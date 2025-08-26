@@ -5,9 +5,15 @@ import type {
   CompletionResult,
   CompletionSource,
 } from "@codemirror/autocomplete";
+import { undo } from "@codemirror/commands";
 import type { Extension, TransactionSpec } from "@codemirror/state";
 import type { EditorView, KeyBinding, ViewUpdate } from "@codemirror/view";
-import { mdiArrowExpand, mdiArrowCollapse } from "@mdi/js";
+import {
+  mdiArrowExpand,
+  mdiArrowCollapse,
+  mdiContentCopy,
+  mdiUndo,
+} from "@mdi/js";
 import type { HassEntities } from "home-assistant-js-websocket";
 import type { PropertyValues } from "lit";
 import { css, ReactiveElement, html, render } from "lit";
@@ -16,11 +22,16 @@ import memoizeOne from "memoize-one";
 import { fireEvent } from "../common/dom/fire_event";
 import { stopPropagation } from "../common/dom/stop_propagation";
 import { getEntityContext } from "../common/entity/context/get_entity_context";
+import { copyToClipboard } from "../common/util/copy-clipboard";
 import type { HomeAssistant } from "../types";
+import { showToast } from "../util/toast";
 import type { CompletionItem } from "./ha-code-editor-completion-items";
 import "./ha-icon";
 import "./ha-icon-button";
+import "./ha-icon-button-group";
 import "./ha-code-editor-completion-items";
+import "./ha-code-editor-toolbar";
+import type { HaCodeEditorToolbar } from "./ha-code-editor-toolbar";
 
 declare global {
   interface HASSDomEvents {
@@ -68,12 +79,17 @@ export class HaCodeEditor extends ReactiveElement {
   @property({ type: Boolean, attribute: "disable-fullscreen" })
   public disableFullscreen = false;
 
+  @property({ type: Boolean, attribute: "has-toolbar" })
+  public hasToolbar = true;
+
   @state() private _value = "";
 
   @state() private _isFullscreen = false;
 
   // eslint-disable-next-line @typescript-eslint/consistent-type-imports
   private _loadedCodeMirror?: typeof import("../resources/codemirror");
+
+  private _editorToolbar?: HaCodeEditorToolbar;
 
   private _iconList?: Completion[];
 
@@ -177,6 +193,9 @@ export class HaCodeEditor extends ReactiveElement {
     if (transactions.length > 0) {
       this.codemirror.dispatch(...transactions);
     }
+    if (changedProps.has("hasToolbar")) {
+      this._updateToolbar();
+    }
     if (changedProps.has("error")) {
       this.classList.toggle("error-state", this.error);
     }
@@ -253,6 +272,7 @@ export class HaCodeEditor extends ReactiveElement {
       }
     }
 
+    // Create the code editor
     this.codemirror = new this._loadedCodeMirror.EditorView({
       state: this._loadedCodeMirror.EditorState.create({
         doc: this._value,
@@ -261,49 +281,107 @@ export class HaCodeEditor extends ReactiveElement {
       parent: this.renderRoot,
     });
 
-    this._updateFullscreenButton();
+    // Create the toolbar. This is placed as a child of the code mirror object
+    // to ensure it doesn't affect the positioning of the editor.
+    this._createEditorToolbar(this.codemirror.dom);
+  }
+
+  private _createEditorToolbar(renderRoot: HTMLElement) {
+    this._editorToolbar = document.createElement("ha-code-editor-toolbar");
+    this._editorToolbar.classList.add("code-editor-toolbar");
+    this._editorToolbar.items = [
+      //  - Undo
+      {
+        label: this.hass ? this.hass.localize("ui.common.undo") : "Undo",
+        path: mdiUndo,
+        action: (e: Event) => this._handleUndoClick(e),
+      },
+      //  - Copy
+      {
+        label: this.hass
+          ? this.hass.localize(
+              "ui.panel.config.automation.editor.copy_to_clipboard"
+            )
+          : "Copy to Clipboard",
+        path: mdiContentCopy,
+        action: (e: Event) => this._handleClipboardClick(e),
+      },
+      //  - Fullscreen
+      {
+        class: "fullscreen-button",
+        disabled: this.disableFullscreen,
+        label: this._isFullscreen ? "Exit fullscreen" : "Enter fullscreen",
+        path: this._isFullscreen ? mdiArrowCollapse : mdiArrowExpand,
+        action: (e: Event) => this._handleFullscreenClick(e),
+      },
+    ];
+    renderRoot.appendChild(this._editorToolbar);
+
+    this._updateToolbar();
+  }
+
+  private _updateToolbar() {
+    // Show/Hide the toolbar if we have one.
+    if (this._editorToolbar) {
+      this._editorToolbar.setAttribute(
+        "style",
+        this.hasToolbar ? "" : "display:none;"
+      );
+    }
+    this.classList.toggle("hasToolbar", this.hasToolbar);
+    // If we don't have a toolbar and fullscreen set, clear it.
+    if (!this.hasToolbar && this._isFullscreen) {
+      this._isFullscreen = false;
+      this._updateFullscreenButton();
+    }
   }
 
   private _updateFullscreenButton() {
-    const existingButton = this.renderRoot.querySelector(".fullscreen-button");
-
-    if (this.disableFullscreen) {
-      // Remove button if it exists and fullscreen is disabled
-      if (existingButton) {
-        existingButton.remove();
+    // Check if we have an existing fullscreen button
+    let fsButton;
+    if (this._editorToolbar) {
+      const toolbarRoot = this._editorToolbar.shadowRoot;
+      if (toolbarRoot) {
+        fsButton = toolbarRoot.querySelector(".fullscreen-button");
       }
-      // Exit fullscreen if currently in fullscreen mode
-      if (this._isFullscreen) {
-        this._isFullscreen = false;
-      }
-      return;
     }
-
-    // Create button if it doesn't exist
-    if (!existingButton) {
-      const button = document.createElement("ha-icon-button");
-      (button as any).path = this._isFullscreen
-        ? mdiArrowCollapse
-        : mdiArrowExpand;
-      button.setAttribute(
-        "label",
-        this._isFullscreen ? "Exit fullscreen" : "Enter fullscreen"
-      );
-      button.classList.add("fullscreen-button");
-      // Use bound method to ensure proper this context
-      button.addEventListener("click", this._handleFullscreenClick);
-      this.renderRoot.appendChild(button);
-    } else {
-      // Update existing button
-      (existingButton as any).path = this._isFullscreen
-        ? mdiArrowCollapse
-        : mdiArrowExpand;
-      existingButton.setAttribute(
+    // Ensure we are not in fullscreen mode if currently disabled
+    if (this.disableFullscreen) {
+      this._isFullscreen = false;
+    }
+    // Configure full-screen button parameters based on our current state
+    if (fsButton) {
+      fsButton.disabled = this.disableFullscreen;
+      fsButton.path = this._isFullscreen ? mdiArrowCollapse : mdiArrowExpand;
+      fsButton.setAttribute(
         "label",
         this._isFullscreen ? "Exit fullscreen" : "Enter fullscreen"
       );
     }
   }
+
+  private _handleClipboardClick = async (e: Event) => {
+    e.preventDefault();
+    e.stopPropagation();
+    if (!this.codemirror) {
+      return;
+    }
+    await copyToClipboard(this.codemirror.state.doc.toString());
+    if (this.hass) {
+      showToast(this, {
+        message: this.hass.localize("ui.common.copied_clipboard"),
+      });
+    }
+  };
+
+  private _handleUndoClick = (e: Event) => {
+    e.preventDefault();
+    e.stopPropagation();
+    if (!this.codemirror) {
+      return;
+    }
+    undo(this.codemirror);
+  };
 
   private _handleFullscreenClick = (e: Event) => {
     e.preventDefault();
@@ -608,39 +686,33 @@ export class HaCodeEditor extends ReactiveElement {
     :host {
       position: relative;
       display: block;
+      --code-editor-toolbar-height: 36px;
     }
 
     :host(.error-state) .cm-gutters {
-      border-color: var(--error-state-color, red);
+      border-color: var(--error-state-color, red) !important;
     }
 
-    .fullscreen-button {
-      position: absolute;
-      top: 8px;
-      right: 8px;
-      z-index: 1;
-      color: var(--secondary-text-color);
-      background-color: var(--secondary-background-color);
-      border-radius: 50%;
-      opacity: 0.9;
-      transition: opacity 0.2s;
-      --mdc-icon-button-size: 32px;
-      --mdc-icon-size: 18px;
-      /* Ensure button is clickable on iOS */
-      cursor: pointer;
-      -webkit-tap-highlight-color: transparent;
-      touch-action: manipulation;
+    :host(.hasToolbar) .cm-gutters {
+      padding-top: 0;
     }
 
-    .fullscreen-button:hover,
-    .fullscreen-button:active {
-      opacity: 1;
+    :host(.hasToolbar) .cm-focused .cm-gutters {
+      padding-top: 1px;
     }
 
-    @media (hover: none) {
-      .fullscreen-button {
-        opacity: 0.8;
-      }
+    :host(.error-state) .cm-content {
+      border-color: var(--error-state-color, red) !important;
+    }
+
+    :host(.hasToolbar) .cm-content {
+      border: "none";
+      border-top: 1px solid var(--secondary-text-color);
+    }
+
+    :host(.hasToolbar) .cm-focused .cm-content {
+      border-top: 2px solid var(--primary-color);
+      padding-top: 15px;
     }
 
     :host(.fullscreen) {
@@ -666,15 +738,14 @@ export class HaCodeEditor extends ReactiveElement {
       display: block !important;
     }
 
+    :host(.hasToolbar) .cm-editor {
+      padding-top: var(--code-editor-toolbar-height);
+    }
+
     :host(.fullscreen) .cm-editor {
       height: 100% !important;
       max-height: 100% !important;
       border-radius: 0 !important;
-    }
-
-    :host(.fullscreen) .fullscreen-button {
-      top: calc(var(--safe-area-inset-top, 0px) + 8px);
-      right: calc(var(--safe-area-inset-right, 0px) + 8px);
     }
 
     .completion-info {
