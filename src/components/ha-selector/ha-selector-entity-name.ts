@@ -76,9 +76,9 @@ export class HaEntityNameSelector extends LitElement {
     const deviceReg = entityReg?.device_id
       ? this.hass.devices?.[entityReg.device_id]
       : undefined;
-    const areaReg = entityReg?.area_id
-      ? this.hass.areas?.[entityReg.area_id]
-      : undefined;
+    // Try entity area first, then fall back to device area
+    const areaId = entityReg?.area_id || deviceReg?.area_id;
+    const areaReg = areaId ? this.hass.areas?.[areaId] : undefined;
     const floorReg = areaReg?.floor_id
       ? this.hass.floors?.[areaReg.floor_id]
       : undefined;
