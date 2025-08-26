@@ -10,8 +10,6 @@ import type {
   LovelaceGridOptions,
 } from "../types";
 import type { ClockCardConfig } from "./types";
-import "./clock/hui-clock-card-analog";
-import "./clock/hui-clock-card-digital";
 
 export const INTERVAL = 1000;
 
@@ -34,6 +32,12 @@ export class HuiClockCard extends LitElement implements LovelaceCard {
 
   public setConfig(config: ClockCardConfig): void {
     this._config = config;
+    // Dynamically import the clock type based on the configuration
+    if (config.clock_style === "analog") {
+      import("./clock/hui-clock-card-analog");
+    } else {
+      import("./clock/hui-clock-card-digital");
+    }
   }
 
   public getCardSize(): number {
