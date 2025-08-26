@@ -841,6 +841,9 @@ class HUIRoot extends LitElement {
     showAreaRegistryDetailDialog(this, {
       createEntry: async (values) => {
         const area = await createAreaRegistryEntry(this.hass, values);
+        if (isStrategyDashboard(this.lovelace!.rawConfig)) {
+          fireEvent(this, "config-refresh");
+        }
         showToast(this, {
           message: this.hass.localize(
             "ui.panel.lovelace.menu.add_area_success"
