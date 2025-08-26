@@ -95,6 +95,7 @@ export default class HaAutomationAction extends LitElement {
             (action) => this._getKey(action),
             (action, idx) => html`
               <ha-automation-action-row
+                .root=${this.root}
                 .sortableData=${action}
                 .index=${idx}
                 .first=${idx === 0}
@@ -173,9 +174,8 @@ export default class HaAutomationAction extends LitElement {
               behavior: "smooth",
             });
           }
-        } else if (!this.optionsInSidebar) {
-          row.expand();
         }
+        row.expand();
         row.focus();
       });
     }
