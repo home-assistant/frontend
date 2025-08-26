@@ -5,7 +5,7 @@ import type {
   CompletionResult,
   CompletionSource,
 } from "@codemirror/autocomplete";
-import { undo } from "@codemirror/commands";
+import { undo, undoDepth, redo, redoDepth } from "@codemirror/commands";
 import type { Extension, TransactionSpec } from "@codemirror/state";
 import type { EditorView, KeyBinding, ViewUpdate } from "@codemirror/view";
 import {
@@ -13,6 +13,7 @@ import {
   mdiArrowCollapse,
   mdiContentCopy,
   mdiUndo,
+  mdiRedo,
 } from "@mdi/js";
 import type { HassEntities } from "home-assistant-js-websocket";
 import type { PropertyValues } from "lit";
@@ -173,6 +174,7 @@ export class HaCodeEditor extends ReactiveElement {
           this._loadedCodeMirror!.EditorView!.editable.of(!this.readOnly)
         ),
       });
+      this._updateEditorStateButtons();
     }
     if (changedProps.has("linewrap")) {
       transactions.push({
@@ -292,9 +294,19 @@ export class HaCodeEditor extends ReactiveElement {
     this._editorToolbar.items = [
       //  - Undo
       {
+        class: "undo-button",
+        disabled: true,
         label: this.hass ? this.hass.localize("ui.common.undo") : "Undo",
         path: mdiUndo,
         action: (e: Event) => this._handleUndoClick(e),
+      },
+      //  - Redo
+      {
+        class: "redo-button",
+        disabled: true,
+        label: this.hass ? this.hass.localize("ui.common.redo") : "Redo",
+        path: mdiRedo,
+        action: (e: Event) => this._handleRedoClick(e),
       },
       //  - Copy
       {
@@ -334,26 +346,52 @@ export class HaCodeEditor extends ReactiveElement {
       this._isFullscreen = false;
       this._updateFullscreenButton();
     }
+    // Refresh history buttons
+    this._updateEditorStateButtons();
+  }
+
+  private _updateEditorStateButtons() {
+    // Update any buttons affected by the editor state
+    this._updateUndoButton();
+    this._updateRedoButton();
+  }
+
+  private _updateUndoButton() {
+    // Update the undo button
+    const undoButton = this._editorToolbar
+      ? this._editorToolbar.findToolbarButtons("undo-button")
+      : undefined;
+    if (!undoButton) return;
+    // Mark buttons as disabled if we are read-only or there is nothing to undo.
+    undoButton[0].disabled =
+      this.readOnly || !(this.codemirror && undoDepth(this.codemirror.state));
+  }
+
+  private _updateRedoButton() {
+    // Update the redo button
+    const redoButton = this._editorToolbar
+      ? this._editorToolbar.findToolbarButtons("redo-button")
+      : undefined;
+    if (!redoButton) return;
+    // Mark buttons as disabled if we are read-only or there is nothing to undo.
+    redoButton[0].disabled =
+      this.readOnly || !(this.codemirror && redoDepth(this.codemirror.state));
   }
 
   private _updateFullscreenButton() {
     // Check if we have an existing fullscreen button
-    let fsButton;
-    if (this._editorToolbar) {
-      const toolbarRoot = this._editorToolbar.shadowRoot;
-      if (toolbarRoot) {
-        fsButton = toolbarRoot.querySelector(".fullscreen-button");
-      }
-    }
+    const fsButton = this._editorToolbar
+      ? this._editorToolbar.findToolbarButtons("fullscreen-button")
+      : undefined;
     // Ensure we are not in fullscreen mode if currently disabled
     if (this.disableFullscreen) {
       this._isFullscreen = false;
     }
     // Configure full-screen button parameters based on our current state
     if (fsButton) {
-      fsButton.disabled = this.disableFullscreen;
-      fsButton.path = this._isFullscreen ? mdiArrowCollapse : mdiArrowExpand;
-      fsButton.setAttribute(
+      fsButton[0].disabled = this.disableFullscreen;
+      fsButton[0].path = this._isFullscreen ? mdiArrowCollapse : mdiArrowExpand;
+      fsButton[0].setAttribute(
         "label",
         this._isFullscreen ? "Exit fullscreen" : "Enter fullscreen"
       );
@@ -381,6 +419,15 @@ export class HaCodeEditor extends ReactiveElement {
       return;
     }
     undo(this.codemirror);
+  };
+
+  private _handleRedoClick = (e: Event) => {
+    e.preventDefault();
+    e.stopPropagation();
+    if (!this.codemirror) {
+      return;
+    }
+    redo(this.codemirror);
   };
 
   private _handleFullscreenClick = (e: Event) => {
@@ -668,6 +715,7 @@ export class HaCodeEditor extends ReactiveElement {
       return;
     }
     this._value = update.state.doc.toString();
+    this._updateEditorStateButtons();
     fireEvent(this, "value-changed", { value: this._value });
   };
 
