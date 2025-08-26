@@ -3,6 +3,7 @@ import { css, html, LitElement } from "lit";
 import { customElement, property } from "lit/decorators";
 import "./ha-icon";
 import "./ha-icon-button";
+import type { HaIconButton } from "./ha-icon-button";
 import "./ha-icon-button-group";
 import "./ha-tooltip";
 import "./ha-md-divider";
@@ -21,6 +22,27 @@ export interface HACodeEditorToolbarItem {
 @customElement("ha-code-editor-toolbar")
 export class HaCodeEditorToolbar extends LitElement {
   @property({ type: Array }) public items: HACodeEditorToolbarItem[] = [];
+
+  // Returns all toolbar buttons, or undefined if there are none.
+  // Optionally returns only those with matching user class.
+  public findToolbarButtons(buttonClass = ""): HaIconButton[] | undefined {
+    const toolbarRoot = this.shadowRoot;
+    if (!toolbarRoot) return undefined;
+    // Search for all editor buttons
+    const allButtonNodes = toolbarRoot.querySelectorAll("ha-icon-button");
+    const allButtons = [...allButtonNodes];
+    const editorButtons = Array.prototype.filter.call(allButtons, (button) =>
+      button.classList.contains("editor-button")
+    );
+    if (!editorButtons.length) return undefined;
+    if (!buttonClass.length) return editorButtons;
+    // Filter by user class if provided
+    const classButtons = Array.prototype.filter.call(editorButtons, (button) =>
+      button.classList.contains(buttonClass)
+    );
+    if (!classButtons.length) return undefined;
+    return classButtons;
+  }
 
   protected render(): TemplateResult {
     return html`
