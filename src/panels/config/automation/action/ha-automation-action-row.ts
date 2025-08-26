@@ -420,7 +420,11 @@ export default class HaAutomationActionRow extends LitElement {
               .leftChevron=${[
                 ...ACTION_BUILDING_BLOCKS,
                 ...ACTION_COMBINED_BLOCKS,
-              ].includes(blockType!)}
+              ].includes(blockType!) ||
+              (blockType === "condition" &&
+                CONDITION_BUILDING_BLOCKS.includes(
+                  (this.action as Condition).condition
+                ))}
               .collapsed=${this._collapsed}
               .selected=${this._selected}
               @toggle-collapsed=${this._toggleCollapse}
