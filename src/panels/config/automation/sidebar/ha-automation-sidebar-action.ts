@@ -47,23 +47,25 @@ export default class HaAutomationSidebarAction extends LitElement {
       if (this.config) {
         this.yamlMode = this.config.yamlMode;
         if (this.yamlMode) {
-          this.editor?.yamlEditor?.setValue(this.config.config);
+          this.editor?.yamlEditor?.setValue(this.config.config.action);
         }
       }
     }
   }
 
   protected render() {
+    const actionConfig = this.config.config.action;
+
     const disabled =
       this.disabled ||
-      ("enabled" in this.config.config && this.config.config.enabled === false);
+      ("enabled" in actionConfig && actionConfig.enabled === false);
 
-    const actionType = getAutomationActionType(this.config.config);
+    const actionType = getAutomationActionType(actionConfig);
 
     const type =
       actionType !== "repeat"
         ? actionType
-        : `repeat_${getRepeatType((this.config.config as RepeatAction).repeat)}`;
+        : `repeat_${getRepeatType((actionConfig as RepeatAction).repeat)}`;
 
     const isBuildingBlock = ACTION_BUILDING_BLOCKS.includes(type || "");
 
@@ -141,7 +143,7 @@ export default class HaAutomationSidebarAction extends LitElement {
         : html`<ha-automation-action-editor
             class="sidebar-editor"
             .hass=${this.hass}
-            .action=${this.config.config}
+            .action=${actionConfig}
             .yamlMode=${this.yamlMode}
             .uiSupported=${this.config.uiSupported}
             @value-changed=${this._valueChangedSidebar}
@@ -169,7 +171,9 @@ export default class HaAutomationSidebarAction extends LitElement {
       fireEvent(this, "value-changed", {
         value: {
           ...this.config,
-          config: ev.detail.value,
+          config: {
+            action: ev.detail.value,
+          },
         },
       });
     }

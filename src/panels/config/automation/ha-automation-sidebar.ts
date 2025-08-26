@@ -175,7 +175,7 @@ export default class HaAutomationSidebar extends LitElement {
       return "option";
     }
 
-    if ((this.config as ActionSidebarConfig)?.config) {
+    if ((this.config as ActionSidebarConfig)?.config.action) {
       return "action";
     }
 

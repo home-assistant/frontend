@@ -662,7 +662,9 @@ export default class HaAutomationActionRow extends LitElement {
       },
       disable: this._onDisable,
       delete: this._onDelete,
-      config: sidebarAction,
+      config: {
+        action: sidebarAction,
+      },
       uiSupported: actionType ? this._uiSupported(actionType) : false,
       yamlMode: this._yamlMode,
     } satisfies ActionSidebarConfig);
