@@ -272,25 +272,18 @@ export class HaCodeEditor extends ReactiveElement {
       }
     }
 
-    // Create flex root element. This is necessary to ensure
-    // that code mirror plays nice with the toolbar. The div
-    // places the toolbar at the top then forces the cm-editor
-    // to fill the rest of the space.
-    const editorRoot = document.createElement("div");
-    editorRoot.classList.add("code-editor");
-    this.renderRoot.appendChild(editorRoot);
-
-    // Create the toolbar
-    this._createEditorToolbar(editorRoot);
-
     // Create the code editor
     this.codemirror = new this._loadedCodeMirror.EditorView({
       state: this._loadedCodeMirror.EditorState.create({
         doc: this._value,
         extensions,
       }),
-      parent: editorRoot,
+      parent: this.renderRoot,
     });
+
+    // Create the toolbar. This is placed as a child of the code mirror object
+    // to ensure it doesn't affect the positioning of the editor.
+    this._createEditorToolbar(this.codemirror.dom);
   }
 
   private _createEditorToolbar(renderRoot: HTMLElement) {
@@ -693,6 +686,7 @@ export class HaCodeEditor extends ReactiveElement {
     :host {
       position: relative;
       display: block;
+      --code-editor-toolbar-height: 36px;
     }
 
     :host(.error-state) .cm-gutters {
@@ -744,14 +738,8 @@ export class HaCodeEditor extends ReactiveElement {
       display: block !important;
     }
 
-    .code-editor {
-      display: flex;
-      flex-direction: column;
-      height: 100%;
-    }
-
-    .cm-editor {
-      flex: 1 1 100%;
+    :host(.hasToolbar) .cm-editor {
+      padding-top: var(--code-editor-toolbar-height);
     }
 
     :host(.fullscreen) .cm-editor {

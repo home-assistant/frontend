@@ -47,7 +47,9 @@ export class HaCodeEditorToolbar extends LitElement {
 
   static styles = css`
     :host {
-      position: relative;
+      position: absolute;
+      top: 0px;
+      width: 100%;
       display: flex;
       flex-direction: row-reverse;
       background-color: var(
