@@ -711,11 +711,11 @@ export class HaCodeEditor extends ReactiveElement {
   }
 
   private _onUpdate = (update: ViewUpdate): void => {
+    this._updateEditorStateButtons();
     if (!update.docChanged) {
       return;
     }
     this._value = update.state.doc.toString();
-    this._updateEditorStateButtons();
     fireEvent(this, "value-changed", { value: this._value });
   };
 
