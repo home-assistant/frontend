@@ -14,7 +14,6 @@ import {
   string,
   union,
 } from "superstruct";
-import { mdiClockOutline } from "@mdi/js";
 import { fireEvent } from "../../../../common/dom/fire_event";
 import "../../../../components/ha-form/ha-form";
 import type {
@@ -40,21 +39,18 @@ const cardConfigStruct = assign(
     time_zone: optional(enums(Object.keys(timezones))),
     show_seconds: optional(boolean()),
     no_background: optional(boolean()),
-    analog_options: optional(
-      object({
-        border: optional(defaulted(boolean(), false)),
-        ticks: optional(
-          defaulted(
-            union([
-              literal("none"),
-              literal("quarter"),
-              literal("hour"),
-              literal("minute"),
-            ]),
-            literal("hour")
-          )
-        ),
-      })
+    // Analog clock options
+    border: optional(defaulted(boolean(), false)),
+    ticks: optional(
+      defaulted(
+        union([
+          literal("none"),
+          literal("quarter"),
+          literal("hour"),
+          literal("minute"),
+        ]),
+        literal("hour")
+      )
     ),
   })
 );
@@ -102,20 +98,67 @@ export class HuiClockCardEditor
         },
         { name: "show_seconds", selector: { boolean: {} } },
         { name: "no_background", selector: { boolean: {} } },
-        {
-          name: "time_format",
-          selector: {
-            select: {
-              mode: "dropdown",
-              options: ["auto", ...Object.values(TimeFormat)].map((value) => ({
-                value,
-                label: localize(
-                  `ui.panel.lovelace.editor.card.clock.time_formats.${value}`
-                ),
-              })),
-            },
-          },
-        },
+        ...(clockStyle === "digital"
+          ? ([
+              {
+                name: "time_format",
+                selector: {
+                  select: {
+                    mode: "dropdown",
+                    options: ["auto", ...Object.values(TimeFormat)].map(
+                      (value) => ({
+                        value,
+                        label: localize(
+                          `ui.panel.lovelace.editor.card.clock.time_formats.${value}`
+                        ),
+                      })
+                    ),
+                  },
+                },
+              },
+            ] as const satisfies readonly HaFormSchema[])
+          : []),
+        ...(clockStyle === "analog"
+          ? ([
+              {
+                name: "border",
+                description: {
+                  suffix: localize(
+                    `ui.panel.lovelace.editor.card.clock.analog_options.border.description`
+                  ),
+                },
+                default: false,
+                selector: {
+                  boolean: {},
+                },
+              },
+              {
+                name: "ticks",
+                description: {
+                  suffix: localize(
+                    `ui.panel.lovelace.editor.card.clock.analog_options.ticks.description`
+                  ),
+                },
+                default: "hour",
+                selector: {
+                  select: {
+                    mode: "dropdown",
+                    options: ["none", "quarter", "hour", "minute"].map(
+                      (value) => ({
+                        value,
+                        label: localize(
+                          `ui.panel.lovelace.editor.card.clock.analog_options.ticks.${value}.label`
+                        ),
+                        description: localize(
+                          `ui.panel.lovelace.editor.card.clock.analog_options.ticks.${value}.description`
+                        ),
+                      })
+                    ),
+                  },
+                },
+              },
+            ] as const satisfies readonly HaFormSchema[])
+          : []),
         {
           name: "time_zone",
           selector: {
@@ -136,54 +179,6 @@ export class HuiClockCardEditor
             },
           },
         },
-        ...(clockStyle === "analog"
-          ? ([
-              {
-                name: "analog_options",
-                type: "expandable",
-                iconPath: mdiClockOutline,
-                schema: [
-                  {
-                    name: "border",
-                    description: {
-                      suffix: localize(
-                        `ui.panel.lovelace.editor.card.clock.analog_options.border.description`
-                      ),
-                    },
-                    default: false,
-                    selector: {
-                      boolean: {},
-                    },
-                  },
-                  {
-                    name: "ticks",
-                    description: {
-                      suffix: localize(
-                        `ui.panel.lovelace.editor.card.clock.analog_options.ticks.description`
-                      ),
-                    },
-                    default: "hour",
-                    selector: {
-                      select: {
-                        mode: "dropdown",
-                        options: ["none", "quarter", "hour", "minute"].map(
-                          (value) => ({
-                            value,
-                            label: localize(
-                              `ui.panel.lovelace.editor.card.clock.analog_options.ticks.${value}.label`
-                            ),
-                            description: localize(
-                              `ui.panel.lovelace.editor.card.clock.analog_options.ticks.${value}.description`
-                            ),
-                          })
-                        ),
-                      },
-                    },
-                  },
-                ],
-              },
-            ] as const satisfies readonly HaFormSchema[])
-          : []),
       ] as const satisfies readonly HaFormSchema[]
   );
 
@@ -194,6 +189,9 @@ export class HuiClockCardEditor
     time_format: "auto",
     show_seconds: false,
     no_background: false,
+    // Analog clock options
+    border: false,
+    ticks: "hour",
     ...config,
   }));
 
@@ -232,12 +230,11 @@ export class HuiClockCardEditor
     }
 
     if (ev.detail.value.clock_style === "analog") {
-      ev.detail.value.analog_options = {
-        border: ev.detail.value.analog_options?.border ?? false,
-        ticks: ev.detail.value.analog_options?.ticks ?? "hour",
-      };
+      ev.detail.value.border = ev.detail.value.border ?? false;
+      ev.detail.value.ticks = ev.detail.value.ticks ?? "hour";
     } else {
-      delete ev.detail.value.analog_options;
+      delete ev.detail.value.border;
+      delete ev.detail.value.ticks;
     }
 
     fireEvent(this, "config-changed", { config: ev.detail.value });
@@ -274,10 +271,6 @@ export class HuiClockCardEditor
       case "no_background":
         return this.hass!.localize(
           `ui.panel.lovelace.editor.card.clock.no_background`
-        );
-      case "analog_options":
-        return this.hass!.localize(
-          `ui.panel.lovelace.editor.card.clock.analog_options.label`
         );
       case "border":
         return this.hass!.localize(
