@@ -292,7 +292,6 @@ export class HaCodeEditor extends ReactiveElement {
     this._editorToolbar = document.createElement("ha-icon-button-toolbar");
     this._editorToolbar.classList.add("code-editor-toolbar");
     this._editorToolbar.items = [
-      //  - Undo
       {
         id: "undo",
         disabled: true,
@@ -300,7 +299,6 @@ export class HaCodeEditor extends ReactiveElement {
         path: mdiUndo,
         action: (e: Event) => this._handleUndoClick(e),
       },
-      //  - Redo
       {
         id: "redo",
         disabled: true,
@@ -308,7 +306,6 @@ export class HaCodeEditor extends ReactiveElement {
         path: mdiRedo,
         action: (e: Event) => this._handleRedoClick(e),
       },
-      //  - Copy
       {
         id: "copy",
         label: this.hass
@@ -319,7 +316,6 @@ export class HaCodeEditor extends ReactiveElement {
         path: mdiContentCopy,
         action: (e: Event) => this._handleClipboardClick(e),
       },
-      //  - Fullscreen
       {
         id: "fullscreen",
         disabled: this.disableFullscreen,

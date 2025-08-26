@@ -6,17 +6,16 @@ import "./ha-icon-button";
 import type { HaIconButton } from "./ha-icon-button";
 import "./ha-icon-button-group";
 import "./ha-tooltip";
-import "./ha-md-divider";
 
 export interface HaIconButtonToolbarItem {
   [key: string]: any;
-  path: string;
-  label: string;
-  id: string;
+  path?: string;
+  label?: string;
+  id?: string;
   class?: string;
   disabled?: boolean;
   tooltip?: string;
-  action: (e: Event) => any;
+  action?: (e: Event) => any;
   divider?: boolean;
 }
 
@@ -57,7 +56,7 @@ export class HaIconButtonToolbar extends LitElement {
       <ha-icon-button-group class="icon-toolbar-buttongroup">
         ${this.items.map((item) =>
           item.divider
-            ? html`<div role="separator"></div>`
+            ? html`<div class="icon-toolbar-divider" role="separator"></div>`
             : html`<ha-tooltip
                 .disabled=${!item.tooltip}
                 .content=${item.tooltip ?? ""}
@@ -66,8 +65,8 @@ export class HaIconButtonToolbar extends LitElement {
                   id=${item.id ?? ""}
                   class="icon-toolbar-button ${item.class}"
                   @click=${item.action}
-                  .label=${item.label}
-                  .path=${item.path}
+                  .label=${item.label ?? ""}
+                  .path=${item.path ?? ""}
                   ?disabled=${item.disabled}
                 ></ha-icon-button>
               </ha-tooltip>`
@@ -87,20 +86,32 @@ export class HaIconButtonToolbar extends LitElement {
         --icon-button-toolbar-color,
         var(--secondary-background-color, whitesmoke)
       );
+      --icon-button-toolbar-height: 32px;
+      --icon-button-toolbar-button: calc(
+        var(--icon-button-toolbar-height) - 4px
+      );
+      --icon-button-toolbar-icon: calc(
+        var(--icon-button-toolbar-height) - 14px
+      );
+    }
+
+    .icon-toolbar-divider {
+      height: var(--icon-button-toolbar-icon);
+      margin: 0px 4px;
+      border: 0.5px solid
+        var(--divider-color, var(--secondary-text-color, transparent));
     }
 
     .icon-toolbar-buttongroup {
       background-color: transparent;
       padding-right: 4px;
-      height: var(--icon-button-toolbar-height, 32px);
+      height: var(--icon-button-toolbar-height);
     }
 
     .icon-toolbar-button {
       color: var(--secondary-text-color);
-      --mdc-icon-button-size: calc(
-        var(--icon-button-toolbar-height, 32px) - 4px
-      );
-      --mdc-icon-size: calc(var(--icon-button-toolbar-height, 32px) - 14px);
+      --mdc-icon-button-size: var(--icon-button-toolbar-button);
+      --mdc-icon-size: var(--icon-button-toolbar-icon);
       /* Ensure button is clickable on iOS */
       cursor: pointer;
       -webkit-tap-highlight-color: transparent;
