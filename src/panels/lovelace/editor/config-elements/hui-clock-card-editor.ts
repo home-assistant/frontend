@@ -6,6 +6,7 @@ import {
   assert,
   assign,
   boolean,
+  defaulted,
   enums,
   literal,
   object,
@@ -30,6 +31,7 @@ const cardConfigStruct = assign(
   baseLovelaceCardConfig,
   object({
     title: optional(string()),
+    clock_style: optional(union([literal("digital"), literal("analog")])),
     clock_size: optional(
       union([literal("small"), literal("medium"), literal("large")])
     ),
@@ -37,6 +39,19 @@ const cardConfigStruct = assign(
     time_zone: optional(enums(Object.keys(timezones))),
     show_seconds: optional(boolean()),
     no_background: optional(boolean()),
+    // Analog clock options
+    border: optional(defaulted(boolean(), false)),
+    ticks: optional(
+      defaulted(
+        union([
+          literal("none"),
+          literal("quarter"),
+          literal("hour"),
+          literal("minute"),
+        ]),
+        literal("hour")
+      )
+    ),
   })
 );
 
@@ -50,9 +65,23 @@ export class HuiClockCardEditor
   @state() private _config?: ClockCardConfig;
 
   private _schema = memoizeOne(
-    (localize: LocalizeFunc) =>
+    (localize: LocalizeFunc, clockStyle: "digital" | "analog") =>
       [
         { name: "title", selector: { text: {} } },
+        {
+          name: "clock_style",
+          selector: {
+            select: {
+              mode: "dropdown",
+              options: ["digital", "analog"].map((value) => ({
+                value,
+                label: localize(
+                  `ui.panel.lovelace.editor.card.clock.clock_styles.${value}`
+                ),
+              })),
+            },
+          },
+        },
         {
           name: "clock_size",
           selector: {
@@ -69,20 +98,66 @@ export class HuiClockCardEditor
         },
         { name: "show_seconds", selector: { boolean: {} } },
         { name: "no_background", selector: { boolean: {} } },
-        {
-          name: "time_format",
-          selector: {
-            select: {
-              mode: "dropdown",
-              options: ["auto", ...Object.values(TimeFormat)].map((value) => ({
-                value,
-                label: localize(
-                  `ui.panel.lovelace.editor.card.clock.time_formats.${value}`
-                ),
-              })),
-            },
-          },
-        },
+        ...(clockStyle === "digital"
+          ? ([
+              {
+                name: "time_format",
+                selector: {
+                  select: {
+                    mode: "dropdown",
+                    options: ["auto", ...Object.values(TimeFormat)].map(
+                      (value) => ({
+                        value,
+                        label: localize(
+                          `ui.panel.lovelace.editor.card.clock.time_formats.${value}`
+                        ),
+                      })
+                    ),
+                  },
+                },
+              },
+            ] as const satisfies readonly HaFormSchema[])
+          : clockStyle === "analog"
+            ? ([
+                {
+                  name: "border",
+                  description: {
+                    suffix: localize(
+                      `ui.panel.lovelace.editor.card.clock.border.description`
+                    ),
+                  },
+                  default: false,
+                  selector: {
+                    boolean: {},
+                  },
+                },
+                {
+                  name: "ticks",
+                  description: {
+                    suffix: localize(
+                      `ui.panel.lovelace.editor.card.clock.ticks.description`
+                    ),
+                  },
+                  default: "hour",
+                  selector: {
+                    select: {
+                      mode: "dropdown",
+                      options: ["none", "quarter", "hour", "minute"].map(
+                        (value) => ({
+                          value,
+                          label: localize(
+                            `ui.panel.lovelace.editor.card.clock.ticks.${value}.label`
+                          ),
+                          description: localize(
+                            `ui.panel.lovelace.editor.card.clock.ticks.${value}.description`
+                          ),
+                        })
+                      ),
+                    },
+                  },
+                },
+              ] as const satisfies readonly HaFormSchema[])
+            : []),
         {
           name: "time_zone",
           selector: {
@@ -107,10 +182,15 @@ export class HuiClockCardEditor
   );
 
   private _data = memoizeOne((config) => ({
+    clock_style: "digital",
     clock_size: "small",
     time_zone: "auto",
     time_format: "auto",
     show_seconds: false,
+    no_background: false,
+    // Analog clock options
+    border: false,
+    ticks: "hour",
     ...config,
   }));
 
@@ -128,8 +208,13 @@ export class HuiClockCardEditor
       <ha-form
         .hass=${this.hass}
         .data=${this._data(this._config)}
-        .schema=${this._schema(this.hass.localize)}
+        .schema=${this._schema(
+          this.hass.localize,
+          (this._data(this._config).clock_style as "digital" | "analog") ??
+            "digital"
+        )}
         .computeLabel=${this._computeLabelCallback}
+        .computeHelper=${this._computeHelperCallback}
         @value-changed=${this._valueChanged}
       ></ha-form>
     `;
@@ -143,6 +228,14 @@ export class HuiClockCardEditor
       delete ev.detail.value.time_format;
     }
 
+    if (ev.detail.value.clock_style === "analog") {
+      ev.detail.value.border = ev.detail.value.border ?? false;
+      ev.detail.value.ticks = ev.detail.value.ticks ?? "hour";
+    } else {
+      delete ev.detail.value.border;
+      delete ev.detail.value.ticks;
+    }
+
     fireEvent(this, "config-changed", { config: ev.detail.value });
   }
 
@@ -153,6 +246,10 @@ export class HuiClockCardEditor
       case "title":
         return this.hass!.localize(
           "ui.panel.lovelace.editor.card.generic.title"
+        );
+      case "clock_style":
+        return this.hass!.localize(
+          `ui.panel.lovelace.editor.card.clock.clock_style`
         );
       case "clock_size":
         return this.hass!.localize(
@@ -173,6 +270,31 @@ export class HuiClockCardEditor
       case "no_background":
         return this.hass!.localize(
           `ui.panel.lovelace.editor.card.clock.no_background`
+        );
+      case "border":
+        return this.hass!.localize(
+          `ui.panel.lovelace.editor.card.clock.border.label`
+        );
+      case "ticks":
+        return this.hass!.localize(
+          `ui.panel.lovelace.editor.card.clock.ticks.label`
+        );
+      default:
+        return undefined;
+    }
+  };
+
+  private _computeHelperCallback = (
+    schema: SchemaUnion<ReturnType<typeof this._schema>>
+  ) => {
+    switch (schema.name) {
+      case "border":
+        return this.hass!.localize(
+          `ui.panel.lovelace.editor.card.clock.border.description`
+        );
+      case "ticks":
+        return this.hass!.localize(
+          `ui.panel.lovelace.editor.card.clock.ticks.description`
         );
       default:
         return undefined;
