@@ -215,7 +215,7 @@ export default class HaAutomationCondition extends LitElement {
 
   private _addConditionDialog() {
     if (this.narrow) {
-      fireEvent(this, "close-sidebar");
+      fireEvent(this, "request-close-sidebar");
     }
     showAddAutomationElementDialog(this, {
       type: "condition",
@@ -322,7 +322,6 @@ export default class HaAutomationCondition extends LitElement {
     // Ensure condition is removed even after update
     const conditions = this.conditions.filter((c) => c !== condition);
     fireEvent(this, "value-changed", { value: conditions });
-    fireEvent(this, "close-sidebar");
   }
 
   private _conditionChanged(ev: CustomEvent) {
