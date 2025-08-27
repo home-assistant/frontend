@@ -1349,8 +1349,8 @@
         "not_supported_microphone_browser": "Your connection to Home Assistant is not secured using HTTPS. This causes browsers to block Home Assistant from accessing the microphone.",
         "not_supported_microphone_documentation": "Use the Home Assistant app or visit {documentation_link} to learn how to use a secure URL",
         "not_supported_microphone_documentation_link": "the documentation",
-        "unknown_error_load_assist": "Loading the assist pipeline failed",
-        "not_found_error_load_assist": "Cannot find the assist pipeline"
+        "unknown_error_load_assist": "Loading the Assist pipeline failed",
+        "not_found_error_load_assist": "Cannot find the Assist pipeline"
       },
       "generic": {
         "default_confirmation_title": "Are you sure?"
