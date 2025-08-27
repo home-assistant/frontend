@@ -1,7 +1,7 @@
 import { formatDurationDigital } from "../common/datetime/format_duration";
 import type { FrontendLocaleData } from "./translation";
 
-// These attributes are hidden from the more-info window.
+// These attributes are hidden from the more-info window for all entities.
 export const STATE_ATTRIBUTES = [
   "entity_id",
   "assumed_state",
@@ -25,8 +25,15 @@ export const STATE_ATTRIBUTES = [
   "supported_features",
   "unit_of_measurement",
   "available_tones",
-  "options",
 ];
+
+// These attributes are hidden from the more-info window for entities of the
+// matching domain and device_class.
+export const STATE_ATTRIBUTES_DOMAIN_CLASS = {
+  sensor: {
+    enum: ["options"],
+  },
+};
 
 export const TEMPERATURE_ATTRIBUTES = new Set([
   "temperature",
