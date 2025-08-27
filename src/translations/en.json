@@ -7296,8 +7296,7 @@
               "background_type": "Background type",
               "background_type_none_option": "None",
               "background_type_color_option": "Color",
-              "background_color": "Background color",
-              "background_opacity": "Background opacity"
+              "background_color": "Background color"
             },
             "visibility": {
               "explanation": "The section will be shown when ALL conditions below are fulfilled. If no conditions are set, the section will always be shown."
