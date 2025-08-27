@@ -6664,6 +6664,7 @@
           "ip_information": "IP information",
           "adapter": {
             "auto_configure": "Autoconfigure",
+            "auto_configure_manual_hint": "Uncheck to manually select network adapters",
             "detected": "Detected",
             "adapter": "Adapter"
           }
