@@ -7,7 +7,7 @@ import memoizeOne from "memoize-one";
 import { fireEvent } from "../common/dom/fire_event";
 import { stringCompare } from "../common/string/compare";
 import type { IntegrationManifest } from "../data/integration";
-import { fetchIntegrationManifests } from "../data/integration";
+import { fetchIntegrationManifests, domainToName } from "../data/integration";
 import { haStyleScrollbar } from "../resources/styles";
 import type { HomeAssistant } from "../types";
 import "./ha-check-list-item";
@@ -79,7 +79,11 @@ export class HaFilterIntegrations extends LitElement {
                         .domain=${integration.domain}
                         brand-fallback
                       ></ha-domain-icon>
-                      ${integration.name || integration.domain}
+                      ${domainToName(
+                        this.hass.localize,
+                        integration.domain,
+                        integration
+                      )}
                     </ha-check-list-item>`
                 )}
               </ha-list> `
@@ -108,6 +112,16 @@ export class HaFilterIntegrations extends LitElement {
 
   protected async firstUpdated() {
     this._manifests = await fetchIntegrationManifests(this.hass);
+    if (this._manifests) {
+      const domains = this._manifests
+        .filter(
+          (mnfst) =>
+            !mnfst.integration_type ||
+            !["entity", "system", "hardware"].includes(mnfst.integration_type)
+        )
+        .map((mnfst) => mnfst.domain);
+      this.hass.loadBackendTranslation("title", domains);
+    }
   }
 
   private _integrations = memoizeOne(
@@ -120,13 +134,15 @@ export class HaFilterIntegrations extends LitElement {
                 mnfst.integration_type
               )) &&
             (!filter ||
-              mnfst.name.toLowerCase().includes(filter) ||
+              domainToName(this.hass.localize, mnfst.domain, mnfst)
+                .toLowerCase()
+                .includes(filter) ||
               mnfst.domain.toLowerCase().includes(filter))
         )
         .sort((a, b) =>
           stringCompare(
-            a.name || a.domain,
-            b.name || b.domain,
+            domainToName(this.hass.localize, a.domain, a),
+            domainToName(this.hass.localize, b.domain, b),
             this.hass.locale.language
           )
         )
