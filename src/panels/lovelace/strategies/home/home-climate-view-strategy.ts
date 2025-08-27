@@ -23,6 +23,7 @@ const processAreasForClimate = (
   entities: string[]
 ): LovelaceCardConfig[] => {
   const cards: LovelaceCardConfig[] = [];
+  const computeTileCard = computeAreaTileCardConfig(hass, "", true);
 
   for (const areaId of areaIds) {
     const area = hass.areas[areaId];
@@ -32,8 +33,6 @@ const processAreasForClimate = (
       area: area.area_id,
     });
     const areaEntities = entities.filter(areaFilter);
-
-    const computeTileCard = computeAreaTileCardConfig(hass, "", true);
 
     if (areaEntities.length > 0) {
       cards.push({
@@ -45,6 +44,13 @@ const processAreasForClimate = (
           navigation_path: `areas-${area.area_id}`,
         },
       });
+
+      if (hass.areas[areaId].temperature_entity_id) {
+        cards.push(computeTileCard(hass.areas[areaId].temperature_entity_id));
+      }
+      if (hass.areas[areaId].humidity_entity_id) {
+        cards.push(computeTileCard(hass.areas[areaId].humidity_entity_id));
+      }
 
       for (const entityId of areaEntities) {
         cards.push(computeTileCard(entityId));
