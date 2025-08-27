@@ -565,6 +565,9 @@ export interface TriggerSidebarConfig extends BaseSidebarConfig {
   close: () => void;
   rename: () => void;
   disable: () => void;
+  duplicate: () => void;
+  cut: () => void;
+  copy: () => void;
   config: Trigger;
   yamlMode: boolean;
   uiSupported: boolean;
@@ -575,6 +578,10 @@ export interface ConditionSidebarConfig extends BaseSidebarConfig {
   close: () => void;
   rename: () => void;
   disable: () => void;
+  test: () => void;
+  duplicate: () => void;
+  cut: () => void;
+  copy: () => void;
   config: Condition;
   yamlMode: boolean;
   uiSupported: boolean;
@@ -585,7 +592,13 @@ export interface ActionSidebarConfig extends BaseSidebarConfig {
   close: () => void;
   rename: () => void;
   disable: () => void;
-  config: Action;
+  duplicate: () => void;
+  cut: () => void;
+  copy: () => void;
+  run: () => void;
+  config: {
+    action: Action;
+  };
   yamlMode: boolean;
   uiSupported: boolean;
 }
@@ -593,6 +606,7 @@ export interface ActionSidebarConfig extends BaseSidebarConfig {
 export interface OptionSidebarConfig extends BaseSidebarConfig {
   close: () => void;
   rename: () => void;
+  duplicate: () => void;
 }
 
 export interface ScriptFieldSidebarConfig extends BaseSidebarConfig {

@@ -16,6 +16,8 @@ import {
   mdiStopCircleOutline,
   mdiTag,
   mdiTransitConnection,
+  mdiUnfoldLessHorizontal,
+  mdiUnfoldMoreHorizontal,
 } from "@mdi/js";
 import type { UnsubscribeFunc } from "home-assistant-js-websocket";
 import type { CSSResultGroup, PropertyValues, TemplateResult } from "lit";
@@ -25,7 +27,6 @@ import { classMap } from "lit/directives/class-map";
 import { transform } from "../../../common/decorators/transform";
 import { fireEvent } from "../../../common/dom/fire_event";
 import { navigate } from "../../../common/navigate";
-import { computeRTL } from "../../../common/util/compute_rtl";
 import { promiseTimeout } from "../../../common/util/promise-timeout";
 import { afterNextRender } from "../../../common/util/render-status";
 import "../../../components/ha-button";
@@ -370,6 +371,30 @@ export class HaAutomationEditor extends PreventUnsavedMixin(
             <ha-svg-icon slot="graphic" .path=${mdiPlaylistEdit}></ha-svg-icon>
           </ha-list-item>
 
+          ${!useBlueprint
+            ? html`
+                <ha-list-item graphic="icon" @click=${this._collapseAll}>
+                  <ha-svg-icon
+                    slot="graphic"
+                    .path=${mdiUnfoldLessHorizontal}
+                  ></ha-svg-icon>
+                  ${this.hass.localize(
+                    "ui.panel.config.automation.editor.collapse_all"
+                  )}
+                </ha-list-item>
+
+                <ha-list-item graphic="icon" @click=${this._expandAll}>
+                  <ha-svg-icon
+                    slot="graphic"
+                    .path=${mdiUnfoldMoreHorizontal}
+                  ></ha-svg-icon>
+                  ${this.hass.localize(
+                    "ui.panel.config.automation.editor.expand_all"
+                  )}
+                </ha-list-item>
+              `
+            : nothing}
+
           <li divider role="separator"></li>
 
           <ha-list-item
@@ -465,11 +490,7 @@ export class HaAutomationEditor extends PreventUnsavedMixin(
           </div>
           ${this._mode === "gui"
             ? html`
-                <div
-                  class=${classMap({
-                    rtl: computeRTL(this.hass),
-                  })}
-                >
+                <div>
                   ${useBlueprint
                     ? html`
                         <blueprint-automation-editor
@@ -1101,6 +1122,14 @@ export class HaAutomationEditor extends PreventUnsavedMixin(
 
   protected async promptDiscardChanges() {
     return this._confirmUnsavedChanged();
+  }
+
+  private _collapseAll() {
+    this._manualEditor?.collapseAll();
+  }
+
+  private _expandAll() {
+    this._manualEditor?.expandAll();
   }
 
   static get styles(): CSSResultGroup {

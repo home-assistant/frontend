@@ -8,9 +8,11 @@ import "../../../../components/ha-yaml-editor";
 import type { HaYamlEditor } from "../../../../components/ha-yaml-editor";
 import type { Condition } from "../../../../data/automation";
 import { expandConditionWithShorthand } from "../../../../data/automation";
+import { COLLAPSIBLE_CONDITION_ELEMENTS } from "../../../../data/condition";
 import type { HomeAssistant } from "../../../../types";
 import "../ha-automation-editor-warning";
-import { editorStyles } from "../styles";
+import { editorStyles, indentStyle } from "../styles";
+import type { ConditionElement } from "./ha-automation-condition-row";
 
 @customElement("ha-automation-condition-editor")
 export default class HaAutomationConditionEditor extends LitElement {
@@ -32,6 +34,9 @@ export default class HaAutomationConditionEditor extends LitElement {
     false;
 
   @query("ha-yaml-editor") public yamlEditor?: HaYamlEditor;
+
+  @query(COLLAPSIBLE_CONDITION_ELEMENTS.join(", "))
+  private _collapsibleElement?: ConditionElement;
 
   private _processedCondition = memoizeOne((condition) =>
     expandConditionWithShorthand(condition)
@@ -108,8 +113,17 @@ export default class HaAutomationConditionEditor extends LitElement {
     fireEvent(this, "value-changed", { value });
   }
 
+  public expandAll() {
+    this._collapsibleElement?.expandAll?.();
+  }
+
+  public collapseAll() {
+    this._collapsibleElement?.collapseAll?.();
+  }
+
   static styles = [
     editorStyles,
+    indentStyle,
     css`
       :host([action]) .card-content {
         padding: 0;

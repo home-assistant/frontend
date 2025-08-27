@@ -52,3 +52,9 @@ export const CONDITION_GROUPS: AutomationElementGroup = {
 } as const;
 
 export const CONDITION_BUILDING_BLOCKS = ["and", "or", "not"];
+
+export const COLLAPSIBLE_CONDITION_ELEMENTS = [
+  "ha-automation-condition-and",
+  "ha-automation-condition-not",
+  "ha-automation-condition-or",
+];

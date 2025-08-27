@@ -2,7 +2,7 @@ import { mdiDrag, mdiPlus } from "@mdi/js";
 import deepClone from "deep-clone-simple";
 import type { PropertyValues } from "lit";
 import { LitElement, css, html, nothing } from "lit";
-import { customElement, property, state } from "lit/decorators";
+import { customElement, property, queryAll, state } from "lit/decorators";
 import { repeat } from "lit/directives/repeat";
 import { storage } from "../../../../common/decorators/storage";
 import { fireEvent } from "../../../../common/dom/fire_event";
@@ -54,6 +54,9 @@ export default class HaAutomationAction extends LitElement {
     storage: "sessionStorage",
   })
   public _clipboard?: AutomationClipboard;
+
+  @queryAll("ha-automation-action-row")
+  private _actionRowElements?: HaAutomationActionRow[];
 
   private _focusLastActionOnChange = false;
 
@@ -179,11 +182,14 @@ export default class HaAutomationAction extends LitElement {
   }
 
   public expandAll() {
-    const rows = this.shadowRoot!.querySelectorAll<HaAutomationActionRow>(
-      "ha-automation-action-row"
-    )!;
-    rows.forEach((row) => {
-      row.expand();
+    this._actionRowElements?.forEach((row) => {
+      row.expandAll();
+    });
+  }
+
+  public collapseAll() {
+    this._actionRowElements?.forEach((row) => {
+      row.collapseAll();
     });
   }
 

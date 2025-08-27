@@ -1,5 +1,9 @@
 import {
+  mdiContentCopy,
+  mdiContentCut,
+  mdiContentDuplicate,
   mdiDelete,
+  mdiPlay,
   mdiPlayCircleOutline,
   mdiPlaylistEdit,
   mdiRenameBox,
@@ -47,23 +51,25 @@ export default class HaAutomationSidebarAction extends LitElement {
       if (this.config) {
         this.yamlMode = this.config.yamlMode;
         if (this.yamlMode) {
-          this.editor?.yamlEditor?.setValue(this.config.config);
+          this.editor?.yamlEditor?.setValue(this.config.config.action);
         }
       }
     }
   }
 
   protected render() {
+    const actionConfig = this.config.config.action;
+
     const disabled =
       this.disabled ||
-      ("enabled" in this.config.config && this.config.config.enabled === false);
+      ("enabled" in actionConfig && actionConfig.enabled === false);
 
-    const actionType = getAutomationActionType(this.config.config);
+    const actionType = getAutomationActionType(actionConfig);
 
     const type =
       actionType !== "repeat"
         ? actionType
-        : `repeat_${getRepeatType((this.config.config as RepeatAction).repeat)}`;
+        : `repeat_${getRepeatType((actionConfig as RepeatAction).repeat)}`;
 
     const isBuildingBlock = ACTION_BUILDING_BLOCKS.includes(type || "");
 
@@ -91,6 +97,11 @@ export default class HaAutomationSidebarAction extends LitElement {
     >
       <span slot="title">${title}</span>
       <span slot="subtitle">${subtitle}</span>
+
+      <ha-md-menu-item slot="menu-items" .clickAction=${this.config.run}>
+        ${this.hass.localize("ui.panel.config.automation.editor.actions.run")}
+        <ha-svg-icon slot="start" .path=${mdiPlay}></ha-svg-icon>
+      </ha-md-menu-item>
       <ha-md-menu-item
         slot="menu-items"
         .clickAction=${this.config.rename}
@@ -100,6 +111,37 @@ export default class HaAutomationSidebarAction extends LitElement {
           "ui.panel.config.automation.editor.triggers.rename"
         )}
         <ha-svg-icon slot="start" .path=${mdiRenameBox}></ha-svg-icon>
+      </ha-md-menu-item>
+      <ha-md-divider
+        slot="menu-items"
+        role="separator"
+        tabindex="-1"
+      ></ha-md-divider>
+      <ha-md-menu-item
+        slot="menu-items"
+        .clickAction=${this.config.duplicate}
+        .disabled=${this.disabled}
+      >
+        ${this.hass.localize(
+          "ui.panel.config.automation.editor.actions.duplicate"
+        )}
+        <ha-svg-icon slot="start" .path=${mdiContentDuplicate}></ha-svg-icon>
+      </ha-md-menu-item>
+      <ha-md-menu-item
+        slot="menu-items"
+        .clickAction=${this.config.copy}
+        .disabled=${this.disabled}
+      >
+        ${this.hass.localize("ui.panel.config.automation.editor.triggers.copy")}
+        <ha-svg-icon slot="start" .path=${mdiContentCopy}></ha-svg-icon>
+      </ha-md-menu-item>
+      <ha-md-menu-item
+        slot="menu-items"
+        .clickAction=${this.config.cut}
+        .disabled=${this.disabled}
+      >
+        ${this.hass.localize("ui.panel.config.automation.editor.triggers.cut")}
+        <ha-svg-icon slot="start" .path=${mdiContentCut}></ha-svg-icon>
       </ha-md-menu-item>
       <ha-md-menu-item
         slot="menu-items"
@@ -141,7 +183,7 @@ export default class HaAutomationSidebarAction extends LitElement {
         : html`<ha-automation-action-editor
             class="sidebar-editor"
             .hass=${this.hass}
-            .action=${this.config.config}
+            .action=${actionConfig}
             .yamlMode=${this.yamlMode}
             .uiSupported=${this.config.uiSupported}
             @value-changed=${this._valueChangedSidebar}
@@ -169,7 +211,9 @@ export default class HaAutomationSidebarAction extends LitElement {
       fireEvent(this, "value-changed", {
         value: {
           ...this.config,
-          config: ev.detail.value,
+          config: {
+            action: ev.detail.value,
+          },
         },
       });
     }

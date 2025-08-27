@@ -9,7 +9,7 @@ import {
 } from "@mdi/js";
 import type { CSSResultGroup } from "lit";
 import { LitElement, css, html, nothing } from "lit";
-import { customElement, property, state } from "lit/decorators";
+import { customElement, property, query, state } from "lit/decorators";
 import { classMap } from "lit/directives/class-map";
 import { ensureArray } from "../../../../common/array/ensure-array";
 import { fireEvent } from "../../../../common/dom/fire_event";
@@ -37,8 +37,10 @@ import {
 } from "../../../../dialogs/generic/show-dialog-box";
 import type { HomeAssistant } from "../../../../types";
 import "../action/ha-automation-action";
+import type HaAutomationAction from "../action/ha-automation-action";
 import "../condition/ha-automation-condition";
-import { editorStyles, rowStyles } from "../styles";
+import type HaAutomationCondition from "../condition/ha-automation-condition";
+import { editorStyles, indentStyle, rowStyles } from "../styles";
 
 @customElement("ha-automation-option-row")
 export default class HaAutomationOptionRow extends LitElement {
@@ -68,6 +70,12 @@ export default class HaAutomationOptionRow extends LitElement {
   @state()
   @consume({ context: fullEntitiesContext, subscribe: true })
   _entityReg!: EntityRegistryEntry[];
+
+  @query("ha-automation-condition")
+  private _conditionElement?: HaAutomationCondition;
+
+  @query("ha-automation-action")
+  private _actionElement?: HaAutomationAction;
 
   private _expandedChanged(ev) {
     if (ev.currentTarget.id !== "option") {
@@ -134,21 +142,21 @@ export default class HaAutomationOptionRow extends LitElement {
                 )}
                 <ha-svg-icon slot="graphic" .path=${mdiRenameBox}></ha-svg-icon>
               </ha-md-menu-item>
+
+              <ha-md-menu-item
+                @click=${this._duplicateOption}
+                .disabled=${this.disabled}
+              >
+                ${this.hass.localize(
+                  "ui.panel.config.automation.editor.actions.duplicate"
+                )}
+                <ha-svg-icon
+                  slot="graphic"
+                  .path=${mdiContentDuplicate}
+                ></ha-svg-icon>
+              </ha-md-menu-item>
             `
           : nothing}
-
-        <ha-md-menu-item
-          @click=${this._duplicateOption}
-          .disabled=${this.disabled}
-        >
-          ${this.hass.localize(
-            "ui.panel.config.automation.editor.actions.duplicate"
-          )}
-          <ha-svg-icon
-            slot="graphic"
-            .path=${mdiContentDuplicate}
-          ></ha-svg-icon>
-        </ha-md-menu-item>
 
         <ha-md-menu-item
           @click=${this._moveUp}
@@ -166,20 +174,22 @@ export default class HaAutomationOptionRow extends LitElement {
           <ha-svg-icon slot="graphic" .path=${mdiArrowDown}></ha-svg-icon>
         </ha-md-menu-item>
 
-        <ha-md-menu-item
-          @click=${this._removeOption}
-          class="warning"
-          .disabled=${this.disabled}
-        >
-          ${this.hass.localize(
-            "ui.panel.config.automation.editor.actions.type.choose.remove_option"
-          )}
-          <ha-svg-icon
-            class="warning"
-            slot="graphic"
-            .path=${mdiDelete}
-          ></ha-svg-icon>
-        </ha-md-menu-item>
+        ${!this.optionsInSidebar
+          ? html`<ha-md-menu-item
+              @click=${this._removeOption}
+              class="warning"
+              .disabled=${this.disabled}
+            >
+              ${this.hass.localize(
+                "ui.panel.config.automation.editor.actions.type.choose.remove_option"
+              )}
+              <ha-svg-icon
+                class="warning"
+                slot="graphic"
+                .path=${mdiDelete}
+              ></ha-svg-icon>
+            </ha-md-menu-item>`
+          : nothing}
       </ha-md-button-menu>
 
       ${!this.optionsInSidebar ? this._renderContent() : nothing}
@@ -195,7 +205,7 @@ export default class HaAutomationOptionRow extends LitElement {
         hidden: this._collapsed,
       })}
     >
-      <h4>
+      <h4 class="conditions">
         ${this.hass.localize(
           "ui.panel.config.automation.editor.actions.type.choose.conditions"
         )}:
@@ -208,7 +218,7 @@ export default class HaAutomationOptionRow extends LitElement {
         @value-changed=${this._conditionChanged}
         .optionsInSidebar=${this.optionsInSidebar}
       ></ha-automation-condition>
-      <h4>
+      <h4 class="actions">
         ${this.hass.localize(
           "ui.panel.config.automation.editor.actions.type.choose.sequence"
         )}:
@@ -253,9 +263,9 @@ export default class HaAutomationOptionRow extends LitElement {
     `;
   }
 
-  private _duplicateOption() {
+  private _duplicateOption = () => {
     fireEvent(this, "duplicate");
-  }
+  };
 
   private _moveUp() {
     fireEvent(this, "move-up");
@@ -353,8 +363,10 @@ export default class HaAutomationOptionRow extends LitElement {
       },
       toggleYamlMode: () => false, // no yaml mode for options
       delete: this._removeOption,
+      duplicate: this._duplicateOption,
     } satisfies OptionSidebarConfig);
     this._selected = true;
+    this._collapsed = false;
 
     if (this.narrow) {
       this.scrollIntoView({
@@ -365,9 +377,32 @@ export default class HaAutomationOptionRow extends LitElement {
   }
 
   public expand() {
+    if (this.optionsInSidebar) {
+      this._collapsed = false;
+      return;
+    }
+
     this.updateComplete.then(() => {
       this.shadowRoot!.querySelector("ha-expansion-panel")!.expanded = true;
     });
+  }
+
+  public collapse() {
+    this._collapsed = true;
+  }
+
+  public expandAll() {
+    this.expand();
+
+    this._conditionElement?.expandAll();
+    this._actionElement?.expandAll();
+  }
+
+  public collapseAll() {
+    this.collapse();
+
+    this._conditionElement?.collapseAll();
+    this._actionElement?.collapseAll();
   }
 
   private _toggleCollapse() {
@@ -378,9 +413,17 @@ export default class HaAutomationOptionRow extends LitElement {
     return [
       rowStyles,
       editorStyles,
+      indentStyle,
       css`
         li[role="separator"] {
           border-bottom-color: var(--divider-color);
+        }
+        h4.conditions {
+          margin-top: 0;
+          margin-bottom: 8px;
+        }
+        h4.actions {
+          margin-bottom: 8px;
         }
       `,
     ];

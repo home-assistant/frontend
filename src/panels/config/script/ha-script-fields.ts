@@ -1,7 +1,7 @@
 import { mdiPlus } from "@mdi/js";
 import type { PropertyValues } from "lit";
 import { LitElement, css, html, nothing } from "lit";
-import { customElement, property } from "lit/decorators";
+import { customElement, property, queryAll } from "lit/decorators";
 import { fireEvent } from "../../../common/dom/fire_event";
 import "../../../components/ha-button";
 import "../../../components/ha-button-menu";
@@ -22,6 +22,9 @@ export default class HaScriptFields extends LitElement {
   @property({ attribute: false }) public highlightedFields?: Fields;
 
   @property({ type: Boolean }) public narrow = false;
+
+  @queryAll("ha-script-field-row")
+  private _fieldRowElements?: HaScriptFieldRow[];
 
   private _focusLastActionOnChange = false;
 
@@ -48,12 +51,7 @@ export default class HaScriptFields extends LitElement {
             )}
           </div> `
         : nothing}
-      <ha-button
-        appearance="filled"
-        size="small"
-        @click=${this._addField}
-        .disabled=${this.disabled}
-      >
+      <ha-button @click=${this._addField} .disabled=${this.disabled}>
         <ha-svg-icon .path=${mdiPlus} slot="start"></ha-svg-icon>
         ${this.hass.localize("ui.panel.config.script.editor.field.add_field")}
       </ha-button>
@@ -142,6 +140,18 @@ export default class HaScriptFields extends LitElement {
       } while (key in fields);
     }
     return key;
+  }
+
+  public expandAll() {
+    this._fieldRowElements?.forEach((row) => {
+      row.expandAll();
+    });
+  }
+
+  public collapseAll() {
+    this._fieldRowElements?.forEach((row) => {
+      row.collapseAll();
+    });
   }
 
   static styles = css`

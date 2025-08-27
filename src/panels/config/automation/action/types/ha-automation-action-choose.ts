@@ -1,5 +1,5 @@
 import { type CSSResultGroup, LitElement, css, html } from "lit";
-import { customElement, property, state } from "lit/decorators";
+import { customElement, property, query, state } from "lit/decorators";
 import { ensureArray } from "../../../../../common/array/ensure-array";
 import { fireEvent } from "../../../../../common/dom/fire_event";
 import "../../../../../components/ha-button";
@@ -7,7 +7,9 @@ import type { Action, ChooseAction, Option } from "../../../../../data/script";
 import { haStyle } from "../../../../../resources/styles";
 import type { HomeAssistant } from "../../../../../types";
 import "../../option/ha-automation-option";
+import type HaAutomationOption from "../../option/ha-automation-option";
 import "../ha-automation-action";
+import type HaAutomationAction from "../ha-automation-action";
 import type { ActionElement } from "../ha-automation-action-row";
 
 @customElement("ha-automation-action-choose")
@@ -23,6 +25,10 @@ export class HaChooseAction extends LitElement implements ActionElement {
   @property({ type: Boolean }) public indent = false;
 
   @state() private _showDefault = false;
+
+  @query("ha-automation-option") private _optionElement?: HaAutomationOption;
+
+  @query("ha-automation-action") private _actionElement?: HaAutomationAction;
 
   public static get defaultConfig(): ChooseAction {
     return { choose: [{ conditions: [], sequence: [] }] };
@@ -45,11 +51,11 @@ export class HaChooseAction extends LitElement implements ActionElement {
 
       ${this._showDefault || action.default
         ? html`
-            <h2>
+            <h4>
               ${this.hass.localize(
                 "ui.panel.config.automation.editor.actions.type.choose.default"
               )}:
-            </h2>
+            </h4>
             <ha-automation-action
               .actions=${ensureArray(action.default) || []}
               .disabled=${this.disabled}
@@ -102,6 +108,16 @@ export class HaChooseAction extends LitElement implements ActionElement {
       delete newValue.default;
     }
     fireEvent(this, "value-changed", { value: newValue });
+  }
+
+  public expandAll() {
+    this._optionElement?.expandAll();
+    this._actionElement?.expandAll();
+  }
+
+  public collapseAll() {
+    this._optionElement?.collapseAll();
+    this._actionElement?.collapseAll();
   }
 
   static get styles(): CSSResultGroup {
