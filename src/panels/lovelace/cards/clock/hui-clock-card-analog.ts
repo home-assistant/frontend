@@ -191,6 +191,9 @@ export class HuiClockCardAnalog extends LitElement {
       justify-content: center;
       width: var(--clock-size);
       height: var(--clock-size);
+      background: var(--ha-clock-card-analog-face-background, none);
+      border-radius: var(--ha-clock-card-analog-face-border-radius, none);
+      padding: var(--ha-clock-card-analog-face-padding, none);
     }
 
     .analog-clock.size-medium {
