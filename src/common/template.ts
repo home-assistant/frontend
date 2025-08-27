@@ -1,17 +1,66 @@
-import {
-  Environment,
-  Template as NunjucksTemplate,
-  installJinjaCompat,
-} from "nunjucks";
+import nunjucks, { Environment, Template as NunjucksTemplate } from "nunjucks";
 import type { HomeAssistant } from "../types";
 
-installJinjaCompat();
+nunjucks.installJinjaCompat();
 
-const env = new Environment();
+function createEnv() {
+  const env = new Environment();
+  // Add filters and globals that don't use hass
+  env.addFilter("min", (numbers: number[]) => Math.min(...numbers));
+  env.addFilter("max", (numbers: number[]) => Math.max(...numbers));
 
-// Add filters and globals that don't use hass
-env.addFilter("min", (numbers: number[]) => Math.min(...numbers));
-env.addFilter("max", (numbers: number[]) => Math.max(...numbers));
+  env.addGlobal(
+    "states",
+    (
+      hass: HomeAssistant,
+      id: string,
+      round = false,
+      withUnit = false
+    ): string => {
+      if (!hass?.states[id]) {
+        return "unknown";
+      }
+      const state = hass?.states[id]?.state;
+      if (state == null) {
+        return "unavailable";
+      }
+      if (round) {
+        return String(Math.round(Number(state)));
+      }
+      if (withUnit) {
+        return `${state} ${hass?.states[id]?.attributes.unit_of_measurement}`;
+      }
+      return state;
+    }
+  );
+  env.addGlobal(
+    "state_attr",
+    (hass: HomeAssistant, id: string, attr: string) =>
+      hass?.states[id]?.attributes[attr]
+  );
+  env.addGlobal(
+    "is_state",
+    (hass: HomeAssistant, id: string, value: string) =>
+      hass?.states[id]?.state === value
+  );
+  env.addGlobal(
+    "is_state_attr",
+    (hass: HomeAssistant, id: string, attr: string, value: string) =>
+      hass?.states[id]?.attributes[attr] === value
+  );
+  env.addGlobal(
+    "has_value",
+    (hass: HomeAssistant, id: string) => hass?.states[id]?.state != null
+  );
+  env.addGlobal("state_translated", (hass: HomeAssistant, id: string) => {
+    try {
+      return hass?.formatEntityState(hass?.states[id], hass?.states[id]?.state);
+    } catch {
+      return hass?.states[id]?.state ?? undefined;
+    }
+  });
+  return env;
+}
 
 export class HaTemplate {
   private _njTemplate?: NunjucksTemplate;
@@ -28,64 +77,32 @@ export class HaTemplate {
 
   public shouldUpdate = false;
 
-  private _defaultContext = {
+  private _env = createEnv();
+
+  constructor() {
     // functions that access the hass state have to be dynamic
     // in order to track which entities are used in the template
-    states: (id: string, round = false, withUnit = false): string => {
-      this.entityIds.add(id);
-      if (!this._hass?.states[id]) {
-        return "unknown";
-      }
-      const state = this._hass?.states[id]?.state;
-      if (state == null) {
-        return "unavailable";
-      }
-      if (round) {
-        return String(Math.round(Number(state)));
-      }
-      if (withUnit) {
-        return `${state} ${this._hass?.states[id]?.attributes.unit_of_measurement}`;
-      }
-      return state;
-    },
-    state_attr: (id: string, attr: string) => {
-      this.entityIds.add(id);
-      return this._hass?.states[id]?.attributes[attr];
-    },
-    is_state: (id: string, value: string) => {
-      this.entityIds.add(id);
-      return this._hass?.states[id]?.state === value;
-    },
-    is_state_attr: (id: string, attr: string, value: string) => {
-      this.entityIds.add(id);
-      return this._hass?.states[id]?.attributes[attr] === value;
-    },
-    has_value: (id: string) => {
-      this.entityIds.add(id);
-      return this._hass?.states[id]?.state != null;
-    },
-
-    state_translated: (id: string) => {
-      this.entityIds.add(id);
-      try {
-        return this._hass?.formatEntityState(
-          this._hass?.states[id],
-          this._hass?.states[id]?.state
-        );
-      } catch {
-        return this._hass?.states[id]?.state ?? undefined;
-      }
-    },
-  };
+    [
+      "states",
+      "state_attr",
+      "is_state",
+      "is_state_attr",
+      "has_value",
+      "state_translated",
+    ].forEach((func) => {
+      const original = this._env.getGlobal(func);
+      this._env.addGlobal(func, (id: string, ...args: any[]): string => {
+        this.entityIds.add(id);
+        return original(this._hass, id, ...args);
+      });
+    });
+  }
 
   public render(): string {
     if (this.shouldUpdate) {
       this.shouldUpdate = false;
       this.entityIds.clear();
-      this._value = this._njTemplate!.render({
-        ...this._defaultContext,
-        ...this._context,
-      });
+      this._value = this._njTemplate!.render(this._context);
     }
     return this._value;
   }
@@ -93,7 +110,7 @@ export class HaTemplate {
   public set content(content: string) {
     if (this._content !== content) {
       this._content = content;
-      this._njTemplate = new NunjucksTemplate(content, env);
+      this._njTemplate = new NunjucksTemplate(content, this._env);
       this.shouldUpdate = true;
     }
   }
