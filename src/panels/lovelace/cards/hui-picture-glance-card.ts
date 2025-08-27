@@ -292,6 +292,7 @@ class HuiPictureGlanceCard extends LitElement implements LovelaceCard {
           tabindex=${ifDefined(
             !hasAction(entityConf.tap_action) ? "-1" : undefined
           )}
+          .disabled=${!hasAction(entityConf.tap_action)}
           .config=${entityConf}
           class=${classMap({
              "state-on": stateActive(stateObj),
@@ -300,7 +301,6 @@ class HuiPictureGlanceCard extends LitElement implements LovelaceCard {
             stateObj
           )} : ${this.hass.formatEntityState(stateObj)}`}
         >
-        .disabled=${!hasAction(entityConf.tap_action)}
           <ha-state-icon
             .icon=${entityConf.icon}
             .stateObj=${stateObj}
