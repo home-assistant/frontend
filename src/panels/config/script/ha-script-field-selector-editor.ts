@@ -1,17 +1,22 @@
 import type { CSSResultGroup } from "lit";
 import { LitElement, css, html, nothing } from "lit";
-import { customElement, property, state } from "lit/decorators";
+import { customElement, property, query, state } from "lit/decorators";
 import memoizeOne from "memoize-one";
 import { fireEvent } from "../../../common/dom/fire_event";
 import type { LocalizeKeys } from "../../../common/translations/localize";
 import "../../../components/ha-alert";
 import "../../../components/ha-form/ha-form";
+import type { HaForm } from "../../../components/ha-form/ha-form";
 import type { SchemaUnion } from "../../../components/ha-form/types";
+import type { HaSelector } from "../../../components/ha-selector/ha-selector";
+import type { HaActionSelector } from "../../../components/ha-selector/ha-selector-action";
+import type { HaConditionSelector } from "../../../components/ha-selector/ha-selector-condition";
 import "../../../components/ha-yaml-editor";
 import type { Field } from "../../../data/script";
 import { SELECTOR_SELECTOR_BUILDING_BLOCKS } from "../../../data/selector/selector_selector";
 import { haStyle } from "../../../resources/styles";
 import type { HomeAssistant } from "../../../types";
+import { indentStyle } from "../automation/styles";
 
 @customElement("ha-script-field-selector-editor")
 export default class HaScriptFieldSelectorEditor extends LitElement {
@@ -32,6 +37,9 @@ export default class HaScriptFieldSelectorEditor extends LitElement {
   @state() private _uiError?: Record<string, string>;
 
   @state() private _yamlError?: undefined | "yaml_error" | "key_not_unique";
+
+  @query("ha-form")
+  private _formElement?: HaForm;
 
   private _schema = memoizeOne(
     (selector: any) =>
@@ -138,22 +146,51 @@ export default class HaScriptFieldSelectorEditor extends LitElement {
     this.hass.localize(`ui.panel.config.script.editor.field.${error}` as any) ||
     error;
 
+  private _getSelectorElements() {
+    if (this._formElement) {
+      const selectors =
+        this._formElement.shadowRoot?.querySelectorAll<HaSelector>(
+          "ha-selector"
+        );
+
+      const selectorElements: (HaConditionSelector | HaActionSelector)[] = [];
+
+      selectors?.forEach((selector) => {
+        selectorElements.push(
+          ...Array.from(
+            selector.shadowRoot?.querySelectorAll<
+              HaConditionSelector | HaActionSelector
+            >("ha-selector-condition, ha-selector-action") || []
+          )
+        );
+      });
+      return selectorElements;
+    }
+    return [];
+  }
+
+  public expandAll() {
+    this._getSelectorElements().forEach((element) => {
+      element.expandAll?.();
+    });
+  }
+
+  public collapseAll() {
+    this._getSelectorElements().forEach((element) => {
+      element.collapseAll?.();
+    });
+  }
+
   static get styles(): CSSResultGroup {
     return [
       haStyle,
+      indentStyle,
       css`
         :host([indent]) ha-form {
           display: block;
           margin-left: 12px;
           padding: 12px 20px 16px 16px;
           margin-right: -4px;
-          border-left: 2px solid var(--ha-color-border-neutral-quiet);
-        }
-        :host([selected]) ha-form {
-          border-color: var(--primary-color);
-          background-color: var(--ha-color-fill-primary-quiet-resting);
-          border-top-right-radius: var(--ha-border-radius-xl);
-          border-bottom-right-radius: var(--ha-border-radius-xl);
         }
       `,
     ];

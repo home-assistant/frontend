@@ -62,18 +62,31 @@ export const editorStyles = css`
     border-top: 1px solid var(--divider-color);
     border-bottom: 1px solid var(--divider-color);
   }
-  .card-content.indent {
+`;
+
+export const indentStyle = css`
+  .card-content.indent,
+  .selector-row,
+  :host([indent]) ha-form {
     margin-left: 12px;
-    margin-right: -4px;
     padding: 12px 24px 16px 16px;
     border-left: 2px solid var(--ha-color-border-neutral-quiet);
+    border-bottom: 2px solid var(--ha-color-border-neutral-quiet);
+    border-radius: 0;
+    border-bottom-left-radius: var(--ha-border-radius-lg);
   }
   .card-content.indent.selected,
-  :host([selected]) .card-content.indent {
+  :host([selected]) .card-content.indent,
+  .selector-row.parent-selected,
+  :host([selected]) ha-form {
     border-color: var(--primary-color);
-    background-color: var(--ha-color-fill-primary-quiet-resting);
-    border-top-right-radius: var(--ha-border-radius-xl);
-    border-bottom-right-radius: var(--ha-border-radius-xl);
+    background: var(--ha-color-fill-primary-quiet-resting);
+    background: linear-gradient(
+      to right,
+      var(--ha-color-fill-primary-quiet-resting) 0%,
+      var(--ha-color-fill-primary-quiet-resting) 80%,
+      rgba(var(--rgb-primary-color), 0) 100%
+    );
   }
 `;
 
@@ -89,5 +102,135 @@ export const saveFabStyles = css`
   }
   ha-fab.dirty {
     bottom: 16px;
+  }
+`;
+
+export const manualEditorStyles = css`
+  :host {
+    display: block;
+  }
+
+  .split-view {
+    display: flex;
+    flex-direction: row;
+    height: 100%;
+    position: relative;
+    gap: 16px;
+  }
+
+  .split-view.sidebar-hidden {
+    gap: 0;
+  }
+
+  .content-wrapper {
+    position: relative;
+    flex: 6;
+  }
+
+  .content {
+    padding: 32px 16px 64px 0;
+    height: calc(100vh - 153px);
+    height: calc(100dvh - 153px);
+    overflow-y: auto;
+    overflow-x: hidden;
+  }
+
+  .sidebar {
+    padding: 12px 0;
+    flex: 4;
+    height: calc(100vh - 81px);
+    height: calc(100dvh - 81px);
+    width: 40%;
+  }
+  .split-view.sidebar-hidden .sidebar {
+    border-color: transparent;
+    border-width: 0;
+    overflow: hidden;
+    flex: 0;
+    visibility: hidden;
+  }
+
+  .sidebar.overlay {
+    position: fixed;
+    bottom: 8px;
+    right: 8px;
+    height: calc(100% - 70px);
+    padding: 0;
+    z-index: 5;
+    box-shadow: -8px 0 16px rgba(0, 0, 0, 0.2);
+  }
+
+  .sidebar.overlay.rtl {
+    right: unset;
+    left: 8px;
+  }
+
+  @media all and (max-width: 870px) {
+    .split-view {
+      gap: 0;
+      margin-right: -8px;
+    }
+    .sidebar {
+      height: 0;
+      width: 0;
+      flex: 0;
+    }
+  }
+
+  .split-view.sidebar-hidden .sidebar.overlay {
+    width: 0;
+  }
+  .description {
+    margin: 0;
+  }
+  .header a {
+    color: var(--secondary-text-color);
+  }
+`;
+
+export const automationRowsStyles = css`
+  .rows {
+    padding: 16px 0 16px 16px;
+    margin: -16px;
+    margin-right: -20px;
+    display: flex;
+    flex-direction: column;
+    gap: 16px;
+  }
+  .sortable-ghost {
+    background: none;
+    border-radius: var(--ha-card-border-radius, var(--ha-border-radius-lg));
+  }
+  .sortable-drag {
+    background: none;
+  }
+  ha-automation-action-row {
+    display: block;
+    scroll-margin-top: 48px;
+  }
+  .handle {
+    padding: 12px;
+    cursor: move; /* fallback if grab cursor is unsupported */
+    cursor: grab;
+  }
+  .handle ha-svg-icon {
+    pointer-events: none;
+    height: 24px;
+  }
+  .buttons {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 8px;
+    order: 1;
+  }
+`;
+
+export const sidebarEditorStyles = css`
+  .sidebar-editor {
+    display: block;
+    padding-top: 16px;
+  }
+  .description {
+    padding-top: 16px;
   }
 `;

@@ -1,11 +1,8 @@
-import { mdiDelete, mdiDotsVertical } from "@mdi/js";
 import type { CSSResultGroup } from "lit";
 import { LitElement, css, html, nothing } from "lit";
-import { customElement, property, state } from "lit/decorators";
+import { customElement, property, query, state } from "lit/decorators";
 import { classMap } from "lit/directives/class-map";
 import { fireEvent } from "../../../common/dom/fire_event";
-import { preventDefaultStopPropagation } from "../../../common/dom/prevent_default_stop_propagation";
-import { stopPropagation } from "../../../common/dom/stop_propagation";
 import type { LocalizeKeys } from "../../../common/translations/localize";
 import "../../../components/ha-automation-row";
 import "../../../components/ha-card";
@@ -18,7 +15,9 @@ import { SELECTOR_SELECTOR_BUILDING_BLOCKS } from "../../../data/selector/select
 import { showConfirmationDialog } from "../../../dialogs/generic/show-dialog-box";
 import { haStyle } from "../../../resources/styles";
 import type { HomeAssistant } from "../../../types";
+import { indentStyle } from "../automation/styles";
 import "./ha-script-field-selector-editor";
+import type HaScriptFieldSelectorEditor from "./ha-script-field-selector-editor";
 
 @customElement("ha-script-field-row")
 export default class HaScriptFieldRow extends LitElement {
@@ -45,6 +44,9 @@ export default class HaScriptFieldRow extends LitElement {
 
   @state() private _selectorRowCollapsed = false;
 
+  @query("ha-script-field-selector-editor")
+  private _selectorEditor?: HaScriptFieldSelectorEditor;
+
   protected render() {
     return html`
       <ha-card outlined>
@@ -59,34 +61,6 @@ export default class HaScriptFieldRow extends LitElement {
           <h3 slot="header">${this.key}</h3>
 
           <slot name="icons" slot="icons"></slot>
-          <ha-md-button-menu
-            slot="icons"
-            @click=${preventDefaultStopPropagation}
-            @keydown=${stopPropagation}
-            @closed=${stopPropagation}
-            positioning="fixed"
-          >
-            <ha-icon-button
-              slot="trigger"
-              .label=${this.hass.localize("ui.common.menu")}
-              .path=${mdiDotsVertical}
-            ></ha-icon-button>
-
-            <ha-md-menu-item
-              class="warning"
-              .clickAction=${this._onDelete}
-              .disabled=${this.disabled}
-            >
-              ${this.hass.localize(
-                "ui.panel.config.automation.editor.actions.delete"
-              )}
-              <ha-svg-icon
-                class="warning"
-                slot="graphic"
-                .path=${mdiDelete}
-              ></ha-svg-icon>
-            </ha-md-menu-item>
-          </ha-md-button-menu>
         </ha-automation-row>
       </ha-card>
       <div
@@ -141,8 +115,38 @@ export default class HaScriptFieldRow extends LitElement {
     this._collapsed = !this._collapsed;
   }
 
+  public expand() {
+    this._collapsed = false;
+  }
+
+  public collapse() {
+    this._collapsed = true;
+  }
+
+  public expandSelectorRow() {
+    this._selectorRowCollapsed = false;
+  }
+
+  public collapseSelectorRow() {
+    this._selectorRowCollapsed = true;
+  }
+
   private _toggleSelectorRowCollapse() {
     this._selectorRowCollapsed = !this._selectorRowCollapsed;
+  }
+
+  public expandAll() {
+    this.expand();
+    this.expandSelectorRow();
+
+    this._selectorEditor?.expandAll();
+  }
+
+  public collapseAll() {
+    this.collapse();
+    this.collapseSelectorRow();
+
+    this._selectorEditor?.collapseAll();
   }
 
   private _toggleSidebar(ev: Event) {
@@ -155,6 +159,7 @@ export default class HaScriptFieldRow extends LitElement {
     }
 
     this._selected = true;
+    this._collapsed = false;
     this.openSidebar();
   }
 
@@ -168,6 +173,7 @@ export default class HaScriptFieldRow extends LitElement {
     }
 
     this._selectorRowSelected = true;
+    this._selectorRowCollapsed = false;
     this.openSidebar(true);
   }
 
@@ -249,6 +255,7 @@ export default class HaScriptFieldRow extends LitElement {
   static get styles(): CSSResultGroup {
     return [
       haStyle,
+      indentStyle,
       css`
         ha-button-menu,
         ha-icon-button {
@@ -316,18 +323,6 @@ export default class HaScriptFieldRow extends LitElement {
           --shadow-focus: 0 0 0 1px var(--state-inactive-color);
           border-color: var(--state-inactive-color);
           box-shadow: var(--shadow-default), var(--shadow-focus);
-        }
-        .selector-row {
-          margin-left: 12px;
-          padding: 12px 4px 16px 16px;
-          margin-right: -4px;
-          border-left: 2px solid var(--ha-color-border-neutral-quiet);
-        }
-        .selector-row.parent-selected {
-          border-color: var(--primary-color);
-          background-color: var(--ha-color-fill-primary-quiet-resting);
-          border-top-right-radius: var(--ha-border-radius-xl);
-          border-bottom-right-radius: var(--ha-border-radius-xl);
         }
       `,
     ];

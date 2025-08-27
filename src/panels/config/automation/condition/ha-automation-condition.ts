@@ -1,8 +1,8 @@
 import { mdiDrag, mdiPlus } from "@mdi/js";
 import deepClone from "deep-clone-simple";
 import type { PropertyValues } from "lit";
-import { LitElement, css, html, nothing } from "lit";
-import { customElement, property, state } from "lit/decorators";
+import { css, html, LitElement, nothing } from "lit";
+import { customElement, property, queryAll, state } from "lit/decorators";
 import { repeat } from "lit/directives/repeat";
 import { storage } from "../../../../common/decorators/storage";
 import { fireEvent } from "../../../../common/dom/fire_event";
@@ -22,6 +22,7 @@ import {
   PASTE_VALUE,
   showAddAutomationElementDialog,
 } from "../show-add-automation-element-dialog";
+import { automationRowsStyles } from "../styles";
 import "./ha-automation-condition-row";
 import type HaAutomationConditionRow from "./ha-automation-condition-row";
 
@@ -52,6 +53,9 @@ export default class HaAutomationCondition extends LitElement {
     storage: "sessionStorage",
   })
   public _clipboard?: AutomationClipboard;
+
+  @queryAll("ha-automation-condition-row")
+  private _conditionRowElements?: HaAutomationConditionRow[];
 
   private _focusLastConditionOnChange = false;
 
@@ -114,20 +118,22 @@ export default class HaAutomationCondition extends LitElement {
               behavior: "smooth",
             });
           }
-        } else if (!this.optionsInSidebar) {
-          row.expand();
         }
+        row.expand();
         row.focus();
       });
     }
   }
 
   public expandAll() {
-    const rows = this.shadowRoot!.querySelectorAll<HaAutomationConditionRow>(
-      "ha-automation-condition-row"
-    )!;
-    rows.forEach((row) => {
-      row.expand();
+    this._conditionRowElements?.forEach((row) => {
+      row.expandAll();
+    });
+  }
+
+  public collapseAll() {
+    this._conditionRowElements?.forEach((row) => {
+      row.collapseAll();
     });
   }
 
@@ -146,12 +152,13 @@ export default class HaAutomationCondition extends LitElement {
         @item-added=${this._conditionAdded}
         @item-removed=${this._conditionRemoved}
       >
-        <div class="conditions">
+        <div class="rows">
           ${repeat(
             this.conditions.filter((c) => typeof c === "object"),
             (condition) => this._getKey(condition),
             (cond, idx) => html`
               <ha-automation-condition-row
+                .root=${this.root}
                 .sortableData=${cond}
                 .index=${idx}
                 .first=${idx === 0}
@@ -209,7 +216,7 @@ export default class HaAutomationCondition extends LitElement {
 
   private _addConditionDialog() {
     if (this.narrow) {
-      fireEvent(this, "close-sidebar");
+      fireEvent(this, "request-close-sidebar");
     }
     showAddAutomationElementDialog(this, {
       type: "condition",
@@ -316,7 +323,6 @@ export default class HaAutomationCondition extends LitElement {
     // Ensure condition is removed even after update
     const conditions = this.conditions.filter((c) => c !== condition);
     fireEvent(this, "value-changed", { value: conditions });
-    fireEvent(this, "close-sidebar");
   }
 
   private _conditionChanged(ev: CustomEvent) {
@@ -348,44 +354,14 @@ export default class HaAutomationCondition extends LitElement {
     });
   }
 
-  static styles = css`
-    .conditions {
-      padding: 16px 0 16px 16px;
-      margin: -16px;
-      display: flex;
-      flex-direction: column;
-      gap: 16px;
-    }
-    :host([root]) .conditions {
-      padding-right: 8px;
-    }
-    .sortable-ghost {
-      background: none;
-      border-radius: var(--ha-card-border-radius, var(--ha-border-radius-lg));
-    }
-    .sortable-drag {
-      background: none;
-    }
-    ha-automation-condition-row {
-      display: block;
-      scroll-margin-top: 48px;
-    }
-    .handle {
-      padding: 12px;
-      cursor: move; /* fallback if grab cursor is unsupported */
-      cursor: grab;
-    }
-    .handle ha-svg-icon {
-      pointer-events: none;
-      height: 24px;
-    }
-    .buttons {
-      display: flex;
-      flex-wrap: wrap;
-      gap: 8px;
-      order: 1;
-    }
-  `;
+  static styles = [
+    automationRowsStyles,
+    css`
+      :host([root]) .rows {
+        padding-right: 8px;
+      }
+    `,
+  ];
 }
 
 declare global {

@@ -1,11 +1,15 @@
 import {
+  mdiContentCopy,
+  mdiContentCut,
+  mdiContentDuplicate,
   mdiDelete,
+  mdiFlask,
   mdiPlayCircleOutline,
   mdiPlaylistEdit,
   mdiRenameBox,
   mdiStopCircleOutline,
 } from "@mdi/js";
-import { css, html, LitElement } from "lit";
+import { html, LitElement } from "lit";
 import { customElement, property, query, state } from "lit/decorators";
 import { fireEvent } from "../../../../common/dom/fire_event";
 import { handleStructError } from "../../../../common/structs/handle-errors";
@@ -14,6 +18,7 @@ import { CONDITION_BUILDING_BLOCKS } from "../../../../data/condition";
 import type { HomeAssistant } from "../../../../types";
 import "../condition/ha-automation-condition-editor";
 import type HaAutomationConditionEditor from "../condition/ha-automation-condition-editor";
+import { sidebarEditorStyles } from "../styles";
 import "./ha-automation-sidebar-card";
 
 @customElement("ha-automation-sidebar-condition")
@@ -80,6 +85,12 @@ export default class HaAutomationSidebarCondition extends LitElement {
     >
       <span slot="title">${title}</span>
       <span slot="subtitle">${subtitle}</span>
+      <ha-md-menu-item slot="menu-items" .clickAction=${this.config.test}>
+        ${this.hass.localize(
+          "ui.panel.config.automation.editor.conditions.test"
+        )}
+        <ha-svg-icon slot="start" .path=${mdiFlask}></ha-svg-icon>
+      </ha-md-menu-item>
       <ha-md-menu-item
         slot="menu-items"
         .clickAction=${this.config.rename}
@@ -89,6 +100,41 @@ export default class HaAutomationSidebarCondition extends LitElement {
           "ui.panel.config.automation.editor.triggers.rename"
         )}
         <ha-svg-icon slot="start" .path=${mdiRenameBox}></ha-svg-icon>
+      </ha-md-menu-item>
+
+      <ha-md-divider
+        slot="menu-items"
+        role="separator"
+        tabindex="-1"
+      ></ha-md-divider>
+
+      <ha-md-menu-item
+        slot="menu-items"
+        .clickAction=${this.config.duplicate}
+        .disabled=${this.disabled}
+      >
+        ${this.hass.localize(
+          "ui.panel.config.automation.editor.actions.duplicate"
+        )}
+        <ha-svg-icon slot="start" .path=${mdiContentDuplicate}></ha-svg-icon>
+      </ha-md-menu-item>
+
+      <ha-md-menu-item
+        slot="menu-items"
+        .clickAction=${this.config.copy}
+        .disabled=${this.disabled}
+      >
+        ${this.hass.localize("ui.panel.config.automation.editor.triggers.copy")}
+        <ha-svg-icon slot="start" .path=${mdiContentCopy}></ha-svg-icon>
+      </ha-md-menu-item>
+
+      <ha-md-menu-item
+        slot="menu-items"
+        .clickAction=${this.config.cut}
+        .disabled=${this.disabled}
+      >
+        ${this.hass.localize("ui.panel.config.automation.editor.triggers.cut")}
+        <ha-svg-icon slot="start" .path=${mdiContentCut}></ha-svg-icon>
       </ha-md-menu-item>
       <ha-md-menu-item
         slot="menu-items"
@@ -166,14 +212,7 @@ export default class HaAutomationSidebarCondition extends LitElement {
     fireEvent(this, "toggle-yaml-mode");
   };
 
-  static styles = css`
-    .sidebar-editor {
-      padding-top: 64px;
-    }
-    .description {
-      padding-top: 16px;
-    }
-  `;
+  static styles = sidebarEditorStyles;
 }
 
 declare global {

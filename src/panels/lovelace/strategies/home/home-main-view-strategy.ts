@@ -1,6 +1,9 @@
 import { ReactiveElement } from "lit";
 import { customElement } from "lit/decorators";
+import { isComponentLoaded } from "../../../../common/config/is_component_loaded";
+import { generateEntityFilter } from "../../../../common/entity/entity_filter";
 import type { AreaRegistryEntry } from "../../../../data/area_registry";
+import { getEnergyPreferences } from "../../../../data/energy";
 import type { LovelaceSectionConfig } from "../../../../data/lovelace/config/section";
 import type { LovelaceViewConfig } from "../../../../data/lovelace/config/view";
 import type { HomeAssistant } from "../../../../types";
@@ -9,12 +12,13 @@ import type {
   ButtonCardConfig,
   MarkdownCardConfig,
   TileCardConfig,
+  WeatherForecastCardConfig,
 } from "../../cards/types";
 import { getAreas } from "../areas/helpers/areas-strategy-helper";
-import { OVERVIEW_SUMMARIES_ICONS } from "./helpers/overview-summaries";
+import { HOME_SUMMARIES_ICONS } from "./helpers/home-summaries";
 
-export interface OverviewHomeViewStrategyConfig {
-  type: "overview-home";
+export interface HomeMainViewStrategyConfig {
+  type: "home-main";
   favorite_entities?: string[];
 }
 
@@ -44,10 +48,10 @@ const computeAreaCard = (
   };
 };
 
-@customElement("overview-home-view-strategy")
-export class OverviewHomeViewStrategy extends ReactiveElement {
+@customElement("home-main-view-strategy")
+export class HomeMainViewStrategy extends ReactiveElement {
   static async generate(
-    config: OverviewHomeViewStrategyConfig,
+    config: HomeMainViewStrategyConfig,
     hass: HomeAssistant
   ): Promise<LovelaceViewConfig> {
     const areas = getAreas(hass.areas);
@@ -92,6 +96,7 @@ export class OverviewHomeViewStrategy extends ReactiveElement {
             ({
               type: "tile",
               entity: entityId,
+              show_entity_picture: true,
             }) as TileCardConfig
         )
       );
@@ -107,7 +112,7 @@ export class OverviewHomeViewStrategy extends ReactiveElement {
         },
         {
           type: "button",
-          icon: OVERVIEW_SUMMARIES_ICONS.lights,
+          icon: HOME_SUMMARIES_ICONS.lights,
           name: "Lights",
           icon_height: "24px",
           grid_options: {
@@ -121,7 +126,7 @@ export class OverviewHomeViewStrategy extends ReactiveElement {
         } satisfies ButtonCardConfig,
         {
           type: "button",
-          icon: OVERVIEW_SUMMARIES_ICONS.climate,
+          icon: HOME_SUMMARIES_ICONS.climate,
           name: "Climate",
           icon_height: "30px",
           grid_options: {
@@ -135,7 +140,7 @@ export class OverviewHomeViewStrategy extends ReactiveElement {
         } satisfies ButtonCardConfig,
         {
           type: "button",
-          icon: OVERVIEW_SUMMARIES_ICONS.security,
+          icon: HOME_SUMMARIES_ICONS.security,
           name: "Security",
           icon_height: "30px",
           grid_options: {
@@ -149,7 +154,7 @@ export class OverviewHomeViewStrategy extends ReactiveElement {
         } satisfies ButtonCardConfig,
         {
           type: "button",
-          icon: OVERVIEW_SUMMARIES_ICONS.media_players,
+          icon: HOME_SUMMARIES_ICONS.media_players,
           name: "Media Players",
           icon_height: "30px",
           grid_options: {
@@ -161,27 +166,62 @@ export class OverviewHomeViewStrategy extends ReactiveElement {
             navigation_path: "media-players",
           },
         } satisfies ButtonCardConfig,
-        {
-          type: "button",
-          icon: "mdi:lightning-bolt",
-          name: "Energy",
-          icon_height: "30px",
-          grid_options: {
-            rows: 2,
-            columns: 4,
-          },
-          tap_action: {
-            action: "navigate",
-            navigation_path: "/energy?historyBack=1",
-          },
-        } satisfies ButtonCardConfig,
       ],
     };
+
+    const weatherFilter = generateEntityFilter(hass, {
+      domain: "weather",
+      entity_category: "none",
+    });
+
+    const widgetSection: LovelaceSectionConfig = {
+      type: "grid",
+      column_span: maxColumns,
+      cards: [],
+    };
+    const weatherEntity = Object.keys(hass.states).find(weatherFilter);
+
+    if (weatherEntity) {
+      widgetSection.cards!.push(
+        {
+          type: "heading",
+          heading: "",
+          heading_style: "subtitle",
+        },
+        {
+          type: "weather-forecast",
+          entity: weatherEntity,
+          forecast_type: "daily",
+        } as WeatherForecastCardConfig
+      );
+    }
+
+    const energyPrefs = isComponentLoaded(hass, "energy")
+      ? // It raises if not configured, just swallow that.
+        await getEnergyPreferences(hass).catch(() => undefined)
+      : undefined;
+
+    if (energyPrefs) {
+      const grid = energyPrefs.energy_sources.find(
+        (source) => source.type === "grid"
+      );
+
+      if (grid && grid.flow_from.length > 0) {
+        widgetSection.cards!.push({
+          title: hass.localize(
+            "ui.panel.lovelace.cards.energy.energy_distribution.title_today"
+          ),
+          type: "energy-distribution",
+          link_dashboard: true,
+        });
+      }
+    }
 
     const sections = [
       ...(favoriteSection.cards ? [favoriteSection] : []),
       summarySection,
       areasSection,
+      ...(widgetSection.cards ? [widgetSection] : []),
     ];
     return {
       type: "sections",
@@ -201,6 +241,6 @@ export class OverviewHomeViewStrategy extends ReactiveElement {
 
 declare global {
   interface HTMLElementTagNameMap {
-    "overview-home-view-strategy": OverviewHomeViewStrategy;
+    "home-main-view-strategy": HomeMainViewStrategy;
   }
 }

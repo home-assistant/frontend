@@ -1,7 +1,7 @@
 import { consume, ContextProvider } from "@lit/context";
 import type { UnsubscribeFunc } from "home-assistant-js-websocket";
 import { css, html, LitElement, nothing } from "lit";
-import { customElement, property, state } from "lit/decorators";
+import { customElement, property, query, state } from "lit/decorators";
 import memoizeOne from "memoize-one";
 import { fullEntitiesContext } from "../../data/context";
 import {
@@ -13,6 +13,7 @@ import { migrateAutomationAction } from "../../data/script";
 import type { ActionSelector } from "../../data/selector";
 import { SubscribeMixin } from "../../mixins/subscribe-mixin";
 import "../../panels/config/automation/action/ha-automation-action";
+import type HaAutomationAction from "../../panels/config/automation/action/ha-automation-action";
 import type { HomeAssistant } from "../../types";
 
 @customElement("ha-selector-action")
@@ -34,6 +35,9 @@ export class HaActionSelector extends SubscribeMixin(LitElement) {
   _entityReg: EntityRegistryEntry[] | undefined;
 
   @state() private _entitiesContext;
+
+  @query("ha-automation-action")
+  private _actionElement?: HaAutomationAction;
 
   protected hassSubscribeRequiredHostProps = ["_entitiesContext"];
 
@@ -61,6 +65,14 @@ export class HaActionSelector extends SubscribeMixin(LitElement) {
     ];
   }
 
+  public expandAll() {
+    this._actionElement?.expandAll();
+  }
+
+  public collapseAll() {
+    this._actionElement?.collapseAll();
+  }
+
   protected render() {
     return html`
       ${this.label ? html`<label>${this.label}</label>` : nothing}
@@ -77,12 +89,12 @@ export class HaActionSelector extends SubscribeMixin(LitElement) {
   static styles = css`
     ha-automation-action {
       display: block;
-      margin-bottom: 16px;
     }
     label {
       display: block;
       margin-bottom: 4px;
       font-weight: var(--ha-font-weight-medium);
+      color: var(--secondary-text-color);
     }
   `;
 }

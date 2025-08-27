@@ -2,7 +2,7 @@ import { mdiDrag, mdiPlus } from "@mdi/js";
 import deepClone from "deep-clone-simple";
 import type { PropertyValues } from "lit";
 import { LitElement, css, html, nothing } from "lit";
-import { customElement, property, state } from "lit/decorators";
+import { customElement, property, queryAll, state } from "lit/decorators";
 import { repeat } from "lit/directives/repeat";
 import { storage } from "../../../../common/decorators/storage";
 import { fireEvent } from "../../../../common/dom/fire_event";
@@ -24,6 +24,7 @@ import {
   VIRTUAL_ACTIONS,
   showAddAutomationElementDialog,
 } from "../show-add-automation-element-dialog";
+import { automationRowsStyles } from "../styles";
 import type HaAutomationActionRow from "./ha-automation-action-row";
 import { getAutomationActionType } from "./ha-automation-action-row";
 
@@ -54,6 +55,9 @@ export default class HaAutomationAction extends LitElement {
     storage: "sessionStorage",
   })
   public _clipboard?: AutomationClipboard;
+
+  @queryAll("ha-automation-action-row")
+  private _actionRowElements?: HaAutomationActionRow[];
 
   private _focusLastActionOnChange = false;
 
@@ -86,12 +90,13 @@ export default class HaAutomationAction extends LitElement {
         @item-added=${this._actionAdded}
         @item-removed=${this._actionRemoved}
       >
-        <div class="actions">
+        <div class="rows">
           ${repeat(
             this.actions,
             (action) => this._getKey(action),
             (action, idx) => html`
               <ha-automation-action-row
+                .root=${this.root}
                 .sortableData=${action}
                 .index=${idx}
                 .first=${idx === 0}
@@ -170,26 +175,28 @@ export default class HaAutomationAction extends LitElement {
               behavior: "smooth",
             });
           }
-        } else if (!this.optionsInSidebar) {
-          row.expand();
         }
+        row.expand();
         row.focus();
       });
     }
   }
 
   public expandAll() {
-    const rows = this.shadowRoot!.querySelectorAll<HaAutomationActionRow>(
-      "ha-automation-action-row"
-    )!;
-    rows.forEach((row) => {
-      row.expand();
+    this._actionRowElements?.forEach((row) => {
+      row.expandAll();
+    });
+  }
+
+  public collapseAll() {
+    this._actionRowElements?.forEach((row) => {
+      row.collapseAll();
     });
   }
 
   private _addActionDialog() {
     if (this.narrow) {
-      fireEvent(this, "close-sidebar");
+      fireEvent(this, "request-close-sidebar");
     }
 
     showAddAutomationElementDialog(this, {
@@ -299,7 +306,6 @@ export default class HaAutomationAction extends LitElement {
     // Ensure action is removed even after update
     const actions = this.actions.filter((a) => a !== action);
     fireEvent(this, "value-changed", { value: actions });
-    fireEvent(this, "close-sidebar");
   }
 
   private _actionChanged(ev: CustomEvent) {
@@ -329,44 +335,14 @@ export default class HaAutomationAction extends LitElement {
     });
   }
 
-  static styles = css`
-    .actions {
-      padding: 16px 0 16px 16px;
-      margin: -16px;
-      display: flex;
-      flex-direction: column;
-      gap: 16px;
-    }
-    :host([root]) .actions {
-      padding-right: 8px;
-    }
-    .sortable-ghost {
-      background: none;
-      border-radius: var(--ha-card-border-radius, var(--ha-border-radius-lg));
-    }
-    .sortable-drag {
-      background: none;
-    }
-    ha-automation-action-row {
-      display: block;
-      scroll-margin-top: 48px;
-    }
-    .handle {
-      padding: 12px;
-      cursor: move; /* fallback if grab cursor is unsupported */
-      cursor: grab;
-    }
-    .handle ha-svg-icon {
-      pointer-events: none;
-      height: 24px;
-    }
-    .buttons {
-      display: flex;
-      flex-wrap: wrap;
-      gap: 8px;
-      order: 1;
-    }
-  `;
+  static styles = [
+    automationRowsStyles,
+    css`
+      :host([root]) .rows {
+        padding-right: 8px;
+      }
+    `,
+  ];
 }
 
 declare global {
