@@ -47,15 +47,15 @@ export const HOME_SUMMARIES_FILTERS: Record<HomeSummaries, EntityFilter[]> = {
   ],
   security: [
     {
+      domain: "camera",
+      entity_category: "none",
+    },
+    {
       domain: "alarm_control_panel",
       entity_category: "none",
     },
     {
       domain: "lock",
-      entity_category: "none",
-    },
-    {
-      domain: "camera",
       entity_category: "none",
     },
     {

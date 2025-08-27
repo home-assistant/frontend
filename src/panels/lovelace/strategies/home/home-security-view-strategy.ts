@@ -1,8 +1,7 @@
 import { ReactiveElement } from "lit";
 import { customElement } from "lit/decorators";
 import { generateEntityFilter } from "../../../../common/entity/entity_filter";
-import { clamp } from "../../../../common/number/clamp";
-import { floorDefaultIcon } from "../../../../components/ha-floor-icon";
+import type { LovelaceCardConfig } from "../../../../data/lovelace/config/card";
 import type { LovelaceSectionRawConfig } from "../../../../data/lovelace/config/section";
 import type { LovelaceViewConfig } from "../../../../data/lovelace/config/view";
 import type { HomeAssistant } from "../../../../types";
@@ -11,9 +10,8 @@ import {
   getAreas,
   getFloors,
 } from "../areas/helpers/areas-strategy-helper";
-import { findEntities, HOME_SUMMARIES_FILTERS } from "./helpers/home-summaries";
 import { getHomeStructure } from "./helpers/home-structure";
-import type { LovelaceCardConfig } from "../../../../data/lovelace/config/card";
+import { findEntities, HOME_SUMMARIES_FILTERS } from "./helpers/home-summaries";
 
 export interface HomeSecurityViewStrategyConfig {
   type: "home-security";
@@ -35,14 +33,13 @@ const processAreasForSecurity = (
     });
     const areaEntities = entities.filter(areaFilter);
 
-    const computeTileCard = computeAreaTileCardConfig(hass, "", true);
+    const computeTileCard = computeAreaTileCardConfig(hass, "", false);
 
     if (areaEntities.length > 0) {
       cards.push({
         heading_style: "subtitle",
         type: "heading",
         heading: area.name,
-        icon: area.icon || "mdi:home",
         tap_action: {
           action: "navigate",
           navigation_path: `areas-${area.area_id}`,
@@ -72,11 +69,11 @@ export class HomeSecurityViewStrategy extends ReactiveElement {
 
     const allEntities = Object.keys(hass.states);
 
-    const filterFunctions = HOME_SUMMARIES_FILTERS.security.map((filter) =>
+    const securityFilters = HOME_SUMMARIES_FILTERS.security.map((filter) =>
       generateEntityFilter(hass, filter)
     );
 
-    const entities = findEntities(allEntities, filterFunctions);
+    const entities = findEntities(allEntities, securityFilters);
 
     const floorCount = home.floors.length + (home.areas.length ? 1 : 0);
 
@@ -88,11 +85,11 @@ export class HomeSecurityViewStrategy extends ReactiveElement {
 
       const section: LovelaceSectionRawConfig = {
         type: "grid",
+        column_span: 2,
         cards: [
           {
             type: "heading",
             heading: floorCount > 1 ? floor.name : "Areas",
-            icon: floor.icon || floorDefaultIcon(floor) || "mdi:home-floor",
           },
         ],
       };
@@ -109,11 +106,11 @@ export class HomeSecurityViewStrategy extends ReactiveElement {
     if (home.areas.length > 0) {
       const section: LovelaceSectionRawConfig = {
         type: "grid",
+        column_span: 2,
         cards: [
           {
             type: "heading",
             heading: floorCount > 1 ? "Other areas" : "Areas",
-            icon: "mdi:home",
           },
         ],
       };
@@ -126,17 +123,9 @@ export class HomeSecurityViewStrategy extends ReactiveElement {
       }
     }
 
-    // Allow between 2 and 3 columns (the max should be set to define the width of the header)
-    const maxColumns = clamp(sections.length, 2, 3);
-
-    // Take the full width if there is only one section to avoid narrow header on desktop
-    if (sections.length === 1) {
-      sections[0].column_span = 2;
-    }
-
     return {
       type: "sections",
-      max_columns: maxColumns,
+      max_columns: 2,
       sections: sections || [],
     };
   }
