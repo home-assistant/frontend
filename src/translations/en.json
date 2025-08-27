@@ -7409,6 +7409,8 @@
               "alert_classes": "Alert classes",
               "alert_classes_helper": "In compact style, only the first one will be shown. Order alerts by priority.",
               "sensor_classes": "Sensor classes",
+              "sum": "sum",
+              "median": "median",
               "description": "The Area card automatically displays entities of a specific area.",
               "display_type": "Display type",
               "content_layout": "[%key:ui::panel::lovelace::editor::card::tile::content_layout%]",
