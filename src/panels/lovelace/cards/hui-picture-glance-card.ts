@@ -300,6 +300,7 @@ class HuiPictureGlanceCard extends LitElement implements LovelaceCard {
             stateObj
           )} : ${this.hass.formatEntityState(stateObj)}`}
         >
+        .disabled=${!hasAction(entityConf.tap_action)}
           <ha-state-icon
             .icon=${entityConf.icon}
             .stateObj=${stateObj}
