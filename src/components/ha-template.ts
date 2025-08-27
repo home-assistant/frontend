@@ -1,4 +1,3 @@
-import type { PropertyValues } from "lit";
 import { LitElement } from "lit";
 import { customElement, property } from "lit/decorators";
 import type { HomeAssistant } from "../types";
@@ -14,16 +13,18 @@ export class HaTemplateElement extends LitElement {
 
   private _template = new HaTemplate();
 
-  protected shouldUpdate(changedProperties: PropertyValues): boolean {
-    return (
-      this._template.shouldUpdate(changedProperties, "content") ||
-      changedProperties.has("context")
-    );
+  protected shouldUpdate(): boolean {
+    if (this.hass) {
+      this._template.hass = this.hass;
+      this._template.content = this.content;
+      this._template.context = this.context;
+    }
+    return this._template.shouldUpdate;
   }
 
   public render() {
     try {
-      return this._template.render(this.hass!, this.content, this.context);
+      return this._template.render();
     } catch (error) {
       // eslint-disable-next-line no-console
       console.debug(`Error rendering template: ${error}`);

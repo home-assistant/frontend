@@ -1,5 +1,3 @@
-import type { PropertyValues } from "lit";
-import memoizeOne from "memoize-one";
 import { Environment, Template as NunjucksTemplate } from "nunjucks";
 import type { HomeAssistant } from "../types";
 
@@ -12,70 +10,73 @@ env.addFilter("max", (numbers: number[]) => Math.max(...numbers));
 export class HaTemplate {
   private _njTemplate?: NunjucksTemplate;
 
-  public hass?: HomeAssistant;
+  private _hass?: HomeAssistant;
+
+  private _content?: string;
+
+  private _context?: Record<string, any>;
 
   public entityIds = new Set<string>();
 
-  private context = {
+  public shouldUpdate = false;
+
+  private _defaultContext = {
     // functions that access the hass state have to dynamic
     states: (id: string) => {
       this.entityIds.add(id);
-      return this.hass?.states[id]?.state;
+      return this._hass?.states[id]?.state;
     },
     state_attr: (id: string, attr: string) => {
       this.entityIds.add(id);
-      return this.hass?.states[id]?.attributes[attr];
+      return this._hass?.states[id]?.attributes[attr];
     },
     is_state: (id: string, value: string) => {
       this.entityIds.add(id);
-      return this.hass?.states[id]?.state === value;
+      return this._hass?.states[id]?.state === value;
     },
     is_state_attr: (id: string, attr: string, value: string) => {
       this.entityIds.add(id);
-      return this.hass?.states[id]?.attributes[attr] === value;
+      return this._hass?.states[id]?.attributes[attr] === value;
     },
   };
 
-  public render(
-    hass: HomeAssistant,
-    content: string,
-    customContext: Record<string, any> = {}
-  ): string {
-    this._njTemplate = this._createNunjucksTemplate(content);
-    this.hass = hass;
+  public render(): string {
+    if (!this.shouldUpdate) {
+      return "";
+    }
+    this.shouldUpdate = false;
     this.entityIds.clear();
-    return this._njTemplate.render({ ...this.context, ...customContext });
+    return this._njTemplate!.render({
+      ...this._defaultContext,
+      ...this._context,
+    });
   }
 
-  public shouldUpdate(
-    changedProps: PropertyValues,
-    contentProperty?: string
-  ): boolean {
-    if (contentProperty && changedProps.has(contentProperty)) {
-      return true;
+  public set content(content: string) {
+    if (this._content !== content) {
+      this._content = content;
+      this._njTemplate = new NunjucksTemplate(content, env);
+      this.shouldUpdate = true;
     }
-    if (!changedProps.has("hass")) {
-      return false;
-    }
-    const newHass = changedProps.get("hass") as HomeAssistant;
-    if (!this.hass !== !newHass) {
-      return true;
-    }
+  }
 
-    if (this.hass) {
-      for (const entityId of this.entityIds) {
-        if (
-          this.hass.states[entityId]?.state !== newHass.states[entityId]?.state
-        ) {
-          return true;
-        }
+  public set context(context: Record<string, any>) {
+    if (this._context !== context) {
+      this._context = context;
+      this.shouldUpdate = true;
+    }
+  }
+
+  public set hass(hass: HomeAssistant) {
+    if (this._hass !== hass) {
+      if (!this.shouldUpdate) {
+        this.shouldUpdate =
+          !this._hass !== !hass ||
+          Array.from(this.entityIds).some(
+            (id) => this._hass?.states[id]?.state !== hass.states[id]?.state
+          );
       }
+      this._hass = hass;
     }
-
-    return false;
   }
-
-  private _createNunjucksTemplate = memoizeOne(
-    (content: string) => new NunjucksTemplate(content, env)
-  );
 }
