@@ -196,7 +196,7 @@ export default class HaAutomationAction extends LitElement {
 
   private _addActionDialog() {
     if (this.narrow) {
-      fireEvent(this, "close-sidebar");
+      fireEvent(this, "request-close-sidebar");
     }
 
     showAddAutomationElementDialog(this, {
@@ -306,7 +306,6 @@ export default class HaAutomationAction extends LitElement {
     // Ensure action is removed even after update
     const actions = this.actions.filter((a) => a !== action);
     fireEvent(this, "value-changed", { value: actions });
-    fireEvent(this, "close-sidebar");
   }
 
   private _actionChanged(ev: CustomEvent) {

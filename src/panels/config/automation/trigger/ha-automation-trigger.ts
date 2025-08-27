@@ -137,7 +137,7 @@ export default class HaAutomationTrigger extends LitElement {
 
   private _addTriggerDialog() {
     if (this.narrow) {
-      fireEvent(this, "close-sidebar");
+      fireEvent(this, "request-close-sidebar");
     }
     showAddAutomationElementDialog(this, {
       type: "trigger",

@@ -167,6 +167,7 @@ export class HaManualAutomationEditor extends LitElement {
         .disabled=${this.disabled || this.saving}
         .narrow=${this.narrow}
         @open-sidebar=${this._openSidebar}
+        @request-close-sidebar=${this._closeSidebar}
         @close-sidebar=${this._handleCloseSidebar}
         root
         sidebar
@@ -213,6 +214,7 @@ export class HaManualAutomationEditor extends LitElement {
         .disabled=${this.disabled || this.saving}
         .narrow=${this.narrow}
         @open-sidebar=${this._openSidebar}
+        @request-close-sidebar=${this._closeSidebar}
         @close-sidebar=${this._handleCloseSidebar}
         root
         sidebar
@@ -254,6 +256,7 @@ export class HaManualAutomationEditor extends LitElement {
         .highlightedActions=${this._pastedConfig?.actions || []}
         @value-changed=${this._actionChanged}
         @open-sidebar=${this._openSidebar}
+        @request-close-sidebar=${this._closeSidebar}
         @close-sidebar=${this._handleCloseSidebar}
         .hass=${this.hass}
         .narrow=${this.narrow}
@@ -339,9 +342,7 @@ export class HaManualAutomationEditor extends LitElement {
 
   private _closeSidebar() {
     if (this._sidebarConfig) {
-      const closeRow = this._sidebarConfig?.close;
-      this._sidebarConfig = undefined;
-      closeRow?.();
+      this._sidebarConfig?.close();
     }
   }
 
@@ -664,6 +665,7 @@ declare global {
 
   interface HASSDomEvents {
     "open-sidebar": SidebarConfig;
+    "request-close-sidebar": undefined;
     "close-sidebar": undefined;
   }
 }
