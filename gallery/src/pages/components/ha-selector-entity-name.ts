@@ -15,7 +15,8 @@ import { provideHass } from "../../../../src/fake_data/provide_hass";
 import type { ProvideHassElement } from "../../../../src/mixins/provide-hass-lit-mixin";
 import type { HomeAssistant } from "../../../../src/types";
 import "../../../../src/components/ha-selector/ha-selector-entity-name";
-import "../../../../src/components/ha-combo-box";
+import "../../../../src/components/ha-selector/ha-selector-entity";
+import { mockIcons } from "../../../../demo/src/stubs/icons";
 
 const ENTITIES = [
   getEntity("light", "living_room", "on", {
@@ -340,6 +341,7 @@ export class DemoHaSelectorEntityName
     mockConfigEntries(hass);
     mockAreaRegistry(hass, AREAS);
     mockFloorRegistry(hass, FLOORS);
+    mockIcons(hass);
     this._setupMockData();
     // Delay to ensure all components are properly initialized
     setTimeout(() => {
@@ -395,27 +397,14 @@ export class DemoHaSelectorEntityName
           to see the available options.
         </p>
 
-        <div class="options">
-          <div class="option">
-            <label>Entity ID:</label>
-            <select .value=${this._entityId} @change=${this._entityChanged}>
-              <option value="light.living_room">
-                light.living_room (device + area + floor)
-              </option>
-              <option value="switch.bedroom_lamp">
-                switch.bedroom_lamp (device only)
-              </option>
-              <option value="sensor.kitchen_temperature">
-                sensor.kitchen_temperature (area + floor only)
-              </option>
-              <option value="binary_sensor.front_door">
-                binary_sensor.front_door (area only)
-              </option>
-              <option value="climate.thermostat">
-                climate.thermostat (entity only)
-              </option>
-            </select>
-          </div>
+        <div class="selector-container">
+          <ha-selector-entity
+            .hass=${this.hass}
+            .selector=${{ entity: { multiple: false } }}
+            .value=${this._entityId}
+            .label=${"Select entity"}
+            @value-changed=${this._entityChanged}
+          ></ha-selector-entity>
         </div>
 
         <div class="selector-container">
@@ -462,8 +451,8 @@ export class DemoHaSelectorEntityName
     `;
   }
 
-  private _entityChanged(ev: Event) {
-    this._entityId = (ev.target as HTMLSelectElement).value;
+  private _entityChanged(ev: CustomEvent) {
+    this._entityId = ev.detail.value;
     this._value = "";
   }
 
@@ -520,34 +509,6 @@ export class DemoHaSelectorEntityName
       max-width: 800px;
       margin: 16px auto;
       // padding: 16px;
-    }
-
-    .options {
-      margin: 16px 0;
-    }
-
-    .options ha-formfield {
-      margin-right: 16px;
-    }
-    .option {
-      display: flex;
-      align-items: center;
-      margin: 8px 0;
-      gap: 8px;
-    }
-
-    .option label {
-      min-width: 80px;
-      font-weight: 500;
-    }
-
-    .option select {
-      padding: 8px;
-      border: 1px solid var(--divider-color);
-      border-radius: 4px;
-      background: var(--card-background-color);
-      color: var(--primary-text-color);
-      min-width: 200px;
     }
 
     .selector-container {
