@@ -118,6 +118,10 @@ export class HaFilterIntegrations extends LitElement {
   private _integrations = memoizeOne(
     (manifest: IntegrationManifest[], filter: string | undefined, _value) =>
       manifest
+        .map((mnfst) => ({
+          ...mnfst,
+          name: domainToName(this.hass.localize, mnfst.domain, mnfst),
+        }))
         .filter(
           (mnfst) =>
             (!mnfst.integration_type ||
@@ -125,17 +129,11 @@ export class HaFilterIntegrations extends LitElement {
                 mnfst.integration_type
               )) &&
             (!filter ||
-              domainToName(this.hass.localize, mnfst.domain, mnfst)
-                .toLowerCase()
-                .includes(filter) ||
+              mnfst.name.toLowerCase().includes(filter) ||
               mnfst.domain.toLowerCase().includes(filter))
         )
         .sort((a, b) =>
-          stringCompare(
-            domainToName(this.hass.localize, a.domain, a),
-            domainToName(this.hass.localize, b.domain, b),
-            this.hass.locale.language
-          )
+          stringCompare(a.name, b.name, this.hass.locale.language)
         )
   );
 
