@@ -89,12 +89,12 @@ export class HaActionSelector extends SubscribeMixin(LitElement) {
   static styles = css`
     ha-automation-action {
       display: block;
-      margin-bottom: 16px;
     }
     label {
       display: block;
       margin-bottom: 4px;
       font-weight: var(--ha-font-weight-medium);
+      color: var(--secondary-text-color);
     }
   `;
 }

@@ -1,5 +1,5 @@
 import { mdiDelete, mdiPlaylistEdit } from "@mdi/js";
-import { css, html, LitElement } from "lit";
+import { html, LitElement } from "lit";
 import { customElement, property, query, state } from "lit/decorators";
 import { fireEvent } from "../../../../common/dom/fire_event";
 import type { LocalizeKeys } from "../../../../common/translations/localize";
@@ -7,6 +7,7 @@ import type { ScriptFieldSidebarConfig } from "../../../../data/automation";
 import type { HomeAssistant } from "../../../../types";
 import "../../script/ha-script-field-selector-editor";
 import type HaAutomationConditionEditor from "../action/ha-automation-action-editor";
+import { sidebarEditorStyles } from "../styles";
 import "./ha-automation-sidebar-card";
 
 @customElement("ha-automation-sidebar-script-field-selector")
@@ -119,11 +120,7 @@ export default class HaAutomationSidebarScriptFieldSelector extends LitElement {
     fireEvent(this, "toggle-yaml-mode");
   };
 
-  static styles = css`
-    .sidebar-editor {
-      padding-top: 64px;
-    }
-  `;
+  static styles = sidebarEditorStyles;
 }
 
 declare global {

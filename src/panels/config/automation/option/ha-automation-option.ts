@@ -1,7 +1,7 @@
 import { mdiDrag, mdiPlus } from "@mdi/js";
 import deepClone from "deep-clone-simple";
 import type { PropertyValues } from "lit";
-import { LitElement, css, html, nothing } from "lit";
+import { LitElement, html, nothing } from "lit";
 import { customElement, property, queryAll, state } from "lit/decorators";
 import { repeat } from "lit/directives/repeat";
 import { storage } from "../../../../common/decorators/storage";
@@ -14,6 +14,7 @@ import "../../../../components/ha-svg-icon";
 import type { AutomationClipboard } from "../../../../data/automation";
 import type { Option } from "../../../../data/script";
 import type { HomeAssistant } from "../../../../types";
+import { automationRowsStyles } from "../styles";
 import "./ha-automation-option-row";
 import type HaAutomationOptionRow from "./ha-automation-option-row";
 
@@ -29,6 +30,9 @@ export default class HaAutomationOption extends LitElement {
 
   @property({ type: Boolean, attribute: "sidebar" }) public optionsInSidebar =
     false;
+
+  @property({ type: Boolean, attribute: "show-default" })
+  public showDefaultActions = false;
 
   @state() private _showReorder = false;
 
@@ -75,7 +79,7 @@ export default class HaAutomationOption extends LitElement {
         @item-added=${this._optionAdded}
         @item-removed=${this._optionRemoved}
       >
-        <div class="options">
+        <div class="rows">
           ${repeat(
             this.options,
             (option) => this._getKey(option),
@@ -117,6 +121,19 @@ export default class HaAutomationOption extends LitElement {
                 "ui.panel.config.automation.editor.actions.type.choose.add_option"
               )}
             </ha-button>
+            ${!this.showDefaultActions
+              ? html`<ha-button
+                  appearance="plain"
+                  size="small"
+                  .disabled=${this.disabled}
+                  @click=${this._showDefaultActions}
+                >
+                  <ha-svg-icon .path=${mdiPlus} slot="start"></ha-svg-icon>
+                  ${this.hass.localize(
+                    "ui.panel.config.automation.editor.actions.type.choose.add_default"
+                  )}
+                </ha-button>`
+              : nothing}
           </div>
         </div>
       </ha-sortable>
@@ -248,45 +265,19 @@ export default class HaAutomationOption extends LitElement {
     });
   }
 
-  static styles = css`
-    .options {
-      padding: 16px 0 16px 16px;
-      margin: -16px;
-      display: flex;
-      flex-direction: column;
-      gap: 16px;
-    }
-    .sortable-ghost {
-      background: none;
-      border-radius: var(--ha-card-border-radius, var(--ha-border-radius-lg));
-    }
-    .sortable-drag {
-      background: none;
-    }
-    ha-automation-option-row {
-      display: block;
-      scroll-margin-top: 48px;
-    }
-    .handle {
-      padding: 12px;
-      cursor: move; /* fallback if grab cursor is unsupported */
-      cursor: grab;
-    }
-    .handle ha-svg-icon {
-      pointer-events: none;
-      height: 24px;
-    }
-    .buttons {
-      display: flex;
-      flex-wrap: wrap;
-      gap: 8px;
-      order: 1;
-    }
-  `;
+  private _showDefaultActions = () => {
+    fireEvent(this, "show-default-actions");
+  };
+
+  static styles = automationRowsStyles;
 }
 
 declare global {
   interface HTMLElementTagNameMap {
     "ha-automation-option": HaAutomationOption;
+  }
+
+  interface HASSDomEvents {
+    "show-default-actions": undefined;
   }
 }

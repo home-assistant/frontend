@@ -39,7 +39,7 @@ import "../automation/action/ha-automation-action";
 import type HaAutomationAction from "../automation/action/ha-automation-action";
 import "../automation/ha-automation-sidebar";
 import { showPasteReplaceDialog } from "../automation/paste-replace-dialog/show-dialog-paste-replace";
-import { saveFabStyles } from "../automation/styles";
+import { manualEditorStyles, saveFabStyles } from "../automation/styles";
 import "./ha-script-fields";
 import type HaScriptFields from "./ha-script-fields";
 
@@ -194,7 +194,12 @@ export class HaManualScriptEditor extends LitElement {
 
   protected render() {
     return html`
-      <div class="split-view">
+      <div
+        class=${classMap({
+          "split-view": true,
+          "sidebar-hidden": !this._sidebarConfig,
+        })}
+      >
         <div class="content-wrapper">
           <div class="content">${this._renderContent()}</div>
           <ha-fab
@@ -211,7 +216,6 @@ export class HaManualScriptEditor extends LitElement {
         <ha-automation-sidebar
           class=${classMap({
             sidebar: true,
-            hidden: !this._sidebarConfig,
             overlay: !this.isWide,
             rtl: computeRTL(this.hass),
           })}
@@ -504,79 +508,8 @@ export class HaManualScriptEditor extends LitElement {
   static get styles(): CSSResultGroup {
     return [
       saveFabStyles,
+      manualEditorStyles,
       css`
-        :host {
-          display: block;
-        }
-
-        .split-view {
-          display: flex;
-          flex-direction: row;
-          height: 100%;
-          position: relative;
-          gap: 16px;
-        }
-
-        .content-wrapper {
-          position: relative;
-          flex: 6;
-        }
-
-        .content {
-          padding: 32px 16px 64px 0;
-          height: calc(100vh - 153px);
-          height: calc(100dvh - 153px);
-          overflow-y: auto;
-          overflow-x: hidden;
-        }
-
-        .sidebar {
-          padding: 12px 0;
-          flex: 4;
-          height: calc(100vh - 81px);
-          height: calc(100dvh - 81px);
-          width: 40%;
-        }
-        .sidebar.hidden {
-          border-color: transparent;
-          border-width: 0;
-          overflow: hidden;
-          flex: 0;
-          visibility: hidden;
-        }
-
-        .sidebar.overlay {
-          position: fixed;
-          bottom: 0;
-          right: 0;
-          height: calc(100% - 64px);
-          padding: 0;
-          z-index: 5;
-        }
-
-        .sidebar.overlay.rtl {
-          right: unset;
-          left: 8px;
-        }
-
-        @media all and (max-width: 870px) {
-          .split-view {
-            gap: 0;
-            margin-right: -8px;
-          }
-          .sidebar {
-            height: 0;
-            width: 0;
-            flex: 0;
-          }
-        }
-
-        .sidebar.overlay.hidden {
-          width: 0;
-        }
-        .description {
-          margin: 0;
-        }
         .header {
           display: flex;
           align-items: center;
@@ -588,9 +521,6 @@ export class HaManualScriptEditor extends LitElement {
           font-size: var(--ha-font-size-xl);
           font-weight: var(--ha-font-weight-normal);
           flex: 1;
-        }
-        .header a {
-          color: var(--secondary-text-color);
         }
       `,
     ];
