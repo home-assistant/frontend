@@ -38,8 +38,6 @@ import { renderTileBadge } from "./tile/badges/tile-badge";
 import type { TileCardConfig } from "./types";
 import type { LovelaceCardFeatureContext } from "../card-features/types";
 import { createEntityNotFoundWarning } from "../components/hui-warning";
-// import { TemplateMixin } from "../../../mixins/template-mixin";
-import "../../../components/ha-template";
 
 export const getEntityDefaultTileIconAction = (entityId: string) => {
   const domain = computeDomain(entityId);
@@ -263,12 +261,7 @@ export class HuiTileCard extends LitElement implements LovelaceCard {
 
     const contentClasses = { vertical: Boolean(this._config.vertical) };
 
-    const name = this._config.name
-      ? html`<ha-template
-          .content=${this._config.name}
-          .hass=${this.hass}
-        ></ha-template>`
-      : computeStateName(stateObj);
+    const name = this._config.name || computeStateName(stateObj);
     const active = stateActive(stateObj);
     const color = this._computeStateColor(stateObj, this._config.color);
     const domain = computeDomain(stateObj.entity_id);
