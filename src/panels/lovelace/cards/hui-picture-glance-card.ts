@@ -19,7 +19,7 @@ import { actionHandler } from "../common/directives/action-handler-directive";
 import { findEntities } from "../common/find-entities";
 import { handleAction } from "../common/handle-action";
 import { hasAction } from "../common/has-action";
-import { hasConfigOrEntityChanged } from "../common/has-changed
+import { hasConfigOrEntityChanged } from "../common/has-changed";
 import { processConfigEntities } from "../common/process-config-entities";
 import "../components/hui-image";
 import { createEntityNotFoundWarning } from "../components/hui-warning";
