@@ -36,33 +36,20 @@ export class HaEntityNameSelector extends LitElement {
 
   @state() private _opened = false;
 
-  @state() private _options: EntityNameOption[] = [];
-
   protected shouldUpdate(changedProps: PropertyValues): boolean {
     return !(!changedProps.has("_opened") && this._opened);
   }
 
-  protected updated(changedProps: PropertyValues): void {
-    if (
-      (changedProps.has("_opened") && this._opened) ||
-      changedProps.has("selector") ||
-      changedProps.has("context")
-    ) {
-      this._updateOptions();
-    }
-  }
-
-  private _updateOptions(): void {
+  private get _options(): EntityNameOption[] {
     if (!this.hass) {
-      return;
+      return [];
     }
 
     const entityId = this.context?.entity || this.selector?.entity_name?.entity;
     const entity = entityId ? this.hass.states[entityId] : undefined;
 
     if (!entity) {
-      this._options = [];
-      return;
+      return [];
     }
 
     const entityReg = this.hass.entities?.[entityId!];
@@ -89,7 +76,7 @@ export class HaEntityNameSelector extends LitElement {
       floor: floorReg?.name?.trim() || null,
     };
 
-    this._options = this._generateAllOptions(names);
+    return this._generateAllOptions(names);
   }
 
   private _generateAllOptions(names: {
