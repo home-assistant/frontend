@@ -75,8 +75,9 @@ export class HaEntityNameSelector extends LitElement {
       ? this.hass.floors?.[areaReg.floor_id]
       : undefined;
 
-    const entityName = entity.attributes.friendly_name || null;
-    const deviceName = deviceReg?.name_by_user || deviceReg?.name || null;
+    const entityName = entity.attributes.friendly_name?.trim() || null;
+    const deviceName =
+      (deviceReg?.name_by_user || deviceReg?.name)?.trim() || null;
 
     const names = {
       entity: entityName,
@@ -84,8 +85,8 @@ export class HaEntityNameSelector extends LitElement {
         deviceName && entityName && deviceName === entityName
           ? null
           : deviceName,
-      area: areaReg?.name || null,
-      floor: floorReg?.name || null,
+      area: areaReg?.name?.trim() || null,
+      floor: floorReg?.name?.trim() || null,
     };
 
     this._options = this._generateAllOptions(names);
