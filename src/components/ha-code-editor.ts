@@ -760,7 +760,7 @@ export class HaCodeEditor extends ReactiveElement {
       left: 8px !important;
       right: 8px !important;
       bottom: 8px !important;
-      z-index: 9999 !important;
+      z-index: 6;
       border-radius: 12px !important;
       box-shadow: 0 2px 10px rgba(0, 0, 0, 0.3) !important;
       overflow: hidden !important;
