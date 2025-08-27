@@ -96,6 +96,7 @@ export class HomeMainViewStrategy extends ReactiveElement {
             ({
               type: "tile",
               entity: entityId,
+              show_entity_picture: true,
             }) as TileCardConfig
         )
       );
