@@ -2,14 +2,15 @@ import { type CSSResultGroup, LitElement, css, html, nothing } from "lit";
 import { customElement, property, query, state } from "lit/decorators";
 import { ensureArray } from "../../../../../common/array/ensure-array";
 import { fireEvent } from "../../../../../common/dom/fire_event";
-import "../../../../../components/ha-button";
 import type { Action, ChooseAction, Option } from "../../../../../data/script";
 import { haStyle } from "../../../../../resources/styles";
 import type { HomeAssistant } from "../../../../../types";
 import "../../option/ha-automation-option";
 import type HaAutomationOption from "../../option/ha-automation-option";
+import "../../option/ha-automation-option-row";
+import type HaAutomationOptionRow from "../../option/ha-automation-option-row";
+import { indentStyle } from "../../styles";
 import "../ha-automation-action";
-import type HaAutomationAction from "../ha-automation-action";
 import type { ActionElement } from "../ha-automation-action-row";
 
 @customElement("ha-automation-action-choose")
@@ -28,7 +29,8 @@ export class HaChooseAction extends LitElement implements ActionElement {
 
   @query("ha-automation-option") private _optionElement?: HaAutomationOption;
 
-  @query("ha-automation-action") private _actionElement?: HaAutomationAction;
+  @query("ha-automation-option-row")
+  private _defaultOptionRowElement?: HaAutomationOptionRow;
 
   public static get defaultConfig(): ChooseAction {
     return { choose: [{ conditions: [], sequence: [] }] };
@@ -53,26 +55,23 @@ export class HaChooseAction extends LitElement implements ActionElement {
 
       ${this._showDefault || action.default
         ? html`
-            <h4 class="default-actions">
-              ${this.hass.localize(
-                "ui.panel.config.automation.editor.actions.type.choose.default"
-              )}:
-            </h4>
-            <ha-automation-action
-              .actions=${ensureArray(action.default) || []}
-              .disabled=${this.disabled}
-              @value-changed=${this._defaultChanged}
-              .hass=${this.hass}
+            <ha-automation-option-row
+              .defaultActions=${(ensureArray(action.default) || []) as Action[]}
               .narrow=${this.narrow}
+              .disabled=${this.disabled}
+              .hass=${this.hass}
               .optionsInSidebar=${this.indent}
-            ></ha-automation-action>
+              @value-changed=${this._defaultChanged}
+            ></ha-automation-option-row>
           `
         : nothing}
     `;
   }
 
-  private _addDefault() {
+  private async _addDefault() {
     this._showDefault = true;
+    await this._defaultOptionRowElement?.updateComplete;
+    this._defaultOptionRowElement?.expand();
   }
 
   private _optionsChanged(ev: CustomEvent) {
@@ -102,24 +101,26 @@ export class HaChooseAction extends LitElement implements ActionElement {
 
   public expandAll() {
     this._optionElement?.expandAll();
-    this._actionElement?.expandAll();
+    this._defaultOptionRowElement?.expandAll();
   }
 
   public collapseAll() {
     this._optionElement?.collapseAll();
-    this._actionElement?.collapseAll();
+    this._defaultOptionRowElement?.collapseAll();
   }
 
   static get styles(): CSSResultGroup {
     return [
       haStyle,
+      indentStyle,
       css`
-        .link-button-row {
-          padding: 14px 14px 0 14px;
+        ha-automation-option-row {
+          display: block;
+          margin-top: 24px;
         }
-        h4.default-actions {
-          color: var(--secondary-text-color);
-          margin-bottom: 8px;
+        h3 {
+          font-size: inherit;
+          font-weight: inherit;
         }
       `,
     ];
