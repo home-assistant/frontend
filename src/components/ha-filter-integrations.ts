@@ -112,7 +112,7 @@ export class HaFilterIntegrations extends LitElement {
 
   protected async firstUpdated() {
     this._manifests = await fetchIntegrationManifests(this.hass);
-      this.hass.loadBackendTranslation("title");
+    this.hass.loadBackendTranslation("title");
   }
 
   private _integrations = memoizeOne(
