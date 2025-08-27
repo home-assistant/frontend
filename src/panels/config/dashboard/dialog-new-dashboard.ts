@@ -26,15 +26,15 @@ interface Strategy {
 
 const STRATEGIES = [
   {
-    type: "default",
+    type: "overview",
     images: {
       light:
-        "/static/images/dashboard-options/light/icon-dashboard-default.svg",
-      dark: "/static/images/dashboard-options/dark/icon-dashboard-default.svg",
+        "/static/images/dashboard-options/light/icon-dashboard-overview.svg",
+      dark: "/static/images/dashboard-options/dark/icon-dashboard-overview.svg",
     },
-    name: "ui.panel.config.lovelace.dashboards.dialog_new.strategy.default.title",
+    name: "ui.panel.config.lovelace.dashboards.dialog_new.strategy.overview.title",
     description:
-      "ui.panel.config.lovelace.dashboards.dialog_new.strategy.default.description",
+      "ui.panel.config.lovelace.dashboards.dialog_new.strategy.overview.description",
   },
   {
     type: "areas",
@@ -47,14 +47,14 @@ const STRATEGIES = [
       "ui.panel.config.lovelace.dashboards.dialog_new.strategy.areas.description",
   },
   {
-    type: "overview",
+    type: "home",
     images: {
       light: "/static/images/dashboard-options/light/icon-dashboard-areas.svg",
       dark: "/static/images/dashboard-options/dark/icon-dashboard-areas.svg",
     },
-    name: "ui.panel.config.lovelace.dashboards.dialog_new.strategy.overview.title",
+    name: "ui.panel.config.lovelace.dashboards.dialog_new.strategy.home.title",
     description:
-      "ui.panel.config.lovelace.dashboards.dialog_new.strategy.overview.description",
+      "ui.panel.config.lovelace.dashboards.dialog_new.strategy.home.description",
   },
   {
     type: "map",
@@ -254,7 +254,7 @@ class DialogNewDashboard extends LitElement implements HassDialog {
     if (target.config) {
       config = target.config;
     } else if (target.strategy) {
-      if (target.strategy === "default") {
+      if (target.strategy === "overview") {
         config = null;
       } else {
         config = this._generateStrategyConfig(target.strategy);

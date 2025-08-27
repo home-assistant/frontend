@@ -3,26 +3,23 @@ import type {
   EntityFilterFunc,
 } from "../../../../../common/entity/entity_filter";
 
-export const OVERVIEW_SUMMARIES = [
+export const HOME_SUMMARIES = [
   "lights",
   "climate",
   "security",
   "media_players",
 ] as const;
 
-export type OverviewSummaries = (typeof OVERVIEW_SUMMARIES)[number];
+export type HomeSummaries = (typeof HOME_SUMMARIES)[number];
 
-export const OVERVIEW_SUMMARIES_ICONS: Record<OverviewSummaries, string> = {
+export const HOME_SUMMARIES_ICONS: Record<HomeSummaries, string> = {
   lights: "mdi:lamps",
   climate: "mdi:home-thermometer",
   security: "mdi:security",
   media_players: "mdi:multimedia",
 };
 
-export const OVERVIEW_SUMMARIES_FILTERS: Record<
-  OverviewSummaries,
-  EntityFilter[]
-> = {
+export const HOME_SUMMARIES_FILTERS: Record<HomeSummaries, EntityFilter[]> = {
   lights: [{ domain: "light", entity_category: "none" }],
   climate: [
     { domain: "climate", entity_category: "none" },
