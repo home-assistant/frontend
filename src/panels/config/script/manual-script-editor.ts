@@ -1,8 +1,9 @@
-import { mdiHelpCircle } from "@mdi/js";
-import type { CSSResultGroup, PropertyValues } from "lit";
-import { LitElement, css, html, nothing } from "lit";
-import { customElement, property, query, state } from "lit/decorators";
+import { mdiContentSave, mdiHelpCircle } from "@mdi/js";
 import { load } from "js-yaml";
+import type { CSSResultGroup } from "lit";
+import { css, html, LitElement, nothing } from "lit";
+import { customElement, property, query, state } from "lit/decorators";
+import { classMap } from "lit/directives/class-map";
 import {
   any,
   array,
@@ -13,32 +14,29 @@ import {
   optional,
   string,
 } from "superstruct";
+import { ensureArray } from "../../../common/array/ensure-array";
+import { canOverrideAlphanumericInput } from "../../../common/dom/can-override-input";
 import { fireEvent } from "../../../common/dom/fire_event";
-import { constructUrlCurrentPath } from "../../../common/url/construct-url";
-import {
-  extractSearchParam,
-  removeSearchParam,
-} from "../../../common/url/search-params";
-import "../../../components/ha-card";
+import { computeRTL } from "../../../common/util/compute_rtl";
 import "../../../components/ha-icon-button";
 import "../../../components/ha-markdown";
+import type { SidebarConfig } from "../../../data/automation";
 import type { Action, Fields, ScriptConfig } from "../../../data/script";
 import {
   getActionType,
   MODES,
   normalizeScriptConfig,
 } from "../../../data/script";
-import { haStyle } from "../../../resources/styles";
 import type { HomeAssistant } from "../../../types";
 import { documentationUrl } from "../../../util/documentation-url";
+import { showToast } from "../../../util/toast";
 import "../automation/action/ha-automation-action";
 import type HaAutomationAction from "../automation/action/ha-automation-action";
+import "../automation/ha-automation-sidebar";
+import { showPasteReplaceDialog } from "../automation/paste-replace-dialog/show-dialog-paste-replace";
+import { saveFabStyles } from "../automation/styles";
 import "./ha-script-fields";
 import type HaScriptFields from "./ha-script-fields";
-import { canOverrideAlphanumericInput } from "../../../common/dom/can-override-input";
-import { showToast } from "../../../util/toast";
-import { showPasteReplaceDialog } from "../automation/paste-replace-dialog/show-dialog-paste-replace";
-import { ensureArray } from "../../../common/array/ensure-array";
 
 const scriptConfigStruct = object({
   alias: optional(string()),
@@ -60,6 +58,8 @@ export class HaManualScriptEditor extends LitElement {
 
   @property({ type: Boolean }) public disabled = false;
 
+  @property({ type: Boolean }) public saving = false;
+
   @property({ attribute: false }) public config!: ScriptConfig;
 
   @property({ attribute: false }) public dirty = false;
@@ -70,6 +70,8 @@ export class HaManualScriptEditor extends LitElement {
   private _openFields = false;
 
   @state() private _pastedConfig?: ScriptConfig;
+
+  @state() private _sidebarConfig?: SidebarConfig;
 
   private _previousConfig?: ScriptConfig;
 
@@ -99,41 +101,19 @@ export class HaManualScriptEditor extends LitElement {
     }
   }
 
-  protected firstUpdated(changedProps: PropertyValues): void {
-    super.firstUpdated(changedProps);
-    const expanded = extractSearchParam("expanded");
-    if (expanded === "1") {
-      this._clearParam("expanded");
-      const items = this.shadowRoot!.querySelectorAll<HaAutomationAction>(
-        "ha-automation-action"
-      );
-
-      items.forEach((el) => {
-        el.updateComplete.then(() => {
-          el.expandAll();
-        });
-      });
-    }
-  }
-
-  private _clearParam(param: string) {
-    window.history.replaceState(
-      null,
-      "",
-      constructUrlCurrentPath(removeSearchParam(param))
-    );
-  }
-
-  protected render() {
+  private _renderContent() {
     return html`
-      ${this.config.description
-        ? html`<ha-markdown
-            class="description"
-            breaks
-            .content=${this.config.description}
-          ></ha-markdown>`
-        : nothing}
-      ${this.config.fields
+      ${
+        this.config.description
+          ? html`<ha-markdown
+              class="description"
+              breaks
+              .content=${this.config.description}
+            ></ha-markdown>`
+          : nothing
+      }
+    ${
+      this.config.fields
         ? html`<div class="header">
               <h2 id="fields-heading" class="name">
                 ${this.hass.localize(
@@ -165,39 +145,79 @@ export class HaManualScriptEditor extends LitElement {
               @value-changed=${this._fieldsChanged}
               .hass=${this.hass}
               .disabled=${this.disabled}
+              .narrow=${this.narrow}
+              @open-sidebar=${this._openSidebar}
+              @close-sidebar=${this._handleCloseSidebar}
             ></ha-script-fields>`
-        : nothing}
+        : nothing
+    }
 
-      <div class="header">
-        <h2 id="sequence-heading" class="name">
-          ${this.hass.localize("ui.panel.config.script.editor.sequence")}
-        </h2>
-        <a
-          href=${documentationUrl(this.hass, "/docs/scripts/")}
-          target="_blank"
-          rel="noreferrer"
-        >
-          <ha-icon-button
-            .path=${mdiHelpCircle}
-            .label=${this.hass.localize(
-              "ui.panel.config.script.editor.link_available_actions"
-            )}
-          ></ha-icon-button>
-        </a>
+    <div class="header">
+      <h2 id="sequence-heading" class="name">
+        ${this.hass.localize("ui.panel.config.script.editor.sequence")}
+      </h2>
+      <a
+        href=${documentationUrl(this.hass, "/docs/scripts/")}
+        target="_blank"
+        rel="noreferrer"
+      >
+        <ha-icon-button
+          .path=${mdiHelpCircle}
+          .label=${this.hass.localize(
+            "ui.panel.config.script.editor.link_available_actions"
+          )}
+        ></ha-icon-button>
+      </a>
+    </div>
+
+    <ha-automation-action
+      role="region"
+      aria-labelledby="sequence-heading"
+      .actions=${this.config.sequence || []}
+      .highlightedActions=${this._pastedConfig?.sequence || []}
+      @value-changed=${this._sequenceChanged}
+      @open-sidebar=${this._openSidebar}
+      @close-sidebar=${this._handleCloseSidebar}
+      .hass=${this.hass}
+      .narrow=${this.narrow}
+      .disabled=${this.disabled || this.saving}
+      root
+      sidebar
+    ></ha-automation-action>
+  </div>`;
+  }
+
+  protected render() {
+    return html`
+      <div class="split-view">
+        <div class="content-wrapper">
+          <div class="content">${this._renderContent()}</div>
+          <ha-fab
+            slot="fab"
+            class=${this.dirty ? "dirty" : ""}
+            .label=${this.hass.localize("ui.common.save")}
+            .disabled=${this.saving}
+            extended
+            @click=${this._saveScript}
+          >
+            <ha-svg-icon slot="icon" .path=${mdiContentSave}></ha-svg-icon>
+          </ha-fab>
+        </div>
+        <ha-automation-sidebar
+          class=${classMap({
+            sidebar: true,
+            hidden: !this._sidebarConfig,
+            overlay: !this.isWide,
+            rtl: computeRTL(this.hass),
+          })}
+          .narrow=${this.narrow}
+          .isWide=${this.isWide}
+          .hass=${this.hass}
+          .config=${this._sidebarConfig}
+          @value-changed=${this._sidebarConfigChanged}
+          .disabled=${this.disabled}
+        ></ha-automation-sidebar>
       </div>
-
-      <ha-automation-action
-        role="region"
-        aria-labelledby="sequence-heading"
-        .actions=${this.config.sequence || []}
-        .highlightedActions=${this._pastedConfig?.sequence || []}
-        .path=${["sequence"]}
-        @value-changed=${this._sequenceChanged}
-        .hass=${this.hass}
-        .narrow=${this.narrow}
-        .disabled=${this.disabled}
-        root
-      ></ha-automation-action>
     `;
   }
 
@@ -406,21 +426,134 @@ export class HaManualScriptEditor extends LitElement {
     });
   }
 
+  private _openSidebar(ev: CustomEvent<SidebarConfig>) {
+    // deselect previous selected row
+    this._sidebarConfig?.close?.();
+    this._sidebarConfig = ev.detail;
+  }
+
+  private _sidebarConfigChanged(ev: CustomEvent<{ value: SidebarConfig }>) {
+    ev.stopPropagation();
+    if (!this._sidebarConfig) {
+      return;
+    }
+
+    this._sidebarConfig = {
+      ...this._sidebarConfig,
+      ...ev.detail.value,
+    };
+  }
+
+  private _closeSidebar() {
+    if (this._sidebarConfig) {
+      const closeRow = this._sidebarConfig?.close;
+      this._sidebarConfig = undefined;
+      closeRow?.();
+    }
+  }
+
+  private _handleCloseSidebar() {
+    this._sidebarConfig = undefined;
+  }
+
+  private _saveScript() {
+    this._closeSidebar();
+    fireEvent(this, "save-script");
+  }
+
+  private _getCollapsableElements() {
+    return this.shadowRoot!.querySelectorAll<
+      HaAutomationAction | HaScriptFields
+    >("ha-automation-action, ha-script-fields");
+  }
+
+  public expandAll() {
+    this._getCollapsableElements().forEach((element) => {
+      element.expandAll();
+    });
+  }
+
+  public collapseAll() {
+    this._getCollapsableElements().forEach((element) => {
+      element.collapseAll();
+    });
+  }
+
   static get styles(): CSSResultGroup {
     return [
-      haStyle,
+      saveFabStyles,
       css`
         :host {
           display: block;
         }
-        ha-card {
+
+        .split-view {
+          display: flex;
+          flex-direction: row;
+          height: 100%;
+          position: relative;
+          gap: 16px;
+        }
+
+        .content-wrapper {
+          position: relative;
+          flex: 6;
+        }
+
+        .content {
+          padding: 32px 16px 64px 0;
+          height: calc(100vh - 153px);
+          height: calc(100dvh - 153px);
+          overflow-y: auto;
+          overflow-x: hidden;
+        }
+
+        .sidebar {
+          padding: 12px 0;
+          flex: 4;
+          height: calc(100vh - 81px);
+          height: calc(100dvh - 81px);
+          width: 40%;
+        }
+        .sidebar.hidden {
+          border-color: transparent;
+          border-width: 0;
           overflow: hidden;
+          flex: 0;
+          visibility: hidden;
+        }
+
+        .sidebar.overlay {
+          position: fixed;
+          bottom: 0;
+          right: 0;
+          height: calc(100% - 64px);
+          padding: 0;
+          z-index: 5;
+        }
+
+        .sidebar.overlay.rtl {
+          right: unset;
+          left: 8px;
+        }
+
+        @media all and (max-width: 870px) {
+          .split-view {
+            gap: 0;
+            margin-right: -8px;
+          }
+          .sidebar {
+            height: 0;
+            width: 0;
+            flex: 0;
+          }
+        }
+
+        .sidebar.overlay.hidden {
+          width: 0;
         }
         .description {
           margin: 0;
-        }
-        p {
-          margin-bottom: 0;
         }
         .header {
           display: flex;

@@ -91,6 +91,15 @@ export const isService = (key: string | undefined): boolean | undefined =>
 export const getService = (key: string): string =>
   key.substring(SERVICE_PREFIX.length);
 
+export const COLLAPSIBLE_ACTION_ELEMENTS = [
+  "ha-automation-action-choose",
+  "ha-automation-action-condition",
+  "ha-automation-action-if",
+  "ha-automation-action-parallel",
+  "ha-automation-action-repeat",
+  "ha-automation-action-sequence",
+];
+
 export const ACTION_BUILDING_BLOCKS = [
   "choose",
   "if",

@@ -5,11 +5,15 @@ import { dynamicElement } from "../../../../common/dom/dynamic-element-directive
 import { fireEvent } from "../../../../common/dom/fire_event";
 import "../../../../components/ha-yaml-editor";
 import type { HaYamlEditor } from "../../../../components/ha-yaml-editor";
+import { COLLAPSIBLE_ACTION_ELEMENTS } from "../../../../data/action";
 import { migrateAutomationAction, type Action } from "../../../../data/script";
 import type { HomeAssistant } from "../../../../types";
 import "../ha-automation-editor-warning";
-import { editorStyles } from "../styles";
-import { getAutomationActionType } from "./ha-automation-action-row";
+import { editorStyles, indentStyle } from "../styles";
+import {
+  getAutomationActionType,
+  type ActionElement,
+} from "./ha-automation-action-row";
 
 @customElement("ha-automation-action-editor")
 export default class HaAutomationActionEditor extends LitElement {
@@ -33,6 +37,9 @@ export default class HaAutomationActionEditor extends LitElement {
     false;
 
   @query("ha-yaml-editor") public yamlEditor?: HaYamlEditor;
+
+  @query(COLLAPSIBLE_ACTION_ELEMENTS.join(", "))
+  private _collapsibleElement?: ActionElement;
 
   protected render() {
     const yamlMode = this.yamlMode || !this.uiSupported;
@@ -103,7 +110,15 @@ export default class HaAutomationActionEditor extends LitElement {
     fireEvent(this, "value-changed", { value });
   }
 
-  static styles = editorStyles;
+  public expandAll() {
+    this._collapsibleElement?.expandAll?.();
+  }
+
+  public collapseAll() {
+    this._collapsibleElement?.collapseAll?.();
+  }
+
+  static styles = [editorStyles, indentStyle];
 }
 
 declare global {

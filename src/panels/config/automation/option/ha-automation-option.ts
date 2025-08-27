@@ -2,7 +2,7 @@ import { mdiDrag, mdiPlus } from "@mdi/js";
 import deepClone from "deep-clone-simple";
 import type { PropertyValues } from "lit";
 import { LitElement, css, html, nothing } from "lit";
-import { customElement, property, state } from "lit/decorators";
+import { customElement, property, queryAll, state } from "lit/decorators";
 import { repeat } from "lit/directives/repeat";
 import { storage } from "../../../../common/decorators/storage";
 import { fireEvent } from "../../../../common/dom/fire_event";
@@ -40,6 +40,9 @@ export default class HaAutomationOption extends LitElement {
     storage: "sessionStorage",
   })
   public _clipboard?: AutomationClipboard;
+
+  @queryAll("ha-automation-option-row")
+  private _optionRowElements?: HaAutomationOptionRow[];
 
   private _focusLastOptionOnChange = false;
 
@@ -132,20 +135,23 @@ export default class HaAutomationOption extends LitElement {
       row.updateComplete.then(() => {
         if (!this.optionsInSidebar) {
           row.expand();
+        } else if (this.narrow) {
+          row.scrollIntoView({
+            block: "start",
+            behavior: "smooth",
+          });
         }
-        row.scrollIntoView();
         row.focus();
       });
     }
   }
 
   public expandAll() {
-    const rows = this.shadowRoot!.querySelectorAll<HaAutomationOptionRow>(
-      "ha-automation-option-row"
-    )!;
-    rows.forEach((row) => {
-      row.expand();
-    });
+    this._optionRowElements?.forEach((row) => row.expandAll());
+  }
+
+  public collapseAll() {
+    this._optionRowElements?.forEach((row) => row.collapseAll());
   }
 
   private _addOption = () => {

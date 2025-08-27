@@ -18,7 +18,6 @@ export interface Node {
   value: number;
   index: number; // like z-index but for x/y
   label?: string;
-  tooltip?: string;
   color?: string;
   passThrough?: boolean;
 }

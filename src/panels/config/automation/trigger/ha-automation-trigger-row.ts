@@ -34,7 +34,11 @@ import "../../../../components/ha-icon-button";
 import "../../../../components/ha-md-button-menu";
 import "../../../../components/ha-md-divider";
 import "../../../../components/ha-md-menu-item";
-import type { AutomationClipboard, Trigger } from "../../../../data/automation";
+import type {
+  AutomationClipboard,
+  Trigger,
+  TriggerSidebarConfig,
+} from "../../../../data/automation";
 import { subscribeTrigger } from "../../../../data/automation";
 import { describeTrigger } from "../../../../data/automation_i18n";
 import { validateConfig } from "../../../../data/config";
@@ -175,7 +179,7 @@ export default class HaAutomationTriggerRow extends LitElement {
         ></ha-icon-button>
 
         ${!this.optionsInSidebar
-          ? html` <ha-md-menu-item
+          ? html`<ha-md-menu-item
                 .clickAction=${this._renameTrigger}
                 .disabled=${this.disabled || type === "list"}
               >
@@ -195,38 +199,41 @@ export default class HaAutomationTriggerRow extends LitElement {
                 <ha-svg-icon slot="start" .path=${mdiIdentifier}></ha-svg-icon>
               </ha-md-menu-item>
 
-              <ha-md-divider role="separator" tabindex="-1"></ha-md-divider>`
+              <ha-md-divider role="separator" tabindex="-1"></ha-md-divider>
+
+              <ha-md-menu-item
+                .clickAction=${this._duplicateTrigger}
+                .disabled=${this.disabled}
+              >
+                ${this.hass.localize(
+                  "ui.panel.config.automation.editor.triggers.duplicate"
+                )}
+                <ha-svg-icon
+                  slot="start"
+                  .path=${mdiContentDuplicate}
+                ></ha-svg-icon>
+              </ha-md-menu-item>
+
+              <ha-md-menu-item
+                .clickAction=${this._copyTrigger}
+                .disabled=${this.disabled}
+              >
+                ${this.hass.localize(
+                  "ui.panel.config.automation.editor.triggers.copy"
+                )}
+                <ha-svg-icon slot="start" .path=${mdiContentCopy}></ha-svg-icon>
+              </ha-md-menu-item>
+
+              <ha-md-menu-item
+                .clickAction=${this._cutTrigger}
+                .disabled=${this.disabled}
+              >
+                ${this.hass.localize(
+                  "ui.panel.config.automation.editor.triggers.cut"
+                )}
+                <ha-svg-icon slot="start" .path=${mdiContentCut}></ha-svg-icon>
+              </ha-md-menu-item>`
           : nothing}
-
-        <ha-md-menu-item
-          .clickAction=${this._duplicateTrigger}
-          .disabled=${this.disabled}
-        >
-          ${this.hass.localize(
-            "ui.panel.config.automation.editor.triggers.duplicate"
-          )}
-          <ha-svg-icon slot="start" .path=${mdiContentDuplicate}></ha-svg-icon>
-        </ha-md-menu-item>
-
-        <ha-md-menu-item
-          .clickAction=${this._copyTrigger}
-          .disabled=${this.disabled}
-        >
-          ${this.hass.localize(
-            "ui.panel.config.automation.editor.triggers.copy"
-          )}
-          <ha-svg-icon slot="start" .path=${mdiContentCopy}></ha-svg-icon>
-        </ha-md-menu-item>
-
-        <ha-md-menu-item
-          .clickAction=${this._cutTrigger}
-          .disabled=${this.disabled}
-        >
-          ${this.hass.localize(
-            "ui.panel.config.automation.editor.triggers.cut"
-          )}
-          <ha-svg-icon slot="start" .path=${mdiContentCut}></ha-svg-icon>
-        </ha-md-menu-item>
 
         <ha-md-menu-item
           .clickAction=${this._moveUp}
@@ -258,43 +265,44 @@ export default class HaAutomationTriggerRow extends LitElement {
                   .path=${mdiPlaylistEdit}
                 ></ha-svg-icon>
               </ha-md-menu-item>
+
+              <ha-md-divider role="separator" tabindex="-1"></ha-md-divider>
+
+              <ha-md-menu-item
+                .clickAction=${this._onDisable}
+                .disabled=${this.disabled || type === "list"}
+              >
+                ${"enabled" in this.trigger && this.trigger.enabled === false
+                  ? this.hass.localize(
+                      "ui.panel.config.automation.editor.actions.enable"
+                    )
+                  : this.hass.localize(
+                      "ui.panel.config.automation.editor.actions.disable"
+                    )}
+                <ha-svg-icon
+                  slot="start"
+                  .path=${"enabled" in this.trigger &&
+                  this.trigger.enabled === false
+                    ? mdiPlayCircleOutline
+                    : mdiStopCircleOutline}
+                ></ha-svg-icon>
+              </ha-md-menu-item>
+              <ha-md-menu-item
+                .clickAction=${this._onDelete}
+                class="warning"
+                .disabled=${this.disabled}
+              >
+                ${this.hass.localize(
+                  "ui.panel.config.automation.editor.actions.delete"
+                )}
+                <ha-svg-icon
+                  class="warning"
+                  slot="start"
+                  .path=${mdiDelete}
+                ></ha-svg-icon>
+              </ha-md-menu-item>
             `
           : nothing}
-
-        <ha-md-divider role="separator" tabindex="-1"></ha-md-divider>
-
-        <ha-md-menu-item
-          .clickAction=${this._onDisable}
-          .disabled=${this.disabled || type === "list"}
-        >
-          ${"enabled" in this.trigger && this.trigger.enabled === false
-            ? this.hass.localize(
-                "ui.panel.config.automation.editor.actions.enable"
-              )
-            : this.hass.localize(
-                "ui.panel.config.automation.editor.actions.disable"
-              )}
-          <ha-svg-icon
-            slot="start"
-            .path=${"enabled" in this.trigger && this.trigger.enabled === false
-              ? mdiPlayCircleOutline
-              : mdiStopCircleOutline}
-          ></ha-svg-icon>
-        </ha-md-menu-item>
-        <ha-md-menu-item
-          .clickAction=${this._onDelete}
-          class="warning"
-          .disabled=${this.disabled}
-        >
-          ${this.hass.localize(
-            "ui.panel.config.automation.editor.actions.delete"
-          )}
-          <ha-svg-icon
-            class="warning"
-            slot="start"
-            .path=${mdiDelete}
-          ></ha-svg-icon>
-        </ha-md-menu-item>
       </ha-md-button-menu>
       ${!this.optionsInSidebar
         ? html`${this._warnings
@@ -465,9 +473,6 @@ export default class HaAutomationTriggerRow extends LitElement {
   }
 
   public openSidebar(trigger?: Trigger): void {
-    if (this.narrow) {
-      this.scrollIntoView();
-    }
     fireEvent(this, "open-sidebar", {
       save: (value) => {
         fireEvent(this, "value-changed", { value });
@@ -485,12 +490,21 @@ export default class HaAutomationTriggerRow extends LitElement {
       },
       disable: this._onDisable,
       delete: this._onDelete,
+      copy: this._copyTrigger,
+      duplicate: this._duplicateTrigger,
+      cut: this._cutTrigger,
       config: trigger || this.trigger,
-      type: "trigger",
       uiSupported: this._uiSupported(this._getType(trigger || this.trigger)),
       yamlMode: this._yamlMode,
-    });
+    } satisfies TriggerSidebarConfig);
     this._selected = true;
+
+    if (this.narrow) {
+      this.scrollIntoView({
+        block: "start",
+        behavior: "smooth",
+      });
+    }
   }
 
   private _setClipboard() {

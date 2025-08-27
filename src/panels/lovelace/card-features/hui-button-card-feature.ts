@@ -21,7 +21,7 @@ export const supportsButtonCardFeature = (
     : undefined;
   if (!stateObj) return false;
   const domain = computeDomain(stateObj.entity_id);
-  return ["button", "input_button", "script"].includes(domain);
+  return ["button", "input_button", "scene", "script"].includes(domain);
 };
 
 @customElement("hui-button-card-feature")
@@ -78,7 +78,7 @@ class HuiButtonCardFeature extends LitElement implements LovelaceCardFeature {
     return html`
       <ha-control-button-group>
         <ha-control-button
-          .disabled=${["unavailable", "unknown"].includes(this._stateObj.state)}
+          .disabled=${this._stateObj.state === "unavailable"}
           class="press-button"
           @click=${this._pressButton}
         >

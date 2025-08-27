@@ -840,7 +840,9 @@ export class QuickBar extends LitElement {
     const additionalItems = [
       {
         path: "",
-        primaryText: this.hass.localize("ui.panel.config.info.shortcuts"),
+        primaryText: this.hass.localize(
+          "ui.dialogs.quick-bar.commands.navigation.shortcuts"
+        ),
         action: () => showShortcutsDialog(this),
         iconPath: mdiKeyboard,
       },
@@ -856,7 +858,9 @@ export class QuickBar extends LitElement {
 
   private _generateNavigationPanelCommands(): BaseNavigationCommand[] {
     return Object.keys(this.hass.panels)
-      .filter((panelKey) => panelKey !== "_my_redirect")
+      .filter(
+        (panelKey) => panelKey !== "_my_redirect" && panelKey !== "hassio"
+      )
       .map((panelKey) => {
         const panel = this.hass.panels[panelKey];
         const translationKey = getPanelNameTranslationKey(panel);
