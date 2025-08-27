@@ -1,6 +1,7 @@
 import { formatDurationDigital } from "../common/datetime/format_duration";
 import type { FrontendLocaleData } from "./translation";
 
+// These attributes are hidden from the more-info window.
 export const STATE_ATTRIBUTES = [
   "entity_id",
   "assumed_state",
@@ -24,6 +25,7 @@ export const STATE_ATTRIBUTES = [
   "supported_features",
   "unit_of_measurement",
   "available_tones",
+  "options",
 ];
 
 export const TEMPERATURE_ATTRIBUTES = new Set([
