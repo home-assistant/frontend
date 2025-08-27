@@ -79,11 +79,7 @@ export class HaFilterIntegrations extends LitElement {
                         .domain=${integration.domain}
                         brand-fallback
                       ></ha-domain-icon>
-                      ${domainToName(
-                        this.hass.localize,
-                        integration.domain,
-                        integration
-                      )}
+                      ${integration.name}
                     </ha-check-list-item>`
                 )}
               </ha-list> `
