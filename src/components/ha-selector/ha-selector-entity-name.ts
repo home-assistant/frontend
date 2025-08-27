@@ -120,9 +120,10 @@ export class HaEntityNameSelector extends LitElement {
       }
     }
 
-    // Generate combinations (2-4 items)
-    for (let size = 2; size <= availableNames.length; size++) {
-      this._addCombinations(availableNames, size, options);
+    // Generate combinations (2-4 items) - use reverse priority order
+    const priorityOrderedNames = [...availableNames].reverse();
+    for (let size = 2; size <= priorityOrderedNames.length; size++) {
+      this._addCombinations(priorityOrderedNames, size, options);
     }
 
     return options;
@@ -137,19 +138,15 @@ export class HaEntityNameSelector extends LitElement {
     size: number,
     options: EntityNameOption[]
   ): void {
-    const priorityOrder = { floor: 0, area: 1, device: 2, entity: 3 };
-
     const generateCombos = (
       start: number,
       current: (typeof availableNames)[0][]
     ): void => {
       if (current.length === size) {
-        // Sort by priority (floor > area > device > entity)
-        const sorted = [...current].sort(
-          (a, b) => priorityOrder[a.key] - priorityOrder[b.key]
-        );
-        const combinedName = sorted.map((item) => item.name).join(" - ");
-        const combinedDescription = sorted
+        // Names are already in priority order (floor > area > device > entity)
+        const combinedName = current.map((item) => item.name).join(" - ");
+        // Description should also be in the same order as the combined name
+        const combinedDescription = current
           .map((item) =>
             this.hass.localize(
               `ui.components.entity.entity-name-picker.${item.localeKey}`
