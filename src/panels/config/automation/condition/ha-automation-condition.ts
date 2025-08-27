@@ -117,9 +117,8 @@ export default class HaAutomationCondition extends LitElement {
               behavior: "smooth",
             });
           }
-        } else if (!this.optionsInSidebar) {
-          row.expand();
         }
+        row.expand();
         row.focus();
       });
     }
@@ -158,6 +157,7 @@ export default class HaAutomationCondition extends LitElement {
             (condition) => this._getKey(condition),
             (cond, idx) => html`
               <ha-automation-condition-row
+                .root=${this.root}
                 .sortableData=${cond}
                 .index=${idx}
                 .first=${idx === 0}

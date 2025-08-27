@@ -3,26 +3,20 @@ import { customElement } from "lit/decorators";
 import { generateEntityFilter } from "../../../../common/entity/entity_filter";
 import { clamp } from "../../../../common/number/clamp";
 import { floorDefaultIcon } from "../../../../components/ha-floor-icon";
+import type { LovelaceCardConfig } from "../../../../data/lovelace/config/card";
 import type { LovelaceSectionRawConfig } from "../../../../data/lovelace/config/section";
 import type { LovelaceViewConfig } from "../../../../data/lovelace/config/view";
 import type { HomeAssistant } from "../../../../types";
-import {
-  computeAreaTileCardConfig,
-  getAreas,
-  getFloors,
-} from "../areas/helpers/areas-strategy-helper";
-import {
-  findEntities,
-  OVERVIEW_SUMMARIES_FILTERS,
-} from "./helpers/overview-summaries";
-import { getHomeStructure } from "./helpers/overview-home-structure";
-import type { LovelaceCardConfig } from "../../../../data/lovelace/config/card";
+import type { MediaControlCardConfig } from "../../cards/types";
+import { getAreas, getFloors } from "../areas/helpers/areas-strategy-helper";
+import { getHomeStructure } from "./helpers/home-structure";
+import { findEntities, HOME_SUMMARIES_FILTERS } from "./helpers/home-summaries";
 
-export interface OverviewSecurityViewStrategyConfig {
-  type: "overview-security";
+export interface HomeMediaPlayersViewStrategyConfig {
+  type: "home-media-players";
 }
 
-const processAreasForSecurity = (
+const processAreasForMediaPlayers = (
   areaIds: string[],
   hass: HomeAssistant,
   entities: string[]
@@ -38,8 +32,6 @@ const processAreasForSecurity = (
     });
     const areaEntities = entities.filter(areaFilter);
 
-    const computeTileCard = computeAreaTileCardConfig(hass, "", true);
-
     if (areaEntities.length > 0) {
       cards.push({
         heading_style: "subtitle",
@@ -53,7 +45,10 @@ const processAreasForSecurity = (
       });
 
       for (const entityId of areaEntities) {
-        cards.push(computeTileCard(entityId));
+        cards.push({
+          type: "media-control",
+          entity: entityId,
+        } satisfies MediaControlCardConfig);
       }
     }
   }
@@ -61,10 +56,10 @@ const processAreasForSecurity = (
   return cards;
 };
 
-@customElement("overview-security-view-strategy")
-export class OverviewSecurityViewStrategy extends ReactiveElement {
+@customElement("home-media-players-view-strategy")
+export class HomeMMediaPlayersViewStrategy extends ReactiveElement {
   static async generate(
-    _config: OverviewSecurityViewStrategyConfig,
+    _config: HomeMediaPlayersViewStrategyConfig,
     hass: HomeAssistant
   ): Promise<LovelaceViewConfig> {
     const areas = getAreas(hass.areas);
@@ -75,7 +70,7 @@ export class OverviewSecurityViewStrategy extends ReactiveElement {
 
     const allEntities = Object.keys(hass.states);
 
-    const filterFunctions = OVERVIEW_SUMMARIES_FILTERS.security.map((filter) =>
+    const filterFunctions = HOME_SUMMARIES_FILTERS.media_players.map((filter) =>
       generateEntityFilter(hass, filter)
     );
 
@@ -100,7 +95,7 @@ export class OverviewSecurityViewStrategy extends ReactiveElement {
         ],
       };
 
-      const areaCards = processAreasForSecurity(areaIds, hass, entities);
+      const areaCards = processAreasForMediaPlayers(areaIds, hass, entities);
 
       if (areaCards.length > 0) {
         section.cards!.push(...areaCards);
@@ -121,7 +116,7 @@ export class OverviewSecurityViewStrategy extends ReactiveElement {
         ],
       };
 
-      const areaCards = processAreasForSecurity(home.areas, hass, entities);
+      const areaCards = processAreasForMediaPlayers(home.areas, hass, entities);
 
       if (areaCards.length > 0) {
         section.cards!.push(...areaCards);
@@ -147,6 +142,6 @@ export class OverviewSecurityViewStrategy extends ReactiveElement {
 
 declare global {
   interface HTMLElementTagNameMap {
-    "overview-security-view-strategy": OverviewSecurityViewStrategy;
+    "home-media-players-view-strategy": HomeMMediaPlayersViewStrategy;
   }
 }

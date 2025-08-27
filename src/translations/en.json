@@ -452,7 +452,9 @@
           "browse_media": "Browse media",
           "manual": "Manually enter media ID",
           "media_content_id": "Media content ID",
-          "media_content_type": "Media content type"
+          "media_content_type": "Media content type",
+          "media_content_id_detail": "The ID of the content to play. Platform dependent.",
+          "media_content_type_detail": "The type of the content to play, such as image, music, tv show, video, episode, channel, or playlist."
         },
         "file": {
           "upload_failed": "Upload failed",
@@ -3361,7 +3363,11 @@
                   "description": "Display your devices grouped by area"
                 },
                 "overview": {
-                  "title": "Overview (experimental)",
+                  "title": "Overview",
+                  "description": "Gives an overview of all your entities and areas they are in"
+                },
+                "home": {
+                  "title": "Home (experimental)",
                   "description": "Global overview of your home"
                 }
               },
@@ -6678,7 +6684,8 @@
             "homeassistant": "Home Assistant",
             "ssl": "SSL"
           },
-          "lifetime_used": "Lifetime used",
+          "lifetime": "Lifetime",
+          "lifetime_description": "{lifetime} used",
           "lifetime_used_description": "The drive’s wear level is shown as a percentage, based on endurance indicators reported by the device via NVMe SMART or eMMC lifetime estimate fields.",
           "disk_metrics": "Disk metrics",
           "datadisk": {
@@ -7703,6 +7710,11 @@
             "clock": {
               "name": "Clock",
               "description": "The Clock card displays the current time using your desired size and format.",
+              "clock_style": "Clock style",
+              "clock_styles": {
+                "digital": "Digital",
+                "analog": "Analog"
+              },
               "clock_size": "Clock size",
               "clock_sizes": {
                 "small": "Small",
@@ -7722,7 +7734,31 @@
               "time_zones": {
                 "auto": "Use user settings"
               },
-              "no_background": "No background"
+              "no_background": "No background",
+              "border": {
+                "label": "Border",
+                "description": "Whether to show a border around the clock"
+              },
+              "ticks": {
+                "label": "Ticks",
+                "description": "Whether to show ticks (indices) on the outside of the clock",
+                "none": {
+                  "label": "None",
+                  "description": "No ticks (Hands only)"
+                },
+                "quarter": {
+                  "label": "Quarter",
+                  "description": "4 ticks (Every 15 minutes)"
+                },
+                "hour": {
+                  "label": "Hour",
+                  "description": "12 ticks (Every hour)"
+                },
+                "minute": {
+                  "label": "Minute",
+                  "description": "60 ticks (Every minute)"
+                }
+              }
             },
             "media-control": {
               "name": "Media control",

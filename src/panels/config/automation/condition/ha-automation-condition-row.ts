@@ -14,7 +14,7 @@ import {
   mdiStopCircleOutline,
 } from "@mdi/js";
 import deepClone from "deep-clone-simple";
-import type { CSSResultGroup } from "lit";
+import type { CSSResultGroup, PropertyValues } from "lit";
 import { LitElement, css, html, nothing } from "lit";
 import { customElement, property, query, state } from "lit/decorators";
 import { classMap } from "lit/directives/class-map";
@@ -107,13 +107,15 @@ export default class HaAutomationConditionRow extends LitElement {
 
   @property({ type: Boolean }) public disabled = false;
 
+  @property({ type: Boolean }) public root = false;
+
   @property({ type: Boolean }) public first?: boolean;
 
   @property({ type: Boolean }) public last?: boolean;
 
   @property({ type: Boolean }) public narrow = false;
 
-  @state() private _collapsed = false;
+  @state() private _collapsed = true;
 
   @state() private _warnings?: string[];
 
@@ -393,6 +395,14 @@ export default class HaAutomationConditionRow extends LitElement {
           ></ha-automation-condition-editor>`
         : nothing}
     `;
+  }
+
+  protected firstUpdated(changedProperties: PropertyValues): void {
+    super.firstUpdated(changedProperties);
+
+    if (this.root) {
+      this._collapsed = false;
+    }
   }
 
   protected willUpdate(changedProperties) {

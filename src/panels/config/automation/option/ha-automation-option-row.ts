@@ -65,7 +65,7 @@ export default class HaAutomationOptionRow extends LitElement {
 
   @state() private _selected = false;
 
-  @state() private _collapsed = false;
+  @state() private _collapsed = true;
 
   @state()
   @consume({ context: fullEntitiesContext, subscribe: true })

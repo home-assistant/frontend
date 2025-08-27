@@ -12,17 +12,14 @@ import {
   getAreas,
   getFloors,
 } from "../areas/helpers/areas-strategy-helper";
-import { getHomeStructure } from "./helpers/overview-home-structure";
-import {
-  findEntities,
-  OVERVIEW_SUMMARIES_FILTERS,
-} from "./helpers/overview-summaries";
+import { getHomeStructure } from "./helpers/home-structure";
+import { findEntities, HOME_SUMMARIES_FILTERS } from "./helpers/home-summaries";
 
-export interface OverviewLightsViewStrategyConfig {
-  type: "overview-lights";
+export interface HomeClimateViewStrategyConfig {
+  type: "home-climate";
 }
 
-const processAreasForLights = (
+const processAreasForClimate = (
   areaIds: string[],
   hass: HomeAssistant,
   entities: string[]
@@ -36,11 +33,11 @@ const processAreasForLights = (
     const areaFilter = generateEntityFilter(hass, {
       area: area.area_id,
     });
-    const areaLights = entities.filter(areaFilter);
+    const areaEntities = entities.filter(areaFilter);
 
-    const computeTileCard = computeAreaTileCardConfig(hass, "", false);
+    const computeTileCard = computeAreaTileCardConfig(hass, "", true);
 
-    if (areaLights.length > 0) {
+    if (areaEntities.length > 0) {
       cards.push({
         heading_style: "subtitle",
         type: "heading",
@@ -52,7 +49,7 @@ const processAreasForLights = (
         },
       });
 
-      for (const entityId of areaLights) {
+      for (const entityId of areaEntities) {
         cards.push(computeTileCard(entityId));
       }
     }
@@ -61,10 +58,10 @@ const processAreasForLights = (
   return cards;
 };
 
-@customElement("overview-lights-view-strategy")
-export class OverviewLightsViewStrategy extends ReactiveElement {
+@customElement("home-climate-view-strategy")
+export class HomeClimateViewStrategy extends ReactiveElement {
   static async generate(
-    _config: OverviewLightsViewStrategyConfig,
+    _config: HomeClimateViewStrategyConfig,
     hass: HomeAssistant
   ): Promise<LovelaceViewConfig> {
     const areas = getAreas(hass.areas);
@@ -75,11 +72,11 @@ export class OverviewLightsViewStrategy extends ReactiveElement {
 
     const allEntities = Object.keys(hass.states);
 
-    const lightsFilters = OVERVIEW_SUMMARIES_FILTERS.lights.map((filter) =>
+    const filterFunctions = HOME_SUMMARIES_FILTERS.climate.map((filter) =>
       generateEntityFilter(hass, filter)
     );
 
-    const entities = findEntities(allEntities, lightsFilters);
+    const entities = findEntities(allEntities, filterFunctions);
 
     const floorCount = home.floors.length + (home.areas.length ? 1 : 0);
 
@@ -100,7 +97,7 @@ export class OverviewLightsViewStrategy extends ReactiveElement {
         ],
       };
 
-      const areaCards = processAreasForLights(areaIds, hass, entities);
+      const areaCards = processAreasForClimate(areaIds, hass, entities);
 
       if (areaCards.length > 0) {
         section.cards!.push(...areaCards);
@@ -121,7 +118,7 @@ export class OverviewLightsViewStrategy extends ReactiveElement {
         ],
       };
 
-      const areaCards = processAreasForLights(home.areas, hass, entities);
+      const areaCards = processAreasForClimate(home.areas, hass, entities);
 
       if (areaCards.length > 0) {
         section.cards!.push(...areaCards);
@@ -147,6 +144,6 @@ export class OverviewLightsViewStrategy extends ReactiveElement {
 
 declare global {
   interface HTMLElementTagNameMap {
-    "overview-lights-view-strategy": OverviewLightsViewStrategy;
+    "home-climate-view-strategy": HomeClimateViewStrategy;
   }
 }
