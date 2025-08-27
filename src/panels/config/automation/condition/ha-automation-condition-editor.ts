@@ -11,7 +11,7 @@ import { expandConditionWithShorthand } from "../../../../data/automation";
 import { COLLAPSIBLE_CONDITION_ELEMENTS } from "../../../../data/condition";
 import type { HomeAssistant } from "../../../../types";
 import "../ha-automation-editor-warning";
-import { editorStyles } from "../styles";
+import { editorStyles, indentStyle } from "../styles";
 import type { ConditionElement } from "./ha-automation-condition-row";
 
 @customElement("ha-automation-condition-editor")
@@ -123,6 +123,7 @@ export default class HaAutomationConditionEditor extends LitElement {
 
   static styles = [
     editorStyles,
+    indentStyle,
     css`
       :host([action]) .card-content {
         padding: 0;

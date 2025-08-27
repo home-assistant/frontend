@@ -1349,8 +1349,8 @@
         "not_supported_microphone_browser": "Your connection to Home Assistant is not secured using HTTPS. This causes browsers to block Home Assistant from accessing the microphone.",
         "not_supported_microphone_documentation": "Use the Home Assistant app or visit {documentation_link} to learn how to use a secure URL",
         "not_supported_microphone_documentation_link": "the documentation",
-        "unknown_error_load_assist": "Loading the assist pipeline failed",
-        "not_found_error_load_assist": "Cannot find the assist pipeline"
+        "unknown_error_load_assist": "Loading the Assist pipeline failed",
+        "not_found_error_load_assist": "Cannot find the Assist pipeline"
       },
       "generic": {
         "default_confirmation_title": "Are you sure?"
@@ -3054,8 +3054,8 @@
             "add_battery_system": "Add battery system",
             "dialog": {
               "header": "Configure battery system",
-              "entity_para": "Pick sensors which measure energy going in to and out of the battery in either of {unit}.",
-              "energy_into_battery": "Energy going in to the battery",
+              "entity_para": "Pick sensors which measure energy going into and coming out of the battery in either of {unit}.",
+              "energy_into_battery": "Energy going into the battery",
               "energy_out_of_battery": "Energy coming out of the battery"
             }
           },
@@ -3489,7 +3489,7 @@
                 "steps": {
                   "config": {
                     "title": "Configuration",
-                    "description": "Give your assistant a name and select your language. Depending on this language, you may be able to choose region specific variants below."
+                    "description": "Give your assistant a name and select your language. Depending on this language, you may be able to choose region-specific variants below."
                   },
                   "conversation": {
                     "title": "Conversation agent",
@@ -6126,7 +6126,7 @@
           },
           "node_config": {
             "header": "Z-Wave device configuration",
-            "introduction": "Manage and adjust device specific configuration parameters for the selected device",
+            "introduction": "Manage and adjust device-specific configuration parameters for the selected device",
             "attribution": "Device configuration parameters and descriptions are provided by the {device_database}",
             "endpoint": "Endpoint {endpoint}",
             "zwave_js_device_database": "Z-Wave JS device database",
@@ -6678,7 +6678,8 @@
             "homeassistant": "Home Assistant",
             "ssl": "SSL"
           },
-          "lifetime_used": "Lifetime used",
+          "lifetime": "Lifetime",
+          "lifetime_description": "{lifetime} used",
           "lifetime_used_description": "The drive’s wear level is shown as a percentage, based on endurance indicators reported by the device via NVMe SMART or eMMC lifetime estimate fields.",
           "disk_metrics": "Disk metrics",
           "datadisk": {

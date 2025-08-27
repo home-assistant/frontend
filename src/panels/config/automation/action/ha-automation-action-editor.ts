@@ -9,7 +9,7 @@ import { COLLAPSIBLE_ACTION_ELEMENTS } from "../../../../data/action";
 import { migrateAutomationAction, type Action } from "../../../../data/script";
 import type { HomeAssistant } from "../../../../types";
 import "../ha-automation-editor-warning";
-import { editorStyles } from "../styles";
+import { editorStyles, indentStyle } from "../styles";
 import {
   getAutomationActionType,
   type ActionElement,
@@ -118,7 +118,7 @@ export default class HaAutomationActionEditor extends LitElement {
     this._collapsibleElement?.collapseAll?.();
   }
 
-  static styles = editorStyles;
+  static styles = [editorStyles, indentStyle];
 }
 
 declare global {
