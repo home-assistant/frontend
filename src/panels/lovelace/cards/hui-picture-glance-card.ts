@@ -7,6 +7,7 @@ import { DOMAINS_TOGGLE } from "../../../common/const";
 import { applyThemesOnElement } from "../../../common/dom/apply_themes_on_element";
 import { computeDomain } from "../../../common/entity/compute_domain";
 import { computeStateName } from "../../../common/entity/compute_state_name";
+import { stateActive } from "../../../common/entity/state_active";
 import "../../../components/ha-card";
 import "../../../components/ha-icon-button";
 import "../../../components/ha-state-icon";
@@ -18,7 +19,7 @@ import { actionHandler } from "../common/directives/action-handler-directive";
 import { findEntities } from "../common/find-entities";
 import { handleAction } from "../common/handle-action";
 import { hasAction } from "../common/has-action";
-import { hasConfigOrEntityChanged } from "../common/has-changed";
+import { hasConfigOrEntityChanged } from "../common/has-changed
 import { processConfigEntities } from "../common/process-config-entities";
 import "../components/hui-image";
 import { createEntityNotFoundWarning } from "../components/hui-warning";
@@ -302,7 +303,7 @@ class HuiPictureGlanceCard extends LitElement implements LovelaceCard {
           )}
           .config=${entityConf}
           class=${classMap({
-            "state-on": !STATES_OFF.has(stateObj.state) || stateObj.state === "unknown",
+             "state-on": stateActive(stateObj),
           })}
           title=${`${computeStateName(
             stateObj
