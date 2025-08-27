@@ -1,5 +1,11 @@
-import { Environment, Template as NunjucksTemplate } from "nunjucks";
+import {
+  Environment,
+  Template as NunjucksTemplate,
+  installJinjaCompat,
+} from "nunjucks";
 import type { HomeAssistant } from "../types";
+
+installJinjaCompat();
 
 const env = new Environment();
 
@@ -16,15 +22,31 @@ export class HaTemplate {
 
   private _context?: Record<string, any>;
 
+  private _value = "";
+
   public entityIds = new Set<string>();
 
   public shouldUpdate = false;
 
   private _defaultContext = {
-    // functions that access the hass state have to dynamic
-    states: (id: string) => {
+    // functions that access the hass state have to be dynamic
+    // in order to track which entities are used in the template
+    states: (id: string, round = false, withUnit = false): string => {
       this.entityIds.add(id);
-      return this._hass?.states[id]?.state;
+      if (!this._hass?.states[id]) {
+        return "unknown";
+      }
+      const state = this._hass?.states[id]?.state;
+      if (state == null) {
+        return "unavailable";
+      }
+      if (round) {
+        return String(Math.round(Number(state)));
+      }
+      if (withUnit) {
+        return `${state} ${this._hass?.states[id]?.attributes.unit_of_measurement}`;
+      }
+      return state;
     },
     state_attr: (id: string, attr: string) => {
       this.entityIds.add(id);
@@ -38,18 +60,34 @@ export class HaTemplate {
       this.entityIds.add(id);
       return this._hass?.states[id]?.attributes[attr] === value;
     },
+    has_value: (id: string) => {
+      this.entityIds.add(id);
+      return this._hass?.states[id]?.state != null;
+    },
+
+    state_translated: (id: string) => {
+      this.entityIds.add(id);
+      try {
+        return this._hass?.formatEntityState(
+          this._hass?.states[id],
+          this._hass?.states[id]?.state
+        );
+      } catch {
+        return this._hass?.states[id]?.state ?? undefined;
+      }
+    },
   };
 
   public render(): string {
-    if (!this.shouldUpdate) {
-      return "";
+    if (this.shouldUpdate) {
+      this.shouldUpdate = false;
+      this.entityIds.clear();
+      this._value = this._njTemplate!.render({
+        ...this._defaultContext,
+        ...this._context,
+      });
     }
-    this.shouldUpdate = false;
-    this.entityIds.clear();
-    return this._njTemplate!.render({
-      ...this._defaultContext,
-      ...this._context,
-    });
+    return this._value;
   }
 
   public set content(content: string) {
