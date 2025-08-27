@@ -607,6 +607,7 @@ export interface OptionSidebarConfig extends BaseSidebarConfig {
   close: () => void;
   rename: () => void;
   duplicate: () => void;
+  defaultOption?: boolean;
 }
 
 export interface ScriptFieldSidebarConfig extends BaseSidebarConfig {
