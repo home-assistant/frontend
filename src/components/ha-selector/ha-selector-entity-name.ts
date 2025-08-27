@@ -58,32 +58,23 @@ export class HaEntityNameSelector extends LitElement {
     }
 
     const entityId = this.context?.entity || this.selector?.entity_name?.entity;
-
-    if (!entityId) {
-      this._options = [];
-      return;
-    }
-
-    const options: EntityNameOption[] = [];
-    const entity = this.hass.states[entityId];
+    const entity = entityId ? this.hass.states[entityId] : undefined;
 
     if (!entity) {
       this._options = [];
       return;
     }
 
-    const entityReg = this.hass.entities?.[entityId];
+    const entityReg = this.hass.entities?.[entityId!];
     const deviceReg = entityReg?.device_id
       ? this.hass.devices?.[entityReg.device_id]
       : undefined;
-    // Try entity area first, then fall back to device area
     const areaId = entityReg?.area_id || deviceReg?.area_id;
     const areaReg = areaId ? this.hass.areas?.[areaId] : undefined;
     const floorReg = areaReg?.floor_id
       ? this.hass.floors?.[areaReg.floor_id]
       : undefined;
 
-    // Collect available names in priority order
     const entityName = entity.attributes.friendly_name || null;
     const deviceName = deviceReg?.name_by_user || deviceReg?.name || null;
 
@@ -97,143 +88,94 @@ export class HaEntityNameSelector extends LitElement {
       floor: floorReg?.name || null,
     };
 
-    // Add individual options first
-    if (names.entity) {
-      options.push({
-        value: names.entity,
-        label: names.entity,
-        description: this.hass.localize(
-          "ui.components.entity.entity-name-picker.entity_name"
-        ),
-      });
-    }
-
-    if (names.device && !options.find((opt) => opt.value === names.device)) {
-      options.push({
-        value: names.device,
-        label: names.device,
-        description: this.hass.localize(
-          "ui.components.entity.entity-name-picker.device_name"
-        ),
-      });
-    }
-
-    if (names.area && !options.find((opt) => opt.value === names.area)) {
-      options.push({
-        value: names.area,
-        label: names.area,
-        description: this.hass.localize(
-          "ui.components.entity.entity-name-picker.area_name"
-        ),
-      });
-    }
-
-    if (names.floor && !options.find((opt) => opt.value === names.floor)) {
-      options.push({
-        value: names.floor,
-        label: names.floor,
-        description: this.hass.localize(
-          "ui.components.entity.entity-name-picker.floor_name"
-        ),
-      });
-    }
-
-    // Generate combinations with priority ordering
-    this._addCombinationOptions(options, names);
-
-    this._options = options;
+    this._options = this._generateAllOptions(names);
   }
 
-  private _addCombinationOptions(
-    options: EntityNameOption[],
-    names: {
-      entity: string | null;
-      device: string | null;
-      area: string | null;
-      floor: string | null;
-    }
-  ): void {
-    const availableNames = Object.entries(names)
-      .filter(([, name]) => name !== null)
-      .map(([key, name]) => ({ key, name: name! }));
+  private _generateAllOptions(names: {
+    entity: string | null;
+    device: string | null;
+    area: string | null;
+    floor: string | null;
+  }): EntityNameOption[] {
+    const options: EntityNameOption[] = [];
+    const nameTypes = [
+      { key: "entity", name: names.entity, localeKey: "entity_name" },
+      { key: "device", name: names.device, localeKey: "device_name" },
+      { key: "area", name: names.area, localeKey: "area_name" },
+      { key: "floor", name: names.floor, localeKey: "floor_name" },
+    ] as const;
 
-    // Generate all possible combinations (2-4 items)
-    for (
-      let combinationSize = 2;
-      combinationSize <= availableNames.length;
-      combinationSize++
-    ) {
-      this._generateCombinations(availableNames, combinationSize, options);
-    }
-  }
+    const availableNames = nameTypes.filter((item) => item.name);
 
-  private _generateCombinations(
-    availableNames: { key: string; name: string }[],
-    size: number,
-    options: EntityNameOption[]
-  ): void {
-    const combinations: { key: string; name: string }[][] = [];
-    this._getCombinations(availableNames, size, 0, [], combinations);
-
-    for (const combination of combinations) {
-      // Sort combination by priority (floor > area > device > entity)
-      const priorityOrder = { floor: 0, area: 1, device: 2, entity: 3 };
-      combination.sort((a, b) => priorityOrder[a.key] - priorityOrder[b.key]);
-
-      const combinedName = combination.map((item) => item.name).join(" - ");
-      const combinedDescription = combination
-        .map((item) => {
-          switch (item.key) {
-            case "entity":
-              return this.hass.localize(
-                "ui.components.entity.entity-name-picker.entity_name"
-              );
-            case "device":
-              return this.hass.localize(
-                "ui.components.entity.entity-name-picker.device_name"
-              );
-            case "area":
-              return this.hass.localize(
-                "ui.components.entity.entity-name-picker.area_name"
-              );
-            case "floor":
-              return this.hass.localize(
-                "ui.components.entity.entity-name-picker.floor_name"
-              );
-            default:
-              return "";
-          }
-        })
-        .join(" + ");
-
-      // Only add if not already present
-      if (!options.find((opt) => opt.value === combinedName)) {
+    // Add individual options
+    for (const item of availableNames) {
+      if (!options.find((opt) => opt.value === item.name)) {
         options.push({
-          value: combinedName,
-          label: combinedName,
-          description: combinedDescription,
+          value: item.name!,
+          label: item.name!,
+          description: this.hass.localize(
+            `ui.components.entity.entity-name-picker.${item.localeKey}`
+          ),
         });
       }
     }
+
+    // Generate combinations (2-4 items)
+    for (let size = 2; size <= availableNames.length; size++) {
+      this._addCombinations(availableNames, size, options);
+    }
+
+    return options;
   }
 
-  private _getCombinations<T>(
-    items: T[],
+  private _addCombinations(
+    availableNames: readonly {
+      key: string;
+      name: string | null;
+      localeKey: string;
+    }[],
     size: number,
-    start: number,
-    current: T[],
-    result: T[][]
+    options: EntityNameOption[]
   ): void {
-    if (current.length === size) {
-      result.push([...current]);
-      return;
-    }
+    const priorityOrder = { floor: 0, area: 1, device: 2, entity: 3 };
 
-    for (let i = start; i < items.length; i++) {
-      current.push(items[i]);
-      this._getCombinations(items, size, i + 1, current, result);
-      current.pop();
-    }
+    const generateCombos = (
+      start: number,
+      current: (typeof availableNames)[0][]
+    ): void => {
+      if (current.length === size) {
+        // Sort by priority (floor > area > device > entity)
+        const sorted = [...current].sort(
+          (a, b) => priorityOrder[a.key] - priorityOrder[b.key]
+        );
+        const combinedName = sorted.map((item) => item.name).join(" - ");
+        const combinedDescription = sorted
+          .map((item) =>
+            this.hass.localize(
+              `ui.components.entity.entity-name-picker.${item.localeKey}`
+            )
+          )
+          .join(" + ");
+
+        // Only add if not already present
+        if (!options.find((opt) => opt.value === combinedName)) {
+          options.push({
+            value: combinedName,
+            label: combinedName,
+            description: combinedDescription,
+          });
+        }
+        return;
+      }
+
+      for (let i = start; i < availableNames.length; i++) {
+        current.push(availableNames[i]);
+        generateCombos(i + 1, current);
+        current.pop();
+      }
+    };
+
+    generateCombos(0, []);
   }
 
   private _rowRenderer: ComboBoxLitRenderer<EntityNameOption> = (
