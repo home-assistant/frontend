@@ -1,12 +1,6 @@
 import type { CSSResultGroup } from "lit";
 import { css, html, LitElement } from "lit";
-import {
-  customElement,
-  property,
-  query,
-  queryAll,
-  state,
-} from "lit/decorators";
+import { customElement, property, query, queryAll } from "lit/decorators";
 import { fireEvent } from "../../../../../common/dom/fire_event";
 import "../../../../../components/ha-textfield";
 import type { Action, IfAction } from "../../../../../data/script";
@@ -29,8 +23,6 @@ export class HaIfAction extends LitElement implements ActionElement {
   @property({ type: Boolean }) public narrow = false;
 
   @property({ type: Boolean }) public indent = false;
-
-  @state() private _showElse = false;
 
   @query("ha-automation-condition")
   private _conditionElement?: HaAutomationCondition;
@@ -92,10 +84,6 @@ export class HaIfAction extends LitElement implements ActionElement {
     `;
   }
 
-  private _addElse() {
-    this._showElse = true;
-  }
-
   private _ifChanged(ev: CustomEvent) {
     ev.stopPropagation();
     const value = ev.detail.value as Condition[];
@@ -120,7 +108,6 @@ export class HaIfAction extends LitElement implements ActionElement {
 
   private _elseChanged(ev: CustomEvent) {
     ev.stopPropagation();
-    this._showElse = true;
     const elseAction = ev.detail.value as Action[];
     const newValue: IfAction = {
       ...this.action,
