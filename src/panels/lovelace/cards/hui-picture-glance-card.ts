@@ -31,15 +31,6 @@ import type {
 } from "./types";
 import type { PersonEntity } from "../../../data/person";
 
-const STATES_OFF = new Set([
-  "closed",
-  "locked",
-  "not_home",
-  "off",
-  "unavailable",
-  "unknown",
-]);
-
 @customElement("hui-picture-glance-card")
 class HuiPictureGlanceCard extends LitElement implements LovelaceCard {
   public static async getConfigElement(): Promise<LovelaceCardEditor> {
