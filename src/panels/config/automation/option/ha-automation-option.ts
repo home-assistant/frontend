@@ -150,14 +150,13 @@ export default class HaAutomationOption extends LitElement {
         "ha-automation-option-row:last-of-type"
       )!;
       row.updateComplete.then(() => {
-        if (!this.optionsInSidebar) {
-          row.expand();
-        } else if (this.narrow) {
+        if (this.narrow) {
           row.scrollIntoView({
             block: "start",
             behavior: "smooth",
           });
         }
+        row.expand();
         row.focus();
       });
     }
