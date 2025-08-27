@@ -1,7 +1,7 @@
 import { mdiContentSave, mdiHelpCircle } from "@mdi/js";
 import type { HassEntity } from "home-assistant-js-websocket";
 import { load } from "js-yaml";
-import type { CSSResultGroup } from "lit";
+import type { CSSResultGroup, PropertyValues } from "lit";
 import { css, html, LitElement, nothing } from "lit";
 import { customElement, property, query, state } from "lit/decorators";
 import { classMap } from "lit/directives/class-map";
@@ -18,6 +18,11 @@ import {
 import { ensureArray } from "../../../common/array/ensure-array";
 import { canOverrideAlphanumericInput } from "../../../common/dom/can-override-input";
 import { fireEvent } from "../../../common/dom/fire_event";
+import { constructUrlCurrentPath } from "../../../common/url/construct-url";
+import {
+  extractSearchParam,
+  removeSearchParam,
+} from "../../../common/url/search-params";
 import { computeRTL } from "../../../common/util/compute_rtl";
 import "../../../components/ha-button";
 import "../../../components/ha-fab";
@@ -44,8 +49,9 @@ import type HaAutomationAction from "./action/ha-automation-action";
 import "./condition/ha-automation-condition";
 import type HaAutomationCondition from "./condition/ha-automation-condition";
 import "./ha-automation-sidebar";
+import type HaAutomationSidebar from "./ha-automation-sidebar";
 import { showPasteReplaceDialog } from "./paste-replace-dialog/show-dialog-paste-replace";
-import { saveFabStyles } from "./styles";
+import { manualEditorStyles, saveFabStyles } from "./styles";
 import "./trigger/ha-automation-trigger";
 
 const baseConfigStruct = object({
@@ -89,6 +95,8 @@ export class HaManualAutomationEditor extends LitElement {
 
   @query(".content")
   private _contentElement?: HTMLDivElement;
+
+  @query("ha-automation-sidebar") private _sidebarElement?: HaAutomationSidebar;
 
   private _previousConfig?: ManualAutomationConfig;
 
@@ -162,6 +170,7 @@ export class HaManualAutomationEditor extends LitElement {
         .disabled=${this.disabled || this.saving}
         .narrow=${this.narrow}
         @open-sidebar=${this._openSidebar}
+        @request-close-sidebar=${this._closeSidebar}
         @close-sidebar=${this._handleCloseSidebar}
         root
         sidebar
@@ -208,6 +217,7 @@ export class HaManualAutomationEditor extends LitElement {
         .disabled=${this.disabled || this.saving}
         .narrow=${this.narrow}
         @open-sidebar=${this._openSidebar}
+        @request-close-sidebar=${this._closeSidebar}
         @close-sidebar=${this._handleCloseSidebar}
         root
         sidebar
@@ -249,6 +259,7 @@ export class HaManualAutomationEditor extends LitElement {
         .highlightedActions=${this._pastedConfig?.actions || []}
         @value-changed=${this._actionChanged}
         @open-sidebar=${this._openSidebar}
+        @request-close-sidebar=${this._closeSidebar}
         @close-sidebar=${this._handleCloseSidebar}
         .hass=${this.hass}
         .narrow=${this.narrow}
@@ -261,7 +272,12 @@ export class HaManualAutomationEditor extends LitElement {
 
   protected render() {
     return html`
-      <div class="split-view">
+      <div
+        class=${classMap({
+          "split-view": true,
+          "sidebar-hidden": !this._sidebarConfig,
+        })}
+      >
         <div class="content-wrapper">
           <div class="content">${this._renderContent()}</div>
           <ha-fab
@@ -276,9 +292,9 @@ export class HaManualAutomationEditor extends LitElement {
           </ha-fab>
         </div>
         <ha-automation-sidebar
+          tabindex="-1"
           class=${classMap({
             sidebar: true,
-            hidden: !this._sidebarConfig,
             overlay: !this.isWide && !this.narrow,
             rtl: computeRTL(this.hass),
           })}
@@ -293,10 +309,30 @@ export class HaManualAutomationEditor extends LitElement {
     `;
   }
 
-  private _openSidebar(ev: CustomEvent<SidebarConfig>) {
+  protected firstUpdated(changedProps: PropertyValues): void {
+    super.firstUpdated(changedProps);
+    const expanded = extractSearchParam("expanded");
+    if (expanded === "1") {
+      this._clearParam("expanded");
+      this.expandAll();
+    }
+  }
+
+  private _clearParam(param: string) {
+    window.history.replaceState(
+      null,
+      "",
+      constructUrlCurrentPath(removeSearchParam(param))
+    );
+  }
+
+  private async _openSidebar(ev: CustomEvent<SidebarConfig>) {
     // deselect previous selected row
     this._sidebarConfig?.close?.();
     this._sidebarConfig = ev.detail;
+
+    await this._sidebarElement?.updateComplete;
+    this._sidebarElement?.focus();
   }
 
   private _sidebarConfigChanged(ev: CustomEvent<{ value: SidebarConfig }>) {
@@ -313,9 +349,7 @@ export class HaManualAutomationEditor extends LitElement {
 
   private _closeSidebar() {
     if (this._sidebarConfig) {
-      const closeRow = this._sidebarConfig?.close;
-      this._sidebarConfig = undefined;
-      closeRow?.();
+      this._sidebarConfig?.close();
     }
   }
 
@@ -597,81 +631,8 @@ export class HaManualAutomationEditor extends LitElement {
   static get styles(): CSSResultGroup {
     return [
       saveFabStyles,
+      manualEditorStyles,
       css`
-        :host {
-          display: block;
-        }
-
-        .split-view {
-          display: flex;
-          flex-direction: row;
-          height: 100%;
-          position: relative;
-          gap: 16px;
-        }
-
-        .content-wrapper {
-          position: relative;
-          flex: 6;
-        }
-
-        .content {
-          padding: 32px 16px 64px 0;
-          height: calc(100vh - 153px);
-          height: calc(100dvh - 153px);
-          overflow-y: auto;
-          overflow-x: hidden;
-        }
-
-        .sidebar {
-          padding: 12px 0;
-          flex: 4;
-          height: calc(100vh - 81px);
-          height: calc(100dvh - 81px);
-          width: 40%;
-        }
-        .sidebar.hidden {
-          border-color: transparent;
-          border-width: 0;
-          overflow: hidden;
-          flex: 0;
-          visibility: hidden;
-        }
-
-        .sidebar.overlay {
-          position: fixed;
-          bottom: 8px;
-          right: 8px;
-          height: calc(100% - 70px);
-          padding: 0;
-          z-index: 5;
-          box-shadow: -8px 0 16px rgba(0, 0, 0, 0.2);
-        }
-
-        .sidebar.overlay.rtl {
-          right: unset;
-          left: 8px;
-        }
-
-        @media all and (max-width: 870px) {
-          .split-view {
-            gap: 0;
-            margin-right: -8px;
-          }
-          .sidebar {
-            height: 0;
-            width: 0;
-            flex: 0;
-          }
-        }
-
-        .sidebar.overlay.hidden {
-          width: 0;
-        }
-
-        .description {
-          margin: 0;
-        }
         p {
           margin-top: 0;
         }
@@ -688,9 +649,6 @@ export class HaManualAutomationEditor extends LitElement {
           font-weight: var(--ha-font-weight-normal);
           flex: 1;
           margin-bottom: 8px;
-        }
-        .header a {
-          color: var(--secondary-text-color);
         }
         .header .small {
           font-size: small;
@@ -714,6 +672,7 @@ declare global {
 
   interface HASSDomEvents {
     "open-sidebar": SidebarConfig;
+    "request-close-sidebar": undefined;
     "close-sidebar": undefined;
   }
 }

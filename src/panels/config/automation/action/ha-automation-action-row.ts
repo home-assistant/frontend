@@ -81,7 +81,6 @@ import "./types/ha-automation-action-device_id";
 import "./types/ha-automation-action-event";
 import "./types/ha-automation-action-if";
 import "./types/ha-automation-action-parallel";
-import "./types/ha-automation-action-play_media";
 import { getRepeatType } from "./types/ha-automation-action-repeat";
 import "./types/ha-automation-action-sequence";
 import "./types/ha-automation-action-service";
@@ -96,7 +95,7 @@ export const getAutomationActionType = memoizeOne(
       return undefined;
     }
     if ("action" in action) {
-      return getActionType(action) as "action" | "play_media";
+      return getActionType(action) as "action";
     }
     if (CONDITION_BUILDING_BLOCKS.some((key) => key in action)) {
       return "condition" as const;
@@ -145,6 +144,8 @@ export default class HaAutomationActionRow extends LitElement {
 
   @property({ type: Boolean }) public disabled = false;
 
+  @property({ type: Boolean }) public root = false;
+
   @property({ type: Boolean }) public first?: boolean;
 
   @property({ type: Boolean }) public last?: boolean;
@@ -178,12 +179,20 @@ export default class HaAutomationActionRow extends LitElement {
 
   @state() private _selected = false;
 
-  @state() private _collapsed = false;
+  @state() private _collapsed = true;
 
   @state() private _warnings?: string[];
 
   @query("ha-automation-action-editor")
   private _actionEditor?: HaAutomationActionEditor;
+
+  protected firstUpdated(changedProperties: PropertyValues): void {
+    super.firstUpdated(changedProperties);
+
+    if (this.root) {
+      this._collapsed = false;
+    }
+  }
 
   protected willUpdate(changedProperties: PropertyValues) {
     if (changedProperties.has("yamlMode")) {

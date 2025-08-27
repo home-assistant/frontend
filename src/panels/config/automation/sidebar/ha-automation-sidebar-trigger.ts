@@ -9,13 +9,14 @@ import {
   mdiRenameBox,
   mdiStopCircleOutline,
 } from "@mdi/js";
-import { css, html, LitElement, nothing } from "lit";
+import { html, LitElement, nothing } from "lit";
 import { customElement, property, query, state } from "lit/decorators";
 import { fireEvent } from "../../../../common/dom/fire_event";
 import { handleStructError } from "../../../../common/structs/handle-errors";
 import type { TriggerSidebarConfig } from "../../../../data/automation";
 import { isTriggerList } from "../../../../data/trigger";
 import type { HomeAssistant } from "../../../../types";
+import { sidebarEditorStyles } from "../styles";
 import "../trigger/ha-automation-trigger-editor";
 import type HaAutomationTriggerEditor from "../trigger/ha-automation-trigger-editor";
 import "./ha-automation-sidebar-card";
@@ -227,11 +228,7 @@ export default class HaAutomationSidebarTrigger extends LitElement {
     this._requestShowId = true;
   };
 
-  static styles = css`
-    .sidebar-editor {
-      padding-top: 64px;
-    }
-  `;
+  static styles = sidebarEditorStyles;
 }
 
 declare global {

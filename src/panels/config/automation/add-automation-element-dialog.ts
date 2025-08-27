@@ -244,14 +244,7 @@ class DialogAddAutomationElement extends LitElement implements HassDialog {
       manifests?: DomainManifestLookup
     ): ListItem[] => {
       if (type === "action" && isService(group)) {
-        let result = this._services(localize, services, manifests, group);
-        if (group === `${SERVICE_PREFIX}media_player`) {
-          result = [
-            this._convertToItem("play_media", {}, type, localize),
-            ...result,
-          ];
-        }
-        return result;
+        return this._services(localize, services, manifests, group);
       }
 
       const groups = this._getGroups(type, group);

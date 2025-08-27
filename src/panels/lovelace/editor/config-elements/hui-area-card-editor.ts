@@ -34,6 +34,7 @@ import type {
 } from "../../card-features/types";
 import {
   DEVICE_CLASSES,
+  SUM_DEVICE_CLASSES,
   type AreaCardFeatureContext,
 } from "../../cards/hui-area-card";
 import type { AreaCardConfig, AreaCardDisplayType } from "../../cards/types";
@@ -263,13 +264,28 @@ export class HuiAreaCardEditor
     currentClasses: string[]
   ): SelectOption[] {
     const options = [...new Set([...possibleClasses, ...currentClasses])].map(
-      (deviceClass) => ({
-        value: deviceClass,
-        label:
-          this.hass!.localize(
-            `component.${domain}.entity_component.${deviceClass}.name`
-          ) || deviceClass,
-      })
+      (deviceClass) => {
+        const labelSuffix =
+          domain === "sensor"
+            ? ` (${
+                SUM_DEVICE_CLASSES.includes(deviceClass)
+                  ? this.hass!.localize(
+                      "ui.panel.lovelace.editor.card.area.sum"
+                    )
+                  : this.hass!.localize(
+                      "ui.panel.lovelace.editor.card.area.median"
+                    )
+              })`
+            : "";
+        return {
+          value: deviceClass,
+          label: `${
+            this.hass!.localize(
+              `component.${domain}.entity_component.${deviceClass}.name`
+            ) || deviceClass
+          }${labelSuffix}`,
+        };
+      }
     );
     options.sort((a, b) =>
       caseInsensitiveStringCompare(a.label, b.label, this.hass!.locale.language)

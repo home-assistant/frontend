@@ -133,6 +133,7 @@ export default class HaAutomationConditionEditor extends LitElement {
         margin-right: 0;
         padding: 0;
         border-left: none;
+        border-bottom: none;
       }
     `,
   ];
