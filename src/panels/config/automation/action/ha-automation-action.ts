@@ -1,7 +1,7 @@
 import { mdiDrag, mdiPlus } from "@mdi/js";
 import deepClone from "deep-clone-simple";
 import type { PropertyValues } from "lit";
-import { css, LitElement, html, nothing } from "lit";
+import { LitElement, css, html, nothing } from "lit";
 import { customElement, property, queryAll, state } from "lit/decorators";
 import { repeat } from "lit/directives/repeat";
 import { storage } from "../../../../common/decorators/storage";
@@ -24,7 +24,7 @@ import {
   VIRTUAL_ACTIONS,
   showAddAutomationElementDialog,
 } from "../show-add-automation-element-dialog";
-import { rows } from "../styles";
+import { automationRowsStyles } from "../styles";
 import type HaAutomationActionRow from "./ha-automation-action-row";
 import { getAutomationActionType } from "./ha-automation-action-row";
 
@@ -337,7 +337,7 @@ export default class HaAutomationAction extends LitElement {
   }
 
   static styles = [
-    rows,
+    automationRowsStyles,
     css`
       :host([root]) .rows {
         padding-right: 8px;

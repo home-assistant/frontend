@@ -39,7 +39,7 @@ import "../automation/action/ha-automation-action";
 import type HaAutomationAction from "../automation/action/ha-automation-action";
 import "../automation/ha-automation-sidebar";
 import { showPasteReplaceDialog } from "../automation/paste-replace-dialog/show-dialog-paste-replace";
-import { manualEditor, saveFabStyles } from "../automation/styles";
+import { manualEditorStyles, saveFabStyles } from "../automation/styles";
 import "./ha-script-fields";
 import type HaScriptFields from "./ha-script-fields";
 
@@ -508,7 +508,7 @@ export class HaManualScriptEditor extends LitElement {
   static get styles(): CSSResultGroup {
     return [
       saveFabStyles,
-      manualEditor,
+      manualEditorStyles,
       css`
         .header {
           display: flex;

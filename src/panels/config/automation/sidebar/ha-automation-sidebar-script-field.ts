@@ -6,7 +6,7 @@ import type { ScriptFieldSidebarConfig } from "../../../../data/automation";
 import type { HomeAssistant } from "../../../../types";
 import "../../script/ha-script-field-editor";
 import type HaAutomationConditionEditor from "../action/ha-automation-action-editor";
-import { sidebarEditor } from "../styles";
+import { sidebarEditorStyles } from "../styles";
 import "./ha-automation-sidebar-card";
 
 @customElement("ha-automation-sidebar-script-field")
@@ -114,7 +114,7 @@ export default class HaAutomationSidebarScriptField extends LitElement {
     fireEvent(this, "toggle-yaml-mode");
   };
 
-  static styles = sidebarEditor;
+  static styles = sidebarEditorStyles;
 }
 
 declare global {

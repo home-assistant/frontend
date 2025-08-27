@@ -18,7 +18,7 @@ import { CONDITION_BUILDING_BLOCKS } from "../../../../data/condition";
 import type { HomeAssistant } from "../../../../types";
 import "../condition/ha-automation-condition-editor";
 import type HaAutomationConditionEditor from "../condition/ha-automation-condition-editor";
-import { sidebarEditor } from "../styles";
+import { sidebarEditorStyles } from "../styles";
 import "./ha-automation-sidebar-card";
 
 @customElement("ha-automation-sidebar-condition")
@@ -212,7 +212,7 @@ export default class HaAutomationSidebarCondition extends LitElement {
     fireEvent(this, "toggle-yaml-mode");
   };
 
-  static styles = sidebarEditor;
+  static styles = sidebarEditorStyles;
 }
 
 declare global {

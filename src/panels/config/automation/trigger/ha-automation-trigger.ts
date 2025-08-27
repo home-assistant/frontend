@@ -23,7 +23,7 @@ import {
   PASTE_VALUE,
   showAddAutomationElementDialog,
 } from "../show-add-automation-element-dialog";
-import { rows } from "../styles";
+import { automationRowsStyles } from "../styles";
 import "./ha-automation-trigger-row";
 import type HaAutomationTriggerRow from "./ha-automation-trigger-row";
 
@@ -303,7 +303,7 @@ export default class HaAutomationTrigger extends LitElement {
   }
 
   static styles = [
-    rows,
+    automationRowsStyles,
     css`
       :host([root]) .rows {
         padding-right: 8px;

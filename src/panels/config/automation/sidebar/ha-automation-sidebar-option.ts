@@ -4,7 +4,7 @@ import { customElement, property, query } from "lit/decorators";
 import type { OptionSidebarConfig } from "../../../../data/automation";
 import type { HomeAssistant } from "../../../../types";
 import type HaAutomationConditionEditor from "../action/ha-automation-action-editor";
-import { sidebarEditor } from "../styles";
+import { sidebarEditorStyles } from "../styles";
 import "./ha-automation-sidebar-card";
 
 @customElement("ha-automation-sidebar-option")
@@ -93,7 +93,7 @@ export default class HaAutomationSidebarOption extends LitElement {
     </ha-automation-sidebar-card>`;
   }
 
-  static styles = sidebarEditor;
+  static styles = sidebarEditorStyles;
 }
 
 declare global {

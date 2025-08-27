@@ -22,7 +22,7 @@ import {
   PASTE_VALUE,
   showAddAutomationElementDialog,
 } from "../show-add-automation-element-dialog";
-import { rows } from "../styles";
+import { automationRowsStyles } from "../styles";
 import "./ha-automation-condition-row";
 import type HaAutomationConditionRow from "./ha-automation-condition-row";
 
@@ -356,7 +356,7 @@ export default class HaAutomationCondition extends LitElement {
   }
 
   static styles = [
-    rows,
+    automationRowsStyles,
     css`
       :host([root]) .rows {
         padding-right: 8px;

@@ -23,7 +23,7 @@ import type { HomeAssistant } from "../../../../types";
 import type HaAutomationConditionEditor from "../action/ha-automation-action-editor";
 import { getAutomationActionType } from "../action/ha-automation-action-row";
 import { getRepeatType } from "../action/types/ha-automation-action-repeat";
-import { sidebarEditor } from "../styles";
+import { sidebarEditorStyles } from "../styles";
 import "../trigger/ha-automation-trigger-editor";
 import "./ha-automation-sidebar-card";
 
@@ -224,7 +224,7 @@ export default class HaAutomationSidebarAction extends LitElement {
     fireEvent(this, "toggle-yaml-mode");
   };
 
-  static styles = sidebarEditor;
+  static styles = sidebarEditorStyles;
 }
 
 declare global {

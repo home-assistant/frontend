@@ -14,7 +14,7 @@ import "../../../../components/ha-svg-icon";
 import type { AutomationClipboard } from "../../../../data/automation";
 import type { Option } from "../../../../data/script";
 import type { HomeAssistant } from "../../../../types";
-import { rows } from "../styles";
+import { automationRowsStyles } from "../styles";
 import "./ha-automation-option-row";
 import type HaAutomationOptionRow from "./ha-automation-option-row";
 
@@ -269,7 +269,7 @@ export default class HaAutomationOption extends LitElement {
     fireEvent(this, "show-default-actions");
   };
 
-  static styles = rows;
+  static styles = automationRowsStyles;
 }
 
 declare global {

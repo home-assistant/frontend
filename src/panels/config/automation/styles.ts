@@ -105,7 +105,7 @@ export const saveFabStyles = css`
   }
 `;
 
-export const manualEditor = css`
+export const manualEditorStyles = css`
   :host {
     display: block;
   }
@@ -188,7 +188,7 @@ export const manualEditor = css`
   }
 `;
 
-export const rows = css`
+export const automationRowsStyles = css`
   .rows {
     padding: 16px 0 16px 16px;
     margin: -16px;
@@ -225,7 +225,7 @@ export const rows = css`
   }
 `;
 
-export const sidebarEditor = css`
+export const sidebarEditorStyles = css`
   .sidebar-editor {
     display: block;
     padding-top: 16px;

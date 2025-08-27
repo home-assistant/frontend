@@ -50,7 +50,7 @@ import "./condition/ha-automation-condition";
 import type HaAutomationCondition from "./condition/ha-automation-condition";
 import "./ha-automation-sidebar";
 import { showPasteReplaceDialog } from "./paste-replace-dialog/show-dialog-paste-replace";
-import { manualEditor, saveFabStyles } from "./styles";
+import { manualEditorStyles, saveFabStyles } from "./styles";
 import "./trigger/ha-automation-trigger";
 
 const baseConfigStruct = object({
@@ -623,7 +623,7 @@ export class HaManualAutomationEditor extends LitElement {
   static get styles(): CSSResultGroup {
     return [
       saveFabStyles,
-      manualEditor,
+      manualEditorStyles,
       css`
         p {
           margin-top: 0;
