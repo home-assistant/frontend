@@ -112,16 +112,7 @@ export class HaFilterIntegrations extends LitElement {
 
   protected async firstUpdated() {
     this._manifests = await fetchIntegrationManifests(this.hass);
-    if (this._manifests) {
-      const domains = this._manifests
-        .filter(
-          (mnfst) =>
-            !mnfst.integration_type ||
-            !["entity", "system", "hardware"].includes(mnfst.integration_type)
-        )
-        .map((mnfst) => mnfst.domain);
-      this.hass.loadBackendTranslation("title", domains);
-    }
+      this.hass.loadBackendTranslation("title");
   }
 
   private _integrations = memoizeOne(
