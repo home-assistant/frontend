@@ -1080,7 +1080,7 @@ export class HaScriptEditor extends SubscribeMixin(
         :not(.yaml-mode) > .error-wrapper {
           position: absolute;
           top: 4px;
-          z-index: 3;
+          z-index: 100;
           width: 100%;
           display: flex;
           flex-direction: column;
