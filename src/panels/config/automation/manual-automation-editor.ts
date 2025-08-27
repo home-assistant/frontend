@@ -44,10 +44,10 @@ import type HaAutomationAction from "./action/ha-automation-action";
 import "./condition/ha-automation-condition";
 import type HaAutomationCondition from "./condition/ha-automation-condition";
 import "./ha-automation-sidebar";
+import type HaAutomationSidebar from "./ha-automation-sidebar";
 import { showPasteReplaceDialog } from "./paste-replace-dialog/show-dialog-paste-replace";
 import { saveFabStyles } from "./styles";
 import "./trigger/ha-automation-trigger";
-import type HaAutomationSidebar from "./ha-automation-sidebar";
 
 const baseConfigStruct = object({
   alias: optional(string()),
@@ -297,13 +297,13 @@ export class HaManualAutomationEditor extends LitElement {
     `;
   }
 
-  private _openSidebar(ev: CustomEvent<SidebarConfig>) {
+  private async _openSidebar(ev: CustomEvent<SidebarConfig>) {
     // deselect previous selected row
     this._sidebarConfig?.close?.();
     this._sidebarConfig = ev.detail;
-    setTimeout(() => {
-      this._sidebarElement?.focus();
-    });
+
+    await this._sidebarElement?.updateComplete;
+    this._sidebarElement?.focus();
   }
 
   private _sidebarConfigChanged(ev: CustomEvent<{ value: SidebarConfig }>) {

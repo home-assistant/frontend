@@ -208,6 +208,7 @@ export default class HaAutomationSidebar extends LitElement {
 
   static styles = css`
     :host {
+      outline: none;
       height: 100%;
       --ha-card-border-radius: var(
         --ha-dialog-border-radius,
