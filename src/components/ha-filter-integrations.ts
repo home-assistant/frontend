@@ -6,6 +6,7 @@ import { repeat } from "lit/directives/repeat";
 import memoizeOne from "memoize-one";
 import { fireEvent } from "../common/dom/fire_event";
 import { stringCompare } from "../common/string/compare";
+import type { LocalizeFunc } from "../common/translations/localize";
 import type { IntegrationManifest } from "../data/integration";
 import { fetchIntegrationManifests, domainToName } from "../data/integration";
 import { haStyleScrollbar } from "../resources/styles";
@@ -63,7 +64,12 @@ export class HaFilterIntegrations extends LitElement {
                 multi
               >
                 ${repeat(
-                  this._integrations(this._manifests, this._filter, this.value),
+                  this._integrations(
+                    this.hass.localize,
+                    this._manifests,
+                    this._filter,
+                    this.value
+                  ),
                   (i) => i.domain,
                   (integration) =>
                     html`<ha-check-list-item
@@ -112,11 +118,16 @@ export class HaFilterIntegrations extends LitElement {
   }
 
   private _integrations = memoizeOne(
-    (manifest: IntegrationManifest[], filter: string | undefined, _value) =>
+    (
+      localize: LocalizeFunc,
+      manifest: IntegrationManifest[],
+      filter: string | undefined,
+      _value
+    ) =>
       manifest
         .map((mnfst) => ({
           ...mnfst,
-          name: domainToName(this.hass.localize, mnfst.domain, mnfst),
+          name: domainToName(localize, mnfst.domain, mnfst),
         }))
         .filter(
           (mnfst) =>
