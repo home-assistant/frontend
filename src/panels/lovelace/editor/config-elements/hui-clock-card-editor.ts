@@ -358,31 +358,6 @@ export class HuiClockCardEditor
         return this.hass!.localize(
           `ui.panel.lovelace.editor.card.clock.ticks.description`
         );
-      case "border":
-        return this.hass!.localize(
-          `ui.panel.lovelace.editor.card.clock.border.label`
-        );
-      case "ticks":
-        return this.hass!.localize(
-          `ui.panel.lovelace.editor.card.clock.ticks.label`
-        );
-      default:
-        return undefined;
-    }
-  };
-
-  private _computeHelperCallback = (
-    schema: SchemaUnion<ReturnType<typeof this._schema>>
-  ) => {
-    switch (schema.name) {
-      case "border":
-        return this.hass!.localize(
-          `ui.panel.lovelace.editor.card.clock.border.description`
-        );
-      case "ticks":
-        return this.hass!.localize(
-          `ui.panel.lovelace.editor.card.clock.ticks.description`
-        );
       default:
         return undefined;
     }
