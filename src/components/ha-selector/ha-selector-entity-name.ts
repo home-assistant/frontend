@@ -1,12 +1,22 @@
 import type { ComboBoxLitRenderer } from "@vaadin/combo-box/lit";
 import type { PropertyValues } from "lit";
-import { LitElement, html, nothing } from "lit";
+import { LitElement, css, html, nothing } from "lit";
 import { customElement, property, state } from "lit/decorators";
+import { registerStyles } from "@vaadin/vaadin-themable-mixin/register-styles";
 import { fireEvent } from "../../common/dom/fire_event";
 import type { EntityNameSelector } from "../../data/selector";
 import type { HomeAssistant } from "../../types";
 import "../ha-combo-box";
 import "../ha-input-helper-text";
+
+registerStyles(
+  "vaadin-combo-box-item",
+  css`
+    :host(:hover:not([disabled])) {
+      background-color: rgba(var(--rgb-primary-text-color), 0.04);
+    }
+  `
+);
 
 interface EntityNameOption {
   value: string;
