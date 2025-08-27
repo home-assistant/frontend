@@ -49,6 +49,7 @@ import type HaAutomationAction from "./action/ha-automation-action";
 import "./condition/ha-automation-condition";
 import type HaAutomationCondition from "./condition/ha-automation-condition";
 import "./ha-automation-sidebar";
+import type HaAutomationSidebar from "./ha-automation-sidebar";
 import { showPasteReplaceDialog } from "./paste-replace-dialog/show-dialog-paste-replace";
 import { manualEditorStyles, saveFabStyles } from "./styles";
 import "./trigger/ha-automation-trigger";
@@ -94,6 +95,8 @@ export class HaManualAutomationEditor extends LitElement {
 
   @query(".content")
   private _contentElement?: HTMLDivElement;
+
+  @query("ha-automation-sidebar") private _sidebarElement?: HaAutomationSidebar;
 
   private _previousConfig?: ManualAutomationConfig;
 
@@ -289,6 +292,7 @@ export class HaManualAutomationEditor extends LitElement {
           </ha-fab>
         </div>
         <ha-automation-sidebar
+          tabindex="-1"
           class=${classMap({
             sidebar: true,
             overlay: !this.isWide && !this.narrow,
@@ -322,10 +326,13 @@ export class HaManualAutomationEditor extends LitElement {
     );
   }
 
-  private _openSidebar(ev: CustomEvent<SidebarConfig>) {
+  private async _openSidebar(ev: CustomEvent<SidebarConfig>) {
     // deselect previous selected row
     this._sidebarConfig?.close?.();
     this._sidebarConfig = ev.detail;
+
+    await this._sidebarElement?.updateComplete;
+    this._sidebarElement?.focus();
   }
 
   private _sidebarConfigChanged(ev: CustomEvent<{ value: SidebarConfig }>) {
