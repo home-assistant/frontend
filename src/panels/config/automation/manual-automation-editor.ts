@@ -1,7 +1,7 @@
-import { mdiContentSave, mdiHelpCircle } from "@mdi/js";
+import { mdiContentSave, mdiHelpCircle, mdiRobotConfused } from "@mdi/js";
 import type { HassEntity } from "home-assistant-js-websocket";
 import { load } from "js-yaml";
-import type { CSSResultGroup, PropertyValues } from "lit";
+import type { CSSResultGroup, PropertyValues, TemplateResult } from "lit";
 import { css, html, LitElement, nothing } from "lit";
 import { customElement, property, query, state } from "lit/decorators";
 import { classMap } from "lit/directives/class-map";
@@ -53,6 +53,7 @@ import type HaAutomationSidebar from "./ha-automation-sidebar";
 import { showPasteReplaceDialog } from "./paste-replace-dialog/show-dialog-paste-replace";
 import { manualEditorStyles, saveFabStyles } from "./styles";
 import "./trigger/ha-automation-trigger";
+import { UNAVAILABLE } from "../../../data/entity";
 
 const baseConfigStruct = object({
   alias: optional(string()),
@@ -88,6 +89,13 @@ export class HaManualAutomationEditor extends LitElement {
   @property({ attribute: false }) public stateObj?: HassEntity;
 
   @property({ attribute: false }) public dirty = false;
+
+  @property({ attribute: false }) public errors?: string;
+
+  @property({ attribute: false }) public hasBlueprintConfig = false;
+
+  @property({ attribute: false })
+  public validationErrors?: (string | TemplateResult)[];
 
   @state() private _pastedConfig?: ManualAutomationConfig;
 
@@ -279,7 +287,66 @@ export class HaManualAutomationEditor extends LitElement {
         })}
       >
         <div class="content-wrapper">
-          <div class="content">${this._renderContent()}</div>
+          <div class="content">
+            <div class="error-wrapper">
+              ${this.errors || this.stateObj?.state === UNAVAILABLE
+                ? html`<ha-alert
+                    alert-type="error"
+                    .title=${this.stateObj?.state === UNAVAILABLE
+                      ? this.hass.localize(
+                          "ui.panel.config.automation.editor.unavailable"
+                        )
+                      : undefined}
+                  >
+                    ${this.errors || this.validationErrors}
+                    ${this.stateObj?.state === UNAVAILABLE
+                      ? html`<ha-svg-icon
+                          slot="icon"
+                          .path=${mdiRobotConfused}
+                        ></ha-svg-icon>`
+                      : nothing}
+                  </ha-alert>`
+                : ""}
+              ${this.hasBlueprintConfig
+                ? html`<ha-alert alert-type="info">
+                    ${this.hass.localize(
+                      "ui.panel.config.automation.editor.confirm_take_control"
+                    )}
+                    <div slot="action" style="display: flex;">
+                      <ha-button
+                        appearance="plain"
+                        @click=${this._takeControlSave}
+                        >${this.hass.localize("ui.common.yes")}</ha-button
+                      >
+                      <ha-button
+                        appearance="plain"
+                        @click=${this._revertBlueprint}
+                        >${this.hass.localize("ui.common.no")}</ha-button
+                      >
+                    </div>
+                  </ha-alert>`
+                : this.disabled
+                  ? html`<ha-alert alert-type="warning" dismissable
+                      >${this.hass.localize(
+                        "ui.panel.config.automation.editor.read_only"
+                      )}
+                      <ha-button
+                        appearance="filled"
+                        size="small"
+                        variant="warning"
+                        slot="action"
+                        @click=${this._duplicate}
+                      >
+                        ${this.hass.localize(
+                          "ui.panel.config.automation.editor.migrate"
+                        )}
+                      </ha-button>
+                    </ha-alert>`
+                  : nothing}
+            </div>
+
+            ${this._renderContent()}
+          </div>
           <ha-fab
             slot="fab"
             class=${this.dirty ? "dirty" : ""}
@@ -393,6 +460,18 @@ export class HaManualAutomationEditor extends LitElement {
     await this.hass.callService("automation", "turn_on", {
       entity_id: this.stateObj.entity_id,
     });
+  }
+
+  private _duplicate() {
+    fireEvent(this, "duplicate");
+  }
+
+  private _takeControlSave() {
+    fireEvent(this, "take-control-save");
+  }
+
+  private _revertBlueprint() {
+    fireEvent(this, "revert-blueprint");
   }
 
   private _saveAutomation() {
@@ -656,6 +735,25 @@ export class HaManualAutomationEditor extends LitElement {
           line-height: 0;
         }
 
+        .error-wrapper {
+          position: sticky;
+          top: -24px;
+          margin-top: -24px;
+          margin-bottom: -163px;
+          z-index: 100;
+          width: 100%;
+          display: flex;
+          flex-direction: column;
+          align-items: center;
+        }
+
+        .error-wrapper ha-alert {
+          background-color: var(--card-background-color);
+          box-shadow: 0 2px 4px rgba(0, 0, 0, 0.2);
+          border-radius: var(--ha-border-radius-sm);
+          margin-bottom: 0;
+        }
+
         ha-alert {
           display: block;
           margin-bottom: 16px;
@@ -671,8 +769,11 @@ declare global {
   }
 
   interface HASSDomEvents {
+    duplicate: undefined;
+    "close-sidebar": undefined;
     "open-sidebar": SidebarConfig;
     "request-close-sidebar": undefined;
-    "close-sidebar": undefined;
+    "revert-blueprint": undefined;
+    "take-control-save": undefined;
   }
 }

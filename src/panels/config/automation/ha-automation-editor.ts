@@ -12,7 +12,6 @@ import {
   mdiPlayCircleOutline,
   mdiPlaylistEdit,
   mdiRenameBox,
-  mdiRobotConfused,
   mdiStopCircleOutline,
   mdiTag,
   mdiTransitConnection,
@@ -432,62 +431,6 @@ export class HaAutomationEditor extends PreventUnsavedMixin(
           class=${this._mode === "yaml" ? "yaml-mode" : ""}
           @subscribe-automation-config=${this._subscribeAutomationConfig}
         >
-          <div class="error-wrapper">
-            ${this._errors || stateObj?.state === UNAVAILABLE
-              ? html`<ha-alert
-                  alert-type="error"
-                  .title=${stateObj?.state === UNAVAILABLE
-                    ? this.hass.localize(
-                        "ui.panel.config.automation.editor.unavailable"
-                      )
-                    : undefined}
-                >
-                  ${this._errors || this._validationErrors}
-                  ${stateObj?.state === UNAVAILABLE
-                    ? html`<ha-svg-icon
-                        slot="icon"
-                        .path=${mdiRobotConfused}
-                      ></ha-svg-icon>`
-                    : nothing}
-                </ha-alert>`
-              : ""}
-            ${this._blueprintConfig
-              ? html`<ha-alert alert-type="info">
-                  ${this.hass.localize(
-                    "ui.panel.config.automation.editor.confirm_take_control"
-                  )}
-                  <div slot="action" style="display: flex;">
-                    <ha-button
-                      appearance="plain"
-                      @click=${this._takeControlSave}
-                      >${this.hass.localize("ui.common.yes")}</ha-button
-                    >
-                    <ha-button
-                      appearance="plain"
-                      @click=${this._revertBlueprint}
-                      >${this.hass.localize("ui.common.no")}</ha-button
-                    >
-                  </div>
-                </ha-alert>`
-              : this._readOnly
-                ? html`<ha-alert alert-type="warning" dismissable
-                    >${this.hass.localize(
-                      "ui.panel.config.automation.editor.read_only"
-                    )}
-                    <ha-button
-                      appearance="filled"
-                      size="small"
-                      variant="warning"
-                      slot="action"
-                      @click=${this._duplicate}
-                    >
-                      ${this.hass.localize(
-                        "ui.panel.config.automation.editor.migrate"
-                      )}
-                    </ha-button>
-                  </ha-alert>`
-                : nothing}
-          </div>
           ${this._mode === "gui"
             ? html`
                 <div>
@@ -502,8 +445,11 @@ export class HaAutomationEditor extends PreventUnsavedMixin(
                           .disabled=${this._readOnly}
                           .saving=${this._saving}
                           .dirty=${this._dirty}
-                          @value-changed=${this._valueChanged}
+                          @duplicate=${this._duplicate}
+                          @revert-blueprint=${this._revertBlueprint}
                           @save-automation=${this._handleSaveAutomation}
+                          @take-control-save=${this._takeControlSave}
+                          @value-changed=${this._valueChanged}
                         ></blueprint-automation-editor>
                       `
                     : html`
@@ -516,6 +462,9 @@ export class HaAutomationEditor extends PreventUnsavedMixin(
                           .disabled=${this._readOnly}
                           .dirty=${this._dirty}
                           .saving=${this._saving}
+                          .errors=${this._errors}
+                          .hasBlueprintConfig=${Boolean(this._blueprintConfig)}
+                          .validationErrors=${this._validationErrors}
                           @value-changed=${this._valueChanged}
                           @save-automation=${this._handleSaveAutomation}
                           @editor-save=${this._handleSaveAutomation}
@@ -1154,22 +1103,6 @@ export class HaAutomationEditor extends PreventUnsavedMixin(
           max-width: 1040px;
           padding: 28px 20px 0;
           display: block;
-        }
-
-        :not(.yaml-mode) > .error-wrapper {
-          position: absolute;
-          top: 4px;
-          z-index: 100;
-          width: 100%;
-          display: flex;
-          flex-direction: column;
-          align-items: center;
-        }
-
-        :not(.yaml-mode) > .error-wrapper ha-alert {
-          background-color: var(--card-background-color);
-          box-shadow: 0 2px 4px rgba(0, 0, 0, 0.2);
-          border-radius: var(--ha-border-radius-sm);
         }
 
         manual-automation-editor {
