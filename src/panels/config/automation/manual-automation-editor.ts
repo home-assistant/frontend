@@ -650,9 +650,8 @@ declare global {
   }
 
   interface HASSDomEvents {
-    "close-sidebar": undefined;
     "open-sidebar": SidebarConfig;
-    "save-automation": undefined;
     "request-close-sidebar": undefined;
+    "close-sidebar": undefined;
   }
 }
