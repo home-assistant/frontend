@@ -446,11 +446,8 @@ export class HaAutomationEditor extends PreventUnsavedMixin(
                           .disabled=${this._readOnly}
                           .saving=${this._saving}
                           .dirty=${this._dirty}
-                          @duplicate=${this._duplicate}
-                          @revert-blueprint=${this._revertBlueprint}
-                          @save-automation=${this._handleSaveAutomation}
-                          @take-control-save=${this._takeControlSave}
                           @value-changed=${this._valueChanged}
+                          @save-automation=${this._handleSaveAutomation}
                         ></blueprint-automation-editor>
                       `
                     : html`
