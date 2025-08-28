@@ -201,7 +201,10 @@ export class HaManualScriptEditor extends LitElement {
         })}
       >
         <div class="content-wrapper">
-          <div class="content">${this._renderContent()}</div>
+          <div class="content">
+            <slot name="alerts"></slot>
+            ${this._renderContent()}
+          </div>
           <ha-fab
             slot="fab"
             class=${this.dirty ? "dirty" : ""}
@@ -521,6 +524,10 @@ export class HaManualScriptEditor extends LitElement {
           font-size: var(--ha-font-size-xl);
           font-weight: var(--ha-font-weight-normal);
           flex: 1;
+        }
+
+        .description {
+          margin-top: 16px;
         }
       `,
     ];
