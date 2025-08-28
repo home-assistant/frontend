@@ -438,6 +438,10 @@ export default class HaAutomationOptionRow extends LitElement {
     this._collapsed = !this._collapsed;
   }
 
+  public isSelected() {
+    return this._selected;
+  }
+
   static get styles(): CSSResultGroup {
     return [
       rowStyles,
