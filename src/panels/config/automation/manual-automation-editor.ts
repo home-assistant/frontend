@@ -292,7 +292,7 @@ export class HaManualAutomationEditor extends LitElement {
                         ></ha-svg-icon>`
                       : nothing}
                   </ha-alert>`
-                : ""}
+                : nothing}
               ${this.hasBlueprintConfig
                 ? html`<ha-alert alert-type="info">
                     ${this.hass.localize(
