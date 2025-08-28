@@ -130,7 +130,7 @@ export default class HaAutomationOptionRow extends LitElement {
 
       <slot name="icons" slot="icons"></slot>
 
-      ${this.option
+      ${this.option && !this.optionsInSidebar
         ? html`
             <ha-md-button-menu
               quick
