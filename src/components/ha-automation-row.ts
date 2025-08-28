@@ -1,7 +1,7 @@
 import { mdiChevronUp } from "@mdi/js";
 import type { TemplateResult } from "lit";
 import { css, html, LitElement, nothing } from "lit";
-import { customElement, property } from "lit/decorators";
+import { customElement, property, query } from "lit/decorators";
 import { fireEvent } from "../common/dom/fire_event";
 import "./ha-icon-button";
 
@@ -16,11 +16,17 @@ export class HaAutomationRow extends LitElement {
   @property({ type: Boolean, reflect: true })
   public selected = false;
 
+  @property({ type: Boolean, reflect: true, attribute: "sort-selected" })
+  public sortSelected = false;
+
   @property({ type: Boolean, reflect: true })
   public disabled = false;
 
   @property({ type: Boolean, reflect: true, attribute: "building-block" })
   public buildingBlock = false;
+
+  @query(".row")
+  private _rowElement?: HTMLDivElement;
 
   protected render(): TemplateResult {
     return html`
@@ -66,13 +72,38 @@ export class HaAutomationRow extends LitElement {
     if (ev.defaultPrevented) {
       return;
     }
-    if (ev.key !== "Enter" && ev.key !== " ") {
+
+    if (
+      ev.key !== "Enter" &&
+      ev.key !== " " &&
+      !(
+        (this.sortSelected || ev.altKey) &&
+        (ev.key === "ArrowUp" || ev.key === "ArrowDown")
+      )
+    ) {
       return;
     }
     ev.preventDefault();
     ev.stopPropagation();
 
+    if (ev.key === "ArrowUp" || ev.key === "ArrowDown") {
+      if (ev.key === "ArrowUp") {
+        fireEvent(this, "move-up");
+        return;
+      }
+      fireEvent(this, "move-down");
+      return;
+    }
+    if (this.sortSelected && (ev.key === "Enter" || ev.key === " ")) {
+      fireEvent(this, "stop-sort-selection");
+      return;
+    }
+
     this.click();
+  }
+
+  public focus() {
+    requestAnimationFrame(() => this._rowElement?.focus());
   }
 
   static styles = css`
@@ -134,6 +165,11 @@ export class HaAutomationRow extends LitElement {
       overflow-wrap: anywhere;
       margin: 0 12px;
     }
+    :host([sort-selected]) .row {
+      box-shadow:
+        0px 0px 8px 4px rgba(var(--rgb-accent-color), 0.8),
+        inset 0px 2px 8px 4px rgba(var(--rgb-accent-color), 0.4);
+    }
   `;
 }
 
@@ -144,5 +180,6 @@ declare global {
 
   interface HASSDomEvents {
     "toggle-collapsed": undefined;
+    "stop-sort-selection": undefined;
   }
 }

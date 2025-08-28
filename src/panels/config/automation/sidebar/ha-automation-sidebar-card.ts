@@ -67,10 +67,13 @@ export default class HaAutomationSidebarCard extends LitElement {
           <slot slot="subtitle" name="subtitle"></slot>
           <slot name="overflow-menu" slot="actionItems">
             <ha-md-button-menu
+              quick
               @click=${this._openOverflowMenu}
               @keydown=${stopPropagation}
               @closed=${stopPropagation}
               .positioning=${this.narrow ? "absolute" : "fixed"}
+              anchor-corner="end-end"
+              menu-corner="start-end"
             >
               <ha-icon-button
                 slot="trigger"
