@@ -10,6 +10,7 @@ import { listenMediaQuery } from "../../../../common/dom/media_query";
 import { nextRender } from "../../../../common/util/render-status";
 import "../../../../components/ha-button";
 import "../../../../components/ha-sortable";
+import type { HaSortableClonedEventData } from "../../../../components/ha-sortable";
 import "../../../../components/ha-svg-icon";
 import {
   ACTION_BUILDING_BLOCKS,
@@ -61,6 +62,8 @@ export default class HaAutomationAction extends LitElement {
 
   private _focusLastActionOnChange = false;
 
+  private _focusActionIndexOnChange?: number;
+
   private _actionKeys = new WeakMap<Action, string>();
 
   private _unsubMql?: () => void;
@@ -89,6 +92,7 @@ export default class HaAutomationAction extends LitElement {
         @item-moved=${this._actionMoved}
         @item-added=${this._actionAdded}
         @item-removed=${this._actionRemoved}
+        @item-cloned=${this._actionCloned}
       >
         <div class="rows">
           ${repeat(
@@ -154,19 +158,27 @@ export default class HaAutomationAction extends LitElement {
   protected updated(changedProps: PropertyValues) {
     super.updated(changedProps);
 
-    if (changedProps.has("actions") && this._focusLastActionOnChange) {
-      this._focusLastActionOnChange = false;
+    if (
+      changedProps.has("actions") &&
+      (this._focusLastActionOnChange ||
+        this._focusActionIndexOnChange !== undefined)
+    ) {
+      const mode = this._focusLastActionOnChange ? "new" : "moved";
 
       const row = this.shadowRoot!.querySelector<HaAutomationActionRow>(
-        "ha-automation-action-row:last-of-type"
+        `ha-automation-action-row:${mode === "new" ? "last-of-type" : `nth-of-type(${this._focusActionIndexOnChange! + 1})`}`
       )!;
+
+      this._focusLastActionOnChange = false;
+      this._focusActionIndexOnChange = undefined;
+
       row.updateComplete.then(() => {
         // on new condition open the settings in the sidebar, except for building blocks
         const type = getAutomationActionType(row.action);
         if (
           type &&
           this.optionsInSidebar &&
-          !ACTION_BUILDING_BLOCKS.includes(type)
+          (!ACTION_BUILDING_BLOCKS.includes(type) || mode === "moved")
         ) {
           row.openSidebar();
           if (this.narrow) {
@@ -176,8 +188,14 @@ export default class HaAutomationAction extends LitElement {
             });
           }
         }
-        row.expand();
-        row.focus();
+
+        if (mode === "new") {
+          row.expand();
+        }
+
+        if (!this.optionsInSidebar) {
+          row.focus();
+        }
       });
     }
   }
@@ -277,6 +295,12 @@ export default class HaAutomationAction extends LitElement {
   private async _actionAdded(ev: CustomEvent): Promise<void> {
     ev.stopPropagation();
     const { index, data } = ev.detail;
+    let selected = false;
+    if (data?.["ha-automation-row-selected"]) {
+      selected = true;
+      delete data["ha-automation-row-selected"];
+    }
+
     let actions = [
       ...this.actions.slice(0, index),
       data,
@@ -284,6 +308,9 @@ export default class HaAutomationAction extends LitElement {
     ];
     // Add action locally to avoid UI jump
     this.actions = actions;
+    if (selected) {
+      this._focusActionIndexOnChange = actions.length === 1 ? 0 : index;
+    }
     await nextRender();
     if (this.actions !== actions) {
       // Ensure action is added even after update
@@ -292,6 +319,9 @@ export default class HaAutomationAction extends LitElement {
         data,
         ...this.actions.slice(index),
       ];
+      if (selected) {
+        this._focusActionIndexOnChange = actions.length === 1 ? 0 : index;
+      }
     }
     fireEvent(this, "value-changed", { value: actions });
   }
@@ -325,6 +355,12 @@ export default class HaAutomationAction extends LitElement {
     }
 
     fireEvent(this, "value-changed", { value: actions });
+  }
+
+  private _actionCloned(ev: CustomEvent<HaSortableClonedEventData>) {
+    if (ev.detail.item.action && ev.detail.item.isSelected()) {
+      ev.detail.item.action["ha-automation-row-selected"] = true;
+    }
   }
 
   private _duplicateAction(ev: CustomEvent) {
