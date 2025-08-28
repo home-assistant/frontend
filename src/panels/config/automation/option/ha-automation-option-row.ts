@@ -216,6 +216,7 @@ export default class HaAutomationOptionRow extends LitElement {
     return html`<div
       class=${classMap({
         "card-content": true,
+        card: !this.optionsInSidebar,
         indent: this.optionsInSidebar,
         selected: this._selected,
         hidden: this.optionsInSidebar && this._collapsed,
