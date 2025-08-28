@@ -120,20 +120,6 @@ export class HaManualAutomationEditor extends LitElement {
 
   private _renderContent() {
     return html`
-      ${this.stateObj?.state === "off"
-        ? html`
-            <ha-alert alert-type="info">
-              ${this.hass.localize(
-                "ui.panel.config.automation.editor.disabled"
-              )}
-              <ha-button size="small" slot="action" @click=${this._enable}>
-                ${this.hass.localize(
-                  "ui.panel.config.automation.editor.enable"
-                )}
-              </ha-button>
-            </ha-alert>
-          `
-        : nothing}
       ${this.config.description
         ? html`<ha-markdown
             class="description"
@@ -343,6 +329,24 @@ export class HaManualAutomationEditor extends LitElement {
                       </ha-button>
                     </ha-alert>`
                   : nothing}
+              ${this.stateObj?.state === "off"
+                ? html`
+                    <ha-alert alert-type="info">
+                      ${this.hass.localize(
+                        "ui.panel.config.automation.editor.disabled"
+                      )}
+                      <ha-button
+                        size="small"
+                        slot="action"
+                        @click=${this._enable}
+                      >
+                        ${this.hass.localize(
+                          "ui.panel.config.automation.editor.enable"
+                        )}
+                      </ha-button>
+                    </ha-alert>
+                  `
+                : nothing}
             </div>
 
             ${this._renderContent()}
@@ -745,6 +749,7 @@ export class HaManualAutomationEditor extends LitElement {
           display: flex;
           flex-direction: column;
           align-items: center;
+          gap: 8px;
         }
 
         .alert-wrapper ha-alert {
