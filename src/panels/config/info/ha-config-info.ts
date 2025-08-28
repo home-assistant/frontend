@@ -324,7 +324,7 @@ class HaConfigInfo extends LitElement {
 
         .ohf {
           text-align: center;
-          padding-bottom: 0;
+          padding-bottom: 5px;
         }
 
         .ohf img {

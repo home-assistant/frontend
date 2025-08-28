@@ -476,7 +476,13 @@ class HaConfigEntryRow extends LitElement {
 
   private async _fetchSubEntries() {
     this._subEntries = this.entry.num_subentries
-      ? await getSubEntries(this.hass, this.entry.entry_id)
+      ? (await getSubEntries(this.hass, this.entry.entry_id)).sort((a, b) =>
+          caseInsensitiveStringCompare(
+            a.title,
+            b.title,
+            this.hass.locale.language
+          )
+        )
       : undefined;
   }
 

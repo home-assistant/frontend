@@ -14,6 +14,8 @@ import type { LovelaceCardConfig } from "../../../../../data/lovelace/config/car
 import type { HomeAssistant } from "../../../../../types";
 import { supportsAlarmModesCardFeature } from "../../../card-features/hui-alarm-modes-card-feature";
 import { supportsCoverOpenCloseCardFeature } from "../../../card-features/hui-cover-open-close-card-feature";
+import { supportsFanSpeedCardFeature } from "../../../card-features/hui-fan-speed-card-feature";
+import { supportsHistoryChartCardFeature } from "../../../card-features/hui-history-chart-card-feature";
 import { supportsLightBrightnessCardFeature } from "../../../card-features/hui-light-brightness-card-feature";
 import { supportsLockCommandsCardFeature } from "../../../card-features/hui-lock-commands-card-feature";
 import { supportsTargetTemperatureCardFeature } from "../../../card-features/hui-target-temperature-card-feature";
@@ -236,7 +238,12 @@ export const computeAreaTileCardConfig =
 
     let feature: LovelaceCardFeatureConfig | undefined;
     if (includeFeature) {
-      if (supportsLightBrightnessCardFeature(hass, context)) {
+      if (supportsHistoryChartCardFeature(hass, context)) {
+        feature = {
+          type: "history-chart",
+          hours_to_show: 24,
+        };
+      } else if (supportsLightBrightnessCardFeature(hass, context)) {
         feature = {
           type: "light-brightness",
         };
@@ -247,6 +254,10 @@ export const computeAreaTileCardConfig =
       } else if (supportsTargetTemperatureCardFeature(hass, context)) {
         feature = {
           type: "target-temperature",
+        };
+      } else if (supportsFanSpeedCardFeature(hass, context)) {
+        feature = {
+          type: "fan-speed",
         };
       } else if (supportsAlarmModesCardFeature(hass, context)) {
         feature = {

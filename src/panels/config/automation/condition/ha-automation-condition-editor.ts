@@ -1,24 +1,18 @@
-import { html, LitElement } from "lit";
-import { customElement, property } from "lit/decorators";
+import { css, html, LitElement, nothing } from "lit";
+import { customElement, property, query } from "lit/decorators";
+import { classMap } from "lit/directives/class-map";
 import memoizeOne from "memoize-one";
 import { dynamicElement } from "../../../../common/dom/dynamic-element-directive";
 import { fireEvent } from "../../../../common/dom/fire_event";
 import "../../../../components/ha-yaml-editor";
+import type { HaYamlEditor } from "../../../../components/ha-yaml-editor";
 import type { Condition } from "../../../../data/automation";
 import { expandConditionWithShorthand } from "../../../../data/automation";
-import { haStyle } from "../../../../resources/styles";
+import { COLLAPSIBLE_CONDITION_ELEMENTS } from "../../../../data/condition";
 import type { HomeAssistant } from "../../../../types";
-import "./types/ha-automation-condition-and";
-import "./types/ha-automation-condition-device";
-import "./types/ha-automation-condition-not";
-import "./types/ha-automation-condition-numeric_state";
-import "./types/ha-automation-condition-or";
-import "./types/ha-automation-condition-state";
-import "./types/ha-automation-condition-sun";
-import "./types/ha-automation-condition-template";
-import "./types/ha-automation-condition-time";
-import "./types/ha-automation-condition-trigger";
-import "./types/ha-automation-condition-zone";
+import "../ha-automation-editor-warning";
+import { editorStyles, indentStyle } from "../styles";
+import type { ConditionElement } from "./ha-automation-condition-row";
 
 @customElement("ha-automation-condition-editor")
 export default class HaAutomationConditionEditor extends LitElement {
@@ -30,46 +24,77 @@ export default class HaAutomationConditionEditor extends LitElement {
 
   @property({ attribute: false }) public yamlMode = false;
 
+  @property({ type: Boolean }) public indent = false;
+
+  @property({ type: Boolean }) public narrow = false;
+
+  @property({ type: Boolean, attribute: "sidebar" }) public inSidebar = false;
+
+  @property({ type: Boolean, reflect: true }) public selected = false;
+
+  @property({ type: Boolean, attribute: "supported" }) public uiSupported =
+    false;
+
+  @query("ha-yaml-editor") public yamlEditor?: HaYamlEditor;
+
+  @query(COLLAPSIBLE_CONDITION_ELEMENTS.join(", "))
+  private _collapsibleElement?: ConditionElement;
+
   private _processedCondition = memoizeOne((condition) =>
     expandConditionWithShorthand(condition)
   );
 
   protected render() {
     const condition = this._processedCondition(this.condition);
-    const supported =
-      customElements.get(`ha-automation-condition-${condition.condition}`) !==
-      undefined;
-    const yamlMode = this.yamlMode || !supported;
+    const yamlMode = this.yamlMode || !this.uiSupported;
+
     return html`
-      ${yamlMode
-        ? html`
-            ${!supported
-              ? html`
-                  ${this.hass.localize(
-                    "ui.panel.config.automation.editor.conditions.unsupported_condition",
-                    { condition: condition.condition }
-                  )}
-                `
-              : ""}
-            <ha-yaml-editor
-              .hass=${this.hass}
-              .defaultValue=${this.condition}
-              @value-changed=${this._onYamlChange}
-              .readOnly=${this.disabled}
-            ></ha-yaml-editor>
-          `
-        : html`
-            <div @value-changed=${this._onUiChanged}>
-              ${dynamicElement(
-                `ha-automation-condition-${condition.condition}`,
-                {
-                  hass: this.hass,
-                  condition: condition,
-                  disabled: this.disabled,
-                }
-              )}
-            </div>
-          `}
+      <div
+        class=${classMap({
+          "card-content": true,
+          disabled:
+            this.disabled ||
+            (this.condition.enabled === false && !this.yamlMode),
+          yaml: yamlMode,
+          indent: this.indent,
+          card: !this.inSidebar,
+        })}
+      >
+        ${yamlMode
+          ? html`
+              ${!this.uiSupported
+                ? html`
+                    <ha-automation-editor-warning
+                      .alertTitle=${this.hass.localize(
+                        "ui.panel.config.automation.editor.conditions.unsupported_condition",
+                        { condition: condition.condition }
+                      )}
+                      .localize=${this.hass.localize}
+                    ></ha-automation-editor-warning>
+                  `
+                : nothing}
+              <ha-yaml-editor
+                .hass=${this.hass}
+                .defaultValue=${this.condition}
+                @value-changed=${this._onYamlChange}
+                .readOnly=${this.disabled}
+              ></ha-yaml-editor>
+            `
+          : html`
+              <div @value-changed=${this._onUiChanged}>
+                ${dynamicElement(
+                  `ha-automation-condition-${condition.condition}`,
+                  {
+                    hass: this.hass,
+                    condition: condition,
+                    disabled: this.disabled,
+                    optionsInSidebar: this.indent,
+                    narrow: this.narrow,
+                  }
+                )}
+              </div>
+            `}
+      </div>
     `;
   }
 
@@ -91,7 +116,30 @@ export default class HaAutomationConditionEditor extends LitElement {
     fireEvent(this, "value-changed", { value });
   }
 
-  static styles = haStyle;
+  public expandAll() {
+    this._collapsibleElement?.expandAll?.();
+  }
+
+  public collapseAll() {
+    this._collapsibleElement?.collapseAll?.();
+  }
+
+  static styles = [
+    editorStyles,
+    indentStyle,
+    css`
+      :host([action]) .card-content {
+        padding: 0;
+      }
+      :host([action]) .card-content.indent {
+        margin-left: 0;
+        margin-right: 0;
+        padding: 0;
+        border-left: none;
+        border-bottom: none;
+      }
+    `,
+  ];
 }
 
 declare global {

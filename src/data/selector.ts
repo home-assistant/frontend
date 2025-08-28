@@ -74,7 +74,9 @@ export type Selector =
   | BackupLocationSelector;
 
 export interface ActionSelector {
-  action: {} | null;
+  action: {
+    optionsInSidebar?: boolean;
+  } | null;
 }
 
 export interface AddonSelector {
@@ -130,7 +132,9 @@ export interface ColorTempSelector {
 }
 
 export interface ConditionSelector {
-  condition: {} | null;
+  condition: {
+    optionsInSidebar?: boolean;
+  } | null;
 }
 
 export interface ConversationAgentSelector {
@@ -319,6 +323,7 @@ export interface MediaSelectorValue {
     media_class?: string;
     children_media_class?: string | null;
     navigateIds?: { media_content_type: string; media_content_id: string }[];
+    browse_entity_id?: string;
   };
 }
 
@@ -397,6 +402,7 @@ export interface StateSelector {
     entity_id?: string | string[];
     attribute?: string;
     hide_states?: string[];
+    multiple?: boolean;
   } | null;
 }
 

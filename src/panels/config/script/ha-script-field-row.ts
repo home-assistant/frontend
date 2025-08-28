@@ -1,27 +1,26 @@
-import type { ActionDetail } from "@material/mwc-list/mwc-list-foundation";
-import { mdiDelete, mdiDotsVertical, mdiPlaylistEdit } from "@mdi/js";
+import { mdiDelete } from "@mdi/js";
 import type { CSSResultGroup } from "lit";
 import { LitElement, css, html, nothing } from "lit";
-import { customElement, property, state } from "lit/decorators";
+import { customElement, property, query, state } from "lit/decorators";
 import { classMap } from "lit/directives/class-map";
-import memoizeOne from "memoize-one";
 import { fireEvent } from "../../../common/dom/fire_event";
-import { slugify } from "../../../common/string/slugify";
-import "../../../components/ha-alert";
-import "../../../components/ha-button-menu";
+import { preventDefaultStopPropagation } from "../../../common/dom/prevent_default_stop_propagation";
+import { stopPropagation } from "../../../common/dom/stop_propagation";
+import type { LocalizeKeys } from "../../../common/translations/localize";
+import "../../../components/ha-automation-row";
 import "../../../components/ha-card";
-import "../../../components/ha-form/ha-form";
-import "../../../components/ha-expansion-panel";
-import "../../../components/ha-list-item";
-import type { SchemaUnion } from "../../../components/ha-form/types";
 import "../../../components/ha-icon-button";
-import "../../../components/ha-yaml-editor";
+import "../../../components/ha-md-button-menu";
+import "../../../components/ha-md-menu-item";
+import type { ScriptFieldSidebarConfig } from "../../../data/automation";
 import type { Field } from "../../../data/script";
+import { SELECTOR_SELECTOR_BUILDING_BLOCKS } from "../../../data/selector/selector_selector";
 import { showConfirmationDialog } from "../../../dialogs/generic/show-dialog-box";
 import { haStyle } from "../../../resources/styles";
 import type { HomeAssistant } from "../../../types";
-
-const preventDefault = (ev) => ev.preventDefault();
+import { indentStyle } from "../automation/styles";
+import "./ha-script-field-selector-editor";
+import type HaScriptFieldSelectorEditor from "./ha-script-field-selector-editor";
 
 @customElement("ha-script-field-row")
 export default class HaScriptFieldRow extends LitElement {
@@ -36,139 +35,232 @@ export default class HaScriptFieldRow extends LitElement {
 
   @property({ type: Boolean }) public disabled = false;
 
-  @state() private _uiError?: Record<string, string>;
-
-  @state() private _yamlError?: undefined | "yaml_error" | "key_not_unique";
+  @property({ type: Boolean }) public narrow = false;
 
   @state() private _yamlMode = false;
 
-  private _errorKey?: string;
+  @state() private _selected = false;
 
-  private _schema = memoizeOne(
-    (selector: any) =>
-      [
-        {
-          name: "name",
-          selector: { text: {} },
-        },
-        {
-          name: "key",
-          selector: { text: {} },
-        },
-        {
-          name: "description",
-          selector: { text: {} },
-        },
-        {
-          name: "selector",
-          selector: { selector: {} },
-        },
-        {
-          name: "default",
-          selector: selector && typeof selector === "object" ? selector : {},
-        },
-        {
-          name: "required",
-          selector: { boolean: {} },
-        },
-      ] as const
-  );
+  @state() private _collapsed = false;
+
+  @state() private _selectorRowSelected = false;
+
+  @state() private _selectorRowCollapsed = false;
+
+  @query("ha-script-field-selector-editor")
+  private _selectorEditor?: HaScriptFieldSelectorEditor;
 
   protected render() {
-    const schema = this._schema(this.field.selector);
-    const data = { ...this.field, key: this._errorKey ?? this.key };
-
-    const yamlValue = { [this.key]: this.field };
-
     return html`
       <ha-card outlined>
-        <ha-expansion-panel left-chevron>
+        <ha-automation-row
+          .disabled=${this.disabled}
+          @click=${this._toggleSidebar}
+          .selected=${this._selected}
+          left-chevron
+          @toggle-collapsed=${this._toggleCollapse}
+          .collapsed=${this._collapsed}
+        >
           <h3 slot="header">${this.key}</h3>
 
           <slot name="icons" slot="icons"></slot>
-          <ha-button-menu
+
+          <ha-md-button-menu
+            quick
             slot="icons"
-            @action=${this._handleAction}
-            @click=${preventDefault}
-            fixed
+            @click=${preventDefaultStopPropagation}
+            @keydown=${stopPropagation}
+            @closed=${stopPropagation}
+            positioning="fixed"
+            anchor-corner="end-end"
+            menu-corner="start-end"
           >
-            <ha-icon-button
-              slot="trigger"
-              .label=${this.hass.localize("ui.common.menu")}
-              .path=${mdiDotsVertical}
-            ></ha-icon-button>
-
-            <ha-list-item graphic="icon">
-              ${this.hass.localize(
-                `ui.panel.config.automation.editor.edit_${!this._yamlMode ? "yaml" : "ui"}`
-              )}
-              <ha-svg-icon
-                slot="graphic"
-                .path=${mdiPlaylistEdit}
-              ></ha-svg-icon>
-            </ha-list-item>
-
-            <ha-list-item
-              class="warning"
-              graphic="icon"
+            <ha-md-menu-item
+              slot="menu-items"
+              .clickAction=${this._onDelete}
               .disabled=${this.disabled}
+              class="warning"
             >
               ${this.hass.localize(
                 "ui.panel.config.automation.editor.actions.delete"
               )}
-              <ha-svg-icon
-                class="warning"
-                slot="graphic"
-                .path=${mdiDelete}
-              ></ha-svg-icon>
-            </ha-list-item>
-          </ha-button-menu>
-          <div
-            class=${classMap({
-              "card-content": true,
-            })}
-          >
-            ${this._yamlMode
-              ? html` ${this._yamlError
-                    ? html`<ha-alert alert-type="error">
-                        ${this.hass.localize(
-                          `ui.panel.config.script.editor.field.${this._yamlError}`
-                        )}
-                      </ha-alert>`
-                    : nothing}
-                  <ha-yaml-editor
-                    .hass=${this.hass}
-                    .defaultValue=${yamlValue}
-                    @value-changed=${this._onYamlChange}
-                  ></ha-yaml-editor>`
-              : html`<ha-form
-                  .schema=${schema}
-                  .data=${data}
-                  .error=${this._uiError}
-                  .hass=${this.hass}
-                  .disabled=${this.disabled}
-                  .computeLabel=${this._computeLabelCallback}
-                  .computeError=${this._computeError}
-                  @value-changed=${this._valueChanged}
-                ></ha-form>`}
-          </div>
-        </ha-expansion-panel>
+              <ha-svg-icon slot="start" .path=${mdiDelete}></ha-svg-icon>
+            </ha-md-menu-item>
+          </ha-md-button-menu>
+        </ha-automation-row>
       </ha-card>
+      <div
+        class=${classMap({
+          "selector-row": true,
+          "parent-selected": this._selected,
+          hidden: this._collapsed,
+        })}
+      >
+        <ha-card>
+          <ha-automation-row
+            .selected=${this._selectorRowSelected}
+            @click=${this._toggleSelectorSidebar}
+            .collapsed=${this._selectorRowCollapsed}
+            @toggle-collapsed=${this._toggleSelectorRowCollapse}
+            .leftChevron=${SELECTOR_SELECTOR_BUILDING_BLOCKS.includes(
+              Object.keys(this.field.selector)[0]
+            )}
+          >
+            <h3 slot="header">
+              ${this.hass.localize(
+                `ui.components.selectors.selector.types.${Object.keys(this.field.selector)[0]}` as LocalizeKeys
+              )}
+              ${this.hass.localize(
+                "ui.panel.config.script.editor.field.selector"
+              )}
+            </h3>
+          </ha-automation-row>
+        </ha-card>
+        ${typeof this.field.selector === "object" &&
+        SELECTOR_SELECTOR_BUILDING_BLOCKS.includes(
+          Object.keys(this.field.selector)[0]
+        )
+          ? html`
+              <ha-script-field-selector-editor
+                class=${this._selectorRowCollapsed ? "hidden" : ""}
+                .selected=${this._selectorRowSelected}
+                .hass=${this.hass}
+                .field=${this.field}
+                .disabled=${this.disabled}
+                indent
+                @value-changed=${this._selectorValueChanged}
+                .narrow=${this.narrow}
+              ></ha-script-field-selector-editor>
+            `
+          : nothing}
+      </div>
     `;
   }
 
-  private async _handleAction(ev: CustomEvent<ActionDetail>) {
-    switch (ev.detail.index) {
-      case 0:
-        this._yamlMode = !this._yamlMode;
-        break;
-      case 1:
-        this._onDelete();
-        break;
+  private _toggleCollapse() {
+    this._collapsed = !this._collapsed;
+  }
+
+  public expand() {
+    this._collapsed = false;
+  }
+
+  public collapse() {
+    this._collapsed = true;
+  }
+
+  public expandSelectorRow() {
+    this._selectorRowCollapsed = false;
+  }
+
+  public collapseSelectorRow() {
+    this._selectorRowCollapsed = true;
+  }
+
+  private _toggleSelectorRowCollapse() {
+    this._selectorRowCollapsed = !this._selectorRowCollapsed;
+  }
+
+  public expandAll() {
+    this.expand();
+    this.expandSelectorRow();
+
+    this._selectorEditor?.expandAll();
+  }
+
+  public collapseAll() {
+    this.collapse();
+    this.collapseSelectorRow();
+
+    this._selectorEditor?.collapseAll();
+  }
+
+  private _toggleSidebar(ev: Event) {
+    ev?.stopPropagation();
+
+    if (this._selected) {
+      this._selected = false;
+      fireEvent(this, "close-sidebar");
+      return;
+    }
+
+    this._selected = true;
+    this._collapsed = false;
+    this.openSidebar();
+  }
+
+  private _toggleSelectorSidebar(ev: Event) {
+    ev?.stopPropagation();
+
+    if (this._selectorRowSelected) {
+      this._selectorRowSelected = false;
+      fireEvent(this, "close-sidebar");
+      return;
+    }
+
+    this._selectorRowSelected = true;
+    this._selectorRowCollapsed = false;
+    this.openSidebar(true);
+  }
+
+  private _selectorValueChanged(ev: CustomEvent) {
+    ev.stopPropagation();
+
+    fireEvent(this, "value-changed", {
+      value: {
+        ...this.field,
+        key: this.key,
+        ...ev.detail.value,
+      },
+    });
+  }
+
+  public openSidebar(selectorEditor = false): void {
+    if (!selectorEditor) {
+      this._selected = true;
+    }
+
+    fireEvent(this, "open-sidebar", {
+      save: (value) => {
+        fireEvent(this, "value-changed", { value });
+      },
+      close: () => {
+        if (selectorEditor) {
+          this._selectorRowSelected = false;
+        } else {
+          this._selected = false;
+        }
+        fireEvent(this, "close-sidebar");
+      },
+      toggleYamlMode: () => {
+        this._toggleYamlMode();
+        return this._yamlMode;
+      },
+      delete: this._onDelete,
+      config: {
+        field: this.field,
+        selector: selectorEditor,
+        key: this.key,
+        excludeKeys: this.excludeKeys,
+      },
+      yamlMode: this._yamlMode,
+    } satisfies ScriptFieldSidebarConfig);
+
+    if (this.narrow) {
+      requestAnimationFrame(() => {
+        this.scrollIntoView({
+          block: "start",
+          behavior: "smooth",
+        });
+      });
     }
   }
 
-  private _onDelete() {
+  private _toggleYamlMode = () => {
+    this._yamlMode = !this._yamlMode;
+  };
+
+  private _onDelete = () => {
     showConfirmationDialog(this, {
       title: this.hass.localize(
         "ui.panel.config.script.editor.field_delete_confirm_title"
@@ -181,115 +273,17 @@ export default class HaScriptFieldRow extends LitElement {
       destructive: true,
       confirm: () => {
         fireEvent(this, "value-changed", { value: null });
+        if (this._selected || this._selectorRowSelected) {
+          fireEvent(this, "close-sidebar");
+        }
       },
     });
-  }
-
-  private _onYamlChange(ev: CustomEvent) {
-    ev.stopPropagation();
-    const value = { ...ev.detail.value };
-
-    if (typeof value !== "object" || Object.keys(value).length !== 1) {
-      this._yamlError = "yaml_error";
-      return;
-    }
-    const key = Object.keys(value)[0];
-    if (this.excludeKeys.includes(key)) {
-      this._yamlError = "key_not_unique";
-      return;
-    }
-    this._yamlError = undefined;
-
-    const newValue = { ...value[key], key };
-
-    fireEvent(this, "value-changed", { value: newValue });
-  }
-
-  private _maybeSetKey(value): void {
-    const nameChanged = value.name !== this.field.name;
-    const keyChanged = value.key !== this.key;
-    if (!nameChanged || keyChanged) {
-      return;
-    }
-    const slugifyName = this.field.name
-      ? slugify(this.field.name)
-      : this.hass.localize("ui.panel.config.script.editor.field.field") ||
-        "field";
-    const regex = new RegExp(`^${slugifyName}(_\\d)?$`);
-    if (regex.test(this.key)) {
-      let key = !value.name
-        ? this.hass.localize("ui.panel.config.script.editor.field.field") ||
-          "field"
-        : slugify(value.name);
-      if (this.excludeKeys.includes(key)) {
-        let uniqueKey = key;
-        let i = 2;
-        do {
-          uniqueKey = `${key}_${i}`;
-          i++;
-        } while (this.excludeKeys.includes(uniqueKey));
-        key = uniqueKey;
-      }
-      value.key = key;
-    }
-  }
-
-  private _valueChanged(ev: CustomEvent) {
-    ev.stopPropagation();
-    const value = { ...ev.detail.value };
-
-    this._maybeSetKey(value);
-
-    // Don't allow to set an empty key, or duplicate an existing key.
-    if (!value.key || this.excludeKeys.includes(value.key)) {
-      this._uiError = value.key
-        ? {
-            key: "key_not_unique",
-          }
-        : {
-            key: "key_not_null",
-          };
-      this._errorKey = value.key ?? "";
-      return;
-    }
-    this._errorKey = undefined;
-    this._uiError = undefined;
-
-    // If we render the default with an incompatible selector, it risks throwing an exception and not rendering.
-    // Clear the default when changing the selector type.
-    if (
-      Object.keys(this.field.selector)[0] !== Object.keys(value.selector)[0]
-    ) {
-      delete value.default;
-    }
-
-    fireEvent(this, "value-changed", { value });
-  }
-
-  public expand() {
-    this.updateComplete.then(() => {
-      this.shadowRoot!.querySelector("ha-expansion-panel")!.expanded = true;
-    });
-  }
-
-  private _computeLabelCallback = (
-    schema: SchemaUnion<ReturnType<typeof this._schema>>
-  ): string => {
-    switch (schema.name) {
-      default:
-        return this.hass.localize(
-          `ui.panel.config.script.editor.field.${schema.name}`
-        );
-    }
   };
-
-  private _computeError = (error: string) =>
-    this.hass.localize(`ui.panel.config.script.editor.field.${error}` as any) ||
-    error;
 
   static get styles(): CSSResultGroup {
     return [
       haStyle,
+      indentStyle,
       css`
         ha-button-menu,
         ha-icon-button {
@@ -299,9 +293,8 @@ export default class HaScriptFieldRow extends LitElement {
           opacity: 0.5;
           pointer-events: none;
         }
-        ha-expansion-panel {
-          --expansion-panel-summary-padding: 0 0 0 8px;
-          --expansion-panel-content-padding: 0;
+        .hidden {
+          display: none;
         }
         h3 {
           margin: 0;
@@ -341,7 +334,7 @@ export default class HaScriptFieldRow extends LitElement {
           );
         }
 
-        ha-list-item[disabled] {
+        ha-md-menu-item[disabled] {
           --mdc-theme-text-primary-on-background: var(--disabled-text-color);
         }
         .warning ul {

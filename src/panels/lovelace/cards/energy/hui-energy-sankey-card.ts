@@ -6,6 +6,7 @@ import "../../../../components/ha-card";
 import "../../../../components/ha-svg-icon";
 import type { EnergyData } from "../../../../data/energy";
 import {
+  computeConsumptionData,
   energySourcesByType,
   getEnergyDataCollection,
   getSummedData,
@@ -92,6 +93,10 @@ class HuiEnergySankeyCard
     const prefs = this._data.prefs;
     const types = energySourcesByType(prefs);
     const { summedData, compareSummedData: _ } = getSummedData(this._data);
+    const { consumption, compareConsumption: __ } = computeConsumptionData(
+      summedData,
+      undefined
+    );
 
     const computedStyle = getComputedStyle(this);
 
@@ -103,11 +108,57 @@ class HuiEnergySankeyCard
       label: this.hass.localize(
         "ui.panel.lovelace.cards.energy.energy_distribution.home"
       ),
-      value: 0,
+      value: Math.max(0, consumption.total.used_total),
       color: computedStyle.getPropertyValue("--primary-color"),
       index: 1,
     };
     nodes.push(homeNode);
+
+    if (types.battery) {
+      const totalBatteryOut = summedData.total.from_battery ?? 0;
+      const totalBatteryIn = summedData.total.to_battery ?? 0;
+
+      // Add battery source
+      nodes.push({
+        id: "battery",
+        label: this.hass.localize(
+          "ui.panel.lovelace.cards.energy.energy_distribution.battery"
+        ),
+        value: totalBatteryOut,
+        color: computedStyle.getPropertyValue("--energy-battery-out-color"),
+        index: 0,
+      });
+      links.push({
+        source: "battery",
+        target: "home",
+        value: consumption.total.used_battery,
+      });
+
+      // Add battery sink
+      nodes.push({
+        id: "battery_in",
+        label: this.hass.localize(
+          "ui.panel.lovelace.cards.energy.energy_distribution.battery"
+        ),
+        value: totalBatteryIn,
+        color: computedStyle.getPropertyValue("--energy-battery-in-color"),
+        index: 1,
+      });
+      if (consumption.total.grid_to_battery > 0) {
+        links.push({
+          source: "grid",
+          target: "battery_in",
+          value: consumption.total.grid_to_battery,
+        });
+      }
+      if (consumption.total.solar_to_battery > 0) {
+        links.push({
+          source: "solar",
+          target: "battery_in",
+          value: consumption.total.solar_to_battery,
+        });
+      }
+    }
 
     if (types.grid) {
       const totalFromGrid = summedData.total.from_grid ?? 0;
@@ -118,7 +169,6 @@ class HuiEnergySankeyCard
           "ui.panel.lovelace.cards.energy.energy_distribution.grid"
         ),
         value: totalFromGrid,
-        tooltip: `${formatNumber(totalFromGrid, this.hass.locale)} kWh`,
         color: computedStyle.getPropertyValue(
           "--energy-grid-consumption-color"
         ),
@@ -128,6 +178,7 @@ class HuiEnergySankeyCard
       links.push({
         source: "grid",
         target: "home",
+        value: consumption.total.used_grid,
       });
     }
 
@@ -141,7 +192,6 @@ class HuiEnergySankeyCard
           "ui.panel.lovelace.cards.energy.energy_distribution.solar"
         ),
         value: totalSolarProduction,
-        tooltip: `${formatNumber(totalSolarProduction, this.hass.locale)} kWh`,
         color: computedStyle.getPropertyValue("--energy-solar-color"),
         index: 0,
       });
@@ -149,57 +199,7 @@ class HuiEnergySankeyCard
       links.push({
         source: "solar",
         target: "home",
-      });
-    }
-
-    // Calculate total home consumption from all producers
-    homeNode.value = nodes
-      .filter((node) => node.index === 0)
-      .reduce((sum, node) => sum + (node.value || 0), 0);
-
-    if (types.battery) {
-      // Add battery source
-      const totalBatteryOut = summedData.total.from_battery ?? 0;
-      const totalBatteryIn = summedData.total.to_battery ?? 0;
-      const netBattery = totalBatteryOut - totalBatteryIn;
-      const netBatteryOut = Math.max(netBattery, 0);
-      const netBatteryIn = Math.max(-netBattery, 0);
-      homeNode.value += netBattery;
-
-      nodes.push({
-        id: "battery",
-        label: this.hass.localize(
-          "ui.panel.lovelace.cards.energy.energy_distribution.battery"
-        ),
-        value: netBatteryOut,
-        tooltip: `${formatNumber(netBatteryOut, this.hass.locale)} kWh`,
-        color: computedStyle.getPropertyValue("--energy-battery-out-color"),
-        index: 0,
-      });
-      links.push({
-        source: "battery",
-        target: "home",
-      });
-
-      // Add battery sink
-      nodes.push({
-        id: "battery_in",
-        label: this.hass.localize(
-          "ui.panel.lovelace.cards.energy.energy_distribution.battery"
-        ),
-        value: netBatteryIn,
-        tooltip: `${formatNumber(netBatteryIn, this.hass.locale)} kWh`,
-        color: computedStyle.getPropertyValue("--energy-battery-in-color"),
-        index: 1,
-      });
-      nodes.forEach((node) => {
-        // Link all sources to battery_in
-        if (node.index === 0) {
-          links.push({
-            source: node.id,
-            target: "battery_in",
-          });
-        }
+        value: consumption.total.used_solar,
       });
     }
 
@@ -213,21 +213,23 @@ class HuiEnergySankeyCard
           "ui.panel.lovelace.cards.energy.energy_distribution.grid"
         ),
         value: totalToGrid,
-        tooltip: `${formatNumber(totalToGrid, this.hass.locale)} kWh`,
         color: computedStyle.getPropertyValue("--energy-grid-return-color"),
         index: 1,
       });
-      nodes.forEach((node) => {
-        // Link all non-grid sources to grid_return
-        if (node.index === 0 && node.id !== "grid") {
-          links.push({
-            source: node.id,
-            target: "grid_return",
-          });
-        }
-      });
-
-      homeNode.value -= totalToGrid;
+      if (consumption.total.battery_to_grid > 0) {
+        links.push({
+          source: "battery",
+          target: "grid",
+          value: consumption.total.battery_to_grid,
+        });
+      }
+      if (consumption.total.solar_to_grid > 0) {
+        links.push({
+          source: "solar",
+          target: "grid_return",
+          value: consumption.total.solar_to_grid,
+        });
+      }
     }
 
     let untrackedConsumption = homeNode.value;
@@ -253,7 +255,6 @@ class HuiEnergySankeyCard
             this._data!.statsMetadata[device.stat_consumption]
           ),
         value,
-        tooltip: `${formatNumber(value, this.hass.locale)} kWh`,
         color: getGraphColorByIndex(idx, computedStyle),
         index: 4,
         parent: device.included_in_stat,
@@ -293,7 +294,6 @@ class HuiEnergySankeyCard
               id: floorNodeId,
               label: this.hass.floors[floorId].name,
               value: floors[floorId].value,
-              tooltip: `${formatNumber(floors[floorId].value, this.hass.locale)} kWh`,
               index: 2,
               color: computedStyle.getPropertyValue("--primary-color"),
             });
@@ -315,7 +315,6 @@ class HuiEnergySankeyCard
                 id: areaNodeId,
                 label: this.hass.areas[areaId]!.name,
                 value: areas[areaId].value,
-                tooltip: `${formatNumber(areas[areaId].value, this.hass.locale)} kWh`,
                 index: 3,
                 color: computedStyle.getPropertyValue("--primary-color"),
               });
@@ -361,7 +360,6 @@ class HuiEnergySankeyCard
           "ui.panel.lovelace.cards.energy.energy_devices_detail_graph.untracked_consumption"
         ),
         value: untrackedConsumption,
-        tooltip: `${formatNumber(untrackedConsumption, this.hass.locale)} kWh`,
         color: computedStyle.getPropertyValue("--state-unavailable-color"),
         index: 3 + deviceSections.length,
       });
@@ -370,11 +368,7 @@ class HuiEnergySankeyCard
         target: "untracked",
         value: untrackedConsumption,
       });
-    } else if (untrackedConsumption < 0) {
-      // if untracked consumption is negative, then the sources are not enough
-      homeNode.value -= untrackedConsumption;
     }
-    homeNode.tooltip = `${formatNumber(homeNode.value, this.hass.locale)} kWh`;
 
     const hasData = nodes.some((node) => node.value > 0);
 
@@ -400,7 +394,7 @@ class HuiEnergySankeyCard
   }
 
   private _valueFormatter = (value: number) =>
-    `${formatNumber(value, this.hass.locale)} kWh`;
+    `${formatNumber(value, this.hass.locale, value < 0.1 ? { maximumFractionDigits: 3 } : undefined)} kWh`;
 
   protected _groupByFloorAndArea(deviceNodes: Node[]) {
     const areas: Record<string, { value: number; devices: Node[] }> = {

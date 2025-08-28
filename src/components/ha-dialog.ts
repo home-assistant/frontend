@@ -148,6 +148,10 @@ export class HaDialog extends DialogBase {
         white-space: nowrap;
         display: block;
         padding-left: 4px;
+        padding-right: 4px;
+        margin-right: 12px;
+        margin-inline-end: 12px;
+        margin-inline-start: initial;
       }
       .header_button {
         text-decoration: none;

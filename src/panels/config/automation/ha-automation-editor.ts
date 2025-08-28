@@ -16,6 +16,8 @@ import {
   mdiStopCircleOutline,
   mdiTag,
   mdiTransitConnection,
+  mdiUnfoldLessHorizontal,
+  mdiUnfoldMoreHorizontal,
 } from "@mdi/js";
 import type { UnsubscribeFunc } from "home-assistant-js-websocket";
 import type { CSSResultGroup, PropertyValues, TemplateResult } from "lit";
@@ -25,12 +27,11 @@ import { classMap } from "lit/directives/class-map";
 import { transform } from "../../../common/decorators/transform";
 import { fireEvent } from "../../../common/dom/fire_event";
 import { navigate } from "../../../common/navigate";
-import { computeRTL } from "../../../common/util/compute_rtl";
 import { promiseTimeout } from "../../../common/util/promise-timeout";
 import { afterNextRender } from "../../../common/util/render-status";
+import "../../../components/ha-button";
 import "../../../components/ha-button-menu";
 import "../../../components/ha-fab";
-import "../../../components/ha-button";
 import "../../../components/ha-fade-in";
 import "../../../components/ha-icon";
 import "../../../components/ha-icon-button";
@@ -97,6 +98,7 @@ declare global {
     "move-down": undefined;
     "move-up": undefined;
     duplicate: undefined;
+    "save-automation": undefined;
   }
 }
 
@@ -369,6 +371,30 @@ export class HaAutomationEditor extends PreventUnsavedMixin(
             <ha-svg-icon slot="graphic" .path=${mdiPlaylistEdit}></ha-svg-icon>
           </ha-list-item>
 
+          ${!useBlueprint
+            ? html`
+                <ha-list-item graphic="icon" @click=${this._collapseAll}>
+                  <ha-svg-icon
+                    slot="graphic"
+                    .path=${mdiUnfoldLessHorizontal}
+                  ></ha-svg-icon>
+                  ${this.hass.localize(
+                    "ui.panel.config.automation.editor.collapse_all"
+                  )}
+                </ha-list-item>
+
+                <ha-list-item graphic="icon" @click=${this._expandAll}>
+                  <ha-svg-icon
+                    slot="graphic"
+                    .path=${mdiUnfoldMoreHorizontal}
+                  ></ha-svg-icon>
+                  ${this.hass.localize(
+                    "ui.panel.config.automation.editor.expand_all"
+                  )}
+                </ha-list-item>
+              `
+            : nothing}
+
           <li divider role="separator"></li>
 
           <ha-list-item
@@ -403,68 +429,12 @@ export class HaAutomationEditor extends PreventUnsavedMixin(
           </ha-list-item>
         </ha-button-menu>
         <div
-          class="content ${classMap({
-            "yaml-mode": this._mode === "yaml",
-          })}"
+          class=${this._mode === "yaml" ? "yaml-mode" : ""}
           @subscribe-automation-config=${this._subscribeAutomationConfig}
         >
-          ${this._errors || stateObj?.state === UNAVAILABLE
-            ? html`<ha-alert
-                alert-type="error"
-                .title=${stateObj?.state === UNAVAILABLE
-                  ? this.hass.localize(
-                      "ui.panel.config.automation.editor.unavailable"
-                    )
-                  : undefined}
-              >
-                ${this._errors || this._validationErrors}
-                ${stateObj?.state === UNAVAILABLE
-                  ? html`<ha-svg-icon
-                      slot="icon"
-                      .path=${mdiRobotConfused}
-                    ></ha-svg-icon>`
-                  : nothing}
-              </ha-alert>`
-            : ""}
-          ${this._blueprintConfig
-            ? html`<ha-alert alert-type="info">
-                ${this.hass.localize(
-                  "ui.panel.config.automation.editor.confirm_take_control"
-                )}
-                <div slot="action" style="display: flex;">
-                  <ha-button appearance="plain" @click=${this._takeControlSave}
-                    >${this.hass.localize("ui.common.yes")}</ha-button
-                  >
-                  <ha-button appearance="plain" @click=${this._revertBlueprint}
-                    >${this.hass.localize("ui.common.no")}</ha-button
-                  >
-                </div>
-              </ha-alert>`
-            : this._readOnly
-              ? html`<ha-alert alert-type="warning" dismissable
-                  >${this.hass.localize(
-                    "ui.panel.config.automation.editor.read_only"
-                  )}
-                  <ha-button
-                    appearance="filled"
-                    size="small"
-                    variant="warning"
-                    slot="action"
-                    @click=${this._duplicate}
-                  >
-                    ${this.hass.localize(
-                      "ui.panel.config.automation.editor.migrate"
-                    )}
-                  </ha-button>
-                </ha-alert>`
-              : nothing}
           ${this._mode === "gui"
             ? html`
-                <div
-                  class=${classMap({
-                    rtl: computeRTL(this.hass),
-                  })}
-                >
+                <div>
                   ${useBlueprint
                     ? html`
                         <blueprint-automation-editor
@@ -473,8 +443,11 @@ export class HaAutomationEditor extends PreventUnsavedMixin(
                           .isWide=${this.isWide}
                           .stateObj=${stateObj}
                           .config=${this._config}
-                          .disabled=${Boolean(this._readOnly)}
+                          .disabled=${this._readOnly}
+                          .saving=${this._saving}
+                          .dirty=${this._dirty}
                           @value-changed=${this._valueChanged}
+                          @save-automation=${this._handleSaveAutomation}
                         ></blueprint-automation-editor>
                       `
                     : html`
@@ -484,11 +457,94 @@ export class HaAutomationEditor extends PreventUnsavedMixin(
                           .isWide=${this.isWide}
                           .stateObj=${stateObj}
                           .config=${this._config}
-                          .disabled=${Boolean(this._readOnly)}
+                          .disabled=${this._readOnly}
                           .dirty=${this._dirty}
+                          .saving=${this._saving}
                           @value-changed=${this._valueChanged}
+                          @save-automation=${this._handleSaveAutomation}
                           @editor-save=${this._handleSaveAutomation}
-                        ></manual-automation-editor>
+                        >
+                          <div class="alert-wrapper" slot="alerts">
+                            ${this._errors || stateObj?.state === UNAVAILABLE
+                              ? html`<ha-alert
+                                  alert-type="error"
+                                  .title=${stateObj?.state === UNAVAILABLE
+                                    ? this.hass.localize(
+                                        "ui.panel.config.automation.editor.unavailable"
+                                      )
+                                    : undefined}
+                                >
+                                  ${this._errors || this._validationErrors}
+                                  ${stateObj?.state === UNAVAILABLE
+                                    ? html`<ha-svg-icon
+                                        slot="icon"
+                                        .path=${mdiRobotConfused}
+                                      ></ha-svg-icon>`
+                                    : nothing}
+                                </ha-alert>`
+                              : nothing}
+                            ${this._blueprintConfig
+                              ? html`<ha-alert alert-type="info">
+                                  ${this.hass.localize(
+                                    "ui.panel.config.automation.editor.confirm_take_control"
+                                  )}
+                                  <div slot="action" style="display: flex;">
+                                    <ha-button
+                                      appearance="plain"
+                                      @click=${this._takeControlSave}
+                                      >${this.hass.localize(
+                                        "ui.common.yes"
+                                      )}</ha-button
+                                    >
+                                    <ha-button
+                                      appearance="plain"
+                                      @click=${this._revertBlueprint}
+                                      >${this.hass.localize(
+                                        "ui.common.no"
+                                      )}</ha-button
+                                    >
+                                  </div>
+                                </ha-alert>`
+                              : this._readOnly
+                                ? html`<ha-alert
+                                    alert-type="warning"
+                                    dismissable
+                                    >${this.hass.localize(
+                                      "ui.panel.config.automation.editor.read_only"
+                                    )}
+                                    <ha-button
+                                      appearance="filled"
+                                      size="small"
+                                      variant="warning"
+                                      slot="action"
+                                      @click=${this._duplicate}
+                                    >
+                                      ${this.hass.localize(
+                                        "ui.panel.config.automation.editor.migrate"
+                                      )}
+                                    </ha-button>
+                                  </ha-alert>`
+                                : nothing}
+                            ${stateObj?.state === "off"
+                              ? html`
+                                  <ha-alert alert-type="info">
+                                    ${this.hass.localize(
+                                      "ui.panel.config.automation.editor.disabled"
+                                    )}
+                                    <ha-button
+                                      size="small"
+                                      slot="action"
+                                      @click=${this._toggle}
+                                    >
+                                      ${this.hass.localize(
+                                        "ui.panel.config.automation.editor.enable"
+                                      )}
+                                    </ha-button>
+                                  </ha-alert>
+                                `
+                              : nothing}
+                          </div>
+                        </manual-automation-editor>
                       `}
                 </div>
               `
@@ -511,7 +567,7 @@ export class HaAutomationEditor extends PreventUnsavedMixin(
                           </ha-button>
                         </ha-alert>
                       `
-                    : ""}
+                    : nothing}
                   <ha-yaml-editor
                     copy-clipboard
                     .hass=${this.hass}
@@ -521,21 +577,22 @@ export class HaAutomationEditor extends PreventUnsavedMixin(
                     @editor-save=${this._handleSaveAutomation}
                     .showErrors=${false}
                     disable-fullscreen
-                  ></ha-yaml-editor>`
+                  ></ha-yaml-editor>
+                  <ha-fab
+                    slot="fab"
+                    class=${this._dirty ? "dirty" : ""}
+                    .label=${this.hass.localize("ui.common.save")}
+                    .disabled=${this._saving}
+                    extended
+                    @click=${this._handleSaveAutomation}
+                  >
+                    <ha-svg-icon
+                      slot="icon"
+                      .path=${mdiContentSave}
+                    ></ha-svg-icon>
+                  </ha-fab>`
               : nothing}
         </div>
-        <ha-fab
-          slot="fab"
-          class=${classMap({
-            dirty: !this._readOnly && this._dirty,
-          })}
-          .label=${this.hass.localize("ui.panel.config.automation.editor.save")}
-          .disabled=${this._saving}
-          extended
-          @click=${this._handleSaveAutomation}
-        >
-          <ha-svg-icon slot="icon" .path=${mdiContentSave}></ha-svg-icon>
-        </ha-fab>
       </hass-subpage>
     `;
   }
@@ -1092,6 +1149,14 @@ export class HaAutomationEditor extends PreventUnsavedMixin(
     return this._confirmUnsavedChanged();
   }
 
+  private _collapseAll() {
+    this._manualEditor?.collapseAll();
+  }
+
+  private _expandAll() {
+    this._manualEditor?.expandAll();
+  }
+
   static get styles(): CSSResultGroup {
     return [
       haStyle,
@@ -1102,9 +1167,6 @@ export class HaAutomationEditor extends PreventUnsavedMixin(
           align-items: center;
           height: 100%;
         }
-        .content {
-          padding-bottom: 20px;
-        }
         .yaml-mode {
           height: 100%;
           display: flex;
@@ -1112,13 +1174,37 @@ export class HaAutomationEditor extends PreventUnsavedMixin(
           padding-bottom: 0;
         }
         manual-automation-editor,
-        blueprint-automation-editor,
-        :not(.yaml-mode) > ha-alert {
+        blueprint-automation-editor {
           margin: 0 auto;
           max-width: 1040px;
           padding: 28px 20px 0;
           display: block;
         }
+
+        :not(.yaml-mode) > .alert-wrapper {
+          position: sticky;
+          top: -24px;
+          margin-top: -24px;
+          z-index: 100;
+          width: 100%;
+          display: flex;
+          flex-direction: column;
+          align-items: center;
+          gap: 8px;
+        }
+
+        :not(.yaml-mode) > .alert-wrapper ha-alert {
+          background-color: var(--card-background-color);
+          box-shadow: 0 2px 4px rgba(0, 0, 0, 0.2);
+          border-radius: var(--ha-border-radius-sm);
+          margin-bottom: 0;
+        }
+
+        manual-automation-editor {
+          max-width: 1540px;
+          padding: 0 12px;
+        }
+
         ha-yaml-editor {
           flex-grow: 1;
           --actions-border-radius: 0;
@@ -1134,14 +1220,6 @@ export class HaAutomationEditor extends PreventUnsavedMixin(
           margin-right: 8px;
           margin-inline-end: 8px;
           margin-inline-start: initial;
-        }
-        ha-fab {
-          position: relative;
-          bottom: calc(-80px - var(--safe-area-inset-bottom));
-          transition: bottom 0.3s;
-        }
-        ha-fab.dirty {
-          bottom: 0;
         }
         li[role="separator"] {
           border-bottom-color: var(--divider-color);
@@ -1159,6 +1237,15 @@ export class HaAutomationEditor extends PreventUnsavedMixin(
           margin: 0 auto;
           max-width: 1040px;
           padding: 28px 20px 0;
+        }
+        ha-fab {
+          position: fixed;
+          right: 16px;
+          bottom: calc(-80px - var(--safe-area-inset-bottom));
+          transition: bottom 0.3s;
+        }
+        ha-fab.dirty {
+          bottom: 16px;
         }
       `,
     ];

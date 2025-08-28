@@ -254,21 +254,37 @@ export class HaDateRangePicker extends LitElement {
   }
 
   private _applyDateRange() {
-    if (this.hass.locale.time_zone === TimeZone.server) {
-      const dateRangePicker = this._dateRangePicker;
+    let start = new Date(this._dateRangePicker.start);
+    let end = new Date(this._dateRangePicker.end);
 
-      const startDate = fromZonedTime(
-        dateRangePicker.start,
-        this.hass.config.time_zone
-      );
-      const endDate = fromZonedTime(
-        dateRangePicker.end,
-        this.hass.config.time_zone
-      );
+    if (this.timePicker) {
+      start.setSeconds(0);
+      start.setMilliseconds(0);
+      end.setSeconds(0);
+      end.setMilliseconds(0);
 
-      dateRangePicker.clickRange([startDate, endDate]);
+      if (
+        end.getHours() === 0 &&
+        end.getMinutes() === 0 &&
+        start.getFullYear() === end.getFullYear() &&
+        start.getMonth() === end.getMonth() &&
+        start.getDate() === end.getDate()
+      ) {
+        end.setDate(end.getDate() + 1);
+      }
     }
 
+    if (this.hass.locale.time_zone === TimeZone.server) {
+      start = fromZonedTime(start, this.hass.config.time_zone);
+      end = fromZonedTime(end, this.hass.config.time_zone);
+    }
+
+    if (
+      start.getTime() !== this._dateRangePicker.start.getTime() ||
+      end.getTime() !== this._dateRangePicker.end.getTime()
+    ) {
+      this._dateRangePicker.clickRange([start, end]);
+    }
     this._dateRangePicker.clickedApply();
   }
 

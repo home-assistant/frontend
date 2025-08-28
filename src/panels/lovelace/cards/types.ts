@@ -104,12 +104,13 @@ export interface EntitiesCardConfig extends LovelaceCardConfig {
   state_color?: boolean;
 }
 
+export type AreaCardDisplayType = "compact" | "icon" | "picture" | "camera";
 export interface AreaCardConfig extends LovelaceCardConfig {
   area?: string;
   name?: string;
   color?: string;
   navigation_path?: string;
-  display_type?: "compact" | "icon" | "picture" | "camera";
+  display_type?: AreaCardDisplayType;
   /** @deprecated Use `display_type` instead */
   show_camera?: boolean;
   camera_view?: HuiImage["cameraView"];
@@ -370,10 +371,15 @@ export interface MarkdownCardConfig extends LovelaceCardConfig {
 export interface ClockCardConfig extends LovelaceCardConfig {
   type: "clock";
   title?: string;
+  clock_style?: "digital" | "analog";
   clock_size?: "small" | "medium" | "large";
   show_seconds?: boolean | undefined;
   time_format?: TimeFormat;
   time_zone?: string;
+  no_background?: boolean;
+  // Analog clock options
+  border?: boolean;
+  ticks?: "none" | "quarter" | "hour" | "minute";
 }
 
 export interface MediaControlCardConfig extends LovelaceCardConfig {
