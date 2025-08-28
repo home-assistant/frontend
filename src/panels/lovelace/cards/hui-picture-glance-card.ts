@@ -295,7 +295,7 @@ class HuiPictureGlanceCard extends LitElement implements LovelaceCard {
           .disabled=${!hasAction(entityConf.tap_action)}
           .config=${entityConf}
           class=${classMap({
-             "state-on": stateActive(stateObj),
+            "state-on": stateActive(stateObj),
           })}
           title=${`${computeStateName(
             stateObj
