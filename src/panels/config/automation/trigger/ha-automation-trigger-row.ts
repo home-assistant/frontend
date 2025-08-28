@@ -657,6 +657,10 @@ export default class HaAutomationTriggerRow extends LitElement {
       customElements.get(`ha-automation-trigger-${type}`) !== undefined
   );
 
+  public isSelected() {
+    return this._selected;
+  }
+
   static get styles(): CSSResultGroup {
     return [
       rowStyles,

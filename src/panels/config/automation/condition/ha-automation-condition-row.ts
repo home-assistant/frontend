@@ -675,6 +675,10 @@ export default class HaAutomationConditionRow extends LitElement {
     this._collapsed = !this._collapsed;
   }
 
+  public isSelected() {
+    return this._selected;
+  }
+
   static get styles(): CSSResultGroup {
     return [
       rowStyles,

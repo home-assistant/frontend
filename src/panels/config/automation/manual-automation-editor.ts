@@ -112,20 +112,6 @@ export class HaManualAutomationEditor extends LitElement {
 
   private _renderContent() {
     return html`
-      ${this.stateObj?.state === "off"
-        ? html`
-            <ha-alert alert-type="info">
-              ${this.hass.localize(
-                "ui.panel.config.automation.editor.disabled"
-              )}
-              <ha-button size="small" slot="action" @click=${this._enable}>
-                ${this.hass.localize(
-                  "ui.panel.config.automation.editor.enable"
-                )}
-              </ha-button>
-            </ha-alert>
-          `
-        : nothing}
       ${this.config.description
         ? html`<ha-markdown
             class="description"
@@ -279,7 +265,10 @@ export class HaManualAutomationEditor extends LitElement {
         })}
       >
         <div class="content-wrapper">
-          <div class="content">${this._renderContent()}</div>
+          <div class="content">
+            <slot name="alerts"></slot>
+            ${this._renderContent()}
+          </div>
           <ha-fab
             slot="fab"
             class=${this.dirty ? "dirty" : ""}
@@ -383,15 +372,6 @@ export class HaManualAutomationEditor extends LitElement {
     this.resetPastedConfig();
     fireEvent(this, "value-changed", {
       value: { ...this.config!, actions: ev.detail.value as Action[] },
-    });
-  }
-
-  private async _enable(): Promise<void> {
-    if (!this.hass || !this.stateObj) {
-      return;
-    }
-    await this.hass.callService("automation", "turn_on", {
-      entity_id: this.stateObj.entity_id,
     });
   }
 
@@ -656,9 +636,8 @@ export class HaManualAutomationEditor extends LitElement {
           line-height: 0;
         }
 
-        ha-alert {
-          display: block;
-          margin-bottom: 16px;
+        .description {
+          margin-top: 16px;
         }
       `,
     ];

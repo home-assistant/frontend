@@ -10,6 +10,7 @@ import { listenMediaQuery } from "../../../../common/dom/media_query";
 import { nextRender } from "../../../../common/util/render-status";
 import "../../../../components/ha-button";
 import "../../../../components/ha-sortable";
+import type { HaSortableClonedEventData } from "../../../../components/ha-sortable";
 import "../../../../components/ha-svg-icon";
 import type { AutomationClipboard } from "../../../../data/automation";
 import type { Option } from "../../../../data/script";
@@ -50,6 +51,8 @@ export default class HaAutomationOption extends LitElement {
 
   private _focusLastOptionOnChange = false;
 
+  private _focusOptionIndexOnChange?: number;
+
   private _optionsKeys = new WeakMap<Option, string>();
 
   private _unsubMql?: () => void;
@@ -78,6 +81,7 @@ export default class HaAutomationOption extends LitElement {
         @item-moved=${this._optionMoved}
         @item-added=${this._optionAdded}
         @item-removed=${this._optionRemoved}
+        @item-cloned=${this._optionCloned}
       >
         <div class="rows ${!this.optionsInSidebar ? "no-sidebar" : ""}">
           ${repeat(
@@ -143,12 +147,20 @@ export default class HaAutomationOption extends LitElement {
   protected updated(changedProps: PropertyValues) {
     super.updated(changedProps);
 
-    if (changedProps.has("options") && this._focusLastOptionOnChange) {
-      this._focusLastOptionOnChange = false;
+    if (
+      changedProps.has("options") &&
+      (this._focusLastOptionOnChange ||
+        this._focusOptionIndexOnChange !== undefined)
+    ) {
+      const mode = this._focusLastOptionOnChange ? "new" : "moved";
 
       const row = this.shadowRoot!.querySelector<HaAutomationOptionRow>(
-        "ha-automation-option-row:last-of-type"
+        `ha-automation-option-row:${mode === "new" ? "last-of-type" : `nth-of-type(${this._focusOptionIndexOnChange! + 1})`}`
       )!;
+
+      this._focusLastOptionOnChange = false;
+      this._focusOptionIndexOnChange = undefined;
+
       row.updateComplete.then(() => {
         if (this.narrow) {
           row.scrollIntoView({
@@ -156,8 +168,16 @@ export default class HaAutomationOption extends LitElement {
             behavior: "smooth",
           });
         }
-        row.expand();
-        row.focus();
+
+        if (mode === "new") {
+          row.expand();
+        }
+
+        if (this.optionsInSidebar) {
+          row.openSidebar();
+        } else {
+          row.focus();
+        }
       });
     }
   }
@@ -215,6 +235,12 @@ export default class HaAutomationOption extends LitElement {
   private async _optionAdded(ev: CustomEvent): Promise<void> {
     ev.stopPropagation();
     const { index, data } = ev.detail;
+    let selected = false;
+    if (data?.["ha-automation-row-selected"]) {
+      selected = true;
+      delete data["ha-automation-row-selected"];
+    }
+
     const options = [
       ...this.options.slice(0, index),
       data,
@@ -222,6 +248,9 @@ export default class HaAutomationOption extends LitElement {
     ];
     // Add option locally to avoid UI jump
     this.options = options;
+    if (selected) {
+      this._focusOptionIndexOnChange = options.length === 1 ? 0 : index;
+    }
     await nextRender();
     fireEvent(this, "value-changed", { value: this.options });
   }
@@ -236,6 +265,12 @@ export default class HaAutomationOption extends LitElement {
     // Ensure option is removed even after update
     const options = this.options.filter((o) => o !== option);
     fireEvent(this, "value-changed", { value: options });
+  }
+
+  private _optionCloned(ev: CustomEvent<HaSortableClonedEventData>) {
+    if (ev.detail.item.isSelected()) {
+      ev.detail.item.option["ha-automation-row-selected"] = true;
+    }
   }
 
   private _optionChanged(ev: CustomEvent) {

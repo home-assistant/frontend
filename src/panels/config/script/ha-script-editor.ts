@@ -384,60 +384,6 @@ export class HaScriptEditor extends SubscribeMixin(
           </ha-list-item>
         </ha-button-menu>
         <div class=${this._mode === "yaml" ? "yaml-mode" : ""}>
-          <div class="error-wrapper">
-            ${this._errors || stateObj?.state === UNAVAILABLE
-              ? html`<ha-alert
-                  alert-type="error"
-                  .title=${stateObj?.state === UNAVAILABLE
-                    ? this.hass.localize(
-                        "ui.panel.config.script.editor.unavailable"
-                      )
-                    : undefined}
-                >
-                  ${this._errors || this._validationErrors}
-                  ${stateObj?.state === UNAVAILABLE
-                    ? html`<ha-svg-icon
-                        slot="icon"
-                        .path=${mdiRobotConfused}
-                      ></ha-svg-icon>`
-                    : nothing}
-                </ha-alert>`
-              : nothing}
-            ${this._blueprintConfig
-              ? html`<ha-alert alert-type="info">
-                  ${this.hass.localize(
-                    "ui.panel.config.script.editor.confirm_take_control"
-                  )}
-                  <div slot="action" style="display: flex;">
-                    <ha-button
-                      appearance="plain"
-                      @click=${this._takeControlSave}
-                      >${this.hass.localize("ui.common.yes")}</ha-button
-                    >
-                    <ha-button
-                      appearance="plain"
-                      @click=${this._revertBlueprint}
-                      >${this.hass.localize("ui.common.no")}</ha-button
-                    >
-                  </div>
-                </ha-alert>`
-              : this._readOnly
-                ? html`<ha-alert alert-type="warning" dismissable
-                    >${this.hass.localize(
-                      "ui.panel.config.script.editor.read_only"
-                    )}
-                    <ha-button
-                      appearance="plain"
-                      slot="action"
-                      @click=${this._duplicate}
-                    >
-                      ${this.hass.localize(
-                        "ui.panel.config.script.editor.migrate"
-                      )}
-                    </ha-button>
-                  </ha-alert>`
-                : nothing}
-          </div>
           ${this._mode === "gui"
             ? html`
                 <div>
@@ -467,7 +413,68 @@ export class HaScriptEditor extends SubscribeMixin(
                           @value-changed=${this._valueChanged}
                           @editor-save=${this._handleSaveScript}
                           @save-script=${this._handleSaveScript}
-                        ></manual-script-editor>
+                        >
+                          <div class="alert-wrapper" slot="alerts">
+                            ${this._errors || stateObj?.state === UNAVAILABLE
+                              ? html`<ha-alert
+                                  alert-type="error"
+                                  .title=${stateObj?.state === UNAVAILABLE
+                                    ? this.hass.localize(
+                                        "ui.panel.config.script.editor.unavailable"
+                                      )
+                                    : undefined}
+                                >
+                                  ${this._errors || this._validationErrors}
+                                  ${stateObj?.state === UNAVAILABLE
+                                    ? html`<ha-svg-icon
+                                        slot="icon"
+                                        .path=${mdiRobotConfused}
+                                      ></ha-svg-icon>`
+                                    : nothing}
+                                </ha-alert>`
+                              : nothing}
+                            ${this._blueprintConfig
+                              ? html`<ha-alert alert-type="info">
+                                  ${this.hass.localize(
+                                    "ui.panel.config.script.editor.confirm_take_control"
+                                  )}
+                                  <div slot="action" style="display: flex;">
+                                    <ha-button
+                                      appearance="plain"
+                                      @click=${this._takeControlSave}
+                                      >${this.hass.localize(
+                                        "ui.common.yes"
+                                      )}</ha-button
+                                    >
+                                    <ha-button
+                                      appearance="plain"
+                                      @click=${this._revertBlueprint}
+                                      >${this.hass.localize(
+                                        "ui.common.no"
+                                      )}</ha-button
+                                    >
+                                  </div>
+                                </ha-alert>`
+                              : this._readOnly
+                                ? html`<ha-alert
+                                    alert-type="warning"
+                                    dismissable
+                                    >${this.hass.localize(
+                                      "ui.panel.config.script.editor.read_only"
+                                    )}
+                                    <ha-button
+                                      appearance="plain"
+                                      slot="action"
+                                      @click=${this._duplicate}
+                                    >
+                                      ${this.hass.localize(
+                                        "ui.panel.config.script.editor.migrate"
+                                      )}
+                                    </ha-button>
+                                  </ha-alert>`
+                                : nothing}
+                          </div>
+                        </manual-script-editor>
                       `}
                 </div>
               `
@@ -1090,6 +1097,26 @@ export class HaScriptEditor extends SubscribeMixin(
           background-color: var(--card-background-color);
           box-shadow: 0 2px 4px rgba(0, 0, 0, 0.2);
           border-radius: var(--ha-border-radius-sm);
+        }
+
+        .alert-wrapper {
+          position: sticky;
+          top: -24px;
+          margin-top: -24px;
+          margin-bottom: 8px;
+          z-index: 100;
+          width: 100%;
+          display: flex;
+          flex-direction: column;
+          align-items: center;
+          gap: 8px;
+        }
+
+        .alert-wrapper ha-alert {
+          background-color: var(--card-background-color);
+          box-shadow: 0 2px 4px rgba(0, 0, 0, 0.2);
+          border-radius: var(--ha-border-radius-sm);
+          margin-bottom: 0;
         }
 
         manual-script-editor {
