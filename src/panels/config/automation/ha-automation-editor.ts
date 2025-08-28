@@ -1185,6 +1185,7 @@ export class HaAutomationEditor extends PreventUnsavedMixin(
           position: sticky;
           top: -24px;
           margin-top: -24px;
+          margin-bottom: -8px;
           z-index: 100;
           width: 100%;
           display: flex;
