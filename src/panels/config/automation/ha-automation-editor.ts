@@ -465,9 +465,10 @@ export class HaAutomationEditor extends PreventUnsavedMixin(
                           .errors=${this._errors}
                           .hasBlueprintConfig=${Boolean(this._blueprintConfig)}
                           .validationErrors=${this._validationErrors}
-                          @value-changed=${this._valueChanged}
-                          @save-automation=${this._handleSaveAutomation}
+                          @duplicate-automation=${this._duplicate}
                           @editor-save=${this._handleSaveAutomation}
+                          @save-automation=${this._handleSaveAutomation}
+                          @value-changed=${this._valueChanged}
                         ></manual-automation-editor>
                       `}
                 </div>

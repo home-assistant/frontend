@@ -463,7 +463,7 @@ export class HaManualAutomationEditor extends LitElement {
   }
 
   private _duplicate() {
-    fireEvent(this, "duplicate");
+    fireEvent(this, "duplicate-automation");
   }
 
   private _takeControlSave() {
@@ -769,7 +769,7 @@ declare global {
   }
 
   interface HASSDomEvents {
-    duplicate: undefined;
+    "duplicate-automation": undefined;
     "close-sidebar": undefined;
     "open-sidebar": SidebarConfig;
     "request-close-sidebar": undefined;
