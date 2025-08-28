@@ -12,7 +12,6 @@ import {
   mdiPlay,
   mdiPlaylistEdit,
   mdiRenameBox,
-  mdiRobotConfused,
   mdiTag,
   mdiTransitConnection,
   mdiUnfoldLessHorizontal,
