@@ -86,7 +86,7 @@ export default class HaAutomationTrigger extends LitElement {
         @item-added=${this._triggerAdded}
         @item-removed=${this._triggerRemoved}
       >
-        <div class="rows">
+        <div class="rows ${!this.optionsInSidebar ? "no-sidebar" : ""}">
           ${repeat(
             this.triggers,
             (trigger) => this._getKey(trigger),

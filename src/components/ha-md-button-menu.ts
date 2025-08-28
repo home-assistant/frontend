@@ -19,6 +19,8 @@ export class HaMdButtonMenu extends LitElement {
   @property({ type: Boolean, attribute: "has-overflow" }) public hasOverflow =
     false;
 
+  @property({ type: Boolean }) public quick = false;
+
   @query("ha-md-menu", true) private _menu!: HaMdMenu;
 
   public get items() {
@@ -39,6 +41,7 @@ export class HaMdButtonMenu extends LitElement {
         <slot name="trigger" @slotchange=${this._setTriggerAria}></slot>
       </div>
       <ha-md-menu
+        .quick=${this.quick}
         .positioning=${this.positioning}
         .hasOverflow=${this.hasOverflow}
         @opening=${this._handleOpening}

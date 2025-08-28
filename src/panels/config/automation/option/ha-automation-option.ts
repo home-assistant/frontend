@@ -79,7 +79,7 @@ export default class HaAutomationOption extends LitElement {
         @item-added=${this._optionAdded}
         @item-removed=${this._optionRemoved}
       >
-        <div class="rows">
+        <div class="rows ${!this.optionsInSidebar ? "no-sidebar" : ""}">
           ${repeat(
             this.options,
             (option) => this._getKey(option),

@@ -126,6 +126,7 @@ export default class HaAutomationOptionRow extends LitElement {
       ${this.option
         ? html`
             <ha-md-button-menu
+              quick
               slot="icons"
               @click=${preventDefaultStopPropagation}
               @closed=${stopPropagation}
@@ -138,35 +139,28 @@ export default class HaAutomationOptionRow extends LitElement {
                 .path=${mdiDotsVertical}
               ></ha-icon-button>
 
-              ${!this.optionsInSidebar
-                ? html`
-                    <ha-md-menu-item
-                      @click=${this._renameOption}
-                      .disabled=${this.disabled}
-                    >
-                      ${this.hass.localize(
-                        "ui.panel.config.automation.editor.actions.rename"
-                      )}
-                      <ha-svg-icon
-                        slot="graphic"
-                        .path=${mdiRenameBox}
-                      ></ha-svg-icon>
-                    </ha-md-menu-item>
+              <ha-md-menu-item
+                @click=${this._renameOption}
+                .disabled=${this.disabled}
+              >
+                ${this.hass.localize(
+                  "ui.panel.config.automation.editor.actions.rename"
+                )}
+                <ha-svg-icon slot="graphic" .path=${mdiRenameBox}></ha-svg-icon>
+              </ha-md-menu-item>
 
-                    <ha-md-menu-item
-                      @click=${this._duplicateOption}
-                      .disabled=${this.disabled}
-                    >
-                      ${this.hass.localize(
-                        "ui.panel.config.automation.editor.actions.duplicate"
-                      )}
-                      <ha-svg-icon
-                        slot="graphic"
-                        .path=${mdiContentDuplicate}
-                      ></ha-svg-icon>
-                    </ha-md-menu-item>
-                  `
-                : nothing}
+              <ha-md-menu-item
+                @click=${this._duplicateOption}
+                .disabled=${this.disabled}
+              >
+                ${this.hass.localize(
+                  "ui.panel.config.automation.editor.actions.duplicate"
+                )}
+                <ha-svg-icon
+                  slot="graphic"
+                  .path=${mdiContentDuplicate}
+                ></ha-svg-icon>
+              </ha-md-menu-item>
 
               <ha-md-menu-item
                 @click=${this._moveUp}
@@ -188,22 +182,20 @@ export default class HaAutomationOptionRow extends LitElement {
                 <ha-svg-icon slot="graphic" .path=${mdiArrowDown}></ha-svg-icon>
               </ha-md-menu-item>
 
-              ${!this.optionsInSidebar
-                ? html`<ha-md-menu-item
-                    @click=${this._removeOption}
-                    class="warning"
-                    .disabled=${this.disabled}
-                  >
-                    ${this.hass.localize(
-                      "ui.panel.config.automation.editor.actions.type.choose.remove_option"
-                    )}
-                    <ha-svg-icon
-                      class="warning"
-                      slot="graphic"
-                      .path=${mdiDelete}
-                    ></ha-svg-icon>
-                  </ha-md-menu-item>`
-                : nothing}
+              <ha-md-menu-item
+                @click=${this._removeOption}
+                class="warning"
+                .disabled=${this.disabled}
+              >
+                ${this.hass.localize(
+                  "ui.panel.config.automation.editor.actions.type.choose.remove_option"
+                )}
+                <ha-svg-icon
+                  class="warning"
+                  slot="graphic"
+                  .path=${mdiDelete}
+                ></ha-svg-icon>
+              </ha-md-menu-item>
             </ha-md-button-menu>
           `
         : nothing}

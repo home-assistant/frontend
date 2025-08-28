@@ -152,7 +152,7 @@ export default class HaAutomationCondition extends LitElement {
         @item-added=${this._conditionAdded}
         @item-removed=${this._conditionRemoved}
       >
-        <div class="rows">
+        <div class="rows ${!this.optionsInSidebar ? "no-sidebar" : ""}">
           ${repeat(
             this.conditions.filter((c) => typeof c === "object"),
             (condition) => this._getKey(condition),

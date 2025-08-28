@@ -1,8 +1,11 @@
+import { mdiDelete } from "@mdi/js";
 import type { CSSResultGroup } from "lit";
 import { LitElement, css, html, nothing } from "lit";
 import { customElement, property, query, state } from "lit/decorators";
 import { classMap } from "lit/directives/class-map";
 import { fireEvent } from "../../../common/dom/fire_event";
+import { preventDefaultStopPropagation } from "../../../common/dom/prevent_default_stop_propagation";
+import { stopPropagation } from "../../../common/dom/stop_propagation";
 import type { LocalizeKeys } from "../../../common/translations/localize";
 import "../../../components/ha-automation-row";
 import "../../../components/ha-card";
@@ -61,6 +64,27 @@ export default class HaScriptFieldRow extends LitElement {
           <h3 slot="header">${this.key}</h3>
 
           <slot name="icons" slot="icons"></slot>
+
+          <ha-md-button-menu
+            quick
+            slot="icons"
+            @click=${preventDefaultStopPropagation}
+            @keydown=${stopPropagation}
+            @closed=${stopPropagation}
+            positioning="fixed"
+          >
+            <ha-md-menu-item
+              slot="menu-items"
+              .clickAction=${this._onDelete}
+              .disabled=${this.disabled}
+              class="warning"
+            >
+              ${this.hass.localize(
+                "ui.panel.config.automation.editor.actions.delete"
+              )}
+              <ha-svg-icon slot="start" .path=${mdiDelete}></ha-svg-icon>
+            </ha-md-menu-item>
+          </ha-md-button-menu>
         </ha-automation-row>
       </ha-card>
       <div
