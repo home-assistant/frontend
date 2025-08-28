@@ -651,7 +651,6 @@ export default class HaAutomationConditionRow extends LitElement {
       close: () => {
         this._selected = false;
         fireEvent(this, "close-sidebar");
-        this.focus();
       },
       rename: () => {
         this._renameCondition();

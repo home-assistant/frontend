@@ -38,7 +38,6 @@ import { showToast } from "../../../util/toast";
 import "../automation/action/ha-automation-action";
 import type HaAutomationAction from "../automation/action/ha-automation-action";
 import "../automation/ha-automation-sidebar";
-import type HaAutomationSidebar from "../automation/ha-automation-sidebar";
 import { showPasteReplaceDialog } from "../automation/paste-replace-dialog/show-dialog-paste-replace";
 import { manualEditorStyles, saveFabStyles } from "../automation/styles";
 import "./ha-script-fields";
@@ -70,19 +69,14 @@ export class HaManualScriptEditor extends LitElement {
 
   @property({ attribute: false }) public dirty = false;
 
-  @state() private _pastedConfig?: ScriptConfig;
-
-  @state() private _sidebarConfig?: SidebarConfig;
-
   @query("ha-script-fields")
   private _scriptFields?: HaScriptFields;
 
-  @query(".content")
-  private _contentElement?: HTMLDivElement;
-
-  @query("ha-automation-sidebar") private _sidebarElement?: HaAutomationSidebar;
-
   private _openFields = false;
+
+  @state() private _pastedConfig?: ScriptConfig;
+
+  @state() private _sidebarConfig?: SidebarConfig;
 
   private _previousConfig?: ScriptConfig;
 
@@ -223,7 +217,6 @@ export class HaManualScriptEditor extends LitElement {
           </ha-fab>
         </div>
         <ha-automation-sidebar
-          tabindex="-1"
           class=${classMap({
             sidebar: true,
             overlay: !this.isWide,
@@ -462,13 +455,10 @@ export class HaManualScriptEditor extends LitElement {
     });
   }
 
-  private async _openSidebar(ev: CustomEvent<SidebarConfig>) {
+  private _openSidebar(ev: CustomEvent<SidebarConfig>) {
     // deselect previous selected row
     this._sidebarConfig?.close?.();
     this._sidebarConfig = ev.detail;
-
-    await this._sidebarElement?.updateComplete;
-    this._sidebarElement?.focus();
   }
 
   private _sidebarConfigChanged(ev: CustomEvent<{ value: SidebarConfig }>) {
@@ -493,8 +483,6 @@ export class HaManualScriptEditor extends LitElement {
 
   private _handleCloseSidebar() {
     this._sidebarConfig = undefined;
-    // fix content shift when bottom rows are scrolled into view
-    this._contentElement?.scrollIntoView();
   }
 
   private _saveScript() {
