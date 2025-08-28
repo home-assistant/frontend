@@ -1,6 +1,6 @@
-import { mdiContentSave, mdiHelpCircle, mdiRobotConfused } from "@mdi/js";
+import { mdiContentSave, mdiHelpCircle } from "@mdi/js";
 import { load } from "js-yaml";
-import type { CSSResultGroup, PropertyValues, TemplateResult } from "lit";
+import type { CSSResultGroup, PropertyValues } from "lit";
 import { css, html, LitElement, nothing } from "lit";
 import { customElement, property, query, state } from "lit/decorators";
 import { classMap } from "lit/directives/class-map";
@@ -14,7 +14,6 @@ import {
   optional,
   string,
 } from "superstruct";
-import type { HassEntity } from "home-assistant-js-websocket";
 import { ensureArray } from "../../../common/array/ensure-array";
 import { canOverrideAlphanumericInput } from "../../../common/dom/can-override-input";
 import { fireEvent } from "../../../common/dom/fire_event";
@@ -43,7 +42,6 @@ import { showPasteReplaceDialog } from "../automation/paste-replace-dialog/show-
 import { manualEditorStyles, saveFabStyles } from "../automation/styles";
 import "./ha-script-fields";
 import type HaScriptFields from "./ha-script-fields";
-import { UNAVAILABLE } from "../../../data/entity";
 
 const scriptConfigStruct = object({
   alias: optional(string()),
@@ -70,17 +68,6 @@ export class HaManualScriptEditor extends LitElement {
   @property({ attribute: false }) public config!: ScriptConfig;
 
   @property({ attribute: false }) public dirty = false;
-
-  @property({ attribute: false }) public stateObj?: HassEntity;
-
-  @property({ attribute: false }) public errors?: string;
-
-  @property({ attribute: false }) public hasBlueprintConfig = false;
-
-  @property({ attribute: false }) public validationErrors?: (
-    | string
-    | TemplateResult
-  )[];
 
   @query("ha-script-fields")
   private _scriptFields?: HaScriptFields;
@@ -215,61 +202,7 @@ export class HaManualScriptEditor extends LitElement {
       >
         <div class="content-wrapper">
           <div class="content">
-            <div class="alert-wrapper">
-              ${this.errors || this.stateObj?.state === UNAVAILABLE
-                ? html`<ha-alert
-                    alert-type="error"
-                    .title=${this.stateObj?.state === UNAVAILABLE
-                      ? this.hass.localize(
-                          "ui.panel.config.script.editor.unavailable"
-                        )
-                      : undefined}
-                  >
-                    ${this.errors || this.validationErrors}
-                    ${this.stateObj?.state === UNAVAILABLE
-                      ? html`<ha-svg-icon
-                          slot="icon"
-                          .path=${mdiRobotConfused}
-                        ></ha-svg-icon>`
-                      : nothing}
-                  </ha-alert>`
-                : nothing}
-              ${this.hasBlueprintConfig
-                ? html`<ha-alert alert-type="info">
-                    ${this.hass.localize(
-                      "ui.panel.config.script.editor.confirm_take_control"
-                    )}
-                    <div slot="action" style="display: flex;">
-                      <ha-button
-                        appearance="plain"
-                        @click=${this._takeControlSave}
-                        >${this.hass.localize("ui.common.yes")}</ha-button
-                      >
-                      <ha-button
-                        appearance="plain"
-                        @click=${this._revertBlueprint}
-                        >${this.hass.localize("ui.common.no")}</ha-button
-                      >
-                    </div>
-                  </ha-alert>`
-                : this.disabled
-                  ? html`<ha-alert alert-type="warning" dismissable
-                      >${this.hass.localize(
-                        "ui.panel.config.script.editor.read_only"
-                      )}
-                      <ha-button
-                        appearance="plain"
-                        slot="action"
-                        @click=${this._duplicate}
-                      >
-                        ${this.hass.localize(
-                          "ui.panel.config.script.editor.migrate"
-                        )}
-                      </ha-button>
-                    </ha-alert>`
-                  : nothing}
-            </div>
-
+            <slot name="alerts"></slot>
             ${this._renderContent()}
           </div>
           <ha-fab
@@ -341,18 +274,6 @@ export class HaManualScriptEditor extends LitElement {
   public disconnectedCallback() {
     window.removeEventListener("paste", this._handlePaste);
     super.disconnectedCallback();
-  }
-
-  private _duplicate() {
-    fireEvent(this, "duplicate-script");
-  }
-
-  private _takeControlSave() {
-    fireEvent(this, "take-control-save");
-  }
-
-  private _revertBlueprint() {
-    fireEvent(this, "revert-blueprint");
   }
 
   private _handlePaste = async (ev: ClipboardEvent) => {
@@ -605,24 +526,8 @@ export class HaManualScriptEditor extends LitElement {
           flex: 1;
         }
 
-        .alert-wrapper {
-          position: sticky;
-          top: -24px;
-          margin-top: -24px;
-          margin-bottom: 16px;
-          z-index: 100;
-          width: 100%;
-          display: flex;
-          flex-direction: column;
-          align-items: center;
-          gap: 8px;
-        }
-
-        .alert-wrapper ha-alert {
-          background-color: var(--card-background-color);
-          box-shadow: 0 2px 4px rgba(0, 0, 0, 0.2);
-          border-radius: var(--ha-border-radius-sm);
-          margin-bottom: 0;
+        .description {
+          margin-top: 16px;
         }
       `,
     ];
@@ -632,12 +537,5 @@ export class HaManualScriptEditor extends LitElement {
 declare global {
   interface HTMLElementTagNameMap {
     "manual-script-editor": HaManualScriptEditor;
-  }
-
-  interface HASSDomEvents {
-    "duplicate-script": undefined;
-    "take-control-save": undefined;
-    "revert-blueprint": undefined;
-    "save-script": undefined;
   }
 }
