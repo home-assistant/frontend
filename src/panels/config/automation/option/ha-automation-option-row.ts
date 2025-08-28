@@ -146,7 +146,7 @@ export default class HaAutomationOptionRow extends LitElement {
                 ${this.hass.localize(
                   "ui.panel.config.automation.editor.actions.rename"
                 )}
-                <ha-svg-icon slot="graphic" .path=${mdiRenameBox}></ha-svg-icon>
+                <ha-svg-icon slot="start" .path=${mdiRenameBox}></ha-svg-icon>
               </ha-md-menu-item>
 
               <ha-md-menu-item
@@ -157,7 +157,7 @@ export default class HaAutomationOptionRow extends LitElement {
                   "ui.panel.config.automation.editor.actions.duplicate"
                 )}
                 <ha-svg-icon
-                  slot="graphic"
+                  slot="start"
                   .path=${mdiContentDuplicate}
                 ></ha-svg-icon>
               </ha-md-menu-item>
@@ -169,7 +169,7 @@ export default class HaAutomationOptionRow extends LitElement {
                 ${this.hass.localize(
                   "ui.panel.config.automation.editor.move_up"
                 )}
-                <ha-svg-icon slot="graphic" .path=${mdiArrowUp}></ha-svg-icon>
+                <ha-svg-icon slot="start" .path=${mdiArrowUp}></ha-svg-icon>
               </ha-md-menu-item>
 
               <ha-md-menu-item
@@ -179,7 +179,7 @@ export default class HaAutomationOptionRow extends LitElement {
                 ${this.hass.localize(
                   "ui.panel.config.automation.editor.move_down"
                 )}
-                <ha-svg-icon slot="graphic" .path=${mdiArrowDown}></ha-svg-icon>
+                <ha-svg-icon slot="start" .path=${mdiArrowDown}></ha-svg-icon>
               </ha-md-menu-item>
 
               <ha-md-menu-item
@@ -192,7 +192,7 @@ export default class HaAutomationOptionRow extends LitElement {
                 )}
                 <ha-svg-icon
                   class="warning"
-                  slot="graphic"
+                  slot="start"
                   .path=${mdiDelete}
                 ></ha-svg-icon>
               </ha-md-menu-item>
