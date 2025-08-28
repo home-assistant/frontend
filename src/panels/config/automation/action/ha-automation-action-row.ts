@@ -688,9 +688,11 @@ export default class HaAutomationActionRow extends LitElement {
     this._collapsed = false;
 
     if (this.narrow) {
-      this.scrollIntoView({
-        block: "start",
-        behavior: "smooth",
+      requestAnimationFrame(() => {
+        this.scrollIntoView({
+          block: "start",
+          behavior: "smooth",
+        });
       });
     }
   }

@@ -245,9 +245,11 @@ export default class HaScriptFieldRow extends LitElement {
     } satisfies ScriptFieldSidebarConfig);
 
     if (this.narrow) {
-      this.scrollIntoView({
-        block: "start",
-        behavior: "smooth",
+      requestAnimationFrame(() => {
+        this.scrollIntoView({
+          block: "start",
+          behavior: "smooth",
+        });
       });
     }
   }
