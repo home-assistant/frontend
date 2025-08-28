@@ -12,6 +12,7 @@ import {
   mdiPlayCircleOutline,
   mdiPlaylistEdit,
   mdiRenameBox,
+  mdiRobotConfused,
   mdiStopCircleOutline,
   mdiTag,
   mdiTransitConnection,
@@ -462,14 +463,91 @@ export class HaAutomationEditor extends PreventUnsavedMixin(
                           .disabled=${this._readOnly}
                           .dirty=${this._dirty}
                           .saving=${this._saving}
-                          .errors=${this._errors}
-                          .hasBlueprintConfig=${Boolean(this._blueprintConfig)}
-                          .validationErrors=${this._validationErrors}
-                          @duplicate-automation=${this._duplicate}
                           @editor-save=${this._handleSaveAutomation}
                           @save-automation=${this._handleSaveAutomation}
                           @value-changed=${this._valueChanged}
-                        ></manual-automation-editor>
+                        >
+                          <div class="alert-wrapper" slot="alerts">
+                            ${this._errors || stateObj?.state === UNAVAILABLE
+                              ? html`<ha-alert
+                                  alert-type="error"
+                                  .title=${stateObj?.state === UNAVAILABLE
+                                    ? this.hass.localize(
+                                        "ui.panel.config.automation.editor.unavailable"
+                                      )
+                                    : undefined}
+                                >
+                                  ${this._errors || this._validationErrors}
+                                  ${stateObj?.state === UNAVAILABLE
+                                    ? html`<ha-svg-icon
+                                        slot="icon"
+                                        .path=${mdiRobotConfused}
+                                      ></ha-svg-icon>`
+                                    : nothing}
+                                </ha-alert>`
+                              : nothing}
+                            ${this._blueprintConfig
+                              ? html`<ha-alert alert-type="info">
+                                  ${this.hass.localize(
+                                    "ui.panel.config.automation.editor.confirm_take_control"
+                                  )}
+                                  <div slot="action" style="display: flex;">
+                                    <ha-button
+                                      appearance="plain"
+                                      @click=${this._takeControlSave}
+                                      >${this.hass.localize(
+                                        "ui.common.yes"
+                                      )}</ha-button
+                                    >
+                                    <ha-button
+                                      appearance="plain"
+                                      @click=${this._revertBlueprint}
+                                      >${this.hass.localize(
+                                        "ui.common.no"
+                                      )}</ha-button
+                                    >
+                                  </div>
+                                </ha-alert>`
+                              : this._readOnly
+                                ? html`<ha-alert
+                                    alert-type="warning"
+                                    dismissable
+                                    >${this.hass.localize(
+                                      "ui.panel.config.automation.editor.read_only"
+                                    )}
+                                    <ha-button
+                                      appearance="filled"
+                                      size="small"
+                                      variant="warning"
+                                      slot="action"
+                                      @click=${this._duplicate}
+                                    >
+                                      ${this.hass.localize(
+                                        "ui.panel.config.automation.editor.migrate"
+                                      )}
+                                    </ha-button>
+                                  </ha-alert>`
+                                : nothing}
+                            ${stateObj?.state === "off"
+                              ? html`
+                                  <ha-alert alert-type="info">
+                                    ${this.hass.localize(
+                                      "ui.panel.config.automation.editor.disabled"
+                                    )}
+                                    <ha-button
+                                      size="small"
+                                      slot="action"
+                                      @click=${this._toggle}
+                                    >
+                                      ${this.hass.localize(
+                                        "ui.panel.config.automation.editor.enable"
+                                      )}
+                                    </ha-button>
+                                  </ha-alert>
+                                `
+                              : nothing}
+                          </div>
+                        </manual-automation-editor>
                       `}
                 </div>
               `
@@ -1104,6 +1182,25 @@ export class HaAutomationEditor extends PreventUnsavedMixin(
           max-width: 1040px;
           padding: 28px 20px 0;
           display: block;
+        }
+
+        :not(.yaml-mode) > .alert-wrapper {
+          position: sticky;
+          top: -24px;
+          margin-top: -24px;
+          z-index: 100;
+          width: 100%;
+          display: flex;
+          flex-direction: column;
+          align-items: center;
+          gap: 8px;
+        }
+
+        :not(.yaml-mode) > .alert-wrapper ha-alert {
+          background-color: var(--card-background-color);
+          box-shadow: 0 2px 4px rgba(0, 0, 0, 0.2);
+          border-radius: var(--ha-border-radius-sm);
+          margin-bottom: 0;
         }
 
         manual-automation-editor {
