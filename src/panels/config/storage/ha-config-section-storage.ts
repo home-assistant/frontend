@@ -340,12 +340,13 @@ class HaConfigSectionStorage extends LitElement {
         ></ha-segmented-bar>
 
         ${!storageInfo || storageInfo === null
-          ? html`<ha-alert alert-type="info"
-              >${this.hass.localize(
+          ? html`<ha-alert alert-type="info">
+              <ha-spinner slot="icon"></ha-spinner>
+              ${this.hass.localize(
                 "ui.panel.config.storage.loading_detailed"
               )}</ha-alert
             >`
-          : nothing} `;
+          : nothing}`;
     }
   );
 
@@ -517,6 +518,10 @@ class HaConfigSectionStorage extends LitElement {
     ha-svg-icon,
     ha-icon-next {
       width: 24px;
+    }
+
+    ha-alert ha-spinner {
+      --ha-spinner-size: 24px;
     }
   `;
 }
