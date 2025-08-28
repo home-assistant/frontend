@@ -65,7 +65,7 @@ export const HOME_SUMMARIES_FILTERS: Record<HomeSummaries, EntityFilter[]> = {
     },
     {
       domain: "binary_sensor",
-      device_class: ["door", "garage_door"],
+      device_class: ["door", "garage_door", "motion"],
       entity_category: "none",
     },
   ],
