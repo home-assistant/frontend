@@ -33,6 +33,7 @@ export const colorStyles = css`
     --rgb-error-color: 219, 68, 55;
     --rgb-success-color: 67, 160, 71;
     --rgb-info-color: 3, 155, 229;
+    --rgb-loading-color: 75, 75, 75;
 
     --scrollbar-thumb-color: rgb(194, 194, 194);
 
@@ -40,6 +41,7 @@ export const colorStyles = css`
     --warning-color: #ffa600;
     --success-color: #43a047;
     --info-color: #039be5;
+    --loading-color: #4b4b4b;
 
     /* backgrounds */
     --card-background-color: #ffffff;

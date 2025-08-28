@@ -4,6 +4,7 @@ import {
   mdiCheckboxMarkedCircleOutline,
   mdiClose,
   mdiInformationOutline,
+  mdiLoading,
 } from "@mdi/js";
 import { css, html, LitElement, nothing } from "lit";
 import { customElement, property } from "lit/decorators";
@@ -11,12 +12,14 @@ import { classMap } from "lit/directives/class-map";
 import { fireEvent } from "../common/dom/fire_event";
 import "./ha-icon-button";
 import "./ha-svg-icon";
+import "./ha-spinner";
 
 const ALERT_ICONS = {
   info: mdiInformationOutline,
   warning: mdiAlertOutline,
   error: mdiAlertCircleOutline,
   success: mdiCheckboxMarkedCircleOutline,
+  loading: mdiLoading,
 };
 
 declare global {
@@ -34,7 +37,8 @@ class HaAlert extends LitElement {
     | "info"
     | "warning"
     | "error"
-    | "success" = "info";
+    | "success"
+    | "loading" = "info";
 
   @property({ type: Boolean }) public dismissable = false;
 
@@ -50,7 +54,11 @@ class HaAlert extends LitElement {
       >
         <div class="icon ${this.title ? "" : "no-title"}">
           <slot name="icon">
-            <ha-svg-icon .path=${ALERT_ICONS[this.alertType]}></ha-svg-icon>
+            ${this.alertType === "loading"
+              ? html`<ha-spinner></ha-spinner>`
+              : html`<ha-svg-icon
+                  .path=${ALERT_ICONS[this.alertType]}
+                ></ha-svg-icon>`}
           </slot>
         </div>
         <div class=${classMap({ content: true, narrow: this.narrow })}>
@@ -133,6 +141,7 @@ class HaAlert extends LitElement {
       --mdc-theme-primary: var(--primary-text-color);
       --mdc-icon-button-size: 36px;
     }
+
     .issue-type.info > .icon {
       color: var(--info-color);
     }
@@ -160,6 +169,17 @@ class HaAlert extends LitElement {
     .issue-type.success::after {
       background-color: var(--success-color);
     }
+
+    .issue-type.loading > .icon {
+      color: var(--loading-color);
+    }
+    .issue-type.loading::after {
+      background-color: var(--loading-color);
+    }
+    .issue-type.loading > .icon ha-spinner {
+      --ha-spinner-size: 24px;
+    }
+
     :host ::slotted(ul) {
       margin: 0;
       padding-inline-start: 20px;
