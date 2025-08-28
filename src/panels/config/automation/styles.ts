@@ -168,7 +168,6 @@ export const manualEditorStyles = css`
   @media all and (max-width: 870px) {
     .split-view {
       gap: 0;
-      margin-right: -8px;
     }
     .sidebar {
       height: 0;
