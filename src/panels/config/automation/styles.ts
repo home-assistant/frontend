@@ -69,7 +69,7 @@ export const indentStyle = css`
   .selector-row,
   :host([indent]) ha-form {
     margin-left: 12px;
-    padding: 12px 24px 16px 16px;
+    padding: 12px 20px 16px 16px;
     border-left: 2px solid var(--ha-color-border-neutral-quiet);
     border-bottom: 2px solid var(--ha-color-border-neutral-quiet);
     border-radius: 0;
@@ -196,6 +196,9 @@ export const automationRowsStyles = css`
     display: flex;
     flex-direction: column;
     gap: 16px;
+  }
+  .rows.no-sidebar {
+    margin-right: 0;
   }
   .sortable-ghost {
     background: none;
