@@ -327,8 +327,7 @@ class HaConfigSectionStorage extends LitElement {
             >${roundWithOneDecimal(freeSpaceGB)} GB</span
           >`,
       });
-      const chart = html`
-        <ha-segmented-bar
+      return html`<ha-segmented-bar
           .heading=${this.hass.localize("ui.panel.config.storage.used_space")}
           .description=${this.hass.localize(
             "ui.panel.config.storage.detailed_description",
@@ -339,17 +338,15 @@ class HaConfigSectionStorage extends LitElement {
           )}
           .segments=${segments}
         ></ha-segmented-bar>
-      `;
-      return storageInfo || storageInfo === null
-        ? chart
-        : html`
-            <div class="loading-container">
-              ${chart}
-              <div class="loading-overlay">
-                <ha-spinner></ha-spinner>
-              </div>
-            </div>
-          `;
+
+        ${!storageInfo || storageInfo === null
+          ? html`<ha-alert alert-type="info">
+              <ha-spinner slot="icon"></ha-spinner>
+              ${this.hass.localize(
+                "ui.panel.config.storage.loading_detailed"
+              )}</ha-alert
+            >`
+          : nothing}`;
     }
   );
 
@@ -521,6 +518,10 @@ class HaConfigSectionStorage extends LitElement {
     ha-svg-icon,
     ha-icon-next {
       width: 24px;
+    }
+
+    ha-alert ha-spinner {
+      --ha-spinner-size: 24px;
     }
   `;
 }

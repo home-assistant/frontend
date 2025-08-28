@@ -6674,6 +6674,7 @@
           "description": "{percent_used} used - {free_space} free",
           "used_space": "Storage",
           "detailed_description": "{used} of {total} used",
+          "loading_detailed": "Loading detailed storage information...",
           "segments": {
             "used": "Used space",
             "free": "Free space",
