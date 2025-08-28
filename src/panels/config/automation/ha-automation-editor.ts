@@ -499,7 +499,7 @@ export class HaAutomationEditor extends PreventUnsavedMixin(
                           .isWide=${this.isWide}
                           .stateObj=${stateObj}
                           .config=${this._config}
-                          .disabled=${Boolean(this._readOnly)}
+                          .disabled=${this._readOnly}
                           .saving=${this._saving}
                           .dirty=${this._dirty}
                           @value-changed=${this._valueChanged}
@@ -513,7 +513,7 @@ export class HaAutomationEditor extends PreventUnsavedMixin(
                           .isWide=${this.isWide}
                           .stateObj=${stateObj}
                           .config=${this._config}
-                          .disabled=${Boolean(this._readOnly)}
+                          .disabled=${this._readOnly}
                           .dirty=${this._dirty}
                           .saving=${this._saving}
                           @value-changed=${this._valueChanged}
