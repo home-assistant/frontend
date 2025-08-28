@@ -54,7 +54,7 @@ export const editorStyles = css`
     pointer-events: none;
   }
 
-  .card-content {
+  .card-content.card {
     padding: 16px;
   }
   .card-content.yaml {
@@ -69,7 +69,7 @@ export const indentStyle = css`
   .selector-row,
   :host([indent]) ha-form {
     margin-left: 12px;
-    padding: 12px 24px 16px 16px;
+    padding: 12px 20px 16px 16px;
     border-left: 2px solid var(--ha-color-border-neutral-quiet);
     border-bottom: 2px solid var(--ha-color-border-neutral-quiet);
     border-radius: 0;
@@ -168,7 +168,6 @@ export const manualEditorStyles = css`
   @media all and (max-width: 870px) {
     .split-view {
       gap: 0;
-      margin-right: -8px;
     }
     .sidebar {
       height: 0;
@@ -197,6 +196,9 @@ export const automationRowsStyles = css`
     flex-direction: column;
     gap: 16px;
   }
+  .rows.no-sidebar {
+    margin-right: 0;
+  }
   .sortable-ghost {
     background: none;
     border-radius: var(--ha-card-border-radius, var(--ha-border-radius-lg));
@@ -209,9 +211,19 @@ export const automationRowsStyles = css`
     scroll-margin-top: 48px;
   }
   .handle {
-    padding: 12px;
+    margin: 4px;
+    padding: 8px;
     cursor: move; /* fallback if grab cursor is unsupported */
     cursor: grab;
+    border-radius: var(--ha-border-radius-pill);
+  }
+  .handle:focus {
+    outline: var(--wa-focus-ring);
+    background: var(--ha-color-fill-neutral-quiet-resting);
+  }
+  .handle.active {
+    outline: var(--wa-focus-ring);
+    background: var(--ha-color-fill-neutral-normal-active);
   }
   .handle ha-svg-icon {
     pointer-events: none;

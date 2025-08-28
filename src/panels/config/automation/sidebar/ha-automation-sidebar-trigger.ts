@@ -193,6 +193,7 @@ export default class HaAutomationSidebarTrigger extends LitElement {
           .yamlMode=${this.yamlMode}
           .disabled=${this.disabled}
           @ui-mode-not-available=${this._handleUiModeNotAvailable}
+          sidebar
         ></ha-automation-trigger-editor>
       </ha-automation-sidebar-card>
     `;

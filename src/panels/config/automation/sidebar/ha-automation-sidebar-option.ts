@@ -67,7 +67,7 @@ export default class HaAutomationSidebarOption extends LitElement {
                 "ui.panel.config.automation.editor.actions.duplicate"
               )}
               <ha-svg-icon
-                slot="graphic"
+                slot="start"
                 .path=${mdiContentDuplicate}
               ></ha-svg-icon>
             </ha-md-menu-item>
