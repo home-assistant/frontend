@@ -339,7 +339,7 @@ export class HuiClockCardEditor
         );
       case "face_style":
         return this.hass!.localize(
-          `ui.panel.lovelace.editor.card.clock.face_style`
+          `ui.panel.lovelace.editor.card.clock.face_style.label`
         );
       default:
         return undefined;
@@ -357,6 +357,10 @@ export class HuiClockCardEditor
       case "ticks":
         return this.hass!.localize(
           `ui.panel.lovelace.editor.card.clock.ticks.description`
+        );
+      case "face_style":
+        return this.hass!.localize(
+          `ui.panel.lovelace.editor.card.clock.face_style.description`
         );
       default:
         return undefined;
