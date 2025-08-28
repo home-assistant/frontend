@@ -567,7 +567,7 @@ export class HaAutomationEditor extends PreventUnsavedMixin(
                           </ha-button>
                         </ha-alert>
                       `
-                    : ""}
+                    : nothing}
                   <ha-yaml-editor
                     copy-clipboard
                     .hass=${this.hass}
