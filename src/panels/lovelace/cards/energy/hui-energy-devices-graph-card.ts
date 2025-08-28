@@ -21,7 +21,7 @@ import type { HomeAssistant } from "../../../../types";
 import type { LovelaceCard } from "../../types";
 import type { EnergyDevicesGraphCardConfig } from "../types";
 import { hasConfigChanged } from "../../common/has-changed";
-import type { ECOption } from "../../../../resources/echarts";
+import type { ECOption } from "../../../../resources/echarts/echarts";
 import "../../../../components/ha-card";
 import { fireEvent } from "../../../../common/dom/fire_event";
 import { measureTextWidth } from "../../../../util/text";

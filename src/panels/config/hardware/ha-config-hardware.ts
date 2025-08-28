@@ -31,7 +31,7 @@ import { showOptionsFlowDialog } from "../../../dialogs/config-flow/show-dialog-
 import { showRestartDialog } from "../../../dialogs/restart/show-dialog-restart";
 import "../../../layouts/hass-subpage";
 import { SubscribeMixin } from "../../../mixins/subscribe-mixin";
-import type { ECOption } from "../../../resources/echarts";
+import type { ECOption } from "../../../resources/echarts/echarts";
 import { haStyle } from "../../../resources/styles";
 import { DefaultPrimaryColor } from "../../../resources/theme/color/color.globals";
 import type { HomeAssistant } from "../../../types";

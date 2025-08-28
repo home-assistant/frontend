@@ -6,8 +6,9 @@ import type { SankeySeriesOption } from "echarts/types/dist/echarts";
 import { SankeyChart } from "echarts/charts";
 import memoizeOne from "memoize-one";
 import { ResizeController } from "@lit-labs/observers/resize-controller";
+import SankeyLayout from "../../resources/echarts/components/sankey-layout";
 import type { HomeAssistant } from "../../types";
-import type { ECOption } from "../../resources/echarts";
+import type { ECOption } from "../../resources/echarts/echarts";
 import { measureTextWidth } from "../../util/text";
 import "./ha-chart-base";
 import { NODE_SIZE } from "../trace/hat-graph-const";
@@ -81,7 +82,7 @@ export class HaSankeyChart extends LitElement {
       .data=${this._createData(this.data, this._sizeController.value?.width)}
       .options=${options}
       height="100%"
-      .extraComponents=${[SankeyChart]}
+      .extraComponents=${[SankeyChart, SankeyLayout]}
     ></ha-chart-base>`;
   }
 

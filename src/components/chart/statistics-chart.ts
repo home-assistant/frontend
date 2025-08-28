@@ -29,7 +29,7 @@ import {
   getStatisticMetadata,
   statisticsHaveType,
 } from "../../data/recorder";
-import type { ECOption } from "../../resources/echarts";
+import type { ECOption } from "../../resources/echarts/echarts";
 import type { HomeAssistant } from "../../types";
 import type { CustomLegendOption } from "./ha-chart-base";
 import "./ha-chart-base";

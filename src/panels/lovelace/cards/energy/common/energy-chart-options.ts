@@ -25,7 +25,7 @@ import {
   formatDateVeryShort,
 } from "../../../../../common/datetime/format_date";
 import { formatTime } from "../../../../../common/datetime/format_time";
-import type { ECOption } from "../../../../../resources/echarts";
+import type { ECOption } from "../../../../../resources/echarts/echarts";
 
 export function getSuggestedMax(dayDifference: number, end: Date): number {
   let suggestedMax = new Date(end);
