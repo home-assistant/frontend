@@ -485,6 +485,7 @@ export default class HaAutomationTriggerRow extends LitElement {
       close: () => {
         this._selected = false;
         fireEvent(this, "close-sidebar");
+        this.focus();
       },
       rename: () => {
         this._renameTrigger();

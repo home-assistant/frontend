@@ -8,6 +8,7 @@ import { preventDefaultStopPropagation } from "../../../common/dom/prevent_defau
 import { stopPropagation } from "../../../common/dom/stop_propagation";
 import type { LocalizeKeys } from "../../../common/translations/localize";
 import "../../../components/ha-automation-row";
+import type { HaAutomationRow } from "../../../components/ha-automation-row";
 import "../../../components/ha-card";
 import "../../../components/ha-icon-button";
 import "../../../components/ha-md-button-menu";
@@ -49,6 +50,12 @@ export default class HaScriptFieldRow extends LitElement {
 
   @query("ha-script-field-selector-editor")
   private _selectorEditor?: HaScriptFieldSelectorEditor;
+
+  @query("ha-automation-row:first-of-type")
+  private _fieldRowElement?: HaAutomationRow;
+
+  @query(".selector-row ha-automation-row")
+  private _selectorRowElement?: HaAutomationRow;
 
   protected render() {
     return html`
@@ -227,8 +234,10 @@ export default class HaScriptFieldRow extends LitElement {
       close: () => {
         if (selectorEditor) {
           this._selectorRowSelected = false;
+          this.focusSelector();
         } else {
           this._selected = false;
+          this.focus();
         }
         fireEvent(this, "close-sidebar");
       },
@@ -279,6 +288,14 @@ export default class HaScriptFieldRow extends LitElement {
       },
     });
   };
+
+  public focus() {
+    this._fieldRowElement?.focus();
+  }
+
+  public focusSelector() {
+    this._selectorRowElement?.focus();
+  }
 
   static get styles(): CSSResultGroup {
     return [
@@ -351,6 +368,10 @@ export default class HaScriptFieldRow extends LitElement {
           --shadow-focus: 0 0 0 1px var(--state-inactive-color);
           border-color: var(--state-inactive-color);
           box-shadow: var(--shadow-default), var(--shadow-focus);
+        }
+
+        .selector-row {
+          padding: 12px 0 16px 16px;
         }
       `,
     ];
