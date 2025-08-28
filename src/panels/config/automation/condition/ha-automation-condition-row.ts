@@ -26,6 +26,7 @@ import { stopPropagation } from "../../../../common/dom/stop_propagation";
 import { capitalizeFirstLetter } from "../../../../common/string/capitalize-first-letter";
 import { handleStructError } from "../../../../common/structs/handle-errors";
 import "../../../../components/ha-automation-row";
+import type { HaAutomationRow } from "../../../../components/ha-automation-row";
 import "../../../../components/ha-card";
 import "../../../../components/ha-expansion-panel";
 import "../../../../components/ha-icon-button";
@@ -115,6 +116,9 @@ export default class HaAutomationConditionRow extends LitElement {
 
   @property({ type: Boolean }) public narrow = false;
 
+  @property({ type: Boolean, attribute: "sort-selected" })
+  public sortSelected = false;
+
   @state() private _collapsed = true;
 
   @state() private _warnings?: string[];
@@ -144,6 +148,9 @@ export default class HaAutomationConditionRow extends LitElement {
 
   @query("ha-automation-condition-editor")
   public conditionEditor?: HaAutomationConditionEditor;
+
+  @query("ha-automation-row")
+  private _automationRowElement?: HaAutomationRow;
 
   private _renderRow() {
     return html`
@@ -349,6 +356,7 @@ export default class HaAutomationConditionRow extends LitElement {
               .buildingBlock=${CONDITION_BUILDING_BLOCKS.includes(
                 this.condition.condition
               )}
+              .sortSelected=${this.sortSelected}
               >${this._renderRow()}</ha-automation-row
             >`
           : html`
@@ -681,6 +689,10 @@ export default class HaAutomationConditionRow extends LitElement {
 
   public isSelected() {
     return this._selected;
+  }
+
+  public focus() {
+    this._automationRowElement?.focus();
   }
 
   static get styles(): CSSResultGroup {

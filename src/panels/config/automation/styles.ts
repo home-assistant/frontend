@@ -211,9 +211,19 @@ export const automationRowsStyles = css`
     scroll-margin-top: 48px;
   }
   .handle {
-    padding: 12px;
+    margin: 4px;
+    padding: 8px;
     cursor: move; /* fallback if grab cursor is unsupported */
     cursor: grab;
+    border-radius: var(--ha-border-radius-pill);
+  }
+  .handle:focus {
+    outline: var(--wa-focus-ring);
+    background: var(--ha-color-fill-neutral-quiet-resting);
+  }
+  .handle.active {
+    outline: var(--wa-focus-ring);
+    background: var(--ha-color-fill-neutral-normal-active);
   }
   .handle ha-svg-icon {
     pointer-events: none;

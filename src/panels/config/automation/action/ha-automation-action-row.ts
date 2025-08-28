@@ -26,6 +26,7 @@ import { stopPropagation } from "../../../../common/dom/stop_propagation";
 import { capitalizeFirstLetter } from "../../../../common/string/capitalize-first-letter";
 import { handleStructError } from "../../../../common/structs/handle-errors";
 import "../../../../components/ha-automation-row";
+import type { HaAutomationRow } from "../../../../components/ha-automation-row";
 import "../../../../components/ha-card";
 import "../../../../components/ha-expansion-panel";
 import "../../../../components/ha-icon-button";
@@ -153,6 +154,9 @@ export default class HaAutomationActionRow extends LitElement {
   @property({ type: Boolean, attribute: "sidebar" })
   public optionsInSidebar = false;
 
+  @property({ type: Boolean, attribute: "sort-selected" })
+  public sortSelected = false;
+
   @storage({
     key: "automationClipboard",
     state: false,
@@ -185,6 +189,9 @@ export default class HaAutomationActionRow extends LitElement {
 
   @query("ha-automation-action-editor")
   private _actionEditor?: HaAutomationActionEditor;
+
+  @query("ha-automation-row")
+  private _automationRowElement?: HaAutomationRow;
 
   protected firstUpdated(changedProperties: PropertyValues): void {
     super.firstUpdated(changedProperties);
@@ -440,6 +447,7 @@ export default class HaAutomationActionRow extends LitElement {
                 ...ACTION_BUILDING_BLOCKS,
                 ...ACTION_COMBINED_BLOCKS,
               ].includes(blockType!)}
+              .sortSelected=${this.sortSelected}
               >${this._renderRow()}</ha-automation-row
             >`
           : html`
@@ -744,6 +752,10 @@ export default class HaAutomationActionRow extends LitElement {
 
   public isSelected() {
     return this._selected;
+  }
+
+  public focus() {
+    this._automationRowElement?.focus();
   }
 
   static styles = rowStyles;

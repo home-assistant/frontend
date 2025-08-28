@@ -28,6 +28,7 @@ import { handleStructError } from "../../../../common/structs/handle-errors";
 import { debounce } from "../../../../common/util/debounce";
 import "../../../../components/ha-alert";
 import "../../../../components/ha-automation-row";
+import type { HaAutomationRow } from "../../../../components/ha-automation-row";
 import "../../../../components/ha-card";
 import "../../../../components/ha-expansion-panel";
 import "../../../../components/ha-icon-button";
@@ -115,6 +116,9 @@ export default class HaAutomationTriggerRow extends LitElement {
   @property({ type: Boolean, attribute: "sidebar" })
   public optionsInSidebar = false;
 
+  @property({ type: Boolean, attribute: "sort-selected" })
+  public sortSelected = false;
+
   @state() private _yamlMode = false;
 
   @state() private _triggered?: Record<string, unknown>;
@@ -131,6 +135,9 @@ export default class HaAutomationTriggerRow extends LitElement {
 
   @query("ha-automation-trigger-editor")
   public triggerEditor?: HaAutomationTriggerEditor;
+
+  @query("ha-automation-row")
+  private _automationRowElement?: HaAutomationRow;
 
   @storage({
     key: "automationClipboard",
@@ -338,6 +345,7 @@ export default class HaAutomationTriggerRow extends LitElement {
               this.trigger.enabled === false}
               @click=${this._toggleSidebar}
               .selected=${this._selected}
+              .sortSelected=${this.sortSelected}
               >${this._selected
                 ? "selected"
                 : nothing}${this._renderRow()}</ha-automation-row
@@ -663,6 +671,10 @@ export default class HaAutomationTriggerRow extends LitElement {
 
   public isSelected() {
     return this._selected;
+  }
+
+  public focus() {
+    this._automationRowElement?.focus();
   }
 
   static get styles(): CSSResultGroup {

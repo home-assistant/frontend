@@ -17,6 +17,7 @@ import { preventDefaultStopPropagation } from "../../../../common/dom/prevent_de
 import { stopPropagation } from "../../../../common/dom/stop_propagation";
 import { capitalizeFirstLetter } from "../../../../common/string/capitalize-first-letter";
 import "../../../../components/ha-automation-row";
+import type { HaAutomationRow } from "../../../../components/ha-automation-row";
 import "../../../../components/ha-card";
 import "../../../../components/ha-expansion-panel";
 import "../../../../components/ha-icon-button";
@@ -63,6 +64,9 @@ export default class HaAutomationOptionRow extends LitElement {
   @property({ type: Boolean, attribute: "sidebar" })
   public optionsInSidebar = false;
 
+  @property({ type: Boolean, attribute: "sort-selected" })
+  public sortSelected = false;
+
   @state() private _expanded = false;
 
   @state() private _selected = false;
@@ -78,6 +82,9 @@ export default class HaAutomationOptionRow extends LitElement {
 
   @query("ha-automation-action")
   private _actionElement?: HaAutomationAction;
+
+  @query("ha-automation-row")
+  private _automationRowElement?: HaAutomationRow;
 
   private _expandedChanged(ev) {
     if (ev.currentTarget.id !== "option") {
@@ -265,6 +272,7 @@ export default class HaAutomationOptionRow extends LitElement {
               .selected=${this._selected}
               @click=${this._toggleSidebar}
               @toggle-collapsed=${this._toggleCollapse}
+              .sortSelected=${this.sortSelected}
               >${this._renderRow()}</ha-automation-row
             >`
           : html`
@@ -436,6 +444,10 @@ export default class HaAutomationOptionRow extends LitElement {
 
   public isSelected() {
     return this._selected;
+  }
+
+  public focus() {
+    this._automationRowElement?.focus();
   }
 
   static get styles(): CSSResultGroup {
