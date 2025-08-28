@@ -288,7 +288,7 @@ export class HaManualAutomationEditor extends LitElement {
       >
         <div class="content-wrapper">
           <div class="content">
-            <div class="error-wrapper">
+            <div class="alert-wrapper">
               ${this.errors || this.stateObj?.state === UNAVAILABLE
                 ? html`<ha-alert
                     alert-type="error"
@@ -735,11 +735,11 @@ export class HaManualAutomationEditor extends LitElement {
           line-height: 0;
         }
 
-        .error-wrapper {
+        .alert-wrapper {
           position: sticky;
           top: -24px;
           margin-top: -24px;
-          margin-bottom: -163px;
+          margin-bottom: -16px;
           z-index: 100;
           width: 100%;
           display: flex;
@@ -747,7 +747,7 @@ export class HaManualAutomationEditor extends LitElement {
           align-items: center;
         }
 
-        .error-wrapper ha-alert {
+        .alert-wrapper ha-alert {
           background-color: var(--card-background-color);
           box-shadow: 0 2px 4px rgba(0, 0, 0, 0.2);
           border-radius: var(--ha-border-radius-sm);
