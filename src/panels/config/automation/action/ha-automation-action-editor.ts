@@ -53,6 +53,7 @@ export default class HaAutomationActionEditor extends LitElement {
             this.disabled || (this.action.enabled === false && !this.yamlMode),
           yaml: yamlMode,
           indent: this.indent,
+          card: !this.inSidebar,
         })}
       >
         ${yamlMode

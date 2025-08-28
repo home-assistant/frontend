@@ -54,7 +54,7 @@ export const editorStyles = css`
     pointer-events: none;
   }
 
-  .card-content {
+  .card-content.card {
     padding: 16px;
   }
   .card-content.yaml {
