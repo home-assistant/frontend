@@ -460,9 +460,9 @@ export class HaAutomationEditor extends PreventUnsavedMixin(
                           .disabled=${this._readOnly}
                           .dirty=${this._dirty}
                           .saving=${this._saving}
-                          @editor-save=${this._handleSaveAutomation}
-                          @save-automation=${this._handleSaveAutomation}
                           @value-changed=${this._valueChanged}
+                          @save-automation=${this._handleSaveAutomation}
+                          @editor-save=${this._handleSaveAutomation}
                         >
                           <div class="alert-wrapper" slot="alerts">
                             ${this._errors || stateObj?.state === UNAVAILABLE
