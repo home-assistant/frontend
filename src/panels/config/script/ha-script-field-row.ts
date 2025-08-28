@@ -72,6 +72,8 @@ export default class HaScriptFieldRow extends LitElement {
             @keydown=${stopPropagation}
             @closed=${stopPropagation}
             positioning="fixed"
+            anchor-corner="end-end"
+            menu-corner="start-end"
           >
             <ha-md-menu-item
               slot="menu-items"

@@ -72,6 +72,8 @@ export default class HaAutomationSidebarCard extends LitElement {
               @keydown=${stopPropagation}
               @closed=${stopPropagation}
               .positioning=${this.narrow ? "absolute" : "fixed"}
+              anchor-corner="end-end"
+              menu-corner="start-end"
             >
               <ha-icon-button
                 slot="trigger"

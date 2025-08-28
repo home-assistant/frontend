@@ -262,6 +262,8 @@ export default class HaAutomationActionRow extends LitElement {
         @keydown=${stopPropagation}
         @closed=${stopPropagation}
         positioning="fixed"
+        anchor-corner="end-end"
+        menu-corner="start-end"
       >
         <ha-icon-button
           slot="trigger"

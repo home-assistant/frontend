@@ -16,6 +16,18 @@ export class HaMdButtonMenu extends LitElement {
 
   @property() public positioning?: "fixed" | "absolute" | "popover";
 
+  @property({ attribute: "anchor-corner" }) public anchorCorner:
+    | "start-start"
+    | "start-end"
+    | "end-start"
+    | "end-end" = "end-start";
+
+  @property({ attribute: "menu-corner" }) public menuCorner:
+    | "start-start"
+    | "start-end"
+    | "end-start"
+    | "end-end" = "start-start";
+
   @property({ type: Boolean, attribute: "has-overflow" }) public hasOverflow =
     false;
 
@@ -44,6 +56,8 @@ export class HaMdButtonMenu extends LitElement {
         .quick=${this.quick}
         .positioning=${this.positioning}
         .hasOverflow=${this.hasOverflow}
+        .anchorCorner=${this.anchorCorner}
+        .menuCorner=${this.menuCorner}
         @opening=${this._handleOpening}
         @closing=${this._handleClosing}
       >
