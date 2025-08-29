@@ -13,6 +13,7 @@ import type { InputNumberEntity } from "../../../data/input_number";
 
 class MoreInfoInputNumber extends LitElement {
   @property({ attribute: false }) public hass!: HomeAssistant;
+  
   @property({ attribute: false }) public stateObj?: InputNumberEntity;
 
   @state() private _currentValue?: number;
