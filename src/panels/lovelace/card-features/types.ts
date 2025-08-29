@@ -7,7 +7,7 @@ export type ButtonCardData = Record<string, any>;
 export interface ButtonCardFeatureConfig {
   type: "button";
   action_name?: string;
-  data?: ButtenCardData;
+  data?: ButtonCardData;
 }
 
 export interface CoverOpenCloseCardFeatureConfig {
