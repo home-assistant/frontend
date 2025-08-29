@@ -571,9 +571,19 @@ class DialogAddAutomationElement
                   @click=${this._selected}
                 >
                   <div class="shortcut-label">
-                    ${this.hass.localize(
-                      `ui.panel.config.automation.editor.${this._params.type}s.paste`
-                    )}
+                    <div class="label">
+                      <div>
+                        ${this.hass.localize(
+                          `ui.panel.config.automation.editor.${this._params.type}s.paste`
+                        )}
+                      </div>
+                      <div class="supporting-text">
+                        ${this.hass.localize(
+                          // @ts-ignore
+                          `ui.panel.config.automation.editor.${this._params.type}s.type.${this._params.clipboardItem}.label`
+                        )}
+                      </div>
+                    </div>
                     ${!this._narrow
                       ? html`<span class="shortcut">
                           <span
@@ -591,12 +601,6 @@ class DialogAddAutomationElement
                         </span>`
                       : nothing}
                   </div>
-                  <span slot="supporting-text"
-                    >${this.hass.localize(
-                      // @ts-ignore
-                      `ui.panel.config.automation.editor.${this._params.type}s.type.${this._params.clipboardItem}.label`
-                    )}</span
-                  >
                   <ha-svg-icon
                     slot="start"
                     .path=${mdiContentPaste}
@@ -729,6 +733,7 @@ class DialogAddAutomationElement
           max-width: 100vw;
           --md-list-item-leading-space: 24px;
           --md-list-item-trailing-space: 24px;
+          --md-list-item-supporting-text-font: var(--ha-font-size-s);
         }
         ha-md-list-item img {
           width: 24px;
@@ -740,6 +745,11 @@ class DialogAddAutomationElement
         .shortcut-label {
           display: flex;
           gap: 12px;
+          justify-content: space-between;
+        }
+        .shortcut-label .supporting-text {
+          color: var(--secondary-text-color);
+          font-size: var(--ha-font-size-s);
         }
         .shortcut-label .shortcut {
           --mdc-icon-size: 12px;
