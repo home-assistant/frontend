@@ -1,5 +1,6 @@
-import { css, html, LitElement } from "lit";
-import { customElement, property } from "lit/decorators";
+import { css, html, LitElement, type PropertyValues } from "lit";
+import { customElement, property, state } from "lit/decorators";
+import { mdiArrowDown, mdiArrowUp } from "@mdi/js";
 import { fireEvent } from "../common/dom/fire_event";
 import "./ha-icon-button";
 import "./ha-textfield";
@@ -16,42 +17,73 @@ export class HaNumericArrowInput extends LitElement {
 
   @property({ attribute: false }) public step?: number;
 
-  @property({ attribute: false }) public value?: number;
+  @property({ attribute: false }) public value = 0;
+
+  @property({ attribute: false }) public labelUp?: string;
+
+  @property({ attribute: false }) public labelDown?: string;
+
+  @state() private _value = 0;
+
+  protected firstUpdated(changedProperties: PropertyValues) {
+    super.firstUpdated(changedProperties);
+    this._value = this.value ?? 0;
+  }
 
   render() {
-    return html`<div class="container">
-      <ha-icon-button icon="mdi:arrow-up"></ha-icon-button>
-      <ha-textfield
-        .disabled=${this.disabled}
-        .required=${this.required}
-        .value=${String(this.value ?? 0)}
-        @change=${this._valueChanged}
-        @keydown=${this._keyDown}
-      ></ha-textfield>
-      <ha-icon-button icon="mdi:arrow-down"></ha-icon-button>
+    return html`<div
+      class="numeric-arrow-input-container"
+      @keydown=${this._keyDown}
+    >
+      <ha-icon-button
+        .label=${this.labelUp ?? ""}
+        .path=${mdiArrowUp}
+        @click=${this._up}
+      ></ha-icon-button>
+      ${this._value}
+      <ha-icon-button
+        .label=${this.labelDown ?? ""}
+        .path=${mdiArrowDown}
+        @click=${this._down}
+      ></ha-icon-button>
     </div>`;
+  }
+
+  protected updated(changedProperties: PropertyValues) {
+    super.updated(changedProperties);
+    if (changedProperties.has("value")) {
+      fireEvent(this, "value-changed", { value: this._value });
+    }
   }
 
   private _keyDown(ev: KeyboardEvent) {
     if (ev.key === "ArrowUp") {
-      this._valueChanged(ev);
+      this._up();
     }
     if (ev.key === "ArrowDown") {
-      this._valueChanged(ev);
+      this._down();
     }
   }
 
-  private _valueChanged(ev: Event) {
-    const value = (ev.target as HTMLInputElement).value;
-    this.value = Number(value) + (this.step ?? 1);
-    fireEvent(this, "value-changed", { value: this.value });
+  private _up() {
+    this._value += this.step ?? 1;
+  }
+
+  private _down() {
+    this._value -= this.step ?? 1;
   }
 
   static styles = css`
-    .container {
+    .numeric-arrow-input-container {
       display: flex;
-      flex-direction: row;
+      flex-direction: column;
       align-items: center;
+      justify-content: center;
+      gap: 4px;
+      width: 24px;
+      height: 24px;
+      border: 1px solid var(--ha-border-color);
+      border-radius: 4px;
     }
   `;
 }

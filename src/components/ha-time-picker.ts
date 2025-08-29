@@ -1,5 +1,5 @@
 import type { PropertyValues } from "lit";
-import { html, LitElement, nothing } from "lit";
+import { css, html, LitElement, nothing } from "lit";
 import { customElement, property, state } from "lit/decorators";
 import { useAmPm } from "../common/datetime/use_am_pm";
 import { fireEvent } from "../common/dom/fire_event";
@@ -62,7 +62,7 @@ export class HaTimePicker extends LitElement {
   }
 
   protected render() {
-    return html`<div class="container">
+    return html`<div class="time-picker-container">
       <ha-numeric-arrow-input
         .disabled=${this.disabled}
         .required=${this.required}
@@ -182,6 +182,15 @@ export class HaTimePicker extends LitElement {
     fireEvent(this, "change");
     fireEvent(this, "value-changed", { value: time });
   }
+
+  static styles = css`
+    .time-picker-container {
+      display: flex;
+      flex-direction: row;
+      align-items: center;
+      gap: 4px;
+    }
+  `;
 }
 
 declare global {
