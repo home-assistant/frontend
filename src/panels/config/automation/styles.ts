@@ -135,6 +135,7 @@ export const manualEditorStyles = css`
   .content-wrapper {
     padding-top: 32px;
     padding-right: calc(var(--sidebar-width) + var(--sidebar-gap));
+    padding-bottom: 72px;
   }
 
   ha-automation-sidebar {
