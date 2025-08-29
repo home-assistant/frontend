@@ -199,8 +199,10 @@ export class HaConfigLovelaceDashboards extends LitElement {
           "ui.panel.config.lovelace.dashboards.picker.headers.require_admin"
         ),
         sortable: true,
-        type: "icon",
         hidden: narrow,
+        type: "icon",
+        minWidth: "120px",
+        maxWidth: "120px",
         template: (dashboard) =>
           dashboard.require_admin
             ? html`<ha-svg-icon .path=${mdiCheck}></ha-svg-icon>`
@@ -210,8 +212,10 @@ export class HaConfigLovelaceDashboards extends LitElement {
         title: localize(
           "ui.panel.config.lovelace.dashboards.picker.headers.sidebar"
         ),
-        type: "icon",
         hidden: narrow,
+        type: "icon",
+        minWidth: "120px",
+        maxWidth: "120px",
         template: (dashboard) =>
           dashboard.show_in_sidebar
             ? html`<ha-svg-icon .path=${mdiCheck}></ha-svg-icon>`
