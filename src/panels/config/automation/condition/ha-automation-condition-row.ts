@@ -470,6 +470,7 @@ export default class HaAutomationConditionRow extends LitElement {
           fireEvent(this, "close-sidebar");
         }
       },
+      enableCancelAction: true,
     });
   };
 

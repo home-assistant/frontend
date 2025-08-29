@@ -327,6 +327,7 @@ export default class HaAutomationOptionRow extends LitElement {
           fireEvent(this, "close-sidebar");
         }
       },
+      enableCancelAction: true,
     });
   };
 

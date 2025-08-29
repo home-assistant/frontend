@@ -17,15 +17,10 @@ export const KeyboardShortcutMixin = <T extends Constructor<LitElement>>(
         return;
       }
 
-      if (event.key === "Delete" && supportedShortcuts.Delete) {
+      const supportedSingleKeyShortcuts = this.supportedSingleKeyShortcuts();
+      if (event.key in supportedSingleKeyShortcuts) {
         event.preventDefault();
-        supportedShortcuts.Delete();
-        return;
-      }
-
-      if (event.key === "Enter" && supportedShortcuts.Enter) {
-        event.preventDefault();
-        supportedShortcuts.Enter();
+        supportedSingleKeyShortcuts[event.key]();
       }
     };
 
@@ -40,6 +35,10 @@ export const KeyboardShortcutMixin = <T extends Constructor<LitElement>>(
     }
 
     protected supportedShortcuts(): SupportedShortcuts {
+      return {};
+    }
+
+    protected supportedSingleKeyShortcuts(): SupportedShortcuts {
       return {};
     }
   };

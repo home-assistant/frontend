@@ -3,16 +3,16 @@ import { css, html, LitElement, nothing } from "lit";
 import { customElement, property, query, state } from "lit/decorators";
 import { ifDefined } from "lit/directives/if-defined";
 import { fireEvent } from "../../common/dom/fire_event";
+import "../../components/ha-button";
+import "../../components/ha-dialog-header";
 import "../../components/ha-md-dialog";
 import type { HaMdDialog } from "../../components/ha-md-dialog";
-import "../../components/ha-dialog-header";
 import "../../components/ha-svg-icon";
-import "../../components/ha-button";
 import "../../components/ha-textfield";
 import type { HaTextField } from "../../components/ha-textfield";
+import { KeyboardShortcutMixin } from "../../mixins/keyboard-shortcut-mixin";
 import type { HomeAssistant } from "../../types";
 import type { DialogBoxParams } from "./show-dialog-box";
-import { KeyboardShortcutMixin } from "../../mixins/keyboard-shortcut-mixin";
 
 @customElement("dialog-box")
 class DialogBox extends KeyboardShortcutMixin(LitElement) {
@@ -53,7 +53,7 @@ class DialogBox extends KeyboardShortcutMixin(LitElement) {
       return nothing;
     }
 
-    const confirmPrompt = this._params.confirmation || this._params.prompt;
+    const confirmPrompt = this._params.confirmation || !!this._params.prompt;
 
     const dialogTitle =
       this._params.title ||
@@ -63,7 +63,8 @@ class DialogBox extends KeyboardShortcutMixin(LitElement) {
     return html`
       <ha-md-dialog
         open
-        .disableCancelAction=${confirmPrompt || false}
+        .disableCancelAction=${!this._params.enableCancelAction &&
+        confirmPrompt}
         @closed=${this._dialogClosed}
         type="alert"
         aria-labelledby="dialog-box-title"
@@ -168,7 +169,7 @@ class DialogBox extends KeyboardShortcutMixin(LitElement) {
     this._closeResolve = undefined;
   }
 
-  protected supportedShortcuts(): SupportedShortcuts {
+  protected supportedSingleKeyShortcuts(): SupportedShortcuts {
     return {
       Enter: () => this._confirm(),
     };
