@@ -54,7 +54,7 @@ export class HuiMediaPlayerVolumeSliderCardFeatureEditor
           selector: {
             number: {
               min: 1,
-              max: 10,
+              max: 40,
               mode: "slider",
             },
           },
