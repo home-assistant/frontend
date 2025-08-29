@@ -473,7 +473,6 @@ export class HaScriptEditor extends SubscribeMixin(
               `
             : this._mode === "yaml"
               ? html`<ha-yaml-editor
-                    copy-clipboard
                     .hass=${this.hass}
                     .defaultValue=${this._preprocessYaml()}
                     .readOnly=${this._readOnly}

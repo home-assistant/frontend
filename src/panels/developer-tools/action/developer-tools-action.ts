@@ -208,7 +208,6 @@ class HaPanelDevAction extends LitElement {
               <div class="card-content">
                 <ha-yaml-editor
                   .hass=${this.hass}
-                  copy-clipboard
                   read-only
                   auto-update
                   has-extra-actions

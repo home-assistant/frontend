@@ -544,7 +544,6 @@ export class HaAutomationEditor extends PreventUnsavedMixin(
                       `
                     : ""}
                   <ha-yaml-editor
-                    copy-clipboard
                     .hass=${this.hass}
                     .defaultValue=${this._preprocessYaml()}
                     .readOnly=${this._readOnly}
