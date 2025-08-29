@@ -26,6 +26,7 @@ export const DOMAINS_WITH_NEW_MORE_INFO = [
   "fan",
   "humidifier",
   "input_boolean",
+  "input_number",
   "light",
   "lock",
   "siren",
@@ -56,6 +57,7 @@ export const DOMAINS_WITH_MORE_INFO = [
   "image",
   "input_boolean",
   "input_datetime",
+  "input_number",
   "lawn_mower",
   "light",
   "lock",
@@ -79,7 +81,6 @@ export const DOMAINS_WITH_MORE_INFO = [
 /** Domains that do not show the default more info dialog content (e.g. the attribute section)
  *  and do not have a separate more info (so not in DOMAINS_WITH_MORE_INFO). */
 export const DOMAINS_HIDE_DEFAULT_MORE_INFO = [
-  "input_number",
   "input_select",
   "input_text",
   "number",
