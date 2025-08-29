@@ -2,11 +2,10 @@ import { mdiMinus, mdiPlus, mdiSlider } from "@mdi/js";
 import type { CSSResultGroup, PropertyValues } from "lit";
 import { LitElement, css, html, nothing } from "lit";
 import { customElement, property, state } from "lit/decorators";
-import { stopPropagation } from "../../../common/dom/stop_propagation";
 import type { HomeAssistant } from "../../../types";
 import { moreInfoControlStyle } from "../components/more-info-control-style";
-import "../../../components/ha-state-label-badge";
 import "../../../components/ha-icon-button";
+import "../components/ha-more-info-state-header";
 
 import type { InputNumberEntity } from "../../../data/input_number";
 
@@ -27,7 +26,12 @@ class MoreInfoInputNumber extends LitElement {
 
   private _setValue(ev: Event) {
     const target = ev.target as HTMLInputElement;
-    const value = Number(target.value);
+    let value = Number(target.value);
+    if (this.stateObj) {
+      const min = this.stateObj.attributes.min ?? 0;
+      const max = this.stateObj.attributes.max ?? 100;
+      value = Math.min(Math.max(value, min), max);
+    }
     this._currentValue = value;
     this.hass.callService("input_number", "set_value", {
       entity_id: this.stateObj!.entity_id,
@@ -69,20 +73,18 @@ class MoreInfoInputNumber extends LitElement {
     const min = this.stateObj.attributes.min ?? 0;
     const max = this.stateObj.attributes.max ?? 100;
     const step = this.stateObj.attributes.step ?? 1;
-
-    const mode = this.stateObj.attributes.mode ?? "slider"; // slider or box
+    const mode = this.stateObj.attributes.mode ?? "slider";
 
     return html`
+      <ha-more-info-state-header
+        .hass=${this.hass}
+        .stateObj=${this.stateObj}
+        .stateOverride=${this._currentValue}
+      ></ha-more-info-state-header>
+
       <div class="controls">
         ${mode === "slider"
           ? html`
-              <ha-icon-button
-                .label=${this.hass.localize(
-                  "ui.dialogs.more_info_control.input_number.slider",
-                )}
-              >
-                <ha-svg-icon .path=${mdiSlider}></ha-svg-icon>
-              </ha-icon-button>
               <input
                 type="range"
                 .min=${min}
@@ -94,23 +96,33 @@ class MoreInfoInputNumber extends LitElement {
               <div class="value-label">${this._currentValue}</div>
             `
           : html`
-              <div class="button-bar">
+              <div class="box-control">
                 <ha-icon-button
-                  .label=${this.hass.localize(
-                    "ui.dialogs.more_info_control.input_number.decrement",
-                  )}
-                  @click=${this._decrement}
-                >
-                  <ha-svg-icon .path=${mdiMinus}></ha-svg-icon>
-                </ha-icon-button>
-                <div class="value-box">${this._currentValue}</div>
-                <ha-icon-button
+                  class="increment"
                   .label=${this.hass.localize(
                     "ui.dialogs.more_info_control.input_number.increment",
                   )}
                   @click=${this._increment}
                 >
                   <ha-svg-icon .path=${mdiPlus}></ha-svg-icon>
+                </ha-icon-button>
+                <input
+                  class="value-input"
+                  type="number"
+                  .min=${min}
+                  .max=${max}
+                  .step=${step}
+                  .value=${this._currentValue ?? min}
+                  @change=${this._setValue}
+                />
+                <ha-icon-button
+                  class="decrement"
+                  .label=${this.hass.localize(
+                    "ui.dialogs.more_info_control.input_number.decrement",
+                  )}
+                  @click=${this._decrement}
+                >
+                  <ha-svg-icon .path=${mdiMinus}></ha-svg-icon>
                 </ha-icon-button>
               </div>
             `}
@@ -132,16 +144,32 @@ class MoreInfoInputNumber extends LitElement {
           width: 100%;
           margin: 8px 0;
         }
-        .value-label,
-        .value-box {
+        .value-label {
           margin-top: 4px;
           font-size: 1.2em;
           font-weight: bold;
         }
-        .button-bar {
+
+        .box-control {
           display: flex;
+          flex-direction: column;
           align-items: center;
-          gap: 16px;
+          justify-content: space-between;
+          height: 48px;
+          width: 100%;
+        }
+
+        .box-control .value-input {
+          width: 80%;
+          text-align: center;
+          font-size: 1.2em;
+          font-weight: bold;
+          margin: 2px 0;
+        }
+
+        .box-control ha-icon-button {
+          --mdc-icon-size: 28px;
+          width: 100%;
         }
       `,
     ];
