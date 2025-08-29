@@ -331,12 +331,6 @@ export class HaCodeEditor extends ReactiveElement {
 
   private _updateToolbar() {
     // Show/Hide the toolbar if we have one.
-    if (this._editorToolbar) {
-      this._editorToolbar.setAttribute(
-        "style",
-        this.hasToolbar ? "" : "display:none;"
-      );
-    }
     this.classList.toggle("hasToolbar", this.hasToolbar);
     // If we don't have a toolbar and fullscreen set, clear it.
     if (!this.hasToolbar && this._isFullscreen) {
@@ -785,6 +779,10 @@ export class HaCodeEditor extends ReactiveElement {
       height: 100% !important;
       max-height: 100% !important;
       border-radius: 0 !important;
+    }
+
+    :host(:not(.hasToolbar)) .code-editor-toolbar {
+      display: none !important;
     }
 
     .code-editor-toolbar {
