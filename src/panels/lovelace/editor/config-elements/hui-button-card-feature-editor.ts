@@ -29,7 +29,7 @@ export class HuiButtonCardFeatureEditor
       },
     },
     {
-      name: "data"
+      name: "data",
       selector: {
         object: {},
       },
