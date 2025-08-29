@@ -133,8 +133,11 @@ export const manualEditorStyles = css`
   }
 
   .content-wrapper {
-    padding-top: 32px;
     padding-right: calc(var(--sidebar-width) + var(--sidebar-gap));
+  }
+
+  .content {
+    padding-top: 24px;
     padding-bottom: 72px;
   }
 
