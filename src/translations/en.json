@@ -407,6 +407,7 @@
       "next": "Next",
       "back": "Back",
       "undo": "Undo",
+      "redo": "Redo",
       "move": "Move",
       "save": "Save",
       "apply": "Apply",
@@ -1209,7 +1210,9 @@
       "yaml-editor": {
         "copy_to_clipboard": "[%key:ui::panel::config::automation::editor::copy_to_clipboard%]",
         "error": "Error in parsing YAML: {reason}",
-        "error_location": "line: {line}, column: {column}"
+        "error_location": "line: {line}, column: {column}",
+        "enter_fullscreen": "Enter fullscreen",
+        "exit_fullscreen": "Exit fullscreen"
       },
       "state-content-picker": {
         "state": "State",
