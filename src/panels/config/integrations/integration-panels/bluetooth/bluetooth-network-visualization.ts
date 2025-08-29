@@ -125,6 +125,28 @@ export class BluetoothNetworkVisualization extends LitElement {
     `;
   }
 
+  private _getRssiColorVar = memoizeOne((rssi: number): string => {
+    // Color gradient based on RSSI strength (5 dBm steps)
+    const thresholds: [number, string][] = [
+      [-70, "--green-color"], // Excellent: > -70 dBm
+      [-75, "--lime-color"], // Good: -70 to -75 dBm
+      [-80, "--yellow-color"], // Okay: -75 to -80 dBm
+      [-85, "--amber-color"], // Marginal: -80 to -85 dBm
+      [-90, "--orange-color"], // Weak: -85 to -90 dBm
+      [-95, "--deep-orange-color"], // Poor: -90 to -95 dBm
+      [-Infinity, "--red-color"], // Very poor: < -95 dBm
+    ];
+
+    for (const [threshold, colorVar] of thresholds) {
+      if (rssi > threshold) {
+        return colorVar;
+      }
+    }
+
+    // Fallback (should never reach here)
+    return "--red-color";
+  });
+
   private _formatNetworkData = memoizeOne(
     (
       data: BluetoothDeviceData[],
@@ -206,7 +228,7 @@ export class BluetoothNetworkVisualization extends LitElement {
             symbol: "none",
             lineStyle: {
               width: this._getLineWidth(node.rssi),
-              color: style.getPropertyValue("--primary-color"),
+              color: style.getPropertyValue(this._getRssiColorVar(node.rssi)),
             },
           });
           return;
@@ -227,7 +249,7 @@ export class BluetoothNetworkVisualization extends LitElement {
           lineStyle: {
             width: this._getLineWidth(node.rssi),
             color: device
-              ? style.getPropertyValue("--primary-color")
+              ? style.getPropertyValue(this._getRssiColorVar(node.rssi))
               : style.getPropertyValue("--disabled-color"),
           },
         });
