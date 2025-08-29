@@ -17,18 +17,11 @@ export class HaNumericArrowInput extends LitElement {
 
   @property({ attribute: false }) public step?: number;
 
-  @property({ attribute: false }) public value = 0;
-
   @property({ attribute: false }) public labelUp?: string;
 
   @property({ attribute: false }) public labelDown?: string;
 
-  @state() private _value = 0;
-
-  protected firstUpdated(changedProperties: PropertyValues) {
-    super.firstUpdated(changedProperties);
-    this._value = this.value ?? 0;
-  }
+  @property({ attribute: false }) public value = 0;
 
   render() {
     return html`<div
@@ -41,7 +34,7 @@ export class HaNumericArrowInput extends LitElement {
         .path=${mdiArrowUp}
         @click=${this._up}
       ></ha-icon-button>
-      <span class="numeric-arrow-input-value">${this._value}</span>
+      <span class="numeric-arrow-input-value">${this.value}</span>
       <ha-icon-button
         .disabled=${this.disabled}
         .label=${this.labelDown ?? ""}
@@ -54,7 +47,7 @@ export class HaNumericArrowInput extends LitElement {
   protected updated(changedProperties: PropertyValues) {
     super.updated(changedProperties);
     if (changedProperties.has("value")) {
-      fireEvent(this, "value-changed", { value: this._value });
+      fireEvent(this, "value-changed", { value: this.value });
     }
   }
 
@@ -68,11 +61,23 @@ export class HaNumericArrowInput extends LitElement {
   }
 
   private _up() {
-    this._value += this.step ?? 1;
+    const newValue = this.value + (this.step ?? 1);
+    fireEvent(this, "value-changed", { value: this._clampValue(newValue) });
   }
 
   private _down() {
-    this._value -= this.step ?? 1;
+    const newValue = this.value - (this.step ?? 1);
+    fireEvent(this, "value-changed", { value: this._clampValue(newValue) });
+  }
+
+  private _clampValue(value: number) {
+    if (this.max && value > this.max) {
+      return this.max;
+    }
+    if (this.min && value < this.min) {
+      return this.min;
+    }
+    return value;
   }
 
   static styles = css`
