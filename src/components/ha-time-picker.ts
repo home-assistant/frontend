@@ -12,14 +12,13 @@ import "./ha-button";
 export class HaTimePicker extends LitElement {
   @property({ attribute: false }) public locale!: FrontendLocaleData;
 
-  @property() public value?: string;
+  @property({ attribute: false }) public value?: string;
 
-  @property({ type: Boolean }) public disabled = false;
+  @property({ attribute: false }) public disabled = false;
 
-  @property({ type: Boolean }) public required = false;
+  @property({ attribute: false }) public required = false;
 
-  @property({ type: Boolean, attribute: "enable-second" })
-  public enableSecond = false;
+  @property({ attribute: false }) public enableSeconds = false;
 
   @state() private _hours = 0;
 
@@ -83,7 +82,7 @@ export class HaTimePicker extends LitElement {
         @value-changed=${this._minutesChanged}
       ></ha-numeric-arrow-input>
 
-      ${this.enableSecond
+      ${this.enableSeconds
         ? html`
             <ha-numeric-arrow-input
               .disabled=${this.disabled}

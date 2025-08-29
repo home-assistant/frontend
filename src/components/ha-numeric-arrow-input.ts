@@ -40,7 +40,7 @@ export class HaNumericArrowInput extends LitElement {
         .path=${mdiArrowUp}
         @click=${this._up}
       ></ha-icon-button>
-      ${this._value}
+      <span class="numeric-arrow-input-value">${this._value}</span>
       <ha-icon-button
         .label=${this.labelDown ?? ""}
         .path=${mdiArrowDown}
@@ -84,6 +84,15 @@ export class HaNumericArrowInput extends LitElement {
       height: 24px;
       border: 1px solid var(--ha-border-color);
       border-radius: 4px;
+    }
+
+    .numeric-arrow-input-container ha-icon-button {
+      --mdc-icon-button-size: 24px;
+    }
+
+    .numeric-arrow-input-value {
+      font-size: 16px;
+      font-weight: 500;
     }
   `;
 }
