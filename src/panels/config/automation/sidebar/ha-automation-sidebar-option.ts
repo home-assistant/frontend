@@ -1,4 +1,4 @@
-import { mdiContentDuplicate, mdiDelete, mdiRenameBox } from "@mdi/js";
+import { mdiDelete, mdiPlusCircleMultipleOutline, mdiRenameBox } from "@mdi/js";
 import { html, LitElement, nothing } from "lit";
 import { customElement, property, query } from "lit/decorators";
 import type { OptionSidebarConfig } from "../../../../data/automation";
@@ -69,7 +69,7 @@ export default class HaAutomationSidebarOption extends LitElement {
             >
               <ha-svg-icon
                 slot="start"
-                .path=${mdiContentDuplicate}
+                .path=${mdiPlusCircleMultipleOutline}
               ></ha-svg-icon>
               <div class="overflow-label">
                 ${this.hass.localize(

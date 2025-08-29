@@ -5,12 +5,12 @@ import {
   mdiArrowUp,
   mdiContentCopy,
   mdiContentCut,
-  mdiContentDuplicate,
   mdiDelete,
   mdiDotsVertical,
   mdiPlay,
   mdiPlayCircleOutline,
   mdiPlaylistEdit,
+  mdiPlusCircleMultipleOutline,
   mdiRenameBox,
   mdiStopCircleOutline,
 } from "@mdi/js";
@@ -309,7 +309,7 @@ export default class HaAutomationActionRow extends LitElement {
               )}
               <ha-svg-icon
                 slot="start"
-                .path=${mdiContentDuplicate}
+                .path=${mdiPlusCircleMultipleOutline}
               ></ha-svg-icon>
             </ha-md-menu-item>
 

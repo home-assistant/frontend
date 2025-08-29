@@ -2,11 +2,11 @@ import {
   mdiAppleKeyboardCommand,
   mdiContentCopy,
   mdiContentCut,
-  mdiContentDuplicate,
   mdiDelete,
   mdiIdentifier,
   mdiPlayCircleOutline,
   mdiPlaylistEdit,
+  mdiPlusCircleMultipleOutline,
   mdiRenameBox,
   mdiStopCircleOutline,
 } from "@mdi/js";
@@ -131,7 +131,10 @@ export default class HaAutomationSidebarTrigger extends LitElement {
           ${this.hass.localize(
             "ui.panel.config.automation.editor.triggers.duplicate"
           )}
-          <ha-svg-icon slot="start" .path=${mdiContentDuplicate}></ha-svg-icon>
+          <ha-svg-icon
+            slot="start"
+            .path=${mdiPlusCircleMultipleOutline}
+          ></ha-svg-icon>
         </ha-md-menu-item>
 
         <ha-md-menu-item

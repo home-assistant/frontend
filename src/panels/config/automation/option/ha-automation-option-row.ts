@@ -2,9 +2,9 @@ import { consume } from "@lit/context";
 import {
   mdiArrowDown,
   mdiArrowUp,
-  mdiContentDuplicate,
   mdiDelete,
   mdiDotsVertical,
+  mdiPlusCircleMultipleOutline,
   mdiRenameBox,
 } from "@mdi/js";
 import type { CSSResultGroup } from "lit";
@@ -171,7 +171,7 @@ export default class HaAutomationOptionRow extends LitElement {
                 )}
                 <ha-svg-icon
                   slot="start"
-                  .path=${mdiContentDuplicate}
+                  .path=${mdiPlusCircleMultipleOutline}
                 ></ha-svg-icon>
               </ha-md-menu-item>
 
