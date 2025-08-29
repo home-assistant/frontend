@@ -4320,8 +4320,8 @@
               "type_select": "Action type",
               "continue_on_error": "Continue on error",
               "action": "Action",
-              "copied_to_clipboard": "Copied action to clipboard",
-              "cut_to_clipboard": "Cut action to clipboard",
+              "copied_to_clipboard": "Action copied to clipboard",
+              "cut_to_clipboard": "Action cut to clipboard",
               "groups": {
                 "helpers": {
                   "label": "Helpers"
