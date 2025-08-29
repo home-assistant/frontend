@@ -34,6 +34,8 @@ export default class HaAutomationSidebar extends LitElement {
 
   @property({ type: Boolean }) public narrow = false;
 
+  @property({ attribute: "sidebar-key" }) public sidebarKey?: string;
+
   @state() private _yamlMode = false;
 
   @query("ha-bottom-sheet") private _bottomSheetElement?: HaBottomSheet;
@@ -52,6 +54,7 @@ export default class HaAutomationSidebar extends LitElement {
           .narrow=${this.narrow}
           .disabled=${this.disabled}
           .yamlMode=${this._yamlMode}
+          .sidebarKey=${this.sidebarKey}
           @toggle-yaml-mode=${this._toggleYamlMode}
           @close-sidebar=${this._handleCloseSidebar}
         ></ha-automation-sidebar-trigger>
@@ -67,6 +70,7 @@ export default class HaAutomationSidebar extends LitElement {
           .narrow=${this.narrow}
           .disabled=${this.disabled}
           .yamlMode=${this._yamlMode}
+          .sidebarKey=${this.sidebarKey}
           @toggle-yaml-mode=${this._toggleYamlMode}
           @close-sidebar=${this._handleCloseSidebar}
         ></ha-automation-sidebar-condition>
@@ -82,6 +86,7 @@ export default class HaAutomationSidebar extends LitElement {
           .narrow=${this.narrow}
           .disabled=${this.disabled}
           .yamlMode=${this._yamlMode}
+          .sidebarKey=${this.sidebarKey}
           @toggle-yaml-mode=${this._toggleYamlMode}
           @close-sidebar=${this._handleCloseSidebar}
         ></ha-automation-sidebar-action>
@@ -110,6 +115,7 @@ export default class HaAutomationSidebar extends LitElement {
           .narrow=${this.narrow}
           .disabled=${this.disabled}
           .yamlMode=${this._yamlMode}
+          .sidebarKey=${this.sidebarKey}
           @toggle-yaml-mode=${this._toggleYamlMode}
           @close-sidebar=${this._handleCloseSidebar}
         ></ha-automation-sidebar-script-field-selector>
@@ -125,6 +131,7 @@ export default class HaAutomationSidebar extends LitElement {
           .narrow=${this.narrow}
           .disabled=${this.disabled}
           .yamlMode=${this._yamlMode}
+          .sidebarKey=${this.sidebarKey}
           @toggle-yaml-mode=${this._toggleYamlMode}
           @close-sidebar=${this._handleCloseSidebar}
         ></ha-automation-sidebar-script-field>

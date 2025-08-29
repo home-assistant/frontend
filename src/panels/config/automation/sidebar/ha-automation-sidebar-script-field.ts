@@ -1,6 +1,7 @@
 import { mdiDelete, mdiPlaylistEdit } from "@mdi/js";
 import { html, LitElement } from "lit";
 import { customElement, property, query, state } from "lit/decorators";
+import { keyed } from "lit/directives/keyed";
 import { fireEvent } from "../../../../common/dom/fire_event";
 import type { ScriptFieldSidebarConfig } from "../../../../data/automation";
 import type { HomeAssistant } from "../../../../types";
@@ -22,6 +23,8 @@ export default class HaAutomationSidebarScriptField extends LitElement {
   @property({ type: Boolean, attribute: "yaml-mode" }) public yamlMode = false;
 
   @property({ type: Boolean }) public narrow = false;
+
+  @property({ attribute: "sidebar-key" }) public sidebarKey?: string;
 
   @state() private _warnings?: string[];
 
@@ -74,17 +77,20 @@ export default class HaAutomationSidebarScriptField extends LitElement {
         )}
         <ha-svg-icon slot="start" .path=${mdiDelete}></ha-svg-icon>
       </ha-md-menu-item>
-      <ha-script-field-editor
-        class="sidebar-editor"
-        .hass=${this.hass}
-        .field=${this.config.config.field}
-        .key=${this.config.config.key}
-        .excludeKeys=${this.config.config.excludeKeys}
-        .disabled=${this.disabled}
-        .yamlMode=${this.yamlMode}
-        @value-changed=${this._valueChangedSidebar}
-        @yaml-changed=${this._yamlChangedSidebar}
-      ></ha-script-field-editor>
+      ${keyed(
+        this.sidebarKey,
+        html`<ha-script-field-editor
+          class="sidebar-editor"
+          .hass=${this.hass}
+          .field=${this.config.config.field}
+          .key=${this.config.config.key}
+          .excludeKeys=${this.config.config.excludeKeys}
+          .disabled=${this.disabled}
+          .yamlMode=${this.yamlMode}
+          @value-changed=${this._valueChangedSidebar}
+          @yaml-changed=${this._yamlChangedSidebar}
+        ></ha-script-field-editor>`
+      )}
     </ha-automation-sidebar-card>`;
   }
 

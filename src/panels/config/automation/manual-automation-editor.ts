@@ -92,6 +92,8 @@ export class HaManualAutomationEditor extends LitElement {
 
   @state() private _sidebarConfig?: SidebarConfig;
 
+  @state() private _sidebarKey?: string;
+
   @query("ha-automation-sidebar") private _sidebarElement?: HaAutomationSidebar;
 
   private _previousConfig?: ManualAutomationConfig;
@@ -287,6 +289,7 @@ export class HaManualAutomationEditor extends LitElement {
             .config=${this._sidebarConfig}
             @value-changed=${this._sidebarConfigChanged}
             .disabled=${this.disabled}
+            .sidebarKey=${this._sidebarKey}
           ></ha-automation-sidebar>
         </div>
       </div>
@@ -314,6 +317,7 @@ export class HaManualAutomationEditor extends LitElement {
     // deselect previous selected row
     this._sidebarConfig?.close?.();
     this._sidebarConfig = ev.detail;
+    this._sidebarKey = JSON.stringify(this._sidebarConfig);
 
     await this._sidebarElement?.updateComplete;
     this._sidebarElement?.focus();

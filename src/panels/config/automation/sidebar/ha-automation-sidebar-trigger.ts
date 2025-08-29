@@ -11,6 +11,7 @@ import {
 } from "@mdi/js";
 import { html, LitElement, nothing } from "lit";
 import { customElement, property, query, state } from "lit/decorators";
+import { keyed } from "lit/directives/keyed";
 import { fireEvent } from "../../../../common/dom/fire_event";
 import { handleStructError } from "../../../../common/structs/handle-errors";
 import type { TriggerSidebarConfig } from "../../../../data/automation";
@@ -34,6 +35,8 @@ export default class HaAutomationSidebarTrigger extends LitElement {
   @property({ type: Boolean, attribute: "yaml-mode" }) public yamlMode = false;
 
   @property({ type: Boolean }) public narrow = false;
+
+  @property({ attribute: "sidebar-key" }) public sidebarKey?: string;
 
   @state() private _requestShowId = false;
 
@@ -183,19 +186,22 @@ export default class HaAutomationSidebarTrigger extends LitElement {
           )}
           <ha-svg-icon slot="start" .path=${mdiDelete}></ha-svg-icon>
         </ha-md-menu-item>
-        <ha-automation-trigger-editor
-          class="sidebar-editor"
-          .hass=${this.hass}
-          .trigger=${this.config.config}
-          @value-changed=${this._valueChangedSidebar}
-          @yaml-changed=${this._yamlChangedSidebar}
-          .uiSupported=${this.config.uiSupported}
-          .showId=${this._requestShowId}
-          .yamlMode=${this.yamlMode}
-          .disabled=${this.disabled}
-          @ui-mode-not-available=${this._handleUiModeNotAvailable}
-          sidebar
-        ></ha-automation-trigger-editor>
+        ${keyed(
+          this.sidebarKey,
+          html`<ha-automation-trigger-editor
+            class="sidebar-editor"
+            .hass=${this.hass}
+            .trigger=${this.config.config}
+            @value-changed=${this._valueChangedSidebar}
+            @yaml-changed=${this._yamlChangedSidebar}
+            .uiSupported=${this.config.uiSupported}
+            .showId=${this._requestShowId}
+            .yamlMode=${this.yamlMode}
+            .disabled=${this.disabled}
+            @ui-mode-not-available=${this._handleUiModeNotAvailable}
+            sidebar
+          ></ha-automation-trigger-editor>`
+        )}
       </ha-automation-sidebar-card>
     `;
   }
