@@ -1,4 +1,9 @@
-import { mdiClose, mdiContentPaste, mdiPlus } from "@mdi/js";
+import {
+  mdiAppleKeyboardCommand,
+  mdiClose,
+  mdiContentPaste,
+  mdiPlus,
+} from "@mdi/js";
 import Fuse from "fuse.js";
 import type { CSSResultGroup, PropertyValues, TemplateResult } from "lit";
 import { LitElement, css, html, nothing } from "lit";
@@ -45,6 +50,7 @@ import { KeyboardShortcutMixin } from "../../../mixins/keyboard-shortcut-mixin";
 import { HaFuse } from "../../../resources/fuse";
 import { haStyle, haStyleDialog } from "../../../resources/styles";
 import type { HomeAssistant } from "../../../types";
+import { isMac } from "../../../util/is_mac";
 import { showToast } from "../../../util/toast";
 import type { AddAutomationElementDialogParams } from "./show-add-automation-element-dialog";
 import { PASTE_VALUE } from "./show-add-automation-element-dialog";
@@ -113,6 +119,8 @@ class DialogAddAutomationElement
 
   @state() private _height?: number;
 
+  @state() private _narrow = false;
+
   public showDialog(params): void {
     this._params = params;
     this._group = params.group;
@@ -125,6 +133,8 @@ class DialogAddAutomationElement
     this._fullScreen = matchMedia(
       "all and (max-width: 450px), all and (max-height: 500px)"
     ).matches;
+
+    this._narrow = matchMedia("(max-width: 870px)").matches;
   }
 
   public closeDialog() {
@@ -560,9 +570,27 @@ class DialogAddAutomationElement
                   .value=${PASTE_VALUE}
                   @click=${this._selected}
                 >
-                  ${this.hass.localize(
-                    `ui.panel.config.automation.editor.${this._params.type}s.paste`
-                  )}
+                  <div class="shortcut-label">
+                    ${this.hass.localize(
+                      `ui.panel.config.automation.editor.${this._params.type}s.paste`
+                    )}
+                    ${!this._narrow
+                      ? html`<span class="shortcut">
+                          <span
+                            >${isMac
+                              ? html`<ha-svg-icon
+                                  slot="start"
+                                  .path=${mdiAppleKeyboardCommand}
+                                ></ha-svg-icon>`
+                              : this.hass.localize(
+                                  "ui.panel.config.automation.editor.ctrl"
+                                )}</span
+                          >
+                          <span>+</span>
+                          <span>V</span>
+                        </span>`
+                      : nothing}
+                  </div>
                   <span slot="supporting-text"
                     >${this.hass.localize(
                       // @ts-ignore
@@ -708,6 +736,22 @@ class DialogAddAutomationElement
         search-input {
           display: block;
           margin: 0 16px;
+        }
+        .shortcut-label {
+          display: flex;
+          gap: 12px;
+        }
+        .shortcut-label .shortcut {
+          --mdc-icon-size: 12px;
+          display: inline-flex;
+          flex-direction: row;
+          align-items: center;
+          gap: 2px;
+        }
+        .shortcut-label .shortcut span {
+          font-size: var(--ha-font-size-s);
+          font-family: var(--ha-font-family-code);
+          color: var(--ha-color-text-secondary);
         }
       `,
     ];
