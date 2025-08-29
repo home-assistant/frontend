@@ -69,7 +69,7 @@ export const indentStyle = css`
   .selector-row,
   :host([indent]) ha-form {
     margin-left: 12px;
-    padding: 12px 20px 16px 16px;
+    padding: 12px 0 16px 16px;
     border-left: 2px solid var(--ha-color-border-neutral-quiet);
     border-bottom: 2px solid var(--ha-color-border-neutral-quiet);
     border-radius: 0;
@@ -164,9 +164,6 @@ export const manualEditorStyles = css`
 
 export const automationRowsStyles = css`
   .rows {
-    padding: 16px 0 16px 16px;
-    margin: -16px;
-    margin-right: -20px;
     display: flex;
     flex-direction: column;
     gap: 16px;
