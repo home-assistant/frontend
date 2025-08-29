@@ -283,9 +283,8 @@ export class HaCodeEditor extends ReactiveElement {
       parent: this.renderRoot,
     });
 
-    // Create the toolbar. This is placed as a child of the code mirror object
-    // to ensure it doesn't affect the positioning of the editor.
-    this._createEditorToolbar(this.codemirror.dom);
+    // Update the toolbar. Creating it if required
+    this._updateToolbar();
   }
 
   private _fullscreenLabel(): string {
@@ -304,10 +303,11 @@ export class HaCodeEditor extends ReactiveElement {
     return this._isFullscreen ? mdiArrowCollapse : mdiArrowExpand;
   }
 
-  private _createEditorToolbar(renderRoot: HTMLElement) {
-    this._editorToolbar = document.createElement("ha-icon-button-toolbar");
-    this._editorToolbar.classList.add("code-editor-toolbar");
-    this._editorToolbar.items = [
+  private _createEditorToolbar(): HaIconButtonToolbar {
+    // Create the editor toolbar element
+    const editorToolbar = document.createElement("ha-icon-button-toolbar");
+    editorToolbar.classList.add("code-editor-toolbar");
+    editorToolbar.items = [
       {
         id: "undo",
         disabled: true,
@@ -338,19 +338,34 @@ export class HaCodeEditor extends ReactiveElement {
         action: (e: Event) => this._handleFullscreenClick(e),
       },
     ];
-    renderRoot.appendChild(this._editorToolbar);
-
-    this._updateToolbar();
+    return editorToolbar;
   }
 
   private _updateToolbar() {
     // Show/Hide the toolbar if we have one.
     this.classList.toggle("hasToolbar", this.hasToolbar);
-    // If we don't have a toolbar and fullscreen set, clear it.
-    if (!this.hasToolbar && this._isFullscreen) {
+
+    // If we don't have a toolbar, nothing to update
+    if (!this.hasToolbar) {
+      // Cannot be in fullscreen if there is no toolbar,
+      // so make sure to exit fullscreen if there.
       this._isFullscreen = false;
-      this._updateFullscreenButton();
+      return;
     }
+
+    // If we don't yet have the toolbar, create it.
+    if (!this._editorToolbar) {
+      this._editorToolbar = this._createEditorToolbar();
+    }
+
+    // Render the toolbar. This must be placed as a child of the code
+    // mirror element to ensure it doesn't affect the positioning and
+    // size of codemirror.
+    this.codemirror?.dom.appendChild(this._editorToolbar);
+
+    // Update fullscreen button
+    this._updateFullscreenButton();
+
     // Refresh history buttons
     this._updateEditorStateButtons();
   }
