@@ -1185,12 +1185,13 @@ export class HaAutomationEditor extends PreventUnsavedMixin(
           position: sticky;
           top: -24px;
           margin-top: -24px;
-          z-index: 100;
+          z-index: 1;
           width: 100%;
           display: flex;
           flex-direction: column;
           align-items: center;
           gap: 8px;
+          pointer-events: none;
         }
 
         :not(.yaml-mode) > .alert-wrapper ha-alert {
@@ -1198,6 +1199,7 @@ export class HaAutomationEditor extends PreventUnsavedMixin(
           box-shadow: 0 2px 4px rgba(0, 0, 0, 0.2);
           border-radius: var(--ha-border-radius-sm);
           margin-bottom: 0;
+          pointer-events: auto;
         }
 
         manual-automation-editor {

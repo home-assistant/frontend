@@ -1104,12 +1104,13 @@ export class HaScriptEditor extends SubscribeMixin(
           top: -24px;
           margin-top: -24px;
           margin-bottom: 8px;
-          z-index: 100;
+          z-index: 1;
           width: 100%;
           display: flex;
           flex-direction: column;
           align-items: center;
           gap: 8px;
+          pointer-events: none;
         }
 
         .alert-wrapper ha-alert {
@@ -1117,6 +1118,7 @@ export class HaScriptEditor extends SubscribeMixin(
           box-shadow: 0 2px 4px rgba(0, 0, 0, 0.2);
           border-radius: var(--ha-border-radius-sm);
           margin-bottom: 0;
+          pointer-events: auto;
         }
 
         manual-script-editor {
