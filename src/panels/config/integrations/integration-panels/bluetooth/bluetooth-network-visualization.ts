@@ -34,6 +34,16 @@ const UPDATE_THROTTLE_TIME = 10000;
 const CORE_SOURCE_ID = "ha";
 const CORE_SOURCE_LABEL = "Home Assistant";
 
+const RSSI_COLOR_THRESHOLDS: [number, string][] = [
+  [-70, "--green-color"], // Excellent: > -70 dBm
+  [-75, "--lime-color"], // Good: -70 to -75 dBm
+  [-80, "--yellow-color"], // Okay: -75 to -80 dBm
+  [-85, "--amber-color"], // Marginal: -80 to -85 dBm
+  [-90, "--orange-color"], // Weak: -85 to -90 dBm
+  [-95, "--deep-orange-color"], // Poor: -90 to -95 dBm
+  [-Infinity, "--red-color"], // Very poor: < -95 dBm
+];
+
 @customElement("bluetooth-network-visualization")
 export class BluetoothNetworkVisualization extends LitElement {
   @property({ attribute: false }) public hass!: HomeAssistant;
@@ -126,23 +136,11 @@ export class BluetoothNetworkVisualization extends LitElement {
   }
 
   private _getRssiColorVar = memoizeOne((rssi: number): string => {
-    // Color gradient based on RSSI strength (5 dBm steps)
-    const thresholds: [number, string][] = [
-      [-70, "--green-color"], // Excellent: > -70 dBm
-      [-75, "--lime-color"], // Good: -70 to -75 dBm
-      [-80, "--yellow-color"], // Okay: -75 to -80 dBm
-      [-85, "--amber-color"], // Marginal: -80 to -85 dBm
-      [-90, "--orange-color"], // Weak: -85 to -90 dBm
-      [-95, "--deep-orange-color"], // Poor: -90 to -95 dBm
-      [-Infinity, "--red-color"], // Very poor: < -95 dBm
-    ];
-
-    for (const [threshold, colorVar] of thresholds) {
+    for (const [threshold, colorVar] of RSSI_COLOR_THRESHOLDS) {
       if (rssi > threshold) {
         return colorVar;
       }
     }
-
     // Fallback (should never reach here)
     return "--red-color";
   });
