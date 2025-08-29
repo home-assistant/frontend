@@ -182,6 +182,7 @@ export default class HaAutomationSidebarCondition extends LitElement {
             @value-changed=${this._valueChangedSidebar}
             .disabled=${this.disabled}
             @ui-mode-not-available=${this._handleUiModeNotAvailable}
+            sidebar
           ></ha-automation-condition-editor> `}
     </ha-automation-sidebar-card>`;
   }

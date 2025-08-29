@@ -23,7 +23,6 @@ import {
   extractSearchParam,
   removeSearchParam,
 } from "../../../common/url/search-params";
-import { computeRTL } from "../../../common/util/compute_rtl";
 import "../../../components/ha-button";
 import "../../../components/ha-fab";
 import "../../../components/ha-icon-button";
@@ -92,9 +91,6 @@ export class HaManualAutomationEditor extends LitElement {
   @state() private _pastedConfig?: ManualAutomationConfig;
 
   @state() private _sidebarConfig?: SidebarConfig;
-
-  @query(".content")
-  private _contentElement?: HTMLDivElement;
 
   @query("ha-automation-sidebar") private _sidebarElement?: HaAutomationSidebar;
 
@@ -260,8 +256,7 @@ export class HaManualAutomationEditor extends LitElement {
     return html`
       <div
         class=${classMap({
-          "split-view": true,
-          "sidebar-hidden": !this._sidebarConfig,
+          "has-sidebar": this._sidebarConfig && !this.narrow,
         })}
       >
         <div class="content-wrapper">
@@ -269,31 +264,31 @@ export class HaManualAutomationEditor extends LitElement {
             <slot name="alerts"></slot>
             ${this._renderContent()}
           </div>
-          <ha-fab
-            slot="fab"
-            class=${this.dirty ? "dirty" : ""}
-            .label=${this.hass.localize("ui.common.save")}
-            .disabled=${this.saving}
-            extended
-            @click=${this._saveAutomation}
-          >
-            <ha-svg-icon slot="icon" .path=${mdiContentSave}></ha-svg-icon>
-          </ha-fab>
+          <div class="fab-positioner">
+            <ha-fab
+              slot="fab"
+              class=${this.dirty ? "dirty" : ""}
+              .label=${this.hass.localize("ui.common.save")}
+              .disabled=${this.saving}
+              extended
+              @click=${this._saveAutomation}
+            >
+              <ha-svg-icon slot="icon" .path=${mdiContentSave}></ha-svg-icon>
+            </ha-fab>
+          </div>
         </div>
-        <ha-automation-sidebar
-          tabindex="-1"
-          class=${classMap({
-            sidebar: true,
-            overlay: !this.isWide && !this.narrow,
-            rtl: computeRTL(this.hass),
-          })}
-          .isWide=${this.isWide}
-          .hass=${this.hass}
-          .narrow=${this.narrow}
-          .config=${this._sidebarConfig}
-          @value-changed=${this._sidebarConfigChanged}
-          .disabled=${this.disabled}
-        ></ha-automation-sidebar>
+        <div class="sidebar-positioner">
+          <ha-automation-sidebar
+            tabindex="-1"
+            class=${classMap({ hidden: !this._sidebarConfig })}
+            .isWide=${this.isWide}
+            .hass=${this.hass}
+            .narrow=${this.narrow}
+            .config=${this._sidebarConfig}
+            @value-changed=${this._sidebarConfigChanged}
+            .disabled=${this.disabled}
+          ></ha-automation-sidebar>
+        </div>
       </div>
     `;
   }
@@ -344,8 +339,6 @@ export class HaManualAutomationEditor extends LitElement {
 
   private _handleCloseSidebar() {
     this._sidebarConfig = undefined;
-    // fix content shift when bottom rows are scrolled into view
-    this._contentElement?.scrollIntoView();
   }
 
   private _triggerChanged(ev: CustomEvent): void {

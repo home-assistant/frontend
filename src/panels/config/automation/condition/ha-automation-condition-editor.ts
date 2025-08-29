@@ -28,6 +28,8 @@ export default class HaAutomationConditionEditor extends LitElement {
 
   @property({ type: Boolean }) public narrow = false;
 
+  @property({ type: Boolean, attribute: "sidebar" }) public inSidebar = false;
+
   @property({ type: Boolean, reflect: true }) public selected = false;
 
   @property({ type: Boolean, attribute: "supported" }) public uiSupported =
@@ -55,6 +57,7 @@ export default class HaAutomationConditionEditor extends LitElement {
             (this.condition.enabled === false && !this.yamlMode),
           yaml: yamlMode,
           indent: this.indent,
+          card: !this.inSidebar,
         })}
       >
         ${yamlMode

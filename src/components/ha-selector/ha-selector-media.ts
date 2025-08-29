@@ -53,9 +53,15 @@ export class HaMediaSelector extends LitElement {
 
   private _contextEntities: string[] | undefined;
 
+  private get _hasAccept(): boolean {
+    return !!this.selector?.media?.accept?.length;
+  }
+
   willUpdate(changedProps: PropertyValues<this>) {
     if (changedProps.has("context")) {
-      this._contextEntities = ensureArray(this.context?.filter_entity);
+      if (!this._hasAccept) {
+        this._contextEntities = ensureArray(this.context?.filter_entity);
+      }
     }
 
     if (changedProps.has("value")) {
@@ -99,10 +105,8 @@ export class HaMediaSelector extends LitElement {
       (stateObj &&
         supportsFeature(stateObj, MediaPlayerEntityFeature.BROWSE_MEDIA));
 
-    const hasAccept = this.selector?.media?.accept?.length;
-
     return html`
-      ${hasAccept ||
+      ${this._hasAccept ||
       (this._contextEntities && this._contextEntities.length <= 1)
         ? nothing
         : html`
@@ -148,7 +152,7 @@ export class HaMediaSelector extends LitElement {
                 : this.value.metadata?.title || this.value.media_content_id}
               @click=${this._pickMedia}
               @keydown=${this._handleKeyDown}
-              class=${this.disabled || (!entityId && !hasAccept)
+              class=${this.disabled || (!entityId && !this._hasAccept)
                 ? "disabled"
                 : ""}
             >
@@ -215,7 +219,7 @@ export class HaMediaSelector extends LitElement {
 
   private _entityChanged(ev: CustomEvent) {
     ev.stopPropagation();
-    if (this.context?.filter_entity) {
+    if (!this._hasAccept && this.context?.filter_entity) {
       fireEvent(this, "value-changed", {
         value: {
           media_content_id: "",
@@ -257,7 +261,7 @@ export class HaMediaSelector extends LitElement {
                 media_content_type: id.media_content_type,
                 media_content_id: id.media_content_id,
               })),
-              ...(this.context?.filter_entity
+              ...(!this._hasAccept && this.context?.filter_entity
                 ? { browse_entity_id: this._getActiveEntityId() }
                 : {}),
             },
