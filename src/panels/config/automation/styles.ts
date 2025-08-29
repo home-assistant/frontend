@@ -69,7 +69,7 @@ export const indentStyle = css`
   .selector-row,
   :host([indent]) ha-form {
     margin-left: 12px;
-    padding: 12px 20px 16px 16px;
+    padding: 12px 0 16px 16px;
     border-left: 2px solid var(--ha-color-border-neutral-quiet);
     border-bottom: 2px solid var(--ha-color-border-neutral-quiet);
     border-radius: 0;
@@ -108,77 +108,59 @@ export const saveFabStyles = css`
 export const manualEditorStyles = css`
   :host {
     display: block;
+    --sidebar-width: 0;
+    --sidebar-gap: 0;
   }
 
-  .split-view {
+  .has-sidebar {
+    --sidebar-width: min(35vw, 500px);
+    --sidebar-gap: 16px;
+  }
+
+  .fab-positioner {
     display: flex;
-    flex-direction: row;
-    height: 100%;
-    position: relative;
-    gap: 16px;
+    justify-content: flex-end;
   }
 
-  .split-view.sidebar-hidden {
-    gap: 0;
+  .fab-positioner ha-fab {
+    position: fixed;
+    right: unset;
+    left: unset;
+    bottom: calc(-80px - var(--safe-area-inset-bottom));
+    transition: bottom 0.3s;
+  }
+  .fab-positioner ha-fab.dirty {
+    bottom: 16px;
   }
 
   .content-wrapper {
-    position: relative;
-    flex: 6;
+    padding-right: calc(var(--sidebar-width) + var(--sidebar-gap));
+    padding-inline-end: calc(var(--sidebar-width) + var(--sidebar-gap));
+    padding-inline-start: 0;
   }
 
   .content {
-    padding: 32px 16px 64px 0;
-    height: calc(100vh - 153px);
-    height: calc(100dvh - 153px);
-    overflow-y: auto;
-    overflow-x: hidden;
+    padding-top: 24px;
+    padding-bottom: 72px;
   }
 
-  .sidebar {
-    padding: 12px 0;
-    flex: 4;
-    height: calc(100vh - 81px);
-    height: calc(100dvh - 81px);
-    width: 40%;
-  }
-  .split-view.sidebar-hidden .sidebar {
-    border-color: transparent;
-    border-width: 0;
-    overflow: hidden;
-    flex: 0;
-    visibility: hidden;
-  }
-
-  .sidebar.overlay {
+  ha-automation-sidebar {
     position: fixed;
-    bottom: 8px;
-    right: 8px;
-    height: calc(100% - 70px);
-    padding: 0;
-    z-index: 5;
-    box-shadow: -8px 0 16px rgba(0, 0, 0, 0.2);
+    top: calc(var(--header-height) + 16px);
+    height: calc(-81px + 100dvh);
+    width: var(--sidebar-width);
+    display: block;
   }
 
-  .sidebar.overlay.rtl {
-    right: unset;
-    left: 8px;
+  ha-automation-sidebar.hidden {
+    display: none;
   }
 
-  @media all and (max-width: 870px) {
-    .split-view {
-      gap: 0;
-    }
-    .sidebar {
-      height: 0;
-      width: 0;
-      flex: 0;
-    }
+  .sidebar-positioner {
+    display: flex;
+    justify-content: flex-end;
   }
 
-  .split-view.sidebar-hidden .sidebar.overlay {
-    width: 0;
-  }
   .description {
     margin: 0;
   }
@@ -189,9 +171,6 @@ export const manualEditorStyles = css`
 
 export const automationRowsStyles = css`
   .rows {
-    padding: 16px 0 16px 16px;
-    margin: -16px;
-    margin-right: -20px;
     display: flex;
     flex-direction: column;
     gap: 16px;

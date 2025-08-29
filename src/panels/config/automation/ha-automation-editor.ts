@@ -1181,25 +1181,6 @@ export class HaAutomationEditor extends PreventUnsavedMixin(
           display: block;
         }
 
-        :not(.yaml-mode) > .alert-wrapper {
-          position: sticky;
-          top: -24px;
-          margin-top: -24px;
-          z-index: 100;
-          width: 100%;
-          display: flex;
-          flex-direction: column;
-          align-items: center;
-          gap: 8px;
-        }
-
-        :not(.yaml-mode) > .alert-wrapper ha-alert {
-          background-color: var(--card-background-color);
-          box-shadow: 0 2px 4px rgba(0, 0, 0, 0.2);
-          border-radius: var(--ha-border-radius-sm);
-          margin-bottom: 0;
-        }
-
         manual-automation-editor {
           max-width: 1540px;
           padding: 0 12px;

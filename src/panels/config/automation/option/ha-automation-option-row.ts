@@ -385,9 +385,12 @@ export default class HaAutomationOptionRow extends LitElement {
 
   public openSidebar(): void {
     fireEvent(this, "open-sidebar", {
-      close: () => {
+      close: (focus?: boolean) => {
         this._selected = false;
         fireEvent(this, "close-sidebar");
+        if (focus) {
+          this.focus();
+        }
       },
       rename: () => {
         this._renameOption();

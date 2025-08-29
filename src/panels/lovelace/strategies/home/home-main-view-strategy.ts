@@ -15,7 +15,10 @@ import type {
   WeatherForecastCardConfig,
 } from "../../cards/types";
 import { getAreas } from "../areas/helpers/areas-strategy-helper";
-import { HOME_SUMMARIES_ICONS } from "./helpers/home-summaries";
+import {
+  getSummaryLabel,
+  HOME_SUMMARIES_ICONS,
+} from "./helpers/home-summaries";
 
 export interface HomeMainViewStrategyConfig {
   type: "home-main";
@@ -63,7 +66,7 @@ export class HomeMainViewStrategy extends ReactiveElement {
         {
           type: "heading",
           heading_style: "title",
-          heading: "Areas",
+          heading: hass.localize("ui.panel.lovelace.strategy.home.areas"),
         },
         ...areas.map<AreaCardConfig>((area) =>
           computeAreaCard(area.area_id, hass)
@@ -108,12 +111,12 @@ export class HomeMainViewStrategy extends ReactiveElement {
       cards: [
         {
           type: "heading",
-          heading: "Summaries",
+          heading: hass.localize("ui.panel.lovelace.strategy.home.summaries"),
         },
         {
           type: "button",
           icon: HOME_SUMMARIES_ICONS.lights,
-          name: "Lights",
+          name: getSummaryLabel(hass.localize, "lights"),
           icon_height: "24px",
           grid_options: {
             rows: 2,
@@ -127,7 +130,7 @@ export class HomeMainViewStrategy extends ReactiveElement {
         {
           type: "button",
           icon: HOME_SUMMARIES_ICONS.climate,
-          name: "Climate",
+          name: getSummaryLabel(hass.localize, "climate"),
           icon_height: "30px",
           grid_options: {
             rows: 2,
@@ -141,7 +144,7 @@ export class HomeMainViewStrategy extends ReactiveElement {
         {
           type: "button",
           icon: HOME_SUMMARIES_ICONS.security,
-          name: "Security",
+          name: getSummaryLabel(hass.localize, "security"),
           icon_height: "30px",
           grid_options: {
             rows: 2,
@@ -155,7 +158,7 @@ export class HomeMainViewStrategy extends ReactiveElement {
         {
           type: "button",
           icon: HOME_SUMMARIES_ICONS.media_players,
-          name: "Media Players",
+          name: getSummaryLabel(hass.localize, "media_players"),
           icon_height: "30px",
           grid_options: {
             rows: 2,
@@ -232,7 +235,7 @@ export class HomeMainViewStrategy extends ReactiveElement {
         card: {
           type: "markdown",
           text_only: true,
-          content: "## Welcome {{user}}",
+          content: `## ${hass.localize("ui.panel.lovelace.strategy.home.welcome_user", { user: "{{ user }}" })}`,
         } satisfies MarkdownCardConfig,
       },
     };

@@ -1,7 +1,7 @@
 import { mdiDrag, mdiPlus } from "@mdi/js";
 import deepClone from "deep-clone-simple";
 import type { PropertyValues } from "lit";
-import { LitElement, css, html, nothing } from "lit";
+import { LitElement, html, nothing } from "lit";
 import { customElement, property, queryAll, state } from "lit/decorators";
 import { repeat } from "lit/directives/repeat";
 import { storage } from "../../../../common/decorators/storage";
@@ -409,14 +409,7 @@ export default class HaAutomationAction extends LitElement {
     this._rowSortSelected = undefined;
   }
 
-  static styles = [
-    automationRowsStyles,
-    css`
-      :host([root]) .rows {
-        padding-right: 8px;
-      }
-    `,
-  ];
+  static styles = automationRowsStyles;
 }
 
 declare global {
