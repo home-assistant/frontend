@@ -5647,10 +5647,10 @@
         },
         "application_credentials": {
           "caption": "Application credentials",
-          "description": "Manage the OAuth application credentials used by Integrations",
+          "description": "Manage the OAuth application credentials used by integrations",
           "editor": {
-            "caption": "Add credentials",
-            "description": "OAuth is used to grant Home Assistant access to information on other websites without giving a password. This mechanism is used by companies such as Spotify, Google, Withings, Microsoft, and Twitter.",
+            "caption": "Add application credentials",
+            "description": "OAuth is used to grant Home Assistant secure delegated access to information on other websites without revealing your personal credentials.",
             "missing_credentials": "Setting up {integration} requires configuring application credentials.",
             "missing_credentials_domain_link": "View {integration} documentation",
             "view_documentation": "View application credentials documentation",
