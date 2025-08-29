@@ -83,6 +83,7 @@ export default class HaAutomationSidebarScriptField extends LitElement {
         .disabled=${this.disabled}
         .yamlMode=${this.yamlMode}
         @value-changed=${this._valueChangedSidebar}
+        @yaml-changed=${this._yamlChangedSidebar}
       ></ha-script-field-editor>
     </ha-automation-sidebar-card>`;
   }
@@ -108,6 +109,12 @@ export default class HaAutomationSidebarScriptField extends LitElement {
         },
       });
     }
+  }
+
+  private _yamlChangedSidebar(ev: CustomEvent) {
+    ev.stopPropagation();
+
+    this.config?.save?.(ev.detail.value);
   }
 
   private _toggleYamlMode = () => {

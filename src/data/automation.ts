@@ -556,7 +556,6 @@ export interface AutomationClipboard {
 }
 
 export interface BaseSidebarConfig {
-  toggleYamlMode: () => boolean;
   delete: () => void;
   close: (focus?: boolean) => void;
 }
@@ -568,6 +567,7 @@ export interface TriggerSidebarConfig extends BaseSidebarConfig {
   duplicate: () => void;
   cut: () => void;
   copy: () => void;
+  toggleYamlMode: () => boolean;
   config: Trigger;
   yamlMode: boolean;
   uiSupported: boolean;
@@ -581,6 +581,7 @@ export interface ConditionSidebarConfig extends BaseSidebarConfig {
   duplicate: () => void;
   cut: () => void;
   copy: () => void;
+  toggleYamlMode: () => boolean;
   config: Condition;
   yamlMode: boolean;
   uiSupported: boolean;
@@ -594,6 +595,7 @@ export interface ActionSidebarConfig extends BaseSidebarConfig {
   cut: () => void;
   copy: () => void;
   run: () => void;
+  toggleYamlMode: () => boolean;
   config: {
     action: Action;
   };
@@ -615,6 +617,7 @@ export interface ScriptFieldSidebarConfig extends BaseSidebarConfig {
     key: string;
     excludeKeys: string[];
   };
+  toggleYamlMode: () => boolean;
   yamlMode: boolean;
 }
 

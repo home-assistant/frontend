@@ -180,6 +180,7 @@ export default class HaAutomationSidebarCondition extends LitElement {
             .yamlMode=${this.yamlMode}
             .uiSupported=${this.config.uiSupported}
             @value-changed=${this._valueChangedSidebar}
+            @yaml-changed=${this._yamlChangedSidebar}
             .disabled=${this.disabled}
             @ui-mode-not-available=${this._handleUiModeNotAvailable}
             sidebar
@@ -207,6 +208,12 @@ export default class HaAutomationSidebarCondition extends LitElement {
         },
       });
     }
+  }
+
+  private _yamlChangedSidebar(ev: CustomEvent) {
+    ev.stopPropagation();
+
+    this.config?.save?.(ev.detail.value);
   }
 
   private _toggleYamlMode = () => {

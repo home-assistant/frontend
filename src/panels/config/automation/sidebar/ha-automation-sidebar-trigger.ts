@@ -188,6 +188,7 @@ export default class HaAutomationSidebarTrigger extends LitElement {
           .hass=${this.hass}
           .trigger=${this.config.config}
           @value-changed=${this._valueChangedSidebar}
+          @yaml-changed=${this._yamlChangedSidebar}
           .uiSupported=${this.config.uiSupported}
           .showId=${this._requestShowId}
           .yamlMode=${this.yamlMode}
@@ -219,6 +220,12 @@ export default class HaAutomationSidebarTrigger extends LitElement {
         },
       });
     }
+  }
+
+  private _yamlChangedSidebar(ev: CustomEvent) {
+    ev.stopPropagation();
+
+    this.config?.save?.(ev.detail.value);
   }
 
   private _toggleYamlMode = () => {

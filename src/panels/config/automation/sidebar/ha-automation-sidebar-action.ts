@@ -188,6 +188,7 @@ export default class HaAutomationSidebarAction extends LitElement {
             .yamlMode=${this.yamlMode}
             .uiSupported=${this.config.uiSupported}
             @value-changed=${this._valueChangedSidebar}
+            @yaml-changed=${this._yamlChangedSidebar}
             sidebar
             narrow
             .disabled=${this.disabled}
@@ -218,6 +219,12 @@ export default class HaAutomationSidebarAction extends LitElement {
         },
       });
     }
+  }
+
+  private _yamlChangedSidebar(ev: CustomEvent) {
+    ev.stopPropagation();
+
+    this.config?.save?.(ev.detail.value);
   }
 
   private _toggleYamlMode = () => {

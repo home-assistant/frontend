@@ -197,7 +197,7 @@ export default class HaAutomationSidebar extends LitElement {
   }
 
   private _toggleYamlMode = () => {
-    this._yamlMode = this.config!.toggleYamlMode();
+    this._yamlMode = (this.config as ActionSidebarConfig)!.toggleYamlMode();
     fireEvent(this, "value-changed", {
       value: {
         ...this.config,
@@ -235,5 +235,8 @@ declare global {
 
   interface HASSDomEvents {
     "toggle-yaml-mode": undefined;
+    "yaml-changed": {
+      value: unknown;
+    };
   }
 }
