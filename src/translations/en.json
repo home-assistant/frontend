@@ -3885,8 +3885,8 @@
               "unknown_trigger": "[%key:ui::panel::config::devices::automation::triggers::unknown_trigger%]",
               "triggering_event_detail": "Triggering event detail",
               "trigger": "Trigger",
-              "copied_to_clipboard": "Copied trigger to clipboard",
-              "cut_to_clipboard": "Cut trigger to clipboard",
+              "copied_to_clipboard": "Trigger copied to clipboard",
+              "cut_to_clipboard": "Trigger cut to clipboard",
               "groups": {
                 "entity": {
                   "label": "Entity",
