@@ -15,7 +15,10 @@ import type {
   WeatherForecastCardConfig,
 } from "../../cards/types";
 import { getAreas } from "../areas/helpers/areas-strategy-helper";
-import { HOME_SUMMARIES_ICONS } from "./helpers/home-summaries";
+import {
+  getSummaryLabel,
+  HOME_SUMMARIES_ICONS,
+} from "./helpers/home-summaries";
 
 export interface HomeMainViewStrategyConfig {
   type: "home-main";
@@ -113,7 +116,7 @@ export class HomeMainViewStrategy extends ReactiveElement {
         {
           type: "button",
           icon: HOME_SUMMARIES_ICONS.lights,
-          name: "Lights",
+          name: getSummaryLabel(hass, "lights"),
           icon_height: "24px",
           grid_options: {
             rows: 2,
@@ -127,7 +130,7 @@ export class HomeMainViewStrategy extends ReactiveElement {
         {
           type: "button",
           icon: HOME_SUMMARIES_ICONS.climate,
-          name: "Climate",
+          name: getSummaryLabel(hass, "climate"),
           icon_height: "30px",
           grid_options: {
             rows: 2,
@@ -141,7 +144,7 @@ export class HomeMainViewStrategy extends ReactiveElement {
         {
           type: "button",
           icon: HOME_SUMMARIES_ICONS.security,
-          name: "Security",
+          name: getSummaryLabel(hass, "security"),
           icon_height: "30px",
           grid_options: {
             rows: 2,
@@ -155,7 +158,7 @@ export class HomeMainViewStrategy extends ReactiveElement {
         {
           type: "button",
           icon: HOME_SUMMARIES_ICONS.media_players,
-          name: "Media Players",
+          name: getSummaryLabel(hass, "media_players"),
           icon_height: "30px",
           grid_options: {
             rows: 2,

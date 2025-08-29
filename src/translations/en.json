@@ -6817,6 +6817,18 @@
             },
             "other_areas": "Other areas",
             "areas": "Areas"
+          },
+          "home": {
+            "summaries": {
+              "climate": "Climate",
+              "lights": "Lights",
+              "security": "Security",
+              "media_players": "Media players"
+            },
+            "areas": "Areas",
+            "other_areas": "Other areas",
+            "unamed_device": "Unnamed device",
+            "others": "Others"
           }
         },
         "cards": {

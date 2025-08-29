@@ -14,10 +14,11 @@ import type { HeadingCardConfig } from "../../cards/types";
 import { computeAreaTileCardConfig } from "../areas/helpers/areas-strategy-helper";
 import {
   findEntities,
+  getSummaryLabel,
   HOME_SUMMARIES,
   HOME_SUMMARIES_FILTERS,
   HOME_SUMMARIES_ICONS,
-  type HomeSummaries,
+  type HomeSummary,
 } from "./helpers/home-summaries";
 
 export interface HomeAreaViewStrategyConfig {
@@ -96,7 +97,7 @@ export class HomeAreaViewStrategy extends ReactiveElement {
         acc[summary] = findEntities(areaEntities, filterFunctions);
         return acc;
       },
-      {} as Record<HomeSummaries, string[]>
+      {} as Record<HomeSummary, string[]>
     );
 
     const {
@@ -110,7 +111,11 @@ export class HomeAreaViewStrategy extends ReactiveElement {
       sections.push({
         type: "grid",
         cards: [
-          computeHeadingCard("Lights", HOME_SUMMARIES_ICONS.lights, "lights"),
+          computeHeadingCard(
+            getSummaryLabel(hass, "lights"),
+            HOME_SUMMARIES_ICONS.lights,
+            "lights"
+          ),
           ...lights.map(computeTileCard),
         ],
       });
@@ -121,7 +126,7 @@ export class HomeAreaViewStrategy extends ReactiveElement {
         type: "grid",
         cards: [
           computeHeadingCard(
-            "Climate",
+            getSummaryLabel(hass, "climate"),
             HOME_SUMMARIES_ICONS.climate,
             "climate"
           ),
@@ -135,7 +140,7 @@ export class HomeAreaViewStrategy extends ReactiveElement {
         type: "grid",
         cards: [
           computeHeadingCard(
-            "Security",
+            getSummaryLabel(hass, "security"),
             HOME_SUMMARIES_ICONS.security,
             "security"
           ),
@@ -149,7 +154,7 @@ export class HomeAreaViewStrategy extends ReactiveElement {
         type: "grid",
         cards: [
           computeHeadingCard(
-            "Media players",
+            getSummaryLabel(hass, "media_players"),
             HOME_SUMMARIES_ICONS.media_players,
             "media-players"
           ),
@@ -229,9 +234,11 @@ export class HomeAreaViewStrategy extends ReactiveElement {
       const device = hass.devices[deviceId];
       let heading = "";
       if (device) {
-        heading = computeDeviceName(device) || "Unnamed device";
+        heading =
+          computeDeviceName(device) ||
+          hass.localize("ui.panel.lovelace.strategy.home.unamed_device");
       } else {
-        heading = "Others";
+        heading = hass.localize("ui.panel.lovelace.strategy.home.others");
       }
 
       deviceSections.push({
