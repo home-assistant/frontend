@@ -92,9 +92,6 @@ export class HaManualAutomationEditor extends LitElement {
 
   @state() private _sidebarConfig?: SidebarConfig;
 
-  @query(".content")
-  private _contentElement?: HTMLDivElement;
-
   @query("ha-automation-sidebar") private _sidebarElement?: HaAutomationSidebar;
 
   private _previousConfig?: ManualAutomationConfig;
@@ -342,8 +339,6 @@ export class HaManualAutomationEditor extends LitElement {
 
   private _handleCloseSidebar() {
     this._sidebarConfig = undefined;
-    // fix content shift when bottom rows are scrolled into view
-    this._contentElement?.scrollIntoView();
   }
 
   private _triggerChanged(ev: CustomEvent): void {
