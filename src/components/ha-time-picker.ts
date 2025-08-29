@@ -71,7 +71,7 @@ export class HaTimePicker extends LitElement {
         .value=${this._hours}
         @value-changed=${this._hoursChanged}
       ></ha-numeric-arrow-input>
-
+      <span class="time-picker-separator">:</span>
       <ha-numeric-arrow-input
         .disabled=${this.disabled}
         .required=${this.required}
@@ -81,9 +81,9 @@ export class HaTimePicker extends LitElement {
         .value=${this._minutes}
         @value-changed=${this._minutesChanged}
       ></ha-numeric-arrow-input>
-
       ${this.enableSeconds
         ? html`
+            <span class="time-picker-separator">:</span>
             <ha-numeric-arrow-input
               .disabled=${this.disabled}
               .required=${this.required}
@@ -188,6 +188,10 @@ export class HaTimePicker extends LitElement {
       flex-direction: row;
       align-items: center;
       gap: 4px;
+    }
+
+    .time-picker-separator {
+      color: var(--primary-text-color);
     }
   `;
 }
