@@ -6,6 +6,7 @@ import type { HomeAssistant } from "../../../../types";
 import type HaAutomationConditionEditor from "../action/ha-automation-action-editor";
 import { sidebarEditorStyles } from "../styles";
 import "./ha-automation-sidebar-card";
+import { isMac } from "../../../../util/is_mac";
 
 @customElement("ha-automation-sidebar-option")
 export default class HaAutomationSidebarOption extends LitElement {
@@ -56,6 +57,7 @@ export default class HaAutomationSidebarOption extends LitElement {
                 "ui.panel.config.automation.editor.triggers.rename"
               )}
               <ha-svg-icon slot="start" .path=${mdiRenameBox}></ha-svg-icon>
+              <span class="shortcut-placeholder ${isMac ? "mac" : ""}"></span>
             </ha-md-menu-item>
 
             <ha-md-menu-item
@@ -70,6 +72,7 @@ export default class HaAutomationSidebarOption extends LitElement {
                 slot="start"
                 .path=${mdiContentDuplicate}
               ></ha-svg-icon>
+              <span class="shortcut-placeholder ${isMac ? "mac" : ""}"></span>
             </ha-md-menu-item>
             <ha-md-divider
               slot="menu-items"

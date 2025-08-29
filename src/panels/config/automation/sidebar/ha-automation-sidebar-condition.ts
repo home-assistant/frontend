@@ -1,4 +1,6 @@
 import {
+  mdiAppleKeyboardCommand,
+  mdiContentCopy,
   mdiContentCut,
   mdiContentDuplicate,
   mdiDelete,
@@ -103,6 +105,7 @@ export default class HaAutomationSidebarCondition extends LitElement {
           "ui.panel.config.automation.editor.conditions.test"
         )}
         <ha-svg-icon slot="start" .path=${mdiFlask}></ha-svg-icon>
+        <span class="shortcut-placeholder ${isMac ? "mac" : ""}"></span>
       </ha-md-menu-item>
       <ha-md-menu-item
         slot="menu-items"
@@ -113,6 +116,7 @@ export default class HaAutomationSidebarCondition extends LitElement {
           "ui.panel.config.automation.editor.triggers.rename"
         )}
         <ha-svg-icon slot="start" .path=${mdiRenameBox}></ha-svg-icon>
+        <span class="shortcut-placeholder ${isMac ? "mac" : ""}"></span>
       </ha-md-menu-item>
 
       <ha-md-divider
@@ -130,6 +134,7 @@ export default class HaAutomationSidebarCondition extends LitElement {
           "ui.panel.config.automation.editor.actions.duplicate"
         )}
         <ha-svg-icon slot="start" .path=${mdiContentDuplicate}></ha-svg-icon>
+        <span class="shortcut-placeholder ${isMac ? "mac" : ""}"></span>
       </ha-md-menu-item>
 
       <ha-md-menu-item
@@ -137,6 +142,7 @@ export default class HaAutomationSidebarCondition extends LitElement {
         .clickAction=${this.config.copy}
         .disabled=${this.disabled}
       >
+        <ha-svg-icon slot="start" .path=${mdiContentCopy}></ha-svg-icon>
         <div class="overflow-label">
           ${this.hass.localize(
             "ui.panel.config.automation.editor.triggers.copy"
@@ -144,10 +150,16 @@ export default class HaAutomationSidebarCondition extends LitElement {
           ${!this.narrow
             ? html`<span class="shortcut">
                 <span
-                  >${this.hass.localize(
-                    `ui.panel.config.automation.editor.${isMac ? "cmd" : "ctrl"}`
-                  )}</span
+                  >${isMac
+                    ? html`<ha-svg-icon
+                        slot="start"
+                        .path=${mdiAppleKeyboardCommand}
+                      ></ha-svg-icon>`
+                    : this.hass.localize(
+                        "ui.panel.config.automation.editor.ctrl"
+                      )}</span
                 >
+                <span>+</span>
                 <span>C</span>
               </span>`
             : nothing}
@@ -167,10 +179,16 @@ export default class HaAutomationSidebarCondition extends LitElement {
           ${!this.narrow
             ? html`<span class="shortcut">
                 <span
-                  >${this.hass.localize(
-                    `ui.panel.config.automation.editor.${isMac ? "cmd" : "ctrl"}`
-                  )}</span
+                  >${isMac
+                    ? html`<ha-svg-icon
+                        slot="start"
+                        .path=${mdiAppleKeyboardCommand}
+                      ></ha-svg-icon>`
+                    : this.hass.localize(
+                        "ui.panel.config.automation.editor.ctrl"
+                      )}</span
                 >
+                <span>+</span>
                 <span>X</span>
               </span>`
             : nothing}
@@ -185,6 +203,7 @@ export default class HaAutomationSidebarCondition extends LitElement {
           `ui.panel.config.automation.editor.edit_${!this.yamlMode ? "yaml" : "ui"}`
         )}
         <ha-svg-icon slot="start" .path=${mdiPlaylistEdit}></ha-svg-icon>
+        <span class="shortcut-placeholder ${isMac ? "mac" : ""}"></span>
       </ha-md-menu-item>
       <ha-md-divider
         slot="menu-items"
@@ -199,6 +218,7 @@ export default class HaAutomationSidebarCondition extends LitElement {
           slot="start"
           .path=${this.disabled ? mdiPlayCircleOutline : mdiStopCircleOutline}
         ></ha-svg-icon>
+        <span class="shortcut-placeholder ${isMac ? "mac" : ""}"></span>
       </ha-md-menu-item>
       <ha-md-menu-item
         slot="menu-items"

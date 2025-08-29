@@ -10,6 +10,7 @@ import "../../script/ha-script-field-selector-editor";
 import type HaAutomationConditionEditor from "../action/ha-automation-action-editor";
 import { sidebarEditorStyles } from "../styles";
 import "./ha-automation-sidebar-card";
+import { isMac } from "../../../../util/is_mac";
 
 @customElement("ha-automation-sidebar-script-field-selector")
 export default class HaAutomationSidebarScriptFieldSelector extends LitElement {
@@ -72,6 +73,7 @@ export default class HaAutomationSidebarScriptFieldSelector extends LitElement {
           `ui.panel.config.automation.editor.edit_${!this.yamlMode ? "yaml" : "ui"}`
         )}
         <ha-svg-icon slot="start" .path=${mdiPlaylistEdit}></ha-svg-icon>
+        <span class="shortcut-placeholder ${isMac ? "mac" : ""}"></span>
       </ha-md-menu-item>
       <ha-md-menu-item
         slot="menu-items"

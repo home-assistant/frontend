@@ -1,4 +1,5 @@
 import {
+  mdiAppleKeyboardCommand,
   mdiContentCopy,
   mdiContentCut,
   mdiContentDuplicate,
@@ -17,11 +18,11 @@ import { handleStructError } from "../../../../common/structs/handle-errors";
 import type { TriggerSidebarConfig } from "../../../../data/automation";
 import { isTriggerList } from "../../../../data/trigger";
 import type { HomeAssistant } from "../../../../types";
+import { isMac } from "../../../../util/is_mac";
 import { sidebarEditorStyles } from "../styles";
 import "../trigger/ha-automation-trigger-editor";
 import type HaAutomationTriggerEditor from "../trigger/ha-automation-trigger-editor";
 import "./ha-automation-sidebar-card";
-import { isMac } from "../../../../util/is_mac";
 
 @customElement("ha-automation-sidebar-trigger")
 export default class HaAutomationSidebarTrigger extends LitElement {
@@ -94,6 +95,7 @@ export default class HaAutomationSidebarTrigger extends LitElement {
             "ui.panel.config.automation.editor.triggers.rename"
           )}
           <ha-svg-icon slot="start" .path=${mdiRenameBox}></ha-svg-icon>
+          <span class="shortcut-placeholder ${isMac ? "mac" : ""}"></span>
         </ha-md-menu-item>
         ${!this.yamlMode &&
         !("id" in this.config.config) &&
@@ -107,6 +109,7 @@ export default class HaAutomationSidebarTrigger extends LitElement {
                 "ui.panel.config.automation.editor.triggers.edit_id"
               )}
               <ha-svg-icon slot="start" .path=${mdiIdentifier}></ha-svg-icon>
+              <span class="shortcut-placeholder ${isMac ? "mac" : ""}"></span>
             </ha-md-menu-item>`
           : nothing}
 
@@ -140,10 +143,16 @@ export default class HaAutomationSidebarTrigger extends LitElement {
             ${!this.narrow
               ? html`<span class="shortcut">
                   <span
-                    >${this.hass.localize(
-                      `ui.panel.config.automation.editor.${isMac ? "cmd" : "ctrl"}`
-                    )}</span
+                    >${isMac
+                      ? html`<ha-svg-icon
+                          slot="start"
+                          .path=${mdiAppleKeyboardCommand}
+                        ></ha-svg-icon>`
+                      : this.hass.localize(
+                          "ui.panel.config.automation.editor.ctrl"
+                        )}</span
                   >
+                  <span>+</span>
                   <span>C</span>
                 </span>`
               : nothing}
@@ -163,10 +172,16 @@ export default class HaAutomationSidebarTrigger extends LitElement {
             ${!this.narrow
               ? html`<span class="shortcut">
                   <span
-                    >${this.hass.localize(
-                      `ui.panel.config.automation.editor.${isMac ? "cmd" : "ctrl"}`
-                    )}</span
+                    >${isMac
+                      ? html`<ha-svg-icon
+                          slot="start"
+                          .path=${mdiAppleKeyboardCommand}
+                        ></ha-svg-icon>`
+                      : this.hass.localize(
+                          "ui.panel.config.automation.editor.ctrl"
+                        )}</span
                   >
+                  <span>+</span>
                   <span>X</span>
                 </span>`
               : nothing}
@@ -181,6 +196,7 @@ export default class HaAutomationSidebarTrigger extends LitElement {
             `ui.panel.config.automation.editor.edit_${!this.yamlMode ? "yaml" : "ui"}`
           )}
           <ha-svg-icon slot="start" .path=${mdiPlaylistEdit}></ha-svg-icon>
+          <span class="shortcut-placeholder ${isMac ? "mac" : ""}"></span>
         </ha-md-menu-item>
         <ha-md-divider
           slot="menu-items"
@@ -199,6 +215,7 @@ export default class HaAutomationSidebarTrigger extends LitElement {
             slot="start"
             .path=${this.disabled ? mdiPlayCircleOutline : mdiStopCircleOutline}
           ></ha-svg-icon>
+          <span class="shortcut-placeholder ${isMac ? "mac" : ""}"></span>
         </ha-md-menu-item>
         <ha-md-menu-item
           slot="menu-items"
