@@ -1,4 +1,9 @@
-import { mdiDelete, mdiPlusCircleMultipleOutline, mdiRenameBox } from "@mdi/js";
+import {
+  mdiAppleKeyboardCommand,
+  mdiDelete,
+  mdiPlusCircleMultipleOutline,
+  mdiRenameBox,
+} from "@mdi/js";
 import { html, LitElement, nothing } from "lit";
 import { customElement, property, query } from "lit/decorators";
 import type { OptionSidebarConfig } from "../../../../data/automation";
@@ -96,6 +101,17 @@ export default class HaAutomationSidebarOption extends LitElement {
                 )}
                 ${!this.narrow
                   ? html`<span class="shortcut">
+                      <span
+                        >${isMac
+                          ? html`<ha-svg-icon
+                              slot="start"
+                              .path=${mdiAppleKeyboardCommand}
+                            ></ha-svg-icon>`
+                          : this.hass.localize(
+                              "ui.panel.config.automation.editor.ctrl"
+                            )}</span
+                      >
+                      <span>+</span>
                       <span
                         >${this.hass.localize(
                           "ui.panel.config.automation.editor.del"

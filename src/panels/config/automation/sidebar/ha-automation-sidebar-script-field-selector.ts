@@ -1,4 +1,4 @@
-import { mdiDelete, mdiPlaylistEdit } from "@mdi/js";
+import { mdiAppleKeyboardCommand, mdiDelete, mdiPlaylistEdit } from "@mdi/js";
 import { html, LitElement, nothing } from "lit";
 import { customElement, property, query, state } from "lit/decorators";
 import { keyed } from "lit/directives/keyed";
@@ -90,6 +90,17 @@ export default class HaAutomationSidebarScriptFieldSelector extends LitElement {
           )}
           ${!this.narrow
             ? html`<span class="shortcut">
+                <span
+                  >${isMac
+                    ? html`<ha-svg-icon
+                        slot="start"
+                        .path=${mdiAppleKeyboardCommand}
+                      ></ha-svg-icon>`
+                    : this.hass.localize(
+                        "ui.panel.config.automation.editor.ctrl"
+                      )}</span
+                >
+                <span>+</span>
                 <span
                   >${this.hass.localize(
                     "ui.panel.config.automation.editor.del"

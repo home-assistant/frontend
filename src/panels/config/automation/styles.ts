@@ -238,10 +238,10 @@ export const sidebarEditorStyles = css`
   }
   .shortcut-placeholder {
     display: inline-block;
-    width: 40px;
+    width: 60px;
   }
   .shortcut-placeholder.mac {
-    width: 26px;
+    width: 46px;
   }
   @media all and (max-width: 870px) {
     .shortcut-placeholder {
