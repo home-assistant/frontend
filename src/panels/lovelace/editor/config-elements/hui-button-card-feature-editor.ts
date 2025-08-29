@@ -28,6 +28,12 @@ export class HuiButtonCardFeatureEditor
         text: {},
       },
     },
+    {
+      name: "data"
+      selector: {
+        object: {},
+      },
+    },
   ]);
 
   protected render() {
