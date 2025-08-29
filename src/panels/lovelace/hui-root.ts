@@ -252,11 +252,11 @@ class HUIRoot extends LitElement {
       result.push(
         html`<ha-icon-button
             slot="actionItems"
-            id="button-${index}"
+            .id="button-${index}"
             .path=${button.icon}
             @click=${button.buttonAction}
           ></ha-icon-button>
-          <ha-tooltip placement="bottom" for="button-${index}">
+          <ha-tooltip placement="bottom" .for="button-${index}">
             ${[this.hass!.localize(button.key), button.suffix].join(" ")}
           </ha-tooltip>`
       );

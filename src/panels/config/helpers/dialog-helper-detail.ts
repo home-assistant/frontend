@@ -238,11 +238,11 @@ export class DialogHelperDetail extends LitElement {
                   ? html`<ha-icon-next slot="meta"></ha-icon-next>`
                   : html` <ha-svg-icon
                         slot="meta"
-                        id="icon-${domain}"
+                        .id="icon-${domain}"
                         path=${mdiAlertOutline}
                         @click=${stopPropagation}
                       ></ha-svg-icon>
-                      <ha-tooltip for="icon-${domain}">
+                      <ha-tooltip .for="icon-${domain}">
                         ${this.hass.localize(
                           "ui.dialogs.helper_settings.platform_not_loaded",
                           { platform: domain }

@@ -119,7 +119,7 @@ class HassioRepositoriesDialog extends LitElement {
                         <div>${repo.url}</div>
                       </div>
                       <ha-tooltip
-                        for="icon-button-${repo.slug}"
+                        .for="icon-button-${repo.slug}"
                         class="delete"
                         slot="end"
                       >
@@ -129,7 +129,7 @@ class HassioRepositoriesDialog extends LitElement {
                             : "dialog.repositories.remove"
                         )}
                       </ha-tooltip>
-                      <div id="icon-button-${repo.slug}">
+                      <div .id="icon-button-${repo.slug}">
                         <ha-icon-button
                           .disabled=${usedRepositories.includes(repo.slug)}
                           .slug=${repo.slug}

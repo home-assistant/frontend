@@ -642,10 +642,10 @@ export class HaMediaPlayerBrowse extends LitElement {
                 `
               : ""}
           </div>
-          <ha-tooltip for="grid-${child.title}" distance="-4">
+          <ha-tooltip .for="grid-${child.title}" distance="-4">
             ${child.title}
           </ha-tooltip>
-          <div id="grid-${child.title}" class="title">${child.title}</div>
+          <div .id="grid-${child.title}" class="title">${child.title}</div>
         </ha-card>
       </div>
     `;

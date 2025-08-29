@@ -557,7 +557,7 @@ export class HaConfigDevicePage extends LitElement {
                             `
                           : html`
                               <ha-list-item
-                                id="scene-${slugify(entityState.entity_id)}"
+                                .id="scene-${slugify(entityState.entity_id)}"
                                 hasMeta
                                 .scene=${entityState}
                               >
@@ -565,7 +565,7 @@ export class HaConfigDevicePage extends LitElement {
                                 <ha-icon-next slot="meta"></ha-icon-next>
                               </ha-list-item>
                               <ha-tooltip
-                                for="scene-${slugify(entityState.entity_id)}"
+                                .for="scene-${slugify(entityState.entity_id)}"
                                 placement="left"
                               >
                                 ${this.hass.localize(

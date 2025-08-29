@@ -549,14 +549,14 @@ class HaConfigAreaPage extends LitElement {
 
   private _renderScene(name: string, entityState: SceneEntity) {
     return html`<ha-tooltip
-        for="scene-${slugify(entityState.entity_id)}"
+        .for="scene-${slugify(entityState.entity_id)}"
         .distance=${-4}
         .disabled=${!!entityState.attributes.id}
       >
         ${this.hass.localize("ui.panel.config.devices.cant_edit")}
       </ha-tooltip>
       <a
-        id="scene-${slugify(entityState.entity_id)}"
+        .id="scene-${slugify(entityState.entity_id)}"
         href=${ifDefined(
           entityState.attributes.id
             ? `/config/scene/edit/${entityState.attributes.id}`

@@ -68,7 +68,7 @@ export class HaAnalytics extends LitElement {
             </span>
             <span>
               <ha-switch
-                id="switch-${preference}"
+                .id="switch-${preference}"
                 @change=${this._handleRowClick}
                 .checked=${this.analytics?.preferences[preference]}
                 .preference=${preference}
@@ -76,7 +76,7 @@ export class HaAnalytics extends LitElement {
                 ?disabled=${baseEnabled}
               >
               </ha-switch>
-              <ha-tooltip for="switch-${preference}" placement="right">
+              <ha-tooltip .for="switch-${preference}" placement="right">
                 ${this.localize(
                   `ui.panel.${this.translationKeyPanel}.analytics.need_base_enabled`
                 )}

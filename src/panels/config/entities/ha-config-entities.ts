@@ -394,7 +394,7 @@ export class HaConfigEntities extends SubscribeMixin(LitElement) {
                   style="display:inline-block; position: relative;"
                 >
                   <ha-svg-icon
-                    id="status-icon-${slugify(entry.entity_id)}"
+                    .id="status-icon-${slugify(entry.entity_id)}"
                     style=${styleMap({
                       color: entry.unavailable ? "var(--error-color)" : "",
                     })}
@@ -410,7 +410,7 @@ export class HaConfigEntities extends SubscribeMixin(LitElement) {
                   ></ha-svg-icon>
 
                   <ha-tooltip
-                    for="status-icon-${slugify(entry.entity_id)}"
+                    .for="status-icon-${slugify(entry.entity_id)}"
                     placement="left"
                   >
                     ${entry.restored

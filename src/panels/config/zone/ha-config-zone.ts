@@ -217,7 +217,7 @@ export class HaConfigZone extends SubscribeMixin(LitElement) {
                             slot="meta"
                           ></ha-icon-button>
                           <ha-tooltip
-                            for="zone-${slugify(stateObject.entity_id)}"
+                            .for="zone-${slugify(stateObject.entity_id)}"
                             placement="left"
                             .disabled=${stateObject.entity_id === "zone.home"}
                             hoist
