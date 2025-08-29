@@ -207,7 +207,7 @@
         "count_locks_unlocked": "{count} {count, plural,\n one {unlocked}\n other {unlocked}\n}",
         "count_alarms_disarmed": "{count} {count, plural,\n one {disarmed}\n other {disarmed}\n}",
         "all_secure": "All secure",
-        "no_media_playing": "no media playing",
+        "no_media_playing": "No media playing",
         "count_media_playing": "{count} {count, plural,\n one {playing}\n other {playing}\n}"
       },
       "media_player": {
