@@ -12,9 +12,10 @@ import "../../components/ha-textfield";
 import type { HaTextField } from "../../components/ha-textfield";
 import type { HomeAssistant } from "../../types";
 import type { DialogBoxParams } from "./show-dialog-box";
+import { KeyboardShortcutMixin } from "../../mixins/keyboard-shortcut-mixin";
 
 @customElement("dialog-box")
-class DialogBox extends LitElement {
+class DialogBox extends KeyboardShortcutMixin(LitElement) {
   @property({ attribute: false }) public hass!: HomeAssistant;
 
   @state() private _params?: DialogBoxParams;
@@ -165,6 +166,12 @@ class DialogBox extends LitElement {
     this._params = undefined;
     this._closeResolve?.();
     this._closeResolve = undefined;
+  }
+
+  protected supportedShortcuts(): SupportedShortcuts {
+    return {
+      Enter: () => this._confirm(),
+    };
   }
 
   static styles = css`

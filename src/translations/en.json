@@ -3856,6 +3856,7 @@
             "type_script_plural": "[%key:ui::panel::config::blueprint::overview::types_plural::script%]",
             "new_automation_setup_failed_title": "New {type} setup failed",
             "new_automation_setup_failed_text": "Your new {type} has saved, but waiting for it to setup has timed out. This could be due to errors parsing your configuration.yaml, please check the configuration in developer tools. Your {type} will not be visible until this is corrected, and {types} are reloaded. Changes to area, category, or labels were not saved and must be reapplied.",
+            "item_pasted": "{item} pasted",
             "triggers": {
               "name": "Triggers",
               "header": "When",
@@ -3882,6 +3883,8 @@
               "unknown_trigger": "[%key:ui::panel::config::devices::automation::triggers::unknown_trigger%]",
               "triggering_event_detail": "Triggering event detail",
               "trigger": "Trigger",
+              "copied_to_clipboard": "Copied trigger to clipboard",
+              "cut_to_clipboard": "Cut trigger to clipboard",
               "groups": {
                 "entity": {
                   "label": "Entity",
@@ -4144,6 +4147,8 @@
               "type_select": "Condition type",
               "unknown_condition": "[%key:ui::panel::config::devices::automation::conditions::unknown_condition%]",
               "condition": "Condition",
+              "copied_to_clipboard": "Copied condition to clipboard",
+              "cut_to_clipboard": "Cut condition to clipboard",
               "groups": {
                 "entity": {
                   "label": "Entity",
@@ -4313,6 +4318,8 @@
               "type_select": "Action type",
               "continue_on_error": "Continue on error",
               "action": "Action",
+              "copied_to_clipboard": "Copied action to clipboard",
+              "cut_to_clipboard": "Cut action to clipboard",
               "groups": {
                 "helpers": {
                   "label": "Helpers"

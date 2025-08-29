@@ -14,6 +14,18 @@ export const KeyboardShortcutMixin = <T extends Constructor<LitElement>>(
       if ((event.ctrlKey || event.metaKey) && event.key in supportedShortcuts) {
         event.preventDefault();
         supportedShortcuts[event.key]();
+        return;
+      }
+
+      if (event.key === "Delete" && supportedShortcuts.Delete) {
+        event.preventDefault();
+        supportedShortcuts.Delete();
+        return;
+      }
+
+      if (event.key === "Enter" && supportedShortcuts.Enter) {
+        event.preventDefault();
+        supportedShortcuts.Enter();
       }
     };
 

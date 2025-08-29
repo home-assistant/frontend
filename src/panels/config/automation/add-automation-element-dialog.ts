@@ -41,11 +41,13 @@ import {
 } from "../../../data/integration";
 import { TRIGGER_GROUPS, TRIGGER_ICONS } from "../../../data/trigger";
 import type { HassDialog } from "../../../dialogs/make-dialog-manager";
+import { KeyboardShortcutMixin } from "../../../mixins/keyboard-shortcut-mixin";
+import { HaFuse } from "../../../resources/fuse";
 import { haStyle, haStyleDialog } from "../../../resources/styles";
 import type { HomeAssistant } from "../../../types";
+import { showToast } from "../../../util/toast";
 import type { AddAutomationElementDialogParams } from "./show-add-automation-element-dialog";
 import { PASTE_VALUE } from "./show-add-automation-element-dialog";
-import { HaFuse } from "../../../resources/fuse";
 
 const TYPES = {
   trigger: { groups: TRIGGER_GROUPS, icons: TRIGGER_ICONS },
@@ -85,7 +87,10 @@ const ENTITY_DOMAINS_OTHER = new Set([
 const ENTITY_DOMAINS_MAIN = new Set(["notify"]);
 
 @customElement("add-automation-element-dialog")
-class DialogAddAutomationElement extends LitElement implements HassDialog {
+class DialogAddAutomationElement
+  extends KeyboardShortcutMixin(LitElement)
+  implements HassDialog
+{
   @property({ attribute: false }) public hass!: HomeAssistant;
 
   @state() private _params?: AddAutomationElementDialogParams;
@@ -571,7 +576,7 @@ class DialogAddAutomationElement extends LitElement implements HassDialog {
                   ><ha-svg-icon slot="end" .path=${mdiPlus}></ha-svg-icon>
                 </ha-md-list-item>
                 <ha-md-divider role="separator" tabindex="-1"></ha-md-divider>`
-            : ""}
+            : nothing}
           ${repeat(
             items,
             (item) => item.key,
@@ -635,6 +640,42 @@ class DialogAddAutomationElement extends LitElement implements HassDialog {
 
   private _filterChanged(ev) {
     this._filter = ev.detail.value;
+  }
+
+  private _addClipboard = () => {
+    if (
+      this._params?.clipboardItem &&
+      !this._filter &&
+      (!this._group ||
+        this._getGroupItems(
+          this._params.type,
+          this._group,
+          this._domains,
+          this.hass.localize,
+          this.hass.services,
+          this._manifests
+        ).find((item) => item.key === this._params!.clipboardItem))
+    ) {
+      this._params!.add(this._params.clipboardItem);
+      showToast(this, {
+        message: this.hass.localize(
+          "ui.panel.config.automation.editor.item_pasted",
+          {
+            item: this.hass.localize(
+              // @ts-ignore
+              `ui.panel.config.automation.editor.${this._params.type}s.type.${this._params.clipboardItem}.label`
+            ),
+          }
+        ),
+      });
+      this.closeDialog();
+    }
+  };
+
+  protected supportedShortcuts(): SupportedShortcuts {
+    return {
+      v: () => this._addClipboard(),
+    };
   }
 
   static get styles(): CSSResultGroup {

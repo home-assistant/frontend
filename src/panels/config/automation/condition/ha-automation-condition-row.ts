@@ -53,6 +53,7 @@ import {
   showPromptDialog,
 } from "../../../../dialogs/generic/show-dialog-box";
 import type { HomeAssistant } from "../../../../types";
+import { showToast } from "../../../../util/toast";
 import "../ha-automation-editor-warning";
 import { rowStyles } from "../styles";
 import "./ha-automation-condition-editor";
@@ -153,6 +154,10 @@ export default class HaAutomationConditionRow extends LitElement {
 
   @query("ha-automation-row")
   private _automationRowElement?: HaAutomationRow;
+
+  get selected() {
+    return this._selected;
+  }
 
   private _renderRow() {
     return html`
@@ -358,12 +363,15 @@ export default class HaAutomationConditionRow extends LitElement {
               .collapsed=${this._collapsed}
               .selected=${this._selected}
               .highlight=${this.highlight}
-              @click=${this._toggleSidebar}
-              @toggle-collapsed=${this._toggleCollapse}
               .buildingBlock=${CONDITION_BUILDING_BLOCKS.includes(
                 this.condition.condition
               )}
               .sortSelected=${this.sortSelected}
+              @click=${this._toggleSidebar}
+              @toggle-collapsed=${this._toggleCollapse}
+              @copy-row=${this._copyCondition}
+              @cut-row=${this._cutCondition}
+              @delete-row=${this._onDelete}
               >${this._renderRow()}</ha-automation-row
             >`
           : html`
@@ -570,6 +578,12 @@ export default class HaAutomationConditionRow extends LitElement {
 
   private _copyCondition = () => {
     this._setClipboard();
+    showToast(this, {
+      message: this.hass.localize(
+        "ui.panel.config.automation.editor.conditions.copied_to_clipboard"
+      ),
+      duration: 2000,
+    });
   };
 
   private _cutCondition = () => {
@@ -578,6 +592,12 @@ export default class HaAutomationConditionRow extends LitElement {
     if (this._selected) {
       fireEvent(this, "close-sidebar");
     }
+    showToast(this, {
+      message: this.hass.localize(
+        "ui.panel.config.automation.editor.conditions.cut_to_clipboard"
+      ),
+      duration: 2000,
+    });
   };
 
   private _moveUp = () => {
@@ -695,10 +715,6 @@ export default class HaAutomationConditionRow extends LitElement {
 
   private _toggleCollapse() {
     this._collapsed = !this._collapsed;
-  }
-
-  public isSelected() {
-    return this._selected;
   }
 
   public focus() {

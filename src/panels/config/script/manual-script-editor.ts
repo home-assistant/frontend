@@ -2,7 +2,13 @@ import { mdiContentSave, mdiHelpCircle } from "@mdi/js";
 import { load } from "js-yaml";
 import type { CSSResultGroup, PropertyValues } from "lit";
 import { css, html, LitElement, nothing } from "lit";
-import { customElement, property, query, state } from "lit/decorators";
+import {
+  customElement,
+  property,
+  query,
+  queryAll,
+  state,
+} from "lit/decorators";
 import { classMap } from "lit/directives/class-map";
 import {
   any,
@@ -24,7 +30,10 @@ import {
 } from "../../../common/url/search-params";
 import "../../../components/ha-icon-button";
 import "../../../components/ha-markdown";
-import type { SidebarConfig } from "../../../data/automation";
+import type {
+  ActionSidebarConfig,
+  SidebarConfig,
+} from "../../../data/automation";
 import type { Action, Fields, ScriptConfig } from "../../../data/script";
 import {
   getActionType,
@@ -79,6 +88,11 @@ export class HaManualScriptEditor extends LitElement {
   private _scriptFields?: HaScriptFields;
 
   @query("ha-automation-sidebar") private _sidebarElement?: HaAutomationSidebar;
+
+  @queryAll("ha-automation-action, ha-script-fields")
+  private _collapsableElements?: NodeListOf<
+    HaAutomationAction | HaScriptFields
+  >;
 
   private _previousConfig?: ScriptConfig;
 
@@ -501,22 +515,34 @@ export class HaManualScriptEditor extends LitElement {
     fireEvent(this, "save-script");
   }
 
-  private _getCollapsableElements() {
-    return this.shadowRoot!.querySelectorAll<
-      HaAutomationAction | HaScriptFields
-    >("ha-automation-action, ha-script-fields");
-  }
-
   public expandAll() {
-    this._getCollapsableElements().forEach((element) => {
+    this._collapsableElements?.forEach((element) => {
       element.expandAll();
     });
   }
 
   public collapseAll() {
-    this._getCollapsableElements().forEach((element) => {
+    this._collapsableElements?.forEach((element) => {
       element.collapseAll();
     });
+  }
+
+  public copySelectedRow() {
+    if ((this._sidebarConfig as ActionSidebarConfig)?.copy) {
+      (this._sidebarConfig as ActionSidebarConfig).copy();
+    }
+  }
+
+  public cutSelectedRow() {
+    if ((this._sidebarConfig as ActionSidebarConfig)?.cut) {
+      (this._sidebarConfig as ActionSidebarConfig).cut();
+    }
+  }
+
+  public deleteSelectedRow() {
+    if ((this._sidebarConfig as ActionSidebarConfig)?.delete) {
+      (this._sidebarConfig as ActionSidebarConfig).delete();
+    }
   }
 
   static get styles(): CSSResultGroup {

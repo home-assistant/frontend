@@ -81,7 +81,9 @@ export class HaAutomationRow extends LitElement {
       !(
         (this.sortSelected || ev.altKey) &&
         (ev.key === "ArrowUp" || ev.key === "ArrowDown")
-      )
+      ) &&
+      ev.key !== "Delete" &&
+      !((ev.ctrlKey || ev.metaKey) && (ev.key === "c" || ev.key === "x"))
     ) {
       return;
     }
@@ -99,6 +101,22 @@ export class HaAutomationRow extends LitElement {
     if (this.sortSelected && (ev.key === "Enter" || ev.key === " ")) {
       fireEvent(this, "stop-sort-selection");
       return;
+    }
+
+    if (ev.key === "Delete") {
+      fireEvent(this, "delete-row");
+      return;
+    }
+
+    if (ev.ctrlKey || ev.metaKey) {
+      if (ev.key === "c") {
+        fireEvent(this, "copy-row");
+        return;
+      }
+      if (ev.key === "x") {
+        fireEvent(this, "cut-row");
+        return;
+      }
     }
 
     this.click();
@@ -194,5 +212,8 @@ declare global {
   interface HASSDomEvents {
     "toggle-collapsed": undefined;
     "stop-sort-selection": undefined;
+    "copy-row": undefined;
+    "cut-row": undefined;
+    "delete-row": undefined;
   }
 }

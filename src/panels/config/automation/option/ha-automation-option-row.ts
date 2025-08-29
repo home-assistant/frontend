@@ -86,6 +86,10 @@ export default class HaAutomationOptionRow extends LitElement {
   @query("ha-automation-row")
   private _automationRowElement?: HaAutomationRow;
 
+  get selected() {
+    return this._selected;
+  }
+
   private _expandedChanged(ev) {
     if (ev.currentTarget.id !== "option") {
       return;
@@ -271,9 +275,10 @@ export default class HaAutomationOptionRow extends LitElement {
               left-chevron
               .collapsed=${this._collapsed}
               .selected=${this._selected}
+              .sortSelected=${this.sortSelected}
               @click=${this._toggleSidebar}
               @toggle-collapsed=${this._toggleCollapse}
-              .sortSelected=${this.sortSelected}
+              @delete-row=${this._removeOption}
               >${this._renderRow()}</ha-automation-row
             >`
           : html`
@@ -443,10 +448,6 @@ export default class HaAutomationOptionRow extends LitElement {
 
   private _toggleCollapse() {
     this._collapsed = !this._collapsed;
-  }
-
-  public isSelected() {
-    return this._selected;
   }
 
   public focus() {

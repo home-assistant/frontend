@@ -195,6 +195,10 @@ export default class HaAutomationActionRow extends LitElement {
   @query("ha-automation-row")
   private _automationRowElement?: HaAutomationRow;
 
+  get selected() {
+    return this._selected;
+  }
+
   protected firstUpdated(changedProperties: PropertyValues): void {
     super.firstUpdated(changedProperties);
 
@@ -438,7 +442,6 @@ export default class HaAutomationActionRow extends LitElement {
         ${this.optionsInSidebar
           ? html`<ha-automation-row
               .disabled=${this.action.enabled === false}
-              @click=${this._toggleSidebar}
               .leftChevron=${[
                 ...ACTION_BUILDING_BLOCKS,
                 ...ACTION_COMBINED_BLOCKS,
@@ -450,12 +453,16 @@ export default class HaAutomationActionRow extends LitElement {
               .collapsed=${this._collapsed}
               .selected=${this._selected}
               .highlight=${this.highlight}
-              @toggle-collapsed=${this._toggleCollapse}
               .buildingBlock=${[
                 ...ACTION_BUILDING_BLOCKS,
                 ...ACTION_COMBINED_BLOCKS,
               ].includes(blockType!)}
               .sortSelected=${this.sortSelected}
+              @click=${this._toggleSidebar}
+              @toggle-collapsed=${this._toggleCollapse}
+              @copy-row=${this._copyAction}
+              @cut-row=${this._cutAction}
+              @delete-row=${this._onDelete}
               >${this._renderRow()}</ha-automation-row
             >`
           : html`
@@ -623,6 +630,12 @@ export default class HaAutomationActionRow extends LitElement {
 
   private _copyAction = () => {
     this._setClipboard();
+    showToast(this, {
+      message: this.hass.localize(
+        "ui.panel.config.automation.editor.actions.copied_to_clipboard"
+      ),
+      duration: 2000,
+    });
   };
 
   private _cutAction = () => {
@@ -631,6 +644,12 @@ export default class HaAutomationActionRow extends LitElement {
     if (this._selected) {
       fireEvent(this, "close-sidebar");
     }
+    showToast(this, {
+      message: this.hass.localize(
+        "ui.panel.config.automation.editor.actions.cut_to_clipboard"
+      ),
+      duration: 2000,
+    });
   };
 
   private _moveUp = () => {
@@ -759,10 +778,6 @@ export default class HaAutomationActionRow extends LitElement {
 
   private _toggleCollapse() {
     this._collapsed = !this._collapsed;
-  }
-
-  public isSelected() {
-    return this._selected;
   }
 
   public focus() {

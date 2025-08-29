@@ -64,6 +64,7 @@ export default class HaScriptFieldRow extends LitElement {
           @toggle-collapsed=${this._toggleCollapse}
           .collapsed=${this._collapsed}
           .highlight=${this.highlight}
+          @delete-row=${this._onDelete}
         >
           <h3 slot="header">${this.key}</h3>
 
