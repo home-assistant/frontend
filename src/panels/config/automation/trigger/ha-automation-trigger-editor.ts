@@ -29,6 +29,8 @@ export default class HaAutomationTriggerEditor extends LitElement {
 
   @property({ type: Boolean, attribute: "show-id" }) public showId = false;
 
+  @property({ type: Boolean, attribute: "sidebar" }) public inSidebar = false;
+
   @query("ha-yaml-editor") public yamlEditor?: HaYamlEditor;
 
   protected render() {
@@ -47,6 +49,7 @@ export default class HaAutomationTriggerEditor extends LitElement {
               this.trigger.enabled === false &&
               !this.yamlMode),
           yaml: yamlMode,
+          card: !this.inSidebar,
         })}
       >
         ${yamlMode

@@ -1,7 +1,7 @@
 import { mdiDrag, mdiPlus } from "@mdi/js";
 import deepClone from "deep-clone-simple";
 import type { PropertyValues } from "lit";
-import { css, html, LitElement, nothing } from "lit";
+import { html, LitElement, nothing } from "lit";
 import { customElement, property, queryAll, state } from "lit/decorators";
 import { repeat } from "lit/directives/repeat";
 import { storage } from "../../../../common/decorators/storage";
@@ -11,6 +11,7 @@ import { nextRender } from "../../../../common/util/render-status";
 import "../../../../components/ha-button";
 import "../../../../components/ha-button-menu";
 import "../../../../components/ha-sortable";
+import type { HaSortableClonedEventData } from "../../../../components/ha-sortable";
 import "../../../../components/ha-svg-icon";
 import type {
   AutomationClipboard,
@@ -45,6 +46,8 @@ export default class HaAutomationCondition extends LitElement {
 
   @state() private _showReorder = false;
 
+  @state() private _rowSortSelected?: number;
+
   @state()
   @storage({
     key: "automationClipboard",
@@ -58,6 +61,8 @@ export default class HaAutomationCondition extends LitElement {
   private _conditionRowElements?: HaAutomationConditionRow[];
 
   private _focusLastConditionOnChange = false;
+
+  private _focusConditionIndexOnChange?: number;
 
   private _conditionKeys = new WeakMap<Condition, string>();
 
@@ -100,16 +105,25 @@ export default class HaAutomationCondition extends LitElement {
       fireEvent(this, "value-changed", {
         value: updatedConditions,
       });
-    } else if (this._focusLastConditionOnChange) {
-      this._focusLastConditionOnChange = false;
+    } else if (
+      this._focusLastConditionOnChange ||
+      this._focusConditionIndexOnChange !== undefined
+    ) {
+      const mode = this._focusLastConditionOnChange ? "new" : "moved";
+
       const row = this.shadowRoot!.querySelector<HaAutomationConditionRow>(
-        "ha-automation-condition-row:last-of-type"
+        `ha-automation-condition-row:${mode === "new" ? "last-of-type" : `nth-of-type(${this._focusConditionIndexOnChange! + 1})`}`
       )!;
+
+      this._focusLastConditionOnChange = false;
+      this._focusConditionIndexOnChange = undefined;
+
       row.updateComplete.then(() => {
         // on new condition open the settings in the sidebar, except for building blocks
         if (
           this.optionsInSidebar &&
-          !CONDITION_BUILDING_BLOCKS.includes(row.condition.condition)
+          (!CONDITION_BUILDING_BLOCKS.includes(row.condition.condition) ||
+            mode === "moved")
         ) {
           row.openSidebar();
           if (this.narrow) {
@@ -119,8 +133,14 @@ export default class HaAutomationCondition extends LitElement {
             });
           }
         }
-        row.expand();
-        row.focus();
+
+        if (mode === "new") {
+          row.expand();
+        }
+
+        if (!this.optionsInSidebar) {
+          row.focus();
+        }
       });
     }
   }
@@ -151,8 +171,9 @@ export default class HaAutomationCondition extends LitElement {
         @item-moved=${this._conditionMoved}
         @item-added=${this._conditionAdded}
         @item-removed=${this._conditionRemoved}
+        @item-cloned=${this._conditionCloned}
       >
-        <div class="rows">
+        <div class="rows ${!this.optionsInSidebar ? "no-sidebar" : ""}">
           ${repeat(
             this.conditions.filter((c) => typeof c === "object"),
             (condition) => this._getKey(condition),
@@ -174,10 +195,20 @@ export default class HaAutomationCondition extends LitElement {
                 .hass=${this.hass}
                 ?highlight=${this.highlightedConditions?.includes(cond)}
                 .optionsInSidebar=${this.optionsInSidebar}
+                .sortSelected=${this._rowSortSelected === idx}
+                @stop-sort-selection=${this._stopSortSelection}
               >
                 ${this._showReorder && !this.disabled
                   ? html`
-                      <div class="handle" slot="icons">
+                      <div
+                        tabindex="0"
+                        class="handle ${this._rowSortSelected === idx
+                          ? "active"
+                          : ""}"
+                        slot="icons"
+                        @keydown=${this._handleDragKeydown}
+                        .index=${idx}
+                      >
                         <ha-svg-icon .path=${mdiDrag}></ha-svg-icon>
                       </div>
                     `
@@ -266,15 +297,27 @@ export default class HaAutomationCondition extends LitElement {
   private _moveUp(ev) {
     ev.stopPropagation();
     const index = (ev.target as any).index;
-    const newIndex = index - 1;
-    this._move(index, newIndex);
+    if (!(ev.target as HaAutomationConditionRow).first) {
+      const newIndex = index - 1;
+      this._move(index, newIndex);
+      if (this._rowSortSelected === index) {
+        this._rowSortSelected = newIndex;
+      }
+      ev.target.focus();
+    }
   }
 
   private _moveDown(ev) {
     ev.stopPropagation();
     const index = (ev.target as any).index;
-    const newIndex = index + 1;
-    this._move(index, newIndex);
+    if (!(ev.target as HaAutomationConditionRow).last) {
+      const newIndex = index + 1;
+      this._move(index, newIndex);
+      if (this._rowSortSelected === index) {
+        this._rowSortSelected = newIndex;
+      }
+      ev.target.focus();
+    }
   }
 
   private _move(oldIndex: number, newIndex: number) {
@@ -294,6 +337,11 @@ export default class HaAutomationCondition extends LitElement {
   private async _conditionAdded(ev: CustomEvent): Promise<void> {
     ev.stopPropagation();
     const { index, data } = ev.detail;
+    let selected = false;
+    if (data?.["ha-automation-row-selected"]) {
+      selected = true;
+      delete data["ha-automation-row-selected"];
+    }
     let conditions = [
       ...this.conditions.slice(0, index),
       data,
@@ -301,6 +349,9 @@ export default class HaAutomationCondition extends LitElement {
     ];
     // Add condition locally to avoid UI jump
     this.conditions = conditions;
+    if (selected) {
+      this._focusConditionIndexOnChange = conditions.length === 1 ? 0 : index;
+    }
     await nextRender();
     if (this.conditions !== conditions) {
       // Ensure condition is added even after update
@@ -309,6 +360,9 @@ export default class HaAutomationCondition extends LitElement {
         data,
         ...this.conditions.slice(index),
       ];
+      if (selected) {
+        this._focusConditionIndexOnChange = conditions.length === 1 ? 0 : index;
+      }
     }
     fireEvent(this, "value-changed", { value: conditions });
   }
@@ -323,6 +377,12 @@ export default class HaAutomationCondition extends LitElement {
     // Ensure condition is removed even after update
     const conditions = this.conditions.filter((c) => c !== condition);
     fireEvent(this, "value-changed", { value: conditions });
+  }
+
+  private _conditionCloned(ev: CustomEvent<HaSortableClonedEventData>) {
+    if (ev.detail.item.isSelected()) {
+      ev.detail.item.condition["ha-automation-row-selected"] = true;
+    }
   }
 
   private _conditionChanged(ev: CustomEvent) {
@@ -354,14 +414,21 @@ export default class HaAutomationCondition extends LitElement {
     });
   }
 
-  static styles = [
-    automationRowsStyles,
-    css`
-      :host([root]) .rows {
-        padding-right: 8px;
-      }
-    `,
-  ];
+  private _handleDragKeydown(ev: KeyboardEvent) {
+    if (ev.key === "Enter" || ev.key === " ") {
+      ev.stopPropagation();
+      this._rowSortSelected =
+        this._rowSortSelected === undefined
+          ? (ev.target as any).index
+          : undefined;
+    }
+  }
+
+  private _stopSortSelection() {
+    this._rowSortSelected = undefined;
+  }
+
+  static styles = automationRowsStyles;
 }
 
 declare global {

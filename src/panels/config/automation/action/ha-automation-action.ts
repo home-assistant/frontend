@@ -1,7 +1,7 @@
 import { mdiDrag, mdiPlus } from "@mdi/js";
 import deepClone from "deep-clone-simple";
 import type { PropertyValues } from "lit";
-import { LitElement, css, html, nothing } from "lit";
+import { LitElement, html, nothing } from "lit";
 import { customElement, property, queryAll, state } from "lit/decorators";
 import { repeat } from "lit/directives/repeat";
 import { storage } from "../../../../common/decorators/storage";
@@ -10,6 +10,7 @@ import { listenMediaQuery } from "../../../../common/dom/media_query";
 import { nextRender } from "../../../../common/util/render-status";
 import "../../../../components/ha-button";
 import "../../../../components/ha-sortable";
+import type { HaSortableClonedEventData } from "../../../../components/ha-sortable";
 import "../../../../components/ha-svg-icon";
 import {
   ACTION_BUILDING_BLOCKS,
@@ -47,6 +48,8 @@ export default class HaAutomationAction extends LitElement {
 
   @state() private _showReorder = false;
 
+  @state() private _rowSortSelected?: number;
+
   @state()
   @storage({
     key: "automationClipboard",
@@ -60,6 +63,8 @@ export default class HaAutomationAction extends LitElement {
   private _actionRowElements?: HaAutomationActionRow[];
 
   private _focusLastActionOnChange = false;
+
+  private _focusActionIndexOnChange?: number;
 
   private _actionKeys = new WeakMap<Action, string>();
 
@@ -89,8 +94,9 @@ export default class HaAutomationAction extends LitElement {
         @item-moved=${this._actionMoved}
         @item-added=${this._actionAdded}
         @item-removed=${this._actionRemoved}
+        @item-cloned=${this._actionCloned}
       >
-        <div class="rows">
+        <div class="rows ${!this.optionsInSidebar ? "no-sidebar" : ""}">
           ${repeat(
             this.actions,
             (action) => this._getKey(action),
@@ -111,10 +117,20 @@ export default class HaAutomationAction extends LitElement {
                 .hass=${this.hass}
                 ?highlight=${this.highlightedActions?.includes(action)}
                 .optionsInSidebar=${this.optionsInSidebar}
+                .sortSelected=${this._rowSortSelected === idx}
+                @stop-sort-selection=${this._stopSortSelection}
               >
                 ${this._showReorder && !this.disabled
                   ? html`
-                      <div class="handle" slot="icons">
+                      <div
+                        tabindex="0"
+                        class="handle ${this._rowSortSelected === idx
+                          ? "active"
+                          : ""}"
+                        slot="icons"
+                        @keydown=${this._handleDragKeydown}
+                        .index=${idx}
+                      >
                         <ha-svg-icon .path=${mdiDrag}></ha-svg-icon>
                       </div>
                     `
@@ -154,19 +170,27 @@ export default class HaAutomationAction extends LitElement {
   protected updated(changedProps: PropertyValues) {
     super.updated(changedProps);
 
-    if (changedProps.has("actions") && this._focusLastActionOnChange) {
-      this._focusLastActionOnChange = false;
+    if (
+      changedProps.has("actions") &&
+      (this._focusLastActionOnChange ||
+        this._focusActionIndexOnChange !== undefined)
+    ) {
+      const mode = this._focusLastActionOnChange ? "new" : "moved";
 
       const row = this.shadowRoot!.querySelector<HaAutomationActionRow>(
-        "ha-automation-action-row:last-of-type"
+        `ha-automation-action-row:${mode === "new" ? "last-of-type" : `nth-of-type(${this._focusActionIndexOnChange! + 1})`}`
       )!;
+
+      this._focusLastActionOnChange = false;
+      this._focusActionIndexOnChange = undefined;
+
       row.updateComplete.then(() => {
         // on new condition open the settings in the sidebar, except for building blocks
         const type = getAutomationActionType(row.action);
         if (
           type &&
           this.optionsInSidebar &&
-          !ACTION_BUILDING_BLOCKS.includes(type)
+          (!ACTION_BUILDING_BLOCKS.includes(type) || mode === "moved")
         ) {
           row.openSidebar();
           if (this.narrow) {
@@ -176,8 +200,14 @@ export default class HaAutomationAction extends LitElement {
             });
           }
         }
-        row.expand();
-        row.focus();
+
+        if (mode === "new") {
+          row.expand();
+        }
+
+        if (!this.optionsInSidebar) {
+          row.focus();
+        }
       });
     }
   }
@@ -246,18 +276,30 @@ export default class HaAutomationAction extends LitElement {
     return this._actionKeys.get(action)!;
   }
 
-  private _moveUp(ev) {
+  private async _moveUp(ev) {
     ev.stopPropagation();
     const index = (ev.target as any).index;
-    const newIndex = index - 1;
-    this._move(index, newIndex);
+    if (!(ev.target as HaAutomationActionRow).first) {
+      const newIndex = index - 1;
+      this._move(index, newIndex);
+      if (this._rowSortSelected === index) {
+        this._rowSortSelected = newIndex;
+      }
+      ev.target.focus();
+    }
   }
 
-  private _moveDown(ev) {
+  private async _moveDown(ev) {
     ev.stopPropagation();
     const index = (ev.target as any).index;
-    const newIndex = index + 1;
-    this._move(index, newIndex);
+    if (!(ev.target as HaAutomationActionRow).last) {
+      const newIndex = index + 1;
+      this._move(index, newIndex);
+      if (this._rowSortSelected === index) {
+        this._rowSortSelected = newIndex;
+      }
+      ev.target.focus();
+    }
   }
 
   private _move(oldIndex: number, newIndex: number) {
@@ -277,6 +319,12 @@ export default class HaAutomationAction extends LitElement {
   private async _actionAdded(ev: CustomEvent): Promise<void> {
     ev.stopPropagation();
     const { index, data } = ev.detail;
+    let selected = false;
+    if (data?.["ha-automation-row-selected"]) {
+      selected = true;
+      delete data["ha-automation-row-selected"];
+    }
+
     let actions = [
       ...this.actions.slice(0, index),
       data,
@@ -284,6 +332,9 @@ export default class HaAutomationAction extends LitElement {
     ];
     // Add action locally to avoid UI jump
     this.actions = actions;
+    if (selected) {
+      this._focusActionIndexOnChange = actions.length === 1 ? 0 : index;
+    }
     await nextRender();
     if (this.actions !== actions) {
       // Ensure action is added even after update
@@ -292,6 +343,9 @@ export default class HaAutomationAction extends LitElement {
         data,
         ...this.actions.slice(index),
       ];
+      if (selected) {
+        this._focusActionIndexOnChange = actions.length === 1 ? 0 : index;
+      }
     }
     fireEvent(this, "value-changed", { value: actions });
   }
@@ -327,6 +381,12 @@ export default class HaAutomationAction extends LitElement {
     fireEvent(this, "value-changed", { value: actions });
   }
 
+  private _actionCloned(ev: CustomEvent<HaSortableClonedEventData>) {
+    if (ev.detail.item.action && ev.detail.item.isSelected()) {
+      ev.detail.item.action["ha-automation-row-selected"] = true;
+    }
+  }
+
   private _duplicateAction(ev: CustomEvent) {
     ev.stopPropagation();
     const index = (ev.target as any).index;
@@ -335,14 +395,21 @@ export default class HaAutomationAction extends LitElement {
     });
   }
 
-  static styles = [
-    automationRowsStyles,
-    css`
-      :host([root]) .rows {
-        padding-right: 8px;
-      }
-    `,
-  ];
+  private _handleDragKeydown(ev: KeyboardEvent) {
+    if (ev.key === "Enter" || ev.key === " ") {
+      ev.stopPropagation();
+      this._rowSortSelected =
+        this._rowSortSelected === undefined
+          ? (ev.target as any).index
+          : undefined;
+    }
+  }
+
+  private _stopSortSelection() {
+    this._rowSortSelected = undefined;
+  }
+
+  static styles = automationRowsStyles;
 }
 
 declare global {

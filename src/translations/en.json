@@ -454,7 +454,7 @@
           "media_content_id": "Media content ID",
           "media_content_type": "Media content type",
           "media_content_id_detail": "The ID of the content to play. Platform dependent.",
-          "media_content_type_detail": "The type of the content to play, such as image, music, tv show, video, episode, channel, or playlist."
+          "media_content_type_detail": "The type of the content to play, such as image, music, TV show, video, episode, channel, or playlist."
         },
         "file": {
           "upload_failed": "Upload failed",
@@ -3853,7 +3853,7 @@
             "triggers": {
               "name": "Triggers",
               "header": "When",
-              "description": "A trigger is a specific event happening in or around your home, for example: ''When the sun sets''. Any trigger listed here will start your automation.",
+              "description": "A trigger is a specific event happening in or around your home, for example: ''When the sun sets''. Any trigger added here will start your automation.",
               "learn_more": "Learn more about triggers",
               "triggered": "Triggered",
               "add": "Add trigger",
@@ -4113,7 +4113,7 @@
             "conditions": {
               "name": "Conditions",
               "header": "And if",
-              "description": "This list of conditions needs to be satisfied for the automation to run. A condition can be satisfied or not at any given time, for example: ''If {user} is home''. You can use building blocks to create more complex conditions.",
+              "description": "All conditions added here need to be satisfied for the automation to run. A condition can be satisfied or not at any given time, for example: ''If {user} is home''. You can use building blocks to create more complex conditions.",
               "learn_more": "Learn more about conditions",
               "add": "Add condition",
               "search": "Search condition",
@@ -4280,7 +4280,7 @@
             "actions": {
               "name": "Actions",
               "header": "Then do",
-              "description": "This list of actions will be performed in sequence when the automation runs. An action usually controls one of your areas, devices, or entities, for example: 'Turn on the lights'. You can use building blocks to create more complex sequences of actions.",
+              "description": "All actions added here will be performed in sequence when the automation runs. An action usually controls one of your areas, devices, or entities, for example: 'Turn on the lights'. You can use building blocks to create more complex sequences of actions.",
               "learn_more": "Learn more about actions",
               "add": "Add action",
               "search": "Search action",
@@ -5450,8 +5450,8 @@
           "config_entry": {
             "application_credentials": {
               "delete_title": "Application credentials",
-              "delete_prompt": "Would you like to also delete Application Credentials for this integration?",
-              "delete_detail": "If you delete them, you will need to enter credentials when setting up the integration again. If you keep them, they will be used automatically when setting up the integration again or may be accessed from the Application Credentials menu.",
+              "delete_prompt": "Would you like to also delete application credentials for this integration?",
+              "delete_detail": "If you delete them, you will need to enter credentials when setting up the integration again. If you keep them, they will be used automatically when setting up the integration again or may be accessed from the Application credentials menu.",
               "delete_error_title": "Deleting application credentials failed",
               "dismiss": "Keep",
               "learn_more": "Learn more about application credentials"
@@ -5650,10 +5650,10 @@
         },
         "application_credentials": {
           "caption": "Application credentials",
-          "description": "Manage the OAuth application credentials used by Integrations",
+          "description": "Manage the OAuth application credentials used by integrations",
           "editor": {
-            "caption": "Add credentials",
-            "description": "OAuth is used to grant Home Assistant access to information on other websites without giving a password. This mechanism is used by companies such as Spotify, Google, Withings, Microsoft, and Twitter.",
+            "caption": "Add application credentials",
+            "description": "OAuth is used to grant Home Assistant secure delegated access to information on other websites without revealing your personal credentials.",
             "missing_credentials": "Setting up {integration} requires configuring application credentials.",
             "missing_credentials_domain_link": "View {integration} documentation",
             "view_documentation": "View application credentials documentation",
@@ -6574,7 +6574,7 @@
             "in_progress": "We're communicating with the device. This may take some time.",
             "failed": "The command failed. Additional information may be available in the logs.",
             "success": "Your device is ready to be added to another Matter platform.",
-            "scan_code": "With their app, scan the QR code or enter the sharing code below to finish set up.",
+            "scan_code": "With their app, scan the QR code or enter the sharing code below to finish setup.",
             "copy_code": "Copy code"
           }
         },
@@ -6677,6 +6677,7 @@
           "description": "{percent_used} used - {free_space} free",
           "used_space": "Storage",
           "detailed_description": "{used} of {total} used",
+          "loading_detailed": "Loading detailed storage information...",
           "segments": {
             "used": "Used space",
             "free": "Free space",
@@ -6819,6 +6820,20 @@
             },
             "other_areas": "Other areas",
             "areas": "Areas"
+          },
+          "home": {
+            "summary_list": {
+              "climate": "Climate",
+              "lights": "Lights",
+              "security": "Security",
+              "media_players": "Media players"
+            },
+            "welcome_user": "Welcome {user}",
+            "summaries": "Summaries",
+            "areas": "Areas",
+            "other_areas": "Other areas",
+            "unamed_device": "Unnamed device",
+            "others": "Others"
           }
         },
         "cards": {
@@ -8178,6 +8193,10 @@
               "no_entities": "No entities in this group, the section will not be displayed",
               "use_compact_card": "Use compact card",
               "use_large_card": "Use large card"
+            },
+            "home": {
+              "favorite_entities": "Favorite entities",
+              "add_favorite_entity": "Add favorite entity"
             }
           },
           "view": {

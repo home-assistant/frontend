@@ -5,10 +5,8 @@ import { classMap } from "lit/directives/class-map";
 import { fireEvent } from "../../../common/dom/fire_event";
 import type { LocalizeKeys } from "../../../common/translations/localize";
 import "../../../components/ha-automation-row";
+import type { HaAutomationRow } from "../../../components/ha-automation-row";
 import "../../../components/ha-card";
-import "../../../components/ha-icon-button";
-import "../../../components/ha-md-button-menu";
-import "../../../components/ha-md-menu-item";
 import type { ScriptFieldSidebarConfig } from "../../../data/automation";
 import type { Field } from "../../../data/script";
 import { SELECTOR_SELECTOR_BUILDING_BLOCKS } from "../../../data/selector/selector_selector";
@@ -46,6 +44,12 @@ export default class HaScriptFieldRow extends LitElement {
 
   @query("ha-script-field-selector-editor")
   private _selectorEditor?: HaScriptFieldSelectorEditor;
+
+  @query("ha-automation-row:first-of-type")
+  private _fieldRowElement?: HaAutomationRow;
+
+  @query(".selector-row ha-automation-row")
+  private _selectorRowElement?: HaAutomationRow;
 
   protected render() {
     return html`
@@ -198,11 +202,17 @@ export default class HaScriptFieldRow extends LitElement {
       save: (value) => {
         fireEvent(this, "value-changed", { value });
       },
-      close: () => {
+      close: (focus?: boolean) => {
         if (selectorEditor) {
           this._selectorRowSelected = false;
+          if (focus) {
+            this.focusSelector();
+          }
         } else {
           this._selected = false;
+          if (focus) {
+            this.focus();
+          }
         }
         fireEvent(this, "close-sidebar");
       },
@@ -221,9 +231,11 @@ export default class HaScriptFieldRow extends LitElement {
     } satisfies ScriptFieldSidebarConfig);
 
     if (this.narrow) {
-      this.scrollIntoView({
-        block: "start",
-        behavior: "smooth",
+      requestAnimationFrame(() => {
+        this.scrollIntoView({
+          block: "start",
+          behavior: "smooth",
+        });
       });
     }
   }
@@ -252,15 +264,19 @@ export default class HaScriptFieldRow extends LitElement {
     });
   };
 
+  public focus() {
+    this._fieldRowElement?.focus();
+  }
+
+  public focusSelector() {
+    this._selectorRowElement?.focus();
+  }
+
   static get styles(): CSSResultGroup {
     return [
       haStyle,
       indentStyle,
       css`
-        ha-button-menu,
-        ha-icon-button {
-          --mdc-theme-text-primary-on-background: var(--primary-text-color);
-        }
         .disabled {
           opacity: 0.5;
           pointer-events: none;
@@ -306,9 +322,6 @@ export default class HaScriptFieldRow extends LitElement {
           );
         }
 
-        ha-md-menu-item[disabled] {
-          --mdc-theme-text-primary-on-background: var(--disabled-text-color);
-        }
         .warning ul {
           margin: 4px 0;
         }
@@ -323,6 +336,10 @@ export default class HaScriptFieldRow extends LitElement {
           --shadow-focus: 0 0 0 1px var(--state-inactive-color);
           border-color: var(--state-inactive-color);
           box-shadow: var(--shadow-default), var(--shadow-focus);
+        }
+
+        .selector-row {
+          padding: 12px 0 16px 16px;
         }
       `,
     ];

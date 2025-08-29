@@ -2,6 +2,7 @@ import type {
   EntityFilter,
   EntityFilterFunc,
 } from "../../../../../common/entity/entity_filter";
+import type { LocalizeFunc } from "../../../../../common/translations/localize";
 
 export const HOME_SUMMARIES = [
   "lights",
@@ -10,16 +11,16 @@ export const HOME_SUMMARIES = [
   "media_players",
 ] as const;
 
-export type HomeSummaries = (typeof HOME_SUMMARIES)[number];
+export type HomeSummary = (typeof HOME_SUMMARIES)[number];
 
-export const HOME_SUMMARIES_ICONS: Record<HomeSummaries, string> = {
+export const HOME_SUMMARIES_ICONS: Record<HomeSummary, string> = {
   lights: "mdi:lamps",
   climate: "mdi:home-thermometer",
   security: "mdi:security",
   media_players: "mdi:multimedia",
 };
 
-export const HOME_SUMMARIES_FILTERS: Record<HomeSummaries, EntityFilter[]> = {
+export const HOME_SUMMARIES_FILTERS: Record<HomeSummary, EntityFilter[]> = {
   lights: [{ domain: "light", entity_category: "none" }],
   climate: [
     { domain: "climate", entity_category: "none" },
@@ -65,7 +66,7 @@ export const HOME_SUMMARIES_FILTERS: Record<HomeSummaries, EntityFilter[]> = {
     },
     {
       domain: "binary_sensor",
-      device_class: ["door", "garage_door"],
+      device_class: ["door", "garage_door", "motion"],
       entity_category: "none",
     },
   ],
@@ -90,3 +91,6 @@ export const findEntities = (
 
   return results;
 };
+
+export const getSummaryLabel = (localize: LocalizeFunc, summary: HomeSummary) =>
+  localize(`ui.panel.lovelace.strategy.home.summary_list.${summary}`);
