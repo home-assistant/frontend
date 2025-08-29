@@ -73,6 +73,8 @@ export class HaManualScriptEditor extends LitElement {
 
   @state() private _sidebarConfig?: SidebarConfig;
 
+  @state() private _sidebarKey?: string;
+
   @query("ha-script-fields")
   private _scriptFields?: HaScriptFields;
 
@@ -223,6 +225,7 @@ export class HaManualScriptEditor extends LitElement {
         </div>
         <div class="sidebar-positioner">
           <ha-automation-sidebar
+            .sidebarKey=${this._sidebarKey}
             tabindex="-1"
             class=${classMap({ hidden: !this._sidebarConfig })}
             .narrow=${this.narrow}
@@ -463,6 +466,7 @@ export class HaManualScriptEditor extends LitElement {
     // deselect previous selected row
     this._sidebarConfig?.close?.();
     this._sidebarConfig = ev.detail;
+    this._sidebarKey = JSON.stringify(this._sidebarConfig);
 
     await this._sidebarElement?.updateComplete;
     this._sidebarElement?.focus();
