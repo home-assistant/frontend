@@ -1,12 +1,11 @@
 import { customElement, property, state } from "lit/decorators";
 import { LitElement, html, css } from "lit";
 import type { EChartsType } from "echarts/core";
-import type { CallbackDataParams } from "echarts/types/dist/shared";
 import type { SankeySeriesOption } from "echarts/types/dist/echarts";
-import { SankeyChart } from "echarts/charts";
+import type { CallbackDataParams } from "echarts/types/src/util/types";
 import memoizeOne from "memoize-one";
 import { ResizeController } from "@lit-labs/observers/resize-controller";
-import SankeyLayout from "../../resources/echarts/components/sankey-layout";
+import SankeyChart from "../../resources/echarts/components/sankey/install";
 import type { HomeAssistant } from "../../types";
 import type { ECOption } from "../../resources/echarts/echarts";
 import { measureTextWidth } from "../../util/text";
@@ -39,7 +38,7 @@ type ProcessedLink = Link & {
 
 const OVERFLOW_MARGIN = 5;
 const FONT_SIZE = 12;
-const NODE_GAP = 8;
+const NODE_GAP = 6;
 const LABEL_DISTANCE = 5;
 
 @customElement("ha-sankey-chart")
@@ -82,7 +81,7 @@ export class HaSankeyChart extends LitElement {
       .data=${this._createData(this.data, this._sizeController.value?.width)}
       .options=${options}
       height="100%"
-      .extraComponents=${[SankeyChart, SankeyLayout]}
+      .extraComponents=${[SankeyChart]}
     ></ha-chart-base>`;
   }
 
@@ -164,6 +163,7 @@ export class HaSankeyChart extends LitElement {
       lineStyle: {
         color: "gradient",
         opacity: 0.4,
+        curveness: 0.5,
       },
       layoutIterations: 0,
       label: {
