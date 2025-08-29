@@ -412,13 +412,12 @@ export class HaCodeEditor extends ReactiveElement {
   private _handleClipboardClick = async (e: Event) => {
     e.preventDefault();
     e.stopPropagation();
-    if (!this.codemirror) {
-      return;
-    }
-    await copyToClipboard(this.codemirror.state.doc.toString());
-    if (this.hass) {
+    if (this.value) {
+      await copyToClipboard(this.value);
       showToast(this, {
-        message: this.hass.localize("ui.common.copied_clipboard"),
+        message:
+          this.hass?.localize("ui.common.copied_clipboard") ||
+          "Copied to clipboard",
       });
     }
   };
