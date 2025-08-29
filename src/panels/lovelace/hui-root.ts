@@ -307,7 +307,7 @@ class HUIRoot extends LitElement {
       (i) => i.visible && (!i.overflow || overflowCanPromote)
     );
 
-    buttonItems.forEach((item) => {
+    buttonItems.forEach((item, index) => {
       const label = [this.hass!.localize(item.key), item.suffix].join(" ");
       const button = item.subItems
         ? html`
@@ -344,11 +344,11 @@ class HUIRoot extends LitElement {
             <ha-icon-button
               slot="actionItems"
               .id="button-${index}"
-              .path=${button.icon}
-              @click=${button.buttonAction}
+              .path=${item.icon}
+              @click=${item.buttonAction}
             ></ha-icon-button>
             <ha-tooltip placement="bottom" .for="button-${index}">
-              ${[this.hass!.localize(button.key), button.suffix].join(" ")}
+              ${label}
             </ha-tooltip>
           `;
       result.push(button);
