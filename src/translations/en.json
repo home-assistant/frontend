@@ -7988,7 +7988,10 @@
                 "label": "Media player playback controls"
               },
               "media-player-volume-slider": {
-                "label": "Media player volume slider"
+                "label": "Media player volume slider",
+                "min": "Minimum volume",
+                "max": "Maximum volume",
+                "step": "Step size"
               },
               "vacuum-commands": {
                 "label": "Vacuum commands",

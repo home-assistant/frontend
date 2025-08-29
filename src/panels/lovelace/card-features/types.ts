@@ -45,6 +45,9 @@ export interface MediaPlayerPlaybackCardFeatureConfig {
 
 export interface MediaPlayerVolumeSliderCardFeatureConfig {
   type: "media-player-volume-slider";
+  min?: number;
+  max?: number;
+  step?: number;
 }
 
 export interface FanDirectionCardFeatureConfig {
