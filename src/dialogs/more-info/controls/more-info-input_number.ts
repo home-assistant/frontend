@@ -1,4 +1,4 @@
-import { mdiMinus, mdiPlus, mdiSlider } from "@mdi/js";
+import { mdiMinus, mdiPlus } from "@mdi/js";
 import type { CSSResultGroup, PropertyValues } from "lit";
 import { LitElement, css, html, nothing } from "lit";
 import { customElement, property, state } from "lit/decorators";
@@ -10,6 +10,7 @@ import "../components/ha-more-info-state-header";
 import type { InputNumberEntity } from "../../../data/input_number";
 
 @customElement("more-info-input_number")
+
 class MoreInfoInputNumber extends LitElement {
   @property({ attribute: false }) public hass!: HomeAssistant;
   @property({ attribute: false }) public stateObj?: InputNumberEntity;
