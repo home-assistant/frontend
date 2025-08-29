@@ -102,19 +102,20 @@ class DialogBox extends KeyboardShortcutMixin(LitElement) {
             : ""}
         </div>
         <div slot="actions">
-          ${confirmPrompt &&
-          html`
-            <ha-button
-              @click=${this._dismiss}
-              ?dialogInitialFocus=${!this._params.prompt &&
-              this._params.destructive}
-              appearance="plain"
-            >
-              ${this._params.dismissText
-                ? this._params.dismissText
-                : this.hass.localize("ui.common.cancel")}
-            </ha-button>
-          `}
+          ${confirmPrompt
+            ? html`
+                <ha-button
+                  @click=${this._dismiss}
+                  ?dialogInitialFocus=${!this._params.prompt &&
+                  this._params.destructive}
+                  appearance="plain"
+                >
+                  ${this._params.dismissText
+                    ? this._params.dismissText
+                    : this.hass.localize("ui.common.cancel")}
+                </ha-button>
+              `
+            : nothing}
           <ha-button
             @click=${this._confirm}
             ?dialogInitialFocus=${!this._params.prompt &&
