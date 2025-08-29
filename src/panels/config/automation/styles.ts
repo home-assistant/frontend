@@ -125,6 +125,7 @@ export const manualEditorStyles = css`
   .fab-positioner ha-fab {
     position: fixed;
     right: unset;
+    left: unset;
     bottom: calc(-80px - var(--safe-area-inset-bottom));
     transition: bottom 0.3s;
   }
@@ -134,6 +135,8 @@ export const manualEditorStyles = css`
 
   .content-wrapper {
     padding-right: calc(var(--sidebar-width) + var(--sidebar-gap));
+    padding-inline-end: calc(var(--sidebar-width) + var(--sidebar-gap));
+    padding-inline-start: 0;
   }
 
   .content {
