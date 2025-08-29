@@ -288,6 +288,22 @@ export class HaCodeEditor extends ReactiveElement {
     this._createEditorToolbar(this.codemirror.dom);
   }
 
+  private _fullscreenLabel(): string {
+    if (this._isFullscreen)
+      return (
+        this.hass?.localize("ui.components.yaml-editor.exit_fullscreen") ||
+        "Exit fullscreen"
+      );
+    return (
+      this.hass?.localize("ui.components.yaml-editor.enter_fullscreen") ||
+      "Enter fullscreen"
+    );
+  }
+
+  private _fullscreenIcon(): string {
+    return this._isFullscreen ? mdiArrowCollapse : mdiArrowExpand;
+  }
+
   private _createEditorToolbar(renderRoot: HTMLElement) {
     this._editorToolbar = document.createElement("ha-icon-button-toolbar");
     this._editorToolbar.classList.add("code-editor-toolbar");
@@ -295,32 +311,30 @@ export class HaCodeEditor extends ReactiveElement {
       {
         id: "undo",
         disabled: true,
-        label: this.hass ? this.hass.localize("ui.common.undo") : "Undo",
+        label: this.hass?.localize("ui.common.undo") || "Undo",
         path: mdiUndo,
         action: (e: Event) => this._handleUndoClick(e),
       },
       {
         id: "redo",
         disabled: true,
-        label: this.hass ? this.hass.localize("ui.common.redo") : "Redo",
+        label: this.hass?.localize("ui.common.redo") || "Redo",
         path: mdiRedo,
         action: (e: Event) => this._handleRedoClick(e),
       },
       {
         id: "copy",
-        label: this.hass
-          ? this.hass.localize(
-              "ui.panel.config.automation.editor.copy_to_clipboard"
-            )
-          : "Copy to Clipboard",
+        label:
+          this.hass?.localize("ui.components.yaml-editor.copy_to_clipboard") ||
+          "Copy to Clipboard",
         path: mdiContentCopy,
         action: (e: Event) => this._handleClipboardClick(e),
       },
       {
         id: "fullscreen",
         disabled: this.disableFullscreen,
-        label: this._isFullscreen ? "Exit fullscreen" : "Enter fullscreen",
-        path: this._isFullscreen ? mdiArrowCollapse : mdiArrowExpand,
+        label: this._fullscreenLabel(),
+        path: this._fullscreenIcon(),
         action: (e: Event) => this._handleFullscreenClick(e),
       },
     ];
@@ -375,11 +389,8 @@ export class HaCodeEditor extends ReactiveElement {
     // Configure full-screen button parameters based on our current state
     if (fsButton) {
       fsButton.disabled = this.disableFullscreen;
-      fsButton.path = this._isFullscreen ? mdiArrowCollapse : mdiArrowExpand;
-      fsButton.setAttribute(
-        "label",
-        this._isFullscreen ? "Exit fullscreen" : "Enter fullscreen"
-      );
+      fsButton.path = this._fullscreenIcon();
+      fsButton.setAttribute("label", this._fullscreenLabel());
     }
   }
 
