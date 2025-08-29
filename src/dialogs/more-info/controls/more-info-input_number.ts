@@ -1,4 +1,5 @@
 import { mdiMinus, mdiPlus } from "@mdi/js";
+import type { HassEntity } from "home-assistant-js-websocket";
 import type { CSSResultGroup, PropertyValues } from "lit";
 import { LitElement, css, html, nothing } from "lit";
 import { customElement, property, state } from "lit/decorators";
@@ -6,7 +7,6 @@ import type { HomeAssistant } from "../../../types";
 import { moreInfoControlStyle } from "../components/more-info-control-style";
 import "../../../components/ha-icon-button";
 import "../components/ha-more-info-state-header";
-import type { HassEntity } from "home-assistant-js-websocket";
 
 @customElement("more-info-input_number")
 
