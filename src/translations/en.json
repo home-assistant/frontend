@@ -4149,8 +4149,8 @@
               "type_select": "Condition type",
               "unknown_condition": "[%key:ui::panel::config::devices::automation::conditions::unknown_condition%]",
               "condition": "Condition",
-              "copied_to_clipboard": "Copied condition to clipboard",
-              "cut_to_clipboard": "Cut condition to clipboard",
+              "copied_to_clipboard": "Condition copied to clipboard",
+              "cut_to_clipboard": "Condition cut to clipboard",
               "groups": {
                 "entity": {
                   "label": "Entity",
