@@ -256,7 +256,7 @@ export class HaManualAutomationEditor extends LitElement {
     return html`
       <div
         class=${classMap({
-          "has-sidebar": !!this._sidebarConfig && !this.narrow,
+          "has-sidebar": this._sidebarConfig && !this.narrow,
         })}
       >
         <div class="content-wrapper">

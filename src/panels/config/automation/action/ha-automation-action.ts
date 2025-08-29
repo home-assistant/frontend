@@ -409,7 +409,7 @@ export default class HaAutomationAction extends LitElement {
     this._rowSortSelected = undefined;
   }
 
-  static styles = [automationRowsStyles];
+  static styles = automationRowsStyles;
 }
 
 declare global {
