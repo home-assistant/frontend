@@ -21,6 +21,7 @@ import { sidebarEditorStyles } from "../styles";
 import "../trigger/ha-automation-trigger-editor";
 import type HaAutomationTriggerEditor from "../trigger/ha-automation-trigger-editor";
 import "./ha-automation-sidebar-card";
+import { isMac } from "../../../../util/is_mac";
 
 @customElement("ha-automation-sidebar-trigger")
 export default class HaAutomationSidebarTrigger extends LitElement {
@@ -131,10 +132,22 @@ export default class HaAutomationSidebarTrigger extends LitElement {
           .clickAction=${this.config.copy}
           .disabled=${this.disabled}
         >
-          ${this.hass.localize(
-            "ui.panel.config.automation.editor.triggers.copy"
-          )}
           <ha-svg-icon slot="start" .path=${mdiContentCopy}></ha-svg-icon>
+          <div class="overflow-label">
+            ${this.hass.localize(
+              "ui.panel.config.automation.editor.triggers.copy"
+            )}
+            ${!this.narrow
+              ? html`<span class="shortcut">
+                  <span
+                    >${this.hass.localize(
+                      `ui.panel.config.automation.editor.${isMac ? "cmd" : "ctrl"}`
+                    )}</span
+                  >
+                  <span>C</span>
+                </span>`
+              : nothing}
+          </div>
         </ha-md-menu-item>
 
         <ha-md-menu-item
@@ -142,10 +155,22 @@ export default class HaAutomationSidebarTrigger extends LitElement {
           .clickAction=${this.config.cut}
           .disabled=${this.disabled}
         >
-          ${this.hass.localize(
-            "ui.panel.config.automation.editor.triggers.cut"
-          )}
           <ha-svg-icon slot="start" .path=${mdiContentCut}></ha-svg-icon>
+          <div class="overflow-label">
+            ${this.hass.localize(
+              "ui.panel.config.automation.editor.triggers.cut"
+            )}
+            ${!this.narrow
+              ? html`<span class="shortcut">
+                  <span
+                    >${this.hass.localize(
+                      `ui.panel.config.automation.editor.${isMac ? "cmd" : "ctrl"}`
+                    )}</span
+                  >
+                  <span>X</span>
+                </span>`
+              : nothing}
+          </div>
         </ha-md-menu-item>
         <ha-md-menu-item
           slot="menu-items"
@@ -181,10 +206,21 @@ export default class HaAutomationSidebarTrigger extends LitElement {
           .disabled=${this.disabled}
           class="warning"
         >
-          ${this.hass.localize(
-            "ui.panel.config.automation.editor.actions.delete"
-          )}
           <ha-svg-icon slot="start" .path=${mdiDelete}></ha-svg-icon>
+          <div class="overflow-label">
+            ${this.hass.localize(
+              "ui.panel.config.automation.editor.actions.delete"
+            )}
+            ${!this.narrow
+              ? html`<span class="shortcut">
+                  <span
+                    >${this.hass.localize(
+                      "ui.panel.config.automation.editor.del"
+                    )}</span
+                  >
+                </span>`
+              : nothing}
+          </div>
         </ha-md-menu-item>
         ${keyed(
           this.sidebarKey,

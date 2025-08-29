@@ -1,5 +1,5 @@
 import { mdiContentDuplicate, mdiDelete, mdiRenameBox } from "@mdi/js";
-import { html, LitElement } from "lit";
+import { html, LitElement, nothing } from "lit";
 import { customElement, property, query } from "lit/decorators";
 import type { OptionSidebarConfig } from "../../../../data/automation";
 import type { HomeAssistant } from "../../../../types";
@@ -82,10 +82,21 @@ export default class HaAutomationSidebarOption extends LitElement {
               .disabled=${this.disabled}
               class="warning"
             >
-              ${this.hass.localize(
-                "ui.panel.config.automation.editor.actions.type.choose.remove_option"
-              )}
               <ha-svg-icon slot="start" .path=${mdiDelete}></ha-svg-icon>
+              <div class="overflow-label">
+                ${this.hass.localize(
+                  "ui.panel.config.automation.editor.actions.type.choose.remove_option"
+                )}
+                ${!this.narrow
+                  ? html`<span class="shortcut">
+                      <span
+                        >${this.hass.localize(
+                          "ui.panel.config.automation.editor.del"
+                        )}</span
+                      >
+                    </span>`
+                  : nothing}
+              </div>
             </ha-md-menu-item>
           `}
 

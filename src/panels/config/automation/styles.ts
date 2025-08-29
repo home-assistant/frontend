@@ -218,4 +218,25 @@ export const sidebarEditorStyles = css`
   .description {
     padding-top: 16px;
   }
+  .overflow-label {
+    display: flex;
+    justify-content: space-between;
+  }
+  .overflow-label .shortcut {
+    display: inline-flex;
+    flex-direction: row;
+    align-items: center;
+    gap: 4px;
+    margin-left: 16px;
+  }
+  .overflow-label .shortcut span {
+    padding: 2px;
+    line-height: 1;
+    border: 1px solid var(--ha-color-border-neutral-normal);
+    background-color: var(--ha-color-fill-neutral-quiet-resting);
+    font-size: var(--ha-font-size-xs);
+    border-radius: var(--ha-border-radius-sm);
+    font-family: var(--ha-font-family-code);
+    color: var(--ha-color-text-secondary);
+  }
 `;

@@ -1,5 +1,5 @@
 import { mdiDelete, mdiPlaylistEdit } from "@mdi/js";
-import { html, LitElement } from "lit";
+import { html, LitElement, nothing } from "lit";
 import { customElement, property, query, state } from "lit/decorators";
 import { keyed } from "lit/directives/keyed";
 import { fireEvent } from "../../../../common/dom/fire_event";
@@ -79,10 +79,21 @@ export default class HaAutomationSidebarScriptFieldSelector extends LitElement {
         .disabled=${this.disabled}
         class="warning"
       >
-        ${this.hass.localize(
-          "ui.panel.config.automation.editor.actions.delete"
-        )}
         <ha-svg-icon slot="start" .path=${mdiDelete}></ha-svg-icon>
+        <div class="overflow-label">
+          ${this.hass.localize(
+            "ui.panel.config.automation.editor.actions.delete"
+          )}
+          ${!this.narrow
+            ? html`<span class="shortcut">
+                <span
+                  >${this.hass.localize(
+                    "ui.panel.config.automation.editor.del"
+                  )}</span
+                >
+              </span>`
+            : nothing}
+        </div>
       </ha-md-menu-item>
       ${keyed(
         this.sidebarKey,
