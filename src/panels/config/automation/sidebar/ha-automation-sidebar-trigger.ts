@@ -91,11 +91,13 @@ export default class HaAutomationSidebarTrigger extends LitElement {
           .clickAction=${this.config.rename}
           .disabled=${disabled || type === "list"}
         >
-          ${this.hass.localize(
-            "ui.panel.config.automation.editor.triggers.rename"
-          )}
           <ha-svg-icon slot="start" .path=${mdiRenameBox}></ha-svg-icon>
-          <span class="shortcut-placeholder ${isMac ? "mac" : ""}"></span>
+          <div class="overflow-label">
+            ${this.hass.localize(
+              "ui.panel.config.automation.editor.triggers.rename"
+            )}
+            <span class="shortcut-placeholder ${isMac ? "mac" : ""}"></span>
+          </div>
         </ha-md-menu-item>
         ${!this.yamlMode &&
         !("id" in this.config.config) &&
@@ -105,11 +107,13 @@ export default class HaAutomationSidebarTrigger extends LitElement {
               .clickAction=${this._showTriggerId}
               .disabled=${disabled || type === "list"}
             >
-              ${this.hass.localize(
-                "ui.panel.config.automation.editor.triggers.edit_id"
-              )}
               <ha-svg-icon slot="start" .path=${mdiIdentifier}></ha-svg-icon>
-              <span class="shortcut-placeholder ${isMac ? "mac" : ""}"></span>
+              <div class="overflow-label">
+                ${this.hass.localize(
+                  "ui.panel.config.automation.editor.triggers.edit_id"
+                )}
+                <span class="shortcut-placeholder ${isMac ? "mac" : ""}"></span>
+              </div>
             </ha-md-menu-item>`
           : nothing}
 
@@ -192,11 +196,13 @@ export default class HaAutomationSidebarTrigger extends LitElement {
           .clickAction=${this._toggleYamlMode}
           .disabled=${!this.config.uiSupported || !!this._warnings}
         >
-          ${this.hass.localize(
-            `ui.panel.config.automation.editor.edit_${!this.yamlMode ? "yaml" : "ui"}`
-          )}
           <ha-svg-icon slot="start" .path=${mdiPlaylistEdit}></ha-svg-icon>
-          <span class="shortcut-placeholder ${isMac ? "mac" : ""}"></span>
+          <div class="overflow-label">
+            ${this.hass.localize(
+              `ui.panel.config.automation.editor.edit_${!this.yamlMode ? "yaml" : "ui"}`
+            )}
+            <span class="shortcut-placeholder ${isMac ? "mac" : ""}"></span>
+          </div>
         </ha-md-menu-item>
         <ha-md-divider
           slot="menu-items"
@@ -208,14 +214,16 @@ export default class HaAutomationSidebarTrigger extends LitElement {
           .clickAction=${this.config.disable}
           .disabled=${type === "list"}
         >
-          ${this.hass.localize(
-            `ui.panel.config.automation.editor.actions.${disabled ? "enable" : "disable"}`
-          )}
           <ha-svg-icon
             slot="start"
             .path=${this.disabled ? mdiPlayCircleOutline : mdiStopCircleOutline}
           ></ha-svg-icon>
-          <span class="shortcut-placeholder ${isMac ? "mac" : ""}"></span>
+          <div class="overflow-label">
+            ${this.hass.localize(
+              `ui.panel.config.automation.editor.actions.${disabled ? "enable" : "disable"}`
+            )}
+            <span class="shortcut-placeholder ${isMac ? "mac" : ""}"></span>
+          </div>
         </ha-md-menu-item>
         <ha-md-menu-item
           slot="menu-items"

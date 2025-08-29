@@ -105,20 +105,24 @@ export default class HaAutomationSidebarAction extends LitElement {
       <span slot="subtitle">${subtitle}</span>
 
       <ha-md-menu-item slot="menu-items" .clickAction=${this.config.run}>
-        ${this.hass.localize("ui.panel.config.automation.editor.actions.run")}
         <ha-svg-icon slot="start" .path=${mdiPlay}></ha-svg-icon>
-        <span class="shortcut-placeholder ${isMac ? "mac" : ""}"></span>
+        <div class="overflow-label">
+          ${this.hass.localize("ui.panel.config.automation.editor.actions.run")}
+          <span class="shortcut-placeholder ${isMac ? "mac" : ""}"></span>
+        </div>
       </ha-md-menu-item>
       <ha-md-menu-item
         slot="menu-items"
         .clickAction=${this.config.rename}
         .disabled=${!!disabled}
       >
-        ${this.hass.localize(
-          "ui.panel.config.automation.editor.triggers.rename"
-        )}
         <ha-svg-icon slot="start" .path=${mdiRenameBox}></ha-svg-icon>
-        <span class="shortcut-placeholder ${isMac ? "mac" : ""}"></span>
+        <div class="overflow-label">
+          ${this.hass.localize(
+            "ui.panel.config.automation.editor.triggers.rename"
+          )}
+          <span class="shortcut-placeholder ${isMac ? "mac" : ""}"></span>
+        </div>
       </ha-md-menu-item>
       <ha-md-divider
         slot="menu-items"
@@ -130,11 +134,13 @@ export default class HaAutomationSidebarAction extends LitElement {
         .clickAction=${this.config.duplicate}
         .disabled=${this.disabled}
       >
-        ${this.hass.localize(
-          "ui.panel.config.automation.editor.actions.duplicate"
-        )}
         <ha-svg-icon slot="start" .path=${mdiContentDuplicate}></ha-svg-icon>
-        <span class="shortcut-placeholder ${isMac ? "mac" : ""}"></span>
+        <div class="overflow-label">
+          ${this.hass.localize(
+            "ui.panel.config.automation.editor.actions.duplicate"
+          )}
+          <span class="shortcut-placeholder ${isMac ? "mac" : ""}"></span>
+        </div>
       </ha-md-menu-item>
       <ha-md-menu-item
         slot="menu-items"
@@ -197,11 +203,13 @@ export default class HaAutomationSidebarAction extends LitElement {
         .clickAction=${this._toggleYamlMode}
         .disabled=${!this.config.uiSupported || !!this._warnings}
       >
-        ${this.hass.localize(
-          `ui.panel.config.automation.editor.edit_${!this.yamlMode ? "yaml" : "ui"}`
-        )}
         <ha-svg-icon slot="start" .path=${mdiPlaylistEdit}></ha-svg-icon>
-        <span class="shortcut-placeholder ${isMac ? "mac" : ""}"></span>
+        <div class="overflow-label">
+          ${this.hass.localize(
+            `ui.panel.config.automation.editor.edit_${!this.yamlMode ? "yaml" : "ui"}`
+          )}
+          <span class="shortcut-placeholder ${isMac ? "mac" : ""}"></span>
+        </div>
       </ha-md-menu-item>
       <ha-md-divider
         slot="menu-items"
@@ -209,14 +217,16 @@ export default class HaAutomationSidebarAction extends LitElement {
         tabindex="-1"
       ></ha-md-divider>
       <ha-md-menu-item slot="menu-items" .clickAction=${this.config.disable}>
-        ${this.hass.localize(
-          `ui.panel.config.automation.editor.actions.${disabled ? "enable" : "disable"}`
-        )}
         <ha-svg-icon
           slot="start"
           .path=${this.disabled ? mdiPlayCircleOutline : mdiStopCircleOutline}
         ></ha-svg-icon>
-        <span class="shortcut-placeholder ${isMac ? "mac" : ""}"></span>
+        <div class="overflow-label">
+          ${this.hass.localize(
+            `ui.panel.config.automation.editor.actions.${disabled ? "enable" : "disable"}`
+          )}
+          <span class="shortcut-placeholder ${isMac ? "mac" : ""}"></span>
+        </div>
       </ha-md-menu-item>
       <ha-md-menu-item
         slot="menu-items"

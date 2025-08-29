@@ -62,11 +62,13 @@ export default class HaAutomationSidebarScriptField extends LitElement {
         .clickAction=${this._toggleYamlMode}
         .disabled=${!!this._warnings}
       >
-        ${this.hass.localize(
-          `ui.panel.config.automation.editor.edit_${!this.yamlMode ? "yaml" : "ui"}`
-        )}
         <ha-svg-icon slot="start" .path=${mdiPlaylistEdit}></ha-svg-icon>
-        <span class="shortcut-placeholder ${isMac ? "mac" : ""}"></span>
+        <div class="overflow-label">
+          ${this.hass.localize(
+            `ui.panel.config.automation.editor.edit_${!this.yamlMode ? "yaml" : "ui"}`
+          )}
+          <span class="shortcut-placeholder ${isMac ? "mac" : ""}"></span>
+        </div>
       </ha-md-menu-item>
       <ha-md-menu-item
         slot="menu-items"

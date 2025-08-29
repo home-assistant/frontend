@@ -222,6 +222,7 @@ export const sidebarEditorStyles = css`
     display: flex;
     justify-content: space-between;
     gap: 12px;
+    white-space: nowrap;
   }
   .overflow-label .shortcut {
     --mdc-icon-size: 12px;
@@ -237,9 +238,14 @@ export const sidebarEditorStyles = css`
   }
   .shortcut-placeholder {
     display: inline-block;
-    width: 52px;
+    width: 40px;
   }
   .shortcut-placeholder.mac {
-    width: 38px;
+    width: 26px;
+  }
+  @media all and (max-width: 870px) {
+    .shortcut-placeholder {
+      display: none;
+    }
   }
 `;
