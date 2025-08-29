@@ -16,6 +16,8 @@ class MoreInfoInputNumber extends LitElement {
 
   @state() private _currentValue?: number;
 
+  private _updateScheduled = false;
+
   protected updated(changedProps: PropertyValues<this>) {
     if (changedProps.has("stateObj")) {
       this._currentValue = this.stateObj?.state
@@ -33,10 +35,17 @@ class MoreInfoInputNumber extends LitElement {
       value = Math.min(Math.max(value, min), max);
     }
     this._currentValue = value;
-    this.hass.callService("input_number", "set_value", {
-      entity_id: this.stateObj!.entity_id,
-      value,
-    });
+
+    if (!this._updateScheduled) {
+      this._updateScheduled = true;
+      requestAnimationFrame(() => {
+        this._updateScheduled = false;
+        this.hass.callService("input_number", "set_value", {
+          entity_id: this.stateObj!.entity_id,
+          value: this._currentValue,
+        });
+      });
+    }
   }
 
   private _increment() {
