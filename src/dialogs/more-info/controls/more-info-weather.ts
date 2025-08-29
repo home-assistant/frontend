@@ -311,7 +311,7 @@ class MoreInfoWeather extends LitElement {
                 </sl-tab>`
             )}
           </sl-tab-group>`
-        : html`<ha-spinner size="medium"></ha-spinner>`}
+        : nothing}
       <div class="forecast">
         ${forecast && forecast.length > 0
           ? forecast.map((item) =>
