@@ -2,7 +2,7 @@ import type {
   EntityFilter,
   EntityFilterFunc,
 } from "../../../../../common/entity/entity_filter";
-import type { HomeAssistant } from "../../../../../types";
+import type { LocalizeFunc } from "../../../../../common/translations/localize";
 
 export const HOME_SUMMARIES = [
   "lights",
@@ -92,5 +92,5 @@ export const findEntities = (
   return results;
 };
 
-export const getSummaryLabel = (hass: HomeAssistant, summary: HomeSummary) =>
-  hass.localize(`ui.panel.lovelace.strategy.home.summary_list.${summary}`);
+export const getSummaryLabel = (localize: LocalizeFunc, summary: HomeSummary) =>
+  localize(`ui.panel.lovelace.strategy.home.summary_list.${summary}`);

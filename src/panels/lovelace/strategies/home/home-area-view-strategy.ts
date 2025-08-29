@@ -112,7 +112,7 @@ export class HomeAreaViewStrategy extends ReactiveElement {
         type: "grid",
         cards: [
           computeHeadingCard(
-            getSummaryLabel(hass, "lights"),
+            getSummaryLabel(hass.localize, "lights"),
             HOME_SUMMARIES_ICONS.lights,
             "lights"
           ),
@@ -126,7 +126,7 @@ export class HomeAreaViewStrategy extends ReactiveElement {
         type: "grid",
         cards: [
           computeHeadingCard(
-            getSummaryLabel(hass, "climate"),
+            getSummaryLabel(hass.localize, "climate"),
             HOME_SUMMARIES_ICONS.climate,
             "climate"
           ),
@@ -140,7 +140,7 @@ export class HomeAreaViewStrategy extends ReactiveElement {
         type: "grid",
         cards: [
           computeHeadingCard(
-            getSummaryLabel(hass, "security"),
+            getSummaryLabel(hass.localize, "security"),
             HOME_SUMMARIES_ICONS.security,
             "security"
           ),
@@ -154,7 +154,7 @@ export class HomeAreaViewStrategy extends ReactiveElement {
         type: "grid",
         cards: [
           computeHeadingCard(
-            getSummaryLabel(hass, "media_players"),
+            getSummaryLabel(hass.localize, "media_players"),
             HOME_SUMMARIES_ICONS.media_players,
             "media-players"
           ),

@@ -63,7 +63,7 @@ export class HomeDashboardStrategy extends ReactiveElement {
     });
 
     const lightView = {
-      title: getSummaryLabel(hass, "lights"),
+      title: getSummaryLabel(hass.localize, "lights"),
       path: "lights",
       subview: true,
       strategy: {
@@ -73,7 +73,7 @@ export class HomeDashboardStrategy extends ReactiveElement {
     } satisfies LovelaceViewRawConfig;
 
     const climateView = {
-      title: getSummaryLabel(hass, "climate"),
+      title: getSummaryLabel(hass.localize, "climate"),
       path: "climate",
       subview: true,
       strategy: {
@@ -83,7 +83,7 @@ export class HomeDashboardStrategy extends ReactiveElement {
     } satisfies LovelaceViewRawConfig;
 
     const securityView = {
-      title: getSummaryLabel(hass, "security"),
+      title: getSummaryLabel(hass.localize, "security"),
       path: "security",
       subview: true,
       strategy: {
@@ -93,7 +93,7 @@ export class HomeDashboardStrategy extends ReactiveElement {
     } satisfies LovelaceViewRawConfig;
 
     const mediaPlayersView = {
-      title: getSummaryLabel(hass, "media_players"),
+      title: getSummaryLabel(hass.localize, "media_players"),
       path: "media-players",
       subview: true,
       strategy: {

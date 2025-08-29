@@ -116,7 +116,7 @@ export class HomeMainViewStrategy extends ReactiveElement {
         {
           type: "button",
           icon: HOME_SUMMARIES_ICONS.lights,
-          name: getSummaryLabel(hass, "lights"),
+          name: getSummaryLabel(hass.localize, "lights"),
           icon_height: "24px",
           grid_options: {
             rows: 2,
@@ -130,7 +130,7 @@ export class HomeMainViewStrategy extends ReactiveElement {
         {
           type: "button",
           icon: HOME_SUMMARIES_ICONS.climate,
-          name: getSummaryLabel(hass, "climate"),
+          name: getSummaryLabel(hass.localize, "climate"),
           icon_height: "30px",
           grid_options: {
             rows: 2,
@@ -144,7 +144,7 @@ export class HomeMainViewStrategy extends ReactiveElement {
         {
           type: "button",
           icon: HOME_SUMMARIES_ICONS.security,
-          name: getSummaryLabel(hass, "security"),
+          name: getSummaryLabel(hass.localize, "security"),
           icon_height: "30px",
           grid_options: {
             rows: 2,
@@ -158,7 +158,7 @@ export class HomeMainViewStrategy extends ReactiveElement {
         {
           type: "button",
           icon: HOME_SUMMARIES_ICONS.media_players,
-          name: getSummaryLabel(hass, "media_players"),
+          name: getSummaryLabel(hass.localize, "media_players"),
           icon_height: "30px",
           grid_options: {
             rows: 2,
