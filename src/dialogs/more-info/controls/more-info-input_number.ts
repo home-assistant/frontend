@@ -110,7 +110,7 @@ class MoreInfoInputNumber extends LitElement {
                 <ha-icon-button
                   class="increment"
                   .label=${this.hass.localize(
-                    "ui.card.counter.timer.actions.increment",
+                    "ui.card.counter.actions.increment",
                   )}
                   @click=${this._increment}
                 >
@@ -128,7 +128,7 @@ class MoreInfoInputNumber extends LitElement {
                 <ha-icon-button
                   class="decrement"
                   .label=${this.hass.localize(
-                    "ui.card.counter.timer.actions.decrement",
+                    "ui.card.counter.actions.decrement",
                   )}
                   @click=${this._decrement}
                 >
