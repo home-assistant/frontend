@@ -521,6 +521,15 @@ export default class HaAutomationActionRow extends LitElement {
   };
 
   private _runAction = async () => {
+    requestAnimationFrame(() => {
+      // @ts-ignore is supported in all browsers expect firefox
+      if (this.scrollIntoViewIfNeeded) {
+        // @ts-ignore is supported in all browsers expect firefox
+        this.scrollIntoViewIfNeeded();
+        return;
+      }
+      this.scrollIntoView();
+    });
     const validated = await validateConfig(this.hass, {
       actions: this.action,
     });
