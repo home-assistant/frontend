@@ -567,7 +567,7 @@ export interface TriggerSidebarConfig extends BaseSidebarConfig {
   duplicate: () => void;
   cut: () => void;
   copy: () => void;
-  toggleYamlMode: () => boolean;
+  toggleYamlMode: () => void;
   config: Trigger;
   yamlMode: boolean;
   uiSupported: boolean;
@@ -581,7 +581,7 @@ export interface ConditionSidebarConfig extends BaseSidebarConfig {
   duplicate: () => void;
   cut: () => void;
   copy: () => void;
-  toggleYamlMode: () => boolean;
+  toggleYamlMode: () => void;
   config: Condition;
   yamlMode: boolean;
   uiSupported: boolean;
@@ -595,7 +595,7 @@ export interface ActionSidebarConfig extends BaseSidebarConfig {
   cut: () => void;
   copy: () => void;
   run: () => void;
-  toggleYamlMode: () => boolean;
+  toggleYamlMode: () => void;
   config: {
     action: Action;
   };
@@ -617,7 +617,7 @@ export interface ScriptFieldSidebarConfig extends BaseSidebarConfig {
     key: string;
     excludeKeys: string[];
   };
-  toggleYamlMode: () => boolean;
+  toggleYamlMode: () => void;
   yamlMode: boolean;
 }
 

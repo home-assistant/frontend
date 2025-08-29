@@ -218,7 +218,7 @@ export default class HaScriptFieldRow extends LitElement {
       },
       toggleYamlMode: () => {
         this._toggleYamlMode();
-        return this._yamlMode;
+        this.openSidebar();
       },
       delete: this._onDelete,
       config: {

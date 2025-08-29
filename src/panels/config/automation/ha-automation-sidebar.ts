@@ -1,6 +1,5 @@
 import { css, html, LitElement, nothing } from "lit";
 import { customElement, property, query, state } from "lit/decorators";
-import { fireEvent } from "../../../common/dom/fire_event";
 import "../../../components/ha-bottom-sheet";
 import type { HaBottomSheet } from "../../../components/ha-bottom-sheet";
 import {
@@ -204,13 +203,7 @@ export default class HaAutomationSidebar extends LitElement {
   }
 
   private _toggleYamlMode = () => {
-    this._yamlMode = (this.config as ActionSidebarConfig)!.toggleYamlMode();
-    fireEvent(this, "value-changed", {
-      value: {
-        ...this.config,
-        yamlMode: this._yamlMode,
-      },
-    });
+    (this.config as ActionSidebarConfig)?.toggleYamlMode();
   };
 
   static styles = css`
