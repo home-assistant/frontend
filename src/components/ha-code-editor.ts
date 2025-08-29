@@ -7,20 +7,20 @@ import type {
 } from "@codemirror/autocomplete";
 import type { Extension, TransactionSpec } from "@codemirror/state";
 import type { EditorView, KeyBinding, ViewUpdate } from "@codemirror/view";
-import { mdiArrowExpand, mdiArrowCollapse } from "@mdi/js";
+import { mdiArrowCollapse, mdiArrowExpand } from "@mdi/js";
 import type { HassEntities } from "home-assistant-js-websocket";
 import type { PropertyValues } from "lit";
-import { css, ReactiveElement, html, render } from "lit";
+import { css, html, ReactiveElement, render } from "lit";
 import { customElement, property, state } from "lit/decorators";
 import memoizeOne from "memoize-one";
 import { fireEvent } from "../common/dom/fire_event";
 import { stopPropagation } from "../common/dom/stop_propagation";
 import { getEntityContext } from "../common/entity/context/get_entity_context";
 import type { HomeAssistant } from "../types";
+import "./ha-code-editor-completion-items";
 import type { CompletionItem } from "./ha-code-editor-completion-items";
 import "./ha-icon";
 import "./ha-icon-button";
-import "./ha-code-editor-completion-items";
 
 declare global {
   interface HASSDomEvents {
@@ -72,6 +72,8 @@ export class HaCodeEditor extends ReactiveElement {
 
   @state() private _isFullscreen = false;
 
+  private _fullscreenDialog?: HTMLDialogElement;
+
   // eslint-disable-next-line @typescript-eslint/consistent-type-imports
   private _loadedCodeMirror?: typeof import("../resources/codemirror");
 
@@ -120,7 +122,7 @@ export class HaCodeEditor extends ReactiveElement {
     this.removeEventListener("keydown", stopPropagation);
     this.removeEventListener("keydown", this._handleKeyDown);
     if (this._isFullscreen) {
-      this._toggleFullscreen();
+      this._closeFullscreenDialog();
     }
     this.updateComplete.then(() => {
       this.codemirror!.destroy();
@@ -179,9 +181,6 @@ export class HaCodeEditor extends ReactiveElement {
     }
     if (changedProps.has("error")) {
       this.classList.toggle("error-state", this.error);
-    }
-    if (changedProps.has("_isFullscreen")) {
-      this.classList.toggle("fullscreen", this._isFullscreen);
     }
     if (changedProps.has("disableFullscreen")) {
       this._updateFullscreenButton();
@@ -312,8 +311,91 @@ export class HaCodeEditor extends ReactiveElement {
   };
 
   private _toggleFullscreen() {
+    if (!this._isFullscreen) {
+      this._openFullscreenDialog();
+    } else {
+      this._closeFullscreenDialog();
+    }
     this._isFullscreen = !this._isFullscreen;
     this._updateFullscreenButton();
+  }
+
+  private _openFullscreenDialog() {
+    // Create dialog if it doesn't exist
+    if (!this._fullscreenDialog) {
+      this._fullscreenDialog = document.createElement("dialog");
+      this._fullscreenDialog.style =
+        "width: calc(100% - 16px); margin: 56px 8px 8px; height: calc(100% - 64px); border: none; border-radius: 8px;";
+
+      // Handle dialog close events
+      this._fullscreenDialog.addEventListener("close", () => {
+        if (this._isFullscreen) {
+          this._isFullscreen = false;
+          this._updateFullscreenButton();
+        }
+      });
+
+      // Handle click on backdrop to close
+      this._fullscreenDialog.addEventListener("click", (e) => {
+        if (e.target === this._fullscreenDialog) {
+          this._closeFullscreenDialog();
+        }
+      });
+
+      document.body.appendChild(this._fullscreenDialog);
+    }
+
+    // Clone the editor and move it to dialog
+    const editorClone = this.cloneNode(true) as HaCodeEditor;
+    editorClone.classList.add("fullscreen-editor");
+
+    // Copy current value to cloned editor
+    editorClone.value = this.value;
+
+    // Listen for changes in the cloned editor
+    editorClone.addEventListener("value-changed", (e: any) => {
+      this._value = e.detail.value;
+      fireEvent(this, "value-changed", { value: this._value });
+    });
+
+    // Add close button
+    const closeButton = document.createElement("ha-icon-button");
+    closeButton.path = mdiArrowCollapse;
+    closeButton.setAttribute("label", "Exit fullscreen");
+    closeButton.className = "fullscreen-close-button";
+    closeButton.addEventListener("click", () => this._closeFullscreenDialog());
+
+    // Clear dialog content and add new content
+    this._fullscreenDialog.innerHTML = "";
+    this._fullscreenDialog.appendChild(editorClone);
+    this._fullscreenDialog.appendChild(closeButton);
+
+    // Show modal dialog
+    this._fullscreenDialog.showModal();
+  }
+
+  private _closeFullscreenDialog() {
+    if (this._fullscreenDialog) {
+      this._fullscreenDialog.close();
+
+      // Update original editor with current value
+      const editorInDialog = this._fullscreenDialog.querySelector(
+        "ha-code-editor"
+      ) as HaCodeEditor;
+      if (editorInDialog) {
+        this._value = editorInDialog.value;
+        if (this.codemirror) {
+          this.codemirror.dispatch({
+            changes: {
+              from: 0,
+              to: this.codemirror.state.doc.length,
+              insert: this._value,
+            },
+          });
+        }
+      }
+    }
+    this._isFullscreen = false;
   }
 
   private _handleKeyDown = (e: KeyboardEvent) => {
@@ -641,40 +723,6 @@ export class HaCodeEditor extends ReactiveElement {
       .fullscreen-button {
         opacity: 0.8;
       }
-    }
-
-    :host(.fullscreen) {
-      position: fixed !important;
-      top: calc(var(--header-height, 56px) + 8px) !important;
-      left: 8px !important;
-      right: 8px !important;
-      bottom: 8px !important;
-      z-index: 9999 !important;
-      border-radius: 12px !important;
-      box-shadow: 0 2px 10px rgba(0, 0, 0, 0.3) !important;
-      overflow: hidden !important;
-      background-color: var(
-        --code-editor-background-color,
-        var(--card-background-color)
-      ) !important;
-      margin: 0 !important;
-      padding-top: var(--safe-area-inset-top) !important;
-      padding-left: var(--safe-area-inset-left) !important;
-      padding-right: var(--safe-area-inset-right) !important;
-      padding-bottom: var(--safe-area-inset-bottom) !important;
-      box-sizing: border-box !important;
-      display: block !important;
-    }
-
-    :host(.fullscreen) .cm-editor {
-      height: 100% !important;
-      max-height: 100% !important;
-      border-radius: 0 !important;
-    }
-
-    :host(.fullscreen) .fullscreen-button {
-      top: calc(var(--safe-area-inset-top, 0px) + 8px);
-      right: calc(var(--safe-area-inset-right, 0px) + 8px);
     }
 
     .completion-info {
