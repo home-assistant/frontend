@@ -211,6 +211,7 @@ export class HaYamlEditor extends LitElement {
         }
         ha-code-editor {
           flex-grow: 1;
+          min-height: 0;
         }
       `,
     ];

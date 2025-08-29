@@ -1,6 +1,6 @@
 import type { CSSResultGroup } from "lit";
 import { html, LitElement } from "lit";
-import { customElement, property } from "lit/decorators";
+import { query, customElement, property } from "lit/decorators";
 import { fireEvent } from "../../../../../common/dom/fire_event";
 import "../../../../../components/ha-textfield";
 import type { Action, SequenceAction } from "../../../../../data/script";
@@ -8,6 +8,7 @@ import { haStyle } from "../../../../../resources/styles";
 import type { HomeAssistant } from "../../../../../types";
 import "../ha-automation-action";
 import type { ActionElement } from "../ha-automation-action-row";
+import type HaAutomationAction from "../ha-automation-action";
 
 @customElement("ha-automation-action-sequence")
 export class HaSequenceAction extends LitElement implements ActionElement {
@@ -18,6 +19,11 @@ export class HaSequenceAction extends LitElement implements ActionElement {
   @property({ type: Boolean }) public narrow = false;
 
   @property({ attribute: false }) public action!: SequenceAction;
+
+  @property({ type: Boolean }) public indent = false;
+
+  @query("ha-automation-action")
+  private _actionElement?: HaAutomationAction;
 
   public static get defaultConfig(): SequenceAction {
     return {
@@ -35,6 +41,7 @@ export class HaSequenceAction extends LitElement implements ActionElement {
         .disabled=${this.disabled}
         @value-changed=${this._actionsChanged}
         .hass=${this.hass}
+        .optionsInSidebar=${this.indent}
       ></ha-automation-action>
     `;
   }
@@ -48,6 +55,14 @@ export class HaSequenceAction extends LitElement implements ActionElement {
         sequence: value,
       },
     });
+  }
+
+  public expandAll() {
+    this._actionElement?.expandAll();
+  }
+
+  public collapseAll() {
+    this._actionElement?.collapseAll();
   }
 
   static get styles(): CSSResultGroup {

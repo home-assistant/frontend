@@ -32,7 +32,7 @@ export const coreColorStyles = css`
     --ha-color-neutral-50: #7a7a7a;
     --ha-color-neutral-60: #989898;
     --ha-color-neutral-70: #b1b1b1;
-    --ha-color-neutral-80: #b1b1b1;
+    --ha-color-neutral-80: #cccccc;
     --ha-color-neutral-90: #e6e6e6;
     --ha-color-neutral-95: #f3f3f3;
 

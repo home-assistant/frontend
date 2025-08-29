@@ -251,8 +251,6 @@ export class HuiTileCard extends LitElement implements LovelaceCard {
     const entityId = this._config.entity;
     const stateObj = entityId ? this.hass.states[entityId] : undefined;
 
-    const contentClasses = { vertical: Boolean(this._config.vertical) };
-
     if (!stateObj) {
       return html`
         <hui-warning .hass=${this.hass}>
@@ -260,6 +258,8 @@ export class HuiTileCard extends LitElement implements LovelaceCard {
         </hui-warning>
       `;
     }
+
+    const contentClasses = { vertical: Boolean(this._config.vertical) };
 
     const name = this._config.name || computeStateName(stateObj);
     const active = stateActive(stateObj);

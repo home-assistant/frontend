@@ -11,8 +11,6 @@ import {
   union,
   array,
   assign,
-  literal,
-  is,
   boolean,
   refine,
 } from "superstruct";
@@ -65,17 +63,6 @@ export const serviceActionStruct: Describe<ServiceActionWithTemplate> = assign(
     data: optional(object()),
     response_variable: optional(string()),
     metadata: optional(object()),
-  })
-);
-
-const playMediaActionStruct: Describe<PlayMediaAction> = assign(
-  baseActionStruct,
-  object({
-    action: literal("media_player.play_media"),
-    target: optional(object({ entity_id: optional(string()) })),
-    entity_id: optional(string()),
-    data: object({ media_content_id: string(), media_content_type: string() }),
-    metadata: object(),
   })
 );
 
@@ -182,14 +169,6 @@ export interface WaitForTriggerAction extends BaseAction {
   continue_on_timeout?: boolean;
 }
 
-export interface PlayMediaAction extends BaseAction {
-  action: "media_player.play_media";
-  target?: { entity_id?: string };
-  entity_id?: string;
-  data: { media_content_id: string; media_content_type: string };
-  metadata: Record<string, unknown>;
-}
-
 export interface RepeatAction extends BaseAction {
   repeat: CountRepeat | WhileRepeat | UntilRepeat | ForEachRepeat;
 }
@@ -266,7 +245,6 @@ export type NonConditionAction =
   | ChooseAction
   | IfAction
   | VariablesAction
-  | PlayMediaAction
   | StopAction
   | SequenceAction
   | ParallelAction
@@ -291,7 +269,6 @@ export interface ActionTypes {
   wait_for_trigger: WaitForTriggerAction;
   variables: VariablesAction;
   service: ServiceAction;
-  play_media: PlayMediaAction;
   stop: StopAction;
   sequence: SequenceAction;
   parallel: ParallelAction;
@@ -398,11 +375,6 @@ export const getActionType = (action: Action): ActionType => {
     return "set_conversation_response";
   }
   if ("action" in action || "service" in action) {
-    if ("metadata" in action) {
-      if (is(action, playMediaActionStruct)) {
-        return "play_media";
-      }
-    }
     return "service";
   }
   return "unknown";
@@ -441,6 +413,31 @@ export const migrateAutomationAction = (
       entity_id: action.scene,
     };
     delete action.scene;
+  }
+
+  // legacy play media
+  if (
+    typeof action === "object" &&
+    action !== null &&
+    "action" in action &&
+    action.action === "media_player.play_media" &&
+    "data" in action &&
+    ((action.data as any)?.media_content_id ||
+      (action.data as any)?.media_content_type)
+  ) {
+    const oldData = { ...(action.data as any) };
+    const media = {
+      media_content_id: oldData.media_content_id,
+      media_content_type: oldData.media_content_type,
+      metadata: { ...(action.metadata || {}) },
+    };
+    delete action.metadata;
+    delete oldData.media_content_id;
+    delete oldData.media_content_type;
+    action.data = {
+      ...oldData,
+      media,
+    };
   }
 
   if (typeof action === "object" && action !== null && "sequence" in action) {

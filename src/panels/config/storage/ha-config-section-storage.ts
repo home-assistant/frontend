@@ -1,6 +1,7 @@
 import {
   mdiBackupRestore,
   mdiFolder,
+  mdiInformation,
   mdiNas,
   mdiPlayBox,
   mdiReload,
@@ -8,6 +9,7 @@ import {
 import type { PropertyValues, TemplateResult } from "lit";
 import { LitElement, css, html, nothing } from "lit";
 import { customElement, property, state } from "lit/decorators";
+import memoizeOne from "memoize-one";
 import { isComponentLoaded } from "../../../common/config/is_component_loaded";
 import { navigate } from "../../../common/navigate";
 import "../../../components/ha-alert";
@@ -17,11 +19,14 @@ import "../../../components/ha-icon-button";
 import "../../../components/ha-icon-next";
 import "../../../components/ha-list";
 import "../../../components/ha-list-item";
-import "../../../components/ha-metric";
+import "../../../components/ha-segmented-bar";
 import "../../../components/ha-svg-icon";
 import { extractApiErrorMessage } from "../../../data/hassio/common";
-import type { HassioHostInfo } from "../../../data/hassio/host";
-import { fetchHassioHostInfo } from "../../../data/hassio/host";
+import type { HassioHostInfo, HostDisksUsage } from "../../../data/hassio/host";
+import {
+  fetchHassioHostInfo,
+  fetchHostDisksUsage,
+} from "../../../data/hassio/host";
 import type {
   SupervisorMount,
   SupervisorMounts,
@@ -36,13 +41,13 @@ import {
 import { showAlertDialog } from "../../../dialogs/generic/show-dialog-box";
 import "../../../layouts/hass-subpage";
 import type { HomeAssistant, Route } from "../../../types";
-import {
-  getValueInPercentage,
-  roundWithOneDecimal,
-} from "../../../util/calculate";
+import { roundWithOneDecimal } from "../../../util/calculate";
 import "../core/ha-config-analytics";
 import { showMoveDatadiskDialog } from "./show-dialog-move-datadisk";
 import { showMountViewDialog } from "./show-dialog-view-mount";
+import type { Segment } from "../../../components/ha-segmented-bar";
+import { getGraphColorByIndex } from "../../../common/color/colors";
+import { blankBeforePercent } from "../../../common/translations/blank_before_percent";
 
 @customElement("ha-config-section-storage")
 class HaConfigSectionStorage extends LitElement {
@@ -55,6 +60,8 @@ class HaConfigSectionStorage extends LitElement {
   @state() private _error?: { code: string; message: string };
 
   @state() private _hostInfo?: HassioHostInfo;
+
+  @state() private _storageInfo?: HostDisksUsage | null;
 
   @state() private _mountsInfo?: SupervisorMounts | null;
 
@@ -97,41 +104,11 @@ class HaConfigSectionStorage extends LitElement {
                   )}
                 >
                   <div class="card-content">
-                    <ha-metric
-                      .heading=${this.hass.localize(
-                        "ui.panel.config.storage.used_space"
-                      )}
-                      .value=${this._getUsedSpace(
-                        this._hostInfo?.disk_used,
-                        this._hostInfo?.disk_total
-                      )}
-                      .tooltip=${`${this._hostInfo.disk_used} GB/${this._hostInfo.disk_total} GB`}
-                    ></ha-metric>
-                    <div class="detailed-storage-info">
-                      ${this.hass.localize(
-                        "ui.panel.config.storage.detailed_description",
-                        {
-                          used: `${this._hostInfo?.disk_used} GB`,
-                          total: `${this._hostInfo?.disk_total} GB`,
-                          free_space: `${this._hostInfo.disk_free} GB`,
-                        }
-                      )}
-                    </div>
-                    ${this._hostInfo.disk_life_time !== null
-                      ? // prettier-ignore
-                        html`
-                          <ha-metric
-                            .heading=${this.hass.localize(
-                              "ui.panel.config.storage.lifetime_used"
-                            )}
-                            .value=${this._hostInfo.disk_life_time}
-                            .tooltip=${this.hass.localize(
-                              "ui.panel.config.storage.lifetime_used_description"
-                            )}
-                            class="emmc"
-                          ></ha-metric>
-                        `
-                      : ""}
+                    ${this._renderStorageMetrics(
+                      this._hostInfo,
+                      this._storageInfo
+                    )}
+                    ${this._renderDiskLifeTime(this._hostInfo.disk_life_time)}
                   </div>
                   ${this._hostInfo
                     ? html`<div class="card-actions">
@@ -247,7 +224,142 @@ class HaConfigSectionStorage extends LitElement {
     `;
   }
 
+  private _renderDiskLifeTime(diskLifeTime: number | null) {
+    if (diskLifeTime === null) {
+      return nothing;
+    }
+
+    const segments: Segment[] = [
+      {
+        color: "var(--primary-color)",
+        value: diskLifeTime,
+      },
+      {
+        color:
+          "var(--ha-bar-background-color, var(--secondary-background-color))",
+        value: 100 - diskLifeTime,
+      },
+    ];
+
+    return html`
+      <ha-segmented-bar
+        .heading=${this.hass.localize("ui.panel.config.storage.lifetime")}
+        .description=${this.hass.localize(
+          "ui.panel.config.storage.lifetime_description",
+          {
+            lifetime: `${diskLifeTime}${blankBeforePercent(this.hass.locale)}%`,
+          }
+        )}
+        .segments=${segments}
+        hide-legend
+        hide-tooltip
+      >
+        <ha-tooltip slot="extra">
+          <ha-icon-button
+            .path=${mdiInformation}
+            class="help-button"
+          ></ha-icon-button>
+          <p class="metric-description" slot="content">
+            ${this.hass.localize(
+              "ui.panel.config.storage.lifetime_used_description"
+            )}
+          </p>
+        </ha-tooltip>
+      </ha-segmented-bar>
+    `;
+  }
+
+  private _renderStorageMetrics = memoizeOne(
+    (hostInfo?: HassioHostInfo, storageInfo?: HostDisksUsage | null) => {
+      if (!hostInfo) {
+        return nothing;
+      }
+      const computedStyles = getComputedStyle(this);
+      let totalSpaceGB = hostInfo.disk_total;
+      let usedSpaceGB = hostInfo.disk_used;
+      // hostInfo.disk_free is sometimes 0, so we may need to calculate it
+      let freeSpaceGB =
+        hostInfo.disk_free || hostInfo.disk_total - hostInfo.disk_used;
+      const segments: Segment[] = [];
+      if (storageInfo) {
+        const totalSpace =
+          storageInfo.total_bytes ?? this._gbToBytes(hostInfo.disk_total);
+        totalSpaceGB = this._bytesToGB(totalSpace);
+        usedSpaceGB = this._bytesToGB(storageInfo.used_bytes);
+        freeSpaceGB = this._bytesToGB(totalSpace - storageInfo.used_bytes);
+        storageInfo.children?.forEach((child, index) => {
+          if (child.used_bytes > 0) {
+            const space = this._bytesToGB(child.used_bytes);
+            segments.push({
+              value: space,
+              color: getGraphColorByIndex(index, computedStyles),
+              label: html`${this.hass.localize(
+                  `ui.panel.config.storage.segments.${child.id}`
+                ) ||
+                child.label ||
+                child.id}
+                <span style="color: var(--secondary-text-color)"
+                  >${roundWithOneDecimal(space)} GB</span
+                >`,
+            });
+          }
+        });
+      } else {
+        segments.push({
+          value: usedSpaceGB,
+          color: "var(--primary-color)",
+          label: html`${this.hass.localize(
+              "ui.panel.config.storage.segments.used"
+            )}
+            <span style="color: var(--secondary-text-color)"
+              >${roundWithOneDecimal(usedSpaceGB)} GB</span
+            >`,
+        });
+      }
+      segments.push({
+        value: freeSpaceGB,
+        color:
+          "var(--ha-bar-background-color, var(--secondary-background-color))",
+        label: html`${this.hass.localize(
+            "ui.panel.config.storage.segments.free"
+          )}
+          <span style="color: var(--secondary-text-color)"
+            >${roundWithOneDecimal(freeSpaceGB)} GB</span
+          >`,
+      });
+      return html`<ha-segmented-bar
+          .heading=${this.hass.localize("ui.panel.config.storage.used_space")}
+          .description=${this.hass.localize(
+            "ui.panel.config.storage.detailed_description",
+            {
+              used: `${roundWithOneDecimal(usedSpaceGB)} GB`,
+              total: `${roundWithOneDecimal(totalSpaceGB)} GB`,
+            }
+          )}
+          .segments=${segments}
+        ></ha-segmented-bar>
+
+        ${!storageInfo || storageInfo === null
+          ? html`<ha-alert alert-type="info">
+              <ha-spinner slot="icon"></ha-spinner>
+              ${this.hass.localize(
+                "ui.panel.config.storage.loading_detailed"
+              )}</ha-alert
+            >`
+          : nothing}`;
+    }
+  );
+
+  private _bytesToGB(bytes: number) {
+    return bytes / 1024 / 1024 / 1024;
+  }
+
+  private _gbToBytes(GB: number) {
+    return GB * 1024 * 1024 * 1024;
+  }
+
   private async _load() {
+    this._loadStorageInfo();
     try {
       this._hostInfo = await fetchHassioHostInfo(this.hass);
     } catch (err: any) {
@@ -257,6 +369,15 @@ class HaConfigSectionStorage extends LitElement {
       await this._reloadMounts();
     } else {
       this._mountsInfo = null;
+    }
+  }
+
+  private async _loadStorageInfo() {
+    try {
+      this._storageInfo = await fetchHostDisksUsage(this.hass);
+    } catch (err: any) {
+      this._error = err.message || err;
+      this._storageInfo = null;
     }
   }
 
@@ -311,9 +432,6 @@ class HaConfigSectionStorage extends LitElement {
     }
   }
 
-  private _getUsedSpace = (used: number, total: number) =>
-    roundWithOneDecimal(getValueInPercentage(used, 0, total));
-
   static styles = css`
     .content {
       padding: 28px 20px 0;
@@ -337,10 +455,22 @@ class HaConfigSectionStorage extends LitElement {
       flex-direction: column;
     }
 
-    .detailed-storage-info {
-      font-size: var(--ha-font-size-s);
-      color: var(--secondary-text-color);
+    .loading-container {
+      position: relative;
     }
+
+    .loading-overlay {
+      position: absolute;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      background-color: rgba(var(--rgb-card-background-color), 0.75);
+      display: flex;
+      justify-content: center;
+      align-items: center;
+    }
+
     .mount-state-failed {
       color: var(--error-color);
     }
@@ -359,6 +489,12 @@ class HaConfigSectionStorage extends LitElement {
       right: 10px;
       inset-inline-end: 10px;
       inset-inline-start: initial;
+    }
+
+    .help-button {
+      --mdc-icon-button-size: 20px;
+      --mdc-icon-size: 20px;
+      color: var(--secondary-text-color);
     }
 
     .no-mounts {
@@ -382,6 +518,10 @@ class HaConfigSectionStorage extends LitElement {
     ha-svg-icon,
     ha-icon-next {
       width: 24px;
+    }
+
+    ha-alert ha-spinner {
+      --ha-spinner-size: 24px;
     }
   `;
 }

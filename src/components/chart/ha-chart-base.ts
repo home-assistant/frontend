@@ -39,6 +39,7 @@ export type CustomLegendOption = ECOption["legend"] & {
   type: "custom";
   data?: {
     id?: string;
+    secondaryIds?: string[]; // Other dataset IDs that should be controlled by this legend item.
     name: string;
     itemStyle?: Record<string, any>;
   }[];
@@ -181,6 +182,10 @@ export class HaChartBase extends LitElement {
       return;
     }
     let chartOptions: ECOption = {};
+    if (changedProps.has("options")) {
+      // Separate 'if' from below since this must updated before _getSeries()
+      this._updateHiddenStatsFromOptions(this.options);
+    }
     if (changedProps.has("data") || changedProps.has("_hiddenDatasets")) {
       chartOptions.series = this._getSeries();
     }
@@ -387,24 +392,25 @@ export class HaChartBase extends LitElement {
           lastTipX = e.x;
           lastTipY = e.y;
           this.chart?.setOption({
-            xAxis: ensureArray(this.chart?.getOption().xAxis as any).map(
-              (axis: XAXisOption) =>
-                axis.show
-                  ? {
-                      ...axis,
-                      axisPointer: {
-                        ...axis.axisPointer,
-                        status: "show",
-                        handle: {
-                          color: style.getPropertyValue("primary-color"),
-                          margin: 0,
-                          size: 20,
-                          ...axis.axisPointer?.handle,
-                          show: true,
-                        },
+            xAxis: ensureArray(
+              (this.chart?.getOption().xAxis as any) ?? []
+            ).map((axis: XAXisOption) =>
+              axis.show
+                ? {
+                    ...axis,
+                    axisPointer: {
+                      ...axis.axisPointer,
+                      status: "show",
+                      handle: {
+                        color: style.getPropertyValue("--primary-color"),
+                        margin: 0,
+                        size: 20,
+                        ...axis.axisPointer?.handle,
+                        show: true,
                       },
-                    }
-                  : axis
+                    },
+                  }
+                : axis
             ),
           });
         });
@@ -417,21 +423,22 @@ export class HaChartBase extends LitElement {
               return;
             }
             this.chart?.setOption({
-              xAxis: ensureArray(this.chart?.getOption().xAxis as any).map(
-                (axis: XAXisOption) =>
-                  axis.show
-                    ? {
-                        ...axis,
-                        axisPointer: {
-                          ...axis.axisPointer,
-                          handle: {
-                            ...axis.axisPointer?.handle,
-                            show: false,
-                          },
-                          status: "hide",
+              xAxis: ensureArray(
+                (this.chart?.getOption().xAxis as any) ?? []
+              ).map((axis: XAXisOption) =>
+                axis.show
+                  ? {
+                      ...axis,
+                      axisPointer: {
+                        ...axis.axisPointer,
+                        handle: {
+                          ...axis.axisPointer?.handle,
+                          show: false,
                         },
-                      }
-                    : axis
+                        status: "hide",
+                      },
+                    }
+                  : axis
               ),
             });
             this.chart?.dispatchAction({
@@ -449,14 +456,7 @@ export class HaChartBase extends LitElement {
         });
       }
 
-      const legend = ensureArray(this.options?.legend || [])[0] as
-        | LegendComponentOption
-        | undefined;
-      Object.entries(legend?.selected || {}).forEach(([stat, selected]) => {
-        if (selected === false) {
-          this._hiddenDatasets.add(stat);
-        }
-      });
+      this._updateHiddenStatsFromOptions(this.options);
 
       this.chart.setOption({
         ...this._createOptions(),
@@ -465,6 +465,42 @@ export class HaChartBase extends LitElement {
     } finally {
       this._loading = false;
     }
+  }
+
+  // Return an array of all IDs associated with the legend item of the primaryId
+  private _getAllIdsFromLegend(
+    options: ECOption | undefined,
+    primaryId: string
+  ): string[] {
+    if (!options) return [primaryId];
+    const legend = ensureArray(this.options?.legend || [])[0] as
+      | LegendComponentOption
+      | undefined;
+
+    let customLegendItem;
+    if (legend?.type === "custom") {
+      customLegendItem = (legend as CustomLegendOption).data?.find(
+        (li) => typeof li === "object" && li.id === primaryId
+      );
+    }
+
+    return [primaryId, ...(customLegendItem?.secondaryIds || [])];
+  }
+
+  // Parses the options structure and adds all ids of unselected legend items to hiddenDatasets.
+  // No known need to remove items at this time.
+  private _updateHiddenStatsFromOptions(options: ECOption | undefined) {
+    if (!options) return;
+    const legend = ensureArray(this.options?.legend || [])[0] as
+      | LegendComponentOption
+      | undefined;
+    Object.entries(legend?.selected || {}).forEach(([stat, selected]) => {
+      if (selected === false) {
+        this._getAllIdsFromLegend(options, stat).forEach((id) =>
+          this._hiddenDatasets.add(id)
+        );
+      }
+    });
   }
 
   private _getDataZoomConfig(): DataZoomComponentOption | undefined {
@@ -592,6 +628,13 @@ export class HaChartBase extends LitElement {
       },
       bar: { itemStyle: { barBorderWidth: 1.5 } },
       graph: {
+        label: {
+          color: style.getPropertyValue("--primary-text-color"),
+          textBorderColor: style.getPropertyValue("--primary-background-color"),
+          textBorderWidth: 2,
+        },
+      },
+      sankey: {
         label: {
           color: style.getPropertyValue("--primary-text-color"),
           textBorderColor: style.getPropertyValue("--primary-background-color"),
@@ -835,10 +878,14 @@ export class HaChartBase extends LitElement {
     }
     const id = ev.currentTarget?.id;
     if (this._hiddenDatasets.has(id)) {
-      this._hiddenDatasets.delete(id);
+      this._getAllIdsFromLegend(this.options, id).forEach((i) =>
+        this._hiddenDatasets.delete(i)
+      );
       fireEvent(this, "dataset-unhidden", { id });
     } else {
-      this._hiddenDatasets.add(id);
+      this._getAllIdsFromLegend(this.options, id).forEach((i) =>
+        this._hiddenDatasets.add(i)
+      );
       fireEvent(this, "dataset-hidden", { id });
     }
     this.requestUpdate("_hiddenDatasets");
