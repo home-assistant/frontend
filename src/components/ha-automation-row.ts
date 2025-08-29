@@ -103,7 +103,9 @@ export class HaAutomationRow extends LitElement {
   }
 
   public focus() {
-    requestAnimationFrame(() => this._rowElement?.focus());
+    requestAnimationFrame(() => {
+      this._rowElement?.focus();
+    });
   }
 
   static styles = css`

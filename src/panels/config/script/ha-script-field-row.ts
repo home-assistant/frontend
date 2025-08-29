@@ -1,17 +1,12 @@
-import { mdiDelete } from "@mdi/js";
 import type { CSSResultGroup } from "lit";
 import { LitElement, css, html, nothing } from "lit";
 import { customElement, property, query, state } from "lit/decorators";
 import { classMap } from "lit/directives/class-map";
 import { fireEvent } from "../../../common/dom/fire_event";
-import { preventDefaultStopPropagation } from "../../../common/dom/prevent_default_stop_propagation";
-import { stopPropagation } from "../../../common/dom/stop_propagation";
 import type { LocalizeKeys } from "../../../common/translations/localize";
 import "../../../components/ha-automation-row";
+import type { HaAutomationRow } from "../../../components/ha-automation-row";
 import "../../../components/ha-card";
-import "../../../components/ha-icon-button";
-import "../../../components/ha-md-button-menu";
-import "../../../components/ha-md-menu-item";
 import type { ScriptFieldSidebarConfig } from "../../../data/automation";
 import type { Field } from "../../../data/script";
 import { SELECTOR_SELECTOR_BUILDING_BLOCKS } from "../../../data/selector/selector_selector";
@@ -50,6 +45,12 @@ export default class HaScriptFieldRow extends LitElement {
   @query("ha-script-field-selector-editor")
   private _selectorEditor?: HaScriptFieldSelectorEditor;
 
+  @query("ha-automation-row:first-of-type")
+  private _fieldRowElement?: HaAutomationRow;
+
+  @query(".selector-row ha-automation-row")
+  private _selectorRowElement?: HaAutomationRow;
+
   protected render() {
     return html`
       <ha-card outlined>
@@ -64,29 +65,6 @@ export default class HaScriptFieldRow extends LitElement {
           <h3 slot="header">${this.key}</h3>
 
           <slot name="icons" slot="icons"></slot>
-
-          <ha-md-button-menu
-            quick
-            slot="icons"
-            @click=${preventDefaultStopPropagation}
-            @keydown=${stopPropagation}
-            @closed=${stopPropagation}
-            positioning="fixed"
-            anchor-corner="end-end"
-            menu-corner="start-end"
-          >
-            <ha-md-menu-item
-              slot="menu-items"
-              .clickAction=${this._onDelete}
-              .disabled=${this.disabled}
-              class="warning"
-            >
-              ${this.hass.localize(
-                "ui.panel.config.automation.editor.actions.delete"
-              )}
-              <ha-svg-icon slot="start" .path=${mdiDelete}></ha-svg-icon>
-            </ha-md-menu-item>
-          </ha-md-button-menu>
         </ha-automation-row>
       </ha-card>
       <div
@@ -224,11 +202,17 @@ export default class HaScriptFieldRow extends LitElement {
       save: (value) => {
         fireEvent(this, "value-changed", { value });
       },
-      close: () => {
+      close: (focus?: boolean) => {
         if (selectorEditor) {
           this._selectorRowSelected = false;
+          if (focus) {
+            this.focusSelector();
+          }
         } else {
           this._selected = false;
+          if (focus) {
+            this.focus();
+          }
         }
         fireEvent(this, "close-sidebar");
       },
@@ -280,15 +264,19 @@ export default class HaScriptFieldRow extends LitElement {
     });
   };
 
+  public focus() {
+    this._fieldRowElement?.focus();
+  }
+
+  public focusSelector() {
+    this._selectorRowElement?.focus();
+  }
+
   static get styles(): CSSResultGroup {
     return [
       haStyle,
       indentStyle,
       css`
-        ha-button-menu,
-        ha-icon-button {
-          --mdc-theme-text-primary-on-background: var(--primary-text-color);
-        }
         .disabled {
           opacity: 0.5;
           pointer-events: none;
@@ -334,9 +322,6 @@ export default class HaScriptFieldRow extends LitElement {
           );
         }
 
-        ha-md-menu-item[disabled] {
-          --mdc-theme-text-primary-on-background: var(--disabled-text-color);
-        }
         .warning ul {
           margin: 4px 0;
         }
@@ -351,6 +336,10 @@ export default class HaScriptFieldRow extends LitElement {
           --shadow-focus: 0 0 0 1px var(--state-inactive-color);
           border-color: var(--state-inactive-color);
           box-shadow: var(--shadow-default), var(--shadow-focus);
+        }
+
+        .selector-row {
+          padding: 12px 0 16px 16px;
         }
       `,
     ];
