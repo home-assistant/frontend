@@ -6,15 +6,14 @@ import type { HomeAssistant } from "../../../types";
 import { moreInfoControlStyle } from "../components/more-info-control-style";
 import "../../../components/ha-icon-button";
 import "../components/ha-more-info-state-header";
-
-import type { InputNumberEntity } from "../../../data/input_number";
+import type { HassEntity } from "home-assistant-js-websocket";
 
 @customElement("more-info-input_number")
 
 class MoreInfoInputNumber extends LitElement {
   @property({ attribute: false }) public hass!: HomeAssistant;
   
-  @property({ attribute: false }) public stateObj?: InputNumberEntity;
+  @property({ attribute: false }) public stateObj?: HassEntity;
 
   @state() private _currentValue?: number;
 
@@ -111,7 +110,7 @@ class MoreInfoInputNumber extends LitElement {
                 <ha-icon-button
                   class="increment"
                   .label=${this.hass.localize(
-                    "ui.dialogs.more_info_control.input_number.increment",
+                    "ui.card.counter.timer.actions.increment",
                   )}
                   @click=${this._increment}
                 >
@@ -129,7 +128,7 @@ class MoreInfoInputNumber extends LitElement {
                 <ha-icon-button
                   class="decrement"
                   .label=${this.hass.localize(
-                    "ui.dialogs.more_info_control.input_number.decrement",
+                    "ui.card.counter.timer.actions.decrement",
                   )}
                   @click=${this._decrement}
                 >
