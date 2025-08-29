@@ -66,7 +66,7 @@ export class HomeMainViewStrategy extends ReactiveElement {
         {
           type: "heading",
           heading_style: "title",
-          heading: "Areas",
+          heading: hass.localize("ui.panel.lovelace.strategy.home.areas"),
         },
         ...areas.map<AreaCardConfig>((area) =>
           computeAreaCard(area.area_id, hass)
@@ -111,7 +111,7 @@ export class HomeMainViewStrategy extends ReactiveElement {
       cards: [
         {
           type: "heading",
-          heading: "Summaries",
+          heading: hass.localize("ui.panel.lovelace.strategy.home.summaries"),
         },
         {
           type: "button",
@@ -235,7 +235,7 @@ export class HomeMainViewStrategy extends ReactiveElement {
         card: {
           type: "markdown",
           text_only: true,
-          content: "## Welcome {{user}}",
+          content: `## ${hass.localize("ui.panel.lovelace.strategy.home.welcome_user", { user: "{{ user }}" })}`,
         } satisfies MarkdownCardConfig,
       },
     };

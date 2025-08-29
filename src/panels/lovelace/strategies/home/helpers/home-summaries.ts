@@ -93,4 +93,4 @@ export const findEntities = (
 };
 
 export const getSummaryLabel = (hass: HomeAssistant, summary: HomeSummary) =>
-  hass.localize(`ui.panel.lovelace.strategy.home.summaries.${summary}`);
+  hass.localize(`ui.panel.lovelace.strategy.home.summary_list.${summary}`);

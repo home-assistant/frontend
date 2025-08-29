@@ -6819,12 +6819,14 @@
             "areas": "Areas"
           },
           "home": {
-            "summaries": {
+            "summary_list": {
               "climate": "Climate",
               "lights": "Lights",
               "security": "Security",
               "media_players": "Media players"
             },
+            "welcome_user": "Welcome {user}",
+            "summaries": "Summaries",
             "areas": "Areas",
             "other_areas": "Other areas",
             "unamed_device": "Unnamed device",
