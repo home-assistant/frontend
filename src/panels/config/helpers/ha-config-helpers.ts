@@ -110,6 +110,7 @@ import { renderConfigEntryError } from "../integrations/ha-config-integration-pa
 import { showLabelDetailDialog } from "../labels/show-dialog-label-detail";
 import { isHelperDomain } from "./const";
 import { showHelperDetailDialog } from "./show-dialog-helper-detail";
+import { slugify } from "../../../common/string/slugify";
 
 interface HelperItem {
   id: string;
