@@ -7,7 +7,10 @@ import "../../../components/ha-control-button-group";
 import type { HomeAssistant } from "../../../types";
 import type { LovelaceCardFeature, LovelaceCardFeatureEditor } from "../types";
 import { cardFeatureStyles } from "./common/card-feature-styles";
-import { handleAction } from "../../../common/dom/handle-action";
+import { handleAction } from "../../../common/dom/handle-action.js";
+import { actionHandler } from "../../../common/util/action-handler.js";
+import type { ActionHandlerEvent } from "../../../data/lovelace";
+
 import type {
   ButtonCardFeatureConfig,
   LovelaceCardFeatureContext,
@@ -39,30 +42,26 @@ class HuiButtonCardFeature extends LitElement implements LovelaceCardFeature {
     }
     return this.hass.states[this.context.entity_id!] as HassEntity | undefined;
   }
-
-  private _pressButton() {
-    if (!this.hass) return;
-
-    if (this._config?.action) {
-      const { action, target, data } = this._config.action;
-      if (action) {
-        const [domain, service] = action.split(".", 2);
-        this.hass.callService(domain, service, {
-          ...(target ?? {}),
-          ...(data ?? {}),
-        });
-        return;
-      }
+    
+  
+  private _handleAction(ev: ActionHandlerEvent) {
+    if (!this.hass || !this.context || !this._config) return;
+  
+    if (this._config.action) {
+      // Custom action defined in feature
+      handleAction(this, this.hass, this._config, ev.detail.action);
+      return;
     }
-
-    if (!this._stateObj) return;
-
-    const domain = computeDomain(this._stateObj.entity_id);
+  
+    const stateObj = this._stateObj;
+    if (!stateObj) return;
+  
+    const domain = computeDomain(stateObj.entity_id);
     const service =
       domain === "button" || domain === "input_button" ? "press" : "turn_on";
-
+  
     this.hass.callService(domain, service, {
-      entity_id: this._stateObj.entity_id,
+      entity_id: stateObj.entity_id,
     });
   }
 
@@ -95,7 +94,8 @@ class HuiButtonCardFeature extends LitElement implements LovelaceCardFeature {
         <ha-control-button
           .disabled=${this._stateObj.state === "unavailable"}
           class="press-button"
-          @click=${this._pressButton}
+          @action=${this._handleAction}
+          .actionHandler=${actionHandler()}
         >
           ${this._config.action_name ??
           this.hass.localize("ui.card.button.press")}
