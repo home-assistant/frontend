@@ -5118,7 +5118,7 @@
             "integration": "Integration",
             "config_entry": "Config entry"
           },
-          "enabled_description": "Disabled devices and services will not be shown and entities belonging to them will be disabled and not added to Home Assistant.",
+          "enabled_description": "Disabled devices and services will not be shown and entities belonging to them will be disabled, too.",
           "open_configuration_url": "Visit",
           "set_up_voice_assistant": "Set up voice assistant",
           "download_diagnostics": "Download diagnostics",
