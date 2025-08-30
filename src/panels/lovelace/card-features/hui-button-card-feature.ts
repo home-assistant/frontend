@@ -10,7 +10,6 @@ import { cardFeatureStyles } from "./common/card-feature-styles";
 import { actionHandler } from "../common/directives/action-handler-directive";
 import { hasAction } from "../common/has-action";
 import { handleAction } from "../common/handle-action";
-import type { ActionHandlerEvent } from "../common/directives/action-handler-directive";
 
 import type {
   ButtonCardFeatureConfig,
@@ -44,11 +43,13 @@ class HuiButtonCardFeature extends LitElement implements LovelaceCardFeature {
     return this.hass.states[this.context.entity_id!] as HassEntity | undefined;
   }
 
-  private _handleAction(ev: ActionHandlerEvent) {
-    if (!this.hass || !this.context || !this._config) return;
+  private _handleAction(ev: Event) {
+    const detail = (ev as CustomEvent).detail;
+    const action = detail?.action;
+    if (!this.hass || !this.context || !this._config || !action) return;
 
     if (this._config.button_action) {
-      handleAction(this, this.hass, this._config, ev.detail.action!);
+      handleAction(this, this.hass, this._config, action);
       return;
     }
 
@@ -93,8 +94,8 @@ class HuiButtonCardFeature extends LitElement implements LovelaceCardFeature {
           class="press-button"
           @action=${this._handleAction}
           .actionHandler=${actionHandler({
-            hasHold: hasAction(this._config.perform_action),
-            hasDoubleClick: hasAction(this._config.perform_action),
+            hasHold: hasAction(this._config.button_action),
+            hasDoubleClick: hasAction(this._config.button_action),
           })}
         >
           ${this._config.action_name ??
