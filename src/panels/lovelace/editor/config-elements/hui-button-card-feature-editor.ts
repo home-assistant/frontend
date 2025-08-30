@@ -29,9 +29,9 @@ export class HuiButtonCardFeatureEditor
       },
     },
     {
-      name: "data",
+      name: "perform_data",
       selector: {
-        object: {},
+        ui_action: {},
       },
     },
   ]);
