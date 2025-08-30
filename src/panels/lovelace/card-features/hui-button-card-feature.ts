@@ -7,10 +7,10 @@ import "../../../components/ha-control-button-group";
 import type { HomeAssistant } from "../../../types";
 import type { LovelaceCardFeature, LovelaceCardFeatureEditor } from "../types";
 import { cardFeatureStyles } from "./common/card-feature-styles";
-import { handleAction } from "../../../common/dom/handle-action";
+import { handleAction } from "../../../common/handle-action";
 import { actionHandler } from "../../../common/util/action-handler";
+import { hasAction } from "../../../common/has-action";
 import type { ActionHandlerEvent } from "../../../data/lovelace";
-
 import type {
   ButtonCardFeatureConfig,
   LovelaceCardFeatureContext,
@@ -42,26 +42,23 @@ class HuiButtonCardFeature extends LitElement implements LovelaceCardFeature {
     }
     return this.hass.states[this.context.entity_id!] as HassEntity | undefined;
   }
-    
-  
+
   private _handleAction(ev: ActionHandlerEvent) {
     if (!this.hass || !this.context || !this._config) return;
-  
+
     if (this._config.perform_action) {
-      handleAction(this, this.hass, this._config, ev.detail.action);
+      handleAction(this, this.hass, this._config, ev.detail.action!);
       return;
     }
-  
+
     const stateObj = this._stateObj;
     if (!stateObj) return;
-  
+
     const domain = computeDomain(stateObj.entity_id);
     const service =
       domain === "button" || domain === "input_button" ? "press" : "turn_on";
-  
-    this.hass.callService(domain, service, {
-      entity_id: stateObj.entity_id,
-    });
+
+    this.hass.callService(domain, service, { entity_id: stateObj.entity_id });
   }
 
   static getStubConfig(): ButtonCardFeatureConfig {
@@ -94,7 +91,10 @@ class HuiButtonCardFeature extends LitElement implements LovelaceCardFeature {
           .disabled=${this._stateObj.state === "unavailable"}
           class="press-button"
           @action=${this._handleAction}
-          .actionHandler=${actionHandler()}
+          .actionHandler=${actionHandler({
+            hasHold: hasAction(this._config.perform_action),
+            hasDoubleClick: hasAction(this._config.perform_action),
+          })}
         >
           ${this._config.action_name ??
           this.hass.localize("ui.card.button.press")}
