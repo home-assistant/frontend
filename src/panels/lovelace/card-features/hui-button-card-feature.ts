@@ -18,7 +18,7 @@ import type {
 
 export const supportsButtonCardFeature = (
   hass: HomeAssistant,
-  context: LovelaceCardFeatureContext
+  context: LovelaceCardFeatureContext,
 ) => {
   const stateObj = context.entity_id
     ? hass.states[context.entity_id]
@@ -37,41 +37,36 @@ class HuiButtonCardFeature extends LitElement implements LovelaceCardFeature {
   @state() private _config?: ButtonCardFeatureConfig;
 
   private get _stateObj() {
-    if (!this.hass || !this.context || !this.context.entity_id) {
+    if (!this.hass || !this.context || !this.context.entity_id)
       return undefined;
-    }
     return this.hass.states[this.context.entity_id!] as HassEntity | undefined;
   }
 
   private _handleAction(ev: ActionHandlerEvent) {
-    if (!this.hass || !this.context || !this._config) return;
-
-    if (this._config.button_action) {
-      handleAction(this, this.hass!, this._config.button_action, ev.detail.action!);
-      return;
-    }
-
-    const stateObj = this._stateObj;
-    if (!stateObj) return;
-
-    const domain = computeDomain(stateObj.entity_id);
-    const service =
-      domain === "button" || domain === "input_button" ? "press" : "turn_on";
-
-    this.hass.callService(domain, service, { entity_id: stateObj.entity_id });
+    if (!this.hass || !this._config) return;
+    handleAction(
+      this,
+      this.hass!,
+      this._config.button_action!,
+      ev.detail.action,
+    );
   }
 
   static getStubConfig(): ButtonCardFeatureConfig {
-    return {
-      type: "button",
-    };
+    return { type: "button" };
   }
 
   public setConfig(config: ButtonCardFeatureConfig): void {
-    if (!config) {
-      throw new Error("Invalid configuration");
-    }
-    this._config = config;
+    if (!config) throw new Error("Invalid configuration");
+
+    const stateObj = this.hass?.states[config.entity_id!];
+    const domain = stateObj ? computeDomain(stateObj.entity_id) : "button";
+
+    const defaultAction = ["button", "input_button"].includes(domain)
+      ? { action: "call-service", perform_action: "press" }
+      : { action: "call-service", perform_action: "turn_on" };
+
+    this._config = { button_action: defaultAction, ...config };
   }
 
   protected render() {
