@@ -33,11 +33,26 @@ interface SectionNode {
   size: number;
 }
 
-function isPassThroughNode(node: Node): node is PassThroughNode {
+export function isPassThroughNode(node: Node): node is PassThroughNode {
   return "passThrough" in node;
 }
 
 const MIN_SIZE = 1;
+
+interface CoordinateSystem {
+  breadth: "x" | "y";
+  depth: "x" | "y";
+  breadthSize: "dx" | "dy";
+  depthSize: "dx" | "dy";
+}
+
+export function getCoordinateSystem(
+  orient: "vertical" | "horizontal"
+): CoordinateSystem {
+  return orient === "vertical"
+    ? { breadth: "x", depth: "y", breadthSize: "dx", depthSize: "dy" }
+    : { breadth: "y", depth: "x", breadthSize: "dy", depthSize: "dx" };
+}
 
 export default function sankeyLayout(ecModel: GlobalModel, _api: ExtensionAPI) {
   ecModel.eachSeriesByType("sankey", (seriesModel: SankeySeriesModel) => {
@@ -99,42 +114,200 @@ function layoutSankey(
   applyLayout(processedNodes, nodeWidth, orient);
 }
 
+export function getNodeDepthInfo(
+  node: GraphNode,
+  depths: number[]
+): { depth: number; depthIndex: number } {
+  const nodeItem = node.hostGraph.data.getRawDataItem(
+    node.dataIndex
+  ) as SankeyNodeItemOption;
+  const depth = nodeItem.depth || 0;
+  const depthIndex = depths.findIndex((i) => i === depth);
+  return { depth, depthIndex };
+}
+
+export function getEdgeValue(edge: GraphEdge): number {
+  const edgeItem = edge.hostGraph.edgeData.getRawDataItem(
+    edge.dataIndex
+  ) as SankeyEdgeItemOption;
+  return edgeItem.value as number;
+}
+
+export function getPassThroughSections(
+  sourceDepthIndex: number,
+  targetDepthIndex: number,
+  depths: number[]
+): number[] {
+  return depths.slice(sourceDepthIndex + 1, targetDepthIndex);
+}
+
+export function createPassThroughNode(
+  sourceId: string,
+  targetId: string,
+  depth: number,
+  value: number
+): PassThroughNode {
+  return {
+    passThrough: true,
+    id: `${sourceId}-${targetId}-${depth}`,
+    value,
+    depth,
+  };
+}
+
+function processEdgeForPassThrough(
+  edge: GraphEdge,
+  depths: number[],
+  passThroughNodes: PassThroughNode[]
+): string[] {
+  if (edge.getLayout().value === 0) {
+    return [];
+  }
+
+  const sourceInfo = getNodeDepthInfo(edge.node1, depths);
+  const targetInfo = getNodeDepthInfo(edge.node2, depths);
+  const edgeValue = getEdgeValue(edge);
+
+  const passThroughSections = getPassThroughSections(
+    sourceInfo.depthIndex,
+    targetInfo.depthIndex,
+    depths
+  );
+
+  const sourceNode = edge.node1.hostGraph.data.getRawDataItem(
+    edge.node1.dataIndex
+  ) as SankeyNodeItemOption;
+  const targetNode = edge.node2.hostGraph.data.getRawDataItem(
+    edge.node2.dataIndex
+  ) as SankeyNodeItemOption;
+
+  const passThroughNodeIds = passThroughSections.map((depth) => {
+    const node = createPassThroughNode(
+      sourceNode.id as string,
+      targetNode.id as string,
+      depth,
+      edgeValue
+    );
+    passThroughNodes.push(node);
+    return node.id;
+  });
+
+  return passThroughNodeIds;
+}
+
 function generatePassThroughNodes(depths: number[], edges: GraphEdge[]) {
   const passThroughNodes: PassThroughNode[] = [];
 
   edges.forEach((edge) => {
-    if (edge.getLayout().value === 0) {
-      return;
-    }
-    const sourceNode = edge.node1.hostGraph.data.getRawDataItem(
-      edge.node1.dataIndex
-    ) as SankeyNodeItemOption;
-    const targetNode = edge.node2.hostGraph.data.getRawDataItem(
-      edge.node2.dataIndex
-    ) as SankeyNodeItemOption;
-    // handle links across sections
-    const sourceIndex = depths.findIndex((i) => i === sourceNode.depth);
-    const targetIndex = depths.findIndex((i) => i === targetNode.depth);
-    const edgeItem = edge.hostGraph.edgeData.getRawDataItem(
-      edge.dataIndex
-    ) as SankeyEdgeItemOption;
-    const passThroughSections = depths.slice(sourceIndex + 1, targetIndex);
-    // create pass-through nodes to reserve space
-    const passThroughNodeIds = passThroughSections.map((depth) => {
-      const node: PassThroughNode = {
-        passThrough: true,
-        id: `${sourceNode.id}-${targetNode.id}-${depth}`,
-        value: edgeItem.value as number,
-        depth,
-      };
-      passThroughNodes.push(node);
-      return node.id;
-    });
+    const passThroughNodeIds = processEdgeForPassThrough(
+      edge,
+      depths,
+      passThroughNodes
+    );
     const link = edge as GraphLink;
     link.passThroughNodeIds = passThroughNodeIds;
   });
 
   return passThroughNodes;
+}
+
+export function groupNodesBySection(
+  nodes: GraphNode[],
+  passThroughNodes: PassThroughNode[]
+): Record<number, Node[]> {
+  const nodesPerSection: Record<number, Node[]> = {};
+
+  nodes.forEach((node) => {
+    const depth = node.getLayout().depth;
+    if (!nodesPerSection[depth]) {
+      nodesPerSection[depth] = [node];
+    } else {
+      nodesPerSection[depth].push(node);
+    }
+  });
+
+  passThroughNodes.forEach((node) => {
+    if (!nodesPerSection[node.depth]) {
+      nodesPerSection[node.depth] = [node];
+    } else {
+      nodesPerSection[node.depth].push(node);
+    }
+  });
+
+  return nodesPerSection;
+}
+
+export function createSectionNodes(nodes: Node[]): SectionNode[] {
+  return nodes.map(
+    (node: Node): SectionNode => ({
+      node,
+      id: node.id,
+      value: isPassThroughNode(node) ? node.value : node.getLayout().value,
+      x: 0,
+      y: 0,
+      dx: 0,
+      dy: 0,
+      size: 0,
+    })
+  );
+}
+
+export function calculateSectionDimensions(
+  orient: "vertical" | "horizontal",
+  width: number,
+  height: number,
+  depths: number[],
+  nodeGap: number
+) {
+  const sectionSize = (orient === "vertical" ? width : height) - nodeGap * 2;
+  const sectionDepthSize =
+    orient === "vertical" ? height / depths.length : width / depths.length;
+
+  return { sectionSize, sectionDepthSize };
+}
+
+function positionNodesInSection(
+  section: {
+    nodes: SectionNode[];
+    depth: number;
+    totalValue: number;
+    valueToSizeRatio: number;
+  },
+  index: number,
+  sectionSize: number,
+  sectionDepthSize: number,
+  _nodeGap: number,
+  globalValueToSizeRatio: number,
+  orient: "vertical" | "horizontal"
+) {
+  let totalSize = 0;
+
+  if (section.valueToSizeRatio !== globalValueToSizeRatio) {
+    section.nodes.forEach((node) => {
+      const size = Math.max(
+        MIN_SIZE,
+        Math.floor(node.value / globalValueToSizeRatio)
+      );
+      totalSize += size;
+      node.size = size;
+    });
+  } else {
+    totalSize = section.nodes.reduce((sum, node) => sum + node.size, 0);
+  }
+
+  const emptySpace = sectionSize - totalSize;
+  let offset = emptySpace / (section.nodes.length + 1);
+
+  section.nodes.forEach((node) => {
+    if (orient === "vertical") {
+      node.x = offset;
+      node.y = index * sectionDepthSize;
+    } else {
+      node.x = index * sectionDepthSize;
+      node.y = offset;
+    }
+    offset += node.size + emptySpace / (section.nodes.length + 1);
+  });
 }
 
 function processNodes(
@@ -146,109 +319,75 @@ function processNodes(
   orient: "vertical" | "horizontal",
   nodeGap: number
 ) {
-  const sectionSize = (orient === "vertical" ? width : height) - nodeGap * 2;
-  const sectionFlexSize =
-    orient === "vertical" ? height / depths.length : width / depths.length;
+  const { sectionSize, sectionDepthSize } = calculateSectionDimensions(
+    orient,
+    width,
+    height,
+    depths,
+    nodeGap
+  );
 
-  const nodesPerSection: Record<number, Node[]> = {};
-  nodes.forEach((node) => {
-    if (!nodesPerSection[node.getLayout().depth]) {
-      nodesPerSection[node.getLayout().depth] = [node];
-    } else {
-      nodesPerSection[node.getLayout().depth].push(node);
-    }
-  });
-  passThroughNodes.forEach((node) => {
-    if (!nodesPerSection[node.depth]) {
-      nodesPerSection[node.depth] = [node];
-    } else {
-      nodesPerSection[node.depth].push(node);
-    }
-  });
-
-  let statePerPixel = 0;
+  const nodesPerSection = groupNodesBySection(nodes, passThroughNodes);
+  let globalValueToSizeRatio = 0;
 
   const sections = depths.map((depth) => {
-    const sectionNodes = nodesPerSection[depth].map(
-      (node: Node): SectionNode => ({
-        node,
-        id: node.id,
-        value: isPassThroughNode(node) ? node.value : node.getLayout().value,
-        x: 0,
-        y: 0,
-        dx: 0,
-        dy: 0,
-        size: 0,
-      })
-    );
+    const sectionNodes = createSectionNodes(nodesPerSection[depth] || []);
     const availableSpace = sectionSize - (sectionNodes.length + 1) * nodeGap;
     const totalValue = sectionNodes.reduce(
       (acc: number, node: SectionNode) => acc + node.value,
       0
     );
-    const { nodes: sizedNodes, statePerPixel: sectionStatePerPixel } =
-      setNodeSizes(sectionNodes, availableSpace, totalValue, statePerPixel);
-    if (sectionStatePerPixel > statePerPixel) {
-      statePerPixel = sectionStatePerPixel;
+    const { nodes: sizedNodes, valueToSizeRatio: sectionValueToSizeRatio } =
+      setNodeSizes(
+        sectionNodes,
+        availableSpace,
+        totalValue,
+        globalValueToSizeRatio
+      );
+
+    if (sectionValueToSizeRatio > globalValueToSizeRatio) {
+      globalValueToSizeRatio = sectionValueToSizeRatio;
     }
+
     return {
       nodes: sizedNodes,
       depth,
       totalValue,
-      statePerPixel: sectionStatePerPixel,
+      valueToSizeRatio: sectionValueToSizeRatio,
     };
   });
 
   sections.forEach((section, index) => {
-    // calc sizes again with the best statePerPixel
-    let totalSize = 0;
-    if (section.statePerPixel !== statePerPixel) {
-      section.nodes.forEach((node) => {
-        const size = Math.max(MIN_SIZE, Math.floor(node.value / statePerPixel));
-        totalSize += size;
-        node.size = size;
-      });
-    } else {
-      totalSize = section.nodes.reduce((sum, b) => sum + b.size, 0);
-    }
-    // calc margin between boxes
-    const emptySpace = sectionSize - totalSize;
-    const spacerSize = emptySpace / (section.nodes.length + 1);
-
-    // align-items: space-between
-    let offset = emptySpace / (section.nodes.length + 1);
-    // calc positions - swap x/y for vertical layout
-    section.nodes.forEach((node) => {
-      if (orient === "vertical") {
-        node.x = offset;
-        node.y = index * sectionFlexSize;
-      } else {
-        node.x = index * sectionFlexSize;
-        node.y = offset;
-      }
-      offset += node.size + spacerSize;
-    });
+    positionNodesInSection(
+      section,
+      index,
+      sectionSize,
+      sectionDepthSize,
+      nodeGap,
+      globalValueToSizeRatio,
+      orient
+    );
   });
 
   return sections.flatMap((section) => section.nodes);
 }
 
-function setNodeSizes(
+export function setNodeSizes(
   nodes: SectionNode[],
   availableSpace: number,
   totalValue: number,
-  prevStatePerPixel = 0
-): { nodes: SectionNode[]; statePerPixel: number } {
-  let statePerPixel = totalValue / availableSpace;
-  if (statePerPixel < prevStatePerPixel) {
-    statePerPixel = prevStatePerPixel;
+  prevValueToSizeRatio = 0
+): { nodes: SectionNode[]; valueToSizeRatio: number } {
+  let valueToSizeRatio = totalValue / availableSpace;
+  if (valueToSizeRatio < prevValueToSizeRatio) {
+    valueToSizeRatio = prevValueToSizeRatio;
   }
   let deficitHeight = 0;
   const result = nodes.map((node) => {
     if (node.size === MIN_SIZE) {
       return node;
     }
-    let size = Math.floor(node.value / statePerPixel);
+    let size = Math.floor(node.value / valueToSizeRatio);
     if (size < MIN_SIZE) {
       deficitHeight += MIN_SIZE - size;
       size = MIN_SIZE;
@@ -263,23 +402,20 @@ function setNodeSizes(
       result,
       availableSpace - deficitHeight,
       totalValue,
-      statePerPixel
+      valueToSizeRatio
     );
   }
-  return { nodes: result, statePerPixel };
+  return { nodes: result, valueToSizeRatio };
 }
 
-function applyLayout(
+function applyNodeDimensions(
   nodes: SectionNode[],
   nodeWidth: number,
-  orient: "vertical" | "horizontal"
+  coords: CoordinateSystem
 ) {
-  const breadthCoord = orient === "vertical" ? "x" : "y";
-  const breadthAttr = orient === "vertical" ? "dx" : "dy";
-  const depthAttr = orient === "vertical" ? "dy" : "dx";
   nodes.forEach((node) => {
-    node[breadthAttr] = node.size;
-    node[depthAttr] = nodeWidth;
+    node[coords.breadthSize] = node.size;
+    node[coords.depthSize] = nodeWidth;
     if (isPassThroughNode(node.node)) {
       return;
     }
@@ -287,78 +423,156 @@ function applyLayout(
       { x: node.x, y: node.y, dx: node.dx, dy: node.dy },
       true
     );
+  });
+}
+
+function applyEdgeSizes(nodes: SectionNode[], coords: CoordinateSystem) {
+  nodes.forEach((node) => {
+    if (isPassThroughNode(node.node)) {
+      return;
+    }
     node.node.outEdges.forEach((edge) => {
       const edgeItem = edge.hostGraph.edgeData.getRawDataItem(
         edge.dataIndex
       ) as SankeyEdgeItemOption;
       const edgeSize = ((edgeItem.value as number) / node.value) * node.size;
-      edge.setLayout({ [breadthAttr]: edgeSize, [depthAttr]: 0 }, true);
+      edge.setLayout(
+        { [coords.breadthSize]: edgeSize, [coords.depthSize]: 0 },
+        true
+      );
     });
   });
+}
 
-  const curveType = orient === "vertical" ? "curveVertical" : "curveHorizontal";
+function sortEdgesByTargetPosition(
+  nodes: SectionNode[],
+  coords: CoordinateSystem
+) {
   nodes.forEach((node) => {
     if (isPassThroughNode(node.node)) {
       return;
     }
-
     node.node.outEdges.sort(
       (a, b) =>
-        a.node2.getLayout()[breadthCoord] - b.node2.getLayout()[breadthCoord]
+        a.node2.getLayout()[coords.breadth] -
+        b.node2.getLayout()[coords.breadth]
     );
     node.node.inEdges.sort(
       (a, b) =>
-        a.node1.getLayout()[breadthCoord] - b.node1.getLayout()[breadthCoord]
+        a.node1.getLayout()[coords.breadth] -
+        b.node1.getLayout()[coords.breadth]
     );
-    let offset = 0;
-    node.node.outEdges.forEach((edge) => {
-      edge.setLayout(
-        {
-          x: orient === "vertical" ? node.x + offset : node.x + node.dx,
-          y: orient === "vertical" ? node.y + node.dy : node.y + offset,
-        },
-        true
-      );
-      offset += edge.getLayout()[breadthAttr];
+  });
+}
+
+function generatePassThroughPoints(
+  edge: GraphLink,
+  nodes: SectionNode[],
+  orient: "vertical" | "horizontal",
+  curveType: "curveVertical" | "curveHorizontal"
+): SankeyPathShape["targets"] {
+  const passthroughPoints: SankeyPathShape["targets"] = [];
+
+  edge.passThroughNodeIds.forEach((nodeId) => {
+    const passthroughNode = nodes.find((n) => n.id === nodeId)!;
+    passthroughPoints.push({
+      x: passthroughNode.x,
+      y: passthroughNode.y,
+      type: curveType,
     });
-    offset = 0;
-    node.node.inEdges.forEach((edge) => {
-      const passthroughPoints: SankeyPathShape["targets"] = [];
-      (edge as GraphLink).passThroughNodeIds.forEach((nodeId) => {
-        const passtroughNode = nodes.find((n) => n.id === nodeId)!;
-        passthroughPoints.push({
-          x: passtroughNode.x,
-          y: passtroughNode.y,
-          type: curveType,
-        });
-        if (orient === "vertical") {
-          passthroughPoints.push({
-            x: passtroughNode.x,
-            y: passtroughNode.y + passtroughNode.dy,
-            type: "line",
-          });
-        } else {
-          passthroughPoints.push({
-            x: passtroughNode.x + passtroughNode.dx,
-            y: passtroughNode.y,
-            type: "line",
-          });
-        }
+
+    if (orient === "vertical") {
+      passthroughPoints.push({
+        x: passthroughNode.x,
+        y: passthroughNode.y + passthroughNode.dy,
+        type: "line",
       });
-      edge.setLayout(
-        {
-          targets: [
-            ...passthroughPoints,
-            {
-              x: orient === "vertical" ? node.x + offset : node.x,
-              y: orient === "vertical" ? node.y : node.y + offset,
-              type: curveType,
-            },
-          ] as SankeyPathShape["targets"],
-        },
-        true
-      );
-      offset += edge.getLayout()[breadthAttr];
-    });
+    } else {
+      passthroughPoints.push({
+        x: passthroughNode.x + passthroughNode.dx,
+        y: passthroughNode.y,
+        type: "line",
+      });
+    }
+  });
+
+  return passthroughPoints;
+}
+
+function positionOutEdges(
+  node: SectionNode,
+  orient: "vertical" | "horizontal",
+  coords: CoordinateSystem
+) {
+  if (isPassThroughNode(node.node)) {
+    return;
+  }
+  let offset = 0;
+  node.node.outEdges.forEach((edge) => {
+    edge.setLayout(
+      {
+        x: orient === "vertical" ? node.x + offset : node.x + node.dx,
+        y: orient === "vertical" ? node.y + node.dy : node.y + offset,
+      },
+      true
+    );
+    offset += edge.getLayout()[coords.breadthSize];
+  });
+}
+
+function positionInEdges(
+  node: SectionNode,
+  nodes: SectionNode[],
+  orient: "vertical" | "horizontal",
+  coords: CoordinateSystem,
+  curveType: "curveVertical" | "curveHorizontal"
+) {
+  if (isPassThroughNode(node.node)) {
+    return;
+  }
+  let offset = 0;
+  node.node.inEdges.forEach((edge) => {
+    const passthroughPoints = generatePassThroughPoints(
+      edge as GraphLink,
+      nodes,
+      orient,
+      curveType
+    );
+
+    edge.setLayout(
+      {
+        targets: [
+          ...passthroughPoints,
+          {
+            x: orient === "vertical" ? node.x + offset : node.x,
+            y: orient === "vertical" ? node.y : node.y + offset,
+            type: curveType,
+          },
+        ] as SankeyPathShape["targets"],
+      },
+      true
+    );
+    offset += edge.getLayout()[coords.breadthSize];
+  });
+}
+
+function applyLayout(
+  nodes: SectionNode[],
+  nodeWidth: number,
+  orient: "vertical" | "horizontal"
+) {
+  const coords = getCoordinateSystem(orient);
+  const curveType = orient === "vertical" ? "curveVertical" : "curveHorizontal";
+
+  applyNodeDimensions(nodes, nodeWidth, coords);
+  applyEdgeSizes(nodes, coords);
+  sortEdgesByTargetPosition(nodes, coords);
+
+  nodes.forEach((node) => {
+    if (isPassThroughNode(node.node)) {
+      return;
+    }
+    positionOutEdges(node, orient, coords);
+    positionInEdges(node, nodes, orient, coords, curveType);
   });
 }
