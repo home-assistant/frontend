@@ -37,8 +37,9 @@ class HuiButtonCardFeature extends LitElement implements LovelaceCardFeature {
   @state() private _config?: ButtonCardFeatureConfig;
 
   private get _stateObj() {
-    if (!this.hass || !this.context || !this.context.entity_id)
+    if (!this.hass || !this.context || !this.context.entity_id) {
       return undefined;
+    }
     return this.hass.states[this.context.entity_id!] as HassEntity | undefined;
   }
 
