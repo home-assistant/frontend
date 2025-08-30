@@ -10,7 +10,8 @@ import { cardFeatureStyles } from "./common/card-feature-styles";
 import { actionHandler } from "../common/directives/action-handler-directive";
 import { hasAction } from "../common/has-action";
 import { handleAction } from "../common/handle-action";
-import type { ActionHandlerEvent } from "../../../data/lovelace";
+import type { ActionHandlerEvent } from "../common/directives/action-handler-directive";
+
 import type {
   ButtonCardFeatureConfig,
   LovelaceCardFeatureContext,
