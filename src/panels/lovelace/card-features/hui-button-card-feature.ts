@@ -47,7 +47,15 @@ class HuiButtonCardFeature extends LitElement implements LovelaceCardFeature {
     if (!config) {
       throw new Error("Invalid configuration");
     }
-    this._config = config;
+
+    this._config = {
+      button_action: undefined,
+      ...config,
+    };
+
+    this.context = {
+      entity_id: config.entity ?? this.context?.entity_id,
+    };
   }
 
   private _handleAction(ev: ActionHandlerEvent) {
@@ -57,7 +65,7 @@ class HuiButtonCardFeature extends LitElement implements LovelaceCardFeature {
       handleAction(
         this,
         this.hass,
-        this._config.button_action,
+        this._config.button_action as any,
         ev.detail.action!
       );
       return;
