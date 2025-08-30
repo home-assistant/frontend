@@ -45,34 +45,22 @@ class HuiButtonCardFeature extends LitElement implements LovelaceCardFeature {
 
   private _handleAction(ev: ActionHandlerEvent) {
     if (!this.hass || !this._stateObj) return;
-
+  
     if (this._config?.button_action) {
-      handleAction(
-        this,
-        this.hass,
-        this._config.button_action,
-        ev.detail.action!
-      );
+      handleAction(this, this.hass, this._config.button_action, ev.detail.action!);
       return;
     }
-
+  
     const domain = computeDomain(this._stateObj.entity_id);
     const service =
       domain === "button" || domain === "input_button" ? "press" : "turn_on";
-
-    this.hass.callService(domain, service, {
-      entity_id: this._stateObj.entity_id,
-    });
+  
+    this.hass.callService(domain, service, { entity_id: this._stateObj.entity_id });
   }
+
 
   static getStubConfig(): ButtonCardFeatureConfig {
     return { type: "button" };
-  }
-
-  public setConfig(config: ButtonCardFeatureConfig): void {
-    if (!config) throw new Error("Invalid configuration");
-
-    this._config = { button_action: { action: "more-info" }, ...config };
   }
 
   protected render() {
