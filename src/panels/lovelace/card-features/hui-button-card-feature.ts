@@ -18,7 +18,7 @@ import type {
 
 export const supportsButtonCardFeature = (
   hass: HomeAssistant,
-  context: LovelaceCardFeatureContext,
+  context: LovelaceCardFeatureContext
 ) => {
   const stateObj = context.entity_id
     ? hass.states[context.entity_id]
@@ -47,8 +47,8 @@ class HuiButtonCardFeature extends LitElement implements LovelaceCardFeature {
     handleAction(
       this,
       this.hass!,
-      this._config.button_action!,
-      ev.detail.action,
+      this._config.button_action ?? { action: "more-info" },
+      ev.detail.action
     );
   }
 
@@ -59,14 +59,7 @@ class HuiButtonCardFeature extends LitElement implements LovelaceCardFeature {
   public setConfig(config: ButtonCardFeatureConfig): void {
     if (!config) throw new Error("Invalid configuration");
 
-    const stateObj = this.hass?.states[config.entity_id!];
-    const domain = stateObj ? computeDomain(stateObj.entity_id) : "button";
-
-    const defaultAction = ["button", "input_button"].includes(domain)
-      ? { action: "call-service", perform_action: "press" }
-      : { action: "call-service", perform_action: "turn_on" };
-
-    this._config = { button_action: defaultAction, ...config };
+    this._config = { button_action: { action: "more-info" }, ...config };
   }
 
   protected render() {
