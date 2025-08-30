@@ -7,6 +7,7 @@ import "../../../components/ha-control-button-group";
 import type { HomeAssistant } from "../../../types";
 import type { LovelaceCardFeature, LovelaceCardFeatureEditor } from "../types";
 import { cardFeatureStyles } from "./common/card-feature-styles";
+import { handleAction } from "../../../common/dom/handle-action";
 import type {
   ButtonCardFeatureConfig,
   LovelaceCardFeatureContext,
