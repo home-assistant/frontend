@@ -47,8 +47,7 @@ class HuiButtonCardFeature extends LitElement implements LovelaceCardFeature {
   private _handleAction(ev: ActionHandlerEvent) {
     if (!this.hass || !this.context || !this._config) return;
   
-    if (this._config.action) {
-      // Custom action defined in feature
+    if (this._config.perform_action) {
       handleAction(this, this.hass, this._config, ev.detail.action);
       return;
     }
