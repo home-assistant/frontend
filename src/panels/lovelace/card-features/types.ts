@@ -6,7 +6,7 @@ import type { OperationMode } from "../../../data/water_heater";
 export interface ButtonCardFeatureConfig {
   type: "button";
   action_name?: string;
-  perform_action?: ActionConfig;
+  button_action?: ActionConfig;
 }
 
 export interface CoverOpenCloseCardFeatureConfig {
