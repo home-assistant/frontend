@@ -7,8 +7,8 @@ import "../../../components/ha-control-button-group";
 import type { HomeAssistant } from "../../../types";
 import type { LovelaceCardFeature, LovelaceCardFeatureEditor } from "../types";
 import { cardFeatureStyles } from "./common/card-feature-styles";
-import { handleAction } from "../../../common/dom/handle-action.js";
-import { actionHandler } from "../../../common/util/action-handler.js";
+import { handleAction } from "../../../common/dom/handle-action";
+import { actionHandler } from "../../../common/util/action-handler";
 import type { ActionHandlerEvent } from "../../../data/lovelace";
 
 import type {
