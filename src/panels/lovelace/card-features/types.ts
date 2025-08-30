@@ -1,4 +1,4 @@
-import { ActionConfig } from "../../../data/lovelace";
+import type { ActionConfig } from "../../../data/lovelace";
 import type { AlarmMode } from "../../../data/alarm_control_panel";
 import type { HvacMode } from "../../../data/climate";
 import type { OperationMode } from "../../../data/water_heater";
