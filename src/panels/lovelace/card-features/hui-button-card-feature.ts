@@ -10,7 +10,6 @@ import { cardFeatureStyles } from "./common/card-feature-styles";
 import { actionHandler } from "../common/directives/action-handler-directive";
 import { hasAction } from "../common/has-action";
 import { handleAction } from "../common/handle-action";
-
 import type {
   ButtonCardFeatureConfig,
   LovelaceCardFeatureContext,
@@ -43,13 +42,11 @@ class HuiButtonCardFeature extends LitElement implements LovelaceCardFeature {
     return this.hass.states[this.context.entity_id!] as HassEntity | undefined;
   }
 
-  private _handleAction(ev: Event) {
-    const detail = (ev as CustomEvent).detail;
-    const action = detail?.action;
-    if (!this.hass || !this.context || !this._config || !action) return;
+  private _handleAction(ev: ActionHandlerEvent) {
+    if (!this.hass || !this.context || !this._config) return;
 
     if (this._config.button_action) {
-      handleAction(this, this.hass, this._config, action);
+      handleAction(this, this.hass!, this._config!, ev.detail.action!);
       return;
     }
 
