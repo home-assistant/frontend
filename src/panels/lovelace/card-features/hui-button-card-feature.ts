@@ -8,7 +8,6 @@ import type { HomeAssistant } from "../../../types";
 import type { LovelaceCardFeature, LovelaceCardFeatureEditor } from "../types";
 import { cardFeatureStyles } from "./common/card-feature-styles";
 import type { ActionHandlerEvent } from "../../../data/lovelace/action_handler";
-import type { ActionConfig } from "../../../data/lovelace/config/action";
 import type {
   ButtonCardFeatureConfig,
   LovelaceCardFeatureContext,
