@@ -7,9 +7,8 @@ import "../../../components/ha-control-button-group";
 import type { HomeAssistant } from "../../../types";
 import type { LovelaceCardFeature, LovelaceCardFeatureEditor } from "../types";
 import { cardFeatureStyles } from "./common/card-feature-styles";
-import { actionHandler } from "../common/directives/action-handler-directive";
-import { hasAction } from "../common/has-action";
-import { handleAction } from "../common/handle-action";
+import type { ActionHandlerEvent } from "../../../data/lovelace/action_handler";
+import type { ActionConfig } from "../../../data/lovelace/config/action";
 import type {
   ButtonCardFeatureConfig,
   LovelaceCardFeatureContext,
@@ -46,7 +45,7 @@ class HuiButtonCardFeature extends LitElement implements LovelaceCardFeature {
     if (!this.hass || !this.context || !this._config) return;
 
     if (this._config.button_action) {
-      handleAction(this, this.hass!, this._config!, ev.detail.action!);
+      handleAction(this, this.hass!, this._config.button_action, ev.detail.action!);
       return;
     }
 
