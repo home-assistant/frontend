@@ -55,6 +55,13 @@ export interface BluetoothAllocationsData {
   allocated: string[];
 }
 
+export interface BluetoothScannerState {
+  source: string;
+  adapter: string;
+  current_mode: "active" | "passive" | null;
+  requested_mode: "active" | "passive" | null;
+}
+
 export const subscribeBluetoothScannersDetailsUpdates = (
   conn: Connection,
   store: Store<BluetoothScannersDetails>
@@ -167,6 +174,23 @@ export const subscribeBluetoothConnectionAllocations = (
   }
   return conn.subscribeMessage<BluetoothAllocationsData[]>(
     (bluetoothAllocationsData) => callbackFunction(bluetoothAllocationsData),
+    params
+  );
+};
+
+export const subscribeBluetoothScannerState = (
+  conn: Connection,
+  callbackFunction: (scannerState: BluetoothScannerState) => void,
+  configEntryId?: string
+): Promise<() => Promise<void>> => {
+  const params: { type: string; config_entry_id?: string } = {
+    type: "bluetooth/subscribe_scanner_state",
+  };
+  if (configEntryId) {
+    params.config_entry_id = configEntryId;
+  }
+  return conn.subscribeMessage<BluetoothScannerState>(
+    (scannerState) => callbackFunction(scannerState),
     params
   );
 };
