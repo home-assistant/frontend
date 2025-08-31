@@ -7718,7 +7718,8 @@
                 "card": "Card",
                 "text-only": "Text only"
               },
-              "description": "The Markdown card is used to render Markdown."
+              "description": "The Markdown card is used to render Markdown.",
+              "interactions_warning": "Note: When actions are configured, clicking links in the markdown content will trigger the card action instead of following the link."
             },
             "clock": {
               "name": "Clock",

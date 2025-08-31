@@ -132,14 +132,31 @@ export class HuiMarkdownCardEditor
       this._config.text_only || false
     );
 
+    const hasActions =
+      (this._config?.tap_action && this._config.tap_action.action !== "none") ||
+      (this._config?.hold_action &&
+        this._config.hold_action.action !== "none") ||
+      (this._config?.double_tap_action &&
+        this._config.double_tap_action.action !== "none");
+
     return html`
       <ha-form
         .hass=${this.hass}
         .data=${data}
         .schema=${schema}
         .computeLabel=${this._computeLabelCallback}
+        .computeHelper=${this._computeHelperCallback}
         @value-changed=${this._valueChanged}
       ></ha-form>
+      ${hasActions
+        ? html`
+            <ha-alert own-margin alert-type="info">
+              ${this.hass.localize(
+                "ui.panel.lovelace.editor.card.markdown.interactions_warning"
+              )}
+            </ha-alert>
+          `
+        : nothing}
     `;
   }
 
@@ -171,6 +188,10 @@ export class HuiMarkdownCardEditor
         );
     }
   };
+
+  private _computeHelperCallback = (
+    _schema: SchemaUnion<ReturnType<typeof this._schema>>
+  ) => undefined;
 }
 
 declare global {
