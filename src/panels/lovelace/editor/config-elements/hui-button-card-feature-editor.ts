@@ -28,6 +28,12 @@ export class HuiButtonCardFeatureEditor
         text: {},
       },
     },
+    {
+      name: "button_action",
+      selector: {
+        ui_action: {},
+      },
+    },
   ]);
 
   protected render() {
