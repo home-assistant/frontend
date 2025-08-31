@@ -162,7 +162,7 @@
     "@rspack/core": "1.5.0",
     "@rspack/dev-server": "1.1.4",
     "@types/babel__plugin-transform-runtime": "7.9.5",
-    "@types/chromecast-caf-receiver": "6.0.22",
+    "@types/chromecast-caf-receiver": "6.0.24",
     "@types/chromecast-caf-sender": "1.0.11",
     "@types/color-name": "2.0.0",
     "@types/culori": "4.0.0",
