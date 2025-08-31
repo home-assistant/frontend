@@ -268,12 +268,13 @@ export function calculateSectionDimensions(
 
 /**
  * Basically does `align-items: space-around`
- * @param section - The section to position nodes in
- * @param index - The index of the section
- * @param sectionSize - The size of the section
- * @param sectionDepthSize - The depth size of the section
- * @param globalValueToSizeRatio - The global value to size ratio
- * @param orient - The orientation of the section (vertical or horizontal)
+ * @param {{ nodes: SectionNode[]; depth: number; totalValue: number; valueToSizeRatio: number; }} section - The section to position nodes in
+ * @param {number} index - The index of the section
+ * @param {number} sectionSize - The size of the section
+ * @param {number} sectionDepthSize - The depth size of the section
+ * @param {number} globalValueToSizeRatio - The global value to size ratio
+ * @param {"vertical" | "horizontal"} orient - The orientation of the section (vertical or horizontal)
+ * @returns {void}
  */
 function positionNodesInSection(
   section: {
