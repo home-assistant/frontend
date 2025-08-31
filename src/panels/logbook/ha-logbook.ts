@@ -129,6 +129,7 @@ export class HaLogbook extends LitElement {
         .entries=${this._logbookEntries}
         .traceContexts=${this._traceContexts}
         .userIdToName=${this._userIdToName}
+        .time=${this.time}
         @hass-logbook-live=${this._handleLogbookLive}
       ></ha-logbook-renderer>
     `;

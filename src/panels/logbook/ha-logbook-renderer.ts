@@ -5,9 +5,14 @@ import { css, html, LitElement, nothing } from "lit";
 import { customElement, eventOptions, property } from "lit/decorators";
 import { classMap } from "lit/directives/class-map";
 import { styleMap } from "lit/directives/style-map";
+import {
+  addDays,
+  startOfDay
+} from "date-fns";
+import { calcDate } from "../../common/datetime/calc_date";
 import { isComponentLoaded } from "../../common/config/is_component_loaded";
 import { formatDate } from "../../common/datetime/format_date";
-import { formatTimeWithSeconds } from "../../common/datetime/format_time";
+import { formatTime, formatTimeWithSeconds } from "../../common/datetime/format_time";
 import { restoreScroll } from "../../common/decorators/restore-scroll";
 import { fireEvent } from "../../common/dom/fire_event";
 import { computeDomain } from "../../common/entity/compute_domain";
@@ -75,8 +80,17 @@ class HaLogbookRenderer extends LitElement {
   @property({ type: Boolean, attribute: "relative-time" })
   public relativeTime = false;
 
+  @property({ attribute: false }) public time?:
+    | { range: [Date, Date] }
+    | {
+        // Seconds
+        recent: number;
+      };
+
   // @ts-ignore
   @restoreScroll(".container") private _savedScrollPos?: number;
+
+  private _isFullDay = false;
 
   protected willUpdate(changedProps: PropertyValues<this>) {
     if (
@@ -189,11 +203,7 @@ class HaLogbookRenderer extends LitElement {
             new Date(previous.when * 1000).toDateString())
           ? html`
               <h4 class="date">
-                ${formatDate(
-                  new Date(item.when * 1000),
-                  this.hass.locale,
-                  this.hass.config
-                )}
+                ${this._formatRangeString(new Date(item.when * 1000))}
               </h4>
             `
           : nothing}
@@ -565,6 +575,50 @@ class HaLogbookRenderer extends LitElement {
     }
     navigate(target.traceLink);
     fireEvent(this, "closed");
+  }
+
+  private _formatRangeString(eventDay: Date): string {
+    const dateLabel = formatDate(eventDay, this.hass.locale, this.hass.config);
+
+    if (!this.time || "recent" in this.time) {
+      return dateLabel;
+    }
+
+    const [globalStart, globalEnd] = this.time.range;
+
+    const dayStart = calcDate(eventDay, startOfDay, this.hass.locale, this.hass.config);
+    const dayEnd = calcDate(dayStart, addDays, this.hass.locale, this.hass.config, 1);
+
+    // If no overlap, default to date only
+    if (globalEnd <= dayStart || globalStart >= dayEnd) {
+      return dateLabel;
+    }
+
+    // Clamp the global range to this day
+    const start = new Date(Math.max(globalStart.getTime(), dayStart.getTime()));
+    const end = new Date(Math.min(globalEnd.getTime(), dayEnd.getTime()));
+
+    // Treat 00:00–23:59 (or 00:00–next-day-00:00) as full day
+    const MINUTE = 60_000;
+    const isFullDay =
+      start.getTime() === dayStart.getTime() &&
+      (end.getTime() === dayEnd.getTime() || end.getTime() >= dayEnd.getTime() - MINUTE);
+
+    if (isFullDay) {
+      return dateLabel;
+    }
+
+    // if the clamped end equals dayEnd (00:00 next day), show 23:59 of this day instead.
+    const endForLabel =
+      end.getTime() === dayEnd.getTime() ? new Date(dayEnd.getTime() - MINUTE) : end;
+
+    const startStr = formatTime(start, this.hass.locale, this.hass.config);
+    const endStr = formatTime(endForLabel, this.hass.locale, this.hass.config);
+
+    // Examples:
+    // 29 August 2025 15:00–23:59
+    // 31 August 2025 00:00–18:00
+    return `${dateLabel} ${startStr}-${endStr}`;
   }
 
   static get styles(): CSSResultGroup {
