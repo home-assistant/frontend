@@ -140,14 +140,6 @@ export class HuiMarkdownCardEditor
         this._config.double_tap_action.action !== "none");
 
     return html`
-      <ha-form
-        .hass=${this.hass}
-        .data=${data}
-        .schema=${schema}
-        .computeLabel=${this._computeLabelCallback}
-        .computeHelper=${this._computeHelperCallback}
-        @value-changed=${this._valueChanged}
-      ></ha-form>
       ${hasActions
         ? html`
             <ha-alert own-margin alert-type="info">
@@ -157,6 +149,14 @@ export class HuiMarkdownCardEditor
             </ha-alert>
           `
         : nothing}
+      <ha-form
+        .hass=${this.hass}
+        .data=${data}
+        .schema=${schema}
+        .computeLabel=${this._computeLabelCallback}
+        .computeHelper=${this._computeHelperCallback}
+        @value-changed=${this._valueChanged}
+      ></ha-form>
     `;
   }
 
