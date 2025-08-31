@@ -16,7 +16,7 @@ export function buildPath(
   shape: SankeyPathShape,
   curveness: number
 ) {
-  if (shape.targets.length === 0) {
+  if (!shape.targets?.length) {
     return;
   }
   ctx.moveTo(shape.x, shape.y);

@@ -25,6 +25,7 @@ class SankeyView extends EchartsSankeyView {
       const echartsCurve = edgeData.getItemGraphicEl(edge.dataIndex) as Path;
       echartsCurve.buildPath = (ctx: CanvasRenderingContext2D) =>
         buildPath(ctx, edgeLayout, curveness);
+      echartsCurve.dirtyShape();
     });
   }
 }
