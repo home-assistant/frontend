@@ -24,6 +24,7 @@ import type { CSSResultGroup, PropertyValues, TemplateResult } from "lit";
 import { css, html, LitElement, nothing } from "lit";
 import { property, query, state } from "lit/decorators";
 import { classMap } from "lit/directives/class-map";
+import { isArray } from "@tsparticles/engine";
 import { transform } from "../../../common/decorators/transform";
 import { fireEvent } from "../../../common/dom/fire_event";
 import { navigate } from "../../../common/navigate";
@@ -43,6 +44,7 @@ import type {
   AutomationConfig,
   AutomationEntity,
   BlueprintAutomationConfig,
+  Condition,
 } from "../../../data/automation";
 import {
   deleteAutomation,
@@ -1062,8 +1064,28 @@ export class HaAutomationEditor extends PreventUnsavedMixin(
       });
     }
 
+    // Move conditions at top of action to automation condition key
+    const configToSave = { ...this._config! };
+    configToSave.conditions = !configToSave.conditions
+      ? []
+      : isArray(configToSave.conditions)
+        ? [...configToSave.conditions]
+        : [configToSave.conditions];
+    configToSave.actions = !configToSave.actions
+      ? []
+      : isArray(configToSave.actions)
+        ? [...configToSave.actions]
+        : [configToSave.actions];
+
+    while (
+      configToSave.actions.length > 0 &&
+      "condition" in configToSave.actions[0]
+    ) {
+      configToSave.conditions.push(configToSave.actions.shift() as Condition);
+    }
+
     try {
-      await saveAutomationConfig(this.hass, id, this._config!);
+      await saveAutomationConfig(this.hass, id, configToSave);
 
       if (this._entityRegistryUpdate !== undefined) {
         let entityId = this._entityId;

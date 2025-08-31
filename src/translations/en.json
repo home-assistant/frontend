@@ -4109,9 +4109,6 @@
             },
             "conditions": {
               "name": "Conditions",
-              "header": "And if",
-              "description": "All conditions added here need to be satisfied for the automation to run. A condition can be satisfied or not at any given time, for example: ''If {user} is home''. You can use building blocks to create more complex conditions.",
-              "learn_more": "Learn more about conditions",
               "add": "Add condition",
               "search": "Search condition",
               "add_building_block": "Add building block",

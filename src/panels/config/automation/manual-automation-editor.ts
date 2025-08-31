@@ -45,8 +45,6 @@ import { documentationUrl } from "../../../util/documentation-url";
 import { showToast } from "../../../util/toast";
 import "./action/ha-automation-action";
 import type HaAutomationAction from "./action/ha-automation-action";
-import "./condition/ha-automation-condition";
-import type HaAutomationCondition from "./condition/ha-automation-condition";
 import "./ha-automation-sidebar";
 import type HaAutomationSidebar from "./ha-automation-sidebar";
 import { showPasteReplaceDialog } from "./paste-replace-dialog/show-dialog-paste-replace";
@@ -157,53 +155,6 @@ export class HaManualAutomationEditor extends LitElement {
         root
         sidebar
       ></ha-automation-trigger>
-
-      <div class="header">
-        <h2 id="conditions-heading" class="name">
-          ${this.hass.localize(
-            "ui.panel.config.automation.editor.conditions.header"
-          )}
-          <span class="small"
-            >(${this.hass.localize("ui.common.optional")})</span
-          >
-        </h2>
-        <a
-          href=${documentationUrl(this.hass, "/docs/automation/condition/")}
-          target="_blank"
-          rel="noreferrer"
-        >
-          <ha-icon-button
-            .path=${mdiHelpCircle}
-            .label=${this.hass.localize(
-              "ui.panel.config.automation.editor.conditions.learn_more"
-            )}
-          ></ha-icon-button>
-        </a>
-      </div>
-      ${!ensureArray(this.config.conditions)?.length
-        ? html`<p>
-            ${this.hass.localize(
-              "ui.panel.config.automation.editor.conditions.description",
-              { user: this.hass.user?.name || "Alice" }
-            )}
-          </p>`
-        : nothing}
-
-      <ha-automation-condition
-        role="region"
-        aria-labelledby="conditions-heading"
-        .conditions=${this.config.conditions || []}
-        .highlightedConditions=${this._pastedConfig?.conditions || []}
-        @value-changed=${this._conditionChanged}
-        .hass=${this.hass}
-        .disabled=${this.disabled || this.saving}
-        .narrow=${this.narrow}
-        @open-sidebar=${this._openSidebar}
-        @request-close-sidebar=${this._closeSidebar}
-        @close-sidebar=${this._handleCloseSidebar}
-        root
-        sidebar
-      ></ha-automation-condition>
 
       <div class="header">
         <h2 id="actions-heading" class="name">
@@ -584,9 +535,9 @@ export class HaManualAutomationEditor extends LitElement {
   }
 
   private _getCollapsableElements() {
-    return this.shadowRoot!.querySelectorAll<
-      HaAutomationAction | HaAutomationCondition
-    >("ha-automation-action, ha-automation-condition");
+    return this.shadowRoot!.querySelectorAll<HaAutomationAction>(
+      "ha-automation-action"
+    );
   }
 
   public expandAll() {

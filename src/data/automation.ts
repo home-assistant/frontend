@@ -387,6 +387,18 @@ export const normalizeAutomationConfig = <
     }
   }
 
+  // We move all conditions into the action for display
+  if (config.conditions) {
+    if (config.actions) {
+      (config.actions as Action[]).unshift(
+        ...(config.conditions as Condition[])
+      );
+    } else {
+      config.actions = config.conditions;
+    }
+    delete config.conditions;
+  }
+
   return config;
 };
 
