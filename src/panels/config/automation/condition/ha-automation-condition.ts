@@ -1,7 +1,7 @@
 import { mdiDrag, mdiPlus } from "@mdi/js";
 import deepClone from "deep-clone-simple";
 import type { PropertyValues } from "lit";
-import { css, html, LitElement, nothing } from "lit";
+import { html, LitElement, nothing } from "lit";
 import { customElement, property, queryAll, state } from "lit/decorators";
 import { repeat } from "lit/directives/repeat";
 import { storage } from "../../../../common/decorators/storage";
@@ -45,6 +45,8 @@ export default class HaAutomationCondition extends LitElement {
     false;
 
   @state() private _showReorder = false;
+
+  @state() private _rowSortSelected?: number;
 
   @state()
   @storage({
@@ -171,7 +173,7 @@ export default class HaAutomationCondition extends LitElement {
         @item-removed=${this._conditionRemoved}
         @item-cloned=${this._conditionCloned}
       >
-        <div class="rows">
+        <div class="rows ${!this.optionsInSidebar ? "no-sidebar" : ""}">
           ${repeat(
             this.conditions.filter((c) => typeof c === "object"),
             (condition) => this._getKey(condition),
@@ -193,10 +195,20 @@ export default class HaAutomationCondition extends LitElement {
                 .hass=${this.hass}
                 ?highlight=${this.highlightedConditions?.includes(cond)}
                 .optionsInSidebar=${this.optionsInSidebar}
+                .sortSelected=${this._rowSortSelected === idx}
+                @stop-sort-selection=${this._stopSortSelection}
               >
                 ${this._showReorder && !this.disabled
                   ? html`
-                      <div class="handle" slot="icons">
+                      <div
+                        tabindex="0"
+                        class="handle ${this._rowSortSelected === idx
+                          ? "active"
+                          : ""}"
+                        slot="icons"
+                        @keydown=${this._handleDragKeydown}
+                        .index=${idx}
+                      >
                         <ha-svg-icon .path=${mdiDrag}></ha-svg-icon>
                       </div>
                     `
@@ -285,15 +297,27 @@ export default class HaAutomationCondition extends LitElement {
   private _moveUp(ev) {
     ev.stopPropagation();
     const index = (ev.target as any).index;
-    const newIndex = index - 1;
-    this._move(index, newIndex);
+    if (!(ev.target as HaAutomationConditionRow).first) {
+      const newIndex = index - 1;
+      this._move(index, newIndex);
+      if (this._rowSortSelected === index) {
+        this._rowSortSelected = newIndex;
+      }
+      ev.target.focus();
+    }
   }
 
   private _moveDown(ev) {
     ev.stopPropagation();
     const index = (ev.target as any).index;
-    const newIndex = index + 1;
-    this._move(index, newIndex);
+    if (!(ev.target as HaAutomationConditionRow).last) {
+      const newIndex = index + 1;
+      this._move(index, newIndex);
+      if (this._rowSortSelected === index) {
+        this._rowSortSelected = newIndex;
+      }
+      ev.target.focus();
+    }
   }
 
   private _move(oldIndex: number, newIndex: number) {
@@ -390,14 +414,21 @@ export default class HaAutomationCondition extends LitElement {
     });
   }
 
-  static styles = [
-    automationRowsStyles,
-    css`
-      :host([root]) .rows {
-        padding-right: 8px;
-      }
-    `,
-  ];
+  private _handleDragKeydown(ev: KeyboardEvent) {
+    if (ev.key === "Enter" || ev.key === " ") {
+      ev.stopPropagation();
+      this._rowSortSelected =
+        this._rowSortSelected === undefined
+          ? (ev.target as any).index
+          : undefined;
+    }
+  }
+
+  private _stopSortSelection() {
+    this._rowSortSelected = undefined;
+  }
+
+  static styles = automationRowsStyles;
 }
 
 declare global {
