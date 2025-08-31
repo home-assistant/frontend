@@ -188,9 +188,17 @@ export class BluetoothConfigDashboard extends LitElement {
           "ui.panel.config.bluetooth.scanning_mode_none"
         );
       }
-      return this.hass.localize(
-        `ui.panel.config.bluetooth.scanning_mode_${mode}`
-      );
+      if (mode === "active") {
+        return this.hass.localize(
+          "ui.panel.config.bluetooth.scanning_mode_active"
+        );
+      }
+      if (mode === "passive") {
+        return this.hass.localize(
+          "ui.panel.config.bluetooth.scanning_mode_passive"
+        );
+      }
+      return mode; // Fallback for unknown modes
     };
 
     return html`
@@ -227,9 +235,21 @@ export class BluetoothConfigDashboard extends LitElement {
                 )}
               </div>
               <ul>
-                <li>${this.hass.localize("ui.panel.config.bluetooth.scanner_mode_mismatch_proxy")}</li>
-                <li>${this.hass.localize("ui.panel.config.bluetooth.scanner_mode_mismatch_usb")}</li>
-                <li>${this.hass.localize("ui.panel.config.bluetooth.scanner_mode_mismatch_onboard")}</li>
+                <li>
+                  ${this.hass.localize(
+                    "ui.panel.config.bluetooth.scanner_mode_mismatch_proxy"
+                  )}
+                </li>
+                <li>
+                  ${this.hass.localize(
+                    "ui.panel.config.bluetooth.scanner_mode_mismatch_usb"
+                  )}
+                </li>
+                <li>
+                  ${this.hass.localize(
+                    "ui.panel.config.bluetooth.scanner_mode_mismatch_onboard"
+                  )}
+                </li>
               </ul>
             </ha-alert>`
           : nothing}
