@@ -7,6 +7,10 @@ import "../../../components/ha-control-button-group";
 import type { HomeAssistant } from "../../../types";
 import type { LovelaceCardFeature, LovelaceCardFeatureEditor } from "../types";
 import { cardFeatureStyles } from "./common/card-feature-styles";
+import type { ActionHandlerEvent } from "../../../data/lovelace/action_handler";
+import { actionHandler } from "../common/directives/action-handler-directive";
+import { handleAction } from "../common/handle-action";
+import { hasAction } from "../common/has-action";
 import type {
   ButtonCardFeatureConfig,
   LovelaceCardFeatureContext,
@@ -39,8 +43,29 @@ class HuiButtonCardFeature extends LitElement implements LovelaceCardFeature {
     return this.hass.states[this.context.entity_id!] as HassEntity | undefined;
   }
 
-  private _pressButton() {
+  public setConfig(config: ButtonCardFeatureConfig): void {
+    if (!config) {
+      throw new Error("Invalid configuration");
+    }
+
+    this._config = {
+      button_action: undefined,
+      ...config,
+    };
+  }
+
+  private _handleAction(ev: ActionHandlerEvent) {
     if (!this.hass || !this._stateObj) return;
+
+    if (this._config?.button_action) {
+      handleAction(
+        this,
+        this.hass,
+        this._config.button_action as any,
+        ev.detail.action!
+      );
+      return;
+    }
 
     const domain = computeDomain(this._stateObj.entity_id);
     const service =
@@ -52,16 +77,7 @@ class HuiButtonCardFeature extends LitElement implements LovelaceCardFeature {
   }
 
   static getStubConfig(): ButtonCardFeatureConfig {
-    return {
-      type: "button",
-    };
-  }
-
-  public setConfig(config: ButtonCardFeatureConfig): void {
-    if (!config) {
-      throw new Error("Invalid configuration");
-    }
-    this._config = config;
+    return { type: "button" };
   }
 
   protected render() {
@@ -80,7 +96,11 @@ class HuiButtonCardFeature extends LitElement implements LovelaceCardFeature {
         <ha-control-button
           .disabled=${this._stateObj.state === "unavailable"}
           class="press-button"
-          @click=${this._pressButton}
+          @action=${this._handleAction}
+          .actionHandler=${actionHandler({
+            hasHold: hasAction(this._config.button_action),
+            hasDoubleClick: hasAction(this._config.button_action),
+          })}
         >
           ${this._config.action_name ??
           this.hass.localize("ui.card.button.press")}
