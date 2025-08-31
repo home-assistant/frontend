@@ -1,4 +1,3 @@
-
 import type { ActionConfig } from "../../../data/lovelace/config/action";
 import type { AlarmMode } from "../../../data/alarm_control_panel";
 import type { HvacMode } from "../../../data/climate";
