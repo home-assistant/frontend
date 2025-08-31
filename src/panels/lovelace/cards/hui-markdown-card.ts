@@ -3,9 +3,11 @@ import type { PropertyValues } from "lit";
 import { css, html, LitElement, nothing } from "lit";
 import { customElement, property, state } from "lit/decorators";
 import { classMap } from "lit/directives/class-map";
+import { ifDefined } from "lit/directives/if-defined";
 import hash from "object-hash";
 import { applyThemesOnElement } from "../../../common/dom/apply_themes_on_element";
 import { fireEvent } from "../../../common/dom/fire_event";
+import type { ActionHandlerEvent } from "../../../data/lovelace/action_handler";
 import "../../../components/ha-alert";
 import "../../../components/ha-card";
 import "../../../components/ha-markdown";
@@ -13,6 +15,9 @@ import type { RenderTemplateResult } from "../../../data/ws-templates";
 import { subscribeRenderTemplate } from "../../../data/ws-templates";
 import type { HomeAssistant } from "../../../types";
 import { CacheManager } from "../../../util/cache-manager";
+import { actionHandler } from "../common/directives/action-handler-directive";
+import { handleAction } from "../common/handle-action";
+import { hasAction } from "../common/has-action";
 import type { LovelaceCard, LovelaceCardEditor } from "../types";
 import type { MarkdownCardConfig } from "./types";
 
@@ -105,6 +110,8 @@ export class HuiMarkdownCard extends LitElement implements LovelaceCard {
       return nothing;
     }
 
+    const hasConfiguredActions = this._hasConfiguredActions();
+
     return html`
       ${this._error
         ? html`
@@ -122,7 +129,16 @@ export class HuiMarkdownCard extends LitElement implements LovelaceCard {
         class=${classMap({
           "with-header": !!this._config.title,
           "text-only": this._config.text_only ?? false,
+          clickable: hasConfiguredActions,
         })}
+        @action=${hasConfiguredActions ? this._handleAction : nothing}
+        .actionHandler=${hasConfiguredActions
+          ? actionHandler({
+              hasHold: hasAction(this._config.hold_action),
+              hasDoubleClick: hasAction(this._config.double_tap_action),
+            })
+          : undefined}
+        tabindex=${ifDefined(hasConfiguredActions ? "0" : undefined)}
       >
         <ha-markdown
           cache
@@ -228,9 +244,24 @@ export class HuiMarkdownCard extends LitElement implements LovelaceCard {
     this._errorLevel = undefined;
   }
 
+  private _hasConfiguredActions(): boolean {
+    return (
+      hasAction(this._config!.tap_action) ||
+      hasAction(this._config!.hold_action) ||
+      hasAction(this._config!.double_tap_action)
+    );
+  }
+
+  private _handleAction(ev: ActionHandlerEvent) {
+    handleAction(this, this.hass!, this._config!, ev.detail.action!);
+  }
+
   static styles = css`
     ha-card {
       height: 100%;
+    }
+    ha-card.clickable {
+      cursor: pointer;
     }
     ha-alert {
       margin-bottom: 8px;

@@ -1,3 +1,4 @@
+import { mdiGestureTap } from "@mdi/js";
 import { html, LitElement, nothing } from "lit";
 import { customElement, property, state } from "lit/decorators";
 import memoizeOne from "memoize-one";
@@ -12,6 +13,7 @@ import type {
 import type { HomeAssistant } from "../../../../types";
 import type { MarkdownCardConfig } from "../../cards/types";
 import type { LovelaceCardEditor } from "../../types";
+import { actionConfigStruct } from "../structs/action-struct";
 import { baseLovelaceCardConfig } from "../structs/base-card-struct";
 
 const cardConfigStruct = assign(
@@ -20,6 +22,9 @@ const cardConfigStruct = assign(
     text_only: optional(boolean()),
     title: optional(string()),
     content: string(),
+    tap_action: optional(actionConfigStruct),
+    hold_action: optional(actionConfigStruct),
+    double_tap_action: optional(actionConfigStruct),
   })
 );
 
@@ -64,6 +69,51 @@ export class HuiMarkdownCardEditor
           ? ([{ name: "title", selector: { text: {} } }] as const)
           : []),
         { name: "content", required: true, selector: { template: {} } },
+        {
+          name: "interactions",
+          type: "expandable",
+          flatten: true,
+          iconPath: mdiGestureTap,
+          schema: [
+            {
+              name: "tap_action",
+              selector: {
+                ui_action: {
+                  actions: [
+                    "navigate",
+                    "url",
+                    "perform-action",
+                    "assist",
+                    "none",
+                  ],
+                  default_action: "none",
+                },
+              },
+            },
+            {
+              name: "",
+              type: "optional_actions",
+              flatten: true,
+              schema: (["hold_action", "double_tap_action"] as const).map(
+                (action) => ({
+                  name: action,
+                  selector: {
+                    ui_action: {
+                      actions: [
+                        "navigate",
+                        "url",
+                        "perform-action",
+                        "assist",
+                        "none",
+                      ],
+                      default_action: "none" as const,
+                    },
+                  },
+                })
+              ),
+            },
+          ],
+        },
       ] as const satisfies HaFormSchema[]
   );
 
