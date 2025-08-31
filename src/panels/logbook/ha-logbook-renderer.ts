@@ -203,7 +203,7 @@ class HaLogbookRenderer extends LitElement {
             new Date(previous.when * 1000).toDateString())
           ? html`
               <h4 class="date">
-                ${this._formatRangeString(new Date(item.when * 1000))}
+                ${this._formatDateHeading(new Date(item.when * 1000))}
               </h4>
             `
           : nothing}
@@ -577,7 +577,7 @@ class HaLogbookRenderer extends LitElement {
     fireEvent(this, "closed");
   }
 
-  private _formatRangeString(eventDay: Date): string {
+  private _formatDateHeading(eventDay: Date): string {
     const dateLabel = formatDate(eventDay, this.hass.locale, this.hass.config);
 
     if (!this.time || "recent" in this.time) {
