@@ -1,4 +1,4 @@
-import type { GlobalModel } from "echarts/types/dist/shared";
+import type GlobalModel from "echarts/types/src/model/Global";
 import type SankeySeriesModel from "echarts/types/src/chart/sankey/SankeySeries";
 import type {
   SankeyEdgeItemOption,
@@ -55,7 +55,7 @@ export function getCoordinateSystem(
 }
 
 export default function sankeyLayout(ecModel: GlobalModel, _api: ExtensionAPI) {
-  ecModel.eachSeriesByType("sankey", (seriesModel: SankeySeriesModel) => {
+  ecModel.eachSeriesByType("sankey", ((seriesModel: SankeySeriesModel) => {
     if (seriesModel.get("nodeAlign") !== "justify") {
       // Only handle justify nodes for now
       return;
@@ -79,7 +79,7 @@ export default function sankeyLayout(ecModel: GlobalModel, _api: ExtensionAPI) {
     const orient = seriesModel.get("orient")!;
 
     layoutSankey(nodes, edges, nodeWidth, nodeGap, width, height, orient);
-  });
+  }) as any);
 }
 
 function layoutSankey(
