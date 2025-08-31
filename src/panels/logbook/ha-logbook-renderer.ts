@@ -5,14 +5,14 @@ import { css, html, LitElement, nothing } from "lit";
 import { customElement, eventOptions, property } from "lit/decorators";
 import { classMap } from "lit/directives/class-map";
 import { styleMap } from "lit/directives/style-map";
-import {
-  addDays,
-  startOfDay
-} from "date-fns";
+import { addDays, startOfDay } from "date-fns";
 import { calcDate } from "../../common/datetime/calc_date";
 import { isComponentLoaded } from "../../common/config/is_component_loaded";
 import { formatDate } from "../../common/datetime/format_date";
-import { formatTime, formatTimeWithSeconds } from "../../common/datetime/format_time";
+import {
+  formatTime,
+  formatTimeWithSeconds,
+} from "../../common/datetime/format_time";
 import { restoreScroll } from "../../common/decorators/restore-scroll";
 import { fireEvent } from "../../common/dom/fire_event";
 import { computeDomain } from "../../common/entity/compute_domain";
@@ -584,8 +584,19 @@ class HaLogbookRenderer extends LitElement {
 
     const [globalStart, globalEnd] = this.time.range;
 
-    const dayStart = calcDate(eventDay, startOfDay, this.hass.locale, this.hass.config);
-    const dayEnd = calcDate(dayStart, addDays, this.hass.locale, this.hass.config, 1);
+    const dayStart = calcDate(
+      eventDay,
+      startOfDay,
+      this.hass.locale,
+      this.hass.config
+    );
+    const dayEnd = calcDate(
+      dayStart,
+      addDays,
+      this.hass.locale,
+      this.hass.config,
+      1
+    );
 
     // If no overlap, default to date only
     if (globalEnd <= dayStart || globalStart >= dayEnd) {
@@ -600,7 +611,8 @@ class HaLogbookRenderer extends LitElement {
     const MINUTE = 60_000;
     const isFullDay =
       start.getTime() === dayStart.getTime() &&
-      (end.getTime() === dayEnd.getTime() || end.getTime() >= dayEnd.getTime() - MINUTE);
+      (end.getTime() === dayEnd.getTime() ||
+        end.getTime() >= dayEnd.getTime() - MINUTE);
 
     if (isFullDay) {
       return dateLabel;
@@ -608,7 +620,9 @@ class HaLogbookRenderer extends LitElement {
 
     // if the clamped end equals dayEnd (00:00 next day), show 23:59 of this day instead.
     const endForLabel =
-      end.getTime() === dayEnd.getTime() ? new Date(dayEnd.getTime() - MINUTE) : end;
+      end.getTime() === dayEnd.getTime()
+        ? new Date(dayEnd.getTime() - MINUTE)
+        : end;
 
     const startStr = formatTime(start, this.hass.locale, this.hass.config);
     const endStr = formatTime(endForLabel, this.hass.locale, this.hass.config);
