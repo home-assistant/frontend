@@ -23,6 +23,8 @@ class SankeyView extends EchartsSankeyView {
       const curveness = lineStyleModel.get("curveness" as any);
 
       const echartsCurve = edgeData.getItemGraphicEl(edge.dataIndex) as Path;
+      // have to do some monkey patching
+      // no other way to do this without recwriting the whole Sankey component
       echartsCurve.buildPath = (ctx: CanvasRenderingContext2D) =>
         buildPath(ctx, edgeLayout, curveness);
       echartsCurve.dirtyShape();

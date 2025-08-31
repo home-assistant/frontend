@@ -266,6 +266,15 @@ export function calculateSectionDimensions(
   return { sectionSize, sectionDepthSize };
 }
 
+/**
+ * Basically does `align-items: space-around`
+ * @param section - The section to position nodes in
+ * @param index - The index of the section
+ * @param sectionSize - The size of the section
+ * @param sectionDepthSize - The depth size of the section
+ * @param globalValueToSizeRatio - The global value to size ratio
+ * @param orient - The orientation of the section (vertical or horizontal)
+ */
 function positionNodesInSection(
   section: {
     nodes: SectionNode[];
@@ -276,7 +285,6 @@ function positionNodesInSection(
   index: number,
   sectionSize: number,
   sectionDepthSize: number,
-  _nodeGap: number,
   globalValueToSizeRatio: number,
   orient: "vertical" | "horizontal"
 ) {
@@ -363,7 +371,6 @@ function processNodes(
       index,
       sectionSize,
       sectionDepthSize,
-      nodeGap,
       globalValueToSizeRatio,
       orient
     );
