@@ -90,8 +90,6 @@ class HaLogbookRenderer extends LitElement {
   // @ts-ignore
   @restoreScroll(".container") private _savedScrollPos?: number;
 
-  private _isFullDay = false;
-
   protected willUpdate(changedProps: PropertyValues<this>) {
     if (
       (!this.hasUpdated && this.virtualize) ||
