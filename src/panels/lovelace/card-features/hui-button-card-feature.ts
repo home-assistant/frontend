@@ -52,10 +52,6 @@ class HuiButtonCardFeature extends LitElement implements LovelaceCardFeature {
       button_action: undefined,
       ...config,
     };
-
-    this.context = {
-      entity_id: config.entity ?? this.context?.entity_id,
-    };
   }
 
   private _handleAction(ev: ActionHandlerEvent) {
