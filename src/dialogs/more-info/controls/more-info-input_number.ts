@@ -9,10 +9,9 @@ import "../../../components/ha-icon-button";
 import "../components/ha-more-info-state-header";
 
 @customElement("more-info-input_number")
-
 class MoreInfoInputNumber extends LitElement {
   @property({ attribute: false }) public hass!: HomeAssistant;
-  
+
   @property({ attribute: false }) public stateObj?: HassEntity;
 
   @state() private _currentValue?: number;
@@ -110,7 +109,7 @@ class MoreInfoInputNumber extends LitElement {
                 <ha-icon-button
                   class="increment"
                   .label=${this.hass.localize(
-                    "ui.card.counter.actions.increment",
+                    "ui.card.counter.actions.increment"
                   )}
                   @click=${this._increment}
                 >
@@ -128,7 +127,7 @@ class MoreInfoInputNumber extends LitElement {
                 <ha-icon-button
                   class="decrement"
                   .label=${this.hass.localize(
-                    "ui.card.counter.actions.decrement",
+                    "ui.card.counter.actions.decrement"
                   )}
                   @click=${this._decrement}
                 >
