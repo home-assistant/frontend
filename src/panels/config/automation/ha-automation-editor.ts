@@ -11,11 +11,13 @@ import {
   mdiPlayCircleOutline,
   mdiPlaylistEdit,
   mdiPlusCircleMultipleOutline,
+  mdiRedo,
   mdiRenameBox,
   mdiRobotConfused,
   mdiStopCircleOutline,
   mdiTag,
   mdiTransitConnection,
+  mdiUndo,
 } from "@mdi/js";
 import type { UnsubscribeFunc } from "home-assistant-js-websocket";
 import type { CSSResultGroup, PropertyValues, TemplateResult } from "lit";
@@ -81,6 +83,7 @@ import {
 import "./blueprint-automation-editor";
 import "./manual-automation-editor";
 import type { HaManualAutomationEditor } from "./manual-automation-editor";
+import { UndoRedoMixin } from "../../../mixins/undo-redo-mixin";
 
 declare global {
   interface HTMLElementTagNameMap {
@@ -100,9 +103,12 @@ declare global {
   }
 }
 
-export class HaAutomationEditor extends PreventUnsavedMixin(
-  KeyboardShortcutMixin(LitElement)
-) {
+const baseEditorMixins = PreventUnsavedMixin(KeyboardShortcutMixin(LitElement));
+
+export class HaAutomationEditor extends UndoRedoMixin<
+  typeof baseEditorMixins,
+  AutomationConfig
+>(baseEditorMixins) {
   @property({ attribute: false }) public hass!: HomeAssistant;
 
   @property({ attribute: false }) public automationId: string | null = null;
@@ -214,6 +220,25 @@ export class HaAutomationEditor extends PreventUnsavedMixin(
       >
         ${this._config?.id && !this.narrow
           ? html`
+              ${this._mode === "gui"
+                ? html` <ha-icon-button
+                      slot="toolbar-icon"
+                      .label=${this.hass.localize("ui.common.undo")}
+                      .path=${mdiUndo}
+                      @click=${this.undo}
+                      ?disabled=${!this.canUndo}
+                    >
+                    </ha-icon-button>
+                    <ha-icon-button
+                      slot="toolbar-icon"
+                      .label=${this.hass.localize("ui.common.redo")}
+                      .path=${mdiRedo}
+                      @click=${this.redo}
+                      ?disabled=${!this.canRedo}
+                    >
+                    </ha-icon-button>`
+                : nothing}
+
               <ha-button
                 appearance="plain"
                 size="small"
@@ -709,6 +734,10 @@ export class HaAutomationEditor extends PreventUnsavedMixin(
   private _valueChanged(ev: CustomEvent<{ value: AutomationConfig }>) {
     ev.stopPropagation();
 
+    if (this._config) {
+      this.pushToUndo(this._config);
+    }
+
     this._config = ev.detail.value;
     if (this._readOnly) {
       return;
@@ -1117,6 +1146,8 @@ export class HaAutomationEditor extends PreventUnsavedMixin(
       x: () => this._cutSelectedRow(),
       Delete: () => this._deleteSelectedRow(),
       Backspace: () => this._deleteSelectedRow(),
+      z: () => this.undo(),
+      Z: () => this.redo(),
     };
   }
 
@@ -1148,6 +1179,16 @@ export class HaAutomationEditor extends PreventUnsavedMixin(
 
   private _deleteSelectedRow() {
     this._manualEditor?.deleteSelectedRow();
+  }
+
+  protected get currentConfig() {
+    return this._config;
+  }
+
+  protected applyUndoRedo(config: AutomationConfig) {
+    this._manualEditor?.triggerCloseSidebar();
+    this._config = config;
+    this._dirty = true;
   }
 
   static get styles(): CSSResultGroup {

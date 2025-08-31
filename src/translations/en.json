@@ -416,6 +416,7 @@
       "next": "Next",
       "back": "Back",
       "undo": "Undo",
+      "redo": "Redo",
       "move": "Move",
       "save": "Save",
       "apply": "Apply",
