@@ -217,13 +217,20 @@ export class BluetoothConfigDashboard extends LitElement {
         </div>
         ${scannerState.current_mode !== scannerState.requested_mode
           ? html`<ha-alert alert-type="warning">
-              ${this.hass.localize(
-                "ui.panel.config.bluetooth.scanner_mode_mismatch",
-                {
-                  requested: formatMode(scannerState.requested_mode),
-                  current: formatMode(scannerState.current_mode),
-                }
-              )}
+              <div>
+                ${this.hass.localize(
+                  "ui.panel.config.bluetooth.scanner_mode_mismatch",
+                  {
+                    requested: formatMode(scannerState.requested_mode),
+                    current: formatMode(scannerState.current_mode),
+                  }
+                )}
+              </div>
+              <ul>
+                <li>${this.hass.localize("ui.panel.config.bluetooth.scanner_mode_mismatch_proxy")}</li>
+                <li>${this.hass.localize("ui.panel.config.bluetooth.scanner_mode_mismatch_usb")}</li>
+                <li>${this.hass.localize("ui.panel.config.bluetooth.scanner_mode_mismatch_onboard")}</li>
+              </ul>
             </ha-alert>`
           : nothing}
       </div>
