@@ -19,7 +19,6 @@ import type {
 import { getSensorNumericDeviceClasses } from "../../../data/sensor";
 import { isComponentLoaded } from "../../../common/config/is_component_loaded";
 import { SubscribeMixin } from "../../../mixins/subscribe-mixin";
-import { getGraphColorByIndex } from "../../../common/color/colors";
 import { computeTimelineColor } from "../../../components/chart/timeline-color";
 import { downSampleLineData } from "../../../components/chart/down-sample";
 import { fireEvent } from "../../../common/dom/fire_event";
@@ -95,18 +94,17 @@ class HuiHistoryChartCardFeature
     if (line) {
       const points = this._generateLinePoints(line);
       const { paths, filledPaths } = this._getLinePaths(points);
-      const color = getGraphColorByIndex(0, this.style);
 
       return html`
         <div class="line" @click=${this._handleClick}>
           ${svg`<svg width="${width}" height="${height}" viewBox="0 0 ${width} ${height}">
             ${paths.map(
               (path) =>
-                svg`<path d="${path}" stroke="${color}" stroke-width="1" stroke-linecap="round" fill="none" />`
+                svg`<path d="${path}" stroke="var(--feature-color)" stroke-width="1" stroke-linecap="round" fill="none" />`
             )}
             ${filledPaths.map(
               (path) =>
-                svg`<path d="${path}" stroke="none" stroke-linecap="round" fill="${color}" fill-opacity="0.2" />`
+                svg`<path d="${path}" stroke="none" stroke-linecap="round" fill="var(--feature-color)" fill-opacity="0.2" />`
             )}
               </svg>`}
         </div>
