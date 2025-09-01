@@ -53,13 +53,6 @@ export class HaNumericArrowInput extends LitElement {
     </div>`;
   }
 
-  protected updated(changedProperties: PropertyValues) {
-    super.updated(changedProperties);
-    if (changedProperties.has("value")) {
-      fireEvent(this, "value-changed", { value: this.value });
-    }
-  }
-
   private _keyDown(ev: KeyboardEvent) {
     if (ev.key === "ArrowUp") {
       this._up();
@@ -80,10 +73,10 @@ export class HaNumericArrowInput extends LitElement {
   }
 
   private _clampValue(value: number) {
-    if (this.max && value > this.max) {
+    if (this.max && value >= this.max) {
       return this.max;
     }
-    if (this.min && value < this.min) {
+    if (this.min && value <= this.min) {
       return this.min;
     }
     return value;

@@ -155,35 +155,38 @@ export class HaTimePicker extends LitElement {
     }
   }
 
-  private _hoursChanged(ev: CustomEvent<{ value?: number }>) {
+  private _hoursChanged(ev: CustomEvent<{ value: number }>) {
     const value = ev.detail.value;
-    if (value) {
-      if (this._useAmPm) {
-        if (value > 12) {
-          this._hours = value - 12;
-        } else if (value === 0) {
-          this._hours = 12;
-        } else {
-          this._hours = value;
-        }
+    console.log({ originalValue: this.value }, "hoursChanged", value);
+    if (this._useAmPm) {
+      if (value > 12) {
+        this._hours = value - 12;
+      } else if (value === 0) {
+        this._hours = 12;
       } else {
         this._hours = value;
       }
+    } else {
+      this._hours = value;
     }
   }
 
-  private _minutesChanged(ev: CustomEvent<{ value?: number }>) {
-    const value = ev.detail.value;
-    if (value) {
-      this._minutes = value;
-    }
+  private _minutesChanged(ev: CustomEvent<{ value: number }>) {
+    console.log(
+      { originalValue: this.value },
+      "minutesChanged",
+      ev.detail.value
+    );
+    this._minutes = ev.detail.value;
   }
 
-  private _secondsChanged(ev: CustomEvent<{ value?: number }>) {
-    const value = ev.detail.value;
-    if (value) {
-      this._seconds = value;
-    }
+  private _secondsChanged(ev: CustomEvent<{ value: number }>) {
+    console.log(
+      { originalValue: this.value },
+      "secondsChanged",
+      ev.detail.value
+    );
+    this._seconds = ev.detail.value;
   }
 
   private _toggleAmPm() {
@@ -191,6 +194,13 @@ export class HaTimePicker extends LitElement {
   }
 
   private _timeUpdated() {
+    console.log(
+      { originalValue: this.value },
+      "timeUpdated",
+      this._hours,
+      this._minutes,
+      this._seconds
+    );
     const timeParts = [
       this._hours.toString().padStart(2, "0"),
       this._minutes.toString().padStart(2, "0"),
