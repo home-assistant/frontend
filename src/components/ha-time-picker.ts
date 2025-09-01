@@ -152,9 +152,8 @@ export class HaTimePicker extends LitElement {
     }
   }
 
-  private _hoursChanged(ev: CustomEvent<{ value: number }>) {
+  private _hoursChanged(ev: CustomEvent<{ clamped: boolean; value: number }>) {
     const value = ev.detail.value;
-    console.log({ originalValue: this.value }, "hoursChanged", value);
     if (this._useAmPm) {
       if (value > 12) {
         this._hours = value - 12;
@@ -168,22 +167,38 @@ export class HaTimePicker extends LitElement {
     }
   }
 
-  private _minutesChanged(ev: CustomEvent<{ value: number }>) {
-    console.log(
-      { originalValue: this.value },
-      "minutesChanged",
-      ev.detail.value
-    );
+  private _minutesChanged(
+    ev: CustomEvent<{ clamped: boolean; value: number }>
+  ) {
     this._minutes = ev.detail.value;
+    if (ev.detail.clamped) {
+      if (ev.detail.value <= 0) {
+        this._hours -= 1;
+        this._minutes = 59;
+      }
+
+      if (ev.detail.value >= 59) {
+        this._hours += 1;
+        this._minutes = 0;
+      }
+    }
   }
 
-  private _secondsChanged(ev: CustomEvent<{ value: number }>) {
-    console.log(
-      { originalValue: this.value },
-      "secondsChanged",
-      ev.detail.value
-    );
+  private _secondsChanged(
+    ev: CustomEvent<{ clamped: boolean; value: number }>
+  ) {
     this._seconds = ev.detail.value;
+    if (ev.detail.clamped) {
+      if (ev.detail.value <= 0) {
+        this._minutes -= 1;
+        this._seconds = 59;
+      }
+
+      if (ev.detail.value >= 59) {
+        this._minutes += 1;
+        this._seconds = 0;
+      }
+    }
   }
 
   private _toggleAmPm() {
@@ -191,13 +206,6 @@ export class HaTimePicker extends LitElement {
   }
 
   private _timeUpdated() {
-    console.log(
-      { originalValue: this.value },
-      "timeUpdated",
-      this._hours,
-      this._minutes,
-      this._seconds
-    );
     const timeParts = [
       this._hours.toString().padStart(2, "0"),
       this._minutes.toString().padStart(2, "0"),

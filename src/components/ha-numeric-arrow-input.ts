@@ -64,22 +64,24 @@ export class HaNumericArrowInput extends LitElement {
 
   private _up() {
     const newValue = this.value + (this.step ?? 1);
-    fireEvent(this, "value-changed", { value: this._clampValue(newValue) });
+    fireEvent(this, "value-changed", this._clampValue(newValue));
   }
 
   private _down() {
     const newValue = this.value - (this.step ?? 1);
-    fireEvent(this, "value-changed", { value: this._clampValue(newValue) });
+    fireEvent(this, "value-changed", this._clampValue(newValue));
   }
 
-  private _clampValue(value: number) {
-    if (this.max && value >= this.max) {
-      return this.max;
+  private _clampValue(value: number): { clamped: boolean; value: number } {
+    if (this.max !== undefined && value >= this.max) {
+      return { clamped: true, value: this.max };
     }
-    if (this.min && value <= this.min) {
-      return this.min;
+
+    if (this.min !== undefined && value < this.min) {
+      return { clamped: true, value: this.min };
     }
-    return value;
+
+    return { clamped: false, value };
   }
 
   static styles = css`
