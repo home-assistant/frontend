@@ -395,7 +395,6 @@ export default class HaAutomationOptionRow extends LitElement {
       rename: () => {
         this._renameOption();
       },
-      toggleYamlMode: () => false, // no yaml mode for options
       delete: this._removeOption,
       duplicate: this._duplicateOption,
       defaultOption: !!this.defaultActions,

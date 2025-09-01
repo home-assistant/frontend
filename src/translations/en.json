@@ -5118,7 +5118,7 @@
             "integration": "Integration",
             "config_entry": "Config entry"
           },
-          "enabled_description": "Disabled devices will not be shown and entities belonging to the device will be disabled and not added to Home Assistant.",
+          "enabled_description": "Disabled devices and services will not be shown and entities belonging to them will be disabled, too.",
           "open_configuration_url": "Visit",
           "set_up_voice_assistant": "Set up voice assistant",
           "download_diagnostics": "Download diagnostics",
@@ -6817,6 +6817,20 @@
             },
             "other_areas": "Other areas",
             "areas": "Areas"
+          },
+          "home": {
+            "summary_list": {
+              "climate": "Climate",
+              "lights": "Lights",
+              "security": "Security",
+              "media_players": "Media players"
+            },
+            "welcome_user": "Welcome {user}",
+            "summaries": "Summaries",
+            "areas": "Areas",
+            "other_areas": "Other areas",
+            "unamed_device": "Unnamed device",
+            "others": "Others"
           }
         },
         "cards": {
@@ -8176,6 +8190,10 @@
               "no_entities": "No entities in this group, the section will not be displayed",
               "use_compact_card": "Use compact card",
               "use_large_card": "Use large card"
+            },
+            "home": {
+              "favorite_entities": "Favorite entities",
+              "add_favorite_entity": "Add favorite entity"
             }
           },
           "view": {

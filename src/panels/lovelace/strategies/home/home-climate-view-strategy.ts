@@ -12,10 +12,29 @@ import {
 } from "../areas/helpers/areas-strategy-helper";
 import { getHomeStructure } from "./helpers/home-structure";
 import { findEntities, HOME_SUMMARIES_FILTERS } from "./helpers/home-summaries";
+import { computeStateName } from "../../../../common/entity/compute_state_name";
+import { computeObjectId } from "../../../../common/entity/compute_object_id";
 
 export interface HomeClimateViewStrategyConfig {
   type: "home-climate";
 }
+
+const createTempHumidBadge = (hass: HomeAssistant, entityId: string) => {
+  const stateObj = hass.states[entityId];
+  return {
+    type: "tile",
+    entity: entityId,
+    name: stateObj
+      ? computeStateName(stateObj)
+      : computeObjectId(entityId).replace(/_/g, " "),
+    features: [
+      {
+        type: "history-chart",
+        hours_to_show: 3,
+      },
+    ],
+  };
+};
 
 const processAreasForClimate = (
   areaIds: string[],
@@ -46,10 +65,14 @@ const processAreasForClimate = (
       });
 
       if (hass.areas[areaId].temperature_entity_id) {
-        cards.push(computeTileCard(hass.areas[areaId].temperature_entity_id));
+        cards.push(
+          createTempHumidBadge(hass, hass.areas[areaId].temperature_entity_id)
+        );
       }
       if (hass.areas[areaId].humidity_entity_id) {
-        cards.push(computeTileCard(hass.areas[areaId].humidity_entity_id));
+        cards.push(
+          createTempHumidBadge(hass, hass.areas[areaId].humidity_entity_id)
+        );
       }
 
       for (const entityId of areaEntities) {
@@ -95,7 +118,10 @@ export class HomeClimateViewStrategy extends ReactiveElement {
         cards: [
           {
             type: "heading",
-            heading: floorCount > 1 ? floor.name : "Areas",
+            heading:
+              floorCount > 1
+                ? floor.name
+                : hass.localize("ui.panel.lovelace.strategy.home.areas"),
           },
         ],
       };
@@ -116,7 +142,10 @@ export class HomeClimateViewStrategy extends ReactiveElement {
         cards: [
           {
             type: "heading",
-            heading: floorCount > 1 ? "Other areas" : "Areas",
+            heading:
+              floorCount > 1
+                ? hass.localize("ui.panel.lovelace.strategy.home.other_areas")
+                : hass.localize("ui.panel.lovelace.strategy.home.areas"),
           },
         ],
       };
