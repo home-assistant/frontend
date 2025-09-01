@@ -218,27 +218,26 @@ export class HaAutomationEditor extends UndoRedoMixin<
         .header=${this._config.alias ||
         this.hass.localize("ui.panel.config.automation.editor.default_name")}
       >
+        ${this._mode === "gui"
+          ? html`<ha-icon-button
+                slot="toolbar-icon"
+                .label=${this.hass.localize("ui.common.undo")}
+                .path=${mdiUndo}
+                @click=${this.undo}
+                ?disabled=${!this.canUndo}
+              >
+              </ha-icon-button>
+              <ha-icon-button
+                slot="toolbar-icon"
+                .label=${this.hass.localize("ui.common.redo")}
+                .path=${mdiRedo}
+                @click=${this.redo}
+                ?disabled=${!this.canRedo}
+              >
+              </ha-icon-button>`
+          : nothing}
         ${this._config?.id && !this.narrow
           ? html`
-              ${this._mode === "gui"
-                ? html` <ha-icon-button
-                      slot="toolbar-icon"
-                      .label=${this.hass.localize("ui.common.undo")}
-                      .path=${mdiUndo}
-                      @click=${this.undo}
-                      ?disabled=${!this.canUndo}
-                    >
-                    </ha-icon-button>
-                    <ha-icon-button
-                      slot="toolbar-icon"
-                      .label=${this.hass.localize("ui.common.redo")}
-                      .path=${mdiRedo}
-                      @click=${this.redo}
-                      ?disabled=${!this.canRedo}
-                    >
-                    </ha-icon-button>`
-                : nothing}
-
               <ha-button
                 appearance="plain"
                 size="small"
