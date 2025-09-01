@@ -1,6 +1,7 @@
 import { mdiDelete, mdiPlaylistEdit } from "@mdi/js";
 import { html, LitElement } from "lit";
 import { customElement, property, query, state } from "lit/decorators";
+import { keyed } from "lit/directives/keyed";
 import { fireEvent } from "../../../../common/dom/fire_event";
 import type { LocalizeKeys } from "../../../../common/translations/localize";
 import type { ScriptFieldSidebarConfig } from "../../../../data/automation";
@@ -23,6 +24,8 @@ export default class HaAutomationSidebarScriptFieldSelector extends LitElement {
   @property({ type: Boolean, attribute: "yaml-mode" }) public yamlMode = false;
 
   @property({ type: Boolean }) public narrow = false;
+
+  @property({ attribute: "sidebar-key" }) public sidebarKey?: string;
 
   @state() private _warnings?: string[];
 
@@ -81,14 +84,18 @@ export default class HaAutomationSidebarScriptFieldSelector extends LitElement {
         )}
         <ha-svg-icon slot="start" .path=${mdiDelete}></ha-svg-icon>
       </ha-md-menu-item>
-      <ha-script-field-selector-editor
-        class="sidebar-editor"
-        .hass=${this.hass}
-        .field=${this.config.config.field}
-        .disabled=${this.disabled}
-        @value-changed=${this._valueChangedSidebar}
-        .yamlMode=${this.yamlMode}
-      ></ha-script-field-selector-editor>
+      ${keyed(
+        this.sidebarKey,
+        html`<ha-script-field-selector-editor
+          class="sidebar-editor"
+          .hass=${this.hass}
+          .field=${this.config.config.field}
+          .disabled=${this.disabled}
+          @value-changed=${this._valueChangedSidebar}
+          @yaml-changed=${this._yamlChangedSidebar}
+          .yamlMode=${this.yamlMode}
+        ></ha-script-field-selector-editor>`
+      )}
     </ha-automation-sidebar-card>`;
   }
 
@@ -114,6 +121,12 @@ export default class HaAutomationSidebarScriptFieldSelector extends LitElement {
         },
       });
     }
+  }
+
+  private _yamlChangedSidebar(ev: CustomEvent) {
+    ev.stopPropagation();
+
+    this.config?.save?.(ev.detail.value);
   }
 
   private _toggleYamlMode = () => {
