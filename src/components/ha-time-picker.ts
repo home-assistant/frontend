@@ -68,6 +68,7 @@ export class HaTimePicker extends LitElement {
         .min=${this._useAmPm ? 1 : 0}
         .max=${this._useAmPm ? 12 : 23}
         .step=${1}
+        .padStart=${2}
         .value=${this._hours}
         @value-changed=${this._hoursChanged}
       ></ha-numeric-arrow-input>
@@ -78,6 +79,7 @@ export class HaTimePicker extends LitElement {
         .min=${0}
         .max=${59}
         .step=${1}
+        .padStart=${2}
         .value=${this._minutes}
         @value-changed=${this._minutesChanged}
       ></ha-numeric-arrow-input>
@@ -90,6 +92,7 @@ export class HaTimePicker extends LitElement {
               .min=${0}
               .max=${59}
               .step=${1}
+              .padStart=${2}
               .value=${this._seconds}
               @value-changed=${this._secondsChanged}
             ></ha-numeric-arrow-input>

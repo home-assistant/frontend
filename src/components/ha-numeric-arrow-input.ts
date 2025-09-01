@@ -4,6 +4,7 @@ import { mdiArrowDown, mdiArrowUp } from "@mdi/js";
 import { fireEvent } from "../common/dom/fire_event";
 import "./ha-icon-button";
 import "./ha-textfield";
+import memoizeOne from "memoize-one";
 
 @customElement("ha-numeric-arrow-input")
 export class HaNumericArrowInput extends LitElement {
@@ -21,7 +22,13 @@ export class HaNumericArrowInput extends LitElement {
 
   @property({ attribute: false }) public labelDown?: string;
 
+  @property({ attribute: false }) public padStart?: number;
+
   @property({ attribute: false }) public value = 0;
+
+  private _paddedValue = memoizeOne((value: number, padStart?: number) =>
+    value.toString().padStart(padStart ?? 0, "0")
+  );
 
   render() {
     return html`<div
@@ -34,7 +41,9 @@ export class HaNumericArrowInput extends LitElement {
         .path=${mdiArrowUp}
         @click=${this._up}
       ></ha-icon-button>
-      <span class="numeric-arrow-input-value">${this.value}</span>
+      <span class="numeric-arrow-input-value"
+        >${this._paddedValue(this.value, this.padStart)}</span
+      >
       <ha-icon-button
         .disabled=${this.disabled}
         .label=${this.labelDown ?? ""}
