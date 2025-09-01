@@ -26,15 +26,15 @@ class SankeyView extends EchartsSankeyView {
       /**
        * Monkey patching warning:
        * This code overrides the `buildPath` method of the ECharts internal Path object for Sankey edges.
-       * 
+       *
        * Compatibility: Tested with ECharts v5.x (update this if you upgrade ECharts).
-       * 
+       *
        * Reason: ECharts does not currently provide a public API for customizing Sankey edge paths.
        *         To customize the edge shape, we must override the internal method on each edge instance.
-       * 
+       *
        * Risks: This may break if ECharts changes the internal structure of Sankey edges or the Path class.
        *        Future ECharts updates may render this patch ineffective or cause runtime errors.
-       * 
+       *
        * Migration path: If ECharts adds a public API for custom edge paths, migrate to that and remove this patch.
        *                 Track ECharts issues: https://github.com/apache/echarts/issues?q=sankey+edge+custom
        */
