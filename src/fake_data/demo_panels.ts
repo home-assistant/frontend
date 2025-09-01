@@ -79,6 +79,13 @@ export const demoPanels: Panels = {
     config: null,
     url_path: "energy",
   },
+  "time-picker": {
+    component_name: "time-picker",
+    icon: "hass:clock-outline",
+    title: "time_picker",
+    config: null,
+    url_path: "time-picker",
+  },
   // config: {
   //   component_name: "config",
   //   icon: "hass:cog",

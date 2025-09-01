@@ -80,6 +80,13 @@ class PanelDeveloperTools extends LitElement {
           <sl-tab slot="nav" panel="assist" .active=${page === "assist"}
             >Assist</sl-tab
           >
+          <sl-tab
+            slot="nav"
+            panel="time-picker"
+            .active=${page === "time-picker"}
+          >
+            Time Picker
+          </sl-tab>
         </sl-tab-group>
       </div>
       <developer-tools-router

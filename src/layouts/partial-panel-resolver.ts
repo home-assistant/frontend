@@ -30,6 +30,7 @@ const COMPONENTS = {
   my: () => import("../panels/my/ha-panel-my"),
   profile: () => import("../panels/profile/ha-panel-profile"),
   todo: () => import("../panels/todo/ha-panel-todo"),
+  "time-picker": () => import("../panels/time-picker/ha-panel-time-picker"),
   "media-browser": () =>
     import("../panels/media-browser/ha-panel-media-browser"),
 };

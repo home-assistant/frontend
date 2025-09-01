@@ -54,6 +54,10 @@ class DeveloperToolsRouter extends HassRouterPage {
         tag: "developer-tools-debug",
         load: () => import("./debug/developer-tools-debug"),
       },
+      "time-picker": {
+        tag: "developer-tools-time-picker",
+        load: () => import("../time-picker/ha-panel-time-picker"),
+      },
     },
   };
 
