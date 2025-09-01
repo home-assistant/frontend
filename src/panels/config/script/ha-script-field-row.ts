@@ -32,6 +32,8 @@ export default class HaScriptFieldRow extends LitElement {
 
   @property({ type: Boolean }) public narrow = false;
 
+  @property({ type: Boolean }) public highlight?: boolean;
+
   @state() private _yamlMode = false;
 
   @state() private _selected = false;
@@ -61,6 +63,7 @@ export default class HaScriptFieldRow extends LitElement {
           left-chevron
           @toggle-collapsed=${this._toggleCollapse}
           .collapsed=${this._collapsed}
+          .highlight=${this.highlight}
         >
           <h3 slot="header">${this.key}</h3>
 
@@ -83,6 +86,7 @@ export default class HaScriptFieldRow extends LitElement {
             .leftChevron=${SELECTOR_SELECTOR_BUILDING_BLOCKS.includes(
               Object.keys(this.field.selector)[0]
             )}
+            .highlight=${this.highlight}
           >
             <h3 slot="header">
               ${this.hass.localize(
@@ -218,7 +222,7 @@ export default class HaScriptFieldRow extends LitElement {
       },
       toggleYamlMode: () => {
         this._toggleYamlMode();
-        return this._yamlMode;
+        this.openSidebar();
       },
       delete: this._onDelete,
       config: {
@@ -331,13 +335,6 @@ export default class HaScriptFieldRow extends LitElement {
         li[role="separator"] {
           border-bottom-color: var(--divider-color);
         }
-        :host([highlight]) ha-card {
-          --shadow-default: var(--ha-card-box-shadow, 0 0 0 0 transparent);
-          --shadow-focus: 0 0 0 1px var(--state-inactive-color);
-          border-color: var(--state-inactive-color);
-          box-shadow: var(--shadow-default), var(--shadow-focus);
-        }
-
         .selector-row {
           padding: 12px 0 16px 16px;
         }

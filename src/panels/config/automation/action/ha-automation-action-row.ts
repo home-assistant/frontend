@@ -151,6 +151,8 @@ export default class HaAutomationActionRow extends LitElement {
 
   @property({ type: Boolean }) public last?: boolean;
 
+  @property({ type: Boolean }) public highlight?: boolean;
+
   @property({ type: Boolean, attribute: "sidebar" })
   public optionsInSidebar = false;
 
@@ -447,6 +449,7 @@ export default class HaAutomationActionRow extends LitElement {
                 ))}
               .collapsed=${this._collapsed}
               .selected=${this._selected}
+              .highlight=${this.highlight}
               @toggle-collapsed=${this._toggleCollapse}
               .buildingBlock=${[
                 ...ACTION_BUILDING_BLOCKS,
@@ -688,7 +691,7 @@ export default class HaAutomationActionRow extends LitElement {
       },
       toggleYamlMode: () => {
         this._toggleYamlMode();
-        return this._yamlMode;
+        this.openSidebar();
       },
       disable: this._onDisable,
       delete: this._onDelete,

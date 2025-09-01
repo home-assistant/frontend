@@ -25,6 +25,8 @@ export class HaAutomationRow extends LitElement {
   @property({ type: Boolean, reflect: true, attribute: "building-block" })
   public buildingBlock = false;
 
+  @property({ type: Boolean, reflect: true }) public highlight?: boolean;
+
   @query(".row")
   private _rowElement?: HTMLDivElement;
 
@@ -168,9 +170,20 @@ export class HaAutomationRow extends LitElement {
       margin: 0 12px;
     }
     :host([sort-selected]) .row {
-      box-shadow:
-        0px 0px 8px 4px rgba(var(--rgb-accent-color), 0.8),
-        inset 0px 2px 8px 4px rgba(var(--rgb-accent-color), 0.4);
+      outline: solid;
+      outline-color: rgba(var(--rgb-accent-color), 0.6);
+      outline-offset: -2px;
+      outline-width: 2px;
+      background-color: rgba(var(--rgb-accent-color), 0.08);
+    }
+    .row:hover {
+      background-color: rgba(var(--rgb-primary-text-color), 0.04);
+    }
+    :host([highlight]) .row {
+      background-color: rgba(var(--rgb-primary-color), 0.08);
+    }
+    :host([highlight]) .row:hover {
+      background-color: rgba(var(--rgb-primary-color), 0.16);
     }
   `;
 }

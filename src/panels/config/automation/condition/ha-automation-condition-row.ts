@@ -116,6 +116,8 @@ export default class HaAutomationConditionRow extends LitElement {
 
   @property({ type: Boolean }) public narrow = false;
 
+  @property({ type: Boolean }) public highlight?: boolean;
+
   @property({ type: Boolean, attribute: "sort-selected" })
   public sortSelected = false;
 
@@ -355,6 +357,7 @@ export default class HaAutomationConditionRow extends LitElement {
               )}
               .collapsed=${this._collapsed}
               .selected=${this._selected}
+              .highlight=${this.highlight}
               @click=${this._toggleSidebar}
               @toggle-collapsed=${this._toggleCollapse}
               .buildingBlock=${CONDITION_BUILDING_BLOCKS.includes(
@@ -660,7 +663,7 @@ export default class HaAutomationConditionRow extends LitElement {
       },
       toggleYamlMode: () => {
         this._toggleYamlMode();
-        return this._yamlMode;
+        this.openSidebar();
       },
       disable: this._onDisable,
       delete: this._onDelete,

@@ -113,6 +113,8 @@ export default class HaAutomationTriggerRow extends LitElement {
 
   @property({ type: Boolean }) public last?: boolean;
 
+  @property({ type: Boolean }) public highlight?: boolean;
+
   @property({ type: Boolean, attribute: "sidebar" })
   public optionsInSidebar = false;
 
@@ -349,6 +351,7 @@ export default class HaAutomationTriggerRow extends LitElement {
               this.trigger.enabled === false}
               @click=${this._toggleSidebar}
               .selected=${this._selected}
+              .highlight=${this.highlight}
               .sortSelected=${this.sortSelected}
               >${this._selected
                 ? "selected"
@@ -494,7 +497,7 @@ export default class HaAutomationTriggerRow extends LitElement {
       },
       toggleYamlMode: () => {
         this._toggleYamlMode();
-        return this._yamlMode;
+        this.openSidebar();
       },
       disable: this._onDisable,
       delete: this._onDelete,

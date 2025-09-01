@@ -6,12 +6,10 @@ import { customElement, property, queryAll, state } from "lit/decorators";
 import { repeat } from "lit/directives/repeat";
 import { storage } from "../../../../common/decorators/storage";
 import { fireEvent } from "../../../../common/dom/fire_event";
-import { listenMediaQuery } from "../../../../common/dom/media_query";
 import { nextRender } from "../../../../common/util/render-status";
 import "../../../../components/ha-button";
 import "../../../../components/ha-button-menu";
 import "../../../../components/ha-sortable";
-import type { HaSortableClonedEventData } from "../../../../components/ha-sortable";
 import "../../../../components/ha-svg-icon";
 import type {
   AutomationClipboard,
@@ -44,8 +42,6 @@ export default class HaAutomationCondition extends LitElement {
   @property({ type: Boolean, attribute: "sidebar" }) public optionsInSidebar =
     false;
 
-  @state() private _showReorder = false;
-
   @state() private _rowSortSelected?: number;
 
   @state()
@@ -65,21 +61,6 @@ export default class HaAutomationCondition extends LitElement {
   private _focusConditionIndexOnChange?: number;
 
   private _conditionKeys = new WeakMap<Condition, string>();
-
-  private _unsubMql?: () => void;
-
-  public connectedCallback() {
-    super.connectedCallback();
-    this._unsubMql = listenMediaQuery("(min-width: 600px)", (matches) => {
-      this._showReorder = matches;
-    });
-  }
-
-  public disconnectedCallback() {
-    super.disconnectedCallback();
-    this._unsubMql?.();
-    this._unsubMql = undefined;
-  }
 
   protected updated(changedProperties: PropertyValues) {
     if (!changedProperties.has("conditions")) {
@@ -165,13 +146,12 @@ export default class HaAutomationCondition extends LitElement {
       <ha-sortable
         handle-selector=".handle"
         draggable-selector="ha-automation-condition-row"
-        .disabled=${!this._showReorder || this.disabled}
+        .disabled=${this.disabled}
         group="conditions"
         invert-swap
         @item-moved=${this._conditionMoved}
         @item-added=${this._conditionAdded}
         @item-removed=${this._conditionRemoved}
-        @item-cloned=${this._conditionCloned}
       >
         <div class="rows ${!this.optionsInSidebar ? "no-sidebar" : ""}">
           ${repeat(
@@ -193,12 +173,12 @@ export default class HaAutomationCondition extends LitElement {
                 @move-up=${this._moveUp}
                 @value-changed=${this._conditionChanged}
                 .hass=${this.hass}
-                ?highlight=${this.highlightedConditions?.includes(cond)}
+                .highlight=${this.highlightedConditions?.includes(cond)}
                 .optionsInSidebar=${this.optionsInSidebar}
                 .sortSelected=${this._rowSortSelected === idx}
                 @stop-sort-selection=${this._stopSortSelection}
               >
-                ${this._showReorder && !this.disabled
+                ${!this.disabled
                   ? html`
                       <div
                         tabindex="0"
@@ -337,11 +317,8 @@ export default class HaAutomationCondition extends LitElement {
   private async _conditionAdded(ev: CustomEvent): Promise<void> {
     ev.stopPropagation();
     const { index, data } = ev.detail;
-    let selected = false;
-    if (data?.["ha-automation-row-selected"]) {
-      selected = true;
-      delete data["ha-automation-row-selected"];
-    }
+    const item = ev.detail.item as HaAutomationConditionRow;
+    const selected = item.isSelected();
     let conditions = [
       ...this.conditions.slice(0, index),
       data,
@@ -377,12 +354,6 @@ export default class HaAutomationCondition extends LitElement {
     // Ensure condition is removed even after update
     const conditions = this.conditions.filter((c) => c !== condition);
     fireEvent(this, "value-changed", { value: conditions });
-  }
-
-  private _conditionCloned(ev: CustomEvent<HaSortableClonedEventData>) {
-    if (ev.detail.item.isSelected()) {
-      ev.detail.item.condition["ha-automation-row-selected"] = true;
-    }
   }
 
   private _conditionChanged(ev: CustomEvent) {

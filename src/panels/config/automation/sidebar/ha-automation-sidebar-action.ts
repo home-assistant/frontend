@@ -11,6 +11,7 @@ import {
 } from "@mdi/js";
 import { html, LitElement } from "lit";
 import { customElement, property, query, state } from "lit/decorators";
+import { keyed } from "lit/directives/keyed";
 import { fireEvent } from "../../../../common/dom/fire_event";
 import { handleStructError } from "../../../../common/structs/handle-errors";
 import type { LocalizeKeys } from "../../../../common/translations/localize";
@@ -40,6 +41,8 @@ export default class HaAutomationSidebarAction extends LitElement {
   @property({ type: Boolean, attribute: "yaml-mode" }) public yamlMode = false;
 
   @property({ type: Boolean }) public narrow = false;
+
+  @property({ attribute: "sidebar-key" }) public sidebarKey?: string;
 
   @state() private _warnings?: string[];
 
@@ -181,18 +184,22 @@ export default class HaAutomationSidebarAction extends LitElement {
       </ha-md-menu-item>
       ${description && !this.yamlMode
         ? html`<div class="description">${description}</div>`
-        : html`<ha-automation-action-editor
-            class="sidebar-editor"
-            .hass=${this.hass}
-            .action=${actionConfig}
-            .yamlMode=${this.yamlMode}
-            .uiSupported=${this.config.uiSupported}
-            @value-changed=${this._valueChangedSidebar}
-            sidebar
-            narrow
-            .disabled=${this.disabled}
-            @ui-mode-not-available=${this._handleUiModeNotAvailable}
-          ></ha-automation-action-editor>`}
+        : keyed(
+            this.sidebarKey,
+            html`<ha-automation-action-editor
+              class="sidebar-editor"
+              .hass=${this.hass}
+              .action=${actionConfig}
+              .yamlMode=${this.yamlMode}
+              .uiSupported=${this.config.uiSupported}
+              @value-changed=${this._valueChangedSidebar}
+              @yaml-changed=${this._yamlChangedSidebar}
+              sidebar
+              narrow
+              .disabled=${this.disabled}
+              @ui-mode-not-available=${this._handleUiModeNotAvailable}
+            ></ha-automation-action-editor>`
+          )}
     </ha-automation-sidebar-card>`;
   }
 
@@ -218,6 +225,12 @@ export default class HaAutomationSidebarAction extends LitElement {
         },
       });
     }
+  }
+
+  private _yamlChangedSidebar(ev: CustomEvent) {
+    ev.stopPropagation();
+
+    this.config?.save?.(ev.detail.value);
   }
 
   private _toggleYamlMode = () => {
