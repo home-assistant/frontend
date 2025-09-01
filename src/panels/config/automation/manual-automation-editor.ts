@@ -491,6 +491,14 @@ export class HaManualAutomationEditor extends LitElement {
       ev.preventDefault();
 
       if (
+        Object.keys(normalized).length === 1 &&
+        ensureArray(normalized[Object.keys(normalized)[0]]).length === 1
+      ) {
+        this._appendToExistingConfig(normalized);
+        return;
+      }
+
+      if (
         this.dirty ||
         ensureArray(this.config.triggers)?.length ||
         ensureArray(this.config.conditions)?.length ||

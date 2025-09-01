@@ -266,7 +266,6 @@ export default class HaScriptFieldRow extends LitElement {
           fireEvent(this, "close-sidebar");
         }
       },
-      enableCancelAction: true,
     });
   };
 

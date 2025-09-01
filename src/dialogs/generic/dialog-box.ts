@@ -10,12 +10,11 @@ import type { HaMdDialog } from "../../components/ha-md-dialog";
 import "../../components/ha-svg-icon";
 import "../../components/ha-textfield";
 import type { HaTextField } from "../../components/ha-textfield";
-import { KeyboardShortcutMixin } from "../../mixins/keyboard-shortcut-mixin";
 import type { HomeAssistant } from "../../types";
 import type { DialogBoxParams } from "./show-dialog-box";
 
 @customElement("dialog-box")
-class DialogBox extends KeyboardShortcutMixin(LitElement) {
+class DialogBox extends LitElement {
   @property({ attribute: false }) public hass!: HomeAssistant;
 
   @state() private _params?: DialogBoxParams;
@@ -63,8 +62,7 @@ class DialogBox extends KeyboardShortcutMixin(LitElement) {
     return html`
       <ha-md-dialog
         open
-        .disableCancelAction=${!this._params.enableCancelAction &&
-        confirmPrompt}
+        .disableCancelAction=${confirmPrompt}
         @closed=${this._dialogClosed}
         type="alert"
         aria-labelledby="dialog-box-title"
@@ -106,8 +104,7 @@ class DialogBox extends KeyboardShortcutMixin(LitElement) {
             ? html`
                 <ha-button
                   @click=${this._dismiss}
-                  ?dialogInitialFocus=${!this._params.prompt &&
-                  this._params.destructive}
+                  ?autofocus=${!this._params.prompt && this._params.destructive}
                   appearance="plain"
                 >
                   ${this._params.dismissText
@@ -118,8 +115,7 @@ class DialogBox extends KeyboardShortcutMixin(LitElement) {
             : nothing}
           <ha-button
             @click=${this._confirm}
-            ?dialogInitialFocus=${!this._params.prompt &&
-            !this._params.destructive}
+            ?autofocus=${!this._params.prompt && !this._params.destructive}
             variant=${this._params.destructive ? "danger" : "brand"}
           >
             ${this._params.confirmText
@@ -168,12 +164,6 @@ class DialogBox extends KeyboardShortcutMixin(LitElement) {
     this._params = undefined;
     this._closeResolve?.();
     this._closeResolve = undefined;
-  }
-
-  protected supportedSingleKeyShortcuts(): SupportedShortcuts {
-    return {
-      Enter: () => this._confirm(),
-    };
   }
 
   static styles = css`

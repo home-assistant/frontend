@@ -17,7 +17,6 @@ export interface ConfirmationDialogParams extends BaseDialogBoxParams {
   confirm?: () => void;
   cancel?: () => void;
   destructive?: boolean;
-  enableCancelAction?: boolean;
 }
 
 export interface PromptDialogParams extends BaseDialogBoxParams {
