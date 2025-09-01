@@ -112,7 +112,11 @@ export class HaDialog extends DialogBase {
       }
       .mdc-dialog .mdc-dialog__content {
         position: var(--dialog-content-position, relative);
-        padding: var(--dialog-content-padding, 24px);
+        padding: var(
+          --dialog-content-padding,
+          24px max(24px, var(--safe-area-inset-right)) 24px
+            max(24px, var(--safe-area-inset-left))
+        );
       }
       :host([hideactions]) .mdc-dialog .mdc-dialog__content {
         padding-bottom: max(
@@ -124,6 +128,10 @@ export class HaDialog extends DialogBase {
         position: var(--dialog-surface-position, relative);
         top: var(--dialog-surface-top);
         margin-top: var(--dialog-surface-margin-top);
+        // TODO support left, right and bottom safe area
+        //margin-left: var(--safe-area-inset-left);
+        //margin-right: var(--safe-area-inset-right);
+        //margin-bottom: var(--safe-area-inset-bottom);
         min-height: var(--mdc-dialog-min-height, auto);
         border-radius: var(--ha-dialog-border-radius, 24px);
         -webkit-backdrop-filter: var(--ha-dialog-surface-backdrop-filter, none);
