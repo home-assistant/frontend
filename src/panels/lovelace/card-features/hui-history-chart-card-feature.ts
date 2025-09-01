@@ -92,8 +92,8 @@ class HuiHistoryChartCardFeature
     const width = this.clientWidth;
     const height = this.clientHeight;
     if (line) {
-      const points = this._generateLinePoints(line);
-      const { paths, filledPaths } = this._getLinePaths(points);
+      const { points, yAxisOrigin } = this._generateLinePoints(line);
+      const { paths, filledPaths } = this._getLinePaths(points, yAxisOrigin);
 
       return html`
         <div class="line" @click=${this._handleClick}>
@@ -159,9 +159,13 @@ class HuiHistoryChartCardFeature
     );
   }
 
-  private _generateLinePoints(line: LineChartUnit): { x: number; y: number }[] {
+  private _generateLinePoints(line: LineChartUnit): {
+    points: { x: number; y: number }[];
+    yAxisOrigin: number;
+  } {
     const width = this.clientWidth;
     const height = this.clientHeight;
+    let yAxisOrigin = height;
     let minY = Number(line.data[0].states[0].state);
     let maxY = Number(line.data[0].states[0].state);
     const minX = line.data[0].states[0].last_changed;
@@ -170,8 +174,7 @@ class HuiHistoryChartCardFeature
       const stateValue = Number(stateData.state);
       if (stateValue < minY) {
         minY = stateValue;
-      }
-      if (stateValue > maxY) {
+      } else if (stateValue > maxY) {
         maxY = stateValue;
       }
     });
@@ -185,9 +188,21 @@ class HuiHistoryChartCardFeature
       minX,
       maxX
     );
-    // add margin to the min and max
-    minY -= rangeY * 0.1;
-    maxY += rangeY * 0.1;
+    if (maxY < 0) {
+      // all values are negative
+      // add margin
+      maxY += rangeY * 0.1;
+      maxY = Math.min(0, maxY);
+      yAxisOrigin = 0;
+    } else if (minY < 0) {
+      // some values are negative
+      yAxisOrigin = (maxY / (maxY - minY || 1)) * height;
+    } else {
+      // all values are positive
+      // add margin
+      minY -= rangeY * 0.1;
+      minY = Math.max(0, minY);
+    }
     const yDenom = maxY - minY || 1;
     const xDenom = maxX - minX || 1;
     const points = sampledData!.map((point) => {
@@ -196,7 +211,7 @@ class HuiHistoryChartCardFeature
       return { x, y };
     });
     points.push({ x: width, y: points[points.length - 1].y });
-    return points;
+    return { points, yAxisOrigin };
   }
 
   private _generateTimelineRanges(timeline: TimelineEntity) {
@@ -232,7 +247,10 @@ class HuiHistoryChartCardFeature
     return ranges;
   }
 
-  private _getLinePaths(points: { x: number; y: number }[]) {
+  private _getLinePaths(
+    points: { x: number; y: number }[],
+    yAxisOrigin: number
+  ) {
     const paths: string[] = [];
     const filledPaths: string[] = [];
     if (!points.length) {
@@ -267,7 +285,7 @@ class HuiHistoryChartCardFeature
       paths.push(path);
       filledPaths.push(
         path +
-          ` L ${next!.x},${this.clientHeight} L ${pathPoints[0].x},${this.clientHeight} Z`
+          ` L ${next!.x},${yAxisOrigin} L ${pathPoints[0].x},${yAxisOrigin} Z`
       );
     });
 
