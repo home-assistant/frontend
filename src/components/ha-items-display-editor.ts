@@ -393,10 +393,13 @@ export class HaItemDisplayEditor extends LitElement {
       --md-list-item-one-line-container-height: 48px;
     }
     ha-md-list-item.drag-selected {
-      box-shadow:
-        0px 0px 8px 4px rgba(var(--rgb-accent-color), 0.8),
-        inset 0px 2px 8px 4px rgba(var(--rgb-accent-color), 0.4);
+      --md-focus-ring-color: rgba(var(--rgb-accent-color), 0.6);
       border-radius: 8px;
+      outline: solid;
+      outline-color: rgba(var(--rgb-accent-color), 0.6);
+      outline-offset: -2px;
+      outline-width: 2px;
+      background-color: rgba(var(--rgb-accent-color), 0.08);
     }
     ha-md-list-item ha-icon-button {
       margin-left: -12px;
