@@ -60,25 +60,23 @@ export class HaQrCode extends LitElement {
         changedProperties.has("centerImage"))
     ) {
       const computedStyles = getComputedStyle(this);
-      const textRgb = computedStyles.getPropertyValue(
-        "--rgb-primary-text-color"
-      );
-      const backgroundRgb = computedStyles.getPropertyValue(
-        "--rgb-card-background-color"
+      const textColor = computedStyles.getPropertyValue("--primary-text-color");
+      const backgroundColor = computedStyles.getPropertyValue(
+        "--card-background-color"
       );
       const textHex = rgb2hex(
-        textRgb.split(",").map((a) => parseInt(a, 10)) as [
-          number,
-          number,
-          number,
-        ]
+        textColor
+          .split("(")[1]
+          .split(")")[0]
+          .split(",")
+          .map((a) => parseInt(a, 10)) as [number, number, number]
       );
       const backgroundHex = rgb2hex(
-        backgroundRgb.split(",").map((a) => parseInt(a, 10)) as [
-          number,
-          number,
-          number,
-        ]
+        backgroundColor
+          .split("(")[1]
+          .split(")")[0]
+          .split(",")
+          .map((a) => parseInt(a, 10)) as [number, number, number]
       );
 
       QRCode.toCanvas(canvas, this.data, {

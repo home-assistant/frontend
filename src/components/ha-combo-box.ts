@@ -30,7 +30,7 @@ registerStyles(
       padding: 0 !important;
     }
     :host([focused]:not([disabled])) {
-      background-color: rgba(var(--rgb-primary-text-color, 0, 0, 0), 0.12);
+      background-color: rgb(from var(--primary-text-color) r g b / 0.12);
     }
     :host([selected]:not([disabled])) {
       background-color: transparent;

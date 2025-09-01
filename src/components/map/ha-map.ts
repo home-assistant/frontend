@@ -742,7 +742,7 @@ export class HaMap extends ReactiveElement {
     .marker-cluster div {
       background-clip: padding-box;
       background-color: var(--primary-color);
-      border: 3px solid rgba(var(--rgb-primary-color), 0.2);
+      border: 3px solid rgb(from var(--primary-color) r g b / 0.2);
       width: 32px;
       height: 32px;
       border-radius: 20px;

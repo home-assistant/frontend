@@ -157,7 +157,7 @@ export class DialogSupportPackage extends LitElement {
     }
 
     table > tbody > tr:nth-child(odd) {
-      background-color: rgba(var(--rgb-primary-text-color), 0.04);
+      background-color: rgb(from var(--primary-text-color) r g b / 0.04);
     }
 
     table > tbody > tr > td {
@@ -170,7 +170,7 @@ export class DialogSupportPackage extends LitElement {
     }
 
     table > tbody > tr:hover {
-      background-color: rgba(var(--rgb-primary-text-color), 0.08);
+      background-color: rgb(from var(--primary-text-color) r g b / 0.08);
     }
 
     tr {

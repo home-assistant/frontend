@@ -1171,7 +1171,7 @@ export class HaMediaPlayerBrowse extends LitElement {
         }
 
         .child .play.can_expand {
-          background-color: rgba(var(--rgb-card-background-color), 0.5);
+          background-color: rgb(from var(--card-background-color) r g b / 0.5);
           top: auto;
           bottom: 0px;
           right: 8px;
@@ -1210,7 +1210,7 @@ export class HaMediaPlayerBrowse extends LitElement {
         ha-list-item .graphic .play {
           opacity: 0;
           transition: all 0.5s;
-          background-color: rgba(var(--rgb-card-background-color), 0.5);
+          background-color: rgb(from var(--card-background-color) r g b / 0.5);
           border-radius: 50%;
           --mdc-icon-button-size: 40px;
         }
@@ -1347,7 +1347,7 @@ export class HaMediaPlayerBrowse extends LitElement {
           bottom: 0px;
           right: -24px;
           --mdc-fab-box-shadow: none;
-          --mdc-theme-secondary: rgba(var(--rgb-primary-color), 0.5);
+          --mdc-theme-secondary: rgb(from var(--primary-color) r g b / 0.5);
         }
 
         lit-virtualizer {
