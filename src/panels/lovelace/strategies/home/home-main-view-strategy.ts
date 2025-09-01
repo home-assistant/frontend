@@ -215,6 +215,7 @@ export class HomeMainViewStrategy extends ReactiveElement {
             "ui.panel.lovelace.cards.energy.energy_distribution.title_today"
           ),
           type: "energy-distribution",
+          collection_key: "energy_home_dashboard",
           link_dashboard: true,
         });
       }
