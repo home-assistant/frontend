@@ -134,9 +134,6 @@ export class HaTimePicker extends LitElement {
 
   protected updated(changedProperties: PropertyValues) {
     super.updated(changedProperties);
-    if (changedProperties.has("value")) {
-      this._timeUpdated();
-    }
 
     if (changedProperties.has("_hours")) {
       this._timeUpdated();
