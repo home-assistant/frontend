@@ -32,6 +32,7 @@
         justify-content: flex-start;
         margin-bottom: 32px;
         margin-left: 32px;
+        padding-top: var(--safe-area-inset-top);
       }
 
       .header img {
