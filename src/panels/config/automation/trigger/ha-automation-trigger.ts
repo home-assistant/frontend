@@ -6,7 +6,6 @@ import { customElement, property, state } from "lit/decorators";
 import { repeat } from "lit/directives/repeat";
 import { storage } from "../../../../common/decorators/storage";
 import { fireEvent } from "../../../../common/dom/fire_event";
-import { listenMediaQuery } from "../../../../common/dom/media_query";
 import { nextRender } from "../../../../common/util/render-status";
 import "../../../../components/ha-button";
 import "../../../../components/ha-button-menu";
@@ -45,8 +44,6 @@ export default class HaAutomationTrigger extends LitElement {
 
   @property({ type: Boolean }) public root = false;
 
-  @state() private _showReorder = false;
-
   @state() private _rowSortSelected?: number;
 
   @state()
@@ -64,27 +61,12 @@ export default class HaAutomationTrigger extends LitElement {
 
   private _triggerKeys = new WeakMap<Trigger, string>();
 
-  private _unsubMql?: () => void;
-
-  public connectedCallback() {
-    super.connectedCallback();
-    this._unsubMql = listenMediaQuery("(min-width: 600px)", (matches) => {
-      this._showReorder = matches;
-    });
-  }
-
-  public disconnectedCallback() {
-    super.disconnectedCallback();
-    this._unsubMql?.();
-    this._unsubMql = undefined;
-  }
-
   protected render() {
     return html`
       <ha-sortable
         handle-selector=".handle"
         draggable-selector="ha-automation-trigger-row"
-        .disabled=${!this._showReorder || this.disabled}
+        .disabled=${this.disabled}
         group="triggers"
         invert-swap
         @item-moved=${this._triggerMoved}
@@ -115,7 +97,7 @@ export default class HaAutomationTrigger extends LitElement {
                 .sortSelected=${this._rowSortSelected === idx}
                 @stop-sort-selection=${this._stopSortSelection}
               >
-                ${this._showReorder && !this.disabled
+                ${!this.disabled
                   ? html`
                       <div
                         tabindex="0"
