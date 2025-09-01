@@ -196,7 +196,7 @@ export class HuiHomeSummaryCard extends LitElement implements LovelaceCard {
             }
           );
         }
-        return "All secure";
+        return this.hass.localize("ui.card.home-summary.all_secure");
       }
       case "media_players": {
         // Playing media
