@@ -238,7 +238,8 @@ export default class HaAutomationOption extends LitElement {
 
   private async _optionAdded(ev: CustomEvent): Promise<void> {
     ev.stopPropagation();
-    const { index, data, item } = ev.detail;
+    const { index, data } = ev.detail;
+    const item = ev.detail.item as HaAutomationOptionRow;
     const selected = item.isSelected();
 
     const options = [

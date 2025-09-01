@@ -316,7 +316,8 @@ export default class HaAutomationCondition extends LitElement {
 
   private async _conditionAdded(ev: CustomEvent): Promise<void> {
     ev.stopPropagation();
-    const { index, data, item } = ev.detail;
+    const { index, data } = ev.detail;
+    const item = ev.detail.item as HaAutomationConditionRow;
     const selected = item.isSelected();
     let conditions = [
       ...this.conditions.slice(0, index),
