@@ -9,14 +9,20 @@ import {
   mdiRenameBox,
   mdiStopCircleOutline,
 } from "@mdi/js";
-import { html, LitElement } from "lit";
+import { css, html, LitElement } from "lit";
 import { customElement, property, query, state } from "lit/decorators";
+import { classMap } from "lit/directives/class-map";
 import { keyed } from "lit/directives/keyed";
 import { fireEvent } from "../../../../common/dom/fire_event";
 import { handleStructError } from "../../../../common/structs/handle-errors";
-import type { ConditionSidebarConfig } from "../../../../data/automation";
+import {
+  testCondition,
+  type ConditionSidebarConfig,
+} from "../../../../data/automation";
 import { CONDITION_BUILDING_BLOCKS } from "../../../../data/condition";
+import { validateConfig } from "../../../../data/config";
 import type { HomeAssistant } from "../../../../types";
+import { showAlertDialog } from "../../../lovelace/custom-card-helpers";
 import "../condition/ha-automation-condition-editor";
 import type HaAutomationConditionEditor from "../condition/ha-automation-condition-editor";
 import { sidebarEditorStyles } from "../styles";
@@ -39,6 +45,10 @@ export default class HaAutomationSidebarCondition extends LitElement {
   @property({ attribute: "sidebar-key" }) public sidebarKey?: string;
 
   @state() private _warnings?: string[];
+
+  @state() private _testing = false;
+
+  @state() private _testingResult?: boolean;
 
   @query(".sidebar-editor")
   public editor?: HaAutomationConditionEditor;
@@ -88,7 +98,7 @@ export default class HaAutomationSidebarCondition extends LitElement {
     >
       <span slot="title">${title}</span>
       <span slot="subtitle">${subtitle}</span>
-      <ha-md-menu-item slot="menu-items" .clickAction=${this.config.test}>
+      <ha-md-menu-item slot="menu-items" .clickAction=${this._testCondition}>
         ${this.hass.localize(
           "ui.panel.config.automation.editor.conditions.test"
         )}
@@ -191,8 +201,80 @@ export default class HaAutomationSidebarCondition extends LitElement {
               sidebar
             ></ha-automation-condition-editor>`
           )}
+      <div
+        class="testing ${classMap({
+          active: this._testing,
+          pass: this._testingResult === true,
+          error: this._testingResult === false,
+        })}"
+      >
+        ${this._testingResult
+          ? this.hass.localize(
+              "ui.panel.config.automation.editor.conditions.testing_pass"
+            )
+          : this.hass.localize(
+              "ui.panel.config.automation.editor.conditions.testing_error"
+            )}
+      </div>
     </ha-automation-sidebar-card>`;
   }
+
+  private _testCondition = async () => {
+    if (this._testing) {
+      return;
+    }
+    this._testingResult = undefined;
+    this._testing = true;
+    const condition = this.config.config;
+
+    try {
+      const validateResult = await validateConfig(this.hass, {
+        conditions: condition,
+      });
+
+      // Abort if condition changed.
+      if (this.config.config !== condition) {
+        this._testing = false;
+        return;
+      }
+
+      if (!validateResult.conditions.valid) {
+        showAlertDialog(this, {
+          title: this.hass.localize(
+            "ui.panel.config.automation.editor.conditions.invalid_condition"
+          ),
+          text: validateResult.conditions.error,
+        });
+        this._testing = false;
+        return;
+      }
+
+      let result: { result: boolean };
+      try {
+        result = await testCondition(this.hass, condition);
+      } catch (err: any) {
+        if (this.config.config !== condition) {
+          this._testing = false;
+          return;
+        }
+
+        showAlertDialog(this, {
+          title: this.hass.localize(
+            "ui.panel.config.automation.editor.conditions.test_failed"
+          ),
+          text: err.message,
+        });
+        this._testing = false;
+        return;
+      }
+
+      this._testingResult = result.result;
+    } finally {
+      setTimeout(() => {
+        this._testing = false;
+      }, 2500);
+    }
+  };
 
   private _handleUiModeNotAvailable(ev: CustomEvent) {
     this._warnings = handleStructError(this.hass, ev.detail).warnings;
@@ -226,7 +308,47 @@ export default class HaAutomationSidebarCondition extends LitElement {
     fireEvent(this, "toggle-yaml-mode");
   };
 
-  static styles = sidebarEditorStyles;
+  static styles = [
+    sidebarEditorStyles,
+    css`
+      ha-automation-sidebar-card {
+        position: relative;
+      }
+      .testing {
+        position: absolute;
+        z-index: 6;
+        top: 0px;
+        right: 0px;
+        left: 0px;
+        text-transform: uppercase;
+        font-size: var(--ha-font-size-m);
+        font-weight: var(--ha-font-weight-bold);
+        background-color: var(--divider-color, #e0e0e0);
+        color: var(--text-primary-color);
+        max-height: 0px;
+        overflow: hidden;
+        transition: max-height 0.3s;
+        text-align: center;
+        border-top-right-radius: var(
+          --ha-card-border-radius,
+          var(--ha-border-radius-lg)
+        );
+        border-top-left-radius: var(
+          --ha-card-border-radius,
+          var(--ha-border-radius-lg)
+        );
+      }
+      .testing.active {
+        max-height: 100px;
+      }
+      .testing.error {
+        background-color: var(--accent-color);
+      }
+      .testing.pass {
+        background-color: var(--success-color);
+      }
+    `,
+  ];
 }
 
 declare global {
