@@ -10,7 +10,6 @@ import { nextRender } from "../../../../common/util/render-status";
 import "../../../../components/ha-button";
 import "../../../../components/ha-button-menu";
 import "../../../../components/ha-sortable";
-import type { HaSortableClonedEventData } from "../../../../components/ha-sortable";
 import "../../../../components/ha-svg-icon";
 import type {
   AutomationClipboard,
@@ -153,7 +152,6 @@ export default class HaAutomationCondition extends LitElement {
         @item-moved=${this._conditionMoved}
         @item-added=${this._conditionAdded}
         @item-removed=${this._conditionRemoved}
-        @item-cloned=${this._conditionCloned}
       >
         <div class="rows ${!this.optionsInSidebar ? "no-sidebar" : ""}">
           ${repeat(
@@ -319,11 +317,8 @@ export default class HaAutomationCondition extends LitElement {
   private async _conditionAdded(ev: CustomEvent): Promise<void> {
     ev.stopPropagation();
     const { index, data } = ev.detail;
-    let selected = false;
-    if (data?.["ha-automation-row-selected"]) {
-      selected = true;
-      delete data["ha-automation-row-selected"];
-    }
+    const item = ev.detail.item as HaAutomationConditionRow;
+    const selected = item.isSelected();
     let conditions = [
       ...this.conditions.slice(0, index),
       data,
@@ -359,12 +354,6 @@ export default class HaAutomationCondition extends LitElement {
     // Ensure condition is removed even after update
     const conditions = this.conditions.filter((c) => c !== condition);
     fireEvent(this, "value-changed", { value: conditions });
-  }
-
-  private _conditionCloned(ev: CustomEvent<HaSortableClonedEventData>) {
-    if (ev.detail.item.isSelected()) {
-      ev.detail.item.condition["ha-automation-row-selected"] = true;
-    }
   }
 
   private _conditionChanged(ev: CustomEvent) {

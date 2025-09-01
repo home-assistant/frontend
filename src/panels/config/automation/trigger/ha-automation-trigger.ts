@@ -10,7 +10,6 @@ import { nextRender } from "../../../../common/util/render-status";
 import "../../../../components/ha-button";
 import "../../../../components/ha-button-menu";
 import "../../../../components/ha-sortable";
-import type { HaSortableClonedEventData } from "../../../../components/ha-sortable";
 import "../../../../components/ha-svg-icon";
 import type {
   AutomationClipboard,
@@ -72,7 +71,6 @@ export default class HaAutomationTrigger extends LitElement {
         @item-moved=${this._triggerMoved}
         @item-added=${this._triggerAdded}
         @item-removed=${this._triggerRemoved}
-        @item-cloned=${this._triggerCloned}
       >
         <div class="rows ${!this.optionsInSidebar ? "no-sidebar" : ""}">
           ${repeat(
@@ -260,11 +258,8 @@ export default class HaAutomationTrigger extends LitElement {
   private async _triggerAdded(ev: CustomEvent): Promise<void> {
     ev.stopPropagation();
     const { index, data } = ev.detail;
-    let selected = false;
-    if (data?.["ha-automation-row-selected"]) {
-      selected = true;
-      delete data["ha-automation-row-selected"];
-    }
+    const item = ev.detail.item as HaAutomationTriggerRow;
+    const selected = item.isSelected();
 
     let triggers = [
       ...this.triggers.slice(0, index),
@@ -301,12 +296,6 @@ export default class HaAutomationTrigger extends LitElement {
     // Ensure trigger is removed even after update
     const triggers = this.triggers.filter((t) => t !== trigger);
     fireEvent(this, "value-changed", { value: triggers });
-  }
-
-  private _triggerCloned(ev: CustomEvent<HaSortableClonedEventData>) {
-    if (ev.detail.item.isSelected()) {
-      ev.detail.item.trigger["ha-automation-row-selected"] = true;
-    }
   }
 
   private _triggerChanged(ev: CustomEvent) {
