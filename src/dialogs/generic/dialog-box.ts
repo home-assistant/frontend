@@ -3,11 +3,11 @@ import { css, html, LitElement, nothing } from "lit";
 import { customElement, property, query, state } from "lit/decorators";
 import { ifDefined } from "lit/directives/if-defined";
 import { fireEvent } from "../../common/dom/fire_event";
+import "../../components/ha-button";
+import "../../components/ha-dialog-header";
 import "../../components/ha-md-dialog";
 import type { HaMdDialog } from "../../components/ha-md-dialog";
-import "../../components/ha-dialog-header";
 import "../../components/ha-svg-icon";
-import "../../components/ha-button";
 import "../../components/ha-textfield";
 import type { HaTextField } from "../../components/ha-textfield";
 import type { HomeAssistant } from "../../types";
@@ -52,7 +52,7 @@ class DialogBox extends LitElement {
       return nothing;
     }
 
-    const confirmPrompt = this._params.confirmation || this._params.prompt;
+    const confirmPrompt = this._params.confirmation || !!this._params.prompt;
 
     const dialogTitle =
       this._params.title ||
@@ -62,7 +62,7 @@ class DialogBox extends LitElement {
     return html`
       <ha-md-dialog
         open
-        .disableCancelAction=${confirmPrompt || false}
+        .disableCancelAction=${confirmPrompt}
         @closed=${this._dialogClosed}
         type="alert"
         aria-labelledby="dialog-box-title"
@@ -100,23 +100,22 @@ class DialogBox extends LitElement {
             : ""}
         </div>
         <div slot="actions">
-          ${confirmPrompt &&
-          html`
-            <ha-button
-              @click=${this._dismiss}
-              ?dialogInitialFocus=${!this._params.prompt &&
-              this._params.destructive}
-              appearance="plain"
-            >
-              ${this._params.dismissText
-                ? this._params.dismissText
-                : this.hass.localize("ui.common.cancel")}
-            </ha-button>
-          `}
+          ${confirmPrompt
+            ? html`
+                <ha-button
+                  @click=${this._dismiss}
+                  ?autofocus=${!this._params.prompt && this._params.destructive}
+                  appearance="plain"
+                >
+                  ${this._params.dismissText
+                    ? this._params.dismissText
+                    : this.hass.localize("ui.common.cancel")}
+                </ha-button>
+              `
+            : nothing}
           <ha-button
             @click=${this._confirm}
-            ?dialogInitialFocus=${!this._params.prompt &&
-            !this._params.destructive}
+            ?autofocus=${!this._params.prompt && !this._params.destructive}
             variant=${this._params.destructive ? "danger" : "brand"}
           >
             ${this._params.confirmText
