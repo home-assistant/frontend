@@ -697,14 +697,24 @@ export class HaTabsSubpageDataTable extends KeyboardShortcutMixin(LitElement) {
       height: 100%;
     }
 
+    hass-tabs-subpage {
+      background: var(--data-table-background-color);
+      --tabs-subpage-content-padding-left: 0;
+      --tabs-subpage-content-padding-right: 0;
+    }
+
     ha-data-table {
       width: 100%;
       height: 100%;
       --data-table-border-width: 0;
+      --data-row-padding-left: var(--safe-area-inset-left);
+      --data-row-padding-right: var(--safe-area-inset-right);
     }
     :host(:not([narrow])) ha-data-table,
     .pane {
-      height: calc(100vh - 1px - var(--header-height));
+      height: calc(
+        100vh - 1px - var(--header-height) - var(--safe-area-inset-top)
+      );
       display: block;
     }
 
@@ -727,7 +737,8 @@ export class HaTabsSubpageDataTable extends KeyboardShortcutMixin(LitElement) {
       height: 56px;
       width: 100%;
       justify-content: space-between;
-      padding: 0 16px;
+      padding-left: max(16px, var(--safe-area-content-inset-left));
+      padding-right: max(16px, var(--safe-area-content-inset-right));
       gap: 16px;
       box-sizing: border-box;
       background: var(--primary-background-color);
