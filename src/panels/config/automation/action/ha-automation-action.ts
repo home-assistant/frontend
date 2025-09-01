@@ -300,7 +300,7 @@ export default class HaAutomationAction extends LitElement {
     ev.stopPropagation();
     const { index, data } = ev.detail;
     const item = ev.detail.item as HaAutomationActionRow;
-    const selected = item.isSelected();
+    const selected = item.selected;
 
     let actions = [
       ...this.actions.slice(0, index),
