@@ -707,7 +707,7 @@ class HaSidebar extends SubscribeMixin(LitElement) {
           box-sizing: border-box;
         }
         .menu {
-          height: var(--header-height);
+          height: calc(var(--header-height) + var(--safe-area-inset-top));
           box-sizing: border-box;
           display: flex;
           padding: 0 4px;
@@ -728,6 +728,7 @@ class HaSidebar extends SubscribeMixin(LitElement) {
           padding-left: calc(4px + var(--safe-area-inset-left));
           padding-inline-start: calc(4px + var(--safe-area-inset-left));
           padding-inline-end: initial;
+          padding-top: var(--safe-area-inset-top);
         }
         :host([expanded]) .menu {
           width: calc(256px + var(--safe-area-inset-left));
@@ -755,8 +756,11 @@ class HaSidebar extends SubscribeMixin(LitElement) {
 
         ha-fade-in,
         ha-md-list {
+          padding: 4px 0;
+          box-sizing: border-box;
           height: calc(
-            100% - var(--header-height) - 132px - var(--safe-area-inset-bottom)
+            100% - var(--header-height) - var(--safe-area-inset-top) -
+              132px - var(--safe-area-inset-bottom)
           );
         }
 
@@ -767,8 +771,6 @@ class HaSidebar extends SubscribeMixin(LitElement) {
         }
 
         ha-md-list {
-          padding: 4px 0;
-          box-sizing: border-box;
           overflow-x: hidden;
           background: none;
           margin-left: var(--safe-area-inset-left);
