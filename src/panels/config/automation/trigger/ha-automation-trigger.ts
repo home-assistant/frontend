@@ -259,7 +259,7 @@ export default class HaAutomationTrigger extends LitElement {
     ev.stopPropagation();
     const { index, data } = ev.detail;
     const item = ev.detail.item as HaAutomationTriggerRow;
-    const selected = item.isSelected();
+    const selected = item.selected;
 
     let triggers = [
       ...this.triggers.slice(0, index),

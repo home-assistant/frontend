@@ -4,12 +4,12 @@ import {
   mdiArrowUp,
   mdiContentCopy,
   mdiContentCut,
-  mdiContentDuplicate,
   mdiDelete,
   mdiDotsVertical,
   mdiIdentifier,
   mdiPlayCircleOutline,
   mdiPlaylistEdit,
+  mdiPlusCircleMultipleOutline,
   mdiRenameBox,
   mdiStopCircleOutline,
 } from "@mdi/js";
@@ -52,6 +52,7 @@ import {
   showPromptDialog,
 } from "../../../../dialogs/generic/show-dialog-box";
 import type { HomeAssistant } from "../../../../types";
+import { showToast } from "../../../../util/toast";
 import "../ha-automation-editor-warning";
 import { rowStyles } from "../styles";
 import "./ha-automation-trigger-editor";
@@ -74,6 +75,7 @@ import "./types/ha-automation-trigger-time";
 import "./types/ha-automation-trigger-time_pattern";
 import "./types/ha-automation-trigger-webhook";
 import "./types/ha-automation-trigger-zone";
+import { copyToClipboard } from "../../../../common/util/copy-clipboard";
 
 export interface TriggerElement extends LitElement {
   trigger: Trigger;
@@ -153,6 +155,10 @@ export default class HaAutomationTriggerRow extends LitElement {
   @consume({ context: fullEntitiesContext, subscribe: true })
   _entityReg!: EntityRegistryEntry[];
 
+  get selected() {
+    return this._selected;
+  }
+
   private _triggerUnsub?: Promise<UnsubscribeFunc>;
 
   private _renderRow() {
@@ -221,7 +227,7 @@ export default class HaAutomationTriggerRow extends LitElement {
               )}
               <ha-svg-icon
                 slot="start"
-                .path=${mdiContentDuplicate}
+                .path=${mdiPlusCircleMultipleOutline}
               ></ha-svg-icon>
             </ha-md-menu-item>
 
@@ -349,10 +355,13 @@ export default class HaAutomationTriggerRow extends LitElement {
           ? html`<ha-automation-row
               .disabled=${"enabled" in this.trigger &&
               this.trigger.enabled === false}
-              @click=${this._toggleSidebar}
               .selected=${this._selected}
               .highlight=${this.highlight}
               .sortSelected=${this.sortSelected}
+              @click=${this._toggleSidebar}
+              @copy-row=${this._copyTrigger}
+              @cut-row=${this._cutTrigger}
+              @delete-row=${this._onDelete}
               >${this._selected
                 ? "selected"
                 : nothing}${this._renderRow()}</ha-automation-row
@@ -525,6 +534,7 @@ export default class HaAutomationTriggerRow extends LitElement {
       ...this._clipboard,
       trigger: this.trigger,
     };
+    copyToClipboard(JSON.stringify(this.trigger));
   }
 
   private _onDelete = () => {
@@ -634,6 +644,12 @@ export default class HaAutomationTriggerRow extends LitElement {
 
   private _copyTrigger = () => {
     this._setClipboard();
+    showToast(this, {
+      message: this.hass.localize(
+        "ui.panel.config.automation.editor.triggers.copied_to_clipboard"
+      ),
+      duration: 2000,
+    });
   };
 
   private _cutTrigger = () => {
@@ -642,6 +658,12 @@ export default class HaAutomationTriggerRow extends LitElement {
     if (this._selected) {
       fireEvent(this, "close-sidebar");
     }
+    showToast(this, {
+      message: this.hass.localize(
+        "ui.panel.config.automation.editor.triggers.cut_to_clipboard"
+      ),
+      duration: 2000,
+    });
   };
 
   private _moveUp = () => {
@@ -678,10 +700,6 @@ export default class HaAutomationTriggerRow extends LitElement {
     (type: string) =>
       customElements.get(`ha-automation-trigger-${type}`) !== undefined
   );
-
-  public isSelected() {
-    return this._selected;
-  }
 
   public focus() {
     this._automationRowElement?.focus();
