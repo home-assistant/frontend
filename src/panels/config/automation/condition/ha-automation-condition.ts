@@ -173,7 +173,7 @@ export default class HaAutomationCondition extends LitElement {
                 @move-up=${this._moveUp}
                 @value-changed=${this._conditionChanged}
                 .hass=${this.hass}
-                ?highlight=${this.highlightedConditions?.includes(cond)}
+                .highlight=${this.highlightedConditions?.includes(cond)}
                 .optionsInSidebar=${this.optionsInSidebar}
                 .sortSelected=${this._rowSortSelected === idx}
                 @stop-sort-selection=${this._stopSortSelection}

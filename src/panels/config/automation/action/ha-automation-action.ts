@@ -95,7 +95,7 @@ export default class HaAutomationAction extends LitElement {
                 @move-up=${this._moveUp}
                 @value-changed=${this._actionChanged}
                 .hass=${this.hass}
-                ?highlight=${this.highlightedActions?.includes(action)}
+                .highlight=${this.highlightedActions?.includes(action)}
                 .optionsInSidebar=${this.optionsInSidebar}
                 .sortSelected=${this._rowSortSelected === idx}
                 @stop-sort-selection=${this._stopSortSelection}
