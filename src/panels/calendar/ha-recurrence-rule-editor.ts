@@ -1,5 +1,5 @@
 import type { SelectedDetail } from "@material/mwc-list";
-import { formatInTimeZone, toDate } from "date-fns-tz";
+import { TZDate } from "@date-fns/tz";
 import type { PropertyValues } from "lit";
 import { LitElement, css, html, nothing } from "lit";
 import { customElement, property, query, state } from "lit/decorators";
@@ -168,7 +168,9 @@ export class RecurrenceRuleEditor extends LitElement {
     }
     if (rrule.until) {
       this._end = "on";
-      this._untilDay = toDate(rrule.until, { timeZone: this.timezone });
+      this._untilDay = new Date(
+        new TZDate(rrule.until, this.timezone).getTime()
+      );
     } else if (rrule.count) {
       this._end = "after";
       this._count = rrule.count;
@@ -421,9 +423,9 @@ export class RecurrenceRuleEditor extends LitElement {
 
   private _onUntilChange(e: CustomEvent) {
     e.stopPropagation();
-    this._untilDay = toDate(e.detail.value + "T00:00:00", {
-      timeZone: this.timezone,
-    });
+    this._untilDay = new Date(
+      new TZDate(e.detail.value + "T00:00:00", this.timezone).getTime()
+    );
   }
 
   // Reset the weekday selected when there is only a single value
@@ -458,20 +460,19 @@ export class RecurrenceRuleEditor extends LitElement {
     let contentline = RRule.optionsToString(options);
     if (this._untilDay) {
       // The UNTIL value should be inclusive of the last event instance
-      const until = toDate(
+      const until = new TZDate(
         this._formatDate(this._untilDay!) +
           "T" +
           this._formatTime(this.dtstart!),
-        { timeZone: this.timezone }
+        this.timezone
       );
       // rrule.js can't compute some UNTIL variations so we compute that ourself. Must be
       // in the same format as dtstart.
       const format = this.allDay ? "yyyyMMdd" : "yyyyMMdd'T'HHmmss";
-      const newUntilValue = formatInTimeZone(
-        until,
-        this.hass.config.time_zone,
-        format
-      );
+      const newUntilValue = until
+        .toISOString()
+        .replace(/[-:]/g, "")
+        .split(".")[0];
       contentline += `;UNTIL=${newUntilValue}`;
     }
     return contentline.slice(6); // Strip "RRULE:" prefix
@@ -494,12 +495,14 @@ export class RecurrenceRuleEditor extends LitElement {
 
   // Formats a date in browser display timezone
   private _formatDate(date: Date): string {
-    return formatInTimeZone(date, this.timezone!, "yyyy-MM-dd");
+    const tzDate = new TZDate(date, this.timezone!);
+    return tzDate.toISOString().split("T")[0]; // Get YYYY-MM-DD format
   }
 
   // Formats a time in browser display timezone
   private _formatTime(date: Date): string {
-    return formatInTimeZone(date, this.timezone!, "HH:mm:ss");
+    const tzDate = new TZDate(date, this.timezone!);
+    return tzDate.toISOString().split("T")[1].split(".")[0]; // Get HH:mm:ss format
   }
 
   static styles = css`

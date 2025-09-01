@@ -5,7 +5,7 @@ import {
   differenceInMilliseconds,
   startOfHour,
 } from "date-fns";
-import { formatInTimeZone, toDate } from "date-fns-tz";
+import { TZDate } from "@date-fns/tz";
 import type { HassEntity } from "home-assistant-js-websocket";
 import type { CSSResultGroup } from "lit";
 import { LitElement, css, html, nothing } from "lit";
@@ -312,17 +312,20 @@ class DialogCalendarEventEditor extends LitElement {
 
   // Formats a date in specified timezone, or defaulting to browser display timezone
   private _formatDate(date: Date, timeZone: string = this._timeZone!): string {
-    return formatInTimeZone(date, timeZone, "yyyy-MM-dd");
+    const tzDate = new TZDate(date, timeZone);
+    return tzDate.toISOString().split("T")[0]; // Get YYYY-MM-DD format
   }
 
   // Formats a time in specified timezone, or defaulting to browser display timezone
   private _formatTime(date: Date, timeZone: string = this._timeZone!): string {
-    return formatInTimeZone(date, timeZone, "HH:mm:ss"); // 24 hr
+    const tzDate = new TZDate(date, timeZone);
+    return tzDate.toISOString().split("T")[1].split(".")[0]; // Get HH:mm:ss format
   }
 
   // Parse a date in the browser timezone
   private _parseDate(dateStr: string): Date {
-    return toDate(dateStr, { timeZone: this._timeZone! });
+    const tzDate = new TZDate(dateStr, this._timeZone!);
+    return new Date(tzDate.getTime());
   }
 
   private _clearInfo() {
