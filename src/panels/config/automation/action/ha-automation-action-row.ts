@@ -524,9 +524,9 @@ export default class HaAutomationActionRow extends LitElement {
 
   private _runAction = async () => {
     requestAnimationFrame(() => {
-      // @ts-ignore is supported in all browsers expect firefox
+      // @ts-ignore is supported in all browsers except firefox
       if (this.scrollIntoViewIfNeeded) {
-        // @ts-ignore is supported in all browsers expect firefox
+        // @ts-ignore is supported in all browsers except firefox
         this.scrollIntoViewIfNeeded();
         return;
       }
