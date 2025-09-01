@@ -651,7 +651,10 @@ export class MoreInfoDialog extends LitElement {
         ha-dialog {
           /* Set the top top of the dialog to a fixed position, so it doesnt jump when the content changes size */
           --vertical-align-dialog: flex-start;
-          --dialog-surface-margin-top: max(40px, var(--safe-area-inset-top));
+          --dialog-surface-margin-top: max(
+            40px,
+            var(--safe-area-inset-top, 0px)
+          );
           --dialog-content-padding: 0;
         }
 
