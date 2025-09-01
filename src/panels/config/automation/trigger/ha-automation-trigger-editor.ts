@@ -121,7 +121,7 @@ export default class HaAutomationTriggerEditor extends LitElement {
     if (!ev.detail.isValid) {
       return;
     }
-    fireEvent(this, "value-changed", {
+    fireEvent(this, "yaml-changed", {
       value: migrateAutomationTrigger(ev.detail.value),
     });
   }
