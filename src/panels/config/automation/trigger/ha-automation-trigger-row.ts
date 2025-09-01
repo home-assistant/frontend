@@ -75,6 +75,7 @@ import "./types/ha-automation-trigger-time";
 import "./types/ha-automation-trigger-time_pattern";
 import "./types/ha-automation-trigger-webhook";
 import "./types/ha-automation-trigger-zone";
+import { copyToClipboard } from "../../../../common/util/copy-clipboard";
 
 export interface TriggerElement extends LitElement {
   trigger: Trigger;
@@ -533,6 +534,7 @@ export default class HaAutomationTriggerRow extends LitElement {
       ...this._clipboard,
       trigger: this.trigger,
     };
+    copyToClipboard(JSON.stringify(this.trigger));
   }
 
   private _onDelete = () => {

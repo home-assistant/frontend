@@ -89,6 +89,7 @@ import "./types/ha-automation-action-set_conversation_response";
 import "./types/ha-automation-action-stop";
 import "./types/ha-automation-action-wait_for_trigger";
 import "./types/ha-automation-action-wait_template";
+import { copyToClipboard } from "../../../../common/util/copy-clipboard";
 
 export const getAutomationActionType = memoizeOne(
   (action: Action | undefined) => {
@@ -507,6 +508,7 @@ export default class HaAutomationActionRow extends LitElement {
       ...this._clipboard,
       action: deepClone(this.action),
     };
+    copyToClipboard(JSON.stringify(this.action));
   }
 
   private _onDisable = () => {

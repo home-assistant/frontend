@@ -69,6 +69,7 @@ import "./types/ha-automation-condition-template";
 import "./types/ha-automation-condition-time";
 import "./types/ha-automation-condition-trigger";
 import "./types/ha-automation-condition-zone";
+import { copyToClipboard } from "../../../../common/util/copy-clipboard";
 
 export interface ConditionElement extends LitElement {
   condition: Condition;
@@ -440,6 +441,7 @@ export default class HaAutomationConditionRow extends LitElement {
       ...this._clipboard,
       condition: deepClone(this.condition),
     };
+    copyToClipboard(JSON.stringify(this.condition));
   }
 
   private _onDisable = () => {
