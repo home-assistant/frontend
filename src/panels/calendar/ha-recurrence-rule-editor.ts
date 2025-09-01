@@ -466,9 +466,6 @@ export class RecurrenceRuleEditor extends LitElement {
           this._formatTime(this.dtstart!),
         this.timezone
       );
-      // rrule.js can't compute some UNTIL variations so we compute that ourself. Must be
-      // in the same format as dtstart.
-      const format = this.allDay ? "yyyyMMdd" : "yyyyMMdd'T'HHmmss";
       const newUntilValue = until
         .toISOString()
         .replace(/[-:]/g, "")
