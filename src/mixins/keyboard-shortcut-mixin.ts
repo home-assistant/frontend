@@ -24,17 +24,28 @@ export const KeyboardShortcutMixin = <T extends Constructor<LitElement>>(
       }
     };
 
+    private _listenersAdded = false;
+
     public connectedCallback() {
       super.connectedCallback();
-      window.addEventListener("keydown", this._keydownEvent);
+      this.addKeyboardShortcuts();
     }
 
     public disconnectedCallback() {
-      window.removeEventListener("keydown", this._keydownEvent);
+      this.removeKeyboardShortcuts();
       super.disconnectedCallback();
     }
 
-    public releaseKeyboardShortcuts() {
+    public addKeyboardShortcuts() {
+      if (this._listenersAdded) {
+        return;
+      }
+      this._listenersAdded = true;
+      window.addEventListener("keydown", this._keydownEvent);
+    }
+
+    public removeKeyboardShortcuts() {
+      this._listenersAdded = false;
       window.removeEventListener("keydown", this._keydownEvent);
     }
 

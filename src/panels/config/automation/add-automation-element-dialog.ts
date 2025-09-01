@@ -124,6 +124,9 @@ class DialogAddAutomationElement
   public showDialog(params): void {
     this._params = params;
     this._group = params.group;
+
+    this.addKeyboardShortcuts();
+
     if (this._params?.type === "action") {
       this.hass.loadBackendTranslation("services");
       this._fetchManifests();
@@ -138,7 +141,7 @@ class DialogAddAutomationElement
   }
 
   public closeDialog() {
-    this.releaseKeyboardShortcuts();
+    this.removeKeyboardShortcuts();
     if (this._params) {
       fireEvent(this, "dialog-closed", { dialog: this.localName });
     }
