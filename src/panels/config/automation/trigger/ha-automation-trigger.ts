@@ -92,7 +92,7 @@ export default class HaAutomationTrigger extends LitElement {
                 .hass=${this.hass}
                 .disabled=${this.disabled}
                 .narrow=${this.narrow}
-                ?highlight=${this.highlightedTriggers?.includes(trg)}
+                .highlight=${this.highlightedTriggers?.includes(trg)}
                 .optionsInSidebar=${this.optionsInSidebar}
                 .sortSelected=${this._rowSortSelected === idx}
                 @stop-sort-selection=${this._stopSortSelection}
