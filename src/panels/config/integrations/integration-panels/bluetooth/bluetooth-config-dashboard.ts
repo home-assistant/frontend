@@ -183,22 +183,22 @@ export class BluetoothConfigDashboard extends LitElement {
     const scannerState = this._scannerState;
 
     const formatMode = (mode: string | null) => {
-      if (!mode) {
-        return this.hass.localize(
-          "ui.panel.config.bluetooth.scanning_mode_none"
-        );
+      switch (mode) {
+        case null:
+          return this.hass.localize(
+            "ui.panel.config.bluetooth.scanning_mode_none"
+          );
+        case "active":
+          return this.hass.localize(
+            "ui.panel.config.bluetooth.scanning_mode_active"
+          );
+        case "passive":
+          return this.hass.localize(
+            "ui.panel.config.bluetooth.scanning_mode_passive"
+          );
+        default:
+          return mode; // Fallback for unknown modes
       }
-      if (mode === "active") {
-        return this.hass.localize(
-          "ui.panel.config.bluetooth.scanning_mode_active"
-        );
-      }
-      if (mode === "passive") {
-        return this.hass.localize(
-          "ui.panel.config.bluetooth.scanning_mode_passive"
-        );
-      }
-      return mode; // Fallback for unknown modes
     };
 
     return html`
