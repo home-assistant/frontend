@@ -11,7 +11,7 @@ import {
   differenceInDays,
   addDays,
 } from "date-fns";
-import { toZonedTime, fromZonedTime } from "date-fns-tz";
+import { TZDate } from "@date-fns/tz";
 import type { HassConfig } from "home-assistant-js-websocket";
 import type { FrontendLocaleData } from "../../data/translation";
 import { TimeZone } from "../../data/translation";
@@ -22,12 +22,13 @@ const calcZonedDate = (
   fn: (date: Date, options?: any) => Date | number | boolean,
   options?
 ) => {
-  const inputZoned = toZonedTime(date, tz);
-  const fnZoned = fn(inputZoned, options);
-  if (fnZoned instanceof Date) {
-    return fromZonedTime(fnZoned, tz) as Date;
+  const tzDate = new TZDate(date, tz);
+  const fnResult = fn(tzDate, options);
+  if (fnResult instanceof Date) {
+    // Convert back to regular Date in the specified timezone
+    return new Date(fnResult.getTime());
   }
-  return fnZoned;
+  return fnResult;
 };
 
 export const calcDate = (
@@ -65,7 +66,7 @@ export const calcDateDifferenceProperty = (
     locale,
     config,
     locale.time_zone === TimeZone.server
-      ? toZonedTime(startDate, config.time_zone)
+      ? new TZDate(startDate, config.time_zone)
       : startDate
   );
 
