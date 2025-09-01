@@ -138,6 +138,7 @@ class DialogAddAutomationElement
   }
 
   public closeDialog() {
+    this.releaseKeyboardShortcuts();
     if (this._params) {
       fireEvent(this, "dialog-closed", { dialog: this.localName });
     }

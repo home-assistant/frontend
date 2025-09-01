@@ -34,6 +34,10 @@ export const KeyboardShortcutMixin = <T extends Constructor<LitElement>>(
       super.disconnectedCallback();
     }
 
+    public releaseKeyboardShortcuts() {
+      window.removeEventListener("keydown", this._keydownEvent);
+    }
+
     protected supportedShortcuts(): SupportedShortcuts {
       return {};
     }

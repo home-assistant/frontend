@@ -371,7 +371,11 @@ export class HaManualScriptEditor extends LitElement {
     if (normalized) {
       ev.preventDefault();
 
-      if (this.dirty) {
+      if (
+        this.dirty ||
+        ensureArray(this.config.sequence)?.length ||
+        Object.keys(this.config.fields || {}).length
+      ) {
         const result = await new Promise<boolean>((resolve) => {
           showPasteReplaceDialog(this, {
             domain: "script",
