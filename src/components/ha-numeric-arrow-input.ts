@@ -1,10 +1,10 @@
 import { css, html, LitElement, type PropertyValues } from "lit";
-import { customElement, property, state } from "lit/decorators";
-import { mdiArrowDown, mdiArrowUp } from "@mdi/js";
+import { customElement, property } from "lit/decorators";
+import memoizeOne from "memoize-one";
+import { mdiMinus, mdiPlus } from "@mdi/js";
 import { fireEvent } from "../common/dom/fire_event";
 import "./ha-icon-button";
 import "./ha-textfield";
-import memoizeOne from "memoize-one";
 
 @customElement("ha-numeric-arrow-input")
 export class HaNumericArrowInput extends LitElement {
@@ -18,11 +18,11 @@ export class HaNumericArrowInput extends LitElement {
 
   @property({ attribute: false }) public step?: number;
 
-  @property({ attribute: false }) public labelUp?: string;
-
-  @property({ attribute: false }) public labelDown?: string;
-
   @property({ attribute: false }) public padStart?: number;
+
+  @property({ attribute: false }) public labelUp = "Increase";
+
+  @property({ attribute: false }) public labelDown = "Decrease";
 
   @property({ attribute: false }) public value = 0;
 
@@ -37,8 +37,8 @@ export class HaNumericArrowInput extends LitElement {
     >
       <ha-icon-button
         .disabled=${this.disabled}
-        .label=${this.labelUp ?? ""}
-        .path=${mdiArrowUp}
+        .label=${this.labelUp}
+        .path=${mdiPlus}
         @click=${this._up}
       ></ha-icon-button>
       <span class="numeric-arrow-input-value"
@@ -46,8 +46,8 @@ export class HaNumericArrowInput extends LitElement {
       >
       <ha-icon-button
         .disabled=${this.disabled}
-        .label=${this.labelDown ?? ""}
-        .path=${mdiArrowDown}
+        .label=${this.labelDown}
+        .path=${mdiMinus}
         @click=${this._down}
       ></ha-icon-button>
     </div>`;

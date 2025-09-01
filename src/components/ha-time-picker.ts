@@ -71,6 +71,14 @@ export class HaTimePicker extends LitElement {
         .padStart=${2}
         .value=${this._hours}
         @value-changed=${this._hoursChanged}
+        .labelUp=${
+          // TODO: Localize
+          "Increase hours"
+        }
+        .labelDown=${
+          // TODO: Localize
+          "Decrease hours"
+        }
       ></ha-numeric-arrow-input>
       <span class="time-picker-separator">:</span>
       <ha-numeric-arrow-input
@@ -80,6 +88,14 @@ export class HaTimePicker extends LitElement {
         .max=${59}
         .step=${1}
         .padStart=${2}
+        .labelUp=${
+          // TODO: Localize
+          "Increase minutes"
+        }
+        .labelDown=${
+          // TODO: Localize
+          "Decrease minutes"
+        }
         .value=${this._minutes}
         @value-changed=${this._minutesChanged}
       ></ha-numeric-arrow-input>
@@ -93,6 +109,14 @@ export class HaTimePicker extends LitElement {
               .max=${59}
               .step=${1}
               .padStart=${2}
+              .labelUp=${
+                // TODO: Localize
+                "Increase seconds"
+              }
+              .labelDown=${
+                // TODO: Localize
+                "Decrease seconds"
+              }
               .value=${this._seconds}
               @value-changed=${this._secondsChanged}
             ></ha-numeric-arrow-input>
