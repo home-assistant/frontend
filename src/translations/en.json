@@ -1614,7 +1614,7 @@
             "preload_stream": "Preload camera stream",
             "preload_stream_description": "This keeps the camera stream open in the background so it shows quicker. Warning! This is device intensive.",
             "stream_orientation": "Camera stream orientation",
-            "stream_orientation_description": "The orientation transformation to use for the camera stream.",
+            "stream_orientation_description": "The orientation transformation to use for the camera stream.\nWarning: Stream orientation processing occurs on the Home Assistant device and may impact system performance. When possible, configure this setting directly on your camera instead.",
             "stream_orientation_1": "No orientation transform",
             "stream_orientation_2": "Mirror",
             "stream_orientation_3": "Rotate 180",
