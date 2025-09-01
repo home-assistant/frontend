@@ -675,20 +675,8 @@ class DialogAddAutomationElement
   }
 
   private _addClipboard = () => {
-    if (
-      this._params?.clipboardItem &&
-      !this._filter &&
-      (!this._group ||
-        this._getGroupItems(
-          this._params.type,
-          this._group,
-          this._domains,
-          this.hass.localize,
-          this.hass.services,
-          this._manifests
-        ).find((item) => item.key === this._params!.clipboardItem))
-    ) {
-      this._params!.add(this._params.clipboardItem);
+    if (this._params?.clipboardItem) {
+      this._params!.add(PASTE_VALUE);
       showToast(this, {
         message: this.hass.localize(
           "ui.panel.config.automation.editor.item_pasted",
