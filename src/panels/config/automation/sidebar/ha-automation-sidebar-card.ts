@@ -125,6 +125,7 @@ export default class HaAutomationSidebarCard extends LitElement {
     @media all and (max-width: 870px) {
       ha-card.mobile {
         border: none;
+        box-shadow: none;
       }
       ha-card.mobile {
         border-bottom-right-radius: var(--ha-border-radius-square);
