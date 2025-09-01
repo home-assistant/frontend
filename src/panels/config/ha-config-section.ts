@@ -39,7 +39,8 @@ export class HaConfigSection extends LitElement {
       display: block;
     }
     .content {
-      padding: 28px 20px 0;
+      padding: 28px max(20px, var(--safe-area-content-inset-right)) 0
+        max(20px, var(--safe-area-content-inset-left));
       max-width: 1040px;
       margin: 0 auto;
     }
