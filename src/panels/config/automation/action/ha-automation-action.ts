@@ -9,7 +9,6 @@ import { fireEvent } from "../../../../common/dom/fire_event";
 import { nextRender } from "../../../../common/util/render-status";
 import "../../../../components/ha-button";
 import "../../../../components/ha-sortable";
-import type { HaSortableClonedEventData } from "../../../../components/ha-sortable";
 import "../../../../components/ha-svg-icon";
 import {
   ACTION_BUILDING_BLOCKS,
@@ -76,7 +75,6 @@ export default class HaAutomationAction extends LitElement {
         @item-moved=${this._actionMoved}
         @item-added=${this._actionAdded}
         @item-removed=${this._actionRemoved}
-        @item-cloned=${this._actionCloned}
       >
         <div class="rows ${!this.optionsInSidebar ? "no-sidebar" : ""}">
           ${repeat(
@@ -300,12 +298,8 @@ export default class HaAutomationAction extends LitElement {
 
   private async _actionAdded(ev: CustomEvent): Promise<void> {
     ev.stopPropagation();
-    const { index, data } = ev.detail;
-    let selected = false;
-    if (data?.["ha-automation-row-selected"]) {
-      selected = true;
-      delete data["ha-automation-row-selected"];
-    }
+    const { index, data, item } = ev.detail;
+    const selected = item.isSelected();
 
     let actions = [
       ...this.actions.slice(0, index),
@@ -361,12 +355,6 @@ export default class HaAutomationAction extends LitElement {
     }
 
     fireEvent(this, "value-changed", { value: actions });
-  }
-
-  private _actionCloned(ev: CustomEvent<HaSortableClonedEventData>) {
-    if (ev.detail.item.action && ev.detail.item.isSelected()) {
-      ev.detail.item.action["ha-automation-row-selected"] = true;
-    }
   }
 
   private _duplicateAction(ev: CustomEvent) {

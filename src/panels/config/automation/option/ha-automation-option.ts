@@ -9,7 +9,6 @@ import { fireEvent } from "../../../../common/dom/fire_event";
 import { nextRender } from "../../../../common/util/render-status";
 import "../../../../components/ha-button";
 import "../../../../components/ha-sortable";
-import type { HaSortableClonedEventData } from "../../../../components/ha-sortable";
 import "../../../../components/ha-svg-icon";
 import type { AutomationClipboard } from "../../../../data/automation";
 import type { Option } from "../../../../data/script";
@@ -65,7 +64,6 @@ export default class HaAutomationOption extends LitElement {
         @item-moved=${this._optionMoved}
         @item-added=${this._optionAdded}
         @item-removed=${this._optionRemoved}
-        @item-cloned=${this._optionCloned}
       >
         <div class="rows ${!this.optionsInSidebar ? "no-sidebar" : ""}">
           ${repeat(
@@ -240,12 +238,8 @@ export default class HaAutomationOption extends LitElement {
 
   private async _optionAdded(ev: CustomEvent): Promise<void> {
     ev.stopPropagation();
-    const { index, data } = ev.detail;
-    let selected = false;
-    if (data?.["ha-automation-row-selected"]) {
-      selected = true;
-      delete data["ha-automation-row-selected"];
-    }
+    const { index, data, item } = ev.detail;
+    const selected = item.isSelected();
 
     const options = [
       ...this.options.slice(0, index),
@@ -271,12 +265,6 @@ export default class HaAutomationOption extends LitElement {
     // Ensure option is removed even after update
     const options = this.options.filter((o) => o !== option);
     fireEvent(this, "value-changed", { value: options });
-  }
-
-  private _optionCloned(ev: CustomEvent<HaSortableClonedEventData>) {
-    if (ev.detail.item.isSelected()) {
-      ev.detail.item.option["ha-automation-row-selected"] = true;
-    }
   }
 
   private _optionChanged(ev: CustomEvent) {
