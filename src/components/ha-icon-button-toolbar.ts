@@ -1,6 +1,6 @@
 import type { TemplateResult } from "lit";
 import { css, html, LitElement } from "lit";
-import { customElement, property } from "lit/decorators";
+import { customElement, property, queryAll } from "lit/decorators";
 import "./ha-icon";
 import "./ha-icon-button";
 import type { HaIconButton } from "./ha-icon-button";
@@ -23,20 +23,19 @@ export interface HaIconButtonToolbarItem {
 export class HaIconButtonToolbar extends LitElement {
   @property({ type: Array }) public items: HaIconButtonToolbarItem[] = [];
 
+  @queryAll("ha-icon-button") private _buttons?: HaIconButton[];
+
   // Returns all toolbar buttons, or undefined if there are none.
   // Optionally returns only those with matching selector.
   public findToolbarButtons(selector = ""): HaIconButton[] | undefined {
     // Search for all toolbar buttons
-    const allButtonNodes = this.shadowRoot?.querySelectorAll("ha-icon-button");
-    if (!allButtonNodes) return undefined;
-    const allButtons = [...allButtonNodes];
-    const toolbarButtons = Array.prototype.filter.call(allButtons, (button) =>
+    const toolbarButtons = this._buttons?.filter((button) =>
       button.classList.contains("icon-toolbar-button")
     );
-    if (!toolbarButtons.length) return undefined;
+    if (!toolbarButtons || !toolbarButtons.length) return undefined;
     if (!selector.length) return toolbarButtons;
     // Filter by user class if provided
-    const classButtons = Array.prototype.filter.call(toolbarButtons, (button) =>
+    const classButtons = toolbarButtons.filter((button) =>
       button.querySelector(selector)
     );
     return classButtons.length ? classButtons : undefined;
