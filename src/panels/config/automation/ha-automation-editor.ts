@@ -1145,7 +1145,7 @@ export class HaAutomationEditor extends UndoRedoMixin<
       Delete: () => this._deleteSelectedRow(),
       Backspace: () => this._deleteSelectedRow(),
       z: () => this.undo(),
-      Z: () => this.redo(),
+      y: () => this.redo(),
     };
   }
 
