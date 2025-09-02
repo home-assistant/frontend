@@ -32,9 +32,7 @@ export class HuiButtonCardFeatureEditor
     {
       name: "button_action",
       selector: {
-        ui_action: {
-          default_action: "toggle",
-        },
+        ui_action: {},
       },
     },
   ]);
