@@ -32,7 +32,7 @@ export class HuiButtonCardFeatureEditor
     {
       name: "button_action",
       selector: {
-        ui_action: {}
+        ui_action: {},
       },
     },
   ]);
@@ -60,7 +60,9 @@ export class HuiButtonCardFeatureEditor
       case "action_name":
         return this.hass!.localize("ui.common.name");
       case "button_action":
-        return this.hass!.localize("ui.components.selectors.selector.types.action");
+        return this.hass!.localize(
+          "ui.components.selectors.selector.types.action"
+        );
       default:
         return this.hass!.localize(
           `ui.panel.lovelace.editor.card.generic.${schema.name}`
