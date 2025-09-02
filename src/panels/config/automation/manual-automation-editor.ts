@@ -270,13 +270,15 @@ export class HaManualAutomationEditor extends LitElement {
     return html`
       <div
         class=${classMap({
-          wrapper: true,
           "has-sidebar": this._sidebarConfig && !this.narrow,
-          "has-bottom-sheet": this._sidebarConfig && this.narrow,
         })}
       >
         <div class="content-wrapper">
-          <div class="content">
+          <div
+            class="content ${this._sidebarConfig && this.narrow
+              ? "has-bottom-sheet"
+              : ""}"
+          >
             <slot name="alerts"></slot>
             ${this._renderContent()}
           </div>

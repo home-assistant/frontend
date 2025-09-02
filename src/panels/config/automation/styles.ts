@@ -111,14 +111,6 @@ export const manualEditorStyles = css`
     --sidebar-gap: 16px;
   }
 
-  .wrapper {
-    transition: padding-bottom 180ms ease-in-out;
-  }
-
-  .has-bottom-sheet {
-    padding-bottom: calc(90vh - 72px);
-  }
-
   .fab-positioner {
     display: flex;
     justify-content: flex-end;
@@ -144,6 +136,11 @@ export const manualEditorStyles = css`
   .content {
     padding-top: 24px;
     padding-bottom: 72px;
+    transition: padding-bottom 180ms ease-in-out;
+  }
+
+  .content.has-bottom-sheet {
+    padding-bottom: calc(90vh - 72px);
   }
 
   ha-automation-sidebar {
