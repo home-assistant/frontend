@@ -31,7 +31,9 @@ export class HuiButtonCardFeatureEditor
     {
       name: "button_action",
       selector: {
-        ui_action: {},
+        ui_action: {
+          default_action: "toggle",
+        },
       },
     },
   ]);
@@ -52,7 +54,24 @@ export class HuiButtonCardFeatureEditor
     `;
   }
 
-  private _computeLabel = () => this.hass.localize("ui.common.name");
+  private _computeLabel = (
+    schema: SchemaUnion<ReturnType<typeof this._schema>>
+  ) => {
+    switch (schema.name) {
+      case "action_name":
+        return this.hass!.localize(
+          "ui.panel.lovelace.editor.card.generic.name"
+        );
+      case "button_action":
+        return this.hass!.localize(
+          "ui.panel.lovelace.editor.card.generic.action"
+        );
+      default:
+        return this.hass!.localize(
+          `ui.panel.lovelace.editor.card.generic.${schema.name}`
+        );
+    }
+  };
 
   private _valueChanged(ev: CustomEvent) {
     ev.stopPropagation();
