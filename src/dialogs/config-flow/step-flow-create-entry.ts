@@ -27,6 +27,7 @@ import { showAlertDialog } from "../generic/show-dialog-box";
 import { showVoiceAssistantSetupDialog } from "../voice-assistant-setup/show-voice-assistant-setup-dialog";
 import type { FlowConfig } from "./show-dialog-data-entry-flow";
 import { configFlowContentStyles } from "./styles";
+import { showConfigFlowDialog } from "./show-dialog-config-flow";
 
 @customElement("step-flow-create-entry")
 class StepFlowCreateEntry extends LitElement {
@@ -237,7 +238,13 @@ class StepFlowCreateEntry extends LitElement {
     }
 
     fireEvent(this, "flow-update", { step: undefined });
-    if (this.step.result && this.navigateToResult) {
+    if (this.step.next_flow_id) {
+      // start the next flow
+      showConfigFlowDialog(this, {
+        continueFlowId: this.step.next_flow_id,
+        navigateToResult: this.navigateToResult,
+      });
+    } else if (this.step.result && this.navigateToResult) {
       if (this.devices.length === 1) {
         navigate(`/config/devices/device/${this.devices[0].id}`);
       } else {
