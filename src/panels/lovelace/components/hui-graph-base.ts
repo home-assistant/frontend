@@ -25,8 +25,9 @@ export class HuiGraphBase extends LitElement {
             <rect height="100%" width="100%" id="fill-rect" fill="var(--accent-color)" mask="url(#fill)"></rect>
             <mask id="line">
               <path
+                class='line'
                 fill="none"
-                stroke="var(--accent-color)"
+                stroke="white"
                 stroke-width="${strokeWidth}"
                 stroke-linecap="round"
                 stroke-linejoin="round"
@@ -54,6 +55,9 @@ export class HuiGraphBase extends LitElement {
     :host {
       display: flex;
       width: 100%;
+    }
+    .line {
+      opacity: 0.8;
     }
     .fill {
       opacity: 0.1;
