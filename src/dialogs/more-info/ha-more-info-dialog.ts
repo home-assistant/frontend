@@ -8,6 +8,7 @@ import {
   mdiPencil,
   mdiPencilOff,
   mdiPencilOutline,
+  mdiPlusBoxMultipleOutline,
 } from "@mdi/js";
 import type { HassEntity } from "home-assistant-js-websocket";
 import type { PropertyValues } from "lit";
@@ -48,6 +49,7 @@ import { lightSupportsFavoriteColors } from "../../data/light";
 import type { ItemType } from "../../data/search";
 import { SearchableDomains } from "../../data/search";
 import { getSensorNumericDeviceClasses } from "../../data/sensor";
+import type { ExternalEntityAddToActions } from "../../external_app/external_messaging";
 import { haStyleDialog } from "../../resources/styles";
 import "../../state-summary/state-card-content";
 import type { HomeAssistant } from "../../types";
@@ -115,6 +117,10 @@ export class MoreInfoDialog extends LitElement {
 
   @state() private _sensorNumericDeviceClasses?: string[] = [];
 
+  @state() private _externalActions?: ExternalEntityAddToActions = {
+    actions: [],
+  };
+
   public showDialog(params: MoreInfoDialogParams) {
     this._entityId = params.entityId;
     if (!this._entityId) {
@@ -126,6 +132,7 @@ export class MoreInfoDialog extends LitElement {
     this._childView = undefined;
     this.large = false;
     this._loadEntityRegistryEntry();
+    this._loadExternalActions();
   }
 
   private async _loadEntityRegistryEntry() {
@@ -139,6 +146,34 @@ export class MoreInfoDialog extends LitElement {
       );
     } catch (_e) {
       this._entry = null;
+    }
+  }
+
+  private async _loadExternalActions() {
+    if (this.hass.auth.external?.config.canAddEntityToApp) {
+      // This will load the actions from the external app when it supports
+      this._externalActions =
+        await this.hass.auth.external?.sendMessage<"entity/add_to/get_actions">(
+          {
+            type: "entity/add_to/get_actions",
+            payload: { entity_id: this._entityId! },
+          }
+        );
+
+      // TODO move everything bellow to the dedicated UI once we've decided on the design level
+
+      // Later somewhere in the more info dialog, you can use the actions like this:
+      // icon of the action: this._externalActions?.actions[0]?.icon
+      // translated name of the action: this._externalActions?.actions[0]?.icon
+
+      // Send an action to the external app when the user clicks on one
+      this.hass.auth.external!.fireMessage({
+        type: "entity/add_to",
+        payload: {
+          entity_id: this._entityId!,
+          action_id: this._externalActions?.actions[0]?.id,
+        },
+      });
     }
   }
 
@@ -186,6 +221,10 @@ export class MoreInfoDialog extends LitElement {
           this._sensorNumericDeviceClasses
         ))
     );
+  }
+
+  private _shouldShowAddEntityTo(): boolean {
+    return !!this.hass.auth.external?.config.canAddEntityToApp;
   }
 
   private _getDeviceId(): string | null {
@@ -287,6 +326,11 @@ export class MoreInfoDialog extends LitElement {
   private _goToRelated(ev): void {
     if (!shouldHandleRequestSelectedEvent(ev)) return;
     this._setView("related");
+  }
+
+  private _goToAddEntityTo(ev): void {
+    if (!shouldHandleRequestSelectedEvent(ev)) return;
+    // TODO decide what we do here
   }
 
   private _breadcrumbClick(ev: Event) {
@@ -496,6 +540,22 @@ export class MoreInfoDialog extends LitElement {
                             .path=${mdiInformationOutline}
                           ></ha-svg-icon>
                         </ha-list-item>
+                        ${this._shouldShowAddEntityTo()
+                          ? html`
+                              <ha-list-item
+                                graphic="icon"
+                                @request-selected=${this._goToAddEntityTo}
+                              >
+                                ${this.hass.localize(
+                                  "ui.dialogs.more_info_control.add_entity_to"
+                                )}
+                                <ha-svg-icon
+                                  slot="graphic"
+                                  .path=${mdiPlusBoxMultipleOutline}
+                                ></ha-svg-icon>
+                              </ha-list-item>
+                            `
+                          : nothing}
                       </ha-button-menu>
                     `
                   : nothing}
