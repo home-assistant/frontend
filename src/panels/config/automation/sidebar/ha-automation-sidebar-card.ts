@@ -1,4 +1,6 @@
+import { ResizeController } from "@lit-labs/observers/resize-controller";
 import { mdiClose, mdiDotsVertical } from "@mdi/js";
+import type { PropertyValues } from "lit";
 import { css, html, LitElement, nothing } from "lit";
 import {
   customElement,
@@ -43,7 +45,22 @@ export default class HaAutomationSidebarCard extends LitElement {
 
   @state() private _contentScrolled = false;
 
-  @query(".card-content") private _contentElement?: HTMLDivElement;
+  @state() private _contentScrollable = false;
+
+  @query(".card-content") private _contentElement!: HTMLDivElement;
+
+  private _contentSize = new ResizeController(this, {
+    target: null,
+    callback: (entries) => {
+      if (entries[0]?.target) {
+        this._canScrollDown(entries[0].target);
+      }
+    },
+  });
+
+  protected firstUpdated(_changedProperties: PropertyValues): void {
+    this._contentSize.observe(this._contentElement);
+  }
 
   protected render() {
     return html`
@@ -94,14 +111,29 @@ export default class HaAutomationSidebarCard extends LitElement {
         <div class="card-content" @scroll=${this._onScroll}>
           <slot></slot>
         </div>
+        ${this.narrow
+          ? html`
+              <div
+                class="fade ${this._contentScrollable ? "scrollable" : ""}"
+              ></div>
+            `
+          : nothing}
       </ha-card>
     `;
   }
 
   @eventOptions({ passive: true })
-  private _onScroll() {
-    const top = this._contentElement?.scrollTop ?? 0;
+  private _onScroll(ev) {
+    const top = ev.target.scrollTop ?? 0;
     this._contentScrolled = top > 0;
+
+    this._canScrollDown(ev.target);
+  }
+
+  private _canScrollDown(element: HTMLElement) {
+    this._contentScrollable =
+      (element.scrollHeight ?? 0) - (element.clientHeight ?? 0) >
+      (element.scrollTop ?? 0);
   }
 
   private _closeSidebar() {
@@ -149,6 +181,20 @@ export default class HaAutomationSidebarCard extends LitElement {
 
     ha-dialog-header.scrolled {
       box-shadow: 0 2px 8px rgba(0, 0, 0, 0.12);
+    }
+
+    .fade {
+      position: fixed;
+      bottom: -12px;
+      left: 0;
+      right: 0;
+      height: 12px;
+      pointer-events: none;
+      transition: box-shadow 180ms ease-in-out;
+    }
+
+    .fade.scrollable {
+      box-shadow: 0 -2px 12px rgba(0, 0, 0, 0.16);
     }
 
     .card-content {
