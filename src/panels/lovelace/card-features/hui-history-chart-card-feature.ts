@@ -1,34 +1,31 @@
-import { css, html, LitElement, nothing, svg } from "lit";
+import { css, html, LitElement, nothing } from "lit";
+import "../../../components/ha-spinner";
 import { customElement, property, state } from "lit/decorators";
 import { computeDomain } from "../../../common/entity/compute_domain";
-import {
-  computeHistory,
-  subscribeHistoryStatesTimeWindow,
-} from "../../../data/history";
-import type {
-  HistoryResult,
-  LineChartUnit,
-  TimelineEntity,
-} from "../../../data/history";
+import { subscribeHistoryStatesTimeWindow } from "../../../data/history";
 import type { HomeAssistant } from "../../../types";
 import type { LovelaceCardFeature } from "../types";
 import type {
   LovelaceCardFeatureContext,
   HistoryChartCardFeatureConfig,
 } from "./types";
-import { getSensorNumericDeviceClasses } from "../../../data/sensor";
 import { isComponentLoaded } from "../../../common/config/is_component_loaded";
 import { SubscribeMixin } from "../../../mixins/subscribe-mixin";
-import { computeTimelineColor } from "../../../components/chart/timeline-color";
-import { downSampleLineData } from "../../../components/chart/down-sample";
-import { fireEvent } from "../../../common/dom/fire_event";
+import { coordinatesMinimalResponseCompressedState } from "../common/graph/coordinates";
+import "../components/hui-graph-base";
+import { isNumericFromAttributes } from "../../../common/number/format_number";
 
 export const supportsHistoryChartCardFeature = (
-  _hass: HomeAssistant,
+  hass: HomeAssistant,
   context: LovelaceCardFeatureContext
-) =>
-  !!context.entity_id &&
-  ["sensor", "binary_sensor"].includes(computeDomain(context.entity_id));
+) => {
+  const stateObj = context.entity_id
+    ? hass.states[context.entity_id]
+    : undefined;
+  if (!stateObj) return false;
+  const domain = computeDomain(stateObj.entity_id);
+  return domain === "sensor" && isNumericFromAttributes(stateObj.attributes);
+};
 
 @customElement("hui-history-chart-card-feature")
 class HuiHistoryChartCardFeature
@@ -42,7 +39,7 @@ class HuiHistoryChartCardFeature
 
   @state() private _config?: HistoryChartCardFeatureConfig;
 
-  @state() private _stateHistory?: HistoryResult;
+  @state() private _coordinates?: number[][];
 
   private _interval?: number;
 
@@ -81,53 +78,27 @@ class HuiHistoryChartCardFeature
       !this._config ||
       !this.hass ||
       !this.context ||
-      !this._stateHistory ||
       !supportsHistoryChartCardFeature(this.hass, this.context)
     ) {
       return nothing;
     }
-
-    const line = this._stateHistory.line[0];
-    const timeline = this._stateHistory.timeline[0];
-    const width = this.clientWidth;
-    const height = this.clientHeight;
-    if (line) {
-      const { points, yAxisOrigin } = this._generateLinePoints(line);
-      const { paths, filledPaths } = this._getLinePaths(points, yAxisOrigin);
-
+    if (!this._coordinates) {
       return html`
-        <div class="line" @click=${this._handleClick}>
-          ${svg`<svg width="${width}" height="${height}" viewBox="0 0 ${width} ${height}">
-            ${paths.map(
-              (path) =>
-                svg`<path d="${path}" stroke="var(--feature-color)" stroke-width="1" stroke-linecap="round" fill="none" />`
-            )}
-            ${filledPaths.map(
-              (path) =>
-                svg`<path d="${path}" stroke="none" stroke-linecap="round" fill="var(--feature-color)" fill-opacity="0.2" />`
-            )}
-              </svg>`}
+        <div class="container">
+          <ha-spinner size="small"></ha-spinner>
         </div>
       `;
     }
-    if (timeline) {
-      const ranges = this._generateTimelineRanges(timeline);
+    if (!this._coordinates.length) {
       return html`
-        <div class="timeline" @click=${this._handleClick}>
-          ${svg`<svg width="${width}" height="${height}" viewBox="0 0 ${width} ${height}">
-            <g>
-                ${ranges.map((r) => svg`<rect x="${r.startX}" y="0" width="${r.endX - r.startX}" height="${height}" fill="${r.color}" />`)}
-            </g>
-            </svg>`}
+        <div class="container">
+          <div class="info">No state history found.</div>
         </div>
       `;
     }
-    return nothing;
-  }
-
-  private _handleClick() {
-    // open more info dialog to show more detailed history
-    fireEvent(this, "hass-more-info", { entityId: this.context!.entity_id! });
+    return html`
+      <hui-graph-base .coordinates=${this._coordinates}></hui-graph-base>
+    `;
   }
 
   private async _subscribeHistory(): Promise<() => Promise<void>> {
@@ -138,174 +109,36 @@ class HuiHistoryChartCardFeature
     ) {
       return () => Promise.resolve();
     }
-
-    const { numeric_device_classes: sensorNumericDeviceClasses } =
-      await getSensorNumericDeviceClasses(this.hass!);
-
     return subscribeHistoryStatesTimeWindow(
       this.hass!,
       (historyStates) => {
-        this._stateHistory = computeHistory(
-          this.hass!,
-          historyStates,
-          [this.context!.entity_id!],
-          this.hass!.localize,
-          sensorNumericDeviceClasses,
-          false
-        );
+        this._coordinates =
+          coordinatesMinimalResponseCompressedState(
+            historyStates[this.context!.entity_id!],
+            this._config!.hours_to_show ?? 24,
+            500,
+            2,
+            undefined
+          ) || [];
       },
       this._config!.hours_to_show ?? 24,
       [this.context!.entity_id!]
     );
   }
 
-  private _generateLinePoints(line: LineChartUnit): {
-    points: { x: number; y: number }[];
-    yAxisOrigin: number;
-  } {
-    const width = this.clientWidth;
-    const height = this.clientHeight;
-    let yAxisOrigin = height;
-    let minY = Number(line.data[0].states[0].state);
-    let maxY = Number(line.data[0].states[0].state);
-    const minX = line.data[0].states[0].last_changed;
-    const maxX = Date.now();
-    line.data[0].states.forEach((stateData) => {
-      const stateValue = Number(stateData.state);
-      if (stateValue < minY) {
-        minY = stateValue;
-      } else if (stateValue > maxY) {
-        maxY = stateValue;
-      }
-    });
-    const rangeY = maxY - minY || minY * 0.1;
-    const sampledData = downSampleLineData(
-      line.data[0].states.map((stateData) => [
-        stateData.last_changed,
-        Number(stateData.state),
-      ]),
-      width,
-      minX,
-      maxX
-    );
-    if (maxY < 0) {
-      // all values are negative
-      // add margin
-      maxY += rangeY * 0.1;
-      maxY = Math.min(0, maxY);
-      yAxisOrigin = 0;
-    } else if (minY < 0) {
-      // some values are negative
-      yAxisOrigin = (maxY / (maxY - minY || 1)) * height;
-    } else {
-      // all values are positive
-      // add margin
-      minY -= rangeY * 0.1;
-      minY = Math.max(0, minY);
-    }
-    const yDenom = maxY - minY || 1;
-    const xDenom = maxX - minX || 1;
-    const points = sampledData!.map((point) => {
-      const x = ((point![0] - minX) / xDenom) * width;
-      const y = height - ((Number(point![1]) - minY) / yDenom) * height;
-      return { x, y };
-    });
-    points.push({ x: width, y: points[points.length - 1].y });
-    return { points, yAxisOrigin };
-  }
-
-  private _generateTimelineRanges(timeline: TimelineEntity) {
-    if (timeline.data.length === 0) {
-      return [];
-    }
-    const computedStyles = getComputedStyle(this);
-    const width = this.clientWidth;
-    const minX = timeline.data[0].last_changed;
-    const maxX = Date.now();
-    let prevEndX = 0;
-    let prevStateColor = "";
-    const ranges = timeline.data.map((t) => {
-      const x = ((t.last_changed - minX) / (maxX - minX)) * width;
-      const range = {
-        startX: prevEndX,
-        endX: x,
-        color: prevStateColor,
-      };
-      prevStateColor = computeTimelineColor(
-        t.state,
-        computedStyles,
-        this.hass!.states[timeline.entity_id]
-      );
-      prevEndX = x;
-      return range;
-    });
-    ranges.push({
-      startX: prevEndX,
-      endX: width,
-      color: prevStateColor,
-    });
-    return ranges;
-  }
-
-  private _getLinePaths(
-    points: { x: number; y: number }[],
-    yAxisOrigin: number
-  ) {
-    const paths: string[] = [];
-    const filledPaths: string[] = [];
-    if (!points.length) {
-      return { paths, filledPaths };
-    }
-    // path can interupted by missing data, so we need to split the path into segments
-    const pathSegments: { x: number; y: number }[][] = [[]];
-    points.forEach((point) => {
-      if (!isNaN(point.y)) {
-        pathSegments[pathSegments.length - 1].push(point);
-      } else if (pathSegments[pathSegments.length - 1].length > 0) {
-        pathSegments.push([]);
-      }
-    });
-
-    pathSegments.forEach((pathPoints) => {
-      // create a smoothed path
-      let next: { x: number; y: number };
-      let path = "";
-      let last = pathPoints[0];
-
-      path += `M ${last.x},${last.y}`;
-
-      pathPoints.forEach((coord) => {
-        next = coord;
-        path += ` ${(next.x + last.x) / 2},${(next.y + last.y) / 2}`;
-        path += ` Q${next.x},${next.y}`;
-        last = next;
-      });
-
-      path += ` ${next!.x},${next!.y}`;
-      paths.push(path);
-      filledPaths.push(
-        path +
-          ` L ${next!.x},${yAxisOrigin} L ${pathPoints[0].x},${yAxisOrigin} Z`
-      );
-    });
-
-    return { paths, filledPaths };
-  }
-
   static styles = css`
     :host {
-      display: block;
+      display: flex;
       width: 100%;
       height: var(--feature-height);
+      flex-direction: column;
+      justify-content: flex-end;
+      align-items: flex-end;
+      pointer-events: none !important;
     }
-    :host > div {
+    hui-graph-base {
       width: 100%;
-      height: 100%;
-      cursor: pointer;
-    }
-    .timeline {
-      border-radius: 4px;
-      overflow: hidden;
+      --accent-color: var(--feature-color);
     }
   `;
 }
