@@ -520,12 +520,12 @@ export default class HaAutomationTriggerRow extends LitElement {
     this._selected = true;
 
     if (this.narrow) {
-      requestAnimationFrame(() => {
+      window.setTimeout(() => {
         this.scrollIntoView({
           block: "start",
           behavior: "smooth",
         });
-      });
+      }, 180);
     }
   }
 
