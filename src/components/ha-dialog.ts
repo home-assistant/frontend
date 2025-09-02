@@ -114,14 +114,14 @@ export class HaDialog extends DialogBase {
         position: var(--dialog-content-position, relative);
         padding: var(
           --dialog-content-padding,
-          24px max(24px, var(--safe-area-inset-right)) 24px
-            max(24px, var(--safe-area-inset-left))
+          24px max(24px, var(--safe-area-inset-right, 0px)) 24px
+            max(24px, var(--safe-area-inset-left, 0px))
         );
       }
       :host([hideactions]) .mdc-dialog .mdc-dialog__content {
         padding-bottom: max(
           var(--dialog-content-padding, 24px),
-          var(--safe-area-inset-bottom)
+          var(--safe-area-inset-bottom, 0px)
         );
       }
       .mdc-dialog .mdc-dialog__surface {
