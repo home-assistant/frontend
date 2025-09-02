@@ -127,8 +127,8 @@ export class MoreInfoInfo extends LitElement {
       display: flex;
       flex-direction: column;
       flex: 1;
-      padding: 24px max(24px, var(--safe-area-inset-right, 0px)) 24px
-        max(24px, var(--safe-area-inset-left, 0px));
+      padding: 24px;
+      padding-bottom: max(var(--safe-area-inset-bottom), 24px);
     }
 
     [data-domain="camera"] .content {
