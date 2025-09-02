@@ -30,7 +30,7 @@ export class HaBottomSheet extends LitElement {
 
   @state() private _dialogMaxViewpointHeight = 70;
 
-  @state() private _dialogMinViewpointHeight = 50;
+  @state() private _dialogMinViewpointHeight = 55;
 
   @state() private _dialogViewportHeight?: number;
 
