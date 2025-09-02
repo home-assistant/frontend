@@ -3,7 +3,13 @@ import type { HassEntity } from "home-assistant-js-websocket";
 import { load } from "js-yaml";
 import type { CSSResultGroup, PropertyValues } from "lit";
 import { css, html, LitElement, nothing } from "lit";
-import { customElement, property, query, state } from "lit/decorators";
+import {
+  customElement,
+  property,
+  query,
+  queryAll,
+  state,
+} from "lit/decorators";
 import { classMap } from "lit/directives/class-map";
 import {
   any,
@@ -28,6 +34,7 @@ import "../../../components/ha-fab";
 import "../../../components/ha-icon-button";
 import "../../../components/ha-markdown";
 import type {
+  ActionSidebarConfig,
   AutomationConfig,
   Condition,
   ManualAutomationConfig,
@@ -92,7 +99,14 @@ export class HaManualAutomationEditor extends LitElement {
 
   @state() private _sidebarConfig?: SidebarConfig;
 
+  @state() private _sidebarKey?: string;
+
   @query("ha-automation-sidebar") private _sidebarElement?: HaAutomationSidebar;
+
+  @queryAll("ha-automation-action, ha-automation-condition")
+  private _collapsableElements?: NodeListOf<
+    HaAutomationAction | HaAutomationCondition
+  >;
 
   private _previousConfig?: ManualAutomationConfig;
 
@@ -260,7 +274,11 @@ export class HaManualAutomationEditor extends LitElement {
         })}
       >
         <div class="content-wrapper">
-          <div class="content">
+          <div
+            class="content ${this._sidebarConfig && this.narrow
+              ? "has-bottom-sheet"
+              : ""}"
+          >
             <slot name="alerts"></slot>
             ${this._renderContent()}
           </div>
@@ -287,6 +305,7 @@ export class HaManualAutomationEditor extends LitElement {
             .config=${this._sidebarConfig}
             @value-changed=${this._sidebarConfigChanged}
             .disabled=${this.disabled}
+            .sidebarKey=${this._sidebarKey}
           ></ha-automation-sidebar>
         </div>
       </div>
@@ -314,6 +333,7 @@ export class HaManualAutomationEditor extends LitElement {
     // deselect previous selected row
     this._sidebarConfig?.close?.();
     this._sidebarConfig = ev.detail;
+    this._sidebarKey = JSON.stringify(this._sidebarConfig);
 
     await this._sidebarElement?.updateComplete;
     this._sidebarElement?.focus();
@@ -474,7 +494,20 @@ export class HaManualAutomationEditor extends LitElement {
     if (normalized) {
       ev.preventDefault();
 
-      if (this.dirty) {
+      if (
+        Object.keys(normalized).length === 1 &&
+        ensureArray(normalized[Object.keys(normalized)[0]]).length === 1
+      ) {
+        this._appendToExistingConfig(normalized);
+        return;
+      }
+
+      if (
+        this.dirty ||
+        ensureArray(this.config.triggers)?.length ||
+        ensureArray(this.config.conditions)?.length ||
+        ensureArray(this.config.actions)?.length
+      ) {
         const result = await new Promise<boolean>((resolve) => {
           showPasteReplaceDialog(this, {
             domain: "automation",
@@ -583,22 +616,34 @@ export class HaManualAutomationEditor extends LitElement {
     });
   }
 
-  private _getCollapsableElements() {
-    return this.shadowRoot!.querySelectorAll<
-      HaAutomationAction | HaAutomationCondition
-    >("ha-automation-action, ha-automation-condition");
-  }
-
   public expandAll() {
-    this._getCollapsableElements().forEach((element) => {
+    this._collapsableElements?.forEach((element) => {
       element.expandAll();
     });
   }
 
   public collapseAll() {
-    this._getCollapsableElements().forEach((element) => {
+    this._collapsableElements?.forEach((element) => {
       element.collapseAll();
     });
+  }
+
+  public copySelectedRow() {
+    if ((this._sidebarConfig as ActionSidebarConfig)?.copy) {
+      (this._sidebarConfig as ActionSidebarConfig).copy();
+    }
+  }
+
+  public cutSelectedRow() {
+    if ((this._sidebarConfig as ActionSidebarConfig)?.cut) {
+      (this._sidebarConfig as ActionSidebarConfig).cut();
+    }
+  }
+
+  public deleteSelectedRow() {
+    if ((this._sidebarConfig as ActionSidebarConfig)?.delete) {
+      (this._sidebarConfig as ActionSidebarConfig).delete();
+    }
   }
 
   static get styles(): CSSResultGroup {

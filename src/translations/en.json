@@ -201,6 +201,15 @@
         "open_door_confirm": "Really open?",
         "open_door_done": "Done"
       },
+      "home-summary": {
+        "all_lights_off": "All off",
+        "count_lights_on": "{count} {count, plural,\n one {on}\n other {on}\n}",
+        "count_locks_unlocked": "{count} {count, plural,\n one {unlocked}\n other {unlocked}\n}",
+        "count_alarms_disarmed": "{count} {count, plural,\n one {disarmed}\n other {disarmed}\n}",
+        "all_secure": "All secure",
+        "no_media_playing": "No media playing",
+        "count_media_playing": "{count} {count, plural,\n one {playing}\n other {playing}\n}"
+      },
       "media_player": {
         "source": "Source",
         "sound_mode": "Sound mode",
@@ -669,7 +678,7 @@
       },
       "subpage-data-table": {
         "filters": "Filters",
-        "show_results": "show {number} results",
+        "show_results": "Show {number} results",
         "clear_filter": "Clear filter",
         "close_filter": "Close filters",
         "exit_selection_mode": "Exit selection mode",
@@ -1375,6 +1384,11 @@
         "history": "History",
         "logbook": "Activity",
         "device_info": "Device info",
+        "device_or_service_info": "[%key:ui::panel::config::devices::device_info%]",
+        "device_type": {
+          "device": "[%key:ui::panel::config::devices::type::device_heading%]",
+          "service": "[%key:ui::panel::config::devices::type::service_heading%]"
+        },
         "last_changed": "Last changed",
         "last_updated": "Last updated",
         "show_more": "Show more",
@@ -2047,6 +2061,9 @@
         },
         "automation_script": {
           "title": "Automations / Scripts",
+          "copy": "to copy the selected automation/script action/condition/trigger",
+          "cut": "to cut the selected automation/script action/condition/trigger",
+          "delete": "to delete the selected automation/script action/condition/trigger",
           "paste": "to paste automation/script YAML from clipboard to editor",
           "save": "to save automation/script"
         },
@@ -3847,6 +3864,9 @@
             "type_script_plural": "[%key:ui::panel::config::blueprint::overview::types_plural::script%]",
             "new_automation_setup_failed_title": "New {type} setup failed",
             "new_automation_setup_failed_text": "Your new {type} has saved, but waiting for it to setup has timed out. This could be due to errors parsing your configuration.yaml, please check the configuration in developer tools. Your {type} will not be visible until this is corrected, and {types} are reloaded. Changes to area, category, or labels were not saved and must be reapplied.",
+            "item_pasted": "{item} pasted",
+            "ctrl": "Ctrl",
+            "del": "Del",
             "triggers": {
               "name": "Triggers",
               "header": "When",
@@ -3873,6 +3893,8 @@
               "unknown_trigger": "[%key:ui::panel::config::devices::automation::triggers::unknown_trigger%]",
               "triggering_event_detail": "Triggering event detail",
               "trigger": "Trigger",
+              "copied_to_clipboard": "Trigger copied to clipboard",
+              "cut_to_clipboard": "Trigger cut to clipboard",
               "groups": {
                 "entity": {
                   "label": "Entity",
@@ -4135,6 +4157,8 @@
               "type_select": "Condition type",
               "unknown_condition": "[%key:ui::panel::config::devices::automation::conditions::unknown_condition%]",
               "condition": "Condition",
+              "copied_to_clipboard": "Condition copied to clipboard",
+              "cut_to_clipboard": "Condition cut to clipboard",
               "groups": {
                 "entity": {
                   "label": "Entity",
@@ -4304,6 +4328,8 @@
               "type_select": "Action type",
               "continue_on_error": "Continue on error",
               "action": "Action",
+              "copied_to_clipboard": "Action copied to clipboard",
+              "cut_to_clipboard": "Action cut to clipboard",
               "groups": {
                 "helpers": {
                   "label": "Helpers"

@@ -15,19 +15,14 @@ declare global {
     "item-added": {
       index: number;
       data: any;
+      item: any;
     };
     "item-removed": {
       index: number;
     };
     "drag-start": undefined;
     "drag-end": undefined;
-    "item-cloned": HaSortableClonedEventData;
   }
-}
-
-export interface HaSortableClonedEventData {
-  item: any;
-  clone: any;
 }
 
 export type HaSortableOptions = Omit<
@@ -154,7 +149,6 @@ export class HaSortable extends LitElement {
       onUpdate: this._handleUpdate,
       onAdd: this._handleAdd,
       onRemove: this._handleRemove,
-      onClone: this._handleClone,
     };
 
     if (this.draggableSelector) {
@@ -187,15 +181,12 @@ export class HaSortable extends LitElement {
     fireEvent(this, "item-added", {
       index: evt.newIndex,
       data: evt.item.sortableData,
+      item: evt.item,
     });
   };
 
   private _handleRemove = (evt) => {
     fireEvent(this, "item-removed", { index: evt.oldIndex });
-  };
-
-  private _handleClone = (evt) => {
-    fireEvent(this, "item-cloned", evt);
   };
 
   private _handleEnd = async (evt) => {

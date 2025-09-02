@@ -37,12 +37,6 @@ export const rowStyles = css`
   ha-tooltip {
     cursor: default;
   }
-  :host([highlight]) ha-card {
-    --shadow-default: var(--ha-card-box-shadow, 0 0 0 0 transparent);
-    --shadow-focus: 0 0 0 1px var(--state-inactive-color);
-    border-color: var(--state-inactive-color);
-    box-shadow: var(--shadow-default), var(--shadow-focus);
-  }
   .hidden {
     display: none;
   }
@@ -142,6 +136,11 @@ export const manualEditorStyles = css`
   .content {
     padding-top: 24px;
     padding-bottom: 72px;
+    transition: padding-bottom 180ms ease-in-out;
+  }
+
+  .content.has-bottom-sheet {
+    padding-bottom: calc(90vh - 72px);
   }
 
   ha-automation-sidebar {
@@ -190,8 +189,7 @@ export const automationRowsStyles = css`
     scroll-margin-top: 48px;
   }
   .handle {
-    margin: 4px;
-    padding: 8px;
+    padding: 4px;
     cursor: move; /* fallback if grab cursor is unsupported */
     cursor: grab;
     border-radius: var(--ha-border-radius-pill);
@@ -223,5 +221,35 @@ export const sidebarEditorStyles = css`
   }
   .description {
     padding-top: 16px;
+  }
+  .overflow-label {
+    display: flex;
+    justify-content: space-between;
+    gap: 12px;
+    white-space: nowrap;
+  }
+  .overflow-label .shortcut {
+    --mdc-icon-size: 12px;
+    display: inline-flex;
+    flex-direction: row;
+    align-items: center;
+    gap: 2px;
+  }
+  .overflow-label .shortcut span {
+    font-size: var(--ha-font-size-s);
+    font-family: var(--ha-font-family-code);
+    color: var(--ha-color-text-secondary);
+  }
+  .shortcut-placeholder {
+    display: inline-block;
+    width: 60px;
+  }
+  .shortcut-placeholder.mac {
+    width: 46px;
+  }
+  @media all and (max-width: 870px) {
+    .shortcut-placeholder {
+      display: none;
+    }
   }
 `;

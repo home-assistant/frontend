@@ -4,12 +4,12 @@ import {
   mdiArrowUp,
   mdiContentCopy,
   mdiContentCut,
-  mdiContentDuplicate,
   mdiDelete,
   mdiDotsVertical,
   mdiFlask,
   mdiPlayCircleOutline,
   mdiPlaylistEdit,
+  mdiPlusCircleMultipleOutline,
   mdiRenameBox,
   mdiStopCircleOutline,
 } from "@mdi/js";
@@ -53,6 +53,7 @@ import {
   showPromptDialog,
 } from "../../../../dialogs/generic/show-dialog-box";
 import type { HomeAssistant } from "../../../../types";
+import { showToast } from "../../../../util/toast";
 import "../ha-automation-editor-warning";
 import { rowStyles } from "../styles";
 import "./ha-automation-condition-editor";
@@ -68,6 +69,7 @@ import "./types/ha-automation-condition-template";
 import "./types/ha-automation-condition-time";
 import "./types/ha-automation-condition-trigger";
 import "./types/ha-automation-condition-zone";
+import { copyToClipboard } from "../../../../common/util/copy-clipboard";
 
 export interface ConditionElement extends LitElement {
   condition: Condition;
@@ -116,6 +118,8 @@ export default class HaAutomationConditionRow extends LitElement {
 
   @property({ type: Boolean }) public narrow = false;
 
+  @property({ type: Boolean }) public highlight?: boolean;
+
   @property({ type: Boolean, attribute: "sort-selected" })
   public sortSelected = false;
 
@@ -151,6 +155,10 @@ export default class HaAutomationConditionRow extends LitElement {
 
   @query("ha-automation-row")
   private _automationRowElement?: HaAutomationRow;
+
+  get selected() {
+    return this._selected;
+  }
 
   private _renderRow() {
     return html`
@@ -212,7 +220,7 @@ export default class HaAutomationConditionRow extends LitElement {
               )}
               <ha-svg-icon
                 slot="start"
-                .path=${mdiContentDuplicate}
+                .path=${mdiPlusCircleMultipleOutline}
               ></ha-svg-icon>
             </ha-md-menu-item>
 
@@ -355,12 +363,16 @@ export default class HaAutomationConditionRow extends LitElement {
               )}
               .collapsed=${this._collapsed}
               .selected=${this._selected}
-              @click=${this._toggleSidebar}
-              @toggle-collapsed=${this._toggleCollapse}
+              .highlight=${this.highlight}
               .buildingBlock=${CONDITION_BUILDING_BLOCKS.includes(
                 this.condition.condition
               )}
               .sortSelected=${this.sortSelected}
+              @click=${this._toggleSidebar}
+              @toggle-collapsed=${this._toggleCollapse}
+              @copy-row=${this._copyCondition}
+              @cut-row=${this._cutCondition}
+              @delete-row=${this._onDelete}
               >${this._renderRow()}</ha-automation-row
             >`
           : html`
@@ -429,6 +441,7 @@ export default class HaAutomationConditionRow extends LitElement {
       ...this._clipboard,
       condition: deepClone(this.condition),
     };
+    copyToClipboard(JSON.stringify(this.condition));
   }
 
   private _onDisable = () => {
@@ -477,6 +490,15 @@ export default class HaAutomationConditionRow extends LitElement {
     this._testingResult = undefined;
     this._testing = true;
     const condition = this.condition;
+    requestAnimationFrame(() => {
+      // @ts-ignore is supported in all browsers expect firefox
+      if (this.scrollIntoViewIfNeeded) {
+        // @ts-ignore is supported in all browsers expect firefox
+        this.scrollIntoViewIfNeeded();
+        return;
+      }
+      this.scrollIntoView();
+    });
 
     try {
       const validateResult = await validateConfig(this.hass, {
@@ -567,6 +589,12 @@ export default class HaAutomationConditionRow extends LitElement {
 
   private _copyCondition = () => {
     this._setClipboard();
+    showToast(this, {
+      message: this.hass.localize(
+        "ui.panel.config.automation.editor.conditions.copied_to_clipboard"
+      ),
+      duration: 2000,
+    });
   };
 
   private _cutCondition = () => {
@@ -575,6 +603,12 @@ export default class HaAutomationConditionRow extends LitElement {
     if (this._selected) {
       fireEvent(this, "close-sidebar");
     }
+    showToast(this, {
+      message: this.hass.localize(
+        "ui.panel.config.automation.editor.conditions.cut_to_clipboard"
+      ),
+      duration: 2000,
+    });
   };
 
   private _moveUp = () => {
@@ -660,7 +694,7 @@ export default class HaAutomationConditionRow extends LitElement {
       },
       toggleYamlMode: () => {
         this._toggleYamlMode();
-        return this._yamlMode;
+        this.openSidebar();
       },
       disable: this._onDisable,
       delete: this._onDelete,
@@ -676,12 +710,12 @@ export default class HaAutomationConditionRow extends LitElement {
     this._collapsed = false;
 
     if (this.narrow) {
-      requestAnimationFrame(() => {
+      window.setTimeout(() => {
         this.scrollIntoView({
           block: "start",
           behavior: "smooth",
         });
-      });
+      }, 180); // duration of transition of added padding for bottom sheet
     }
   }
 
@@ -692,10 +726,6 @@ export default class HaAutomationConditionRow extends LitElement {
 
   private _toggleCollapse() {
     this._collapsed = !this._collapsed;
-  }
-
-  public isSelected() {
-    return this._selected;
   }
 
   public focus() {

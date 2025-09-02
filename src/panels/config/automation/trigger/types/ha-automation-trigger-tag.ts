@@ -42,6 +42,8 @@ export class HaTagTrigger extends LitElement implements TriggerElement {
         .disabled=${this.disabled || this._tags.length === 0}
         .value=${this.trigger.tag_id}
         @selected=${this._tagChanged}
+        fixedMenuPosition
+        naturalMenuWidth
       >
         ${this._tags.map(
           (tag) => html`

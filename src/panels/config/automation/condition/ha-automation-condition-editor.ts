@@ -103,8 +103,7 @@ export default class HaAutomationConditionEditor extends LitElement {
     if (!ev.detail.isValid) {
       return;
     }
-    // @ts-ignore
-    fireEvent(this, "value-changed", { value: ev.detail.value, yaml: true });
+    fireEvent(this, "yaml-changed", { value: ev.detail.value });
   }
 
   private _onUiChanged(ev: CustomEvent) {

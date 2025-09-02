@@ -30,6 +30,8 @@ export class HaBottomSheet extends LitElement {
 
   @state() private _dialogMaxViewpointHeight = 70;
 
+  @state() private _dialogMinViewpointHeight = 55;
+
   @state() private _dialogViewportHeight?: number;
 
   render() {
@@ -41,6 +43,7 @@ export class HaBottomSheet extends LitElement {
           ? `${this._dialogViewportHeight}vh`
           : "auto",
         maxHeight: `${this._dialogMaxViewpointHeight}vh`,
+        minHeight: `${this._dialogMinViewpointHeight}vh`,
       })}
     >
       <div class="handle-wrapper">
@@ -80,6 +83,7 @@ export class HaBottomSheet extends LitElement {
       this._dialogViewportHeight =
         (this._dialog.offsetHeight / window.innerHeight) * 100;
       this._dialogMaxViewpointHeight = 90;
+      this._dialogMinViewpointHeight = 20;
     } else {
       // after close animation is done close dialog element and fire closed event
       this._dialog.close();

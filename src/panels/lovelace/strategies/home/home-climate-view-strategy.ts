@@ -45,11 +45,17 @@ const processAreasForClimate = (
         },
       });
 
-      if (hass.areas[areaId].temperature_entity_id) {
-        cards.push(computeTileCard(hass.areas[areaId].temperature_entity_id));
+      if (area.temperature_entity_id) {
+        cards.push({
+          ...computeTileCard(area.temperature_entity_id),
+          features: [{ type: "history-chart" }],
+        });
       }
-      if (hass.areas[areaId].humidity_entity_id) {
-        cards.push(computeTileCard(hass.areas[areaId].humidity_entity_id));
+      if (area.humidity_entity_id) {
+        cards.push({
+          ...computeTileCard(area.humidity_entity_id),
+          features: [{ type: "history-chart" }],
+        });
       }
 
       for (const entityId of areaEntities) {
