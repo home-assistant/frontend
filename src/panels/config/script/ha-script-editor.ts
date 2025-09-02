@@ -1035,10 +1035,12 @@ export class HaScriptEditor extends SubscribeMixin(
     return this._confirmUnsavedChanged();
   }
 
+  // @ts-ignore
   private _collapseAll() {
     this._manualEditor?.collapseAll();
   }
 
+  // @ts-ignore
   private _expandAll() {
     this._manualEditor?.expandAll();
   }
