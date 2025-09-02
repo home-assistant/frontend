@@ -218,6 +218,9 @@ export const colorStyles = css`
     --table-row-alternative-background-color: var(--secondary-background-color);
     --data-table-background-color: var(--card-background-color);
     --markdown-code-background-color: var(--primary-background-color);
+    --bar-box-shadow:
+      0px 2px 4px -1px rgba(0, 0, 0, 0.2), 0px 4px 5px 0px rgba(0, 0, 0, 0.14),
+      0px 1px 10px 0px rgba(0, 0, 0, 0.12);
 
     /* https://github.com/material-components/material-web/blob/master/docs/theming.md */
     --mdc-theme-primary: var(--primary-color);
@@ -246,6 +249,7 @@ export const colorStyles = css`
     --mdc-dialog-scroll-divider-color: var(--divider-color);
     --mdc-dialog-heading-ink-color: var(--primary-text-color);
     --mdc-dialog-content-ink-color: var(--primary-text-color);
+    --mdc-top-app-bar-fixed-box-shadow: var(--bar-box-shadow);
 
     --mdc-text-field-idle-line-color: var(--input-idle-line-color);
     --mdc-text-field-hover-line-color: var(--input-hover-line-color);
