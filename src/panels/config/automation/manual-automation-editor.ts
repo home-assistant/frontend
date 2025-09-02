@@ -274,7 +274,11 @@ export class HaManualAutomationEditor extends LitElement {
         })}
       >
         <div class="content-wrapper">
-          <div class="content">
+          <div
+            class="content ${this._sidebarConfig && this.narrow
+              ? "has-bottom-sheet"
+              : ""}"
+          >
             <slot name="alerts"></slot>
             ${this._renderContent()}
           </div>

@@ -236,12 +236,12 @@ export default class HaScriptFieldRow extends LitElement {
     } satisfies ScriptFieldSidebarConfig);
 
     if (this.narrow) {
-      requestAnimationFrame(() => {
+      window.setTimeout(() => {
         this.scrollIntoView({
           block: "start",
           behavior: "smooth",
         });
-      });
+      }, 180); // duration of transition of added padding for bottom sheet
     }
   }
 
