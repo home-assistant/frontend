@@ -90,7 +90,7 @@ export class HaDialog extends DialogBase {
       }
       .mdc-dialog__actions {
         justify-content: var(--justify-action-buttons, flex-end);
-        padding: 12px 16px max(var(--safe-area-inset-bottom), 16px) 16px;
+        padding: 12px 16px 16px 16px;
       }
       .mdc-dialog__actions span:nth-child(1) {
         flex: var(--secondary-action-button-flex, unset);
