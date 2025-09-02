@@ -73,6 +73,21 @@ const _SHORTCUTS: Section[] = [
     items: [
       {
         type: "shortcut",
+        shortcut: [{ key: "ui.dialogs.shortcuts.shortcuts.ctrl_cmd" }, "C"],
+        key: "ui.dialogs.shortcuts.automation_script.copy",
+      },
+      {
+        type: "shortcut",
+        shortcut: [{ key: "ui.dialogs.shortcuts.shortcuts.ctrl_cmd" }, "X"],
+        key: "ui.dialogs.shortcuts.automation_script.cut",
+      },
+      {
+        type: "shortcut",
+        shortcut: [{ key: "ui.dialogs.shortcuts.shortcuts.ctrl_cmd" }, "del"],
+        key: "ui.dialogs.shortcuts.automation_script.delete",
+      },
+      {
+        type: "shortcut",
         shortcut: [{ key: "ui.dialogs.shortcuts.shortcuts.ctrl_cmd" }, "V"],
         key: "ui.dialogs.shortcuts.automation_script.paste",
       },
