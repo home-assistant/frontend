@@ -3,6 +3,7 @@ import {
   mdiDevices,
   mdiPaletteSwatch,
   mdiTextureBox,
+  mdiTransitConnectionVariant,
 } from "@mdi/js";
 import type { CSSResultGroup, PropertyValues } from "lit";
 import { LitElement, css, html, nothing } from "lit";
@@ -266,7 +267,9 @@ export class HaRelatedItems extends LitElement {
                   <a href="/config/devices/device/${relatedDeviceId}">
                     <ha-list-item hasMeta graphic="icon">
                       <ha-svg-icon
-                        .path=${mdiDevices}
+                        .path=${device.entry_type === "service"
+                          ? mdiTransitConnectionVariant
+                          : mdiDevices}
                         slot="graphic"
                       ></ha-svg-icon>
                       ${device.name_by_user || device.name}
