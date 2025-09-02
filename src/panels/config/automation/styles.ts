@@ -136,6 +136,11 @@ export const manualEditorStyles = css`
   .content {
     padding-top: 24px;
     padding-bottom: 72px;
+    transition: padding-bottom 180ms ease-in-out;
+  }
+
+  .content.has-bottom-sheet {
+    padding-bottom: calc(90vh - 72px);
   }
 
   ha-automation-sidebar {
@@ -184,8 +189,7 @@ export const automationRowsStyles = css`
     scroll-margin-top: 48px;
   }
   .handle {
-    margin: 4px;
-    padding: 8px;
+    padding: 4px;
     cursor: move; /* fallback if grab cursor is unsupported */
     cursor: grab;
     border-radius: var(--ha-border-radius-pill);
