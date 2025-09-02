@@ -1384,6 +1384,11 @@
         "history": "History",
         "logbook": "Activity",
         "device_info": "Device info",
+        "device_or_service_info": "[%key:ui::panel::config::devices::device_info%]",
+        "device_type": {
+          "device": "[%key:ui::panel::config::devices::type::device_heading%]",
+          "service": "[%key:ui::panel::config::devices::type::service_heading%]"
+        },
         "last_changed": "Last changed",
         "last_updated": "Last updated",
         "show_more": "Show more",
