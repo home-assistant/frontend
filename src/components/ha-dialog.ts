@@ -100,9 +100,6 @@ export class HaDialog extends DialogBase {
       }
       .mdc-dialog__container {
         align-items: var(--vertical-align-dialog, center);
-        margin-bottom: var(--safe-area-inset-bottom);
-        margin-left: var(--safe-area-inset-left);
-        margin-right: var(--safe-area-inset-right);
       }
       .mdc-dialog__title {
         padding: 16px 16px 0 16px;
@@ -137,6 +134,17 @@ export class HaDialog extends DialogBase {
         display: flex;
         flex-direction: column;
       }
+
+      @media all and (max-width: 450px), all and (max-height: 500px) {
+        .mdc-dialog .mdc-dialog__surface {
+          width: 100%;
+          padding-top: var(--safe-area-inset-top);
+          padding-right: var(--safe-area-inset-right);
+          padding-left: var(--safe-area-inset-left);
+          padding-bottom: var(--safe-area-inset-bottom);
+        }
+      }
+
       .header_title {
         display: flex;
         align-items: center;
