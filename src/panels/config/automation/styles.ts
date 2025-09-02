@@ -111,6 +111,14 @@ export const manualEditorStyles = css`
     --sidebar-gap: 16px;
   }
 
+  .wrapper {
+    transition: padding-bottom 180ms ease-in-out;
+  }
+
+  .has-bottom-sheet {
+    padding-bottom: 90vh;
+  }
+
   .fab-positioner {
     display: flex;
     justify-content: flex-end;

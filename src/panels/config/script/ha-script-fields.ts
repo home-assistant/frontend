@@ -76,10 +76,12 @@ export default class HaScriptFields extends LitElement {
       row.focus();
 
       if (this.narrow) {
-        row.scrollIntoView({
-          block: "start",
-          behavior: "smooth",
-        });
+        window.setTimeout(() => {
+          row.scrollIntoView({
+            block: "start",
+            behavior: "smooth",
+          });
+        }, 180); // duration of transition of added padding for bottom sheet
       }
     });
   }
