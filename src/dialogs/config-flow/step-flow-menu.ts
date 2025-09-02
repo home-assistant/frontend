@@ -1,5 +1,5 @@
 import type { TemplateResult } from "lit";
-import { css, html, LitElement } from "lit";
+import { css, html, LitElement, nothing } from "lit";
 import { customElement, property } from "lit/decorators";
 import { fireEvent } from "../../common/dom/fire_event";
 import "../../components/ha-icon-next";
@@ -20,6 +20,7 @@ class StepFlowMenu extends LitElement {
   protected render(): TemplateResult {
     let options: string[];
     let translations: Record<string, string>;
+    let optionDescriptions: Record<string, string> = {};
 
     if (Array.isArray(this.step.menu_options)) {
       options = this.step.menu_options;
@@ -30,10 +31,26 @@ class StepFlowMenu extends LitElement {
           this.step,
           option
         );
+        optionDescriptions[option] =
+          this.flowConfig.renderMenuOptionDescription(
+            this.hass,
+            this.step,
+            option
+          );
       }
     } else {
       options = Object.keys(this.step.menu_options);
       translations = this.step.menu_options;
+      optionDescriptions = Object.fromEntries(
+        options.map((key) => [
+          key,
+          this.flowConfig.renderMenuOptionDescription(
+            this.hass,
+            this.step,
+            key
+          ),
+        ])
+      );
     }
 
     const description = this.flowConfig.renderMenuDescription(
@@ -47,7 +64,12 @@ class StepFlowMenu extends LitElement {
         ${options.map(
           (option) => html`
             <ha-list-item hasMeta .step=${option} @click=${this._handleStep}>
-              <span>${translations[option]}</span>
+              <div class="option-text">${translations[option]}</div>
+              ${optionDescriptions[option]
+                ? html`<div class="option-description">
+                    ${optionDescriptions[option]}
+                  </div>`
+                : nothing}
               <ha-icon-next slot="meta"></ha-icon-next>
             </ha-list-item>
           `
@@ -73,17 +95,28 @@ class StepFlowMenu extends LitElement {
     css`
       .options {
         margin-top: 20px;
-        margin-bottom: 8px;
+        margin-bottom: 16px;
       }
       .content {
         padding-bottom: 16px;
-        border-bottom: 1px solid var(--divider-color);
       }
       .content + .options {
         margin-top: 8px;
       }
       ha-list-item {
         --mdc-list-side-padding: 24px;
+      }
+      ha-list-item:has(.option-description) {
+        padding-top: 10px;
+        padding-bottom: 10px;
+      }
+      .option-text {
+        line-height: var(--ha-line-height-normal);
+        font-size: var(--ha-font-size-l);
+      }
+      .option-description {
+        font-size: var(--ha-font-size-m);
+        color: var(--secondary-text-color);
       }
     `,
   ];
