@@ -41,7 +41,7 @@ export class HaDialogHeader extends LitElement {
           display: flex;
           flex-direction: row;
           align-items: flex-start;
-          padding: 12px;
+          padding: 4px;
           box-sizing: border-box;
         }
         .header-content {
