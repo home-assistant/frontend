@@ -11,7 +11,12 @@ export const KeyboardShortcutMixin = <T extends Constructor<LitElement>>(
   class extends superClass {
     private _keydownEvent = (event: KeyboardEvent) => {
       const supportedShortcuts = this.supportedShortcuts();
-      if ((event.ctrlKey || event.metaKey) && event.key in supportedShortcuts) {
+      if (
+        (event.ctrlKey || event.metaKey) &&
+        !event.shiftKey &&
+        !event.altKey &&
+        event.key in supportedShortcuts
+      ) {
         event.preventDefault();
         supportedShortcuts[event.key]();
         return;

@@ -80,10 +80,14 @@ export class HaAutomationRow extends LitElement {
       ev.key !== " " &&
       !(
         (this.sortSelected || ev.altKey) &&
+        !(ev.ctrlKey || ev.metaKey) &&
+        !ev.shiftKey &&
         (ev.key === "ArrowUp" || ev.key === "ArrowDown")
       ) &&
       !(
         (ev.ctrlKey || ev.metaKey) &&
+        !ev.shiftKey &&
+        !ev.altKey &&
         (ev.key === "c" || ev.key === "x" || ev.key === "Delete")
       )
     ) {
