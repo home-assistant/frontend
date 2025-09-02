@@ -180,7 +180,7 @@ export default class HaAutomationSidebarCard extends LitElement {
     }
 
     ha-dialog-header.scrolled {
-      box-shadow: 0 2px 8px rgba(0, 0, 0, 0.12);
+      box-shadow: var(--bar-box-shadow);
     }
 
     .fade {
@@ -194,7 +194,8 @@ export default class HaAutomationSidebarCard extends LitElement {
     }
 
     .fade.scrollable {
-      box-shadow: 0 -2px 12px rgba(0, 0, 0, 0.16);
+      box-shadow: var(--bar-box-shadow);
+      transform: rotate(180deg);
     }
 
     .card-content {
