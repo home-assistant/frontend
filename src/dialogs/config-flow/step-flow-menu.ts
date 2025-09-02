@@ -63,12 +63,17 @@ class StepFlowMenu extends LitElement {
       <div class="options">
         ${options.map(
           (option) => html`
-            <ha-list-item hasMeta .step=${option} @click=${this._handleStep}>
-              <div class="option-text">${translations[option]}</div>
+            <ha-list-item
+              hasMeta
+              .step=${option}
+              @click=${this._handleStep}
+              ?twoline=${optionDescriptions[option]}
+            >
+              <span class="option-text">${translations[option]}</span>
               ${optionDescriptions[option]
-                ? html`<div class="option-description">
+                ? html`<span class="option-description" slot="secondary">
                     ${optionDescriptions[option]}
-                  </div>`
+                  </span>`
                 : nothing}
               <ha-icon-next slot="meta"></ha-icon-next>
             </ha-list-item>
@@ -105,18 +110,6 @@ class StepFlowMenu extends LitElement {
       }
       ha-list-item {
         --mdc-list-side-padding: 24px;
-      }
-      ha-list-item:has(.option-description) {
-        padding-top: 10px;
-        padding-bottom: 10px;
-      }
-      .option-text {
-        line-height: var(--ha-line-height-normal);
-        font-size: var(--ha-font-size-l);
-      }
-      .option-description {
-        font-size: var(--ha-font-size-m);
-        color: var(--secondary-text-color);
       }
     `,
   ];
