@@ -88,7 +88,10 @@ export class HaAutomationRow extends LitElement {
         (ev.ctrlKey || ev.metaKey) &&
         !ev.shiftKey &&
         !ev.altKey &&
-        (ev.key === "c" || ev.key === "x" || ev.key === "Delete")
+        (ev.key === "c" ||
+          ev.key === "x" ||
+          ev.key === "Delete" ||
+          ev.key === "Backspace")
       )
     ) {
       return;
@@ -119,7 +122,7 @@ export class HaAutomationRow extends LitElement {
         return;
       }
 
-      if (ev.key === "Delete") {
+      if (ev.key === "Delete" || ev.key === "Backspace") {
         fireEvent(this, "delete-row");
         return;
       }
