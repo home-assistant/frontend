@@ -100,6 +100,9 @@ export class HaDialog extends DialogBase {
       }
       .mdc-dialog__container {
         align-items: var(--vertical-align-dialog, center);
+        margin-left: var(--safe-area-inset-left);
+        margin-right: var(--safe-area-inset-right);
+        margin-bottom: var(--safe-area-inset-bottom);
       }
       .mdc-dialog__title {
         padding: 16px 16px 0 16px;
@@ -128,10 +131,6 @@ export class HaDialog extends DialogBase {
         position: var(--dialog-surface-position, relative);
         top: var(--dialog-surface-top);
         margin-top: var(--dialog-surface-margin-top);
-        // TODO support left, right and bottom safe area
-        //margin-left: var(--safe-area-inset-left);
-        //margin-right: var(--safe-area-inset-right);
-        //margin-bottom: var(--safe-area-inset-bottom);
         min-height: var(--mdc-dialog-min-height, auto);
         border-radius: var(--ha-dialog-border-radius, 24px);
         -webkit-backdrop-filter: var(--ha-dialog-surface-backdrop-filter, none);
