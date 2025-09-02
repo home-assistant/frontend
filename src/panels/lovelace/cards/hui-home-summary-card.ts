@@ -119,7 +119,7 @@ export class HuiHomeSummaryCard extends LitElement implements LovelaceCard {
 
         const sensorsValues = areaSensors
           .map(
-            (entityId) => parseFloat(this.hass!.states[entityId!].state) || NaN
+            (entityId) => parseFloat(this.hass!.states[entityId!]?.state) || NaN
           )
           .filter((value) => !isNaN(value));
 
