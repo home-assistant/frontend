@@ -298,6 +298,15 @@ export const showRepairsFlowDialog = (
         );
       },
 
+      renderMenuOptionSortValue(hass, step, option) {
+        return hass.localize(
+          `component.${issue.domain}.issues.${
+            issue.translation_key || issue.issue_id
+          }.fix_flow.step.${step.step_id}.menu_sort_values.${option}`,
+          mergePlaceholders(issue, step)
+        );
+      },
+
       renderLoadingDescription(hass, reason) {
         return (
           hass.localize(
