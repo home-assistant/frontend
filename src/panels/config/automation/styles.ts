@@ -218,4 +218,34 @@ export const sidebarEditorStyles = css`
   .description {
     padding-top: 16px;
   }
+  .overflow-label {
+    display: flex;
+    justify-content: space-between;
+    gap: 12px;
+    white-space: nowrap;
+  }
+  .overflow-label .shortcut {
+    --mdc-icon-size: 12px;
+    display: inline-flex;
+    flex-direction: row;
+    align-items: center;
+    gap: 2px;
+  }
+  .overflow-label .shortcut span {
+    font-size: var(--ha-font-size-s);
+    font-family: var(--ha-font-family-code);
+    color: var(--ha-color-text-secondary);
+  }
+  .shortcut-placeholder {
+    display: inline-block;
+    width: 60px;
+  }
+  .shortcut-placeholder.mac {
+    width: 46px;
+  }
+  @media all and (max-width: 870px) {
+    .shortcut-placeholder {
+      display: none;
+    }
+  }
 `;

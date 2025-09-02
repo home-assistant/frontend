@@ -318,7 +318,7 @@ export default class HaAutomationCondition extends LitElement {
     ev.stopPropagation();
     const { index, data } = ev.detail;
     const item = ev.detail.item as HaAutomationConditionRow;
-    const selected = item.isSelected();
+    const selected = item.selected;
     let conditions = [
       ...this.conditions.slice(0, index),
       data,

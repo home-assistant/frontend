@@ -1,7 +1,6 @@
 import { consume } from "@lit/context";
 import {
   mdiCog,
-  mdiContentDuplicate,
   mdiContentSave,
   mdiDebugStepOver,
   mdiDelete,
@@ -11,6 +10,7 @@ import {
   mdiPlay,
   mdiPlayCircleOutline,
   mdiPlaylistEdit,
+  mdiPlusCircleMultipleOutline,
   mdiRenameBox,
   mdiRobotConfused,
   mdiStopCircleOutline,
@@ -337,7 +337,7 @@ export class HaAutomationEditor extends PreventUnsavedMixin(
             )}
             <ha-svg-icon
               slot="graphic"
-              .path=${mdiContentDuplicate}
+              .path=${mdiPlusCircleMultipleOutline}
             ></ha-svg-icon>
           </ha-list-item>
 
@@ -1138,6 +1138,9 @@ export class HaAutomationEditor extends PreventUnsavedMixin(
   protected supportedShortcuts(): SupportedShortcuts {
     return {
       s: () => this._handleSaveAutomation(),
+      c: () => this._copySelectedRow(),
+      x: () => this._cutSelectedRow(),
+      Delete: () => this._deleteSelectedRow(),
     };
   }
 
@@ -1155,6 +1158,18 @@ export class HaAutomationEditor extends PreventUnsavedMixin(
 
   private _expandAll() {
     this._manualEditor?.expandAll();
+  }
+
+  private _copySelectedRow() {
+    this._manualEditor?.copySelectedRow();
+  }
+
+  private _cutSelectedRow() {
+    this._manualEditor?.cutSelectedRow();
+  }
+
+  private _deleteSelectedRow() {
+    this._manualEditor?.deleteSelectedRow();
   }
 
   static get styles(): CSSResultGroup {
