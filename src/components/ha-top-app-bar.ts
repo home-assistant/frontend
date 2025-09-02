@@ -8,10 +8,6 @@ export class HaTopAppBar extends TopAppBarBase {
   static override styles = [
     styles,
     css`
-      header {
-        padding-top: var(--safe-area-inset-top);
-        /* TODO right padding */
-      }
       .mdc-top-app-bar__row {
         height: var(--header-height);
         border-bottom: var(--app-header-border-bottom);
@@ -26,6 +22,9 @@ export class HaTopAppBar extends TopAppBarBase {
           --app-header-background-color,
           var(--mdc-theme-primary)
         );
+        padding-top: var(--safe-area-inset-top);
+        padding-left: var(--safe-area-inset-left);
+        padding-right: var(--safe-area-inset-right);
       }
     `,
   ];

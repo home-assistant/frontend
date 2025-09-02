@@ -278,6 +278,9 @@ export class TopAppBarBaseBase extends BaseElement {
           --app-header-background-color,
           var(--mdc-theme-primary)
         );
+        padding-top: var(--safe-area-inset-top);
+        padding-left: var(--safe-area-inset-left);
+        padding-right: var(--safe-area-inset-right);
       }
       .mdc-top-app-bar--pane.mdc-top-app-bar--fixed-scrolled {
         box-shadow: none;

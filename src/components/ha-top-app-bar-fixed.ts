@@ -27,6 +27,9 @@ export class HaTopAppBarFixed extends TopAppBarFixedBase {
           --app-header-background-color,
           var(--mdc-theme-primary)
         );
+        padding-top: var(--safe-area-inset-top);
+        padding-left: var(--safe-area-inset-left);
+        padding-right: var(--safe-area-inset-right);
       }
       .mdc-top-app-bar__title {
         font-size: var(--ha-font-size-xl);
