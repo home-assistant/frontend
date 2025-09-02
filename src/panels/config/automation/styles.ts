@@ -116,7 +116,7 @@ export const manualEditorStyles = css`
   }
 
   .has-bottom-sheet {
-    padding-bottom: 90vh;
+    padding-bottom: calc(90vh - 72px);
   }
 
   .fab-positioner {
