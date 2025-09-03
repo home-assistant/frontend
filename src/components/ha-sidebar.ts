@@ -799,7 +799,7 @@ class HaSidebar extends SubscribeMixin(LitElement) {
           width: 248px;
         }
         :host([narrow][expanded]) ha-md-list-item {
-          width: 240px;
+          width: calc(240px - var(--safe-area-inset-left, 0px));
         }
 
         ha-md-list-item.selected {
