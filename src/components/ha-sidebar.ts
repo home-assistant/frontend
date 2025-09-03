@@ -707,7 +707,7 @@ class HaSidebar extends SubscribeMixin(LitElement) {
           box-sizing: border-box;
         }
         .menu {
-          height: calc(var(--header-height) + var(--safe-area-inset-top));
+          height: calc(var(--header-height) + var(--safe-area-inset-top, 0px));
           box-sizing: border-box;
           display: flex;
           padding: 0 4px;
@@ -759,8 +759,8 @@ class HaSidebar extends SubscribeMixin(LitElement) {
           padding: 4px 0;
           box-sizing: border-box;
           height: calc(
-            100% - var(--header-height) - var(--safe-area-inset-top) -
-              132px - var(--safe-area-inset-bottom)
+            100% - var(--header-height) - var(--safe-area-inset-top, 0px) -
+              132px - var(--safe-area-inset-bottom, 0px)
           );
         }
 
