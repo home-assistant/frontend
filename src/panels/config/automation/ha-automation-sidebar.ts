@@ -55,7 +55,7 @@ export default class HaAutomationSidebar extends LitElement {
           .yamlMode=${this._yamlMode}
           .sidebarKey=${this.sidebarKey}
           @toggle-yaml-mode=${this._toggleYamlMode}
-          @close-sidebar=${this._handleCloseSidebar}
+          @close-sidebar=${this.triggerCloseSidebar}
         ></ha-automation-sidebar-trigger>
       `;
     }
@@ -71,7 +71,7 @@ export default class HaAutomationSidebar extends LitElement {
           .yamlMode=${this._yamlMode}
           .sidebarKey=${this.sidebarKey}
           @toggle-yaml-mode=${this._toggleYamlMode}
-          @close-sidebar=${this._handleCloseSidebar}
+          @close-sidebar=${this.triggerCloseSidebar}
         ></ha-automation-sidebar-condition>
       `;
     }
@@ -87,7 +87,7 @@ export default class HaAutomationSidebar extends LitElement {
           .yamlMode=${this._yamlMode}
           .sidebarKey=${this.sidebarKey}
           @toggle-yaml-mode=${this._toggleYamlMode}
-          @close-sidebar=${this._handleCloseSidebar}
+          @close-sidebar=${this.triggerCloseSidebar}
         ></ha-automation-sidebar-action>
       `;
     }
@@ -100,7 +100,7 @@ export default class HaAutomationSidebar extends LitElement {
           .isWide=${this.isWide}
           .narrow=${this.narrow}
           .disabled=${this.disabled}
-          @close-sidebar=${this._handleCloseSidebar}
+          @close-sidebar=${this.triggerCloseSidebar}
         ></ha-automation-sidebar-option>
       `;
     }
@@ -116,7 +116,7 @@ export default class HaAutomationSidebar extends LitElement {
           .yamlMode=${this._yamlMode}
           .sidebarKey=${this.sidebarKey}
           @toggle-yaml-mode=${this._toggleYamlMode}
-          @close-sidebar=${this._handleCloseSidebar}
+          @close-sidebar=${this.triggerCloseSidebar}
         ></ha-automation-sidebar-script-field-selector>
       `;
     }
@@ -132,7 +132,7 @@ export default class HaAutomationSidebar extends LitElement {
           .yamlMode=${this._yamlMode}
           .sidebarKey=${this.sidebarKey}
           @toggle-yaml-mode=${this._toggleYamlMode}
-          @close-sidebar=${this._handleCloseSidebar}
+          @close-sidebar=${this.triggerCloseSidebar}
         ></ha-automation-sidebar-script-field>
       `;
     }
@@ -188,8 +188,8 @@ export default class HaAutomationSidebar extends LitElement {
     return undefined;
   }
 
-  private _handleCloseSidebar(ev: CustomEvent) {
-    ev.stopPropagation();
+  public triggerCloseSidebar(ev?: CustomEvent) {
+    ev?.stopPropagation();
     if (this.narrow) {
       this._bottomSheetElement?.closeSheet();
       return;

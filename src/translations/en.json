@@ -2043,8 +2043,7 @@
         "shortcuts": {
           "double_click": "Double-click",
           "scroll_wheel": "Scroll",
-          "drag": "Drag",
-          "ctrl_cmd": "Ctrl/Cmd"
+          "drag": "Drag"
         },
         "searching": {
           "title": "Searching",
@@ -2061,9 +2060,9 @@
         },
         "automation_script": {
           "title": "Automations / Scripts",
-          "copy": "to copy the selected automation/script action/condition/trigger",
-          "cut": "to cut the selected automation/script action/condition/trigger",
-          "delete": "to delete the selected automation/script action/condition/trigger",
+          "copy": "to copy the selected item to clipboard",
+          "cut": "to cut the selected item and place it on the clipboard",
+          "delete": "to delete the selected item",
           "paste": "to paste automation/script YAML from clipboard to editor",
           "save": "to save automation/script"
         },
@@ -5741,6 +5740,16 @@
           "no_advertisements_found": "No matching Bluetooth advertisements found",
           "no_connection_slot_allocations": "No connection slot allocations information available",
           "no_active_connection_support": "This adapter does not support making active (GATT) connections.",
+          "no_scanner_state_available": "No scanner state available",
+          "current_scanning_mode": "Current scanning mode",
+          "requested_scanning_mode": "Requested scanning mode",
+          "scanning_mode_none": "none",
+          "scanning_mode_active": "active",
+          "scanning_mode_passive": "passive",
+          "scanner_mode_mismatch": "Scanner requested {requested} mode but is operating in {current} mode. The scanner is in a bad state and needs to be power cycled.",
+          "scanner_mode_mismatch_remote": "For proxies: reboot the device",
+          "scanner_mode_mismatch_usb": "For USB adapters: unplug and plug back in",
+          "scanner_mode_mismatch_uart": "For UART/onboard adapters: power down the system completely and power it back up",
           "address": "Address",
           "name": "Name",
           "source": "Source",
@@ -8197,8 +8206,8 @@
               "bar-gauge": {
                 "label": "Bar gauge"
               },
-              "history-chart": {
-                "label": "History chart"
+              "trend-graph": {
+                "label": "Trend graph"
               }
             }
           },

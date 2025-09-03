@@ -166,7 +166,7 @@ export class HaManualAutomationEditor extends LitElement {
         .disabled=${this.disabled || this.saving}
         .narrow=${this.narrow}
         @open-sidebar=${this._openSidebar}
-        @request-close-sidebar=${this._closeSidebar}
+        @request-close-sidebar=${this._triggerCloseSidebar}
         @close-sidebar=${this._handleCloseSidebar}
         root
         sidebar
@@ -213,7 +213,7 @@ export class HaManualAutomationEditor extends LitElement {
         .disabled=${this.disabled || this.saving}
         .narrow=${this.narrow}
         @open-sidebar=${this._openSidebar}
-        @request-close-sidebar=${this._closeSidebar}
+        @request-close-sidebar=${this._triggerCloseSidebar}
         @close-sidebar=${this._handleCloseSidebar}
         root
         sidebar
@@ -255,7 +255,7 @@ export class HaManualAutomationEditor extends LitElement {
         .highlightedActions=${this._pastedConfig?.actions || []}
         @value-changed=${this._actionChanged}
         @open-sidebar=${this._openSidebar}
-        @request-close-sidebar=${this._closeSidebar}
+        @request-close-sidebar=${this._triggerCloseSidebar}
         @close-sidebar=${this._handleCloseSidebar}
         .hass=${this.hass}
         .narrow=${this.narrow}
@@ -351,8 +351,12 @@ export class HaManualAutomationEditor extends LitElement {
     };
   }
 
-  private _closeSidebar() {
+  private _triggerCloseSidebar() {
     if (this._sidebarConfig) {
+      if (this._sidebarElement) {
+        this._sidebarElement.triggerCloseSidebar();
+        return;
+      }
       this._sidebarConfig?.close();
     }
   }
@@ -389,7 +393,7 @@ export class HaManualAutomationEditor extends LitElement {
   }
 
   private _saveAutomation() {
-    this._closeSidebar();
+    this._triggerCloseSidebar();
     fireEvent(this, "save-automation");
   }
 
@@ -493,14 +497,6 @@ export class HaManualAutomationEditor extends LitElement {
 
     if (normalized) {
       ev.preventDefault();
-
-      if (
-        Object.keys(normalized).length === 1 &&
-        ensureArray(normalized[Object.keys(normalized)[0]]).length === 1
-      ) {
-        this._appendToExistingConfig(normalized);
-        return;
-      }
 
       if (
         this.dirty ||
