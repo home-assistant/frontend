@@ -705,7 +705,7 @@ class HaSidebar extends SubscribeMixin(LitElement) {
           background-color: var(--sidebar-background-color);
           width: 100%;
           box-sizing: border-box;
-          padding-bottom: calc(12px + var(--safe-area-inset-bottom, 0px));
+          padding-bottom: calc(14px + var(--safe-area-inset-bottom, 0px));
         }
         .menu {
           height: calc(var(--header-height) + var(--safe-area-inset-top, 0px));
@@ -796,7 +796,10 @@ class HaSidebar extends SubscribeMixin(LitElement) {
           --md-list-item-leading-icon-size: 24px;
         }
         :host([expanded]) ha-md-list-item {
-          width: calc(240px - var(--safe-area-inset-left, 0px));
+          width: 248px;
+        }
+        :host([narrow][expanded]) ha-md-list-item {
+          width: 240px;
         }
 
         ha-md-list-item.selected {
