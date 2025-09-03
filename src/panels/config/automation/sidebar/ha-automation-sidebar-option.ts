@@ -1,9 +1,16 @@
-import { mdiContentDuplicate, mdiDelete, mdiRenameBox } from "@mdi/js";
-import { css, html, LitElement } from "lit";
+import {
+  mdiAppleKeyboardCommand,
+  mdiDelete,
+  mdiPlusCircleMultipleOutline,
+  mdiRenameBox,
+} from "@mdi/js";
+import { html, LitElement, nothing } from "lit";
 import { customElement, property, query } from "lit/decorators";
 import type { OptionSidebarConfig } from "../../../../data/automation";
 import type { HomeAssistant } from "../../../../types";
+import { isMac } from "../../../../util/is_mac";
 import type HaAutomationConditionEditor from "../action/ha-automation-action-editor";
+import { sidebarEditorStyles } from "../styles";
 import "./ha-automation-sidebar-card";
 
 @customElement("ha-automation-sidebar-option")
@@ -29,11 +36,11 @@ export default class HaAutomationSidebarOption extends LitElement {
     );
 
     const title = this.hass.localize(
-      "ui.panel.config.automation.editor.actions.type.choose.option_label"
+      `ui.panel.config.automation.editor.actions.type.choose.${this.config.defaultOption ? "default_" : ""}option_label`
     );
 
     const description = this.hass.localize(
-      "ui.panel.config.automation.editor.actions.type.choose.option_description"
+      `ui.panel.config.automation.editor.actions.type.choose.${this.config.defaultOption ? "default_" : ""}option_description`
     );
 
     return html`<ha-automation-sidebar-card
@@ -43,55 +50,84 @@ export default class HaAutomationSidebarOption extends LitElement {
     >
       <span slot="title">${title}</span>
       <span slot="subtitle">${subtitle}</span>
-      <ha-md-menu-item
-        slot="menu-items"
-        .clickAction=${this.config.rename}
-        .disabled=${!!disabled}
-      >
-        ${this.hass.localize(
-          "ui.panel.config.automation.editor.triggers.rename"
-        )}
-        <ha-svg-icon slot="start" .path=${mdiRenameBox}></ha-svg-icon>
-      </ha-md-menu-item>
+      ${this.config.defaultOption
+        ? html`<span slot="overflow-menu"></span>`
+        : html`
+            <ha-md-menu-item
+              slot="menu-items"
+              .clickAction=${this.config.rename}
+              .disabled=${!!disabled}
+            >
+              <ha-svg-icon slot="start" .path=${mdiRenameBox}></ha-svg-icon>
+              <div class="overflow-label">
+                ${this.hass.localize(
+                  "ui.panel.config.automation.editor.triggers.rename"
+                )}
+                <span class="shortcut-placeholder ${isMac ? "mac" : ""}"></span>
+              </div>
+            </ha-md-menu-item>
 
-      <ha-md-menu-item
-        slot="menu-items"
-        @click=${this.config.duplicate}
-        .disabled=${this.disabled}
-      >
-        ${this.hass.localize(
-          "ui.panel.config.automation.editor.actions.duplicate"
-        )}
-        <ha-svg-icon slot="graphic" .path=${mdiContentDuplicate}></ha-svg-icon>
-      </ha-md-menu-item>
-      <ha-md-divider
-        slot="menu-items"
-        role="separator"
-        tabindex="-1"
-      ></ha-md-divider>
-      <ha-md-menu-item
-        slot="menu-items"
-        .clickAction=${this.config.delete}
-        .disabled=${this.disabled}
-        class="warning"
-      >
-        ${this.hass.localize(
-          "ui.panel.config.automation.editor.actions.type.choose.remove_option"
-        )}
-        <ha-svg-icon slot="start" .path=${mdiDelete}></ha-svg-icon>
-      </ha-md-menu-item>
+            <ha-md-menu-item
+              slot="menu-items"
+              @click=${this.config.duplicate}
+              .disabled=${this.disabled}
+            >
+              <ha-svg-icon
+                slot="start"
+                .path=${mdiPlusCircleMultipleOutline}
+              ></ha-svg-icon>
+              <div class="overflow-label">
+                ${this.hass.localize(
+                  "ui.panel.config.automation.editor.actions.duplicate"
+                )}
+                <span class="shortcut-placeholder ${isMac ? "mac" : ""}"></span>
+              </div>
+            </ha-md-menu-item>
+            <ha-md-divider
+              slot="menu-items"
+              role="separator"
+              tabindex="-1"
+            ></ha-md-divider>
+            <ha-md-menu-item
+              slot="menu-items"
+              .clickAction=${this.config.delete}
+              .disabled=${this.disabled}
+              class="warning"
+            >
+              <ha-svg-icon slot="start" .path=${mdiDelete}></ha-svg-icon>
+              <div class="overflow-label">
+                ${this.hass.localize(
+                  "ui.panel.config.automation.editor.actions.type.choose.remove_option"
+                )}
+                ${!this.narrow
+                  ? html`<span class="shortcut">
+                      <span
+                        >${isMac
+                          ? html`<ha-svg-icon
+                              slot="start"
+                              .path=${mdiAppleKeyboardCommand}
+                            ></ha-svg-icon>`
+                          : this.hass.localize(
+                              "ui.panel.config.automation.editor.ctrl"
+                            )}</span
+                      >
+                      <span>+</span>
+                      <span
+                        >${this.hass.localize(
+                          "ui.panel.config.automation.editor.del"
+                        )}</span
+                      >
+                    </span>`
+                  : nothing}
+              </div>
+            </ha-md-menu-item>
+          `}
+
       <div class="description">${description}</div>
     </ha-automation-sidebar-card>`;
   }
 
-  static styles = css`
-    .sidebar-editor {
-      padding-top: 64px;
-    }
-    .description {
-      padding-top: 16px;
-    }
-  `;
+  static styles = sidebarEditorStyles;
 }
 
 declare global {

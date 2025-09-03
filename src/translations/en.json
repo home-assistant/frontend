@@ -201,6 +201,15 @@
         "open_door_confirm": "Really open?",
         "open_door_done": "Done"
       },
+      "home-summary": {
+        "all_lights_off": "All off",
+        "count_lights_on": "{count} {count, plural,\n one {on}\n other {on}\n}",
+        "count_locks_unlocked": "{count} {count, plural,\n one {unlocked}\n other {unlocked}\n}",
+        "count_alarms_disarmed": "{count} {count, plural,\n one {disarmed}\n other {disarmed}\n}",
+        "all_secure": "All secure",
+        "no_media_playing": "No media playing",
+        "count_media_playing": "{count} {count, plural,\n one {playing}\n other {playing}\n}"
+      },
       "media_player": {
         "source": "Source",
         "sound_mode": "Sound mode",
@@ -440,8 +449,7 @@
       "replace": "Replace",
       "append": "Append",
       "supports_markdown": "Supports {markdown_help_link}",
-      "markdown": "Markdown",
-      "none": "None"
+      "markdown": "Markdown"
     },
     "components": {
       "selectors": {
@@ -452,7 +460,9 @@
           "browse_media": "Browse media",
           "manual": "Manually enter media ID",
           "media_content_id": "Media content ID",
-          "media_content_type": "Media content type"
+          "media_content_type": "Media content type",
+          "media_content_id_detail": "The ID of the content to play. Platform dependent.",
+          "media_content_type_detail": "The type of the content to play, such as image, music, TV show, video, episode, channel, or playlist."
         },
         "file": {
           "upload_failed": "Upload failed",
@@ -676,7 +686,7 @@
       },
       "subpage-data-table": {
         "filters": "Filters",
-        "show_results": "show {number} results",
+        "show_results": "Show {number} results",
         "clear_filter": "Clear filter",
         "close_filter": "Close filters",
         "exit_selection_mode": "Exit selection mode",
@@ -1357,8 +1367,8 @@
         "not_supported_microphone_browser": "Your connection to Home Assistant is not secured using HTTPS. This causes browsers to block Home Assistant from accessing the microphone.",
         "not_supported_microphone_documentation": "Use the Home Assistant app or visit {documentation_link} to learn how to use a secure URL",
         "not_supported_microphone_documentation_link": "the documentation",
-        "unknown_error_load_assist": "Loading the assist pipeline failed",
-        "not_found_error_load_assist": "Cannot find the assist pipeline"
+        "unknown_error_load_assist": "Loading the Assist pipeline failed",
+        "not_found_error_load_assist": "Cannot find the Assist pipeline"
       },
       "generic": {
         "default_confirmation_title": "Are you sure?"
@@ -1382,6 +1392,11 @@
         "history": "History",
         "logbook": "Activity",
         "device_info": "Device info",
+        "device_or_service_info": "[%key:ui::panel::config::devices::device_info%]",
+        "device_type": {
+          "device": "[%key:ui::panel::config::devices::type::device_heading%]",
+          "service": "[%key:ui::panel::config::devices::type::service_heading%]"
+        },
         "last_changed": "Last changed",
         "last_updated": "Last updated",
         "show_more": "Show more",
@@ -1612,7 +1627,7 @@
             "preload_stream": "Preload camera stream",
             "preload_stream_description": "This keeps the camera stream open in the background so it shows quicker. Warning! This is device intensive.",
             "stream_orientation": "Camera stream orientation",
-            "stream_orientation_description": "The orientation transformation to use for the camera stream.",
+            "stream_orientation_description": "The orientation transformation to use for the camera stream.\nWarning: Stream orientation processing occurs on the Home Assistant device and may impact system performance. When possible, configure this setting directly on your camera instead.",
             "stream_orientation_1": "No orientation transform",
             "stream_orientation_2": "Mirror",
             "stream_orientation_3": "Rotate 180",
@@ -2036,8 +2051,7 @@
         "shortcuts": {
           "double_click": "Double-click",
           "scroll_wheel": "Scroll",
-          "drag": "Drag",
-          "ctrl_cmd": "Ctrl/Cmd"
+          "drag": "Drag"
         },
         "searching": {
           "title": "Searching",
@@ -2054,6 +2068,9 @@
         },
         "automation_script": {
           "title": "Automations / Scripts",
+          "copy": "to copy the selected item to clipboard",
+          "cut": "to cut the selected item and place it on the clipboard",
+          "delete": "to delete the selected item",
           "paste": "to paste automation/script YAML from clipboard to editor",
           "save": "to save automation/script"
         },
@@ -3369,7 +3386,11 @@
                   "description": "Display your devices grouped by area"
                 },
                 "overview": {
-                  "title": "Overview (experimental)",
+                  "title": "Overview",
+                  "description": "Gives an overview of all your entities and areas they are in"
+                },
+                "home": {
+                  "title": "Home (experimental)",
                   "description": "Global overview of your home"
                 }
               },
@@ -3850,10 +3871,13 @@
             "type_script_plural": "[%key:ui::panel::config::blueprint::overview::types_plural::script%]",
             "new_automation_setup_failed_title": "New {type} setup failed",
             "new_automation_setup_failed_text": "Your new {type} has saved, but waiting for it to setup has timed out. This could be due to errors parsing your configuration.yaml, please check the configuration in developer tools. Your {type} will not be visible until this is corrected, and {types} are reloaded. Changes to area, category, or labels were not saved and must be reapplied.",
+            "item_pasted": "{item} pasted",
+            "ctrl": "Ctrl",
+            "del": "Del",
             "triggers": {
               "name": "Triggers",
               "header": "When",
-              "description": "A trigger is a specific event happening in or around your home, for example: ''When the sun sets''. Any trigger listed here will start your automation.",
+              "description": "A trigger is a specific event happening in or around your home, for example: ''When the sun sets''. Any trigger added here will start your automation.",
               "learn_more": "Learn more about triggers",
               "triggered": "Triggered",
               "add": "Add trigger",
@@ -3876,6 +3900,8 @@
               "unknown_trigger": "[%key:ui::panel::config::devices::automation::triggers::unknown_trigger%]",
               "triggering_event_detail": "Triggering event detail",
               "trigger": "Trigger",
+              "copied_to_clipboard": "Trigger copied to clipboard",
+              "cut_to_clipboard": "Trigger cut to clipboard",
               "groups": {
                 "entity": {
                   "label": "Entity",
@@ -4113,7 +4139,7 @@
             "conditions": {
               "name": "Conditions",
               "header": "And if",
-              "description": "This list of conditions needs to be satisfied for the automation to run. A condition can be satisfied or not at any given time, for example: ''If {user} is home''. You can use building blocks to create more complex conditions.",
+              "description": "All conditions added here need to be satisfied for the automation to run. A condition can be satisfied or not at any given time, for example: ''If {user} is home''. You can use building blocks to create more complex conditions.",
               "learn_more": "Learn more about conditions",
               "add": "Add condition",
               "search": "Search condition",
@@ -4138,6 +4164,8 @@
               "type_select": "Condition type",
               "unknown_condition": "[%key:ui::panel::config::devices::automation::conditions::unknown_condition%]",
               "condition": "Condition",
+              "copied_to_clipboard": "Condition copied to clipboard",
+              "cut_to_clipboard": "Condition cut to clipboard",
               "groups": {
                 "entity": {
                   "label": "Entity",
@@ -4280,7 +4308,7 @@
             "actions": {
               "name": "Actions",
               "header": "Then do",
-              "description": "This list of actions will be performed in sequence when the automation runs. An action usually controls one of your areas, devices, or entities, for example: 'Turn on the lights'. You can use building blocks to create more complex sequences of actions.",
+              "description": "All actions added here will be performed in sequence when the automation runs. An action usually controls one of your areas, devices, or entities, for example: 'Turn on the lights'. You can use building blocks to create more complex sequences of actions.",
               "learn_more": "Learn more about actions",
               "add": "Add action",
               "search": "Search action",
@@ -4307,6 +4335,8 @@
               "type_select": "Action type",
               "continue_on_error": "Continue on error",
               "action": "Action",
+              "copied_to_clipboard": "Action copied to clipboard",
+              "cut_to_clipboard": "Action cut to clipboard",
               "groups": {
                 "helpers": {
                   "label": "Helpers"
@@ -4474,7 +4504,9 @@
                   "no_conditions": "[%key:ui::panel::config::devices::automation::conditions::no_conditions%]",
                   "sequence": "Actions",
                   "option_label": "Option",
+                  "default_option_label": "Default actions",
                   "option_description": "Choose actions based on conditions",
+                  "default_option_description": "Optional actions to run if no other options match",
                   "description": {
                     "picker": "Choose what to do based on conditions (Similar to If-then, but more powerful).",
                     "full": "Choose {number, plural,\n one {an option}\n other{between {number} options}\n}",
@@ -5119,7 +5151,7 @@
             "integration": "Integration",
             "config_entry": "Config entry"
           },
-          "enabled_description": "Disabled devices will not be shown and entities belonging to the device will be disabled and not added to Home Assistant.",
+          "enabled_description": "Disabled devices and services will not be shown and entities belonging to them will be disabled, too.",
           "open_configuration_url": "Visit",
           "set_up_voice_assistant": "Set up voice assistant",
           "download_diagnostics": "Download diagnostics",
@@ -5448,8 +5480,8 @@
           "config_entry": {
             "application_credentials": {
               "delete_title": "Application credentials",
-              "delete_prompt": "Would you like to also delete Application Credentials for this integration?",
-              "delete_detail": "If you delete them, you will need to enter credentials when setting up the integration again. If you keep them, they will be used automatically when setting up the integration again or may be accessed from the Application Credentials menu.",
+              "delete_prompt": "Would you like to also delete application credentials for this integration?",
+              "delete_detail": "If you delete them, you will need to enter credentials when setting up the integration again. If you keep them, they will be used automatically when setting up the integration again or may be accessed from the Application credentials menu.",
               "delete_error_title": "Deleting application credentials failed",
               "dismiss": "Keep",
               "learn_more": "Learn more about application credentials"
@@ -5648,10 +5680,10 @@
         },
         "application_credentials": {
           "caption": "Application credentials",
-          "description": "Manage the OAuth application credentials used by Integrations",
+          "description": "Manage the OAuth application credentials used by integrations",
           "editor": {
-            "caption": "Add credentials",
-            "description": "OAuth is used to grant Home Assistant access to information on other websites without giving a password. This mechanism is used by companies such as Spotify, Google, Withings, Microsoft, and Twitter.",
+            "caption": "Add application credentials",
+            "description": "OAuth is used to grant Home Assistant secure delegated access to information on other websites without revealing your personal credentials.",
             "missing_credentials": "Setting up {integration} requires configuring application credentials.",
             "missing_credentials_domain_link": "View {integration} documentation",
             "view_documentation": "View application credentials documentation",
@@ -5716,6 +5748,16 @@
           "no_advertisements_found": "No matching Bluetooth advertisements found",
           "no_connection_slot_allocations": "No connection slot allocations information available",
           "no_active_connection_support": "This adapter does not support making active (GATT) connections.",
+          "no_scanner_state_available": "No scanner state available",
+          "current_scanning_mode": "Current scanning mode",
+          "requested_scanning_mode": "Requested scanning mode",
+          "scanning_mode_none": "none",
+          "scanning_mode_active": "active",
+          "scanning_mode_passive": "passive",
+          "scanner_mode_mismatch": "Scanner requested {requested} mode but is operating in {current} mode. The scanner is in a bad state and needs to be power cycled.",
+          "scanner_mode_mismatch_remote": "For proxies: reboot the device",
+          "scanner_mode_mismatch_usb": "For USB adapters: unplug and plug back in",
+          "scanner_mode_mismatch_uart": "For UART/onboard adapters: power down the system completely and power it back up",
           "address": "Address",
           "name": "Name",
           "source": "Source",
@@ -6572,7 +6614,7 @@
             "in_progress": "We're communicating with the device. This may take some time.",
             "failed": "The command failed. Additional information may be available in the logs.",
             "success": "Your device is ready to be added to another Matter platform.",
-            "scan_code": "With their app, scan the QR code or enter the sharing code below to finish set up.",
+            "scan_code": "With their app, scan the QR code or enter the sharing code below to finish setup.",
             "copy_code": "Copy code"
           }
         },
@@ -6665,6 +6707,7 @@
           "ip_information": "IP information",
           "adapter": {
             "auto_configure": "Autoconfigure",
+            "auto_configure_manual_hint": "Uncheck to manually select network adapters",
             "detected": "Detected",
             "adapter": "Adapter"
           }
@@ -6674,6 +6717,7 @@
           "description": "{percent_used} used - {free_space} free",
           "used_space": "Storage",
           "detailed_description": "{used} of {total} used",
+          "loading_detailed": "Loading detailed storage information...",
           "segments": {
             "used": "Used space",
             "free": "Free space",
@@ -6686,7 +6730,8 @@
             "homeassistant": "Home Assistant",
             "ssl": "SSL"
           },
-          "lifetime_used": "Lifetime used",
+          "lifetime": "Lifetime",
+          "lifetime_description": "{lifetime} used",
           "lifetime_used_description": "The drive’s wear level is shown as a percentage, based on endurance indicators reported by the device via NVMe SMART or eMMC lifetime estimate fields.",
           "disk_metrics": "Disk metrics",
           "datadisk": {
@@ -6815,6 +6860,20 @@
             },
             "other_areas": "Other areas",
             "areas": "Areas"
+          },
+          "home": {
+            "summary_list": {
+              "climate": "Climate",
+              "lights": "Lights",
+              "security": "Security",
+              "media_players": "Media players"
+            },
+            "welcome_user": "Welcome {user}",
+            "summaries": "Summaries",
+            "areas": "Areas",
+            "other_areas": "Other areas",
+            "unamed_device": "Unnamed device",
+            "others": "Others"
           }
         },
         "cards": {
@@ -7290,13 +7349,7 @@
             "edit_yaml": "[%key:ui::panel::lovelace::editor::edit_view::edit_yaml%]",
             "settings": {
               "column_span": "Width",
-              "column_span_helper": "Larger sections will be made smaller to fit the display. (e.g. on mobile devices)",
-              "styling": "Styling",
-              "background_type": "Background type",
-              "background_type_none_option": "None",
-              "background_type_color_option": "Color",
-              "background_color": "Background color",
-              "background_opacity": "Background opacity"
+              "column_span_helper": "Larger sections will be made smaller to fit the display. (e.g. on mobile devices)"
             },
             "visibility": {
               "explanation": "The section will be shown when ALL conditions below are fulfilled. If no conditions are set, the section will always be shown."
@@ -7408,6 +7461,8 @@
               "alert_classes": "Alert classes",
               "alert_classes_helper": "In compact style, only the first one will be shown. Order alerts by priority.",
               "sensor_classes": "Sensor classes",
+              "sum": "sum",
+              "median": "median",
               "description": "The Area card automatically displays entities of a specific area.",
               "display_type": "Display type",
               "content_layout": "[%key:ui::panel::lovelace::editor::card::tile::content_layout%]",
@@ -7711,6 +7766,11 @@
             "clock": {
               "name": "Clock",
               "description": "The Clock card displays the current time using your desired size and format.",
+              "clock_style": "Clock style",
+              "clock_styles": {
+                "digital": "Digital",
+                "analog": "Analog"
+              },
               "clock_size": "Clock size",
               "clock_sizes": {
                 "small": "Small",
@@ -7730,7 +7790,31 @@
               "time_zones": {
                 "auto": "Use user settings"
               },
-              "no_background": "No background"
+              "no_background": "No background",
+              "border": {
+                "label": "Border",
+                "description": "Whether to show a border around the clock"
+              },
+              "ticks": {
+                "label": "Ticks",
+                "description": "Whether to show ticks (indices) on the outside of the clock",
+                "none": {
+                  "label": "None",
+                  "description": "No ticks (Hands only)"
+                },
+                "quarter": {
+                  "label": "Quarter",
+                  "description": "4 ticks (Every 15 minutes)"
+                },
+                "hour": {
+                  "label": "Hour",
+                  "description": "12 ticks (Every hour)"
+                },
+                "minute": {
+                  "label": "Minute",
+                  "description": "60 ticks (Every minute)"
+                }
+              }
             },
             "media-control": {
               "name": "Media control",
@@ -8149,6 +8233,10 @@
               "no_entities": "No entities in this group, the section will not be displayed",
               "use_compact_card": "Use compact card",
               "use_large_card": "Use large card"
+            },
+            "home": {
+              "favorite_entities": "Favorite entities",
+              "add_favorite_entity": "Add favorite entity"
             }
           },
           "view": {

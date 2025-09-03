@@ -2,27 +2,25 @@ import type {
   EntityFilter,
   EntityFilterFunc,
 } from "../../../../../common/entity/entity_filter";
+import type { LocalizeFunc } from "../../../../../common/translations/localize";
 
-export const OVERVIEW_SUMMARIES = [
+export const HOME_SUMMARIES = [
   "lights",
   "climate",
   "security",
   "media_players",
 ] as const;
 
-export type OverviewSummaries = (typeof OVERVIEW_SUMMARIES)[number];
+export type HomeSummary = (typeof HOME_SUMMARIES)[number];
 
-export const OVERVIEW_SUMMARIES_ICONS: Record<OverviewSummaries, string> = {
+export const HOME_SUMMARIES_ICONS: Record<HomeSummary, string> = {
   lights: "mdi:lamps",
   climate: "mdi:home-thermometer",
   security: "mdi:security",
   media_players: "mdi:multimedia",
 };
 
-export const OVERVIEW_SUMMARIES_FILTERS: Record<
-  OverviewSummaries,
-  EntityFilter[]
-> = {
+export const HOME_SUMMARIES_FILTERS: Record<HomeSummary, EntityFilter[]> = {
   lights: [{ domain: "light", entity_category: "none" }],
   climate: [
     { domain: "climate", entity_category: "none" },
@@ -50,15 +48,15 @@ export const OVERVIEW_SUMMARIES_FILTERS: Record<
   ],
   security: [
     {
+      domain: "camera",
+      entity_category: "none",
+    },
+    {
       domain: "alarm_control_panel",
       entity_category: "none",
     },
     {
       domain: "lock",
-      entity_category: "none",
-    },
-    {
-      domain: "camera",
       entity_category: "none",
     },
     {
@@ -68,7 +66,7 @@ export const OVERVIEW_SUMMARIES_FILTERS: Record<
     },
     {
       domain: "binary_sensor",
-      device_class: ["door", "garage_door"],
+      device_class: ["door", "garage_door", "motion"],
       entity_category: "none",
     },
   ],
@@ -93,3 +91,6 @@ export const findEntities = (
 
   return results;
 };
+
+export const getSummaryLabel = (localize: LocalizeFunc, summary: HomeSummary) =>
+  localize(`ui.panel.lovelace.strategy.home.summary_list.${summary}`);

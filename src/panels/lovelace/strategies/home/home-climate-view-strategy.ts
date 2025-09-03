@@ -1,30 +1,29 @@
 import { ReactiveElement } from "lit";
 import { customElement } from "lit/decorators";
 import { generateEntityFilter } from "../../../../common/entity/entity_filter";
-import { clamp } from "../../../../common/number/clamp";
-import { floorDefaultIcon } from "../../../../components/ha-floor-icon";
 import type { LovelaceCardConfig } from "../../../../data/lovelace/config/card";
 import type { LovelaceSectionRawConfig } from "../../../../data/lovelace/config/section";
 import type { LovelaceViewConfig } from "../../../../data/lovelace/config/view";
 import type { HomeAssistant } from "../../../../types";
-import type { MediaControlCardConfig } from "../../cards/types";
-import { getAreas, getFloors } from "../areas/helpers/areas-strategy-helper";
-import { getHomeStructure } from "./helpers/overview-home-structure";
 import {
-  findEntities,
-  OVERVIEW_SUMMARIES_FILTERS,
-} from "./helpers/overview-summaries";
+  computeAreaTileCardConfig,
+  getAreas,
+  getFloors,
+} from "../areas/helpers/areas-strategy-helper";
+import { getHomeStructure } from "./helpers/home-structure";
+import { findEntities, HOME_SUMMARIES_FILTERS } from "./helpers/home-summaries";
 
-export interface OvervieMediaPlayersViewStrategyConfig {
-  type: "overview-media-players";
+export interface HomeClimateViewStrategyConfig {
+  type: "home-climate";
 }
 
-const processAreasForMediaPlayers = (
+const processAreasForClimate = (
   areaIds: string[],
   hass: HomeAssistant,
   entities: string[]
 ): LovelaceCardConfig[] => {
   const cards: LovelaceCardConfig[] = [];
+  const computeTileCard = computeAreaTileCardConfig(hass, "", true);
 
   for (const areaId of areaIds) {
     const area = hass.areas[areaId];
@@ -40,18 +39,27 @@ const processAreasForMediaPlayers = (
         heading_style: "subtitle",
         type: "heading",
         heading: area.name,
-        icon: area.icon || "mdi:home",
         tap_action: {
           action: "navigate",
           navigation_path: `areas-${area.area_id}`,
         },
       });
 
-      for (const entityId of areaEntities) {
+      if (area.temperature_entity_id) {
         cards.push({
-          type: "media-control",
-          entity: entityId,
-        } satisfies MediaControlCardConfig);
+          ...computeTileCard(area.temperature_entity_id),
+          features: [{ type: "history-chart" }],
+        });
+      }
+      if (area.humidity_entity_id) {
+        cards.push({
+          ...computeTileCard(area.humidity_entity_id),
+          features: [{ type: "history-chart" }],
+        });
+      }
+
+      for (const entityId of areaEntities) {
+        cards.push(computeTileCard(entityId));
       }
     }
   }
@@ -59,10 +67,10 @@ const processAreasForMediaPlayers = (
   return cards;
 };
 
-@customElement("overview-media-players-view-strategy")
-export class OverviewMediaPlayersViewStrategy extends ReactiveElement {
+@customElement("home-climate-view-strategy")
+export class HomeClimateViewStrategy extends ReactiveElement {
   static async generate(
-    _config: OvervieMediaPlayersViewStrategyConfig,
+    _config: HomeClimateViewStrategyConfig,
     hass: HomeAssistant
   ): Promise<LovelaceViewConfig> {
     const areas = getAreas(hass.areas);
@@ -73,8 +81,8 @@ export class OverviewMediaPlayersViewStrategy extends ReactiveElement {
 
     const allEntities = Object.keys(hass.states);
 
-    const filterFunctions = OVERVIEW_SUMMARIES_FILTERS.media_players.map(
-      (filter) => generateEntityFilter(hass, filter)
+    const filterFunctions = HOME_SUMMARIES_FILTERS.climate.map((filter) =>
+      generateEntityFilter(hass, filter)
     );
 
     const entities = findEntities(allEntities, filterFunctions);
@@ -89,16 +97,19 @@ export class OverviewMediaPlayersViewStrategy extends ReactiveElement {
 
       const section: LovelaceSectionRawConfig = {
         type: "grid",
+        column_span: 2,
         cards: [
           {
             type: "heading",
-            heading: floorCount > 1 ? floor.name : "Areas",
-            icon: floor.icon || floorDefaultIcon(floor) || "mdi:home-floor",
+            heading:
+              floorCount > 1
+                ? floor.name
+                : hass.localize("ui.panel.lovelace.strategy.home.areas"),
           },
         ],
       };
 
-      const areaCards = processAreasForMediaPlayers(areaIds, hass, entities);
+      const areaCards = processAreasForClimate(areaIds, hass, entities);
 
       if (areaCards.length > 0) {
         section.cards!.push(...areaCards);
@@ -110,16 +121,19 @@ export class OverviewMediaPlayersViewStrategy extends ReactiveElement {
     if (home.areas.length > 0) {
       const section: LovelaceSectionRawConfig = {
         type: "grid",
+        column_span: 2,
         cards: [
           {
             type: "heading",
-            heading: floorCount > 1 ? "Other areas" : "Areas",
-            icon: "mdi:home",
+            heading:
+              floorCount > 1
+                ? hass.localize("ui.panel.lovelace.strategy.home.other_areas")
+                : hass.localize("ui.panel.lovelace.strategy.home.areas"),
           },
         ],
       };
 
-      const areaCards = processAreasForMediaPlayers(home.areas, hass, entities);
+      const areaCards = processAreasForClimate(home.areas, hass, entities);
 
       if (areaCards.length > 0) {
         section.cards!.push(...areaCards);
@@ -127,17 +141,9 @@ export class OverviewMediaPlayersViewStrategy extends ReactiveElement {
       }
     }
 
-    // Allow between 2 and 3 columns (the max should be set to define the width of the header)
-    const maxColumns = clamp(sections.length, 2, 3);
-
-    // Take the full width if there is only one section to avoid narrow header on desktop
-    if (sections.length === 1) {
-      sections[0].column_span = 2;
-    }
-
     return {
       type: "sections",
-      max_columns: maxColumns,
+      max_columns: 2,
       sections: sections || [],
     };
   }
@@ -145,6 +151,6 @@ export class OverviewMediaPlayersViewStrategy extends ReactiveElement {
 
 declare global {
   interface HTMLElementTagNameMap {
-    "overview-media-players-view-strategy": OverviewMediaPlayersViewStrategy;
+    "home-climate-view-strategy": HomeClimateViewStrategy;
   }
 }

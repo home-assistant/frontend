@@ -26,6 +26,7 @@ import type {
 import type { LovelaceHeaderFooterConfig } from "../header-footer/types";
 import type { LovelaceHeadingBadgeConfig } from "../heading-badges/types";
 import type { TimeFormat } from "../../../data/translation";
+import type { HomeSummary } from "../strategies/home/helpers/home-summaries";
 
 export type AlarmPanelCardConfigState =
   | "arm_away"
@@ -371,11 +372,15 @@ export interface MarkdownCardConfig extends LovelaceCardConfig {
 export interface ClockCardConfig extends LovelaceCardConfig {
   type: "clock";
   title?: string;
+  clock_style?: "digital" | "analog";
   clock_size?: "small" | "medium" | "large";
   show_seconds?: boolean | undefined;
   time_format?: TimeFormat;
   time_zone?: string;
   no_background?: boolean;
+  // Analog clock options
+  border?: boolean;
+  ticks?: "none" | "quarter" | "hour" | "minute";
 }
 
 export interface MediaControlCardConfig extends LovelaceCardConfig {
@@ -583,4 +588,12 @@ export interface HeadingCardConfig extends LovelaceCardConfig {
   badges?: LovelaceHeadingBadgeConfig[];
   /** @deprecated Use `badges` instead */
   entities?: LovelaceHeadingBadgeConfig[];
+}
+
+export interface HomeSummaryCard extends LovelaceCardConfig {
+  summary: HomeSummary;
+  vertical?: boolean;
+  tap_action?: ActionConfig;
+  hold_action?: ActionConfig;
+  double_tap_action?: ActionConfig;
 }

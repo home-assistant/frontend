@@ -14,14 +14,15 @@ import type { HeadingCardConfig } from "../../cards/types";
 import { computeAreaTileCardConfig } from "../areas/helpers/areas-strategy-helper";
 import {
   findEntities,
-  OVERVIEW_SUMMARIES,
-  OVERVIEW_SUMMARIES_FILTERS,
-  OVERVIEW_SUMMARIES_ICONS,
-  type OverviewSummaries,
-} from "./helpers/overview-summaries";
+  getSummaryLabel,
+  HOME_SUMMARIES,
+  HOME_SUMMARIES_FILTERS,
+  HOME_SUMMARIES_ICONS,
+  type HomeSummary,
+} from "./helpers/home-summaries";
 
-export interface OverviewAreaViewStrategyConfig {
-  type: "overview-area";
+export interface HomeAreaViewStrategyConfig {
+  type: "home-area";
   area?: string;
 }
 
@@ -42,10 +43,10 @@ const computeHeadingCard = (
       : undefined,
   }) satisfies HeadingCardConfig;
 
-@customElement("overview-area-view-strategy")
-export class OverviewAreaViewStrategy extends ReactiveElement {
+@customElement("home-area-view-strategy")
+export class HomeAreaViewStrategy extends ReactiveElement {
   static async generate(
-    config: OverviewAreaViewStrategyConfig,
+    config: HomeAreaViewStrategyConfig,
     hass: HomeAssistant
   ): Promise<LovelaceViewConfig> {
     if (!config.area) {
@@ -87,16 +88,16 @@ export class OverviewAreaViewStrategy extends ReactiveElement {
     const allEntities = Object.keys(hass.states);
     const areaEntities = allEntities.filter(areaFilter);
 
-    const entitiesBySummary = OVERVIEW_SUMMARIES.reduce(
+    const entitiesBySummary = HOME_SUMMARIES.reduce(
       (acc, summary) => {
-        const summariesFilters = OVERVIEW_SUMMARIES_FILTERS[summary];
+        const summariesFilters = HOME_SUMMARIES_FILTERS[summary];
         const filterFunctions = summariesFilters.map((filter) =>
           generateEntityFilter(hass, filter)
         );
         acc[summary] = findEntities(areaEntities, filterFunctions);
         return acc;
       },
-      {} as Record<OverviewSummaries, string[]>
+      {} as Record<HomeSummary, string[]>
     );
 
     const {
@@ -111,8 +112,8 @@ export class OverviewAreaViewStrategy extends ReactiveElement {
         type: "grid",
         cards: [
           computeHeadingCard(
-            "Lights",
-            OVERVIEW_SUMMARIES_ICONS.lights,
+            getSummaryLabel(hass.localize, "lights"),
+            HOME_SUMMARIES_ICONS.lights,
             "lights"
           ),
           ...lights.map(computeTileCard),
@@ -125,8 +126,8 @@ export class OverviewAreaViewStrategy extends ReactiveElement {
         type: "grid",
         cards: [
           computeHeadingCard(
-            "Climate",
-            OVERVIEW_SUMMARIES_ICONS.climate,
+            getSummaryLabel(hass.localize, "climate"),
+            HOME_SUMMARIES_ICONS.climate,
             "climate"
           ),
           ...climate.map(computeTileCard),
@@ -139,8 +140,8 @@ export class OverviewAreaViewStrategy extends ReactiveElement {
         type: "grid",
         cards: [
           computeHeadingCard(
-            "Security",
-            OVERVIEW_SUMMARIES_ICONS.security,
+            getSummaryLabel(hass.localize, "security"),
+            HOME_SUMMARIES_ICONS.security,
             "security"
           ),
           ...security.map(computeTileCard),
@@ -153,8 +154,8 @@ export class OverviewAreaViewStrategy extends ReactiveElement {
         type: "grid",
         cards: [
           computeHeadingCard(
-            "Media players",
-            OVERVIEW_SUMMARIES_ICONS.media_players,
+            getSummaryLabel(hass.localize, "media_players"),
+            HOME_SUMMARIES_ICONS.media_players,
             "media-players"
           ),
           ...mediaPlayers.map(computeTileCard),
@@ -233,9 +234,11 @@ export class OverviewAreaViewStrategy extends ReactiveElement {
       const device = hass.devices[deviceId];
       let heading = "";
       if (device) {
-        heading = computeDeviceName(device) || "Unnamed device";
+        heading =
+          computeDeviceName(device) ||
+          hass.localize("ui.panel.lovelace.strategy.home.unamed_device");
       } else {
-        heading = "Others";
+        heading = hass.localize("ui.panel.lovelace.strategy.home.others");
       }
 
       deviceSections.push({
@@ -310,6 +313,6 @@ export class OverviewAreaViewStrategy extends ReactiveElement {
 
 declare global {
   interface HTMLElementTagNameMap {
-    "overview-area-view-strategy": OverviewAreaViewStrategy;
+    "home-area-view-strategy": HomeAreaViewStrategy;
   }
 }

@@ -1,5 +1,5 @@
 import type { TemplateResult } from "lit";
-import { css, html, LitElement } from "lit";
+import { css, html, LitElement, nothing } from "lit";
 import { customElement, property } from "lit/decorators";
 import { styleMap } from "lit/directives/style-map";
 import "./ha-tooltip";
@@ -7,7 +7,7 @@ import "./ha-tooltip";
 export interface Segment {
   value: number;
   color: string;
-  label: TemplateResult | string;
+  label?: TemplateResult | string;
 }
 
 @customElement("ha-segmented-bar")
@@ -18,6 +18,12 @@ class HaSegmentedBar extends LitElement {
 
   @property({ type: String }) public description?: string;
 
+  @property({ type: Boolean, attribute: "hide-legend" })
+  public hideLegend = false;
+
+  @property({ type: Boolean, attribute: "hide-tooltip" })
+  public hideTooltip = false;
+
   protected render(): TemplateResult {
     const totalValue = this.segments.reduce(
       (acc, segment) => acc + segment.value,
@@ -26,39 +32,51 @@ class HaSegmentedBar extends LitElement {
     return html`
       <div class="container">
         <div class="heading">
-          <span>${this.heading}</span>
-          <span>${this.description}</span>
+          <div class="title">
+            <span>${this.heading}</span>
+            <span>${this.description}</span>
+          </div>
+          <slot name="extra"></slot>
         </div>
         <div class="bar">
-          ${this.segments.map(
-            (segment) => html`
-              <ha-tooltip>
-                <span slot="content">${segment.label}</span>
-                <div
-                  style=${styleMap({
-                    width: `${(segment.value / totalValue) * 100}%`,
-                    backgroundColor: segment.color,
-                  })}
-                ></div>
-              </ha-tooltip>
-            `
-          )}
+          ${this.segments.map((segment) => {
+            const bar = html`<div
+              style=${styleMap({
+                width: `${(segment.value / totalValue) * 100}%`,
+                backgroundColor: segment.color,
+              })}
+            ></div>`;
+            return this.hideTooltip && !segment.label
+              ? bar
+              : html`
+                  <ha-tooltip>
+                    <span slot="content">${segment.label}</span>
+                    ${bar}
+                  </ha-tooltip>
+                `;
+          })}
         </div>
-        <ul class="legend">
-          ${this.segments.map(
-            (segment) => html`
-              <li>
-                <div
-                  class="bullet"
-                  style=${styleMap({
-                    backgroundColor: segment.color,
-                  })}
-                ></div>
-                <span class="label">${segment.label}</span>
-              </li>
-            `
-          )}
-        </ul>
+        ${this.hideLegend
+          ? nothing
+          : html`
+              <ul class="legend">
+                ${this.segments.map((segment) =>
+                  segment.label
+                    ? html`
+                        <li>
+                          <div
+                            class="bullet"
+                            style=${styleMap({
+                              backgroundColor: segment.color,
+                            })}
+                          ></div>
+                          <span class="label">${segment.label}</span>
+                        </li>
+                      `
+                    : nothing
+                )}
+              </ul>
+            `}
       </div>
     `;
   }
@@ -67,12 +85,20 @@ class HaSegmentedBar extends LitElement {
     .container {
       width: 100%;
     }
-    .heading span {
+    .heading {
+      display: flex;
+      flex-direction: row;
+      gap: 8px;
+    }
+    .heading .title {
+      flex: 1;
+    }
+    .heading .title span {
       color: var(--secondary-text-color);
       line-height: var(--ha-line-height-expanded);
       margin-right: 8px;
     }
-    .heading span:first-child {
+    .heading .title span:first-child {
       color: var(--primary-text-color);
     }
     .bar {
@@ -112,6 +138,9 @@ class HaSegmentedBar extends LitElement {
       width: 12px;
       height: 12px;
       border-radius: 50%;
+    }
+    .spacer {
+      flex: 1;
     }
   `;
 }

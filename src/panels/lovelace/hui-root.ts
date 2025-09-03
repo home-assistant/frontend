@@ -355,7 +355,10 @@ class HUIRoot extends LitElement {
       overflowItems.forEach((i) => {
         const title = [this.hass!.localize(i.key), i.suffix].join(" ");
         const action = i.subItems
-          ? () => {
+          ? (e) => {
+              if (!shouldHandleRequestSelectedEvent(e)) {
+                return;
+              }
               showListItemsDialog(this, {
                 title: title,
                 items: i.subItems!.map((si) => ({

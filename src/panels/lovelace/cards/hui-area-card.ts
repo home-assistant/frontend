@@ -54,7 +54,7 @@ export const DEVICE_CLASSES = {
   binary_sensor: ["motion", "moisture"],
 };
 
-const SUM_DEVICE_CLASSES = [
+export const SUM_DEVICE_CLASSES = [
   "power",
   "apparent_power",
   "reactive_power",

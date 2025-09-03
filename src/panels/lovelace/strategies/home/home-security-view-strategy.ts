@@ -1,8 +1,6 @@
 import { ReactiveElement } from "lit";
 import { customElement } from "lit/decorators";
 import { generateEntityFilter } from "../../../../common/entity/entity_filter";
-import { clamp } from "../../../../common/number/clamp";
-import { floorDefaultIcon } from "../../../../components/ha-floor-icon";
 import type { LovelaceCardConfig } from "../../../../data/lovelace/config/card";
 import type { LovelaceSectionRawConfig } from "../../../../data/lovelace/config/section";
 import type { LovelaceViewConfig } from "../../../../data/lovelace/config/view";
@@ -12,22 +10,20 @@ import {
   getAreas,
   getFloors,
 } from "../areas/helpers/areas-strategy-helper";
-import { getHomeStructure } from "./helpers/overview-home-structure";
-import {
-  findEntities,
-  OVERVIEW_SUMMARIES_FILTERS,
-} from "./helpers/overview-summaries";
+import { getHomeStructure } from "./helpers/home-structure";
+import { findEntities, HOME_SUMMARIES_FILTERS } from "./helpers/home-summaries";
 
-export interface OverviewClimateViewStrategyConfig {
-  type: "overview-climate";
+export interface HomeSecurityViewStrategyConfig {
+  type: "home-security";
 }
 
-const processAreasForClimate = (
+const processAreasForSecurity = (
   areaIds: string[],
   hass: HomeAssistant,
   entities: string[]
 ): LovelaceCardConfig[] => {
   const cards: LovelaceCardConfig[] = [];
+  const computeTileCard = computeAreaTileCardConfig(hass, "", false);
 
   for (const areaId of areaIds) {
     const area = hass.areas[areaId];
@@ -38,14 +34,11 @@ const processAreasForClimate = (
     });
     const areaEntities = entities.filter(areaFilter);
 
-    const computeTileCard = computeAreaTileCardConfig(hass, "", true);
-
     if (areaEntities.length > 0) {
       cards.push({
         heading_style: "subtitle",
         type: "heading",
         heading: area.name,
-        icon: area.icon || "mdi:home",
         tap_action: {
           action: "navigate",
           navigation_path: `areas-${area.area_id}`,
@@ -61,10 +54,10 @@ const processAreasForClimate = (
   return cards;
 };
 
-@customElement("overview-climate-view-strategy")
-export class OverviewClimateViewStrategy extends ReactiveElement {
+@customElement("home-security-view-strategy")
+export class HomeSecurityViewStrategy extends ReactiveElement {
   static async generate(
-    _config: OverviewClimateViewStrategyConfig,
+    _config: HomeSecurityViewStrategyConfig,
     hass: HomeAssistant
   ): Promise<LovelaceViewConfig> {
     const areas = getAreas(hass.areas);
@@ -75,11 +68,11 @@ export class OverviewClimateViewStrategy extends ReactiveElement {
 
     const allEntities = Object.keys(hass.states);
 
-    const filterFunctions = OVERVIEW_SUMMARIES_FILTERS.climate.map((filter) =>
+    const securityFilters = HOME_SUMMARIES_FILTERS.security.map((filter) =>
       generateEntityFilter(hass, filter)
     );
 
-    const entities = findEntities(allEntities, filterFunctions);
+    const entities = findEntities(allEntities, securityFilters);
 
     const floorCount = home.floors.length + (home.areas.length ? 1 : 0);
 
@@ -91,16 +84,19 @@ export class OverviewClimateViewStrategy extends ReactiveElement {
 
       const section: LovelaceSectionRawConfig = {
         type: "grid",
+        column_span: 2,
         cards: [
           {
             type: "heading",
-            heading: floorCount > 1 ? floor.name : "Areas",
-            icon: floor.icon || floorDefaultIcon(floor) || "mdi:home-floor",
+            heading:
+              floorCount > 1
+                ? floor.name
+                : hass.localize("ui.panel.lovelace.strategy.home.areas"),
           },
         ],
       };
 
-      const areaCards = processAreasForClimate(areaIds, hass, entities);
+      const areaCards = processAreasForSecurity(areaIds, hass, entities);
 
       if (areaCards.length > 0) {
         section.cards!.push(...areaCards);
@@ -112,16 +108,19 @@ export class OverviewClimateViewStrategy extends ReactiveElement {
     if (home.areas.length > 0) {
       const section: LovelaceSectionRawConfig = {
         type: "grid",
+        column_span: 2,
         cards: [
           {
             type: "heading",
-            heading: floorCount > 1 ? "Other areas" : "Areas",
-            icon: "mdi:home",
+            heading:
+              floorCount > 1
+                ? hass.localize("ui.panel.lovelace.strategy.home.other_areas")
+                : hass.localize("ui.panel.lovelace.strategy.home.areas"),
           },
         ],
       };
 
-      const areaCards = processAreasForClimate(home.areas, hass, entities);
+      const areaCards = processAreasForSecurity(home.areas, hass, entities);
 
       if (areaCards.length > 0) {
         section.cards!.push(...areaCards);
@@ -129,17 +128,9 @@ export class OverviewClimateViewStrategy extends ReactiveElement {
       }
     }
 
-    // Allow between 2 and 3 columns (the max should be set to define the width of the header)
-    const maxColumns = clamp(sections.length, 2, 3);
-
-    // Take the full width if there is only one section to avoid narrow header on desktop
-    if (sections.length === 1) {
-      sections[0].column_span = 2;
-    }
-
     return {
       type: "sections",
-      max_columns: maxColumns,
+      max_columns: 2,
       sections: sections || [],
     };
   }
@@ -147,6 +138,6 @@ export class OverviewClimateViewStrategy extends ReactiveElement {
 
 declare global {
   interface HTMLElementTagNameMap {
-    "overview-climate-view-strategy": OverviewClimateViewStrategy;
+    "home-security-view-strategy": HomeSecurityViewStrategy;
   }
 }

@@ -1,7 +1,7 @@
 import { mdiChevronUp } from "@mdi/js";
 import type { TemplateResult } from "lit";
 import { css, html, LitElement, nothing } from "lit";
-import { customElement, property } from "lit/decorators";
+import { customElement, property, query } from "lit/decorators";
 import { fireEvent } from "../common/dom/fire_event";
 import "./ha-icon-button";
 
@@ -16,11 +16,19 @@ export class HaAutomationRow extends LitElement {
   @property({ type: Boolean, reflect: true })
   public selected = false;
 
+  @property({ type: Boolean, reflect: true, attribute: "sort-selected" })
+  public sortSelected = false;
+
   @property({ type: Boolean, reflect: true })
   public disabled = false;
 
   @property({ type: Boolean, reflect: true, attribute: "building-block" })
   public buildingBlock = false;
+
+  @property({ type: Boolean, reflect: true }) public highlight?: boolean;
+
+  @query(".row")
+  private _rowElement?: HTMLDivElement;
 
   protected render(): TemplateResult {
     return html`
@@ -66,13 +74,67 @@ export class HaAutomationRow extends LitElement {
     if (ev.defaultPrevented) {
       return;
     }
-    if (ev.key !== "Enter" && ev.key !== " ") {
+
+    if (
+      ev.key !== "Enter" &&
+      ev.key !== " " &&
+      !(
+        (this.sortSelected || ev.altKey) &&
+        !(ev.ctrlKey || ev.metaKey) &&
+        !ev.shiftKey &&
+        (ev.key === "ArrowUp" || ev.key === "ArrowDown")
+      ) &&
+      !(
+        (ev.ctrlKey || ev.metaKey) &&
+        !ev.shiftKey &&
+        !ev.altKey &&
+        (ev.key === "c" ||
+          ev.key === "x" ||
+          ev.key === "Delete" ||
+          ev.key === "Backspace")
+      )
+    ) {
       return;
     }
     ev.preventDefault();
     ev.stopPropagation();
 
+    if (ev.key === "ArrowUp" || ev.key === "ArrowDown") {
+      if (ev.key === "ArrowUp") {
+        fireEvent(this, "move-up");
+        return;
+      }
+      fireEvent(this, "move-down");
+      return;
+    }
+    if (this.sortSelected && (ev.key === "Enter" || ev.key === " ")) {
+      fireEvent(this, "stop-sort-selection");
+      return;
+    }
+
+    if (ev.ctrlKey || ev.metaKey) {
+      if (ev.key === "c") {
+        fireEvent(this, "copy-row");
+        return;
+      }
+      if (ev.key === "x") {
+        fireEvent(this, "cut-row");
+        return;
+      }
+
+      if (ev.key === "Delete" || ev.key === "Backspace") {
+        fireEvent(this, "delete-row");
+        return;
+      }
+    }
+
     this.click();
+  }
+
+  public focus() {
+    requestAnimationFrame(() => {
+      this._rowElement?.focus();
+    });
   }
 
   static styles = css`
@@ -97,6 +159,7 @@ export class HaAutomationRow extends LitElement {
     .expand-button {
       transition: transform 150ms cubic-bezier(0.4, 0, 0.2, 1);
       color: var(--ha-color-on-neutral-quiet);
+      margin-left: -8px;
     }
     :host([building-block]) .leading-icon-wrapper {
       background-color: var(--ha-color-fill-neutral-loud-resting);
@@ -134,6 +197,22 @@ export class HaAutomationRow extends LitElement {
       overflow-wrap: anywhere;
       margin: 0 12px;
     }
+    :host([sort-selected]) .row {
+      outline: solid;
+      outline-color: rgba(var(--rgb-accent-color), 0.6);
+      outline-offset: -2px;
+      outline-width: 2px;
+      background-color: rgba(var(--rgb-accent-color), 0.08);
+    }
+    .row:hover {
+      background-color: rgba(var(--rgb-primary-text-color), 0.04);
+    }
+    :host([highlight]) .row {
+      background-color: rgba(var(--rgb-primary-color), 0.08);
+    }
+    :host([highlight]) .row:hover {
+      background-color: rgba(var(--rgb-primary-color), 0.16);
+    }
   `;
 }
 
@@ -144,5 +223,9 @@ declare global {
 
   interface HASSDomEvents {
     "toggle-collapsed": undefined;
+    "stop-sort-selection": undefined;
+    "copy-row": undefined;
+    "cut-row": undefined;
+    "delete-row": undefined;
   }
 }

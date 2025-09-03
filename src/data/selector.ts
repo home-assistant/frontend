@@ -330,6 +330,7 @@ export interface MediaSelectorValue {
     media_class?: string;
     children_media_class?: string | null;
     navigateIds?: { media_content_type: string; media_content_id: string }[];
+    browse_entity_id?: string;
   };
 }
 

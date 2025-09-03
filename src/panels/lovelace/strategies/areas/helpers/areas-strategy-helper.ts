@@ -14,6 +14,7 @@ import type { LovelaceCardConfig } from "../../../../../data/lovelace/config/car
 import type { HomeAssistant } from "../../../../../types";
 import { supportsAlarmModesCardFeature } from "../../../card-features/hui-alarm-modes-card-feature";
 import { supportsCoverOpenCloseCardFeature } from "../../../card-features/hui-cover-open-close-card-feature";
+import { supportsFanSpeedCardFeature } from "../../../card-features/hui-fan-speed-card-feature";
 import { supportsLightBrightnessCardFeature } from "../../../card-features/hui-light-brightness-card-feature";
 import { supportsLockCommandsCardFeature } from "../../../card-features/hui-lock-commands-card-feature";
 import { supportsTargetTemperatureCardFeature } from "../../../card-features/hui-target-temperature-card-feature";
@@ -247,6 +248,10 @@ export const computeAreaTileCardConfig =
       } else if (supportsTargetTemperatureCardFeature(hass, context)) {
         feature = {
           type: "target-temperature",
+        };
+      } else if (supportsFanSpeedCardFeature(hass, context)) {
+        feature = {
+          type: "fan-speed",
         };
       } else if (supportsAlarmModesCardFeature(hass, context)) {
         feature = {

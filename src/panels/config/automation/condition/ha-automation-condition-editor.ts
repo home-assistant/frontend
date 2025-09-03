@@ -28,6 +28,8 @@ export default class HaAutomationConditionEditor extends LitElement {
 
   @property({ type: Boolean }) public narrow = false;
 
+  @property({ type: Boolean, attribute: "sidebar" }) public inSidebar = false;
+
   @property({ type: Boolean, reflect: true }) public selected = false;
 
   @property({ type: Boolean, attribute: "supported" }) public uiSupported =
@@ -55,6 +57,7 @@ export default class HaAutomationConditionEditor extends LitElement {
             (this.condition.enabled === false && !this.yamlMode),
           yaml: yamlMode,
           indent: this.indent,
+          card: !this.inSidebar,
         })}
       >
         ${yamlMode
@@ -100,8 +103,7 @@ export default class HaAutomationConditionEditor extends LitElement {
     if (!ev.detail.isValid) {
       return;
     }
-    // @ts-ignore
-    fireEvent(this, "value-changed", { value: ev.detail.value, yaml: true });
+    fireEvent(this, "yaml-changed", { value: ev.detail.value });
   }
 
   private _onUiChanged(ev: CustomEvent) {
@@ -133,6 +135,7 @@ export default class HaAutomationConditionEditor extends LitElement {
         margin-right: 0;
         padding: 0;
         border-left: none;
+        border-bottom: none;
       }
     `,
   ];

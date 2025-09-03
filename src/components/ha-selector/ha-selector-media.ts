@@ -18,6 +18,7 @@ import "../ha-alert";
 import "../ha-form/ha-form";
 import type { SchemaUnion } from "../ha-form/types";
 import { showMediaBrowserDialog } from "../media-player/show-media-browser-dialog";
+import { ensureArray } from "../../common/array/ensure-array";
 
 const MANUAL_SCHEMA = [
   { name: "media_content_id", required: false, selector: { text: {} } },
@@ -44,9 +45,25 @@ export class HaMediaSelector extends LitElement {
 
   @property({ type: Boolean, reflect: true }) public required = true;
 
+  @property({ attribute: false }) public context?: {
+    filter_entity?: string | string[];
+  };
+
   @state() private _thumbnailUrl?: string | null;
 
+  private _contextEntities: string[] | undefined;
+
+  private get _hasAccept(): boolean {
+    return !!this.selector?.media?.accept?.length;
+  }
+
   willUpdate(changedProps: PropertyValues<this>) {
+    if (changedProps.has("context")) {
+      if (!this._hasAccept) {
+        this._contextEntities = ensureArray(this.context?.filter_entity);
+      }
+    }
+
     if (changedProps.has("value")) {
       const thumbnail = this.value?.metadata?.thumbnail;
       const oldThumbnail = (changedProps.get("value") as this["value"])
@@ -79,24 +96,23 @@ export class HaMediaSelector extends LitElement {
   }
 
   protected render() {
-    const stateObj = this.value?.entity_id
-      ? this.hass.states[this.value.entity_id]
-      : undefined;
+    const entityId = this._getActiveEntityId();
+
+    const stateObj = entityId ? this.hass.states[entityId] : undefined;
 
     const supportsBrowse =
-      !this.value?.entity_id ||
+      !entityId ||
       (stateObj &&
         supportsFeature(stateObj, MediaPlayerEntityFeature.BROWSE_MEDIA));
 
-    const hasAccept = this.selector?.media?.accept?.length;
-
     return html`
-      ${hasAccept
+      ${this._hasAccept ||
+      (this._contextEntities && this._contextEntities.length <= 1)
         ? nothing
         : html`
             <ha-entity-picker
               .hass=${this.hass}
-              .value=${this.value?.entity_id}
+              .value=${entityId}
               .label=${this.label ||
               this.hass.localize(
                 "ui.components.selectors.media.pick_media_player"
@@ -104,8 +120,10 @@ export class HaMediaSelector extends LitElement {
               .disabled=${this.disabled}
               .helper=${this.helper}
               .required=${this.required}
+              .hideClearIcon=${!!this._contextEntities}
               .includeDomains=${INCLUDE_DOMAINS}
-              allow-custom-entity
+              .includeEntities=${this._contextEntities}
+              .allowCustomEntity=${!this._contextEntities}
               @value-changed=${this._entityChanged}
             ></ha-entity-picker>
           `}
@@ -121,6 +139,7 @@ export class HaMediaSelector extends LitElement {
               .data=${this.value || EMPTY_FORM}
               .schema=${MANUAL_SCHEMA}
               .computeLabel=${this._computeLabelCallback}
+              .computeHelper=${this._computeHelperCallback}
             ></ha-form>
           `
         : html`
@@ -133,7 +152,7 @@ export class HaMediaSelector extends LitElement {
                 : this.value.metadata?.title || this.value.media_content_id}
               @click=${this._pickMedia}
               @keydown=${this._handleKeyDown}
-              class=${this.disabled || (!this.value?.entity_id && !hasAccept)
+              class=${this.disabled || (!entityId && !this._hasAccept)
                 ? "disabled"
                 : ""}
             >
@@ -193,21 +212,38 @@ export class HaMediaSelector extends LitElement {
   ): string =>
     this.hass.localize(`ui.components.selectors.media.${schema.name}`);
 
+  private _computeHelperCallback = (
+    schema: SchemaUnion<typeof MANUAL_SCHEMA>
+  ): string =>
+    this.hass.localize(`ui.components.selectors.media.${schema.name}_detail`);
+
   private _entityChanged(ev: CustomEvent) {
     ev.stopPropagation();
-    fireEvent(this, "value-changed", {
-      value: {
-        entity_id: ev.detail.value,
-        media_content_id: "",
-        media_content_type: "",
-      },
-    });
+    if (!this._hasAccept && this.context?.filter_entity) {
+      fireEvent(this, "value-changed", {
+        value: {
+          media_content_id: "",
+          media_content_type: "",
+          metadata: {
+            browse_entity_id: ev.detail.value,
+          },
+        },
+      });
+    } else {
+      fireEvent(this, "value-changed", {
+        value: {
+          entity_id: ev.detail.value,
+          media_content_id: "",
+          media_content_type: "",
+        },
+      });
+    }
   }
 
   private _pickMedia() {
     showMediaBrowserDialog(this, {
       action: "pick",
-      entityId: this.value?.entity_id,
+      entityId: this._getActiveEntityId(),
       navigateIds: this.value?.metadata?.navigateIds,
       accept: this.selector.media?.accept,
       mediaPickedCallback: (pickedMedia: MediaPickedEvent) => {
@@ -225,11 +261,23 @@ export class HaMediaSelector extends LitElement {
                 media_content_type: id.media_content_type,
                 media_content_id: id.media_content_id,
               })),
+              ...(!this._hasAccept && this.context?.filter_entity
+                ? { browse_entity_id: this._getActiveEntityId() }
+                : {}),
             },
           },
         });
       },
     });
+  }
+
+  private _getActiveEntityId(): string | undefined {
+    const metaId = this.value?.metadata?.browse_entity_id;
+    return (
+      this.value?.entity_id ||
+      (metaId && this._contextEntities?.includes(metaId) && metaId) ||
+      this._contextEntities?.[0]
+    );
   }
 
   private _handleKeyDown(ev: KeyboardEvent) {

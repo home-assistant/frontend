@@ -53,6 +53,7 @@ export default class HaAutomationActionEditor extends LitElement {
             this.disabled || (this.action.enabled === false && !this.yamlMode),
           yaml: yamlMode,
           indent: this.indent,
+          card: !this.inSidebar,
         })}
       >
         ${yamlMode
@@ -96,7 +97,7 @@ export default class HaAutomationActionEditor extends LitElement {
     if (!ev.detail.isValid) {
       return;
     }
-    fireEvent(this, "value-changed", {
+    fireEvent(this, "yaml-changed", {
       value: migrateAutomationAction(ev.detail.value),
     });
   }
