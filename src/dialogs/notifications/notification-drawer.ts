@@ -160,14 +160,19 @@ export class HuiNotificationDrawer extends LitElement {
       overflow-y: auto;
       padding-top: 16px;
       padding-left: var(--safe-area-inset-left);
-      padding-right: var(--safe-area-inset-right);
       padding-inline-start: var(--safe-area-inset-left);
-      padding-inline-end: var(--safe-area-inset-right);
       padding-bottom: var(--safe-area-inset-bottom);
       height: calc(100% - 1px - var(--header-height));
       box-sizing: border-box;
       background-color: var(--primary-background-color);
       color: var(--primary-text-color);
+    }
+
+    @media all and (max-width: 450px), all and (max-height: 500px) {
+      .notifications {
+        padding-right: var(--safe-area-inset-right);
+        padding-inline-end: var(--safe-area-inset-right);
+      }
     }
 
     .notification {
