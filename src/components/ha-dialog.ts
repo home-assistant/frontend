@@ -100,6 +100,8 @@ export class HaDialog extends DialogBase {
       }
       .mdc-dialog__container {
         align-items: var(--vertical-align-dialog, center);
+        padding-top: var(--safe-area-inset-top);
+        padding-bottom: var(--safe-area-inset-bottom);
       }
       .mdc-dialog__title {
         padding: 16px 16px 0 16px;
