@@ -2043,8 +2043,7 @@
         "shortcuts": {
           "double_click": "Double-click",
           "scroll_wheel": "Scroll",
-          "drag": "Drag",
-          "ctrl_cmd": "Ctrl/Cmd"
+          "drag": "Drag"
         },
         "searching": {
           "title": "Searching",
@@ -2061,9 +2060,9 @@
         },
         "automation_script": {
           "title": "Automations / Scripts",
-          "copy": "to copy the selected automation/script action/condition/trigger",
-          "cut": "to cut the selected automation/script action/condition/trigger",
-          "delete": "to delete the selected automation/script action/condition/trigger",
+          "copy": "to copy the selected item to clipboard",
+          "cut": "to cut the selected item and place it on the clipboard",
+          "delete": "to delete the selected item",
           "paste": "to paste automation/script YAML from clipboard to editor",
           "save": "to save automation/script"
         },

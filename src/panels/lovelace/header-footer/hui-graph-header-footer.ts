@@ -61,7 +61,7 @@ export class HuiGraphHeaderFooter
 
   @state() protected _config?: GraphHeaderFooterConfig;
 
-  @state() private _coordinates?: number[][];
+  @state() private _coordinates?: [number, number][];
 
   private _error?: string;
 
