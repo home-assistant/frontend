@@ -731,7 +731,7 @@ class HaSidebar extends SubscribeMixin(LitElement) {
           padding-top: var(--safe-area-inset-top);
         }
         :host([expanded]) .menu {
-          width: calc(256px + var(--safe-area-inset-left));
+          width: calc(256px + var(--safe-area-inset-left, 0px));
         }
         .menu ha-icon-button {
           color: var(--sidebar-icon-color);
