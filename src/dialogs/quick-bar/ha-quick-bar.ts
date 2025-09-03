@@ -281,11 +281,11 @@ export class QuickBar extends LitElement {
                         class="ha-scrollbar"
                         style=${styleMap({
                           height: this._narrow
-                            ? "calc(100vh - 56px - var(--safe-area-inset-top) - var(--safe-area-inset-bottom))"
+                            ? "calc(100vh - 56px - var(--safe-area-inset-top, 0px) - var(--safe-area-inset-bottom, 0px))"
                             : `calc(${Math.min(
                                 items.length * (commandMode ? 56 : 72) + 26,
                                 500
-                              )}px - var(--safe-area-inset-top) - var(--safe-area-inset-bottom))`,
+                              )}px - var(--safe-area-inset-top, 0px) - var(--safe-area-inset-bottom, 0px))`,
                         })}
                         .items=${items}
                         .renderItem=${this._renderItem}

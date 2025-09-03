@@ -254,7 +254,13 @@ class DialogExposeEntity extends LitElement {
             --ha-dialog-border-radius: 0px;
           }
           lit-virtualizer {
-            height: calc(100vh - 198px);
+            height: calc(
+              100vh -
+                198px - var(--safe-area-inset-top, 0px) - var(
+                  --safe-area-inset-bottom,
+                  0px
+                )
+            );
           }
           search-input {
             --text-field-suffix-padding-left: unset;
