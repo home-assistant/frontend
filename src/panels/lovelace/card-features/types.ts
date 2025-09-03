@@ -187,9 +187,9 @@ export interface UpdateActionsCardFeatureConfig {
   backup?: "yes" | "no" | "ask";
 }
 
-export interface HistoryChartCardFeatureConfig {
-  type: "history-chart";
-  hours_to_show: number;
+export interface TrendGraphCardFeatureConfig {
+  type: "trend-graph";
+  hours_to_show?: number;
 }
 
 export const AREA_CONTROLS = [
@@ -239,7 +239,7 @@ export type LovelaceCardFeatureConfig =
   | FanOscillateCardFeatureConfig
   | FanPresetModesCardFeatureConfig
   | FanSpeedCardFeatureConfig
-  | HistoryChartCardFeatureConfig
+  | TrendGraphCardFeatureConfig
   | HumidifierToggleCardFeatureConfig
   | HumidifierModesCardFeatureConfig
   | LawnMowerCommandsCardFeatureConfig
@@ -251,7 +251,7 @@ export type LovelaceCardFeatureConfig =
   | MediaPlayerVolumeSliderCardFeatureConfig
   | NumericInputCardFeatureConfig
   | SelectOptionsCardFeatureConfig
-  | HistoryChartCardFeatureConfig
+  | TrendGraphCardFeatureConfig
   | TargetHumidityCardFeatureConfig
   | TargetTemperatureCardFeatureConfig
   | ToggleCardFeatureConfig

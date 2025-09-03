@@ -8196,8 +8196,8 @@
               "bar-gauge": {
                 "label": "Bar gauge"
               },
-              "history-chart": {
-                "label": "History chart"
+              "trend-graph": {
+                "label": "Trend graph"
               }
             }
           },

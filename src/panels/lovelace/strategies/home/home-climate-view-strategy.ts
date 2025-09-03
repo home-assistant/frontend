@@ -48,13 +48,13 @@ const processAreasForClimate = (
       if (area.temperature_entity_id) {
         cards.push({
           ...computeTileCard(area.temperature_entity_id),
-          features: [{ type: "history-chart" }],
+          features: [{ type: "trend-graph" }],
         });
       }
       if (area.humidity_entity_id) {
         cards.push({
           ...computeTileCard(area.humidity_entity_id),
-          features: [{ type: "history-chart" }],
+          features: [{ type: "trend-graph" }],
         });
       }
 
