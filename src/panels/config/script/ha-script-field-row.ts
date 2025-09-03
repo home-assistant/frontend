@@ -162,8 +162,7 @@ export default class HaScriptFieldRow extends LitElement {
     ev?.stopPropagation();
 
     if (this._selected) {
-      this._selected = false;
-      fireEvent(this, "close-sidebar");
+      fireEvent(this, "request-close-sidebar");
       return;
     }
 
@@ -176,8 +175,7 @@ export default class HaScriptFieldRow extends LitElement {
     ev?.stopPropagation();
 
     if (this._selectorRowSelected) {
-      this._selectorRowSelected = false;
-      fireEvent(this, "close-sidebar");
+      fireEvent(this, "request-close-sidebar");
       return;
     }
 
