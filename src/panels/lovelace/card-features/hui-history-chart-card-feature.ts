@@ -8,7 +8,7 @@ import { subscribeHistoryStatesTimeWindow } from "../../../data/history";
 import { SubscribeMixin } from "../../../mixins/subscribe-mixin";
 import type { HomeAssistant } from "../../../types";
 import { coordinatesMinimalResponseCompressedState } from "../common/graph/coordinates";
-import { GRAPH_BASE_WIDTH } from "../components/hui-graph-base";
+import "../components/hui-graph-base";
 import type { LovelaceCardFeature } from "../types";
 import type {
   HistoryChartCardFeatureConfig,
@@ -97,10 +97,7 @@ class HuiHistoryChartCardFeature
       `;
     }
     return html`
-      <hui-graph-base
-        .coordinates=${this._coordinates}
-        responsive
-      ></hui-graph-base>
+      <hui-graph-base .coordinates=${this._coordinates}></hui-graph-base>
     `;
   }
 
@@ -119,7 +116,7 @@ class HuiHistoryChartCardFeature
           coordinatesMinimalResponseCompressedState(
             historyStates[this.context!.entity_id!],
             this._config!.hours_to_show ?? 24,
-            GRAPH_BASE_WIDTH,
+            500,
             2,
             undefined
           ) || [];
