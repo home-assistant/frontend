@@ -258,7 +258,8 @@ class HaSidebar extends SubscribeMixin(LitElement) {
       ${this._renderAllPanels(selectedPanel)}
       ${this._renderDivider()}
       <ha-md-list class="bottom-list">
-        ${this._renderNotifications()} ${this._renderUserItem(selectedPanel)}
+        ${this._renderNotifications()}
+        ${this._renderUserItem(selectedPanel)}
       </ha-md-list>
       <div disabled class="bottom-spacer"></div>
       <div class="tooltip"></div>
