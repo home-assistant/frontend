@@ -122,6 +122,10 @@ class HaEntityStatePicker extends LitElement {
             ]
           : []),
         {
+          label: this.hass.localize("ui.components.state-content-picker.area"),
+          value: "area",
+        },
+        {
           label: this.hass.localize(
             "ui.components.state-content-picker.last_changed"
           ),
