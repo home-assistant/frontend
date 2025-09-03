@@ -49,7 +49,7 @@ export class HuiNotificationDrawer extends LitElement {
     );
     this.style.setProperty(
       "--mdc-drawer-width",
-      `calc(${narrow ? window.innerWidth + "px" : "500px"} + var(--safe-area-inset-left, 0px))`
+      `min(100vw, calc(${narrow ? window.innerWidth + "px" : "500px"} + var(--safe-area-inset-left, 0px)))`
     );
     this._open = true;
   }
@@ -152,8 +152,17 @@ export class HuiNotificationDrawer extends LitElement {
     ha-header-bar {
       --mdc-theme-on-primary: var(--primary-text-color);
       --mdc-theme-primary: var(--primary-background-color);
+      --header-bar-padding: var(--safe-area-inset-top, 0px) 0 0
+        var(--safe-area-inset-left, 0px);
       border-bottom: 1px solid var(--divider-color);
       display: block;
+    }
+
+    @media all and (max-width: 450px), all and (max-height: 500px) {
+      ha-header-bar {
+        --header-bar-padding: var(--safe-area-inset-top, 0px)
+          var(--safe-area-inset-right, 0px) 0 var(--safe-area-inset-left, 0px);
+      }
     }
 
     .notifications {
@@ -162,7 +171,9 @@ export class HuiNotificationDrawer extends LitElement {
       padding-left: var(--safe-area-inset-left);
       padding-inline-start: var(--safe-area-inset-left);
       padding-bottom: var(--safe-area-inset-bottom);
-      height: calc(100% - 1px - var(--header-height));
+      height: calc(
+        100% - 1px - var(--header-height) - var(--safe-area-inset-top, 0px)
+      );
       box-sizing: border-box;
       background-color: var(--primary-background-color);
       color: var(--primary-text-color);
