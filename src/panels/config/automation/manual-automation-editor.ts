@@ -353,7 +353,7 @@ export class HaManualAutomationEditor extends LitElement {
 
   private _triggerCloseSidebar() {
     if (this._sidebarConfig) {
-      if (this.narrow && this._sidebarElement) {
+      if (this._sidebarElement) {
         this._sidebarElement.triggerCloseSidebar();
         return;
       }
