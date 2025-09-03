@@ -46,7 +46,7 @@ import { supportsMediaPlayerPlaybackCardFeature } from "../../card-features/hui-
 import { supportsMediaPlayerVolumeSliderCardFeature } from "../../card-features/hui-media-player-volume-slider-card-feature";
 import { supportsNumericInputCardFeature } from "../../card-features/hui-numeric-input-card-feature";
 import { supportsSelectOptionsCardFeature } from "../../card-features/hui-select-options-card-feature";
-import { supportsHistoryChartCardFeature } from "../../card-features/hui-history-chart-card-feature";
+import { supportsTrendGraphCardFeature } from "../../card-features/hui-trend-graph-card-feature";
 import { supportsTargetHumidityCardFeature } from "../../card-features/hui-target-humidity-card-feature";
 import { supportsTargetTemperatureCardFeature } from "../../card-features/hui-target-temperature-card-feature";
 import { supportsToggleCardFeature } from "../../card-features/hui-toggle-card-feature";
@@ -100,7 +100,7 @@ const UI_FEATURE_TYPES = [
   "media-player-volume-slider",
   "numeric-input",
   "select-options",
-  "history-chart",
+  "trend-graph",
   "target-humidity",
   "target-temperature",
   "toggle",
@@ -168,7 +168,7 @@ const SUPPORTS_FEATURE_TYPES: Record<
   "media-player-volume-slider": supportsMediaPlayerVolumeSliderCardFeature,
   "numeric-input": supportsNumericInputCardFeature,
   "select-options": supportsSelectOptionsCardFeature,
-  "history-chart": supportsHistoryChartCardFeature,
+  "trend-graph": supportsTrendGraphCardFeature,
   "target-humidity": supportsTargetHumidityCardFeature,
   "target-temperature": supportsTargetTemperatureCardFeature,
   toggle: supportsToggleCardFeature,
