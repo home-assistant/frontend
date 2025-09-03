@@ -254,11 +254,13 @@ class HaSidebar extends SubscribeMixin(LitElement) {
 
     // prettier-ignore
     return html`
-      ${this._renderHeader()} ${this._renderAllPanels(selectedPanel)}
+      ${this._renderHeader()}
+      ${this._renderAllPanels(selectedPanel)}
       ${this._renderDivider()}
       <ha-md-list class="bottom-list">
         ${this._renderNotifications()} ${this._renderUserItem(selectedPanel)}
       </ha-md-list>
+      <div disabled class="bottom-spacer"></div>
       <div class="tooltip"></div>
     `;
   }
