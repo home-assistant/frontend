@@ -666,7 +666,7 @@ class HaSidebar extends SubscribeMixin(LitElement) {
     tooltip.style.display = "block";
     tooltip.style.position = "fixed";
     tooltip.style.top = `${top}px`;
-    tooltip.style.left = `${item.offsetLeft + item.clientWidth + 8}px`;
+    tooltip.style.left = `calc(${item.offsetLeft + item.clientWidth + 8}px + var(--safe-area-inset-left, 0px))`;
   }
 
   private _hideTooltip() {
@@ -773,7 +773,7 @@ class HaSidebar extends SubscribeMixin(LitElement) {
         ha-md-list {
           overflow-x: hidden;
           background: none;
-          margin-left: var(--safe-area-inset-left);
+          margin-left: var(--safe-area-inset-left, 0px);
         }
 
         ha-md-list-item {
@@ -784,7 +784,7 @@ class HaSidebar extends SubscribeMixin(LitElement) {
           --md-list-item-one-line-container-height: 40px;
           --md-list-item-top-space: 0;
           --md-list-item-bottom-space: 0;
-          width: 48px;
+          width: calc(48px - var(--safe-area-inset-left, 0px));
           position: relative;
           --md-list-item-label-text-color: var(--sidebar-text-color);
           --md-list-item-leading-space: 12px;
@@ -792,8 +792,7 @@ class HaSidebar extends SubscribeMixin(LitElement) {
           --md-list-item-leading-icon-size: 24px;
         }
         :host([expanded]) ha-md-list-item {
-          width: 248px;
-          width: calc(248px - var(--safe-area-inset-left));
+          width: calc(248px - var(--safe-area-inset-left, 0px));
         }
 
         ha-md-list-item.selected {
@@ -817,7 +816,7 @@ class HaSidebar extends SubscribeMixin(LitElement) {
 
         ha-icon[slot="start"],
         ha-svg-icon[slot="start"] {
-          width: 24px;
+          width: calc(24px - var(--safe-area-inset-left, 0px));
           flex-shrink: 0;
           color: var(--sidebar-icon-color);
         }
