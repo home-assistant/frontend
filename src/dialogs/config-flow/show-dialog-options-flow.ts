@@ -232,13 +232,6 @@ export const showOptionsFlowDialog = (
         );
       },
 
-      renderMenuOptionSortValue(hass, step, option) {
-        return hass.localize(
-          `component.${step.translation_domain || configEntry.domain}.options.step.${step.step_id}.menu_sort_values.${option}`,
-          step.description_placeholders
-        );
-      },
-
       renderLoadingDescription(hass, reason) {
         return (
           hass.localize(`component.${configEntry.domain}.options.loading`) ||

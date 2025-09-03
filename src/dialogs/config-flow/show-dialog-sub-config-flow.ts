@@ -259,13 +259,6 @@ export const showSubConfigFlowDialog = (
       );
     },
 
-    renderMenuOptionSortValue(hass, step, option) {
-      return hass.localize(
-        `component.${step.translation_domain || configEntry.domain}.config_subentries.${flowType}.step.${step.step_id}.menu_sort_values.${option}`,
-        step.description_placeholders
-      );
-    },
-
     renderLoadingDescription(hass, reason, handler, step) {
       if (reason !== "loading_flow" && reason !== "loading_step") {
         return "";

@@ -263,13 +263,6 @@ export const showConfigFlowDialog = (
       );
     },
 
-    renderMenuOptionSortValue(hass, step, option) {
-      return hass.localize(
-        `component.${step.translation_domain || step.handler}.config.step.${step.step_id}.menu_sort_values.${option}`,
-        step.description_placeholders
-      );
-    },
-
     renderLoadingDescription(hass, reason, handler, step) {
       if (reason !== "loading_flow" && reason !== "loading_step") {
         return "";

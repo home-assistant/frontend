@@ -66,14 +66,7 @@ class StepFlowMenu extends LitElement {
       options = options
         .map((option) => ({
           option,
-          value:
-            this.flowConfig.renderMenuOptionSortValue(
-              this.hass,
-              this.step,
-              option
-            ) ||
-            translations[option] ||
-            option,
+          value: translations[option] || option,
         }))
         .sort((a, b) =>
           stringCompare(a.value, b.value, this.hass.locale.language)

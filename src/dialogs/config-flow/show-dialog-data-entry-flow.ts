@@ -143,12 +143,6 @@ export interface FlowConfig {
     option: string
   ): string;
 
-  renderMenuOptionSortValue(
-    hass: HomeAssistant,
-    step: DataEntryFlowStepMenu,
-    option: string
-  ): string;
-
   renderLoadingDescription(
     hass: HomeAssistant,
     loadingReason: LoadingReason,
