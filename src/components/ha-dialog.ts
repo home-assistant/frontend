@@ -122,6 +122,10 @@ export class HaDialog extends DialogBase {
         top: var(--dialog-surface-top);
         margin-top: var(--dialog-surface-margin-top);
         min-height: var(--mdc-dialog-min-height, auto);
+        margin-top: var(--safe-area-inset-top);
+        margin-right: var(--safe-area-inset-right);
+        margin-left: var(--safe-area-inset-left);
+        margin-bottom: var(--safe-area-inset-bottom);
         border-radius: var(--ha-dialog-border-radius, 24px);
         -webkit-backdrop-filter: var(--ha-dialog-surface-backdrop-filter, none);
         backdrop-filter: var(--ha-dialog-surface-backdrop-filter, none);
@@ -149,10 +153,6 @@ export class HaDialog extends DialogBase {
                 0px
               )
           );
-          margin-top: var(--safe-area-inset-top);
-          margin-right: var(--safe-area-inset-right);
-          margin-left: var(--safe-area-inset-left);
-          margin-bottom: var(--safe-area-inset-bottom);
         }
       }
 
