@@ -25,6 +25,7 @@ import { preventDefaultStopPropagation } from "../../../../common/dom/prevent_de
 import { stopPropagation } from "../../../../common/dom/stop_propagation";
 import { capitalizeFirstLetter } from "../../../../common/string/capitalize-first-letter";
 import { handleStructError } from "../../../../common/structs/handle-errors";
+import { copyToClipboard } from "../../../../common/util/copy-clipboard";
 import { debounce } from "../../../../common/util/debounce";
 import "../../../../components/ha-alert";
 import "../../../../components/ha-automation-row";
@@ -75,7 +76,6 @@ import "./types/ha-automation-trigger-time";
 import "./types/ha-automation-trigger-time_pattern";
 import "./types/ha-automation-trigger-webhook";
 import "./types/ha-automation-trigger-zone";
-import { copyToClipboard } from "../../../../common/util/copy-clipboard";
 
 export interface TriggerElement extends LitElement {
   trigger: Trigger;
@@ -482,8 +482,7 @@ export default class HaAutomationTriggerRow extends LitElement {
     ev?.stopPropagation();
 
     if (this._selected) {
-      this._selected = false;
-      fireEvent(this, "close-sidebar");
+      fireEvent(this, "request-close-sidebar");
       return;
     }
     this.openSidebar();
