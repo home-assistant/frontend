@@ -75,7 +75,6 @@ import "./types/ha-automation-trigger-time";
 import "./types/ha-automation-trigger-time_pattern";
 import "./types/ha-automation-trigger-webhook";
 import "./types/ha-automation-trigger-zone";
-import { copyToClipboard } from "../../../../common/util/copy-clipboard";
 
 export interface TriggerElement extends LitElement {
   trigger: Trigger;
@@ -482,8 +481,7 @@ export default class HaAutomationTriggerRow extends LitElement {
     ev?.stopPropagation();
 
     if (this._selected) {
-      this._selected = false;
-      fireEvent(this, "close-sidebar");
+      fireEvent(this, "request-close-sidebar");
       return;
     }
     this.openSidebar();
@@ -520,12 +518,12 @@ export default class HaAutomationTriggerRow extends LitElement {
     this._selected = true;
 
     if (this.narrow) {
-      requestAnimationFrame(() => {
+      window.setTimeout(() => {
         this.scrollIntoView({
           block: "start",
           behavior: "smooth",
         });
-      });
+      }, 180);
     }
   }
 
@@ -534,7 +532,6 @@ export default class HaAutomationTriggerRow extends LitElement {
       ...this._clipboard,
       trigger: this.trigger,
     };
-    copyToClipboard(JSON.stringify(this.trigger));
   }
 
   private _onDelete = () => {

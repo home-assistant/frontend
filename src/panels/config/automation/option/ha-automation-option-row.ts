@@ -381,8 +381,7 @@ export default class HaAutomationOptionRow extends LitElement {
     ev?.stopPropagation();
 
     if (this._selected) {
-      this._selected = false;
-      fireEvent(this, "close-sidebar");
+      fireEvent(this, "request-close-sidebar");
       return;
     }
     this.openSidebar();
@@ -408,12 +407,12 @@ export default class HaAutomationOptionRow extends LitElement {
     this._collapsed = false;
 
     if (this.narrow) {
-      requestAnimationFrame(() => {
+      window.setTimeout(() => {
         this.scrollIntoView({
           block: "start",
           behavior: "smooth",
         });
-      });
+      }, 180); // duration of transition of added padding for bottom sheet
     }
   }
 

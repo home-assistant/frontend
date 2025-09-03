@@ -15,8 +15,6 @@ import {
   mdiRobotConfused,
   mdiTag,
   mdiTransitConnection,
-  mdiUnfoldLessHorizontal,
-  mdiUnfoldMoreHorizontal,
 } from "@mdi/js";
 import type { CSSResultGroup, PropertyValues, TemplateResult } from "lit";
 import { LitElement, css, html, nothing } from "lit";
@@ -341,30 +339,6 @@ export class HaScriptEditor extends SubscribeMixin(
             )}
             <ha-svg-icon slot="graphic" .path=${mdiPlaylistEdit}></ha-svg-icon>
           </ha-list-item>
-
-          ${!useBlueprint
-            ? html`
-                <ha-list-item graphic="icon" @click=${this._collapseAll}>
-                  <ha-svg-icon
-                    slot="graphic"
-                    .path=${mdiUnfoldLessHorizontal}
-                  ></ha-svg-icon>
-                  ${this.hass.localize(
-                    "ui.panel.config.automation.editor.collapse_all"
-                  )}
-                </ha-list-item>
-
-                <ha-list-item graphic="icon" @click=${this._expandAll}>
-                  <ha-svg-icon
-                    slot="graphic"
-                    .path=${mdiUnfoldMoreHorizontal}
-                  ></ha-svg-icon>
-                  ${this.hass.localize(
-                    "ui.panel.config.automation.editor.expand_all"
-                  )}
-                </ha-list-item>
-              `
-            : nothing}
 
           <li divider role="separator"></li>
 
@@ -1061,10 +1035,12 @@ export class HaScriptEditor extends SubscribeMixin(
     return this._confirmUnsavedChanged();
   }
 
+  // @ts-ignore
   private _collapseAll() {
     this._manualEditor?.collapseAll();
   }
 
+  // @ts-ignore
   private _expandAll() {
     this._manualEditor?.expandAll();
   }

@@ -69,7 +69,6 @@ import "./types/ha-automation-condition-template";
 import "./types/ha-automation-condition-time";
 import "./types/ha-automation-condition-trigger";
 import "./types/ha-automation-condition-zone";
-import { copyToClipboard } from "../../../../common/util/copy-clipboard";
 
 export interface ConditionElement extends LitElement {
   condition: Condition;
@@ -441,7 +440,6 @@ export default class HaAutomationConditionRow extends LitElement {
       ...this._clipboard,
       condition: deepClone(this.condition),
     };
-    copyToClipboard(JSON.stringify(this.condition));
   }
 
   private _onDisable = () => {
@@ -669,8 +667,7 @@ export default class HaAutomationConditionRow extends LitElement {
     ev?.stopPropagation();
 
     if (this._selected) {
-      this._selected = false;
-      fireEvent(this, "close-sidebar");
+      fireEvent(this, "request-close-sidebar");
       return;
     }
     this.openSidebar();
@@ -710,12 +707,12 @@ export default class HaAutomationConditionRow extends LitElement {
     this._collapsed = false;
 
     if (this.narrow) {
-      requestAnimationFrame(() => {
+      window.setTimeout(() => {
         this.scrollIntoView({
           block: "start",
           behavior: "smooth",
         });
-      });
+      }, 180); // duration of transition of added padding for bottom sheet
     }
   }
 

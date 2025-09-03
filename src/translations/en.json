@@ -678,7 +678,7 @@
       },
       "subpage-data-table": {
         "filters": "Filters",
-        "show_results": "show {number} results",
+        "show_results": "Show {number} results",
         "clear_filter": "Clear filter",
         "close_filter": "Close filters",
         "exit_selection_mode": "Exit selection mode",
@@ -1384,6 +1384,11 @@
         "history": "History",
         "logbook": "Activity",
         "device_info": "Device info",
+        "device_or_service_info": "[%key:ui::panel::config::devices::device_info%]",
+        "device_type": {
+          "device": "[%key:ui::panel::config::devices::type::device_heading%]",
+          "service": "[%key:ui::panel::config::devices::type::service_heading%]"
+        },
         "last_changed": "Last changed",
         "last_updated": "Last updated",
         "show_more": "Show more",
@@ -2038,8 +2043,7 @@
         "shortcuts": {
           "double_click": "Double-click",
           "scroll_wheel": "Scroll",
-          "drag": "Drag",
-          "ctrl_cmd": "Ctrl/Cmd"
+          "drag": "Drag"
         },
         "searching": {
           "title": "Searching",
@@ -2056,6 +2060,9 @@
         },
         "automation_script": {
           "title": "Automations / Scripts",
+          "copy": "to copy the selected item to clipboard",
+          "cut": "to cut the selected item and place it on the clipboard",
+          "delete": "to delete the selected item",
           "paste": "to paste automation/script YAML from clipboard to editor",
           "save": "to save automation/script"
         },
@@ -5733,6 +5740,16 @@
           "no_advertisements_found": "No matching Bluetooth advertisements found",
           "no_connection_slot_allocations": "No connection slot allocations information available",
           "no_active_connection_support": "This adapter does not support making active (GATT) connections.",
+          "no_scanner_state_available": "No scanner state available",
+          "current_scanning_mode": "Current scanning mode",
+          "requested_scanning_mode": "Requested scanning mode",
+          "scanning_mode_none": "none",
+          "scanning_mode_active": "active",
+          "scanning_mode_passive": "passive",
+          "scanner_mode_mismatch": "Scanner requested {requested} mode but is operating in {current} mode. The scanner is in a bad state and needs to be power cycled.",
+          "scanner_mode_mismatch_remote": "For proxies: reboot the device",
+          "scanner_mode_mismatch_usb": "For USB adapters: unplug and plug back in",
+          "scanner_mode_mismatch_uart": "For UART/onboard adapters: power down the system completely and power it back up",
           "address": "Address",
           "name": "Name",
           "source": "Source",
@@ -8189,8 +8206,8 @@
               "bar-gauge": {
                 "label": "Bar gauge"
               },
-              "history-chart": {
-                "label": "History chart"
+              "trend-graph": {
+                "label": "Trend graph"
               }
             }
           },

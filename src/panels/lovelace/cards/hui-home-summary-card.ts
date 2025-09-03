@@ -31,8 +31,8 @@ import type { HomeSummaryCard } from "./types";
 const COLORS: Record<HomeSummary, string> = {
   lights: "amber",
   climate: "deep-orange",
-  security: "blue",
-  media_players: "purple",
+  security: "blue-grey",
+  media_players: "blue",
 };
 
 @customElement("hui-home-summary-card")
@@ -119,7 +119,7 @@ export class HuiHomeSummaryCard extends LitElement implements LovelaceCard {
 
         const sensorsValues = areaSensors
           .map(
-            (entityId) => parseFloat(this.hass!.states[entityId!].state) || NaN
+            (entityId) => parseFloat(this.hass!.states[entityId!]?.state) || NaN
           )
           .filter((value) => !isNaN(value));
 

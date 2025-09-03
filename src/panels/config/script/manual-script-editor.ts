@@ -170,6 +170,7 @@ export class HaManualScriptEditor extends LitElement {
               .disabled=${this.disabled}
               .narrow=${this.narrow}
               @open-sidebar=${this._openSidebar}
+              @request-close-sidebar=${this._triggerCloseSidebar}
               @close-sidebar=${this._handleCloseSidebar}
             ></ha-script-fields>`
         : nothing
@@ -200,6 +201,7 @@ export class HaManualScriptEditor extends LitElement {
       .highlightedActions=${this._pastedConfig?.sequence || []}
       @value-changed=${this._sequenceChanged}
       @open-sidebar=${this._openSidebar}
+      @request-close-sidebar=${this._triggerCloseSidebar}
       @close-sidebar=${this._handleCloseSidebar}
       .hass=${this.hass}
       .narrow=${this.narrow}
@@ -218,7 +220,11 @@ export class HaManualScriptEditor extends LitElement {
         })}
       >
         <div class="content-wrapper">
-          <div class="content">
+          <div
+            class="content ${this._sidebarConfig && this.narrow
+              ? "has-bottom-sheet"
+              : ""}"
+          >
             <slot name="alerts"></slot>
             ${this._renderContent()}
           </div>
@@ -502,11 +508,13 @@ export class HaManualScriptEditor extends LitElement {
     };
   }
 
-  private _closeSidebar() {
+  private _triggerCloseSidebar() {
     if (this._sidebarConfig) {
-      const closeRow = this._sidebarConfig?.close;
-      this._sidebarConfig = undefined;
-      closeRow?.();
+      if (this._sidebarElement) {
+        this._sidebarElement.triggerCloseSidebar();
+        return;
+      }
+      this._sidebarConfig?.close();
     }
   }
 
@@ -515,7 +523,7 @@ export class HaManualScriptEditor extends LitElement {
   }
 
   private _saveScript() {
-    this._closeSidebar();
+    this._triggerCloseSidebar();
     fireEvent(this, "save-script");
   }
 
