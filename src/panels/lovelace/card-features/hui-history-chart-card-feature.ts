@@ -139,7 +139,8 @@ class HuiHistoryChartCardFeature
     hui-graph-base {
       width: 100%;
       --accent-color: var(--feature-color);
-      border-radius: 8px;
+      border-bottom-right-radius: 8px;
+      border-bottom-left-radius: 8px;
       overflow: hidden;
     }
   `;
