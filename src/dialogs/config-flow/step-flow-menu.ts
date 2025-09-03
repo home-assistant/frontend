@@ -1,4 +1,4 @@
-import type { TemplateResult } from "lit";
+import type { PropertyValues, TemplateResult } from "lit";
 import { css, html, LitElement, nothing } from "lit";
 import { customElement, property } from "lit/decorators";
 import { fireEvent } from "../../common/dom/fire_event";
@@ -8,6 +8,7 @@ import type { DataEntryFlowStepMenu } from "../../data/data_entry_flow";
 import type { HomeAssistant } from "../../types";
 import type { FlowConfig } from "./show-dialog-data-entry-flow";
 import { configFlowContentStyles } from "./styles";
+import { stringCompare } from "../../common/string/compare";
 
 @customElement("step-flow-menu")
 class StepFlowMenu extends LitElement {
@@ -16,6 +17,14 @@ class StepFlowMenu extends LitElement {
   @property({ attribute: false }) public hass!: HomeAssistant;
 
   @property({ attribute: false }) public step!: DataEntryFlowStepMenu;
+
+  protected shouldUpdate(changedProps: PropertyValues): boolean {
+    return (
+      changedProps.size > 1 ||
+      !changedProps.has("hass") ||
+      this.hass.localize !== changedProps.get("hass")?.localize
+    );
+  }
 
   protected render(): TemplateResult {
     let options: string[];
@@ -50,6 +59,16 @@ class StepFlowMenu extends LitElement {
             key
           ),
         ])
+      );
+    }
+
+    if (this.step.sort) {
+      options = options.sort((a, b) =>
+        stringCompare(
+          translations[a]!,
+          translations[b]!,
+          this.hass.locale.language
+        )
       );
     }
 
