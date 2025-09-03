@@ -3,10 +3,9 @@ import { css, html, LitElement, nothing } from "lit";
 import { customElement, property, state } from "lit/decorators";
 import { fireEvent } from "../../common/dom/fire_event";
 import type { LocalizeKeys } from "../../common/translations/localize";
-import "../../components/chips/ha-assist-chip";
 import "../../components/ha-alert";
-import "../../components/ha-button";
 import { createCloseHeading } from "../../components/ha-dialog";
+import "../../components/ha-svg-icon";
 import { haStyleDialog } from "../../resources/styles";
 import type { HomeAssistant } from "../../types";
 import { isMac } from "../../util/is_mac";
@@ -164,14 +163,14 @@ class DialogShortcuts extends LitElement {
       <div class="shortcut">
         ${keys.map(
           (key) =>
-            html` <span
+            html`<span
               >${key === CTRL_CMD
                 ? isMac
                   ? html`<ha-svg-icon
                       .path=${mdiAppleKeyboardCommand}
                     ></ha-svg-icon>`
                   : this.hass.localize("ui.panel.config.automation.editor.ctrl")
-                : key.toUpperCase()}</span
+                : key}</span
             >`
         )}
         ${this.hass.localize(translationKey)}
