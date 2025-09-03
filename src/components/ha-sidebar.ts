@@ -257,7 +257,7 @@ class HaSidebar extends SubscribeMixin(LitElement) {
       ${this._renderHeader()}
       ${this._renderAllPanels(selectedPanel)}
       ${this._renderDivider()}
-      <ha-md-list class="bottom-list">
+      <ha-md-list>
         ${this._renderNotifications()}
         ${this._renderUserItem(selectedPanel)}
       </ha-md-list>
