@@ -75,7 +75,7 @@ const TYPES = new Set<LovelaceCardFeatureConfig["type"]>([
   "media-player-volume-slider",
   "numeric-input",
   "select-options",
-  "history-chart",
+  "trend-graph",
   "target-humidity",
   "target-temperature",
   "toggle",

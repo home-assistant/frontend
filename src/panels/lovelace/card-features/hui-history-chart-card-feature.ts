@@ -11,11 +11,11 @@ import { coordinatesMinimalResponseCompressedState } from "../common/graph/coord
 import "../components/hui-graph-base";
 import type { LovelaceCardFeature } from "../types";
 import type {
-  HistoryChartCardFeatureConfig,
+  TrendGraphCardFeatureConfig,
   LovelaceCardFeatureContext,
 } from "./types";
 
-export const supportsHistoryChartCardFeature = (
+export const supportsTrendGraphCardFeature = (
   hass: HomeAssistant,
   context: LovelaceCardFeatureContext
 ) => {
@@ -27,7 +27,9 @@ export const supportsHistoryChartCardFeature = (
   return domain === "sensor" && isNumericFromAttributes(stateObj.attributes);
 };
 
-@customElement("hui-history-chart-card-feature")
+const DEFAULT_HOURS_TO_SHOW = 24;
+
+@customElement("hui-trend-graph-card-feature")
 class HuiHistoryChartCardFeature
   extends SubscribeMixin(LitElement)
   implements LovelaceCardFeature
@@ -37,20 +39,19 @@ class HuiHistoryChartCardFeature
 
   @property({ attribute: false }) public context?: LovelaceCardFeatureContext;
 
-  @state() private _config?: HistoryChartCardFeatureConfig;
+  @state() private _config?: TrendGraphCardFeatureConfig;
 
   @state() private _coordinates?: [number, number][];
 
   private _interval?: number;
 
-  static getStubConfig(): HistoryChartCardFeatureConfig {
+  static getStubConfig(): TrendGraphCardFeatureConfig {
     return {
-      type: "history-chart",
-      hours_to_show: 24,
+      type: "trend-graph",
     };
   }
 
-  public setConfig(config: HistoryChartCardFeatureConfig): void {
+  public setConfig(config: TrendGraphCardFeatureConfig): void {
     if (!config) {
       throw new Error("Invalid configuration");
     }
@@ -78,7 +79,7 @@ class HuiHistoryChartCardFeature
       !this._config ||
       !this.hass ||
       !this.context ||
-      !supportsHistoryChartCardFeature(this.hass, this.context)
+      !supportsTrendGraphCardFeature(this.hass, this.context)
     ) {
       return nothing;
     }
@@ -109,19 +110,22 @@ class HuiHistoryChartCardFeature
     ) {
       return () => Promise.resolve();
     }
+
+    const hourToShow = this._config.hours_to_show ?? DEFAULT_HOURS_TO_SHOW;
+    
     return subscribeHistoryStatesTimeWindow(
       this.hass!,
       (historyStates) => {
         this._coordinates =
           coordinatesMinimalResponseCompressedState(
             historyStates[this.context!.entity_id!],
-            this._config!.hours_to_show ?? 24,
+            hourToShow,
             500,
             2,
             undefined
           ) || [];
       },
-      this._config!.hours_to_show ?? 24,
+      hourToShow,
       [this.context!.entity_id!]
     );
   }
@@ -148,6 +152,6 @@ class HuiHistoryChartCardFeature
 
 declare global {
   interface HTMLElementTagNameMap {
-    "hui-history-chart-card-feature": HuiHistoryChartCardFeature;
+    "hui-trend-graph-card-feature": HuiHistoryChartCardFeature;
   }
 }
