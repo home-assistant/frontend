@@ -36,7 +36,7 @@ import "../card-features/hui-valve-position-card-feature";
 import "../card-features/hui-water-heater-operation-modes-card-feature";
 import "../card-features/hui-area-controls-card-feature";
 import "../card-features/hui-bar-gauge-card-feature";
-import "../card-features/hui-history-chart-card-feature";
+import "../card-features/hui-trend-graph-card-feature";
 
 import type { LovelaceCardFeatureConfig } from "../card-features/types";
 import {

@@ -112,7 +112,7 @@ class HuiHistoryChartCardFeature
     }
 
     const hourToShow = this._config.hours_to_show ?? DEFAULT_HOURS_TO_SHOW;
-    
+
     return subscribeHistoryStatesTimeWindow(
       this.hass!,
       (historyStates) => {
