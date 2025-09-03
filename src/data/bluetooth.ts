@@ -24,11 +24,14 @@ export interface BluetoothConnectionData extends DataTableRowData {
   source: string;
 }
 
+export type HaScannerType = "usb" | "uart" | "remote" | "unknown";
+
 export interface BluetoothScannerDetails {
   source: string;
   connectable: boolean;
   name: string;
   adapter: string;
+  scanner_type?: HaScannerType;
 }
 
 export type BluetoothScannersDetails = Record<string, BluetoothScannerDetails>;
