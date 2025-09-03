@@ -49,7 +49,7 @@ export class HuiNotificationDrawer extends LitElement {
     );
     this.style.setProperty(
       "--mdc-drawer-width",
-      narrow ? window.innerWidth + "px" : "500px"
+      `calc(${narrow ? window.innerWidth + "px" : "500px"} + var(--safe-area-inset-left, 0px))`
     );
     this._open = true;
   }
