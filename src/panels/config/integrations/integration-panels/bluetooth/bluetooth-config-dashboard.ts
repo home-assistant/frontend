@@ -11,14 +11,16 @@ import { showOptionsFlowDialog } from "../../../../../dialogs/config-flow/show-d
 import "../../../../../layouts/hass-subpage";
 import { haStyle } from "../../../../../resources/styles";
 import type { HomeAssistant } from "../../../../../types";
+import {
+  subscribeBluetoothConnectionAllocations,
+  subscribeBluetoothScannerState,
+  subscribeBluetoothScannersDetails,
+} from "../../../../../data/bluetooth";
 import type {
   BluetoothAllocationsData,
   BluetoothScannerState,
   BluetoothScannersDetails,
-  subscribeBluetoothConnectionAllocations,
-  subscribeBluetoothScannerState,
-  subscribeBluetoothScannersDetails,
-  type HaScannerType,
+  HaScannerType,
 } from "../../../../../data/bluetooth";
 import {
   getValueInPercentage,
