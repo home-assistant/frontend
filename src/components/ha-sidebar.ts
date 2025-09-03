@@ -756,8 +756,6 @@ class HaSidebar extends SubscribeMixin(LitElement) {
 
         ha-fade-in,
         ha-md-list {
-          padding: 4px 0;
-          box-sizing: border-box;
           height: calc(
             100% - var(--header-height) - var(--safe-area-inset-top, 0px) -
               132px - var(--safe-area-inset-bottom, 0px)
@@ -765,6 +763,8 @@ class HaSidebar extends SubscribeMixin(LitElement) {
         }
 
         ha-fade-in {
+          padding: 4px 0;
+          box-sizing: border-box;
           display: flex;
           justify-content: center;
           align-items: center;
