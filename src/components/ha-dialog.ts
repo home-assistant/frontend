@@ -100,6 +100,10 @@ export class HaDialog extends DialogBase {
       }
       .mdc-dialog__container {
         align-items: var(--vertical-align-dialog, center);
+        padding-top: var(--safe-area-inset-top);
+        padding-right: var(--safe-area-inset-right);
+        padding-left: var(--safe-area-inset-left);
+        padding-bottom: var(--safe-area-inset-bottom);
       }
       .mdc-dialog__title {
         padding: 16px 16px 0 16px;
@@ -122,10 +126,6 @@ export class HaDialog extends DialogBase {
         top: var(--dialog-surface-top);
         margin-top: var(--dialog-surface-margin-top);
         min-height: var(--mdc-dialog-min-height, auto);
-        margin-top: var(--safe-area-inset-top);
-        margin-right: var(--safe-area-inset-right);
-        margin-left: var(--safe-area-inset-left);
-        margin-bottom: var(--safe-area-inset-bottom);
         border-radius: var(--ha-dialog-border-radius, 24px);
         -webkit-backdrop-filter: var(--ha-dialog-surface-backdrop-filter, none);
         backdrop-filter: var(--ha-dialog-surface-backdrop-filter, none);
@@ -140,6 +140,10 @@ export class HaDialog extends DialogBase {
       }
 
       @media all and (max-width: 450px), all and (max-height: 500px) {
+        .mdc-dialog__container {
+          min-height: 100vh;
+          box-sizing: border-box;
+        }
         .mdc-dialog .mdc-dialog__surface {
           min-height: calc(
             100vh - var(--safe-area-inset-top, 0px) - var(
