@@ -254,14 +254,11 @@ class HaSidebar extends SubscribeMixin(LitElement) {
 
     // prettier-ignore
     return html`
-      ${this._renderHeader()}
-      ${this._renderAllPanels(selectedPanel)}
+      ${this._renderHeader()} ${this._renderAllPanels(selectedPanel)}
       ${this._renderDivider()}
-      <ha-md-list>
-        ${this._renderNotifications()}
-        ${this._renderUserItem(selectedPanel)}
+      <ha-md-list class="bottom-list">
+        ${this._renderNotifications()} ${this._renderUserItem(selectedPanel)}
       </ha-md-list>
-      <div disabled class="bottom-spacer"></div>
       <div class="tooltip"></div>
     `;
   }
@@ -705,6 +702,7 @@ class HaSidebar extends SubscribeMixin(LitElement) {
           background-color: var(--sidebar-background-color);
           width: 100%;
           box-sizing: border-box;
+          padding-bottom: var(--safe-area-inset-bottom, 0px);
         }
         .menu {
           height: calc(var(--header-height) + var(--safe-area-inset-top, 0px));
@@ -784,7 +782,7 @@ class HaSidebar extends SubscribeMixin(LitElement) {
           --md-list-item-one-line-container-height: 40px;
           --md-list-item-top-space: 0;
           --md-list-item-bottom-space: 0;
-          width: calc(48px - var(--safe-area-inset-left, 0px));
+          width: 48px;
           position: relative;
           --md-list-item-label-text-color: var(--sidebar-text-color);
           --md-list-item-leading-space: 12px;
@@ -816,7 +814,7 @@ class HaSidebar extends SubscribeMixin(LitElement) {
 
         ha-icon[slot="start"],
         ha-svg-icon[slot="start"] {
-          width: calc(24px - var(--safe-area-inset-left, 0px));
+          width: 24px;
           flex-shrink: 0;
           color: var(--sidebar-icon-color);
         }
