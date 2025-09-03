@@ -1,13 +1,15 @@
+import { mdiAppleKeyboardCommand } from "@mdi/js";
 import { css, html, LitElement, nothing } from "lit";
 import { customElement, property, state } from "lit/decorators";
 import { fireEvent } from "../../common/dom/fire_event";
+import type { LocalizeKeys } from "../../common/translations/localize";
+import "../../components/chips/ha-assist-chip";
+import "../../components/ha-alert";
 import "../../components/ha-button";
 import { createCloseHeading } from "../../components/ha-dialog";
-import type { HomeAssistant } from "../../types";
 import { haStyleDialog } from "../../resources/styles";
-import "../../components/ha-alert";
-import "../../components/chips/ha-assist-chip";
-import type { LocalizeKeys } from "../../common/translations/localize";
+import type { HomeAssistant } from "../../types";
+import { isMac } from "../../util/is_mac";
 
 interface Text {
   type: "text";
@@ -26,6 +28,8 @@ interface Section {
   key: LocalizeKeys;
   items: (Text | Shortcut)[];
 }
+
+const CTRL_CMD = "__CTRL_CMD__";
 
 const _SHORTCUTS: Section[] = [
   {
@@ -53,7 +57,7 @@ const _SHORTCUTS: Section[] = [
       },
       {
         type: "shortcut",
-        shortcut: [{ key: "ui.dialogs.shortcuts.shortcuts.ctrl_cmd" }, "F"],
+        shortcut: [CTRL_CMD, "F"],
         key: "ui.dialogs.shortcuts.searching.search_in_table",
       },
     ],
@@ -73,27 +77,27 @@ const _SHORTCUTS: Section[] = [
     items: [
       {
         type: "shortcut",
-        shortcut: [{ key: "ui.dialogs.shortcuts.shortcuts.ctrl_cmd" }, "C"],
+        shortcut: [CTRL_CMD, "C"],
         key: "ui.dialogs.shortcuts.automation_script.copy",
       },
       {
         type: "shortcut",
-        shortcut: [{ key: "ui.dialogs.shortcuts.shortcuts.ctrl_cmd" }, "X"],
+        shortcut: [CTRL_CMD, "X"],
         key: "ui.dialogs.shortcuts.automation_script.cut",
       },
       {
         type: "shortcut",
-        shortcut: [{ key: "ui.dialogs.shortcuts.shortcuts.ctrl_cmd" }, "del"],
+        shortcut: [CTRL_CMD, "del"],
         key: "ui.dialogs.shortcuts.automation_script.delete",
       },
       {
         type: "shortcut",
-        shortcut: [{ key: "ui.dialogs.shortcuts.shortcuts.ctrl_cmd" }, "V"],
+        shortcut: [CTRL_CMD, "V"],
         key: "ui.dialogs.shortcuts.automation_script.paste",
       },
       {
         type: "shortcut",
-        shortcut: [{ key: "ui.dialogs.shortcuts.shortcuts.ctrl_cmd" }, "S"],
+        shortcut: [CTRL_CMD, "S"],
         key: "ui.dialogs.shortcuts.automation_script.save",
       },
     ],
@@ -103,16 +107,13 @@ const _SHORTCUTS: Section[] = [
     items: [
       {
         type: "shortcut",
-        shortcut: [
-          { key: "ui.dialogs.shortcuts.shortcuts.ctrl_cmd" },
-          { key: "ui.dialogs.shortcuts.shortcuts.drag" },
-        ],
+        shortcut: [CTRL_CMD, { key: "ui.dialogs.shortcuts.shortcuts.drag" }],
         key: "ui.dialogs.shortcuts.charts.drag_to_zoom",
       },
       {
         type: "shortcut",
         shortcut: [
-          { key: "ui.dialogs.shortcuts.shortcuts.ctrl_cmd" },
+          CTRL_CMD,
           { key: "ui.dialogs.shortcuts.shortcuts.scroll_wheel" },
         ],
         key: "ui.dialogs.shortcuts.charts.scroll_to_zoom",
@@ -161,7 +162,18 @@ class DialogShortcuts extends LitElement {
 
     return html`
       <div class="shortcut">
-        ${keys.map((key) => html` <span>${key.toUpperCase()}</span>`)}
+        ${keys.map(
+          (key) =>
+            html` <span
+              >${key === CTRL_CMD
+                ? isMac
+                  ? html`<ha-svg-icon
+                      .path=${mdiAppleKeyboardCommand}
+                    ></ha-svg-icon>`
+                  : this.hass.localize("ui.panel.config.automation.editor.ctrl")
+                : key.toUpperCase()}</span
+            >`
+        )}
         ${this.hass.localize(translationKey)}
       </div>
     `;
@@ -246,6 +258,10 @@ class DialogShortcuts extends LitElement {
 
       .items p {
         margin-bottom: 8px;
+      }
+
+      ha-svg-icon {
+        width: 12px;
       }
     `,
   ];
