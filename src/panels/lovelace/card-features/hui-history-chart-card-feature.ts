@@ -1,19 +1,19 @@
 import { css, html, LitElement, nothing } from "lit";
-import "../../../components/ha-spinner";
 import { customElement, property, state } from "lit/decorators";
+import { isComponentLoaded } from "../../../common/config/is_component_loaded";
 import { computeDomain } from "../../../common/entity/compute_domain";
+import { isNumericFromAttributes } from "../../../common/number/format_number";
+import "../../../components/ha-spinner";
 import { subscribeHistoryStatesTimeWindow } from "../../../data/history";
+import { SubscribeMixin } from "../../../mixins/subscribe-mixin";
 import type { HomeAssistant } from "../../../types";
+import { coordinatesMinimalResponseCompressedState } from "../common/graph/coordinates";
+import { GRAPH_BASE_WIDTH } from "../components/hui-graph-base";
 import type { LovelaceCardFeature } from "../types";
 import type {
-  LovelaceCardFeatureContext,
   HistoryChartCardFeatureConfig,
+  LovelaceCardFeatureContext,
 } from "./types";
-import { isComponentLoaded } from "../../../common/config/is_component_loaded";
-import { SubscribeMixin } from "../../../mixins/subscribe-mixin";
-import { coordinatesMinimalResponseCompressedState } from "../common/graph/coordinates";
-import "../components/hui-graph-base";
-import { isNumericFromAttributes } from "../../../common/number/format_number";
 
 export const supportsHistoryChartCardFeature = (
   hass: HomeAssistant,
@@ -39,7 +39,7 @@ class HuiHistoryChartCardFeature
 
   @state() private _config?: HistoryChartCardFeatureConfig;
 
-  @state() private _coordinates?: number[][];
+  @state() private _coordinates?: [number, number][];
 
   private _interval?: number;
 
@@ -97,7 +97,10 @@ class HuiHistoryChartCardFeature
       `;
     }
     return html`
-      <hui-graph-base .coordinates=${this._coordinates}></hui-graph-base>
+      <hui-graph-base
+        .coordinates=${this._coordinates}
+        responsive
+      ></hui-graph-base>
     `;
   }
 
@@ -116,7 +119,7 @@ class HuiHistoryChartCardFeature
           coordinatesMinimalResponseCompressedState(
             historyStates[this.context!.entity_id!],
             this._config!.hours_to_show ?? 24,
-            500,
+            GRAPH_BASE_WIDTH,
             2,
             undefined
           ) || [];
@@ -139,6 +142,8 @@ class HuiHistoryChartCardFeature
     hui-graph-base {
       width: 100%;
       --accent-color: var(--feature-color);
+      border-radius: 8px;
+      overflow: hidden;
     }
   `;
 }
