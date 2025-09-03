@@ -64,14 +64,9 @@ class StepFlowMenu extends LitElement {
 
     if (this.step.sort) {
       options = options
-        .map((option) => ({
-          option,
-          value: translations[option] || option,
-        }))
         .sort((a, b) =>
-          stringCompare(a.value, b.value, this.hass.locale.language)
-        )
-        .map((option) => option.option);
+          stringCompare(translations[a]!, translations[b]!, this.hass.locale.language)
+        );
     }
 
     const description = this.flowConfig.renderMenuDescription(
