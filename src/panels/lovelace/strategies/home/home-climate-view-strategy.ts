@@ -64,15 +64,13 @@ const processAreasForClimate = (
         },
       });
 
-      if (hass.areas[areaId].temperature_entity_id) {
-        cards.push(
-          createTempHumidBadge(hass, hass.areas[areaId].temperature_entity_id)
-        );
+      const temperatureEntityId = hass.areas[areaId].temperature_entity_id;
+      if (temperatureEntityId && hass.states[temperatureEntityId]) {
+        cards.push(createTempHumidBadge(hass, temperatureEntityId));
       }
-      if (hass.areas[areaId].humidity_entity_id) {
-        cards.push(
-          createTempHumidBadge(hass, hass.areas[areaId].humidity_entity_id)
-        );
+      const humidityEntityId = hass.areas[areaId].humidity_entity_id;
+      if (humidityEntityId && hass.states[humidityEntityId]) {
+        cards.push(createTempHumidBadge(hass, humidityEntityId));
       }
 
       for (const entityId of areaEntities) {
