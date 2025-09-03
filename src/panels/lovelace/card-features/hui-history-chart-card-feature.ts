@@ -1,19 +1,19 @@
 import { css, html, LitElement, nothing } from "lit";
-import "../../../components/ha-spinner";
 import { customElement, property, state } from "lit/decorators";
-import { computeDomain } from "../../../common/entity/compute_domain";
-import { subscribeHistoryStatesTimeWindow } from "../../../data/history";
-import type { HomeAssistant } from "../../../types";
-import type { LovelaceCardFeature } from "../types";
-import type {
-  LovelaceCardFeatureContext,
-  HistoryChartCardFeatureConfig,
-} from "./types";
 import { isComponentLoaded } from "../../../common/config/is_component_loaded";
+import { computeDomain } from "../../../common/entity/compute_domain";
+import { isNumericFromAttributes } from "../../../common/number/format_number";
+import "../../../components/ha-spinner";
+import { subscribeHistoryStatesTimeWindow } from "../../../data/history";
 import { SubscribeMixin } from "../../../mixins/subscribe-mixin";
+import type { HomeAssistant } from "../../../types";
 import { coordinatesMinimalResponseCompressedState } from "../common/graph/coordinates";
 import "../components/hui-graph-base";
-import { isNumericFromAttributes } from "../../../common/number/format_number";
+import type { LovelaceCardFeature } from "../types";
+import type {
+  HistoryChartCardFeatureConfig,
+  LovelaceCardFeatureContext,
+} from "./types";
 
 export const supportsHistoryChartCardFeature = (
   hass: HomeAssistant,
@@ -39,7 +39,7 @@ class HuiHistoryChartCardFeature
 
   @state() private _config?: HistoryChartCardFeatureConfig;
 
-  @state() private _coordinates?: number[][];
+  @state() private _coordinates?: [number, number][];
 
   private _interval?: number;
 
@@ -139,6 +139,9 @@ class HuiHistoryChartCardFeature
     hui-graph-base {
       width: 100%;
       --accent-color: var(--feature-color);
+      border-bottom-right-radius: 8px;
+      border-bottom-left-radius: 8px;
+      overflow: hidden;
     }
   `;
 }
