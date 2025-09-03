@@ -256,7 +256,7 @@ class DialogExposeEntity extends LitElement {
           lit-virtualizer {
             height: calc(
               100vh -
-                198px - var(--safe-area-inset-top, 0px) - var(
+                210px - var(--safe-area-inset-top, 0px) - var(
                   --safe-area-inset-bottom,
                   0px
                 )
