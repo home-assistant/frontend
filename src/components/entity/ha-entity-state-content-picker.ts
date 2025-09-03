@@ -106,6 +106,14 @@ class HaEntityStatePicker extends LitElement {
   private options = memoizeOne(
     (entityId?: string, stateObj?: HassEntity, allowName?: boolean) => {
       const domain = entityId ? computeDomain(entityId) : undefined;
+
+      // Check if entity or its device has an area
+      const entityReg = entityId ? this.hass.entities?.[entityId] : undefined;
+      const deviceReg = entityReg?.device_id
+        ? this.hass.devices?.[entityReg.device_id]
+        : undefined;
+      const hasArea = !!(entityReg?.area_id || deviceReg?.area_id);
+
       return [
         {
           label: this.hass.localize("ui.components.state-content-picker.state"),
@@ -121,10 +129,16 @@ class HaEntityStatePicker extends LitElement {
               },
             ]
           : []),
-        {
-          label: this.hass.localize("ui.components.state-content-picker.area"),
-          value: "area",
-        },
+        ...(hasArea
+          ? [
+              {
+                label: this.hass.localize(
+                  "ui.components.state-content-picker.area"
+                ),
+                value: "area",
+              },
+            ]
+          : []),
         {
           label: this.hass.localize(
             "ui.components.state-content-picker.last_changed"
