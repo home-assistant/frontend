@@ -1115,6 +1115,7 @@ export class HaAutomationEditor extends PreventUnsavedMixin(
       c: () => this._copySelectedRow(),
       x: () => this._cutSelectedRow(),
       Delete: () => this._deleteSelectedRow(),
+      Backspace: () => this._deleteSelectedRow(),
     };
   }
 
