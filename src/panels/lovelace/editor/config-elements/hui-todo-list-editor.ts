@@ -32,6 +32,7 @@ const cardConfigStruct = assign(
     entity: optional(string()),
     hide_completed: optional(boolean()),
     hide_create: optional(boolean()),
+    hide_status: optional(boolean()),
     display_order: optional(string()),
     item_tap_action: optional(string()),
   })
@@ -59,6 +60,7 @@ export class HuiTodoListEditor
         { name: "theme", selector: { theme: {} } },
         { name: "hide_completed", selector: { boolean: {} } },
         { name: "hide_create", selector: { boolean: {} } },
+        { name: "hide_status", selector: { boolean: {} } },
         {
           name: "display_order",
           selector: {
@@ -164,6 +166,7 @@ export class HuiTodoListEditor
         )})`;
       case "hide_completed":
       case "hide_create":
+      case "hide_status":
       case "display_order":
       case "item_tap_action":
         return this.hass!.localize(
