@@ -145,3 +145,25 @@ export const shiftDateRange = (
   }
   return { start, end };
 };
+
+/**
+ * @description Formats a date in browser display timezone
+ * @param date - The date to format
+ * @param timezone - The timezone to format the date in
+ * @returns The formatted date
+ */
+export const formatDate = (date: Date, timezone: string): string => {
+  const tzDate = new TZDate(date, timezone);
+  return tzDate.toISOString().split("T")[0]; // Get YYYY-MM-DD format
+};
+
+/**
+ * @description Formats a time in browser display timezone
+ * @param date - The date to format
+ * @param timezone - The timezone to format the date in
+ * @returns The formatted date
+ */
+export const formatTime = (date: Date, timezone: string): string => {
+  const tzDate = new TZDate(date, timezone);
+  return tzDate.toISOString().split("T")[1].split(".")[0]; // Get HH:mm:ss format
+};
