@@ -11,22 +11,22 @@ import type { HomeAssistant } from "../../types";
 import { isMac } from "../../util/is_mac";
 
 interface Text {
-  textKey: LocalizeKeys;
+  textTranslationKey: LocalizeKeys;
 }
 
 interface LocalizedShortcut {
-  shortcutKey: LocalizeKeys;
+  shortcutTranslationKey: LocalizeKeys;
 }
 
 type ShortcutString = string | LocalizedShortcut;
 
 interface Shortcut {
   shortcut: ShortcutString[];
-  descriptionKey: LocalizeKeys;
+  descriptionTranslationKey: LocalizeKeys;
 }
 
 interface Section {
-  titleKey: LocalizeKeys;
+  titleTranslationKey: LocalizeKeys;
   items: (Text | Shortcut)[];
 }
 
@@ -34,97 +34,115 @@ const CTRL_CMD = "__CTRL_CMD__";
 
 const _SHORTCUTS: Section[] = [
   {
-    titleKey: "ui.dialogs.shortcuts.searching.title",
+    titleTranslationKey: "ui.dialogs.shortcuts.searching.title",
     items: [
       {
-        textKey: "ui.dialogs.shortcuts.searching.on_any_page",
+        textTranslationKey: "ui.dialogs.shortcuts.searching.on_any_page",
       },
       {
         shortcut: ["C"],
-        descriptionKey: "ui.dialogs.shortcuts.searching.search_command",
+        descriptionTranslationKey:
+          "ui.dialogs.shortcuts.searching.search_command",
       },
       {
         shortcut: ["E"],
-        descriptionKey: "ui.dialogs.shortcuts.searching.search_entities",
+        descriptionTranslationKey:
+          "ui.dialogs.shortcuts.searching.search_entities",
       },
       {
         shortcut: ["D"],
-        descriptionKey: "ui.dialogs.shortcuts.searching.search_devices",
+        descriptionTranslationKey:
+          "ui.dialogs.shortcuts.searching.search_devices",
       },
       {
-        textKey: "ui.dialogs.shortcuts.searching.on_pages_with_tables",
+        textTranslationKey:
+          "ui.dialogs.shortcuts.searching.on_pages_with_tables",
       },
       {
         shortcut: [CTRL_CMD, "F"],
-        descriptionKey: "ui.dialogs.shortcuts.searching.search_in_table",
+        descriptionTranslationKey:
+          "ui.dialogs.shortcuts.searching.search_in_table",
       },
     ],
   },
   {
-    titleKey: "ui.dialogs.shortcuts.assist.title",
+    titleTranslationKey: "ui.dialogs.shortcuts.assist.title",
     items: [
       {
         shortcut: ["A"],
-        descriptionKey: "ui.dialogs.shortcuts.assist.open_assist",
+        descriptionTranslationKey: "ui.dialogs.shortcuts.assist.open_assist",
       },
     ],
   },
   {
-    titleKey: "ui.dialogs.shortcuts.automation_script.title",
+    titleTranslationKey: "ui.dialogs.shortcuts.automation_script.title",
     items: [
       {
         shortcut: [CTRL_CMD, "C"],
-        descriptionKey: "ui.dialogs.shortcuts.automation_script.copy",
+        descriptionTranslationKey:
+          "ui.dialogs.shortcuts.automation_script.copy",
       },
       {
         shortcut: [CTRL_CMD, "X"],
-        descriptionKey: "ui.dialogs.shortcuts.automation_script.cut",
+        descriptionTranslationKey: "ui.dialogs.shortcuts.automation_script.cut",
       },
       {
-        shortcut: [CTRL_CMD, { shortcutKey: "ui.dialogs.shortcuts.keys.del" }],
-        descriptionKey: "ui.dialogs.shortcuts.automation_script.delete",
+        shortcut: [
+          CTRL_CMD,
+          { shortcutTranslationKey: "ui.dialogs.shortcuts.keys.del" },
+        ],
+        descriptionTranslationKey:
+          "ui.dialogs.shortcuts.automation_script.delete",
       },
       {
         shortcut: [CTRL_CMD, "V"],
-        descriptionKey: "ui.dialogs.shortcuts.automation_script.paste",
+        descriptionTranslationKey:
+          "ui.dialogs.shortcuts.automation_script.paste",
       },
       {
         shortcut: [CTRL_CMD, "S"],
-        descriptionKey: "ui.dialogs.shortcuts.automation_script.save",
+        descriptionTranslationKey:
+          "ui.dialogs.shortcuts.automation_script.save",
       },
     ],
   },
   {
-    titleKey: "ui.dialogs.shortcuts.charts.title",
+    titleTranslationKey: "ui.dialogs.shortcuts.charts.title",
     items: [
       {
         shortcut: [
           CTRL_CMD,
-          { shortcutKey: "ui.dialogs.shortcuts.shortcuts.drag" },
+          { shortcutTranslationKey: "ui.dialogs.shortcuts.shortcuts.drag" },
         ],
-        descriptionKey: "ui.dialogs.shortcuts.charts.drag_to_zoom",
+        descriptionTranslationKey: "ui.dialogs.shortcuts.charts.drag_to_zoom",
       },
       {
         shortcut: [
           CTRL_CMD,
-          { shortcutKey: "ui.dialogs.shortcuts.shortcuts.scroll_wheel" },
+          {
+            shortcutTranslationKey:
+              "ui.dialogs.shortcuts.shortcuts.scroll_wheel",
+          },
         ],
-        descriptionKey: "ui.dialogs.shortcuts.charts.scroll_to_zoom",
+        descriptionTranslationKey: "ui.dialogs.shortcuts.charts.scroll_to_zoom",
       },
       {
         shortcut: [
-          { shortcutKey: "ui.dialogs.shortcuts.shortcuts.double_click" },
+          {
+            shortcutTranslationKey:
+              "ui.dialogs.shortcuts.shortcuts.double_click",
+          },
         ],
-        descriptionKey: "ui.dialogs.shortcuts.charts.double_click",
+        descriptionTranslationKey: "ui.dialogs.shortcuts.charts.double_click",
       },
     ],
   },
   {
-    titleKey: "ui.dialogs.shortcuts.other.title",
+    titleTranslationKey: "ui.dialogs.shortcuts.other.title",
     items: [
       {
         shortcut: ["M"],
-        descriptionKey: "ui.dialogs.shortcuts.other.my_link",
+        descriptionTranslationKey: "ui.dialogs.shortcuts.other.my_link",
       },
     ],
   },
@@ -162,7 +180,9 @@ class DialogShortcuts extends LitElement {
                   : this.hass.localize("ui.panel.config.automation.editor.ctrl")
                 : typeof shortcutKey === "string"
                   ? shortcutKey
-                  : this.hass.localize(shortcutKey.shortcutKey)}</span
+                  : this.hass.localize(
+                      shortcutKey.shortcutTranslationKey
+                    )}</span
             >`
         )}
         ${this.hass.localize(descriptionKey)}
@@ -189,17 +209,17 @@ class DialogShortcuts extends LitElement {
         <div class="content">
           ${_SHORTCUTS.map(
             (section) => html`
-              <h3>${this.hass.localize(section.titleKey)}</h3>
+              <h3>${this.hass.localize(section.titleTranslationKey)}</h3>
               <div class="items">
                 ${section.items.map((item) => {
                   if ("shortcut" in item) {
                     return this._renderShortcut(
                       (item as Shortcut).shortcut,
-                      (item as Shortcut).descriptionKey
+                      (item as Shortcut).descriptionTranslationKey
                     );
                   }
                   return html`<p>
-                    ${this.hass.localize((item as Text).textKey)}
+                    ${this.hass.localize((item as Text).textTranslationKey)}
                   </p>`;
                 })}
               </div>
