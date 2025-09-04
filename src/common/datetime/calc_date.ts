@@ -147,6 +147,17 @@ export const shiftDateRange = (
 };
 
 /**
+ * @description Parses a date in browser display timezone
+ * @param date - The date to parse
+ * @param timezone - The timezone to parse the date in
+ * @returns The parsed date as a Date object
+ */
+export const parseDate = (date: string, timezone: string): Date => {
+  const tzDate = new TZDate(date, timezone);
+  return new Date(tzDate.getTime());
+};
+
+/**
  * @description Formats a date in browser display timezone
  * @param date - The date to format
  * @param timezone - The timezone to format the date in
