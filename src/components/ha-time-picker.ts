@@ -4,12 +4,16 @@ import { customElement, property, state } from "lit/decorators";
 import { useAmPm } from "../common/datetime/use_am_pm";
 import { fireEvent } from "../common/dom/fire_event";
 import type { FrontendLocaleData } from "../data/translation";
+import type { HomeAssistant } from "../types";
+import { clampValue } from "../data/number";
 import "./ha-base-time-input";
 import "./ha-numeric-arrow-input";
 import "./ha-button";
 
 @customElement("ha-time-picker")
 export class HaTimePicker extends LitElement {
+  @property({ attribute: false }) public hass!: HomeAssistant;
+
   @property({ attribute: false }) public locale!: FrontendLocaleData;
 
   @property({ attribute: false }) public value?: string;
@@ -28,6 +32,8 @@ export class HaTimePicker extends LitElement {
 
   @state() private _useAmPm = false;
 
+  @state() private _isPm = false;
+
   protected firstUpdated(changedProperties: PropertyValues) {
     super.firstUpdated(changedProperties);
     this._useAmPm = useAmPm(this.locale);
@@ -35,29 +41,37 @@ export class HaTimePicker extends LitElement {
     let hours = NaN;
     let minutes = NaN;
     let seconds = NaN;
-    let numberHours = 0;
+    let isPm = false;
+
     if (this.value) {
       const parts = this.value?.split(":") || [];
       minutes = parts[1] ? Number(parts[1]) : 0;
       seconds = parts[2] ? Number(parts[2]) : 0;
-      hours = parts[0] ? Number(parts[0]) : 0;
-      numberHours = hours;
-      if (
-        numberHours &&
-        this._useAmPm &&
-        numberHours > 12 &&
-        numberHours < 24
-      ) {
-        hours = numberHours - 12;
-      }
-      if (this._useAmPm && numberHours === 0) {
-        hours = 12;
+      const hour24 = parts[0] ? Number(parts[0]) : 0;
+
+      if (this._useAmPm) {
+        if (hour24 === 0) {
+          hours = 12;
+          isPm = false;
+        } else if (hour24 < 12) {
+          hours = hour24;
+          isPm = false;
+        } else if (hour24 === 12) {
+          hours = 12;
+          isPm = true;
+        } else {
+          hours = hour24 - 12;
+          isPm = true;
+        }
+      } else {
+        hours = hour24;
       }
     }
 
     this._hours = hours;
     this._minutes = minutes;
     this._seconds = seconds;
+    this._isPm = isPm;
   }
 
   protected render() {
@@ -125,7 +139,7 @@ export class HaTimePicker extends LitElement {
       ${this._useAmPm
         ? html`
             <ha-button @click=${this._toggleAmPm}>
-              ${this._hours > 12 ? "PM" : "AM"}
+              ${this._isPm ? "PM" : "AM"}
             </ha-button>
           `
         : nothing}
@@ -150,35 +164,42 @@ export class HaTimePicker extends LitElement {
     if (changedProperties.has("_useAmPm")) {
       this._timeUpdated();
     }
+
+    if (changedProperties.has("_isPm")) {
+      this._timeUpdated();
+    }
   }
 
   private _hoursChanged(ev: CustomEvent<{ clamped: boolean; value: number }>) {
-    const value = ev.detail.value;
-    if (this._useAmPm) {
-      if (value > 12) {
-        this._hours = value - 12;
-      } else if (value === 0) {
-        this._hours = 12;
-      } else {
-        this._hours = value;
-      }
-    } else {
-      this._hours = value;
-    }
+    this._hours = ev.detail.value;
+    console.log("hoursChanged", ev.detail);
   }
 
   private _minutesChanged(
     ev: CustomEvent<{ clamped: boolean; value: number }>
   ) {
     this._minutes = ev.detail.value;
+    console.log("minutesChanged", ev.detail);
     if (ev.detail.clamped) {
-      if (ev.detail.value <= 0) {
-        this._hours -= 1;
+      if (ev.detail.value === 0) {
+        this._hoursChanged({
+          detail: clampValue({
+            value: this._hours - 1,
+            min: this._useAmPm ? 1 : 0,
+            max: this._useAmPm ? 12 : 23,
+          }),
+        } as CustomEvent<{ clamped: boolean; value: number }>);
         this._minutes = 59;
       }
 
-      if (ev.detail.value >= 59) {
-        this._hours += 1;
+      if (ev.detail.value === 59) {
+        this._hoursChanged({
+          detail: clampValue({
+            value: this._hours + 1,
+            min: this._useAmPm ? 1 : 0,
+            max: this._useAmPm ? 12 : 23,
+          }),
+        } as CustomEvent<{ clamped: boolean; value: number }>);
         this._minutes = 0;
       }
     }
@@ -188,32 +209,44 @@ export class HaTimePicker extends LitElement {
     ev: CustomEvent<{ clamped: boolean; value: number }>
   ) {
     this._seconds = ev.detail.value;
+    console.log("secondsChanged", ev.detail);
     if (ev.detail.clamped) {
-      if (ev.detail.value <= 0) {
-        this._minutes -= 1;
+      if (ev.detail.value === 0) {
+        this._minutesChanged({
+          detail: clampValue({ value: this._minutes - 1, min: 0, max: 59 }),
+        } as CustomEvent<{ clamped: boolean; value: number }>);
         this._seconds = 59;
       }
 
-      if (ev.detail.value >= 59) {
-        this._minutes += 1;
+      if (ev.detail.value === 59) {
+        this._minutesChanged({
+          detail: clampValue({ value: this._minutes + 1, min: 0, max: 59 }),
+        } as CustomEvent<{ clamped: boolean; value: number }>);
         this._seconds = 0;
       }
     }
   }
 
   private _toggleAmPm() {
-    this._hours = this._hours > 12 ? this._hours - 12 : this._hours + 12;
+    this._isPm = !this._isPm;
   }
 
   private _timeUpdated() {
+    let hour24 = this._hours;
+
+    if (this._useAmPm) {
+      if (this._hours === 12) {
+        hour24 = this._isPm ? 12 : 0;
+      } else {
+        hour24 = this._isPm ? this._hours + 12 : this._hours;
+      }
+    }
+
     const timeParts = [
-      this._hours.toString().padStart(2, "0"),
+      hour24.toString().padStart(2, "0"),
       this._minutes.toString().padStart(2, "0"),
       this._seconds.toString().padStart(2, "0"),
     ];
-    if (this._useAmPm) {
-      timeParts.push(this._hours > 12 ? "PM" : "AM");
-    }
 
     const time = timeParts.join(":");
     if (time === this.value) {
