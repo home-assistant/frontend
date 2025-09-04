@@ -232,7 +232,6 @@ export class HaBottomSheet extends LitElement {
       box-shadow: var(--wa-shadow-l);
       padding: 0;
       margin: 0;
-
       top: auto;
       inset-inline-end: auto;
       bottom: 0;
