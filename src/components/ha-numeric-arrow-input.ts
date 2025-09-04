@@ -1,10 +1,11 @@
-import { css, html, LitElement, type PropertyValues } from "lit";
-import { customElement, property } from "lit/decorators";
+import { css, html, LitElement } from "lit";
+import { customElement, property, query } from "lit/decorators";
 import memoizeOne from "memoize-one";
 import { mdiMinus, mdiPlus } from "@mdi/js";
 import { fireEvent } from "../common/dom/fire_event";
-import "./ha-icon-button";
+import type { HaIconButton } from "./ha-icon-button";
 import "./ha-textfield";
+import "./ha-icon-button";
 
 @customElement("ha-numeric-arrow-input")
 export class HaNumericArrowInput extends LitElement {
@@ -26,6 +27,12 @@ export class HaNumericArrowInput extends LitElement {
 
   @property({ attribute: false }) public value = 0;
 
+  @query("ha-icon-button[data-direction='up']")
+  private _upButton!: HaIconButton;
+
+  @query("ha-icon-button[data-direction='down']")
+  private _downButton!: HaIconButton;
+
   private _paddedValue = memoizeOne((value: number, padStart?: number) =>
     value.toString().padStart(padStart ?? 0, "0")
   );
@@ -36,6 +43,7 @@ export class HaNumericArrowInput extends LitElement {
       @keydown=${this._keyDown}
     >
       <ha-icon-button
+        data-direction="up"
         .disabled=${this.disabled}
         .label=${this.labelUp}
         .path=${mdiPlus}
@@ -45,6 +53,7 @@ export class HaNumericArrowInput extends LitElement {
         >${this._paddedValue(this.value, this.padStart)}</span
       >
       <ha-icon-button
+        data-direction="down"
         .disabled=${this.disabled}
         .label=${this.labelDown}
         .path=${mdiMinus}
@@ -55,9 +64,11 @@ export class HaNumericArrowInput extends LitElement {
 
   private _keyDown(ev: KeyboardEvent) {
     if (ev.key === "ArrowUp") {
+      this._upButton.focus();
       this._up();
     }
     if (ev.key === "ArrowDown") {
+      this._downButton.focus();
       this._down();
     }
   }
