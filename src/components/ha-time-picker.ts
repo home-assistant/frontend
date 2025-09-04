@@ -5,6 +5,7 @@ import { useAmPm } from "../common/datetime/use_am_pm";
 import { fireEvent } from "../common/dom/fire_event";
 import type { FrontendLocaleData } from "../data/translation";
 import type { HomeAssistant } from "../types";
+import type { ClampedValue } from "../data/number";
 import { clampValue } from "../data/number";
 import "./ha-base-time-input";
 import "./ha-numeric-arrow-input";
@@ -170,14 +171,12 @@ export class HaTimePicker extends LitElement {
     }
   }
 
-  private _hoursChanged(ev: CustomEvent<{ clamped: boolean; value: number }>) {
+  private _hoursChanged(ev: CustomEvent<ClampedValue>) {
     this._hours = ev.detail.value;
     console.log("hoursChanged", ev.detail);
   }
 
-  private _minutesChanged(
-    ev: CustomEvent<{ clamped: boolean; value: number }>
-  ) {
+  private _minutesChanged(ev: CustomEvent<ClampedValue>) {
     this._minutes = ev.detail.value;
     console.log("minutesChanged", ev.detail);
     if (ev.detail.clamped) {
@@ -188,7 +187,7 @@ export class HaTimePicker extends LitElement {
             min: this._useAmPm ? 1 : 0,
             max: this._useAmPm ? 12 : 23,
           }),
-        } as CustomEvent<{ clamped: boolean; value: number }>);
+        } as CustomEvent<ClampedValue>);
         this._minutes = 59;
       }
 
@@ -199,29 +198,27 @@ export class HaTimePicker extends LitElement {
             min: this._useAmPm ? 1 : 0,
             max: this._useAmPm ? 12 : 23,
           }),
-        } as CustomEvent<{ clamped: boolean; value: number }>);
+        } as CustomEvent<ClampedValue>);
         this._minutes = 0;
       }
     }
   }
 
-  private _secondsChanged(
-    ev: CustomEvent<{ clamped: boolean; value: number }>
-  ) {
+  private _secondsChanged(ev: CustomEvent<ClampedValue>) {
     this._seconds = ev.detail.value;
     console.log("secondsChanged", ev.detail);
     if (ev.detail.clamped) {
       if (ev.detail.value === 0) {
         this._minutesChanged({
           detail: clampValue({ value: this._minutes - 1, min: 0, max: 59 }),
-        } as CustomEvent<{ clamped: boolean; value: number }>);
+        } as CustomEvent<ClampedValue>);
         this._seconds = 59;
       }
 
       if (ev.detail.value === 59) {
         this._minutesChanged({
           detail: clampValue({ value: this._minutes + 1, min: 0, max: 59 }),
-        } as CustomEvent<{ clamped: boolean; value: number }>);
+        } as CustomEvent<ClampedValue>);
         this._seconds = 0;
       }
     }
