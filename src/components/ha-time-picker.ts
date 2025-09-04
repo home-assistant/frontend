@@ -172,13 +172,13 @@ export class HaTimePicker extends LitElement {
   }
 
   private _hoursChanged(ev: CustomEvent<ClampedValue>) {
+    ev.stopPropagation?.();
     this._hours = ev.detail.value;
-    console.log("hoursChanged", ev.detail);
   }
 
   private _minutesChanged(ev: CustomEvent<ClampedValue>) {
+    ev.stopPropagation?.();
     this._minutes = ev.detail.value;
-    console.log("minutesChanged", ev.detail);
     if (ev.detail.clamped) {
       if (ev.detail.value === 0) {
         this._hoursChanged({
@@ -205,8 +205,8 @@ export class HaTimePicker extends LitElement {
   }
 
   private _secondsChanged(ev: CustomEvent<ClampedValue>) {
+    ev.stopPropagation?.();
     this._seconds = ev.detail.value;
-    console.log("secondsChanged", ev.detail);
     if (ev.detail.clamped) {
       if (ev.detail.value === 0) {
         this._minutesChanged({
