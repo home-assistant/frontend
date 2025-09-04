@@ -171,7 +171,6 @@ export default class HaAutomationSidebarCard extends LitElement {
       transition: box-shadow 180ms ease-in-out;
       border-bottom-left-radius: 0;
       border-bottom-right-radius: 0;
-      z-index: 6;
       position: relative;
       background-color: var(
         --ha-dialog-surface-background,
