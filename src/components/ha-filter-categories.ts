@@ -1,4 +1,4 @@
-import type { ActionDetail, SelectedDetail } from "@material/mwc-list";
+import type { SelectedDetail } from "@material/mwc-list";
 import {
   mdiDelete,
   mdiDotsVertical,
@@ -26,8 +26,8 @@ import { haStyleScrollbar } from "../resources/styles";
 import type { HomeAssistant } from "../types";
 import "./ha-expansion-panel";
 import "./ha-icon";
-import "./ha-button-menu";
-import "./ha-list-item";
+import "./ha-md-button-menu";
+import "./ha-md-menu-item";
 import "./ha-list";
 import { stopPropagation } from "../common/dom/stop_propagation";
 
@@ -114,37 +114,39 @@ export class HaFilterCategories extends SubscribeMixin(LitElement) {
                             slot="graphic"
                           ></ha-svg-icon>`}
                       ${category.name}
-                      <ha-button-menu
+                      <ha-md-button-menu
                         @click=${stopPropagation}
-                        @action=${this._handleAction}
                         slot="meta"
-                        fixed
+                        positioning="fixed"
                         .categoryId=${category.category_id}
                       >
                         <ha-icon-button
                           .path=${mdiDotsVertical}
                           slot="trigger"
                         ></ha-icon-button>
-                        <ha-list-item graphic="icon"
+                        <ha-md-menu-item @click=${this._editCategoryClicked}
+                          data-category-id=${category.category_id}
                           ><ha-svg-icon
                             .path=${mdiPencil}
-                            slot="graphic"
+                            slot="start"
                           ></ha-svg-icon
                           >${this.hass.localize(
                             "ui.panel.config.category.editor.edit"
-                          )}</ha-list-item
+                          )}</ha-md-menu-item
                         >
-                        <ha-list-item graphic="icon" class="warning"
+                        <ha-md-menu-item @click=${this._deleteCategoryClicked}
+                          data-category-id=${category.category_id}
+                          class="warning"
                           ><ha-svg-icon
                             class="warning"
                             .path=${mdiDelete}
-                            slot="graphic"
+                            slot="start"
                           ></ha-svg-icon
                           >${this.hass.localize(
                             "ui.panel.config.category.editor.delete"
-                          )}</ha-list-item
+                          )}</ha-md-menu-item
                         >
-                      </ha-button-menu>
+                      </ha-md-button-menu>
                     </ha-list-item>`
                 )}
               </ha-list>
@@ -174,16 +176,16 @@ export class HaFilterCategories extends SubscribeMixin(LitElement) {
     }
   }
 
-  private _handleAction(ev: CustomEvent<ActionDetail>) {
-    const categoryId = (ev.currentTarget as any).categoryId;
-    switch (ev.detail.index) {
-      case 0:
-        this._editCategory(categoryId);
-        break;
-      case 1:
-        this._deleteCategory(categoryId);
-        break;
-    }
+  private _editCategoryClicked(ev: Event) {
+    ev.stopPropagation();
+    const categoryId = (ev.currentTarget as HTMLElement).getAttribute('data-category-id')!;
+    this._editCategory(categoryId);
+  }
+
+  private _deleteCategoryClicked(ev: Event) {
+    ev.stopPropagation();
+    const categoryId = (ev.currentTarget as HTMLElement).getAttribute('data-category-id')!;
+    this._deleteCategory(categoryId);
   }
 
   private _editCategory(id: string) {

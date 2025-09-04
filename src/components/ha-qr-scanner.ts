@@ -14,8 +14,8 @@ import { addExternalBarCodeListener } from "../external_app/external_app_entrypo
 import type { HomeAssistant } from "../types";
 import "./ha-alert";
 import "./ha-button";
-import "./ha-button-menu";
-import "./ha-list-item";
+import "./ha-md-button-menu";
+import "./ha-md-menu-item";
 import "./ha-spinner";
 import "./ha-textfield";
 import type { HaTextField } from "./ha-textfield";
@@ -121,7 +121,7 @@ class HaQrScanner extends LitElement {
             !this._error &&
             this._cameras &&
             this._cameras.length > 1
-              ? html`<ha-button-menu fixed @closed=${stopPropagation}>
+              ? html`<ha-md-button-menu positioning="fixed" @closed=${stopPropagation}>
                   <ha-icon-button
                     slot="trigger"
                     .label=${this.hass.localize(
@@ -131,15 +131,15 @@ class HaQrScanner extends LitElement {
                   ></ha-icon-button>
                   ${this._cameras!.map(
                     (camera) => html`
-                      <ha-list-item
-                        .value=${camera.id}
+                      <ha-md-menu-item
+                        data-camera-id=${camera.id}
                         @click=${this._cameraChanged}
                       >
                         ${camera.label}
-                      </ha-list-item>
+                      </ha-md-menu-item>
                     `
                   )}
-                </ha-button-menu>`
+                </ha-md-button-menu>`
               : nothing}
           </div>`
       : html`<ha-alert alert-type="warning">
@@ -252,8 +252,9 @@ class HaQrScanner extends LitElement {
     this._qrCodeScanned(this._manualInput!.value);
   }
 
-  private _cameraChanged(ev: CustomEvent): void {
-    this._qrScanner?.setCamera((ev.target as any).value);
+  private _cameraChanged(ev: Event): void {
+    const cameraId = (ev.currentTarget as HTMLElement).getAttribute('data-camera-id')!;
+    this._qrScanner?.setCamera(cameraId);
   }
 
   private _openExternalScanner() {
@@ -359,7 +360,7 @@ class HaQrScanner extends LitElement {
     #canvas-container {
       position: relative;
     }
-    ha-button-menu {
+    ha-md-button-menu {
       position: absolute;
       bottom: 8px;
       right: 8px;

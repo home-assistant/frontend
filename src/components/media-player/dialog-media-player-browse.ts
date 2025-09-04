@@ -1,4 +1,3 @@
-import type { ActionDetail } from "@material/mwc-list";
 import {
   mdiAlphaABoxOutline,
   mdiArrowLeft,
@@ -23,7 +22,8 @@ import { haStyleDialog } from "../../resources/styles";
 import type { HomeAssistant } from "../../types";
 import "../ha-dialog";
 import "../ha-dialog-header";
-import "../ha-list-item";
+import "../ha-md-button-menu";
+import "../ha-md-menu-item";
 import "./ha-media-manage-button";
 import "./ha-media-player-browse";
 import type {
@@ -108,48 +108,47 @@ class DialogMediaPlayerBrowse extends LitElement {
             .currentItem=${this._currentItem}
             @media-refresh=${this._refreshMedia}
           ></ha-media-manage-button>
-          <ha-button-menu
+          <ha-md-button-menu
             slot="actionItems"
-            @action=${this._handleMenuAction}
             @closed=${stopPropagation}
-            fixed
+            positioning="fixed"
           >
             <ha-icon-button
               slot="trigger"
               .label=${this.hass.localize("ui.common.menu")}
               .path=${mdiDotsVertical}
             ></ha-icon-button>
-            <ha-list-item graphic="icon">
+            <ha-md-menu-item @click=${this._setAutoLayout}>
               ${this.hass.localize("ui.components.media-browser.auto")}
               <ha-svg-icon
                 class=${this._preferredLayout === "auto"
                   ? "selected_menu_item"
                   : ""}
-                slot="graphic"
+                slot="start"
                 .path=${mdiAlphaABoxOutline}
               ></ha-svg-icon>
-            </ha-list-item>
-            <ha-list-item graphic="icon">
+            </ha-md-menu-item>
+            <ha-md-menu-item @click=${this._setGridLayout}>
               ${this.hass.localize("ui.components.media-browser.grid")}
               <ha-svg-icon
                 class=${this._preferredLayout === "grid"
                   ? "selected_menu_item"
                   : ""}
-                slot="graphic"
+                slot="start"
                 .path=${mdiGrid}
               ></ha-svg-icon>
-            </ha-list-item>
-            <ha-list-item graphic="icon">
+            </ha-md-menu-item>
+            <ha-md-menu-item @click=${this._setListLayout}>
               ${this.hass.localize("ui.components.media-browser.list")}
               <ha-svg-icon
-                slot="graphic"
+                slot="start"
                 class=${this._preferredLayout === "list"
                   ? "selected_menu_item"
                   : ""}
                 .path=${mdiListBoxOutline}
               ></ha-svg-icon>
-            </ha-list-item>
-          </ha-button-menu>
+            </ha-md-menu-item>
+          </ha-md-button-menu>
           <ha-icon-button
             .label=${this.hass.localize("ui.common.close")}
             .path=${mdiClose}
@@ -177,18 +176,16 @@ class DialogMediaPlayerBrowse extends LitElement {
     this.classList.add("opened");
   }
 
-  private async _handleMenuAction(ev: CustomEvent<ActionDetail>) {
-    switch (ev.detail.index) {
-      case 0:
-        this._preferredLayout = "auto";
-        break;
-      case 1:
-        this._preferredLayout = "grid";
-        break;
-      case 2:
-        this._preferredLayout = "list";
-        break;
-    }
+  private _setAutoLayout() {
+    this._preferredLayout = "auto";
+  }
+
+  private _setGridLayout() {
+    this._preferredLayout = "grid";
+  }
+
+  private _setListLayout() {
+    this._preferredLayout = "list";
   }
 
   private _goBack() {

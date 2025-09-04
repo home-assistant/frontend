@@ -7,7 +7,8 @@ import { stopPropagation } from "../../common/dom/stop_propagation";
 import type { LocalizeFunc } from "../../common/translations/localize";
 import type { HomeAssistant } from "../../types";
 import "../ha-button";
-import "../ha-list-item";
+import "../ha-md-button-menu";
+import "../ha-md-menu-item";
 import "../ha-svg-icon";
 import "./ha-form";
 import type {
@@ -116,9 +117,8 @@ export class HaFormOptionalActions extends LitElement implements HaFormElement {
         : nothing}
       ${hiddenActions.length > 0
         ? html`
-            <ha-button-menu
-              @action=${this._handleAddAction}
-              fixed
+            <ha-md-button-menu
+              positioning="fixed"
               @closed=${stopPropagation}
             >
               <ha-button slot="trigger" appearance="filled" size="small">
@@ -126,28 +126,31 @@ export class HaFormOptionalActions extends LitElement implements HaFormElement {
                 ${this.localize?.("ui.components.form-optional-actions.add") ||
                 "Add interaction"}
               </ha-button>
-              ${hiddenActions.map((action) => {
+              ${hiddenActions.map((action, index) => {
                 const actionSchema = schemaMap.get(action);
                 return html`
-                  <ha-list-item>
+                  <ha-md-menu-item
+                    @click=${this._handleAddActionClicked}
+                    data-action-index=${index}
+                  >
                     ${this.computeLabel && actionSchema
                       ? this.computeLabel(actionSchema)
                       : action}
-                  </ha-list-item>
+                  </ha-md-menu-item>
                 `;
               })}
-            </ha-button-menu>
+            </ha-md-button-menu>
           `
         : nothing}
     `;
   }
 
-  private _handleAddAction(ev: CustomEvent) {
+  private _handleAddActionClicked(ev: Event) {
     const hiddenActions = this._hiddenActions(
       this.schema.schema,
       this._displayActions ?? NO_ACTIONS
     );
-    const index = ev.detail.index;
+    const index = parseInt((ev.currentTarget as HTMLElement).getAttribute('data-action-index')!, 10);
     const action = hiddenActions[index];
     this._displayActions = [...(this._displayActions ?? []), action];
   }
