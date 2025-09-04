@@ -65,6 +65,10 @@ export default class HaAutomationSidebarCondition extends LitElement {
         }
       }
     }
+    // Reset testing state when condition changes
+    if (changedProperties.has("sidebarKey")) {
+      this._testing = false;
+    }
   }
 
   protected render() {
