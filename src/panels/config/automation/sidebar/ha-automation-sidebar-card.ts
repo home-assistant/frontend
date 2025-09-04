@@ -200,6 +200,7 @@ export default class HaAutomationSidebarCard extends LitElement {
     .card-content {
       max-height: calc(100% - 80px);
       overflow: auto;
+      margin-top: 0;
     }
 
     @media (min-width: 450px) and (min-height: 500px) {
