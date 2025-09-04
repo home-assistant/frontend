@@ -5,7 +5,6 @@ import {
   differenceInMilliseconds,
   startOfHour,
 } from "date-fns";
-import { TZDate } from "@date-fns/tz";
 import type { HassEntity } from "home-assistant-js-websocket";
 import type { CSSResultGroup } from "lit";
 import { LitElement, css, html, nothing } from "lit";
@@ -40,6 +39,11 @@ import "../lovelace/components/hui-generic-entity-row";
 import "./ha-recurrence-rule-editor";
 import { showConfirmEventDialog } from "./show-confirm-event-dialog-box";
 import type { CalendarEventEditDialogParams } from "./show-dialog-calendar-event-editor";
+import {
+  formatDate,
+  formatTime,
+  parseDate,
+} from "../../common/datetime/calc_date";
 
 const CALENDAR_DOMAINS = ["calendar"];
 
@@ -303,30 +307,12 @@ class DialogCalendarEventEditor extends LitElement {
 
   private _getLocaleStrings = memoizeOne(
     (startDate?: Date, endDate?: Date) => ({
-      startDate: this._formatDate(startDate!),
-      startTime: this._formatTime(startDate!),
-      endDate: this._formatDate(endDate!),
-      endTime: this._formatTime(endDate!),
+      startDate: formatDate(startDate!, this._timeZone!),
+      startTime: formatTime(startDate!, this._timeZone!),
+      endDate: formatDate(endDate!, this._timeZone!),
+      endTime: formatTime(endDate!, this._timeZone!),
     })
   );
-
-  // Formats a date in specified timezone, or defaulting to browser display timezone
-  private _formatDate(date: Date, timeZone: string = this._timeZone!): string {
-    const tzDate = new TZDate(date, timeZone);
-    return tzDate.toISOString().split("T")[0]; // Get YYYY-MM-DD format
-  }
-
-  // Formats a time in specified timezone, or defaulting to browser display timezone
-  private _formatTime(date: Date, timeZone: string = this._timeZone!): string {
-    const tzDate = new TZDate(date, timeZone);
-    return tzDate.toISOString().split("T")[1].split(".")[0]; // Get HH:mm:ss format
-  }
-
-  // Parse a date in the browser timezone
-  private _parseDate(dateStr: string): Date {
-    const tzDate = new TZDate(dateStr, this._timeZone!);
-    return new Date(tzDate.getTime());
-  }
 
   private _clearInfo() {
     this._info = undefined;
@@ -352,8 +338,9 @@ class DialogCalendarEventEditor extends LitElement {
     // Store previous event duration
     const duration = differenceInMilliseconds(this._dtend!, this._dtstart!);
 
-    this._dtstart = this._parseDate(
-      `${ev.detail.value}T${this._formatTime(this._dtstart!)}`
+    this._dtstart = parseDate(
+      `${ev.detail.value}T${formatTime(this._dtstart!, this._timeZone!)}`,
+      this._timeZone!
     );
 
     // Prevent that the end time can be before the start time. Try to keep the
@@ -367,8 +354,9 @@ class DialogCalendarEventEditor extends LitElement {
   }
 
   private _endDateChanged(ev: CustomEvent) {
-    this._dtend = this._parseDate(
-      `${ev.detail.value}T${this._formatTime(this._dtend!)}`
+    this._dtend = parseDate(
+      `${ev.detail.value}T${formatTime(this._dtend!, this._timeZone!)}`,
+      this._timeZone!
     );
   }
 
@@ -376,8 +364,9 @@ class DialogCalendarEventEditor extends LitElement {
     // Store previous event duration
     const duration = differenceInMilliseconds(this._dtend!, this._dtstart!);
 
-    this._dtstart = this._parseDate(
-      `${this._formatDate(this._dtstart!)}T${ev.detail.value}`
+    this._dtstart = parseDate(
+      `${formatDate(this._dtstart!, this._timeZone!)}T${ev.detail.value}`,
+      this._timeZone!
     );
 
     // Prevent that the end time can be before the start time. Try to keep the
@@ -391,8 +380,9 @@ class DialogCalendarEventEditor extends LitElement {
   }
 
   private _endTimeChanged(ev: CustomEvent) {
-    this._dtend = this._parseDate(
-      `${this._formatDate(this._dtend!)}T${ev.detail.value}`
+    this._dtend = parseDate(
+      `${formatDate(this._dtend!, this._timeZone!)}T${ev.detail.value}`,
+      this._timeZone!
     );
   }
 
@@ -405,18 +395,18 @@ class DialogCalendarEventEditor extends LitElement {
       dtend: "",
     };
     if (this._allDay) {
-      data.dtstart = this._formatDate(this._dtstart!);
+      data.dtstart = formatDate(this._dtstart!, this._timeZone!);
       // End date/time is exclusive when persisted
-      data.dtend = this._formatDate(addDays(this._dtend!, 1));
+      data.dtend = formatDate(addDays(this._dtend!, 1), this._timeZone!);
     } else {
-      data.dtstart = `${this._formatDate(
+      data.dtstart = `${formatDate(
         this._dtstart!,
         this.hass.config.time_zone
-      )}T${this._formatTime(this._dtstart!, this.hass.config.time_zone)}`;
-      data.dtend = `${this._formatDate(
+      )}T${formatTime(this._dtstart!, this.hass.config.time_zone)}`;
+      data.dtend = `${formatDate(
         this._dtend!,
         this.hass.config.time_zone
-      )}T${this._formatTime(this._dtend!, this.hass.config.time_zone)}`;
+      )}T${formatTime(this._dtend!, this.hass.config.time_zone)}`;
     }
     return data;
   }
