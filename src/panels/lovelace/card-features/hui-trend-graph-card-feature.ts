@@ -9,7 +9,7 @@ import { SubscribeMixin } from "../../../mixins/subscribe-mixin";
 import type { HomeAssistant } from "../../../types";
 import { coordinatesMinimalResponseCompressedState } from "../common/graph/coordinates";
 import "../components/hui-graph-base";
-import type { LovelaceCardFeature } from "../types";
+import type { LovelaceCardFeature, LovelaceCardFeatureEditor } from "../types";
 import type {
   TrendGraphCardFeatureConfig,
   LovelaceCardFeatureContext,
@@ -27,7 +27,7 @@ export const supportsTrendGraphCardFeature = (
   return domain === "sensor" && isNumericFromAttributes(stateObj.attributes);
 };
 
-const DEFAULT_HOURS_TO_SHOW = 24;
+export const DEFAULT_HOURS_TO_SHOW = 24;
 
 @customElement("hui-trend-graph-card-feature")
 class HuiHistoryChartCardFeature
@@ -49,6 +49,13 @@ class HuiHistoryChartCardFeature
     return {
       type: "trend-graph",
     };
+  }
+
+  public static async getConfigElement(): Promise<LovelaceCardFeatureEditor> {
+    await import(
+      "../editor/config-elements/hui-trend-graph-card-feature-editor"
+    );
+    return document.createElement("hui-trend-graph-card-feature-editor");
   }
 
   public setConfig(config: TrendGraphCardFeatureConfig): void {
