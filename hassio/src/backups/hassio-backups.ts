@@ -214,6 +214,7 @@ export class HassioBackups extends LitElement {
             ${this.supervisor.localize("common.reload")}
           </ha-md-menu-item>
           <ha-md-menu-item @click=${this._showBackupLocationDialog}>
+            ${this.supervisor.localize("dialog.backup_location.title")}
           </ha-md-menu-item>
           ${atLeastVersion(this.hass.config.version, 0, 116)
             ? html`<ha-md-menu-item @click=${this._showUploadBackupDialog}>

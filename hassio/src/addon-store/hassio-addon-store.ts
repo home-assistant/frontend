@@ -88,9 +88,9 @@ export class HassioAddonStore extends LitElement {
             .path=${mdiDotsVertical}
             slot="trigger"
           ></ha-icon-button>
-          <ha-md-list-item @click=${this.refreshData}>
+          <ha-md-menu-item @click=${this.refreshData}>
             ${this.supervisor.localize("store.check_updates")}
-          </ha-md-list-item>
+          </ha-md-menu-item>
           <ha-md-menu-item @click=${this._manageRepositoriesClicked}>
             ${this.supervisor.localize("store.repositories")}
           </ha-md-menu-item>
