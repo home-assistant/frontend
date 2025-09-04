@@ -2040,6 +2040,9 @@
         "title": "Shortcuts",
         "enable_shortcuts_hint": "For keyboard shortcuts to work, make sure you have them enabled in your {user_profile}.",
         "enable_shortcuts_hint_user_profile": "user profile",
+        "keys": {
+          "del": "Del"
+        },
         "shortcuts": {
           "double_click": "Double-click",
           "scroll_wheel": "Scroll",
