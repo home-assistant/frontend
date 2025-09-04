@@ -298,7 +298,7 @@ class MoreInfoWeather extends LitElement {
       <div class="section">
         ${this.hass.localize("ui.card.weather.forecast")}:
       </div>
-      ${supportedForecasts && supportedForecasts.length > 1
+      ${supportedForecasts?.length > 1
         ? html`<sl-tab-group @sl-tab-show=${this._handleForecastTypeChanged}>
             ${supportedForecasts.map(
               (forecastType) =>
@@ -313,7 +313,7 @@ class MoreInfoWeather extends LitElement {
           </sl-tab-group>`
         : nothing}
       <div class="forecast">
-        ${forecast && forecast.length > 0
+        ${forecast?.length
           ? forecast.map((item) =>
               this._showValue(item.templow) || this._showValue(item.temperature)
                 ? html`
