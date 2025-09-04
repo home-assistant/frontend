@@ -34,7 +34,7 @@ export const clampValue = ({
   min?: number;
   max?: number;
 }): ClampedValue => {
-  if (max !== undefined && value >= max) {
+  if (max !== undefined && value > max) {
     return { clamped: true, value: max };
   }
 
