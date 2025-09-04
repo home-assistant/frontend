@@ -1,15 +1,15 @@
 import type { PropertyValues } from "lit";
 import { css, html, LitElement, nothing } from "lit";
 import { customElement, property, state } from "lit/decorators";
+import { clampValue } from "../data/number";
 import { useAmPm } from "../common/datetime/use_am_pm";
 import { fireEvent } from "../common/dom/fire_event";
 import type { FrontendLocaleData } from "../data/translation";
 import type { HomeAssistant } from "../types";
 import type { ClampedValue } from "../data/number";
-import { clampValue } from "../data/number";
 import "./ha-base-time-input";
-import "./ha-numeric-arrow-input";
 import "./ha-button";
+import "./ha-numeric-arrow-input";
 
 @customElement("ha-time-picker")
 export class HaTimePicker extends LitElement {
@@ -199,7 +199,10 @@ export class HaTimePicker extends LitElement {
             max: this._useAmPm ? 12 : 23,
           }),
         } as CustomEvent<ClampedValue>);
-        this._minutes = 0;
+        const hourMax = this._useAmPm ? 12 : 23;
+        if (this._hours < hourMax) {
+          this._minutes = 0;
+        }
       }
     }
   }
@@ -219,7 +222,10 @@ export class HaTimePicker extends LitElement {
         this._minutesChanged({
           detail: clampValue({ value: this._minutes + 1, min: 0, max: 59 }),
         } as CustomEvent<ClampedValue>);
-        this._seconds = 0;
+        const hourMax = this._useAmPm ? 12 : 23;
+        if (!(this._hours === hourMax && this._minutes === 59)) {
+          this._seconds = 0;
+        }
       }
     }
   }
