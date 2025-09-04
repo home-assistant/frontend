@@ -33,6 +33,7 @@ import {
   ruleByWeekDay,
   untilValue,
 } from "./recurrence";
+import { formatDate, formatTime } from "../../common/datetime/calc_date";
 
 @customElement("ha-recurrence-rule-editor")
 export class RecurrenceRuleEditor extends LitElement {
@@ -337,7 +338,7 @@ export class RecurrenceRuleEditor extends LitElement {
                 "ui.components.calendar.event.repeat.end_on.label"
               )}
               .locale=${this.locale}
-              .value=${this._formatDate(this._untilDay!)}
+              .value=${formatDate(this._untilDay!, this.timezone!)}
               @value-changed=${this._onUntilChange}
             ></ha-date-input>
           `
@@ -461,9 +462,9 @@ export class RecurrenceRuleEditor extends LitElement {
     if (this._untilDay) {
       // The UNTIL value should be inclusive of the last event instance
       const until = new TZDate(
-        this._formatDate(this._untilDay!) +
+        formatDate(this._untilDay!, this.timezone!) +
           "T" +
-          this._formatTime(this.dtstart!),
+          formatTime(this.dtstart!, this.timezone!),
         this.timezone
       );
       const newUntilValue = until
@@ -488,18 +489,6 @@ export class RecurrenceRuleEditor extends LitElement {
         detail: { value: rule },
       })
     );
-  }
-
-  // Formats a date in browser display timezone
-  private _formatDate(date: Date): string {
-    const tzDate = new TZDate(date, this.timezone!);
-    return tzDate.toISOString().split("T")[0]; // Get YYYY-MM-DD format
-  }
-
-  // Formats a time in browser display timezone
-  private _formatTime(date: Date): string {
-    const tzDate = new TZDate(date, this.timezone!);
-    return tzDate.toISOString().split("T")[1].split(".")[0]; // Get HH:mm:ss format
   }
 
   static styles = css`
