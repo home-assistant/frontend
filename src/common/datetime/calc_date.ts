@@ -150,20 +150,20 @@ export const shiftDateRange = (
  * @description Formats a date in browser display timezone
  * @param date - The date to format
  * @param timezone - The timezone to format the date in
- * @returns The formatted date
+ * @returns The formatted date in YYYY-MM-DD format
  */
 export const formatDate = (date: Date, timezone: string): string => {
   const tzDate = new TZDate(date, timezone);
-  return tzDate.toISOString().split("T")[0]; // Get YYYY-MM-DD format
+  return tzDate.toISOString().split("T")[0];
 };
 
 /**
  * @description Formats a time in browser display timezone
  * @param date - The date to format
- * @param timezone - The timezone to format the date in
- * @returns The formatted date
+ * @param timezone - The timezone to format the time in
+ * @returns The formatted time in HH:mm:ss format
  */
 export const formatTime = (date: Date, timezone: string): string => {
   const tzDate = new TZDate(date, timezone);
-  return tzDate.toISOString().split("T")[1].split(".")[0]; // Get HH:mm:ss format
+  return tzDate.toISOString().split("T")[1].split(".")[0];
 };
