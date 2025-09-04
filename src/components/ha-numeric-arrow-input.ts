@@ -6,6 +6,7 @@ import { fireEvent } from "../common/dom/fire_event";
 import type { HaIconButton } from "./ha-icon-button";
 import "./ha-textfield";
 import "./ha-icon-button";
+import { clampValue } from "../data/number";
 
 @customElement("ha-numeric-arrow-input")
 export class HaNumericArrowInput extends LitElement {
@@ -75,24 +76,20 @@ export class HaNumericArrowInput extends LitElement {
 
   private _up() {
     const newValue = this.value + (this.step ?? 1);
-    fireEvent(this, "value-changed", this._clampValue(newValue));
+    fireEvent(
+      this,
+      "value-changed",
+      clampValue({ value: newValue, min: this.min, max: this.max })
+    );
   }
 
   private _down() {
     const newValue = this.value - (this.step ?? 1);
-    fireEvent(this, "value-changed", this._clampValue(newValue));
-  }
-
-  private _clampValue(value: number): { clamped: boolean; value: number } {
-    if (this.max !== undefined && value >= this.max) {
-      return { clamped: true, value: this.max };
-    }
-
-    if (this.min !== undefined && value < this.min) {
-      return { clamped: true, value: this.min };
-    }
-
-    return { clamped: false, value };
+    fireEvent(
+      this,
+      "value-changed",
+      clampValue({ value: newValue, min: this.min, max: this.max })
+    );
   }
 
   static styles = css`
