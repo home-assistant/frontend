@@ -1,5 +1,3 @@
-import type { ActionDetail } from "@material/mwc-list/mwc-list-foundation";
-
 import { mdiDotsVertical } from "@mdi/js";
 import type { PropertyValues, TemplateResult } from "lit";
 import { css, html, LitElement, nothing } from "lit";
@@ -9,9 +7,9 @@ import { atLeastVersion } from "../../../src/common/config/version";
 import { fireEvent } from "../../../src/common/dom/fire_event";
 import { navigate } from "../../../src/common/navigate";
 import { extractSearchParam } from "../../../src/common/url/search-params";
-import "../../../src/components/ha-button-menu";
+import "../../../src/components/ha-md-button-menu";
+import "../../../src/components/ha-md-menu-item";
 import "../../../src/components/ha-icon-button";
-import "../../../src/components/ha-list-item";
 import "../../../src/components/search-input";
 import type { HassioAddonRepository } from "../../../src/data/hassio/addon";
 import { reloadHassioAddons } from "../../../src/data/hassio/addon";
@@ -54,7 +52,7 @@ export class HassioAddonStore extends LitElement {
 
   @state() private _filter?: string;
 
-  public async refreshData() {
+  public async refreshData(_ev) {
     try {
       await reloadHassioAddons(this.hass);
     } catch (err) {
@@ -84,25 +82,25 @@ export class HassioAddonStore extends LitElement {
         .route=${this.route}
         .header=${this.supervisor.localize("panel.store")}
       >
-        <ha-button-menu slot="toolbar-icon" @action=${this._handleAction}>
+        <ha-md-button-menu positioning="popover" slot="toolbar-icon">
           <ha-icon-button
             .label=${this.supervisor.localize("common.menu")}
             .path=${mdiDotsVertical}
             slot="trigger"
           ></ha-icon-button>
-          <ha-list-item>
+          <ha-md-list-item @click=${this.refreshData}>
             ${this.supervisor.localize("store.check_updates")}
-          </ha-list-item>
-          <ha-list-item>
+          </ha-md-list-item>
+          <ha-md-menu-item @click=${this._manageRepositoriesClicked}>
             ${this.supervisor.localize("store.repositories")}
-          </ha-list-item>
+          </ha-md-menu-item>
           ${this.hass.userData?.showAdvanced &&
           atLeastVersion(this.hass.config.version, 0, 117)
-            ? html`<ha-list-item>
+            ? html`<ha-md-menu-item @click=${this._manageRegistries}>
                 ${this.supervisor.localize("store.registries")}
-              </ha-list-item>`
+              </ha-md-menu-item>`
             : ""}
-        </ha-button-menu>
+        </ha-md-button-menu>
         ${repos.length === 0
           ? html`<hass-loading-screen no-toolbar></hass-loading-screen>`
           : html`
@@ -166,27 +164,13 @@ export class HassioAddonStore extends LitElement {
       })
   );
 
-  private _handleAction(ev: CustomEvent<ActionDetail>) {
-    switch (ev.detail.index) {
-      case 0:
-        this.refreshData();
-        break;
-      case 1:
-        this._manageRepositoriesClicked();
-        break;
-      case 2:
-        this._manageRegistries();
-        break;
-    }
-  }
-
   private _apiCalled(ev) {
     if (ev.detail.success) {
       this._loadData();
     }
   }
 
-  private _manageRepositoriesClicked() {
+  private _manageRepositoriesClicked(_ev) {
     this._manageRepositories();
   }
 
@@ -197,7 +181,7 @@ export class HassioAddonStore extends LitElement {
     });
   }
 
-  private _manageRegistries() {
+  private _manageRegistries(_ev) {
     showRegistriesDialog(this, { supervisor: this.supervisor });
   }
 

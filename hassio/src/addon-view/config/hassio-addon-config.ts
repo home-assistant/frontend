@@ -1,4 +1,3 @@
-import type { ActionDetail } from "@material/mwc-list";
 import { mdiDotsVertical } from "@mdi/js";
 import { DEFAULT_SCHEMA, Type } from "js-yaml";
 import type { CSSResultGroup, PropertyValues, TemplateResult } from "lit";
@@ -8,7 +7,8 @@ import memoizeOne from "memoize-one";
 import { fireEvent } from "../../../../src/common/dom/fire_event";
 import "../../../../src/components/buttons/ha-progress-button";
 import "../../../../src/components/ha-alert";
-import "../../../../src/components/ha-button-menu";
+import "../../../../src/components/ha-md-button-menu";
+import "../../../../src/components/ha-md-menu-item";
 import "../../../../src/components/ha-card";
 import "../../../../src/components/ha-form/ha-form";
 import type { HaFormSchema } from "../../../../src/components/ha-form/types";
@@ -171,13 +171,16 @@ class HassioAddonConfig extends LitElement {
             ${this.supervisor.localize("addon.configuration.options.header")}
           </h2>
           <div class="card-menu">
-            <ha-button-menu @action=${this._handleAction}>
+            <ha-md-button-menu positioning="popover">
               <ha-icon-button
                 .label=${this.supervisor.localize("common.menu")}
                 .path=${mdiDotsVertical}
                 slot="trigger"
               ></ha-icon-button>
-              <ha-list-item .disabled=${!this._canShowSchema || this.disabled}>
+              <ha-md-menu-item
+                .disabled=${!this._canShowSchema || this.disabled}
+                @click=${this._toggleYAML}
+              >
                 ${this._yamlMode
                   ? this.supervisor.localize(
                       "addon.configuration.options.edit_in_ui"
@@ -185,14 +188,15 @@ class HassioAddonConfig extends LitElement {
                   : this.supervisor.localize(
                       "addon.configuration.options.edit_in_yaml"
                     )}
-              </ha-list-item>
-              <ha-list-item
+              </ha-md-menu-item>
+              <ha-md-menu-item
                 class=${!this.disabled ? "warning" : ""}
                 .disabled=${this.disabled}
+                @click=${this._resetTapped}
               >
                 ${this.supervisor.localize("common.reset_defaults")}
-              </ha-list-item>
-            </ha-button-menu>
+              </ha-md-menu-item>
+            </ha-md-button-menu>
           </div>
         </div>
 
@@ -288,15 +292,8 @@ class HassioAddonConfig extends LitElement {
     }
   }
 
-  private _handleAction(ev: CustomEvent<ActionDetail>) {
-    switch (ev.detail.index) {
-      case 0:
-        this._yamlMode = !this._yamlMode;
-        break;
-      case 1:
-        this._resetTapped(ev);
-        break;
-    }
+  private async _toggleYAML(_ev: CustomEvent): Promise<void> {
+    this._yamlMode = !this._yamlMode;
   }
 
   private _toggleOptional() {

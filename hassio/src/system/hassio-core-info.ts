@@ -4,7 +4,6 @@ import { customElement, property, state } from "lit/decorators";
 import { atLeastVersion } from "../../../src/common/config/version";
 import "../../../src/components/buttons/ha-progress-button";
 import "../../../src/components/ha-button";
-import "../../../src/components/ha-button-menu";
 import "../../../src/components/ha-card";
 import "../../../src/components/ha-settings-row";
 import type { HassioStats } from "../../../src/data/hassio/common";
@@ -186,10 +185,6 @@ class HassioCoreInfo extends LitElement {
         ha-settings-row > span[slot="description"] {
           white-space: normal;
           color: var(--secondary-text-color);
-        }
-        ha-button-menu {
-          color: var(--secondary-text-color);
-          --mdc-menu-min-width: 200px;
         }
         a {
           text-decoration: none;

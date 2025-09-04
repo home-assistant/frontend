@@ -1,5 +1,3 @@
-import type { ActionDetail } from "@material/mwc-list";
-
 import { mdiBackupRestore, mdiDelete, mdiDotsVertical, mdiPlus } from "@mdi/js";
 import type { CSSResultGroup, PropertyValues } from "lit";
 import { LitElement, css, html, nothing } from "lit";
@@ -14,11 +12,11 @@ import type {
   RowClickedEvent,
   SelectionChangedEvent,
 } from "../../../src/components/data-table/ha-data-table";
-import "../../../src/components/ha-button-menu";
+import "../../../src/components/ha-md-button-menu";
+import "../../../src/components/ha-md-menu-item";
 import "../../../src/components/ha-fab";
 import "../../../src/components/ha-button";
 import "../../../src/components/ha-icon-button";
-import "../../../src/components/ha-list-item";
 import "../../../src/components/ha-svg-icon";
 import type { HassioBackup } from "../../../src/data/hassio/backup";
 import {
@@ -206,24 +204,23 @@ export class HassioBackups extends LitElement {
           : "/config"}
         supervisor
       >
-        <ha-button-menu slot="toolbar-icon" @action=${this._handleAction}>
+        <ha-md-button-menu positioning="popover" slot="toolbar-icon">
           <ha-icon-button
             .label=${this.supervisor?.localize("common.menu")}
             .path=${mdiDotsVertical}
             slot="trigger"
           ></ha-icon-button>
-          <ha-list-item>
+          <ha-md-menu-item @click=${this._fetchBackups}>
             ${this.supervisor.localize("common.reload")}
-          </ha-list-item>
-          <ha-list-item>
-            ${this.supervisor.localize("dialog.backup_location.title")}
-          </ha-list-item>
+          </ha-md-menu-item>
+          <ha-md-menu-item @click=${this._showBackupLocationDialog}>
+          </ha-md-menu-item>
           ${atLeastVersion(this.hass.config.version, 0, 116)
-            ? html`<ha-list-item>
+            ? html`<ha-md-menu-item @click=${this._showUploadBackupDialog}>
                 ${this.supervisor.localize("backup.upload_backup")}
-              </ha-list-item>`
+              </ha-md-menu-item>`
             : ""}
-        </ha-button-menu>
+        </ha-md-button-menu>
 
         ${this._selectedBackups.length
           ? html`<div
@@ -275,20 +272,6 @@ export class HassioBackups extends LitElement {
     `;
   }
 
-  private _handleAction(ev: CustomEvent<ActionDetail>) {
-    switch (ev.detail.index) {
-      case 0:
-        this._fetchBackups();
-        break;
-      case 1:
-        showHassioBackupLocationDialog(this, { supervisor: this.supervisor });
-        break;
-      case 2:
-        this._showUploadBackupDialog();
-        break;
-    }
-  }
-
   private _handleSelectionChanged(
     ev: HASSDomEvent<SelectionChangedEvent>
   ): void {
@@ -312,6 +295,10 @@ export class HassioBackups extends LitElement {
     await reloadHassioBackups(this.hass);
     this._backups = await fetchHassioBackups(this.hass);
     this._isLoading = false;
+  }
+
+  private async _showBackupLocationDialog(_ev: CustomEvent) {
+    showHassioBackupLocationDialog(this, { supervisor: this.supervisor });
   }
 
   private async _deleteSelected() {
