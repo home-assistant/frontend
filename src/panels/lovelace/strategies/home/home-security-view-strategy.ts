@@ -32,7 +32,13 @@ const processAreasForSecurity = (
     const areaFilter = generateEntityFilter(hass, {
       area: area.area_id,
     });
+
     const areaEntities = entities.filter(areaFilter);
+    const areaCards: LovelaceCardConfig[] = [];
+
+    for (const entityId of areaEntities) {
+      areaCards.push(computeTileCard(entityId));
+    }
 
     if (areaEntities.length > 0) {
       cards.push({
@@ -44,10 +50,7 @@ const processAreasForSecurity = (
           navigation_path: `areas-${area.area_id}`,
         },
       });
-
-      for (const entityId of areaEntities) {
-        cards.push(computeTileCard(entityId));
-      }
+      cards.push(...areaCards);
     }
   }
 
