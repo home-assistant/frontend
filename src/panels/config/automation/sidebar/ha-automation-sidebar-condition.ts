@@ -65,6 +65,10 @@ export default class HaAutomationSidebarCondition extends LitElement {
         }
       }
     }
+    // Reset testing state when condition changes
+    if (changedProperties.has("sidebarKey")) {
+      this._testing = false;
+    }
   }
 
   protected render() {
@@ -283,20 +287,23 @@ export default class HaAutomationSidebarCondition extends LitElement {
               sidebar
             ></ha-automation-condition-editor>`
           )}
-      <div
-        class="testing ${classMap({
-          active: this._testing,
-          pass: this._testingResult === true,
-          error: this._testingResult === false,
-        })}"
-      >
-        ${this._testingResult
-          ? this.hass.localize(
-              "ui.panel.config.automation.editor.conditions.testing_pass"
-            )
-          : this.hass.localize(
-              "ui.panel.config.automation.editor.conditions.testing_error"
-            )}
+      <div class="testing-wrapper">
+        <div
+          class="testing ${classMap({
+            active: this._testing,
+            pass: this._testingResult === true,
+            error: this._testingResult === false,
+            narrow: this.narrow,
+          })}"
+        >
+          ${this._testingResult
+            ? this.hass.localize(
+                "ui.panel.config.automation.editor.conditions.testing_pass"
+              )
+            : this.hass.localize(
+                "ui.panel.config.automation.editor.conditions.testing_error"
+              )}
+        </div>
       </div>
     </ha-automation-sidebar-card>`;
   }
@@ -396,21 +403,13 @@ export default class HaAutomationSidebarCondition extends LitElement {
       ha-automation-sidebar-card {
         position: relative;
       }
-      .testing {
+      .testing-wrapper {
         position: absolute;
-        z-index: 6;
         top: 0px;
         right: 0px;
         left: 0px;
-        text-transform: uppercase;
-        font-size: var(--ha-font-size-m);
-        font-weight: var(--ha-font-weight-bold);
-        background-color: var(--divider-color, #e0e0e0);
-        color: var(--text-primary-color);
-        max-height: 0px;
+        margin: -1px;
         overflow: hidden;
-        transition: max-height 0.3s;
-        text-align: center;
         border-top-right-radius: var(
           --ha-card-border-radius,
           var(--ha-border-radius-lg)
@@ -419,15 +418,33 @@ export default class HaAutomationSidebarCondition extends LitElement {
           --ha-card-border-radius,
           var(--ha-border-radius-lg)
         );
+        pointer-events: none;
+        height: 100px;
+      }
+      .testing {
+        --testing-color: var(--divider-color, #e0e0e0);
+        text-transform: uppercase;
+        font-size: var(--ha-font-size-m);
+        font-weight: var(--ha-font-weight-bold);
+        background-color: var(--testing-color);
+        color: var(--text-primary-color);
+        max-height: 0px;
+        transition:
+          max-height 0.3s ease-in-out,
+          padding-top 0.3s ease-in-out;
+        text-align: center;
+      }
+      .testing.active.narrow {
+        padding-top: 16px;
       }
       .testing.active {
-        max-height: 100px;
+        max-height: 100%;
       }
       .testing.error {
-        background-color: var(--accent-color);
+        --testing-color: var(--accent-color);
       }
       .testing.pass {
-        background-color: var(--success-color);
+        --testing-color: var(--success-color);
       }
     `,
   ];
