@@ -165,7 +165,7 @@
     "@types/chromecast-caf-receiver": "6.0.24",
     "@types/chromecast-caf-sender": "1.0.11",
     "@types/color-name": "2.0.0",
-    "@types/culori": "4.0.0",
+    "@types/culori": "4.0.1",
     "@types/html-minifier-terser": "7.0.2",
     "@types/js-yaml": "4.0.9",
     "@types/leaflet": "1.9.20",
