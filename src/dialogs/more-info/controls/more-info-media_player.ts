@@ -291,25 +291,6 @@ class MoreInfoMediaPlayer extends LitElement {
                 ? html`<div class="media-artist">${secondaryTitle}</div>`
                 : nothing}
             </div>
-            <div>
-              ${!isUnavailableState(stateObj.state) &&
-              supportsFeature(stateObj, MediaPlayerEntityFeature.BROWSE_MEDIA)
-                ? html`
-                    <ha-button
-                      @click=${this._showBrowseMedia}
-                      appearance="plain"
-                      variant="neutral"
-                      size="small"
-                    >
-                      <ha-svg-icon
-                        .path=${mdiPlayBoxMultiple}
-                        slot="start"
-                      ></ha-svg-icon>
-                      ${this.hass.localize("ui.card.media_player.browse_media")}
-                    </ha-button>
-                  `
-                : nothing}
-            </div>
           </div>`
         : nothing}
       ${duration && duration > 0
@@ -375,20 +356,6 @@ class MoreInfoMediaPlayer extends LitElement {
             </div>
             <div class="side-control">
               ${["media_next_track", "shuffle_set"].map((action) => {
-                const control = controls?.find((c) => c.action === action);
-                return control
-                  ? html`<ha-icon-button
-                      action=${action}
-                      @click=${this._handleClick}
-                      .path=${control.icon}
-                      .label=${this.hass.localize(
-                        "ui.card.media_player.media_pause"
-                      )}
-                    >
-                    </ha-icon-button>`
-                  : nothing;
-              })}
-              ${["turn_on", "turn_off"].map((action) => {
                 const control = controls?.find((c) => c.action === action);
                 return control
                   ? html`<ha-icon-button
