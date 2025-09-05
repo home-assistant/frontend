@@ -97,6 +97,7 @@ export class StateHistoryChartLine extends LitElement {
         style=${styleMap({ height: this.height })}
         @dataset-hidden=${this._datasetHidden}
         @dataset-unhidden=${this._datasetUnhidden}
+        @chart-zoom=${this._handleDataZoom}
         .expandLegend=${this.expandLegend}
         .hideResetButton=${this.hideResetButton}
       ></ha-chart-base>
@@ -196,6 +197,16 @@ export class StateHistoryChartLine extends LitElement {
     this._hiddenStats.delete(ev.detail.id);
   }
 
+  private _handleDataZoom(ev: CustomEvent) {
+    fireEvent(this, "chart-zoom", {
+      start: ev.detail.start ?? 0,
+      end: ev.detail.end ?? 100,
+      chartIndex: this.chartIndex,
+      startTime: ev.detail.startTime,
+      endTime: ev.detail.endTime,
+    });
+  }
+
   public willUpdate(changedProps: PropertyValues) {
     if (
       changedProps.has("data") ||
@@ -255,6 +266,10 @@ export class StateHistoryChartLine extends LitElement {
           type: "time",
           min: this.startTime,
           max: this.endTime,
+          boundaryGap: [0, 0],
+          axisPointer: {
+            show: false,
+          },
         },
         yAxis: {
           type: this.logarithmicScale ? "log" : "value",
