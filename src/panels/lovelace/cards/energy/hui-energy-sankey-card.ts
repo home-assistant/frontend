@@ -109,7 +109,7 @@ class HuiEnergySankeyCard
         "ui.panel.lovelace.cards.energy.energy_distribution.home"
       ),
       value: Math.max(0, consumption.total.used_total),
-      color: computedStyle.getPropertyValue("--primary-color"),
+      color: computedStyle.getPropertyValue("--primary-color").trim(),
       index: 1,
     };
     nodes.push(homeNode);
@@ -125,7 +125,9 @@ class HuiEnergySankeyCard
           "ui.panel.lovelace.cards.energy.energy_distribution.battery"
         ),
         value: totalBatteryOut,
-        color: computedStyle.getPropertyValue("--energy-battery-out-color"),
+        color: computedStyle
+          .getPropertyValue("--energy-battery-out-color")
+          .trim(),
         index: 0,
       });
       links.push({
@@ -141,7 +143,9 @@ class HuiEnergySankeyCard
           "ui.panel.lovelace.cards.energy.energy_distribution.battery"
         ),
         value: totalBatteryIn,
-        color: computedStyle.getPropertyValue("--energy-battery-in-color"),
+        color: computedStyle
+          .getPropertyValue("--energy-battery-in-color")
+          .trim(),
         index: 1,
       });
       if (consumption.total.grid_to_battery > 0) {
@@ -169,9 +173,9 @@ class HuiEnergySankeyCard
           "ui.panel.lovelace.cards.energy.energy_distribution.grid"
         ),
         value: totalFromGrid,
-        color: computedStyle.getPropertyValue(
-          "--energy-grid-consumption-color"
-        ),
+        color: computedStyle
+          .getPropertyValue("--energy-grid-consumption-color")
+          .trim(),
         index: 0,
       });
 
@@ -192,7 +196,7 @@ class HuiEnergySankeyCard
           "ui.panel.lovelace.cards.energy.energy_distribution.solar"
         ),
         value: totalSolarProduction,
-        color: computedStyle.getPropertyValue("--energy-solar-color"),
+        color: computedStyle.getPropertyValue("--energy-solar-color").trim(),
         index: 0,
       });
 
@@ -213,7 +217,9 @@ class HuiEnergySankeyCard
           "ui.panel.lovelace.cards.energy.energy_distribution.grid"
         ),
         value: totalToGrid,
-        color: computedStyle.getPropertyValue("--energy-grid-return-color"),
+        color: computedStyle
+          .getPropertyValue("--energy-grid-return-color")
+          .trim(),
         index: 1,
       });
       if (consumption.total.battery_to_grid > 0) {
@@ -295,7 +301,7 @@ class HuiEnergySankeyCard
               label: this.hass.floors[floorId].name,
               value: floors[floorId].value,
               index: 2,
-              color: computedStyle.getPropertyValue("--primary-color"),
+              color: computedStyle.getPropertyValue("--primary-color").trim(),
             });
             links.push({
               source: "home",
@@ -316,7 +322,7 @@ class HuiEnergySankeyCard
                 label: this.hass.areas[areaId]!.name,
                 value: areas[areaId].value,
                 index: 3,
-                color: computedStyle.getPropertyValue("--primary-color"),
+                color: computedStyle.getPropertyValue("--primary-color").trim(),
               });
               links.push({
                 source: floorNodeId,
@@ -360,7 +366,9 @@ class HuiEnergySankeyCard
           "ui.panel.lovelace.cards.energy.energy_devices_detail_graph.untracked_consumption"
         ),
         value: untrackedConsumption,
-        color: computedStyle.getPropertyValue("--state-unavailable-color"),
+        color: computedStyle
+          .getPropertyValue("--state-unavailable-color")
+          .trim(),
         index: 3 + deviceSections.length,
       });
       links.push({

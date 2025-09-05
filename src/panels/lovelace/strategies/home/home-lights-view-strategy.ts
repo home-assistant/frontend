@@ -32,10 +32,15 @@ const processAreasForLights = (
       area: area.area_id,
     });
     const areaLights = entities.filter(areaFilter);
+    const areaCards: LovelaceCardConfig[] = [];
 
     const computeTileCard = computeAreaTileCardConfig(hass, "", false);
 
-    if (areaLights.length > 0) {
+    for (const entityId of areaLights) {
+      areaCards.push(computeTileCard(entityId));
+    }
+
+    if (areaCards.length > 0) {
       cards.push({
         heading_style: "subtitle",
         type: "heading",
@@ -45,10 +50,7 @@ const processAreasForLights = (
           navigation_path: `areas-${area.area_id}`,
         },
       });
-
-      for (const entityId of areaLights) {
-        cards.push(computeTileCard(entityId));
-      }
+      cards.push(...areaCards);
     }
   }
 

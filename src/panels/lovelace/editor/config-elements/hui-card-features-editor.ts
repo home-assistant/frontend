@@ -128,6 +128,7 @@ const EDITABLES_FEATURE_TYPES = new Set<UiFeatureTypes>([
   "lawn-mower-commands",
   "numeric-input",
   "select-options",
+  "trend-graph",
   "update-actions",
   "vacuum-commands",
   "water-heater-operation-modes",
