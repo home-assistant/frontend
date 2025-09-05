@@ -20,8 +20,6 @@ import "../../../components/ha-select";
 import "../../../components/ha-slider";
 import "../../../components/ha-button";
 import "../../../components/ha-svg-icon";
-import "../../../components/chips/ha-chip-set";
-import "../../../components/chips/ha-filter-chip";
 import { showMediaBrowserDialog } from "../../../components/media-player/show-media-browser-dialog";
 import { showJoinMediaPlayersDialog } from "../../../components/media-player/show-join-media-players-dialog";
 import { isUnavailableState } from "../../../data/entity";
@@ -37,6 +35,9 @@ import {
 } from "../../../data/media-player";
 import type { HomeAssistant } from "../../../types";
 import HassMediaPlayerEntity from "../../../util/hass-media-player-model";
+import "../../../components/ha-md-button-menu";
+import "../../../components/chips/ha-assist-chip";
+import "../../../components/ha-md-menu-item";
 
 @customElement("more-info-media_player")
 class MoreInfoMediaPlayer extends LitElement {
