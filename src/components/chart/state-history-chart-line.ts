@@ -66,6 +66,9 @@ export class StateHistoryChartLine extends LitElement {
   @property({ attribute: "expand-legend", type: Boolean })
   public expandLegend?: boolean;
 
+  @property({ attribute: "hide-reset-button", type: Boolean })
+  public hideResetButton?: boolean;
+
   @state() private _chartData: LineSeriesOption[] = [];
 
   @state() private _entityIds: string[] = [];
@@ -95,6 +98,7 @@ export class StateHistoryChartLine extends LitElement {
         @dataset-hidden=${this._datasetHidden}
         @dataset-unhidden=${this._datasetUnhidden}
         .expandLegend=${this.expandLegend}
+        .hideResetButton=${this.hideResetButton}
       ></ha-chart-base>
     `;
   }
