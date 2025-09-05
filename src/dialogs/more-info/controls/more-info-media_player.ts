@@ -333,7 +333,7 @@ class MoreInfoMediaPlayer extends LitElement {
                       @click=${this._handleClick}
                       .path=${control.icon}
                       .label=${this.hass.localize(
-                        "ui.card.media_player.media_pause"
+                              `ui.card.media_player.${control.action}`
                       )}
                     >
                     </ha-icon-button>`
@@ -355,7 +355,7 @@ class MoreInfoMediaPlayer extends LitElement {
                         <ha-svg-icon
                           .path=${control.icon}
                           .label=${this.hass.localize(
-                            "ui.card.media_player.media_pause"
+                                  `ui.card.media_player.${control.action}`
                           )}
                         ></ha-svg-icon>
                       </ha-button>`
@@ -372,7 +372,7 @@ class MoreInfoMediaPlayer extends LitElement {
                       @click=${this._handleClick}
                       .path=${control.icon}
                       .label=${this.hass.localize(
-                        "ui.card.media_player.media_pause"
+                              `ui.card.media_player.${control.action}`
                       )}
                     >
                     </ha-icon-button>`
@@ -405,13 +405,17 @@ class MoreInfoMediaPlayer extends LitElement {
         ${["turn_on", "turn_off"].map((action) => {
           const control = controls?.find((c) => c.action === action);
           return control
-            ? html`<ha-icon-button
+            ? html`<ha-button
                 action=${action}
                 @click=${this._handleClick}
-                .path=${control.icon}
-                .label=${this.hass.localize("ui.card.media_player.media_pause")}
+                appearance="plain"
+                variant="neutral"
+                size="small"
               >
-              </ha-icon-button>`
+                      <ha-svg-icon
+                              .path=${control.icon}
+                      ></ha-svg-icon>
+              </ha-button>`
             : nothing;
         })}
       </div>
