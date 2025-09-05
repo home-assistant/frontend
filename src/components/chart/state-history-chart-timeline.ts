@@ -71,6 +71,7 @@ export class StateHistoryChartTimeline extends LitElement {
         .data=${this._chartData as ECOption["series"]}
         small-controls
         @chart-click=${this._handleChartClick}
+        @chart-zoom=${this._handleDataZoom}
         .hideResetButton=${this.hideResetButton}
       ></ha-chart-base>
     `;
@@ -203,10 +204,14 @@ export class StateHistoryChartTimeline extends LitElement {
         type: "time",
         min: this.startTime,
         max: this.endTime,
+        boundaryGap: [0, 0],
         axisTick: {
           show: true,
         },
         splitLine: {
+          show: false,
+        },
+        axisPointer: {
           show: false,
         },
       },
@@ -258,6 +263,16 @@ export class StateHistoryChartTimeline extends LitElement {
         formatter: this._renderTooltip,
       },
     };
+  }
+
+  private _handleDataZoom(ev: CustomEvent) {
+    fireEvent(this, "chart-zoom", {
+      start: ev.detail.start ?? 0,
+      end: ev.detail.end ?? 100,
+      chartIndex: this.chartIndex,
+      startTime: ev.detail.startTime,
+      endTime: ev.detail.endTime,
+    });
   }
 
   private _generateData() {
