@@ -5,7 +5,7 @@ import "../../../src/dialogs/more-info/more-info-content";
 import "../../../src/state-summary/state-card-content";
 import "../ha-demo-options";
 import type { HomeAssistant } from "../../../src/types";
-import { DOMAINS_WITH_NEW_MORE_INFO } from "../../../src/dialogs/more-info/const";
+import { computeShowNewMoreInfo } from "../../../src/dialogs/more-info/const";
 
 @customElement("demo-more-info")
 class DemoMoreInfo extends LitElement {
@@ -18,13 +18,11 @@ class DemoMoreInfo extends LitElement {
 
   render() {
     const state = this._getState(this.entityId, this.hass.states);
-    const domain = this.entityId.split(".")[0];
-
     return html`
       <div class="root">
         <div id="card">
           <ha-card>
-            ${!DOMAINS_WITH_NEW_MORE_INFO.includes(domain)
+            ${!computeShowNewMoreInfo(state)
               ? html`<state-card-content
                   .stateObj=${state}
                   .hass=${this.hass}
