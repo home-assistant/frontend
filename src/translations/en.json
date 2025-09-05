@@ -7654,7 +7654,7 @@
               "aspect_ratio": "Aspect ratio",
               "aspect_ratio_ignored": "Will be ignored because the card is resized.",
               "attribute": "Attribute",
-              "camera_image": "Camera entity",
+              "camera_entity": "Camera entity",
               "image_entity": "Image entity",
               "camera_view": "Camera view",
               "camera_view_options": {
