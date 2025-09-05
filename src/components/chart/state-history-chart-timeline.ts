@@ -51,6 +51,9 @@ export class StateHistoryChartTimeline extends LitElement {
 
   @property({ attribute: false, type: Number }) public chartIndex?;
 
+  @property({ attribute: "hide-reset-button", type: Boolean })
+  public hideResetButton?: boolean;
+
   @state() private _chartData: CustomSeriesOption[] = [];
 
   @state() private _chartOptions?: ECOption;
@@ -68,6 +71,7 @@ export class StateHistoryChartTimeline extends LitElement {
         .data=${this._chartData as ECOption["series"]}
         small-controls
         @chart-click=${this._handleChartClick}
+        .hideResetButton=${this.hideResetButton}
       ></ha-chart-base>
     `;
   }

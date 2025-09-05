@@ -63,6 +63,9 @@ export class HaChartBase extends LitElement {
   @property({ attribute: "small-controls", type: Boolean })
   public smallControls?: boolean;
 
+  @property({ attribute: "hide-reset-button", type: Boolean })
+  public hideResetButton?: boolean;
+
   // extraComponents is not reactive and should not trigger updates
   public extraComponents?: any[];
 
@@ -215,7 +218,7 @@ export class HaChartBase extends LitElement {
         </div>
         ${this._renderLegend()}
         <div class="chart-controls ${classMap({ small: this.smallControls })}">
-          ${this._isZoomed
+          ${this._isZoomed && !this.hideResetButton
             ? html`<ha-icon-button
                 class="zoom-reset"
                 .path=${mdiRestart}
