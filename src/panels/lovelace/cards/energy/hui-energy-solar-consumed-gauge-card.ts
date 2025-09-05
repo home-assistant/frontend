@@ -102,17 +102,15 @@ class HuiEnergySolarGaugeCard
                   "--gauge-color": this._computeSeverity(value),
                 })}
               ></ha-gauge>
-              <ha-tooltip placement="left" hoist>
-                <span slot="content">
-                  ${this.hass.localize(
-                    "ui.panel.lovelace.cards.energy.solar_consumed_gauge.card_indicates_solar_energy_used"
-                  )}
-                  <br /><br />
-                  ${this.hass.localize(
-                    "ui.panel.lovelace.cards.energy.solar_consumed_gauge.card_indicates_solar_energy_used_charge_home_bat"
-                  )}
-                </span>
-                <ha-svg-icon .path=${mdiInformation}></ha-svg-icon>
+              <ha-svg-icon id="info" .path=${mdiInformation}></ha-svg-icon>
+              <ha-tooltip for="info" placement="left">
+                ${this.hass.localize(
+                  "ui.panel.lovelace.cards.energy.solar_consumed_gauge.card_indicates_solar_energy_used"
+                )}
+                <br /><br />
+                ${this.hass.localize(
+                  "ui.panel.lovelace.cards.energy.solar_consumed_gauge.card_indicates_solar_energy_used_charge_home_bat"
+                )}
               </ha-tooltip>
               <div class="name">
                 ${this.hass.localize(
@@ -175,10 +173,6 @@ class HuiEnergySolarGaugeCard
       inset-inline-start: initial;
       top: 4px;
       color: var(--secondary-text-color);
-    }
-
-    ha-tooltip::part(base__popup) {
-      margin-top: 4px;
     }
   `;
 }

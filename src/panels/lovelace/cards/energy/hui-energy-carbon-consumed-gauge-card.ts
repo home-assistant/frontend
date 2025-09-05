@@ -133,14 +133,12 @@ class HuiEnergyCarbonGaugeCard
                   "--gauge-color": this._computeSeverity(value),
                 })}
               ></ha-gauge>
-              <ha-tooltip
-                .content=${this.hass.localize(
+
+              <ha-svg-icon id="info" .path=${mdiInformation}></ha-svg-icon>
+              <ha-tooltip for="info" placement="left">
+                ${this.hass.localize(
                   "ui.panel.lovelace.cards.energy.carbon_consumed_gauge.card_indicates_energy_used"
                 )}
-                placement="left"
-                hoist
-              >
-                <ha-svg-icon .path=${mdiInformation}></ha-svg-icon>
               </ha-tooltip>
               <div class="name">
                 ${this.hass.localize(

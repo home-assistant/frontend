@@ -106,6 +106,7 @@ import { showAssignCategoryDialog } from "../category/show-dialog-assign-categor
 import { showCategoryRegistryDetailDialog } from "../category/show-dialog-category-registry-detail";
 import { configSections } from "../ha-panel-config";
 import { showLabelDetailDialog } from "../labels/show-dialog-label-detail";
+import { slugify } from "../../../common/string/slugify";
 
 type SceneItem = SceneEntity & {
   name: string;
@@ -318,16 +319,18 @@ class HaSceneDashboard extends SubscribeMixin(LitElement) {
           template: (scene) =>
             !scene.attributes.id
               ? html`
+                  <ha-svg-icon
+                    .id="svg-icon-${slugify(scene.entity_id)}"
+                    .path=${mdiPencilOff}
+                    style="color: var(--secondary-text-color)"
+                  ></ha-svg-icon>
                   <ha-tooltip
+                    .for="svg-icon-${slugify(scene.entity_id)}"
                     placement="left"
-                    .content=${this.hass.localize(
+                  >
+                    ${this.hass.localize(
                       "ui.panel.config.scene.picker.only_editable"
                     )}
-                  >
-                    <ha-svg-icon
-                      .path=${mdiPencilOff}
-                      style="color: var(--secondary-text-color)"
-                    ></ha-svg-icon>
                   </ha-tooltip>
                 `
               : nothing,

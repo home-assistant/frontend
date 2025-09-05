@@ -50,6 +50,7 @@ import {
   loadAreaRegistryDetailDialog,
   showAreaRegistryDetailDialog,
 } from "./show-dialog-area-registry-detail";
+import { slugify } from "../../../common/string/slugify";
 
 declare interface NameAndEntity<EntityType extends HassEntity> {
   name: string;
@@ -548,11 +549,14 @@ class HaConfigAreaPage extends LitElement {
 
   private _renderScene(name: string, entityState: SceneEntity) {
     return html`<ha-tooltip
-      .distance=${-4}
-      .disabled=${!!entityState.attributes.id}
-      .content=${this.hass.localize("ui.panel.config.devices.cant_edit")}
-    >
+        .for="scene-${slugify(entityState.entity_id)}"
+        .distance=${-4}
+        .disabled=${!!entityState.attributes.id}
+      >
+        ${this.hass.localize("ui.panel.config.devices.cant_edit")}
+      </ha-tooltip>
       <a
+        .id="scene-${slugify(entityState.entity_id)}"
         href=${ifDefined(
           entityState.attributes.id
             ? `/config/scene/edit/${entityState.attributes.id}`
@@ -563,17 +567,12 @@ class HaConfigAreaPage extends LitElement {
           <span>${name}</span>
           <ha-icon-next slot="meta"></ha-icon-next>
         </ha-list-item>
-      </a>
-    </ha-tooltip>`;
+      </a> `;
   }
 
   private _renderAutomation(name: string, entityState: AutomationEntity) {
-    return html`<ha-tooltip
-      .disabled=${!!entityState.attributes.id}
-      .distance=${-4}
-      .content=${this.hass.localize("ui.panel.config.devices.cant_edit")}
-    >
-      <a
+    return html` <a
+        id="automation-${slugify(entityState.entity_id)}"
         href=${ifDefined(
           entityState.attributes.id
             ? `/config/automation/edit/${encodeURIComponent(entityState.attributes.id)}`
@@ -585,7 +584,12 @@ class HaConfigAreaPage extends LitElement {
           <ha-icon-next slot="meta"></ha-icon-next>
         </ha-list-item>
       </a>
-    </ha-tooltip>`;
+      <ha-tooltip
+        for="automation-${slugify(entityState.entity_id)}"
+        .disabled=${!!entityState.attributes.id}
+        .distance=${-4}
+        >${this.hass.localize("ui.panel.config.devices.cant_edit")}
+      </ha-tooltip>`;
   }
 
   private _renderScript(name: string, entityState: ScriptEntity) {

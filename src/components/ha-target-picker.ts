@@ -343,40 +343,36 @@ export class HaTargetPicker extends SubscribeMixin(LitElement) {
         ${type === "entity_id"
           ? ""
           : html`<span role="gridcell">
-              <ha-tooltip
-                .content=${this.hass.localize(
+              <ha-tooltip .for="expand-${id}"
+                >${this.hass.localize(
                   `ui.components.target-picker.expand_${type}`
                 )}
-              >
-                <ha-icon-button
-                  class="expand-btn mdc-chip__icon mdc-chip__icon--trailing"
-                  .label=${this.hass.localize(
-                    "ui.components.target-picker.expand"
-                  )}
-                  .path=${mdiUnfoldMoreVertical}
-                  hide-title
-                  .id=${id}
-                  .type=${type}
-                  @click=${this._handleExpand}
-                ></ha-icon-button>
               </ha-tooltip>
+              <ha-icon-button
+                class="expand-btn mdc-chip__icon mdc-chip__icon--trailing"
+                .label=${this.hass.localize(
+                  "ui.components.target-picker.expand"
+                )}
+                .path=${mdiUnfoldMoreVertical}
+                hide-title
+                .id="expand-${id}"
+                .type=${type}
+                @click=${this._handleExpand}
+              ></ha-icon-button>
             </span>`}
         <span role="gridcell">
-          <ha-tooltip
-            .content=${this.hass.localize(
-              `ui.components.target-picker.remove_${type}`
-            )}
-          >
-            <ha-icon-button
-              class="mdc-chip__icon mdc-chip__icon--trailing"
-              .label=${this.hass.localize("ui.components.target-picker.remove")}
-              .path=${mdiClose}
-              hide-title
-              .id=${id}
-              .type=${type}
-              @click=${this._handleRemove}
-            ></ha-icon-button>
+          <ha-tooltip .for="remove-${id}">
+            ${this.hass.localize(`ui.components.target-picker.remove_${type}`)}
           </ha-tooltip>
+          <ha-icon-button
+            class="mdc-chip__icon mdc-chip__icon--trailing"
+            .label=${this.hass.localize("ui.components.target-picker.remove")}
+            .path=${mdiClose}
+            hide-title
+            .id="remove-${id}"
+            .type=${type}
+            @click=${this._handleRemove}
+          ></ha-icon-button>
         </span>
       </div>
     `;
