@@ -333,7 +333,7 @@ class MoreInfoMediaPlayer extends LitElement {
                       @click=${this._handleClick}
                       .path=${control.icon}
                       .label=${this.hass.localize(
-                              `ui.card.media_player.${control.action}`
+                        `ui.card.media_player.${control.action}`
                       )}
                     >
                     </ha-icon-button>`
@@ -354,8 +354,8 @@ class MoreInfoMediaPlayer extends LitElement {
                       >
                         <ha-svg-icon
                           .path=${control.icon}
-                          .label=${this.hass.localize(
-                                  `ui.card.media_player.${control.action}`
+                          aria-label=${this.hass.localize(
+                            `ui.card.media_player.${control.action}`
                           )}
                         ></ha-svg-icon>
                       </ha-button>`
@@ -372,7 +372,7 @@ class MoreInfoMediaPlayer extends LitElement {
                       @click=${this._handleClick}
                       .path=${control.icon}
                       .label=${this.hass.localize(
-                              `ui.card.media_player.${control.action}`
+                        `ui.card.media_player.${control.action}`
                       )}
                     >
                     </ha-icon-button>`
@@ -412,9 +412,12 @@ class MoreInfoMediaPlayer extends LitElement {
                 variant="neutral"
                 size="small"
               >
-                      <ha-svg-icon
-                              .path=${control.icon}
-                      ></ha-svg-icon>
+                <ha-svg-icon
+                  .path=${control.icon}
+                  aria-label=".${this.hass.localize(
+                    `ui.card.media_player.${control.action}`
+                  )}"
+                ></ha-svg-icon>
               </ha-button>`
             : nothing;
         })}
