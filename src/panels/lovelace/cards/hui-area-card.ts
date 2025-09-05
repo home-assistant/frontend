@@ -1,4 +1,4 @@
-import { mdiTextureBox } from "@mdi/js";
+import { mdiPlay, mdiPause, mdiTextureBox } from "@mdi/js";
 import type { HassEntity } from "home-assistant-js-websocket";
 import {
   css,
@@ -13,6 +13,7 @@ import { classMap } from "lit/directives/class-map";
 import { ifDefined } from "lit/directives/if-defined";
 import { styleMap } from "lit/directives/style-map";
 import memoizeOne from "memoize-one";
+import { computeActiveMediaStates } from "../../../common/entity/compute_active_media_states";
 import { computeCssColor } from "../../../common/color/compute-color";
 import { BINARY_STATE_ON } from "../../../common/const";
 import { computeAreaName } from "../../../common/entity/compute_area_name";
@@ -285,6 +286,10 @@ export class HuiAreaCard extends LitElement implements LovelaceCard {
     );
   }
 
+  private _computeActiveMediaStates(): HassEntity[] {
+    return computeActiveMediaStates(this.hass, this._config?.area);
+  }
+
   private _renderAlertSensorBadge(): TemplateResult<1> | typeof nothing {
     const states = this._computeActiveAlertStates();
 
@@ -298,6 +303,27 @@ export class HuiAreaCard extends LitElement implements LovelaceCard {
     return html`
       <ha-tile-badge class="alert-badge">
         <ha-state-icon .hass=${this.hass} .stateObj=${stateObj}></ha-state-icon>
+      </ha-tile-badge>
+    `;
+  }
+
+  private _renderMediaBadge(): TemplateResult<1> | typeof nothing {
+    const states = this._computeActiveMediaStates();
+
+    if (states.length === 0) {
+      return nothing;
+    }
+
+    const firstState = states[0];
+    const isPlaying = firstState.state === "playing";
+    const iconPath = isPlaying ? mdiPlay : mdiPause;
+    const label = isPlaying
+      ? this.hass.localize("ui.card.area.media_playing")
+      : this.hass.localize("ui.card.area.media_paused");
+
+    return html`
+      <ha-tile-badge class="media-badge" .label=${label}>
+        <ha-svg-icon .path=${iconPath}></ha-svg-icon>
       </ha-tile-badge>
     `;
   }
@@ -563,7 +589,10 @@ export class HuiAreaCard extends LitElement implements LovelaceCard {
           <div class="content ${classMap(contentClasses)}">
             <ha-tile-icon>
               ${displayType === "compact"
-                ? this._renderAlertSensorBadge()
+                ? html`
+                    ${this._renderAlertSensorBadge()}
+                    ${this._renderMediaBadge()}
+                  `
                 : nothing}
               ${icon
                 ? html`<ha-icon slot="icon" .icon=${icon}></ha-icon>`
@@ -740,6 +769,9 @@ export class HuiAreaCard extends LitElement implements LovelaceCard {
     }
     .alert-badge {
       --tile-badge-background-color: var(--orange-color);
+    }
+    .media-badge {
+      --tile-badge-background-color: var(--light-blue-color);
     }
     .alerts {
       position: absolute;
