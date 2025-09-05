@@ -38,6 +38,7 @@ import HassMediaPlayerEntity from "../../../util/hass-media-player-model";
 import "../../../components/ha-md-button-menu";
 import "../../../components/chips/ha-assist-chip";
 import "../../../components/ha-md-menu-item";
+import "../../../components/ha-marquee-text";
 
 @customElement("more-info-media_player")
 class MoreInfoMediaPlayer extends LitElement {
@@ -283,14 +284,22 @@ class MoreInfoMediaPlayer extends LitElement {
           )}
       ${primaryTitle || secondaryTitle
         ? html`<div class="media-info-row">
-            <div class="media-info">
-              ${primaryTitle
-                ? html`<div class="media-title">${primaryTitle}</div>`
-                : nothing}
-              ${secondaryTitle
-                ? html`<div class="media-artist">${secondaryTitle}</div>`
-                : nothing}
-            </div>
+            ${primaryTitle
+              ? html`<ha-marquee-text
+                  class="media-title"
+                  .text=${primaryTitle}
+                  speed="15"
+                  pause-on-hover
+                ></ha-marquee-text>`
+              : nothing}
+            ${secondaryTitle
+              ? html`<ha-marquee-text
+                  class="media-artist"
+                  .text=${secondaryTitle}
+                  speed="15"
+                  pause-on-hover
+                ></ha-marquee-text>`
+              : nothing}
           </div>`
         : nothing}
       ${duration && duration > 0
@@ -543,9 +552,8 @@ class MoreInfoMediaPlayer extends LitElement {
 
     .media-info-row {
       display: flex;
-      align-items: center;
+      flex-direction: column;
       justify-content: space-between;
-      gap: 16px;
       margin: 8px 0 8px 8px;
     }
 
