@@ -213,7 +213,7 @@
       "media_player": {
         "source": "Source",
         "sound_mode": "Sound mode",
-        "browse_media": "Browse media",
+        "browse_media": "Play media",
         "turn_on": "Turn on",
         "turn_off": "Turn off",
         "media_play": "Play",
