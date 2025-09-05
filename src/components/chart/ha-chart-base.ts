@@ -353,20 +353,18 @@ export class HaChartBase extends LitElement {
 
       this.chart = echarts.init(container, "custom");
       this.chart.on("datazoom", (e: any) => {
-        const { start, end } = e.batch?.[0] ?? e;
-        this._isZoomed = start !== 0 || end !== 100;
-        this._zoomRatio = (end - start) / 100;
-        if (this._isTouchDevice) {
-          // zooming changes the axis pointer so we need to hide it
-          this.chart?.dispatchAction({
-            type: "hideTip",
-            from: "datazoom",
-          });
-        }
+        this._handleDataZoomEvent(e);
       });
       this.chart.on("click", (e: ECElementEvent) => {
         fireEvent(this, "chart-click", e);
       });
+
+      this.chart.getZr().on("mouseup", () => {
+        if (this._modifierPressed) {
+          this._syncZoomState();
+        }
+      });
+
       if (!this.options?.dataZoom) {
         this.chart.getZr().on("dblclick", this._handleClickZoom);
       }
@@ -872,6 +870,67 @@ export class HaChartBase extends LitElement {
     this.chart?.dispatchAction({ type: "dataZoom", start: 0, end: 100 });
   }
 
+  private _handleDataZoomEvent(e: any) {
+    const zoomData = e.batch?.[0] ?? e;
+    let start = typeof zoomData.start === "number" ? zoomData.start : 0;
+    let end = typeof zoomData.end === "number" ? zoomData.end : 100;
+
+    if (
+      start === 0 &&
+      end === 100 &&
+      zoomData.startValue !== undefined &&
+      zoomData.endValue !== undefined
+    ) {
+      const option = this.chart!.getOption();
+      const xAxis = (option as any).xAxis?.[0] ?? (option as any).xAxis;
+
+      if (xAxis?.min && xAxis?.max) {
+        const axisMin = new Date(xAxis.min).getTime();
+        const axisMax = new Date(xAxis.max).getTime();
+        const axisRange = axisMax - axisMin;
+
+        start = Math.max(
+          0,
+          Math.min(100, ((zoomData.startValue - axisMin) / axisRange) * 100)
+        );
+        end = Math.max(
+          0,
+          Math.min(100, ((zoomData.endValue - axisMin) / axisRange) * 100)
+        );
+      }
+    }
+
+    this._isZoomed = start !== 0 || end !== 100;
+    this._zoomRatio = (end - start) / 100;
+    if (this._isTouchDevice) {
+      this.chart?.dispatchAction({
+        type: "hideTip",
+        from: "datazoom",
+      });
+    }
+    fireEvent(this, "chart-zoom", { start, end });
+  }
+
+  private _syncZoomState() {
+    if (!this.chart) return;
+
+    const option = this.chart.getOption();
+    const dataZoom = option.dataZoom;
+
+    if (dataZoom && Array.isArray(dataZoom) && dataZoom.length > 0) {
+      const zoom = dataZoom[0];
+      const start = typeof zoom.start === "number" ? zoom.start : 0;
+      const end = typeof zoom.end === "number" ? zoom.end : 100;
+      const isZoomed = start !== 0 || end !== 100;
+
+      if (isZoomed !== this._isZoomed) {
+        this._isZoomed = isZoomed;
+        this._zoomRatio = (end - start) / 100;
+        fireEvent(this, "chart-zoom", { start, end });
+      }
+    }
+  }
+
   private _legendClick(ev: any) {
     if (!this.chart) {
       return;
@@ -1024,5 +1083,12 @@ declare global {
     "dataset-hidden": { id: string };
     "dataset-unhidden": { id: string };
     "chart-click": ECElementEvent;
+    "chart-zoom": {
+      start: number;
+      end: number;
+      chartIndex?: number;
+      startTime?: Date;
+      endTime?: Date;
+    };
   }
 }
