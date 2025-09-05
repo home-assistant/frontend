@@ -37,7 +37,7 @@ import {
   getCommonOptions,
   getCompareTransform,
 } from "./common/energy-chart-options";
-import type { ECOption } from "../../../../resources/echarts";
+import type { ECOption } from "../../../../resources/echarts/echarts";
 
 const colorPropertyMap = {
   to_grid: "--energy-grid-return-color",
