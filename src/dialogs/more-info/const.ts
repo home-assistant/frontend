@@ -34,6 +34,7 @@ export const DOMAINS_WITH_NEW_MORE_INFO = [
   "valve",
   "water_heater",
   "weather",
+  "media_player",
 ];
 /** Domains with full height more info dialog */
 export const DOMAINS_FULL_HEIGHT_MORE_INFO = ["update"];
