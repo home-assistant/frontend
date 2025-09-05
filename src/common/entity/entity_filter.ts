@@ -60,7 +60,13 @@ export const generateEntityFilter = (
       }
     }
 
-    const { area, floor, device, entity } = getEntityContext(stateObj, hass);
+    const { area, floor, device, entity } = getEntityContext(
+      stateObj,
+      hass.entities,
+      hass.devices,
+      hass.areas,
+      hass.floors
+    );
 
     if (entity && entity.hidden) {
       return false;
