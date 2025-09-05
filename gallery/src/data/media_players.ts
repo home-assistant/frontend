@@ -18,6 +18,7 @@ export const createMediaPlayerEntities = () => [
     ).toISOString(),
     volume_level: 0.5,
     source_list: ["AirPlay", "Blu-Ray", "TV", "USB", "iPod (USB)"],
+    source: "AirPlay",
     sound_mode_list: ["Movie", "Music", "Game", "Pure Audio"],
     sound_mode: "Music",
   }),
