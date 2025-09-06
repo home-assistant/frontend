@@ -11,6 +11,7 @@ import {
 import { LitElement, css, html, nothing } from "lit";
 import { customElement, property } from "lit/decorators";
 import { ifDefined } from "lit/directives/if-defined";
+import { classMap } from "lit/directives/class-map";
 import { stateActive } from "../../../common/entity/state_active";
 import { supportsFeature } from "../../../common/entity/supports-feature";
 import { formatDurationDigital } from "../../../common/datetime/format_duration";
@@ -271,9 +272,10 @@ class MoreInfoMediaPlayer extends LitElement {
       ${coverUrl
         ? html`<div class="cover-container">
             <img
-              class="cover-image${stateObj.state === "playing"
-                ? " cover-image--playing"
-                : ""}"
+              class=${classMap({
+                "cover-image": true,
+                "cover-image--playing": stateObj.state === "playing",
+              })}
               src=${coverUrl}
               alt=${ifDefined(primaryTitle)}
             />
