@@ -4694,16 +4694,16 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@types/leaflet.markercluster@npm:1.5.5":
-  version: 1.5.5
-  resolution: "@types/leaflet.markercluster@npm:1.5.5"
+"@types/leaflet.markercluster@npm:1.5.6":
+  version: 1.5.6
+  resolution: "@types/leaflet.markercluster@npm:1.5.6"
   dependencies:
-    "@types/leaflet": "npm:*"
-  checksum: 10/17647d187ed8c9c38124005c3c45c0c7998c6359d8783e2ea162f9649b151862750c813eba2373054e90156a11a37af2b220429f937b302889b9d6e2105bf2ca
+    "@types/leaflet": "npm:^1.9"
+  checksum: 10/6ddc628fa6d8a3735f154418115b8b0225fefc74d1d472d0aa987a945a92ed6e0dcc0bcaad5a65d104f38e7445cddbf91d75de97b970b6d173e43afa373d8761
   languageName: node
   linkType: hard
 
-"@types/leaflet@npm:*, @types/leaflet@npm:1.9.20, @types/leaflet@npm:^1.9":
+"@types/leaflet@npm:1.9.20, @types/leaflet@npm:^1.9":
   version: 1.9.20
   resolution: "@types/leaflet@npm:1.9.20"
   dependencies:
@@ -9393,7 +9393,7 @@ __metadata:
     "@types/js-yaml": "npm:4.0.9"
     "@types/leaflet": "npm:1.9.20"
     "@types/leaflet-draw": "npm:1.0.13"
-    "@types/leaflet.markercluster": "npm:1.5.5"
+    "@types/leaflet.markercluster": "npm:1.5.6"
     "@types/lodash.merge": "npm:4.6.9"
     "@types/luxon": "npm:3.7.1"
     "@types/mocha": "npm:10.0.10"
