@@ -67,10 +67,7 @@ export const generateEntityFilter = (
     }
 
     if (floors) {
-      if (!floor) {
-        return false;
-      }
-      if (!floors) {
+      if (!floor || !floors.has(floor.floor_id)) {
         return false;
       }
     }
