@@ -15,8 +15,8 @@ export class HaMarqueeText extends LitElement {
 
   @property({ type: Number, attribute: "pause-duration" }) pauseDuration = 1000; // ms delay at ends
 
-  @property({ type: Boolean, attribute: "pause-on-hover" }) pauseOnHover =
-    false;
+  @property({ type: Boolean, attribute: "pause-on-hover" })
+  pauseOnHover = false;
 
   private _direction: "left" | "right" = "left";
 
@@ -66,6 +66,8 @@ export class HaMarqueeText extends LitElement {
         class="marquee-container"
         @mouseenter=${this._handleMouseEnter}
         @mouseleave=${this._handleMouseLeave}
+        @touchstart=${this._handleMouseEnter}
+        @touchend=${this._handleMouseLeave}
         aria-label=${this.text}
         role="marquee"
       >
