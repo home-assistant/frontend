@@ -552,13 +552,6 @@ class MoreInfoMediaPlayer extends LitElement {
       padding: 0 8px;
     }
 
-    .source-input ha-chip {
-      --ha-chip-selected-color: var(--primary-color);
-      --ha-chip-text-color: var(--text-primary-color);
-      --ha-chip-background-color: var(--card-background-color);
-      --ha-chip-border-color: var(--primary-color);
-    }
-
     .media-info-row {
       display: flex;
       flex-direction: column;
