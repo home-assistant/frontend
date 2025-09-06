@@ -236,21 +236,6 @@ export class HuiAreaCard extends LitElement implements LovelaceCard {
     }
   );
 
-  private _getCameraEntity = memoizeOne(
-    (
-      entities: HomeAssistant["entities"],
-      areaId: string
-    ): string | undefined => {
-      const cameraFilter = generateEntityFilter(this.hass, {
-        area: areaId,
-        entity_category: "none",
-        domain: "camera",
-      });
-      const cameraEntities = Object.keys(entities).filter(cameraFilter);
-      return cameraEntities.length > 0 ? cameraEntities[0] : undefined;
-    }
-  );
-
   private _computeActiveAlertStates(): HassEntity[] {
     const areaId = this._config?.area;
     const area = areaId ? this.hass.areas[areaId] : undefined;
@@ -497,9 +482,7 @@ export class HuiAreaCard extends LitElement implements LovelaceCard {
     const displayType = this._config.display_type || "picture";
 
     const cameraEntityId =
-      displayType === "camera"
-        ? this._getCameraEntity(this.hass.entities, area.area_id)
-        : undefined;
+      displayType === "camera" ? this._config?.camera_entity : undefined;
 
     const ignoreAspectRatio = this.layout === "grid" || this.layout === "panel";
 
