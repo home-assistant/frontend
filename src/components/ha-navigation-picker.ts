@@ -44,7 +44,7 @@ const createPanelNavigationItem = (hass: HomeAssistant, panel: PanelInfo) => ({
   path: `/${panel.url_path}`,
   icon: panel.icon ?? "mdi:view-dashboard",
   title:
-    panel.url_path === hass.defaultPanel
+    panel.url_path === hass.sidebar.defaultPanel
       ? hass.localize("panel.states")
       : hass.localize(`panel.${panel.title}`) ||
         panel.title ||
