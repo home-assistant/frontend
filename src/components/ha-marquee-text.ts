@@ -1,4 +1,10 @@
-import { LitElement, html, css } from "lit";
+import type {
+  TemplateResult,
+  LitElement,
+  html,
+  css,
+  type PropertyValues,
+} from "lit";
 import { customElement, property, query } from "lit/decorators";
 
 @customElement("ha-marquee-text")
@@ -28,31 +34,19 @@ export class HaMarqueeText extends LitElement {
 
   private _pauseTimeout?: number;
 
-  render() {
-    return html`
-      <div
-        class="marquee-container"
-        @mouseenter=${this._onMouseEnter}
-        @mouseleave=${this._onMouseLeave}
-        aria-label=${this.text}
-        role="marquee"
-      >
-        <span class="marquee-text">${this.text}</span>
-      </div>
-    `;
-  }
+  protected firstUpdated(changedProps: PropertyValues) {
+    super.firstUpdated(changedProps);
 
-  firstUpdated() {
     this._setupAnimation();
   }
 
-  updated(changedProps: Map<string, unknown>) {
+  protected updated(changedProps: Map<string, unknown>) {
     if (changedProps.has("text")) {
       this._setupAnimation();
     }
   }
 
-  disconnectedCallback() {
+  public disconnectedCallback() {
     super.disconnectedCallback();
 
     if (this._animationFrame) {
@@ -64,8 +58,25 @@ export class HaMarqueeText extends LitElement {
     }
   }
 
+  protected render(): TemplateResult {
+    return html`
+      <div
+        class="marquee-container"
+        @mouseenter=${this._handleMouseEnter}
+        @mouseleave=${this._handleMouseLeave}
+        aria-label=${this.text}
+        role="marquee"
+      >
+        <span class="marquee-text">${this.text}</span>
+      </div>
+    `;
+  }
+
   private _setupAnimation() {
-    if (!this._container || !this._textSpan) return;
+    if (!this._container || !this._textSpan) {
+      return;
+    }
+
     this._position = 0;
     this._direction = "left";
     this._maxOffset = Math.max(
@@ -84,7 +95,10 @@ export class HaMarqueeText extends LitElement {
   }
 
   private _animate = () => {
-    if (!this._container || !this._textSpan) return;
+    if (!this._container || !this._textSpan) {
+      return;
+    }
+
     const dt = 1 / 60; // ~16ms per frame
     const pxPerFrame = this.speed * dt;
     let reachedEnd = false;
@@ -114,7 +128,7 @@ export class HaMarqueeText extends LitElement {
     }
   };
 
-  private _onMouseEnter = () => {
+  private _handleMouseEnter() {
     if (this.pauseOnHover && this._animationFrame) {
       cancelAnimationFrame(this._animationFrame);
       this._animationFrame = undefined;
@@ -123,26 +137,23 @@ export class HaMarqueeText extends LitElement {
       clearTimeout(this._pauseTimeout);
       this._pauseTimeout = undefined;
     }
-  };
+  }
 
-  private _onMouseLeave = () => {
+  private _handleMouseLeave() {
     if (this.pauseOnHover && !this._animationFrame && !this._pauseTimeout) {
       this._animate();
     }
-  };
+  }
 
   static styles = css`
     :host {
       display: block;
       overflow: hidden;
       width: 100%;
-      --marquee-height: 32px;
     }
 
     .marquee-container {
-      position: relative;
       width: 100%;
-      height: var(--marquee-height, 32px);
       white-space: nowrap;
       overflow: hidden;
       user-select: none;
@@ -150,12 +161,10 @@ export class HaMarqueeText extends LitElement {
     }
 
     .marquee-text {
-      position: absolute;
-      left: 0;
-      transform: translateY(-50%);
+      display: inline-block;
+      vertical-align: middle;
       will-change: transform;
       font-size: 1em;
-      line-height: var(--marquee-height, 32px);
       pointer-events: none;
     }
   `;
