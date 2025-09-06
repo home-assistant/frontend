@@ -169,7 +169,7 @@
     "@types/html-minifier-terser": "7.0.2",
     "@types/js-yaml": "4.0.9",
     "@types/leaflet": "1.9.20",
-    "@types/leaflet-draw": "1.0.12",
+    "@types/leaflet-draw": "1.0.13",
     "@types/leaflet.markercluster": "1.5.5",
     "@types/lodash.merge": "4.6.9",
     "@types/luxon": "3.7.1",

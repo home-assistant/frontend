@@ -4685,12 +4685,12 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@types/leaflet-draw@npm:1.0.12":
-  version: 1.0.12
-  resolution: "@types/leaflet-draw@npm:1.0.12"
+"@types/leaflet-draw@npm:1.0.13":
+  version: 1.0.13
+  resolution: "@types/leaflet-draw@npm:1.0.13"
   dependencies:
-    "@types/leaflet": "npm:*"
-  checksum: 10/2a73a152e6a9405502789d7b2d8ffe18d679da03533e17c2a1fe722e78c8ed8cf3daf6a56aae5572c4dd86257811286b5e06b0cb307141a241618f33a360618a
+    "@types/leaflet": "npm:^1.9"
+  checksum: 10/1a6c3a8b3011f15362108b522fa6d17cca888a7f866e2e582dac921e2c748d9e24685d83b2a5ed1d97e3a1448b0f5b1879a42f1143ffdeb36b71c7fb9b94e9f5
   languageName: node
   linkType: hard
 
@@ -4703,7 +4703,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@types/leaflet@npm:*, @types/leaflet@npm:1.9.20":
+"@types/leaflet@npm:*, @types/leaflet@npm:1.9.20, @types/leaflet@npm:^1.9":
   version: 1.9.20
   resolution: "@types/leaflet@npm:1.9.20"
   dependencies:
@@ -9392,7 +9392,7 @@ __metadata:
     "@types/html-minifier-terser": "npm:7.0.2"
     "@types/js-yaml": "npm:4.0.9"
     "@types/leaflet": "npm:1.9.20"
-    "@types/leaflet-draw": "npm:1.0.12"
+    "@types/leaflet-draw": "npm:1.0.13"
     "@types/leaflet.markercluster": "npm:1.5.5"
     "@types/lodash.merge": "npm:4.6.9"
     "@types/luxon": "npm:3.7.1"
