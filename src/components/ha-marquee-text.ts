@@ -9,8 +9,6 @@ import { customElement, property, query } from "lit/decorators";
 
 @customElement("ha-marquee-text")
 export class HaMarqueeText extends LitElement {
-  @property({ type: String }) text = "";
-
   @property({ type: Number }) speed = 15; // pixels per second
 
   @property({ type: Number, attribute: "pause-duration" }) pauseDuration = 1000; // ms delay at ends
@@ -68,10 +66,10 @@ export class HaMarqueeText extends LitElement {
         @mouseleave=${this._handleMouseLeave}
         @touchstart=${this._handleMouseEnter}
         @touchend=${this._handleMouseLeave}
-        aria-label=${this.text}
+        aria-label=${this.textContent.trim() || ""}
         role="marquee"
       >
-        <span class="marquee-text">${this.text}</span>
+        <span class="marquee-text"><slot></slot></span>
       </div>
     `;
   }

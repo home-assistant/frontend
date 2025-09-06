@@ -289,18 +289,16 @@ class MoreInfoMediaPlayer extends LitElement {
             ${primaryTitle
               ? html`<ha-marquee-text
                   class="media-title"
-                  .text=${primaryTitle}
                   speed="30"
                   pause-on-hover
-                ></ha-marquee-text>`
+                >${primaryTitle}</ha-marquee-text>`
               : nothing}
             ${secondaryTitle
               ? html`<ha-marquee-text
                   class="media-artist"
-                  .text=${secondaryTitle}
                   speed="30"
                   pause-on-hover
-                ></ha-marquee-text>`
+                >${secondaryTitle}</ha-marquee-text>`
               : nothing}
           </div>`
         : nothing}
