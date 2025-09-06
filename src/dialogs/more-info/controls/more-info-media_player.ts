@@ -267,6 +267,8 @@ class MoreInfoMediaPlayer extends LitElement {
     const postionFormated = this._formateDuration(position);
     const primaryTitle = playerObj.primaryTitle;
     const secondaryTitle = playerObj.secondaryTitle;
+    const turnOn = controls?.find((c) => c.action === "turn_on");
+    const turnOff = controls?.find((c) => c.action === "turn_off");
 
     return html`
       ${coverUrl
@@ -388,6 +390,18 @@ class MoreInfoMediaPlayer extends LitElement {
       ${this._renderVolumeControl()}
 
       <div class="bottom-controls">
+        ${turnOn
+          ? html`<ha-button
+              action=${turnOn.action}
+              @click=${this._handleClick}
+              appearance="plain"
+              variant="neutral"
+              size="small"
+            >
+              <ha-svg-icon .path=${turnOn.icon} slot="start"></ha-svg-icon>
+              ${this.hass.localize(`ui.card.media_player.${turnOn.action}`)}
+            </ha-button>`
+          : nothing}
         ${!isUnavailableState(stateObj.state) &&
         supportsFeature(stateObj, MediaPlayerEntityFeature.BROWSE_MEDIA)
           ? html`
@@ -406,25 +420,18 @@ class MoreInfoMediaPlayer extends LitElement {
             `
           : nothing}
         ${this._renderGrouping()}
-        ${["turn_on", "turn_off"].map((action) => {
-          const control = controls?.find((c) => c.action === action);
-          return control
-            ? html`<ha-button
-                action=${action}
-                @click=${this._handleClick}
-                appearance="plain"
-                variant="neutral"
-                size="small"
-              >
-                <ha-svg-icon
-                  .path=${control.icon}
-                  aria-label=".${this.hass.localize(
-                    `ui.card.media_player.${control.action}`
-                  )}"
-                ></ha-svg-icon>
-              </ha-button>`
-            : nothing;
-        })}
+        ${turnOff
+          ? html`<ha-button
+              action=${turnOff.action}
+              @click=${this._handleClick}
+              appearance="plain"
+              variant="neutral"
+              size="small"
+            >
+              <ha-svg-icon .path=${turnOff.icon} slot="start"></ha-svg-icon>
+              ${this.hass.localize(`ui.card.media_player.${turnOff.action}`)}
+            </ha-button>`
+          : nothing}
       </div>
 
       <div class="bottom-controls">
