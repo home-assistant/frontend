@@ -9,12 +9,13 @@ import { storage } from "../../common/decorators/storage";
 import type { HASSDomEvent } from "../../common/dom/fire_event";
 import { computeStateName } from "../../common/entity/compute_state_name";
 import "../../components/ha-button";
-import "../../components/ha-button-menu";
+import "../../components/ha-md-button-menu";
 import "../../components/ha-card";
 import "../../components/ha-check-list-item";
 import "../../components/ha-icon-button";
 import "../../components/ha-list";
-import "../../components/ha-list-item";
+import "../../components/ha-md-divider";
+import "../../components/ha-md-menu-item";
 import type { HaListItem } from "../../components/ha-list-item";
 import "../../components/ha-menu-button";
 import "../../components/ha-state-icon";
@@ -122,16 +123,12 @@ class PanelCalendar extends LitElement {
         ></ha-menu-button>
 
         ${!showPane
-          ? html`<ha-button-menu
+          ? html`<ha-md-button-menu
               slot="title"
               class="lists"
-              multi
-              fixed
-              .noAnchor=${this.mobile}
-              .y=${this.mobile
-                ? this._headerHeight / 2
-                : this._headerHeight / 4}
-              .x=${this.mobile ? 0 : undefined}
+              positioning="fixed"
+              .anchorCorner=${this.mobile ? "start-start" : "start-end"}
+              .menuCorner=${this.mobile ? "start-start" : "start-start"}
             >
               <ha-button slot="trigger">
                 ${this.hass.localize("ui.components.calendar.my_calendars")}
@@ -139,18 +136,18 @@ class PanelCalendar extends LitElement {
               </ha-button>
               ${calendarItems}
               ${this.hass.user?.is_admin
-                ? html` <li divider role="separator"></li>
-                    <ha-list-item graphic="icon" @click=${this._addCalendar}>
+                ? html` <ha-md-divider></ha-md-divider>
+                    <ha-md-menu-item @click=${this._addCalendar}>
                       <ha-svg-icon
                         .path=${mdiPlus}
-                        slot="graphic"
+                        slot="start"
                       ></ha-svg-icon>
                       ${this.hass.localize(
                         "ui.components.calendar.create_calendar"
                       )}
-                    </ha-list-item>`
+                    </ha-md-menu-item>`
                 : nothing}
-            </ha-button-menu>`
+            </ha-md-button-menu>`
           : html`<div slot="title">
               ${this.hass.localize("ui.components.calendar.my_calendars")}
             </div>`}
@@ -299,13 +296,13 @@ class PanelCalendar extends LitElement {
           --calendar-border-radius: 0;
           --calendar-border-width: 1px 0;
         }
-        ha-button-menu ha-button {
+        ha-md-button-menu ha-button {
           --ha-font-size-m: var(--ha-font-size-l);
         }
         :host([mobile]) .lists {
           --mdc-menu-min-width: 100vw;
         }
-        :host([mobile]) ha-button-menu {
+        :host([mobile]) ha-md-button-menu {
           --mdc-shape-medium: 0 0 var(--mdc-shape-medium)
             var(--mdc-shape-medium);
         }
