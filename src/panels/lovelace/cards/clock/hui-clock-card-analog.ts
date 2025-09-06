@@ -7,6 +7,26 @@ import type { HomeAssistant } from "../../../../types";
 import { INTERVAL } from "../hui-clock-card";
 import { resolveTimeZone } from "../../../../common/datetime/resolve-time-zone";
 
+function romanize12HourClock(num: number) {
+  const numerals = [
+    "", // 0 (not used)
+    "I", // 1
+    "II", // 2
+    "III", // 3
+    "IV", // 4
+    "V", // 5
+    "VI", // 6
+    "VII", // 7
+    "VIII", // 8
+    "IX", // 9
+    "X", // 10
+    "XI", // 11
+    "XII", // 12
+  ];
+  if (num < 1 || num > 12) return "";
+  return numerals[num];
+}
+
 @customElement("hui-clock-card-analog")
 export class HuiClockCardAnalog extends LitElement {
   @property({ attribute: false }) public hass?: HomeAssistant;
@@ -101,6 +121,36 @@ export class HuiClockCardAnalog extends LitElement {
       ? `size-${this.config.clock_size}`
       : "";
 
+    const isNumbers = this.config?.face_style?.startsWith("numbers");
+    const isRoman = this.config?.face_style?.startsWith("roman");
+    const isUpright = this.config?.face_style?.endsWith("upright");
+
+    const indicator = (number?: number) => html`
+      <div
+        class=${classMap({
+          line: true,
+          numbers: isNumbers,
+          roman: isRoman,
+        })}
+      >
+        ${number && this.config?.face_style !== "markers"
+          ? html`<div
+              class=${classMap({
+                number: true,
+                [this.config?.clock_size ?? ""]: true,
+                upright: isUpright,
+              })}
+            >
+              ${isRoman
+                ? romanize12HourClock(number)
+                : isNumbers
+                  ? number
+                  : nothing}
+            </div>`
+          : nothing}
+      </div>
+    `;
+
     return html`
       <div
         class="analog-clock ${sizeClass}"
@@ -116,14 +166,14 @@ export class HuiClockCardAnalog extends LitElement {
           ${this.config.ticks === "quarter"
             ? Array.from({ length: 4 }, (_, i) => i).map(
                 (i) =>
-                  // 4 ticks
+                  // 4 ticks (12, 3, 6, 9) at 0°, 90°, 180°, 270°
                   html`
                     <div
-                      aria-hidden
+                      aria-hidden="true"
                       class="tick hour"
                       style=${`--tick-rotation: ${i * 90}deg;`}
                     >
-                      <div class="line"></div>
+                      ${indicator([12, 3, 6, 9][i])}
                     </div>
                   `
               )
@@ -131,28 +181,30 @@ export class HuiClockCardAnalog extends LitElement {
                 this.config.ticks === "hour"
               ? Array.from({ length: 12 }, (_, i) => i).map(
                   (i) =>
-                    // 12 ticks
+                    // 12 ticks (1-12)
                     html`
                       <div
-                        aria-hidden
+                        aria-hidden="true"
                         class="tick hour"
                         style=${`--tick-rotation: ${i * 30}deg;`}
                       >
-                        <div class="line"></div>
+                        ${indicator(((i + 11) % 12) + 1)}
                       </div>
                     `
                 )
               : this.config.ticks === "minute"
                 ? Array.from({ length: 60 }, (_, i) => i).map(
                     (i) =>
-                      // 60 ticks
+                      // 60 ticks (1-60)
                       html`
                         <div
-                          aria-hidden
+                          aria-hidden="true"
                           class="tick ${i % 5 === 0 ? "hour" : "minute"}"
                           style=${`--tick-rotation: ${i * 6}deg;`}
                         >
-                          <div class="line"></div>
+                          ${i % 5 === 0
+                            ? indicator(((i / 5 + 11) % 12) + 1)
+                            : indicator()}
                         </div>
                       `
                   )
@@ -243,6 +295,42 @@ export class HuiClockCardAnalog extends LitElement {
       width: 2px;
       height: calc(var(--clock-size) * 0.07);
       opacity: 0.8;
+    }
+
+    .tick.hour .line.numbers,
+    .tick.hour .line.roman {
+      height: calc(var(--clock-size) * 0.03);
+    }
+
+    .tick.minute .line.numbers,
+    .tick.minute .line.roman {
+      height: calc(var(--clock-size) * 0.015);
+    }
+
+    .tick .number {
+      position: absolute;
+      top: 0%;
+      left: 50%;
+      transform: translate(-50%, 35%);
+      color: var(--primary-text-color);
+      font-weight: var(--ha-font-weight-medium);
+      line-height: var(--ha-line-height-condensed);
+    }
+
+    .tick .number.upright {
+      transform: translate(-50%, 35%) rotate(calc(var(--tick-rotation) * -1));
+    }
+
+    .tick .number.small {
+      font-size: var(--ha-font-size-s);
+    }
+
+    .tick .number.medium {
+      font-size: var(--ha-font-size-m);
+    }
+
+    .tick .number.large {
+      font-size: var(--ha-font-size-l);
     }
 
     .center-dot {
