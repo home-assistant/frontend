@@ -1,5 +1,5 @@
-import type {
-  TemplateResult,
+import {
+  type TemplateResult,
   LitElement,
   html,
   css,
