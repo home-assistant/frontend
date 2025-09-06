@@ -10,7 +10,7 @@ import {
   type MediaPlayerEntity,
 } from "../../../data/media-player";
 import type { HomeAssistant } from "../../../types";
-import type { LovelaceCardFeature } from "../types";
+import type { LovelaceCardFeature, LovelaceCardFeatureEditor } from "../types";
 import { cardFeatureStyles } from "./common/card-feature-styles";
 import type {
   LovelaceCardFeatureContext,
@@ -58,6 +58,15 @@ class HuiMediaPlayerVolumeSliderCardFeature
     };
   }
 
+  public static async getConfigElement(): Promise<LovelaceCardFeatureEditor> {
+    await import(
+      "../editor/config-elements/hui-media-player-volume-slider-card-feature-editor"
+    );
+    return document.createElement(
+      "hui-media-player-volume-slider-card-feature-editor"
+    );
+  }
+
   public setConfig(config: MediaPlayerVolumeSliderCardFeatureConfig): void {
     if (!config) {
       throw new Error("Invalid configuration");
@@ -84,8 +93,9 @@ class HuiMediaPlayerVolumeSliderCardFeature
     return html`
       <ha-control-slider
         .value=${position}
-        min="0"
-        max="100"
+        .min=${this._config.min ?? 0}
+        .max=${this._config.max ?? 100}
+        .step=${this._config.step ?? 1}
         .showHandle=${stateActive(this._stateObj)}
         .disabled=${!this._stateObj || isUnavailableState(this._stateObj.state)}
         @value-changed=${this._valueChanged}
