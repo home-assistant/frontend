@@ -40,7 +40,9 @@ export class HaMarqueeText extends LitElement {
     this._setupAnimation();
   }
 
-  protected updated(changedProps: Map<string, unknown>) {
+  protected updated(changedProps: PropertyValues) {
+    super.updated(changedProps);
+
     if (changedProps.has("text")) {
       this._setupAnimation();
     }
