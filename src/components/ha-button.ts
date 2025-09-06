@@ -262,10 +262,10 @@ export class HaButton extends Button {
         }
 
         .button.has-start {
-          padding-left: 8px;
+          padding-inline-start: 8px;
         }
         .button.has-end {
-          padding-right: 8px;
+          padding-inline-end: 8px;
         }
       `,
     ];
