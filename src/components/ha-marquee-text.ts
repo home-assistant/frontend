@@ -66,8 +66,6 @@ export class HaMarqueeText extends LitElement {
         @mouseleave=${this._handleMouseLeave}
         @touchstart=${this._handleMouseEnter}
         @touchend=${this._handleMouseLeave}
-        aria-label=${this.textContent.trim() || ""}
-        role="marquee"
       >
         <span class="marquee-text"><slot></slot></span>
       </div>
