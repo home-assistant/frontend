@@ -243,7 +243,7 @@ class ErrorLogCard extends LitElement {
               ${!streaming || this._error
                 ? html`<ha-icon-button
                     .path=${mdiRefresh}
-                    @click=${this._loadLogs}
+                    @click=${this._handleRefresh}
                     .label=${localize("ui.common.refresh")}
                   ></ha-icon-button>`
                 : nothing}
@@ -713,6 +713,10 @@ class ErrorLogCard extends LitElement {
 
   private _toggleLineWrap() {
     this._wrapLines = !this._wrapLines;
+  }
+
+  private _handleRefresh() {
+    this._loadLogs();
   }
 
   private _handleOverflowAction(ev: CustomEvent<ActionDetail>) {
