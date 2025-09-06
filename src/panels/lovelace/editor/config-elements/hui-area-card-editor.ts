@@ -340,10 +340,9 @@ export class HuiAreaCardEditor
     const displayType =
       config.display_type || (config.show_camera ? "camera" : "picture");
 
-    availableCameraEntities = this._getCameraEntities(
-      this.hass.entities,
-      config.area
-    );
+    availableCameraEntities = config.area
+      ? this._getCameraEntities(this.hass.entities, config.area)
+      : [];
 
     this._config = {
       ...config,
@@ -501,10 +500,9 @@ export class HuiAreaCardEditor
   private _valueChanged(ev: CustomEvent): void {
     const newConfig = ev.detail.value as AreaCardConfig;
 
-    availableCameraEntities = this._getCameraEntities(
-      this.hass.entities,
-      newConfig.area
-    );
+    availableCameraEntities = newConfig.area
+      ? this._getCameraEntities(this.hass.entities, newConfig.area)
+      : [];
 
     if (this._config!.area !== newConfig.area) {
       delete newConfig.camera_entity;
