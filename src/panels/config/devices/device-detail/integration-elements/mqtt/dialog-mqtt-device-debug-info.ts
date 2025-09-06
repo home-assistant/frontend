@@ -239,12 +239,8 @@ class DialogMQTTDeviceDebugInfo extends LitElement {
         }
         @media all and (max-width: 450px), all and (max-height: 500px) {
           ha-dialog {
-            --mdc-dialog-min-width: calc(
-              100vw - var(--safe-area-inset-right) - var(--safe-area-inset-left)
-            );
-            --mdc-dialog-max-width: calc(
-              100vw - var(--safe-area-inset-right) - var(--safe-area-inset-left)
-            );
+            --mdc-dialog-min-width: 100vw;
+            --mdc-dialog-max-width: 100vw;
           }
         }
         ha-switch {

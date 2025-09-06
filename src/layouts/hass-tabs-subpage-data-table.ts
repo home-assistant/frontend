@@ -884,7 +884,13 @@ export class HaTabsSubpageDataTable extends KeyboardShortcutMixin(LitElement) {
     }
 
     .filter-dialog-content {
-      height: calc(100vh - 1px - 61px - var(--header-height));
+      height: calc(
+        100vh -
+          70px - var(--header-height, 0px) - var(
+            --safe-area-inset-top,
+            0px
+          ) - var(--safe-area-inset-bottom, 0px)
+      );
       display: flex;
       flex-direction: column;
     }
