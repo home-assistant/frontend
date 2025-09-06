@@ -97,6 +97,7 @@ export interface DataEntryFlowStepMenu {
   step_id: string;
   /** If array, use value to lookup translations in strings.json */
   menu_options: string[] | Record<string, string>;
+  sort?: boolean;
   description_placeholders?: Record<string, string>;
   translation_domain?: string;
 }

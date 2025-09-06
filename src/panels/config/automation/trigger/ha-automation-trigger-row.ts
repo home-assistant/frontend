@@ -25,7 +25,6 @@ import { preventDefaultStopPropagation } from "../../../../common/dom/prevent_de
 import { stopPropagation } from "../../../../common/dom/stop_propagation";
 import { capitalizeFirstLetter } from "../../../../common/string/capitalize-first-letter";
 import { handleStructError } from "../../../../common/structs/handle-errors";
-import { copyToClipboard } from "../../../../common/util/copy-clipboard";
 import { debounce } from "../../../../common/util/debounce";
 import "../../../../components/ha-alert";
 import "../../../../components/ha-automation-row";
@@ -533,7 +532,6 @@ export default class HaAutomationTriggerRow extends LitElement {
       ...this._clipboard,
       trigger: this.trigger,
     };
-    copyToClipboard(JSON.stringify(this.trigger));
   }
 
   private _onDelete = () => {

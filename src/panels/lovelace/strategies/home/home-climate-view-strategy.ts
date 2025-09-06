@@ -33,8 +33,28 @@ const processAreasForClimate = (
       area: area.area_id,
     });
     const areaEntities = entities.filter(areaFilter);
+    const areaCards: LovelaceCardConfig[] = [];
 
-    if (areaEntities.length > 0) {
+    const temperatureEntityId = area.temperature_entity_id;
+    if (temperatureEntityId && hass.states[temperatureEntityId]) {
+      areaCards.push({
+        ...computeTileCard(temperatureEntityId),
+        features: [{ type: "trend-graph" }],
+      });
+    }
+    const humidityEntityId = area.humidity_entity_id;
+    if (humidityEntityId && hass.states[humidityEntityId]) {
+      areaCards.push({
+        ...computeTileCard(humidityEntityId),
+        features: [{ type: "trend-graph" }],
+      });
+    }
+
+    for (const entityId of areaEntities) {
+      areaCards.push(computeTileCard(entityId));
+    }
+
+    if (areaCards.length > 0) {
       cards.push({
         heading_style: "subtitle",
         type: "heading",
@@ -44,23 +64,7 @@ const processAreasForClimate = (
           navigation_path: `areas-${area.area_id}`,
         },
       });
-
-      if (area.temperature_entity_id) {
-        cards.push({
-          ...computeTileCard(area.temperature_entity_id),
-          features: [{ type: "history-chart" }],
-        });
-      }
-      if (area.humidity_entity_id) {
-        cards.push({
-          ...computeTileCard(area.humidity_entity_id),
-          features: [{ type: "history-chart" }],
-        });
-      }
-
-      for (const entityId of areaEntities) {
-        cards.push(computeTileCard(entityId));
-      }
+      cards.push(...areaCards);
     }
   }
 
