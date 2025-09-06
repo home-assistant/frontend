@@ -134,7 +134,7 @@ export class HuiTileCardEditor
                   {
                     name: "state_content",
                     selector: {
-                      ui_state_content: {},
+                      ui_state_content: { allow_area: true },
                     },
                     context: {
                       filter_entity: "entity",

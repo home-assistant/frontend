@@ -89,6 +89,9 @@ class HaEntityStatePicker extends LitElement {
   @property({ type: Boolean, attribute: "allow-name" }) public allowName =
     false;
 
+  @property({ type: Boolean, attribute: "allow-area" }) public allowArea =
+    false;
+
   @property() public label?: string;
 
   @property() public value?: string[] | string;
@@ -104,8 +107,24 @@ class HaEntityStatePicker extends LitElement {
   }
 
   private options = memoizeOne(
-    (entityId?: string, stateObj?: HassEntity, allowName?: boolean) => {
+    (
+      entityId?: string,
+      stateObj?: HassEntity,
+      allowName?: boolean,
+      allowArea?: boolean
+    ) => {
       const domain = entityId ? computeDomain(entityId) : undefined;
+
+      // Check if entity or its device has an area
+      let hasArea = false;
+      if (allowArea) {
+        const entityReg = entityId ? this.hass.entities?.[entityId] : undefined;
+        const deviceReg = entityReg?.device_id
+          ? this.hass.devices?.[entityReg.device_id]
+          : undefined;
+        hasArea = !!(entityReg?.area_id || deviceReg?.area_id);
+      }
+
       return [
         {
           label: this.hass.localize("ui.components.state-content-picker.state"),
@@ -118,6 +137,16 @@ class HaEntityStatePicker extends LitElement {
                   "ui.components.state-content-picker.name"
                 ),
                 value: "name",
+              },
+            ]
+          : []),
+        ...(hasArea
+          ? [
+              {
+                label: this.hass.localize(
+                  "ui.components.state-content-picker.area"
+                ),
+                value: "area",
               },
             ]
           : []),
@@ -166,7 +195,12 @@ class HaEntityStatePicker extends LitElement {
       ? this.hass.states[this.entityId]
       : undefined;
 
-    const options = this.options(this.entityId, stateObj, this.allowName);
+    const options = this.options(
+      this.entityId,
+      stateObj,
+      this.allowName,
+      this.allowArea
+    );
     const optionItems = options.filter(
       (option) => !this._value.includes(option.value)
     );
