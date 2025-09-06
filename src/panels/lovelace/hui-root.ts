@@ -1209,10 +1209,17 @@ class HUIRoot extends LitElement {
           border-bottom: var(--app-header-border-bottom, none);
           position: fixed;
           top: 0;
-          width: var(--mdc-top-app-bar-width, 100%);
+          width: var(
+            --mdc-top-app-bar-width,
+            calc(
+              100% - var(--safe-area-inset-left) - var(--safe-area-inset-right)
+            )
+          );
           -webkit-backdrop-filter: var(--app-header-backdrop-filter, none);
           backdrop-filter: var(--app-header-backdrop-filter, none);
           padding-top: var(--safe-area-inset-top);
+          padding-left: var(--safe-area-inset-left);
+          padding-right: var(--safe-area-inset-right);
           z-index: 4;
           transition: box-shadow 200ms linear;
         }
@@ -1398,7 +1405,7 @@ class HUIRoot extends LitElement {
           padding-top: calc(
             var(--header-height, 56px) +
               calc(var(--tab-bar-height, 56px) - 2px) +
-              var(--safe-area-inset-top)
+              var(--safe-area-inset-top, 0px)
           );
         }
         .hide-tab {

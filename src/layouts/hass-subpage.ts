@@ -29,31 +29,35 @@ class HassSubpage extends LitElement {
   protected render(): TemplateResult {
     return html`
       <div class="toolbar">
-        ${this.mainPage || history.state?.root
-          ? html`
-              <ha-menu-button
-                .hassio=${this.supervisor}
-                .hass=${this.hass}
-                .narrow=${this.narrow}
-              ></ha-menu-button>
-            `
-          : this.backPath
+        <div class="toolbar-content">
+          ${this.mainPage || history.state?.root
             ? html`
-                <a href=${this.backPath}>
+                <ha-menu-button
+                  .hassio=${this.supervisor}
+                  .hass=${this.hass}
+                  .narrow=${this.narrow}
+                ></ha-menu-button>
+              `
+            : this.backPath
+              ? html`
+                  <a href=${this.backPath}>
+                    <ha-icon-button-arrow-prev
+                      .hass=${this.hass}
+                    ></ha-icon-button-arrow-prev>
+                  </a>
+                `
+              : html`
                   <ha-icon-button-arrow-prev
                     .hass=${this.hass}
+                    @click=${this._backTapped}
                   ></ha-icon-button-arrow-prev>
-                </a>
-              `
-            : html`
-                <ha-icon-button-arrow-prev
-                  .hass=${this.hass}
-                  @click=${this._backTapped}
-                ></ha-icon-button-arrow-prev>
-              `}
+                `}
 
-        <div class="main-title"><slot name="header">${this.header}</slot></div>
-        <slot name="toolbar-icon"></slot>
+          <div class="main-title">
+            <slot name="header">${this.header}</slot>
+          </div>
+          <slot name="toolbar-icon"></slot>
+        </div>
       </div>
       <div class="content ha-scrollbar" @scroll=${this._saveScrollPos}>
         <slot></slot>
@@ -95,23 +99,28 @@ class HassSubpage extends LitElement {
         }
 
         .toolbar {
-          display: flex;
-          align-items: center;
-          font-size: var(--ha-font-size-xl);
-          height: var(--header-height);
-          padding: 8px 12px;
+          padding-top: var(--safe-area-inset-top);
+          padding-right: var(--safe-area-inset-right);
+          padding-left: var(--safe-area-inset-left);
           background-color: var(--app-header-background-color);
-          font-weight: var(--ha-font-weight-normal);
-          color: var(--app-header-text-color, white);
           border-bottom: var(--app-header-border-bottom, none);
           box-sizing: border-box;
         }
+
+        .toolbar-content {
+          display: flex;
+          align-items: center;
+          font-size: var(--ha-font-size-xl);
+          padding: 8px 12px;
+          font-weight: var(--ha-font-weight-normal);
+          color: var(--app-header-text-color, white);
+        }
         @media (max-width: 599px) {
-          .toolbar {
+          .toolbar-content {
             padding: 4px;
           }
         }
-        .toolbar a {
+        .toolbar-content a {
           color: var(--sidebar-text-color);
           text-decoration: none;
         }
@@ -140,7 +149,9 @@ class HassSubpage extends LitElement {
         .content {
           position: relative;
           width: 100%;
-          height: calc(100% - 1px - var(--header-height));
+          height: calc(
+            100% - 1px - var(--header-height) - var(--safe-area-inset-top, 0px)
+          );
           overflow-y: auto;
           overflow: auto;
           -webkit-overflow-scrolling: touch;
