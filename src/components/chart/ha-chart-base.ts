@@ -869,6 +869,15 @@ export class HaChartBase extends LitElement {
     });
   };
 
+  public zoom(start: number, end: number, silent = false) {
+    this.chart?.dispatchAction({
+      type: "dataZoom",
+      start,
+      end,
+      silent,
+    });
+  }
+
   private _handleZoomReset() {
     this.chart?.dispatchAction({ type: "dataZoom", start: 0, end: 100 });
   }

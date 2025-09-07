@@ -330,17 +330,8 @@ export class StateHistoryCharts extends LitElement {
           return;
         }
 
-        const chartBase =
-          chartComponent.renderRoot?.querySelector("ha-chart-base");
-
-        if (chartBase && chartBase.chart) {
-          chartBase.chart.dispatchAction({
-            type: "dataZoom",
-            dataZoomId: "dataZoom",
-            start: start,
-            end: end,
-            silent: true,
-          });
+        if (chartComponent.zoom) {
+          chartComponent.zoom(start, end);
         }
       });
 

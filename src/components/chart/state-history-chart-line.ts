@@ -197,6 +197,11 @@ export class StateHistoryChartLine extends LitElement {
     this._hiddenStats.delete(ev.detail.id);
   }
 
+  public zoom(start: number, end: number) {
+    const chartBase = this.shadowRoot!.querySelector("ha-chart-base")!;
+    chartBase.zoom(start, end, true);
+  }
+
   private _handleDataZoom(ev: CustomEvent) {
     fireEvent(this, "chart-zoom", {
       start: ev.detail.start ?? 0,
