@@ -31,13 +31,6 @@ const chunkData = (inputArray: any[], chunks: number) =>
 declare global {
   interface HASSDomEvents {
     "y-width-changed": { value: number; chartIndex: number };
-    "chart-zoom": {
-      start: number;
-      end: number;
-      chartIndex?: number;
-      startTime?: Date | undefined;
-      endTime?: Date | undefined;
-    };
   }
 }
 
