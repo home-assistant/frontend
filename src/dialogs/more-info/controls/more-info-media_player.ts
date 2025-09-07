@@ -389,6 +389,10 @@ class MoreInfoMediaPlayer extends LitElement {
         : nothing}
       ${this._renderVolumeControl()}
 
+      <div class="chips">
+        ${this._renderSourceControl()} ${this._renderSoundMode()}
+      </div>
+
       <div class="bottom-controls">
         ${turnOn
           ? html`<ha-button
@@ -420,22 +424,17 @@ class MoreInfoMediaPlayer extends LitElement {
             `
           : nothing}
         ${this._renderGrouping()}
+        <span class="flex"></span>
         ${turnOff
-          ? html`<ha-button
+          ? html`<ha-icon-button
               action=${turnOff.action}
               @click=${this._handleClick}
-              appearance="plain"
-              variant="neutral"
-              size="small"
-            >
-              <ha-svg-icon .path=${turnOff.icon} slot="start"></ha-svg-icon>
-              ${this.hass.localize(`ui.card.media_player.${turnOff.action}`)}
-            </ha-button>`
+              .label=${this.hass.localize(
+                `ui.card.media_player.${turnOff.action}`
+              )}
+              .path=${turnOff.icon}
+            ></ha-icon-button>`
           : nothing}
-      </div>
-
-      <div class="bottom-controls">
-        ${this._renderSourceControl()} ${this._renderSoundMode()}
       </div>
     `;
   }
@@ -509,6 +508,10 @@ class MoreInfoMediaPlayer extends LitElement {
       justify-content: center;
     }
 
+    .flex {
+      flex: 1;
+    }
+
     .volume {
       direction: ltr;
     }
@@ -579,10 +582,15 @@ class MoreInfoMediaPlayer extends LitElement {
       font-weight: 500;
     }
 
+    .chips {
+      display: flex;
+      gap: 8px;
+    }
+
     .bottom-controls {
       display: flex;
       gap: 8px;
-      justify-content: center;
+      align-items: center;
     }
   `;
 
