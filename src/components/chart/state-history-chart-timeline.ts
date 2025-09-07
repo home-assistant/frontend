@@ -204,14 +204,10 @@ export class StateHistoryChartTimeline extends LitElement {
         type: "time",
         min: this.startTime,
         max: this.endTime,
-        boundaryGap: [0, 0],
         axisTick: {
           show: true,
         },
         splitLine: {
-          show: false,
-        },
-        axisPointer: {
           show: false,
         },
       },

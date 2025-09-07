@@ -272,9 +272,6 @@ export class StateHistoryChartLine extends LitElement {
           min: this.startTime,
           max: this.endTime,
           boundaryGap: [0, 0],
-          axisPointer: {
-            show: false,
-          },
         },
         yAxis: {
           type: this.logarithmicScale ? "log" : "value",
