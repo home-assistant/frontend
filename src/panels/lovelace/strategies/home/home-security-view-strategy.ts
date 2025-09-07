@@ -12,6 +12,7 @@ import {
 } from "../areas/helpers/areas-strategy-helper";
 import { getHomeStructure } from "./helpers/home-structure";
 import { findEntities, HOME_SUMMARIES_FILTERS } from "./helpers/home-summaries";
+import type { LogbookCardConfig } from "../../cards/types";
 
 export interface HomeSecurityViewStrategyConfig {
   type: "home-security";
@@ -130,6 +131,24 @@ export class HomeSecurityViewStrategy extends ReactiveElement {
         sections.push(section);
       }
     }
+
+    sections.push({
+      type: "grid",
+      cards: [
+        {
+          type: "heading",
+          heading: hass.localize("panel.logbook"),
+          tap_action: {
+            action: "navigate",
+            navigation_path: `/logbook?entity_id=${entities.join(",")}`,
+          },
+        },
+        {
+          type: "logbook",
+          target: { entity_id: entities },
+        } satisfies LogbookCardConfig,
+      ],
+    });
 
     return {
       type: "sections",
