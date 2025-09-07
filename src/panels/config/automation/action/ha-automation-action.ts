@@ -6,11 +6,9 @@ import { customElement, property, queryAll, state } from "lit/decorators";
 import { repeat } from "lit/directives/repeat";
 import { storage } from "../../../../common/decorators/storage";
 import { fireEvent } from "../../../../common/dom/fire_event";
-import { listenMediaQuery } from "../../../../common/dom/media_query";
 import { nextRender } from "../../../../common/util/render-status";
 import "../../../../components/ha-button";
 import "../../../../components/ha-sortable";
-import type { HaSortableClonedEventData } from "../../../../components/ha-sortable";
 import "../../../../components/ha-svg-icon";
 import {
   ACTION_BUILDING_BLOCKS,
@@ -46,8 +44,6 @@ export default class HaAutomationAction extends LitElement {
   @property({ type: Boolean, attribute: "sidebar" }) public optionsInSidebar =
     false;
 
-  @state() private _showReorder = false;
-
   @state() private _rowSortSelected?: number;
 
   @state()
@@ -68,33 +64,17 @@ export default class HaAutomationAction extends LitElement {
 
   private _actionKeys = new WeakMap<Action, string>();
 
-  private _unsubMql?: () => void;
-
-  public connectedCallback() {
-    super.connectedCallback();
-    this._unsubMql = listenMediaQuery("(min-width: 600px)", (matches) => {
-      this._showReorder = matches;
-    });
-  }
-
-  public disconnectedCallback() {
-    super.disconnectedCallback();
-    this._unsubMql?.();
-    this._unsubMql = undefined;
-  }
-
   protected render() {
     return html`
       <ha-sortable
         handle-selector=".handle"
         draggable-selector="ha-automation-action-row"
-        .disabled=${!this._showReorder || this.disabled}
+        .disabled=${this.disabled}
         group="actions"
         invert-swap
         @item-moved=${this._actionMoved}
         @item-added=${this._actionAdded}
         @item-removed=${this._actionRemoved}
-        @item-cloned=${this._actionCloned}
       >
         <div class="rows ${!this.optionsInSidebar ? "no-sidebar" : ""}">
           ${repeat(
@@ -115,12 +95,12 @@ export default class HaAutomationAction extends LitElement {
                 @move-up=${this._moveUp}
                 @value-changed=${this._actionChanged}
                 .hass=${this.hass}
-                ?highlight=${this.highlightedActions?.includes(action)}
+                .highlight=${this.highlightedActions?.includes(action)}
                 .optionsInSidebar=${this.optionsInSidebar}
                 .sortSelected=${this._rowSortSelected === idx}
                 @stop-sort-selection=${this._stopSortSelection}
               >
-                ${this._showReorder && !this.disabled
+                ${!this.disabled
                   ? html`
                       <div
                         tabindex="0"
@@ -319,11 +299,8 @@ export default class HaAutomationAction extends LitElement {
   private async _actionAdded(ev: CustomEvent): Promise<void> {
     ev.stopPropagation();
     const { index, data } = ev.detail;
-    let selected = false;
-    if (data?.["ha-automation-row-selected"]) {
-      selected = true;
-      delete data["ha-automation-row-selected"];
-    }
+    const item = ev.detail.item as HaAutomationActionRow;
+    const selected = item.selected;
 
     let actions = [
       ...this.actions.slice(0, index),
@@ -379,12 +356,6 @@ export default class HaAutomationAction extends LitElement {
     }
 
     fireEvent(this, "value-changed", { value: actions });
-  }
-
-  private _actionCloned(ev: CustomEvent<HaSortableClonedEventData>) {
-    if (ev.detail.item.action && ev.detail.item.isSelected()) {
-      ev.detail.item.action["ha-automation-row-selected"] = true;
-    }
   }
 
   private _duplicateAction(ev: CustomEvent) {

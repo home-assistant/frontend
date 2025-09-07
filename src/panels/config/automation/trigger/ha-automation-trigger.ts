@@ -6,12 +6,10 @@ import { customElement, property, state } from "lit/decorators";
 import { repeat } from "lit/directives/repeat";
 import { storage } from "../../../../common/decorators/storage";
 import { fireEvent } from "../../../../common/dom/fire_event";
-import { listenMediaQuery } from "../../../../common/dom/media_query";
 import { nextRender } from "../../../../common/util/render-status";
 import "../../../../components/ha-button";
 import "../../../../components/ha-button-menu";
 import "../../../../components/ha-sortable";
-import type { HaSortableClonedEventData } from "../../../../components/ha-sortable";
 import "../../../../components/ha-svg-icon";
 import type {
   AutomationClipboard,
@@ -45,8 +43,6 @@ export default class HaAutomationTrigger extends LitElement {
 
   @property({ type: Boolean }) public root = false;
 
-  @state() private _showReorder = false;
-
   @state() private _rowSortSelected?: number;
 
   @state()
@@ -64,33 +60,17 @@ export default class HaAutomationTrigger extends LitElement {
 
   private _triggerKeys = new WeakMap<Trigger, string>();
 
-  private _unsubMql?: () => void;
-
-  public connectedCallback() {
-    super.connectedCallback();
-    this._unsubMql = listenMediaQuery("(min-width: 600px)", (matches) => {
-      this._showReorder = matches;
-    });
-  }
-
-  public disconnectedCallback() {
-    super.disconnectedCallback();
-    this._unsubMql?.();
-    this._unsubMql = undefined;
-  }
-
   protected render() {
     return html`
       <ha-sortable
         handle-selector=".handle"
         draggable-selector="ha-automation-trigger-row"
-        .disabled=${!this._showReorder || this.disabled}
+        .disabled=${this.disabled}
         group="triggers"
         invert-swap
         @item-moved=${this._triggerMoved}
         @item-added=${this._triggerAdded}
         @item-removed=${this._triggerRemoved}
-        @item-cloned=${this._triggerCloned}
       >
         <div class="rows ${!this.optionsInSidebar ? "no-sidebar" : ""}">
           ${repeat(
@@ -110,12 +90,12 @@ export default class HaAutomationTrigger extends LitElement {
                 .hass=${this.hass}
                 .disabled=${this.disabled}
                 .narrow=${this.narrow}
-                ?highlight=${this.highlightedTriggers?.includes(trg)}
+                .highlight=${this.highlightedTriggers?.includes(trg)}
                 .optionsInSidebar=${this.optionsInSidebar}
                 .sortSelected=${this._rowSortSelected === idx}
                 @stop-sort-selection=${this._stopSortSelection}
               >
-                ${this._showReorder && !this.disabled
+                ${!this.disabled
                   ? html`
                       <div
                         tabindex="0"
@@ -278,11 +258,8 @@ export default class HaAutomationTrigger extends LitElement {
   private async _triggerAdded(ev: CustomEvent): Promise<void> {
     ev.stopPropagation();
     const { index, data } = ev.detail;
-    let selected = false;
-    if (data?.["ha-automation-row-selected"]) {
-      selected = true;
-      delete data["ha-automation-row-selected"];
-    }
+    const item = ev.detail.item as HaAutomationTriggerRow;
+    const selected = item.selected;
 
     let triggers = [
       ...this.triggers.slice(0, index),
@@ -319,12 +296,6 @@ export default class HaAutomationTrigger extends LitElement {
     // Ensure trigger is removed even after update
     const triggers = this.triggers.filter((t) => t !== trigger);
     fireEvent(this, "value-changed", { value: triggers });
-  }
-
-  private _triggerCloned(ev: CustomEvent<HaSortableClonedEventData>) {
-    if (ev.detail.item.isSelected()) {
-      ev.detail.item.trigger["ha-automation-row-selected"] = true;
-    }
   }
 
   private _triggerChanged(ev: CustomEvent) {

@@ -14,8 +14,8 @@ const calcPoints = (
   detail: number,
   min: number,
   max: number
-): number[][] => {
-  const coords = [] as number[][];
+): [number, number][] => {
+  const coords = [] as [number, number][];
   const height = 80;
   let yRatio = (max - min) / height;
   yRatio = yRatio !== 0 ? yRatio : height;
@@ -61,7 +61,7 @@ export const coordinates = (
   width: number,
   detail: number,
   limits?: { min?: number; max?: number }
-): number[][] | undefined => {
+): [number, number][] | undefined => {
   history.forEach((item) => {
     item.state = Number(item.state);
   });
@@ -119,7 +119,7 @@ export const coordinatesMinimalResponseCompressedState = (
   width: number,
   detail: number,
   limits?: { min?: number; max?: number }
-): number[][] | undefined => {
+): [number, number][] | undefined => {
   if (!history) {
     return undefined;
   }

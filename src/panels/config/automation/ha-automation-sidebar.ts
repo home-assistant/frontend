@@ -1,6 +1,5 @@
 import { css, html, LitElement, nothing } from "lit";
 import { customElement, property, query, state } from "lit/decorators";
-import { fireEvent } from "../../../common/dom/fire_event";
 import "../../../components/ha-bottom-sheet";
 import type { HaBottomSheet } from "../../../components/ha-bottom-sheet";
 import {
@@ -34,6 +33,8 @@ export default class HaAutomationSidebar extends LitElement {
 
   @property({ type: Boolean }) public narrow = false;
 
+  @property({ attribute: "sidebar-key" }) public sidebarKey?: string;
+
   @state() private _yamlMode = false;
 
   @query("ha-bottom-sheet") private _bottomSheetElement?: HaBottomSheet;
@@ -52,8 +53,9 @@ export default class HaAutomationSidebar extends LitElement {
           .narrow=${this.narrow}
           .disabled=${this.disabled}
           .yamlMode=${this._yamlMode}
+          .sidebarKey=${this.sidebarKey}
           @toggle-yaml-mode=${this._toggleYamlMode}
-          @close-sidebar=${this._handleCloseSidebar}
+          @close-sidebar=${this.triggerCloseSidebar}
         ></ha-automation-sidebar-trigger>
       `;
     }
@@ -67,8 +69,9 @@ export default class HaAutomationSidebar extends LitElement {
           .narrow=${this.narrow}
           .disabled=${this.disabled}
           .yamlMode=${this._yamlMode}
+          .sidebarKey=${this.sidebarKey}
           @toggle-yaml-mode=${this._toggleYamlMode}
-          @close-sidebar=${this._handleCloseSidebar}
+          @close-sidebar=${this.triggerCloseSidebar}
         ></ha-automation-sidebar-condition>
       `;
     }
@@ -82,8 +85,9 @@ export default class HaAutomationSidebar extends LitElement {
           .narrow=${this.narrow}
           .disabled=${this.disabled}
           .yamlMode=${this._yamlMode}
+          .sidebarKey=${this.sidebarKey}
           @toggle-yaml-mode=${this._toggleYamlMode}
-          @close-sidebar=${this._handleCloseSidebar}
+          @close-sidebar=${this.triggerCloseSidebar}
         ></ha-automation-sidebar-action>
       `;
     }
@@ -96,7 +100,7 @@ export default class HaAutomationSidebar extends LitElement {
           .isWide=${this.isWide}
           .narrow=${this.narrow}
           .disabled=${this.disabled}
-          @close-sidebar=${this._handleCloseSidebar}
+          @close-sidebar=${this.triggerCloseSidebar}
         ></ha-automation-sidebar-option>
       `;
     }
@@ -110,8 +114,9 @@ export default class HaAutomationSidebar extends LitElement {
           .narrow=${this.narrow}
           .disabled=${this.disabled}
           .yamlMode=${this._yamlMode}
+          .sidebarKey=${this.sidebarKey}
           @toggle-yaml-mode=${this._toggleYamlMode}
-          @close-sidebar=${this._handleCloseSidebar}
+          @close-sidebar=${this.triggerCloseSidebar}
         ></ha-automation-sidebar-script-field-selector>
       `;
     }
@@ -125,8 +130,9 @@ export default class HaAutomationSidebar extends LitElement {
           .narrow=${this.narrow}
           .disabled=${this.disabled}
           .yamlMode=${this._yamlMode}
+          .sidebarKey=${this.sidebarKey}
           @toggle-yaml-mode=${this._toggleYamlMode}
-          @close-sidebar=${this._handleCloseSidebar}
+          @close-sidebar=${this.triggerCloseSidebar}
         ></ha-automation-sidebar-script-field>
       `;
     }
@@ -182,8 +188,8 @@ export default class HaAutomationSidebar extends LitElement {
     return undefined;
   }
 
-  private _handleCloseSidebar(ev: CustomEvent) {
-    ev.stopPropagation();
+  public triggerCloseSidebar(ev?: CustomEvent) {
+    ev?.stopPropagation();
     if (this.narrow) {
       this._bottomSheetElement?.closeSheet();
       return;
@@ -197,17 +203,12 @@ export default class HaAutomationSidebar extends LitElement {
   }
 
   private _toggleYamlMode = () => {
-    this._yamlMode = this.config!.toggleYamlMode();
-    fireEvent(this, "value-changed", {
-      value: {
-        ...this.config,
-        yamlMode: this._yamlMode,
-      },
-    });
+    (this.config as ActionSidebarConfig)?.toggleYamlMode();
   };
 
   static styles = css`
     :host {
+      z-index: 6;
       outline: none;
       height: 100%;
       --ha-card-border-radius: var(
@@ -235,5 +236,8 @@ declare global {
 
   interface HASSDomEvents {
     "toggle-yaml-mode": undefined;
+    "yaml-changed": {
+      value: unknown;
+    };
   }
 }
