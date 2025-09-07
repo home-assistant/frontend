@@ -136,9 +136,7 @@ export class HaCodeEditor extends ReactiveElement {
     super.disconnectedCallback();
     this.removeEventListener("keydown", stopPropagation);
     this.removeEventListener("keydown", this._handleKeyDown);
-    if (this._isFullscreen) {
-      this._toggleFullscreen();
-    }
+    this._updateFullscreenState(false);
     this.updateComplete.then(() => {
       this.codemirror!.destroy();
       delete this.codemirror;
@@ -205,7 +203,7 @@ export class HaCodeEditor extends ReactiveElement {
       this.classList.toggle("fullscreen", this._isFullscreen);
     }
     if (changedProps.has("disableFullscreen")) {
-      this._updateFullscreenButton();
+      this._updateFullscreenState();
     }
   }
 
@@ -349,7 +347,7 @@ export class HaCodeEditor extends ReactiveElement {
     if (!this.hasToolbar) {
       // Cannot be in fullscreen if there is no toolbar,
       // so make sure to exit fullscreen if there.
-      this._isFullscreen = false;
+      this._updateFullscreenState(false);
       return;
     }
 
@@ -363,8 +361,8 @@ export class HaCodeEditor extends ReactiveElement {
     // size of codemirror.
     this.codemirror?.dom.appendChild(this._editorToolbar);
 
-    // Update fullscreen button
-    this._updateFullscreenButton();
+    // Update fullscreen button. Maintain current state
+    this._updateFullscreenState();
 
     // Refresh history buttons
     this._updateEditorStateButtons();
@@ -394,19 +392,26 @@ export class HaCodeEditor extends ReactiveElement {
       this.readOnly || !(this.codemirror && redoDepth(this.codemirror.state));
   }
 
-  private _updateFullscreenButton() {
-    // Check if we have an existing fullscreen button
-    const fsButton = this._editorToolbar?.findToolbarButtonById("fullscreen");
-    // Ensure we are not in fullscreen mode if currently disabled
-    if (this.disableFullscreen) {
-      this._isFullscreen = false;
+  private _updateFullscreenState(
+    fullscreen: boolean = this._isFullscreen
+  ): boolean {
+    // Update the current fullscreen state based on selected value. If fullscreen
+    // is disabled, or we have no toolbar, ensure we are not in fullscreen mode.
+    this._isFullscreen =
+      fullscreen && !this.disableFullscreen && this.hasToolbar;
+
+    // Check if we have a toolbar with an existing fullscreen button
+    if (this.hasToolbar) {
+      const fsButton = this._editorToolbar?.findToolbarButtonById("fullscreen");
+      if (fsButton) {
+        // If so, configure full-screen button parameters based on our current state
+        fsButton.disabled = this.disableFullscreen;
+        fsButton.path = this._fullscreenIcon();
+        fsButton.setAttribute("label", this._fullscreenLabel());
+      }
     }
-    // Configure full-screen button parameters based on our current state
-    if (fsButton) {
-      fsButton.disabled = this.disableFullscreen;
-      fsButton.path = this._fullscreenIcon();
-      fsButton.setAttribute("label", this._fullscreenLabel());
-    }
+    // Return whether successfully in requested state
+    return this._isFullscreen === fullscreen;
   }
 
   private _handleClipboardClick = async (e: Event) => {
@@ -443,23 +448,19 @@ export class HaCodeEditor extends ReactiveElement {
   private _handleFullscreenClick = (e: Event) => {
     e.preventDefault();
     e.stopPropagation();
-    this._toggleFullscreen();
+    this._updateFullscreenState(!this._isFullscreen);
   };
 
-  private _toggleFullscreen() {
-    this._isFullscreen = !this._isFullscreen;
-    this._updateFullscreenButton();
-  }
-
   private _handleKeyDown = (e: KeyboardEvent) => {
-    if (this._isFullscreen && e.key === "Escape") {
+    if (
+      (e.key === "Escape" &&
+        this._isFullscreen &&
+        this._updateFullscreenState(false)) ||
+      (e.key === "F11" && this._updateFullscreenState(true))
+    ) {
+      // If we successfully performed the action, stop it propagating further.
       e.preventDefault();
       e.stopPropagation();
-      this._toggleFullscreen();
-    } else if (e.key === "F11" && !this.disableFullscreen) {
-      e.preventDefault();
-      e.stopPropagation();
-      this._toggleFullscreen();
     }
   };
 
