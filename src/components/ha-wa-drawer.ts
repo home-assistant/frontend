@@ -3,7 +3,6 @@ import { css } from "lit";
 import { customElement } from "lit/decorators";
 
 @customElement("ha-wa-drawer")
-// @ts-ignore
 export class HaWaDrawer extends Drawer {
   static get styles() {
     return [
