@@ -18,8 +18,8 @@ const ANIMATION_DURATION_MS = 300;
  * @cssprop --ha-bottom-sheet-border-style - Border style for the sheet
  * @cssprop --ha-bottom-sheet-border-color - Border color for the sheet
  */
-@customElement("ha-bottom-sheet")
-export class HaBottomSheet extends LitElement {
+@customElement("ha-resizable-bottom-sheet")
+export class HaResizableBottomSheet extends LitElement {
   @query("dialog") private _dialog!: HTMLDialogElement;
 
   private _dragging = false;
@@ -263,7 +263,7 @@ export class HaBottomSheet extends LitElement {
 
 declare global {
   interface HTMLElementTagNameMap {
-    "ha-bottom-sheet": HaBottomSheet;
+    "ha-resizable-bottom-sheet": HaResizableBottomSheet;
   }
 
   interface HASSDomEvents {
