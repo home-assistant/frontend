@@ -40,6 +40,7 @@ export const createMediaPlayerEntities = () => [
     volume_level: 0.5,
     sound_mode_list: ["Movie", "Music", "Game", "Pure Audio"],
     sound_mode: "Music",
+    group_members: ["media_player.playing", "media_player.stream_playing"],
   }),
   getEntity("media_player", "stream_playing", "playing", {
     friendly_name: "Playing the Stream",
