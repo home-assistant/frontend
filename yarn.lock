@@ -9449,7 +9449,7 @@ __metadata:
     lit-html: "npm:3.3.1"
     lodash.merge: "npm:4.6.2"
     lodash.template: "npm:4.5.0"
-    luxon: "npm:3.7.1"
+    luxon: "npm:3.7.2"
     map-stream: "npm:0.0.7"
     marked: "npm:16.2.1"
     memoize-one: "npm:6.0.0"
@@ -11044,10 +11044,10 @@ __metadata:
   languageName: node
   linkType: hard
 
-"luxon@npm:3.7.1":
-  version: 3.7.1
-  resolution: "luxon@npm:3.7.1"
-  checksum: 10/3582460c0e2d4a88f6f0c11df30cac70c7e09a3d595b66b1d04543759a38afe6e5be28c601c4d81ee73d2e8602c65f825e2c8a8542392cc564624f2bf7d6301f
+"luxon@npm:3.7.2":
+  version: 3.7.2
+  resolution: "luxon@npm:3.7.2"
+  checksum: 10/b24cd205ed306ce7415991687897dcc4027921ae413c9116590bc33a95f93b86ce52cf74ba72b4f5c5ab1c10090517f54ac8edfb127c049e0bf55b90dc2260be
   languageName: node
   linkType: hard
 
