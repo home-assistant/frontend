@@ -40,6 +40,9 @@ import "../../../components/ha-md-button-menu";
 import "../../../components/chips/ha-assist-chip";
 import "../../../components/ha-md-menu-item";
 import "../../../components/ha-marquee-text";
+import { computeEntityName } from "../../../common/entity/compute_entity_name";
+import { computeStateName } from "../../../common/entity/compute_state_name";
+import { brandsUrl } from "../../../util/brands-url";
 
 @customElement("more-info-media_player")
 class MoreInfoMediaPlayer extends LitElement {
@@ -56,6 +59,35 @@ class MoreInfoMediaPlayer extends LitElement {
       minutes,
       seconds,
     })!;
+  }
+
+  protected _renderIntegrationLogo() {
+    if (!this.stateObj) {
+      return nothing;
+    }
+
+    const entry = this.hass.entities[this.stateObj.entity_id];
+    if (!entry || !entry.platform) {
+      return nothing;
+    }
+
+    const brandUrl = brandsUrl({
+      domain: entry.platform,
+      type: "icon",
+      darkOptimized: this.hass.themes?.darkMode,
+    });
+
+    return brandUrl
+      ? html`
+          <img
+            src=${brandUrl}
+            alt=${entry.platform}
+            title=${entry.platform}
+            width="24"
+            height="24"
+          />
+        `
+      : nothing;
   }
 
   protected _renderVolumeControl() {
@@ -171,49 +203,13 @@ class MoreInfoMediaPlayer extends LitElement {
       : nothing}`;
   }
 
-  protected _renderSoundMode() {
-    return html` ${stateActive(this.stateObj!) &&
-    supportsFeature(
-      this.stateObj!,
-      MediaPlayerEntityFeature.SELECT_SOUND_MODE
-    ) &&
-    this.stateObj!.attributes.sound_mode_list?.length
-      ? html`
-          <ha-md-button-menu positioning="popover" class="sound-input">
-            <ha-assist-chip
-              slot="trigger"
-              .label=${this.stateObj!.attributes.sound_mode ||
-              this.hass.localize("ui.card.media_player.sound_mode")}
-            >
-              <ha-svg-icon slot="icon" .path=${mdiMusicNote}></ha-svg-icon>
-            </ha-assist-chip>
-            ${this.stateObj!.attributes.sound_mode_list!.map(
-              (mode) =>
-                html`<ha-md-menu-item
-                  data-mode=${mode}
-                  keep-open
-                  @click=${this._handleSoundeModeClick}
-                  @keydown=${this._handleSoundeModeClick}
-                  .selected=${mode === this.stateObj?.attributes.sound_mode}
-                >
-                  ${this.hass.formatEntityAttributeValue(
-                    this.stateObj!,
-                    "sound_mode",
-                    mode
-                  )}
-                </ha-md-menu-item>`
-            )}
-          </ha-md-button-menu>
-        `
-      : nothing}`;
-  }
-
   protected _renderGrouping() {
     if (!this.stateObj) {
       return nothing;
     }
     const stateObj = this.stateObj;
     const groupMembers = stateObj.attributes.group_members?.length;
+    const hasMultipleMembers = groupMembers && groupMembers > 1;
 
     return html`${!isUnavailableState(stateObj.state) &&
     supportsFeature(stateObj, MediaPlayerEntityFeature.GROUPING)
@@ -225,12 +221,21 @@ class MoreInfoMediaPlayer extends LitElement {
             size="small"
           >
             <ha-svg-icon .path=${mdiSpeakerMultiple} slot="start"></ha-svg-icon>
-            ${groupMembers && groupMembers > 1
+            ${hasMultipleMembers
               ? html`<span class="badge">
                   ${stateObj.attributes.group_members?.length || 4}
                 </span>`
               : nothing}
-            ${this.hass.localize("ui.card.media_player.join")}
+            <span class="grouping-label">
+              ${hasMultipleMembers
+                ? stateObj.attributes.group_members
+                    ?.filter((member) => member !== stateObj.entity_id)
+                    .map((member) =>
+                      this._getFriendlyNameForGroupMember(member)
+                    )
+                    .join(", ")
+                : this.hass.localize("ui.card.media_player.join")}
+            </span>
           </ha-button>
         `
       : nothing}`;
@@ -271,6 +276,12 @@ class MoreInfoMediaPlayer extends LitElement {
     const turnOff = controls?.find((c) => c.action === "turn_off");
 
     return html`
+      <div class="controls-row">
+        ${this._renderIntegrationLogo()} ${this._renderSourceControl()}
+        <span class="flex"></span>
+        ${this._renderGrouping()}
+      </div>
+
       ${coverUrl
         ? html`<div class="cover-container">
             <img
@@ -329,7 +340,7 @@ class MoreInfoMediaPlayer extends LitElement {
           `
         : nothing}
       ${controls && controls.length > 0
-        ? html`<div class="controls-row">
+        ? html`<div class="main-controls">
             <div class="side-control">
               ${["repeat_set", "media_previous_track"].map((action) => {
                 const control = controls?.find((c) => c.action === action);
@@ -389,23 +400,7 @@ class MoreInfoMediaPlayer extends LitElement {
         : nothing}
       ${this._renderVolumeControl()}
 
-      <div class="chips">
-        ${this._renderSourceControl()} ${this._renderSoundMode()}
-      </div>
-
-      <div class="bottom-controls">
-        ${turnOn
-          ? html`<ha-button
-              action=${turnOn.action}
-              @click=${this._handleClick}
-              appearance="plain"
-              variant="neutral"
-              size="small"
-            >
-              <ha-svg-icon .path=${turnOn.icon} slot="start"></ha-svg-icon>
-              ${this.hass.localize(`ui.card.media_player.${turnOn.action}`)}
-            </ha-button>`
-          : nothing}
+      <div class="controls-row">
         ${!isUnavailableState(stateObj.state) &&
         supportsFeature(stateObj, MediaPlayerEntityFeature.BROWSE_MEDIA)
           ? html`
@@ -423,17 +418,30 @@ class MoreInfoMediaPlayer extends LitElement {
               </ha-button>
             `
           : nothing}
-        ${this._renderGrouping()}
         <span class="flex"></span>
+        ${turnOn
+          ? html`<ha-button
+              action=${turnOn.action}
+              @click=${this._handleClick}
+              appearance="plain"
+              variant="neutral"
+              size="small"
+            >
+              <ha-svg-icon .path=${turnOn.icon} slot="start"></ha-svg-icon>
+              ${this.hass.localize(`ui.card.media_player.${turnOn.action}`)}
+            </ha-button>`
+          : nothing}
         ${turnOff
-          ? html`<ha-icon-button
+          ? html`<ha-button
               action=${turnOff.action}
               @click=${this._handleClick}
-              .label=${this.hass.localize(
-                `ui.card.media_player.${turnOff.action}`
-              )}
-              .path=${turnOff.icon}
-            ></ha-icon-button>`
+              appearance="plain"
+              variant="neutral"
+              size="small"
+            >
+              <ha-svg-icon .path=${turnOff.icon} slot="start"></ha-svg-icon>
+              ${this.hass.localize(`ui.card.media_player.${turnOff.action}`)}
+            </ha-button>`
           : nothing}
       </div>
     `;
@@ -483,7 +491,7 @@ class MoreInfoMediaPlayer extends LitElement {
       color: var(--secondary-text-color);
     }
 
-    .controls-row {
+    .main-controls {
       --ha-button-height: 56px;
       display: flex;
       flex-direction: row;
@@ -522,14 +530,12 @@ class MoreInfoMediaPlayer extends LitElement {
       --md-sys-color-primary: var(--disabled-color);
     }
 
-    .source-input,
-    .sound-input {
+    .source-input {
       direction: var(--direction);
     }
 
     .volume,
-    .source-input,
-    .sound-input {
+    .source-input {
       display: flex;
       align-items: center;
     }
@@ -582,15 +588,17 @@ class MoreInfoMediaPlayer extends LitElement {
       font-weight: 500;
     }
 
-    .chips {
-      display: flex;
-      gap: 8px;
-    }
-
-    .bottom-controls {
+    .controls-row {
       display: flex;
       gap: 8px;
       align-items: center;
+    }
+
+    .grouping-label {
+      text-overflow: ellipsis;
+      overflow: hidden;
+      white-space: nowrap;
+      max-width: 100px;
     }
   `;
 
@@ -628,18 +636,6 @@ class MoreInfoMediaPlayer extends LitElement {
     });
   }
 
-  private _handleSoundeModeClick(e) {
-    const mode = (e.currentTarget as HTMLElement).getAttribute("data-mode");
-    if (!mode || this.stateObj?.attributes.sound_mode === mode) {
-      return;
-    }
-
-    this.hass.callService("media_player", "select_sound_mode", {
-      entity_id: this.stateObj!.entity_id,
-      sound_mode: mode,
-    });
-  }
-
   private _showBrowseMedia(): void {
     showMediaBrowserDialog(this, {
       action: "play",
@@ -670,6 +666,18 @@ class MoreInfoMediaPlayer extends LitElement {
       entity_id: this.stateObj.entity_id,
       seek_position: newValue,
     });
+  }
+
+  protected _getFriendlyNameForGroupMember(member: string): string {
+    const stateObj = this.hass.states[member];
+
+    if (stateObj) {
+      const stateName = computeStateName(stateObj);
+      const entityName = computeEntityName(stateObj, this.hass);
+
+      return entityName || stateName;
+    }
+    return member;
   }
 }
 

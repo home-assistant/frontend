@@ -137,10 +137,6 @@ export class MoreInfoInfo extends LitElement {
       --video-max-height: calc(100vh - 72px - 79px - 60px);
     }
 
-    [data-domain="media_player"] .content {
-      padding-top: 0;
-    }
-
     more-info-content {
       position: relative;
       display: flex;
