@@ -595,6 +595,7 @@ class MoreInfoMediaPlayer extends LitElement {
     }
 
     .grouping-label {
+      display: block;
       text-overflow: ellipsis;
       overflow: hidden;
       white-space: nowrap;
