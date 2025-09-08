@@ -246,7 +246,6 @@ export class TopAppBarBaseBase extends BaseElement {
     css`
       header {
         padding-top: var(--safe-area-inset-top);
-        /* TODO rigth padding */
       }
       .mdc-top-app-bar__row {
         height: var(--header-height);
