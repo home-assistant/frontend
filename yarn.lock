@@ -41,24 +41,6 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@awesome.me/webawesome@npm:3.0.0-beta.4":
-  version: 3.0.0-beta.4
-  resolution: "@awesome.me/webawesome@npm:3.0.0-beta.4"
-  dependencies:
-    "@ctrl/tinycolor": "npm:^4.1.0"
-    "@floating-ui/dom": "npm:^1.6.13"
-    "@lit/react": "npm:^1.0.8"
-    "@shoelace-style/animations": "npm:^1.2.0"
-    "@shoelace-style/localize": "npm:^3.2.1"
-    composed-offset-position: "npm:^0.0.6"
-    lit: "npm:^3.2.1"
-    nanoid: "npm:^5.1.5"
-    qr-creator: "npm:^1.0.0"
-    style-observer: "npm:^0.0.7"
-  checksum: 10/476e8e6495def8b8a99a9b0d203eb6859915bb9793632a2aae348f42ef5683751bdfb6d99155cb2512ecc2d706cd9377466f765d105d3fc355afeafe21c820df
-  languageName: node
-  linkType: hard
-
 "@babel/code-frame@npm:7.26.2":
   version: 7.26.2
   resolution: "@babel/code-frame@npm:7.26.2"
@@ -1920,6 +1902,24 @@ __metadata:
   dependencies:
     is-negated-glob: "npm:^1.0.0"
   checksum: 10/30ec7825064422b6f02c1975ab6c779ff73409411c37bec2e984262459935afd196c1dbe960075e914967a047743ccf726fce3d3ebb4417ca2e3c34538fbceb8
+  languageName: node
+  linkType: hard
+
+"@home-assistant/webawesome@npm:3.0.0-beta.4.ha.1":
+  version: 3.0.0-beta.4.ha.1
+  resolution: "@home-assistant/webawesome@npm:3.0.0-beta.4.ha.1"
+  dependencies:
+    "@ctrl/tinycolor": "npm:^4.1.0"
+    "@floating-ui/dom": "npm:^1.6.13"
+    "@lit/react": "npm:^1.0.8"
+    "@shoelace-style/animations": "npm:^1.2.0"
+    "@shoelace-style/localize": "npm:^3.2.1"
+    composed-offset-position: "npm:^0.0.6"
+    lit: "npm:^3.2.1"
+    nanoid: "npm:^5.1.5"
+    qr-creator: "npm:^1.0.0"
+    style-observer: "npm:^0.0.7"
+  checksum: 10/18cd9d16057289f7b10ccf681bc7bdfaeaaf814a985c2d259bf8bffefdd5cbb8e27c5ea15c9829247b0eb746c3557aeef3798174aad5d8e742097d11c06a1144
   languageName: node
   linkType: hard
 
@@ -9294,7 +9294,6 @@ __metadata:
   version: 0.0.0-use.local
   resolution: "home-assistant-frontend@workspace:."
   dependencies:
-    "@awesome.me/webawesome": "npm:3.0.0-beta.4"
     "@babel/core": "npm:7.28.3"
     "@babel/helper-define-polyfill-provider": "npm:0.6.5"
     "@babel/plugin-transform-runtime": "npm:7.28.3"
@@ -9325,6 +9324,7 @@ __metadata:
     "@fullcalendar/list": "npm:6.1.19"
     "@fullcalendar/luxon3": "npm:6.1.19"
     "@fullcalendar/timegrid": "npm:6.1.19"
+    "@home-assistant/webawesome": "npm:3.0.0-beta.4.ha.1"
     "@lezer/highlight": "npm:1.2.1"
     "@lit-labs/motion": "npm:1.0.9"
     "@lit-labs/observers": "npm:2.0.6"
