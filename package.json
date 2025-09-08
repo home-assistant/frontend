@@ -26,7 +26,7 @@
   "license": "Apache-2.0",
   "type": "module",
   "dependencies": {
-    "@babel/runtime": "7.28.3",
+    "@babel/runtime": "7.28.4",
     "@braintree/sanitize-url": "7.1.1",
     "@codemirror/autocomplete": "6.18.7",
     "@codemirror/commands": "6.8.1",
@@ -149,7 +149,7 @@
     "xss": "1.0.15"
   },
   "devDependencies": {
-    "@babel/core": "7.28.3",
+    "@babel/core": "7.28.4",
     "@babel/helper-define-polyfill-provider": "0.6.5",
     "@babel/plugin-transform-runtime": "7.28.3",
     "@babel/preset-env": "7.28.3",
