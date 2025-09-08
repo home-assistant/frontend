@@ -12,6 +12,12 @@ export const waMainStyles = css`
     --wa-space-l: 24px;
     --wa-shadow-l: 0 8px 8px -4px rgba(0, 0, 0, 0.2);
     --wa-form-control-padding-block: 0.75em;
+
+    --wa-font-weight-action: var(--ha-font-weight-medium);
+    --wa-transition-fast: 75ms;
+    --wa-transition-easing: ease;
+    --wa-border-width-l: var(--ha-border-radius-l);
+    --wa-space-xl: 32px;
   }
 `;
 
