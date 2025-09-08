@@ -1,7 +1,7 @@
-import { css, html, LitElement, nothing } from "lit";
+import { html, LitElement, nothing } from "lit";
 import { customElement, property, state } from "lit/decorators";
 import { fireEvent } from "../../common/dom/fire_event";
-import { createCloseHeading } from "../../components/ha-dialog";
+import "../../components/ha-bottom-sheet";
 import "../../components/ha-icon";
 import "../../components/ha-md-list";
 import "../../components/ha-md-list-item";
@@ -19,20 +19,29 @@ export class ListItemsDialog
 
   @state() private _params?: ListItemsDialogParams;
 
+  @state() private _open = false;
+
   public async showDialog(params: ListItemsDialogParams): Promise<void> {
     this._params = params;
+    await this.updateComplete;
+    this._open = true;
   }
 
   private _dialogClosed(): void {
     this._params = undefined;
+    this._open = false;
     fireEvent(this, "dialog-closed", { dialog: this.localName });
+  }
+
+  private _closeDialog(): void {
+    this._open = false;
   }
 
   private _itemClicked(ev: CustomEvent): void {
     const item = (ev.currentTarget as any).item;
     if (!item) return;
     item.action();
-    this._dialogClosed();
+    this._closeDialog();
   }
 
   protected render() {
@@ -41,12 +50,7 @@ export class ListItemsDialog
     }
 
     return html`
-      <ha-dialog
-        open
-        .heading=${createCloseHeading(this.hass, this._params.title ?? " ")}
-        @closed=${this._dialogClosed}
-        hideActions
-      >
+      <ha-bottom-sheet .open=${this._open} @wa-after-hide=${this._dialogClosed}>
         <div class="container">
           <ha-md-list>
             ${this._params.items.map(
@@ -84,19 +88,9 @@ export class ListItemsDialog
             )}
           </ha-md-list>
         </div>
-      </ha-dialog>
+      </ha-bottom-sheet>
     `;
   }
-
-  static styles = css`
-    ha-dialog {
-      /* Place above other dialogs */
-      --dialog-z-index: 104;
-      --dialog-content-padding: 0;
-      --md-list-item-leading-space: 24px;
-      --md-list-item-trailing-space: 24px;
-    }
-  `;
 }
 
 declare global {
