@@ -20,29 +20,20 @@ export class ListItemsDialog
 
   @state() private _params?: ListItemsDialogParams;
 
-  @state() private _open = false;
-
   public async showDialog(params: ListItemsDialogParams): Promise<void> {
     this._params = params;
-    await this.updateComplete;
-    this._open = true;
   }
 
   private _dialogClosed(): void {
     this._params = undefined;
-    this._open = false;
     fireEvent(this, "dialog-closed", { dialog: this.localName });
-  }
-
-  private _closeDialog(): void {
-    this._open = false;
   }
 
   private _itemClicked(ev: CustomEvent): void {
     const item = (ev.currentTarget as any).item;
     if (!item) return;
     item.action();
-    this._closeDialog();
+    this._dialogClosed();
   }
 
   protected render() {
@@ -92,10 +83,7 @@ export class ListItemsDialog
 
     if (this._params.mode === "bottom-sheet") {
       return html`
-        <ha-bottom-sheet
-          .open=${this._open}
-          @wa-after-hide=${this._dialogClosed}
-        >
+        <ha-bottom-sheet placement="bottom" open @closed=${this._dialogClosed}>
           ${content}
         </ha-bottom-sheet>
       `;
