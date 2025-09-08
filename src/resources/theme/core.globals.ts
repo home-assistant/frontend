@@ -14,7 +14,7 @@ export const coreStyles = css`
     --ha-border-radius-2xl: 20px;
     --ha-border-radius-3xl: 24px;
     --ha-border-radius-4xl: 28px;
-    --ha-border-radius-5xl: 23px;
+    --ha-border-radius-5xl: 32px;
     --ha-border-radius-6xl: 36px;
     --ha-border-radius-pill: 9999px;
     --ha-border-radius-circle: 50%;
