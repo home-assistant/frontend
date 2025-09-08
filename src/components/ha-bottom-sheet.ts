@@ -48,6 +48,10 @@ export class HaBottomSheet extends LitElement {
       --show-duration: 180ms;
       --hide-duration: 180ms;
     }
+    wa-drawer::part(dialog) {
+      border-top-left-radius: 12px;
+      border-top-right-radius: 12px;
+    }
   `;
 }
 
