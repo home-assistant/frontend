@@ -7759,7 +7759,7 @@
               },
               "face_style": {
                 "label": "Clock face style",
-                "description": "Which style to use for the clock face",
+                "description": "Which kind of indices to use for the clock face",
                 "markers": {
                   "label": "Markers",
                   "description": "Show simple markers around the clock face (default)"
