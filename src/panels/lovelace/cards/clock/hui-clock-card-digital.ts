@@ -86,18 +86,13 @@ export class HuiClockCardDigital extends LitElement {
     if (!this._dateTimeFormat) return;
 
     const parts = this._dateTimeFormat.formatToParts();
-    const hour = parts.find((part) => part.type === "hour")?.value;
-    const minute = parts.find((part) => part.type === "minute")?.value;
-    const second = this.config?.show_seconds
+
+    this._timeHour = parts.find((part) => part.type === "hour")?.value;
+    this._timeMinute = parts.find((part) => part.type === "minute")?.value;
+    this._timeSecond = this.config?.show_seconds
       ? parts.find((part) => part.type === "second")?.value
       : undefined;
-    const dayPeriod = parts.find((part) => part.type === "dayPeriod")?.value;
-
-    // Only update when values actually change to avoid unnecessary re-renders
-    if (hour !== this._timeHour) this._timeHour = hour;
-    if (minute !== this._timeMinute) this._timeMinute = minute;
-    if (second !== this._timeSecond) this._timeSecond = second;
-    if (dayPeriod !== this._timeAmPm) this._timeAmPm = dayPeriod;
+    this._timeAmPm = parts.find((part) => part.type === "dayPeriod")?.value;
   }
 
   render() {
