@@ -273,12 +273,17 @@ class HuiAreaControlsCardFeature
               .control=${control}
               @click=${this._handleButtonTap}
             >
-              <ha-domain-icon
-                .hass=${this.hass}
-                .domain=${domain}
-                .deviceClass=${deviceClass}
-                .state=${groupState}
-              ></ha-domain-icon>
+              ${entities.length === 1
+                ? html`<ha-state-icon
+                    .stateObj=${entities[0]}
+                    .hass=${this.hass}
+                  ></ha-state-icon>`
+                : html` <ha-domain-icon
+                    .hass=${this.hass}
+                    .domain=${domain}
+                    .deviceClass=${deviceClass}
+                    .state=${groupState}
+                  ></ha-domain-icon>`}
             </ha-control-button>
           `;
         })}
