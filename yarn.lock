@@ -5259,7 +5259,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@vaadin/vaadin-themable-mixin@npm:24.8.7":
+"@vaadin/vaadin-themable-mixin@npm:24.8.7, @vaadin/vaadin-themable-mixin@npm:~24.8.7":
   version: 24.8.7
   resolution: "@vaadin/vaadin-themable-mixin@npm:24.8.7"
   dependencies:
