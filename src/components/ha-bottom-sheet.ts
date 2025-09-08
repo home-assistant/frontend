@@ -1,6 +1,6 @@
-import "@awesome.me/webawesome/dist/components/drawer/drawer";
 import { css, html, LitElement, type PropertyValues } from "lit";
 import { customElement, property, state } from "lit/decorators";
+import "./ha-wa-drawer";
 
 @customElement("ha-bottom-sheet")
 export class HaBottomSheet extends LitElement {
@@ -26,29 +26,24 @@ export class HaBottomSheet extends LitElement {
 
   render() {
     return html`
-      <wa-drawer
+      <ha-wa-drawer
         placement="bottom"
         .open=${this._drawerOpen}
         @wa-after-hide=${this._handleAfterHide}
         without-header
       >
         <slot></slot>
-      </wa-drawer>
+      </ha-wa-drawer>
     `;
   }
 
   static styles = css`
-    wa-drawer {
-      --wa-color-surface-raised: var(
-        --ha-dialog-surface-background,
-        var(--mdc-theme-surface, #fff)
-      );
-      --spacing: 0;
+    ha-wa-drawer {
       --size: auto;
-      --show-duration: 180ms;
-      --hide-duration: 180ms;
+      --show-duration: 200ms;
+      --hide-duration: 200ms;
     }
-    wa-drawer::part(dialog) {
+    ha-wa-drawer::part(dialog) {
       border-top-left-radius: var(--ha-border-radius-lg);
       border-top-right-radius: var(--ha-border-radius-lg);
     }
