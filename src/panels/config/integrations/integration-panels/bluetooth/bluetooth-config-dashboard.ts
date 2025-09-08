@@ -122,6 +122,13 @@ export class BluetoothConfigDashboard extends LitElement {
   }
 
   protected render(): TemplateResult {
+    // Get scanner type to determine if options button should be shown
+    const scannerDetails =
+      this._scannerState && this._scannerDetails?.[this._scannerState.source];
+    const scannerType: HaScannerType =
+      scannerDetails?.scanner_type ?? "unknown";
+    const isRemoteScanner = scannerType === "remote";
+
     return html`
       <hass-subpage .narrow=${this.narrow} .hass=${this.hass}>
         <div class="content">
@@ -131,13 +138,15 @@ export class BluetoothConfigDashboard extends LitElement {
             )}
           >
             <div class="card-content">${this._renderScannerState()}</div>
-            <div class="card-actions">
-              <ha-button @click=${this._openOptionFlow}
-                >${this.hass.localize(
-                  "ui.panel.config.bluetooth.option_flow"
-                )}</ha-button
-              >
-            </div>
+            ${!isRemoteScanner
+              ? html`<div class="card-actions">
+                  <ha-button @click=${this._openOptionFlow}
+                    >${this.hass.localize(
+                      "ui.panel.config.bluetooth.option_flow"
+                    )}</ha-button
+                  >
+                </div>`
+              : nothing}
           </ha-card>
           <ha-card
             .header=${this.hass.localize(
