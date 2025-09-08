@@ -11,8 +11,6 @@ import type {
 } from "../types";
 import type { ClockCardConfig } from "./types";
 
-export const INTERVAL = 1000;
-
 @customElement("hui-clock-card")
 export class HuiClockCard extends LitElement implements LovelaceCard {
   public static async getConfigElement(): Promise<LovelaceCardEditor> {
