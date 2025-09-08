@@ -7765,8 +7765,8 @@
                   "description": "Show simple markers around the clock face (default)"
                 },
                 "numbers_upright": {
-                  "label": "Numbers (upright)",
-                  "description": "Show numbers that stay upright around the clock face"
+                  "label": "Numbers",
+                  "description": "Show numbers around the clock face"
                 },
                 "roman": {
                   "label": "Roman numerals",
