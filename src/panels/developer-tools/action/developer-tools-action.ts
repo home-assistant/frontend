@@ -46,7 +46,11 @@ class HaPanelDevAction extends LitElement {
 
   @state() private _uiAvailable = true;
 
-  @state() private _response?: Record<string, any>;
+  @state() private _response?: {
+    domain: string;
+    service: string;
+    result: Record<string, any>;
+  };
 
   @state() private _error?: string;
 
@@ -199,7 +203,7 @@ class HaPanelDevAction extends LitElement {
         </div>
       </div>
       ${this._response
-        ? html`<div class="content">
+        ? html`<div class="content response">
             <ha-card
               .header=${this.hass.localize(
                 "ui.panel.developer-tools.tabs.actions.response"
@@ -212,7 +216,7 @@ class HaPanelDevAction extends LitElement {
                   read-only
                   auto-update
                   has-extra-actions
-                  .value=${this._response}
+                  .value=${this._response.result}
                 >
                   <ha-button
                     appearance="plain"
@@ -223,6 +227,14 @@ class HaPanelDevAction extends LitElement {
                     )}</ha-button
                   >
                 </ha-yaml-editor>
+                ${this._response.domain === "ai_task" &&
+                this._response.service === "generate_image" &&
+                this._response.result.url
+                  ? html`<img
+                      src=${this._response.result.url}
+                      alt="Generated media"
+                    />`
+                  : nothing}
               </div>
             </ha-card>
           </div>`
@@ -328,7 +340,7 @@ class HaPanelDevAction extends LitElement {
 
   private async _copyTemplate(): Promise<void> {
     await copyToClipboard(
-      `{% set ${this._serviceData?.response_variable || "action_response"} = ${JSON.stringify(this._response)} %}`
+      `{% set ${this._serviceData?.response_variable || "action_response"} = ${JSON.stringify(this._response!.result)} %}`
     );
     showToast(this, {
       message: this.hass.localize("ui.common.copied_clipboard"),
@@ -478,7 +490,11 @@ class HaPanelDevAction extends LitElement {
     }
     button.progress = true;
     try {
-      this._response = (await callExecuteScript(this.hass, script)).response;
+      this._response = {
+        domain,
+        service,
+        result: (await callExecuteScript(this.hass, script)).response,
+      };
     } catch (err: any) {
       if (
         err.error?.code === ERR_CONNECTION_LOST &&
@@ -681,6 +697,12 @@ class HaPanelDevAction extends LitElement {
           justify-content: space-between;
           display: flex;
           align-items: center;
+        }
+
+        .response img {
+          max-width: 100%;
+          height: auto;
+          margin-top: 24px;
         }
       `,
     ];
