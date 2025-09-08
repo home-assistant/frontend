@@ -229,10 +229,10 @@ class HUIRoot extends LitElement {
           },
           {
             icon: mdiSofa,
-            key: "ui.panel.lovelace.menu.add_area",
+            key: "ui.panel.lovelace.menu.create_area",
             visible: true,
-            action: this._addArea,
-            overflowAction: this._handleAddArea,
+            action: this._createArea,
+            overflowAction: this._handleCreateArea,
           },
           {
             icon: mdiAccount,
@@ -834,14 +834,14 @@ class HUIRoot extends LitElement {
     showNewAutomationDialog(this, { mode: "automation" });
   };
 
-  private _handleAddArea(ev: CustomEvent<RequestSelectedDetail>): void {
+  private _handleCreateArea(ev: CustomEvent<RequestSelectedDetail>): void {
     if (!shouldHandleRequestSelectedEvent(ev)) {
       return;
     }
-    this._addArea();
+    this._createArea();
   }
 
-  private _addArea = async () => {
+  private _createArea = async () => {
     await this.hass.loadFragmentTranslation("config");
     showAreaRegistryDetailDialog(this, {
       createEntry: async (values) => {
@@ -851,13 +851,15 @@ class HUIRoot extends LitElement {
         }
         showToast(this, {
           message: this.hass.localize(
-            "ui.panel.lovelace.menu.add_area_success"
+            "ui.panel.lovelace.menu.create_area_success"
           ),
           action: {
             action: () => {
               navigate(`/config/areas/area/${area.area_id}`);
             },
-            text: this.hass.localize("ui.panel.lovelace.menu.add_area_action"),
+            text: this.hass.localize(
+              "ui.panel.lovelace.menu.create_area_action"
+            ),
           },
         });
       },
