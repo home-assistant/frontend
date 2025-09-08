@@ -34,7 +34,7 @@ jobs:
         uses: home-assistant/actions/helpers/verify-version@master
 
       - name: Setup Node
-        uses: actions/setup-node@v4.4.0
+        uses: actions/setup-node@v5.0.0
         with:
           node-version-file: ".nvmrc"
           cache: yarn
@@ -92,7 +92,7 @@ jobs:
       - name: Checkout the repository
         uses: actions/checkout@v5.0.0
       - name: Setup Node
-        uses: actions/setup-node@v4.4.0
+        uses: actions/setup-node@v5.0.0
         with:
           node-version-file: ".nvmrc"
           cache: yarn
@@ -121,7 +121,7 @@ jobs:
       - name: Checkout the repository
         uses: actions/checkout@v5.0.0
       - name: Setup Node
-        uses: actions/setup-node@v4.4.0
+        uses: actions/setup-node@v5.0.0
         with:
           node-version-file: ".nvmrc"
           cache: yarn
