@@ -492,7 +492,7 @@ class MoreInfoMediaPlayer extends LitElement {
     }
 
     .empty-cover {
-      background-color: var(--disabled-color);
+      background-color: var(--secondary-background-color);
       font-size: 1.5em;
       color: var(--secondary-text-color);
     }
@@ -526,7 +526,9 @@ class MoreInfoMediaPlayer extends LitElement {
       flex: 1;
     }
 
-    .volume {
+    .volume,
+    .position-bar,
+    .main-control {
       direction: ltr;
     }
 
@@ -534,10 +536,6 @@ class MoreInfoMediaPlayer extends LitElement {
     .position-bar ha-slider {
       width: 100%;
       --md-sys-color-primary: var(--disabled-color);
-    }
-
-    .source-input {
-      direction: var(--direction);
     }
 
     .volume,
@@ -558,9 +556,9 @@ class MoreInfoMediaPlayer extends LitElement {
       border-radius: 10px;
       font-weight: var(--ha-font-weight-normal);
       font-size: var(--ha-font-size-xs);
-      background-color: var(--accent-color);
+      background-color: var(--primary-color);
       padding: 0 4px;
-      color: var(--text-accent-color, var(--text-primary-color));
+      color: var(--primary-text-color);
     }
 
     .position-bar {
@@ -667,7 +665,7 @@ class MoreInfoMediaPlayer extends LitElement {
     });
   }
 
-  private _handleMediaSeekChanged(e: Event): void {
+  private async _handleMediaSeekChanged(e: Event): Promise<void> {
     if (!this.stateObj) {
       return;
     }
