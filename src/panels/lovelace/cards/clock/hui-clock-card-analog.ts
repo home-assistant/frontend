@@ -4,8 +4,9 @@ import { customElement, property, state } from "lit/decorators";
 import { classMap } from "lit/directives/class-map";
 import type { ClockCardConfig } from "../types";
 import type { HomeAssistant } from "../../../../types";
-import { INTERVAL } from "../hui-clock-card";
 import { resolveTimeZone } from "../../../../common/datetime/resolve-time-zone";
+
+const INTERVAL = 10;
 
 function romanize12HourClock(num: number) {
   const numerals = [
@@ -108,10 +109,15 @@ export class HuiClockCardAnalog extends LitElement {
     const hour = hourStr ? parseInt(hourStr, 10) : 0;
     const minute = minuteStr ? parseInt(minuteStr, 10) : 0;
     const second = secondStr ? parseInt(secondStr, 10) : 0;
+    const ms = new Date().getMilliseconds();
+    const secondWithMs = second + ms / 1000;
 
-    this._hourDeg = hour * 30 + minute * 0.5; // 30deg per hour + 0.5deg per minute
-    this._minuteDeg = minute * 6 + second * 0.1; // 6deg per minute + 0.1deg per second
-    this._secondDeg = this.config?.show_seconds ? second * 6 : undefined; // 6deg per second
+    // 30deg per hour + 0.5deg per minute + fractional seconds contribution
+    this._hourDeg = hour * 30 + minute * 0.5 + secondWithMs * (0.5 / 60);
+    // 6deg per minute + 0.1deg per second (including milliseconds)
+    this._minuteDeg = minute * 6 + secondWithMs * 0.1;
+    // 6deg per second (including milliseconds)
+    this._secondDeg = this.config?.show_seconds ? secondWithMs * 6 : undefined;
   }
 
   render() {
