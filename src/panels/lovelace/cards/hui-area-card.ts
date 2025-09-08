@@ -1,5 +1,5 @@
 import { mdiPlay, mdiPause, mdiTextureBox } from "@mdi/js";
-import type { HassEntity } from "home-assistant-js-websocket";
+import type { HassEntity, HassEntityBase } from "home-assistant-js-websocket";
 import {
   css,
   html,
@@ -13,7 +13,7 @@ import { classMap } from "lit/directives/class-map";
 import { ifDefined } from "lit/directives/if-defined";
 import { styleMap } from "lit/directives/style-map";
 import memoizeOne from "memoize-one";
-import { computeActiveMediaStates } from "../../../common/entity/compute_active_media_states";
+import { computeActiveAreaMediaStates } from "../../../data/media-player";
 import { computeCssColor } from "../../../common/color/compute-color";
 import { BINARY_STATE_ON } from "../../../common/const";
 import { computeAreaName } from "../../../common/entity/compute_area_name";
@@ -286,8 +286,8 @@ export class HuiAreaCard extends LitElement implements LovelaceCard {
     );
   }
 
-  private _computeActiveMediaStates(): HassEntity[] {
-    return computeActiveMediaStates(this.hass, this._config?.area);
+  private _computeActiveAreaMediaStates(): HassEntityBase[] {
+    return computeActiveAreaMediaStates(this.hass, this._config?.area || "");
   }
 
   private _renderAlertSensorBadge(): TemplateResult<1> | typeof nothing {
@@ -308,14 +308,13 @@ export class HuiAreaCard extends LitElement implements LovelaceCard {
   }
 
   private _renderMediaBadge(): TemplateResult<1> | typeof nothing {
-    const states = this._computeActiveMediaStates();
+    const states = this._computeActiveAreaMediaStates();
 
     if (states.length === 0) {
       return nothing;
     }
 
-    const firstState = states[0];
-    const isPlaying = firstState.state === "playing";
+    const isPlaying = states.some((entity) => entity.state === "playing");
     const iconPath = isPlaying ? mdiPlay : mdiPause;
     const label = isPlaying
       ? this.hass.localize("ui.card.area.media_playing")
