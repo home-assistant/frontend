@@ -215,18 +215,24 @@ class MoreInfoMediaPlayer extends LitElement {
     supportsFeature(stateObj, MediaPlayerEntityFeature.GROUPING)
       ? html`
           <ha-button
+            class="grouping"
             @click=${this._showGroupMediaPlayers}
             appearance="plain"
             variant="neutral"
             size="small"
           >
-            <ha-svg-icon .path=${mdiSpeakerMultiple} slot="start"></ha-svg-icon>
-            ${hasMultipleMembers
-              ? html`<span class="badge">
-                  ${stateObj.attributes.group_members?.length || 4}
-                </span>`
-              : nothing}
-            <span class="grouping-label">
+            <div slot="start">
+              <ha-svg-icon
+                .path=${mdiSpeakerMultiple}
+                slot="start"
+              ></ha-svg-icon>
+              ${hasMultipleMembers
+                ? html`<span class="badge">
+                    ${stateObj.attributes.group_members?.length || 4}
+                  </span>`
+                : nothing}
+            </div>
+            <span>
               ${hasMultipleMembers
                 ? stateObj.attributes.group_members
                     ?.filter((member) => member !== stateObj.entity_id)
@@ -542,8 +548,8 @@ class MoreInfoMediaPlayer extends LitElement {
 
     .badge {
       position: absolute;
-      top: -6px;
-      left: 24px;
+      top: -10px;
+      left: 16px;
       display: flex;
       justify-content: center;
       align-items: center;
@@ -594,12 +600,16 @@ class MoreInfoMediaPlayer extends LitElement {
       align-items: center;
     }
 
-    .grouping-label {
+    .grouping::part(label) {
       display: block;
       text-overflow: ellipsis;
       overflow: hidden;
       white-space: nowrap;
       max-width: 100px;
+    }
+
+    .grouping::part(start) {
+      position: relative;
     }
   `;
 
