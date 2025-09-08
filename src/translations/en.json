@@ -1383,7 +1383,6 @@
         "related": "Related",
         "history": "History",
         "logbook": "Logbook",
-        "device_info": "Device info",
         "device_or_service_info": "[%key:ui::panel::config::devices::device_info%]",
         "device_type": {
           "device": "[%key:ui::panel::config::devices::type::device_heading%]",
@@ -8765,7 +8764,7 @@
             "all_parameters": "All available parameters",
             "accepts_target": "This action accepts a target, for example: `entity_id: light.bed_light`",
             "no_template_ui_support": "The UI does not support templates, you can still use the YAML editor.",
-            "copy_clipboard_template": "Copy to clipboard (template)",
+            "copy_clipboard_template": "Copy to clipboard as template",
             "errors": {
               "ui": {
                 "no_action": "No action selected, please select an action",
