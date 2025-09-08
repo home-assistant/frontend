@@ -7923,7 +7923,7 @@
               "integration_not_loaded": "This card requires the `todo` integration to be set up.",
               "hide_completed": "Hide completed items",
               "hide_create": "Hide 'Add item' field",
-              "hide_status": "Hide status section",
+              "hide_status": "Hide status sections",
               "display_order": "Display order",
               "item_tap_action": "Item tap behavior",
               "actions": {
