@@ -362,6 +362,7 @@ class HUIRoot extends LitElement {
               }
               showListItemsDialog(this, {
                 title: title,
+                mode: this.narrow ? "bottom-sheet" : "dialog",
                 items: i.subItems!.map((si) => ({
                   iconPath: si.icon,
                   label: this.hass!.localize(si.key),
