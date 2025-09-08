@@ -49,8 +49,8 @@ export class HaBottomSheet extends LitElement {
       --hide-duration: 180ms;
     }
     wa-drawer::part(dialog) {
-      border-top-left-radius: 12px;
-      border-top-right-radius: 12px;
+      border-top-left-radius: var(--ha-border-radius-lg);
+      border-top-right-radius: var(--ha-border-radius-lg);
     }
   `;
 }
