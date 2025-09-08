@@ -56,10 +56,8 @@ const cardConfigStruct = assign(
       defaulted(
         union([
           literal("markers"),
-          literal("numbers"),
           literal("numbers_upright"),
           literal("roman"),
-          literal("roman_upright"),
         ]),
         literal("markers")
       )
@@ -187,10 +185,8 @@ export class HuiClockCardEditor
                             mode: "dropdown",
                             options: [
                               "markers",
-                              "numbers",
                               "numbers_upright",
                               "roman",
-                              "roman_upright",
                             ].map((value) => ({
                               value,
                               label: localize(
