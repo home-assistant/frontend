@@ -31,8 +31,8 @@ import type { HomeSummaryCard } from "./types";
 const COLORS: Record<HomeSummary, string> = {
   lights: "amber",
   climate: "deep-orange",
-  security: "blue",
-  media_players: "purple",
+  security: "blue-grey",
+  media_players: "blue",
 };
 
 @customElement("hui-home-summary-card")

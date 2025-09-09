@@ -171,7 +171,6 @@ export default class HaAutomationSidebarCard extends LitElement {
       transition: box-shadow 180ms ease-in-out;
       border-bottom-left-radius: 0;
       border-bottom-right-radius: 0;
-      z-index: 6;
       position: relative;
       background-color: var(
         --ha-dialog-surface-background,
@@ -180,7 +179,7 @@ export default class HaAutomationSidebarCard extends LitElement {
     }
 
     ha-dialog-header.scrolled {
-      box-shadow: 0 2px 8px rgba(0, 0, 0, 0.12);
+      box-shadow: var(--bar-box-shadow);
     }
 
     .fade {
@@ -194,12 +193,14 @@ export default class HaAutomationSidebarCard extends LitElement {
     }
 
     .fade.scrollable {
-      box-shadow: 0 -2px 12px rgba(0, 0, 0, 0.16);
+      box-shadow: var(--bar-box-shadow);
+      transform: rotate(180deg);
     }
 
     .card-content {
       max-height: calc(100% - 80px);
       overflow: auto;
+      margin-top: 0;
     }
 
     @media (min-width: 450px) and (min-height: 500px) {

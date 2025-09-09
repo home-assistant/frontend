@@ -317,7 +317,7 @@ export default class HaAutomationOption extends LitElement {
     automationRowsStyles,
     css`
       :host([root]) .rows {
-        padding-right: 8px;
+        padding-inline-end: 8px;
       }
     `,
   ];

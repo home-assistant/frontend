@@ -162,8 +162,7 @@ export default class HaScriptFieldRow extends LitElement {
     ev?.stopPropagation();
 
     if (this._selected) {
-      this._selected = false;
-      fireEvent(this, "close-sidebar");
+      fireEvent(this, "request-close-sidebar");
       return;
     }
 
@@ -176,8 +175,7 @@ export default class HaScriptFieldRow extends LitElement {
     ev?.stopPropagation();
 
     if (this._selectorRowSelected) {
-      this._selectorRowSelected = false;
-      fireEvent(this, "close-sidebar");
+      fireEvent(this, "request-close-sidebar");
       return;
     }
 
@@ -337,7 +335,10 @@ export default class HaScriptFieldRow extends LitElement {
           border-bottom-color: var(--divider-color);
         }
         .selector-row {
-          padding: 12px 0 16px 16px;
+          padding-top: 12px;
+          padding-bottom: 16px;
+          padding-inline-start: 16px;
+          padding-inline-end: 0px;
         }
       `,
     ];
