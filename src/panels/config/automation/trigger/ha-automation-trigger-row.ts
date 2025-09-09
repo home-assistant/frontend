@@ -358,9 +358,6 @@ export default class HaAutomationTriggerRow extends LitElement {
               .highlight=${this.highlight}
               .sortSelected=${this.sortSelected}
               @click=${this._toggleSidebar}
-              @copy-row=${this._copyTrigger}
-              @cut-row=${this._cutTrigger}
-              @delete-row=${this._onDelete}
               >${this._selected
                 ? "selected"
                 : nothing}${this._renderRow()}</ha-automation-row
