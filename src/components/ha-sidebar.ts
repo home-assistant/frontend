@@ -726,10 +726,10 @@ class HaSidebar extends SubscribeMixin(LitElement) {
           );
           font-size: var(--ha-font-size-xl);
           align-items: center;
-          padding-left: calc(4px + var(--safe-area-inset-left));
-          padding-inline-start: calc(4px + var(--safe-area-inset-left));
+          padding-left: calc(4px + var(--safe-area-inset-left, 0px));
+          padding-inline-start: calc(4px + var(--safe-area-inset-left, 0px));
           padding-inline-end: initial;
-          padding-top: var(--safe-area-inset-top);
+          padding-top: var(--safe-area-inset-top, 0px);
         }
         :host([expanded]) .menu {
           width: calc(256px + var(--safe-area-inset-left, 0px));
