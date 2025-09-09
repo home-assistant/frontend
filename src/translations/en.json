@@ -7816,6 +7816,22 @@
                   "label": "Minute",
                   "description": "60 ticks (Every minute)"
                 }
+              },
+              "face_style": {
+                "label": "Clock face style",
+                "description": "Which kind of indices to use for the clock face",
+                "markers": {
+                  "label": "Markers",
+                  "description": "Show simple markers around the clock face (default)"
+                },
+                "numbers_upright": {
+                  "label": "Numbers",
+                  "description": "Show numbers around the clock face"
+                },
+                "roman": {
+                  "label": "Roman numerals",
+                  "description": "Show Roman numerals (I-XII) around the clock face"
+                }
               }
             },
             "media-control": {
