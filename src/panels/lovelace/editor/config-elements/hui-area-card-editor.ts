@@ -67,6 +67,22 @@ const cardConfigStruct = assign(
 
 let availableCameraEntities;
 
+export const getCameraEntities = memoizeOne(
+  (
+    // entities: HomeAssistant["entities"],
+    hass: any,
+    areaId: string
+  ): string[] | undefined => {
+    const cameraFilter = generateEntityFilter(hass!, {
+      area: areaId,
+      entity_category: "none",
+      domain: "camera",
+    });
+
+    return Object.keys(hass.entities).filter(cameraFilter);
+  }
+);
+
 @customElement("hui-area-card-editor")
 export class HuiAreaCardEditor
   extends LitElement
@@ -169,9 +185,11 @@ export class HuiAreaCardEditor
                             options:
                               cameraEntities === undefined
                                 ? []
-                                : cameraEntities.map((value) => ({
-                                    label: value.replace("camera.", ""),
-                                    value,
+                                : cameraEntities.map((entityId) => ({
+                                    label:
+                                      this.hass!.states[entityId]?.attributes
+                                        ?.friendly_name || entityId,
+                                    value: entityId,
                                   })),
                             mode: "dropdown",
                           },
@@ -219,21 +237,6 @@ export class HuiAreaCardEditor
           ],
         },
       ] as const satisfies readonly HaFormSchema[]
-  );
-
-  private _getCameraEntities = memoizeOne(
-    (
-      entities: HomeAssistant["entities"],
-      areaId: string
-    ): string[] | undefined => {
-      const cameraFilter = generateEntityFilter(this.hass!, {
-        area: areaId,
-        entity_category: "none",
-        domain: "camera",
-      });
-
-      return Object.keys(entities).filter(cameraFilter);
-    }
   );
 
   private _binaryClassesForArea = memoizeOne(
@@ -341,7 +344,7 @@ export class HuiAreaCardEditor
       config.display_type || (config.show_camera ? "camera" : "picture");
 
     availableCameraEntities = config.area
-      ? this._getCameraEntities(this.hass.entities, config.area)
+      ? getCameraEntities(this.hass, config.area)
       : [];
 
     this._config = {
@@ -501,7 +504,7 @@ export class HuiAreaCardEditor
     const newConfig = ev.detail.value as AreaCardConfig;
 
     availableCameraEntities = newConfig.area
-      ? this._getCameraEntities(this.hass.entities, newConfig.area)
+      ? getCameraEntities(this.hass, newConfig.area)
       : [];
 
     if (this._config!.area !== newConfig.area) {

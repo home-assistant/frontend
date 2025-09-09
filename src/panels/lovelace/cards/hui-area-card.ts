@@ -46,6 +46,7 @@ import type {
   LovelaceGridOptions,
 } from "../types";
 import type { AreaCardConfig } from "./types";
+import { getCameraEntities } from "../editor/config-elements/hui-area-card-editor";
 
 export const DEFAULT_ASPECT_RATIO = "16:9";
 
@@ -481,8 +482,18 @@ export class HuiAreaCard extends LitElement implements LovelaceCard {
 
     const displayType = this._config.display_type || "picture";
 
-    const cameraEntityId =
-      displayType === "camera" ? this._config?.camera_entity : undefined;
+    let cameraEntityId;
+
+    if (displayType === "camera") {
+      cameraEntityId = this._config?.camera_entity ?? undefined;
+
+      if (cameraEntityId === undefined) {
+        const cameraList = getCameraEntities(this.hass, this._config.area);
+        if (cameraList !== undefined && cameraList.length > 0) {
+          cameraEntityId = cameraList[0];
+        }
+      }
+    }
 
     const ignoreAspectRatio = this.layout === "grid" || this.layout === "panel";
 
