@@ -508,8 +508,7 @@ class HaPanelDevState extends LitElement {
           -moz-user-select: initial;
           display: block;
           padding: 16px;
-          padding: max(16px, var(--safe-area-inset-top))
-            max(16px, var(--safe-area-inset-right))
+          padding: 16px max(16px, var(--safe-area-inset-right))
             max(16px, var(--safe-area-inset-bottom))
             max(16px, var(--safe-area-inset-left));
         }
