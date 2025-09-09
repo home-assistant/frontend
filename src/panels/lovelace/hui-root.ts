@@ -1212,7 +1212,10 @@ class HUIRoot extends LitElement {
           width: var(
             --mdc-top-app-bar-width,
             calc(
-              100% - var(--safe-area-inset-left) - var(--safe-area-inset-right)
+              100% - var(--safe-area-inset-left, 0px) - var(
+                  --safe-area-inset-right,
+                  0px
+                )
             )
           );
           -webkit-backdrop-filter: var(--app-header-backdrop-filter, none);
