@@ -12,7 +12,6 @@ import {
 } from "../areas/helpers/areas-strategy-helper";
 import { getHomeStructure } from "./helpers/home-structure";
 import { findEntities, HOME_SUMMARIES_FILTERS } from "./helpers/home-summaries";
-import { computeDomain } from "../../../../common/entity/compute_domain";
 
 export interface HomeSecurityViewStrategyConfig {
   type: "home-security";
@@ -25,7 +24,6 @@ const processAreasForSecurity = (
 ): LovelaceCardConfig[] => {
   const cards: LovelaceCardConfig[] = [];
   const computeTileCard = computeAreaTileCardConfig(hass, "", false);
-  const computeTileCardWithFeature = computeAreaTileCardConfig(hass, "", true);
 
   for (const areaId of areaIds) {
     const area = hass.areas[areaId];
@@ -34,7 +32,13 @@ const processAreasForSecurity = (
     const areaFilter = generateEntityFilter(hass, {
       area: area.area_id,
     });
+
     const areaEntities = entities.filter(areaFilter);
+    const areaCards: LovelaceCardConfig[] = [];
+
+    for (const entityId of areaEntities) {
+      areaCards.push(computeTileCard(entityId));
+    }
 
     if (areaEntities.length > 0) {
       cards.push({
@@ -46,15 +50,7 @@ const processAreasForSecurity = (
           navigation_path: `areas-${area.area_id}`,
         },
       });
-
-      for (const entityId of areaEntities) {
-        cards.push(
-          computeDomain(entityId) === "binary_sensor" &&
-            hass.states[entityId]?.attributes.device_class === "motion"
-            ? computeTileCardWithFeature(entityId)
-            : computeTileCard(entityId)
-        );
-      }
+      cards.push(...areaCards);
     }
   }
 

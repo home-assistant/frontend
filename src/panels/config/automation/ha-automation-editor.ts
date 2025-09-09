@@ -1,7 +1,6 @@
 import { consume } from "@lit/context";
 import {
   mdiCog,
-  mdiContentDuplicate,
   mdiContentSave,
   mdiDebugStepOver,
   mdiDelete,
@@ -11,13 +10,12 @@ import {
   mdiPlay,
   mdiPlayCircleOutline,
   mdiPlaylistEdit,
+  mdiPlusCircleMultipleOutline,
   mdiRenameBox,
   mdiRobotConfused,
   mdiStopCircleOutline,
   mdiTag,
   mdiTransitConnection,
-  mdiUnfoldLessHorizontal,
-  mdiUnfoldMoreHorizontal,
 } from "@mdi/js";
 import type { UnsubscribeFunc } from "home-assistant-js-websocket";
 import type { CSSResultGroup, PropertyValues, TemplateResult } from "lit";
@@ -337,7 +335,7 @@ export class HaAutomationEditor extends PreventUnsavedMixin(
             )}
             <ha-svg-icon
               slot="graphic"
-              .path=${mdiContentDuplicate}
+              .path=${mdiPlusCircleMultipleOutline}
             ></ha-svg-icon>
           </ha-list-item>
 
@@ -370,30 +368,6 @@ export class HaAutomationEditor extends PreventUnsavedMixin(
             )}
             <ha-svg-icon slot="graphic" .path=${mdiPlaylistEdit}></ha-svg-icon>
           </ha-list-item>
-
-          ${!useBlueprint
-            ? html`
-                <ha-list-item graphic="icon" @click=${this._collapseAll}>
-                  <ha-svg-icon
-                    slot="graphic"
-                    .path=${mdiUnfoldLessHorizontal}
-                  ></ha-svg-icon>
-                  ${this.hass.localize(
-                    "ui.panel.config.automation.editor.collapse_all"
-                  )}
-                </ha-list-item>
-
-                <ha-list-item graphic="icon" @click=${this._expandAll}>
-                  <ha-svg-icon
-                    slot="graphic"
-                    .path=${mdiUnfoldMoreHorizontal}
-                  ></ha-svg-icon>
-                  ${this.hass.localize(
-                    "ui.panel.config.automation.editor.expand_all"
-                  )}
-                </ha-list-item>
-              `
-            : nothing}
 
           <li divider role="separator"></li>
 
@@ -619,6 +593,7 @@ export class HaAutomationEditor extends PreventUnsavedMixin(
       this.hass
     ) {
       const initData = getAutomationEditorInitData();
+      this._dirty = !!initData;
       let baseConfig: Partial<AutomationConfig> = { description: "" };
       if (!initData || !("use_blueprint" in initData)) {
         baseConfig = {
@@ -1138,6 +1113,10 @@ export class HaAutomationEditor extends PreventUnsavedMixin(
   protected supportedShortcuts(): SupportedShortcuts {
     return {
       s: () => this._handleSaveAutomation(),
+      c: () => this._copySelectedRow(),
+      x: () => this._cutSelectedRow(),
+      Delete: () => this._deleteSelectedRow(),
+      Backspace: () => this._deleteSelectedRow(),
     };
   }
 
@@ -1149,12 +1128,26 @@ export class HaAutomationEditor extends PreventUnsavedMixin(
     return this._confirmUnsavedChanged();
   }
 
+  // @ts-ignore
   private _collapseAll() {
     this._manualEditor?.collapseAll();
   }
 
+  // @ts-ignore
   private _expandAll() {
     this._manualEditor?.expandAll();
+  }
+
+  private _copySelectedRow() {
+    this._manualEditor?.copySelectedRow();
+  }
+
+  private _cutSelectedRow() {
+    this._manualEditor?.cutSelectedRow();
+  }
+
+  private _deleteSelectedRow() {
+    this._manualEditor?.deleteSelectedRow();
   }
 
   static get styles(): CSSResultGroup {

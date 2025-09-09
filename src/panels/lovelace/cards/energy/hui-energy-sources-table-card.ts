@@ -75,6 +75,139 @@ export class HuiEnergySourcesTableCard
     );
   }
 
+  protected _renderRow(
+    computedStyles: CSSStyleDeclaration,
+    type: string,
+    statId: string,
+    idx: number,
+    energy: number,
+    compareEnergy: number,
+    energyUnit: string,
+    cost: number | null,
+    compareCost: number | null,
+    showCosts: boolean,
+    compare: boolean
+  ) {
+    return html`<tr
+      class="mdc-data-table__row ${classMap({
+        clickable: !isExternalStatistic(statId),
+      })}"
+      @click=${this._handleMoreInfo}
+      .entity=${statId}
+    >
+      <td class="mdc-data-table__cell cell-bullet">
+        <div
+          class="bullet"
+          style=${styleMap({
+            borderColor: getEnergyColor(
+              computedStyles,
+              this.hass.themes.darkMode,
+              false,
+              false,
+              colorPropertyMap[type],
+              idx
+            ),
+            backgroundColor: getEnergyColor(
+              computedStyles,
+              this.hass.themes.darkMode,
+              true,
+              false,
+              colorPropertyMap[type],
+              idx
+            ),
+          })}
+        ></div>
+      </td>
+      <th class="mdc-data-table__cell" scope="row">
+        ${getStatisticLabel(
+          this.hass,
+          statId,
+          this._data?.statsMetadata[statId]
+        )}
+      </th>
+      ${compare
+        ? html`<td class="mdc-data-table__cell mdc-data-table__cell--numeric">
+              ${formatNumber(compareEnergy, this.hass.locale)} ${energyUnit}
+            </td>
+            ${showCosts
+              ? html`<td
+                  class="mdc-data-table__cell mdc-data-table__cell--numeric"
+                >
+                  ${compareCost !== null
+                    ? formatNumber(compareCost, this.hass.locale, {
+                        style: "currency",
+                        currency: this.hass.config.currency!,
+                      })
+                    : ""}
+                </td>`
+              : ""}`
+        : ""}
+      <td class="mdc-data-table__cell mdc-data-table__cell--numeric">
+        ${formatNumber(energy, this.hass.locale)} ${energyUnit}
+      </td>
+      ${showCosts
+        ? html` <td class="mdc-data-table__cell mdc-data-table__cell--numeric">
+            ${cost !== null
+              ? formatNumber(cost, this.hass.locale, {
+                  style: "currency",
+                  currency: this.hass.config.currency!,
+                })
+              : ""}
+          </td>`
+        : ""}
+    </tr>`;
+  }
+
+  protected _renderTotalRow(
+    label: string,
+    energy: number | null,
+    compareEnergy: number | null,
+    energyUnit: string,
+    cost: number | null,
+    compareCost: number | null,
+    showCosts: boolean,
+    compare: boolean
+  ) {
+    return html` <tr class="mdc-data-table__row total">
+      <td class="mdc-data-table__cell"></td>
+      <th class="mdc-data-table__cell" scope="row">${label}</th>
+      ${compare
+        ? html`<td class="mdc-data-table__cell mdc-data-table__cell--numeric">
+              ${compareEnergy === null
+                ? ""
+                : `${formatNumber(compareEnergy, this.hass.locale)} ${energyUnit}`}
+            </td>
+            ${showCosts
+              ? html`<td
+                  class="mdc-data-table__cell mdc-data-table__cell--numeric"
+                >
+                  ${compareCost !== null
+                    ? formatNumber(compareCost, this.hass.locale, {
+                        style: "currency",
+                        currency: this.hass.config.currency!,
+                      })
+                    : ""}
+                </td>`
+              : ""}`
+        : ""}
+      <td class="mdc-data-table__cell mdc-data-table__cell--numeric">
+        ${energy === null
+          ? ""
+          : `${formatNumber(energy, this.hass.locale)} ${energyUnit}`}
+      </td>
+      ${showCosts
+        ? html`<td class="mdc-data-table__cell mdc-data-table__cell--numeric">
+            ${cost !== null
+              ? formatNumber(cost, this.hass.locale, {
+                  style: "currency",
+                  currency: this.hass.config.currency!,
+                })
+              : ""}
+          </td>`
+        : ""}
+    </tr>`;
+  }
+
   protected render() {
     if (!this.hass || !this._config) {
       return nothing;
@@ -112,7 +245,7 @@ export class HuiEnergySourcesTableCard
 
     const computedStyles = getComputedStyle(this);
 
-    const showCosts =
+    const showCosts = !!(
       types.grid?.[0].flow_from.some(
         (flow) =>
           flow.stat_cost || flow.entity_energy_price || flow.number_energy_price
@@ -130,7 +263,8 @@ export class HuiEnergySourcesTableCard
       types.water?.some(
         (flow) =>
           flow.stat_cost || flow.entity_energy_price || flow.number_energy_price
-      );
+      )
+    );
 
     const gasUnit = this._data.gasUnit;
 
@@ -217,91 +351,33 @@ export class HuiEnergySourcesTableCard
                   0;
                 totalSolarCompare += compareEnergy;
 
-                return html`<tr
-                  class="mdc-data-table__row ${classMap({
-                    clickable: !isExternalStatistic(source.stat_energy_from),
-                  })}"
-                  @click=${this._handleMoreInfo}
-                  .entity=${source.stat_energy_from}
-                >
-                  <td class="mdc-data-table__cell cell-bullet">
-                    <div
-                      class="bullet"
-                      style=${styleMap({
-                        borderColor: getEnergyColor(
-                          computedStyles,
-                          this.hass.themes.darkMode,
-                          false,
-                          false,
-                          colorPropertyMap.solar,
-                          idx
-                        ),
-                        backgroundColor: getEnergyColor(
-                          computedStyles,
-                          this.hass.themes.darkMode,
-                          true,
-                          false,
-                          colorPropertyMap.solar,
-                          idx
-                        ),
-                      })}
-                    ></div>
-                  </td>
-                  <th class="mdc-data-table__cell" scope="row">
-                    ${getStatisticLabel(
-                      this.hass,
-                      source.stat_energy_from,
-                      this._data?.statsMetadata[source.stat_energy_from]
-                    )}
-                  </th>
-                  ${compare
-                    ? html`<td
-                          class="mdc-data-table__cell mdc-data-table__cell--numeric"
-                        >
-                          ${formatNumber(compareEnergy, this.hass.locale)} kWh
-                        </td>
-                        ${showCosts
-                          ? html`<td class="mdc-data-table__cell"></td>`
-                          : ""}`
-                    : ""}
-                  <td
-                    class="mdc-data-table__cell mdc-data-table__cell--numeric"
-                  >
-                    ${formatNumber(energy, this.hass.locale)} kWh
-                  </td>
-                  ${showCosts
-                    ? html`<td class="mdc-data-table__cell"></td>`
-                    : ""}
-                </tr>`;
+                return this._renderRow(
+                  computedStyles,
+                  "solar",
+                  source.stat_energy_from,
+                  idx,
+                  energy,
+                  compareEnergy,
+                  "kWh",
+                  null,
+                  null,
+                  showCosts,
+                  compare
+                );
               })}
               ${types.solar
-                ? html`<tr class="mdc-data-table__row total">
-                    <td class="mdc-data-table__cell"></td>
-                    <th class="mdc-data-table__cell" scope="row">
-                      ${this.hass.localize(
-                        "ui.panel.lovelace.cards.energy.energy_sources_table.solar_total"
-                      )}
-                    </th>
-                    ${compare
-                      ? html`<td
-                            class="mdc-data-table__cell mdc-data-table__cell--numeric"
-                          >
-                            ${formatNumber(totalSolarCompare, this.hass.locale)}
-                            kWh
-                          </td>
-                          ${showCosts
-                            ? html`<td class="mdc-data-table__cell"></td>`
-                            : ""}`
-                      : ""}
-                    <td
-                      class="mdc-data-table__cell mdc-data-table__cell--numeric"
-                    >
-                      ${formatNumber(totalSolar, this.hass.locale)} kWh
-                    </td>
-                    ${showCosts
-                      ? html`<td class="mdc-data-table__cell"></td>`
-                      : ""}
-                  </tr>`
+                ? this._renderTotalRow(
+                    this.hass.localize(
+                      "ui.panel.lovelace.cards.energy.energy_sources_table.solar_total"
+                    ),
+                    totalSolar,
+                    totalSolarCompare,
+                    "kWh",
+                    null,
+                    null,
+                    showCosts,
+                    compare
+                  )
                 : ""}
               ${types.battery?.map((source, idx) => {
                 const energyFrom =
@@ -328,155 +404,45 @@ export class HuiEnergySourcesTableCard
                   0;
                 totalBatteryCompare += energyFromCompare - energyToCompare;
 
-                return html`<tr
-                    class="mdc-data-table__row ${classMap({
-                      clickable: !isExternalStatistic(source.stat_energy_from),
-                    })}"
-                    @click=${this._handleMoreInfo}
-                    .entity=${source.stat_energy_from}
-                  >
-                    <td class="mdc-data-table__cell cell-bullet">
-                      <div
-                        class="bullet"
-                        style=${styleMap({
-                          borderColor: getEnergyColor(
-                            computedStyles,
-                            this.hass.themes.darkMode,
-                            false,
-                            false,
-                            colorPropertyMap.battery_out,
-                            idx
-                          ),
-                          backgroundColor: getEnergyColor(
-                            computedStyles,
-                            this.hass.themes.darkMode,
-                            true,
-                            false,
-                            colorPropertyMap.battery_out,
-                            idx
-                          ),
-                        })}
-                      ></div>
-                    </td>
-                    <th class="mdc-data-table__cell" scope="row">
-                      ${getStatisticLabel(
-                        this.hass,
-                        source.stat_energy_from,
-                        this._data?.statsMetadata[source.stat_energy_from]
-                      )}
-                    </th>
-                    ${compare
-                      ? html`<td
-                            class="mdc-data-table__cell mdc-data-table__cell--numeric"
-                          >
-                            ${formatNumber(energyFromCompare, this.hass.locale)}
-                            kWh
-                          </td>
-                          ${showCosts
-                            ? html`<td class="mdc-data-table__cell"></td>`
-                            : ""}`
-                      : ""}
-                    <td
-                      class="mdc-data-table__cell mdc-data-table__cell--numeric"
-                    >
-                      ${formatNumber(energyFrom, this.hass.locale)} kWh
-                    </td>
-                    ${showCosts
-                      ? html`<td class="mdc-data-table__cell"></td>`
-                      : ""}
-                  </tr>
-                  <tr
-                    class="mdc-data-table__row ${classMap({
-                      clickable: !isExternalStatistic(source.stat_energy_to),
-                    })}"
-                    @click=${this._handleMoreInfo}
-                    .entity=${source.stat_energy_to}
-                  >
-                    <td class="mdc-data-table__cell cell-bullet">
-                      <div
-                        class="bullet"
-                        style=${styleMap({
-                          borderColor: getEnergyColor(
-                            computedStyles,
-                            this.hass.themes.darkMode,
-                            false,
-                            false,
-                            colorPropertyMap.battery_in,
-                            idx
-                          ),
-                          backgroundColor: getEnergyColor(
-                            computedStyles,
-                            this.hass.themes.darkMode,
-                            true,
-                            false,
-                            colorPropertyMap.battery_in,
-                            idx
-                          ),
-                        })}
-                      ></div>
-                    </td>
-                    <th class="mdc-data-table__cell" scope="row">
-                      ${getStatisticLabel(
-                        this.hass,
-                        source.stat_energy_to,
-                        this._data?.statsMetadata[source.stat_energy_to]
-                      )}
-                    </th>
-                    ${compare
-                      ? html`<td
-                            class="mdc-data-table__cell mdc-data-table__cell--numeric"
-                          >
-                            ${formatNumber(
-                              energyToCompare * -1,
-                              this.hass.locale
-                            )}
-                            kWh
-                          </td>
-                          ${showCosts
-                            ? html`<td class="mdc-data-table__cell"></td>`
-                            : ""}`
-                      : ""}
-                    <td
-                      class="mdc-data-table__cell mdc-data-table__cell--numeric"
-                    >
-                      ${formatNumber(energyTo * -1, this.hass.locale)} kWh
-                    </td>
-                    ${showCosts
-                      ? html`<td class="mdc-data-table__cell"></td>`
-                      : ""}
-                  </tr>`;
+                return html` ${this._renderRow(
+                  computedStyles,
+                  "battery_out",
+                  source.stat_energy_from,
+                  idx,
+                  energyFrom,
+                  energyFromCompare,
+                  "kWh",
+                  null,
+                  null,
+                  showCosts,
+                  compare
+                )}${this._renderRow(
+                  computedStyles,
+                  "battery_in",
+                  source.stat_energy_to,
+                  idx,
+                  -energyTo,
+                  -energyToCompare,
+                  "kWh",
+                  null,
+                  null,
+                  showCosts,
+                  compare
+                )}`;
               })}
               ${types.battery
-                ? html`<tr class="mdc-data-table__row total">
-                    <td class="mdc-data-table__cell"></td>
-                    <th class="mdc-data-table__cell" scope="row">
-                      ${this.hass.localize(
-                        "ui.panel.lovelace.cards.energy.energy_sources_table.battery_total"
-                      )}
-                    </th>
-                    ${compare
-                      ? html` <td
-                            class="mdc-data-table__cell mdc-data-table__cell--numeric"
-                          >
-                            ${formatNumber(
-                              totalBatteryCompare,
-                              this.hass.locale
-                            )}
-                            kWh
-                          </td>
-                          ${showCosts
-                            ? html`<td class="mdc-data-table__cell"></td>`
-                            : ""}`
-                      : ""}
-                    <td
-                      class="mdc-data-table__cell mdc-data-table__cell--numeric"
-                    >
-                      ${formatNumber(totalBattery, this.hass.locale)} kWh
-                    </td>
-                    ${showCosts
-                      ? html`<td class="mdc-data-table__cell"></td>`
-                      : ""}
-                  </tr>`
+                ? this._renderTotalRow(
+                    this.hass.localize(
+                      "ui.panel.lovelace.cards.energy.energy_sources_table.battery_total"
+                    ),
+                    totalBattery,
+                    totalBatteryCompare,
+                    "kWh",
+                    null,
+                    null,
+                    showCosts,
+                    compare
+                  )
                 : ""}
               ${types.grid?.map(
                 (source) =>
@@ -518,85 +484,19 @@ export class HuiEnergySourcesTableCard
                       totalGridCostCompare += costCompare;
                     }
 
-                    return html`<tr
-                      class="mdc-data-table__row ${classMap({
-                        clickable: !isExternalStatistic(flow.stat_energy_from),
-                      })}"
-                      @click=${this._handleMoreInfo}
-                      .entity=${flow.stat_energy_from}
-                    >
-                      <td class="mdc-data-table__cell cell-bullet">
-                        <div
-                          class="bullet"
-                          style=${styleMap({
-                            borderColor: getEnergyColor(
-                              computedStyles,
-                              this.hass.themes.darkMode,
-                              false,
-                              false,
-                              colorPropertyMap.grid_consumption,
-                              idx
-                            ),
-                            backgroundColor: getEnergyColor(
-                              computedStyles,
-                              this.hass.themes.darkMode,
-                              true,
-                              false,
-                              colorPropertyMap.grid_consumption,
-                              idx
-                            ),
-                          })}
-                        ></div>
-                      </td>
-                      <th class="mdc-data-table__cell" scope="row">
-                        ${getStatisticLabel(
-                          this.hass,
-                          flow.stat_energy_from,
-                          this._data?.statsMetadata[flow.stat_energy_from]
-                        )}
-                      </th>
-                      ${compare
-                        ? html`<td
-                              class="mdc-data-table__cell mdc-data-table__cell--numeric"
-                            >
-                              ${formatNumber(compareEnergy, this.hass.locale)}
-                              kWh
-                            </td>
-                            ${showCosts
-                              ? html`<td
-                                  class="mdc-data-table__cell mdc-data-table__cell--numeric"
-                                >
-                                  ${costCompare !== null
-                                    ? formatNumber(
-                                        costCompare,
-                                        this.hass.locale,
-                                        {
-                                          style: "currency",
-                                          currency: this.hass.config.currency!,
-                                        }
-                                      )
-                                    : ""}
-                                </td>`
-                              : ""}`
-                        : ""}
-                      <td
-                        class="mdc-data-table__cell mdc-data-table__cell--numeric"
-                      >
-                        ${formatNumber(energy, this.hass.locale)} kWh
-                      </td>
-                      ${showCosts
-                        ? html` <td
-                            class="mdc-data-table__cell mdc-data-table__cell--numeric"
-                          >
-                            ${cost !== null
-                              ? formatNumber(cost, this.hass.locale, {
-                                  style: "currency",
-                                  currency: this.hass.config.currency!,
-                                })
-                              : ""}
-                          </td>`
-                        : ""}
-                    </tr>`;
+                    return this._renderRow(
+                      computedStyles,
+                      "grid_consumption",
+                      flow.stat_energy_from,
+                      idx,
+                      energy,
+                      compareEnergy,
+                      "kWh",
+                      cost,
+                      costCompare,
+                      showCosts,
+                      compare
+                    );
                   })}
                   ${source.flow_to.map((flow, idx) => {
                     const energy =
@@ -635,139 +535,36 @@ export class HuiEnergySourcesTableCard
                       totalGridCostCompare += costCompare;
                     }
 
-                    return html`<tr
-                      class="mdc-data-table__row ${classMap({
-                        clickable: !isExternalStatistic(flow.stat_energy_to),
-                      })}"
-                      @click=${this._handleMoreInfo}
-                      .entity=${flow.stat_energy_to}
-                    >
-                      <td class="mdc-data-table__cell cell-bullet">
-                        <div
-                          class="bullet"
-                          style=${styleMap({
-                            borderColor: getEnergyColor(
-                              computedStyles,
-                              this.hass.themes.darkMode,
-                              false,
-                              false,
-                              colorPropertyMap.grid_return,
-                              idx
-                            ),
-                            backgroundColor: getEnergyColor(
-                              computedStyles,
-                              this.hass.themes.darkMode,
-                              true,
-                              false,
-                              colorPropertyMap.grid_return,
-                              idx
-                            ),
-                          })}
-                        ></div>
-                      </td>
-                      <th class="mdc-data-table__cell" scope="row">
-                        ${getStatisticLabel(
-                          this.hass,
-                          flow.stat_energy_to,
-                          this._data?.statsMetadata[flow.stat_energy_to]
-                        )}
-                      </th>
-                      ${compare
-                        ? html`<td
-                              class="mdc-data-table__cell mdc-data-table__cell--numeric"
-                            >
-                              ${formatNumber(energyCompare, this.hass.locale)}
-                              kWh
-                            </td>
-                            ${showCosts
-                              ? html`<td
-                                  class="mdc-data-table__cell mdc-data-table__cell--numeric"
-                                >
-                                  ${costCompare !== null
-                                    ? formatNumber(
-                                        costCompare,
-                                        this.hass.locale,
-                                        {
-                                          style: "currency",
-                                          currency: this.hass.config.currency!,
-                                        }
-                                      )
-                                    : ""}
-                                </td>`
-                              : ""}`
-                        : ""}
-                      <td
-                        class="mdc-data-table__cell mdc-data-table__cell--numeric"
-                      >
-                        ${formatNumber(energy, this.hass.locale)} kWh
-                      </td>
-                      ${showCosts
-                        ? html` <td
-                            class="mdc-data-table__cell mdc-data-table__cell--numeric"
-                          >
-                            ${cost !== null
-                              ? formatNumber(cost, this.hass.locale, {
-                                  style: "currency",
-                                  currency: this.hass.config.currency!,
-                                })
-                              : ""}
-                          </td>`
-                        : ""}
-                    </tr>`;
+                    return this._renderRow(
+                      computedStyles,
+                      "grid_return",
+                      flow.stat_energy_to,
+                      idx,
+                      energy,
+                      energyCompare,
+                      "kWh",
+                      cost,
+                      costCompare,
+                      showCosts,
+                      compare
+                    );
                   })}`
               )}
               ${types.grid &&
               (types.grid?.[0].flow_from?.length ||
                 types.grid?.[0].flow_to?.length)
-                ? html` <tr class="mdc-data-table__row total">
-                    <td class="mdc-data-table__cell"></td>
-                    <th class="mdc-data-table__cell" scope="row">
-                      ${this.hass.localize(
-                        "ui.panel.lovelace.cards.energy.energy_sources_table.grid_total"
-                      )}
-                    </th>
-                    ${compare
-                      ? html`<td
-                            class="mdc-data-table__cell mdc-data-table__cell--numeric"
-                          >
-                            ${formatNumber(totalGridCompare, this.hass.locale)}
-                            kWh
-                          </td>
-                          ${showCosts
-                            ? html`<td
-                                class="mdc-data-table__cell mdc-data-table__cell--numeric"
-                              >
-                                ${hasGridCost
-                                  ? formatNumber(
-                                      totalGridCostCompare,
-                                      this.hass.locale,
-                                      {
-                                        style: "currency",
-                                        currency: this.hass.config.currency!,
-                                      }
-                                    )
-                                  : ""}
-                              </td>`
-                            : ""}`
-                      : ""}
-                    <td
-                      class="mdc-data-table__cell mdc-data-table__cell--numeric"
-                    >
-                      ${formatNumber(totalGrid, this.hass.locale)} kWh
-                    </td>
-                    ${showCosts
-                      ? html`<td
-                          class="mdc-data-table__cell mdc-data-table__cell--numeric"
-                        >
-                          ${hasGridCost
-                            ? formatNumber(totalGridCost, this.hass.locale, {
-                                style: "currency",
-                                currency: this.hass.config.currency!,
-                              })
-                            : ""}
-                        </td>`
-                      : ""}
-                  </tr>`
+                ? this._renderTotalRow(
+                    this.hass.localize(
+                      "ui.panel.lovelace.cards.energy.energy_sources_table.grid_total"
+                    ),
+                    totalGrid,
+                    totalGridCompare,
+                    "kWh",
+                    hasGridCost ? totalGridCost : null,
+                    hasGridCost ? totalGridCostCompare : null,
+                    showCosts,
+                    compare
+                  )
                 : ""}
               ${types.gas?.map((source, idx) => {
                 const energy =
@@ -806,132 +603,33 @@ export class HuiEnergySourcesTableCard
                   totalGasCostCompare += costCompare;
                 }
 
-                return html`<tr
-                  class="mdc-data-table__row ${classMap({
-                    clickable: !isExternalStatistic(source.stat_energy_from),
-                  })}"
-                  @click=${this._handleMoreInfo}
-                  .entity=${source.stat_energy_from}
-                >
-                  <td class="mdc-data-table__cell cell-bullet">
-                    <div
-                      class="bullet"
-                      style=${styleMap({
-                        borderColor: getEnergyColor(
-                          computedStyles,
-                          this.hass.themes.darkMode,
-                          false,
-                          false,
-                          colorPropertyMap.gas,
-                          idx
-                        ),
-                        backgroundColor: getEnergyColor(
-                          computedStyles,
-                          this.hass.themes.darkMode,
-                          true,
-                          false,
-                          colorPropertyMap.gas,
-                          idx
-                        ),
-                      })}
-                    ></div>
-                  </td>
-                  <th class="mdc-data-table__cell" scope="row">
-                    ${getStatisticLabel(
-                      this.hass,
-                      source.stat_energy_from,
-                      this._data?.statsMetadata[source.stat_energy_from]
-                    )}
-                  </th>
-                  ${compare
-                    ? html` <td
-                          class="mdc-data-table__cell mdc-data-table__cell--numeric"
-                        >
-                          ${formatNumber(energyCompare, this.hass.locale)}
-                          ${gasUnit}
-                        </td>
-                        ${showCosts
-                          ? html`<td
-                              class="mdc-data-table__cell mdc-data-table__cell--numeric"
-                            >
-                              ${costCompare !== null
-                                ? formatNumber(costCompare, this.hass.locale, {
-                                    style: "currency",
-                                    currency: this.hass.config.currency!,
-                                  })
-                                : ""}
-                            </td>`
-                          : ""}`
-                    : ""}
-                  <td
-                    class="mdc-data-table__cell mdc-data-table__cell--numeric"
-                  >
-                    ${formatNumber(energy, this.hass.locale)} ${gasUnit}
-                  </td>
-                  ${showCosts
-                    ? html`<td
-                        class="mdc-data-table__cell mdc-data-table__cell--numeric"
-                      >
-                        ${cost !== null
-                          ? formatNumber(cost, this.hass.locale, {
-                              style: "currency",
-                              currency: this.hass.config.currency!,
-                            })
-                          : ""}
-                      </td>`
-                    : ""}
-                </tr>`;
+                return this._renderRow(
+                  computedStyles,
+                  "gas",
+                  source.stat_energy_from,
+                  idx,
+                  energy,
+                  energyCompare,
+                  gasUnit,
+                  cost,
+                  costCompare,
+                  showCosts,
+                  compare
+                );
               })}
               ${types.gas
-                ? html`<tr class="mdc-data-table__row total">
-                    <td class="mdc-data-table__cell"></td>
-                    <th class="mdc-data-table__cell" scope="row">
-                      ${this.hass.localize(
-                        "ui.panel.lovelace.cards.energy.energy_sources_table.gas_total"
-                      )}
-                    </th>
-                    ${compare
-                      ? html`<td
-                            class="mdc-data-table__cell mdc-data-table__cell--numeric"
-                          >
-                            ${formatNumber(totalGasCompare, this.hass.locale)}
-                            ${gasUnit}
-                          </td>
-                          ${showCosts
-                            ? html`<td
-                                class="mdc-data-table__cell mdc-data-table__cell--numeric"
-                              >
-                                ${hasGasCost
-                                  ? formatNumber(
-                                      totalGasCostCompare,
-                                      this.hass.locale,
-                                      {
-                                        style: "currency",
-                                        currency: this.hass.config.currency!,
-                                      }
-                                    )
-                                  : ""}
-                              </td>`
-                            : ""}`
-                      : ""}
-                    <td
-                      class="mdc-data-table__cell mdc-data-table__cell--numeric"
-                    >
-                      ${formatNumber(totalGas, this.hass.locale)} ${gasUnit}
-                    </td>
-                    ${showCosts
-                      ? html`<td
-                          class="mdc-data-table__cell mdc-data-table__cell--numeric"
-                        >
-                          ${hasGasCost
-                            ? formatNumber(totalGasCost, this.hass.locale, {
-                                style: "currency",
-                                currency: this.hass.config.currency!,
-                              })
-                            : ""}
-                        </td>`
-                      : ""}
-                  </tr>`
+                ? this._renderTotalRow(
+                    this.hass.localize(
+                      "ui.panel.lovelace.cards.energy.energy_sources_table.gas_total"
+                    ),
+                    totalGas,
+                    totalGasCompare,
+                    gasUnit,
+                    hasGasCost ? totalGasCost : null,
+                    hasGasCost ? totalGasCostCompare : null,
+                    showCosts,
+                    compare
+                  )
                 : ""}
               ${types.water?.map((source, idx) => {
                 const energy =
@@ -970,173 +668,50 @@ export class HuiEnergySourcesTableCard
                   totalWaterCostCompare += costCompare;
                 }
 
-                return html`<tr
-                  class="mdc-data-table__row ${classMap({
-                    clickable: !isExternalStatistic(source.stat_energy_from),
-                  })}"
-                  @click=${this._handleMoreInfo}
-                  .entity=${source.stat_energy_from}
-                >
-                  <td class="mdc-data-table__cell cell-bullet">
-                    <div
-                      class="bullet"
-                      style=${styleMap({
-                        borderColor: getEnergyColor(
-                          computedStyles,
-                          this.hass.themes.darkMode,
-                          false,
-                          false,
-                          colorPropertyMap.water,
-                          idx
-                        ),
-                        backgroundColor: getEnergyColor(
-                          computedStyles,
-                          this.hass.themes.darkMode,
-                          true,
-                          false,
-                          colorPropertyMap.water,
-                          idx
-                        ),
-                      })}
-                    ></div>
-                  </td>
-                  <th class="mdc-data-table__cell" scope="row">
-                    ${getStatisticLabel(
-                      this.hass,
-                      source.stat_energy_from,
-                      this._data?.statsMetadata[source.stat_energy_from]
-                    )}
-                  </th>
-                  ${compare
-                    ? html` <td
-                          class="mdc-data-table__cell mdc-data-table__cell--numeric"
-                        >
-                          ${formatNumber(energyCompare, this.hass.locale)}
-                          ${waterUnit}
-                        </td>
-                        ${showCosts
-                          ? html`<td
-                              class="mdc-data-table__cell mdc-data-table__cell--numeric"
-                            >
-                              ${costCompare !== null
-                                ? formatNumber(costCompare, this.hass.locale, {
-                                    style: "currency",
-                                    currency: this.hass.config.currency!,
-                                  })
-                                : ""}
-                            </td>`
-                          : ""}`
-                    : ""}
-                  <td
-                    class="mdc-data-table__cell mdc-data-table__cell--numeric"
-                  >
-                    ${formatNumber(energy, this.hass.locale)} ${waterUnit}
-                  </td>
-                  ${showCosts
-                    ? html`<td
-                        class="mdc-data-table__cell mdc-data-table__cell--numeric"
-                      >
-                        ${cost !== null
-                          ? formatNumber(cost, this.hass.locale, {
-                              style: "currency",
-                              currency: this.hass.config.currency!,
-                            })
-                          : ""}
-                      </td>`
-                    : ""}
-                </tr>`;
+                return this._renderRow(
+                  computedStyles,
+                  "water",
+                  source.stat_energy_from,
+                  idx,
+                  energy,
+                  energyCompare,
+                  waterUnit,
+                  cost,
+                  costCompare,
+                  showCosts,
+                  compare
+                );
               })}
               ${types.water
-                ? html`<tr class="mdc-data-table__row total">
-                    <td class="mdc-data-table__cell"></td>
-                    <th class="mdc-data-table__cell" scope="row">
-                      ${this.hass.localize(
-                        "ui.panel.lovelace.cards.energy.energy_sources_table.water_total"
-                      )}
-                    </th>
-                    ${compare
-                      ? html`<td
-                            class="mdc-data-table__cell mdc-data-table__cell--numeric"
-                          >
-                            ${formatNumber(totalWaterCompare, this.hass.locale)}
-                            ${waterUnit}
-                          </td>
-                          ${showCosts
-                            ? html`<td
-                                class="mdc-data-table__cell mdc-data-table__cell--numeric"
-                              >
-                                ${hasWaterCost
-                                  ? formatNumber(
-                                      totalWaterCostCompare,
-                                      this.hass.locale,
-                                      {
-                                        style: "currency",
-                                        currency: this.hass.config.currency!,
-                                      }
-                                    )
-                                  : ""}
-                              </td>`
-                            : ""}`
-                      : ""}
-                    <td
-                      class="mdc-data-table__cell mdc-data-table__cell--numeric"
-                    >
-                      ${formatNumber(totalWater, this.hass.locale)} ${waterUnit}
-                    </td>
-                    ${showCosts
-                      ? html`<td
-                          class="mdc-data-table__cell mdc-data-table__cell--numeric"
-                        >
-                          ${hasWaterCost
-                            ? formatNumber(totalWaterCost, this.hass.locale, {
-                                style: "currency",
-                                currency: this.hass.config.currency!,
-                              })
-                            : ""}
-                        </td>`
-                      : ""}
-                  </tr>`
+                ? this._renderTotalRow(
+                    this.hass.localize(
+                      "ui.panel.lovelace.cards.energy.energy_sources_table.water_total"
+                    ),
+                    totalWater,
+                    totalWaterCompare,
+                    waterUnit,
+                    hasWaterCost ? totalWaterCost : null,
+                    hasWaterCost ? totalWaterCostCompare : null,
+                    showCosts,
+                    compare
+                  )
                 : ""}
               ${[hasGasCost, hasWaterCost, hasGridCost].filter(Boolean).length >
               1
-                ? html`<tr class="mdc-data-table__row total">
-                    <td class="mdc-data-table__cell"></td>
-                    <th class="mdc-data-table__cell" scope="row">
-                      ${this.hass.localize(
-                        "ui.panel.lovelace.cards.energy.energy_sources_table.total_costs"
-                      )}
-                    </th>
-                    ${compare
-                      ? html`<td class="mdc-data-table__cell"></td>
-                          <td
-                            class="mdc-data-table__cell mdc-data-table__cell--numeric"
-                          >
-                            ${formatNumber(
-                              totalGasCostCompare +
-                                totalGridCostCompare +
-                                totalWaterCostCompare,
-                              this.hass.locale,
-                              {
-                                style: "currency",
-                                currency: this.hass.config.currency!,
-                              }
-                            )}
-                          </td>`
-                      : ""}
-                    <td class="mdc-data-table__cell"></td>
-                    <td
-                      class="mdc-data-table__cell mdc-data-table__cell--numeric"
-                    >
-                      ${formatNumber(
-                        totalGasCost + totalGridCost + totalWaterCost,
-                        this.hass.locale,
-                        {
-                          style: "currency",
-                          currency: this.hass.config.currency!,
-                        }
-                      )}
-                    </td>
-                  </tr>`
+                ? this._renderTotalRow(
+                    this.hass.localize(
+                      "ui.panel.lovelace.cards.energy.energy_sources_table.total_costs"
+                    ),
+                    null,
+                    null,
+                    "",
+                    totalGasCost + totalGridCost + totalWaterCost,
+                    totalGasCostCompare +
+                      totalGridCostCompare +
+                      totalWaterCostCompare,
+                    showCosts,
+                    compare
+                  )
                 : ""}
             </tbody>
           </table>

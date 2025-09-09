@@ -5,7 +5,7 @@
     "config": "Settings",
     "states": "Overview",
     "map": "Map",
-    "logbook": "Activity",
+    "logbook": "Logbook",
     "history": "History",
     "todo": "To-do lists",
     "developer_tools": "Developer tools",
@@ -200,6 +200,15 @@
         "open_door": "Open door",
         "open_door_confirm": "Really open?",
         "open_door_done": "Done"
+      },
+      "home-summary": {
+        "all_lights_off": "All off",
+        "count_lights_on": "{count} {count, plural,\n one {on}\n other {on}\n}",
+        "count_locks_unlocked": "{count} {count, plural,\n one {unlocked}\n other {unlocked}\n}",
+        "count_alarms_disarmed": "{count} {count, plural,\n one {disarmed}\n other {disarmed}\n}",
+        "all_secure": "All secure",
+        "no_media_playing": "No media playing",
+        "count_media_playing": "{count} {count, plural,\n one {playing}\n other {playing}\n}"
       },
       "media_player": {
         "source": "Source",
@@ -517,7 +526,7 @@
         }
       },
       "logbook": {
-        "entries_not_found": "No activity found.",
+        "entries_not_found": "No logbook events found.",
         "triggered_by": "triggered by",
         "triggered_by_automation": "triggered by automation",
         "triggered_by_script": "triggered by script",
@@ -530,7 +539,7 @@
         "triggered_by_homeassistant_stopping": "triggered by Home Assistant stopping",
         "triggered_by_homeassistant_starting": "triggered by Home Assistant starting",
         "show_trace": "[%key:ui::panel::config::automation::editor::show_trace%]",
-        "retrieval_error": "Could not load activity",
+        "retrieval_error": "Could not load logbook",
         "not_loaded": "[%key:ui::dialogs::helper_settings::platform_not_loaded%]",
         "messages": {
           "was_away": "was detected away",
@@ -669,7 +678,7 @@
       },
       "subpage-data-table": {
         "filters": "Filters",
-        "show_results": "show {number} results",
+        "show_results": "Show {number} results",
         "clear_filter": "Clear filter",
         "close_filter": "Close filters",
         "exit_selection_mode": "Exit selection mode",
@@ -1373,8 +1382,12 @@
         "info": "Information",
         "related": "Related",
         "history": "History",
-        "logbook": "Activity",
-        "device_info": "Device info",
+        "logbook": "Logbook",
+        "device_or_service_info": "[%key:ui::panel::config::devices::device_info%]",
+        "device_type": {
+          "device": "[%key:ui::panel::config::devices::type::device_heading%]",
+          "service": "[%key:ui::panel::config::devices::type::service_heading%]"
+        },
         "last_changed": "Last changed",
         "last_updated": "Last updated",
         "show_more": "Show more",
@@ -1605,7 +1618,7 @@
             "preload_stream": "Preload camera stream",
             "preload_stream_description": "This keeps the camera stream open in the background so it shows quicker. Warning! This is device intensive.",
             "stream_orientation": "Camera stream orientation",
-            "stream_orientation_description": "The orientation transformation to use for the camera stream.",
+            "stream_orientation_description": "The orientation transformation to use for the camera stream.\nWarning: Stream orientation processing occurs on the Home Assistant device and may impact system performance. When possible, configure this setting directly on your camera instead.",
             "stream_orientation_1": "No orientation transform",
             "stream_orientation_2": "Mirror",
             "stream_orientation_3": "Rotate 180",
@@ -2026,11 +2039,13 @@
         "title": "Shortcuts",
         "enable_shortcuts_hint": "For keyboard shortcuts to work, make sure you have them enabled in your {user_profile}.",
         "enable_shortcuts_hint_user_profile": "user profile",
+        "keys": {
+          "del": "Del"
+        },
         "shortcuts": {
           "double_click": "Double-click",
           "scroll_wheel": "Scroll",
-          "drag": "Drag",
-          "ctrl_cmd": "Ctrl/Cmd"
+          "drag": "Drag"
         },
         "searching": {
           "title": "Searching",
@@ -2047,6 +2062,9 @@
         },
         "automation_script": {
           "title": "Automations / Scripts",
+          "copy": "to copy the selected item to clipboard",
+          "cut": "to cut the selected item and place it on the clipboard",
+          "delete": "to delete the selected item",
           "paste": "to paste automation/script YAML from clipboard to editor",
           "save": "to save automation/script"
         },
@@ -3847,6 +3865,9 @@
             "type_script_plural": "[%key:ui::panel::config::blueprint::overview::types_plural::script%]",
             "new_automation_setup_failed_title": "New {type} setup failed",
             "new_automation_setup_failed_text": "Your new {type} has saved, but waiting for it to setup has timed out. This could be due to errors parsing your configuration.yaml, please check the configuration in developer tools. Your {type} will not be visible until this is corrected, and {types} are reloaded. Changes to area, category, or labels were not saved and must be reapplied.",
+            "item_pasted": "{item} pasted",
+            "ctrl": "Ctrl",
+            "del": "Del",
             "triggers": {
               "name": "Triggers",
               "header": "When",
@@ -3873,6 +3894,8 @@
               "unknown_trigger": "[%key:ui::panel::config::devices::automation::triggers::unknown_trigger%]",
               "triggering_event_detail": "Triggering event detail",
               "trigger": "Trigger",
+              "copied_to_clipboard": "Trigger copied to clipboard",
+              "cut_to_clipboard": "Trigger cut to clipboard",
               "groups": {
                 "entity": {
                   "label": "Entity",
@@ -4135,6 +4158,8 @@
               "type_select": "Condition type",
               "unknown_condition": "[%key:ui::panel::config::devices::automation::conditions::unknown_condition%]",
               "condition": "Condition",
+              "copied_to_clipboard": "Condition copied to clipboard",
+              "cut_to_clipboard": "Condition cut to clipboard",
               "groups": {
                 "entity": {
                   "label": "Entity",
@@ -4304,6 +4329,8 @@
               "type_select": "Action type",
               "continue_on_error": "Continue on error",
               "action": "Action",
+              "copied_to_clipboard": "Action copied to clipboard",
+              "cut_to_clipboard": "Action cut to clipboard",
               "groups": {
                 "helpers": {
                   "label": "Helpers"
@@ -4568,7 +4595,7 @@
             "tabs": {
               "details": "Step details",
               "timeline": "Trace timeline",
-              "logbook": "Related activity",
+              "logbook": "Related logbook entries",
               "automation_config": "Automation config",
               "step_config": "Step config",
               "changed_variables": "Changed variables",
@@ -4585,7 +4612,7 @@
               "error": "Error: {error}",
               "result": "Result:",
               "step_not_executed": "This step was not executed.",
-              "no_logbook_entries": "No activity found for this step.",
+              "no_logbook_entries": "No logbook entries found for this step.",
               "no_variables_changed": "No variables changed",
               "unable_to_find_config": "Unable to find config"
             },
@@ -4611,8 +4638,8 @@
               "disabled": "(disabled)",
               "triggered_by": "{triggeredBy, select, \n alias {{alias} triggered}\n other {Triggered} \n} {triggeredPath, select, \n trigger {by the {trigger}}\n other {manually} \n} at {time}",
               "path_error": "Unable to extract path {path}. Download trace and report as bug.",
-              "not_all_entries_are_related_automation_note": "Not all shown activity might be related to this automation.",
-              "not_all_entries_are_related_script_note": "Not all shown activity might be related to this script."
+              "not_all_entries_are_related_automation_note": "Not all shown logbook entries might be related to this automation.",
+              "not_all_entries_are_related_script_note": "Not all shown logbook entries might be related to this script."
             }
           }
         },
@@ -5118,7 +5145,7 @@
             "integration": "Integration",
             "config_entry": "Config entry"
           },
-          "enabled_description": "Disabled devices will not be shown and entities belonging to the device will be disabled and not added to Home Assistant.",
+          "enabled_description": "Disabled devices and services will not be shown and entities belonging to them will be disabled, too.",
           "open_configuration_url": "Visit",
           "set_up_voice_assistant": "Set up voice assistant",
           "download_diagnostics": "Download diagnostics",
@@ -5233,7 +5260,15 @@
             "bulk_actions": {
               "move_area": "Move to area",
               "no_area": "No area",
-              "add_area": "Add area"
+              "add_area": "Add area",
+              "delete_selected": {
+                "button": "[%key:ui::panel::config::entities::picker::delete_selected::button%]",
+                "confirm_title": "Delete selected devices?",
+                "confirm_text": "Are you sure you want to delete the devices?",
+                "confirm_partly_text": "You can only delete {deletable} of the {selected} devices. The others are provided by integrations that do not support deleting devices.",
+                "partial_failure_title": "Delete failed",
+                "partial_failure": "Some devices failed to delete successfully. Check system logs for more information."
+              }
             }
           }
         },
@@ -5715,6 +5750,16 @@
           "no_advertisements_found": "No matching Bluetooth advertisements found",
           "no_connection_slot_allocations": "No connection slot allocations information available",
           "no_active_connection_support": "This adapter does not support making active (GATT) connections.",
+          "no_scanner_state_available": "No scanner state available",
+          "current_scanning_mode": "Current scanning mode",
+          "requested_scanning_mode": "Requested scanning mode",
+          "scanning_mode_none": "none",
+          "scanning_mode_active": "active",
+          "scanning_mode_passive": "passive",
+          "scanner_mode_mismatch": "Scanner requested {requested} mode but is operating in {current} mode. The scanner is in a bad state and needs to be power cycled.",
+          "scanner_mode_mismatch_remote": "For proxies: reboot the device",
+          "scanner_mode_mismatch_usb": "For USB adapters: unplug and plug back in",
+          "scanner_mode_mismatch_uart": "For UART/onboard adapters: power down the system completely and power it back up",
           "address": "Address",
           "name": "Name",
           "source": "Source",
@@ -7529,8 +7574,8 @@
               "square": "Render cards as squares"
             },
             "logbook": {
-              "name": "Activity",
-              "description": "The Activity card shows a list of events for entities."
+              "name": "Logbook",
+              "description": "The Logbook card shows a list of events for entities."
             },
             "history-graph": {
               "name": "History graph",
@@ -7770,6 +7815,22 @@
                 "minute": {
                   "label": "Minute",
                   "description": "60 ticks (Every minute)"
+                }
+              },
+              "face_style": {
+                "label": "Clock face style",
+                "description": "Which kind of indices to use for the clock face",
+                "markers": {
+                  "label": "Markers",
+                  "description": "Show simple markers around the clock face (default)"
+                },
+                "numbers_upright": {
+                  "label": "Numbers",
+                  "description": "Show numbers around the clock face"
+                },
+                "roman": {
+                  "label": "Roman numerals",
+                  "description": "Show Roman numerals (I-XII) around the clock face"
                 }
               }
             },
@@ -8171,8 +8232,8 @@
               "bar-gauge": {
                 "label": "Bar gauge"
               },
-              "history-chart": {
-                "label": "History chart"
+              "trend-graph": {
+                "label": "Trend graph"
               }
             }
           },
@@ -8727,7 +8788,7 @@
             "all_parameters": "All available parameters",
             "accepts_target": "This action accepts a target, for example: `entity_id: light.bed_light`",
             "no_template_ui_support": "The UI does not support templates, you can still use the YAML editor.",
-            "copy_clipboard_template": "Copy to clipboard (template)",
+            "copy_clipboard_template": "Copy to clipboard as template",
             "errors": {
               "ui": {
                 "no_action": "No action selected, please select an action",

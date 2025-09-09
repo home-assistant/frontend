@@ -90,7 +90,7 @@ export class HaDialog extends DialogBase {
       }
       .mdc-dialog__actions {
         justify-content: var(--justify-action-buttons, flex-end);
-        padding: 12px 16px max(var(--safe-area-inset-bottom), 16px) 16px;
+        padding: 12px 16px 16px 16px;
       }
       .mdc-dialog__actions span:nth-child(1) {
         flex: var(--secondary-action-button-flex, unset);
@@ -100,6 +100,8 @@ export class HaDialog extends DialogBase {
       }
       .mdc-dialog__container {
         align-items: var(--vertical-align-dialog, center);
+        padding-top: var(--safe-area-inset-top);
+        padding-bottom: var(--safe-area-inset-bottom);
       }
       .mdc-dialog__title {
         padding: 16px 16px 0 16px;
@@ -115,15 +117,17 @@ export class HaDialog extends DialogBase {
         padding: var(--dialog-content-padding, 24px);
       }
       :host([hideactions]) .mdc-dialog .mdc-dialog__content {
-        padding-bottom: max(
-          var(--dialog-content-padding, 24px),
-          var(--safe-area-inset-bottom)
-        );
+        padding-bottom: var(--dialog-content-padding, 24px);
       }
       .mdc-dialog .mdc-dialog__surface {
         position: var(--dialog-surface-position, relative);
         top: var(--dialog-surface-top);
         margin-top: var(--dialog-surface-margin-top);
+        min-width: calc(
+          var(--mdc-dialog-min-width, 100vw) - var(
+              --safe-area-inset-left
+            ) - var(--safe-area-inset-right)
+        );
         min-height: var(--mdc-dialog-min-height, auto);
         border-radius: var(--ha-dialog-border-radius, 24px);
         -webkit-backdrop-filter: var(--ha-dialog-surface-backdrop-filter, none);
@@ -137,6 +141,24 @@ export class HaDialog extends DialogBase {
         display: flex;
         flex-direction: column;
       }
+
+      @media all and (max-width: 450px), all and (max-height: 500px) {
+        .mdc-dialog .mdc-dialog__surface {
+          min-height: calc(
+            100vh - var(--safe-area-inset-top, 0px) - var(
+                --safe-area-inset-bottom,
+                0px
+              )
+          );
+          max-height: calc(
+            100vh - var(--safe-area-inset-top, 0px) - var(
+                --safe-area-inset-bottom,
+                0px
+              )
+          );
+        }
+      }
+
       .header_title {
         display: flex;
         align-items: center;

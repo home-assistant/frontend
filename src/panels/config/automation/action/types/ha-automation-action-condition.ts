@@ -3,6 +3,7 @@ import { customElement, property, query } from "lit/decorators";
 import memoizeOne from "memoize-one";
 import { fireEvent } from "../../../../../common/dom/fire_event";
 import { stringCompare } from "../../../../../common/string/compare";
+import { stopPropagation } from "../../../../../common/dom/stop_propagation";
 import type { LocalizeFunc } from "../../../../../common/translations/localize";
 import "../../../../../components/ha-list-item";
 import "../../../../../components/ha-select";
@@ -66,6 +67,7 @@ export class HaConditionAction extends LitElement implements ActionElement {
               .value=${this.action.condition}
               naturalMenuWidth
               @selected=${this._typeChanged}
+              @closed=${stopPropagation}
             >
               ${this._processedTypes(this.hass.localize).map(
                 ([opt, label, icon]) => html`

@@ -2,9 +2,9 @@ import { consume } from "@lit/context";
 import {
   mdiArrowDown,
   mdiArrowUp,
-  mdiContentDuplicate,
   mdiDelete,
   mdiDotsVertical,
+  mdiPlusCircleMultipleOutline,
   mdiRenameBox,
 } from "@mdi/js";
 import type { CSSResultGroup } from "lit";
@@ -85,6 +85,10 @@ export default class HaAutomationOptionRow extends LitElement {
 
   @query("ha-automation-row")
   private _automationRowElement?: HaAutomationRow;
+
+  get selected() {
+    return this._selected;
+  }
 
   private _expandedChanged(ev) {
     if (ev.currentTarget.id !== "option") {
@@ -167,7 +171,7 @@ export default class HaAutomationOptionRow extends LitElement {
                 )}
                 <ha-svg-icon
                   slot="start"
-                  .path=${mdiContentDuplicate}
+                  .path=${mdiPlusCircleMultipleOutline}
                 ></ha-svg-icon>
               </ha-md-menu-item>
 
@@ -271,9 +275,10 @@ export default class HaAutomationOptionRow extends LitElement {
               left-chevron
               .collapsed=${this._collapsed}
               .selected=${this._selected}
+              .sortSelected=${this.sortSelected}
               @click=${this._toggleSidebar}
               @toggle-collapsed=${this._toggleCollapse}
-              .sortSelected=${this.sortSelected}
+              @delete-row=${this._removeOption}
               >${this._renderRow()}</ha-automation-row
             >`
           : html`
@@ -376,8 +381,7 @@ export default class HaAutomationOptionRow extends LitElement {
     ev?.stopPropagation();
 
     if (this._selected) {
-      this._selected = false;
-      fireEvent(this, "close-sidebar");
+      fireEvent(this, "request-close-sidebar");
       return;
     }
     this.openSidebar();
@@ -395,7 +399,6 @@ export default class HaAutomationOptionRow extends LitElement {
       rename: () => {
         this._renameOption();
       },
-      toggleYamlMode: () => false, // no yaml mode for options
       delete: this._removeOption,
       duplicate: this._duplicateOption,
       defaultOption: !!this.defaultActions,
@@ -404,12 +407,12 @@ export default class HaAutomationOptionRow extends LitElement {
     this._collapsed = false;
 
     if (this.narrow) {
-      requestAnimationFrame(() => {
+      window.setTimeout(() => {
         this.scrollIntoView({
           block: "start",
           behavior: "smooth",
         });
-      });
+      }, 180); // duration of transition of added padding for bottom sheet
     }
   }
 
@@ -444,10 +447,6 @@ export default class HaAutomationOptionRow extends LitElement {
 
   private _toggleCollapse() {
     this._collapsed = !this._collapsed;
-  }
-
-  public isSelected() {
-    return this._selected;
   }
 
   public focus() {

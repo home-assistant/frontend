@@ -146,6 +146,8 @@ export class HomeAssistantMain extends LitElement {
       -webkit-tap-highlight-color: rgba(0, 0, 0, 0);
       --mdc-drawer-width: 56px;
       --mdc-top-app-bar-width: calc(100% - var(--mdc-drawer-width));
+      --safe-area-content-inset-left: 0px;
+      --safe-area-content-inset-right: var(--safe-area-inset-right);
     }
     :host([expanded]) {
       --mdc-drawer-width: calc(256px + var(--safe-area-inset-left));
@@ -153,6 +155,7 @@ export class HomeAssistantMain extends LitElement {
     :host([modal]) {
       --mdc-drawer-width: unset;
       --mdc-top-app-bar-width: unset;
+      --safe-area-content-inset-left: var(--safe-area-inset-left);
     }
     partial-panel-resolver,
     ha-sidebar {

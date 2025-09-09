@@ -97,7 +97,7 @@ export default class HaAutomationActionEditor extends LitElement {
     if (!ev.detail.isValid) {
       return;
     }
-    fireEvent(this, "value-changed", {
+    fireEvent(this, this.inSidebar ? "yaml-changed" : "value-changed", {
       value: migrateAutomationAction(ev.detail.value),
     });
   }

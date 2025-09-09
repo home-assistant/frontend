@@ -2,7 +2,13 @@ import { mdiContentSave, mdiHelpCircle } from "@mdi/js";
 import { load } from "js-yaml";
 import type { CSSResultGroup, PropertyValues } from "lit";
 import { css, html, LitElement, nothing } from "lit";
-import { customElement, property, query, state } from "lit/decorators";
+import {
+  customElement,
+  property,
+  query,
+  queryAll,
+  state,
+} from "lit/decorators";
 import { classMap } from "lit/directives/class-map";
 import {
   any,
@@ -24,7 +30,10 @@ import {
 } from "../../../common/url/search-params";
 import "../../../components/ha-icon-button";
 import "../../../components/ha-markdown";
-import type { SidebarConfig } from "../../../data/automation";
+import type {
+  ActionSidebarConfig,
+  SidebarConfig,
+} from "../../../data/automation";
 import type { Action, Fields, ScriptConfig } from "../../../data/script";
 import {
   getActionType,
@@ -73,10 +82,17 @@ export class HaManualScriptEditor extends LitElement {
 
   @state() private _sidebarConfig?: SidebarConfig;
 
+  @state() private _sidebarKey?: string;
+
   @query("ha-script-fields")
   private _scriptFields?: HaScriptFields;
 
   @query("ha-automation-sidebar") private _sidebarElement?: HaAutomationSidebar;
+
+  @queryAll("ha-automation-action, ha-script-fields")
+  private _collapsableElements?: NodeListOf<
+    HaAutomationAction | HaScriptFields
+  >;
 
   private _previousConfig?: ScriptConfig;
 
@@ -154,6 +170,7 @@ export class HaManualScriptEditor extends LitElement {
               .disabled=${this.disabled}
               .narrow=${this.narrow}
               @open-sidebar=${this._openSidebar}
+              @request-close-sidebar=${this._triggerCloseSidebar}
               @close-sidebar=${this._handleCloseSidebar}
             ></ha-script-fields>`
         : nothing
@@ -184,6 +201,7 @@ export class HaManualScriptEditor extends LitElement {
       .highlightedActions=${this._pastedConfig?.sequence || []}
       @value-changed=${this._sequenceChanged}
       @open-sidebar=${this._openSidebar}
+      @request-close-sidebar=${this._triggerCloseSidebar}
       @close-sidebar=${this._handleCloseSidebar}
       .hass=${this.hass}
       .narrow=${this.narrow}
@@ -202,7 +220,11 @@ export class HaManualScriptEditor extends LitElement {
         })}
       >
         <div class="content-wrapper">
-          <div class="content">
+          <div
+            class="content ${this._sidebarConfig && this.narrow
+              ? "has-bottom-sheet"
+              : ""}"
+          >
             <slot name="alerts"></slot>
             ${this._renderContent()}
           </div>
@@ -223,6 +245,7 @@ export class HaManualScriptEditor extends LitElement {
         </div>
         <div class="sidebar-positioner">
           <ha-automation-sidebar
+            .sidebarKey=${this._sidebarKey}
             tabindex="-1"
             class=${classMap({ hidden: !this._sidebarConfig })}
             .narrow=${this.narrow}
@@ -354,7 +377,11 @@ export class HaManualScriptEditor extends LitElement {
     if (normalized) {
       ev.preventDefault();
 
-      if (this.dirty) {
+      if (
+        this.dirty ||
+        ensureArray(this.config.sequence)?.length ||
+        Object.keys(this.config.fields || {}).length
+      ) {
         const result = await new Promise<boolean>((resolve) => {
           showPasteReplaceDialog(this, {
             domain: "script",
@@ -463,6 +490,7 @@ export class HaManualScriptEditor extends LitElement {
     // deselect previous selected row
     this._sidebarConfig?.close?.();
     this._sidebarConfig = ev.detail;
+    this._sidebarKey = JSON.stringify(this._sidebarConfig);
 
     await this._sidebarElement?.updateComplete;
     this._sidebarElement?.focus();
@@ -480,11 +508,13 @@ export class HaManualScriptEditor extends LitElement {
     };
   }
 
-  private _closeSidebar() {
+  private _triggerCloseSidebar() {
     if (this._sidebarConfig) {
-      const closeRow = this._sidebarConfig?.close;
-      this._sidebarConfig = undefined;
-      closeRow?.();
+      if (this._sidebarElement) {
+        this._sidebarElement.triggerCloseSidebar();
+        return;
+      }
+      this._sidebarConfig?.close();
     }
   }
 
@@ -493,26 +523,38 @@ export class HaManualScriptEditor extends LitElement {
   }
 
   private _saveScript() {
-    this._closeSidebar();
+    this._triggerCloseSidebar();
     fireEvent(this, "save-script");
   }
 
-  private _getCollapsableElements() {
-    return this.shadowRoot!.querySelectorAll<
-      HaAutomationAction | HaScriptFields
-    >("ha-automation-action, ha-script-fields");
-  }
-
   public expandAll() {
-    this._getCollapsableElements().forEach((element) => {
+    this._collapsableElements?.forEach((element) => {
       element.expandAll();
     });
   }
 
   public collapseAll() {
-    this._getCollapsableElements().forEach((element) => {
+    this._collapsableElements?.forEach((element) => {
       element.collapseAll();
     });
+  }
+
+  public copySelectedRow() {
+    if ((this._sidebarConfig as ActionSidebarConfig)?.copy) {
+      (this._sidebarConfig as ActionSidebarConfig).copy();
+    }
+  }
+
+  public cutSelectedRow() {
+    if ((this._sidebarConfig as ActionSidebarConfig)?.cut) {
+      (this._sidebarConfig as ActionSidebarConfig).cut();
+    }
+  }
+
+  public deleteSelectedRow() {
+    if ((this._sidebarConfig as ActionSidebarConfig)?.delete) {
+      (this._sidebarConfig as ActionSidebarConfig).delete();
+    }
   }
 
   static get styles(): CSSResultGroup {
