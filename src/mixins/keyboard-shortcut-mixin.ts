@@ -1,5 +1,6 @@
 import type { LitElement } from "lit";
 import type { Constructor } from "../types";
+import { canOverrideAlphanumericInput } from "../common/dom/can-override-input";
 
 declare global {
   type SupportedShortcuts = Record<string, () => void>;
@@ -17,6 +18,9 @@ export const KeyboardShortcutMixin = <T extends Constructor<LitElement>>(
         !event.altKey &&
         event.key in supportedShortcuts
       ) {
+        if (!canOverrideAlphanumericInput(event.composedPath())) {
+          return;
+        }
         event.preventDefault();
         supportedShortcuts[event.key]();
         return;
