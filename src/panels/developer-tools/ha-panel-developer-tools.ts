@@ -128,7 +128,15 @@ class PanelDeveloperTools extends LitElement {
           top: 0;
           z-index: 4;
           background-color: var(--app-header-background-color);
-          width: var(--mdc-top-app-bar-width, 100%);
+          width: var(
+            --mdc-top-app-bar-width,
+            calc(
+              100% - var(--safe-area-inset-left, 0px) - var(
+                  --safe-area-inset-right,
+                  0px
+                )
+            )
+          );
           padding-top: var(--safe-area-inset-top);
           padding-left: var(--safe-area-inset-left);
           padding-right: var(--safe-area-inset-right);
