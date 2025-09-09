@@ -773,6 +773,11 @@ export class HaConfigDevicePage extends LitElement {
                         appearance="plain"
                         target=${ifDefined(firstDeviceAction!.target)}
                         class=${ifDefined(firstDeviceAction!.classes)}
+                        .variant=${firstDeviceAction!.classes?.includes(
+                          "warning"
+                        )
+                          ? "danger"
+                          : "brand"}
                         .action=${firstDeviceAction!.action}
                         @click=${this._deviceActionClicked}
                       >

@@ -1,4 +1,9 @@
-import { mdiClose, mdiContentPaste, mdiPlus } from "@mdi/js";
+import {
+  mdiAppleKeyboardCommand,
+  mdiClose,
+  mdiContentPaste,
+  mdiPlus,
+} from "@mdi/js";
 import Fuse from "fuse.js";
 import type { CSSResultGroup, PropertyValues, TemplateResult } from "lit";
 import { LitElement, css, html, nothing } from "lit";
@@ -41,11 +46,14 @@ import {
 } from "../../../data/integration";
 import { TRIGGER_GROUPS, TRIGGER_ICONS } from "../../../data/trigger";
 import type { HassDialog } from "../../../dialogs/make-dialog-manager";
+import { KeyboardShortcutMixin } from "../../../mixins/keyboard-shortcut-mixin";
+import { HaFuse } from "../../../resources/fuse";
 import { haStyle, haStyleDialog } from "../../../resources/styles";
 import type { HomeAssistant } from "../../../types";
+import { isMac } from "../../../util/is_mac";
+import { showToast } from "../../../util/toast";
 import type { AddAutomationElementDialogParams } from "./show-add-automation-element-dialog";
 import { PASTE_VALUE } from "./show-add-automation-element-dialog";
-import { HaFuse } from "../../../resources/fuse";
 
 const TYPES = {
   trigger: { groups: TRIGGER_GROUPS, icons: TRIGGER_ICONS },
@@ -85,7 +93,10 @@ const ENTITY_DOMAINS_OTHER = new Set([
 const ENTITY_DOMAINS_MAIN = new Set(["notify"]);
 
 @customElement("add-automation-element-dialog")
-class DialogAddAutomationElement extends LitElement implements HassDialog {
+class DialogAddAutomationElement
+  extends KeyboardShortcutMixin(LitElement)
+  implements HassDialog
+{
   @property({ attribute: false }) public hass!: HomeAssistant;
 
   @state() private _params?: AddAutomationElementDialogParams;
@@ -108,9 +119,14 @@ class DialogAddAutomationElement extends LitElement implements HassDialog {
 
   @state() private _height?: number;
 
+  @state() private _narrow = false;
+
   public showDialog(params): void {
     this._params = params;
     this._group = params.group;
+
+    this.addKeyboardShortcuts();
+
     if (this._params?.type === "action") {
       this.hass.loadBackendTranslation("services");
       this._fetchManifests();
@@ -120,9 +136,12 @@ class DialogAddAutomationElement extends LitElement implements HassDialog {
     this._fullScreen = matchMedia(
       "all and (max-width: 450px), all and (max-height: 500px)"
     ).matches;
+
+    this._narrow = matchMedia("(max-width: 870px)").matches;
   }
 
   public closeDialog() {
+    this.removeKeyboardShortcuts();
     if (this._params) {
       fireEvent(this, "dialog-closed", { dialog: this.localName });
     }
@@ -244,14 +263,7 @@ class DialogAddAutomationElement extends LitElement implements HassDialog {
       manifests?: DomainManifestLookup
     ): ListItem[] => {
       if (type === "action" && isService(group)) {
-        let result = this._services(localize, services, manifests, group);
-        if (group === `${SERVICE_PREFIX}media_player`) {
-          result = [
-            this._convertToItem("play_media", {}, type, localize),
-            ...result,
-          ];
-        }
-        return result;
+        return this._services(localize, services, manifests, group);
       }
 
       const groups = this._getGroups(type, group);
@@ -562,15 +574,37 @@ class DialogAddAutomationElement extends LitElement implements HassDialog {
                   .value=${PASTE_VALUE}
                   @click=${this._selected}
                 >
-                  ${this.hass.localize(
-                    `ui.panel.config.automation.editor.${this._params.type}s.paste`
-                  )}
-                  <span slot="supporting-text"
-                    >${this.hass.localize(
-                      // @ts-ignore
-                      `ui.panel.config.automation.editor.${this._params.type}s.type.${this._params.clipboardItem}.label`
-                    )}</span
-                  >
+                  <div class="shortcut-label">
+                    <div class="label">
+                      <div>
+                        ${this.hass.localize(
+                          `ui.panel.config.automation.editor.${this._params.type}s.paste`
+                        )}
+                      </div>
+                      <div class="supporting-text">
+                        ${this.hass.localize(
+                          // @ts-ignore
+                          `ui.panel.config.automation.editor.${this._params.type}s.type.${this._params.clipboardItem}.label`
+                        )}
+                      </div>
+                    </div>
+                    ${!this._narrow
+                      ? html`<span class="shortcut">
+                          <span
+                            >${isMac
+                              ? html`<ha-svg-icon
+                                  slot="start"
+                                  .path=${mdiAppleKeyboardCommand}
+                                ></ha-svg-icon>`
+                              : this.hass.localize(
+                                  "ui.panel.config.automation.editor.ctrl"
+                                )}</span
+                          >
+                          <span>+</span>
+                          <span>V</span>
+                        </span>`
+                      : nothing}
+                  </div>
                   <ha-svg-icon
                     slot="start"
                     .path=${mdiContentPaste}
@@ -578,7 +612,7 @@ class DialogAddAutomationElement extends LitElement implements HassDialog {
                   ><ha-svg-icon slot="end" .path=${mdiPlus}></ha-svg-icon>
                 </ha-md-list-item>
                 <ha-md-divider role="separator" tabindex="-1"></ha-md-divider>`
-            : ""}
+            : nothing}
           ${repeat(
             items,
             (item) => item.key,
@@ -644,6 +678,30 @@ class DialogAddAutomationElement extends LitElement implements HassDialog {
     this._filter = ev.detail.value;
   }
 
+  private _addClipboard = () => {
+    if (this._params?.clipboardItem) {
+      this._params!.add(PASTE_VALUE);
+      showToast(this, {
+        message: this.hass.localize(
+          "ui.panel.config.automation.editor.item_pasted",
+          {
+            item: this.hass.localize(
+              // @ts-ignore
+              `ui.panel.config.automation.editor.${this._params.type}s.type.${this._params.clipboardItem}.label`
+            ),
+          }
+        ),
+      });
+      this.closeDialog();
+    }
+  };
+
+  protected supportedShortcuts(): SupportedShortcuts {
+    return {
+      v: () => this._addClipboard(),
+    };
+  }
+
   static get styles(): CSSResultGroup {
     return [
       haStyle,
@@ -667,6 +725,7 @@ class DialogAddAutomationElement extends LitElement implements HassDialog {
           max-width: 100vw;
           --md-list-item-leading-space: 24px;
           --md-list-item-trailing-space: 24px;
+          --md-list-item-supporting-text-font: var(--ha-font-size-s);
         }
         ha-md-list-item img {
           width: 24px;
@@ -674,6 +733,27 @@ class DialogAddAutomationElement extends LitElement implements HassDialog {
         search-input {
           display: block;
           margin: 0 16px;
+        }
+        .shortcut-label {
+          display: flex;
+          gap: 12px;
+          justify-content: space-between;
+        }
+        .shortcut-label .supporting-text {
+          color: var(--secondary-text-color);
+          font-size: var(--ha-font-size-s);
+        }
+        .shortcut-label .shortcut {
+          --mdc-icon-size: 12px;
+          display: inline-flex;
+          flex-direction: row;
+          align-items: center;
+          gap: 2px;
+        }
+        .shortcut-label .shortcut span {
+          font-size: var(--ha-font-size-s);
+          font-family: var(--ha-font-family-code);
+          color: var(--ha-color-text-secondary);
         }
       `,
     ];

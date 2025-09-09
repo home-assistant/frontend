@@ -476,6 +476,7 @@ class HaPanelDevAction extends LitElement {
     } else {
       script.push(this._serviceData!);
     }
+    button.progress = true;
     try {
       this._response = (await callExecuteScript(this.hass, script)).response;
     } catch (err: any) {
@@ -505,6 +506,8 @@ class HaPanelDevAction extends LitElement {
           service: this._serviceData!.action!,
         }) + ` ${err.message}`;
       return;
+    } finally {
+      button.progress = false;
     }
     button.actionSuccess();
   }

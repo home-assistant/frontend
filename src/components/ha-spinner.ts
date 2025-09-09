@@ -1,9 +1,7 @@
-import Spinner from "@awesome.me/webawesome/dist/components/spinner/spinner";
+import Spinner from "@home-assistant/webawesome/dist/components/spinner/spinner";
 import type { CSSResultGroup, PropertyValues } from "lit";
 import { css } from "lit";
 import { customElement, property } from "lit/decorators";
-
-import { StateSet } from "../resources/polyfills/stateset";
 
 @customElement("ha-spinner")
 export class HaSpinner extends Spinner {
@@ -31,14 +29,6 @@ export class HaSpinner extends Spinner {
           break;
       }
     }
-  }
-
-  attachInternals() {
-    const internals = super.attachInternals();
-    Object.defineProperty(internals, "states", {
-      value: new StateSet(this, internals.states),
-    });
-    return internals;
   }
 
   static get styles(): CSSResultGroup {

@@ -15,8 +15,6 @@ import type { CloudStatus } from "../../../data/cloud";
 import { fetchCloudStatus } from "../../../data/cloud";
 import type { HardwareInfo } from "../../../data/hardware";
 import { BOARD_NAMES } from "../../../data/hardware";
-import type { HassioBackup } from "../../../data/hassio/backup";
-import { fetchHassioBackups } from "../../../data/hassio/backup";
 import type {
   HassioHassOSInfo,
   HassioHostInfo,
@@ -44,7 +42,7 @@ class HaConfigSystemNavigation extends LitElement {
 
   @property({ attribute: false }) public showAdvanced = false;
 
-  @state() private _latestBackupDate?: string;
+  @state() private _latestBackupDate?: Date;
 
   @state() private _boardName?: string;
 
@@ -63,7 +61,7 @@ class HaConfigSystemNavigation extends LitElement {
             description = this._latestBackupDate
               ? this.hass.localize("ui.panel.config.backup.description", {
                   relative_time: relativeTime(
-                    new Date(this._latestBackupDate),
+                    this._latestBackupDate,
                     this.hass.locale
                   ),
                 })
@@ -155,26 +153,24 @@ class HaConfigSystemNavigation extends LitElement {
 
     this._fetchNetworkStatus();
     const isHassioLoaded = isComponentLoaded(this.hass, "hassio");
-    this._fetchBackupInfo(isHassioLoaded);
+    this._fetchBackupInfo();
     this._fetchHardwareInfo(isHassioLoaded);
     if (isHassioLoaded) {
       this._fetchStorageInfo();
     }
   }
 
-  private async _fetchBackupInfo(isHassioLoaded: boolean) {
-    const backups: BackupContent[] | HassioBackup[] = isHassioLoaded
-      ? await fetchHassioBackups(this.hass)
-      : isComponentLoaded(this.hass, "backup")
-        ? await fetchBackupInfo(this.hass).then(
-            (backupData) => backupData.backups
-          )
-        : [];
+  private async _fetchBackupInfo() {
+    const backups: BackupContent[] = isComponentLoaded(this.hass, "backup")
+      ? await fetchBackupInfo(this.hass).then(
+          (backupData) => backupData.backups
+        )
+      : [];
 
     if (backups.length > 0) {
-      this._latestBackupDate = (backups as any[]).reduce((a, b) =>
-        a.date > b.date ? a : b
-      ).date;
+      this._latestBackupDate = backups
+        .map((backup) => new Date(backup.date))
+        .reduce((a, b) => (a > b ? a : b));
     }
   }
 

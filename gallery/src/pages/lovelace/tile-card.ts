@@ -101,11 +101,14 @@ const ENTITIES = [
       ClimateEntityFeature.FAN_MODE +
       ClimateEntityFeature.TARGET_TEMPERATURE_RANGE,
   }),
-  getEntity("fan", "fan_direction", "on", {
+  getEntity("fan", "fan_demo", "on", {
     friendly_name: "Ceiling fan",
     device_class: "fan",
     direction: "reverse",
-    supported_features: [FanEntityFeature.DIRECTION],
+    supported_features:
+      FanEntityFeature.DIRECTION +
+      FanEntityFeature.SET_SPEED +
+      FanEntityFeature.OSCILLATE,
   }),
 ];
 
@@ -272,9 +275,27 @@ const CONFIGS = [
     heading: "Fan direction feature",
     config: `
 - type: tile
-  entity: fan.fan_direction
+  entity: fan.fan_demo
   features:
   - type: fan-direction
+    `,
+  },
+  {
+    heading: "Fan speed feature",
+    config: `
+- type: tile
+  entity: fan.fan_demo
+  features:
+  - type: fan-speed
+    `,
+  },
+  {
+    heading: "Fan oscillate feature",
+    config: `
+- type: tile
+  entity: fan.fan_demo
+  features:
+  - type: fan-oscillate
     `,
   },
 ];

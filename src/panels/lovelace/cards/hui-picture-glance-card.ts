@@ -7,6 +7,7 @@ import { DOMAINS_TOGGLE } from "../../../common/const";
 import { applyThemesOnElement } from "../../../common/dom/apply_themes_on_element";
 import { computeDomain } from "../../../common/entity/compute_domain";
 import { computeStateName } from "../../../common/entity/compute_state_name";
+import { stateActive } from "../../../common/entity/state_active";
 import "../../../components/ha-card";
 import "../../../components/ha-icon-button";
 import "../../../components/ha-state-icon";
@@ -29,15 +30,6 @@ import type {
   PictureGlanceEntityConfig,
 } from "./types";
 import type { PersonEntity } from "../../../data/person";
-
-const STATES_OFF = new Set([
-  "closed",
-  "locked",
-  "not_home",
-  "off",
-  "unavailable",
-  "unknown",
-]);
 
 @customElement("hui-picture-glance-card")
 class HuiPictureGlanceCard extends LitElement implements LovelaceCard {
@@ -219,13 +211,13 @@ class HuiPictureGlanceCard extends LitElement implements LovelaceCard {
 
     return html`
       <ha-card>
-        <hui-image
-          class=${classMap({
+        <div
+          class="image-container ${classMap({
             clickable:
               hasTapAction ||
               hasAction(this._config.hold_action) ||
               hasAction(this._config.double_tap_action),
-          })}
+          })}"
           @action=${this._handleAction}
           .actionHandler=${actionHandler({
             hasTap: hasTapAction,
@@ -233,19 +225,23 @@ class HuiPictureGlanceCard extends LitElement implements LovelaceCard {
             hasDoubleClick: hasAction(this._config.double_tap_action),
           })}
           tabindex=${ifDefined(hasTapAction ? "0" : undefined)}
+          role=${ifDefined(hasTapAction ? "button" : undefined)}
           .config=${this._config}
-          .hass=${this.hass}
-          .image=${image}
-          .stateImage=${this._config.state_image}
-          .stateFilter=${this._config.state_filter}
-          .cameraImage=${this._config.camera_image}
-          .cameraView=${this._config.camera_view}
-          .entity=${this._config.entity}
-          .fitMode=${this._config.fit_mode}
-          .aspectRatio=${ignoreAspectRatio
-            ? undefined
-            : this._config.aspect_ratio}
-        ></hui-image>
+        >
+          <hui-image
+            .hass=${this.hass}
+            .image=${image}
+            .stateImage=${this._config.state_image}
+            .stateFilter=${this._config.state_filter}
+            .cameraImage=${this._config.camera_image}
+            .cameraView=${this._config.camera_view}
+            .entity=${this._config.entity}
+            .fitMode=${this._config.fit_mode}
+            .aspectRatio=${ignoreAspectRatio
+              ? undefined
+              : this._config.aspect_ratio}
+          ></hui-image>
+        </div>
         <div class="box">
           ${this._config.title
             ? html`<div class="title">${this._config.title}</div>`
@@ -299,7 +295,7 @@ class HuiPictureGlanceCard extends LitElement implements LovelaceCard {
           .disabled=${!hasAction(entityConf.tap_action)}
           .config=${entityConf}
           class=${classMap({
-            "state-on": !STATES_OFF.has(stateObj.state),
+            "state-on": stateActive(stateObj),
           })}
           title=${`${computeStateName(
             stateObj
@@ -342,11 +338,15 @@ class HuiPictureGlanceCard extends LitElement implements LovelaceCard {
       height: 100%;
       box-sizing: border-box;
     }
-    hui-image {
+    .image-container {
       height: 100%;
     }
-    hui-image.clickable {
+    .image-container.clickable {
       cursor: pointer;
+    }
+    hui-image {
+      pointer-events: none;
+      height: 100%;
     }
     .box {
       position: absolute;

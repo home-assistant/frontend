@@ -26,6 +26,7 @@ import type {
 import type { LovelaceHeaderFooterConfig } from "../header-footer/types";
 import type { LovelaceHeadingBadgeConfig } from "../heading-badges/types";
 import type { TimeFormat } from "../../../data/translation";
+import type { HomeSummary } from "../strategies/home/helpers/home-summaries";
 
 export type AlarmPanelCardConfigState =
   | "arm_away"
@@ -104,12 +105,13 @@ export interface EntitiesCardConfig extends LovelaceCardConfig {
   state_color?: boolean;
 }
 
+export type AreaCardDisplayType = "compact" | "icon" | "picture" | "camera";
 export interface AreaCardConfig extends LovelaceCardConfig {
   area?: string;
   name?: string;
   color?: string;
   navigation_path?: string;
-  display_type?: "compact" | "icon" | "picture" | "camera";
+  display_type?: AreaCardDisplayType;
   /** @deprecated Use `display_type` instead */
   show_camera?: boolean;
   camera_view?: HuiImage["cameraView"];
@@ -370,10 +372,16 @@ export interface MarkdownCardConfig extends LovelaceCardConfig {
 export interface ClockCardConfig extends LovelaceCardConfig {
   type: "clock";
   title?: string;
+  clock_style?: "digital" | "analog";
   clock_size?: "small" | "medium" | "large";
   show_seconds?: boolean | undefined;
   time_format?: TimeFormat;
   time_zone?: string;
+  no_background?: boolean;
+  // Analog clock options
+  border?: boolean;
+  ticks?: "none" | "quarter" | "hour" | "minute";
+  face_style?: "markers" | "numbers_upright" | "roman";
 }
 
 export interface MediaControlCardConfig extends LovelaceCardConfig {
@@ -581,4 +589,12 @@ export interface HeadingCardConfig extends LovelaceCardConfig {
   badges?: LovelaceHeadingBadgeConfig[];
   /** @deprecated Use `badges` instead */
   entities?: LovelaceHeadingBadgeConfig[];
+}
+
+export interface HomeSummaryCard extends LovelaceCardConfig {
+  summary: HomeSummary;
+  vertical?: boolean;
+  tap_action?: ActionConfig;
+  hold_action?: ActionConfig;
+  double_tap_action?: ActionConfig;
 }
