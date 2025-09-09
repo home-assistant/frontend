@@ -1,5 +1,5 @@
 import type { PropertyValues } from "lit";
-import { css, html, LitElement } from "lit";
+import { css, html, LitElement, nothing } from "lit";
 import { customElement, eventOptions, property, state } from "lit/decorators";
 import type { RenderItemFunction } from "@lit-labs/virtualizer/virtualize";
 import { mdiRestart } from "@mdi/js";
@@ -12,9 +12,12 @@ import type {
 } from "../../data/history";
 import { loadVirtualizer } from "../../resources/virtualizer";
 import type { HomeAssistant } from "../../types";
+import type { StateHistoryChartLine } from "./state-history-chart-line";
+import type { StateHistoryChartTimeline } from "./state-history-chart-timeline";
+import "../ha-fab";
+import "../ha-svg-icon";
 import "./state-history-chart-line";
 import "./state-history-chart-timeline";
-import "../ha-icon-button";
 
 const CANVAS_TIMELINE_ROWS_CHUNK = 10; // Split up the canvases to avoid hitting the render limit
 
@@ -139,15 +142,17 @@ export class StateHistoryCharts extends LitElement {
             this._renderHistoryItem(item, index)
           )}`}
       ${this._hasZoomedCharts
-        ? html`<ha-icon-button
-            class="floating-reset-button"
-            .path=${mdiRestart}
-            @click=${this._handleGlobalZoomReset}
-            title=${this.hass.localize(
+        ? html`<ha-fab
+            slot="fab"
+            .label=${this.hass.localize(
               "ui.components.history_charts.zoom_reset"
             )}
-          ></ha-icon-button>`
-        : ""}
+            extended
+            @click=${this._handleGlobalZoomReset}
+          >
+            <ha-svg-icon slot="icon" .path=${mdiRestart}></ha-svg-icon>
+          </ha-fab>`
+        : nothing}
     `;
   }
 
@@ -316,14 +321,14 @@ export class StateHistoryCharts extends LitElement {
     requestAnimationFrame(() => {
       const chartComponents = this.renderRoot.querySelectorAll(
         "state-history-chart-line, state-history-chart-timeline"
-      );
+      ) as unknown as (StateHistoryChartLine | StateHistoryChartTimeline)[];
 
-      chartComponents.forEach((chartComponent: any, index) => {
+      chartComponents.forEach((chartComponent, index) => {
         if (index === sourceChartIndex) {
           return;
         }
 
-        if (chartComponent.zoom) {
+        if ("zoom" in chartComponent) {
           chartComponent.zoom(start, end);
         }
       });
