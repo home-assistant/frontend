@@ -612,18 +612,13 @@ class HaPanelDevAction extends LitElement {
       css`
         .content {
           padding: 16px;
-          padding: 16px max(16px, var(--safe-area-inset-right))
-            max(16px, var(--safe-area-inset-bottom))
-            max(16px, var(--safe-area-inset-left));
+          padding: 16px max(16px, var(--safe-area-inset-right, 0px)) 16px
+            max(16px, var(--safe-area-inset-left, 0px));
           max-width: 1200px;
           margin: auto;
         }
         .button-row {
           padding: 8px 16px;
-          padding: max(8px, var(--safe-area-inset-top))
-            max(16px, var(--safe-area-inset-right))
-            max(8px, var(--safe-area-inset-bottom))
-            max(16px, var(--safe-area-inset-left));
           border-top: 1px solid var(--divider-color);
           border-bottom: 1px solid var(--divider-color);
           background: var(--card-background-color);
@@ -631,6 +626,7 @@ class HaPanelDevAction extends LitElement {
           bottom: 0;
           box-sizing: border-box;
           width: 100%;
+          margin-bottom: max(16px, var(--safe-area-inset-bottom, 0px));
         }
         .button-row .buttons {
           display: flex;
