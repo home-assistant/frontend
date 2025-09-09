@@ -457,6 +457,9 @@ class HuiEnergySankeyCard
     return { areas, floors };
   }
 
+  /**
+   * Organizes device nodes into hierarchical sections based on parent-child relationships.
+   */
   protected _getDeviceSections(
     parentLinks: Record<string, string>,
     deviceNodes: Node[]
@@ -465,20 +468,34 @@ class HuiEnergySankeyCard
     const childSection: Node[] = [];
     const parentIds = Object.values(parentLinks);
     const remainingLinks: typeof parentLinks = {};
+
     deviceNodes.forEach((deviceNode) => {
-      if (parentIds.includes(deviceNode.id)) {
+      const isChild = deviceNode.id in parentLinks;
+      const isParent = parentIds.includes(deviceNode.id);
+      if (isParent && !isChild) {
+        // Top-level parents (have children but no parents themselves)
         parentSection.push(deviceNode);
-        remainingLinks[deviceNode.id] = parentLinks[deviceNode.id];
       } else {
         childSection.push(deviceNode);
       }
     });
+
+    // Filter out links where parent is already in current parent section
+    Object.entries(parentLinks).forEach(([child, parent]) => {
+      if (!parentSection.some((node) => node.id === parent)) {
+        remainingLinks[child] = parent;
+      }
+    });
+
     if (parentSection.length > 0) {
+      // Recursively process child section with remaining links
       return [
-        ...this._getDeviceSections(remainingLinks, parentSection),
-        childSection,
+        parentSection,
+        ...this._getDeviceSections(remainingLinks, childSection),
       ];
     }
+
+    // Base case: no more parent-child relationships to process
     return [deviceNodes];
   }
 
