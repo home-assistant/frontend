@@ -64,6 +64,11 @@ class StepFlowCreateEntry extends LitElement {
       return;
     }
 
+    if (this.step.next_flow_id && this.devices.length === 0) {
+      this._flowDone();
+      return;
+    }
+
     if (
       this.devices.length !== 1 ||
       this.devices[0].primary_config_entry !== this.step.result?.entry_id ||
@@ -174,7 +179,13 @@ class StepFlowCreateEntry extends LitElement {
       <div class="buttons">
         <ha-button @click=${this._flowDone}
           >${localize(
-            `ui.panel.config.integrations.config_flow.${!this.devices.length || Object.keys(this._deviceUpdate).length ? "finish" : "finish_skip"}`
+            `ui.panel.config.integrations.config_flow.${
+              this.step.next_flow_id
+                ? "next"
+                : !this.devices.length || Object.keys(this._deviceUpdate).length
+                  ? "finish"
+                  : "finish_skip"
+            }`
           )}</ha-button
         >
       </div>
