@@ -2312,7 +2312,9 @@
           "header": "AI suggestions",
           "description": "Home Assistant can use generative AI to help you with tasks. Look for the button with the {button} icon throughout Home Assistant to get suggestions. Select an AI task entity to use this feature.",
           "gen_data_header": "Data generation tasks",
-          "gen_data_description": "Suggest automation names."
+          "gen_data_description": "Suggest automation names.",
+          "gen_image_header": "Image generation tasks",
+          "gen_image_description": "Generate images."
         },
         "category": {
           "caption": "Categories",
