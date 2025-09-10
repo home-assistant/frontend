@@ -24,6 +24,7 @@ import {
 import { automationRowsStyles } from "../styles";
 import "./ha-automation-condition-row";
 import type HaAutomationConditionRow from "./ha-automation-condition-row";
+import { ensureArray } from "../../../../common/array/ensure-array";
 
 @customElement("ha-automation-condition")
 export default class HaAutomationCondition extends LitElement {
@@ -169,6 +170,7 @@ export default class HaAutomationCondition extends LitElement {
                 .disabled=${this.disabled}
                 .narrow=${this.narrow}
                 @duplicate=${this._duplicateCondition}
+                @insert-after=${this._insertAfter}
                 @move-down=${this._moveDown}
                 @move-up=${this._moveUp}
                 @value-changed=${this._conditionChanged}
@@ -381,7 +383,21 @@ export default class HaAutomationCondition extends LitElement {
     ev.stopPropagation();
     const index = (ev.target as any).index;
     fireEvent(this, "value-changed", {
-      value: this.conditions.concat(deepClone(this.conditions[index])),
+      value: this.conditions.toSpliced(
+        index + 1,
+        0,
+        deepClone(this.conditions[index])
+      ),
+    });
+  }
+
+  private _insertAfter(ev: CustomEvent) {
+    ev.stopPropagation();
+    const index = (ev.target as any).index;
+    const inserted = ensureArray(ev.detail.value);
+    this.highlightedConditions = inserted;
+    fireEvent(this, "value-changed", {
+      value: this.conditions.toSpliced(index + 1, 0, ...inserted),
     });
   }
 

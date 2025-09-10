@@ -19,6 +19,7 @@ import { LitElement, css, html, nothing } from "lit";
 import { customElement, property, query, state } from "lit/decorators";
 import { classMap } from "lit/directives/class-map";
 import memoizeOne from "memoize-one";
+import { dump } from "js-yaml";
 import { storage } from "../../../../common/decorators/storage";
 import { fireEvent } from "../../../../common/dom/fire_event";
 import { preventDefaultStopPropagation } from "../../../../common/dom/prevent_default_stop_propagation";
@@ -38,7 +39,7 @@ import type {
   Condition,
   ConditionSidebarConfig,
 } from "../../../../data/automation";
-import { testCondition } from "../../../../data/automation";
+import { isCondition, testCondition } from "../../../../data/automation";
 import { describeCondition } from "../../../../data/automation_i18n";
 import {
   CONDITION_BUILDING_BLOCKS,
@@ -69,6 +70,7 @@ import "./types/ha-automation-condition-template";
 import "./types/ha-automation-condition-time";
 import "./types/ha-automation-condition-trigger";
 import "./types/ha-automation-condition-zone";
+import { copyToClipboard } from "../../../../common/util/copy-clipboard";
 
 export interface ConditionElement extends LitElement {
   condition: Condition;
@@ -440,6 +442,7 @@ export default class HaAutomationConditionRow extends LitElement {
       ...this._clipboard,
       condition: deepClone(this.condition),
     };
+    copyToClipboard(dump(this.condition));
   }
 
   private _onDisable = () => {
@@ -585,6 +588,18 @@ export default class HaAutomationConditionRow extends LitElement {
     fireEvent(this, "duplicate");
   };
 
+  private _insertAfter = (value: Condition | Condition[]) => {
+    if (
+      Array.isArray(value) &&
+      !value.every((val) => isCondition(val)) &&
+      !isCondition(value)
+    ) {
+      return false;
+    }
+    fireEvent(this, "insert-after", { value });
+    return true;
+  };
+
   private _copyCondition = () => {
     this._setClipboard();
     showToast(this, {
@@ -696,6 +711,7 @@ export default class HaAutomationConditionRow extends LitElement {
       disable: this._onDisable,
       delete: this._onDelete,
       duplicate: this._duplicateCondition,
+      insertAfter: this._insertAfter,
       copy: this._copyCondition,
       cut: this._cutCondition,
       test: this._testCondition,

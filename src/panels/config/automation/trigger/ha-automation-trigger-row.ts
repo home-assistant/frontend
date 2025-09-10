@@ -19,6 +19,7 @@ import { LitElement, css, html, nothing } from "lit";
 import { customElement, property, query, state } from "lit/decorators";
 import { classMap } from "lit/directives/class-map";
 import memoizeOne from "memoize-one";
+import { dump } from "js-yaml";
 import { storage } from "../../../../common/decorators/storage";
 import { fireEvent } from "../../../../common/dom/fire_event";
 import { preventDefaultStopPropagation } from "../../../../common/dom/prevent_default_stop_propagation";
@@ -40,7 +41,7 @@ import type {
   Trigger,
   TriggerSidebarConfig,
 } from "../../../../data/automation";
-import { subscribeTrigger } from "../../../../data/automation";
+import { isTrigger, subscribeTrigger } from "../../../../data/automation";
 import { describeTrigger } from "../../../../data/automation_i18n";
 import { validateConfig } from "../../../../data/config";
 import { fullEntitiesContext } from "../../../../data/context";
@@ -75,6 +76,7 @@ import "./types/ha-automation-trigger-time";
 import "./types/ha-automation-trigger-time_pattern";
 import "./types/ha-automation-trigger-webhook";
 import "./types/ha-automation-trigger-zone";
+import { copyToClipboard } from "../../../../common/util/copy-clipboard";
 
 export interface TriggerElement extends LitElement {
   trigger: Trigger;
@@ -511,6 +513,7 @@ export default class HaAutomationTriggerRow extends LitElement {
       copy: this._copyTrigger,
       duplicate: this._duplicateTrigger,
       cut: this._cutTrigger,
+      insertAfter: this._insertAfter,
       config: trigger || this.trigger,
       uiSupported: this._uiSupported(this._getType(trigger || this.trigger)),
       yamlMode: this._yamlMode,
@@ -532,6 +535,8 @@ export default class HaAutomationTriggerRow extends LitElement {
       ...this._clipboard,
       trigger: this.trigger,
     };
+
+    copyToClipboard(dump(this.trigger));
   }
 
   private _onDelete = () => {
@@ -637,6 +642,18 @@ export default class HaAutomationTriggerRow extends LitElement {
 
   private _duplicateTrigger = () => {
     fireEvent(this, "duplicate");
+  };
+
+  private _insertAfter = (value: Trigger | Trigger[]) => {
+    if (
+      Array.isArray(value) &&
+      !value.every((val) => isTrigger(val)) &&
+      !isTrigger(value)
+    ) {
+      return false;
+    }
+    fireEvent(this, "insert-after", { value });
+    return true;
   };
 
   private _copyTrigger = () => {
