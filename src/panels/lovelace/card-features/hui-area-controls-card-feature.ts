@@ -278,7 +278,7 @@ class HuiAreaControlsCardFeature
                     .stateObj=${entities[0]}
                     .hass=${this.hass}
                   ></ha-state-icon>`
-                : html` <ha-domain-icon
+                : html`<ha-domain-icon
                     .hass=${this.hass}
                     .domain=${domain}
                     .deviceClass=${deviceClass}
