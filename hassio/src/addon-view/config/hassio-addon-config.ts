@@ -104,7 +104,7 @@ class HassioAddonConfig extends LitElement {
   }
 
   private _convertSchemaElement(entry: any): HaFormSchema {
-    const selector = this._convertSchemaElementToSelector(entry);
+    const selector = this._convertSchemaElementToSelector(entry, false);
     if (selector) {
       return {
         name: entry.name,
@@ -115,7 +115,10 @@ class HassioAddonConfig extends LitElement {
     return entry;
   }
 
-  private _convertSchemaElementToSelector(entry: any): Selector | null {
+  private _convertSchemaElementToSelector(
+    entry: any,
+    force: boolean
+  ): Selector | null {
     if (entry.type === "select") {
       return { select: { options: entry.options } };
     }
@@ -145,6 +148,9 @@ class HassioAddonConfig extends LitElement {
           step: entry.type === "float" ? "any" : undefined,
         },
       };
+    }
+    if (force) {
+      return { object: {} };
     }
     return null;
   }
