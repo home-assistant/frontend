@@ -11,7 +11,7 @@ import type {
 } from "./types";
 
 @customElement("ha-form-expandable")
-export class HaFormExpendable extends LitElement implements HaFormElement {
+export class HaFormExpandable extends LitElement implements HaFormElement {
   @property({ attribute: false }) public hass!: HomeAssistant;
 
   @property({ attribute: false }) public data!: HaFormDataContainer;
@@ -132,6 +132,6 @@ export class HaFormExpendable extends LitElement implements HaFormElement {
 
 declare global {
   interface HTMLElementTagNameMap {
-    "ha-form-expandable": HaFormExpendable;
+    "ha-form-expandable": HaFormExpandable;
   }
 }
