@@ -141,7 +141,6 @@ export default class HaAutomationTriggerEditor extends LitElement {
       haStyle,
       css`
         .disabled {
-          opacity: 0.5;
           pointer-events: none;
         }
 
