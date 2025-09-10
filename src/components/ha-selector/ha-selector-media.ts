@@ -1,4 +1,4 @@
-import { mdiPlayBox, mdiPlus, mdiFormTextbox, mdiClose } from "@mdi/js";
+import { mdiPlayBox, mdiPlus } from "@mdi/js";
 import type { PropertyValues } from "lit";
 import { css, html, LitElement, nothing } from "lit";
 import { customElement, property, state } from "lit/decorators";
@@ -16,11 +16,9 @@ import type { HomeAssistant } from "../../types";
 import { brandsUrl, extractDomainFromBrandUrl } from "../../util/brands-url";
 import "../ha-alert";
 import "../ha-form/ha-form";
-import "../ha-icon-button";
 import type { SchemaUnion } from "../ha-form/types";
 import { showMediaBrowserDialog } from "../media-player/show-media-browser-dialog";
 import { ensureArray } from "../../common/array/ensure-array";
-import { isMediaSourceContentId } from "../../data/media_source";
 
 const MANUAL_SCHEMA = [
   { name: "media_content_id", required: false, selector: { text: {} } },
@@ -53,8 +51,6 @@ export class HaMediaSelector extends LitElement {
 
   @state() private _thumbnailUrl?: string | null;
 
-  @state() private _showManualEntry = false;
-
   private _contextEntities: string[] | undefined;
 
   willUpdate(changedProps: PropertyValues<this>) {
@@ -63,13 +59,6 @@ export class HaMediaSelector extends LitElement {
     }
 
     if (changedProps.has("value")) {
-      if (
-        this.value?.media_content_id &&
-        !isMediaSourceContentId(this.value.media_content_id)
-      ) {
-        this._showManualEntry = true;
-      }
-
       const thumbnail = this.value?.metadata?.thumbnail;
       const oldThumbnail = (changedProps.get("value") as this["value"])
         ?.metadata?.thumbnail;
@@ -153,7 +142,7 @@ export class HaMediaSelector extends LitElement {
             <ha-card
               outlined
               tabindex="0"
-              role=${this._showManualEntry ? "" : "button"}
+              role="button"
               aria-label=${!this.value?.media_content_id
                 ? this.hass.localize("ui.components.selectors.media.pick_media")
                 : this.value.metadata?.title || this.value.media_content_id}
@@ -164,102 +153,54 @@ export class HaMediaSelector extends LitElement {
                 : ""}
             >
               <div class="content-container">
-                ${!this._showManualEntry
-                  ? html` <div class="thumbnail">
-                      ${this.value?.metadata?.thumbnail
-                        ? html`
-                            <div
-                              class="${classMap({
-                                "centered-image":
-                                  !!this.value.metadata.media_class &&
-                                  ["app", "directory"].includes(
-                                    this.value.metadata.media_class
-                                  ),
-                              })}
+                <div class="thumbnail">
+                  ${this.value?.metadata?.thumbnail
+                    ? html`
+                        <div
+                          class="${classMap({
+                            "centered-image":
+                              !!this.value.metadata.media_class &&
+                              ["app", "directory"].includes(
+                                this.value.metadata.media_class
+                              ),
+                          })}
                           image"
-                              style=${this._thumbnailUrl
-                                ? `background-image: url(${this._thumbnailUrl});`
-                                : ""}
-                            ></div>
-                          `
-                        : html`
-                            <div class="icon-holder image">
-                              <ha-svg-icon
-                                class="folder"
-                                .path=${!this.value?.media_content_id
-                                  ? mdiPlus
-                                  : this.value?.metadata?.media_class
-                                    ? MediaClassBrowserSettings[
-                                        this.value.metadata.media_class ===
-                                        "directory"
-                                          ? this.value.metadata
-                                              .children_media_class ||
-                                            this.value.metadata.media_class
-                                          : this.value.metadata.media_class
-                                      ].icon
-                                    : mdiPlayBox}
-                              ></ha-svg-icon>
-                            </div>
-                          `}
-                    </div>`
-                  : nothing}
-                <div class="title">
-                  ${this._showManualEntry
-                    ? this.hass.localize("ui.components.selectors.media.manual")
-                    : !this.value?.media_content_id
-                      ? this.hass.localize(
-                          "ui.components.selectors.media.pick_media"
-                        )
-                      : this.value.metadata?.title ||
-                        this.value.media_content_id}
+                          style=${this._thumbnailUrl
+                            ? `background-image: url(${this._thumbnailUrl});`
+                            : ""}
+                        ></div>
+                      `
+                    : html`
+                        <div class="icon-holder image">
+                          <ha-svg-icon
+                            class="folder"
+                            .path=${!this.value?.media_content_id
+                              ? mdiPlus
+                              : this.value?.metadata?.media_class
+                                ? MediaClassBrowserSettings[
+                                    this.value.metadata.media_class ===
+                                    "directory"
+                                      ? this.value.metadata
+                                          .children_media_class ||
+                                        this.value.metadata.media_class
+                                      : this.value.metadata.media_class
+                                  ].icon
+                                : mdiPlayBox}
+                          ></ha-svg-icon>
+                        </div>
+                      `}
                 </div>
-                ${!this.value?.media_content_id && !this._showManualEntry
-                  ? html` <ha-icon-button
-                      @click=${this._buttonManualEdit}
-                      .disabled=${this.disabled}
-                      .path=${mdiFormTextbox}
-                      .label=${this.hass.localize(
-                        "ui.components.selectors.media.manual"
-                      )}
-                    ></ha-icon-button>`
-                  : html` <ha-icon-button
-                      @click=${this._clear}
-                      .disabled=${this.disabled}
-                      .path=${mdiClose}
-                      .label=${this.hass.localize("ui.common.clear")}
-                    ></ha-icon-button>`}
+                <div class="title">
+                  ${!this.value?.media_content_id
+                    ? this.hass.localize(
+                        "ui.components.selectors.media.pick_media"
+                      )
+                    : this.value.metadata?.title || this.value.media_content_id}
+                </div>
               </div>
-              ${this._showManualEntry
-                ? html`<ha-form
-                    class="card"
-                    .hass=${this.hass}
-                    .data=${this.value || EMPTY_FORM}
-                    .schema=${MANUAL_SCHEMA}
-                    .computeLabel=${this._computeLabelCallback}
-                    .computeHelper=${this._computeHelperCallback}
-                  ></ha-form>`
-                : nothing}
             </ha-card>
           `}
     `;
-  }
-
-  private _buttonManualEdit(ev: CustomEvent) {
-    ev.stopPropagation();
-    this._showManualEntry = true;
-  }
-
-  private _clear(ev: CustomEvent) {
-    ev.stopPropagation();
-    this._showManualEntry = false;
-    fireEvent(this, "value-changed", {
-      value: {
-        ...this.value,
-        media_content_id: "",
-        media_content_type: "",
-        metadata: {},
-      },
-    });
   }
 
   private _computeLabelCallback = (
@@ -296,7 +237,6 @@ export class HaMediaSelector extends LitElement {
   }
 
   private _pickMedia() {
-    if (this._showManualEntry) return;
     showMediaBrowserDialog(this, {
       action: "pick",
       entityId: this._getActiveEntityId(),
@@ -356,11 +296,9 @@ export class HaMediaSelector extends LitElement {
       position: relative;
       width: 100%;
       box-sizing: border-box;
+      cursor: pointer;
       transition: background-color 180ms ease-in-out;
       min-height: 56px;
-    }
-    ha-card[role="button"] {
-      cursor: pointer;
     }
     ha-card:hover:not(.disabled),
     ha-card:focus:not(.disabled) {
@@ -390,10 +328,6 @@ export class HaMediaSelector extends LitElement {
     }
     ha-card .image {
       border-radius: 8px;
-    }
-    ha-form.card {
-      margin: 0px 16px 16px 16px;
-      display: block;
     }
     .folder {
       --mdc-icon-size: 24px;
