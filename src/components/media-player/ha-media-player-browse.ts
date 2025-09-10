@@ -53,7 +53,9 @@ import "../ha-spinner";
 import "../ha-svg-icon";
 import "../ha-tooltip";
 import "./ha-browse-media-tts";
+import "./ha-browse-media-manual";
 import type { TtsMediaPickedEvent } from "./ha-browse-media-tts";
+import type { ManualMediaPickedEvent } from "./ha-browse-media-manual";
 
 declare global {
   interface HASSDomEvents {
@@ -73,6 +75,22 @@ export interface MediaPlayerItemId {
   media_content_id: string | undefined;
   media_content_type: string | undefined;
 }
+
+const MANUAL_ITEM: MediaPlayerItem = {
+  can_expand: true,
+  can_play: false,
+  can_search: false,
+  children_media_class: "",
+  media_class: "app",
+  media_content_id: "manual",
+  media_content_type: "app",
+  thumbnail: brandsUrl({
+    domain: "keyboard",
+    type: "logo",
+    useFallback: true,
+  }),
+  title: "Manual Entry",
+};
 
 @customElement("ha-media-player-browse")
 export class HaMediaPlayerBrowse extends LitElement {
@@ -108,6 +126,8 @@ export class HaMediaPlayerBrowse extends LitElement {
   @query(".content") private _content?: HTMLDivElement;
 
   @query("lit-virtualizer") private _virtualizer?: LitVirtualizer;
+
+  private _manualItem: MediaPlayerItemId | undefined;
 
   private _observed = false;
 
@@ -170,6 +190,15 @@ export class HaMediaPlayerBrowse extends LitElement {
     const oldNavigateIds = changedProps.get("navigateIds") as
       | this["navigateIds"]
       | undefined;
+
+    if (
+      this.navigateIds[this.navigateIds.length - 2]?.media_content_id ===
+      "manual"
+    ) {
+      this._manualItem = this.navigateIds[this.navigateIds.length - 1];
+      this.navigateIds = this.navigateIds.slice(0, -1);
+    }
+
     const navigateIds = this.navigateIds;
 
     // We're navigating. Reset the shizzle.
@@ -216,56 +245,66 @@ export class HaMediaPlayerBrowse extends LitElement {
       }
     }
     // Fetch current
-    if (!currentProm) {
-      currentProm = this._fetchData(
-        this.entityId,
-        currentId.media_content_id,
-        currentId.media_content_type
+    if (currentId.media_content_id === "manual") {
+      this._currentItem = MANUAL_ITEM;
+      fireEvent(this, "media-browsed", {
+        ids: navigateIds,
+        current: MANUAL_ITEM,
+      });
+    } else {
+      if (!currentProm) {
+        currentProm = this._fetchData(
+          this.entityId,
+          currentId.media_content_id,
+          currentId.media_content_type
+        );
+      }
+      currentProm.then(
+        (item) => {
+          this._currentItem = item;
+          fireEvent(this, "media-browsed", {
+            ids: navigateIds,
+            current: item,
+          });
+        },
+        (err) => {
+          // When we change entity ID, we will first try to see if the new entity is
+          // able to resolve the new path. If that results in an error, browse the root.
+          const isNewEntityWithSamePath =
+            oldNavigateIds &&
+            changedProps.has("entityId") &&
+            navigateIds.length === oldNavigateIds.length &&
+            oldNavigateIds.every(
+              (oldItem, idx) =>
+                navigateIds[idx].media_content_id ===
+                  oldItem.media_content_id &&
+                navigateIds[idx].media_content_type ===
+                  oldItem.media_content_type
+            );
+          if (isNewEntityWithSamePath) {
+            fireEvent(this, "media-browsed", {
+              ids: [
+                { media_content_id: undefined, media_content_type: undefined },
+              ],
+              replace: true,
+            });
+          } else if (
+            err.code === "entity_not_found" &&
+            this.entityId &&
+            isUnavailableState(this.hass.states[this.entityId]?.state)
+          ) {
+            this._setError({
+              message: this.hass.localize(
+                `ui.components.media-browser.media_player_unavailable`
+              ),
+              code: "entity_not_found",
+            });
+          } else {
+            this._setError(err);
+          }
+        }
       );
     }
-    currentProm.then(
-      (item) => {
-        this._currentItem = item;
-        fireEvent(this, "media-browsed", {
-          ids: navigateIds,
-          current: item,
-        });
-      },
-      (err) => {
-        // When we change entity ID, we will first try to see if the new entity is
-        // able to resolve the new path. If that results in an error, browse the root.
-        const isNewEntityWithSamePath =
-          oldNavigateIds &&
-          changedProps.has("entityId") &&
-          navigateIds.length === oldNavigateIds.length &&
-          oldNavigateIds.every(
-            (oldItem, idx) =>
-              navigateIds[idx].media_content_id === oldItem.media_content_id &&
-              navigateIds[idx].media_content_type === oldItem.media_content_type
-          );
-        if (isNewEntityWithSamePath) {
-          fireEvent(this, "media-browsed", {
-            ids: [
-              { media_content_id: undefined, media_content_type: undefined },
-            ],
-            replace: true,
-          });
-        } else if (
-          err.code === "entity_not_found" &&
-          this.entityId &&
-          isUnavailableState(this.hass.states[this.entityId]?.state)
-        ) {
-          this._setError({
-            message: this.hass.localize(
-              `ui.components.media-browser.media_player_unavailable`
-            ),
-            code: "entity_not_found",
-          });
-        } else {
-          this._setError(err);
-        }
-      }
-    );
     // Fetch parent
     if (!parentProm && parentId !== undefined) {
       parentProm = this._fetchData(
@@ -479,111 +518,118 @@ export class HaMediaPlayerBrowse extends LitElement {
                       </ha-alert>
                     </div>
                   `
-                : isTTSMediaSource(currentItem.media_content_id)
-                  ? html`
-                      <ha-browse-media-tts
-                        .item=${currentItem}
-                        .hass=${this.hass}
-                        .action=${this.action}
-                        @tts-picked=${this._ttsPicked}
-                      ></ha-browse-media-tts>
-                    `
-                  : !children.length && !currentItem.not_shown
+                : currentItem === MANUAL_ITEM
+                  ? html`<ha-browse-media-manual
+                      .item=${this._manualItem}
+                      .hass=${this.hass}
+                      .action=${this.action}
+                      @manual-media-picked=${this._manualPicked}
+                    ></ha-browse-media-manual>`
+                  : isTTSMediaSource(currentItem.media_content_id)
                     ? html`
-                        <div class="container no-items">
-                          ${currentItem.media_content_id ===
-                          "media-source://media_source/local/."
-                            ? html`
-                                <div class="highlight-add-button">
-                                  <span>
-                                    <ha-svg-icon
-                                      .path=${mdiArrowUpRight}
-                                    ></ha-svg-icon>
-                                  </span>
-                                  <span>
-                                    ${this.hass.localize(
-                                      "ui.components.media-browser.file_management.highlight_button"
-                                    )}
-                                  </span>
-                                </div>
-                              `
-                            : this.hass.localize(
-                                "ui.components.media-browser.no_items"
-                              )}
-                        </div>
+                        <ha-browse-media-tts
+                          .item=${currentItem}
+                          .hass=${this.hass}
+                          .action=${this.action}
+                          @tts-picked=${this._ttsPicked}
+                        ></ha-browse-media-tts>
                       `
-                    : this.preferredLayout === "grid" ||
-                        (this.preferredLayout === "auto" &&
-                          childrenMediaClass.layout === "grid")
+                    : !children.length && !currentItem.not_shown
                       ? html`
-                          <lit-virtualizer
-                            scroller
-                            .layout=${grid({
-                              itemSize: {
-                                width: "175px",
-                                height:
-                                  childrenMediaClass.thumbnail_ratio ===
-                                  "portrait"
-                                    ? "312px"
-                                    : "225px",
-                              },
-                              gap: "16px",
-                              flex: { preserve: "aspect-ratio" },
-                              justify: "space-evenly",
-                              direction: "vertical",
-                            })}
-                            .items=${children}
-                            .renderItem=${this._renderGridItem}
-                            class="children ${classMap({
-                              portrait:
-                                childrenMediaClass.thumbnail_ratio ===
-                                "portrait",
-                              not_shown: !!currentItem.not_shown,
-                            })}"
-                          ></lit-virtualizer>
-                          ${currentItem.not_shown
-                            ? html`
-                                <div class="grid not-shown">
-                                  <div class="title">
-                                    ${this.hass.localize(
-                                      "ui.components.media-browser.not_shown",
-                                      { count: currentItem.not_shown }
-                                    )}
+                          <div class="container no-items">
+                            ${currentItem.media_content_id ===
+                            "media-source://media_source/local/."
+                              ? html`
+                                  <div class="highlight-add-button">
+                                    <span>
+                                      <ha-svg-icon
+                                        .path=${mdiArrowUpRight}
+                                      ></ha-svg-icon>
+                                    </span>
+                                    <span>
+                                      ${this.hass.localize(
+                                        "ui.components.media-browser.file_management.highlight_button"
+                                      )}
+                                    </span>
                                   </div>
-                                </div>
-                              `
-                            : ""}
+                                `
+                              : this.hass.localize(
+                                  "ui.components.media-browser.no_items"
+                                )}
+                          </div>
                         `
-                      : html`
-                          <ha-list>
+                      : this.preferredLayout === "grid" ||
+                          (this.preferredLayout === "auto" &&
+                            childrenMediaClass.layout === "grid")
+                        ? html`
                             <lit-virtualizer
                               scroller
-                              .items=${children}
-                              style=${styleMap({
-                                height: `${children.length * 72 + 26}px`,
+                              .layout=${grid({
+                                itemSize: {
+                                  width: "175px",
+                                  height:
+                                    childrenMediaClass.thumbnail_ratio ===
+                                    "portrait"
+                                      ? "312px"
+                                      : "225px",
+                                },
+                                gap: "16px",
+                                flex: { preserve: "aspect-ratio" },
+                                justify: "space-evenly",
+                                direction: "vertical",
                               })}
-                              .renderItem=${this._renderListItem}
+                              .items=${children}
+                              .renderItem=${this._renderGridItem}
+                              class="children ${classMap({
+                                portrait:
+                                  childrenMediaClass.thumbnail_ratio ===
+                                  "portrait",
+                                not_shown: !!currentItem.not_shown,
+                              })}"
                             ></lit-virtualizer>
                             ${currentItem.not_shown
                               ? html`
-                                  <ha-list-item
-                                    noninteractive
-                                    class="not-shown"
-                                    .graphic=${mediaClass.show_list_images
-                                      ? "medium"
-                                      : "avatar"}
-                                  >
-                                    <span class="title">
+                                  <div class="grid not-shown">
+                                    <div class="title">
                                       ${this.hass.localize(
                                         "ui.components.media-browser.not_shown",
                                         { count: currentItem.not_shown }
                                       )}
-                                    </span>
-                                  </ha-list-item>
+                                    </div>
+                                  </div>
                                 `
                               : ""}
-                          </ha-list>
-                        `
+                          `
+                        : html`
+                            <ha-list>
+                              <lit-virtualizer
+                                scroller
+                                .items=${children}
+                                style=${styleMap({
+                                  height: `${children.length * 72 + 26}px`,
+                                })}
+                                .renderItem=${this._renderListItem}
+                              ></lit-virtualizer>
+                              ${currentItem.not_shown
+                                ? html`
+                                    <ha-list-item
+                                      noninteractive
+                                      class="not-shown"
+                                      .graphic=${mediaClass.show_list_images
+                                        ? "medium"
+                                        : "avatar"}
+                                    >
+                                      <span class="title">
+                                        ${this.hass.localize(
+                                          "ui.components.media-browser.not_shown",
+                                          { count: currentItem.not_shown }
+                                        )}
+                                      </span>
+                                    </ha-list-item>
+                                  `
+                                : ""}
+                            </ha-list>
+                          `
             }
           </div>
         </div>
@@ -767,6 +813,16 @@ export class HaMediaPlayerBrowse extends LitElement {
     });
   }
 
+  private _manualPicked(ev: CustomEvent<ManualMediaPickedEvent>) {
+    ev.stopPropagation();
+    const navigateIds = [...this.navigateIds];
+    navigateIds.push(ev.detail.item);
+    fireEvent(this, "media-picked", {
+      item: ev.detail.item as MediaPlayerItem,
+      navigateIds,
+    });
+  }
+
   private _childClicked = async (ev: MouseEvent): Promise<void> => {
     const target = ev.currentTarget as any;
     const item: MediaPlayerItem = target.item;
@@ -790,9 +846,23 @@ export class HaMediaPlayerBrowse extends LitElement {
     mediaContentId?: string,
     mediaContentType?: string
   ): Promise<MediaPlayerItem> {
-    return entityId && entityId !== BROWSER_PLAYER
-      ? browseMediaPlayer(this.hass, entityId, mediaContentId, mediaContentType)
-      : browseLocalMediaPlayer(this.hass, mediaContentId);
+    const prom =
+      entityId && entityId !== BROWSER_PLAYER
+        ? browseMediaPlayer(
+            this.hass,
+            entityId,
+            mediaContentId,
+            mediaContentType
+          )
+        : browseLocalMediaPlayer(this.hass, mediaContentId);
+
+    return prom.then((item) => {
+      if (!mediaContentId && this.action === "pick") {
+        item.children = item.children || [];
+        item.children.push(MANUAL_ITEM);
+      }
+      return item;
+    });
   }
 
   private _measureCard(): void {
