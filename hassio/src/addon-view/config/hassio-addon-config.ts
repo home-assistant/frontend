@@ -11,7 +11,10 @@ import "../../../../src/components/ha-alert";
 import "../../../../src/components/ha-button-menu";
 import "../../../../src/components/ha-card";
 import "../../../../src/components/ha-form/ha-form";
-import type { HaFormSchema } from "../../../../src/components/ha-form/types";
+import type {
+  HaFormSchema,
+  HaFormDataContainer,
+} from "../../../../src/components/ha-form/types";
 import "../../../../src/components/ha-formfield";
 import "../../../../src/components/ha-icon-button";
 import "../../../../src/components/ha-list-item";
@@ -53,6 +56,13 @@ const ADDON_YAML_SCHEMA = DEFAULT_SCHEMA.extend([
 
 const MASKED_FIELDS = ["password", "secret", "token"];
 
+function getFieldKey(
+  entry: HaFormSchema,
+  options?: { path?: string[] }
+): string {
+  return options?.path ? [...options.path, entry.name].join(".") : entry.name;
+}
+
 @customElement("hassio-addon-config")
 class HassioAddonConfig extends LitElement {
   @property({ attribute: false }) public addon!: HassioAddonDetails;
@@ -79,16 +89,27 @@ class HassioAddonConfig extends LitElement {
 
   @query("ha-yaml-editor") private _editor?: HaYamlEditor;
 
-  public computeLabel = (entry: HaFormSchema): string =>
-    this.addon.translations[this.hass.language]?.configuration?.[entry.name]
+  public computeLabel = (
+    entry: HaFormSchema,
+    _data: HaFormDataContainer,
+    options?: { path?: string[] }
+  ): string =>
+    this.addon.translations[this.hass.language]?.configuration?.[
+      getFieldKey(entry, options)
+    ]?.name ||
+    this.addon.translations.en?.configuration?.[getFieldKey(entry, options)]
       ?.name ||
-    this.addon.translations.en?.configuration?.[entry.name]?.name ||
     entry.name;
 
-  public computeHelper = (entry: HaFormSchema): string =>
-    this.addon.translations[this.hass.language]?.configuration?.[entry.name]
+  public computeHelper = (
+    entry: HaFormSchema,
+    options?: { path?: string[] }
+  ): string =>
+    this.addon.translations[this.hass.language]?.configuration?.[
+      getFieldKey(entry, options)
+    ]?.description ||
+    this.addon.translations.en?.configuration?.[getFieldKey(entry, options)]
       ?.description ||
-    this.addon.translations.en?.configuration?.[entry.name]?.description ||
     "";
 
   private _convertSchema = memoizeOne(
