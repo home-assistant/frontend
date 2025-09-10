@@ -109,34 +109,6 @@ class BrowseMediaManual extends LitElement {
         flex-direction: column;
         max-width: 448px;
       }
-      .options {
-        margin-top: 16px;
-        display: flex;
-        justify-content: space-between;
-      }
-      ha-textarea {
-        width: 100%;
-      }
-      button.link {
-        color: var(--primary-color);
-      }
-      .footer {
-        font-size: var(--ha-font-size-s);
-        color: var(--secondary-text-color);
-        margin: 16px 0;
-        text-align: center;
-      }
-      .footer code {
-        font-weight: var(--ha-font-weight-bold);
-      }
-      .footer {
-        --mdc-icon-size: 14px;
-        --mdc-icon-button-size: 24px;
-        display: flex;
-        justify-content: center;
-        align-items: center;
-        gap: 6px;
-      }
     `,
   ];
 }
