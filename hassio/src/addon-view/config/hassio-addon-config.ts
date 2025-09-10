@@ -92,67 +92,75 @@ class HassioAddonConfig extends LitElement {
 
   private _convertSchema = memoizeOne(
     // Convert supervisor schema to selectors
-    (schema: Record<string, any>): HaFormSchema[] =>
-      schema.map((entry) => {
-        if (entry.type === "select") {
-          return {
-            name: entry.name,
-            required: entry.required,
-            selector: { select: { options: entry.options } },
-          };
-        }
-        if (entry.type === "string") {
-          return entry.multiple
-            ? {
-                name: entry.name,
-                required: entry.required,
-                selector: {
-                  select: { options: [], multiple: true, custom_value: true },
-                },
-              }
-            : {
-                name: entry.name,
-                required: entry.required,
-                selector: {
-                  text: {
-                    type: entry.format
-                      ? entry.format
-                      : MASKED_FIELDS.includes(entry.name)
-                        ? "password"
-                        : "text",
-                  },
-                },
-              };
-        }
-        if (entry.type === "boolean") {
-          return {
-            name: entry.name,
-            required: entry.required,
-            selector: { boolean: {} },
-          };
-        }
-        if (entry.type === "schema") {
-          return {
-            name: entry.name,
-            required: entry.required,
-            selector: { object: {} },
-          };
-        }
-        if (entry.type === "float" || entry.type === "integer") {
-          return {
+    (schema: readonly HaFormSchema[]): HaFormSchema[] =>
+      this._convertSchemaElements(schema)
+  );
+
+  private _convertSchemaElements(
+    schema: readonly HaFormSchema[]
+  ): HaFormSchema[] {
+    return schema.map((entry) => this._convertSchemaElement(entry));
+  }
+
+  private _convertSchemaElement(entry: any): HaFormSchema {
+    if (entry.type === "select") {
+      return {
+        name: entry.name,
+        required: entry.required,
+        selector: { select: { options: entry.options } },
+      };
+    }
+    if (entry.type === "string") {
+      return entry.multiple
+        ? {
             name: entry.name,
             required: entry.required,
             selector: {
-              number: {
-                mode: "box",
-                step: entry.type === "float" ? "any" : undefined,
+              select: { options: [], multiple: true, custom_value: true },
+            },
+          }
+        : {
+            name: entry.name,
+            required: entry.required,
+            selector: {
+              text: {
+                type: entry.format
+                  ? entry.format
+                  : MASKED_FIELDS.includes(entry.name)
+                    ? "password"
+                    : "text",
               },
             },
           };
-        }
-        return entry;
-      })
-  );
+    }
+    if (entry.type === "boolean") {
+      return {
+        name: entry.name,
+        required: entry.required,
+        selector: { boolean: {} },
+      };
+    }
+    if (entry.type === "schema") {
+      return {
+        name: entry.name,
+        required: entry.required,
+        selector: { object: {} },
+      };
+    }
+    if (entry.type === "float" || entry.type === "integer") {
+      return {
+        name: entry.name,
+        required: entry.required,
+        selector: {
+          number: {
+            mode: "box",
+            step: entry.type === "float" ? "any" : undefined,
+          },
+        },
+      };
+    }
+    return entry;
+  }
 
   private _filteredSchema = memoizeOne(
     (options: Record<string, unknown>, schema: HaFormSchema[]) =>
