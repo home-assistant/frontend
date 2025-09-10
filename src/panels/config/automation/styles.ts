@@ -37,12 +37,6 @@ export const rowStyles = css`
   ha-tooltip {
     cursor: default;
   }
-  :host([highlight]) ha-card {
-    --shadow-default: var(--ha-card-box-shadow, 0 0 0 0 transparent);
-    --shadow-focus: 0 0 0 1px var(--state-inactive-color);
-    border-color: var(--state-inactive-color);
-    box-shadow: var(--shadow-default), var(--shadow-focus);
-  }
   .hidden {
     display: none;
   }
@@ -50,11 +44,10 @@ export const rowStyles = css`
 
 export const editorStyles = css`
   .disabled {
-    opacity: 0.5;
     pointer-events: none;
   }
 
-  .card-content {
+  .card-content.card {
     padding: 16px;
   }
   .card-content.yaml {
@@ -68,12 +61,15 @@ export const indentStyle = css`
   .card-content.indent,
   .selector-row,
   :host([indent]) ha-form {
-    margin-left: 12px;
-    padding: 12px 24px 16px 16px;
-    border-left: 2px solid var(--ha-color-border-neutral-quiet);
+    margin-inline-start: 12px;
+    padding-top: 12px;
+    padding-bottom: 16px;
+    padding-inline-start: 16px;
+    padding-inline-end: 0px;
+    border-inline-start: 2px solid var(--ha-color-border-neutral-quiet);
     border-bottom: 2px solid var(--ha-color-border-neutral-quiet);
     border-radius: 0;
-    border-bottom-left-radius: var(--ha-border-radius-lg);
+    border-end-start-radius: var(--ha-border-radius-lg);
   }
   .card-content.indent.selected,
   :host([selected]) .card-content.indent,
@@ -108,78 +104,64 @@ export const saveFabStyles = css`
 export const manualEditorStyles = css`
   :host {
     display: block;
+    --sidebar-width: 0;
+    --sidebar-gap: 0;
   }
 
-  .split-view {
+  .has-sidebar {
+    --sidebar-width: min(35vw, 500px);
+    --sidebar-gap: 16px;
+  }
+
+  .fab-positioner {
     display: flex;
-    flex-direction: row;
-    height: 100%;
-    position: relative;
-    gap: 16px;
+    justify-content: flex-end;
   }
 
-  .split-view.sidebar-hidden {
-    gap: 0;
+  .fab-positioner ha-fab {
+    position: fixed;
+    right: unset;
+    left: unset;
+    bottom: calc(-80px - var(--safe-area-inset-bottom));
+    transition: bottom 0.3s;
+  }
+  .fab-positioner ha-fab.dirty {
+    bottom: 16px;
   }
 
   .content-wrapper {
-    position: relative;
-    flex: 6;
+    padding-right: calc(var(--sidebar-width) + var(--sidebar-gap));
+    padding-inline-end: calc(var(--sidebar-width) + var(--sidebar-gap));
+    padding-inline-start: 0;
   }
 
   .content {
-    padding: 32px 16px 64px 0;
-    height: calc(100vh - 153px);
-    height: calc(100dvh - 153px);
-    overflow-y: auto;
-    overflow-x: hidden;
+    padding-top: 24px;
+    padding-bottom: 72px;
+    transition: padding-bottom 180ms ease-in-out;
   }
 
-  .sidebar {
-    padding: 12px 0;
-    flex: 4;
-    height: calc(100vh - 81px);
-    height: calc(100dvh - 81px);
-    width: 40%;
-  }
-  .split-view.sidebar-hidden .sidebar {
-    border-color: transparent;
-    border-width: 0;
-    overflow: hidden;
-    flex: 0;
-    visibility: hidden;
+  .content.has-bottom-sheet {
+    padding-bottom: calc(90vh - 72px);
   }
 
-  .sidebar.overlay {
+  ha-automation-sidebar {
     position: fixed;
-    bottom: 8px;
-    right: 8px;
-    height: calc(100% - 70px);
-    padding: 0;
-    z-index: 5;
-    box-shadow: -8px 0 16px rgba(0, 0, 0, 0.2);
+    top: calc(var(--header-height) + 16px);
+    height: calc(-81px + 100dvh);
+    width: var(--sidebar-width);
+    display: block;
   }
 
-  .sidebar.overlay.rtl {
-    right: unset;
-    left: 8px;
+  ha-automation-sidebar.hidden {
+    display: none;
   }
 
-  @media all and (max-width: 870px) {
-    .split-view {
-      gap: 0;
-      margin-right: -8px;
-    }
-    .sidebar {
-      height: 0;
-      width: 0;
-      flex: 0;
-    }
+  .sidebar-positioner {
+    display: flex;
+    justify-content: flex-end;
   }
 
-  .split-view.sidebar-hidden .sidebar.overlay {
-    width: 0;
-  }
   .description {
     margin: 0;
   }
@@ -190,12 +172,12 @@ export const manualEditorStyles = css`
 
 export const automationRowsStyles = css`
   .rows {
-    padding: 16px 0 16px 16px;
-    margin: -16px;
-    margin-right: -20px;
     display: flex;
     flex-direction: column;
     gap: 16px;
+  }
+  .rows.no-sidebar {
+    margin-inline-end: 0;
   }
   .sortable-ghost {
     background: none;
@@ -209,9 +191,18 @@ export const automationRowsStyles = css`
     scroll-margin-top: 48px;
   }
   .handle {
-    padding: 12px;
+    padding: 4px;
     cursor: move; /* fallback if grab cursor is unsupported */
     cursor: grab;
+    border-radius: var(--ha-border-radius-pill);
+  }
+  .handle:focus {
+    outline: var(--wa-focus-ring);
+    background: var(--ha-color-fill-neutral-quiet-resting);
+  }
+  .handle.active {
+    outline: var(--wa-focus-ring);
+    background: var(--ha-color-fill-neutral-normal-active);
   }
   .handle ha-svg-icon {
     pointer-events: none;
@@ -228,9 +219,39 @@ export const automationRowsStyles = css`
 export const sidebarEditorStyles = css`
   .sidebar-editor {
     display: block;
-    padding-top: 16px;
+    padding-top: 8px;
   }
   .description {
     padding-top: 16px;
+  }
+  .overflow-label {
+    display: flex;
+    justify-content: space-between;
+    gap: 12px;
+    white-space: nowrap;
+  }
+  .overflow-label .shortcut {
+    --mdc-icon-size: 12px;
+    display: inline-flex;
+    flex-direction: row;
+    align-items: center;
+    gap: 2px;
+  }
+  .overflow-label .shortcut span {
+    font-size: var(--ha-font-size-s);
+    font-family: var(--ha-font-family-code);
+    color: var(--ha-color-text-secondary);
+  }
+  .shortcut-placeholder {
+    display: inline-block;
+    width: 60px;
+  }
+  .shortcut-placeholder.mac {
+    width: 46px;
+  }
+  @media all and (max-width: 870px) {
+    .shortcut-placeholder {
+      display: none;
+    }
   }
 `;

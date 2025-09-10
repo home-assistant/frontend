@@ -1,9 +1,11 @@
-import { mdiDelete, mdiPlaylistEdit } from "@mdi/js";
-import { html, LitElement } from "lit";
+import { mdiAppleKeyboardCommand, mdiDelete, mdiPlaylistEdit } from "@mdi/js";
+import { html, LitElement, nothing } from "lit";
 import { customElement, property, query, state } from "lit/decorators";
+import { keyed } from "lit/directives/keyed";
 import { fireEvent } from "../../../../common/dom/fire_event";
 import type { ScriptFieldSidebarConfig } from "../../../../data/automation";
 import type { HomeAssistant } from "../../../../types";
+import { isMac } from "../../../../util/is_mac";
 import "../../script/ha-script-field-editor";
 import type HaAutomationConditionEditor from "../action/ha-automation-action-editor";
 import { sidebarEditorStyles } from "../styles";
@@ -22,6 +24,8 @@ export default class HaAutomationSidebarScriptField extends LitElement {
   @property({ type: Boolean, attribute: "yaml-mode" }) public yamlMode = false;
 
   @property({ type: Boolean }) public narrow = false;
+
+  @property({ attribute: "sidebar-key" }) public sidebarKey?: string;
 
   @state() private _warnings?: string[];
 
@@ -58,10 +62,13 @@ export default class HaAutomationSidebarScriptField extends LitElement {
         .clickAction=${this._toggleYamlMode}
         .disabled=${!!this._warnings}
       >
-        ${this.hass.localize(
-          `ui.panel.config.automation.editor.edit_${!this.yamlMode ? "yaml" : "ui"}`
-        )}
         <ha-svg-icon slot="start" .path=${mdiPlaylistEdit}></ha-svg-icon>
+        <div class="overflow-label">
+          ${this.hass.localize(
+            `ui.panel.config.automation.editor.edit_${!this.yamlMode ? "yaml" : "ui"}`
+          )}
+          <span class="shortcut-placeholder ${isMac ? "mac" : ""}"></span>
+        </div>
       </ha-md-menu-item>
       <ha-md-menu-item
         slot="menu-items"
@@ -69,21 +76,47 @@ export default class HaAutomationSidebarScriptField extends LitElement {
         .disabled=${this.disabled}
         class="warning"
       >
-        ${this.hass.localize(
-          "ui.panel.config.automation.editor.actions.delete"
-        )}
         <ha-svg-icon slot="start" .path=${mdiDelete}></ha-svg-icon>
+        <div class="overflow-label">
+          ${this.hass.localize(
+            "ui.panel.config.automation.editor.actions.delete"
+          )}
+          ${!this.narrow
+            ? html`<span class="shortcut">
+                <span
+                  >${isMac
+                    ? html`<ha-svg-icon
+                        slot="start"
+                        .path=${mdiAppleKeyboardCommand}
+                      ></ha-svg-icon>`
+                    : this.hass.localize(
+                        "ui.panel.config.automation.editor.ctrl"
+                      )}</span
+                >
+                <span>+</span>
+                <span
+                  >${this.hass.localize(
+                    "ui.panel.config.automation.editor.del"
+                  )}</span
+                >
+              </span>`
+            : nothing}
+        </div>
       </ha-md-menu-item>
-      <ha-script-field-editor
-        class="sidebar-editor"
-        .hass=${this.hass}
-        .field=${this.config.config.field}
-        .key=${this.config.config.key}
-        .excludeKeys=${this.config.config.excludeKeys}
-        .disabled=${this.disabled}
-        .yamlMode=${this.yamlMode}
-        @value-changed=${this._valueChangedSidebar}
-      ></ha-script-field-editor>
+      ${keyed(
+        this.sidebarKey,
+        html`<ha-script-field-editor
+          class="sidebar-editor"
+          .hass=${this.hass}
+          .field=${this.config.config.field}
+          .key=${this.config.config.key}
+          .excludeKeys=${this.config.config.excludeKeys}
+          .disabled=${this.disabled}
+          .yamlMode=${this.yamlMode}
+          @value-changed=${this._valueChangedSidebar}
+          @yaml-changed=${this._yamlChangedSidebar}
+        ></ha-script-field-editor>`
+      )}
     </ha-automation-sidebar-card>`;
   }
 
@@ -108,6 +141,12 @@ export default class HaAutomationSidebarScriptField extends LitElement {
         },
       });
     }
+  }
+
+  private _yamlChangedSidebar(ev: CustomEvent) {
+    ev.stopPropagation();
+
+    this.config?.save?.(ev.detail.value);
   }
 
   private _toggleYamlMode = () => {

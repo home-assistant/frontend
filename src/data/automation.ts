@@ -556,18 +556,18 @@ export interface AutomationClipboard {
 }
 
 export interface BaseSidebarConfig {
-  toggleYamlMode: () => boolean;
   delete: () => void;
+  close: (focus?: boolean) => void;
 }
 
 export interface TriggerSidebarConfig extends BaseSidebarConfig {
   save: (value: Trigger) => void;
-  close: () => void;
   rename: () => void;
   disable: () => void;
   duplicate: () => void;
   cut: () => void;
   copy: () => void;
+  toggleYamlMode: () => void;
   config: Trigger;
   yamlMode: boolean;
   uiSupported: boolean;
@@ -575,13 +575,13 @@ export interface TriggerSidebarConfig extends BaseSidebarConfig {
 
 export interface ConditionSidebarConfig extends BaseSidebarConfig {
   save: (value: Condition) => void;
-  close: () => void;
   rename: () => void;
   disable: () => void;
   test: () => void;
   duplicate: () => void;
   cut: () => void;
   copy: () => void;
+  toggleYamlMode: () => void;
   config: Condition;
   yamlMode: boolean;
   uiSupported: boolean;
@@ -589,13 +589,13 @@ export interface ConditionSidebarConfig extends BaseSidebarConfig {
 
 export interface ActionSidebarConfig extends BaseSidebarConfig {
   save: (value: Action) => void;
-  close: () => void;
   rename: () => void;
   disable: () => void;
   duplicate: () => void;
   cut: () => void;
   copy: () => void;
   run: () => void;
+  toggleYamlMode: () => void;
   config: {
     action: Action;
   };
@@ -604,7 +604,6 @@ export interface ActionSidebarConfig extends BaseSidebarConfig {
 }
 
 export interface OptionSidebarConfig extends BaseSidebarConfig {
-  close: () => void;
   rename: () => void;
   duplicate: () => void;
   defaultOption?: boolean;
@@ -612,13 +611,13 @@ export interface OptionSidebarConfig extends BaseSidebarConfig {
 
 export interface ScriptFieldSidebarConfig extends BaseSidebarConfig {
   save: (value: Field) => void;
-  close: () => void;
   config: {
     field: Field;
     selector: boolean;
     key: string;
     excludeKeys: string[];
   };
+  toggleYamlMode: () => void;
   yamlMode: boolean;
 }
 

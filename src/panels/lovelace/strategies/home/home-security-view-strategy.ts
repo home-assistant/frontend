@@ -23,6 +23,7 @@ const processAreasForSecurity = (
   entities: string[]
 ): LovelaceCardConfig[] => {
   const cards: LovelaceCardConfig[] = [];
+  const computeTileCard = computeAreaTileCardConfig(hass, "", false);
 
   for (const areaId of areaIds) {
     const area = hass.areas[areaId];
@@ -31,9 +32,13 @@ const processAreasForSecurity = (
     const areaFilter = generateEntityFilter(hass, {
       area: area.area_id,
     });
-    const areaEntities = entities.filter(areaFilter);
 
-    const computeTileCard = computeAreaTileCardConfig(hass, "", false);
+    const areaEntities = entities.filter(areaFilter);
+    const areaCards: LovelaceCardConfig[] = [];
+
+    for (const entityId of areaEntities) {
+      areaCards.push(computeTileCard(entityId));
+    }
 
     if (areaEntities.length > 0) {
       cards.push({
@@ -45,10 +50,7 @@ const processAreasForSecurity = (
           navigation_path: `areas-${area.area_id}`,
         },
       });
-
-      for (const entityId of areaEntities) {
-        cards.push(computeTileCard(entityId));
-      }
+      cards.push(...areaCards);
     }
   }
 
@@ -89,7 +91,10 @@ export class HomeSecurityViewStrategy extends ReactiveElement {
         cards: [
           {
             type: "heading",
-            heading: floorCount > 1 ? floor.name : "Areas",
+            heading:
+              floorCount > 1
+                ? floor.name
+                : hass.localize("ui.panel.lovelace.strategy.home.areas"),
           },
         ],
       };
@@ -110,7 +115,10 @@ export class HomeSecurityViewStrategy extends ReactiveElement {
         cards: [
           {
             type: "heading",
-            heading: floorCount > 1 ? "Other areas" : "Areas",
+            heading:
+              floorCount > 1
+                ? hass.localize("ui.panel.lovelace.strategy.home.other_areas")
+                : hass.localize("ui.panel.lovelace.strategy.home.areas"),
           },
         ],
       };

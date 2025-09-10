@@ -29,6 +29,8 @@ export default class HaAutomationTriggerEditor extends LitElement {
 
   @property({ type: Boolean, attribute: "show-id" }) public showId = false;
 
+  @property({ type: Boolean, attribute: "sidebar" }) public inSidebar = false;
+
   @query("ha-yaml-editor") public yamlEditor?: HaYamlEditor;
 
   protected render() {
@@ -47,6 +49,7 @@ export default class HaAutomationTriggerEditor extends LitElement {
               this.trigger.enabled === false &&
               !this.yamlMode),
           yaml: yamlMode,
+          card: !this.inSidebar,
         })}
       >
         ${yamlMode
@@ -118,7 +121,7 @@ export default class HaAutomationTriggerEditor extends LitElement {
     if (!ev.detail.isValid) {
       return;
     }
-    fireEvent(this, "value-changed", {
+    fireEvent(this, this.inSidebar ? "yaml-changed" : "value-changed", {
       value: migrateAutomationTrigger(ev.detail.value),
     });
   }
@@ -138,7 +141,6 @@ export default class HaAutomationTriggerEditor extends LitElement {
       haStyle,
       css`
         .disabled {
-          opacity: 0.5;
           pointer-events: none;
         }
 

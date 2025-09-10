@@ -23,6 +23,7 @@ const processAreasForClimate = (
   entities: string[]
 ): LovelaceCardConfig[] => {
   const cards: LovelaceCardConfig[] = [];
+  const computeTileCard = computeAreaTileCardConfig(hass, "", true);
 
   for (const areaId of areaIds) {
     const area = hass.areas[areaId];
@@ -32,10 +33,28 @@ const processAreasForClimate = (
       area: area.area_id,
     });
     const areaEntities = entities.filter(areaFilter);
+    const areaCards: LovelaceCardConfig[] = [];
 
-    const computeTileCard = computeAreaTileCardConfig(hass, "", true);
+    const temperatureEntityId = area.temperature_entity_id;
+    if (temperatureEntityId && hass.states[temperatureEntityId]) {
+      areaCards.push({
+        ...computeTileCard(temperatureEntityId),
+        features: [{ type: "trend-graph" }],
+      });
+    }
+    const humidityEntityId = area.humidity_entity_id;
+    if (humidityEntityId && hass.states[humidityEntityId]) {
+      areaCards.push({
+        ...computeTileCard(humidityEntityId),
+        features: [{ type: "trend-graph" }],
+      });
+    }
 
-    if (areaEntities.length > 0) {
+    for (const entityId of areaEntities) {
+      areaCards.push(computeTileCard(entityId));
+    }
+
+    if (areaCards.length > 0) {
       cards.push({
         heading_style: "subtitle",
         type: "heading",
@@ -45,10 +64,7 @@ const processAreasForClimate = (
           navigation_path: `areas-${area.area_id}`,
         },
       });
-
-      for (const entityId of areaEntities) {
-        cards.push(computeTileCard(entityId));
-      }
+      cards.push(...areaCards);
     }
   }
 
@@ -89,7 +105,10 @@ export class HomeClimateViewStrategy extends ReactiveElement {
         cards: [
           {
             type: "heading",
-            heading: floorCount > 1 ? floor.name : "Areas",
+            heading:
+              floorCount > 1
+                ? floor.name
+                : hass.localize("ui.panel.lovelace.strategy.home.areas"),
           },
         ],
       };
@@ -110,7 +129,10 @@ export class HomeClimateViewStrategy extends ReactiveElement {
         cards: [
           {
             type: "heading",
-            heading: floorCount > 1 ? "Other areas" : "Areas",
+            heading:
+              floorCount > 1
+                ? hass.localize("ui.panel.lovelace.strategy.home.other_areas")
+                : hass.localize("ui.panel.lovelace.strategy.home.areas"),
           },
         ],
       };

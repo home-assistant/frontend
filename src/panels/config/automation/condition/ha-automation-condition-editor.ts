@@ -28,6 +28,8 @@ export default class HaAutomationConditionEditor extends LitElement {
 
   @property({ type: Boolean }) public narrow = false;
 
+  @property({ type: Boolean, attribute: "sidebar" }) public inSidebar = false;
+
   @property({ type: Boolean, reflect: true }) public selected = false;
 
   @property({ type: Boolean, attribute: "supported" }) public uiSupported =
@@ -51,10 +53,12 @@ export default class HaAutomationConditionEditor extends LitElement {
         class=${classMap({
           "card-content": true,
           disabled:
-            this.disabled ||
-            (this.condition.enabled === false && !this.yamlMode),
+            !this.indent &&
+            (this.disabled ||
+              (this.condition.enabled === false && !this.yamlMode)),
           yaml: yamlMode,
           indent: this.indent,
+          card: !this.inSidebar,
         })}
       >
         ${yamlMode
@@ -100,8 +104,9 @@ export default class HaAutomationConditionEditor extends LitElement {
     if (!ev.detail.isValid) {
       return;
     }
-    // @ts-ignore
-    fireEvent(this, "value-changed", { value: ev.detail.value, yaml: true });
+    fireEvent(this, this.inSidebar ? "yaml-changed" : "value-changed", {
+      value: ev.detail.value,
+    });
   }
 
   private _onUiChanged(ev: CustomEvent) {

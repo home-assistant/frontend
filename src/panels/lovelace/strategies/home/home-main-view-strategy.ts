@@ -9,13 +9,12 @@ import type { LovelaceViewConfig } from "../../../../data/lovelace/config/view";
 import type { HomeAssistant } from "../../../../types";
 import type {
   AreaCardConfig,
-  ButtonCardConfig,
+  HomeSummaryCard,
   MarkdownCardConfig,
   TileCardConfig,
   WeatherForecastCardConfig,
 } from "../../cards/types";
 import { getAreas } from "../areas/helpers/areas-strategy-helper";
-import { HOME_SUMMARIES_ICONS } from "./helpers/home-summaries";
 
 export interface HomeMainViewStrategyConfig {
   type: "home-main";
@@ -63,7 +62,7 @@ export class HomeMainViewStrategy extends ReactiveElement {
         {
           type: "heading",
           heading_style: "title",
-          heading: "Areas",
+          heading: hass.localize("ui.panel.lovelace.strategy.home.areas"),
         },
         ...areas.map<AreaCardConfig>((area) =>
           computeAreaCard(area.area_id, hass)
@@ -108,64 +107,60 @@ export class HomeMainViewStrategy extends ReactiveElement {
       cards: [
         {
           type: "heading",
-          heading: "Summaries",
+          heading: hass.localize("ui.panel.lovelace.strategy.home.summaries"),
         },
         {
-          type: "button",
-          icon: HOME_SUMMARIES_ICONS.lights,
-          name: "Lights",
-          icon_height: "24px",
-          grid_options: {
-            rows: 2,
-            columns: 4,
-          },
+          type: "home-summary",
+          summary: "lights",
+          vertical: true,
           tap_action: {
             action: "navigate",
             navigation_path: "lights",
           },
-        } satisfies ButtonCardConfig,
-        {
-          type: "button",
-          icon: HOME_SUMMARIES_ICONS.climate,
-          name: "Climate",
-          icon_height: "30px",
           grid_options: {
             rows: 2,
             columns: 4,
           },
+        } satisfies HomeSummaryCard,
+        {
+          type: "home-summary",
+          summary: "climate",
+          vertical: true,
           tap_action: {
             action: "navigate",
             navigation_path: "climate",
           },
-        } satisfies ButtonCardConfig,
-        {
-          type: "button",
-          icon: HOME_SUMMARIES_ICONS.security,
-          name: "Security",
-          icon_height: "30px",
           grid_options: {
             rows: 2,
             columns: 4,
           },
+        } satisfies HomeSummaryCard,
+        {
+          type: "home-summary",
+          summary: "security",
+          vertical: true,
           tap_action: {
             action: "navigate",
             navigation_path: "security",
           },
-        } satisfies ButtonCardConfig,
-        {
-          type: "button",
-          icon: HOME_SUMMARIES_ICONS.media_players,
-          name: "Media Players",
-          icon_height: "30px",
           grid_options: {
             rows: 2,
             columns: 4,
           },
+        } satisfies HomeSummaryCard,
+        {
+          type: "home-summary",
+          summary: "media_players",
+          vertical: true,
           tap_action: {
             action: "navigate",
             navigation_path: "media-players",
           },
-        } satisfies ButtonCardConfig,
+          grid_options: {
+            rows: 2,
+            columns: 4,
+          },
+        } satisfies HomeSummaryCard,
       ],
     };
 
@@ -212,6 +207,7 @@ export class HomeMainViewStrategy extends ReactiveElement {
             "ui.panel.lovelace.cards.energy.energy_distribution.title_today"
           ),
           type: "energy-distribution",
+          collection_key: "energy_home_dashboard",
           link_dashboard: true,
         });
       }
@@ -232,7 +228,7 @@ export class HomeMainViewStrategy extends ReactiveElement {
         card: {
           type: "markdown",
           text_only: true,
-          content: "## Welcome {{user}}",
+          content: `## ${hass.localize("ui.panel.lovelace.strategy.home.welcome_user", { user: "{{ user }}" })}`,
         } satisfies MarkdownCardConfig,
       },
     };

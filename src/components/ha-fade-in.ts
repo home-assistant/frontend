@@ -1,4 +1,4 @@
-import WaAnimation from "@awesome.me/webawesome/dist/components/animation/animation";
+import WaAnimation from "@home-assistant/webawesome/dist/components/animation/animation";
 import { customElement, property } from "lit/decorators";
 
 @customElement("ha-fade-in")

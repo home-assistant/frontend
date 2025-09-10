@@ -159,6 +159,7 @@ export class HaMdDialog extends Dialog {
         --md-dialog-headline-size: var(--ha-font-size-xl);
         --md-dialog-supporting-text-size: var(--ha-font-size-m);
         --md-dialog-supporting-text-line-height: var(--ha-line-height-normal);
+        --md-divider-color: var(--divider-color);
       }
 
       :host([type="alert"]) {

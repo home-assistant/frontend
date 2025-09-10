@@ -29,6 +29,14 @@ const processAreasForMediaPlayers = (
       area: area.area_id,
     });
     const areaEntities = entities.filter(areaFilter);
+    const areaCards: LovelaceCardConfig[] = [];
+
+    for (const entityId of areaEntities) {
+      cards.push({
+        type: "media-control",
+        entity: entityId,
+      } satisfies MediaControlCardConfig);
+    }
 
     if (areaEntities.length > 0) {
       cards.push({
@@ -40,13 +48,7 @@ const processAreasForMediaPlayers = (
           navigation_path: `areas-${area.area_id}`,
         },
       });
-
-      for (const entityId of areaEntities) {
-        cards.push({
-          type: "media-control",
-          entity: entityId,
-        } satisfies MediaControlCardConfig);
-      }
+      cards.push(...areaCards);
     }
   }
 
@@ -87,7 +89,10 @@ export class HomeMMediaPlayersViewStrategy extends ReactiveElement {
         cards: [
           {
             type: "heading",
-            heading: floorCount > 1 ? floor.name : "Areas",
+            heading:
+              floorCount > 1
+                ? floor.name
+                : hass.localize("ui.panel.lovelace.strategy.home.areas"),
           },
         ],
       };
@@ -108,7 +113,10 @@ export class HomeMMediaPlayersViewStrategy extends ReactiveElement {
         cards: [
           {
             type: "heading",
-            heading: floorCount > 1 ? "Other areas" : "Areas",
+            heading:
+              floorCount > 1
+                ? hass.localize("ui.panel.lovelace.strategy.home.other_areas")
+                : hass.localize("ui.panel.lovelace.strategy.home.areas"),
           },
         ],
       };

@@ -36,11 +36,12 @@ export class HuiClockCardDigital extends LitElement {
       locale = { ...locale, time_format: this.config.time_format };
     }
 
+    const h12 = useAmPm(locale);
     this._dateTimeFormat = new Intl.DateTimeFormat(this.hass.locale.language, {
-      hour: "2-digit",
+      hour: h12 ? "numeric" : "2-digit",
       minute: "2-digit",
       second: "2-digit",
-      hourCycle: useAmPm(locale) ? "h12" : "h23",
+      hourCycle: h12 ? "h12" : "h23",
       timeZone:
         this.config?.time_zone ||
         resolveTimeZone(locale.time_zone, this.hass.config?.time_zone),
