@@ -1285,7 +1285,7 @@ class HUIRoot extends LitElement {
           );
           z-index: 1;
         }
-        ha-tab-group::part(scroll-button--end) {
+        ha-tab-group::part(scroll-button-end) {
           background: linear-gradient(
             270deg,
             var(--app-header-background-color),
