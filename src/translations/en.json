@@ -5261,7 +5261,15 @@
             "bulk_actions": {
               "move_area": "Move to area",
               "no_area": "No area",
-              "add_area": "Add area"
+              "add_area": "Add area",
+              "delete_selected": {
+                "button": "[%key:ui::panel::config::entities::picker::delete_selected::button%]",
+                "confirm_title": "Delete selected devices?",
+                "confirm_text": "Are you sure you want to delete the devices?",
+                "confirm_partly_text": "You can only delete {deletable} of the {selected} devices. The others are provided by integrations that do not support deleting devices.",
+                "partial_failure_title": "Delete failed",
+                "partial_failure": "Some devices failed to delete successfully. Check system logs for more information."
+              }
             }
           }
         },
@@ -7809,6 +7817,22 @@
                   "label": "Minute",
                   "description": "60 ticks (Every minute)"
                 }
+              },
+              "face_style": {
+                "label": "Clock face style",
+                "description": "Which kind of indices to use for the clock face",
+                "markers": {
+                  "label": "Markers",
+                  "description": "Show simple markers around the clock face (default)"
+                },
+                "numbers_upright": {
+                  "label": "Numbers",
+                  "description": "Show numbers around the clock face"
+                },
+                "roman": {
+                  "label": "Roman numerals",
+                  "description": "Show Roman numerals (I-XII) around the clock face"
+                }
               }
             },
             "media-control": {
@@ -8765,7 +8789,7 @@
             "all_parameters": "All available parameters",
             "accepts_target": "This action accepts a target, for example: `entity_id: light.bed_light`",
             "no_template_ui_support": "The UI does not support templates, you can still use the YAML editor.",
-            "copy_clipboard_template": "Copy to clipboard (template)",
+            "copy_clipboard_template": "Copy to clipboard as template",
             "errors": {
               "ui": {
                 "no_action": "No action selected, please select an action",

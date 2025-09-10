@@ -1,11 +1,11 @@
+import "@home-assistant/webawesome/dist/components/animation/animation";
 import { mdiCheckCircleOutline } from "@mdi/js";
-import { customElement, property } from "lit/decorators";
-import "@awesome.me/webawesome/dist/components/animation/animation";
 import { css, html, LitElement } from "lit";
+import { customElement, property } from "lit/decorators";
 import type { HomeAssistant } from "../../../../../../types";
 
-import "../../../../../../components/ha-svg-icon";
 import "../../../../../../components/ha-alert";
+import "../../../../../../components/ha-svg-icon";
 
 @customElement("zwave-js-add-node-added-insecure")
 export class ZWaveJsAddNodeFinished extends LitElement {
