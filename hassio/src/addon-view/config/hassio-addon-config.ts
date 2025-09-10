@@ -33,6 +33,7 @@ import { haStyle } from "../../../../src/resources/styles";
 import type { HomeAssistant } from "../../../../src/types";
 import { suggestAddonRestart } from "../../dialogs/suggestAddonRestart";
 import { hassioStyle } from "../../resources/hassio-style";
+import type { Selector } from "../../../../src/data/selector";
 
 const SUPPORTED_UI_TYPES = [
   "string",
@@ -103,63 +104,49 @@ class HassioAddonConfig extends LitElement {
   }
 
   private _convertSchemaElement(entry: any): HaFormSchema {
-    if (entry.type === "select") {
+    const selector = this._convertSchemaElementToSelector(entry);
+    if (selector) {
       return {
         name: entry.name,
         required: entry.required,
-        selector: { select: { options: entry.options } },
+        selector,
       };
+    }
+    return entry;
+  }
+
+  private _convertSchemaElementToSelector(entry: any): Selector | null {
+    if (entry.type === "select") {
+      return { select: { options: entry.options } };
     }
     if (entry.type === "string") {
       return entry.multiple
-        ? {
-            name: entry.name,
-            required: entry.required,
-            selector: {
-              select: { options: [], multiple: true, custom_value: true },
-            },
-          }
+        ? { select: { options: [], multiple: true, custom_value: true } }
         : {
-            name: entry.name,
-            required: entry.required,
-            selector: {
-              text: {
-                type: entry.format
-                  ? entry.format
-                  : MASKED_FIELDS.includes(entry.name)
-                    ? "password"
-                    : "text",
-              },
+            text: {
+              type: entry.format
+                ? entry.format
+                : MASKED_FIELDS.includes(entry.name)
+                  ? "password"
+                  : "text",
             },
           };
     }
     if (entry.type === "boolean") {
-      return {
-        name: entry.name,
-        required: entry.required,
-        selector: { boolean: {} },
-      };
+      return { boolean: {} };
     }
     if (entry.type === "schema") {
-      return {
-        name: entry.name,
-        required: entry.required,
-        selector: { object: {} },
-      };
+      return { object: {} };
     }
     if (entry.type === "float" || entry.type === "integer") {
       return {
-        name: entry.name,
-        required: entry.required,
-        selector: {
-          number: {
-            mode: "box",
-            step: entry.type === "float" ? "any" : undefined,
-          },
+        number: {
+          mode: "box",
+          step: entry.type === "float" ? "any" : undefined,
         },
       };
     }
-    return entry;
+    return null;
   }
 
   private _filteredSchema = memoizeOne(
