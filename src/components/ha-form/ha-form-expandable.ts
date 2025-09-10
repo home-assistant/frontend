@@ -2,6 +2,7 @@ import { css, html, LitElement, nothing } from "lit";
 import { customElement, property } from "lit/decorators";
 import type { HomeAssistant } from "../../types";
 import "./ha-form";
+import "../ha-expansion-panel";
 import type {
   HaFormDataContainer,
   HaFormElement,
