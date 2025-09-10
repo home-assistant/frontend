@@ -56,13 +56,6 @@ const ADDON_YAML_SCHEMA = DEFAULT_SCHEMA.extend([
 
 const MASKED_FIELDS = ["password", "secret", "token"];
 
-function getFieldKey(
-  entry: HaFormSchema,
-  options?: { path?: string[] }
-): string {
-  return options?.path ? [...options.path, entry.name].join(".") : entry.name;
-}
-
 @customElement("hassio-addon-config")
 class HassioAddonConfig extends LitElement {
   @property({ attribute: false }) public addon!: HassioAddonDetails;
@@ -89,27 +82,38 @@ class HassioAddonConfig extends LitElement {
 
   @query("ha-yaml-editor") private _editor?: HaYamlEditor;
 
+  private _getTranslationEntry(
+    language: string,
+    entry: HaFormSchema,
+    options?: { path?: string[] }
+  ) {
+    let parent = this.addon.translations[language]?.configuration;
+    if (!parent) return undefined;
+    if (options?.path) {
+      for (const key of options.path) {
+        parent = parent[key]?.fields;
+        if (!parent) return undefined;
+      }
+    }
+    return parent[entry.name];
+  }
+
   public computeLabel = (
     entry: HaFormSchema,
     _data: HaFormDataContainer,
     options?: { path?: string[] }
   ): string =>
-    this.addon.translations[this.hass.language]?.configuration?.[
-      getFieldKey(entry, options)
-    ]?.name ||
-    this.addon.translations.en?.configuration?.[getFieldKey(entry, options)]
-      ?.name ||
+    this._getTranslationEntry(this.hass.language, entry, options)?.name ||
+    this._getTranslationEntry("en", entry, options)?.name ||
     entry.name;
 
   public computeHelper = (
     entry: HaFormSchema,
     options?: { path?: string[] }
   ): string =>
-    this.addon.translations[this.hass.language]?.configuration?.[
-      getFieldKey(entry, options)
-    ]?.description ||
-    this.addon.translations.en?.configuration?.[getFieldKey(entry, options)]
+    this._getTranslationEntry(this.hass.language, entry, options)
       ?.description ||
+    this._getTranslationEntry("en", entry, options)?.description ||
     "";
 
   private _convertSchema = memoizeOne(
