@@ -33,7 +33,7 @@ import { haStyle } from "../../../../src/resources/styles";
 import type { HomeAssistant } from "../../../../src/types";
 import { suggestAddonRestart } from "../../dialogs/suggestAddonRestart";
 import { hassioStyle } from "../../resources/hassio-style";
-import type { Selector } from "../../../../src/data/selector";
+import type { ObjectSelector, Selector } from "../../../../src/data/selector";
 
 const SUPPORTED_UI_TYPES = [
   "string",
@@ -139,7 +139,19 @@ class HassioAddonConfig extends LitElement {
       return { boolean: {} };
     }
     if (entry.type === "schema") {
-      return { object: {} };
+      const fields: NonNullable<ObjectSelector["object"]>["fields"] = {};
+      for (const child_entry of entry.schema) {
+        fields[child_entry.name] = {
+          required: child_entry.required,
+          selector: this._convertSchemaElementToSelector(child_entry, true)!,
+        };
+      }
+      return {
+        object: {
+          multiple: entry.multiple,
+          fields,
+        },
+      };
     }
     if (entry.type === "float" || entry.type === "integer") {
       return {
