@@ -53,8 +53,9 @@ export default class HaAutomationConditionEditor extends LitElement {
         class=${classMap({
           "card-content": true,
           disabled:
-            this.disabled ||
-            (this.condition.enabled === false && !this.yamlMode),
+            !this.indent &&
+            (this.disabled ||
+              (this.condition.enabled === false && !this.yamlMode)),
           yaml: yamlMode,
           indent: this.indent,
           card: !this.inSidebar,
