@@ -44,7 +44,6 @@ export const rowStyles = css`
 
 export const editorStyles = css`
   .disabled {
-    opacity: 0.5;
     pointer-events: none;
   }
 
