@@ -104,6 +104,14 @@ class HassioAddonConfig extends LitElement {
   }
 
   private _convertSchemaElement(entry: any): HaFormSchema {
+    if (entry.type === "schema" && !entry.multiple) {
+      return {
+        name: entry.name,
+        type: "expandable",
+        required: entry.required,
+        schema: this._convertSchemaElements(entry.schema),
+      };
+    }
     const selector = this._convertSchemaElementToSelector(entry, false);
     if (selector) {
       return {
