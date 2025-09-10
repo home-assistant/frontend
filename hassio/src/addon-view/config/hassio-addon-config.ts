@@ -93,60 +93,65 @@ class HassioAddonConfig extends LitElement {
   private _convertSchema = memoizeOne(
     // Convert supervisor schema to selectors
     (schema: Record<string, any>): HaFormSchema[] =>
-      schema.map((entry) =>
-        entry.type === "select"
-          ? {
-              name: entry.name,
-              required: entry.required,
-              selector: { select: { options: entry.options } },
-            }
-          : entry.type === "string"
-            ? entry.multiple
-              ? {
-                  name: entry.name,
-                  required: entry.required,
-                  selector: {
-                    select: { options: [], multiple: true, custom_value: true },
+      schema.map((entry) => {
+        if (entry.type === "select") {
+          return {
+            name: entry.name,
+            required: entry.required,
+            selector: { select: { options: entry.options } },
+          };
+        }
+        if (entry.type === "string") {
+          return entry.multiple
+            ? {
+                name: entry.name,
+                required: entry.required,
+                selector: {
+                  select: { options: [], multiple: true, custom_value: true },
+                },
+              }
+            : {
+                name: entry.name,
+                required: entry.required,
+                selector: {
+                  text: {
+                    type: entry.format
+                      ? entry.format
+                      : MASKED_FIELDS.includes(entry.name)
+                        ? "password"
+                        : "text",
                   },
-                }
-              : {
-                  name: entry.name,
-                  required: entry.required,
-                  selector: {
-                    text: {
-                      type: entry.format
-                        ? entry.format
-                        : MASKED_FIELDS.includes(entry.name)
-                          ? "password"
-                          : "text",
-                    },
-                  },
-                }
-            : entry.type === "boolean"
-              ? {
-                  name: entry.name,
-                  required: entry.required,
-                  selector: { boolean: {} },
-                }
-              : entry.type === "schema"
-                ? {
-                    name: entry.name,
-                    required: entry.required,
-                    selector: { object: {} },
-                  }
-                : entry.type === "float" || entry.type === "integer"
-                  ? {
-                      name: entry.name,
-                      required: entry.required,
-                      selector: {
-                        number: {
-                          mode: "box",
-                          step: entry.type === "float" ? "any" : undefined,
-                        },
-                      },
-                    }
-                  : entry
-      )
+                },
+              };
+        }
+        if (entry.type === "boolean") {
+          return {
+            name: entry.name,
+            required: entry.required,
+            selector: { boolean: {} },
+          };
+        }
+        if (entry.type === "schema") {
+          return {
+            name: entry.name,
+            required: entry.required,
+            selector: { object: {} },
+          };
+        }
+        if (entry.type === "float" || entry.type === "integer") {
+          return {
+            name: entry.name,
+            required: entry.required,
+            selector: {
+              number: {
+                mode: "box",
+                step: entry.type === "float" ? "any" : undefined,
+              },
+            },
+          };
+        }
+        return entry;
+      })
   );
 
   private _filteredSchema = memoizeOne(
