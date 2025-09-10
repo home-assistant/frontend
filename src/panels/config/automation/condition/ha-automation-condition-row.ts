@@ -386,12 +386,12 @@ export default class HaAutomationConditionRow extends LitElement {
             error: this._testingResult === false,
           })}"
         >
-          ${this._testingResult
-            ? this.hass.localize(
-                "ui.panel.config.automation.editor.conditions.testing_pass"
-              )
+          ${this._testingResult === undefined
+            ? nothing
             : this.hass.localize(
-                "ui.panel.config.automation.editor.conditions.testing_error"
+                `ui.panel.config.automation.editor.conditions.testing_${
+                  this._testingResult ? "pass" : "error"
+                }`
               )}
         </div>
       </ha-card>
