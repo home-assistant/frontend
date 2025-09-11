@@ -99,28 +99,27 @@ class HassSubpage extends LitElement {
         }
 
         .toolbar {
+          background-color: var(--app-header-background-color);
           padding-top: var(--safe-area-inset-top);
           padding-right: var(--safe-area-inset-right);
+        }
+        :host([narrow]) .toolbar {
           padding-left: var(--safe-area-inset-left);
-          background-color: var(--app-header-background-color);
-          border-bottom: var(--app-header-border-bottom, none);
-          box-sizing: border-box;
         }
 
         .toolbar-content {
           display: flex;
           align-items: center;
           font-size: var(--ha-font-size-xl);
-          padding: 8px 12px;
+          height: var(--header-height);
           font-weight: var(--ha-font-weight-normal);
           color: var(--app-header-text-color, white);
+          border-bottom: var(--app-header-border-bottom, none);
+          box-sizing: border-box;
+          padding: 8px 12px;
         }
-        @media (max-width: 599px) {
-          .toolbar-content {
-            padding: 4px;
-          }
-        }
-        .toolbar-content a {
+
+        .toolbar a {
           color: var(--sidebar-text-color);
           text-decoration: none;
         }
@@ -149,9 +148,7 @@ class HassSubpage extends LitElement {
         .content {
           position: relative;
           width: 100%;
-          height: calc(
-            100% - 1px - var(--header-height) - var(--safe-area-inset-top, 0px)
-          );
+          height: calc(100% - 1px - var(--header-height));
           overflow-y: auto;
           overflow: auto;
           -webkit-overflow-scrolling: touch;

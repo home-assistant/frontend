@@ -63,6 +63,7 @@ export interface DataEntryFlowStepCreateEntry {
   type: "create_entry";
   version: number;
   flow_id: string;
+  next_flow?: [FlowType, string]; // [flow_type, flow_id]
   handler: string;
   title: string;
   result?: ConfigEntry;
