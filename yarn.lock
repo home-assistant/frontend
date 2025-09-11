@@ -1644,7 +1644,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@floating-ui/dom@npm:^1.6.12, @floating-ui/dom@npm:^1.6.13":
+"@floating-ui/dom@npm:^1.6.13":
   version: 1.7.3
   resolution: "@floating-ui/dom@npm:1.7.3"
   dependencies:
@@ -2326,7 +2326,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@lit/react@npm:^1.0.6, @lit/react@npm:^1.0.8":
+"@lit/react@npm:^1.0.8":
   version: 1.0.8
   resolution: "@lit/react@npm:1.0.8"
   peerDependencies:
@@ -4167,22 +4167,6 @@ __metadata:
   version: 3.2.1
   resolution: "@shoelace-style/localize@npm:3.2.1"
   checksum: 10/e22e108a27ce7da6b86a7b2f16f8db69e9b3c7d2aaf4e34fc39023c2f060aa7a5004d02ffd1cce2fbef3de7e5cd2a60e79c77fbba5cbd5e9456881fa3a452db1
-  languageName: node
-  linkType: hard
-
-"@shoelace-style/shoelace@npm:2.20.1":
-  version: 2.20.1
-  resolution: "@shoelace-style/shoelace@npm:2.20.1"
-  dependencies:
-    "@ctrl/tinycolor": "npm:^4.1.0"
-    "@floating-ui/dom": "npm:^1.6.12"
-    "@lit/react": "npm:^1.0.6"
-    "@shoelace-style/animations": "npm:^1.2.0"
-    "@shoelace-style/localize": "npm:^3.2.1"
-    composed-offset-position: "npm:^0.0.6"
-    lit: "npm:^3.2.1"
-    qr-creator: "npm:^1.0.0"
-  checksum: 10/c3aabeac03d5fd5bc43799783562ab09c92bae98efbc43a931c7dcec608acc393771b6ed0da3f29e08570bb9d9a9e3bff7637cbf6f79ba7aa439f6641da4eb7c
   languageName: node
   linkType: hard
 
@@ -9374,7 +9358,6 @@ __metadata:
     "@rsdoctor/rspack-plugin": "npm:1.2.3"
     "@rspack/core": "npm:1.5.2"
     "@rspack/dev-server": "npm:1.1.4"
-    "@shoelace-style/shoelace": "npm:2.20.1"
     "@swc/helpers": "npm:0.5.17"
     "@thomasloven/round-slider": "npm:0.6.0"
     "@tsparticles/engine": "npm:3.9.1"
