@@ -14,6 +14,7 @@ import {
   computeDeviceName,
   computeDeviceNameDisplay,
 } from "../../common/entity/compute_device_name";
+import { computeDomain } from "../../common/entity/compute_domain";
 import { computeEntityName } from "../../common/entity/compute_entity_name";
 import { getEntityContext } from "../../common/entity/context/get_entity_context";
 import { computeRTL } from "../../common/util/compute_rtl";
@@ -115,7 +116,7 @@ export class HaTargetPickerItemRow extends LitElement {
         }
         <div slot="headline">${name}</div>
         ${
-          context
+          context && !this.subEntry
             ? html`<span slot="supporting-text">${context}</span>`
             : nothing
         }
@@ -310,7 +311,7 @@ export class HaTargetPickerItemRow extends LitElement {
       const device = this.hass.devices?.[item];
 
       if (device.primary_config_entry) {
-        this._getDomainIcon(device.primary_config_entry);
+        this._getDeviceDomain(device.primary_config_entry);
       }
 
       return {
@@ -320,6 +321,8 @@ export class HaTargetPickerItemRow extends LitElement {
       };
     }
     if (type === "entity") {
+      this._setDomainName(computeDomain(item));
+
       const stateObject = this.hass.states[item];
       const entityName = computeEntityName(stateObject, this.hass);
       const { area, device } = getEntityContext(stateObject, this.hass);
@@ -337,6 +340,10 @@ export class HaTargetPickerItemRow extends LitElement {
     return { name: item };
   });
 
+  private _setDomainName(domain: string) {
+    this._domainName = domainToName(this.hass.localize, domain);
+  }
+
   private _removeItem() {
     fireEvent(this, "remove-target-item", {
       type: this.type,
@@ -344,7 +351,7 @@ export class HaTargetPickerItemRow extends LitElement {
     });
   }
 
-  private async _getDomainIcon(configEntryId: string) {
+  private async _getDeviceDomain(configEntryId: string) {
     try {
       const data = await getConfigEntry(this.hass, configEntryId);
       const domain = data.config_entry.domain;
@@ -353,9 +360,8 @@ export class HaTargetPickerItemRow extends LitElement {
         type: "icon",
         darkOptimized: this.hass.themes?.darkMode,
       });
-      this._domainName = domain
-        ? domainToName(this.hass.localize, domain)
-        : undefined;
+
+      this._setDomainName(domain);
     } catch {
       // failed to load config entry -> ignore
     }
@@ -412,6 +418,12 @@ export class HaTargetPickerItemRow extends LitElement {
     }
     .summary .secondary.domain {
       font-family: var(--ha-font-family-code);
+    }
+
+    @media all and (max-width: 870px) {
+      :host([sub-entry]) .summary {
+        display: none;
+      }
     }
 
     .entries {
