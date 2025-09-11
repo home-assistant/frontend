@@ -894,7 +894,7 @@ export class HaChartBase extends LitElement {
       zoomData.endValue !== undefined
     ) {
       const option = this.chart!.getOption();
-      const xAxis = (option as any).xAxis?.[0] ?? (option as any).xAxis;
+      const xAxis = option.xAxis?.[0] ?? option.xAxis;
 
       if (xAxis?.min && xAxis?.max) {
         const axisMin = new Date(xAxis.min).getTime();
