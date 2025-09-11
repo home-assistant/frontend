@@ -208,8 +208,8 @@ class MoreInfoMediaPlayer extends LitElement {
       return nothing;
     }
     const stateObj = this.stateObj;
-    const groupMembers = stateObj.attributes.group_members?.length;
-    const hasMultipleMembers = groupMembers && groupMembers > 1;
+    const groupMembers = stateObj.attributes.group_members;
+    const hasMultipleMembers = groupMembers && groupMembers?.length > 1;
 
     return html`${!isUnavailableState(stateObj.state) &&
     supportsFeature(stateObj, MediaPlayerEntityFeature.GROUPING)
@@ -228,13 +228,13 @@ class MoreInfoMediaPlayer extends LitElement {
               ></ha-svg-icon>
               ${hasMultipleMembers
                 ? html`<span class="badge">
-                    ${stateObj.attributes.group_members?.length || 4}
+                    ${groupMembers?.length || 4}
                   </span>`
                 : nothing}
             </div>
             <span>
               ${hasMultipleMembers
-                ? stateObj.attributes.group_members
+                ? groupMembers
                     ?.filter((member) => member !== stateObj.entity_id)
                     .map((member) =>
                       this._getFriendlyNameForGroupMember(member)
@@ -337,6 +337,8 @@ class MoreInfoMediaPlayer extends LitElement {
                   "ui.card.media_player.track_position"
                 )}
                 @change=${this._handleMediaSeekChanged}
+                ?disabled=${!stateActive(stateObj) ||
+                !supportsFeature(stateObj, MediaPlayerEntityFeature.SEEK)}
               ></ha-slider>
               <div class="position-info-row">
                 <span class="position-time">${postionFormated}</span>
