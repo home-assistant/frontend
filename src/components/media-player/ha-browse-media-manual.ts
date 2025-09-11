@@ -66,7 +66,7 @@ class BrowseMediaManual extends LitElement {
           ></ha-form>
         </div>
         <div class="card-actions">
-          <ha-button appearance="plain" @click=${this._mediaPicked}>
+          <ha-button @click=${this._mediaPicked}>
             ${this.hass.localize("ui.common.submit")}
           </ha-button>
         </div>
@@ -108,6 +108,10 @@ class BrowseMediaManual extends LitElement {
         display: flex;
         flex-direction: column;
         max-width: 448px;
+      }
+      .card-actions {
+        display: flex;
+        justify-content: flex-end;
       }
     `,
   ];
