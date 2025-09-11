@@ -148,7 +148,13 @@ export const manualEditorStyles = css`
   ha-automation-sidebar {
     position: fixed;
     top: calc(var(--header-height) + 16px);
-    height: calc(-81px + 100dvh);
+    height: calc(
+      -81px +
+        100dvh - var(--safe-area-inset-top, 0px) - var(
+          --safe-area-inset-bottom,
+          0px
+        )
+    );
     width: var(--sidebar-width);
     display: block;
   }
