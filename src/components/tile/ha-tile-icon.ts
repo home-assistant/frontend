@@ -44,7 +44,9 @@ export class HaTileIcon extends LitElement {
       --tile-icon-color: var(--disabled-color);
       --tile-icon-opacity: 0.2;
       --tile-icon-hover-opacity: 0.35;
-      --mdc-icon-size: 24px;
+      --tile-icon-border-radius: var(--ha-tile-icon-border-radius, 50%);
+      --tile-icon-size: 36px;
+      --mdc-icon-size: var(--ha-tile-icon-size, 24px);
       position: relative;
       user-select: none;
       transition: transform 180ms ease-in-out;
@@ -62,7 +64,7 @@ export class HaTileIcon extends LitElement {
       justify-content: center;
       width: 36px;
       height: 36px;
-      border-radius: 18px;
+      border-radius: var(--tile-icon-border-radius);
       overflow: hidden;
       transition: box-shadow 180ms ease-in-out;
     }
