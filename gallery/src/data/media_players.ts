@@ -8,7 +8,7 @@ export const createMediaPlayerEntities = () => [
     media_artist: "Technohead",
     // Pause + Seek + Volume Set + Volume Mute + Previous Track + Next Track + Play Media +
     // Select Source + Stop + Clear + Play + Shuffle Set
-    supported_features: 129599,
+    supported_features: 64063,
     entity_picture: "/images/album_cover_2.jpg",
     media_duration: 300,
     media_position: 50,
