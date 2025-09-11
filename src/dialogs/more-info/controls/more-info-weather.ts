@@ -3,6 +3,7 @@ import type { CSSResultGroup, PropertyValues } from "lit";
 import { LitElement, css, html, nothing } from "lit";
 import { customElement, property, state } from "lit/decorators";
 import memoizeOne from "memoize-one";
+import { DragScrollController } from "../../../common/controllers/drag-scroll-controller";
 import { formatDateWeekdayShort } from "../../../common/datetime/format_date";
 import { formatTime } from "../../../common/datetime/format_time";
 import { formatNumber } from "../../../common/number/format_number";
@@ -11,8 +12,9 @@ import "../../../components/ha-relative-time";
 import "../../../components/ha-spinner";
 import "../../../components/ha-state-icon";
 import "../../../components/ha-svg-icon";
+import "../../../components/ha-tab-group";
+import "../../../components/ha-tab-group-tab";
 import "../../../components/ha-tooltip";
-import "../../../components/sl-tab-group";
 import type {
   ForecastEvent,
   ModernForecastType,
@@ -30,7 +32,6 @@ import {
   weatherSVGStyles,
 } from "../../../data/weather";
 import type { HomeAssistant } from "../../../types";
-import { DragScrollController } from "../../../common/controllers/drag-scroll-controller";
 
 @customElement("more-info-weather")
 class MoreInfoWeather extends LitElement {
@@ -298,18 +299,18 @@ class MoreInfoWeather extends LitElement {
         ${this.hass.localize("ui.card.weather.forecast")}:
       </div>
       ${supportedForecasts?.length > 1
-        ? html`<sl-tab-group @sl-tab-show=${this._handleForecastTypeChanged}>
+        ? html`<ha-tab-group @wa-tab-show=${this._handleForecastTypeChanged}>
             ${supportedForecasts.map(
               (forecastType) =>
-                html`<sl-tab
+                html`<ha-tab-group-tab
                   slot="nav"
                   .panel=${forecastType}
                   .active=${this._forecastType === forecastType}
                 >
                   ${this.hass!.localize(`ui.card.weather.${forecastType}`)}
-                </sl-tab>`
+                </ha-tab-group-tab>`
             )}
-          </sl-tab-group>`
+          </ha-tab-group>`
         : nothing}
       <div class="forecast">
         ${forecast?.length
@@ -418,11 +419,11 @@ class MoreInfoWeather extends LitElement {
           font-size: 1.2em;
         }
 
-        sl-tab {
+        ha-tab-group-tab {
           flex: 1;
         }
 
-        sl-tab::part(base) {
+        ha-tab-group-tab::part(base) {
           width: 100%;
           justify-content: center;
         }
