@@ -1,7 +1,7 @@
 import type { LitVirtualizer } from "@lit-labs/virtualizer";
 import { grid } from "@lit-labs/virtualizer/layouts/grid";
 
-import { mdiArrowUpRight, mdiPlay, mdiPlus } from "@mdi/js";
+import { mdiArrowUpRight, mdiPlay, mdiPlus, mdiKeyboard } from "@mdi/js";
 import type { CSSResultGroup, PropertyValues, TemplateResult } from "lit";
 import { css, html, LitElement, nothing } from "lit";
 import {
@@ -88,12 +88,9 @@ const MANUAL_ITEM: MediaPlayerItem = {
   media_class: "app",
   media_content_id: "media-source://manual/",
   media_content_type: "",
-  thumbnail: brandsUrl({
-    domain: "keyboard",
-    type: "logo",
-    useFallback: true,
-  }),
-  title: "Manual Entry",
+  iconPath: mdiKeyboard,
+
+  title: "Manual entry",
 };
 
 @customElement("ha-media-player-browse")
@@ -670,8 +667,9 @@ export class HaMediaPlayerBrowse extends LitElement {
               : html`
                   <div class="icon-holder image">
                     <ha-svg-icon
-                      class="folder"
-                      .path=${MediaClassBrowserSettings[
+                      class=${child.iconPath ? "icon" : "folder"}
+                      .path=${child.iconPath ||
+                      MediaClassBrowserSettings[
                         child.media_class === "directory"
                           ? child.children_media_class || child.media_class
                           : child.media_class
@@ -1218,6 +1216,11 @@ export class HaMediaPlayerBrowse extends LitElement {
 
         .child .folder {
           color: var(--secondary-text-color);
+          --mdc-icon-size: calc(var(--media-browse-item-size, 175px) * 0.4);
+        }
+
+        .child .icon {
+          color: #00a9f7; /* Match the png color from brands repo */
           --mdc-icon-size: calc(var(--media-browse-item-size, 175px) * 0.4);
         }
 

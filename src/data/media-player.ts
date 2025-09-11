@@ -204,6 +204,7 @@ export interface MediaPlayerItem {
   can_expand: boolean;
   can_search: boolean;
   thumbnail?: string;
+  iconPath?: string;
   children?: MediaPlayerItem[];
   not_shown?: number;
 }
