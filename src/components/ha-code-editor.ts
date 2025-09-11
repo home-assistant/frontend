@@ -765,7 +765,7 @@ export class HaCodeEditor extends ReactiveElement {
     }
 
     :host(.hasToolbar) .cm-content {
-      border: "none";
+      border: none;
       border-top: 1px solid var(--secondary-text-color);
     }
 
