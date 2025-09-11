@@ -28,7 +28,11 @@ import {
   BROWSER_PLAYER,
   MediaClassBrowserSettings,
 } from "../../data/media-player";
-import { browseLocalMediaPlayer } from "../../data/media_source";
+import {
+  browseLocalMediaPlayer,
+  isManualMediaSourceContentId,
+  MANUAL_MEDIA_SOURCE_PREFIX,
+} from "../../data/media_source";
 import { isTTSMediaSource } from "../../data/tts";
 import { showAlertDialog } from "../../dialogs/generic/show-dialog-box";
 import { haStyle } from "../../resources/styles";
@@ -82,8 +86,8 @@ const MANUAL_ITEM: MediaPlayerItem = {
   can_search: false,
   children_media_class: "",
   media_class: "app",
-  media_content_id: "manual",
-  media_content_type: "app",
+  media_content_id: "media-source://manual/",
+  media_content_type: "",
   thumbnail: brandsUrl({
     domain: "keyboard",
     type: "logo",
@@ -126,8 +130,6 @@ export class HaMediaPlayerBrowse extends LitElement {
   @query(".content") private _content?: HTMLDivElement;
 
   @query("lit-virtualizer") private _virtualizer?: LitVirtualizer;
-
-  private _manualItem: MediaPlayerItemId | undefined;
 
   private _observed = false;
 
@@ -191,14 +193,6 @@ export class HaMediaPlayerBrowse extends LitElement {
       | this["navigateIds"]
       | undefined;
 
-    if (
-      this.navigateIds[this.navigateIds.length - 2]?.media_content_id ===
-      "manual"
-    ) {
-      this._manualItem = this.navigateIds[this.navigateIds.length - 1];
-      this.navigateIds = this.navigateIds.slice(0, -1);
-    }
-
     const navigateIds = this.navigateIds;
 
     // We're navigating. Reset the shizzle.
@@ -245,11 +239,18 @@ export class HaMediaPlayerBrowse extends LitElement {
       }
     }
     // Fetch current
-    if (currentId.media_content_id === "manual") {
-      this._currentItem = MANUAL_ITEM;
+    if (
+      currentId.media_content_id &&
+      isManualMediaSourceContentId(currentId.media_content_id)
+    ) {
+      this._currentItem = {
+        ...MANUAL_ITEM,
+        media_content_type: currentId.media_content_type || "",
+        media_content_id: currentId.media_content_id,
+      };
       fireEvent(this, "media-browsed", {
         ids: navigateIds,
-        current: MANUAL_ITEM,
+        current: this._currentItem,
       });
     } else {
       if (!currentProm) {
@@ -518,9 +519,15 @@ export class HaMediaPlayerBrowse extends LitElement {
                       </ha-alert>
                     </div>
                   `
-                : currentItem === MANUAL_ITEM
+                : isManualMediaSourceContentId(currentItem.media_content_id)
                   ? html`<ha-browse-media-manual
-                      .item=${this._manualItem}
+                      .item=${{
+                        media_content_id:
+                          currentItem.media_content_id.substring(
+                            MANUAL_MEDIA_SOURCE_PREFIX.length
+                          ),
+                        media_content_type: currentItem.media_content_type,
+                      }}
                       .hass=${this.hass}
                       .action=${this.action}
                       @manual-media-picked=${this._manualPicked}
@@ -815,8 +822,12 @@ export class HaMediaPlayerBrowse extends LitElement {
 
   private _manualPicked(ev: CustomEvent<ManualMediaPickedEvent>) {
     ev.stopPropagation();
-    const navigateIds = [...this.navigateIds];
-    navigateIds.push(ev.detail.item);
+    const item = ev.detail.item;
+    const navigateIds = this.navigateIds.slice(0, -1);
+    navigateIds.push({
+      ...item,
+      media_content_id: MANUAL_MEDIA_SOURCE_PREFIX + item.media_content_id,
+    });
     fireEvent(this, "media-picked", {
       item: ev.detail.item as MediaPlayerItem,
       navigateIds,
