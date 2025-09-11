@@ -467,10 +467,16 @@ export class RecurrenceRuleEditor extends LitElement {
           formatTime(this.dtstart!, this.timezone!),
         this.timezone
       );
-      const newUntilValue = until
-        .toISOString()
-        .replace(/[-:]/g, "")
-        .split(".")[0];
+      // rrule.js can't compute some UNTIL variations so we compute that ourself. Must be
+      // in the same format as dtstart.
+      let newUntilValue;
+      if (this.allDay) {
+        // For all-day events, only use the date part
+        newUntilValue = until.toISOString().split("T")[0].replace(/-/g, "");
+      } else {
+        // For timed events, include the time part
+        newUntilValue = until.toISOString().replace(/[-:]/g, "").split(".")[0];
+      }
       contentline += `;UNTIL=${newUntilValue}`;
     }
     return contentline.slice(6); // Strip "RRULE:" prefix
