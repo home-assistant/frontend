@@ -1905,9 +1905,9 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@home-assistant/webawesome@npm:3.0.0-beta.4.ha.2":
-  version: 3.0.0-beta.4.ha.2
-  resolution: "@home-assistant/webawesome@npm:3.0.0-beta.4.ha.2"
+"@home-assistant/webawesome@npm:3.0.0-beta.4.ha.3":
+  version: 3.0.0-beta.4.ha.3
+  resolution: "@home-assistant/webawesome@npm:3.0.0-beta.4.ha.3"
   dependencies:
     "@ctrl/tinycolor": "npm:^4.1.0"
     "@floating-ui/dom": "npm:^1.6.13"
@@ -1919,7 +1919,7 @@ __metadata:
     nanoid: "npm:^5.1.5"
     qr-creator: "npm:^1.0.0"
     style-observer: "npm:^0.0.7"
-  checksum: 10/0ac66d43050571e2b86bb7b0181d428aa2a064e25745075b207a8fe96d873398eaead663172130dfe8d9ac0be575028f8f9f6b9f8a9cd12f81c8c82e9f60a0e9
+  checksum: 10/b9241821ed471ccbad86b0ea4697a2d41395f05fdc26f46e5edbc7f6b5eeab5d248251ef702326312ded00d5bf850ce0dcdcf7cd5e2e542b9d9cb9a84f3726da
   languageName: node
   linkType: hard
 
@@ -9318,7 +9318,7 @@ __metadata:
     "@fullcalendar/list": "npm:6.1.19"
     "@fullcalendar/luxon3": "npm:6.1.19"
     "@fullcalendar/timegrid": "npm:6.1.19"
-    "@home-assistant/webawesome": "npm:3.0.0-beta.4.ha.2"
+    "@home-assistant/webawesome": "npm:3.0.0-beta.4.ha.3"
     "@lezer/highlight": "npm:1.2.1"
     "@lit-labs/motion": "npm:1.0.9"
     "@lit-labs/observers": "npm:2.0.6"
