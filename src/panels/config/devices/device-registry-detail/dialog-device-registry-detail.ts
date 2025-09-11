@@ -132,7 +132,7 @@ class DialogDeviceRegistryDetail extends LitElement {
           </div>
         </div>
         <ha-button
-          slot="primaryAction"
+          slot="secondaryAction"
           @click=${this.closeDialog}
           .disabled=${this._submitting}
           appearance="plain"

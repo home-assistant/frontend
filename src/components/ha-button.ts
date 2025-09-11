@@ -1,8 +1,6 @@
-import Button from "@awesome.me/webawesome/dist/components/button/button";
+import Button from "@home-assistant/webawesome/dist/components/button/button";
 import { css, type CSSResultGroup } from "lit";
 import { customElement } from "lit/decorators";
-
-import { StateSet } from "../resources/polyfills/stateset";
 
 export type Appearance = "accent" | "filled" | "outlined" | "plain";
 
@@ -35,53 +33,9 @@ export type Appearance = "accent" | "filled" | "outlined" | "plain";
  * @attr {boolean} loading - shows a loading indicator instead of the buttons label and disable buttons click.
  * @attr {boolean} disabled - Disables the button and prevents user interaction.
  */
-@customElement("ha-button") // @ts-expect-error Intentionally overriding private methods
+@customElement("ha-button")
 export class HaButton extends Button {
   variant: "brand" | "neutral" | "success" | "warning" | "danger" = "brand";
-
-  attachInternals() {
-    const internals = super.attachInternals();
-    Object.defineProperty(internals, "states", {
-      value: new StateSet(this, internals.states),
-    });
-    return internals;
-  }
-
-  // @ts-expect-error handleLabelSlotChange is used in super class
-  // eslint-disable-next-line @typescript-eslint/naming-convention
-  private override handleLabelSlotChange() {
-    const nodes = this.labelSlot.assignedNodes({ flatten: true });
-    let hasIconLabel = false;
-    let hasIcon = false;
-    let text = "";
-
-    // If there's only an icon and no text, it's an icon button
-    [...nodes].forEach((node) => {
-      if (
-        node.nodeType === Node.ELEMENT_NODE &&
-        (node as HTMLElement).localName === "ha-svg-icon"
-      ) {
-        hasIcon = true;
-        if (!hasIconLabel)
-          hasIconLabel = (node as HTMLElement).hasAttribute("aria-label");
-      }
-
-      // Concatenate text nodes
-      if (node.nodeType === Node.TEXT_NODE) {
-        text += node.textContent;
-      }
-    });
-
-    this.isIconButton = text.trim() === "" && hasIcon;
-
-    if (__DEV__ && this.isIconButton && !hasIconLabel) {
-      // eslint-disable-next-line no-console
-      console.warn(
-        'Icon buttons must have a label for screen readers. Add <ha-svg-icon aria-label="..."> to remove this warning.',
-        this
-      );
-    }
-  }
 
   static get styles(): CSSResultGroup {
     return [
@@ -262,10 +216,10 @@ export class HaButton extends Button {
         }
 
         .button.has-start {
-          padding-left: 8px;
+          padding-inline-start: 8px;
         }
         .button.has-end {
-          padding-right: 8px;
+          padding-inline-end: 8px;
         }
       `,
     ];

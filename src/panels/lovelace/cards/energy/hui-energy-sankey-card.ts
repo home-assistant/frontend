@@ -225,7 +225,7 @@ class HuiEnergySankeyCard
       if (consumption.total.battery_to_grid > 0) {
         links.push({
           source: "battery",
-          target: "grid",
+          target: "grid_return",
           value: consumption.total.battery_to_grid,
         });
       }

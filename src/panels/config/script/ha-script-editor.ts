@@ -1023,6 +1023,7 @@ export class HaScriptEditor extends SubscribeMixin(
       c: () => this._copySelectedRow(),
       x: () => this._cutSelectedRow(),
       Delete: () => this._deleteSelectedRow(),
+      Backspace: () => this._deleteSelectedRow(),
     };
   }
 

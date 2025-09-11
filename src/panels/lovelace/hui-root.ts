@@ -45,7 +45,8 @@ import "../../components/ha-icon-button-arrow-prev";
 import "../../components/ha-list-item";
 import "../../components/ha-menu-button";
 import "../../components/ha-svg-icon";
-import "../../components/sl-tab-group";
+import "../../components/ha-tab-group";
+import "../../components/ha-tab-group-tab";
 import { createAreaRegistryEntry } from "../../data/area_registry";
 import type { LovelacePanelConfig } from "../../data/lovelace";
 import type { LovelaceConfig } from "../../data/lovelace/config/types";
@@ -409,12 +410,12 @@ class HUIRoot extends LitElement {
         !view.visible.some((e) => e.user === this.hass!.user?.id)) ||
         view.visible === false);
 
-    const tabs = html`<sl-tab-group @sl-tab-show=${this._handleViewSelected}>
+    const tabs = html`<ha-tab-group @wa-tab-show=${this._handleViewSelected}>
       ${views.map((view, index) => {
         const hidden =
           !this._editMode && (view.subview || _isTabHiddenForUser(view));
         return html`
-          <sl-tab
+          <ha-tab-group-tab
             slot="nav"
             panel=${index}
             .active=${this._curView === index}
@@ -471,10 +472,10 @@ class HUIRoot extends LitElement {
                   ></ha-icon-button-arrow-next>
                 `
               : nothing}
-          </sl-tab>
+          </ha-tab-group-tab>
         `;
       })}
-    </sl-tab-group>`;
+    </ha-tab-group>`;
 
     const isSubview = curViewConfig?.subview;
     const hasTabViews = views.filter((view) => !view.subview).length > 1;
@@ -1209,10 +1210,17 @@ class HUIRoot extends LitElement {
           border-bottom: var(--app-header-border-bottom, none);
           position: fixed;
           top: 0;
-          width: var(--mdc-top-app-bar-width, 100%);
+          width: var(
+            --mdc-top-app-bar-width,
+            calc(
+              100% - var(--safe-area-inset-left) - var(--safe-area-inset-right)
+            )
+          );
           -webkit-backdrop-filter: var(--app-header-backdrop-filter, none);
           backdrop-filter: var(--app-header-backdrop-filter, none);
           padding-top: var(--safe-area-inset-top);
+          padding-left: var(--safe-area-inset-left);
+          padding-right: var(--safe-area-inset-right);
           z-index: 4;
           transition: box-shadow 200ms linear;
         }
@@ -1260,7 +1268,7 @@ class HUIRoot extends LitElement {
           display: flex;
           align-items: center;
         }
-        sl-tab-group {
+        ha-tab-group {
           --ha-tab-indicator-color: var(
             --app-header-selection-bar-color,
             var(--app-header-text-color, white)
@@ -1272,10 +1280,10 @@ class HUIRoot extends LitElement {
           min-width: 0;
           height: 100%;
         }
-        sl-tab-group::part(nav) {
+        ha-tab-group::part(nav) {
           padding: 0;
         }
-        sl-tab-group::part(scroll-button) {
+        ha-tab-group::part(scroll-button) {
           background-color: var(--app-header-background-color);
           background: linear-gradient(
             90deg,
@@ -1284,14 +1292,14 @@ class HUIRoot extends LitElement {
           );
           z-index: 1;
         }
-        sl-tab-group::part(scroll-button--end) {
+        ha-tab-group::part(scroll-button-end) {
           background: linear-gradient(
             270deg,
             var(--app-header-background-color),
             transparent
           );
         }
-        .edit-mode sl-tab-group::part(scroll-button) {
+        .edit-mode ha-tab-group::part(scroll-button) {
           background-color: var(--app-header-edit-background-color, #455a64);
           background: linear-gradient(
             90deg,
@@ -1299,7 +1307,7 @@ class HUIRoot extends LitElement {
             transparent
           );
         }
-        .edit-mode sl-tab-group::part(scroll-button--end) {
+        .edit-mode ha-tab-group::part(scroll-button--end) {
           background: linear-gradient(
             270deg,
             var(--app-header-edit-background-color, #455a64),
@@ -1312,41 +1320,35 @@ class HUIRoot extends LitElement {
         .tab-bar {
           display: flex;
         }
-        .edit-mode sl-tab-group {
+        .edit-mode ha-tab-group {
           flex-grow: 0;
           color: var(--app-header-edit-text-color, #fff);
           --ha-tab-active-text-color: var(--app-header-edit-text-color, #fff);
           --ha-tab-indicator-color: var(--app-header-edit-text-color, #fff);
         }
-        sl-tab {
-          --sl-tab-height: var(--header-height, 56px);
-          height: calc(var(--sl-tab-height) - 2px);
+        ha-tab-group-tab {
+          --ha-tab-group-tab-height: var(--header-height, 56px);
         }
-        sl-tab[aria-selected="true"] .edit-icon {
+        ha-tab-group-tab[aria-selected="true"] .edit-icon {
           display: inline-flex;
         }
-        sl-tab::part(base) {
-          padding-inline-start: var(
-            --ha-tab-padding-start,
-            var(--sl-spacing-large)
+        ha-tab-group-tab::part(base) {
+          padding-inline-start: var(--ha-tab-padding-start, var(--wa-space-l));
+          padding-inline-end: var(--ha-tab-padding-end, var(--wa-space-l));
+        }
+        ha-tab-group-tab::part(base) {
+          padding-top: calc((var(--ha-tab-group-tab-height) - 20px) / 2);
+        }
+        ha-tab-group-tab.icon::part(base) {
+          padding-top: calc((var(--ha-tab-group-tab-height) - 20px) / 2 - 2px);
+          padding-bottom: calc(
+            (var(--ha-tab-group-tab-height) - 20px) / 2 - 4px
           );
-          padding-inline-end: var(
-            --ha-tab-padding-end,
-            var(--sl-spacing-large)
-          );
         }
-        sl-tab::part(base) {
-          padding-top: calc((var(--sl-tab-height) - 20px) / 2);
-          padding-bottom: calc((var(--sl-tab-height) - 20px) / 2 - 2px);
+        .tab-bar ha-tab-group-tab {
+          --ha-tab-group-tab-height: var(--tab-bar-height, 56px);
         }
-        sl-tab.icon::part(base) {
-          padding-top: calc((var(--sl-tab-height) - 20px) / 2 - 2px);
-          padding-bottom: calc((var(--sl-tab-height) - 20px) / 2 - 4px);
-        }
-        .tab-bar sl-tab {
-          --sl-tab-height: var(--tab-bar-height, 56px);
-        }
-        .edit-mode sl-tab[aria-selected="true"]::part(base) {
+        .edit-mode ha-tab-group-tab[aria-selected="true"]::part(base) {
           padding: 0;
           margin-top: calc((var(--tab-bar-height, 56px) - 48px) / 2);
         }
@@ -1398,7 +1400,7 @@ class HUIRoot extends LitElement {
           padding-top: calc(
             var(--header-height, 56px) +
               calc(var(--tab-bar-height, 56px) - 2px) +
-              var(--safe-area-inset-top)
+              var(--safe-area-inset-top, 0px)
           );
         }
         .hide-tab {

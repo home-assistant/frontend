@@ -592,6 +592,7 @@ export class HaAutomationEditor extends PreventUnsavedMixin(
       this.hass
     ) {
       const initData = getAutomationEditorInitData();
+      this._dirty = !!initData;
       let baseConfig: Partial<AutomationConfig> = { description: "" };
       if (!initData || !("use_blueprint" in initData)) {
         baseConfig = {
