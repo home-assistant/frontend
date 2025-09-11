@@ -24,7 +24,7 @@ export const browseLocalMediaPlayer = (
     media_content_id: mediaContentId,
   });
 
-export const MANUAL_MEDIA_SOURCE_PREFIX = "media-source://manual/";
+export const MANUAL_MEDIA_SOURCE_PREFIX = "media-source://manual";
 
 export const isManualMediaSourceContentId = (mediaContentId: string) =>
   mediaContentId.startsWith(MANUAL_MEDIA_SOURCE_PREFIX);

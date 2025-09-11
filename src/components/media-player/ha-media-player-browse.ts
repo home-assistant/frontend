@@ -86,7 +86,7 @@ const MANUAL_ITEM: MediaPlayerItem = {
   can_search: false,
   children_media_class: "",
   media_class: "app",
-  media_content_id: "media-source://manual/",
+  media_content_id: MANUAL_MEDIA_SOURCE_PREFIX,
   media_content_type: "",
   iconPath: mdiKeyboard,
   title: "Manual entry",
@@ -108,6 +108,10 @@ export class HaMediaPlayerBrowse extends LitElement {
   @property({ attribute: false }) public navigateIds: MediaPlayerItemId[] = [];
 
   @property({ attribute: false }) public accept?: string[];
+
+  @property({ attribute: false }) public defaultId?: string;
+
+  @property({ attribute: false }) public defaultType?: string;
 
   // @todo Consider reworking to eliminate need for attribute since it is manipulated internally
   @property({ type: Boolean, reflect: true }) public narrow = false;
@@ -238,11 +242,7 @@ export class HaMediaPlayerBrowse extends LitElement {
       currentId.media_content_id &&
       isManualMediaSourceContentId(currentId.media_content_id)
     ) {
-      this._currentItem = {
-        ...MANUAL_ITEM,
-        media_content_type: currentId.media_content_type || "",
-        media_content_id: currentId.media_content_id,
-      };
+      this._currentItem = MANUAL_ITEM;
       fireEvent(this, "media-browsed", {
         ids: navigateIds,
         current: this._currentItem,
@@ -517,11 +517,8 @@ export class HaMediaPlayerBrowse extends LitElement {
                 : isManualMediaSourceContentId(currentItem.media_content_id)
                   ? html`<ha-browse-media-manual
                       .item=${{
-                        media_content_id:
-                          currentItem.media_content_id.substring(
-                            MANUAL_MEDIA_SOURCE_PREFIX.length
-                          ),
-                        media_content_type: currentItem.media_content_type,
+                        media_content_id: this.defaultId || "",
+                        media_content_type: this.defaultType || "",
                       }}
                       .hass=${this.hass}
                       @manual-media-picked=${this._manualPicked}
@@ -817,15 +814,9 @@ export class HaMediaPlayerBrowse extends LitElement {
 
   private _manualPicked(ev: CustomEvent<ManualMediaPickedEvent>) {
     ev.stopPropagation();
-    const item = ev.detail.item;
-    const navigateIds = this.navigateIds.slice(0, -1);
-    navigateIds.push({
-      ...item,
-      media_content_id: MANUAL_MEDIA_SOURCE_PREFIX + item.media_content_id,
-    });
     fireEvent(this, "media-picked", {
       item: ev.detail.item as MediaPlayerItem,
-      navigateIds,
+      navigateIds: this.navigateIds,
     });
   }
 
