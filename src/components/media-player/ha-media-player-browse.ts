@@ -89,7 +89,6 @@ const MANUAL_ITEM: MediaPlayerItem = {
   media_content_id: "media-source://manual/",
   media_content_type: "",
   iconPath: mdiKeyboard,
-
   title: "Manual entry",
 };
 
@@ -189,7 +188,6 @@ export class HaMediaPlayerBrowse extends LitElement {
     const oldNavigateIds = changedProps.get("navigateIds") as
       | this["navigateIds"]
       | undefined;
-
     const navigateIds = this.navigateIds;
 
     // We're navigating. Reset the shizzle.
@@ -526,7 +524,6 @@ export class HaMediaPlayerBrowse extends LitElement {
                         media_content_type: currentItem.media_content_type,
                       }}
                       .hass=${this.hass}
-                      .action=${this.action}
                       @manual-media-picked=${this._manualPicked}
                     ></ha-browse-media-manual>`
                   : isTTSMediaSource(currentItem.media_content_id)
