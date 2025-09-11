@@ -6,8 +6,7 @@ export const waMainStyles = css`
     --wa-focus-ring-style: solid;
     --wa-focus-ring-width: 2px;
     --wa-focus-ring-offset: 2px;
-    --wa-focus-ring: var(--wa-focus-ring-style) var(--wa-focus-ring-width)
-      var(--wa-focus-ring-color);
+    --wa-focus-ring: var(--wa-focus-ring-style) var(--wa-focus-ring-width) var(--wa-focus-ring-color);
 
     --wa-space-l: 24px;
     --wa-shadow-l: 0 8px 8px -4px rgba(0, 0, 0, 0.2);
