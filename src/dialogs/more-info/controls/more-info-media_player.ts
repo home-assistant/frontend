@@ -77,17 +77,15 @@ class MoreInfoMediaPlayer extends LitElement {
       darkOptimized: this.hass.themes?.darkMode,
     });
 
-    return brandUrl
-      ? html`
-          <img
-            src=${brandUrl}
-            alt=${entry.platform}
-            title=${entry.platform}
-            width="24"
-            height="24"
-          />
-        `
-      : nothing;
+    return html`
+      <img
+        src=${brandUrl}
+        alt=${entry.platform}
+        title=${entry.platform}
+        width="24"
+        height="24"
+      />
+    `;
   }
 
   protected _renderVolumeControl() {
