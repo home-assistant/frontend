@@ -530,7 +530,7 @@ export class HaControlSlider extends LitElement {
     .slider .slider-track-bar {
       --slider-track-bar-border-radius: min(
         var(--control-slider-border-radius),
-        8px
+        var(--ha-border-radius-md)
       );
       top: 0;
       left: 0;
