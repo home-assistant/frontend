@@ -121,7 +121,7 @@ export default class HaAutomationTriggerEditor extends LitElement {
     if (!ev.detail.isValid) {
       return;
     }
-    fireEvent(this, "yaml-changed", {
+    fireEvent(this, this.inSidebar ? "yaml-changed" : "value-changed", {
       value: migrateAutomationTrigger(ev.detail.value),
     });
   }
@@ -141,7 +141,6 @@ export default class HaAutomationTriggerEditor extends LitElement {
       haStyle,
       css`
         .disabled {
-          opacity: 0.5;
           pointer-events: none;
         }
 

@@ -12,29 +12,10 @@ import {
 } from "../areas/helpers/areas-strategy-helper";
 import { getHomeStructure } from "./helpers/home-structure";
 import { findEntities, HOME_SUMMARIES_FILTERS } from "./helpers/home-summaries";
-import { computeStateName } from "../../../../common/entity/compute_state_name";
-import { computeObjectId } from "../../../../common/entity/compute_object_id";
 
 export interface HomeClimateViewStrategyConfig {
   type: "home-climate";
 }
-
-const createTempHumidBadge = (hass: HomeAssistant, entityId: string) => {
-  const stateObj = hass.states[entityId];
-  return {
-    type: "tile",
-    entity: entityId,
-    name: stateObj
-      ? computeStateName(stateObj)
-      : computeObjectId(entityId).replace(/_/g, " "),
-    features: [
-      {
-        type: "history-chart",
-        hours_to_show: 3,
-      },
-    ],
-  };
-};
 
 const processAreasForClimate = (
   areaIds: string[],
@@ -52,8 +33,28 @@ const processAreasForClimate = (
       area: area.area_id,
     });
     const areaEntities = entities.filter(areaFilter);
+    const areaCards: LovelaceCardConfig[] = [];
 
-    if (areaEntities.length > 0) {
+    const temperatureEntityId = area.temperature_entity_id;
+    if (temperatureEntityId && hass.states[temperatureEntityId]) {
+      areaCards.push({
+        ...computeTileCard(temperatureEntityId),
+        features: [{ type: "trend-graph" }],
+      });
+    }
+    const humidityEntityId = area.humidity_entity_id;
+    if (humidityEntityId && hass.states[humidityEntityId]) {
+      areaCards.push({
+        ...computeTileCard(humidityEntityId),
+        features: [{ type: "trend-graph" }],
+      });
+    }
+
+    for (const entityId of areaEntities) {
+      areaCards.push(computeTileCard(entityId));
+    }
+
+    if (areaCards.length > 0) {
       cards.push({
         heading_style: "subtitle",
         type: "heading",
@@ -63,21 +64,7 @@ const processAreasForClimate = (
           navigation_path: `areas-${area.area_id}`,
         },
       });
-
-      if (hass.areas[areaId].temperature_entity_id) {
-        cards.push(
-          createTempHumidBadge(hass, hass.areas[areaId].temperature_entity_id)
-        );
-      }
-      if (hass.areas[areaId].humidity_entity_id) {
-        cards.push(
-          createTempHumidBadge(hass, hass.areas[areaId].humidity_entity_id)
-        );
-      }
-
-      for (const entityId of areaEntities) {
-        cards.push(computeTileCard(entityId));
-      }
+      cards.push(...areaCards);
     }
   }
 

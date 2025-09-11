@@ -25,6 +25,8 @@ export class HaAutomationRow extends LitElement {
   @property({ type: Boolean, reflect: true, attribute: "building-block" })
   public buildingBlock = false;
 
+  @property({ type: Boolean, reflect: true }) public highlight?: boolean;
+
   @query(".row")
   private _rowElement?: HTMLDivElement;
 
@@ -78,7 +80,18 @@ export class HaAutomationRow extends LitElement {
       ev.key !== " " &&
       !(
         (this.sortSelected || ev.altKey) &&
+        !(ev.ctrlKey || ev.metaKey) &&
+        !ev.shiftKey &&
         (ev.key === "ArrowUp" || ev.key === "ArrowDown")
+      ) &&
+      !(
+        (ev.ctrlKey || ev.metaKey) &&
+        !ev.shiftKey &&
+        !ev.altKey &&
+        (ev.key === "c" ||
+          ev.key === "x" ||
+          ev.key === "Delete" ||
+          ev.key === "Backspace")
       )
     ) {
       return;
@@ -97,6 +110,22 @@ export class HaAutomationRow extends LitElement {
     if (this.sortSelected && (ev.key === "Enter" || ev.key === " ")) {
       fireEvent(this, "stop-sort-selection");
       return;
+    }
+
+    if (ev.ctrlKey || ev.metaKey) {
+      if (ev.key === "c") {
+        fireEvent(this, "copy-row");
+        return;
+      }
+      if (ev.key === "x") {
+        fireEvent(this, "cut-row");
+        return;
+      }
+
+      if (ev.key === "Delete" || ev.key === "Backspace") {
+        fireEvent(this, "delete-row");
+        return;
+      }
     }
 
     this.click();
@@ -130,6 +159,7 @@ export class HaAutomationRow extends LitElement {
     .expand-button {
       transition: transform 150ms cubic-bezier(0.4, 0, 0.2, 1);
       color: var(--ha-color-on-neutral-quiet);
+      margin-left: -8px;
     }
     :host([building-block]) .leading-icon-wrapper {
       background-color: var(--ha-color-fill-neutral-loud-resting);
@@ -168,9 +198,20 @@ export class HaAutomationRow extends LitElement {
       margin: 0 12px;
     }
     :host([sort-selected]) .row {
-      box-shadow:
-        0px 0px 8px 4px rgba(var(--rgb-accent-color), 0.8),
-        inset 0px 2px 8px 4px rgba(var(--rgb-accent-color), 0.4);
+      outline: solid;
+      outline-color: rgba(var(--rgb-accent-color), 0.6);
+      outline-offset: -2px;
+      outline-width: 2px;
+      background-color: rgba(var(--rgb-accent-color), 0.08);
+    }
+    .row:hover {
+      background-color: rgba(var(--rgb-primary-text-color), 0.04);
+    }
+    :host([highlight]) .row {
+      background-color: rgba(var(--rgb-primary-color), 0.08);
+    }
+    :host([highlight]) .row:hover {
+      background-color: rgba(var(--rgb-primary-color), 0.16);
     }
   `;
 }
@@ -183,5 +224,8 @@ declare global {
   interface HASSDomEvents {
     "toggle-collapsed": undefined;
     "stop-sort-selection": undefined;
+    "copy-row": undefined;
+    "cut-row": undefined;
+    "delete-row": undefined;
   }
 }

@@ -431,7 +431,13 @@ export class DialogHelperDetail extends LitElement {
         }
         @media all and (max-width: 450px), all and (max-height: 500px) {
           ha-list {
-            height: calc(100vh - 184px);
+            height: calc(
+              100vh -
+                184px - var(--safe-area-inset-top, 0px) - var(
+                  --safe-area-inset-bottom,
+                  0px
+                )
+            );
           }
         }
       `,

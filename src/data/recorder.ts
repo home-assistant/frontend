@@ -2,6 +2,7 @@ import type { Connection } from "home-assistant-js-websocket";
 import { computeStateName } from "../common/entity/compute_state_name";
 import type { HaDurationData } from "../components/ha-duration-input";
 import type { HomeAssistant } from "../types";
+import { firstWeekday } from "../common/datetime/first_weekday";
 
 export interface RecorderInfo {
   backlog: number | null;
@@ -108,7 +109,7 @@ export interface StatisticsValidationResultMeanTypeChanged {
   };
 }
 
-export const VOLUME_UNITS = ["L", "gal", "ft³", "m³", "CCF"] as const;
+export const VOLUME_UNITS = ["L", "gal", "ft³", "m³", "CCF", "MCF"] as const;
 
 export interface StatisticsUnitConfiguration {
   energy?: "Wh" | "kWh" | "MWh" | "GJ";
@@ -211,7 +212,14 @@ export const fetchStatistic = (
               : period.fixed_period.end,
         }
       : undefined,
-    calendar: period.calendar,
+    calendar: period.calendar
+      ? {
+          ...(period.calendar.period === "week"
+            ? { first_weekday: firstWeekday(hass.locale).substring(0, 3) }
+            : {}),
+          ...period.calendar,
+        }
+      : undefined,
     rolling_window: period.rolling_window,
   });
 
@@ -238,7 +246,7 @@ export const clearStatistics = (hass: HomeAssistant, statistic_ids: string[]) =>
   });
 
 export const calculateStatisticSumGrowth = (
-  values: StatisticValue[]
+  values?: StatisticValue[]
 ): number | null => {
   let growth: number | null = null;
 

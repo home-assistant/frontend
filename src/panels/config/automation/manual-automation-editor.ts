@@ -3,7 +3,13 @@ import type { HassEntity } from "home-assistant-js-websocket";
 import { load } from "js-yaml";
 import type { CSSResultGroup, PropertyValues } from "lit";
 import { css, html, LitElement, nothing } from "lit";
-import { customElement, property, query, state } from "lit/decorators";
+import {
+  customElement,
+  property,
+  query,
+  queryAll,
+  state,
+} from "lit/decorators";
 import { classMap } from "lit/directives/class-map";
 import {
   any,
@@ -28,6 +34,7 @@ import "../../../components/ha-fab";
 import "../../../components/ha-icon-button";
 import "../../../components/ha-markdown";
 import type {
+  ActionSidebarConfig,
   AutomationConfig,
   Condition,
   ManualAutomationConfig,
@@ -96,6 +103,11 @@ export class HaManualAutomationEditor extends LitElement {
 
   @query("ha-automation-sidebar") private _sidebarElement?: HaAutomationSidebar;
 
+  @queryAll("ha-automation-action, ha-automation-condition")
+  private _collapsableElements?: NodeListOf<
+    HaAutomationAction | HaAutomationCondition
+  >;
+
   private _previousConfig?: ManualAutomationConfig;
 
   public connectedCallback() {
@@ -154,7 +166,7 @@ export class HaManualAutomationEditor extends LitElement {
         .disabled=${this.disabled || this.saving}
         .narrow=${this.narrow}
         @open-sidebar=${this._openSidebar}
-        @request-close-sidebar=${this._closeSidebar}
+        @request-close-sidebar=${this._triggerCloseSidebar}
         @close-sidebar=${this._handleCloseSidebar}
         root
         sidebar
@@ -201,7 +213,7 @@ export class HaManualAutomationEditor extends LitElement {
         .disabled=${this.disabled || this.saving}
         .narrow=${this.narrow}
         @open-sidebar=${this._openSidebar}
-        @request-close-sidebar=${this._closeSidebar}
+        @request-close-sidebar=${this._triggerCloseSidebar}
         @close-sidebar=${this._handleCloseSidebar}
         root
         sidebar
@@ -243,7 +255,7 @@ export class HaManualAutomationEditor extends LitElement {
         .highlightedActions=${this._pastedConfig?.actions || []}
         @value-changed=${this._actionChanged}
         @open-sidebar=${this._openSidebar}
-        @request-close-sidebar=${this._closeSidebar}
+        @request-close-sidebar=${this._triggerCloseSidebar}
         @close-sidebar=${this._handleCloseSidebar}
         .hass=${this.hass}
         .narrow=${this.narrow}
@@ -262,7 +274,11 @@ export class HaManualAutomationEditor extends LitElement {
         })}
       >
         <div class="content-wrapper">
-          <div class="content">
+          <div
+            class="content ${this._sidebarConfig && this.narrow
+              ? "has-bottom-sheet"
+              : ""}"
+          >
             <slot name="alerts"></slot>
             ${this._renderContent()}
           </div>
@@ -335,8 +351,12 @@ export class HaManualAutomationEditor extends LitElement {
     };
   }
 
-  private _closeSidebar() {
+  private _triggerCloseSidebar() {
     if (this._sidebarConfig) {
+      if (this._sidebarElement) {
+        this._sidebarElement.triggerCloseSidebar();
+        return;
+      }
       this._sidebarConfig?.close();
     }
   }
@@ -373,7 +393,7 @@ export class HaManualAutomationEditor extends LitElement {
   }
 
   private _saveAutomation() {
-    this._closeSidebar();
+    this._triggerCloseSidebar();
     fireEvent(this, "save-automation");
   }
 
@@ -478,7 +498,12 @@ export class HaManualAutomationEditor extends LitElement {
     if (normalized) {
       ev.preventDefault();
 
-      if (this.dirty) {
+      if (
+        this.dirty ||
+        ensureArray(this.config.triggers)?.length ||
+        ensureArray(this.config.conditions)?.length ||
+        ensureArray(this.config.actions)?.length
+      ) {
         const result = await new Promise<boolean>((resolve) => {
           showPasteReplaceDialog(this, {
             domain: "automation",
@@ -587,22 +612,34 @@ export class HaManualAutomationEditor extends LitElement {
     });
   }
 
-  private _getCollapsableElements() {
-    return this.shadowRoot!.querySelectorAll<
-      HaAutomationAction | HaAutomationCondition
-    >("ha-automation-action, ha-automation-condition");
-  }
-
   public expandAll() {
-    this._getCollapsableElements().forEach((element) => {
+    this._collapsableElements?.forEach((element) => {
       element.expandAll();
     });
   }
 
   public collapseAll() {
-    this._getCollapsableElements().forEach((element) => {
+    this._collapsableElements?.forEach((element) => {
       element.collapseAll();
     });
+  }
+
+  public copySelectedRow() {
+    if ((this._sidebarConfig as ActionSidebarConfig)?.copy) {
+      (this._sidebarConfig as ActionSidebarConfig).copy();
+    }
+  }
+
+  public cutSelectedRow() {
+    if ((this._sidebarConfig as ActionSidebarConfig)?.cut) {
+      (this._sidebarConfig as ActionSidebarConfig).cut();
+    }
+  }
+
+  public deleteSelectedRow() {
+    if ((this._sidebarConfig as ActionSidebarConfig)?.delete) {
+      (this._sidebarConfig as ActionSidebarConfig).delete();
+    }
   }
 
   static get styles(): CSSResultGroup {

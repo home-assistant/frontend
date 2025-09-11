@@ -8,6 +8,7 @@ import {
   mdiPencil,
   mdiPencilOff,
   mdiPencilOutline,
+  mdiTransitConnectionVariant,
 } from "@mdi/js";
 import type { HassEntity } from "home-assistant-js-websocket";
 import type { PropertyValues } from "lit";
@@ -311,6 +312,8 @@ export class MoreInfoDialog extends LitElement {
     const isAdmin = this.hass.user!.is_admin;
 
     const deviceId = this._getDeviceId();
+    const deviceType =
+      (deviceId && this.hass.devices[deviceId].entry_type) || "device";
 
     const isDefaultView = this._currView === DEFAULT_VIEW && !this._childView;
     const isSpecificInitialView =
@@ -434,11 +437,18 @@ export class MoreInfoDialog extends LitElement {
                                 @request-selected=${this._goToDevice}
                               >
                                 ${this.hass.localize(
-                                  "ui.dialogs.more_info_control.device_info"
+                                  "ui.dialogs.more_info_control.device_or_service_info",
+                                  {
+                                    type: this.hass.localize(
+                                      `ui.dialogs.more_info_control.device_type.${deviceType}`
+                                    ),
+                                  }
                                 )}
                                 <ha-svg-icon
                                   slot="graphic"
-                                  .path=${mdiDevices}
+                                  .path=${deviceType === "service"
+                                    ? mdiTransitConnectionVariant
+                                    : mdiDevices}
                                 ></ha-svg-icon>
                               </ha-list-item>
                             `
@@ -651,7 +661,10 @@ export class MoreInfoDialog extends LitElement {
         ha-dialog {
           /* Set the top top of the dialog to a fixed position, so it doesnt jump when the content changes size */
           --vertical-align-dialog: flex-start;
-          --dialog-surface-margin-top: 40px;
+          --dialog-surface-margin-top: max(
+            40px,
+            var(--safe-area-inset-top, 0px)
+          );
           --dialog-content-padding: 0;
         }
 

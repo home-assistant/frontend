@@ -292,7 +292,7 @@ class HaAutomationPicker extends SubscribeMixin(LitElement) {
           extraTemplate: (automation) =>
             automation.labels.length
               ? html`<ha-data-table-labels
-                  @label-clicked=${this._labelClicked}
+                  @label-clicked=${narrow ? undefined : this._labelClicked}
                   .labels=${automation.labels}
                 ></ha-data-table-labels>`
               : nothing,
