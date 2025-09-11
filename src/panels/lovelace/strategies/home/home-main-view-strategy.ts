@@ -15,6 +15,7 @@ import type {
   WeatherForecastCardConfig,
 } from "../../cards/types";
 import { getAreas } from "../areas/helpers/areas-strategy-helper";
+import { getCommonControl } from "../../../../data/usage_prediction";
 
 export interface HomeMainViewStrategyConfig {
   type: "home-main";
@@ -82,6 +83,20 @@ export class HomeMainViewStrategy extends ReactiveElement {
     const favoriteEntities = (config.favorite_entities || []).filter(
       (entityId) => hass.states[entityId] !== undefined
     );
+
+    if (favoriteEntities.length < 9) {
+      // Add favorite entities to fill it up to 8.
+      const predictedEntities = await getCommonControl(hass);
+      for (
+        let i = 0;
+        favoriteEntities.length < 9 && i < predictedEntities.entities.length;
+        i++
+      ) {
+        if (hass.states[predictedEntities.entities[i]] !== undefined) {
+          favoriteEntities.push(predictedEntities.entities[i]);
+        }
+      }
+    }
 
     if (favoriteEntities.length > 0) {
       favoriteSection.cards!.push(
