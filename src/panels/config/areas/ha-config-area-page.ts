@@ -571,7 +571,7 @@ class HaConfigAreaPage extends LitElement {
   }
 
   private _renderAutomation(name: string, entityState: AutomationEntity) {
-    return html` <a
+    return html`<a
         id="automation-${slugify(entityState.entity_id)}"
         href=${ifDefined(
           entityState.attributes.id

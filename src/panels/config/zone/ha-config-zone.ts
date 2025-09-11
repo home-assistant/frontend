@@ -201,7 +201,7 @@ export class HaConfigZone extends SubscribeMixin(LitElement) {
                     stateObject.entity_id === "zone.home" &&
                     !this._canEditCore
                       ? nothing
-                      : html` <ha-icon-button
+                      : html`<ha-icon-button
                             .id="zone-${slugify(stateObject.entity_id)}"
                             .entityId=${stateObject.entity_id}
                             .noEdit=${stateObject.entity_id !== "zone.home" ||

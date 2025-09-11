@@ -1,12 +1,10 @@
-import Tooltip from "@awesome.me/webawesome/dist/components/tooltip/tooltip";
+import Tooltip from "@home-assistant/webawesome/dist/components/tooltip/tooltip";
 import { css } from "lit";
 import type { CSSResultGroup } from "lit";
 import { customElement, property } from "lit/decorators";
 
-
 @customElement("ha-tooltip")
 export class HaTooltip extends Tooltip {
-
   /** The amount of time to wait before showing the tooltip when the user mouses in. */
   @property({ attribute: "show-delay", type: Number }) showDelay = 150;
 
