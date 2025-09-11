@@ -40,13 +40,11 @@ export class HaTargetPickerItemGroup extends LitElement {
       <ha-md-list>
         ${this.items.map(
           (item) =>
-            html`
-              <ha-target-picker-item-row
-                .hass=${this.hass}
-                .type=${this.type}
-                .item=${item}
-              ></ha-target-picker-item-row>
-            </ha-md-list-item>`
+            html`<ha-target-picker-item-row
+              .hass=${this.hass}
+              .type=${this.type}
+              .item=${item}
+            ></ha-target-picker-item-row>`
         )}
       </ha-md-list>
     </ha-expansion-panel>`;
