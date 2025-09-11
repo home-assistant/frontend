@@ -20,6 +20,8 @@ import "../../../../components/ha-dialog";
 import "../../../../components/ha-dialog-header";
 import "../../../../components/ha-list-item";
 import "../../../../components/ha-spinner";
+import "../../../../components/ha-tab-group";
+import "../../../../components/ha-tab-group-tab";
 import "../../../../components/ha-yaml-editor";
 import type { HaYamlEditor } from "../../../../components/ha-yaml-editor";
 import {
@@ -53,7 +55,6 @@ import "./hui-view-background-editor";
 import "./hui-view-editor";
 import "./hui-view-visibility-editor";
 import type { EditViewDialogParams } from "./show-edit-view-dialog";
-import "../../../../components/sl-tab-group";
 
 const TABS = ["tab-settings", "tab-background", "tab-visibility"] as const;
 
@@ -274,10 +275,10 @@ export class HuiDialogEditView extends LitElement {
               `
             : nothing}
           ${!this._yamlMode
-            ? html`<sl-tab-group @sl-tab-show=${this._handleTabChanged}>
+            ? html`<ha-tab-group @wa-tab-show=${this._handleTabChanged}>
                 ${TABS.map(
                   (tab) => html`
-                    <sl-tab
+                    <ha-tab-group-tab
                       slot="nav"
                       .panel=${tab}
                       .active=${this._currTab === tab}
@@ -285,10 +286,10 @@ export class HuiDialogEditView extends LitElement {
                       ${this.hass!.localize(
                         `ui.panel.lovelace.editor.edit_view.${tab.replace("-", "_")}`
                       )}
-                    </sl-tab>
+                    </ha-tab-group-tab>
                   `
                 )}
-              </sl-tab-group>`
+              </ha-tab-group>`
             : nothing}
         </ha-dialog-header>
         ${content}
@@ -651,10 +652,10 @@ export class HuiDialogEditView extends LitElement {
           font-size: inherit;
           font-weight: inherit;
         }
-        sl-tab {
+        ha-tab-group-tab {
           flex: 1;
         }
-        sl-tab::part(base) {
+        ha-tab-group-tab::part(base) {
           width: 100%;
           justify-content: center;
         }
