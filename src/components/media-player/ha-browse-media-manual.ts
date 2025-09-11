@@ -1,10 +1,7 @@
 import { css, html, LitElement } from "lit";
 import { customElement, property } from "lit/decorators";
 import memoizeOne from "memoize-one";
-
 import { fireEvent } from "../../common/dom/fire_event";
-
-import type { MediaPlayerBrowseAction } from "../../data/media-player";
 import { buttonLinkStyle } from "../../resources/styles";
 import type { HomeAssistant } from "../../types";
 import "../ha-button";
@@ -29,8 +26,6 @@ class BrowseMediaManual extends LitElement {
   @property({ attribute: false }) public hass!: HomeAssistant;
 
   @property({ attribute: false }) public item!: MediaPlayerItemId;
-
-  @property() public action!: MediaPlayerBrowseAction;
 
   private _schema = memoizeOne(
     () =>
