@@ -165,7 +165,11 @@ class PanelTodo extends LitElement {
         </ha-list-item> `
     );
     return html`
-      <ha-two-pane-top-app-bar-fixed .pane=${showPane} footer>
+      <ha-two-pane-top-app-bar-fixed
+        .pane=${showPane}
+        footer
+        .narrow=${this.narrow}
+      >
         <ha-menu-button
           slot="navigationIcon"
           .hass=${this.hass}
@@ -403,9 +407,9 @@ class PanelTodo extends LitElement {
         }
         ha-fab {
           position: fixed;
-          right: 16px;
-          bottom: 16px;
-          inset-inline-end: 16px;
+          right: calc(16px + var(--safe-area-inset-right, 0px));
+          bottom: calc(16px + var(--safe-area-inset-bottom, 0px));
+          inset-inline-end: calc(16px + var(--safe-area-inset-right, 0px));
           inset-inline-start: initial;
         }
       `,
