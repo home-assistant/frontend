@@ -3,7 +3,6 @@ import { css, type CSSResultGroup } from "lit";
 import { customElement } from "lit/decorators";
 
 @customElement("ha-tab-group-tab")
-// @ts-ignore
 export class HaTabGroupTab extends Tab {
   static get styles(): CSSResultGroup {
     return [
@@ -38,7 +37,6 @@ export class HaTabGroupTab extends Tab {
 
 declare global {
   interface HTMLElementTagNameMap {
-    // @ts-ignore
     "ha-tab-group-tab": HaTabGroupTab;
   }
 }

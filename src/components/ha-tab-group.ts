@@ -59,7 +59,6 @@ export class HaTabGroup extends TabGroup {
 
 declare global {
   interface HTMLElementTagNameMap {
-    // @ts-ignore
     "ha-tab-group": HaTabGroup;
   }
 }
