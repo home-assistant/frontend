@@ -407,7 +407,7 @@ export class HaCodeEditor extends ReactiveElement {
         // If so, configure full-screen button parameters based on our current state
         fsButton.disabled = this.disableFullscreen;
         fsButton.path = this._fullscreenIcon();
-        fsButton.setAttribute("label", this._fullscreenLabel());
+        fsButton.label = this._fullscreenLabel();
       }
     }
     // Return whether successfully in requested state
