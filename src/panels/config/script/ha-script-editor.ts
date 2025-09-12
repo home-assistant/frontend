@@ -1139,7 +1139,7 @@ export class HaScriptEditor extends SubscribeMixin(
           transition: bottom 0.3s;
         }
         ha-fab.dirty {
-          bottom: 16px;
+          bottom: calc(16px + var(--safe-area-inset-bottom, 0px));
         }
         li[role="separator"] {
           border-bottom-color: var(--divider-color);

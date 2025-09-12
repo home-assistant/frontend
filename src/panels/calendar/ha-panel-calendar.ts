@@ -114,7 +114,11 @@ class PanelCalendar extends LitElement {
     );
     const showPane = this._showPaneController.value ?? !this.narrow;
     return html`
-      <ha-two-pane-top-app-bar-fixed .pane=${showPane} footer>
+      <ha-two-pane-top-app-bar-fixed
+        .pane=${showPane}
+        footer
+        .narrow=${this.narrow}
+      >
         <ha-menu-button
           slot="navigationIcon"
           .hass=${this.hass}
@@ -294,10 +298,15 @@ class PanelCalendar extends LitElement {
           display: block;
         }
         ha-full-calendar {
-          height: calc(100vh - var(--header-height));
           --calendar-header-padding: 12px;
           --calendar-border-radius: 0;
           --calendar-border-width: 1px 0;
+          height: calc(
+            100vh - var(--header-height, 0px) - var(
+                --safe-area-inset-top,
+                0px
+              ) - var(--safe-area-inset-bottom, 0px)
+          );
         }
         ha-button-menu ha-button {
           --ha-font-size-m: var(--ha-font-size-l);

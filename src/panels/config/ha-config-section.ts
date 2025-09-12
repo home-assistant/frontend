@@ -38,6 +38,7 @@ export class HaConfigSection extends LitElement {
     :host {
       display: block;
     }
+
     .content {
       padding: 28px 20px 0;
       max-width: 1040px;

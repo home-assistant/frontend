@@ -1217,19 +1217,27 @@ class HUIRoot extends LitElement {
           border-bottom: var(--app-header-border-bottom, none);
           position: fixed;
           top: 0;
-          width: var(
-            --mdc-top-app-bar-width,
-            calc(
-              100% - var(--safe-area-inset-left) - var(--safe-area-inset-right)
-            )
+          width: calc(
+            var(--mdc-top-app-bar-width, 100%) - var(
+                --safe-area-inset-right,
+                0px
+              )
           );
           -webkit-backdrop-filter: var(--app-header-backdrop-filter, none);
           backdrop-filter: var(--app-header-backdrop-filter, none);
           padding-top: var(--safe-area-inset-top);
-          padding-left: var(--safe-area-inset-left);
           padding-right: var(--safe-area-inset-right);
           z-index: 4;
           transition: box-shadow 200ms linear;
+        }
+        .narrow .header {
+          width: calc(
+            var(--mdc-top-app-bar-width, 100%) - var(
+                --safe-area-inset-left,
+                0px
+              ) - var(--safe-area-inset-right, 0px)
+          );
+          padding-left: var(--safe-area-inset-left);
         }
         :host([scrolled]) .header {
           box-shadow: var(
@@ -1252,10 +1260,8 @@ class HUIRoot extends LitElement {
           font-weight: var(--ha-font-weight-normal);
           box-sizing: border-box;
         }
-        @media (max-width: 599px) {
-          .toolbar {
-            padding: 0 4px;
-          }
+        .narrow .toolbar {
+          padding: 0 4px;
         }
         .main-title {
           margin: var(--margin-title);
@@ -1390,11 +1396,13 @@ class HUIRoot extends LitElement {
           min-height: 100vh;
           box-sizing: border-box;
           padding-top: calc(var(--header-height) + var(--safe-area-inset-top));
-          padding-left: var(--safe-area-inset-left);
           padding-right: var(--safe-area-inset-right);
-          padding-inline-start: var(--safe-area-inset-left);
           padding-inline-end: var(--safe-area-inset-right);
           padding-bottom: var(--safe-area-inset-bottom);
+        }
+        .narrow hui-view-container {
+          padding-left: var(--safe-area-inset-left);
+          padding-inline-start: var(--safe-area-inset-left);
         }
         hui-view-container > * {
           flex: 1 1 100%;

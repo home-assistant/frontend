@@ -912,6 +912,9 @@ class HaConfigIntegrationPage extends SubscribeMixin(LitElement) {
           max-width: 1000px;
           padding: 32px;
         }
+        :host([narrow]) .container {
+          padding: 16px;
+        }
         .container > * {
           flex-grow: 1;
         }
@@ -951,9 +954,6 @@ class HaConfigIntegrationPage extends SubscribeMixin(LitElement) {
         }
         .card-content {
           padding: 16px 0 8px;
-        }
-        :host([narrow]) .container {
-          padding: 16px;
         }
         .card-header {
           padding-bottom: 0;

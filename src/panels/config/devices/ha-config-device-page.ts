@@ -1489,6 +1489,9 @@ export class HaConfigDevicePage extends LitElement {
           margin-top: 32px;
           margin-bottom: 32px;
         }
+        :host([narrow]) .container {
+          margin-top: 0;
+        }
 
         .card-header {
           display: flex;
@@ -1586,10 +1589,6 @@ export class HaConfigDevicePage extends LitElement {
 
         :host([narrow]) .column {
           width: 100%;
-        }
-
-        :host([narrow]) .container {
-          margin-top: 0;
         }
 
         a {

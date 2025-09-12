@@ -92,7 +92,7 @@ class PanelMediaBrowser extends LitElement {
 
   protected render(): TemplateResult {
     return html`
-      <ha-top-app-bar-fixed>
+      <ha-top-app-bar-fixed .narrow=${this.narrow}>
         ${this._navigateIds.length > 1
           ? html`
               <ha-icon-button-arrow-prev
@@ -349,19 +349,48 @@ class PanelMediaBrowser extends LitElement {
         }
 
         ha-media-player-browse {
-          height: calc(100vh - (100px + var(--header-height)));
+          height: calc(
+            100vh -
+              (
+                100px + var(--header-height, 0px) +
+                  var(--safe-area-inset-top, 0px) +
+                  var(--safe-area-inset-bottom, 0px)
+              )
+          );
         }
 
         :host([narrow]) ha-media-player-browse {
-          height: calc(100vh - (57px + var(--header-height)));
+          height: calc(
+            100vh -
+              (
+                68px + var(--header-height, 0px) +
+                  var(--safe-area-inset-top, 0px) +
+                  var(--safe-area-inset-bottom, 0px)
+              )
+          );
         }
+
         .selected_menu_item {
           color: var(--primary-color);
         }
 
         ha-bar-media-player {
           position: fixed;
-          width: var(--mdc-top-app-bar-width, 100%);
+          bottom: var(--safe-area-inset-bottom, 0px);
+          width: calc(
+            var(--mdc-top-app-bar-width, 100%) - var(
+                --safe-area-inset-right,
+                0px
+              )
+          );
+        }
+        :host([narrow]) ha-bar-media-player {
+          width: calc(
+            var(--mdc-top-app-bar-width, 100%) - var(
+                --safe-area-inset-left,
+                0px
+              ) - var(--safe-area-inset-right, 0px)
+          );
         }
       `,
     ];

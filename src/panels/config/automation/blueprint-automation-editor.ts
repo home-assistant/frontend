@@ -94,11 +94,25 @@ export class HaBlueprintAutomationEditor extends HaBlueprintGenericEditor {
         :host {
           position: relative;
           height: 100%;
-          min-height: calc(100vh - 85px);
-          min-height: calc(100dvh - 85px);
+          min-height: calc(
+            100vh -
+              134px - var(--safe-area-inset-top, 0px) - var(
+                --safe-area-inset-bottom,
+                0px
+              )
+          );
+          min-height: calc(
+            100dvh -
+              134px - var(--safe-area-inset-top, 0px) - var(
+                --safe-area-inset-bottom,
+                0px
+              )
+          );
         }
         ha-fab {
           position: fixed;
+          bottom: calc(16px + var(--safe-area-inset-bottom, 0px));
+          right: calc(16px + var(--safe-area-inset-right, 0px));
         }
       `,
     ];
