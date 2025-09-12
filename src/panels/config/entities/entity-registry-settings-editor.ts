@@ -90,6 +90,7 @@ import { showVoiceAssistantsView } from "../../../dialogs/more-info/components/v
 import { showMoreInfoDialog } from "../../../dialogs/more-info/show-ha-more-info-dialog";
 import { haStyle } from "../../../resources/styles";
 import type { HomeAssistant } from "../../../types";
+import { showToast } from "../../../util/toast";
 import { showDeviceRegistryDetailDialog } from "../devices/device-registry-detail/show-dialog-device-registry-detail";
 
 const OVERRIDE_DEVICE_CLASSES = {
