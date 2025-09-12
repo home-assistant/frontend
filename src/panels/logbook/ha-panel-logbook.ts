@@ -60,7 +60,7 @@ export class HaPanelLogbook extends LitElement {
   }
 
   private _goBack(): void {
-    goBack("/");
+    goBack();
   }
 
   protected render() {
