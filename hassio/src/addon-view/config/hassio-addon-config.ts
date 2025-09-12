@@ -199,6 +199,7 @@ class HassioAddonConfig extends LitElement {
         <div class="card-content">
           ${showForm
             ? html`<ha-form
+                .hass=${this.hass}
                 .disabled=${this.disabled}
                 .data=${this._options!}
                 @value-changed=${this._configChanged}

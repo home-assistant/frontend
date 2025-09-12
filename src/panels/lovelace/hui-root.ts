@@ -26,7 +26,7 @@ import memoizeOne from "memoize-one";
 import { isComponentLoaded } from "../../common/config/is_component_loaded";
 import { fireEvent } from "../../common/dom/fire_event";
 import { shouldHandleRequestSelectedEvent } from "../../common/mwc/handle-request-selected-event";
-import { navigate } from "../../common/navigate";
+import { goBack, navigate } from "../../common/navigate";
 import type { LocalizeKeys } from "../../common/translations/localize";
 import { constructUrlCurrentPath } from "../../common/url/construct-url";
 import {
@@ -47,6 +47,7 @@ import "../../components/ha-menu-button";
 import "../../components/ha-svg-icon";
 import "../../components/ha-tab-group";
 import "../../components/ha-tab-group-tab";
+import "../../components/ha-tooltip";
 import { createAreaRegistryEntry } from "../../data/area_registry";
 import type { LovelacePanelConfig } from "../../data/lovelace";
 import type { LovelaceConfig } from "../../data/lovelace/config/types";
@@ -229,10 +230,10 @@ class HUIRoot extends LitElement {
           },
           {
             icon: mdiSofa,
-            key: "ui.panel.lovelace.menu.add_area",
+            key: "ui.panel.lovelace.menu.create_area",
             visible: true,
-            action: this._addArea,
-            overflowAction: this._handleAddArea,
+            action: this._createArea,
+            overflowAction: this._handleCreateArea,
           },
           {
             icon: mdiAccount,
@@ -307,7 +308,7 @@ class HUIRoot extends LitElement {
       (i) => i.visible && (!i.overflow || overflowCanPromote)
     );
 
-    buttonItems.forEach((item) => {
+    buttonItems.forEach((item, index) => {
       const label = [this.hass!.localize(item.key), item.suffix].join(" ");
       const button = item.subItems
         ? html`
@@ -341,11 +342,14 @@ class HUIRoot extends LitElement {
             </ha-button-menu>
           `
         : html`
-            <ha-tooltip slot="actionItems" placement="bottom" .content=${label}>
-              <ha-icon-button
-                .path=${item.icon}
-                @click=${item.buttonAction}
-              ></ha-icon-button>
+            <ha-icon-button
+              slot="actionItems"
+              .id="button-${index}"
+              .path=${item.icon}
+              @click=${item.buttonAction}
+            ></ha-icon-button>
+            <ha-tooltip placement="bottom" .for="button-${index}">
+              ${label}
             </ha-tooltip>
           `;
       result.push(button);
@@ -362,6 +366,7 @@ class HUIRoot extends LitElement {
               }
               showListItemsDialog(this, {
                 title: title,
+                mode: this.narrow ? "bottom-sheet" : "dialog",
                 items: i.subItems!.map((si) => ({
                   iconPath: si.icon,
                   label: this.hass!.localize(si.key),
@@ -799,7 +804,7 @@ class HUIRoot extends LitElement {
     if (curViewConfig?.back_path != null) {
       navigate(curViewConfig.back_path, { replace: true });
     } else if (history.length > 1) {
-      history.back();
+      goBack();
     } else if (!views[0].subview) {
       navigate(this.route!.prefix, { replace: true });
     } else {
@@ -833,14 +838,14 @@ class HUIRoot extends LitElement {
     showNewAutomationDialog(this, { mode: "automation" });
   };
 
-  private _handleAddArea(ev: CustomEvent<RequestSelectedDetail>): void {
+  private _handleCreateArea(ev: CustomEvent<RequestSelectedDetail>): void {
     if (!shouldHandleRequestSelectedEvent(ev)) {
       return;
     }
-    this._addArea();
+    this._createArea();
   }
 
-  private _addArea = async () => {
+  private _createArea = async () => {
     await this.hass.loadFragmentTranslation("config");
     showAreaRegistryDetailDialog(this, {
       createEntry: async (values) => {
@@ -850,13 +855,15 @@ class HUIRoot extends LitElement {
         }
         showToast(this, {
           message: this.hass.localize(
-            "ui.panel.lovelace.menu.add_area_success"
+            "ui.panel.lovelace.menu.create_area_success"
           ),
           action: {
             action: () => {
               navigate(`/config/areas/area/${area.area_id}`);
             },
-            text: this.hass.localize("ui.panel.lovelace.menu.add_area_action"),
+            text: this.hass.localize(
+              "ui.panel.lovelace.menu.create_area_action"
+            ),
           },
         });
       },

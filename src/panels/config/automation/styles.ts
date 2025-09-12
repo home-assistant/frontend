@@ -254,4 +254,7 @@ export const sidebarEditorStyles = css`
       display: none;
     }
   }
+  ha-md-menu-item {
+    --mdc-icon-size: 24px;
+  }
 `;
