@@ -1094,14 +1094,12 @@ ${
     this._enableSelected,
     mdiToggleSwitch,
     "ui.panel.config.entities.picker.enable_selected.button",
-    false,
     "enable-selected-disabled"
   )}
   ${renderDisableableMenuItem(
     this._disableSelected,
     mdiToggleSwitchOffOutline,
     "ui.panel.config.entities.picker.disable_selected.button",
-    false,
     "disable-selected-disabled"
   )}
   <ha-md-divider role="separator" tabindex="-1"></ha-md-divider>
@@ -1110,14 +1108,12 @@ ${
     this._unhideSelected,
     mdiEye,
     "ui.panel.config.entities.picker.unhide_selected.button",
-    false,
     "unhide-selected-disabled"
   )}
   ${renderDisableableMenuItem(
     this._hideSelected,
     mdiEyeOff,
     "ui.panel.config.entities.picker.hide_selected.button",
-    false,
     "hide-selected-disabled"
   )}
 
@@ -1155,7 +1151,6 @@ ${
     this._restoreEntityIdSelected,
     mdiRestore,
     "ui.panel.config.entities.picker.restore_entity_id_selected.button",
-    false,
     "restore-selected-disabled"
   )}
 
@@ -1165,8 +1160,8 @@ ${
     this._removeSelected,
     mdiDelete,
     "ui.panel.config.entities.picker.delete_selected.button",
-    true, // warning style
-    "delete-selected-disabled"
+    "delete-selected-disabled",
+    true // warning style
   )}
 
 </ha-md-button-menu>
