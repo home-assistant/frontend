@@ -64,6 +64,10 @@ import {
   subscribeEntityRegistry,
   updateEntityRegistryEntry,
 } from "../../../data/entity_registry";
+import {
+  getEntityRecordingList,
+  setEntityRecordingOptions,
+} from "../../../data/recorder";
 import { entityIcon, entryIcon } from "../../../data/icons";
 import {
   domainToName,
@@ -197,6 +201,8 @@ export class EntityRegistrySettingsEditor extends LitElement {
 
   @state() private _noDeviceArea?: boolean;
 
+  @state() private _recordingDisabled?: boolean;
+
   private _origEntityId!: string;
 
   private _deviceClassOptions?: string[][];
@@ -226,6 +232,9 @@ export class EntityRegistrySettingsEditor extends LitElement {
     this._switchAsInvert = this.entry.options?.switch_as_x?.invert === true;
 
     const domain = computeDomain(this.entry.entity_id);
+
+    // Fetch recording settings
+    this._fetchRecordingSettings();
 
     if (domain === "camera" && isComponentLoaded(this.hass, "stream")) {
       const stateObj: HassEntity | undefined =
@@ -972,6 +981,27 @@ export class EntityRegistrySettingsEditor extends LitElement {
         ></ha-switch>
       </ha-settings-row>
 
+      ${isComponentLoaded(this.hass, "recorder")
+        ? html`
+            <ha-settings-row>
+              <span slot="heading"
+                >${this.hass.localize(
+                  "ui.dialogs.entity_registry.editor.record_label"
+                )}</span
+              >
+              <span slot="description"
+                >${this.hass.localize(
+                  "ui.dialogs.entity_registry.editor.record_description"
+                )}</span
+              >
+              <ha-switch
+                .checked=${!this._recordingDisabled}
+                .disabled=${this.disabled}
+                @change=${this._recordingChanged}
+              ></ha-switch>
+            </ha-settings-row>
+          `
+        : ""}
       ${this.entry.device_id
         ? html`<ha-settings-row>
               <span slot="heading"
@@ -1399,6 +1429,20 @@ export class EntityRegistrySettingsEditor extends LitElement {
     this._labels = ev.detail.value;
   }
 
+  private async _fetchRecordingSettings() {
+    if (!isComponentLoaded(this.hass, "recorder")) {
+      return;
+    }
+    try {
+      const recordingList = await getEntityRecordingList(this.hass);
+      const settings = recordingList[this.entry.entity_id];
+      this._recordingDisabled = settings?.recording_disabled_by !== null;
+    } catch (_err) {
+      // Ignore errors, recording settings might not be available
+      this._recordingDisabled = false;
+    }
+  }
+
   private async _fetchCameraPrefs() {
     const capabilities = await fetchCameraCapabilities(
       this.hass,
@@ -1459,6 +1503,30 @@ export class EntityRegistrySettingsEditor extends LitElement {
       this._hiddenBy = null;
     } else {
       this._hiddenBy = "user";
+    }
+  }
+
+  private async _recordingChanged(ev: CustomEvent): void {
+    const checkbox = ev.currentTarget as HaSwitch;
+    const newRecordingDisabled = !checkbox.checked;
+
+    try {
+      await setEntityRecordingOptions(
+        this.hass,
+        [this.entry.entity_id],
+        newRecordingDisabled ? "user" : null
+      );
+      this._recordingDisabled = newRecordingDisabled;
+      showToast(this, {
+        message: this.hass.localize(
+          newRecordingDisabled
+            ? "ui.dialogs.entity_registry.editor.recording_disabled"
+            : "ui.dialogs.entity_registry.editor.recording_enabled"
+        ),
+      });
+    } catch (err: any) {
+      showAlertDialog(this, { text: err.message });
+      checkbox.checked = !checkbox.checked;
     }
   }
 

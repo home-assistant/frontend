@@ -365,3 +365,34 @@ export const isExternalStatistic = (statisticsId: string): boolean =>
 
 export const updateStatisticsIssues = (hass: HomeAssistant) =>
   hass.callWS<undefined>({ type: "recorder/update_statistics_issues" });
+
+export interface EntityRecordingSettings {
+  recording_disabled_by: string | null;
+}
+
+export type EntityRecordingList = Record<string, EntityRecordingSettings>;
+
+export const getEntityRecordingList = (hass: HomeAssistant) =>
+  hass.callWS<EntityRecordingList>({
+    type: "homeassistant/record_entity/list",
+  });
+
+export const getEntityRecordingSettings = (
+  hass: HomeAssistant,
+  entity_id: string
+) =>
+  hass.callWS<EntityRecordingSettings>({
+    type: "homeassistant/record_entity/get",
+    entity_id,
+  });
+
+export const setEntityRecordingOptions = (
+  hass: HomeAssistant,
+  entity_ids: string[],
+  recording_disabled_by: string | null
+) =>
+  hass.callWS<undefined>({
+    type: "homeassistant/record_entity/set_options",
+    entity_ids,
+    recording_disabled_by,
+  });
