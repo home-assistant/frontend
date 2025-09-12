@@ -4,6 +4,7 @@ import type { LovelaceStrategyConfig } from "./strategy";
 
 export interface LovelaceBaseSectionConfig {
   visibility?: Condition[];
+  hidden?: boolean;
   column_span?: number;
   row_span?: number;
   /**
