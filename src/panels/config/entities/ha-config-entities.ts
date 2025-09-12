@@ -1512,27 +1512,28 @@ ${
     this._clearSelection();
   };
 
-  private _enableRecordingSelected = async () => {
+  private _setRecordingSelected = async (enable: boolean) => {
     if (!isComponentLoaded(this.hass, "recorder")) {
       return;
     }
 
+    const action = enable ? "enable" : "disable";
     showConfirmationDialog(this, {
       title: this.hass.localize(
-        "ui.panel.config.entities.picker.enable_recording_selected.confirm_title",
+        `ui.panel.config.entities.picker.${action}_recording_selected.confirm_title`,
         { number: this._selected.length }
       ),
       text: this.hass.localize(
-        "ui.panel.config.entities.picker.enable_recording_selected.confirm_text"
+        `ui.panel.config.entities.picker.${action}_recording_selected.confirm_text`
       ),
-      confirmText: this.hass.localize("ui.common.enable"),
+      confirmText: this.hass.localize(`ui.common.${action}`),
       dismissText: this.hass.localize("ui.common.cancel"),
       confirm: async () => {
         try {
           await setEntityRecordingOptions(
             this.hass,
             this._selected,
-            null // null means recording is enabled
+            enable ? null : "user" // null = enabled, "user" = disabled by user
           );
 
           // Re-fetch recording data to update the table
@@ -1554,47 +1555,9 @@ ${
     });
   };
 
-  private _disableRecordingSelected = async () => {
-    if (!isComponentLoaded(this.hass, "recorder")) {
-      return;
-    }
+  private _enableRecordingSelected = () => this._setRecordingSelected(true);
 
-    showConfirmationDialog(this, {
-      title: this.hass.localize(
-        "ui.panel.config.entities.picker.disable_recording_selected.confirm_title",
-        { number: this._selected.length }
-      ),
-      text: this.hass.localize(
-        "ui.panel.config.entities.picker.disable_recording_selected.confirm_text"
-      ),
-      confirmText: this.hass.localize("ui.common.disable"),
-      dismissText: this.hass.localize("ui.common.cancel"),
-      confirm: async () => {
-        try {
-          await setEntityRecordingOptions(
-            this.hass,
-            this._selected,
-            "user" // "user" means disabled by user
-          );
-
-          // Re-fetch recording data to update the table
-          if (this._recordingEntities) {
-            await this._fetchRecordingData();
-          }
-        } catch (err: any) {
-          showAlertDialog(this, {
-            title: this.hass.localize(
-              "ui.panel.config.common.multiselect.failed",
-              {
-                number: this._selected.length,
-              }
-            ),
-            text: err.message,
-          });
-        }
-      },
-    });
-  };
+  private _disableRecordingSelected = () => this._setRecordingSelected(false);
 
   private async _handleBulkLabel(ev) {
     const label = ev.currentTarget.value;
