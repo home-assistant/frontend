@@ -70,7 +70,7 @@ class PanelEnergy extends LitElement {
 
   private _back(ev) {
     ev.stopPropagation();
-    goBack("/");
+    goBack();
   }
 
   protected render(): TemplateResult {
