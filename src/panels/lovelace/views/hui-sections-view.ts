@@ -2,7 +2,7 @@ import { ResizeController } from "@lit-labs/observers/resize-controller";
 import { mdiEyeOff, mdiViewGridPlus } from "@mdi/js";
 import type { PropertyValues } from "lit";
 import { css, html, LitElement, nothing } from "lit";
-import { customElement, property, state } from "lit/decorators";
+import { customElement, property, query, state } from "lit/decorators";
 import { classMap } from "lit/directives/class-map";
 import { repeat } from "lit/directives/repeat";
 import { styleMap } from "lit/directives/style-map";
@@ -14,7 +14,10 @@ import "../../../components/ha-sortable";
 import "../../../components/ha-svg-icon";
 import type { LovelaceViewElement } from "../../../data/lovelace";
 import type { LovelaceCardConfig } from "../../../data/lovelace/config/card";
-import type { LovelaceSectionConfig } from "../../../data/lovelace/config/section";
+import type {
+  LovelaceSectionConfig,
+  LovelaceSectionRawConfig,
+} from "../../../data/lovelace/config/section";
 import type { LovelaceViewConfig } from "../../../data/lovelace/config/view";
 import type { HomeAssistant } from "../../../types";
 import type { HuiBadge } from "../badges/hui-badge";
@@ -28,6 +31,7 @@ import {
   getLovelaceContainerPath,
   parseLovelaceCardPath,
 } from "../editor/lovelace-path";
+import "../sections/hui-section";
 import type { HuiSection } from "../sections/hui-section";
 import type { Lovelace } from "../types";
 import "./hui-view-header";
@@ -46,8 +50,6 @@ export class SectionsView extends LitElement implements LovelaceViewElement {
 
   @property({ attribute: false }) public isStrategy = false;
 
-  @property({ attribute: false }) public sections: HuiSection[] = [];
-
   @property({ attribute: false }) public cards: HuiCard[] = [];
 
   @property({ attribute: false }) public badges: HuiBadge[] = [];
@@ -57,6 +59,8 @@ export class SectionsView extends LitElement implements LovelaceViewElement {
   @state() private _sectionColumnCount = 0;
 
   @state() _dragging = false;
+
+  @query(".container") private _container?: HTMLElement;
 
   private _columnsController = new ResizeController(this, {
     callback: (entries) => {
@@ -88,9 +92,9 @@ export class SectionsView extends LitElement implements LovelaceViewElement {
     this._config = config;
   }
 
-  private _sectionConfigKeys = new WeakMap<HuiSection, string>();
+  private _sectionConfigKeys = new WeakMap<LovelaceSectionRawConfig, string>();
 
-  private _getSectionKey(section: HuiSection) {
+  private _getSectionKey(section: LovelaceSectionRawConfig) {
     if (!this._sectionConfigKeys.has(section)) {
       this._sectionConfigKeys.set(section, Math.random().toString());
     }
@@ -98,52 +102,44 @@ export class SectionsView extends LitElement implements LovelaceViewElement {
   }
 
   private _computeSectionsCount() {
-    this._sectionColumnCount = this.sections
-      .filter((section) => !section.hidden)
-      .map((section) => section.config.column_span ?? 1)
-      .reduce((acc, val) => acc + val, 0);
+    const sections = Array.from(
+      this._container?.querySelectorAll("hui-section") ?? []
+    );
+
+    this._sectionColumnCount =
+      sections
+        .filter((section: HuiSection) => !section.hidden)
+        .map((section) => section.config.column_span ?? 1)
+        .reduce((acc, val) => acc + val, 0) || 0;
   }
 
   private _sectionVisibilityChanged = () => {
     this._computeSectionsCount();
   };
 
-  connectedCallback(): void {
-    super.connectedCallback();
-    this.addEventListener(
-      "section-visibility-changed",
-      this._sectionVisibilityChanged
-    );
-  }
+  public updated(changedProps: PropertyValues) {
+    super.updated(changedProps);
 
-  disconnectedCallback(): void {
-    super.disconnectedCallback();
-    this.removeEventListener(
-      "section-visibility-changed",
-      this._sectionVisibilityChanged
-    );
-  }
-
-  willUpdate(changedProperties: PropertyValues<typeof this>): void {
-    if (changedProperties.has("sections")) {
+    if (changedProps.has("_config")) {
       this._computeSectionsCount();
     }
   }
 
   protected render() {
-    if (!this.lovelace) return nothing;
+    if (!this.lovelace || !this._config) return nothing;
 
-    const sections = this.sections;
     const totalSectionCount =
       this._sectionColumnCount + (this.lovelace?.editMode ? 1 : 0);
     const editMode = this.lovelace.editMode;
 
     const maxColumnCount = this._columnsController.value ?? 1;
 
+    const sections = this._config.sections || [];
+
     return html`
       <div
         class="wrapper ${classMap({
-          "top-margin": Boolean(this._config?.top_margin),
+          "top-margin": Boolean(this._config.top_margin),
         })}"
       >
         <hui-view-header
@@ -151,7 +147,7 @@ export class SectionsView extends LitElement implements LovelaceViewElement {
           .badges=${this.badges}
           .lovelace=${this.lovelace}
           .viewIndex=${this.index}
-          .config=${this._config?.header}
+          .config=${this._config.header}
           style=${styleMap({
             "--max-column-count": maxColumnCount,
           })}
@@ -166,7 +162,7 @@ export class SectionsView extends LitElement implements LovelaceViewElement {
         >
           <div
             class="container ${classMap({
-              dense: Boolean(this._config?.dense_section_placement),
+              dense: Boolean(this._config.dense_section_placement),
             })}"
             style=${styleMap({
               "--total-section-count": totalSectionCount,
@@ -175,13 +171,14 @@ export class SectionsView extends LitElement implements LovelaceViewElement {
           >
             ${repeat(
               sections,
-              (section) => this._getSectionKey(section),
-              (section, idx) => {
+              (section: LovelaceSectionRawConfig) =>
+                this._getSectionKey(section),
+              (section: LovelaceSectionRawConfig, idx) => {
                 const columnSpan = Math.min(
-                  section.config.column_span || 1,
+                  section.column_span || 1,
                   maxColumnCount
                 );
-                const rowSpan = section.config.row_span || 1;
+                const rowSpan = section.row_span || 1;
 
                 return html`
                 <div
@@ -205,6 +202,15 @@ export class SectionsView extends LitElement implements LovelaceViewElement {
                           `
                         : section
                     }
+                    <hui-section
+                      .lovelace=${this.lovelace}
+                      .hass=${this.hass}
+                      .config=${this._config!.sections![idx]}
+                      .viewIndex=${this.index}
+                      .index=${idx}
+                      .preview=${this.lovelace?.editMode || false}
+                      @section-visibility-changed=${this._sectionVisibilityChanged}
+                    ></hui-section>
                   </div>
                 </div>
               `;
@@ -243,7 +249,7 @@ export class SectionsView extends LitElement implements LovelaceViewElement {
                   </ha-sortable>
                 `
               : nothing}
-            ${editMode && this._config?.cards?.length
+            ${editMode && this._config.cards?.length
               ? html`
                   <div class="section imported-cards">
                     <div class="imported-card-header">

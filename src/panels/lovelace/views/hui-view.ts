@@ -12,7 +12,6 @@ import type { LovelaceViewElement } from "../../../data/lovelace";
 import type { LovelaceBadgeConfig } from "../../../data/lovelace/config/badge";
 import { ensureBadgeConfig } from "../../../data/lovelace/config/badge";
 import type { LovelaceCardConfig } from "../../../data/lovelace/config/card";
-import type { LovelaceSectionConfig } from "../../../data/lovelace/config/section";
 import type {
   LovelaceViewConfig,
   LovelaceViewRawConfig,
@@ -39,9 +38,6 @@ import {
 } from "../editor/delete-card";
 import type { LovelaceCardPath } from "../editor/lovelace-path";
 import { parseLovelaceCardPath } from "../editor/lovelace-path";
-import { createErrorSectionConfig } from "../sections/hui-error-section";
-import "../sections/hui-section";
-import type { HuiSection } from "../sections/hui-section";
 import { generateLovelaceViewStrategy } from "../strategies/get-strategy";
 import type { Lovelace } from "../types";
 import { getViewType } from "./get-view-type";
@@ -84,8 +80,6 @@ export class HUIView extends ReactiveElement {
 
   @state() private _badges: HuiBadge[] = [];
 
-  @state() private _sections: HuiSection[] = [];
-
   private _layoutElementType?: string;
 
   private _layoutElement?: LovelaceViewElement;
@@ -125,28 +119,6 @@ export class HUIView extends ReactiveElement {
       this._badges = [...this._badges];
     });
     element.load();
-    return element;
-  }
-
-  // Public to make demo happy
-  public createSectionElement(sectionConfig: LovelaceSectionConfig) {
-    const element = document.createElement("hui-section");
-    element.hass = this.hass;
-    element.lovelace = this.lovelace;
-    element.config = sectionConfig;
-    element.viewIndex = this.index;
-    element.preview = this.lovelace.editMode;
-    element.addEventListener(
-      "ll-rebuild",
-      (ev: Event) => {
-        // In edit mode let it go to hui-root and rebuild whole view.
-        if (!this.lovelace!.editMode) {
-          ev.stopPropagation();
-          this._rebuildSection(element, sectionConfig);
-        }
-      },
-      { once: true }
-    );
     return element;
   }
 
@@ -261,14 +233,6 @@ export class HUIView extends ReactiveElement {
           element.hass = this.hass;
         });
 
-        this._sections.forEach((element) => {
-          try {
-            element.hass = this.hass;
-          } catch (e: any) {
-            this._rebuildSection(element, createErrorSectionConfig(e.message));
-          }
-        });
-
         this._layoutElement.hass = this.hass;
       }
       if (changedProperties.has("narrow")) {
@@ -276,15 +240,6 @@ export class HUIView extends ReactiveElement {
       }
       if (changedProperties.has("lovelace")) {
         this._layoutElement.lovelace = this.lovelace;
-        this._sections.forEach((element) => {
-          try {
-            element.hass = this.hass;
-            element.lovelace = this.lovelace;
-            element.preview = this.lovelace.editMode;
-          } catch (e: any) {
-            this._rebuildSection(element, createErrorSectionConfig(e.message));
-          }
-        });
         this._cards.forEach((element) => {
           element.preview = this.lovelace.editMode;
         });
@@ -335,7 +290,6 @@ export class HUIView extends ReactiveElement {
     this._layoutElementConfig = viewConfig;
     this._createBadges(viewConfig);
     this._createCards(viewConfig);
-    this._createSections(viewConfig);
     this._layoutElement!.isStrategy = isStrategy;
     this._layoutElement!.hass = this.hass;
     this._layoutElement!.narrow = this.narrow;
@@ -343,7 +297,6 @@ export class HUIView extends ReactiveElement {
     this._layoutElement!.index = this.index;
     this._layoutElement!.cards = this._cards;
     this._layoutElement!.badges = this._badges;
-    this._layoutElement!.sections = this._sections;
 
     if (addLayoutElement) {
       while (this.lastChild) {
@@ -473,36 +426,6 @@ export class HUIView extends ReactiveElement {
       const element = this._createCardElement(cardConfig);
       return element;
     });
-  }
-
-  private _createSections(config: LovelaceViewConfig): void {
-    if (!config || !config.sections || !Array.isArray(config.sections)) {
-      this._sections = [];
-      return;
-    }
-
-    this._sections = config.sections.map((sectionConfig, index) => {
-      const element = this.createSectionElement(sectionConfig);
-      element.index = index;
-      return element;
-    });
-  }
-
-  private _rebuildSection(
-    sectionElToReplace: HuiSection,
-    config: LovelaceSectionConfig
-  ): void {
-    const newSectionEl = this.createSectionElement(config);
-    newSectionEl.index = sectionElToReplace.index;
-    if (sectionElToReplace.parentElement) {
-      sectionElToReplace.parentElement!.replaceChild(
-        newSectionEl,
-        sectionElToReplace
-      );
-    }
-    this._sections = this._sections!.map((curSectionEl) =>
-      curSectionEl === sectionElToReplace ? newSectionEl : curSectionEl
-    );
   }
 }
 
