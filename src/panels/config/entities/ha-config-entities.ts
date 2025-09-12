@@ -807,19 +807,13 @@ export class HaConfigEntities extends SubscribeMixin(LitElement) {
           : undefined;
 
         // Determine recording status
-        let recorded: boolean | undefined;
-        if (recordingEntities) {
-          const recordingSettings = recordingEntities[entry.entity_id];
-          if (recordingSettings) {
-            recorded = recordingSettings.recording_disabled_by === null;
-          } else if (entry.options?.recorder) {
-            // For entities in registry, check the options
-            recorded = entry.options.recorder.recording_disabled_by === null;
-          } else {
-            // Entity not configured, defaults to recording enabled
-            recorded = true;
-          }
-        }
+        const recorded: boolean | undefined = recordingEntities
+          ? recordingEntities[entry.entity_id]
+            ? recordingEntities[entry.entity_id].recording_disabled_by === null
+            : entry.options?.recorder
+              ? entry.options.recorder.recording_disabled_by === null
+              : true
+          : undefined;
 
         result.push({
           ...entry,
