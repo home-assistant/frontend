@@ -7,17 +7,29 @@ import type { HaIconButton } from "./ha-icon-button";
 import "./ha-icon-button-group";
 import "./ha-tooltip";
 
-export interface HaIconButtonToolbarItem {
-  [key: string]: any;
-  path?: string;
-  label?: string;
-  id?: string;
-  class?: string;
-  disabled?: boolean;
-  tooltip?: string;
-  action?: (e: Event) => any;
-  divider?: boolean;
-}
+export type HaIconButtonToolbarItem =
+  | {
+      [key: string]: any;
+      divider?: false;
+      path: string;
+      label: string;
+      id?: string;
+      class?: string;
+      disabled?: boolean;
+      tooltip?: string;
+      action?: (e: Event) => any;
+    }
+  | {
+      [key: string]: any;
+      divider: true;
+      path?: never;
+      label?: never;
+      id?: never;
+      class?: never;
+      disabled?: never;
+      tooltip?: never;
+      action?: never;
+    };
 
 @customElement("ha-icon-button-toolbar")
 export class HaIconButtonToolbar extends LitElement {
@@ -57,18 +69,20 @@ export class HaIconButtonToolbar extends LitElement {
           item.divider
             ? html`<div class="icon-toolbar-divider" role="separator"></div>`
             : html`<ha-tooltip
-                .disabled=${!item.tooltip}
-                .content=${item.tooltip ?? ""}
-              >
+                  .disabled=${!item.tooltip}
+                  .for=${item.id ?? "icon-button-" + item.label}
+                  >${item.tooltip ?? ""}</ha-tooltip
+                >
                 <ha-icon-button
-                  id=${item.id ?? ""}
-                  class="icon-toolbar-button ${item.class}"
+                  .id=${item.id ?? "icon-button-" + item.label}
+                  .className=${["icon-toolbar-button", item.class]
+                    .filter(Boolean)
+                    .join(" ")}
                   @click=${item.action}
-                  .label=${item.label ?? ""}
-                  .path=${item.path ?? ""}
+                  .label=${item.label}
+                  .path=${item.path}
                   ?disabled=${item.disabled}
-                ></ha-icon-button>
-              </ha-tooltip>`
+                ></ha-icon-button>`
         )}
       </ha-icon-button-group>
     `;
