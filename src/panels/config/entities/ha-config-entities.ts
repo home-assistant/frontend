@@ -506,8 +506,8 @@ export class HaConfigEntities extends SubscribeMixin(LitElement) {
         filterable: true,
         defaultHidden: true,
         showNarrow: true,
-        minWidth: "60px",
-        maxWidth: "60px",
+        minWidth: "86px",
+        maxWidth: "86px",
         template: (entry) =>
           entry.recorded === undefined
             ? "—"
@@ -1216,6 +1216,12 @@ ${
     fetchEntitySourcesWithCache(this.hass).then((sources) => {
       this._entitySources = sources;
     });
+
+    // Fetch recording data if the column is visible
+    if (!this._activeHiddenColumns?.includes("recorded")) {
+      this._fetchRecordingData();
+    }
+
     if (Object.keys(this._filters).length) {
       return;
     }
