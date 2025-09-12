@@ -884,6 +884,12 @@ export class HaConfigEntities extends SubscribeMixin(LitElement) {
         [...filteredDomains][0]
       );
 
+    // Check if any selected entities are without unique IDs
+    const hasNonUniqueIdEntities = this._selected.some((entityId) => {
+      const entity = filteredEntities.find((e) => e.entity_id === entityId);
+      return entity?.readonly === true;
+    });
+
     const labelItems = html` ${this._labels?.map((label) => {
         const color = label.color ? computeCssColor(label.color) : undefined;
         const selected = this._selected.every((entityId) =>
@@ -1030,7 +1036,17 @@ ${
       : nothing
   }
 
-  <ha-md-menu-item .clickAction=${this._enableSelected}>
+  <ha-md-menu-item 
+    .clickAction=${hasNonUniqueIdEntities ? undefined : this._enableSelected}
+    .disabled=${hasNonUniqueIdEntities}
+    .title=${
+      hasNonUniqueIdEntities
+        ? this.hass.localize(
+            "ui.panel.config.entities.picker.non_unique_id_selected"
+          )
+        : ""
+    }
+  >
     <ha-svg-icon slot="start" .path=${mdiToggleSwitch}></ha-svg-icon>
     <div slot="headline">
       ${this.hass.localize(
@@ -1038,7 +1054,17 @@ ${
       )}
     </div>
   </ha-md-menu-item>
-  <ha-md-menu-item .clickAction=${this._disableSelected}>
+  <ha-md-menu-item 
+    .clickAction=${hasNonUniqueIdEntities ? undefined : this._disableSelected}
+    .disabled=${hasNonUniqueIdEntities}
+    .title=${
+      hasNonUniqueIdEntities
+        ? this.hass.localize(
+            "ui.panel.config.entities.picker.non_unique_id_selected"
+          )
+        : ""
+    }
+  >
     <ha-svg-icon
       slot="start"
       .path=${mdiToggleSwitchOffOutline}
@@ -1051,7 +1077,17 @@ ${
   </ha-md-menu-item>
   <ha-md-divider role="separator" tabindex="-1"></ha-md-divider>
 
-  <ha-md-menu-item .clickAction=${this._unhideSelected}>
+  <ha-md-menu-item 
+    .clickAction=${hasNonUniqueIdEntities ? undefined : this._unhideSelected}
+    .disabled=${hasNonUniqueIdEntities}
+    .title=${
+      hasNonUniqueIdEntities
+        ? this.hass.localize(
+            "ui.panel.config.entities.picker.non_unique_id_selected"
+          )
+        : ""
+    }
+  >
     <ha-svg-icon
       slot="start"
       .path=${mdiEye}
@@ -1062,7 +1098,17 @@ ${
       )}
     </div>
   </ha-md-menu-item>
-  <ha-md-menu-item .clickAction=${this._hideSelected}>
+  <ha-md-menu-item 
+    .clickAction=${hasNonUniqueIdEntities ? undefined : this._hideSelected}
+    .disabled=${hasNonUniqueIdEntities}
+    .title=${
+      hasNonUniqueIdEntities
+        ? this.hass.localize(
+            "ui.panel.config.entities.picker.non_unique_id_selected"
+          )
+        : ""
+    }
+  >
     <ha-svg-icon
       slot="start"
       .path=${mdiEyeOff}
@@ -1346,7 +1392,7 @@ ${
           device_id: null,
           icon: null,
           readonly: true,
-          selectable: false,
+          selectable: true,
           entity_category: null,
           has_entity_name: false,
           options: null,
