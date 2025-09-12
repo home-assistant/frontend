@@ -7059,9 +7059,9 @@
           "add": "Add to Home Assistant",
           "add_device": "Add device",
           "create_automation": "Create automation",
-          "add_area": "Add area",
-          "add_area_success": "Area added",
-          "add_area_action": "View area",
+          "create_area": "Create area",
+          "create_area_success": "Area created",
+          "create_area_action": "View area",
           "add_person_success": "Person added",
           "add_person_action": "View persons",
           "add_person": "Add person"
