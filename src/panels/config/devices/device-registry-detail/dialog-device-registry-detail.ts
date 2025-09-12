@@ -5,7 +5,7 @@ import { fireEvent } from "../../../../common/dom/fire_event";
 import { computeDeviceNameDisplay } from "../../../../common/entity/compute_device_name";
 import "../../../../components/ha-alert";
 import "../../../../components/ha-area-picker";
-import "../../../../components/ha-dialog";
+import "../../../../components/ha-wa-dialog";
 import "../../../../components/ha-button";
 import "../../../../components/ha-labels-picker";
 import type { HaSwitch } from "../../../../components/ha-switch";
@@ -57,7 +57,7 @@ class DialogDeviceRegistryDetail extends LitElement {
     }
     const device = this._params.device;
     return html`
-      <ha-dialog
+      <ha-wa-dialog
         open
         @closed=${this.closeDialog}
         .heading=${computeDeviceNameDisplay(device, this.hass)}
@@ -146,7 +146,7 @@ class DialogDeviceRegistryDetail extends LitElement {
         >
           ${this.hass.localize("ui.dialogs.device-registry-detail.update")}
         </ha-button>
-      </ha-dialog>
+      </ha-wa-dialog>
     `;
   }
 
