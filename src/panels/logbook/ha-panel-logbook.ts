@@ -4,7 +4,7 @@ import { css, html, LitElement } from "lit";
 import { customElement, property, state } from "lit/decorators";
 import type { HassServiceTarget } from "home-assistant-js-websocket";
 import memoizeOne from "memoize-one";
-import { navigate } from "../../common/navigate";
+import { goBack, navigate } from "../../common/navigate";
 import { constructUrlCurrentPath } from "../../common/url/construct-url";
 import {
   createSearchParam,
@@ -60,7 +60,7 @@ export class HaPanelLogbook extends LitElement {
   }
 
   private _goBack(): void {
-    history.back();
+    goBack("/");
   }
 
   protected render() {

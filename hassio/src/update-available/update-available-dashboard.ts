@@ -2,6 +2,7 @@ import type { TemplateResult } from "lit";
 import { css, html, LitElement } from "lit";
 import { customElement, property } from "lit/decorators";
 import type { Supervisor } from "../../../src/data/supervisor/supervisor";
+import { goBack } from "../../../src/common/navigate";
 import "../../../src/layouts/hass-subpage";
 import type { HomeAssistant, Route } from "../../../src/types";
 import "./update-available-card";
@@ -35,7 +36,7 @@ class UpdateAvailableDashboard extends LitElement {
   }
 
   private _updateComplete() {
-    history.back();
+    goBack("/");
   }
 
   static styles = css`
