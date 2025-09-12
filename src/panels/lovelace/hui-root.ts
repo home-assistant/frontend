@@ -47,6 +47,7 @@ import "../../components/ha-menu-button";
 import "../../components/ha-svg-icon";
 import "../../components/ha-tab-group";
 import "../../components/ha-tab-group-tab";
+import "../../components/ha-tooltip";
 import { createAreaRegistryEntry } from "../../data/area_registry";
 import type { LovelacePanelConfig } from "../../data/lovelace";
 import type { LovelaceConfig } from "../../data/lovelace/config/types";
@@ -307,7 +308,7 @@ class HUIRoot extends LitElement {
       (i) => i.visible && (!i.overflow || overflowCanPromote)
     );
 
-    buttonItems.forEach((item) => {
+    buttonItems.forEach((item, index) => {
       const label = [this.hass!.localize(item.key), item.suffix].join(" ");
       const button = item.subItems
         ? html`
@@ -341,11 +342,14 @@ class HUIRoot extends LitElement {
             </ha-button-menu>
           `
         : html`
-            <ha-tooltip slot="actionItems" placement="bottom" .content=${label}>
-              <ha-icon-button
-                .path=${item.icon}
-                @click=${item.buttonAction}
-              ></ha-icon-button>
+            <ha-icon-button
+              slot="actionItems"
+              .id="button-${index}"
+              .path=${item.icon}
+              @click=${item.buttonAction}
+            ></ha-icon-button>
+            <ha-tooltip placement="bottom" .for="button-${index}">
+              ${label}
             </ha-tooltip>
           `;
       result.push(button);

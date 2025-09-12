@@ -1644,7 +1644,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@floating-ui/dom@npm:^1.6.12, @floating-ui/dom@npm:^1.6.13":
+"@floating-ui/dom@npm:^1.6.13":
   version: 1.7.3
   resolution: "@floating-ui/dom@npm:1.7.3"
   dependencies:
@@ -1905,9 +1905,9 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@home-assistant/webawesome@npm:3.0.0-beta.4.ha.2":
-  version: 3.0.0-beta.4.ha.2
-  resolution: "@home-assistant/webawesome@npm:3.0.0-beta.4.ha.2"
+"@home-assistant/webawesome@npm:3.0.0-beta.4.ha.3":
+  version: 3.0.0-beta.4.ha.3
+  resolution: "@home-assistant/webawesome@npm:3.0.0-beta.4.ha.3"
   dependencies:
     "@ctrl/tinycolor": "npm:^4.1.0"
     "@floating-ui/dom": "npm:^1.6.13"
@@ -1919,7 +1919,7 @@ __metadata:
     nanoid: "npm:^5.1.5"
     qr-creator: "npm:^1.0.0"
     style-observer: "npm:^0.0.7"
-  checksum: 10/0ac66d43050571e2b86bb7b0181d428aa2a064e25745075b207a8fe96d873398eaead663172130dfe8d9ac0be575028f8f9f6b9f8a9cd12f81c8c82e9f60a0e9
+  checksum: 10/b9241821ed471ccbad86b0ea4697a2d41395f05fdc26f46e5edbc7f6b5eeab5d248251ef702326312ded00d5bf850ce0dcdcf7cd5e2e542b9d9cb9a84f3726da
   languageName: node
   linkType: hard
 
@@ -2326,7 +2326,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@lit/react@npm:^1.0.6, @lit/react@npm:^1.0.8":
+"@lit/react@npm:^1.0.8":
   version: 1.0.8
   resolution: "@lit/react@npm:1.0.8"
   peerDependencies:
@@ -4167,22 +4167,6 @@ __metadata:
   version: 3.2.1
   resolution: "@shoelace-style/localize@npm:3.2.1"
   checksum: 10/e22e108a27ce7da6b86a7b2f16f8db69e9b3c7d2aaf4e34fc39023c2f060aa7a5004d02ffd1cce2fbef3de7e5cd2a60e79c77fbba5cbd5e9456881fa3a452db1
-  languageName: node
-  linkType: hard
-
-"@shoelace-style/shoelace@npm:2.20.1":
-  version: 2.20.1
-  resolution: "@shoelace-style/shoelace@npm:2.20.1"
-  dependencies:
-    "@ctrl/tinycolor": "npm:^4.1.0"
-    "@floating-ui/dom": "npm:^1.6.12"
-    "@lit/react": "npm:^1.0.6"
-    "@shoelace-style/animations": "npm:^1.2.0"
-    "@shoelace-style/localize": "npm:^3.2.1"
-    composed-offset-position: "npm:^0.0.6"
-    lit: "npm:^3.2.1"
-    qr-creator: "npm:^1.0.0"
-  checksum: 10/c3aabeac03d5fd5bc43799783562ab09c92bae98efbc43a931c7dcec608acc393771b6ed0da3f29e08570bb9d9a9e3bff7637cbf6f79ba7aa439f6641da4eb7c
   languageName: node
   linkType: hard
 
@@ -9334,7 +9318,7 @@ __metadata:
     "@fullcalendar/list": "npm:6.1.19"
     "@fullcalendar/luxon3": "npm:6.1.19"
     "@fullcalendar/timegrid": "npm:6.1.19"
-    "@home-assistant/webawesome": "npm:3.0.0-beta.4.ha.2"
+    "@home-assistant/webawesome": "npm:3.0.0-beta.4.ha.3"
     "@lezer/highlight": "npm:1.2.1"
     "@lit-labs/motion": "npm:1.0.9"
     "@lit-labs/observers": "npm:2.0.6"
@@ -9374,7 +9358,6 @@ __metadata:
     "@rsdoctor/rspack-plugin": "npm:1.2.3"
     "@rspack/core": "npm:1.5.2"
     "@rspack/dev-server": "npm:1.1.4"
-    "@shoelace-style/shoelace": "npm:2.20.1"
     "@swc/helpers": "npm:0.5.17"
     "@thomasloven/round-slider": "npm:0.6.0"
     "@tsparticles/engine": "npm:3.9.1"
