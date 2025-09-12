@@ -367,6 +367,7 @@ export class MoreInfoDialog extends LitElement {
         @closed=${this.closeDialog}
         @opened=${this._handleOpened}
         .escapeKeyAction=${this._isEscapeEnabled ? undefined : ""}
+        .overlayClickAction=${this._isEscapeEnabled}
         .heading=${title}
         hideActions
         flexContent
