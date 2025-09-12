@@ -2,7 +2,7 @@ import type { ActionDetail } from "@material/mwc-list/mwc-list-foundation";
 
 import { mdiCalendar } from "@mdi/js";
 import { isThisYear } from "date-fns";
-import { fromZonedTime, toZonedTime } from "date-fns-tz";
+import { TZDate } from "@date-fns/tz";
 import type { PropertyValues, TemplateResult } from "lit";
 import { LitElement, css, html, nothing } from "lit";
 import { customElement, property, state } from "lit/decorators";
@@ -275,8 +275,8 @@ export class HaDateRangePicker extends LitElement {
     }
 
     if (this.hass.locale.time_zone === TimeZone.server) {
-      start = fromZonedTime(start, this.hass.config.time_zone);
-      end = fromZonedTime(end, this.hass.config.time_zone);
+      start = new Date(new TZDate(start, this.hass.config.time_zone).getTime());
+      end = new Date(new TZDate(end, this.hass.config.time_zone).getTime());
     }
 
     if (
@@ -290,7 +290,7 @@ export class HaDateRangePicker extends LitElement {
 
   private _formatDate(date: Date): string {
     if (this.hass.locale.time_zone === TimeZone.server) {
-      return toZonedTime(date, this.hass.config.time_zone).toISOString();
+      return new TZDate(date, this.hass.config.time_zone).toISOString();
     }
     return date.toISOString();
   }
