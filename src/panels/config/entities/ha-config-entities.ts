@@ -239,7 +239,7 @@ export class HaConfigEntities extends SubscribeMixin(LitElement) {
     window.addEventListener("popstate", this._popState);
     window.addEventListener(
       "entity-recording-updated",
-      this._handleEntityRecordingUpdated as EventListener
+      this._handleEntityRecordingUpdated
     );
   }
 
@@ -249,7 +249,7 @@ export class HaConfigEntities extends SubscribeMixin(LitElement) {
     window.removeEventListener("popstate", this._popState);
     window.removeEventListener(
       "entity-recording-updated",
-      this._handleEntityRecordingUpdated as EventListener
+      this._handleEntityRecordingUpdated
     );
   }
 
@@ -267,9 +267,8 @@ export class HaConfigEntities extends SubscribeMixin(LitElement) {
     }
   };
 
-  private _handleEntityRecordingUpdated = async (
-    ev: CustomEvent<{ entityId: string }>
-  ) => {
+  private _handleEntityRecordingUpdated = async (ev: Event) => {
+    const customEvent = ev as CustomEvent<{ entityId: string }>;
     // Update recording data for the specific entity that changed
     if (this._activeHiddenColumns?.includes("recorded")) {
       return;
@@ -278,18 +277,18 @@ export class HaConfigEntities extends SubscribeMixin(LitElement) {
     try {
       const settings = await getEntityRecordingSettings(
         this.hass,
-        ev.detail.entityId
+        customEvent.detail.entityId
       );
       // Update the recording data for this specific entity
       this._recordingEntities = {
         ...this._recordingEntities,
-        [ev.detail.entityId]: settings,
+        [customEvent.detail.entityId]: settings,
       };
     } catch (_err) {
       // Entity might not have recording settings yet, treat as enabled
       this._recordingEntities = {
         ...this._recordingEntities,
-        [ev.detail.entityId]: { recording_disabled_by: null },
+        [customEvent.detail.entityId]: { recording_disabled_by: null },
       };
     }
   };
