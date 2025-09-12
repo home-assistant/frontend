@@ -35,9 +35,18 @@ export class EntitySettingsWithoutUniqueId extends LitElement {
         this.entityId
       );
       this._recordingDisabled = settings?.recording_disabled_by !== null;
-    } catch (_err) {
-      // Ignore errors, recording settings might not be available
-      this._recordingDisabled = false;
+    } catch (err: any) {
+      // If it's a "not found" error, that's expected for entities that have never been configured
+      if (err.code === "not_found") {
+        this._recordingDisabled = false;
+      } else {
+        // For other errors, show an alert
+        showAlertDialog(this, { 
+          title: this.hass.localize("ui.dialogs.entity_registry.editor.error_loading_recording_settings"),
+          text: err.message 
+        });
+        this._recordingDisabled = false;
+      }
     }
   }
 
@@ -89,7 +98,7 @@ export class EntitySettingsWithoutUniqueId extends LitElement {
       css`
         :host {
           display: block;
-          padding: 0 24px;
+          margin-top: 16px;
         }
       `,
     ];

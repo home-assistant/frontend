@@ -1512,7 +1512,7 @@
         "settings": "Settings",
         "control": "Control",
         "related": "Related",
-        "no_unique_id": "This entity (''{entity_id}'') does not have a unique ID, therefore its settings cannot be managed from the UI. See the {faq_link} for more detail.",
+        "no_unique_id": "This entity (''{entity_id}'') does not have a unique ID, therefore only limited settings can be managed from the UI. See the {faq_link} for more detail.",
         "faq": "documentation",
         "editor": {
           "name": "Name",

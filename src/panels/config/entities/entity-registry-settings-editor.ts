@@ -1431,9 +1431,7 @@ export class EntityRegistrySettingsEditor extends LitElement {
     }
     // Get recording settings from entity registry entry options
     const recorderOptions = this.entry.options?.recorder;
-    this._recordingDisabled =
-      recorderOptions?.recording_disabled_by !== null &&
-      recorderOptions?.recording_disabled_by !== undefined;
+    this._recordingDisabled = recorderOptions?.recording_disabled_by !== null;
   }
 
   private async _fetchCameraPrefs() {
