@@ -171,12 +171,6 @@ export class HaWaDialog extends LitElement {
 
     wa-dialog {
       --spacing: var(--dialog-content-padding, 24px);
-      --width: calc(
-        100vw - var(--safe-area-inset-left, 0px) - var(
-            --safe-area-inset-right,
-            0px
-          )
-      );
       --show-duration: 200ms;
       --hide-duration: 200ms;
       z-index: var(--dialog-z-index, 8);
@@ -220,6 +214,12 @@ export class HaWaDialog extends LitElement {
     }
 
     wa-dialog::part(dialog) {
+      min-width: calc(
+        var(--width, 100vw) - var(--safe-area-inset-left, 0px) - var(
+            --safe-area-inset-right,
+            0px
+          )
+      );
       max-width: calc(
         100vw - var(--safe-area-inset-left, 0px) - var(
             --safe-area-inset-right,
