@@ -22,6 +22,7 @@ import {
   union,
 } from "superstruct";
 import { ensureArray } from "../../../common/array/ensure-array";
+import { storage } from "../../../common/decorators/storage";
 import { canOverrideAlphanumericInput } from "../../../common/dom/can-override-input";
 import { fireEvent } from "../../../common/dom/fire_event";
 import { constructUrlCurrentPath } from "../../../common/url/construct-url";
@@ -100,6 +101,13 @@ export class HaManualAutomationEditor extends LitElement {
   @state() private _sidebarConfig?: SidebarConfig;
 
   @state() private _sidebarKey?: string;
+
+  @storage({
+    key: "automation-sidebar-width-percentage",
+    state: false,
+    subscribe: false,
+  })
+  private _sidebarWidth? = 30;
 
   @query("ha-automation-sidebar") private _sidebarElement?: HaAutomationSidebar;
 
@@ -306,6 +314,7 @@ export class HaManualAutomationEditor extends LitElement {
             @value-changed=${this._sidebarConfigChanged}
             .disabled=${this.disabled}
             .sidebarKey=${this._sidebarKey}
+            @sidebar-width-changed=${this._resizeSidebar}
           ></ha-automation-sidebar>
         </div>
       </div>
@@ -314,6 +323,11 @@ export class HaManualAutomationEditor extends LitElement {
 
   protected firstUpdated(changedProps: PropertyValues): void {
     super.firstUpdated(changedProps);
+    this.style.setProperty(
+      "--sidebar-dynamic-width",
+      `${this._sidebarWidth}vw`
+    );
+
     const expanded = extractSearchParam("expanded");
     if (expanded === "1") {
       this._clearParam("expanded");
@@ -640,6 +654,14 @@ export class HaManualAutomationEditor extends LitElement {
     if ((this._sidebarConfig as ActionSidebarConfig)?.delete) {
       (this._sidebarConfig as ActionSidebarConfig).delete();
     }
+  }
+
+  private _resizeSidebar(ev) {
+    ev.stopPropagation();
+    const width = ev.detail.width as number;
+
+    this.style.setProperty("--sidebar-dynamic-width", `${width}vw`);
+    this._sidebarWidth = width;
   }
 
   static get styles(): CSSResultGroup {

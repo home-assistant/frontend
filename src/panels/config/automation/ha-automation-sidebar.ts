@@ -1,5 +1,6 @@
 import { css, html, LitElement, nothing } from "lit";
 import { customElement, property, query, state } from "lit/decorators";
+import { fireEvent } from "../../../common/dom/fire_event";
 import "../../../components/ha-resizable-bottom-sheet";
 import type { HaResizableBottomSheet } from "../../../components/ha-resizable-bottom-sheet";
 import {
@@ -39,6 +40,36 @@ export default class HaAutomationSidebar extends LitElement {
 
   @query("ha-resizable-bottom-sheet")
   private _bottomSheetElement?: HaResizableBottomSheet;
+
+  private _dragging = false;
+
+  private _dragStartX = 0;
+
+  private _initialSize = 0;
+
+  connectedCallback() {
+    super.connectedCallback();
+
+    // register event listeners for drag handling
+    document.addEventListener("mousemove", this._handleMouseMove);
+    document.addEventListener("mouseup", this._handleMouseUp);
+    document.addEventListener("touchmove", this._handleTouchMove, {
+      passive: false,
+    });
+    document.addEventListener("touchend", this._handleTouchEnd);
+    document.addEventListener("touchcancel", this._handleTouchEnd);
+  }
+
+  disconnectedCallback() {
+    super.disconnectedCallback();
+
+    // unregister event listeners for drag handling
+    document.removeEventListener("mousemove", this._handleMouseMove);
+    document.removeEventListener("mouseup", this._handleMouseUp);
+    document.removeEventListener("touchmove", this._handleTouchMove);
+    document.removeEventListener("touchend", this._handleTouchEnd);
+    document.removeEventListener("touchcancel", this._handleTouchEnd);
+  }
 
   private _renderContent() {
     // get config type
@@ -154,7 +185,78 @@ export default class HaAutomationSidebar extends LitElement {
       `;
     }
 
-    return this._renderContent();
+    return html`
+      <div
+        class="handle"
+        @mousedown=${this._handleMouseDown}
+        @touchstart=${this._handleTouchStart}
+      ></div>
+      ${this._renderContent()}
+    `;
+  }
+
+  private _handleMouseDown = (ev: MouseEvent) => {
+    // Prevent the browser from interpreting this as a scroll/PTR gesture.
+    ev.preventDefault();
+    this._startDrag(ev.clientX);
+  };
+
+  private _handleTouchStart = (ev: TouchEvent) => {
+    // Prevent the browser from interpreting this as a scroll/PTR gesture.
+    ev.preventDefault();
+    this._startDrag(ev.touches[0].clientX);
+  };
+
+  private _startDrag(clientX: number) {
+    this._dragging = true;
+    this._dragStartX = clientX;
+    this._initialSize = (this.offsetWidth / window.innerWidth) * 100;
+    document.body.style.setProperty("cursor", "grabbing");
+  }
+
+  private _handleMouseMove = (ev: MouseEvent) => {
+    if (!this._dragging) {
+      return;
+    }
+    this._updateSize(ev.clientX);
+  };
+
+  private _handleTouchMove = (ev: TouchEvent) => {
+    if (!this._dragging) {
+      return;
+    }
+    ev.preventDefault(); // Prevent scrolling
+    this._updateSize(ev.touches[0].clientX);
+  };
+
+  private _updateSize(clientX: number) {
+    const deltaX = this._dragStartX - clientX;
+    const viewportWidth = window.innerWidth;
+    const deltaVw = (deltaX / viewportWidth) * 100;
+
+    // Calculate new size and clamp between 30vh and 70vh
+    let newSize = this._initialSize + deltaVw;
+    newSize = Math.max(30, Math.min(70, newSize));
+
+    requestAnimationFrame(() => {
+      fireEvent(this, "sidebar-width-changed", { width: newSize });
+    });
+  }
+
+  private _handleMouseUp = () => {
+    this._endDrag();
+  };
+
+  private _handleTouchEnd = () => {
+    this._endDrag();
+  };
+
+  private _endDrag() {
+    if (!this._dragging) {
+      return;
+    }
+    this._dragging = false;
+    document.body.style.removeProperty("cursor");
   }
 
   private _getType() {
@@ -227,6 +329,15 @@ export default class HaAutomationSidebar extends LitElement {
         max-height: 100%;
       }
     }
+
+    .handle {
+      position: absolute;
+      left: -4;
+      height: 100%;
+      width: 8px;
+      z-index: 7;
+      cursor: ew-resize;
+    }
   `;
 }
 
@@ -239,6 +350,9 @@ declare global {
     "toggle-yaml-mode": undefined;
     "yaml-changed": {
       value: unknown;
+    };
+    "sidebar-width-changed": {
+      width: number;
     };
   }
 }
