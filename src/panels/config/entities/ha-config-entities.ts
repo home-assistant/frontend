@@ -271,24 +271,26 @@ export class HaConfigEntities extends SubscribeMixin(LitElement) {
     ev: CustomEvent<{ entityId: string }>
   ) => {
     // Update recording data for the specific entity that changed
-    if (!this._activeHiddenColumns?.includes("recorded")) {
-      try {
-        const settings = await getEntityRecordingSettings(
-          this.hass,
-          ev.detail.entityId
-        );
-        // Update the recording data for this specific entity
-        this._recordingEntities = {
-          ...this._recordingEntities,
-          [ev.detail.entityId]: settings,
-        };
-      } catch (_err) {
-        // Entity might not have recording settings yet, treat as enabled
-        this._recordingEntities = {
-          ...this._recordingEntities,
-          [ev.detail.entityId]: { recording_disabled_by: null },
-        };
-      }
+    if (this._activeHiddenColumns?.includes("recorded")) {
+      return;
+    }
+
+    try {
+      const settings = await getEntityRecordingSettings(
+        this.hass,
+        ev.detail.entityId
+      );
+      // Update the recording data for this specific entity
+      this._recordingEntities = {
+        ...this._recordingEntities,
+        [ev.detail.entityId]: settings,
+      };
+    } catch (_err) {
+      // Entity might not have recording settings yet, treat as enabled
+      this._recordingEntities = {
+        ...this._recordingEntities,
+        [ev.detail.entityId]: { recording_disabled_by: null },
+      };
     }
   };
 
