@@ -3,6 +3,7 @@ import { css, html, LitElement, nothing } from "lit";
 import { customElement, property, query, state } from "lit/decorators";
 import "@home-assistant/webawesome/dist/components/dialog/dialog";
 import { FOCUS_TARGET } from "../dialogs/make-dialog-manager";
+import { nextRender } from "../common/util/render-status";
 import type { HomeAssistant } from "../types";
 
 export const createCloseHeading = (
@@ -44,6 +45,7 @@ export class HaDialog extends LitElement {
     this.dispatchEvent(
       new CustomEvent("opened", { bubbles: true, composed: true })
     );
+    this._handleDialogInitialFocus();
   };
 
   private _handleWaHide = (event: any) => {
@@ -90,17 +92,38 @@ export class HaDialog extends LitElement {
   }
 
   private _handleDialogInitialFocus() {
-    // Find elements with dialogInitialFocus attribute and translate to autofocus
-    const elements = this.querySelectorAll("[dialogInitialFocus]");
-    if (elements.length > 0) {
-      const element = elements[0] as HTMLElement;
-      // Temporarily add autofocus to the element
-      element.setAttribute("autofocus", "");
-      // Remove it after a short delay to allow Web Awesome to handle focus
-      setTimeout(() => {
-        element.removeAttribute("autofocus");
-      }, 100);
-    }
+    const candidates = this.querySelectorAll("[dialogInitialFocus]");
+    if (!candidates.length) return;
+
+    const computeFocusTarget = (el: Element): HTMLElement | null => {
+      if (!(el instanceof HTMLElement)) return null;
+      // If element itself is focusable or implements focus(), use it
+      if (typeof el.focus === "function") {
+        return el;
+      }
+      const focusableSelector = [
+        "button:not([disabled])",
+        "input:not([disabled])",
+        "select:not([disabled])",
+        "textarea:not([disabled])",
+        "[tabindex]:not([tabindex='-1'])",
+      ].join(",");
+      return (
+        (el.querySelector(focusableSelector) as HTMLElement | null) || null
+      );
+    };
+
+    const el = candidates[0];
+    const focusTarget = computeFocusTarget(el);
+    if (!focusTarget) return;
+
+    nextRender().then(() => {
+      try {
+        (focusTarget as HTMLElement).focus({ preventScroll: true });
+      } catch (_e) {
+        (focusTarget as HTMLElement).focus();
+      }
+    });
   }
 
   protected render() {
