@@ -15,7 +15,7 @@ import type {
   WeatherForecastCardConfig,
 } from "../../cards/types";
 import { getAreas } from "../areas/helpers/areas-strategy-helper";
-import { getCommonControl } from "../../../../data/usage_prediction";
+import { getCommonControlUsagePrediction } from "../../../../data/usage_prediction";
 
 export interface HomeMainViewStrategyConfig {
   type: "home-main";
@@ -84,20 +84,6 @@ export class HomeMainViewStrategy extends ReactiveElement {
       (entityId) => hass.states[entityId] !== undefined
     );
 
-    if (favoriteEntities.length < 9) {
-      // Add favorite entities to fill it up to 8.
-      const predictedEntities = await getCommonControl(hass);
-      for (
-        let i = 0;
-        favoriteEntities.length < 9 && i < predictedEntities.entities.length;
-        i++
-      ) {
-        if (hass.states[predictedEntities.entities[i]] !== undefined) {
-          favoriteEntities.push(predictedEntities.entities[i]);
-        }
-      }
-    }
-
     if (favoriteEntities.length > 0) {
       favoriteSection.cards!.push(
         {
@@ -114,6 +100,32 @@ export class HomeMainViewStrategy extends ReactiveElement {
             }) as TileCardConfig
         )
       );
+    }
+
+    try {
+      const predictedCommonControl =
+        await getCommonControlUsagePrediction(hass);
+      const predictedEntities = predictedCommonControl.entities.filter(
+        (entityId) => !favoriteEntities.includes(entityId)
+      );
+      if (predictedEntities.length > 0) {
+        favoriteSection.cards!.push(
+          {
+            type: "heading",
+            heading: "Commonly used",
+          },
+          ...predictedEntities.map(
+            (entityId) =>
+              ({
+                type: "tile",
+                entity: entityId,
+                show_entity_picture: true,
+              }) as TileCardConfig
+          )
+        );
+      }
+    } catch {
+      // Ignore if the integration is not loaded
     }
 
     const summarySection: LovelaceSectionConfig = {
