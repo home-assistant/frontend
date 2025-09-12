@@ -1,8 +1,10 @@
+import { consume } from "@lit/context";
 import {
   mdiChevronDown,
   mdiClose,
   mdiDevices,
   mdiHome,
+  mdiLabel,
   mdiTextureBox,
 } from "@mdi/js";
 import { css, html, LitElement, nothing, type PropertyValues } from "lit";
@@ -19,7 +21,9 @@ import { computeEntityName } from "../../common/entity/compute_entity_name";
 import { getEntityContext } from "../../common/entity/context/get_entity_context";
 import { computeRTL } from "../../common/util/compute_rtl";
 import { getConfigEntry } from "../../data/config_entries";
+import { labelsContext } from "../../data/context";
 import { domainToName } from "../../data/integration";
+import type { LabelRegistryEntry } from "../../data/label_registry";
 import {
   extractFromTarget,
   type ExtractFromTargetResult,
@@ -33,6 +37,7 @@ import type { HaMdList } from "../ha-md-list";
 import "../ha-md-list-item";
 import type { HaMdListItem } from "../ha-md-list-item";
 import "../ha-state-icon";
+import "../ha-svg-icon";
 
 export type TargetType = "entity" | "device" | "area" | "label" | "floor";
 
@@ -58,9 +63,15 @@ export class HaTargetPickerItemRow extends LitElement {
 
   @state() private _entries?: ExtractFromTargetResult;
 
+  @state()
+  @consume({ context: labelsContext, subscribe: true })
+  _labelRegistry!: LabelRegistryEntry[];
+
   @query("ha-md-list-item") public item?: HaMdListItem;
 
   @query("ha-md-list") public list?: HaMdList;
+
+  @query("ha-target-picker-item-row") public itemRow?: HaTargetPickerItemRow;
 
   protected willUpdate(changedProps: PropertyValues) {
     if (!this.subEntry && changedProps.has("itemId")) {
@@ -78,101 +89,104 @@ export class HaTargetPickerItemRow extends LitElement {
 
     const entries = this.parentEntries || this._entries;
 
+    // Don't show sub entries that have no entities
+    if (
+      this.subEntry &&
+      this.type !== "entity" &&
+      (!entries || entries.referenced_entities.length === 0)
+    ) {
+      return nothing;
+    }
+
     return html`
-        <ha-md-list-item .type=${this.type === "entity" ? "text" : "button"} @click=${this._toggleExpand}>
-        ${
-          this.type !== "entity"
-            ? html`<ha-icon-button
-                class="expand-button ${entries?.referenced_entities.length &&
-                this._expanded
-                  ? "expanded"
-                  : ""}"
-                .path=${mdiChevronDown}
+      <ha-md-list-item
+        .disabled=${entries?.referenced_entities.length === 0}
+        .type=${this.type === "entity" ? "text" : "button"}
+        @click=${this._toggleExpand}
+      >
+        ${this.type !== "entity"
+          ? html`<ha-svg-icon
+              class="expand-button ${entries?.referenced_entities.length &&
+              this._expanded
+                ? "expanded"
+                : ""}"
+              .path=${mdiChevronDown}
+              slot="start"
+            ></ha-svg-icon>`
+          : nothing}
+        ${iconPath
+          ? html`<ha-icon slot="start" .icon=${iconPath}></ha-icon>`
+          : this._iconImg
+            ? html`<img
                 slot="start"
-                .disabled=${entries?.referenced_entities.length === 0}
-              ></ha-icon-button>`
-            : nothing
-        }
-        ${
-          iconPath
-            ? html`<ha-icon slot="start" .icon=${iconPath}></ha-icon>`
-            : this._iconImg
-              ? html`<img
+                alt=${this._domainName || ""}
+                crossorigin="anonymous"
+                referrerpolicy="no-referrer"
+                src=${this._iconImg}
+              />`
+            : fallbackIconPath
+              ? html`<ha-svg-icon
                   slot="start"
-                  alt=${this._domainName || ""}
-                  crossorigin="anonymous"
-                  referrerpolicy="no-referrer"
-                  src=${this._iconImg}
-                />`
-              : fallbackIconPath
-                ? html`<ha-svg-icon
-                    slot="start"
-                    .path=${fallbackIconPath}
-                  ></ha-svg-icon>`
-                : stateObject
-                  ? html`
-                      <ha-state-icon
-                        .hass=${this.hass}
-                        .stateObj=${stateObject}
-                        slot="start"
-                      >
-                      </ha-state-icon>
-                    `
-                  : nothing
-        }
+                  .path=${fallbackIconPath}
+                ></ha-svg-icon>`
+              : stateObject
+                ? html`
+                    <ha-state-icon
+                      .hass=${this.hass}
+                      .stateObj=${stateObject}
+                      slot="start"
+                    >
+                    </ha-state-icon>
+                  `
+                : nothing}
         <div slot="headline">${name}</div>
-        ${
-          context && !this.subEntry
-            ? html`<span slot="supporting-text">${context}</span>`
-            : nothing
-        }
-        ${
-          showEntities || showDevices || this._domainName
-            ? html`
-                <div slot="end" class="summary">
-                  ${showEntities
-                    ? html`<span class="main"
-                        >${this.hass.localize(
-                          "ui.components.target-picker.entities_count",
-                          {
-                            count: entries?.referenced_entities.length,
-                          }
-                        )}</span
-                      >`
-                    : nothing}
-                  ${showDevices
-                    ? html`<span class="secondary"
-                        >${this.hass.localize(
-                          "ui.components.target-picker.devices_count",
-                          {
-                            count: entries?.referenced_devices.length,
-                          }
-                        )}</span
-                      >`
-                    : nothing}
-                  ${this._domainName && !showDevices
-                    ? html`<span class="secondary domain"
-                        >${this._domainName}</span
-                      >`
-                    : nothing}
-                </div>
-              `
-            : nothing
-        }
-  ${
-    !this.subEntry
-      ? html`
-          <ha-icon-button
-            .path=${mdiClose}
-            slot="end"
-            @click=${this._removeItem}
-          ></ha-icon-button>
-        `
-      : nothing
-  }
-        </ha-icon-button>
+        ${context && !this.subEntry
+          ? html`<span slot="supporting-text">${context}</span>`
+          : nothing}
+        ${showEntities || showDevices || this._domainName
+          ? html`
+              <div slot="end" class="summary">
+                ${showEntities
+                  ? html`<span class="main"
+                      >${this.hass.localize(
+                        "ui.components.target-picker.entities_count",
+                        {
+                          count: entries?.referenced_entities.length,
+                        }
+                      )}</span
+                    >`
+                  : nothing}
+                ${showDevices
+                  ? html`<span class="secondary"
+                      >${this.hass.localize(
+                        "ui.components.target-picker.devices_count",
+                        {
+                          count: entries?.referenced_devices.length,
+                        }
+                      )}</span
+                    >`
+                  : nothing}
+                ${this._domainName && !showDevices
+                  ? html`<span class="secondary domain"
+                      >${this._domainName}</span
+                    >`
+                  : nothing}
+              </div>
+            `
+          : nothing}
+        ${!this.subEntry
+          ? html`
+              <ha-icon-button
+                .path=${mdiClose}
+                slot="end"
+                @click=${this._removeItem}
+              ></ha-icon-button>
+            `
+          : nothing}
       </ha-md-list-item>
-      ${this._expanded && entries && entries.referenced_entities ? this._renderEntries() : nothing}
+      ${this._expanded && entries && entries.referenced_entities
+        ? this._renderEntries()
+        : nothing}
     `;
   }
 
@@ -289,7 +303,7 @@ export class HaTargetPickerItemRow extends LitElement {
       });
     } catch (e) {
       // eslint-disable-next-line no-console
-      console.error("Failed to update item data", e);
+      console.error("Failed to extract target", e);
     }
   }
 
@@ -341,7 +355,14 @@ export class HaTargetPickerItemRow extends LitElement {
         stateObject,
       };
     }
-    return { name: item };
+
+    // type label
+    const label = this._labelRegistry.find((lab) => lab.label_id === item);
+    return {
+      name: label?.name || item,
+      iconPath: label?.icon,
+      fallbackIconPath: mdiLabel,
+    };
   });
 
   private _setDomainName(domain: string) {
@@ -389,12 +410,9 @@ export class HaTargetPickerItemRow extends LitElement {
     :host {
       --md-list-item-top-space: 0;
       --md-list-item-bottom-space: 0;
+      --md-list-item-leading-space: 8px;
       --md-list-item-trailing-space: 8px;
       --md-list-item-two-line-container-height: 56px;
-    }
-
-    :host([type="entity"]) {
-      --md-list-item-leading-space: 8px;
     }
 
     state-badge {
@@ -405,7 +423,6 @@ export class HaTargetPickerItemRow extends LitElement {
       height: 24px;
     }
     .expand-button {
-      margin: 0 -12px;
       transition: transform 150ms cubic-bezier(0.4, 0, 0.2, 1);
     }
     .expand-button.expanded {
@@ -441,7 +458,8 @@ export class HaTargetPickerItemRow extends LitElement {
     }
 
     .entries {
-      padding-left: 32px;
+      padding: 0;
+      padding-left: 40px;
       overflow: hidden;
       transition: height 300ms cubic-bezier(0.4, 0, 0.2, 1);
       border-bottom: 1px solid var(--ha-color-border-neutral-quiet);

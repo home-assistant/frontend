@@ -1,7 +1,5 @@
-import { mdiBroom } from "@mdi/js";
-import { css, html, LitElement } from "lit";
+import { css, html, LitElement, nothing } from "lit";
 import { customElement, property } from "lit/decorators";
-import { fireEvent } from "../../common/dom/fire_event";
 import type { HomeAssistant } from "../../types";
 import "../ha-expansion-panel";
 import "../ha-md-list";
@@ -11,47 +9,46 @@ import "./ha-target-picker-item-row";
 export class HaTargetPickerItemGroup extends LitElement {
   @property({ attribute: false }) public hass!: HomeAssistant;
 
-  @property() public type!: "entity" | "device" | "area" | "label" | "floor";
+  @property() public type!: "entity" | "device" | "area" | "label";
 
-  @property({ attribute: false }) public items!: string[];
+  @property({ attribute: false }) public items!: Partial<
+    Record<"entity" | "device" | "area" | "label" | "floor", string[]>
+  >;
 
   @property({ type: Boolean }) public collapsed = false;
 
   protected render() {
+    let count = 0;
+    Object.values(this.items).forEach((items) => {
+      if (items) {
+        count += items.length;
+      }
+    });
+
     return html`<ha-expansion-panel .expanded=${!this.collapsed} left-chevron>
       <div slot="header" class="heading">
         ${this.hass.localize(
           `ui.components.target-picker.selected.${this.type}`,
           {
-            count: this.items.length,
+            count,
           }
         )}
       </div>
-      <div slot="icons" class="icons">
-        <ha-icon-button
-          title=${this.hass.localize(
-            `ui.components.target-picker.remove_${this.type}s`
-          )}
-          .path=${mdiBroom}
-          @click=${this._removeGroup}
-        ></ha-icon-button>
-      </div>
-
       <ha-md-list>
-        ${this.items.map(
-          (item) =>
-            html`<ha-target-picker-item-row
-              .hass=${this.hass}
-              .type=${this.type}
-              .itemId=${item}
-            ></ha-target-picker-item-row>`
+        ${Object.entries(this.items).map(([type, items]) =>
+          items
+            ? items.map(
+                (item) =>
+                  html`<ha-target-picker-item-row
+                    .hass=${this.hass}
+                    .type=${type as "entity" | "device" | "area" | "label"}
+                    .itemId=${item}
+                  ></ha-target-picker-item-row>`
+              )
+            : nothing
         )}
       </ha-md-list>
     </ha-expansion-panel>`;
-  }
-
-  private _removeGroup() {
-    fireEvent(this, "remove-target-group", this.type);
   }
 
   static styles = css`
@@ -67,13 +64,6 @@ export class HaTargetPickerItemGroup extends LitElement {
       display: flex;
       justify-content: space-between;
       min-height: unset;
-    }
-    .icons {
-      display: flex;
-    }
-    .icons ha-icon-button {
-      --mdc-icon-size: 16px;
-      --mdc-icon-button-size: 24px;
     }
     ha-md-list {
       padding: 0;

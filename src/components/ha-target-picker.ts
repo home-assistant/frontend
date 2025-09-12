@@ -98,27 +98,16 @@ export class HaTargetPicker extends SubscribeMixin(LitElement) {
 
     return html`
       <div class="item-groups">
-        ${this.value?.floor_id
+        ${this.value?.floor_id || this.value?.area_id
           ? html`
               <ha-target-picker-item-group
                 @remove-target-item=${this._handleRemove}
-                @remove-target-group=${this._handleRemoveGroup}
-                type="floor"
-                .hass=${this.hass}
-                .items=${ensureArray(this.value?.floor_id)}
-                .collapsed=${this.compact}
-              >
-              </ha-target-picker-item-group>
-            `
-          : nothing}
-        ${this.value?.area_id
-          ? html`
-              <ha-target-picker-item-group
-                @remove-target-item=${this._handleRemove}
-                @remove-target-group=${this._handleRemoveGroup}
                 type="area"
                 .hass=${this.hass}
-                .items=${ensureArray(this.value?.area_id)}
+                .items=${{
+                  floor: ensureArray(this.value?.floor_id),
+                  area: ensureArray(this.value?.area_id),
+                }}
                 .collapsed=${this.compact}
               >
               </ha-target-picker-item-group>
@@ -128,10 +117,9 @@ export class HaTargetPicker extends SubscribeMixin(LitElement) {
           ? html`
               <ha-target-picker-item-group
                 @remove-target-item=${this._handleRemove}
-                @remove-target-group=${this._handleRemoveGroup}
                 type="device"
                 .hass=${this.hass}
-                .items=${ensureArray(this.value?.device_id)}
+                .items=${{ device: ensureArray(this.value?.device_id) }}
                 .collapsed=${this.compact}
               >
               </ha-target-picker-item-group>
@@ -141,10 +129,9 @@ export class HaTargetPicker extends SubscribeMixin(LitElement) {
           ? html`
               <ha-target-picker-item-group
                 @remove-target-item=${this._handleRemove}
-                @remove-target-group=${this._handleRemoveGroup}
                 type="entity"
                 .hass=${this.hass}
-                .items=${ensureArray(this.value?.entity_id)}
+                .items=${{ entity: ensureArray(this.value?.entity_id) }}
                 .collapsed=${this.compact}
               >
               </ha-target-picker-item-group>
@@ -154,10 +141,9 @@ export class HaTargetPicker extends SubscribeMixin(LitElement) {
           ? html`
               <ha-target-picker-item-group
                 @remove-target-item=${this._handleRemove}
-                @remove-target-group=${this._handleRemoveGroup}
                 type="label"
                 .hass=${this.hass}
-                .items=${ensureArray(this.value?.label_id)}
+                .items=${{ label: ensureArray(this.value?.label_id) }}
                 .collapsed=${this.compact}
               >
               </ha-target-picker-item-group>
@@ -411,19 +397,6 @@ export class HaTargetPicker extends SubscribeMixin(LitElement) {
     fireEvent(this, "value-changed", {
       value: this._removeItem(this.value, type, id),
     });
-  }
-
-  private _handleRemoveGroup(ev) {
-    const type = ev.detail;
-    fireEvent(this, "value-changed", {
-      value: this._removeGroup(type),
-    });
-  }
-
-  private _removeGroup(type: TargetType): this["value"] {
-    const newVal = { ...this.value };
-    delete newVal[`${type}_id`];
-    return newVal;
   }
 
   private _removeItem(

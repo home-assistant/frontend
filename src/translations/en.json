@@ -684,11 +684,11 @@
         "devices_count": "{count} {count, plural,\n one {device}\n other {devices}\n}",
         "entities_count": "{count} {count, plural,\n one {entity}\n other {entities}\n}",
         "selected": {
-          "entity": "{count} {count, plural,\n one {entity}\n other {entities}\n}",
-          "device": "{count} {count, plural,\n one {device}\n other {devices}\n}",
-          "area": "{count} {count, plural,\n one {area}\n other {areas}\n}",
-          "label": "{count} {count, plural,\n one {label}\n other {labels}\n}",
-          "floor": "{count} {count, plural,\n one {floor}\n other {floors}\n}"
+          "entity": "Entities: {count}",
+          "device": "Devices: {count}",
+          "area": "Areas: {count}",
+          "label": "Labels: {count}",
+          "floor": "Floors: {count}"
         }
       },
       "subpage-data-table": {
