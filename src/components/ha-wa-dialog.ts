@@ -7,6 +7,63 @@ import { nextRender } from "../common/util/render-status";
 import { FOCUS_TARGET } from "../dialogs/make-dialog-manager";
 import "./ha-icon-button";
 
+// Global scroll lock management to prevent background scrolling while dialogs are open
+let waDialogScrollLockCount = 0;
+let previousBodyOverflow: string | null = null;
+let previousHtmlOverflow: string | null = null;
+let previousBodyPaddingRight: string | null = null;
+
+const lockDocumentScroll = () => {
+  if (waDialogScrollLockCount === 0) {
+    const htmlEl = document.documentElement as HTMLElement;
+    const bodyEl = document.body as HTMLElement;
+    previousHtmlOverflow = htmlEl.style.overflow || null;
+    previousBodyOverflow = bodyEl.style.overflow || null;
+    previousBodyPaddingRight = bodyEl.style.paddingRight || null;
+
+    // Compensate for scrollbar to avoid layout shift on desktop
+    const scrollbarWidth = window.innerWidth - htmlEl.clientWidth;
+    if (scrollbarWidth > 0) {
+      const computedPaddingRight = parseFloat(
+        window.getComputedStyle(bodyEl).paddingRight || "0"
+      );
+      bodyEl.style.paddingRight = `${computedPaddingRight + scrollbarWidth}px`;
+    }
+
+    htmlEl.style.overflow = "hidden";
+    bodyEl.style.overflow = "hidden";
+  }
+  waDialogScrollLockCount += 1;
+};
+
+const unlockDocumentScroll = () => {
+  if (waDialogScrollLockCount > 0) {
+    waDialogScrollLockCount -= 1;
+  }
+  if (waDialogScrollLockCount === 0) {
+    const htmlEl = document.documentElement as HTMLElement;
+    const bodyEl = document.body as HTMLElement;
+    if (previousHtmlOverflow !== null) {
+      htmlEl.style.overflow = previousHtmlOverflow;
+    } else {
+      htmlEl.style.removeProperty("overflow");
+    }
+    if (previousBodyOverflow !== null) {
+      bodyEl.style.overflow = previousBodyOverflow;
+    } else {
+      bodyEl.style.removeProperty("overflow");
+    }
+    if (previousBodyPaddingRight !== null) {
+      bodyEl.style.paddingRight = previousBodyPaddingRight;
+    } else {
+      bodyEl.style.removeProperty("padding-right");
+    }
+    previousHtmlOverflow = null;
+    previousBodyOverflow = null;
+    previousBodyPaddingRight = null;
+  }
+};
+
 @customElement("ha-wa-dialog")
 export class HaWaDialog extends LitElement {
   protected readonly [FOCUS_TARGET];
@@ -38,6 +95,38 @@ export class HaWaDialog extends LitElement {
   @query("wa-dialog")
   private _waDialog?: any;
 
+  // Cache reference to the internal scrollable body of wa-dialog
+  private _waBodyEl?: HTMLElement | null;
+
+  private _scrollLocked = false;
+
+  private _observeBodyScroll(attach: boolean) {
+    // Get the internal body part from wa-dialog shadow DOM
+    if (!this._waDialog) return;
+    if (!this._waBodyEl) {
+      this._waBodyEl = this._waDialog.shadowRoot?.querySelector(
+        '[part="body"]'
+      ) as HTMLElement | null;
+    }
+    const bodyEl = this._waBodyEl;
+    if (!bodyEl) return;
+    if (attach) {
+      bodyEl.addEventListener("scroll", this._onScroll, { passive: true });
+      this._updateScrolledAttribute();
+    } else {
+      bodyEl.removeEventListener("scroll", this._onScroll as EventListener);
+    }
+  }
+
+  private _onScroll = () => {
+    this._updateScrolledAttribute();
+  };
+
+  private _updateScrolledAttribute() {
+    const scrollTop = (this._waBodyEl?.scrollTop ?? 0) as number;
+    this.toggleAttribute("scrolled", scrollTop !== 0);
+  }
+
   public scrollToPos(x: number, y: number) {
     this._waDialog?.scrollTo(x, y);
   }
@@ -50,6 +139,11 @@ export class HaWaDialog extends LitElement {
     this._handleDialogInitialFocus();
     this._setupDialogKeydown();
     this._addDialogActionListener();
+    this._observeBodyScroll(true);
+    if (!this._scrollLocked) {
+      lockDocumentScroll();
+      this._scrollLocked = true;
+    }
   };
 
   private _handleWaHide = (ev?: CustomEvent) => {
@@ -66,6 +160,11 @@ export class HaWaDialog extends LitElement {
         detail: { action: "close" },
       })
     );
+    this._observeBodyScroll(false);
+    if (this._scrollLocked) {
+      unlockDocumentScroll();
+      this._scrollLocked = false;
+    }
   };
 
   private _onDialogActionClick = (ev: Event) => {
@@ -99,6 +198,11 @@ export class HaWaDialog extends LitElement {
   disconnectedCallback(): void {
     super.disconnectedCallback();
     this.removeEventListener("click", this._onDialogActionClick);
+    this._observeBodyScroll(false);
+    if (this._scrollLocked) {
+      unlockDocumentScroll();
+      this._scrollLocked = false;
+    }
   }
 
   private _onCloseClick = () => {
@@ -119,6 +223,8 @@ export class HaWaDialog extends LitElement {
       this._internalOpen = this.open;
       if (this.open) {
         this._handleDialogInitialFocus();
+        // When opened via property update, ensure scroll listener is attached
+        this._observeBodyScroll(true);
       }
     }
 
@@ -249,6 +355,11 @@ export class HaWaDialog extends LitElement {
       --ha-dialog-surface-background: var(--mdc-theme-surface, #fff);
       --secondary-action-button-flex: unset;
       --primary-action-button-flex: unset;
+    }
+
+    :host([scrolled]) wa-dialog::part(header) {
+      border-bottom: 1px solid
+        var(--dialog-scroll-divider-color, var(--divider-color));
     }
 
     wa-dialog {
