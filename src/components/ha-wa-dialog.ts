@@ -49,6 +49,7 @@ export class HaWaDialog extends LitElement {
     );
     this._handleDialogInitialFocus();
     this._setupDialogKeydown();
+    this._addDialogActionListener();
   };
 
   private _handleWaHide = (ev?: CustomEvent) => {
@@ -66,6 +67,39 @@ export class HaWaDialog extends LitElement {
       })
     );
   };
+
+  private _onDialogActionClick = (ev: Event) => {
+    const path = (ev.composedPath?.() ?? []) as EventTarget[];
+    const actionEl = path.find(
+      (n) =>
+        n instanceof HTMLElement &&
+        (n as HTMLElement).hasAttribute("dialogAction")
+    ) as HTMLElement | undefined;
+    if (!actionEl) return;
+    // Read attribute for parity with legacy API; value not required here
+    actionEl.getAttribute("dialogAction");
+    // For compatibility, any dialogAction should trigger a close of the dialog
+    // (e.g. "close", "cancel").
+    if (this._waDialog?.hide) {
+      this._waDialog.hide();
+    } else {
+      this._internalOpen = false;
+      this._handleWaHide();
+    }
+    // Prevent duplicate handling upstream
+    ev.stopPropagation();
+  };
+
+  private _addDialogActionListener() {
+    // Listen for any clicks on elements with the legacy `dialogAction` attribute
+    // from slotted heading and content.
+    this.addEventListener("click", this._onDialogActionClick);
+  }
+
+  disconnectedCallback(): void {
+    super.disconnectedCallback();
+    this.removeEventListener("click", this._onDialogActionClick);
+  }
 
   private _onCloseClick = () => {
     if (this._waDialog?.hide) {
@@ -224,6 +258,7 @@ export class HaWaDialog extends LitElement {
     }
 
     wa-dialog {
+      --width: min(580px, 95vw);
       --spacing: var(--dialog-content-padding, 24px);
       --show-duration: 200ms;
       --hide-duration: 200ms;
