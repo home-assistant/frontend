@@ -1644,7 +1644,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@floating-ui/dom@npm:^1.6.12, @floating-ui/dom@npm:^1.6.13":
+"@floating-ui/dom@npm:^1.6.13":
   version: 1.7.3
   resolution: "@floating-ui/dom@npm:1.7.3"
   dependencies:
@@ -1905,9 +1905,9 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@home-assistant/webawesome@npm:3.0.0-beta.4.ha.2":
-  version: 3.0.0-beta.4.ha.2
-  resolution: "@home-assistant/webawesome@npm:3.0.0-beta.4.ha.2"
+"@home-assistant/webawesome@npm:3.0.0-beta.4.ha.3":
+  version: 3.0.0-beta.4.ha.3
+  resolution: "@home-assistant/webawesome@npm:3.0.0-beta.4.ha.3"
   dependencies:
     "@ctrl/tinycolor": "npm:^4.1.0"
     "@floating-ui/dom": "npm:^1.6.13"
@@ -1919,7 +1919,7 @@ __metadata:
     nanoid: "npm:^5.1.5"
     qr-creator: "npm:^1.0.0"
     style-observer: "npm:^0.0.7"
-  checksum: 10/0ac66d43050571e2b86bb7b0181d428aa2a064e25745075b207a8fe96d873398eaead663172130dfe8d9ac0be575028f8f9f6b9f8a9cd12f81c8c82e9f60a0e9
+  checksum: 10/b9241821ed471ccbad86b0ea4697a2d41395f05fdc26f46e5edbc7f6b5eeab5d248251ef702326312ded00d5bf850ce0dcdcf7cd5e2e542b9d9cb9a84f3726da
   languageName: node
   linkType: hard
 
@@ -2326,7 +2326,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@lit/react@npm:^1.0.6, @lit/react@npm:^1.0.8":
+"@lit/react@npm:^1.0.8":
   version: 1.0.8
   resolution: "@lit/react@npm:1.0.8"
   peerDependencies:
@@ -4170,22 +4170,6 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@shoelace-style/shoelace@npm:2.20.1":
-  version: 2.20.1
-  resolution: "@shoelace-style/shoelace@npm:2.20.1"
-  dependencies:
-    "@ctrl/tinycolor": "npm:^4.1.0"
-    "@floating-ui/dom": "npm:^1.6.12"
-    "@lit/react": "npm:^1.0.6"
-    "@shoelace-style/animations": "npm:^1.2.0"
-    "@shoelace-style/localize": "npm:^3.2.1"
-    composed-offset-position: "npm:^0.0.6"
-    lit: "npm:^3.2.1"
-    qr-creator: "npm:^1.0.0"
-  checksum: 10/c3aabeac03d5fd5bc43799783562ab09c92bae98efbc43a931c7dcec608acc393771b6ed0da3f29e08570bb9d9a9e3bff7637cbf6f79ba7aa439f6641da4eb7c
-  languageName: node
-  linkType: hard
-
 "@sindresorhus/merge-streams@npm:^2.1.0":
   version: 2.3.0
   resolution: "@sindresorhus/merge-streams@npm:2.3.0"
@@ -4765,16 +4749,6 @@ __metadata:
   version: 10.0.10
   resolution: "@types/mocha@npm:10.0.10"
   checksum: 10/4e3b61ed5112add86891a5dd3ebdd087714f5e1784a63d47a96424c0825058fd07074e85e43573462f751636c92808fc18a5f3862fe45e649ea98fdc5a3ee2ea
-  languageName: node
-  linkType: hard
-
-"@types/node-fetch@npm:^2.6.12":
-  version: 2.6.13
-  resolution: "@types/node-fetch@npm:2.6.13"
-  dependencies:
-    "@types/node": "npm:*"
-    form-data: "npm:^4.0.4"
-  checksum: 10/944d52214791ebba482ca1393a4f0d62b0dbac5f7343ff42c128b75d5356d8bcefd4df77771b55c1acd19d118e16e9bd5d2792819c51bc13402d1c87c0975435
   languageName: node
   linkType: hard
 
@@ -9293,10 +9267,10 @@ __metadata:
   languageName: node
   linkType: hard
 
-"hls.js@npm:1.6.11":
-  version: 1.6.11
-  resolution: "hls.js@npm:1.6.11"
-  checksum: 10/a7fb6407bd9729186fcdff14fb37d98d24ddfdce69e30165179a1af4c66fc83252bd85ee9199df91220ca5573fed7529b861d40fe86d93b4c06dc89ccc33382a
+"hls.js@npm:1.6.12":
+  version: 1.6.12
+  resolution: "hls.js@npm:1.6.12"
+  checksum: 10/b0f23fcda44c6a4dc16dc501b3a17829417133079fefb7463a1e3d22ae9da24cb970e9e45165e4223b1e6b3a3d0f253ca680dcc9daf2e27d3d8153390ed3b9be
   languageName: node
   linkType: hard
 
@@ -9334,7 +9308,7 @@ __metadata:
     "@fullcalendar/list": "npm:6.1.19"
     "@fullcalendar/luxon3": "npm:6.1.19"
     "@fullcalendar/timegrid": "npm:6.1.19"
-    "@home-assistant/webawesome": "npm:3.0.0-beta.4.ha.2"
+    "@home-assistant/webawesome": "npm:3.0.0-beta.4.ha.3"
     "@lezer/highlight": "npm:1.2.1"
     "@lit-labs/motion": "npm:1.0.9"
     "@lit-labs/observers": "npm:2.0.6"
@@ -9374,7 +9348,6 @@ __metadata:
     "@rsdoctor/rspack-plugin": "npm:1.2.3"
     "@rspack/core": "npm:1.5.2"
     "@rspack/dev-server": "npm:1.1.4"
-    "@shoelace-style/shoelace": "npm:2.20.1"
     "@swc/helpers": "npm:0.5.17"
     "@thomasloven/round-slider": "npm:0.6.0"
     "@tsparticles/engine": "npm:3.9.1"
@@ -9441,7 +9414,7 @@ __metadata:
     gulp-json-transform: "npm:0.5.0"
     gulp-rename: "npm:2.1.0"
     gulp-zopfli-green: "npm:6.0.2"
-    hls.js: "npm:1.6.11"
+    hls.js: "npm:1.6.12"
     home-assistant-js-websocket: "npm:9.5.0"
     html-minifier-terser: "npm:7.2.0"
     husky: "npm:9.1.7"
@@ -9484,7 +9457,7 @@ __metadata:
     ts-lit-plugin: "npm:2.0.2"
     typescript: "npm:5.9.2"
     typescript-eslint: "npm:8.43.0"
-    ua-parser-js: "npm:2.0.4"
+    ua-parser-js: "npm:2.0.5"
     vite-tsconfig-paths: "npm:5.1.4"
     vitest: "npm:3.2.4"
     vue: "npm:2.7.16"
@@ -11527,7 +11500,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"node-fetch@npm:^2.6.1, node-fetch@npm:^2.7.0":
+"node-fetch@npm:^2.6.1":
   version: 2.7.0
   resolution: "node-fetch@npm:2.7.0"
   dependencies:
@@ -14577,18 +14550,17 @@ __metadata:
   languageName: node
   linkType: hard
 
-"ua-parser-js@npm:2.0.4":
-  version: 2.0.4
-  resolution: "ua-parser-js@npm:2.0.4"
+"ua-parser-js@npm:2.0.5":
+  version: 2.0.5
+  resolution: "ua-parser-js@npm:2.0.5"
   dependencies:
-    "@types/node-fetch": "npm:^2.6.12"
     detect-europe-js: "npm:^0.1.2"
     is-standalone-pwa: "npm:^0.1.1"
-    node-fetch: "npm:^2.7.0"
     ua-is-frozen: "npm:^0.1.2"
+    undici: "npm:^7.12.0"
   bin:
     ua-parser-js: script/cli.js
-  checksum: 10/eb3a57cd4aea6c42d2d766761ccf38cdc4576075646dec611efc336f0d1e640896ec4ca084142a1fedbf25c589e093e2cad50c49a22d089e234029ecb9b8d2e4
+  checksum: 10/e946cb1c85bfcd0f2d30c7d5e1b605e340bb458432e7e87fc4aa1b2f90117e4220521d4e0bc7dd8c2a5cadd0935dedb5ac434b70efdc0007221288c1d98b3cd5
   languageName: node
   linkType: hard
 
@@ -14648,6 +14620,13 @@ __metadata:
   version: 7.10.0
   resolution: "undici-types@npm:7.10.0"
   checksum: 10/1f3fe777937690ab8a7a7bccabc8fdf4b3171f4899b5a384fb5f3d6b56c4b5fec2a51fbf345c9dd002ff6716fd440a37fa8fdb0e13af8eca8889f25445875ba3
+  languageName: node
+  linkType: hard
+
+"undici@npm:^7.12.0":
+  version: 7.16.0
+  resolution: "undici@npm:7.16.0"
+  checksum: 10/2bb71672b23d3dc0f56f1b7fb6c936e4487a350db46eaafc03f2f9107f99cdf8e51ecdd32e589e2381ef47a64b6369cfb31f328b2c3ea663023aa47bc5258b9e
   languageName: node
   linkType: hard
 

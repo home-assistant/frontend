@@ -119,26 +119,27 @@ class HassioRepositoriesDialog extends LitElement {
                         <div>${repo.url}</div>
                       </div>
                       <ha-tooltip
+                        .for="icon-button-${repo.slug}"
                         class="delete"
                         slot="end"
-                        .content=${this._dialogParams!.supervisor.localize(
+                      >
+                        ${this._dialogParams!.supervisor.localize(
                           usedRepositories.includes(repo.slug)
                             ? "dialog.repositories.used"
                             : "dialog.repositories.remove"
                         )}
-                      >
-                        <div>
-                          <ha-icon-button
-                            .disabled=${usedRepositories.includes(repo.slug)}
-                            .slug=${repo.slug}
-                            .path=${usedRepositories.includes(repo.slug)
-                              ? mdiDeleteOff
-                              : mdiDelete}
-                            @click=${this._removeRepository}
-                          >
-                          </ha-icon-button>
-                        </div>
                       </ha-tooltip>
+                      <div .id="icon-button-${repo.slug}">
+                        <ha-icon-button
+                          .disabled=${usedRepositories.includes(repo.slug)}
+                          .slug=${repo.slug}
+                          .path=${usedRepositories.includes(repo.slug)
+                            ? mdiDeleteOff
+                            : mdiDelete}
+                          @click=${this._removeRepository}
+                        >
+                        </ha-icon-button>
+                      </div>
                     </ha-md-list-item>
                   `
                 )

@@ -110,6 +110,7 @@ import { renderConfigEntryError } from "../integrations/ha-config-integration-pa
 import { showLabelDetailDialog } from "../labels/show-dialog-label-detail";
 import { isHelperDomain } from "./const";
 import { showHelperDetailDialog } from "./show-dialog-helper-detail";
+import { slugify } from "../../../common/string/slugify";
 
 interface HelperItem {
   id: string;
@@ -361,13 +362,16 @@ export class HaConfigHelpers extends SubscribeMixin(LitElement) {
                   tabindex="0"
                   style="display:inline-block; position: relative;"
                 >
+                  <ha-svg-icon
+                    .id="icon-edit-${slugify(helper.entity_id)}"
+                    .path=${mdiPencilOff}
+                  ></ha-svg-icon>
                   <ha-tooltip
+                    .for="icon-edit-${slugify(helper.entity_id)}"
                     placement="left"
-                    .content=${this.hass.localize(
+                    >${this.hass.localize(
                       "ui.panel.config.entities.picker.status.unmanageable"
                     )}
-                  >
-                    <ha-svg-icon .path=${mdiPencilOff}></ha-svg-icon>
                   </ha-tooltip>
                 </div>
               `

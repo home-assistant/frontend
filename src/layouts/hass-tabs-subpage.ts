@@ -4,6 +4,7 @@ import { customElement, eventOptions, property, state } from "lit/decorators";
 import { classMap } from "lit/directives/class-map";
 import memoizeOne from "memoize-one";
 import { canShowPage } from "../common/config/can_show_page";
+import { goBack } from "../common/navigate";
 import { restoreScroll } from "../common/decorators/restore-scroll";
 import type { LocalizeFunc } from "../common/translations/localize";
 import "../components/ha-icon-button-arrow-prev";
@@ -205,7 +206,7 @@ class HassTabsSubpage extends LitElement {
       this.backCallback();
       return;
     }
-    history.back();
+    goBack();
   }
 
   static get styles(): CSSResultGroup {
