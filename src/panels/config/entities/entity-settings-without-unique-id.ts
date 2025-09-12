@@ -33,10 +33,10 @@ export class EntitySettingsWithoutUniqueId extends LitElement {
         this.entityId
       );
       this._recordingDisabled = settings?.recording_disabled_by !== null;
-    } catch (_err) {
-      // Entity not found in recording settings - default to recording enabled
-      // This is expected for entities that have never had their recording settings changed
-      this._recordingDisabled = false;
+    } catch (err: any) {
+      // eslint-disable-next-line no-console
+      console.error("Error fetching recording settings:", err);
+      // Leave undefined - undefined means enabled
     }
   }
 
@@ -73,7 +73,7 @@ export class EntitySettingsWithoutUniqueId extends LitElement {
                 )}</span
               >
               <ha-switch
-                .checked=${!this._recordingDisabled}
+                .checked=${this._recordingDisabled !== true}
                 @change=${this._recordingChanged}
               ></ha-switch>
             </ha-settings-row>
