@@ -42,6 +42,7 @@ export class HaWaDialog extends LitElement {
       new CustomEvent("opened", { bubbles: true, composed: true })
     );
     this._handleDialogInitialFocus();
+    this._setupDialogKeydown();
   };
 
   private _handleWaHide = () => {
@@ -82,6 +83,21 @@ export class HaWaDialog extends LitElement {
       }
     }
   }
+
+  private _setupDialogKeydown() {
+    this._waDialog?.addEventListener("keydown", this._handleDialogKeydown);
+  }
+
+  private _handleDialogKeydown = (event: KeyboardEvent) => {
+    if (event.key === "Enter") {
+      const primaryButton = this.querySelector(
+        '[slot="primaryAction"]'
+      ) as HTMLElement;
+      if (primaryButton) {
+        primaryButton.click();
+      }
+    }
+  };
 
   private _handleDialogInitialFocus() {
     const candidates = this.querySelectorAll("[dialogInitialFocus]");
