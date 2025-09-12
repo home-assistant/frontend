@@ -1,194 +1,246 @@
-import { DialogBase } from "@material/mwc-dialog/mwc-dialog-base";
-import { styles } from "@material/mwc-dialog/mwc-dialog.css";
-import { mdiClose } from "@mdi/js";
 import type { TemplateResult } from "lit";
-import { css, html } from "lit";
-import { customElement } from "lit/decorators";
+import { css, html, LitElement, nothing } from "lit";
+import { customElement, property, query, state } from "lit/decorators";
+import "@home-assistant/webawesome/dist/components/dialog/dialog";
 import { FOCUS_TARGET } from "../dialogs/make-dialog-manager";
 import type { HomeAssistant } from "../types";
-import "./ha-icon-button";
-
-const SUPPRESS_DEFAULT_PRESS_SELECTOR = ["button", "ha-list-item"];
 
 export const createCloseHeading = (
-  hass: HomeAssistant | undefined,
+  _hass: HomeAssistant | undefined,
   title: string | TemplateResult
-) => html`
-  <div class="header_title">
-    <ha-icon-button
-      .label=${hass?.localize("ui.common.close") ?? "Close"}
-      .path=${mdiClose}
-      dialogAction="close"
-      class="header_button"
-    ></ha-icon-button>
-    <span>${title}</span>
-  </div>
-`;
+) => html` <span>${title}</span> `;
 
 @customElement("ha-dialog")
-export class HaDialog extends DialogBase {
+export class HaDialog extends LitElement {
   protected readonly [FOCUS_TARGET];
 
+  @property({ type: Boolean, reflect: true })
+  public open = false;
+
+  @property({ type: Boolean, reflect: true, attribute: "scrim-click-action" })
+  public scrimClickAction = false;
+
+  @property({ type: Boolean, reflect: true, attribute: "hide-actions" })
+  public hideActions = false;
+
+  @property({ type: Boolean, reflect: true, attribute: "flex-content" })
+  public flexContent = false;
+
+  @property()
+  public heading?: string | TemplateResult;
+
+  @state()
+  private _internalOpen = false;
+
+  @query("wa-dialog")
+  private _waDialog?: any;
+
   public scrollToPos(x: number, y: number) {
-    this.contentElement?.scrollTo(x, y);
+    this._waDialog?.scrollTo(x, y);
   }
 
-  protected renderHeading() {
-    return html`<slot name="heading"> ${super.renderHeading()} </slot>`;
-  }
-
-  protected firstUpdated(): void {
-    super.firstUpdated();
-    this.suppressDefaultPressSelector = [
-      this.suppressDefaultPressSelector,
-      SUPPRESS_DEFAULT_PRESS_SELECTOR,
-    ].join(", ");
-    this._updateScrolledAttribute();
-    this.contentElement?.addEventListener("scroll", this._onScroll, {
-      passive: true,
-    });
-  }
-
-  disconnectedCallback(): void {
-    super.disconnectedCallback();
-    this.contentElement.removeEventListener("scroll", this._onScroll);
-  }
-
-  private _onScroll = () => {
-    this._updateScrolledAttribute();
+  private _handleWaShow = () => {
+    this._internalOpen = true;
+    this.dispatchEvent(
+      new CustomEvent("opened", { bubbles: true, composed: true })
+    );
   };
 
-  private _updateScrolledAttribute() {
-    if (!this.contentElement) return;
-    this.toggleAttribute("scrolled", this.contentElement.scrollTop !== 0);
+  private _handleWaHide = (event: any) => {
+    // If scrimClickAction is false, prevent closing on overlay click
+    if (
+      !this.scrimClickAction &&
+      event.detail?.source === this._waDialog?.dialog
+    ) {
+      event.preventDefault();
+      return;
+    }
+
+    this._internalOpen = false;
+    this.open = false;
+    this.dispatchEvent(
+      new CustomEvent("closed", { bubbles: true, composed: true })
+    );
+  };
+
+  private _handleWaAfterHide = () => {
+    this.dispatchEvent(
+      new CustomEvent("closed", { bubbles: true, composed: true })
+    );
+  };
+
+  protected updated(
+    changedProperties: Map<string | number | symbol, unknown>
+  ): void {
+    super.updated(changedProperties);
+
+    if (changedProperties.has("open")) {
+      this._internalOpen = this.open;
+      // Handle dialogInitialFocus translation
+      if (this.open) {
+        this._handleDialogInitialFocus();
+      }
+    }
+
+    if (changedProperties.has("scrimClickAction")) {
+      if (this._waDialog) {
+        this._waDialog.lightDismiss = this.scrimClickAction;
+      }
+    }
   }
 
-  static override styles = [
-    styles,
-    css`
-      :host([scrolled]) ::slotted(ha-dialog-header) {
-        border-bottom: 1px solid
-          var(--mdc-dialog-scroll-divider-color, rgba(0, 0, 0, 0.12));
-      }
-      .mdc-dialog {
-        --mdc-dialog-scroll-divider-color: var(
-          --dialog-scroll-divider-color,
-          var(--divider-color)
-        );
-        z-index: var(--dialog-z-index, 8);
-        -webkit-backdrop-filter: var(
-          --ha-dialog-scrim-backdrop-filter,
-          var(--dialog-backdrop-filter, none)
-        );
-        backdrop-filter: var(
-          --ha-dialog-scrim-backdrop-filter,
-          var(--dialog-backdrop-filter, none)
-        );
-        --mdc-dialog-box-shadow: var(--dialog-box-shadow, none);
-        --mdc-typography-headline6-font-weight: var(--ha-font-weight-normal);
-        --mdc-typography-headline6-font-size: 1.574rem;
-      }
-      .mdc-dialog__actions {
-        justify-content: var(--justify-action-buttons, flex-end);
-        padding: 12px 16px 16px 16px;
-      }
-      .mdc-dialog__actions span:nth-child(1) {
-        flex: var(--secondary-action-button-flex, unset);
-      }
-      .mdc-dialog__actions span:nth-child(2) {
-        flex: var(--primary-action-button-flex, unset);
-      }
-      .mdc-dialog__container {
-        align-items: var(--vertical-align-dialog, center);
-        padding-top: var(--safe-area-inset-top);
-        padding-bottom: var(--safe-area-inset-bottom);
-      }
-      .mdc-dialog__title {
-        padding: 16px 16px 0 16px;
-      }
-      .mdc-dialog__title:has(span) {
-        padding: 12px 12px 0;
-      }
-      .mdc-dialog__title::before {
-        content: unset;
-      }
-      .mdc-dialog .mdc-dialog__content {
-        position: var(--dialog-content-position, relative);
-        padding: var(--dialog-content-padding, 24px);
-      }
-      :host([hideactions]) .mdc-dialog .mdc-dialog__content {
-        padding-bottom: var(--dialog-content-padding, 24px);
-      }
-      .mdc-dialog .mdc-dialog__surface {
-        position: var(--dialog-surface-position, relative);
-        top: var(--dialog-surface-top);
-        margin-top: var(--dialog-surface-margin-top);
-        min-width: calc(
-          var(--mdc-dialog-min-width, 100vw) - var(
-              --safe-area-inset-left
-            ) - var(--safe-area-inset-right)
-        );
-        min-height: var(--mdc-dialog-min-height, auto);
-        border-radius: var(--ha-dialog-border-radius, 24px);
-        -webkit-backdrop-filter: var(--ha-dialog-surface-backdrop-filter, none);
-        backdrop-filter: var(--ha-dialog-surface-backdrop-filter, none);
-        background: var(
-          --ha-dialog-surface-background,
-          var(--mdc-theme-surface, #fff)
-        );
-      }
-      :host([flexContent]) .mdc-dialog .mdc-dialog__content {
-        display: flex;
-        flex-direction: column;
-      }
+  private _handleDialogInitialFocus() {
+    // Find elements with dialogInitialFocus attribute and translate to autofocus
+    const elements = this.querySelectorAll("[dialogInitialFocus]");
+    if (elements.length > 0) {
+      const element = elements[0] as HTMLElement;
+      // Temporarily add autofocus to the element
+      element.setAttribute("autofocus", "");
+      // Remove it after a short delay to allow Web Awesome to handle focus
+      setTimeout(() => {
+        element.removeAttribute("autofocus");
+      }, 100);
+    }
+  }
 
-      @media all and (max-width: 450px), all and (max-height: 500px) {
-        .mdc-dialog .mdc-dialog__surface {
-          min-height: calc(
-            100vh - var(--safe-area-inset-top, 0px) - var(
-                --safe-area-inset-bottom,
-                0px
-              )
-          );
-          max-height: calc(
-            100vh - var(--safe-area-inset-top, 0px) - var(
-                --safe-area-inset-bottom,
-                0px
-              )
-          );
-        }
-      }
+  protected render() {
+    return html`
+      <wa-dialog
+        .open=${this._internalOpen}
+        .lightDismiss=${this.scrimClickAction}
+        .withoutHeader=${!this.heading}
+        @wa-show=${this._handleWaShow}
+        @wa-hide=${this._handleWaHide}
+        @wa-after-hide=${this._handleWaAfterHide}
+        class=${this.open ? "mdc-dialog--open" : ""}
+      >
+        ${this.heading ? html`<div slot="label">${this.heading}</div>` : ""}
+        <slot></slot>
+        ${this.hideActions
+          ? nothing
+          : html`
+              <slot name="secondaryAction" slot="footer"></slot>
+              <slot name="primaryAction" slot="footer"></slot>
+            `}
+      </wa-dialog>
+    `;
+  }
 
-      .header_title {
-        display: flex;
-        align-items: center;
-        direction: var(--direction);
+  static override styles = css`
+    :host {
+      --dialog-z-index: 8;
+      --dialog-backdrop-filter: none;
+      --dialog-box-shadow: none;
+      --ha-font-weight-normal: 400;
+      --justify-action-buttons: flex-end;
+      --vertical-align-dialog: center;
+      --dialog-content-position: relative;
+      --dialog-content-padding: 24px;
+      --dialog-surface-position: relative;
+      --dialog-surface-top: auto;
+      --dialog-surface-margin-top: auto;
+      --ha-dialog-border-radius: 24px;
+      --ha-dialog-surface-backdrop-filter: none;
+      --ha-dialog-surface-background: var(--mdc-theme-surface, #fff);
+      --secondary-action-button-flex: unset;
+      --primary-action-button-flex: unset;
+    }
+
+    wa-dialog {
+      --spacing: var(--dialog-content-padding, 24px);
+      --width: calc(
+        var(--mdc-dialog-min-width, 100vw) - var(
+            --safe-area-inset-left,
+            0
+          ) - var(--safe-area-inset-right, 0)
+      );
+      --show-duration: 200ms;
+      --hide-duration: 200ms;
+      z-index: var(--dialog-z-index, 8);
+      /* Override Web Awesome's surface color with Home Assistant theme */
+      --wa-color-surface-raised: var(
+        --ha-dialog-surface-background,
+        var(--mdc-theme-surface, #fff)
+      );
+      /* Set border radius */
+      --wa-panel-border-radius: var(--ha-dialog-border-radius, 24px);
+    }
+
+    wa-dialog::part(header) {
+      border-bottom: 1px solid var(--divider-color, rgba(0, 0, 0, 0.12));
+      padding: 24px 24px 0 24px;
+    }
+
+    wa-dialog::part(title) {
+      margin: 0;
+      margin-bottom: 8px;
+      color: var(--mdc-dialog-heading-ink-color, rgba(0, 0, 0, 0.87));
+      font-size: var(--mdc-typography-headline6-font-size, 1.574rem);
+      line-height: var(--mdc-typography-headline6-line-height, 2rem);
+      font-weight: var(
+        --mdc-typography-headline6-font-weight,
+        var(--ha-font-weight-normal)
+      );
+      letter-spacing: var(--mdc-typography-headline6-letter-spacing, 0.0125em);
+      text-decoration: var(--mdc-typography-headline6-text-decoration, inherit);
+      text-transform: var(--mdc-typography-headline6-text-transform, inherit);
+    }
+
+    wa-dialog::part(body) {
+      position: var(--dialog-content-position, relative);
+      padding: var(--dialog-content-padding, 24px);
+    }
+
+    wa-dialog::part(footer) {
+      justify-content: flex-end;
+      padding: 12px 16px 16px 16px;
+    }
+
+    :host([flexContent]) wa-dialog::part(body) {
+      display: flex;
+      flex-direction: column;
+    }
+
+    :host([hideActions]) wa-dialog::part(body) {
+      padding-bottom: var(--dialog-content-padding, 24px);
+    }
+
+    @media all and (max-width: 450px), all and (max-height: 500px) {
+      wa-dialog {
+        --width: 100vw;
       }
-      .header_title span {
-        overflow: hidden;
-        text-overflow: ellipsis;
-        white-space: nowrap;
-        display: block;
-        padding-left: 4px;
-        padding-right: 4px;
-        margin-right: 12px;
-        margin-inline-end: 12px;
-        margin-inline-start: initial;
-      }
-      .header_button {
-        text-decoration: none;
-        color: inherit;
-        inset-inline-start: initial;
-        inset-inline-end: -12px;
-        direction: var(--direction);
-      }
-      .dialog-actions {
-        inset-inline-start: initial !important;
-        inset-inline-end: 0px !important;
-        direction: var(--direction);
-      }
-    `,
-  ];
+    }
+
+    .header_title {
+      display: flex;
+      align-items: center;
+      direction: var(--direction);
+    }
+
+    .header_title span {
+      overflow: hidden;
+      text-overflow: ellipsis;
+      white-space: nowrap;
+      display: block;
+      padding-left: 4px;
+      padding-right: 4px;
+      margin-right: 12px;
+      margin-inline-end: 12px;
+      margin-inline-start: initial;
+    }
+
+    .header_button {
+      text-decoration: none;
+      color: inherit;
+      inset-inline-start: initial;
+      inset-inline-end: -12px;
+      direction: var(--direction);
+    }
+
+    .hidden {
+      display: none !important;
+    }
+  `;
 }
 
 declare global {
