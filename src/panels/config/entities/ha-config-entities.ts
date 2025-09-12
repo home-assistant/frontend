@@ -890,6 +890,43 @@ export class HaConfigEntities extends SubscribeMixin(LitElement) {
       return entity?.readonly === true;
     });
 
+    // Helper to render menu items that can be disabled for non-unique ID entities
+    const renderDisableableMenuItem = (
+      action: () => void,
+      icon: string,
+      labelKey: string,
+      itemId: string,
+      warning = false
+    ) =>
+      hasNonUniqueIdEntities
+        ? html`
+            <div style="position: relative;">
+              <ha-md-menu-item
+                .id=${itemId}
+                .disabled=${true}
+                class=${warning ? "warning" : ""}
+              >
+                <ha-svg-icon slot="start" .path=${icon}></ha-svg-icon>
+                <div slot="headline">${this.hass.localize(labelKey)}</div>
+              </ha-md-menu-item>
+              <ha-tooltip
+                .for=${itemId}
+                .text=${this.hass.localize(
+                  "ui.panel.config.entities.picker.non_unique_id_selected"
+                )}
+              ></ha-tooltip>
+            </div>
+          `
+        : html`
+            <ha-md-menu-item
+              .clickAction=${action}
+              class=${warning ? "warning" : ""}
+            >
+              <ha-svg-icon slot="start" .path=${icon}></ha-svg-icon>
+              <div slot="headline">${this.hass.localize(labelKey)}</div>
+            </ha-md-menu-item>
+          `;
+
     const labelItems = html` ${this._labels?.map((label) => {
         const color = label.color ? computeCssColor(label.color) : undefined;
         const selected = this._selected.every((entityId) =>
@@ -1036,89 +1073,32 @@ ${
       : nothing
   }
 
-  <ha-md-menu-item 
-    .clickAction=${hasNonUniqueIdEntities ? undefined : this._enableSelected}
-    .disabled=${hasNonUniqueIdEntities}
-    .title=${
-      hasNonUniqueIdEntities
-        ? this.hass.localize(
-            "ui.panel.config.entities.picker.non_unique_id_selected"
-          )
-        : ""
-    }
-  >
-    <ha-svg-icon slot="start" .path=${mdiToggleSwitch}></ha-svg-icon>
-    <div slot="headline">
-      ${this.hass.localize(
-        "ui.panel.config.entities.picker.enable_selected.button"
-      )}
-    </div>
-  </ha-md-menu-item>
-  <ha-md-menu-item 
-    .clickAction=${hasNonUniqueIdEntities ? undefined : this._disableSelected}
-    .disabled=${hasNonUniqueIdEntities}
-    .title=${
-      hasNonUniqueIdEntities
-        ? this.hass.localize(
-            "ui.panel.config.entities.picker.non_unique_id_selected"
-          )
-        : ""
-    }
-  >
-    <ha-svg-icon
-      slot="start"
-      .path=${mdiToggleSwitchOffOutline}
-    ></ha-svg-icon>
-    <div slot="headline">
-      ${this.hass.localize(
-        "ui.panel.config.entities.picker.disable_selected.button"
-      )}
-    </div>
-  </ha-md-menu-item>
+  ${renderDisableableMenuItem(
+    this._enableSelected,
+    mdiToggleSwitch,
+    "ui.panel.config.entities.picker.enable_selected.button",
+    "enable-selected-disabled"
+  )}
+  ${renderDisableableMenuItem(
+    this._disableSelected,
+    mdiToggleSwitchOffOutline,
+    "ui.panel.config.entities.picker.disable_selected.button",
+    "disable-selected-disabled"
+  )}
   <ha-md-divider role="separator" tabindex="-1"></ha-md-divider>
 
-  <ha-md-menu-item 
-    .clickAction=${hasNonUniqueIdEntities ? undefined : this._unhideSelected}
-    .disabled=${hasNonUniqueIdEntities}
-    .title=${
-      hasNonUniqueIdEntities
-        ? this.hass.localize(
-            "ui.panel.config.entities.picker.non_unique_id_selected"
-          )
-        : ""
-    }
-  >
-    <ha-svg-icon
-      slot="start"
-      .path=${mdiEye}
-    ></ha-svg-icon>
-    <div slot="headline">
-      ${this.hass.localize(
-        "ui.panel.config.entities.picker.unhide_selected.button"
-      )}
-    </div>
-  </ha-md-menu-item>
-  <ha-md-menu-item 
-    .clickAction=${hasNonUniqueIdEntities ? undefined : this._hideSelected}
-    .disabled=${hasNonUniqueIdEntities}
-    .title=${
-      hasNonUniqueIdEntities
-        ? this.hass.localize(
-            "ui.panel.config.entities.picker.non_unique_id_selected"
-          )
-        : ""
-    }
-  >
-    <ha-svg-icon
-      slot="start"
-      .path=${mdiEyeOff}
-    ></ha-svg-icon>
-    <div slot="headline">
-      ${this.hass.localize(
-        "ui.panel.config.entities.picker.hide_selected.button"
-      )}
-    </div>
-  </ha-md-menu-item>
+  ${renderDisableableMenuItem(
+    this._unhideSelected,
+    mdiEye,
+    "ui.panel.config.entities.picker.unhide_selected.button",
+    "unhide-selected-disabled"
+  )}
+  ${renderDisableableMenuItem(
+    this._hideSelected,
+    mdiEyeOff,
+    "ui.panel.config.entities.picker.hide_selected.button",
+    "hide-selected-disabled"
+  )}
 
   <ha-md-divider role="separator" tabindex="-1"></ha-md-divider>
 
@@ -1150,52 +1130,22 @@ ${
       : ""
   }
 
-  <ha-md-menu-item 
-    .clickAction=${hasNonUniqueIdEntities ? undefined : this._restoreEntityIdSelected}
-    .disabled=${hasNonUniqueIdEntities}
-    .title=${
-      hasNonUniqueIdEntities
-        ? this.hass.localize(
-            "ui.panel.config.entities.picker.non_unique_id_selected"
-          )
-        : ""
-    }
-  >
-    <ha-svg-icon
-      slot="start"
-      .path=${mdiRestore}
-    ></ha-svg-icon>
-    <div slot="headline">
-      ${this.hass.localize(
-        "ui.panel.config.entities.picker.restore_entity_id_selected.button"
-      )}
-    </div>
-  </ha-md-menu-item>
+  ${renderDisableableMenuItem(
+    this._restoreEntityIdSelected,
+    mdiRestore,
+    "ui.panel.config.entities.picker.restore_entity_id_selected.button",
+    "restore-selected-disabled"
+  )}
 
   <ha-md-divider role="separator" tabindex="-1"></ha-md-divider>
 
-  <ha-md-menu-item 
-    .clickAction=${hasNonUniqueIdEntities ? undefined : this._removeSelected}
-    .disabled=${hasNonUniqueIdEntities}
-    .title=${
-      hasNonUniqueIdEntities
-        ? this.hass.localize(
-            "ui.panel.config.entities.picker.non_unique_id_selected"
-          )
-        : ""
-    }
-    class="warning"
-  >
-    <ha-svg-icon
-      slot="start"
-      .path=${mdiDelete}
-    ></ha-svg-icon>
-    <div slot="headline">
-      ${this.hass.localize(
-        "ui.panel.config.entities.picker.delete_selected.button"
-      )}
-    </div>
-  </ha-md-menu-item>
+  ${renderDisableableMenuItem(
+    this._removeSelected,
+    mdiDelete,
+    "ui.panel.config.entities.picker.delete_selected.button",
+    "delete-selected-disabled",
+    true // warning style
+  )}
 
 </ha-md-button-menu>
         ${
