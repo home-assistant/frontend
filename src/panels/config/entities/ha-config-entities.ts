@@ -908,29 +908,36 @@ export class HaConfigEntities extends SubscribeMixin(LitElement) {
       icon: string,
       labelKey: string,
       warning = false
-    ) =>
-      hasNonUniqueIdEntities
-        ? html`
+    ) => {
+      if (hasNonUniqueIdEntities) {
+        return html`
+          <div
+            style="position: relative; cursor: not-allowed;"
+            title=${this.hass.localize(
+              "ui.panel.config.entities.picker.non_unique_id_selected"
+            )}
+          >
             <ha-md-menu-item
               .disabled=${true}
               class=${warning ? "warning" : ""}
-              title=${this.hass.localize(
-                "ui.panel.config.entities.picker.non_unique_id_selected"
-              )}
+              style="pointer-events: none; opacity: 0.5;"
             >
               <ha-svg-icon slot="start" .path=${icon}></ha-svg-icon>
               <div slot="headline">${this.hass.localize(labelKey)}</div>
             </ha-md-menu-item>
-          `
-        : html`
-            <ha-md-menu-item
-              .clickAction=${action}
-              class=${warning ? "warning" : ""}
-            >
-              <ha-svg-icon slot="start" .path=${icon}></ha-svg-icon>
-              <div slot="headline">${this.hass.localize(labelKey)}</div>
-            </ha-md-menu-item>
-          `;
+          </div>
+        `;
+      }
+      return html`
+        <ha-md-menu-item
+          .clickAction=${action}
+          class=${warning ? "warning" : ""}
+        >
+          <ha-svg-icon slot="start" .path=${icon}></ha-svg-icon>
+          <div slot="headline">${this.hass.localize(labelKey)}</div>
+        </ha-md-menu-item>
+      `;
+    };
 
     const labelItems = html` ${this._labels?.map((label) => {
         const color = label.color ? computeCssColor(label.color) : undefined;
