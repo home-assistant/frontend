@@ -369,9 +369,6 @@ export default class HaAutomationConditionRow extends LitElement {
               .sortSelected=${this.sortSelected}
               @click=${this._toggleSidebar}
               @toggle-collapsed=${this._toggleCollapse}
-              @copy-row=${this._copyCondition}
-              @cut-row=${this._cutCondition}
-              @delete-row=${this._onDelete}
               >${this._renderRow()}</ha-automation-row
             >`
           : html`
