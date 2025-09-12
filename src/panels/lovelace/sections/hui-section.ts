@@ -232,7 +232,7 @@ export class HuiSection extends ReactiveElement {
       return;
     }
 
-    if (this.config.hidden) {
+    if (this.config.disabled) {
       this._setElementVisibility(false);
       return;
     }
