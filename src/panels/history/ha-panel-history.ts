@@ -17,7 +17,7 @@ import memoizeOne from "memoize-one";
 import { ensureArray } from "../../common/array/ensure-array";
 import { storage } from "../../common/decorators/storage";
 import { computeDomain } from "../../common/entity/compute_domain";
-import { navigate } from "../../common/navigate";
+import { goBack, navigate } from "../../common/navigate";
 import { constructUrlCurrentPath } from "../../common/url/construct-url";
 import {
   createSearchParam,
@@ -114,7 +114,7 @@ class HaPanelHistory extends LitElement {
   }
 
   private _goBack(): void {
-    history.back();
+    goBack();
   }
 
   protected render() {

@@ -26,7 +26,7 @@ import type { Schema } from "js-yaml";
 import { DEFAULT_SCHEMA } from "js-yaml";
 import { transform } from "../../../common/decorators/transform";
 import { fireEvent } from "../../../common/dom/fire_event";
-import { navigate } from "../../../common/navigate";
+import { goBack, navigate } from "../../../common/navigate";
 import { promiseTimeout } from "../../../common/util/promise-timeout";
 import { afterNextRender } from "../../../common/util/render-status";
 import "../../../components/ha-button";
@@ -711,7 +711,7 @@ export class HaAutomationEditor extends PreventUnsavedMixin(
                 { err_no: err.status_code }
               ),
       });
-      history.back();
+      goBack("/config");
     }
   }
 
@@ -862,7 +862,7 @@ export class HaAutomationEditor extends PreventUnsavedMixin(
   private _backTapped = async () => {
     const result = await this._confirmUnsavedChanged();
     if (result) {
-      afterNextRender(() => history.back());
+      afterNextRender(() => goBack("/config"));
     }
   };
 
@@ -950,7 +950,7 @@ export class HaAutomationEditor extends PreventUnsavedMixin(
   private async _delete() {
     if (this.automationId) {
       await deleteAutomation(this.hass, this.automationId);
-      history.back();
+      goBack("/config");
     }
   }
 
