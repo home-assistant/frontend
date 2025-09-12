@@ -193,7 +193,7 @@ class HassioIngressView extends LitElement {
         title: addon.name,
       });
       await nextRender();
-      goBack("/");
+      goBack();
       return;
     }
 
