@@ -2,8 +2,7 @@ import { css, html, LitElement } from "lit";
 import { customElement, query, state } from "lit/decorators";
 import { styleMap } from "lit/directives/style-map";
 import { fireEvent } from "../common/dom/fire_event";
-
-const ANIMATION_DURATION_MS = 300;
+import { BOTTOM_SHEET_ANIMATION_DURATION_MS } from "./ha-bottom-sheet";
 
 /**
  * A bottom sheet component that slides up from the bottom of the screen.
@@ -246,7 +245,7 @@ export class HaResizableBottomSheet extends LitElement {
         var(--ha-border-radius-2xl)
       );
       transform: translateY(100%);
-      transition: transform ${ANIMATION_DURATION_MS}ms ease;
+      transition: transform ${BOTTOM_SHEET_ANIMATION_DURATION_MS}ms ease;
       border-top-width: var(--ha-bottom-sheet-border-width);
       border-right-width: var(--ha-bottom-sheet-border-width);
       border-left-width: var(--ha-bottom-sheet-border-width);

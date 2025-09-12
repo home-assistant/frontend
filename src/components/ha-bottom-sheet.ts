@@ -2,6 +2,8 @@ import { css, html, LitElement, type PropertyValues } from "lit";
 import "@home-assistant/webawesome/dist/components/drawer/drawer";
 import { customElement, property, state } from "lit/decorators";
 
+export const BOTTOM_SHEET_ANIMATION_DURATION_MS = 300;
+
 @customElement("ha-bottom-sheet")
 export class HaBottomSheet extends LitElement {
   @property({ type: Boolean }) public open = false;
@@ -45,12 +47,15 @@ export class HaBottomSheet extends LitElement {
       );
       --spacing: 0;
       --size: auto;
-      --show-duration: 200ms;
-      --hide-duration: 200ms;
+      --show-duration: ${BOTTOM_SHEET_ANIMATION_DURATION_MS}ms;
+      --hide-duration: ${BOTTOM_SHEET_ANIMATION_DURATION_MS}ms;
     }
     wa-drawer::part(dialog) {
       border-top-left-radius: var(--ha-border-radius-lg);
       border-top-right-radius: var(--ha-border-radius-lg);
+    }
+    wa-drawer::part(body) {
+      padding-bottom: var(--safe-area-inset-bottom);
     }
   `;
 }
