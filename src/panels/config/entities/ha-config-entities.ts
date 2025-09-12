@@ -907,15 +907,15 @@ export class HaConfigEntities extends SubscribeMixin(LitElement) {
       action: () => void,
       icon: string,
       labelKey: string,
+      itemId: string,
       warning = false
     ) => {
       if (hasNonUniqueIdEntities) {
         return html`
           <div
+            id=${itemId}
             style="position: relative; cursor: not-allowed;"
-            title=${this.hass.localize(
-              "ui.panel.config.entities.picker.non_unique_id_selected"
-            )}
+            tabindex="0"
           >
             <ha-md-menu-item
               .disabled=${true}
@@ -925,6 +925,11 @@ export class HaConfigEntities extends SubscribeMixin(LitElement) {
               <ha-svg-icon slot="start" .path=${icon}></ha-svg-icon>
               <div slot="headline">${this.hass.localize(labelKey)}</div>
             </ha-md-menu-item>
+            <ha-tooltip .for=${itemId} placement="left">
+              ${this.hass.localize(
+                "ui.panel.config.entities.picker.non_unique_id_selected"
+              )}
+            </ha-tooltip>
           </div>
         `;
       }
@@ -1088,24 +1093,32 @@ ${
   ${renderDisableableMenuItem(
     this._enableSelected,
     mdiToggleSwitch,
-    "ui.panel.config.entities.picker.enable_selected.button"
+    "ui.panel.config.entities.picker.enable_selected.button",
+    false,
+    "enable-selected-disabled"
   )}
   ${renderDisableableMenuItem(
     this._disableSelected,
     mdiToggleSwitchOffOutline,
-    "ui.panel.config.entities.picker.disable_selected.button"
+    "ui.panel.config.entities.picker.disable_selected.button",
+    false,
+    "disable-selected-disabled"
   )}
   <ha-md-divider role="separator" tabindex="-1"></ha-md-divider>
 
   ${renderDisableableMenuItem(
     this._unhideSelected,
     mdiEye,
-    "ui.panel.config.entities.picker.unhide_selected.button"
+    "ui.panel.config.entities.picker.unhide_selected.button",
+    false,
+    "unhide-selected-disabled"
   )}
   ${renderDisableableMenuItem(
     this._hideSelected,
     mdiEyeOff,
-    "ui.panel.config.entities.picker.hide_selected.button"
+    "ui.panel.config.entities.picker.hide_selected.button",
+    false,
+    "hide-selected-disabled"
   )}
 
   <ha-md-divider role="separator" tabindex="-1"></ha-md-divider>
@@ -1141,7 +1154,9 @@ ${
   ${renderDisableableMenuItem(
     this._restoreEntityIdSelected,
     mdiRestore,
-    "ui.panel.config.entities.picker.restore_entity_id_selected.button"
+    "ui.panel.config.entities.picker.restore_entity_id_selected.button",
+    false,
+    "restore-selected-disabled"
   )}
 
   <ha-md-divider role="separator" tabindex="-1"></ha-md-divider>
@@ -1150,7 +1165,8 @@ ${
     this._removeSelected,
     mdiDelete,
     "ui.panel.config.entities.picker.delete_selected.button",
-    true // warning style
+    true, // warning style
+    "delete-selected-disabled"
   )}
 
 </ha-md-button-menu>
