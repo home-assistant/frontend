@@ -34,7 +34,7 @@ import {
 import { shouldHandleRequestSelectedEvent } from "../../common/mwc/handle-request-selected-event";
 import { navigate } from "../../common/navigate";
 import "../../components/ha-button-menu";
-import "../../components/ha-dialog";
+import "../../components/ha-wa-dialog";
 import "../../components/ha-dialog-header";
 import "../../components/ha-icon-button";
 import "../../components/ha-icon-button-prev";
@@ -362,7 +362,7 @@ export class MoreInfoDialog extends LitElement {
     const title = this._childView?.viewTitle || breadcrumb.pop() || entityId;
 
     return html`
-      <ha-dialog
+      <ha-wa-dialog
         open
         @closed=${this.closeDialog}
         @opened=${this._handleOpened}
@@ -620,7 +620,7 @@ export class MoreInfoDialog extends LitElement {
             </div>
           `
         )}
-      </ha-dialog>
+      </ha-wa-dialog>
     `;
   }
 
@@ -676,7 +676,7 @@ export class MoreInfoDialog extends LitElement {
     return [
       haStyleDialog,
       css`
-        ha-dialog {
+        ha-wa-dialog {
           /* Set the top top of the dialog to a fixed position, so it doesnt jump when the content changes size */
           --vertical-align-dialog: flex-start;
           --dialog-surface-margin-top: max(
@@ -706,25 +706,22 @@ export class MoreInfoDialog extends LitElement {
 
         @media all and (max-width: 450px), all and (max-height: 500px) {
           /* When in fullscreen dialog should be attached to top */
-          ha-dialog {
+          ha-wa-dialog {
             --dialog-surface-margin-top: 0px;
           }
         }
 
         @media all and (min-width: 600px) and (min-height: 501px) {
-          ha-dialog {
-            --mdc-dialog-min-width: 580px;
-            --mdc-dialog-max-width: 580px;
-            --mdc-dialog-max-height: calc(100% - 72px);
+          ha-wa-dialog {
+            --width: 580px;
           }
 
           .main-title {
             cursor: default;
           }
 
-          :host([large]) ha-dialog {
-            --mdc-dialog-min-width: 90vw;
-            --mdc-dialog-max-width: 90vw;
+          :host([large]) ha-wa-dialog {
+            --width: 90vw;
           }
         }
 
