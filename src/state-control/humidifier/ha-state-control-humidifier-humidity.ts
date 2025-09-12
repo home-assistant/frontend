@@ -4,7 +4,7 @@ import { LitElement, html, nothing } from "lit";
 import { customElement, property, state } from "lit/decorators";
 import { styleMap } from "lit/directives/style-map";
 import { stateActive } from "../../common/entity/state_active";
-import { stateColorCss } from "../../common/entity/state_color";
+import { stateColor } from "../../common/entity/state_color";
 import { clamp } from "../../common/number/clamp";
 import { debounce } from "../../common/util/debounce";
 import "../../components/ha-big-number";
@@ -248,14 +248,15 @@ export class HaStateControlHumidifierHumidity extends LitElement {
   }
 
   protected render() {
-    const stateColor = stateColorCss(this.stateObj);
+    const color = stateColor(this, this.stateObj);
     const active = stateActive(this.stateObj);
 
     const action = this.stateObj.attributes.action;
 
     let actionColor: string | undefined;
     if (action && action !== "idle" && action !== "off" && active) {
-      actionColor = stateColorCss(
+      actionColor = stateColor(
+        this,
         this.stateObj,
         HUMIDIFIER_ACTION_MODE[action]
       );
@@ -277,7 +278,7 @@ export class HaStateControlHumidifierHumidity extends LitElement {
         <div
           class="container${containerSizeClass}"
           style=${styleMap({
-            "--state-color": stateColor,
+            "--state-color": color,
             "--action-color": actionColor,
           })}
         >
@@ -303,7 +304,7 @@ export class HaStateControlHumidifierHumidity extends LitElement {
       <div
         class="container${containerSizeClass}"
         style=${styleMap({
-          "--state-color": stateColor,
+          "--state-color": color,
           "--action-color": actionColor,
         })}
       >

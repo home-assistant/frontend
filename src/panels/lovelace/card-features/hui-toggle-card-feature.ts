@@ -14,7 +14,7 @@ import { customElement, property, state } from "lit/decorators";
 import { classMap } from "lit/directives/class-map";
 import { styleMap } from "lit/directives/style-map";
 import { computeDomain } from "../../../common/entity/compute_domain";
-import { stateColorCss } from "../../../common/entity/state_color";
+import { stateColor } from "../../../common/entity/state_color";
 import "../../../components/ha-control-button";
 import "../../../components/ha-control-button-group";
 import "../../../components/ha-control-switch";
@@ -134,7 +134,7 @@ class HuiToggleCardFeature extends LitElement implements LovelaceCardFeature {
     }
 
     const onColor = "var(--feature-color)";
-    const offColor = stateColorCss(this._stateObj, "off");
+    const offColor = stateColor(this, this._stateObj, "off");
 
     const isOn = this._stateObj.state === "on";
     const isOff = this._stateObj.state === "off";

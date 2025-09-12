@@ -18,7 +18,7 @@ import { computeStateDomain } from "../../../common/entity/compute_state_domain"
 import { computeStateName } from "../../../common/entity/compute_state_name";
 import {
   stateColorBrightness,
-  stateColorCss,
+  stateColor,
 } from "../../../common/entity/state_color";
 import { isValidEntityId } from "../../../common/entity/valid_entity_id";
 import { iconColorCSS } from "../../../common/style/icon_color_css";
@@ -341,11 +341,15 @@ export class HuiButtonCard extends LitElement implements LovelaceCard {
     if (stateObj.attributes.hvac_action) {
       const hvacAction = stateObj.attributes.hvac_action;
       if (hvacAction in CLIMATE_HVAC_ACTION_TO_MODE) {
-        return stateColorCss(stateObj, CLIMATE_HVAC_ACTION_TO_MODE[hvacAction]);
+        return stateColor(
+          this,
+          stateObj,
+          CLIMATE_HVAC_ACTION_TO_MODE[hvacAction]
+        );
       }
       return undefined;
     }
-    const iconColor = stateColorCss(stateObj);
+    const iconColor = stateColor(this, stateObj);
     if (iconColor) {
       return iconColor;
     }

@@ -5,7 +5,7 @@ import { customElement, property, state } from "lit/decorators";
 import { styleMap } from "lit/directives/style-map";
 import { UNIT_F } from "../../common/const";
 import { stateActive } from "../../common/entity/state_active";
-import { stateColorCss } from "../../common/entity/state_color";
+import { stateColor } from "../../common/entity/state_color";
 import { supportsFeature } from "../../common/entity/supports-feature";
 import { clamp } from "../../common/number/clamp";
 import { debounce } from "../../common/util/debounce";
@@ -179,7 +179,7 @@ export class HaStateControlWaterHeaterTemperature extends LitElement {
       WaterHeaterEntityFeature.TARGET_TEMPERATURE
     );
 
-    const stateColor = stateColorCss(this.stateObj);
+    const color = stateColor(this, this.stateObj);
     const active = stateActive(this.stateObj);
 
     const containerSizeClass = this._sizeController.value
@@ -195,7 +195,7 @@ export class HaStateControlWaterHeaterTemperature extends LitElement {
         <div
           class="container${containerSizeClass}"
           style=${styleMap({
-            "--state-color": stateColor,
+            "--state-color": color,
           })}
         >
           <ha-control-circular-slider
@@ -226,7 +226,7 @@ export class HaStateControlWaterHeaterTemperature extends LitElement {
       <div
         class="container${containerSizeClass}"
         style=${styleMap({
-          "--state-color": stateColor,
+          "--state-color": color,
         })}
       >
         <ha-control-circular-slider

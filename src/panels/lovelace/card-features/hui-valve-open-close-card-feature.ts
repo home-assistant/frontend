@@ -5,7 +5,7 @@ import { classMap } from "lit/directives/class-map";
 import { styleMap } from "lit/directives/style-map";
 import { computeDomain } from "../../../common/entity/compute_domain";
 import { supportsFeature } from "../../../common/entity/supports-feature";
-import { stateColorCss } from "../../../common/entity/state_color";
+import { stateColor } from "../../../common/entity/state_color";
 import "../../../components/ha-control-button";
 import "../../../components/ha-control-button-group";
 import "../../../components/ha-svg-icon";
@@ -125,8 +125,8 @@ class HuiValveOpenCloseCardFeature
     }
 
     // Determine colors and active states for toggle-style UI
-    const openColor = stateColorCss(this._stateObj, "open");
-    const closedColor = stateColorCss(this._stateObj, "closed");
+    const openColor = stateColor(this, this._stateObj, "open");
+    const closedColor = stateColor(this, this._stateObj, "closed");
     const openIcon = mdiValveOpen;
     const closedIcon = mdiValveClosed;
 

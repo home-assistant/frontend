@@ -13,11 +13,16 @@ import "../../../../../components/tile/ha-tile-badge";
 import "../../../../../components/ha-svg-icon";
 
 export type RenderBadgeFunction = (
+  element: HTMLElement,
   stateObj: HassEntity,
   hass: HomeAssistant
 ) => TemplateResult | typeof nothing;
 
-export const renderTileBadge: RenderBadgeFunction = (stateObj, hass) => {
+export const renderTileBadge: RenderBadgeFunction = (
+  element,
+  stateObj,
+  hass
+) => {
   if (stateObj.state === UNKNOWN) {
     return nothing;
   }
@@ -36,11 +41,11 @@ export const renderTileBadge: RenderBadgeFunction = (stateObj, hass) => {
   switch (domain) {
     case "person":
     case "device_tracker":
-      return renderPersonBadge(stateObj, hass);
+      return renderPersonBadge(element, stateObj, hass);
     case "climate":
-      return renderClimateBadge(stateObj, hass);
+      return renderClimateBadge(element, stateObj, hass);
     case "humidifier":
-      return renderHumidifierBadge(stateObj, hass);
+      return renderHumidifierBadge(element, stateObj, hass);
     default:
       return nothing;
   }

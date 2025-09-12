@@ -3,7 +3,7 @@ import { css, html, LitElement } from "lit";
 import { customElement, property, state } from "lit/decorators";
 import { styleMap } from "lit/directives/style-map";
 import { computeAttributeNameDisplay } from "../../common/entity/compute_attribute_display";
-import { stateColorCss } from "../../common/entity/state_color";
+import { stateColor } from "../../common/entity/state_color";
 import "../../components/ha-control-slider";
 import type { CoverEntity } from "../../data/cover";
 import { UNAVAILABLE } from "../../data/entity";
@@ -37,8 +37,8 @@ export class HaStateControlCoverPosition extends LitElement {
   }
 
   protected render(): TemplateResult {
-    const openColor = stateColorCss(this.stateObj, "open");
-    const color = stateColorCss(this.stateObj);
+    const openColor = stateColor(this, this.stateObj, "open");
+    const color = stateColor(this, this.stateObj);
 
     return html`
       <ha-control-slider

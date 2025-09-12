@@ -9,7 +9,7 @@ import { computeDomain } from "../../common/entity/compute_domain";
 import { computeStateDomain } from "../../common/entity/compute_state_domain";
 import {
   stateColorBrightness,
-  stateColorCss,
+  stateColor,
 } from "../../common/entity/state_color";
 import { iconColorCSS } from "../../common/style/icon_color_css";
 import { cameraUrlWithWidthHeight } from "../../data/camera";
@@ -148,7 +148,7 @@ export class StateBadge extends LitElement {
           // Externally provided overriding color wins over state color
           iconStyle.color = this.color;
         } else if (this._stateColor) {
-          const color = stateColorCss(stateObj);
+          const color = stateColor(this, stateObj);
           if (color) {
             iconStyle.color = color;
           }
@@ -169,7 +169,8 @@ export class StateBadge extends LitElement {
           if (stateObj.attributes.hvac_action) {
             const hvacAction = stateObj.attributes.hvac_action;
             if (hvacAction in CLIMATE_HVAC_ACTION_TO_MODE) {
-              iconStyle.color = stateColorCss(
+              iconStyle.color = stateColor(
+                this,
                 stateObj,
                 CLIMATE_HVAC_ACTION_TO_MODE[hvacAction]
               )!;

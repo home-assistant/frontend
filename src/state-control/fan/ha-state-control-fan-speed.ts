@@ -3,7 +3,7 @@ import { customElement, property, state } from "lit/decorators";
 import { styleMap } from "lit/directives/style-map";
 import { computeAttributeNameDisplay } from "../../common/entity/compute_attribute_display";
 import { stateActive } from "../../common/entity/state_active";
-import { stateColorCss } from "../../common/entity/state_color";
+import { stateColor } from "../../common/entity/state_color";
 import "../../components/ha-control-select";
 import type { ControlSelectOption } from "../../components/ha-control-select";
 import "../../components/ha-control-slider";
@@ -73,7 +73,7 @@ export class HaStateControlFanSpeed extends LitElement {
   }
 
   protected render() {
-    const color = stateColorCss(this.stateObj);
+    const color = stateColor(this, this.stateObj);
 
     const speedCount = computeFanSpeedCount(this.stateObj);
 

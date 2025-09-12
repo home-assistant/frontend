@@ -11,7 +11,7 @@ import { DOMAINS_TOGGLE } from "../../../common/const";
 import { computeDomain } from "../../../common/entity/compute_domain";
 import { computeStateName } from "../../../common/entity/compute_state_name";
 import { stateActive } from "../../../common/entity/state_active";
-import { stateColorCss } from "../../../common/entity/state_color";
+import { stateColor } from "../../../common/entity/state_color";
 import "../../../components/ha-card";
 import "../../../components/ha-ripple";
 import "../../../components/ha-state-icon";
@@ -202,7 +202,7 @@ export class HuiTileCard extends LitElement implements LovelaceCard {
       }
 
       // Fallback to state color
-      return stateColorCss(entity);
+      return stateColor(this, entity);
     }
   );
 
@@ -323,7 +323,7 @@ export class HuiTileCard extends LitElement implements LovelaceCard {
                 .stateObj=${stateObj}
                 .hass=${this.hass}
               ></ha-state-icon>
-              ${renderTileBadge(stateObj, this.hass)}
+              ${renderTileBadge(this, stateObj, this.hass)}
             </ha-tile-icon>
             <ha-tile-info
               id="info"

@@ -3,7 +3,7 @@ import { css, html, LitElement } from "lit";
 import { customElement, property, state } from "lit/decorators";
 import { styleMap } from "lit/directives/style-map";
 import memoizeOne from "memoize-one";
-import { stateColorCss } from "../../common/entity/state_color";
+import { stateColor } from "../../common/entity/state_color";
 import { supportsFeature } from "../../common/entity/supports-feature";
 import "../../components/ha-control-select";
 import type { ControlSelectOption } from "../../components/ha-control-select";
@@ -71,7 +71,7 @@ export class HaStateControlAlarmControlPanelModes extends LitElement {
   }
 
   protected render() {
-    const color = stateColorCss(this.stateObj);
+    const color = stateColor(this, this.stateObj);
 
     const modes = this._modes(this.stateObj);
 

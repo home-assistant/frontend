@@ -11,14 +11,13 @@ import {
   toggleGroupEntities,
 } from "../../../common/entity/group_entities";
 import { stateActive } from "../../../common/entity/state_active";
-import { domainColorProperties } from "../../../common/entity/state_color";
+import { domainStateColor } from "../../../common/entity/state_color";
 import "../../../components/ha-control-button";
 import "../../../components/ha-control-button-group";
 import "../../../components/ha-domain-icon";
 import "../../../components/ha-svg-icon";
 import type { AreaRegistryEntry } from "../../../data/area_registry";
 import { forwardHaptic } from "../../../data/haptics";
-import { computeCssVariable } from "../../../resources/css-variables";
 import type { HomeAssistant } from "../../../types";
 import type { AreaCardFeatureContext } from "../cards/hui-area-card";
 import type { LovelaceCardFeature, LovelaceCardFeatureEditor } from "../types";
@@ -258,8 +257,12 @@ class HuiAreaControlsCardFeature
             ? ensureArray(button.filter.device_class)[0]
             : undefined;
 
-          const activeColor = computeCssVariable(
-            domainColorProperties(domain, deviceClass, groupState, true)
+          const activeColor = domainStateColor(
+            this,
+            domain,
+            deviceClass,
+            groupState,
+            true
           );
 
           return html`

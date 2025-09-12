@@ -7,7 +7,7 @@ import { classMap } from "lit/directives/class-map";
 import { styleMap } from "lit/directives/style-map";
 import { applyThemesOnElement } from "../../../common/dom/apply_themes_on_element";
 import { fireEvent } from "../../../common/dom/fire_event";
-import { stateColorCss } from "../../../common/entity/state_color";
+import { stateColor } from "../../../common/entity/state_color";
 import { supportsFeature } from "../../../common/entity/supports-feature";
 import "../../../components/chips/ha-assist-chip";
 import "../../../components/ha-button";
@@ -241,7 +241,7 @@ class HuiAlarmPanelCard extends LitElement implements LovelaceCard {
           <ha-assist-chip
             filled
             style=${styleMap({
-              "--alarm-state-color": stateColorCss(stateObj),
+              "--alarm-state-color": stateColor(this, stateObj),
             })}
             class=${classMap({ [stateObj.state]: true })}
             @click=${this._handleMoreInfo}

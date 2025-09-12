@@ -3,7 +3,7 @@ import { html, LitElement } from "lit";
 import { customElement, property, state } from "lit/decorators";
 import { styleMap } from "lit/directives/style-map";
 import { computeDomain } from "../../../common/entity/compute_domain";
-import { stateColorCss } from "../../../common/entity/state_color";
+import { stateColor } from "../../../common/entity/state_color";
 import "../../../components/ha-control-button";
 import "../../../components/ha-control-button-group";
 import "../../../components/ha-control-select";
@@ -130,7 +130,7 @@ class HuiWaterHeaterOperationModeCardFeature
       return null;
     }
 
-    const color = stateColorCss(this._stateObj);
+    const color = stateColor(this, this._stateObj);
 
     const orderedModes = (this._stateObj.attributes.operation_list || [])
       .concat()

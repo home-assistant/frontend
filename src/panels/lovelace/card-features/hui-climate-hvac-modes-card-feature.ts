@@ -5,7 +5,7 @@ import { customElement, property, query, state } from "lit/decorators";
 import { styleMap } from "lit/directives/style-map";
 import { stopPropagation } from "../../../common/dom/stop_propagation";
 import { computeDomain } from "../../../common/entity/compute_domain";
-import { stateColorCss } from "../../../common/entity/state_color";
+import { stateColor } from "../../../common/entity/state_color";
 import "../../../components/ha-control-select";
 import type { ControlSelectOption } from "../../../components/ha-control-select";
 import "../../../components/ha-control-select-menu";
@@ -145,7 +145,7 @@ class HuiClimateHvacModesCardFeature
       return null;
     }
 
-    const color = stateColorCss(this._stateObj);
+    const color = stateColor(this, this._stateObj);
 
     const ordererHvacModes = (this._stateObj.attributes.hvac_modes || [])
       .concat()

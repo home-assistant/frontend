@@ -7,7 +7,7 @@ import { styleMap } from "lit/directives/style-map";
 import { applyThemesOnElement } from "../../../common/dom/apply_themes_on_element";
 import { fireEvent } from "../../../common/dom/fire_event";
 import { computeStateName } from "../../../common/entity/compute_state_name";
-import { stateColorCss } from "../../../common/entity/state_color";
+import { stateColor } from "../../../common/entity/state_color";
 import "../../../components/ha-card";
 import "../../../components/ha-icon-button";
 import type { HumidifierEntity } from "../../../data/humidifier";
@@ -135,7 +135,7 @@ export class HuiHumidifierCard extends LitElement implements LovelaceCard {
 
     const name = this._config!.name || computeStateName(stateObj);
 
-    const color = stateColorCss(stateObj);
+    const color = stateColor(this, stateObj);
 
     const controlMaxWidth = this._resizeController.value
       ? `${this._resizeController.value}px`

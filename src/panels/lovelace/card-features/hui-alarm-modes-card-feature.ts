@@ -5,7 +5,7 @@ import { customElement, property, state } from "lit/decorators";
 import { styleMap } from "lit/directives/style-map";
 import memoizeOne from "memoize-one";
 import { computeDomain } from "../../../common/entity/compute_domain";
-import { stateColorCss } from "../../../common/entity/state_color";
+import { stateColor } from "../../../common/entity/state_color";
 import "../../../components/ha-control-button";
 import "../../../components/ha-control-button-group";
 import "../../../components/ha-control-select";
@@ -143,7 +143,7 @@ class HuiAlarmModeCardFeature
       return nothing;
     }
 
-    const color = stateColorCss(this._stateObj);
+    const color = stateColor(this, this._stateObj);
 
     const supportedModes = supportedAlarmModes(this._stateObj).reverse();
 

@@ -5,7 +5,7 @@ import { styleMap } from "lit/directives/style-map";
 import { UNIT_F } from "../../../common/const";
 import { computeDomain } from "../../../common/entity/compute_domain";
 import { computeStateDomain } from "../../../common/entity/compute_state_domain";
-import { stateColorCss } from "../../../common/entity/state_color";
+import { stateColor } from "../../../common/entity/state_color";
 import { supportsFeature } from "../../../common/entity/supports-feature";
 import { debounce } from "../../../common/util/debounce";
 import "../../../components/ha-control-button-group";
@@ -192,7 +192,7 @@ class HuiTargetTemperatureCardFeature
       return nothing;
     }
 
-    const stateColor = stateColorCss(this._stateObj);
+    const color = stateColor(this, this._stateObj);
     const digits = this._step.toString().split(".")?.[1]?.length ?? 0;
 
     const options = {
@@ -221,7 +221,7 @@ class HuiTargetTemperatureCardFeature
               "temperature"
             )}
             style=${styleMap({
-              "--control-number-buttons-focus-color": stateColor,
+              "--control-number-buttons-focus-color": color,
             })}
             .disabled=${this._stateObj!.state === UNAVAILABLE}
             .locale=${this.hass.locale}

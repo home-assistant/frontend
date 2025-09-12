@@ -7,7 +7,7 @@ import { classMap } from "lit/directives/class-map";
 import { styleMap } from "lit/directives/style-map";
 import { computeDomain } from "../common/entity/compute_domain";
 import { stateActive } from "../common/entity/state_active";
-import { stateColorCss } from "../common/entity/state_color";
+import { stateColor } from "../common/entity/state_color";
 import "../components/ha-control-button";
 import "../components/ha-control-switch";
 import { UNAVAILABLE, UNKNOWN } from "../data/entity";
@@ -65,8 +65,8 @@ export class HaStateControlToggle extends LitElement {
   }
 
   protected render(): TemplateResult {
-    const onColor = stateColorCss(this.stateObj, "on");
-    const offColor = stateColorCss(this.stateObj, "off");
+    const onColor = stateColor(this, this.stateObj, "on");
+    const offColor = stateColor(this, this.stateObj, "off");
 
     const isOn = this.stateObj.state === "on";
     const isOff = this.stateObj.state === "off";

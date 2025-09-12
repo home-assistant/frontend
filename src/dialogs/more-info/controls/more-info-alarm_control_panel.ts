@@ -2,7 +2,7 @@ import type { CSSResultGroup } from "lit";
 import { css, html, LitElement, nothing } from "lit";
 import { customElement, property } from "lit/decorators";
 import { styleMap } from "lit/directives/style-map";
-import { stateColorCss } from "../../../common/entity/state_color";
+import { stateColor } from "../../../common/entity/state_color";
 import "../../../components/ha-control-button";
 import "../../../components/ha-state-icon";
 import type { AlarmControlPanelEntity } from "../../../data/alarm_control_panel";
@@ -32,7 +32,7 @@ class MoreInfoAlarmControlPanel extends LitElement {
       return nothing;
     }
 
-    const color = stateColorCss(this.stateObj);
+    const color = stateColor(this, this.stateObj);
     const style = {
       "--icon-color": color,
     };

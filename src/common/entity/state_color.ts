@@ -1,11 +1,9 @@
 /** Return a color representing a state. */
 import type { HassEntity } from "home-assistant-js-websocket";
-import { UNAVAILABLE } from "../../data/entity";
 import type { GroupEntity } from "../../data/group";
 import { computeGroupDomain } from "../../data/group";
-import { computeCssVariable } from "../../resources/css-variables";
 import { slugify } from "../string/slugify";
-import { batteryStateColorProperty } from "./color/battery_color";
+import { batteryStateColor } from "./color/battery_color";
 import { computeDomain } from "./compute_domain";
 import { stateActive } from "./state_active";
 
@@ -42,73 +40,21 @@ const STATE_COLORED_DOMAIN = new Set([
   "water_heater",
 ]);
 
-export const stateColorCss = (stateObj: HassEntity, state?: string) => {
-  const compareState = state !== undefined ? state : stateObj?.state;
-  if (compareState === UNAVAILABLE) {
-    return `var(--state-unavailable-color)`;
-  }
-
-  const properties = stateColorProperties(stateObj, state);
-  if (properties) {
-    return computeCssVariable(properties);
-  }
-
-  return undefined;
-};
-
-export const domainStateColorProperties = (
-  domain: string,
+export const stateColor = (
+  element: HTMLElement | CSSStyleDeclaration,
   stateObj: HassEntity,
   state?: string
-): string[] => {
+) => {
+  const domain = computeDomain(stateObj.entity_id);
+  const dc = stateObj.attributes.device_class;
   const compareState = state !== undefined ? state : stateObj.state;
   const active = stateActive(stateObj, state);
 
-  return domainColorProperties(
-    domain,
-    stateObj.attributes.device_class,
-    compareState,
-    active
-  );
-};
-
-export const domainColorProperties = (
-  domain: string,
-  deviceClass: string | undefined,
-  state: string,
-  active: boolean
-) => {
-  const properties: string[] = [];
-
-  const stateKey = slugify(state, "_");
-  const activeKey = active ? "active" : "inactive";
-
-  if (deviceClass) {
-    properties.push(`--state-${domain}-${deviceClass}-${stateKey}-color`);
-  }
-
-  properties.push(
-    `--state-${domain}-${stateKey}-color`,
-    `--state-${domain}-${activeKey}-color`,
-    `--state-${activeKey}-color`
-  );
-
-  return properties;
-};
-
-export const stateColorProperties = (
-  stateObj: HassEntity,
-  state?: string
-): string[] | undefined => {
-  const compareState = state !== undefined ? state : stateObj?.state;
-  const domain = computeDomain(stateObj.entity_id);
-  const dc = stateObj.attributes.device_class;
-
   // Special rules for battery coloring
   if (domain === "sensor" && dc === "battery") {
-    const property = batteryStateColorProperty(compareState);
+    const property = batteryStateColor(compareState);
     if (property) {
-      return [property];
+      return property;
     }
   }
 
@@ -116,14 +62,54 @@ export const stateColorProperties = (
   if (domain === "group") {
     const groupDomain = computeGroupDomain(stateObj as GroupEntity);
     if (groupDomain && STATE_COLORED_DOMAIN.has(groupDomain)) {
-      return domainStateColorProperties(groupDomain, stateObj, state);
+      return domainStateColor(
+        element,
+        groupDomain,
+        undefined,
+        compareState,
+        active
+      );
     }
   }
 
   if (STATE_COLORED_DOMAIN.has(domain)) {
-    return domainStateColorProperties(domain, stateObj, state);
+    return domainStateColor(element, domain, dc, compareState, active);
   }
 
+  return undefined;
+};
+
+export const domainStateColor = (
+  element: HTMLElement | CSSStyleDeclaration,
+  domain: string,
+  deviceClass: string | undefined,
+  state: string,
+  active: boolean
+) => {
+  const style =
+    element instanceof CSSStyleDeclaration
+      ? element
+      : getComputedStyle(element);
+
+  const stateKey = slugify(state, "_");
+  const activeKey = active ? "active" : "inactive";
+
+  const variables = [
+    `--state-${domain}-${stateKey}-color`,
+    `--state-${domain}-${activeKey}-color`,
+    `--state-${activeKey}-color`,
+  ];
+
+  if (deviceClass) {
+    variables.unshift(`--state-${domain}-${deviceClass}-${stateKey}-color`);
+  }
+
+  for (const variable of variables) {
+    const value = style.getPropertyValue(variable).trim();
+    if (value) {
+      return value;
+    }
+  }
   return undefined;
 };
 

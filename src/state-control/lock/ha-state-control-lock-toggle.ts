@@ -3,7 +3,7 @@ import { css, html, LitElement } from "lit";
 import { customElement, property, state } from "lit/decorators";
 import { classMap } from "lit/directives/class-map";
 import { styleMap } from "lit/directives/style-map";
-import { stateColorCss } from "../../common/entity/state_color";
+import { stateColor } from "../../common/entity/state_color";
 import "../../components/ha-control-button";
 import "../../components/ha-control-switch";
 import "../../components/ha-state-icon";
@@ -82,7 +82,7 @@ export class HaStateControlLockToggle extends LitElement {
     const locking = this.stateObj.state === "locking";
     const unlocking = this.stateObj.state === "unlocking";
 
-    const color = stateColorCss(this.stateObj);
+    const color = stateColor(this, this.stateObj);
 
     if (this.stateObj.state === UNKNOWN) {
       return html`

@@ -4,7 +4,7 @@ import { css, html, LitElement } from "lit";
 import { customElement, property } from "lit/decorators";
 import { classMap } from "lit/directives/class-map";
 import { styleMap } from "lit/directives/style-map";
-import { stateColorCss } from "../../common/entity/state_color";
+import { stateColor } from "../../common/entity/state_color";
 import "../../components/ha-control-button";
 import "../../components/ha-control-switch";
 import "../../components/ha-state-icon";
@@ -52,8 +52,8 @@ export class HaStateControlCoverToggle extends LitElement {
   }
 
   protected render(): TemplateResult {
-    const onColor = stateColorCss(this.stateObj, "open");
-    const offColor = stateColorCss(this.stateObj, "closed");
+    const onColor = stateColor(this, this.stateObj, "open");
+    const offColor = stateColor(this, this.stateObj, "closed");
 
     const isOn =
       this.stateObj.state === "open" ||

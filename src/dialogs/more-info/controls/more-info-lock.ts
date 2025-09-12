@@ -3,7 +3,7 @@ import type { CSSResultGroup } from "lit";
 import { LitElement, css, html, nothing } from "lit";
 import { customElement, property, state } from "lit/decorators";
 import { styleMap } from "lit/directives/style-map";
-import { stateColorCss } from "../../../common/entity/state_color";
+import { stateColor } from "../../../common/entity/state_color";
 import { supportsFeature } from "../../../common/entity/supports-feature";
 import "../../../components/ha-attributes";
 import "../../../components/ha-control-button";
@@ -82,7 +82,7 @@ class MoreInfoLock extends LitElement {
 
     const supportsOpen = supportsFeature(this.stateObj, LockEntityFeature.OPEN);
 
-    const color = stateColorCss(this.stateObj);
+    const color = stateColor(this, this.stateObj);
     const style = {
       "--state-color": color,
     };

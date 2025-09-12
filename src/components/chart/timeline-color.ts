@@ -3,7 +3,7 @@ import { getGraphColorByIndex } from "../../common/color/colors";
 import { hex2rgb, lab2hex, rgb2lab } from "../../common/color/convert-color";
 import { labBrighten } from "../../common/color/lab";
 import { computeDomain } from "../../common/entity/compute_domain";
-import { stateColorProperties } from "../../common/entity/state_color";
+import { stateColor } from "../../common/entity/state_color";
 import { UNAVAILABLE, UNKNOWN } from "../../data/entity";
 import { computeCssValue } from "../../resources/css-variables";
 
@@ -30,22 +30,16 @@ function computeTimelineStateColor(
     return computeCssValue("--history-unknown-color", computedStyles);
   }
 
-  const properties = stateColorProperties(stateObj, state);
+  const color = stateColor(computedStyles, stateObj, state);
 
-  if (!properties) {
-    return undefined;
-  }
-
-  const rgb = computeCssValue(properties, computedStyles);
-
-  if (!rgb) return undefined;
+  if (!color) return undefined;
 
   const domain = computeDomain(stateObj.entity_id);
   const shade = DOMAIN_STATE_SHADES[domain]?.[state] as number | number;
   if (!shade) {
-    return rgb;
+    return color;
   }
-  return lab2hex(labBrighten(rgb2lab(hex2rgb(rgb)), shade));
+  return lab2hex(labBrighten(rgb2lab(hex2rgb(color)), shade));
 }
 
 let colorIndex = 0;

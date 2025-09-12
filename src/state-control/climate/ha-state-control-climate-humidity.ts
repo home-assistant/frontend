@@ -4,7 +4,7 @@ import { LitElement, html } from "lit";
 import { customElement, property, state } from "lit/decorators";
 import { styleMap } from "lit/directives/style-map";
 import { stateActive } from "../../common/entity/state_active";
-import { domainStateColorProperties } from "../../common/entity/state_color";
+import { domainStateColor } from "../../common/entity/state_color";
 import { supportsFeature } from "../../common/entity/supports-feature";
 import { clamp } from "../../common/number/clamp";
 import { debounce } from "../../common/util/debounce";
@@ -15,7 +15,6 @@ import "../../components/ha-svg-icon";
 import type { ClimateEntity } from "../../data/climate";
 import { ClimateEntityFeature } from "../../data/climate";
 import { UNAVAILABLE } from "../../data/entity";
-import { computeCssVariable } from "../../resources/css-variables";
 import type { HomeAssistant } from "../../types";
 import {
   createStateControlCircularSliderController,
@@ -172,14 +171,13 @@ export class HaStateControlClimateHumidity extends LitElement {
     const active = stateActive(this.stateObj);
 
     // Use humidifier state color
-    const stateColor = computeCssVariable(
-      domainStateColorProperties(
-        "humidifier",
-        this.stateObj,
-        active ? "on" : "off"
-      )
+    const stateColor = domainStateColor(
+      this,
+      "humidifier",
+      undefined,
+      this.stateObj.state,
+      active
     );
-
     const targetHumidity = this._targetHumidity;
     const currentHumidity = this.stateObj.attributes.current_humidity;
 

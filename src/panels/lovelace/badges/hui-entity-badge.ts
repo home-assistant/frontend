@@ -11,7 +11,7 @@ import { computeDomain } from "../../../common/entity/compute_domain";
 import { computeStateDomain } from "../../../common/entity/compute_state_domain";
 import { computeStateName } from "../../../common/entity/compute_state_name";
 import { stateActive } from "../../../common/entity/state_active";
-import { stateColorCss } from "../../../common/entity/state_color";
+import { stateColor } from "../../../common/entity/state_color";
 import "../../../components/ha-badge";
 import "../../../components/ha-ripple";
 import "../../../components/ha-state-icon";
@@ -132,7 +132,7 @@ export class HuiEntityBadge extends LitElement implements LovelaceBadge {
       }
 
       // Fallback to state color
-      return stateColorCss(stateObj);
+      return stateColor(this, stateObj);
     }
   );
 

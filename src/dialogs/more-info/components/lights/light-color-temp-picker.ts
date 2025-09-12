@@ -10,7 +10,7 @@ import {
   temperature2rgb,
 } from "../../../../common/color/convert-light-color";
 import { fireEvent } from "../../../../common/dom/fire_event";
-import { stateColorCss } from "../../../../common/entity/state_color";
+import { stateColor } from "../../../../common/entity/state_color";
 import { throttle } from "../../../../common/util/throttle";
 import "../../../../components/ha-control-slider";
 import { UNAVAILABLE } from "../../../../data/entity";
@@ -66,7 +66,7 @@ class LightColorTempPicker extends LitElement {
       this.stateObj.attributes.max_color_temp_kelvin ?? DEFAULT_MAX_KELVIN;
 
     const gradient = this._generateTemperatureGradient(minKelvin!, maxKelvin);
-    const color = stateColorCss(this.stateObj);
+    const color = stateColor(this, this.stateObj);
 
     return html`
       <ha-control-slider

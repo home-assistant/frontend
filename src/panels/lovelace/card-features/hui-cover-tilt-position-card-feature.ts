@@ -4,7 +4,7 @@ import { styleMap } from "lit/directives/style-map";
 import { computeCssColor } from "../../../common/color/compute-color";
 import { computeAttributeNameDisplay } from "../../../common/entity/compute_attribute_display";
 import { computeDomain } from "../../../common/entity/compute_domain";
-import { stateColorCss } from "../../../common/entity/state_color";
+import { stateColor } from "../../../common/entity/state_color";
 import { supportsFeature } from "../../../common/entity/supports-feature";
 import type { CoverEntity } from "../../../data/cover";
 import { CoverEntityFeature } from "../../../data/cover";
@@ -84,11 +84,11 @@ class HuiCoverTiltPositionCardFeature
 
     const value = Math.max(Math.round(percentage), 0);
 
-    const openColor = stateColorCss(this._stateObj, "open");
+    const openColor = stateColor(this, this._stateObj, "open");
 
     const color = this.color
       ? computeCssColor(this.color)
-      : stateColorCss(this._stateObj);
+      : stateColor(this, this._stateObj);
 
     const style = {
       "--feature-color": color,

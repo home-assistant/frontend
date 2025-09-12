@@ -6,7 +6,6 @@ import { classMap } from "lit/directives/class-map";
 import { styleMap } from "lit/directives/style-map";
 import { UNIT_F } from "../../common/const";
 import { stateActive } from "../../common/entity/state_active";
-import { stateColorCss } from "../../common/entity/state_color";
 import { supportsFeature } from "../../common/entity/supports-feature";
 import { clamp } from "../../common/number/clamp";
 import { formatNumber } from "../../common/number/format_number";
@@ -28,6 +27,7 @@ import {
   createStateControlCircularSliderController,
   stateControlCircularSliderStyle,
 } from "../state-control-circular-slider-style";
+import { stateColor } from "../../common/entity/state_color";
 
 type Target = "value" | "low" | "high";
 
@@ -189,8 +189,8 @@ export class HaStateControlClimateTemperature extends LitElement {
   }
 
   private _renderTemperatureButtons(target: Target, colored?: boolean) {
-    const lowColor = stateColorCss(this.stateObj, "heat");
-    const highColor = stateColorCss(this.stateObj, "cool");
+    const lowColor = stateColor(this, this.stateObj, "heat");
+    const highColor = stateColor(this, this.stateObj, "cool");
 
     const color =
       colored && stateActive(this.stateObj)
@@ -414,13 +414,14 @@ export class HaStateControlClimateTemperature extends LitElement {
     const action = this.stateObj.attributes.hvac_action;
     const active = stateActive(this.stateObj);
 
-    const stateColor = stateColorCss(this.stateObj);
-    const lowColor = stateColorCss(this.stateObj, active ? "heat" : "off");
-    const highColor = stateColorCss(this.stateObj, active ? "cool" : "off");
+    const color = stateColor(this, this.stateObj);
+    const lowColor = stateColor(this, this.stateObj, active ? "heat" : "off");
+    const highColor = stateColor(this, this.stateObj, active ? "cool" : "off");
 
     let actionColor: string | undefined;
     if (action && action !== "idle" && action !== "off" && active) {
-      actionColor = stateColorCss(
+      actionColor = stateColor(
+        this,
         this.stateObj,
         CLIMATE_HVAC_ACTION_TO_MODE[action]
       );
@@ -448,7 +449,7 @@ export class HaStateControlClimateTemperature extends LitElement {
         <div
           class="container${containerSizeClass}"
           style=${styleMap({
-            "--state-color": stateColor,
+            "--state-color": color,
             "--action-color": actionColor,
           })}
         >

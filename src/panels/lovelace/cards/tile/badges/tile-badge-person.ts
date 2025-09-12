@@ -2,7 +2,7 @@ import { mdiHome, mdiHomeExportOutline } from "@mdi/js";
 import type { HassEntity } from "home-assistant-js-websocket";
 import { html } from "lit";
 import { styleMap } from "lit/directives/style-map";
-import { stateColorCss } from "../../../../../common/entity/state_color";
+import { stateColor } from "../../../../../common/entity/state_color";
 import "../../../../../components/ha-icon";
 import "../../../../../components/ha-svg-icon";
 import "../../../../../components/tile/ha-tile-badge";
@@ -20,7 +20,11 @@ function getZone(entity: HassEntity, hass: HomeAssistant) {
   return zones.find((z) => state === z.attributes.friendly_name);
 }
 
-export const renderPersonBadge: RenderBadgeFunction = (stateObj, hass) => {
+export const renderPersonBadge: RenderBadgeFunction = (
+  element,
+  stateObj,
+  hass
+) => {
   const zone = getZone(stateObj, hass);
 
   const zoneIcon = zone?.attributes.icon;
@@ -29,7 +33,7 @@ export const renderPersonBadge: RenderBadgeFunction = (stateObj, hass) => {
     return html`
       <ha-tile-badge
         style=${styleMap({
-          "--tile-badge-background-color": stateColorCss(stateObj),
+          "--tile-badge-background-color": stateColor(element, stateObj),
         })}
       >
         <ha-icon .icon=${zoneIcon}></ha-icon>
@@ -43,7 +47,7 @@ export const renderPersonBadge: RenderBadgeFunction = (stateObj, hass) => {
   return html`
     <ha-tile-badge
       style=${styleMap({
-        "--tile-badge-background-color": stateColorCss(stateObj),
+        "--tile-badge-background-color": stateColor(element, stateObj),
       })}
     >
       <ha-svg-icon .path=${defaultIcon}></ha-svg-icon>

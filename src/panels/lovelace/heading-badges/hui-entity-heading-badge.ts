@@ -9,7 +9,7 @@ import { hsv2rgb, rgb2hex, rgb2hsv } from "../../../common/color/convert-color";
 import { computeDomain } from "../../../common/entity/compute_domain";
 import { computeStateName } from "../../../common/entity/compute_state_name";
 import { stateActive } from "../../../common/entity/state_active";
-import { stateColorCss } from "../../../common/entity/state_color";
+import { stateColor } from "../../../common/entity/state_color";
 import "../../../components/ha-heading-badge";
 import "../../../components/ha-state-icon";
 import type { ActionHandlerEvent } from "../../../data/lovelace/action_handler";
@@ -97,7 +97,7 @@ export class HuiEntityHeadingBadge
           return rgb2hex(hsv2rgb(hsvColor));
         }
         // Fallback to state color
-        return stateColorCss(entity);
+        return stateColor(this, entity);
       }
 
       if (color) {
