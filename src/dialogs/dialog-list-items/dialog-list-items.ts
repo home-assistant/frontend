@@ -84,7 +84,7 @@ export class ListItemsDialog
     if (this._params.mode === "bottom-sheet") {
       return html`
         <ha-bottom-sheet placement="bottom" open @closed=${this._dialogClosed}>
-          ${content}
+          ${content} ${content} ${content} ${content} ${content} ${content}
         </ha-bottom-sheet>
       `;
     }
