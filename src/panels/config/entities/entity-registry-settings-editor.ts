@@ -90,7 +90,6 @@ import { showVoiceAssistantsView } from "../../../dialogs/more-info/components/v
 import { showMoreInfoDialog } from "../../../dialogs/more-info/show-ha-more-info-dialog";
 import { haStyle } from "../../../resources/styles";
 import type { HomeAssistant } from "../../../types";
-import { showToast } from "../../../util/toast";
 import { showDeviceRegistryDetailDialog } from "../devices/device-registry-detail/show-dialog-device-registry-detail";
 
 const OVERRIDE_DEVICE_CLASSES = {
@@ -1430,16 +1429,11 @@ export class EntityRegistrySettingsEditor extends LitElement {
     if (!isComponentLoaded(this.hass, "recorder")) {
       return;
     }
-    try {
-      const settings = await getEntityRecordingSettings(
-        this.hass,
-        this.entry.entity_id
-      );
-      this._recordingDisabled = settings?.recording_disabled_by !== null;
-    } catch (_err) {
-      // Ignore errors, recording settings might not be available
-      this._recordingDisabled = false;
-    }
+    // Get recording settings from entity registry entry options
+    const recorderOptions = this.entry.options?.recorder;
+    this._recordingDisabled =
+      recorderOptions?.recording_disabled_by !== null &&
+      recorderOptions?.recording_disabled_by !== undefined;
   }
 
   private async _fetchCameraPrefs() {
@@ -1516,13 +1510,6 @@ export class EntityRegistrySettingsEditor extends LitElement {
         newRecordingDisabled ? "user" : null
       );
       this._recordingDisabled = newRecordingDisabled;
-      showToast(this, {
-        message: this.hass.localize(
-          newRecordingDisabled
-            ? "ui.dialogs.entity_registry.editor.recording_disabled"
-            : "ui.dialogs.entity_registry.editor.recording_enabled"
-        ),
-      });
     } catch (err: any) {
       showAlertDialog(this, { text: err.message });
       checkbox.checked = !checkbox.checked;
