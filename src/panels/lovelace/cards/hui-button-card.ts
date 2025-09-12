@@ -330,7 +330,7 @@ export class HuiButtonCard extends LitElement implements LovelaceCard {
   }
 
   private _computeColor(
-    stateObj: HassEntity,
+    stateObj: HassEntity | undefined,
     config: ButtonCardConfig
   ): string | undefined {
     if (config.color) {
