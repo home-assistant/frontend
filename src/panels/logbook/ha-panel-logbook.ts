@@ -104,6 +104,7 @@ export class HaPanelLogbook extends LitElement {
               .value=${this._targetPickerValue}
               add-on-top
               @value-changed=${this._targetsChanged}
+              compact
             ></ha-target-picker>
           </div>
 

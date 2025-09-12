@@ -182,6 +182,7 @@ class HaPanelHistory extends LitElement {
               .disabled=${this._isLoading}
               add-on-top
               @value-changed=${this._targetsChanged}
+              compact
             ></ha-target-picker>
           </div>
           ${this._isLoading
