@@ -6,11 +6,8 @@ import "../../../components/ha-settings-row";
 import "../../../components/ha-switch";
 import type { HaSwitch } from "../../../components/ha-switch";
 import "../../../components/ha-textfield";
-import {
-  getEntityRecordingSettings,
-  setEntityRecordingOptions,
-} from "../../../data/recorder";
-import { showAlertDialog } from "../../../dialogs/generic/show-dialog-box";
+import { getEntityRecordingSettings } from "../../../data/recorder";
+import { handleRecordingChange } from "./recorder-util";
 import { haStyle } from "../../../resources/styles";
 import type { HomeAssistant } from "../../../types";
 
@@ -87,27 +84,23 @@ export class EntitySettingsWithoutUniqueId extends LitElement {
 
   private async _recordingChanged(ev: CustomEvent): void {
     const checkbox = ev.currentTarget as HaSwitch;
-    const newRecordingDisabled = !checkbox.checked;
 
-    try {
-      await setEntityRecordingOptions(
-        this.hass,
-        [this.entityId],
-        newRecordingDisabled ? "user" : null
-      );
-      this._recordingDisabled = newRecordingDisabled;
-      // Fire event to notify entities table to refresh recording data
-      this.dispatchEvent(
-        new CustomEvent("entity-recording-updated", {
-          detail: { entityId: this.entityId },
-          bubbles: true,
-          composed: true,
-        })
-      );
-    } catch (err: any) {
-      showAlertDialog(this, { text: err.message });
-      checkbox.checked = !checkbox.checked;
-    }
+    await handleRecordingChange({
+      hass: this.hass,
+      entityId: this.entityId,
+      checkbox,
+      onSuccess: (recordingDisabled) => {
+        this._recordingDisabled = recordingDisabled;
+        // Fire event to notify entities table to refresh recording data
+        this.dispatchEvent(
+          new CustomEvent("entity-recording-updated", {
+            detail: { entityId: this.entityId },
+            bubbles: true,
+            composed: true,
+          })
+        );
+      },
+    });
   }
 
   static get styles(): CSSResultGroup {

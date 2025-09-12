@@ -64,8 +64,8 @@ import {
   subscribeEntityRegistry,
   updateEntityRegistryEntry,
 } from "../../../data/entity_registry";
-import { setEntityRecordingOptions } from "../../../data/recorder";
 import { entityIcon, entryIcon } from "../../../data/icons";
+import { handleRecordingChange } from "./recorder-util";
 import {
   domainToName,
   fetchIntegrationManifest,
@@ -1499,24 +1499,15 @@ export class EntityRegistrySettingsEditor extends LitElement {
 
   private async _recordingChanged(ev: CustomEvent): void {
     const checkbox = ev.currentTarget as HaSwitch;
-    const newRecordingDisabled = !checkbox.checked;
 
-    try {
-      await setEntityRecordingOptions(
-        this.hass,
-        [this.entry.entity_id],
-        newRecordingDisabled ? "user" : null
-      );
-      this._recordingDisabled = newRecordingDisabled;
-    } catch (err: any) {
-      showAlertDialog(this, {
-        title: this.hass.localize(
-          "ui.dialogs.entity_registry.editor.error_updating_recording_settings"
-        ),
-        text: err.message,
-      });
-      checkbox.checked = !checkbox.checked;
-    }
+    await handleRecordingChange({
+      hass: this.hass,
+      entityId: this.entry.entity_id,
+      checkbox,
+      onSuccess: (recordingDisabled) => {
+        this._recordingDisabled = recordingDisabled;
+      },
+    });
   }
 
   private _openDeviceSettings() {
