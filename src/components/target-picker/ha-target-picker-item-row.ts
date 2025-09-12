@@ -6,7 +6,7 @@ import {
   mdiTextureBox,
 } from "@mdi/js";
 import { css, html, LitElement, nothing, type PropertyValues } from "lit";
-import { customElement, property, state } from "lit/decorators";
+import { customElement, property, query, state } from "lit/decorators";
 import memoizeOne from "memoize-one";
 import { fireEvent } from "../../common/dom/fire_event";
 import { computeAreaName } from "../../common/entity/compute_area_name";
@@ -28,7 +28,10 @@ import type { HomeAssistant } from "../../types";
 import { brandsUrl } from "../../util/brands-url";
 import { floorDefaultIconPath } from "../ha-floor-icon";
 import "../ha-icon-button";
+import "../ha-md-list";
+import type { HaMdList } from "../ha-md-list";
 import "../ha-md-list-item";
+import type { HaMdListItem } from "../ha-md-list-item";
 import "../ha-state-icon";
 
 export type TargetType = "entity" | "device" | "area" | "label" | "floor";
@@ -39,7 +42,7 @@ export class HaTargetPickerItemRow extends LitElement {
 
   @property({ reflect: true }) public type!: TargetType;
 
-  @property() public item!: string;
+  @property({ attribute: "item-id" }) public itemId!: string;
 
   @property({ type: Boolean, attribute: "sub-entry", reflect: true })
   public subEntry = false;
@@ -55,8 +58,12 @@ export class HaTargetPickerItemRow extends LitElement {
 
   @state() private _entries?: ExtractFromTargetResult;
 
+  @query("ha-md-list-item") public item?: HaMdListItem;
+
+  @query("ha-md-list") public list?: HaMdList;
+
   protected willUpdate(changedProps: PropertyValues) {
-    if (!this.subEntry && changedProps.has("item")) {
+    if (!this.subEntry && changedProps.has("itemId")) {
       this._updateItemData();
       this._expanded = false;
     }
@@ -64,7 +71,7 @@ export class HaTargetPickerItemRow extends LitElement {
 
   protected render() {
     const { name, context, iconPath, fallbackIconPath, stateObject } =
-      this._itemData(this.type, this.item);
+      this._itemData(this.type, this.itemId);
 
     const showDevices = ["floor", "area", "label"].includes(this.type);
     const showEntities = this.type !== "entity";
@@ -72,7 +79,7 @@ export class HaTargetPickerItemRow extends LitElement {
     const entries = this.parentEntries || this._entries;
 
     return html`
-      <ha-md-list-item>
+        <ha-md-list-item .type=${this.type === "entity" ? "text" : "button"} @click=${this._toggleExpand}>
         ${
           this.type !== "entity"
             ? html`<ha-icon-button
@@ -82,7 +89,6 @@ export class HaTargetPickerItemRow extends LitElement {
                   : ""}"
                 .path=${mdiChevronDown}
                 slot="start"
-                @click=${this._toggleExpand}
                 .disabled=${entries?.referenced_entities.length === 0}
               ></ha-icon-button>`
             : nothing
@@ -245,43 +251,41 @@ export class HaTargetPickerItemRow extends LitElement {
     const rows2 =
       nextType === "device" && entries
         ? entries.referenced_entities.filter(
-            (entity_id) => this.hass.entities[entity_id].area_id === this.item
+            (entity_id) => this.hass.entities[entity_id].area_id === this.itemId
           )
         : [];
 
     return html`
-      <div class="entries ${this._expanded ? "expanded" : ""}">
+      <ha-md-list class="entries">
         ${rows1.map(
-          (item, index) =>
-            html`
-              <ha-target-picker-item-row
-                sub-entry
-                .hass=${this.hass}
-                .type=${nextType}
-                .item=${item}
-                .parentEntries=${rows1Entries?.[index]}
-              ></ha-target-picker-item-row>
-            </ha-md-list-item>`
+          (itemId, index) => html`
+            <ha-target-picker-item-row
+              sub-entry
+              .hass=${this.hass}
+              .type=${nextType}
+              .itemId=${itemId}
+              .parentEntries=${rows1Entries?.[index]}
+            ></ha-target-picker-item-row>
+          `
         )}
         ${rows2.map(
-          (item) =>
-            html`
-              <ha-target-picker-item-row
-                sub-entry
-                .hass=${this.hass}
-                type="entity"
-                .item=${item}
-              ></ha-target-picker-item-row>
-            </ha-md-list-item>`
+          (itemId) => html`
+            <ha-target-picker-item-row
+              sub-entry
+              .hass=${this.hass}
+              type="entity"
+              .itemId=${itemId}
+            ></ha-target-picker-item-row>
+          `
         )}
-      </div>
+      </ha-md-list>
     `;
   }
 
   private async _updateItemData() {
     try {
       this._entries = await extractFromTarget(this.hass, {
-        [`${this.type}_id`]: [this.item],
+        [`${this.type}_id`]: [this.itemId],
       });
     } catch (e) {
       // eslint-disable-next-line no-console
@@ -344,10 +348,11 @@ export class HaTargetPickerItemRow extends LitElement {
     this._domainName = domainToName(this.hass.localize, domain);
   }
 
-  private _removeItem() {
+  private _removeItem(ev) {
+    ev.stopPropagation();
     fireEvent(this, "remove-target-item", {
       type: this.type,
-      id: this.item,
+      id: this.itemId,
     });
   }
 
@@ -368,6 +373,15 @@ export class HaTargetPickerItemRow extends LitElement {
   }
 
   private _toggleExpand() {
+    const entries = this.parentEntries || this._entries;
+
+    if (
+      this.type === "entity" ||
+      !entries ||
+      entries.referenced_entities.length === 0
+    ) {
+      return;
+    }
     this._expanded = !this._expanded;
   }
 
@@ -430,12 +444,10 @@ export class HaTargetPickerItemRow extends LitElement {
       padding-left: 32px;
       overflow: hidden;
       transition: height 300ms cubic-bezier(0.4, 0, 0.2, 1);
-    }
-
-    .entries.expanded {
       border-bottom: 1px solid var(--ha-color-border-neutral-quiet);
     }
-    :host([sub-entry]) .entries.expanded {
+
+    :host([sub-entry]) .entries {
       border-bottom: none;
     }
   `;

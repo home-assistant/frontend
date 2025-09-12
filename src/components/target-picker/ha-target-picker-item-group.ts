@@ -43,7 +43,7 @@ export class HaTargetPickerItemGroup extends LitElement {
             html`<ha-target-picker-item-row
               .hass=${this.hass}
               .type=${this.type}
-              .item=${item}
+              .itemId=${item}
             ></ha-target-picker-item-row>`
         )}
       </ha-md-list>
