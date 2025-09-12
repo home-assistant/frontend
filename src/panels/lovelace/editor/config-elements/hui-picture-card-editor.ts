@@ -26,7 +26,7 @@ const cardConfigStruct = assign(
 );
 
 const SCHEMA = [
-  { name: "image", selector: { image: {} } },
+  { name: "image", selector: { image: { supports_media: true } } },
   {
     name: "image_entity",
     selector: { entity: { domain: ["image", "person"] } },
