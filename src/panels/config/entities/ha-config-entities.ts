@@ -1150,7 +1150,17 @@ ${
       : ""
   }
 
-  <ha-md-menu-item .clickAction=${this._restoreEntityIdSelected}>
+  <ha-md-menu-item 
+    .clickAction=${hasNonUniqueIdEntities ? undefined : this._restoreEntityIdSelected}
+    .disabled=${hasNonUniqueIdEntities}
+    .title=${
+      hasNonUniqueIdEntities
+        ? this.hass.localize(
+            "ui.panel.config.entities.picker.non_unique_id_selected"
+          )
+        : ""
+    }
+  >
     <ha-svg-icon
       slot="start"
       .path=${mdiRestore}
@@ -1164,7 +1174,18 @@ ${
 
   <ha-md-divider role="separator" tabindex="-1"></ha-md-divider>
 
-  <ha-md-menu-item .clickAction=${this._removeSelected} class="warning">
+  <ha-md-menu-item 
+    .clickAction=${hasNonUniqueIdEntities ? undefined : this._removeSelected}
+    .disabled=${hasNonUniqueIdEntities}
+    .title=${
+      hasNonUniqueIdEntities
+        ? this.hass.localize(
+            "ui.panel.config.entities.picker.non_unique_id_selected"
+          )
+        : ""
+    }
+    class="warning"
+  >
     <ha-svg-icon
       slot="start"
       .path=${mdiDelete}
