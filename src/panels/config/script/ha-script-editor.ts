@@ -21,7 +21,6 @@ import { LitElement, css, html, nothing } from "lit";
 import { property, query, state } from "lit/decorators";
 import { classMap } from "lit/directives/class-map";
 import type { Schema } from "js-yaml";
-import { DEFAULT_SCHEMA } from "js-yaml";
 import { fireEvent } from "../../../common/dom/fire_event";
 import { navigate } from "../../../common/navigate";
 import { slugify } from "../../../common/string/slugify";

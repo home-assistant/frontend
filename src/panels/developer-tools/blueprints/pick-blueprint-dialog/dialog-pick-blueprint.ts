@@ -1,6 +1,6 @@
 import { customElement, property, state } from "lit/decorators";
 import { css, type CSSResultGroup, html, LitElement, nothing } from "lit";
-import { mdiHomeAutomation, mdiPencilOutline, mdiRobot, mdiScript } from "@mdi/js";
+import { mdiPencilOutline, mdiRobot, mdiScript } from "@mdi/js";
 import type { HassDialog } from "../../../../dialogs/make-dialog-manager";
 import type { HomeAssistant } from "../../../../types";
 import { fireEvent } from "../../../../common/dom/fire_event";

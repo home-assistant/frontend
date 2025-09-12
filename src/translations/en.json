@@ -9011,14 +9011,14 @@
           },
           "blueprints": {
             "title": "Blueprints",
-            "dialog_new": {
-              "header": "Add a blueprint",
+            "dialog_pick": {
+              "header": "Pick a blueprint",
+              "automation": "Automation",
+              "script": "Script",
               "create_empty_automation": "Create new automation blueprint",
               "create_empty_automation_description": "Start with an empty automation blueprint from scratch",
               "create_empty_script": "Create new script blueprint",
-              "create_empty_script_description": "Start with an empty script blueprint from scratch",
-              "import_external": "Import a blueprint",
-              "import_external_description": "Import an existing blueprint from the internet"
+              "create_empty_script_description": "Start with an empty script blueprint from scratch"
             },
             "editor": {
               "default_name": "New blueprint",
@@ -9035,6 +9035,8 @@
               "missing_path": "Cannot save blueprint without a path",
               "missing_name": "Cannot save blueprint without a name",
               "metadata": "Metadata",
+              "error": "There is a problem with the selected blueprint. Please fix it in the YAML editor.",
+              "none_selected": "Please pick a blueprint to edit it.",
               "actions": {
                 "delete": "Delete",
                 "duplicate": "Duplicate",

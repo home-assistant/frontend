@@ -21,18 +21,14 @@ import {
   yamlSchemaContext,
   getBlueprint,
   getBlueprintEditorInitData,
-  saveBlueprint,
 } from "../../../data/blueprint";
 import { PreventUnsavedMixin } from "../../../mixins/prevent-unsaved-mixin";
 import { KeyboardShortcutMixin } from "../../../mixins/keyboard-shortcut-mixin";
 import { afterNextRender } from "../../../common/util/render-status";
-import { showToast } from "../../../util/toast";
 import {
   showAlertDialog,
   showConfirmationDialog,
 } from "../../../dialogs/generic/show-dialog-box";
-import { navigate } from "../../../common/navigate";
-import { showBlueprintRenameDialog } from "./blueprint-rename-dialog/show-dialog-blueprint-rename";
 import { documentationUrl } from "../../../util/documentation-url";
 import "./input/ha-blueprint-input";
 import { haStyle } from "../../../resources/styles";
@@ -54,7 +50,7 @@ export abstract class HaBlueprintGenericEditor extends PreventUnsavedMixin(
     Blueprints
   >;
 
-  @property({ attribute: "blueprint-path" }) public blueprintPath?: string;
+  @property({ attribute: "blueprint-path" }) public blueprintPath!: string;
 
   @state() private _dirty = false;
 
@@ -97,82 +93,62 @@ export abstract class HaBlueprintGenericEditor extends PreventUnsavedMixin(
     fireEvent(this, "value-changed", { value: this._blueprint });
   }
 
-  private async _promptBlueprintAlias(): Promise<boolean> {
-    return new Promise((resolve) => {
-      showBlueprintRenameDialog(this, {
-        path: this._blueprintPath!,
-        blueprint: this._blueprint!,
-        updateBlueprint: (blueprint) => {
-          this._blueprint = blueprint;
-          this._dirty = true;
-          this.requestUpdate();
-          resolve(true);
-          fireEvent(this, "value-changed", { value: blueprint });
-        },
-        updatePath: (path) => {
-          this._blueprintPath = path;
-        },
-        onClose: () => resolve(false),
-      });
-    });
-  }
-
-  private async _saveBlueprint(): Promise<void> {
-    if (!this._blueprint) {
-      return;
-    }
-
-    if (this._yamlErrors) {
-      showToast(this, {
-        message: this._yamlErrors,
-      });
-      return;
-    }
-
-    if (!this._blueprintPath) {
-      const saved = await this._promptBlueprintAlias();
-      if (!saved) {
-        return;
-      }
-    }
-
-    this._saving = true;
-
-    try {
-      const blueprint = {
-        ...this._blueprint,
-        blueprint: this._blueprint.metadata,
-        metadata: undefined,
-      };
-
-      await saveBlueprint(
-        this.hass,
-        this._blueprint.metadata.domain,
-        this._blueprintPath as string,
-        yaml.dump(blueprint),
-        this._blueprint.metadata.source_url,
-        true
-      );
-
-      this._dirty = false;
-
-      if (!this.blueprintPath) {
-        navigate(
-          `/config/blueprint/edit/${this._blueprint.metadata.domain}/${this._blueprintPath}.yaml`,
-          {
-            replace: true,
-          }
-        );
-      }
-    } catch (errors: any) {
-      showToast(this, {
-        message: errors.body?.message || errors.error || errors.body,
-      });
-      throw errors;
-    } finally {
-      this._saving = false;
-    }
-  }
+  // private async _saveBlueprint(): Promise<void> {
+  //   if (!this._blueprint) {
+  //     return;
+  //   }
+  //
+  //   if (this._yamlErrors) {
+  //     showToast(this, {
+  //       message: this._yamlErrors,
+  //     });
+  //     return;
+  //   }
+  //
+  //   if (!this._blueprintPath) {
+  //     const saved = await this._promptBlueprintAlias();
+  //     if (!saved) {
+  //       return;
+  //     }
+  //   }
+  //
+  //   this._saving = true;
+  //
+  //   try {
+  //     const blueprint = {
+  //       ...this._blueprint,
+  //       blueprint: this._blueprint.metadata,
+  //       metadata: undefined,
+  //     };
+  //
+  //     await saveBlueprint(
+  //       this.hass,
+  //       this._blueprint.metadata.domain,
+  //       this._blueprintPath as string,
+  //       yaml.dump(blueprint),
+  //       this._blueprint.metadata.source_url,
+  //       true
+  //     );
+  //
+  //     this._dirty = false;
+  //
+  //     if (!this.blueprintPath) {
+  //       navigate(
+  //         `/config/blueprint/edit/${this._blueprint.metadata.domain}/${this._blueprintPath}.yaml`,
+  //         {
+  //           replace: true,
+  //         }
+  //       );
+  //     }
+  //   } catch (errors: any) {
+  //     showToast(this, {
+  //       message: errors.body?.message || errors.error || errors.body,
+  //     });
+  //     throw errors;
+  //   } finally {
+  //     this._saving = false;
+  //   }
+  // }
 
   private async _loadBlueprint() {
     try {
@@ -251,7 +227,7 @@ export abstract class HaBlueprintGenericEditor extends PreventUnsavedMixin(
     fireEvent(this, "value-changed", { value: this._blueprint });
   }
 
-  protected async updated(changedProps: PropertyValues) {
+  protected updated(changedProps: PropertyValues) {
     super.updated(changedProps);
 
     const oldBlueprintPath = changedProps.get("blueprintPath");
@@ -421,7 +397,7 @@ export abstract class HaBlueprintGenericEditor extends PreventUnsavedMixin(
         .header .name {
           font-weight: 400;
           flex: 1;
-          margin-bottom: 16px;
+          margin-bottom: 8px;
         }
         .header a {
           color: var(--secondary-text-color);
@@ -438,6 +414,10 @@ export abstract class HaBlueprintGenericEditor extends PreventUnsavedMixin(
         ha-blueprint-input {
           display: block;
           margin-bottom: 16px;
+        }
+        
+        manual-automation-editor, manual-script-editor {
+          margin-top: -48px;
         }
       `,
     ];

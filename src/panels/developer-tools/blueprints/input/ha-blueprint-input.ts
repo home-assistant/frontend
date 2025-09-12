@@ -212,12 +212,12 @@ export class HaBlueprintInput extends LitElement {
             <ha-button
               outlined
               .disabled=${this.disabled}
-              .label=${this.hass.localize(
-                "ui.panel.developer-tools.tabs.blueprints.editor.inputs.add"
-              )}
               @click=${this._showNewInputDialog}
             >
-              <ha-svg-icon .path=${mdiPlus} slot="icon"></ha-svg-icon>
+              <ha-svg-icon .path=${mdiPlus} slot="start"></ha-svg-icon>
+              ${this.hass.localize(
+                "ui.panel.developer-tools.tabs.blueprints.editor.inputs.add"
+              )}
             </ha-button>
           </div>
         </div>

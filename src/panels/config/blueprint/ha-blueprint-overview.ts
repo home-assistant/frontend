@@ -53,7 +53,7 @@ import type { HomeAssistant, Route } from "../../../types";
 import { documentationUrl } from "../../../util/documentation-url";
 import { showToast } from "../../../util/toast";
 import { configSections } from "../ha-panel-config";
-import { showAddBlueprintDialog } from "../../developer-tools/blueprints/new-blueprint-dialog/show-dialog-add-blueprint";
+import { showAddBlueprintDialog } from "./show-dialog-import-blueprint";
 
 type BlueprintMetaDataPath = BlueprintMetaData & {
   path: string;

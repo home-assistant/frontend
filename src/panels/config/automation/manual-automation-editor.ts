@@ -56,14 +56,7 @@ import "./condition/ha-automation-condition";
 import type HaAutomationCondition from "./condition/ha-automation-condition";
 import "./ha-automation-sidebar";
 import type HaAutomationSidebar from "./ha-automation-sidebar";
-import {
-  extractSearchParam,
-  removeSearchParam,
-} from "../../../common/url/search-params";
-import { constructUrlCurrentPath } from "../../../common/url/construct-url";
 import type { AutomationBlueprint } from "../../../data/blueprint";
-import { canOverrideAlphanumericInput } from "../../../common/dom/can-override-input";
-import { showToast } from "../../../util/toast";
 import { showPasteReplaceDialog } from "./paste-replace-dialog/show-dialog-paste-replace";
 import { manualEditorStyles, saveFabStyles } from "./styles";
 import "./trigger/ha-automation-trigger";

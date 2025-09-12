@@ -9,7 +9,7 @@ import "../../../../components/ha-dialog";
 import "../../../../components/ha-dialog-header";
 import "../../../../components/ha-expansion-panel";
 import "../../../../components/ha-markdown";
-import "../../../components/ha-spinner";
+import "../../../../components/ha-spinner";
 import "../../../../components/ha-textfield";
 import type { HaTextField } from "../../../../components/ha-textfield";
 import type { BlueprintImportResult } from "../../../../data/blueprint";

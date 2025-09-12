@@ -53,18 +53,22 @@ class BlueprintMetadataEditor extends LitElement {
     }
 
     return html`
-      <h2>
-        ${this.hass.localize(
-          "ui.panel.developer-tools.tabs.blueprints.editor.metadata"
-        )}
-      </h2>
-      <div>
-        <ha-form
-          .hass=${this.hass}
-          .data=${this.metadata}
-          .schema=${SCHEMA}
-          .computeLabel=${this._computeLabel}
-        ></ha-form>
+      <div class="container">
+        <div class="header">
+          <h2 class="name">
+            ${this.hass.localize(
+              "ui.panel.developer-tools.tabs.blueprints.editor.metadata"
+            )}
+          </h2>
+        </div>
+        <div class="content">
+          <ha-form
+            .hass=${this.hass}
+            .data=${this.metadata}
+            .schema=${SCHEMA}
+            .computeLabel=${this._computeLabel}
+          ></ha-form>
+        </div>
       </div>
     `;
   }
@@ -73,12 +77,26 @@ class BlueprintMetadataEditor extends LitElement {
     return [
       haStyle,
       css`
-        div {
-          margin: 0 20px;
+        .container {
+          margin: 0 auto;
+          max-width: 1040px;
+          padding: 28px 20px 0;
         }
 
-        h2 {
-          margin: 16px 20px;
+        .header {
+          margin-top: 16px;
+          display: flex;
+          align-items: center;
+        }
+
+        .header:first-child {
+          margin-top: -16px;
+        }
+
+        .header .name {
+          font-weight: var(--ha-font-weight-normal);
+          flex: 1;
+          margin-bottom: 8px;
         }
       `,
     ];

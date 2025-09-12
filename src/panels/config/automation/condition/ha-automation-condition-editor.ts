@@ -1,11 +1,7 @@
 import { css, html, LitElement, nothing } from "lit";
 import { customElement, property, query } from "lit/decorators";
 import { classMap } from "lit/directives/class-map";
-import { html, LitElement } from "lit";
-import { customElement, property } from "lit/decorators";
-import { consume } from "@lit/context";
 import memoizeOne from "memoize-one";
-import type { Schema } from "js-yaml";
 import { DEFAULT_SCHEMA } from "js-yaml";
 import { dynamicElement } from "../../../../common/dom/dynamic-element-directive";
 import { fireEvent } from "../../../../common/dom/fire_event";
@@ -18,7 +14,6 @@ import type { HomeAssistant } from "../../../../types";
 import "../ha-automation-editor-warning";
 import { editorStyles, indentStyle } from "../styles";
 import type { ConditionElement } from "./ha-automation-condition-row";
-import { yamlSchemaContext } from "../../../../data/blueprint";
 
 @customElement("ha-automation-condition-editor")
 export default class HaAutomationConditionEditor extends LitElement {

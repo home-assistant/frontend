@@ -75,7 +75,6 @@ import "./types/ha-automation-trigger-time";
 import "./types/ha-automation-trigger-time_pattern";
 import "./types/ha-automation-trigger-webhook";
 import "./types/ha-automation-trigger-zone";
-import { yamlSchemaContext } from "../../../../data/blueprint";
 
 export interface TriggerElement extends LitElement {
   trigger: Trigger;
