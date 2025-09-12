@@ -36,7 +36,6 @@ export class EntitySettingsWithoutUniqueId extends LitElement {
     } catch (err: any) {
       // eslint-disable-next-line no-console
       console.error("Error fetching recording settings:", err);
-      // Leave undefined - undefined means enabled
     }
   }
 

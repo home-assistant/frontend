@@ -1772,10 +1772,8 @@ ${rejected
     try {
       this._recordingEntities = await getEntityRecordingList(this.hass);
     } catch (err: any) {
-      // Log error for debugging
       // eslint-disable-next-line no-console
       console.error("Failed to fetch recording data:", err);
-      // Set to undefined so we know we tried but failed
       this._recordingEntities = undefined;
     }
   }
@@ -1784,7 +1782,6 @@ ${rejected
     this._activeColumnOrder = ev.detail.columnOrder;
     this._activeHiddenColumns = ev.detail.hiddenColumns;
 
-    // Check if the recorded column is now visible
     if (
       !this._activeHiddenColumns?.includes("recorded") &&
       !this._recordingEntities
