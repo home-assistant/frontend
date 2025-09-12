@@ -1773,8 +1773,12 @@ ${rejected
 
     try {
       this._recordingEntities = await getEntityRecordingList(this.hass);
-    } catch (_err) {
-      // Silently fail - recording data is optional
+    } catch (err: any) {
+      // Log error for debugging
+      // eslint-disable-next-line no-console
+      console.error("Failed to fetch recording data:", err);
+      // Set to undefined so we know we tried but failed
+      this._recordingEntities = undefined;
     }
   }
 
