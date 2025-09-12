@@ -82,7 +82,7 @@ export class EntitySettingsWithoutUniqueId extends LitElement {
     `;
   }
 
-  private async _recordingChanged(ev: CustomEvent): void {
+  private async _recordingChanged(ev: CustomEvent): Promise<void> {
     const checkbox = ev.currentTarget as HaSwitch;
 
     await handleRecordingChange({
