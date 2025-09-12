@@ -14,8 +14,11 @@ export class HaWaDialog extends LitElement {
   @property({ type: Boolean, reflect: true })
   public open = false;
 
-  @property({ type: Boolean, reflect: true, attribute: "scrim-click-action" })
-  public scrimClickAction = false;
+  @property({ reflect: true, attribute: "escape-key-action" })
+  public escapeKeyAction?: string;
+
+  @property({ type: Boolean, reflect: true, attribute: "overlay-click-action" })
+  public overlayClickAction = false;
 
   @property({ type: Boolean, reflect: true, attribute: "hideactions" })
   public hideActions = false;
@@ -25,9 +28,6 @@ export class HaWaDialog extends LitElement {
 
   @property()
   public heading?: string | TemplateResult;
-
-  @property({ reflect: true, attribute: "escape-key-action" })
-  public escapeKeyAction?: string;
 
   @state()
   private _internalOpen = false;
@@ -122,12 +122,6 @@ export class HaWaDialog extends LitElement {
       }
     }
 
-    if (changedProperties.has("scrimClickAction")) {
-      if (this._waDialog) {
-        this._waDialog.lightDismiss = this.scrimClickAction;
-      }
-    }
-
     if (changedProperties.has("_hasCustomHeadingSlot")) {
       this.toggleAttribute("has-custom-heading", this._hasCustomHeadingSlot);
     }
@@ -193,7 +187,7 @@ export class HaWaDialog extends LitElement {
     return html`
       <wa-dialog
         .open=${this._internalOpen}
-        .lightDismiss=${this.scrimClickAction}
+        .lightDismiss=${this.overlayClickAction}
         .withoutHeader=${!this.heading}
         @wa-show=${this._handleWaShow}
         @wa-hide=${this._handleWaHide}
