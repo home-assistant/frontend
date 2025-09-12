@@ -64,10 +64,7 @@ import {
   subscribeEntityRegistry,
   updateEntityRegistryEntry,
 } from "../../../data/entity_registry";
-import {
-  getEntityRecordingList,
-  setEntityRecordingOptions,
-} from "../../../data/recorder";
+import { setEntityRecordingOptions } from "../../../data/recorder";
 import { entityIcon, entryIcon } from "../../../data/icons";
 import {
   domainToName,
@@ -1434,8 +1431,10 @@ export class EntityRegistrySettingsEditor extends LitElement {
       return;
     }
     try {
-      const recordingList = await getEntityRecordingList(this.hass);
-      const settings = recordingList[this.entry.entity_id];
+      const settings = await getEntityRecordingSettings(
+        this.hass,
+        this.entry.entity_id
+      );
       this._recordingDisabled = settings?.recording_disabled_by !== null;
     } catch (_err) {
       // Ignore errors, recording settings might not be available
