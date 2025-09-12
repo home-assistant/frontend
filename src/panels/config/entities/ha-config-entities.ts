@@ -43,7 +43,10 @@ import {
   PROTOCOL_INTEGRATIONS,
   protocolIntegrationPicked,
 } from "../../../common/integrations/protocolIntegrationPicked";
-import type { LocalizeFunc } from "../../../common/translations/localize";
+import type {
+  LocalizeFunc,
+  LocalizeKeys,
+} from "../../../common/translations/localize";
 import {
   hasRejectedItems,
   rejectedItems,
@@ -901,7 +904,7 @@ export class HaConfigEntities extends SubscribeMixin(LitElement) {
     const renderDisableableMenuItem = (
       action: () => void,
       icon: string,
-      labelKey: string,
+      labelKey: LocalizeKeys,
       itemId: string,
       warning = false
     ) => {
