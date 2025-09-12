@@ -8889,13 +8889,13 @@
                 "title": "Entity is not recorded",
                 "info_text_1": "State changes of ''{name}'' ({statistic_id}) are not recorded, therefore, we cannot track long term statistics for it.",
                 "info_text_2": "You probably excluded this entity, or have just included some entities.",
-                "info_text_3_link": "See the recorder documentation for more information."
+                "info_text_3_link": "See the Recorder documentation for more information."
               },
               "entity_no_longer_recorded": {
                 "title": "Entity is no longer recorded",
                 "info_text_1": "We have generated statistics for ''{name}'' ({statistic_id}) in the past, but state changes of this entity are no longer recorded, therefore, we cannot track long term statistics for it anymore.",
                 "info_text_2": "You probably excluded this entity, or have just included some entities.",
-                "info_text_3_link": "See the recorder documentation for more information.",
+                "info_text_3_link": "See the Recorder documentation for more information.",
                 "info_text_4": "If you no longer wish to keep the long term statistics recorded in the past, you may delete them now."
               },
               "state_class_removed": {
