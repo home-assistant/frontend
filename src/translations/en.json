@@ -5310,7 +5310,12 @@
               "domain": "Domain",
               "availability": "Availability",
               "visibility": "Visibility",
-              "enabled": "Enabled"
+              "enabled": "Enabled",
+              "recorded": "Recorded"
+            },
+            "recorded": {
+              "enabled": "Recording enabled",
+              "disabled": "Recording disabled"
             },
             "selected": "{number} selected",
             "enable_selected": {
@@ -5334,6 +5339,16 @@
               "confirm_title": "Delete selected entities?",
               "confirm_text": "Are you sure you want to delete the entities?\n\nRemove them from your dashboard and automations if they include these entities.",
               "confirm_partly_text": "You can only delete {deletable} of the {selected} entities. The others require the integration to stop providing them, and sometimes a Home Assistant restart is needed. Are you sure you want to delete the deletable entities?\n\nRemove them from your dashboard and automations if they include these entities."
+            },
+            "enable_recording_selected": {
+              "button": "Enable recording for selected",
+              "confirm_title": "Do you want to enable recording for {number} {number, plural,\n  one {entity}\n  other {entities}\n}?",
+              "confirm_text": "This will resume recording their state history in the recorder."
+            },
+            "disable_recording_selected": {
+              "button": "Disable recording for selected",
+              "confirm_title": "Do you want to disable recording for {number} {number, plural,\n  one {entity}\n  other {entities}\n}?",
+              "confirm_text": "This will stop recording their state history in the recorder."
             },
             "hide_selected": {
               "button": "Hide selected",
