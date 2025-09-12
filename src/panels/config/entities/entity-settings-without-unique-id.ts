@@ -96,6 +96,14 @@ export class EntitySettingsWithoutUniqueId extends LitElement {
         newRecordingDisabled ? "user" : null
       );
       this._recordingDisabled = newRecordingDisabled;
+      // Fire event to notify entities table to refresh recording data
+      this.dispatchEvent(
+        new CustomEvent("entity-recording-updated", {
+          detail: { entityId: this.entityId },
+          bubbles: true,
+          composed: true,
+        })
+      );
     } catch (err: any) {
       showAlertDialog(this, { text: err.message });
       checkbox.checked = !checkbox.checked;

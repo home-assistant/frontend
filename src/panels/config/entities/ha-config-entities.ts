@@ -100,6 +100,7 @@ import {
 import { regenerateEntityIds } from "../../../data/regenerate_entity_ids";
 import {
   getEntityRecordingList,
+  getEntityRecordingSettings,
   setEntityRecordingOptions,
   type EntityRecordingList,
 } from "../../../data/recorder";
@@ -236,12 +237,20 @@ export class HaConfigEntities extends SubscribeMixin(LitElement) {
     super.connectedCallback();
     window.addEventListener("location-changed", this._locationChanged);
     window.addEventListener("popstate", this._popState);
+    window.addEventListener(
+      "entity-recording-updated",
+      this._handleEntityRecordingUpdated
+    );
   }
 
   disconnectedCallback(): void {
     super.disconnectedCallback();
     window.removeEventListener("location-changed", this._locationChanged);
     window.removeEventListener("popstate", this._popState);
+    window.removeEventListener(
+      "entity-recording-updated",
+      this._handleEntityRecordingUpdated
+    );
   }
 
   private _locationChanged = () => {
@@ -255,6 +264,31 @@ export class HaConfigEntities extends SubscribeMixin(LitElement) {
     if (window.location.search.substring(1) !== this._searchParms.toString()) {
       this._searchParms = new URLSearchParams(window.location.search);
       this._setFiltersFromUrl();
+    }
+  };
+
+  private _handleEntityRecordingUpdated = async (
+    ev: CustomEvent<{ entityId: string }>
+  ) => {
+    // Update recording data for the specific entity that changed
+    if (!this._activeHiddenColumns?.includes("recorded")) {
+      try {
+        const settings = await getEntityRecordingSettings(
+          this.hass,
+          ev.detail.entityId
+        );
+        // Update the recording data for this specific entity
+        this._recordingEntities = {
+          ...this._recordingEntities,
+          [ev.detail.entityId]: settings,
+        };
+      } catch (_err) {
+        // Entity might not have recording settings yet, treat as enabled
+        this._recordingEntities = {
+          ...this._recordingEntities,
+          [ev.detail.entityId]: { recording_disabled_by: null },
+        };
+      }
     }
   };
 
