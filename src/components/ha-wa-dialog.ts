@@ -2,14 +2,10 @@ import type { TemplateResult } from "lit";
 import { css, html, LitElement, nothing } from "lit";
 import { customElement, property, query, state } from "lit/decorators";
 import "@home-assistant/webawesome/dist/components/dialog/dialog";
-import { FOCUS_TARGET } from "../dialogs/make-dialog-manager";
+import { mdiClose } from "@mdi/js";
 import { nextRender } from "../common/util/render-status";
-import type { HomeAssistant } from "../types";
-
-export const createCloseHeading = (
-  _hass: HomeAssistant | undefined,
-  title: string | TemplateResult
-) => html` <span>${title}</span> `;
+import { FOCUS_TARGET } from "../dialogs/make-dialog-manager";
+import "./ha-icon-button";
 
 @customElement("ha-wa-dialog")
 export class HaWaDialog extends LitElement {
@@ -48,27 +44,24 @@ export class HaWaDialog extends LitElement {
     this._handleDialogInitialFocus();
   };
 
-  private _handleWaHide = (event: any) => {
-    // If scrimClickAction is false, prevent closing on overlay click
-    if (
-      !this.scrimClickAction &&
-      event.detail?.source === this._waDialog?.dialog
-    ) {
-      event.preventDefault();
-      return;
-    }
-
+  private _handleWaHide = () => {
     this._internalOpen = false;
-    this.open = false;
     this.dispatchEvent(
-      new CustomEvent("closed", { bubbles: true, composed: true })
+      new CustomEvent("closed", {
+        bubbles: true,
+        composed: true,
+        detail: { action: "close" },
+      })
     );
   };
 
-  private _handleWaAfterHide = () => {
-    this.dispatchEvent(
-      new CustomEvent("closed", { bubbles: true, composed: true })
-    );
+  private _onCloseClick = () => {
+    if (this._waDialog?.hide) {
+      this._waDialog.hide();
+    } else {
+      this._internalOpen = false;
+      this._handleWaHide();
+    }
   };
 
   protected updated(
@@ -78,7 +71,6 @@ export class HaWaDialog extends LitElement {
 
     if (changedProperties.has("open")) {
       this._internalOpen = this.open;
-      // Handle dialogInitialFocus translation
       if (this.open) {
         this._handleDialogInitialFocus();
       }
@@ -134,10 +126,22 @@ export class HaWaDialog extends LitElement {
         .withoutHeader=${!this.heading}
         @wa-show=${this._handleWaShow}
         @wa-hide=${this._handleWaHide}
-        @wa-after-hide=${this._handleWaAfterHide}
         class=${this.open ? "mdc-dialog--open" : ""}
       >
-        ${this.heading ? html`<div slot="label">${this.heading}</div>` : ""}
+        ${this.heading
+          ? html`
+              <div slot="label" class="header_title">
+                <ha-icon-button
+                  .label=${(this as any).hass?.localize?.("ui.common.close") ??
+                  "Close"}
+                  .path=${mdiClose}
+                  class="header_button"
+                  @click=${this._onCloseClick}
+                ></ha-icon-button>
+                <span>${this.heading}</span>
+              </div>
+            `
+          : ""}
         <slot></slot>
         ${this.hideActions
           ? nothing
@@ -174,18 +178,21 @@ export class HaWaDialog extends LitElement {
       --show-duration: 200ms;
       --hide-duration: 200ms;
       z-index: var(--dialog-z-index, 8);
-      /* Override Web Awesome's surface color with Home Assistant theme */
       --wa-color-surface-raised: var(
         --ha-dialog-surface-background,
         var(--mdc-theme-surface, #fff)
       );
-      /* Set border radius */
       --wa-panel-border-radius: var(--ha-dialog-border-radius, 24px);
     }
 
     wa-dialog::part(header) {
       border-bottom: 1px solid var(--divider-color, rgba(0, 0, 0, 0.12));
       padding: 24px 24px 0 24px;
+    }
+
+    wa-dialog::part(close-button),
+    wa-dialog::part(close-button__base) {
+      display: none;
     }
 
     wa-dialog::part(title) {
@@ -286,8 +293,8 @@ export class HaWaDialog extends LitElement {
     .header_button {
       text-decoration: none;
       color: inherit;
-      inset-inline-start: initial;
-      inset-inline-end: -12px;
+      inset-inline-start: -12px;
+      inset-inline-end: initial;
       direction: var(--direction);
     }
 
