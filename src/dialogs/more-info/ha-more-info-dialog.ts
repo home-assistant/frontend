@@ -706,9 +706,8 @@ export class MoreInfoDialog extends LitElement {
         }
 
         @media all and (max-width: 450px), all and (max-height: 500px) {
-          /* When in fullscreen dialog should be attached to top */
           ha-wa-dialog {
-            --dialog-surface-margin-top: 0px;
+            --dialog-surface-margin-top: var(--safe-area-inset-top, 0px);
           }
         }
 
