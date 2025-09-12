@@ -102,7 +102,7 @@ export class HomeMainViewStrategy extends ReactiveElement {
       );
     }
 
-    try {
+    if (isComponentLoaded(hass, "usage_prediction")) {
       const predictedCommonControl =
         await getCommonControlUsagePrediction(hass);
       const predictedEntities = predictedCommonControl.entities.filter(
@@ -124,8 +124,6 @@ export class HomeMainViewStrategy extends ReactiveElement {
           )
         );
       }
-    } catch {
-      // Ignore if the integration is not loaded
     }
 
     const summarySection: LovelaceSectionConfig = {
