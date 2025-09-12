@@ -4,7 +4,7 @@ export interface CommonControlResult {
   entities: string[];
 }
 
-export const getCommonControl = (hass: HomeAssistant) =>
+export const getCommonControlUsagePrediction = (hass: HomeAssistant) =>
   hass.callWS<CommonControlResult>({
     type: "usage_prediction/common_control",
   });
