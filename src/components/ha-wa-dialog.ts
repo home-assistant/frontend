@@ -301,6 +301,7 @@ export class HaWaDialog extends LitElement {
     wa-dialog::part(footer) {
       justify-content: flex-end;
       padding: 12px 16px 16px 16px;
+      gap: 12px;
     }
 
     wa-dialog::part(dialog) {
