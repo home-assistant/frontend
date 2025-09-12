@@ -186,7 +186,7 @@ export class HaWaDialog extends LitElement {
     }
 
     wa-dialog::part(header) {
-      padding: 24px 24px 0 24px;
+      padding: 24px 24px 16px 24px;
     }
 
     wa-dialog::part(close-button),
@@ -196,7 +196,7 @@ export class HaWaDialog extends LitElement {
 
     wa-dialog::part(title) {
       margin: 0;
-      margin-bottom: 8px;
+      margin-bottom: 0;
       color: var(--mdc-dialog-heading-ink-color, rgba(0, 0, 0, 0.87));
       font-size: var(--mdc-typography-headline6-font-size, 1.574rem);
       line-height: var(--mdc-typography-headline6-line-height, 2rem);
@@ -211,7 +211,8 @@ export class HaWaDialog extends LitElement {
 
     wa-dialog::part(body) {
       position: var(--dialog-content-position, relative);
-      padding: var(--dialog-content-padding, 24px);
+      padding: 0 var(--dialog-content-padding, 24px)
+        var(--dialog-content-padding, 24px) var(--dialog-content-padding, 24px);
     }
 
     wa-dialog::part(footer) {
