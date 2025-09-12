@@ -15,6 +15,7 @@ import "../ha-md-list-item";
 import "../ha-sortable";
 import "../ha-yaml-editor";
 import type { HaYamlEditor } from "../ha-yaml-editor";
+import { deepEqual } from "../../common/util/deep-equal";
 
 @customElement("ha-selector-object")
 export class HaObjectSelector extends LitElement {
@@ -122,11 +123,7 @@ export class HaObjectSelector extends LitElement {
   }
 
   protected render() {
-    if (!this.selector.object) {
-      return nothing;
-    }
-
-    if (this.selector.object.fields) {
+    if (this.selector.object?.fields) {
       if (this.selector.object.multiple) {
         const items = ensureArray(this.value ?? []);
         return html`
@@ -141,7 +138,7 @@ export class HaObjectSelector extends LitElement {
                 ${items.map((item, index) => this._renderItem(item, index))}
               </ha-md-list>
             </ha-sortable>
-            <ha-button outlined @click=${this._addItem}>
+            <ha-button appearance="filled" @click=${this._addItem}>
               ${this.hass.localize("ui.common.add")}
             </ha-button>
           </div>
@@ -156,7 +153,7 @@ export class HaObjectSelector extends LitElement {
                 ${this._renderItem(this.value, 0)}
               </ha-md-list>`
             : html`
-                <ha-button outlined @click=${this._addItem}>
+                <ha-button appearance="filled" @click=${this._addItem}>
                   ${this.hass.localize("ui.common.add")}
                 </ha-button>
               `}
@@ -275,7 +272,8 @@ export class HaObjectSelector extends LitElement {
     if (
       changedProps.has("value") &&
       !this._valueChangedFromChild &&
-      this._yamlEditor
+      this._yamlEditor &&
+      !deepEqual(this.value, changedProps.get("value"))
     ) {
       this._yamlEditor.setValue(this.value);
     }
@@ -283,6 +281,7 @@ export class HaObjectSelector extends LitElement {
   }
 
   private _handleChange(ev) {
+    ev.stopPropagation();
     this._valueChangedFromChild = true;
     const value = ev.target.value;
     if (!ev.target.isValid) {

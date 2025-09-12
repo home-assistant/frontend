@@ -4,6 +4,7 @@ import {
   mdiDownload,
   mdiEye,
   mdiHelpCircle,
+  mdiOpenInNew,
   mdiPlus,
   mdiShareVariant,
 } from "@mdi/js";
@@ -11,10 +12,12 @@ import type { CSSResultGroup, PropertyValues, TemplateResult } from "lit";
 import { LitElement, html } from "lit";
 import { customElement, property, state } from "lit/decorators";
 import memoizeOne from "memoize-one";
+import { storage } from "../../../common/decorators/storage";
 import type { HASSDomEvent } from "../../../common/dom/fire_event";
 import { fireEvent } from "../../../common/dom/fire_event";
 import { computeStateName } from "../../../common/entity/compute_state_name";
 import { navigate } from "../../../common/navigate";
+import type { LocalizeFunc } from "../../../common/translations/localize";
 import { extractSearchParam } from "../../../common/url/search-params";
 import type {
   DataTableColumnContainer,
@@ -47,12 +50,10 @@ import {
 import "../../../layouts/hass-tabs-subpage-data-table";
 import { haStyle } from "../../../resources/styles";
 import type { HomeAssistant, Route } from "../../../types";
-import type { LocalizeFunc } from "../../../common/translations/localize";
 import { documentationUrl } from "../../../util/documentation-url";
 import { showToast } from "../../../util/toast";
 import { configSections } from "../ha-panel-config";
 import { showAddBlueprintDialog } from "../../developer-tools/blueprints/new-blueprint-dialog/show-dialog-add-blueprint";
-import { storage } from "../../../common/decorators/storage";
 
 type BlueprintMetaDataPath = BlueprintMetaData & {
   path: string;
@@ -298,17 +299,18 @@ class HaBlueprintOverview extends LitElement {
           style="width: 100%; text-align: center;"
           role="cell"
         >
-          <a
+          <ha-button
+            appearance="plain"
             href="https://www.home-assistant.io/get-blueprints"
             target="_blank"
             rel="noreferrer noopener"
+            size="small"
           >
-            <ha-button
-              >${this.hass.localize(
-                "ui.panel.config.blueprint.overview.discover_more"
-              )}</ha-button
-            >
-          </a>
+            ${this.hass.localize(
+              "ui.panel.config.blueprint.overview.discover_more"
+            )}
+            <ha-svg-icon slot="end" .path=${mdiOpenInNew}></ha-svg-icon>
+          </ha-button>
         </div>`}
         .initialGroupColumn=${this._activeGrouping}
         .initialCollapsedGroups=${this._activeCollapsed}

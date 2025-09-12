@@ -80,9 +80,7 @@ export class ZWaveJsAddNodeConfigureDevice extends LitElement {
               options: [
                 {
                   value: Protocols.ZWaveLongRange.toString(),
-                  label: localize(
-                    "ui.panel.config.zwave_js.add_node.configure_device.long_range_label"
-                  ),
+                  label: "Long Range", // brand name and we should not translate that
                   description: localize(
                     "ui.panel.config.zwave_js.add_node.configure_device.long_range_description"
                   ),

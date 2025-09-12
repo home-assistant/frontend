@@ -5,8 +5,20 @@ import "./hui-card-feature";
 import type {
   LovelaceCardFeatureConfig,
   LovelaceCardFeatureContext,
+  LovelaceCardFeaturePosition,
 } from "./types";
 
+/**
+ * Home Assistant tile icon component
+ *
+ * @element hui-card-features
+ *
+ * @summary
+ * A card features component, used in cards in Home Assistant to display extra features in card.
+ *
+ * @cssprop --ha-card-features-border-radius - The border radius of the card features. defaults to `var(--ha-border-radius-lg)`.
+ *
+ */
 @customElement("hui-card-features")
 export class HuiCardFeatures extends LitElement {
   @property({ attribute: false }) public hass!: HomeAssistant;
@@ -16,6 +28,9 @@ export class HuiCardFeatures extends LitElement {
   @property({ attribute: false }) public features?: LovelaceCardFeatureConfig[];
 
   @property({ attribute: false }) public color?: string;
+
+  @property({ attribute: false })
+  public position?: LovelaceCardFeaturePosition;
 
   protected render() {
     if (!this.features) {
@@ -29,6 +44,7 @@ export class HuiCardFeatures extends LitElement {
             .context=${this.context}
             .color=${this.color}
             .feature=${feature}
+            .position=${this.position}
           ></hui-card-feature>
         `
       )}
@@ -39,8 +55,12 @@ export class HuiCardFeatures extends LitElement {
     :host {
       --feature-color: var(--state-icon-color);
       --feature-height: 42px;
-      --feature-border-radius: 12px;
+      --feature-border-radius: var(
+        --ha-card-features-border-radius,
+        var(--ha-border-radius-lg)
+      );
       --feature-button-spacing: 12px;
+      pointer-events: none;
       position: relative;
       width: 100%;
       display: flex;

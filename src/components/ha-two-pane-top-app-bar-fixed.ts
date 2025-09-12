@@ -244,12 +244,15 @@ export class TopAppBarBaseBase extends BaseElement {
     styles,
     haStyleScrollbar,
     css`
+      header {
+        padding-top: var(--safe-area-inset-top);
+      }
       .mdc-top-app-bar__row {
         height: var(--header-height);
         border-bottom: var(--app-header-border-bottom);
       }
       .mdc-top-app-bar--fixed-adjust {
-        padding-top: var(--header-height);
+        padding-top: calc(var(--safe-area-inset-top) + var(--header-height));
       }
       .shadow-container {
         position: absolute;
@@ -274,6 +277,9 @@ export class TopAppBarBaseBase extends BaseElement {
           --app-header-background-color,
           var(--mdc-theme-primary)
         );
+        padding-top: var(--safe-area-inset-top);
+        padding-left: var(--safe-area-inset-left);
+        padding-right: var(--safe-area-inset-right);
       }
       .mdc-top-app-bar--pane.mdc-top-app-bar--fixed-scrolled {
         box-shadow: none;

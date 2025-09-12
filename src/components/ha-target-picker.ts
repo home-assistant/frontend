@@ -1,6 +1,5 @@
 // @ts-ignore
 import chipStyles from "@material/chips/dist/mdc.chips.min.css";
-import "@material/mwc-button/mwc-button";
 import "@material/mwc-menu/mwc-menu-surface";
 import {
   mdiClose,
@@ -593,7 +592,7 @@ export class HaTargetPicker extends SubscribeMixin(LitElement) {
         if (
           entity.labels.includes(target.id) &&
           !this.value!.entity_id?.includes(entity.entity_id) &&
-          this._entityRegMeetsFilter(entity)
+          this._entityRegMeetsFilter(entity, true)
         ) {
           newEntities.push(entity.entity_id);
         }
@@ -718,8 +717,11 @@ export class HaTargetPicker extends SubscribeMixin(LitElement) {
     return true;
   }
 
-  private _entityRegMeetsFilter(entity: EntityRegistryDisplayEntry): boolean {
-    if (entity.entity_category) {
+  private _entityRegMeetsFilter(
+    entity: EntityRegistryDisplayEntry,
+    includeSecondary = false
+  ): boolean {
+    if (entity.hidden || (entity.entity_category && !includeSecondary)) {
       return false;
     }
 

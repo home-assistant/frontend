@@ -4,6 +4,7 @@ import { customElement, property, state } from "lit/decorators";
 import memoizeOne from "memoize-one";
 import { fireEvent } from "../../../../src/common/dom/fire_event";
 import "../../../../src/components/ha-dialog";
+import "../../../../src/components/ha-button";
 import "../../../../src/components/ha-list-item";
 import "../../../../src/components/ha-select";
 import "../../../../src/components/ha-spinner";
@@ -20,8 +21,8 @@ import type { HomeAssistant } from "../../../../src/types";
 import type { HassioDatatiskDialogParams } from "./show-dialog-hassio-datadisk";
 
 const calculateMoveTime = memoizeOne((supervisor: Supervisor): number => {
-  const speed = supervisor.host.disk_life_time !== "" ? 30 : 10;
-  const moveTime = (supervisor.host.disk_used * 1000) / 60 / speed;
+  // Assume a speed of 30 MB/s.
+  const moveTime = (supervisor.host.disk_used * 1000) / 60 / 30;
   const rebootTime = (supervisor.host.startup_time * 4) / 60;
   return Math.ceil((moveTime + rebootTime) / 10) * 10;
 });
@@ -109,17 +110,18 @@ class HassioDatadiskDialog extends LitElement {
                       "dialog.datadisk_move.no_devices"
                     )}
 
-              <mwc-button
-                slot="secondaryAction"
+              <ha-button
+                appearance="plain"
+                slot="primaryAction"
                 @click=${this.closeDialog}
                 dialogInitialFocus
               >
                 ${this.dialogParams.supervisor.localize(
                   "dialog.datadisk_move.cancel"
                 )}
-              </mwc-button>
+              </ha-button>
 
-              <mwc-button
+              <ha-button
                 .disabled=${!this.selectedDevice}
                 slot="primaryAction"
                 @click=${this._moveDatadisk}
@@ -127,7 +129,7 @@ class HassioDatadiskDialog extends LitElement {
                 ${this.dialogParams.supervisor.localize(
                   "dialog.datadisk_move.move"
                 )}
-              </mwc-button>`}
+              </ha-button>`}
       </ha-dialog>
     `;
   }

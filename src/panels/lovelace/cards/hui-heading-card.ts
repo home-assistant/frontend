@@ -138,6 +138,7 @@ export class HuiHeadingCard extends LitElement implements LovelaceCard {
       flex-direction: column;
       justify-content: flex-end;
       height: 100%;
+      min-height: 24px;
     }
     [role="button"] {
       cursor: pointer;
@@ -147,7 +148,7 @@ export class HuiHeadingCard extends LitElement implements LovelaceCard {
       transition: transform 180ms ease-in-out;
     }
     .container {
-      padding: 2px 4px;
+      padding: 0 4px;
       display: flex;
       flex-direction: row;
       justify-content: space-between;

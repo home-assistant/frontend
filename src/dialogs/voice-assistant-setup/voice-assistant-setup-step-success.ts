@@ -112,7 +112,9 @@ export class HaVoiceAssistantSetupStepSuccess extends LitElement {
           this.assistConfiguration.available_wake_words.length > 1
             ? html`<div class="row">
                 <ha-select
-                  .label=${"Wake word"}
+                  .label=${this.hass.localize(
+                    "ui.panel.config.voice_assistants.assistants.pipeline.detail.form.wake_word_id"
+                  )}
                   @closed=${stopPropagation}
                   fixedMenuPosition
                   naturalMenuWidth
@@ -126,8 +128,15 @@ export class HaVoiceAssistantSetupStepSuccess extends LitElement {
                       </ha-list-item>`
                   )}
                 </ha-select>
-                <ha-button @click=${this._testWakeWord}>
-                  <ha-svg-icon slot="icon" .path=${mdiMicrophone}></ha-svg-icon>
+                <ha-button
+                  appearance="plain"
+                  size="small"
+                  @click=${this._testWakeWord}
+                >
+                  <ha-svg-icon
+                    slot="start"
+                    .path=${mdiMicrophone}
+                  ></ha-svg-icon>
                   ${this.hass.localize(
                     "ui.panel.config.voice_assistants.satellite_wizard.success.test_wakeword"
                   )}
@@ -137,7 +146,9 @@ export class HaVoiceAssistantSetupStepSuccess extends LitElement {
           ${pipelineEntity
             ? html`<div class="row">
                 <ha-select
-                  .label=${"Assistant"}
+                  .label=${this.hass.localize(
+                    "ui.panel.config.voice_assistants.assistants.pipeline.devices.pipeline"
+                  )}
                   @closed=${stopPropagation}
                   .value=${pipelineEntity?.state}
                   fixedMenuPosition
@@ -151,8 +162,12 @@ export class HaVoiceAssistantSetupStepSuccess extends LitElement {
                       </ha-list-item>`
                   )}
                 </ha-select>
-                <ha-button @click=${this._openPipeline}>
-                  <ha-svg-icon slot="icon" .path=${mdiCog}></ha-svg-icon>
+                <ha-button
+                  appearance="plain"
+                  size="small"
+                  @click=${this._openPipeline}
+                >
+                  <ha-svg-icon slot="start" .path=${mdiCog}></ha-svg-icon>
                   ${this.hass.localize(
                     "ui.panel.config.voice_assistants.satellite_wizard.success.edit_pipeline"
                   )}
@@ -169,8 +184,12 @@ export class HaVoiceAssistantSetupStepSuccess extends LitElement {
                   @value-changed=${this._voicePicked}
                   @closed=${stopPropagation}
                 ></ha-tts-voice-picker>
-                <ha-button @click=${this._testTts}>
-                  <ha-svg-icon slot="icon" .path=${mdiPlay}></ha-svg-icon>
+                <ha-button
+                  appearance="plain"
+                  size="small"
+                  @click=${this._testTts}
+                >
+                  <ha-svg-icon slot="start" .path=${mdiPlay}></ha-svg-icon>
                   ${this.hass.localize(
                     "ui.panel.config.voice_assistants.satellite_wizard.success.try_tts"
                   )}
@@ -180,7 +199,7 @@ export class HaVoiceAssistantSetupStepSuccess extends LitElement {
         </div>
       </div>
       <div class="footer">
-        <ha-button @click=${this._done} unelevated
+        <ha-button @click=${this._done}
           >${this.hass.localize(
             "ui.panel.config.voice_assistants.satellite_wizard.success.done"
           )}</ha-button

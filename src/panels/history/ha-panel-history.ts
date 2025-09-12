@@ -426,13 +426,7 @@ class HaPanelHistory extends LitElement {
 
   private _dateRangeChanged(ev) {
     this._startDate = ev.detail.value.startDate;
-    const endDate = ev.detail.value.endDate;
-    if (endDate.getHours() === 0 && endDate.getMinutes() === 0) {
-      endDate.setDate(endDate.getDate() + 1);
-      endDate.setMilliseconds(endDate.getMilliseconds() - 1);
-    }
-    this._endDate = endDate;
-
+    this._endDate = ev.detail.value.endDate;
     this._updatePath();
   }
 

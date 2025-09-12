@@ -1,3 +1,6 @@
+import { css, html, LitElement, nothing } from "lit";
+import { customElement, property, query } from "lit/decorators";
+import { classMap } from "lit/directives/class-map";
 import { html, LitElement } from "lit";
 import { customElement, property } from "lit/decorators";
 import { consume } from "@lit/context";
@@ -7,21 +10,14 @@ import { DEFAULT_SCHEMA } from "js-yaml";
 import { dynamicElement } from "../../../../common/dom/dynamic-element-directive";
 import { fireEvent } from "../../../../common/dom/fire_event";
 import "../../../../components/ha-yaml-editor";
+import type { HaYamlEditor } from "../../../../components/ha-yaml-editor";
 import type { Condition } from "../../../../data/automation";
 import { expandConditionWithShorthand } from "../../../../data/automation";
-import { haStyle } from "../../../../resources/styles";
+import { COLLAPSIBLE_CONDITION_ELEMENTS } from "../../../../data/condition";
 import type { HomeAssistant } from "../../../../types";
-import "./types/ha-automation-condition-and";
-import "./types/ha-automation-condition-device";
-import "./types/ha-automation-condition-not";
-import "./types/ha-automation-condition-numeric_state";
-import "./types/ha-automation-condition-or";
-import "./types/ha-automation-condition-state";
-import "./types/ha-automation-condition-sun";
-import "./types/ha-automation-condition-template";
-import "./types/ha-automation-condition-time";
-import "./types/ha-automation-condition-trigger";
-import "./types/ha-automation-condition-zone";
+import "../ha-automation-editor-warning";
+import { editorStyles, indentStyle } from "../styles";
+import type { ConditionElement } from "./ha-automation-condition-row";
 import { yamlSchemaContext } from "../../../../data/blueprint";
 
 @customElement("ha-automation-condition-editor")
@@ -34,8 +30,21 @@ export default class HaAutomationConditionEditor extends LitElement {
 
   @property({ attribute: false }) public yamlMode = false;
 
-  @consume({ context: yamlSchemaContext })
-  private _yamlSchema?: Schema;
+  @property({ type: Boolean }) public indent = false;
+
+  @property({ type: Boolean }) public narrow = false;
+
+  @property({ type: Boolean, attribute: "sidebar" }) public inSidebar = false;
+
+  @property({ type: Boolean, reflect: true }) public selected = false;
+
+  @property({ type: Boolean, attribute: "supported" }) public uiSupported =
+    false;
+
+  @query("ha-yaml-editor") public yamlEditor?: HaYamlEditor;
+
+  @query(COLLAPSIBLE_CONDITION_ELEMENTS.join(", "))
+  private _collapsibleElement?: ConditionElement;
 
   private _processedCondition = memoizeOne((condition) =>
     expandConditionWithShorthand(condition)
@@ -43,21 +52,34 @@ export default class HaAutomationConditionEditor extends LitElement {
 
   protected render() {
     const condition = this._processedCondition(this.condition);
-    const supported =
-      customElements.get(`ha-automation-condition-${condition.condition}`) !==
-      undefined;
-    const yamlMode = this.yamlMode || !supported;
+    const yamlMode = this.yamlMode || !this.uiSupported;
+
     return html`
-      ${yamlMode
-        ? html`
-            ${!supported
-              ? html`
-                  ${this.hass.localize(
-                    "ui.panel.config.automation.editor.conditions.unsupported_condition",
-                    { condition: condition.condition }
-                  )}
-                `
-              : ""}
+      <div
+        class=${classMap({
+          "card-content": true,
+          disabled:
+            !this.indent &&
+            (this.disabled ||
+              (this.condition.enabled === false && !this.yamlMode)),
+          yaml: yamlMode,
+          indent: this.indent,
+          card: !this.inSidebar,
+        })}
+      >
+        ${yamlMode
+          ? html`
+              ${!this.uiSupported
+                ? html`
+                    <ha-automation-editor-warning
+                      .alertTitle=${this.hass.localize(
+                        "ui.panel.config.automation.editor.conditions.unsupported_condition",
+                        { condition: condition.condition }
+                      )}
+                      .localize=${this.hass.localize}
+                    ></ha-automation-editor-warning>
+                  `
+                : nothing}
             <ha-yaml-editor
               .hass=${this.hass}
               .defaultValue=${this.condition}
@@ -74,10 +96,13 @@ export default class HaAutomationConditionEditor extends LitElement {
                   hass: this.hass,
                   condition: condition,
                   disabled: this.disabled,
-                }
-              )}
-            </div>
-          `}
+                optionsInSidebar: this.indent,
+                    narrow: this.narrow,
+                  }
+                )}
+              </div>
+            `}
+      </div>
     `;
   }
 
@@ -86,8 +111,9 @@ export default class HaAutomationConditionEditor extends LitElement {
     if (!ev.detail.isValid) {
       return;
     }
-    // @ts-ignore
-    fireEvent(this, "value-changed", { value: ev.detail.value, yaml: true });
+    fireEvent(this, this.inSidebar ? "yaml-changed" : "value-changed", {
+      value: ev.detail.value,
+    });
   }
 
   private _onUiChanged(ev: CustomEvent) {
@@ -99,7 +125,30 @@ export default class HaAutomationConditionEditor extends LitElement {
     fireEvent(this, "value-changed", { value });
   }
 
-  static styles = haStyle;
+  public expandAll() {
+    this._collapsibleElement?.expandAll?.();
+  }
+
+  public collapseAll() {
+    this._collapsibleElement?.collapseAll?.();
+  }
+
+  static styles = [
+    editorStyles,
+    indentStyle,
+    css`
+      :host([action]) .card-content {
+        padding: 0;
+      }
+      :host([action]) .card-content.indent {
+        margin-left: 0;
+        margin-right: 0;
+        padding: 0;
+        border-left: none;
+        border-bottom: none;
+      }
+    `,
+  ];
 }
 
 declare global {

@@ -1,5 +1,4 @@
 import "@lit-labs/virtualizer";
-import "@material/mwc-button";
 import { mdiClose } from "@mdi/js";
 import type { HassEntity } from "home-assistant-js-websocket";
 import type { CSSResultGroup } from "lit";
@@ -12,6 +11,7 @@ import { computeStateName } from "../../../common/entity/compute_state_name";
 import "../../../components/ha-check-list-item";
 import "../../../components/search-input";
 import "../../../components/ha-dialog";
+import "../../../components/ha-button";
 import "../../../components/ha-dialog-header";
 import "../../../components/ha-state-icon";
 import "../../../components/ha-list";
@@ -95,7 +95,14 @@ class DialogExposeEntity extends LitElement {
           >
           </lit-virtualizer>
         </ha-list>
-        <mwc-button
+        <ha-button
+          slot="primaryAction"
+          appearance="plain"
+          @click=${this.closeDialog}
+        >
+          ${this.hass!.localize("ui.common.cancel")}
+        </ha-button>
+        <ha-button
           slot="primaryAction"
           @click=${this._expose}
           .disabled=${this._selected.length === 0}
@@ -104,7 +111,7 @@ class DialogExposeEntity extends LitElement {
             "ui.panel.config.voice_assistants.expose.expose_dialog.expose_entities",
             { count: this._selected.length }
           )}
-        </mwc-button>
+        </ha-button>
       </ha-dialog>
     `;
   }
@@ -235,19 +242,21 @@ class DialogExposeEntity extends LitElement {
         }
         @media all and (max-width: 500px), all and (max-height: 500px) {
           ha-dialog {
-            --mdc-dialog-min-width: calc(
-              100vw - var(--safe-area-inset-right) - var(--safe-area-inset-left)
-            );
-            --mdc-dialog-max-width: calc(
-              100vw - var(--safe-area-inset-right) - var(--safe-area-inset-left)
-            );
+            --mdc-dialog-min-width: 100vw;
+            --mdc-dialog-max-width: 100vw;
             --mdc-dialog-min-height: 100%;
             --mdc-dialog-max-height: 100%;
             --vertical-align-dialog: flex-end;
             --ha-dialog-border-radius: 0px;
           }
           lit-virtualizer {
-            height: calc(100vh - 198px);
+            height: calc(
+              100vh -
+                210px - var(--safe-area-inset-top, 0px) - var(
+                  --safe-area-inset-bottom,
+                  0px
+                )
+            );
           }
           search-input {
             --text-field-suffix-padding-left: unset;

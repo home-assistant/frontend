@@ -1,5 +1,3 @@
-import "@material/mwc-button/mwc-button";
-
 import type { ActionDetail } from "@material/mwc-list/mwc-list-foundation";
 
 import { mdiCalendar } from "@mdi/js";
@@ -22,6 +20,7 @@ import { fireEvent } from "../common/dom/fire_event";
 import { TimeZone } from "../data/translation";
 import type { HomeAssistant } from "../types";
 import "./date-range-picker";
+import "./ha-button";
 import "./ha-icon-button";
 import "./ha-icon-button-next";
 import "./ha-icon-button-prev";
@@ -197,13 +196,13 @@ export class HaDateRangePicker extends LitElement {
             </div>`
           : nothing}
         <div slot="footer" class="date-range-footer">
-          <mwc-button @click=${this._cancelDateRange}
-            >${this.hass.localize("ui.common.cancel")}</mwc-button
+          <ha-button appearance="plain" @click=${this._cancelDateRange}
+            >${this.hass.localize("ui.common.cancel")}</ha-button
           >
-          <mwc-button @click=${this._applyDateRange}
+          <ha-button @click=${this._applyDateRange}
             >${this.hass.localize(
               "ui.components.date-range-picker.select"
-            )}</mwc-button
+            )}</ha-button
           >
         </div>
       </date-range-picker>
@@ -255,21 +254,37 @@ export class HaDateRangePicker extends LitElement {
   }
 
   private _applyDateRange() {
-    if (this.hass.locale.time_zone === TimeZone.server) {
-      const dateRangePicker = this._dateRangePicker;
+    let start = new Date(this._dateRangePicker.start);
+    let end = new Date(this._dateRangePicker.end);
 
-      const startDate = fromZonedTime(
-        dateRangePicker.start,
-        this.hass.config.time_zone
-      );
-      const endDate = fromZonedTime(
-        dateRangePicker.end,
-        this.hass.config.time_zone
-      );
+    if (this.timePicker) {
+      start.setSeconds(0);
+      start.setMilliseconds(0);
+      end.setSeconds(0);
+      end.setMilliseconds(0);
 
-      dateRangePicker.clickRange([startDate, endDate]);
+      if (
+        end.getHours() === 0 &&
+        end.getMinutes() === 0 &&
+        start.getFullYear() === end.getFullYear() &&
+        start.getMonth() === end.getMonth() &&
+        start.getDate() === end.getDate()
+      ) {
+        end.setDate(end.getDate() + 1);
+      }
     }
 
+    if (this.hass.locale.time_zone === TimeZone.server) {
+      start = fromZonedTime(start, this.hass.config.time_zone);
+      end = fromZonedTime(end, this.hass.config.time_zone);
+    }
+
+    if (
+      start.getTime() !== this._dateRangePicker.start.getTime() ||
+      end.getTime() !== this._dateRangePicker.end.getTime()
+    ) {
+      this._dateRangePicker.clickRange([start, end]);
+    }
     this._dateRangePicker.clickedApply();
   }
 

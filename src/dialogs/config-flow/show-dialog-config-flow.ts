@@ -35,10 +35,16 @@ export const showConfigFlowDialog = (
       return step;
     },
     fetchFlow: async (hass, flowId) => {
-      const step = await fetchConfigFlow(hass, flowId);
-      await hass.loadFragmentTranslation("config");
-      await hass.loadBackendTranslation("config", step.handler);
-      await hass.loadBackendTranslation("selector", step.handler);
+      const [step] = await Promise.all([
+        fetchConfigFlow(hass, flowId),
+        hass.loadFragmentTranslation("config"),
+      ]);
+      await Promise.all([
+        hass.loadBackendTranslation("config", step.handler),
+        hass.loadBackendTranslation("selector", step.handler),
+        // Used as fallback if no header defined for step
+        hass.loadBackendTranslation("title", step.handler),
+      ]);
       return step;
     },
     handleFlowStep: handleConfigFlowStep,
@@ -246,6 +252,13 @@ export const showConfigFlowDialog = (
     renderMenuOption(hass, step, option) {
       return hass.localize(
         `component.${step.translation_domain || step.handler}.config.step.${step.step_id}.menu_options.${option}`,
+        step.description_placeholders
+      );
+    },
+
+    renderMenuOptionDescription(hass, step, option) {
+      return hass.localize(
+        `component.${step.translation_domain || step.handler}.config.step.${step.step_id}.menu_option_descriptions.${option}`,
         step.description_placeholders
       );
     },

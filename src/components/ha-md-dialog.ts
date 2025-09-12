@@ -159,6 +159,7 @@ export class HaMdDialog extends Dialog {
         --md-dialog-headline-size: var(--ha-font-size-xl);
         --md-dialog-supporting-text-size: var(--ha-font-size-m);
         --md-dialog-supporting-text-line-height: var(--ha-line-height-normal);
+        --md-divider-color: var(--divider-color);
       }
 
       :host([type="alert"]) {
@@ -181,6 +182,10 @@ export class HaMdDialog extends Dialog {
 
       ::slotted(ha-dialog-header[slot="headline"]) {
         display: contents;
+      }
+
+      slot[name="actions"]::slotted(*) {
+        padding: 16px;
       }
 
       .scroller {

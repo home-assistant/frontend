@@ -1,5 +1,4 @@
-import "@material/mwc-button/mwc-button";
-import { mdiDelete, mdiDeleteOff } from "@mdi/js";
+import { mdiDelete, mdiDeleteOff, mdiPlus } from "@mdi/js";
 import type { CSSResultGroup } from "lit";
 import { css, html, LitElement, nothing } from "lit";
 import { customElement, property, query, state } from "lit/decorators";
@@ -7,10 +6,15 @@ import memoizeOne from "memoize-one";
 import { fireEvent } from "../../../../src/common/dom/fire_event";
 import { caseInsensitiveStringCompare } from "../../../../src/common/string/compare";
 import "../../../../src/components/ha-alert";
-import "../../../../src/components/ha-tooltip";
-import "../../../../src/components/ha-spinner";
+import "../../../../src/components/ha-button";
 import { createCloseHeading } from "../../../../src/components/ha-dialog";
 import "../../../../src/components/ha-icon-button";
+import "../../../../src/components/ha-md-list";
+import "../../../../src/components/ha-md-list-item";
+import "../../../../src/components/ha-svg-icon";
+import "../../../../src/components/ha-textfield";
+import type { HaTextField } from "../../../../src/components/ha-textfield";
+import "../../../../src/components/ha-tooltip";
 import type {
   HassioAddonInfo,
   HassioAddonRepository,
@@ -24,10 +28,6 @@ import {
 import { haStyle, haStyleDialog } from "../../../../src/resources/styles";
 import type { HomeAssistant } from "../../../../src/types";
 import type { HassioRepositoryDialogParams } from "./show-dialog-repositories";
-import type { HaTextField } from "../../../../src/components/ha-textfield";
-import "../../../../src/components/ha-textfield";
-import "../../../../src/components/ha-md-list";
-import "../../../../src/components/ha-md-list-item";
 
 @customElement("dialog-hassio-repositories")
 class HassioRepositoriesDialog extends LitElement {
@@ -159,18 +159,22 @@ class HassioRepositoriesDialog extends LitElement {
               @keydown=${this._handleKeyAdd}
               dialogInitialFocus
             ></ha-textfield>
-            <mwc-button @click=${this._addRepository}>
-              ${this._processing
-                ? html`<ha-spinner size="small"></ha-spinner>`
-                : this._dialogParams!.supervisor.localize(
-                    "dialog.repositories.add"
-                  )}
-            </mwc-button>
+            <ha-button
+              .loading=${this._processing}
+              @click=${this._addRepository}
+              appearance="filled"
+              size="small"
+            >
+              <ha-svg-icon slot="start" .path=${mdiPlus}></ha-svg-icon>
+              ${this._dialogParams!.supervisor.localize(
+                "dialog.repositories.add"
+              )}
+            </ha-button>
           </div>
         </div>
-        <mwc-button slot="primaryAction" @click=${this.closeDialog}>
+        <ha-button slot="primaryAction" @click=${this.closeDialog}>
           ${this._dialogParams?.supervisor.localize("common.close")}
-        </mwc-button>
+        </ha-button>
       </ha-dialog>
     `;
   }
@@ -191,15 +195,10 @@ class HassioRepositoriesDialog extends LitElement {
           border-radius: 4px;
           margin-top: 4px;
         }
-        mwc-button {
+        ha-button {
           margin-left: 8px;
           margin-inline-start: 8px;
           margin-inline-end: initial;
-        }
-        ha-spinner {
-          display: block;
-          margin: 32px;
-          text-align: center;
         }
         div.delete ha-icon-button {
           color: var(--error-color);
@@ -249,6 +248,8 @@ class HassioRepositoriesDialog extends LitElement {
       await addStoreRepository(this.hass, input.value);
       await this._loadData();
 
+      fireEvent(this, "supervisor-collection-refresh", { collection: "store" });
+
       input.value = "";
     } catch (err: any) {
       this._error = extractApiErrorMessage(err);
@@ -261,6 +262,8 @@ class HassioRepositoriesDialog extends LitElement {
     try {
       await removeStoreRepository(this.hass, slug);
       await this._loadData();
+
+      fireEvent(this, "supervisor-collection-refresh", { collection: "store" });
     } catch (err: any) {
       this._error = extractApiErrorMessage(err);
     }

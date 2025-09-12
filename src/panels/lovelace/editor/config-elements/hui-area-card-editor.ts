@@ -32,8 +32,12 @@ import type {
   LovelaceCardFeatureConfig,
   LovelaceCardFeatureContext,
 } from "../../card-features/types";
-import { DEVICE_CLASSES } from "../../cards/hui-area-card";
-import type { AreaCardConfig } from "../../cards/types";
+import {
+  DEVICE_CLASSES,
+  SUM_DEVICE_CLASSES,
+  type AreaCardFeatureContext,
+} from "../../cards/hui-area-card";
+import type { AreaCardConfig, AreaCardDisplayType } from "../../cards/types";
 import type { LovelaceCardEditor } from "../../types";
 import { baseLovelaceCardConfig } from "../structs/base-card-struct";
 import type { EditDetailElementEvent, EditSubElementEvent } from "../types";
@@ -45,15 +49,18 @@ const cardConfigStruct = assign(
   object({
     area: optional(string()),
     name: optional(string()),
+    color: optional(string()),
     navigation_path: optional(string()),
     show_camera: optional(boolean()),
     display_type: optional(enums(["compact", "icon", "picture", "camera"])),
+    vertical: optional(boolean()),
     camera_view: optional(string()),
     alert_classes: optional(array(string())),
     sensor_classes: optional(array(string())),
     features: optional(array(any())),
     features_position: optional(enums(["bottom", "inline"])),
     aspect_ratio: optional(string()),
+    exclude_entities: optional(array(string())),
   })
 );
 
@@ -68,16 +75,12 @@ export class HuiAreaCardEditor
 
   @state() private _numericDeviceClasses?: string[];
 
-  private _featureContext = memoizeOne(
-    (areaId?: string): LovelaceCardFeatureContext => ({
-      area_id: areaId,
-    })
-  );
+  @state() private _featureContext: AreaCardFeatureContext = {};
 
   private _schema = memoizeOne(
     (
       localize: LocalizeFunc,
-      showCamera: boolean,
+      displayType: AreaCardDisplayType,
       binaryClasses: SelectOption[],
       sensorClasses: SelectOption[]
     ) =>
@@ -94,6 +97,7 @@ export class HuiAreaCardEditor
               type: "grid",
               schema: [
                 { name: "name", selector: { text: {} } },
+                { name: "color", selector: { ui_color: {} } },
                 {
                   name: "display_type",
                   required: true,
@@ -111,13 +115,28 @@ export class HuiAreaCardEditor
                     },
                   },
                 },
-              ],
-            },
-            {
-              name: "",
-              type: "grid",
-              schema: [
-                ...(showCamera
+                ...(displayType === "compact"
+                  ? ([
+                      {
+                        name: "content_layout",
+                        required: true,
+                        selector: {
+                          select: {
+                            mode: "dropdown",
+                            options: ["horizontal", "vertical"].map(
+                              (value) => ({
+                                label: localize(
+                                  `ui.panel.lovelace.editor.card.area.content_layout_options.${value}`
+                                ),
+                                value,
+                              })
+                            ),
+                          },
+                        },
+                      },
+                    ] as const satisfies readonly HaFormSchema[])
+                  : []),
+                ...(displayType === "camera"
                   ? ([
                       {
                         name: "camera_view",
@@ -178,7 +197,10 @@ export class HuiAreaCardEditor
   );
 
   private _binaryClassesForArea = memoizeOne(
-    (area: string | undefined): string[] => {
+    (
+      area: string | undefined,
+      excludeEntities: string[] | undefined
+    ): string[] => {
       if (!area) {
         return [];
       }
@@ -190,7 +212,9 @@ export class HuiAreaCardEditor
       });
 
       const classes = Object.keys(this.hass!.entities)
-        .filter(binarySensorFilter)
+        .filter(
+          (id) => binarySensorFilter(id) && !excludeEntities?.includes(id)
+        )
         .map((id) => this.hass!.states[id]?.attributes.device_class)
         .filter((c): c is string => Boolean(c));
 
@@ -199,7 +223,11 @@ export class HuiAreaCardEditor
   );
 
   private _sensorClassesForArea = memoizeOne(
-    (area: string | undefined, numericDeviceClasses?: string[]): string[] => {
+    (
+      area: string | undefined,
+      excludeEntities: string[] | undefined,
+      numericDeviceClasses: string[] | undefined
+    ): string[] => {
       if (!area) {
         return [];
       }
@@ -212,7 +240,7 @@ export class HuiAreaCardEditor
       });
 
       const classes = Object.keys(this.hass!.entities)
-        .filter(sensorFilter)
+        .filter((id) => sensorFilter(id) && !excludeEntities?.includes(id))
         .map((id) => this.hass!.states[id]?.attributes.device_class)
         .filter((c): c is string => Boolean(c));
 
@@ -236,13 +264,28 @@ export class HuiAreaCardEditor
     currentClasses: string[]
   ): SelectOption[] {
     const options = [...new Set([...possibleClasses, ...currentClasses])].map(
-      (deviceClass) => ({
-        value: deviceClass,
-        label:
-          this.hass!.localize(
-            `component.${domain}.entity_component.${deviceClass}.name`
-          ) || deviceClass,
-      })
+      (deviceClass) => {
+        const labelSuffix =
+          domain === "sensor"
+            ? ` (${
+                SUM_DEVICE_CLASSES.includes(deviceClass)
+                  ? this.hass!.localize(
+                      "ui.panel.lovelace.editor.card.area.sum"
+                    )
+                  : this.hass!.localize(
+                      "ui.panel.lovelace.editor.card.area.median"
+                    )
+              })`
+            : "";
+        return {
+          value: deviceClass,
+          label: `${
+            this.hass!.localize(
+              `component.${domain}.entity_component.${deviceClass}.name`
+            ) || deviceClass
+          }${labelSuffix}`,
+        };
+      }
     );
     options.sort((a, b) =>
       caseInsensitiveStringCompare(a.label, b.label, this.hass!.locale.language)
@@ -261,6 +304,11 @@ export class HuiAreaCardEditor
       display_type: displayType,
     };
     delete this._config.show_camera;
+
+    this._featureContext = {
+      area_id: config.area,
+      exclude_entities: config.exclude_entities,
+    };
   }
 
   protected async updated() {
@@ -272,7 +320,7 @@ export class HuiAreaCardEditor
   }
 
   private _featuresSchema = memoizeOne(
-    (localize: LocalizeFunc) =>
+    (localize: LocalizeFunc, vertical: boolean) =>
       [
         {
           name: "features_position",
@@ -293,6 +341,7 @@ export class HuiAreaCardEditor
                   src_dark: `/static/images/form/tile_features_position_${value}_dark.svg`,
                   flip_rtl: true,
                 },
+                disabled: vertical && value === "inline",
               })),
             },
           },
@@ -310,11 +359,13 @@ export class HuiAreaCardEditor
       return nothing;
     }
 
-    const areaId = this._config!.area;
-
-    const possibleBinaryClasses = this._binaryClassesForArea(this._config.area);
+    const possibleBinaryClasses = this._binaryClassesForArea(
+      this._config.area,
+      this._config.exclude_entities
+    );
     const possibleSensorClasses = this._sensorClassesForArea(
       this._config.area,
+      this._config.exclude_entities,
       this._numericDeviceClasses
     );
     const binarySelectOptions = this._buildBinaryOptions(
@@ -326,33 +377,38 @@ export class HuiAreaCardEditor
       this._config.sensor_classes || DEVICE_CLASSES.sensor
     );
 
-    const showCamera = this._config.display_type === "camera";
-
     const displayType =
-      this._config.display_type || this._config.show_camera
-        ? "camera"
-        : "picture";
+      this._config.display_type ||
+      (this._config.show_camera ? "camera" : "picture");
 
     const schema = this._schema(
       this.hass.localize,
-      showCamera,
+      displayType,
       binarySelectOptions,
       sensorSelectOptions
     );
 
-    const featuresSchema = this._featuresSchema(this.hass.localize);
+    const vertical = this._config.vertical && displayType === "compact";
+
+    const featuresSchema = this._featuresSchema(this.hass.localize, vertical);
 
     const data = {
       camera_view: "auto",
       alert_classes: DEVICE_CLASSES.binary_sensor,
       sensor_classes: DEVICE_CLASSES.sensor,
-      features_position: "bottom",
       display_type: displayType,
+      content_layout: vertical ? "vertical" : "horizontal",
       ...this._config,
     };
 
-    const featureContext = this._featureContext(areaId);
-    const hasCompatibleFeatures = this._hasCompatibleFeatures(featureContext);
+    // Default features position to bottom and force it to bottom in vertical mode
+    if (!data.features_position || vertical) {
+      data.features_position = "bottom";
+    }
+
+    const hasCompatibleFeatures = this._hasCompatibleFeatures(
+      this._featureContext
+    );
 
     return html`
       <ha-form
@@ -385,7 +441,7 @@ export class HuiAreaCardEditor
             : nothing}
           <hui-card-features-editor
             .hass=${this.hass}
-            .context=${featureContext}
+            .context=${this._featureContext}
             .features=${this._config!.features ?? []}
             @features-changed=${this._featuresChanged}
             @edit-detail-element=${this._editDetailElement}
@@ -405,6 +461,12 @@ export class HuiAreaCardEditor
 
     if (config.display_type !== "camera") {
       delete config.camera_view;
+    }
+
+    // Convert content_layout to vertical
+    if (config.content_layout) {
+      config.vertical = config.content_layout === "vertical";
+      delete config.content_layout;
     }
 
     fireEvent(this, "config-changed", { config });
@@ -432,12 +494,11 @@ export class HuiAreaCardEditor
   private _editDetailElement(ev: HASSDomEvent<EditDetailElementEvent>): void {
     const index = ev.detail.subElementConfig.index;
     const config = this._config!.features![index!];
-    const featureContext = this._featureContext(this._config!.area);
 
     fireEvent(this, "edit-sub-element", {
       config: config,
       saveConfig: (newConfig) => this._updateFeature(index!, newConfig),
-      context: featureContext,
+      context: this._featureContext,
       type: "feature",
     } as EditSubElementEvent<
       LovelaceCardFeatureConfig,
@@ -480,10 +541,10 @@ export class HuiAreaCardEditor
     switch (schema.name) {
       case "area":
         return this.hass!.localize("ui.panel.lovelace.editor.card.area.name");
-
       case "name":
       case "camera_view":
       case "content":
+      case "interactions":
         return this.hass!.localize(
           `ui.panel.lovelace.editor.card.generic.${schema.name}`
         );
@@ -491,7 +552,6 @@ export class HuiAreaCardEditor
         return this.hass!.localize(
           "ui.panel.lovelace.editor.action-editor.navigation_path"
         );
-      case "interactions":
       case "features_position":
         return this.hass!.localize(
           `ui.panel.lovelace.editor.card.tile.${schema.name}`

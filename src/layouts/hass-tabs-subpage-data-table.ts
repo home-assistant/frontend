@@ -1,5 +1,4 @@
 import { ResizeController } from "@lit-labs/observers/resize-controller";
-import "@material/mwc-button/mwc-button";
 import {
   mdiArrowDown,
   mdiArrowUp,
@@ -768,12 +767,6 @@ export class HaTabsSubpageDataTable extends KeyboardShortcutMixin(LitElement) {
     .active-filters ha-svg-icon {
       color: var(--primary-color);
     }
-    .active-filters mwc-button {
-      margin-left: 8px;
-      margin-inline-start: 8px;
-      margin-inline-end: initial;
-      direction: var(--direction);
-    }
     .active-filters::before {
       background-color: var(--primary-color);
       opacity: 0.12;
@@ -891,7 +884,13 @@ export class HaTabsSubpageDataTable extends KeyboardShortcutMixin(LitElement) {
     }
 
     .filter-dialog-content {
-      height: calc(100vh - 1px - 61px - var(--header-height));
+      height: calc(
+        100vh -
+          70px - var(--header-height, 0px) - var(
+            --safe-area-inset-top,
+            0px
+          ) - var(--safe-area-inset-bottom, 0px)
+      );
       display: flex;
       flex-direction: column;
     }

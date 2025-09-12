@@ -2,14 +2,15 @@ import type {
   HassEntityAttributeBase,
   HassEntityBase,
 } from "home-assistant-js-websocket";
-import { navigate } from "../common/navigate";
 import { ensureArray } from "../common/array/ensure-array";
+import { navigate } from "../common/navigate";
+import { createSearchParam } from "../common/url/search-params";
 import type { Context, HomeAssistant } from "../types";
 import type { BlueprintInput } from "./blueprint";
+import { CONDITION_BUILDING_BLOCKS } from "./condition";
 import type { DeviceCondition, DeviceTrigger } from "./device_automation";
-import type { Action, MODES } from "./script";
+import type { Action, Field, MODES } from "./script";
 import { migrateAutomationAction } from "./script";
-import { createSearchParam } from "../common/url/search-params";
 
 export const AUTOMATION_DEFAULT_MODE: (typeof MODES)[number] = "single";
 export const AUTOMATION_DEFAULT_MAX = 10;
@@ -169,6 +170,7 @@ export interface TagTrigger extends BaseTrigger {
 export interface TimeTrigger extends BaseTrigger {
   trigger: "time";
   at: string | { entity_id: string; offset?: string };
+  weekday?: string | string[];
 }
 
 export interface TemplateTrigger extends BaseTrigger {
@@ -324,7 +326,7 @@ export const expandConditionWithShorthand = (
     };
   }
 
-  for (const condition of ["and", "or", "not"]) {
+  for (const condition of CONDITION_BUILDING_BLOCKS) {
     if (condition in cond) {
       return {
         condition,
@@ -511,6 +513,14 @@ export const isCondition = (config: unknown): boolean => {
   return "condition" in condition && typeof condition.condition === "string";
 };
 
+export const isScriptField = (config: unknown): boolean => {
+  if (!config || typeof config !== "object") {
+    return false;
+  }
+  const field = config as Record<string, unknown>;
+  return "field" in field && typeof field.field === "object";
+};
+
 export const subscribeTrigger = (
   hass: HomeAssistant,
   onChange: (result: {
@@ -543,4 +553,82 @@ export interface AutomationClipboard {
   trigger?: Trigger;
   condition?: Condition;
   action?: Action;
+}
+
+export interface BaseSidebarConfig {
+  delete: () => void;
+  close: (focus?: boolean) => void;
+}
+
+export interface TriggerSidebarConfig extends BaseSidebarConfig {
+  save: (value: Trigger) => void;
+  rename: () => void;
+  disable: () => void;
+  duplicate: () => void;
+  cut: () => void;
+  copy: () => void;
+  toggleYamlMode: () => void;
+  config: Trigger;
+  yamlMode: boolean;
+  uiSupported: boolean;
+}
+
+export interface ConditionSidebarConfig extends BaseSidebarConfig {
+  save: (value: Condition) => void;
+  rename: () => void;
+  disable: () => void;
+  test: () => void;
+  duplicate: () => void;
+  cut: () => void;
+  copy: () => void;
+  toggleYamlMode: () => void;
+  config: Condition;
+  yamlMode: boolean;
+  uiSupported: boolean;
+}
+
+export interface ActionSidebarConfig extends BaseSidebarConfig {
+  save: (value: Action) => void;
+  rename: () => void;
+  disable: () => void;
+  duplicate: () => void;
+  cut: () => void;
+  copy: () => void;
+  run: () => void;
+  toggleYamlMode: () => void;
+  config: {
+    action: Action;
+  };
+  yamlMode: boolean;
+  uiSupported: boolean;
+}
+
+export interface OptionSidebarConfig extends BaseSidebarConfig {
+  rename: () => void;
+  duplicate: () => void;
+  defaultOption?: boolean;
+}
+
+export interface ScriptFieldSidebarConfig extends BaseSidebarConfig {
+  save: (value: Field) => void;
+  config: {
+    field: Field;
+    selector: boolean;
+    key: string;
+    excludeKeys: string[];
+  };
+  toggleYamlMode: () => void;
+  yamlMode: boolean;
+}
+
+export type SidebarConfig =
+  | TriggerSidebarConfig
+  | ConditionSidebarConfig
+  | ActionSidebarConfig
+  | OptionSidebarConfig
+  | ScriptFieldSidebarConfig;
+
+export interface ShowAutomationEditorParams {
+  data?: Partial<AutomationConfig>;
+  expanded?: boolean;
 }

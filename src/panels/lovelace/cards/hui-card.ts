@@ -224,7 +224,9 @@ export class HuiCard extends ReactiveElement {
           this._element.preview = this.preview;
           // For backwards compatibility
           (this._element as any).editMode = this.preview;
-          fireEvent(this, "card-updated");
+          if (this.hasUpdated) {
+            fireEvent(this, "card-updated");
+          }
         } catch (e: any) {
           // eslint-disable-next-line no-console
           console.error(this.config?.type, e);

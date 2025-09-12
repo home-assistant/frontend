@@ -174,11 +174,8 @@ class HuiClimateFanModesCardFeature
           .options=${options}
           .value=${this._currentFanMode}
           @value-changed=${this._valueChanged}
-          hide-label
-          .ariaLabel=${this.hass!.formatEntityAttributeName(
-            stateObj,
-            "fan_mode"
-          )}
+          hide-option-label
+          .label=${this.hass!.formatEntityAttributeName(stateObj, "fan_mode")}
           .disabled=${this._stateObj!.state === UNAVAILABLE}
         >
         </ha-control-select>

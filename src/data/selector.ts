@@ -74,7 +74,9 @@ export type Selector =
   | BackupLocationSelector;
 
 export interface ActionSelector {
-  action: {} | null;
+  action: {
+    optionsInSidebar?: boolean;
+  } | null;
 }
 
 export interface AddonSelector {
@@ -98,7 +100,7 @@ export interface AreasDisplaySelector {
 
 export interface AttributeSelector {
   attribute: {
-    entity_id?: string;
+    entity_id?: string | string[];
     hide_attributes?: readonly string[];
   } | null;
 }
@@ -130,7 +132,9 @@ export interface ColorTempSelector {
 }
 
 export interface ConditionSelector {
-  condition: {} | null;
+  condition: {
+    optionsInSidebar?: boolean;
+  } | null;
 }
 
 export interface ConversationAgentSelector {
@@ -226,6 +230,7 @@ export interface EntitySelector {
     include_entities?: string[];
     exclude_entities?: string[];
     filter?: EntitySelectorFilter | readonly EntitySelectorFilter[];
+    reorder?: boolean;
   } | null;
 }
 
@@ -303,7 +308,9 @@ export interface LocationSelectorValue {
 }
 
 export interface MediaSelector {
-  media: {} | null;
+  media: {
+    accept?: string[];
+  } | null;
 }
 
 export interface MediaSelectorValue {
@@ -316,6 +323,7 @@ export interface MediaSelectorValue {
     media_class?: string;
     children_media_class?: string | null;
     navigateIds?: { media_content_type: string; media_content_id: string }[];
+    browse_entity_id?: string;
   };
 }
 
@@ -331,6 +339,7 @@ export interface NumberSelector {
     mode?: "box" | "slider";
     unit_of_measurement?: string;
     slider_ticks?: boolean;
+    translation_key?: string;
   } | null;
 }
 
@@ -390,8 +399,10 @@ export interface SelectorSelector {
 export interface StateSelector {
   state: {
     extra_options?: { label: string; value: any }[];
-    entity_id?: string;
+    entity_id?: string | string[];
     attribute?: string;
+    hide_states?: string[];
+    multiple?: boolean;
   } | null;
 }
 

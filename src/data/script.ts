@@ -11,9 +11,8 @@ import {
   union,
   array,
   assign,
-  literal,
-  is,
   boolean,
+  refine,
 } from "superstruct";
 import { arrayLiteralIncludes } from "../common/array/literal-includes";
 import { navigate } from "../common/navigate";
@@ -49,27 +48,21 @@ export const targetStruct = object({
   label_id: optional(union([string(), array(string())])),
 });
 
-export const serviceActionStruct: Describe<ServiceAction> = assign(
+export const serviceActionStruct: Describe<ServiceActionWithTemplate> = assign(
   baseActionStruct,
   object({
     action: optional(string()),
     service_template: optional(string()),
     entity_id: optional(string()),
-    target: optional(targetStruct),
+    target: optional(
+      union([
+        targetStruct,
+        refine(string(), "has_template", (val) => hasTemplate(val)),
+      ])
+    ),
     data: optional(object()),
     response_variable: optional(string()),
     metadata: optional(object()),
-  })
-);
-
-const playMediaActionStruct: Describe<PlayMediaAction> = assign(
-  baseActionStruct,
-  object({
-    action: literal("media_player.play_media"),
-    target: optional(object({ entity_id: optional(string()) })),
-    entity_id: optional(string()),
-    data: object({ media_content_id: string(), media_content_type: string() }),
-    metadata: object(),
   })
 );
 
@@ -132,6 +125,12 @@ export interface ServiceAction extends BaseAction {
   metadata?: Record<string, unknown>;
 }
 
+type ServiceActionWithTemplate = ServiceAction & {
+  target?: HassServiceTarget | string;
+};
+
+export type { ServiceActionWithTemplate };
+
 export interface DeviceAction extends BaseAction {
   type: string;
   device_id: string;
@@ -168,14 +167,6 @@ export interface WaitForTriggerAction extends BaseAction {
   wait_for_trigger: Trigger | Trigger[];
   timeout?: number | Partial<WaitForTriggerActionParts> | string;
   continue_on_timeout?: boolean;
-}
-
-export interface PlayMediaAction extends BaseAction {
-  action: "media_player.play_media";
-  target?: { entity_id?: string };
-  entity_id?: string;
-  data: { media_content_id: string; media_content_type: string };
-  metadata: Record<string, unknown>;
 }
 
 export interface RepeatAction extends BaseAction {
@@ -254,7 +245,6 @@ export type NonConditionAction =
   | ChooseAction
   | IfAction
   | VariablesAction
-  | PlayMediaAction
   | StopAction
   | SequenceAction
   | ParallelAction
@@ -279,7 +269,6 @@ export interface ActionTypes {
   wait_for_trigger: WaitForTriggerAction;
   variables: VariablesAction;
   service: ServiceAction;
-  play_media: PlayMediaAction;
   stop: StopAction;
   sequence: SequenceAction;
   parallel: ParallelAction;
@@ -386,11 +375,6 @@ export const getActionType = (action: Action): ActionType => {
     return "set_conversation_response";
   }
   if ("action" in action || "service" in action) {
-    if ("metadata" in action) {
-      if (is(action, playMediaActionStruct)) {
-        return "play_media";
-      }
-    }
     return "service";
   }
   return "unknown";
@@ -415,7 +399,7 @@ export const migrateAutomationAction = (
     return action.map(migrateAutomationAction) as Action[];
   }
 
-  if ("service" in action) {
+  if (typeof action === "object" && action !== null && "service" in action) {
     if (!("action" in action)) {
       action.action = action.service;
     }
@@ -423,7 +407,7 @@ export const migrateAutomationAction = (
   }
 
   // legacy scene (scene: scene_name)
-  if ("scene" in action) {
+  if (typeof action === "object" && action !== null && "scene" in action) {
     action.action = "scene.turn_on";
     action.target = {
       entity_id: action.scene,
@@ -431,7 +415,32 @@ export const migrateAutomationAction = (
     delete action.scene;
   }
 
-  if ("sequence" in action) {
+  // legacy play media
+  if (
+    typeof action === "object" &&
+    action !== null &&
+    "action" in action &&
+    action.action === "media_player.play_media" &&
+    "data" in action &&
+    ((action.data as any)?.media_content_id ||
+      (action.data as any)?.media_content_type)
+  ) {
+    const oldData = { ...(action.data as any) };
+    const media = {
+      media_content_id: oldData.media_content_id,
+      media_content_type: oldData.media_content_type,
+      metadata: { ...(action.metadata || {}) },
+    };
+    delete action.metadata;
+    delete oldData.media_content_id;
+    delete oldData.media_content_type;
+    action.data = {
+      ...oldData,
+      media,
+    };
+  }
+
+  if (typeof action === "object" && action !== null && "sequence" in action) {
     for (const sequenceAction of (action as SequenceAction).sequence) {
       migrateAutomationAction(sequenceAction);
     }

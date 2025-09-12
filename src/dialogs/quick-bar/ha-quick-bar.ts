@@ -37,6 +37,7 @@ import { computeRTL } from "../../common/util/compute_rtl";
 import { debounce } from "../../common/util/debounce";
 import "../../components/ha-icon-button";
 import "../../components/ha-label";
+import "../../components/ha-button";
 import "../../components/ha-list";
 import "../../components/ha-md-list-item";
 import "../../components/ha-spinner";
@@ -246,10 +247,13 @@ export class QuickBar extends LitElement {
                     ></ha-icon-button>`}
                     ${this._narrow
                       ? html`
-                          <mwc-button
-                            .label=${this.hass!.localize("ui.common.close")}
+                          <ha-button
+                            appearance="plain"
+                            size="small"
                             @click=${this.closeDialog}
-                          ></mwc-button>
+                          >
+                            ${this.hass!.localize("ui.common.close")}
+                          </ha-button>
                         `
                       : ""}
                   </div>
@@ -277,11 +281,11 @@ export class QuickBar extends LitElement {
                         class="ha-scrollbar"
                         style=${styleMap({
                           height: this._narrow
-                            ? "calc(100vh - 56px)"
-                            : `${Math.min(
+                            ? "calc(100vh - 56px - var(--safe-area-inset-top, 0px) - var(--safe-area-inset-bottom, 0px))"
+                            : `calc(${Math.min(
                                 items.length * (commandMode ? 56 : 72) + 26,
                                 500
-                              )}px`,
+                              )}px - var(--safe-area-inset-top, 0px) - var(--safe-area-inset-bottom, 0px))`,
                         })}
                         .items=${items}
                         .renderItem=${this._renderItem}
@@ -836,7 +840,9 @@ export class QuickBar extends LitElement {
     const additionalItems = [
       {
         path: "",
-        primaryText: this.hass.localize("ui.panel.config.info.shortcuts"),
+        primaryText: this.hass.localize(
+          "ui.dialogs.quick-bar.commands.navigation.shortcuts"
+        ),
         action: () => showShortcutsDialog(this),
         iconPath: mdiKeyboard,
       },
@@ -852,7 +858,9 @@ export class QuickBar extends LitElement {
 
   private _generateNavigationPanelCommands(): BaseNavigationCommand[] {
     return Object.keys(this.hass.panels)
-      .filter((panelKey) => panelKey !== "_my_redirect")
+      .filter(
+        (panelKey) => panelKey !== "_my_redirect" && panelKey !== "hassio"
+      )
       .map((panelKey) => {
         const panel = this.hass.panels[panelKey];
         const translationKey = getPanelNameTranslationKey(panel);

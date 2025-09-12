@@ -1,14 +1,15 @@
-import { customElement, property, state } from "lit/decorators";
 import { css, type CSSResultGroup, html, LitElement, nothing } from "lit";
 import { consume } from "@lit/context";
 import type { Schema } from "js-yaml";
 import { DEFAULT_SCHEMA } from "js-yaml";
-import type { HassDialog } from "../../../../dialogs/make-dialog-manager";
-import type { HomeAssistant } from "../../../../types";
+import { customElement, property, state } from "lit/decorators";
 import { fireEvent } from "../../../../common/dom/fire_event";
-import { haStyle, haStyleDialog } from "../../../../resources/styles";
+import "../../../../components/ha-button";
 import { createCloseHeading } from "../../../../components/ha-dialog";
-import "../trigger/ha-automation-trigger-row";
+import "../../../../components/ha-yaml-editor";
+import type { HassDialog } from "../../../../dialogs/make-dialog-manager";
+import { haStyle, haStyleDialog } from "../../../../resources/styles";
+import type { HomeAssistant } from "../../../../types";
 import type { PasteReplaceDialogParams } from "./show-dialog-paste-replace";
 import { yamlSchemaContext } from "../../../../data/blueprint";
 
@@ -66,7 +67,7 @@ class DialogPasteReplace extends LitElement implements HassDialog {
         ></ha-yaml-editor>
 
         <div slot="primaryAction">
-          <ha-button @click=${this._handleAppend}>
+          <ha-button appearance="plain" @click=${this._handleAppend}>
             ${this.hass.localize("ui.common.append")}
           </ha-button>
           <ha-button @click=${this._handleReplace}>
@@ -96,6 +97,10 @@ class DialogPasteReplace extends LitElement implements HassDialog {
           margin: 0;
           font-size: inherit;
           font-weight: inherit;
+        }
+        div[slot="primaryAction"] {
+          display: flex;
+          gap: 8px;
         }
       `,
     ];

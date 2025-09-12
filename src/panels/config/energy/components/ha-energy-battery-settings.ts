@@ -1,10 +1,11 @@
-import "@material/mwc-button/mwc-button";
-import { mdiBatteryHigh, mdiDelete, mdiPencil } from "@mdi/js";
+import { mdiBatteryHigh, mdiDelete, mdiPencil, mdiPlus } from "@mdi/js";
 import type { CSSResultGroup, TemplateResult } from "lit";
 import { css, html, LitElement } from "lit";
 import { customElement, property } from "lit/decorators";
 import { fireEvent } from "../../../../common/dom/fire_event";
 import "../../../../components/ha-card";
+import "../../../../components/ha-button";
+import "../../../../components/ha-svg-icon";
 import "../../../../components/ha-icon-button";
 import "../../../../components/ha-settings-row";
 import type {
@@ -132,10 +133,15 @@ export class EnergyBatterySettings extends LitElement {
           })}
           <div class="row border-bottom">
             <ha-svg-icon .path=${mdiBatteryHigh}></ha-svg-icon>
-            <mwc-button @click=${this._addSource}
-              >${this.hass.localize(
+            <ha-button
+              @click=${this._addSource}
+              appearance="filled"
+              size="small"
+            >
+              <ha-svg-icon slot="start" .path=${mdiPlus}></ha-svg-icon>
+              ${this.hass.localize(
                 "ui.panel.config.energy.battery.add_battery_system"
-              )}</mwc-button
+              )}</ha-button
             >
           </div>
         </div>
@@ -220,6 +226,7 @@ export class EnergyBatterySettings extends LitElement {
         .label {
           overflow: hidden;
           text-overflow: ellipsis;
+          white-space: nowrap;
         }
       `,
     ];

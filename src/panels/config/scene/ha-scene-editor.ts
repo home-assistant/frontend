@@ -320,7 +320,9 @@ export class HaSceneEditor extends PreventUnsavedMixin(
       .hass=${this.hass}
       .defaultValue=${this._config}
       @value-changed=${this._yamlChanged}
+      @editor-save=${this._saveScene}
       .showErrors=${false}
+      disable-fullscreen
     ></ha-yaml-editor>`;
   }
 
@@ -362,7 +364,11 @@ export class HaSceneEditor extends PreventUnsavedMixin(
                       : mdiEye}
                   ></ha-svg-icon>
                 </span>
-                <ha-button slot="action" @click=${this._toggleLiveMode}>
+                <ha-button
+                  size="small"
+                  slot="action"
+                  @click=${this._toggleLiveMode}
+                >
                   ${this.hass.localize(
                     `ui.panel.config.scene.editor.${this._mode === "live" ? "switch_to_review_mode" : "live_edit"}`
                   )}
@@ -1258,10 +1264,6 @@ export class HaSceneEditor extends PreventUnsavedMixin(
         ha-alert {
           display: block;
           margin-bottom: 24px;
-        }
-        ha-button {
-          white-space: nowrap;
-          --mdc-theme-primary: var(--primary-color);
         }
         ha-fab.dirty {
           bottom: 0;

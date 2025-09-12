@@ -1,10 +1,16 @@
-import "@material/mwc-button/mwc-button";
-import { mdiHelpCircle } from "@mdi/js";
+import { mdiContentSave, mdiHelpCircle } from "@mdi/js";
 import type { HassEntity } from "home-assistant-js-websocket";
+import { load } from "js-yaml";
 import type { CSSResultGroup, PropertyValues } from "lit";
 import { css, html, LitElement, nothing } from "lit";
-import { customElement, property, state } from "lit/decorators";
-import { load } from "js-yaml";
+import {
+  customElement,
+  property,
+  query,
+  queryAll,
+  state,
+} from "lit/decorators";
+import { classMap } from "lit/directives/class-map";
 import {
   any,
   array,
@@ -16,14 +22,23 @@ import {
   union,
 } from "superstruct";
 import { ensureArray } from "../../../common/array/ensure-array";
+import { canOverrideAlphanumericInput } from "../../../common/dom/can-override-input";
 import { fireEvent } from "../../../common/dom/fire_event";
-import "../../../components/ha-card";
+import { constructUrlCurrentPath } from "../../../common/url/construct-url";
+import {
+  extractSearchParam,
+  removeSearchParam,
+} from "../../../common/url/search-params";
+import "../../../components/ha-button";
+import "../../../components/ha-fab";
 import "../../../components/ha-icon-button";
 import "../../../components/ha-markdown";
 import type {
+  ActionSidebarConfig,
   AutomationConfig,
   Condition,
   ManualAutomationConfig,
+  SidebarConfig,
   Trigger,
 } from "../../../data/automation";
 import {
@@ -32,15 +47,15 @@ import {
   normalizeAutomationConfig,
 } from "../../../data/automation";
 import { getActionType, type Action } from "../../../data/script";
-import { haStyle } from "../../../resources/styles";
 import type { HomeAssistant } from "../../../types";
 import { documentationUrl } from "../../../util/documentation-url";
+import { showToast } from "../../../util/toast";
 import "./action/ha-automation-action";
-import "./condition/ha-automation-condition";
-import "./trigger/ha-automation-trigger";
-import type HaAutomationTrigger from "./trigger/ha-automation-trigger";
 import type HaAutomationAction from "./action/ha-automation-action";
+import "./condition/ha-automation-condition";
 import type HaAutomationCondition from "./condition/ha-automation-condition";
+import "./ha-automation-sidebar";
+import type HaAutomationSidebar from "./ha-automation-sidebar";
 import {
   extractSearchParam,
   removeSearchParam,
@@ -50,6 +65,8 @@ import type { AutomationBlueprint } from "../../../data/blueprint";
 import { canOverrideAlphanumericInput } from "../../../common/dom/can-override-input";
 import { showToast } from "../../../util/toast";
 import { showPasteReplaceDialog } from "./paste-replace-dialog/show-dialog-paste-replace";
+import { manualEditorStyles, saveFabStyles } from "./styles";
+import "./trigger/ha-automation-trigger";
 
 const baseConfigStruct = object({
   alias: optional(string()),
@@ -78,6 +95,8 @@ export class HaManualAutomationEditor extends LitElement {
 
   @property({ type: Boolean }) public disabled = false;
 
+  @property({ type: Boolean }) public saving = false;
+
   @property({ attribute: false }) public config!:
     | ManualAutomationConfig
     | AutomationBlueprint;
@@ -87,6 +106,17 @@ export class HaManualAutomationEditor extends LitElement {
   @property({ attribute: false }) public dirty = false;
 
   @state() private _pastedConfig?: ManualAutomationConfig;
+
+  @state() private _sidebarConfig?: SidebarConfig;
+
+  @state() private _sidebarKey?: string;
+
+  @query("ha-automation-sidebar") private _sidebarElement?: HaAutomationSidebar;
+
+  @queryAll("ha-automation-action, ha-automation-condition")
+  private _collapsableElements?: NodeListOf<
+    HaAutomationAction | HaAutomationCondition
+  >;
 
   private _previousConfig?: ManualAutomationConfig;
 
@@ -100,47 +130,8 @@ export class HaManualAutomationEditor extends LitElement {
     super.disconnectedCallback();
   }
 
-  protected firstUpdated(changedProps: PropertyValues): void {
-    super.firstUpdated(changedProps);
-    const expanded = extractSearchParam("expanded");
-    if (expanded === "1") {
-      this._clearParam("expanded");
-      const items = this.shadowRoot!.querySelectorAll<
-        HaAutomationTrigger | HaAutomationCondition | HaAutomationAction
-      >("ha-automation-trigger, ha-automation-condition, ha-automation-action");
-
-      items.forEach((el) => {
-        el.updateComplete.then(() => {
-          el.expandAll();
-        });
-      });
-    }
-  }
-
-  private _clearParam(param: string) {
-    window.history.replaceState(
-      null,
-      "",
-      constructUrlCurrentPath(removeSearchParam(param))
-    );
-  }
-
-  protected render() {
+  private _renderContent() {
     return html`
-      ${this.stateObj?.state === "off"
-        ? html`
-            <ha-alert alert-type="info">
-              ${this.hass.localize(
-                "ui.panel.config.automation.editor.disabled"
-              )}
-              <mwc-button slot="action" @click=${this._enable}>
-                ${this.hass.localize(
-                  "ui.panel.config.automation.editor.enable"
-                )}
-              </mwc-button>
-            </ha-alert>
-          `
-        : nothing}
       ${this.config.description
         ? html`<ha-markdown
             class="description"
@@ -180,10 +171,15 @@ export class HaManualAutomationEditor extends LitElement {
         aria-labelledby="triggers-heading"
         .triggers=${this.config.triggers || []}
         .highlightedTriggers=${this._pastedConfig?.triggers || []}
-        .path=${["triggers"]}
         @value-changed=${this._triggerChanged}
         .hass=${this.hass}
-        .disabled=${this.disabled}
+        .disabled=${this.disabled || this.saving}
+        .narrow=${this.narrow}
+        @open-sidebar=${this._openSidebar}
+        @request-close-sidebar=${this._triggerCloseSidebar}
+        @close-sidebar=${this._handleCloseSidebar}
+        root
+        sidebar
       ></ha-automation-trigger>
 
       <div class="header">
@@ -222,10 +218,15 @@ export class HaManualAutomationEditor extends LitElement {
         aria-labelledby="conditions-heading"
         .conditions=${this.config.conditions || []}
         .highlightedConditions=${this._pastedConfig?.conditions || []}
-        .path=${["conditions"]}
         @value-changed=${this._conditionChanged}
         .hass=${this.hass}
-        .disabled=${this.disabled}
+        .disabled=${this.disabled || this.saving}
+        .narrow=${this.narrow}
+        @open-sidebar=${this._openSidebar}
+        @request-close-sidebar=${this._triggerCloseSidebar}
+        @close-sidebar=${this._handleCloseSidebar}
+        root
+        sidebar
       ></ha-automation-condition>
 
       <div class="header">
@@ -262,13 +263,116 @@ export class HaManualAutomationEditor extends LitElement {
         aria-labelledby="actions-heading"
         .actions=${this.config.actions || []}
         .highlightedActions=${this._pastedConfig?.actions || []}
-        .path=${["actions"]}
         @value-changed=${this._actionChanged}
+        @open-sidebar=${this._openSidebar}
+        @request-close-sidebar=${this._triggerCloseSidebar}
+        @close-sidebar=${this._handleCloseSidebar}
         .hass=${this.hass}
         .narrow=${this.narrow}
-        .disabled=${this.disabled}
+        .disabled=${this.disabled || this.saving}
+        root
+        sidebar
       ></ha-automation-action>
     `;
+  }
+
+  protected render() {
+    return html`
+      <div
+        class=${classMap({
+          "has-sidebar": this._sidebarConfig && !this.narrow,
+        })}
+      >
+        <div class="content-wrapper">
+          <div
+            class="content ${this._sidebarConfig && this.narrow
+              ? "has-bottom-sheet"
+              : ""}"
+          >
+            <slot name="alerts"></slot>
+            ${this._renderContent()}
+          </div>
+          <div class="fab-positioner">
+            <ha-fab
+              slot="fab"
+              class=${this.dirty ? "dirty" : ""}
+              .label=${this.hass.localize("ui.common.save")}
+              .disabled=${this.saving}
+              extended
+              @click=${this._saveAutomation}
+            >
+              <ha-svg-icon slot="icon" .path=${mdiContentSave}></ha-svg-icon>
+            </ha-fab>
+          </div>
+        </div>
+        <div class="sidebar-positioner">
+          <ha-automation-sidebar
+            tabindex="-1"
+            class=${classMap({ hidden: !this._sidebarConfig })}
+            .isWide=${this.isWide}
+            .hass=${this.hass}
+            .narrow=${this.narrow}
+            .config=${this._sidebarConfig}
+            @value-changed=${this._sidebarConfigChanged}
+            .disabled=${this.disabled}
+            .sidebarKey=${this._sidebarKey}
+          ></ha-automation-sidebar>
+        </div>
+      </div>
+    `;
+  }
+
+  protected firstUpdated(changedProps: PropertyValues): void {
+    super.firstUpdated(changedProps);
+    const expanded = extractSearchParam("expanded");
+    if (expanded === "1") {
+      this._clearParam("expanded");
+      this.expandAll();
+    }
+  }
+
+  private _clearParam(param: string) {
+    window.history.replaceState(
+      null,
+      "",
+      constructUrlCurrentPath(removeSearchParam(param))
+    );
+  }
+
+  private async _openSidebar(ev: CustomEvent<SidebarConfig>) {
+    // deselect previous selected row
+    this._sidebarConfig?.close?.();
+    this._sidebarConfig = ev.detail;
+    this._sidebarKey = JSON.stringify(this._sidebarConfig);
+
+    await this._sidebarElement?.updateComplete;
+    this._sidebarElement?.focus();
+  }
+
+  private _sidebarConfigChanged(ev: CustomEvent<{ value: SidebarConfig }>) {
+    ev.stopPropagation();
+    if (!this._sidebarConfig) {
+      return;
+    }
+
+    this._sidebarConfig = {
+      ...this._sidebarConfig,
+      ...ev.detail.value,
+    };
+  }
+
+  private _triggerCloseSidebar() {
+    if (this._sidebarConfig) {
+      if (this._sidebarElement) {
+        this._sidebarElement.triggerCloseSidebar();
+        return;
+      }
+      this._sidebarConfig?.close();
+    }
+  }
+
+  private _handleCloseSidebar() {
+    this._sidebarConfig = undefined;
   }
 
   private _triggerChanged(ev: CustomEvent): void {
@@ -298,13 +402,9 @@ export class HaManualAutomationEditor extends LitElement {
     });
   }
 
-  private async _enable(): Promise<void> {
-    if (!this.hass || !this.stateObj) {
-      return;
-    }
-    await this.hass.callService("automation", "turn_on", {
-      entity_id: this.stateObj.entity_id,
-    });
+  private _saveAutomation() {
+    this._triggerCloseSidebar();
+    fireEvent(this, "save-automation");
   }
 
   private _handlePaste = async (ev: ClipboardEvent) => {
@@ -408,7 +508,12 @@ export class HaManualAutomationEditor extends LitElement {
     if (normalized) {
       ev.preventDefault();
 
-      if (this.dirty) {
+      if (
+        this.dirty ||
+        ensureArray(this.config.triggers)?.length ||
+        ensureArray(this.config.conditions)?.length ||
+        ensureArray(this.config.actions)?.length
+      ) {
         const result = await new Promise<boolean>((resolve) => {
           showPasteReplaceDialog(this, {
             domain: "automation",
@@ -517,19 +622,41 @@ export class HaManualAutomationEditor extends LitElement {
     });
   }
 
+  public expandAll() {
+    this._collapsableElements?.forEach((element) => {
+      element.expandAll();
+    });
+  }
+
+  public collapseAll() {
+    this._collapsableElements?.forEach((element) => {
+      element.collapseAll();
+    });
+  }
+
+  public copySelectedRow() {
+    if ((this._sidebarConfig as ActionSidebarConfig)?.copy) {
+      (this._sidebarConfig as ActionSidebarConfig).copy();
+    }
+  }
+
+  public cutSelectedRow() {
+    if ((this._sidebarConfig as ActionSidebarConfig)?.cut) {
+      (this._sidebarConfig as ActionSidebarConfig).cut();
+    }
+  }
+
+  public deleteSelectedRow() {
+    if ((this._sidebarConfig as ActionSidebarConfig)?.delete) {
+      (this._sidebarConfig as ActionSidebarConfig).delete();
+    }
+  }
+
   static get styles(): CSSResultGroup {
     return [
-      haStyle,
+      saveFabStyles,
+      manualEditorStyles,
       css`
-        :host {
-          display: block;
-        }
-        ha-card {
-          overflow: hidden;
-        }
-        .description {
-          margin: 0;
-        }
         p {
           margin-top: 0;
         }
@@ -545,15 +672,16 @@ export class HaManualAutomationEditor extends LitElement {
         .header .name {
           font-weight: var(--ha-font-weight-normal);
           flex: 1;
-          margin-bottom: 16px;
-        }
-        .header a {
-          color: var(--secondary-text-color);
+          margin-bottom: 8px;
         }
         .header .small {
           font-size: small;
           font-weight: var(--ha-font-weight-normal);
           line-height: 0;
+        }
+
+        .description {
+          margin-top: 16px;
         }
       `,
     ];
@@ -563,5 +691,11 @@ export class HaManualAutomationEditor extends LitElement {
 declare global {
   interface HTMLElementTagNameMap {
     "manual-automation-editor": HaManualAutomationEditor;
+  }
+
+  interface HASSDomEvents {
+    "open-sidebar": SidebarConfig;
+    "request-close-sidebar": undefined;
+    "close-sidebar": undefined;
   }
 }
