@@ -13,7 +13,7 @@ import "../lovelace/components/hui-energy-period-selector";
 import type { Lovelace } from "../lovelace/types";
 import "../lovelace/views/hui-view";
 import "../lovelace/views/hui-view-container";
-import { navigate } from "../../common/navigate";
+import { goBack, navigate } from "../../common/navigate";
 import type {
   GridSourceTypeEnergyPreference,
   SolarSourceTypeEnergyPreference,
@@ -70,7 +70,7 @@ class PanelEnergy extends LitElement {
 
   private _back(ev) {
     ev.stopPropagation();
-    history.back();
+    goBack();
   }
 
   protected render(): TemplateResult {

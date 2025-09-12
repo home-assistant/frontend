@@ -2,6 +2,7 @@ import type { CSSResultGroup, TemplateResult } from "lit";
 import { css, html, LitElement } from "lit";
 import { customElement, eventOptions, property } from "lit/decorators";
 import { restoreScroll } from "../common/decorators/restore-scroll";
+import { goBack } from "../common/navigate";
 import "../components/ha-icon-button-arrow-prev";
 import "../components/ha-menu-button";
 import type { HomeAssistant } from "../types";
@@ -78,7 +79,7 @@ class HassSubpage extends LitElement {
       this.backCallback();
       return;
     }
-    history.back();
+    goBack();
   }
 
   static get styles(): CSSResultGroup {

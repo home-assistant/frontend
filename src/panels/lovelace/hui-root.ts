@@ -26,7 +26,7 @@ import memoizeOne from "memoize-one";
 import { isComponentLoaded } from "../../common/config/is_component_loaded";
 import { fireEvent } from "../../common/dom/fire_event";
 import { shouldHandleRequestSelectedEvent } from "../../common/mwc/handle-request-selected-event";
-import { navigate } from "../../common/navigate";
+import { goBack, navigate } from "../../common/navigate";
 import type { LocalizeKeys } from "../../common/translations/localize";
 import { constructUrlCurrentPath } from "../../common/url/construct-url";
 import {
@@ -799,7 +799,7 @@ class HUIRoot extends LitElement {
     if (curViewConfig?.back_path != null) {
       navigate(curViewConfig.back_path, { replace: true });
     } else if (history.length > 1) {
-      history.back();
+      goBack();
     } else if (!views[0].subview) {
       navigate(this.route!.prefix, { replace: true });
     } else {
