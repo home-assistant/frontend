@@ -373,9 +373,11 @@ export interface EntityRecordingSettings {
 export type EntityRecordingList = Record<string, EntityRecordingSettings>;
 
 export const getEntityRecordingList = (hass: HomeAssistant) =>
-  hass.callWS<EntityRecordingList>({
-    type: "homeassistant/record_entity/list",
-  });
+  hass
+    .callWS<{ recorded_entities: EntityRecordingList }>({
+      type: "homeassistant/record_entity/list",
+    })
+    .then((response) => response.recorded_entities);
 
 export const getEntityRecordingSettings = (
   hass: HomeAssistant,
