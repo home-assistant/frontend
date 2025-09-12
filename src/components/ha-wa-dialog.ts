@@ -186,7 +186,6 @@ export class HaWaDialog extends LitElement {
     }
 
     wa-dialog::part(header) {
-      border-bottom: 1px solid var(--divider-color, rgba(0, 0, 0, 0.12));
       padding: 24px 24px 0 24px;
     }
 
