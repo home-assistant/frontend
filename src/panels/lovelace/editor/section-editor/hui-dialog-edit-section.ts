@@ -17,30 +17,31 @@ import "../../../../components/ha-dialog";
 import "../../../../components/ha-dialog-header";
 import "../../../../components/ha-icon-button";
 import "../../../../components/ha-list-item";
+import "../../../../components/ha-tab-group";
+import "../../../../components/ha-tab-group-tab";
 import "../../../../components/ha-yaml-editor";
 import type { HaYamlEditor } from "../../../../components/ha-yaml-editor";
-import "../../../../components/sl-tab-group";
 import type { LovelaceSectionRawConfig } from "../../../../data/lovelace/config/section";
+import type { LovelaceConfig } from "../../../../data/lovelace/config/types";
+import { saveConfig } from "../../../../data/lovelace/config/types";
 import {
   isStrategyView,
   type LovelaceViewConfig,
 } from "../../../../data/lovelace/config/view";
+import { showAlertDialog } from "../../../../dialogs/generic/show-dialog-box";
 import type { HassDialog } from "../../../../dialogs/make-dialog-manager";
 import { haStyleDialog } from "../../../../resources/styles";
 import type { HomeAssistant } from "../../../../types";
+import type { Lovelace } from "../../types";
+import { addSection, deleteSection, moveSection } from "../config-util";
 import {
   findLovelaceContainer,
   updateLovelaceContainer,
 } from "../lovelace-path";
+import { showSelectViewDialog } from "../select-view/show-select-view-dialog";
 import "./hui-section-settings-editor";
 import "./hui-section-visibility-editor";
 import type { EditSectionDialogParams } from "./show-edit-section-dialog";
-import { showSelectViewDialog } from "../select-view/show-select-view-dialog";
-import type { LovelaceConfig } from "../../../../data/lovelace/config/types";
-import { saveConfig } from "../../../../data/lovelace/config/types";
-import { showAlertDialog } from "../../../../dialogs/generic/show-dialog-box";
-import { addSection, deleteSection, moveSection } from "../config-util";
-import type { Lovelace } from "../../types";
 
 const TABS = ["tab-settings", "tab-visibility"] as const;
 
@@ -195,10 +196,10 @@ export class HuiDialogEditSection
           </ha-button-menu>
           ${!this._yamlMode
             ? html`
-                <sl-tab-group @sl-tab-show=${this._handleTabChanged}>
+                <ha-tab-group @wa-tab-show=${this._handleTabChanged}>
                   ${TABS.map(
                     (tab) => html`
-                      <sl-tab
+                      <ha-tab-group-tab
                         slot="nav"
                         .panel=${tab}
                         .active=${this._currTab === tab}
@@ -206,10 +207,10 @@ export class HuiDialogEditSection
                         ${this.hass!.localize(
                           `ui.panel.lovelace.editor.edit_section.${tab.replace("-", "_")}`
                         )}
-                      </sl-tab>
+                      </ha-tab-group-tab>
                     `
                   )}
-                </sl-tab-group>
+                </ha-tab-group>
               `
             : nothing}
         </ha-dialog-header>
@@ -433,10 +434,10 @@ export class HuiDialogEditSection
         ha-dialog.yaml-mode {
           --dialog-content-padding: 0;
         }
-        sl-tab {
+        ha-tab-group-tab {
           flex: 1;
         }
-        sl-tab::part(base) {
+        ha-tab-group-tab::part(base) {
           width: 100%;
           justify-content: center;
         }
