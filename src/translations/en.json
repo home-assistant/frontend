@@ -5357,7 +5357,8 @@
             },
             "unhide_selected": {
               "button": "Unhide selected"
-            }
+            },
+            "non_unique_id_selected": "Deselect entities without unique IDs to enable this operation"
           }
         },
         "person": {
