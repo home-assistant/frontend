@@ -239,7 +239,7 @@ export class HaConfigEntities extends SubscribeMixin(LitElement) {
     window.addEventListener("popstate", this._popState);
     window.addEventListener(
       "entity-recording-updated",
-      this._handleEntityRecordingUpdated
+      this._handleEntityRecordingUpdated as EventListener
     );
   }
 
@@ -249,7 +249,7 @@ export class HaConfigEntities extends SubscribeMixin(LitElement) {
     window.removeEventListener("popstate", this._popState);
     window.removeEventListener(
       "entity-recording-updated",
-      this._handleEntityRecordingUpdated
+      this._handleEntityRecordingUpdated as EventListener
     );
   }
 
