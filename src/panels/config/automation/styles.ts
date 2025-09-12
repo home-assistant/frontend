@@ -44,7 +44,6 @@ export const rowStyles = css`
 
 export const editorStyles = css`
   .disabled {
-    opacity: 0.5;
     pointer-events: none;
   }
 
@@ -251,5 +250,8 @@ export const sidebarEditorStyles = css`
     .shortcut-placeholder {
       display: none;
     }
+  }
+  ha-md-menu-item {
+    --mdc-icon-size: 24px;
   }
 `;
