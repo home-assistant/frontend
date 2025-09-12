@@ -590,6 +590,18 @@ export class HaConfigEntities extends SubscribeMixin(LitElement) {
     })
   );
 
+  private _hasNonUniqueIdEntities = memoize(
+    (selected: string[], filteredEntities: EntityRow[]) => {
+      // Create a Set of readonly entity IDs for O(1) lookup
+      const readonlyEntityIds = new Set(
+        filteredEntities
+          .filter((e) => e.readonly === true)
+          .map((e) => e.entity_id)
+      );
+      return selected.some((entityId) => readonlyEntityIds.has(entityId));
+    }
+  );
+
   private _filteredEntitiesAndDomains = memoize(
     (
       localize: LocalizeFunc,
@@ -884,15 +896,10 @@ export class HaConfigEntities extends SubscribeMixin(LitElement) {
         [...filteredDomains][0]
       );
 
-    // Check if any selected entities are without unique IDs
-    // Create a Set of readonly entity IDs for O(1) lookup
-    const readonlyEntityIds = new Set(
+    // Check if any selected entities are without unique IDs (memoized for performance)
+    const hasNonUniqueIdEntities = this._hasNonUniqueIdEntities(
+      this._selected,
       filteredEntities
-        .filter((e) => e.readonly === true)
-        .map((e) => e.entity_id)
-    );
-    const hasNonUniqueIdEntities = this._selected.some((entityId) =>
-      readonlyEntityIds.has(entityId)
     );
 
     // Helper to render menu items that can be disabled for non-unique ID entities
