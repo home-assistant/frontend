@@ -9,7 +9,12 @@ export const UndoRedoMixin = <T extends Constructor<LitElement>, ConfigType>(
 
     private _redoStack: ConfigType[] = [];
 
+    protected _undoStackLimit = 75;
+
     protected pushToUndo(config: ConfigType) {
+      if (this._undoStack.length >= this._undoStackLimit) {
+        this._undoStack.shift();
+      }
       this._undoStack.push({ ...config });
       this._redoStack = [];
     }
