@@ -5,6 +5,7 @@ import { isComponentLoaded } from "../../../common/config/is_component_loaded";
 import "../../../components/ha-settings-row";
 import "../../../components/ha-switch";
 import type { HaSwitch } from "../../../components/ha-switch";
+import "../../../components/ha-textfield";
 import {
   getEntityRecordingSettings,
   setEntityRecordingOptions,
@@ -43,27 +44,44 @@ export class EntitySettingsWithoutUniqueId extends LitElement {
   }
 
   protected render() {
-    if (!isComponentLoaded(this.hass, "recorder")) {
-      return nothing;
-    }
+    const stateObj = this.hass.states[this.entityId];
+    const name = stateObj?.attributes?.friendly_name || this.entityId;
 
     return html`
-      <ha-settings-row>
-        <span slot="heading"
-          >${this.hass.localize(
-            "ui.dialogs.entity_registry.editor.record_label"
-          )}</span
-        >
-        <span slot="description"
-          >${this.hass.localize(
-            "ui.dialogs.entity_registry.editor.record_description"
-          )}</span
-        >
-        <ha-switch
-          .checked=${!this._recordingDisabled}
-          @change=${this._recordingChanged}
-        ></ha-switch>
-      </ha-settings-row>
+      <ha-textfield
+        .label=${this.hass.localize("ui.dialogs.entity_registry.editor.name")}
+        .value=${name}
+        disabled
+        readonly
+      ></ha-textfield>
+      <ha-textfield
+        .label=${this.hass.localize(
+          "ui.dialogs.entity_registry.editor.entity_id"
+        )}
+        .value=${this.entityId}
+        disabled
+        readonly
+      ></ha-textfield>
+      ${isComponentLoaded(this.hass, "recorder")
+        ? html`
+            <ha-settings-row>
+              <span slot="heading"
+                >${this.hass.localize(
+                  "ui.dialogs.entity_registry.editor.record_label"
+                )}</span
+              >
+              <span slot="description"
+                >${this.hass.localize(
+                  "ui.dialogs.entity_registry.editor.record_description"
+                )}</span
+              >
+              <ha-switch
+                .checked=${!this._recordingDisabled}
+                @change=${this._recordingChanged}
+              ></ha-switch>
+            </ha-settings-row>
+          `
+        : nothing}
     `;
   }
 
@@ -91,6 +109,10 @@ export class EntitySettingsWithoutUniqueId extends LitElement {
         :host {
           display: block;
           margin-top: 16px;
+        }
+        ha-textfield {
+          display: block;
+          margin-bottom: 16px;
         }
       `,
     ];
