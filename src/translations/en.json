@@ -1607,6 +1607,8 @@
           "hidden_explanation": "Hidden entities will not be included in auto-populated dashboards or when their area, device or label is referenced. Their history is still tracked and you can still interact with them with actions.",
           "record_label": "Record",
           "record_description": "Control whether this entity's state history is recorded by the recorder.",
+          "error_loading_recording_settings": "Error loading recording settings",
+          "error_updating_recording_settings": "Error updating recording settings",
           "delete": "Delete",
           "confirm_delete": "Are you sure you want to delete this entity?",
           "update": "Update",

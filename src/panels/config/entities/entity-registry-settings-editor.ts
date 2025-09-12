@@ -1429,9 +1429,18 @@ export class EntityRegistrySettingsEditor extends LitElement {
     if (!isComponentLoaded(this.hass, "recorder")) {
       return;
     }
-    // Get recording settings from entity registry entry options
-    const recorderOptions = this.entry.options?.recorder;
-    this._recordingDisabled = recorderOptions?.recording_disabled_by !== null;
+    try {
+      // Get recording settings from entity registry entry options
+      const recorderOptions = this.entry.options?.recorder;
+      this._recordingDisabled = recorderOptions?.recording_disabled_by !== null;
+    } catch (err: any) {
+      // If there's an error reading the settings, show an alert and default to enabled
+      showAlertDialog(this, { 
+        title: this.hass.localize("ui.dialogs.entity_registry.editor.error_loading_recording_settings"),
+        text: err.message 
+      });
+      this._recordingDisabled = false;
+    }
   }
 
   private async _fetchCameraPrefs() {
@@ -1509,7 +1518,10 @@ export class EntityRegistrySettingsEditor extends LitElement {
       );
       this._recordingDisabled = newRecordingDisabled;
     } catch (err: any) {
-      showAlertDialog(this, { text: err.message });
+      showAlertDialog(this, { 
+        title: this.hass.localize("ui.dialogs.entity_registry.editor.error_updating_recording_settings"),
+        text: err.message 
+      });
       checkbox.checked = !checkbox.checked;
     }
   }
