@@ -1425,24 +1425,13 @@ export class EntityRegistrySettingsEditor extends LitElement {
     this._labels = ev.detail.value;
   }
 
-  private async _fetchRecordingSettings() {
+  private _fetchRecordingSettings() {
     if (!isComponentLoaded(this.hass, "recorder")) {
       return;
     }
-    try {
-      // Get recording settings from entity registry entry options
-      const recorderOptions = this.entry.options?.recorder;
-      this._recordingDisabled = recorderOptions?.recording_disabled_by !== null;
-    } catch (err: any) {
-      // If there's an error reading the settings, show an alert and default to enabled
-      showAlertDialog(this, {
-        title: this.hass.localize(
-          "ui.dialogs.entity_registry.editor.error_loading_recording_settings"
-        ),
-        text: err.message,
-      });
-      this._recordingDisabled = false;
-    }
+    // Get recording settings from entity registry entry options
+    const recorderOptions = this.entry.options?.recorder;
+    this._recordingDisabled = recorderOptions?.recording_disabled_by !== null;
   }
 
   private async _fetchCameraPrefs() {
