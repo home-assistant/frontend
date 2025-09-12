@@ -36,7 +36,7 @@ class UpdateAvailableDashboard extends LitElement {
   }
 
   private _updateComplete() {
-    goBack("/");
+    goBack();
   }
 
   static styles = css`
