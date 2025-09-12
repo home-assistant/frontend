@@ -87,6 +87,12 @@ export class HaCodeEditor extends ReactiveElement {
 
   @state() private _isFullscreen = false;
 
+  @state() private _canUndo = false;
+
+  @state() private _canRedo = false;
+
+  @state() private _canCopy = false;
+
   // eslint-disable-next-line @typescript-eslint/consistent-type-imports
   private _loadedCodeMirror?: typeof import("../resources/codemirror");
 
@@ -172,7 +178,7 @@ export class HaCodeEditor extends ReactiveElement {
           this._loadedCodeMirror!.EditorView!.editable.of(!this.readOnly)
         ),
       });
-      this._updateEditorStateButtons();
+      this._updateToolbarButtons();
     }
     if (changedProps.has("linewrap")) {
       transactions.push({
@@ -201,6 +207,14 @@ export class HaCodeEditor extends ReactiveElement {
     }
     if (changedProps.has("_isFullscreen")) {
       this.classList.toggle("fullscreen", this._isFullscreen);
+      this._updateToolbarButtons();
+    }
+    if (
+      changedProps.has("_canCopy") ||
+      changedProps.has("_canUndo") ||
+      changedProps.has("_canRedo")
+    ) {
+      this._updateToolbarButtons();
     }
     if (changedProps.has("disableFullscreen")) {
       this._updateFullscreenState();
@@ -280,6 +294,7 @@ export class HaCodeEditor extends ReactiveElement {
       }),
       parent: this.renderRoot,
     });
+    this._canCopy = this._value.length > 0;
 
     // Update the toolbar. Creating it if required
     this._updateToolbar();
@@ -305,23 +320,58 @@ export class HaCodeEditor extends ReactiveElement {
     // Create the editor toolbar element
     const editorToolbar = document.createElement("ha-icon-button-toolbar");
     editorToolbar.classList.add("code-editor-toolbar");
-    editorToolbar.items = [
+    editorToolbar.items = [];
+    return editorToolbar;
+  }
+
+  private _updateToolbar() {
+    // Show/Hide the toolbar if we have one.
+    this.classList.toggle("hasToolbar", this.hasToolbar);
+
+    // Update fullscreen state. Handles toolbar and fullscreen mode being disabled.
+    this._updateFullscreenState();
+
+    // If we don't have a toolbar, nothing to update
+    if (!this.hasToolbar) {
+      return;
+    }
+
+    // If we don't yet have the toolbar, create it.
+    if (!this._editorToolbar) {
+      this._editorToolbar = this._createEditorToolbar();
+    }
+
+    // Ensure all toolbar buttons are correctly configured.
+    this._updateToolbarButtons();
+
+    // Render the toolbar. This must be placed as a child of the code
+    // mirror element to ensure it doesn't affect the positioning and
+    // size of codemirror.
+    this.codemirror?.dom.appendChild(this._editorToolbar);
+  }
+
+  private _updateToolbarButtons() {
+    // Re-render all toolbar items.
+    if (!this._editorToolbar) return;
+
+    this._editorToolbar.items = [
       {
         id: "undo",
-        disabled: true,
+        disabled: !this._canUndo,
         label: this.hass?.localize("ui.common.undo") || "Undo",
         path: mdiUndo,
         action: (e: Event) => this._handleUndoClick(e),
       },
       {
         id: "redo",
-        disabled: true,
+        disabled: !this._canRedo,
         label: this.hass?.localize("ui.common.redo") || "Redo",
         path: mdiRedo,
         action: (e: Event) => this._handleRedoClick(e),
       },
       {
         id: "copy",
+        disabled: !this._canCopy,
         label:
           this.hass?.localize("ui.components.yaml-editor.copy_to_clipboard") ||
           "Copy to Clipboard",
@@ -336,60 +386,6 @@ export class HaCodeEditor extends ReactiveElement {
         action: (e: Event) => this._handleFullscreenClick(e),
       },
     ];
-    return editorToolbar;
-  }
-
-  private _updateToolbar() {
-    // Show/Hide the toolbar if we have one.
-    this.classList.toggle("hasToolbar", this.hasToolbar);
-
-    // If we don't have a toolbar, nothing to update
-    if (!this.hasToolbar) {
-      // Cannot be in fullscreen if there is no toolbar,
-      // so make sure to exit fullscreen if there.
-      this._updateFullscreenState(false);
-      return;
-    }
-
-    // If we don't yet have the toolbar, create it.
-    if (!this._editorToolbar) {
-      this._editorToolbar = this._createEditorToolbar();
-    }
-
-    // Render the toolbar. This must be placed as a child of the code
-    // mirror element to ensure it doesn't affect the positioning and
-    // size of codemirror.
-    this.codemirror?.dom.appendChild(this._editorToolbar);
-
-    // Update fullscreen button. Maintain current state
-    this._updateFullscreenState();
-
-    // Refresh history buttons
-    this._updateEditorStateButtons();
-  }
-
-  private _updateEditorStateButtons() {
-    // Update any buttons affected by the editor state
-    this._updateUndoButton();
-    this._updateRedoButton();
-  }
-
-  private _updateUndoButton() {
-    // Update the undo button
-    const undoButton = this._editorToolbar?.findToolbarButtonById("undo");
-    if (!undoButton) return;
-    // Mark buttons as disabled if we are read-only or there is nothing to undo.
-    undoButton.disabled =
-      this.readOnly || !(this.codemirror && undoDepth(this.codemirror.state));
-  }
-
-  private _updateRedoButton() {
-    // Update the redo button
-    const redoButton = this._editorToolbar?.findToolbarButtonById("redo");
-    if (!redoButton) return;
-    // Mark buttons as disabled if we are read-only or there is nothing to undo.
-    redoButton.disabled =
-      this.readOnly || !(this.codemirror && redoDepth(this.codemirror.state));
   }
 
   private _updateFullscreenState(
@@ -399,17 +395,6 @@ export class HaCodeEditor extends ReactiveElement {
     // is disabled, or we have no toolbar, ensure we are not in fullscreen mode.
     this._isFullscreen =
       fullscreen && !this.disableFullscreen && this.hasToolbar;
-
-    // Check if we have a toolbar with an existing fullscreen button
-    if (this.hasToolbar) {
-      const fsButton = this._editorToolbar?.findToolbarButtonById("fullscreen");
-      if (fsButton) {
-        // If so, configure full-screen button parameters based on our current state
-        fsButton.disabled = this.disableFullscreen;
-        fsButton.path = this._fullscreenIcon();
-        fsButton.label = this._fullscreenLabel();
-      }
-    }
     // Return whether successfully in requested state
     return this._isFullscreen === fullscreen;
   }
@@ -722,11 +707,13 @@ export class HaCodeEditor extends ReactiveElement {
   }
 
   private _onUpdate = (update: ViewUpdate): void => {
-    this._updateEditorStateButtons();
+    this._canUndo = !this.readOnly && undoDepth(update.state) > 0;
+    this._canRedo = !this.readOnly && redoDepth(update.state) > 0;
     if (!update.docChanged) {
       return;
     }
     this._value = update.state.doc.toString();
+    this._canCopy = this._value.length > 0;
     fireEvent(this, "value-changed", { value: this._value });
   };
 
