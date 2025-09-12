@@ -175,6 +175,15 @@ export class HaDialog extends DialogBase {
       padding: 12px 16px 16px 16px;
     }
 
+    wa-dialog::part(dialog) {
+      max-width: calc(
+        100vw - var(--safe-area-inset-left, 0) - var(--safe-area-inset-right, 0)
+      );
+      max-height: calc(
+        100vh - var(--safe-area-inset-top, 0) - var(--safe-area-inset-bottom, 0)
+      );
+    }
+
     :host([flexContent]) wa-dialog::part(body) {
       display: flex;
       flex-direction: column;
@@ -186,7 +195,20 @@ export class HaDialog extends DialogBase {
 
     @media all and (max-width: 450px), all and (max-height: 500px) {
       wa-dialog {
-        --width: 100vw;
+        --width: calc(
+          100vw - var(--safe-area-inset-left, 0px) - var(
+              --safe-area-inset-right,
+              0px
+            )
+        );
+      }
+      wa-dialog::part(dialog) {
+        min-height: calc(
+          100vh - var(--safe-area-inset-top, 0px) - var(
+              --safe-area-inset-bottom,
+              0px
+            )
+        );
       }
 
       @media all and (max-width: 450px), all and (max-height: 500px) {
