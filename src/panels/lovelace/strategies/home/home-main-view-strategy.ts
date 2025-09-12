@@ -4,7 +4,10 @@ import { isComponentLoaded } from "../../../../common/config/is_component_loaded
 import { generateEntityFilter } from "../../../../common/entity/entity_filter";
 import type { AreaRegistryEntry } from "../../../../data/area_registry";
 import { getEnergyPreferences } from "../../../../data/energy";
-import type { LovelaceSectionConfig } from "../../../../data/lovelace/config/section";
+import type {
+  LovelaceSectionConfig,
+  LovelaceStrategySectionConfig,
+} from "../../../../data/lovelace/config/section";
 import type { LovelaceViewConfig } from "../../../../data/lovelace/config/view";
 import type { HomeAssistant } from "../../../../types";
 import type {
@@ -15,7 +18,6 @@ import type {
   WeatherForecastCardConfig,
 } from "../../cards/types";
 import { getAreas } from "../areas/helpers/areas-strategy-helper";
-import { getCommonControlUsagePrediction } from "../../../../data/usage_prediction";
 
 export interface HomeMainViewStrategyConfig {
   type: "home-main";
@@ -102,29 +104,17 @@ export class HomeMainViewStrategy extends ReactiveElement {
       );
     }
 
-    if (isComponentLoaded(hass, "usage_prediction")) {
-      const predictedCommonControl =
-        await getCommonControlUsagePrediction(hass);
-      const predictedEntities = predictedCommonControl.entities.filter(
-        (entityId) => !favoriteEntities.includes(entityId)
-      );
-      if (predictedEntities.length > 0) {
-        favoriteSection.cards!.push(
-          {
-            type: "heading",
-            heading: "Commonly used",
+    const commonControlsSection = isComponentLoaded(hass, "usage_prediction")
+      ? ({
+          strategy: {
+            type: "common-controls",
+            title: "Commonly used",
+            limit: 8,
+            exclude_entities: favoriteEntities,
           },
-          ...predictedEntities.map(
-            (entityId) =>
-              ({
-                type: "tile",
-                entity: entityId,
-                show_entity_picture: true,
-              }) as TileCardConfig
-          )
-        );
-      }
-    }
+          column_span: maxColumns,
+        } as LovelaceStrategySectionConfig)
+      : undefined;
 
     const summarySection: LovelaceSectionConfig = {
       type: "grid",
@@ -240,10 +230,12 @@ export class HomeMainViewStrategy extends ReactiveElement {
 
     const sections = [
       ...(favoriteSection.cards ? [favoriteSection] : []),
+      ...(commonControlsSection ? [commonControlsSection] : []),
       summarySection,
       areasSection,
       ...(widgetSection.cards ? [widgetSection] : []),
     ];
+
     return {
       type: "sections",
       max_columns: maxColumns,
