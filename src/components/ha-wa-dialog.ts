@@ -17,17 +17,23 @@ export class HaWaDialog extends LitElement {
   @property({ type: Boolean, reflect: true, attribute: "scrim-click-action" })
   public scrimClickAction = false;
 
-  @property({ type: Boolean, reflect: true, attribute: "hide-actions" })
+  @property({ type: Boolean, reflect: true, attribute: "hideactions" })
   public hideActions = false;
 
-  @property({ type: Boolean, reflect: true, attribute: "flex-content" })
+  @property({ type: Boolean, reflect: true, attribute: "flexcontent" })
   public flexContent = false;
 
   @property()
   public heading?: string | TemplateResult;
 
+  @property({ reflect: true, attribute: "escape-key-action" })
+  public escapeKeyAction?: string;
+
   @state()
   private _internalOpen = false;
+
+  @state()
+  private _hasCustomHeadingSlot = false;
 
   @query("wa-dialog")
   private _waDialog?: any;
@@ -45,7 +51,12 @@ export class HaWaDialog extends LitElement {
     this._setupDialogKeydown();
   };
 
-  private _handleWaHide = () => {
+  private _handleWaHide = (ev?: CustomEvent) => {
+    // Prevent closing via Escape when escapeKeyAction is empty string
+    if (this.escapeKeyAction === "" && ev?.detail?.source === this._waDialog) {
+      ev?.preventDefault?.();
+      return;
+    }
     this._internalOpen = false;
     this.dispatchEvent(
       new CustomEvent("closed", {
@@ -82,6 +93,10 @@ export class HaWaDialog extends LitElement {
         this._waDialog.lightDismiss = this.scrimClickAction;
       }
     }
+
+    if (changedProperties.has("_hasCustomHeadingSlot")) {
+      this.toggleAttribute("has-custom-heading", this._hasCustomHeadingSlot);
+    }
   }
 
   private _setupDialogKeydown() {
@@ -89,6 +104,12 @@ export class HaWaDialog extends LitElement {
   }
 
   private _handleDialogKeydown = (event: KeyboardEvent) => {
+    // Suppress Escape key when escapeKeyAction is an empty string
+    if (event.key === "Escape" && this.escapeKeyAction === "") {
+      event.stopImmediatePropagation();
+      event.preventDefault();
+      return;
+    }
     if (event.key === "Enter") {
       const primaryButton = this.querySelector(
         '[slot="primaryAction"]'
@@ -144,7 +165,12 @@ export class HaWaDialog extends LitElement {
         @wa-hide=${this._handleWaHide}
         class=${this.open ? "mdc-dialog--open" : ""}
       >
-        ${this.heading
+        <slot
+          name="heading"
+          slot="label"
+          @slotchange=${this._onHeadingSlotChange}
+        ></slot>
+        ${this.heading && !this._hasCustomHeadingSlot
           ? html`
               <div slot="label" class="header_title">
                 <ha-icon-button
@@ -168,6 +194,14 @@ export class HaWaDialog extends LitElement {
       </wa-dialog>
     `;
   }
+
+  private _onHeadingSlotChange = (ev: Event) => {
+    const slot = ev.target as HTMLSlotElement;
+    const hasContent = slot.assignedNodes({ flatten: true }).length > 0;
+    if (hasContent !== this._hasCustomHeadingSlot) {
+      this._hasCustomHeadingSlot = hasContent;
+    }
+  };
 
   static override styles = css`
     :host {
@@ -203,6 +237,10 @@ export class HaWaDialog extends LitElement {
 
     wa-dialog::part(header) {
       padding: 24px 24px 16px 24px;
+    }
+
+    :host([has-custom-heading]) wa-dialog::part(header) {
+      padding: 0;
     }
 
     wa-dialog::part(close-button),
@@ -255,14 +293,16 @@ export class HaWaDialog extends LitElement {
             0px
           )
       );
+      position: var(--dialog-surface-position, relative);
+      margin-top: var(--dialog-surface-margin-top, auto);
     }
 
-    :host([flexContent]) wa-dialog::part(body) {
+    :host([flexcontent]) wa-dialog::part(body) {
       display: flex;
       flex-direction: column;
     }
 
-    :host([hideActions]) wa-dialog::part(body) {
+    :host([hideactions]) wa-dialog::part(body) {
       padding-bottom: var(--dialog-content-padding, 24px);
     }
 
