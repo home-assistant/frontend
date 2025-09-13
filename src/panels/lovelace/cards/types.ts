@@ -527,6 +527,7 @@ export interface TodoListCardConfig extends LovelaceCardConfig {
   entity?: string;
   hide_completed?: boolean;
   hide_create?: boolean;
+  hide_status?: boolean;
   sort?: string;
 }
 
