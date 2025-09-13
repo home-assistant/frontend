@@ -103,7 +103,9 @@
         }
       },
       "area": {
-        "area_not_found": "Area not found."
+        "area_not_found": "Area not found.",
+        "media_playing": "Media playing",
+        "media_paused": "Media paused"
       },
       "automation": {
         "last_triggered": "Last triggered",
