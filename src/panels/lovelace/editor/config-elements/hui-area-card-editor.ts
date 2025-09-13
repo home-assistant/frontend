@@ -55,6 +55,7 @@ const cardConfigStruct = assign(
     display_type: optional(enums(["compact", "icon", "picture", "camera"])),
     vertical: optional(boolean()),
     camera_view: optional(string()),
+    camera_entity: optional(string()),
     alert_classes: optional(array(string())),
     sensor_classes: optional(array(string())),
     features: optional(array(any())),
@@ -62,6 +63,24 @@ const cardConfigStruct = assign(
     aspect_ratio: optional(string()),
     exclude_entities: optional(array(string())),
   })
+);
+
+let availableCameraEntities;
+
+export const getCameraEntities = memoizeOne(
+  (
+    // entities: HomeAssistant["entities"],
+    hass: any,
+    areaId: string
+  ): string[] | undefined => {
+    const cameraFilter = generateEntityFilter(hass!, {
+      area: areaId,
+      entity_category: "none",
+      domain: "camera",
+    });
+
+    return Object.keys(hass.entities).filter(cameraFilter);
+  }
 );
 
 @customElement("hui-area-card-editor")
@@ -82,7 +101,8 @@ export class HuiAreaCardEditor
       localize: LocalizeFunc,
       displayType: AreaCardDisplayType,
       binaryClasses: SelectOption[],
-      sensorClasses: SelectOption[]
+      sensorClasses: SelectOption[],
+      cameraEntities: string[] | undefined
     ) =>
       [
         { name: "area", selector: { area: {} } },
@@ -148,6 +168,29 @@ export class HuiAreaCardEditor
                                 `ui.panel.lovelace.editor.card.generic.camera_view_options.${value}`
                               ),
                             })),
+                            mode: "dropdown",
+                          },
+                        },
+                      },
+                    ] as const satisfies readonly HaFormSchema[])
+                  : []),
+                ...(displayType === "camera"
+                  ? ([
+                      {
+                        name: "camera_entity",
+                        required: true,
+                        default: cameraEntities?.[0],
+                        selector: {
+                          select: {
+                            options:
+                              cameraEntities === undefined
+                                ? []
+                                : cameraEntities.map((entityId) => ({
+                                    label:
+                                      this.hass!.states[entityId]?.attributes
+                                        ?.friendly_name || entityId,
+                                    value: entityId,
+                                  })),
                             mode: "dropdown",
                           },
                         },
@@ -299,6 +342,11 @@ export class HuiAreaCardEditor
 
     const displayType =
       config.display_type || (config.show_camera ? "camera" : "picture");
+
+    availableCameraEntities = config.area
+      ? getCameraEntities(this.hass, config.area)
+      : [];
+
     this._config = {
       ...config,
       display_type: displayType,
@@ -385,7 +433,8 @@ export class HuiAreaCardEditor
       this.hass.localize,
       displayType,
       binarySelectOptions,
-      sensorSelectOptions
+      sensorSelectOptions,
+      availableCameraEntities
     );
 
     const vertical = this._config.vertical && displayType === "compact";
@@ -454,10 +503,22 @@ export class HuiAreaCardEditor
   private _valueChanged(ev: CustomEvent): void {
     const newConfig = ev.detail.value as AreaCardConfig;
 
+    availableCameraEntities = newConfig.area
+      ? getCameraEntities(this.hass, newConfig.area)
+      : [];
+
+    if (this._config!.area !== newConfig.area) {
+      delete newConfig.camera_entity;
+    }
+
     const config: AreaCardConfig = {
       features: this._config!.features,
       ...newConfig,
     };
+
+    if (this._config!.area !== newConfig.area) {
+      delete newConfig.camera_entity;
+    }
 
     if (config.display_type !== "camera") {
       delete config.camera_view;
@@ -543,6 +604,7 @@ export class HuiAreaCardEditor
         return this.hass!.localize("ui.panel.lovelace.editor.card.area.name");
       case "name":
       case "camera_view":
+      case "camera_entity":
       case "content":
       case "interactions":
         return this.hass!.localize(
