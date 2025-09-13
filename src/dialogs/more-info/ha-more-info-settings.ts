@@ -9,6 +9,7 @@ import type {
 } from "../../data/entity_registry";
 import { PLATFORMS_WITH_SETTINGS_TAB } from "../../panels/config/entities/const";
 import "../../panels/config/entities/entity-registry-settings";
+import "../../panels/config/entities/entity-settings-without-unique-id";
 import type { HomeAssistant } from "../../types";
 import { documentationUrl } from "../../util/documentation-url";
 
@@ -28,7 +29,7 @@ export class HaMoreInfoSettings extends LitElement {
       return nothing;
     }
 
-    // No unique ID
+    // No unique ID - show limited settings
     if (this.entry === null) {
       return html`
         <div class="content">
@@ -43,6 +44,10 @@ export class HaMoreInfoSettings extends LitElement {
               >`,
             })}
           </ha-alert>
+          <entity-settings-without-unique-id
+            .hass=${this.hass}
+            .entityId=${this.entityId}
+          ></entity-settings-without-unique-id>
         </div>
       `;
     }

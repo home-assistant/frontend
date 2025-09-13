@@ -23,6 +23,7 @@ import { ifDefined } from "lit/directives/if-defined";
 import { styleMap } from "lit/directives/style-map";
 import memoize from "memoize-one";
 import { computeCssColor } from "../../../common/color/compute-color";
+import { isComponentLoaded } from "../../../common/config/is_component_loaded";
 import { formatShortDateTimeWithConditionalYear } from "../../../common/datetime/format_date_time";
 import { storage } from "../../../common/decorators/storage";
 import type { HASSDomEvent } from "../../../common/dom/fire_event";
@@ -42,7 +43,10 @@ import {
   PROTOCOL_INTEGRATIONS,
   protocolIntegrationPicked,
 } from "../../../common/integrations/protocolIntegrationPicked";
-import type { LocalizeFunc } from "../../../common/translations/localize";
+import type {
+  LocalizeFunc,
+  LocalizeKeys,
+} from "../../../common/translations/localize";
 import {
   hasRejectedItems,
   rejectedItems,
@@ -98,6 +102,12 @@ import {
 } from "../../../data/label_registry";
 import { regenerateEntityIds } from "../../../data/regenerate_entity_ids";
 import {
+  getEntityRecordingList,
+  getEntityRecordingSettings,
+  setEntityRecordingOptions,
+  type EntityRecordingList,
+} from "../../../data/recorder";
+import {
   showAlertDialog,
   showConfirmationDialog,
 } from "../../../dialogs/generic/show-dialog-box";
@@ -138,6 +148,7 @@ export interface EntityRow extends StateEntity {
   enabled: string;
   visible: string;
   available: string;
+  recorded?: boolean;
 }
 
 @customElement("ha-config-entities")
@@ -193,6 +204,8 @@ export class HaConfigEntities extends SubscribeMixin(LitElement) {
 
   @state() private _entitySources?: EntitySources;
 
+  @state() private _recordingEntities?: EntityRecordingList;
+
   @storage({ key: "entities-table-sort", state: false, subscribe: false })
   private _activeSorting?: SortingChangedEvent;
 
@@ -227,12 +240,20 @@ export class HaConfigEntities extends SubscribeMixin(LitElement) {
     super.connectedCallback();
     window.addEventListener("location-changed", this._locationChanged);
     window.addEventListener("popstate", this._popState);
+    window.addEventListener(
+      "entity-recording-updated",
+      this._handleEntityRecordingUpdated
+    );
   }
 
   disconnectedCallback(): void {
     super.disconnectedCallback();
     window.removeEventListener("location-changed", this._locationChanged);
     window.removeEventListener("popstate", this._popState);
+    window.removeEventListener(
+      "entity-recording-updated",
+      this._handleEntityRecordingUpdated
+    );
   }
 
   private _locationChanged = () => {
@@ -246,6 +267,32 @@ export class HaConfigEntities extends SubscribeMixin(LitElement) {
     if (window.location.search.substring(1) !== this._searchParms.toString()) {
       this._searchParms = new URLSearchParams(window.location.search);
       this._setFiltersFromUrl();
+    }
+  };
+
+  private _handleEntityRecordingUpdated = async (ev: Event) => {
+    const customEvent = ev as CustomEvent<{ entityId: string }>;
+    // Update recording data for the specific entity that changed
+    if (this._activeHiddenColumns?.includes("recorded")) {
+      return;
+    }
+
+    try {
+      const settings = await getEntityRecordingSettings(
+        this.hass,
+        customEvent.detail.entityId
+      );
+      // Update the recording data for this specific entity
+      this._recordingEntities = {
+        ...this._recordingEntities,
+        [customEvent.detail.entityId]: settings,
+      };
+    } catch (_err) {
+      // Entity might not have recording settings yet, treat as enabled
+      this._recordingEntities = {
+        ...this._recordingEntities,
+        [customEvent.detail.entityId]: { recording_disabled_by: null },
+      };
     }
   };
 
@@ -490,7 +537,73 @@ export class HaConfigEntities extends SubscribeMixin(LitElement) {
         template: (entry) =>
           entry.label_entries.map((lbl) => lbl.name).join(" "),
       },
+      recorded: {
+        title: localize("ui.panel.config.entities.picker.headers.recorded"),
+        type: "icon",
+        sortable: true,
+        filterable: true,
+        defaultHidden: true,
+        showNarrow: true,
+        minWidth: "86px",
+        maxWidth: "86px",
+        template: (entry) =>
+          entry.recorded === undefined
+            ? "—"
+            : entry.recorded
+              ? html`
+                  <div
+                    tabindex="0"
+                    style="display:inline-block; position: relative;"
+                  >
+                    <ha-svg-icon
+                      .id="recording-icon-${slugify(entry.entity_id)}"
+                      .path=${mdiToggleSwitch}
+                      style="color: var(--success-color)"
+                    ></ha-svg-icon>
+                    <ha-tooltip
+                      .for="recording-icon-${slugify(entry.entity_id)}"
+                      placement="left"
+                    >
+                      ${this.hass.localize(
+                        "ui.panel.config.entities.picker.recorded.enabled"
+                      )}
+                    </ha-tooltip>
+                  </div>
+                `
+              : html`
+                  <div
+                    tabindex="0"
+                    style="display:inline-block; position: relative;"
+                  >
+                    <ha-svg-icon
+                      .id="recording-icon-${slugify(entry.entity_id)}"
+                      .path=${mdiToggleSwitchOffOutline}
+                      style="color: var(--secondary-text-color)"
+                    ></ha-svg-icon>
+                    <ha-tooltip
+                      .for="recording-icon-${slugify(entry.entity_id)}"
+                      placement="left"
+                    >
+                      ${this.hass.localize(
+                        "ui.panel.config.entities.picker.recorded.disabled"
+                      )}
+                    </ha-tooltip>
+                  </div>
+                `,
+      },
     })
+  );
+
+  private _hasNonUniqueIdEntities = memoize(
+    (selected: string[], filteredEntities: EntityRow[]) => {
+      // Create a Set of readonly entity IDs for O(1) lookup
+      const readonlyEntityIds = new Set(
+        filteredEntities
+          .filter((e) => e.readonly === true)
+          .map((e) => e.entity_id)
+      );
+      return selected.some((entityId) => readonlyEntityIds.has(entityId));
+    }
   );
 
   private _filteredEntitiesAndDomains = memoize(
@@ -503,7 +616,8 @@ export class HaConfigEntities extends SubscribeMixin(LitElement) {
       filters: DataTableFiltersValues,
       filteredItems: DataTableFiltersItems,
       entries?: ConfigEntry[],
-      labelReg?: LabelRegistryEntry[]
+      labelReg?: LabelRegistryEntry[],
+      recordingEntities?: EntityRecordingList
     ) => {
       const result: EntityRow[] = [];
 
@@ -694,6 +808,15 @@ export class HaConfigEntities extends SubscribeMixin(LitElement) {
             : deviceName
           : undefined;
 
+        // Determine recording status
+        const recorded: boolean | undefined = recordingEntities
+          ? recordingEntities[entry.entity_id]
+            ? recordingEntities[entry.entity_id].recording_disabled_by === null
+            : entry.options?.recorder
+              ? entry.options.recorder.recording_disabled_by === null
+              : true
+          : undefined;
+
         result.push({
           ...entry,
           entity,
@@ -730,6 +853,7 @@ export class HaConfigEntities extends SubscribeMixin(LitElement) {
           visible: hidden
             ? localize("ui.panel.config.entities.picker.status.hidden")
             : localize("ui.panel.config.entities.picker.status.visible"),
+          recorded,
         });
       }
 
@@ -760,7 +884,8 @@ export class HaConfigEntities extends SubscribeMixin(LitElement) {
         this._filters,
         this._filteredItems,
         this._entries,
-        this._labels
+        this._labels,
+        this._recordingEntities
       );
 
     const includeAddDeviceFab =
@@ -768,6 +893,54 @@ export class HaConfigEntities extends SubscribeMixin(LitElement) {
       (PROTOCOL_INTEGRATIONS as readonly string[]).includes(
         [...filteredDomains][0]
       );
+
+    // Check if any selected entities are without unique IDs (memoized for performance)
+    const hasNonUniqueIdEntities = this._hasNonUniqueIdEntities(
+      this._selected,
+      filteredEntities
+    );
+
+    // Helper to render menu items that can be disabled for non-unique ID entities
+    const renderDisableableMenuItem = (
+      action: () => void,
+      icon: string,
+      labelKey: LocalizeKeys,
+      itemId: string,
+      warning = false
+    ) => {
+      if (hasNonUniqueIdEntities) {
+        return html`
+          <div
+            id=${itemId}
+            style="position: relative; cursor: not-allowed;"
+            tabindex="0"
+          >
+            <ha-md-menu-item
+              .disabled=${true}
+              class=${warning ? "warning" : ""}
+              style="pointer-events: none; opacity: 0.5;"
+            >
+              <ha-svg-icon slot="start" .path=${icon}></ha-svg-icon>
+              <div slot="headline">${this.hass.localize(labelKey)}</div>
+            </ha-md-menu-item>
+            <ha-tooltip .for=${itemId} placement="left">
+              ${this.hass.localize(
+                "ui.panel.config.entities.picker.non_unique_id_selected"
+              )}
+            </ha-tooltip>
+          </div>
+        `;
+      }
+      return html`
+        <ha-md-menu-item
+          .clickAction=${action}
+          class=${warning ? "warning" : ""}
+        >
+          <ha-svg-icon slot="start" .path=${icon}></ha-svg-icon>
+          <div slot="headline">${this.hass.localize(labelKey)}</div>
+        </ha-md-menu-item>
+      `;
+    };
 
     const labelItems = html` ${this._labels?.map((label) => {
         const color = label.color ? computeCssColor(label.color) : undefined;
@@ -915,77 +1088,79 @@ ${
       : nothing
   }
 
-  <ha-md-menu-item .clickAction=${this._enableSelected}>
-    <ha-svg-icon slot="start" .path=${mdiToggleSwitch}></ha-svg-icon>
-    <div slot="headline">
-      ${this.hass.localize(
-        "ui.panel.config.entities.picker.enable_selected.button"
-      )}
-    </div>
-  </ha-md-menu-item>
-  <ha-md-menu-item .clickAction=${this._disableSelected}>
-    <ha-svg-icon
-      slot="start"
-      .path=${mdiToggleSwitchOffOutline}
-    ></ha-svg-icon>
-    <div slot="headline">
-      ${this.hass.localize(
-        "ui.panel.config.entities.picker.disable_selected.button"
-      )}
-    </div>
-  </ha-md-menu-item>
+  ${renderDisableableMenuItem(
+    this._enableSelected,
+    mdiToggleSwitch,
+    "ui.panel.config.entities.picker.enable_selected.button",
+    "enable-selected-disabled"
+  )}
+  ${renderDisableableMenuItem(
+    this._disableSelected,
+    mdiToggleSwitchOffOutline,
+    "ui.panel.config.entities.picker.disable_selected.button",
+    "disable-selected-disabled"
+  )}
   <ha-md-divider role="separator" tabindex="-1"></ha-md-divider>
 
-  <ha-md-menu-item .clickAction=${this._unhideSelected}>
-    <ha-svg-icon
-      slot="start"
-      .path=${mdiEye}
-    ></ha-svg-icon>
-    <div slot="headline">
-      ${this.hass.localize(
-        "ui.panel.config.entities.picker.unhide_selected.button"
-      )}
-    </div>
-  </ha-md-menu-item>
-  <ha-md-menu-item .clickAction=${this._hideSelected}>
-    <ha-svg-icon
-      slot="start"
-      .path=${mdiEyeOff}
-    ></ha-svg-icon>
-    <div slot="headline">
-      ${this.hass.localize(
-        "ui.panel.config.entities.picker.hide_selected.button"
-      )}
-    </div>
-  </ha-md-menu-item>
+  ${renderDisableableMenuItem(
+    this._unhideSelected,
+    mdiEye,
+    "ui.panel.config.entities.picker.unhide_selected.button",
+    "unhide-selected-disabled"
+  )}
+  ${renderDisableableMenuItem(
+    this._hideSelected,
+    mdiEyeOff,
+    "ui.panel.config.entities.picker.hide_selected.button",
+    "hide-selected-disabled"
+  )}
 
   <ha-md-divider role="separator" tabindex="-1"></ha-md-divider>
 
-  <ha-md-menu-item .clickAction=${this._restoreEntityIdSelected}>
-    <ha-svg-icon
-      slot="start"
-      .path=${mdiRestore}
-    ></ha-svg-icon>
-    <div slot="headline">
-      ${this.hass.localize(
-        "ui.panel.config.entities.picker.restore_entity_id_selected.button"
-      )}
-    </div>
-  </ha-md-menu-item>
+  ${
+    isComponentLoaded(this.hass, "recorder")
+      ? html`
+          <ha-md-menu-item .clickAction=${this._enableRecordingSelected}>
+            <ha-svg-icon slot="start" .path=${mdiToggleSwitch}></ha-svg-icon>
+            <div slot="headline">
+              ${this.hass.localize(
+                "ui.panel.config.entities.picker.enable_recording_selected.button"
+              )}
+            </div>
+          </ha-md-menu-item>
+          <ha-md-menu-item .clickAction=${this._disableRecordingSelected}>
+            <ha-svg-icon
+              slot="start"
+              .path=${mdiToggleSwitchOffOutline}
+            ></ha-svg-icon>
+            <div slot="headline">
+              ${this.hass.localize(
+                "ui.panel.config.entities.picker.disable_recording_selected.button"
+              )}
+            </div>
+          </ha-md-menu-item>
+
+          <ha-md-divider role="separator" tabindex="-1"></ha-md-divider>
+        `
+      : ""
+  }
+
+  ${renderDisableableMenuItem(
+    this._restoreEntityIdSelected,
+    mdiRestore,
+    "ui.panel.config.entities.picker.restore_entity_id_selected.button",
+    "restore-selected-disabled"
+  )}
 
   <ha-md-divider role="separator" tabindex="-1"></ha-md-divider>
 
-  <ha-md-menu-item .clickAction=${this._removeSelected} class="warning">
-    <ha-svg-icon
-      slot="start"
-      .path=${mdiDelete}
-    ></ha-svg-icon>
-    <div slot="headline">
-      ${this.hass.localize(
-        "ui.panel.config.entities.picker.delete_selected.button"
-      )}
-    </div>
-  </ha-md-menu-item>
+  ${renderDisableableMenuItem(
+    this._removeSelected,
+    mdiDelete,
+    "ui.panel.config.entities.picker.delete_selected.button",
+    "delete-selected-disabled",
+    true // warning style
+  )}
 
 </ha-md-button-menu>
         ${
@@ -1107,6 +1282,12 @@ ${
     fetchEntitySourcesWithCache(this.hass).then((sources) => {
       this._entitySources = sources;
     });
+
+    // Fetch recording data if the column is visible
+    if (!this._activeHiddenColumns?.includes("recorded")) {
+      this._fetchRecordingData();
+    }
+
     if (Object.keys(this._filters).length) {
       return;
     }
@@ -1162,6 +1343,14 @@ ${
       changedProps.has("_entities") ||
       changedProps.has("_entitySources")
     ) {
+      // Re-fetch recording data when entities change
+      if (
+        changedProps.has("_entities") &&
+        this._recordingEntities &&
+        !this._activeHiddenColumns?.includes("recorded")
+      ) {
+        this._fetchRecordingData();
+      }
       const stateEntities: StateEntity[] = [];
       const regEntityIds = new Set(
         this._entities.map((entity) => entity.entity_id)
@@ -1189,7 +1378,7 @@ ${
           device_id: null,
           icon: null,
           readonly: true,
-          selectable: false,
+          selectable: true,
           entity_category: null,
           has_entity_name: false,
           options: null,
@@ -1338,6 +1527,53 @@ ${
     );
     this._clearSelection();
   };
+
+  private _setRecordingSelected = async (enable: boolean) => {
+    if (!isComponentLoaded(this.hass, "recorder")) {
+      return;
+    }
+
+    const action = enable ? "enable" : "disable";
+    showConfirmationDialog(this, {
+      title: this.hass.localize(
+        `ui.panel.config.entities.picker.${action}_recording_selected.confirm_title`,
+        { number: this._selected.length }
+      ),
+      text: this.hass.localize(
+        `ui.panel.config.entities.picker.${action}_recording_selected.confirm_text`
+      ),
+      confirmText: this.hass.localize(`ui.common.${action}`),
+      dismissText: this.hass.localize("ui.common.cancel"),
+      confirm: async () => {
+        try {
+          await setEntityRecordingOptions(
+            this.hass,
+            this._selected,
+            enable ? null : "user" // null = enabled, "user" = disabled by user
+          );
+
+          // Re-fetch recording data to update the table
+          if (this._recordingEntities) {
+            await this._fetchRecordingData();
+          }
+        } catch (err: any) {
+          showAlertDialog(this, {
+            title: this.hass.localize(
+              "ui.panel.config.common.multiselect.failed",
+              {
+                number: this._selected.length,
+              }
+            ),
+            text: err.message,
+          });
+        }
+      },
+    });
+  };
+
+  private _enableRecordingSelected = () => this._setRecordingSelected(true);
+
+  private _disableRecordingSelected = () => this._setRecordingSelected(false);
 
   private async _handleBulkLabel(ev) {
     const label = ev.currentTarget.value;
@@ -1497,7 +1733,8 @@ ${rejected
         this._filters,
         this._filteredItems,
         this._entries,
-        this._labels
+        this._labels,
+        this._recordingEntities
       );
     if (
       filteredDomains.size === 1 &&
@@ -1527,9 +1764,30 @@ ${rejected
     this._activeCollapsed = ev.detail.value;
   }
 
+  private async _fetchRecordingData() {
+    if (!isComponentLoaded(this.hass, "recorder")) {
+      return;
+    }
+
+    try {
+      this._recordingEntities = await getEntityRecordingList(this.hass);
+    } catch (err: any) {
+      // eslint-disable-next-line no-console
+      console.error("Failed to fetch recording data:", err);
+      this._recordingEntities = undefined;
+    }
+  }
+
   private _handleColumnsChanged(ev: CustomEvent) {
     this._activeColumnOrder = ev.detail.columnOrder;
     this._activeHiddenColumns = ev.detail.hiddenColumns;
+
+    if (
+      !this._activeHiddenColumns?.includes("recorded") &&
+      !this._recordingEntities
+    ) {
+      this._fetchRecordingData();
+    }
   }
 
   static get styles(): CSSResultGroup {
