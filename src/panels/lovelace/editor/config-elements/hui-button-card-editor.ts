@@ -32,6 +32,7 @@ const cardConfigStruct = assign(
     double_tap_action: optional(actionConfigStruct),
     theme: optional(string()),
     show_state: optional(boolean()),
+    color: optional(string()),
   })
 );
 
@@ -53,11 +54,11 @@ export class HuiButtonCardEditor
     (entityId: string | undefined) =>
       [
         { name: "entity", selector: { entity: {} } },
+        { name: "name", selector: { text: {} } },
         {
           name: "",
           type: "grid",
           schema: [
-            { name: "name", selector: { text: {} } },
             {
               name: "icon",
               selector: {
@@ -67,6 +68,17 @@ export class HuiButtonCardEditor
                 icon_entity: "entity",
               },
             },
+            { name: "icon_height", selector: { text: { suffix: "px" } } },
+            {
+              name: "color",
+              selector: {
+                ui_color: {
+                  default_color: "state",
+                  include_state: true,
+                },
+              },
+            },
+            { name: "theme", selector: { theme: {} } },
           ],
         },
         {
@@ -77,14 +89,6 @@ export class HuiButtonCardEditor
             { name: "show_name", selector: { boolean: {} } },
             { name: "show_state", selector: { boolean: {} } },
             { name: "show_icon", selector: { boolean: {} } },
-          ],
-        },
-        {
-          name: "",
-          type: "grid",
-          schema: [
-            { name: "icon_height", selector: { text: { suffix: "px" } } },
-            { name: "theme", selector: { theme: {} } },
           ],
         },
         {
