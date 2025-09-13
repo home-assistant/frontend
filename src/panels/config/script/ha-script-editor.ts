@@ -20,6 +20,7 @@ import type { CSSResultGroup, PropertyValues, TemplateResult } from "lit";
 import { LitElement, css, html, nothing } from "lit";
 import { property, query, state } from "lit/decorators";
 import { classMap } from "lit/directives/class-map";
+import type { Schema } from "js-yaml";
 import { fireEvent } from "../../../common/dom/fire_event";
 import { goBack, navigate } from "../../../common/navigate";
 import { slugify } from "../../../common/string/slugify";
@@ -34,7 +35,10 @@ import "../../../components/ha-icon-button";
 import "../../../components/ha-list-item";
 import "../../../components/ha-svg-icon";
 import "../../../components/ha-yaml-editor";
-import { substituteBlueprint } from "../../../data/blueprint";
+import {
+  substituteBlueprint,
+  yamlSchemaContext,
+} from "../../../data/blueprint";
 import { validateConfig } from "../../../data/config";
 import { fullEntitiesContext } from "../../../data/context";
 import { UNAVAILABLE } from "../../../data/entity";
@@ -113,6 +117,9 @@ export class HaScriptEditor extends SubscribeMixin(
     watch: ["_entityId"],
   })
   private _registryEntry?: EntityRegistryEntry;
+
+  @consume({ context: yamlSchemaContext })
+  private _yamlSchema?: Schema;
 
   @query("manual-script-editor")
   private _manualEditor?: HaManualScriptEditor;

@@ -2,6 +2,7 @@ import { css, html, LitElement, nothing } from "lit";
 import { customElement, property, query } from "lit/decorators";
 import { classMap } from "lit/directives/class-map";
 import memoizeOne from "memoize-one";
+import { DEFAULT_SCHEMA } from "js-yaml";
 import { dynamicElement } from "../../../../common/dom/dynamic-element-directive";
 import { fireEvent } from "../../../../common/dom/fire_event";
 import "../../../../components/ha-yaml-editor";
@@ -74,22 +75,23 @@ export default class HaAutomationConditionEditor extends LitElement {
                     ></ha-automation-editor-warning>
                   `
                 : nothing}
-              <ha-yaml-editor
-                .hass=${this.hass}
-                .defaultValue=${this.condition}
-                @value-changed=${this._onYamlChange}
-                .readOnly=${this.disabled}
-              ></ha-yaml-editor>
-            `
-          : html`
-              <div @value-changed=${this._onUiChanged}>
-                ${dynamicElement(
-                  `ha-automation-condition-${condition.condition}`,
-                  {
-                    hass: this.hass,
-                    condition: condition,
-                    disabled: this.disabled,
-                    optionsInSidebar: this.indent,
+            <ha-yaml-editor
+              .hass=${this.hass}
+              .defaultValue=${this.condition}
+              @value-changed=${this._onYamlChange}
+              .readOnly=${this.disabled}
+              .yamlSchema=${this._yamlSchema ?? DEFAULT_SCHEMA}
+            ></ha-yaml-editor>
+          `
+        : html`
+            <div @value-changed=${this._onUiChanged}>
+              ${dynamicElement(
+                `ha-automation-condition-${condition.condition}`,
+                {
+                  hass: this.hass,
+                  condition: condition,
+                  disabled: this.disabled,
+                optionsInSidebar: this.indent,
                     narrow: this.narrow,
                   }
                 )}
