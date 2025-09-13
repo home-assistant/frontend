@@ -103,6 +103,16 @@ class StateDisplay extends LitElement {
     if (content === "name") {
       return html`${this.name || computeStateName(stateObj)}`;
     }
+    if (content === "area") {
+      const entityId = stateObj.entity_id;
+      const entityReg = this.hass.entities?.[entityId];
+      const deviceReg = entityReg?.device_id
+        ? this.hass.devices?.[entityReg.device_id]
+        : undefined;
+      const areaId = entityReg?.area_id || deviceReg?.area_id;
+      const areaReg = areaId ? this.hass.areas?.[areaId] : undefined;
+      return areaReg?.name?.trim() || "";
+    }
 
     let relativeDateTime: string | undefined;
 
