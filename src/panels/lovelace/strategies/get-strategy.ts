@@ -51,7 +51,10 @@ const STRATEGIES: Record<LovelaceStrategyConfigType, Record<string, any>> = {
       import("./home/home-media-players-view-strategy"),
     "home-area": () => import("./home/home-area-view-strategy"),
   },
-  section: {},
+  section: {
+    "common-controls": () =>
+      import("./usage_prediction/common-controls-section-strategy"),
+  },
 };
 
 export type LovelaceStrategyConfigType = "dashboard" | "view" | "section";
