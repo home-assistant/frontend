@@ -4,7 +4,6 @@ import {
   mdiFilterRemove,
   mdiImagePlus,
 } from "@mdi/js";
-import type { ActionDetail } from "@material/mwc-list";
 import { differenceInHours } from "date-fns";
 import type {
   HassServiceTarget,
@@ -30,8 +29,8 @@ import type { StateHistoryCharts } from "../../components/chart/state-history-ch
 import "../../components/ha-spinner";
 import "../../components/ha-date-range-picker";
 import "../../components/ha-icon-button";
-import "../../components/ha-button-menu";
-import "../../components/ha-list-item";
+import "../../components/ha-md-button-menu";
+import "../../components/ha-md-menu-item";
 import "../../components/ha-icon-button-arrow-prev";
 import "../../components/ha-menu-button";
 import "../../components/ha-target-picker";
@@ -147,23 +146,23 @@ class HaPanelHistory extends LitElement {
               ></ha-icon-button>
             `
           : ""}
-        <ha-button-menu slot="actionItems" @action=${this._handleMenuAction}>
+        <ha-md-button-menu slot="actionItems">
           <ha-icon-button
             slot="trigger"
             .label=${this.hass.localize("ui.common.menu")}
             .path=${mdiDotsVertical}
           ></ha-icon-button>
 
-          <ha-list-item graphic="icon" .disabled=${this._isLoading}>
+          <ha-md-menu-item .disabled=${this._isLoading} @click=${this._downloadHistory}>
             ${this.hass.localize("ui.panel.history.download_data")}
-            <ha-svg-icon slot="graphic" .path=${mdiDownload}></ha-svg-icon>
-          </ha-list-item>
+            <ha-svg-icon slot="start" .path=${mdiDownload}></ha-svg-icon>
+          </ha-md-menu-item>
 
-          <ha-list-item graphic="icon" .disabled=${this._isLoading}>
+          <ha-md-menu-item .disabled=${this._isLoading} @click=${this._suggestCard}>
             ${this.hass.localize("ui.panel.history.add_card")}
-            <ha-svg-icon slot="graphic" .path=${mdiImagePlus}></ha-svg-icon>
-          </ha-list-item>
-        </ha-button-menu>
+            <ha-svg-icon slot="start" .path=${mdiImagePlus}></ha-svg-icon>
+          </ha-md-menu-item>
+        </ha-md-button-menu>
 
         <div class="flex content">
           <div class="filters">
@@ -467,17 +466,6 @@ class HaPanelHistory extends LitElement {
     }
 
     navigate(`/history?${createSearchParam(params)}`, { replace: true });
-  }
-
-  private async _handleMenuAction(ev: CustomEvent<ActionDetail>) {
-    switch (ev.detail.index) {
-      case 0:
-        this._downloadHistory();
-        break;
-      case 1:
-        this._suggestCard();
-        break;
-    }
   }
 
   private _downloadHistory() {

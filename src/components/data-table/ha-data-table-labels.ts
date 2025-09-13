@@ -8,9 +8,9 @@ import { fireEvent } from "../../common/dom/fire_event";
 import "../ha-label";
 import { stringCompare } from "../../common/string/compare";
 import "../chips/ha-chip-set";
-import "../ha-button-menu";
+import "../ha-md-button-menu";
+import "../ha-md-menu-item";
 import "../ha-icon";
-import "../ha-list-item";
 
 @customElement("ha-data-table-labels")
 class HaDataTableLabels extends LitElement {
@@ -26,8 +26,8 @@ class HaDataTableLabels extends LitElement {
           (label) => this._renderLabel(label, true)
         )}
         ${labels.length > 2
-          ? html`<ha-button-menu
-              absolute
+          ? html`<ha-md-button-menu
+              positioning="absolute"
               role="button"
               tabindex="0"
               @click=${this._handleIconOverflowMenuOpened}
@@ -40,12 +40,12 @@ class HaDataTableLabels extends LitElement {
                 labels.slice(2),
                 (label) => label.label_id,
                 (label) => html`
-                  <ha-list-item @click=${this._labelClicked} .item=${label}>
+                  <ha-md-menu-item @click=${this._labelClicked} .item=${label}>
                     ${this._renderLabel(label, false)}
-                  </ha-list-item>
+                  </ha-md-menu-item>
                 `
               )}
-            </ha-button-menu>`
+            </ha-md-button-menu>`
           : nothing}
       </ha-chip-set>
     `;
@@ -83,7 +83,7 @@ class HaDataTableLabels extends LitElement {
   protected _handleIconOverflowMenuOpened(e) {
     e.stopPropagation();
     // If this component is used inside a data table, the z-index of the row
-    // needs to be increased. Otherwise the ha-button-menu would be displayed
+    // needs to be increased. Otherwise the ha-md-button-menu would be displayed
     // underneath the next row in the table.
     const row = this.closest(".mdc-data-table__row") as HTMLDivElement | null;
     if (row) {
@@ -113,7 +113,7 @@ class HaDataTableLabels extends LitElement {
       --ha-label-background-color: var(--color, var(--grey-color));
       --ha-label-background-opacity: 0.5;
     }
-    ha-button-menu {
+    ha-md-button-menu {
       border-radius: 10px;
     }
     .plus {
