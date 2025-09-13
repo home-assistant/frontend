@@ -275,7 +275,7 @@ export class HuiCard extends ReactiveElement {
     );
   }
 
-  private _updateVisibility(forceVisible?: boolean) {
+  private _updateVisibility(ignoreConditions?: boolean) {
     if (!this._element || !this.hass) {
       return;
     }
@@ -285,9 +285,18 @@ export class HuiCard extends ReactiveElement {
       return;
     }
 
+    if (this.preview) {
+      this._setElementVisibility(true);
+      return;
+    }
+
+    if (this.config?.disabled) {
+      this._setElementVisibility(false);
+      return;
+    }
+
     const visible =
-      forceVisible ||
-      this.preview ||
+      ignoreConditions ||
       !this.config?.visibility ||
       checkConditionsMet(this.config.visibility, this.hass);
     this._setElementVisibility(visible);
