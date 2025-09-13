@@ -1606,7 +1606,7 @@
           "enabled_restart_confirm": "Restart Home Assistant to finish enabling the entities",
           "hidden_explanation": "Hidden entities will not be included in auto-populated dashboards or when their area, device or label is referenced. Their history is still tracked and you can still interact with them with actions.",
           "record_label": "Record",
-          "record_description": "Control whether this entity's state history is recorded by the Home Assistant Recorder.",
+          "record_description": "Control whether this entity's state history is recorded by Home Assistant Recorder.",
           "error_loading_recording_settings": "Error loading recording settings",
           "error_updating_recording_settings": "Error updating recording settings",
           "delete": "Delete",
