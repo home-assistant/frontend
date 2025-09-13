@@ -12,6 +12,8 @@ export interface MediaPlayerBrowseDialogParams {
   navigateIds?: MediaPlayerItemId[];
   minimumNavigateLevel?: number;
   accept?: string[];
+  defaultId?: string;
+  defaultType?: string;
 }
 
 export const showMediaBrowserDialog = (
