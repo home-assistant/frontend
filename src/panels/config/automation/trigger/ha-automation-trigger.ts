@@ -25,6 +25,7 @@ import {
 import { automationRowsStyles } from "../styles";
 import "./ha-automation-trigger-row";
 import type HaAutomationTriggerRow from "./ha-automation-trigger-row";
+import { ensureArray } from "../../../../common/array/ensure-array";
 
 @customElement("ha-automation-trigger")
 export default class HaAutomationTrigger extends LitElement {
@@ -84,6 +85,7 @@ export default class HaAutomationTrigger extends LitElement {
                 .last=${idx === this.triggers.length - 1}
                 .trigger=${trg}
                 @duplicate=${this._duplicateTrigger}
+                @insert-after=${this._insertAfter}
                 @move-down=${this._moveDown}
                 @move-up=${this._moveUp}
                 @value-changed=${this._triggerChanged}
@@ -321,7 +323,21 @@ export default class HaAutomationTrigger extends LitElement {
     ev.stopPropagation();
     const index = (ev.target as any).index;
     fireEvent(this, "value-changed", {
-      value: this.triggers.concat(deepClone(this.triggers[index])),
+      value: this.triggers.toSpliced(
+        index + 1,
+        0,
+        deepClone(this.triggers[index])
+      ),
+    });
+  }
+
+  private _insertAfter(ev: CustomEvent) {
+    ev.stopPropagation();
+    const index = (ev.target as any).index;
+    const inserted = ensureArray(ev.detail.value);
+    this.highlightedTriggers = inserted;
+    fireEvent(this, "value-changed", {
+      value: this.triggers.toSpliced(index + 1, 0, ...inserted),
     });
   }
 

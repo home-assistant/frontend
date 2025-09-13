@@ -41,6 +41,8 @@ import type {
   AutomationConfig,
   AutomationEntity,
   BlueprintAutomationConfig,
+  Condition,
+  Trigger,
 } from "../../../data/automation";
 import {
   deleteAutomation,
@@ -60,6 +62,7 @@ import {
   type EntityRegistryEntry,
   updateEntityRegistryEntry,
 } from "../../../data/entity_registry";
+import type { Action } from "../../../data/script";
 import {
   showAlertDialog,
   showConfirmationDialog,
@@ -96,6 +99,9 @@ declare global {
     "move-down": undefined;
     "move-up": undefined;
     duplicate: undefined;
+    "insert-after": {
+      value: Trigger | Condition | Action | Trigger[] | Condition[] | Action[];
+    };
     "save-automation": undefined;
   }
 }

@@ -380,6 +380,9 @@ export const getActionType = (action: Action): ActionType => {
   return "unknown";
 };
 
+export const isAction = (value: unknown): value is Action =>
+  getActionType(value as Action) !== "unknown";
+
 export const hasScriptFields = (
   hass: HomeAssistant,
   entityId: string

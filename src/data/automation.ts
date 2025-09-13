@@ -567,6 +567,7 @@ export interface TriggerSidebarConfig extends BaseSidebarConfig {
   duplicate: () => void;
   cut: () => void;
   copy: () => void;
+  insertAfter: (value: Trigger | Trigger[]) => boolean;
   toggleYamlMode: () => void;
   config: Trigger;
   yamlMode: boolean;
@@ -581,6 +582,7 @@ export interface ConditionSidebarConfig extends BaseSidebarConfig {
   duplicate: () => void;
   cut: () => void;
   copy: () => void;
+  insertAfter: (value: Condition | Condition[]) => boolean;
   toggleYamlMode: () => void;
   config: Condition;
   yamlMode: boolean;
@@ -594,6 +596,7 @@ export interface ActionSidebarConfig extends BaseSidebarConfig {
   duplicate: () => void;
   cut: () => void;
   copy: () => void;
+  insertAfter: (value: Action | Action[]) => boolean;
   run: () => void;
   toggleYamlMode: () => void;
   config: {
