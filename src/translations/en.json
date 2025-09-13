@@ -5348,7 +5348,7 @@
             "disable_recording_selected": {
               "button": "Disable recording for selected",
               "confirm_title": "Do you want to disable recording for {number} {number, plural,\n  one {entity}\n  other {entities}\n}?",
-              "confirm_text": "This will stop recording their state history in the recorder."
+              "confirm_text": "This will stop recording their state history in the Recorder database."
             },
             "hide_selected": {
               "button": "Hide selected",
