@@ -5343,7 +5343,7 @@
             "enable_recording_selected": {
               "button": "Enable recording for selected",
               "confirm_title": "Do you want to enable recording for {number} {number, plural,\n  one {entity}\n  other {entities}\n}?",
-              "confirm_text": "This will resume recording their state history in the recorder."
+              "confirm_text": "This will resume recording their state history in the Recorder database."
             },
             "disable_recording_selected": {
               "button": "Disable recording for selected",
