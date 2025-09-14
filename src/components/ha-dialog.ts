@@ -67,6 +67,7 @@ export class HaDialog extends DialogBase {
     styles,
     css`
       :host([scrolled]) ::slotted(ha-dialog-header) {
+        --dialog-container-justify: center;
         border-bottom: 1px solid
           var(--mdc-dialog-scroll-divider-color, rgba(0, 0, 0, 0.12));
       }
@@ -102,6 +103,7 @@ export class HaDialog extends DialogBase {
         align-items: var(--vertical-align-dialog, center);
         padding-top: var(--safe-area-inset-top);
         padding-bottom: var(--safe-area-inset-bottom);
+        justify-content: var(--dialog-container-justify, center);
       }
       .mdc-dialog__title {
         padding: 16px 16px 0 16px;
