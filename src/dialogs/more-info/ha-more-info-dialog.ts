@@ -9,6 +9,8 @@ import {
   mdiPencilOff,
   mdiPencilOutline,
   mdiTransitConnectionVariant,
+  mdiArrowExpand,
+  mdiArrowCollapse,
 } from "@mdi/js";
 import type { HassEntity } from "home-assistant-js-websocket";
 import type { PropertyValues } from "lit";
@@ -344,8 +346,17 @@ export class MoreInfoDialog extends LitElement {
     );
     const title = this._childView?.viewTitle || breadcrumb.pop() || entityId;
 
+    const sizeLabel =
+      this.hass?.localize?.(
+        this.large
+          ? "ui.dialogs.more_info_control.reduce_size"
+          : "ui.dialogs.more_info_control.enlarge_size"
+      ) ?? (this.large ? "Restore size" : "Enlarge");
+    const sizeIcon = this.large ? mdiArrowCollapse : mdiArrowExpand;
+
     return html`
       <ha-dialog
+        id="moreInfoDialog"
         open
         @closed=${this.closeDialog}
         @opened=${this._handleOpened}
@@ -373,7 +384,7 @@ export class MoreInfoDialog extends LitElement {
                   )}
                 ></ha-icon-button-prev>
               `}
-          <span slot="title" @click=${this._enlarge} class="title">
+          <span slot="title" class="title">
             ${breadcrumb.length > 0
               ? !__DEMO__ && isAdmin
                 ? html`
@@ -395,6 +406,15 @@ export class MoreInfoDialog extends LitElement {
           </span>
           ${isDefaultView
             ? html`
+                <ha-icon-button
+                  slot="actionItems"
+                  .label=${sizeLabel}
+                  title=${sizeLabel}
+                  .path=${sizeIcon}
+                  aria-pressed=${String(this.large)}
+                  aria-controls="moreInfoDialog"
+                  @click=${this._enlarge}
+                ></ha-icon-button>
                 ${this._shouldShowHistory(domain)
                   ? html`
                       <ha-icon-button

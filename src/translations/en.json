@@ -1506,7 +1506,9 @@
         "camera": {
           "download_snapshot": "Download snapshot",
           "failed_to_download": "Failed to download snapshot. Please check the logs for more information."
-        }
+        },
+        "enlarge_size": "Enlarge",
+        "reduce_size": "Restore size"
       },
       "entity_registry": {
         "settings": "Settings",
