@@ -66,8 +66,33 @@ export const HOME_SUMMARIES_FILTERS: Record<HomeSummary, EntityFilter[]> = {
     },
     {
       domain: "binary_sensor",
-      device_class: ["door", "garage_door", "motion"],
+      device_class: [
+        // Locks
+        "lock",
+        // Openings
+        "door",
+        "window",
+        "garage_door",
+        "opening",
+        // Humans
+        "motion",
+        "presence",
+        "occupancy",
+        // Safety
+        "carbon_monoxide",
+        "gas",
+        "moisture",
+        "safety",
+        "smoke",
+        "tamper",
+      ],
       entity_category: "none",
+    },
+    // We also want the tamper sensors when they are diagnostic
+    {
+      domain: "binary_sensor",
+      device_class: ["tamper"],
+      entity_category: "diagnostic",
     },
   ],
   media_players: [{ domain: "media_player", entity_category: "none" }],
