@@ -1,3 +1,4 @@
+/* eslint-disable import/extensions */
 import {
   mdiChartBoxOutline,
   mdiClose,
@@ -15,11 +16,11 @@ import {
 import type { HassEntity } from "home-assistant-js-websocket";
 import type { PropertyValues } from "lit";
 import { LitElement, css, html, nothing } from "lit";
-import { customElement, property, state, query } from "lit/decorators";
-import { cache } from "lit/directives/cache";
-import { join } from "lit/directives/join";
-import { keyed } from "lit/directives/keyed";
-import { dynamicElement } from "../../common/dom/dynamic-element-directive";
+import { customElement, property, state, query } from "lit/decorators.js";
+import { cache } from "lit/directives/cache.js";
+import { join } from "lit/directives/join.js";
+import { keyed } from "lit/directives/keyed.js";
+import { dynamicElement } from "../../common/dom/dynamic-element-directive.js";
 import { fireEvent } from "../../common/dom/fire_event";
 import { stopPropagation } from "../../common/dom/stop_propagation";
 import { computeAreaName } from "../../common/entity/compute_area_name";
