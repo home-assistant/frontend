@@ -15,7 +15,7 @@ import {
 import type { HassEntity } from "home-assistant-js-websocket";
 import type { PropertyValues } from "lit";
 import { LitElement, css, html, nothing } from "lit";
-import { customElement, property, state } from "lit/decorators";
+import { customElement, property, state, query } from "lit/decorators";
 import { cache } from "lit/directives/cache";
 import { join } from "lit/directives/join";
 import { keyed } from "lit/directives/keyed";
@@ -117,6 +117,10 @@ export class MoreInfoDialog extends LitElement {
   @state() private _isEscapeEnabled = true;
 
   @state() private _sensorNumericDeviceClasses?: string[] = [];
+
+  @query("#sizeToggle") private _sizeToggle?: HTMLElement;
+
+  @state() private _srMessage = "";
 
   public showDialog(params: MoreInfoDialogParams) {
     this._entityId = params.entityId;
@@ -357,6 +361,7 @@ export class MoreInfoDialog extends LitElement {
     return html`
       <ha-dialog
         id="moreInfoDialog"
+        aria-labelledby="moreInfoTitle"
         open
         @closed=${this.closeDialog}
         @opened=${this._handleOpened}
@@ -365,6 +370,9 @@ export class MoreInfoDialog extends LitElement {
         hideActions
         flexContent
       >
+        <span class="sr-only" aria-live="polite" aria-atomic="true">
+          ${this._srMessage}
+        </span>
         <ha-dialog-header slot="heading">
           ${showCloseIcon
             ? html`
@@ -384,7 +392,7 @@ export class MoreInfoDialog extends LitElement {
                   )}
                 ></ha-icon-button-prev>
               `}
-          <span slot="title" class="title">
+          <span id="moreInfoTitle" slot="title" class="title" tabindex="-1">
             ${breadcrumb.length > 0
               ? !__DEMO__ && isAdmin
                 ? html`
@@ -407,11 +415,11 @@ export class MoreInfoDialog extends LitElement {
           ${isDefaultView
             ? html`
                 <ha-icon-button
+                  id="sizeToggle"
                   slot="actionItems"
                   .label=${sizeLabel}
                   title=${sizeLabel}
                   .path=${sizeIcon}
-                  aria-pressed=${String(this.large)}
                   aria-controls="moreInfoDialog"
                   @click=${this._enlarge}
                 ></ha-icon-button>
@@ -646,11 +654,19 @@ export class MoreInfoDialog extends LitElement {
 
   private _enlarge() {
     this.large = !this.large;
+    this._announceSizeChange();
+    requestAnimationFrame(() => this._sizeToggle?.focus());
   }
 
   private _handleOpened() {
     window.addEventListener("dialog-closed", this._enableEscapeKeyClose);
     window.addEventListener("show-dialog", this._disableEscapeKeyClose);
+
+    requestAnimationFrame(() => {
+      (
+        this.renderRoot.querySelector("#moreInfoTitle") as HTMLElement | null
+      )?.focus();
+    });
   }
 
   private _handleMoreInfoEvent(ev) {
@@ -673,6 +689,24 @@ export class MoreInfoDialog extends LitElement {
   private _disableEscapeKeyClose = () => {
     this._isEscapeEnabled = false;
   };
+
+  private _srClearTimer?: number;
+
+  private _announceSizeChange() {
+    const fallback = this.large ? "Dialog enlarged" : "Dialog restored";
+    this._srMessage =
+      this.hass?.localize?.(
+        this.large
+          ? "ui.dialogs.more_info_control.size_changed_large"
+          : "ui.dialogs.more_info_control.size_changed_normal"
+      ) ?? fallback;
+
+    if (this._srClearTimer) clearTimeout(this._srClearTimer);
+    this._srClearTimer = window.setTimeout(() => {
+      this._srMessage = "";
+      this._srClearTimer = undefined;
+    }, 1200);
+  }
 
   static get styles() {
     return [
@@ -732,11 +766,28 @@ export class MoreInfoDialog extends LitElement {
           }
         }
 
+        .sr-only {
+          position: absolute !important;
+          width: 1px;
+          height: 1px;
+          padding: 0;
+          margin: -1px;
+          overflow: hidden;
+          clip: rect(0 0 0 0);
+          clip-path: inset(50%);
+          border: 0;
+          white-space: nowrap;
+        }
+
         .title {
           display: flex;
           flex-direction: column;
           align-items: flex-start;
           margin: 0 0 -10px 0;
+        }
+
+        .title[tabindex="-1"]:focus-visible {
+          outline: none;
         }
 
         .title p {

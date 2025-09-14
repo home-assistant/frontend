@@ -1508,7 +1508,9 @@
           "failed_to_download": "Failed to download snapshot. Please check the logs for more information."
         },
         "enlarge_size": "Enlarge",
-        "reduce_size": "Restore size"
+        "reduce_size": "Restore size",
+        "size_changed_large": "Dialog enlarged",
+        "size_changed_normal": "Dialog restored"
       },
       "entity_registry": {
         "settings": "Settings",
