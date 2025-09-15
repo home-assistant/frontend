@@ -219,9 +219,8 @@ export class HuiCalendarCard extends LitElement implements LovelaceCard {
       if (newHeight !== this._calendarHeight) {
         this._calendarHeight = newHeight;
       }
-    } else if (this._calendarHeight) {
-      // Reset to default 400px when not using fixed rows
-      this._calendarHeight = "400px";
+    } else {
+      this._calendarHeight = undefined;
     }
   }
 
