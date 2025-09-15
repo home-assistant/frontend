@@ -171,7 +171,7 @@ export default class HaAutomationSidebar extends LitElement {
         @mousedown=${this._handleMouseDown}
         @touchstart=${this._handleMouseDown}
       >
-        ${this._resizing ? html`<div class="indicator"></div>` : ""}
+        ${this._resizing ? html`<div class="indicator"></div>` : nothing}
       </div>
       ${this._renderContent()}
     `;
