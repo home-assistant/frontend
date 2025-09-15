@@ -103,7 +103,7 @@ export class HuiCalendarCard extends LitElement implements LovelaceCard {
       rows: 6,
       columns: 12,
       min_columns: 4,
-      min_rows: 5,
+      min_rows: 4,
     };
   }
 
