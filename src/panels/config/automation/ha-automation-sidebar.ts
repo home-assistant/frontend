@@ -311,9 +311,9 @@ export default class HaAutomationSidebar extends LitElement {
 
     .handle {
       position: absolute;
-      margin-inline-start: -15px;
+      margin-inline-start: -11px;
       height: calc(100% - (2 * var(--ha-card-border-radius)));
-      width: 32px;
+      width: 24px;
       z-index: 7;
       cursor: ew-resize;
       display: flex;
