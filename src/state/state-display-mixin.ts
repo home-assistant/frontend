@@ -8,7 +8,7 @@ export default <T extends Constructor<HassBaseEl>>(superClass: T) => {
   class StateDisplayMixin extends superClass {
     protected hassConnected() {
       super.hassConnected();
-      this._updateStateDisplay();
+      this._updateFormatFunctions();
     }
 
     protected willUpdate(changedProps) {
@@ -25,13 +25,16 @@ export default <T extends Constructor<HassBaseEl>>(superClass: T) => {
           this.hass.localize !== oldHass.localize ||
           this.hass.locale !== oldHass.locale ||
           this.hass.config !== oldHass.config ||
-          this.hass.entities !== oldHass.entities)
+          this.hass.entities !== oldHass.entities ||
+          this.hass.devices !== oldHass.devices ||
+          this.hass.areas !== oldHass.areas ||
+          this.hass.floors !== oldHass.floors)
       ) {
-        this._updateStateDisplay();
+        this._updateFormatFunctions();
       }
     }
 
-    private _updateStateDisplay = async () => {
+    private _updateFormatFunctions = async () => {
       if (!this.hass || !this.hass.config) {
         return;
       }
