@@ -100,7 +100,6 @@ export class HaWaDialog extends LitElement {
   private _scrollLocked = false;
 
   private _observeBodyScroll(attach: boolean) {
-    // Get the internal body part from wa-dialog shadow DOM
     if (!this._waDialog) return;
     if (!this._waBodyEl) {
       this._waBodyEl = this._waDialog.shadowRoot?.querySelector(
