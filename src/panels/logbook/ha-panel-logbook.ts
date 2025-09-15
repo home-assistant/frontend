@@ -69,7 +69,7 @@ export class HaPanelLogbook extends LitElement {
 
   protected render() {
     return html`
-      <ha-top-app-bar-fixed>
+      <ha-top-app-bar-fixed .narrow=${this.narrow}>
         ${this._showBack
           ? html`
               <ha-icon-button-arrow-prev
@@ -303,11 +303,23 @@ export class HaPanelLogbook extends LitElement {
       haStyle,
       css`
         ha-logbook {
-          height: calc(100vh - 136px);
+          height: calc(
+            100vh -
+              168px - var(--safe-area-inset-top, 0px) - var(
+                --safe-area-inset-bottom,
+                0px
+              )
+          );
         }
 
         :host([narrow]) ha-logbook {
-          height: calc(100vh - 198px);
+          height: calc(
+            100vh -
+              250px - var(--safe-area-inset-top, 0px) - var(
+                --safe-area-inset-bottom,
+                0px
+              )
+          );
         }
 
         ha-date-range-picker {
