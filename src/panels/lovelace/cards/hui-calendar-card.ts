@@ -1,5 +1,6 @@
 import type { PropertyValues } from "lit";
 import { css, html, LitElement, nothing } from "lit";
+import { styleMap } from "lit/directives/style-map";
 import { customElement, property, state } from "lit/decorators";
 import { getColorByIndex } from "../../../common/color/colors";
 import { applyThemesOnElement } from "../../../common/dom/apply_themes_on_element";
@@ -66,6 +67,8 @@ export class HuiCalendarCard extends LitElement implements LovelaceCard {
 
   private _resizeObserver?: ResizeObserver;
 
+  @state() private _calendarHeight?: string;
+
   public setConfig(config: CalendarCardConfig): void {
     if (!config.entities?.length) {
       throw new Error("Entities must be specified");
@@ -125,6 +128,7 @@ export class HuiCalendarCard extends LitElement implements LovelaceCard {
           .initialView=${this._config.initial_view!}
           .eventDisplay=${this._eventDisplay}
           .error=${this._error}
+          style=${styleMap({ "--calendar-height": this._calendarHeight })}
           @view-changed=${this._handleViewChanged}
         ></ha-full-calendar>
       </ha-card>
@@ -158,6 +162,8 @@ export class HuiCalendarCard extends LitElement implements LovelaceCard {
     this._startDate = ev.detail.start;
     this._endDate = ev.detail.end;
     this._fetchCalendarEvents();
+    // Recalculate sizes after view change
+    requestAnimationFrame(() => this._measureCard());
   }
 
   private async _fetchCalendarEvents(): Promise<void> {
@@ -187,6 +193,34 @@ export class HuiCalendarCard extends LitElement implements LovelaceCard {
       return;
     }
     this._narrow = card.offsetWidth < 870;
+
+    // If grid rows are set, calculate available calendar height from card height minus header
+    const hasFixedRows =
+      typeof (this._config as any)?.grid_options?.rows === "number";
+    if (hasFixedRows) {
+      const header = this.shadowRoot!.querySelector<HTMLDivElement>(".header");
+      const fc = this.shadowRoot!.querySelector(
+        "ha-full-calendar"
+      ) as HTMLElement & { shadowRoot?: ShadowRoot | null };
+      const fcHeader = fc?.shadowRoot?.querySelector<HTMLElement>(".header");
+      const cardStyles = getComputedStyle(card as Element);
+      const paddingBottom = parseFloat(cardStyles.paddingBottom || "0");
+      const headerHeight = header ? header.getBoundingClientRect().height : 0;
+      const fcHeaderHeight = fcHeader
+        ? fcHeader.getBoundingClientRect().height
+        : 0;
+      const available = Math.max(
+        0,
+        card.clientHeight - headerHeight - fcHeaderHeight - paddingBottom
+      );
+      const newHeight = `${Math.round(available)}px`;
+      if (newHeight !== this._calendarHeight) {
+        this._calendarHeight = newHeight;
+      }
+    } else if (this._calendarHeight) {
+      // Reset to default 400px when not using fixed rows
+      this._calendarHeight = "400px";
+    }
   }
 
   private async _attachObserver(): Promise<void> {
@@ -219,10 +253,6 @@ export class HuiCalendarCard extends LitElement implements LovelaceCard {
       padding-left: 8px;
       padding-inline-start: 8px;
       direction: var(--direction);
-    }
-
-    ha-full-calendar {
-      --calendar-height: 400px;
     }
   `;
 }
