@@ -268,11 +268,7 @@ export interface IconSelector {
 }
 
 export interface ImageSelector {
-  image: {
-    original?: boolean;
-    crop?: CropOptions;
-    supports_media?: boolean;
-  } | null;
+  image: { original?: boolean; crop?: CropOptions } | null;
 }
 
 export interface BackgroundSelector {
