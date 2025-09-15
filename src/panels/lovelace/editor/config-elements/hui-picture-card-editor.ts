@@ -31,7 +31,7 @@ const SCHEMA = [
     name: "image",
     selector: {
       media: {
-        accept: ["image/*"],
+        accept: ["image/*"] as string[],
         clearable: true,
         image_upload: true,
       },
