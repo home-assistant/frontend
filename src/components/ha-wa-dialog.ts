@@ -129,7 +129,7 @@ export class HaWaDialog extends LitElement {
     this._waDialog?.scrollTo(x, y);
   }
 
-  private _handleWaShow = () => {
+  private _handleShow = () => {
     this._internalOpen = true;
     this.dispatchEvent(
       new CustomEvent("opened", { bubbles: true, composed: true })
@@ -143,7 +143,7 @@ export class HaWaDialog extends LitElement {
     }
   };
 
-  private _handleWaHide = (ev?: CustomEvent) => {
+  private _handleHide = (ev?: CustomEvent) => {
     if (this.escapeKeyAction === "" && ev?.detail?.source === this._waDialog) {
       ev?.preventDefault?.();
       return;
@@ -177,7 +177,7 @@ export class HaWaDialog extends LitElement {
       this._waDialog.hide();
     } else {
       this._internalOpen = false;
-      this._handleWaHide();
+      this._handleHide();
     }
   };
 
@@ -260,8 +260,8 @@ export class HaWaDialog extends LitElement {
         .open=${this._internalOpen}
         .lightDismiss=${this.scrimClickAction}
         .withoutHeader=${!this.heading}
-        @wa-show=${this._handleWaShow}
-        @wa-hide=${this._handleWaHide}
+        @wa-show=${this._handleShow}
+        @wa-hide=${this._handleHide}
         class=${this.open ? "mdc-dialog--open" : ""}
       >
         <slot
