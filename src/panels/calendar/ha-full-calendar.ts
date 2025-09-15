@@ -256,11 +256,6 @@ export class HAFullCalendar extends LitElement {
   protected firstUpdated(): void {
     this._loadCalendar(this.initialView);
     this._activeView = this.initialView;
-    // eslint-disable-next-line no-console
-    console.debug(
-      "[ha-full-calendar] firstUpdated, initialView",
-      this.initialView
-    );
   }
 
   private async _loadCalendar(initialView: FullCalendarView) {
@@ -298,11 +293,6 @@ export class HAFullCalendar extends LitElement {
       config
     );
     this.calendar!.render();
-    // eslint-disable-next-line no-console
-    console.debug(
-      "[ha-full-calendar] calendar rendered, height style",
-      getComputedStyle(this.shadowRoot!.getElementById("calendar")!).height
-    );
     this._fireViewChanged();
   }
 
@@ -384,8 +374,6 @@ export class HAFullCalendar extends LitElement {
   private _handleView(ev: CustomEvent): void {
     this._activeView = ev.detail.value;
     this.calendar!.changeView(this._activeView!);
-    // eslint-disable-next-line no-console
-    console.debug("[ha-full-calendar] view changed", this._activeView);
     this._fireViewChanged();
   }
 
