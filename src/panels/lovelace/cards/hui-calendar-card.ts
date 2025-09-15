@@ -174,8 +174,6 @@ export class HuiCalendarCard extends LitElement implements LovelaceCard {
     this._startDate = ev.detail.start;
     this._endDate = ev.detail.end;
     this._fetchCalendarEvents();
-    // Recalculate sizes after view change
-    requestAnimationFrame(() => this._measureCard());
   }
 
   private async _fetchCalendarEvents(): Promise<void> {
