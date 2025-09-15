@@ -4,7 +4,7 @@ import { LitElement, html } from "lit";
 import { customElement, property, state } from "lit/decorators";
 import { styleMap } from "lit/directives/style-map";
 import { stateActive } from "../../common/entity/state_active";
-import { domainStateColor } from "../../common/entity/state_color";
+import { stateColor } from "../../common/entity/state_color";
 import { supportsFeature } from "../../common/entity/supports-feature";
 import { clamp } from "../../common/number/clamp";
 import { debounce } from "../../common/util/debounce";
@@ -171,13 +171,7 @@ export class HaStateControlClimateHumidity extends LitElement {
     const active = stateActive(this.stateObj);
 
     // Use humidifier state color
-    const stateColor = domainStateColor(
-      this,
-      "humidifier",
-      undefined,
-      this.stateObj.state,
-      active
-    );
+    const color = stateColor(this, this.stateObj);
     const targetHumidity = this._targetHumidity;
     const currentHumidity = this.stateObj.attributes.current_humidity;
 
@@ -194,7 +188,7 @@ export class HaStateControlClimateHumidity extends LitElement {
         <div
           class="container${containerSizeClass}"
           style=${styleMap({
-            "--state-color": stateColor,
+            "--state-color": color,
           })}
         >
           <ha-control-circular-slider

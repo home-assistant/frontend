@@ -5,12 +5,15 @@ import { computeDomain } from "./compute_domain";
 export function stateActive(stateObj: HassEntity, state?: string): boolean {
   const domain = computeDomain(stateObj.entity_id);
   const compareState = state !== undefined ? state : stateObj?.state;
+  return domainStateActive(domain, compareState);
+}
 
+export function domainStateActive(domain: string, state: string) {
   if (["button", "event", "input_button", "scene"].includes(domain)) {
-    return compareState !== UNAVAILABLE;
+    return state !== UNAVAILABLE;
   }
 
-  if (isUnavailableState(compareState)) {
+  if (isUnavailableState(state)) {
     return false;
   }
 
@@ -18,40 +21,40 @@ export function stateActive(stateObj: HassEntity, state?: string): boolean {
   // such as "alert" where "off" is still a somewhat active state and
   // therefore gets a custom color and "idle" is instead the state that
   // matches what most other domains consider inactive.
-  if (compareState === OFF && domain !== "alert") {
+  if (state === OFF && domain !== "alert") {
     return false;
   }
 
   // Custom cases
   switch (domain) {
     case "alarm_control_panel":
-      return compareState !== "disarmed";
+      return state !== "disarmed";
     case "alert":
       // "on" and "off" are active, as "off" just means alert was acknowledged but is still active
-      return compareState !== "idle";
+      return state !== "idle";
     case "cover":
-      return compareState !== "closed";
+      return state !== "closed";
     case "device_tracker":
     case "person":
-      return compareState !== "not_home";
+      return state !== "not_home";
     case "lawn_mower":
-      return ["mowing", "error"].includes(compareState);
+      return ["mowing", "error"].includes(state);
     case "lock":
-      return compareState !== "locked";
+      return state !== "locked";
     case "media_player":
-      return compareState !== "standby";
+      return state !== "standby";
     case "vacuum":
-      return !["idle", "docked", "paused"].includes(compareState);
+      return !["idle", "docked", "paused"].includes(state);
     case "valve":
-      return compareState !== "closed";
+      return state !== "closed";
     case "plant":
-      return compareState === "problem";
+      return state === "problem";
     case "group":
-      return ["on", "home", "open", "locked", "problem"].includes(compareState);
+      return ["on", "home", "open", "locked", "problem"].includes(state);
     case "timer":
-      return compareState === "active";
+      return state === "active";
     case "camera":
-      return compareState === "streaming";
+      return state === "streaming";
   }
 
   return true;

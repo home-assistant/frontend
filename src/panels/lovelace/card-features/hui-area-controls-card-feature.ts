@@ -257,18 +257,12 @@ class HuiAreaControlsCardFeature
             ? ensureArray(button.filter.device_class)[0]
             : undefined;
 
-          const activeColor = domainStateColor(
-            this,
-            domain,
-            deviceClass,
-            groupState,
-            true
-          );
+          const color = domainStateColor(this, domain, deviceClass, groupState);
 
           return html`
             <ha-control-button
               style=${styleMap({
-                "--active-color": activeColor,
+                "--active-color": color,
               })}
               .title=${label}
               aria-label=${label}
