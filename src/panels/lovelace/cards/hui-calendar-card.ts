@@ -141,9 +141,6 @@ export class HuiCalendarCard extends LitElement implements LovelaceCard {
           .initialView=${this._config.initial_view!}
           .eventDisplay=${this._eventDisplay}
           .error=${this._error}
-          style=${styleMap({
-            "--calendar-height": this._calendarHeight ?? "400px",
-          })}
           @view-changed=${this._handleViewChanged}
         ></ha-full-calendar>
       </ha-card>
@@ -208,26 +205,6 @@ export class HuiCalendarCard extends LitElement implements LovelaceCard {
       return;
     }
     this._narrow = card.offsetWidth < 870;
-
-    const header = this.shadowRoot!.querySelector<HTMLDivElement>(".header");
-    const fc = this.shadowRoot!.querySelector(
-      "ha-full-calendar"
-    ) as HTMLElement & { shadowRoot?: ShadowRoot | null };
-    const fcHeader = fc?.shadowRoot?.querySelector<HTMLElement>(".header");
-    const cardStyles = getComputedStyle(card as Element);
-    const paddingBottom = parseFloat(cardStyles.paddingBottom || "0");
-    const headerHeight = header ? header.getBoundingClientRect().height : 0;
-    const fcHeaderHeight = fcHeader
-      ? fcHeader.getBoundingClientRect().height
-      : 0;
-    const available = Math.max(
-      0,
-      card.clientHeight - headerHeight - fcHeaderHeight - paddingBottom
-    );
-    const newHeight = `${Math.round(available)}px`;
-    if (newHeight !== this._calendarHeight) {
-      this._calendarHeight = newHeight;
-    }
   }
 
   private async _attachObserver(): Promise<void> {
@@ -260,6 +237,10 @@ export class HuiCalendarCard extends LitElement implements LovelaceCard {
       padding-left: 8px;
       padding-inline-start: 8px;
       direction: var(--direction);
+    }
+
+    ha-full-calendar {
+      height: 100%;
     }
   `;
 }
