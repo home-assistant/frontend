@@ -202,9 +202,7 @@ class MoreInfoMediaPlayer extends LitElement {
                   </span>`
                 : nothing}
             </div>
-            <span>
-              ${this.hass.localize("ui.card.media_player.join")}
-            </span>
+            <span>${this.hass.localize("ui.card.media_player.join")}</span>
           </ha-button>
         `
       : nothing}`;
@@ -245,9 +243,7 @@ class MoreInfoMediaPlayer extends LitElement {
     const turnOff = controls?.find((c) => c.action === "turn_off");
 
     return html`
-      <div class="controls-row">
-       ${this._renderSourceControl()}
-      </div>
+      <div class="controls-row">${this._renderSourceControl()}</div>
 
       ${coverUrl
         ? html`<div class="cover-container">
@@ -387,7 +383,7 @@ class MoreInfoMediaPlayer extends LitElement {
               </ha-button>
             `
           : nothing}
-          ${this._renderGrouping()}
+        ${this._renderGrouping()}
         <span class="flex"></span>
         ${turnOn
           ? html`<ha-button
