@@ -39,6 +39,10 @@ export class HaPictureUpload extends LitElement {
   @property({ type: Boolean, attribute: "select-media" }) public selectMedia =
     false;
 
+  // This property is set when this component is used inside a media selector.
+  // When set, it returns selected media or uploaded files as MediaSelectorValue
+  // When unset, it only allows selecting images from image-upload, and returns
+  // selected or uploaded images as a string starting with /api/...
   @property({ type: Boolean, attribute: "full-media" }) public fullMedia =
     false;
 
