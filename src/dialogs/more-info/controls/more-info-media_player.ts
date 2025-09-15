@@ -535,7 +535,6 @@ class MoreInfoMediaPlayer extends LitElement {
     .volume ha-slider,
     .position-bar ha-slider {
       width: 100%;
-      --md-sys-color-primary: var(--disabled-color);
     }
 
     .volume,
