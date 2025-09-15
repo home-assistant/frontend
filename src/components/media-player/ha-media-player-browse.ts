@@ -76,8 +76,8 @@ declare global {
 }
 
 export interface MediaPlayerItemId {
-  media_content_id: string | undefined;
-  media_content_type: string | undefined;
+  media_content_id?: string | undefined;
+  media_content_type?: string | undefined;
 }
 
 const MANUAL_ITEM: MediaPlayerItem = {

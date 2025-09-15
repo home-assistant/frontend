@@ -310,6 +310,8 @@ export interface LocationSelectorValue {
 export interface MediaSelector {
   media: {
     accept?: string[];
+    image_upload?: boolean;
+    clearable?: boolean;
   } | null;
 }
 

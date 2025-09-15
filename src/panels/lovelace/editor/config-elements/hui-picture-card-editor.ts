@@ -1,7 +1,8 @@
 import { mdiGestureTap } from "@mdi/js";
 import { html, LitElement, nothing } from "lit";
 import { customElement, property, state } from "lit/decorators";
-import { assert, assign, object, optional, string } from "superstruct";
+import { assert, assign, object, optional, string, union } from "superstruct";
+import memoizeOne from "memoize-one";
 import { fireEvent } from "../../../../common/dom/fire_event";
 import type { SchemaUnion } from "../../../../components/ha-form/types";
 import "../../../../components/ha-theme-picker";
@@ -15,7 +16,7 @@ import { baseLovelaceCardConfig } from "../structs/base-card-struct";
 const cardConfigStruct = assign(
   baseLovelaceCardConfig,
   object({
-    image: optional(string()),
+    image: optional(union([string(), object()])),
     image_entity: optional(string()),
     tap_action: optional(actionConfigStruct),
     hold_action: optional(actionConfigStruct),
@@ -26,7 +27,16 @@ const cardConfigStruct = assign(
 );
 
 const SCHEMA = [
-  { name: "image", selector: { image: {} } },
+  {
+    name: "image",
+    selector: {
+      media: {
+        accept: ["image/*"],
+        clearable: true,
+        image_upload: true,
+      },
+    },
+  },
   {
     name: "image_entity",
     selector: { entity: { domain: ["image", "person"] } },
@@ -88,13 +98,20 @@ export class HuiPictureCardEditor
     return html`
       <ha-form
         .hass=${this.hass}
-        .data=${this._config}
+        .data=${this._processData(this._config)}
         .schema=${SCHEMA}
         .computeLabel=${this._computeLabelCallback}
         @value-changed=${this._valueChanged}
       ></ha-form>
     `;
   }
+
+  private _processData = memoizeOne((config: PictureCardConfig) => ({
+    ...config,
+    ...(typeof config.image === "string"
+      ? { image: { media_content_id: config.image } }
+      : {}),
+  }));
 
   private _valueChanged(ev: CustomEvent): void {
     fireEvent(this, "config-changed", { config: ev.detail.value });

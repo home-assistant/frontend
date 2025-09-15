@@ -19,6 +19,7 @@ import "../ha-form/ha-form";
 import type { SchemaUnion } from "../ha-form/types";
 import { showMediaBrowserDialog } from "../media-player/show-media-browser-dialog";
 import { ensureArray } from "../../common/array/ensure-array";
+import "../ha-picture-upload";
 
 const MANUAL_SCHEMA = [
   { name: "media_content_id", required: false, selector: { text: {} } },
@@ -105,6 +106,16 @@ export class HaMediaSelector extends LitElement {
       (stateObj &&
         supportsFeature(stateObj, MediaPlayerEntityFeature.BROWSE_MEDIA));
 
+    if (this.selector.media?.image_upload && !this.value) {
+      return html`<ha-picture-upload
+        .hass=${this.hass}
+        .value=${null}
+        select-media
+        full-media
+        @media-picked=${this._pictureUploadMediaPicked}
+      ></ha-picture-upload>`;
+    }
+
     return html`
       ${this._hasAccept ||
       (this._contextEntities && this._contextEntities.length <= 1)
@@ -142,8 +153,7 @@ export class HaMediaSelector extends LitElement {
               .computeHelper=${this._computeHelperCallback}
             ></ha-form>
           `
-        : html`
-            <ha-card
+        : html`<ha-card
               outlined
               tabindex="0"
               role="button"
@@ -203,7 +213,20 @@ export class HaMediaSelector extends LitElement {
                 </div>
               </div>
             </ha-card>
-          `}
+            ${this.selector.media?.clearable
+              ? html`<div>
+                  <ha-button
+                    appearance="plain"
+                    size="small"
+                    variant="danger"
+                    @click=${this._clearValue}
+                  >
+                    ${this.hass.localize(
+                      "ui.components.picture-upload.clear_picture"
+                    )}
+                  </ha-button>
+                </div>`
+              : nothing}`}
     `;
   }
 
@@ -287,6 +310,31 @@ export class HaMediaSelector extends LitElement {
       ev.preventDefault();
       this._pickMedia();
     }
+  }
+
+  private _pictureUploadMediaPicked(ev) {
+    const pickedMedia = ev.detail as MediaPickedEvent;
+    fireEvent(this, "value-changed", {
+      value: {
+        ...this.value,
+        media_content_id: pickedMedia.item.media_content_id,
+        media_content_type: pickedMedia.item.media_content_type,
+        metadata: {
+          title: pickedMedia.item.title,
+          thumbnail: pickedMedia.item.thumbnail,
+          media_class: pickedMedia.item.media_class,
+          children_media_class: pickedMedia.item.children_media_class,
+          navigateIds: pickedMedia.navigateIds?.map((id) => ({
+            media_content_type: id.media_content_type,
+            media_content_id: id.media_content_id,
+          })),
+        },
+      },
+    });
+  }
+
+  private _clearValue() {
+    fireEvent(this, "value-changed", { value: undefined });
   }
 
   static styles = css`

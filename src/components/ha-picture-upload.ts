@@ -39,6 +39,9 @@ export class HaPictureUpload extends LitElement {
   @property({ type: Boolean, attribute: "select-media" }) public selectMedia =
     false;
 
+  @property({ type: Boolean, attribute: "full-media" }) public fullMedia =
+    false;
+
   @property({ attribute: false }) public cropOptions?: CropOptions;
 
   @property({ type: Boolean }) public original = false;
@@ -164,12 +167,33 @@ export class HaPictureUpload extends LitElement {
     this._uploading = true;
     try {
       const media = await createImage(this.hass, file);
-      this.value = generateImageThumbnailUrl(
-        media.id,
-        this.size,
-        this.original
-      );
-      fireEvent(this, "change");
+      if (this.fullMedia) {
+        const item = {
+          media_content_id: `${MEDIA_PREFIX}/${media.id}`,
+          media_content_type: media.content_type,
+          title: media.name,
+          media_class: "image" as const,
+          can_play: true,
+          can_expand: false,
+          can_search: false,
+          thumbnail: generateImageThumbnailUrl(media.id, 256),
+        } as const;
+        const navigateIds = [
+          {},
+          { media_content_type: "app", media_content_id: MEDIA_PREFIX },
+        ];
+        fireEvent(this, "media-picked", {
+          item,
+          navigateIds,
+        });
+      } else {
+        this.value = generateImageThumbnailUrl(
+          media.id,
+          this.size,
+          this.original
+        );
+        fireEvent(this, "change");
+      }
     } catch (err: any) {
       showAlertDialog(this, {
         text: err.toString(),
@@ -183,15 +207,22 @@ export class HaPictureUpload extends LitElement {
     showMediaBrowserDialog(this, {
       action: "pick",
       entityId: "browser",
-      navigateIds: [
-        { media_content_id: undefined, media_content_type: undefined },
-        {
-          media_content_id: MEDIA_PREFIX,
-          media_content_type: "app",
-        },
-      ],
-      minimumNavigateLevel: 2,
+      accept: ["image/*"],
+      navigateIds: this.fullMedia
+        ? undefined
+        : [
+            { media_content_id: undefined, media_content_type: undefined },
+            {
+              media_content_id: MEDIA_PREFIX,
+              media_content_type: "app",
+            },
+          ],
+      minimumNavigateLevel: this.fullMedia ? undefined : 2,
       mediaPickedCallback: async (pickedMedia: MediaPickedEvent) => {
+        if (this.fullMedia) {
+          fireEvent(this, "media-picked", pickedMedia);
+          return;
+        }
         const mediaId = getIdFromUrl(pickedMedia.item.media_content_id);
         if (mediaId) {
           if (this.crop) {
