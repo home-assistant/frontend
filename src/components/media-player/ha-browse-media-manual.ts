@@ -2,23 +2,15 @@ import { css, html, LitElement } from "lit";
 import { customElement, property } from "lit/decorators";
 import memoizeOne from "memoize-one";
 import { fireEvent } from "../../common/dom/fire_event";
-import { buttonLinkStyle } from "../../resources/styles";
 import type { HomeAssistant } from "../../types";
 import "../ha-button";
 import "../ha-card";
-import "../ha-textarea";
 import "../ha-form/ha-form";
 import type { SchemaUnion } from "../ha-form/types";
 import type { MediaPlayerItemId } from "./ha-media-player-browse";
 
 export interface ManualMediaPickedEvent {
   item: MediaPlayerItemId;
-}
-
-declare global {
-  interface HASSDomEvents {
-    "manual-media-picked": ManualMediaPickedEvent;
-  }
 }
 
 @customElement("ha-browse-media-manual")
@@ -94,26 +86,27 @@ class BrowseMediaManual extends LitElement {
     });
   }
 
-  static override styles = [
-    buttonLinkStyle,
-    css`
-      :host {
-        margin: 16px auto;
-        padding: 0 8px;
-        display: flex;
-        flex-direction: column;
-        max-width: 448px;
-      }
-      .card-actions {
-        display: flex;
-        justify-content: flex-end;
-      }
-    `,
-  ];
+  static override styles = css`
+    :host {
+      margin: 16px auto;
+      padding: 0 8px;
+      display: flex;
+      flex-direction: column;
+      max-width: 448px;
+    }
+    .card-actions {
+      display: flex;
+      justify-content: flex-end;
+    }
+  `;
 }
 
 declare global {
   interface HTMLElementTagNameMap {
     "ha-browse-media-manual": BrowseMediaManual;
+  }
+
+  interface HASSDomEvents {
+    "manual-media-picked": ManualMediaPickedEvent;
   }
 }
