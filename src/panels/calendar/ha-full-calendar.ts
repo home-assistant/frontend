@@ -162,6 +162,7 @@ export class HAFullCalendar extends LitElement {
                       .buttons=${viewToggleButtons}
                       .active=${this._activeView}
                       size="small"
+                      .wrap=${false}
                       @value-changed=${this._handleView}
                     ></ha-button-toggle-group>
                   `
@@ -197,6 +198,7 @@ export class HAFullCalendar extends LitElement {
                         .buttons=${viewToggleButtons}
                         .active=${this._activeView}
                         size="small"
+                        .wrap=${false}
                         @value-changed=${this._handleView}
                       ></ha-button-toggle-group>
                     </div>

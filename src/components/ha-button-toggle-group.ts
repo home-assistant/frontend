@@ -28,6 +28,8 @@ export class HaButtonToggleGroup extends LitElement {
 
   @property({ reflect: true }) size: "small" | "medium" = "medium";
 
+  @property({ type: Boolean, reflect: true }) public wrap = true;
+
   @property() public variant:
     | "brand"
     | "neutral"
@@ -70,6 +72,14 @@ export class HaButtonToggleGroup extends LitElement {
   static styles = css`
     :host {
       --mdc-icon-size: var(--button-toggle-icon-size, 20px);
+    }
+
+    :host(:not([wrap])) wa-button-group::part(base) {
+      flex-wrap: nowrap;
+    }
+
+    :host([wrap]) wa-button-group::part(base) {
+      flex-wrap: wrap;
     }
   `;
 }
