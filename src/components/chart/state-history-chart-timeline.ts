@@ -267,12 +267,10 @@ export class StateHistoryChartTimeline extends LitElement {
   }
 
   private _handleDataZoom(ev: CustomEvent) {
-    fireEvent(this, "chart-zoom", {
+    fireEvent(this, "chart-zoom-with-index", {
       start: ev.detail.start ?? 0,
       end: ev.detail.end ?? 100,
       chartIndex: this.chartIndex,
-      startTime: ev.detail.startTime,
-      endTime: ev.detail.endTime,
     });
   }
 

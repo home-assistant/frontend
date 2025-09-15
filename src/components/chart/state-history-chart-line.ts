@@ -203,12 +203,10 @@ export class StateHistoryChartLine extends LitElement {
   }
 
   private _handleDataZoom(ev: CustomEvent) {
-    fireEvent(this, "chart-zoom", {
+    fireEvent(this, "chart-zoom-with-index", {
       start: ev.detail.start ?? 0,
       end: ev.detail.end ?? 100,
       chartIndex: this.chartIndex,
-      startTime: ev.detail.startTime,
-      endTime: ev.detail.endTime,
     });
   }
 
@@ -271,7 +269,6 @@ export class StateHistoryChartLine extends LitElement {
           type: "time",
           min: this.startTime,
           max: this.endTime,
-          boundaryGap: [0, 0],
         },
         yAxis: {
           type: this.logarithmicScale ? "log" : "value",

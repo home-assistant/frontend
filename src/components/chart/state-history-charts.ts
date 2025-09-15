@@ -34,6 +34,11 @@ const chunkData = (inputArray: any[], chunks: number) =>
 declare global {
   interface HASSDomEvents {
     "y-width-changed": { value: number; chartIndex: number };
+    "chart-zoom-with-index": {
+      start: number;
+      end: number;
+      chartIndex: number;
+    };
   }
 }
 
@@ -144,10 +149,10 @@ export class StateHistoryCharts extends LitElement {
       ${this._hasZoomedCharts
         ? html`<ha-fab
             slot="fab"
+            class="reset-button"
             .label=${this.hass.localize(
               "ui.components.history_charts.zoom_reset"
             )}
-            extended
             @click=${this._handleGlobalZoomReset}
           >
             <ha-svg-icon slot="icon" .path=${mdiRestart}></ha-svg-icon>
@@ -182,7 +187,7 @@ export class StateHistoryCharts extends LitElement {
           .maxYAxis=${this.maxYAxis}
           .fitYData=${this.fitYData}
           @y-width-changed=${this._yWidthChanged}
-          @chart-zoom=${this._handleTimelineSync}
+          @chart-zoom-with-index=${this._handleTimelineSync}
           .height=${this.virtualize ? undefined : this.height}
           .expandLegend=${this.expandLegend}
           hide-reset-button
@@ -203,7 +208,7 @@ export class StateHistoryCharts extends LitElement {
         .chartIndex=${index}
         .clickForMoreInfo=${this.clickForMoreInfo}
         @y-width-changed=${this._yWidthChanged}
-        @chart-zoom=${this._handleTimelineSync}
+        @chart-zoom-with-index=${this._handleTimelineSync}
         hide-reset-button
       ></state-history-chart-timeline>
     </div> `;
@@ -294,18 +299,14 @@ export class StateHistoryCharts extends LitElement {
     this._maxYWidth = Math.max(...Object.values(this._childYWidths), 0);
   }
 
-  private _handleTimelineSync(e: CustomEvent<HASSDomEvents["chart-zoom"]>) {
+  private _handleTimelineSync(
+    e: CustomEvent<HASSDomEvents["chart-zoom-with-index"]>
+  ) {
     if (this._isSyncing) {
       return;
     }
 
-    const {
-      start,
-      end,
-      chartIndex,
-      startTime: _startTime,
-      endTime: _endTime,
-    } = e.detail;
+    const { start, end, chartIndex } = e.detail;
 
     this._hasZoomedCharts = start !== 0 || end !== 100;
     this._syncZoomToAllCharts(start, end, chartIndex);
@@ -439,24 +440,10 @@ export class StateHistoryCharts extends LitElement {
     state-history-chart-line {
       width: 100%;
     }
-
-    .floating-reset-button {
+    .reset-button {
       position: fixed;
-      bottom: 24px;
-      right: 24px;
-      z-index: 1000;
-      background: var(--card-background-color);
-      border-radius: 50%;
-      --mdc-icon-button-size: 56px;
-      --mdc-icon-size: 24px;
-      color: var(--primary-color);
-      box-shadow: var(--ha-card-box-shadow, 0px 2px 4px rgba(0, 0, 0, 0.16));
-      border: 1px solid var(--divider-color);
-    }
-
-    .floating-reset-button:hover {
-      background: var(--primary-color);
-      color: var(--text-primary-on-accent-color, white);
+      bottom: calc(24px + var(--safe-area-inset-bottom));
+      right: calc(24px + var(--safe-area-inset-bottom));
     }
   `;
 }

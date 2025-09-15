@@ -362,12 +362,6 @@ export class HaChartBase extends LitElement {
         fireEvent(this, "chart-click", e);
       });
 
-      this.chart.getZr().on("mouseup", () => {
-        if (this._modifierPressed) {
-          this._syncZoomState();
-        }
-      });
-
       if (!this.options?.dataZoom) {
         this.chart.getZr().on("dblclick", this._handleClickZoom);
       }
@@ -923,26 +917,6 @@ export class HaChartBase extends LitElement {
     fireEvent(this, "chart-zoom", { start, end });
   }
 
-  private _syncZoomState() {
-    if (!this.chart) return;
-
-    const option = this.chart.getOption();
-    const dataZoom = option.dataZoom;
-
-    if (dataZoom && Array.isArray(dataZoom) && dataZoom.length > 0) {
-      const zoom = dataZoom[0];
-      const start = typeof zoom.start === "number" ? zoom.start : 0;
-      const end = typeof zoom.end === "number" ? zoom.end : 100;
-      const isZoomed = start !== 0 || end !== 100;
-
-      if (isZoomed !== this._isZoomed) {
-        this._isZoomed = isZoomed;
-        this._zoomRatio = (end - start) / 100;
-        fireEvent(this, "chart-zoom", { start, end });
-      }
-    }
-  }
-
   private _legendClick(ev: any) {
     if (!this.chart) {
       return;
@@ -1098,9 +1072,6 @@ declare global {
     "chart-zoom": {
       start: number;
       end: number;
-      chartIndex?: number;
-      startTime?: Date;
-      endTime?: Date;
     };
   }
 }
