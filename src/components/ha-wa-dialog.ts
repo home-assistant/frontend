@@ -136,6 +136,7 @@ export class HaWaDialog extends LitElement {
     );
     this._handleDialogInitialFocus();
     this._setupDialogKeydown();
+    this.addEventListener("click", this._onDialogActionClick);
     this._observeBodyScroll(true);
     if (!this._scrollLocked) {
       lockDocumentScroll();
@@ -163,8 +164,29 @@ export class HaWaDialog extends LitElement {
     }
   };
 
+  // Listen for any clicks on elements with the
+  // dialogAction attribute from slotted heading and content.
+  private _onDialogActionClick = (ev: Event) => {
+    ev.stopPropagation();
+    const path = (ev.composedPath?.() ?? []) as EventTarget[];
+    const actionEl = path.find(
+      (n) =>
+        n instanceof HTMLElement &&
+        (n as HTMLElement).hasAttribute("dialogAction")
+    ) as HTMLElement | undefined;
+    if (!actionEl) return;
+    actionEl.getAttribute("dialogAction");
+    if (this._waDialog?.hide) {
+      this._waDialog.hide();
+    } else {
+      this._internalOpen = false;
+      this._handleHide();
+    }
+  };
+
   disconnectedCallback(): void {
     super.disconnectedCallback();
+    this.removeEventListener("click", this._onDialogActionClick);
     this._observeBodyScroll(false);
     if (this._scrollLocked) {
       unlockDocumentScroll();
