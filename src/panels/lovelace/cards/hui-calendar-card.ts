@@ -209,31 +209,24 @@ export class HuiCalendarCard extends LitElement implements LovelaceCard {
     }
     this._narrow = card.offsetWidth < 870;
 
-    // If grid rows are set, calculate available calendar height from card height minus header
-    const hasFixedRows =
-      typeof (this._config as any)?.grid_options?.rows === "number";
-    if (hasFixedRows) {
-      const header = this.shadowRoot!.querySelector<HTMLDivElement>(".header");
-      const fc = this.shadowRoot!.querySelector(
-        "ha-full-calendar"
-      ) as HTMLElement & { shadowRoot?: ShadowRoot | null };
-      const fcHeader = fc?.shadowRoot?.querySelector<HTMLElement>(".header");
-      const cardStyles = getComputedStyle(card as Element);
-      const paddingBottom = parseFloat(cardStyles.paddingBottom || "0");
-      const headerHeight = header ? header.getBoundingClientRect().height : 0;
-      const fcHeaderHeight = fcHeader
-        ? fcHeader.getBoundingClientRect().height
-        : 0;
-      const available = Math.max(
-        0,
-        card.clientHeight - headerHeight - fcHeaderHeight - paddingBottom
-      );
-      const newHeight = `${Math.round(available)}px`;
-      if (newHeight !== this._calendarHeight) {
-        this._calendarHeight = newHeight;
-      }
-    } else {
-      this._calendarHeight = undefined;
+    const header = this.shadowRoot!.querySelector<HTMLDivElement>(".header");
+    const fc = this.shadowRoot!.querySelector(
+      "ha-full-calendar"
+    ) as HTMLElement & { shadowRoot?: ShadowRoot | null };
+    const fcHeader = fc?.shadowRoot?.querySelector<HTMLElement>(".header");
+    const cardStyles = getComputedStyle(card as Element);
+    const paddingBottom = parseFloat(cardStyles.paddingBottom || "0");
+    const headerHeight = header ? header.getBoundingClientRect().height : 0;
+    const fcHeaderHeight = fcHeader
+      ? fcHeader.getBoundingClientRect().height
+      : 0;
+    const available = Math.max(
+      0,
+      card.clientHeight - headerHeight - fcHeaderHeight - paddingBottom
+    );
+    const newHeight = `${Math.round(available)}px`;
+    if (newHeight !== this._calendarHeight) {
+      this._calendarHeight = newHeight;
     }
   }
 
