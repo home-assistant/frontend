@@ -95,7 +95,6 @@ export class HaWaDialog extends LitElement {
   @query("wa-dialog")
   private _waDialog?: any;
 
-  // Cache reference to the internal scrollable body of wa-dialog
   private _waBodyEl?: HTMLElement | null;
 
   private _scrollLocked = false;
@@ -138,7 +137,6 @@ export class HaWaDialog extends LitElement {
     );
     this._handleDialogInitialFocus();
     this._setupDialogKeydown();
-    this._addDialogActionListener();
     this._observeBodyScroll(true);
     if (!this._scrollLocked) {
       lockDocumentScroll();
@@ -147,7 +145,6 @@ export class HaWaDialog extends LitElement {
   };
 
   private _handleWaHide = (ev?: CustomEvent) => {
-    // Prevent closing via Escape when escapeKeyAction is empty string
     if (this.escapeKeyAction === "" && ev?.detail?.source === this._waDialog) {
       ev?.preventDefault?.();
       return;
@@ -167,37 +164,8 @@ export class HaWaDialog extends LitElement {
     }
   };
 
-  private _onDialogActionClick = (ev: Event) => {
-    const path = (ev.composedPath?.() ?? []) as EventTarget[];
-    const actionEl = path.find(
-      (n) =>
-        n instanceof HTMLElement &&
-        (n as HTMLElement).hasAttribute("dialogAction")
-    ) as HTMLElement | undefined;
-    if (!actionEl) return;
-    // Read attribute for parity with legacy API; value not required here
-    actionEl.getAttribute("dialogAction");
-    // For compatibility, any dialogAction should trigger a close of the dialog
-    // (e.g. "close", "cancel").
-    if (this._waDialog?.hide) {
-      this._waDialog.hide();
-    } else {
-      this._internalOpen = false;
-      this._handleWaHide();
-    }
-    // Prevent duplicate handling upstream
-    ev.stopPropagation();
-  };
-
-  private _addDialogActionListener() {
-    // Listen for any clicks on elements with the legacy `dialogAction` attribute
-    // from slotted heading and content.
-    this.addEventListener("click", this._onDialogActionClick);
-  }
-
   disconnectedCallback(): void {
     super.disconnectedCallback();
-    this.removeEventListener("click", this._onDialogActionClick);
     this._observeBodyScroll(false);
     if (this._scrollLocked) {
       unlockDocumentScroll();
@@ -223,7 +191,6 @@ export class HaWaDialog extends LitElement {
       this._internalOpen = this.open;
       if (this.open) {
         this._handleDialogInitialFocus();
-        // When opened via property update, ensure scroll listener is attached
         this._observeBodyScroll(true);
       }
     }
@@ -238,7 +205,6 @@ export class HaWaDialog extends LitElement {
   }
 
   private _handleDialogKeydown = (event: KeyboardEvent) => {
-    // Suppress Escape key when escapeKeyAction is an empty string
     if (event.key === "Escape" && this.escapeKeyAction === "") {
       event.stopImmediatePropagation();
       event.preventDefault();
@@ -260,7 +226,7 @@ export class HaWaDialog extends LitElement {
 
     const computeFocusTarget = (el: Element): HTMLElement | null => {
       if (!(el instanceof HTMLElement)) return null;
-      // If element itself is focusable or implements focus(), use it
+      // If element itself is focusable or implements focus(), use it instead of the focusable selector
       if (typeof el.focus === "function") {
         return el;
       }
