@@ -1,7 +1,6 @@
 import { ReactiveElement } from "lit";
 import { customElement } from "lit/decorators";
 import { computeDeviceName } from "../../../../common/entity/compute_device_name";
-import { computeEntityName } from "../../../../common/entity/compute_entity_name";
 import { getEntityContext } from "../../../../common/entity/context/get_entity_context";
 import { generateEntityFilter } from "../../../../common/entity/entity_filter";
 import { clamp } from "../../../../common/number/clamp";
@@ -177,7 +176,13 @@ export class HomeAreaViewStrategy extends ReactiveElement {
     for (const entityId of otherEntities) {
       const stateObj = hass.states[entityId];
       if (!stateObj) continue;
-      const { device } = getEntityContext(stateObj, hass);
+      const { device } = getEntityContext(
+        stateObj,
+        hass.entities,
+        hass.devices,
+        hass.areas,
+        hass.floors
+      );
       if (!device) {
         unassignedEntities.push(entityId);
         continue;
@@ -268,8 +273,8 @@ export class HomeAreaViewStrategy extends ReactiveElement {
             return {
               ...computeTileCard(e),
               name:
-                computeEntityName(stateObj, hass) ||
-                (device ? computeDeviceName(device) : ""),
+                hass.formatEntityName(stateObj, "entity") ||
+                hass.formatEntityName(stateObj, "device"),
             };
           }),
         ],
