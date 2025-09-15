@@ -213,7 +213,7 @@
       "media_player": {
         "source": "Source",
         "sound_mode": "Sound mode",
-        "browse_media": "Play media",
+        "browse_media": "Media",
         "turn_on": "Turn on",
         "turn_off": "Turn off",
         "media_play": "Play",
@@ -230,7 +230,7 @@
         "shuffle_set": "Shuffle",
         "text_to_speak": "Text to speak",
         "nothing_playing": "Nothing playing",
-        "join": "Join",
+        "join": "Players",
         "media_players": "Media players",
         "select_all": "Select all",
         "idle": "Idle",

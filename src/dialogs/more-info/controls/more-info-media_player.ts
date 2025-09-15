@@ -42,7 +42,6 @@ import "../../../components/ha-md-menu-item";
 import "../../../components/ha-marquee-text";
 import { computeEntityName } from "../../../common/entity/compute_entity_name";
 import { computeStateName } from "../../../common/entity/compute_state_name";
-import { brandsUrl } from "../../../util/brands-url";
 
 @customElement("more-info-media_player")
 class MoreInfoMediaPlayer extends LitElement {
@@ -59,33 +58,6 @@ class MoreInfoMediaPlayer extends LitElement {
       minutes,
       seconds,
     })!;
-  }
-
-  protected _renderIntegrationLogo() {
-    if (!this.stateObj) {
-      return nothing;
-    }
-
-    const entry = this.hass.entities[this.stateObj.entity_id];
-    if (!entry || !entry.platform) {
-      return nothing;
-    }
-
-    const brandUrl = brandsUrl({
-      domain: entry.platform,
-      type: "icon",
-      darkOptimized: this.hass.themes?.darkMode,
-    });
-
-    return html`
-      <img
-        src=${brandUrl}
-        alt=${entry.platform}
-        title=${entry.platform}
-        width="24"
-        height="24"
-      />
-    `;
   }
 
   protected _renderVolumeControl() {
@@ -231,14 +203,7 @@ class MoreInfoMediaPlayer extends LitElement {
                 : nothing}
             </div>
             <span>
-              ${hasMultipleMembers
-                ? groupMembers
-                    ?.filter((member) => member !== stateObj.entity_id)
-                    .map((member) =>
-                      this._getFriendlyNameForGroupMember(member)
-                    )
-                    .join(", ")
-                : this.hass.localize("ui.card.media_player.join")}
+              ${this.hass.localize("ui.card.media_player.join")}
             </span>
           </ha-button>
         `
@@ -281,9 +246,7 @@ class MoreInfoMediaPlayer extends LitElement {
 
     return html`
       <div class="controls-row">
-        ${this._renderIntegrationLogo()} ${this._renderSourceControl()}
-        <span class="flex"></span>
-        ${this._renderGrouping()}
+       ${this._renderSourceControl()}
       </div>
 
       ${coverUrl
@@ -424,6 +387,7 @@ class MoreInfoMediaPlayer extends LitElement {
               </ha-button>
             `
           : nothing}
+          ${this._renderGrouping()}
         <span class="flex"></span>
         ${turnOn
           ? html`<ha-button
