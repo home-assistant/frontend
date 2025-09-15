@@ -1,4 +1,7 @@
-import { html, LitElement, nothing } from "lit";
+import { html, LitElement, nothing, css } from "lit";
+import "../../../components/ha-icon-button";
+import "../../../components/ha-svg-icon";
+import { mdiMinus, mdiPlus } from "@mdi/js";
 import { customElement, property, state } from "lit/decorators";
 import { computeDomain } from "../../../common/entity/compute_domain";
 import { stateActive } from "../../../common/entity/state_active";
@@ -82,16 +85,39 @@ class HuiMediaPlayerVolumeSliderCardFeature
         : undefined;
 
     return html`
-      <ha-control-slider
-        .value=${position}
-        min="0"
-        max="100"
-        .showHandle=${stateActive(this._stateObj)}
-        .disabled=${!this._stateObj || isUnavailableState(this._stateObj.state)}
-        @value-changed=${this._valueChanged}
-        unit="%"
-        .locale=${this.hass.locale}
-      ></ha-control-slider>
+      <div class="volume-controls">
+        <!-- Minus Button -->
+        <ha-icon-button
+          .path=${mdiMinus}
+          @click=${this._adjustVolumeMinus}
+          .disabled=${!this._stateObj ||
+          isUnavailableState(this._stateObj.state)}
+        ></ha-icon-button>
+
+        <!-- Volume Slider -->
+        <ha-control-slider
+          .value=${position}
+          min="0"
+          max="100"
+          .showHandle=${stateActive(this._stateObj)}
+          .disabled=${!this._stateObj ||
+          isUnavailableState(this._stateObj.state)}
+          @value-changed=${this._valueChanged}
+          unit="%"
+          .locale=${this.hass.locale}
+        ></ha-control-slider>
+
+        <!-- Plus Button -->
+        <ha-icon-button
+          .path=${mdiPlus}
+          @click=${this._adjustVolumePlus}
+          .disabled=${!this._stateObj ||
+          isUnavailableState(this._stateObj.state)}
+        ></ha-icon-button>
+
+        <!-- Percentage Display -->
+        <span class="volume-percentage">${position}%</span>
+      </div>
     `;
   }
 
@@ -105,8 +131,44 @@ class HuiMediaPlayerVolumeSliderCardFeature
     });
   }
 
+  private _adjustVolume(delta: number) {
+    const currentVolume = this._stateObj!.attributes.volume_level * 100;
+    const newVolume = Math.max(0, Math.min(100, currentVolume + delta));
+
+    this.hass!.callService("media_player", "volume_set", {
+      entity_id: this._stateObj!.entity_id,
+      volume_level: newVolume / 100,
+    });
+  }
+
+  private _adjustVolumeMinus = () => {
+    this._adjustVolume(-5);
+  };
+
+  private _adjustVolumePlus = () => {
+    this._adjustVolume(5);
+  };
+
   static get styles() {
-    return cardFeatureStyles;
+    return [
+      cardFeatureStyles,
+      css`
+        .volume-controls {
+          display: flex;
+          align-items: center;
+          gap: 8px;
+          width: 100%;
+        }
+        .volume-percentage {
+          min-width: 40px;
+          text-align: center;
+          font-weight: bold;
+        }
+        ha-control-slider {
+          flex-grow: 1;
+        }
+      `,
+    ];
   }
 }
 
