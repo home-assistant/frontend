@@ -1,20 +1,21 @@
-import type { TemplateResult } from "lit";
-import { html, css, LitElement, nothing } from "lit";
+import { css, html, LitElement } from "lit";
 import { customElement, property } from "lit/decorators";
 
 @customElement("ha-tile-info")
 export class HaTileInfo extends LitElement {
   @property() public primary?: string;
 
-  @property() public secondary?: string | TemplateResult<1>;
+  @property() public secondary?: string;
 
   protected render() {
     return html`
       <div class="info">
-        <span class="primary">${this.primary}</span>
-        ${this.secondary
-          ? html`<span class="secondary">${this.secondary}</span>`
-          : nothing}
+        <slot name="primary" class="primary">
+          <span>${this.primary}</span>
+        </slot>
+        <slot name="secondary" class="secondary">
+          <span>${this.secondary}</span>
+        </slot>
       </div>
     `;
   }
@@ -27,7 +28,8 @@ export class HaTileInfo extends LitElement {
       align-items: flex-start;
       justify-content: center;
     }
-    span {
+    span,
+    ::slotted(*) {
       text-overflow: ellipsis;
       overflow: hidden;
       white-space: nowrap;
