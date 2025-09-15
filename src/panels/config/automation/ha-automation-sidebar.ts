@@ -1,6 +1,7 @@
 import { css, html, LitElement, nothing } from "lit";
 import { customElement, property, query, state } from "lit/decorators";
 import { fireEvent } from "../../../common/dom/fire_event";
+import { computeRTL } from "../../../common/util/compute_rtl";
 import "../../../components/ha-resizable-bottom-sheet";
 import type { HaResizableBottomSheet } from "../../../components/ha-resizable-bottom-sheet";
 import {
@@ -38,35 +39,16 @@ export default class HaAutomationSidebar extends LitElement {
 
   @state() private _yamlMode = false;
 
+  @state() private _resizing = false;
+
   @query("ha-resizable-bottom-sheet")
   private _bottomSheetElement?: HaResizableBottomSheet;
 
-  private _dragging = false;
-
-  private _dragStartX = 0;
-
-  connectedCallback() {
-    super.connectedCallback();
-
-    // register event listeners for drag handling
-    document.addEventListener("mousemove", this._handleMouseMove);
-    document.addEventListener("mouseup", this._handleMouseUp);
-    document.addEventListener("touchmove", this._handleTouchMove, {
-      passive: false,
-    });
-    document.addEventListener("touchend", this._handleTouchEnd);
-    document.addEventListener("touchcancel", this._handleTouchEnd);
-  }
+  private _resizeStartX = 0;
 
   disconnectedCallback() {
     super.disconnectedCallback();
-
-    // unregister event listeners for drag handling
-    document.removeEventListener("mousemove", this._handleMouseMove);
-    document.removeEventListener("mouseup", this._handleMouseUp);
-    document.removeEventListener("touchmove", this._handleTouchMove);
-    document.removeEventListener("touchend", this._handleTouchEnd);
-    document.removeEventListener("touchcancel", this._handleTouchEnd);
+    this._unregisterResizeHandlers();
   }
 
   private _renderContent() {
@@ -185,72 +167,15 @@ export default class HaAutomationSidebar extends LitElement {
 
     return html`
       <div
-        class="handle"
+        class="handle ${this._resizing ? "resizing" : ""}"
         @mousedown=${this._handleMouseDown}
-        @touchstart=${this._handleTouchStart}
-      ></div>
+        @touchstart=${this._handleMouseDown}
+      >
+        ${this._resizing ? html`<div class="indicator"></div>` : ""}
+      </div>
       ${this._renderContent()}
     `;
   }
-
-  private _handleMouseDown = (ev: MouseEvent) => {
-    // Prevent the browser from interpreting this as a scroll/PTR gesture.
-    ev.preventDefault();
-    this._startDrag(ev.clientX);
-  };
-
-  private _handleTouchStart = (ev: TouchEvent) => {
-    // Prevent the browser from interpreting this as a scroll/PTR gesture.
-    ev.preventDefault();
-    this._startDrag(ev.touches[0].clientX);
-  };
-
-  private _startDrag(clientX: number) {
-    this._dragging = true;
-    this._dragStartX = clientX;
-    document.body.style.setProperty("cursor", "grabbing");
-  }
-
-  private _handleMouseMove = (ev: MouseEvent) => {
-    if (!this._dragging) {
-      return;
-    }
-    this._updateSize(ev.clientX);
-  };
-
-  private _handleTouchMove = (ev: TouchEvent) => {
-    if (!this._dragging) {
-      return;
-    }
-    ev.preventDefault(); // Prevent scrolling
-    this._updateSize(ev.touches[0].clientX);
-  };
-
-  private _updateSize(clientX: number) {
-    const deltaX = this._dragStartX - clientX;
-    requestAnimationFrame(() => {
-      fireEvent(this, "sidebar-width-changed", {
-        deltaPx: deltaX,
-      });
-    });
-  }
-
-  private _handleMouseUp = () => {
-    this._endDrag();
-  };
-
-  private _handleTouchEnd = () => {
-    this._endDrag();
-  };
-
-  private _endDrag = () => {
-    if (!this._dragging) {
-      return;
-    }
-    this._dragging = false;
-    document.body.style.removeProperty("cursor");
-    fireEvent(this, "sidebar-width-change-stopped");
-  };
 
   private _getType() {
     if (
@@ -302,6 +227,67 @@ export default class HaAutomationSidebar extends LitElement {
     (this.config as ActionSidebarConfig)?.toggleYamlMode();
   };
 
+  private _handleMouseDown = (ev: MouseEvent | TouchEvent) => {
+    // Prevent the browser from interpreting this as a scroll/PTR gesture.
+    ev.preventDefault();
+    this._startResizing(
+      (ev as TouchEvent).touches?.length
+        ? (ev as TouchEvent).touches[0].clientX
+        : (ev as MouseEvent).clientX
+    );
+  };
+
+  private _startResizing(clientX: number) {
+    // register event listeners for drag handling
+    document.addEventListener("mousemove", this._handleMouseMove);
+    document.addEventListener("mouseup", this._endResizing);
+    document.addEventListener("touchmove", this._handleMouseMove, {
+      passive: false,
+    });
+    document.addEventListener("touchend", this._endResizing);
+    document.addEventListener("touchcancel", this._endResizing);
+
+    this._resizing = true;
+    this._resizeStartX = clientX;
+  }
+
+  private _handleMouseMove = (ev: MouseEvent | TouchEvent) => {
+    this._updateSize(
+      (ev as TouchEvent).touches?.length
+        ? (ev as TouchEvent).touches[0].clientX
+        : (ev as MouseEvent).clientX
+    );
+  };
+
+  private _updateSize(clientX: number) {
+    let delta = this._resizeStartX - clientX;
+
+    if (computeRTL(this.hass)) {
+      delta = -delta;
+    }
+
+    requestAnimationFrame(() => {
+      fireEvent(this, "sidebar-resized", {
+        deltaInPx: delta,
+      });
+    });
+  }
+
+  private _endResizing = () => {
+    this._unregisterResizeHandlers();
+    this._resizing = false;
+    document.body.style.removeProperty("cursor");
+    fireEvent(this, "sidebar-resizing-stopped");
+  };
+
+  private _unregisterResizeHandlers() {
+    document.removeEventListener("mousemove", this._handleMouseMove);
+    document.removeEventListener("mouseup", this._endResizing);
+    document.removeEventListener("touchmove", this._handleMouseMove);
+    document.removeEventListener("touchend", this._endResizing);
+    document.removeEventListener("touchcancel", this._endResizing);
+  }
+
   static styles = css`
     :host {
       z-index: 6;
@@ -325,11 +311,24 @@ export default class HaAutomationSidebar extends LitElement {
 
     .handle {
       position: absolute;
-      left: -4;
-      height: 100%;
-      width: 8px;
+      margin-inline-start: -15px;
+      height: calc(100% - (2 * var(--ha-card-border-radius)));
+      width: 32px;
       z-index: 7;
       cursor: ew-resize;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      padding: var(--ha-card-border-radius) 0;
+    }
+    .handle.resizing {
+      cursor: grabbing;
+    }
+    .handle .indicator {
+      background-color: var(--primary-color);
+      height: 100%;
+      width: 4px;
+      border-radius: var(--ha-border-radius-pill);
     }
   `;
 }
@@ -344,9 +343,9 @@ declare global {
     "yaml-changed": {
       value: unknown;
     };
-    "sidebar-width-changed": {
-      deltaPx: number;
+    "sidebar-resized": {
+      deltaInPx: number;
     };
-    "sidebar-width-change-stopped": undefined;
+    "sidebar-resizing-stopped": undefined;
   }
 }

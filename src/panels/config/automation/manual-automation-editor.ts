@@ -107,7 +107,7 @@ export class HaManualAutomationEditor extends LitElement {
     state: false,
     subscribe: false,
   })
-  private _sidebarWidth = 30;
+  private _sidebarWidth = 40;
 
   @query("ha-automation-sidebar") private _sidebarElement?: HaAutomationSidebar;
 
@@ -283,7 +283,6 @@ export class HaManualAutomationEditor extends LitElement {
       <div
         class=${classMap({
           "has-sidebar": this._sidebarConfig && !this.narrow,
-          "docked-navbar": this.hass.dockedSidebar === "docked",
         })}
       >
         <div class="content-wrapper">
@@ -316,11 +315,11 @@ export class HaManualAutomationEditor extends LitElement {
             .hass=${this.hass}
             .narrow=${this.narrow}
             .config=${this._sidebarConfig}
-            @value-changed=${this._sidebarConfigChanged}
             .disabled=${this.disabled}
             .sidebarKey=${this._sidebarKey}
-            @sidebar-width-changed=${this._resizeSidebar}
-            @sidebar-width-change-stopped=${this._stopResizeSidebar}
+            @value-changed=${this._sidebarConfigChanged}
+            @sidebar-resized=${this._resizeSidebar}
+            @sidebar-resizing-stopped=${this._stopResizeSidebar}
           ></ha-automation-sidebar>
         </div>
       </div>
@@ -680,8 +679,9 @@ export class HaManualAutomationEditor extends LitElement {
 
   private _resizeSidebar(ev) {
     ev.stopPropagation();
-    const delta = ev.detail.deltaPx as number;
+    const delta = ev.detail.deltaInPx as number;
 
+    // set initial resize width to add / reduce delta from it
     if (!this._prevSidebarWidthPx) {
       this._prevSidebarWidthPx = (this._sidebarWidth / 100) * this.clientWidth;
     }

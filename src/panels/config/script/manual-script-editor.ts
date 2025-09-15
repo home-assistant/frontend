@@ -21,6 +21,7 @@ import {
   string,
 } from "superstruct";
 import { ensureArray } from "../../../common/array/ensure-array";
+import { storage } from "../../../common/decorators/storage";
 import { canOverrideAlphanumericInput } from "../../../common/dom/can-override-input";
 import { fireEvent } from "../../../common/dom/fire_event";
 import { constructUrlCurrentPath } from "../../../common/url/construct-url";
@@ -84,6 +85,13 @@ export class HaManualScriptEditor extends LitElement {
 
   @state() private _sidebarKey?: string;
 
+  @storage({
+    key: "automation-sidebar-width-percentage",
+    state: false,
+    subscribe: false,
+  })
+  private _sidebarWidth = 40;
+
   @query("ha-script-fields")
   private _scriptFields?: HaScriptFields;
 
@@ -97,6 +105,8 @@ export class HaManualScriptEditor extends LitElement {
   private _previousConfig?: ScriptConfig;
 
   private _openFields = false;
+
+  private _prevSidebarWidthPx?: number;
 
   public addFields() {
     this._openFields = true;
@@ -252,8 +262,10 @@ export class HaManualScriptEditor extends LitElement {
             .isWide=${this.isWide}
             .hass=${this.hass}
             .config=${this._sidebarConfig}
-            @value-changed=${this._sidebarConfigChanged}
             .disabled=${this.disabled}
+            @value-changed=${this._sidebarConfigChanged}
+            @sidebar-resized=${this._resizeSidebar}
+            @sidebar-resizing-stopped=${this._stopResizeSidebar}
           ></ha-automation-sidebar>
         </div>
       </div>
@@ -262,6 +274,12 @@ export class HaManualScriptEditor extends LitElement {
 
   protected firstUpdated(changedProps: PropertyValues): void {
     super.firstUpdated(changedProps);
+
+    this.style.setProperty(
+      "--sidebar-dynamic-width",
+      `${this._widthPxToVw(this._widthPercentageToPx(this._sidebarWidth))}vw`
+    );
+
     const expanded = extractSearchParam("expanded");
     if (expanded === "1") {
       this._clearParam("expanded");
@@ -296,10 +314,12 @@ export class HaManualScriptEditor extends LitElement {
   public connectedCallback() {
     super.connectedCallback();
     window.addEventListener("paste", this._handlePaste);
+    window.addEventListener("resize", this._resizeSidebarWidth);
   }
 
   public disconnectedCallback() {
     window.removeEventListener("paste", this._handlePaste);
+    window.removeEventListener("resize", this._resizeSidebarWidth);
     super.disconnectedCallback();
   }
 
@@ -555,6 +575,47 @@ export class HaManualScriptEditor extends LitElement {
     if ((this._sidebarConfig as ActionSidebarConfig)?.delete) {
       (this._sidebarConfig as ActionSidebarConfig).delete();
     }
+  }
+
+  private _resizeSidebarWidth = () => {
+    this.style.setProperty(
+      "--sidebar-dynamic-width",
+      `${this._widthPxToVw(this._widthPercentageToPx(this._sidebarWidth))}vw`
+    );
+  };
+
+  private _widthPxToVw(px: number) {
+    return (px / window.innerWidth) * 100;
+  }
+
+  private _widthPercentageToPx(percentage: number) {
+    return (percentage / 100) * this.clientWidth;
+  }
+
+  private _resizeSidebar(ev) {
+    ev.stopPropagation();
+    const delta = ev.detail.deltaInPx as number;
+
+    // set initial resize width to add / reduce delta from it
+    if (!this._prevSidebarWidthPx) {
+      this._prevSidebarWidthPx = (this._sidebarWidth / 100) * this.clientWidth;
+    }
+
+    const widthPx = delta + this._prevSidebarWidthPx;
+
+    if (widthPx > this.clientWidth * 0.7 || widthPx < this.clientWidth * 0.3) {
+      return;
+    }
+
+    const widthVw = this._widthPxToVw(widthPx);
+
+    this.style.setProperty("--sidebar-dynamic-width", `${widthVw}vw`);
+    this._sidebarWidth = (widthPx / this.clientWidth) * 100;
+  }
+
+  private _stopResizeSidebar(ev) {
+    ev.stopPropagation();
+    this._prevSidebarWidthPx = undefined;
   }
 
   static get styles(): CSSResultGroup {
