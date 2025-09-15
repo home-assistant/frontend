@@ -107,7 +107,7 @@ export class HaManualAutomationEditor extends LitElement {
     state: false,
     subscribe: false,
   })
-  private _sidebarWidth? = 30;
+  private _sidebarWidth = 30;
 
   @query("ha-automation-sidebar") private _sidebarElement?: HaAutomationSidebar;
 
@@ -118,13 +118,17 @@ export class HaManualAutomationEditor extends LitElement {
 
   private _previousConfig?: ManualAutomationConfig;
 
+  private _prevSidebarWidthPx?: number;
+
   public connectedCallback() {
     super.connectedCallback();
     window.addEventListener("paste", this._handlePaste);
+    window.addEventListener("resize", this._resizeSidebarWidth);
   }
 
   public disconnectedCallback() {
     window.removeEventListener("paste", this._handlePaste);
+    window.removeEventListener("resize", this._resizeSidebarWidth);
     super.disconnectedCallback();
   }
 
@@ -279,6 +283,7 @@ export class HaManualAutomationEditor extends LitElement {
       <div
         class=${classMap({
           "has-sidebar": this._sidebarConfig && !this.narrow,
+          "docked-navbar": this.hass.dockedSidebar === "docked",
         })}
       >
         <div class="content-wrapper">
@@ -315,6 +320,7 @@ export class HaManualAutomationEditor extends LitElement {
             .disabled=${this.disabled}
             .sidebarKey=${this._sidebarKey}
             @sidebar-width-changed=${this._resizeSidebar}
+            @sidebar-width-change-stopped=${this._stopResizeSidebar}
           ></ha-automation-sidebar>
         </div>
       </div>
@@ -323,9 +329,10 @@ export class HaManualAutomationEditor extends LitElement {
 
   protected firstUpdated(changedProps: PropertyValues): void {
     super.firstUpdated(changedProps);
+
     this.style.setProperty(
       "--sidebar-dynamic-width",
-      `${this._sidebarWidth}vw`
+      `${this._widthPxToVw(this._widthPercentageToPx(this._sidebarWidth))}vw`
     );
 
     const expanded = extractSearchParam("expanded");
@@ -656,12 +663,44 @@ export class HaManualAutomationEditor extends LitElement {
     }
   }
 
+  private _resizeSidebarWidth = () => {
+    this.style.setProperty(
+      "--sidebar-dynamic-width",
+      `${this._widthPxToVw(this._widthPercentageToPx(this._sidebarWidth))}vw`
+    );
+  };
+
+  private _widthPxToVw(px: number) {
+    return (px / window.innerWidth) * 100;
+  }
+
+  private _widthPercentageToPx(percentage: number) {
+    return (percentage / 100) * this.clientWidth;
+  }
+
   private _resizeSidebar(ev) {
     ev.stopPropagation();
-    const width = ev.detail.width as number;
+    const delta = ev.detail.deltaPx as number;
 
-    this.style.setProperty("--sidebar-dynamic-width", `${width}vw`);
-    this._sidebarWidth = width;
+    if (!this._prevSidebarWidthPx) {
+      this._prevSidebarWidthPx = (this._sidebarWidth / 100) * this.clientWidth;
+    }
+
+    const widthPx = delta + this._prevSidebarWidthPx;
+
+    if (widthPx > this.clientWidth * 0.7 || widthPx < this.clientWidth * 0.3) {
+      return;
+    }
+
+    const widthVw = this._widthPxToVw(widthPx);
+
+    this.style.setProperty("--sidebar-dynamic-width", `${widthVw}vw`);
+    this._sidebarWidth = (widthPx / this.clientWidth) * 100;
+  }
+
+  private _stopResizeSidebar(ev) {
+    ev.stopPropagation();
+    this._prevSidebarWidthPx = undefined;
   }
 
   static get styles(): CSSResultGroup {

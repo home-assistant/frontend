@@ -109,8 +109,7 @@ export const manualEditorStyles = css`
   }
 
   .has-sidebar {
-    --sidebar-width: min(var(--sidebar-dynamic-width), 1078px);
-    /* 1540 * 0.7 = 1078px  */
+    --sidebar-width: var(--sidebar-dynamic-width);
     --sidebar-gap: 16px;
   }
 

@@ -45,8 +45,6 @@ export default class HaAutomationSidebar extends LitElement {
 
   private _dragStartX = 0;
 
-  private _initialSize = 0;
-
   connectedCallback() {
     super.connectedCallback();
 
@@ -210,7 +208,6 @@ export default class HaAutomationSidebar extends LitElement {
   private _startDrag(clientX: number) {
     this._dragging = true;
     this._dragStartX = clientX;
-    this._initialSize = (this.offsetWidth / window.innerWidth) * 100;
     document.body.style.setProperty("cursor", "grabbing");
   }
 
@@ -231,15 +228,10 @@ export default class HaAutomationSidebar extends LitElement {
 
   private _updateSize(clientX: number) {
     const deltaX = this._dragStartX - clientX;
-    const viewportWidth = window.innerWidth;
-    const deltaVw = (deltaX / viewportWidth) * 100;
-
-    // Calculate new size and clamp between 30vh and 70vh
-    let newSize = this._initialSize + deltaVw;
-    newSize = Math.max(30, Math.min(70, newSize));
-
     requestAnimationFrame(() => {
-      fireEvent(this, "sidebar-width-changed", { width: newSize });
+      fireEvent(this, "sidebar-width-changed", {
+        deltaPx: deltaX,
+      });
     });
   }
 
@@ -251,13 +243,14 @@ export default class HaAutomationSidebar extends LitElement {
     this._endDrag();
   };
 
-  private _endDrag() {
+  private _endDrag = () => {
     if (!this._dragging) {
       return;
     }
     this._dragging = false;
     document.body.style.removeProperty("cursor");
-  }
+    fireEvent(this, "sidebar-width-change-stopped");
+  };
 
   private _getType() {
     if (
@@ -352,7 +345,8 @@ declare global {
       value: unknown;
     };
     "sidebar-width-changed": {
-      width: number;
+      deltaPx: number;
     };
+    "sidebar-width-change-stopped": undefined;
   }
 }
