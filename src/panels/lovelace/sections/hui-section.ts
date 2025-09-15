@@ -222,15 +222,31 @@ export class HuiSection extends ReactiveElement {
     }
   }
 
-  private _updateElement(forceVisible?: boolean) {
+  private _updateElement(ignoreConditions?: boolean) {
     if (!this._layoutElement) {
       return;
     }
+
+    if (this.preview) {
+      this._setElementVisibility(true);
+      return;
+    }
+
+    if (this.config.disabled) {
+      this._setElementVisibility(false);
+      return;
+    }
+
     const visible =
-      forceVisible ||
-      this.preview ||
+      ignoreConditions ||
       !this.config.visibility ||
       checkConditionsMet(this.config.visibility, this.hass);
+
+    this._setElementVisibility(visible);
+  }
+
+  private _setElementVisibility(visible: boolean) {
+    if (!this._layoutElement) return;
 
     if (this.hidden !== !visible) {
       this.style.setProperty("display", visible ? "" : "none");
