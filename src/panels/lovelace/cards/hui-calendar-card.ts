@@ -17,7 +17,11 @@ import type {
 import "../../calendar/ha-full-calendar";
 import { findEntities } from "../common/find-entities";
 import "../components/hui-warning";
-import type { LovelaceCard, LovelaceCardEditor } from "../types";
+import type {
+  LovelaceCard,
+  LovelaceCardEditor,
+  LovelaceGridOptions,
+} from "../types";
 import type { CalendarCardConfig } from "./types";
 
 @customElement("hui-calendar-card")
@@ -91,7 +95,16 @@ export class HuiCalendarCard extends LitElement implements LovelaceCard {
   }
 
   public getCardSize(): number {
-    return this._config?.header ? 1 : 0 + 11;
+    return 12;
+  }
+
+  public getGridOptions(): LovelaceGridOptions {
+    return {
+      rows: 6,
+      columns: 12,
+      min_columns: 4,
+      min_rows: 2,
+    };
   }
 
   public connectedCallback(): void {
