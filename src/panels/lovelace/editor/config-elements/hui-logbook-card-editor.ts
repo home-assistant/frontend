@@ -85,6 +85,8 @@ export class HuiLogbookCardEditor
   }
 
   private async _loadNumericDeviceClasses(hass: HomeAssistant) {
+    // ensures that the _load function is not called a second time
+    // if another updated occurs before the async function returns
     this._sensorNumericDeviceClasses = [];
     const deviceClasses = await getSensorNumericDeviceClasses(hass);
     this._sensorNumericDeviceClasses = deviceClasses.numeric_device_classes;
