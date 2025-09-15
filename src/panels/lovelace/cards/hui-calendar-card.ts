@@ -1,6 +1,5 @@
 import type { PropertyValues } from "lit";
 import { css, html, LitElement, nothing } from "lit";
-import { styleMap } from "lit/directives/style-map";
 import { customElement, property, state } from "lit/decorators";
 import { getColorByIndex } from "../../../common/color/colors";
 import { applyThemesOnElement } from "../../../common/dom/apply_themes_on_element";
@@ -70,8 +69,6 @@ export class HuiCalendarCard extends LitElement implements LovelaceCard {
   private _endDate?: Date;
 
   private _resizeObserver?: ResizeObserver;
-
-  @state() private _calendarHeight?: string;
 
   public setConfig(config: CalendarCardConfig): void {
     if (!config.entities?.length) {
