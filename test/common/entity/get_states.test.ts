@@ -55,12 +55,23 @@ describe("getStates", () => {
       const entity = createMockEntity("alarm_control_panel.test");
       const result = getStates(mockHass, entity);
 
-      expect(result).toContain("armed_away");
-      expect(result).toContain("armed_home");
-      expect(result).toContain("disarmed");
-      expect(result).toContain("triggered");
-      expect(result).toContain("unavailable");
-      expect(result).toContain("unknown");
+      expect(result).toEqual(
+        expect.arrayContaining([
+          "armed_away",
+          "armed_custom_bypass",
+          "armed_home",
+          "armed_night",
+          "armed_vacation",
+          "arming",
+          "disarmed",
+          "disarming",
+          "pending",
+          "triggered",
+          "unavailable",
+          "unknown",
+        ])
+      );
+      expect(result.length).toBe(12);
     });
 
     it("should return light states", () => {
@@ -71,29 +82,44 @@ describe("getStates", () => {
       expect(result).toContain("off");
       expect(result).toContain("unavailable");
       expect(result).toContain("unknown");
+      expect(result.length).toBe(4);
     });
 
     it("should return empty array plus unavailable states for button domain", () => {
       const entity = createMockEntity("button.test");
       const result = getStates(mockHass, entity);
 
-      expect(result).toEqual(
-        expect.arrayContaining(["unavailable", "unknown"])
-      );
-      expect(result).not.toContain("on");
-      expect(result).not.toContain("off");
+      expect(result).toContain("unavailable");
+      expect(result).toContain("unknown");
+      expect(result.length).toBe(2);
     });
 
     it("should return weather states", () => {
       const entity = createMockEntity("weather.test");
       const result = getStates(mockHass, entity);
 
-      expect(result).toContain("sunny");
-      expect(result).toContain("cloudy");
-      expect(result).toContain("rainy");
-      expect(result).toContain("snowy");
-      expect(result).toContain("unavailable");
-      expect(result).toContain("unknown");
+      expect(result).toEqual(
+        expect.arrayContaining([
+          "clear-night",
+          "cloudy",
+          "exceptional",
+          "fog",
+          "hail",
+          "lightning-rainy",
+          "lightning",
+          "partlycloudy",
+          "pouring",
+          "rainy",
+          "snowy-rainy",
+          "snowy",
+          "sunny",
+          "windy-variant",
+          "windy",
+          "unavailable",
+          "unknown",
+        ])
+      );
+      expect(result.length).toBe(17);
     });
   });
 
@@ -102,13 +128,39 @@ describe("getStates", () => {
       const entity = createMockEntity("binary_sensor.test");
       const result = getStates(mockHass, entity, "device_class");
 
-      expect(result).toContain("door");
-      expect(result).toContain("window");
-      expect(result).toContain("motion");
-      expect(result).toContain("battery");
-      // Should not include unavailable states for attributes
-      expect(result).not.toContain("unavailable");
-      expect(result).not.toContain("unknown");
+      expect(result).toEqual(
+        expect.arrayContaining([
+          "battery",
+          "battery_charging",
+          "co",
+          "cold",
+          "connectivity",
+          "door",
+          "garage_door",
+          "gas",
+          "heat",
+          "light",
+          "lock",
+          "moisture",
+          "motion",
+          "moving",
+          "occupancy",
+          "opening",
+          "plug",
+          "power",
+          "presence",
+          "problem",
+          "running",
+          "safety",
+          "smoke",
+          "sound",
+          "tamper",
+          "update",
+          "vibration",
+          "window",
+        ])
+      );
+      expect(result.length).toBe(28);
     });
 
     it("should return media player device classes", () => {
@@ -118,18 +170,52 @@ describe("getStates", () => {
       expect(result).toContain("tv");
       expect(result).toContain("speaker");
       expect(result).toContain("receiver");
-      expect(result).not.toContain("unavailable");
+      expect(result.length).toBe(3);
     });
 
     it("should return sensor device classes", () => {
       const entity = createMockEntity("sensor.test");
       const result = getStates(mockHass, entity, "device_class");
 
-      expect(result).toContain("temperature");
-      expect(result).toContain("humidity");
-      expect(result).toContain("battery");
-      expect(result).toContain("pressure");
-      expect(result).not.toContain("unavailable");
+      expect(result).toEqual(
+        expect.arrayContaining([
+          "apparent_power",
+          "aqi",
+          "battery",
+          "carbon_dioxide",
+          "carbon_monoxide",
+          "current",
+          "date",
+          "duration",
+          "energy",
+          "frequency",
+          "gas",
+          "humidity",
+          "illuminance",
+          "monetary",
+          "nitrogen_dioxide",
+          "nitrogen_monoxide",
+          "nitrous_oxide",
+          "ozone",
+          "ph",
+          "pm1",
+          "pm10",
+          "pm25",
+          "power_factor",
+          "power",
+          "pressure",
+          "reactive_power",
+          "signal_strength",
+          "sulphur_dioxide",
+          "temperature",
+          "timestamp",
+          "volatile_organic_compounds",
+          "volatile_organic_compounds_parts",
+          "voltage",
+          "volume_flow_rate",
+        ])
+      );
+      expect(result.length).toBe(34);
     });
 
     it("should return empty array for unknown attribute", () => {
@@ -153,6 +239,7 @@ describe("getStates", () => {
       expect(result).toContain("off");
       expect(result).toContain("unavailable");
       expect(result).toContain("unknown");
+      expect(result.length).toBe(6);
     });
 
     it("should return climate fan_modes for fan_mode attribute", () => {
@@ -165,7 +252,7 @@ describe("getStates", () => {
       expect(result).toContain("medium");
       expect(result).toContain("high");
       expect(result).toContain("auto");
-      expect(result).not.toContain("unavailable");
+      expect(result.length).toBe(4);
     });
 
     it("should return preset_modes for preset_mode attribute", () => {
@@ -177,6 +264,7 @@ describe("getStates", () => {
       expect(result).toContain("eco");
       expect(result).toContain("comfort");
       expect(result).toContain("sleep");
+      expect(result.length).toBe(3);
     });
 
     it("should return swing_modes for swing_mode attribute", () => {
@@ -189,6 +277,7 @@ describe("getStates", () => {
       expect(result).toContain("off");
       expect(result).toContain("vertical");
       expect(result).toContain("horizontal");
+      expect(result.length).toBe(4);
     });
   });
 
@@ -201,9 +290,9 @@ describe("getStates", () => {
       expect(result).toContain("not_home");
       expect(result).toContain("Work");
       expect(result).toContain("Office");
-      expect(result).not.toContain("Home"); // zone.home is excluded
       expect(result).toContain("unavailable");
       expect(result).toContain("unknown");
+      expect(result.length).toBe(6);
     });
 
     it("should return zones for person without attributes", () => {
@@ -214,7 +303,9 @@ describe("getStates", () => {
       expect(result).toContain("not_home");
       expect(result).toContain("Work");
       expect(result).toContain("Office");
-      expect(result).not.toContain("Home"); // zone.home is excluded
+      expect(result).toContain("unavailable");
+      expect(result).toContain("unknown");
+      expect(result.length).toBe(6);
     });
 
     it("should not return zones for device_tracker with attributes", () => {
@@ -222,10 +313,10 @@ describe("getStates", () => {
       const result = getStates(mockHass, entity, "source_type");
 
       expect(result).toContain("bluetooth");
+      expect(result).toContain("bluetooth_le");
       expect(result).toContain("router");
       expect(result).toContain("gps");
-      expect(result).not.toContain("Work");
-      expect(result).not.toContain("Office");
+      expect(result.length).toBe(4);
     });
   });
 
@@ -241,6 +332,7 @@ describe("getStates", () => {
       expect(result).toContain("option3");
       expect(result).toContain("unavailable");
       expect(result).toContain("unknown");
+      expect(result.length).toBe(5);
     });
 
     it("should return options for select", () => {
@@ -252,6 +344,9 @@ describe("getStates", () => {
       expect(result).toContain("mode1");
       expect(result).toContain("mode2");
       expect(result).toContain("mode3");
+      expect(result).toContain("unavailable");
+      expect(result).toContain("unknown");
+      expect(result.length).toBe(5);
     });
   });
 
@@ -265,7 +360,7 @@ describe("getStates", () => {
       expect(result).toContain("rainbow");
       expect(result).toContain("colorloop");
       expect(result).toContain("pulse");
-      expect(result).not.toContain("unavailable");
+      expect(result.length).toBe(3);
     });
 
     it("should return color modes for light color_mode attribute", () => {
@@ -277,6 +372,7 @@ describe("getStates", () => {
       expect(result).toContain("rgb");
       expect(result).toContain("xy");
       expect(result).toContain("hs");
+      expect(result.length).toBe(3);
     });
 
     it("should return empty for light effect without effect_list", () => {
@@ -297,6 +393,7 @@ describe("getStates", () => {
       expect(result).toContain("stereo");
       expect(result).toContain("surround");
       expect(result).toContain("music");
+      expect(result.length).toBe(3);
     });
 
     it("should return source list for source attribute", () => {
@@ -308,6 +405,7 @@ describe("getStates", () => {
       expect(result).toContain("spotify");
       expect(result).toContain("radio");
       expect(result).toContain("cd");
+      expect(result.length).toBe(3);
     });
   });
 
@@ -324,6 +422,7 @@ describe("getStates", () => {
       expect(result).toContain("high");
       expect(result).toContain("unavailable");
       expect(result).toContain("unknown");
+      expect(result.length).toBe(5);
     });
 
     it("should not return options for non-enum sensor", () => {
@@ -333,11 +432,9 @@ describe("getStates", () => {
       });
       const result = getStates(mockHass, entity);
 
-      expect(result).not.toContain("low");
-      expect(result).not.toContain("medium");
-      expect(result).not.toContain("high");
       expect(result).toContain("unavailable");
       expect(result).toContain("unknown");
+      expect(result.length).toBe(2);
     });
   });
 
@@ -351,6 +448,7 @@ describe("getStates", () => {
       expect(result).toContain("button_press");
       expect(result).toContain("motion");
       expect(result).toContain("door_open");
+      expect(result.length).toBe(3);
     });
 
     it("should return preset modes for fan", () => {
@@ -362,6 +460,7 @@ describe("getStates", () => {
       expect(result).toContain("breeze");
       expect(result).toContain("sleep");
       expect(result).toContain("auto");
+      expect(result.length).toBe(3);
     });
 
     it("should return available modes for humidifier", () => {
@@ -373,6 +472,7 @@ describe("getStates", () => {
       expect(result).toContain("normal");
       expect(result).toContain("eco");
       expect(result).toContain("boost");
+      expect(result.length).toBe(3);
     });
 
     it("should return activity list for remote", () => {
@@ -384,6 +484,7 @@ describe("getStates", () => {
       expect(result).toContain("watch_tv");
       expect(result).toContain("listen_music");
       expect(result).toContain("gaming");
+      expect(result.length).toBe(3);
     });
 
     it("should return fan speed list for vacuum", () => {
@@ -395,6 +496,7 @@ describe("getStates", () => {
       expect(result).toContain("quiet");
       expect(result).toContain("standard");
       expect(result).toContain("high");
+      expect(result.length).toBe(3);
     });
 
     it("should return operation list for water_heater", () => {
@@ -406,6 +508,9 @@ describe("getStates", () => {
       expect(result).toContain("eco");
       expect(result).toContain("electric");
       expect(result).toContain("gas");
+      expect(result).toContain("unavailable");
+      expect(result).toContain("unknown");
+      expect(result.length).toBe(5);
     });
 
     it("should return operation list for water_heater operation_mode attribute", () => {
@@ -417,6 +522,7 @@ describe("getStates", () => {
       expect(result).toContain("eco");
       expect(result).toContain("electric");
       expect(result).toContain("gas");
+      expect(result.length).toBe(3);
     });
   });
 
@@ -430,6 +536,7 @@ describe("getStates", () => {
       expect(result).toContain("off");
       expect(result).toContain("unavailable");
       expect(result).toContain("unknown");
+      expect(result.length).toBe(4);
     });
 
     it("should handle undefined attribute lists gracefully", () => {
@@ -473,6 +580,7 @@ describe("getStates", () => {
       expect(result).toContain("not_home");
       expect(result).toContain("unavailable");
       expect(result).toContain("unknown");
+      expect(result.length).toBe(4);
     });
 
     it("should handle zones without friendly_name", () => {
@@ -491,9 +599,17 @@ describe("getStates", () => {
       const result = getStates(hassWithoutFriendlyName, entity);
 
       // Should not include zones without friendly_name
-      expect(result).toContain("Work");
-      expect(result).toContain("Office");
-      expect(result).not.toContain("no_name");
+      expect(result).toEqual(
+        expect.arrayContaining([
+          "home",
+          "not_home",
+          "unavailable",
+          "unknown",
+          "Work",
+          "Office",
+        ])
+      );
+      expect(result.length).toBe(6);
     });
   });
 });
