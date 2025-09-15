@@ -74,8 +74,8 @@ export class HaWaDialog extends LitElement {
   @property({ reflect: true, attribute: "escape-key-action" })
   public escapeKeyAction?: string;
 
-  @property({ type: Boolean, reflect: true, attribute: "overlay-click-action" })
-  public overlayClickAction = false;
+  @property({ type: Boolean, reflect: true, attribute: "scrim-click-action" })
+  public scrimClickAction = false;
 
   @property({ type: Boolean, reflect: true, attribute: "hideactions" })
   public hideActions = false;
@@ -293,7 +293,7 @@ export class HaWaDialog extends LitElement {
     return html`
       <wa-dialog
         .open=${this._internalOpen}
-        .lightDismiss=${this.overlayClickAction}
+        .lightDismiss=${this.scrimClickAction}
         .withoutHeader=${!this.heading}
         @wa-show=${this._handleWaShow}
         @wa-hide=${this._handleWaHide}
@@ -358,6 +358,7 @@ export class HaWaDialog extends LitElement {
     }
 
     :host([scrolled]) wa-dialog::part(header) {
+      max-width: 100%;
       border-bottom: 1px solid
         var(--dialog-scroll-divider-color, var(--divider-color));
     }
@@ -367,19 +368,22 @@ export class HaWaDialog extends LitElement {
       --spacing: var(--dialog-content-padding, 24px);
       --show-duration: 200ms;
       --hide-duration: 200ms;
-      z-index: var(--dialog-z-index, 8);
       --wa-color-surface-raised: var(
         --ha-dialog-surface-background,
         var(--mdc-theme-surface, #fff)
       );
       --wa-panel-border-radius: var(--ha-dialog-border-radius, 24px);
+      z-index: var(--dialog-z-index, 8);
+      max-width: 100%;
     }
 
     wa-dialog::part(header) {
+      max-width: 100%;
       padding: 24px 24px 16px 24px;
     }
 
     :host([has-custom-heading]) wa-dialog::part(header) {
+      max-width: 100%;
       padding: 0;
     }
 
@@ -439,6 +443,7 @@ export class HaWaDialog extends LitElement {
     }
 
     :host([flexcontent]) wa-dialog::part(body) {
+      max-width: 100%;
       display: flex;
       flex-direction: column;
     }
@@ -458,6 +463,7 @@ export class HaWaDialog extends LitElement {
               0px
             )
         );
+        max-width: 100%;
       }
       wa-dialog::part(dialog) {
         min-height: calc(
@@ -466,6 +472,7 @@ export class HaWaDialog extends LitElement {
               0px
             )
         );
+        max-width: 100%;
       }
     }
 
@@ -473,6 +480,7 @@ export class HaWaDialog extends LitElement {
       display: flex;
       align-items: center;
       direction: var(--direction);
+      max-width: 100%;
     }
 
     .header_title span {
@@ -485,6 +493,7 @@ export class HaWaDialog extends LitElement {
       margin-right: 12px;
       margin-inline-end: 12px;
       margin-inline-start: initial;
+      max-width: 0;
     }
 
     .header_button {
