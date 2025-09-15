@@ -325,11 +325,12 @@ export class HuiTileCard extends LitElement implements LovelaceCard {
               ></ha-state-icon>
               ${renderTileBadge(stateObj, this.hass)}
             </ha-tile-icon>
-            <ha-tile-info
-              id="info"
-              .primary=${name}
-              .secondary=${stateDisplay}
-            ></ha-tile-info>
+            <ha-tile-info id="info">
+              <span slot="primary" class="primary">${name}</span>
+              ${stateDisplay
+                ? html`<span slot="secondary">${stateDisplay}</span>`
+                : nothing}
+            </ha-tile-info>
           </div>
           ${features.length > 0
             ? html`
