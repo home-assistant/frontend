@@ -174,14 +174,16 @@ class ActionHandler extends HTMLElement implements ActionHandlerType {
         ) {
           this.dblClickTimeout = window.setTimeout(() => {
             this.dblClickTimeout = undefined;
-            fireEvent(target, "action", { action: "tap" });
+            if (options.hasTap !== false) {
+              fireEvent(target, "action", { action: "tap" });
+            }
           }, 250);
         } else {
           clearTimeout(this.dblClickTimeout);
           this.dblClickTimeout = undefined;
           fireEvent(target, "action", { action: "double_tap" });
         }
-      } else {
+      } else if (options.hasTap !== false) {
         fireEvent(target, "action", { action: "tap" });
       }
     };

@@ -10,6 +10,7 @@ import { fireEvent } from "../../../common/dom/fire_event";
 import { stateColorCss } from "../../../common/entity/state_color";
 import { supportsFeature } from "../../../common/entity/supports-feature";
 import "../../../components/chips/ha-assist-chip";
+import "../../../components/ha-button";
 import "../../../components/ha-card";
 import "../../../components/ha-state-icon";
 import "../../../components/ha-textfield";
@@ -259,13 +260,15 @@ class HuiAlarmPanelCard extends LitElement implements LovelaceCard {
             : (["disarm"] as const)
           ).map(
             (stateAction) => html`
-              <mwc-button
+              <ha-button
                 .action=${stateAction}
                 @click=${this._handleActionClick}
-                outlined
+                appearance="filled"
+                size="small"
+                variant=${stateAction === "disarm" ? "danger" : "brand"}
               >
                 ${this._actionDisplay(stateAction)}
-              </mwc-button>
+              </ha-button>
             `
           )}
         </div>
@@ -446,12 +449,8 @@ class HuiAlarmPanelCard extends LitElement implements LovelaceCard {
       justify-content: center;
     }
 
-    .actions mwc-button {
+    .actions ha-button {
       margin: 0 4px 4px;
-    }
-
-    mwc-button#disarm {
-      color: var(--error-color);
     }
   `;
 }

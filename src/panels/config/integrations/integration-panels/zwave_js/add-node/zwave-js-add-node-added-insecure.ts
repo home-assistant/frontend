@@ -1,11 +1,11 @@
+import "@home-assistant/webawesome/dist/components/animation/animation";
 import { mdiCheckCircleOutline } from "@mdi/js";
-import { customElement, property } from "lit/decorators";
-import "@shoelace-style/shoelace/dist/components/animation/animation";
 import { css, html, LitElement } from "lit";
+import { customElement, property } from "lit/decorators";
 import type { HomeAssistant } from "../../../../../../types";
 
-import "../../../../../../components/ha-svg-icon";
 import "../../../../../../components/ha-alert";
+import "../../../../../../components/ha-svg-icon";
 
 @customElement("zwave-js-add-node-added-insecure")
 export class ZWaveJsAddNodeFinished extends LitElement {
@@ -17,9 +17,9 @@ export class ZWaveJsAddNodeFinished extends LitElement {
 
   render() {
     return html`
-      <sl-animation name="zoomIn" .iterations=${1} play>
+      <wa-animation name="zoomIn" .iterations=${1} play>
         <ha-svg-icon .path=${mdiCheckCircleOutline}></ha-svg-icon>
-      </sl-animation>
+      </wa-animation>
       <ha-alert alert-type="warning">
         ${this.reason
           ? this.hass.localize(

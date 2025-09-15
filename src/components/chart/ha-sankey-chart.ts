@@ -18,7 +18,6 @@ export interface Node {
   value: number;
   index: number; // like z-index but for x/y
   label?: string;
-  tooltip?: string;
   color?: string;
   passThrough?: boolean;
 }
@@ -186,23 +185,22 @@ export class HaSankeyChart extends LitElement {
               ""
             );
           const wordWidth = measureTextWidth(longestWord, FONT_SIZE);
+          const availableWidth = params.rect.width + 6;
           const fontSize = Math.min(
             FONT_SIZE,
-            (params.rect.width / wordWidth) * FONT_SIZE
+            (availableWidth / wordWidth) * FONT_SIZE
           );
           return {
             fontSize: fontSize > 1 ? fontSize : 0,
-            width: params.rect.width,
+            width: availableWidth,
             align: "center",
+            dy: -2, // shift up or the lowest row labels may be cut off
           };
         }
 
-        // estimate the number of lines after the label is wrapped
-        // this is a very rough estimate, but it works for now
-        const lineCount = Math.ceil(params.labelRect.width / labelSpace);
-        // `overflow: "break"` allows the label to overflow outside its height, so we need to account for that
+        const availableHeight = params.rect.height + 8; // account for the margin
         const fontSize = Math.min(
-          (params.rect.height / lineCount) * FONT_SIZE,
+          (availableHeight / params.labelRect.height) * FONT_SIZE,
           FONT_SIZE
         );
         return {

@@ -1,4 +1,3 @@
-import "@material/mwc-button/mwc-button";
 import type { PropertyValues } from "lit";
 import { css, html, LitElement, nothing } from "lit";
 import { customElement, property, state } from "lit/decorators";
@@ -171,8 +170,13 @@ class ConfigUrlForm extends SubscribeMixin(LitElement) {
                   `
                 : nothing}
             </div>
-            <ha-button .url=${externalUrl} @click=${this._copyURL}>
-              <ha-svg-icon slot="icon" .path=${mdiContentCopy}></ha-svg-icon>
+            <ha-button
+              size="small"
+              appearance="plain"
+              .url=${externalUrl}
+              @click=${this._copyURL}
+            >
+              <ha-svg-icon slot="start" .path=${mdiContentCopy}></ha-svg-icon>
               ${this.hass.localize("ui.panel.config.common.copy_link")}
             </ha-button>
           </div>
@@ -206,13 +210,16 @@ class ConfigUrlForm extends SubscribeMixin(LitElement) {
                         ${this.hass.localize(
                           "ui.panel.config.url.ha_cloud_remote_not_enabled"
                         )}
-                        <a href="/config/cloud" slot="action"
-                          ><mwc-button
-                            .label=${this.hass.localize(
-                              "ui.panel.config.url.enable_remote"
-                            )}
-                          ></mwc-button
-                        ></a>
+                        <ha-button
+                          size="small"
+                          appearance="plain"
+                          href="/config/cloud"
+                          slot="action"
+                        >
+                          ${this.hass.localize(
+                            "ui.panel.config.url.enable_remote"
+                          )}
+                        </ha-button>
                       </ha-alert>
                     `}
               `
@@ -271,8 +278,13 @@ class ConfigUrlForm extends SubscribeMixin(LitElement) {
                   `
                 : nothing}
             </div>
-            <ha-button .url=${internalUrl} @click=${this._copyURL}>
-              <ha-svg-icon slot="icon" .path=${mdiContentCopy}></ha-svg-icon>
+            <ha-button
+              size="small"
+              appearance="plain"
+              .url=${internalUrl}
+              @click=${this._copyURL}
+            >
+              <ha-svg-icon slot="start" .path=${mdiContentCopy}></ha-svg-icon>
               ${this.hass.localize("ui.panel.config.common.copy_link")}
             </ha-button>
           </div>
@@ -302,11 +314,11 @@ class ConfigUrlForm extends SubscribeMixin(LitElement) {
           }
         </div>
         <div class="card-actions">
-          <mwc-button @click=${this._save} .disabled=${disabled}>
+          <ha-button @click=${this._save} .disabled=${disabled}>
             ${this.hass.localize(
               "ui.panel.config.core.section.core.core_config.save_button"
             )}
-          </mwc-button>
+          </ha-button>
         </div>
       </ha-card>
     `;

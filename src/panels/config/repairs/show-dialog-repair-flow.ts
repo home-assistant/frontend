@@ -289,6 +289,15 @@ export const showRepairsFlowDialog = (
         );
       },
 
+      renderMenuOptionDescription(hass, step, option) {
+        return hass.localize(
+          `component.${issue.domain}.issues.${
+            issue.translation_key || issue.issue_id
+          }.fix_flow.step.${step.step_id}.menu_option_descriptions.${option}`,
+          mergePlaceholders(issue, step)
+        );
+      },
+
       renderLoadingDescription(hass, reason) {
         return (
           hass.localize(

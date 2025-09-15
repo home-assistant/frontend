@@ -114,7 +114,11 @@ class DialogSSDPDiscoveryInfo extends LitElement implements HassDialog {
           </tbody>
         </table>
 
-        <ha-button slot="secondaryAction" @click=${this._copyToClipboard}>
+        <ha-button
+          appearance="plain"
+          slot="secondaryAction"
+          @click=${this._copyToClipboard}
+        >
           ${this.hass.localize("ui.panel.config.ssdp.copy_to_clipboard")}
         </ha-button>
       </ha-dialog>

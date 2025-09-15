@@ -28,7 +28,7 @@ export class HaPasswordField extends LitElement {
 
   @property() public autocomplete?: string;
 
-  @property() public autocorrect?: string;
+  @property({ type: Boolean }) public autocorrect = true;
 
   @property({ attribute: "input-spellcheck" })
   public inputSpellcheck?: string;

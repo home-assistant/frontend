@@ -18,6 +18,7 @@ import type { HomeAssistant, Route } from "../../../types";
 import "./error-log-card";
 import "./system-log-card";
 import type { SystemLogCard } from "./system-log-card";
+import { stringCompare } from "../../../common/string/compare";
 
 const logProviders: LogProvider[] = [
   {
@@ -117,16 +118,11 @@ export class HaConfigLogs extends LitElement {
         ${isComponentLoaded(this.hass, "hassio")
           ? html`
               <ha-button-menu slot="toolbar-icon">
-                <ha-button
-                  slot="trigger"
-                  .label=${this._logProviders.find(
+                <ha-button slot="trigger" appearance="filled">
+                  <ha-svg-icon slot="end" .path=${mdiChevronDown}></ha-svg-icon>
+                  ${this._logProviders.find(
                     (p) => p.key === this._selectedLogProvider
                   )!.name}
-                >
-                  <ha-svg-icon
-                    slot="trailingIcon"
-                    .path=${mdiChevronDown}
-                  ></ha-svg-icon>
                 </ha-button>
                 ${this._logProviders.map(
                   (provider) => html`
@@ -213,15 +209,17 @@ export class HaConfigLogs extends LitElement {
   private async _getInstalledAddons() {
     try {
       const addonsInfo = await fetchHassioAddonsInfo(this.hass);
-      this._logProviders = [
-        ...this._logProviders,
-        ...addonsInfo.addons
-          .filter((addon) => addon.version)
-          .map((addon) => ({
-            key: addon.slug,
-            name: addon.name,
-          })),
-      ];
+      const sortedAddons = addonsInfo.addons
+        .filter((addon) => addon.version)
+        .map((addon) => ({
+          key: addon.slug,
+          name: addon.name,
+        }))
+        .sort((a, b) =>
+          stringCompare(a.name, b.name, this.hass.locale.language)
+        );
+
+      this._logProviders = [...this._logProviders, ...sortedAddons];
     } catch (_err) {
       // Ignore, nothing the user can do anyway
     }
@@ -255,14 +253,20 @@ export class HaConfigLogs extends LitElement {
         .content {
           direction: ltr;
         }
-
-        mwc-button[slot="trigger"] {
-          --mdc-theme-primary: var(--primary-text-color);
-          --mdc-icon-size: 36px;
+        @media all and (max-width: 870px) {
+          ha-button-menu {
+            max-width: 50%;
+          }
+          ha-button {
+            max-width: 100%;
+          }
+          ha-button::part(label) {
+            overflow: hidden;
+            white-space: nowrap;
+          }
         }
-        ha-button-menu > ha-button > ha-svg-icon {
-          margin-inline-end: 0px;
-          margin-inline-start: 8px;
+        ha-list-item[selected] {
+          color: var(--primary-color);
         }
       `,
     ];

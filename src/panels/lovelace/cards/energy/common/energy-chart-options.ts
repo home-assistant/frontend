@@ -174,7 +174,11 @@ function formatTooltip(
   const values = params
     .map((param) => {
       const y = param.value?.[1] as number;
-      const value = formatNumber(y, locale);
+      const value = formatNumber(
+        y,
+        locale,
+        y < 0.1 ? { maximumFractionDigits: 3 } : undefined
+      );
       if (value === "0") {
         return false;
       }

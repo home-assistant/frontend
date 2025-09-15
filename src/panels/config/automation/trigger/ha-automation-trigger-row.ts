@@ -4,12 +4,12 @@ import {
   mdiArrowUp,
   mdiContentCopy,
   mdiContentCut,
-  mdiContentDuplicate,
   mdiDelete,
   mdiDotsVertical,
   mdiIdentifier,
   mdiPlayCircleOutline,
   mdiPlaylistEdit,
+  mdiPlusCircleMultipleOutline,
   mdiRenameBox,
   mdiStopCircleOutline,
 } from "@mdi/js";
@@ -18,28 +18,29 @@ import type { CSSResultGroup, PropertyValues } from "lit";
 import { LitElement, css, html, nothing } from "lit";
 import { customElement, property, query, state } from "lit/decorators";
 import { classMap } from "lit/directives/class-map";
+import memoizeOne from "memoize-one";
 import { storage } from "../../../../common/decorators/storage";
-import { dynamicElement } from "../../../../common/dom/dynamic-element-directive";
 import { fireEvent } from "../../../../common/dom/fire_event";
-import { preventDefault } from "../../../../common/dom/prevent_default";
+import { preventDefaultStopPropagation } from "../../../../common/dom/prevent_default_stop_propagation";
 import { stopPropagation } from "../../../../common/dom/stop_propagation";
 import { capitalizeFirstLetter } from "../../../../common/string/capitalize-first-letter";
 import { handleStructError } from "../../../../common/structs/handle-errors";
 import { debounce } from "../../../../common/util/debounce";
 import "../../../../components/ha-alert";
-import "../../../../components/ha-md-button-menu";
-import "../../../../components/ha-md-menu-item";
-import "../../../../components/ha-md-divider";
+import "../../../../components/ha-automation-row";
+import type { HaAutomationRow } from "../../../../components/ha-automation-row";
 import "../../../../components/ha-card";
 import "../../../../components/ha-expansion-panel";
 import "../../../../components/ha-icon-button";
-import "../../../../components/ha-textfield";
-import type { HaYamlEditor } from "../../../../components/ha-yaml-editor";
-import type { AutomationClipboard, Trigger } from "../../../../data/automation";
-import {
-  migrateAutomationTrigger,
-  subscribeTrigger,
+import "../../../../components/ha-md-button-menu";
+import "../../../../components/ha-md-divider";
+import "../../../../components/ha-md-menu-item";
+import type {
+  AutomationClipboard,
+  Trigger,
+  TriggerSidebarConfig,
 } from "../../../../data/automation";
+import { subscribeTrigger } from "../../../../data/automation";
 import { describeTrigger } from "../../../../data/automation_i18n";
 import { validateConfig } from "../../../../data/config";
 import { fullEntitiesContext } from "../../../../data/context";
@@ -50,8 +51,12 @@ import {
   showConfirmationDialog,
   showPromptDialog,
 } from "../../../../dialogs/generic/show-dialog-box";
-import { haStyle } from "../../../../resources/styles";
 import type { HomeAssistant } from "../../../../types";
+import { showToast } from "../../../../util/toast";
+import "../ha-automation-editor-warning";
+import { rowStyles } from "../styles";
+import "./ha-automation-trigger-editor";
+import type HaAutomationTriggerEditor from "./ha-automation-trigger-editor";
 import "./types/ha-automation-trigger-calendar";
 import "./types/ha-automation-trigger-conversation";
 import "./types/ha-automation-trigger-device";
@@ -109,17 +114,33 @@ export default class HaAutomationTriggerRow extends LitElement {
 
   @property({ type: Boolean }) public last?: boolean;
 
-  @state() private _warnings?: string[];
+  @property({ type: Boolean }) public highlight?: boolean;
+
+  @property({ type: Boolean, attribute: "sidebar" })
+  public optionsInSidebar = false;
+
+  @property({ type: Boolean, attribute: "sort-selected" })
+  public sortSelected = false;
 
   @state() private _yamlMode = false;
-
-  @state() private _requestShowId = false;
 
   @state() private _triggered?: Record<string, unknown>;
 
   @state() private _triggerColor = false;
 
-  @query("ha-yaml-editor") private _yamlEditor?: HaYamlEditor;
+  @state() private _selected = false;
+
+  @state() private _requestShowId = false;
+
+  @state() private _warnings?: string[];
+
+  @property({ type: Boolean }) public narrow = false;
+
+  @query("ha-automation-trigger-editor")
+  public triggerEditor?: HaAutomationTriggerEditor;
+
+  @query("ha-automation-row")
+  private _automationRowElement?: HaAutomationRow;
 
   @storage({
     key: "automationClipboard",
@@ -133,56 +154,47 @@ export default class HaAutomationTriggerRow extends LitElement {
   @consume({ context: fullEntitiesContext, subscribe: true })
   _entityReg!: EntityRegistryEntry[];
 
+  get selected() {
+    return this._selected;
+  }
+
   private _triggerUnsub?: Promise<UnsubscribeFunc>;
 
-  protected render() {
-    if (!this.trigger) return nothing;
+  private _renderRow() {
+    const type = this._getType(this.trigger);
 
-    const type = isTriggerList(this.trigger) ? "list" : this.trigger.trigger;
-
-    const supported =
-      customElements.get(`ha-automation-trigger-${type}`) !== undefined;
+    const supported = this._uiSupported(type);
 
     const yamlMode = this._yamlMode || !supported;
-    const showId = "id" in this.trigger || this._requestShowId;
 
     return html`
-      <ha-card outlined>
-        ${"enabled" in this.trigger && this.trigger.enabled === false
-          ? html`
-              <div class="disabled-bar">
-                ${this.hass.localize(
-                  "ui.panel.config.automation.editor.actions.disabled"
-                )}
-              </div>
-            `
-          : nothing}
+      <ha-svg-icon
+        slot="leading-icon"
+        class="trigger-icon"
+        .path=${TRIGGER_ICONS[type]}
+      ></ha-svg-icon>
+      <h3 slot="header">
+        ${describeTrigger(this.trigger, this.hass, this._entityReg)}
+      </h3>
 
-        <ha-expansion-panel left-chevron>
-          <ha-svg-icon
-            slot="leading-icon"
-            class="trigger-icon"
-            .path=${TRIGGER_ICONS[type]}
-          ></ha-svg-icon>
-          <h3 slot="header">
-            ${describeTrigger(this.trigger, this.hass, this._entityReg)}
-          </h3>
+      <slot name="icons" slot="icons"></slot>
 
-          <slot name="icons" slot="icons"></slot>
-
-          <ha-md-button-menu
+      ${!this.optionsInSidebar
+        ? html`<ha-md-button-menu
+            quick
             slot="icons"
-            @click=${preventDefault}
+            @click=${preventDefaultStopPropagation}
             @keydown=${stopPropagation}
             @closed=${stopPropagation}
             positioning="fixed"
+            anchor-corner="end-end"
+            menu-corner="start-end"
           >
             <ha-icon-button
               slot="trigger"
               .label=${this.hass.localize("ui.common.menu")}
               .path=${mdiDotsVertical}
             ></ha-icon-button>
-
             <ha-md-menu-item
               .clickAction=${this._renameTrigger}
               .disabled=${this.disabled || type === "list"}
@@ -214,7 +226,7 @@ export default class HaAutomationTriggerRow extends LitElement {
               )}
               <ha-svg-icon
                 slot="start"
-                .path=${mdiContentDuplicate}
+                .path=${mdiPlusCircleMultipleOutline}
               ></ha-svg-icon>
             </ha-md-menu-item>
 
@@ -258,7 +270,7 @@ export default class HaAutomationTriggerRow extends LitElement {
 
             <ha-md-menu-item
               .clickAction=${this._toggleYamlMode}
-              .disabled=${!supported}
+              .disabled=${!supported || !!this._warnings}
             >
               ${this.hass.localize(
                 `ui.panel.config.automation.editor.edit_${!yamlMode ? "yaml" : "ui"}`
@@ -301,79 +313,60 @@ export default class HaAutomationTriggerRow extends LitElement {
                 .path=${mdiDelete}
               ></ha-svg-icon>
             </ha-md-menu-item>
-          </ha-md-button-menu>
-
-          <div
-            class=${classMap({
-              "card-content": true,
-              disabled:
-                "enabled" in this.trigger && this.trigger.enabled === false,
-            })}
-          >
-            ${this._warnings
-              ? html`<ha-alert
-                  alert-type="warning"
-                  .title=${this.hass.localize(
-                    "ui.errors.config.editor_not_supported"
-                  )}
+          </ha-md-button-menu>`
+        : nothing}
+      ${!this.optionsInSidebar
+        ? html`${this._warnings
+              ? html`<ha-automation-editor-warning
+                  .localize=${this.hass.localize}
+                  .warnings=${this._warnings}
                 >
-                  ${this._warnings.length && this._warnings[0] !== undefined
-                    ? html` <ul>
-                        ${this._warnings.map(
-                          (warning) => html`<li>${warning}</li>`
-                        )}
-                      </ul>`
-                    : ""}
-                  ${this.hass.localize(
-                    "ui.errors.config.edit_in_yaml_supported"
-                  )}
-                </ha-alert>`
-              : ""}
-            ${yamlMode
-              ? html`
-                  ${!supported
-                    ? html`
-                        ${this.hass.localize(
-                          "ui.panel.config.automation.editor.triggers.unsupported_platform",
-                          { platform: type }
-                        )}
-                      `
-                    : ""}
-                  <ha-yaml-editor
-                    .hass=${this.hass}
-                    .defaultValue=${this.trigger}
-                    .readOnly=${this.disabled}
-                    @value-changed=${this._onYamlChange}
-                  ></ha-yaml-editor>
-                `
-              : html`
-                  ${showId && !isTriggerList(this.trigger)
-                    ? html`
-                        <ha-textfield
-                          .label=${this.hass.localize(
-                            "ui.panel.config.automation.editor.triggers.id"
-                          )}
-                          .value=${this.trigger.id || ""}
-                          .disabled=${this.disabled}
-                          @change=${this._idChanged}
-                        >
-                        </ha-textfield>
-                      `
-                    : ""}
-                  <div
-                    @ui-mode-not-available=${this._handleUiModeNotAvailable}
-                    @value-changed=${this._onUiChanged}
-                  >
-                    ${dynamicElement(`ha-automation-trigger-${type}`, {
-                      hass: this.hass,
-                      trigger: this.trigger,
-                      disabled: this.disabled,
-                    })}
-                  </div>
-                `}
-          </div>
-        </ha-expansion-panel>
+                </ha-automation-editor-warning>`
+              : nothing}
+            <ha-automation-trigger-editor
+              .hass=${this.hass}
+              .trigger=${this.trigger}
+              .disabled=${this.disabled}
+              .yamlMode=${this._yamlMode}
+              .showId=${this._requestShowId}
+              .uiSupported=${supported}
+              @ui-mode-not-available=${this._handleUiModeNotAvailable}
+            ></ha-automation-trigger-editor>`
+        : nothing}
+    `;
+  }
 
+  protected render() {
+    if (!this.trigger) return nothing;
+
+    return html`
+      <ha-card outlined class=${this._selected ? "selected" : ""}>
+        ${"enabled" in this.trigger && this.trigger.enabled === false
+          ? html`
+              <div class="disabled-bar">
+                ${this.hass.localize(
+                  "ui.panel.config.automation.editor.actions.disabled"
+                )}
+              </div>
+            `
+          : nothing}
+        ${this.optionsInSidebar
+          ? html`<ha-automation-row
+              .disabled=${"enabled" in this.trigger &&
+              this.trigger.enabled === false}
+              .selected=${this._selected}
+              .highlight=${this.highlight}
+              .sortSelected=${this.sortSelected}
+              @click=${this._toggleSidebar}
+              >${this._selected
+                ? "selected"
+                : nothing}${this._renderRow()}</ha-automation-row
+            >`
+          : html`
+              <ha-expansion-panel left-chevron>
+                ${this._renderRow()}
+              </ha-expansion-panel>
+            `}
         <div
           class="triggered ${classMap({
             active: this._triggered !== undefined,
@@ -387,6 +380,13 @@ export default class HaAutomationTriggerRow extends LitElement {
         </div>
       </ha-card>
     `;
+  }
+
+  protected willUpdate(changedProperties) {
+    // on yaml toggle --> clear warnings
+    if (changedProperties.has("yamlMode")) {
+      this._warnings = undefined;
+    }
   }
 
   protected override updated(changedProps: PropertyValues<this>): void {
@@ -474,6 +474,56 @@ export default class HaAutomationTriggerRow extends LitElement {
     }
   }
 
+  private _toggleSidebar(ev: Event) {
+    ev?.stopPropagation();
+
+    if (this._selected) {
+      fireEvent(this, "request-close-sidebar");
+      return;
+    }
+    this.openSidebar();
+  }
+
+  public openSidebar(trigger?: Trigger): void {
+    fireEvent(this, "open-sidebar", {
+      save: (value) => {
+        fireEvent(this, "value-changed", { value });
+      },
+      close: (focus?: boolean) => {
+        this._selected = false;
+        fireEvent(this, "close-sidebar");
+        if (focus) {
+          this.focus();
+        }
+      },
+      rename: () => {
+        this._renameTrigger();
+      },
+      toggleYamlMode: () => {
+        this._toggleYamlMode();
+        this.openSidebar();
+      },
+      disable: this._onDisable,
+      delete: this._onDelete,
+      copy: this._copyTrigger,
+      duplicate: this._duplicateTrigger,
+      cut: this._cutTrigger,
+      config: trigger || this.trigger,
+      uiSupported: this._uiSupported(this._getType(trigger || this.trigger)),
+      yamlMode: this._yamlMode,
+    } satisfies TriggerSidebarConfig);
+    this._selected = true;
+
+    if (this.narrow) {
+      window.setTimeout(() => {
+        this.scrollIntoView({
+          block: "start",
+          behavior: "smooth",
+        });
+      }, 180);
+    }
+  }
+
   private _setClipboard() {
     this._clipboard = {
       ...this._clipboard,
@@ -494,6 +544,10 @@ export default class HaAutomationTriggerRow extends LitElement {
       destructive: true,
       confirm: () => {
         fireEvent(this, "value-changed", { value: null });
+
+        if (this._selected) {
+          fireEvent(this, "close-sidebar");
+        }
       },
     });
   };
@@ -503,58 +557,18 @@ export default class HaAutomationTriggerRow extends LitElement {
     const enabled = !(this.trigger.enabled ?? true);
     const value = { ...this.trigger, enabled };
     fireEvent(this, "value-changed", { value });
-    if (this._yamlMode) {
-      this._yamlEditor?.setValue(value);
+    this.openSidebar(value); // refresh sidebar
+
+    if (this._yamlMode && !this.optionsInSidebar) {
+      this.triggerEditor?.yamlEditor?.setValue(value);
     }
   };
 
-  private _idChanged(ev: CustomEvent) {
-    if (isTriggerList(this.trigger)) return;
-    const newId = (ev.target as any).value;
-
-    if (newId === (this.trigger.id ?? "")) {
-      return;
-    }
-    this._requestShowId = true;
-    const value = { ...this.trigger };
-    if (!newId) {
-      delete value.id;
-    } else {
-      value.id = newId;
-    }
-    fireEvent(this, "value-changed", {
-      value,
-    });
-  }
-
-  private _onYamlChange(ev: CustomEvent) {
-    ev.stopPropagation();
-    if (!ev.detail.isValid) {
-      return;
-    }
-    this._warnings = undefined;
-    fireEvent(this, "value-changed", {
-      value: migrateAutomationTrigger(ev.detail.value),
-    });
-  }
-
-  private _onUiChanged(ev: CustomEvent) {
-    if (isTriggerList(this.trigger)) return;
-    ev.stopPropagation();
-    const value = {
-      ...(this.trigger.alias ? { alias: this.trigger.alias } : {}),
-      ...ev.detail.value,
-    };
-    fireEvent(this, "value-changed", { value });
-  }
-
   private _switchUiMode() {
-    this._warnings = undefined;
     this._yamlMode = false;
   }
 
   private _switchYamlMode() {
-    this._warnings = undefined;
     this._yamlMode = true;
   }
 
@@ -601,15 +615,21 @@ export default class HaAutomationTriggerRow extends LitElement {
       fireEvent(this, "value-changed", {
         value,
       });
-      if (this._yamlMode) {
-        this._yamlEditor?.setValue(value);
+
+      if (this._selected && this.optionsInSidebar) {
+        this.openSidebar(value); // refresh sidebar
+      } else if (this._yamlMode) {
+        this.triggerEditor?.yamlEditor?.setValue(value);
       }
     }
   };
 
   private _showTriggerId = () => {
     this._requestShowId = true;
-    this.expand();
+
+    if (!this.optionsInSidebar) {
+      this.expand();
+    }
   };
 
   private _duplicateTrigger = () => {
@@ -618,11 +638,26 @@ export default class HaAutomationTriggerRow extends LitElement {
 
   private _copyTrigger = () => {
     this._setClipboard();
+    showToast(this, {
+      message: this.hass.localize(
+        "ui.panel.config.automation.editor.triggers.copied_to_clipboard"
+      ),
+      duration: 2000,
+    });
   };
 
   private _cutTrigger = () => {
     this._setClipboard();
     fireEvent(this, "value-changed", { value: null });
+    if (this._selected) {
+      fireEvent(this, "close-sidebar");
+    }
+    showToast(this, {
+      message: this.hass.localize(
+        "ui.panel.config.automation.editor.triggers.cut_to_clipboard"
+      ),
+      duration: 2000,
+    });
   };
 
   private _moveUp = () => {
@@ -639,7 +674,10 @@ export default class HaAutomationTriggerRow extends LitElement {
     } else {
       this._switchYamlMode();
     }
-    this.expand();
+
+    if (!this.optionsInSidebar) {
+      this.expand();
+    }
   };
 
   public expand() {
@@ -648,52 +686,23 @@ export default class HaAutomationTriggerRow extends LitElement {
     });
   }
 
+  private _getType = memoizeOne((trigger: Trigger) =>
+    isTriggerList(trigger) ? "list" : trigger.trigger
+  );
+
+  private _uiSupported = memoizeOne(
+    (type: string) =>
+      customElements.get(`ha-automation-trigger-${type}`) !== undefined
+  );
+
+  public focus() {
+    this._automationRowElement?.focus();
+  }
+
   static get styles(): CSSResultGroup {
     return [
-      haStyle,
+      rowStyles,
       css`
-        .disabled {
-          opacity: 0.5;
-          pointer-events: none;
-        }
-        ha-expansion-panel {
-          --expansion-panel-summary-padding: 0 0 0 8px;
-          --expansion-panel-content-padding: 0;
-        }
-        h3 {
-          margin: 0;
-          font-size: inherit;
-          font-weight: inherit;
-        }
-        .trigger-icon {
-          display: none;
-        }
-        @media (min-width: 870px) {
-          .trigger-icon {
-            display: inline-block;
-            color: var(--secondary-text-color);
-            opacity: 0.9;
-          }
-        }
-        .card-content {
-          padding: 16px;
-        }
-        .disabled-bar {
-          background: var(--divider-color, #e0e0e0);
-          text-align: center;
-          border-top-right-radius: calc(
-            var(--ha-card-border-radius, 12px) - var(
-                --ha-card-border-width,
-                1px
-              )
-          );
-          border-top-left-radius: calc(
-            var(--ha-card-border-radius, 12px) - var(
-                --ha-card-border-width,
-                1px
-              )
-          );
-        }
         .triggered {
           cursor: pointer;
           position: absolute;
@@ -709,17 +718,13 @@ export default class HaAutomationTriggerRow extends LitElement {
           overflow: hidden;
           transition: max-height 0.3s;
           text-align: center;
-          border-top-right-radius: calc(
-            var(--ha-card-border-radius, 12px) - var(
-                --ha-card-border-width,
-                1px
-              )
+          border-top-right-radius: var(
+            --ha-card-border-radius,
+            var(--ha-border-radius-lg)
           );
-          border-top-left-radius: calc(
-            var(--ha-card-border-radius, 12px) - var(
-                --ha-card-border-width,
-                1px
-              )
+          border-top-left-radius: var(
+            --ha-card-border-radius,
+            var(--ha-border-radius-lg)
           );
         }
         .triggered.active {
@@ -731,19 +736,6 @@ export default class HaAutomationTriggerRow extends LitElement {
         .triggered.accent {
           background-color: var(--accent-color);
           color: var(--text-accent-color, var(--text-primary-color));
-        }
-        ha-textfield {
-          display: block;
-          margin-bottom: 24px;
-        }
-        ha-md-menu-item > ha-svg-icon {
-          --mdc-icon-size: 24px;
-        }
-        :host([highlight]) ha-card {
-          --shadow-default: var(--ha-card-box-shadow, 0 0 0 0 transparent);
-          --shadow-focus: 0 0 0 1px var(--state-inactive-color);
-          border-color: var(--state-inactive-color);
-          box-shadow: var(--shadow-default), var(--shadow-focus);
         }
       `,
     ];

@@ -1,6 +1,5 @@
 // @ts-ignore
 import chipStyles from "@material/chips/dist/mdc.chips.min.css";
-import "@material/mwc-button/mwc-button";
 import "@material/mwc-menu/mwc-menu-surface";
 import {
   mdiClose,
@@ -344,40 +343,36 @@ export class HaTargetPicker extends SubscribeMixin(LitElement) {
         ${type === "entity_id"
           ? ""
           : html`<span role="gridcell">
-              <ha-tooltip
-                .content=${this.hass.localize(
+              <ha-tooltip .for="expand-${id}"
+                >${this.hass.localize(
                   `ui.components.target-picker.expand_${type}`
                 )}
-              >
-                <ha-icon-button
-                  class="expand-btn mdc-chip__icon mdc-chip__icon--trailing"
-                  .label=${this.hass.localize(
-                    "ui.components.target-picker.expand"
-                  )}
-                  .path=${mdiUnfoldMoreVertical}
-                  hide-title
-                  .id=${id}
-                  .type=${type}
-                  @click=${this._handleExpand}
-                ></ha-icon-button>
               </ha-tooltip>
+              <ha-icon-button
+                class="expand-btn mdc-chip__icon mdc-chip__icon--trailing"
+                .label=${this.hass.localize(
+                  "ui.components.target-picker.expand"
+                )}
+                .path=${mdiUnfoldMoreVertical}
+                hide-title
+                .id="expand-${id}"
+                .type=${type}
+                @click=${this._handleExpand}
+              ></ha-icon-button>
             </span>`}
         <span role="gridcell">
-          <ha-tooltip
-            .content=${this.hass.localize(
-              `ui.components.target-picker.remove_${type}`
-            )}
-          >
-            <ha-icon-button
-              class="mdc-chip__icon mdc-chip__icon--trailing"
-              .label=${this.hass.localize("ui.components.target-picker.remove")}
-              .path=${mdiClose}
-              hide-title
-              .id=${id}
-              .type=${type}
-              @click=${this._handleRemove}
-            ></ha-icon-button>
+          <ha-tooltip .for="remove-${id}">
+            ${this.hass.localize(`ui.components.target-picker.remove_${type}`)}
           </ha-tooltip>
+          <ha-icon-button
+            class="mdc-chip__icon mdc-chip__icon--trailing"
+            .label=${this.hass.localize("ui.components.target-picker.remove")}
+            .path=${mdiClose}
+            hide-title
+            .id="remove-${id}"
+            .type=${type}
+            @click=${this._handleRemove}
+          ></ha-icon-button>
         </span>
       </div>
     `;
@@ -593,7 +588,7 @@ export class HaTargetPicker extends SubscribeMixin(LitElement) {
         if (
           entity.labels.includes(target.id) &&
           !this.value!.entity_id?.includes(entity.entity_id) &&
-          this._entityRegMeetsFilter(entity)
+          this._entityRegMeetsFilter(entity, true)
         ) {
           newEntities.push(entity.entity_id);
         }
@@ -718,8 +713,11 @@ export class HaTargetPicker extends SubscribeMixin(LitElement) {
     return true;
   }
 
-  private _entityRegMeetsFilter(entity: EntityRegistryDisplayEntry): boolean {
-    if (entity.hidden || entity.entity_category) {
+  private _entityRegMeetsFilter(
+    entity: EntityRegistryDisplayEntry,
+    includeSecondary = false
+  ): boolean {
+    if (entity.hidden || (entity.entity_category && !includeSecondary)) {
       return false;
     }
 

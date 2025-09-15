@@ -97,9 +97,6 @@ class HaAlert extends LitElement {
       content: "";
       border-radius: 4px;
     }
-    .icon {
-      z-index: 1;
-    }
     .icon.no-title {
       align-self: center;
     }
@@ -122,16 +119,16 @@ class HaAlert extends LitElement {
     .main-content {
       overflow-wrap: anywhere;
       word-break: break-word;
+      line-height: normal;
       margin-left: 8px;
       margin-right: 0;
       margin-inline-start: 8px;
-      margin-inline-end: 0;
+      margin-inline-end: 8px;
     }
     .title {
       margin-top: 2px;
       font-weight: var(--ha-font-weight-bold);
     }
-    .action mwc-button,
     .action ha-icon-button {
       --mdc-theme-primary: var(--primary-text-color);
       --mdc-icon-button-size: 36px;

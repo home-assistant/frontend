@@ -14,6 +14,24 @@ export class HaFab extends FabBase {
   static override styles = [
     styles,
     css`
+      :host {
+        --mdc-typography-button-text-transform: none;
+        --mdc-typography-button-font-size: var(--ha-font-size-l);
+        --mdc-typography-button-font-family: var(--ha-font-family-body);
+        --mdc-typography-button-font-weight: var(--ha-font-weight-medium);
+      }
+      :host .mdc-fab--extended {
+        border-radius: var(
+          --ha-button-border-radius,
+          var(--ha-border-radius-pill)
+        );
+      }
+      :host .mdc-fab.mdc-fab--extended .ripple {
+        border-radius: var(
+          --ha-button-border-radius,
+          var(--ha-border-radius-pill)
+        );
+      }
       :host .mdc-fab--extended .mdc-fab__icon {
         margin-inline-start: -8px;
         margin-inline-end: 12px;
