@@ -41,8 +41,6 @@ import "../../../components/ha-md-button-menu";
 import "../../../components/chips/ha-assist-chip";
 import "../../../components/ha-md-menu-item";
 import "../../../components/ha-marquee-text";
-import { computeEntityName } from "../../../common/entity/compute_entity_name";
-import { computeStateName } from "../../../common/entity/compute_state_name";
 
 @customElement("more-info-media_player")
 class MoreInfoMediaPlayer extends LitElement {
@@ -677,18 +675,6 @@ class MoreInfoMediaPlayer extends LitElement {
       entity_id: this.stateObj.entity_id,
       seek_position: newValue,
     });
-  }
-
-  protected _getFriendlyNameForGroupMember(member: string): string {
-    const stateObj = this.hass.states[member];
-
-    if (stateObj) {
-      const stateName = computeStateName(stateObj);
-      const entityName = computeEntityName(stateObj, this.hass);
-
-      return entityName || stateName;
-    }
-    return member;
   }
 }
 
