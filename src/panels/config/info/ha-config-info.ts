@@ -178,7 +178,9 @@ class HaConfigInfo extends LitElement {
                           `ui.panel.config.info.external_app_version`
                         )}</span
                       >
-                      <span class="version">${this.hass.auth.external?.config.appVersion}</span>
+                      <span class="version"
+                        >${this.hass.auth.external?.config.appVersion}</span
+                      >
                     </li>
                   `
                 : nothing}
