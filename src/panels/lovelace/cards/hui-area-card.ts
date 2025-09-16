@@ -589,8 +589,9 @@ export class HuiAreaCard extends LitElement implements LovelaceCard {
             <ha-tile-icon>
               ${displayType === "compact"
                 ? html`
-                    ${this._renderAlertSensorBadge()}
-                    ${this._renderMediaBadge()}
+                    ${this._computeActiveAlertStates().length > 0
+                      ? this._renderAlertSensorBadge()
+                      : this._renderMediaBadge()}
                   `
                 : nothing}
               ${icon

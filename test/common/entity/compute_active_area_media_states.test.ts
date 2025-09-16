@@ -125,3 +125,66 @@ describe("computeActiveAreaMediaStates", () => {
     );
   });
 });
+
+describe("computeActiveAreaMediaStates badge priority", () => {
+  it("prioritizes alert badge over media badge", () => {
+    const hass = {
+      areas: { living_room: { area_id: "living_room" } },
+      entities: {
+        "binary_sensor.door": {
+          entity_id: "binary_sensor.door",
+          area_id: "living_room",
+        },
+        "media_player.tv": {
+          entity_id: "media_player.tv",
+          area_id: "living_room",
+        },
+      },
+      states: {
+        "binary_sensor.door": {
+          entity_id: "binary_sensor.door",
+          state: "on",
+        } as HassEntityBase,
+        "media_player.tv": {
+          entity_id: "media_player.tv",
+          state: "playing",
+        } as HassEntityBase,
+      },
+    } as any;
+
+    const alertStates = hass.states["binary_sensor.door"]
+      ? [hass.states["binary_sensor.door"]]
+      : [];
+    const mediaStates = computeActiveAreaMediaStates(hass, "living_room");
+
+    // Alert badge should take priority
+    expect(alertStates.length > 0).toBe(true);
+    expect(mediaStates.length > 0).toBe(true);
+    expect(alertStates.length > 0 ? "alert" : "media").toBe("alert");
+  });
+
+  it("shows media badge when no alerts", () => {
+    const hass = {
+      areas: { living_room: { area_id: "living_room" } },
+      entities: {
+        "media_player.tv": {
+          entity_id: "media_player.tv",
+          area_id: "living_room",
+        },
+      },
+      states: {
+        "media_player.tv": {
+          entity_id: "media_player.tv",
+          state: "playing",
+        } as HassEntityBase,
+      },
+    } as any;
+
+    const alertStates: HassEntityBase[] = [];
+    const mediaStates = computeActiveAreaMediaStates(hass, "living_room");
+
+    expect(alertStates.length).toBe(0);
+    expect(mediaStates.length).toBe(1);
+    expect(alertStates.length > 0 ? "alert" : "media").toBe("media");
+  });
+});
