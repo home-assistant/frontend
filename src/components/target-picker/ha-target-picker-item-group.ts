@@ -4,6 +4,7 @@ import type { HomeAssistant } from "../../types";
 import "../ha-expansion-panel";
 import "../ha-md-list";
 import "./ha-target-picker-item-row";
+import type { TargetType } from "./ha-target-picker-item-row";
 
 @customElement("ha-target-picker-item-group")
 export class HaTargetPickerItemGroup extends LitElement {
@@ -12,7 +13,7 @@ export class HaTargetPickerItemGroup extends LitElement {
   @property() public type!: "entity" | "device" | "area" | "label";
 
   @property({ attribute: false }) public items!: Partial<
-    Record<"entity" | "device" | "area" | "label" | "floor", string[]>
+    Record<TargetType, string[]>
   >;
 
   @property({ type: Boolean }) public collapsed = false;

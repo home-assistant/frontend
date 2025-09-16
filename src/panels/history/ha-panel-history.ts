@@ -1,10 +1,11 @@
+import { ContextProvider } from "@lit/context";
+import type { ActionDetail } from "@material/mwc-list";
 import {
   mdiDotsVertical,
   mdiDownload,
   mdiFilterRemove,
   mdiImagePlus,
 } from "@mdi/js";
-import type { ActionDetail } from "@material/mwc-list";
 import { differenceInHours } from "date-fns";
 import type {
   HassServiceTarget,
@@ -27,32 +28,35 @@ import {
 import { MIN_TIME_BETWEEN_UPDATES } from "../../components/chart/ha-chart-base";
 import "../../components/chart/state-history-charts";
 import type { StateHistoryCharts } from "../../components/chart/state-history-charts";
-import "../../components/ha-spinner";
+import "../../components/ha-button-menu";
 import "../../components/ha-date-range-picker";
 import "../../components/ha-icon-button";
-import "../../components/ha-button-menu";
-import "../../components/ha-list-item";
 import "../../components/ha-icon-button-arrow-prev";
+import "../../components/ha-list-item";
 import "../../components/ha-menu-button";
+import "../../components/ha-spinner";
 import "../../components/ha-target-picker";
 import "../../components/ha-top-app-bar-fixed";
+import { labelsContext } from "../../data/context";
 import type { HistoryResult } from "../../data/history";
 import {
   computeHistory,
-  subscribeHistory,
-  mergeHistoryResults,
   convertStatisticsToHistory,
+  mergeHistoryResults,
+  subscribeHistory,
 } from "../../data/history";
+import { subscribeLabelRegistry } from "../../data/label_registry";
 import { fetchStatistics } from "../../data/recorder";
 import { resolveEntityIDs } from "../../data/selector";
 import { getSensorNumericDeviceClasses } from "../../data/sensor";
 import { showAlertDialog } from "../../dialogs/generic/show-dialog-box";
+import { SubscribeMixin } from "../../mixins/subscribe-mixin";
 import { haStyle } from "../../resources/styles";
 import type { HomeAssistant } from "../../types";
 import { fileDownload } from "../../util/file_download";
 import { addEntitiesToLovelaceView } from "../lovelace/editor/add-entities-to-view";
 
-class HaPanelHistory extends LitElement {
+class HaPanelHistory extends SubscribeMixin(LitElement) {
   @property({ attribute: false }) hass!: HomeAssistant;
 
   @property({ reflect: true, type: Boolean }) public narrow = false;
@@ -89,6 +93,11 @@ class HaPanelHistory extends LitElement {
 
   private _interval?: number;
 
+  private _labelsContext = new ContextProvider(this, {
+    context: labelsContext,
+    initialValue: [],
+  });
+
   public constructor() {
     super();
 
@@ -106,6 +115,14 @@ class HaPanelHistory extends LitElement {
     if (this.hasUpdated) {
       this._getHistory();
     }
+  }
+
+  public hassSubscribe(): UnsubscribeFunc[] {
+    return [
+      subscribeLabelRegistry(this.hass.connection!, (labels) => {
+        this._labelsContext.setValue(labels);
+      }),
+    ];
   }
 
   public disconnectedCallback() {

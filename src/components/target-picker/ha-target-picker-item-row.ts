@@ -342,8 +342,18 @@ export class HaTargetPickerItemRow extends LitElement {
       this._setDomainName(computeDomain(item));
 
       const stateObject = this.hass.states[item];
-      const entityName = computeEntityName(stateObject, this.hass);
-      const { area, device } = getEntityContext(stateObject, this.hass);
+      const entityName = computeEntityName(
+        stateObject,
+        this.hass.entities,
+        this.hass.devices
+      );
+      const { area, device } = getEntityContext(
+        stateObject,
+        this.hass.entities,
+        this.hass.devices,
+        this.hass.areas,
+        this.hass.floors
+      );
       const deviceName = device ? computeDeviceName(device) : undefined;
       const areaName = area ? computeAreaName(area) : undefined;
       const context = [areaName, entityName ? deviceName : undefined]
