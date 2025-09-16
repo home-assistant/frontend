@@ -9,7 +9,6 @@ import { computeCssColor } from "../../../common/color/compute-color";
 import { hsv2rgb, rgb2hex, rgb2hsv } from "../../../common/color/convert-color";
 import { DOMAINS_TOGGLE } from "../../../common/const";
 import { computeDomain } from "../../../common/entity/compute_domain";
-import { computeStateName } from "../../../common/entity/compute_state_name";
 import { stateActive } from "../../../common/entity/state_active";
 import { stateColorCss } from "../../../common/entity/state_color";
 import "../../../components/ha-card";
@@ -26,6 +25,7 @@ import type { HomeAssistant } from "../../../types";
 import "../card-features/hui-card-features";
 import type { LovelaceCardFeatureContext } from "../card-features/types";
 import { actionHandler } from "../common/directives/action-handler-directive";
+import { computeEntityDisplayName } from "../common/entity/compute-display-name";
 import { findEntities } from "../common/find-entities";
 import { handleAction } from "../common/handle-action";
 import { hasAction } from "../common/has-action";
@@ -255,7 +255,11 @@ export class HuiTileCard extends LitElement implements LovelaceCard {
 
     const contentClasses = { vertical: Boolean(this._config.vertical) };
 
-    const name = this._config.name || computeStateName(stateObj);
+    const name = computeEntityDisplayName(
+      this.hass,
+      stateObj,
+      this._config.name
+    );
     const active = stateActive(stateObj);
     const color = this._computeStateColor(stateObj, this._config.color);
     const domain = computeDomain(stateObj.entity_id);
