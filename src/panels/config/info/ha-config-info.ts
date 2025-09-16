@@ -98,6 +98,8 @@ class HaConfigInfo extends LitElement {
 
   @state() private _osInfo?: HassioHassOSInfo;
 
+  @state() private _externalAppVersion?: string;
+
   @state() private _hassioInfo?: HassioInfo;
 
   @state() private _installationMethod?: string;
@@ -170,6 +172,18 @@ class HaConfigInfo extends LitElement {
                   ${JS_VERSION}${JS_TYPE !== "modern" ? ` · ${JS_TYPE}` : ""}
                 </span>
               </li>
+              ${this._externalAppVersion
+                ? html`
+                    <li>
+                      <span class="version-label"
+                        >${this.hass.localize(
+                          `ui.panel.config.info.external_app_version`
+                        )}</span
+                      >
+                      <span class="version">${this._externalAppVersion}</span>
+                    </li>
+                  `
+                : nothing}
             </ul>
           </ha-card>
           <ha-card outlined class="ohf">
@@ -260,6 +274,8 @@ class HaConfigInfo extends LitElement {
     if (isComponentLoaded(this.hass, "hassio")) {
       this._loadSupervisorInfo();
     }
+
+    this._externalAppVersion = this.hass.auth.external?.config.appVersion;
 
     const unsubSystemHealth = subscribeSystemHealthInfo(this.hass, (info) => {
       if (info?.homeassistant) {

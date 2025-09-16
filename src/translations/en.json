@@ -3261,6 +3261,7 @@
         "info": {
           "caption": "About",
           "installation_method": "Installation method",
+          "external_app_version": "Application",
           "copy_menu": "Copy menu",
           "copy_raw": "Raw text",
           "copy_github": "For GitHub",
