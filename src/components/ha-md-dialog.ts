@@ -166,13 +166,6 @@ export class HaMdDialog extends Dialog {
         min-width: 320px;
       }
 
-      .container {
-        padding-top: var(--safe-area-inset-top);
-        padding-bottom: var(--safe-area-inset-bottom);
-        padding-left: var(--safe-area-inset-left);
-        padding-right: var(--safe-area-inset-right);
-      }
-
       @media all and (max-width: 450px), all and (max-height: 500px) {
         :host(:not([type="alert"])) {
           min-width: var(--mdc-dialog-min-width, 100vw);
@@ -182,6 +175,8 @@ export class HaMdDialog extends Dialog {
         }
 
         .container {
+          padding-top: var(--safe-area-inset-top);
+          padding-bottom: var(--safe-area-inset-bottom);
           padding-left: var(--safe-area-inset-left);
           padding-right: var(--safe-area-inset-right);
         }
