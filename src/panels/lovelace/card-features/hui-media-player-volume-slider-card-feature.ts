@@ -112,7 +112,6 @@ class HuiMediaPlayerVolumeSliderCardFeature
           isUnavailableState(this._stateObj.state)}
         ></ha-icon-button>
 
-        <!-- Percentage Display -->
         <span class="volume-percentage">${position}%</span>
       </div>
     `;
@@ -121,20 +120,25 @@ class HuiMediaPlayerVolumeSliderCardFeature
   private _valueChanged(ev: CustomEvent) {
     ev.stopPropagation();
     const value = ev.detail.value;
+    if (!this._stateObj) return;
 
     this.hass!.callService("media_player", "volume_set", {
-      entity_id: this._stateObj!.entity_id,
+      entity_id: this._stateObj.entity_id,
       volume_level: value / 100,
     });
   }
 
   private _adjustVolume(delta: number) {
     if (!this._stateObj) return;
-    const currentVolume = this._stateObj!.attributes.volume_level * 100;
+    const volumeLevel = this._stateObj.attributes.volume_level;
+
+    if (volumeLevel === null || volumeLevel === undefined) return;
+
+    const currentVolume = volumeLevel != null ? volumeLevel * 100 : 0;
     const newVolume = Math.max(0, Math.min(100, currentVolume + delta));
 
     this.hass!.callService("media_player", "volume_set", {
-      entity_id: this._stateObj!.entity_id,
+      entity_id: this._stateObj.entity_id,
       volume_level: newVolume / 100,
     });
   }
