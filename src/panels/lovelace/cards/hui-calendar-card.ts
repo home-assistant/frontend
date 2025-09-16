@@ -1,5 +1,6 @@
 import type { PropertyValues } from "lit";
 import { css, html, LitElement, nothing } from "lit";
+import { classMap } from "lit/directives/class-map";
 import { customElement, property, state } from "lit/decorators";
 import { getColorByIndex } from "../../../common/color/colors";
 import { applyThemesOnElement } from "../../../common/dom/apply_themes_on_element";
@@ -51,6 +52,8 @@ export class HuiCalendarCard extends LitElement implements LovelaceCard {
   }
 
   @property({ attribute: false }) public hass?: HomeAssistant;
+
+  @property({ attribute: false }) public layout?: string;
 
   @state() private _events: CalendarEvent[] = [];
 
@@ -131,6 +134,7 @@ export class HuiCalendarCard extends LitElement implements LovelaceCard {
       <ha-card>
         <div class="header">${this._config.title}</div>
         <ha-full-calendar
+          class=${classMap({ "is-grid": this.layout === "grid" })}
           .narrow=${this._narrow}
           .events=${this._events}
           .hass=${this.hass}
@@ -235,6 +239,10 @@ export class HuiCalendarCard extends LitElement implements LovelaceCard {
     }
 
     ha-full-calendar {
+      height: 400px;
+    }
+
+    ha-full-calendar.is-grid {
       height: calc(100% - 16px);
     }
   `;
