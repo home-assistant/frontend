@@ -27,11 +27,6 @@ export const mainStyles = css`
     --margin-title-ltr: 0 0 0 24px;
     --margin-title-rtl: 0 24px 0 0;
 
-    --app-safe-area-inset-top: 72px;
-    --app-safe-area-inset-bottom: 48px;
-    --app-safe-area-inset-left: 24px;
-    --app-safe-area-inset-right: 24px;
-
     /* safe-area-insets */
     --safe-area-inset-top: var(--app-safe-area-inset-top, env(safe-area-inset-top, 0));
     --safe-area-inset-bottom: var(--app-safe-area-inset-bottom, env(safe-area-inset-bottom, 0));
