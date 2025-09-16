@@ -4,6 +4,7 @@ import { customElement, eventOptions, property, state } from "lit/decorators";
 import { classMap } from "lit/directives/class-map";
 import memoizeOne from "memoize-one";
 import { canShowPage } from "../common/config/can_show_page";
+import { goBack } from "../common/navigate";
 import { restoreScroll } from "../common/decorators/restore-scroll";
 import type { LocalizeFunc } from "../common/translations/localize";
 import "../components/ha-icon-button-arrow-prev";
@@ -172,7 +173,9 @@ class HassTabsSubpage extends LitElement {
           ? html`<div id="tabbar" class="bottom-bar">${tabs}</div>`
           : ""}
       </div>
-      <div class="container">
+      <div
+        class=${classMap({ container: true, tabs: showTabs && this.narrow })}
+      >
         ${this.pane
           ? html`<div class="pane">
               <div class="shadow-container"></div>
@@ -205,7 +208,7 @@ class HassTabsSubpage extends LitElement {
       this.backCallback();
       return;
     }
-    history.back();
+    goBack();
   }
 
   static get styles(): CSSResultGroup {
@@ -225,11 +228,9 @@ class HassTabsSubpage extends LitElement {
 
         .container {
           display: flex;
-          height: calc(100% - var(--header-height));
-        }
-
-        :host([narrow]) .container {
-          height: 100%;
+          height: calc(
+            100% - var(--header-height, 0px) - var(--safe-area-inset-top, 0px)
+          );
         }
 
         ha-menu-button {
@@ -240,14 +241,18 @@ class HassTabsSubpage extends LitElement {
 
         .toolbar {
           font-size: var(--ha-font-size-xl);
-          height: calc(var(--header-height) + var(--safe-area-inset-top));
+          height: calc(
+            var(--header-height, 0px) + var(--safe-area-inset-top, 0px)
+          );
           padding-top: var(--safe-area-inset-top);
           padding-right: var(--safe-area-inset-right);
-          padding-left: var(--safe-area-inset-left);
           background-color: var(--sidebar-background-color);
           font-weight: var(--ha-font-weight-normal);
           border-bottom: 1px solid var(--divider-color);
           box-sizing: border-box;
+        }
+        :host([narrow]) .toolbar {
+          padding-left: var(--safe-area-inset-left);
         }
         .toolbar-content {
           padding: 8px 12px;
@@ -256,10 +261,8 @@ class HassTabsSubpage extends LitElement {
           height: 100%;
           box-sizing: border-box;
         }
-        @media (max-width: 599px) {
-          .toolbar-content {
-            padding: 4px;
-          }
+        :host([narrow]) .toolbar-content {
+          padding: 4px;
         }
         .toolbar a {
           color: var(--sidebar-text-color);
@@ -323,45 +326,38 @@ class HassTabsSubpage extends LitElement {
 
         .content {
           position: relative;
-          width: calc(
-            100% - var(--safe-area-inset-left) - var(--safe-area-inset-right)
-          );
-          margin-left: var(--safe-area-inset-left);
+          width: 100%;
           margin-right: var(--safe-area-inset-right);
-          margin-inline-start: var(--safe-area-inset-left);
           margin-inline-end: var(--safe-area-inset-right);
+          margin-bottom: var(--safe-area-inset-bottom);
           overflow: auto;
           -webkit-overflow-scrolling: touch;
         }
-
         :host([narrow]) .content {
-          height: calc(100% - var(--header-height));
-          height: calc(
-            100% - var(--header-height) - var(--safe-area-inset-bottom)
-          );
+          margin-left: var(--safe-area-inset-left);
+          margin-inline-start: var(--safe-area-inset-left);
         }
-
         :host([narrow]) .content.tabs {
-          height: calc(100% - 2 * var(--header-height));
-          height: calc(
-            100% - 2 * var(--header-height) - var(--safe-area-inset-bottom)
+          /* Bottom bar reuses header height */
+          margin-bottom: calc(
+            var(--header-height, 0px) + var(--safe-area-inset-bottom, 0px)
           );
         }
 
         .content .fab-bottom-space {
-          height: calc(64px + var(--safe-area-inset-bottom));
+          height: calc(64px + var(--safe-area-inset-bottom, 0px));
         }
 
         :host([narrow]) .content.tabs .fab-bottom-space {
-          height: calc(80px + var(--safe-area-inset-bottom));
+          height: calc(80px + var(--safe-area-inset-bottom, 0px));
         }
 
         #fab {
           position: fixed;
-          right: calc(16px + var(--safe-area-inset-right));
+          right: calc(16px + var(--safe-area-inset-right, 0px));
           inset-inline-end: calc(16px + var(--safe-area-inset-right));
           inset-inline-start: initial;
-          bottom: calc(16px + var(--safe-area-inset-bottom));
+          bottom: calc(16px + var(--safe-area-inset-bottom, 0px));
           z-index: 1;
           display: flex;
           flex-wrap: wrap;
@@ -369,7 +365,7 @@ class HassTabsSubpage extends LitElement {
           gap: 8px;
         }
         :host([narrow]) #fab.tabs {
-          bottom: calc(84px + var(--safe-area-inset-bottom));
+          bottom: calc(84px + var(--safe-area-inset-bottom, 0px));
         }
         #fab[is-wide] {
           bottom: 24px;

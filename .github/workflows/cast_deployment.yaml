@@ -21,12 +21,12 @@ jobs:
       url: ${{ steps.deploy.outputs.NETLIFY_LIVE_URL || steps.deploy.outputs.NETLIFY_URL }}
     steps:
       - name: Check out files from GitHub
-        uses: actions/checkout@v5.0.0
+        uses: actions/checkout@08c6903cd8c0fde910a37f88322edcfb5dd907a8 # v5.0.0
         with:
           ref: dev
 
       - name: Setup Node
-        uses: actions/setup-node@v5.0.0
+        uses: actions/setup-node@a0853c24544627f65ddf259abe73b1d18a591444 # v5.0.0
         with:
           node-version-file: ".nvmrc"
           cache: yarn
@@ -56,12 +56,12 @@ jobs:
       url: ${{ steps.deploy.outputs.NETLIFY_LIVE_URL || steps.deploy.outputs.NETLIFY_URL }}
     steps:
       - name: Check out files from GitHub
-        uses: actions/checkout@v5.0.0
+        uses: actions/checkout@08c6903cd8c0fde910a37f88322edcfb5dd907a8 # v5.0.0
         with:
           ref: master
 
       - name: Setup Node
-        uses: actions/setup-node@v5.0.0
+        uses: actions/setup-node@a0853c24544627f65ddf259abe73b1d18a591444 # v5.0.0
         with:
           node-version-file: ".nvmrc"
           cache: yarn

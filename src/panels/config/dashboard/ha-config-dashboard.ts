@@ -212,7 +212,7 @@ class HaConfigDashboard extends SubscribeMixin(LitElement) {
       this._repairsIssues;
 
     return html`
-      <ha-top-app-bar-fixed>
+      <ha-top-app-bar-fixed .narrow=${this.narrow}>
         <ha-menu-button
           slot="navigationIcon"
           .hass=${this.hass}
@@ -386,17 +386,16 @@ class HaConfigDashboard extends SubscribeMixin(LitElement) {
     return [
       haStyle,
       css`
-        ha-card:last-child {
-          margin-bottom: var(--safe-area-inset-bottom);
-        }
         :host(:not([narrow])) ha-card:last-child {
-          margin-bottom: max(24px, var(--safe-area-inset-bottom));
+          margin-bottom: 24px;
         }
+
         ha-config-section {
           margin: auto;
           margin-top: -32px;
           max-width: 600px;
         }
+
         ha-card {
           overflow: hidden;
         }
@@ -404,9 +403,11 @@ class HaConfigDashboard extends SubscribeMixin(LitElement) {
           text-decoration: none;
           color: var(--primary-text-color);
         }
+
         ha-assist-chip {
           margin: 8px 16px 16px 16px;
         }
+
         .title {
           font-size: var(--ha-font-size-l);
           padding: 16px;
@@ -425,7 +426,7 @@ class HaConfigDashboard extends SubscribeMixin(LitElement) {
         }
 
         ha-tip {
-          margin-bottom: max(var(--safe-area-inset-bottom), 8px);
+          margin-bottom: 8px;
         }
 
         .new {

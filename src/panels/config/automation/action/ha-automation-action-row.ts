@@ -258,14 +258,16 @@ export default class HaAutomationActionRow extends LitElement {
 
       ${type !== "condition" &&
       (this.action as NonConditionAction).continue_on_error === true
-        ? html`<ha-tooltip
-            slot="icons"
-            .content=${this.hass.localize(
-              "ui.panel.config.automation.editor.actions.continue_on_error"
-            )}
-          >
-            <ha-svg-icon .path=${mdiAlertCircleCheck}></ha-svg-icon>
-          </ha-tooltip>`
+        ? html`<ha-svg-icon
+              id="svg-icon"
+              slot="icons"
+              .path=${mdiAlertCircleCheck}
+            ></ha-svg-icon>
+            <ha-tooltip for="svg-icon">
+              ${this.hass.localize(
+                "ui.panel.config.automation.editor.actions.continue_on_error"
+              )}
+            </ha-tooltip>`
         : nothing}
       ${!this.optionsInSidebar
         ? html`<ha-md-button-menu
@@ -460,9 +462,6 @@ export default class HaAutomationActionRow extends LitElement {
               .sortSelected=${this.sortSelected}
               @click=${this._toggleSidebar}
               @toggle-collapsed=${this._toggleCollapse}
-              @copy-row=${this._copyAction}
-              @cut-row=${this._cutAction}
-              @delete-row=${this._onDelete}
               >${this._renderRow()}</ha-automation-row
             >`
           : html`

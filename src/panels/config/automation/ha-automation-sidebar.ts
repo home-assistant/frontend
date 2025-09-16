@@ -1,7 +1,7 @@
 import { css, html, LitElement, nothing } from "lit";
 import { customElement, property, query, state } from "lit/decorators";
-import "../../../components/ha-bottom-sheet";
-import type { HaBottomSheet } from "../../../components/ha-bottom-sheet";
+import "../../../components/ha-resizable-bottom-sheet";
+import type { HaResizableBottomSheet } from "../../../components/ha-resizable-bottom-sheet";
 import {
   isCondition,
   isScriptField,
@@ -37,7 +37,8 @@ export default class HaAutomationSidebar extends LitElement {
 
   @state() private _yamlMode = false;
 
-  @query("ha-bottom-sheet") private _bottomSheetElement?: HaBottomSheet;
+  @query("ha-resizable-bottom-sheet")
+  private _bottomSheetElement?: HaResizableBottomSheet;
 
   private _renderContent() {
     // get config type
@@ -147,9 +148,9 @@ export default class HaAutomationSidebar extends LitElement {
 
     if (this.narrow) {
       return html`
-        <ha-bottom-sheet @bottom-sheet-closed=${this._closeSidebar}>
+        <ha-resizable-bottom-sheet @bottom-sheet-closed=${this._closeSidebar}>
           ${this._renderContent()}
-        </ha-bottom-sheet>
+        </ha-resizable-bottom-sheet>
       `;
     }
 
