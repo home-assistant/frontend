@@ -143,7 +143,7 @@ export class HaTargetPickerItemRow extends LitElement {
         ${context && !this.subEntry
           ? html`<span slot="supporting-text">${context}</span>`
           : nothing}
-        ${showEntities || showDevices || this._domainName
+        ${!this.subEntry && (showEntities || showDevices || this._domainName)
           ? html`
               <div slot="end" class="summary">
                 ${showEntities
@@ -459,12 +459,6 @@ export class HaTargetPickerItemRow extends LitElement {
     }
     .summary .secondary.domain {
       font-family: var(--ha-font-family-code);
-    }
-
-    @media all and (max-width: 870px) {
-      :host([sub-entry]) .summary {
-        display: none;
-      }
     }
 
     .entries {
