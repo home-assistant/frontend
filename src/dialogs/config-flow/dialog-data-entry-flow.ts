@@ -482,6 +482,8 @@ class DataEntryFlowDialog extends LitElement {
         }
         this.showDialog({
           ...this._params!,
+          manifest: undefined,
+          domain: undefined,
           continueFlowId: _step.next_flow[1],
           carryOverDevices: this._devices(
             this._params!.flowConfig.showDevices,
