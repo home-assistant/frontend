@@ -140,18 +140,8 @@ export class HaDialog extends DialogBase {
 
       @media all and (max-width: 450px), all and (max-height: 500px) {
         .mdc-dialog .mdc-dialog__surface {
-          min-height: calc(
-            100vh - var(--safe-area-inset-top, 0px) - var(
-                --safe-area-inset-bottom,
-                0px
-              )
-          );
-          max-height: calc(
-            100vh - var(--safe-area-inset-top, 0px) - var(
-                --safe-area-inset-bottom,
-                0px
-              )
-          );
+          min-height: 100vh;
+          max-height: 100vh;
         }
       }
 
