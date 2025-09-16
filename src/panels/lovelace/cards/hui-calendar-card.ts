@@ -134,7 +134,10 @@ export class HuiCalendarCard extends LitElement implements LovelaceCard {
       <ha-card>
         <div class="header">${this._config.title}</div>
         <ha-full-calendar
-          class=${classMap({ "is-grid": this.layout === "grid" })}
+          class=${classMap({
+            "is-grid": this.layout === "grid",
+            "is-panel": this.layout === "panel",
+          })}
           .narrow=${this._narrow}
           .events=${this._events}
           .hass=${this.hass}
@@ -242,7 +245,8 @@ export class HuiCalendarCard extends LitElement implements LovelaceCard {
       height: 400px;
     }
 
-    ha-full-calendar.is-grid {
+    ha-full-calendar.is-grid,
+    ha-full-calendar.is-panel {
       height: calc(100% - 16px);
     }
   `;
