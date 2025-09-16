@@ -36,7 +36,9 @@ export class CommonControlsSectionStrategy extends ReactiveElement {
     if (!isComponentLoaded(hass, "usage_prediction")) {
       section.cards!.push({
         type: "markdown",
-        content: "Usage Prediction integration is not loaded.",
+        content: hass.localize(
+          "ui.panel.lovelace.strategy.common_controls.not_loaded"
+        ),
       });
       return section;
     }
@@ -67,7 +69,9 @@ export class CommonControlsSectionStrategy extends ReactiveElement {
     } else {
       section.cards!.push({
         type: "markdown",
-        content: "Not enough data yet to show common controls.",
+        content: hass.localize(
+          "ui.panel.lovelace.strategy.common_controls.no_data"
+        ),
       });
     }
 

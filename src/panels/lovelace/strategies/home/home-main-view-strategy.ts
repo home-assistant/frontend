@@ -109,7 +109,9 @@ export class HomeMainViewStrategy extends ReactiveElement {
       ? ({
           strategy: {
             type: "common-controls",
-            title: "Commonly used",
+            title: hass.localize(
+              "ui.panel.lovelace.strategy.home.common_controls"
+            ),
             exclude_entities: favoriteEntities,
           },
           column_span: maxColumns,
