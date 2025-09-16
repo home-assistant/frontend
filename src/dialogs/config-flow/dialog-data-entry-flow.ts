@@ -408,7 +408,8 @@ class DataEntryFlowDialog extends LitElement {
                                   .devices=${this._devices(
                                     this._params.flowConfig.showDevices,
                                     Object.values(this.hass.devices),
-                                    this._step.result?.entry_id
+                                    this._step.result?.entry_id,
+                                    this._params.carryOverDevices
                                   )}
                                 ></step-flow-create-entry>
                               `}
