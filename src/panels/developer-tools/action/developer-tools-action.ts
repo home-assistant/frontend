@@ -624,7 +624,6 @@ class HaPanelDevAction extends LitElement {
           bottom: 0;
           box-sizing: border-box;
           width: 100%;
-          margin-bottom: max(16px, var(--safe-area-inset-bottom, 0px));
         }
         .button-row .buttons {
           display: flex;
