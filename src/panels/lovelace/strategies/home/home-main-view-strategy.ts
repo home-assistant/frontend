@@ -4,7 +4,11 @@ import { isComponentLoaded } from "../../../../common/config/is_component_loaded
 import { generateEntityFilter } from "../../../../common/entity/entity_filter";
 import type { AreaRegistryEntry } from "../../../../data/area_registry";
 import { getEnergyPreferences } from "../../../../data/energy";
-import type { LovelaceSectionConfig } from "../../../../data/lovelace/config/section";
+import type {
+  LovelaceSectionConfig,
+  LovelaceSectionRawConfig,
+  LovelaceStrategySectionConfig,
+} from "../../../../data/lovelace/config/section";
 import type { LovelaceViewConfig } from "../../../../data/lovelace/config/view";
 import type { HomeAssistant } from "../../../../types";
 import type {
@@ -100,6 +104,19 @@ export class HomeMainViewStrategy extends ReactiveElement {
         )
       );
     }
+
+    const commonControlsSection = isComponentLoaded(hass, "usage_prediction")
+      ? ({
+          strategy: {
+            type: "common-controls",
+            title: hass.localize(
+              "ui.panel.lovelace.strategy.home.common_controls"
+            ),
+            exclude_entities: favoriteEntities,
+          },
+          column_span: maxColumns,
+        } as LovelaceStrategySectionConfig)
+      : undefined;
 
     const summarySection: LovelaceSectionConfig = {
       type: "grid",
@@ -213,12 +230,16 @@ export class HomeMainViewStrategy extends ReactiveElement {
       }
     }
 
-    const sections = [
-      ...(favoriteSection.cards ? [favoriteSection] : []),
-      summarySection,
-      areasSection,
-      ...(widgetSection.cards ? [widgetSection] : []),
-    ];
+    const sections = (
+      [
+        favoriteSection.cards && favoriteSection,
+        commonControlsSection,
+        summarySection,
+        areasSection,
+        widgetSection.cards && widgetSection,
+      ] satisfies (LovelaceSectionRawConfig | undefined)[]
+    ).filter(Boolean) as LovelaceSectionRawConfig[];
+
     return {
       type: "sections",
       max_columns: maxColumns,

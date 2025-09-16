@@ -6878,7 +6878,12 @@
             "areas": "Areas",
             "other_areas": "Other areas",
             "unamed_device": "Unnamed device",
-            "others": "Others"
+            "others": "Others",
+            "common_controls": "Commonly used"
+          },
+          "common_controls": {
+            "not_loaded": "Usage Prediction integration is not loaded.",
+            "no_data": "This place will soon fill up with the entities you use most often, based on your activity."
           }
         },
         "cards": {
