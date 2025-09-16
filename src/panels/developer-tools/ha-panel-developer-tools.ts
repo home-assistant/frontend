@@ -191,11 +191,21 @@ class PanelDeveloperTools extends LitElement {
         developer-tools-router {
           display: block;
           padding-top: calc(
-            var(--header-height) + 52px + var(--safe-area-inset-top)
+            var(--header-height) + 52px + var(--safe-area-inset-top, 0px)
           );
-          padding-bottom: calc(var(--safe-area-inset-bottom));
+          padding-bottom: var(--safe-area-inset-bottom);
+          padding-right: var(--safe-area-inset-right);
           flex: 1 1 100%;
-          max-width: 100%;
+          max-width: calc(100% - var(--safe-area-inset-right, 0px));
+        }
+        :host([narrow]) developer-tools-router {
+          padding-left: var(--safe-area-inset-left);
+          max-width: calc(
+            100% - var(--safe-area-inset-left, 0px) - var(
+                --safe-area-inset-right,
+                0px
+              )
+          );
         }
         ha-tab-group {
           --ha-tab-active-text-color: var(--app-header-text-color, white);
