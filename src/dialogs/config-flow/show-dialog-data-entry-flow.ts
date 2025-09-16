@@ -13,6 +13,7 @@ import type {
 } from "../../data/data_entry_flow";
 import type { IntegrationManifest } from "../../data/integration";
 import type { HomeAssistant } from "../../types";
+import type { DeviceRegistryEntry } from "../../data/device_registry";
 
 export interface FlowConfig {
   flowType: FlowType;
@@ -170,6 +171,7 @@ export interface DataEntryFlowDialogParams {
   showAdvanced?: boolean;
   dialogParentElement?: HTMLElement;
   navigateToResult?: boolean;
+  carryOverDevices?: Record<string, DeviceRegistryEntry[]>;
 }
 
 export const loadDataEntryFlowDialog = () => import("./dialog-data-entry-flow");

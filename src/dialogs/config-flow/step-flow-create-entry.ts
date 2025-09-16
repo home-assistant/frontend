@@ -66,7 +66,10 @@ class StepFlowCreateEntry extends LitElement {
       return;
     }
 
-    if (this.step.next_flow && this.devices.length === 0) {
+    if (
+      this.step.next_flow &&
+      (this.step.next_flow[0] === "config_flow" || this.devices.length === 0)
+    ) {
       this._flowDone();
       return;
     }
@@ -257,6 +260,9 @@ class StepFlowCreateEntry extends LitElement {
         showConfigFlowDialog(this, {
           continueFlowId: this.step.next_flow[1],
           navigateToResult: this.navigateToResult,
+          carryOverDevices: {
+            [this.step.result!.entry_id]: this.devices,
+          },
         });
       } else if (this.step.next_flow[0] === "options_flow") {
         showOptionsFlowDialog(this, this.step.result!, {

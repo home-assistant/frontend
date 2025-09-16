@@ -178,10 +178,16 @@ class DataEntryFlowDialog extends LitElement {
     (
       showDevices: boolean,
       devices: DeviceRegistryEntry[],
-      entry_id?: string
+      entry_id?: string,
+      carryOverDevices: Record<string, DeviceRegistryEntry[]> = {}
     ) =>
       showDevices && entry_id
-        ? devices.filter((device) => device.config_entries.includes(entry_id))
+        ? [
+            ...Object.values(carryOverDevices ?? {}).flat(),
+            ...devices.filter((device) =>
+              device.config_entries.includes(entry_id)
+            ),
+          ]
         : []
   );
 
@@ -213,7 +219,8 @@ class DataEntryFlowDialog extends LitElement {
         const devicesLength = this._devices(
           this._params.flowConfig.showDevices,
           Object.values(this.hass.devices),
-          this._step.result?.entry_id
+          this._step.result?.entry_id,
+          this._params.carryOverDevices
         ).length;
         return this.hass.localize(
           `ui.panel.config.integrations.config_flow.${
