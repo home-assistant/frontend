@@ -339,7 +339,10 @@ export class HuiButtonCard extends LitElement implements LovelaceCard {
         : undefined;
     }
 
-    if (!stateObj || !config.state_color) {
+    if (
+      !stateObj ||
+      !(config.state_color ?? computeStateDomain(stateObj) === "light")
+    ) {
       return undefined;
     }
 
