@@ -332,7 +332,7 @@ export class HuiTodoListCard extends LitElement implements LovelaceCard {
             ${!this._reordering && uncheckedItems.length
               ? html`
                   ${!this._config.hide_status
-                    ? html`<div class="header" role="seperator">
+                    ? html`<div class="header">
                         <h2>
                           ${this.hass!.localize(
                             "ui.panel.lovelace.cards.todo-list.unchecked_items"
