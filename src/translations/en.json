@@ -9022,8 +9022,6 @@
             },
             "editor": {
               "default_name": "New blueprint",
-              "unsaved_confirm_title": "Leave editor?",
-              "unsaved_confirm_text": "Unsaved changes will be lost.",
               "save": "Save",
               "rename": "Rename",
               "load_error_not_editable": "Only blueprints in blueprints.yaml are editable.",

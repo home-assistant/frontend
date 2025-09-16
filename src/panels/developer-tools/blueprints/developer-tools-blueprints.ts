@@ -8,11 +8,18 @@ import "../../../components/ha-card";
 import { dump } from "js-yaml";
 import type { HomeAssistant } from "../../../types";
 import { haStyle } from "../../../resources/styles";
-import type { Blueprint, BlueprintDomain, BlueprintOrError, Blueprints} from "../../../data/blueprint";
+import type {
+  Blueprint,
+  BlueprintDomain,
+  BlueprintMetaDataEditorSchema,
+  BlueprintOrError,
+  Blueprints,
+} from "../../../data/blueprint";
 import { saveBlueprint, fetchBlueprints, BlueprintYamlSchema } from "../../../data/blueprint";
 import "./ha-blueprint-editor";
 import "./blueprint-metadata-editor";
 import { showPickBlueprintDialog } from "./pick-blueprint-dialog/show-dialog-pick-blueprint";
+import { showAlertDialog, showConfirmationDialog } from "../../../dialogs/generic/show-dialog-box";
 
 @customElement("developer-tools-blueprints")
 class HaPanelDevBlueprints extends LitElement {
@@ -24,11 +31,15 @@ class HaPanelDevBlueprints extends LitElement {
 
   @state() private _selectedBlueprint?: BlueprintOrError;
 
+  @state() private _selectedBlueprintDomain?: BlueprintDomain;
+
   @state() private _dirty = false;
 
   @state() public _originalBlueprint?: BlueprintOrError;
 
   @state() private _selectedBlueprintPath?: string;
+
+  @state() private _originalBlueprintPath?: string;
 
   protected firstUpdated(changedProps) {
     super.firstUpdated(changedProps);
@@ -49,13 +60,43 @@ class HaPanelDevBlueprints extends LitElement {
 
   private _onBlueprintContentChanged(ev: CustomEvent<{ value: Blueprint }>) {
     ev.stopPropagation();
-    this._selectedBlueprint = { ...this._selectedBlueprint, ...ev.detail.value };
+
+    if (!this._selectedBlueprint || "error" in this._selectedBlueprint) {
+      this._selectedBlueprint = ev.detail.value;
+    } else {
+      this._selectedBlueprint = {
+        ...this._selectedBlueprint,
+        ...ev.detail.value,
+        metadata: {
+          ...this._selectedBlueprint.metadata,
+          input: ev.detail.value.metadata.input,
+        },
+      };
+    }
     this._dirty = true;
   }
 
-  private _onBlueprintMetadataChanged(ev: CustomEvent<{ value: Blueprint["metadata"] }>) {
+  private _onBlueprintMetadataChanged(ev: CustomEvent<{ value: BlueprintMetaDataEditorSchema }>) {
     ev.stopPropagation();
-    this._selectedBlueprint = { ...this._selectedBlueprint!, metadata: ev.detail.value };
+    if (!this._selectedBlueprint || "error" in this._selectedBlueprint) {
+      return;
+    }
+
+    this._selectedBlueprint = {
+      ...this._selectedBlueprint,
+      metadata: {
+        ...this._selectedBlueprint.metadata,
+        domain: this._selectedBlueprintDomain!,
+        name: ev.detail.value.name,
+        author: ev.detail.value.author,
+        description: ev.detail.value.description,
+        homeassistant: {
+          min_version: ev.detail.value.minimum_version
+        }
+      }
+    };
+
+    this._selectedBlueprintPath = ev.detail.value.path;
     this._dirty = true;
   }
 
@@ -65,7 +106,7 @@ class HaPanelDevBlueprints extends LitElement {
     this._dirty = true;
   }
 
-  private _handleBlueprintPicked(id: string) {
+  private _handleBlueprintPicked(domain: BlueprintDomain, id: string) {
     if (!this._blueprints) {
       return;
     }
@@ -80,6 +121,8 @@ class HaPanelDevBlueprints extends LitElement {
       this._originalBlueprint = entry[1];
       this._selectedBlueprint = entry[1];
       this._selectedBlueprintPath = id;
+      this._originalBlueprintPath = id;
+      this._selectedBlueprintDomain = domain;
     }
   }
 
@@ -91,6 +134,7 @@ class HaPanelDevBlueprints extends LitElement {
     };
 
     this._dirty = false;
+    this._selectedBlueprintDomain = domain;
     this._originalBlueprint = editorElement.defaultConfig;
     this._selectedBlueprint = editorElement.defaultConfig;
   }
@@ -114,8 +158,22 @@ class HaPanelDevBlueprints extends LitElement {
     }
 
     if (!this._selectedBlueprint || ("error" in this._selectedBlueprint)) {
-      // TODO
+      await showAlertDialog(this, {
+        title: "",
+        text: this._selectedBlueprint?.error
+      })
       return;
+    }
+
+    if (this._selectedBlueprint.metadata.source_url) {
+      const shouldSave = await showConfirmationDialog(this, {
+        title: "",
+        text: "",
+        confirm
+      });
+      if (!shouldSave) {
+        return;
+      }
     }
 
     await saveBlueprint(
@@ -123,9 +181,11 @@ class HaPanelDevBlueprints extends LitElement {
       this._selectedBlueprint.metadata.domain,
       this._selectedBlueprintPath,
       dump(this._selectedBlueprint),
-      "", // TODO display warning
-      true // TODO?
-    )
+      this._selectedBlueprint.metadata.source_url,
+      true
+    );
+    this._originalBlueprint = this._selectedBlueprint;
+    this._originalBlueprintPath = this._selectedBlueprintPath;
   }
 
   private _resetBlueprint() {
@@ -133,6 +193,7 @@ class HaPanelDevBlueprints extends LitElement {
       return;
     }
 
+    this._selectedBlueprintPath = this._originalBlueprintPath;
     this._selectedBlueprint = { ...this._originalBlueprint };
     this._dirty = false;
   }
@@ -146,6 +207,22 @@ class HaPanelDevBlueprints extends LitElement {
       .values(this._blueprints)
       .flatMap(b => Object.values(b))
       .filter(b => !("error" in b)) as Blueprint[];
+    const blueprintMetadata = !this._selectedBlueprint || "error" in this._selectedBlueprint
+      ? {
+        name: "",
+        description: "",
+        minimum_version: "",
+        path: "",
+        author: "",
+      } as BlueprintMetaDataEditorSchema
+      : {
+        name: this._selectedBlueprint.metadata.name,
+        description: this._selectedBlueprint.metadata.description,
+        minimum_version: this._selectedBlueprint.metadata.homeassistant?.min_version,
+        path: this._selectedBlueprintPath,
+        author: this._selectedBlueprint.metadata.author,
+      } as BlueprintMetaDataEditorSchema;
+
     return html`
       <div class="container">
         <div class="full-row">
@@ -171,7 +248,7 @@ class HaPanelDevBlueprints extends LitElement {
               : html`
                 <blueprint-metadata-editor
                   .hass=${this.hass}
-                  .metadata=${this._selectedBlueprint.metadata}
+                  .metadata=${blueprintMetadata}
                   @value-changed=${this._onBlueprintMetadataChanged}
                 ></blueprint-metadata-editor>
                 <ha-blueprint-editor
@@ -179,7 +256,7 @@ class HaPanelDevBlueprints extends LitElement {
                   .narrow=${this.narrow}
                   .isWide=${!this.narrow}
                   .blueprints=${blueprints}
-                  .blueprintPath=${this._selectedBlueprintPath ?? ""}
+                  .blueprintPath=${this._originalBlueprintPath ?? ""}
                   .domain=${this._selectedBlueprint.metadata.domain}
                   @value-changed=${this._onBlueprintContentChanged}
                 >
@@ -187,10 +264,11 @@ class HaPanelDevBlueprints extends LitElement {
               `}
         </ha-card>
         <ha-yaml-editor
+          .hass=${this.hass}
           .yamlSchema=${BlueprintYamlSchema}
           .value=${this._selectedBlueprint}
           .autoUpdate=${true}
-          .readOnly=${!this._selectedBlueprintPath}
+          .readOnly=${true}
           @value-changed=${this._onBlueprintYamlChanged}
         >
         </ha-yaml-editor>

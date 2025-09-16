@@ -63,6 +63,14 @@ export interface AutomationBlueprint
 export interface ScriptBlueprint extends ManualScriptConfig, BlueprintBase {}
 export type Blueprint = AutomationBlueprint | ScriptBlueprint;
 
+export interface BlueprintMetaDataEditorSchema {
+  name: string;
+  path: string;
+  description: string;
+  author: string;
+  minimum_version: string;
+}
+
 export interface BlueprintMetaData {
   domain: BlueprintDomain;
   name: string;

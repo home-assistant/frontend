@@ -5,7 +5,7 @@ export const loadPickBlueprintDialog = () => import("./dialog-pick-blueprint");
 
 export interface PickBlueprintDialogParams {
   blueprints: Record<BlueprintDomain, Blueprints>;
-  handlePickBlueprint: (id: string) => void;
+  handlePickBlueprint: (domain: BlueprintDomain, id: string) => void;
   handlePickNewBlueprint: (domain: BlueprintDomain) => void;
 }
 

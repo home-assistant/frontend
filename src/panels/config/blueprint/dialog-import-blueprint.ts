@@ -1,4 +1,3 @@
-import "@material/mwc-button";
 import { mdiOpenInNew, mdiClose } from "@mdi/js";
 import { css, html, LitElement, nothing } from "lit";
 import { customElement, property, query, state } from "lit/decorators";
@@ -16,6 +15,7 @@ import type { BlueprintImportResult } from "../../../data/blueprint";
 import { importBlueprint, saveBlueprint } from "../../../data/blueprint";
 import { haStyleDialog } from "../../../resources/styles";
 import type { HomeAssistant } from "../../../types";
+import "../../../components/ha-button";
 
 @customElement("ha-dialog-import-blueprint")
 class DialogImportBlueprint extends LitElement {
@@ -157,16 +157,16 @@ class DialogImportBlueprint extends LitElement {
                 ></ha-textfield>
               `}
         </div>
-        <mwc-button
+        <ha-button
           slot="primaryAction"
           @click=${this.closeDialog}
           .disabled=${this._saving}
         >
           ${this.hass.localize("ui.common.cancel")}
-        </mwc-button>
+        </ha-button>
         ${!this._result
           ? html`
-              <mwc-button
+              <ha-button
                 slot="primaryAction"
                 @click=${this._import}
                 .disabled=${this._importing}
@@ -182,10 +182,10 @@ class DialogImportBlueprint extends LitElement {
                 ${this.hass.localize(
                   "ui.panel.config.blueprint.add.import_btn"
                 )}
-              </mwc-button>
+              </ha-button>
             `
           : html`
-              <mwc-button
+              <ha-button
                 slot="primaryAction"
                 @click=${this._save}
                 .disabled=${this._saving || this._result.validation_errors}
@@ -205,7 +205,7 @@ class DialogImportBlueprint extends LitElement {
                   : this.hass.localize(
                       "ui.panel.config.blueprint.add.save_btn"
                     )}
-              </mwc-button>
+              </ha-button>
             `}
       </ha-dialog>
     `;

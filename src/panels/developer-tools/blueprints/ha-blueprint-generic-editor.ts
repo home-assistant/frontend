@@ -9,12 +9,11 @@ import type { HomeAssistant, Route } from "../../../types";
 import "../../../components/ha-fab";
 import "../../../components/ha-button-menu";
 import "../../../components/ha-list-item";
-import "@material/mwc-button/mwc-button";
 import type {
   Blueprint,
   BlueprintDomain,
   BlueprintInput,
-  Blueprints,
+  Blueprints
 } from "../../../data/blueprint";
 import {
   BlueprintYamlSchema,
@@ -24,11 +23,7 @@ import {
 } from "../../../data/blueprint";
 import { PreventUnsavedMixin } from "../../../mixins/prevent-unsaved-mixin";
 import { KeyboardShortcutMixin } from "../../../mixins/keyboard-shortcut-mixin";
-import { afterNextRender } from "../../../common/util/render-status";
-import {
-  showAlertDialog,
-  showConfirmationDialog,
-} from "../../../dialogs/generic/show-dialog-box";
+import { showAlertDialog } from "../../../dialogs/generic/show-dialog-box";
 import { documentationUrl } from "../../../util/documentation-url";
 import "./input/ha-blueprint-input";
 import { haStyle } from "../../../resources/styles";
@@ -52,13 +47,7 @@ export abstract class HaBlueprintGenericEditor extends PreventUnsavedMixin(
 
   @property({ attribute: "blueprint-path" }) public blueprintPath!: string;
 
-  @state() private _dirty = false;
-
   @state() protected _readOnly = false;
-
-  @state() private _saving = false;
-
-  @state() private _yamlErrors?: string;
 
   @state() private _blueprintPath?: string;
 
@@ -89,66 +78,8 @@ export abstract class HaBlueprintGenericEditor extends PreventUnsavedMixin(
     if (this._readOnly) {
       return;
     }
-    this._dirty = true;
     fireEvent(this, "value-changed", { value: this._blueprint });
   }
-
-  // private async _saveBlueprint(): Promise<void> {
-  //   if (!this._blueprint) {
-  //     return;
-  //   }
-  //
-  //   if (this._yamlErrors) {
-  //     showToast(this, {
-  //       message: this._yamlErrors,
-  //     });
-  //     return;
-  //   }
-  //
-  //   if (!this._blueprintPath) {
-  //     const saved = await this._promptBlueprintAlias();
-  //     if (!saved) {
-  //       return;
-  //     }
-  //   }
-  //
-  //   this._saving = true;
-  //
-  //   try {
-  //     const blueprint = {
-  //       ...this._blueprint,
-  //       blueprint: this._blueprint.metadata,
-  //       metadata: undefined,
-  //     };
-  //
-  //     await saveBlueprint(
-  //       this.hass,
-  //       this._blueprint.metadata.domain,
-  //       this._blueprintPath as string,
-  //       yaml.dump(blueprint),
-  //       this._blueprint.metadata.source_url,
-  //       true
-  //     );
-  //
-  //     this._dirty = false;
-  //
-  //     if (!this.blueprintPath) {
-  //       navigate(
-  //         `/config/blueprint/edit/${this._blueprint.metadata.domain}/${this._blueprintPath}.yaml`,
-  //         {
-  //           replace: true,
-  //         }
-  //       );
-  //     }
-  //   } catch (errors: any) {
-  //     showToast(this, {
-  //       message: errors.body?.message || errors.error || errors.body,
-  //     });
-  //     throw errors;
-  //   } finally {
-  //     this._saving = false;
-  //   }
-  // }
 
   private async _loadBlueprint() {
     try {
@@ -160,7 +91,6 @@ export abstract class HaBlueprintGenericEditor extends PreventUnsavedMixin(
       const blueprint = yaml.load(blueprintGetResult.yaml, {
         schema: BlueprintYamlSchema,
       }) as Blueprint;
-      this._dirty = false;
       this._readOnly = false;
       this._blueprint = this.normalizeBlueprint(blueprint);
       this._updateInputsInHass();
@@ -181,30 +111,6 @@ export abstract class HaBlueprintGenericEditor extends PreventUnsavedMixin(
     }
   }
 
-  private async _confirmUnsavedChanged(): Promise<boolean> {
-    if (this._dirty) {
-      return showConfirmationDialog(this, {
-        title: this.hass!.localize(
-          "ui.panel.developer-tools.tabs.blueprints.editor.unsaved_confirm_title"
-        ),
-        text: this.hass!.localize(
-          "ui.panel.developer-tools.tabs.blueprints.editor.unsaved_confirm_text"
-        ),
-        confirmText: this.hass!.localize("ui.common.leave"),
-        dismissText: this.hass!.localize("ui.common.stay"),
-        destructive: true,
-      });
-    }
-    return true;
-  }
-
-  private _backTapped = async () => {
-    const result = await this._confirmUnsavedChanged();
-    if (result) {
-      afterNextRender(() => history.back());
-    }
-  };
-
   private _inputChanged(
     ev: CustomEvent<{ value: [string, BlueprintInput][] }>
   ) {
@@ -223,7 +129,6 @@ export abstract class HaBlueprintGenericEditor extends PreventUnsavedMixin(
         input,
       },
     };
-    this._dirty = true;
     fireEvent(this, "value-changed", { value: this._blueprint });
   }
 
@@ -250,7 +155,6 @@ export abstract class HaBlueprintGenericEditor extends PreventUnsavedMixin(
       } as Blueprint;
       this._blueprintPath = undefined;
       this._readOnly = false;
-      this._dirty = true;
       fireEvent(this, "value-changed", { value: this._blueprint });
     }
   }

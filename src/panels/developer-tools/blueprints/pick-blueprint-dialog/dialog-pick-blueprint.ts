@@ -49,7 +49,7 @@ class HaDialogPickBlueprint extends LitElement implements HassDialog {
 
   private _pickBlueprint(id: string) {
     return () => {
-      this._parameters?.handlePickBlueprint(id);
+      this._parameters?.handlePickBlueprint(this._pickType!, id);
       this.closeDialog();
     };
   }

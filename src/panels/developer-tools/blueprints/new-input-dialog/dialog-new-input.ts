@@ -1,5 +1,5 @@
 import { customElement, property, state } from "lit/decorators";
-import { html, LitElement, nothing } from "lit";
+import { css, type CSSResultGroup, html, LitElement, nothing } from "lit";
 import memoizeOne from "memoize-one";
 import type { HassDialog } from "../../../../dialogs/make-dialog-manager";
 import type { HomeAssistant } from "../../../../types";
@@ -10,6 +10,7 @@ import type { SchemaUnion } from "../../../../components/ha-form/types";
 
 import "../../../../components/ha-form/ha-form";
 import "../../../../components/ha-button";
+import { haStyleDialog } from "../../../../resources/styles";
 
 @customElement("ha-dialog-new-input")
 class DialogNewInput extends LitElement implements HassDialog {
@@ -97,7 +98,7 @@ class DialogNewInput extends LitElement implements HassDialog {
         .heading=${createCloseHeading(
           this.hass,
           this.hass.localize(
-            `ui.panel.developer-tools.tabs.blueprints.dialog_new.header`
+            `ui.panel.developer-tools.tabs.blueprints.editor.inputs.add`
           )
         )}
       >
@@ -124,6 +125,17 @@ class DialogNewInput extends LitElement implements HassDialog {
         </ha-button>
       </ha-dialog>
     `;
+  }
+
+  static get styles(): CSSResultGroup {
+    return [
+      haStyleDialog,
+      css`
+        ha-dialog {
+          --mdc-dialog-max-width: 500px;
+        } 
+      `
+    ];
   }
 }
 
