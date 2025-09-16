@@ -1,13 +1,13 @@
 import type { HassConfig, HassEntity } from "home-assistant-js-websocket";
 import type { FrontendLocaleData } from "../../data/translation";
 import type { HomeAssistant } from "../../types";
-import type { LocalizeFunc } from "./localize";
-import { computeEntityName } from "../entity/compute_entity_name";
-import { computeDeviceName } from "../entity/compute_device_name";
-import { getEntityContext } from "../entity/context/get_entity_context";
-import { computeAreaName } from "../entity/compute_area_name";
-import { computeFloorName } from "../entity/compute_floor_name";
 import { ensureArray } from "../array/ensure-array";
+import { computeAreaName } from "../entity/compute_area_name";
+import { computeDeviceName } from "../entity/compute_device_name";
+import { computeEntityName } from "../entity/compute_entity_name";
+import { computeFloorName } from "../entity/compute_floor_name";
+import { getEntityContext } from "../entity/context/get_entity_context";
+import type { LocalizeFunc } from "./localize";
 
 export type FormatEntityStateFunc = (
   stateObj: HassEntity,
@@ -77,7 +77,6 @@ export const computeFormatFunctions = async (
       computeAttributeNameDisplay(localize, stateObj, entities, attribute),
     formatEntityName: (stateObj, type, separator = " ") => {
       const types = ensureArray(type);
-      const namesList: (string | undefined)[] = [];
 
       const { device, area, floor } = getEntityContext(
         stateObj,
@@ -87,33 +86,24 @@ export const computeFormatFunctions = async (
         floors
       );
 
-      for (const t of types) {
-        switch (t) {
-          case "entity": {
-            namesList.push(computeEntityName(stateObj, entities, devices));
-            break;
+      const names = types
+        .map((t) => {
+          switch (t) {
+            case "entity":
+              return computeEntityName(stateObj, entities, devices);
+            case "device":
+              return device ? computeDeviceName(device) : undefined;
+            case "area":
+              return area ? computeAreaName(area) : undefined;
+            case "floor":
+              return floor ? computeFloorName(floor) : undefined;
+            default:
+              return t;
           }
-          case "device": {
-            if (device) {
-              namesList.push(computeDeviceName(device));
-            }
-            break;
-          }
-          case "area": {
-            if (area) {
-              namesList.push(computeAreaName(area));
-            }
-            break;
-          }
-          case "floor": {
-            if (floor) {
-              namesList.push(computeFloorName(floor));
-            }
-            break;
-          }
-        }
-      }
-      return namesList.filter((name) => name !== undefined).join(separator);
+        })
+        .filter((name) => name !== undefined);
+
+      return names.join(separator);
     },
   };
 };
