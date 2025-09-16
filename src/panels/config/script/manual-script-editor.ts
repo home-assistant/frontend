@@ -598,7 +598,7 @@ export class HaManualScriptEditor extends LitElement {
 
     // set initial resize width to add / reduce delta from it
     if (!this._prevSidebarWidthPx) {
-      this._prevSidebarWidthPx = (this._sidebarWidth / 100) * this.clientWidth;
+      this._prevSidebarWidthPx = this._widthPercentageToPx(this._sidebarWidth);
     }
 
     const widthPx = delta + this._prevSidebarWidthPx;
