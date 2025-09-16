@@ -12,6 +12,7 @@ import {
   mdiPlus,
   mdiTag,
   mdiTrashCan,
+  mdiDownload,
 } from "@mdi/js";
 import type { HassEntity } from "home-assistant-js-websocket";
 import type { CSSResultGroup, PropertyValues, TemplateResult } from "lit";
@@ -111,6 +112,13 @@ import { showLabelDetailDialog } from "../labels/show-dialog-label-detail";
 import { isHelperDomain } from "./const";
 import { showHelperDetailDialog } from "./show-dialog-helper-detail";
 import { slugify } from "../../../common/string/slugify";
+import { isComponentLoaded } from "../../../common/config/is_component_loaded";
+import {
+  fetchDiagnosticHandlers,
+  getConfigEntryDiagnosticsDownloadUrl,
+} from "../../../data/diagnostics";
+import { getSignedPath } from "../../../data/auth";
+import { fileDownload } from "../../../util/file_download";
 
 interface HelperItem {
   id: string;
@@ -208,6 +216,8 @@ export class HaConfigHelpers extends SubscribeMixin(LitElement) {
   @state() private _activeFilters?: string[];
 
   @state() private _helperManifests?: Record<string, IntegrationManifest>;
+
+  @state() private _diagnosticHandlers?: Record<string, boolean>;
 
   @storage({
     storage: "sessionStorage",
@@ -427,6 +437,17 @@ export class HaConfigHelpers extends SubscribeMixin(LitElement) {
                       label: this.hass.localize("ui.common.delete"),
                       warning: true,
                       action: () => this._deleteEntry(helper),
+                    },
+                  ]
+                : []),
+              ...(this._diagnosticHandlers?.[helper.type] && helper.configEntry
+                ? [
+                    {
+                      path: mdiDownload,
+                      label: this.hass.localize(
+                        "ui.panel.config.integrations.config_entry.download_diagnostics"
+                      ),
+                      action: () => this._downloadDiagnostics(helper),
                     },
                   ]
                 : []),
@@ -1042,6 +1063,16 @@ ${rejected
 
     this._fetchEntitySources();
 
+    if (isComponentLoaded(this.hass, "diagnostics")) {
+      fetchDiagnosticHandlers(this.hass).then((infos) => {
+        const handlers = {};
+        for (const info of infos) {
+          handlers[info.domain] = info.handlers.config_entry;
+        }
+        this._diagnosticHandlers = handlers;
+      });
+    }
+
     if (this.route.path === "/add") {
       this._handleAdd();
     }
@@ -1225,6 +1256,14 @@ ${rejected
       return;
     }
     deleteConfigEntry(this.hass, helper.id);
+  }
+
+  private async _downloadDiagnostics(helper: HelperItem) {
+    const url = getConfigEntryDiagnosticsDownloadUrl(
+      helper.configEntry!.entry_id
+    );
+    const signedUrl = await getSignedPath(this.hass, url);
+    fileDownload(signedUrl.path);
   }
 
   private _openSettings(helper: HelperItem) {
