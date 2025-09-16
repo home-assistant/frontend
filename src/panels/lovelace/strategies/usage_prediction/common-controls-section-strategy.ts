@@ -46,7 +46,7 @@ export class CommonControlsSectionStrategy extends ReactiveElement {
 
     if (config.exclude_entities) {
       predictedEntities = predictedEntities.filter(
-        (entity) => !config.exclude_entities?.includes(entity)
+        (entity) => !config.exclude_entities!.includes(entity)
       );
     }
 
@@ -61,7 +61,7 @@ export class CommonControlsSectionStrategy extends ReactiveElement {
               type: "tile",
               entity: entityId,
               show_entity_picture: true,
-            }) as TileCardConfig
+            }) satisfies TileCardConfig
         )
       );
     } else {

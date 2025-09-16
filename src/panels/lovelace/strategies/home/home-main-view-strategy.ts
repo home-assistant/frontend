@@ -6,6 +6,7 @@ import type { AreaRegistryEntry } from "../../../../data/area_registry";
 import { getEnergyPreferences } from "../../../../data/energy";
 import type {
   LovelaceSectionConfig,
+  LovelaceSectionRawConfig,
   LovelaceStrategySectionConfig,
 } from "../../../../data/lovelace/config/section";
 import type { LovelaceViewConfig } from "../../../../data/lovelace/config/view";
@@ -228,13 +229,15 @@ export class HomeMainViewStrategy extends ReactiveElement {
       }
     }
 
-    const sections = [
-      ...(favoriteSection.cards ? [favoriteSection] : []),
-      ...(commonControlsSection ? [commonControlsSection] : []),
-      summarySection,
-      areasSection,
-      ...(widgetSection.cards ? [widgetSection] : []),
-    ];
+    const sections = (
+      [
+        favoriteSection.cards && favoriteSection,
+        commonControlsSection,
+        summarySection,
+        areasSection,
+        widgetSection.cards && widgetSection,
+      ] satisfies (LovelaceSectionRawConfig | undefined)[]
+    ).filter(Boolean) as LovelaceSectionRawConfig[];
 
     return {
       type: "sections",
