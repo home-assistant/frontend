@@ -312,6 +312,8 @@ export interface MediaSelector {
     accept?: string[];
     image_upload?: boolean;
     clearable?: boolean;
+    hide_content_type?: boolean;
+    content_id_helper?: string;
   } | null;
 }
 

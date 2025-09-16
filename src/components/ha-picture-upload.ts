@@ -46,6 +46,8 @@ export class HaPictureUpload extends LitElement {
   @property({ type: Boolean, attribute: "full-media" }) public fullMedia =
     false;
 
+  @property({ attribute: false }) public contentIdHelper?: string;
+
   @property({ attribute: false }) public cropOptions?: CropOptions;
 
   @property({ type: Boolean }) public original = false;
@@ -222,6 +224,8 @@ export class HaPictureUpload extends LitElement {
             },
           ],
       minimumNavigateLevel: this.fullMedia ? undefined : 2,
+      hideContentType: true,
+      contentIdHelper: this.contentIdHelper,
       mediaPickedCallback: async (pickedMedia: MediaPickedEvent) => {
         if (this.fullMedia) {
           fireEvent(this, "media-picked", pickedMedia);

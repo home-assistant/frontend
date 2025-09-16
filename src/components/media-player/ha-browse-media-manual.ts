@@ -19,8 +19,12 @@ class BrowseMediaManual extends LitElement {
 
   @property({ attribute: false }) public item!: MediaPlayerItemId;
 
+  @property({ attribute: false }) public hideContentType = false;
+
+  @property({ attribute: false }) public contentIdHelper?: string;
+
   private _schema = memoizeOne(
-    () =>
+    (hideContentType: boolean) =>
       [
         {
           name: "media_content_id",
@@ -29,13 +33,17 @@ class BrowseMediaManual extends LitElement {
             text: {},
           },
         },
-        {
-          name: "media_content_type",
-          required: false,
-          selector: {
-            text: {},
-          },
-        },
+        ...(hideContentType
+          ? []
+          : [
+              {
+                name: "media_content_type",
+                required: false,
+                selector: {
+                  text: {},
+                },
+              },
+            ]),
       ] as const
   );
 
@@ -45,7 +53,7 @@ class BrowseMediaManual extends LitElement {
         <div class="card-content">
           <ha-form
             .hass=${this.hass}
-            .schema=${this._schema()}
+            .schema=${this._schema(this.hideContentType)}
             .data=${this.item}
             .computeLabel=${this._computeLabel}
             .computeHelper=${this._computeHelper}
@@ -69,13 +77,35 @@ class BrowseMediaManual extends LitElement {
 
   private _computeLabel = (
     entry: SchemaUnion<ReturnType<typeof this._schema>>
-  ): string =>
-    this.hass.localize(`ui.components.selectors.media.${entry.name}`);
+  ): string => {
+    switch (entry.name) {
+      case "media_content_id":
+      case "media_content_type":
+        return this.hass.localize(
+          `ui.components.selectors.media.${entry.name}`
+        );
+    }
+    return entry.name;
+  };
 
   private _computeHelper = (
     entry: SchemaUnion<ReturnType<typeof this._schema>>
-  ): string =>
-    this.hass.localize(`ui.components.selectors.media.${entry.name}_detail`);
+  ): string => {
+    switch (entry.name) {
+      case "media_content_id":
+        return (
+          this.contentIdHelper ||
+          this.hass.localize(
+            `ui.components.selectors.media.${entry.name}_detail`
+          )
+        );
+      case "media_content_type":
+        return this.hass.localize(
+          `ui.components.selectors.media.${entry.name}_detail`
+        );
+    }
+    return "";
+  };
 
   private _mediaPicked() {
     fireEvent(this, "manual-media-picked", {

@@ -12,6 +12,7 @@ import "../../components/hui-action-editor";
 import type { LovelaceCardEditor } from "../../types";
 import { actionConfigStruct } from "../structs/action-struct";
 import { baseLovelaceCardConfig } from "../structs/base-card-struct";
+import type { LocalizeFunc } from "../../../../common/translations/localize";
 
 const cardConfigStruct = assign(
   baseLovelaceCardConfig,
@@ -26,56 +27,6 @@ const cardConfigStruct = assign(
   })
 );
 
-const SCHEMA = [
-  {
-    name: "image",
-    selector: {
-      media: {
-        accept: ["image/*"] as string[],
-        clearable: true,
-        image_upload: true,
-      },
-    },
-  },
-  {
-    name: "image_entity",
-    selector: { entity: { domain: ["image", "person"] } },
-  },
-  { name: "alt_text", selector: { text: {} } },
-  { name: "theme", selector: { theme: {} } },
-  {
-    name: "interactions",
-    type: "expandable",
-    flatten: true,
-    iconPath: mdiGestureTap,
-    schema: [
-      {
-        name: "tap_action",
-        selector: {
-          ui_action: {
-            default_action: "more-info",
-          },
-        },
-      },
-      {
-        name: "",
-        type: "optional_actions",
-        flatten: true,
-        schema: (["hold_action", "double_tap_action"] as const).map(
-          (action) => ({
-            name: action,
-            selector: {
-              ui_action: {
-                default_action: "none" as const,
-              },
-            },
-          })
-        ),
-      },
-    ],
-  },
-] as const;
-
 @customElement("hui-picture-card-editor")
 export class HuiPictureCardEditor
   extends LitElement
@@ -84,6 +35,63 @@ export class HuiPictureCardEditor
   @property({ attribute: false }) public hass?: HomeAssistant;
 
   @state() private _config?: PictureCardConfig;
+
+  private _schema = memoizeOne(
+    (localize: LocalizeFunc) =>
+      [
+        {
+          name: "image",
+          selector: {
+            media: {
+              accept: ["image/*"] as string[],
+              clearable: true,
+              image_upload: true,
+              hide_content_type: true,
+              content_id_helper: localize(
+                "ui.panel.lovelace.editor.card.picture.content_id_helper"
+              ),
+            },
+          },
+        },
+        {
+          name: "image_entity",
+          selector: { entity: { domain: ["image", "person"] } },
+        },
+        { name: "alt_text", selector: { text: {} } },
+        { name: "theme", selector: { theme: {} } },
+        {
+          name: "interactions",
+          type: "expandable",
+          flatten: true,
+          iconPath: mdiGestureTap,
+          schema: [
+            {
+              name: "tap_action",
+              selector: {
+                ui_action: {
+                  default_action: "more-info",
+                },
+              },
+            },
+            {
+              name: "",
+              type: "optional_actions",
+              flatten: true,
+              schema: (["hold_action", "double_tap_action"] as const).map(
+                (action) => ({
+                  name: action,
+                  selector: {
+                    ui_action: {
+                      default_action: "none" as const,
+                    },
+                  },
+                })
+              ),
+            },
+          ],
+        },
+      ] as const
+  );
 
   public setConfig(config: PictureCardConfig): void {
     assert(config, cardConfigStruct);
@@ -99,7 +107,7 @@ export class HuiPictureCardEditor
       <ha-form
         .hass=${this.hass}
         .data=${this._processData(this._config)}
-        .schema=${SCHEMA}
+        .schema=${this._schema(this.hass.localize)}
         .computeLabel=${this._computeLabelCallback}
         @value-changed=${this._valueChanged}
       ></ha-form>
@@ -117,7 +125,9 @@ export class HuiPictureCardEditor
     fireEvent(this, "config-changed", { config: ev.detail.value });
   }
 
-  private _computeLabelCallback = (schema: SchemaUnion<typeof SCHEMA>) => {
+  private _computeLabelCallback = (
+    schema: SchemaUnion<ReturnType<typeof this._schema>>
+  ) => {
     switch (schema.name) {
       case "theme":
         return `${this.hass!.localize(

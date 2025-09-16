@@ -110,6 +110,7 @@ export class HaMediaSelector extends LitElement {
       return html`<ha-picture-upload
         .hass=${this.hass}
         .value=${null}
+        .contentIdHelper=${this.selector.media?.content_id_helper}
         select-media
         full-media
         @media-picked=${this._pictureUploadMediaPicked}
@@ -271,6 +272,8 @@ export class HaMediaSelector extends LitElement {
       accept: this.selector.media?.accept,
       defaultId: this.value?.media_content_id,
       defaultType: this.value?.media_content_type,
+      hideContentType: this.selector.media?.hide_content_type,
+      contentIdHelper: this.selector.media?.content_id_helper,
       mediaPickedCallback: (pickedMedia: MediaPickedEvent) => {
         fireEvent(this, "value-changed", {
           value: {

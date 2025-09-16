@@ -7842,7 +7842,8 @@
             },
             "picture": {
               "name": "Picture",
-              "description": "The Picture card allows you to set an image to use for navigation to various paths in your interface or to perform an action."
+              "description": "The Picture card allows you to set an image to use for navigation to various paths in your interface or to perform an action.",
+              "content_id_helper": "Enter a media_source id or a URL for the image to be displayed."
             },
             "picture-elements": {
               "name": "Picture elements",
