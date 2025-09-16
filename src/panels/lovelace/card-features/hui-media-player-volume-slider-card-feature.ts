@@ -86,7 +86,6 @@ class HuiMediaPlayerVolumeSliderCardFeature
 
     return html`
       <div class="volume-controls">
-        <!-- Minus Button -->
         <ha-icon-button
           .path=${mdiMinus}
           @click=${this._adjustVolumeMinus}
@@ -94,7 +93,6 @@ class HuiMediaPlayerVolumeSliderCardFeature
           isUnavailableState(this._stateObj.state)}
         ></ha-icon-button>
 
-        <!-- Volume Slider -->
         <ha-control-slider
           .value=${position}
           min="0"
@@ -107,7 +105,6 @@ class HuiMediaPlayerVolumeSliderCardFeature
           .locale=${this.hass.locale}
         ></ha-control-slider>
 
-        <!-- Plus Button -->
         <ha-icon-button
           .path=${mdiPlus}
           @click=${this._adjustVolumePlus}
@@ -132,6 +129,7 @@ class HuiMediaPlayerVolumeSliderCardFeature
   }
 
   private _adjustVolume(delta: number) {
+    if (!this._stateObj) return;
     const currentVolume = this._stateObj!.attributes.volume_level * 100;
     const newVolume = Math.max(0, Math.min(100, currentVolume + delta));
 
