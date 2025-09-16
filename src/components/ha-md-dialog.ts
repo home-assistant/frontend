@@ -168,24 +168,9 @@ export class HaMdDialog extends Dialog {
 
       @media all and (max-width: 450px), all and (max-height: 500px) {
         :host(:not([type="alert"])) {
-          min-width: calc(
-            var(--mdc-dialog-min-width, 100vw) - var(
-                --safe-area-inset-left,
-                0px
-              ) - var(--safe-area-inset-right, 0px)
-          );
-          min-height: calc(
-            100vh - var(--safe-area-inset-top, 0px) - var(
-                --safe-area-inset-bottom,
-                0px
-              )
-          );
-          max-height: calc(
-            100vh - var(--safe-area-inset-top, 0px) - var(
-                --safe-area-inset-bottom,
-                0px
-              )
-          );
+          min-width: var(--mdc-dialog-min-width, 100vw);
+          min-height: 100%;
+          max-height: 100%;
           --md-dialog-container-shape: 0;
         }
       }
