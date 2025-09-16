@@ -1,6 +1,8 @@
 import { css, html, LitElement, nothing } from "lit";
 import { customElement, property } from "lit/decorators";
 import type { HomeAssistant } from "../../types";
+import type { HaDevicePickerDeviceFilterFunc } from "../device/ha-device-picker";
+import type { HaEntityPickerEntityFilterFunc } from "../entity/ha-entity-picker";
 import "../ha-expansion-panel";
 import "../ha-md-list";
 import "./ha-target-picker-item-row";
@@ -17,6 +19,28 @@ export class HaTargetPickerItemGroup extends LitElement {
   >;
 
   @property({ type: Boolean }) public collapsed = false;
+
+  @property({ attribute: false })
+  public deviceFilter?: HaDevicePickerDeviceFilterFunc;
+
+  @property({ attribute: false })
+  public entityFilter?: HaEntityPickerEntityFilterFunc;
+
+  /**
+   * Show only targets with entities from specific domains.
+   * @type {Array}
+   * @attr include-domains
+   */
+  @property({ type: Array, attribute: "include-domains" })
+  public includeDomains?: string[];
+
+  /**
+   * Show only targets with entities of these device classes.
+   * @type {Array}
+   * @attr include-device-classes
+   */
+  @property({ type: Array, attribute: "include-device-classes" })
+  public includeDeviceClasses?: string[];
 
   protected render() {
     let count = 0;
@@ -44,6 +68,10 @@ export class HaTargetPickerItemGroup extends LitElement {
                     .hass=${this.hass}
                     .type=${type as "entity" | "device" | "area" | "label"}
                     .itemId=${item}
+                    .deviceFilter=${this.deviceFilter}
+                    .entityFilter=${this.entityFilter}
+                    .includeDomains=${this.includeDomains}
+                    .includeDeviceClasses=${this.includeDeviceClasses}
                   ></ha-target-picker-item-row>`
               )
             : nothing

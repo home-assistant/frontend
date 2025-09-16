@@ -25,11 +25,16 @@ import { labelsContext } from "../../data/context";
 import { domainToName } from "../../data/integration";
 import type { LabelRegistryEntry } from "../../data/label_registry";
 import {
+  areaMeetsFilter,
+  deviceMeetsFilter,
+  entityRegMeetsFilter,
   extractFromTarget,
   type ExtractFromTargetResult,
 } from "../../data/target";
 import type { HomeAssistant } from "../../types";
 import { brandsUrl } from "../../util/brands-url";
+import type { HaDevicePickerDeviceFilterFunc } from "../device/ha-device-picker";
+import type { HaEntityPickerEntityFilterFunc } from "../entity/ha-entity-picker";
 import { floorDefaultIconPath } from "../ha-floor-icon";
 import "../ha-icon-button";
 import "../ha-md-list";
@@ -52,8 +57,33 @@ export class HaTargetPickerItemRow extends LitElement {
   @property({ type: Boolean, attribute: "sub-entry", reflect: true })
   public subEntry = false;
 
+  @property({ type: Boolean, attribute: "hide-context" })
+  public hideContext = false;
+
   @property({ attribute: false })
   public parentEntries?: ExtractFromTargetResult;
+
+  @property({ attribute: false })
+  public deviceFilter?: HaDevicePickerDeviceFilterFunc;
+
+  @property({ attribute: false })
+  public entityFilter?: HaEntityPickerEntityFilterFunc;
+
+  /**
+   * Show only targets with entities from specific domains.
+   * @type {Array}
+   * @attr include-domains
+   */
+  @property({ type: Array, attribute: "include-domains" })
+  public includeDomains?: string[];
+
+  /**
+   * Show only targets with entities of these device classes.
+   * @type {Array}
+   * @attr include-device-classes
+   */
+  @property({ type: Array, attribute: "include-device-classes" })
+  public includeDeviceClasses?: string[];
 
   @state() private _expanded = false;
 
@@ -140,10 +170,12 @@ export class HaTargetPickerItemRow extends LitElement {
                   `
                 : nothing}
         <div slot="headline">${name}</div>
-        ${context && !this.subEntry
+        ${context && !this.hideContext
           ? html`<span slot="supporting-text">${context}</span>`
           : nothing}
-        ${!this.subEntry && (showEntities || showDevices || this._domainName)
+        ${!this.subEntry &&
+        entries &&
+        (showEntities || showDevices || this._domainName)
           ? html`
               <div slot="end" class="summary">
                 ${showEntities
@@ -279,6 +311,7 @@ export class HaTargetPickerItemRow extends LitElement {
               .type=${nextType}
               .itemId=${itemId}
               .parentEntries=${rows1Entries?.[index]}
+              .hideContext=${this.hideContext || this.type !== "label"}
             ></ha-target-picker-item-row>
           `
         )}
@@ -289,6 +322,7 @@ export class HaTargetPickerItemRow extends LitElement {
               .hass=${this.hass}
               type="entity"
               .itemId=${itemId}
+              .hideContext=${this.hideContext || this.type !== "label"}
             ></ha-target-picker-item-row>
           `
         )}
@@ -297,10 +331,77 @@ export class HaTargetPickerItemRow extends LitElement {
   }
 
   private async _updateItemData() {
+    if (this.type === "entity") {
+      this._entries = undefined;
+      return;
+    }
     try {
-      this._entries = await extractFromTarget(this.hass, {
+      const entries = await extractFromTarget(this.hass, {
         [`${this.type}_id`]: [this.itemId],
       });
+
+      const hiddenAreaIds: string[] = [];
+      if (this.type === "floor" || this.type === "label") {
+        entries.referenced_areas = entries.referenced_areas.filter(
+          (area_id) => {
+            const area = this.hass.areas[area_id];
+            if (
+              (this.type === "floor" || area.labels.includes(this.itemId)) &&
+              areaMeetsFilter(
+                area,
+                this.hass.devices,
+                this.hass.entities,
+                this.deviceFilter
+              )
+            ) {
+              return true;
+            }
+
+            hiddenAreaIds.push(area_id);
+            return false;
+          }
+        );
+      }
+
+      const hiddenDeviceIds: string[] = [];
+      if (this.type === "area" || this.type === "label") {
+        entries.referenced_devices = entries.referenced_devices.filter(
+          (device_id) => {
+            const device = this.hass.devices[device_id];
+            if (
+              !hiddenAreaIds.includes(device.area_id || "") &&
+              (this.type === "area" || device.labels.includes(this.itemId)) &&
+              deviceMeetsFilter(device, this.hass.entities, this.deviceFilter)
+            ) {
+              return true;
+            }
+
+            hiddenDeviceIds.push(device_id);
+            return false;
+          }
+        );
+      }
+
+      entries.referenced_entities = entries.referenced_entities.filter(
+        (entity_id) => {
+          const entity = this.hass.entities[entity_id];
+          if (hiddenDeviceIds.includes(entity.device_id || "")) {
+            return false;
+          }
+          if (entries.referenced_devices.includes(entity.device_id || "")) {
+            return true;
+          }
+          if (
+            (this.type === "area" && entity.area_id === this.itemId) ||
+            (this.type === "label" && entity.labels.includes(this.itemId))
+          ) {
+            return entityRegMeetsFilter(entity, this.type === "label");
+          }
+          return false;
+        }
+      );
+
+      this._entries = entries;
     } catch (e) {
       // eslint-disable-next-line no-console
       console.error("Failed to extract target", e);

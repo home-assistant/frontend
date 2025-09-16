@@ -10,11 +10,12 @@ import { customElement, property, query, state } from "lit/decorators";
 import { ensureArray } from "../common/array/ensure-array";
 import { fireEvent } from "../common/dom/fire_event";
 import { stopPropagation } from "../common/dom/stop_propagation";
-import { computeDomain } from "../common/entity/compute_domain";
 import { isValidEntityId } from "../common/entity/valid_entity_id";
-import type { AreaRegistryEntry } from "../data/area_registry";
-import type { DeviceRegistryEntry } from "../data/device_registry";
-import type { EntityRegistryDisplayEntry } from "../data/entity_registry";
+import {
+  areaMeetsFilter,
+  deviceMeetsFilter,
+  entityRegMeetsFilter,
+} from "../data/target";
 import { SubscribeMixin } from "../mixins/subscribe-mixin";
 import type { HomeAssistant } from "../types";
 import "./device/ha-device-picker";
@@ -182,6 +183,10 @@ export class HaTargetPicker extends SubscribeMixin(LitElement) {
                       area: ensureArray(this.value?.area_id),
                     }}
                     .collapsed=${this.compact}
+                    .deviceFilter=${this.deviceFilter}
+                    .entityFilter=${this.entityFilter}
+                    .includeDomains=${this.includeDomains}
+                    .includeDeviceClasses=${this.includeDeviceClasses}
                   >
                   </ha-target-picker-item-group>
                 `
@@ -194,6 +199,10 @@ export class HaTargetPicker extends SubscribeMixin(LitElement) {
                     .hass=${this.hass}
                     .items=${{ device: ensureArray(this.value?.device_id) }}
                     .collapsed=${this.compact}
+                    .deviceFilter=${this.deviceFilter}
+                    .entityFilter=${this.entityFilter}
+                    .includeDomains=${this.includeDomains}
+                    .includeDeviceClasses=${this.includeDeviceClasses}
                   >
                   </ha-target-picker-item-group>
                 `
@@ -206,6 +215,10 @@ export class HaTargetPicker extends SubscribeMixin(LitElement) {
                     .hass=${this.hass}
                     .items=${{ entity: ensureArray(this.value?.entity_id) }}
                     .collapsed=${this.compact}
+                    .deviceFilter=${this.deviceFilter}
+                    .entityFilter=${this.entityFilter}
+                    .includeDomains=${this.includeDomains}
+                    .includeDeviceClasses=${this.includeDeviceClasses}
                   >
                   </ha-target-picker-item-group>
                 `
@@ -218,6 +231,10 @@ export class HaTargetPicker extends SubscribeMixin(LitElement) {
                     .hass=${this.hass}
                     .items=${{ label: ensureArray(this.value?.label_id) }}
                     .collapsed=${this.compact}
+                    .deviceFilter=${this.deviceFilter}
+                    .entityFilter=${this.entityFilter}
+                    .includeDomains=${this.includeDomains}
+                    .includeDeviceClasses=${this.includeDeviceClasses}
                   >
                   </ha-target-picker-item-group>
                 `
@@ -484,7 +501,12 @@ export class HaTargetPicker extends SubscribeMixin(LitElement) {
         if (
           area.floor_id === itemId &&
           !this.value!.area_id?.includes(area.area_id) &&
-          this._areaMeetsFilter(area)
+          areaMeetsFilter(
+            area,
+            this.hass.devices,
+            this.hass.entities,
+            this.deviceFilter
+          )
         ) {
           newAreas.push(area.area_id);
         }
@@ -494,7 +516,7 @@ export class HaTargetPicker extends SubscribeMixin(LitElement) {
         if (
           device.area_id === itemId &&
           !this.value!.device_id?.includes(device.id) &&
-          this._deviceMeetsFilter(device)
+          deviceMeetsFilter(device, this.hass.entities, this.deviceFilter)
         ) {
           newDevices.push(device.id);
         }
@@ -503,7 +525,14 @@ export class HaTargetPicker extends SubscribeMixin(LitElement) {
         if (
           entity.area_id === itemId &&
           !this.value!.entity_id?.includes(entity.entity_id) &&
-          this._entityRegMeetsFilter(entity)
+          entityRegMeetsFilter(
+            entity,
+            false,
+            this.includeDomains,
+            this.includeDeviceClasses,
+            this.hass.states,
+            this.entityFilter
+          )
         ) {
           newEntities.push(entity.entity_id);
         }
@@ -513,7 +542,14 @@ export class HaTargetPicker extends SubscribeMixin(LitElement) {
         if (
           entity.device_id === itemId &&
           !this.value!.entity_id?.includes(entity.entity_id) &&
-          this._entityRegMeetsFilter(entity)
+          entityRegMeetsFilter(
+            entity,
+            false,
+            this.includeDomains,
+            this.includeDeviceClasses,
+            this.hass.states,
+            this.entityFilter
+          )
         ) {
           newEntities.push(entity.entity_id);
         }
@@ -523,7 +559,12 @@ export class HaTargetPicker extends SubscribeMixin(LitElement) {
         if (
           area.labels.includes(itemId) &&
           !this.value!.area_id?.includes(area.area_id) &&
-          this._areaMeetsFilter(area)
+          areaMeetsFilter(
+            area,
+            this.hass.devices,
+            this.hass.entities,
+            this.deviceFilter
+          )
         ) {
           newAreas.push(area.area_id);
         }
@@ -532,7 +573,7 @@ export class HaTargetPicker extends SubscribeMixin(LitElement) {
         if (
           device.labels.includes(itemId) &&
           !this.value!.device_id?.includes(device.id) &&
-          this._deviceMeetsFilter(device)
+          deviceMeetsFilter(device, this.hass.entities, this.deviceFilter)
         ) {
           newDevices.push(device.id);
         }
@@ -541,7 +582,14 @@ export class HaTargetPicker extends SubscribeMixin(LitElement) {
         if (
           entity.labels.includes(itemId) &&
           !this.value!.entity_id?.includes(entity.entity_id) &&
-          this._entityRegMeetsFilter(entity, true)
+          entityRegMeetsFilter(
+            entity,
+            true,
+            this.includeDomains,
+            this.includeDeviceClasses,
+            this.hass.states,
+            this.entityFilter
+          )
         ) {
           newEntities.push(entity.entity_id);
         }
@@ -561,83 +609,6 @@ export class HaTargetPicker extends SubscribeMixin(LitElement) {
     }
     value = this._removeItem(value, type, itemId);
     fireEvent(this, "value-changed", { value });
-  }
-
-  private _areaMeetsFilter(area: AreaRegistryEntry): boolean {
-    const areaDevices = Object.values(this.hass.devices).filter(
-      (device) => device.area_id === area.area_id
-    );
-
-    if (areaDevices.some((device) => this._deviceMeetsFilter(device))) {
-      return true;
-    }
-
-    const areaEntities = Object.values(this.hass.entities).filter(
-      (entity) => entity.area_id === area.area_id
-    );
-
-    if (areaEntities.some((entity) => this._entityRegMeetsFilter(entity))) {
-      return true;
-    }
-
-    return false;
-  }
-
-  private _deviceMeetsFilter(device: DeviceRegistryEntry): boolean {
-    const devEntities = Object.values(this.hass.entities).filter(
-      (entity) => entity.device_id === device.id
-    );
-
-    if (!devEntities.some((entity) => this._entityRegMeetsFilter(entity))) {
-      return false;
-    }
-
-    if (this.deviceFilter) {
-      if (!this.deviceFilter(device)) {
-        return false;
-      }
-    }
-
-    return true;
-  }
-
-  private _entityRegMeetsFilter(
-    entity: EntityRegistryDisplayEntry,
-    includeSecondary = false
-  ): boolean {
-    if (entity.hidden || (entity.entity_category && !includeSecondary)) {
-      return false;
-    }
-
-    if (
-      this.includeDomains &&
-      !this.includeDomains.includes(computeDomain(entity.entity_id))
-    ) {
-      return false;
-    }
-    if (this.includeDeviceClasses) {
-      const stateObj = this.hass.states[entity.entity_id];
-      if (!stateObj) {
-        return false;
-      }
-      if (
-        !stateObj.attributes.device_class ||
-        !this.includeDeviceClasses!.includes(stateObj.attributes.device_class)
-      ) {
-        return false;
-      }
-    }
-
-    if (this.entityFilter) {
-      const stateObj = this.hass.states[entity.entity_id];
-      if (!stateObj) {
-        return false;
-      }
-      if (!this.entityFilter!(stateObj)) {
-        return false;
-      }
-    }
-    return true;
   }
 
   private _addItems(
