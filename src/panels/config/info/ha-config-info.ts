@@ -133,7 +133,7 @@ class HaConfigInfo extends LitElement {
               <li>
                 <span class="version-label"
                   >${this.hass.localize(
-                    `ui.panel.config.info.installation_method`
+                    "ui.panel.config.info.installation_method"
                   )}</span
                 >
                 <span class="version">${this._installationMethod || "…"}</span>
