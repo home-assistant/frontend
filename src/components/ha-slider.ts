@@ -1,6 +1,5 @@
-import { Slider } from "@material/web/slider/internal/slider";
-import { styles } from "@material/web/slider/internal/slider-styles";
-import { css } from "lit";
+import Slider from "@home-assistant/webawesome/dist/components/slider/slider";
+import { css, type CSSResultGroup } from "lit";
 import { customElement } from "lit/decorators";
 import { mainWindow } from "../common/dom/get_main_window";
 
@@ -11,23 +10,37 @@ export class HaSlider extends Slider {
     this.dir = mainWindow.document.dir;
   }
 
-  static override styles = [
-    styles,
-    css`
-      :host {
-        --md-sys-color-primary: var(--primary-color);
-        --md-sys-color-on-primary: var(--text-primary-color);
-        --md-sys-color-outline: var(--outline-color);
-        --md-sys-color-on-surface: var(--primary-text-color);
-        --md-slider-handle-width: 14px;
-        --md-slider-handle-height: 14px;
-        --md-slider-state-layer-size: 24px;
-        min-width: 100px;
-        min-inline-size: 100px;
-        width: 200px;
-      }
-    `,
-  ];
+  static get styles(): CSSResultGroup {
+    return [
+      Slider.styles,
+      css`
+        :host {
+          --wa-form-control-activated-color: var(--primary-color);
+          --track-size: var(--ha-slider-track-size, 4px);
+          --wa-color-surface-default: var(--ha-color-neutral-95);
+          --wa-color-neutral-fill-normal: var(--disabled-color);
+          min-width: 100px;
+          min-inline-size: 100px;
+          width: 200px;
+        }
+
+        :host([size="large"]) {
+          --thumb-width: var(--ha-font-size-xl, 1.5em);
+          --thumb-height: var(--ha-font-size-xl, 1.5em);
+        }
+
+        :host([size="medium"]) {
+          --thumb-width: var(--ha-font-size-l, 1.25em);
+          --thumb-height: var(--ha-font-size-l, 1.25em);
+        }
+
+        :host([size="small"]) {
+          --thumb-width: var(--ha-font-size-m, 1em);
+          --thumb-height: var(--ha-font-size-m, 1em);
+        }
+      `,
+    ];
+  }
 }
 
 declare global {
