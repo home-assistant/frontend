@@ -175,7 +175,7 @@ class HaConfigInfo extends LitElement {
                     <li>
                       <span class="version-label"
                         >${this.hass.localize(
-                          `ui.panel.config.info.external_app_version`
+                          "ui.panel.config.info.external_app_version"
                         )}</span
                       >
                       <span class="version"
