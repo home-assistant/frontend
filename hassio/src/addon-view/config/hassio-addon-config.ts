@@ -149,7 +149,7 @@ class HassioAddonConfig extends LitElement {
       )
   );
 
-  private _filteredShchema = memoizeOne(
+  private _filteredSchema = memoizeOne(
     (options: Record<string, unknown>, schema: HaFormSchema[]) =>
       schema.filter((entry) => entry.name in options || entry.required)
   );
@@ -161,7 +161,7 @@ class HassioAddonConfig extends LitElement {
       showForm &&
       JSON.stringify(this.addon.schema) !==
         JSON.stringify(
-          this._filteredShchema(this.addon.options, this.addon.schema!)
+          this._filteredSchema(this.addon.options, this.addon.schema!)
         );
     return html`
       <h1>${this.addon.name}</h1>
@@ -199,6 +199,7 @@ class HassioAddonConfig extends LitElement {
         <div class="card-content">
           ${showForm
             ? html`<ha-form
+                .hass=${this.hass}
                 .disabled=${this.disabled}
                 .data=${this._options!}
                 @value-changed=${this._configChanged}
@@ -207,7 +208,7 @@ class HassioAddonConfig extends LitElement {
                 .schema=${this._convertSchema(
                   this._showOptional
                     ? this.addon.schema!
-                    : this._filteredShchema(
+                    : this._filteredSchema(
                         this.addon.options,
                         this.addon.schema!
                       )

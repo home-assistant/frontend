@@ -246,7 +246,7 @@ export const clearStatistics = (hass: HomeAssistant, statistic_ids: string[]) =>
   });
 
 export const calculateStatisticSumGrowth = (
-  values: StatisticValue[]
+  values?: StatisticValue[]
 ): number | null => {
   let growth: number | null = null;
 

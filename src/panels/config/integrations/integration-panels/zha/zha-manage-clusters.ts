@@ -6,6 +6,8 @@ import { stopPropagation } from "../../../../../common/dom/stop_propagation";
 import "../../../../../components/ha-card";
 import "../../../../../components/ha-list-item";
 import "../../../../../components/ha-select";
+import "../../../../../components/ha-tab-group";
+import "../../../../../components/ha-tab-group-tab";
 import type { Cluster, ZHADevice } from "../../../../../data/zha";
 import { fetchClustersForZhaDevice } from "../../../../../data/zha";
 import { haStyle } from "../../../../../resources/styles";
@@ -13,7 +15,6 @@ import type { HomeAssistant } from "../../../../../types";
 import { computeClusterKey } from "./functions";
 import "./zha-cluster-attributes";
 import "./zha-cluster-commands";
-import "../../../../../components/sl-tab-group";
 
 declare global {
   // for fire event
@@ -91,20 +92,20 @@ export class ZHAManageClusters extends LitElement {
         </div>
         ${this._selectedCluster
           ? html`
-              <sl-tab-group @sl-tab-show=${this._handleTabChanged}>
+              <ha-tab-group @wa-tab-show=${this._handleTabChanged}>
                 ${tabs.map(
                   (tab) => html`
-                    <sl-tab
+                    <ha-tab-group-tab
                       slot="nav"
                       .panel=${tab}
                       .active=${this._currTab === tab}
                       >${this.hass.localize(
                         `ui.panel.config.zha.clusters.tabs.${tab}`
-                      )}</sl-tab
+                      )}</ha-tab-group-tab
                     >
                   `
                 )}
-              </sl-tab-group>
+              </ha-tab-group>
 
               <div class="content" tabindex="-1" dialogInitialFocus>
                 ${cache(
@@ -177,10 +178,10 @@ export class ZHAManageClusters extends LitElement {
           padding-bottom: 10px;
         }
 
-        sl-tab {
+        ha-tab-group-tab {
           flex: 1;
         }
-        sl-tab::part(base) {
+        ha-tab-group-tab::part(base) {
           width: 100%;
           justify-content: center;
         }

@@ -2,6 +2,7 @@ import type { CSSResultGroup, TemplateResult } from "lit";
 import { css, html, LitElement } from "lit";
 import { customElement, eventOptions, property } from "lit/decorators";
 import { restoreScroll } from "../common/decorators/restore-scroll";
+import { goBack } from "../common/navigate";
 import "../components/ha-icon-button-arrow-prev";
 import "../components/ha-menu-button";
 import type { HomeAssistant } from "../types";
@@ -78,7 +79,7 @@ class HassSubpage extends LitElement {
       this.backCallback();
       return;
     }
-    history.back();
+    goBack();
   }
 
   static get styles(): CSSResultGroup {
@@ -99,28 +100,27 @@ class HassSubpage extends LitElement {
         }
 
         .toolbar {
+          background-color: var(--app-header-background-color);
           padding-top: var(--safe-area-inset-top);
           padding-right: var(--safe-area-inset-right);
+        }
+        :host([narrow]) .toolbar {
           padding-left: var(--safe-area-inset-left);
-          background-color: var(--app-header-background-color);
-          border-bottom: var(--app-header-border-bottom, none);
-          box-sizing: border-box;
         }
 
         .toolbar-content {
           display: flex;
           align-items: center;
           font-size: var(--ha-font-size-xl);
-          padding: 8px 12px;
+          height: var(--header-height);
           font-weight: var(--ha-font-weight-normal);
           color: var(--app-header-text-color, white);
+          border-bottom: var(--app-header-border-bottom, none);
+          box-sizing: border-box;
+          padding: 8px 12px;
         }
-        @media (max-width: 599px) {
-          .toolbar-content {
-            padding: 4px;
-          }
-        }
-        .toolbar-content a {
+
+        .toolbar a {
           color: var(--sidebar-text-color);
           text-decoration: none;
         }
@@ -148,21 +148,36 @@ class HassSubpage extends LitElement {
 
         .content {
           position: relative;
-          width: 100%;
+          width: calc(100% - var(--safe-area-inset-right, 0px));
           height: calc(
-            100% - 1px - var(--header-height) - var(--safe-area-inset-top, 0px)
+            100% -
+              1px - var(--header-height, 0px) - var(
+                --safe-area-inset-top,
+                0px
+              ) - var(--safe-area-inset-bottom, 0px)
           );
+          margin-bottom: var(--safe-area-inset-bottom);
+          margin-right: var(--safe-area-inset-right);
           overflow-y: auto;
           overflow: auto;
           -webkit-overflow-scrolling: touch;
         }
+        :host([narrow]) .content {
+          width: calc(
+            100% - var(--safe-area-inset-left, 0px) - var(
+                --safe-area-inset-right,
+                0px
+              )
+          );
+          margin-left: var(--safe-area-inset-left);
+        }
 
         #fab {
           position: absolute;
-          right: calc(16px + var(--safe-area-inset-right));
-          inset-inline-end: calc(16px + var(--safe-area-inset-right));
+          right: calc(16px + var(--safe-area-inset-right, 0px));
+          inset-inline-end: calc(16px + var(--safe-area-inset-right, 0px));
           inset-inline-start: initial;
-          bottom: calc(16px + var(--safe-area-inset-bottom));
+          bottom: calc(16px + var(--safe-area-inset-bottom, 0px));
           z-index: 1;
           display: flex;
           flex-wrap: wrap;
@@ -170,12 +185,12 @@ class HassSubpage extends LitElement {
           gap: 8px;
         }
         :host([narrow]) #fab.tabs {
-          bottom: calc(84px + var(--safe-area-inset-bottom));
+          bottom: calc(84px + var(--safe-area-inset-bottom, 0px));
         }
         #fab[is-wide] {
-          bottom: 24px;
-          right: 24px;
-          inset-inline-end: 24px;
+          bottom: calc(24px + var(--safe-area-inset-bottom, 0px));
+          right: calc(24px + var(--safe-area-inset-right, 0px));
+          inset-inline-end: calc(24px + var(--safe-area-inset-right, 0px));
           inset-inline-start: initial;
         }
       `,

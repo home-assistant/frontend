@@ -714,6 +714,7 @@ class HaPanelDevStatistics extends KeyboardShortcutMixin(LitElement) {
           height: 100%;
           display: flex;
           flex-direction: column;
+          gap: 8px;
         }
         ha-data-table {
           width: 100%;
