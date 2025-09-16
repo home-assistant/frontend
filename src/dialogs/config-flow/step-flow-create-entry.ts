@@ -27,9 +27,6 @@ import { showAlertDialog } from "../generic/show-dialog-box";
 import { showVoiceAssistantSetupDialog } from "../voice-assistant-setup/show-voice-assistant-setup-dialog";
 import type { FlowConfig } from "./show-dialog-data-entry-flow";
 import { configFlowContentStyles } from "./styles";
-import { showConfigFlowDialog } from "./show-dialog-config-flow";
-import { showOptionsFlowDialog } from "./show-dialog-options-flow";
-import { showSubConfigFlowDialog } from "./show-dialog-sub-config-flow";
 
 @customElement("step-flow-create-entry")
 class StepFlowCreateEntry extends LitElement {
@@ -40,11 +37,6 @@ class StepFlowCreateEntry extends LitElement {
   @property({ attribute: false }) public step!: DataEntryFlowStepCreateEntry;
 
   @property({ attribute: false }) public devices!: DeviceRegistryEntry[];
-
-  @property({ attribute: false }) public carryOverDevices?: Record<
-    string,
-    DeviceRegistryEntry[]
-  >;
 
   public navigateToResult = false;
 
@@ -68,14 +60,6 @@ class StepFlowCreateEntry extends LitElement {
 
   protected willUpdate(changedProps: PropertyValues) {
     if (!changedProps.has("devices") && !changedProps.has("hass")) {
-      return;
-    }
-
-    if (
-      this.step.next_flow &&
-      (this.step.next_flow[0] === "config_flow" || this.allDevices.length === 0)
-    ) {
-      this._flowDone();
       return;
     }
 
@@ -108,7 +92,6 @@ class StepFlowCreateEntry extends LitElement {
 
   protected render(): TemplateResult {
     const localize = this.hass.localize;
-    const allDevices = this.allDevices;
     return html`
       <div class="content">
         ${this.flowConfig.renderCreateEntryDescription(this.hass, this.step)}
@@ -119,10 +102,10 @@ class StepFlowCreateEntry extends LitElement {
               )}</span
             >`
           : nothing}
-        ${allDevices.length === 0 &&
+        ${this.devices.length === 0 &&
         ["options_flow", "repair_flow"].includes(this.flowConfig.flowType)
           ? nothing
-          : allDevices.length === 0
+          : this.devices.length === 0
             ? html`<p>
                 ${localize(
                   "ui.panel.config.integrations.config_flow.created_config",
@@ -131,7 +114,7 @@ class StepFlowCreateEntry extends LitElement {
               </p>`
             : html`
                 <div class="devices">
-                  ${allDevices.map(
+                  ${this.devices.map(
                     (device) => html`
                       <div class="device">
                         <div class="device-info">
@@ -191,23 +174,14 @@ class StepFlowCreateEntry extends LitElement {
         <ha-button @click=${this._flowDone}
           >${localize(
             `ui.panel.config.integrations.config_flow.${
-              this.step.next_flow
-                ? "next"
-                : !allDevices.length || Object.keys(this._deviceUpdate).length
-                  ? "finish"
-                  : "finish_skip"
+              !this.devices.length || Object.keys(this._deviceUpdate).length
+                ? "finish"
+                : "finish_skip"
             }`
           )}</ha-button
         >
       </div>
     `;
-  }
-
-  get allDevices(): DeviceRegistryEntry[] {
-    return [
-      ...this.devices,
-      ...Object.values(this.carryOverDevices ?? {}).flat(),
-    ];
   }
 
   private async _flowDone(): Promise<void> {
@@ -266,49 +240,14 @@ class StepFlowCreateEntry extends LitElement {
       await Promise.allSettled(entityUpdates);
     }
 
-    if (this.step.next_flow) {
-      if (this.step.next_flow[0] === "config_flow") {
-        showConfigFlowDialog(this, {
-          continueFlowId: this.step.next_flow[1],
-          navigateToResult: this.navigateToResult,
-          carryOverDevices: {
-            ...this.carryOverDevices,
-            [this.step.result!.entry_id]: this.devices,
-          },
-        });
-      } else if (this.step.next_flow[0] === "options_flow") {
-        showOptionsFlowDialog(this, this.step.result!, {
-          continueFlowId: this.step.next_flow[1],
-          navigateToResult: this.navigateToResult,
-        });
-      } else if (this.step.next_flow[0] === "config_subentries_flow") {
-        showSubConfigFlowDialog(
-          this,
-          this.step.result!,
-          this.step.next_flow[0],
-          {
-            continueFlowId: this.step.next_flow[1],
-            navigateToResult: this.navigateToResult,
-          }
-        );
+    fireEvent(this, "flow-update", { step: undefined });
+    if (this.step.result && this.navigateToResult) {
+      if (this.devices.length === 1) {
+        navigate(`/config/devices/device/${this.devices[0].id}`);
       } else {
-        showAlertDialog(this, {
-          text: this.hass.localize(
-            "ui.panel.config.integrations.config_flow.error",
-            { error: `Unsupported next flow type: ${this.step.next_flow[0]}` }
-          ),
-        });
-      }
-    } else {
-      fireEvent(this, "flow-update", { step: undefined });
-      if (this.step.result && this.navigateToResult) {
-        if (this.devices.length === 1) {
-          navigate(`/config/devices/device/${this.devices[0].id}`);
-        } else {
-          navigate(
-            `/config/integrations/integration/${this.step.result.domain}#config_entry=${this.step.result.entry_id}`
-          );
-        }
+        navigate(
+          `/config/integrations/integration/${this.step.result.domain}#config_entry=${this.step.result.entry_id}`
+        );
       }
     }
   }

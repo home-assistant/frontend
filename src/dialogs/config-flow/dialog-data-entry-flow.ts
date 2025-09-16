@@ -30,6 +30,8 @@ import "./step-flow-form";
 import "./step-flow-loading";
 import "./step-flow-menu";
 import "./step-flow-progress";
+import { showOptionsFlowDialog } from "./show-dialog-options-flow";
+import { showSubConfigFlowDialog } from "./show-dialog-sub-config-flow";
 
 let instance = 0;
 
@@ -178,10 +180,15 @@ class DataEntryFlowDialog extends LitElement {
     (
       showDevices: boolean,
       devices: DeviceRegistryEntry[],
-      entry_id?: string
+      entry_id?: string,
+      carryOverDevices?: string[]
     ) =>
       showDevices && entry_id
-        ? devices.filter((device) => device.config_entries.includes(entry_id))
+        ? devices.filter(
+            (device) =>
+              device.config_entries.includes(entry_id) ||
+              carryOverDevices?.includes(device.id)
+          )
         : []
   );
 
@@ -210,13 +217,12 @@ class DataEntryFlowDialog extends LitElement {
       case "menu":
         return this._params.flowConfig.renderMenuHeader(this.hass, this._step);
       case "create_entry": {
-        const devicesLength =
-          this._devices(
-            this._params.flowConfig.showDevices,
-            Object.values(this.hass.devices),
-            this._step.result?.entry_id
-          ).length +
-          Object.values(this._params.carryOverDevices ?? {}).flat().length;
+        const devicesLength = this._devices(
+          this._params.flowConfig.showDevices,
+          Object.values(this.hass.devices),
+          this._step.result?.entry_id,
+          this._params.carryOverDevices
+        ).length;
         return this.hass.localize(
           `ui.panel.config.integrations.config_flow.${
             devicesLength ? "device_created" : "success"
@@ -403,10 +409,9 @@ class DataEntryFlowDialog extends LitElement {
                                   .devices=${this._devices(
                                     this._params.flowConfig.showDevices,
                                     Object.values(this.hass.devices),
-                                    this._step.result?.entry_id
+                                    this._step.result?.entry_id,
+                                    this._params.carryOverDevices
                                   )}
-                                  .carryOverDevices=${this._params
-                                    .carryOverDevices}
                                 ></step-flow-create-entry>
                               `}
                 `}
@@ -466,6 +471,47 @@ class DataEntryFlowDialog extends LitElement {
     this._step = undefined;
     await this.updateComplete;
     this._step = _step;
+    if (_step.type === "create_entry" && _step.next_flow) {
+      // skip device rename if there is a chained flow
+      if (_step.next_flow[0] === "config_flow") {
+        this._step = undefined;
+        this._handler = undefined;
+        if (this._unsubDataEntryFlowProgress) {
+          this._unsubDataEntryFlowProgress();
+          this._unsubDataEntryFlowProgress = undefined;
+        }
+        this.showDialog({
+          ...this._params!,
+          continueFlowId: _step.next_flow[1],
+          carryOverDevices: this._devices(
+            this._params!.flowConfig.showDevices,
+            Object.values(this.hass.devices),
+            _step.result?.entry_id,
+            this._params!.carryOverDevices
+          ).map((device) => device.id),
+        });
+      } else if (_step.next_flow[0] === "options_flow") {
+        this.closeDialog();
+        showOptionsFlowDialog(this, _step.result!, {
+          continueFlowId: _step.next_flow[1],
+          navigateToResult: this._params!.navigateToResult,
+        });
+      } else if (_step.next_flow[0] === "config_subentries_flow") {
+        this.closeDialog();
+        showSubConfigFlowDialog(this, _step.result!, _step.next_flow[0], {
+          continueFlowId: _step.next_flow[1],
+          navigateToResult: this._params!.navigateToResult,
+        });
+      } else {
+        this.closeDialog();
+        showAlertDialog(this, {
+          text: this.hass.localize(
+            "ui.panel.config.integrations.config_flow.error",
+            { error: `Unsupported next flow type: ${_step.next_flow[0]}` }
+          ),
+        });
+      }
+    }
   }
 
   private async _subscribeDataEntryFlowProgressed() {
