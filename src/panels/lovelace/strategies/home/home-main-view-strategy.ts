@@ -110,7 +110,6 @@ export class HomeMainViewStrategy extends ReactiveElement {
           strategy: {
             type: "common-controls",
             title: "Commonly used",
-            limit: 8,
             exclude_entities: favoriteEntities,
           },
           column_span: maxColumns,
