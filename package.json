@@ -97,7 +97,7 @@
     "@webcomponents/webcomponentsjs": "2.8.0",
     "app-datepicker": "5.1.1",
     "barcode-detector": "3.0.5",
-    "color-name": "2.0.0",
+    "color-name": "2.0.2",
     "comlink": "4.4.2",
     "core-js": "3.45.1",
     "cropperjs": "1.6.2",
