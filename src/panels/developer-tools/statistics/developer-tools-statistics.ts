@@ -708,15 +708,9 @@ class HaPanelDevStatistics extends KeyboardShortcutMixin(LitElement) {
         :host {
           display: block;
           height: 100%;
-          padding-top: 16px
-          padding-bottom: max(16px, var(--safe-area-inset-bottom, 0px));
-          padding-right: max(16px, var(--safe-area-inset-right, 0px));
-        }
-
-        @media (max-width: 600px) {
-          :host {
-            padding-left: var(--safe-area-inset-left, 0px);
-          }
+          padding-top: 16px;
+          padding-bottom: 16px;
+          padding-right: 16px;
         }
 
         .table-with-toolbars {
