@@ -266,9 +266,7 @@ class StepFlowCreateEntry extends LitElement {
       await Promise.allSettled(entityUpdates);
     }
 
-    fireEvent(this, "flow-update", { step: undefined });
     if (this.step.next_flow) {
-      // start the next flow
       if (this.step.next_flow[0] === "config_flow") {
         showConfigFlowDialog(this, {
           continueFlowId: this.step.next_flow[1],
@@ -301,13 +299,16 @@ class StepFlowCreateEntry extends LitElement {
           ),
         });
       }
-    } else if (this.step.result && this.navigateToResult) {
-      if (this.devices.length === 1) {
-        navigate(`/config/devices/device/${this.devices[0].id}`);
-      } else {
-        navigate(
-          `/config/integrations/integration/${this.step.result.domain}#config_entry=${this.step.result.entry_id}`
-        );
+    } else {
+      fireEvent(this, "flow-update", { step: undefined });
+      if (this.step.result && this.navigateToResult) {
+        if (this.devices.length === 1) {
+          navigate(`/config/devices/device/${this.devices[0].id}`);
+        } else {
+          navigate(
+            `/config/integrations/integration/${this.step.result.domain}#config_entry=${this.step.result.entry_id}`
+          );
+        }
       }
     }
   }
