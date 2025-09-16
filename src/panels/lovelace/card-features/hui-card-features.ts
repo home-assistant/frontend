@@ -65,7 +65,7 @@ export class HuiCardFeatures extends LitElement {
       width: 100%;
       display: flex;
       flex-direction: column;
-      gap: 12px;
+      gap: var(--feature-gap, 12px);
       width: 100%;
       box-sizing: border-box;
       justify-content: space-evenly;
