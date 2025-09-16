@@ -5,7 +5,7 @@ import {
   css,
   type PropertyValues,
 } from "lit";
-import { customElement, property, query } from "lit/decorators";
+import { customElement, eventOptions, property, query } from "lit/decorators";
 
 @customElement("ha-marquee-text")
 export class HaMarqueeText extends LitElement {
@@ -128,6 +128,7 @@ export class HaMarqueeText extends LitElement {
     }
   };
 
+  @eventOptions({ passive: true })
   private _handleMouseEnter() {
     if (this.pauseOnHover && this._animationFrame) {
       cancelAnimationFrame(this._animationFrame);
