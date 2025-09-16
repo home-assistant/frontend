@@ -517,8 +517,13 @@ class MoreInfoMediaPlayer extends LitElement {
 
     .volume ha-svg-icon {
       padding: 4px;
-      height: 24px;
-      width: 24px;
+      height: 16px;
+      width: 16px;
+    }
+
+    .volume ha-icon-button {
+      --mdc-icon-button-size: 32px;
+      --mdc-icon-size: 16px;
     }
 
     .badge {
@@ -549,6 +554,7 @@ class MoreInfoMediaPlayer extends LitElement {
       justify-content: space-between;
       color: var(--secondary-text-color);
       padding: 0 8px;
+      font-size: var(--ha-font-size-s);
     }
 
     .media-info-row {
@@ -565,7 +571,7 @@ class MoreInfoMediaPlayer extends LitElement {
     }
 
     .media-artist {
-      font-size: var(--ha-font-size-lg);
+      font-size: var(--ha-font-size-l);
       font-weight: var(--ha-font-weight-normal);
       color: var(--secondary-text-color);
     }
