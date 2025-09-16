@@ -22,6 +22,8 @@ import type { LovelaceCardEditor } from "../../types";
 import { baseLovelaceCardConfig } from "../structs/base-card-struct";
 import { DEFAULT_HOURS_TO_SHOW } from "../../cards/hui-logbook-card";
 import { targetStruct } from "../../../../data/script";
+import type { HaEntityPickerEntityFilterFunc } from "../../../../components/entity/ha-entity-picker";
+import { getSensorNumericDeviceClasses } from "../../../../data/sensor";
 
 const cardConfigStruct = assign(
   baseLovelaceCardConfig,
@@ -59,6 +61,8 @@ export class HuiLogbookCardEditor
 
   @state() private _config?: LogbookCardConfig;
 
+  @state() private _sensorNumericDeviceClasses?: string[];
+
   public setConfig(config: LogbookCardConfig): void {
     assert(config, cardConfigStruct);
     this._config = config;
@@ -80,6 +84,20 @@ export class HuiLogbookCardEditor
     );
   }
 
+  private async _loadNumericDeviceClasses(hass: HomeAssistant) {
+    // ensures that the _load function is not called a second time
+    // if another updated occurs before the async function returns
+    this._sensorNumericDeviceClasses = [];
+    const deviceClasses = await getSensorNumericDeviceClasses(hass);
+    this._sensorNumericDeviceClasses = deviceClasses.numeric_device_classes;
+  }
+
+  protected updated() {
+    if (this.hass && !this._sensorNumericDeviceClasses) {
+      this._loadNumericDeviceClasses(this.hass);
+    }
+  }
+
   protected render() {
     if (!this.hass || !this._config) {
       return nothing;
@@ -96,13 +114,16 @@ export class HuiLogbookCardEditor
 
       <ha-target-picker
         .hass=${this.hass}
-        .entityFilter=${filterLogbookCompatibleEntities}
+        .entityFilter=${this._filterFunc}
         .value=${this._targetPicker}
         add-on-top
         @value-changed=${this._entitiesChanged}
       ></ha-target-picker>
     `;
   }
+
+  private _filterFunc: HaEntityPickerEntityFilterFunc = (entity) =>
+    filterLogbookCompatibleEntities(entity, this._sensorNumericDeviceClasses);
 
   private _entitiesChanged(ev: CustomEvent): void {
     this._config = { ...this._config!, target: ev.detail.value };

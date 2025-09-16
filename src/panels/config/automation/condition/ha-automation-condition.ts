@@ -6,6 +6,7 @@ import { customElement, property, queryAll, state } from "lit/decorators";
 import { repeat } from "lit/directives/repeat";
 import { storage } from "../../../../common/decorators/storage";
 import { fireEvent } from "../../../../common/dom/fire_event";
+import { stopPropagation } from "../../../../common/dom/stop_propagation";
 import { nextRender } from "../../../../common/util/render-status";
 import "../../../../components/ha-button";
 import "../../../../components/ha-button-menu";
@@ -187,6 +188,7 @@ export default class HaAutomationCondition extends LitElement {
                           : ""}"
                         slot="icons"
                         @keydown=${this._handleDragKeydown}
+                        @click=${stopPropagation}
                         .index=${idx}
                       >
                         <ha-svg-icon .path=${mdiDrag}></ha-svg-icon>

@@ -83,15 +83,6 @@ export class HaAutomationRow extends LitElement {
         !(ev.ctrlKey || ev.metaKey) &&
         !ev.shiftKey &&
         (ev.key === "ArrowUp" || ev.key === "ArrowDown")
-      ) &&
-      !(
-        (ev.ctrlKey || ev.metaKey) &&
-        !ev.shiftKey &&
-        !ev.altKey &&
-        (ev.key === "c" ||
-          ev.key === "x" ||
-          ev.key === "Delete" ||
-          ev.key === "Backspace")
       )
     ) {
       return;
@@ -110,22 +101,6 @@ export class HaAutomationRow extends LitElement {
     if (this.sortSelected && (ev.key === "Enter" || ev.key === " ")) {
       fireEvent(this, "stop-sort-selection");
       return;
-    }
-
-    if (ev.ctrlKey || ev.metaKey) {
-      if (ev.key === "c") {
-        fireEvent(this, "copy-row");
-        return;
-      }
-      if (ev.key === "x") {
-        fireEvent(this, "cut-row");
-        return;
-      }
-
-      if (ev.key === "Delete" || ev.key === "Backspace") {
-        fireEvent(this, "delete-row");
-        return;
-      }
     }
 
     this.click();

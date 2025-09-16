@@ -8,12 +8,12 @@ import { computeDomain } from "../common/entity/compute_domain";
 import { computeStateDomain } from "../common/entity/compute_state_domain";
 import { autoCaseNoun } from "../common/translations/auto_case_noun";
 import type { LocalizeFunc } from "../common/translations/localize";
-import type { HaEntityPickerEntityFilterFunc } from "../components/entity/ha-entity-picker";
 import type { HomeAssistant } from "../types";
 import { UNAVAILABLE, UNKNOWN } from "./entity";
+import { isNumericEntity } from "./history";
 
 const LOGBOOK_LOCALIZE_PATH = "ui.components.logbook.messages";
-export const CONTINUOUS_DOMAINS = ["counter", "proximity", "sensor", "zone"];
+export const CONTINUOUS_DOMAINS = ["counter", "proximity"];
 
 export interface LogbookStreamMessage {
   events: LogbookEntry[];
@@ -326,9 +326,14 @@ export const localizeStateMessage = (
   });
 };
 
-export const filterLogbookCompatibleEntities: HaEntityPickerEntityFilterFunc = (
-  entity
-) =>
-  computeStateDomain(entity) !== "sensor" ||
-  (entity.attributes.unit_of_measurement === undefined &&
-    entity.attributes.state_class === undefined);
+export const filterLogbookCompatibleEntities = (
+  entity,
+  sensorNumericDeviceClasses: string[] = []
+) => {
+  const domain = computeStateDomain(entity);
+  const continuous =
+    CONTINUOUS_DOMAINS.includes(domain) ||
+    (domain === "sensor" &&
+      isNumericEntity(domain, entity, undefined, sensorNumericDeviceClasses));
+  return !continuous;
+};

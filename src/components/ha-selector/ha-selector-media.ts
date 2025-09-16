@@ -246,6 +246,8 @@ export class HaMediaSelector extends LitElement {
       entityId: this._getActiveEntityId(),
       navigateIds: this.value?.metadata?.navigateIds,
       accept: this.selector.media?.accept,
+      defaultId: this.value?.media_content_id,
+      defaultType: this.value?.media_content_type,
       mediaPickedCallback: (pickedMedia: MediaPickedEvent) => {
         fireEvent(this, "value-changed", {
           value: {

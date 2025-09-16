@@ -226,6 +226,7 @@ export class EnergyBatterySettings extends LitElement {
         .label {
           overflow: hidden;
           text-overflow: ellipsis;
+          white-space: nowrap;
         }
       `,
     ];

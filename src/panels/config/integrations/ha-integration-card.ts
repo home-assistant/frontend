@@ -159,29 +159,32 @@ export class HaIntegrationCard extends LitElement {
                   ? "overwrites"
                   : "custom"}"
               >
+                <ha-svg-icon
+                  id="icon-custom"
+                  .path=${mdiPackageVariant}
+                ></ha-svg-icon>
                 <ha-tooltip
-                  hoist
+                  for="icon-custom"
                   .placement=${computeRTL(this.hass) ? "right" : "left"}
-                  .content=${this.hass.localize(
+                >
+                  ${this.hass.localize(
                     this.manifest.overwrites_built_in
                       ? "ui.panel.config.integrations.config_entry.custom_overwrites_core"
                       : "ui.panel.config.integrations.config_entry.custom_integration"
                   )}
-                >
-                  <ha-svg-icon .path=${mdiPackageVariant}></ha-svg-icon>
                 </ha-tooltip>
               </span>`
             : nothing}
           ${this.manifest && this.manifest.iot_class?.startsWith("cloud_")
             ? html`<div class="icon cloud">
+                <ha-svg-icon id="icon-cloud" .path=${mdiWeb}></ha-svg-icon>
                 <ha-tooltip
-                  hoist
+                  for="icon-cloud"
                   .placement=${computeRTL(this.hass) ? "right" : "left"}
-                  .content=${this.hass.localize(
+                >
+                  ${this.hass.localize(
                     "ui.panel.config.integrations.config_entry.depends_on_cloud"
                   )}
-                >
-                  <ha-svg-icon .path=${mdiWeb}></ha-svg-icon>
                 </ha-tooltip>
               </div>`
             : nothing}
@@ -189,15 +192,18 @@ export class HaIntegrationCard extends LitElement {
           !this.manifest?.config_flow &&
           !this.items.every((itm) => itm.source === "system")
             ? html`<div class="icon yaml">
+                <ha-svg-icon
+                  id="icon-yaml"
+                  .path=${mdiFileCodeOutline}
+                ></ha-svg-icon>
                 <ha-tooltip
-                  hoist
+                  for="icon-yaml"
                   .placement=${computeRTL(this.hass) ? "right" : "left"}
-                  .content=${this.hass.localize(
+                >
+                  ${this.hass.localize(
                     "ui.panel.config.integrations.config_entry.no_config_flow"
                   )}
-                >
-                  <ha-svg-icon .path=${mdiFileCodeOutline}></ha-svg-icon
-                ></ha-tooltip>
+                </ha-tooltip>
               </div>`
             : nothing}
         </div>
