@@ -41,6 +41,11 @@ class StepFlowCreateEntry extends LitElement {
 
   @property({ attribute: false }) public devices!: DeviceRegistryEntry[];
 
+  @property({ attribute: false }) public carryOverDevices?: Record<
+    string,
+    DeviceRegistryEntry[]
+  >;
+
   public navigateToResult = false;
 
   @state() private _deviceUpdate: Record<
@@ -68,7 +73,7 @@ class StepFlowCreateEntry extends LitElement {
 
     if (
       this.step.next_flow &&
-      (this.step.next_flow[0] === "config_flow" || this.devices.length === 0)
+      (this.step.next_flow[0] === "config_flow" || this.allDevices.length === 0)
     ) {
       this._flowDone();
       return;
@@ -103,6 +108,7 @@ class StepFlowCreateEntry extends LitElement {
 
   protected render(): TemplateResult {
     const localize = this.hass.localize;
+    const allDevices = this.allDevices;
     return html`
       <div class="content">
         ${this.flowConfig.renderCreateEntryDescription(this.hass, this.step)}
@@ -113,10 +119,10 @@ class StepFlowCreateEntry extends LitElement {
               )}</span
             >`
           : nothing}
-        ${this.devices.length === 0 &&
+        ${allDevices.length === 0 &&
         ["options_flow", "repair_flow"].includes(this.flowConfig.flowType)
           ? nothing
-          : this.devices.length === 0
+          : allDevices.length === 0
             ? html`<p>
                 ${localize(
                   "ui.panel.config.integrations.config_flow.created_config",
@@ -125,7 +131,7 @@ class StepFlowCreateEntry extends LitElement {
               </p>`
             : html`
                 <div class="devices">
-                  ${this.devices.map(
+                  ${allDevices.map(
                     (device) => html`
                       <div class="device">
                         <div class="device-info">
@@ -187,7 +193,7 @@ class StepFlowCreateEntry extends LitElement {
             `ui.panel.config.integrations.config_flow.${
               this.step.next_flow
                 ? "next"
-                : !this.devices.length || Object.keys(this._deviceUpdate).length
+                : !allDevices.length || Object.keys(this._deviceUpdate).length
                   ? "finish"
                   : "finish_skip"
             }`
@@ -195,6 +201,13 @@ class StepFlowCreateEntry extends LitElement {
         >
       </div>
     `;
+  }
+
+  get allDevices(): DeviceRegistryEntry[] {
+    return [
+      ...this.devices,
+      ...Object.values(this.carryOverDevices ?? {}).flat(),
+    ];
   }
 
   private async _flowDone(): Promise<void> {
@@ -261,6 +274,7 @@ class StepFlowCreateEntry extends LitElement {
           continueFlowId: this.step.next_flow[1],
           navigateToResult: this.navigateToResult,
           carryOverDevices: {
+            ...this.carryOverDevices,
             [this.step.result!.entry_id]: this.devices,
           },
         });

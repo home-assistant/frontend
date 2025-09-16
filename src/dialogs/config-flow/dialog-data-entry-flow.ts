@@ -178,16 +178,10 @@ class DataEntryFlowDialog extends LitElement {
     (
       showDevices: boolean,
       devices: DeviceRegistryEntry[],
-      entry_id?: string,
-      carryOverDevices: Record<string, DeviceRegistryEntry[]> = {}
+      entry_id?: string
     ) =>
       showDevices && entry_id
-        ? [
-            ...Object.values(carryOverDevices ?? {}).flat(),
-            ...devices.filter((device) =>
-              device.config_entries.includes(entry_id)
-            ),
-          ]
+        ? devices.filter((device) => device.config_entries.includes(entry_id))
         : []
   );
 
@@ -216,12 +210,13 @@ class DataEntryFlowDialog extends LitElement {
       case "menu":
         return this._params.flowConfig.renderMenuHeader(this.hass, this._step);
       case "create_entry": {
-        const devicesLength = this._devices(
-          this._params.flowConfig.showDevices,
-          Object.values(this.hass.devices),
-          this._step.result?.entry_id,
-          this._params.carryOverDevices
-        ).length;
+        const devicesLength =
+          this._devices(
+            this._params.flowConfig.showDevices,
+            Object.values(this.hass.devices),
+            this._step.result?.entry_id
+          ).length +
+          Object.values(this._params.carryOverDevices ?? {}).flat().length;
         return this.hass.localize(
           `ui.panel.config.integrations.config_flow.${
             devicesLength ? "device_created" : "success"
@@ -408,9 +403,10 @@ class DataEntryFlowDialog extends LitElement {
                                   .devices=${this._devices(
                                     this._params.flowConfig.showDevices,
                                     Object.values(this.hass.devices),
-                                    this._step.result?.entry_id,
-                                    this._params.carryOverDevices
+                                    this._step.result?.entry_id
                                   )}
+                                  .carryOverDevices=${this._params
+                                    .carryOverDevices}
                                 ></step-flow-create-entry>
                               `}
                 `}
