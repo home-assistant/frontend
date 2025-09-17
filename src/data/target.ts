@@ -30,7 +30,11 @@ export const areaMeetsFilter = (
   area: AreaRegistryEntry,
   devices: HomeAssistant["devices"],
   entities: HomeAssistant["entities"],
-  deviceFilter?: HaDevicePickerDeviceFilterFunc
+  deviceFilter?: HaDevicePickerDeviceFilterFunc,
+  includeDomains?: string[],
+  includeDeviceClasses?: string[],
+  states?: HomeAssistant["states"],
+  entityFilter?: HaEntityPickerEntityFilterFunc
 ): boolean => {
   const areaDevices = Object.values(devices).filter(
     (device) => device.area_id === area.area_id
@@ -38,7 +42,15 @@ export const areaMeetsFilter = (
 
   if (
     areaDevices.some((device) =>
-      deviceMeetsFilter(device, entities, deviceFilter)
+      deviceMeetsFilter(
+        device,
+        entities,
+        deviceFilter,
+        includeDomains,
+        includeDeviceClasses,
+        states,
+        entityFilter
+      )
     )
   ) {
     return true;
@@ -48,7 +60,18 @@ export const areaMeetsFilter = (
     (entity) => entity.area_id === area.area_id
   );
 
-  if (areaEntities.some((entity) => entityRegMeetsFilter(entity))) {
+  if (
+    areaEntities.some((entity) =>
+      entityRegMeetsFilter(
+        entity,
+        false,
+        includeDomains,
+        includeDeviceClasses,
+        states,
+        entityFilter
+      )
+    )
+  ) {
     return true;
   }
 
@@ -58,13 +81,28 @@ export const areaMeetsFilter = (
 export const deviceMeetsFilter = (
   device: DeviceRegistryEntry,
   entities: HomeAssistant["entities"],
-  deviceFilter?: HaDevicePickerDeviceFilterFunc
+  deviceFilter?: HaDevicePickerDeviceFilterFunc,
+  includeDomains?: string[],
+  includeDeviceClasses?: string[],
+  states?: HomeAssistant["states"],
+  entityFilter?: HaEntityPickerEntityFilterFunc
 ): boolean => {
   const devEntities = Object.values(entities).filter(
     (entity) => entity.device_id === device.id
   );
 
-  if (!devEntities.some((entity) => entityRegMeetsFilter(entity))) {
+  if (
+    !devEntities.some((entity) =>
+      entityRegMeetsFilter(
+        entity,
+        false,
+        includeDomains,
+        includeDeviceClasses,
+        states,
+        entityFilter
+      )
+    )
+  ) {
     return false;
   }
 

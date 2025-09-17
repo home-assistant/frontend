@@ -505,7 +505,11 @@ export class HaTargetPicker extends SubscribeMixin(LitElement) {
             area,
             this.hass.devices,
             this.hass.entities,
-            this.deviceFilter
+            this.deviceFilter,
+            this.includeDomains,
+            this.includeDeviceClasses,
+            this.hass.states,
+            this.entityFilter
           )
         ) {
           newAreas.push(area.area_id);
@@ -516,7 +520,15 @@ export class HaTargetPicker extends SubscribeMixin(LitElement) {
         if (
           device.area_id === itemId &&
           !this.value!.device_id?.includes(device.id) &&
-          deviceMeetsFilter(device, this.hass.entities, this.deviceFilter)
+          deviceMeetsFilter(
+            device,
+            this.hass.entities,
+            this.deviceFilter,
+            this.includeDomains,
+            this.includeDeviceClasses,
+            this.hass.states,
+            this.entityFilter
+          )
         ) {
           newDevices.push(device.id);
         }
@@ -563,7 +575,11 @@ export class HaTargetPicker extends SubscribeMixin(LitElement) {
             area,
             this.hass.devices,
             this.hass.entities,
-            this.deviceFilter
+            this.deviceFilter,
+            this.includeDomains,
+            this.includeDeviceClasses,
+            this.hass.states,
+            this.entityFilter
           )
         ) {
           newAreas.push(area.area_id);
@@ -573,7 +589,15 @@ export class HaTargetPicker extends SubscribeMixin(LitElement) {
         if (
           device.labels.includes(itemId) &&
           !this.value!.device_id?.includes(device.id) &&
-          deviceMeetsFilter(device, this.hass.entities, this.deviceFilter)
+          deviceMeetsFilter(
+            device,
+            this.hass.entities,
+            this.deviceFilter,
+            this.includeDomains,
+            this.includeDeviceClasses,
+            this.hass.states,
+            this.entityFilter
+          )
         ) {
           newDevices.push(device.id);
         }

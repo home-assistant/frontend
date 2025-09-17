@@ -130,7 +130,6 @@ export class HaTargetPickerItemRow extends LitElement {
 
     return html`
       <ha-md-list-item
-        .disabled=${entries?.referenced_entities.length === 0}
         .type=${this.type === "entity" ? "text" : "button"}
         @click=${this._toggleExpand}
       >
@@ -174,8 +173,7 @@ export class HaTargetPickerItemRow extends LitElement {
           ? html`<span slot="supporting-text">${context}</span>`
           : nothing}
         ${!this.subEntry &&
-        entries &&
-        (showEntities || showDevices || this._domainName)
+        ((entries && (showEntities || showDevices)) || this._domainName)
           ? html`
               <div slot="end" class="summary">
                 ${showEntities
@@ -225,7 +223,7 @@ export class HaTargetPickerItemRow extends LitElement {
   private _renderEntries() {
     const entries = this.parentEntries || this._entries;
 
-    let nextType =
+    let nextType: TargetType =
       this.type === "floor"
         ? "area"
         : this.type === "area"
@@ -295,11 +293,16 @@ export class HaTargetPickerItemRow extends LitElement {
           });
 
     const rows2 =
-      nextType === "device" && entries
-        ? entries.referenced_entities.filter(
-            (entity_id) => this.hass.entities[entity_id].area_id === this.itemId
+      this.type === "label" && entries
+        ? entries.referenced_entities.filter((entity_id) =>
+            this.hass.entities[entity_id].labels.includes(this.itemId)
           )
-        : [];
+        : nextType === "device" && entries
+          ? entries.referenced_entities.filter(
+              (entity_id) =>
+                this.hass.entities[entity_id].area_id === this.itemId
+            )
+          : [];
 
     return html`
       <ha-md-list class="entries">
@@ -351,7 +354,11 @@ export class HaTargetPickerItemRow extends LitElement {
                 area,
                 this.hass.devices,
                 this.hass.entities,
-                this.deviceFilter
+                this.deviceFilter,
+                this.includeDomains,
+                this.includeDeviceClasses,
+                this.hass.states,
+                this.entityFilter
               )
             ) {
               return true;
@@ -364,14 +371,26 @@ export class HaTargetPickerItemRow extends LitElement {
       }
 
       const hiddenDeviceIds: string[] = [];
-      if (this.type === "area" || this.type === "label") {
+      if (
+        this.type === "floor" ||
+        this.type === "area" ||
+        this.type === "label"
+      ) {
         entries.referenced_devices = entries.referenced_devices.filter(
           (device_id) => {
             const device = this.hass.devices[device_id];
             if (
               !hiddenAreaIds.includes(device.area_id || "") &&
-              (this.type === "area" || device.labels.includes(this.itemId)) &&
-              deviceMeetsFilter(device, this.hass.entities, this.deviceFilter)
+              (this.type !== "label" || device.labels.includes(this.itemId)) &&
+              deviceMeetsFilter(
+                device,
+                this.hass.entities,
+                this.deviceFilter,
+                this.includeDomains,
+                this.includeDeviceClasses,
+                this.hass.states,
+                this.entityFilter
+              )
             ) {
               return true;
             }
@@ -388,14 +407,19 @@ export class HaTargetPickerItemRow extends LitElement {
           if (hiddenDeviceIds.includes(entity.device_id || "")) {
             return false;
           }
-          if (entries.referenced_devices.includes(entity.device_id || "")) {
-            return true;
-          }
           if (
             (this.type === "area" && entity.area_id === this.itemId) ||
-            (this.type === "label" && entity.labels.includes(this.itemId))
+            (this.type === "label" && entity.labels.includes(this.itemId)) ||
+            entries.referenced_devices.includes(entity.device_id || "")
           ) {
-            return entityRegMeetsFilter(entity, this.type === "label");
+            return entityRegMeetsFilter(
+              entity,
+              this.type === "label",
+              this.includeDomains,
+              this.includeDeviceClasses,
+              this.hass.states,
+              this.entityFilter
+            );
           }
           return false;
         }
