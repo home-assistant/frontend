@@ -4,15 +4,9 @@ import { customElement, property, state } from "lit/decorators";
 import { computeDomain } from "../../../common/entity/compute_domain";
 import "../../../components/ha-control-button";
 import "../../../components/ha-control-button-group";
-import { hasScriptFields } from "../../../data/script";
-import { showMoreInfoDialog } from "../../../dialogs/more-info/show-ha-more-info-dialog";
 import type { HomeAssistant } from "../../../types";
 import type { LovelaceCardFeature, LovelaceCardFeatureEditor } from "../types";
 import { cardFeatureStyles } from "./common/card-feature-styles";
-import type { ActionHandlerEvent } from "../../../data/lovelace/action_handler";
-import { actionHandler } from "../common/directives/action-handler-directive";
-import { handleAction } from "../common/handle-action";
-import { hasAction } from "../common/has-action";
 import type {
   ButtonCardFeatureConfig,
   LovelaceCardFeatureContext,
@@ -45,49 +39,32 @@ class HuiButtonCardFeature extends LitElement implements LovelaceCardFeature {
     return this.hass.states[this.context.entity_id!] as HassEntity | undefined;
   }
 
-  public setConfig(config: ButtonCardFeatureConfig): void {
-    if (!config) {
-      throw new Error("Invalid configuration");
-    }
-
-    this._config = {
-      button_action: undefined,
-      ...config,
-    };
-  }
-
-  private _handleAction(ev: ActionHandlerEvent) {
+  private _pressButton() {
     if (!this.hass || !this._stateObj) return;
-
-    if (this._config?.button_action) {
-      handleAction(
-        this,
-        this.hass,
-        this._config.button_action as any,
-        ev.detail.action!
-      );
-      return;
-    }
 
     const domain = computeDomain(this._stateObj.entity_id);
     const service =
       domain === "button" || domain === "input_button" ? "press" : "turn_on";
 
-    if (domain === "script") {
-      const entityId = this._stateObj.entity_id;
-      if (hasScriptFields(this.hass!, entityId)) {
-        showMoreInfoDialog(this, { entityId: entityId });
-        return;
-      }
-    }
-
-    this.hass.callService(domain, service, {
+    const serviceData = {
       entity_id: this._stateObj.entity_id,
-    });
+      ...(this._config?.data ?? {}),
+    };
+
+    this.hass.callService(domain, service, serviceData);
   }
 
   static getStubConfig(): ButtonCardFeatureConfig {
-    return { type: "button" };
+    return {
+      type: "button",
+    };
+  }
+
+  public setConfig(config: ButtonCardFeatureConfig): void {
+    if (!config) {
+      throw new Error("Invalid configuration");
+    }
+    this._config = config;
   }
 
   protected render() {
@@ -106,11 +83,7 @@ class HuiButtonCardFeature extends LitElement implements LovelaceCardFeature {
         <ha-control-button
           .disabled=${this._stateObj.state === "unavailable"}
           class="press-button"
-          @action=${this._handleAction}
-          .actionHandler=${actionHandler({
-            hasHold: hasAction(this._config.button_action),
-            hasDoubleClick: hasAction(this._config.button_action),
-          })}
+          @click=${this._pressButton}
         >
           ${this._config.action_name ??
           this.hass.localize("ui.card.button.press")}
