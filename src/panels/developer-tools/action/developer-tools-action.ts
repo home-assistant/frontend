@@ -2,9 +2,10 @@ import { mdiHelpCircle } from "@mdi/js";
 import type { HassService } from "home-assistant-js-websocket";
 import { ERR_CONNECTION_LOST } from "home-assistant-js-websocket";
 import { load } from "js-yaml";
-import type { CSSResultGroup } from "lit";
+import type { CSSResultGroup, TemplateResult } from "lit";
 import { css, html, LitElement, nothing } from "lit";
 import { customElement, property, query, state } from "lit/decorators";
+import { until } from "lit/directives/until";
 import memoizeOne from "memoize-one";
 import { storage } from "../../../common/decorators/storage";
 import { computeDomain } from "../../../common/entity/compute_domain";
@@ -37,6 +38,7 @@ import {
 import { haStyle } from "../../../resources/styles";
 import type { HomeAssistant } from "../../../types";
 import { documentationUrl } from "../../../util/documentation-url";
+import { resolveMediaSource } from "../../../data/media_source";
 
 @customElement("developer-tools-action")
 class HaPanelDevAction extends LitElement {
@@ -50,6 +52,7 @@ class HaPanelDevAction extends LitElement {
     domain: string;
     service: string;
     result: Record<string, any>;
+    media?: Promise<TemplateResult | typeof nothing>;
   };
 
   @state() private _error?: string;
@@ -227,14 +230,7 @@ class HaPanelDevAction extends LitElement {
                     )}</ha-button
                   >
                 </ha-yaml-editor>
-                ${this._response.domain === "ai_task" &&
-                this._response.service === "generate_image" &&
-                this._response.result.url
-                  ? html`<img
-                      src=${this._response.result.url}
-                      alt="Generated media"
-                    />`
-                  : nothing}
+                ${until(this._response.result.image)}
               </div>
             </ha-card>
           </div>`
@@ -490,10 +486,20 @@ class HaPanelDevAction extends LitElement {
     }
     button.progress = true;
     try {
+      const result = (await callExecuteScript(this.hass, script)).response;
       this._response = {
         domain,
         service,
-        result: (await callExecuteScript(this.hass, script)).response,
+        result,
+        media:
+          "media_source_id" in result
+            ? resolveMediaSource(this.hass, result.media_source_id).then(
+                (resolved) =>
+                  resolved.mime_type.startsWith("image/")
+                    ? html`<img src=${resolved.url} alt="Media content" />`
+                    : nothing
+              )
+            : undefined,
       };
     } catch (err: any) {
       if (
