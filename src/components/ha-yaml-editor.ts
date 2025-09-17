@@ -130,7 +130,7 @@ export class HaYamlEditor extends LitElement {
             <div class="card-actions">
               ${this.copyClipboard
                 ? html`
-                    <ha-button @click=${this._copyYaml}>
+                    <ha-button appearance="plain" @click=${this._copyYaml}>
                       ${this.hass.localize(
                         "ui.components.yaml-editor.copy_to_clipboard"
                       )}
@@ -211,6 +211,7 @@ export class HaYamlEditor extends LitElement {
         }
         ha-code-editor {
           flex-grow: 1;
+          min-height: 0;
         }
       `,
     ];

@@ -1,28 +1,28 @@
-import type { CSSResultGroup } from "lit";
 import { mdiClose } from "@mdi/js";
+import type { HassEntity } from "home-assistant-js-websocket";
+import type { CSSResultGroup } from "lit";
 import { LitElement, css, html, nothing } from "lit";
 import { customElement, property, state } from "lit/decorators";
-import type { HassEntity } from "home-assistant-js-websocket";
 import { fireEvent } from "../../common/dom/fire_event";
-import { haStyleDialog } from "../../resources/styles";
-import type { HomeAssistant } from "../../types";
-import "../ha-alert";
-import "../ha-dialog";
-import "../ha-button";
-import "../ha-dialog-header";
-import "./ha-media-player-toggle";
-import type { JoinMediaPlayersDialogParams } from "./show-join-media-players-dialog";
+import { computeDomain } from "../../common/entity/compute_domain";
 import { computeStateName } from "../../common/entity/compute_state_name";
 import { supportsFeature } from "../../common/entity/supports-feature";
+import type { EntityRegistryDisplayEntry } from "../../data/entity_registry";
+import { extractApiErrorMessage } from "../../data/hassio/common";
 import {
   type MediaPlayerEntity,
   MediaPlayerEntityFeature,
   mediaPlayerJoin,
   mediaPlayerUnjoin,
 } from "../../data/media-player";
-import { extractApiErrorMessage } from "../../data/hassio/common";
-import type { EntityRegistryDisplayEntry } from "../../data/entity_registry";
-import { computeDomain } from "../../common/entity/compute_domain";
+import { haStyleDialog } from "../../resources/styles";
+import type { HomeAssistant } from "../../types";
+import "../ha-alert";
+import "../ha-button";
+import "../ha-dialog";
+import "../ha-dialog-header";
+import "./ha-media-player-toggle";
+import type { JoinMediaPlayersDialogParams } from "./show-join-media-players-dialog";
 
 @customElement("dialog-join-media-players")
 class DialogJoinMediaPlayers extends LitElement {
@@ -90,7 +90,11 @@ class DialogJoinMediaPlayers extends LitElement {
           <span slot="title"
             >${this.hass.localize("ui.card.media_player.media_players")}</span
           >
-          <ha-button slot="actionItems" @click=${this._selectAll}>
+          <ha-button
+            appearance="plain"
+            slot="actionItems"
+            @click=${this._selectAll}
+          >
             ${this.hass.localize("ui.card.media_player.select_all")}
           </ha-button>
         </ha-dialog-header>
@@ -114,11 +118,15 @@ class DialogJoinMediaPlayers extends LitElement {
               ></ha-media-player-toggle>`
           )}
         </div>
-        <ha-button slot="secondaryAction" @click=${this.closeDialog}>
+        <ha-button
+          appearance="plain"
+          slot="secondaryAction"
+          @click=${this.closeDialog}
+        >
           ${this.hass.localize("ui.common.cancel")}
         </ha-button>
         <ha-button
-          .disabled=${this._submitting}
+          .disabled=${!!this._submitting}
           slot="primaryAction"
           @click=${this._submit}
         >

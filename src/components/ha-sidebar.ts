@@ -14,6 +14,7 @@ import {
   mdiTooltipAccount,
   mdiViewDashboard,
 } from "@mdi/js";
+import type { UnsubscribeFunc } from "home-assistant-js-websocket";
 import type { CSSResultGroup, PropertyValues } from "lit";
 import { LitElement, css, html, nothing } from "lit";
 import {
@@ -205,6 +206,8 @@ class HaSidebar extends SubscribeMixin(LitElement) {
 
   private _recentKeydownActiveUntil = 0;
 
+  private _unsubPersistentNotifications: UnsubscribeFunc | undefined;
+
   @query(".tooltip") private _tooltip!: HTMLDivElement;
 
   public hassSubscribe() {
@@ -227,9 +230,6 @@ class HaSidebar extends SubscribeMixin(LitElement) {
           }
         }
       ),
-      subscribeNotifications(this.hass.connection, (notifications) => {
-        this._notifications = notifications;
-      }),
       ...(this.hass.user?.is_admin
         ? [
             subscribeRepairsIssueRegistry(this.hass.connection!, (repairs) => {
@@ -300,6 +300,23 @@ class HaSidebar extends SubscribeMixin(LitElement) {
     );
   }
 
+  protected firstUpdated(changedProps: PropertyValues) {
+    super.firstUpdated(changedProps);
+    this._subscribePersistentNotifications();
+  }
+
+  private _subscribePersistentNotifications(): void {
+    if (this._unsubPersistentNotifications) {
+      this._unsubPersistentNotifications();
+    }
+    this._unsubPersistentNotifications = subscribeNotifications(
+      this.hass.connection,
+      (notifications) => {
+        this._notifications = notifications;
+      }
+    );
+  }
+
   protected updated(changedProps) {
     super.updated(changedProps);
     if (changedProps.has("alwaysExpand")) {
@@ -310,6 +327,14 @@ class HaSidebar extends SubscribeMixin(LitElement) {
     }
 
     const oldHass = changedProps.get("hass") as HomeAssistant | undefined;
+
+    if (
+      this.hass &&
+      oldHass?.connected === false &&
+      this.hass.connected === true
+    ) {
+      this._subscribePersistentNotifications();
+    }
 
     this._calculateCounts();
 
@@ -641,7 +666,7 @@ class HaSidebar extends SubscribeMixin(LitElement) {
     tooltip.style.display = "block";
     tooltip.style.position = "fixed";
     tooltip.style.top = `${top}px`;
-    tooltip.style.left = `${item.offsetLeft + item.clientWidth + 8}px`;
+    tooltip.style.left = `calc(${item.offsetLeft + item.clientWidth + 8}px + var(--safe-area-inset-left, 0px))`;
   }
 
   private _hideTooltip() {
@@ -680,9 +705,10 @@ class HaSidebar extends SubscribeMixin(LitElement) {
           background-color: var(--sidebar-background-color);
           width: 100%;
           box-sizing: border-box;
+          padding-bottom: calc(14px + var(--safe-area-inset-bottom, 0px));
         }
         .menu {
-          height: var(--header-height);
+          height: calc(var(--header-height) + var(--safe-area-inset-top, 0px));
           box-sizing: border-box;
           display: flex;
           padding: 0 4px;
@@ -700,12 +726,16 @@ class HaSidebar extends SubscribeMixin(LitElement) {
           );
           font-size: var(--ha-font-size-xl);
           align-items: center;
-          padding-left: calc(4px + var(--safe-area-inset-left));
-          padding-inline-start: calc(4px + var(--safe-area-inset-left));
+          padding-left: calc(4px + var(--safe-area-inset-left, 0px));
+          padding-inline-start: calc(4px + var(--safe-area-inset-left, 0px));
           padding-inline-end: initial;
+          padding-top: var(--safe-area-inset-top, 0px);
         }
         :host([expanded]) .menu {
-          width: calc(256px + var(--safe-area-inset-left));
+          width: calc(256px + var(--safe-area-inset-left, 0px));
+        }
+        :host([narrow][expanded]) .menu {
+          width: 100%;
         }
         .menu ha-icon-button {
           color: var(--sidebar-icon-color);
@@ -731,22 +761,23 @@ class HaSidebar extends SubscribeMixin(LitElement) {
         ha-fade-in,
         ha-md-list {
           height: calc(
-            100% - var(--header-height) - 132px - var(--safe-area-inset-bottom)
+            100% - var(--header-height) - var(--safe-area-inset-top, 0px) -
+              132px - var(--safe-area-inset-bottom, 0px)
           );
         }
 
         ha-fade-in {
+          padding: 4px 0;
+          box-sizing: border-box;
           display: flex;
           justify-content: center;
           align-items: center;
         }
 
         ha-md-list {
-          padding: 4px 0;
-          box-sizing: border-box;
           overflow-x: hidden;
           background: none;
-          margin-left: var(--safe-area-inset-left);
+          margin-left: var(--safe-area-inset-left, 0px);
         }
 
         ha-md-list-item {
@@ -766,7 +797,9 @@ class HaSidebar extends SubscribeMixin(LitElement) {
         }
         :host([expanded]) ha-md-list-item {
           width: 248px;
-          width: calc(248px - var(--safe-area-inset-left));
+        }
+        :host([narrow][expanded]) ha-md-list-item {
+          width: calc(240px - var(--safe-area-inset-left, 0px));
         }
 
         ha-md-list-item.selected {

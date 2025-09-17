@@ -1,4 +1,3 @@
-import "@material/mwc-button/mwc-button";
 import {
   mdiArrowDown,
   mdiArrowUp,
@@ -22,6 +21,7 @@ import { computeStateName } from "../../../common/entity/compute_state_name";
 import type { LocalizeFunc } from "../../../common/translations/localize";
 import "../../../components/chips/ha-assist-chip";
 import "../../../components/ha-md-divider";
+import "../../../components/ha-button";
 import "../../../components/data-table/ha-data-table";
 import type {
   DataTableColumnContainer,
@@ -203,9 +203,11 @@ class HaPanelDevStatistics extends KeyboardShortcutMixin(LitElement) {
         ),
         template: (statistic) =>
           html`${statistic.issues
-            ? html`<mwc-button
+            ? html`<ha-button
                 @click=${this._fixIssue}
                 .data=${statistic.issues}
+                appearance="plain"
+                size="small"
               >
                 ${localize(
                   statistic.issues.some((issue) =>
@@ -214,7 +216,7 @@ class HaPanelDevStatistics extends KeyboardShortcutMixin(LitElement) {
                     ? "ui.panel.developer-tools.tabs.statistics.fix_issue.fix"
                     : "ui.panel.developer-tools.tabs.statistics.fix_issue.info"
                 )}
-              </mwc-button>`
+              </ha-button>`
             : "—"}`,
         minWidth: "113px",
         maxWidth: "113px",
@@ -712,6 +714,7 @@ class HaPanelDevStatistics extends KeyboardShortcutMixin(LitElement) {
           height: 100%;
           display: flex;
           flex-direction: column;
+          gap: 8px;
         }
         ha-data-table {
           width: 100%;

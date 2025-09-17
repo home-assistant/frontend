@@ -66,6 +66,9 @@ export class StateHistoryChartLine extends LitElement {
   @property({ attribute: "expand-legend", type: Boolean })
   public expandLegend?: boolean;
 
+  @property({ attribute: "hide-reset-button", type: Boolean })
+  public hideResetButton?: boolean;
+
   @state() private _chartData: LineSeriesOption[] = [];
 
   @state() private _entityIds: string[] = [];
@@ -94,7 +97,9 @@ export class StateHistoryChartLine extends LitElement {
         style=${styleMap({ height: this.height })}
         @dataset-hidden=${this._datasetHidden}
         @dataset-unhidden=${this._datasetUnhidden}
+        @chart-zoom=${this._handleDataZoom}
         .expandLegend=${this.expandLegend}
+        .hideResetButton=${this.hideResetButton}
       ></ha-chart-base>
     `;
   }
@@ -111,7 +116,7 @@ export class StateHistoryChartLine extends LitElement {
     this._chartData.forEach((dataset, index) => {
       if (
         dataset.tooltip?.show === false ||
-        this._hiddenStats.has(dataset.name as string)
+        this._hiddenStats.has(dataset.id as string)
       )
         return;
       const param = params.find(
@@ -185,11 +190,24 @@ export class StateHistoryChartLine extends LitElement {
   };
 
   private _datasetHidden(ev: CustomEvent) {
-    this._hiddenStats.add(ev.detail.name);
+    this._hiddenStats.add(ev.detail.id);
   }
 
   private _datasetUnhidden(ev: CustomEvent) {
-    this._hiddenStats.delete(ev.detail.name);
+    this._hiddenStats.delete(ev.detail.id);
+  }
+
+  public zoom(start: number, end: number) {
+    const chartBase = this.shadowRoot!.querySelector("ha-chart-base")!;
+    chartBase.zoom(start, end, true);
+  }
+
+  private _handleDataZoom(ev: CustomEvent) {
+    fireEvent(this, "chart-zoom-with-index", {
+      start: ev.detail.start ?? 0,
+      end: ev.detail.end ?? 100,
+      chartIndex: this.chartIndex,
+    });
   }
 
   public willUpdate(changedProps: PropertyValues) {

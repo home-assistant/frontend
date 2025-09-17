@@ -33,6 +33,7 @@ export class HaSelectorUiAction extends LitElement {
   }
 
   private _valueChanged(ev: CustomEvent) {
+    ev.stopPropagation();
     fireEvent(this, "value-changed", { value: ev.detail.value });
   }
 }

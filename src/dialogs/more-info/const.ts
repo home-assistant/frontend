@@ -116,7 +116,8 @@ export const computeShowLogBookComponent = (
 
   const domain = computeDomain(entityId);
   if (
-    (CONTINUOUS_DOMAINS.includes(domain) &&
+    CONTINUOUS_DOMAINS.includes(domain) ||
+    (domain === "sensor" &&
       isNumericEntity(
         domain,
         stateObj,

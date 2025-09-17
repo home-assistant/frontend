@@ -151,8 +151,13 @@ class DialogSetBackupEncryptionKey extends LitElement implements HassDialog {
                   "ui.panel.config.backup.encryption_key.download_emergency_kit_description"
                 )}
               </span>
-              <ha-button slot="end" @click=${this._download}>
-                <ha-svg-icon .path=${mdiDownload} slot="icon"></ha-svg-icon>
+              <ha-button
+                size="small"
+                appearance="plain"
+                slot="end"
+                @click=${this._download}
+              >
+                <ha-svg-icon .path=${mdiDownload} slot="start"></ha-svg-icon>
                 ${this.hass.localize(
                   "ui.panel.config.backup.encryption_key.download_emergency_kit_action"
                 )}

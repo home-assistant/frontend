@@ -22,7 +22,7 @@ class OnboardingWelcome extends LitElement {
       <h1>${this.localize("ui.panel.page-onboarding.welcome.header")}</h1>
       <p>${this.localize("ui.panel.page-onboarding.intro")}</p>
 
-      <ha-button unelevated @click=${this._start} class="start">
+      <ha-button @click=${this._start} class="start">
         ${this.localize("ui.panel.page-onboarding.welcome.start")}
       </ha-button>
 
@@ -94,6 +94,7 @@ class OnboardingWelcome extends LitElement {
         }
         .start {
           margin: 32px 0;
+          width: 100%;
         }
         ha-divider {
           --ha-divider-width: calc(100% + 64px);

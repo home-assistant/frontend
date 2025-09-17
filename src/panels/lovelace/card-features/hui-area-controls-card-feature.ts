@@ -32,8 +32,6 @@ import type {
 import { AREA_CONTROLS } from "./types";
 
 interface AreaControlsButton {
-  offIcon?: string;
-  onIcon?: string;
   filter: {
     domain: string;
     device_class?: string;
@@ -49,9 +47,6 @@ const coverButton = (deviceClass: string) => ({
 
 export const AREA_CONTROLS_BUTTONS: Record<AreaControl, AreaControlsButton> = {
   light: {
-    // Overrides the icons for lights
-    offIcon: "mdi:lightbulb-off",
-    onIcon: "mdi:lightbulb",
     filter: {
       domain: "light",
     },
@@ -258,8 +253,6 @@ class HuiAreaControlsCardFeature
             `ui.card_features.area_controls.${control}.${active ? "off" : "on"}`
           );
 
-          const icon = active ? button.onIcon : button.offIcon;
-
           const domain = button.filter.domain;
           const deviceClass = button.filter.device_class
             ? ensureArray(button.filter.device_class)[0]
@@ -282,7 +275,6 @@ class HuiAreaControlsCardFeature
             >
               <ha-domain-icon
                 .hass=${this.hass}
-                .icon=${icon}
                 .domain=${domain}
                 .deviceClass=${deviceClass}
                 .state=${groupState}

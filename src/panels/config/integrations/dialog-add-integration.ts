@@ -1,5 +1,3 @@
-import "@material/mwc-button";
-
 import type { IFuseOptions } from "fuse.js";
 import Fuse from "fuse.js";
 import type { HassConfig } from "home-assistant-js-websocket";
@@ -97,15 +95,12 @@ class AddIntegrationDialog extends LitElement {
 
   public async showDialog(params?: AddIntegrationDialogParams): Promise<void> {
     const loadPromise = this._load();
-    this._open = true;
-    this._pickedBrand = params?.brand;
-    this._initialFilter = params?.initialFilter;
-    this._narrow = matchMedia(
-      "all and (max-width: 450px), all and (max-height: 500px)"
-    ).matches;
     if (params?.domain) {
-      this._createFlow(params.domain);
+      // Just open the config flow dialog, do not show this dialog
+      await this._createFlow(params.domain);
+      return;
     }
+
     if (params?.brand) {
       await loadPromise;
       const brand = this._integrations?.[params.brand];
@@ -113,6 +108,13 @@ class AddIntegrationDialog extends LitElement {
         this._fetchFlowsInProgress(Object.keys(brand.integrations));
       }
     }
+    // Only open the dialog if no domain is provided
+    this._open = true;
+    this._pickedBrand = params?.brand;
+    this._initialFilter = params?.initialFilter;
+    this._narrow = matchMedia(
+      "all and (max-width: 450px), all and (max-height: 500px)"
+    ).matches;
   }
 
   public closeDialog() {
@@ -459,7 +461,9 @@ class AddIntegrationDialog extends LitElement {
               class="ha-scrollbar"
               style=${styleMap({
                 width: `${this._width}px`,
-                height: this._narrow ? "calc(100vh - 184px)" : "500px",
+                height: this._narrow
+                  ? "calc(100vh - 184px - var(--safe-area-inset-top, 0px) - var(--safe-area-inset-bottom, 0px))"
+                  : "500px",
               })}
               @click=${this._integrationPicked}
               @keypress=${this._handleKeyPress}

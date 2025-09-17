@@ -174,8 +174,8 @@ class HuiHumidifierModesCardFeature
           .options=${options}
           .value=${this._currentMode}
           @value-changed=${this._valueChanged}
-          hide-label
-          .ariaLabel=${this.hass!.formatEntityAttributeName(stateObj, "mode")}
+          hide-option-label
+          .label=${this.hass!.formatEntityAttributeName(stateObj, "mode")}
           .disabled=${this._stateObj!.state === UNAVAILABLE}
         >
         </ha-control-select>

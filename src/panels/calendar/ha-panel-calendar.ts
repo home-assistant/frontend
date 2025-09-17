@@ -114,7 +114,11 @@ class PanelCalendar extends LitElement {
     );
     const showPane = this._showPaneController.value ?? !this.narrow;
     return html`
-      <ha-two-pane-top-app-bar-fixed .pane=${showPane} footer>
+      <ha-two-pane-top-app-bar-fixed
+        .pane=${showPane}
+        footer
+        .narrow=${this.narrow}
+      >
         <ha-menu-button
           slot="navigationIcon"
           .hass=${this.hass}
@@ -135,10 +139,7 @@ class PanelCalendar extends LitElement {
             >
               <ha-button slot="trigger">
                 ${this.hass.localize("ui.components.calendar.my_calendars")}
-                <ha-svg-icon
-                  slot="trailingIcon"
-                  .path=${mdiChevronDown}
-                ></ha-svg-icon>
+                <ha-svg-icon slot="end" .path=${mdiChevronDown}></ha-svg-icon>
               </ha-button>
               ${calendarItems}
               ${this.hass.user?.is_admin
@@ -297,31 +298,18 @@ class PanelCalendar extends LitElement {
           display: block;
         }
         ha-full-calendar {
-          height: calc(100vh - var(--header-height));
           --calendar-header-padding: 12px;
           --calendar-border-radius: 0;
           --calendar-border-width: 1px 0;
+          height: calc(
+            100vh - var(--header-height, 0px) - var(
+                --safe-area-inset-top,
+                0px
+              ) - var(--safe-area-inset-bottom, 0px)
+          );
         }
         ha-button-menu ha-button {
-          --mdc-theme-primary: currentColor;
-          --mdc-typography-button-text-transform: none;
-          --mdc-typography-button-font-size: var(
-            --mdc-typography-headline6-font-size,
-            var(--ha-font-size-l)
-          );
-          --mdc-typography-button-font-weight: var(
-            --mdc-typography-headline6-font-weight,
-            var(--ha-font-weight-medium)
-          );
-          --mdc-typography-button-letter-spacing: var(
-            --mdc-typography-headline6-letter-spacing,
-            0.0125em
-          );
-          --mdc-typography-button-line-height: var(
-            --mdc-typography-headline6-line-height,
-            var(--ha-line-height-expanded)
-          );
-          --button-height: 40px;
+          --ha-font-size-m: var(--ha-font-size-l);
         }
         :host([mobile]) .lists {
           --mdc-menu-min-width: 100vw;

@@ -1,4 +1,3 @@
-import "@material/mwc-button/mwc-button";
 import { mdiContentCopy, mdiRestore } from "@mdi/js";
 import type { HassEntity } from "home-assistant-js-websocket";
 import type { CSSResultGroup, PropertyValues } from "lit";
@@ -14,6 +13,7 @@ import { computeObjectId } from "../../../common/entity/compute_object_id";
 import { supportsFeature } from "../../../common/entity/supports-feature";
 import { formatNumber } from "../../../common/number/format_number";
 import { stringCompare } from "../../../common/string/compare";
+import { autoCaseNoun } from "../../../common/translations/auto_case_noun";
 import type {
   LocalizeFunc,
   LocalizeKeys,
@@ -24,13 +24,13 @@ import "../../../components/ha-area-picker";
 import "../../../components/ha-icon";
 import "../../../components/ha-icon-button-next";
 import "../../../components/ha-icon-picker";
+import "../../../components/ha-labels-picker";
 import "../../../components/ha-list-item";
 import "../../../components/ha-radio";
 import "../../../components/ha-select";
 import "../../../components/ha-settings-row";
 import "../../../components/ha-state-icon";
 import "../../../components/ha-switch";
-import "../../../components/ha-labels-picker";
 import type { HaSwitch } from "../../../components/ha-switch";
 import "../../../components/ha-textfield";
 import {
@@ -91,7 +91,6 @@ import { haStyle } from "../../../resources/styles";
 import type { HomeAssistant } from "../../../types";
 import { showToast } from "../../../util/toast";
 import { showDeviceRegistryDetailDialog } from "../devices/device-registry-detail/show-dialog-device-registry-detail";
-import { autoCaseNoun } from "../../../common/translations/auto_case_noun";
 
 const OVERRIDE_DEVICE_CLASSES = {
   cover: [
@@ -332,6 +331,9 @@ export class EntityRegistrySettingsEditor extends LitElement {
     }
     if (changedProps.has("_entityId")) {
       const domain = computeDomain(this.entry.entity_id);
+      if (domain === "switch") {
+        this.hass.loadBackendTranslation("title", SWITCH_AS_DOMAINS, false);
+      }
 
       if (domain === "weather") {
         const { units } = await getWeatherConvertibleUnits(this.hass);
@@ -343,6 +345,7 @@ export class EntityRegistrySettingsEditor extends LitElement {
     if (changedProps.has("helperConfigEntry")) {
       if (this.helperConfigEntry?.domain === "switch_as_x") {
         this._switchAsDomain = computeDomain(this.entry.entity_id);
+        this.hass.loadBackendTranslation("title", SWITCH_AS_DOMAINS, false);
       } else {
         this._switchAsDomain = "switch";
         this._switchAsInvert = false;
@@ -756,7 +759,7 @@ export class EntityRegistrySettingsEditor extends LitElement {
         iconTrailing
         autocapitalize="none"
         autocomplete="off"
-        autocorrect="off"
+        .autocorrect=${false}
         input-spellcheck="false"
       >
         <div class="layout horizontal" slot="trailingIcon">
@@ -1551,9 +1554,6 @@ export class EntityRegistrySettingsEditor extends LitElement {
         }
         li[divider] {
           border-bottom-color: var(--divider-color);
-        }
-        ha-alert mwc-button {
-          width: max-content;
         }
         .menu-item {
           border-radius: 4px;

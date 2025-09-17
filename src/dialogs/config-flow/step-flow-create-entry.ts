@@ -1,4 +1,3 @@
-import "@material/mwc-button";
 import type { CSSResultGroup, PropertyValues, TemplateResult } from "lit";
 import { css, html, LitElement, nothing } from "lit";
 import { customElement, property, state } from "lit/decorators";
@@ -11,6 +10,7 @@ import {
 import { computeDomain } from "../../common/entity/compute_domain";
 import { navigate } from "../../common/navigate";
 import "../../components/ha-area-picker";
+import "../../components/ha-button";
 import { assistSatelliteSupportsSetupFlow } from "../../data/assist_satellite";
 import type { DataEntryFlowStepCreateEntry } from "../../data/data_entry_flow";
 import type { DeviceRegistryEntry } from "../../data/device_registry";
@@ -27,6 +27,9 @@ import { showAlertDialog } from "../generic/show-dialog-box";
 import { showVoiceAssistantSetupDialog } from "../voice-assistant-setup/show-voice-assistant-setup-dialog";
 import type { FlowConfig } from "./show-dialog-data-entry-flow";
 import { configFlowContentStyles } from "./styles";
+import { showConfigFlowDialog } from "./show-dialog-config-flow";
+import { showOptionsFlowDialog } from "./show-dialog-options-flow";
+import { showSubConfigFlowDialog } from "./show-dialog-sub-config-flow";
 
 @customElement("step-flow-create-entry")
 class StepFlowCreateEntry extends LitElement {
@@ -60,6 +63,11 @@ class StepFlowCreateEntry extends LitElement {
 
   protected willUpdate(changedProps: PropertyValues) {
     if (!changedProps.has("devices") && !changedProps.has("hass")) {
+      return;
+    }
+
+    if (this.step.next_flow && this.devices.length === 0) {
+      this._flowDone();
       return;
     }
 
@@ -171,10 +179,16 @@ class StepFlowCreateEntry extends LitElement {
               `}
       </div>
       <div class="buttons">
-        <mwc-button @click=${this._flowDone}
+        <ha-button @click=${this._flowDone}
           >${localize(
-            `ui.panel.config.integrations.config_flow.${!this.devices.length || Object.keys(this._deviceUpdate).length ? "finish" : "finish_skip"}`
-          )}</mwc-button
+            `ui.panel.config.integrations.config_flow.${
+              this.step.next_flow
+                ? "next"
+                : !this.devices.length || Object.keys(this._deviceUpdate).length
+                  ? "finish"
+                  : "finish_skip"
+            }`
+          )}</ha-button
         >
       </div>
     `;
@@ -212,7 +226,10 @@ class StepFlowCreateEntry extends LitElement {
         entityIds.push(...entities.map((entity) => entity.entity_id));
       });
 
-      const entityIdsMapping = getAutomaticEntityIds(this.hass, entityIds);
+      const entityIdsMapping = await getAutomaticEntityIds(
+        this.hass,
+        entityIds
+      );
 
       Object.entries(entityIdsMapping).forEach(([oldEntityId, newEntityId]) => {
         if (newEntityId) {
@@ -234,7 +251,37 @@ class StepFlowCreateEntry extends LitElement {
     }
 
     fireEvent(this, "flow-update", { step: undefined });
-    if (this.step.result && this.navigateToResult) {
+    if (this.step.next_flow) {
+      // start the next flow
+      if (this.step.next_flow[0] === "config_flow") {
+        showConfigFlowDialog(this, {
+          continueFlowId: this.step.next_flow[1],
+          navigateToResult: this.navigateToResult,
+        });
+      } else if (this.step.next_flow[0] === "options_flow") {
+        showOptionsFlowDialog(this, this.step.result!, {
+          continueFlowId: this.step.next_flow[1],
+          navigateToResult: this.navigateToResult,
+        });
+      } else if (this.step.next_flow[0] === "config_subentries_flow") {
+        showSubConfigFlowDialog(
+          this,
+          this.step.result!,
+          this.step.next_flow[0],
+          {
+            continueFlowId: this.step.next_flow[1],
+            navigateToResult: this.navigateToResult,
+          }
+        );
+      } else {
+        showAlertDialog(this, {
+          text: this.hass.localize(
+            "ui.panel.config.integrations.config_flow.error",
+            { error: `Unsupported next flow type: ${this.step.next_flow[0]}` }
+          ),
+        });
+      }
+    } else if (this.step.result && this.navigateToResult) {
       if (this.devices.length === 1) {
         navigate(`/config/devices/device/${this.devices[0].id}`);
       } else {

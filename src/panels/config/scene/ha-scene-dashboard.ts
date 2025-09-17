@@ -9,6 +9,7 @@ import {
   mdiHelpCircle,
   mdiInformationOutline,
   mdiMenuDown,
+  mdiOpenInNew,
   mdiPalette,
   mdiPencilOff,
   mdiPlay,
@@ -105,6 +106,7 @@ import { showAssignCategoryDialog } from "../category/show-dialog-assign-categor
 import { showCategoryRegistryDetailDialog } from "../category/show-dialog-category-registry-detail";
 import { configSections } from "../ha-panel-config";
 import { showLabelDetailDialog } from "../labels/show-dialog-label-detail";
+import { slugify } from "../../../common/string/slugify";
 
 type SceneItem = SceneEntity & {
   name: string;
@@ -317,16 +319,18 @@ class HaSceneDashboard extends SubscribeMixin(LitElement) {
           template: (scene) =>
             !scene.attributes.id
               ? html`
+                  <ha-svg-icon
+                    .id="svg-icon-${slugify(scene.entity_id)}"
+                    .path=${mdiPencilOff}
+                    style="color: var(--secondary-text-color)"
+                  ></ha-svg-icon>
                   <ha-tooltip
+                    .for="svg-icon-${slugify(scene.entity_id)}"
                     placement="left"
-                    .content=${this.hass.localize(
+                  >
+                    ${this.hass.localize(
                       "ui.panel.config.scene.picker.only_editable"
                     )}
-                  >
-                    <ha-svg-icon
-                      .path=${mdiPencilOff}
-                      style="color: var(--secondary-text-color)"
-                    ></ha-svg-icon>
                   </ha-tooltip>
                 `
               : nothing,
@@ -780,15 +784,16 @@ class HaSceneDashboard extends SubscribeMixin(LitElement) {
               <p>
                 ${this.hass.localize("ui.panel.config.scene.picker.empty_text")}
               </p>
-              <a
+              <ha-button
+                appearance="plain"
                 href=${documentationUrl(this.hass, "/docs/scene/editor/")}
                 target="_blank"
                 rel="noreferrer"
+                size="small"
               >
-                <ha-button>
-                  ${this.hass.localize("ui.panel.config.common.learn_more")}
-                </ha-button>
-              </a>
+                ${this.hass.localize("ui.panel.config.common.learn_more")}
+                <ha-svg-icon slot="end" .path=${mdiOpenInNew}></ha-svg-icon>
+              </ha-button>
             </div>`
           : nothing}
         <a href="/config/scene/edit/new" slot="fab">
@@ -1200,6 +1205,9 @@ ${rejected
         .empty {
           --mdc-icon-size: 80px;
           max-width: 500px;
+        }
+        .empty ha-button {
+          --mdc-icon-size: 24px;
         }
         .empty h1 {
           font-size: var(--ha-font-size-3xl);
