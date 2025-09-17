@@ -19,8 +19,14 @@ export class DemoHaSlider extends LitElement {
           <div class=${mode}>
             <ha-card header="ha-slider ${mode} demo">
               <div class="card-content">
-                <span>Default</span>
-                <ha-slider min="0" max="8" value="4" with-markers></ha-slider>
+                <span>Default (disabled)</span>
+                <ha-slider
+                  disabled
+                  min="0"
+                  max="8"
+                  value="4"
+                  with-markers
+                ></ha-slider>
                 <span>Small</span>
                 <ha-slider
                   size="small"
