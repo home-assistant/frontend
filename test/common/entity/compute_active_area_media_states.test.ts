@@ -35,29 +35,6 @@ describe("computeActiveAreaMediaStates", () => {
     expect(result[0].state).toBe("playing");
   });
 
-  it("returns paused media entities in the area", () => {
-    const hass = {
-      areas: { living_room: { area_id: "living_room" } },
-      entities: {
-        "media_player.tv": {
-          entity_id: "media_player.tv",
-          area_id: "living_room",
-        },
-      },
-      states: {
-        "media_player.tv": {
-          entity_id: "media_player.tv",
-          state: "paused",
-        } as HassEntityBase,
-      },
-    } as any;
-
-    const result = computeActiveAreaMediaStates(hass, "living_room");
-
-    expect(result).toHaveLength(1);
-    expect(result[0].state).toBe("paused");
-  });
-
   it("returns empty array when no area is configured", () => {
     const hass = {
       areas: {},
@@ -89,7 +66,7 @@ describe("computeActiveAreaMediaStates", () => {
     expect(result).toHaveLength(0);
   });
 
-  it("returns both playing and paused media entities in the area", () => {
+  it("returns playing speaker when speaker is playing", () => {
     const hass = {
       areas: { living_room: { area_id: "living_room" } },
       entities: {
@@ -105,24 +82,51 @@ describe("computeActiveAreaMediaStates", () => {
       states: {
         "media_player.tv": {
           entity_id: "media_player.tv",
-          state: "playing",
+          state: "idle",
         } as HassEntityBase,
         "media_player.speaker": {
           entity_id: "media_player.speaker",
-          state: "paused",
+          state: "playing",
         } as HassEntityBase,
       },
     } as any;
 
     const result = computeActiveAreaMediaStates(hass, "living_room");
 
-    expect(result).toHaveLength(2);
-    expect(result.map((entity) => entity.entity_id)).toContain(
-      "media_player.tv"
-    );
-    expect(result.map((entity) => entity.entity_id)).toContain(
-      "media_player.speaker"
-    );
+    expect(result).toHaveLength(1);
+    expect(result[0].entity_id).toBe("media_player.speaker");
+    expect(result[0].state).toBe("playing");
+  });
+
+  it("returns media entities that inherit area from device", () => {
+    const hass = {
+      areas: { living_room: { area_id: "living_room" } },
+      devices: {
+        device_tv: {
+          id: "device_tv",
+          area_id: "living_room",
+        },
+      },
+      entities: {
+        "media_player.tv": {
+          entity_id: "media_player.tv",
+          device_id: "device_tv", // Entity belongs to device
+          // No direct area_id - inherits from device
+        },
+      },
+      states: {
+        "media_player.tv": {
+          entity_id: "media_player.tv",
+          state: "playing",
+        } as HassEntityBase,
+      },
+    } as any;
+
+    const result = computeActiveAreaMediaStates(hass, "living_room");
+
+    expect(result).toHaveLength(1);
+    expect(result[0].entity_id).toBe("media_player.tv");
+    expect(result[0].state).toBe("playing");
   });
 });
 

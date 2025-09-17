@@ -1,4 +1,4 @@
-import { mdiPlay, mdiPause, mdiTextureBox } from "@mdi/js";
+import { mdiPlay, mdiTextureBox } from "@mdi/js";
 import type { HassEntity, HassEntityBase } from "home-assistant-js-websocket";
 import {
   css,
@@ -314,15 +314,12 @@ export class HuiAreaCard extends LitElement implements LovelaceCard {
       return nothing;
     }
 
-    const isPlaying = states.some((entity) => entity.state === "playing");
-    const iconPath = isPlaying ? mdiPlay : mdiPause;
-    const label = isPlaying
-      ? this.hass.localize("ui.card.area.media_playing")
-      : this.hass.localize("ui.card.area.media_paused");
-
     return html`
-      <ha-tile-badge class="media-badge" .label=${label}>
-        <ha-svg-icon .path=${iconPath}></ha-svg-icon>
+      <ha-tile-badge
+        class="media-badge"
+        .label=${this.hass.localize("ui.card.area.media_playing")}
+      >
+        <ha-svg-icon .path=${mdiPlay}></ha-svg-icon>
       </ha-tile-badge>
     `;
   }

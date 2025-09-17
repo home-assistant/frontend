@@ -549,7 +549,6 @@ export const computeActiveAreaMediaStates = (
   return mediaEntities
     .map((entityId) => hass.states[entityId] as HassEntityBase | undefined)
     .filter(
-      (stateObj): stateObj is HassEntityBase =>
-        stateObj?.state === "playing" || stateObj?.state === "paused"
+      (stateObj): stateObj is HassEntityBase => stateObj?.state === "playing"
     );
 };
