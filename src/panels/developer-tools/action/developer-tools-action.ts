@@ -520,8 +520,7 @@ class HaPanelDevAction extends LitElement {
                               rel="noreferrer"
                               ><ha-button>
                                 ${this.hass.localize(
-                                  "ui.panel.developer-tools.tabs.actions.open_media",
-                                  { media: result.media_source_id }
+                                  "ui.panel.developer-tools.tabs.actions.open_media"
                                 )}
                               </ha-button></a
                             >
