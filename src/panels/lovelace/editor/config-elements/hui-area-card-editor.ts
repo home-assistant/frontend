@@ -181,17 +181,9 @@ export class HuiAreaCardEditor
                         required: true,
                         default: cameraEntities?.[0],
                         selector: {
-                          select: {
-                            options:
-                              cameraEntities === undefined
-                                ? []
-                                : cameraEntities.map((entityId) => ({
-                                    label:
-                                      this.hass!.states[entityId]?.attributes
-                                        ?.friendly_name || entityId,
-                                    value: entityId,
-                                  })),
-                            mode: "dropdown",
+                          entity: {
+                            include_entities: cameraEntities,
+                            filter: [{ domain: "camera" }],
                           },
                         },
                       },
