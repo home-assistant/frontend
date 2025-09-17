@@ -1,7 +1,8 @@
 import type { PropertyValues } from "lit";
-import { css, html, LitElement } from "lit";
+import { css, html, LitElement, nothing } from "lit";
 import { customElement, eventOptions, property, state } from "lit/decorators";
 import type { RenderItemFunction } from "@lit-labs/virtualizer/virtualize";
+import { mdiRestart } from "@mdi/js";
 import { isComponentLoaded } from "../../common/config/is_component_loaded";
 import { restoreScroll } from "../../common/decorators/restore-scroll";
 import type {
@@ -11,6 +12,10 @@ import type {
 } from "../../data/history";
 import { loadVirtualizer } from "../../resources/virtualizer";
 import type { HomeAssistant } from "../../types";
+import type { StateHistoryChartLine } from "./state-history-chart-line";
+import type { StateHistoryChartTimeline } from "./state-history-chart-timeline";
+import "../ha-fab";
+import "../ha-svg-icon";
 import "./state-history-chart-line";
 import "./state-history-chart-timeline";
 
@@ -29,6 +34,11 @@ const chunkData = (inputArray: any[], chunks: number) =>
 declare global {
   interface HASSDomEvents {
     "y-width-changed": { value: number; chartIndex: number };
+    "chart-zoom-with-index": {
+      start: number;
+      end: number;
+      chartIndex: number;
+    };
   }
 }
 
@@ -84,6 +94,10 @@ export class StateHistoryCharts extends LitElement {
 
   @state() private _chartCount = 0;
 
+  @state() private _hasZoomedCharts = false;
+
+  private _isSyncing = false;
+
   // @ts-ignore
   @restoreScroll(".container") private _savedScrollPos?: number;
 
@@ -115,19 +129,36 @@ export class StateHistoryCharts extends LitElement {
     // eslint-disable-next-line lit/no-this-assign-in-render
     this._chartCount = combinedItems.length;
 
-    return this.virtualize
-      ? html`<div class="container ha-scrollbar" @scroll=${this._saveScrollPos}>
-          <lit-virtualizer
-            scroller
-            class="ha-scrollbar"
-            .items=${combinedItems}
-            .renderItem=${this._renderHistoryItem}
+    return html`
+      ${this.virtualize
+        ? html`<div
+            class="container ha-scrollbar"
+            @scroll=${this._saveScrollPos}
           >
-          </lit-virtualizer>
-        </div>`
-      : html`${combinedItems.map((item, index) =>
-          this._renderHistoryItem(item, index)
-        )}`;
+            <lit-virtualizer
+              scroller
+              class="ha-scrollbar"
+              .items=${combinedItems}
+              .renderItem=${this._renderHistoryItem}
+            >
+            </lit-virtualizer>
+          </div>`
+        : html`${combinedItems.map((item, index) =>
+            this._renderHistoryItem(item, index)
+          )}`}
+      ${this._hasZoomedCharts
+        ? html`<ha-fab
+            slot="fab"
+            class="reset-button"
+            .label=${this.hass.localize(
+              "ui.components.history_charts.zoom_reset"
+            )}
+            @click=${this._handleGlobalZoomReset}
+          >
+            <ha-svg-icon slot="icon" .path=${mdiRestart}></ha-svg-icon>
+          </ha-fab>`
+        : nothing}
+    `;
   }
 
   private _renderHistoryItem: RenderItemFunction<
@@ -156,8 +187,10 @@ export class StateHistoryCharts extends LitElement {
           .maxYAxis=${this.maxYAxis}
           .fitYData=${this.fitYData}
           @y-width-changed=${this._yWidthChanged}
+          @chart-zoom-with-index=${this._handleTimelineSync}
           .height=${this.virtualize ? undefined : this.height}
           .expandLegend=${this.expandLegend}
+          hide-reset-button
         ></state-history-chart-line>
       </div> `;
     }
@@ -175,6 +208,8 @@ export class StateHistoryCharts extends LitElement {
         .chartIndex=${index}
         .clickForMoreInfo=${this.clickForMoreInfo}
         @y-width-changed=${this._yWidthChanged}
+        @chart-zoom-with-index=${this._handleTimelineSync}
+        hide-reset-button
       ></state-history-chart-timeline>
     </div> `;
   };
@@ -264,6 +299,66 @@ export class StateHistoryCharts extends LitElement {
     this._maxYWidth = Math.max(...Object.values(this._childYWidths), 0);
   }
 
+  private _handleTimelineSync(
+    e: CustomEvent<HASSDomEvents["chart-zoom-with-index"]>
+  ) {
+    if (this._isSyncing) {
+      return;
+    }
+
+    const { start, end, chartIndex } = e.detail;
+
+    this._hasZoomedCharts = start !== 0 || end !== 100;
+    this._syncZoomToAllCharts(start, end, chartIndex);
+  }
+
+  private _syncZoomToAllCharts(
+    start: number,
+    end: number,
+    sourceChartIndex?: number
+  ) {
+    this._isSyncing = true;
+
+    requestAnimationFrame(() => {
+      const chartComponents = this.renderRoot.querySelectorAll(
+        "state-history-chart-line, state-history-chart-timeline"
+      ) as unknown as (StateHistoryChartLine | StateHistoryChartTimeline)[];
+
+      chartComponents.forEach((chartComponent, index) => {
+        if (index === sourceChartIndex) {
+          return;
+        }
+
+        if ("zoom" in chartComponent) {
+          chartComponent.zoom(start, end);
+        }
+      });
+
+      this._isSyncing = false;
+    });
+  }
+
+  private _handleGlobalZoomReset() {
+    this._hasZoomedCharts = false;
+    this._isSyncing = true;
+
+    requestAnimationFrame(() => {
+      const chartComponents = this.renderRoot.querySelectorAll(
+        "state-history-chart-line, state-history-chart-timeline"
+      );
+
+      chartComponents.forEach((chartComponent: any) => {
+        const chartBase =
+          chartComponent.renderRoot?.querySelector("ha-chart-base");
+
+        if (chartBase && chartBase.chart) {
+          chartBase.zoom(0, 100);
+        }
+      });
+      this._isSyncing = false;
+    });
+  }
+
   private _isHistoryEmpty(): boolean {
     const historyDataEmpty =
       !this.historyData ||
@@ -344,6 +439,11 @@ export class StateHistoryCharts extends LitElement {
     state-history-chart-timeline,
     state-history-chart-line {
       width: 100%;
+    }
+    .reset-button {
+      position: fixed;
+      bottom: calc(24px + var(--safe-area-inset-bottom));
+      right: calc(24px + var(--safe-area-inset-bottom));
     }
   `;
 }
