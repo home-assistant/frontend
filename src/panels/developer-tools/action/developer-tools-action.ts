@@ -230,7 +230,7 @@ class HaPanelDevAction extends LitElement {
                     )}</ha-button
                   >
                 </ha-yaml-editor>
-                ${until(this._response.result.media)}
+                ${until(this._response.media)}
               </div>
             </ha-card>
           </div>`
