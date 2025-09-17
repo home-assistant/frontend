@@ -37,14 +37,6 @@ export class DemoHaSlider extends LitElement {
                   value="4"
                   with-markers
                 ></ha-slider>
-                <span>Large</span>
-                <ha-slider
-                  size="large"
-                  min="0"
-                  max="8"
-                  value="4"
-                  with-markers
-                ></ha-slider>
               </div>
             </ha-card>
           </div>

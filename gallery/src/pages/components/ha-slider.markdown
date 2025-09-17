@@ -18,11 +18,11 @@ subtitle: A slider component for selecting a value from a range.
 
 <div class="wrapper">
   <ha-slider size="small" with-markers min="0" max="8" value="4"></ha-slider>
-  <ha-slider size="large"></ha-slider>
+  <ha-slider size="medium"></ha-slider>
 </div>
 
 ```html
-<ha-slider size="small"></ha-slider> <ha-slider size="large"></ha-slider>
+<ha-slider size="small"></ha-slider> <ha-slider size="medium"></ha-slider>
 ```
 
 ### API
