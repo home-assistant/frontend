@@ -1,5 +1,9 @@
 import { css } from "lit";
 
+export const SIDEBAR_MAX_WIDTH = 1078;
+export const SIDEBAR_MIN_WIDTH = 375;
+export const SIDEBAR_MIN_WIDTH_DOCKED_NAVBAR = 300;
+
 export const rowStyles = css`
   ha-icon-button {
     --mdc-theme-text-primary-on-background: var(--primary-text-color);
@@ -109,8 +113,36 @@ export const manualEditorStyles = css`
   }
 
   .has-sidebar {
-    --sidebar-width: max(var(--sidebar-dynamic-width), 375px);
+    --sidebar-width: min(
+      max(var(--sidebar-dynamic-width), ${SIDEBAR_MIN_WIDTH}px),
+      ${SIDEBAR_MAX_WIDTH}px,
+      70vw
+    );
     --sidebar-gap: 16px;
+  }
+
+  @media all and (max-width: 1700px) {
+    .has-sidebar.docked-navbar {
+      --sidebar-width: min(
+        max(var(--sidebar-dynamic-width), ${SIDEBAR_MIN_WIDTH}px),
+        50vw
+      );
+    }
+  }
+
+  @media all and (max-width: 1200px) {
+    .has-sidebar {
+      --sidebar-width: min(
+        max(var(--sidebar-dynamic-width), ${SIDEBAR_MIN_WIDTH}px),
+        50vw
+      );
+    }
+  }
+
+  @media all and (max-width: 1000px) {
+    .has-sidebar.docked-navbar {
+      --sidebar-width: ${SIDEBAR_MIN_WIDTH_DOCKED_NAVBAR}px;
+    }
   }
 
   .fab-positioner {
