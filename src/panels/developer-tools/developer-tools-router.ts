@@ -54,6 +54,10 @@ class DeveloperToolsRouter extends HassRouterPage {
         tag: "developer-tools-debug",
         load: () => import("./debug/developer-tools-debug"),
       },
+      blueprints: {
+        tag: "developer-tools-blueprints",
+        load: () => import("./blueprints/developer-tools-blueprints"),
+      },
     },
   };
 

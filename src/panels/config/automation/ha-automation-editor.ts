@@ -22,6 +22,8 @@ import type { CSSResultGroup, PropertyValues, TemplateResult } from "lit";
 import { css, html, LitElement, nothing } from "lit";
 import { property, query, state } from "lit/decorators";
 import { classMap } from "lit/directives/class-map";
+import type { Schema } from "js-yaml";
+import { DEFAULT_SCHEMA } from "js-yaml";
 import { transform } from "../../../common/decorators/transform";
 import { fireEvent } from "../../../common/dom/fire_event";
 import { goBack, navigate } from "../../../common/navigate";
@@ -52,7 +54,10 @@ import {
   showAutomationEditor,
   triggerAutomationActions,
 } from "../../../data/automation";
-import { substituteBlueprint } from "../../../data/blueprint";
+import {
+  substituteBlueprint,
+  yamlSchemaContext,
+} from "../../../data/blueprint";
 import { validateConfig } from "../../../data/config";
 import { fullEntitiesContext } from "../../../data/context";
 import { UNAVAILABLE } from "../../../data/entity";
@@ -144,6 +149,9 @@ export class HaAutomationEditor extends PreventUnsavedMixin(
     watch: ["_entityId"],
   })
   private _registryEntry?: EntityRegistryEntry;
+
+  @consume({ context: yamlSchemaContext })
+  private _yamlSchema?: Schema;
 
   @state() private _saving = false;
 
@@ -547,6 +555,7 @@ export class HaAutomationEditor extends PreventUnsavedMixin(
                     .hass=${this.hass}
                     .defaultValue=${this._preprocessYaml()}
                     .readOnly=${this._readOnly}
+                    .yamlSchema=${this._yamlSchema ?? DEFAULT_SCHEMA}
                     @value-changed=${this._yamlChanged}
                     @editor-save=${this._handleSaveAutomation}
                     .showErrors=${false}

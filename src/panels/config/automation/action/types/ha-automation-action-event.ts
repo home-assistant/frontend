@@ -1,6 +1,9 @@
 import type { PropertyValues } from "lit";
 import { css, html, LitElement } from "lit";
 import { customElement, property, query } from "lit/decorators";
+import type { Schema } from "js-yaml";
+import { DEFAULT_SCHEMA } from "js-yaml";
+import { consume } from "@lit/context";
 import { fireEvent } from "../../../../../common/dom/fire_event";
 import "../../../../../components/entity/ha-entity-picker";
 import "../../../../../components/ha-service-picker";
@@ -11,6 +14,7 @@ import type { EventAction } from "../../../../../data/script";
 import type { HomeAssistant } from "../../../../../types";
 import type { ActionElement } from "../ha-automation-action-row";
 import { handleChangeEvent } from "../ha-automation-action-row";
+import { yamlSchemaContext } from "../../../../../data/blueprint";
 
 @customElement("ha-automation-action-event")
 export class HaEventAction extends LitElement implements ActionElement {
@@ -21,6 +25,9 @@ export class HaEventAction extends LitElement implements ActionElement {
   @property({ attribute: false }) public action!: EventAction;
 
   @query("ha-yaml-editor", true) private _yamlEditor?: HaYamlEditor;
+
+  @consume({ context: yamlSchemaContext })
+  private _yamlSchema?: Schema;
 
   private _actionData?: EventAction["event_data"];
 
@@ -60,6 +67,7 @@ export class HaEventAction extends LitElement implements ActionElement {
         .name=${"event_data"}
         .readOnly=${this.disabled}
         .defaultValue=${event_data}
+        .yamlSchema=${this._yamlSchema ?? DEFAULT_SCHEMA}
         @value-changed=${this._dataChanged}
       ></ha-yaml-editor>
     `;

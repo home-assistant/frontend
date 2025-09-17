@@ -7,10 +7,10 @@ import "../../../components/ha-markdown";
 import { fetchBlueprints } from "../../../data/blueprint";
 import type { BlueprintScriptConfig } from "../../../data/script";
 import { saveFabStyles } from "../automation/styles";
-import { HaBlueprintGenericEditor } from "../blueprint/blueprint-generic-editor";
+import { BlueprintGenericEditor } from "../blueprint/blueprint-generic-editor";
 
 @customElement("blueprint-script-editor")
-export class HaBlueprintScriptEditor extends HaBlueprintGenericEditor {
+export class BlueprintScriptEditor extends BlueprintGenericEditor {
   @property({ attribute: false }) public config!: BlueprintScriptConfig;
 
   @property({ type: Boolean }) public saving = false;
@@ -75,6 +75,6 @@ export class HaBlueprintScriptEditor extends HaBlueprintGenericEditor {
 }
 declare global {
   interface HTMLElementTagNameMap {
-    "blueprint-script-editor": HaBlueprintScriptEditor;
+    "blueprint-script-editor": BlueprintScriptEditor;
   }
 }
