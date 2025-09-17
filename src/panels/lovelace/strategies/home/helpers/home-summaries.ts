@@ -74,10 +74,6 @@ export const HOME_SUMMARIES_FILTERS: Record<HomeSummary, EntityFilter[]> = {
         "window",
         "garage_door",
         "opening",
-        // Humans
-        "motion",
-        "presence",
-        "occupancy",
         // Safety
         "carbon_monoxide",
         "gas",
