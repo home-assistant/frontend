@@ -17,7 +17,7 @@ export class HaSlider extends Slider {
         :host {
           --wa-form-control-activated-color: var(--primary-color);
           --track-size: var(--ha-slider-track-size, 4px);
-          --wa-color-surface-default: var(--ha-color-neutral-95);
+          --wa-color-surface-default: var(--card-background-color);
           --wa-color-neutral-fill-normal: var(--disabled-color);
           min-width: 100px;
           min-inline-size: 100px;
