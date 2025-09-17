@@ -24,7 +24,7 @@ import { property, query, state } from "lit/decorators";
 import { classMap } from "lit/directives/class-map";
 import { transform } from "../../../common/decorators/transform";
 import { fireEvent } from "../../../common/dom/fire_event";
-import { navigate } from "../../../common/navigate";
+import { goBack, navigate } from "../../../common/navigate";
 import { promiseTimeout } from "../../../common/util/promise-timeout";
 import { afterNextRender } from "../../../common/util/render-status";
 import "../../../components/ha-button";
@@ -593,6 +593,7 @@ export class HaAutomationEditor extends PreventUnsavedMixin(
       this.hass
     ) {
       const initData = getAutomationEditorInitData();
+      this._dirty = !!initData;
       let baseConfig: Partial<AutomationConfig> = { description: "" };
       if (!initData || !("use_blueprint" in initData)) {
         baseConfig = {
@@ -701,7 +702,7 @@ export class HaAutomationEditor extends PreventUnsavedMixin(
                 { err_no: err.status_code }
               ),
       });
-      history.back();
+      goBack("/config");
     }
   }
 
@@ -852,7 +853,7 @@ export class HaAutomationEditor extends PreventUnsavedMixin(
   private _backTapped = async () => {
     const result = await this._confirmUnsavedChanged();
     if (result) {
-      afterNextRender(() => history.back());
+      afterNextRender(() => goBack("/config"));
     }
   };
 
@@ -940,7 +941,7 @@ export class HaAutomationEditor extends PreventUnsavedMixin(
   private async _delete() {
     if (this.automationId) {
       await deleteAutomation(this.hass, this.automationId);
-      history.back();
+      goBack("/config");
     }
   }
 
@@ -1213,12 +1214,12 @@ export class HaAutomationEditor extends PreventUnsavedMixin(
         }
         ha-fab {
           position: fixed;
-          right: 16px;
+          right: calc(16px + var(--safe-area-inset-right, 0px));
           bottom: calc(-80px - var(--safe-area-inset-bottom));
           transition: bottom 0.3s;
         }
         ha-fab.dirty {
-          bottom: 16px;
+          bottom: calc(16px + var(--safe-area-inset-bottom, 0px));
         }
       `,
     ];

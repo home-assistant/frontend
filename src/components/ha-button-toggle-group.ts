@@ -1,11 +1,11 @@
+import "@home-assistant/webawesome/dist/components/button-group/button-group";
 import type { TemplateResult } from "lit";
 import { css, html, LitElement } from "lit";
 import { customElement, property } from "lit/decorators";
 import { fireEvent } from "../common/dom/fire_event";
 import type { ToggleButton } from "../types";
-import "./ha-svg-icon";
 import "./ha-button";
-import "./ha-button-group";
+import "./ha-svg-icon";
 
 /**
  * @element ha-button-toggle-group
@@ -28,6 +28,9 @@ export class HaButtonToggleGroup extends LitElement {
 
   @property({ reflect: true }) size: "small" | "medium" = "medium";
 
+  @property({ type: Boolean, reflect: true, attribute: "no-wrap" })
+  public nowrap = false;
+
   @property() public variant:
     | "brand"
     | "neutral"
@@ -37,11 +40,14 @@ export class HaButtonToggleGroup extends LitElement {
 
   protected render(): TemplateResult {
     return html`
-      <ha-button-group .variant=${this.variant} .size=${this.size}>
+      <wa-button-group childSelector="ha-button">
         ${this.buttons.map(
           (button) =>
             html`<ha-button
+              iconTag="ha-svg-icon"
               class="icon"
+              .variant=${this.variant}
+              .size=${this.size}
               .value=${button.value}
               @click=${this._handleClick}
               .title=${button.label}
@@ -55,7 +61,7 @@ export class HaButtonToggleGroup extends LitElement {
                 : button.label}
             </ha-button>`
         )}
-      </ha-button-group>
+      </wa-button-group>
     `;
   }
 
@@ -67,6 +73,10 @@ export class HaButtonToggleGroup extends LitElement {
   static styles = css`
     :host {
       --mdc-icon-size: var(--button-toggle-icon-size, 20px);
+    }
+
+    :host([no-wrap]) wa-button-group::part(base) {
+      flex-wrap: nowrap;
     }
   `;
 }
