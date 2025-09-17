@@ -6,49 +6,53 @@ import {
 } from "../../../src/common/entity/compute_entity_name";
 import * as computeStateNameModule from "../../../src/common/entity/compute_state_name";
 import * as stripPrefixModule from "../../../src/common/entity/strip_prefix_from_entity_name";
+import type { HomeAssistant } from "../../../src/types";
+import {
+  mockEntity,
+  mockEntityEntry,
+  mockStateObj,
+} from "./context/context-mock";
 
 describe("computeEntityName", () => {
   it("returns state name if entity not in registry", () => {
     vi.spyOn(computeStateNameModule, "computeStateName").mockReturnValue(
       "Kitchen Light"
     );
-    const stateObj = {
+    const stateObj = mockStateObj({
       entity_id: "light.kitchen",
       attributes: { friendly_name: "Kitchen Light" },
       state: "on",
-    };
+    });
     const hass = {
       entities: {},
       devices: {},
-      states: {
-        "light.kitchen": stateObj,
-      },
-    };
-    expect(computeEntityName(stateObj as any, hass as any)).toBe(
+    } as unknown as HomeAssistant;
+    expect(computeEntityName(stateObj, hass.entities, hass.devices)).toBe(
       "Kitchen Light"
     );
     vi.restoreAllMocks();
   });
 
   it("returns entity entry name if present", () => {
-    const stateObj = {
+    const stateObj = mockStateObj({
       entity_id: "light.kitchen",
       attributes: {},
       state: "on",
-    };
+    });
     const hass = {
       entities: {
         "light.kitchen": {
           entity_id: "light.kitchen",
           name: "Ceiling Light",
+          labels: [],
         },
       },
       devices: {},
       states: {
         "light.kitchen": stateObj,
       },
-    };
-    expect(computeEntityName(stateObj as any, hass as any)).toBe(
+    } as unknown as HomeAssistant;
+    expect(computeEntityName(stateObj, hass.entities, hass.devices)).toBe(
       "Ceiling Light"
     );
   });
@@ -56,11 +60,12 @@ describe("computeEntityName", () => {
 
 describe("computeEntityEntryName", () => {
   it("returns entry.name if no device", () => {
-    const entry = { entity_id: "light.kitchen", name: "Ceiling Light" };
+    const entry = mockEntity({
+      entity_id: "light.kitchen",
+      name: "Ceiling Light",
+    });
     const hass = { devices: {}, states: {} };
-    expect(computeEntityEntryName(entry as any, hass as any)).toBe(
-      "Ceiling Light"
-    );
+    expect(computeEntityEntryName(entry, hass.devices)).toBe("Ceiling Light");
   });
 
   it("returns device-stripped name if device present", () => {
@@ -70,16 +75,16 @@ describe("computeEntityEntryName", () => {
     vi.spyOn(stripPrefixModule, "stripPrefixFromEntityName").mockImplementation(
       (name, prefix) => name.replace(prefix + " ", "")
     );
-    const entry = {
+    const entry = mockEntity({
       entity_id: "light.kitchen",
       name: "Kitchen Light",
       device_id: "dev1",
-    };
+    });
     const hass = {
       devices: { dev1: {} },
       states: {},
-    };
-    expect(computeEntityEntryName(entry as any, hass as any)).toBe("Light");
+    } as unknown as HomeAssistant;
+    expect(computeEntityEntryName(entry, hass.devices)).toBe("Light");
     vi.restoreAllMocks();
   });
 
@@ -87,16 +92,16 @@ describe("computeEntityEntryName", () => {
     vi.spyOn(computeDeviceNameModule, "computeDeviceName").mockReturnValue(
       "Kitchen Light"
     );
-    const entry = {
+    const entry = mockEntity({
       entity_id: "light.kitchen",
       name: "Kitchen Light",
       device_id: "dev1",
-    };
+    });
     const hass = {
       devices: { dev1: {} },
       states: {},
-    };
-    expect(computeEntityEntryName(entry as any, hass as any)).toBeUndefined();
+    } as unknown as HomeAssistant;
+    expect(computeEntityEntryName(entry, hass.devices)).toBeUndefined();
     vi.restoreAllMocks();
   });
 
@@ -104,35 +109,36 @@ describe("computeEntityEntryName", () => {
     vi.spyOn(computeStateNameModule, "computeStateName").mockReturnValue(
       "Fallback Name"
     );
-    const entry = { entity_id: "light.kitchen" };
+    const entry = mockEntity({ entity_id: "light.kitchen" });
     const hass = {
       devices: {},
-      states: {
-        "light.kitchen": { entity_id: "light.kitchen" },
-      },
-    };
-    expect(computeEntityEntryName(entry as any, hass as any)).toBe(
+    } as unknown as HomeAssistant;
+    const stateObj = mockStateObj({ entity_id: "light.kitchen" });
+    expect(computeEntityEntryName(entry, hass.devices, stateObj)).toBe(
       "Fallback Name"
     );
     vi.restoreAllMocks();
   });
 
   it("returns original_name if present", () => {
-    const entry = { entity_id: "light.kitchen", original_name: "Old Name" };
+    const entry = mockEntityEntry({
+      entity_id: "light.kitchen",
+      original_name: "Old Name",
+    });
     const hass = {
       devices: {},
       states: {},
-    };
-    expect(computeEntityEntryName(entry as any, hass as any)).toBe("Old Name");
+    } as unknown as HomeAssistant;
+    expect(computeEntityEntryName(entry, hass.devices)).toBe("Old Name");
   });
 
   it("returns undefined if no name, original_name, or device", () => {
-    const entry = { entity_id: "light.kitchen" };
+    const entry = mockEntity({ entity_id: "light.kitchen" });
     const hass = {
       devices: {},
       states: {},
-    };
-    expect(computeEntityEntryName(entry as any, hass as any)).toBeUndefined();
+    } as unknown as HomeAssistant;
+    expect(computeEntityEntryName(entry, hass.devices)).toBeUndefined();
   });
 
   it("handles entities with numeric original_name (real bug from issue #25363)", () => {

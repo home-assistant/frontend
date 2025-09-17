@@ -145,11 +145,7 @@ export default class HaAutomationSidebarAction extends LitElement {
           <span class="shortcut-placeholder ${isMac ? "mac" : ""}"></span>
         </div>
       </ha-md-menu-item>
-      <ha-md-menu-item
-        slot="menu-items"
-        .clickAction=${this.config.copy}
-        .disabled=${this.disabled}
-      >
+      <ha-md-menu-item slot="menu-items" .clickAction=${this.config.copy}>
         <ha-svg-icon slot="start" .path=${mdiContentCopy}></ha-svg-icon>
         <div class="overflow-label">
           ${this.hass.localize(

@@ -292,7 +292,9 @@ export default class HaAutomationSidebar extends LitElement {
     :host {
       z-index: 6;
       outline: none;
-      height: 100%;
+      height: calc(
+        100% - var(--safe-area-inset-top) - var(--safe-area-inset-bottom)
+      );
       --ha-card-border-radius: var(
         --ha-dialog-border-radius,
         var(--ha-border-radius-2xl)
@@ -301,6 +303,8 @@ export default class HaAutomationSidebar extends LitElement {
       --ha-bottom-sheet-border-width: 2px;
       --ha-bottom-sheet-border-style: solid;
       --ha-bottom-sheet-border-color: var(--primary-color);
+      margin-top: var(--safe-area-inset-top);
+      margin-bottom: var(--safe-area-inset-bottom);
     }
 
     @media all and (max-width: 870px) {

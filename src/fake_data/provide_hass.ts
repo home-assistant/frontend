@@ -114,17 +114,22 @@ export const provideHass = (
       formatEntityState,
       formatEntityAttributeName,
       formatEntityAttributeValue,
+      formatEntityName,
     } = await computeFormatFunctions(
       hass().localize,
       hass().locale,
       hass().config,
       hass().entities,
+      hass().devices,
+      hass().areas,
+      hass().floors,
       [] // numericDeviceClasses
     );
     hass().updateHass({
       formatEntityState,
       formatEntityAttributeName,
       formatEntityAttributeValue,
+      formatEntityName,
     });
   }
 

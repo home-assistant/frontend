@@ -682,7 +682,8 @@ export class HaConfigEntities extends SubscribeMixin(LitElement) {
 
         const entityName = computeEntityEntryName(
           entry as EntityRegistryEntry,
-          this.hass
+          this.hass.devices,
+          entity
         );
 
         const deviceName = device ? computeDeviceName(device) : undefined;

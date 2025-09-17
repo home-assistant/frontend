@@ -225,7 +225,9 @@ export class HaResizableBottomSheet extends LitElement {
       top: 0;
       inset-inline-start: 0;
       position: fixed;
-      width: calc(100% - 4px);
+      width: calc(
+        100% - 4px - var(--safe-area-inset-left) - var(--safe-area-inset-right)
+      );
       max-width: 100%;
       border: none;
       box-shadow: var(--wa-shadow-l);
@@ -252,6 +254,9 @@ export class HaResizableBottomSheet extends LitElement {
       border-bottom-width: 0;
       border-style: var(--ha-bottom-sheet-border-style);
       border-color: var(--ha-bottom-sheet-border-color);
+      margin-bottom: var(--safe-area-inset-bottom);
+      margin-left: var(--safe-area-inset-left);
+      margin-right: var(--safe-area-inset-right);
     }
 
     dialog.show {

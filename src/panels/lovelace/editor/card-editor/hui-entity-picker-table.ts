@@ -5,11 +5,7 @@ import { styleMap } from "lit/directives/style-map";
 import memoizeOne from "memoize-one";
 import type { HASSDomEvent } from "../../../../common/dom/fire_event";
 import { fireEvent } from "../../../../common/dom/fire_event";
-import { computeAreaName } from "../../../../common/entity/compute_area_name";
-import { computeDeviceName } from "../../../../common/entity/compute_device_name";
 import { computeDomain } from "../../../../common/entity/compute_domain";
-import { computeEntityName } from "../../../../common/entity/compute_entity_name";
-import { getEntityContext } from "../../../../common/entity/context/get_entity_context";
 import type { LocalizeFunc } from "../../../../common/translations/localize";
 import { computeRTL } from "../../../../common/util/compute_rtl";
 import "../../../../components/data-table/ha-data-table";
@@ -66,11 +62,9 @@ export class HuiEntityPickerTable extends LitElement {
         (entity) => {
           const stateObj = this.hass.states[entity];
 
-          const { area, device } = getEntityContext(stateObj, this.hass);
-
-          const entityName = computeEntityName(stateObj, this.hass);
-          const deviceName = device ? computeDeviceName(device) : undefined;
-          const areaName = area ? computeAreaName(area) : undefined;
+          const entityName = this.hass.formatEntityName(stateObj, "entity");
+          const deviceName = this.hass.formatEntityName(stateObj, "device");
+          const areaName = this.hass.formatEntityName(stateObj, "area");
           const name = [deviceName, entityName].filter(Boolean).join(" ");
           const domain = computeDomain(entity);
 
