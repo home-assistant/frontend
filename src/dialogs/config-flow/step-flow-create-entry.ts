@@ -27,6 +27,7 @@ import { showAlertDialog } from "../generic/show-dialog-box";
 import { showVoiceAssistantSetupDialog } from "../voice-assistant-setup/show-voice-assistant-setup-dialog";
 import type { FlowConfig } from "./show-dialog-data-entry-flow";
 import { configFlowContentStyles } from "./styles";
+import { getConfigEntries } from "../../data/config_entries";
 
 @customElement("step-flow-create-entry")
 class StepFlowCreateEntry extends LitElement {
@@ -37,6 +38,8 @@ class StepFlowCreateEntry extends LitElement {
   @property({ attribute: false }) public step!: DataEntryFlowStepCreateEntry;
 
   @property({ attribute: false }) public devices!: DeviceRegistryEntry[];
+
+  private _domains: Record<string, string> = {};
 
   public navigateToResult = false;
 
@@ -57,6 +60,11 @@ class StepFlowCreateEntry extends LitElement {
           (!domain || computeDomain(entity.entity_id) === domain)
       )
   );
+
+  protected firstUpdated(changedProps: PropertyValues) {
+    super.firstUpdated(changedProps);
+    this._loadDomains();
+  }
 
   protected willUpdate(changedProps: PropertyValues) {
     if (!changedProps.has("devices") && !changedProps.has("hass")) {
@@ -92,6 +100,12 @@ class StepFlowCreateEntry extends LitElement {
 
   protected render(): TemplateResult {
     const localize = this.hass.localize;
+    const domains = this.step.result
+      ? {
+          ...this._domains,
+          [this.step.result.entry_id]: this.step.result.domain,
+        }
+      : this._domains;
     return html`
       <div class="content">
         ${this.flowConfig.renderCreateEntryDescription(this.hass, this.step)}
@@ -118,15 +132,16 @@ class StepFlowCreateEntry extends LitElement {
                     (device) => html`
                       <div class="device">
                         <div class="device-info">
-                          ${this.step.result?.domain
+                          ${device.primary_config_entry &&
+                          domains[device.primary_config_entry]
                             ? html`<img
                                 slot="graphic"
                                 alt=${domainToName(
                                   this.hass.localize,
-                                  this.step.result.domain
+                                  domains[device.primary_config_entry]
                                 )}
                                 src=${brandsUrl({
-                                  domain: this.step.result.domain,
+                                  domain: domains[device.primary_config_entry],
                                   type: "icon",
                                   darkOptimized: this.hass.themes?.darkMode,
                                 })}
@@ -182,6 +197,13 @@ class StepFlowCreateEntry extends LitElement {
         >
       </div>
     `;
+  }
+
+  private async _loadDomains() {
+    const domains = await getConfigEntries(this.hass);
+    this._domains = Object.fromEntries(
+      domains.map((domain) => [domain.entry_id, domain.domain])
+    );
   }
 
   private async _flowDone(): Promise<void> {
