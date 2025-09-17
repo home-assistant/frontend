@@ -497,7 +497,35 @@ class HaPanelDevAction extends LitElement {
                 (resolved) =>
                   resolved.mime_type.startsWith("image/")
                     ? html`<img src=${resolved.url} alt="Media content" />`
-                    : nothing
+                    : resolved.mime_type.startsWith("video/")
+                      ? html`
+                          <video
+                            controls
+                            src=${resolved.url}
+                            alt="Video content"
+                          ></video>
+                        `
+                      : resolved.mime_type.startsWith("audio/")
+                        ? html`
+                            <audio
+                              controls
+                              src=${resolved.url}
+                              alt="Audio content"
+                            ></audio>
+                          `
+                        : html`
+                            <a
+                              href=${resolved.url}
+                              target="_blank"
+                              rel="noreferrer"
+                              ><ha-button>
+                                ${this.hass.localize(
+                                  "ui.panel.developer-tools.tabs.actions.open_media",
+                                  { media: result.media_source_id }
+                                )}
+                              </ha-button></a
+                            >
+                          `
               )
             : undefined,
       };
