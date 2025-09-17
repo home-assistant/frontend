@@ -1,14 +1,13 @@
 import Slider from "@home-assistant/webawesome/dist/components/slider/slider";
 import { css, type CSSResultGroup } from "lit";
-import {customElement, property} from "lit/decorators";
+import { customElement, property } from "lit/decorators";
 import { mainWindow } from "../common/dom/get_main_window";
 
 @customElement("ha-slider")
 export class HaSlider extends Slider {
+  @property({ reflect: true }) size: "small" | "medium" = "small";
 
-    @property({ reflect: true }) size: 'small' | 'medium' = 'small';
-
-    public connectedCallback() {
+  public connectedCallback() {
     super.connectedCallback();
     this.dir = mainWindow.document.dir;
   }
@@ -26,15 +25,15 @@ export class HaSlider extends Slider {
           min-inline-size: 100px;
           width: 200px;
         }
-        
+
         #thumb {
-            border: none;
+          border: none;
         }
-          
-          .marker {
-              --marker-height: 0.125em;
-              --marker-width: 0.125em;
-          }
+
+        .marker {
+          --marker-height: 0.125em;
+          --marker-width: 0.125em;
+        }
 
         :host([size="medium"]) {
           --thumb-width: var(--ha-font-size-l, 1.25em);
