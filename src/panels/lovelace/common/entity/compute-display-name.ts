@@ -8,6 +8,7 @@ export const ENTITY_NAME_PRESETS = [
   "device_name",
   "device_entity_name",
   "area_name",
+  "area_device_name",
   "floor_name",
   "friendly_name",
 ] as const;
@@ -21,6 +22,7 @@ export const NAME_PRESET_TYPES: Partial<
   device_name: "device",
   device_entity_name: ["device", "entity"],
   area_name: "area",
+  area_device_name: ["area", "device"],
   floor_name: "floor",
 };
 
@@ -36,7 +38,7 @@ export const computeEntityDisplayName = (
   }
 
   // Special case for "entity" preset to fall back to device name if entity name is empty
-  if (nameOrPreset === "entity") {
+  if (nameOrPreset === "entity_name") {
     return (
       hass.formatEntityName(stateObj, "entity") ||
       hass.formatEntityName(stateObj, "device")
@@ -51,5 +53,5 @@ export const computeEntityDisplayName = (
     return hass.formatEntityName(stateObj, types);
   }
 
-  return nameOrPreset;
+  return nameOrPreset || computeStateName(stateObj);
 };
