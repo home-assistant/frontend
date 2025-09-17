@@ -383,6 +383,7 @@ export default class HaAutomationCondition extends LitElement {
     ev.stopPropagation();
     const index = (ev.target as any).index;
     fireEvent(this, "value-changed", {
+      // @ts-expect-error Requires library bump to ES2023
       value: this.conditions.toSpliced(
         index + 1,
         0,
@@ -397,6 +398,7 @@ export default class HaAutomationCondition extends LitElement {
     const inserted = ensureArray(ev.detail.value);
     this.highlightedConditions = inserted;
     fireEvent(this, "value-changed", {
+      // @ts-expect-error Requires library bump to ES2023
       value: this.conditions.toSpliced(index + 1, 0, ...inserted),
     });
   }

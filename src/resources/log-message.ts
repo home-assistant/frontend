@@ -44,7 +44,9 @@ export const createLogMessage = async (
         return frame.toString();
       });
     lines.push(...(stackLines.length > 0 ? stackLines : [stackFallback]));
+    // @ts-expect-error Requires library bump to ES2022
     if (error.cause) {
+      // @ts-expect-error Requires library bump to ES2022
       lines.push(`Caused by: ${await createLogMessage(error.cause)}`);
     }
     if (error instanceof AggregateError) {

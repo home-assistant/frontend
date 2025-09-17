@@ -198,7 +198,7 @@ export class HaManualScriptEditor extends LitElement {
       role="region"
       aria-labelledby="sequence-heading"
       .actions=${this.config.sequence || []}
-      .highlightedActions=${this._pastedConfig?.sequence || []}
+      .highlightedActions=${this._pastedConfig?.sequence}
       @value-changed=${this._sequenceChanged}
       @open-sidebar=${this._openSidebar}
       @request-close-sidebar=${this._triggerCloseSidebar}
@@ -377,6 +377,20 @@ export class HaManualScriptEditor extends LitElement {
     if (normalized) {
       ev.preventDefault();
 
+      const keysPresent = Object.keys(normalized).filter(
+        (key) => ensureArray(normalized[key]).length
+      );
+
+      if (keysPresent.length === 1 && ["sequence"].includes(keysPresent[0])) {
+        // if only one type of element is pasted, insert under the currently active item
+        const previousConfig = { ...this.config };
+        if (this._tryInsertAfterSelected(normalized[keysPresent[0]])) {
+          this._previousConfig = previousConfig;
+          this._showPastedToastWithUndo();
+          return;
+        }
+      }
+
       if (
         this.dirty ||
         ensureArray(this.config.sequence)?.length ||
@@ -525,6 +539,13 @@ export class HaManualScriptEditor extends LitElement {
   private _saveScript() {
     this._triggerCloseSidebar();
     fireEvent(this, "save-script");
+  }
+
+  private _tryInsertAfterSelected(config: Action | Action[]): boolean {
+    if (this._sidebarConfig && "insertAfter" in this._sidebarConfig) {
+      return this._sidebarConfig.insertAfter(config as any);
+    }
+    return false;
   }
 
   public expandAll() {

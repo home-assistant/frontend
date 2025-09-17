@@ -364,6 +364,7 @@ export default class HaAutomationAction extends LitElement {
     ev.stopPropagation();
     const index = (ev.target as any).index;
     fireEvent(this, "value-changed", {
+      // @ts-expect-error Requires library bump to ES2023
       value: this.actions.toSpliced(
         index + 1,
         0,
@@ -378,6 +379,7 @@ export default class HaAutomationAction extends LitElement {
     const inserted = ensureArray(ev.detail.value);
     this.highlightedActions = inserted;
     fireEvent(this, "value-changed", {
+      // @ts-expect-error Requires library bump to ES2023
       value: this.actions.toSpliced(index + 1, 0, ...inserted),
     });
   }

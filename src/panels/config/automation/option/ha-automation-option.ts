@@ -291,6 +291,7 @@ export default class HaAutomationOption extends LitElement {
     ev.stopPropagation();
     const index = (ev.target as any).index;
     fireEvent(this, "value-changed", {
+      // @ts-expect-error Requires library bump to ES2023
       value: this.options.toSpliced(
         index + 1,
         0,

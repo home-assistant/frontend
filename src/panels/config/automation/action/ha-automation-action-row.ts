@@ -20,6 +20,7 @@ import type { PropertyValues } from "lit";
 import { LitElement, html, nothing } from "lit";
 import { customElement, property, query, state } from "lit/decorators";
 import memoizeOne from "memoize-one";
+import { ensureArray } from "../../../../common/array/ensure-array";
 import { storage } from "../../../../common/decorators/storage";
 import { fireEvent } from "../../../../common/dom/fire_event";
 import { preventDefaultStopPropagation } from "../../../../common/dom/prevent_default_stop_propagation";
@@ -641,11 +642,7 @@ export default class HaAutomationActionRow extends LitElement {
   };
 
   private _insertAfter = (value: Action | Action[]) => {
-    if (
-      Array.isArray(value) &&
-      !value.every((val) => isAction(val)) &&
-      !isAction(value)
-    ) {
+    if (ensureArray(value).some((val) => !isAction(val))) {
       return false;
     }
     fireEvent(this, "insert-after", { value });

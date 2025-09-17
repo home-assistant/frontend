@@ -14,18 +14,20 @@ import {
   mdiStopCircleOutline,
 } from "@mdi/js";
 import deepClone from "deep-clone-simple";
+import { dump } from "js-yaml";
 import type { CSSResultGroup, PropertyValues } from "lit";
 import { LitElement, css, html, nothing } from "lit";
 import { customElement, property, query, state } from "lit/decorators";
 import { classMap } from "lit/directives/class-map";
 import memoizeOne from "memoize-one";
-import { dump } from "js-yaml";
+import { ensureArray } from "../../../../common/array/ensure-array";
 import { storage } from "../../../../common/decorators/storage";
 import { fireEvent } from "../../../../common/dom/fire_event";
 import { preventDefaultStopPropagation } from "../../../../common/dom/prevent_default_stop_propagation";
 import { stopPropagation } from "../../../../common/dom/stop_propagation";
 import { capitalizeFirstLetter } from "../../../../common/string/capitalize-first-letter";
 import { handleStructError } from "../../../../common/structs/handle-errors";
+import { copyToClipboard } from "../../../../common/util/copy-clipboard";
 import "../../../../components/ha-automation-row";
 import type { HaAutomationRow } from "../../../../components/ha-automation-row";
 import "../../../../components/ha-card";
@@ -70,7 +72,6 @@ import "./types/ha-automation-condition-template";
 import "./types/ha-automation-condition-time";
 import "./types/ha-automation-condition-trigger";
 import "./types/ha-automation-condition-zone";
-import { copyToClipboard } from "../../../../common/util/copy-clipboard";
 
 export interface ConditionElement extends LitElement {
   condition: Condition;
@@ -589,11 +590,7 @@ export default class HaAutomationConditionRow extends LitElement {
   };
 
   private _insertAfter = (value: Condition | Condition[]) => {
-    if (
-      Array.isArray(value) &&
-      !value.every((val) => isCondition(val)) &&
-      !isCondition(value)
-    ) {
+    if (ensureArray(value).some((val) => !isCondition(val))) {
       return false;
     }
     fireEvent(this, "insert-after", { value });
