@@ -32,6 +32,7 @@ import "./step-flow-menu";
 import "./step-flow-progress";
 import { showOptionsFlowDialog } from "./show-dialog-options-flow";
 import { showSubConfigFlowDialog } from "./show-dialog-sub-config-flow";
+import { showConfigFlowDialog } from "./show-dialog-config-flow";
 
 let instance = 0;
 
@@ -480,10 +481,7 @@ class DataEntryFlowDialog extends LitElement {
           this._unsubDataEntryFlowProgress();
           this._unsubDataEntryFlowProgress = undefined;
         }
-        this.showDialog({
-          ...this._params!,
-          manifest: undefined,
-          domain: undefined,
+        showConfigFlowDialog(this._params!.dialogParentElement!, {
           continueFlowId: _step.next_flow[1],
           carryOverDevices: this._devices(
             this._params!.flowConfig.showDevices,
@@ -494,19 +492,28 @@ class DataEntryFlowDialog extends LitElement {
         });
       } else if (_step.next_flow[0] === "options_flow") {
         this.closeDialog();
-        showOptionsFlowDialog(this, _step.result!, {
-          continueFlowId: _step.next_flow[1],
-          navigateToResult: this._params!.navigateToResult,
-        });
+        showOptionsFlowDialog(
+          this._params!.dialogParentElement!,
+          _step.result!,
+          {
+            continueFlowId: _step.next_flow[1],
+            navigateToResult: this._params!.navigateToResult,
+          }
+        );
       } else if (_step.next_flow[0] === "config_subentries_flow") {
         this.closeDialog();
-        showSubConfigFlowDialog(this, _step.result!, _step.next_flow[0], {
-          continueFlowId: _step.next_flow[1],
-          navigateToResult: this._params!.navigateToResult,
-        });
+        showSubConfigFlowDialog(
+          this._params!.dialogParentElement!,
+          _step.result!,
+          _step.next_flow[0],
+          {
+            continueFlowId: _step.next_flow[1],
+            navigateToResult: this._params!.navigateToResult,
+          }
+        );
       } else {
         this.closeDialog();
-        showAlertDialog(this, {
+        showAlertDialog(this._params!.dialogParentElement!, {
           text: this.hass.localize(
             "ui.panel.config.integrations.config_flow.error",
             { error: `Unsupported next flow type: ${_step.next_flow[0]}` }
