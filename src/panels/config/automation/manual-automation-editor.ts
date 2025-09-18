@@ -58,12 +58,7 @@ import type HaAutomationCondition from "./condition/ha-automation-condition";
 import "./ha-automation-sidebar";
 import type HaAutomationSidebar from "./ha-automation-sidebar";
 import { showPasteReplaceDialog } from "./paste-replace-dialog/show-dialog-paste-replace";
-import {
-  manualEditorStyles,
-  saveFabStyles,
-  SIDEBAR_MAX_WIDTH,
-  SIDEBAR_MIN_WIDTH_DOCKED_NAVBAR,
-} from "./styles";
+import { manualEditorStyles, saveFabStyles } from "./styles";
 import "./trigger/ha-automation-trigger";
 
 const baseConfigStruct = object({
@@ -83,7 +78,7 @@ const automationConfigStruct = union([
   assign(baseConfigStruct, object({ actions: array(any()) })),
 ]);
 
-const SIDEBAR_DEFAULT_WIDTH = 500;
+export const SIDEBAR_DEFAULT_WIDTH = 500;
 
 @customElement("manual-automation-editor")
 export class HaManualAutomationEditor extends LitElement {
@@ -130,12 +125,10 @@ export class HaManualAutomationEditor extends LitElement {
   public connectedCallback() {
     super.connectedCallback();
     window.addEventListener("paste", this._handlePaste);
-    window.addEventListener("resize", this._resizeSidebarWidth);
   }
 
   public disconnectedCallback() {
     window.removeEventListener("paste", this._handlePaste);
-    window.removeEventListener("resize", this._resizeSidebarWidth);
     super.disconnectedCallback();
   }
 
@@ -290,7 +283,6 @@ export class HaManualAutomationEditor extends LitElement {
       <div
         class=${classMap({
           "has-sidebar": this._sidebarConfig && !this.narrow,
-          "docked-navbar": this.hass.dockedSidebar === "docked",
         })}
       >
         <div class="content-wrapper">
@@ -670,13 +662,6 @@ export class HaManualAutomationEditor extends LitElement {
     }
   }
 
-  private _resizeSidebarWidth = () => {
-    this.style.setProperty(
-      "--sidebar-dynamic-width",
-      `${this._sidebarWidthPx}px`
-    );
-  };
-
   private _resizeSidebar(ev) {
     ev.stopPropagation();
     const delta = ev.detail.deltaInPx as number;
@@ -689,10 +674,7 @@ export class HaManualAutomationEditor extends LitElement {
 
     const widthPx = delta + this._prevSidebarWidthPx;
 
-    this._sidebarWidthPx = Math.min(
-      Math.max(widthPx, SIDEBAR_MIN_WIDTH_DOCKED_NAVBAR),
-      SIDEBAR_MAX_WIDTH
-    );
+    this._sidebarWidthPx = widthPx;
 
     this.style.setProperty(
       "--sidebar-dynamic-width",

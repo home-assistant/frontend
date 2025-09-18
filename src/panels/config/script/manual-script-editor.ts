@@ -48,6 +48,7 @@ import "../automation/action/ha-automation-action";
 import type HaAutomationAction from "../automation/action/ha-automation-action";
 import "../automation/ha-automation-sidebar";
 import type HaAutomationSidebar from "../automation/ha-automation-sidebar";
+import { SIDEBAR_DEFAULT_WIDTH } from "../automation/manual-automation-editor";
 import { showPasteReplaceDialog } from "../automation/paste-replace-dialog/show-dialog-paste-replace";
 import { manualEditorStyles, saveFabStyles } from "../automation/styles";
 import "./ha-script-fields";
@@ -86,11 +87,11 @@ export class HaManualScriptEditor extends LitElement {
   @state() private _sidebarKey?: string;
 
   @storage({
-    key: "automation-sidebar-width-percentage",
+    key: "automation-sidebar-width",
     state: false,
     subscribe: false,
   })
-  private _sidebarWidth = 40;
+  private _sidebarWidthPx = SIDEBAR_DEFAULT_WIDTH;
 
   @query("ha-script-fields")
   private _scriptFields?: HaScriptFields;
@@ -277,7 +278,7 @@ export class HaManualScriptEditor extends LitElement {
 
     this.style.setProperty(
       "--sidebar-dynamic-width",
-      `${this._widthPxToVw(this._widthPercentageToPx(this._sidebarWidth))}vw`
+      `${this._sidebarWidthPx}px`
     );
 
     const expanded = extractSearchParam("expanded");
@@ -314,12 +315,10 @@ export class HaManualScriptEditor extends LitElement {
   public connectedCallback() {
     super.connectedCallback();
     window.addEventListener("paste", this._handlePaste);
-    window.addEventListener("resize", this._resizeSidebarWidth);
   }
 
   public disconnectedCallback() {
     window.removeEventListener("paste", this._handlePaste);
-    window.removeEventListener("resize", this._resizeSidebarWidth);
     super.disconnectedCallback();
   }
 
@@ -577,40 +576,24 @@ export class HaManualScriptEditor extends LitElement {
     }
   }
 
-  private _resizeSidebarWidth = () => {
-    this.style.setProperty(
-      "--sidebar-dynamic-width",
-      `${this._widthPxToVw(this._widthPercentageToPx(this._sidebarWidth))}vw`
-    );
-  };
-
-  private _widthPxToVw(px: number) {
-    return (px / window.innerWidth) * 100;
-  }
-
-  private _widthPercentageToPx(percentage: number) {
-    return (percentage / 100) * this.clientWidth;
-  }
-
   private _resizeSidebar(ev) {
     ev.stopPropagation();
     const delta = ev.detail.deltaInPx as number;
 
     // set initial resize width to add / reduce delta from it
     if (!this._prevSidebarWidthPx) {
-      this._prevSidebarWidthPx = this._widthPercentageToPx(this._sidebarWidth);
+      this._prevSidebarWidthPx =
+        this._sidebarElement?.clientWidth || SIDEBAR_DEFAULT_WIDTH;
     }
 
     const widthPx = delta + this._prevSidebarWidthPx;
 
-    if (widthPx > this.clientWidth * 0.7 || widthPx < this.clientWidth * 0.3) {
-      return;
-    }
+    this._sidebarWidthPx = widthPx;
 
-    const widthVw = this._widthPxToVw(widthPx);
-
-    this.style.setProperty("--sidebar-dynamic-width", `${widthVw}vw`);
-    this._sidebarWidth = (widthPx / this.clientWidth) * 100;
+    this.style.setProperty(
+      "--sidebar-dynamic-width",
+      `${this._sidebarWidthPx}px`
+    );
   }
 
   private _stopResizeSidebar(ev) {
