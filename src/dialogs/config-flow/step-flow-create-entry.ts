@@ -200,9 +200,9 @@ class StepFlowCreateEntry extends LitElement {
   }
 
   private async _loadDomains() {
-    const domains = await getConfigEntries(this.hass);
+    const entries = await getConfigEntries(this.hass);
     this._domains = Object.fromEntries(
-      domains.map((domain) => [domain.entry_id, domain.domain])
+      entries.map((entry) => [entry.entry_id, entry.domain])
     );
   }
 
