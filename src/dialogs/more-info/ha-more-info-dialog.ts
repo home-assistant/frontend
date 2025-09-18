@@ -728,7 +728,6 @@ export class MoreInfoDialog extends LitElement {
           display: flex;
           flex-direction: column;
           align-items: flex-start;
-          margin: 0 0 -10px 0;
         }
 
         .title p {
