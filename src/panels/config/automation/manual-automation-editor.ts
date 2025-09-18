@@ -35,7 +35,6 @@ import "../../../components/ha-fab";
 import "../../../components/ha-icon-button";
 import "../../../components/ha-markdown";
 import type {
-  ActionSidebarConfig,
   AutomationConfig,
   Condition,
   ManualAutomationConfig,
@@ -172,7 +171,7 @@ export class HaManualAutomationEditor extends LitElement {
         role="region"
         aria-labelledby="triggers-heading"
         .triggers=${this.config.triggers || []}
-        .highlightedTriggers=${this._pastedConfig?.triggers || []}
+        .highlightedTriggers=${this._pastedConfig?.triggers}
         @value-changed=${this._triggerChanged}
         .hass=${this.hass}
         .disabled=${this.disabled || this.saving}
@@ -219,7 +218,7 @@ export class HaManualAutomationEditor extends LitElement {
         role="region"
         aria-labelledby="conditions-heading"
         .conditions=${this.config.conditions || []}
-        .highlightedConditions=${this._pastedConfig?.conditions || []}
+        .highlightedConditions=${this._pastedConfig?.conditions}
         @value-changed=${this._conditionChanged}
         .hass=${this.hass}
         .disabled=${this.disabled || this.saving}
@@ -264,7 +263,7 @@ export class HaManualAutomationEditor extends LitElement {
         role="region"
         aria-labelledby="actions-heading"
         .actions=${this.config.actions || []}
-        .highlightedActions=${this._pastedConfig?.actions || []}
+        .highlightedActions=${this._pastedConfig?.actions}
         @value-changed=${this._actionChanged}
         @open-sidebar=${this._openSidebar}
         @request-close-sidebar=${this._triggerCloseSidebar}
@@ -518,12 +517,30 @@ export class HaManualAutomationEditor extends LitElement {
     if (normalized) {
       ev.preventDefault();
 
+      const keysPresent = Object.keys(normalized).filter(
+        (key) => ensureArray(normalized[key]).length
+      );
+
+      if (
+        keysPresent.length === 1 &&
+        ["triggers", "conditions", "actions"].includes(keysPresent[0])
+      ) {
+        // if only one type of element is pasted, insert under the currently active item
+        const previousConfig = { ...this.config };
+        if (this._tryInsertAfterSelected(normalized[keysPresent[0]])) {
+          this._previousConfig = previousConfig;
+          this._showPastedToastWithUndo();
+          return;
+        }
+      }
+
       if (
         this.dirty ||
         ensureArray(this.config.triggers)?.length ||
         ensureArray(this.config.conditions)?.length ||
         ensureArray(this.config.actions)?.length
       ) {
+        // ask if they want to append or replace if we have existing config or there are unsaved changes
         const result = await new Promise<boolean>((resolve) => {
           showPasteReplaceDialog(this, {
             domain: "automation",
@@ -644,21 +661,30 @@ export class HaManualAutomationEditor extends LitElement {
     });
   }
 
+  private _tryInsertAfterSelected(
+    config: Trigger | Condition | Action | Trigger[] | Condition[] | Action[]
+  ): boolean {
+    if (this._sidebarConfig && "insertAfter" in this._sidebarConfig) {
+      return this._sidebarConfig.insertAfter(config as any);
+    }
+    return false;
+  }
+
   public copySelectedRow() {
-    if ((this._sidebarConfig as ActionSidebarConfig)?.copy) {
-      (this._sidebarConfig as ActionSidebarConfig).copy();
+    if (this._sidebarConfig && "copy" in this._sidebarConfig) {
+      this._sidebarConfig.copy();
     }
   }
 
   public cutSelectedRow() {
-    if ((this._sidebarConfig as ActionSidebarConfig)?.cut) {
-      (this._sidebarConfig as ActionSidebarConfig).cut();
+    if (this._sidebarConfig && "cut" in this._sidebarConfig) {
+      this._sidebarConfig.cut();
     }
   }
 
   public deleteSelectedRow() {
-    if ((this._sidebarConfig as ActionSidebarConfig)?.delete) {
-      (this._sidebarConfig as ActionSidebarConfig).delete();
+    if (this._sidebarConfig && "delete" in this._sidebarConfig) {
+      this._sidebarConfig.delete();
     }
   }
 

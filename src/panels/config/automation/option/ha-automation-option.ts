@@ -293,7 +293,12 @@ export default class HaAutomationOption extends LitElement {
     ev.stopPropagation();
     const index = (ev.target as any).index;
     fireEvent(this, "value-changed", {
-      value: this.options.concat(deepClone(this.options[index])),
+      // @ts-expect-error Requires library bump to ES2023
+      value: this.options.toSpliced(
+        index + 1,
+        0,
+        deepClone(this.options[index])
+      ),
     });
   }
 
