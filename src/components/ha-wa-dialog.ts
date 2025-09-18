@@ -51,7 +51,9 @@ export class HaWaDialog extends LitElement {
     super.updated(changedProperties);
 
     if (changedProperties.has("open")) {
-      this._open = this.open;
+      if (this.open) {
+        this._open = this.open;
+      }
     }
 
     if (changedProperties.has("dialogSize")) {
@@ -66,7 +68,7 @@ export class HaWaDialog extends LitElement {
         .lightDismiss=${this.scrimDismissable}
         .withoutHeader=${true}
         @wa-show=${this._handleShow}
-        @wa-hide=${this._handleHide}
+        @wa-after-hide=${this._handleAfterHide}
       >
         <slot name="heading">
           <ha-dialog-header>
@@ -101,7 +103,7 @@ export class HaWaDialog extends LitElement {
     this.dispatchEvent(new CustomEvent("opened"));
   };
 
-  private _handleHide = () => {
+  private _handleAfterHide = () => {
     this._open = false;
     this.dispatchEvent(new CustomEvent("closed"));
   };
@@ -125,10 +127,19 @@ export class HaWaDialog extends LitElement {
     }
 
     wa-dialog {
+      --full-width: min(
+        calc(
+          100vw - var(--safe-area-inset-left, 0px) - var(
+              --safe-area-inset-right,
+              0px
+            )
+        ),
+        95vw
+      );
       --width: min(580px, 95vw);
       --spacing: var(--dialog-content-padding, 24px);
-      --show-duration: 200ms;
-      --hide-duration: 200ms;
+      --show-duration: var(--ha-dialog-show-duration, 200ms);
+      --hide-duration: var(--ha-dialog-hide-duration, 200ms);
       --wa-color-surface-raised: var(
         --ha-dialog-surface-background,
         var(--mdc-theme-surface, #fff)
@@ -139,20 +150,20 @@ export class HaWaDialog extends LitElement {
     }
 
     :host([current-dialog-size="small"]) wa-dialog {
-      --width: min(320px, 95vw);
+      --width: min(320px, var(--full-width));
     }
 
     :host([current-dialog-size="large"]) wa-dialog {
-      --width: min(720px, 95vw);
+      --width: min(720px, var(--full-width));
     }
 
     :host([current-dialog-size="full"]) wa-dialog {
-      --width: 95vw;
+      --width: var(--full-width);
     }
 
     wa-dialog::part(dialog) {
-      min-width: var(--width, 100vw);
-      max-width: var(--width, 100vw);
+      min-width: var(--width, var(--full-width));
+      max-width: var(--width, var(--full-width));
       max-height: 100vh;
       position: var(--dialog-surface-position, relative);
       margin-top: var(--dialog-surface-margin-top, auto);
@@ -164,10 +175,6 @@ export class HaWaDialog extends LitElement {
     @media all and (max-width: 450px), all and (max-height: 500px) {
       :host {
         --ha-dialog-border-radius: 0px;
-      }
-
-      wa-dialog {
-        --width: 100vw;
       }
 
       wa-dialog::part(dialog) {
