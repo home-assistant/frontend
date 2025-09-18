@@ -9481,8 +9481,8 @@
             "description": "Autoupdate the add-on when there is a new version available"
           },
           "ingress_panel": {
-            "title": "Show in sidebar",
-            "description": "Add this add-on to your sidebar"
+            "title": "Add to sidebar",
+            "description": "Allows users to show or hide the add-on"
           },
           "protected": {
             "title": "Protection mode",
