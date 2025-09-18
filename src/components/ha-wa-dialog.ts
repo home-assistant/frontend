@@ -1,7 +1,7 @@
 import { css, html, LitElement } from "lit";
 import { customElement, property, state } from "lit/decorators";
 import "@home-assistant/webawesome/dist/components/dialog/dialog";
-import { mdiChartBoxOutline, mdiClose, mdiCogOutline } from "@mdi/js";
+import { mdiClose } from "@mdi/js";
 import type { HomeAssistant } from "../types";
 import "./ha-dialog-header";
 import "./ha-icon-button";
@@ -65,22 +65,7 @@ export class HaWaDialog extends LitElement {
             <slot name="subtitle" slot="subtitle">
               <span>${this.headerSubtitle}</span>
             </slot>
-            <slot name="actionItems" slot="actionItems">
-              <ha-icon-button
-                .label=${this.hass?.localize(
-                  "ui.dialogs.more_info_control.history"
-                )}
-                .path=${mdiChartBoxOutline}
-              ></ha-icon-button>
-            </slot>
-            <slot name="header-actions" slot="header-actions">
-              <ha-icon-button
-                .label=${this.hass?.localize(
-                  "ui.dialogs.more_info_control.settings"
-                )}
-                .path=${mdiCogOutline}
-              ></ha-icon-button>
-            </slot>
+            <slot name="actionItems" slot="actionItems"> </slot>
           </ha-dialog-header>
         </slot>
         <div class="body">
