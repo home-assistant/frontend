@@ -61,7 +61,7 @@ export class HuiButtonCardFeatureEditor
         return this.hass!.localize("ui.common.name");
       case "data":
         return this.hass!.localize(
-          "ui.components['service-control'].action_data"
+          "ui.components.service-control.action_data"
         );
       default:
         return this.hass!.localize(
