@@ -21,6 +21,48 @@ export class HaTileInfo extends LitElement {
   }
 
   static styles = css`
+    :host {
+      --tile-info-primary-font-size: var(
+        --ha-tile-info-primary-font-size,
+        var(--ha-font-size-m)
+      );
+      --tile-info-primary-font-weight: var(
+        --ha-tile-info-primary-font-weight,
+        var(--ha-font-weight-medium)
+      );
+      --tile-info-primary-line-height: var(
+        --ha-tile-info-primary-line-height,
+        var(--ha-line-height-normal)
+      );
+      --tile-info-primary-letter-spacing: var(
+        --ha-tile-info-primary-letter-spacing,
+        0.1px
+      );
+      --tile-info-primary-color: var(
+        --ha-tile-info-primary-color,
+        var(--primary-text-color)
+      );
+      --tile-info-secondary-font-size: var(
+        --ha-tile-info-secondary-font-size,
+        var(--ha-font-size-s)
+      );
+      --tile-info-secondary-font-weight: var(
+        --ha-tile-info-secondary-font-weight,
+        var(--ha-font-weight-normal)
+      );
+      --tile-info-secondary-line-height: var(
+        --ha-tile-info-secondary-line-height,
+        var(--ha-line-height-condensed)
+      );
+      --tile-info-secondary-letter-spacing: var(
+        --ha-tile-info-secondary-letter-spacing,
+        0.4px
+      );
+      --tile-info-secondary-color: var(
+        --ha-tile-info-secondary-color,
+        var(--primary-text-color)
+      );
+    }
     .info {
       width: 100%;
       display: flex;
@@ -36,18 +78,18 @@ export class HaTileInfo extends LitElement {
       width: 100%;
     }
     .primary {
-      font-size: var(--ha-font-size-m);
-      font-weight: var(--ha-font-weight-medium);
-      line-height: var(--ha-line-height-normal);
-      letter-spacing: 0.1px;
-      color: var(--primary-text-color);
+      font-size: var(--tile-info-primary-font-size);
+      font-weight: var(--tile-info-primary-font-weight);
+      line-height: var(--tile-info-primary-line-height);
+      letter-spacing: var(--tile-info-primary-letter-spacing);
+      color: var(--tile-info-primary-color);
     }
     .secondary {
-      font-size: var(--ha-font-size-s);
-      font-weight: var(--ha-font-weight-normal);
-      line-height: var(--ha-line-height-condensed);
-      letter-spacing: 0.4px;
-      color: var(--primary-text-color);
+      font-size: var(--tile-info-secondary-font-size);
+      font-weight: var(--tile-info-secondary-font-weight);
+      line-height: var(--tile-info-secondary-line-height);
+      letter-spacing: var(--tile-info-secondary-letter-spacing);
+      color: var(--tile-info-secondary-color);
     }
   `;
 }
