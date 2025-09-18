@@ -683,13 +683,20 @@
         "add_label_id": "Choose label",
         "devices_count": "{count} {count, plural,\n one {device}\n other {devices}\n}",
         "entities_count": "{count} {count, plural,\n one {entity}\n other {entities}\n}",
-        "overview": "Overview",
+        "target_details": "Target details",
         "selected": {
           "entity": "Entities: {count}",
           "device": "Devices: {count}",
           "area": "Areas: {count}",
           "label": "Labels: {count}",
           "floor": "Floors: {count}"
+        },
+        "type": {
+          "area": "Area",
+          "device": "Device",
+          "entity": "Entity",
+          "label": "Label",
+          "floor": "Floor"
         }
       },
       "subpage-data-table": {

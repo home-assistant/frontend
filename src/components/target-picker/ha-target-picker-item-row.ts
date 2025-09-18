@@ -613,13 +613,13 @@ export class HaTargetPickerItemRow extends LitElement {
 
       .entries-tree .line-wrapper .line {
         border-left: 2px dashed var(--divider-color);
-        height: 100%;
+        height: calc(100% - 28px);
         position: absolute;
         top: 0;
       }
 
       :host([sub-entry]) .entries-tree .line-wrapper .line {
-        height: calc(100% + 18px);
+        height: calc(100% - 12px);
         top: -18px;
       }
 

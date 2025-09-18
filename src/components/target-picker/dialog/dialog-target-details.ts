@@ -72,9 +72,16 @@ class DialogTargetDetails
             .label=${this.hass.localize("ui.common.close")}
             .path=${mdiClose}
           ></ha-icon-button>
-          <span slot="title">${this._params.title}</span>
+          <span slot="title"
+            >${this.hass.localize(
+              "ui.components.target-picker.target_details"
+            )}</span
+          >
           <span slot="subtitle"
-            >${this.hass.localize("ui.components.target-picker.overview")}</span
+            >${this.hass.localize(
+              `ui.components.target-picker.type.${this._params.type}`
+            )}:
+            ${this._params.title}</span
           >
         </ha-dialog-header>
         <div slot="content">
