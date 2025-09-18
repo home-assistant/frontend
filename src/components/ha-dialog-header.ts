@@ -1,12 +1,44 @@
 import { css, html, LitElement } from "lit";
-import { customElement } from "lit/decorators";
+import { customElement, state } from "lit/decorators";
+import { classMap } from "lit/directives/class-map";
 
 @customElement("ha-dialog-header")
 export class HaDialogHeader extends LitElement {
+  @state()
+  private _hasSubtitle = false;
+
+  protected firstUpdated() {
+    this._checkSubtitleContent();
+  }
+
+  private _checkSubtitleContent() {
+    const subtitleSlot = this.shadowRoot?.querySelector(
+      'slot[name="subtitle"]'
+    ) as HTMLSlotElement;
+    if (subtitleSlot) {
+      const assignedNodes = subtitleSlot.assignedNodes({ flatten: true });
+      const hasContent = assignedNodes.some((node) => {
+        if (node.nodeType === Node.TEXT_NODE) {
+          return node.textContent?.trim();
+        }
+        if (node.nodeType === Node.ELEMENT_NODE) {
+          return (node as Element).textContent?.trim();
+        }
+        return false;
+      });
+      this._hasSubtitle = hasContent;
+    }
+  }
+
   protected render() {
     return html`
       <header class="header">
-        <div class="header-bar">
+        <div
+          class=${classMap({
+            "header-bar": true,
+            "no-subtitle": !this._hasSubtitle,
+          })}
+        >
           <section class="header-navigation-icon">
             <slot name="navigationIcon"></slot>
           </section>
@@ -15,7 +47,10 @@ export class HaDialogHeader extends LitElement {
               <slot name="title"></slot>
             </div>
             <div class="header-subtitle">
-              <slot name="subtitle"></slot>
+              <slot
+                name="subtitle"
+                @slotchange=${this._checkSubtitleContent}
+              ></slot>
             </div>
           </section>
           <section class="header-action-items">
@@ -43,6 +78,9 @@ export class HaDialogHeader extends LitElement {
           align-items: flex-start;
           padding: 4px;
           box-sizing: border-box;
+        }
+        .header-bar.no-subtitle {
+          align-items: center;
         }
         .header-content {
           flex: 1;
