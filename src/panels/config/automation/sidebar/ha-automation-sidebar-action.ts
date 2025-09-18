@@ -26,7 +26,7 @@ import { isMac } from "../../../../util/is_mac";
 import type HaAutomationConditionEditor from "../action/ha-automation-action-editor";
 import { getAutomationActionType } from "../action/ha-automation-action-row";
 import { getRepeatType } from "../action/types/ha-automation-action-repeat";
-import { sidebarEditorStyles } from "../styles";
+import { overflowStyles, sidebarEditorStyles } from "../styles";
 import "../trigger/ha-automation-trigger-editor";
 import "./ha-automation-sidebar-card";
 
@@ -315,7 +315,7 @@ export default class HaAutomationSidebarAction extends LitElement {
     fireEvent(this, "toggle-yaml-mode");
   };
 
-  static styles = sidebarEditorStyles;
+  static styles = [sidebarEditorStyles, overflowStyles];
 }
 
 declare global {

@@ -230,6 +230,9 @@ export const sidebarEditorStyles = css`
   .description {
     padding-top: 16px;
   }
+`;
+
+export const overflowStyles = css`
   .overflow-label {
     display: flex;
     justify-content: space-between;
