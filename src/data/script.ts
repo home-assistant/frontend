@@ -344,7 +344,11 @@ export const getActionType = (action: Action): ActionType => {
   if ("event" in action) {
     return "fire_event";
   }
-  if ("device_id" in action) {
+  if (
+    "device_id" in action &&
+    !("trigger" in action) &&
+    !("condition" in action)
+  ) {
     return "device_action";
   }
   if ("repeat" in action) {
