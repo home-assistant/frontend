@@ -366,10 +366,8 @@ export class MoreInfoDialog extends LitElement {
         open
         @closed=${this.closeDialog}
         @opened=${this._handleOpened}
-        .escapeKeyAction=${this._isEscapeEnabled ? undefined : ""}
-        .scrimClickAction=${this._isEscapeEnabled}
-        .heading=${title}
-        hideActions
+        .headerTitle=${title}
+        scrimDismissable
         flexContent
       >
         <ha-dialog-header slot="heading">
@@ -428,7 +426,7 @@ export class MoreInfoDialog extends LitElement {
                 ${!__DEMO__ && isAdmin
                   ? html`
                       <ha-icon-button
-                        slot="actionItems"
+                        slot="header-actions"
                         .label=${this.hass.localize(
                           "ui.dialogs.more_info_control.settings"
                         )}
@@ -438,7 +436,7 @@ export class MoreInfoDialog extends LitElement {
                       <ha-button-menu
                         corner="BOTTOM_END"
                         menu-corner="END"
-                        slot="actionItems"
+                        slot="header-actions"
                         @closed=${stopPropagation}
                         fixed
                       >
