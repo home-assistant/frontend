@@ -1,5 +1,6 @@
 import {
   mdiChartBoxOutline,
+  mdiClose,
   mdiCogOutline,
   mdiDevices,
   mdiDotsVertical,
@@ -355,6 +356,24 @@ export class MoreInfoDialog extends LitElement {
         .scrimDismissable=${this._isEscapeEnabled}
         flexContent
       >
+        ${showCloseIcon
+          ? html`
+              <ha-icon-button
+                slot="navigationIcon"
+                data-dialog="close"
+                .label=${this.hass.localize("ui.common.close")}
+                .path=${mdiClose}
+              ></ha-icon-button>
+            `
+          : html`
+              <ha-icon-button-prev
+                slot="navigationIcon"
+                @click=${this._goBack}
+                .label=${this.hass.localize(
+                  "ui.dialogs.more_info_control.back_to_info"
+                )}
+              ></ha-icon-button-prev>
+            `}
         <span slot="title" @click=${this._enlarge} class="title">
           ${breadcrumb.length > 0
             ? !__DEMO__ && isAdmin
@@ -392,7 +411,7 @@ export class MoreInfoDialog extends LitElement {
               ${!__DEMO__ && isAdmin
                 ? html`
                     <ha-icon-button
-                      slot="header-actions"
+                      slot="actionItems"
                       .label=${this.hass.localize(
                         "ui.dialogs.more_info_control.settings"
                       )}
@@ -402,7 +421,7 @@ export class MoreInfoDialog extends LitElement {
                     <ha-button-menu
                       corner="BOTTOM_END"
                       menu-corner="END"
-                      slot="header-actions"
+                      slot="actionItems"
                       @closed=${stopPropagation}
                       fixed
                     >
