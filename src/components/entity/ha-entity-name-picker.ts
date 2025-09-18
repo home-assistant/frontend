@@ -18,13 +18,13 @@ import { ensureArray } from "../../common/array/ensure-array";
 import type { EntityNameType } from "../../common/translations/entity-state";
 import { nextRender } from "../../common/util/render-status";
 
-interface Option {
+interface EntityNameItem {
   primary: string;
   secondary?: string;
   value: string;
 }
 
-const rowRenderer: ComboBoxLitRenderer<Option> = (item) => html`
+const rowRenderer: ComboBoxLitRenderer<EntityNameItem> = (item) => html`
   <ha-combo-box-item type="button">
     <span slot="headline">${item.primary}</span>
     ${item.secondary
@@ -62,19 +62,19 @@ export class HaEntityNamePicker extends LitElement {
       (changedProps.has("_opened") && this._opened) ||
       changedProps.has("entityId")
     ) {
-      const options = this._getOptions(this.entityId);
+      const options = this._getItems(this.entityId);
       (this._comboBox as any).filteredItems = options;
     }
   }
 
-  private _getOptions = memoizeOne((entityId?: string) => {
+  private _getItems = memoizeOne((entityId?: string) => {
     if (!entityId) {
       return [];
     }
     if (!this.hass.states[entityId]) {
       return [];
     }
-    const options = ENTITY_NAME_PRESETS.map<Option>((preset) => ({
+    const options = ENTITY_NAME_PRESETS.map<EntityNameItem>((preset) => ({
       primary: computeEntityDisplayName(
         this.hass,
         this.hass.states[entityId],
@@ -133,7 +133,7 @@ export class HaEntityNamePicker extends LitElement {
         .placeholder=${stateObj
           ? computeEntityDisplayName(this.hass, stateObj, "friendly_name")
           : ""}
-        .filteredItems=${this._getOptions(this.entityId)}
+        .filteredItems=${this._getItems(this.entityId)}
         @opened-changed=${this._openedChanged}
         @value-changed=${this._valueChanged}
         @filter-changed=${this._filterChanged}
