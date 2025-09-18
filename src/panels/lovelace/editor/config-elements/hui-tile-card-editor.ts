@@ -44,6 +44,12 @@ const cardConfigStruct = assign(
   object({
     entity: optional(string()),
     name: optional(string()),
+    name_content: optional(
+      union([
+        enums(["floor", "area", "device", "entity"]),
+        array(enums(["floor", "area", "device", "entity"])),
+      ])
+    ),
     icon: optional(string()),
     color: optional(string()),
     show_entity_picture: optional(boolean()),
@@ -98,9 +104,13 @@ export class HuiTileCardEditor
           iconPath: mdiTextShort,
           schema: [
             {
-              name: "name",
+              name: "name_content",
               selector: { entity_name: {} },
               context: { entity: "entity" },
+            },
+            {
+              name: "name",
+              selector: { text: {} },
             },
             {
               name: "",
@@ -410,6 +420,7 @@ export class HuiTileCardEditor
       | SchemaUnion<ReturnType<typeof this._featuresSchema>>
   ) => {
     switch (schema.name) {
+      case "name_content":
       case "color":
       case "icon_tap_action":
       case "icon_hold_action":

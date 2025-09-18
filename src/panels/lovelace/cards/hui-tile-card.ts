@@ -255,11 +255,10 @@ export class HuiTileCard extends LitElement implements LovelaceCard {
 
     const contentClasses = { vertical: Boolean(this._config.vertical) };
 
-    const name = computeEntityDisplayName(
-      this.hass,
-      stateObj,
-      this._config.name
-    );
+    const name =
+      this._config.name ||
+      computeEntityDisplayName(this.hass, stateObj, this._config.name_content);
+
     const active = stateActive(stateObj);
     const color = this._computeStateColor(stateObj, this._config.color);
     const domain = computeDomain(stateObj.entity_id);
