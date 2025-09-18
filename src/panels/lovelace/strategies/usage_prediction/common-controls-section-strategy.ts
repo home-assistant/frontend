@@ -8,17 +8,18 @@ import type { TileCardConfig } from "../../cards/types";
 
 const DEFAULT_LIMIT = 8;
 
-export interface OriginalStatesViewStrategyConfig {
+export interface CommonControlSectionStrategyConfig {
   type: "common-controls";
   title?: string;
   limit?: number;
   exclude_entities?: string[];
+  hide_empty?: boolean;
 }
 
 @customElement("common-controls-section-strategy")
 export class CommonControlsSectionStrategy extends ReactiveElement {
   static async generate(
-    config: OriginalStatesViewStrategyConfig,
+    config: CommonControlSectionStrategyConfig,
     hass: HomeAssistant
   ): Promise<LovelaceSectionConfig> {
     const section: LovelaceSectionConfig = {
@@ -40,6 +41,7 @@ export class CommonControlsSectionStrategy extends ReactiveElement {
           "ui.panel.lovelace.strategy.common_controls.not_loaded"
         ),
       });
+      section.disabled = config.hide_empty;
       return section;
     }
 
@@ -73,6 +75,7 @@ export class CommonControlsSectionStrategy extends ReactiveElement {
           "ui.panel.lovelace.strategy.common_controls.no_data"
         ),
       });
+      section.disabled = config.hide_empty;
     }
 
     return section;
