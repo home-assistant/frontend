@@ -6,12 +6,28 @@ import type { HomeAssistant } from "../types";
 import "./ha-dialog-header";
 import "./ha-icon-button";
 
+export type DialogSize = "small" | "medium" | "large" | "full";
+export type DialogSizeOnTitleClick = DialogSize | "none";
+
 @customElement("ha-wa-dialog")
 export class HaWaDialog extends LitElement {
   @property({ attribute: false }) public hass!: HomeAssistant;
 
   @property({ type: Boolean, reflect: true })
   public open = false;
+
+  @property({ type: String, reflect: true, attribute: "dialog-size" })
+  public dialogSize: DialogSize = "medium";
+
+  @property({ type: String, reflect: true, attribute: "current-dialog-size" })
+  public currentDialogSize: DialogSize = this.dialogSize;
+
+  @property({
+    type: String,
+    reflect: true,
+    attribute: "dialog-size-on-title-click",
+  })
+  public dialogSizeOnTitleClick: DialogSizeOnTitleClick = "none";
 
   // TODO: Should this be scrim, overlay, or match WA with lightDismiss?
   @property({ type: Boolean, reflect: true, attribute: "scrim-dismissable" })
@@ -37,6 +53,10 @@ export class HaWaDialog extends LitElement {
     if (changedProperties.has("open")) {
       this._open = this.open;
     }
+
+    if (changedProperties.has("dialogSize")) {
+      this.currentDialogSize = this.dialogSize;
+    }
   }
 
   protected render() {
@@ -58,7 +78,7 @@ export class HaWaDialog extends LitElement {
               ></ha-icon-button>
             </slot>
             <slot name="title" slot="title">
-              <span @click=${this._toggleSize} class="title">
+              <span @click=${this.toggleSize} class="title">
                 ${this.headerTitle}
               </span>
             </slot>
@@ -86,8 +106,15 @@ export class HaWaDialog extends LitElement {
     this.dispatchEvent(new CustomEvent("closed"));
   };
 
-  private _toggleSize = () => {
-    // TODO: Implement
+  public toggleSize = () => {
+    if (this.dialogSizeOnTitleClick === "none") {
+      return;
+    }
+
+    this.currentDialogSize =
+      this.currentDialogSize === this.dialogSizeOnTitleClick
+        ? this.dialogSize
+        : this.dialogSizeOnTitleClick;
   };
 
   static override styles = css`
@@ -109,6 +136,19 @@ export class HaWaDialog extends LitElement {
       --wa-panel-border-radius: var(--ha-dialog-border-radius, 24px);
       z-index: var(--dialog-z-index, 8);
       max-width: 100%;
+      transition: width 200ms ease-in-out;
+    }
+
+    :host([current-dialog-size="small"]) wa-dialog {
+      --width: min(320px, 95vw);
+    }
+
+    :host([current-dialog-size="large"]) wa-dialog {
+      --width: min(720px, 95vw);
+    }
+
+    :host([current-dialog-size="full"]) wa-dialog {
+      --width: 95vw;
     }
 
     wa-dialog::part(dialog) {
