@@ -6,6 +6,7 @@ import { repeat } from "lit/directives/repeat";
 import memoizeOne from "memoize-one";
 import { ensureArray } from "../../common/array/ensure-array";
 import { fireEvent } from "../../common/dom/fire_event";
+import { getEntityContext } from "../../common/entity/context/get_entity_context";
 import type { EntityNameType } from "../../common/translations/entity-state";
 import { computeEntityDisplayName } from "../../panels/lovelace/common/entity/compute-display-name";
 import type { HomeAssistant, ValueChangedEvent } from "../../types";
@@ -73,14 +74,32 @@ export class HaEntityNamePicker extends LitElement {
     }
   }
 
+  private _validOptions = memoizeOne((entityId: string) => {
+    const stateObj = this.hass.states[entityId];
+    if (!stateObj) {
+      return [];
+    }
+
+    const context = getEntityContext(
+      stateObj,
+      this.hass.entities,
+      this.hass.devices,
+      this.hass.areas,
+      this.hass.floors
+    );
+    const options: EntityNameType[] = ["entity"];
+    if (context.device) options.push("device");
+    if (context.area) options.push("area");
+    if (context.floor) options.push("floor");
+    return options;
+  });
+
   private _getItems = memoizeOne((entityId?: string) => {
     if (!entityId) {
       return [];
     }
-    if (!this.hass.states[entityId]) {
-      return [];
-    }
-    const options = NAMES.map<EntityNameItem>((name) => ({
+
+    const items = this._validOptions(entityId).map<EntityNameItem>((name) => ({
       primary: this.hass.localize(
         `ui.components.entity.entity-name-picker.types.${name}`
       ),
@@ -91,7 +110,7 @@ export class HaEntityNamePicker extends LitElement {
       ),
       value: name,
     }));
-    return options;
+    return items;
   });
 
   protected render() {
@@ -120,9 +139,11 @@ export class HaEntityNamePicker extends LitElement {
                   this._value,
                   (item) => item,
                   (item, idx) => {
-                    const label =
-                      options.find((option) => option.value === item)
-                        ?.primary || item;
+                    const label = NAMES.includes(item)
+                      ? this.hass.localize(
+                          `ui.components.entity.entity-name-picker.types.${item as EntityNameType}`
+                        )
+                      : item;
                     return html`
                       <ha-input-chip
                         data-idx=${idx}
@@ -131,7 +152,7 @@ export class HaEntityNamePicker extends LitElement {
                         selected
                       >
                         <ha-svg-icon slot="icon" .path=${mdiDrag}></ha-svg-icon>
-                        ${label}
+                        <span>${label}</span>
                       </ha-input-chip>
                     `;
                   }
