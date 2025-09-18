@@ -110,6 +110,10 @@ export class HaEntityNamePicker extends LitElement {
       return nothing;
     }
 
+    const stateObj = this.entityId
+      ? this.hass.states[this.entityId]
+      : undefined;
+
     return html`
       <ha-combo-box
         .hass=${this.hass}
@@ -124,8 +128,13 @@ export class HaEntityNamePicker extends LitElement {
         item-value-path="value"
         item-label-path="primary"
         .renderer=${rowRenderer}
+        .placeholder=${stateObj
+          ? computeEntityDisplayName(this.hass, stateObj, "friendly_name")
+          : ""}
+        .filteredItems=${this._getOptions(this.entityId)}
         @opened-changed=${this._openedChanged}
         @value-changed=${this._valueChanged}
+        @filter-changed=${this._filterChanged}
       >
       </ha-combo-box>
     `;
@@ -137,6 +146,11 @@ export class HaEntityNamePicker extends LitElement {
 
   private _openedChanged(ev: ValueChangedEvent<boolean>) {
     this._opened = ev.detail.value;
+  }
+
+  private _filterChanged(ev: ValueChangedEvent<string>) {
+    const filter = ev.detail.value || "";
+    this._setValue(filter);
   }
 
   private _valueChanged(ev: ValueChangedEvent<string>) {
