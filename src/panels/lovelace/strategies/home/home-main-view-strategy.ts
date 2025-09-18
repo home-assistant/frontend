@@ -112,6 +112,7 @@ export class HomeMainViewStrategy extends ReactiveElement {
             title: hass.localize(
               "ui.panel.lovelace.strategy.home.common_controls"
             ),
+            limit: 4,
             exclude_entities: favoriteEntities,
           },
           column_span: maxColumns,

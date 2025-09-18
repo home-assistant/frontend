@@ -8797,6 +8797,7 @@
             "accepts_target": "This action accepts a target, for example: `entity_id: light.bed_light`",
             "no_template_ui_support": "The UI does not support templates, you can still use the YAML editor.",
             "copy_clipboard_template": "Copy to clipboard as template",
+            "open_media": "Open media",
             "errors": {
               "ui": {
                 "no_action": "No action selected, please select an action",
@@ -9480,8 +9481,8 @@
             "description": "Autoupdate the add-on when there is a new version available"
           },
           "ingress_panel": {
-            "title": "Show in sidebar",
-            "description": "Add this add-on to your sidebar"
+            "title": "Add to sidebar",
+            "description": "Allows users to show or hide the add-on"
           },
           "protected": {
             "title": "Protection mode",
