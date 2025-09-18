@@ -352,7 +352,7 @@ export class MoreInfoDialog extends LitElement {
         )}
         .backAction=${showCloseIcon ? undefined : this._goBack}
         .headerTitle=${title}
-        scrimDismissable
+        .scrimDismissable=${this._isEscapeEnabled}
         flexContent
       >
         <span slot="title" @click=${this._enlarge} class="title">
