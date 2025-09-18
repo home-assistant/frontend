@@ -56,12 +56,10 @@ export class HaSlider extends Slider {
           border: none;
         }
 
-        #slider {
-          &:focus-visible:not(.disabled) #thumb,
-          &:focus-visible:not(.disabled) #thumb-min,
-          &:focus-visible:not(.disabled) #thumb-max {
-            outline: var(--wa-focus-ring);
-          }
+        #slider:focus-visible:not(.disabled) #thumb,
+        #slider:focus-visible:not(.disabled) #thumb-min,
+        #slider:focus-visible:not(.disabled) #thumb-max {
+          outline: var(--wa-focus-ring);
         }
 
         :host([size="medium"]) {
