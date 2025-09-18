@@ -17,16 +17,16 @@ export class HaDialogHeader extends LitElement {
     ) as HTMLSlotElement;
     if (subtitleSlot) {
       const assignedNodes = subtitleSlot.assignedNodes({ flatten: true });
-      const hasContent = assignedNodes.some((node) => {
+      this._hasSubtitle = assignedNodes.some((node) => {
+        let text: string | any[] | undefined;
         if (node.nodeType === Node.TEXT_NODE) {
-          return node.textContent?.trim();
+          text = node.textContent?.trim();
         }
         if (node.nodeType === Node.ELEMENT_NODE) {
-          return (node as Element).textContent?.trim();
+          text = (node as Element).textContent?.trim();
         }
-        return false;
+        return text && text.length > 0;
       });
-      this._hasSubtitle = hasContent;
     }
   }
 
