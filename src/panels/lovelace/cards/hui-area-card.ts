@@ -264,7 +264,12 @@ export class HuiAreaCard extends LitElement implements LovelaceCard {
             .map(
               (entityId) => this.hass.states[entityId] as HassEntity | undefined
             )
-            .filter((stateObj) => stateObj?.state === BINARY_STATE_ON);
+            .filter((stateObj) => {
+              if (stateObj?.entity_id?.includes("connectivity")) {
+                return stateObj.state === "off";
+              }
+              return stateObj?.state === BINARY_STATE_ON;
+            });
         })
         .filter((activeAlerts) => activeAlerts.length > 0)
         // Only return the first active entity for each alert class
@@ -487,7 +492,7 @@ export class HuiAreaCard extends LitElement implements LovelaceCard {
         <div
           class="background"
           @action=${this._handleAction}
-          .actionHandler=${actionHandler()}
+          @actionHandler=${actionHandler()}
           role=${ifDefined(this._hasCardAction ? "button" : undefined)}
           tabindex=${ifDefined(this._hasCardAction ? "0" : undefined)}
           aria-labelledby="info"
