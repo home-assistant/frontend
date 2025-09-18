@@ -168,8 +168,8 @@ export class HaWaDialog extends LitElement {
       position: var(--dialog-surface-position, relative);
       margin-top: var(--dialog-surface-margin-top, auto);
       transition:
-        min-width 200ms ease-in-out,
-        max-width 200ms ease-in-out;
+        min-width var(--ha-dialog-expand-duration, 200ms) ease-in-out,
+        max-width var(--ha-dialog-expand-duration, 200ms) ease-in-out;
     }
 
     @media all and (max-width: 450px), all and (max-height: 500px) {
