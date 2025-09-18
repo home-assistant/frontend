@@ -27,6 +27,7 @@ import type {
 import type { LovelaceHeaderFooterConfig } from "../header-footer/types";
 import type { LovelaceHeadingBadgeConfig } from "../heading-badges/types";
 import type { HomeSummary } from "../strategies/home/helpers/home-summaries";
+import type { EntityNameType } from "../../../common/translations/entity-state";
 
 export type AlarmPanelCardConfigState =
   | "arm_away"
@@ -566,6 +567,7 @@ export interface WeatherForecastCardConfig extends LovelaceCardConfig {
 export interface TileCardConfig extends LovelaceCardConfig {
   entity: string;
   name?: string;
+  name_content?: EntityNameType | EntityNameType[];
   hide_state?: boolean;
   state_content?: string | string[];
   icon?: string;
