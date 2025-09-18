@@ -68,7 +68,7 @@ export class HaWaDialog extends LitElement {
             <slot name="actionItems" slot="actionItems"> </slot>
           </ha-dialog-header>
         </slot>
-        <div class="body">
+        <div class="body ha-scrollbar">
           <slot></slot>
         </div>
         <slot name="footer" slot="footer"></slot>
@@ -195,9 +195,15 @@ export class HaWaDialog extends LitElement {
     }
 
     wa-dialog::part(footer) {
-      justify-content: flex-end;
       padding: 12px 16px 16px 16px;
+    }
+
+    ::slotted([slot="footer"]) {
+      display: flex;
       gap: 12px;
+      justify-content: flex-end;
+      align-items: center;
+      width: 100%;
     }
   `;
 }
