@@ -491,7 +491,6 @@ export class HaRelatedItems extends LitElement {
         }
         h3 {
           padding: 0 24px;
-          margin-bottom: 0;
           margin-bottom: -8px;
         }
         h3:first-child {
