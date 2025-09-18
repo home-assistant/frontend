@@ -16,6 +16,7 @@ import "../ha-select";
 import "../ha-textfield";
 import { ensureArray } from "../../common/array/ensure-array";
 import type { EntityNameType } from "../../common/translations/entity-state";
+import { nextRender } from "../../common/util/render-status";
 
 interface Option {
   primary: string;
@@ -149,8 +150,12 @@ export class HaEntityNamePicker extends LitElement {
   }
 
   private _filterChanged(ev: ValueChangedEvent<string>) {
-    const filter = ev.detail.value || "";
-    this._setValue(filter);
+    nextRender().then(() => {
+      if (this._opened) {
+        const value = ev.detail.value || "";
+        this._setValue(value);
+      }
+    });
   }
 
   private _valueChanged(ev: ValueChangedEvent<string>) {
