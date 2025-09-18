@@ -243,6 +243,10 @@ export class HaWaDialog extends LitElement {
       padding-bottom: var(--dialog-content-padding, 24px);
     }
 
+    wa-dialog::part(footer) {
+      padding: 0;
+    }
+
     ::slotted([slot="footer"]) {
       display: flex;
       padding: 12px 16px 16px 16px;
