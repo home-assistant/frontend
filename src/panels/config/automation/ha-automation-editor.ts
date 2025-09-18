@@ -1154,6 +1154,12 @@ export class HaAutomationEditor extends PreventUnsavedMixin(
     return [
       haStyle,
       css`
+        :host {
+          --ha-automation-editor-max-width: var(
+            --ha-automation-editor-width,
+            1540px
+          );
+        }
         ha-fade-in {
           display: flex;
           justify-content: center;
@@ -1175,7 +1181,7 @@ export class HaAutomationEditor extends PreventUnsavedMixin(
         }
 
         manual-automation-editor {
-          max-width: 1540px;
+          max-width: var(--ha-automation-editor-max-width);
           padding: 0 12px;
         }
 

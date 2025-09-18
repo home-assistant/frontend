@@ -22,6 +22,7 @@ import {
   union,
 } from "superstruct";
 import { ensureArray } from "../../../common/array/ensure-array";
+import { storage } from "../../../common/decorators/storage";
 import { canOverrideAlphanumericInput } from "../../../common/dom/can-override-input";
 import { fireEvent } from "../../../common/dom/fire_event";
 import { constructUrlCurrentPath } from "../../../common/url/construct-url";
@@ -77,6 +78,8 @@ const automationConfigStruct = union([
   assign(baseConfigStruct, object({ actions: array(any()) })),
 ]);
 
+export const SIDEBAR_DEFAULT_WIDTH = 500;
+
 @customElement("manual-automation-editor")
 export class HaManualAutomationEditor extends LitElement {
   @property({ attribute: false }) public hass!: HomeAssistant;
@@ -101,6 +104,13 @@ export class HaManualAutomationEditor extends LitElement {
 
   @state() private _sidebarKey?: string;
 
+  @storage({
+    key: "automation-sidebar-width",
+    state: false,
+    subscribe: false,
+  })
+  private _sidebarWidthPx = SIDEBAR_DEFAULT_WIDTH;
+
   @query("ha-automation-sidebar") private _sidebarElement?: HaAutomationSidebar;
 
   @queryAll("ha-automation-action, ha-automation-condition")
@@ -109,6 +119,8 @@ export class HaManualAutomationEditor extends LitElement {
   >;
 
   private _previousConfig?: ManualAutomationConfig;
+
+  private _prevSidebarWidthPx?: number;
 
   public connectedCallback() {
     super.connectedCallback();
@@ -303,9 +315,11 @@ export class HaManualAutomationEditor extends LitElement {
             .hass=${this.hass}
             .narrow=${this.narrow}
             .config=${this._sidebarConfig}
-            @value-changed=${this._sidebarConfigChanged}
             .disabled=${this.disabled}
             .sidebarKey=${this._sidebarKey}
+            @value-changed=${this._sidebarConfigChanged}
+            @sidebar-resized=${this._resizeSidebar}
+            @sidebar-resizing-stopped=${this._stopResizeSidebar}
           ></ha-automation-sidebar>
         </div>
       </div>
@@ -314,6 +328,12 @@ export class HaManualAutomationEditor extends LitElement {
 
   protected firstUpdated(changedProps: PropertyValues): void {
     super.firstUpdated(changedProps);
+
+    this.style.setProperty(
+      "--sidebar-dynamic-width",
+      `${this._sidebarWidthPx}px`
+    );
+
     const expanded = extractSearchParam("expanded");
     if (expanded === "1") {
       this._clearParam("expanded");
@@ -640,6 +660,31 @@ export class HaManualAutomationEditor extends LitElement {
     if ((this._sidebarConfig as ActionSidebarConfig)?.delete) {
       (this._sidebarConfig as ActionSidebarConfig).delete();
     }
+  }
+
+  private _resizeSidebar(ev) {
+    ev.stopPropagation();
+    const delta = ev.detail.deltaInPx as number;
+
+    // set initial resize width to add / reduce delta from it
+    if (!this._prevSidebarWidthPx) {
+      this._prevSidebarWidthPx =
+        this._sidebarElement?.clientWidth || SIDEBAR_DEFAULT_WIDTH;
+    }
+
+    const widthPx = delta + this._prevSidebarWidthPx;
+
+    this._sidebarWidthPx = widthPx;
+
+    this.style.setProperty(
+      "--sidebar-dynamic-width",
+      `${this._sidebarWidthPx}px`
+    );
+  }
+
+  private _stopResizeSidebar(ev) {
+    ev.stopPropagation();
+    this._prevSidebarWidthPx = undefined;
   }
 
   static get styles(): CSSResultGroup {
