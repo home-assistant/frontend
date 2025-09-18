@@ -19,7 +19,7 @@ import type { TriggerSidebarConfig } from "../../../../data/automation";
 import { isTriggerList } from "../../../../data/trigger";
 import type { HomeAssistant } from "../../../../types";
 import { isMac } from "../../../../util/is_mac";
-import { sidebarEditorStyles } from "../styles";
+import { overflowStyles, sidebarEditorStyles } from "../styles";
 import "../trigger/ha-automation-trigger-editor";
 import type HaAutomationTriggerEditor from "../trigger/ha-automation-trigger-editor";
 import "./ha-automation-sidebar-card";
@@ -313,7 +313,7 @@ export default class HaAutomationSidebarTrigger extends LitElement {
     this._requestShowId = true;
   };
 
-  static styles = sidebarEditorStyles;
+  static styles = [sidebarEditorStyles, overflowStyles];
 }
 
 declare global {
