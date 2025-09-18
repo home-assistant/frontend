@@ -474,13 +474,13 @@ class DataEntryFlowDialog extends LitElement {
     this._step = _step;
     if (_step.type === "create_entry" && _step.next_flow) {
       // skip device rename if there is a chained flow
+      this._step = undefined;
+      this._handler = undefined;
+      if (this._unsubDataEntryFlowProgress) {
+        this._unsubDataEntryFlowProgress();
+        this._unsubDataEntryFlowProgress = undefined;
+      }
       if (_step.next_flow[0] === "config_flow") {
-        this._step = undefined;
-        this._handler = undefined;
-        if (this._unsubDataEntryFlowProgress) {
-          this._unsubDataEntryFlowProgress();
-          this._unsubDataEntryFlowProgress = undefined;
-        }
         showConfigFlowDialog(this._params!.dialogParentElement!, {
           continueFlowId: _step.next_flow[1],
           carryOverDevices: this._devices(
@@ -489,19 +489,19 @@ class DataEntryFlowDialog extends LitElement {
             _step.result?.entry_id,
             this._params!.carryOverDevices
           ).map((device) => device.id),
+          dialogClosedCallback: this._params!.dialogClosedCallback,
         });
       } else if (_step.next_flow[0] === "options_flow") {
-        this.closeDialog();
         showOptionsFlowDialog(
           this._params!.dialogParentElement!,
           _step.result!,
           {
             continueFlowId: _step.next_flow[1],
             navigateToResult: this._params!.navigateToResult,
+            dialogClosedCallback: this._params!.dialogClosedCallback,
           }
         );
       } else if (_step.next_flow[0] === "config_subentries_flow") {
-        this.closeDialog();
         showSubConfigFlowDialog(
           this._params!.dialogParentElement!,
           _step.result!,
@@ -509,6 +509,7 @@ class DataEntryFlowDialog extends LitElement {
           {
             continueFlowId: _step.next_flow[1],
             navigateToResult: this._params!.navigateToResult,
+            dialogClosedCallback: this._params!.dialogClosedCallback,
           }
         );
       } else {
