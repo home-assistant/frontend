@@ -29,6 +29,12 @@ export class HuiButtonCardFeatureEditor
         text: {},
       },
     },
+    {
+      name: "data",
+      selector: {
+        object: {},
+      },
+    },
   ]);
 
   protected render() {
@@ -53,6 +59,10 @@ export class HuiButtonCardFeatureEditor
     switch (schema.name) {
       case "action_name":
         return this.hass!.localize("ui.common.name");
+      case "data":
+        return this.hass!.localize(
+          "ui.components['service-control'].action_data"
+        );
       default:
         return this.hass!.localize(
           `ui.panel.lovelace.editor.card.generic.${schema.name}`
