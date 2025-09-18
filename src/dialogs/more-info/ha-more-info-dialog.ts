@@ -89,8 +89,6 @@ const DEFAULT_VIEW: View = "info";
 export class MoreInfoDialog extends LitElement {
   @property({ attribute: false }) public hass!: HomeAssistant;
 
-  @property({ type: Boolean, reflect: true }) public large = false;
-
   @state() private _parentEntityIds: string[] = [];
 
   @state() private _entityId?: string | null;
@@ -118,7 +116,6 @@ export class MoreInfoDialog extends LitElement {
     this._currView = params.view || DEFAULT_VIEW;
     this._initialView = params.view || DEFAULT_VIEW;
     this._childView = undefined;
-    this.large = false;
     this._loadEntityRegistryEntry();
   }
 
@@ -354,6 +351,7 @@ export class MoreInfoDialog extends LitElement {
         .backAction=${showCloseIcon ? undefined : this._goBack}
         .headerTitle=${title}
         .scrimDismissable=${this._isEscapeEnabled}
+        .dialogSizeOnTitleClick=${"full"}
         flexContent
       >
         ${showCloseIcon
@@ -374,7 +372,7 @@ export class MoreInfoDialog extends LitElement {
                 )}
               ></ha-icon-button-prev>
             `}
-        <span slot="title" @click=${this._enlarge} class="title">
+        <span slot="title" @click=${this._toggleSize} class="title">
           ${breadcrumb.length > 0
             ? !__DEMO__ && isAdmin
               ? html`
@@ -624,8 +622,8 @@ export class MoreInfoDialog extends LitElement {
     this._entry = ev.detail;
   }
 
-  private _enlarge() {
-    this.large = !this.large;
+  private _toggleSize() {
+    this.shadowRoot?.querySelector("ha-wa-dialog")?.toggleSize();
   }
 
   private _handleOpened() {
@@ -693,16 +691,8 @@ export class MoreInfoDialog extends LitElement {
         }
 
         @media all and (min-width: 600px) and (min-height: 501px) {
-          ha-wa-dialog {
-            --width: 580px;
-          }
-
           .main-title {
             cursor: default;
-          }
-
-          :host([large]) ha-wa-dialog {
-            --width: 90vw;
           }
         }
 
