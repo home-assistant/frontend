@@ -117,6 +117,7 @@ export class HaEntityNamePicker extends LitElement {
 
     return html`
       <ha-combo-box
+        hide-clear-icon
         .hass=${this.hass}
         .value=${this.value}
         .autofocus=${this.autofocus}
