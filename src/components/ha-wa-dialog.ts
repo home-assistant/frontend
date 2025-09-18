@@ -23,6 +23,12 @@ export class HaWaDialog extends LitElement {
   @property({ type: String, attribute: "header-subtitle" })
   public headerSubtitle = "";
 
+  @property({ type: Function, attribute: "header-action" })
+  public backAction?: () => void;
+
+  @property({ type: String, attribute: "back-label" })
+  public backLabel?: string;
+
   @property({ type: Boolean, reflect: true, attribute: "flexcontent" })
   public flexContent = false;
 
@@ -51,11 +57,18 @@ export class HaWaDialog extends LitElement {
         <slot name="heading">
           <ha-dialog-header>
             <slot name="navigationIcon" slot="navigationIcon">
-              <ha-icon-button
-                data-dialog="close"
-                .label=${this.hass?.localize("ui.common.close")}
-                .path=${mdiClose}
-              ></ha-icon-button>
+              ${this.backAction
+                ? html`<ha-icon-button-prev
+                    @click=${this.backAction}
+                    .label=${this.backLabel ??
+                    this.hass?.localize("ui.common.back") ??
+                    "Back"}
+                  ></ha-icon-button-prev>`
+                : html`<ha-icon-button
+                    data-dialog="close"
+                    .label=${this.hass?.localize("ui.common.close") ?? "Close"}
+                    .path=${mdiClose}
+                  ></ha-icon-button>`}
             </slot>
             <slot name="title" slot="title">
               <span @click=${this._toggleSize} class="title">
