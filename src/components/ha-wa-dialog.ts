@@ -136,7 +136,6 @@ export class HaWaDialog extends LitElement {
       --wa-panel-border-radius: var(--ha-dialog-border-radius, 24px);
       z-index: var(--dialog-z-index, 8);
       max-width: 100%;
-      transition: width 200ms ease-in-out;
     }
 
     :host([current-dialog-size="small"]) wa-dialog {
@@ -157,6 +156,9 @@ export class HaWaDialog extends LitElement {
       max-height: 100vh;
       position: var(--dialog-surface-position, relative);
       margin-top: var(--dialog-surface-margin-top, auto);
+      transition:
+        min-width 200ms ease-in-out,
+        max-width 200ms ease-in-out;
     }
 
     @media all and (max-width: 450px), all and (max-height: 500px) {
