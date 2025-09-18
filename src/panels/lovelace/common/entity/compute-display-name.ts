@@ -6,10 +6,10 @@ import type { HomeAssistant } from "../../../../types";
 export const ENTITY_NAME_PRESETS = [
   "entity_name",
   "device_name",
-  "device_entity_name",
   "area_name",
-  "area_device_name",
   "floor_name",
+  "device_entity_name",
+  "area_device_name",
   "friendly_name",
 ] as const;
 

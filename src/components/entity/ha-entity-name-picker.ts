@@ -1,24 +1,36 @@
-import { css, html, LitElement, nothing } from "lit";
-import { customElement, property, state } from "lit/decorators";
+import type { ComboBoxLitRenderer } from "@vaadin/combo-box/lit";
+import { html, LitElement, nothing, type PropertyValues } from "lit";
+import { customElement, property, query, state } from "lit/decorators";
 import memoizeOne from "memoize-one";
 import { fireEvent } from "../../common/dom/fire_event";
-import { stopPropagation } from "../../common/dom/stop_propagation";
-import { computeStateName } from "../../common/entity/compute_state_name";
 import {
   computeEntityDisplayName,
   ENTITY_NAME_PRESETS,
+  NAME_PRESET_TYPES,
 } from "../../panels/lovelace/common/entity/compute-display-name";
-import type { HomeAssistant } from "../../types";
+import type { HomeAssistant, ValueChangedEvent } from "../../types";
+import "../ha-combo-box";
+import type { HaComboBox } from "../ha-combo-box";
 import "../ha-list-item";
 import "../ha-select";
-import type { HaSelect } from "../ha-select";
 import "../ha-textfield";
+import { ensureArray } from "../../common/array/ensure-array";
+import type { EntityNameType } from "../../common/translations/entity-state";
 
 interface Option {
-  label: string;
-  description: string;
+  primary: string;
+  secondary?: string;
   value: string;
 }
+
+const rowRenderer: ComboBoxLitRenderer<Option> = (item) => html`
+  <ha-combo-box-item type="button">
+    <span slot="headline">${item.primary}</span>
+    ${item.secondary
+      ? html`<span slot="supporting-text">${item.secondary}</span>`
+      : nothing}
+  </ha-combo-box-item>
+`;
 
 @customElement("ha-entity-name-picker")
 export class HaEntityNamePicker extends LitElement {
@@ -30,127 +42,117 @@ export class HaEntityNamePicker extends LitElement {
 
   @property() public label?: string;
 
+  @property() public helper?: string;
+
   @property({ type: Boolean }) public required = false;
 
   @property({ type: Boolean, reflect: true }) public disabled = false;
 
-  @state({ attribute: false }) public showCustom = false;
+  @state() private _opened = false;
+
+  @query("ha-combo-box", true) private _comboBox!: HaComboBox;
+
+  protected shouldUpdate(changedProps: PropertyValues) {
+    return !(!changedProps.has("_opened") && this._opened);
+  }
+
+  protected updated(changedProps: PropertyValues) {
+    if (
+      (changedProps.has("_opened") && this._opened) ||
+      changedProps.has("entityId")
+    ) {
+      const options = this._getOptions(this.entityId);
+      (this._comboBox as any).filteredItems = options;
+    }
+  }
 
   private _getOptions = memoizeOne((entityId?: string) => {
     if (!entityId) {
       return [];
     }
+    if (!this.hass.states[entityId]) {
+      return [];
+    }
     const options = ENTITY_NAME_PRESETS.map<Option>((preset) => ({
-      label: preset
-        .split("_")
-        .map((part) => part.charAt(0).toUpperCase() + part.slice(1))
-        .join(" "),
-      value: preset,
-      description: computeEntityDisplayName(
+      primary: computeEntityDisplayName(
         this.hass,
         this.hass.states[entityId],
         preset
       ),
+      secondary: this._localizePreset(preset),
+      value: preset,
     }));
-    options.push({ label: "Custom", value: "custom", description: "" });
     return options;
   });
 
-  private _isValidOption(value: string | undefined, options: Option[]) {
-    if (value === undefined) {
-      return false;
+  private _localizePreset(preset: string) {
+    if (preset in NAME_PRESET_TYPES) {
+      return ensureArray(NAME_PRESET_TYPES[preset])
+        .map((type: EntityNameType) =>
+          this.hass.localize(
+            `ui.components.entity.entity-name-picker.types.${type}`
+          )
+        )
+        .join(" + ");
     }
-    return options.some((option) => option.value === value);
+
+    if (preset === "friendly_name") {
+      return this.hass.localize(
+        "ui.components.entity.entity-name-picker.friendly_name"
+      );
+    }
+
+    return preset;
   }
 
   protected render() {
-    const options = this._getOptions(this.entityId);
+    if (!this.hass) {
+      return nothing;
+    }
 
-    const value = this._isValidOption(this.value, options)
-      ? this.value
-      : "custom";
-
-    const stateObj = this.entityId
-      ? this.hass.states[this.entityId]
-      : undefined;
     return html`
-      <ha-select
+      <ha-combo-box
+        .hass=${this.hass}
+        .value=${this.value}
+        .autofocus=${this.autofocus}
         .label=${this.label}
-        .value=${value}
+        .disabled=${this.disabled || !this.entityId}
         .required=${this.required}
-        .disabled=${this.disabled}
-        @selected=${this._changed}
-        @closed=${stopPropagation}
-        fixedMenuPosition
-        naturalMenuWidth
+        .helper=${this.helper}
+        .allowCustomValue=${true}
+        item-id-path="value"
+        item-value-path="value"
+        item-label-path="primary"
+        .renderer=${rowRenderer}
+        @opened-changed=${this._openedChanged}
+        @value-changed=${this._valueChanged}
       >
-        ${options.map(
-          (option) => html`
-            <ha-list-item
-              .value=${option.value}
-              .twoline=${!!option.description}
-            >
-              <span>${option.label}</span>
-              ${option.description
-                ? html`<span slot="secondary">${option.description}</span>`
-                : nothing}
-            </ha-list-item>
-          `
-        )}
-      </ha-select>
-      ${this.showCustom
-        ? html`
-            <ha-textfield
-              .value=${this.value || ""}
-              .placeholder=${stateObj ? computeStateName(stateObj) : ""}
-              .disabled=${this.disabled}
-              @input=${this._customChanged}
-              .required=${this.required}
-            ></ha-textfield>
-          `
-        : nothing}
+      </ha-combo-box>
     `;
   }
 
-  static styles = css`
-    :host {
-      display: flex;
-      flex-direction: row;
-      gap: 8px;
-    }
-    ha-select {
-      flex: 1;
-    }
-    ha-textfield {
-      flex: 1;
-    }
-  `;
-
-  private _changed(ev): void {
-    const target = ev.currentTarget as HaSelect;
-    if (target.value === "" || target.value === this.value) {
-      return;
-    }
-
-    if (target.value === "custom") {
-      this.showCustom = true;
-      this.value = "";
-      fireEvent(this, "value-changed", { value: "" });
-      return;
-    }
-
-    this.showCustom = false;
-    this.value = target.value;
-    fireEvent(this, "value-changed", { value: this.value });
+  private get _value() {
+    return this.value || "";
   }
 
-  private _customChanged(ev): void {
-    const target = ev.currentTarget as HTMLInputElement;
-    if (target.value === this.value) {
-      return;
+  private _openedChanged(ev: ValueChangedEvent<boolean>) {
+    this._opened = ev.detail.value;
+  }
+
+  private _valueChanged(ev: ValueChangedEvent<string>) {
+    ev.stopPropagation();
+    const newValue = ev.detail.value;
+    if (newValue !== this._value) {
+      this._setValue(newValue);
     }
-    this.value = target.value;
-    fireEvent(this, "value-changed", { value: this.value });
+  }
+
+  private _setValue(value: string) {
+    this.value = value;
+    setTimeout(() => {
+      fireEvent(this, "value-changed", { value });
+      fireEvent(this, "change");
+    }, 0);
   }
 }
 
