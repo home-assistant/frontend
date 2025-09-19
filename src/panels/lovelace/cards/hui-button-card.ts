@@ -163,7 +163,8 @@ export class HuiButtonCard extends LitElement implements LovelaceCard {
       double_tap_action: { action: "none" },
       show_icon: true,
       show_name: true,
-      state_color: true,
+      color:
+        config.color ?? (config.state_color === false ? "none" : undefined),
       ...config,
     };
   }
@@ -200,7 +201,10 @@ export class HuiButtonCard extends LitElement implements LovelaceCard {
           hasAction(this._config.tap_action) ? "0" : undefined
         )}
         style=${styleMap({
-          "--state-color": this._computeColor(stateObj, this._config),
+          "--state-color":
+            this._config.color !== "none"
+              ? this._computeColor(stateObj, this._config)
+              : undefined,
         })}
       >
         <ha-ripple></ha-ripple>
@@ -339,10 +343,7 @@ export class HuiButtonCard extends LitElement implements LovelaceCard {
         : undefined;
     }
 
-    if (
-      !stateObj ||
-      !(config.state_color ?? computeStateDomain(stateObj) === "light")
-    ) {
+    if (!stateObj) {
       return undefined;
     }
 

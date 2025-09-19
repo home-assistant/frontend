@@ -32,6 +32,7 @@ const cardConfigStruct = assign(
     double_tap_action: optional(actionConfigStruct),
     theme: optional(string()),
     show_state: optional(boolean()),
+    state_color: optional(boolean()),
     color: optional(string()),
   })
 );
@@ -47,6 +48,19 @@ export class HuiButtonCardEditor
 
   public setConfig(config: ButtonCardConfig): void {
     assert(config, cardConfigStruct);
+
+    // Migrate state_color to color
+    if (config.state_color !== undefined) {
+      config = {
+        ...config,
+        color: config.state_color ? undefined : "none",
+      };
+      delete config.state_color;
+
+      fireEvent(this, "config-changed", { config: config });
+      return;
+    }
+
     this._config = config;
   }
 
@@ -75,6 +89,7 @@ export class HuiButtonCardEditor
                 ui_color: {
                   default_color: "state",
                   include_state: true,
+                  include_none: true,
                 },
               },
             },
