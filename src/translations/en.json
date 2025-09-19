@@ -104,8 +104,7 @@
       },
       "area": {
         "area_not_found": "Area not found.",
-        "media_playing": "Media playing",
-        "media_paused": "Media paused"
+        "media_playing": "Media playing"
       },
       "automation": {
         "last_triggered": "Last triggered",

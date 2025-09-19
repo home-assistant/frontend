@@ -1,5 +1,5 @@
 import { mdiPlay, mdiTextureBox } from "@mdi/js";
-import type { HassEntity, HassEntityBase } from "home-assistant-js-websocket";
+import type { HassEntity } from "home-assistant-js-websocket";
 import {
   css,
   html,
@@ -13,7 +13,10 @@ import { classMap } from "lit/directives/class-map";
 import { ifDefined } from "lit/directives/if-defined";
 import { styleMap } from "lit/directives/style-map";
 import memoizeOne from "memoize-one";
-import { computeActiveAreaMediaStates } from "../../../data/media-player";
+import {
+  computeActiveAreaMediaStates,
+  type MediaPlayerEntity,
+} from "../../../data/media-player";
 import { computeCssColor } from "../../../common/color/compute-color";
 import { BINARY_STATE_ON } from "../../../common/const";
 import { computeAreaName } from "../../../common/entity/compute_area_name";
@@ -286,19 +289,19 @@ export class HuiAreaCard extends LitElement implements LovelaceCard {
     );
   }
 
-  private _computeActiveAreaMediaStates(): HassEntityBase[] {
+  private _computeActiveAreaMediaStates(): MediaPlayerEntity[] {
     return computeActiveAreaMediaStates(this.hass, this._config?.area || "");
   }
 
-  private _renderAlertSensorBadge(): TemplateResult<1> | typeof nothing {
-    const states = this._computeActiveAlertStates();
-
-    if (states.length === 0) {
+  private _renderAlertSensorBadge(
+    alertStates: HassEntity[]
+  ): TemplateResult<1> | typeof nothing {
+    if (alertStates.length === 0) {
       return nothing;
     }
 
     // Only render the first one when using a badge
-    const stateObj = states[0] as HassEntity | undefined;
+    const stateObj = alertStates[0] as HassEntity | undefined;
 
     return html`
       <ha-tile-badge class="alert-badge">
@@ -322,6 +325,13 @@ export class HuiAreaCard extends LitElement implements LovelaceCard {
         <ha-svg-icon .path=${mdiPlay}></ha-svg-icon>
       </ha-tile-badge>
     `;
+  }
+
+  private _renderCompactBadge(): TemplateResult<1> | typeof nothing {
+    const alertStates = this._computeActiveAlertStates();
+    return alertStates.length > 0
+      ? this._renderAlertSensorBadge(alertStates)
+      : this._renderMediaBadge();
   }
 
   private _renderAlertSensors(): TemplateResult<1> | typeof nothing {
@@ -585,11 +595,7 @@ export class HuiAreaCard extends LitElement implements LovelaceCard {
           <div class="content ${classMap(contentClasses)}">
             <ha-tile-icon>
               ${displayType === "compact"
-                ? html`
-                    ${this._computeActiveAlertStates().length > 0
-                      ? this._renderAlertSensorBadge()
-                      : this._renderMediaBadge()}
-                  `
+                ? this._renderCompactBadge()
                 : nothing}
               ${icon
                 ? html`<ha-icon slot="icon" .icon=${icon}></ha-icon>`

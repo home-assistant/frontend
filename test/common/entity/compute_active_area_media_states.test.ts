@@ -1,6 +1,8 @@
 import { describe, expect, it } from "vitest";
-import type { HassEntityBase } from "home-assistant-js-websocket";
-import { computeActiveAreaMediaStates } from "../../../src/data/media-player";
+import {
+  computeActiveAreaMediaStates,
+  type MediaPlayerEntity,
+} from "../../../src/data/media-player";
 
 describe("computeActiveAreaMediaStates", () => {
   it("returns playing media entities in the area", () => {
@@ -20,11 +22,11 @@ describe("computeActiveAreaMediaStates", () => {
         "media_player.tv": {
           entity_id: "media_player.tv",
           state: "playing",
-        } as HassEntityBase,
+        } as MediaPlayerEntity,
         "media_player.speaker": {
           entity_id: "media_player.speaker",
           state: "idle",
-        } as HassEntityBase,
+        } as MediaPlayerEntity,
       },
     } as any;
 
@@ -57,7 +59,7 @@ describe("computeActiveAreaMediaStates", () => {
         "media_player.bedroom": {
           entity_id: "media_player.bedroom",
           state: "playing",
-        } as HassEntityBase,
+        } as MediaPlayerEntity,
       },
     } as any;
 
@@ -83,11 +85,11 @@ describe("computeActiveAreaMediaStates", () => {
         "media_player.tv": {
           entity_id: "media_player.tv",
           state: "idle",
-        } as HassEntityBase,
+        } as MediaPlayerEntity,
         "media_player.speaker": {
           entity_id: "media_player.speaker",
           state: "playing",
-        } as HassEntityBase,
+        } as MediaPlayerEntity,
       },
     } as any;
 
@@ -118,7 +120,7 @@ describe("computeActiveAreaMediaStates", () => {
         "media_player.tv": {
           entity_id: "media_player.tv",
           state: "playing",
-        } as HassEntityBase,
+        } as MediaPlayerEntity,
       },
     } as any;
 
@@ -148,11 +150,11 @@ describe("computeActiveAreaMediaStates badge priority", () => {
         "binary_sensor.door": {
           entity_id: "binary_sensor.door",
           state: "on",
-        } as HassEntityBase,
+        } as MediaPlayerEntity,
         "media_player.tv": {
           entity_id: "media_player.tv",
           state: "playing",
-        } as HassEntityBase,
+        } as MediaPlayerEntity,
       },
     } as any;
 
@@ -180,11 +182,11 @@ describe("computeActiveAreaMediaStates badge priority", () => {
         "media_player.tv": {
           entity_id: "media_player.tv",
           state: "playing",
-        } as HassEntityBase,
+        } as MediaPlayerEntity,
       },
     } as any;
 
-    const alertStates: HassEntityBase[] = [];
+    const alertStates: MediaPlayerEntity[] = [];
     const mediaStates = computeActiveAreaMediaStates(hass, "living_room");
 
     expect(alertStates.length).toBe(0);

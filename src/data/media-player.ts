@@ -527,12 +527,12 @@ export const mediaPlayerUnjoin = (hass: HomeAssistant, entity_id: string) =>
  * Compute active media player states in a specific area.
  * @param hass Home Assistant object
  * @param areaId Area ID to filter media players by
- * @returns Array of active media player entities (playing or paused)
+ * @returns Array of playing media player entities
  */
 export const computeActiveAreaMediaStates = (
   hass: HomeAssistant,
   areaId: string
-): HassEntityBase[] => {
+): MediaPlayerEntity[] => {
   const area = hass.areas[areaId];
   if (!area) {
     return [];
@@ -547,8 +547,8 @@ export const computeActiveAreaMediaStates = (
   const mediaEntities = Object.keys(hass.entities).filter(mediaFilter);
 
   return mediaEntities
-    .map((entityId) => hass.states[entityId] as HassEntityBase | undefined)
+    .map((entityId) => hass.states[entityId] as MediaPlayerEntity | undefined)
     .filter(
-      (stateObj): stateObj is HassEntityBase => stateObj?.state === "playing"
+      (stateObj): stateObj is MediaPlayerEntity => stateObj?.state === "playing"
     );
 };
