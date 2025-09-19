@@ -28,7 +28,7 @@ import {
   getCommonOptions,
   getCompareTransform,
 } from "./common/energy-chart-options";
-import type { ECOption } from "../../../../resources/echarts";
+import type { ECOption } from "../../../../resources/echarts/echarts";
 
 @customElement("hui-energy-gas-graph-card")
 export class HuiEnergyGasGraphCard
