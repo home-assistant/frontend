@@ -3,9 +3,10 @@ import type { PropertyValues } from "lit";
 import { customElement, property, state } from "lit/decorators";
 import type { ClockCardConfig } from "../types";
 import type { HomeAssistant } from "../../../../types";
-import { INTERVAL } from "../hui-clock-card";
 import { useAmPm } from "../../../../common/datetime/use_am_pm";
 import { resolveTimeZone } from "../../../../common/datetime/resolve-time-zone";
+
+const INTERVAL = 1000;
 
 @customElement("hui-clock-card-digital")
 export class HuiClockCardDigital extends LitElement {
