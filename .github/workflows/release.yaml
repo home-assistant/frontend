@@ -19,8 +19,11 @@ jobs:
   release:
     name: Release
     runs-on: ubuntu-latest
+    environment: pypi
     permissions:
       contents: write # Required to upload release assets
+      id-token: write # For "Trusted Publisher" to PyPi
+    if: github.repository_owner == 'home-assistant'
     steps:
       - name: Checkout the repository
         uses: actions/checkout@08c6903cd8c0fde910a37f88322edcfb5dd907a8 # v5.0.0
@@ -46,13 +49,17 @@ jobs:
         run: ./script/translations_download
         env:
           LOKALISE_TOKEN: ${{ secrets.LOKALISE_TOKEN }}
+      
       - name: Build and release package
         run: |
-          python3 -m pip install twine build
-          export TWINE_USERNAME="__token__"
-          export TWINE_PASSWORD="${{ secrets.TWINE_TOKEN }}"
+          python3 -m pip install build
           export SKIP_FETCH_NIGHTLY_TRANSLATIONS=1
           script/release
+
+      - name: Publish to PyPI
+        uses: pypa/gh-action-pypi-publish@ed0c53931b1dc9bd32cbe73a98c7f6766f8a527e # v1.13.0
+        with:
+          skip-existing: true
 
       - name: Upload release assets
         uses: softprops/action-gh-release@6cbd405e2c4e67a21c47fa9e383d020e4e28b836 # v2.3.3
