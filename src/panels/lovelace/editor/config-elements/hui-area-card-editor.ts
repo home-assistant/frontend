@@ -657,6 +657,10 @@ export class HuiAreaCardEditor
           );
         }
         return undefined;
+      case "exclude_entities":
+        return this.hass!.localize(
+          `ui.panel.lovelace.editor.card.area.exclude_entities_helper`
+        );
       default:
         return undefined;
     }
