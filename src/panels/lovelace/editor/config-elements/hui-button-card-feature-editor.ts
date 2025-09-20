@@ -1,6 +1,7 @@
 import { html, LitElement, nothing } from "lit";
 import { customElement, property, state } from "lit/decorators";
 import memoizeOne from "memoize-one";
+import type { SchemaUnion } from "../../../../components/ha-form/types";
 import type { LocalizeFunc } from "../../../../common/translations/localize";
 import "../../../../components/ha-form/ha-form";
 import type { HomeAssistant } from "../../../../types";
@@ -28,6 +29,12 @@ export class HuiButtonCardFeatureEditor
         text: {},
       },
     },
+    {
+      name: "data",
+      selector: {
+        object: {},
+      },
+    },
   ]);
 
   protected render() {
@@ -46,7 +53,22 @@ export class HuiButtonCardFeatureEditor
     `;
   }
 
-  private _computeLabel = () => this.hass.localize("ui.common.name");
+  private _computeLabel = (
+    schema: SchemaUnion<ReturnType<typeof this._schema>>
+  ) => {
+    switch (schema.name) {
+      case "action_name":
+        return this.hass!.localize("ui.common.name");
+      case "data":
+        return this.hass!.localize(
+          "ui.components.service-control.action_data"
+        );
+      default:
+        return this.hass!.localize(
+          `ui.panel.lovelace.editor.card.generic.${schema.name}`
+        );
+    }
+  };
 
   private _valueChanged(ev: CustomEvent) {
     ev.stopPropagation();
