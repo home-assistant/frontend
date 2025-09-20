@@ -37,6 +37,7 @@ export type Selector =
   | DateSelector
   | DateTimeSelector
   | DeviceSelector
+  | EntityNameSelector
   | FloorSelector
   | LegacyDeviceSelector
   | DurationSelector
@@ -222,6 +223,12 @@ interface EntitySelectorFilter {
   domain?: string | readonly string[];
   device_class?: string | readonly string[];
   supported_features?: number | [number];
+}
+
+export interface EntityNameSelector {
+  entity_name: {
+    entity?: string;
+  } | null;
 }
 
 export interface EntitySelector {
