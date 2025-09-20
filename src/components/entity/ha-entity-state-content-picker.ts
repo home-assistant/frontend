@@ -116,14 +116,7 @@ class HaEntityStatePicker extends LitElement {
       const domain = entityId ? computeDomain(entityId) : undefined;
 
       // Check if entity or its device has an area
-      let hasArea = false;
-      if (allowArea) {
-        const entityReg = entityId ? this.hass.entities?.[entityId] : undefined;
-        const deviceReg = entityReg?.device_id
-          ? this.hass.devices?.[entityReg.device_id]
-          : undefined;
-        hasArea = !!(entityReg?.area_id || deviceReg?.area_id);
-      }
+      const hasArea = this._hasArea(entityId, allowArea);
 
       return [
         {
@@ -332,6 +325,17 @@ class HaEntityStatePicker extends LitElement {
     fireEvent(this, "value-changed", {
       value: newValue,
     });
+  }
+
+  private _hasArea(entityId?: string, allowArea?: boolean): boolean {
+    if (!allowArea) {
+      return false;
+    }
+    const entityReg = entityId ? this.hass.entities?.[entityId] : undefined;
+    const deviceReg = entityReg?.device_id
+      ? this.hass.devices?.[entityReg.device_id]
+      : undefined;
+    return !!(entityReg?.area_id || deviceReg?.area_id);
   }
 
   static styles = css`
