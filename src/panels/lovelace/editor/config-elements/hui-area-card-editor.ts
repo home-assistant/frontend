@@ -82,7 +82,8 @@ export class HuiAreaCardEditor
       localize: LocalizeFunc,
       displayType: AreaCardDisplayType,
       binaryClasses: SelectOption[],
-      sensorClasses: SelectOption[]
+      sensorClasses: SelectOption[],
+      entityOptions: SelectOption[]
     ) =>
       [
         { name: "area", selector: { area: {} } },
@@ -178,6 +179,17 @@ export class HuiAreaCardEditor
                 },
               },
             },
+            {
+              name: "exclude_entities",
+              selector: {
+                select: {
+                  reorder: true,
+                  multiple: true,
+                  custom_value: false,
+                  options: entityOptions,
+                },
+              },
+            },
           ],
         },
         {
@@ -245,6 +257,41 @@ export class HuiAreaCardEditor
         .filter((c): c is string => Boolean(c));
 
       return [...new Set(classes)];
+    }
+  );
+
+  private _entitiesForArea = memoizeOne(
+    (area: string | undefined): SelectOption[] => {
+      if (!area) {
+        return [];
+      }
+
+      const areaFilter = generateEntityFilter(this.hass!, {
+        area,
+        entity_category: "none",
+      });
+
+      const entities = Object.keys(this.hass!.entities)
+        .filter(areaFilter)
+        .map((entityId) => {
+          const entity = this.hass!.entities[entityId];
+          const stateObj = this.hass!.states[entityId];
+          return {
+            value: entityId,
+            label:
+              entity?.name || stateObj?.attributes?.friendly_name || entityId,
+          };
+        });
+
+      entities.sort((a, b) =>
+        caseInsensitiveStringCompare(
+          a.label,
+          b.label,
+          this.hass!.locale.language
+        )
+      );
+
+      return entities;
     }
   );
 
@@ -376,6 +423,7 @@ export class HuiAreaCardEditor
       possibleSensorClasses,
       this._config.sensor_classes || DEVICE_CLASSES.sensor
     );
+    const entitySelectOptions = this._entitiesForArea(this._config.area);
 
     const displayType =
       this._config.display_type ||
@@ -385,7 +433,8 @@ export class HuiAreaCardEditor
       this.hass.localize,
       displayType,
       binarySelectOptions,
-      sensorSelectOptions
+      sensorSelectOptions,
+      entitySelectOptions
     );
 
     const vertical = this._config.vertical && displayType === "compact";
@@ -396,6 +445,7 @@ export class HuiAreaCardEditor
       camera_view: "auto",
       alert_classes: DEVICE_CLASSES.binary_sensor,
       sensor_classes: DEVICE_CLASSES.sensor,
+      exclude_entities: [],
       display_type: displayType,
       content_layout: vertical ? "vertical" : "horizontal",
       ...this._config,
