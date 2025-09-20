@@ -1,39 +1,21 @@
 // @ts-ignore
 import chipStyles from "@material/chips/dist/mdc.chips.min.css";
 import "@material/mwc-menu/mwc-menu-surface";
-import {
-  mdiClose,
-  mdiDevices,
-  mdiHome,
-  mdiLabel,
-  mdiPlus,
-  mdiTextureBox,
-  mdiUnfoldMoreVertical,
-} from "@mdi/js";
+import { mdiPlus } from "@mdi/js";
 import type { ComboBoxLightOpenedChangedEvent } from "@vaadin/combo-box/vaadin-combo-box-light";
-import type {
-  HassEntity,
-  HassServiceTarget,
-  UnsubscribeFunc,
-} from "home-assistant-js-websocket";
+import type { HassServiceTarget } from "home-assistant-js-websocket";
 import type { CSSResultGroup } from "lit";
 import { LitElement, css, html, nothing, unsafeCSS } from "lit";
 import { customElement, property, query, state } from "lit/decorators";
-import { classMap } from "lit/directives/class-map";
 import { ensureArray } from "../common/array/ensure-array";
-import { computeCssColor } from "../common/color/compute-color";
-import { hex2rgb } from "../common/color/convert-color";
 import { fireEvent } from "../common/dom/fire_event";
 import { stopPropagation } from "../common/dom/stop_propagation";
-import { computeDeviceNameDisplay } from "../common/entity/compute_device_name";
-import { computeDomain } from "../common/entity/compute_domain";
-import { computeStateName } from "../common/entity/compute_state_name";
 import { isValidEntityId } from "../common/entity/valid_entity_id";
-import type { AreaRegistryEntry } from "../data/area_registry";
-import type { DeviceRegistryEntry } from "../data/device_registry";
-import type { EntityRegistryDisplayEntry } from "../data/entity_registry";
-import type { LabelRegistryEntry } from "../data/label_registry";
-import { subscribeLabelRegistry } from "../data/label_registry";
+import {
+  areaMeetsFilter,
+  deviceMeetsFilter,
+  entityRegMeetsFilter,
+} from "../data/target";
 import { SubscribeMixin } from "../mixins/subscribe-mixin";
 import type { HomeAssistant } from "../types";
 import "./device/ha-device-picker";
@@ -41,12 +23,14 @@ import type { HaDevicePickerDeviceFilterFunc } from "./device/ha-device-picker";
 import "./entity/ha-entity-picker";
 import type { HaEntityPickerEntityFilterFunc } from "./entity/ha-entity-picker";
 import "./ha-area-floor-picker";
-import { floorDefaultIconPath } from "./ha-floor-icon";
 import "./ha-icon-button";
 import "./ha-input-helper-text";
 import "./ha-label-picker";
 import "./ha-svg-icon";
 import "./ha-tooltip";
+import "./target-picker/ha-target-picker-chips-selection";
+import "./target-picker/ha-target-picker-item-group";
+import type { TargetType } from "./target-picker/ha-target-picker-item-row";
 
 @customElement("ha-target-picker")
 export class HaTargetPicker extends SubscribeMixin(LitElement) {
@@ -57,6 +41,8 @@ export class HaTargetPicker extends SubscribeMixin(LitElement) {
   @property() public label?: string;
 
   @property() public helper?: string;
+
+  @property({ type: Boolean, reflect: true }) public compact = false;
 
   @property({ attribute: false, type: Array }) public createDomains?: string[];
 
@@ -96,17 +82,7 @@ export class HaTargetPicker extends SubscribeMixin(LitElement) {
 
   @query(".add-container", true) private _addContainer?: HTMLDivElement;
 
-  @state() private _labels?: LabelRegistryEntry[];
-
   private _opened = false;
-
-  protected hassSubscribe(): (UnsubscribeFunc | Promise<UnsubscribeFunc>)[] {
-    return [
-      subscribeLabelRegistry(this.hass.connection, (labels) => {
-        this._labels = labels;
-      }),
-    ];
-  }
 
   protected render() {
     if (this.addOnTop) {
@@ -116,89 +92,154 @@ export class HaTargetPicker extends SubscribeMixin(LitElement) {
   }
 
   private _renderItems() {
+    if (
+      !this.value?.floor_id &&
+      !this.value?.area_id &&
+      !this.value?.device_id &&
+      !this.value?.entity_id &&
+      !this.value?.label_id
+    ) {
+      return nothing;
+    }
+
     return html`
-      <div class="mdc-chip-set items">
-        ${this.value?.floor_id
-          ? ensureArray(this.value.floor_id).map((floor_id) => {
-              const floor = this.hass.floors[floor_id];
-              return this._renderChip(
-                "floor_id",
-                floor_id,
-                floor?.name || floor_id,
-                undefined,
-                floor?.icon,
-                floor ? floorDefaultIconPath(floor) : mdiHome
-              );
-            })
-          : ""}
-        ${this.value?.area_id
-          ? ensureArray(this.value.area_id).map((area_id) => {
-              const area = this.hass.areas![area_id];
-              return this._renderChip(
-                "area_id",
-                area_id,
-                area?.name || area_id,
-                undefined,
-                area?.icon,
-                mdiTextureBox
-              );
-            })
-          : nothing}
-        ${this.value?.device_id
-          ? ensureArray(this.value.device_id).map((device_id) => {
-              const device = this.hass.devices![device_id];
-              return this._renderChip(
-                "device_id",
-                device_id,
-                device
-                  ? computeDeviceNameDisplay(device, this.hass)
-                  : device_id,
-                undefined,
-                undefined,
-                mdiDevices
-              );
-            })
-          : nothing}
-        ${this.value?.entity_id
-          ? ensureArray(this.value.entity_id).map((entity_id) => {
-              const entity = this.hass.states[entity_id];
-              return this._renderChip(
-                "entity_id",
-                entity_id,
-                entity ? computeStateName(entity) : entity_id,
-                entity
-              );
-            })
-          : nothing}
-        ${this.value?.label_id
-          ? ensureArray(this.value.label_id).map((label_id) => {
-              const label = this._labels?.find(
-                (lbl) => lbl.label_id === label_id
-              );
-              let color = label?.color
-                ? computeCssColor(label.color)
-                : undefined;
-              if (color?.startsWith("var(")) {
-                const computedStyles = getComputedStyle(this);
-                color = computedStyles.getPropertyValue(
-                  color.substring(4, color.length - 1)
-                );
-              }
-              if (color?.startsWith("#")) {
-                color = hex2rgb(color).join(",");
-              }
-              return this._renderChip(
-                "label_id",
-                label_id,
-                label ? label.name : label_id,
-                undefined,
-                label?.icon,
-                mdiLabel,
-                color
-              );
-            })
-          : nothing}
-      </div>
+      ${this.compact
+        ? html`<div class="mdc-chip-set items">
+            ${this.value?.floor_id
+              ? ensureArray(this.value.floor_id).map(
+                  (floor_id) => html`
+                    <ha-target-picker-chips-selection
+                      .hass=${this.hass}
+                      .type=${"floor"}
+                      .itemId=${floor_id}
+                      @remove-target-item=${this._handleRemove}
+                      @expand-target-item=${this._handleExpand}
+                    ></ha-target-picker-chips-selection>
+                  `
+                )
+              : nothing}
+            ${this.value?.area_id
+              ? ensureArray(this.value.area_id).map(
+                  (area_id) => html`
+                    <ha-target-picker-chips-selection
+                      .hass=${this.hass}
+                      .type=${"area"}
+                      .itemId=${area_id}
+                      @remove-target-item=${this._handleRemove}
+                      @expand-target-item=${this._handleExpand}
+                    ></ha-target-picker-chips-selection>
+                  `
+                )
+              : nothing}
+            ${this.value?.device_id
+              ? ensureArray(this.value.device_id).map(
+                  (device_id) => html`
+                    <ha-target-picker-chips-selection
+                      .hass=${this.hass}
+                      .type=${"device"}
+                      .itemId=${device_id}
+                      @remove-target-item=${this._handleRemove}
+                      @expand-target-item=${this._handleExpand}
+                    ></ha-target-picker-chips-selection>
+                  `
+                )
+              : nothing}
+            ${this.value?.entity_id
+              ? ensureArray(this.value.entity_id).map(
+                  (entity_id) => html`
+                    <ha-target-picker-chips-selection
+                      .hass=${this.hass}
+                      .type=${"entity"}
+                      .itemId=${entity_id}
+                      @remove-target-item=${this._handleRemove}
+                      @expand-target-item=${this._handleExpand}
+                    ></ha-target-picker-chips-selection>
+                  `
+                )
+              : nothing}
+            ${this.value?.label_id
+              ? ensureArray(this.value.label_id).map(
+                  (label_id) => html`
+                    <ha-target-picker-chips-selection
+                      .hass=${this.hass}
+                      .type=${"label"}
+                      .itemId=${label_id}
+                      @remove-target-item=${this._handleRemove}
+                      @expand-target-item=${this._handleExpand}
+                    ></ha-target-picker-chips-selection>
+                  `
+                )
+              : nothing}
+          </div>`
+        : html`<div class="item-groups">
+            ${this.value?.floor_id || this.value?.area_id
+              ? html`
+                  <ha-target-picker-item-group
+                    @remove-target-item=${this._handleRemove}
+                    type="area"
+                    .hass=${this.hass}
+                    .items=${{
+                      floor: ensureArray(this.value?.floor_id),
+                      area: ensureArray(this.value?.area_id),
+                    }}
+                    .collapsed=${this.compact}
+                    .deviceFilter=${this.deviceFilter}
+                    .entityFilter=${this.entityFilter}
+                    .includeDomains=${this.includeDomains}
+                    .includeDeviceClasses=${this.includeDeviceClasses}
+                  >
+                  </ha-target-picker-item-group>
+                `
+              : nothing}
+            ${this.value?.device_id
+              ? html`
+                  <ha-target-picker-item-group
+                    @remove-target-item=${this._handleRemove}
+                    type="device"
+                    .hass=${this.hass}
+                    .items=${{ device: ensureArray(this.value?.device_id) }}
+                    .collapsed=${this.compact}
+                    .deviceFilter=${this.deviceFilter}
+                    .entityFilter=${this.entityFilter}
+                    .includeDomains=${this.includeDomains}
+                    .includeDeviceClasses=${this.includeDeviceClasses}
+                  >
+                  </ha-target-picker-item-group>
+                `
+              : nothing}
+            ${this.value?.entity_id
+              ? html`
+                  <ha-target-picker-item-group
+                    @remove-target-item=${this._handleRemove}
+                    type="entity"
+                    .hass=${this.hass}
+                    .items=${{ entity: ensureArray(this.value?.entity_id) }}
+                    .collapsed=${this.compact}
+                    .deviceFilter=${this.deviceFilter}
+                    .entityFilter=${this.entityFilter}
+                    .includeDomains=${this.includeDomains}
+                    .includeDeviceClasses=${this.includeDeviceClasses}
+                  >
+                  </ha-target-picker-item-group>
+                `
+              : nothing}
+            ${this.value?.label_id
+              ? html`
+                  <ha-target-picker-item-group
+                    @remove-target-item=${this._handleRemove}
+                    type="label"
+                    .hass=${this.hass}
+                    .items=${{ label: ensureArray(this.value?.label_id) }}
+                    .collapsed=${this.compact}
+                    .deviceFilter=${this.deviceFilter}
+                    .entityFilter=${this.entityFilter}
+                    .includeDomains=${this.includeDomains}
+                    .includeDeviceClasses=${this.includeDeviceClasses}
+                  >
+                  </ha-target-picker-item-group>
+                `
+              : nothing}
+          </div>`}
     `;
   }
 
@@ -297,85 +338,6 @@ export class HaTargetPicker extends SubscribeMixin(LitElement) {
 
   private _showPicker(ev) {
     this._addMode = ev.currentTarget.type;
-  }
-
-  private _renderChip(
-    type: "floor_id" | "area_id" | "device_id" | "entity_id" | "label_id",
-    id: string,
-    name: string,
-    entityState?: HassEntity,
-    icon?: string | null,
-    fallbackIconPath?: string,
-    color?: string
-  ) {
-    return html`
-      <div
-        class="mdc-chip ${classMap({
-          [type]: true,
-        })}"
-        style=${color
-          ? `--color: rgb(${color}); --background-color: rgba(${color}, .5)`
-          : ""}
-      >
-        ${icon
-          ? html`<ha-icon
-              class="mdc-chip__icon mdc-chip__icon--leading"
-              .icon=${icon}
-            ></ha-icon>`
-          : fallbackIconPath
-            ? html`<ha-svg-icon
-                class="mdc-chip__icon mdc-chip__icon--leading"
-                .path=${fallbackIconPath}
-              ></ha-svg-icon>`
-            : ""}
-        ${entityState
-          ? html`<ha-state-icon
-              class="mdc-chip__icon mdc-chip__icon--leading"
-              .hass=${this.hass}
-              .stateObj=${entityState}
-            ></ha-state-icon>`
-          : ""}
-        <span role="gridcell">
-          <span role="button" tabindex="0" class="mdc-chip__primary-action">
-            <span class="mdc-chip__text">${name}</span>
-          </span>
-        </span>
-        ${type === "entity_id"
-          ? ""
-          : html`<span role="gridcell">
-              <ha-tooltip .for="expand-${id}"
-                >${this.hass.localize(
-                  `ui.components.target-picker.expand_${type}`
-                )}
-              </ha-tooltip>
-              <ha-icon-button
-                class="expand-btn mdc-chip__icon mdc-chip__icon--trailing"
-                .label=${this.hass.localize(
-                  "ui.components.target-picker.expand"
-                )}
-                .path=${mdiUnfoldMoreVertical}
-                hide-title
-                .id="expand-${id}"
-                .type=${type}
-                @click=${this._handleExpand}
-              ></ha-icon-button>
-            </span>`}
-        <span role="gridcell">
-          <ha-tooltip .for="remove-${id}">
-            ${this.hass.localize(`ui.components.target-picker.remove_${type}`)}
-          </ha-tooltip>
-          <ha-icon-button
-            class="mdc-chip__icon mdc-chip__icon--trailing"
-            .label=${this.hass.localize("ui.components.target-picker.remove")}
-            .path=${mdiClose}
-            hide-title
-            .id="remove-${id}"
-            .type=${type}
-            @click=${this._handleRemove}
-          ></ha-icon-button>
-        </span>
-      </div>
-    `;
   }
 
   private _renderPicker() {
@@ -520,75 +482,138 @@ export class HaTargetPicker extends SubscribeMixin(LitElement) {
     });
   }
 
+  private _handleRemove(ev) {
+    const { type, id } = ev.detail;
+    fireEvent(this, "value-changed", {
+      value: this._removeItem(this.value, type, id),
+    });
+  }
+
   private _handleExpand(ev) {
-    const target = ev.currentTarget as any;
+    const type = ev.detail.type;
+    const itemId = ev.detail.id;
     const newAreas: string[] = [];
     const newDevices: string[] = [];
     const newEntities: string[] = [];
 
-    if (target.type === "floor_id") {
+    if (type === "floor") {
       Object.values(this.hass.areas).forEach((area) => {
         if (
-          area.floor_id === target.id &&
+          area.floor_id === itemId &&
           !this.value!.area_id?.includes(area.area_id) &&
-          this._areaMeetsFilter(area)
+          areaMeetsFilter(
+            area,
+            this.hass.devices,
+            this.hass.entities,
+            this.deviceFilter,
+            this.includeDomains,
+            this.includeDeviceClasses,
+            this.hass.states,
+            this.entityFilter
+          )
         ) {
           newAreas.push(area.area_id);
         }
       });
-    } else if (target.type === "area_id") {
+    } else if (type === "area") {
       Object.values(this.hass.devices).forEach((device) => {
         if (
-          device.area_id === target.id &&
+          device.area_id === itemId &&
           !this.value!.device_id?.includes(device.id) &&
-          this._deviceMeetsFilter(device)
+          deviceMeetsFilter(
+            device,
+            this.hass.entities,
+            this.deviceFilter,
+            this.includeDomains,
+            this.includeDeviceClasses,
+            this.hass.states,
+            this.entityFilter
+          )
         ) {
           newDevices.push(device.id);
         }
       });
       Object.values(this.hass.entities).forEach((entity) => {
         if (
-          entity.area_id === target.id &&
+          entity.area_id === itemId &&
           !this.value!.entity_id?.includes(entity.entity_id) &&
-          this._entityRegMeetsFilter(entity)
+          entityRegMeetsFilter(
+            entity,
+            false,
+            this.includeDomains,
+            this.includeDeviceClasses,
+            this.hass.states,
+            this.entityFilter
+          )
         ) {
           newEntities.push(entity.entity_id);
         }
       });
-    } else if (target.type === "device_id") {
+    } else if (type === "device") {
       Object.values(this.hass.entities).forEach((entity) => {
         if (
-          entity.device_id === target.id &&
+          entity.device_id === itemId &&
           !this.value!.entity_id?.includes(entity.entity_id) &&
-          this._entityRegMeetsFilter(entity)
+          entityRegMeetsFilter(
+            entity,
+            false,
+            this.includeDomains,
+            this.includeDeviceClasses,
+            this.hass.states,
+            this.entityFilter
+          )
         ) {
           newEntities.push(entity.entity_id);
         }
       });
-    } else if (target.type === "label_id") {
+    } else if (type === "label") {
       Object.values(this.hass.areas).forEach((area) => {
         if (
-          area.labels.includes(target.id) &&
+          area.labels.includes(itemId) &&
           !this.value!.area_id?.includes(area.area_id) &&
-          this._areaMeetsFilter(area)
+          areaMeetsFilter(
+            area,
+            this.hass.devices,
+            this.hass.entities,
+            this.deviceFilter,
+            this.includeDomains,
+            this.includeDeviceClasses,
+            this.hass.states,
+            this.entityFilter
+          )
         ) {
           newAreas.push(area.area_id);
         }
       });
       Object.values(this.hass.devices).forEach((device) => {
         if (
-          device.labels.includes(target.id) &&
+          device.labels.includes(itemId) &&
           !this.value!.device_id?.includes(device.id) &&
-          this._deviceMeetsFilter(device)
+          deviceMeetsFilter(
+            device,
+            this.hass.entities,
+            this.deviceFilter,
+            this.includeDomains,
+            this.includeDeviceClasses,
+            this.hass.states,
+            this.entityFilter
+          )
         ) {
           newDevices.push(device.id);
         }
       });
       Object.values(this.hass.entities).forEach((entity) => {
         if (
-          entity.labels.includes(target.id) &&
+          entity.labels.includes(itemId) &&
           !this.value!.entity_id?.includes(entity.entity_id) &&
-          this._entityRegMeetsFilter(entity, true)
+          entityRegMeetsFilter(
+            entity,
+            true,
+            this.includeDomains,
+            this.includeDeviceClasses,
+            this.hass.states,
+            this.entityFilter
+          )
         ) {
           newEntities.push(entity.entity_id);
         }
@@ -606,15 +631,8 @@ export class HaTargetPicker extends SubscribeMixin(LitElement) {
     if (newAreas.length) {
       value = this._addItems(value, "area_id", newAreas);
     }
-    value = this._removeItem(value, target.type, target.id);
+    value = this._removeItem(value, type, itemId);
     fireEvent(this, "value-changed", { value });
-  }
-
-  private _handleRemove(ev) {
-    const target = ev.currentTarget as any;
-    fireEvent(this, "value-changed", {
-      value: this._removeItem(this.value, target.type, target.id),
-    });
   }
 
   private _addItems(
@@ -630,20 +648,22 @@ export class HaTargetPicker extends SubscribeMixin(LitElement) {
 
   private _removeItem(
     value: this["value"],
-    type: string,
+    type: TargetType,
     id: string
   ): this["value"] {
-    const newVal = ensureArray(value![type])!.filter(
+    const typeId = `${type}_id`;
+
+    const newVal = ensureArray(value![typeId])!.filter(
       (val) => String(val) !== id
     );
     if (newVal.length) {
       return {
         ...value,
-        [type]: newVal,
+        [typeId]: newVal,
       };
     }
     const val = { ...value }!;
-    delete val[type];
+    delete val[typeId];
     if (Object.keys(val).length) {
       return val;
     }
@@ -675,83 +695,6 @@ export class HaTargetPicker extends SubscribeMixin(LitElement) {
     ev.preventDefault();
   }
 
-  private _areaMeetsFilter(area: AreaRegistryEntry): boolean {
-    const areaDevices = Object.values(this.hass.devices).filter(
-      (device) => device.area_id === area.area_id
-    );
-
-    if (areaDevices.some((device) => this._deviceMeetsFilter(device))) {
-      return true;
-    }
-
-    const areaEntities = Object.values(this.hass.entities).filter(
-      (entity) => entity.area_id === area.area_id
-    );
-
-    if (areaEntities.some((entity) => this._entityRegMeetsFilter(entity))) {
-      return true;
-    }
-
-    return false;
-  }
-
-  private _deviceMeetsFilter(device: DeviceRegistryEntry): boolean {
-    const devEntities = Object.values(this.hass.entities).filter(
-      (entity) => entity.device_id === device.id
-    );
-
-    if (!devEntities.some((entity) => this._entityRegMeetsFilter(entity))) {
-      return false;
-    }
-
-    if (this.deviceFilter) {
-      if (!this.deviceFilter(device)) {
-        return false;
-      }
-    }
-
-    return true;
-  }
-
-  private _entityRegMeetsFilter(
-    entity: EntityRegistryDisplayEntry,
-    includeSecondary = false
-  ): boolean {
-    if (entity.hidden || (entity.entity_category && !includeSecondary)) {
-      return false;
-    }
-
-    if (
-      this.includeDomains &&
-      !this.includeDomains.includes(computeDomain(entity.entity_id))
-    ) {
-      return false;
-    }
-    if (this.includeDeviceClasses) {
-      const stateObj = this.hass.states[entity.entity_id];
-      if (!stateObj) {
-        return false;
-      }
-      if (
-        !stateObj.attributes.device_class ||
-        !this.includeDeviceClasses!.includes(stateObj.attributes.device_class)
-      ) {
-        return false;
-      }
-    }
-
-    if (this.entityFilter) {
-      const stateObj = this.hass.states[entity.entity_id];
-      if (!stateObj) {
-        return false;
-      }
-      if (!this.entityFilter!(stateObj)) {
-        return false;
-      }
-    }
-    return true;
-  }
-
   static get styles(): CSSResultGroup {
     return css`
       ${unsafeCSS(chipStyles)}
@@ -763,6 +706,10 @@ export class HaTargetPicker extends SubscribeMixin(LitElement) {
       }
       .mdc-chip-set {
         padding: 4px 0;
+        gap: 8px;
+      }
+      .mdc-chip-set .mdc-chip {
+        margin: 0;
       }
       .mdc-chip.add {
         color: rgba(0, 0, 0, 0.87);
@@ -784,7 +731,7 @@ export class HaTargetPicker extends SubscribeMixin(LitElement) {
         border-radius: 50%;
         background: var(--secondary-text-color);
       }
-      .mdc-chip__icon.mdc-chip__icon--trailing {
+      .mdc-chip__icon.mdc-chip__icon--2 {
         width: 16px;
         height: 16px;
         --mdc-icon-size: 14px;
@@ -805,46 +752,6 @@ export class HaTargetPicker extends SubscribeMixin(LitElement) {
         margin-inline-end: 4px !important;
         direction: var(--direction);
       }
-      .expand-btn {
-        margin-right: 0;
-        margin-inline-end: 0;
-        margin-inline-start: initial;
-      }
-      .mdc-chip.area_id:not(.add),
-      .mdc-chip.floor_id:not(.add) {
-        border: 1px solid #fed6a4;
-        background: var(--card-background-color);
-      }
-      .mdc-chip.area_id:not(.add) .mdc-chip__icon--leading,
-      .mdc-chip.area_id.add,
-      .mdc-chip.floor_id:not(.add) .mdc-chip__icon--leading,
-      .mdc-chip.floor_id.add {
-        background: #fed6a4;
-      }
-      .mdc-chip.device_id:not(.add) {
-        border: 1px solid #a8e1fb;
-        background: var(--card-background-color);
-      }
-      .mdc-chip.device_id:not(.add) .mdc-chip__icon--leading,
-      .mdc-chip.device_id.add {
-        background: #a8e1fb;
-      }
-      .mdc-chip.entity_id:not(.add) {
-        border: 1px solid #d2e7b9;
-        background: var(--card-background-color);
-      }
-      .mdc-chip.entity_id:not(.add) .mdc-chip__icon--leading,
-      .mdc-chip.entity_id.add {
-        background: #d2e7b9;
-      }
-      .mdc-chip.label_id:not(.add) {
-        border: 1px solid var(--color, #e0e0e0);
-        background: var(--card-background-color);
-      }
-      .mdc-chip.label_id:not(.add) .mdc-chip__icon--leading,
-      .mdc-chip.label_id.add {
-        background: var(--background-color, #e0e0e0);
-      }
       .mdc-chip:hover {
         z-index: 5;
       }
@@ -861,8 +768,30 @@ export class HaTargetPicker extends SubscribeMixin(LitElement) {
         display: block;
         width: 100%;
       }
-      ha-tooltip {
-        --ha-tooltip-arrow-size: 0;
+
+      .item-groups {
+        overflow: hidden;
+        border: 2px solid var(--divider-color);
+        border-radius: var(--ha-border-radius-lg);
+      }
+
+      :host([compact]) .mdc-chip.area_id:not(.add),
+      .mdc-chip.floor_id:not(.add) {
+        border: 1px solid #fed6a4;
+        background: var(--card-background-color);
+      }
+      :host([compact]) .mdc-chip.area_id.add,
+      :host([compact]) .mdc-chip.floor_id.add {
+        background: #fed6a4;
+      }
+      :host([compact]) .mdc-chip.device_id.add {
+        background: #a8e1fb;
+      }
+      :host([compact]) .mdc-chip.entity_id.add {
+        background: #d2e7b9;
+      }
+      :host([compact]) .mdc-chip.label_id.add {
+        background: var(--background-color, #e0e0e0);
       }
     `;
   }
@@ -871,5 +800,17 @@ export class HaTargetPicker extends SubscribeMixin(LitElement) {
 declare global {
   interface HTMLElementTagNameMap {
     "ha-target-picker": HaTargetPicker;
+  }
+
+  interface HASSDomEvents {
+    "remove-target-item": {
+      type: string;
+      id: string;
+    };
+    "expand-target-item": {
+      type: string;
+      id: string;
+    };
+    "remove-target-group": string;
   }
 }
