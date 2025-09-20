@@ -59,9 +59,18 @@ export class MoreInfoHistory extends LitElement {
 
     return html`${isComponentLoaded(this.hass, "history")
       ? html`<div class="header">
-            <h2>
-              ${this.hass.localize("ui.dialogs.more_info_control.history")}
-            </h2>
+            <div>
+              <h2>
+                ${this.hass.localize("ui.dialogs.more_info_control.history")}
+              </h2>
+              ${this._statistics
+                ? html`<div class="header-secondary">
+                    ${this.hass.localize(
+                      "ui.dialogs.more_info_control.aggregate"
+                    )}
+                  </div>`
+                : nothing}
+            </div>
             ${__DEMO__
               ? nothing
               : html`<a href=${this._showMoreHref}
@@ -245,6 +254,10 @@ export class MoreInfoHistory extends LitElement {
       .header > a,
       a:visited {
         color: var(--primary-color);
+      }
+      .header-secondary {
+        font-size: var(--ha-font-size-s);
+        color: var(--secondary-text-color);
       }
       h2 {
         margin: 0;
