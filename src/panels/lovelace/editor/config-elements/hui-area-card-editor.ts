@@ -260,28 +260,102 @@ export class HuiAreaCardEditor
     }
   );
 
+  // Add sensor entities that match configured sensor_classes
+  private _addSensorEntities(
+    allRelevantEntities: Set<string>,
+    area: string,
+    sensorClasses: string[],
+    numericDeviceClasses: string[] | undefined
+  ): void {
+    if (sensorClasses.length === 0) return;
+
+    const sensorFilter = generateEntityFilter(this.hass!, {
+      area,
+      entity_category: "none",
+      domain: "sensor",
+      device_class: numericDeviceClasses,
+    });
+    Object.keys(this.hass!.entities)
+      .filter(sensorFilter)
+      .filter((id) => {
+        const stateObj = this.hass!.states[id];
+        return sensorClasses.includes(stateObj?.attributes.device_class || "");
+      })
+      .forEach((id) => allRelevantEntities.add(id));
+  }
+
+  // Add binary_sensor entities that match configured alert_classes
+  private _addBinarySensorEntities(
+    allRelevantEntities: Set<string>,
+    area: string,
+    alertClasses: string[]
+  ): void {
+    if (alertClasses.length === 0) return;
+
+    const binaryFilter = generateEntityFilter(this.hass!, {
+      area,
+      entity_category: "none",
+      domain: "binary_sensor",
+    });
+    Object.keys(this.hass!.entities)
+      .filter(binaryFilter)
+      .filter((id) => {
+        const stateObj = this.hass!.states[id];
+        return alertClasses.includes(stateObj?.attributes.device_class || "");
+      })
+      .forEach((id) => allRelevantEntities.add(id));
+  }
+
+  // Add entities used by area-controls feature (light, fan, switch, cover)
+  private _addAreaControlEntities(
+    allRelevantEntities: Set<string>,
+    area: string
+  ): void {
+    const controlDomains = ["light", "fan", "switch", "cover"];
+    controlDomains.forEach((domain) => {
+      const domainFilter = generateEntityFilter(this.hass!, {
+        area,
+        entity_category: "none",
+        domain,
+      });
+      Object.keys(this.hass!.entities)
+        .filter(domainFilter)
+        .forEach((id) => allRelevantEntities.add(id));
+    });
+  }
+
   private _entitiesForArea = memoizeOne(
-    (area: string | undefined): SelectOption[] => {
+    (
+      area: string | undefined,
+      sensorClasses: string[],
+      alertClasses: string[],
+      numericDeviceClasses: string[] | undefined
+    ): SelectOption[] => {
       if (!area) {
         return [];
       }
 
-      const areaFilter = generateEntityFilter(this.hass!, {
-        area,
-        entity_category: "none",
-      });
+      const allRelevantEntities = new Set<string>();
 
-      const entities = Object.keys(this.hass!.entities)
-        .filter(areaFilter)
-        .map((entityId) => {
-          const entity = this.hass!.entities[entityId];
-          const stateObj = this.hass!.states[entityId];
-          return {
-            value: entityId,
-            label:
-              entity?.name || stateObj?.attributes?.friendly_name || entityId,
-          };
-        });
+      this._addSensorEntities(
+        allRelevantEntities,
+        area,
+        sensorClasses,
+        numericDeviceClasses
+      );
+      this._addBinarySensorEntities(allRelevantEntities, area, alertClasses);
+      this._addAreaControlEntities(allRelevantEntities, area);
+
+      // Convert entity IDs to SelectOptions with proper labels
+      const entities = Array.from(allRelevantEntities).map((entityId) => {
+        const entity = this.hass!.entities[entityId];
+        const stateObj = this.hass!.states[entityId];
+        return {
+          value: entityId,
+          label:
+            entity?.name || stateObj?.attributes?.friendly_name || entityId,
+        };
+      });
 
       entities.sort((a, b) =>
         caseInsensitiveStringCompare(
@@ -423,7 +497,12 @@ export class HuiAreaCardEditor
       possibleSensorClasses,
       this._config.sensor_classes || DEVICE_CLASSES.sensor
     );
-    const entitySelectOptions = this._entitiesForArea(this._config.area);
+    const entitySelectOptions = this._entitiesForArea(
+      this._config.area,
+      this._config.sensor_classes || DEVICE_CLASSES.sensor,
+      this._config.alert_classes || DEVICE_CLASSES.binary_sensor,
+      this._numericDeviceClasses
+    );
 
     const displayType =
       this._config.display_type ||
