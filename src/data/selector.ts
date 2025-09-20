@@ -498,6 +498,7 @@ export interface UiStateContentSelector {
     allow_name?: boolean;
     allow_area?: boolean;
     allow_device?: boolean;
+    allow_floor?: boolean;
   } | null;
 }
 

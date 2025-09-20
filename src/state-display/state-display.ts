@@ -122,6 +122,19 @@ class StateDisplay extends LitElement {
         : undefined;
       return deviceReg ? computeDeviceName(deviceReg) : "";
     }
+    if (content === "floor") {
+      const entityId = stateObj.entity_id;
+      const entityReg = this.hass.entities?.[entityId];
+      const deviceReg = entityReg?.device_id
+        ? this.hass.devices?.[entityReg.device_id]
+        : undefined;
+      const areaId = entityReg?.area_id || deviceReg?.area_id;
+      const areaReg = areaId ? this.hass.areas?.[areaId] : undefined;
+      const floorReg = areaReg?.floor_id
+        ? this.hass.floors?.[areaReg.floor_id]
+        : undefined;
+      return floorReg?.name?.trim() || "";
+    }
 
     let relativeDateTime: string | Date | undefined;
 

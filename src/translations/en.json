@@ -1225,6 +1225,7 @@
         "name": "Name",
         "area": "Area name",
         "device": "Device name",
+        "floor": "Floor name",
         "last_changed": "Last changed",
         "last_updated": "Last updated",
         "remaining_time": "Remaining time",

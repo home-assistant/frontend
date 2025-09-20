@@ -39,6 +39,7 @@ export class HaSelectorUiStateContent extends SubscribeMixin(LitElement) {
         .allowName=${this.selector.ui_state_content?.allow_name}
         .allowArea=${this.selector.ui_state_content?.allow_area}
         .allowDevice=${this.selector.ui_state_content?.allow_device}
+        .allowFloor=${this.selector.ui_state_content?.allow_floor}
       ></ha-entity-state-content-picker>
     `;
   }

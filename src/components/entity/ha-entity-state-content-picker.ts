@@ -95,6 +95,9 @@ class HaEntityStatePicker extends LitElement {
   @property({ type: Boolean, attribute: "allow-device" }) public allowDevice =
     false;
 
+  @property({ type: Boolean, attribute: "allow-floor" }) public allowFloor =
+    false;
+
   @property() public label?: string;
 
   @property() public value?: string[] | string;
@@ -115,7 +118,8 @@ class HaEntityStatePicker extends LitElement {
       stateObj?: HassEntity,
       allowName?: boolean,
       allowArea?: boolean,
-      allowDevice?: boolean
+      allowDevice?: boolean,
+      allowFloor?: boolean
     ) => {
       const domain = entityId ? computeDomain(entityId) : undefined;
 
@@ -123,6 +127,8 @@ class HaEntityStatePicker extends LitElement {
       const hasArea = this._hasArea(entityId, allowArea);
       // Check if entity has a device
       const hasDevice = this._hasDevice(entityId, allowDevice);
+      // Check if entity or its device has a floor
+      const hasFloor = this._hasFloor(entityId, allowFloor);
 
       return [
         {
@@ -156,6 +162,16 @@ class HaEntityStatePicker extends LitElement {
                   "ui.components.state-content-picker.device"
                 ),
                 value: "device",
+              },
+            ]
+          : []),
+        ...(hasFloor
+          ? [
+              {
+                label: this.hass.localize(
+                  "ui.components.state-content-picker.floor"
+                ),
+                value: "floor",
               },
             ]
           : []),
@@ -209,7 +225,8 @@ class HaEntityStatePicker extends LitElement {
       stateObj,
       this.allowName,
       this.allowArea,
-      this.allowDevice
+      this.allowDevice,
+      this.allowFloor
     );
     const optionItems = options.filter(
       (option) => !this._value.includes(option.value)
@@ -361,6 +378,19 @@ class HaEntityStatePicker extends LitElement {
     }
     const entityReg = entityId ? this.hass.entities?.[entityId] : undefined;
     return !!entityReg?.device_id;
+  }
+
+  private _hasFloor(entityId?: string, allowFloor?: boolean): boolean {
+    if (!allowFloor) {
+      return false;
+    }
+    const entityReg = entityId ? this.hass.entities?.[entityId] : undefined;
+    const deviceReg = entityReg?.device_id
+      ? this.hass.devices?.[entityReg.device_id]
+      : undefined;
+    const areaId = entityReg?.area_id || deviceReg?.area_id;
+    const areaReg = areaId ? this.hass.areas?.[areaId] : undefined;
+    return !!areaReg?.floor_id;
   }
 
   static styles = css`

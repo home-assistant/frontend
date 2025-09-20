@@ -140,6 +140,7 @@ export class HuiTileCardEditor
                       ui_state_content: {
                         allow_area: true,
                         allow_device: true,
+                        allow_floor: true,
                       },
                     },
                     context: {
