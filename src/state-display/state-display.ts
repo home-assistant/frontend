@@ -101,38 +101,22 @@ class StateDisplay extends LitElement {
 
       return this.hass!.formatEntityState(stateObj);
     }
+
+    // Resolve entity hierarchy once for all content types that need it
+    const { deviceReg, areaReg, floorReg } = this._resolveEntityHierarchy(
+      stateObj.entity_id
+    );
+
     if (content === "name") {
       return html`${this.name || computeStateName(stateObj)}`;
     }
     if (content === "area") {
-      const entityId = stateObj.entity_id;
-      const entityReg = this.hass.entities?.[entityId];
-      const deviceReg = entityReg?.device_id
-        ? this.hass.devices?.[entityReg.device_id]
-        : undefined;
-      const areaId = entityReg?.area_id || deviceReg?.area_id;
-      const areaReg = areaId ? this.hass.areas?.[areaId] : undefined;
       return areaReg?.name?.trim() || "";
     }
     if (content === "device") {
-      const entityId = stateObj.entity_id;
-      const entityReg = this.hass.entities?.[entityId];
-      const deviceReg = entityReg?.device_id
-        ? this.hass.devices?.[entityReg.device_id]
-        : undefined;
       return deviceReg ? computeDeviceName(deviceReg) : "";
     }
     if (content === "floor") {
-      const entityId = stateObj.entity_id;
-      const entityReg = this.hass.entities?.[entityId];
-      const deviceReg = entityReg?.device_id
-        ? this.hass.devices?.[entityReg.device_id]
-        : undefined;
-      const areaId = entityReg?.area_id || deviceReg?.area_id;
-      const areaReg = areaId ? this.hass.areas?.[areaId] : undefined;
-      const floorReg = areaReg?.floor_id
-        ? this.hass.floors?.[areaReg.floor_id]
-        : undefined;
       return floorReg?.name?.trim() || "";
     }
 
@@ -219,6 +203,24 @@ class StateDisplay extends LitElement {
     }
 
     return join(values, " · ");
+  }
+
+  private _resolveEntityHierarchy(entityId: string) {
+    const entityReg = this.hass.entities?.[entityId];
+    const deviceReg = entityReg?.device_id
+      ? this.hass.devices?.[entityReg.device_id]
+      : undefined;
+    const areaId = entityReg?.area_id || deviceReg?.area_id;
+    const areaReg = areaId ? this.hass.areas?.[areaId] : undefined;
+    const floorReg = areaReg?.floor_id
+      ? this.hass.floors?.[areaReg.floor_id]
+      : undefined;
+
+    return {
+      deviceReg,
+      areaReg,
+      floorReg,
+    };
   }
 }
 
