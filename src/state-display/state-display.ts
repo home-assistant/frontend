@@ -13,6 +13,7 @@ import type { UpdateEntity } from "../data/update";
 import { computeUpdateStateDisplay } from "../data/update";
 import "../panels/lovelace/components/hui-timestamp-display";
 import type { HomeAssistant } from "../types";
+import { computeDeviceName } from "../common/entity/compute_device_name";
 
 const TIMESTAMP_STATE_DOMAINS = ["button", "input_button", "scene"];
 
@@ -112,6 +113,14 @@ class StateDisplay extends LitElement {
       const areaId = entityReg?.area_id || deviceReg?.area_id;
       const areaReg = areaId ? this.hass.areas?.[areaId] : undefined;
       return areaReg?.name?.trim() || "";
+    }
+    if (content === "device") {
+      const entityId = stateObj.entity_id;
+      const entityReg = this.hass.entities?.[entityId];
+      const deviceReg = entityReg?.device_id
+        ? this.hass.devices?.[entityReg.device_id]
+        : undefined;
+      return deviceReg ? computeDeviceName(deviceReg) : "";
     }
 
     let relativeDateTime: string | Date | undefined;

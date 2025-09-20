@@ -497,6 +497,7 @@ export interface UiStateContentSelector {
     entity_id?: string;
     allow_name?: boolean;
     allow_area?: boolean;
+    allow_device?: boolean;
   } | null;
 }
 

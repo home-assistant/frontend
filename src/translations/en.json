@@ -1223,7 +1223,8 @@
       "state-content-picker": {
         "state": "State",
         "name": "Name",
-        "area": "Area",
+        "area": "Area name",
+        "device": "Device name",
         "last_changed": "Last changed",
         "last_updated": "Last updated",
         "remaining_time": "Remaining time",

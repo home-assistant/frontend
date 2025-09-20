@@ -92,6 +92,9 @@ class HaEntityStatePicker extends LitElement {
   @property({ type: Boolean, attribute: "allow-area" }) public allowArea =
     false;
 
+  @property({ type: Boolean, attribute: "allow-device" }) public allowDevice =
+    false;
+
   @property() public label?: string;
 
   @property() public value?: string[] | string;
@@ -111,12 +114,15 @@ class HaEntityStatePicker extends LitElement {
       entityId?: string,
       stateObj?: HassEntity,
       allowName?: boolean,
-      allowArea?: boolean
+      allowArea?: boolean,
+      allowDevice?: boolean
     ) => {
       const domain = entityId ? computeDomain(entityId) : undefined;
 
       // Check if entity or its device has an area
       const hasArea = this._hasArea(entityId, allowArea);
+      // Check if entity has a device
+      const hasDevice = this._hasDevice(entityId, allowDevice);
 
       return [
         {
@@ -140,6 +146,16 @@ class HaEntityStatePicker extends LitElement {
                   "ui.components.state-content-picker.area"
                 ),
                 value: "area",
+              },
+            ]
+          : []),
+        ...(hasDevice
+          ? [
+              {
+                label: this.hass.localize(
+                  "ui.components.state-content-picker.device"
+                ),
+                value: "device",
               },
             ]
           : []),
@@ -192,7 +208,8 @@ class HaEntityStatePicker extends LitElement {
       this.entityId,
       stateObj,
       this.allowName,
-      this.allowArea
+      this.allowArea,
+      this.allowDevice
     );
     const optionItems = options.filter(
       (option) => !this._value.includes(option.value)
@@ -336,6 +353,14 @@ class HaEntityStatePicker extends LitElement {
       ? this.hass.devices?.[entityReg.device_id]
       : undefined;
     return !!(entityReg?.area_id || deviceReg?.area_id);
+  }
+
+  private _hasDevice(entityId?: string, allowDevice?: boolean): boolean {
+    if (!allowDevice) {
+      return false;
+    }
+    const entityReg = entityId ? this.hass.entities?.[entityId] : undefined;
+    return !!entityReg?.device_id;
   }
 
   static styles = css`
