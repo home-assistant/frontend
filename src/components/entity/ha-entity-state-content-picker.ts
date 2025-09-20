@@ -361,14 +361,19 @@ class HaEntityStatePicker extends LitElement {
     });
   }
 
-  private _hasArea(entityId?: string, allowArea?: boolean): boolean {
-    if (!allowArea) {
-      return false;
-    }
+  private _getEntityAndDeviceReg(entityId?: string) {
     const entityReg = entityId ? this.hass.entities?.[entityId] : undefined;
     const deviceReg = entityReg?.device_id
       ? this.hass.devices?.[entityReg.device_id]
       : undefined;
+    return { entityReg, deviceReg };
+  }
+
+  private _hasArea(entityId?: string, allowArea?: boolean): boolean {
+    if (!allowArea) {
+      return false;
+    }
+    const { entityReg, deviceReg } = this._getEntityAndDeviceReg(entityId);
     return !!(entityReg?.area_id || deviceReg?.area_id);
   }
 
@@ -376,7 +381,7 @@ class HaEntityStatePicker extends LitElement {
     if (!allowDevice) {
       return false;
     }
-    const entityReg = entityId ? this.hass.entities?.[entityId] : undefined;
+    const { entityReg } = this._getEntityAndDeviceReg(entityId);
     return !!entityReg?.device_id;
   }
 
@@ -384,10 +389,7 @@ class HaEntityStatePicker extends LitElement {
     if (!allowFloor) {
       return false;
     }
-    const entityReg = entityId ? this.hass.entities?.[entityId] : undefined;
-    const deviceReg = entityReg?.device_id
-      ? this.hass.devices?.[entityReg.device_id]
-      : undefined;
+    const { entityReg, deviceReg } = this._getEntityAndDeviceReg(entityId);
     const areaId = entityReg?.area_id || deviceReg?.area_id;
     const areaReg = areaId ? this.hass.areas?.[areaId] : undefined;
     return !!areaReg?.floor_id;
