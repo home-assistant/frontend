@@ -496,6 +496,9 @@ export interface UiStateContentSelector {
   ui_state_content: {
     entity_id?: string;
     allow_name?: boolean;
+    allow_area?: boolean;
+    allow_device?: boolean;
+    allow_floor?: boolean;
   } | null;
 }
 

@@ -89,6 +89,15 @@ class HaEntityStatePicker extends LitElement {
   @property({ type: Boolean, attribute: "allow-name" }) public allowName =
     false;
 
+  @property({ type: Boolean, attribute: "allow-area" }) public allowArea =
+    false;
+
+  @property({ type: Boolean, attribute: "allow-device" }) public allowDevice =
+    false;
+
+  @property({ type: Boolean, attribute: "allow-floor" }) public allowFloor =
+    false;
+
   @property() public label?: string;
 
   @property() public value?: string[] | string;
@@ -104,8 +113,23 @@ class HaEntityStatePicker extends LitElement {
   }
 
   private options = memoizeOne(
-    (entityId?: string, stateObj?: HassEntity, allowName?: boolean) => {
+    (
+      entityId?: string,
+      stateObj?: HassEntity,
+      allowName?: boolean,
+      allowArea?: boolean,
+      allowDevice?: boolean,
+      allowFloor?: boolean
+    ) => {
       const domain = entityId ? computeDomain(entityId) : undefined;
+
+      // Check if entity or its device has an area
+      const hasArea = this._hasArea(entityId, allowArea);
+      // Check if entity has a device
+      const hasDevice = this._hasDevice(entityId, allowDevice);
+      // Check if entity or its device has a floor
+      const hasFloor = this._hasFloor(entityId, allowFloor);
+
       return [
         {
           label: this.hass.localize("ui.components.state-content-picker.state"),
@@ -118,6 +142,36 @@ class HaEntityStatePicker extends LitElement {
                   "ui.components.state-content-picker.name"
                 ),
                 value: "name",
+              },
+            ]
+          : []),
+        ...(hasArea
+          ? [
+              {
+                label: this.hass.localize(
+                  "ui.components.state-content-picker.area"
+                ),
+                value: "area",
+              },
+            ]
+          : []),
+        ...(hasDevice
+          ? [
+              {
+                label: this.hass.localize(
+                  "ui.components.state-content-picker.device"
+                ),
+                value: "device",
+              },
+            ]
+          : []),
+        ...(hasFloor
+          ? [
+              {
+                label: this.hass.localize(
+                  "ui.components.state-content-picker.floor"
+                ),
+                value: "floor",
               },
             ]
           : []),
@@ -166,7 +220,14 @@ class HaEntityStatePicker extends LitElement {
       ? this.hass.states[this.entityId]
       : undefined;
 
-    const options = this.options(this.entityId, stateObj, this.allowName);
+    const options = this.options(
+      this.entityId,
+      stateObj,
+      this.allowName,
+      this.allowArea,
+      this.allowDevice,
+      this.allowFloor
+    );
     const optionItems = options.filter(
       (option) => !this._value.includes(option.value)
     );
@@ -298,6 +359,40 @@ class HaEntityStatePicker extends LitElement {
     fireEvent(this, "value-changed", {
       value: newValue,
     });
+  }
+
+  private _getEntityAndDeviceReg(entityId?: string) {
+    const entityReg = entityId ? this.hass.entities?.[entityId] : undefined;
+    const deviceReg = entityReg?.device_id
+      ? this.hass.devices?.[entityReg.device_id]
+      : undefined;
+    return { entityReg, deviceReg };
+  }
+
+  private _hasArea(entityId?: string, allowArea?: boolean): boolean {
+    if (!allowArea) {
+      return false;
+    }
+    const { entityReg, deviceReg } = this._getEntityAndDeviceReg(entityId);
+    return !!(entityReg?.area_id || deviceReg?.area_id);
+  }
+
+  private _hasDevice(entityId?: string, allowDevice?: boolean): boolean {
+    if (!allowDevice) {
+      return false;
+    }
+    const { entityReg } = this._getEntityAndDeviceReg(entityId);
+    return !!entityReg?.device_id;
+  }
+
+  private _hasFloor(entityId?: string, allowFloor?: boolean): boolean {
+    if (!allowFloor) {
+      return false;
+    }
+    const { entityReg, deviceReg } = this._getEntityAndDeviceReg(entityId);
+    const areaId = entityReg?.area_id || deviceReg?.area_id;
+    const areaReg = areaId ? this.hass.areas?.[areaId] : undefined;
+    return !!areaReg?.floor_id;
   }
 
   static styles = css`

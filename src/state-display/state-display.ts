@@ -13,6 +13,7 @@ import type { UpdateEntity } from "../data/update";
 import { computeUpdateStateDisplay } from "../data/update";
 import "../panels/lovelace/components/hui-timestamp-display";
 import type { HomeAssistant } from "../types";
+import { computeDeviceName } from "../common/entity/compute_device_name";
 
 const TIMESTAMP_STATE_DOMAINS = ["button", "input_button", "scene"];
 
@@ -100,8 +101,23 @@ class StateDisplay extends LitElement {
 
       return this.hass!.formatEntityState(stateObj);
     }
+
+    // Resolve entity hierarchy once for all content types that need it
+    const { deviceReg, areaReg, floorReg } = this._resolveEntityHierarchy(
+      stateObj.entity_id
+    );
+
     if (content === "name") {
       return html`${this.name || computeStateName(stateObj)}`;
+    }
+    if (content === "area") {
+      return areaReg?.name?.trim() || "";
+    }
+    if (content === "device") {
+      return deviceReg ? computeDeviceName(deviceReg) : "";
+    }
+    if (content === "floor") {
+      return floorReg?.name?.trim() || "";
     }
 
     let relativeDateTime: string | Date | undefined;
@@ -187,6 +203,24 @@ class StateDisplay extends LitElement {
     }
 
     return join(values, " · ");
+  }
+
+  private _resolveEntityHierarchy(entityId: string) {
+    const entityReg = this.hass.entities?.[entityId];
+    const deviceReg = entityReg?.device_id
+      ? this.hass.devices?.[entityReg.device_id]
+      : undefined;
+    const areaId = entityReg?.area_id || deviceReg?.area_id;
+    const areaReg = areaId ? this.hass.areas?.[areaId] : undefined;
+    const floorReg = areaReg?.floor_id
+      ? this.hass.floors?.[areaReg.floor_id]
+      : undefined;
+
+    return {
+      deviceReg,
+      areaReg,
+      floorReg,
+    };
   }
 }
 
