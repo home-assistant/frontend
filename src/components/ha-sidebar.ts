@@ -762,7 +762,7 @@ class HaSidebar extends SubscribeMixin(LitElement) {
         ha-md-list {
           height: calc(
             100% - var(--header-height) - var(--safe-area-inset-top, 0px) -
-              132px - var(--safe-area-inset-bottom, 0px)
+              132px
           );
         }
 

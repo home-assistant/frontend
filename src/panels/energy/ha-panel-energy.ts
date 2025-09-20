@@ -13,7 +13,7 @@ import "../lovelace/components/hui-energy-period-selector";
 import type { Lovelace } from "../lovelace/types";
 import "../lovelace/views/hui-view";
 import "../lovelace/views/hui-view-container";
-import { navigate } from "../../common/navigate";
+import { goBack, navigate } from "../../common/navigate";
 import type {
   GridSourceTypeEnergyPreference,
   SolarSourceTypeEnergyPreference,
@@ -70,7 +70,7 @@ class PanelEnergy extends LitElement {
 
   private _back(ev) {
     ev.stopPropagation();
-    history.back();
+    goBack();
   }
 
   protected render(): TemplateResult {
@@ -496,7 +496,12 @@ class PanelEnergy extends LitElement {
           border-bottom: var(--app-header-border-bottom, none);
           position: fixed;
           top: 0;
-          width: var(--mdc-top-app-bar-width, 100%);
+          width: calc(
+            var(--mdc-top-app-bar-width, 100%) - var(
+                --safe-area-inset-right,
+                0px
+              )
+          );
           padding-top: var(--safe-area-inset-top);
           z-index: 4;
           transition: box-shadow 200ms linear;
@@ -504,6 +509,17 @@ class PanelEnergy extends LitElement {
           flex-direction: row;
           -webkit-backdrop-filter: var(--app-header-backdrop-filter, none);
           backdrop-filter: var(--app-header-backdrop-filter, none);
+          padding-top: var(--safe-area-inset-top);
+          padding-right: var(--safe-area-inset-right);
+        }
+        :host([narrow]) .header {
+          width: calc(
+            var(--mdc-top-app-bar-width, 100%) - var(
+                --safe-area-inset-left,
+                0px
+              ) - var(--safe-area-inset-right, 0px)
+          );
+          padding-left: var(--safe-area-inset-left);
         }
         :host([scrolled]) .header {
           box-shadow: var(
@@ -523,10 +539,8 @@ class PanelEnergy extends LitElement {
           font-weight: var(--ha-font-weight-normal);
           box-sizing: border-box;
         }
-        @media (max-width: 599px) {
-          .toolbar {
-            padding: 0 4px;
-          }
+        :host([narrow]) .toolbar {
+          padding: 0 4px;
         }
         .main-title {
           margin: var(--margin-title);
@@ -539,11 +553,13 @@ class PanelEnergy extends LitElement {
           min-height: 100vh;
           box-sizing: border-box;
           padding-top: calc(var(--header-height) + var(--safe-area-inset-top));
-          padding-left: var(--safe-area-inset-left);
           padding-right: var(--safe-area-inset-right);
-          padding-inline-start: var(--safe-area-inset-left);
           padding-inline-end: var(--safe-area-inset-right);
           padding-bottom: var(--safe-area-inset-bottom);
+        }
+        :host([narrow]) hui-view-container {
+          padding-left: var(--safe-area-inset-left);
+          padding-inline-start: var(--safe-area-inset-left);
         }
         hui-view {
           flex: 1 1 100%;

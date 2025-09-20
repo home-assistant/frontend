@@ -150,11 +150,7 @@ export default class HaAutomationSidebarCondition extends LitElement {
         </div>
       </ha-md-menu-item>
 
-      <ha-md-menu-item
-        slot="menu-items"
-        .clickAction=${this.config.copy}
-        .disabled=${this.disabled}
-      >
+      <ha-md-menu-item slot="menu-items" .clickAction=${this.config.copy}>
         <ha-svg-icon slot="start" .path=${mdiContentCopy}></ha-svg-icon>
         <div class="overflow-label">
           ${this.hass.localize(
@@ -296,12 +292,12 @@ export default class HaAutomationSidebarCondition extends LitElement {
             narrow: this.narrow,
           })}"
         >
-          ${this._testingResult
-            ? this.hass.localize(
-                "ui.panel.config.automation.editor.conditions.testing_pass"
-              )
+          ${this._testingResult === undefined
+            ? nothing
             : this.hass.localize(
-                "ui.panel.config.automation.editor.conditions.testing_error"
+                `ui.panel.config.automation.editor.conditions.testing_${
+                  this._testingResult ? "pass" : "error"
+                }`
               )}
         </div>
       </div>

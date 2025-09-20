@@ -2313,7 +2313,9 @@
           "header": "AI suggestions",
           "description": "Home Assistant can use generative AI to help you with tasks. Look for the button with the {button} icon throughout Home Assistant to get suggestions. Select an AI task entity to use this feature.",
           "gen_data_header": "Data generation tasks",
-          "gen_data_description": "Suggest automation names."
+          "gen_data_description": "Suggest automation names.",
+          "gen_image_header": "Image generation tasks",
+          "gen_image_description": "Generate images."
         },
         "category": {
           "caption": "Categories",
@@ -2460,7 +2462,7 @@
             "local_backup_location": {
               "title": "Change default local backup location",
               "description": "Change the default location where local backups are stored on your Home Assistant instance.",
-              "note": "This location will be used when you create a backup using the supervisor actions in an automation for example.",
+              "note": "This location will be used when you create a backup using the Supervisor actions in an automation for example.",
               "options": {
                 "default_backup_mount": {
                   "name": "Default location"
@@ -2892,8 +2894,8 @@
               "description": "Creates a backup of your add-on and its data. That way you can keep around the previous version of the add-on, so you can always roll back to it if needed.",
               "local_only": "This backup is only saved on this system.",
               "retention_description": "Prevent your system from filling up with old versions.",
-              "error_load": "Error loading supervisor update config: {error}",
-              "error_save": "Error saving supervisor update config: {error}"
+              "error_load": "Error loading Supervisor update config: {error}",
+              "error_save": "Error saving Supervisor update config: {error}"
             }
           },
           "details": {
@@ -3260,6 +3262,7 @@
         "info": {
           "caption": "About",
           "installation_method": "Installation method",
+          "external_app_version": "Companion app",
           "copy_menu": "Copy menu",
           "copy_raw": "Raw text",
           "copy_github": "For GitHub",
@@ -3401,7 +3404,7 @@
                 "conf_mode": "Configuration method",
                 "default": "Default",
                 "require_admin": "Admin only",
-                "sidebar": "Show in sidebar",
+                "sidebar": "In sidebar",
                 "filename": "Filename",
                 "url": "Open"
               },
@@ -3415,7 +3418,7 @@
             "detail": {
               "edit_dashboard": "Edit dashboard",
               "new_dashboard": "Add new dashboard",
-              "show_sidebar": "Show in sidebar",
+              "show_sidebar": "Add to sidebar",
               "icon": "Icon",
               "title": "Title",
               "title_required": "Title is required.",
@@ -5549,7 +5552,7 @@
             },
             "custom_integration": "Custom integration",
             "legacy_integration": "Legacy integration",
-            "custom_overwrites_core": "Custom integration that replaces a core component",
+            "custom_overwrites_core": "Custom integration that replaces a Core component",
             "depends_on_cloud": "Requires Internet",
             "yaml_only": "This integration cannot be set up from the UI",
             "no_config_flow": "This integration was not set up from the UI",
@@ -6876,7 +6879,12 @@
             "areas": "Areas",
             "other_areas": "Other areas",
             "unamed_device": "Unnamed device",
-            "others": "Others"
+            "others": "Others",
+            "common_controls": "Commonly used"
+          },
+          "common_controls": {
+            "not_loaded": "Usage Prediction integration is not loaded.",
+            "no_data": "This place will soon fill up with the entities you use most often, based on your activity."
           }
         },
         "cards": {
@@ -7058,9 +7066,9 @@
           "add": "Add to Home Assistant",
           "add_device": "Add device",
           "create_automation": "Create automation",
-          "add_area": "Add area",
-          "add_area_success": "Area added",
-          "add_area_action": "View area",
+          "create_area": "Create area",
+          "create_area_success": "Area created",
+          "create_area_action": "View area",
           "add_person_success": "Person added",
           "add_person_action": "View persons",
           "add_person": "Add person"
@@ -8790,6 +8798,7 @@
             "accepts_target": "This action accepts a target, for example: `entity_id: light.bed_light`",
             "no_template_ui_support": "The UI does not support templates, you can still use the YAML editor.",
             "copy_clipboard_template": "Copy to clipboard as template",
+            "open_media": "Open media",
             "errors": {
               "ui": {
                 "no_action": "No action selected, please select an action",
@@ -8888,13 +8897,13 @@
                 "title": "Entity is not recorded",
                 "info_text_1": "State changes of ''{name}'' ({statistic_id}) are not recorded, therefore, we cannot track long term statistics for it.",
                 "info_text_2": "You probably excluded this entity, or have just included some entities.",
-                "info_text_3_link": "See the recorder documentation for more information."
+                "info_text_3_link": "See the Recorder documentation for more information."
               },
               "entity_no_longer_recorded": {
                 "title": "Entity is no longer recorded",
                 "info_text_1": "We have generated statistics for ''{name}'' ({statistic_id}) in the past, but state changes of this entity are no longer recorded, therefore, we cannot track long term statistics for it anymore.",
                 "info_text_2": "You probably excluded this entity, or have just included some entities.",
-                "info_text_3_link": "See the recorder documentation for more information.",
+                "info_text_3_link": "See the Recorder documentation for more information.",
                 "info_text_4": "If you no longer wish to keep the long term statistics recorded in the past, you may delete them now."
               },
               "state_class_removed": {
@@ -9473,8 +9482,8 @@
             "description": "Autoupdate the add-on when there is a new version available"
           },
           "ingress_panel": {
-            "title": "Show in sidebar",
-            "description": "Add this add-on to your sidebar"
+            "title": "Add to sidebar",
+            "description": "Allows users to show or hide the add-on"
           },
           "protected": {
             "title": "Protection mode",
@@ -9625,9 +9634,9 @@
         "update_supervisor": "Update the Supervisor",
         "channel": "Channel",
         "leave_beta_action": "Leave beta channel",
-        "leave_beta_description": "Get stable updates for Home Assistant, Supervisor and host",
+        "leave_beta_description": "Get stable updates for Home Assistant OS, Core, Supervisor and Frontend",
         "join_beta_action": "Join beta channel",
-        "join_beta_description": "Get beta updates for Home Assistant (RCs), Supervisor and host",
+        "join_beta_description": "Get beta updates for Home Assistant OS, Core, Supervisor and Frontend",
         "share_diagnostics": "Share diagnostics",
         "share_diagnostics_description": "Share crash reports and diagnostic information.",
         "reload_supervisor": "Reload Supervisor",
@@ -9743,7 +9752,7 @@
       "remote_download_text": "You are accessing Home Assistant via remote access. Downloading backups over the Nabu Casa URL will take some time. If you are at home, cancel this dialog and enter your local URL, such as 'http://homeassistant.local:8123'",
       "restore_start_failed": "Failed to start restore. Unknown error.",
       "no_backup_found": "No backup found.",
-      "restore_no_home_assistant": "Backup does not contain Home Assistant data. To restore Home Assistant you need a backup of Home Assistant core.",
+      "restore_no_home_assistant": "Backup does not contain Home Assistant data. To restore Home Assistant you need a backup of Home Assistant Core.",
       "unnamed_backup": "Unnamed backup"
     },
     "dialog": {

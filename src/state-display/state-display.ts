@@ -114,7 +114,7 @@ class StateDisplay extends LitElement {
       return areaReg?.name?.trim() || "";
     }
 
-    let relativeDateTime: string | undefined;
+    let relativeDateTime: string | Date | undefined;
 
     // Check last-changed for backwards compatibility
     if (content === "last_changed" || content === "last-changed") {
@@ -123,6 +123,9 @@ class StateDisplay extends LitElement {
     // Check last_updated for backwards compatibility
     if (content === "last_updated" || content === "last-updated") {
       relativeDateTime = stateObj.last_updated;
+    }
+    if (domain === "input_datetime" && content === "timestamp") {
+      relativeDateTime = new Date(stateObj.attributes.timestamp * 1000);
     }
 
     if (

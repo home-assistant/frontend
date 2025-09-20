@@ -17,6 +17,7 @@ import {
 import type { HASSDomEvent } from "../../../../common/dom/fire_event";
 import { fireEvent } from "../../../../common/dom/fire_event";
 import type { LocalizeFunc } from "../../../../common/translations/localize";
+import { orderProperties } from "../../../../common/util/order-properties";
 import "../../../../components/ha-expansion-panel";
 import "../../../../components/ha-form/ha-form";
 import type {
@@ -44,10 +45,10 @@ const cardConfigStruct = assign(
     entity: optional(string()),
     name: optional(string()),
     icon: optional(string()),
-    hide_state: optional(boolean()),
-    state_content: optional(union([string(), array(string())])),
     color: optional(string()),
     show_entity_picture: optional(boolean()),
+    hide_state: optional(boolean()),
+    state_content: optional(union([string(), array(string())])),
     vertical: optional(boolean()),
     tap_action: optional(actionConfigStruct),
     hold_action: optional(actionConfigStruct),
@@ -59,6 +60,8 @@ const cardConfigStruct = assign(
     features_position: optional(enums(["bottom", "inline"])),
   })
 );
+
+export const fieldOrder = Object.keys(cardConfigStruct.schema);
 
 @customElement("hui-tile-card-editor")
 export class HuiTileCardEditor
@@ -328,7 +331,7 @@ export class HuiTileCardEditor
 
     const newConfig = ev.detail.value as TileCardConfig;
 
-    const config: TileCardConfig = {
+    let config: TileCardConfig = {
       features: this._config.features,
       ...newConfig,
     };
@@ -346,6 +349,8 @@ export class HuiTileCardEditor
       config.vertical = config.content_layout === "vertical";
       delete config.content_layout;
     }
+
+    config = orderProperties(config, fieldOrder);
 
     fireEvent(this, "config-changed", { config });
   }
@@ -388,10 +393,11 @@ export class HuiTileCardEditor
   private _updateFeature(index: number, feature: LovelaceCardFeatureConfig) {
     const features = this._config!.features!.concat();
     features[index] = feature;
-    const config = { ...this._config!, features };
-    fireEvent(this, "config-changed", {
-      config: config,
-    });
+    let config = { ...this._config!, features };
+
+    config = orderProperties(config, fieldOrder);
+
+    fireEvent(this, "config-changed", { config });
   }
 
   private _computeLabelCallback = (

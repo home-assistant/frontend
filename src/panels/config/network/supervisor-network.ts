@@ -15,9 +15,10 @@ import "../../../components/ha-password-field";
 import "../../../components/ha-radio";
 import type { HaRadio } from "../../../components/ha-radio";
 import "../../../components/ha-spinner";
+import "../../../components/ha-tab-group";
+import "../../../components/ha-tab-group-tab";
 import "../../../components/ha-textfield";
 import type { HaTextField } from "../../../components/ha-textfield";
-import "../../../components/sl-tab-group";
 import { extractApiErrorMessage } from "../../../data/hassio/common";
 import {
   type AccessPoint,
@@ -99,19 +100,19 @@ export class HassioNetwork extends LitElement {
           ${this.hass.localize("ui.panel.config.network.supervisor.title")}
           ${this._interfaces.length > 1
             ? html`
-                <sl-tab-group @sl-tab-show=${this._handleTabActivated}
+                <ha-tab-group @wa-tab-show=${this._handleTabActivated}
                   >${this._interfaces.map(
                     (device, i) =>
-                      html`<sl-tab
+                      html`<ha-tab-group-tab
                         slot="nav"
                         .active=${this._curTabIndex === i}
                         .panel=${i.toString()}
                         .id=${device.interface}
                       >
                         ${device.interface}
-                      </sl-tab>`
+                      </ha-tab-group-tab>`
                   )}
-                </sl-tab-group>
+                </ha-tab-group>
               `
             : nothing}
         </div>
@@ -833,13 +834,13 @@ export class HassioNetwork extends LitElement {
           margin-bottom: 16px;
         }
 
-        sl-tab-group {
+        ha-tab-group {
           line-height: var(--ha-line-height-normal);
         }
-        sl-tab {
+        ha-tab-group-tab {
           flex: 1;
         }
-        sl-tab::part(base) {
+        ha-tab-group-tab::part(base) {
           width: 100%;
           justify-content: center;
         }

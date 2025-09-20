@@ -21,7 +21,7 @@ import { LitElement, css, html, nothing } from "lit";
 import { property, query, state } from "lit/decorators";
 import { classMap } from "lit/directives/class-map";
 import { fireEvent } from "../../../common/dom/fire_event";
-import { navigate } from "../../../common/navigate";
+import { goBack, navigate } from "../../../common/navigate";
 import { slugify } from "../../../common/string/slugify";
 import { promiseTimeout } from "../../../common/util/promise-timeout";
 import { afterNextRender } from "../../../common/util/render-status";
@@ -596,7 +596,7 @@ export class HaScriptEditor extends SubscribeMixin(
                 { err_no: resp.status_code || resp.code }
               )
         );
-        history.back();
+        goBack("/config");
       }
     );
   }
@@ -762,7 +762,7 @@ export class HaScriptEditor extends SubscribeMixin(
   private _backTapped = async () => {
     const result = await this._confirmUnsavedChanged();
     if (result) {
-      afterNextRender(() => history.back());
+      afterNextRender(() => goBack("/config"));
     }
   };
 
@@ -852,7 +852,7 @@ export class HaScriptEditor extends SubscribeMixin(
 
   private async _delete() {
     await deleteScript(this.hass, this.scriptId!);
-    history.back();
+    goBack("/config");
   }
 
   private async _switchUiMode() {
@@ -1062,6 +1062,12 @@ export class HaScriptEditor extends SubscribeMixin(
     return [
       haStyle,
       css`
+        :host {
+          --ha-automation-editor-max-width: var(
+            --ha-automation-editor-width,
+            1540px
+          );
+        }
         .yaml-mode {
           height: 100%;
           display: flex;
@@ -1114,7 +1120,7 @@ export class HaScriptEditor extends SubscribeMixin(
         }
 
         manual-script-editor {
-          max-width: 1540px;
+          max-width: var(--ha-automation-editor-max-width);
           padding: 0 12px;
         }
 
@@ -1139,7 +1145,7 @@ export class HaScriptEditor extends SubscribeMixin(
           transition: bottom 0.3s;
         }
         ha-fab.dirty {
-          bottom: 16px;
+          bottom: calc(16px + var(--safe-area-inset-bottom, 0px));
         }
         li[role="separator"] {
           border-bottom-color: var(--divider-color);

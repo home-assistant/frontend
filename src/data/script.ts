@@ -344,7 +344,11 @@ export const getActionType = (action: Action): ActionType => {
   if ("event" in action) {
     return "fire_event";
   }
-  if ("device_id" in action) {
+  if (
+    "device_id" in action &&
+    !("trigger" in action) &&
+    !("condition" in action)
+  ) {
     return "device_action";
   }
   if ("repeat" in action) {
@@ -379,6 +383,9 @@ export const getActionType = (action: Action): ActionType => {
   }
   return "unknown";
 };
+
+export const isAction = (value: unknown): value is Action =>
+  getActionType(value as Action) !== "unknown";
 
 export const hasScriptFields = (
   hass: HomeAssistant,
