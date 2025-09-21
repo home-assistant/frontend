@@ -249,7 +249,11 @@ export class HaChartBase extends LitElement {
       legend.data ||
       datasets
         .filter((d) => (d.data as any[])?.length && (d.id || d.name))
-        .map((d) => ({ id: d.id, name: d.name }));
+        .map((d) => ({
+          id: d.id,
+          name: d.name,
+          current_state: this.hass.states[d.id!]?.state,
+        }));
 
     const isMobile = window.matchMedia(
       "all and (max-width: 450px), all and (max-height: 500px)"
@@ -302,7 +306,12 @@ export class HaChartBase extends LitElement {
                 borderColor: borderColor || color,
               })}
             ></div>
-            <div class="label">${name}</div>
+            <div class="label">
+              ${name} (<b
+                >${item.current_state}
+                ${(this.options?.yAxis as YAXisOption)?.name}</b
+              >)
+            </div>
           </li>`;
         })}
         ${items.length > overflowLimit
@@ -1021,9 +1030,6 @@ export class HaChartBase extends LitElement {
       padding: 0 2px;
       box-sizing: border-box;
       overflow: hidden;
-    }
-    .chart-legend.multiple-items li {
-      max-width: 220px;
     }
     .chart-legend .hidden {
       color: var(--secondary-text-color);

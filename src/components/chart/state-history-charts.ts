@@ -219,6 +219,22 @@ export class StateHistoryCharts extends LitElement {
 
   protected shouldUpdate(changedProps: PropertyValues): boolean {
     if (changedProps.size === 1 && changedProps.has("hass")) {
+      const oldHass = changedProps.get("hass") as HomeAssistant | undefined;
+
+      // Update when one of the relevant states changes
+      if (this.historyData?.line) {
+        for (const line of this.historyData.line) {
+          for (const data of line.data) {
+            const hasSensorChanged =
+              oldHass?.states[data.entity_id]?.state !==
+              this.hass.states[data.entity_id]?.state;
+            if (hasSensorChanged) {
+              return true;
+            }
+          }
+        }
+      }
+
       return false;
     }
     if (
