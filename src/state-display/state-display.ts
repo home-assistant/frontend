@@ -111,13 +111,13 @@ class StateDisplay extends LitElement {
       return html`${this.name || computeStateName(stateObj)}`;
     }
     if (content === "area") {
-      return areaReg?.name?.trim() || "";
+      return html`${areaReg?.name?.trim() || ""}`;
     }
     if (content === "device") {
-      return deviceReg ? computeDeviceName(deviceReg) : "";
+      return html`${deviceReg ? computeDeviceName(deviceReg) : ""}`;
     }
     if (content === "floor") {
-      return floorReg?.name?.trim() || "";
+      return html`${floorReg?.name?.trim() || ""}`;
     }
 
     let relativeDateTime: string | Date | undefined;
