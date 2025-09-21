@@ -38,7 +38,7 @@ const processAreasForMediaPlayers = (
       } satisfies MediaControlCardConfig);
     }
 
-    if (areaEntities.length > 0) {
+    if (areaCards.length > 0) {
       cards.push({
         heading_style: "subtitle",
         type: "heading",
