@@ -293,6 +293,15 @@ export class HaChartBase extends LitElement {
           };
           const color = itemStyle?.color as string;
           const borderColor = itemStyle?.borderColor as string;
+
+          const current_state_text =
+            item.current_state != null
+              ? html`(<b
+                    >${item.current_state}
+                    ${(this.options?.yAxis as YAXisOption)?.name ?? ""}</b
+                  >)`
+              : "";
+
           return html`<li
             .id=${id}
             @click=${this._legendClick}
@@ -306,12 +315,7 @@ export class HaChartBase extends LitElement {
                 borderColor: borderColor || color,
               })}
             ></div>
-            <div class="label">
-              ${name} (<b
-                >${item.current_state}
-                ${(this.options?.yAxis as YAXisOption)?.name}</b
-              >)
-            </div>
+            <div class="label">${name} ${current_state_text}</div>
           </li>`;
         })}
         ${items.length > overflowLimit
