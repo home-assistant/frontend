@@ -17,6 +17,8 @@ import { computeDeviceName } from "../common/entity/compute_device_name";
 
 const TIMESTAMP_STATE_DOMAINS = ["button", "input_button", "scene"];
 
+const HIERARCHY_CONTENT_TYPES = new Set(["area", "device", "floor"]);
+
 export const STATE_DISPLAY_SPECIAL_CONTENT = [
   "remaining_time",
   "install_status",
@@ -102,22 +104,25 @@ class StateDisplay extends LitElement {
       return this.hass!.formatEntityState(stateObj);
     }
 
-    // Resolve entity hierarchy once for all content types that need it
-    const { deviceReg, areaReg, floorReg } = this._resolveEntityHierarchy(
-      stateObj.entity_id
-    );
-
     if (content === "name") {
       return html`${this.name || computeStateName(stateObj)}`;
     }
-    if (content === "area") {
-      return html`${areaReg?.name?.trim() || ""}`;
-    }
-    if (content === "device") {
-      return html`${deviceReg ? computeDeviceName(deviceReg) : ""}`;
-    }
-    if (content === "floor") {
-      return html`${floorReg?.name?.trim() || ""}`;
+
+    // Resolve entity hierarchy only for content types that need it
+    if (HIERARCHY_CONTENT_TYPES.has(content)) {
+      const { deviceReg, areaReg, floorReg } = this._resolveEntityHierarchy(
+        stateObj.entity_id
+      );
+
+      if (content === "area") {
+        return html`${areaReg?.name?.trim() || ""}`;
+      }
+      if (content === "device") {
+        return html`${deviceReg ? computeDeviceName(deviceReg) : ""}`;
+      }
+      if (content === "floor") {
+        return html`${floorReg?.name?.trim() || ""}`;
+      }
     }
 
     let relativeDateTime: string | Date | undefined;
