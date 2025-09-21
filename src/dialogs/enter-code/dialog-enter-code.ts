@@ -94,6 +94,7 @@ export class DialogEnterCode
     if (isText) {
       return html`
         <ha-dialog
+          @keydown=${this._onKeyDown}
           open
           @closed=${this._cancel}
           .heading=${this._dialogParams.title ??
