@@ -416,6 +416,7 @@
       "next": "Next",
       "back": "Back",
       "undo": "Undo",
+      "redo": "Redo",
       "move": "Move",
       "save": "Save",
       "apply": "Apply",
@@ -2066,7 +2067,9 @@
           "cut": "to cut the selected item and place it on the clipboard",
           "delete": "to delete the selected item",
           "paste": "to paste automation/script YAML from clipboard to editor",
-          "save": "to save automation/script"
+          "save": "to save automation/script",
+          "undo": "to undo last change",
+          "redo": "to redo last undone change"
         },
         "charts": {
           "title": "Charts",

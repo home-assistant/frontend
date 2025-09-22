@@ -11,11 +11,13 @@ import {
   mdiPlayCircleOutline,
   mdiPlaylistEdit,
   mdiPlusCircleMultipleOutline,
+  mdiRedo,
   mdiRenameBox,
   mdiRobotConfused,
   mdiStopCircleOutline,
   mdiTag,
   mdiTransitConnection,
+  mdiUndo,
 } from "@mdi/js";
 import type { UnsubscribeFunc } from "home-assistant-js-websocket";
 import type { CSSResultGroup, PropertyValues, TemplateResult } from "lit";
@@ -84,6 +86,7 @@ import {
 import "./blueprint-automation-editor";
 import "./manual-automation-editor";
 import type { HaManualAutomationEditor } from "./manual-automation-editor";
+import { UndoRedoMixin } from "../../../mixins/undo-redo-mixin";
 
 declare global {
   interface HTMLElementTagNameMap {
@@ -106,9 +109,12 @@ declare global {
   }
 }
 
-export class HaAutomationEditor extends PreventUnsavedMixin(
-  KeyboardShortcutMixin(LitElement)
-) {
+const baseEditorMixins = PreventUnsavedMixin(KeyboardShortcutMixin(LitElement));
+
+export class HaAutomationEditor extends UndoRedoMixin<
+  typeof baseEditorMixins,
+  AutomationConfig
+>(baseEditorMixins) {
   @property({ attribute: false }) public hass!: HomeAssistant;
 
   @property({ attribute: false }) public automationId: string | null = null;
@@ -218,6 +224,24 @@ export class HaAutomationEditor extends PreventUnsavedMixin(
         .header=${this._config.alias ||
         this.hass.localize("ui.panel.config.automation.editor.default_name")}
       >
+        ${this._mode === "gui" && !this.narrow
+          ? html`<ha-icon-button
+                slot="toolbar-icon"
+                .label=${this.hass.localize("ui.common.undo")}
+                .path=${mdiUndo}
+                @click=${this.undo}
+                .disabled=${!this.canUndo}
+              >
+              </ha-icon-button>
+              <ha-icon-button
+                slot="toolbar-icon"
+                .label=${this.hass.localize("ui.common.redo")}
+                .path=${mdiRedo}
+                @click=${this.redo}
+                .disabled=${!this.canRedo}
+              >
+              </ha-icon-button>`
+          : nothing}
         ${this._config?.id && !this.narrow
           ? html`
               <ha-button
@@ -238,6 +262,25 @@ export class HaAutomationEditor extends PreventUnsavedMixin(
             .label=${this.hass.localize("ui.common.menu")}
             .path=${mdiDotsVertical}
           ></ha-icon-button>
+
+          ${this._mode === "gui" && this.narrow
+            ? html`<ha-list-item
+                  graphic="icon"
+                  @click=${this.undo}
+                  .disabled=${!this.canUndo}
+                >
+                  ${this.hass.localize("ui.common.undo")}
+                  <ha-svg-icon slot="graphic" .path=${mdiUndo}></ha-svg-icon>
+                </ha-list-item>
+                <ha-list-item
+                  graphic="icon"
+                  @click=${this.redo}
+                  .disabled=${!this.canRedo}
+                >
+                  ${this.hass.localize("ui.common.redo")}
+                  <ha-svg-icon slot="graphic" .path=${mdiRedo}></ha-svg-icon>
+                </ha-list-item>`
+            : nothing}
 
           <ha-list-item
             graphic="icon"
@@ -715,6 +758,10 @@ export class HaAutomationEditor extends PreventUnsavedMixin(
   private _valueChanged(ev: CustomEvent<{ value: AutomationConfig }>) {
     ev.stopPropagation();
 
+    if (this._config) {
+      this.pushToUndo(this._config);
+    }
+
     this._config = ev.detail.value;
     if (this._readOnly) {
       return;
@@ -1123,6 +1170,8 @@ export class HaAutomationEditor extends PreventUnsavedMixin(
       x: () => this._cutSelectedRow(),
       Delete: () => this._deleteSelectedRow(),
       Backspace: () => this._deleteSelectedRow(),
+      z: () => this.undo(),
+      y: () => this.redo(),
     };
   }
 
@@ -1154,6 +1203,16 @@ export class HaAutomationEditor extends PreventUnsavedMixin(
 
   private _deleteSelectedRow() {
     this._manualEditor?.deleteSelectedRow();
+  }
+
+  protected get currentConfig() {
+    return this._config;
+  }
+
+  protected applyUndoRedo(config: AutomationConfig) {
+    this._manualEditor?.triggerCloseSidebar();
+    this._config = config;
+    this._dirty = true;
   }
 
   static get styles(): CSSResultGroup {
