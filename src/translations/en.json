@@ -3403,7 +3403,7 @@
                 "conf_mode": "Configuration method",
                 "default": "Default",
                 "require_admin": "Admin only",
-                "sidebar": "Show in sidebar",
+                "sidebar": "In sidebar",
                 "filename": "Filename",
                 "url": "Open"
               },
@@ -3417,7 +3417,7 @@
             "detail": {
               "edit_dashboard": "Edit dashboard",
               "new_dashboard": "Add new dashboard",
-              "show_sidebar": "Show in sidebar",
+              "show_sidebar": "Add to sidebar",
               "icon": "Icon",
               "title": "Title",
               "title_required": "Title is required.",

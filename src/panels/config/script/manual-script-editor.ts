@@ -21,6 +21,7 @@ import {
   string,
 } from "superstruct";
 import { ensureArray } from "../../../common/array/ensure-array";
+import { storage } from "../../../common/decorators/storage";
 import { canOverrideAlphanumericInput } from "../../../common/dom/can-override-input";
 import { fireEvent } from "../../../common/dom/fire_event";
 import { constructUrlCurrentPath } from "../../../common/url/construct-url";
@@ -47,6 +48,7 @@ import "../automation/action/ha-automation-action";
 import type HaAutomationAction from "../automation/action/ha-automation-action";
 import "../automation/ha-automation-sidebar";
 import type HaAutomationSidebar from "../automation/ha-automation-sidebar";
+import { SIDEBAR_DEFAULT_WIDTH } from "../automation/manual-automation-editor";
 import { showPasteReplaceDialog } from "../automation/paste-replace-dialog/show-dialog-paste-replace";
 import { manualEditorStyles, saveFabStyles } from "../automation/styles";
 import "./ha-script-fields";
@@ -84,6 +86,13 @@ export class HaManualScriptEditor extends LitElement {
 
   @state() private _sidebarKey?: string;
 
+  @storage({
+    key: "automation-sidebar-width",
+    state: false,
+    subscribe: false,
+  })
+  private _sidebarWidthPx = SIDEBAR_DEFAULT_WIDTH;
+
   @query("ha-script-fields")
   private _scriptFields?: HaScriptFields;
 
@@ -97,6 +106,8 @@ export class HaManualScriptEditor extends LitElement {
   private _previousConfig?: ScriptConfig;
 
   private _openFields = false;
+
+  private _prevSidebarWidthPx?: number;
 
   public addFields() {
     this._openFields = true;
@@ -198,7 +209,7 @@ export class HaManualScriptEditor extends LitElement {
       role="region"
       aria-labelledby="sequence-heading"
       .actions=${this.config.sequence || []}
-      .highlightedActions=${this._pastedConfig?.sequence || []}
+      .highlightedActions=${this._pastedConfig?.sequence}
       @value-changed=${this._sequenceChanged}
       @open-sidebar=${this._openSidebar}
       @request-close-sidebar=${this._triggerCloseSidebar}
@@ -252,8 +263,10 @@ export class HaManualScriptEditor extends LitElement {
             .isWide=${this.isWide}
             .hass=${this.hass}
             .config=${this._sidebarConfig}
-            @value-changed=${this._sidebarConfigChanged}
             .disabled=${this.disabled}
+            @value-changed=${this._sidebarConfigChanged}
+            @sidebar-resized=${this._resizeSidebar}
+            @sidebar-resizing-stopped=${this._stopResizeSidebar}
           ></ha-automation-sidebar>
         </div>
       </div>
@@ -262,6 +275,12 @@ export class HaManualScriptEditor extends LitElement {
 
   protected firstUpdated(changedProps: PropertyValues): void {
     super.firstUpdated(changedProps);
+
+    this.style.setProperty(
+      "--sidebar-dynamic-width",
+      `${this._sidebarWidthPx}px`
+    );
+
     const expanded = extractSearchParam("expanded");
     if (expanded === "1") {
       this._clearParam("expanded");
@@ -376,6 +395,20 @@ export class HaManualScriptEditor extends LitElement {
 
     if (normalized) {
       ev.preventDefault();
+
+      const keysPresent = Object.keys(normalized).filter(
+        (key) => ensureArray(normalized[key]).length
+      );
+
+      if (keysPresent.length === 1 && ["sequence"].includes(keysPresent[0])) {
+        // if only one type of element is pasted, insert under the currently active item
+        const previousConfig = { ...this.config };
+        if (this._tryInsertAfterSelected(normalized[keysPresent[0]])) {
+          this._previousConfig = previousConfig;
+          this._showPastedToastWithUndo();
+          return;
+        }
+      }
 
       if (
         this.dirty ||
@@ -527,6 +560,13 @@ export class HaManualScriptEditor extends LitElement {
     fireEvent(this, "save-script");
   }
 
+  private _tryInsertAfterSelected(config: Action | Action[]): boolean {
+    if (this._sidebarConfig && "insertAfter" in this._sidebarConfig) {
+      return this._sidebarConfig.insertAfter(config as any);
+    }
+    return false;
+  }
+
   public expandAll() {
     this._collapsableElements?.forEach((element) => {
       element.expandAll();
@@ -555,6 +595,31 @@ export class HaManualScriptEditor extends LitElement {
     if ((this._sidebarConfig as ActionSidebarConfig)?.delete) {
       (this._sidebarConfig as ActionSidebarConfig).delete();
     }
+  }
+
+  private _resizeSidebar(ev) {
+    ev.stopPropagation();
+    const delta = ev.detail.deltaInPx as number;
+
+    // set initial resize width to add / reduce delta from it
+    if (!this._prevSidebarWidthPx) {
+      this._prevSidebarWidthPx =
+        this._sidebarElement?.clientWidth || SIDEBAR_DEFAULT_WIDTH;
+    }
+
+    const widthPx = delta + this._prevSidebarWidthPx;
+
+    this._sidebarWidthPx = widthPx;
+
+    this.style.setProperty(
+      "--sidebar-dynamic-width",
+      `${this._sidebarWidthPx}px`
+    );
+  }
+
+  private _stopResizeSidebar(ev) {
+    ev.stopPropagation();
+    this._prevSidebarWidthPx = undefined;
   }
 
   static get styles(): CSSResultGroup {

@@ -16,16 +16,19 @@ import {
   mdiStopCircleOutline,
 } from "@mdi/js";
 import deepClone from "deep-clone-simple";
+import { dump } from "js-yaml";
 import type { PropertyValues, TemplateResult } from "lit";
 import { LitElement, html, nothing } from "lit";
 import { customElement, property, query, state } from "lit/decorators";
 import memoizeOne from "memoize-one";
+import { ensureArray } from "../../../../common/array/ensure-array";
 import { storage } from "../../../../common/decorators/storage";
 import { fireEvent } from "../../../../common/dom/fire_event";
 import { preventDefaultStopPropagation } from "../../../../common/dom/prevent_default_stop_propagation";
 import { stopPropagation } from "../../../../common/dom/stop_propagation";
 import { capitalizeFirstLetter } from "../../../../common/string/capitalize-first-letter";
 import { handleStructError } from "../../../../common/structs/handle-errors";
+import { copyToClipboard } from "../../../../common/util/copy-clipboard";
 import "../../../../components/ha-automation-row";
 import type { HaAutomationRow } from "../../../../components/ha-automation-row";
 import "../../../../components/ha-card";
@@ -62,7 +65,7 @@ import type {
   NonConditionAction,
   RepeatAction,
 } from "../../../../data/script";
-import { getActionType } from "../../../../data/script";
+import { getActionType, isAction } from "../../../../data/script";
 import { describeAction } from "../../../../data/script_i18n";
 import { callExecuteScript } from "../../../../data/service";
 import {
@@ -586,6 +589,7 @@ export default class HaAutomationActionRow extends LitElement {
       ...this._clipboard,
       action: deepClone(this.action),
     };
+    copyToClipboard(dump(this.action));
   }
 
   private _onDisable = () => {
@@ -716,6 +720,14 @@ export default class HaAutomationActionRow extends LitElement {
     fireEvent(this, "duplicate");
   };
 
+  private _insertAfter = (value: Action | Action[]) => {
+    if (ensureArray(value).some((val) => !isAction(val))) {
+      return false;
+    }
+    fireEvent(this, "insert-after", { value });
+    return true;
+  };
+
   private _copyAction = () => {
     this._setClipboard();
     showToast(this, {
@@ -806,6 +818,7 @@ export default class HaAutomationActionRow extends LitElement {
       copy: this._copyAction,
       cut: this._cutAction,
       duplicate: this._duplicateAction,
+      insertAfter: this._insertAfter,
       run: this._runAction,
       config: {
         action: sidebarAction,

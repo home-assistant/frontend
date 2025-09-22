@@ -15,17 +15,20 @@ import {
   mdiStopCircleOutline,
 } from "@mdi/js";
 import type { UnsubscribeFunc } from "home-assistant-js-websocket";
+import { dump } from "js-yaml";
 import type { CSSResultGroup, PropertyValues, TemplateResult } from "lit";
 import { LitElement, css, html, nothing } from "lit";
 import { customElement, property, query, state } from "lit/decorators";
 import { classMap } from "lit/directives/class-map";
 import memoizeOne from "memoize-one";
+import { ensureArray } from "../../../../common/array/ensure-array";
 import { storage } from "../../../../common/decorators/storage";
 import { fireEvent } from "../../../../common/dom/fire_event";
 import { preventDefaultStopPropagation } from "../../../../common/dom/prevent_default_stop_propagation";
 import { stopPropagation } from "../../../../common/dom/stop_propagation";
 import { capitalizeFirstLetter } from "../../../../common/string/capitalize-first-letter";
 import { handleStructError } from "../../../../common/structs/handle-errors";
+import { copyToClipboard } from "../../../../common/util/copy-clipboard";
 import { debounce } from "../../../../common/util/debounce";
 import "../../../../components/ha-alert";
 import "../../../../components/ha-automation-row";
@@ -41,7 +44,7 @@ import type {
   Trigger,
   TriggerSidebarConfig,
 } from "../../../../data/automation";
-import { subscribeTrigger } from "../../../../data/automation";
+import { isTrigger, subscribeTrigger } from "../../../../data/automation";
 import { describeTrigger } from "../../../../data/automation_i18n";
 import { validateConfig } from "../../../../data/config";
 import { fullEntitiesContext } from "../../../../data/context";
@@ -586,6 +589,7 @@ export default class HaAutomationTriggerRow extends LitElement {
       copy: this._copyTrigger,
       duplicate: this._duplicateTrigger,
       cut: this._cutTrigger,
+      insertAfter: this._insertAfter,
       config: trigger || this.trigger,
       uiSupported: this._uiSupported(this._getType(trigger || this.trigger)),
       yamlMode: this._yamlMode,
@@ -607,6 +611,8 @@ export default class HaAutomationTriggerRow extends LitElement {
       ...this._clipboard,
       trigger: this.trigger,
     };
+
+    copyToClipboard(dump(this.trigger));
   }
 
   private _onDelete = () => {
@@ -712,6 +718,14 @@ export default class HaAutomationTriggerRow extends LitElement {
 
   private _duplicateTrigger = () => {
     fireEvent(this, "duplicate");
+  };
+
+  private _insertAfter = (value: Trigger | Trigger[]) => {
+    if (ensureArray(value).some((val) => !isTrigger(val))) {
+      return false;
+    }
+    fireEvent(this, "insert-after", { value });
+    return true;
   };
 
   private _copyTrigger = () => {

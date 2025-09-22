@@ -1,5 +1,7 @@
 import { css, html, LitElement, nothing } from "lit";
 import { customElement, property, query, state } from "lit/decorators";
+import { fireEvent } from "../../../common/dom/fire_event";
+import { computeRTL } from "../../../common/util/compute_rtl";
 import "../../../components/ha-resizable-bottom-sheet";
 import type { HaResizableBottomSheet } from "../../../components/ha-resizable-bottom-sheet";
 import {
@@ -37,8 +39,17 @@ export default class HaAutomationSidebar extends LitElement {
 
   @state() private _yamlMode = false;
 
+  @state() private _resizing = false;
+
   @query("ha-resizable-bottom-sheet")
   private _bottomSheetElement?: HaResizableBottomSheet;
+
+  private _resizeStartX = 0;
+
+  disconnectedCallback() {
+    super.disconnectedCallback();
+    this._unregisterResizeHandlers();
+  }
 
   private _renderContent() {
     // get config type
@@ -154,7 +165,16 @@ export default class HaAutomationSidebar extends LitElement {
       `;
     }
 
-    return this._renderContent();
+    return html`
+      <div
+        class="handle ${this._resizing ? "resizing" : ""}"
+        @mousedown=${this._handleMouseDown}
+        @touchstart=${this._handleMouseDown}
+      >
+        ${this._resizing ? html`<div class="indicator"></div>` : nothing}
+      </div>
+      ${this._renderContent()}
+    `;
   }
 
   private _getType() {
@@ -207,6 +227,67 @@ export default class HaAutomationSidebar extends LitElement {
     (this.config as ActionSidebarConfig)?.toggleYamlMode();
   };
 
+  private _handleMouseDown = (ev: MouseEvent | TouchEvent) => {
+    // Prevent the browser from interpreting this as a scroll/PTR gesture.
+    ev.preventDefault();
+    this._startResizing(
+      (ev as TouchEvent).touches?.length
+        ? (ev as TouchEvent).touches[0].clientX
+        : (ev as MouseEvent).clientX
+    );
+  };
+
+  private _startResizing(clientX: number) {
+    // register event listeners for drag handling
+    document.addEventListener("mousemove", this._handleMouseMove);
+    document.addEventListener("mouseup", this._endResizing);
+    document.addEventListener("touchmove", this._handleMouseMove, {
+      passive: false,
+    });
+    document.addEventListener("touchend", this._endResizing);
+    document.addEventListener("touchcancel", this._endResizing);
+
+    this._resizing = true;
+    this._resizeStartX = clientX;
+  }
+
+  private _handleMouseMove = (ev: MouseEvent | TouchEvent) => {
+    this._updateSize(
+      (ev as TouchEvent).touches?.length
+        ? (ev as TouchEvent).touches[0].clientX
+        : (ev as MouseEvent).clientX
+    );
+  };
+
+  private _updateSize(clientX: number) {
+    let delta = this._resizeStartX - clientX;
+
+    if (computeRTL(this.hass)) {
+      delta = -delta;
+    }
+
+    requestAnimationFrame(() => {
+      fireEvent(this, "sidebar-resized", {
+        deltaInPx: delta,
+      });
+    });
+  }
+
+  private _endResizing = () => {
+    this._unregisterResizeHandlers();
+    this._resizing = false;
+    document.body.style.removeProperty("cursor");
+    fireEvent(this, "sidebar-resizing-stopped");
+  };
+
+  private _unregisterResizeHandlers() {
+    document.removeEventListener("mousemove", this._handleMouseMove);
+    document.removeEventListener("mouseup", this._endResizing);
+    document.removeEventListener("touchmove", this._handleMouseMove);
+    document.removeEventListener("touchend", this._endResizing);
+    document.removeEventListener("touchcancel", this._endResizing);
+  }
+
   static styles = css`
     :host {
       z-index: 6;
@@ -231,6 +312,28 @@ export default class HaAutomationSidebar extends LitElement {
         max-height: 100%;
       }
     }
+
+    .handle {
+      position: absolute;
+      margin-inline-start: -11px;
+      height: calc(100% - (2 * var(--ha-card-border-radius)));
+      width: 24px;
+      z-index: 7;
+      cursor: ew-resize;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      padding: var(--ha-card-border-radius) 0;
+    }
+    .handle.resizing {
+      cursor: grabbing;
+    }
+    .handle .indicator {
+      background-color: var(--primary-color);
+      height: 100%;
+      width: 4px;
+      border-radius: var(--ha-border-radius-pill);
+    }
   `;
 }
 
@@ -244,5 +347,9 @@ declare global {
     "yaml-changed": {
       value: unknown;
     };
+    "sidebar-resized": {
+      deltaInPx: number;
+    };
+    "sidebar-resizing-stopped": undefined;
   }
 }

@@ -170,6 +170,7 @@ export interface DataEntryFlowDialogParams {
   showAdvanced?: boolean;
   dialogParentElement?: HTMLElement;
   navigateToResult?: boolean;
+  carryOverDevices?: string[];
 }
 
 export const loadDataEntryFlowDialog = () => import("./dialog-data-entry-flow");
