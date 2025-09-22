@@ -7,33 +7,21 @@ import type { HaIconButton } from "./ha-icon-button";
 import "./ha-icon-button-group";
 import "./ha-tooltip";
 
-export type HaIconButtonToolbarItem =
-  | {
-      [key: string]: any;
-      divider?: false;
-      path: string;
-      label: string;
-      id?: string;
-      class?: string;
-      disabled?: boolean;
-      tooltip?: string;
-      action?: (e: Event) => any;
-    }
-  | {
-      [key: string]: any;
-      divider: true;
-      path?: never;
-      label?: never;
-      id?: never;
-      class?: never;
-      disabled?: never;
-      tooltip?: never;
-      action?: never;
-    };
+export interface HaIconButtonToolbarItem {
+  [key: string]: any;
+  path: string;
+  label: string;
+  id?: string;
+  disabled?: boolean;
+  tooltip?: string;
+  action?: (e: Event) => any;
+  divider?: boolean;
+}
 
 @customElement("ha-icon-button-toolbar")
 export class HaIconButtonToolbar extends LitElement {
-  @property({ type: Array }) public items: HaIconButtonToolbarItem[] = [];
+  @property({ type: Array, attribute: false })
+  public items: HaIconButtonToolbarItem[] = [];
 
   @queryAll("ha-icon-button") private _buttons?: HaIconButton[];
 
@@ -55,7 +43,7 @@ export class HaIconButtonToolbar extends LitElement {
 
   // Returns a toolbar button based on the provided id.
   // Will return undefined if not found.
-  public findToolbarButtonById(id = ""): HaIconButton | undefined {
+  public findToolbarButtonById(id): HaIconButton | undefined {
     // Find the specified id
     const element = this.shadowRoot?.getElementById(id);
     if (!element || element.localName !== "ha-icon-button") return undefined;
@@ -74,14 +62,12 @@ export class HaIconButtonToolbar extends LitElement {
                   >${item.tooltip ?? ""}</ha-tooltip
                 >
                 <ha-icon-button
+                  class="icon-toolbar-button"
                   .id=${item.id ?? "icon-button-" + item.label}
-                  .className=${["icon-toolbar-button", item.class]
-                    .filter(Boolean)
-                    .join(" ")}
                   @click=${item.action}
                   .label=${item.label}
                   .path=${item.path}
-                  ?disabled=${item.disabled}
+                  .disabled=${item.disabled ?? false}
                 ></ha-icon-button>`
         )}
       </ha-icon-button-group>
