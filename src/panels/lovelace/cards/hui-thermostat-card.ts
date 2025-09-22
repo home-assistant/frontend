@@ -11,6 +11,7 @@ import { stateColorCss } from "../../../common/entity/state_color";
 import "../../../components/ha-card";
 import "../../../components/ha-icon-button";
 import "../../../state-control/climate/ha-state-control-climate-temperature";
+import "../../../state-control/water_heater/ha-state-control-water_heater-temperature";
 import type { HomeAssistant } from "../../../types";
 import "../card-features/hui-card-features";
 import type { LovelaceCardFeatureContext } from "../card-features/types";
@@ -26,18 +27,14 @@ import { computeDomain } from "../../../common/entity/compute_domain";
 
 @customElement("hui-thermostat-card")
 export class HuiThermostatCard extends LitElement implements LovelaceCard {
-  private _createResizeController() {
-    return new ResizeController(this, {
-      callback: (entries) => {
-        const container = entries[0]?.target.shadowRoot?.querySelector(
-          ".container"
-        ) as HTMLElement | undefined;
-        return container?.clientHeight;
-      },
-    });
-  }
-
-  private _resizeController = this._createResizeController();
+  private _resizeController = new ResizeController(this, {
+    callback: (entries) => {
+      const container = entries[0]?.target.shadowRoot?.querySelector(
+        ".container"
+      ) as HTMLElement | undefined;
+      return container?.clientHeight;
+    },
+  });
 
   public static async getConfigElement(): Promise<LovelaceCardEditor> {
     await import("../editor/config-elements/hui-thermostat-card-editor");
@@ -68,8 +65,6 @@ export class HuiThermostatCard extends LitElement implements LovelaceCard {
 
   @state() private _featureContext: LovelaceCardFeatureContext = {};
 
-  @state() private _loadedWater = false;
-
   public getCardSize(): number {
     return 7;
   }
@@ -96,18 +91,6 @@ export class HuiThermostatCard extends LitElement implements LovelaceCard {
     });
   }
 
-  private async _loadWaterHeater() {
-    import(
-      "../../../state-control/water_heater/ha-state-control-water_heater-temperature"
-    );
-    customElements
-      .whenDefined("ha-state-control-water_heater-temperature")
-      .then(() => {
-        this._loadedWater = true;
-        this._resizeController = this._createResizeController();
-      });
-  }
-
   protected updated(changedProps: PropertyValues): void {
     super.updated(changedProps);
 
@@ -117,14 +100,6 @@ export class HuiThermostatCard extends LitElement implements LovelaceCard {
       (!changedProps.has("hass") && !changedProps.has("_config"))
     ) {
       return;
-    }
-
-    if (
-      this._config.entity &&
-      computeDomain(this._config.entity) === "water_heater" &&
-      !this._loadedWater
-    ) {
-      this._loadWaterHeater();
     }
 
     const oldHass = changedProps.get("hass") as HomeAssistant | undefined;
@@ -156,9 +131,6 @@ export class HuiThermostatCard extends LitElement implements LovelaceCard {
       `;
     }
     const domain = computeDomain(stateObj.entity_id);
-    if (domain === "water_heater" && !this._loadedWater) {
-      return nothing;
-    }
 
     const name = this._config!.name || computeStateName(stateObj);
 
