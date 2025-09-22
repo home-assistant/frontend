@@ -7,6 +7,7 @@ import {
   mdiContentCut,
   mdiDelete,
   mdiDotsVertical,
+  mdiInformation,
   mdiPlayCircleOutline,
   mdiPlaylistEdit,
   mdiPlusCircleMultipleOutline,
@@ -442,6 +443,7 @@ export default class HaAutomationTriggerRow extends LitElement {
           ${this.hass.localize(
             "ui.panel.config.automation.editor.triggers.triggered"
           )}
+          <ha-icon-button .path=${mdiInformation}></ha-icon-button>
         </div>
       </ha-card>
     `;
@@ -798,6 +800,11 @@ export default class HaAutomationTriggerRow extends LitElement {
             var(--ha-border-radius-lg)
           );
         }
+        .triggered ha-icon-button {
+          --mdc-icon-size: 16px;
+          --mdc-icon-button-size: 20px;
+        }
+
         .triggered.active {
           max-height: 100px;
         }

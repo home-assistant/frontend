@@ -564,9 +564,9 @@ export default class HaAutomationConditionRow extends LitElement {
     this._testing = true;
     const condition = this.condition;
     requestAnimationFrame(() => {
-      // @ts-ignore is supported in all browsers expect firefox
+      // @ts-ignore is supported in all browsers except firefox
       if (this.scrollIntoViewIfNeeded) {
-        // @ts-ignore is supported in all browsers expect firefox
+        // @ts-ignore is supported in all browsers except firefox
         this.scrollIntoViewIfNeeded();
         return;
       }
