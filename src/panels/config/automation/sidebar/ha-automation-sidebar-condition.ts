@@ -364,6 +364,7 @@ export default class HaAutomationSidebarCondition extends LitElement {
     } finally {
       setTimeout(() => {
         this._testing = false;
+        this._testingResult = undefined;
       }, 2500);
     }
   };
