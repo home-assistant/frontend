@@ -293,7 +293,7 @@ export class HaCodeEditor extends ReactiveElement {
       }),
       parent: this.renderRoot,
     });
-    this._canCopy = this._value.length > 0;
+    this._canCopy = this._value?.length > 0;
 
     // Update the toolbar. Creating it if required
     this._updateToolbar();
@@ -714,7 +714,7 @@ export class HaCodeEditor extends ReactiveElement {
       return;
     }
     this._value = update.state.doc.toString();
-    this._canCopy = this._value.length > 0;
+    this._canCopy = this._value?.length > 0;
     fireEvent(this, "value-changed", { value: this._value });
   };
 
