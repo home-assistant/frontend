@@ -73,9 +73,11 @@ export default class HaAutomationTriggerEditor extends LitElement {
               ${!isTriggerList(this.trigger)
                 ? html`
                     <ha-textfield
-                      .label=${this.hass.localize(
+                      .label=${`${this.hass.localize(
                         "ui.panel.config.automation.editor.triggers.id"
-                      )}
+                      )} (${this.hass.localize(
+                        "ui.panel.config.automation.editor.triggers.optional"
+                      )})`}
                       .value=${this.trigger.id || ""}
                       .disabled=${this.disabled}
                       @change=${this._idChanged}
