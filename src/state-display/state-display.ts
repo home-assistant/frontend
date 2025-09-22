@@ -16,6 +16,7 @@ import type { HomeAssistant } from "../types";
 import { computeAreaName } from "../common/entity/compute_area_name";
 import { computeDeviceName } from "../common/entity/compute_device_name";
 import { computeFloorName } from "../common/entity/compute_floor_name";
+import { getEntityContext } from "../common/entity/context/get_entity_context";
 
 const TIMESTAMP_STATE_DOMAINS = ["button", "input_button", "scene"];
 
@@ -112,18 +113,22 @@ class StateDisplay extends LitElement {
 
     // Resolve entity hierarchy only for content types that need it
     if (HIERARCHY_CONTENT_TYPES.has(content)) {
-      const { deviceReg, areaReg, floorReg } = this._resolveEntityHierarchy(
-        stateObj.entity_id
+      const context = getEntityContext(
+        stateObj,
+        this.hass.entities,
+        this.hass.devices,
+        this.hass.areas,
+        this.hass.floors
       );
 
       if (content === "area") {
-        return html`${areaReg ? computeAreaName(areaReg) : ""}`;
+        return html`${context.area ? computeAreaName(context.area) : ""}`;
       }
       if (content === "device") {
-        return html`${deviceReg ? computeDeviceName(deviceReg) : ""}`;
+        return html`${context.device ? computeDeviceName(context.device) : ""}`;
       }
       if (content === "floor") {
-        return html`${floorReg ? computeFloorName(floorReg) : ""}`;
+        return html`${context.floor ? computeFloorName(context.floor) : ""}`;
       }
     }
 
@@ -210,24 +215,6 @@ class StateDisplay extends LitElement {
     }
 
     return join(values, " · ");
-  }
-
-  private _resolveEntityHierarchy(entityId: string) {
-    const entityReg = this.hass.entities?.[entityId];
-    const deviceReg = entityReg?.device_id
-      ? this.hass.devices?.[entityReg.device_id]
-      : undefined;
-    const areaId = entityReg?.area_id || deviceReg?.area_id;
-    const areaReg = areaId ? this.hass.areas?.[areaId] : undefined;
-    const floorReg = areaReg?.floor_id
-      ? this.hass.floors?.[areaReg.floor_id]
-      : undefined;
-
-    return {
-      deviceReg,
-      areaReg,
-      floorReg,
-    };
   }
 }
 
