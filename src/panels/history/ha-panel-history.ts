@@ -199,6 +199,7 @@ class HaPanelHistory extends LitElement {
                     .startTime=${this._startDate}
                     .endTime=${this._endDate}
                     .narrow=${this.narrow}
+                    sync-charts
                   >
                   </state-history-charts>
                 `}
