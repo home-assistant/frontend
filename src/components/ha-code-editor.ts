@@ -29,7 +29,6 @@ import { showToast } from "../util/toast";
 import type { CompletionItem } from "./ha-code-editor-completion-items";
 import "./ha-icon";
 import "./ha-icon-button";
-import "./ha-icon-button-group";
 import "./ha-code-editor-completion-items";
 import "./ha-icon-button-toolbar";
 import type { HaIconButtonToolbar } from "./ha-icon-button-toolbar";
@@ -352,7 +351,9 @@ export class HaCodeEditor extends ReactiveElement {
 
   private _updateToolbarButtons() {
     // Re-render all toolbar items.
-    if (!this._editorToolbar) return;
+    if (!this._editorToolbar) {
+      return;
+    }
 
     this._editorToolbar.items = [
       {
