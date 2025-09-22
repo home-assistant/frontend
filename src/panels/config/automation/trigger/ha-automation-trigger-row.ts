@@ -39,6 +39,7 @@ import "../../../../components/ha-icon-button";
 import "../../../../components/ha-md-button-menu";
 import "../../../../components/ha-md-divider";
 import "../../../../components/ha-md-menu-item";
+import "../../../../components/ha-svg-icon";
 import type {
   AutomationClipboard,
   Trigger,
@@ -443,7 +444,7 @@ export default class HaAutomationTriggerRow extends LitElement {
           ${this.hass.localize(
             "ui.panel.config.automation.editor.triggers.triggered"
           )}
-          <ha-icon-button .path=${mdiInformation}></ha-icon-button>
+          <ha-svg-icon .path=${mdiInformation}></ha-svg-icon>
         </div>
       </ha-card>
     `;
@@ -799,14 +800,20 @@ export default class HaAutomationTriggerRow extends LitElement {
             --ha-card-border-radius,
             var(--ha-border-radius-lg)
           );
+          display: flex;
+          justify-content: center;
+          align-items: center;
+          gap: 4px;
+          line-height: 1;
+          padding: 0;
         }
-        .triggered ha-icon-button {
+        .triggered ha-svg-icon {
           --mdc-icon-size: 16px;
-          --mdc-icon-button-size: 20px;
         }
 
         .triggered.active {
           max-height: 100px;
+          padding: 4px;
         }
         .triggered:hover {
           opacity: 0.8;
