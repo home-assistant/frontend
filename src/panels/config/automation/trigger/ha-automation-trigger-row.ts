@@ -7,7 +7,6 @@ import {
   mdiContentCut,
   mdiDelete,
   mdiDotsVertical,
-  mdiIdentifier,
   mdiPlayCircleOutline,
   mdiPlaylistEdit,
   mdiPlusCircleMultipleOutline,
@@ -135,8 +134,6 @@ export default class HaAutomationTriggerRow extends LitElement {
 
   @state() private _selected = false;
 
-  @state() private _requestShowId = false;
-
   @state() private _warnings?: string[];
 
   @property({ type: Boolean }) public narrow = false;
@@ -221,18 +218,6 @@ export default class HaAutomationTriggerRow extends LitElement {
           ${this._renderOverflowLabel(
             this.hass.localize(
               "ui.panel.config.automation.editor.triggers.rename"
-            )
-          )}
-        </ha-md-menu-item>
-
-        <ha-md-menu-item
-          .clickAction=${this._showTriggerId}
-          .disabled=${this.disabled || type === "list"}
-        >
-          <ha-svg-icon slot="start" .path=${mdiIdentifier}></ha-svg-icon>
-          ${this._renderOverflowLabel(
-            this.hass.localize(
-              "ui.panel.config.automation.editor.triggers.edit_id"
             )
           )}
         </ha-md-menu-item>
@@ -409,7 +394,6 @@ export default class HaAutomationTriggerRow extends LitElement {
               .trigger=${this.trigger}
               .disabled=${this.disabled}
               .yamlMode=${this._yamlMode}
-              .showId=${this._requestShowId}
               .uiSupported=${supported}
               @ui-mode-not-available=${this._handleUiModeNotAvailable}
             ></ha-automation-trigger-editor>`
@@ -705,14 +689,6 @@ export default class HaAutomationTriggerRow extends LitElement {
       } else if (this._yamlMode) {
         this.triggerEditor?.yamlEditor?.setValue(value);
       }
-    }
-  };
-
-  private _showTriggerId = () => {
-    this._requestShowId = true;
-
-    if (!this.optionsInSidebar) {
-      this.expand();
     }
   };
 
