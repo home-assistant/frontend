@@ -141,7 +141,7 @@ export default class HaAutomationSidebarCard extends LitElement {
       ) || 0;
     this._contentScrollable =
       (element.scrollHeight ?? 0) - (element.clientHeight ?? 0) >
-      (element.scrollTop ?? 0) + safeAreaInsetBottom;
+      (element.scrollTop ?? 0) + safeAreaInsetBottom + 16;
   }
 
   private _closeSidebar() {
@@ -226,8 +226,7 @@ export default class HaAutomationSidebarCard extends LitElement {
     .card-content {
       max-height: calc(
         100% - var(--safe-area-inset-bottom, 0px) - var(
-            --ha-dialog-header-height,
-            88px
+            --ha-dialog-header-height
           ) -
           16px
       );
@@ -249,9 +248,9 @@ export default class HaAutomationSidebarCard extends LitElement {
       .card-content {
         max-height: calc(
           100% - var(--safe-area-inset-bottom, 0px) - var(
-              --ha-dialog-header-height,
-              112px
-            )
+              --ha-dialog-header-height
+            ) -
+            32px
         );
         overflow: auto;
       }
