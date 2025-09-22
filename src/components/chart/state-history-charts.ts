@@ -444,6 +444,7 @@ export class StateHistoryCharts extends LitElement {
       position: fixed;
       bottom: calc(24px + var(--safe-area-inset-bottom));
       right: calc(24px + var(--safe-area-inset-bottom));
+      z-index: 1;
     }
   `;
 }
