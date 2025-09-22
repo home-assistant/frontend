@@ -60,6 +60,14 @@ export default class HaAutomationSidebarCard extends LitElement {
 
   protected firstUpdated(_changedProperties: PropertyValues): void {
     this._contentSize.observe(this._contentElement);
+    this._updateHeaderHeight();
+  }
+
+  protected updated(_changedProperties: PropertyValues): void {
+    super.updated(_changedProperties);
+    if (_changedProperties.has("hass") || _changedProperties.has("narrow")) {
+      this._updateHeaderHeight();
+    }
   }
 
   protected render() {
@@ -149,6 +157,19 @@ export default class HaAutomationSidebarCard extends LitElement {
     ev.preventDefault();
   }
 
+  private _updateHeaderHeight() {
+    requestAnimationFrame(() => {
+      const header = this.shadowRoot?.querySelector("ha-dialog-header");
+      if (header) {
+        const headerHeight = header.offsetHeight;
+        this.style.setProperty(
+          "--ha-dialog-header-height",
+          `${headerHeight}px`
+        );
+      }
+    });
+  }
+
   static styles = css`
     ha-card {
       height: 100%;
@@ -202,14 +223,24 @@ export default class HaAutomationSidebarCard extends LitElement {
     }
 
     .card-content {
-      max-height: calc(100% - var(--safe-area-inset-bottom, 0px) - 88px);
+      max-height: calc(
+        100% - var(--safe-area-inset-bottom, 0px) - var(
+            --ha-dialog-header-height,
+            88px
+          )
+      );
       overflow: auto;
       margin-top: 0;
     }
 
     @media (min-width: 450px) and (min-height: 500px) {
       .card-content {
-        max-height: calc(100% - var(--safe-area-inset-bottom, 0px) - 112px);
+        max-height: calc(
+          100% - var(--safe-area-inset-bottom, 0px) - var(
+              --ha-dialog-header-height,
+              112px
+            )
+        );
         overflow: auto;
       }
     }
