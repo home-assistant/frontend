@@ -205,17 +205,11 @@ export default class HaAutomationSidebarCard extends LitElement {
     }
 
     .fade {
-      position: fixed;
-      bottom: calc(
-        (
-            var(--ha-dialog-header-height, 12px) +
-              var(--safe-area-inset-bottom, 0px)
-          ) *
-          -1
-      );
-      left: 0;
-      right: 0;
-      height: var(--ha-dialog-header-height, 12px);
+      position: absolute;
+      bottom: 1px;
+      left: 1px;
+      right: 1px;
+      height: 16px;
       pointer-events: none;
       transition: box-shadow 180ms ease-in-out;
       background-color: var(
@@ -223,6 +217,9 @@ export default class HaAutomationSidebarCard extends LitElement {
         var(--mdc-theme-surface, #fff)
       );
       transform: rotate(180deg);
+      border-radius: var(--ha-card-border-radius);
+      border-bottom-left-radius: 0;
+      border-bottom-right-radius: 0;
     }
 
     .fade.scrollable {
@@ -233,32 +230,21 @@ export default class HaAutomationSidebarCard extends LitElement {
       max-height: calc(
         100% - var(--safe-area-inset-bottom, 0px) - var(
             --ha-dialog-header-height
-          ) -
-          16px
+          )
       );
       overflow: auto;
       margin-top: 0;
     }
 
-    @media (min-width: 450px) and (min-height: 500px) {
+    @media all and (max-width: 870px) {
       .fade {
-        position: absolute;
-        bottom: 0;
-        left: 2px;
-        right: 2px;
-        height: 16px;
-        border-radius: var(--ha-card-border-radius);
-        border-bottom-left-radius: 0;
-        border-bottom-right-radius: 0;
+        position: fixed;
+        bottom: calc(var(--ha-dialog-header-height) * -1);
+        height: var(--ha-dialog-header-height, 12px);
       }
 
       .card-content {
-        max-height: calc(
-          100% - var(--safe-area-inset-bottom, 0px) - var(
-              --ha-dialog-header-height
-            ) -
-            32px
-        );
+        max-height: calc(100% - var(--ha-dialog-header-height) - 32px);
         overflow: auto;
       }
     }
