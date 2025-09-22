@@ -714,6 +714,7 @@ class HaPanelDevStatistics extends KeyboardShortcutMixin(LitElement) {
           height: 100%;
           display: flex;
           flex-direction: column;
+          gap: 8px;
         }
         ha-data-table {
           width: 100%;
@@ -801,12 +802,8 @@ class HaPanelDevStatistics extends KeyboardShortcutMixin(LitElement) {
         }
 
         ha-dialog {
-          --mdc-dialog-min-width: calc(
-            100vw - var(--safe-area-inset-right) - var(--safe-area-inset-left)
-          );
-          --mdc-dialog-max-width: calc(
-            100vw - var(--safe-area-inset-right) - var(--safe-area-inset-left)
-          );
+          --mdc-dialog-min-width: 100vw;
+          --mdc-dialog-max-width: 100vw;
           --mdc-dialog-min-height: 100%;
           --mdc-dialog-max-height: 100%;
           --vertical-align-dialog: flex-end;

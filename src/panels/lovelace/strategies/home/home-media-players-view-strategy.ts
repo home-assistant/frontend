@@ -32,13 +32,13 @@ const processAreasForMediaPlayers = (
     const areaCards: LovelaceCardConfig[] = [];
 
     for (const entityId of areaEntities) {
-      cards.push({
+      areaCards.push({
         type: "media-control",
         entity: entityId,
       } satisfies MediaControlCardConfig);
     }
 
-    if (areaEntities.length > 0) {
+    if (areaCards.length > 0) {
       cards.push({
         heading_style: "subtitle",
         type: "heading",

@@ -1061,6 +1061,12 @@ export class HaScriptEditor extends SubscribeMixin(
     return [
       haStyle,
       css`
+        :host {
+          --ha-automation-editor-max-width: var(
+            --ha-automation-editor-width,
+            1540px
+          );
+        }
         .yaml-mode {
           height: 100%;
           display: flex;
@@ -1113,7 +1119,7 @@ export class HaScriptEditor extends SubscribeMixin(
         }
 
         manual-script-editor {
-          max-width: 1540px;
+          max-width: var(--ha-automation-editor-max-width);
           padding: 0 12px;
         }
 
@@ -1138,7 +1144,7 @@ export class HaScriptEditor extends SubscribeMixin(
           transition: bottom 0.3s;
         }
         ha-fab.dirty {
-          bottom: 16px;
+          bottom: calc(16px + var(--safe-area-inset-bottom, 0px));
         }
         li[role="separator"] {
           border-bottom-color: var(--divider-color);

@@ -452,7 +452,13 @@ export class HaCodeEditor extends ReactiveElement {
 
   private _renderInfo = (completion: Completion): CompletionInfo => {
     const key = completion.label;
-    const context = getEntityContext(this.hass!.states[key], this.hass!);
+    const context = getEntityContext(
+      this.hass!.states[key],
+      this.hass!.entities,
+      this.hass!.devices,
+      this.hass!.areas,
+      this.hass!.floors
+    );
 
     const completionInfo = document.createElement("div");
     completionInfo.classList.add("completion-info");

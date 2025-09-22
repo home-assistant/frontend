@@ -73,8 +73,9 @@ jobs:
           version=$(echo "${{ github.ref }}" | awk -F"/" '{print $NF}' )
           echo "home-assistant-frontend==$version" > ./requirements.txt
 
+      # home-assistant/wheels doesn't support SHA pinning
       - name: Build wheels
-        uses: home-assistant/wheels@bf4ddde339dde61ba98ccb4330517936bed6d2f8 # 2025.07.0
+        uses: home-assistant/wheels@2025.07.0
         with:
           abi: cp313
           tag: musllinux_1_2

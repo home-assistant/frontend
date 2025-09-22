@@ -104,6 +104,16 @@ const _SHORTCUTS: Section[] = [
         descriptionTranslationKey:
           "ui.dialogs.shortcuts.automation_script.save",
       },
+      {
+        shortcut: [CTRL_CMD, "Z"],
+        descriptionTranslationKey:
+          "ui.dialogs.shortcuts.automation_script.undo",
+      },
+      {
+        shortcut: [CTRL_CMD, "Y"],
+        descriptionTranslationKey:
+          "ui.dialogs.shortcuts.automation_script.redo",
+      },
     ],
   },
   {
