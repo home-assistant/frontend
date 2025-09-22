@@ -131,9 +131,13 @@ export default class HaAutomationSidebarCard extends LitElement {
   }
 
   private _canScrollDown(element: HTMLElement) {
+    const safeAreaInsetBottom =
+      parseFloat(
+        getComputedStyle(element).getPropertyValue("--safe-area-inset-bottom")
+      ) || 0;
     this._contentScrollable =
       (element.scrollHeight ?? 0) - (element.clientHeight ?? 0) >
-      (element.scrollTop ?? 0);
+      (element.scrollTop ?? 0) + safeAreaInsetBottom;
   }
 
   private _closeSidebar() {
