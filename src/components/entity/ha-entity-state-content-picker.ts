@@ -89,13 +89,7 @@ class HaEntityStatePicker extends LitElement {
   @property({ type: Boolean, attribute: "allow-name" }) public allowName =
     false;
 
-  @property({ type: Boolean, attribute: "allow-area" }) public allowArea =
-    false;
-
-  @property({ type: Boolean, attribute: "allow-device" }) public allowDevice =
-    false;
-
-  @property({ type: Boolean, attribute: "allow-floor" }) public allowFloor =
+  @property({ type: Boolean, attribute: "allow-context" }) public allowContext =
     false;
 
   @property() public label?: string;
@@ -224,9 +218,7 @@ class HaEntityStatePicker extends LitElement {
       this.entityId,
       stateObj,
       this.allowName,
-      this.allowArea,
-      this.allowDevice,
-      this.allowFloor
+      this.allowContext
     );
     const optionItems = options.filter(
       (option) => !this._value.includes(option.value)
