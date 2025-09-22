@@ -224,7 +224,7 @@ export class HaAutomationEditor extends UndoRedoMixin<
                 .label=${this.hass.localize("ui.common.undo")}
                 .path=${mdiUndo}
                 @click=${this.undo}
-                ?disabled=${!this.canUndo}
+                .disabled=${!this.canUndo}
               >
               </ha-icon-button>
               <ha-icon-button
@@ -232,7 +232,7 @@ export class HaAutomationEditor extends UndoRedoMixin<
                 .label=${this.hass.localize("ui.common.redo")}
                 .path=${mdiRedo}
                 @click=${this.redo}
-                ?disabled=${!this.canRedo}
+                .disabled=${!this.canRedo}
               >
               </ha-icon-button>`
           : nothing}
@@ -261,7 +261,7 @@ export class HaAutomationEditor extends UndoRedoMixin<
             ? html`<ha-list-item
                   graphic="icon"
                   @click=${this.undo}
-                  ?disabled=${!this.canUndo}
+                  .disabled=${!this.canUndo}
                 >
                   ${this.hass.localize("ui.common.undo")}
                   <ha-svg-icon slot="graphic" .path=${mdiUndo}></ha-svg-icon>
@@ -269,7 +269,7 @@ export class HaAutomationEditor extends UndoRedoMixin<
                 <ha-list-item
                   graphic="icon"
                   @click=${this.redo}
-                  ?disabled=${!this.canRedo}
+                  .disabled=${!this.canRedo}
                 >
                   ${this.hass.localize("ui.common.redo")}
                   <ha-svg-icon slot="graphic" .path=${mdiRedo}></ha-svg-icon>

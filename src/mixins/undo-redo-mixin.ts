@@ -20,21 +20,21 @@ export const UndoRedoMixin = <T extends Constructor<LitElement>, ConfigType>(
     }
 
     public undo() {
-      const _currentConfig = this.currentConfig;
-      if (this._undoStack.length === 0 || !_currentConfig) {
+      const currentConfig = this.currentConfig;
+      if (this._undoStack.length === 0 || !currentConfig) {
         return;
       }
-      this._redoStack.push({ ..._currentConfig });
+      this._redoStack.push({ ...currentConfig });
       const config = this._undoStack.pop()!;
       this.applyUndoRedo(config);
     }
 
     public redo() {
-      const _currentConfig = this.currentConfig;
-      if (this._redoStack.length === 0 || !_currentConfig) {
+      const currentConfig = this.currentConfig;
+      if (this._redoStack.length === 0 || !currentConfig) {
         return;
       }
-      this._undoStack.push({ ..._currentConfig });
+      this._undoStack.push({ ...currentConfig });
       const config = this._redoStack.pop()!;
       this.applyUndoRedo(config);
     }
