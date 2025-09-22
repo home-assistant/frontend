@@ -210,7 +210,7 @@
     "map-stream": "0.0.7",
     "pinst": "3.0.0",
     "prettier": "3.6.2",
-    "rspack-manifest-plugin": "5.0.3",
+    "rspack-manifest-plugin": "5.1.0",
     "serve": "14.2.5",
     "sinon": "21.0.0",
     "tar": "7.4.3",
