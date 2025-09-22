@@ -26,10 +26,9 @@ import { getEntityContext } from "../common/entity/context/get_entity_context";
 import { copyToClipboard } from "../common/util/copy-clipboard";
 import type { HomeAssistant } from "../types";
 import { showToast } from "../util/toast";
+import "./ha-code-editor-completion-items";
 import type { CompletionItem } from "./ha-code-editor-completion-items";
 import "./ha-icon";
-import "./ha-icon-button";
-import "./ha-code-editor-completion-items";
 import "./ha-icon-button-toolbar";
 import type { HaIconButtonToolbar } from "./ha-icon-button-toolbar";
 
