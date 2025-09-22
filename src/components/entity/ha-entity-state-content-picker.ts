@@ -18,6 +18,7 @@ import "../ha-sortable";
 import "../chips/ha-input-chip";
 import "../chips/ha-chip-set";
 import type { HaComboBox } from "../ha-combo-box";
+import { getEntityContext } from "../../common/entity/context/get_entity_context";
 
 const HIDDEN_ATTRIBUTES = [
   "access_token",
@@ -110,12 +111,18 @@ class HaEntityStatePicker extends LitElement {
     (entityId?: string, stateObj?: HassEntity, allowName?: boolean) => {
       const domain = entityId ? computeDomain(entityId) : undefined;
 
-      // Check if entity or its device has an area
-      const hasArea = this._hasArea(entityId);
-      // Check if entity has a device
-      const hasDevice = this._hasDevice(entityId);
-      // Check if entity or its device has a floor
-      const hasFloor = this._hasFloor(entityId);
+      // Check entity context
+      const context = getEntityContext(
+        stateObj!,
+        this.hass.entities,
+        this.hass.devices,
+        this.hass.areas,
+        this.hass.floors
+      );
+
+      const hasArea = !!context.area && this.allowContext;
+      const hasDevice = !!context.device && this.allowContext;
+      const hasFloor = !!context.floor && this.allowContext;
 
       return [
         {
@@ -340,40 +347,6 @@ class HaEntityStatePicker extends LitElement {
     fireEvent(this, "value-changed", {
       value: newValue,
     });
-  }
-
-  private _getEntityAndDeviceReg(entityId?: string) {
-    const entityReg = entityId ? this.hass.entities?.[entityId] : undefined;
-    const deviceReg = entityReg?.device_id
-      ? this.hass.devices?.[entityReg.device_id]
-      : undefined;
-    return { entityReg, deviceReg };
-  }
-
-  private _hasArea(entityId?: string): boolean {
-    if (!this.allowContext) {
-      return false;
-    }
-    const { entityReg, deviceReg } = this._getEntityAndDeviceReg(entityId);
-    return !!(entityReg?.area_id || deviceReg?.area_id);
-  }
-
-  private _hasDevice(entityId?: string): boolean {
-    if (!this.allowContext) {
-      return false;
-    }
-    const { entityReg } = this._getEntityAndDeviceReg(entityId);
-    return !!entityReg?.device_id;
-  }
-
-  private _hasFloor(entityId?: string): boolean {
-    if (!this.allowContext) {
-      return false;
-    }
-    const { entityReg, deviceReg } = this._getEntityAndDeviceReg(entityId);
-    const areaId = entityReg?.area_id || deviceReg?.area_id;
-    const areaReg = areaId ? this.hass.areas?.[areaId] : undefined;
-    return !!areaReg?.floor_id;
   }
 
   static styles = css`
