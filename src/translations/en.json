@@ -1223,9 +1223,9 @@
       "state-content-picker": {
         "state": "State",
         "name": "Name",
-        "area": "Area name",
-        "device": "Device name",
-        "floor": "Floor name",
+        "area": "Area",
+        "device": "Device",
+        "floor": "Floor",
         "last_changed": "Last changed",
         "last_updated": "Last updated",
         "remaining_time": "Remaining time",
