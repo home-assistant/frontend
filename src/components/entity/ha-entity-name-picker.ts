@@ -1,5 +1,7 @@
 import { mdiDrag } from "@mdi/js";
 import type { ComboBoxLitRenderer } from "@vaadin/combo-box/lit";
+import type { IFuseOptions } from "fuse.js";
+import Fuse from "fuse.js";
 import { css, html, LitElement, nothing, type PropertyValues } from "lit";
 import { customElement, property, query, state } from "lit/decorators";
 import { repeat } from "lit/directives/repeat";
@@ -171,7 +173,6 @@ export class HaEntityNamePicker extends LitElement {
         .disabled=${this.disabled || !this.entityId}
         .required=${this.required && !value.length}
         .helper=${this.helper}
-        .allowCustomValue=${true}
         item-id-path="value"
         item-value-path="value"
         item-label-path="primary"
@@ -201,24 +202,30 @@ export class HaEntityNamePicker extends LitElement {
   }
 
   private _filterChanged(ev: ValueChangedEvent<string>) {
-    const filter = ev.detail.value?.toLowerCase() || "";
+    const input = ev.detail.value;
+    const filter = input?.toLowerCase() || "";
     const options = this._getItems(this.entityId);
+
+    // Exclude already selected items
     const optionItems = options.filter(
       (option) => !this._value.includes(option.value)
     );
 
-    const filteredItems = optionItems.filter((item) => {
-      const label = item.primary || item.value;
-      return label.toLowerCase().includes(filter);
-    });
-
-    if (filter) {
-      filteredItems.unshift({
-        primary: filter,
-        value: filter,
-        secondary: undefined,
-      });
+    if (!filter) {
+      this._comboBox.filteredItems = optionItems;
+      return;
     }
+
+    const fuseOptions: IFuseOptions<EntityNameItem> = {
+      keys: ["primary", "secondary", "value"],
+      isCaseSensitive: false,
+      minMatchCharLength: Math.min(filter.length, 2),
+      threshold: 0.2,
+      ignoreDiacritics: true,
+    };
+
+    const fuse = new Fuse(optionItems, fuseOptions);
+    const filteredItems = fuse.search(filter).map((result) => result.item);
 
     this._comboBox.filteredItems = filteredItems;
   }
