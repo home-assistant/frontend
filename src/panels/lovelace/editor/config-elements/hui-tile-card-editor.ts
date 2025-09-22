@@ -420,6 +420,10 @@ export class HuiTileCardEditor
       | SchemaUnion<ReturnType<typeof this._featuresSchema>>
   ) => {
     switch (schema.name) {
+      case "name":
+        return this.hass!.localize(
+          `ui.panel.lovelace.editor.card.tile.custom_name`
+        );
       case "name_content":
       case "color":
       case "icon_tap_action":
@@ -446,6 +450,7 @@ export class HuiTileCardEditor
       | SchemaUnion<ReturnType<typeof this._featuresSchema>>
   ) => {
     switch (schema.name) {
+      case "name_content":
       case "color":
         return this.hass!.localize(
           `ui.panel.lovelace.editor.card.tile.${schema.name}_helper`
