@@ -228,7 +228,7 @@ export default class HaAutomationSidebarCard extends LitElement {
         100% - var(--safe-area-inset-bottom, 0px) - var(
             --ha-dialog-header-height,
             88px
-          ) +
+          ) -
           16px
       );
       overflow: auto;
