@@ -309,25 +309,27 @@ export default class HaAutomationOptionRow extends LitElement {
   }
 
   private _removeOption = () => {
-    showConfirmationDialog(this, {
-      title: this.hass.localize(
-        "ui.panel.config.automation.editor.actions.type.choose.delete_confirm_title"
-      ),
-      text: this.hass.localize(
-        "ui.panel.config.automation.editor.actions.delete_confirm_text"
-      ),
-      dismissText: this.hass.localize("ui.common.cancel"),
-      confirmText: this.hass.localize("ui.common.delete"),
-      destructive: true,
-      confirm: () => {
-        fireEvent(this, "value-changed", {
-          value: null,
-        });
-        if (this._selected) {
-          fireEvent(this, "close-sidebar");
-        }
-      },
-    });
+    if (this.option) {
+      showConfirmationDialog(this, {
+        title: this.hass.localize(
+          "ui.panel.config.automation.editor.actions.type.choose.delete_confirm_title"
+        ),
+        text: this.hass.localize(
+          "ui.panel.config.automation.editor.actions.delete_confirm_text"
+        ),
+        dismissText: this.hass.localize("ui.common.cancel"),
+        confirmText: this.hass.localize("ui.common.delete"),
+        destructive: true,
+        confirm: () => {
+          fireEvent(this, "value-changed", {
+            value: null,
+          });
+          if (this._selected) {
+            fireEvent(this, "close-sidebar");
+          }
+        },
+      });
+    }
   };
 
   private _renameOption = async () => {
