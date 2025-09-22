@@ -61,7 +61,7 @@ export default class HaAutomationSidebarTrigger extends LitElement {
   }
 
   protected render() {
-    const disabled =
+    const rowDisabled =
       this.disabled ||
       ("enabled" in this.config.config && this.config.config.enabled === false);
     const type = isTriggerList(this.config.config)
@@ -85,11 +85,15 @@ export default class HaAutomationSidebarTrigger extends LitElement {
         .narrow=${this.narrow}
       >
         <span slot="title">${title}</span>
-        <span slot="subtitle">${subtitle}</span>
+        <span slot="subtitle"
+          >${subtitle}${rowDisabled
+            ? ` (${this.hass.localize("ui.panel.config.automation.editor.actions.disabled")})`
+            : ""}</span
+        >
         <ha-md-menu-item
           slot="menu-items"
           .clickAction=${this.config.rename}
-          .disabled=${disabled || type === "list"}
+          .disabled=${this.disabled || type === "list"}
         >
           <ha-svg-icon slot="start" .path=${mdiRenameBox}></ha-svg-icon>
           <div class="overflow-label">
@@ -105,7 +109,7 @@ export default class HaAutomationSidebarTrigger extends LitElement {
           ? html`<ha-md-menu-item
               slot="menu-items"
               .clickAction=${this._showTriggerId}
-              .disabled=${disabled || type === "list"}
+              .disabled=${this.disabled || type === "list"}
             >
               <ha-svg-icon slot="start" .path=${mdiIdentifier}></ha-svg-icon>
               <div class="overflow-label">
@@ -211,15 +215,15 @@ export default class HaAutomationSidebarTrigger extends LitElement {
         <ha-md-menu-item
           slot="menu-items"
           .clickAction=${this.config.disable}
-          .disabled=${type === "list"}
+          .disabled=${this.disabled || type === "list"}
         >
           <ha-svg-icon
             slot="start"
-            .path=${this.disabled ? mdiPlayCircleOutline : mdiStopCircleOutline}
+            .path=${rowDisabled ? mdiPlayCircleOutline : mdiStopCircleOutline}
           ></ha-svg-icon>
           <div class="overflow-label">
             ${this.hass.localize(
-              `ui.panel.config.automation.editor.actions.${disabled ? "enable" : "disable"}`
+              `ui.panel.config.automation.editor.actions.${rowDisabled ? "enable" : "disable"}`
             )}
             <span class="shortcut-placeholder ${isMac ? "mac" : ""}"></span>
           </div>

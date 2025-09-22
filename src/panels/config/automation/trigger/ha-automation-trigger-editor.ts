@@ -144,9 +144,6 @@ export default class HaAutomationTriggerEditor extends LitElement {
           pointer-events: none;
         }
 
-        .card-content {
-          padding: 16px;
-        }
         .card-content.yaml {
           padding: 0 1px;
           border-top: 1px solid var(--divider-color);
