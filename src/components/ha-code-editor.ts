@@ -732,7 +732,7 @@ export class HaCodeEditor extends ReactiveElement {
     :host {
       position: relative;
       display: block;
-      --code-editor-toolbar-height: 36px;
+      --code-editor-toolbar-height: 28px;
     }
 
     :host(.error-state) .cm-gutters {
@@ -804,6 +804,8 @@ export class HaCodeEditor extends ReactiveElement {
         --code-editor-gutter-color,
         var(--secondary-background-color, whitesmoke)
       );
+      border-top-left-radius: var(--ha-border-radius-sm);
+      border-top-right-radius: var(--ha-border-radius-sm);
     }
 
     .completion-info {
