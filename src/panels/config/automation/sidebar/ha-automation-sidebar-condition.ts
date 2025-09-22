@@ -27,7 +27,7 @@ import { isMac } from "../../../../util/is_mac";
 import { showAlertDialog } from "../../../lovelace/custom-card-helpers";
 import "../condition/ha-automation-condition-editor";
 import type HaAutomationConditionEditor from "../condition/ha-automation-condition-editor";
-import { sidebarEditorStyles } from "../styles";
+import { overflowStyles, sidebarEditorStyles } from "../styles";
 import "./ha-automation-sidebar-card";
 
 @customElement("ha-automation-sidebar-condition")
@@ -364,6 +364,7 @@ export default class HaAutomationSidebarCondition extends LitElement {
     } finally {
       setTimeout(() => {
         this._testing = false;
+        this._testingResult = undefined;
       }, 2500);
     }
   };
@@ -402,6 +403,7 @@ export default class HaAutomationSidebarCondition extends LitElement {
 
   static styles = [
     sidebarEditorStyles,
+    overflowStyles,
     css`
       ha-automation-sidebar-card {
         position: relative;

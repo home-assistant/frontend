@@ -3883,6 +3883,8 @@
               "add": "Add trigger",
               "search": "Search trigger",
               "id": "Trigger ID",
+              "id_helper": "Helps identify each run based on which trigger fired.",
+              "optional": "Optional",
               "edit_id": "Edit ID",
               "duplicate": "[%key:ui::common::duplicate%]",
               "re_order": "Re-order",
@@ -4287,7 +4289,7 @@
                 },
                 "trigger": {
                   "label": "Triggered by",
-                  "no_triggers": "No triggers have an ID set. Use the three-dot menu on a trigger and select Edit ID to assign one.",
+                  "no_triggers": "There are no triggers with ID's set in this automation. Edit a trigger and give it a Trigger ID name.",
                   "id": "Trigger",
                   "description": {
                     "picker": "If the automation has been triggered by a specific trigger.",
