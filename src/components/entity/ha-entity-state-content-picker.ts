@@ -107,22 +107,15 @@ class HaEntityStatePicker extends LitElement {
   }
 
   private options = memoizeOne(
-    (
-      entityId?: string,
-      stateObj?: HassEntity,
-      allowName?: boolean,
-      allowArea?: boolean,
-      allowDevice?: boolean,
-      allowFloor?: boolean
-    ) => {
+    (entityId?: string, stateObj?: HassEntity, allowName?: boolean) => {
       const domain = entityId ? computeDomain(entityId) : undefined;
 
       // Check if entity or its device has an area
-      const hasArea = this._hasArea(entityId, allowArea);
+      const hasArea = this._hasArea(entityId);
       // Check if entity has a device
-      const hasDevice = this._hasDevice(entityId, allowDevice);
+      const hasDevice = this._hasDevice(entityId);
       // Check if entity or its device has a floor
-      const hasFloor = this._hasFloor(entityId, allowFloor);
+      const hasFloor = this._hasFloor(entityId);
 
       return [
         {
@@ -214,12 +207,8 @@ class HaEntityStatePicker extends LitElement {
       ? this.hass.states[this.entityId]
       : undefined;
 
-    const options = this.options(
-      this.entityId,
-      stateObj,
-      this.allowName,
-      this.allowContext
-    );
+    const options = this.options(this.entityId, stateObj, this.allowName);
+
     const optionItems = options.filter(
       (option) => !this._value.includes(option.value)
     );
@@ -361,24 +350,24 @@ class HaEntityStatePicker extends LitElement {
     return { entityReg, deviceReg };
   }
 
-  private _hasArea(entityId?: string, allowArea?: boolean): boolean {
-    if (!allowArea) {
+  private _hasArea(entityId?: string): boolean {
+    if (!this.allowContext) {
       return false;
     }
     const { entityReg, deviceReg } = this._getEntityAndDeviceReg(entityId);
     return !!(entityReg?.area_id || deviceReg?.area_id);
   }
 
-  private _hasDevice(entityId?: string, allowDevice?: boolean): boolean {
-    if (!allowDevice) {
+  private _hasDevice(entityId?: string): boolean {
+    if (!this.allowContext) {
       return false;
     }
     const { entityReg } = this._getEntityAndDeviceReg(entityId);
     return !!entityReg?.device_id;
   }
 
-  private _hasFloor(entityId?: string, allowFloor?: boolean): boolean {
-    if (!allowFloor) {
+  private _hasFloor(entityId?: string): boolean {
+    if (!this.allowContext) {
       return false;
     }
     const { entityReg, deviceReg } = this._getEntityAndDeviceReg(entityId);
