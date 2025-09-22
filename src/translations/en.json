@@ -8516,7 +8516,7 @@
         },
         "entity_id_picker": {
           "title": "Display entity IDs in picker",
-          "description": "Shows the full entity IDs when selecting entities with a picker."
+          "description": "Shows the full entity IDs when selecting entities from a menu list."
         },
         "refresh_tokens": {
           "header": "Refresh tokens",
