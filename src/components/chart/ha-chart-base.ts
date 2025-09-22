@@ -21,6 +21,7 @@ import { fireEvent } from "../../common/dom/fire_event";
 import { listenMediaQuery } from "../../common/dom/media_query";
 import { themesContext } from "../../data/context";
 import type { Themes } from "../../data/ws-themes";
+import { isUnavailableState } from "../../data/entity";
 import type { ECOption } from "../../resources/echarts";
 import type { HomeAssistant } from "../../types";
 import { isMac } from "../../util/is_mac";
@@ -295,7 +296,8 @@ export class HaChartBase extends LitElement {
           const borderColor = itemStyle?.borderColor as string;
 
           const current_state_text =
-            item.current_state != null
+            item.current_state != null &&
+            !isUnavailableState(item.current_state)
               ? html`(<b
                     >${item.current_state}
                     ${(this.options?.yAxis as YAXisOption)?.name ?? ""}</b
