@@ -208,7 +208,7 @@ export default class HaAutomationSidebarCard extends LitElement {
     }
 
     .fade {
-      position: fixed;
+      position: absolute;
       bottom: calc(-12px - var(--safe-area-inset-bottom, 0px));
       left: 0;
       right: 0;
@@ -227,7 +227,8 @@ export default class HaAutomationSidebarCard extends LitElement {
         100% - var(--safe-area-inset-bottom, 0px) - var(
             --ha-dialog-header-height,
             88px
-          )
+          ) +
+          16px
       );
       overflow: auto;
       margin-top: 0;
