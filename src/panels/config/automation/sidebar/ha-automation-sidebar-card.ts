@@ -119,13 +119,9 @@ export default class HaAutomationSidebarCard extends LitElement {
         <div class="card-content" @scroll=${this._onScroll}>
           <slot></slot>
         </div>
-        ${this.narrow
-          ? html`
-              <div
-                class="fade ${this._contentScrollable ? "scrollable" : ""}"
-              ></div>
-            `
-          : nothing}
+        <div
+          class=${classMap({ fade: true, scrollable: this._contentScrollable })}
+        ></div>
       </ha-card>
     `;
   }
@@ -172,6 +168,7 @@ export default class HaAutomationSidebarCard extends LitElement {
 
   static styles = css`
     ha-card {
+      position: relative;
       height: 100%;
       width: 100%;
       border-color: var(--primary-color);
@@ -215,11 +212,15 @@ export default class HaAutomationSidebarCard extends LitElement {
       height: calc(12px + var(--safe-area-inset-bottom, 0px));
       pointer-events: none;
       transition: box-shadow 180ms ease-in-out;
+      background-color: var(
+        --ha-dialog-surface-background,
+        var(--mdc-theme-surface, #fff)
+      );
+      transform: rotate(180deg);
     }
 
     .fade.scrollable {
       box-shadow: var(--bar-box-shadow);
-      transform: rotate(180deg);
     }
 
     .card-content {
@@ -235,6 +236,16 @@ export default class HaAutomationSidebarCard extends LitElement {
     }
 
     @media (min-width: 450px) and (min-height: 500px) {
+      .fade {
+        bottom: 0;
+        left: 2px;
+        right: 2px;
+        height: 16px;
+        border-radius: var(--ha-card-border-radius);
+        border-bottom-left-radius: 0;
+        border-bottom-right-radius: 0;
+      }
+
       .card-content {
         max-height: calc(
           100% - var(--safe-area-inset-bottom, 0px) - var(
