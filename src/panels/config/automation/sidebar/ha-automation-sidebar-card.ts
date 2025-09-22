@@ -198,14 +198,14 @@ export default class HaAutomationSidebarCard extends LitElement {
     }
 
     .card-content {
-      max-height: calc(100% - var(--safe-area-inset-bottom) - 88px);
+      max-height: calc(100% - var(--safe-area-inset-bottom, 0px) - 88px);
       overflow: auto;
       margin-top: 0;
     }
 
     @media (min-width: 450px) and (min-height: 500px) {
       .card-content {
-        max-height: calc(100% - var(--safe-area-inset-bottom) - 112px);
+        max-height: calc(100% - var(--safe-area-inset-bottom, 0px) - 112px);
         overflow: auto;
       }
     }
