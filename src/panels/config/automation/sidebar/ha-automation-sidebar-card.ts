@@ -184,10 +184,10 @@ export default class HaAutomationSidebarCard extends LitElement {
 
     .fade {
       position: fixed;
-      bottom: -12px;
+      bottom: calc(-12px - var(--safe-area-inset-bottom, 0px));
       left: 0;
       right: 0;
-      height: 12px;
+      height: calc(12px + var(--safe-area-inset-bottom, 0px));
       pointer-events: none;
       transition: box-shadow 180ms ease-in-out;
     }
