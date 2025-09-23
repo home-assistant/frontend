@@ -298,7 +298,7 @@ export class HaChartBase extends LitElement {
           const current_state_text =
             item.current_state != null &&
             !isUnavailableState(item.current_state)
-              ? html`(<b
+              ? html` (<b
                     >${item.current_state}
                     ${(this.options?.yAxis as YAXisOption)?.name ?? ""}</b
                   >)`
