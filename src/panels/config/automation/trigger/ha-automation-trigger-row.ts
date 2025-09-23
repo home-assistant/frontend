@@ -628,7 +628,10 @@ export default class HaAutomationTriggerRow extends LitElement {
     const enabled = !(this.trigger.enabled ?? true);
     const value = { ...this.trigger, enabled };
     fireEvent(this, "value-changed", { value });
-    this.openSidebar(value); // refresh sidebar
+
+    if (this._selected && this.optionsInSidebar) {
+      this.openSidebar(value); // refresh sidebar
+    }
 
     if (this._yamlMode && !this.optionsInSidebar) {
       this.triggerEditor?.yamlEditor?.setValue(value);

@@ -521,7 +521,10 @@ export default class HaAutomationConditionRow extends LitElement {
     const enabled = !(this.condition.enabled ?? true);
     const value = { ...this.condition, enabled };
     fireEvent(this, "value-changed", { value });
-    this.openSidebar(value); // refresh sidebar
+
+    if (this._selected && this.optionsInSidebar) {
+      this.openSidebar(value); // refresh sidebar
+    }
 
     if (this._yamlMode && !this.optionsInSidebar) {
       this.conditionEditor?.yamlEditor?.setValue(value);
