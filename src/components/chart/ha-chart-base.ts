@@ -317,7 +317,7 @@ export class HaChartBase extends LitElement {
                 borderColor: borderColor || color,
               })}
             ></div>
-            <div class="label">${name} ${current_state_text}</div>
+            <div class="label">${name}${current_state_text}</div>
           </li>`;
         })}
         ${items.length > overflowLimit
