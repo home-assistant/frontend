@@ -111,8 +111,12 @@ export class HaBlueprintAutomationEditor extends HaBlueprintGenericEditor {
         }
         ha-fab {
           position: fixed;
-          bottom: calc(16px + var(--safe-area-inset-bottom, 0px));
           right: calc(16px + var(--safe-area-inset-right, 0px));
+          bottom: calc(-80px - var(--safe-area-inset-bottom));
+          transition: bottom 0.3s;
+        }
+        ha-fab.dirty {
+          bottom: calc(16px + var(--safe-area-inset-bottom, 0px));
         }
       `,
     ];
