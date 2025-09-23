@@ -1,4 +1,5 @@
 import "../../../layouts/hass-error-screen";
+import { mdiDownload } from "@mdi/js";
 import type { CSSResultGroup, TemplateResult } from "lit";
 import { css, html, LitElement } from "lit";
 import { customElement, property, state } from "lit/decorators";
@@ -26,6 +27,7 @@ import "./components/ha-energy-solar-settings";
 import "./components/ha-energy-battery-settings";
 import "./components/ha-energy-gas-settings";
 import "./components/ha-energy-water-settings";
+import { fileDownload } from "../../../util/file_download";
 
 const INITIAL_CONFIG: EnergyPreferences = {
   energy_sources: [],
@@ -85,6 +87,14 @@ class HaConfigEnergy extends LitElement {
           : "/config/lovelace/dashboards"}
         .header=${this.hass.localize("ui.panel.config.energy.caption")}
       >
+        <ha-icon-button
+          slot="toolbar-icon"
+          .path=${mdiDownload}
+          .label=${this.hass.localize(
+            "ui.panel.config.devices.download_diagnostics"
+          )}
+          @click=${this._downloadDiagnostics}
+        ></ha-icon-button>
         <ha-alert>
           ${this.hass.localize("ui.panel.config.energy.new_device_info")}
         </ha-alert>
@@ -183,6 +193,31 @@ class HaConfigEnergy extends LitElement {
       statsMetadata[x.statistic_id] = x;
     });
     this._statsMetadata = statsMetadata;
+  }
+
+  private async _downloadDiagnostics() {
+    const data = {
+      info: this._info,
+      preferences: this._preferences,
+      metadata: this._statsMetadata,
+      entities: Object.fromEntries(
+        Object.keys(this._statsMetadata || {}).map((key) => [
+          key,
+          this.hass.entities[key],
+        ])
+      ),
+      states: Object.fromEntries(
+        Object.keys(this._statsMetadata || {}).map((key) => [
+          key,
+          this.hass.states[key],
+        ])
+      ),
+    };
+    const json = JSON.stringify(data, null, 2);
+    const blob = new Blob([json], { type: "application/json" });
+    const url = URL.createObjectURL(blob);
+
+    fileDownload(url, "energy_diagnostics.json");
   }
 
   static get styles(): CSSResultGroup {
