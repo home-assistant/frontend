@@ -486,6 +486,7 @@ export class HaAutomationEditor extends UndoRedoMixin<
                           @value-changed=${this._valueChanged}
                           @save-automation=${this._handleSaveAutomation}
                           @editor-save=${this._handleSaveAutomation}
+                          @undo-paste=${this.undo}
                         >
                           <div class="alert-wrapper" slot="alerts">
                             ${this._errors || stateObj?.state === UNAVAILABLE

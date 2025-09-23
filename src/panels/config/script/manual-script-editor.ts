@@ -35,7 +35,12 @@ import type {
   ActionSidebarConfig,
   SidebarConfig,
 } from "../../../data/automation";
-import type { Action, Fields, ScriptConfig } from "../../../data/script";
+import type {
+  Action,
+  Fields,
+  ManualScriptConfig,
+  ScriptConfig,
+} from "../../../data/script";
 import {
   getActionType,
   MODES,
@@ -102,8 +107,6 @@ export class HaManualScriptEditor extends LitElement {
   private _collapsableElements?: NodeListOf<
     HaAutomationAction | HaScriptFields
   >;
-
-  private _previousConfig?: ScriptConfig;
 
   private _openFields = false;
 
@@ -181,7 +184,7 @@ export class HaManualScriptEditor extends LitElement {
               .disabled=${this.disabled}
               .narrow=${this.narrow}
               @open-sidebar=${this._openSidebar}
-              @request-close-sidebar=${this._triggerCloseSidebar}
+              @request-close-sidebar=${this.triggerCloseSidebar}
               @close-sidebar=${this._handleCloseSidebar}
             ></ha-script-fields>`
         : nothing
@@ -212,7 +215,7 @@ export class HaManualScriptEditor extends LitElement {
       .highlightedActions=${this._pastedConfig?.sequence}
       @value-changed=${this._sequenceChanged}
       @open-sidebar=${this._openSidebar}
-      @request-close-sidebar=${this._triggerCloseSidebar}
+      @request-close-sidebar=${this.triggerCloseSidebar}
       @close-sidebar=${this._handleCloseSidebar}
       .hass=${this.hass}
       .narrow=${this.narrow}
@@ -402,9 +405,7 @@ export class HaManualScriptEditor extends LitElement {
 
       if (keysPresent.length === 1 && ["sequence"].includes(keysPresent[0])) {
         // if only one type of element is pasted, insert under the currently active item
-        const previousConfig = { ...this.config };
         if (this._tryInsertAfterSelected(normalized[keysPresent[0]])) {
-          this._previousConfig = previousConfig;
           this._showPastedToastWithUndo();
           return;
         }
@@ -439,22 +440,23 @@ export class HaManualScriptEditor extends LitElement {
   };
 
   private _appendToExistingConfig(config: ScriptConfig) {
-    // make a copy otherwise we will reference the original config
-    this._previousConfig = { ...this.config } as ScriptConfig;
     this._pastedConfig = config;
+    // make a copy otherwise we will modify the original config
+    // which breaks the (referenced) config used for storing in undo stack
+    const workingCopy: ManualScriptConfig = { ...this.config };
 
-    if (!this.config) {
+    if (!workingCopy) {
       return;
     }
 
     if ("fields" in config) {
-      this.config.fields = {
-        ...this.config.fields,
+      workingCopy.fields = {
+        ...workingCopy.fields,
         ...config.fields,
       };
     }
     if ("sequence" in config) {
-      this.config.sequence = ensureArray(this.config.sequence || []).concat(
+      workingCopy.sequence = ensureArray(workingCopy.sequence || []).concat(
         ensureArray(config.sequence)
       ) as Action[];
     }
@@ -463,22 +465,19 @@ export class HaManualScriptEditor extends LitElement {
 
     fireEvent(this, "value-changed", {
       value: {
-        ...this.config,
+        ...workingCopy,
       },
     });
   }
 
   private _replaceExistingConfig(config: ScriptConfig) {
-    // make a copy otherwise we will reference the original config
-    this._previousConfig = { ...this.config } as ScriptConfig;
     this._pastedConfig = config;
-    this.config = config;
 
     this._showPastedToastWithUndo();
 
     fireEvent(this, "value-changed", {
       value: {
-        ...this.config,
+        ...config,
       },
     });
   }
@@ -492,13 +491,8 @@ export class HaManualScriptEditor extends LitElement {
       action: {
         text: this.hass.localize("ui.common.undo"),
         action: () => {
-          fireEvent(this, "value-changed", {
-            value: {
-              ...this._previousConfig!,
-            },
-          });
+          fireEvent(this, "undo-paste");
 
-          this._previousConfig = undefined;
           this._pastedConfig = undefined;
         },
       },
@@ -506,12 +500,7 @@ export class HaManualScriptEditor extends LitElement {
   }
 
   public resetPastedConfig() {
-    if (!this._previousConfig) {
-      return;
-    }
-
     this._pastedConfig = undefined;
-    this._previousConfig = undefined;
 
     showToast(this, {
       message: "",
@@ -541,7 +530,7 @@ export class HaManualScriptEditor extends LitElement {
     };
   }
 
-  private _triggerCloseSidebar() {
+  public triggerCloseSidebar() {
     if (this._sidebarConfig) {
       if (this._sidebarElement) {
         this._sidebarElement.triggerCloseSidebar();
@@ -556,7 +545,7 @@ export class HaManualScriptEditor extends LitElement {
   }
 
   private _saveScript() {
-    this._triggerCloseSidebar();
+    this.triggerCloseSidebar();
     fireEvent(this, "save-script");
   }
 
