@@ -86,6 +86,10 @@ class HaAlert extends LitElement {
       padding: 8px;
       display: flex;
     }
+    .icon {
+      height: var(--ha-alert-icon-size, 24px);
+      width: var(--ha-alert-icon-size, 24px);
+    }
     .issue-type::after {
       position: absolute;
       top: 0;
