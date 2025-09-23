@@ -641,5 +641,4 @@ declare global {
   interface HTMLElementTagNameMap {
     "manual-script-editor": HaManualScriptEditor;
   }
-
 }
