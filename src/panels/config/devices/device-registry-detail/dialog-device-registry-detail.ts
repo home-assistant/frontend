@@ -5,8 +5,9 @@ import { fireEvent } from "../../../../common/dom/fire_event";
 import { computeDeviceNameDisplay } from "../../../../common/entity/compute_device_name";
 import "../../../../components/ha-alert";
 import "../../../../components/ha-area-picker";
-import "../../../../components/ha-wa-dialog";
 import "../../../../components/ha-button";
+import "../../../../components/ha-dialog-footer";
+import "../../../../components/ha-wa-dialog";
 import "../../../../components/ha-labels-picker";
 import type { HaSwitch } from "../../../../components/ha-switch";
 import "../../../../components/ha-textfield";
@@ -131,18 +132,23 @@ class DialogDeviceRegistryDetail extends LitElement {
             </div>
           </div>
         </div>
-        <div slot="footer">
+        <ha-dialog-footer slot="footer">
           <ha-button
+            slot="secondaryAction"
             appearance="plain"
+            data-dialog="close"
             .disabled=${this._submitting}
-            @click=${this.closeDialog}
           >
             ${this.hass.localize("ui.common.cancel")}
           </ha-button>
-          <ha-button .disabled=${this._submitting} @click=${this._updateEntry}>
+          <ha-button
+            slot="primaryAction"
+            .disabled=${this._submitting}
+            @click=${this._updateEntry}
+          >
             ${this.hass.localize("ui.dialogs.device-registry-detail.update")}
           </ha-button>
-        </div>
+        </ha-dialog-footer>
       </ha-wa-dialog>
     `;
   }
