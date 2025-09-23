@@ -122,13 +122,13 @@ class StateDisplay extends LitElement {
       );
 
       if (content === "area") {
-        return html`${context.area ? computeAreaName(context.area) : ""}`;
+        return context.area ? computeAreaName(context.area) : "";
       }
       if (content === "device") {
-        return html`${context.device ? computeDeviceName(context.device) : ""}`;
+        return context.device ? computeDeviceName(context.device) : "";
       }
       if (content === "floor") {
-        return html`${context.floor ? computeFloorName(context.floor) : ""}`;
+        return context.floor ? computeFloorName(context.floor) : "";
       }
     }
 
