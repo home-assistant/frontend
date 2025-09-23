@@ -7793,11 +7793,6 @@
                 "large": "Large"
               },
               "show_seconds": "Display seconds",
-              "seconds_motion": "Seconds motion",
-              "seconds_motion_options": {
-                "continuous": "Continuous",
-                "tick": "Tick"
-              },
               "time_format": "[%key:ui::panel::profile::time_format::dropdown_label%]",
               "time_formats": {
                 "auto": "Use user settings",
@@ -7833,6 +7828,18 @@
                 "minute": {
                   "label": "Minute",
                   "description": "60 ticks (Every minute)"
+                }
+              },
+              "seconds_motion": {
+                "label": "Seconds motion",
+                "description": "How the seconds hand moves on the clock",
+                "continuous": {
+                  "label": "Continuous",
+                  "description": "The seconds hand moves continuously"
+                },
+                "tick": {
+                  "label": "Tick",
+                  "description": "The seconds hand moves in 1 second steps"
                 }
               },
               "face_style": {

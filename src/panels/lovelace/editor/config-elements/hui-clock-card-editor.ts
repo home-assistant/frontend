@@ -52,6 +52,12 @@ const cardConfigStruct = assign(
         literal("hour")
       )
     ),
+    seconds_motion: optional(
+      defaulted(
+        union([literal("continuous"), literal("tick")]),
+        literal("continuous")
+      )
+    ),
     face_style: optional(
       defaulted(
         union([
@@ -175,6 +181,11 @@ export class HuiClockCardEditor
                   ? ([
                       {
                         name: "seconds_motion",
+                        description: {
+                          suffix: localize(
+                            `ui.panel.lovelace.editor.card.clock.seconds_motion.description`
+                          ),
+                        },
                         default: "continuous",
                         selector: {
                           select: {
@@ -182,7 +193,10 @@ export class HuiClockCardEditor
                             options: ["continuous", "tick"].map((value) => ({
                               value,
                               label: localize(
-                                `ui.panel.lovelace.editor.card.clock.seconds_motion.${value}`
+                                `ui.panel.lovelace.editor.card.clock.seconds_motion.${value}.label`
+                              ),
+                              description: localize(
+                                `ui.panel.lovelace.editor.card.clock.seconds_motion.${value}.description`
                               ),
                             })),
                           },
@@ -361,6 +375,10 @@ export class HuiClockCardEditor
         return this.hass!.localize(
           `ui.panel.lovelace.editor.card.clock.ticks.label`
         );
+      case "seconds_motion":
+        return this.hass!.localize(
+          `ui.panel.lovelace.editor.card.clock.seconds_motion.label`
+        );
       case "face_style":
         return this.hass!.localize(
           `ui.panel.lovelace.editor.card.clock.face_style.label`
@@ -381,6 +399,10 @@ export class HuiClockCardEditor
       case "ticks":
         return this.hass!.localize(
           `ui.panel.lovelace.editor.card.clock.ticks.description`
+        );
+      case "seconds_motion":
+        return this.hass!.localize(
+          `ui.panel.lovelace.editor.card.clock.seconds_motion.description`
         );
       case "face_style":
         return this.hass!.localize(
