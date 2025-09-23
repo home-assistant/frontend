@@ -64,7 +64,7 @@ export default class HaAutomationSidebarCard extends LitElement {
   }
 
   protected updated(changedProperties: PropertyValues): void {
-    if (_changedProperties.has("hass") || _changedProperties.has("narrow")) {
+    if (changedProperties.has("hass") || changedProperties.has("narrow")) {
       this._updateHeaderHeight();
     }
   }
