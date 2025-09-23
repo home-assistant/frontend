@@ -177,6 +177,9 @@ export class HaWaDialog extends LitElement {
       transition:
         min-width var(--ha-dialog-expand-duration, 200ms) ease-in-out,
         max-width var(--ha-dialog-expand-duration, 200ms) ease-in-out;
+      display: flex;
+      flex-direction: column;
+      overflow: hidden;
     }
 
     @media all and (max-width: 450px), all and (max-height: 500px) {
@@ -233,16 +236,22 @@ export class HaWaDialog extends LitElement {
 
     wa-dialog::part(body) {
       padding: 0;
+      display: flex;
+      flex-direction: column;
+      max-width: 100%;
+      overflow: hidden;
     }
 
     .body {
       position: var(--dialog-content-position, relative);
       padding: 0 var(--dialog-content-padding, 24px)
         var(--dialog-content-padding, 24px) var(--dialog-content-padding, 24px);
-    }
-    :host([flexcontent]) wa-dialog::part(body) {
-      max-width: 100%;
       overflow: auto;
+      flex-grow: 1;
+    }
+    :host([flexcontent]) .body {
+      max-width: 100%;
+      overflow: hidden;
       display: flex;
       flex-direction: column;
     }
