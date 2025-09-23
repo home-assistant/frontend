@@ -742,7 +742,7 @@ export class HaCodeEditor extends ReactiveElement {
     }
 
     :host(.error-state) .cm-gutters {
-      border-color: var(--error-state-color, red) !important;
+      border-color: var(--error-state-color, var(--error-color)) !important;
     }
 
     :host(.hasToolbar) .cm-gutters {
@@ -754,7 +754,7 @@ export class HaCodeEditor extends ReactiveElement {
     }
 
     :host(.error-state) .cm-content {
-      border-color: var(--error-state-color, red) !important;
+      border-color: var(--error-state-color, var(--error-color)) !important;
     }
 
     :host(.hasToolbar) .cm-content {
