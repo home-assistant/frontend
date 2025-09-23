@@ -15,13 +15,12 @@ export interface HaIconButtonToolbarItem {
   disabled?: boolean;
   tooltip?: string;
   action?: (e: Event) => any;
-  divider?: boolean;
 }
 
 @customElement("ha-icon-button-toolbar")
 export class HaIconButtonToolbar extends LitElement {
   @property({ type: Array, attribute: false })
-  public items: HaIconButtonToolbarItem[] = [];
+  public items: (HaIconButtonToolbarItem | string)[] = [];
 
   @queryAll("ha-icon-button") private _buttons?: HaIconButton[];
 
@@ -54,7 +53,7 @@ export class HaIconButtonToolbar extends LitElement {
     return html`
       <ha-icon-button-group class="icon-toolbar-buttongroup">
         ${this.items.map((item) =>
-          item.divider
+          typeof item === "string"
             ? html`<div class="icon-toolbar-divider" role="separator"></div>`
             : html`<ha-tooltip
                   .disabled=${!item.tooltip}
