@@ -564,7 +564,7 @@ export class HaManualAutomationEditor extends LitElement {
     this._pastedConfig = config;
     // make a copy otherwise we will modify the original config
     // which breaks the (referenced) config used for storing in undo stack
-    const workingCopy = { ...this.config } as ManualAutomationConfig;
+    const workingCopy: ManualAutomationConfig = { ...this.config };
 
     if (!workingCopy) {
       return;
