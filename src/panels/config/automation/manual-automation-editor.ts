@@ -117,8 +117,6 @@ export class HaManualAutomationEditor extends LitElement {
     HaAutomationAction | HaAutomationCondition
   >;
 
-  private _previousConfig?: ManualAutomationConfig;
-
   private _prevSidebarWidthPx?: number;
 
   public connectedCallback() {
@@ -526,9 +524,7 @@ export class HaManualAutomationEditor extends LitElement {
         ["triggers", "conditions", "actions"].includes(keysPresent[0])
       ) {
         // if only one type of element is pasted, insert under the currently active item
-        const previousConfig = { ...this.config };
         if (this._tryInsertAfterSelected(normalized[keysPresent[0]])) {
-          this._previousConfig = previousConfig;
           this._showPastedToastWithUndo();
           return;
         }
@@ -565,26 +561,27 @@ export class HaManualAutomationEditor extends LitElement {
   };
 
   private _appendToExistingConfig(config: ManualAutomationConfig) {
-    // make a copy otherwise we will reference the original config
-    this._previousConfig = { ...this.config } as ManualAutomationConfig;
     this._pastedConfig = config;
+    // make a copy otherwise we will modify the original config
+    // which breaks the (referenced) config used for storing in undo stack
+    const workingCopy: ManualAutomationConfig = { ...this.config };
 
-    if (!this.config) {
+    if (!workingCopy) {
       return;
     }
 
     if ("triggers" in config) {
-      this.config.triggers = ensureArray(this.config.triggers || []).concat(
+      workingCopy.triggers = ensureArray(workingCopy.triggers || []).concat(
         ensureArray(config.triggers)
       );
     }
     if ("conditions" in config) {
-      this.config.conditions = ensureArray(this.config.conditions || []).concat(
+      workingCopy.conditions = ensureArray(workingCopy.conditions || []).concat(
         ensureArray(config.conditions)
       );
     }
     if ("actions" in config) {
-      this.config.actions = ensureArray(this.config.actions || []).concat(
+      workingCopy.actions = ensureArray(workingCopy.actions || []).concat(
         ensureArray(config.actions)
       ) as Action[];
     }
@@ -593,22 +590,19 @@ export class HaManualAutomationEditor extends LitElement {
 
     fireEvent(this, "value-changed", {
       value: {
-        ...this.config!,
+        ...workingCopy!,
       },
     });
   }
 
   private _replaceExistingConfig(config: ManualAutomationConfig) {
-    // make a copy otherwise we will reference the original config
-    this._previousConfig = { ...this.config } as ManualAutomationConfig;
     this._pastedConfig = config;
-    this.config = config;
 
     this._showPastedToastWithUndo();
 
     fireEvent(this, "value-changed", {
       value: {
-        ...this.config,
+        ...config,
       },
     });
   }
@@ -622,13 +616,8 @@ export class HaManualAutomationEditor extends LitElement {
       action: {
         text: this.hass.localize("ui.common.undo"),
         action: () => {
-          fireEvent(this, "value-changed", {
-            value: {
-              ...this._previousConfig!,
-            },
-          });
+          fireEvent(this, "undo-paste");
 
-          this._previousConfig = undefined;
           this._pastedConfig = undefined;
         },
       },
@@ -636,12 +625,7 @@ export class HaManualAutomationEditor extends LitElement {
   }
 
   public resetPastedConfig() {
-    if (!this._previousConfig) {
-      return;
-    }
-
     this._pastedConfig = undefined;
-    this._previousConfig = undefined;
 
     showToast(this, {
       message: "",
@@ -758,5 +742,6 @@ declare global {
     "open-sidebar": SidebarConfig;
     "request-close-sidebar": undefined;
     "close-sidebar": undefined;
+    "undo-paste": undefined;
   }
 }
