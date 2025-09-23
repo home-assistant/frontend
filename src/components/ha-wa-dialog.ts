@@ -108,11 +108,13 @@ export class HaWaDialog extends LitElement {
       ) as HTMLElement;
       focusElement?.focus();
     });
+    window.addEventListener("keydown", this._onKeyDown, true);
   };
 
   private _handleAfterHide = () => {
     this._open = false;
     this.dispatchEvent(new CustomEvent("closed"));
+    window.removeEventListener("keydown", this._onKeyDown, true);
   };
 
   public toggleSize = () => {
@@ -124,6 +126,28 @@ export class HaWaDialog extends LitElement {
       this.currentDialogSize === this.dialogSizeOnTitleClick
         ? this.dialogSize
         : this.dialogSizeOnTitleClick;
+  };
+
+  private _onKeyDown = (ev: KeyboardEvent) => {
+    if (!this._open) return;
+    if (ev.defaultPrevented) return;
+    if (ev.key !== "Enter") return;
+
+    const footer = this.querySelector("ha-dialog-footer") as HTMLElement | null;
+    if (!footer) return;
+
+    const primaryAction = footer.querySelector(
+      '[slot="primaryAction"]'
+    ) as HTMLElement | null;
+    if (!primaryAction) return;
+
+    const isDisabled =
+      (primaryAction as any).disabled ?? primaryAction.hasAttribute("disabled");
+    if (isDisabled) return;
+
+    primaryAction.click();
+    ev.preventDefault();
+    ev.stopPropagation();
   };
 
   static override styles = css`
