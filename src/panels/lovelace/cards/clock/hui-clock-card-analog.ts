@@ -237,8 +237,16 @@ export class HuiClockCardAnalog extends LitElement {
           ></div>
           ${this.config.show_seconds
             ? html`<div
-                class="hand second"
-                style=${`animation-delay: -${this._secondOffsetSec ?? 0}s;`}
+                class=${classMap({
+                  hand: true,
+                  second: true,
+                  tick: this.config.seconds_motion === "tick",
+                })}
+                style=${`animation-delay: -${
+                  (this.config.seconds_motion === "tick"
+                    ? Math.floor(this._secondOffsetSec ?? 0)
+                    : (this._secondOffsetSec ?? 0)) as number
+                }s;`}
               ></div>`
             : nothing}
         </div>
@@ -403,6 +411,10 @@ export class HuiClockCardAnalog extends LitElement {
       opacity: 0.8;
       z-index: 2;
       animation-duration: 60s; /* 60 seconds */
+    }
+
+    .hand.second.tick {
+      animation-timing-function: steps(60, end);
     }
 
     @keyframes ha-clock-rotate {

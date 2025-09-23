@@ -7793,6 +7793,11 @@
                 "large": "Large"
               },
               "show_seconds": "Display seconds",
+              "seconds_motion": "Seconds motion",
+              "seconds_motion_options": {
+                "continuous": "Continuous",
+                "tick": "Tick"
+              },
               "time_format": "[%key:ui::panel::profile::time_format::dropdown_label%]",
               "time_formats": {
                 "auto": "Use user settings",
