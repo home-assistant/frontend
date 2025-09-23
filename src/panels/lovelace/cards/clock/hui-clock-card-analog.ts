@@ -222,7 +222,7 @@ export class HuiClockCardAnalog extends LitElement {
                 class=${classMap({
                   hand: true,
                   second: true,
-                  tick: this.config.seconds_motion === "tick",
+                  step: this.config.seconds_motion === "tick",
                 })}
                 style=${`animation-delay: -${
                   (this.config.seconds_motion === "tick"
@@ -395,7 +395,7 @@ export class HuiClockCardAnalog extends LitElement {
       animation-duration: 60s; /* 60 seconds */
     }
 
-    .hand.second.tick {
+    .hand.second.step {
       animation-timing-function: steps(60, end);
     }
 
