@@ -218,8 +218,8 @@ export default class HaAutomationSidebarCard extends LitElement {
       );
       transform: rotate(180deg);
       border-radius: var(--ha-card-border-radius);
-      border-bottom-left-radius: 0;
-      border-bottom-right-radius: 0;
+      border-bottom-left-radius: var(--ha-border-radius-square);
+      border-bottom-right-radius: var(--ha-border-radius-square);
     }
 
     .fade.scrollable {
@@ -228,7 +228,7 @@ export default class HaAutomationSidebarCard extends LitElement {
 
     .card-content {
       max-height: calc(
-        100% - var(--safe-area-inset-bottom, 0px) - var(
+        100% - max(var(--safe-area-inset-bottom, 0px), 16px) - var(
             --ha-dialog-header-height
           )
       );
@@ -238,13 +238,11 @@ export default class HaAutomationSidebarCard extends LitElement {
 
     @media all and (max-width: 870px) {
       .fade {
-        position: fixed;
-        bottom: calc(var(--ha-dialog-header-height) * -1);
-        height: var(--ha-dialog-header-height, 12px);
+        border-radius: var(--ha-border-radius-square);
       }
 
       .card-content {
-        max-height: calc(100% - var(--ha-dialog-header-height) - 32px);
+        max-height: calc(100% - var(--ha-dialog-header-height) - 34px);
         overflow: auto;
       }
     }
