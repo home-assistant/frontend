@@ -6,8 +6,6 @@ import type { ClockCardConfig } from "../types";
 import type { HomeAssistant } from "../../../../types";
 import { resolveTimeZone } from "../../../../common/datetime/resolve-time-zone";
 
-const INTERVAL = 10;
-
 function romanize12HourClock(num: number) {
   const numerals = [
     "", // 0 (not used)
@@ -36,13 +34,13 @@ export class HuiClockCardAnalog extends LitElement {
 
   @state() private _dateTimeFormat?: Intl.DateTimeFormat;
 
-  @state() private _hourDeg?: number;
+  @state() private _hourOffsetSec?: number;
 
-  @state() private _minuteDeg?: number;
+  @state() private _minuteOffsetSec?: number;
 
-  @state() private _secondDeg?: number;
+  @state() private _secondOffsetSec?: number;
 
-  private _tickInterval?: undefined | number;
+  private _resyncInterval?: number;
 
   private _initDate() {
     if (!this.config || !this.hass) {
@@ -64,7 +62,7 @@ export class HuiClockCardAnalog extends LitElement {
         resolveTimeZone(locale.time_zone, this.hass.config?.time_zone),
     });
 
-    this._tick();
+    this._computeOffsets();
   }
 
   protected updated(changedProps: PropertyValues) {
@@ -78,27 +76,27 @@ export class HuiClockCardAnalog extends LitElement {
 
   public connectedCallback() {
     super.connectedCallback();
-    this._startTick();
+    document.addEventListener("visibilitychange", this._handleVisibilityChange);
+    this._computeOffsets();
+    this._startResync();
   }
 
   public disconnectedCallback() {
     super.disconnectedCallback();
-    this._stopTick();
+    document.removeEventListener(
+      "visibilitychange",
+      this._handleVisibilityChange
+    );
+    this._stopResync();
   }
 
-  private _startTick() {
-    this._tickInterval = window.setInterval(() => this._tick(), INTERVAL);
-    this._tick();
-  }
-
-  private _stopTick() {
-    if (this._tickInterval) {
-      clearInterval(this._tickInterval);
-      this._tickInterval = undefined;
+  private _handleVisibilityChange = () => {
+    if (!document.hidden) {
+      this._computeOffsets();
     }
-  }
+  };
 
-  private _tick() {
+  private _computeOffsets() {
     if (!this._dateTimeFormat) return;
 
     const parts = this._dateTimeFormat.formatToParts();
@@ -110,14 +108,27 @@ export class HuiClockCardAnalog extends LitElement {
     const minute = minuteStr ? parseInt(minuteStr, 10) : 0;
     const second = secondStr ? parseInt(secondStr, 10) : 0;
     const ms = new Date().getMilliseconds();
-    const secondWithMs = second + ms / 1000;
+    const secondsWithMs = second + ms / 1000;
 
-    // 30deg per hour + 0.5deg per minute + fractional seconds contribution
-    this._hourDeg = hour * 30 + minute * 0.5 + secondWithMs * (0.5 / 60);
-    // 6deg per minute + 0.1deg per second (including milliseconds)
-    this._minuteDeg = minute * 6 + secondWithMs * 0.1;
-    // 6deg per second (including milliseconds)
-    this._secondDeg = this.config?.show_seconds ? secondWithMs * 6 : undefined;
+    const hour12 = hour % 12;
+
+    this._secondOffsetSec = secondsWithMs;
+    this._minuteOffsetSec = minute * 60 + secondsWithMs;
+    this._hourOffsetSec = hour12 * 3600 + minute * 60 + secondsWithMs;
+  }
+
+  private _startResync() {
+    this._stopResync();
+    this._resyncInterval = window.setInterval(() => {
+      this._computeOffsets();
+    }, 60000);
+  }
+
+  private _stopResync() {
+    if (this._resyncInterval) {
+      clearInterval(this._resyncInterval);
+      this._resyncInterval = undefined;
+    }
   }
 
   render() {
@@ -218,16 +229,16 @@ export class HuiClockCardAnalog extends LitElement {
           <div class="center-dot"></div>
           <div
             class="hand hour"
-            style=${`--hand-rotation: ${this._hourDeg ?? 0}deg;`}
+            style=${`animation-delay: -${this._hourOffsetSec ?? 0}s;`}
           ></div>
           <div
             class="hand minute"
-            style=${`--hand-rotation: ${this._minuteDeg ?? 0}deg;`}
+            style=${`animation-delay: -${this._minuteOffsetSec ?? 0}s;`}
           ></div>
           ${this.config.show_seconds
             ? html`<div
                 class="hand second"
-                style=${`--hand-rotation: ${this._secondDeg ?? 0}deg;`}
+                style=${`animation-delay: -${this._secondOffsetSec ?? 0}s;`}
               ></div>`
             : nothing}
         </div>
@@ -356,10 +367,13 @@ export class HuiClockCardAnalog extends LitElement {
       left: 50%;
       bottom: 50%;
       transform-origin: 50% 100%;
-      transform: translate(-50%, 0) rotate(var(--hand-rotation, 0deg));
+      transform: translate(-50%, 0) rotate(0deg);
       background: var(--primary-text-color);
       border-radius: 2px;
       will-change: transform;
+      animation-name: ha-clock-rotate;
+      animation-timing-function: linear;
+      animation-iteration-count: infinite;
     }
 
     .hand.hour {
@@ -368,6 +382,7 @@ export class HuiClockCardAnalog extends LitElement {
       background: var(--primary-text-color);
       box-shadow: 0 0 8px 0 rgba(0, 0, 0, 0.2);
       z-index: 1;
+      animation-duration: 43200s; /* 12 hours */
     }
 
     .hand.minute {
@@ -377,6 +392,7 @@ export class HuiClockCardAnalog extends LitElement {
       box-shadow: 0 0 6px 0 rgba(0, 0, 0, 0.2);
       opacity: 0.9;
       z-index: 3;
+      animation-duration: 3600s; /* 60 minutes */
     }
 
     .hand.second {
@@ -386,6 +402,16 @@ export class HuiClockCardAnalog extends LitElement {
       box-shadow: 0 0 4px 0 rgba(0, 0, 0, 0.2);
       opacity: 0.8;
       z-index: 2;
+      animation-duration: 60s; /* 60 seconds */
+    }
+
+    @keyframes ha-clock-rotate {
+      from {
+        transform: translate(-50%, 0) rotate(0deg);
+      }
+      to {
+        transform: translate(-50%, 0) rotate(360deg);
+      }
     }
   `;
 }
