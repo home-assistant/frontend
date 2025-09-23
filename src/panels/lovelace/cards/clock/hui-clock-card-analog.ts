@@ -40,8 +40,6 @@ export class HuiClockCardAnalog extends LitElement {
 
   @state() private _secondOffsetSec?: number;
 
-  private _resyncInterval?: number;
-
   private _initDate() {
     if (!this.config || !this.hass) {
       return;
@@ -78,7 +76,6 @@ export class HuiClockCardAnalog extends LitElement {
     super.connectedCallback();
     document.addEventListener("visibilitychange", this._handleVisibilityChange);
     this._computeOffsets();
-    this._startResync();
   }
 
   public disconnectedCallback() {
@@ -87,7 +84,6 @@ export class HuiClockCardAnalog extends LitElement {
       "visibilitychange",
       this._handleVisibilityChange
     );
-    this._stopResync();
   }
 
   private _handleVisibilityChange = () => {
@@ -115,20 +111,6 @@ export class HuiClockCardAnalog extends LitElement {
     this._secondOffsetSec = secondsWithMs;
     this._minuteOffsetSec = minute * 60 + secondsWithMs;
     this._hourOffsetSec = hour12 * 3600 + minute * 60 + secondsWithMs;
-  }
-
-  private _startResync() {
-    this._stopResync();
-    this._resyncInterval = window.setInterval(() => {
-      this._computeOffsets();
-    }, 60000);
-  }
-
-  private _stopResync() {
-    if (this._resyncInterval) {
-      clearInterval(this._resyncInterval);
-      this._resyncInterval = undefined;
-    }
   }
 
   render() {
