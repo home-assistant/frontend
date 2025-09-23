@@ -49,17 +49,23 @@ export const computeEntityDisplayName = (
 
   // If entity has no custom name, use device name instead of entity name
   if (entityUseDeviceName) {
-    names = names.map((n) => (n === "entity" ? "device" : n));
+    names = names.map((n) => (n === "entity_name" ? "device_name" : n));
   }
 
-  // Remove duplicates while preserving order
-  names = names.filter((item, pos) => names.indexOf(item) === pos);
+  // Remove duplicates while preserving order (only if they are known types)
+  names = names.filter(
+    (n, i) =>
+      !(
+        (ENTITY_DISPLAY_NAME_TYPES as readonly string[]).includes(n) &&
+        names.indexOf(n) !== i
+      )
+  );
 
   // Fallback to state name (friendly name) if no name could be computed
   return (
     hass.formatEntityName(
       stateObj,
-      names.map((n) => MAPPING[n]),
+      names.map((n) => MAPPING[n] || n),
       " "
     ) || computeStateName(stateObj)
   );
