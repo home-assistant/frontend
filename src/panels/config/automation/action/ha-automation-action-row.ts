@@ -596,7 +596,10 @@ export default class HaAutomationActionRow extends LitElement {
     const enabled = !(this.action.enabled ?? true);
     const value = { ...this.action, enabled };
     fireEvent(this, "value-changed", { value });
-    this.openSidebar(value); // refresh sidebar
+
+    if (this._selected && this.optionsInSidebar) {
+      this.openSidebar(value); // refresh sidebar
+    }
 
     if (this._yamlMode && !this.optionsInSidebar) {
       this._actionEditor?.yamlEditor?.setValue(value);
