@@ -49,6 +49,8 @@ export default class HaAutomationSidebarCard extends LitElement {
 
   @query(".card-content") private _contentElement!: HTMLDivElement;
 
+  @query("ha-dialog-header") private _headerElement?: HTMLElement;
+
   private _contentSize = new ResizeController(this, {
     target: null,
     callback: (entries) => {
@@ -154,7 +156,7 @@ export default class HaAutomationSidebarCard extends LitElement {
 
   private _updateHeaderHeight() {
     requestAnimationFrame(() => {
-      const header = this.shadowRoot?.querySelector("ha-dialog-header");
+      const header = this._headerElement;
       if (header) {
         const headerHeight = header.offsetHeight;
         this.style.setProperty(
