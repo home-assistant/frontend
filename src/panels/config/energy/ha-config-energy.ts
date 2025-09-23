@@ -197,6 +197,7 @@ class HaConfigEnergy extends LitElement {
 
   private async _downloadDiagnostics() {
     const data = {
+      version: this.hass.config.version,
       info: this._info,
       preferences: this._preferences,
       metadata: this._statsMetadata,
