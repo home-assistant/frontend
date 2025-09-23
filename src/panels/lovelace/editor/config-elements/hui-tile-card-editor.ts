@@ -30,7 +30,10 @@ import type {
   LovelaceCardFeatureConfig,
   LovelaceCardFeatureContext,
 } from "../../card-features/types";
-import { getEntityDefaultTileIconAction } from "../../cards/hui-tile-card";
+import {
+  DEFAULT_NAME,
+  getEntityDefaultTileIconAction,
+} from "../../cards/hui-tile-card";
 import type { TileCardConfig } from "../../cards/types";
 import type { LovelaceCardEditor } from "../../types";
 import { actionConfigStruct } from "../structs/action-struct";
@@ -43,13 +46,7 @@ const cardConfigStruct = assign(
   baseLovelaceCardConfig,
   object({
     entity: optional(string()),
-    name: optional(string()),
-    name_content: optional(
-      union([
-        enums(["floor", "area", "device", "entity"]),
-        array(enums(["floor", "area", "device", "entity"])),
-      ])
-    ),
+    name: optional(union([string(), array(string())])),
     icon: optional(string()),
     color: optional(string()),
     show_entity_picture: optional(boolean()),
@@ -104,13 +101,10 @@ export class HuiTileCardEditor
           iconPath: mdiTextShort,
           schema: [
             {
-              name: "name_content",
+              name: "name",
               selector: { entity_name: {} },
               context: { entity: "entity" },
-            },
-            {
-              name: "name",
-              selector: { text: {} },
+              default: DEFAULT_NAME,
             },
             {
               name: "",
@@ -420,11 +414,6 @@ export class HuiTileCardEditor
       | SchemaUnion<ReturnType<typeof this._featuresSchema>>
   ) => {
     switch (schema.name) {
-      case "name":
-        return this.hass!.localize(
-          `ui.panel.lovelace.editor.card.tile.custom_name`
-        );
-      case "name_content":
       case "color":
       case "icon_tap_action":
       case "icon_hold_action":
@@ -450,7 +439,6 @@ export class HuiTileCardEditor
       | SchemaUnion<ReturnType<typeof this._featuresSchema>>
   ) => {
     switch (schema.name) {
-      case "name_content":
       case "color":
         return this.hass!.localize(
           `ui.panel.lovelace.editor.card.tile.${schema.name}_helper`

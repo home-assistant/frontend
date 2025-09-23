@@ -659,10 +659,10 @@
         },
         "entity-name-picker": {
           "types": {
-            "floor": "Floor",
-            "area": "Area",
-            "device": "Device",
-            "entity": "Entity"
+            "floor_name": "Floor",
+            "area_name": "Area",
+            "device_name": "Device",
+            "entity_name": "Entity"
           },
           "friendly_name": "Friendly name"
         },
@@ -7954,9 +7954,6 @@
             },
             "tile": {
               "name": "Tile",
-              "name_content": "Name content",
-              "name_content_helper": "Ignored if a custom name is set.",
-              "custom_name": "Custom name",
               "description": "The Tile card gives you a quick overview of an entity. The card allows you to toggle the entity, show the More info dialog or trigger custom actions.",
               "color": "Color",
               "color_helper": "Inactive state (e.g. off, closed) will not be colored.",

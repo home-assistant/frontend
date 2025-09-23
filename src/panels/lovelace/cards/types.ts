@@ -569,8 +569,7 @@ export interface WeatherForecastCardConfig extends LovelaceCardConfig {
 
 export interface TileCardConfig extends LovelaceCardConfig {
   entity: string;
-  name?: string;
-  name_content?: EntityNameType | EntityNameType[];
+  name?: string | string[];
   hide_state?: boolean;
   state_content?: string | string[];
   icon?: string;
