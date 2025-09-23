@@ -49,8 +49,6 @@ export default class HaAutomationSidebarCard extends LitElement {
 
   @query(".card-content") private _contentElement!: HTMLDivElement;
 
-  @query("ha-dialog-header") private _headerElement?: HTMLElement;
-
   private _contentSize = new ResizeController(this, {
     target: null,
     callback: (entries) => {
@@ -62,13 +60,6 @@ export default class HaAutomationSidebarCard extends LitElement {
 
   protected firstUpdated(_changedProperties: PropertyValues): void {
     this._contentSize.observe(this._contentElement);
-    this._updateHeaderHeight();
-  }
-
-  protected updated(changedProperties: PropertyValues): void {
-    if (changedProperties.has("hass") || changedProperties.has("narrow")) {
-      this._updateHeaderHeight();
-    }
   }
 
   protected render() {
@@ -154,19 +145,6 @@ export default class HaAutomationSidebarCard extends LitElement {
     ev.preventDefault();
   }
 
-  private _updateHeaderHeight() {
-    requestAnimationFrame(() => {
-      const header = this._headerElement;
-      if (header) {
-        const headerHeight = header.offsetHeight;
-        this.style.setProperty(
-          "--ha-dialog-header-height",
-          `${headerHeight}px`
-        );
-      }
-    });
-  }
-
   static styles = css`
     ha-card {
       position: relative;
@@ -174,7 +152,8 @@ export default class HaAutomationSidebarCard extends LitElement {
       width: 100%;
       border-color: var(--primary-color);
       border-width: 2px;
-      display: block;
+      display: flex;
+      flex-direction: column;
     }
 
     @media all and (max-width: 870px) {
@@ -228,13 +207,11 @@ export default class HaAutomationSidebarCard extends LitElement {
     }
 
     .card-content {
-      max-height: calc(
-        100% - max(var(--safe-area-inset-bottom, 0px), 16px) - var(
-            --ha-dialog-header-height
-          )
-      );
+      flex: 1 1 auto;
+      min-height: 0;
       overflow: auto;
       margin-top: 0;
+      padding-bottom: max(var(--safe-area-inset-bottom, 0px), 32px);
     }
 
     @media all and (max-width: 870px) {
@@ -243,8 +220,7 @@ export default class HaAutomationSidebarCard extends LitElement {
       }
 
       .card-content {
-        max-height: calc(100% - var(--ha-dialog-header-height) - 34px);
-        overflow: auto;
+        padding-bottom: 42px;
       }
     }
   `;
