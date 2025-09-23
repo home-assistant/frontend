@@ -642,7 +642,4 @@ declare global {
     "manual-script-editor": HaManualScriptEditor;
   }
 
-  interface HASSDomEvents {
-    "undo-paste": undefined;
-  }
 }
