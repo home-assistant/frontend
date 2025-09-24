@@ -142,7 +142,8 @@ export class HaEntityNamePicker extends LitElement {
                     @remove=${this._removeItem}
                     @click=${this._editItem}
                     .label=${label}
-                    selected
+                    .selected=${!this.disabled}
+                    .disabled=${this.disabled}
                   >
                     <ha-svg-icon slot="icon" .path=${mdiDrag}></ha-svg-icon>
                     <span>${label}</span>
@@ -347,6 +348,38 @@ export class HaEntityNamePicker extends LitElement {
 
     .container {
       position: relative;
+      background-color: var(--mdc-text-field-fill-color, whitesmoke);
+      border-radius: 4px;
+      border-end-end-radius: 0;
+      border-end-start-radius: 0;
+    }
+    .container:after {
+      display: block;
+      content: "";
+      position: absolute;
+      pointer-events: none;
+      bottom: 0;
+      left: 0;
+      right: 0;
+      height: 1px;
+      width: 100%;
+      background-color: var(
+        --mdc-text-field-idle-line-color,
+        rgba(0, 0, 0, 0.42)
+      );
+      transform:
+        height 180ms ease-in-out,
+        background-color 180ms ease-in-out;
+    }
+    :host([disabled]) .container:after {
+      background-color: var(
+        --mdc-text-field-disabled-line-color,
+        rgba(0, 0, 0, 0.42)
+      );
+    }
+    .container:focus-within:after {
+      height: 2px;
+      background-color: var(--mdc-theme-primary);
     }
 
     label {
@@ -363,7 +396,7 @@ export class HaEntityNamePicker extends LitElement {
     }
 
     ha-chip-set {
-      padding: 8px 0;
+      padding: 8px 8px;
     }
 
     .sortable-fallback {
