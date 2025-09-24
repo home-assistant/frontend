@@ -64,6 +64,7 @@ export interface MoreInfoDialogParams {
   view?: View;
   /** @deprecated Use `view` instead */
   tab?: View;
+  data?: Record<string, any>;
 }
 
 type View = "info" | "history" | "settings" | "related";
@@ -96,6 +97,8 @@ export class MoreInfoDialog extends LitElement {
 
   @state() private _entityId?: string | null;
 
+  @state() private _data?: Record<string, any>;
+
   @state() private _currView: View = DEFAULT_VIEW;
 
   @state() private _initialView: View = DEFAULT_VIEW;
@@ -116,6 +119,8 @@ export class MoreInfoDialog extends LitElement {
       this.closeDialog();
       return;
     }
+
+    this._data = params.data;
     this._currView = params.view || DEFAULT_VIEW;
     this._initialView = params.view || DEFAULT_VIEW;
     this._childView = undefined;
@@ -570,6 +575,7 @@ export class MoreInfoDialog extends LitElement {
                           .entityId=${this._entityId}
                           .entry=${this._entry}
                           .editMode=${this._infoEditMode}
+                          .data=${this._data}
                         ></ha-more-info-info>
                       `
                     : this._currView === "history"

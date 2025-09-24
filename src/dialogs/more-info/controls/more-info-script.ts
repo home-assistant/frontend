@@ -3,20 +3,24 @@ import type { HassEntity } from "home-assistant-js-websocket";
 import type { PropertyValues } from "lit";
 import { css, html, LitElement, nothing } from "lit";
 import { customElement, property, state } from "lit/decorators";
-import "../../../components/ha-relative-time";
-import "../../../components/ha-service-control";
+import { listenMediaQuery } from "../../../common/dom/media_query";
+import { computeObjectId } from "../../../common/entity/compute_object_id";
+import "../../../components/entity/state-info";
 import "../../../components/ha-control-button";
 import "../../../components/ha-control-button-group";
-import "../../../components/entity/state-info";
-import type { HomeAssistant } from "../../../types";
-import type { ScriptEntity } from "../../../data/script";
-import { canRun } from "../../../data/script";
-import { isUnavailableState } from "../../../data/entity";
-import { computeObjectId } from "../../../common/entity/compute_object_id";
-import { listenMediaQuery } from "../../../common/dom/media_query";
-import "../components/ha-more-info-state-header";
-import type { ExtEntityRegistryEntry } from "../../../data/entity_registry";
 import "../../../components/ha-markdown";
+import "../../../components/ha-relative-time";
+import "../../../components/ha-service-control";
+import { isUnavailableState } from "../../../data/entity";
+import type { ExtEntityRegistryEntry } from "../../../data/entity_registry";
+import type { ScriptEntity } from "../../../data/script";
+import {
+  canRun,
+  hasRequiredScriptFields,
+  requiredScriptFieldsFilled,
+} from "../../../data/script";
+import type { HomeAssistant } from "../../../types";
+import "../components/ha-more-info-state-header";
 
 @customElement("more-info-script")
 class MoreInfoScript extends LitElement {
@@ -25,6 +29,8 @@ class MoreInfoScript extends LitElement {
   @property({ attribute: false }) public stateObj?: ScriptEntity;
 
   @property({ attribute: false }) public entry?: ExtEntityRegistryEntry;
+
+  @property({ attribute: false }) public data?: Record<string, any>;
 
   @state() private _scriptData: Record<string, any> = {};
 
@@ -110,7 +116,10 @@ class MoreInfoScript extends LitElement {
                 hide-picker
                 hide-description
                 .hass=${this.hass}
-                .value=${this._scriptData}
+                .value=${{
+                  ...(this.data ? { data: this.data } : {}),
+                  ...this._scriptData,
+                }}
                 .showAdvanced=${this.hass.userData?.showAdvanced}
                 .narrow=${this.narrow}
                 @value-changed=${this._scriptDataChanged}
@@ -198,7 +207,13 @@ class MoreInfoScript extends LitElement {
 
   private _canRun() {
     if (
-      canRun(this.stateObj!) ||
+      !hasRequiredScriptFields(this.hass, this.stateObj!.entity_id) ||
+      (requiredScriptFieldsFilled(
+        this.hass,
+        this.stateObj!.entity_id,
+        this._scriptData.data
+      ) &&
+        canRun(this.stateObj!)) ||
       // Restart can also always runs. Just cancels other run.
       this.stateObj!.attributes.mode === "restart"
     ) {
