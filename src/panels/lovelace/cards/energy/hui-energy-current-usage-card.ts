@@ -6,6 +6,7 @@ import memoizeOne from "memoize-one";
 import "../../../../components/ha-card";
 import "../../../../components/ha-alert";
 import "../../../../components/ha-icon";
+import "../../../../components/ha-icon-button-arrow-prev";
 import "../../../../components/ha-md-list";
 import "../../../../components/ha-md-list-item";
 import "../../../../components/ha-md-divider";
@@ -26,7 +27,8 @@ import {
 import { haStyleScrollbar } from "../../../../resources/styles";
 import { createEntityNotFoundWarning } from "../../components/hui-warning";
 
-interface AreaBreakdown {
+interface Breakdown {
+  id: string;
   name: string;
   value: number;
 }
@@ -39,6 +41,14 @@ export class HuiEnergyCurrentUsageCard
   @property({ attribute: false }) public hass!: HomeAssistant;
 
   @state() private _config?: EnergyCurrentUsageCardConfig;
+
+  @state() private _navigationStack: {
+    type: "area" | "entity";
+    id?: string;
+    name?: string;
+  }[] = [];
+
+  @state() private _currentView: "areas" | "entities" = "areas";
 
   public static async getConfigElement(): Promise<LovelaceCardEditor> {
     await import(
@@ -107,9 +117,9 @@ export class HuiEnergyCurrentUsageCard
         hass: HomeAssistant,
         powerEntityId: string,
         powerEntityState: string
-      ): AreaBreakdown[] => {
+      ): Breakdown[] => {
         const breakdowns = Object.values(hass.areas)
-          .map((area): AreaBreakdown | null => {
+          .map((area): Breakdown | null => {
             const areaName = computeAreaName(area);
             if (!areaName) {
               return null;
@@ -145,15 +155,17 @@ export class HuiEnergyCurrentUsageCard
             }
 
             return {
+              id: area.area_id,
               name: areaName,
               value: sum,
             };
           })
-          .filter((bd): bd is AreaBreakdown => bd !== null);
+          .filter((bd): bd is Breakdown => bd !== null);
 
         return [
           ...breakdowns,
           {
+            id: "untracked",
             name: hass.localize("ui.common.untracked"),
             value:
               Number(powerEntityState) -
@@ -165,6 +177,47 @@ export class HuiEnergyCurrentUsageCard
 
     const breakdown = _computeBreakdown(this.hass, entityId, stateObj.state);
     const gridRows = Number(this._config.grid_options?.rows ?? 3);
+
+    const _computeEntityBreakdown = memoizeOne(
+      (
+        hass: HomeAssistant,
+        powerEntityId: string,
+        areaId: string
+      ): Breakdown[] => {
+        const powerEntityIds = Object.keys(hass.states).filter(
+          generateEntityFilter(hass, {
+            domain: "sensor",
+            device_class: "power",
+            area: areaId,
+          })
+        );
+
+        const validPowerEntities = powerEntityIds
+          .map((id) => hass.states[id])
+          .filter(
+            (st) =>
+              st &&
+              st.entity_id !== powerEntityId &&
+              isNumericState(st) &&
+              !isNaN(Number(st.state))
+          );
+
+        return validPowerEntities
+          .map((entity) => ({
+            id: entity.entity_id,
+            name:
+              hass.states[entity.entity_id]?.attributes.friendly_name ||
+              entity.entity_id.split(".")[1].replace(/_/g, " "),
+            value: Number(entity.state),
+          }))
+          .sort((a, b) => b.value - a.value);
+      }
+    );
+
+    const currentNavigation =
+      this._navigationStack[this._navigationStack.length - 1];
+    const showBackButton =
+      this._currentView === "entities" && currentNavigation;
 
     return html`<ha-card>
       <div
@@ -186,26 +239,70 @@ export class HuiEnergyCurrentUsageCard
       ${gridRows > 1
         ? html`
             <div class="breakdown ha-scrollbar">
-              <ha-md-list>
-                ${breakdown.map(
-                  (area, idx) => html`
-                    ${breakdown.length > 1 && idx === breakdown.length - 1
-                      ? html`<ha-md-divider
-                          role="separator"
-                          tabindex="-1"
-                        ></ha-md-divider>`
-                      : nothing}
-                    <ha-md-list-item>
-                      <span slot="headline">${area.name}</span>
-                      <span class="meta" slot="end"
-                        >${formatNumber(area.value, this.hass.locale, {
-                          maximumFractionDigits: 1,
-                        })}
-                        ${uom ?? ""}</span
+              ${showBackButton
+                ? html`
+                    <div class="navigation-header">
+                      <ha-icon-button-arrow-prev
+                        @click=${this._goBack}
+                        .hass=${this.hass}
+                      ></ha-icon-button-arrow-prev>
+                      <span class="navigation-title"
+                        >${currentNavigation?.name}</span
                       >
-                    </ha-md-list-item>
+                    </div>
                   `
-                )}
+                : nothing}
+              <ha-md-list>
+                ${this._currentView === "areas"
+                  ? breakdown.map(
+                      (area, idx) => html`
+                        ${breakdown.length > 1 && idx === breakdown.length - 1
+                          ? html`<ha-md-divider
+                              role="separator"
+                              tabindex="-1"
+                            ></ha-md-divider>`
+                          : nothing}
+                        <ha-md-list-item
+                          class=${classMap({
+                            "untracked-item": area.id === "untracked",
+                          })}
+                          type="button"
+                          @click=${area.id !== "untracked"
+                            ? this._createAreaClickHandler(area)
+                            : undefined}
+                        >
+                          <span slot="headline">${area.name}</span>
+                          <span class="meta" slot="end"
+                            >${formatNumber(area.value, this.hass.locale, {
+                              maximumFractionDigits: 1,
+                            })}
+                            ${uom ?? ""}</span
+                          >
+                        </ha-md-list-item>
+                      `
+                    )
+                  : currentNavigation?.id
+                    ? _computeEntityBreakdown(
+                        this.hass,
+                        entityId,
+                        currentNavigation.id
+                      ).map(
+                        (entity) => html`
+                          <ha-md-list-item
+                            type="button"
+                            @click=${this._createEntityClickHandler(entity)}
+                          >
+                            <span slot="headline">${entity.name}</span>
+                            <span class="meta" slot="end"
+                              >${formatNumber(entity.value, this.hass.locale, {
+                                maximumFractionDigits: 1,
+                              })}
+                              ${uom ?? ""}</span
+                            >
+                          </ha-md-list-item>
+                        `
+                      )
+                    : nothing}
               </ha-md-list>
             </div>
           `
@@ -215,6 +312,36 @@ export class HuiEnergyCurrentUsageCard
 
   private _handleHeadingClick(): void {
     fireEvent(this, "hass-more-info", { entityId: this._config!.power_entity });
+  }
+
+  private _handleAreaClick(area: Breakdown): void {
+    if (area.id === "untracked") return;
+
+    this._navigationStack.push({
+      type: "area",
+      id: area.id,
+      name: area.name,
+    });
+    this._currentView = "entities";
+  }
+
+  private _handleEntityClick(entity: Breakdown): void {
+    fireEvent(this, "hass-more-info", { entityId: entity.id });
+  }
+
+  private _createAreaClickHandler(area: Breakdown) {
+    return () => this._handleAreaClick(area);
+  }
+
+  private _createEntityClickHandler(entity: Breakdown) {
+    return () => this._handleEntityClick(entity);
+  }
+
+  private _goBack(): void {
+    if (this._navigationStack.length > 0) {
+      this._navigationStack.pop();
+      this._currentView = "areas";
+    }
   }
 
   static get styles(): CSSResultGroup {
@@ -289,6 +416,38 @@ export class HuiEnergyCurrentUsageCard
           --md-list-item-one-line-container-height: 16px;
           --md-list-item-top-space: 8px;
           --md-list-item-bottom-space: 8px;
+          padding: 0;
+        }
+
+        .breakdown ha-md-list-item.untracked-item {
+          pointer-events: none;
+        }
+
+        .navigation-header {
+          display: flex;
+          align-items: center;
+          gap: 8px;
+          padding: 0 8px 2px;
+          border-bottom: 1px solid var(--divider-color);
+          background-color: var(--card-background-color);
+          position: sticky;
+          top: 0;
+          z-index: 1;
+        }
+
+        .navigation-header ha-icon-button-arrow-prev {
+          --mdc-icon-button-size: 32px;
+          --mdc-icon-size: 20px;
+        }
+
+        .navigation-title {
+          font-size: var(--ha-font-size-body-1);
+          font-weight: var(--ha-font-weight-medium);
+          color: var(--primary-text-color);
+          white-space: nowrap;
+          overflow: hidden;
+          text-overflow: ellipsis;
+          flex: 1;
         }
 
         .meta {
