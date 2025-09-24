@@ -22,6 +22,7 @@ import { demoPanels } from "./demo_panels";
 import { demoServices } from "./demo_services";
 import type { Entity } from "./entity";
 import { getEntity } from "./entity";
+import type { EntityRegistryDisplayEntry } from "../data/entity_registry";
 
 const ensureArray = <T>(val: T | T[]): T[] =>
   Array.isArray(val) ? val : [val];
@@ -147,6 +148,17 @@ export const provideHass = (
     } else {
       updateStates(states);
     }
+
+    for (const ent of ensureArray(newEntities)) {
+      hass().entities[ent.entityId] = {
+        entity_id: ent.entityId,
+        name: ent.name,
+        icon: ent.icon,
+        platform: "demo",
+        labels: [],
+      } satisfies EntityRegistryDisplayEntry;
+    }
+
     updateFormatFunctions();
   }
 
