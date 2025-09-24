@@ -7830,6 +7830,18 @@
                   "description": "60 ticks (Every minute)"
                 }
               },
+              "seconds_motion": {
+                "label": "Seconds motion",
+                "description": "How the seconds hand moves on the clock",
+                "continuous": {
+                  "label": "Continuous",
+                  "description": "The seconds hand moves continuously"
+                },
+                "tick": {
+                  "label": "Tick",
+                  "description": "The seconds hand moves in 1 second steps"
+                }
+              },
               "face_style": {
                 "label": "Clock face style",
                 "description": "Which kind of indices to use for the clock face",
