@@ -170,6 +170,7 @@ export class HuiEnergyCurrentUsageCard
       <div
         class=${classMap({
           heading: true,
+          "reduced-padding": gridRows < 3,
           "single-row": gridRows === 1,
         })}
         @click=${this._handleHeadingClick}
@@ -239,18 +240,28 @@ export class HuiEnergyCurrentUsageCard
           gap: 2px;
           pointer-events: all;
           cursor: pointer;
+          line-height: var(--ha-line-height-normal);
         }
-        .heading.single-row {
+        .heading.reduced-padding {
           padding: 8px 8px 0;
+        }
+        .heading.reduced-padding {
+          line-height: var(--ha-line-height-condensed);
         }
 
         .heading .icon {
           --mdc-icon-size: var(--ha-font-size-3xl);
         }
+        .heading.single-row .icon {
+          --mdc-icon-size: var(--ha-font-size-2xl);
+        }
 
         .heading .value {
           font-size: var(--ha-font-size-5xl);
           font-weight: var(--ha-font-weight-light);
+        }
+        .heading.single-row .value {
+          font-size: var(--ha-font-size-4xl);
         }
 
         .heading .measurement {
@@ -258,6 +269,10 @@ export class HuiEnergyCurrentUsageCard
           align-self: flex-end;
           font-size: var(--ha-font-size-xl);
           color: var(--secondary-text-color);
+        }
+        .heading.single-row .measurement {
+          padding-bottom: 8px;
+          font-size: var(--ha-font-size-l);
         }
 
         .breakdown {
