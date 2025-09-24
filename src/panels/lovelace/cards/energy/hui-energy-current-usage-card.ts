@@ -7,6 +7,7 @@ import "../../../../components/ha-alert";
 import "../../../../components/ha-icon";
 import "../../../../components/ha-md-list";
 import "../../../../components/ha-md-list-item";
+import "../../../../components/ha-md-divider";
 import type { HomeAssistant } from "../../../../types";
 import type {
   LovelaceCard,
@@ -182,10 +183,16 @@ export class HuiEnergyCurrentUsageCard
       ${gridRows > 1
         ? html`
             <div class="breakdown">
-              <ha-md-list>
+              <ha-md-list class="ha-scrollbar">
                 ${breakdown.map(
-                  (area) =>
-                    html`<ha-md-list-item>
+                  (area, idx) => html`
+                    ${breakdown.length > 1 && idx === breakdown.length - 1
+                      ? html`<ha-md-divider
+                          role="separator"
+                          tabindex="-1"
+                        ></ha-md-divider>`
+                      : nothing}
+                    <ha-md-list-item>
                       <span slot="headline">${area.name}</span>
                       <span class="meta" slot="end"
                         >${formatNumber(area.value, this.hass.locale, {
@@ -193,7 +200,8 @@ export class HuiEnergyCurrentUsageCard
                         })}
                         ${uom ?? ""}</span
                       >
-                    </ha-md-list-item>`
+                    </ha-md-list-item>
+                  `
                 )}
               </ha-md-list>
             </div>
