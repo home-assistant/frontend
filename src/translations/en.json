@@ -5,7 +5,7 @@
     "config": "Settings",
     "states": "Overview",
     "map": "Map",
-    "logbook": "Logbook",
+    "logbook": "Activity",
     "history": "History",
     "todo": "To-do lists",
     "developer_tools": "Developer tools",
@@ -416,6 +416,7 @@
       "next": "Next",
       "back": "Back",
       "undo": "Undo",
+      "redo": "Redo",
       "move": "Move",
       "save": "Save",
       "apply": "Apply",
@@ -526,7 +527,7 @@
         }
       },
       "logbook": {
-        "entries_not_found": "No logbook events found.",
+        "entries_not_found": "No activity found.",
         "triggered_by": "triggered by",
         "triggered_by_automation": "triggered by automation",
         "triggered_by_script": "triggered by script",
@@ -539,7 +540,7 @@
         "triggered_by_homeassistant_stopping": "triggered by Home Assistant stopping",
         "triggered_by_homeassistant_starting": "triggered by Home Assistant starting",
         "show_trace": "[%key:ui::panel::config::automation::editor::show_trace%]",
-        "retrieval_error": "Could not load logbook",
+        "retrieval_error": "Could not load activity",
         "not_loaded": "[%key:ui::dialogs::helper_settings::platform_not_loaded%]",
         "messages": {
           "was_away": "was detected away",
@@ -1219,7 +1220,9 @@
       "yaml-editor": {
         "copy_to_clipboard": "[%key:ui::panel::config::automation::editor::copy_to_clipboard%]",
         "error": "Error in parsing YAML: {reason}",
-        "error_location": "line: {line}, column: {column}"
+        "error_location": "line: {line}, column: {column}",
+        "enter_fullscreen": "Enter fullscreen",
+        "exit_fullscreen": "Exit fullscreen"
       },
       "state-content-picker": {
         "state": "State",
@@ -1383,7 +1386,8 @@
         "info": "Information",
         "related": "Related",
         "history": "History",
-        "logbook": "Logbook",
+        "aggregate": "5-minute aggregated",
+        "logbook": "Activity",
         "device_or_service_info": "[%key:ui::panel::config::devices::device_info%]",
         "device_type": {
           "device": "[%key:ui::panel::config::devices::type::device_heading%]",
@@ -2067,7 +2071,9 @@
           "cut": "to cut the selected item and place it on the clipboard",
           "delete": "to delete the selected item",
           "paste": "to paste automation/script YAML from clipboard to editor",
-          "save": "to save automation/script"
+          "save": "to save automation/script",
+          "undo": "to undo last change",
+          "redo": "to redo last undone change"
         },
         "charts": {
           "title": "Charts",
@@ -3404,7 +3410,7 @@
                 "conf_mode": "Configuration method",
                 "default": "Default",
                 "require_admin": "Admin only",
-                "sidebar": "Show in sidebar",
+                "sidebar": "In sidebar",
                 "filename": "Filename",
                 "url": "Open"
               },
@@ -3418,7 +3424,7 @@
             "detail": {
               "edit_dashboard": "Edit dashboard",
               "new_dashboard": "Add new dashboard",
-              "show_sidebar": "Show in sidebar",
+              "show_sidebar": "Add to sidebar",
               "icon": "Icon",
               "title": "Title",
               "title_required": "Title is required.",
@@ -3881,6 +3887,8 @@
               "add": "Add trigger",
               "search": "Search trigger",
               "id": "Trigger ID",
+              "id_helper": "Helps identify each run based on which trigger fired.",
+              "optional": "Optional",
               "edit_id": "Edit ID",
               "duplicate": "[%key:ui::common::duplicate%]",
               "re_order": "Re-order",
@@ -4285,7 +4293,7 @@
                 },
                 "trigger": {
                   "label": "Triggered by",
-                  "no_triggers": "No triggers have an ID set. Use the three-dot menu on a trigger and select Edit ID to assign one.",
+                  "no_triggers": "There are no triggers with ID's set in this automation. Edit a trigger and give it a Trigger ID name.",
                   "id": "Trigger",
                   "description": {
                     "picker": "If the automation has been triggered by a specific trigger.",
@@ -4599,7 +4607,7 @@
             "tabs": {
               "details": "Step details",
               "timeline": "Trace timeline",
-              "logbook": "Related logbook entries",
+              "logbook": "Related activity",
               "automation_config": "Automation config",
               "step_config": "Step config",
               "changed_variables": "Changed variables",
@@ -4616,7 +4624,7 @@
               "error": "Error: {error}",
               "result": "Result:",
               "step_not_executed": "This step was not executed.",
-              "no_logbook_entries": "No logbook entries found for this step.",
+              "no_logbook_entries": "No activity found for this step.",
               "no_variables_changed": "No variables changed",
               "unable_to_find_config": "Unable to find config"
             },
@@ -4642,8 +4650,8 @@
               "disabled": "(disabled)",
               "triggered_by": "{triggeredBy, select, \n alias {{alias} triggered}\n other {Triggered} \n} {triggeredPath, select, \n trigger {by the {trigger}}\n other {manually} \n} at {time}",
               "path_error": "Unable to extract path {path}. Download trace and report as bug.",
-              "not_all_entries_are_related_automation_note": "Not all shown logbook entries might be related to this automation.",
-              "not_all_entries_are_related_script_note": "Not all shown logbook entries might be related to this script."
+              "not_all_entries_are_related_automation_note": "Not all shown activity might be related to this automation.",
+              "not_all_entries_are_related_script_note": "Not all shown activity might be related to this script."
             }
           }
         },
@@ -7583,8 +7591,8 @@
               "square": "Render cards as squares"
             },
             "logbook": {
-              "name": "Logbook",
-              "description": "The Logbook card shows a list of events for entities."
+              "name": "Activity",
+              "description": "The Activity card shows a list of events for entities."
             },
             "history-graph": {
               "name": "History graph",
@@ -7826,6 +7834,18 @@
                   "description": "60 ticks (Every minute)"
                 }
               },
+              "seconds_motion": {
+                "label": "Seconds motion",
+                "description": "How the seconds hand moves on the clock",
+                "continuous": {
+                  "label": "Continuous",
+                  "description": "The seconds hand moves continuously"
+                },
+                "tick": {
+                  "label": "Tick",
+                  "description": "The seconds hand moves in 1 second steps"
+                }
+              },
               "face_style": {
                 "label": "Clock face style",
                 "description": "Which kind of indices to use for the clock face",
@@ -7920,7 +7940,7 @@
             },
             "thermostat": {
               "name": "Thermostat",
-              "description": "The Thermostat card gives control of a climate entity for heating or cooling, allowing you to set its mode and desired temperature.",
+              "description": "The Thermostat card gives control of a climate or water heater entity for heating or cooling, allowing you to set its mode and desired temperature.",
               "show_current_as_primary": "Show current temperature as primary information"
             },
             "tile": {
@@ -8515,7 +8535,7 @@
         },
         "entity_id_picker": {
           "title": "Display entity IDs in picker",
-          "description": "Shows the full entity IDs when selecting entities with a picker."
+          "description": "Shows the full entity IDs when selecting entities from a menu list."
         },
         "refresh_tokens": {
           "header": "Refresh tokens",

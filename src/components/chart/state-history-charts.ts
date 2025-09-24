@@ -84,6 +84,9 @@ export class StateHistoryCharts extends LitElement {
   @property({ attribute: "expand-legend", type: Boolean })
   public expandLegend?: boolean;
 
+  @property({ attribute: "sync-charts", type: Boolean })
+  public syncCharts = false;
+
   private _computedStartTime!: Date;
 
   private _computedEndTime!: Date;
@@ -146,7 +149,7 @@ export class StateHistoryCharts extends LitElement {
         : html`${combinedItems.map((item, index) =>
             this._renderHistoryItem(item, index)
           )}`}
-      ${this._hasZoomedCharts
+      ${this.syncCharts && this._hasZoomedCharts
         ? html`<ha-fab
             slot="fab"
             class="reset-button"
@@ -190,7 +193,7 @@ export class StateHistoryCharts extends LitElement {
           @chart-zoom-with-index=${this._handleTimelineSync}
           .height=${this.virtualize ? undefined : this.height}
           .expandLegend=${this.expandLegend}
-          hide-reset-button
+          ?hide-reset-button=${this.syncCharts}
         ></state-history-chart-line>
       </div> `;
     }
@@ -209,7 +212,7 @@ export class StateHistoryCharts extends LitElement {
         .clickForMoreInfo=${this.clickForMoreInfo}
         @y-width-changed=${this._yWidthChanged}
         @chart-zoom-with-index=${this._handleTimelineSync}
-        hide-reset-button
+        ?hide-reset-button=${this.syncCharts}
       ></state-history-chart-timeline>
     </div> `;
   };
@@ -302,7 +305,7 @@ export class StateHistoryCharts extends LitElement {
   private _handleTimelineSync(
     e: CustomEvent<HASSDomEvents["chart-zoom-with-index"]>
   ) {
-    if (this._isSyncing) {
+    if (!this.syncCharts || this._isSyncing) {
       return;
     }
 
@@ -444,6 +447,7 @@ export class StateHistoryCharts extends LitElement {
       position: fixed;
       bottom: calc(24px + var(--safe-area-inset-bottom));
       right: calc(24px + var(--safe-area-inset-bottom));
+      z-index: 1;
     }
   `;
 }
