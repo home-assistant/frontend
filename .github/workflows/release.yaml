@@ -49,7 +49,7 @@ jobs:
         run: ./script/translations_download
         env:
           LOKALISE_TOKEN: ${{ secrets.LOKALISE_TOKEN }}
-      
+
       - name: Build and release package
         run: |
           python3 -m pip install build
