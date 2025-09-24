@@ -955,7 +955,8 @@
         "target": "Targets",
         "target_secondary": "What should this action use as targeted areas, devices or entities.",
         "action_data": "Action data",
-        "integration_doc": "Integration documentation"
+        "integration_doc": "Integration documentation",
+        "script_variables": "Script variables"
       },
       "related-items": {
         "no_related_found": "No related items found.",
