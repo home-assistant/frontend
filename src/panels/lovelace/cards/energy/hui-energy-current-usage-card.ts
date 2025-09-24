@@ -21,7 +21,6 @@ import {
   formatNumber,
   isNumericState,
 } from "../../../../common/number/format_number";
-import { blankBeforeUnit } from "../../../../common/translations/blank_before_unit";
 
 interface AreaBreakdown {
   name: string;
@@ -163,11 +162,7 @@ export class HuiEnergyCurrentUsageCard
             (area) =>
               html`<ha-md-list-item>
                 <span slot="headline">${area.name}</span>
-                <span slot="end" class="meta"
-                  >${area.value}${uom
-                    ? blankBeforeUnit(uom, this.hass.locale)
-                    : ""}${uom ?? ""}</span
-                >
+                <span slot="end" class="meta">${area.value} ${uom ?? ""}</span>
               </ha-md-list-item>`
           )}
         </ha-md-list>
