@@ -216,6 +216,7 @@ export default class HaAutomationSidebarCard extends LitElement {
 
     @media all and (max-width: 870px) {
       .fade {
+        bottom: 0;
         border-radius: var(--ha-border-radius-square);
       }
 
