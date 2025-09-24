@@ -51,7 +51,7 @@ class HaPanelDevAction extends LitElement {
   @state() private _response?: {
     domain: string;
     service: string;
-    result: Record<string, any>;
+    result: Record<string, any> | null;
     media?: Promise<TemplateResult | typeof nothing>;
   };
 
@@ -205,7 +205,7 @@ class HaPanelDevAction extends LitElement {
           </ha-progress-button>
         </div>
       </div>
-      ${this._response
+      ${this._response?.result
         ? html`<div class="content response">
             <ha-card
               .header=${this.hass.localize(
@@ -491,7 +491,7 @@ class HaPanelDevAction extends LitElement {
         service,
         result,
         media:
-          "media_source_id" in result
+          result && "media_source_id" in result
             ? resolveMediaSource(this.hass, result.media_source_id).then(
                 (resolved) =>
                   resolved.mime_type.startsWith("image/")
