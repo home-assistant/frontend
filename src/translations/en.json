@@ -450,7 +450,8 @@
       "replace": "Replace",
       "append": "Append",
       "supports_markdown": "Supports {markdown_help_link}",
-      "markdown": "Markdown"
+      "markdown": "Markdown",
+      "untracked": "Untracked"
     },
     "components": {
       "selectors": {

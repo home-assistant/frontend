@@ -1,5 +1,6 @@
 import { css, html, LitElement, nothing } from "lit";
 import { customElement, property, state } from "lit/decorators";
+import { classMap } from "lit/directives/class-map";
 import memoizeOne from "memoize-one";
 import "../../../../components/ha-card";
 import "../../../../components/ha-alert";
@@ -24,7 +25,7 @@ import {
 
 interface AreaBreakdown {
   name: string;
-  value: string;
+  value: number;
 }
 
 @customElement("hui-energy-current-usage-card")
@@ -33,8 +34,6 @@ export class HuiEnergyCurrentUsageCard
   implements LovelaceCard
 {
   @property({ attribute: false }) public hass!: HomeAssistant;
-
-  // @property({ attribute: false }) public layout?: string;
 
   @state() private _config?: EnergyCurrentUsageCardConfig;
 
@@ -65,8 +64,8 @@ export class HuiEnergyCurrentUsageCard
     return {
       columns: 6,
       rows: 3,
-      min_columns: 6,
-      min_rows: 3,
+      min_columns: 5,
+      min_rows: 1,
     };
   }
 
@@ -101,8 +100,12 @@ export class HuiEnergyCurrentUsageCard
       : "mdi:lightning-bolt";
 
     const _computeBreakdown = memoizeOne(
-      (hass: HomeAssistant, powerEntityId: string): AreaBreakdown[] =>
-        Object.values(hass.areas)
+      (
+        hass: HomeAssistant,
+        powerEntityId: string,
+        powerEntityState: string
+      ): AreaBreakdown[] => {
+        const breakdowns = Object.values(hass.areas)
           .map((area): AreaBreakdown | null => {
             const areaName = computeAreaName(area);
             if (!areaName) {
@@ -140,33 +143,62 @@ export class HuiEnergyCurrentUsageCard
 
             return {
               name: areaName,
-              value: formatNumber(sum, hass.locale, {
-                maximumFractionDigits: 1,
-              }),
+              value: sum,
             };
           })
-          .filter((bd): bd is AreaBreakdown => bd !== null)
+          .filter((bd): bd is AreaBreakdown => bd !== null);
+
+        return [
+          ...breakdowns,
+          {
+            name: hass.localize("ui.common.untracked"),
+            value:
+              Number(powerEntityState) -
+              breakdowns.reduce((acc, bd) => acc + bd.value, 0),
+          },
+        ];
+      }
     );
 
-    const breakdown = _computeBreakdown(this.hass, entityId);
+    const breakdown = _computeBreakdown(this.hass, entityId, stateObj.state);
+    const gridRows = Number(this._config.grid_options?.rows ?? 3);
 
     return html`<ha-card>
-      <div class="heading" @click=${this._handleHeadingClick}>
+      <div
+        class=${classMap({
+          heading: true,
+          "single-row": gridRows === 1,
+        })}
+        @click=${this._handleHeadingClick}
+      >
         <ha-icon class="icon" .icon=${powerEntityIcon}></ha-icon>
-        <span class="value">${stateObj.state}</span>
+        <span class="value"
+          >${formatNumber(stateObj.state, this.hass.locale, {
+            maximumFractionDigits: 1,
+          })}</span
+        >
         <span class="measurement">${uom}</span>
       </div>
-      <div class="breakdown">
-        <ha-md-list>
-          ${breakdown.map(
-            (area) =>
-              html`<ha-md-list-item>
-                <span slot="headline">${area.name}</span>
-                <span slot="end" class="meta">${area.value} ${uom ?? ""}</span>
-              </ha-md-list-item>`
-          )}
-        </ha-md-list>
-      </div>
+      ${gridRows > 1
+        ? html`
+            <div class="breakdown">
+              <ha-md-list>
+                ${breakdown.map(
+                  (area) =>
+                    html`<ha-md-list-item>
+                      <span slot="headline">${area.name}</span>
+                      <span class="meta" slot="end"
+                        >${formatNumber(area.value, this.hass.locale, {
+                          maximumFractionDigits: 1,
+                        })}
+                        ${uom ?? ""}</span
+                      >
+                    </ha-md-list-item>`
+                )}
+              </ha-md-list>
+            </div>
+          `
+        : nothing}
     </ha-card>`;
   }
 
@@ -194,6 +226,9 @@ export class HuiEnergyCurrentUsageCard
       gap: 2px;
       pointer-events: all;
       cursor: pointer;
+    }
+    .heading.single-row {
+      padding: 8px 8px 0;
     }
 
     .heading .icon {
