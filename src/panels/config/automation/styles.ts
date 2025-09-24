@@ -1,5 +1,8 @@
 import { css } from "lit";
 
+export const SIDEBAR_MIN_WIDTH = 375;
+export const CONTENT_MIN_WIDTH = 350;
+
 export const rowStyles = css`
   ha-icon-button {
     --mdc-theme-text-primary-on-background: var(--primary-text-color);
@@ -61,12 +64,15 @@ export const indentStyle = css`
   .card-content.indent,
   .selector-row,
   :host([indent]) ha-form {
-    margin-left: 12px;
-    padding: 12px 0 16px 16px;
-    border-left: 2px solid var(--ha-color-border-neutral-quiet);
+    margin-inline-start: 12px;
+    padding-top: 12px;
+    padding-bottom: 16px;
+    padding-inline-start: 16px;
+    padding-inline-end: 0px;
+    border-inline-start: 2px solid var(--ha-color-border-neutral-quiet);
     border-bottom: 2px solid var(--ha-color-border-neutral-quiet);
     border-radius: 0;
-    border-bottom-left-radius: var(--ha-border-radius-lg);
+    border-end-start-radius: var(--ha-border-radius-lg);
   }
   .card-content.indent.selected,
   :host([selected]) .card-content.indent,
@@ -89,12 +95,12 @@ export const saveFabStyles = css`
   }
   ha-fab {
     position: absolute;
-    right: 16px;
+    right: calc(16px + var(--safe-area-inset-right, 0px));
     bottom: calc(-80px - var(--safe-area-inset-bottom));
     transition: bottom 0.3s;
   }
   ha-fab.dirty {
-    bottom: 16px;
+    bottom: calc(16px + var(--safe-area-inset-bottom, 0px));
   }
 `;
 
@@ -106,7 +112,12 @@ export const manualEditorStyles = css`
   }
 
   .has-sidebar {
-    --sidebar-width: min(35vw, 500px);
+    --sidebar-width: min(
+      max(var(--sidebar-dynamic-width), ${SIDEBAR_MIN_WIDTH}px),
+      100vw - ${CONTENT_MIN_WIDTH}px - var(--mdc-drawer-width, 0px),
+      var(--ha-automation-editor-max-width) -
+        ${CONTENT_MIN_WIDTH}px - var(--mdc-drawer-width, 0px)
+    );
     --sidebar-gap: 16px;
   }
 
@@ -123,7 +134,7 @@ export const manualEditorStyles = css`
     transition: bottom 0.3s;
   }
   .fab-positioner ha-fab.dirty {
-    bottom: 16px;
+    bottom: calc(16px + var(--safe-area-inset-bottom, 0px));
   }
 
   .content-wrapper {
@@ -145,7 +156,13 @@ export const manualEditorStyles = css`
   ha-automation-sidebar {
     position: fixed;
     top: calc(var(--header-height) + 16px);
-    height: calc(-81px + 100dvh);
+    height: calc(
+      -81px +
+        100dvh - var(--safe-area-inset-top, 0px) - var(
+          --safe-area-inset-bottom,
+          0px
+        )
+    );
     width: var(--sidebar-width);
     display: block;
   }
@@ -174,7 +191,7 @@ export const automationRowsStyles = css`
     gap: 16px;
   }
   .rows.no-sidebar {
-    margin-right: 0;
+    margin-inline-end: 0;
   }
   .sortable-ghost {
     background: none;
@@ -221,6 +238,9 @@ export const sidebarEditorStyles = css`
   .description {
     padding-top: 16px;
   }
+`;
+
+export const overflowStyles = css`
   .overflow-label {
     display: flex;
     justify-content: space-between;

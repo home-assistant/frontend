@@ -63,3 +63,21 @@ export const navigate = async (
   });
   return true;
 };
+
+/**
+ * Navigate back in history, with fallback to a default path if no history exists.
+ * This prevents a user from getting stuck when they navigate directly to a page with no history.
+ */
+export const goBack = (fallbackPath?: string) => {
+  const { history } = mainWindow;
+
+  // Check if we have history to go back to
+  if (history.length > 1) {
+    history.back();
+    return;
+  }
+
+  // No history available, navigate to fallback path
+  const fallback = fallbackPath || "/";
+  navigate(fallback, { replace: true });
+};

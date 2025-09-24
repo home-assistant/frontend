@@ -156,16 +156,18 @@ export class HaConfigLovelaceDashboards extends LitElement {
                 ${dashboard.title}
                 ${dashboard.default
                   ? html`
+                      <ha-svg-icon
+                        .id="default-icon-${dashboard.title}"
+                        style="padding-left: 10px; padding-inline-start: 10px; padding-inline-end: initial; direction: var(--direction);"
+                        .path=${mdiCheckCircleOutline}
+                      ></ha-svg-icon>
                       <ha-tooltip
-                        .content=${this.hass.localize(
-                          `ui.panel.config.lovelace.dashboards.default_dashboard`
-                        )}
+                        .for="default-icon-${dashboard.title}"
                         placement="right"
                       >
-                        <ha-svg-icon
-                          style="padding-left: 10px; padding-inline-start: 10px; padding-inline-end: initial; direction: var(--direction);"
-                          .path=${mdiCheckCircleOutline}
-                        ></ha-svg-icon>
+                        ${this.hass.localize(
+                          `ui.panel.config.lovelace.dashboards.default_dashboard`
+                        )}
                       </ha-tooltip>
                     `
                   : nothing}
@@ -199,8 +201,10 @@ export class HaConfigLovelaceDashboards extends LitElement {
           "ui.panel.config.lovelace.dashboards.picker.headers.require_admin"
         ),
         sortable: true,
-        type: "icon",
         hidden: narrow,
+        type: "icon",
+        minWidth: "120px",
+        maxWidth: "120px",
         template: (dashboard) =>
           dashboard.require_admin
             ? html`<ha-svg-icon .path=${mdiCheck}></ha-svg-icon>`
@@ -210,8 +214,10 @@ export class HaConfigLovelaceDashboards extends LitElement {
         title: localize(
           "ui.panel.config.lovelace.dashboards.picker.headers.sidebar"
         ),
-        type: "icon",
         hidden: narrow,
+        type: "icon",
+        minWidth: "120px",
+        maxWidth: "120px",
         template: (dashboard) =>
           dashboard.show_in_sidebar
             ? html`<ha-svg-icon .path=${mdiCheck}></ha-svg-icon>`

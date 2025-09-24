@@ -508,10 +508,6 @@ class HaPanelDevState extends LitElement {
           -moz-user-select: initial;
           display: block;
           padding: 16px;
-          padding: max(16px, var(--safe-area-inset-top))
-            max(16px, var(--safe-area-inset-right))
-            max(16px, var(--safe-area-inset-bottom))
-            max(16px, var(--safe-area-inset-left));
         }
 
         :host search-input {
@@ -568,6 +564,10 @@ class HaPanelDevState extends LitElement {
           margin: 0 8px 16px;
         }
 
+        ha-expansion-panel p {
+          padding: 0 8px;
+        }
+
         .inputs {
           width: 100%;
           max-width: 800px;
@@ -579,8 +579,9 @@ class HaPanelDevState extends LitElement {
 
         .button-row {
           display: flex;
-          margin-top: 8px;
+          margin: 8px 0;
           align-items: center;
+          gap: 8px;
         }
 
         :host([narrow]) .state-wrapper {

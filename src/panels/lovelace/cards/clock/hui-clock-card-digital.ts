@@ -3,9 +3,10 @@ import type { PropertyValues } from "lit";
 import { customElement, property, state } from "lit/decorators";
 import type { ClockCardConfig } from "../types";
 import type { HomeAssistant } from "../../../../types";
-import { INTERVAL } from "../hui-clock-card";
 import { useAmPm } from "../../../../common/datetime/use_am_pm";
 import { resolveTimeZone } from "../../../../common/datetime/resolve-time-zone";
+
+const INTERVAL = 1000;
 
 @customElement("hui-clock-card-digital")
 export class HuiClockCardDigital extends LitElement {
@@ -36,11 +37,12 @@ export class HuiClockCardDigital extends LitElement {
       locale = { ...locale, time_format: this.config.time_format };
     }
 
+    const h12 = useAmPm(locale);
     this._dateTimeFormat = new Intl.DateTimeFormat(this.hass.locale.language, {
-      hour: "2-digit",
+      hour: h12 ? "numeric" : "2-digit",
       minute: "2-digit",
       second: "2-digit",
-      hourCycle: useAmPm(locale) ? "h12" : "h23",
+      hourCycle: h12 ? "h12" : "h23",
       timeZone:
         this.config?.time_zone ||
         resolveTimeZone(locale.time_zone, this.hass.config?.time_zone),

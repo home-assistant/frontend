@@ -375,12 +375,14 @@ export interface ClockCardConfig extends LovelaceCardConfig {
   clock_style?: "digital" | "analog";
   clock_size?: "small" | "medium" | "large";
   show_seconds?: boolean | undefined;
+  seconds_motion?: "continuous" | "tick";
   time_format?: TimeFormat;
   time_zone?: string;
   no_background?: boolean;
   // Analog clock options
   border?: boolean;
   ticks?: "none" | "quarter" | "hour" | "minute";
+  face_style?: "markers" | "numbers_upright" | "roman";
 }
 
 export interface MediaControlCardConfig extends LovelaceCardConfig {
