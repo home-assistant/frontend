@@ -77,7 +77,7 @@ export class HuiEnergyCurrentUsageCard
     return {
       columns: 6,
       rows: 3,
-      min_columns: 5,
+      min_columns: 4,
       min_rows: 1,
     };
   }
