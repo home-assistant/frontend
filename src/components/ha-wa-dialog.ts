@@ -29,7 +29,6 @@ export class HaWaDialog extends LitElement {
   })
   public dialogSizeOnTitleClick: DialogSizeOnTitleClick = "none";
 
-  // TODO: Should this be scrim, overlay, or match WA with lightDismiss?
   @property({ type: Boolean, reflect: true, attribute: "scrim-dismissable" })
   public scrimDismissable = false;
 
