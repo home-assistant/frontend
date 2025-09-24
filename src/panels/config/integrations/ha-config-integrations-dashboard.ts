@@ -665,10 +665,6 @@ class HaConfigIntegrationsDashboard extends KeyboardShortcutMixin(
     `;
   }
 
-  private _preventDefault(ev) {
-    ev.preventDefault();
-  }
-
   private async _scanUSBDevices() {
     if (!isComponentLoaded(this.hass, "usb")) {
       return;
