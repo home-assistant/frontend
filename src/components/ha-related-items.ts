@@ -153,6 +153,58 @@ export class HaRelatedItems extends LitElement {
     );
 
     return html`
+      ${this._related.entity
+        ? html`
+            <h3>${this.hass.localize("ui.components.related-items.entity")}</h3>
+            <ha-list>
+              ${this._relatedEntities(this._related.entity).map(
+                (entity) => html`
+                  <ha-list-item
+                    @click=${this._openMoreInfo}
+                    .entityId=${entity.entity_id}
+                    hasMeta
+                    graphic="icon"
+                  >
+                    <ha-state-icon
+                      .hass=${this.hass}
+                      .stateObj=${entity}
+                      slot="graphic"
+                    ></ha-state-icon>
+                    ${entity.attributes.friendly_name || entity.entity_id}
+                    <ha-icon-next slot="meta"></ha-icon-next>
+                  </ha-list-item>
+                `
+              )}
+            </ha-list>
+          `
+        : nothing}
+      ${this._related.device
+        ? html`<h3>
+              ${this.hass.localize("ui.components.related-items.device")}
+            </h3>
+            <ha-list>
+              ${this._related.device.map((relatedDeviceId) => {
+                const device = this.hass.devices[relatedDeviceId];
+                if (!device) {
+                  return nothing;
+                }
+                return html`
+                  <a href="/config/devices/device/${relatedDeviceId}">
+                    <ha-list-item hasMeta graphic="icon">
+                      <ha-svg-icon
+                        .path=${device.entry_type === "service"
+                          ? mdiTransitConnectionVariant
+                          : mdiDevices}
+                        slot="graphic"
+                      ></ha-svg-icon>
+                      ${device.name_by_user || device.name}
+                      <ha-icon-next slot="meta"></ha-icon-next>
+                    </ha-list-item>
+                  </a>
+                `;
+              })}
+            </ha-list>`
+        : nothing}
       ${configEntries || this._related.integration
         ? html`<h3>
               ${this.hass.localize("ui.components.related-items.integration")}
@@ -252,58 +304,6 @@ export class HaRelatedItems extends LitElement {
                 `;
               })}
             </ha-list>`
-        : nothing}
-      ${this._related.device
-        ? html`<h3>
-              ${this.hass.localize("ui.components.related-items.device")}
-            </h3>
-            <ha-list>
-              ${this._related.device.map((relatedDeviceId) => {
-                const device = this.hass.devices[relatedDeviceId];
-                if (!device) {
-                  return nothing;
-                }
-                return html`
-                  <a href="/config/devices/device/${relatedDeviceId}">
-                    <ha-list-item hasMeta graphic="icon">
-                      <ha-svg-icon
-                        .path=${device.entry_type === "service"
-                          ? mdiTransitConnectionVariant
-                          : mdiDevices}
-                        slot="graphic"
-                      ></ha-svg-icon>
-                      ${device.name_by_user || device.name}
-                      <ha-icon-next slot="meta"></ha-icon-next>
-                    </ha-list-item>
-                  </a>
-                `;
-              })}
-            </ha-list>`
-        : nothing}
-      ${this._related.entity
-        ? html`
-            <h3>${this.hass.localize("ui.components.related-items.entity")}</h3>
-            <ha-list>
-              ${this._relatedEntities(this._related.entity).map(
-                (entity) => html`
-                  <ha-list-item
-                    @click=${this._openMoreInfo}
-                    .entityId=${entity.entity_id}
-                    hasMeta
-                    graphic="icon"
-                  >
-                    <ha-state-icon
-                      .hass=${this.hass}
-                      .stateObj=${entity}
-                      slot="graphic"
-                    ></ha-state-icon>
-                    ${entity.attributes.friendly_name || entity.entity_id}
-                    <ha-icon-next slot="meta"></ha-icon-next>
-                  </ha-list-item>
-                `
-              )}
-            </ha-list>
-          `
         : nothing}
       ${this._related.group
         ? html`
@@ -491,7 +491,7 @@ export class HaRelatedItems extends LitElement {
         }
         h3 {
           padding: 0 24px;
-          margin-bottom: 0;
+          margin-bottom: -8px;
         }
         h3:first-child {
           margin-top: 0;

@@ -21,6 +21,7 @@ import "../../../../../components/ha-list-item";
 import "../../../../../components/ha-progress-ring";
 import "../../../../../components/ha-spinner";
 import "../../../../../components/ha-svg-icon";
+import { goBack } from "../../../../../common/navigate";
 import type { ConfigEntry } from "../../../../../data/config_entries";
 import {
   ERROR_STATES,
@@ -618,7 +619,7 @@ class ZWaveJSConfigDashboard extends SubscribeMixin(LitElement) {
   }
 
   private _handleBack(): void {
-    history.back();
+    goBack("/config");
   }
 
   private _fetchData = async () => {

@@ -111,13 +111,9 @@ export default class HaAutomationSidebarCard extends LitElement {
         <div class="card-content" @scroll=${this._onScroll}>
           <slot></slot>
         </div>
-        ${this.narrow
-          ? html`
-              <div
-                class="fade ${this._contentScrollable ? "scrollable" : ""}"
-              ></div>
-            `
-          : nothing}
+        <div
+          class=${classMap({ fade: true, scrollable: this._contentScrollable })}
+        ></div>
       </ha-card>
     `;
   }
@@ -131,9 +127,13 @@ export default class HaAutomationSidebarCard extends LitElement {
   }
 
   private _canScrollDown(element: HTMLElement) {
+    const safeAreaInsetBottom =
+      parseFloat(
+        getComputedStyle(element).getPropertyValue("--safe-area-inset-bottom")
+      ) || 0;
     this._contentScrollable =
       (element.scrollHeight ?? 0) - (element.clientHeight ?? 0) >
-      (element.scrollTop ?? 0);
+      (element.scrollTop ?? 0) + safeAreaInsetBottom + 16;
   }
 
   private _closeSidebar() {
@@ -147,11 +147,13 @@ export default class HaAutomationSidebarCard extends LitElement {
 
   static styles = css`
     ha-card {
+      position: relative;
       height: 100%;
       width: 100%;
       border-color: var(--primary-color);
       border-width: 2px;
-      display: block;
+      display: flex;
+      flex-direction: column;
     }
 
     @media all and (max-width: 870px) {
@@ -183,30 +185,42 @@ export default class HaAutomationSidebarCard extends LitElement {
     }
 
     .fade {
-      position: fixed;
-      bottom: -12px;
-      left: 0;
-      right: 0;
-      height: 12px;
+      position: absolute;
+      bottom: 1px;
+      left: 1px;
+      right: 1px;
+      height: 16px;
       pointer-events: none;
       transition: box-shadow 180ms ease-in-out;
+      background-color: var(
+        --ha-dialog-surface-background,
+        var(--mdc-theme-surface, #fff)
+      );
+      transform: rotate(180deg);
+      border-radius: var(--ha-card-border-radius);
+      border-bottom-left-radius: var(--ha-border-radius-square);
+      border-bottom-right-radius: var(--ha-border-radius-square);
     }
 
     .fade.scrollable {
       box-shadow: var(--bar-box-shadow);
-      transform: rotate(180deg);
     }
 
     .card-content {
-      max-height: calc(100% - 80px);
+      flex: 1 1 auto;
+      min-height: 0;
       overflow: auto;
       margin-top: 0;
+      padding-bottom: max(var(--safe-area-inset-bottom, 0px), 32px);
     }
 
-    @media (min-width: 450px) and (min-height: 500px) {
+    @media all and (max-width: 870px) {
+      .fade {
+        border-radius: var(--ha-border-radius-square);
+      }
+
       .card-content {
-        max-height: calc(100% - 104px);
-        overflow: auto;
+        padding-bottom: 42px;
       }
     }
   `;

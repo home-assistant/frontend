@@ -27,7 +27,7 @@ import { isMac } from "../../../../util/is_mac";
 import { showAlertDialog } from "../../../lovelace/custom-card-helpers";
 import "../condition/ha-automation-condition-editor";
 import type HaAutomationConditionEditor from "../condition/ha-automation-condition-editor";
-import { sidebarEditorStyles } from "../styles";
+import { overflowStyles, sidebarEditorStyles } from "../styles";
 import "./ha-automation-sidebar-card";
 
 @customElement("ha-automation-sidebar-condition")
@@ -72,9 +72,8 @@ export default class HaAutomationSidebarCondition extends LitElement {
   }
 
   protected render() {
-    const disabled =
-      this.disabled ||
-      ("enabled" in this.config.config && this.config.config.enabled === false);
+    const rowDisabled =
+      "enabled" in this.config.config && this.config.config.enabled === false;
 
     const type = this.config.config.condition;
 
@@ -103,7 +102,11 @@ export default class HaAutomationSidebarCondition extends LitElement {
       .narrow=${this.narrow}
     >
       <span slot="title">${title}</span>
-      <span slot="subtitle">${subtitle}</span>
+      <span slot="subtitle"
+        >${subtitle}${rowDisabled
+          ? ` (${this.hass.localize("ui.panel.config.automation.editor.actions.disabled")})`
+          : ""}</span
+      >
       <ha-md-menu-item slot="menu-items" .clickAction=${this._testCondition}>
         <ha-svg-icon slot="start" .path=${mdiFlask}></ha-svg-icon>
         <div class="overflow-label">
@@ -116,7 +119,7 @@ export default class HaAutomationSidebarCondition extends LitElement {
       <ha-md-menu-item
         slot="menu-items"
         .clickAction=${this.config.rename}
-        .disabled=${!!disabled}
+        .disabled=${this.disabled}
       >
         <ha-svg-icon slot="start" .path=${mdiRenameBox}></ha-svg-icon>
         <div class="overflow-label">
@@ -150,11 +153,7 @@ export default class HaAutomationSidebarCondition extends LitElement {
         </div>
       </ha-md-menu-item>
 
-      <ha-md-menu-item
-        slot="menu-items"
-        .clickAction=${this.config.copy}
-        .disabled=${this.disabled}
-      >
+      <ha-md-menu-item slot="menu-items" .clickAction=${this.config.copy}>
         <ha-svg-icon slot="start" .path=${mdiContentCopy}></ha-svg-icon>
         <div class="overflow-label">
           ${this.hass.localize(
@@ -225,14 +224,18 @@ export default class HaAutomationSidebarCondition extends LitElement {
         role="separator"
         tabindex="-1"
       ></ha-md-divider>
-      <ha-md-menu-item slot="menu-items" .clickAction=${this.config.disable}>
+      <ha-md-menu-item
+        slot="menu-items"
+        .clickAction=${this.config.disable}
+        .disabled=${this.disabled}
+      >
         <ha-svg-icon
           slot="start"
-          .path=${this.disabled ? mdiPlayCircleOutline : mdiStopCircleOutline}
+          .path=${rowDisabled ? mdiPlayCircleOutline : mdiStopCircleOutline}
         ></ha-svg-icon>
         <div class="overflow-label">
           ${this.hass.localize(
-            `ui.panel.config.automation.editor.actions.${disabled ? "enable" : "disable"}`
+            `ui.panel.config.automation.editor.actions.${rowDisabled ? "enable" : "disable"}`
           )}
           <span class="shortcut-placeholder ${isMac ? "mac" : ""}"></span>
         </div>
@@ -296,12 +299,12 @@ export default class HaAutomationSidebarCondition extends LitElement {
             narrow: this.narrow,
           })}"
         >
-          ${this._testingResult
-            ? this.hass.localize(
-                "ui.panel.config.automation.editor.conditions.testing_pass"
-              )
+          ${this._testingResult === undefined
+            ? nothing
             : this.hass.localize(
-                "ui.panel.config.automation.editor.conditions.testing_error"
+                `ui.panel.config.automation.editor.conditions.testing_${
+                  this._testingResult ? "pass" : "error"
+                }`
               )}
         </div>
       </div>
@@ -361,6 +364,7 @@ export default class HaAutomationSidebarCondition extends LitElement {
     } finally {
       setTimeout(() => {
         this._testing = false;
+        this._testingResult = undefined;
       }, 2500);
     }
   };
@@ -399,6 +403,7 @@ export default class HaAutomationSidebarCondition extends LitElement {
 
   static styles = [
     sidebarEditorStyles,
+    overflowStyles,
     css`
       ha-automation-sidebar-card {
         position: relative;

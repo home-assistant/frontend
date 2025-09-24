@@ -10,8 +10,8 @@ import { computeStateName } from "../../../common/entity/compute_state_name";
 import { stateColorCss } from "../../../common/entity/state_color";
 import "../../../components/ha-card";
 import "../../../components/ha-icon-button";
-import type { ClimateEntity } from "../../../data/climate";
 import "../../../state-control/climate/ha-state-control-climate-temperature";
+import "../../../state-control/water_heater/ha-state-control-water_heater-temperature";
 import type { HomeAssistant } from "../../../types";
 import "../card-features/hui-card-features";
 import type { LovelaceCardFeatureContext } from "../card-features/types";
@@ -23,6 +23,7 @@ import type {
   LovelaceGridOptions,
 } from "../types";
 import type { ThermostatCardConfig } from "./types";
+import { computeDomain } from "../../../common/entity/compute_domain";
 
 @customElement("hui-thermostat-card")
 export class HuiThermostatCard extends LitElement implements LovelaceCard {
@@ -69,8 +70,13 @@ export class HuiThermostatCard extends LitElement implements LovelaceCard {
   }
 
   public setConfig(config: ThermostatCardConfig): void {
-    if (!config.entity || config.entity.split(".")[0] !== "climate") {
-      throw new Error("Specify an entity from within the climate domain");
+    if (
+      !config.entity ||
+      !["climate", "water_heater"].includes(config.entity.split(".")[0])
+    ) {
+      throw new Error(
+        "Specify an entity from within the climate or water_heater domain"
+      );
     }
 
     this._config = config;
@@ -115,7 +121,7 @@ export class HuiThermostatCard extends LitElement implements LovelaceCard {
     if (!this.hass || !this._config) {
       return nothing;
     }
-    const stateObj = this.hass.states[this._config.entity] as ClimateEntity;
+    const stateObj = this.hass.states[this._config.entity];
 
     if (!stateObj) {
       return html`
@@ -124,6 +130,7 @@ export class HuiThermostatCard extends LitElement implements LovelaceCard {
         </hui-warning>
       `;
     }
+    const domain = computeDomain(stateObj.entity_id);
 
     const name = this._config!.name || computeStateName(stateObj);
 
@@ -137,16 +144,26 @@ export class HuiThermostatCard extends LitElement implements LovelaceCard {
       <ha-card>
         <p class="title">${name}</p>
         <div class="container">
-          <ha-state-control-climate-temperature
-            style=${styleMap({
-              maxWidth: controlMaxWidth,
-            })}
-            prevent-interaction-on-scroll
-            .showCurrentAsPrimary=${this._config.show_current_as_primary}
-            show-secondary
-            .hass=${this.hass}
-            .stateObj=${stateObj}
-          ></ha-state-control-climate-temperature>
+          ${domain === "water_heater"
+            ? html` <ha-state-control-water_heater-temperature
+                style=${styleMap({
+                  maxWidth: controlMaxWidth,
+                })}
+                prevent-interaction-on-scroll
+                show-current
+                .hass=${this.hass}
+                .stateObj=${stateObj}
+              ></ha-state-control-water_heater-temperature>`
+            : html` <ha-state-control-climate-temperature
+                style=${styleMap({
+                  maxWidth: controlMaxWidth,
+                })}
+                prevent-interaction-on-scroll
+                .showCurrentAsPrimary=${this._config.show_current_as_primary}
+                show-secondary
+                .hass=${this.hass}
+                .stateObj=${stateObj}
+              ></ha-state-control-climate-temperature>`}
         </div>
         <ha-icon-button
           class="more-info"
