@@ -55,8 +55,7 @@ class HuiButtonCardFeature extends LitElement implements LovelaceCardFeature {
       const entityId = this._stateObj.entity_id;
       if (
         hasRequiredScriptFields(this.hass!, entityId) &&
-        (!this._config?.data ||
-          !requiredScriptFieldsFilled(this.hass!, entityId, this._config?.data))
+        !requiredScriptFieldsFilled(this.hass!, entityId, this._config?.data)
       ) {
         showMoreInfoDialog(this, {
           entityId: entityId,
