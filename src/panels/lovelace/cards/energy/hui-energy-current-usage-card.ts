@@ -1,3 +1,4 @@
+import type { CSSResultGroup } from "lit";
 import { css, html, LitElement, nothing } from "lit";
 import { customElement, property, state } from "lit/decorators";
 import { classMap } from "lit/directives/class-map";
@@ -15,7 +16,6 @@ import type {
   LovelaceGridOptions,
 } from "../../types";
 import type { EnergyCurrentUsageCardConfig } from "../types";
-import { createEntityNotFoundWarning } from "../../components/hui-warning";
 import { fireEvent } from "../../../../common/dom/fire_event";
 import { computeAreaName } from "../../../../common/entity/compute_area_name";
 import { generateEntityFilter } from "../../../../common/entity/entity_filter";
@@ -23,6 +23,8 @@ import {
   formatNumber,
   isNumericState,
 } from "../../../../common/number/format_number";
+import { haStyleScrollbar } from "../../../../resources/styles";
+import { createEntityNotFoundWarning } from "../../components/hui-warning";
 
 interface AreaBreakdown {
   name: string;
@@ -182,8 +184,8 @@ export class HuiEnergyCurrentUsageCard
       </div>
       ${gridRows > 1
         ? html`
-            <div class="breakdown">
-              <ha-md-list class="ha-scrollbar">
+            <div class="breakdown ha-scrollbar">
+              <ha-md-list>
                 ${breakdown.map(
                   (area, idx) => html`
                     ${breakdown.length > 1 && idx === breakdown.length - 1
@@ -214,65 +216,72 @@ export class HuiEnergyCurrentUsageCard
     fireEvent(this, "hass-more-info", { entityId: this._config!.power_entity });
   }
 
-  static styles = css`
-    ha-card {
-      height: 100%;
-      display: flex;
-      flex-direction: column;
-      align-items: center;
-      justify-content: flex-start;
-      gap: 8px;
-    }
+  static get styles(): CSSResultGroup {
+    return [
+      haStyleScrollbar,
+      css`
+        ha-card {
+          height: 100%;
+          display: flex;
+          flex-direction: column;
+          align-items: center;
+          justify-content: flex-start;
+          gap: 8px;
+        }
 
-    .heading {
-      width: fit-content;
-      position: relative;
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      padding: 12px 12px 0;
-      gap: 2px;
-      pointer-events: all;
-      cursor: pointer;
-    }
-    .heading.single-row {
-      padding: 8px 8px 0;
-    }
+        .heading {
+          width: fit-content;
+          position: relative;
+          display: flex;
+          align-items: center;
+          justify-content: center;
+          padding: 12px 12px 0;
+          gap: 2px;
+          pointer-events: all;
+          cursor: pointer;
+        }
+        .heading.single-row {
+          padding: 8px 8px 0;
+        }
 
-    .heading .icon {
-      --mdc-icon-size: var(--ha-font-size-3xl);
-    }
+        .heading .icon {
+          --mdc-icon-size: var(--ha-font-size-3xl);
+        }
 
-    .heading .value {
-      font-size: var(--ha-font-size-5xl);
-      font-weight: var(--ha-font-weight-light);
-    }
+        .heading .value {
+          font-size: var(--ha-font-size-5xl);
+          font-weight: var(--ha-font-weight-light);
+        }
 
-    .heading .measurement {
-      padding-bottom: 10px;
-      align-self: flex-end;
-      font-size: var(--ha-font-size-xl);
-      color: var(--secondary-text-color);
-    }
+        .heading .measurement {
+          padding-bottom: 10px;
+          align-self: flex-end;
+          font-size: var(--ha-font-size-xl);
+          color: var(--secondary-text-color);
+        }
 
-    .breakdown {
-      flex: 1 1 auto;
-      min-height: 0;
-      overflow: auto;
-      width: 100%;
-    }
+        .breakdown {
+          flex: 1 1 auto;
+          min-height: 0;
+          overflow: auto;
+          width: 100%;
+        }
 
-    .breakdown ha-md-list {
-      --md-list-item-label-text-line-height: var(--ha-line-height-condensed);
-      --md-list-item-one-line-container-height: 16px;
-      --md-list-item-top-space: 8px;
-      --md-list-item-bottom-space: 8px;
-    }
+        .breakdown ha-md-list {
+          --md-list-item-label-text-line-height: var(
+            --ha-line-height-condensed
+          );
+          --md-list-item-one-line-container-height: 16px;
+          --md-list-item-top-space: 8px;
+          --md-list-item-bottom-space: 8px;
+        }
 
-    .meta {
-      color: var(--secondary-text-color);
-    }
-  `;
+        .meta {
+          color: var(--secondary-text-color);
+        }
+      `,
+    ];
+  }
 }
 
 declare global {
