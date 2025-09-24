@@ -46,7 +46,9 @@ export class CommonControlsSectionStrategy extends ReactiveElement {
     }
 
     const predictedCommonControl = await getCommonControlUsagePrediction(hass);
-    let predictedEntities = predictedCommonControl.entities;
+    let predictedEntities = predictedCommonControl.entities.filter(
+      (entity) => entity in hass.states
+    );
 
     if (config.exclude_entities) {
       predictedEntities = predictedEntities.filter(
