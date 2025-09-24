@@ -7710,6 +7710,7 @@
               "show_icon": "Show icon",
               "show_name": "Show name",
               "show_state": "Show state",
+              "show_last_changed": "Show last changed",
               "tap_action": "Tap behavior",
               "interactions": "Interactions",
               "title": "Title",
