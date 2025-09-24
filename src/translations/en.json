@@ -664,7 +664,7 @@
             "device_name": "Device",
             "entity_name": "Entity"
           },
-          "friendly_name": "Friendly name"
+          "add": "Add"
         },
         "entity-attribute-picker": {
           "attribute": "Attribute",

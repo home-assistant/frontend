@@ -156,7 +156,9 @@ export class HaEntityNamePicker extends LitElement {
                   <ha-assist-chip
                     @click=${this._addItem}
                     .disabled=${this.disabled}
-                    label="Add"
+                    label=${this.hass.localize(
+                      "ui.components.entity.entity-name-picker.add"
+                    )}
                     class="add"
                   >
                     <ha-svg-icon slot="icon" .path=${mdiPlus}></ha-svg-icon>
