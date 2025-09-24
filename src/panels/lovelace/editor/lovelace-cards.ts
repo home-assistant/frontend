@@ -102,6 +102,10 @@ export const coreCards: Card[] = [
     showElement: true,
   },
   {
+    type: "energy-current-usage",
+    showElement: true,
+  },
+  {
     type: "tile",
     showElement: true,
   },
