@@ -1,6 +1,6 @@
 import type { CSSResultGroup } from "lit";
 import { css, html, LitElement } from "lit";
-import { customElement, property } from "lit/decorators";
+import { customElement, property, query } from "lit/decorators";
 import memoizeOne from "memoize-one";
 import { fireEvent } from "../../../../../common/dom/fire_event";
 import "../../../../../components/ha-textfield";
@@ -12,10 +12,14 @@ import type { ActionElement } from "../ha-automation-action-row";
 
 import { isTemplate } from "../../../../../common/string/has-template";
 import "../../../../../components/ha-form/ha-form";
+import type { HaForm } from "../../../../../components/ha-form/ha-form";
 import type {
   HaFormSchema,
   SchemaUnion,
 } from "../../../../../components/ha-form/types";
+import type { HaSelector } from "../../../../../components/ha-selector/ha-selector";
+import type { HaActionSelector } from "../../../../../components/ha-selector/ha-selector-action";
+import type { HaConditionSelector } from "../../../../../components/ha-selector/ha-selector-condition";
 
 const OPTIONS = ["count", "while", "until", "for_each"] as const;
 type RepeatType = (typeof OPTIONS)[number];
@@ -36,6 +40,9 @@ export class HaRepeatAction extends LitElement implements ActionElement {
   @property({ type: Boolean, attribute: "sidebar" }) public inSidebar = false;
 
   @property({ type: Boolean, attribute: "indent" }) public indent = false;
+
+  @query("ha-form")
+  private _formElement?: HaForm;
 
   public static get defaultConfig(): RepeatAction {
     return { repeat: { count: 2, sequence: [] } };
@@ -173,6 +180,41 @@ export class HaRepeatAction extends LitElement implements ActionElement {
         }
       `,
     ];
+  }
+
+  private _getSelectorElements() {
+    if (this._formElement) {
+      const selectors =
+        this._formElement.shadowRoot?.querySelectorAll<HaSelector>(
+          "ha-selector"
+        );
+
+      const selectorElements: (HaConditionSelector | HaActionSelector)[] = [];
+
+      selectors?.forEach((selector) => {
+        selectorElements.push(
+          ...Array.from(
+            selector.shadowRoot?.querySelectorAll<
+              HaConditionSelector | HaActionSelector
+            >("ha-selector-condition, ha-selector-action") || []
+          )
+        );
+      });
+      return selectorElements;
+    }
+    return [];
+  }
+
+  public expandAll() {
+    this._getSelectorElements().forEach((element) => {
+      element.expandAll?.();
+    });
+  }
+
+  public collapseAll() {
+    this._getSelectorElements().forEach((element) => {
+      element.collapseAll?.();
+    });
   }
 
   private _computeLabelCallback = (

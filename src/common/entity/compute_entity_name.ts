@@ -10,9 +10,10 @@ import { stripPrefixFromEntityName } from "./strip_prefix_from_entity_name";
 
 export const computeEntityName = (
   stateObj: HassEntity,
-  hass: HomeAssistant
+  entities: HomeAssistant["entities"],
+  devices: HomeAssistant["devices"]
 ): string | undefined => {
-  const entry = hass.entities[stateObj.entity_id] as
+  const entry = entities[stateObj.entity_id] as
     | EntityRegistryDisplayEntry
     | undefined;
 
@@ -20,25 +21,28 @@ export const computeEntityName = (
     // Fall back to state name if not in the entity registry (friendly name)
     return computeStateName(stateObj);
   }
-  return computeEntityEntryName(entry, hass);
+  return computeEntityEntryName(entry, devices);
 };
 
 export const computeEntityEntryName = (
   entry: EntityRegistryDisplayEntry | EntityRegistryEntry,
-  hass: HomeAssistant
+  devices: HomeAssistant["devices"],
+  fallbackStateObj?: HassEntity
 ): string | undefined => {
   const name =
-    entry.name || ("original_name" in entry ? entry.original_name : undefined);
+    entry.name ||
+    ("original_name" in entry && entry.original_name != null
+      ? String(entry.original_name)
+      : undefined);
 
-  const device = entry.device_id ? hass.devices[entry.device_id] : undefined;
+  const device = entry.device_id ? devices[entry.device_id] : undefined;
 
   if (!device) {
     if (name) {
       return name;
     }
-    const stateObj = hass.states[entry.entity_id] as HassEntity | undefined;
-    if (stateObj) {
-      return computeStateName(stateObj);
+    if (fallbackStateObj) {
+      return computeStateName(fallbackStateObj);
     }
     return undefined;
   }

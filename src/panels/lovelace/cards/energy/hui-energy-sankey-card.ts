@@ -109,7 +109,7 @@ class HuiEnergySankeyCard
         "ui.panel.lovelace.cards.energy.energy_distribution.home"
       ),
       value: Math.max(0, consumption.total.used_total),
-      color: computedStyle.getPropertyValue("--primary-color"),
+      color: computedStyle.getPropertyValue("--primary-color").trim(),
       index: 1,
     };
     nodes.push(homeNode);
@@ -125,8 +125,9 @@ class HuiEnergySankeyCard
           "ui.panel.lovelace.cards.energy.energy_distribution.battery"
         ),
         value: totalBatteryOut,
-        tooltip: `${formatNumber(totalBatteryOut, this.hass.locale)} kWh`,
-        color: computedStyle.getPropertyValue("--energy-battery-out-color"),
+        color: computedStyle
+          .getPropertyValue("--energy-battery-out-color")
+          .trim(),
         index: 0,
       });
       links.push({
@@ -142,8 +143,9 @@ class HuiEnergySankeyCard
           "ui.panel.lovelace.cards.energy.energy_distribution.battery"
         ),
         value: totalBatteryIn,
-        tooltip: `${formatNumber(totalBatteryIn, this.hass.locale)} kWh`,
-        color: computedStyle.getPropertyValue("--energy-battery-in-color"),
+        color: computedStyle
+          .getPropertyValue("--energy-battery-in-color")
+          .trim(),
         index: 1,
       });
       if (consumption.total.grid_to_battery > 0) {
@@ -171,10 +173,9 @@ class HuiEnergySankeyCard
           "ui.panel.lovelace.cards.energy.energy_distribution.grid"
         ),
         value: totalFromGrid,
-        tooltip: `${formatNumber(totalFromGrid, this.hass.locale)} kWh`,
-        color: computedStyle.getPropertyValue(
-          "--energy-grid-consumption-color"
-        ),
+        color: computedStyle
+          .getPropertyValue("--energy-grid-consumption-color")
+          .trim(),
         index: 0,
       });
 
@@ -195,8 +196,7 @@ class HuiEnergySankeyCard
           "ui.panel.lovelace.cards.energy.energy_distribution.solar"
         ),
         value: totalSolarProduction,
-        tooltip: `${formatNumber(totalSolarProduction, this.hass.locale)} kWh`,
-        color: computedStyle.getPropertyValue("--energy-solar-color"),
+        color: computedStyle.getPropertyValue("--energy-solar-color").trim(),
         index: 0,
       });
 
@@ -217,14 +217,15 @@ class HuiEnergySankeyCard
           "ui.panel.lovelace.cards.energy.energy_distribution.grid"
         ),
         value: totalToGrid,
-        tooltip: `${formatNumber(totalToGrid, this.hass.locale)} kWh`,
-        color: computedStyle.getPropertyValue("--energy-grid-return-color"),
+        color: computedStyle
+          .getPropertyValue("--energy-grid-return-color")
+          .trim(),
         index: 1,
       });
       if (consumption.total.battery_to_grid > 0) {
         links.push({
           source: "battery",
-          target: "grid",
+          target: "grid_return",
           value: consumption.total.battery_to_grid,
         });
       }
@@ -260,7 +261,6 @@ class HuiEnergySankeyCard
             this._data!.statsMetadata[device.stat_consumption]
           ),
         value,
-        tooltip: `${formatNumber(value, this.hass.locale)} kWh`,
         color: getGraphColorByIndex(idx, computedStyle),
         index: 4,
         parent: device.included_in_stat,
@@ -300,9 +300,8 @@ class HuiEnergySankeyCard
               id: floorNodeId,
               label: this.hass.floors[floorId].name,
               value: floors[floorId].value,
-              tooltip: `${formatNumber(floors[floorId].value, this.hass.locale)} kWh`,
               index: 2,
-              color: computedStyle.getPropertyValue("--primary-color"),
+              color: computedStyle.getPropertyValue("--primary-color").trim(),
             });
             links.push({
               source: "home",
@@ -322,9 +321,8 @@ class HuiEnergySankeyCard
                 id: areaNodeId,
                 label: this.hass.areas[areaId]!.name,
                 value: areas[areaId].value,
-                tooltip: `${formatNumber(areas[areaId].value, this.hass.locale)} kWh`,
                 index: 3,
-                color: computedStyle.getPropertyValue("--primary-color"),
+                color: computedStyle.getPropertyValue("--primary-color").trim(),
               });
               links.push({
                 source: floorNodeId,
@@ -368,8 +366,9 @@ class HuiEnergySankeyCard
           "ui.panel.lovelace.cards.energy.energy_devices_detail_graph.untracked_consumption"
         ),
         value: untrackedConsumption,
-        tooltip: `${formatNumber(untrackedConsumption, this.hass.locale)} kWh`,
-        color: computedStyle.getPropertyValue("--state-unavailable-color"),
+        color: computedStyle
+          .getPropertyValue("--state-unavailable-color")
+          .trim(),
         index: 3 + deviceSections.length,
       });
       links.push({
@@ -378,7 +377,6 @@ class HuiEnergySankeyCard
         value: untrackedConsumption,
       });
     }
-    homeNode.tooltip = `${formatNumber(homeNode.value, this.hass.locale)} kWh`;
 
     const hasData = nodes.some((node) => node.value > 0);
 
@@ -404,7 +402,7 @@ class HuiEnergySankeyCard
   }
 
   private _valueFormatter = (value: number) =>
-    `${formatNumber(value, this.hass.locale)} kWh`;
+    `${formatNumber(value, this.hass.locale, value < 0.1 ? { maximumFractionDigits: 3 } : undefined)} kWh`;
 
   protected _groupByFloorAndArea(deviceNodes: Node[]) {
     const areas: Record<string, { value: number; devices: Node[] }> = {
@@ -421,7 +419,13 @@ class HuiEnergySankeyCard
     };
     deviceNodes.forEach((deviceNode) => {
       const entity = this.hass.states[deviceNode.id];
-      const { area, floor } = getEntityContext(entity, this.hass);
+      const { area, floor } = getEntityContext(
+        entity,
+        this.hass.entities,
+        this.hass.devices,
+        this.hass.areas,
+        this.hass.floors
+      );
       if (area) {
         if (area.area_id in areas) {
           areas[area.area_id].value += deviceNode.value;
@@ -459,6 +463,9 @@ class HuiEnergySankeyCard
     return { areas, floors };
   }
 
+  /**
+   * Organizes device nodes into hierarchical sections based on parent-child relationships.
+   */
   protected _getDeviceSections(
     parentLinks: Record<string, string>,
     deviceNodes: Node[]
@@ -467,20 +474,34 @@ class HuiEnergySankeyCard
     const childSection: Node[] = [];
     const parentIds = Object.values(parentLinks);
     const remainingLinks: typeof parentLinks = {};
+
     deviceNodes.forEach((deviceNode) => {
-      if (parentIds.includes(deviceNode.id)) {
+      const isChild = deviceNode.id in parentLinks;
+      const isParent = parentIds.includes(deviceNode.id);
+      if (isParent && !isChild) {
+        // Top-level parents (have children but no parents themselves)
         parentSection.push(deviceNode);
-        remainingLinks[deviceNode.id] = parentLinks[deviceNode.id];
       } else {
         childSection.push(deviceNode);
       }
     });
+
+    // Filter out links where parent is already in current parent section
+    Object.entries(parentLinks).forEach(([child, parent]) => {
+      if (!parentSection.some((node) => node.id === parent)) {
+        remainingLinks[child] = parent;
+      }
+    });
+
     if (parentSection.length > 0) {
+      // Recursively process child section with remaining links
       return [
-        ...this._getDeviceSections(remainingLinks, parentSection),
-        childSection,
+        parentSection,
+        ...this._getDeviceSections(remainingLinks, childSection),
       ];
     }
+
+    // Base case: no more parent-child relationships to process
     return [deviceNodes];
   }
 

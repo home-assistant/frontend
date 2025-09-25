@@ -1,13 +1,15 @@
 import type { CSSResultGroup } from "lit";
 import { css, html, LitElement } from "lit";
-import { customElement, property, state } from "lit/decorators";
+import { customElement, property, query, queryAll } from "lit/decorators";
 import { fireEvent } from "../../../../../common/dom/fire_event";
 import "../../../../../components/ha-textfield";
 import type { Action, IfAction } from "../../../../../data/script";
 import { haStyle } from "../../../../../resources/styles";
 import type { HomeAssistant } from "../../../../../types";
 import type { Condition } from "../../../../lovelace/common/validate-condition";
+import type HaAutomationCondition from "../../condition/ha-automation-condition";
 import "../ha-automation-action";
+import type HaAutomationAction from "../ha-automation-action";
 import type { ActionElement } from "../ha-automation-action-row";
 
 @customElement("ha-automation-action-if")
@@ -22,7 +24,11 @@ export class HaIfAction extends LitElement implements ActionElement {
 
   @property({ type: Boolean }) public indent = false;
 
-  @state() private _showElse = false;
+  @query("ha-automation-condition")
+  private _conditionElement?: HaAutomationCondition;
+
+  @queryAll("ha-automation-action")
+  private _actionElements?: HaAutomationAction[];
 
   public static get defaultConfig(): IfAction {
     return {
@@ -35,11 +41,11 @@ export class HaIfAction extends LitElement implements ActionElement {
     const action = this.action;
 
     return html`
-      <h3>
+      <h4>
         ${this.hass.localize(
           "ui.panel.config.automation.editor.actions.type.if.if"
-        )}*:
-      </h3>
+        )}:
+      </h4>
       <ha-automation-condition
         .conditions=${action.if ?? []}
         .disabled=${this.disabled}
@@ -49,11 +55,11 @@ export class HaIfAction extends LitElement implements ActionElement {
         .optionsInSidebar=${this.indent}
       ></ha-automation-condition>
 
-      <h3>
+      <h4>
         ${this.hass.localize(
           "ui.panel.config.automation.editor.actions.type.if.then"
-        )}*:
-      </h3>
+        )}:
+      </h4>
       <ha-automation-action
         .actions=${action.then ?? []}
         .disabled=${this.disabled}
@@ -62,38 +68,20 @@ export class HaIfAction extends LitElement implements ActionElement {
         .narrow=${this.narrow}
         .optionsInSidebar=${this.indent}
       ></ha-automation-action>
-      ${this._showElse || action.else
-        ? html`
-            <h3>
-              ${this.hass.localize(
-                "ui.panel.config.automation.editor.actions.type.if.else"
-              )}:
-            </h3>
-            <ha-automation-action
-              .actions=${action.else || []}
-              .disabled=${this.disabled}
-              @value-changed=${this._elseChanged}
-              .hass=${this.hass}
-              .narrow=${this.narrow}
-              .optionsInSidebar=${this.indent}
-            ></ha-automation-action>
-          `
-        : html`<div class="link-button-row">
-            <button
-              class="link"
-              @click=${this._addElse}
-              .disabled=${this.disabled}
-            >
-              ${this.hass.localize(
-                "ui.panel.config.automation.editor.actions.type.if.add_else"
-              )}
-            </button>
-          </div>`}
+      <h4>
+        ${this.hass.localize(
+          "ui.panel.config.automation.editor.actions.type.if.else"
+        )}:
+      </h4>
+      <ha-automation-action
+        .actions=${action.else || []}
+        .disabled=${this.disabled}
+        @value-changed=${this._elseChanged}
+        .hass=${this.hass}
+        .narrow=${this.narrow}
+        .optionsInSidebar=${this.indent}
+      ></ha-automation-action>
     `;
-  }
-
-  private _addElse() {
-    this._showElse = true;
   }
 
   private _ifChanged(ev: CustomEvent) {
@@ -120,7 +108,6 @@ export class HaIfAction extends LitElement implements ActionElement {
 
   private _elseChanged(ev: CustomEvent) {
     ev.stopPropagation();
-    this._showElse = true;
     const elseAction = ev.detail.value as Action[];
     const newValue: IfAction = {
       ...this.action,
@@ -132,12 +119,26 @@ export class HaIfAction extends LitElement implements ActionElement {
     fireEvent(this, "value-changed", { value: newValue });
   }
 
+  public expandAll() {
+    this._conditionElement?.expandAll();
+    this._actionElements?.forEach((element) => element.expandAll?.());
+  }
+
+  public collapseAll() {
+    this._conditionElement?.collapseAll();
+    this._actionElements?.forEach((element) => element.collapseAll?.());
+  }
+
   static get styles(): CSSResultGroup {
     return [
       haStyle,
       css`
-        .link-button-row {
-          padding: 14px;
+        h4 {
+          color: var(--secondary-text-color);
+          margin-bottom: 8px;
+        }
+        h4:first-child {
+          margin-top: 0;
         }
       `,
     ];

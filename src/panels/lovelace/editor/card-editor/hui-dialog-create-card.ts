@@ -9,7 +9,8 @@ import { fireEvent } from "../../../../common/dom/fire_event";
 import "../../../../components/ha-button";
 import "../../../../components/ha-dialog";
 import "../../../../components/ha-dialog-header";
-import "../../../../components/sl-tab-group";
+import "../../../../components/ha-tab-group";
+import "../../../../components/ha-tab-group-tab";
 import type { LovelaceSectionConfig } from "../../../../data/lovelace/config/section";
 import { isStrategySection } from "../../../../data/lovelace/config/section";
 import type { LovelaceViewConfig } from "../../../../data/lovelace/config/view";
@@ -117,8 +118,8 @@ export class HuiCreateDialogCard
           ></ha-icon-button>
           <span slot="title">${title}</span>
 
-          <sl-tab-group @sl-tab-show=${this._handleTabChanged}>
-            <sl-tab
+          <ha-tab-group @wa-tab-show=${this._handleTabChanged}>
+            <ha-tab-group-tab
               slot="nav"
               .active=${this._currTab === "card"}
               panel="card"
@@ -127,16 +128,16 @@ export class HuiCreateDialogCard
               ${this.hass!.localize(
                 "ui.panel.lovelace.editor.cardpicker.by_card"
               )}
-            </sl-tab>
-            <sl-tab
+            </ha-tab-group-tab>
+            <ha-tab-group-tab
               slot="nav"
               .active=${this._currTab === "entity"}
               panel="entity"
               >${this.hass!.localize(
                 "ui.panel.lovelace.editor.cardpicker.by_entity"
-              )}</sl-tab
+              )}</ha-tab-group-tab
             >
-          </sl-tab-group>
+          </ha-tab-group>
         </ha-dialog-header>
         ${cache(
           this._currTab === "card"
@@ -215,10 +216,10 @@ export class HuiCreateDialogCard
             --mdc-dialog-min-width: 1000px;
           }
         }
-        sl-tab {
+        ha-tab-group-tab {
           flex: 1;
         }
-        sl-tab::part(base) {
+        ha-tab-group-tab::part(base) {
           width: 100%;
           justify-content: center;
         }

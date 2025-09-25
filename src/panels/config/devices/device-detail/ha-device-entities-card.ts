@@ -172,7 +172,9 @@ export class HaDeviceEntitiesCard extends LitElement {
       element.hass = this.hass;
       const stateObj = this.hass.states[entry.entity_id];
 
-      let name = computeEntityName(stateObj, this.hass) || this.deviceName;
+      let name =
+        computeEntityName(stateObj, this.hass.entities, this.hass.devices) ||
+        this.deviceName;
 
       if (entry.hidden_by) {
         name += ` (${this.hass.localize(

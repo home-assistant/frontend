@@ -1,23 +1,16 @@
-import {
-  mdiClipboardTextMultipleOutline,
-  mdiContentCopy,
-  mdiInformationOutline,
-  mdiRefresh,
-} from "@mdi/js";
+import { mdiContentCopy, mdiRefresh } from "@mdi/js";
 import { addHours } from "date-fns";
 import type {
   HassEntities,
   HassEntity,
   HassEntityAttributeBase,
 } from "home-assistant-js-websocket";
-import { dump } from "js-yaml";
 import type { CSSResultGroup } from "lit";
 import { LitElement, css, html, nothing } from "lit";
 import { customElement, property, query, state } from "lit/decorators";
 import memoizeOne from "memoize-one";
 import { formatDateTimeWithSeconds } from "../../../common/datetime/format_date_time";
 import { storage } from "../../../common/decorators/storage";
-import { fireEvent } from "../../../common/dom/fire_event";
 import { escapeRegExp } from "../../../common/string/escape_regexp";
 import { copyToClipboard } from "../../../common/util/copy-clipboard";
 import "../../../components/entity/ha-entity-picker";
@@ -36,6 +29,14 @@ import { showAlertDialog } from "../../../dialogs/generic/show-dialog-box";
 import { haStyle } from "../../../resources/styles";
 import type { HomeAssistant } from "../../../types";
 import { showToast } from "../../../util/toast";
+import "./developer-tools-state-renderer";
+
+// Use virtualizer after threshold to avoid performance issues
+// NOTE: If virtualizer is used when filtered entiity state
+// array size is 1, the virtualizer will scroll up the page on
+// render updates until the view matches to near the top of the
+// virtualized list, an undesirable effect.
+const VIRTUALIZE_THRESHOLD = 100;
 
 @customElement("developer-tools-state")
 class HaPanelDevState extends LitElement {
@@ -95,14 +96,28 @@ class HaPanelDevState extends LitElement {
       this._attributeFilter,
       this.hass.states
     );
-    const showAttributes = !this.narrow && this._showAttributes;
 
     return html`
-      <h1>
-        ${this.hass.localize(
-          "ui.panel.developer-tools.tabs.states.current_entities"
-        )}
-      </h1>
+      <div class="heading">
+        <h1>
+          ${this.hass.localize(
+            "ui.panel.developer-tools.tabs.states.current_entities"
+          )}
+        </h1>
+        ${!this.narrow
+          ? html` <ha-formfield
+              .label=${this.hass.localize(
+                "ui.panel.developer-tools.tabs.states.attributes"
+              )}
+            >
+              <ha-checkbox
+                .checked=${this._showAttributes}
+                @change=${this._saveAttributeCheckboxState}
+                reducedTouchTarget
+              ></ha-checkbox>
+            </ha-formfield>`
+          : nothing}
+      </div>
       <ha-expansion-panel
         .header=${this.hass.localize(
           "ui.panel.developer-tools.tabs.states.set_state"
@@ -120,7 +135,7 @@ class HaPanelDevState extends LitElement {
           )}
         </p>
         ${this._error
-          ? html`<ha-alert alert-type="error">${this._error}}</ha-alert>`
+          ? html`<ha-alert alert-type="error">${this._error}</ha-alert>`
           : nothing}
         <div class="state-wrapper flex-horizontal">
           <div class="inputs">
@@ -212,134 +227,45 @@ class HaPanelDevState extends LitElement {
           </div>
         </div>
       </ha-expansion-panel>
-      <div class="table-wrapper">
-        <table class="entities">
-          <tr>
-            <th>
-              ${this.hass.localize(
-                "ui.panel.developer-tools.tabs.states.entity"
-              )}
-            </th>
-            <th>
-              ${this.hass.localize(
-                "ui.panel.developer-tools.tabs.states.state"
-              )}
-            </th>
-            ${!this.narrow
-              ? html`<th class="attributes">
-                  ${this.hass.localize(
-                    "ui.panel.developer-tools.tabs.states.attributes"
-                  )}
-                  <ha-checkbox
-                    .checked=${this._showAttributes}
-                    @change=${this._saveAttributeCheckboxState}
-                    reducedTouchTarget
-                  ></ha-checkbox>
-                </th>`
-              : nothing}
-          </tr>
-          <tr class="filters">
-            <th>
-              <search-input
-                .hass=${this.hass}
-                .label=${this.hass.localize(
-                  "ui.panel.developer-tools.tabs.states.filter_entities"
-                )}
-                .value=${this._entityFilter}
-                @value-changed=${this._entityFilterChanged}
-              ></search-input>
-            </th>
-            <th>
-              <search-input
-                .hass=${this.hass}
-                .label=${this.hass.localize(
-                  "ui.panel.developer-tools.tabs.states.filter_states"
-                )}
-                type="search"
-                .value=${this._stateFilter}
-                @value-changed=${this._stateFilterChanged}
-              ></search-input>
-            </th>
-            ${showAttributes
-              ? html`<th>
-                  <search-input
-                    .hass=${this.hass}
-                    .label=${this.hass.localize(
-                      "ui.panel.developer-tools.tabs.states.filter_attributes"
-                    )}
-                    type="search"
-                    .value=${this._attributeFilter}
-                    @value-changed=${this._attributeFilterChanged}
-                  ></search-input>
-                </th>`
-              : nothing}
-          </tr>
-          ${entities.length === 0
-            ? html`<tr>
-                <td colspan="3">
-                  ${this.hass.localize(
-                    "ui.panel.developer-tools.tabs.states.no_entities"
-                  )}
-                </td>
-              </tr>`
-            : nothing}
-          ${entities.map(
-            (entity) =>
-              html`<tr>
-                <td>
-                  <div class="id-name-container">
-                    <div class="id-name-row">
-                      <ha-svg-icon
-                        @click=${this._copyEntity}
-                        .entity=${entity}
-                        alt=${this.hass.localize(
-                          "ui.panel.developer-tools.tabs.states.copy_id"
-                        )}
-                        title=${this.hass.localize(
-                          "ui.panel.developer-tools.tabs.states.copy_id"
-                        )}
-                        .path=${mdiClipboardTextMultipleOutline}
-                      ></ha-svg-icon>
-                      <a
-                        href="#"
-                        .entity=${entity}
-                        @click=${this._entitySelected}
-                        >${entity.entity_id}</a
-                      >
-                    </div>
-                    <div class="id-name-row">
-                      <ha-svg-icon
-                        @click=${this._entityMoreInfo}
-                        .entity=${entity}
-                        alt=${this.hass.localize(
-                          "ui.panel.developer-tools.tabs.states.more_info"
-                        )}
-                        title=${this.hass.localize(
-                          "ui.panel.developer-tools.tabs.states.more_info"
-                        )}
-                        .path=${mdiInformationOutline}
-                      ></ha-svg-icon>
-                      <span class="secondary">
-                        ${entity.attributes.friendly_name}
-                      </span>
-                    </div>
-                  </div>
-                </td>
-                <td>${entity.state}</td>
-                ${showAttributes
-                  ? html`<td>${this._attributeString(entity)}</td>`
-                  : nothing}
-              </tr>`
+      <developer-tools-state-renderer
+        .hass=${this.hass}
+        .narrow=${this.narrow}
+        .entities=${entities}
+        .virtualize=${entities.length > VIRTUALIZE_THRESHOLD}
+        .showAttributes=${this._showAttributes}
+        @states-tool-entity-selected=${this._entitySelected}
+      >
+        <search-input
+          slot="filter-entities"
+          .hass=${this.hass}
+          .label=${this.hass.localize(
+            "ui.panel.developer-tools.tabs.states.filter_entities"
           )}
-        </table>
-      </div>
+          .value=${this._entityFilter}
+          @value-changed=${this._entityFilterChanged}
+        ></search-input>
+        <search-input
+          slot="filter-states"
+          .hass=${this.hass}
+          .label=${this.hass.localize(
+            "ui.panel.developer-tools.tabs.states.filter_states"
+          )}
+          type="search"
+          .value=${this._stateFilter}
+          @value-changed=${this._stateFilterChanged}
+        ></search-input>
+        <search-input
+          slot="filter-attributes"
+          .hass=${this.hass}
+          .label=${this.hass.localize(
+            "ui.panel.developer-tools.tabs.states.filter_attributes"
+          )}
+          type="search"
+          .value=${this._attributeFilter}
+          @value-changed=${this._attributeFilterChanged}
+        ></search-input>
+      </developer-tools-state-renderer>
     `;
-  }
-
-  private async _copyEntity(ev) {
-    ev.preventDefault();
-    const entity = (ev.currentTarget! as any).entity;
-    await copyToClipboard(entity.entity_id);
   }
 
   private async _copyStateEntity(ev) {
@@ -351,7 +277,7 @@ class HaPanelDevState extends LitElement {
   }
 
   private _entitySelected(ev) {
-    const entityState: HassEntity = (ev.currentTarget! as any).entity;
+    const entityState: HassEntity = ev.detail.entity;
     this._entityId = entityState.entity_id;
     this._entity = entityState;
     this._state = entityState.state;
@@ -359,6 +285,7 @@ class HaPanelDevState extends LitElement {
     this._updateEditor();
     this._expanded = true;
     ev.preventDefault();
+    window.scrollTo({ top: 0 });
   }
 
   private _updateEditor() {
@@ -420,12 +347,14 @@ class HaPanelDevState extends LitElement {
 
   private _expandedChanged(ev) {
     this._expanded = ev.detail.expanded;
-  }
-
-  private _entityMoreInfo(ev) {
-    ev.preventDefault();
-    const entity = (ev.currentTarget! as any).entity;
-    fireEvent(this, "hass-more-info", { entityId: entity.entity_id });
+    if (!ev.detail.expanded) {
+      // lit-virtulizer in state renderer will not show items
+      // if none were in view when panel was expanded
+      // so we fire scroll event to trigger a re-render
+      setTimeout(() => {
+        window.dispatchEvent(new Event("scroll"));
+      }, 100);
+    }
   }
 
   private async _handleSetState() {
@@ -539,29 +468,6 @@ class HaPanelDevState extends LitElement {
       });
   }
 
-  private _formatAttributeValue(value) {
-    if (
-      (Array.isArray(value) && value.some((val) => val instanceof Object)) ||
-      (!Array.isArray(value) && value instanceof Object)
-    ) {
-      return `\n${dump(value)}`;
-    }
-    return Array.isArray(value) ? value.join(", ") : value;
-  }
-
-  private _attributeString(entity) {
-    const output = "";
-
-    if (entity && entity.attributes) {
-      return Object.keys(entity.attributes).map(
-        (key) =>
-          `${key}: ${this._formatAttributeValue(entity.attributes[key])}\n`
-      );
-    }
-
-    return output;
-  }
-
   private _lastChangedString(entity) {
     return formatDateTimeWithSeconds(
       new Date(entity.last_changed),
@@ -592,19 +498,36 @@ class HaPanelDevState extends LitElement {
       haStyle,
       css`
         :host {
+          display: block;
+          height: 100%;
+        }
+
+        :host {
           -ms-user-select: initial;
           -webkit-user-select: initial;
           -moz-user-select: initial;
           display: block;
           padding: 16px;
-          padding: max(16px, var(--safe-area-inset-top))
-            max(16px, var(--safe-area-inset-right))
-            max(16px, var(--safe-area-inset-bottom))
-            max(16px, var(--safe-area-inset-left));
+        }
+
+        :host search-input {
+          display: block;
+          width: 100%;
         }
 
         ha-textfield {
           display: block;
+        }
+
+        .heading {
+          display: flex;
+          justify-content: space-between;
+        }
+
+        .heading ha-formfield {
+          margin-right: 8px;
+          --mdc-typography-body2-font-size: var(--ha-font-size-m);
+          --mdc-typography-body2-font-weight: var(--ha-font-weight-medium);
         }
 
         .entity-id {
@@ -641,6 +564,10 @@ class HaPanelDevState extends LitElement {
           margin: 0 8px 16px;
         }
 
+        ha-expansion-panel p {
+          padding: 0 8px;
+        }
+
         .inputs {
           width: 100%;
           max-width: 800px;
@@ -652,85 +579,9 @@ class HaPanelDevState extends LitElement {
 
         .button-row {
           display: flex;
-          margin-top: 8px;
+          margin: 8px 0;
           align-items: center;
-        }
-
-        .table-wrapper {
-          width: 100%;
-          overflow: auto;
-        }
-
-        .entities th {
-          padding: 0 8px;
-          text-align: var(--float-start);
-          direction: var(--direction);
-        }
-
-        .filters th {
-          padding: 0;
-        }
-
-        .filters search-input {
-          display: block;
-          --mdc-text-field-fill-color: transparent;
-        }
-
-        th.attributes {
-          position: relative;
-        }
-
-        th.attributes ha-checkbox {
-          position: absolute;
-          bottom: -8px;
-        }
-
-        .entities tr {
-          vertical-align: top;
-          direction: ltr;
-        }
-
-        .entities tr:nth-child(odd) {
-          background-color: var(--table-row-background-color, #fff);
-        }
-
-        .entities tr:nth-child(even) {
-          background-color: var(--table-row-alternative-background-color, #eee);
-        }
-        .entities td {
-          padding: 4px;
-          min-width: 200px;
-          word-break: break-word;
-        }
-        .entities ha-svg-icon {
-          --mdc-icon-size: 20px;
-          padding: 4px;
-          cursor: pointer;
-          flex-shrink: 0;
-          margin-right: 8px;
-          margin-inline-end: 8px;
-          margin-inline-start: initial;
-        }
-        .entities td:nth-child(1) {
-          min-width: 300px;
-          width: 30%;
-        }
-        .entities td:nth-child(3) {
-          white-space: pre-wrap;
-          word-break: break-word;
-        }
-
-        .entities a {
-          color: var(--primary-color);
-        }
-
-        .entities .id-name-container {
-          display: flex;
-          flex-direction: column;
-        }
-        .entities .id-name-row {
-          display: flex;
-          align-items: center;
+          gap: 8px;
         }
 
         :host([narrow]) .state-wrapper {

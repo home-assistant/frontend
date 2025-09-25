@@ -1,5 +1,4 @@
 import { customElement, property } from "lit/decorators";
-import "@shoelace-style/shoelace/dist/components/animation/animation";
 import { css, html, LitElement, nothing } from "lit";
 import type { HomeAssistant } from "../../../../../../types";
 import { SecurityClass } from "../../../../../../data/zwave_js";
