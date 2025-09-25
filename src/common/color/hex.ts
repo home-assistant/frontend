@@ -1,5 +1,11 @@
 import { formatHex, parse } from "culori";
 
+/**
+ * Expands a 3-digit hex color to a 6-digit hex color.
+ * @param hex - The hex color to expand.
+ * @returns The expanded hex color.
+ * @throws If the hex color is invalid.
+ */
 export const expandHex = (hex: string): string => {
   const color = parse(hex);
   if (!color) {
@@ -8,7 +14,13 @@ export const expandHex = (hex: string): string => {
   return (formatHex(color) || "#000000").replace("#", "");
 };
 
-// Blend 2 hex colors: c1 is placed over c2, blend is c1's opacity.
+/**
+ * Blends two hex colors. c1 is placed over c2, blend is c1's opacity.
+ * @param c1 - The first hex color.
+ * @param c2 - The second hex color.
+ * @param blend - The blend percentage (0-100).
+ * @returns The blended hex color.
+ */
 export const hexBlend = (c1: string, c2: string, blend = 50): string => {
   c1 = expandHex(c1);
   c2 = expandHex(c2);
