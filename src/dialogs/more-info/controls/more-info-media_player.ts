@@ -48,7 +48,7 @@ class MoreInfoMediaPlayer extends LitElement {
 
   @property({ attribute: false }) public stateObj?: MediaPlayerEntity;
 
-  private _formateDuration(duration: number) {
+  private _formatDuration(duration: number) {
     const hours = Math.floor(duration / 3600);
     const minutes = Math.floor((duration % 3600) / 60);
     const seconds = duration % 60;
@@ -263,9 +263,9 @@ class MoreInfoMediaPlayer extends LitElement {
     const position = Math.floor(playerObj.currentProgress) || 0;
     const duration = stateObj.attributes.media_duration || 0;
     const remaining = duration - position;
-    const durationFormated =
-      remaining > 0 ? this._formateDuration(remaining) : 0;
-    const postionFormated = this._formateDuration(position);
+    const durationFormatted =
+      remaining > 0 ? this._formatDuration(Math.floor(remaining)) : 0;
+    const positionFormatted = this._formatDuration(Math.floor(position));
     const primaryTitle = playerObj.primaryTitle;
     const secondaryTitle = playerObj.secondaryTitle;
     const turnOn = controls?.find((c) => c.action === "turn_on");
@@ -325,8 +325,8 @@ class MoreInfoMediaPlayer extends LitElement {
                 !supportsFeature(stateObj, MediaPlayerEntityFeature.SEEK)}
               ></ha-slider>
               <div class="position-info-row">
-                <span class="position-time">${postionFormated}</span>
-                <span class="duration-time">${durationFormated}</span>
+                <span class="position-time">${positionFormatted}</span>
+                <span class="duration-time">${durationFormatted}</span>
               </div>
             </div>
           `
