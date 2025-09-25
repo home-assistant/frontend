@@ -1,21 +1,22 @@
 import type { LineSeriesOption } from "echarts";
 
-export function downSampleLineData(
-  data: LineSeriesOption["data"],
-  chartWidth: number,
+export function downSampleLineData<
+  T extends [number, number] | NonNullable<LineSeriesOption["data"]>[number],
+>(
+  data: T[] | undefined,
+  maxDetails: number,
   minX?: number,
   maxX?: number
-) {
+): T[] {
   if (!data || data.length < 10) {
-    return data;
+    return [];
   }
-  const width = chartWidth * window.devicePixelRatio;
-  if (data.length <= width) {
+  if (data.length <= maxDetails) {
     return data;
   }
   const min = minX ?? getPointData(data[0]!)[0];
   const max = maxX ?? getPointData(data[data.length - 1]!)[0];
-  const step = Math.floor((max - min) / width);
+  const step = Math.ceil((max - min) / Math.floor(maxDetails));
   const frames = new Map<
     number,
     {
@@ -47,7 +48,7 @@ export function downSampleLineData(
   }
 
   // Convert frames back to points
-  const result: typeof data = [];
+  const result: T[] = [];
   for (const [_i, frame] of frames) {
     // Use min/max points to preserve visual accuracy
     // The order of the data must be preserved so max may be before min

@@ -43,6 +43,8 @@ class HuiHistoryChartCardFeature
 
   @state() private _coordinates?: [number, number][];
 
+  @state() private _yAxisOrigin?: number;
+
   private _interval?: number;
 
   static getStubConfig(): TrendGraphCardFeatureConfig {
@@ -105,7 +107,10 @@ class HuiHistoryChartCardFeature
       `;
     }
     return html`
-      <hui-graph-base .coordinates=${this._coordinates}></hui-graph-base>
+      <hui-graph-base
+        .coordinates=${this._coordinates}
+        .yAxisOrigin=${this._yAxisOrigin}
+      ></hui-graph-base>
     `;
   }
 
@@ -123,14 +128,15 @@ class HuiHistoryChartCardFeature
     return subscribeHistoryStatesTimeWindow(
       this.hass!,
       (historyStates) => {
-        this._coordinates =
+        const { points, yAxisOrigin } =
           coordinatesMinimalResponseCompressedState(
             historyStates[this.context!.entity_id!],
-            hourToShow,
-            500,
-            2,
-            undefined
-          ) || [];
+            this.clientWidth,
+            this.clientHeight,
+            this.clientWidth / 5 // sample to 1 point per 5 pixels
+          );
+        this._coordinates = points;
+        this._yAxisOrigin = yAxisOrigin;
       },
       hourToShow,
       [this.context!.entity_id!]

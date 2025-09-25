@@ -1,134 +1,85 @@
-import { strokeWidth } from "../../../../data/graph";
+import { downSampleLineData } from "../../../../components/chart/down-sample";
 import type { EntityHistoryState } from "../../../../data/history";
 
-const average = (items: any[]): number =>
-  items.reduce((sum, entry) => sum + parseFloat(entry.state), 0) / items.length;
-
-const lastValue = (items: any[]): number =>
-  parseFloat(items[items.length - 1].state) || 0;
-
 const calcPoints = (
-  history: any,
-  hours: number,
+  history: [number, number][],
   width: number,
-  detail: number,
-  min: number,
-  max: number
-): [number, number][] => {
-  const coords = [] as [number, number][];
-  const height = 80;
-  let yRatio = (max - min) / height;
-  yRatio = yRatio !== 0 ? yRatio : height;
-  let xRatio = width / (hours - (detail === 1 ? 1 : 0));
-  xRatio = isFinite(xRatio) ? xRatio : width;
-
-  let first = history.filter(Boolean)[0];
-  if (detail > 1) {
-    first = first.filter(Boolean)[0];
-  }
-  let last = [average(first), lastValue(first)];
-
-  const getY = (value: number): number =>
-    height + strokeWidth / 2 - (value - min) / yRatio;
-
-  const getCoords = (item: any[], i: number, offset = 0, depth = 1) => {
-    if (depth > 1 && item) {
-      return item.forEach((subItem, index) =>
-        getCoords(subItem, i, index, depth - 1)
-      );
+  height: number,
+  limits?: { minX?: number; maxX?: number; minY?: number; maxY?: number }
+) => {
+  let yAxisOrigin = height;
+  let minY = limits?.minY ?? history[0][1];
+  let maxY = limits?.maxY ?? history[0][1];
+  const minX = limits?.minX ?? history[0][0];
+  const maxX = limits?.maxX ?? history[history.length - 1][0];
+  history.forEach(([_, stateValue]) => {
+    if (stateValue < minY) {
+      minY = stateValue;
+    } else if (stateValue > maxY) {
+      maxY = stateValue;
     }
-
-    const x = xRatio * (i + offset / 6);
-
-    if (item) {
-      last = [average(item), lastValue(item)];
-    }
-    const y = getY(item ? last[0] : last[1]);
-    return coords.push([x, y]);
-  };
-
-  for (let i = 0; i < history.length; i += 1) {
-    getCoords(history[i], i, 0, detail);
+  });
+  const rangeY = maxY - minY || minY * 0.1;
+  if (maxY < 0) {
+    // all values are negative
+    // add margin
+    maxY += rangeY * 0.1;
+    maxY = Math.min(0, maxY);
+    yAxisOrigin = 0;
+  } else if (minY < 0) {
+    // some values are negative
+    yAxisOrigin = (maxY / (maxY - minY || 1)) * height;
+  } else {
+    // all values are positive
+    // add margin
+    minY -= rangeY * 0.1;
+    minY = Math.max(0, minY);
   }
-
-  coords.push([width, getY(last[1])]);
-  return coords;
+  const yDenom = maxY - minY || 1;
+  const xDenom = maxX - minX || 1;
+  const points: [number, number][] = history.map((point) => {
+    const x = ((point[0] - minX) / xDenom) * width;
+    const y = height - ((point[1] - minY) / yDenom) * height;
+    return [x, y];
+  });
+  points.push([width, points[points.length - 1][1]]);
+  return { points, yAxisOrigin };
 };
 
 export const coordinates = (
-  history: any,
-  hours: number,
+  history: [number, number][],
   width: number,
-  detail: number,
-  limits?: { min?: number; max?: number }
-): [number, number][] | undefined => {
-  history.forEach((item) => {
-    item.state = Number(item.state);
-  });
-  history = history.filter((item) => !Number.isNaN(item.state));
+  height: number,
+  maxDetails: number,
+  limits?: { minX?: number; maxX?: number; minY?: number; maxY?: number }
+) => {
+  history = history.filter((item) => !Number.isNaN(item[1]));
 
-  const min =
-    limits?.min !== undefined
-      ? limits.min
-      : Math.min(...history.map((item) => item.state));
-  const max =
-    limits?.max !== undefined
-      ? limits.max
-      : Math.max(...history.map((item) => item.state));
-  const now = new Date().getTime();
-
-  const reduce = (res, item, point) => {
-    const age = now - new Date(item.last_changed).getTime();
-
-    let key = Math.abs(age / (1000 * 3600) - hours);
-    if (point) {
-      key = (key - Math.floor(key)) * 60;
-      key = Number((Math.round(key / 10) * 10).toString()[0]);
-    } else {
-      key = Math.floor(key);
-    }
-    if (!res[key]) {
-      res[key] = [];
-    }
-    res[key].push(item);
-    return res;
-  };
-
-  history = history.reduce((res, item) => reduce(res, item, false), []);
-  if (detail > 1) {
-    history = history.map((entry) =>
-      entry.reduce((res, item) => reduce(res, item, true), [])
-    );
-  }
-
-  if (!history.length) {
-    return undefined;
-  }
-
-  return calcPoints(history, hours, width, detail, min, max);
+  const sampledData: [number, number][] = downSampleLineData(
+    history,
+    maxDetails,
+    limits?.minX,
+    limits?.maxX
+  );
+  return calcPoints(sampledData, width, height, limits);
 };
 
-interface NumericEntityHistoryState {
-  state: number;
-  last_changed: number;
-}
-
 export const coordinatesMinimalResponseCompressedState = (
-  history: EntityHistoryState[],
-  hours: number,
+  history: EntityHistoryState[] | undefined,
   width: number,
-  detail: number,
-  limits?: { min?: number; max?: number }
-): [number, number][] | undefined => {
+  height: number,
+  maxDetails: number,
+  limits?: { minX?: number; maxX?: number; minY?: number; maxY?: number }
+) => {
   if (!history) {
-    return undefined;
+    return { points: [], yAxisOrigin: 0 };
   }
-  const numericHistory: NumericEntityHistoryState[] = history.map((item) => ({
-    state: Number(item.s),
+  const mappedHistory: [number, number][] = history.map((item) => [
     // With minimal response and compressed state, we don't have last_changed,
     // so we use last_updated since its always the same as last_changed since
     // we already filtered out states that are the same.
-    last_changed: item.lu * 1000,
-  }));
-  return coordinates(numericHistory, hours, width, detail, limits);
+    item.lu * 1000,
+    Number(item.s),
+  ]);
+  return coordinates(mappedHistory, width, height, maxDetails, limits);
 };
