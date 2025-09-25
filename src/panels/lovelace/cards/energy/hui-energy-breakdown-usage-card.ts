@@ -63,13 +63,37 @@ export class HuiEnergyBreakdownUsageCard
   }
 
   public static async getStubConfig(
-    _hass: HomeAssistant
+    hass: HomeAssistant
   ): Promise<EnergyBreakdownUsageCardConfig> {
-    return { type: "energy-breakdown-usage" };
+    const powerSensors = Object.keys(hass.states).filter(
+      generateEntityFilter(hass, {
+        domain: "sensor",
+        device_class: "power",
+      })
+    );
+    if (powerSensors.length === 0) {
+      return { type: "energy-breakdown-usage" };
+    }
+
+    const validStates = powerSensors
+      .map((id) => hass.states[id])
+      .filter((st) => st && isNumericState(st) && !isNaN(Number(st.state)));
+    if (validStates.length === 0) {
+      return { type: "energy-breakdown-usage" };
+    }
+
+    const highest = validStates.reduce((best, st) =>
+      Number(st.state) > Number(best.state) ? st : best
+    );
+
+    return {
+      type: "energy-breakdown-usage",
+      power_entity: highest.entity_id,
+    };
   }
 
   public getCardSize(): number {
-    return 2;
+    return 3;
   }
 
   public getGridOptions(): LovelaceGridOptions {
