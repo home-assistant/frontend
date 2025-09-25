@@ -1,3 +1,4 @@
+import scrollLockStyles from "@home-assistant/webawesome/dist/styles/utilities/scroll-lock.css.js";
 import { css } from "lit";
 import { extractDerivedVars } from "../../common/style/derived-css-vars";
 
@@ -18,6 +19,8 @@ export const waMainStyles = css`
     --wa-border-width-l: var(--ha-border-radius-l);
     --wa-space-xl: 32px;
   }
+
+  ${scrollLockStyles}
 `;
 
 export const waMainDerivedVariables = extractDerivedVars(waMainStyles);

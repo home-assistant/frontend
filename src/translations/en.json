@@ -5388,7 +5388,7 @@
           "person_not_found_title": "Person not found",
           "person_not_found": "We couldn't find the person you were trying to edit.",
           "detail": {
-            "new_person": "New person",
+            "new_person": "Add person",
             "name": "Name",
             "name_error_msg": "Name is required",
             "linked_user": "Linked user",
@@ -5399,7 +5399,6 @@
             "device_tracker_picked": "Track device",
             "device_tracker_pick": "Pick device to track",
             "delete": "Delete",
-            "create": "Create",
             "update": "Update",
             "confirm_delete_user_title": "Delete user account",
             "confirm_delete_user_text": "The user account for ''{name}'' will be permanently deleted. You can still track the user, but the person will no longer be able to log in.",

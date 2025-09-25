@@ -54,9 +54,9 @@ export class HaBottomSheet extends LitElement {
       border-top-left-radius: var(--ha-border-radius-lg);
       border-top-right-radius: var(--ha-border-radius-lg);
       max-height: 90vh;
-      margin-bottom: var(--safe-area-inset-bottom);
-      margin-left: var(--safe-area-inset-left);
-      margin-right: var(--safe-area-inset-right);
+      padding-bottom: var(--safe-area-inset-bottom);
+      padding-left: var(--safe-area-inset-left);
+      padding-right: var(--safe-area-inset-right);
     }
   `;
 }
