@@ -2,9 +2,12 @@ import type { AlarmMode } from "../../../data/alarm_control_panel";
 import type { HvacMode } from "../../../data/climate";
 import type { OperationMode } from "../../../data/water_heater";
 
+export type ButtonCardData = Record<string, any>;
+
 export interface ButtonCardFeatureConfig {
   type: "button";
   action_name?: string;
+  data?: ButtonCardData;
 }
 
 export interface CoverOpenCloseCardFeatureConfig {
