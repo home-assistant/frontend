@@ -102,7 +102,7 @@ export const coreCards: Card[] = [
     showElement: true,
   },
   {
-    type: "energy-current-usage",
+    type: "energy-breakdown-usage",
     showElement: true,
   },
   {

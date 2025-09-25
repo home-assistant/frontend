@@ -16,7 +16,7 @@ import type {
   LovelaceCardEditor,
   LovelaceGridOptions,
 } from "../../types";
-import type { EnergyCurrentUsageCardConfig } from "../types";
+import type { EnergyBreakdownUsageCardConfig } from "../types";
 import { fireEvent } from "../../../../common/dom/fire_event";
 import { computeAreaName } from "../../../../common/entity/compute_area_name";
 import { generateEntityFilter } from "../../../../common/entity/entity_filter";
@@ -25,7 +25,6 @@ import {
   isNumericState,
 } from "../../../../common/number/format_number";
 import { haStyleScrollbar } from "../../../../resources/styles";
-import { createEntityNotFoundWarning } from "../../components/hui-warning";
 
 interface Breakdown {
   id: string;
@@ -33,14 +32,14 @@ interface Breakdown {
   value: number;
 }
 
-@customElement("hui-energy-current-usage-card")
-export class HuiEnergyCurrentUsageCard
+@customElement("hui-energy-breakdown-usage-card")
+export class HuiEnergyBreakdownUsageCard
   extends LitElement
   implements LovelaceCard
 {
   @property({ attribute: false }) public hass!: HomeAssistant;
 
-  @state() private _config?: EnergyCurrentUsageCardConfig;
+  @state() private _config?: EnergyBreakdownUsageCardConfig;
 
   @state() private _navigationStack: {
     type: "area" | "entity";
@@ -52,12 +51,12 @@ export class HuiEnergyCurrentUsageCard
 
   public static async getConfigElement(): Promise<LovelaceCardEditor> {
     await import(
-      "../../editor/config-elements/hui-energy-current-usage-card-editor"
+      "../../editor/config-elements/hui-energy-breakdown-usage-card-editor"
     );
-    return document.createElement("hui-energy-current-usage-card-editor");
+    return document.createElement("hui-energy-breakdown-usage-card-editor");
   }
 
-  public setConfig(config: EnergyCurrentUsageCardConfig): void {
+  public setConfig(config: EnergyBreakdownUsageCardConfig): void {
     this._config = {
       ...config,
     };
@@ -65,8 +64,8 @@ export class HuiEnergyCurrentUsageCard
 
   public static async getStubConfig(
     _hass: HomeAssistant
-  ): Promise<EnergyCurrentUsageCardConfig> {
-    return { type: "energy-current-usage", power_entity: "" };
+  ): Promise<EnergyBreakdownUsageCardConfig> {
+    return { type: "energy-breakdown-usage" };
   }
 
   public getCardSize(): number {
@@ -88,26 +87,20 @@ export class HuiEnergyCurrentUsageCard
     }
 
     const entityId = this._config.power_entity;
-    const stateObj = this.hass.states[entityId];
+    const stateObj = entityId ? this.hass.states[entityId] : undefined;
 
-    if (!stateObj) {
-      return html`
-        <hui-warning .hass=${this.hass}>
-          ${createEntityNotFoundWarning(this.hass, entityId)}
-        </hui-warning>
-      `;
-    }
-
-    const powerEntityCompatible = stateObj.attributes.device_class === "power";
+    const powerEntityCompatible = stateObj
+      ? stateObj.attributes.device_class === "power"
+      : true;
     if (!powerEntityCompatible) {
       return html`<ha-alert alert-type="error">
         ${this.hass.localize(
-          "ui.panel.lovelace.editor.card.energy-current-usage.power_entity_invalid"
+          "ui.panel.lovelace.editor.card.energy-breakdown-usage.power_entity_invalid"
         )}
       </ha-alert>`;
     }
 
-    const uom = stateObj.attributes.unit_of_measurement;
+    const uom = stateObj?.attributes.unit_of_measurement;
     const powerEntityIcon = this._config.power_icon?.length
       ? this._config.power_icon
       : "mdi:lightning-bolt";
@@ -115,8 +108,8 @@ export class HuiEnergyCurrentUsageCard
     const _computeBreakdown = memoizeOne(
       (
         hass: HomeAssistant,
-        powerEntityId: string,
-        powerEntityState: string
+        powerEntityId?: string,
+        powerEntityState?: string
       ): Breakdown[] => {
         const breakdowns = Object.values(hass.areas)
           .map((area): Breakdown | null => {
@@ -162,27 +155,28 @@ export class HuiEnergyCurrentUsageCard
           })
           .filter((bd): bd is Breakdown => bd !== null);
 
-        return [
-          ...breakdowns,
-          {
+        if (powerEntityState) {
+          breakdowns.push({
             id: "untracked",
             name: hass.localize("ui.common.untracked"),
             value:
               Number(powerEntityState) -
               breakdowns.reduce((acc, bd) => acc + bd.value, 0),
-          },
-        ];
+          });
+        }
+
+        return breakdowns;
       }
     );
 
-    const breakdown = _computeBreakdown(this.hass, entityId, stateObj.state);
+    const breakdown = _computeBreakdown(this.hass, entityId, stateObj?.state);
     const gridRows = Number(this._config.grid_options?.rows ?? 3);
 
     const _computeEntityBreakdown = memoizeOne(
       (
         hass: HomeAssistant,
-        powerEntityId: string,
-        areaId: string
+        areaId: string,
+        powerEntityId?: string
       ): Breakdown[] => {
         const powerEntityIds = Object.keys(hass.states).filter(
           generateEntityFilter(hass, {
@@ -205,9 +199,7 @@ export class HuiEnergyCurrentUsageCard
         return validPowerEntities
           .map((entity) => ({
             id: entity.entity_id,
-            name:
-              hass.states[entity.entity_id]?.attributes.friendly_name ||
-              entity.entity_id.split(".")[1].replace(/_/g, " "),
+            name: hass.states[entity.entity_id]?.attributes.friendly_name ?? "",
             value: Number(entity.state),
           }))
           .sort((a, b) => b.value - a.value);
@@ -220,22 +212,26 @@ export class HuiEnergyCurrentUsageCard
       this._currentView === "entities" && currentNavigation;
 
     return html`<ha-card>
-      <div
-        class=${classMap({
-          heading: true,
-          "reduced-padding": gridRows < 3,
-          "single-row": gridRows === 1,
-        })}
-        @click=${this._handleHeadingClick}
-      >
-        <ha-icon class="icon" .icon=${powerEntityIcon}></ha-icon>
-        <span class="value"
-          >${formatNumber(stateObj.state, this.hass.locale, {
-            maximumFractionDigits: 1,
-          })}</span
-        >
-        <span class="measurement">${uom}</span>
-      </div>
+      ${stateObj
+        ? html`
+            <div
+              class=${classMap({
+                heading: true,
+                "reduced-padding": gridRows < 3,
+                "single-row": gridRows === 1,
+              })}
+              @click=${this._handleHeadingClick}
+            >
+              <ha-icon class="icon" .icon=${powerEntityIcon}></ha-icon>
+              <span class="value"
+                >${formatNumber(stateObj?.state, this.hass.locale, {
+                  maximumFractionDigits: 1,
+                })}</span
+              >
+              <span class="measurement">${uom}</span>
+            </div>
+          `
+        : nothing}
       ${gridRows > 1
         ? html`
             <div class="breakdown ha-scrollbar">
@@ -256,7 +252,9 @@ export class HuiEnergyCurrentUsageCard
                 ${this._currentView === "areas"
                   ? breakdown.map(
                       (area, idx) => html`
-                        ${breakdown.length > 1 && idx === breakdown.length - 1
+                        ${breakdown.length > 1 &&
+                        idx === breakdown.length - 1 &&
+                        area.id !== "untracked"
                           ? html`<ha-md-divider
                               role="separator"
                               tabindex="-1"
@@ -284,8 +282,8 @@ export class HuiEnergyCurrentUsageCard
                   : currentNavigation?.id
                     ? _computeEntityBreakdown(
                         this.hass,
-                        entityId,
-                        currentNavigation.id
+                        currentNavigation.id,
+                        entityId
                       ).map(
                         (entity) => html`
                           <ha-md-list-item
@@ -311,7 +309,8 @@ export class HuiEnergyCurrentUsageCard
   }
 
   private _handleHeadingClick(): void {
-    fireEvent(this, "hass-more-info", { entityId: this._config!.power_entity });
+    if (!this._config?.power_entity) return;
+    fireEvent(this, "hass-more-info", { entityId: this._config.power_entity });
   }
 
   private _handleAreaClick(area: Breakdown): void {
@@ -326,6 +325,7 @@ export class HuiEnergyCurrentUsageCard
   }
 
   private _handleEntityClick(entity: Breakdown): void {
+    if (!entity.id) return;
     fireEvent(this, "hass-more-info", { entityId: entity.id });
   }
 
@@ -460,6 +460,6 @@ export class HuiEnergyCurrentUsageCard
 
 declare global {
   interface HTMLElementTagNameMap {
-    "hui-energy-current-usage-card": HuiEnergyCurrentUsageCard;
+    "hui-energy-breakdown-usage-card": HuiEnergyBreakdownUsageCard;
   }
 }

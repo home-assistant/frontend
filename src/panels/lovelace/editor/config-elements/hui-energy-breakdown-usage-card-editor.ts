@@ -10,7 +10,7 @@ import type {
   SchemaUnion,
 } from "../../../../components/ha-form/types";
 import type { HomeAssistant } from "../../../../types";
-import type { EnergyCurrentUsageCardConfig } from "../../cards/types";
+import type { EnergyBreakdownUsageCardConfig } from "../../cards/types";
 import type { LovelaceCardEditor } from "../../types";
 import { baseLovelaceCardConfig } from "../structs/base-card-struct";
 import { configElementStyle } from "./config-elements-style";
@@ -18,19 +18,19 @@ import { configElementStyle } from "./config-elements-style";
 const cardConfigStruct = assign(
   baseLovelaceCardConfig,
   object({
-    power_entity: string(),
+    power_entity: optional(string()),
     power_icon: optional(string()),
   })
 );
 
-@customElement("hui-energy-current-usage-card-editor")
-export class HuiEnergyCurrentUsageCardEditor
+@customElement("hui-energy-breakdown-usage-card-editor")
+export class HuiEnergyBreakdownUsageCardEditor
   extends LitElement
   implements LovelaceCardEditor
 {
   @property({ attribute: false }) public hass?: HomeAssistant;
 
-  @state() private _config?: EnergyCurrentUsageCardConfig;
+  @state() private _config?: EnergyBreakdownUsageCardConfig;
 
   private _schema = memoizeOne(
     (_localize: LocalizeFunc) =>
@@ -52,7 +52,7 @@ export class HuiEnergyCurrentUsageCardEditor
       ] as const satisfies readonly HaFormSchema[]
   );
 
-  public setConfig(config: EnergyCurrentUsageCardConfig): void {
+  public setConfig(config: EnergyBreakdownUsageCardConfig): void {
     assert(config, cardConfigStruct);
 
     this._config = {
@@ -80,11 +80,11 @@ export class HuiEnergyCurrentUsageCardEditor
   }
 
   private _valueChanged(ev: CustomEvent): void {
-    const newConfig = ev.detail.value as EnergyCurrentUsageCardConfig;
+    const newConfig = ev.detail.value as EnergyBreakdownUsageCardConfig;
 
-    const config: EnergyCurrentUsageCardConfig = {
+    const config: EnergyBreakdownUsageCardConfig = {
       ...newConfig,
-      type: "energy-current-usage",
+      type: "energy-breakdown-usage",
     };
 
     fireEvent(this, "config-changed", { config });
@@ -96,7 +96,7 @@ export class HuiEnergyCurrentUsageCardEditor
     switch (schema.name) {
       default:
         return this.hass!.localize(
-          `ui.panel.lovelace.editor.card.energy-current-usage.${schema.name}_helper`
+          `ui.panel.lovelace.editor.card.energy-breakdown-usage.${schema.name}_helper`
         );
     }
   };
@@ -133,6 +133,6 @@ export class HuiEnergyCurrentUsageCardEditor
 
 declare global {
   interface HTMLElementTagNameMap {
-    "hui-energy-current-usage-card-editor": HuiEnergyCurrentUsageCardEditor;
+    "hui-energy-breakdown-usage-card-editor": HuiEnergyBreakdownUsageCardEditor;
   }
 }

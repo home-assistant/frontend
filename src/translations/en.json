@@ -7943,9 +7943,9 @@
               "description": "The Thermostat card gives control of a climate or water heater entity for heating or cooling, allowing you to set its mode and desired temperature.",
               "show_current_as_primary": "Show current temperature as primary information"
             },
-            "energy-current-usage": {
-              "name": "Current energy usage",
-              "description": "The Current energy usage card shows your home's current power usage at a glance.",
+            "energy-breakdown-usage": {
+              "name": "Current energy usage and breakdown",
+              "description": "The Current energy usage and breakdown card shows your home's current power usage at a glance and a breakdown of the usage by area.",
               "power_entity_invalid": "Selected entity is not a power sensor (watts). Pick a sensor with the device class power.",
               "power_entity_helper": "Entity for current usage",
               "power_icon_helper": "Icon for current usage"

@@ -220,9 +220,9 @@ export interface EnergySankeyCardConfig extends EnergyCardBaseConfig {
   group_by_area?: boolean;
 }
 
-export interface EnergyCurrentUsageCardConfig extends LovelaceCardConfig {
-  type: "energy-current-usage";
-  power_entity: string;
+export interface EnergyBreakdownUsageCardConfig extends LovelaceCardConfig {
+  type: "energy-breakdown-usage";
+  power_entity?: string;
   power_icon?: string;
 }
 
