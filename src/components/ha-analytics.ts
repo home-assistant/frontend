@@ -1,5 +1,5 @@
 import type { CSSResultGroup, TemplateResult } from "lit";
-import { css, html, LitElement } from "lit";
+import { css, html, LitElement, nothing } from "lit";
 import { customElement, property } from "lit/decorators";
 import { fireEvent } from "../common/dom/fire_event";
 import type { LocalizeFunc } from "../common/translations/localize";
@@ -73,14 +73,18 @@ export class HaAnalytics extends LitElement {
                 .checked=${this.analytics?.preferences[preference]}
                 .preference=${preference}
                 name=${preference}
-                .disabled=${!baseEnabled}
               >
               </ha-switch>
-              <ha-tooltip .for="switch-${preference}" placement="right">
-                ${this.localize(
-                  `ui.panel.${this.translationKeyPanel}.analytics.need_base_enabled`
-                )}
-              </ha-tooltip>
+              ${baseEnabled
+                ? nothing
+                : html`<ha-tooltip
+                    .for="switch-${preference}"
+                    placement="right"
+                  >
+                    ${this.localize(
+                      `ui.panel.${this.translationKeyPanel}.analytics.need_base_enabled`
+                    )}
+                  </ha-tooltip>`}
             </span>
           </ha-settings-row>
         `
