@@ -203,7 +203,7 @@
     "husky": "9.1.7",
     "jsdom": "27.0.0",
     "jszip": "3.10.1",
-    "lint-staged": "16.1.6",
+    "lint-staged": "16.2.0",
     "lit-analyzer": "2.0.3",
     "lodash.merge": "4.6.2",
     "lodash.template": "4.5.0",
