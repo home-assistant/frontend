@@ -9,19 +9,4 @@
     padding: 0;
     height: 100%;
   }
-  /* Imported from wa repo */
-  @supports (scrollbar-gutter: stable) {
-    .wa-scroll-lock {
-      scrollbar-gutter: var(--wa-scroll-lock-gutter) !important;
-    }
-    .wa-scroll-lock body {
-      overflow: hidden !important;
-    }
-  }
-  @supports not (scrollbar-gutter: stable) {
-    .wa-scroll-lock body {
-      padding-right: var(--wa-scroll-lock-size) !important;
-      overflow: hidden !important;
-    }
-  }
 </style>
