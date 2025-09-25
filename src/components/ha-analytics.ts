@@ -73,7 +73,7 @@ export class HaAnalytics extends LitElement {
                 .checked=${this.analytics?.preferences[preference]}
                 .preference=${preference}
                 name=${preference}
-                ?disabled=${baseEnabled}
+                .disabled=${!baseEnabled}
               >
               </ha-switch>
               <ha-tooltip .for="switch-${preference}" placement="right">
