@@ -8,7 +8,7 @@ export function downSampleLineData<
   minX?: number,
   maxX?: number
 ): T[] {
-  if (!data || data.length < 10) {
+  if (!data) {
     return [];
   }
   if (data.length <= maxDetails) {

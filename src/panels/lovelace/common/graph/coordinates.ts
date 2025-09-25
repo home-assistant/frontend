@@ -71,7 +71,7 @@ export const coordinatesMinimalResponseCompressedState = (
   maxDetails: number,
   limits?: { minX?: number; maxX?: number; minY?: number; maxY?: number }
 ) => {
-  if (!history) {
+  if (!history?.length) {
     return { points: [], yAxisOrigin: 0 };
   }
   const mappedHistory: [number, number][] = history.map((item) => [

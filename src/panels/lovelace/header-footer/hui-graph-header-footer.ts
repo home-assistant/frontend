@@ -63,8 +63,6 @@ export class HuiGraphHeaderFooter
 
   @state() private _coordinates?: [number, number][];
 
-  @state() private _yAxisOrigin?: number;
-
   private _error?: string;
 
   private _interval?: number;
@@ -124,10 +122,7 @@ export class HuiGraphHeaderFooter
     }
 
     return html`
-      <hui-graph-base
-        .coordinates=${this._coordinates}
-        .yAxisOrigin=${this._yAxisOrigin}
-      ></hui-graph-base>
+      <hui-graph-base .coordinates=${this._coordinates}></hui-graph-base>
     `;
   }
 
@@ -164,16 +159,14 @@ export class HuiGraphHeaderFooter
           this._config.detail! > 1
             ? Math.max(width / 5, this._config.hours_to_show!)
             : this._config.hours_to_show!;
-        const { points, yAxisOrigin } =
-          coordinatesMinimalResponseCompressedState(
-            combinedHistory[this._config.entity],
-            width,
-            width / 5,
-            maxDetails,
-            { minY: this._config.limits?.min, maxY: this._config.limits?.max }
-          );
+        const { points } = coordinatesMinimalResponseCompressedState(
+          combinedHistory[this._config.entity],
+          width,
+          width / 5,
+          maxDetails,
+          { minY: this._config.limits?.min, maxY: this._config.limits?.max }
+        );
         this._coordinates = points;
-        this._yAxisOrigin = yAxisOrigin;
       },
       this._config.hours_to_show!,
       [this._config.entity]
