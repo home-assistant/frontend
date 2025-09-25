@@ -7,8 +7,12 @@ import {
   parse,
 } from "culori";
 
-// Conversion between HEX and RGB
-
+/**
+ * Converts a hex color string to an RGB array.
+ * @param hex - The hex color string to convert.
+ * @returns The RGB array.
+ * @throws If the hex color is invalid.
+ */
 export const hex2rgb = (hex: string): [number, number, number] => {
   const color = parse(hex);
   if (!color || color.mode !== "rgb") {
@@ -21,6 +25,12 @@ export const hex2rgb = (hex: string): [number, number, number] => {
   ];
 };
 
+/**
+ * Converts an RGB array to a hex color string.
+ * @param rgb - The RGB array to convert.
+ * @returns The hex color string.
+ * @throws If the RGB array is invalid.
+ */
 export const rgb2hex = (rgb: [number, number, number]): string => {
   const hex = formatHex({
     mode: "rgb",
@@ -31,8 +41,12 @@ export const rgb2hex = (rgb: [number, number, number]): string => {
   return hex || "#000000";
 };
 
-// Conversions between RGB and LAB
-
+/**
+ * Converts an RGB array to a LAB array.
+ * @param rgb - The RGB array to convert.
+ * @returns The LAB array.
+ * @throws If the RGB array is invalid.
+ */
 export const rgb2lab = (
   rgb: [number, number, number]
 ): [number, number, number] => {
@@ -44,6 +58,12 @@ export const rgb2lab = (
   return [labColor.l, labColor.a, labColor.b];
 };
 
+/**
+ * Converts a LAB array to an RGB array.
+ * @param lab - The LAB array to convert.
+ * @returns The RGB array.
+ * @throws If the LAB array is invalid.
+ */
 export const lab2rgb = (
   lab: [number, number, number]
 ): [number, number, number] => {
@@ -59,11 +79,23 @@ export const lab2rgb = (
   ];
 };
 
+/**
+ * Converts a LAB array to a hex color string.
+ * @param lab - The LAB array to convert.
+ * @returns The hex color string.
+ * @throws If the LAB array is invalid.
+ */
 export const lab2hex = (lab: [number, number, number]): string => {
   const rgb = lab2rgb(lab);
   return rgb2hex(rgb);
 };
 
+/**
+ * Converts an RGB array to an HSV array.
+ * @param rgb - The RGB array to convert.
+ * @returns The HSV array.
+ * @throws If the RGB array is invalid.
+ */
 export const rgb2hsv = (
   rgb: [number, number, number]
 ): [number, number, number] => {
@@ -75,6 +107,12 @@ export const rgb2hsv = (
   return [hsvColor.h ?? 0, hsvColor.s, hsvColor.v];
 };
 
+/**
+ * Converts an HSV array to an RGB array.
+ * @param hsvColor - The HSV array to convert.
+ * @returns The RGB array.
+ * @throws If the HSV array is invalid.
+ */
 export const hsv2rgb = (
   hsvColor: [number, number, number]
 ): [number, number, number] => {
@@ -90,12 +128,30 @@ export const hsv2rgb = (
   ];
 };
 
+/**
+ * Converts an RGB array to an HS array.
+ * @param rgb - The RGB array to convert.
+ * @returns The HS array.
+ * @throws If the RGB array is invalid.
+ */
 export const rgb2hs = (rgb: [number, number, number]): [number, number] =>
   rgb2hsv(rgb).slice(0, 2) as [number, number];
 
+/**
+ * Converts an HS array to an RGB array.
+ * @param hs - The HS array to convert.
+ * @returns The RGB array.
+ * @throws If the HS array is invalid.
+ */
 export const hs2rgb = (hs: [number, number]): [number, number, number] =>
   hsv2rgb([hs[0], hs[1], 1]);
 
+/**
+ * Converts a theme color string to a hex color string.
+ * @param themeColor - The theme color string to convert.
+ * @returns The hex color string.
+ * @throws If the theme color string is invalid.
+ */
 export function theme2hex(themeColor: string): string {
   const parsed = parse(themeColor);
   if (parsed) {
