@@ -5,7 +5,39 @@ import type { HomeAssistant } from "../../types";
 export type ShortcutHandler = (event: KeyboardEvent) => void;
 
 export interface ShortcutManager {
-  add: (shortcuts: Record<string, ShortcutHandler>) => () => void;
+  /**
+   * Add a group of keyboard shortcuts to the manager.
+   *
+   * @param shortcuts - Key combinations mapped to handler functions.
+   *   Uses tinykeys syntax. See https://github.com/jamiebuilds/tinykeys#usage.
+   * @example
+   * ```ts
+   * const manager = createShortcutManager(hass);
+   * manager.add({
+   *   "e": () => openEntities(),
+   *   "Shift+?": () => openShortcutsDialog(),
+   *   "KeyE": () => openEntities(), // Non-Latin fallback
+   * });
+   * // Later: manager.remove(["e", "Shift+?"]); // Remove specific shortcuts
+   * ```
+   */
+  add: (shortcuts: Record<string, ShortcutHandler>) => void;
+
+  /**
+   * Remove shortcuts from the manager.
+   *
+   * @param keys - Optional array of specific key combinations to remove. If provided,
+   *   only shortcuts matching these keys will be removed. If omitted, all shortcuts
+   *   from this manager will be removed.
+   * @example
+   * ```ts
+   * // Remove specific shortcuts
+   * manager.remove(["e", "Shift+?"]);
+   *
+   * // Remove all shortcuts
+   * manager.remove();
+   * ```
+   */
   remove: (keys?: string[]) => void;
 }
 
@@ -54,24 +86,13 @@ export function createShortcutManager(hass?: HomeAssistant): ShortcutManager {
     add(shortcuts: Record<string, ShortcutHandler>) {
       // Skip registration if shortcuts are disabled
       if (hass && !hass.enableShortcuts) {
-        return () => {
-          // No-op disposer
-        };
+        return;
       }
 
       const disposer = registerShortcuts(shortcuts);
       const keys = new Set(Object.keys(shortcuts));
       const entry: ShortcutEntry = { keys, disposer };
       shortcutEntries.push(entry);
-
-      return () => {
-        // Remove this entry from the list and call its disposer
-        const index = shortcutEntries.indexOf(entry);
-        if (index !== -1) {
-          shortcutEntries.splice(index, 1);
-          disposer();
-        }
-      };
     },
 
     remove(keys?: string[]) {
