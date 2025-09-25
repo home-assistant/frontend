@@ -87,6 +87,7 @@ class StepFlowMenu extends LitElement {
               .step=${option}
               @click=${this._handleStep}
               ?twoline=${optionDescriptions[option]}
+              ?multiline-secondary=${optionDescriptions[option]}
             >
               <span>${translations[option]}</span>
               ${optionDescriptions[option]

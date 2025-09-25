@@ -520,6 +520,10 @@ class HaConfigSectionStorage extends LitElement {
       width: 24px;
     }
 
+    ha-alert {
+      --ha-alert-icon-size: 24px;
+    }
+
     ha-alert ha-spinner {
       --ha-spinner-size: 24px;
     }

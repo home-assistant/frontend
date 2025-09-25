@@ -27,6 +27,8 @@ export class MoreInfoInfo extends LitElement {
 
   @property({ attribute: false }) public editMode?: boolean;
 
+  @property({ attribute: false }) public data?: Record<string, any>;
+
   @state() private _sensorNumericDeviceClasses?: string[] = [];
 
   private async _loadNumericDeviceClasses() {
@@ -105,6 +107,7 @@ export class MoreInfoInfo extends LitElement {
             .hass=${this.hass}
             .entry=${this.entry}
             .editMode=${this.editMode}
+            .data=${this.data}
           ></more-info-content>
         </div>
       </div>

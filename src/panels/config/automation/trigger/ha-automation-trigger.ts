@@ -6,6 +6,7 @@ import { customElement, property, state } from "lit/decorators";
 import { repeat } from "lit/directives/repeat";
 import { storage } from "../../../../common/decorators/storage";
 import { fireEvent } from "../../../../common/dom/fire_event";
+import { stopPropagation } from "../../../../common/dom/stop_propagation";
 import { nextRender } from "../../../../common/util/render-status";
 import "../../../../components/ha-button";
 import "../../../../components/ha-button-menu";
@@ -25,6 +26,7 @@ import {
 import { automationRowsStyles } from "../styles";
 import "./ha-automation-trigger-row";
 import type HaAutomationTriggerRow from "./ha-automation-trigger-row";
+import { ensureArray } from "../../../../common/array/ensure-array";
 
 @customElement("ha-automation-trigger")
 export default class HaAutomationTrigger extends LitElement {
@@ -84,6 +86,7 @@ export default class HaAutomationTrigger extends LitElement {
                 .last=${idx === this.triggers.length - 1}
                 .trigger=${trg}
                 @duplicate=${this._duplicateTrigger}
+                @insert-after=${this._insertAfter}
                 @move-down=${this._moveDown}
                 @move-up=${this._moveUp}
                 @value-changed=${this._triggerChanged}
@@ -104,6 +107,7 @@ export default class HaAutomationTrigger extends LitElement {
                           : ""}"
                         slot="icons"
                         @keydown=${this._handleDragKeydown}
+                        @click=${stopPropagation}
                         .index=${idx}
                       >
                         <ha-svg-icon .path=${mdiDrag}></ha-svg-icon>
@@ -321,7 +325,23 @@ export default class HaAutomationTrigger extends LitElement {
     ev.stopPropagation();
     const index = (ev.target as any).index;
     fireEvent(this, "value-changed", {
-      value: this.triggers.concat(deepClone(this.triggers[index])),
+      // @ts-expect-error Requires library bump to ES2023
+      value: this.triggers.toSpliced(
+        index + 1,
+        0,
+        deepClone(this.triggers[index])
+      ),
+    });
+  }
+
+  private _insertAfter(ev: CustomEvent) {
+    ev.stopPropagation();
+    const index = (ev.target as any).index;
+    const inserted = ensureArray(ev.detail.value);
+    this.highlightedTriggers = inserted;
+    fireEvent(this, "value-changed", {
+      // @ts-expect-error Requires library bump to ES2023
+      value: this.triggers.toSpliced(index + 1, 0, ...inserted),
     });
   }
 

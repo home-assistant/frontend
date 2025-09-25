@@ -23,14 +23,8 @@ import { stopPropagation } from "../../common/dom/stop_propagation";
 import { computeAreaName } from "../../common/entity/compute_area_name";
 import { computeDeviceName } from "../../common/entity/compute_device_name";
 import { computeDomain } from "../../common/entity/compute_domain";
-import {
-  computeEntityEntryName,
-  computeEntityName,
-} from "../../common/entity/compute_entity_name";
-import {
-  getEntityContext,
-  getEntityEntryContext,
-} from "../../common/entity/context/get_entity_context";
+import { computeEntityEntryName } from "../../common/entity/compute_entity_name";
+import { getEntityEntryContext } from "../../common/entity/context/get_entity_context";
 import { shouldHandleRequestSelectedEvent } from "../../common/mwc/handle-request-selected-event";
 import { navigate } from "../../common/navigate";
 import "../../components/ha-button-menu";
@@ -70,6 +64,7 @@ export interface MoreInfoDialogParams {
   view?: View;
   /** @deprecated Use `view` instead */
   tab?: View;
+  data?: Record<string, any>;
 }
 
 type View = "info" | "history" | "settings" | "related";
@@ -102,6 +97,8 @@ export class MoreInfoDialog extends LitElement {
 
   @state() private _entityId?: string | null;
 
+  @state() private _data?: Record<string, any>;
+
   @state() private _currView: View = DEFAULT_VIEW;
 
   @state() private _initialView: View = DEFAULT_VIEW;
@@ -122,6 +119,8 @@ export class MoreInfoDialog extends LitElement {
       this.closeDialog();
       return;
     }
+
+    this._data = params.data;
     this._currView = params.view || DEFAULT_VIEW;
     this._initialView = params.view || DEFAULT_VIEW;
     this._childView = undefined;
@@ -322,22 +321,28 @@ export class MoreInfoDialog extends LitElement {
       (isDefaultView && this._parentEntityIds.length === 0) ||
       isSpecificInitialView;
 
-    const context = stateObj
-      ? getEntityContext(stateObj, this.hass)
-      : this._entry
-        ? getEntityEntryContext(this._entry, this.hass)
-        : undefined;
+    let entityName: string | undefined;
+    let deviceName: string | undefined;
+    let areaName: string | undefined;
 
-    const entityName = stateObj
-      ? computeEntityName(stateObj, this.hass)
-      : this._entry
-        ? computeEntityEntryName(this._entry, this.hass)
-        : entityId;
-
-    const deviceName = context?.device
-      ? computeDeviceName(context.device)
-      : undefined;
-    const areaName = context?.area ? computeAreaName(context.area) : undefined;
+    if (stateObj) {
+      entityName = this.hass.formatEntityName(stateObj, "entity");
+      deviceName = this.hass.formatEntityName(stateObj, "device");
+      areaName = this.hass.formatEntityName(stateObj, "area");
+    } else if (this._entry) {
+      const { device, area } = getEntityEntryContext(
+        this._entry,
+        this.hass.entities,
+        this.hass.devices,
+        this.hass.areas,
+        this.hass.floors
+      );
+      entityName = computeEntityEntryName(this._entry, this.hass.devices);
+      deviceName = device ? computeDeviceName(device) : undefined;
+      areaName = area ? computeAreaName(area) : undefined;
+    } else {
+      entityName = entityId;
+    }
 
     const breadcrumb = [areaName, deviceName, entityName].filter(
       (v): v is string => Boolean(v)
@@ -570,6 +575,7 @@ export class MoreInfoDialog extends LitElement {
                           .entityId=${this._entityId}
                           .entry=${this._entry}
                           .editMode=${this._infoEditMode}
+                          .data=${this._data}
                         ></ha-more-info-info>
                       `
                     : this._currView === "history"
