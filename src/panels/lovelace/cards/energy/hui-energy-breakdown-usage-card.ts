@@ -298,7 +298,7 @@ export class HuiEnergyBreakdownUsageCard
                             >${formatNumber(area.value, this.hass.locale, {
                               maximumFractionDigits: 1,
                             })}
-                            ${uom ?? ""}</span
+                            W</span
                           >
                         </ha-md-list-item>
                       `
