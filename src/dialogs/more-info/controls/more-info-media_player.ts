@@ -51,7 +51,7 @@ class MoreInfoMediaPlayer extends LitElement {
   private _formateDuration(duration: number) {
     const hours = Math.floor(duration / 3600);
     const minutes = Math.floor((duration % 3600) / 60);
-    const seconds = duration % 60;
+    const seconds = Math.floor(duration % 60);
     return formatDurationDigital(this.hass.locale, {
       hours,
       minutes,
