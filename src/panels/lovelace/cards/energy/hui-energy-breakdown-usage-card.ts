@@ -256,7 +256,7 @@ export class HuiEnergyBreakdownUsageCard
             </div>
           `
         : nothing}
-      ${gridRows > 1
+      ${gridRows > 1 || !stateObj
         ? html`
             <div class="breakdown ha-scrollbar">
               ${showBackButton
