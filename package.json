@@ -213,7 +213,7 @@
     "rspack-manifest-plugin": "5.1.0",
     "serve": "14.2.5",
     "sinon": "21.0.0",
-    "tar": "7.4.3",
+    "tar": "7.4.4",
     "terser-webpack-plugin": "5.3.14",
     "ts-lit-plugin": "2.0.2",
     "typescript": "5.9.2",
