@@ -233,9 +233,6 @@ export class HuiGraphHeaderFooter
       top: calc(50% - 16px);
       color: var(--secondary-text-color);
     }
-    ha-graph-base {
-      /* height: 50%; */
-    }
   `;
 }
 
