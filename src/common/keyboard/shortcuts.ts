@@ -4,13 +4,23 @@ import type { HomeAssistant } from "../../types";
 
 export type ShortcutHandler = (event: KeyboardEvent) => void;
 
+export interface ShortcutManager {
+  add: (shortcuts: Record<string, ShortcutHandler>) => () => void;
+  remove: (keys?: string[]) => void;
+}
+
+interface ShortcutEntry {
+  keys: Set<string>;
+  disposer: () => void;
+}
+
 /**
  * Register keyboard shortcuts using tinykeys.
  *
  * @param shortcuts - Key combinations mapped to handler functions.
- * @returns A function to unregister the shortcuts.
+ * @returns A function to remove the shortcuts.
  */
-export function registerShortcuts(
+function registerShortcuts(
   shortcuts: Record<string, ShortcutHandler>
 ): () => void {
   const wrappedShortcuts: Record<string, ShortcutHandler> = {};
@@ -35,13 +45,10 @@ export function registerShortcuts(
  * Create a shortcut manager that can add and dispose shortcuts.
  *
  * @param hass - Home Assistant context to check if shortcuts are enabled.
- * @returns A shortcut manager containing the add and dispose methods.
+ * @returns A shortcut manager containing the add and remove methods.
  */
-export function createShortcutManager(hass?: HomeAssistant): {
-  add: (shortcuts: Record<string, ShortcutHandler>) => () => void;
-  dispose: () => void;
-} {
-  const disposers: (() => void)[] = [];
+export function createShortcutManager(hass?: HomeAssistant): ShortcutManager {
+  const shortcutEntries: ShortcutEntry[] = [];
 
   return {
     add(shortcuts: Record<string, ShortcutHandler>) {
@@ -53,13 +60,41 @@ export function createShortcutManager(hass?: HomeAssistant): {
       }
 
       const disposer = registerShortcuts(shortcuts);
-      disposers.push(disposer);
-      return disposer;
+      const keys = new Set(Object.keys(shortcuts));
+      const entry: ShortcutEntry = { keys, disposer };
+      shortcutEntries.push(entry);
+
+      return () => {
+        // Remove this entry from the list and call its disposer
+        const index = shortcutEntries.indexOf(entry);
+        if (index !== -1) {
+          shortcutEntries.splice(index, 1);
+          disposer();
+        }
+      };
     },
 
-    dispose() {
-      disposers.forEach((dispose) => dispose());
-      disposers.length = 0;
+    remove(keys?: string[]) {
+      if (keys) {
+        const entriesToRemove: ShortcutEntry[] = [];
+
+        for (const entry of shortcutEntries) {
+          if (keys.some((key) => entry.keys.has(key))) {
+            entry.disposer();
+            entriesToRemove.push(entry);
+          }
+        }
+
+        for (const entry of entriesToRemove) {
+          const index = shortcutEntries.indexOf(entry);
+          if (index !== -1) {
+            shortcutEntries.splice(index, 1);
+          }
+        }
+      } else {
+        shortcutEntries.forEach((entry) => entry.disposer());
+        shortcutEntries.length = 0;
+      }
     },
   };
 }
