@@ -1,6 +1,5 @@
 import scrollLockStyles from "@home-assistant/webawesome/dist/styles/utilities/scroll-lock.css.js";
 import { css } from "lit";
-import scrollLockStyles from "@home-assistant/webawesome/dist/styles/utilities/scroll-lock.css.js";
 import { extractDerivedVars } from "../../common/style/derived-css-vars";
 
 export const waMainStyles = css`
