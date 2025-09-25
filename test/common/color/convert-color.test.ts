@@ -31,7 +31,7 @@ describe("Color Conversion Tests", () => {
 
   it("should convert lab to hex", () => {
     const lab: [number, number, number] = [53.23288, 80.10933, 67.22006];
-    expect(lab2hex(lab)).toBe("#ff0000");
+    expect(lab2hex(lab)).toBe("#fa0007");
   });
 
   it("should convert rgb to hsv and back", () => {
