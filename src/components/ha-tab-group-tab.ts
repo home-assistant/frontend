@@ -18,6 +18,8 @@ export class HaTabGroupTab extends Tab {
           opacity: 0.8;
 
           color: inherit;
+
+          --wa-space-l: 16px;
         }
 
         :host([active]:not([disabled])) {
