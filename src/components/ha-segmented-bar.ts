@@ -40,21 +40,22 @@ class HaSegmentedBar extends LitElement {
         </div>
         <div class="bar">
           ${this.segments.map(
-            (segment, index) =>
-              html`${this.hideTooltip && !segment.label
+            (segment, index) => html`
+              ${this.hideTooltip || !segment.label
                 ? nothing
                 : html`
                     <ha-tooltip for="segment-${index}" placement="top">
                       ${segment.label}
                     </ha-tooltip>
-                    <div
-                      id="segment-${index}"
-                      style=${styleMap({
-                        width: `${(segment.value / totalValue) * 100}%`,
-                        backgroundColor: segment.color,
-                      })}
-                    ></div>
-                  `}`
+                  `}
+              <div
+                id="segment-${index}"
+                style=${styleMap({
+                  width: `${(segment.value / totalValue) * 100}%`,
+                  backgroundColor: segment.color,
+                })}
+              ></div>
+            `
           )}
         </div>
         ${this.hideLegend
