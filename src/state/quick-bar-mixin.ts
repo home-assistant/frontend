@@ -1,5 +1,4 @@
 import type { PropertyValues } from "lit";
-import { tinykeys } from "tinykeys";
 import memoizeOne from "memoize-one";
 import { isComponentLoaded } from "../common/config/is_component_loaded";
 import { mainWindow } from "../common/dom/get_main_window";
@@ -12,6 +11,7 @@ import type { Constructor, HomeAssistant } from "../types";
 import { storeState } from "../util/ha-pref-storage";
 import { showToast } from "../util/toast";
 import type { HassElement } from "./hass-element";
+import { createShortcutManager } from "../common/keyboard/shortcuts";
 import { extractSearchParamsObject } from "../common/url/search-params";
 import { showVoiceCommandDialog } from "../dialogs/voice-command-dialog/show-ha-voice-command-dialog";
 import { canOverrideAlphanumericInput } from "../common/dom/can-override-input";
@@ -62,7 +62,8 @@ export default <T extends Constructor<HassElement>>(superClass: T) =>
     }
 
     private _registerShortcut() {
-      tinykeys(window, {
+      const shortcutManager = createShortcutManager(this.hass);
+      shortcutManager.add({
         // Those are for latin keyboards that have e, c, m keys
         e: (ev) => this._showQuickBar(ev),
         c: (ev) => this._showQuickBar(ev, QuickBarMode.Command),
