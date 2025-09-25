@@ -18,7 +18,6 @@ import {
   removeSearchParam,
 } from "../../common/url/search-params";
 import "../../components/entity/ha-entity-picker";
-import type { HaEntityPickerEntityFilterFunc } from "../../components/entity/ha-entity-picker";
 import "../../components/ha-date-range-picker";
 import "../../components/ha-icon-button";
 import "../../components/ha-icon-button-arrow-prev";
@@ -34,6 +33,7 @@ import { SubscribeMixin } from "../../mixins/subscribe-mixin";
 import { haStyle } from "../../resources/styles";
 import type { HomeAssistant } from "../../types";
 import "./ha-logbook";
+import type { HaEntityPickerEntityFilterFunc } from "../../data/entity";
 
 @customElement("ha-panel-logbook")
 export class HaPanelLogbook extends SubscribeMixin(LitElement) {

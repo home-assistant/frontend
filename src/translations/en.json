@@ -668,6 +668,7 @@
         "expand_area_id": "Split this area into separate devices and entities.",
         "expand_device_id": "Split this device into separate entities.",
         "expand_label_id": "Split this label into separate areas, devices and entities.",
+        "add_target": "Add target",
         "remove": "Remove",
         "remove_floor_id": "Remove floor",
         "remove_floors": "Remove floors",

@@ -26,13 +26,12 @@ import type {
 import type { PickerValueRenderer } from "../ha-picker-field";
 import "../ha-svg-icon";
 import "./state-badge";
+import type { HaEntityPickerEntityFilterFunc } from "../../data/entity";
 
 interface EntityComboBoxItem extends PickerComboBoxItem {
   domain_name?: string;
   stateObj?: HassEntity;
 }
-
-export type HaEntityPickerEntityFilterFunc = (entity: HassEntity) => boolean;
 
 const CREATE_ID = "___create-new-entity___";
 

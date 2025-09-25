@@ -34,7 +34,6 @@ import { buttonLinkStyle } from "../../resources/styles";
 import type { HomeAssistant } from "../../types";
 import { brandsUrl } from "../../util/brands-url";
 import type { HaDevicePickerDeviceFilterFunc } from "../device/ha-device-picker";
-import type { HaEntityPickerEntityFilterFunc } from "../entity/ha-entity-picker";
 import { floorDefaultIconPath } from "../ha-floor-icon";
 import "../ha-icon-button";
 import "../ha-md-list";
@@ -44,6 +43,7 @@ import type { HaMdListItem } from "../ha-md-list-item";
 import "../ha-state-icon";
 import "../ha-svg-icon";
 import { showTargetDetailsDialog } from "./dialog/show-dialog-target-details";
+import type { HaEntityPickerEntityFilterFunc } from "../../data/entity";
 
 export type TargetType = "entity" | "device" | "area" | "label" | "floor";
 

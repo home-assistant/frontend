@@ -1,8 +1,8 @@
 import { css, html, LitElement, nothing } from "lit";
 import { customElement, property } from "lit/decorators";
+import type { HaEntityPickerEntityFilterFunc } from "../../data/entity";
 import type { HomeAssistant } from "../../types";
 import type { HaDevicePickerDeviceFilterFunc } from "../device/ha-device-picker";
-import type { HaEntityPickerEntityFilterFunc } from "../entity/ha-entity-picker";
 import "../ha-expansion-panel";
 import "../ha-md-list";
 import "./ha-target-picker-item-row";

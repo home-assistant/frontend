@@ -1,11 +1,11 @@
 import type { HassServiceTarget } from "home-assistant-js-websocket";
 import { computeDomain } from "../common/entity/compute_domain";
 import type { HaDevicePickerDeviceFilterFunc } from "../components/device/ha-device-picker";
-import type { HaEntityPickerEntityFilterFunc } from "../components/entity/ha-entity-picker";
 import type { HomeAssistant } from "../types";
 import type { AreaRegistryEntry } from "./area_registry";
 import type { DeviceRegistryEntry } from "./device_registry";
 import type { EntityRegistryDisplayEntry } from "./entity_registry";
+import type { HaEntityPickerEntityFilterFunc } from "./entity";
 
 export interface ExtractFromTargetResult {
   missing_areas: string[];

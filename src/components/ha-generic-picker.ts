@@ -79,6 +79,7 @@ export class HaGenericPicker extends LitElement {
         ${!this._opened
           ? html`
               <ha-picker-field
+                id="picker"
                 type="button"
                 compact
                 aria-label=${ifDefined(this.label)}
