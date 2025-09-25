@@ -46,6 +46,8 @@ export class HuiCard extends ReactiveElement {
 
   private _listeners: MediaQueriesListener[] = [];
 
+  private _hashChangeListener?: () => void;
+
   protected createRenderRoot() {
     return this;
   }
@@ -53,11 +55,13 @@ export class HuiCard extends ReactiveElement {
   public disconnectedCallback() {
     super.disconnectedCallback();
     this._clearMediaQueries();
+    this._clearHashChangeListener();
   }
 
   public connectedCallback() {
     super.connectedCallback();
     this._listenMediaQueries();
+    this._listenHashChanges();
     this._updateVisibility();
   }
 
@@ -249,6 +253,10 @@ export class HuiCard extends ReactiveElement {
     if (changedProps.has("hass") || changedProps.has("preview")) {
       this._updateVisibility();
     }
+
+    if (changedProps.has("config")) {
+      this._listenHashChanges();
+    }
   }
 
   private _clearMediaQueries() {
@@ -273,6 +281,32 @@ export class HuiCard extends ReactiveElement {
         this._updateVisibility(hasOnlyMediaQuery && matches);
       }
     );
+  }
+
+  private _clearHashChangeListener() {
+    if (this._hashChangeListener) {
+      window.removeEventListener("hashchange", this._hashChangeListener);
+      this._hashChangeListener = undefined;
+    }
+  }
+
+  private _listenHashChanges() {
+    this._clearHashChangeListener();
+    if (!this.config?.visibility) {
+      return;
+    }
+
+    // Check if any visibility condition uses url_hash
+    const hasUrlHashCondition = this.config.visibility.some(
+      (condition) => condition.condition === "url_hash"
+    );
+
+    if (hasUrlHashCondition) {
+      this._hashChangeListener = () => {
+        this._updateVisibility();
+      };
+      window.addEventListener("hashchange", this._hashChangeListener);
+    }
   }
 
   private _updateVisibility(forceVisible?: boolean) {

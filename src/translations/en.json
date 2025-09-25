@@ -7324,6 +7324,10 @@
               "user": {
                 "label": "User"
               },
+              "url_hash": {
+                "label": "URL Hash",
+                "hash": "Hash value"
+              },
               "or": {
                 "label": "Or"
               },

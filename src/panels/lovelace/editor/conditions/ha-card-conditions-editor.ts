@@ -24,6 +24,7 @@ import "./types/ha-card-condition-numeric_state";
 import "./types/ha-card-condition-or";
 import "./types/ha-card-condition-screen";
 import "./types/ha-card-condition-state";
+import "./types/ha-card-condition-url_hash";
 import "./types/ha-card-condition-user";
 
 const UI_CONDITION = [
@@ -32,6 +33,7 @@ const UI_CONDITION = [
   "state",
   "screen",
   "user",
+  "url_hash",
   "and",
   "not",
   "or",

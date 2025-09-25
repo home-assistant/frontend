@@ -13,6 +13,7 @@ export type Condition =
   | StateCondition
   | ScreenCondition
   | UserCondition
+  | UrlHashCondition
   | OrCondition
   | AndCondition
   | NotCondition;
@@ -55,6 +56,11 @@ export interface ScreenCondition extends BaseCondition {
 export interface UserCondition extends BaseCondition {
   condition: "user";
   users?: string[];
+}
+
+export interface UrlHashCondition extends BaseCondition {
+  condition: "url_hash";
+  hash?: string;
 }
 
 export interface OrCondition extends BaseCondition {
@@ -169,6 +175,11 @@ function checkUserCondition(condition: UserCondition, hass: HomeAssistant) {
     : false;
 }
 
+function checkUrlHashCondition(condition: UrlHashCondition, _: HomeAssistant) {
+  const currentHash = window.location.hash.substring(1); // Remove the # prefix
+  return condition.hash ? currentHash === condition.hash : false;
+}
+
 function checkAndCondition(condition: AndCondition, hass: HomeAssistant) {
   if (!condition.conditions) return true;
   return checkConditionsMet(condition.conditions, hass);
@@ -201,6 +212,8 @@ export function checkConditionsMet(
           return checkScreenCondition(c, hass);
         case "user":
           return checkUserCondition(c, hass);
+        case "url_hash":
+          return checkUrlHashCondition(c, hass);
         case "location":
           return checkLocationCondition(c, hass);
         case "numeric_state":
@@ -277,6 +290,10 @@ function validateUserCondition(condition: UserCondition) {
   return condition.users != null;
 }
 
+function validateUrlHashCondition(condition: UrlHashCondition) {
+  return condition.hash != null && condition.hash !== "";
+}
+
 function validateLocationCondition(condition: LocationCondition) {
   return condition.locations != null;
 }
@@ -314,6 +331,8 @@ export function validateConditionalConfig(
           return validateScreenCondition(c);
         case "user":
           return validateUserCondition(c);
+        case "url_hash":
+          return validateUrlHashCondition(c);
         case "location":
           return validateLocationCondition(c);
         case "numeric_state":
