@@ -171,7 +171,7 @@ export default class HaAutomationSidebar extends LitElement {
         @mousedown=${this._handleMouseDown}
         @touchstart=${this._handleMouseDown}
       >
-        ${this._resizing ? html`<div class="indicator"></div>` : nothing}
+        <div class="indicator ${this._resizing ? "" : "hidden"}"></div>
       </div>
       ${this._renderContent()}
     `;
@@ -333,6 +333,15 @@ export default class HaAutomationSidebar extends LitElement {
       height: 100%;
       width: 4px;
       border-radius: var(--ha-border-radius-pill);
+      transform: scale3d(1, 1, 1);
+      opacity: 1;
+      transition:
+        transform 180ms ease-in-out,
+        opacity 180ms ease-in-out;
+    }
+    .handle .indicator.hidden {
+      transform: scale3d(0, 1, 1);
+      opacity: 0;
     }
   `;
 }
