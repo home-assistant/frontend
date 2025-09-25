@@ -323,7 +323,7 @@ export default class HaAutomationSidebar extends LitElement {
       display: flex;
       align-items: center;
       justify-content: center;
-      padding: var(--ha-card-border-radius) 0;
+      padding: var(--ha-card-border-radius) var(--ha-border-radius-square);
     }
     .handle.resizing {
       cursor: grabbing;

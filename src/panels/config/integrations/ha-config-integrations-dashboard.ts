@@ -1052,7 +1052,7 @@ class HaConfigIntegrationsDashboard extends KeyboardShortcutMixin(
         .badge {
           min-width: 20px;
           min-height: 20px;
-          border-radius: 50%;
+          border-radius: var(--ha-border-radius-circle);
           font-weight: var(--ha-font-weight-normal);
           background-color: var(--primary-color);
           display: flex;

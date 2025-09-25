@@ -160,7 +160,7 @@ export const haStyleDialog = css`
       --mdc-dialog-min-height: 100%;
       --mdc-dialog-max-height: 100%;
       --vertical-align-dialog: flex-end;
-      --ha-dialog-border-radius: 0;
+      --ha-dialog-border-radius: var(--ha-border-radius-square);
     }
   }
   .error {
@@ -175,8 +175,7 @@ export const haStyleScrollbar = css`
   }
 
   .ha-scrollbar::-webkit-scrollbar-thumb {
-    -webkit-border-radius: 4px;
-    border-radius: 4px;
+    border-radius: var(--ha-border-radius-sm);
     background: var(--scrollbar-thumb-color);
   }
 

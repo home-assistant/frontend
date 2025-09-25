@@ -782,7 +782,7 @@ export class HaTabsSubpageDataTable extends KeyboardShortcutMixin(LitElement) {
     .active-filters::before {
       background-color: var(--primary-color);
       opacity: 0.12;
-      border-radius: 4px;
+      border-radius: var(--ha-border-radius-sm);
       position: absolute;
       top: 0;
       right: 0;
@@ -809,7 +809,7 @@ export class HaTabsSubpageDataTable extends KeyboardShortcutMixin(LitElement) {
       inset-inline-start: initial;
       min-width: 16px;
       box-sizing: border-box;
-      border-radius: 50%;
+      border-radius: var(--ha-border-radius-circle);
       font-size: var(--ha-font-size-xs);
       font-weight: var(--ha-font-weight-normal);
       background-color: var(--primary-color);
@@ -887,7 +887,7 @@ export class HaTabsSubpageDataTable extends KeyboardShortcutMixin(LitElement) {
       --mdc-dialog-min-height: 100%;
       --mdc-dialog-max-height: 100%;
       --vertical-align-dialog: flex-end;
-      --ha-dialog-border-radius: 0;
+      --ha-dialog-border-radius: var(--ha-border-radius-square);
       --dialog-content-padding: 0;
     }
 

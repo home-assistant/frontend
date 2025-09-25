@@ -301,7 +301,7 @@ export class HaObjectSelector extends LitElement {
         }
         ha-md-list-item {
           border: 1px solid var(--divider-color);
-          border-radius: 8px;
+          border-radius: var(--ha-border-radius-md);
           --ha-md-list-item-gap: 0;
           --md-list-item-top-space: 0;
           --md-list-item-bottom-space: 0;

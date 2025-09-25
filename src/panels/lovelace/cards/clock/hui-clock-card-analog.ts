@@ -1,10 +1,10 @@
-import { css, html, LitElement, nothing } from "lit";
 import type { PropertyValues } from "lit";
+import { css, html, LitElement, nothing } from "lit";
 import { customElement, property, state } from "lit/decorators";
 import { classMap } from "lit/directives/class-map";
-import type { ClockCardConfig } from "../types";
-import type { HomeAssistant } from "../../../../types";
 import { resolveTimeZone } from "../../../../common/datetime/resolve-time-zone";
+import type { HomeAssistant } from "../../../../types";
+import type { ClockCardConfig } from "../types";
 
 function romanize12HourClock(num: number) {
   const numerals = [
@@ -272,7 +272,7 @@ export class HuiClockCardAnalog extends LitElement {
 
     .dial-border {
       border: 2px solid var(--divider-color);
-      border-radius: 50%;
+      border-radius: var(--ha-border-radius-circle);
     }
 
     .tick {
@@ -346,7 +346,7 @@ export class HuiClockCardAnalog extends LitElement {
       left: 50%;
       width: 8px;
       height: 8px;
-      border-radius: 50%;
+      border-radius: var(--ha-border-radius-circle);
       background: var(--primary-text-color);
       transform: translate(-50%, -50%);
       z-index: 3;

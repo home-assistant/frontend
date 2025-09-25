@@ -35,7 +35,10 @@ export class HaTooltip extends Tooltip {
             var(--ha-line-height-condensed)
           );
           --wa-tooltip-padding: 8px;
-          --wa-tooltip-border-radius: var(--ha-tooltip-border-radius, 4px);
+          --wa-tooltip-border-radius: var(
+            --ha-tooltip-border-radius,
+            var(--ha-border-radius-sm)
+          );
           --wa-tooltip-arrow-size: var(--ha-tooltip-arrow-size, 8px);
           --wa-z-index-tooltip: var(--ha-tooltip-z-index, 1000);
         }

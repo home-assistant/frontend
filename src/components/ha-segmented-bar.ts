@@ -104,7 +104,7 @@ class HaSegmentedBar extends LitElement {
     .bar {
       display: flex;
       overflow: hidden;
-      border-radius: var(--ha-bar-border-radius, 4px);
+      border-radius: var(--ha-bar-border-radius, var(--ha-border-radius-sm));
       width: 100%;
       height: 12px;
       margin: 2px 0;
@@ -137,7 +137,7 @@ class HaSegmentedBar extends LitElement {
     .legend li .bullet {
       width: 12px;
       height: 12px;
-      border-radius: 50%;
+      border-radius: var(--ha-border-radius-circle);
     }
     .spacer {
       flex: 1;

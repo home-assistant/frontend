@@ -2,16 +2,16 @@ import {
   mdiArrowDown,
   mdiArrowUp,
   mdiClose,
-  mdiTableCog,
   mdiFormatListChecks,
   mdiMenuDown,
   mdiSlopeUphill,
+  mdiTableCog,
   mdiUnfoldLessHorizontal,
   mdiUnfoldMoreHorizontal,
 } from "@mdi/js";
 
 import type { HassEntity } from "home-assistant-js-websocket";
-import { type CSSResultGroup, LitElement, css, html, nothing } from "lit";
+import { css, type CSSResultGroup, html, LitElement, nothing } from "lit";
 import { customElement, property, query, state } from "lit/decorators";
 import { classMap } from "lit/directives/class-map";
 import memoizeOne from "memoize-one";
@@ -20,8 +20,6 @@ import { fireEvent } from "../../../common/dom/fire_event";
 import { computeStateName } from "../../../common/entity/compute_state_name";
 import type { LocalizeFunc } from "../../../common/translations/localize";
 import "../../../components/chips/ha-assist-chip";
-import "../../../components/ha-md-divider";
-import "../../../components/ha-button";
 import "../../../components/data-table/ha-data-table";
 import type {
   DataTableColumnContainer,
@@ -30,8 +28,10 @@ import type {
   SortingDirection,
 } from "../../../components/data-table/ha-data-table";
 import { showDataTableSettingsDialog } from "../../../components/data-table/show-dialog-data-table-settings";
-import "../../../components/ha-md-button-menu";
+import "../../../components/ha-button";
 import "../../../components/ha-dialog";
+import "../../../components/ha-md-button-menu";
+import "../../../components/ha-md-divider";
 import type { HaMdMenu } from "../../../components/ha-md-menu";
 import "../../../components/ha-md-menu-item";
 import "../../../components/search-input-outlined";
@@ -46,12 +46,12 @@ import {
   updateStatisticsIssues,
   validateStatistics,
 } from "../../../data/recorder";
+import { KeyboardShortcutMixin } from "../../../mixins/keyboard-shortcut-mixin";
 import { haStyle } from "../../../resources/styles";
 import type { HomeAssistant } from "../../../types";
 import { showConfirmationDialog } from "../../lovelace/custom-card-helpers";
 import { fixStatisticsIssue } from "./fix-statistics";
 import { showStatisticsAdjustSumDialog } from "./show-dialog-statistics-adjust-sum";
-import { KeyboardShortcutMixin } from "../../../mixins/keyboard-shortcut-mixin";
 
 const FIX_ISSUES_ORDER: Record<StatisticsValidationResult["type"], number> = {
   no_state: 0,
@@ -807,7 +807,7 @@ class HaPanelDevStatistics extends KeyboardShortcutMixin(LitElement) {
           --mdc-dialog-min-height: 100%;
           --mdc-dialog-max-height: 100%;
           --vertical-align-dialog: flex-end;
-          --ha-dialog-border-radius: 0;
+          --ha-dialog-border-radius: var(--ha-border-radius-square);
           --dialog-content-padding: 0;
         }
 

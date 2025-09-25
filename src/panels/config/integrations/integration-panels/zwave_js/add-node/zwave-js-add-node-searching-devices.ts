@@ -133,7 +133,7 @@ export class ZWaveJsAddNodeSearchingDevices extends WakeLockMixin(LitElement) {
       height: 128px;
     }
     .searching-spinner .circle {
-      border-radius: 50%;
+      border-radius: var(--ha-border-radius-circle);
       background-color: var(--light-primary-color);
       position: absolute;
       width: calc(100% - 32px);

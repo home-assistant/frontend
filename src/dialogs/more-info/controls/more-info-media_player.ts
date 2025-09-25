@@ -461,7 +461,7 @@ class MoreInfoMediaPlayer extends LitElement {
       max-width: 100%;
       max-height: 100%;
       object-fit: cover;
-      border-radius: 4px;
+      border-radius: var(--ha-border-radius-sm);
       box-shadow: 0 2px 8px rgba(0, 0, 0, 0.15);
       position: relative;
       display: flex;
@@ -535,7 +535,7 @@ class MoreInfoMediaPlayer extends LitElement {
       align-items: center;
       height: 16px;
       min-width: 8px;
-      border-radius: 10px;
+      border-radius: var(--ha-border-radius-md);
       font-weight: var(--ha-font-weight-normal);
       font-size: var(--ha-font-size-xs);
       background-color: var(--primary-color);

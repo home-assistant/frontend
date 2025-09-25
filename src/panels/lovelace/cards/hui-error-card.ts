@@ -83,7 +83,7 @@ export class HuiErrorCard extends LitElement implements LovelaceCard {
       opacity: 0.12;
       pointer-events: none;
       content: "";
-      border-radius: var(--ha-card-border-radius, 12px);
+      border-radius: var(--ha-card-border-radius, var(--ha-border-radius-lg));
     }
     .header {
       display: flex;
