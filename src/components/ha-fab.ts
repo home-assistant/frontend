@@ -26,6 +26,11 @@ export class HaFab extends FabBase {
           var(--ha-border-radius-pill)
         );
       }
+      :host .mdc-fab--extended .mdc-fab__label {
+        white-space: var(--ha-fab-label-white-space, nowrap);
+        word-break: var(--ha-fab-label-word-break, normal);
+        text-align: var(--ha-fab-label-text-align, center);
+      }
       :host .mdc-fab.mdc-fab--extended .ripple {
         border-radius: var(
           --ha-button-border-radius,
