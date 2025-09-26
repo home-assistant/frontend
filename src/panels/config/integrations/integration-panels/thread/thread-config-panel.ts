@@ -742,6 +742,12 @@ export class ThreadConfigPanel extends SubscribeMixin(LitElement) {
         display: flex;
         justify-content: space-between;
       }
+      ha-fab {
+        --ha-fab-label-white-space: normal;
+        --ha-fab-label-word-break: break-word;
+        --ha-fab-label-text-align: left;
+        --mdc-icon-size: 24px;
+      }
     `,
   ];
 }
