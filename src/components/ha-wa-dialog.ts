@@ -86,7 +86,7 @@ export class HaWaDialog extends LitElement {
             <slot name="subtitle" slot="subtitle">
               <span>${this.headerSubtitle}</span>
             </slot>
-            <slot name="actionItems" slot="actionItems"> </slot>
+            <slot name="actionItems" slot="actionItems"></slot>
           </ha-dialog-header>
         </slot>
         <div class="body ha-scrollbar">
