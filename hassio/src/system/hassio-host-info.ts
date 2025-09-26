@@ -7,10 +7,10 @@ import { atLeastVersion } from "../../../src/common/config/version";
 import { fireEvent } from "../../../src/common/dom/fire_event";
 import "../../../src/components/buttons/ha-progress-button";
 import "../../../src/components/ha-button";
-import "../../../src/components/ha-button-menu";
+import "../../../src/components/ha-md-button-menu";
+import "../../../src/components/ha-md-menu-item";
 import "../../../src/components/ha-card";
 import "../../../src/components/ha-icon-button";
-import "../../../src/components/ha-list-item";
 import "../../../src/components/ha-settings-row";
 import {
   extractApiErrorMessage,
@@ -183,42 +183,42 @@ class HassioHostInfo extends LitElement {
               `
             : ""}
 
-          <ha-button-menu>
+          <ha-md-button-menu positioning="popover">
             <ha-icon-button
               .label=${this.supervisor.localize("common.menu")}
               .path=${mdiDotsVertical}
               slot="trigger"
             ></ha-icon-button>
-            <ha-list-item
+            <ha-md-menu-item
               .action=${"hardware"}
               @click=${this._handleMenuAction}
             >
               ${this.supervisor.localize("system.host.hardware")}
-            </ha-list-item>
+            </ha-md-menu-item>
             ${this.supervisor.host.features.includes("haos")
               ? html`
-                  <ha-list-item
+                  <ha-md-menu-item
                     .action=${"import_from_usb"}
                     @click=${this._handleMenuAction}
                   >
                     ${this.supervisor.localize("system.host.import_from_usb")}
-                  </ha-list-item>
+                  </ha-md-menu-item>
                   ${this.supervisor.host.features.includes("os_agent") &&
                   atLeastVersion(this.supervisor.host.agent_version, 1, 2, 0)
                     ? html`
-                        <ha-list-item
+                        <ha-md-menu-item
                           .action=${"move_datadisk"}
                           @click=${this._handleMenuAction}
                         >
                           ${this.supervisor.localize(
                             "system.host.move_datadisk"
                           )}
-                        </ha-list-item>
+                        </ha-md-menu-item>
                       `
                     : ""}
                 `
               : ""}
-          </ha-button-menu>
+          </ha-md-button-menu>
         </div>
       </ha-card>
     `;
@@ -431,9 +431,8 @@ class HassioHostInfo extends LitElement {
           color: var(--secondary-text-color);
         }
 
-        ha-button-menu {
+        ha-md-button-menu {
           color: var(--secondary-text-color);
-          --mdc-menu-min-width: 200px;
         }
         ha-list-item ha-svg-icon {
           color: var(--secondary-text-color);
