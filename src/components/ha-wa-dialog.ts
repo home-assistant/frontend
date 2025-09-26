@@ -149,7 +149,7 @@ export class HaWaDialog extends LitElement {
     ev.stopPropagation();
   };
 
-  static override styles = css`
+  static styles = css`
     :host([scrolled]) wa-dialog::part(header) {
       max-width: 100%;
       border-bottom: 1px solid
