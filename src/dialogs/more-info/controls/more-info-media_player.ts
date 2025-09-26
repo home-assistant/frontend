@@ -48,10 +48,10 @@ class MoreInfoMediaPlayer extends LitElement {
 
   @property({ attribute: false }) public stateObj?: MediaPlayerEntity;
 
-  private _formateDuration(duration: number) {
+  private _formatDuration(duration: number) {
     const hours = Math.floor(duration / 3600);
     const minutes = Math.floor((duration % 3600) / 60);
-    const seconds = duration % 60;
+    const seconds = Math.floor(duration % 60);
     return formatDurationDigital(this.hass.locale, {
       hours,
       minutes,
@@ -260,12 +260,12 @@ class MoreInfoMediaPlayer extends LitElement {
     const controls = computeMediaControls(stateObj, true);
     const coverUrl = stateObj.attributes.entity_picture || "";
     const playerObj = new HassMediaPlayerEntity(this.hass, this.stateObj);
-    const position = Math.floor(playerObj.currentProgress) || 0;
-    const duration = stateObj.attributes.media_duration || 0;
-    const remaining = duration - position;
-    const durationFormated =
-      remaining > 0 ? this._formateDuration(remaining) : 0;
-    const postionFormated = this._formateDuration(position);
+
+    const position = Math.max(Math.floor(playerObj.currentProgress || 0), 0);
+    const duration = Math.max(stateObj.attributes.media_duration || 0, 0);
+    const remaining = Math.max(duration - position, 0);
+    const remainingFormatted = this._formatDuration(remaining);
+    const positionFormatted = this._formatDuration(position);
     const primaryTitle = playerObj.primaryTitle;
     const secondaryTitle = playerObj.secondaryTitle;
     const turnOn = controls?.find((c) => c.action === "turn_on");
@@ -323,11 +323,10 @@ class MoreInfoMediaPlayer extends LitElement {
                 @change=${this._handleMediaSeekChanged}
                 ?disabled=${!stateActive(stateObj) ||
                 !supportsFeature(stateObj, MediaPlayerEntityFeature.SEEK)}
-              ></ha-slider>
-              <div class="position-info-row">
-                <span class="position-time">${postionFormated}</span>
-                <span class="duration-time">${durationFormated}</span>
-              </div>
+              >
+                <span slot="reference">${positionFormatted}</span>
+                <span slot="reference">${remainingFormatted}</span>
+              </ha-slider>
             </div>
           `
         : nothing}
@@ -548,13 +547,8 @@ class MoreInfoMediaPlayer extends LitElement {
       flex-direction: column;
     }
 
-    .position-info-row {
-      display: flex;
-      flex-direction: row;
-      justify-content: space-between;
+    .position-bar ha-slider::part(references) {
       color: var(--secondary-text-color);
-      padding: 0 8px;
-      font-size: var(--ha-font-size-s);
     }
 
     .media-info-row {

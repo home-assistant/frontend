@@ -8217,7 +8217,12 @@
               "water-heater-operation-modes": {
                 "label": "Water heater operation modes",
                 "operation_modes": "Operation modes",
-                "customize_modes": "Customize operation modes"
+                "customize_modes": "Customize operation modes",
+                "style": "[%key:ui::panel::lovelace::editor::features::types::climate-preset-modes::style%]",
+                "style_list": {
+                  "dropdown": "[%key:ui::panel::lovelace::editor::features::types::climate-preset-modes::style_list::dropdown%]",
+                  "icons": "[%key:ui::panel::lovelace::editor::features::types::climate-preset-modes::style_list::icons%]"
+                }
               },
               "lawn-mower-commands": {
                 "label": "Lawn mower commands",
