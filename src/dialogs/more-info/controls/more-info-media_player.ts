@@ -260,11 +260,11 @@ class MoreInfoMediaPlayer extends LitElement {
     const controls = computeMediaControls(stateObj, true);
     const coverUrl = stateObj.attributes.entity_picture || "";
     const playerObj = new HassMediaPlayerEntity(this.hass, this.stateObj);
-    const position = Math.floor(playerObj.currentProgress) || 0;
-    const duration = stateObj.attributes.media_duration || 0;
-    const remaining = duration - position;
-    const remainingFormatted =
-      remaining > 0 ? this._formatDuration(remaining) : 0;
+
+    const position = Math.max(Math.floor(playerObj.currentProgress || 0), 0);
+    const duration = Math.max(stateObj.attributes.media_duration || 0, 0);
+    const remaining = Math.max(duration - position, 0);
+    const remainingFormatted = this._formatDuration(remaining);
     const positionFormatted = this._formatDuration(position);
     const primaryTitle = playerObj.primaryTitle;
     const secondaryTitle = playerObj.secondaryTitle;
