@@ -10,16 +10,6 @@ export interface ShortcutManager {
    *
    * @param shortcuts - Key combinations mapped to handler functions.
    *   Uses tinykeys syntax. See https://github.com/jamiebuilds/tinykeys#usage.
-   * @example
-   * ```ts
-   * const manager = createShortcutManager(hass);
-   * manager.add({
-   *   "e": () => openEntities(),
-   *   "Shift+?": () => openShortcutsDialog(),
-   *   "KeyE": () => openEntities(), // Non-Latin fallback
-   * });
-   * // Later: manager.remove(["e", "Shift+?"]); // Remove specific shortcuts
-   * ```
    */
   add: (shortcuts: Record<string, ShortcutHandler>) => void;
 
@@ -29,14 +19,6 @@ export interface ShortcutManager {
    * @param keys - Optional array of specific key combinations to remove. If provided,
    *   only shortcuts matching these keys will be removed. If omitted, all shortcuts
    *   from this manager will be removed.
-   * @example
-   * ```ts
-   * // Remove specific shortcuts
-   * manager.remove(["e", "Shift+?"]);
-   *
-   * // Remove all shortcuts
-   * manager.remove();
-   * ```
    */
   remove: (keys?: string[]) => void;
 }
