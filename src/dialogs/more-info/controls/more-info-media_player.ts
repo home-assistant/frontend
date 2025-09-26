@@ -263,7 +263,7 @@ class MoreInfoMediaPlayer extends LitElement {
     const position = Math.floor(playerObj.currentProgress) || 0;
     const duration = stateObj.attributes.media_duration || 0;
     const remaining = duration - position;
-    const durationFormatted =
+    const remainingFormatted =
       remaining > 0 ? this._formatDuration(remaining) : 0;
     const positionFormatted = this._formatDuration(position);
     const primaryTitle = playerObj.primaryTitle;
@@ -325,7 +325,7 @@ class MoreInfoMediaPlayer extends LitElement {
                 !supportsFeature(stateObj, MediaPlayerEntityFeature.SEEK)}
               >
                 <span slot="reference">${positionFormatted}</span>
-                <span slot="reference">${durationFormatted}</span>
+                <span slot="reference">${remainingFormatted}</span>
               </ha-slider>
             </div>
           `
