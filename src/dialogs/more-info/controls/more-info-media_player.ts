@@ -263,7 +263,7 @@ class MoreInfoMediaPlayer extends LitElement {
     const position = Math.floor(playerObj.currentProgress) || 0;
     const duration = stateObj.attributes.media_duration || 0;
     const remaining = duration - position;
-    const durationFormatted =
+    const remainingFormatted =
       remaining > 0 ? this._formatDuration(remaining) : 0;
     const positionFormatted = this._formatDuration(position);
     const primaryTitle = playerObj.primaryTitle;
@@ -323,11 +323,10 @@ class MoreInfoMediaPlayer extends LitElement {
                 @change=${this._handleMediaSeekChanged}
                 ?disabled=${!stateActive(stateObj) ||
                 !supportsFeature(stateObj, MediaPlayerEntityFeature.SEEK)}
-              ></ha-slider>
-              <div class="position-info-row">
-                <span class="position-time">${positionFormatted}</span>
-                <span class="duration-time">${durationFormatted}</span>
-              </div>
+              >
+                <span slot="reference">${positionFormatted}</span>
+                <span slot="reference">${remainingFormatted}</span>
+              </ha-slider>
             </div>
           `
         : nothing}
@@ -548,13 +547,8 @@ class MoreInfoMediaPlayer extends LitElement {
       flex-direction: column;
     }
 
-    .position-info-row {
-      display: flex;
-      flex-direction: row;
-      justify-content: space-between;
+    .position-bar ha-slider::part(references) {
       color: var(--secondary-text-color);
-      padding: 0 8px;
-      font-size: var(--ha-font-size-s);
     }
 
     .media-info-row {
