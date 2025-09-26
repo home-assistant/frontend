@@ -323,11 +323,10 @@ class MoreInfoMediaPlayer extends LitElement {
                 @change=${this._handleMediaSeekChanged}
                 ?disabled=${!stateActive(stateObj) ||
                 !supportsFeature(stateObj, MediaPlayerEntityFeature.SEEK)}
-              ></ha-slider>
-              <div class="position-info-row">
-                <span class="position-time">${positionFormatted}</span>
-                <span class="duration-time">${durationFormatted}</span>
-              </div>
+              >
+                <span slot="reference">${positionFormatted}</span>
+                <span slot="reference">${durationFormatted}</span>
+              </ha-slider>
             </div>
           `
         : nothing}
@@ -548,13 +547,8 @@ class MoreInfoMediaPlayer extends LitElement {
       flex-direction: column;
     }
 
-    .position-info-row {
-      display: flex;
-      flex-direction: row;
-      justify-content: space-between;
+    .position-bar ha-slider::part(references) {
       color: var(--secondary-text-color);
-      padding: 0 8px;
-      font-size: var(--ha-font-size-s);
     }
 
     .media-info-row {
