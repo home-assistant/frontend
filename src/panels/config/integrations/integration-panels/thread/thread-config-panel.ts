@@ -143,7 +143,9 @@ export class ThreadConfigPanel extends SubscribeMixin(LitElement) {
               slot="fab"
               @click=${this._importExternalThreadCredentials}
               extended
-              label="Send credentials to Home Assistant"
+              .label=${this.hass.localize(
+                "ui.panel.config.thread.thread_network_send_credentials_ha"
+              )}
               ><ha-svg-icon slot="icon" .path=${mdiCellphoneKey}></ha-svg-icon
             ></ha-fab>`
           : nothing}
@@ -310,7 +312,9 @@ export class ThreadConfigPanel extends SubscribeMixin(LitElement) {
             <ha-button
               .datasetId=${network.dataset.dataset_id}
               @click=${this._setPreferred}
-              >Make preferred network</ha-button
+              >${this.hass.localize(
+                "ui.panel.config.thread.thread_network_make_preferred"
+              )}</ha-button
             >
           </div>`
         : ""}
@@ -322,7 +326,9 @@ export class ThreadConfigPanel extends SubscribeMixin(LitElement) {
               size="small"
               .networkDataset=${network.dataset}
               @click=${this._sendCredentials}
-              >Send credentials to phone</ha-button
+              >${this.hass.localize(
+                "ui.panel.config.thread.thread_network_send_credentials_phone"
+              )}</ha-button
             >
           </div>`
         : ""}
