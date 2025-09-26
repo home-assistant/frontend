@@ -269,7 +269,7 @@ export class HaTargetPicker extends SubscribeMixin(LitElement) {
         ${!this._narrow
           ? html`
               <wa-popover
-                style="--body-width: ${this._addTargetWidth}px"
+                style="--body-width: calc(${this._addTargetWidth}px + 16px);"
                 without-arrow
                 distance="0"
                 placement="bottom"
@@ -610,6 +610,9 @@ export class HaTargetPicker extends SubscribeMixin(LitElement) {
       wa-popover::part(body) {
         width: var(--body-width);
         max-width: var(--body-width);
+        max-height: 700px;
+        height: 100vh;
+        /* TODO height should be variable if less elements are available */
       }
 
       ${unsafeCSS(chipStyles)}

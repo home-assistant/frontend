@@ -44,7 +44,7 @@ class DialogTargetPicker extends LitElement implements HassDialog {
     }
 
     return html`
-      <ha-md-dialog open @closed=${this._dialogClosed}>
+      <ha-md-dialog flexcontent open @closed=${this._dialogClosed}>
         <ha-dialog-header slot="headline">
           <ha-icon-button
             slot="navigationIcon"
@@ -54,8 +54,9 @@ class DialogTargetPicker extends LitElement implements HassDialog {
           ></ha-icon-button>
           <span slot="title">Pick target</span>
         </ha-dialog-header>
-        <div slot="content">
+        <div class="content" slot="content">
           <ha-target-picker-selector
+            mode="dialog"
             autofocus
             .hass=${this.hass}
             @filter-types-changed=${this._handleUpdatePickerFilters}
@@ -77,8 +78,17 @@ class DialogTargetPicker extends LitElement implements HassDialog {
       --md-dialog-container-shape: 0;
       min-width: 100%;
       min-height: 100%;
-      --dialog-content-padding: 8px 24px
-        max(var(--safe-area-inset-bottom, 0px), 32px);
+      --dialog-content-padding: 8px 0 0 0;
+    }
+
+    .content {
+      display: flex;
+      flex-direction: column;
+      flex: 1;
+    }
+
+    ha-target-picker-selector {
+      flex: 1;
     }
   `;
 }

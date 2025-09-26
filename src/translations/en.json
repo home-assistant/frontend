@@ -687,6 +687,8 @@
         "devices_count": "{count} {count, plural,\n one {device}\n other {devices}\n}",
         "entities_count": "{count} {count, plural,\n one {entity}\n other {entities}\n}",
         "target_details": "Target details",
+        "no_targets": "No targets",
+        "no_target_found": "No target found for term {term}",
         "selected": {
           "entity": "Entities: {count}",
           "device": "Devices: {count}",
@@ -696,9 +698,13 @@
         },
         "type": {
           "area": "Area",
+          "areas": "Areas",
           "device": "Device",
+          "devices": "Devices",
           "entity": "Entity",
+          "entities": "Entities",
           "label": "Label",
+          "labels": "Labels",
           "floor": "Floor"
         }
       },

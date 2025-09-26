@@ -1,7 +1,14 @@
+import type { LitVirtualizer } from "@lit-labs/virtualizer";
 import { mdiCheck, mdiTextureBox } from "@mdi/js";
 import Fuse from "fuse.js";
 import { css, html, LitElement, nothing, type PropertyValues } from "lit";
-import { customElement, property, state } from "lit/decorators";
+import {
+  customElement,
+  eventOptions,
+  property,
+  query,
+  state,
+} from "lit/decorators";
 import { styleMap } from "lit/directives/style-map";
 import memoizeOne from "memoize-one";
 import { fireEvent } from "../../common/dom/fire_event";
@@ -11,14 +18,20 @@ import {
   type AreaFloorValue,
   type FloorComboBoxItem,
 } from "../../data/area_floor";
+import {
+  getEntities,
+  type EntityComboBoxItem,
+} from "../../data/entity_registry";
 import { HaFuse } from "../../resources/fuse";
 import { haStyleScrollbar } from "../../resources/styles";
 import { loadVirtualizer } from "../../resources/virtualizer";
 import type { HomeAssistant } from "../../types";
+import "../entity/state-badge";
 import "../ha-button";
 import "../ha-combo-box-item";
 import "../ha-floor-icon";
 import "../ha-md-list";
+import type { PickerComboBoxItem } from "../ha-picker-combo-box";
 import "../ha-svg-icon";
 import "../ha-textfield";
 import type { HaTextField } from "../ha-textfield";
@@ -36,7 +49,13 @@ export class HaTargetPickerSelector extends LitElement {
   @property({ attribute: false }) public filterTypes: TargetTypeFloorless[] =
     [];
 
+  @property({ reflect: true }) public mode: "popover" | "dialog" = "popover";
+
+  @query("lit-virtualizer") private _virtualizerElement?: LitVirtualizer;
+
   @state() private _searchTerm = "";
+
+  @state() private _listScrolled = false;
 
   static shadowRootOptions = {
     ...LitElement.shadowRootOptions,
@@ -63,6 +82,8 @@ export class HaTargetPickerSelector extends LitElement {
         scroller
         .items=${this._getItems()}
         .renderItem=${this._renderRow}
+        @scroll=${this._onScrollList}
+        class=${this._listScrolled ? "scrolled" : ""}
       >
       </lit-virtualizer>
     `;
@@ -106,6 +127,9 @@ export class HaTargetPickerSelector extends LitElement {
     }
 
     if (typeof item === "string") {
+      if (item === "padding") {
+        return html`<div class="bottom-padding"></div>`;
+      }
       return html`<div class="title">${item}</div>`;
     }
 
@@ -113,11 +137,35 @@ export class HaTargetPickerSelector extends LitElement {
       return this._areaRowRenderer(item);
     }
 
-    return nothing;
+    if ("domain" in item) {
+      // TODO device row
+    }
+
+    if ("stateObj" in item) {
+      return this._entityRowRenderer(item);
+    }
+
+    // label or empty
+    return html`
+      <ha-combo-box-item type="button" compact>
+        ${item.icon
+          ? html`<ha-icon slot="start" .icon=${item.icon}></ha-icon>`
+          : item.icon_path
+            ? html`<ha-svg-icon
+                slot="start"
+                .path=${item.icon_path}
+              ></ha-svg-icon>`
+            : nothing}
+        <span slot="headline">${item.primary}</span>
+        ${item.secondary
+          ? html`<span slot="supporting-text">${item.secondary}</span>`
+          : nothing}
+      </ha-combo-box-item>
+    `;
   };
 
   private _filterAreasAndFloors(items: FloorComboBoxItem[]) {
-    const index = this._fuseIndex(items);
+    const index = this._areaFuseIndex(items);
     const fuse = new HaFuse(items, { shouldSort: false }, index);
 
     const results = fuse.multiTermsSearch(this._searchTerm);
@@ -129,10 +177,54 @@ export class HaTargetPickerSelector extends LitElement {
     return filteredItems;
   }
 
+  private _filterEntities(items: EntityComboBoxItem[]) {
+    const fuseIndex = this._entityFuseIndex(items);
+    const fuse = new HaFuse(items, { shouldSort: false }, fuseIndex);
+
+    const results = fuse.multiTermsSearch(this._searchTerm);
+    let filteredItems = items as EntityComboBoxItem[];
+    if (results) {
+      filteredItems = results.map((result) => result.item);
+    }
+
+    // If there is exact match for entity id, put it first
+    const index = filteredItems.findIndex(
+      (item) => item.stateObj?.entity_id === this._searchTerm
+    );
+    if (index === -1) {
+      return filteredItems;
+    }
+
+    const [exactMatch] = filteredItems.splice(index, 1);
+    filteredItems.unshift(exactMatch);
+    return filteredItems;
+  }
+
   private _getItems = () => {
-    const items: (string | FloorComboBoxItem)[] = [];
+    const items: (
+      | string
+      | FloorComboBoxItem
+      | EntityComboBoxItem
+      | PickerComboBoxItem
+    )[] = [];
+
+    if (this.filterTypes.length === 0 || this.filterTypes.includes("entity")) {
+      let entities = getEntities(this.hass);
+
+      if (this._searchTerm) {
+        entities = this._filterEntities(entities);
+      }
+
+      if (entities.length > 0 && this.filterTypes.length !== 1) {
+        items.push(
+          this.hass.localize("ui.components.target-picker.type.entities")
+        ); // title
+      }
+
+      items.push(...entities);
+    }
+
     if (this.filterTypes.length === 0 || this.filterTypes.includes("area")) {
-      items.push("Areas"); // title
       let areasAndFloors = getAreasAndFloors(
         this.hass.states,
         this.hass.floors,
@@ -148,13 +240,58 @@ export class HaTargetPickerSelector extends LitElement {
         areasAndFloors = this._filterAreasAndFloors(areasAndFloors);
       }
 
-      items.push(...areasAndFloors);
+      if (areasAndFloors.length > 0 && this.filterTypes.length !== 1) {
+        items.push(
+          this.hass.localize("ui.components.target-picker.type.areas")
+        ); // title
+      }
+
+      items.push(
+        ...areasAndFloors.map((item, index) => {
+          const nextItem = areasAndFloors[index + 1];
+
+          if (
+            !nextItem ||
+            (item.type === "area" && nextItem.type === "floor")
+          ) {
+            return {
+              ...item,
+              last: true,
+            };
+          }
+
+          return item;
+        })
+      );
+    }
+
+    if (this._searchTerm && items.length === 0) {
+      items.push({
+        id: "empty",
+        primary: this.hass.localize(
+          "ui.components.target-picker.no_target_found",
+          { term: html`<span class="search-term">${this._searchTerm}</span>` }
+        ),
+      });
+    } else if (items.length === 0) {
+      items.push({
+        id: "empty",
+        primary: this.hass.localize("ui.components.target-picker.no_targets"),
+      });
+    }
+
+    if (this.mode === "dialog") {
+      items.push("padding"); // padding for safe area inset
     }
 
     return items;
   };
 
-  private _fuseIndex = memoizeOne((states: FloorComboBoxItem[]) =>
+  private _areaFuseIndex = memoizeOne((states: FloorComboBoxItem[]) =>
+    Fuse.createIndex(["search_labels"], states)
+  );
+
+  private _entityFuseIndex = memoizeOne((states: EntityComboBoxItem[]) =>
     Fuse.createIndex(["search_labels"], states)
   );
 
@@ -187,7 +324,7 @@ export class HaTargetPickerSelector extends LitElement {
                   right: rtl ? "4px" : undefined,
                   transform: rtl ? "scaleX(-1)" : "",
                 })}
-                .end=${false}
+                .end=${item.last}
                 slot="start"
               ></ha-tree-indicator>
             `
@@ -208,6 +345,52 @@ export class HaTargetPickerSelector extends LitElement {
     `;
   };
 
+  private get _showEntityId() {
+    return this.hass.userData?.showEntityIdPicker;
+  }
+
+  private _entityRowRenderer = (item) => {
+    const showEntityId = this._showEntityId;
+
+    return html`
+      <ha-combo-box-item type="button" compact>
+        ${item.icon_path
+          ? html`
+              <ha-svg-icon
+                slot="start"
+                style="margin: 0 4px"
+                .path=${item.icon_path}
+              ></ha-svg-icon>
+            `
+          : html`
+              <state-badge
+                slot="start"
+                .stateObj=${item.stateObj}
+                .hass=${this.hass}
+              ></state-badge>
+            `}
+        <span slot="headline">${item.primary}</span>
+        ${item.secondary
+          ? html`<span slot="supporting-text">${item.secondary}</span>`
+          : nothing}
+        ${item.stateObj && showEntityId
+          ? html`
+              <span slot="supporting-text" class="code">
+                ${item.stateObj.entity_id}
+              </span>
+            `
+          : nothing}
+        ${item.domain_name && !showEntityId
+          ? html`
+              <div slot="trailing-supporting-text" class="domain">
+                ${item.domain_name}
+              </div>
+            `
+          : nothing}
+      </ha-combo-box-item>
+    `;
+  };
+
   private _toggleFilter(ev: any) {
     const type = ev.target.type as TargetTypeFloorless;
     if (!type) {
@@ -220,7 +403,18 @@ export class HaTargetPickerSelector extends LitElement {
       this.filterTypes = this.filterTypes.filter((t) => t !== type);
     }
 
+    // Reset scroll position when filter changes
+    if (this._virtualizerElement) {
+      this._virtualizerElement.scrollTop = 0;
+    }
+
     fireEvent(this, "filter-types-changed", this.filterTypes);
+  }
+
+  @eventOptions({ passive: true })
+  private _onScrollList(ev) {
+    const top = ev.target.scrollTop ?? 0;
+    this._listScrolled = top > 0;
   }
 
   static styles = [
@@ -231,6 +425,7 @@ export class HaTargetPickerSelector extends LitElement {
         flex-direction: column;
         gap: 12px;
         padding-top: 12px;
+        flex: 1;
       }
 
       ha-textfield {
@@ -240,6 +435,7 @@ export class HaTargetPickerSelector extends LitElement {
       .filter {
         display: flex;
         gap: 8px;
+        flex-wrap: wrap;
         padding: 0 12px;
         --ha-button-border-radius: var(--ha-border-radius-md);
       }
@@ -258,8 +454,37 @@ export class HaTargetPickerSelector extends LitElement {
         color: var(--secondary-text-color);
       }
 
+      :host([mode="dialog"]) .title {
+        padding: 4px 16px;
+      }
+
+      :host([mode="dialog"]) .filter,
+      :host([mode="dialog"]) ha-textfield {
+        padding: 0 16px;
+      }
+
       ha-combo-box-item {
         width: 100%;
+      }
+
+      lit-virtualizer {
+        flex: 1;
+        box-shadow: none;
+        transition: box-shadow 180ms ease-in-out;
+      }
+
+      lit-virtualizer.scrolled {
+        border-top: 1px solid var(--ha-color-border-neutral-quiet);
+      }
+
+      .bottom-padding {
+        height: max(var(--safe-area-inset-bottom, 0px), 32px);
+        width: 100%;
+      }
+
+      .search-term {
+        color: var(--primary-color);
+        font-weight: var(--ha-font-weight-medium);
       }
     `,
   ];
