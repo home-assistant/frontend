@@ -283,6 +283,14 @@ export class DialogLovelaceDashboardDetail extends LitElement {
       }
       this.closeDialog();
     } catch (err: any) {
+      if (err.code === "invalid_format") {
+        this._error = {
+          url_path: this.hass.localize(
+            "ui.panel.config.lovelace.dashboards.detail.url_unique_error_msg"
+          ),
+        };
+        return;
+      }
       this._error = { base: err?.message || "Unknown error" };
     } finally {
       this._submitting = false;

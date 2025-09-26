@@ -3426,6 +3426,7 @@
               "title_required": "Title is required.",
               "url": "URL",
               "url_error_msg": "The URL should contain a - and cannot contain spaces or special characters, except for _ and -",
+              "url_unique_error_msg": "This URL is already in use. Please choose a different one",
               "require_admin": "Admin only",
               "delete": "Delete",
               "update": "Update",
