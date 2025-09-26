@@ -11,7 +11,11 @@ export const expandHex = (hex: string): string => {
   if (!color) {
     throw new Error(`Invalid hex color: ${hex}`);
   }
-  return (formatHex(color) || "#000000").replace("#", "");
+  const formattedColor = formatHex(color);
+  if (!formattedColor) {
+    throw new Error(`Could not format hex color: ${hex}`);
+  }
+  return formattedColor.replace("#", "");
 };
 
 /**
