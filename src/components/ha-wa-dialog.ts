@@ -65,7 +65,7 @@ export class HaWaDialog extends LitElement {
       <wa-dialog
         .open=${this._open}
         .lightDismiss=${this.scrimDismissable}
-        .withoutHeader=${true}
+        without-header
         @wa-show=${this._handleShow}
         @wa-after-hide=${this._handleAfterHide}
       >
