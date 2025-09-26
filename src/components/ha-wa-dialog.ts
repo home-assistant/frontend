@@ -128,9 +128,9 @@ export class HaWaDialog extends LitElement {
   };
 
   private _onKeyDown = (ev: KeyboardEvent) => {
-    if (!this._open) return;
-    if (ev.defaultPrevented) return;
-    if (ev.key !== "Enter") return;
+    if (!this._open || ev.defaultPrevented || ev.key !== "Enter") {
+      return;
+    }
 
     const footer = this.querySelector("ha-dialog-footer") as HTMLElement | null;
     if (!footer) return;
