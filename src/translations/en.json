@@ -5838,7 +5838,8 @@
           "thread_network_info": "Thread network information",
           "thread_network_delete_credentials": "Delete Thread network credentials",
           "thread_network_send_credentials_ha": "Send credentials to Home Assistant",
-          "thread_network_send_credentials_phone": "Send credentials to phone"
+          "thread_network_send_credentials_phone": "Send credentials to phone",
+          "thread_network_make_preferred": "Make preferred network"
         },
         "ssdp": {
           "name": "Name",

@@ -312,7 +312,9 @@ export class ThreadConfigPanel extends SubscribeMixin(LitElement) {
             <ha-button
               .datasetId=${network.dataset.dataset_id}
               @click=${this._setPreferred}
-              >Make preferred network</ha-button
+              >${this.hass.localize(
+                "ui.panel.config.thread.thread_network_make_preferred"
+              )}</ha-button
             >
           </div>`
         : ""}
