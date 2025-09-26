@@ -3416,6 +3416,8 @@
                 "url": "Open"
               },
               "open": "Open",
+              "edit": "Edit",
+              "delete": "Delete",
               "add_dashboard": "Add dashboard"
             },
             "confirm_delete_title": "Delete {dashboard_title}?",
