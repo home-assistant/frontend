@@ -503,7 +503,7 @@ export class HaConfigLovelaceDashboards extends LitElement {
     }
     try {
       await deleteDashboard(this.hass!, dashboard!.id);
-      this._dashboards = this._dashboards!.filter((res) => res !== dashboard);
+      this._dashboards = this._dashboards.filter((res) => res !== dashboard);
       return true;
     } catch (_err: any) {
       return false;
