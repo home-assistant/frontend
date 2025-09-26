@@ -1,4 +1,3 @@
-import { fireEvent } from "../common/dom/fire_event";
 import type { HomeAssistant, PanelInfo } from "../types";
 
 /** Panel to show when no panel is picked. */
@@ -10,16 +9,9 @@ export const getStorageDefaultPanelUrlPath = (): string => {
   return defaultPanel ? JSON.parse(defaultPanel) : DEFAULT_PANEL;
 };
 
-export const setDefaultPanel = (
-  element: HTMLElement,
-  urlPath: string
-): void => {
-  fireEvent(element, "hass-default-panel", { defaultPanel: urlPath });
-};
-
 export const getDefaultPanel = (hass: HomeAssistant): PanelInfo =>
-  hass.panels[hass.defaultPanel]
-    ? hass.panels[hass.defaultPanel]
+  hass.panels[hass.sidebar.defaultPanel]
+    ? hass.panels[hass.sidebar.defaultPanel]
     : hass.panels[DEFAULT_PANEL];
 
 export const getPanelNameTranslationKey = (panel: PanelInfo) => {
