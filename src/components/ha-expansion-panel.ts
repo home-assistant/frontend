@@ -49,6 +49,7 @@ export class HaExpansionPanel extends LitElement {
           tabindex=${this.noCollapse ? -1 : 0}
           aria-expanded=${this.expanded}
           aria-controls="sect1"
+          part="summary"
         >
           ${this.leftChevron ? chevronIcon : nothing}
           <slot name="leading-icon"></slot>
