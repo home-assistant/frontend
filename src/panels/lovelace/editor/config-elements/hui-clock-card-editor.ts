@@ -52,6 +52,12 @@ const cardConfigStruct = assign(
         literal("hour")
       )
     ),
+    seconds_motion: optional(
+      defaulted(
+        union([literal("continuous"), literal("tick")]),
+        literal("continuous")
+      )
+    ),
     face_style: optional(
       defaulted(
         union([
@@ -78,7 +84,8 @@ export class HuiClockCardEditor
     (
       localize: LocalizeFunc,
       clockStyle: ClockCardConfig["clock_style"],
-      ticks: ClockCardConfig["ticks"]
+      ticks: ClockCardConfig["ticks"],
+      showSeconds: boolean | undefined
     ) =>
       [
         { name: "title", selector: { text: {} } },
@@ -170,6 +177,33 @@ export class HuiClockCardEditor
                     },
                   },
                 },
+                ...(showSeconds
+                  ? ([
+                      {
+                        name: "seconds_motion",
+                        description: {
+                          suffix: localize(
+                            `ui.panel.lovelace.editor.card.clock.seconds_motion.description`
+                          ),
+                        },
+                        default: "continuous",
+                        selector: {
+                          select: {
+                            mode: "dropdown",
+                            options: ["continuous", "tick"].map((value) => ({
+                              value,
+                              label: localize(
+                                `ui.panel.lovelace.editor.card.clock.seconds_motion.${value}.label`
+                              ),
+                              description: localize(
+                                `ui.panel.lovelace.editor.card.clock.seconds_motion.${value}.description`
+                              ),
+                            })),
+                          },
+                        },
+                      },
+                    ] as const satisfies readonly HaFormSchema[])
+                  : []),
                 ...(ticks !== "none"
                   ? ([
                       {
@@ -257,7 +291,8 @@ export class HuiClockCardEditor
         .schema=${this._schema(
           this.hass.localize,
           this._data(this._config).clock_style,
-          this._data(this._config).ticks
+          this._data(this._config).ticks,
+          this._data(this._config).show_seconds
         )}
         .computeLabel=${this._computeLabelCallback}
         .computeHelper=${this._computeHelperCallback}
@@ -278,10 +313,17 @@ export class HuiClockCardEditor
       ev.detail.value.border = ev.detail.value.border ?? false;
       ev.detail.value.ticks = ev.detail.value.ticks ?? "hour";
       ev.detail.value.face_style = ev.detail.value.face_style ?? "markers";
+      if (ev.detail.value.show_seconds) {
+        ev.detail.value.seconds_motion =
+          ev.detail.value.seconds_motion ?? "continuous";
+      } else {
+        delete ev.detail.value.seconds_motion;
+      }
     } else {
       delete ev.detail.value.border;
       delete ev.detail.value.ticks;
       delete ev.detail.value.face_style;
+      delete ev.detail.value.seconds_motion;
     }
 
     if (ev.detail.value.ticks !== "none") {
@@ -333,6 +375,10 @@ export class HuiClockCardEditor
         return this.hass!.localize(
           `ui.panel.lovelace.editor.card.clock.ticks.label`
         );
+      case "seconds_motion":
+        return this.hass!.localize(
+          `ui.panel.lovelace.editor.card.clock.seconds_motion.label`
+        );
       case "face_style":
         return this.hass!.localize(
           `ui.panel.lovelace.editor.card.clock.face_style.label`
@@ -353,6 +399,10 @@ export class HuiClockCardEditor
       case "ticks":
         return this.hass!.localize(
           `ui.panel.lovelace.editor.card.clock.ticks.description`
+        );
+      case "seconds_motion":
+        return this.hass!.localize(
+          `ui.panel.lovelace.editor.card.clock.seconds_motion.description`
         );
       case "face_style":
         return this.hass!.localize(

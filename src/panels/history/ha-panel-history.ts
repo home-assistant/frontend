@@ -120,7 +120,7 @@ class HaPanelHistory extends LitElement {
   protected render() {
     const entitiesSelected = this._getEntityIds().length > 0;
     return html`
-      <ha-top-app-bar-fixed>
+      <ha-top-app-bar-fixed .narrow=${this.narrow}>
         ${this._showBack
           ? html`
               <ha-icon-button-arrow-prev
@@ -199,6 +199,7 @@ class HaPanelHistory extends LitElement {
                     .startTime=${this._startDate}
                     .endTime=${this._endDate}
                     .narrow=${this.narrow}
+                    sync-charts
                   >
                   </state-history-charts>
                 `}
@@ -620,7 +621,6 @@ class HaPanelHistory extends LitElement {
 
         .content {
           padding: 0 16px 16px;
-          padding-bottom: max(var(--safe-area-inset-bottom), 16px);
         }
 
         :host([virtualize]) {

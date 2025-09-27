@@ -20,7 +20,7 @@ class PanelDeveloperTools extends LitElement {
 
   @property({ attribute: false }) public route!: Route;
 
-  @property({ type: Boolean }) public narrow = false;
+  @property({ type: Boolean, reflect: true }) public narrow = false;
 
   protected firstUpdated(changedProps) {
     super.firstUpdated(changedProps);
@@ -157,15 +157,29 @@ class PanelDeveloperTools extends LitElement {
           top: 0;
           z-index: 4;
           background-color: var(--app-header-background-color);
-          width: var(--mdc-top-app-bar-width, 100%);
+          width: calc(
+            var(--mdc-top-app-bar-width, 100%) - var(
+                --safe-area-inset-right,
+                0px
+              )
+          );
           padding-top: var(--safe-area-inset-top);
-          padding-left: var(--safe-area-inset-left);
           padding-right: var(--safe-area-inset-right);
           color: var(--app-header-text-color, white);
           border-bottom: var(--app-header-border-bottom, none);
           -webkit-backdrop-filter: var(--app-header-backdrop-filter, none);
           backdrop-filter: var(--app-header-backdrop-filter, none);
         }
+        :host([narrow]) .header {
+          width: calc(
+            var(--mdc-top-app-bar-width, 100%) - var(
+                --safe-area-inset-left,
+                0px
+              ) - var(--safe-area-inset-right, 0px)
+          );
+          padding-left: var(--safe-area-inset-left);
+        }
+
         .toolbar {
           height: var(--header-height);
           display: flex;
@@ -175,10 +189,8 @@ class PanelDeveloperTools extends LitElement {
           font-weight: var(--ha-font-weight-normal);
           box-sizing: border-box;
         }
-        @media (max-width: 599px) {
-          .toolbar {
-            padding: 4px;
-          }
+        :host([narrow]) .toolbar {
+          padding: 4px;
         }
         .main-title {
           margin: var(--margin-title);
@@ -188,11 +200,21 @@ class PanelDeveloperTools extends LitElement {
         developer-tools-router {
           display: block;
           padding-top: calc(
-            var(--header-height) + 48px + var(--safe-area-inset-top)
+            var(--header-height) + 52px + var(--safe-area-inset-top, 0px)
           );
-          padding-bottom: calc(var(--safe-area-inset-bottom));
+          padding-bottom: var(--safe-area-inset-bottom);
+          padding-right: var(--safe-area-inset-right);
           flex: 1 1 100%;
-          max-width: 100%;
+          max-width: calc(100% - var(--safe-area-inset-right, 0px));
+        }
+        :host([narrow]) developer-tools-router {
+          padding-left: var(--safe-area-inset-left);
+          max-width: calc(
+            100% - var(--safe-area-inset-left, 0px) - var(
+                --safe-area-inset-right,
+                0px
+              )
+          );
         }
         ha-tab-group {
           --ha-tab-active-text-color: var(--app-header-text-color, white);

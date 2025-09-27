@@ -18,6 +18,7 @@ import type { HomeAssistant, Route } from "../../../types";
 import "./error-log-card";
 import "./system-log-card";
 import type { SystemLogCard } from "./system-log-card";
+import { stringCompare } from "../../../common/string/compare";
 
 const logProviders: LogProvider[] = [
   {
@@ -208,15 +209,17 @@ export class HaConfigLogs extends LitElement {
   private async _getInstalledAddons() {
     try {
       const addonsInfo = await fetchHassioAddonsInfo(this.hass);
-      this._logProviders = [
-        ...this._logProviders,
-        ...addonsInfo.addons
-          .filter((addon) => addon.version)
-          .map((addon) => ({
-            key: addon.slug,
-            name: addon.name,
-          })),
-      ];
+      const sortedAddons = addonsInfo.addons
+        .filter((addon) => addon.version)
+        .map((addon) => ({
+          key: addon.slug,
+          name: addon.name,
+        }))
+        .sort((a, b) =>
+          stringCompare(a.name, b.name, this.hass.locale.language)
+        );
+
+      this._logProviders = [...this._logProviders, ...sortedAddons];
     } catch (_err) {
       // Ignore, nothing the user can do anyway
     }

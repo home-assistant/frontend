@@ -6,6 +6,7 @@ import { customElement, property, queryAll, state } from "lit/decorators";
 import { repeat } from "lit/directives/repeat";
 import { storage } from "../../../../common/decorators/storage";
 import { fireEvent } from "../../../../common/dom/fire_event";
+import { stopPropagation } from "../../../../common/dom/stop_propagation";
 import { nextRender } from "../../../../common/util/render-status";
 import "../../../../components/ha-button";
 import "../../../../components/ha-sortable";
@@ -96,6 +97,7 @@ export default class HaAutomationOption extends LitElement {
                           : ""}"
                         slot="icons"
                         @keydown=${this._handleDragKeydown}
+                        @click=${stopPropagation}
                         .index=${idx}
                       >
                         <ha-svg-icon .path=${mdiDrag}></ha-svg-icon>
@@ -291,7 +293,12 @@ export default class HaAutomationOption extends LitElement {
     ev.stopPropagation();
     const index = (ev.target as any).index;
     fireEvent(this, "value-changed", {
-      value: this.options.concat(deepClone(this.options[index])),
+      // @ts-expect-error Requires library bump to ES2023
+      value: this.options.toSpliced(
+        index + 1,
+        0,
+        deepClone(this.options[index])
+      ),
     });
   }
 

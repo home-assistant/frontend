@@ -8,7 +8,7 @@ import type { HomeAssistant } from "../../../../types";
 import { isMac } from "../../../../util/is_mac";
 import "../../script/ha-script-field-editor";
 import type HaAutomationConditionEditor from "../action/ha-automation-action-editor";
-import { sidebarEditorStyles } from "../styles";
+import { overflowStyles, sidebarEditorStyles } from "../styles";
 import "./ha-automation-sidebar-card";
 
 @customElement("ha-automation-sidebar-script-field")
@@ -153,7 +153,7 @@ export default class HaAutomationSidebarScriptField extends LitElement {
     fireEvent(this, "toggle-yaml-mode");
   };
 
-  static styles = sidebarEditorStyles;
+  static styles = [sidebarEditorStyles, overflowStyles];
 }
 
 declare global {
