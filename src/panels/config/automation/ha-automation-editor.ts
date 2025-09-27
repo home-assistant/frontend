@@ -1,5 +1,6 @@
 import { consume } from "@lit/context";
 import {
+  mdiAppleKeyboardCommand,
   mdiCog,
   mdiContentSave,
   mdiDebugStepOver,
@@ -87,6 +88,7 @@ import "./blueprint-automation-editor";
 import "./manual-automation-editor";
 import type { HaManualAutomationEditor } from "./manual-automation-editor";
 import { UndoRedoMixin } from "../../../mixins/undo-redo-mixin";
+import { isMac } from "../../../util/is_mac";
 
 declare global {
   interface HTMLElementTagNameMap {
@@ -215,6 +217,10 @@ export class HaAutomationEditor extends UndoRedoMixin<
       : undefined;
 
     const useBlueprint = "use_blueprint" in this._config;
+    const shortcutIcon = isMac
+      ? html`<ha-svg-icon .path=${mdiAppleKeyboardCommand}></ha-svg-icon>`
+      : this.hass.localize("ui.panel.config.automation.editor.ctrl");
+
     return html`
       <hass-subpage
         .hass=${this.hass}
@@ -231,16 +237,35 @@ export class HaAutomationEditor extends UndoRedoMixin<
                 .path=${mdiUndo}
                 @click=${this.undo}
                 .disabled=${!this.canUndo}
+                id="button-undo"
               >
               </ha-icon-button>
+              <ha-tooltip placement="bottom" for="button-undo">
+                ${this.hass.localize("ui.common.undo")}
+                <span class="shortcut"
+                  >(
+                  <span>${shortcutIcon}</span>
+                  <span>+</span>
+                  <span>Z</span>)
+                </span>
+              </ha-tooltip>
               <ha-icon-button
                 slot="toolbar-icon"
                 .label=${this.hass.localize("ui.common.redo")}
                 .path=${mdiRedo}
                 @click=${this.redo}
                 .disabled=${!this.canRedo}
+                id="button-redo"
               >
-              </ha-icon-button>`
+              </ha-icon-button>
+              <ha-tooltip placement="bottom" for="button-redo">
+                ${this.hass.localize("ui.common.redo")}
+                <span class="shortcut">
+                  (<span>${shortcutIcon}</span>
+                  <span>+</span>
+                  <span>Y</span>)
+                </span>
+              </ha-tooltip>`
           : nothing}
         ${this._config?.id && !this.narrow
           ? html`
@@ -1291,6 +1316,15 @@ export class HaAutomationEditor extends UndoRedoMixin<
         }
         ha-fab.dirty {
           bottom: calc(16px + var(--safe-area-inset-bottom, 0px));
+        }
+        ha-tooltip ha-svg-icon {
+          width: 12px;
+        }
+        ha-tooltip .shortcut {
+          display: inline-flex;
+          flex-direction: row;
+          align-items: center;
+          gap: 2px;
         }
       `,
     ];
