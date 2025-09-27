@@ -29,6 +29,7 @@ const LOAD_ELEMENTS = {
   device: () => import("./ha-selector-device"),
   duration: () => import("./ha-selector-duration"),
   entity: () => import("./ha-selector-entity"),
+  entity_name: () => import("./ha-selector-entity-name"),
   statistic: () => import("./ha-selector-statistic"),
   file: () => import("./ha-selector-file"),
   floor: () => import("./ha-selector-floor"),
@@ -76,6 +77,8 @@ export class HaSelector extends LitElement {
   @property({ attribute: false }) public selector!: Selector;
 
   @property() public value?: any;
+
+  @property() public default?: any;
 
   @property() public label?: string;
 
@@ -133,6 +136,7 @@ export class HaSelector extends LitElement {
         name: this.name,
         selector: this._handleLegacySelector(this.selector),
         value: this.value,
+        default: this.default,
         label: this.label,
         placeholder: this.placeholder,
         disabled: this.disabled,

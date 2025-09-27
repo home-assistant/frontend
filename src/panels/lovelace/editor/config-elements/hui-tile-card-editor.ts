@@ -30,7 +30,10 @@ import type {
   LovelaceCardFeatureConfig,
   LovelaceCardFeatureContext,
 } from "../../card-features/types";
-import { getEntityDefaultTileIconAction } from "../../cards/hui-tile-card";
+import {
+  DEFAULT_NAME,
+  getEntityDefaultTileIconAction,
+} from "../../cards/hui-tile-card";
 import type { TileCardConfig } from "../../cards/types";
 import type { LovelaceCardEditor } from "../../types";
 import { actionConfigStruct } from "../structs/action-struct";
@@ -43,7 +46,7 @@ const cardConfigStruct = assign(
   baseLovelaceCardConfig,
   object({
     entity: optional(string()),
-    name: optional(string()),
+    name: optional(union([string(), array(string())])),
     icon: optional(string()),
     color: optional(string()),
     show_entity_picture: optional(boolean()),
@@ -98,10 +101,15 @@ export class HuiTileCardEditor
           iconPath: mdiTextShort,
           schema: [
             {
+              name: "name",
+              selector: { entity_name: {} },
+              context: { entity: "entity" },
+              default: DEFAULT_NAME,
+            },
+            {
               name: "",
               type: "grid",
               schema: [
-                { name: "name", selector: { text: {} } },
                 {
                   name: "icon",
                   selector: {
