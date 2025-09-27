@@ -4052,92 +4052,92 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@rspack/binding-darwin-arm64@npm:1.5.6":
-  version: 1.5.6
-  resolution: "@rspack/binding-darwin-arm64@npm:1.5.6"
+"@rspack/binding-darwin-arm64@npm:1.5.7":
+  version: 1.5.7
+  resolution: "@rspack/binding-darwin-arm64@npm:1.5.7"
   conditions: os=darwin & cpu=arm64
   languageName: node
   linkType: hard
 
-"@rspack/binding-darwin-x64@npm:1.5.6":
-  version: 1.5.6
-  resolution: "@rspack/binding-darwin-x64@npm:1.5.6"
+"@rspack/binding-darwin-x64@npm:1.5.7":
+  version: 1.5.7
+  resolution: "@rspack/binding-darwin-x64@npm:1.5.7"
   conditions: os=darwin & cpu=x64
   languageName: node
   linkType: hard
 
-"@rspack/binding-linux-arm64-gnu@npm:1.5.6":
-  version: 1.5.6
-  resolution: "@rspack/binding-linux-arm64-gnu@npm:1.5.6"
+"@rspack/binding-linux-arm64-gnu@npm:1.5.7":
+  version: 1.5.7
+  resolution: "@rspack/binding-linux-arm64-gnu@npm:1.5.7"
   conditions: os=linux & cpu=arm64 & libc=glibc
   languageName: node
   linkType: hard
 
-"@rspack/binding-linux-arm64-musl@npm:1.5.6":
-  version: 1.5.6
-  resolution: "@rspack/binding-linux-arm64-musl@npm:1.5.6"
+"@rspack/binding-linux-arm64-musl@npm:1.5.7":
+  version: 1.5.7
+  resolution: "@rspack/binding-linux-arm64-musl@npm:1.5.7"
   conditions: os=linux & cpu=arm64 & libc=musl
   languageName: node
   linkType: hard
 
-"@rspack/binding-linux-x64-gnu@npm:1.5.6":
-  version: 1.5.6
-  resolution: "@rspack/binding-linux-x64-gnu@npm:1.5.6"
+"@rspack/binding-linux-x64-gnu@npm:1.5.7":
+  version: 1.5.7
+  resolution: "@rspack/binding-linux-x64-gnu@npm:1.5.7"
   conditions: os=linux & cpu=x64 & libc=glibc
   languageName: node
   linkType: hard
 
-"@rspack/binding-linux-x64-musl@npm:1.5.6":
-  version: 1.5.6
-  resolution: "@rspack/binding-linux-x64-musl@npm:1.5.6"
+"@rspack/binding-linux-x64-musl@npm:1.5.7":
+  version: 1.5.7
+  resolution: "@rspack/binding-linux-x64-musl@npm:1.5.7"
   conditions: os=linux & cpu=x64 & libc=musl
   languageName: node
   linkType: hard
 
-"@rspack/binding-wasm32-wasi@npm:1.5.6":
-  version: 1.5.6
-  resolution: "@rspack/binding-wasm32-wasi@npm:1.5.6"
+"@rspack/binding-wasm32-wasi@npm:1.5.7":
+  version: 1.5.7
+  resolution: "@rspack/binding-wasm32-wasi@npm:1.5.7"
   dependencies:
     "@napi-rs/wasm-runtime": "npm:^1.0.5"
   conditions: cpu=wasm32
   languageName: node
   linkType: hard
 
-"@rspack/binding-win32-arm64-msvc@npm:1.5.6":
-  version: 1.5.6
-  resolution: "@rspack/binding-win32-arm64-msvc@npm:1.5.6"
+"@rspack/binding-win32-arm64-msvc@npm:1.5.7":
+  version: 1.5.7
+  resolution: "@rspack/binding-win32-arm64-msvc@npm:1.5.7"
   conditions: os=win32 & cpu=arm64
   languageName: node
   linkType: hard
 
-"@rspack/binding-win32-ia32-msvc@npm:1.5.6":
-  version: 1.5.6
-  resolution: "@rspack/binding-win32-ia32-msvc@npm:1.5.6"
+"@rspack/binding-win32-ia32-msvc@npm:1.5.7":
+  version: 1.5.7
+  resolution: "@rspack/binding-win32-ia32-msvc@npm:1.5.7"
   conditions: os=win32 & cpu=ia32
   languageName: node
   linkType: hard
 
-"@rspack/binding-win32-x64-msvc@npm:1.5.6":
-  version: 1.5.6
-  resolution: "@rspack/binding-win32-x64-msvc@npm:1.5.6"
+"@rspack/binding-win32-x64-msvc@npm:1.5.7":
+  version: 1.5.7
+  resolution: "@rspack/binding-win32-x64-msvc@npm:1.5.7"
   conditions: os=win32 & cpu=x64
   languageName: node
   linkType: hard
 
-"@rspack/binding@npm:1.5.6":
-  version: 1.5.6
-  resolution: "@rspack/binding@npm:1.5.6"
+"@rspack/binding@npm:1.5.7":
+  version: 1.5.7
+  resolution: "@rspack/binding@npm:1.5.7"
   dependencies:
-    "@rspack/binding-darwin-arm64": "npm:1.5.6"
-    "@rspack/binding-darwin-x64": "npm:1.5.6"
-    "@rspack/binding-linux-arm64-gnu": "npm:1.5.6"
-    "@rspack/binding-linux-arm64-musl": "npm:1.5.6"
-    "@rspack/binding-linux-x64-gnu": "npm:1.5.6"
-    "@rspack/binding-linux-x64-musl": "npm:1.5.6"
-    "@rspack/binding-wasm32-wasi": "npm:1.5.6"
-    "@rspack/binding-win32-arm64-msvc": "npm:1.5.6"
-    "@rspack/binding-win32-ia32-msvc": "npm:1.5.6"
-    "@rspack/binding-win32-x64-msvc": "npm:1.5.6"
+    "@rspack/binding-darwin-arm64": "npm:1.5.7"
+    "@rspack/binding-darwin-x64": "npm:1.5.7"
+    "@rspack/binding-linux-arm64-gnu": "npm:1.5.7"
+    "@rspack/binding-linux-arm64-musl": "npm:1.5.7"
+    "@rspack/binding-linux-x64-gnu": "npm:1.5.7"
+    "@rspack/binding-linux-x64-musl": "npm:1.5.7"
+    "@rspack/binding-wasm32-wasi": "npm:1.5.7"
+    "@rspack/binding-win32-arm64-msvc": "npm:1.5.7"
+    "@rspack/binding-win32-ia32-msvc": "npm:1.5.7"
+    "@rspack/binding-win32-x64-msvc": "npm:1.5.7"
   dependenciesMeta:
     "@rspack/binding-darwin-arm64":
       optional: true
@@ -4159,23 +4159,23 @@ __metadata:
       optional: true
     "@rspack/binding-win32-x64-msvc":
       optional: true
-  checksum: 10/852113a80ff7396257426a6a3a6c6fd47f5743c7304b90de9d348ed0496e5f335bcc0617f857be2d9e836fa610dd7a3952a1a834b756a228c4913acb78a3d3fa
+  checksum: 10/38e104f67f5c7299d1452b85728675525684685e4b13f8a9091b46b53de3decf5caabf73d0408ad5167d3b2800ab4068aa5fc83275cfa259bc1814aede1a3684
   languageName: node
   linkType: hard
 
-"@rspack/core@npm:1.5.6":
-  version: 1.5.6
-  resolution: "@rspack/core@npm:1.5.6"
+"@rspack/core@npm:1.5.7":
+  version: 1.5.7
+  resolution: "@rspack/core@npm:1.5.7"
   dependencies:
     "@module-federation/runtime-tools": "npm:0.18.0"
-    "@rspack/binding": "npm:1.5.6"
+    "@rspack/binding": "npm:1.5.7"
     "@rspack/lite-tapable": "npm:1.0.1"
   peerDependencies:
     "@swc/helpers": ">=0.5.1"
   peerDependenciesMeta:
     "@swc/helpers":
       optional: true
-  checksum: 10/50814815c63b611c2e9a7724dfa194e8b52e7232fa18637ef17c6de79c36ceb798f1fd7501e869b24a4f4f4ab6c198c5ce43884be81e7421c82a0e4880dc9600
+  checksum: 10/a8a95e18f1f0c5f40f2727b3180f06175e26252a6a31d4fe7dafd8b08f0648beca2457ec7d4c1698ce1f061dacabf734bece843e1dea0fd165acc2048eab29ac
   languageName: node
   linkType: hard
 
@@ -9435,7 +9435,7 @@ __metadata:
     "@octokit/rest": "npm:22.0.0"
     "@replit/codemirror-indentation-markers": "npm:6.5.3"
     "@rsdoctor/rspack-plugin": "npm:1.2.3"
-    "@rspack/core": "npm:1.5.6"
+    "@rspack/core": "npm:1.5.7"
     "@rspack/dev-server": "npm:1.1.4"
     "@swc/helpers": "npm:0.5.17"
     "@thomasloven/round-slider": "npm:0.6.0"
