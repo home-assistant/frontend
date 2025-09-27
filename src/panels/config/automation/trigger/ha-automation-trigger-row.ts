@@ -806,7 +806,7 @@ export default class HaAutomationTriggerRow extends LitElement {
           display: flex;
           justify-content: center;
           align-items: center;
-          gap: 4px;
+          gap: var(--ha-space-1);
           line-height: 1;
           padding: 0;
         }

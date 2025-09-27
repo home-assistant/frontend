@@ -1173,7 +1173,7 @@ export class HaScriptEditor extends UndoRedoMixin<
           display: flex;
           flex-direction: column;
           align-items: center;
-          gap: 8px;
+          gap: var(--ha-space-2);
           pointer-events: none;
         }
 
