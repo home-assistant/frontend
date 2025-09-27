@@ -5,8 +5,9 @@ import { fireEvent } from "../../../../common/dom/fire_event";
 import { computeDeviceNameDisplay } from "../../../../common/entity/compute_device_name";
 import "../../../../components/ha-alert";
 import "../../../../components/ha-area-picker";
-import "../../../../components/ha-dialog";
 import "../../../../components/ha-button";
+import "../../../../components/ha-dialog-footer";
+import "../../../../components/ha-wa-dialog";
 import "../../../../components/ha-labels-picker";
 import type { HaSwitch } from "../../../../components/ha-switch";
 import "../../../../components/ha-textfield";
@@ -57,10 +58,10 @@ class DialogDeviceRegistryDetail extends LitElement {
     }
     const device = this._params.device;
     return html`
-      <ha-dialog
+      <ha-wa-dialog
         open
         @closed=${this.closeDialog}
-        .heading=${computeDeviceNameDisplay(device, this.hass)}
+        .headerTitle=${computeDeviceNameDisplay(device, this.hass)}
       >
         <div>
           ${this._error
@@ -131,22 +132,24 @@ class DialogDeviceRegistryDetail extends LitElement {
             </div>
           </div>
         </div>
-        <ha-button
-          slot="secondaryAction"
-          @click=${this.closeDialog}
-          .disabled=${this._submitting}
-          appearance="plain"
-        >
-          ${this.hass.localize("ui.common.cancel")}
-        </ha-button>
-        <ha-button
-          slot="primaryAction"
-          @click=${this._updateEntry}
-          .disabled=${this._submitting}
-        >
-          ${this.hass.localize("ui.dialogs.device-registry-detail.update")}
-        </ha-button>
-      </ha-dialog>
+        <ha-dialog-footer slot="footer">
+          <ha-button
+            slot="secondaryAction"
+            appearance="plain"
+            data-dialog="close"
+            .disabled=${this._submitting}
+          >
+            ${this.hass.localize("ui.common.cancel")}
+          </ha-button>
+          <ha-button
+            slot="primaryAction"
+            .disabled=${this._submitting}
+            @click=${this._updateEntry}
+          >
+            ${this.hass.localize("ui.dialogs.device-registry-detail.update")}
+          </ha-button>
+        </ha-dialog-footer>
+      </ha-wa-dialog>
     `;
   }
 
