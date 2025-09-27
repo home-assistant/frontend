@@ -57,6 +57,8 @@ export abstract class HuiElementEditor<
 
   @property({ attribute: false }) public context?: C;
 
+  @property({ attribute: false }) public schema?;
+
   @state() private _config?: T;
 
   @state() private _configElement?: LovelaceGenericElementEditor;
@@ -312,6 +314,9 @@ export abstract class HuiElementEditor<
     if (this._configElement && changedProperties.has("context")) {
       this._configElement.context = this.context;
     }
+    if (this._configElement && changedProperties.has("schema")) {
+      this._configElement.schema = this.schema;
+    }
   }
 
   private _handleUIConfigChanged(ev: UIConfigChangedEvent<T>) {
@@ -399,6 +404,7 @@ export abstract class HuiElementEditor<
         configElement.lovelace = this.lovelace;
       }
       configElement.context = this.context;
+      configElement.schema = this.schema;
       configElement.addEventListener("config-changed", (ev) =>
         this._handleUIConfigChanged(ev as UIConfigChangedEvent<T>)
       );

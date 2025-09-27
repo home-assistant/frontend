@@ -18,6 +18,9 @@ import type { SchemaUnion } from "../../../../components/ha-form/types";
 import type { HomeAssistant } from "../../../../types";
 import type { HistoryGraphCardConfig } from "../../cards/types";
 import "../../components/hui-entity-editor";
+import "../hui-sub-element-editor";
+import type { EditDetailElementEvent, SubElementEditorConfig } from "../types";
+import type { HASSDomEvent } from "../../../../common/dom/fire_event";
 import type { EntityConfig } from "../../entity-rows/types";
 import type { LovelaceCardEditor } from "../../types";
 import { processEditorEntities } from "../process-editor-entities";
@@ -40,6 +43,11 @@ const cardConfigStruct = assign(
   })
 );
 
+const SUB_SCHEMA = [
+  { name: "entity", selector: { entity: {} }, required: true },
+  { name: "name", selector: { text: {} } },
+] as const;
+
 @customElement("hui-history-graph-card-editor")
 export class HuiHistoryGraphCardEditor
   extends LitElement
@@ -48,6 +56,8 @@ export class HuiHistoryGraphCardEditor
   @property({ attribute: false }) public hass?: HomeAssistant;
 
   @state() private _config?: HistoryGraphCardConfig;
+
+  @state() private _subElementEditorConfig?: SubElementEditorConfig;
 
   @state() private _configEntities?: EntityConfig[];
 
@@ -110,6 +120,19 @@ export class HuiHistoryGraphCardEditor
       return nothing;
     }
 
+    if (this._subElementEditorConfig) {
+      return html`
+        <hui-sub-element-editor
+          .hass=${this.hass}
+          .config=${this._subElementEditorConfig}
+          .schema=${SUB_SCHEMA}
+          @go-back=${this._goBack}
+          @config-changed=${this._handleSubEntityChanged}
+        >
+        </hui-sub-element-editor>
+      `;
+    }
+
     const schema = this._schema(
       this._config!.min_y_axis !== undefined ||
         this._config!.max_y_axis !== undefined
@@ -126,9 +149,39 @@ export class HuiHistoryGraphCardEditor
       <hui-entity-editor
         .hass=${this.hass}
         .entities=${this._configEntities}
+        can-edit
         @entities-changed=${this._entitiesChanged}
+        @edit-detail-element=${this._editDetailElement}
       ></hui-entity-editor>
     `;
+  }
+
+  private _goBack(): void {
+    this._subElementEditorConfig = undefined;
+  }
+
+  private _editDetailElement(ev: HASSDomEvent<EditDetailElementEvent>): void {
+    this._subElementEditorConfig = ev.detail.subElementConfig;
+  }
+
+  private _handleSubEntityChanged(ev: CustomEvent): void {
+    ev.stopPropagation();
+
+    const index = this._subElementEditorConfig!.index!;
+
+    const newEntities = this._configEntities!.concat();
+    const newConfig = ev.detail.config as EntityConfig;
+    this._subElementEditorConfig = {
+      ...this._subElementEditorConfig!,
+      elementConfig: newConfig,
+    };
+    newEntities[index] = newConfig;
+    let config = this._config!;
+    config = { ...config, entities: newEntities };
+    this._config = config;
+    this._configEntities = processEditorEntities(config.entities);
+
+    fireEvent(this, "config-changed", { config });
   }
 
   private _valueChanged(ev: CustomEvent): void {
