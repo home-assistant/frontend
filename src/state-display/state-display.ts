@@ -13,8 +13,14 @@ import type { UpdateEntity } from "../data/update";
 import { computeUpdateStateDisplay } from "../data/update";
 import "../panels/lovelace/components/hui-timestamp-display";
 import type { HomeAssistant } from "../types";
+import { computeAreaName } from "../common/entity/compute_area_name";
+import { computeDeviceName } from "../common/entity/compute_device_name";
+import { computeFloorName } from "../common/entity/compute_floor_name";
+import { getEntityContext } from "../common/entity/context/get_entity_context";
 
 const TIMESTAMP_STATE_DOMAINS = ["button", "input_button", "scene"];
+
+const HIERARCHY_CONTENT_TYPES = new Set(["area", "device", "floor"]);
 
 export const STATE_DISPLAY_SPECIAL_CONTENT = [
   "remaining_time",
@@ -100,8 +106,30 @@ class StateDisplay extends LitElement {
 
       return this.hass!.formatEntityState(stateObj);
     }
+
     if (content === "name") {
       return html`${this.name || computeStateName(stateObj)}`;
+    }
+
+    // Resolve entity hierarchy only for content types that need it
+    if (HIERARCHY_CONTENT_TYPES.has(content)) {
+      const context = getEntityContext(
+        stateObj,
+        this.hass.entities,
+        this.hass.devices,
+        this.hass.areas,
+        this.hass.floors
+      );
+
+      if (content === "area") {
+        return context.area ? computeAreaName(context.area) : "";
+      }
+      if (content === "device") {
+        return context.device ? computeDeviceName(context.device) : "";
+      }
+      if (content === "floor") {
+        return context.floor ? computeFloorName(context.floor) : "";
+      }
     }
 
     let relativeDateTime: string | Date | undefined;

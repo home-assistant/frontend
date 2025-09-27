@@ -18,6 +18,7 @@ import "../ha-sortable";
 import "../chips/ha-input-chip";
 import "../chips/ha-chip-set";
 import type { HaComboBox } from "../ha-combo-box";
+import { getEntityContext } from "../../common/entity/context/get_entity_context";
 
 const HIDDEN_ATTRIBUTES = [
   "access_token",
@@ -89,6 +90,9 @@ class HaEntityStatePicker extends LitElement {
   @property({ type: Boolean, attribute: "allow-name" }) public allowName =
     false;
 
+  @property({ type: Boolean, attribute: "allow-context" }) public allowContext =
+    false;
+
   @property() public label?: string;
 
   @property() public value?: string[] | string;
@@ -106,6 +110,20 @@ class HaEntityStatePicker extends LitElement {
   private options = memoizeOne(
     (entityId?: string, stateObj?: HassEntity, allowName?: boolean) => {
       const domain = entityId ? computeDomain(entityId) : undefined;
+
+      // Check entity context
+      const context = getEntityContext(
+        stateObj!,
+        this.hass.entities,
+        this.hass.devices,
+        this.hass.areas,
+        this.hass.floors
+      );
+
+      const hasArea = !!context.area && this.allowContext;
+      const hasDevice = !!context.device && this.allowContext;
+      const hasFloor = !!context.floor && this.allowContext;
+
       return [
         {
           label: this.hass.localize("ui.components.state-content-picker.state"),
@@ -118,6 +136,36 @@ class HaEntityStatePicker extends LitElement {
                   "ui.components.state-content-picker.name"
                 ),
                 value: "name",
+              },
+            ]
+          : []),
+        ...(hasArea
+          ? [
+              {
+                label: this.hass.localize(
+                  "ui.components.state-content-picker.area"
+                ),
+                value: "area",
+              },
+            ]
+          : []),
+        ...(hasDevice
+          ? [
+              {
+                label: this.hass.localize(
+                  "ui.components.state-content-picker.device"
+                ),
+                value: "device",
+              },
+            ]
+          : []),
+        ...(hasFloor
+          ? [
+              {
+                label: this.hass.localize(
+                  "ui.components.state-content-picker.floor"
+                ),
+                value: "floor",
               },
             ]
           : []),
@@ -167,6 +215,7 @@ class HaEntityStatePicker extends LitElement {
       : undefined;
 
     const options = this.options(this.entityId, stateObj, this.allowName);
+
     const optionItems = options.filter(
       (option) => !this._value.includes(option.value)
     );
