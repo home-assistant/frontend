@@ -10,8 +10,8 @@ import { actionHandler } from "../common/directives/action-handler-directive";
 import { handleAction } from "../common/handle-action";
 import { hasAction } from "../common/has-action";
 import "../components/hui-image";
-import type { ImageElementConfig, LovelaceElement } from "./types";
 import type { LovelacePictureElementEditor } from "../types";
+import type { ImageElementConfig, LovelaceElement } from "./types";
 
 @customElement("hui-image-element")
 export class HuiImageElement extends LitElement implements LovelaceElement {
@@ -97,7 +97,7 @@ export class HuiImageElement extends LitElement implements LovelaceElement {
     }
     div:focus hui-image {
       background: var(--divider-color);
-      border-radius: 100%;
+      border-radius: var(--ha-border-radius-pill);
     }
   `;
 

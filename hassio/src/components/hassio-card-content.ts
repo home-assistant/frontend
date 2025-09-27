@@ -121,7 +121,7 @@ class HassioCardContent extends LitElement {
       height: 12px;
       top: 8px;
       right: 8px;
-      border-radius: 50%;
+      border-radius: var(--ha-border-radius-circle);
     }
     .topbar {
       position: absolute;

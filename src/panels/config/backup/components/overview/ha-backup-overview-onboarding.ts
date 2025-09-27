@@ -65,7 +65,7 @@ class HaBackupOverviewBackups extends LitElement {
         }
         .icon {
           position: relative;
-          border-radius: 20px;
+          border-radius: var(--ha-border-radius-2xl);
           width: 40px;
           height: 40px;
           display: flex;

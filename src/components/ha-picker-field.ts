@@ -96,7 +96,7 @@ export class HaPickerField extends LitElement {
         }
         ha-combo-box-item {
           background-color: var(--mdc-text-field-fill-color, whitesmoke);
-          border-radius: 4px;
+          border-radius: var(--ha-border-radius-sm);
           border-end-end-radius: 0;
           border-end-start-radius: 0;
           --md-list-item-one-line-container-height: 56px;

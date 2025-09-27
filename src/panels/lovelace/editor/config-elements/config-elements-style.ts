@@ -37,8 +37,8 @@ export const configElementStyle = css`
   ha-expansion-panel {
     display: block;
     --expansion-panel-content-padding: 0;
-    border-radius: 6px;
-    --ha-card-border-radius: 6px;
+    border-radius: var(--ha-border-radius-md);
+    --ha-card-border-radius: var(--ha-border-radius-md);
   }
   ha-expansion-panel .content {
     padding: 12px;

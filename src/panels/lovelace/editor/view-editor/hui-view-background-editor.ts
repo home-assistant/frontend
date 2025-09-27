@@ -193,7 +193,7 @@ export class HuiViewBackgroundEditor extends LitElement {
   static styles = css`
     :host {
       display: block;
-      --file-upload-image-border-radius: 4px;
+      --file-upload-image-border-radius: var(--ha-border-radius-sm);
     }
   `;
 }

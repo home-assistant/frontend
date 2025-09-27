@@ -1116,7 +1116,7 @@ class DialogZWaveJSAddNode extends SubscribeMixin(LitElement) {
             --mdc-dialog-min-height: 100%;
             --mdc-dialog-max-height: 100%;
             --vertical-align-dialog: flex-end;
-            --ha-dialog-border-radius: 0;
+            --ha-dialog-border-radius: var(--ha-border-radius-square);
           }
         }
         ha-fade-in {

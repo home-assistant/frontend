@@ -7,6 +7,7 @@ import { repeat } from "lit/directives/repeat";
 import memoizeOne from "memoize-one";
 import { fireEvent } from "../common/dom/fire_event";
 import { computeRTL } from "../common/util/compute_rtl";
+import { deepEqual } from "../common/util/deep-equal";
 import { getFloorAreaLookup } from "../data/floor_registry";
 import type { RelatedResult } from "../data/search";
 import { findRelated } from "../data/search";
@@ -20,7 +21,6 @@ import "./ha-icon-button";
 import "./ha-list";
 import "./ha-svg-icon";
 import "./ha-tree-indicator";
-import { deepEqual } from "../common/util/deep-equal";
 
 @customElement("ha-filter-floor-areas")
 export class HaFilterFloorAreas extends LitElement {
@@ -281,7 +281,7 @@ export class HaFilterFloorAreas extends LitElement {
           height: 0;
         }
         ha-expansion-panel {
-          --ha-card-border-radius: 0;
+          --ha-card-border-radius: var(--ha-border-radius-square);
           --expansion-panel-content-padding: 0;
         }
         .header {
@@ -299,7 +299,7 @@ export class HaFilterFloorAreas extends LitElement {
           margin-inline-end: 0;
           min-width: 16px;
           box-sizing: border-box;
-          border-radius: 50%;
+          border-radius: var(--ha-border-radius-circle);
           font-size: var(--ha-font-size-xs);
           font-weight: var(--ha-font-weight-normal);
           background-color: var(--primary-color);

@@ -436,10 +436,12 @@ export class HaVoiceAssistantSetupStepPipeline extends LitElement {
         transition: background-color 0.3s;
       }
       .segment:first-child {
-        border-radius: 4px 0 0 4px;
+        border-radius: var(--ha-border-radius-sm) var(--ha-border-radius-square)
+          var(--ha-border-radius-square) var(--ha-border-radius-sm);
       }
       .segment:last-child {
-        border-radius: 0 4px 4px 0;
+        border-radius: var(--ha-border-radius-square) var(--ha-border-radius-sm)
+          var(--ha-border-radius-sm) var(--ha-border-radius-square);
       }
       .perf-bar.high .segment {
         background-color: var(--success-color);

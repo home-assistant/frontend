@@ -150,7 +150,7 @@ export class HaDeviceInfoMatter extends SubscribeMixin(LitElement) {
           margin: 8px -16px 0;
           --expansion-panel-summary-padding: 0 16px;
           --expansion-panel-content-padding: 0 16px;
-          --ha-card-border-radius: 0px;
+          --ha-card-border-radius: var(--ha-border-radius-square);
         }
       `,
     ];

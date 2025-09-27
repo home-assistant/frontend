@@ -459,8 +459,7 @@ class HaScheduleForm extends LitElement {
           height: 0.4rem;
         }
         .fc-scroller::-webkit-scrollbar-thumb {
-          -webkit-border-radius: 4px;
-          border-radius: 4px;
+          border-radius: var(--ha-border-radius-sm);
           background: var(--scrollbar-thumb-color);
         }
         .fc-scroller {

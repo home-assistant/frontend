@@ -242,7 +242,7 @@ export class HaFileUpload extends LitElement {
       align-items: center;
       border: solid 1px
         var(--mdc-text-field-idle-line-color, rgba(0, 0, 0, 0.42));
-      border-radius: var(--mdc-shape-small, 4px);
+      border-radius: var(--mdc-shape-small, var(--ha-border-radius-sm));
       height: 100%;
     }
     .row {

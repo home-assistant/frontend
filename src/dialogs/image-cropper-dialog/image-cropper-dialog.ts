@@ -2,11 +2,11 @@ import Cropper from "cropperjs";
 // @ts-ignore
 import cropperCss from "cropperjs/dist/cropper.css";
 import type { CSSResultGroup, PropertyValues, TemplateResult } from "lit";
-import { css, html, nothing, LitElement, unsafeCSS } from "lit";
-import { customElement, property, state, query } from "lit/decorators";
+import { css, html, LitElement, nothing, unsafeCSS } from "lit";
+import { customElement, property, query, state } from "lit/decorators";
 import { classMap } from "lit/directives/class-map";
-import "../../components/ha-dialog";
 import "../../components/ha-button";
+import "../../components/ha-dialog";
 import { haStyleDialog } from "../../resources/styles";
 import type { HomeAssistant } from "../../types";
 import type { HaImageCropperDialogParams } from "./show-image-cropper-dialog";
@@ -150,7 +150,7 @@ export class HaImagecropperDialog extends LitElement {
         }
         .container.round .cropper-view-box,
         .container.round .cropper-face {
-          border-radius: 50%;
+          border-radius: var(--ha-border-radius-circle);
         }
         .cropper-line,
         .cropper-point,

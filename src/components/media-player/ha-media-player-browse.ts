@@ -1,7 +1,7 @@
 import type { LitVirtualizer } from "@lit-labs/virtualizer";
 import { grid } from "@lit-labs/virtualizer/layouts/grid";
 
-import { mdiArrowUpRight, mdiPlay, mdiPlus, mdiKeyboard } from "@mdi/js";
+import { mdiArrowUpRight, mdiKeyboard, mdiPlay, mdiPlus } from "@mdi/js";
 import type { CSSResultGroup, PropertyValues, TemplateResult } from "lit";
 import { css, html, LitElement, nothing } from "lit";
 import {
@@ -56,10 +56,10 @@ import "../ha-list-item";
 import "../ha-spinner";
 import "../ha-svg-icon";
 import "../ha-tooltip";
-import "./ha-browse-media-tts";
 import "./ha-browse-media-manual";
-import type { TtsMediaPickedEvent } from "./ha-browse-media-tts";
 import type { ManualMediaPickedEvent } from "./ha-browse-media-manual";
+import "./ha-browse-media-tts";
+import type { TtsMediaPickedEvent } from "./ha-browse-media-tts";
 
 declare global {
   interface HASSDomEvents {
@@ -1174,7 +1174,8 @@ export class HaMediaPlayerBrowse extends LitElement {
         }
 
         ha-card .image {
-          border-radius: 3px 3px 0 0;
+          border-radius: var(--ha-border-radius-sm) var(--ha-border-radius-sm)
+            var(--ha-border-radius-square) var(--ha-border-radius-square);
         }
 
         .image {
@@ -1216,7 +1217,7 @@ export class HaMediaPlayerBrowse extends LitElement {
         .child .play {
           position: absolute;
           transition: color 0.5s;
-          border-radius: 50%;
+          border-radius: var(--ha-border-radius-circle);
           top: calc(50% - 40px);
           right: calc(50% - 35px);
           opacity: 0;
@@ -1273,7 +1274,7 @@ export class HaMediaPlayerBrowse extends LitElement {
           background-size: contain;
           background-repeat: no-repeat;
           background-position: center;
-          border-radius: 2px;
+          border-radius: var(--ha-border-radius-sm);
           display: flex;
           align-content: center;
           align-items: center;
@@ -1284,7 +1285,7 @@ export class HaMediaPlayerBrowse extends LitElement {
           opacity: 0;
           transition: all 0.5s;
           background-color: rgba(var(--rgb-card-background-color), 0.5);
-          border-radius: 50%;
+          border-radius: var(--ha-border-radius-circle);
           --mdc-icon-button-size: 40px;
         }
 
@@ -1344,7 +1345,7 @@ export class HaMediaPlayerBrowse extends LitElement {
           margin-bottom: 8px;
           position: relative;
           background-position: center;
-          border-radius: 0;
+          border-radius: var(--ha-border-radius-square);
           transition:
             width 0.4s,
             height 0.4s,

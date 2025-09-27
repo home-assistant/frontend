@@ -17,7 +17,7 @@ export class HaCard extends LitElement {
       backdrop-filter: var(--ha-card-backdrop-filter, none);
       box-shadow: var(--ha-card-box-shadow, none);
       box-sizing: border-box;
-      border-radius: var(--ha-card-border-radius, 12px);
+      border-radius: var(--ha-card-border-radius, var(--ha-border-radius-lg));
       border-width: var(--ha-card-border-width, 1px);
       border-style: solid;
       border-color: var(--ha-card-border-color, var(--divider-color, #e0e0e0));

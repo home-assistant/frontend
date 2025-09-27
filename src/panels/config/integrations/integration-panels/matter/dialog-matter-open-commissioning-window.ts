@@ -3,10 +3,11 @@ import type { CSSResultGroup } from "lit";
 import { LitElement, css, html, nothing } from "lit";
 import { customElement, property, state } from "lit/decorators";
 import { fireEvent } from "../../../../../common/dom/fire_event";
-import "../../../../../components/ha-spinner";
-import { createCloseHeading } from "../../../../../components/ha-dialog";
+import { copyToClipboard } from "../../../../../common/util/copy-clipboard";
 import "../../../../../components/ha-button";
+import { createCloseHeading } from "../../../../../components/ha-dialog";
 import "../../../../../components/ha-qr-code";
+import "../../../../../components/ha-spinner";
 import { domainToName } from "../../../../../data/integration";
 import type { MatterCommissioningParameters } from "../../../../../data/matter";
 import { openMatterCommissioningWindow } from "../../../../../data/matter";
@@ -14,7 +15,6 @@ import { haStyleDialog } from "../../../../../resources/styles";
 import type { HomeAssistant } from "../../../../../types";
 import { brandsUrl } from "../../../../../util/brands-url";
 import type { MatterOpenCommissioningWindowDialogParams } from "./show-dialog-matter-open-commissioning-window";
-import { copyToClipboard } from "../../../../../common/util/copy-clipboard";
 
 @customElement("dialog-matter-open-commissioning-window")
 class DialogMatterOpenCommissioningWindow extends LitElement {
@@ -246,7 +246,7 @@ class DialogMatterOpenCommissioningWindow extends LitElement {
           flex-direction: column;
           align-items: center;
           border: 2px solid;
-          border-radius: 16px;
+          border-radius: var(--ha-border-radius-xl);
           padding: 16px;
         }
 

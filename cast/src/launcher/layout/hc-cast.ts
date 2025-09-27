@@ -242,7 +242,7 @@ class HcCast extends LitElement {
     }
 
     .question:before {
-      border-radius: 4px;
+      border-radius: var(--ha-border-radius-sm);
       position: absolute;
       top: 0;
       right: 0;

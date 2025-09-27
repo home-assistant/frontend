@@ -303,7 +303,10 @@ export class HuiCardEditMode extends LitElement {
           display: flex;
           align-items: center;
           justify-content: center;
-          border-radius: var(--ha-card-border-radius, 12px);
+          border-radius: var(
+            --ha-card-border-radius,
+            var(--ha-border-radius-lg)
+          );
           z-index: 0;
         }
         .control-overlay {
@@ -312,14 +315,17 @@ export class HuiCardEditMode extends LitElement {
           opacity: 0.8;
           background-color: var(--primary-background-color);
           border: 1px solid var(--divider-color);
-          border-radius: var(--ha-card-border-radius, 12px);
+          border-radius: var(
+            --ha-card-border-radius,
+            var(--ha-border-radius-lg)
+          );
           z-index: 0;
         }
         .control ha-svg-icon {
           display: flex;
           position: relative;
           color: var(--primary-text-color);
-          border-radius: 50%;
+          border-radius: var(--ha-border-radius-circle);
           padding: 8px;
           background: var(--secondary-background-color);
           --mdc-icon-size: 20px;
@@ -333,7 +339,7 @@ export class HuiCardEditMode extends LitElement {
         }
         .more ha-icon-button {
           cursor: pointer;
-          border-radius: 50%;
+          border-radius: var(--ha-border-radius-circle);
           background: var(--secondary-background-color);
           --mdc-icon-button-size: 32px;
           --mdc-icon-size: 20px;

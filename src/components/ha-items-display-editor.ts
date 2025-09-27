@@ -394,7 +394,7 @@ export class HaItemDisplayEditor extends LitElement {
     }
     ha-md-list-item.drag-selected {
       --md-focus-ring-color: rgba(var(--rgb-accent-color), 0.6);
-      border-radius: 8px;
+      border-radius: var(--ha-border-radius-md);
       outline: solid;
       outline-color: rgba(var(--rgb-accent-color), 0.6);
       outline-offset: -2px;

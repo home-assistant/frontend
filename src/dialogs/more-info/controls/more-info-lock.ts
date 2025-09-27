@@ -167,7 +167,7 @@ class MoreInfoLock extends LitElement {
         ha-control-button {
           font-size: var(--ha-font-size-m);
           height: 60px;
-          --control-button-border-radius: 24px;
+          --control-button-border-radius: var(--ha-border-radius-3xl);
         }
         .open-button {
           width: 130px;
@@ -219,7 +219,7 @@ class MoreInfoLock extends LitElement {
           --mdc-icon-size: 80px;
           animation: pulse 1s infinite;
           color: var(--state-color);
-          border-radius: 50%;
+          border-radius: var(--ha-border-radius-circle);
           width: 144px;
           height: 144px;
           display: flex;
@@ -233,7 +233,7 @@ class MoreInfoLock extends LitElement {
           left: 0;
           height: 100%;
           width: 100%;
-          border-radius: 50%;
+          border-radius: var(--ha-border-radius-circle);
           background-color: var(--state-color);
           transition: background-color 180ms ease-in-out;
           opacity: 0.2;

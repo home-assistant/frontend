@@ -3,6 +3,7 @@ import type { PropertyValues } from "lit";
 import { css, html, LitElement, nothing } from "lit";
 import { customElement, property } from "lit/decorators";
 import { classMap } from "lit/directives/class-map";
+import { DragScrollController } from "../../../common/controllers/drag-scroll-controller";
 import "../../../components/ha-ripple";
 import "../../../components/ha-sortable";
 import "../../../components/ha-svg-icon";
@@ -16,11 +17,10 @@ import type { HuiBadge } from "../badges/hui-badge";
 import "../badges/hui-view-badges";
 import type { HuiCard } from "../cards/hui-card";
 import "../components/hui-badge-edit-mode";
+import { showEditCardDialog } from "../editor/card-editor/show-edit-card-dialog";
 import { replaceView } from "../editor/config-util";
 import { showEditViewHeaderDialog } from "../editor/view-header/show-edit-view-header-dialog";
 import type { Lovelace } from "../types";
-import { showEditCardDialog } from "../editor/card-editor/show-edit-card-dialog";
-import { DragScrollController } from "../../../common/controllers/drag-scroll-controller";
 
 export const DEFAULT_VIEW_HEADER_LAYOUT = "center";
 export const DEFAULT_VIEW_HEADER_BADGES_POSITION = "bottom";
@@ -314,7 +314,7 @@ export class HuiViewHeader extends LitElement {
       align-items: center;
       justify-content: center;
       transition: opacity 0.2s ease-in-out;
-      border-radius: var(--ha-card-border-radius, 12px);
+      border-radius: var(--ha-card-border-radius, var(--ha-border-radius-lg));
       border-bottom-left-radius: 0px;
       border-bottom-right-radius: 0px;
       background: var(--secondary-background-color);
@@ -449,7 +449,7 @@ export class HuiViewHeader extends LitElement {
 
     .container.edit-mode {
       padding: 8px;
-      border-radius: var(--ha-card-border-radius, 12px);
+      border-radius: var(--ha-card-border-radius, var(--ha-border-radius-lg));
       border: 2px dashed var(--divider-color);
       border-start-end-radius: 0;
     }
@@ -469,7 +469,7 @@ export class HuiViewHeader extends LitElement {
       padding: 6px 20px 6px 20px;
       box-sizing: border-box;
       width: auto;
-      border-radius: var(--ha-card-border-radius, 12px);
+      border-radius: var(--ha-card-border-radius, var(--ha-border-radius-lg));
       background-color: transparent;
       border-width: 2px;
       border-style: dashed;

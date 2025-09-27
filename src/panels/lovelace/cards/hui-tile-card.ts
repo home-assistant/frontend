@@ -386,7 +386,7 @@ export class HuiTileCard extends LitElement implements LovelaceCard {
       left: 0;
       bottom: 0;
       right: 0;
-      border-radius: var(--ha-card-border-radius, 12px);
+      border-radius: var(--ha-card-border-radius, var(--ha-border-radius-lg));
       margin: calc(-1 * var(--ha-card-border-width, 1px));
       overflow: hidden;
     }
@@ -462,7 +462,7 @@ export class HuiTileCard extends LitElement implements LovelaceCard {
 
     /* Make sure we display the whole image */
     ha-tile-icon.image[data-domain="update"] {
-      --tile-icon-border-radius: 0;
+      --tile-icon-border-radius: var(--ha-border-radius-square);
     }
     /* Make sure we display the almost the whole image but it often use text */
     ha-tile-icon.image[data-domain="media_player"] {

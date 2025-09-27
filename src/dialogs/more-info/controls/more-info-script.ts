@@ -236,7 +236,7 @@ class MoreInfoScript extends LitElement {
     .fields {
       padding: 16px;
       border: 1px solid var(--divider-color);
-      border-radius: 8px;
+      border-radius: var(--ha-border-radius-md);
       margin-bottom: 16px;
     }
     .fields .title {

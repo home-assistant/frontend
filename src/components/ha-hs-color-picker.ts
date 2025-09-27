@@ -394,7 +394,7 @@ class HaHsColorPicker extends LitElement {
       width: 100%;
       height: 100%;
       object-fit: contain;
-      border-radius: 50%;
+      border-radius: var(--ha-border-radius-circle);
       cursor: pointer;
     }
     svg {

@@ -1,26 +1,26 @@
+import { mdiClose, mdiPlay, mdiStop } from "@mdi/js";
+import type { HassEntity } from "home-assistant-js-websocket";
 import type { CSSResultGroup } from "lit";
 import { css, html, LitElement, nothing } from "lit";
 import { customElement, property, query, state } from "lit/decorators";
-import type { HassEntity } from "home-assistant-js-websocket";
-import { mdiClose, mdiPlay, mdiStop } from "@mdi/js";
-import type { HomeAssistant } from "../../../../types";
+import { fireEvent } from "../../../../common/dom/fire_event";
 import { stopPropagation } from "../../../../common/dom/stop_propagation";
+import { supportsFeature } from "../../../../common/entity/supports-feature";
+import "../../../../components/ha-button";
+import "../../../../components/ha-control-button";
+import "../../../../components/ha-dialog-header";
+import "../../../../components/ha-icon-button";
+import "../../../../components/ha-list-item";
+import type { HaMdDialog } from "../../../../components/ha-md-dialog";
 import {
   getMobileCloseToBottomAnimation,
   getMobileOpenFromBottomAnimation,
 } from "../../../../components/ha-md-dialog";
-import "../../../../components/ha-dialog-header";
-import "../../../../components/ha-icon-button";
-import "../../../../components/ha-button";
-import "../../../../components/ha-textfield";
-import "../../../../components/ha-control-button";
 import "../../../../components/ha-select";
-import "../../../../components/ha-list-item";
-import type { HaMdDialog } from "../../../../components/ha-md-dialog";
-import { fireEvent } from "../../../../common/dom/fire_event";
-import { supportsFeature } from "../../../../common/entity/supports-feature";
+import "../../../../components/ha-textfield";
 import { SirenEntityFeature } from "../../../../data/siren";
 import { haStyle } from "../../../../resources/styles";
+import type { HomeAssistant } from "../../../../types";
 
 @customElement("ha-more-info-siren-advanced-controls")
 class MoreInfoSirenAdvancedControls extends LitElement {
@@ -212,7 +212,7 @@ class MoreInfoSirenAdvancedControls extends LitElement {
           margin-top: 16px;
         }
         ha-control-button {
-          --control-button-border-radius: 16px;
+          --control-button-border-radius: var(--ha-border-radius-xl);
           --mdc-icon-size: 24px;
           width: 64px;
           height: 64px;

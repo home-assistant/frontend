@@ -783,7 +783,7 @@ export class HaTargetPicker extends SubscribeMixin(LitElement) {
         outline: none;
       }
       .mdc-chip ha-icon-button ha-svg-icon {
-        border-radius: 50%;
+        border-radius: var(--ha-border-radius-circle);
         background: var(--secondary-text-color);
       }
       .mdc-chip__icon.mdc-chip__icon--trailing {
@@ -800,7 +800,7 @@ export class HaTargetPicker extends SubscribeMixin(LitElement) {
         align-items: center;
         justify-content: center;
         --mdc-icon-size: 20px;
-        border-radius: 50%;
+        border-radius: var(--ha-border-radius-circle);
         padding: 6px;
         margin-left: -13px !important;
         margin-inline-start: -13px !important;

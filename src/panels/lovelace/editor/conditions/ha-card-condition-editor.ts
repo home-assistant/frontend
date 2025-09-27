@@ -13,6 +13,7 @@ import type { PropertyValues } from "lit";
 import { LitElement, css, html, nothing } from "lit";
 import { customElement, property, state } from "lit/decorators";
 import { classMap } from "lit/directives/class-map";
+import { storage } from "../../../../common/decorators/storage";
 import { dynamicElement } from "../../../../common/dom/dynamic-element-directive";
 import { fireEvent } from "../../../../common/dom/fire_event";
 import { preventDefault } from "../../../../common/dom/prevent_default";
@@ -39,7 +40,6 @@ import {
   validateConditionalConfig,
 } from "../../common/validate-condition";
 import type { LovelaceConditionEditorConstructor } from "./types";
-import { storage } from "../../../../common/decorators/storage";
 
 @customElement("ha-card-condition-editor")
 export class HaCardConditionEditor extends LitElement {
@@ -384,10 +384,16 @@ export class HaCardConditionEditor extends LitElement {
         transition: max-height 0.3s;
         text-align: center;
         border-top-right-radius: calc(
-          var(--ha-card-border-radius, 12px) - var(--ha-card-border-width, 1px)
+          var(--ha-card-border-radius, var(--ha-border-radius-lg)) - var(
+              --ha-card-border-width,
+              1px
+            )
         );
         border-top-left-radius: calc(
-          var(--ha-card-border-radius, 12px) - var(--ha-card-border-width, 1px)
+          var(--ha-card-border-radius, var(--ha-border-radius-lg)) - var(
+              --ha-card-border-width,
+              1px
+            )
         );
       }
       .testing.active {
@@ -401,7 +407,7 @@ export class HaCardConditionEditor extends LitElement {
       }
       .container {
         position: relative;
-        border-radius: var(--ha-card-border-radius, 12px);
+        border-radius: var(--ha-card-border-radius, var(--ha-border-radius-lg));
         border: 1px solid var(--divider-color);
       }
     `,

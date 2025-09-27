@@ -1051,7 +1051,7 @@ class HaConfigIntegrationPage extends SubscribeMixin(LitElement) {
         }
         ha-md-list {
           border: 1px solid var(--divider-color);
-          border-radius: 8px;
+          border-radius: var(--ha-border-radius-md);
           padding: 0;
         }
         .discovered {

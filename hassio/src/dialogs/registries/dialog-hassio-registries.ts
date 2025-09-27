@@ -228,7 +228,7 @@ class HassioRegistriesDialog extends LitElement {
       css`
         .registry {
           border: 1px solid var(--divider-color);
-          border-radius: 4px;
+          border-radius: var(--ha-border-radius-sm);
           margin-top: 4px;
         }
         .action {

@@ -247,7 +247,7 @@ class DialogExposeEntity extends LitElement {
             --mdc-dialog-min-height: 100%;
             --mdc-dialog-max-height: 100%;
             --vertical-align-dialog: flex-end;
-            --ha-dialog-border-radius: 0px;
+            --ha-dialog-border-radius: var(--ha-border-radius-square);
           }
           lit-virtualizer {
             height: calc(

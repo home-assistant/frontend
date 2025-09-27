@@ -299,7 +299,7 @@ class PanelCalendar extends LitElement {
         }
         ha-full-calendar {
           --calendar-header-padding: 12px;
-          --calendar-border-radius: 0;
+          --calendar-border-radius: var(--ha-border-radius-square);
           --calendar-border-width: 1px 0;
           height: calc(
             100vh - var(--header-height, 0px) - var(

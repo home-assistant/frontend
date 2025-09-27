@@ -7,27 +7,27 @@ import type {
   Layer,
   Map,
   Marker,
-  Polyline,
   MarkerClusterGroup,
+  Polyline,
 } from "leaflet";
 import type { PropertyValues } from "lit";
 import { css, ReactiveElement } from "lit";
 import { customElement, property, state } from "lit/decorators";
-import { fireEvent } from "../../common/dom/fire_event";
 import { formatDateTime } from "../../common/datetime/format_date_time";
 import {
   formatTimeWeekday,
   formatTimeWithSeconds,
 } from "../../common/datetime/format_time";
+import { fireEvent } from "../../common/dom/fire_event";
 import type { LeafletModuleType } from "../../common/dom/setup-leaflet-map";
 import { setupLeafletMap } from "../../common/dom/setup-leaflet-map";
 import { computeStateDomain } from "../../common/entity/compute_state_domain";
 import { computeStateName } from "../../common/entity/compute_state_name";
+import { DecoratedMarker } from "../../common/map/decorated_marker";
 import type { HomeAssistant, ThemeMode } from "../../types";
 import { isTouch } from "../../util/is_touch";
 import "../ha-icon-button";
 import "./ha-entity-marker";
-import { DecoratedMarker } from "../../common/map/decorated_marker";
 
 declare global {
   // for fire event
@@ -710,7 +710,7 @@ export class HaMap extends ReactiveElement {
       cursor: move !important;
     }
     .leaflet-edit-resize {
-      border-radius: 50%;
+      border-radius: var(--ha-border-radius-circle);
       cursor: nesw-resize !important;
     }
     .named-icon {
@@ -734,7 +734,7 @@ export class HaMap extends ReactiveElement {
       font-size: var(--ha-font-size-s);
       background: rgba(80, 80, 80, 0.9) !important;
       color: white !important;
-      border-radius: 4px;
+      border-radius: var(--ha-border-radius-sm);
       box-shadow: none !important;
       text-align: center;
     }
@@ -745,7 +745,7 @@ export class HaMap extends ReactiveElement {
       border: 3px solid rgba(var(--rgb-primary-color), 0.2);
       width: 32px;
       height: 32px;
-      border-radius: 20px;
+      border-radius: var(--ha-border-radius-2xl);
       text-align: center;
       color: var(--text-primary-color);
       font-size: var(--ha-font-size-m);

@@ -204,7 +204,7 @@ export class HaResizableBottomSheet extends LitElement {
     }
     .handle-wrapper .handle::after {
       content: "";
-      border-radius: 8px;
+      border-radius: var(--ha-border-radius-md);
       height: 4px;
       background: var(--divider-color, #e0e0e0);
       width: 80px;

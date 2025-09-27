@@ -281,7 +281,7 @@ class DialogLightColorFavorite extends LitElement {
           width: 30px;
           height: 30px;
           flex: none;
-          border-radius: 15px;
+          border-radius: var(--ha-border-radius-xl);
         }
         .wheel.color {
           background-image: url("/static/images/color_wheel.png");

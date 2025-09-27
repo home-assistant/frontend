@@ -4,11 +4,11 @@ import Vue from "vue";
 import DateRangePicker from "vue2-daterange-picker";
 // @ts-ignore
 import dateRangePickerStyles from "vue2-daterange-picker/dist/vue2-daterange-picker.css";
-import { fireEvent } from "../common/dom/fire_event";
 import {
-  localizeWeekdays,
   localizeMonths,
+  localizeWeekdays,
 } from "../common/datetime/localize_date";
+import { fireEvent } from "../common/dom/fire_event";
 import { mainWindow } from "../common/dom/get_main_window";
 
 // eslint-disable-next-line @typescript-eslint/naming-convention
@@ -177,7 +177,7 @@ class DateRangePickerElement extends WrappedElement {
             top: auto;
             box-shadow: var(--ha-card-box-shadow, none);
             background-color: var(--card-background-color);
-            border-radius: var(--ha-card-border-radius, 12px);
+            border-radius: var(--ha-card-border-radius, var(--ha-border-radius-lg));
             border-width: var(--ha-card-border-width, 1px);
             border-style: solid;
             border-color: var(
@@ -203,7 +203,7 @@ class DateRangePickerElement extends WrappedElement {
           .daterangepicker .calendar-table th {
             background-color: transparent;
             color: var(--secondary-text-color);
-            border-radius: 0;
+            border-radius: var(--ha-border-radius-square);
             outline: none;
             min-width: 32px;
             height: 32px;
@@ -225,13 +225,13 @@ class DateRangePickerElement extends WrappedElement {
             color: var(--text-primary-color);
           }
           .daterangepicker td.start-date.end-date {
-            border-radius: 50%;
+            border-radius: var(--ha-border-radius-circle);
           }
           .daterangepicker td.start-date {
-            border-radius: 50% 0 0 50%;
+            border-radius: var(--ha-border-radius-circle) var(--ha-border-radius-square) var(--ha-border-radius-square) var(--ha-border-radius-circle);
           }
           .daterangepicker td.end-date {
-            border-radius: 0 50% 50% 0;
+            border-radius: var(--ha-border-radius-square) var(--ha-border-radius-circle) var(--ha-border-radius-circle) var(--ha-border-radius-square);
           }
           .reportrange-text {
             background: none !important;
@@ -265,7 +265,7 @@ class DateRangePickerElement extends WrappedElement {
             border: 1px solid var(--primary-color);
             background-color: transparent;
             color: var(--primary-color);
-            border-radius: 4px;
+            border-radius: var(--ha-border-radius-sm);
             padding: 8px;
             cursor: pointer;
           }
@@ -321,10 +321,10 @@ class DateRangePickerElement extends WrappedElement {
               -webkit-transform: rotate(-45deg);
             }
             .daterangepicker td.start-date {
-              border-radius: 0 50% 50% 0;
+              border-radius: var(--ha-border-radius-square) var(--ha-border-radius-circle) var(--ha-border-radius-circle) var(--ha-border-radius-square);
             }
             .daterangepicker td.end-date {
-              border-radius: 50% 0 0 50%;
+              border-radius: var(--ha-border-radius-circle) var(--ha-border-radius-square) var(--ha-border-radius-square) var(--ha-border-radius-circle);
             }
             `;
     }

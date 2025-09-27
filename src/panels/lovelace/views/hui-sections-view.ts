@@ -380,7 +380,7 @@ export class SectionsView extends LitElement implements LovelaceViewElement {
     }
 
     .section {
-      border-radius: var(--ha-card-border-radius, 12px);
+      border-radius: var(--ha-card-border-radius, var(--ha-border-radius-lg));
       grid-column: span var(--column-span);
       grid-row: span var(--row-span);
     }
@@ -436,7 +436,7 @@ export class SectionsView extends LitElement implements LovelaceViewElement {
       outline: none;
       background: none;
       cursor: pointer;
-      border-radius: var(--ha-card-border-radius, 12px);
+      border-radius: var(--ha-card-border-radius, var(--ha-border-radius-lg));
       border: 2px dashed var(--primary-color);
       height: calc(var(--row-height) + 2 * (var(--row-gap) + 2px));
       padding: 8px;
@@ -461,7 +461,7 @@ export class SectionsView extends LitElement implements LovelaceViewElement {
       outline: none;
       background: none;
       cursor: pointer;
-      border-radius: var(--ha-card-border-radius, 12px);
+      border-radius: var(--ha-card-border-radius, var(--ha-border-radius-lg));
       border: 2px dashed var(--primary-color);
       order: 1;
       height: calc(var(--row-height) + 2 * (var(--row-gap) + 2px));
@@ -478,7 +478,7 @@ export class SectionsView extends LitElement implements LovelaceViewElement {
     }
 
     .sortable-ghost {
-      border-radius: var(--ha-card-border-radius, 12px);
+      border-radius: var(--ha-card-border-radius, var(--ha-border-radius-lg));
     }
 
     hui-view-header {

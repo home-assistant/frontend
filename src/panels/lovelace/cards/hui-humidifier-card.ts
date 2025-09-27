@@ -256,7 +256,7 @@ export class HuiHumidifierCard extends LitElement implements LovelaceCard {
       right: 0;
       inset-inline-end: 0px;
       inset-inline-start: initial;
-      border-radius: 100%;
+      border-radius: var(--ha-border-radius-pill);
       color: var(--secondary-text-color);
       direction: var(--direction);
     }

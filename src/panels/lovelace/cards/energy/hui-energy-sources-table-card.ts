@@ -686,7 +686,7 @@ export class HuiEnergySourcesTableCard
       .bullet {
         border-width: 1px;
         border-style: solid;
-        border-radius: 4px;
+        border-radius: var(--ha-border-radius-sm);
         height: 16px;
         width: 32px;
       }

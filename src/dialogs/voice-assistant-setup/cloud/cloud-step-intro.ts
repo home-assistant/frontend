@@ -146,7 +146,7 @@ export class CloudStepIntro extends LitElement {
         margin: 0 4px;
       }
       .round-icon {
-        border-radius: 50%;
+        border-radius: var(--ha-border-radius-circle);
         color: #6e41ab;
         background-color: #e8dcf7;
         display: flex;

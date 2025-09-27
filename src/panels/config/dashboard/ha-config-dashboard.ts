@@ -38,6 +38,7 @@ import {
   showQuickBar,
 } from "../../../dialogs/quick-bar/show-dialog-quick-bar";
 import { showRestartDialog } from "../../../dialogs/restart/show-dialog-restart";
+import { showShortcutsDialog } from "../../../dialogs/shortcuts/show-shortcuts-dialog";
 import type { PageNavigation } from "../../../layouts/hass-tabs-subpage";
 import { SubscribeMixin } from "../../../mixins/subscribe-mixin";
 import { haStyle } from "../../../resources/styles";
@@ -49,7 +50,6 @@ import { configSections } from "../ha-panel-config";
 import "../repairs/ha-config-repairs";
 import "./ha-config-navigation";
 import "./ha-config-updates";
-import { showShortcutsDialog } from "../../../dialogs/shortcuts/show-shortcuts-dialog";
 
 const randomTip = (openFn: any, hass: HomeAssistant, narrow: boolean) => {
   const weighted: string[] = [];
@@ -417,7 +417,7 @@ class HaConfigDashboard extends SubscribeMixin(LitElement) {
         @media all and (max-width: 600px) {
           ha-card {
             border-width: 1px 0;
-            border-radius: 0;
+            border-radius: var(--ha-border-radius-square);
             box-shadow: unset;
           }
           ha-config-section {

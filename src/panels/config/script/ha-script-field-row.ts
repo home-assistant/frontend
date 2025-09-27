@@ -451,13 +451,13 @@ export default class HaScriptFieldRow extends LitElement {
           background: var(--divider-color, #e0e0e0);
           text-align: center;
           border-top-right-radius: calc(
-            var(--ha-card-border-radius, 12px) - var(
+            var(--ha-card-border-radius, var(--ha-border-radius-lg)) - var(
                 --ha-card-border-width,
                 1px
               )
           );
           border-top-left-radius: calc(
-            var(--ha-card-border-radius, 12px) - var(
+            var(--ha-card-border-radius, var(--ha-border-radius-lg)) - var(
                 --ha-card-border-width,
                 1px
               )
