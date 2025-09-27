@@ -116,6 +116,10 @@ export interface SwitchAsXEntityOptions {
   invert: boolean;
 }
 
+export interface RecorderEntityOptions {
+  recording_disabled_by?: string | null;
+}
+
 export interface EntityRegistryOptions {
   number?: NumberEntityOptions;
   sensor?: SensorEntityOptions;
@@ -124,6 +128,7 @@ export interface EntityRegistryOptions {
   weather?: WeatherEntityOptions;
   light?: LightEntityOptions;
   switch_as_x?: SwitchAsXEntityOptions;
+  recorder?: RecorderEntityOptions;
   conversation?: Record<string, unknown>;
   "cloud.alexa"?: Record<string, unknown>;
   "cloud.google_assistant"?: Record<string, unknown>;
