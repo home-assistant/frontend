@@ -34,3 +34,5 @@ Check the [webawesome documentation](https://webawesome.com/docs/components/slid
 **CSS Custom Properties**
 
 - `--ha-slider-track-size` - Height of the slider track. Defaults to `4px`.
+- `--ha-slider-indicator-color` - Color of the slider indicator. Defaults to `var(--primary-color)`.
+- `--ha-slider-thumb-color` - Color of the slider thumb. Defaults to `var(--primary-color)`.
