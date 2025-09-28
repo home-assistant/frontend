@@ -40,7 +40,7 @@ jobs:
       - name: Deploy preview to Netlify
         id: deploy
         run: |
-          npx -y netlify-cli deploy --dir=gallery/dist --alias "deploy-preview-${{ github.event.number }}" \
+          npx -y netlify-cli@23.7.3 deploy --dir=gallery/dist --alias "deploy-preview-${{ github.event.number }}" \
             --json > deploy_output.json
         env:
           NETLIFY_AUTH_TOKEN: ${{ secrets.NETLIFY_AUTH_TOKEN }}
