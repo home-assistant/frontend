@@ -295,12 +295,11 @@ class HaPanelDevAction extends LitElement {
                           `component.${domain}.services.${serviceName}.fields.${field.key}.description`
                         ) || field.description}
                       </td>
-                      <!-- prettier-ignore -->
-                      <td>${this.hass.localize(
-                        `component.${domain}.services.${serviceName}.fields.${field.key}.example`
-                      ) || Array.isArray(field.example)
-                        ? field.example.join(", ")
-                        : field.example}</td>
+                      <td>
+                        ${this.hass.localize(
+                          `component.${domain}.services.${serviceName}.fields.${field.key}.example`
+                        ) || JSON.stringify(field.example)}
+                      </td>
                     </tr>`
                 )}
               </table>
