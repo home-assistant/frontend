@@ -328,7 +328,7 @@ class MoreInfoMediaPlayer extends LitElement {
             <div class="position-bar">
               <ha-slider
                 id="position-slider"
-                min="0"
+                min="0"r
                 max=${duration}
                 step="1"
                 .value=${position}
