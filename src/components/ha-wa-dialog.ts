@@ -198,7 +198,10 @@ export class HaWaDialog extends LitElement {
       --hide-duration: var(--ha-dialog-hide-duration, 200ms);
       --wa-color-surface-raised: var(
         --ha-dialog-surface-background,
-        var(--mdc-theme-surface, #fff)
+        var(
+          --card-background-color,
+          var(--ha-color-surface-default, var(--mdc-theme-surface, #fff))
+        )
       );
       --wa-panel-border-radius: var(
         --ha-dialog-border-radius,
