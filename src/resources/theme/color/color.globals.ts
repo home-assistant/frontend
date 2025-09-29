@@ -273,6 +273,8 @@ export const colorStyles = css`
     --material-background-color: var(--card-background-color);
     --material-secondary-background-color: var(--secondary-background-color);
     --material-secondary-text-color: var(--secondary-text-color);
+
+    --ha-control-color: var(--primary-color);
   }
 `;
 

@@ -19,6 +19,7 @@ export class HaSlider extends Slider {
       Slider.styles,
       css`
         :host {
+          --wa-form-control-activated-color: var(--ha-control-color);
           --track-size: var(--ha-slider-track-size, 4px);
           --marker-height: calc(var(--ha-slider-track-size, 4px) / 2);
           --marker-width: calc(var(--ha-slider-track-size, 4px) / 2);
@@ -52,7 +53,6 @@ export class HaSlider extends Slider {
         }
 
         #thumb {
-          background-color: var(--ha-slider-thumb-color, var(--primary-color));
           border: none;
         }
 
@@ -70,13 +70,6 @@ export class HaSlider extends Slider {
         :host([size="small"]) {
           --thumb-width: var(--ha-font-size-m, 1em);
           --thumb-height: var(--ha-font-size-m, 1em);
-        }
-
-        #indicator {
-          background-color: var(
-            --ha-slider-indicator-color,
-            var(--primary-color)
-          );
         }
       `,
     ];
