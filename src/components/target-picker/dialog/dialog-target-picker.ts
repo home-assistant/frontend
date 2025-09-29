@@ -1,8 +1,13 @@
+import { ContextProvider } from "@lit/context";
 import { mdiClose } from "@mdi/js";
+import type { UnsubscribeFunc } from "home-assistant-js-websocket";
 import { css, html, LitElement, nothing } from "lit";
 import { customElement, property, query, state } from "lit/decorators";
 import { fireEvent } from "../../../common/dom/fire_event";
+import { labelsContext } from "../../../data/context";
+import { subscribeLabelRegistry } from "../../../data/label_registry";
 import type { HassDialog } from "../../../dialogs/make-dialog-manager";
+import { SubscribeMixin } from "../../../mixins/subscribe-mixin";
 import type { HomeAssistant } from "../../../types";
 import "../../ha-dialog-header";
 import "../../ha-icon-button";
@@ -17,12 +22,20 @@ import type { TargetTypeFloorless } from "../ha-target-picker-selector";
 import type { TargetPickerDialogParams } from "./show-dialog-target-picker";
 
 @customElement("ha-dialog-target-picker")
-class DialogTargetPicker extends LitElement implements HassDialog {
+class DialogTargetPicker
+  extends SubscribeMixin(LitElement)
+  implements HassDialog
+{
   @property({ attribute: false }) public hass!: HomeAssistant;
 
   @state() private _params?: TargetPickerDialogParams;
 
   @query("ha-md-dialog") private _dialog?: HaMdDialog;
+
+  private _labelsContext = new ContextProvider(this, {
+    context: labelsContext,
+    initialValue: [],
+  });
 
   public showDialog(params: TargetPickerDialogParams): void {
     this._params = params;
@@ -36,6 +49,14 @@ class DialogTargetPicker extends LitElement implements HassDialog {
   private _dialogClosed() {
     fireEvent(this, "dialog-closed", { dialog: this.localName });
     this._params = undefined;
+  }
+
+  public hassSubscribe(): UnsubscribeFunc[] {
+    return [
+      subscribeLabelRegistry(this.hass.connection!, (labels) => {
+        this._labelsContext.setValue(labels);
+      }),
+    ];
   }
 
   protected render() {
@@ -61,6 +82,12 @@ class DialogTargetPicker extends LitElement implements HassDialog {
             .hass=${this.hass}
             @filter-types-changed=${this._handleUpdatePickerFilters}
             .filterTypes=${this._params.typeFilter || []}
+            @target-picked=${this._handleTargetPicked}
+            .targetValue=${this._params.target}
+            .deviceFilter=${this._params.deviceFilter}
+            .entityFilter=${this._params.entityFilter}
+            .includeDomains=${this._params.includeDomains}
+            .includeDeviceClasses=${this._params.includeDeviceClasses}
           ></ha-target-picker-selector>
         </div>
       </ha-md-dialog>
@@ -71,6 +98,13 @@ class DialogTargetPicker extends LitElement implements HassDialog {
     if (this._params?.updateTypeFilter) {
       this._params.updateTypeFilter(ev.detail);
     }
+  }
+
+  private _handleTargetPicked(
+    ev: CustomEvent<{ id: string; type: TargetTypeFloorless }>
+  ) {
+    this._params?.selectTarget(ev);
+    this.closeDialog();
   }
 
   static styles = css`

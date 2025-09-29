@@ -274,6 +274,7 @@ export const getAreasAndFloors = (
             id: formatId({ id: area.area_id, type: "area" }),
             type: "area" as const,
             primary: areaName,
+            area: area,
             icon: area.icon || undefined,
             search_labels: [area.area_id, areaName, ...area.aliases],
           };

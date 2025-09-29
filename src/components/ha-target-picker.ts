@@ -86,8 +86,6 @@ export class HaTargetPicker extends SubscribeMixin(LitElement) {
 
   @query("#input") private _inputElement?;
 
-  @query(".add-container", true) private _addContainer?: HTMLDivElement;
-
   @query(".add-target-wrapper") private _addTargetWrapper?: HTMLDivElement;
 
   @query("wa-popover") private _addPopover?: WaPopover;
@@ -282,6 +280,12 @@ export class HaTargetPicker extends SubscribeMixin(LitElement) {
                       @filter-types-changed=${this._handleUpdatePickerFilters}
                       .filterTypes=${this._pickerFilters}
                       autofocus
+                      @target-picked=${this._targetPicked}
+                      .targetValue=${this.value}
+                      .deviceFilter=${this.deviceFilter}
+                      .entityFilter=${this.entityFilter}
+                      .includeDomains=${this.includeDomains}
+                      .includeDeviceClasses=${this.includeDeviceClasses}
                     ></ha-target-picker-selector>`
                   : nothing}
               </wa-popover>
@@ -316,14 +320,12 @@ export class HaTargetPicker extends SubscribeMixin(LitElement) {
 
     if (this._narrow) {
       showTargetPickerDialog(this, {
-        target: this.value || {},
+        target: this.value,
         deviceFilter: this.deviceFilter,
         entityFilter: this.entityFilter,
         includeDomains: this.includeDomains,
         includeDeviceClasses: this.includeDeviceClasses,
-        selectTarget: () => {
-          // TODO
-        },
+        selectTarget: this._targetPicked,
         typeFilter: this._pickerFilters,
         updateTypeFilter: this._updatePickerFilters,
       });
@@ -344,29 +346,28 @@ export class HaTargetPicker extends SubscribeMixin(LitElement) {
     this._addMode = false;
   }
 
-  private _targetPicked(ev) {
+  private _targetPicked = (
+    ev: CustomEvent<{ type: TargetType; id: string }>
+  ) => {
     ev.stopPropagation();
-    if (!ev.detail.value) {
+
+    // close popover
+    this._addPopover?.hide();
+
+    if (!ev.detail.type || !ev.detail.id) {
       return;
     }
-    let value = ev.detail.value;
-    const target = ev.currentTarget;
-    let type = target.type;
+    const id = ev.detail.id;
+    const type = `${ev.detail.type}_id`;
 
-    if (type === "entity_id" && !isValidEntityId(value)) {
+    if (type === "entity_id" && !isValidEntityId(id)) {
       return;
     }
 
-    if (type === "area_id") {
-      value = ev.detail.value.id;
-      type = `${ev.detail.value.type}_id`;
-    }
-
-    target.value = "";
     if (
       this.value &&
       this.value[type] &&
-      ensureArray(this.value[type]).includes(value)
+      ensureArray(this.value[type]).includes(id)
     ) {
       return;
     }
@@ -375,12 +376,12 @@ export class HaTargetPicker extends SubscribeMixin(LitElement) {
         ? {
             ...this.value,
             [type]: this.value[type]
-              ? [...ensureArray(this.value[type]), value]
-              : value,
+              ? [...ensureArray(this.value[type]), id]
+              : id,
           }
-        : { [type]: value },
+        : { [type]: id },
     });
-  }
+  };
 
   private _handleRemove(ev) {
     const { type, id } = ev.detail;
@@ -610,9 +611,8 @@ export class HaTargetPicker extends SubscribeMixin(LitElement) {
       wa-popover::part(body) {
         width: var(--body-width);
         max-width: var(--body-width);
-        max-height: 700px;
-        height: 100vh;
-        /* TODO height should be variable if less elements are available */
+        max-height: 500px;
+        height: 70vh;
       }
 
       ${unsafeCSS(chipStyles)}
@@ -631,10 +631,6 @@ export class HaTargetPicker extends SubscribeMixin(LitElement) {
       }
       .mdc-chip.add {
         color: rgba(0, 0, 0, 0.87);
-      }
-      .add-container {
-        position: relative;
-        display: inline-flex;
       }
       .mdc-chip:not(.add) {
         cursor: default;
