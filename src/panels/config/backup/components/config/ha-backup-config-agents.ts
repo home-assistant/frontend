@@ -313,13 +313,13 @@ class HaBackupConfigAgents extends LitElement {
       display: flex;
       align-items: center;
       flex-direction: row;
-      gap: 8px;
+      gap: var(--ha-space-2);
       line-height: var(--ha-line-height-condensed);
     }
     .unencrypted-warning {
       display: flex;
       align-items: center;
-      gap: 4px;
+      gap: var(--ha-space-1);
     }
     .dot {
       display: block;
@@ -341,7 +341,7 @@ class HaBackupConfigAgents extends LitElement {
         align-items: flex-start;
         flex-direction: column;
         justify-content: flex-start;
-        gap: 4px;
+        gap: var(--ha-space-1);
       }
     }
   `;

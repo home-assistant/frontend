@@ -442,7 +442,7 @@ class MoreInfoMediaPlayer extends LitElement {
     :host {
       display: flex;
       flex-direction: column;
-      gap: 24px;
+      gap: var(--ha-space-6);
       margin-top: 0;
     }
 
@@ -510,7 +510,7 @@ class MoreInfoMediaPlayer extends LitElement {
     .volume {
       display: flex;
       align-items: center;
-      gap: 12px;
+      gap: var(--ha-space-3);
       margin-left: 8px;
     }
 
@@ -591,7 +591,7 @@ class MoreInfoMediaPlayer extends LitElement {
     .bottom-controls {
       display: flex;
       flex-direction: column;
-      gap: 24px;
+      gap: var(--ha-space-6);
       align-self: center;
       width: 320px;
     }

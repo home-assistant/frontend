@@ -305,7 +305,7 @@ class DialogChangeBackupEncryptionKey extends LitElement implements HassDialog {
           display: flex;
           flex-direction: row;
           align-items: center;
-          gap: 24px;
+          gap: var(--ha-space-6);
         }
         .encryption-key p {
           margin: 0;

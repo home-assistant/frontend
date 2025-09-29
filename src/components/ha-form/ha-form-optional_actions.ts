@@ -156,7 +156,7 @@ export class HaFormOptionalActions extends LitElement implements HaFormElement {
     :host {
       display: flex !important;
       flex-direction: column;
-      gap: 24px;
+      gap: var(--ha-space-6);
     }
     :host ha-form {
       display: block;

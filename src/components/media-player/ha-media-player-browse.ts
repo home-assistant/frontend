@@ -1138,7 +1138,7 @@ export class HaMediaPlayerBrowse extends LitElement {
             auto-fit,
             minmax(var(--media-browse-item-size, 175px), 0.1fr)
           );
-          grid-gap: 16px;
+          grid-gap: var(--ha-space-4);
           padding: 16px;
         }
 
