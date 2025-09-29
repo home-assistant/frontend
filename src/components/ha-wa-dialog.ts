@@ -202,7 +202,7 @@ export class HaWaDialog extends LitElement {
       );
       --wa-color-surface-raised: var(
         --ha-dialog-surface-background,
-        var(--card-background-color, var(--ha-color-surface-default, #fff))
+        var(--card-background-color, var(--ha-color-surface-default))
       );
       --wa-panel-border-radius: var(
         --ha-dialog-border-radius,
