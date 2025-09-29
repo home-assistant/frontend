@@ -27,6 +27,9 @@ interface ShortcutEntry {
    * The keys that the shortcut is registered to.
    */
   keys: Set<string>;
+  /**
+   * A function to remove the shortcuts.
+   */
   disposer: () => void;
 }
 
@@ -53,7 +56,6 @@ function registerShortcuts(
     };
   });
 
-  // Underlying implementation (tinykeys for now)
   return tinykeys(window, wrappedShortcuts);
 }
 
