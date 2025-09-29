@@ -275,7 +275,7 @@ export class HaConfigLovelaceDashboards extends LitElement {
       const isDefault = defaultUrlPath === "lovelace";
       const result: DataTableItem[] = [
         {
-          icon: "hass:view-dashboard",
+          icon: "mdi:view-dashboard",
           title: this.hass.localize("panel.states"),
           default: isDefault,
           show_in_sidebar: isDefault,
@@ -288,7 +288,7 @@ export class HaConfigLovelaceDashboards extends LitElement {
       ];
       if (isComponentLoaded(this.hass, "energy")) {
         result.push({
-          icon: "hass:lightning-bolt",
+          icon: "mdi:lightning-bolt",
           title: this.hass.localize(`ui.panel.config.dashboard.energy.main`),
           show_in_sidebar: true,
           mode: "storage",
