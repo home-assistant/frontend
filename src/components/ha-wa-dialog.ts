@@ -277,16 +277,22 @@ export class HaWaDialog extends LitElement {
     .header-title {
       margin: 0;
       margin-bottom: 0;
-      color: var(--mdc-dialog-heading-ink-color, rgba(0, 0, 0, 0.87));
-      font-size: var(--mdc-typography-headline6-font-size, 1.574rem);
-      line-height: var(--mdc-typography-headline6-line-height, 2rem);
+      color: var(
+        --ha-dialog-header-title-color,
+        var(--ha-color-on-surface-default, var(--primary-text-color))
+      );
+      font-size: var(
+        --ha-dialog-header-title-font-size,
+        var(--ha-font-size-2xl)
+      );
+      line-height: var(
+        --ha-dialog-header-title-line-height,
+        var(--ha-line-height-condensed)
+      );
       font-weight: var(
-        --mdc-typography-headline6-font-weight,
+        --ha-dialog-header-title-font-weight,
         var(--ha-font-weight-normal)
       );
-      letter-spacing: var(--mdc-typography-headline6-letter-spacing, 0.0125em);
-      text-decoration: var(--mdc-typography-headline6-text-decoration, inherit);
-      text-transform: var(--mdc-typography-headline6-text-transform, inherit);
       overflow: hidden;
       text-overflow: ellipsis;
       white-space: nowrap;
