@@ -62,7 +62,7 @@ export default <T extends Constructor<HassElement>>(superClass: T) =>
     }
 
     private _registerShortcut() {
-      const shortcutManager = createShortcutManager(this.hass);
+      const shortcutManager = createShortcutManager();
       shortcutManager.add({
         // Those are for latin keyboards that have e, c, m keys
         e: (ev) => this._showQuickBar(ev),
