@@ -3,7 +3,7 @@ import { canOverrideAlphanumericInput } from "../dom/can-override-input";
 
 export type ShortcutHandler = (event: KeyboardEvent) => void;
 
-export interface ShortcutManager {
+export interface ShortcutManagerInterface {
   /**
    * Add a group of keyboard shortcuts to the manager.
    *
@@ -23,6 +23,9 @@ export interface ShortcutManager {
 }
 
 interface ShortcutEntry {
+  /**
+   * The keys that the shortcut is registered to.
+   */
   keys: Set<string>;
   disposer: () => void;
 }
@@ -55,42 +58,38 @@ function registerShortcuts(
 }
 
 /**
- * Create a shortcut manager that can add and dispose shortcuts.
- *
- * @returns A shortcut manager containing the add and remove methods.
+ * A class that can add and remove keyboard shortcuts.
  */
-export function createShortcutManager(): ShortcutManager {
-  const shortcutEntries: ShortcutEntry[] = [];
+export class ShortcutManager implements ShortcutManagerInterface {
+  private shortcutEntries: ShortcutEntry[] = [];
 
-  return {
-    add(shortcuts: Record<string, ShortcutHandler>) {
-      const disposer = registerShortcuts(shortcuts);
-      const keys = new Set(Object.keys(shortcuts));
-      const entry: ShortcutEntry = { keys, disposer };
-      shortcutEntries.push(entry);
-    },
+  public add(shortcuts: Record<string, ShortcutHandler>) {
+    const disposer = registerShortcuts(shortcuts);
+    const keys = new Set(Object.keys(shortcuts));
+    const entry: ShortcutEntry = { keys, disposer };
+    this.shortcutEntries.push(entry);
+  }
 
-    remove(keys?: string[]) {
-      if (keys) {
-        const entriesToRemove: ShortcutEntry[] = [];
+  public remove(keys?: string[]) {
+    if (keys) {
+      const entriesToRemove: ShortcutEntry[] = [];
 
-        for (const entry of shortcutEntries) {
-          if (keys.some((key) => entry.keys.has(key))) {
-            entry.disposer();
-            entriesToRemove.push(entry);
-          }
+      for (const entry of this.shortcutEntries) {
+        if (keys.some((key) => entry.keys.has(key))) {
+          entry.disposer();
+          entriesToRemove.push(entry);
         }
-
-        entriesToRemove.forEach((entry) => {
-          const index = shortcutEntries.indexOf(entry);
-          if (index !== -1) {
-            shortcutEntries.splice(index, 1);
-          }
-        });
-      } else {
-        shortcutEntries.forEach((entry) => entry.disposer());
-        shortcutEntries.length = 0;
       }
-    },
-  };
+
+      entriesToRemove.forEach((entry) => {
+        const index = this.shortcutEntries.indexOf(entry);
+        if (index !== -1) {
+          this.shortcutEntries.splice(index, 1);
+        }
+      });
+    } else {
+      this.shortcutEntries.forEach((entry) => entry.disposer());
+      this.shortcutEntries.length = 0;
+    }
+  }
 }
