@@ -81,12 +81,12 @@ export function createShortcutManager(): ShortcutManager {
           }
         }
 
-        for (const entry of entriesToRemove) {
+        entriesToRemove.forEach((entry) => {
           const index = shortcutEntries.indexOf(entry);
           if (index !== -1) {
             shortcutEntries.splice(index, 1);
           }
-        }
+        });
       } else {
         shortcutEntries.forEach((entry) => entry.disposer());
         shortcutEntries.length = 0;
