@@ -1,5 +1,5 @@
 import { css, html, LitElement } from "lit";
-import { customElement, property, state } from "lit/decorators";
+import { customElement, property, state, query } from "lit/decorators";
 import "@home-assistant/webawesome/dist/components/dialog/dialog";
 import { mdiClose } from "@mdi/js";
 import type { HomeAssistant } from "../types";
@@ -89,6 +89,9 @@ export class HaWaDialog extends LitElement {
   @state()
   private _sizeChanged = false;
 
+  @query('ha-dialog-footer [slot="primaryAction"]')
+  private _primaryAction!: HTMLElement;
+
   protected updated(
     changedProperties: Map<string | number | symbol, unknown>
   ): void {
@@ -176,19 +179,14 @@ export class HaWaDialog extends LitElement {
       return;
     }
 
-    const footer = this.querySelector("ha-dialog-footer") as HTMLElement | null;
-    if (!footer) return;
+    if (
+      !this._primaryAction ||
+      !(this._primaryAction instanceof HTMLButtonElement) ||
+      this._primaryAction.disabled
+    )
+      return;
 
-    const primaryAction = footer.querySelector(
-      '[slot="primaryAction"]'
-    ) as HTMLElement | null;
-    if (!primaryAction) return;
-
-    const isDisabled =
-      (primaryAction as any).disabled ?? primaryAction.hasAttribute("disabled");
-    if (isDisabled) return;
-
-    primaryAction.click();
+    this._primaryAction.click();
     ev.preventDefault();
     ev.stopPropagation();
   };
