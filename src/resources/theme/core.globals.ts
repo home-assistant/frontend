@@ -34,7 +34,7 @@ export const coreStyles = css`
     --ha-space-10: 40px;
     --ha-space-11: 44px;
     --ha-space-12: 48px;
-    --ha-space-13: 44px;
+    --ha-space-13: 52px;
     --ha-space-14: 56px;
     --ha-space-15: 60px;
     --ha-space-16: 64px;
