@@ -320,9 +320,6 @@ export class HaWaDialog extends LitElement {
       display: flex;
       flex-direction: column;
     }
-    :host([hideactions]) wa-dialog::part(body) {
-      padding-bottom: var(--dialog-content-padding, 24px);
-    }
 
     wa-dialog::part(footer) {
       padding: 0;
