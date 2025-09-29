@@ -217,7 +217,7 @@ export class HaWaDialog extends LitElement {
         --ha-dialog-surface-background,
         var(--mdc-theme-surface, #fff)
       );
-      --wa-panel-border-radius: var(--ha-dialog-border-radius, 24px);
+      --wa-panel-border-radius: var(--ha-dialog-border-radius, var(--ha-border-radius-3xl));
       z-index: var(--dialog-z-index, 8);
       max-width: 100%;
     }
