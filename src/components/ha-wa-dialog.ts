@@ -182,16 +182,13 @@ export class HaWaDialog extends LitElement {
     }
 
     wa-dialog {
-      --full-width: min(
-        calc(
-          100vw - var(--safe-area-inset-left, 0px) - var(
-              --safe-area-inset-right,
-              0px
-            )
-        ),
-        95vw
+      --full-width: calc(
+        100vw - var(--safe-area-inset-left, 0px) - var(
+            --safe-area-inset-right,
+            0px
+          )
       );
-      --width: min(580px, 95vw);
+      --width: min(var(--ha-dialog-width-md, 580px), var(--full-width));
       --spacing: var(--dialog-content-padding, 24px);
       --show-duration: var(--ha-dialog-show-duration, 200ms);
       --hide-duration: var(--ha-dialog-hide-duration, 200ms);
@@ -209,12 +206,12 @@ export class HaWaDialog extends LitElement {
 
     :host([width="small"]),
     :host(.size-changed[width-on-title-click="small"]) wa-dialog {
-      --width: min(320px, var(--full-width));
+      --width: min(var(--ha-dialog-width-sm, 320px), var(--full-width));
     }
 
     :host([width="large"]),
     :host(.size-changed[width-on-title-click="large"]) wa-dialog {
-      --width: min(720px, var(--full-width));
+      --width: min(var(--ha-dialog-width-lg, 720px), var(--full-width));
     }
 
     :host([width="full"]),
