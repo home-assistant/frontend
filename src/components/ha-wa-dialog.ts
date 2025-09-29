@@ -46,7 +46,7 @@ export type DialogWidthOnTitleClick = DialogWidth | "none";
  * @attr {("small"|"medium"|"large"|"full")} width - Preferred dialog width preset. Defaults to "medium".
  * @attr {("small"|"medium"|"large"|"full")} current-width - The active dialog width; toggles with title click when enabled.
  * @attr {("none"|"small"|"medium"|"large"|"full")} width-on-title-click - Target width when clicking the title. "none" disables.
- * @attr {boolean} scrim-dismissable - Allows closing the dialog by clicking the scrim/overlay.
+ * @attr {boolean} scrim-dismissable - Allows closing the dialog by clicking the scrim/overlay. Defaults to true.
  * @attr {string} header-title - Header title text when no custom title slot is provided.
  * @attr {string} header-subtitle - Header subtitle text when no custom subtitle slot is provided.
  * @attr {boolean} flexcontent - Makes the dialog body a flex container for flexible layouts.
@@ -75,7 +75,7 @@ export class HaWaDialog extends LitElement {
   public widthOnTitleClick: DialogWidthOnTitleClick = "none";
 
   @property({ type: Boolean, reflect: true, attribute: "scrim-dismissable" })
-  public scrimDismissable = false;
+  public scrimDismissable = true;
 
   @property({ type: String, attribute: "header-title" })
   public headerTitle = "";
