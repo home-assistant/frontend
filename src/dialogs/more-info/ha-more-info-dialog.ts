@@ -368,7 +368,7 @@ export class MoreInfoDialog extends LitElement {
         .backAction=${showCloseIcon ? undefined : this._goBack}
         .headerTitle=${title}
         .scrimDismissable=${this._isEscapeEnabled}
-        .dialogSizeOnTitleClick=${"full"}
+        width-on-title-click="full"
         flexContent
       >
         ${showCloseIcon
