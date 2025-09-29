@@ -283,7 +283,13 @@ export class DialogLovelaceDashboardDetail extends LitElement {
       }
       this.closeDialog();
     } catch (err: any) {
-      this._error = { base: err?.message || "Unknown error" };
+      const errorMessage = err?.message;
+      if (errorMessage.includes(". Got")) {
+        const splitMessage = errorMessage.split(". Got");
+        this._error = { base: splitMessage[0] };
+      } else {
+        this._error = { base: errorMessage ?? "Unknown error" };
+      }
     } finally {
       this._submitting = false;
     }
