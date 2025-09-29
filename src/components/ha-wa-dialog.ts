@@ -6,8 +6,8 @@ import type { HomeAssistant } from "../types";
 import "./ha-dialog-header";
 import "./ha-icon-button";
 
-export type DialogSize = "small" | "medium" | "large" | "full";
-export type DialogSizeOnTitleClick = DialogSize | "none";
+export type DialogWidth = "small" | "medium" | "large" | "full";
+export type DialogWidthOnTitleClick = DialogWidth | "none";
 
 /**
  * Home Assistant dialog component
@@ -21,7 +21,7 @@ export type DialogSizeOnTitleClick = DialogSize | "none";
  *
  * @slot heading - Replace the entire header area.
  * @slot navigationIcon - Leading header action (e.g. close/back button).
- * @slot title - Header title. Click can toggle size depending on `dialog-size-on-title-click`.
+ * @slot title - Header title. Click can toggle width depending on `width-on-title-click`.
  * @slot subtitle - Header subtitle, shown under the title.
  * @slot actionItems - Trailing header actions (e.g. buttons, menus).
  * @slot - Dialog content body.
@@ -40,12 +40,12 @@ export type DialogSizeOnTitleClick = DialogSize | "none";
  * @cssprop --dialog-z-index - Z-index for the dialog. Defaults to 8.
  * @cssprop --dialog-surface-position - CSS position of the dialog surface. Defaults to relative.
  * @cssprop --dialog-surface-margin-top - Top margin for the dialog surface. Defaults to auto.
- * @cssprop --ha-dialog-expand-duration - Duration for width transitions when resizing. Defaults to 200ms.
+ * @cssprop --ha-dialog-expand-duration - Duration for width transitions when changing width. Defaults to 200ms.
  *
  * @attr {boolean} open - Controls the dialog open state.
- * @attr {("small"|"medium"|"large"|"full")} dialog-size - Preferred dialog width preset. Defaults to "medium".
- * @attr {("small"|"medium"|"large"|"full")} current-dialog-size - The active dialog size; toggles with title click when enabled.
- * @attr {("none"|"small"|"medium"|"large"|"full")} dialog-size-on-title-click - Target size when clicking the title. "none" disables.
+ * @attr {("small"|"medium"|"large"|"full")} width - Preferred dialog width preset. Defaults to "medium".
+ * @attr {("small"|"medium"|"large"|"full")} current-width - The active dialog width; toggles with title click when enabled.
+ * @attr {("none"|"small"|"medium"|"large"|"full")} width-on-title-click - Target width when clicking the title. "none" disables.
  * @attr {boolean} scrim-dismissable - Allows closing the dialog by clicking the scrim/overlay.
  * @attr {string} header-title - Header title text when no custom title slot is provided.
  * @attr {string} header-subtitle - Header subtitle text when no custom subtitle slot is provided.
@@ -61,18 +61,18 @@ export class HaWaDialog extends LitElement {
   @property({ type: Boolean, reflect: true })
   public open = false;
 
-  @property({ type: String, reflect: true, attribute: "dialog-size" })
-  public dialogSize: DialogSize = "medium";
+  @property({ type: String, reflect: true, attribute: "width" })
+  public width: DialogWidth = "medium";
 
-  @property({ type: String, reflect: true, attribute: "current-dialog-size" })
-  public currentDialogSize: DialogSize = this.dialogSize;
+  @property({ type: String, reflect: true, attribute: "current-width" })
+  public currentWidth: DialogWidth = this.width;
 
   @property({
     type: String,
     reflect: true,
-    attribute: "dialog-size-on-title-click",
+    attribute: "width-on-title-click",
   })
-  public dialogSizeOnTitleClick: DialogSizeOnTitleClick = "none";
+  public widthOnTitleClick: DialogWidthOnTitleClick = "none";
 
   @property({ type: Boolean, reflect: true, attribute: "scrim-dismissable" })
   public scrimDismissable = false;
@@ -100,8 +100,8 @@ export class HaWaDialog extends LitElement {
       }
     }
 
-    if (changedProperties.has("dialogSize")) {
-      this.currentDialogSize = this.dialogSize;
+    if (changedProperties.has("width")) {
+      this.currentWidth = this.width;
     }
   }
 
@@ -124,7 +124,7 @@ export class HaWaDialog extends LitElement {
               ></ha-icon-button>
             </slot>
             <slot name="title" slot="title">
-              <span @click=${this.toggleSize} class="title">
+              <span @click=${this.toggleWidth} class="title">
                 ${this.headerTitle}
               </span>
             </slot>
@@ -161,15 +161,15 @@ export class HaWaDialog extends LitElement {
     window.removeEventListener("keydown", this._onKeyDown, true);
   };
 
-  public toggleSize = () => {
-    if (this.dialogSizeOnTitleClick === "none") {
+  public toggleWidth = () => {
+    if (this.widthOnTitleClick === "none") {
       return;
     }
 
-    this.currentDialogSize =
-      this.currentDialogSize === this.dialogSizeOnTitleClick
-        ? this.dialogSize
-        : this.dialogSizeOnTitleClick;
+    this.currentWidth =
+      this.currentWidth === this.widthOnTitleClick
+        ? this.width
+        : this.widthOnTitleClick;
   };
 
   private _onKeyDown = (ev: KeyboardEvent) => {
@@ -224,15 +224,15 @@ export class HaWaDialog extends LitElement {
       max-width: 100%;
     }
 
-    :host([current-dialog-size="small"]) wa-dialog {
+    :host([current-width="small"]) wa-dialog {
       --width: min(320px, var(--full-width));
     }
 
-    :host([current-dialog-size="large"]) wa-dialog {
+    :host([current-width="large"]) wa-dialog {
       --width: min(720px, var(--full-width));
     }
 
-    :host([current-dialog-size="full"]) wa-dialog {
+    :host([current-width="full"]) wa-dialog {
       --width: var(--full-width);
     }
 

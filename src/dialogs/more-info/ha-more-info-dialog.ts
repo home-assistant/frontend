@@ -629,7 +629,7 @@ export class MoreInfoDialog extends LitElement {
   }
 
   private _toggleSize() {
-    this.shadowRoot?.querySelector("ha-wa-dialog")?.toggleSize();
+    this.shadowRoot?.querySelector("ha-wa-dialog")?.toggleWidth();
   }
 
   private _handleOpened() {
