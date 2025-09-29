@@ -62,16 +62,6 @@ export class HomeDashboardStrategy extends ReactiveElement {
       };
     });
 
-    const lightView = {
-      title: getSummaryLabel(hass.localize, "lights"),
-      path: "lights",
-      subview: true,
-      strategy: {
-        type: "home-lights",
-      },
-      icon: HOME_SUMMARIES_ICONS.lights,
-    } satisfies LovelaceViewRawConfig;
-
     const climateView = {
       title: getSummaryLabel(hass.localize, "climate"),
       path: "climate",
@@ -113,7 +103,6 @@ export class HomeDashboardStrategy extends ReactiveElement {
           } satisfies HomeMainViewStrategyConfig,
         },
         ...areaViews,
-        lightView,
         climateView,
         securityView,
         mediaPlayersView,

@@ -238,13 +238,17 @@ export class HaConfigLovelaceDashboards extends LitElement {
             .hass=${this.hass}
             narrow
             .items=${[
-              {
-                path: mdiPencil,
-                label: this.hass.localize(
-                  "ui.panel.config.lovelace.dashboards.picker.edit"
-                ),
-                action: () => this._handleEdit(dashboard),
-              },
+              ...(this._canEdit(dashboard.url_path)
+                ? [
+                    {
+                      path: mdiPencil,
+                      label: this.hass.localize(
+                        "ui.panel.config.lovelace.dashboards.picker.edit"
+                      ),
+                      action: () => this._handleEdit(dashboard),
+                    },
+                  ]
+                : []),
               ...(this._canDelete(dashboard.url_path)
                 ? [
                     {
@@ -294,7 +298,21 @@ export class HaConfigLovelaceDashboards extends LitElement {
           mode: "storage",
           url_path: "energy",
           filename: "",
-          iconColor: "var(--label-badge-yellow)",
+          iconColor: "var(--orange-color)",
+          default: false,
+          require_admin: false,
+        });
+      }
+
+      if (this.hass.panels.lights) {
+        result.push({
+          icon: "mdi:lightbulb",
+          title: this.hass.localize("panel.lights"),
+          show_in_sidebar: true,
+          mode: "storage",
+          url_path: "lights",
+          filename: "",
+          iconColor: "var(--amber-color)",
           default: false,
           require_admin: false,
         });
@@ -397,7 +415,18 @@ export class HaConfigLovelaceDashboards extends LitElement {
   }
 
   private _canDelete(urlPath: string) {
-    if (urlPath === "lovelace" || urlPath === "energy") {
+    if (
+      urlPath === "lovelace" ||
+      urlPath === "energy" ||
+      urlPath === "lights"
+    ) {
+      return false;
+    }
+    return true;
+  }
+
+  private _canEdit(urlPath: string) {
+    if (urlPath === "lights") {
       return false;
     }
     return true;

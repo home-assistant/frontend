@@ -45,10 +45,6 @@ const processAreasForLights = (
         heading_style: "subtitle",
         type: "heading",
         heading: area.name,
-        tap_action: {
-          action: "navigate",
-          navigation_path: `areas-${area.area_id}`,
-        },
       });
       cards.push(...areaCards);
     }

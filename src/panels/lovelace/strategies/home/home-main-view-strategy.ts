@@ -131,7 +131,7 @@ export class HomeMainViewStrategy extends ReactiveElement {
           vertical: true,
           tap_action: {
             action: "navigate",
-            navigation_path: "lights",
+            navigation_path: "/lights?historyBack=1",
           },
           grid_options: {
             rows: 2,

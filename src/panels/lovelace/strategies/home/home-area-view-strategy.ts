@@ -113,7 +113,7 @@ export class HomeAreaViewStrategy extends ReactiveElement {
           computeHeadingCard(
             getSummaryLabel(hass.localize, "lights"),
             HOME_SUMMARIES_ICONS.lights,
-            "lights"
+            "/lights?historyBack=1"
           ),
           ...lights.map(computeTileCard),
         ],

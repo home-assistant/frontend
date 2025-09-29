@@ -10,7 +10,8 @@
     "todo": "To-do lists",
     "developer_tools": "Developer tools",
     "media_browser": "Media",
-    "profile": "Profile"
+    "profile": "Profile",
+    "lights": "Lights"
   },
   "state": {
     "default": {
