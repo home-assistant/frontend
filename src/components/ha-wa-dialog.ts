@@ -9,6 +9,51 @@ import "./ha-icon-button";
 export type DialogSize = "small" | "medium" | "large" | "full";
 export type DialogSizeOnTitleClick = DialogSize | "none";
 
+/**
+ * Home Assistant dialog component
+ *
+ * @element ha-wa-dialog
+ * @extends {LitElement}
+ *
+ * @summary
+ * A stylable dialog built using the `wa-dialog` component, providing the standard header (ha-dialog-header),
+ * body, and footer (when used in conjunction with `ha-dialog-footer`) with slots, sizing, and keyboard handling.
+ *
+ * @slot heading - Replace the entire header area.
+ * @slot navigationIcon - Leading header action (e.g. close/back button).
+ * @slot title - Header title. Click can toggle size depending on `dialog-size-on-title-click`.
+ * @slot subtitle - Header subtitle, shown under the title.
+ * @slot actionItems - Trailing header actions (e.g. buttons, menus).
+ * @slot - Dialog content body.
+ * @slot footer - Dialog footer content; typically action buttons.
+ *
+ * @csspart dialog - The dialog surface.
+ * @csspart header - The header container.
+ * @csspart body - The scrollable body container.
+ * @csspart footer - The footer container.
+ *
+ * @cssprop --dialog-content-padding - Padding for the dialog content sections. Defaults to 24px.
+ * @cssprop --ha-dialog-show-duration - Show animation duration. Defaults to 200ms.
+ * @cssprop --ha-dialog-hide-duration - Hide animation duration. Defaults to 200ms.
+ * @cssprop --ha-dialog-surface-background - Dialog background color. Defaults to surface.
+ * @cssprop --ha-dialog-border-radius - Border radius of the dialog surface. Defaults to 24px.
+ * @cssprop --dialog-z-index - Z-index for the dialog. Defaults to 8.
+ * @cssprop --dialog-surface-position - CSS position of the dialog surface. Defaults to relative.
+ * @cssprop --dialog-surface-margin-top - Top margin for the dialog surface. Defaults to auto.
+ * @cssprop --ha-dialog-expand-duration - Duration for width transitions when resizing. Defaults to 200ms.
+ *
+ * @attr {boolean} open - Controls the dialog open state.
+ * @attr {("small"|"medium"|"large"|"full")} dialog-size - Preferred dialog width preset. Defaults to "medium".
+ * @attr {("small"|"medium"|"large"|"full")} current-dialog-size - The active dialog size; toggles with title click when enabled.
+ * @attr {("none"|"small"|"medium"|"large"|"full")} dialog-size-on-title-click - Target size when clicking the title. "none" disables.
+ * @attr {boolean} scrim-dismissable - Allows closing the dialog by clicking the scrim/overlay.
+ * @attr {string} header-title - Header title text when no custom title slot is provided.
+ * @attr {string} header-subtitle - Header subtitle text when no custom subtitle slot is provided.
+ * @attr {boolean} flexcontent - Makes the dialog body a flex container for flexible layouts.
+ *
+ * @event opened - Fired when the dialog is shown.
+ * @event closed - Fired after the dialog is hidden.
+ */
 @customElement("ha-wa-dialog")
 export class HaWaDialog extends LitElement {
   @property({ attribute: false }) public hass!: HomeAssistant;
