@@ -208,6 +208,7 @@ export class HaWaDialog extends LitElement {
         --ha-dialog-border-radius,
         var(--ha-border-radius-3xl)
       );
+      position: var(--dialog-surface-position, relative);
       z-index: var(--dialog-z-index, 8);
       max-width: 100%;
     }
