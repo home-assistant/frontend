@@ -1,6 +1,19 @@
 import { css, html, LitElement } from "lit";
 import { customElement } from "lit/decorators";
 
+/**
+ * Home Assistant dialog footer component
+ *
+ * @element ha-dialog-footer
+ * @extends {LitElement}
+ *
+ * @summary
+ * A simple footer container for dialog actions,
+ * typically used as the `footer` slot in `ha-wa-dialog`.
+ *
+ * @slot primaryAction - Primary action button(s), aligned to the end.
+ * @slot secondaryAction - Secondary action button(s), placed before the primary action.
+ */
 @customElement("ha-dialog-footer")
 export class HaDialogFooter extends LitElement {
   protected render() {
