@@ -365,7 +365,6 @@ export class MoreInfoDialog extends LitElement {
         .backLabel=${this.hass.localize(
           "ui.dialogs.more_info_control.back_to_info"
         )}
-        .backAction=${showCloseIcon ? undefined : this._goBack}
         .headerTitle=${title}
         .scrimDismissable=${this._isEscapeEnabled}
         width-on-title-click="full"
