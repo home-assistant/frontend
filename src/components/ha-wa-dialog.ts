@@ -44,7 +44,6 @@ export type DialogWidthOnTitleClick = DialogWidth | "none";
  *
  * @attr {boolean} open - Controls the dialog open state.
  * @attr {("small"|"medium"|"large"|"full")} width - Preferred dialog width preset. Defaults to "medium".
- * @attr {("small"|"medium"|"large"|"full")} current-width - The active dialog width; toggles with title click when enabled.
  * @attr {("none"|"small"|"medium"|"large"|"full")} width-on-title-click - Target width when clicking the title. "none" disables.
  * @attr {boolean} scrim-dismissable - Allows closing the dialog by clicking the scrim/overlay. Defaults to true.
  * @attr {string} header-title - Header title text when no custom title slot is provided.
@@ -63,9 +62,6 @@ export class HaWaDialog extends LitElement {
 
   @property({ type: String, reflect: true, attribute: "width" })
   public width: DialogWidth = "medium";
-
-  @property({ type: String, reflect: true, attribute: "current-width" })
-  public currentWidth: DialogWidth = this.width;
 
   @property({
     type: String,
@@ -89,6 +85,9 @@ export class HaWaDialog extends LitElement {
   @state()
   private _open = false;
 
+  @state()
+  private _sizeChanged = false;
+
   protected updated(
     changedProperties: Map<string | number | symbol, unknown>
   ): void {
@@ -101,8 +100,10 @@ export class HaWaDialog extends LitElement {
     }
 
     if (changedProperties.has("width")) {
-      this.currentWidth = this.width;
+      this._sizeChanged = false;
     }
+
+    this.classList.toggle("size-changed", this._sizeChanged);
   }
 
   protected render() {
@@ -166,10 +167,7 @@ export class HaWaDialog extends LitElement {
       return;
     }
 
-    this.currentWidth =
-      this.currentWidth === this.widthOnTitleClick
-        ? this.width
-        : this.widthOnTitleClick;
+    this._sizeChanged = !this._sizeChanged;
   };
 
   private _onKeyDown = (ev: KeyboardEvent) => {
@@ -224,15 +222,18 @@ export class HaWaDialog extends LitElement {
       max-width: 100%;
     }
 
-    :host([current-width="small"]) wa-dialog {
+    :host([width="small"]),
+    :host(.size-changed[width-on-title-click="small"]) wa-dialog {
       --width: min(320px, var(--full-width));
     }
 
-    :host([current-width="large"]) wa-dialog {
+    :host([width="large"]),
+    :host(.size-changed[width-on-title-click="large"]) wa-dialog {
       --width: min(720px, var(--full-width));
     }
 
-    :host([current-width="full"]) wa-dialog {
+    :host([width="full"]),
+    :host(.size-changed[width-on-title-click="full"]) wa-dialog {
       --width: var(--full-width);
     }
 
