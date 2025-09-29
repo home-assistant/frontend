@@ -1,10 +1,6 @@
 import type { HassEntity } from "home-assistant-js-websocket";
-import { LitElement, css, html, nothing } from "lit";
+import { LitElement, html, nothing } from "lit";
 import { customElement, property, state } from "lit/decorators";
-import { classMap } from "lit/directives/class-map";
-import { ifDefined } from "lit/directives/if-defined";
-import { styleMap } from "lit/directives/style-map";
-import memoizeOne from "memoize-one";
 import { computeCssColor } from "../../../common/color/compute-color";
 import { hsv2rgb, rgb2hex, rgb2hsv } from "../../../common/color/convert-color";
 import { DOMAINS_TOGGLE } from "../../../common/const";
@@ -12,30 +8,20 @@ import { computeDomain } from "../../../common/entity/compute_domain";
 import { computeStateName } from "../../../common/entity/compute_state_name";
 import { stateActive } from "../../../common/entity/state_active";
 import { stateColorCss } from "../../../common/entity/state_color";
-import "../../../components/ha-card";
-import "../../../components/ha-ripple";
-import "../../../components/ha-state-icon";
-import "../../../components/ha-svg-icon";
-import "../../../components/tile/ha-tile-badge";
-import "../../../components/tile/ha-tile-icon";
-import "../../../components/tile/ha-tile-info";
 import { cameraUrlWithWidthHeight } from "../../../data/camera";
 import type { ActionHandlerEvent } from "../../../data/lovelace/action_handler";
-import "../../../state-display/state-display";
 import type { HomeAssistant } from "../../../types";
-import "../card-features/hui-card-features";
 import type { LovelaceCardFeatureContext } from "../card-features/types";
-import { actionHandler } from "../common/directives/action-handler-directive";
 import { findEntities } from "../common/find-entities";
 import { handleAction } from "../common/handle-action";
 import { hasAction } from "../common/has-action";
 import { createEntityNotFoundWarning } from "../components/hui-warning";
+import "../components/hui-tile";
 import type {
   LovelaceCard,
   LovelaceCardEditor,
   LovelaceGridOptions,
 } from "../types";
-import { renderTileBadge } from "./tile/badges/tile-badge";
 import type { TileCardConfig } from "./types";
 
 export const getEntityDefaultTileIconAction = (entityId: string) => {
@@ -101,8 +87,9 @@ export class HuiTileCard extends LitElement implements LovelaceCard {
   }
 
   public getCardSize(): number {
-    const featuresPosition =
-      this._config && this._featurePosition(this._config);
+    const featuresPosition = this._config?.vertical
+      ? "bottom"
+      : this._config?.features_position || "bottom";
     const featuresCount = this._config?.features?.length || 0;
     return (
       1 +
@@ -115,7 +102,9 @@ export class HuiTileCard extends LitElement implements LovelaceCard {
     const columns = 6;
     let min_columns = 6;
     let rows = 1;
-    const featurePosition = this._config && this._featurePosition(this._config);
+    const featurePosition = this._config?.vertical
+      ? "bottom"
+      : this._config?.features_position || "bottom";
     const featuresCount = this._config?.features?.length || 0;
     if (featuresCount) {
       if (featurePosition === "inline") {
@@ -152,6 +141,14 @@ export class HuiTileCard extends LitElement implements LovelaceCard {
     handleAction(this, this.hass!, config, ev.detail.action!);
   }
 
+  private _onAction = (ev: ActionHandlerEvent) => {
+    this._handleAction(ev);
+  };
+
+  private _onIconAction = (ev: CustomEvent) => {
+    this._handleIconAction(ev);
+  };
+
   private _getImageUrl(entity: HassEntity): string | undefined {
     const entityPicture =
       entity.attributes.entity_picture_local ||
@@ -167,44 +164,42 @@ export class HuiTileCard extends LitElement implements LovelaceCard {
     return imageUrl;
   }
 
-  private _computeStateColor = memoizeOne(
-    (entity: HassEntity, color?: string) => {
-      // Use custom color if active
-      if (color) {
-        return stateActive(entity) ? computeCssColor(color) : undefined;
-      }
-
-      // Use default color for person/device_tracker because color is on the badge
-      if (
-        computeDomain(entity.entity_id) === "person" ||
-        computeDomain(entity.entity_id) === "device_tracker"
-      ) {
-        return undefined;
-      }
-
-      // Use light color if the light support rgb
-      if (
-        computeDomain(entity.entity_id) === "light" &&
-        entity.attributes.rgb_color
-      ) {
-        const hsvColor = rgb2hsv(entity.attributes.rgb_color);
-
-        // Modify the real rgb color for better contrast
-        if (hsvColor[1] < 0.4) {
-          // Special case for very light color (e.g: white)
-          if (hsvColor[1] < 0.1) {
-            hsvColor[2] = 225;
-          } else {
-            hsvColor[1] = 0.4;
-          }
-        }
-        return rgb2hex(hsv2rgb(hsvColor));
-      }
-
-      // Fallback to state color
-      return stateColorCss(entity);
+  private _computeStateColor(entity: HassEntity, color?: string) {
+    // Use custom color if active
+    if (color) {
+      return stateActive(entity) ? computeCssColor(color) : undefined;
     }
-  );
+
+    // Use default color for person/device_tracker because color is on the badge
+    if (
+      computeDomain(entity.entity_id) === "person" ||
+      computeDomain(entity.entity_id) === "device_tracker"
+    ) {
+      return undefined;
+    }
+
+    // Use light color if the light support rgb
+    if (
+      computeDomain(entity.entity_id) === "light" &&
+      entity.attributes.rgb_color
+    ) {
+      const hsvColor = rgb2hsv(entity.attributes.rgb_color);
+
+      // Modify the real rgb color for better contrast
+      if (hsvColor[1] < 0.4) {
+        // Special case for very light color (e.g: white)
+        if (hsvColor[1] < 0.1) {
+          hsvColor[2] = 225;
+        } else {
+          hsvColor[1] = 0.4;
+        }
+      }
+      return rgb2hex(hsv2rgb(hsvColor));
+    }
+
+    // Fallback to state color
+    return stateColorCss(entity);
+  }
 
   private get _hasCardAction() {
     return (
@@ -221,23 +216,6 @@ export class HuiTileCard extends LitElement implements LovelaceCard {
     );
   }
 
-  private _featurePosition = memoizeOne((config: TileCardConfig) => {
-    if (config.vertical) {
-      return "bottom";
-    }
-    return config.features_position || "bottom";
-  });
-
-  private _displayedFeatures = memoizeOne((config: TileCardConfig) => {
-    const features = config.features || [];
-    const featurePosition = this._featurePosition(config);
-
-    if (featurePosition === "inline") {
-      return features.slice(0, 1);
-    }
-    return features;
-  });
-
   protected render() {
     if (!this._config || !this.hass) {
       return nothing;
@@ -252,8 +230,6 @@ export class HuiTileCard extends LitElement implements LovelaceCard {
         </hui-warning>
       `;
     }
-
-    const contentClasses = { vertical: Boolean(this._config.vertical) };
 
     const name = this._config.name || computeStateName(stateObj);
     const active = stateActive(stateObj);
@@ -272,218 +248,50 @@ export class HuiTileCard extends LitElement implements LovelaceCard {
           </state-display>
         `;
 
-    const style = {
-      "--tile-color": color,
-    };
-
     const imageUrl = this._config.show_entity_picture
       ? this._getImageUrl(stateObj)
       : undefined;
 
-    const featurePosition = this._featurePosition(this._config);
-    const features = this._displayedFeatures(this._config);
+    const tileConfig = {
+      name,
+      stateContent: this._config.state_content,
+      hideState: this._config.hide_state,
+      icon: this._config.icon,
+      color: this._config.color,
+      showEntityPicture: this._config.show_entity_picture,
+      vertical: this._config.vertical,
+      features: this._config.features,
+      featuresPosition: this._config.features_position,
+      tapAction: this._config.tap_action,
+      holdAction: this._config.hold_action,
+      doubleTapAction: this._config.double_tap_action,
+      iconTapAction: this._config.icon_tap_action,
+      iconHoldAction: this._config.icon_hold_action,
+      iconDoubleTapAction: this._config.icon_double_tap_action,
+    };
 
-    const containerOrientationClass =
-      featurePosition === "inline" ? "horizontal" : "";
+    const tileState = {
+      active,
+      color,
+      imageUrl,
+      stateDisplay,
+    };
 
     return html`
-      <ha-card style=${styleMap(style)} class=${classMap({ active })}>
-        <div
-          class="background"
-          @action=${this._handleAction}
-          .actionHandler=${actionHandler({
-            hasHold: hasAction(this._config!.hold_action),
-            hasDoubleClick: hasAction(this._config!.double_tap_action),
-          })}
-          role=${ifDefined(this._hasCardAction ? "button" : undefined)}
-          tabindex=${ifDefined(this._hasCardAction ? "0" : undefined)}
-          aria-labelledby="info"
-        >
-          <ha-ripple .disabled=${!this._hasCardAction}></ha-ripple>
-        </div>
-        <div class="container ${containerOrientationClass}">
-          <div class="content ${classMap(contentClasses)}">
-            <ha-tile-icon
-              role=${ifDefined(this._hasIconAction ? "button" : undefined)}
-              tabindex=${ifDefined(this._hasIconAction ? "0" : undefined)}
-              @action=${this._handleIconAction}
-              .actionHandler=${actionHandler({
-                hasHold: hasAction(this._config!.icon_hold_action),
-                hasDoubleClick: hasAction(this._config!.icon_double_tap_action),
-              })}
-              .interactive=${this._hasIconAction}
-              .imageUrl=${imageUrl}
-              data-domain=${ifDefined(domain)}
-              data-state=${ifDefined(stateObj?.state)}
-              class=${classMap({ image: Boolean(imageUrl) })}
-            >
-              <ha-state-icon
-                slot="icon"
-                .icon=${this._config.icon}
-                .stateObj=${stateObj}
-                .hass=${this.hass}
-              ></ha-state-icon>
-              ${renderTileBadge(stateObj, this.hass)}
-            </ha-tile-icon>
-            <ha-tile-info id="info">
-              <span slot="primary" class="primary">${name}</span>
-              ${stateDisplay
-                ? html`<span slot="secondary">${stateDisplay}</span>`
-                : nothing}
-            </ha-tile-info>
-          </div>
-          ${features.length > 0
-            ? html`
-                <hui-card-features
-                  .hass=${this.hass}
-                  .context=${this._featureContext}
-                  .color=${this._config.color}
-                  .features=${features}
-                ></hui-card-features>
-              `
-            : nothing}
-        </div>
-      </ha-card>
+      <hui-tile
+        .hass=${this.hass}
+        .config=${tileConfig}
+        .state=${tileState}
+        .featureContext=${this._featureContext}
+        .domain=${domain}
+        .entityId=${entityId}
+        .hasCardAction=${this._hasCardAction}
+        .hasIconAction=${this._hasIconAction}
+        .onAction=${this._onAction}
+        .onIconAction=${this._onIconAction}
+      ></hui-tile>
     `;
   }
-
-  static styles = css`
-    :host {
-      --tile-color: var(--state-inactive-color);
-      -webkit-tap-highlight-color: transparent;
-    }
-    ha-card:has(.background:focus-visible) {
-      --shadow-default: var(--ha-card-box-shadow, 0 0 0 0 transparent);
-      --shadow-focus: 0 0 0 1px var(--tile-color);
-      border-color: var(--tile-color);
-      box-shadow: var(--shadow-default), var(--shadow-focus);
-    }
-    ha-card {
-      --ha-ripple-color: var(--tile-color);
-      --ha-ripple-hover-opacity: 0.04;
-      --ha-ripple-pressed-opacity: 0.12;
-      height: 100%;
-      transition:
-        box-shadow 180ms ease-in-out,
-        border-color 180ms ease-in-out;
-      display: flex;
-      flex-direction: column;
-      justify-content: space-between;
-    }
-    ha-card.active {
-      --tile-color: var(--state-icon-color);
-    }
-    [role="button"] {
-      cursor: pointer;
-      pointer-events: auto;
-    }
-    [role="button"]:focus {
-      outline: none;
-    }
-    .background {
-      position: absolute;
-      top: 0;
-      left: 0;
-      bottom: 0;
-      right: 0;
-      border-radius: var(--ha-card-border-radius, 12px);
-      margin: calc(-1 * var(--ha-card-border-width, 1px));
-      overflow: hidden;
-    }
-    .container {
-      margin: calc(-1 * var(--ha-card-border-width, 1px));
-      display: flex;
-      flex-direction: column;
-      flex: 1;
-    }
-    .container.horizontal {
-      flex-direction: row;
-    }
-
-    .content {
-      position: relative;
-      display: flex;
-      flex-direction: row;
-      align-items: center;
-      padding: 10px;
-      flex: 1;
-      min-width: 0;
-      box-sizing: border-box;
-      pointer-events: none;
-      gap: 10px;
-    }
-
-    .vertical {
-      flex-direction: column;
-      text-align: center;
-      justify-content: center;
-    }
-    .vertical ha-tile-info {
-      width: 100%;
-      flex: none;
-    }
-    ha-tile-icon {
-      --tile-icon-color: var(--tile-color);
-      position: relative;
-      padding: 6px;
-      margin: -6px;
-    }
-    ha-tile-badge {
-      position: absolute;
-      top: 3px;
-      right: 3px;
-      inset-inline-end: 3px;
-      inset-inline-start: initial;
-    }
-    ha-tile-info {
-      position: relative;
-      min-width: 0;
-      transition: background-color 180ms ease-in-out;
-      box-sizing: border-box;
-    }
-    hui-card-features {
-      --feature-color: var(--tile-color);
-      padding: 0 12px 12px 12px;
-    }
-    .container.horizontal hui-card-features {
-      width: calc(50% - var(--column-gap, 0px) / 2 - 12px);
-      flex: none;
-      --feature-height: 36px;
-      padding: 0 12px;
-      padding-inline-start: 0;
-    }
-
-    ha-tile-icon[data-domain="alarm_control_panel"][data-state="pending"],
-    ha-tile-icon[data-domain="alarm_control_panel"][data-state="arming"],
-    ha-tile-icon[data-domain="alarm_control_panel"][data-state="triggered"],
-    ha-tile-icon[data-domain="lock"][data-state="jammed"] {
-      animation: pulse 1s infinite;
-    }
-
-    /* Make sure we display the whole image */
-    ha-tile-icon.image[data-domain="update"] {
-      --tile-icon-border-radius: 0;
-    }
-    /* Make sure we display the almost the whole image but it often use text */
-    ha-tile-icon.image[data-domain="media_player"] {
-      --tile-icon-border-radius: min(
-        var(--ha-tile-icon-border-radius, var(--ha-border-radius-sm)),
-        var(--ha-border-radius-sm)
-      );
-    }
-
-    @keyframes pulse {
-      0% {
-        opacity: 1;
-      }
-      50% {
-        opacity: 0;
-      }
-      100% {
-        opacity: 1;
-      }
-    }
-  `;
 }
 
 declare global {
