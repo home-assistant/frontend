@@ -166,6 +166,12 @@ export class HaWaDialog extends LitElement {
     window.removeEventListener("keydown", this._onKeyDown, true);
   };
 
+  public disconnectedCallback(): void {
+    super.disconnectedCallback();
+    this._open = false;
+    window.removeEventListener("keydown", this._onKeyDown, true);
+  }
+
   public toggleWidth = () => {
     if (this.widthOnTitleClick === "none") {
       return;
