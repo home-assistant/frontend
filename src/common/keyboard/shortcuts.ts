@@ -38,7 +38,7 @@ function registerShortcuts(
 ): () => void {
   const wrappedShortcuts: Record<string, ShortcutHandler> = {};
 
-  for (const [key, handler] of Object.entries(shortcuts)) {
+  Object.entries(shortcuts).forEach(([key, handler]) => {
     wrappedShortcuts[key] = (event: KeyboardEvent) => {
       if (!canOverrideAlphanumericInput(event.composedPath())) {
         return;
@@ -48,7 +48,7 @@ function registerShortcuts(
       }
       handler(event);
     };
-  }
+  });
 
   // Underlying implementation (tinykeys for now)
   return tinykeys(window, wrappedShortcuts);
