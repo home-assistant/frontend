@@ -21,7 +21,7 @@ export type DialogWidthOnTitleClick = DialogWidth | "none";
  *
  * @slot heading - Replace the entire header area.
  * @slot navigationIcon - Leading header action (e.g. close/back button).
- * @slot title - Header title. Click can toggle width depending on `width-on-title-click`.
+ * @slot title - Header title. Click can toggle width if `width-on-title-click` is not "none".
  * @slot subtitle - Header subtitle, shown under the title.
  * @slot actionItems - Trailing header actions (e.g. buttons, menus).
  * @slot - Dialog content body.
