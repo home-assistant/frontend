@@ -1,5 +1,5 @@
 import { css, html, LitElement } from "lit";
-import { customElement, property, state, query } from "lit/decorators";
+import { customElement, property, state } from "lit/decorators";
 import "@home-assistant/webawesome/dist/components/dialog/dialog";
 import { mdiClose } from "@mdi/js";
 import type { HomeAssistant } from "../types";
@@ -89,9 +89,6 @@ export class HaWaDialog extends LitElement {
   @state()
   private _sizeChanged = false;
 
-  @query('ha-dialog-footer [slot="primaryAction"]')
-  private _primaryAction!: HTMLElement;
-
   protected updated(
     changedProperties: Map<string | number | symbol, unknown>
   ): void {
@@ -157,19 +154,16 @@ export class HaWaDialog extends LitElement {
       ) as HTMLElement;
       focusElement?.focus();
     });
-    window.addEventListener("keydown", this._onKeyDown, true);
   };
 
   private _handleAfterHide = () => {
     this._open = false;
     fireEvent(this, "closed");
-    window.removeEventListener("keydown", this._onKeyDown, true);
   };
 
   public disconnectedCallback(): void {
     super.disconnectedCallback();
     this._open = false;
-    window.removeEventListener("keydown", this._onKeyDown, true);
   }
 
   public toggleWidth = () => {
@@ -178,23 +172,6 @@ export class HaWaDialog extends LitElement {
     }
 
     this._sizeChanged = !this._sizeChanged;
-  };
-
-  private _onKeyDown = (ev: KeyboardEvent) => {
-    if (!this._open || ev.defaultPrevented || ev.key !== "Enter") {
-      return;
-    }
-
-    if (
-      !this._primaryAction ||
-      !(this._primaryAction instanceof HTMLButtonElement) ||
-      this._primaryAction.disabled
-    )
-      return;
-
-    this._primaryAction.click();
-    ev.preventDefault();
-    ev.stopPropagation();
   };
 
   static styles = css`
