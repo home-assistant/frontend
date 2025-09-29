@@ -1,6 +1,5 @@
 import { tinykeys } from "tinykeys";
 import { canOverrideAlphanumericInput } from "../dom/can-override-input";
-import type { HomeAssistant } from "../../types";
 
 export type ShortcutHandler = (event: KeyboardEvent) => void;
 
@@ -58,19 +57,13 @@ function registerShortcuts(
 /**
  * Create a shortcut manager that can add and dispose shortcuts.
  *
- * @param hass - Home Assistant context to check if shortcuts are enabled.
  * @returns A shortcut manager containing the add and remove methods.
  */
-export function createShortcutManager(hass?: HomeAssistant): ShortcutManager {
+export function createShortcutManager(): ShortcutManager {
   const shortcutEntries: ShortcutEntry[] = [];
 
   return {
     add(shortcuts: Record<string, ShortcutHandler>) {
-      // Skip registration if shortcuts are disabled
-      if (hass && !hass.enableShortcuts) {
-        return;
-      }
-
       const disposer = registerShortcuts(shortcuts);
       const keys = new Set(Object.keys(shortcuts));
       const entry: ShortcutEntry = { keys, disposer };
