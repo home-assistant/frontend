@@ -5,6 +5,7 @@ import { mdiClose } from "@mdi/js";
 import type { HomeAssistant } from "../types";
 import "./ha-dialog-header";
 import "./ha-icon-button";
+import { fireEvent } from "../common/dom/fire_event";
 
 export type DialogWidth = "small" | "medium" | "large" | "full";
 export type DialogWidthOnTitleClick = DialogWidth | "none";
@@ -145,7 +146,7 @@ export class HaWaDialog extends LitElement {
 
   private _handleShow = () => {
     this._open = true;
-    this.dispatchEvent(new CustomEvent("opened"));
+    fireEvent(this, "opened");
 
     this.updateComplete.then(() => {
       const focusElement = this.querySelector(
@@ -158,7 +159,7 @@ export class HaWaDialog extends LitElement {
 
   private _handleAfterHide = () => {
     this._open = false;
-    this.dispatchEvent(new CustomEvent("closed"));
+    fireEvent(this, "closed");
     window.removeEventListener("keydown", this._onKeyDown, true);
   };
 
@@ -217,7 +218,10 @@ export class HaWaDialog extends LitElement {
         --ha-dialog-surface-background,
         var(--mdc-theme-surface, #fff)
       );
-      --wa-panel-border-radius: var(--ha-dialog-border-radius, var(--ha-border-radius-3xl));
+      --wa-panel-border-radius: var(
+        --ha-dialog-border-radius,
+        var(--ha-border-radius-3xl)
+      );
       z-index: var(--dialog-z-index, 8);
       max-width: 100%;
     }
@@ -346,5 +350,10 @@ export class HaWaDialog extends LitElement {
 declare global {
   interface HTMLElementTagNameMap {
     "ha-wa-dialog": HaWaDialog;
+  }
+
+  interface HASSDomEvents {
+    opened: undefined;
+    closed: undefined;
   }
 }
