@@ -285,8 +285,7 @@ export const darkSemanticColorStyles = css`
     --ha-color-on-success-normal: var(--ha-color-green-60);
     --ha-color-on-success-loud: var(--white-color);
 
-    /* surfaces */
-    /* Bridge to legacy while we introduce semantic surfaces */
+    /* Surfaces */
     --ha-color-surface-default: var(--card-background-color);
     --ha-color-on-surface-default: var(--primary-text-color);
   }
