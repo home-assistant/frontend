@@ -44,12 +44,13 @@ const STRATEGIES: Record<LovelaceStrategyConfigType, Record<string, any>> = {
     area: () => import("./areas/area-view-strategy"),
     "areas-overview": () => import("./areas/areas-overview-view-strategy"),
     "home-main": () => import("./home/home-main-view-strategy"),
-    "home-lights": () => import("./home/home-lights-view-strategy"),
+
     "home-climate": () => import("./home/home-climate-view-strategy"),
     "home-security": () => import("./home/home-security-view-strategy"),
     "home-media-players": () =>
       import("./home/home-media-players-view-strategy"),
     "home-area": () => import("./home/home-area-view-strategy"),
+    lights: () => import("../../lights/strategies/lights-view-strategy"),
   },
   section: {
     "common-controls": () =>

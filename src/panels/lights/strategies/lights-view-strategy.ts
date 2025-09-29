@@ -1,21 +1,31 @@
 import { ReactiveElement } from "lit";
 import { customElement } from "lit/decorators";
-import { generateEntityFilter } from "../../../../common/entity/entity_filter";
-import type { LovelaceCardConfig } from "../../../../data/lovelace/config/card";
-import type { LovelaceSectionRawConfig } from "../../../../data/lovelace/config/section";
-import type { LovelaceViewConfig } from "../../../../data/lovelace/config/view";
-import type { HomeAssistant } from "../../../../types";
+import {
+  generateEntityFilter,
+  type EntityFilter,
+} from "../../../common/entity/entity_filter";
+import type { LovelaceCardConfig } from "../../../data/lovelace/config/card";
+import type { LovelaceSectionRawConfig } from "../../../data/lovelace/config/section";
+import type { LovelaceViewConfig } from "../../../data/lovelace/config/view";
+import type { HomeAssistant } from "../../../types";
 import {
   computeAreaTileCardConfig,
   getAreas,
   getFloors,
-} from "../areas/helpers/areas-strategy-helper";
-import { getHomeStructure } from "./helpers/home-structure";
-import { findEntities, HOME_SUMMARIES_FILTERS } from "./helpers/home-summaries";
+} from "../../lovelace/strategies/areas/helpers/areas-strategy-helper";
+import { getHomeStructure } from "../../lovelace/strategies/home/helpers/home-structure";
+import {
+  findEntities,
+  HOME_SUMMARIES_FILTERS,
+} from "../../lovelace/strategies/home/helpers/home-summaries";
 
-export interface HomeLightsViewStrategyConfig {
-  type: "home-lights";
+export interface LightsViewStrategyConfig {
+  type: "lights";
 }
+
+export const lightFilters: EntityFilter[] = [
+  { domain: "light", entity_category: "none" },
+];
 
 const processAreasForLights = (
   areaIds: string[],
@@ -53,10 +63,10 @@ const processAreasForLights = (
   return cards;
 };
 
-@customElement("home-lights-view-strategy")
-export class HomeLightsViewStrategy extends ReactiveElement {
+@customElement("lights-view-strategy")
+export class LightsViewStrategy extends ReactiveElement {
   static async generate(
-    _config: HomeLightsViewStrategyConfig,
+    _config: LightsViewStrategyConfig,
     hass: HomeAssistant
   ): Promise<LovelaceViewConfig> {
     const areas = getAreas(hass.areas);
@@ -137,6 +147,6 @@ export class HomeLightsViewStrategy extends ReactiveElement {
 
 declare global {
   interface HTMLElementTagNameMap {
-    "home-lights-view-strategy": HomeLightsViewStrategy;
+    "lights-view-strategy": LightsViewStrategy;
   }
 }

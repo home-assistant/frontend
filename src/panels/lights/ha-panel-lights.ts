@@ -15,7 +15,7 @@ const LIGHTS_LOVELACE_CONFIG: LovelaceConfig = {
   views: [
     {
       strategy: {
-        type: "home-lights",
+        type: "lights",
       },
     },
   ],

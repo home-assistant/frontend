@@ -3,6 +3,7 @@ import type {
   EntityFilterFunc,
 } from "../../../../../common/entity/entity_filter";
 import type { LocalizeFunc } from "../../../../../common/translations/localize";
+import { lightFilters } from "../../../../lights/strategies/lights-view-strategy";
 
 export const HOME_SUMMARIES = [
   "lights",
@@ -21,7 +22,7 @@ export const HOME_SUMMARIES_ICONS: Record<HomeSummary, string> = {
 };
 
 export const HOME_SUMMARIES_FILTERS: Record<HomeSummary, EntityFilter[]> = {
-  lights: [{ domain: "light", entity_category: "none" }],
+  lights: lightFilters,
   climate: [
     { domain: "climate", entity_category: "none" },
     { domain: "humidifier", entity_category: "none" },

@@ -306,7 +306,7 @@ export class HaConfigLovelaceDashboards extends LitElement {
 
       if (this.hass.panels.lights) {
         result.push({
-          icon: "mdi:lightbulb",
+          icon: "mdi:lamps",
           title: this.hass.localize("panel.lights"),
           show_in_sidebar: true,
           mode: "storage",
