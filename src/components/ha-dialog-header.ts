@@ -1,5 +1,5 @@
 import { css, html, LitElement } from "lit";
-import { customElement, state } from "lit/decorators";
+import { customElement, query, state } from "lit/decorators";
 import { classMap } from "lit/directives/class-map";
 import { hasSlotContent } from "../common/dom/has-slot-content";
 
@@ -8,11 +8,11 @@ export class HaDialogHeader extends LitElement {
   @state()
   private _hasSubtitle = false;
 
+  @query('slot[name="subtitle"]')
+  private _subtitleSlot!: HTMLSlotElement;
+
   private _checkSubtitleContent() {
-    const subtitleSlot = this.shadowRoot?.querySelector(
-      'slot[name="subtitle"]'
-    ) as HTMLSlotElement;
-    this._hasSubtitle = hasSlotContent(subtitleSlot);
+    this._hasSubtitle = hasSlotContent(this._subtitleSlot);
   }
 
   protected render() {
