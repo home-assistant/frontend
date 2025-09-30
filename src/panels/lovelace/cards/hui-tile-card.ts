@@ -27,6 +27,7 @@ import type {
 } from "../types";
 import { renderTileBadge } from "./tile/badges/tile-badge";
 import type { TileCardConfig } from "./types";
+import { actionHandler } from "../common/directives/action-handler-directive";
 
 export const getEntityDefaultTileIconAction = (entityId: string) => {
   const domain = computeDomain(entityId);
@@ -141,10 +142,6 @@ export class HuiTileCard extends LitElement implements LovelaceCard {
     };
     handleAction(this, this.hass!, config, ev.detail.action!);
   }
-
-  private _onAction = (ev: ActionHandlerEvent) => {
-    this._handleAction(ev);
-  };
 
   private _getImageUrl(entity: HassEntity): string | undefined {
     const entityPicture =
@@ -275,22 +272,25 @@ export class HuiTileCard extends LitElement implements LovelaceCard {
         color=${ifDefined(color)}
         .hasCardAction=${this._hasCardAction}
         .hasIconAction=${this._hasIconAction}
-        .onAction=${this._onAction}
+        .onAction=${this._handleAction}
         .tapAction=${this._config.tap_action}
         .holdAction=${this._config.hold_action}
         .doubleTapAction=${this._config.double_tap_action}
-        .iconTapAction=${this._config.icon_tap_action}
-        .iconHoldAction=${this._config.icon_hold_action}
-        .iconDoubleTapAction=${this._config.icon_double_tap_action}
         .featurePosition=${this._featurePosition(this._config)}
       >
         <ha-tile-icon
           slot="icon"
           role=${ifDefined(this._hasIconAction ? "button" : undefined)}
           tabindex=${ifDefined(this._hasIconAction ? "0" : undefined)}
+          @action=${this._handleIconAction}
+          .actionHandler=${actionHandler({
+            hasHold: hasAction(this._config!.icon_hold_action),
+            hasDoubleClick: hasAction(this._config!.icon_double_tap_action),
+          })}
+          .interactive=${this._hasIconAction}
           .imageUrl=${imageUrl}
-          data-domain=${domain}
-          data-state=${stateObj.state}
+          data-domain=${ifDefined(domain)}
+          data-state=${ifDefined(stateObj?.state)}
           class=${classMap({ image: Boolean(imageUrl) })}
         >
           <ha-state-icon

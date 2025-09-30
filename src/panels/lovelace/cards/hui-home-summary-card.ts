@@ -64,10 +64,6 @@ export class HuiHomeSummaryCard extends LitElement implements LovelaceCard {
     handleAction(this, this.hass!, this._config!, ev.detail.action!);
   }
 
-  private _onAction = (ev: ActionHandlerEvent) => {
-    this._handleAction(ev);
-  };
-
   private get _hasCardAction() {
     return (
       hasAction(this._config?.tap_action) ||
@@ -238,7 +234,7 @@ export class HuiHomeSummaryCard extends LitElement implements LovelaceCard {
         ?vertical=${this._config.vertical}
         color=${color}
         .hasCardAction=${this._hasCardAction}
-        .onAction=${this._onAction}
+        .onAction=${this._handleAction}
         .tapAction=${this._config.tap_action}
         .holdAction=${this._config.hold_action}
         .doubleTapAction=${this._config.double_tap_action}
