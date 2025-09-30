@@ -1,6 +1,7 @@
 import { css, html, LitElement } from "lit";
 import { customElement, state } from "lit/decorators";
 import { classMap } from "lit/directives/class-map";
+import { hasSlotContent } from "../common/dom/has-slot-content";
 
 @customElement("ha-dialog-header")
 export class HaDialogHeader extends LitElement {
@@ -11,8 +12,7 @@ export class HaDialogHeader extends LitElement {
     const subtitleSlot = this.shadowRoot?.querySelector(
       'slot[name="subtitle"]'
     ) as HTMLSlotElement;
-    this._hasSubtitle =
-      subtitleSlot?.assignedNodes({ flatten: true }).length > 0;
+    this._hasSubtitle = hasSlotContent(subtitleSlot);
   }
 
   protected render() {
