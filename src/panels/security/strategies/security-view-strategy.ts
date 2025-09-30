@@ -21,22 +21,49 @@ export interface SecurityViewStrategyConfig {
 }
 
 export const securityEntityFilters: EntityFilter[] = [
-  { domain: "binary_sensor", device_class: "door" },
-  { domain: "binary_sensor", device_class: "garage_door" },
-  { domain: "binary_sensor", device_class: "lock" },
-  { domain: "binary_sensor", device_class: "opening" },
-  { domain: "binary_sensor", device_class: "window" },
-  { domain: "binary_sensor", device_class: "motion" },
-  { domain: "binary_sensor", device_class: "occupancy" },
-  { domain: "binary_sensor", device_class: "presence" },
-  { domain: "binary_sensor", device_class: "safety" },
-  { domain: "binary_sensor", device_class: "smoke" },
-  { domain: "binary_sensor", device_class: "gas" },
-  { domain: "binary_sensor", device_class: "problem" },
-  { domain: "binary_sensor", device_class: "tamper" },
-  { domain: "lock" },
-  { domain: "alarm_control_panel" },
-  { domain: "camera" },
+  {
+    domain: "camera",
+    entity_category: "none",
+  },
+  {
+    domain: "alarm_control_panel",
+    entity_category: "none",
+  },
+  {
+    domain: "lock",
+    entity_category: "none",
+  },
+  {
+    domain: "cover",
+    device_class: ["door", "garage", "gate"],
+    entity_category: "none",
+  },
+  {
+    domain: "binary_sensor",
+    device_class: [
+      // Locks
+      "lock",
+      // Openings
+      "door",
+      "window",
+      "garage_door",
+      "opening",
+      // Safety
+      "carbon_monoxide",
+      "gas",
+      "moisture",
+      "safety",
+      "smoke",
+      "tamper",
+    ],
+    entity_category: "none",
+  },
+  // We also want the tamper sensors when they are diagnostic
+  {
+    domain: "binary_sensor",
+    device_class: ["tamper"],
+    entity_category: "diagnostic",
+  },
 ];
 
 const processAreasForSecurity = (

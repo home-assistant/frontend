@@ -33,6 +33,10 @@ class PanelClimate extends LitElement {
 
   @state() private _searchParms = new URLSearchParams(window.location.search);
 
+  public firstUpdated(_changedProperties: PropertyValues): void {
+    super.firstUpdated(_changedProperties);
+  }
+
   public willUpdate(changedProps: PropertyValues) {
     if (!this.hasUpdated) {
       this.hass.loadFragmentTranslation("lovelace");

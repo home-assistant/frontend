@@ -21,14 +21,28 @@ export interface ClimateViewStrategyConfig {
 }
 
 export const climateEntityFilters: EntityFilter[] = [
-  { domain: "climate" },
-  { domain: "humidifier" },
-  { domain: "fan" },
-  { domain: "binary_sensor", device_class: "heat" },
-  { domain: "binary_sensor", device_class: "cold" },
-  { domain: "sensor", device_class: "temperature" },
-  { domain: "sensor", device_class: "humidity" },
-  { domain: "sensor", device_class: "atmospheric_pressure" },
+  { domain: "climate", entity_category: "none" },
+  { domain: "humidifier", entity_category: "none" },
+  { domain: "fan", entity_category: "none" },
+  { domain: "water_heater", entity_category: "none" },
+  {
+    domain: "cover",
+    device_class: [
+      "awning",
+      "blind",
+      "curtain",
+      "shade",
+      "shutter",
+      "window",
+      "none",
+    ],
+    entity_category: "none",
+  },
+  {
+    domain: "binary_sensor",
+    device_class: ["window"],
+    entity_category: "none",
+  },
 ];
 
 const processAreasForClimate = (
