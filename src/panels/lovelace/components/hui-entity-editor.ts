@@ -12,6 +12,7 @@ import "../../../components/ha-icon-button";
 import "../../../components/ha-sortable";
 import type { HomeAssistant } from "../../../types";
 import type { EntityConfig } from "../entity-rows/types";
+import { computeRTL } from "../../../common/util/compute_rtl";
 
 @customElement("hui-entity-editor")
 export class HuiEntityEditor extends LitElement {
@@ -37,24 +38,29 @@ export class HuiEntityEditor extends LitElement {
   }
 
   private _renderItem(item: EntityConfig, index: number) {
-    const stateObj = item.name ? undefined : this.hass!.states[item.entity];
+    const stateObj = this.hass!.states[item.entity];
 
-    const name =
-      item.name ||
-      (stateObj &&
-        (this.hass!.formatEntityName(stateObj, "entity") ||
-          this.hass!.formatEntityName(stateObj, "device")));
-    const label = name || item.entity;
-    const description = name ? item.entity : "";
+    const entityName =
+      stateObj && this.hass!.formatEntityName(stateObj, "entity");
+    const deviceName =
+      stateObj && this.hass!.formatEntityName(stateObj, "device");
+    const areaName = stateObj && this.hass!.formatEntityName(stateObj, "area");
+
+    const isRTL = computeRTL(this.hass!);
+
+    const primary = item.name || entityName || deviceName || item.entity;
+    const secondary = [areaName, entityName ? deviceName : undefined]
+      .filter(Boolean)
+      .join(isRTL ? " ◂ " : " ▸ ");
 
     return html`
       <ha-md-list-item class="item">
         <ha-svg-icon class="handle" .path=${mdiDrag} slot="start"></ha-svg-icon>
 
-        <div slot="headline" class="label">${label}</div>
-        ${description
+        <div slot="headline" class="label">${primary}</div>
+        ${secondary
           ? html`<div slot="supporting-text" class="description">
-              ${description}
+              ${secondary}
             </div>`
           : nothing}
         <ha-icon-button
