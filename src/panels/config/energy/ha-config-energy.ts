@@ -213,6 +213,7 @@ class HaConfigEnergy extends LitElement {
           this.hass.states[key],
         ])
       ),
+      issues: this._validationResult,
     };
     const json = JSON.stringify(data, null, 2);
     const blob = new Blob([json], { type: "application/json" });

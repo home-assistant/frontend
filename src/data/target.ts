@@ -17,6 +17,12 @@ export interface ExtractFromTargetResult {
   referenced_entities: string[];
 }
 
+export interface ExtractFromTargetResultReferenced {
+  referenced_areas: string[];
+  referenced_devices: string[];
+  referenced_entities: string[];
+}
+
 export const extractFromTarget = async (
   hass: HomeAssistant,
   target: HassServiceTarget

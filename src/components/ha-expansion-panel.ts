@@ -171,6 +171,11 @@ export class HaExpansionPanel extends LitElement {
       margin-left: 8px;
       margin-inline-start: 8px;
       margin-inline-end: initial;
+      border-radius: var(--ha-border-radius-circle);
+    }
+
+    #summary:focus-visible ha-svg-icon.summary-icon {
+      background-color: var(--ha-color-fill-neutral-normal-active);
     }
 
     :host([left-chevron]) .summary-icon,

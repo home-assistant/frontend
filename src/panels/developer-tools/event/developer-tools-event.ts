@@ -146,7 +146,7 @@ class HaPanelDevEvent extends LitElement {
       haStyle,
       css`
         .content {
-          gap: 16px;
+          gap: var(--ha-space-4);
           padding: 16px;
           max-width: 1200px;
           margin: auto;

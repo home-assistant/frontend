@@ -29,6 +29,7 @@ import {
   entityRegMeetsFilter,
   extractFromTarget,
   type ExtractFromTargetResult,
+  type ExtractFromTargetResultReferenced,
 } from "../../data/target";
 import { buttonLinkStyle } from "../../resources/styles";
 import type { HomeAssistant } from "../../types";
@@ -66,7 +67,7 @@ export class HaTargetPickerItemRow extends LitElement {
   public hideContext = false;
 
   @property({ attribute: false })
-  public parentEntries?: ExtractFromTargetResult;
+  public parentEntries?: ExtractFromTargetResultReferenced;
 
   @property({ attribute: false })
   public deviceFilter?: HaDevicePickerDeviceFilterFunc;
@@ -252,15 +253,13 @@ export class HaTargetPickerItemRow extends LitElement {
           ? entries?.referenced_devices
           : entries?.referenced_entities) || [];
 
+    const devicesInAreas = [] as string[];
+
     const rows1Entries =
       nextType === "entity"
         ? undefined
         : rows1.map((rowItem) => {
             const nextEntries = {
-              missing_areas: [] as string[],
-              missing_devices: [] as string[],
-              missing_floors: [] as string[],
-              missing_labels: [] as string[],
               referenced_areas: [] as string[],
               referenced_devices: [] as string[],
               referenced_entities: [] as string[],
@@ -276,6 +275,8 @@ export class HaTargetPickerItemRow extends LitElement {
                         this.hass.entities?.[entity_id]?.device_id === device_id
                     )
                 ) || ([] as string[]);
+
+              devicesInAreas.push(...nextEntries.referenced_devices);
 
               nextEntries.referenced_entities =
                 entries?.referenced_entities.filter((entity_id) => {
@@ -299,7 +300,7 @@ export class HaTargetPickerItemRow extends LitElement {
             return nextEntries;
           });
 
-    const rows2 =
+    const entityRows =
       this.type === "label" && entries
         ? entries.referenced_entities.filter((entity_id) =>
             this.hass.entities[entity_id].labels.includes(this.itemId)
@@ -310,6 +311,28 @@ export class HaTargetPickerItemRow extends LitElement {
                 this.hass.entities[entity_id].area_id === this.itemId
             )
           : [];
+
+    const deviceRows =
+      this.type === "label" && entries
+        ? entries.referenced_devices.filter(
+            (device_id) =>
+              !devicesInAreas.includes(device_id) &&
+              this.hass.devices[device_id].labels.includes(this.itemId)
+          )
+        : [];
+
+    const deviceRowsEntries =
+      deviceRows.length === 0
+        ? undefined
+        : deviceRows.map((device_id) => ({
+            referenced_areas: [] as string[],
+            referenced_devices: [] as string[],
+            referenced_entities:
+              entries?.referenced_entities.filter(
+                (entity_id) =>
+                  this.hass.entities?.[entity_id]?.device_id === device_id
+              ) || ([] as string[]),
+          }));
 
     return html`
       <div class="entries-tree">
@@ -327,11 +350,28 @@ export class HaTargetPickerItemRow extends LitElement {
                 .parentEntries=${rows1Entries?.[index]}
                 .hideContext=${this.hideContext || this.type !== "label"}
                 expand
-                .lastItem=${rows2.length === 0 && index === rows1.length - 1}
+                .lastItem=${deviceRows.length === 0 &&
+                entityRows.length === 0 &&
+                index === rows1.length - 1}
               ></ha-target-picker-item-row>
             `
           )}
-          ${rows2.map(
+          ${deviceRows.map(
+            (itemId, index) => html`
+              <ha-target-picker-item-row
+                sub-entry
+                .hass=${this.hass}
+                type="device"
+                .itemId=${itemId}
+                .parentEntries=${deviceRowsEntries?.[index]}
+                .hideContext=${this.hideContext || this.type !== "label"}
+                expand
+                .lastItem=${entityRows.length === 0 &&
+                index === deviceRows.length - 1}
+              ></ha-target-picker-item-row>
+            `
+          )}
+          ${entityRows.map(
             (itemId, index) => html`
               <ha-target-picker-item-row
                 sub-entry
@@ -339,7 +379,7 @@ export class HaTargetPickerItemRow extends LitElement {
                 type="entity"
                 .itemId=${itemId}
                 .hideContext=${this.hideContext || this.type !== "label"}
-                .lastItem=${index === rows2.length - 1}
+                .lastItem=${index === entityRows.length - 1}
               ></ha-target-picker-item-row>
             `
           )}
@@ -637,6 +677,16 @@ export class HaTargetPickerItemRow extends LitElement {
         margin-inline-start: -28px;
         width: 29px;
         border-top: 2px dashed var(--divider-color);
+      }
+
+      button.link {
+        text-decoration: none;
+        color: var(--primary-color);
+      }
+
+      button.link:hover,
+      button.link:focus {
+        text-decoration: underline;
       }
     `,
   ];

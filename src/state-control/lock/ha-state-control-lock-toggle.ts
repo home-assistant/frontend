@@ -68,7 +68,7 @@ export class HaStateControlLockToggle extends LitElement {
     if (!this.hass || !this.stateObj) {
       return;
     }
-    forwardHaptic("light");
+    forwardHaptic(this, "light");
     fireEvent(this, "lock-service-called");
     callProtectedLockService(
       this,

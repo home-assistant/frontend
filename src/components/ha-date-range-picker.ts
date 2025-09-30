@@ -343,7 +343,7 @@ export class HaDateRangePicker extends LitElement {
     .date-range-inputs {
       display: flex;
       align-items: center;
-      gap: 8px;
+      gap: var(--ha-space-2);
     }
 
     .date-range-ranges {
