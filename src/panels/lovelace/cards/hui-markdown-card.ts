@@ -231,7 +231,7 @@ export class HuiMarkdownCard extends LitElement implements LovelaceCard {
   static styles = css`
     ha-card {
       height: 100%;
-      overflow: scroll;
+      overflow-y: auto;
     }
     ha-alert {
       margin-bottom: 8px;
