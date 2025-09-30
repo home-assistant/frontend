@@ -438,31 +438,18 @@ export class HaConfigLovelaceDashboards extends LitElement {
       navigate("/config/energy");
       return;
     }
-    if (urlPath === "climate") {
-      navigate("/config/climate");
-      return;
-    }
     const dashboard = this._dashboards.find((res) => res.url_path === urlPath);
     this._openDetailDialog(dashboard, urlPath);
   }
 
   private _canDelete(urlPath: string) {
-    if (
-      urlPath === "lovelace" ||
-      urlPath === "energy" ||
-      urlPath === "light" ||
-      urlPath === "security"
-    ) {
-      return false;
-    }
-    return true;
+    return !["lovelace", "energy", "light", "security", "climate"].includes(
+      urlPath
+    );
   }
 
   private _canEdit(urlPath: string) {
-    if (urlPath === "light" || urlPath === "security") {
-      return false;
-    }
-    return true;
+    return !["light", "security", "climate"].includes(urlPath);
   }
 
   private _handleDelete = async (item: DataTableItem) => {

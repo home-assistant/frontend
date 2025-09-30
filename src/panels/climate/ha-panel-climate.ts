@@ -1,8 +1,7 @@
-import { mdiCog } from "@mdi/js";
 import type { CSSResultGroup, PropertyValues, TemplateResult } from "lit";
-import { LitElement, css, html, nothing } from "lit";
+import { LitElement, css, html } from "lit";
 import { customElement, property, state } from "lit/decorators";
-import { goBack, navigate } from "../../common/navigate";
+import { goBack } from "../../common/navigate";
 import "../../components/ha-icon-button-arrow-prev";
 import "../../components/ha-menu-button";
 import type { LovelaceConfig } from "../../data/lovelace/config/types";
@@ -75,14 +74,6 @@ class PanelClimate extends LitElement {
                 ></ha-menu-button>
               `}
           <div class="main-title">${this.hass.localize("panel.climate")}</div>
-          ${this.hass.user?.is_admin
-            ? html`<ha-icon-button
-                @click=${this._navigateConfig}
-                .path=${mdiCog}
-                title=${this.hass!.localize("ui.panel.energy.configure")}
-              >
-              </ha-icon-button>`
-            : nothing}
         </div>
       </div>
 
@@ -111,11 +102,6 @@ class PanelClimate extends LitElement {
       setEditMode: () => undefined,
       showToast: () => undefined,
     };
-  }
-
-  private _navigateConfig(ev) {
-    ev.stopPropagation();
-    navigate("/config/climate?historyBack=1");
   }
 
   static get styles(): CSSResultGroup {

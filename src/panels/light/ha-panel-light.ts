@@ -1,5 +1,5 @@
 import type { CSSResultGroup, PropertyValues, TemplateResult } from "lit";
-import { LitElement, css, html, nothing } from "lit";
+import { LitElement, css, html } from "lit";
 import { customElement, property, state } from "lit/decorators";
 import { goBack } from "../../common/navigate";
 import "../../components/ha-icon-button-arrow-prev";
@@ -69,11 +69,7 @@ class PanelLight extends LitElement {
                   .narrow=${this.narrow}
                 ></ha-menu-button>
               `}
-          ${!this.narrow
-            ? html`<div class="main-title">
-                ${this.hass.localize("panel.light")}
-              </div>`
-            : nothing}
+          <div class="main-title">${this.hass.localize("panel.light")}</div>
         </div>
       </div>
 
