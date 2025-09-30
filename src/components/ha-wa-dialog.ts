@@ -54,6 +54,7 @@ export type DialogWidthOnTitleClick = DialogWidth | "none";
  * @attr {boolean} prevent-scrim-close - Prevents closing the dialog by clicking the scrim/overlay. Defaults to false.
  * @attr {string} header-title - Header title text when no custom title slot is provided.
  * @attr {string} header-subtitle - Header subtitle text when no custom subtitle slot is provided.
+ * @attr {("above"|"below")} header-subtitle-position - Position of the subtitle relative to the title. Defaults to "below".
  * @attr {boolean} flexcontent - Makes the dialog body a flex container for flexible layouts.
  *
  * @event opened - Fired when the dialog is shown.
@@ -84,6 +85,9 @@ export class HaWaDialog extends LitElement {
 
   @property({ type: String, attribute: "header-subtitle" })
   public headerSubtitle = "";
+
+  @property({ type: String, attribute: "header-subtitle-position" })
+  public headerSubtitlePosition: "above" | "below" = "below";
 
   @property({ type: Boolean, reflect: true, attribute: "flexcontent" })
   public flexContent = false;
@@ -122,7 +126,7 @@ export class HaWaDialog extends LitElement {
         @wa-after-hide=${this._handleAfterHide}
       >
         <slot name="heading">
-          <ha-dialog-header>
+          <ha-dialog-header .subtitlePosition=${this.headerSubtitlePosition}>
             <slot name="navigationIcon" slot="navigationIcon">
               <ha-icon-button
                 data-dialog="close"
