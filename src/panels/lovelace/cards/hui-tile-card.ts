@@ -91,9 +91,8 @@ export class HuiTileCard extends LitElement implements LovelaceCard {
   }
 
   public getCardSize(): number {
-    const featuresPosition = this._config?.vertical
-      ? "bottom"
-      : this._config?.features_position || "bottom";
+    const featuresPosition =
+      this._config && this._featurePosition(this._config);
     const featuresCount = this._config?.features?.length || 0;
     return (
       1 +
@@ -106,9 +105,7 @@ export class HuiTileCard extends LitElement implements LovelaceCard {
     const columns = 6;
     let min_columns = 6;
     let rows = 1;
-    const featurePosition = this._config?.vertical
-      ? "bottom"
-      : this._config?.features_position || "bottom";
+    const featurePosition = this._config && this._featurePosition(this._config);
     const featuresCount = this._config?.features?.length || 0;
     if (featuresCount) {
       if (featurePosition === "inline") {
@@ -149,10 +146,6 @@ export class HuiTileCard extends LitElement implements LovelaceCard {
     this._handleAction(ev);
   };
 
-  private _onIconAction = (ev: CustomEvent) => {
-    this._handleIconAction(ev);
-  };
-
   private _getImageUrl(entity: HassEntity): string | undefined {
     const entityPicture =
       entity.attributes.entity_picture_local ||
@@ -168,42 +161,44 @@ export class HuiTileCard extends LitElement implements LovelaceCard {
     return imageUrl;
   }
 
-  private _computeStateColor(entity: HassEntity, color?: string) {
-    // Use custom color if active
-    if (color) {
-      return stateActive(entity) ? computeCssColor(color) : undefined;
-    }
-
-    // Use default color for person/device_tracker because color is on the badge
-    if (
-      computeDomain(entity.entity_id) === "person" ||
-      computeDomain(entity.entity_id) === "device_tracker"
-    ) {
-      return undefined;
-    }
-
-    // Use light color if the light support rgb
-    if (
-      computeDomain(entity.entity_id) === "light" &&
-      entity.attributes.rgb_color
-    ) {
-      const hsvColor = rgb2hsv(entity.attributes.rgb_color);
-
-      // Modify the real rgb color for better contrast
-      if (hsvColor[1] < 0.4) {
-        // Special case for very light color (e.g: white)
-        if (hsvColor[1] < 0.1) {
-          hsvColor[2] = 225;
-        } else {
-          hsvColor[1] = 0.4;
-        }
+  private _computeStateColor = memoizeOne(
+    (entity: HassEntity, color?: string) => {
+      // Use custom color if active
+      if (color) {
+        return stateActive(entity) ? computeCssColor(color) : undefined;
       }
-      return rgb2hex(hsv2rgb(hsvColor));
-    }
 
-    // Fallback to state color
-    return stateColorCss(entity);
-  }
+      // Use default color for person/device_tracker because color is on the badge
+      if (
+        computeDomain(entity.entity_id) === "person" ||
+        computeDomain(entity.entity_id) === "device_tracker"
+      ) {
+        return undefined;
+      }
+
+      // Use light color if the light support rgb
+      if (
+        computeDomain(entity.entity_id) === "light" &&
+        entity.attributes.rgb_color
+      ) {
+        const hsvColor = rgb2hsv(entity.attributes.rgb_color);
+
+        // Modify the real rgb color for better contrast
+        if (hsvColor[1] < 0.4) {
+          // Special case for very light color (e.g: white)
+          if (hsvColor[1] < 0.1) {
+            hsvColor[2] = 225;
+          } else {
+            hsvColor[1] = 0.4;
+          }
+        }
+        return rgb2hex(hsv2rgb(hsvColor));
+      }
+
+      // Fallback to state color
+      return stateColorCss(entity);
+    }
+  );
 
   private get _hasCardAction() {
     return (
@@ -281,7 +276,6 @@ export class HuiTileCard extends LitElement implements LovelaceCard {
         .hasCardAction=${this._hasCardAction}
         .hasIconAction=${this._hasIconAction}
         .onAction=${this._onAction}
-        .onIconAction=${this._onIconAction}
         .tapAction=${this._config.tap_action}
         .holdAction=${this._config.hold_action}
         .doubleTapAction=${this._config.double_tap_action}
@@ -329,6 +323,14 @@ export class HuiTileCard extends LitElement implements LovelaceCard {
   }
 
   static styles = css`
+    ha-tile-badge {
+      position: absolute;
+      top: 3px;
+      right: 3px;
+      inset-inline-end: 3px;
+      inset-inline-start: initial;
+    }
+
     ha-tile-icon[data-domain="alarm_control_panel"][data-state="pending"],
     ha-tile-icon[data-domain="alarm_control_panel"][data-state="arming"],
     ha-tile-icon[data-domain="alarm_control_panel"][data-state="triggered"],
@@ -346,14 +348,6 @@ export class HuiTileCard extends LitElement implements LovelaceCard {
         var(--ha-tile-icon-border-radius, var(--ha-border-radius-sm)),
         var(--ha-border-radius-sm)
       );
-    }
-
-    ha-tile-badge {
-      position: absolute;
-      top: 3px;
-      right: 3px;
-      inset-inline-end: 3px;
-      inset-inline-start: initial;
     }
 
     @keyframes pulse {

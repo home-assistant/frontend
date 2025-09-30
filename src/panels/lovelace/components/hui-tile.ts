@@ -24,21 +24,11 @@ export class HuiTile extends LitElement {
     ev: ActionHandlerEvent
   ) => void;
 
-  @property({ attribute: false }) public onIconAction?: (
-    ev: CustomEvent
-  ) => void;
-
   @property({ attribute: false }) public tapAction?: any;
 
   @property({ attribute: false }) public holdAction?: any;
 
   @property({ attribute: false }) public doubleTapAction?: any;
-
-  @property({ attribute: false }) public iconTapAction?: any;
-
-  @property({ attribute: false }) public iconHoldAction?: any;
-
-  @property({ attribute: false }) public iconDoubleTapAction?: any;
 
   @property({ attribute: false })
   public featurePosition?: LovelaceCardFeaturePosition;
