@@ -15,6 +15,7 @@ import { styleMap } from "lit/directives/style-map";
 import memoizeOne from "memoize-one";
 import { ensureArray } from "../../common/array/ensure-array";
 import { fireEvent } from "../../common/dom/fire_event";
+import type { LocalizeKeys } from "../../common/translations/localize";
 import { computeRTL } from "../../common/util/compute_rtl";
 import {
   getAreasAndFloors,
@@ -165,9 +166,10 @@ export class HaTargetPickerSelector extends LitElement {
           ${selected
             ? html`<ha-svg-icon slot="start" .path=${mdiCheck}></ha-svg-icon>`
             : nothing}
-          ${filterType.charAt(0).toUpperCase() +
-          filterType.slice(1)}s</ha-button
-        >
+          ${this.hass.localize(
+            `ui.components.target-picker.type.${filterType === "entity" ? "entities" : `${filterType}s`}` as LocalizeKeys
+          )}
+        </ha-button>
       `;
     });
   }
