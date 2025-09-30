@@ -443,7 +443,7 @@ class HaPanelDevAction extends LitElement {
     const button = ev.currentTarget as HaProgressButton;
 
     if (this._yamlMode && !this._yamlValid) {
-      forwardHaptic("failure");
+      forwardHaptic(this, "failure");
       button.actionError();
       this._error = this.hass.localize(
         "ui.panel.developer-tools.tabs.actions.errors.yaml.invalid_yaml"
@@ -465,7 +465,7 @@ class HaPanelDevAction extends LitElement {
     );
 
     if (this._error !== undefined) {
-      forwardHaptic("failure");
+      forwardHaptic(this, "failure");
       button.actionError();
       return;
     }
@@ -534,7 +534,7 @@ class HaPanelDevAction extends LitElement {
       ) {
         return;
       }
-      forwardHaptic("failure");
+      forwardHaptic(this, "failure");
       button.actionError();
 
       let localizedErrorMessage: string | undefined;
