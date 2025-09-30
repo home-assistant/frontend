@@ -4,6 +4,9 @@ import { computeCssColor } from "../../../common/color/compute-color";
 import { computeDomain } from "../../../common/entity/compute_domain";
 import { generateEntityFilter } from "../../../common/entity/entity_filter";
 import { formatNumber } from "../../../common/number/format_number";
+import "../../../components/ha-icon";
+import "../../../components/tile/ha-tile-icon";
+import "../../../components/tile/ha-tile-info";
 import type { ActionHandlerEvent } from "../../../data/lovelace/action_handler";
 import type { HomeAssistant } from "../../../types";
 import { handleAction } from "../common/handle-action";
@@ -229,29 +232,25 @@ export class HuiHomeSummaryCard extends LitElement implements LovelaceCard {
     const color = computeCssColor(COLORS[this._config.summary]);
     const secondary = this._computeSummaryState();
 
-    const tileConfig = {
-      name: label,
-      icon,
-      vertical: this._config.vertical,
-      tapAction: this._config.tap_action,
-      holdAction: this._config.hold_action,
-      doubleTapAction: this._config.double_tap_action,
-    };
-
-    const tileState = {
-      active: false, // Home summary cards don't have active state
-      color,
-      stateDisplay: html`<span>${secondary}</span>`,
-    };
-
     return html`
       <hui-tile
-        .hass=${this.hass}
-        .config=${tileConfig}
-        .state=${tileState}
+        name=${label}
+        ?vertical=${this._config.vertical}
+        color=${color}
         .hasCardAction=${this._hasCardAction}
         .onAction=${this._onAction}
-      ></hui-tile>
+        .tapAction=${this._config.tap_action}
+        .holdAction=${this._config.hold_action}
+        .doubleTapAction=${this._config.double_tap_action}
+      >
+        <ha-tile-icon slot="icon">
+          <ha-icon slot="icon" .icon=${icon}></ha-icon>
+        </ha-tile-icon>
+        <ha-tile-info slot="info" id="info">
+          <span slot="primary" class="primary">${label}</span>
+          <span slot="secondary">${secondary}</span>
+        </ha-tile-info>
+      </hui-tile>
     `;
   }
 }

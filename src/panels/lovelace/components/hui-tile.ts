@@ -1,63 +1,20 @@
-import { LitElement, css, html, nothing } from "lit";
+import { LitElement, css, html } from "lit";
 import { customElement, property } from "lit/decorators";
 import { classMap } from "lit/directives/class-map";
 import { ifDefined } from "lit/directives/if-defined";
 import { styleMap } from "lit/directives/style-map";
 import "../../../components/ha-card";
 import "../../../components/ha-ripple";
-import "../../../components/ha-state-icon";
-import "../../../components/ha-svg-icon";
-import "../../../components/tile/ha-tile-badge";
-import "../../../components/tile/ha-tile-icon";
-import "../../../components/tile/ha-tile-info";
 import type { ActionHandlerEvent } from "../../../data/lovelace/action_handler";
-import "../../../state-display/state-display";
-import type { HomeAssistant } from "../../../types";
-import "../card-features/hui-card-features";
-import type { LovelaceCardFeatureContext } from "../card-features/types";
 import { actionHandler } from "../common/directives/action-handler-directive";
 import { hasAction } from "../common/has-action";
-import { renderTileBadge } from "../cards/tile/badges/tile-badge";
-
-export interface TileConfig {
-  name: string;
-  stateContent?: any;
-  hideState?: boolean;
-  icon?: string;
-  color?: string;
-  showEntityPicture?: boolean;
-  vertical?: boolean;
-  features?: any[];
-  featuresPosition?: string;
-  tapAction?: any;
-  holdAction?: any;
-  doubleTapAction?: any;
-  iconTapAction?: any;
-  iconHoldAction?: any;
-  iconDoubleTapAction?: any;
-}
-
-export interface TileState {
-  active: boolean;
-  color?: string;
-  imageUrl?: string;
-  stateDisplay?: any;
-}
+import type { LovelaceCardFeaturePosition } from "../card-features/types";
 
 @customElement("hui-tile")
 export class HuiTile extends LitElement {
-  @property({ attribute: false }) public hass?: HomeAssistant;
+  @property({ type: Boolean }) public vertical = false;
 
-  @property({ attribute: false }) public config?: TileConfig;
-
-  @property({ attribute: false }) public state?: TileState;
-
-  @property({ attribute: false })
-  public featureContext?: LovelaceCardFeatureContext;
-
-  @property({ attribute: false }) public domain?: string;
-
-  @property({ attribute: false }) public entityId?: string;
+  @property() public color?: string;
 
   @property({ attribute: false, type: Boolean }) public hasCardAction = false;
 
@@ -71,62 +28,43 @@ export class HuiTile extends LitElement {
     ev: CustomEvent
   ) => void;
 
-  private get _featurePosition() {
-    if (this.config?.vertical) {
-      return "bottom";
-    }
-    return this.config?.featuresPosition || "bottom";
-  }
+  @property({ attribute: false }) public tapAction?: any;
 
-  private get _displayedFeatures() {
-    const features = this.config?.features || [];
-    const featurePosition = this._featurePosition;
+  @property({ attribute: false }) public holdAction?: any;
 
-    if (featurePosition === "inline") {
-      return features.slice(0, 1);
-    }
-    return features;
-  }
+  @property({ attribute: false }) public doubleTapAction?: any;
+
+  @property({ attribute: false }) public iconTapAction?: any;
+
+  @property({ attribute: false }) public iconHoldAction?: any;
+
+  @property({ attribute: false }) public iconDoubleTapAction?: any;
+
+  @property({ attribute: false })
+  public featurePosition?: LovelaceCardFeaturePosition;
 
   private _handleAction(ev: ActionHandlerEvent) {
     this.onAction?.(ev);
   }
 
-  private _handleIconAction(ev: CustomEvent) {
-    this.onIconAction?.(ev);
-  }
-
   protected render() {
-    if (!this.config || !this.state || !this.hass) {
-      return nothing;
-    }
-
-    const contentClasses = { vertical: Boolean(this.config.vertical) };
-    const name = this.config.name;
-    const active = this.state.active;
-    const color = this.state.color;
-    const stateDisplay = this.config.hideState
-      ? nothing
-      : this.state.stateDisplay;
+    const contentClasses = { vertical: Boolean(this.vertical) };
 
     const style = {
-      "--tile-color": color,
+      "--tile-color": this.color,
     };
 
-    const imageUrl = this.state.imageUrl;
-    const featurePosition = this._featurePosition;
-    const features = this._displayedFeatures;
     const containerOrientationClass =
-      featurePosition === "inline" ? "horizontal" : "";
+      this.featurePosition === "inline" ? "horizontal" : "";
 
     return html`
-      <ha-card style=${styleMap(style)} class=${classMap({ active })}>
+      <ha-card style=${styleMap(style)}>
         <div
           class="background"
           @action=${this._handleAction}
           .actionHandler=${actionHandler({
-            hasHold: hasAction(this.config!.holdAction),
-            hasDoubleClick: hasAction(this.config!.doubleTapAction),
+            hasHold: hasAction(this.holdAction),
+            hasDoubleClick: hasAction(this.doubleTapAction),
           })}
           role=${ifDefined(this.hasCardAction ? "button" : undefined)}
           tabindex=${ifDefined(this.hasCardAction ? "0" : undefined)}
@@ -136,53 +74,10 @@ export class HuiTile extends LitElement {
         </div>
         <div class="container ${containerOrientationClass}">
           <div class="content ${classMap(contentClasses)}">
-            <ha-tile-icon
-              role=${ifDefined(this.hasIconAction ? "button" : undefined)}
-              tabindex=${ifDefined(this.hasIconAction ? "0" : undefined)}
-              @action=${this._handleIconAction}
-              .actionHandler=${actionHandler({
-                hasHold: hasAction(this.config!.iconHoldAction),
-                hasDoubleClick: hasAction(this.config!.iconDoubleTapAction),
-              })}
-              .interactive=${this.hasIconAction}
-              .imageUrl=${imageUrl}
-              data-domain=${ifDefined(this.domain)}
-              data-state=${ifDefined(
-                this.entityId
-                  ? this.hass.states[this.entityId]?.state
-                  : undefined
-              )}
-              class=${classMap({ image: Boolean(imageUrl) })}
-            >
-              <ha-state-icon
-                slot="icon"
-                .icon=${this.config.icon}
-                .stateObj=${this.entityId
-                  ? this.hass.states[this.entityId]
-                  : undefined}
-                .hass=${this.hass}
-              ></ha-state-icon>
-              ${this.entityId
-                ? renderTileBadge(this.hass.states[this.entityId], this.hass)
-                : nothing}
-            </ha-tile-icon>
-            <ha-tile-info id="info">
-              <span slot="primary" class="primary">${name}</span>
-              ${stateDisplay
-                ? html`<span slot="secondary">${stateDisplay}</span>`
-                : nothing}
-            </ha-tile-info>
+            <slot name="icon"></slot>
+            <slot name="info"></slot>
           </div>
-          ${features.length > 0
-            ? html`
-                <hui-card-features
-                  .hass=${this.hass}
-                  .context=${this.featureContext || {}}
-                  .color=${this.config.color}
-                  .features=${features}
-                ></hui-card-features>
-              `
-            : nothing}
+          <slot name="features"></slot>
         </div>
       </ha-card>
     `;
@@ -259,70 +154,32 @@ export class HuiTile extends LitElement {
       text-align: center;
       justify-content: center;
     }
-    .vertical ha-tile-info {
+    .vertical ::slotted(ha-tile-info) {
       width: 100%;
       flex: none;
     }
-    ha-tile-icon {
+    ::slotted(ha-tile-icon) {
       --tile-icon-color: var(--tile-color);
       position: relative;
       padding: 6px;
       margin: -6px;
     }
-    ha-tile-badge {
-      position: absolute;
-      top: 3px;
-      right: 3px;
-      inset-inline-end: 3px;
-      inset-inline-start: initial;
-    }
-    ha-tile-info {
+    ::slotted(ha-tile-info) {
       position: relative;
       min-width: 0;
       transition: background-color 180ms ease-in-out;
       box-sizing: border-box;
     }
-    hui-card-features {
+    ::slotted(features) {
       --feature-color: var(--tile-color);
       padding: 0 12px 12px 12px;
     }
-    .container.horizontal hui-card-features {
+    .container.horizontal ::slotted(hui-card-features) {
       width: calc(50% - var(--column-gap, 0px) / 2 - 12px);
       flex: none;
       --feature-height: 36px;
       padding: 0 12px;
       padding-inline-start: 0;
-    }
-
-    ha-tile-icon[data-domain="alarm_control_panel"][data-state="pending"],
-    ha-tile-icon[data-domain="alarm_control_panel"][data-state="arming"],
-    ha-tile-icon[data-domain="alarm_control_panel"][data-state="triggered"],
-    ha-tile-icon[data-domain="lock"][data-state="jammed"] {
-      animation: pulse 1s infinite;
-    }
-
-    /* Make sure we display the whole image */
-    ha-tile-icon.image[data-domain="update"] {
-      --tile-icon-border-radius: 0;
-    }
-    /* Make sure we display the almost the whole image but it often use text */
-    ha-tile-icon.image[data-domain="media_player"] {
-      --tile-icon-border-radius: min(
-        var(--ha-tile-icon-border-radius, var(--ha-border-radius-sm)),
-        var(--ha-border-radius-sm)
-      );
-    }
-
-    @keyframes pulse {
-      0% {
-        opacity: 1;
-      }
-      50% {
-        opacity: 0;
-      }
-      100% {
-        opacity: 1;
-      }
     }
   `;
 }
