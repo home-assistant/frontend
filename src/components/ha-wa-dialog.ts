@@ -2,10 +2,11 @@ import { css, html, LitElement } from "lit";
 import { customElement, property, state } from "lit/decorators";
 import "@home-assistant/webawesome/dist/components/dialog/dialog";
 import { mdiClose } from "@mdi/js";
-import type { HomeAssistant } from "../types";
 import "./ha-dialog-header";
 import "./ha-icon-button";
+import type { HomeAssistant } from "../types";
 import { fireEvent } from "../common/dom/fire_event";
+import { haStyleScrollbar } from "../resources/styles";
 
 export type DialogWidth = "small" | "medium" | "large" | "full";
 export type DialogWidthOnTitleClick = DialogWidth | "none";
@@ -178,172 +179,175 @@ export class HaWaDialog extends LitElement {
     this._sizeChanged = !this._sizeChanged;
   };
 
-  static styles = css`
-    :host([scrolled]) wa-dialog::part(header) {
-      max-width: 100%;
-      border-bottom: 1px solid
-        var(--dialog-scroll-divider-color, var(--divider-color));
-    }
-
-    wa-dialog {
-      --full-width: min(
-        95vw,
-        calc(
-          100vw - var(--safe-area-inset-left, 0px) - var(
-              --safe-area-inset-right,
-              0px
-            )
-        )
-      );
-      --width: min(var(--ha-dialog-width-md, 580px), var(--full-width));
-      --spacing: var(--dialog-content-padding, 24px);
-      --show-duration: var(--ha-dialog-show-duration, 200ms);
-      --hide-duration: var(--ha-dialog-hide-duration, 200ms);
-      --ha-dialog-surface-background: var(
-        --card-background-color,
-        var(--ha-color-surface-default)
-      );
-      --wa-color-surface-raised: var(
-        --ha-dialog-surface-background,
-        var(--card-background-color, var(--ha-color-surface-default))
-      );
-      --wa-panel-border-radius: var(
-        --ha-dialog-border-radius,
-        var(--ha-border-radius-3xl)
-      );
-      max-width: 100%;
-    }
-
-    :host([width="small"]),
-    :host(.size-changed[width-on-title-click="small"]) wa-dialog {
-      --width: min(var(--ha-dialog-width-sm, 320px), var(--full-width));
-    }
-
-    :host([width="large"]),
-    :host(.size-changed[width-on-title-click="large"]) wa-dialog {
-      --width: min(var(--ha-dialog-width-lg, 720px), var(--full-width));
-    }
-
-    :host([width="full"]),
-    :host(.size-changed[width-on-title-click="full"]) wa-dialog {
-      --width: var(--full-width);
-    }
-
-    wa-dialog::part(dialog) {
-      min-width: var(--width, var(--full-width));
-      max-width: var(--width, var(--full-width));
-      max-height: 100%;
-      position: var(--dialog-surface-position, relative);
-      margin-top: var(--dialog-surface-margin-top, auto);
-      transition:
-        min-width var(--ha-dialog-expand-duration, 200ms) ease-in-out,
-        max-width var(--ha-dialog-expand-duration, 200ms) ease-in-out;
-      display: flex;
-      flex-direction: column;
-      overflow: hidden;
-    }
-
-    @media all and (max-width: 450px), all and (max-height: 500px) {
-      :host {
-        --ha-dialog-border-radius: 0px;
+  static styles = [
+    haStyleScrollbar,
+    css`
+      :host([scrolled]) wa-dialog::part(header) {
+        max-width: 100%;
+        border-bottom: 1px solid
+          var(--dialog-scroll-divider-color, var(--divider-color));
       }
 
       wa-dialog {
-        --full-width: 100vw;
+        --full-width: min(
+          95vw,
+          calc(
+            100vw - var(--safe-area-inset-left, 0px) - var(
+                --safe-area-inset-right,
+                0px
+              )
+          )
+        );
+        --width: min(var(--ha-dialog-width-md, 580px), var(--full-width));
+        --spacing: var(--dialog-content-padding, 24px);
+        --show-duration: var(--ha-dialog-show-duration, 200ms);
+        --hide-duration: var(--ha-dialog-hide-duration, 200ms);
+        --ha-dialog-surface-background: var(
+          --card-background-color,
+          var(--ha-color-surface-default)
+        );
+        --wa-color-surface-raised: var(
+          --ha-dialog-surface-background,
+          var(--card-background-color, var(--ha-color-surface-default))
+        );
+        --wa-panel-border-radius: var(
+          --ha-dialog-border-radius,
+          var(--ha-border-radius-3xl)
+        );
+        max-width: 100%;
+      }
+
+      :host([width="small"]),
+      :host(.size-changed[width-on-title-click="small"]) wa-dialog {
+        --width: min(var(--ha-dialog-width-sm, 320px), var(--full-width));
+      }
+
+      :host([width="large"]),
+      :host(.size-changed[width-on-title-click="large"]) wa-dialog {
+        --width: min(var(--ha-dialog-width-lg, 720px), var(--full-width));
+      }
+
+      :host([width="full"]),
+      :host(.size-changed[width-on-title-click="full"]) wa-dialog {
+        --width: var(--full-width);
       }
 
       wa-dialog::part(dialog) {
-        min-height: 100%;
-        padding-top: var(--safe-area-inset-top, 0px);
-        padding-bottom: var(--safe-area-inset-bottom, 0px);
-        padding-left: var(--safe-area-inset-left, 0px);
-        padding-right: var(--safe-area-inset-right, 0px);
+        min-width: var(--width, var(--full-width));
+        max-width: var(--width, var(--full-width));
+        max-height: calc(100% - 80px);
+        position: var(--dialog-surface-position, relative);
+        margin-top: var(--dialog-surface-margin-top, auto);
+        transition:
+          min-width var(--ha-dialog-expand-duration, 200ms) ease-in-out,
+          max-width var(--ha-dialog-expand-duration, 200ms) ease-in-out;
+        display: flex;
+        flex-direction: column;
+        overflow: hidden;
       }
-    }
 
-    wa-dialog::part(header) {
-      max-width: 100%;
-      overflow: hidden;
-      display: flex;
-      align-items: center;
-      padding: 24px 24px 16px 24px;
-      gap: 4px;
-    }
-    :host([has-custom-heading]) wa-dialog::part(header) {
-      max-width: 100%;
-      padding: 0;
-    }
+      @media all and (max-width: 450px), all and (max-height: 500px) {
+        :host {
+          --ha-dialog-border-radius: 0px;
+        }
 
-    wa-dialog::part(close-button),
-    wa-dialog::part(close-button__base) {
-      display: none;
-    }
+        wa-dialog {
+          --full-width: 100vw;
+        }
 
-    .header-title-container {
-      display: flex;
-      align-items: center;
-    }
+        wa-dialog::part(dialog) {
+          min-height: 100%;
+          padding-top: var(--safe-area-inset-top, 0px);
+          padding-bottom: var(--safe-area-inset-bottom, 0px);
+          padding-left: var(--safe-area-inset-left, 0px);
+          padding-right: var(--safe-area-inset-right, 0px);
+        }
+      }
 
-    .header-title {
-      margin: 0;
-      margin-bottom: 0;
-      color: var(
-        --ha-dialog-header-title-color,
-        var(--ha-color-on-surface-default, var(--primary-text-color))
-      );
-      font-size: var(
-        --ha-dialog-header-title-font-size,
-        var(--ha-font-size-2xl)
-      );
-      line-height: var(
-        --ha-dialog-header-title-line-height,
-        var(--ha-line-height-condensed)
-      );
-      font-weight: var(
-        --ha-dialog-header-title-font-weight,
-        var(--ha-font-weight-normal)
-      );
-      overflow: hidden;
-      text-overflow: ellipsis;
-      white-space: nowrap;
-      margin-right: 12px;
-    }
+      wa-dialog::part(header) {
+        max-width: 100%;
+        overflow: hidden;
+        display: flex;
+        align-items: center;
+        padding: 24px 24px 16px 24px;
+        gap: 4px;
+      }
+      :host([has-custom-heading]) wa-dialog::part(header) {
+        max-width: 100%;
+        padding: 0;
+      }
 
-    wa-dialog::part(body) {
-      padding: 0;
-      display: flex;
-      flex-direction: column;
-      max-width: 100%;
-      overflow: hidden;
-    }
+      wa-dialog::part(close-button),
+      wa-dialog::part(close-button__base) {
+        display: none;
+      }
 
-    .body {
-      position: var(--dialog-content-position, relative);
-      padding: 0 var(--dialog-content-padding, 24px)
-        var(--dialog-content-padding, 24px) var(--dialog-content-padding, 24px);
-      overflow: auto;
-      flex-grow: 1;
-    }
-    :host([flexcontent]) .body {
-      max-width: 100%;
-      overflow: hidden;
-      display: flex;
-      flex-direction: column;
-    }
+      .header-title-container {
+        display: flex;
+        align-items: center;
+      }
 
-    wa-dialog::part(footer) {
-      padding: 0;
-    }
+      .header-title {
+        margin: 0;
+        margin-bottom: 0;
+        color: var(
+          --ha-dialog-header-title-color,
+          var(--ha-color-on-surface-default, var(--primary-text-color))
+        );
+        font-size: var(
+          --ha-dialog-header-title-font-size,
+          var(--ha-font-size-2xl)
+        );
+        line-height: var(
+          --ha-dialog-header-title-line-height,
+          var(--ha-line-height-condensed)
+        );
+        font-weight: var(
+          --ha-dialog-header-title-font-weight,
+          var(--ha-font-weight-normal)
+        );
+        overflow: hidden;
+        text-overflow: ellipsis;
+        white-space: nowrap;
+        margin-right: 12px;
+      }
 
-    ::slotted([slot="footer"]) {
-      display: flex;
-      padding: 12px 16px 16px 16px;
-      gap: 12px;
-      justify-content: flex-end;
-      align-items: center;
-      width: 100%;
-    }
-  `;
+      wa-dialog::part(body) {
+        padding: 0;
+        display: flex;
+        flex-direction: column;
+        max-width: 100%;
+        overflow: hidden;
+      }
+
+      .body {
+        position: var(--dialog-content-position, relative);
+        padding: 0 var(--dialog-content-padding, 24px)
+          var(--dialog-content-padding, 24px)
+          var(--dialog-content-padding, 24px);
+        overflow: auto;
+        flex-grow: 1;
+      }
+      :host([flexcontent]) .body {
+        max-width: 100%;
+        display: flex;
+        flex-direction: column;
+      }
+
+      wa-dialog::part(footer) {
+        padding: 0;
+      }
+
+      ::slotted([slot="footer"]) {
+        display: flex;
+        padding: 12px 16px 16px 16px;
+        gap: 12px;
+        justify-content: flex-end;
+        align-items: center;
+        width: 100%;
+      }
+    `,
+  ];
 }
 
 declare global {
