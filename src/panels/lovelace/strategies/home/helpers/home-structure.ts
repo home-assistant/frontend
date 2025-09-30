@@ -6,7 +6,6 @@ interface HomeStructure {
     id: string;
     areas: string[];
   }[];
-
   areas: string[];
 }
 

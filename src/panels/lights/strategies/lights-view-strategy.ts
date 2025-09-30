@@ -1,6 +1,7 @@
 import { ReactiveElement } from "lit";
 import { customElement } from "lit/decorators";
 import {
+  findEntities,
   generateEntityFilter,
   type EntityFilter,
 } from "../../../common/entity/entity_filter";
@@ -14,16 +15,12 @@ import {
   getFloors,
 } from "../../lovelace/strategies/areas/helpers/areas-strategy-helper";
 import { getHomeStructure } from "../../lovelace/strategies/home/helpers/home-structure";
-import {
-  findEntities,
-  HOME_SUMMARIES_FILTERS,
-} from "../../lovelace/strategies/home/helpers/home-summaries";
 
 export interface LightsViewStrategyConfig {
   type: "lights";
 }
 
-export const lightFilters: EntityFilter[] = [
+export const lightEntityFilters: EntityFilter[] = [
   { domain: "light", entity_category: "none" },
 ];
 
@@ -77,7 +74,7 @@ export class LightsViewStrategy extends ReactiveElement {
 
     const allEntities = Object.keys(hass.states);
 
-    const lightsFilters = HOME_SUMMARIES_FILTERS.lights.map((filter) =>
+    const lightsFilters = lightEntityFilters.map((filter) =>
       generateEntityFilter(hass, filter)
     );
 

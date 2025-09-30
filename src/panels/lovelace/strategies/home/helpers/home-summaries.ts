@@ -1,9 +1,6 @@
-import type {
-  EntityFilter,
-  EntityFilterFunc,
-} from "../../../../../common/entity/entity_filter";
+import type { EntityFilter } from "../../../../../common/entity/entity_filter";
 import type { LocalizeFunc } from "../../../../../common/translations/localize";
-import { lightFilters } from "../../../../lights/strategies/lights-view-strategy";
+import { lightEntityFilters } from "../../../../lights/strategies/lights-view-strategy";
 
 export const HOME_SUMMARIES = [
   "lights",
@@ -22,7 +19,7 @@ export const HOME_SUMMARIES_ICONS: Record<HomeSummary, string> = {
 };
 
 export const HOME_SUMMARIES_FILTERS: Record<HomeSummary, EntityFilter[]> = {
-  lights: lightFilters,
+  lights: lightEntityFilters,
   climate: [
     { domain: "climate", entity_category: "none" },
     { domain: "humidifier", entity_category: "none" },
@@ -95,24 +92,12 @@ export const HOME_SUMMARIES_FILTERS: Record<HomeSummary, EntityFilter[]> = {
   media_players: [{ domain: "media_player", entity_category: "none" }],
 };
 
-export const findEntities = (
-  entities: string[],
-  filters: EntityFilterFunc[]
-): string[] => {
-  const seen = new Set<string>();
-  const results: string[] = [];
-
-  for (const filter of filters) {
-    for (const entity of entities) {
-      if (filter(entity) && !seen.has(entity)) {
-        seen.add(entity);
-        results.push(entity);
-      }
-    }
+export const getSummaryLabel = (
+  localize: LocalizeFunc,
+  summary: HomeSummary
+) => {
+  if (summary === "lights") {
+    return localize("panel.lights");
   }
-
-  return results;
+  return localize(`ui.panel.lovelace.strategy.home.summary_list.${summary}`);
 };
-
-export const getSummaryLabel = (localize: LocalizeFunc, summary: HomeSummary) =>
-  localize(`ui.panel.lovelace.strategy.home.summary_list.${summary}`);

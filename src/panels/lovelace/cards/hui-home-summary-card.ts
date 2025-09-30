@@ -5,7 +5,10 @@ import { ifDefined } from "lit/directives/if-defined";
 import { styleMap } from "lit/directives/style-map";
 import { computeCssColor } from "../../../common/color/compute-color";
 import { computeDomain } from "../../../common/entity/compute_domain";
-import { generateEntityFilter } from "../../../common/entity/entity_filter";
+import {
+  findEntities,
+  generateEntityFilter,
+} from "../../../common/entity/entity_filter";
 import { formatNumber } from "../../../common/number/format_number";
 import "../../../components/ha-card";
 import "../../../components/ha-icon";
@@ -19,7 +22,6 @@ import { actionHandler } from "../common/directives/action-handler-directive";
 import { handleAction } from "../common/handle-action";
 import { hasAction } from "../common/has-action";
 import {
-  findEntities,
   getSummaryLabel,
   HOME_SUMMARIES_FILTERS,
   HOME_SUMMARIES_ICONS,
