@@ -255,7 +255,7 @@ export class HaWaDialog extends LitElement {
       }
 
       wa-dialog::part(dialog) {
-        min-height: 100vh;
+        min-height: 100%;
         padding-top: var(--safe-area-inset-top, 0px);
         padding-bottom: var(--safe-area-inset-bottom, 0px);
         padding-left: var(--safe-area-inset-left, 0px);
