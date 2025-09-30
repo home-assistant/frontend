@@ -638,6 +638,16 @@ export class HaTargetPickerItemRow extends LitElement {
         width: 29px;
         border-top: 2px dashed var(--divider-color);
       }
+
+      button.link {
+        text-decoration: none;
+        color: var(--primary-color);
+      }
+
+      button.link:hover,
+      button.link:focus {
+        text-decoration: underline;
+      }
     `,
   ];
 }
