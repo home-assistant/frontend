@@ -667,6 +667,10 @@ class HaPanelHistory extends SubscribeMixin(LitElement) {
           direction: var(--direction);
         }
 
+        ha-target-picker {
+          flex: 1;
+        }
+
         @media all and (max-width: 1025px) {
           .filters {
             flex-direction: column;

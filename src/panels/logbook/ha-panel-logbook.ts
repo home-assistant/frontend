@@ -25,6 +25,7 @@ import "../../components/ha-menu-button";
 import "../../components/ha-target-picker";
 import "../../components/ha-top-app-bar-fixed";
 import { labelsContext } from "../../data/context";
+import type { HaEntityPickerEntityFilterFunc } from "../../data/entity";
 import { subscribeLabelRegistry } from "../../data/label_registry";
 import { filterLogbookCompatibleEntities } from "../../data/logbook";
 import { resolveEntityIDs } from "../../data/selector";
@@ -33,7 +34,6 @@ import { SubscribeMixin } from "../../mixins/subscribe-mixin";
 import { haStyle } from "../../resources/styles";
 import type { HomeAssistant } from "../../types";
 import "./ha-logbook";
-import type { HaEntityPickerEntityFilterFunc } from "../../data/entity";
 
 @customElement("ha-panel-logbook")
 export class HaPanelLogbook extends SubscribeMixin(LitElement) {
@@ -382,6 +382,10 @@ export class HaPanelLogbook extends SubscribeMixin(LitElement) {
           display: inline-block;
           flex-grow: 1;
           max-width: 400px;
+        }
+
+        ha-target-picker {
+          flex: 1;
         }
 
         :host([narrow]) ha-entity-picker {

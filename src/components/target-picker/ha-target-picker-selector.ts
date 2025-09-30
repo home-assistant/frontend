@@ -13,6 +13,7 @@ import {
 } from "lit/decorators";
 import { styleMap } from "lit/directives/style-map";
 import memoizeOne from "memoize-one";
+import { tinykeys } from "tinykeys";
 import { ensureArray } from "../../common/array/ensure-array";
 import { fireEvent } from "../../common/dom/fire_event";
 import type { LocalizeKeys } from "../../common/translations/localize";
@@ -96,6 +97,8 @@ export class HaTargetPickerSelector extends LitElement {
 
   @state() private _configEntryLookup: Record<string, ConfigEntry> = {};
 
+  @state() private _selectedItemIndex = -1;
+
   @state()
   @consume({ context: labelsContext, subscribe: true })
   _labelRegistry!: LabelRegistryEntry[];
@@ -105,6 +108,8 @@ export class HaTargetPickerSelector extends LitElement {
     delegatesFocus: true,
   };
 
+  private _removeKeyboardShortcuts?: () => void;
+
   public willUpdate(changedProps: PropertyValues) {
     super.willUpdate(changedProps);
 
@@ -112,6 +117,15 @@ export class HaTargetPickerSelector extends LitElement {
       this._loadConfigEntries();
       loadVirtualizer();
     }
+  }
+
+  protected firstUpdated() {
+    this._registerKeyboardShortcuts();
+  }
+
+  disconnectedCallback() {
+    super.disconnectedCallback();
+    this._removeKeyboardShortcuts?.();
   }
 
   private async _loadConfigEntries() {
@@ -131,7 +145,11 @@ export class HaTargetPickerSelector extends LitElement {
       <div class="filter">${this._renderFilterButtons()}</div>
       <lit-virtualizer
         scroller
-        .items=${this._getItems()}
+        .items=${this._getItems(
+          this.filterTypes,
+          this._searchTerm,
+          this._selectedItemIndex
+        )}
         .renderItem=${this._renderRow}
         @scroll=${this._onScrollList}
         class="list ${this._listScrolled ? "scrolled" : ""}"
@@ -140,6 +158,66 @@ export class HaTargetPickerSelector extends LitElement {
       </lit-virtualizer>
     `;
   }
+
+  private _registerKeyboardShortcuts() {
+    this._removeKeyboardShortcuts = tinykeys(this, {
+      ArrowUp: this._selectPreviousItem,
+      ArrowDown: this._selectNextItem,
+      Enter: this._pickSelectedItem,
+    });
+  }
+
+  private _selectNextItem = () => {
+    if (!this._virtualizerElement) {
+      return;
+    }
+
+    const maxItems = this._virtualizerElement.items.length - 1;
+
+    if (maxItems === -1) {
+      this._selectedItemIndex = -1;
+      return;
+    }
+
+    this._selectedItemIndex =
+      maxItems === this._selectedItemIndex
+        ? this._selectedItemIndex
+        : this._selectedItemIndex + 1;
+
+    this._virtualizerElement?.scrollToIndex(this._selectedItemIndex);
+  };
+
+  private _selectPreviousItem = () => {
+    if (!this._virtualizerElement) {
+      return;
+    }
+
+    if (this._selectedItemIndex > 0) {
+      this._selectedItemIndex--;
+
+      this._virtualizerElement?.scrollToIndex(this._selectedItemIndex);
+    }
+  };
+
+  private _pickSelectedItem = () => {
+    if (this._selectedItemIndex === -1) {
+      return;
+    }
+
+    const item: any = this._virtualizerElement?.items[this._selectedItemIndex];
+    if (item && typeof item !== "string") {
+      this._pickTarget(
+        item.id,
+        "domain" in item
+          ? "device"
+          : "stateObj" in item
+            ? "entity"
+            : item.type
+              ? "area"
+              : "label"
+      );
+    }
+  };
 
   private _renderFilterButtons() {
     const filter: (TargetTypeFloorless | "separator")[] = [
@@ -174,7 +252,14 @@ export class HaTargetPickerSelector extends LitElement {
     });
   }
 
-  private _renderRow = (item) => {
+  private _renderRow = (
+    item:
+      | PickerComboBoxItem
+      | (FloorComboBoxItem & { last?: boolean | undefined })
+      | EntityComboBoxItem
+      | DevicePickerItem,
+    index
+  ) => {
     if (!item) {
       return nothing;
     }
@@ -186,21 +271,28 @@ export class HaTargetPickerSelector extends LitElement {
       return html`<div class="title">${item}</div>`;
     }
 
-    if (item.type === "area" || item.type === "floor") {
-      return this._areaRowRenderer(item);
+    if (
+      (item as FloorComboBoxItem).type === "area" ||
+      (item as FloorComboBoxItem).type === "floor"
+    ) {
+      return this._areaRowRenderer(
+        item as FloorComboBoxItem & { last?: boolean },
+        index
+      );
     }
 
     if ("domain" in item) {
-      return this._deviceRowRenderer(item);
+      return this._deviceRowRenderer(item, index);
     }
 
     if ("stateObj" in item) {
-      return this._entityRowRenderer(item);
+      return this._entityRowRenderer(item, index);
     }
 
     // label or empty
     return html`
       <ha-combo-box-item
+        class=${this._selectedItemIndex === index ? "selected" : ""}
         .type=${item.id === EMPTY_SEARCH ? "text" : "button"}
         @click=${
           // eslint-disable-next-line lit/no-template-arrow
@@ -287,168 +379,174 @@ export class HaTargetPickerSelector extends LitElement {
     return filteredItems;
   }
 
-  private _getItems = () => {
-    const items: (
-      | string
-      | FloorComboBoxItem
-      | EntityComboBoxItem
-      | PickerComboBoxItem
-    )[] = [];
+  private _getItems = memoizeOne(
+    (
+      filterTypes: this["filterTypes"],
+      searchTerm: string,
+      _selectedItemIndex: number
+    ) => {
+      const items: (
+        | string
+        | FloorComboBoxItem
+        | EntityComboBoxItem
+        | PickerComboBoxItem
+      )[] = [];
 
-    if (this.filterTypes.length === 0 || this.filterTypes.includes("entity")) {
-      let entities = getEntities(
-        this.hass,
-        this.includeDomains,
-        undefined,
-        this.entityFilter,
-        this.includeDeviceClasses,
-        undefined,
-        undefined,
-        this.targetValue?.entity_id
-          ? ensureArray(this.targetValue.entity_id)
-          : undefined
-      );
+      if (filterTypes.length === 0 || filterTypes.includes("entity")) {
+        let entities = getEntities(
+          this.hass,
+          this.includeDomains,
+          undefined,
+          this.entityFilter,
+          this.includeDeviceClasses,
+          undefined,
+          undefined,
+          this.targetValue?.entity_id
+            ? ensureArray(this.targetValue.entity_id)
+            : undefined
+        );
 
-      if (this._searchTerm) {
-        entities = this._filterEntities(entities);
+        if (searchTerm) {
+          entities = this._filterEntities(entities);
+        }
+
+        if (entities.length > 0 && filterTypes.length !== 1) {
+          items.push(
+            this.hass.localize("ui.components.target-picker.type.entities")
+          ); // title
+        }
+
+        items.push(...entities);
       }
 
-      if (entities.length > 0 && this.filterTypes.length !== 1) {
+      if (filterTypes.length === 0 || filterTypes.includes("device")) {
+        let devices = getDevices(
+          this.hass,
+          this._configEntryLookup,
+          this.includeDomains,
+          undefined,
+          this.includeDeviceClasses,
+          this.deviceFilter,
+          this.entityFilter,
+          this.targetValue?.device_id
+            ? ensureArray(this.targetValue.device_id)
+            : undefined
+        );
+
+        if (searchTerm) {
+          devices = this._filterDevices(devices);
+        }
+
+        if (devices.length > 0 && filterTypes.length !== 1) {
+          items.push(
+            this.hass.localize("ui.components.target-picker.type.devices")
+          ); // title
+        }
+
+        items.push(...devices);
+      }
+
+      if (filterTypes.length === 0 || filterTypes.includes("label")) {
+        let labels = getLabels(
+          this.hass,
+          this._labelRegistry,
+          this.includeDomains,
+          undefined,
+          this.includeDeviceClasses,
+          this.deviceFilter,
+          this.entityFilter,
+          this.targetValue?.label_id
+            ? ensureArray(this.targetValue.label_id)
+            : undefined
+        );
+
+        if (searchTerm) {
+          labels = this._filterLabels(labels);
+        }
+
+        if (labels.length > 0 && filterTypes.length !== 1) {
+          items.push(
+            this.hass.localize("ui.components.target-picker.type.labels")
+          ); // title
+        }
+
+        items.push(...labels);
+      }
+
+      if (filterTypes.length === 0 || filterTypes.includes("area")) {
+        let areasAndFloors = getAreasAndFloors(
+          this.hass.states,
+          this.hass.floors,
+          this.hass.areas,
+          this.hass.devices,
+          this.hass.entities,
+          memoizeOne((value: AreaFloorValue): string =>
+            [value.type, value.id].join(SEPARATOR)
+          ),
+          this.includeDomains,
+          undefined,
+          this.includeDeviceClasses,
+          this.deviceFilter,
+          this.entityFilter,
+          this.targetValue?.area_id
+            ? ensureArray(this.targetValue.area_id)
+            : undefined,
+          this.targetValue?.floor_id
+            ? ensureArray(this.targetValue.floor_id)
+            : undefined
+        );
+
+        if (searchTerm) {
+          areasAndFloors = this._filterAreasAndFloors(areasAndFloors);
+        }
+
+        if (areasAndFloors.length > 0 && filterTypes.length !== 1) {
+          items.push(
+            this.hass.localize("ui.components.target-picker.type.areas")
+          ); // title
+        }
+
         items.push(
-          this.hass.localize("ui.components.target-picker.type.entities")
-        ); // title
+          ...areasAndFloors.map((item, index) => {
+            const nextItem = areasAndFloors[index + 1];
+
+            if (
+              !nextItem ||
+              (item.type === "area" && nextItem.type === "floor")
+            ) {
+              return {
+                ...item,
+                last: true,
+              };
+            }
+
+            return item;
+          })
+        );
       }
 
-      items.push(...entities);
+      if (searchTerm && items.length === 0) {
+        items.push({
+          id: EMPTY_SEARCH,
+          primary: this.hass.localize(
+            "ui.components.target-picker.no_target_found",
+            { term: html`<span class="search-term">"${searchTerm}"</span>` }
+          ),
+        });
+      } else if (items.length === 0) {
+        items.push({
+          id: EMPTY_SEARCH,
+          primary: this.hass.localize("ui.components.target-picker.no_targets"),
+        });
+      }
+
+      if (this.mode === "dialog") {
+        items.push("padding"); // padding for safe area inset
+      }
+
+      return items;
     }
-
-    if (this.filterTypes.length === 0 || this.filterTypes.includes("device")) {
-      let devices = getDevices(
-        this.hass,
-        this._configEntryLookup,
-        this.includeDomains,
-        undefined,
-        this.includeDeviceClasses,
-        this.deviceFilter,
-        this.entityFilter,
-        this.targetValue?.device_id
-          ? ensureArray(this.targetValue.device_id)
-          : undefined
-      );
-
-      if (this._searchTerm) {
-        devices = this._filterDevices(devices);
-      }
-
-      if (devices.length > 0 && this.filterTypes.length !== 1) {
-        items.push(
-          this.hass.localize("ui.components.target-picker.type.devices")
-        ); // title
-      }
-
-      items.push(...devices);
-    }
-
-    if (this.filterTypes.length === 0 || this.filterTypes.includes("label")) {
-      let labels = getLabels(
-        this.hass,
-        this._labelRegistry,
-        this.includeDomains,
-        undefined,
-        this.includeDeviceClasses,
-        this.deviceFilter,
-        this.entityFilter,
-        this.targetValue?.label_id
-          ? ensureArray(this.targetValue.label_id)
-          : undefined
-      );
-
-      if (this._searchTerm) {
-        labels = this._filterLabels(labels);
-      }
-
-      if (labels.length > 0 && this.filterTypes.length !== 1) {
-        items.push(
-          this.hass.localize("ui.components.target-picker.type.labels")
-        ); // title
-      }
-
-      items.push(...labels);
-    }
-
-    if (this.filterTypes.length === 0 || this.filterTypes.includes("area")) {
-      let areasAndFloors = getAreasAndFloors(
-        this.hass.states,
-        this.hass.floors,
-        this.hass.areas,
-        this.hass.devices,
-        this.hass.entities,
-        memoizeOne((value: AreaFloorValue): string =>
-          [value.type, value.id].join(SEPARATOR)
-        ),
-        this.includeDomains,
-        undefined,
-        this.includeDeviceClasses,
-        this.deviceFilter,
-        this.entityFilter,
-        this.targetValue?.area_id
-          ? ensureArray(this.targetValue.area_id)
-          : undefined,
-        this.targetValue?.floor_id
-          ? ensureArray(this.targetValue.floor_id)
-          : undefined
-      );
-
-      if (this._searchTerm) {
-        areasAndFloors = this._filterAreasAndFloors(areasAndFloors);
-      }
-
-      if (areasAndFloors.length > 0 && this.filterTypes.length !== 1) {
-        items.push(
-          this.hass.localize("ui.components.target-picker.type.areas")
-        ); // title
-      }
-
-      items.push(
-        ...areasAndFloors.map((item, index) => {
-          const nextItem = areasAndFloors[index + 1];
-
-          if (
-            !nextItem ||
-            (item.type === "area" && nextItem.type === "floor")
-          ) {
-            return {
-              ...item,
-              last: true,
-            };
-          }
-
-          return item;
-        })
-      );
-    }
-
-    if (this._searchTerm && items.length === 0) {
-      items.push({
-        id: EMPTY_SEARCH,
-        primary: this.hass.localize(
-          "ui.components.target-picker.no_target_found",
-          { term: html`<span class="search-term">"${this._searchTerm}"</span>` }
-        ),
-      });
-    } else if (items.length === 0) {
-      items.push({
-        id: EMPTY_SEARCH,
-        primary: this.hass.localize("ui.components.target-picker.no_targets"),
-      });
-    }
-
-    if (this.mode === "dialog") {
-      items.push("padding"); // padding for safe area inset
-    }
-
-    return items;
-  };
+  );
 
   private _areaFuseIndex = memoizeOne((states: FloorComboBoxItem[]) =>
     Fuse.createIndex(["search_labels"], states)
@@ -482,13 +580,17 @@ export class HaTargetPickerSelector extends LitElement {
     });
   };
 
-  private _areaRowRenderer = (item: FloorComboBoxItem & { last?: boolean }) => {
+  private _areaRowRenderer = (
+    item: FloorComboBoxItem & { last?: boolean },
+    index: number
+  ) => {
     const rtl = computeRTL(this.hass);
 
     const hasFloor = item.type === "area" && item.area?.floor_id;
 
     return html`
       <ha-combo-box-item
+        class=${this._selectedItemIndex === index ? "selected" : ""}
         type="button"
         style=${item.type === "area" && hasFloor
           ? "--md-list-item-leading-space: 48px;"
@@ -532,10 +634,11 @@ export class HaTargetPickerSelector extends LitElement {
     `;
   };
 
-  private _deviceRowRenderer(item: DevicePickerItem) {
+  private _deviceRowRenderer(item: DevicePickerItem, index: number) {
     return html`
       <ha-combo-box-item
         type="button"
+        class=${this._selectedItemIndex === index ? "selected" : ""}
         @click=${
           // eslint-disable-next-line lit/no-template-arrow
           () => {
@@ -578,11 +681,12 @@ export class HaTargetPickerSelector extends LitElement {
     return this.hass.userData?.showEntityIdPicker;
   }
 
-  private _entityRowRenderer = (item: EntityComboBoxItem) => {
+  private _entityRowRenderer = (item: EntityComboBoxItem, index: number) => {
     const showEntityId = this._showEntityId;
 
     return html`
       <ha-combo-box-item
+        class=${this._selectedItemIndex === index ? "selected" : ""}
         type="button"
         compact
         @click=${
@@ -630,6 +734,7 @@ export class HaTargetPickerSelector extends LitElement {
   };
 
   private _toggleFilter(ev: any) {
+    this._selectedItemIndex = -1;
     const type = ev.target.type as TargetTypeFloorless;
     if (!type) {
       return;
@@ -703,6 +808,10 @@ export class HaTargetPickerSelector extends LitElement {
 
       ha-combo-box-item {
         width: 100%;
+      }
+
+      ha-combo-box-item.selected {
+        background-color: var(--ha-color-fill-neutral-quiet-hover);
       }
 
       lit-virtualizer {

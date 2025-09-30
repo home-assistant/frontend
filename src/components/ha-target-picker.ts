@@ -257,7 +257,6 @@ export class HaTargetPicker extends SubscribeMixin(LitElement) {
         <ha-button
           id="add-target-button"
           size="small"
-          class="add-target"
           appearance="filled"
           @click=${this._showPicker}
         >
@@ -267,10 +266,10 @@ export class HaTargetPicker extends SubscribeMixin(LitElement) {
         ${!this._narrow
           ? html`
               <wa-popover
-                style="--body-width: calc(${this._addTargetWidth}px + 16px);"
+                style="--body-width: ${this._addTargetWidth}px;"
                 without-arrow
-                distance="0"
-                placement="bottom"
+                distance="-4"
+                placement="bottom-start"
                 for="add-target-button"
                 @wa-after-hide=${this._hidePicker}
                 auto-size="vertical"
@@ -598,12 +597,17 @@ export class HaTargetPicker extends SubscribeMixin(LitElement) {
     return css`
       .add-target-wrapper {
         display: flex;
-        justify-content: center;
+        justify-content: flex-start;
         margin-top: 12px;
       }
-      .add-target {
+      #add-target-button {
         width: 100%;
         max-width: 304px;
+      }
+
+      :host([compact]) #add-target-button {
+        width: 304px;
+        max-width: 100%;
       }
 
       wa-popover {
@@ -611,8 +615,8 @@ export class HaTargetPicker extends SubscribeMixin(LitElement) {
       }
 
       wa-popover::part(body) {
-        width: max(var(--body-width), 336px);
-        max-width: max(var(--body-width), 336px);
+        width: min(max(var(--body-width), 336px), 600px);
+        max-width: min(max(var(--body-width), 336px), 600px);
         max-height: 500px;
         height: 70vh;
       }
