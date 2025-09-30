@@ -50,7 +50,7 @@ export type DialogWidthOnTitleClick = DialogWidth | "none";
  * @attr {boolean} open - Controls the dialog open state.
  * @attr {("small"|"medium"|"large"|"full")} width - Preferred dialog width preset. Defaults to "medium".
  * @attr {("none"|"small"|"medium"|"large"|"full")} width-on-title-click - Target width when clicking the title. "none" disables.
- * @attr {boolean} scrim-dismissable - Allows closing the dialog by clicking the scrim/overlay. Defaults to true.
+ * @attr {boolean} prevent-scrim-close - Prevents closing the dialog by clicking the scrim/overlay. Defaults to false.
  * @attr {string} header-title - Header title text when no custom title slot is provided.
  * @attr {string} header-subtitle - Header subtitle text when no custom subtitle slot is provided.
  * @attr {boolean} flexcontent - Makes the dialog body a flex container for flexible layouts.
@@ -75,8 +75,8 @@ export class HaWaDialog extends LitElement {
   })
   public widthOnTitleClick: DialogWidthOnTitleClick = "none";
 
-  @property({ type: Boolean, reflect: true, attribute: "scrim-dismissable" })
-  public scrimDismissable = true;
+  @property({ type: Boolean, reflect: true, attribute: "prevent-scrim-close" })
+  public preventScrimClose = false;
 
   @property({ type: String, attribute: "header-title" })
   public headerTitle = "";
@@ -115,7 +115,7 @@ export class HaWaDialog extends LitElement {
     return html`
       <wa-dialog
         .open=${this._open}
-        .lightDismiss=${this.scrimDismissable}
+        .lightDismiss=${!this.preventScrimClose}
         without-header
         @wa-show=${this._handleShow}
         @wa-after-hide=${this._handleAfterHide}

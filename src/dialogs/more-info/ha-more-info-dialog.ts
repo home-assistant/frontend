@@ -366,7 +366,7 @@ export class MoreInfoDialog extends LitElement {
           "ui.dialogs.more_info_control.back_to_info"
         )}
         .headerTitle=${title}
-        .scrimDismissable=${this._isEscapeEnabled}
+        .preventScrimClose=${!this._isEscapeEnabled}
         width-on-title-click="full"
         flexContent
       >
