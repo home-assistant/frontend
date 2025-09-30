@@ -204,7 +204,14 @@ export class HuiEnergyDevicesGraphCard
 
     const computedStyle = getComputedStyle(this);
 
+    const exclude = this._config?.hide_compound_stats
+      ? energyData.prefs.device_consumption.map((d) => d.included_in_stat)
+      : [];
+
     energyData.prefs.device_consumption.forEach((device, id) => {
+      if (exclude.includes(device.stat_consumption)) {
+        return;
+      }
       const value =
         device.stat_consumption in data
           ? calculateStatisticSumGrowth(data[device.stat_consumption]) || 0
