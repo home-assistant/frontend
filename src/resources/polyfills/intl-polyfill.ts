@@ -14,7 +14,15 @@ import {
   polyfillTimeZoneData,
 } from "./locale-data-polyfill";
 
+let polyfilled = false;
+
+const _polyfillTimeZoneData = polyfillTimeZoneData;
+
 const polyfillIntl = async () => {
+  if (polyfilled) {
+    return;
+  }
+  polyfilled = true;
   const locale = getLocalLanguage();
   const polyfills: Promise<unknown>[] = [];
   if (shouldPolyfillGetCanonicalLocales()) {
@@ -26,7 +34,7 @@ const polyfillIntl = async () => {
   if (shouldPolyfillDateTimeFormat(locale)) {
     polyfills.push(
       import("@formatjs/intl-datetimeformat/polyfill-force").then(() =>
-        polyfillTimeZoneData()
+        _polyfillTimeZoneData()
       )
     );
   }
@@ -58,7 +66,7 @@ const polyfillIntl = async () => {
   if (polyfills.length === 0) {
     return;
   }
-  await Promise.all(polyfills).then(() =>
+  await Promise.allSettled(polyfills).then(() =>
     // Load the default language
     polyfillLocaleData(locale)
   );
