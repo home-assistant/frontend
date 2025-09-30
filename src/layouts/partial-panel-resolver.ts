@@ -33,6 +33,8 @@ const COMPONENTS = {
   "media-browser": () =>
     import("../panels/media-browser/ha-panel-media-browser"),
   lights: () => import("../panels/lights/ha-panel-lights"),
+  security: () => import("../panels/security/ha-panel-security"),
+  climate: () => import("../panels/climate/ha-panel-climate"),
 };
 
 @customElement("partial-panel-resolver")

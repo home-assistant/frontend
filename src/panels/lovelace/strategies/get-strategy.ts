@@ -51,6 +51,8 @@ const STRATEGIES: Record<LovelaceStrategyConfigType, Record<string, any>> = {
       import("./home/home-media-players-view-strategy"),
     "home-area": () => import("./home/home-area-view-strategy"),
     lights: () => import("../../lights/strategies/lights-view-strategy"),
+    security: () => import("../../security/strategies/security-view-strategy"),
+    climate: () => import("../../climate/strategies/climate-view-strategy"),
   },
   section: {
     "common-controls": () =>

@@ -11,7 +11,9 @@
     "developer_tools": "Developer tools",
     "media_browser": "Media",
     "profile": "Profile",
-    "lights": "Lights"
+    "lights": "Lights",
+    "security": "Security",
+    "climate": "Climate"
   },
   "state": {
     "default": {
