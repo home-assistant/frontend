@@ -242,7 +242,7 @@ export class HuiCalendarCard extends LitElement implements LovelaceCard {
     }
 
     ha-full-calendar {
-      height: 400px;
+      --calendar-height: 400px;
     }
 
     ha-full-calendar.is-grid,
