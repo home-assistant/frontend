@@ -83,7 +83,7 @@ export class HaDialogHeader extends LitElement {
         .header-title {
           font-size: var(--ha-font-size-xl);
           line-height: var(--ha-line-height-condensed);
-          font-weight: var(--ha-font-weight-normal);
+          font-weight: var(--ha-font-weight-medium);
         }
         .header-subtitle {
           font-size: var(--ha-font-size-m);
