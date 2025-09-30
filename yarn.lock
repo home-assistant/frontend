@@ -1351,10 +1351,10 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@ctrl/tinycolor@npm:^4.1.0":
-  version: 4.2.0
-  resolution: "@ctrl/tinycolor@npm:4.2.0"
-  checksum: 10/1be14de7d7e8184c0bc5c8d7e3486cc8186e6702e8ca899c7239f328bb1df9a15d1575e2af7b4c6ba020727fa78f5a9f887555971f30a2890cece9e4253a9d3a
+"@ctrl/tinycolor@npm:4.1.0":
+  version: 4.1.0
+  resolution: "@ctrl/tinycolor@npm:4.1.0"
+  checksum: 10/e64569399139ef0abd2eb0ec9fb7267dfd7820f7ad7d4567a63e5fc35e5cfdcb8ecdb3bad65cb9244b47ba6c77bc51085826c00e981acf263a3221dc89343adc
   languageName: node
   linkType: hard
 
@@ -1940,11 +1940,11 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@home-assistant/webawesome@npm:3.0.0-beta.4.ha.3":
-  version: 3.0.0-beta.4.ha.3
-  resolution: "@home-assistant/webawesome@npm:3.0.0-beta.4.ha.3"
+"@home-assistant/webawesome@npm:3.0.0-beta.6.ha.0":
+  version: 3.0.0-beta.6.ha.0
+  resolution: "@home-assistant/webawesome@npm:3.0.0-beta.6.ha.0"
   dependencies:
-    "@ctrl/tinycolor": "npm:^4.1.0"
+    "@ctrl/tinycolor": "npm:4.1.0"
     "@floating-ui/dom": "npm:^1.6.13"
     "@lit/react": "npm:^1.0.8"
     "@shoelace-style/animations": "npm:^1.2.0"
@@ -1953,8 +1953,7 @@ __metadata:
     lit: "npm:^3.2.1"
     nanoid: "npm:^5.1.5"
     qr-creator: "npm:^1.0.0"
-    style-observer: "npm:^0.0.7"
-  checksum: 10/b9241821ed471ccbad86b0ea4697a2d41395f05fdc26f46e5edbc7f6b5eeab5d248251ef702326312ded00d5bf850ce0dcdcf7cd5e2e542b9d9cb9a84f3726da
+  checksum: 10/ec9d74585b544e5755f7b2644a0d7f9318b5776bedf51430c8f8729918fddb6e54cce46acace674960383385362846cc4c0f2da5245fa622bce8c54733a31865
   languageName: node
   linkType: hard
 
@@ -9397,7 +9396,7 @@ __metadata:
     "@fullcalendar/list": "npm:6.1.19"
     "@fullcalendar/luxon3": "npm:6.1.19"
     "@fullcalendar/timegrid": "npm:6.1.19"
-    "@home-assistant/webawesome": "npm:3.0.0-beta.4.ha.3"
+    "@home-assistant/webawesome": "npm:3.0.0-beta.6.ha.0"
     "@lezer/highlight": "npm:1.2.1"
     "@lit-labs/motion": "npm:1.0.9"
     "@lit-labs/observers": "npm:2.0.6"
@@ -13981,13 +13980,6 @@ __metadata:
   version: 4.1.2
   resolution: "style-mod@npm:4.1.2"
   checksum: 10/9da37909d6dbc3c043ab6d18da5d997073a4698c91e86058293252493eb18aca4e44e3fb18f32fcee26dcee8785f393c6c95f3c96cc722a0dd6b8de622b5b293
-  languageName: node
-  linkType: hard
-
-"style-observer@npm:^0.0.7":
-  version: 0.0.7
-  resolution: "style-observer@npm:0.0.7"
-  checksum: 10/bb57f98bae4463c1e1b57234f8ffe72ec0de27fb08b032c1919910129c210aacd1ddd615432b9453d491e10d3b719cf6c2a68a97165ca55d6fc9b86c0fca37fb
   languageName: node
   linkType: hard
 

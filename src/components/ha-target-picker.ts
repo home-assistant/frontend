@@ -273,6 +273,8 @@ export class HaTargetPicker extends SubscribeMixin(LitElement) {
                 placement="bottom"
                 for="add-target-button"
                 @wa-after-hide=${this._hidePicker}
+                auto-size="vertical"
+                auto-size-padding="16"
               >
                 ${this._addMode
                   ? html`<ha-target-picker-selector
@@ -609,8 +611,8 @@ export class HaTargetPicker extends SubscribeMixin(LitElement) {
       }
 
       wa-popover::part(body) {
-        width: var(--body-width);
-        max-width: var(--body-width);
+        width: max(var(--body-width), 336px);
+        max-width: max(var(--body-width), 336px);
         max-height: 500px;
         height: 70vh;
       }
