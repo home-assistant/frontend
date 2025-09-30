@@ -12,7 +12,7 @@ export class HuiEnergyGraphChip extends LitElement {
       <div class="chip" id=${id}>
         <slot></slot>
       </div>
-      <ha-tooltip for=${id} placement="top"> ${this.tooltip} </ha-tooltip>
+      <ha-tooltip for=${id} placement="top">${this.tooltip}</ha-tooltip>
     `;
   }
 
