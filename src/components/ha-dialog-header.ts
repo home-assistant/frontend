@@ -7,27 +7,12 @@ export class HaDialogHeader extends LitElement {
   @state()
   private _hasSubtitle = false;
 
-  protected firstUpdated() {
-    this._checkSubtitleContent();
-  }
-
   private _checkSubtitleContent() {
     const subtitleSlot = this.shadowRoot?.querySelector(
       'slot[name="subtitle"]'
     ) as HTMLSlotElement;
-    if (subtitleSlot) {
-      const assignedNodes = subtitleSlot.assignedNodes({ flatten: true });
-      this._hasSubtitle = assignedNodes.some((node) => {
-        let text: string | any[] | undefined;
-        if (node.nodeType === Node.TEXT_NODE) {
-          text = node.textContent?.trim();
-        }
-        if (node.nodeType === Node.ELEMENT_NODE) {
-          text = (node as Element).textContent?.trim();
-        }
-        return text && text.length > 0;
-      });
-    }
+    this._hasSubtitle =
+      subtitleSlot?.assignedNodes({ flatten: true }).length > 0;
   }
 
   protected render() {
