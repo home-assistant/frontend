@@ -13,6 +13,11 @@ import { customElement } from "lit/decorators";
  *
  * @slot primaryAction - Primary action button(s), aligned to the end.
  * @slot secondaryAction - Secondary action button(s), placed before the primary action.
+ *
+ * @remarks
+ * **Button Styling Guidance:**
+ * - `primaryAction` slot: Use `variant="accent"`
+ * - `secondaryAction` slot: Use `variant="plain"`
  */
 @customElement("ha-dialog-footer")
 export class HaDialogFooter extends LitElement {
