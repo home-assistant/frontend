@@ -62,7 +62,7 @@ class DialogDeviceRegistryDetail extends LitElement {
         open
         @closed=${this.closeDialog}
         .headerTitle=${computeDeviceNameDisplay(device, this.hass)}
-        .scrimDismissable=${false}
+        .preventScrimClose=${true}
       >
         <div>
           ${this._error
