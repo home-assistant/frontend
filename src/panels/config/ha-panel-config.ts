@@ -577,6 +577,10 @@ class HaPanelConfig extends SubscribeMixin(HassRouterPage) {
         load: () =>
           import("./application_credentials/ha-config-application-credentials"),
       },
+      climate: {
+        tag: "ha-config-climate",
+        load: () => import("./climate/ha-config-climate"),
+      },
     },
   };
 

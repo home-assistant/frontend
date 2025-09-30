@@ -308,11 +308,39 @@ export class HaConfigLovelaceDashboards extends LitElement {
         result.push({
           icon: "mdi:lamps",
           title: this.hass.localize("panel.lights"),
-          show_in_sidebar: true,
+          show_in_sidebar: false,
           mode: "storage",
           url_path: "lights",
           filename: "",
           iconColor: "var(--amber-color)",
+          default: false,
+          require_admin: false,
+        });
+      }
+
+      if (this.hass.panels.security) {
+        result.push({
+          icon: "mdi:security",
+          title: this.hass.localize("panel.security"),
+          show_in_sidebar: false,
+          mode: "storage",
+          url_path: "security",
+          filename: "",
+          iconColor: "var(--blue-grey-color)",
+          default: false,
+          require_admin: false,
+        });
+      }
+
+      if (this.hass.panels.climate) {
+        result.push({
+          icon: "mdi:home-thermometer",
+          title: this.hass.localize("panel.climate"),
+          show_in_sidebar: false,
+          mode: "storage",
+          url_path: "climate",
+          filename: "",
+          iconColor: "var(--deep-orange-color)",
           default: false,
           require_admin: false,
         });
@@ -410,6 +438,10 @@ export class HaConfigLovelaceDashboards extends LitElement {
       navigate("/config/energy");
       return;
     }
+    if (urlPath === "climate") {
+      navigate("/config/climate");
+      return;
+    }
     const dashboard = this._dashboards.find((res) => res.url_path === urlPath);
     this._openDetailDialog(dashboard, urlPath);
   }
@@ -418,7 +450,8 @@ export class HaConfigLovelaceDashboards extends LitElement {
     if (
       urlPath === "lovelace" ||
       urlPath === "energy" ||
-      urlPath === "lights"
+      urlPath === "lights" ||
+      urlPath === "security"
     ) {
       return false;
     }
@@ -426,7 +459,7 @@ export class HaConfigLovelaceDashboards extends LitElement {
   }
 
   private _canEdit(urlPath: string) {
-    if (urlPath === "lights") {
+    if (urlPath === "lights" || urlPath === "security") {
       return false;
     }
     return true;
