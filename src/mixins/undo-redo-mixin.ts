@@ -47,6 +47,11 @@ export const UndoRedoMixin = <T extends Constructor<LitElement>, ConfigType>(
       return this._redoStack.length > 0;
     }
 
+    public clearUndoRedo(): void {
+      this._undoStack = [];
+      this._redoStack = [];
+    }
+
     protected get currentConfig(): ConfigType | undefined {
       return undefined;
     }
