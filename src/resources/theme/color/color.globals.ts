@@ -195,7 +195,7 @@ export const colorStyles = css`
     --state-weather-pouring-color: var(--indigo-color);
     --state-weather-rainy-color: var(--blue-color);
     --state-weather-snowy_rainy-color: var(--light-blue-color);
-    --state-weather-snowy-color: #ddffff;
+    --state-weather-snowy-color: #c0e0ff;
     --state-weather-sunny-color: var(--amber-color);
     --state-weather-windy_variant-color: var(--green-color);
     --state-weather-windy-color: var(--green-color);
