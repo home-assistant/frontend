@@ -11,18 +11,18 @@ import type { Lovelace } from "../lovelace/types";
 import "../lovelace/views/hui-view";
 import "../lovelace/views/hui-view-container";
 
-const LIGHTS_LOVELACE_CONFIG: LovelaceConfig = {
+const LIGHT_LOVELACE_CONFIG: LovelaceConfig = {
   views: [
     {
       strategy: {
-        type: "lights",
+        type: "light",
       },
     },
   ],
 };
 
-@customElement("ha-panel-lights")
-class PanelLights extends LitElement {
+@customElement("ha-panel-light")
+class PanelLight extends LitElement {
   @property({ attribute: false }) public hass!: HomeAssistant;
 
   @property({ type: Boolean, reflect: true }) public narrow = false;
@@ -71,7 +71,7 @@ class PanelLights extends LitElement {
               `}
           ${!this.narrow
             ? html`<div class="main-title">
-                ${this.hass.localize("panel.lights")}
+                ${this.hass.localize("panel.light")}
               </div>`
             : nothing}
         </div>
@@ -90,10 +90,10 @@ class PanelLights extends LitElement {
 
   private _setLovelace() {
     this._lovelace = {
-      config: LIGHTS_LOVELACE_CONFIG,
-      rawConfig: LIGHTS_LOVELACE_CONFIG,
+      config: LIGHT_LOVELACE_CONFIG,
+      rawConfig: LIGHT_LOVELACE_CONFIG,
       editMode: false,
-      urlPath: "lights",
+      urlPath: "light",
       mode: "generated",
       locale: this.hass.locale,
       enableFullEditMode: () => undefined,
@@ -195,6 +195,6 @@ class PanelLights extends LitElement {
 
 declare global {
   interface HTMLElementTagNameMap {
-    "ha-panel-lights": PanelLights;
+    "ha-panel-light": PanelLight;
   }
 }

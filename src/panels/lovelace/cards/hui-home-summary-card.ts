@@ -31,7 +31,7 @@ import type { LovelaceCard, LovelaceGridOptions } from "../types";
 import type { HomeSummaryCard } from "./types";
 
 const COLORS: Record<HomeSummary, string> = {
-  lights: "amber",
+  light: "amber",
   climate: "deep-orange",
   security: "blue-grey",
   media_players: "blue",
@@ -94,9 +94,9 @@ export class HuiHomeSummaryCard extends LitElement implements LovelaceCard {
     const entitiesInsideArea = allEntities.filter(areasFilter);
 
     switch (this._config.summary) {
-      case "lights": {
+      case "light": {
         // Number of lights on
-        const lightsFilters = HOME_SUMMARIES_FILTERS.lights.map((filter) =>
+        const lightsFilters = HOME_SUMMARIES_FILTERS.light.map((filter) =>
           generateEntityFilter(this.hass!, filter)
         );
 

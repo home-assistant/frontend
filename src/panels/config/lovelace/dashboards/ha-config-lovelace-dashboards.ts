@@ -304,13 +304,13 @@ export class HaConfigLovelaceDashboards extends LitElement {
         });
       }
 
-      if (this.hass.panels.lights) {
+      if (this.hass.panels.light) {
         result.push({
           icon: "mdi:lamps",
-          title: this.hass.localize("panel.lights"),
+          title: this.hass.localize("panel.light"),
           show_in_sidebar: false,
           mode: "storage",
-          url_path: "lights",
+          url_path: "light",
           filename: "",
           iconColor: "var(--amber-color)",
           default: false,
@@ -450,7 +450,7 @@ export class HaConfigLovelaceDashboards extends LitElement {
     if (
       urlPath === "lovelace" ||
       urlPath === "energy" ||
-      urlPath === "lights" ||
+      urlPath === "light" ||
       urlPath === "security"
     ) {
       return false;
@@ -459,7 +459,7 @@ export class HaConfigLovelaceDashboards extends LitElement {
   }
 
   private _canEdit(urlPath: string) {
-    if (urlPath === "lights" || urlPath === "security") {
+    if (urlPath === "light" || urlPath === "security") {
       return false;
     }
     return true;

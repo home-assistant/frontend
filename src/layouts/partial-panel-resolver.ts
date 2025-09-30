@@ -32,7 +32,7 @@ const COMPONENTS = {
   todo: () => import("../panels/todo/ha-panel-todo"),
   "media-browser": () =>
     import("../panels/media-browser/ha-panel-media-browser"),
-  lights: () => import("../panels/lights/ha-panel-lights"),
+  light: () => import("../panels/light/ha-panel-light"),
   security: () => import("../panels/security/ha-panel-security"),
   climate: () => import("../panels/climate/ha-panel-climate"),
 };

@@ -52,8 +52,6 @@ import "./ha-spinner";
 import "./ha-svg-icon";
 import "./user/ha-user-badge";
 
-const HIDDEN = ["climate", "lights", "security"];
-
 const SHOW_AFTER_SPACER = ["config", "developer-tools"];
 
 const SUPPORT_SCROLL_IF_NEEDED = "scrollIntoViewIfNeeded" in document.body;
@@ -155,20 +153,18 @@ export const computePanels = memoizeOne(
     const beforeSpacer: PanelInfo[] = [];
     const afterSpacer: PanelInfo[] = [];
 
-    Object.values(panels)
-      .filter((panel) => !HIDDEN.includes(panel.url_path))
-      .forEach((panel) => {
-        if (
-          hiddenPanels.includes(panel.url_path) ||
-          (!panel.title && panel.url_path !== defaultPanel)
-        ) {
-          return;
-        }
-        (SHOW_AFTER_SPACER.includes(panel.url_path)
-          ? afterSpacer
-          : beforeSpacer
-        ).push(panel);
-      });
+    Object.values(panels).forEach((panel) => {
+      if (
+        hiddenPanels.includes(panel.url_path) ||
+        (!panel.title && panel.url_path !== defaultPanel)
+      ) {
+        return;
+      }
+      (SHOW_AFTER_SPACER.includes(panel.url_path)
+        ? afterSpacer
+        : beforeSpacer
+      ).push(panel);
+    });
 
     const reverseSort = [...panelsOrder].reverse();
 

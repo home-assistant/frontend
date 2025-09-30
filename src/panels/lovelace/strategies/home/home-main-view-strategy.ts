@@ -127,11 +127,11 @@ export class HomeMainViewStrategy extends ReactiveElement {
         },
         {
           type: "home-summary",
-          summary: "lights",
+          summary: "light",
           vertical: true,
           tap_action: {
             action: "navigate",
-            navigation_path: "/lights?historyBack=1",
+            navigation_path: "/light?historyBack=1",
           },
           grid_options: {
             rows: 2,

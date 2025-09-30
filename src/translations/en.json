@@ -11,7 +11,7 @@
     "developer_tools": "Developer tools",
     "media_browser": "Media",
     "profile": "Profile",
-    "lights": "Lights",
+    "light": "Lights",
     "security": "Security",
     "climate": "Climate"
   },
@@ -6886,8 +6886,6 @@
           },
           "home": {
             "summary_list": {
-              "climate": "Climate",
-              "security": "Security",
               "media_players": "Media players"
             },
             "welcome_user": "Welcome {user}",
