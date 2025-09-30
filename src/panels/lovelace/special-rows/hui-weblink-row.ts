@@ -17,7 +17,7 @@ class HuiWeblinkRow extends LitElement implements LovelaceRow {
     }
 
     this._config = {
-      icon: "hass:link",
+      icon: "mdi:link",
       name: config.url,
       ...config,
     };

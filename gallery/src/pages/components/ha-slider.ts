@@ -88,7 +88,7 @@ export class DemoHaSlider extends LitElement {
       display: flex;
       flex-direction: column;
       align-items: center;
-      gap: 24px;
+      gap: var(--ha-space-6);
     }
   `;
 }

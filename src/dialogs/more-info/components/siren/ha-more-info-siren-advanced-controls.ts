@@ -202,13 +202,13 @@ class MoreInfoSirenAdvancedControls extends LitElement {
         .options {
           display: flex;
           flex-direction: column;
-          gap: 16px;
+          gap: var(--ha-space-4);
         }
         .controls {
           display: flex;
           flex-direction: row;
           justify-content: center;
-          gap: 16px;
+          gap: var(--ha-space-4);
           margin-top: 16px;
         }
         ha-control-button {

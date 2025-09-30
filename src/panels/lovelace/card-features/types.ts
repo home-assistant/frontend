@@ -140,6 +140,7 @@ export interface ToggleCardFeatureConfig {
 
 export interface WaterHeaterOperationModesCardFeatureConfig {
   type: "water-heater-operation-modes";
+  style?: "dropdown" | "icons";
   operation_modes?: OperationMode[];
 }
 

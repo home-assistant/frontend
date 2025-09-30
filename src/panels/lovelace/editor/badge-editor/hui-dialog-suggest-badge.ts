@@ -148,7 +148,7 @@ export class HuiDialogSuggestBadge extends LitElement {
           align-items: flex-start;
           flex-wrap: wrap;
           justify-content: center;
-          gap: 8px;
+          gap: var(--ha-space-2);
           margin: 0;
         }
         .editor {

@@ -88,7 +88,7 @@ export class HuiErrorCard extends LitElement implements LovelaceCard {
     .header {
       display: flex;
       align-items: center;
-      gap: 8px;
+      gap: var(--ha-space-2);
       padding: 16px;
     }
     .message {

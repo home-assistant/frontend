@@ -32,7 +32,7 @@ export class HaMoreInfoControlSelectContainer extends LitElement {
       display: flex;
       flex-direction: row;
       justify-content: flex-start;
-      gap: 12px;
+      gap: var(--ha-space-3);
       margin: auto;
       overflow: auto;
       -ms-overflow-style: none; /* IE and Edge */

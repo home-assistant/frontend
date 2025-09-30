@@ -54,7 +54,7 @@ export class HaBadge extends LitElement {
       flex-direction: row;
       align-items: center;
       justify-content: center;
-      gap: 8px;
+      gap: var(--ha-space-2);
       height: var(--ha-badge-size, 36px);
       min-width: var(--ha-badge-size, 36px);
       padding: 0px 12px;

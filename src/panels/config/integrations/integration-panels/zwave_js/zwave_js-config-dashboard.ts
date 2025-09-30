@@ -997,7 +997,7 @@ class ZWaveJSConfigDashboard extends SubscribeMixin(LitElement) {
 
         .right-buttons {
           display: flex;
-          gap: 8px;
+          gap: var(--ha-space-2);
           margin-left: auto;
         }
 

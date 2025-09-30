@@ -39,7 +39,7 @@ class HaSetVibrateRow extends LitElement {
     fireEvent(this, "hass-vibrate", {
       vibrate,
     });
-    forwardHaptic("light");
+    forwardHaptic(this, "light");
   }
 }
 

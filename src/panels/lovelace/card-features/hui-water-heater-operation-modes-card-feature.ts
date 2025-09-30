@@ -1,30 +1,32 @@
+import { mdiWaterBoiler } from "@mdi/js";
 import type { PropertyValues, TemplateResult } from "lit";
 import { html, LitElement } from "lit";
-import { customElement, property, state } from "lit/decorators";
+import { customElement, property, query, state } from "lit/decorators";
 import { styleMap } from "lit/directives/style-map";
+import { stopPropagation } from "../../../common/dom/stop_propagation";
 import { computeDomain } from "../../../common/entity/compute_domain";
 import { stateColorCss } from "../../../common/entity/state_color";
-import "../../../components/ha-control-button";
-import "../../../components/ha-control-button-group";
 import "../../../components/ha-control-select";
 import type { ControlSelectOption } from "../../../components/ha-control-select";
-import "../../../components/ha-control-slider";
-import { UNAVAILABLE } from "../../../data/entity";
+import "../../../components/ha-control-select-menu";
+import type { HaControlSelectMenu } from "../../../components/ha-control-select-menu";
+import "../../../components/ha-list-item";
 import type {
   OperationMode,
   WaterHeaterEntity,
 } from "../../../data/water_heater";
 import {
-  compareWaterHeaterOperationMode,
   computeOperationModeIcon,
+  compareWaterHeaterOperationMode,
 } from "../../../data/water_heater";
+import { UNAVAILABLE } from "../../../data/entity";
 import type { HomeAssistant } from "../../../types";
 import type { LovelaceCardFeature, LovelaceCardFeatureEditor } from "../types";
 import { cardFeatureStyles } from "./common/card-feature-styles";
 import { filterModes } from "./common/filter-modes";
 import type {
-  LovelaceCardFeatureContext,
   WaterHeaterOperationModesCardFeatureConfig,
+  LovelaceCardFeatureContext,
 } from "./types";
 
 export const supportsWaterHeaterOperationModesCardFeature = (
@@ -51,6 +53,9 @@ class HuiWaterHeaterOperationModeCardFeature
   @state() private _config?: WaterHeaterOperationModesCardFeatureConfig;
 
   @state() _currentOperationMode?: OperationMode;
+
+  @query("ha-control-select-menu", true)
+  private _haSelect?: HaControlSelectMenu;
 
   private get _stateObj() {
     if (!this.hass || !this.context || !this.context.entity_id) {
@@ -97,8 +102,23 @@ class HuiWaterHeaterOperationModeCardFeature
     }
   }
 
+  protected updated(changedProps: PropertyValues) {
+    super.updated(changedProps);
+    if (this._haSelect && changedProps.has("hass")) {
+      const oldHass = changedProps.get("hass") as HomeAssistant | undefined;
+      if (
+        this.hass &&
+        this.hass.formatEntityAttributeValue !==
+          oldHass?.formatEntityAttributeValue
+      ) {
+        this._haSelect.layoutOptions();
+      }
+    }
+  }
+
   private async _valueChanged(ev: CustomEvent) {
-    const mode = (ev.detail as any).value as OperationMode;
+    const mode =
+      (ev.detail as any).value ?? ((ev.target as any).value as OperationMode);
 
     if (mode === this._stateObj!.state) return;
 
@@ -143,8 +163,47 @@ class HuiWaterHeaterOperationModeCardFeature
     ).map<ControlSelectOption>((mode) => ({
       value: mode,
       label: this.hass!.formatEntityState(this._stateObj!, mode),
-      path: computeOperationModeIcon(mode as OperationMode),
+      icon: html`
+        <ha-svg-icon
+          slot="graphic"
+          .path=${computeOperationModeIcon(mode as OperationMode)}
+        ></ha-svg-icon>
+      `,
     }));
+
+    if (this._config.style === "dropdown") {
+      return html`
+        <ha-control-select-menu
+          show-arrow
+          hide-label
+          .label=${this.hass.localize("ui.card.water_heater.mode")}
+          .value=${this._currentOperationMode}
+          .disabled=${this._stateObj.state === UNAVAILABLE}
+          fixedMenuPosition
+          naturalMenuWidth
+          @selected=${this._valueChanged}
+          @closed=${stopPropagation}
+        >
+          ${this._currentOperationMode
+            ? html`
+                <ha-svg-icon
+                  slot="icon"
+                  .path=${computeOperationModeIcon(this._currentOperationMode)}
+                ></ha-svg-icon>
+              `
+            : html`
+                <ha-svg-icon slot="icon" .path=${mdiWaterBoiler}></ha-svg-icon>
+              `}
+          ${options.map(
+            (option) => html`
+              <ha-list-item .value=${option.value} graphic="icon">
+                ${option.icon}${option.label}
+              </ha-list-item>
+            `
+          )}
+        </ha-control-select-menu>
+      `;
+    }
 
     return html`
       <ha-control-select

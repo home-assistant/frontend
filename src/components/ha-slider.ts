@@ -19,7 +19,7 @@ export class HaSlider extends Slider {
       Slider.styles,
       css`
         :host {
-          --wa-form-control-activated-color: var(--primary-color);
+          --wa-form-control-activated-color: var(--ha-control-color);
           --track-size: var(--ha-slider-track-size, 4px);
           --marker-height: calc(var(--ha-slider-track-size, 4px) / 2);
           --marker-width: calc(var(--ha-slider-track-size, 4px) / 2);
