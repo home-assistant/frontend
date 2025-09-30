@@ -18,8 +18,8 @@ export type DialogWidthOnTitleClick = DialogWidth | "none";
  * @extends {LitElement}
  *
  * @summary
- * A stylable dialog built using the `wa-dialog` component, providing the standard header (ha-dialog-header),
- * body, and footer (when used in conjunction with `ha-dialog-footer`) with slots, sizing, and keyboard handling.
+ * A stylable dialog built using the `wa-dialog` component, providing a standardized header (ha-dialog-header),
+ * body, and footer (preferably using `ha-dialog-footer`) with slots
  *
  * You can open and close the dialog declaratively by using the `data-dialog="close"` attribute.
  * @see https://webawesome.com/docs/components/dialog/#opening-and-closing-dialogs-declaratively
@@ -31,7 +31,7 @@ export type DialogWidthOnTitleClick = DialogWidth | "none";
  * @slot subtitle - Header subtitle, shown under the title.
  * @slot actionItems - Trailing header actions (e.g. buttons, menus).
  * @slot - Dialog content body.
- * @slot footer - Dialog footer content; typically action buttons.
+ * @slot footer - Dialog footer content.
  *
  * @csspart dialog - The dialog surface.
  * @csspart header - The header container.
