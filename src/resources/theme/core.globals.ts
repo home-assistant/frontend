@@ -19,8 +19,8 @@ export const coreStyles = css`
     --ha-border-radius-pill: 9999px;
     --ha-border-radius-circle: 50%;
     --ha-border-radius-square: 0;
-      
-    # Spacing
+
+    /* Spacing */
     --ha-space-0: 0px;
     --ha-space-1: 4px;
     --ha-space-2: 8px;
