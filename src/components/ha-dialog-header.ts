@@ -1,10 +1,13 @@
 import { css, html, LitElement } from "lit";
-import { customElement, query, state } from "lit/decorators";
+import { customElement, property, query, state } from "lit/decorators";
 import { classMap } from "lit/directives/class-map";
 import { hasSlotContent } from "../common/dom/has-slot-content";
 
 @customElement("ha-dialog-header")
 export class HaDialogHeader extends LitElement {
+  @property({ type: String, attribute: "subtitle-position" })
+  public subtitlePosition: "above" | "below" = "below";
+
   @state()
   private _hasSubtitle = false;
 
@@ -16,6 +19,14 @@ export class HaDialogHeader extends LitElement {
   }
 
   protected render() {
+    const titleSlot = html`<div class="header-title">
+      <slot name="title"></slot>
+    </div>`;
+
+    const subtitleSlot = html`<div class="header-subtitle">
+      <slot name="subtitle" @slotchange=${this._checkSubtitleContent}></slot>
+    </div>`;
+
     return html`
       <header class="header">
         <div
@@ -28,15 +39,9 @@ export class HaDialogHeader extends LitElement {
             <slot name="navigationIcon"></slot>
           </section>
           <section class="header-content">
-            <div class="header-title">
-              <slot name="title"></slot>
-            </div>
-            <div class="header-subtitle">
-              <slot
-                name="subtitle"
-                @slotchange=${this._checkSubtitleContent}
-              ></slot>
-            </div>
+            ${this.subtitlePosition === "above"
+              ? html`${subtitleSlot}${titleSlot}`
+              : html`${titleSlot}${subtitleSlot}`}
           </section>
           <section class="header-action-items">
             <slot name="actionItems"></slot>
