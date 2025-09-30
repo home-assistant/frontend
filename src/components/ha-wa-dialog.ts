@@ -251,16 +251,15 @@ export class HaWaDialog extends LitElement {
       }
 
       wa-dialog {
-        --full-width: calc(
-          100vw - var(--safe-area-inset-left, 0px) - var(
-              --safe-area-inset-right,
-              0px
-            )
-        );
+        --full-width: 100vw;
       }
 
       wa-dialog::part(dialog) {
         min-height: 100vh;
+        padding-top: var(--safe-area-inset-top, 0px);
+        padding-bottom: var(--safe-area-inset-bottom, 0px);
+        padding-left: var(--safe-area-inset-left, 0px);
+        padding-right: var(--safe-area-inset-right, 0px);
       }
     }
 
