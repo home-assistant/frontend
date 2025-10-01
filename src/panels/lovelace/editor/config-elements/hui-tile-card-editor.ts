@@ -38,6 +38,7 @@ import type { TileCardConfig } from "../../cards/types";
 import type { LovelaceCardEditor } from "../../types";
 import { actionConfigStruct } from "../structs/action-struct";
 import { baseLovelaceCardConfig } from "../structs/base-card-struct";
+import { entityNameStruct } from "../structs/entity-name-struct";
 import type { EditDetailElementEvent, EditSubElementEvent } from "../types";
 import { configElementStyle } from "./config-elements-style";
 import { getSupportedFeaturesType } from "./hui-card-features-editor";
@@ -46,7 +47,7 @@ const cardConfigStruct = assign(
   baseLovelaceCardConfig,
   object({
     entity: optional(string()),
-    name: optional(union([string(), array(string())])),
+    name: optional(entityNameStruct),
     icon: optional(string()),
     color: optional(string()),
     show_entity_picture: optional(boolean()),
@@ -102,9 +103,12 @@ export class HuiTileCardEditor
           schema: [
             {
               name: "name",
-              selector: { entity_name: {} },
+              selector: {
+                entity_name: {
+                  default_name: DEFAULT_NAME,
+                },
+              },
               context: { entity: "entity" },
-              default: DEFAULT_NAME,
             },
             {
               name: "",

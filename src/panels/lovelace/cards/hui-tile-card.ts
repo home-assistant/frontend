@@ -1,5 +1,5 @@
 import type { HassEntity } from "home-assistant-js-websocket";
-import { LitElement, css, html, nothing } from "lit";
+import { css, html, LitElement, nothing } from "lit";
 import { customElement, property, state } from "lit/decorators";
 import { classMap } from "lit/directives/class-map";
 import { ifDefined } from "lit/directives/if-defined";
@@ -26,9 +26,9 @@ import "../card-features/hui-card-features";
 import type { LovelaceCardFeatureContext } from "../card-features/types";
 import { actionHandler } from "../common/directives/action-handler-directive";
 import {
-  computeEntityDisplayName,
-  type EntityDisplayNameType,
-} from "../common/entity/compute-display-name";
+  formatEntityDisplayName,
+  type EntityNameConfig,
+} from "../common/entity/entity-display-name";
 import { findEntities } from "../common/find-entities";
 import { handleAction } from "../common/handle-action";
 import { hasAction } from "../common/has-action";
@@ -51,9 +51,9 @@ export const getEntityDefaultTileIconAction = (entityId: string) => {
 };
 
 export const DEFAULT_NAME = [
-  "device_name",
-  "entity_name",
-] satisfies EntityDisplayNameType[];
+  { type: "device" },
+  { type: "entity" },
+] satisfies EntityNameConfig[];
 
 @customElement("hui-tile-card")
 export class HuiTileCard extends LitElement implements LovelaceCard {
@@ -263,7 +263,7 @@ export class HuiTileCard extends LitElement implements LovelaceCard {
 
     const contentClasses = { vertical: Boolean(this._config.vertical) };
 
-    const name = computeEntityDisplayName(
+    const name = formatEntityDisplayName(
       this.hass,
       stateObj,
       this._config.name || DEFAULT_NAME

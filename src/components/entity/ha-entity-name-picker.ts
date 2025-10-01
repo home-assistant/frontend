@@ -11,11 +11,13 @@ import { ensureArray } from "../../common/array/ensure-array";
 import { fireEvent } from "../../common/dom/fire_event";
 import { stopPropagation } from "../../common/dom/stop_propagation";
 import { getEntityContext } from "../../common/entity/context/get_entity_context";
+import type { EntityNameType } from "../../common/translations/entity-state";
 import {
-  computeEntityDisplayName,
-  ENTITY_DISPLAY_NAME_TYPES,
-  type EntityDisplayNameType,
-} from "../../panels/lovelace/common/entity/compute-display-name";
+  ensureEntityNameObject,
+  formatEntityDisplayName,
+  type EntityNameConfig,
+  type EntityNameObject,
+} from "../../panels/lovelace/common/entity/entity-display-name";
 import type { HomeAssistant, ValueChangedEvent } from "../../types";
 import "../chips/ha-assist-chip";
 import "../chips/ha-chip-set";
@@ -43,13 +45,17 @@ const rowRenderer: ComboBoxLitRenderer<EntityNameOption> = (item) => html`
   </ha-combo-box-item>
 `;
 
+const KNOWN_TYPES = new Set(["entity", "device", "area", "floor"]);
+
+const UNIQUE_TYPES = new Set(["entity", "device", "area", "floor"]);
+
 @customElement("ha-entity-name-picker")
 export class HaEntityNamePicker extends LitElement {
   @property({ attribute: false }) public hass!: HomeAssistant;
 
   @property({ attribute: false }) public entityId?: string;
 
-  @property() public value?: string[] | string;
+  @property() public value?: EntityNameConfig | EntityNameConfig[];
 
   @property() public label?: string;
 
@@ -80,10 +86,10 @@ export class HaEntityNamePicker extends LitElement {
       this.hass.areas,
       this.hass.floors
     );
-    const options: EntityDisplayNameType[] = ["entity_name"];
-    if (context.device) options.push("device_name");
-    if (context.area) options.push("area_name");
-    if (context.floor) options.push("floor_name");
+    const options: EntityNameType[] = ["entity"];
+    if (context.device) options.push("device");
+    if (context.area) options.push("area");
+    if (context.floor) options.push("floor");
     return options;
   });
 
@@ -97,7 +103,7 @@ export class HaEntityNamePicker extends LitElement {
         primary: this.hass.localize(
           `ui.components.entity.entity-name-picker.types.${name}`
         ),
-        secondary: computeEntityDisplayName(
+        secondary: formatEntityDisplayName(
           this.hass,
           this.hass.states[entityId],
           name
@@ -108,6 +114,18 @@ export class HaEntityNamePicker extends LitElement {
 
     return items;
   });
+
+  private _formatItem = (item: EntityNameObject) => {
+    if (item.type === "text") {
+      return `"${item.text}"`;
+    }
+    if (KNOWN_TYPES.has(item.type)) {
+      return this.hass.localize(
+        `ui.components.entity.entity-name-picker.types.${item.type as EntityNameType}`
+      );
+    }
+    return item.type;
+  };
 
   protected render() {
     if (!this.hass) {
@@ -131,12 +149,8 @@ export class HaEntityNamePicker extends LitElement {
             ${repeat(
               this._value,
               (item) => item,
-              (item, idx) => {
-                const label = ENTITY_DISPLAY_NAME_TYPES.includes(item)
-                  ? this.hass.localize(
-                      `ui.components.entity.entity-name-picker.types.${item as EntityDisplayNameType}`
-                    )
-                  : `"${item}"`;
+              (item: EntityNameObject, idx) => {
+                const label = this._formatItem(item);
                 return html`
                   <ha-input-chip
                     data-idx=${idx}
@@ -227,17 +241,44 @@ export class HaEntityNamePicker extends LitElement {
     this._opened = true;
   }
 
-  private get _value() {
-    return this.value ? ensureArray(this.value) : [];
+  private get _value(): EntityNameObject[] {
+    return this._toItems(this.value);
   }
+
+  private _toItems = memoizeOne(
+    (value?: EntityNameConfig | EntityNameConfig[]) =>
+      ensureArray(value).map(ensureEntityNameObject)
+  );
+
+  private _toValue = memoizeOne(
+    (items: EntityNameObject[]): EntityNameConfig | EntityNameConfig[] => {
+      const compactItems = items.map((item) => {
+        if (item.type === "text") {
+          return item.text;
+        }
+        return item;
+      });
+      return compactItems.length === 0
+        ? []
+        : compactItems.length === 1
+          ? compactItems[0]
+          : compactItems;
+    }
+  );
 
   private _openedChanged(ev: ValueChangedEvent<boolean>) {
     const open = ev.detail.value;
     if (open) {
       const options = this._comboBox.items || [];
 
-      const initialValue =
-        this._editIndex != null ? this._value[this._editIndex] : "";
+      const initialItem =
+        this._editIndex != null ? this._value[this._editIndex] : undefined;
+
+      const initialValue = initialItem
+        ? initialItem.type === "text"
+          ? initialItem.text
+          : initialItem.type
+        : "";
 
       const filteredItems = this._filterSelectedOptions(options, initialValue);
 
@@ -253,8 +294,14 @@ export class HaEntityNamePicker extends LitElement {
     current?: string
   ) => {
     const value = this._value;
+
+    const types = value.map((item) => item.type) as string[];
+
     const filteredOptions = options.filter(
-      (option) => !value.includes(option.value) || option.value === current
+      (option) =>
+        !UNIQUE_TYPES.has(option.value) ||
+        !types.includes(option.value) ||
+        option.value === current
     );
     return filteredOptions;
   };
@@ -264,8 +311,15 @@ export class HaEntityNamePicker extends LitElement {
     const filter = input?.toLowerCase() || "";
     const options = this._comboBox.items || [];
 
-    const currentValue =
-      this._editIndex != null ? this._value[this._editIndex] : "";
+    const currentItem =
+      this._editIndex != null ? this._value[this._editIndex] : undefined;
+
+    const currentValue = currentItem
+      ? currentItem.type === "text"
+        ? currentItem.text
+        : currentItem.type
+      : "";
+
     this._comboBox.filteredItems = this._filterSelectedOptions(
       options,
       currentValue
@@ -303,7 +357,7 @@ export class HaEntityNamePicker extends LitElement {
 
   private async _removeItem(ev) {
     ev.stopPropagation();
-    const value: string[] = [...this._value];
+    const value = [...this._value];
     const idx = parseInt(ev.target.dataset.idx, 10);
     value.splice(idx, 1);
     this._setValue(value);
@@ -319,22 +373,23 @@ export class HaEntityNamePicker extends LitElement {
       return;
     }
 
-    const currentValue = [...this._value];
+    const item: EntityNameObject = KNOWN_TYPES.has(value as any)
+      ? { type: value as EntityNameType }
+      : { type: "text", text: value };
 
-    const newValue = [...currentValue];
+    const newValue = [...this._value];
 
     if (this._editIndex != null) {
-      newValue[this._editIndex] = value;
+      newValue[this._editIndex] = item;
     } else {
-      newValue.push(value);
+      newValue.push(item);
     }
 
     this._setValue(newValue);
   }
 
-  private _setValue(value: string[]) {
-    const newValue =
-      value.length === 0 ? [] : value.length === 1 ? value[0] : value;
+  private _setValue(value: EntityNameObject[]) {
+    const newValue = this._toValue(value);
     this.value = newValue;
     fireEvent(this, "value-changed", {
       value: newValue,
