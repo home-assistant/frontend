@@ -57,6 +57,7 @@ export class HaDialogHeader extends LitElement {
       css`
         :host {
           display: block;
+          min-height: 48px;
         }
         :host([show-border]) {
           border-bottom: 1px solid
@@ -87,7 +88,7 @@ export class HaDialogHeader extends LitElement {
         }
         .header-subtitle {
           font-size: var(--ha-font-size-m);
-          line-height: 20px;
+          line-height: var(--ha-line-height-normal);
           color: var(--secondary-text-color);
         }
         @media all and (min-width: 450px) and (min-height: 500px) {
