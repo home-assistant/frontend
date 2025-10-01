@@ -44,7 +44,7 @@ export const coreStyles = css`
     --ha-space-20: 80px;
 
     /* Animation timing */
-    --ha-animation-duration: 300ms;
+    --ha-animation-duration: 400ms;
     --ha-animation-delay-base: 50ms;
   }
 `;
