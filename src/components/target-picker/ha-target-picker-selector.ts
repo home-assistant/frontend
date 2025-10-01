@@ -355,63 +355,30 @@ export class HaTargetPickerSelector extends LitElement {
     `;
   };
 
-  private _filterAreasAndFloors(items: FloorComboBoxItem[]) {
-    const index = this._areaFuseIndex(items);
-    const fuse = new HaFuse(items, { shouldSort: false }, index);
-
-    const results = fuse.multiTermsSearch(this._searchTerm);
-    let filteredItems = items as FloorComboBoxItem[];
-    if (results) {
-      filteredItems = results.map((result) => result.item);
-    }
-
-    return filteredItems;
-  }
-
-  private _filterEntities(items: EntityComboBoxItem[]) {
-    const fuseIndex = this._entityFuseIndex(items);
+  private _filterGroup(
+    type: TargetType,
+    items: (FloorComboBoxItem | PickerComboBoxItem | EntityComboBoxItem)[],
+    checkExact?: (
+      item: FloorComboBoxItem | PickerComboBoxItem | EntityComboBoxItem
+    ) => boolean
+  ) {
+    const fuseIndex = this._fuseIndexes[type](items);
     const fuse = new HaFuse(items, { shouldSort: false }, fuseIndex);
 
     const results = fuse.multiTermsSearch(this._searchTerm);
-    let filteredItems = items as EntityComboBoxItem[];
+    let filteredItems = items;
     if (results) {
       filteredItems = results.map((result) => result.item);
     }
 
-    // If there is exact match for entity id, put it first
-    const index = filteredItems.findIndex(
-      (item) => item.stateObj?.entity_id === this._searchTerm
-    );
-    if (index === -1) {
+    if (!checkExact) {
       return filteredItems;
     }
 
-    const [exactMatch] = filteredItems.splice(index, 1);
-    filteredItems.unshift(exactMatch);
-    return filteredItems;
-  }
-
-  private _filterDevices(items: PickerComboBoxItem[]) {
-    const fuseIndex = this._deviceFuseIndex(items);
-    const fuse = new HaFuse(items, { shouldSort: false }, fuseIndex);
-
-    const results = fuse.multiTermsSearch(this._searchTerm);
-    let filteredItems = items as DevicePickerItem[];
-    if (results) {
-      filteredItems = results.map((result) => result.item);
-    }
-
-    return filteredItems;
-  }
-
-  private _filterLabels(items: PickerComboBoxItem[]) {
-    const fuseIndex = this._labelFuseIndex(items);
-    const fuse = new HaFuse(items, { shouldSort: false }, fuseIndex);
-
-    const results = fuse.multiTermsSearch(this._searchTerm);
-    let filteredItems = items as PickerComboBoxItem[];
-    if (results) {
-      filteredItems = results.map((result) => result.item);
+    // If there is exact match for entity id, put it first
+    const index = filteredItems.findIndex((item) => checkExact(item));
+    if (index === -1) {
+      return filteredItems;
     }
 
     return filteredItems;
@@ -440,13 +407,19 @@ export class HaTargetPickerSelector extends LitElement {
       );
 
       if (this._searchTerm) {
-        entities = this._filterEntities(entities);
+        entities = this._filterGroup(
+          "entity",
+          entities,
+          (item: EntityComboBoxItem) =>
+            item.stateObj?.entity_id === this._searchTerm
+        ) as EntityComboBoxItem[];
       }
 
       if (entities.length > 0 && this.filterTypes.length !== 1) {
+        // show group title
         items.push(
           this.hass.localize("ui.components.target-picker.type.entities")
-        ); // title
+        );
       }
 
       items.push(...entities);
@@ -467,7 +440,7 @@ export class HaTargetPickerSelector extends LitElement {
       );
 
       if (this._searchTerm) {
-        devices = this._filterDevices(devices);
+        devices = this._filterGroup("device", devices);
       }
 
       if (devices.length > 0 && this.filterTypes.length !== 1) {
@@ -494,7 +467,7 @@ export class HaTargetPickerSelector extends LitElement {
       );
 
       if (this._searchTerm) {
-        labels = this._filterLabels(labels);
+        labels = this._filterGroup("label", labels);
       }
 
       if (labels.length > 0 && this.filterTypes.length !== 1) {
@@ -530,7 +503,10 @@ export class HaTargetPickerSelector extends LitElement {
       );
 
       if (this._searchTerm) {
-        areasAndFloors = this._filterAreasAndFloors(areasAndFloors);
+        areasAndFloors = this._filterGroup(
+          "area",
+          areasAndFloors
+        ) as FloorComboBoxItem[];
       }
 
       if (areasAndFloors.length > 0 && this.filterTypes.length !== 1) {
@@ -612,21 +588,23 @@ export class HaTargetPickerSelector extends LitElement {
     }
   );
 
-  private _areaFuseIndex = memoizeOne((states: FloorComboBoxItem[]) =>
-    Fuse.createIndex(["search_labels"], states)
-  );
+  private _fuseIndexes = {
+    area: memoizeOne((states: FloorComboBoxItem[]) =>
+      this._createFuseIndex(states)
+    ),
+    entity: memoizeOne((states: EntityComboBoxItem[]) =>
+      this._createFuseIndex(states)
+    ),
+    device: memoizeOne((states: DevicePickerItem[]) =>
+      this._createFuseIndex(states)
+    ),
+    label: memoizeOne((states: PickerComboBoxItem[]) =>
+      this._createFuseIndex(states)
+    ),
+  };
 
-  private _entityFuseIndex = memoizeOne((states: EntityComboBoxItem[]) =>
-    Fuse.createIndex(["search_labels"], states)
-  );
-
-  private _deviceFuseIndex = memoizeOne((states: DevicePickerItem[]) =>
-    Fuse.createIndex(["search_labels"], states)
-  );
-
-  private _labelFuseIndex = memoizeOne((states: PickerComboBoxItem[]) =>
-    Fuse.createIndex(["search_labels"], states)
-  );
+  private _createFuseIndex = (states) =>
+    Fuse.createIndex(["search_labels"], states);
 
   private _searchChanged(ev: Event) {
     const textfield = ev.target as HaTextField;
