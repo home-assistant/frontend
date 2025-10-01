@@ -10,12 +10,17 @@ const originalLocation = window.location;
 
 describe("validate-condition", () => {
   beforeEach(() => {
-    // Mock window.location
-    delete (window as any).location;
+    // Mock window.location with a proper type
+    delete window.location;
+    // Create a minimal mock that matches the Location interface
     window.location = {
       ...originalLocation,
       hash: "",
-    } as any;
+      assign: originalLocation.assign.bind(originalLocation),
+      reload: originalLocation.reload.bind(originalLocation),
+      replace: originalLocation.replace.bind(originalLocation),
+      toString: originalLocation.toString.bind(originalLocation),
+    } as Location;
   });
 
   afterEach(() => {
