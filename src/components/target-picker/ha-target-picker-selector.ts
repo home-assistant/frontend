@@ -314,22 +314,40 @@ export class HaTargetPickerSelector extends LitElement {
       return html`<div class="title">${item}</div>`;
     }
 
+    let type: TargetType | "empty" = "label";
+    let hasFloor = false;
+    let rtl = false;
+    let showEntityId = false;
+
     if (
       (item as FloorComboBoxItem).type === "area" ||
       (item as FloorComboBoxItem).type === "floor"
     ) {
-      return this._areaRowRenderer(
-        item as FloorComboBoxItem & { last?: boolean },
-        index
-      );
+      type = (item as FloorComboBoxItem).type;
+      const areaItem = item as FloorComboBoxItem;
+      item.id = item[areaItem.type]?.[`${areaItem.type}_id`];
+
+      rtl = computeRTL(this.hass);
+      hasFloor = areaItem.type === "area" && !!areaItem.area?.floor_id;
+      // return this._areaRowRenderer(
+      //   item as FloorComboBoxItem & { last?: boolean },
+      //   index
+      // );
     }
 
     if ("domain" in item) {
-      return this._deviceRowRenderer(item, index);
+      type = "device";
+      // return this._deviceRowRenderer(item, index);
     }
 
     if ("stateObj" in item) {
-      return this._entityRowRenderer(item, index);
+      type = "entity";
+      showEntityId = !!this._showEntityId;
+      // return this._entityRowRenderer(item, index);
+    }
+
+    if (item.id === EMPTY_SEARCH) {
+      type = "empty";
     }
 
     // label or empty
@@ -337,11 +355,32 @@ export class HaTargetPickerSelector extends LitElement {
       <ha-combo-box-item
         tabindex="-1"
         class=${this._selectedItemIndex === index ? "selected" : ""}
-        .type=${item.id === EMPTY_SEARCH ? "text" : "button"}
+        .type=${type === "empty" ? "text" : "button"}
         @click=${this._handlePickTarget}
-        .targetType=${"label"}
+        .targetType=${type}
         .targetId=${item.id}
+        style=${(item as FloorComboBoxItem).type === "area" && hasFloor
+          ? "--md-list-item-leading-space: 48px;"
+          : ""}
       >
+        ${(item as FloorComboBoxItem).type === "area" && hasFloor
+          ? html`
+              <ha-tree-indicator
+                style=${styleMap({
+                  width: "48px",
+                  position: "absolute",
+                  top: "0px",
+                  left: rtl ? undefined : "4px",
+                  right: rtl ? "4px" : undefined,
+                  transform: rtl ? "scaleX(-1)" : "",
+                })}
+                .end=${(
+                  item as FloorComboBoxItem & { last?: boolean | undefined }
+                ).last}
+                slot="start"
+              ></ha-tree-indicator>
+            `
+          : nothing}
         ${item.icon
           ? html`<ha-icon slot="start" .icon=${item.icon}></ha-icon>`
           : item.icon_path
@@ -349,10 +388,64 @@ export class HaTargetPickerSelector extends LitElement {
                 slot="start"
                 .path=${item.icon_path}
               ></ha-svg-icon>`
-            : nothing}
+            : (item as EntityComboBoxItem).stateObj
+              ? html`
+                  <state-badge
+                    slot="start"
+                    .stateObj=${(item as EntityComboBoxItem).stateObj}
+                    .hass=${this.hass}
+                  ></state-badge>
+                `
+              : (item as DevicePickerItem).domain
+                ? html`
+                    <img
+                      slot="start"
+                      alt=""
+                      crossorigin="anonymous"
+                      referrerpolicy="no-referrer"
+                      src=${brandsUrl({
+                        domain: (item as DevicePickerItem).domain!,
+                        type: "icon",
+                        darkOptimized: this.hass.themes.darkMode,
+                      })}
+                    />
+                  `
+                : (item as FloorComboBoxItem).type === "floor" &&
+                    (item as FloorComboBoxItem).floor
+                  ? html`<ha-floor-icon
+                      slot="start"
+                      .floor=${(item as FloorComboBoxItem).floor}
+                    ></ha-floor-icon>`
+                  : item.icon
+                    ? html`<ha-icon slot="start" .icon=${item.icon}></ha-icon>`
+                    : html`<ha-svg-icon
+                        slot="start"
+                        .path=${item.icon_path || mdiTextureBox}
+                      ></ha-svg-icon>`}
         <span slot="headline">${item.primary}</span>
         ${item.secondary
           ? html`<span slot="supporting-text">${item.secondary}</span>`
+          : nothing}
+        ${(item as EntityComboBoxItem).stateObj && showEntityId
+          ? html`
+              <span slot="supporting-text" class="code">
+                ${(item as EntityComboBoxItem).stateObj?.entity_id}
+              </span>
+            `
+          : nothing}
+        ${(item as EntityComboBoxItem).domain_name && !showEntityId
+          ? html`
+              <div slot="trailing-supporting-text" class="domain">
+                ${(item as EntityComboBoxItem).domain_name}
+              </div>
+            `
+          : nothing}
+        ${(item as DevicePickerItem).domain_name
+          ? html`
+              <div slot="trailing-supporting-text" class="domain">
+                ${(item as DevicePickerItem).domain_name}
+              </div>
+            `
           : nothing}
       </ha-combo-box-item>
     `;
@@ -648,152 +741,9 @@ export class HaTargetPickerSelector extends LitElement {
     });
   };
 
-  private _areaRowRenderer = (
-    item: FloorComboBoxItem & { last?: boolean },
-    index: number
-  ) => {
-    const rtl = computeRTL(this.hass);
-
-    const hasFloor = item.type === "area" && item.area?.floor_id;
-
-    return html`
-      <ha-combo-box-item
-        tabindex="-1"
-        class=${this._selectedItemIndex === index ? "selected" : ""}
-        type="button"
-        style=${item.type === "area" && hasFloor
-          ? "--md-list-item-leading-space: 48px;"
-          : ""}
-        @click=${this._handlePickTarget}
-        .targetType=${item.type}
-        .targetId=${item[item.type]?.[`${item.type}_id`]}
-      >
-        ${item.type === "area" && hasFloor
-          ? html`
-              <ha-tree-indicator
-                style=${styleMap({
-                  width: "48px",
-                  position: "absolute",
-                  top: "0px",
-                  left: rtl ? undefined : "4px",
-                  right: rtl ? "4px" : undefined,
-                  transform: rtl ? "scaleX(-1)" : "",
-                })}
-                .end=${item.last}
-                slot="start"
-              ></ha-tree-indicator>
-            `
-          : nothing}
-        ${item.type === "floor" && item.floor
-          ? html`<ha-floor-icon
-              slot="start"
-              .floor=${item.floor}
-            ></ha-floor-icon>`
-          : item.icon
-            ? html`<ha-icon slot="start" .icon=${item.icon}></ha-icon>`
-            : html`<ha-svg-icon
-                slot="start"
-                .path=${item.icon_path || mdiTextureBox}
-              ></ha-svg-icon>`}
-        ${item.primary}
-      </ha-combo-box-item>
-    `;
-  };
-
-  private _deviceRowRenderer(item: DevicePickerItem, index: number) {
-    return html`
-      <ha-combo-box-item
-        tabindex="-1"
-        type="button"
-        class=${this._selectedItemIndex === index ? "selected" : ""}
-        @click=${this._handlePickTarget}
-        .targetType=${"device"}
-        .targetId=${item.id}
-      >
-        ${item.domain
-          ? html`
-              <img
-                slot="start"
-                alt=""
-                crossorigin="anonymous"
-                referrerpolicy="no-referrer"
-                src=${brandsUrl({
-                  domain: item.domain,
-                  type: "icon",
-                  darkOptimized: this.hass.themes.darkMode,
-                })}
-              />
-            `
-          : nothing}
-
-        <span slot="headline">${item.primary}</span>
-        ${item.secondary
-          ? html`<span slot="supporting-text">${item.secondary}</span>`
-          : nothing}
-        ${item.domain_name
-          ? html`
-              <div slot="trailing-supporting-text" class="domain">
-                ${item.domain_name}
-              </div>
-            `
-          : nothing}
-      </ha-combo-box-item>
-    `;
-  }
-
   private get _showEntityId() {
     return this.hass.userData?.showEntityIdPicker;
   }
-
-  private _entityRowRenderer = (item: EntityComboBoxItem, index: number) => {
-    const showEntityId = this._showEntityId;
-
-    return html`
-      <ha-combo-box-item
-        tabindex="-1"
-        class=${this._selectedItemIndex === index ? "selected" : ""}
-        type="button"
-        compact
-        @click=${this._handlePickTarget}
-        .targetType=${"entity"}
-        .targetId=${item.id}
-      >
-        ${item.icon_path
-          ? html`
-              <ha-svg-icon
-                slot="start"
-                style="margin: 0 4px"
-                .path=${item.icon_path}
-              ></ha-svg-icon>
-            `
-          : html`
-              <state-badge
-                slot="start"
-                .stateObj=${item.stateObj}
-                .hass=${this.hass}
-              ></state-badge>
-            `}
-        <span slot="headline">${item.primary}</span>
-        ${item.secondary
-          ? html`<span slot="supporting-text">${item.secondary}</span>`
-          : nothing}
-        ${item.stateObj && showEntityId
-          ? html`
-              <span slot="supporting-text" class="code">
-                ${item.stateObj.entity_id}
-              </span>
-            `
-          : nothing}
-        ${item.domain_name && !showEntityId
-          ? html`
-              <div slot="trailing-supporting-text" class="domain">
-                ${item.domain_name}
-              </div>
-            `
-          : nothing}
-      </ha-combo-box-item>
-    `;
-  };
 
   private _toggleFilter(ev: any) {
     this._selectedItemIndex = -1;
