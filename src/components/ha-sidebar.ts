@@ -40,7 +40,7 @@ import { updateCanInstall } from "../data/update";
 import { showEditSidebarDialog } from "../dialogs/sidebar/show-dialog-edit-sidebar";
 import { SubscribeMixin } from "../mixins/subscribe-mixin";
 import { actionHandler } from "../panels/lovelace/common/directives/action-handler-directive";
-import { haStyleScrollbar } from "../resources/styles";
+import { haStyleAnimations, haStyleScrollbar } from "../resources/styles";
 import type { HomeAssistant, PanelInfo, Route } from "../types";
 import "./ha-fade-in";
 import "./ha-icon";
@@ -693,6 +693,7 @@ class HaSidebar extends SubscribeMixin(LitElement) {
   static get styles(): CSSResultGroup {
     return [
       haStyleScrollbar,
+      haStyleAnimations,
       css`
         :host {
           overflow: visible;
@@ -913,6 +914,45 @@ class HaSidebar extends SubscribeMixin(LitElement) {
         .menu ha-icon-button {
           -webkit-transform: scaleX(var(--scale-direction));
           transform: scaleX(var(--scale-direction));
+        }
+
+        ha-md-list-item {
+          animation: fadeInSlideDown var(--ha-animation-duration) ease-out both;
+        }
+
+        /* Staggered animation delays */
+        ha-md-list-item:nth-child(1) {
+          animation-delay: var(--ha-animation-delay-base);
+        }
+        ha-md-list-item:nth-child(2) {
+          animation-delay: calc(var(--ha-animation-delay-base) * 2);
+        }
+        ha-md-list-item:nth-child(3) {
+          animation-delay: calc(var(--ha-animation-delay-base) * 3);
+        }
+        ha-md-list-item:nth-child(4) {
+          animation-delay: calc(var(--ha-animation-delay-base) * 4);
+        }
+        ha-md-list-item:nth-child(5) {
+          animation-delay: calc(var(--ha-animation-delay-base) * 5);
+        }
+        ha-md-list-item:nth-child(6) {
+          animation-delay: calc(var(--ha-animation-delay-base) * 6);
+        }
+        ha-md-list-item:nth-child(7) {
+          animation-delay: calc(var(--ha-animation-delay-base) * 7);
+        }
+        ha-md-list-item:nth-child(8) {
+          animation-delay: calc(var(--ha-animation-delay-base) * 8);
+        }
+        ha-md-list-item:nth-child(9) {
+          animation-delay: calc(var(--ha-animation-delay-base) * 9);
+        }
+        ha-md-list-item:nth-child(10) {
+          animation-delay: calc(var(--ha-animation-delay-base) * 10);
+        }
+        ha-md-list-item:nth-child(n + 11) {
+          animation-delay: calc(var(--ha-animation-delay-base) * 11);
         }
       `,
     ];
