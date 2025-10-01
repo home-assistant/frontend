@@ -7,16 +7,15 @@ import { css, html, LitElement, nothing } from "lit";
 import { customElement, property, query, state } from "lit/decorators";
 import { repeat } from "lit/directives/repeat";
 import memoizeOne from "memoize-one";
-import { ensureArray } from "../../common/array/ensure-array";
 import { fireEvent } from "../../common/dom/fire_event";
 import { stopPropagation } from "../../common/dom/stop_propagation";
 import { getEntityContext } from "../../common/entity/context/get_entity_context";
 import type { EntityNameType } from "../../common/translations/entity-state";
 import {
-  ensureEntityNameObject,
+  ensureEntityNameItems,
   formatEntityDisplayName,
   type EntityNameConfig,
-  type EntityNameObject,
+  type EntityNameItem,
 } from "../../panels/lovelace/common/entity/entity-display-name";
 import type { HomeAssistant, ValueChangedEvent } from "../../types";
 import "../chips/ha-assist-chip";
@@ -55,7 +54,7 @@ export class HaEntityNamePicker extends LitElement {
 
   @property({ attribute: false }) public entityId?: string;
 
-  @property() public value?: EntityNameConfig | EntityNameConfig[];
+  @property() public value?: EntityNameConfig;
 
   @property() public label?: string;
 
@@ -115,7 +114,7 @@ export class HaEntityNamePicker extends LitElement {
     return items;
   });
 
-  private _formatItem = (item: EntityNameObject) => {
+  private _formatItem = (item: EntityNameItem) => {
     if (item.type === "text") {
       return `"${item.text}"`;
     }
@@ -149,7 +148,7 @@ export class HaEntityNamePicker extends LitElement {
             ${repeat(
               this._value,
               (item) => item,
-              (item: EntityNameObject, idx) => {
+              (item: EntityNameItem, idx) => {
                 const label = this._formatItem(item);
                 return html`
                   <ha-input-chip
@@ -241,30 +240,27 @@ export class HaEntityNamePicker extends LitElement {
     this._opened = true;
   }
 
-  private get _value(): EntityNameObject[] {
+  private get _value(): EntityNameItem[] {
     return this._toItems(this.value);
   }
 
-  private _toItems = memoizeOne(
-    (value?: EntityNameConfig | EntityNameConfig[]) =>
-      ensureArray(value).map(ensureEntityNameObject)
+  private _toItems = memoizeOne((value?: EntityNameConfig) =>
+    value ? ensureEntityNameItems(value) : []
   );
 
-  private _toValue = memoizeOne(
-    (items: EntityNameObject[]): EntityNameConfig | EntityNameConfig[] => {
-      const compactItems = items.map((item) => {
-        if (item.type === "text") {
-          return item.text;
-        }
-        return item;
-      });
-      return compactItems.length === 0
-        ? []
-        : compactItems.length === 1
-          ? compactItems[0]
-          : compactItems;
-    }
-  );
+  private _toValue = memoizeOne((items: EntityNameItem[]): EntityNameConfig => {
+    const compactItems = items.map((item) => {
+      if (item.type === "text") {
+        return item.text;
+      }
+      return item;
+    });
+    return compactItems.length === 0
+      ? []
+      : compactItems.length === 1
+        ? compactItems[0]
+        : compactItems;
+  });
 
   private _openedChanged(ev: ValueChangedEvent<boolean>) {
     const open = ev.detail.value;
@@ -373,7 +369,7 @@ export class HaEntityNamePicker extends LitElement {
       return;
     }
 
-    const item: EntityNameObject = KNOWN_TYPES.has(value as any)
+    const item: EntityNameItem = KNOWN_TYPES.has(value as any)
       ? { type: value as EntityNameType }
       : { type: "text", text: value };
 
@@ -388,7 +384,7 @@ export class HaEntityNamePicker extends LitElement {
     this._setValue(newValue);
   }
 
-  private _setValue(value: EntityNameObject[]) {
+  private _setValue(value: EntityNameItem[]) {
     const newValue = this._toValue(value);
     this.value = newValue;
     fireEvent(this, "value-changed", {
