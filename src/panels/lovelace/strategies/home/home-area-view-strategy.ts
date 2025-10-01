@@ -102,22 +102,22 @@ export class HomeAreaViewStrategy extends ReactiveElement {
     );
 
     const {
-      lights,
+      light,
       climate,
       security,
       media_players: mediaPlayers,
     } = entitiesBySummary;
 
-    if (lights.length > 0) {
+    if (light.length > 0) {
       sections.push({
         type: "grid",
         cards: [
           computeHeadingCard(
-            getSummaryLabel(hass.localize, "lights"),
-            HOME_SUMMARIES_ICONS.lights,
+            getSummaryLabel(hass.localize, "light"),
+            HOME_SUMMARIES_ICONS.light,
             "/lights?historyBack=1"
           ),
-          ...lights.map(computeTileCard),
+          ...light.map(computeTileCard),
         ],
       });
     }
