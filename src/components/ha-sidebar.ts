@@ -920,7 +920,6 @@ class HaSidebar extends SubscribeMixin(LitElement) {
           animation: fadeInSlideDown var(--ha-animation-duration) ease-out both;
         }
 
-        /* Staggered animation delays */
         ha-md-list-item:nth-child(1) {
           animation-delay: var(--ha-animation-delay-base);
         }
@@ -942,17 +941,8 @@ class HaSidebar extends SubscribeMixin(LitElement) {
         ha-md-list-item:nth-child(7) {
           animation-delay: calc(var(--ha-animation-delay-base) * 7);
         }
-        ha-md-list-item:nth-child(8) {
+        ha-md-list-item:nth-child(n + 8) {
           animation-delay: calc(var(--ha-animation-delay-base) * 8);
-        }
-        ha-md-list-item:nth-child(9) {
-          animation-delay: calc(var(--ha-animation-delay-base) * 9);
-        }
-        ha-md-list-item:nth-child(10) {
-          animation-delay: calc(var(--ha-animation-delay-base) * 10);
-        }
-        ha-md-list-item:nth-child(n + 11) {
-          animation-delay: calc(var(--ha-animation-delay-base) * 11);
         }
       `,
     ];
