@@ -94,7 +94,7 @@ export class HuiEnergySolarGraphCard
           <span>${this._config.title ? this._config.title : nothing}</span>
           ${this._total
             ? html`<hui-energy-graph-chip
-                tooltip=${this._formatTotal(this._total)}
+                .tooltip=${this._formatTotal(this._total)}
               >
                 ${formatNumber(this._total, this.hass.locale)} kWh
               </hui-energy-graph-chip>`
