@@ -53,7 +53,7 @@ export const getEntityDefaultTileIconAction = (entityId: string) => {
 export const DEFAULT_NAME = [
   { type: "device" },
   { type: "entity" },
-] satisfies EntityNameConfig[];
+] satisfies EntityNameConfig;
 
 @customElement("hui-tile-card")
 export class HuiTileCard extends LitElement implements LovelaceCard {
