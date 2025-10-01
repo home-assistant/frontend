@@ -217,8 +217,8 @@ export class HaResizableBottomSheet extends LitElement {
       max-height: 70vh;
       min-height: 30vh;
       background-color: var(
-        --ha-dialog-surface-background,
-        var(--mdc-theme-surface, #fff)
+        --ha-bottom-sheet-surface-background,
+        var(--ha-dialog-surface-background, var(--mdc-theme-surface, #fff)),
       );
       display: flex;
       flex-direction: column;

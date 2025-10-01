@@ -42,8 +42,8 @@ export class HaBottomSheet extends LitElement {
   static styles = css`
     wa-drawer {
       --wa-color-surface-raised: var(
-        --ha-dialog-surface-background,
-        var(--mdc-theme-surface, #fff)
+        --ha-bottom-sheet-surface-background,
+        var(--ha-dialog-surface-background, var(--mdc-theme-surface, #fff)),
       );
       --spacing: 0;
       --size: auto;
