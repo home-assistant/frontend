@@ -85,7 +85,7 @@ export class HaCardConditionUrlHash extends LitElement {
   }
 
   private _valueChanged(ev: CustomEvent): void {
-    const target = ev.currentTarget as any;
+    const target = ev.currentTarget as HTMLInputElement;
     const value = target.value;
 
     const condition: UrlHashCondition = {
