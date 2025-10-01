@@ -239,12 +239,12 @@ export class HaResizableBottomSheet extends LitElement {
       inset-inline-start: 0;
       box-shadow: 0px -8px 16px rgba(0, 0, 0, 0.2);
       border-top-left-radius: var(
-        --ha-dialog-border-radius,
-        var(--ha-border-radius-2xl)
+        --ha-bottom-sheet-border-radius,
+        var(--ha-dialog-border-radius, var(--ha-border-radius-2xl))
       );
       border-top-right-radius: var(
-        --ha-dialog-border-radius,
-        var(--ha-border-radius-2xl)
+        --ha-bottom-sheet-border-radius,
+        var(--ha-dialog-border-radius, var(--ha-border-radius-2xl))
       );
       transform: translateY(100%);
       transition: transform ${BOTTOM_SHEET_ANIMATION_DURATION_MS}ms ease;
