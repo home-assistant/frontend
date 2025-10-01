@@ -139,8 +139,8 @@ export class HuiEnergyDevicesGraphCard
           show: true,
           formatter: this._renderTooltip.bind(this),
         },
-        xAxis: {show: false},
-        yAxis: {show: false},
+        xAxis: { show: false },
+        yAxis: { show: false },
       };
       if (chartType === "bar") {
         const isMobile = window.matchMedia(
