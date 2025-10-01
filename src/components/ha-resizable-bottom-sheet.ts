@@ -1,8 +1,11 @@
-import { css, html, LitElement } from "lit";
-import { customElement, query, state } from "lit/decorators";
+import { css, html, LitElement, nothing } from "lit";
+import { customElement, property, query, state } from "lit/decorators";
 import { styleMap } from "lit/directives/style-map";
 import { fireEvent } from "../common/dom/fire_event";
 import { BOTTOM_SHEET_ANIMATION_DURATION_MS } from "./ha-bottom-sheet";
+
+const MAX_VIEWPOINT_HEIGHT = 90;
+const MIN_VIEWPOINT_HEIGHT = 20;
 
 /**
  * A bottom sheet component that slides up from the bottom of the screen.
@@ -33,25 +36,32 @@ export class HaResizableBottomSheet extends LitElement {
 
   @state() private _dialogViewportHeight?: number;
 
+  @property({ type: Boolean, reflect: true })
+  public fullscreen = false;
+
   render() {
     return html`<dialog
       open
       @transitionend=${this._handleTransitionEnd}
       style=${styleMap({
-        height: this._dialogViewportHeight
-          ? `${this._dialogViewportHeight}vh`
-          : "auto",
-        maxHeight: `${this._dialogMaxViewpointHeight}vh`,
+        height: this.fullscreen
+          ? "100vh"
+          : this._dialogViewportHeight
+            ? `${this._dialogViewportHeight}vh`
+            : "auto",
+        maxHeight: `${this.fullscreen ? 100 : this._dialogMaxViewpointHeight}vh`,
         minHeight: `${this._dialogMinViewpointHeight}vh`,
       })}
     >
-      <div class="handle-wrapper">
-        <div
-          @mousedown=${this._handleMouseDown}
-          @touchstart=${this._handleTouchStart}
-          class="handle"
-        ></div>
-      </div>
+      ${!this.fullscreen
+        ? html` <div class="handle-wrapper">
+            <div
+              @mousedown=${this._handleMouseDown}
+              @touchstart=${this._handleTouchStart}
+              class="handle"
+            ></div>
+          </div>`
+        : nothing}
       <slot></slot>
     </dialog>`;
   }
@@ -81,8 +91,8 @@ export class HaResizableBottomSheet extends LitElement {
       // - set max height to 90vh, so it opens at max 70vh but can be resized to 90vh
       this._dialogViewportHeight =
         (this._dialog.offsetHeight / window.innerHeight) * 100;
-      this._dialogMaxViewpointHeight = 90;
-      this._dialogMinViewpointHeight = 20;
+      this._dialogMaxViewpointHeight = MAX_VIEWPOINT_HEIGHT;
+      this._dialogMinViewpointHeight = MIN_VIEWPOINT_HEIGHT;
     } else {
       // after close animation is done close dialog element and fire closed event
       this._dialog.close();
@@ -153,10 +163,10 @@ export class HaResizableBottomSheet extends LitElement {
 
     // Calculate new size and clamp between 10vh and 90vh
     let newSize = this._initialSize + deltaVh;
-    newSize = Math.max(10, Math.min(90, newSize));
+    newSize = Math.max(10, Math.min(MAX_VIEWPOINT_HEIGHT, newSize));
 
     // on drag down and below 20vh
-    if (newSize < 20 && deltaY < 0) {
+    if (newSize < MIN_VIEWPOINT_HEIGHT && deltaY < 0) {
       this._endDrag();
       this.closeSheet();
       return;
