@@ -72,7 +72,7 @@ import {
 } from "../../dialogs/quick-bar/show-dialog-quick-bar";
 import { showShortcutsDialog } from "../../dialogs/shortcuts/show-shortcuts-dialog";
 import { showVoiceCommandDialog } from "../../dialogs/voice-command-dialog/show-ha-voice-command-dialog";
-import { haStyle } from "../../resources/styles";
+import { haStyle, haStyleAnimations } from "../../resources/styles";
 import type { HomeAssistant, PanelInfo } from "../../types";
 import { documentationUrl } from "../../util/documentation-url";
 import { showToast } from "../../util/toast";
@@ -1212,6 +1212,7 @@ class HUIRoot extends LitElement {
   static get styles(): CSSResultGroup {
     return [
       haStyle,
+      haStyleAnimations,
       css`
         :host {
           -ms-user-select: none;
@@ -1266,6 +1267,8 @@ class HUIRoot extends LitElement {
           padding: 0px 12px;
           font-weight: var(--ha-font-weight-normal);
           box-sizing: border-box;
+          animation: fadeIn var(--ha-animation-duration) ease-out both;
+          animation-delay: var(--ha-animation-delay-base);
         }
         .narrow .toolbar {
           padding: 0 4px;
