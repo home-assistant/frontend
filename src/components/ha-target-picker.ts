@@ -18,6 +18,7 @@ import {
   entityRegMeetsFilter,
 } from "../data/target";
 import { SubscribeMixin } from "../mixins/subscribe-mixin";
+import { showHelperDetailDialog } from "../panels/config/helpers/show-dialog-helper-detail";
 import type { HomeAssistant } from "../types";
 import type { HaDevicePickerDeviceFilterFunc } from "./device/ha-device-picker";
 import { BOTTOM_SHEET_ANIMATION_DURATION_MS } from "./ha-bottom-sheet";
@@ -331,17 +332,45 @@ export class HaTargetPicker extends SubscribeMixin(LitElement) {
         @filter-types-changed=${this._handleUpdatePickerFilters}
         .filterTypes=${this._pickerFilters}
         autofocus
-        @target-picked=${this._targetPicked}
+        @target-picked=${this._handleTargetPicked}
+        @create-domain-picked=${this._handleCreateDomain}
         .targetValue=${this.value}
         .deviceFilter=${this.deviceFilter}
         .entityFilter=${this.entityFilter}
         .includeDomains=${this.includeDomains}
         .includeDeviceClasses=${this.includeDeviceClasses}
+        .createDomains=${this.createDomains}
       ></ha-target-picker-selector>
     `;
   }
 
-  private _targetPicked = (
+  private _addTarget(id: string, type: TargetType) {
+    const typeId = `${type}_id`;
+
+    if (typeId === "entity_id" && !isValidEntityId(id)) {
+      return;
+    }
+
+    if (
+      this.value &&
+      this.value[typeId] &&
+      ensureArray(this.value[typeId]).includes(id)
+    ) {
+      return;
+    }
+    fireEvent(this, "value-changed", {
+      value: this.value
+        ? {
+            ...this.value,
+            [typeId]: this.value[typeId]
+              ? [...ensureArray(this.value[typeId]), id]
+              : id,
+          }
+        : { [typeId]: id },
+    });
+  }
+
+  private _handleTargetPicked = (
     ev: CustomEvent<{ type: TargetType; id: string }>
   ) => {
     ev.stopPropagation();
@@ -352,29 +381,26 @@ export class HaTargetPicker extends SubscribeMixin(LitElement) {
     if (!ev.detail.type || !ev.detail.id) {
       return;
     }
-    const id = ev.detail.id;
-    const type = `${ev.detail.type}_id`;
 
-    if (type === "entity_id" && !isValidEntityId(id)) {
-      return;
-    }
+    this._addTarget(ev.detail.id, ev.detail.type);
+  };
 
-    if (
-      this.value &&
-      this.value[type] &&
-      ensureArray(this.value[type]).includes(id)
-    ) {
-      return;
-    }
-    fireEvent(this, "value-changed", {
-      value: this.value
-        ? {
-            ...this.value,
-            [type]: this.value[type]
-              ? [...ensureArray(this.value[type]), id]
-              : id,
-          }
-        : { [type]: id },
+  private _handleCreateDomain = (ev: CustomEvent<string>) => {
+    this._pickerOpen = false;
+    this._pickerPopover?.hide();
+
+    const domain = ev.detail;
+
+    showHelperDetailDialog(this, {
+      domain,
+      dialogClosedCallback: (item) => {
+        if (item.entityId) {
+          // prevent error that new entity_id isn't in hass object
+          requestAnimationFrame(() => {
+            this._addTarget(item.entityId!, "entity");
+          });
+        }
+      },
     });
   };
 

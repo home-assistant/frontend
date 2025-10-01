@@ -1,6 +1,6 @@
 import type { LitVirtualizer } from "@lit-labs/virtualizer";
 import { consume } from "@lit/context";
-import { mdiCheck, mdiTextureBox } from "@mdi/js";
+import { mdiCheck, mdiPlus, mdiTextureBox } from "@mdi/js";
 import Fuse from "fuse.js";
 import type { HassServiceTarget } from "home-assistant-js-websocket";
 import { css, html, LitElement, nothing, type PropertyValues } from "lit";
@@ -31,7 +31,12 @@ import {
   getEntities,
   type EntityComboBoxItem,
 } from "../../data/entity_registry";
+import { domainToName } from "../../data/integration";
 import { getLabels, type LabelRegistryEntry } from "../../data/label_registry";
+import {
+  isHelperDomain,
+  type HelperDomain,
+} from "../../panels/config/helpers/const";
 import { HaFuse } from "../../resources/fuse";
 import { haStyleScrollbar } from "../../resources/styles";
 import { loadVirtualizer } from "../../resources/virtualizer";
@@ -51,8 +56,8 @@ import "../ha-tree-indicator";
 import type { TargetType } from "./ha-target-picker-item-row";
 
 const SEPARATOR = "________";
-
 const EMPTY_SEARCH = "___EMPTY_SEARCH___";
+const CREATE_ID = "___create-new-entity___";
 
 export type TargetTypeFloorless = Exclude<TargetType, "floor">;
 
@@ -88,6 +93,8 @@ export class HaTargetPickerSelector extends LitElement {
   public entityFilter?: HaEntityPickerEntityFilterFunc;
 
   @property({ attribute: false }) public targetValue?: HassServiceTarget;
+
+  @property({ attribute: false, type: Array }) public createDomains?: string[];
 
   @query("lit-virtualizer") private _virtualizerElement?: LitVirtualizer;
 
@@ -145,11 +152,7 @@ export class HaTargetPickerSelector extends LitElement {
       <div class="filter">${this._renderFilterButtons()}</div>
       <lit-virtualizer
         scroller
-        .items=${this._getItems(
-          this.filterTypes,
-          this._searchTerm,
-          this._selectedItemIndex
-        )}
+        .items=${this._getItems()}
         .renderItem=${this._renderRow}
         @scroll=${this._onScrollList}
         class="list ${this._listScrolled ? "scrolled" : ""}"
@@ -167,7 +170,8 @@ export class HaTargetPickerSelector extends LitElement {
     });
   }
 
-  private _selectNextItem = () => {
+  private _selectNextItem = (ev: KeyboardEvent) => {
+    ev.stopPropagation();
     if (!this._virtualizerElement) {
       return;
     }
@@ -203,7 +207,8 @@ export class HaTargetPickerSelector extends LitElement {
     this._virtualizerElement?.scrollToIndex(this._selectedItemIndex, "end");
   };
 
-  private _selectPreviousItem = () => {
+  private _selectPreviousItem = (ev: KeyboardEvent) => {
+    ev.stopPropagation();
     if (!this._virtualizerElement) {
       return;
     }
@@ -412,172 +417,198 @@ export class HaTargetPickerSelector extends LitElement {
     return filteredItems;
   }
 
-  private _getItems = memoizeOne(
-    (
-      filterTypes: this["filterTypes"],
-      searchTerm: string,
-      _selectedItemIndex: number
-    ) => {
-      const items: (
-        | string
-        | FloorComboBoxItem
-        | EntityComboBoxItem
-        | PickerComboBoxItem
-      )[] = [];
+  private _getItems = () => {
+    const items: (
+      | string
+      | FloorComboBoxItem
+      | EntityComboBoxItem
+      | PickerComboBoxItem
+    )[] = [];
 
-      if (filterTypes.length === 0 || filterTypes.includes("entity")) {
-        let entities = getEntities(
-          this.hass,
-          this.includeDomains,
-          undefined,
-          this.entityFilter,
-          this.includeDeviceClasses,
-          undefined,
-          undefined,
-          this.targetValue?.entity_id
-            ? ensureArray(this.targetValue.entity_id)
-            : undefined
-        );
+    if (this.filterTypes.length === 0 || this.filterTypes.includes("entity")) {
+      let entities = getEntities(
+        this.hass,
+        this.includeDomains,
+        undefined,
+        this.entityFilter,
+        this.includeDeviceClasses,
+        undefined,
+        undefined,
+        this.targetValue?.entity_id
+          ? ensureArray(this.targetValue.entity_id)
+          : undefined
+      );
 
-        if (searchTerm) {
-          entities = this._filterEntities(entities);
-        }
-
-        if (entities.length > 0 && filterTypes.length !== 1) {
-          items.push(
-            this.hass.localize("ui.components.target-picker.type.entities")
-          ); // title
-        }
-
-        items.push(...entities);
+      if (this._searchTerm) {
+        entities = this._filterEntities(entities);
       }
 
-      if (filterTypes.length === 0 || filterTypes.includes("device")) {
-        let devices = getDevices(
-          this.hass,
-          this._configEntryLookup,
-          this.includeDomains,
-          undefined,
-          this.includeDeviceClasses,
-          this.deviceFilter,
-          this.entityFilter,
-          this.targetValue?.device_id
-            ? ensureArray(this.targetValue.device_id)
-            : undefined
-        );
-
-        if (searchTerm) {
-          devices = this._filterDevices(devices);
-        }
-
-        if (devices.length > 0 && filterTypes.length !== 1) {
-          items.push(
-            this.hass.localize("ui.components.target-picker.type.devices")
-          ); // title
-        }
-
-        items.push(...devices);
-      }
-
-      if (filterTypes.length === 0 || filterTypes.includes("label")) {
-        let labels = getLabels(
-          this.hass,
-          this._labelRegistry,
-          this.includeDomains,
-          undefined,
-          this.includeDeviceClasses,
-          this.deviceFilter,
-          this.entityFilter,
-          this.targetValue?.label_id
-            ? ensureArray(this.targetValue.label_id)
-            : undefined
-        );
-
-        if (searchTerm) {
-          labels = this._filterLabels(labels);
-        }
-
-        if (labels.length > 0 && filterTypes.length !== 1) {
-          items.push(
-            this.hass.localize("ui.components.target-picker.type.labels")
-          ); // title
-        }
-
-        items.push(...labels);
-      }
-
-      if (filterTypes.length === 0 || filterTypes.includes("area")) {
-        let areasAndFloors = getAreasAndFloors(
-          this.hass.states,
-          this.hass.floors,
-          this.hass.areas,
-          this.hass.devices,
-          this.hass.entities,
-          memoizeOne((value: AreaFloorValue): string =>
-            [value.type, value.id].join(SEPARATOR)
-          ),
-          this.includeDomains,
-          undefined,
-          this.includeDeviceClasses,
-          this.deviceFilter,
-          this.entityFilter,
-          this.targetValue?.area_id
-            ? ensureArray(this.targetValue.area_id)
-            : undefined,
-          this.targetValue?.floor_id
-            ? ensureArray(this.targetValue.floor_id)
-            : undefined
-        );
-
-        if (searchTerm) {
-          areasAndFloors = this._filterAreasAndFloors(areasAndFloors);
-        }
-
-        if (areasAndFloors.length > 0 && filterTypes.length !== 1) {
-          items.push(
-            this.hass.localize("ui.components.target-picker.type.areas")
-          ); // title
-        }
-
+      if (entities.length > 0 && this.filterTypes.length !== 1) {
         items.push(
-          ...areasAndFloors.map((item, index) => {
-            const nextItem = areasAndFloors[index + 1];
+          this.hass.localize("ui.components.target-picker.type.entities")
+        ); // title
+      }
 
-            if (
-              !nextItem ||
-              (item.type === "area" && nextItem.type === "floor")
-            ) {
-              return {
-                ...item,
-                last: true,
-              };
-            }
+      items.push(...entities);
+    }
 
-            return item;
-          })
+    if (this.filterTypes.length === 0 || this.filterTypes.includes("device")) {
+      let devices = getDevices(
+        this.hass,
+        this._configEntryLookup,
+        this.includeDomains,
+        undefined,
+        this.includeDeviceClasses,
+        this.deviceFilter,
+        this.entityFilter,
+        this.targetValue?.device_id
+          ? ensureArray(this.targetValue.device_id)
+          : undefined
+      );
+
+      if (this._searchTerm) {
+        devices = this._filterDevices(devices);
+      }
+
+      if (devices.length > 0 && this.filterTypes.length !== 1) {
+        items.push(
+          this.hass.localize("ui.components.target-picker.type.devices")
+        ); // title
+      }
+
+      items.push(...devices);
+    }
+
+    if (this.filterTypes.length === 0 || this.filterTypes.includes("label")) {
+      let labels = getLabels(
+        this.hass,
+        this._labelRegistry,
+        this.includeDomains,
+        undefined,
+        this.includeDeviceClasses,
+        this.deviceFilter,
+        this.entityFilter,
+        this.targetValue?.label_id
+          ? ensureArray(this.targetValue.label_id)
+          : undefined
+      );
+
+      if (this._searchTerm) {
+        labels = this._filterLabels(labels);
+      }
+
+      if (labels.length > 0 && this.filterTypes.length !== 1) {
+        items.push(
+          this.hass.localize("ui.components.target-picker.type.labels")
+        ); // title
+      }
+
+      items.push(...labels);
+    }
+
+    if (this.filterTypes.length === 0 || this.filterTypes.includes("area")) {
+      let areasAndFloors = getAreasAndFloors(
+        this.hass.states,
+        this.hass.floors,
+        this.hass.areas,
+        this.hass.devices,
+        this.hass.entities,
+        memoizeOne((value: AreaFloorValue): string =>
+          [value.type, value.id].join(SEPARATOR)
+        ),
+        this.includeDomains,
+        undefined,
+        this.includeDeviceClasses,
+        this.deviceFilter,
+        this.entityFilter,
+        this.targetValue?.area_id
+          ? ensureArray(this.targetValue.area_id)
+          : undefined,
+        this.targetValue?.floor_id
+          ? ensureArray(this.targetValue.floor_id)
+          : undefined
+      );
+
+      if (this._searchTerm) {
+        areasAndFloors = this._filterAreasAndFloors(areasAndFloors);
+      }
+
+      if (areasAndFloors.length > 0 && this.filterTypes.length !== 1) {
+        items.push(
+          this.hass.localize("ui.components.target-picker.type.areas")
+        ); // title
+      }
+
+      items.push(
+        ...areasAndFloors.map((item, index) => {
+          const nextItem = areasAndFloors[index + 1];
+
+          if (
+            !nextItem ||
+            (item.type === "area" && nextItem.type === "floor")
+          ) {
+            return {
+              ...item,
+              last: true,
+            };
+          }
+
+          return item;
+        })
+      );
+    }
+
+    items.push(...this._getCreateItems(this.createDomains));
+
+    if (this._searchTerm && items.length === 0) {
+      items.push({
+        id: EMPTY_SEARCH,
+        primary: this.hass.localize(
+          "ui.components.target-picker.no_target_found",
+          { term: html`<span class="search-term">"${this._searchTerm}"</span>` }
+        ),
+      });
+    } else if (items.length === 0) {
+      items.push({
+        id: EMPTY_SEARCH,
+        primary: this.hass.localize("ui.components.target-picker.no_targets"),
+      });
+    }
+
+    if (this.mode === "dialog") {
+      items.push("padding"); // padding for safe area inset
+    }
+
+    return items;
+  };
+
+  private _getCreateItems = memoizeOne(
+    (createDomains: this["createDomains"]) => {
+      if (!createDomains?.length) {
+        return [];
+      }
+
+      return createDomains.map((domain) => {
+        const primary = this.hass.localize(
+          "ui.components.entity.entity-picker.create_helper",
+          {
+            domain: isHelperDomain(domain)
+              ? this.hass.localize(
+                  `ui.panel.config.helpers.types.${domain as HelperDomain}`
+                )
+              : domainToName(this.hass.localize, domain),
+          }
         );
-      }
 
-      if (searchTerm && items.length === 0) {
-        items.push({
-          id: EMPTY_SEARCH,
-          primary: this.hass.localize(
-            "ui.components.target-picker.no_target_found",
-            { term: html`<span class="search-term">"${searchTerm}"</span>` }
+        return {
+          id: CREATE_ID + domain,
+          primary: primary,
+          secondary: this.hass.localize(
+            "ui.components.entity.entity-picker.new_entity"
           ),
-        });
-      } else if (items.length === 0) {
-        items.push({
-          id: EMPTY_SEARCH,
-          primary: this.hass.localize("ui.components.target-picker.no_targets"),
-        });
-      }
-
-      if (this.mode === "dialog") {
-        items.push("padding"); // padding for safe area inset
-      }
-
-      return items;
+          icon_path: mdiPlus,
+        } satisfies EntityComboBoxItem;
+      });
     }
   );
 
@@ -608,6 +639,14 @@ export class HaTargetPickerSelector extends LitElement {
     if (type === "label" && id === EMPTY_SEARCH) {
       return;
     }
+
+    if (id.startsWith(CREATE_ID)) {
+      const domain = id.substring(CREATE_ID.length);
+
+      fireEvent(this, "create-domain-picked", domain);
+      return;
+    }
+
     fireEvent(this, "target-picked", {
       id,
       type,
@@ -883,5 +922,6 @@ declare global {
       type: TargetType;
       id: string;
     };
+    "create-domain-picked": string;
   }
 }
