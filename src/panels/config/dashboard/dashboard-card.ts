@@ -59,7 +59,7 @@ export class DashboardCard extends LitElement {
       padding: 12px;
       display: block;
       text-align: var(--float-start);
-      gap: 8px;
+      gap: var(--ha-space-2);
     }
     .preview {
       padding: 16px;

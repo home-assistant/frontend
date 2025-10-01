@@ -1,5 +1,6 @@
 import { consume } from "@lit/context";
 import {
+  mdiAppleKeyboardCommand,
   mdiCog,
   mdiContentSave,
   mdiDebugStepOver,
@@ -75,6 +76,7 @@ import "./blueprint-script-editor";
 import "./manual-script-editor";
 import type { HaManualScriptEditor } from "./manual-script-editor";
 import { UndoRedoMixin } from "../../../mixins/undo-redo-mixin";
+import { isMac } from "../../../util/is_mac";
 
 const baseEditorMixins = SubscribeMixin(
   PreventUnsavedMixin(KeyboardShortcutMixin(LitElement))
@@ -168,6 +170,10 @@ export class HaScriptEditor extends UndoRedoMixin<
       : undefined;
 
     const useBlueprint = "use_blueprint" in this._config;
+    const shortcutIcon = isMac
+      ? html`<ha-svg-icon .path=${mdiAppleKeyboardCommand}></ha-svg-icon>`
+      : this.hass.localize("ui.panel.config.automation.editor.ctrl");
+
     return html`
       <hass-subpage
         .hass=${this.hass}
@@ -184,16 +190,34 @@ export class HaScriptEditor extends UndoRedoMixin<
                 .path=${mdiUndo}
                 @click=${this.undo}
                 .disabled=${!this.canUndo}
+                id="button-undo"
               >
               </ha-icon-button>
+              <ha-tooltip placement="bottom" for="button-undo">
+                ${this.hass.localize("ui.common.undo")}
+                <span class="shortcut">
+                  (<span>${shortcutIcon}</span>
+                  <span>+</span>
+                  <span>Z</span>)
+                </span>
+              </ha-tooltip>
               <ha-icon-button
                 slot="toolbar-icon"
                 .label=${this.hass.localize("ui.common.redo")}
                 .path=${mdiRedo}
                 @click=${this.redo}
                 .disabled=${!this.canRedo}
+                id="button-redo"
               >
-              </ha-icon-button>`
+              </ha-icon-button>
+              <ha-tooltip placement="bottom" for="button-redo">
+                ${this.hass.localize("ui.common.redo")}
+                <span class="shortcut">
+                  (<span>${shortcutIcon}</span>
+                  <span>+</span>
+                  <span>Y</span>)
+                </span>
+              </ha-tooltip>`
           : nothing}
         ${this.scriptId && !this.narrow
           ? html`
@@ -1173,7 +1197,7 @@ export class HaScriptEditor extends UndoRedoMixin<
           display: flex;
           flex-direction: column;
           align-items: center;
-          gap: 8px;
+          gap: var(--ha-space-2);
           pointer-events: none;
         }
 
@@ -1232,6 +1256,15 @@ export class HaScriptEditor extends UndoRedoMixin<
         ha-button-menu a {
           text-decoration: none;
           color: var(--primary-color);
+        }
+        ha-tooltip ha-svg-icon {
+          width: 12px;
+        }
+        ha-tooltip .shortcut {
+          display: inline-flex;
+          flex-direction: row;
+          align-items: center;
+          gap: 2px;
         }
       `,
     ];

@@ -464,7 +464,7 @@ export class HuiViewHeader extends LitElement {
       flex-direction: row;
       align-items: center;
       outline: none;
-      gap: 8px;
+      gap: var(--ha-space-2);
       height: 36px;
       padding: 6px 20px 6px 20px;
       box-sizing: border-box;

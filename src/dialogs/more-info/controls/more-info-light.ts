@@ -310,7 +310,7 @@ class MoreInfoLight extends LitElement {
 
   private _toggle = () => {
     const service = this.stateObj?.state === "on" ? "turn_off" : "turn_on";
-    forwardHaptic("light");
+    forwardHaptic(this, "light");
     this.hass.callService("light", service, {
       entity_id: this.stateObj!.entity_id,
     });

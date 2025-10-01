@@ -159,7 +159,7 @@ export class HuiClockCard extends LitElement implements LovelaceCard {
     .time-wrapper.size-large {
       height: calc(100% - 32px);
       padding: 16px;
-      row-gap: 12px;
+      row-gap: var(--ha-space-3);
     }
 
     .time-title {

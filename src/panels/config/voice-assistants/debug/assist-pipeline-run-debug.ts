@@ -470,7 +470,7 @@ export class AssistPipelineRunDebug extends LitElement {
       .start-buttons {
         display: flex;
         flex-wrap: wrap;
-        gap: 8px;
+        gap: var(--ha-space-2);
         align-items: center;
         justify-content: center;
       }
