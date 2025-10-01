@@ -85,6 +85,8 @@ export class HaTargetPicker extends SubscribeMixin(LitElement) {
 
   @query("wa-popover") private _pickerPopover?: WaPopover;
 
+  private _newTarget?: { type: TargetType; id: string };
+
   protected render() {
     if (this.addOnTop) {
       return html` ${this._renderChips()} ${this._renderItems()} `;
@@ -320,6 +322,11 @@ export class HaTargetPicker extends SubscribeMixin(LitElement) {
   private _hidePicker() {
     this._pickerOpen = false;
     this._addMode = false;
+
+    if (this._newTarget) {
+      this._addTarget(this._newTarget.id, this._newTarget.type);
+      this._newTarget = undefined;
+    }
   }
 
   private _renderTargetSelector() {
@@ -370,7 +377,7 @@ export class HaTargetPicker extends SubscribeMixin(LitElement) {
     });
   }
 
-  private _handleTargetPicked = (
+  private _handleTargetPicked = async (
     ev: CustomEvent<{ type: TargetType; id: string }>
   ) => {
     ev.stopPropagation();
@@ -382,7 +389,8 @@ export class HaTargetPicker extends SubscribeMixin(LitElement) {
       return;
     }
 
-    this._addTarget(ev.detail.id, ev.detail.type);
+    // save new target temporarily to add it after dialog closes
+    this._newTarget = ev.detail;
   };
 
   private _handleCreateDomain = (ev: CustomEvent<string>) => {

@@ -194,8 +194,11 @@ export class HaTargetPickerSelector extends LitElement {
       return;
     }
 
-    if (typeof items[nextIndex] === "string") {
-      // Skip titles and padding
+    if (
+      typeof items[nextIndex] === "string" ||
+      (items[nextIndex] as PickerComboBoxItem)?.id === EMPTY_SEARCH
+    ) {
+      // Skip titles, padding and empty search
       if (nextIndex === maxItems) {
         return;
       }
@@ -222,8 +225,11 @@ export class HaTargetPickerSelector extends LitElement {
         return;
       }
 
-      if (typeof items[nextIndex] === "string") {
-        // Skip titles and padding
+      if (
+        typeof items[nextIndex] === "string" ||
+        (items[nextIndex] as PickerComboBoxItem)?.id === EMPTY_SEARCH
+      ) {
+        // Skip titles, padding and empty search
         if (nextIndex === 0) {
           return;
         }
@@ -444,9 +450,10 @@ export class HaTargetPickerSelector extends LitElement {
       }
 
       if (devices.length > 0 && this.filterTypes.length !== 1) {
+        // show group title
         items.push(
           this.hass.localize("ui.components.target-picker.type.devices")
-        ); // title
+        );
       }
 
       items.push(...devices);
@@ -471,9 +478,10 @@ export class HaTargetPickerSelector extends LitElement {
       }
 
       if (labels.length > 0 && this.filterTypes.length !== 1) {
+        // show group title
         items.push(
           this.hass.localize("ui.components.target-picker.type.labels")
-        ); // title
+        );
       }
 
       items.push(...labels);
@@ -510,9 +518,10 @@ export class HaTargetPickerSelector extends LitElement {
       }
 
       if (areasAndFloors.length > 0 && this.filterTypes.length !== 1) {
+        // show group title
         items.push(
           this.hass.localize("ui.components.target-picker.type.areas")
-        ); // title
+        );
       }
 
       items.push(
