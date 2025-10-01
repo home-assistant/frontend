@@ -78,8 +78,6 @@ export class HaSelector extends LitElement {
 
   @property() public value?: any;
 
-  @property() public default?: any;
-
   @property() public label?: string;
 
   @property() public helper?: string;
@@ -136,7 +134,6 @@ export class HaSelector extends LitElement {
         name: this.name,
         selector: this._handleLegacySelector(this.selector),
         value: this.value,
-        default: this.default,
         label: this.label,
         placeholder: this.placeholder,
         disabled: this.disabled,
