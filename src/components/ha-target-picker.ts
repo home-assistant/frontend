@@ -1,9 +1,9 @@
+import "@home-assistant/webawesome/dist/components/drawer/drawer";
 import "@home-assistant/webawesome/dist/components/popover/popover";
 import type WaPopover from "@home-assistant/webawesome/dist/components/popover/popover";
 // @ts-ignore
 import chipStyles from "@material/chips/dist/mdc.chips.min.css";
 import { mdiPlaylistPlus } from "@mdi/js";
-import type { ComboBoxLightOpenedChangedEvent } from "@vaadin/combo-box/vaadin-combo-box-light";
 import type { HassServiceTarget } from "home-assistant-js-websocket";
 import type { CSSResultGroup } from "lit";
 import { LitElement, css, html, nothing, unsafeCSS } from "lit";
@@ -19,17 +19,11 @@ import {
 } from "../data/target";
 import { SubscribeMixin } from "../mixins/subscribe-mixin";
 import type { HomeAssistant } from "../types";
-import "./device/ha-device-picker";
 import type { HaDevicePickerDeviceFilterFunc } from "./device/ha-device-picker";
-import "./entity/ha-entity-picker";
-import "./ha-area-floor-picker";
+import { BOTTOM_SHEET_ANIMATION_DURATION_MS } from "./ha-bottom-sheet";
 import "./ha-button";
-import "./ha-icon-button";
 import "./ha-input-helper-text";
-import "./ha-label-picker";
 import "./ha-svg-icon";
-import "./ha-tooltip";
-import { showTargetPickerDialog } from "./target-picker/dialog/show-dialog-target-picker";
 import "./target-picker/ha-target-picker-chips-selection";
 import "./target-picker/ha-target-picker-item-group";
 import type { TargetType } from "./target-picker/ha-target-picker-item-row";
@@ -84,13 +78,11 @@ export class HaTargetPicker extends SubscribeMixin(LitElement) {
 
   @state() private _pickerFilters: TargetTypeFloorless[] = [];
 
-  @query("#input") private _inputElement?;
+  @state() private _pickerOpen = false;
 
   @query(".add-target-wrapper") private _addTargetWrapper?: HTMLDivElement;
 
-  @query("wa-popover") private _addPopover?: WaPopover;
-
-  private _opened = false;
+  @query("wa-popover") private _pickerPopover?: WaPopover;
 
   protected render() {
     if (this.addOnTop) {
@@ -275,29 +267,23 @@ export class HaTargetPicker extends SubscribeMixin(LitElement) {
                 auto-size="vertical"
                 auto-size-padding="16"
               >
-                ${this._addMode
-                  ? html`<ha-target-picker-selector
-                      .hass=${this.hass}
-                      @filter-types-changed=${this._handleUpdatePickerFilters}
-                      .filterTypes=${this._pickerFilters}
-                      autofocus
-                      @target-picked=${this._targetPicked}
-                      .targetValue=${this.value}
-                      .deviceFilter=${this.deviceFilter}
-                      .entityFilter=${this.entityFilter}
-                      .includeDomains=${this.includeDomains}
-                      .includeDeviceClasses=${this.includeDeviceClasses}
-                    ></ha-target-picker-selector>`
-                  : nothing}
+                ${this._renderTargetSelector()}
               </wa-popover>
             `
-          : nothing}
+          : html`<wa-drawer
+              placement="bottom"
+              @wa-after-hide=${this._hidePicker}
+              without-header
+              .open=${this._pickerOpen}
+            >
+              ${this._renderTargetSelector()}
+            </wa-drawer>`}
       </div>
       ${this.helper
         ? html`<ha-input-helper-text .disabled=${this.disabled}
             >${this.helper}</ha-input-helper-text
           >`
-        : ""}
+        : nothing}
     `;
   }
 
@@ -318,21 +304,8 @@ export class HaTargetPicker extends SubscribeMixin(LitElement) {
 
   private _showPicker() {
     this._addTargetWidth = this._addTargetWrapper?.offsetWidth || 0;
-
-    if (this._narrow) {
-      showTargetPickerDialog(this, {
-        target: this.value,
-        deviceFilter: this.deviceFilter,
-        entityFilter: this.entityFilter,
-        includeDomains: this.includeDomains,
-        includeDeviceClasses: this.includeDeviceClasses,
-        selectTarget: this._targetPicked,
-        typeFilter: this._pickerFilters,
-        updateTypeFilter: this._updatePickerFilters,
-      });
-    } else {
-      this._addMode = true;
-    }
+    this._pickerOpen = true;
+    this._addMode = true;
   }
 
   private _handleUpdatePickerFilters(ev: CustomEvent<TargetTypeFloorless[]>) {
@@ -344,7 +317,28 @@ export class HaTargetPicker extends SubscribeMixin(LitElement) {
   };
 
   private _hidePicker() {
+    this._pickerOpen = false;
     this._addMode = false;
+  }
+
+  private _renderTargetSelector() {
+    if (!this._addMode) {
+      return nothing;
+    }
+    return html`
+      <ha-target-picker-selector
+        .hass=${this.hass}
+        @filter-types-changed=${this._handleUpdatePickerFilters}
+        .filterTypes=${this._pickerFilters}
+        autofocus
+        @target-picked=${this._targetPicked}
+        .targetValue=${this.value}
+        .deviceFilter=${this.deviceFilter}
+        .entityFilter=${this.entityFilter}
+        .includeDomains=${this.includeDomains}
+        .includeDeviceClasses=${this.includeDeviceClasses}
+      ></ha-target-picker-selector>
+    `;
   }
 
   private _targetPicked = (
@@ -352,8 +346,8 @@ export class HaTargetPicker extends SubscribeMixin(LitElement) {
   ) => {
     ev.stopPropagation();
 
-    // close popover
-    this._addPopover?.hide();
+    this._pickerOpen = false;
+    this._pickerPopover?.hide();
 
     if (!ev.detail.type || !ev.detail.id) {
       return;
@@ -572,42 +566,12 @@ export class HaTargetPicker extends SubscribeMixin(LitElement) {
     return undefined;
   }
 
-  private _onClosed(ev) {
-    ev.stopPropagation();
-    ev.target.open = true;
-  }
-
-  private async _onOpened() {
-    if (!this._addMode) {
-      return;
-    }
-    await this._inputElement?.focus();
-    await this._inputElement?.open();
-    this._opened = true;
-  }
-
-  private _openedChanged(ev: ComboBoxLightOpenedChangedEvent) {
-    if (this._opened && !ev.detail.value) {
-      this._opened = false;
-      // this._addMode = undefined;
-    }
-  }
-
   static get styles(): CSSResultGroup {
     return css`
       .add-target-wrapper {
         display: flex;
         justify-content: flex-start;
         margin-top: 12px;
-      }
-      #add-target-button {
-        width: 100%;
-        max-width: 304px;
-      }
-
-      :host([compact]) #add-target-button {
-        width: 304px;
-        max-width: 100%;
       }
 
       wa-popover {
@@ -621,10 +585,31 @@ export class HaTargetPicker extends SubscribeMixin(LitElement) {
         height: 70vh;
       }
 
-      ${unsafeCSS(chipStyles)}
-      .mdc-chip {
-        color: var(--primary-text-color);
+      ha-bottom-sheet {
+        --ha-bottom-sheet-size: 100vh;
       }
+
+      wa-drawer {
+        --spacing: 0;
+        --size: 90vh;
+        --size: calc(100dvh - 48px);
+        --show-duration: ${BOTTOM_SHEET_ANIMATION_DURATION_MS}ms;
+        --hide-duration: ${BOTTOM_SHEET_ANIMATION_DURATION_MS}ms;
+        --wa-color-surface-raised: var(
+          --ha-dialog-surface-background,
+          var(--mdc-theme-surface, #fff)
+        );
+      }
+      wa-drawer::part(dialog) {
+        border-top-left-radius: var(--ha-border-radius-lg);
+        border-top-right-radius: var(--ha-border-radius-lg);
+      }
+
+      wa-drawer::part(body) {
+        display: flex;
+      }
+
+      ${unsafeCSS(chipStyles)}
       .items {
         z-index: 2;
       }
@@ -632,86 +617,11 @@ export class HaTargetPicker extends SubscribeMixin(LitElement) {
         padding: 4px 0;
         gap: 8px;
       }
-      .mdc-chip-set .mdc-chip {
-        margin: 0;
-      }
-      .mdc-chip.add {
-        color: rgba(0, 0, 0, 0.87);
-      }
-      .mdc-chip:not(.add) {
-        cursor: default;
-      }
-      .mdc-chip ha-icon-button {
-        --mdc-icon-button-size: 24px;
-        display: flex;
-        align-items: center;
-        outline: none;
-      }
-      .mdc-chip ha-icon-button ha-svg-icon {
-        border-radius: 50%;
-        background: var(--secondary-text-color);
-      }
-      .mdc-chip__icon.mdc-chip__icon--2 {
-        width: 16px;
-        height: 16px;
-        --mdc-icon-size: 14px;
-        color: var(--secondary-text-color);
-        margin-inline-start: 4px !important;
-        margin-inline-end: -4px !important;
-        direction: var(--direction);
-      }
-      .mdc-chip__icon--leading {
-        display: flex;
-        align-items: center;
-        justify-content: center;
-        --mdc-icon-size: 20px;
-        border-radius: 50%;
-        padding: 6px;
-        margin-left: -13px !important;
-        margin-inline-start: -13px !important;
-        margin-inline-end: 4px !important;
-        direction: var(--direction);
-      }
-      .mdc-chip:hover {
-        z-index: 5;
-      }
-      :host([disabled]) .mdc-chip {
-        opacity: var(--light-disabled-opacity);
-        pointer-events: none;
-      }
-      mwc-menu-surface {
-        --mdc-menu-min-width: 100%;
-      }
-      ha-entity-picker,
-      ha-device-picker,
-      ha-area-floor-picker {
-        display: block;
-        width: 100%;
-      }
 
       .item-groups {
         overflow: hidden;
         border: 2px solid var(--divider-color);
         border-radius: var(--ha-border-radius-lg);
-      }
-
-      :host([compact]) .mdc-chip.area_id:not(.add),
-      .mdc-chip.floor_id:not(.add) {
-        border: 1px solid #fed6a4;
-        background: var(--card-background-color);
-      }
-      :host([compact]) .mdc-chip.area_id.add,
-      :host([compact]) .mdc-chip.floor_id.add {
-        background: #fed6a4;
-      }
-      :host([compact]) .mdc-chip.device_id.add {
-        background: #a8e1fb;
-      }
-      :host([compact]) .mdc-chip.entity_id.add {
-        background: #d2e7b9;
-      }
-      :host([compact]) .mdc-chip.label_id.add {
-        background: var(--background-color, #e0e0e0);
       }
     `;
   }
