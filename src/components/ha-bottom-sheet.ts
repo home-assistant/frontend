@@ -51,8 +51,14 @@ export class HaBottomSheet extends LitElement {
       --hide-duration: ${BOTTOM_SHEET_ANIMATION_DURATION_MS}ms;
     }
     wa-drawer::part(dialog) {
-      border-top-left-radius: var(--ha-border-radius-lg);
-      border-top-right-radius: var(--ha-border-radius-lg);
+      border-top-left-radius: var(
+        --ha-dialog-border-radius,
+        var(--ha-border-radius-2xl)
+      );
+      border-top-right-radius: var(
+        --ha-dialog-border-radius,
+        var(--ha-border-radius-2xl)
+      );
       max-height: 90vh;
       padding-bottom: var(--safe-area-inset-bottom);
       padding-left: var(--safe-area-inset-left);
