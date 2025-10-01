@@ -11,7 +11,7 @@ import { fireEvent } from "../../../common/dom/fire_event";
 
 declare global {
   interface HASSDomEvents {
-    "row-visibility-changed": { value: boolean };
+    "row-visibility-changed": { row: LovelaceRow; value: boolean };
   }
 }
 @customElement("hui-conditional-row")
@@ -38,7 +38,7 @@ class HuiConditionalRow extends HuiConditionalBase implements LovelaceRow {
     const previouslyHidden = this.hidden;
     super.setVisibility(conditionMet);
     if (previouslyHidden !== this.hidden) {
-      fireEvent(this, "row-visibility-changed", { value: visible });
+      fireEvent(this, "row-visibility-changed", { row: this, value: visible });
     }
   }
 }

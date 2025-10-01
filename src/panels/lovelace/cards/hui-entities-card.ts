@@ -85,7 +85,9 @@ class HuiEntitiesCard extends LitElement implements LovelaceCard {
 
   connectedCallback(): void {
     super.connectedCallback();
-    this.addEventListener("row-visibility-changed", this._updateRowVisibility);
+    this.addEventListener("row-visibility-changed", (ev) =>
+      this._updateRowVisibility(ev)
+    );
   }
 
   disconnectedCallback(): void {
@@ -315,16 +317,12 @@ class HuiEntitiesCard extends LitElement implements LovelaceCard {
     return html`<div ?hidden=${element.hidden}>${element}</div>`;
   }
 
-  private _updateRowVisibility = () => {
-    this.shadowRoot
-      ?.querySelectorAll("#states > div > *")
-      .forEach((element: unknown) => {
-        if ((element as LovelaceRow).hidden) {
-          (element as LovelaceRow).parentElement!.style.display = "none";
-        } else {
-          (element as LovelaceRow).parentElement!.style.display = "";
-        }
-      });
+  private _updateRowVisibility = (ev) => {
+    if (ev.detail?.value === false) {
+      ev.detail?.row?.parentElement!.style.setProperty("display", "none");
+    } else {
+      ev.detail?.row?.parentElement!.style.setProperty("display", "");
+    }
   };
 }
 
