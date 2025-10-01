@@ -82,7 +82,7 @@ export class HaCardConditionEditor extends LitElement {
     if (changedProperties.has("condition")) {
       this._condition = {
         ...this.condition,
-      } as Condition;
+      };
       const validator = this._editor?.validateUIConfig;
       if (validator) {
         try {
