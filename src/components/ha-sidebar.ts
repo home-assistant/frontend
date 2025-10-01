@@ -22,6 +22,7 @@ import {
   eventOptions,
   property,
   query,
+  queryAll,
   state,
 } from "lit/decorators";
 import { classMap } from "lit/directives/class-map";
@@ -210,6 +211,8 @@ class HaSidebar extends SubscribeMixin(LitElement) {
 
   @query(".tooltip") private _tooltip!: HTMLDivElement;
 
+  @queryAll("ha-md-list-item") private _listItems!: NodeListOf<HaMdListItem>;
+
   public hassSubscribe() {
     return [
       subscribeFrontendUserData(
@@ -322,6 +325,15 @@ class HaSidebar extends SubscribeMixin(LitElement) {
     if (changedProps.has("alwaysExpand")) {
       toggleAttribute(this, "expanded", this.alwaysExpand);
     }
+
+    // Staggered animation for list items based on index
+    this._listItems.forEach((item, index) => {
+      (item as HTMLElement).style.setProperty(
+        "--animation-index",
+        String(index + 1)
+      );
+    });
+
     if (!changedProps.has("hass")) {
       return;
     }
@@ -746,34 +758,13 @@ class HaSidebar extends SubscribeMixin(LitElement) {
         }
         .menu-button {
           animation: fadeInSlideDown var(--ha-animation-duration) ease-out both;
-          animation-delay: var(--ha-animation-delay-base);
+          animation-delay: var(--ha-animation-delay-base) / 2;
         }
         ha-md-list-item {
           animation: fadeInSlideDown var(--ha-animation-duration) ease-out both;
-        }
-        ha-md-list-item:nth-child(1) {
-          animation-delay: var(--ha-animation-delay-base);
-        }
-        ha-md-list-item:nth-child(2) {
-          animation-delay: calc(var(--ha-animation-delay-base) * 2);
-        }
-        ha-md-list-item:nth-child(3) {
-          animation-delay: calc(var(--ha-animation-delay-base) * 3);
-        }
-        ha-md-list-item:nth-child(4) {
-          animation-delay: calc(var(--ha-animation-delay-base) * 4);
-        }
-        ha-md-list-item:nth-child(5) {
-          animation-delay: calc(var(--ha-animation-delay-base) * 5);
-        }
-        ha-md-list-item:nth-child(6) {
-          animation-delay: calc(var(--ha-animation-delay-base) * 6);
-        }
-        ha-md-list-item:nth-child(7) {
-          animation-delay: calc(var(--ha-animation-delay-base) * 7);
-        }
-        ha-md-list-item:nth-child(n + 8) {
-          animation-delay: calc(var(--ha-animation-delay-base) * 8);
+          animation-delay: calc(
+            var(--ha-animation-delay-base) * var(--animation-index, 1) / 2
+          );
         }
         .title {
           margin-left: 3px;
