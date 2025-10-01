@@ -28,6 +28,7 @@ import "../../../../components/ha-card";
 import { fireEvent } from "../../../../common/dom/fire_event";
 import { measureTextWidth } from "../../../../util/text";
 import "../../../../components/ha-icon-button";
+import { storage } from "../../../../common/decorators/storage";
 
 const MAX_PIE_LABELS = 5;
 
@@ -44,7 +45,13 @@ export class HuiEnergyDevicesGraphCard
 
   @state() private _data?: EnergyData;
 
-  @state() private _chartType: "bar" | "pie" = "bar";
+  @state()
+  @storage({
+    key: "energy-devices-graph-chart-type",
+    state: true,
+    subscribe: false,
+  })
+  private _chartType: "bar" | "pie" = "bar";
 
   protected hassSubscribeRequiredHostProps = ["_config"];
 
