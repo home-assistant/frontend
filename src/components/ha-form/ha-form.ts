@@ -144,7 +144,6 @@ export class HaForm extends LitElement implements HaFormElement {
                   .label=${this._computeLabel(item, this.data)}
                   .disabled=${item.disabled || this.disabled || false}
                   .placeholder=${item.required ? "" : item.default}
-                  .default=${item.default}
                   .helper=${this._computeHelper(item)}
                   .localizeValue=${this.localizeValue}
                   .required=${item.required || false}
