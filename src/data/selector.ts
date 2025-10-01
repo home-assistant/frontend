@@ -7,6 +7,7 @@ import { computeStateDomain } from "../common/entity/compute_state_domain";
 import { supportsFeature } from "../common/entity/supports-feature";
 import type { CropOptions } from "../dialogs/image-cropper-dialog/show-image-cropper-dialog";
 import { isHelperDomain } from "../panels/config/helpers/const";
+import type { EntityNameConfig } from "../panels/lovelace/common/entity/entity-display-name";
 import type { UiAction } from "../panels/lovelace/components/hui-action-editor";
 import type { HomeAssistant } from "../types";
 import {
@@ -503,6 +504,7 @@ export interface UiStateContentSelector {
 export interface EntityNameSelector {
   entity_name: {
     entity_id?: string;
+    default_name?: EntityNameConfig | EntityNameConfig[];
   } | null;
 }
 

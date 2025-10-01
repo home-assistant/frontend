@@ -659,10 +659,10 @@
         },
         "entity-name-picker": {
           "types": {
-            "floor_name": "Floor",
-            "area_name": "Area",
-            "device_name": "Device",
-            "entity_name": "Entity"
+            "floor": "Floor",
+            "area": "Area",
+            "device": "Device",
+            "entity": "Entity"
           },
           "add": "Add"
         },

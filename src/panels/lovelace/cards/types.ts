@@ -16,6 +16,7 @@ import type {
   LovelaceCardFeatureConfig,
   LovelaceCardFeaturePosition,
 } from "../card-features/types";
+import type { EntityNameConfig } from "../common/entity/entity-display-name";
 import type { LegacyStateFilter } from "../common/evaluate-filter";
 import type { Condition, LegacyCondition } from "../common/validate-condition";
 import type { HuiImage } from "../components/hui-image";
@@ -569,7 +570,7 @@ export interface WeatherForecastCardConfig extends LovelaceCardConfig {
 
 export interface TileCardConfig extends LovelaceCardConfig {
   entity: string;
-  name?: string | string[];
+  name?: EntityNameConfig;
   hide_state?: boolean;
   state_content?: string | string[];
   icon?: string;
