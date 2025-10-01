@@ -1414,6 +1414,8 @@ class HUIRoot extends LitElement {
         hui-view-container > * {
           flex: 1 1 100%;
           max-width: 100%;
+          animation: fadeInSlideDown var(--ha-animation-duration) ease-out both;
+          animation-delay: var(--ha-animation-delay-base);
         }
         /**
          * In edit mode we have the tab bar on a new line *
