@@ -176,6 +176,7 @@ export interface EnergyDevicesGraphCardConfig extends EnergyCardBaseConfig {
   type: "energy-devices-graph";
   title?: string;
   max_devices?: number;
+  hide_compound_stats?: boolean;
 }
 
 export interface EnergyDevicesDetailGraphCardConfig
