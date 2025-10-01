@@ -185,7 +185,7 @@ export const colorStyles = css`
     --state-water_heater-high_demand-color: var(--deep-orange-color);
     --state-water_heater-performance-color: var(--deep-orange-color);
     --state-weather-clear_night-color: var(--deep-purple-color);
-    --state-weather-cloudy-color: var(--dark-grey-color);
+    --state-weather-cloudy-color: var(--light-grey-color);
     --state-weather-exceptional-color: var(--red-color);
     --state-weather-fog-color: var(--grey-color);
     --state-weather-hail-color: var(--cyan-color);
