@@ -258,7 +258,10 @@ class MoreInfoMediaPlayer extends LitElement {
 
     const stateObj = this.stateObj;
     const controls = computeMediaControls(stateObj, true);
-    const coverUrl = stateObj.attributes.entity_picture || "";
+    const coverUrl =
+      stateObj.attributes.entity_picture_local ||
+      stateObj.attributes.entity_picture ||
+      "";
     const playerObj = new HassMediaPlayerEntity(this.hass, this.stateObj);
 
     const position = Math.max(Math.floor(playerObj.currentProgress || 0), 0);
@@ -474,6 +477,22 @@ class MoreInfoMediaPlayer extends LitElement {
     .cover-image--playing {
       width: 320px;
       height: 320px;
+    }
+
+    @media (max-height: 750px) {
+      .cover-container {
+        height: 120px;
+      }
+
+      .cover-image {
+        width: 100px;
+        height: 100px;
+      }
+
+      .cover-image--playing {
+        width: 120px;
+        height: 120px;
+      }
     }
 
     .empty-cover {
