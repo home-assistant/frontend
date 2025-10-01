@@ -338,12 +338,9 @@ export class HaTargetPickerSelector extends LitElement {
         tabindex="-1"
         class=${this._selectedItemIndex === index ? "selected" : ""}
         .type=${item.id === EMPTY_SEARCH ? "text" : "button"}
-        @click=${
-          // eslint-disable-next-line lit/no-template-arrow
-          () => {
-            this._pickTarget(item.id, "label");
-          }
-        }
+        @click=${this._handlePickTarget}
+        .targetType=${"label"}
+        .targetId=${item.id}
       >
         ${item.icon
           ? html`<ha-icon slot="start" .icon=${item.icon}></ha-icon>`
@@ -622,6 +619,17 @@ export class HaTargetPickerSelector extends LitElement {
     this._selectedItemIndex = -1;
   }
 
+  private _handlePickTarget = (ev) => {
+    const id = ev.currentTarget?.targetId as string;
+    const type = ev.currentTarget?.targetType as TargetType;
+
+    if (!id || !type) {
+      return;
+    }
+
+    this._pickTarget(id, type);
+  };
+
   private _pickTarget = (id: string, type: TargetType) => {
     if (type === "label" && id === EMPTY_SEARCH) {
       return;
@@ -656,12 +664,9 @@ export class HaTargetPickerSelector extends LitElement {
         style=${item.type === "area" && hasFloor
           ? "--md-list-item-leading-space: 48px;"
           : ""}
-        @click=${
-          // eslint-disable-next-line lit/no-template-arrow
-          () => {
-            this._pickTarget(item[item.type]?.[`${item.type}_id`], item.type);
-          }
-        }
+        @click=${this._handlePickTarget}
+        .targetType=${item.type}
+        .targetId=${item[item.type]?.[`${item.type}_id`]}
       >
         ${item.type === "area" && hasFloor
           ? html`
@@ -701,12 +706,9 @@ export class HaTargetPickerSelector extends LitElement {
         tabindex="-1"
         type="button"
         class=${this._selectedItemIndex === index ? "selected" : ""}
-        @click=${
-          // eslint-disable-next-line lit/no-template-arrow
-          () => {
-            this._pickTarget(item.id, "device");
-          }
-        }
+        @click=${this._handlePickTarget}
+        .targetType=${"device"}
+        .targetId=${item.id}
       >
         ${item.domain
           ? html`
@@ -752,12 +754,9 @@ export class HaTargetPickerSelector extends LitElement {
         class=${this._selectedItemIndex === index ? "selected" : ""}
         type="button"
         compact
-        @click=${
-          // eslint-disable-next-line lit/no-template-arrow
-          () => {
-            this._pickTarget(item.id, "entity");
-          }
-        }
+        @click=${this._handlePickTarget}
+        .targetType=${"entity"}
+        .targetId=${item.id}
       >
         ${item.icon_path
           ? html`
