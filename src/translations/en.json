@@ -8440,6 +8440,7 @@
             "system": "Use system locale",
             "comma_decimal": "1,234,567.89",
             "decimal_comma": "1.234.567,89",
+            "quote_decimal": "1'234'567.89",
             "space_comma": "1 234 567,89",
             "none": "None"
           }
