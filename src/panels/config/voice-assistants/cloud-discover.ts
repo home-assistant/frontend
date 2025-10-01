@@ -145,7 +145,7 @@ export class CloudDiscover extends LitElement {
     .features {
       display: grid;
       grid-template-columns: auto;
-      grid-gap: 16px;
+      grid-gap: var(--ha-space-4);
       padding: 16px;
     }
     @media (min-width: 600px) {

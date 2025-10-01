@@ -6,14 +6,14 @@ import { dynamicElement } from "../../common/dom/dynamic-element-directive";
 import { computeStateDomain } from "../../common/entity/compute_state_domain";
 import "../../components/ha-badge";
 import type { ExtEntityRegistryEntry } from "../../data/entity_registry";
+import { supportsCoverPositionCardFeature } from "../../panels/lovelace/card-features/hui-cover-position-card-feature";
+import { supportsLightBrightnessCardFeature } from "../../panels/lovelace/card-features/hui-light-brightness-card-feature";
+import type { LovelaceCardFeatureConfig } from "../../panels/lovelace/card-features/types";
 import type { TileCardConfig } from "../../panels/lovelace/cards/types";
 import { importMoreInfoControl } from "../../panels/lovelace/custom-card-helpers";
 import "../../panels/lovelace/sections/hui-section";
 import type { HomeAssistant } from "../../types";
 import { stateMoreInfoType } from "./state_more_info_control";
-import type { LovelaceCardFeatureConfig } from "../../panels/lovelace/card-features/types";
-import { supportsLightBrightnessCardFeature } from "../../panels/lovelace/card-features/hui-light-brightness-card-feature";
-import { supportsCoverPositionCardFeature } from "../../panels/lovelace/card-features/hui-cover-position-card-feature";
 
 @customElement("more-info-content")
 class MoreInfoContent extends LitElement {
@@ -24,6 +24,8 @@ class MoreInfoContent extends LitElement {
   @property({ attribute: false }) public entry?: ExtEntityRegistryEntry | null;
 
   @property({ attribute: false }) public editMode?: boolean;
+
+  @property({ attribute: false }) public data?: Record<string, any>;
 
   protected render() {
     let moreInfoType: string | undefined;
@@ -48,6 +50,7 @@ class MoreInfoContent extends LitElement {
         stateObj: this.stateObj,
         entry: this.entry,
         editMode: this.editMode,
+        data: this.data,
       })}
       ${this._showEntityMembers(this.stateObj)
         ? html`
@@ -72,31 +75,40 @@ class MoreInfoContent extends LitElement {
     return (
       stateObj.attributes &&
       stateObj.attributes.entity_id &&
-      Array.isArray(stateObj.attributes.entity_id)
+      Array.isArray(stateObj.attributes.entity_id) &&
+      stateObj.attributes.entity_id.some(
+        (entityId: string) => !this.hass!.entities[entityId]?.hidden
+      )
     );
   }
 
   private _entitiesSectionConfig = memoizeOne((entityIds: string[]) => {
-    const cards = entityIds.map((entityId) => {
-      const features: LovelaceCardFeatureConfig[] = [];
-      const context = { entity_id: entityId };
-      if (supportsCoverPositionCardFeature(this.hass!, context)) {
-        features.push({
-          type: "cover-position",
-        });
-      } else if (supportsLightBrightnessCardFeature(this.hass!, context)) {
-        features.push({
-          type: "light-brightness",
-        });
-      }
-      return {
-        type: "tile",
-        entity: entityId,
-        features_position: "inline",
-        features,
-        grid_options: { columns: 12 },
-      } as TileCardConfig;
-    });
+    const cards = entityIds
+      .map((entityId) => {
+        const entity = this.hass!.entities[entityId];
+        if (entity?.hidden) {
+          return null;
+        }
+        const features: LovelaceCardFeatureConfig[] = [];
+        const context = { entity_id: entityId };
+        if (supportsCoverPositionCardFeature(this.hass!, context)) {
+          features.push({
+            type: "cover-position",
+          });
+        } else if (supportsLightBrightnessCardFeature(this.hass!, context)) {
+          features.push({
+            type: "light-brightness",
+          });
+        }
+        return {
+          type: "tile",
+          entity: entityId,
+          features_position: "inline",
+          features,
+          grid_options: { columns: 12 },
+        } as TileCardConfig;
+      })
+      .filter(Boolean);
     return {
       type: "grid",
       cards,

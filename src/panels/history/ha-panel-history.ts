@@ -17,7 +17,7 @@ import memoizeOne from "memoize-one";
 import { ensureArray } from "../../common/array/ensure-array";
 import { storage } from "../../common/decorators/storage";
 import { computeDomain } from "../../common/entity/compute_domain";
-import { navigate } from "../../common/navigate";
+import { goBack, navigate } from "../../common/navigate";
 import { constructUrlCurrentPath } from "../../common/url/construct-url";
 import {
   createSearchParam,
@@ -114,13 +114,13 @@ class HaPanelHistory extends LitElement {
   }
 
   private _goBack(): void {
-    history.back();
+    goBack();
   }
 
   protected render() {
     const entitiesSelected = this._getEntityIds().length > 0;
     return html`
-      <ha-top-app-bar-fixed>
+      <ha-top-app-bar-fixed .narrow=${this.narrow}>
         ${this._showBack
           ? html`
               <ha-icon-button-arrow-prev
@@ -199,6 +199,7 @@ class HaPanelHistory extends LitElement {
                     .startTime=${this._startDate}
                     .endTime=${this._endDate}
                     .narrow=${this.narrow}
+                    sync-charts
                   >
                   </state-history-charts>
                 `}
@@ -426,13 +427,7 @@ class HaPanelHistory extends LitElement {
 
   private _dateRangeChanged(ev) {
     this._startDate = ev.detail.value.startDate;
-    const endDate = ev.detail.value.endDate;
-    if (endDate.getHours() === 0 && endDate.getMinutes() === 0) {
-      endDate.setDate(endDate.getDate() + 1);
-      endDate.setMilliseconds(endDate.getMilliseconds() - 1);
-    }
-    this._endDate = endDate;
-
+    this._endDate = ev.detail.value.endDate;
     this._updatePath();
   }
 
@@ -626,7 +621,6 @@ class HaPanelHistory extends LitElement {
 
         .content {
           padding: 0 16px 16px;
-          padding-bottom: max(var(--safe-area-inset-bottom), 16px);
         }
 
         :host([virtualize]) {

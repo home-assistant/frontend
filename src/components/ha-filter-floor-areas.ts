@@ -329,9 +329,8 @@ export class HaFilterFloorAreas extends LitElement {
         }
         .subdir {
           margin-inline-end: 8px;
-          opacity: .6;
+          opacity: 0.6;
         }
-        .
       `,
     ];
   }

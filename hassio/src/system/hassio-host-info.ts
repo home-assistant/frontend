@@ -143,16 +143,12 @@ class HassioHostInfo extends LitElement {
               : ""}
           </div>
           <div>
-            ${this.supervisor.host.disk_life_time !== "" &&
-            this.supervisor.host.disk_life_time >= 10
+            ${this.supervisor.host.disk_life_time !== null
               ? html` <ha-settings-row>
                   <span slot="heading">
-                    ${this.supervisor.localize(
-                      "system.host.emmc_lifetime_used"
-                    )}
+                    ${this.supervisor.localize("system.host.lifetime_used")}
                   </span>
                   <span slot="description">
-                    ${this.supervisor.host.disk_life_time - 10} % -
                     ${this.supervisor.host.disk_life_time} %
                   </span>
                 </ha-settings-row>`

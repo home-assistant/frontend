@@ -33,6 +33,7 @@ import { fetchWithAuth } from "../util/fetch-with-auth";
 import { getState } from "../util/ha-pref-storage";
 import hassCallApi, { hassCallApiRaw } from "../util/hass-call-api";
 import type { HassBaseEl } from "./hass-base-mixin";
+import { computeStateName } from "../common/entity/compute_state_name";
 
 export const connectionMixin = <T extends Constructor<HassBaseEl>>(
   superClass: T
@@ -126,7 +127,7 @@ export const connectionMixin = <T extends Constructor<HassBaseEl>>(
               );
             }
             if (notifyOnError) {
-              forwardHaptic("failure");
+              forwardHaptic(this, "failure");
               const lokalize = await this.hass!.loadBackendTranslation(
                 "exceptions",
                 err.translation_domain
@@ -210,6 +211,7 @@ export const connectionMixin = <T extends Constructor<HassBaseEl>>(
           value != null ? value : (stateObj.attributes[attribute] ?? ""),
         ...getState(),
         ...this._pendingHass,
+        formatEntityName: (stateObj) => computeStateName(stateObj),
       };
 
       this.hassConnected();

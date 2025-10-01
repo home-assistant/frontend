@@ -1,4 +1,4 @@
-import { mdiTextureBox } from "@mdi/js";
+import { mdiPlay, mdiTextureBox } from "@mdi/js";
 import type { HassEntity } from "home-assistant-js-websocket";
 import {
   css,
@@ -9,9 +9,14 @@ import {
   type TemplateResult,
 } from "lit";
 import { customElement, property, state } from "lit/decorators";
+import { classMap } from "lit/directives/class-map";
 import { ifDefined } from "lit/directives/if-defined";
 import { styleMap } from "lit/directives/style-map";
 import memoizeOne from "memoize-one";
+import {
+  computeActiveAreaMediaStates,
+  type MediaPlayerEntity,
+} from "../../../data/media-player";
 import { computeCssColor } from "../../../common/color/compute-color";
 import { BINARY_STATE_ON } from "../../../common/const";
 import { computeAreaName } from "../../../common/entity/compute_area_name";
@@ -53,6 +58,19 @@ export const DEVICE_CLASSES = {
   binary_sensor: ["motion", "moisture"],
 };
 
+export const SUM_DEVICE_CLASSES = [
+  "power",
+  "apparent_power",
+  "reactive_power",
+  "energy",
+  "reactive_energy",
+  "current",
+  "gas",
+  "monetary",
+  "volume",
+  "water",
+];
+
 export interface AreaCardFeatureContext extends LovelaceCardFeatureContext {
   exclude_entities?: string[];
 }
@@ -84,8 +102,10 @@ export class HuiAreaCard extends LitElement implements LovelaceCard {
 
     const displayType =
       config.display_type || (config.show_camera ? "camera" : "picture");
+    const vertical = displayType === "compact" ? config.vertical : false;
     this._config = {
       ...config,
+      vertical,
       display_type: displayType,
     };
 
@@ -109,7 +129,7 @@ export class HuiAreaCard extends LitElement implements LovelaceCard {
     const featuresCount = this._config?.features?.length || 0;
     return (
       1 +
-      (displayType === "compact" ? 0 : 2) +
+      (displayType === "compact" ? (this._config?.vertical ? 1 : 0) : 2) +
       (featuresPosition === "inline" ? 0 : featuresCount)
     );
   }
@@ -132,6 +152,11 @@ export class HuiAreaCard extends LitElement implements LovelaceCard {
     }
 
     const displayType = this._config?.display_type || "picture";
+
+    if (this._config?.vertical) {
+      rows++;
+      min_columns = 3;
+    }
 
     if (displayType !== "compact") {
       if (featurePosition === "inline" && featuresCount > 0) {
@@ -264,21 +289,49 @@ export class HuiAreaCard extends LitElement implements LovelaceCard {
     );
   }
 
-  private _renderAlertSensorBadge(): TemplateResult<1> | typeof nothing {
-    const states = this._computeActiveAlertStates();
+  private _computeActiveAreaMediaStates(): MediaPlayerEntity[] {
+    return computeActiveAreaMediaStates(this.hass, this._config?.area || "");
+  }
 
-    if (states.length === 0) {
+  private _renderAlertSensorBadge(
+    alertStates: HassEntity[]
+  ): TemplateResult<1> | typeof nothing {
+    if (alertStates.length === 0) {
       return nothing;
     }
 
     // Only render the first one when using a badge
-    const stateObj = states[0] as HassEntity | undefined;
+    const stateObj = alertStates[0] as HassEntity | undefined;
 
     return html`
       <ha-tile-badge class="alert-badge">
         <ha-state-icon .hass=${this.hass} .stateObj=${stateObj}></ha-state-icon>
       </ha-tile-badge>
     `;
+  }
+
+  private _renderMediaBadge(): TemplateResult<1> | typeof nothing {
+    const states = this._computeActiveAreaMediaStates();
+
+    if (states.length === 0) {
+      return nothing;
+    }
+
+    return html`
+      <ha-tile-badge
+        class="media-badge"
+        .label=${this.hass.localize("ui.card.area.media_playing")}
+      >
+        <ha-svg-icon .path=${mdiPlay}></ha-svg-icon>
+      </ha-tile-badge>
+    `;
+  }
+
+  private _renderCompactBadge(): TemplateResult<1> | typeof nothing {
+    const alertStates = this._computeActiveAlertStates();
+    return alertStates.length > 0
+      ? this._renderAlertSensorBadge(alertStates)
+      : this._renderMediaBadge();
   }
 
   private _renderAlertSensors(): TemplateResult<1> | typeof nothing {
@@ -378,9 +431,9 @@ export class HuiAreaCard extends LitElement implements LovelaceCard {
           return undefined;
         }
 
-        const value =
-          validEntities.reduce((acc, entity) => acc + Number(entity.state), 0) /
-          validEntities.length;
+        const value = SUM_DEVICE_CLASSES.includes(sensorClass)
+          ? this._computeSumState(validEntities)
+          : this._computeMedianState(validEntities);
 
         const formattedAverage = formatNumber(value, this.hass!.locale, {
           maximumFractionDigits: 1,
@@ -397,9 +450,28 @@ export class HuiAreaCard extends LitElement implements LovelaceCard {
     return sensorStates;
   }
 
-  private _featurePosition = memoizeOne(
-    (config: AreaCardConfig) => config.features_position || "bottom"
-  );
+  private _computeSumState(entities: HassEntity[]): number {
+    return entities.reduce((acc, entity) => acc + Number(entity.state), 0);
+  }
+
+  private _computeMedianState(entities: HassEntity[]): number {
+    const sortedStates = entities
+      .map((entity) => Number(entity.state))
+      .sort((a, b) => a - b);
+    if (sortedStates.length % 2 === 0) {
+      const medianIndex = sortedStates.length / 2;
+      return (sortedStates[medianIndex] + sortedStates[medianIndex - 1]) / 2;
+    }
+    const medianIndex = Math.floor(sortedStates.length / 2);
+    return sortedStates[medianIndex];
+  }
+
+  private _featurePosition = memoizeOne((config: AreaCardConfig) => {
+    if (config.vertical) {
+      return "bottom";
+    }
+    return config.features_position || "bottom";
+  });
 
   private _displayedFeatures = memoizeOne((config: AreaCardConfig) => {
     const features = config.features || [];
@@ -438,6 +510,8 @@ export class HuiAreaCard extends LitElement implements LovelaceCard {
         </hui-warning>
       `;
     }
+
+    const contentClasses = { vertical: Boolean(this._config.vertical) };
 
     const icon = area.icon;
 
@@ -518,10 +592,10 @@ export class HuiAreaCard extends LitElement implements LovelaceCard {
               </div>
             `}
         <div class="container ${containerOrientationClass}">
-          <div class="content">
+          <div class="content ${classMap(contentClasses)}">
             <ha-tile-icon>
               ${displayType === "compact"
-                ? this._renderAlertSensorBadge()
+                ? this._renderCompactBadge()
                 : nothing}
               ${icon
                 ? html`<ha-icon slot="icon" .icon=${icon}></ha-icon>`
@@ -656,6 +730,16 @@ export class HuiAreaCard extends LitElement implements LovelaceCard {
       gap: 10px;
     }
 
+    .vertical {
+      flex-direction: column;
+      text-align: center;
+      justify-content: center;
+    }
+    .vertical ha-tile-info {
+      width: 100%;
+      flex: none;
+    }
+
     ha-tile-icon {
       --tile-icon-color: var(--tile-color);
       position: relative;
@@ -689,13 +773,16 @@ export class HuiAreaCard extends LitElement implements LovelaceCard {
     .alert-badge {
       --tile-badge-background-color: var(--orange-color);
     }
+    .media-badge {
+      --tile-badge-background-color: var(--light-blue-color);
+    }
     .alerts {
       position: absolute;
       top: 0;
       left: 0;
       display: flex;
       flex-direction: row;
-      gap: 8px;
+      gap: var(--ha-space-2);
       padding: 8px;
       pointer-events: none;
       z-index: 1;

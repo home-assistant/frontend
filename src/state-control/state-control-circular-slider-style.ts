@@ -26,7 +26,7 @@ export const stateControlCircularSliderStyle = css`
     font-size: var(--ha-font-size-l);
     line-height: var(--ha-line-height-normal);
     letter-spacing: 0.1px;
-    gap: 8px;
+    gap: var(--ha-space-2);
     --mdc-icon-size: 16px;
   }
   .info * {
@@ -61,7 +61,7 @@ export const stateControlCircularSliderStyle = css`
     left: 0;
     right: 0;
     margin: 0 auto;
-    gap: 24px;
+    gap: var(--ha-space-6);
     display: flex;
     flex-direction: row;
     align-items: center;

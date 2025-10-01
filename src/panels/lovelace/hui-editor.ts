@@ -36,6 +36,8 @@ const strategyStruct = type({
 
 @customElement("hui-editor")
 class LovelaceFullConfigEditor extends LitElement {
+  @property({ type: Boolean }) public narrow = false;
+
   @property({ attribute: false }) public hass!: HomeAssistant;
 
   @property({ attribute: false }) public lovelace?: Lovelace;
@@ -48,7 +50,7 @@ class LovelaceFullConfigEditor extends LitElement {
 
   protected render(): TemplateResult | undefined {
     return html`
-      <ha-top-app-bar-fixed>
+      <ha-top-app-bar-fixed .narrow=${this.narrow}>
         <ha-icon-button
           slot="navigationIcon"
           .path=${mdiClose}
@@ -148,6 +150,10 @@ class LovelaceFullConfigEditor extends LitElement {
 
         .comments {
           font-size: var(--ha-font-size-l);
+        }
+
+        ha-code-editor {
+          height: 100%;
         }
 
         .save-button {

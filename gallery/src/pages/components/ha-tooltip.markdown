@@ -6,21 +6,23 @@ A tooltip's target is its _first child element_, so you should only wrap one ele
 
 Tooltips use `display: contents` so they won't interfere with how elements are positioned in a flex or grid layout.
 
-<ha-tooltip content="This is a tooltip">
-  <ha-button>Hover Me</ha-button>
+<ha-button id="hover">Hover Me</ha-button>
+<ha-tooltip for="hover">
+This is a tooltip
 </ha-tooltip>
 
 ```
-<ha-tooltip content="This is a tooltip">
-  <ha-button>Hover Me</ha-button>
+<ha-button id="hover">Hover Me</ha-button>
+<ha-tooltip for="hover">
+This is a tooltip
 </ha-tooltip>
 ```
 
 ## Documentation
 
-This element is based on shoelace `sl-tooltip` it only sets some css tokens and has a custom show/hide animation.
+This element is based on webawesome `wa-tooltip` it only sets some css tokens and has a custom show/hide animation.
 
-<a href="https://shoelace.style/components/tooltip" target="_blank" rel="noopener noreferrer">Shoelace documentation</a>
+<a href="https://webawesome.com/docs/components/tooltip/" target="_blank" rel="noopener noreferrer">Webawesome documentation</a>
 
 ### HA style tokens
 
@@ -28,7 +30,7 @@ In your theme settings use this without the prefixed `--`.
 
 - `--ha-tooltip-border-radius` (Default: 4px)
 - `--ha-tooltip-arrow-size` (Default: 8px)
-- `--sl-tooltip-font-family` (Default: `var(--ha-font-family-body)`)
+- `--wa-tooltip-font-family` (Default: `var(--ha-font-family-body)`)
 - `--ha-tooltip-font-size` (Default: `var(--ha-font-size-s)`)
-- `--sl-tooltip-font-weight` (Default: `var(--ha-font-weight-normal)`)
-- `--sl-tooltip-line-height` (Default: `var(--ha-line-height-condensed)`)
+- `--wa-tooltip-font-weight` (Default: `var(--ha-font-weight-normal)`)
+- `--wa-tooltip-line-height` (Default: `var(--ha-line-height-condensed)`)

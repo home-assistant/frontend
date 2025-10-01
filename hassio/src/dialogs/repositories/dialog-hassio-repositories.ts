@@ -7,10 +7,14 @@ import { fireEvent } from "../../../../src/common/dom/fire_event";
 import { caseInsensitiveStringCompare } from "../../../../src/common/string/compare";
 import "../../../../src/components/ha-alert";
 import "../../../../src/components/ha-button";
-import "../../../../src/components/ha-tooltip";
-import "../../../../src/components/ha-svg-icon";
 import { createCloseHeading } from "../../../../src/components/ha-dialog";
 import "../../../../src/components/ha-icon-button";
+import "../../../../src/components/ha-md-list";
+import "../../../../src/components/ha-md-list-item";
+import "../../../../src/components/ha-svg-icon";
+import "../../../../src/components/ha-textfield";
+import type { HaTextField } from "../../../../src/components/ha-textfield";
+import "../../../../src/components/ha-tooltip";
 import type {
   HassioAddonInfo,
   HassioAddonRepository,
@@ -24,10 +28,6 @@ import {
 import { haStyle, haStyleDialog } from "../../../../src/resources/styles";
 import type { HomeAssistant } from "../../../../src/types";
 import type { HassioRepositoryDialogParams } from "./show-dialog-repositories";
-import type { HaTextField } from "../../../../src/components/ha-textfield";
-import "../../../../src/components/ha-textfield";
-import "../../../../src/components/ha-md-list";
-import "../../../../src/components/ha-md-list-item";
 
 @customElement("dialog-hassio-repositories")
 class HassioRepositoriesDialog extends LitElement {
@@ -119,26 +119,27 @@ class HassioRepositoriesDialog extends LitElement {
                         <div>${repo.url}</div>
                       </div>
                       <ha-tooltip
+                        .for="icon-button-${repo.slug}"
                         class="delete"
                         slot="end"
-                        .content=${this._dialogParams!.supervisor.localize(
+                      >
+                        ${this._dialogParams!.supervisor.localize(
                           usedRepositories.includes(repo.slug)
                             ? "dialog.repositories.used"
                             : "dialog.repositories.remove"
                         )}
-                      >
-                        <div>
-                          <ha-icon-button
-                            .disabled=${usedRepositories.includes(repo.slug)}
-                            .slug=${repo.slug}
-                            .path=${usedRepositories.includes(repo.slug)
-                              ? mdiDeleteOff
-                              : mdiDelete}
-                            @click=${this._removeRepository}
-                          >
-                          </ha-icon-button>
-                        </div>
                       </ha-tooltip>
+                      <div .id="icon-button-${repo.slug}">
+                        <ha-icon-button
+                          .disabled=${usedRepositories.includes(repo.slug)}
+                          .slug=${repo.slug}
+                          .path=${usedRepositories.includes(repo.slug)
+                            ? mdiDeleteOff
+                            : mdiDelete}
+                          @click=${this._removeRepository}
+                        >
+                        </ha-icon-button>
+                      </div>
                     </ha-md-list-item>
                   `
                 )

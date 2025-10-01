@@ -21,6 +21,7 @@ import "../../../../../components/ha-list-item";
 import "../../../../../components/ha-progress-ring";
 import "../../../../../components/ha-spinner";
 import "../../../../../components/ha-svg-icon";
+import { goBack } from "../../../../../common/navigate";
 import type { ConfigEntry } from "../../../../../data/config_entries";
 import {
   ERROR_STATES,
@@ -230,6 +231,20 @@ class ZWaveJSConfigDashboard extends SubscribeMixin(LitElement) {
                           )}
                         </ha-button>`
                       : nothing}
+                    <ha-button
+                      class="remove-node-button"
+                      @click=${this._removeNodeClicked}
+                      appearance="filled"
+                      .disabled=${this._status !== "connected" ||
+                      (this._network?.controller.inclusion_state !==
+                        InclusionState.Idle &&
+                        this._network?.controller.inclusion_state !==
+                          InclusionState.SmartStart)}
+                    >
+                      ${this.hass.localize(
+                        "ui.panel.config.zwave_js.common.remove_a_node"
+                      )}
+                    </ha-button>
                   </div>
                 </ha-card>
                 <ha-card header="Diagnostics">
@@ -410,19 +425,6 @@ class ZWaveJSConfigDashboard extends SubscribeMixin(LitElement) {
                   <div class="card-actions">
                     <ha-button
                       appearance="plain"
-                      @click=${this._removeNodeClicked}
-                      .disabled=${this._status !== "connected" ||
-                      (this._network?.controller.inclusion_state !==
-                        InclusionState.Idle &&
-                        this._network?.controller.inclusion_state !==
-                          InclusionState.SmartStart)}
-                    >
-                      ${this.hass.localize(
-                        "ui.panel.config.zwave_js.common.remove_a_node"
-                      )}
-                    </ha-button>
-                    <ha-button
-                      appearance="plain"
                       @click=${this._rebuildNetworkRoutesClicked}
                       .disabled=${this._status === "disconnected"}
                     >
@@ -434,7 +436,11 @@ class ZWaveJSConfigDashboard extends SubscribeMixin(LitElement) {
                 </ha-card>
                 <ha-card>
                   <div class="card-header">
-                    <h1>Third-party data reporting</h1>
+                    <h1>
+                      ${this.hass.localize(
+                        "ui.panel.config.zwave_js.dashboard.data_collection.title"
+                      )}
+                    </h1>
                     ${this._dataCollectionOptIn !== undefined
                       ? html`
                           <ha-switch
@@ -446,17 +452,18 @@ class ZWaveJSConfigDashboard extends SubscribeMixin(LitElement) {
                   </div>
                   <div class="card-content">
                     <p>
-                      Enable the reporting of anonymized telemetry and
-                      statistics to the <em>Z-Wave JS organization</em>. This
-                      data will be used to focus development efforts and improve
-                      the user experience. Information about the data that is
-                      collected and how it is used, including an example of the
-                      data collected, can be found in the
-                      <a
-                        target="_blank"
-                        href="https://zwave-js.github.io/node-zwave-js/#/data-collection/data-collection"
-                        >Z-Wave JS data collection documentation</a
-                      >.
+                      ${this.hass.localize(
+                        "ui.panel.config.zwave_js.dashboard.data_collection.description",
+                        {
+                          documentation_link: html`<a
+                            target="_blank"
+                            href="https://zwave-js.github.io/node-zwave-js/#/data-collection/data-collection"
+                            >${this.hass.localize(
+                              "ui.panel.config.zwave_js.dashboard.data_collection.documentation_link"
+                            )}</a
+                          >`,
+                        }
+                      )}
                     </p>
                   </div>
                 </ha-card>
@@ -499,35 +506,35 @@ class ZWaveJSConfigDashboard extends SubscribeMixin(LitElement) {
                                 "ui.panel.config.zwave_js.dashboard.nvm_backup.download_backup"
                               )}
                             </ha-button>
-                            <div class="upload-button">
+                            <div class="right-buttons">
+                              <div class="upload-button">
+                                <ha-button
+                                  appearance="filled"
+                                  @click=${this._restoreButtonClick}
+                                >
+                                  <span class="button-content">
+                                    ${this.hass.localize(
+                                      "ui.panel.config.zwave_js.dashboard.nvm_backup.restore_backup"
+                                    )}
+                                  </span>
+                                </ha-button>
+                                <input
+                                  type="file"
+                                  id="nvm-restore-file"
+                                  accept=".bin"
+                                  @change=${this._handleRestoreFileSelected}
+                                  style="display: none"
+                                />
+                              </div>
                               <ha-button
-                                appearance="plain"
-                                @click=${this._restoreButtonClick}
-                                variant="danger"
+                                appearance="filled"
+                                @click=${this._openConfigFlow}
                               >
-                                <span class="button-content">
-                                  ${this.hass.localize(
-                                    "ui.panel.config.zwave_js.dashboard.nvm_backup.restore_backup"
-                                  )}
-                                </span>
+                                ${this.hass.localize(
+                                  "ui.panel.config.zwave_js.dashboard.nvm_backup.migrate"
+                                )}
                               </ha-button>
-                              <input
-                                type="file"
-                                id="nvm-restore-file"
-                                accept=".bin"
-                                @change=${this._handleRestoreFileSelected}
-                                style="display: none"
-                              />
-                            </div>
-                            <ha-button
-                              variant="danger"
-                              @click=${this._openConfigFlow}
-                              class="migrate-button"
-                            >
-                              ${this.hass.localize(
-                                "ui.panel.config.zwave_js.dashboard.nvm_backup.migrate"
-                              )}
-                            </ha-button>`}
+                            </div>`}
                   </div>
                 </ha-card>
               `
@@ -612,7 +619,7 @@ class ZWaveJSConfigDashboard extends SubscribeMixin(LitElement) {
   }
 
   private _handleBack(): void {
-    history.back();
+    goBack("/config");
   }
 
   private _fetchData = async () => {
@@ -984,7 +991,13 @@ class ZWaveJSConfigDashboard extends SubscribeMixin(LitElement) {
           pointer-events: none;
         }
 
-        .migrate-button {
+        .remove-node-button {
+          margin-left: auto;
+        }
+
+        .right-buttons {
+          display: flex;
+          gap: var(--ha-space-2);
           margin-left: auto;
         }
 

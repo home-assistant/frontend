@@ -506,7 +506,7 @@ export class HaControlSlider extends LitElement {
       width: 100%;
     }
     .slider .slider-track-bar {
-      --border-radius: var(--control-slider-border-radius);
+      --ha-border-radius: var(--control-slider-border-radius);
       --slider-size: 100%;
       position: absolute;
       height: 100%;
@@ -528,6 +528,10 @@ export class HaControlSlider extends LitElement {
       background-color: white;
     }
     .slider .slider-track-bar {
+      --slider-track-bar-border-radius: min(
+        var(--control-slider-border-radius),
+        var(--ha-border-radius-md)
+      );
       top: 0;
       left: 0;
       transform: translate3d(
@@ -535,7 +539,7 @@ export class HaControlSlider extends LitElement {
         0,
         0
       );
-      border-radius: 0 8px 8px 0;
+      border-radius: var(--slider-track-bar-border-radius);
     }
     .slider .slider-track-bar:after {
       top: 0;
@@ -548,7 +552,6 @@ export class HaControlSlider extends LitElement {
       right: 0;
       left: initial;
       transform: translate3d(calc(var(--value, 0) * var(--slider-size)), 0, 0);
-      border-radius: 8px 0 0 8px;
     }
     .slider .slider-track-bar.end::after {
       right: initial;
@@ -563,7 +566,6 @@ export class HaControlSlider extends LitElement {
         calc((1 - var(--value, 0)) * var(--slider-size)),
         0
       );
-      border-radius: 8px 8px 0 0;
     }
     :host([vertical]) .slider .slider-track-bar:after {
       top: var(--handle-margin);
@@ -581,7 +583,6 @@ export class HaControlSlider extends LitElement {
         calc((0 - var(--value, 0)) * var(--slider-size)),
         0
       );
-      border-radius: 0 0 8px 8px;
     }
     :host([vertical]) .slider .slider-track-bar.end::after {
       top: initial;
@@ -605,7 +606,10 @@ export class HaControlSlider extends LitElement {
       --cursor-size: calc(var(--control-slider-thickness) / 4);
       position: absolute;
       background-color: white;
-      border-radius: var(--handle-size);
+      border-radius: min(
+        var(--handle-size),
+        var(--control-slider-border-radius)
+      );
       transition:
         left 180ms ease-in-out,
         bottom 180ms ease-in-out;

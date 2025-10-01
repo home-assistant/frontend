@@ -62,7 +62,7 @@ export class HaColorTempSelector extends LitElement {
           "--ha-slider-background": `linear-gradient( to var(--float-end), ${gradient})`,
         })}
         labeled
-        icon="hass:thermometer"
+        icon="mdi:thermometer"
         .caption=${this.label || ""}
         .min=${min}
         .max=${max}

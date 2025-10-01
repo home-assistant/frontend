@@ -34,7 +34,7 @@ class StepFlowProgress extends LitElement {
                 )}%</ha-progress-ring
               >
             `
-          : html` <ha-spinner size="large"></ha-spinner> `}
+          : html`<ha-spinner size="large"></ha-spinner>`}
         ${this.flowConfig.renderShowFormProgressDescription(
           this.hass,
           this.step
@@ -48,6 +48,7 @@ class StepFlowProgress extends LitElement {
       configFlowContentStyles,
       css`
         .content {
+          margin-top: 0;
           padding: 50px 100px;
           text-align: center;
         }

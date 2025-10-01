@@ -107,7 +107,7 @@ class MoreInfoCamera extends LitElement {
       box-sizing: border-box;
       padding: 16px;
       z-index: 1;
-      gap: 8px;
+      gap: var(--ha-space-2);
     }
   `;
 }

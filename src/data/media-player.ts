@@ -39,6 +39,8 @@ import type { HomeAssistant, TranslationDict } from "../types";
 import { isUnavailableState } from "./entity";
 import { isTTSMediaSource } from "./tts";
 
+import { generateEntityFilter } from "../common/entity/entity_filter";
+
 interface MediaPlayerEntityAttributes extends HassEntityAttributeBase {
   media_content_id?: string;
   media_content_type?: string;
@@ -199,10 +201,12 @@ export interface MediaPlayerItem {
   media_content_type: string;
   media_content_id: string;
   media_class: keyof TranslationDict["ui"]["components"]["media-browser"]["class"];
-  children_media_class?: string;
+  children_media_class?: string | null;
   can_play: boolean;
   can_expand: boolean;
+  can_search: boolean;
   thumbnail?: string;
+  iconPath?: string;
   children?: MediaPlayerItem[];
   not_shown?: number;
 }
@@ -520,3 +524,33 @@ export const mediaPlayerJoin = (
 
 export const mediaPlayerUnjoin = (hass: HomeAssistant, entity_id: string) =>
   hass.callService("media_player", "unjoin", {}, { entity_id });
+
+/**
+ * Compute active media player states in a specific area.
+ * @param hass Home Assistant object
+ * @param areaId Area ID to filter media players by
+ * @returns Array of playing media player entities
+ */
+export const computeActiveAreaMediaStates = (
+  hass: HomeAssistant,
+  areaId: string
+): MediaPlayerEntity[] => {
+  const area = hass.areas[areaId];
+  if (!area) {
+    return [];
+  }
+
+  // Get all media_player entities in this area
+  const mediaFilter = generateEntityFilter(hass, {
+    area: areaId,
+    domain: "media_player",
+  });
+
+  const mediaEntities = Object.keys(hass.entities).filter(mediaFilter);
+
+  return mediaEntities
+    .map((entityId) => hass.states[entityId] as MediaPlayerEntity | undefined)
+    .filter(
+      (stateObj): stateObj is MediaPlayerEntity => stateObj?.state === "playing"
+    );
+};

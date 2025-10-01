@@ -112,7 +112,9 @@ export class HaVoiceAssistantSetupStepSuccess extends LitElement {
           this.assistConfiguration.available_wake_words.length > 1
             ? html`<div class="row">
                 <ha-select
-                  .label=${"Wake word"}
+                  .label=${this.hass.localize(
+                    "ui.panel.config.voice_assistants.assistants.pipeline.detail.form.wake_word_id"
+                  )}
                   @closed=${stopPropagation}
                   fixedMenuPosition
                   naturalMenuWidth
@@ -144,7 +146,9 @@ export class HaVoiceAssistantSetupStepSuccess extends LitElement {
           ${pipelineEntity
             ? html`<div class="row">
                 <ha-select
-                  .label=${"Assistant"}
+                  .label=${this.hass.localize(
+                    "ui.panel.config.voice_assistants.assistants.pipeline.devices.pipeline"
+                  )}
                   @closed=${stopPropagation}
                   .value=${pipelineEntity?.state}
                   fixedMenuPosition
@@ -364,7 +368,7 @@ export class HaVoiceAssistantSetupStepSuccess extends LitElement {
         margin-top: 24px;
       }
       .rows {
-        gap: 16px;
+        gap: var(--ha-space-4);
         display: flex;
         flex-direction: column;
       }

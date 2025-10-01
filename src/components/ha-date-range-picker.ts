@@ -2,7 +2,7 @@ import type { ActionDetail } from "@material/mwc-list/mwc-list-foundation";
 
 import { mdiCalendar } from "@mdi/js";
 import { isThisYear } from "date-fns";
-import { fromZonedTime, toZonedTime } from "date-fns-tz";
+import { TZDate } from "@date-fns/tz";
 import type { PropertyValues, TemplateResult } from "lit";
 import { LitElement, css, html, nothing } from "lit";
 import { customElement, property, state } from "lit/decorators";
@@ -254,27 +254,43 @@ export class HaDateRangePicker extends LitElement {
   }
 
   private _applyDateRange() {
-    if (this.hass.locale.time_zone === TimeZone.server) {
-      const dateRangePicker = this._dateRangePicker;
+    let start = new Date(this._dateRangePicker.start);
+    let end = new Date(this._dateRangePicker.end);
 
-      const startDate = fromZonedTime(
-        dateRangePicker.start,
-        this.hass.config.time_zone
-      );
-      const endDate = fromZonedTime(
-        dateRangePicker.end,
-        this.hass.config.time_zone
-      );
+    if (this.timePicker) {
+      start.setSeconds(0);
+      start.setMilliseconds(0);
+      end.setSeconds(0);
+      end.setMilliseconds(0);
 
-      dateRangePicker.clickRange([startDate, endDate]);
+      if (
+        end.getHours() === 0 &&
+        end.getMinutes() === 0 &&
+        start.getFullYear() === end.getFullYear() &&
+        start.getMonth() === end.getMonth() &&
+        start.getDate() === end.getDate()
+      ) {
+        end.setDate(end.getDate() + 1);
+      }
     }
 
+    if (this.hass.locale.time_zone === TimeZone.server) {
+      start = new Date(new TZDate(start, this.hass.config.time_zone).getTime());
+      end = new Date(new TZDate(end, this.hass.config.time_zone).getTime());
+    }
+
+    if (
+      start.getTime() !== this._dateRangePicker.start.getTime() ||
+      end.getTime() !== this._dateRangePicker.end.getTime()
+    ) {
+      this._dateRangePicker.clickRange([start, end]);
+    }
     this._dateRangePicker.clickedApply();
   }
 
   private _formatDate(date: Date): string {
     if (this.hass.locale.time_zone === TimeZone.server) {
-      return toZonedTime(date, this.hass.config.time_zone).toISOString();
+      return new TZDate(date, this.hass.config.time_zone).toISOString();
     }
     return date.toISOString();
   }
@@ -327,7 +343,7 @@ export class HaDateRangePicker extends LitElement {
     .date-range-inputs {
       display: flex;
       align-items: center;
-      gap: 8px;
+      gap: var(--ha-space-2);
     }
 
     .date-range-ranges {

@@ -211,6 +211,7 @@ export class HuiWeatherForecastCardEditor
           ? ([
               {
                 name: "forecast",
+                default: "show_both",
                 selector: {
                   select: {
                     options: [

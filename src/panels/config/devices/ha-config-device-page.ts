@@ -89,6 +89,7 @@ import {
   loadDeviceRegistryDetailDialog,
   showDeviceRegistryDetailDialog,
 } from "./device-registry-detail/show-dialog-device-registry-detail";
+import { slugify } from "../../../common/string/slugify";
 
 export interface EntityRegistryStateEntry extends EntityRegistryEntry {
   stateName?: string | null;
@@ -555,16 +556,21 @@ export class HaConfigDevicePage extends LitElement {
                               </a>
                             `
                           : html`
+                              <ha-list-item
+                                .id="scene-${slugify(entityState.entity_id)}"
+                                hasMeta
+                                .scene=${entityState}
+                              >
+                                ${computeStateName(entityState)}
+                                <ha-icon-next slot="meta"></ha-icon-next>
+                              </ha-list-item>
                               <ha-tooltip
+                                .for="scene-${slugify(entityState.entity_id)}"
                                 placement="left"
-                                .content=${this.hass.localize(
+                              >
+                                ${this.hass.localize(
                                   "ui.panel.config.devices.cant_edit"
                                 )}
-                              >
-                                <ha-list-item hasMeta .scene=${entityState}>
-                                  ${computeStateName(entityState)}
-                                  <ha-icon-next slot="meta"></ha-icon-next>
-                                </ha-list-item>
                               </ha-tooltip>
                             `;
                       })}
@@ -773,6 +779,11 @@ export class HaConfigDevicePage extends LitElement {
                         appearance="plain"
                         target=${ifDefined(firstDeviceAction!.target)}
                         class=${ifDefined(firstDeviceAction!.classes)}
+                        .variant=${firstDeviceAction!.classes?.includes(
+                          "warning"
+                        )
+                          ? "danger"
+                          : "brand"}
                         .action=${firstDeviceAction!.action}
                         @click=${this._deviceActionClicked}
                       >
@@ -1227,7 +1238,7 @@ export class HaConfigDevicePage extends LitElement {
   private _computeEntityName(entity: EntityRegistryEntry) {
     const device = this.hass.devices[this.deviceId];
     return (
-      computeEntityEntryName(entity, this.hass) ||
+      computeEntityEntryName(entity, this.hass.devices) ||
       computeDeviceNameDisplay(device, this.hass)
     );
   }
@@ -1442,10 +1453,11 @@ export class HaConfigDevicePage extends LitElement {
   }
 
   private async _signUrl(ev) {
-    const signedUrl = await getSignedPath(
-      this.hass,
-      ev.currentTarget.getAttribute("href")
-    );
+    const a = ev.currentTarget.getAttribute("href")
+      ? ev.currentTarget
+      : ev.currentTarget.closest("a");
+
+    const signedUrl = await getSignedPath(this.hass, a.getAttribute("href"));
     fileDownload(signedUrl.path);
   }
 
@@ -1476,6 +1488,9 @@ export class HaConfigDevicePage extends LitElement {
           max-width: 1000px;
           margin-top: 32px;
           margin-bottom: 32px;
+        }
+        :host([narrow]) .container {
+          margin-top: 0;
         }
 
         .card-header {
@@ -1574,10 +1589,6 @@ export class HaConfigDevicePage extends LitElement {
 
         :host([narrow]) .column {
           width: 100%;
-        }
-
-        :host([narrow]) .container {
-          margin-top: 0;
         }
 
         a {

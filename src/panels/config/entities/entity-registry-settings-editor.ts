@@ -331,6 +331,9 @@ export class EntityRegistrySettingsEditor extends LitElement {
     }
     if (changedProps.has("_entityId")) {
       const domain = computeDomain(this.entry.entity_id);
+      if (domain === "switch") {
+        this.hass.loadBackendTranslation("title", SWITCH_AS_DOMAINS, false);
+      }
 
       if (domain === "weather") {
         const { units } = await getWeatherConvertibleUnits(this.hass);
@@ -342,6 +345,7 @@ export class EntityRegistrySettingsEditor extends LitElement {
     if (changedProps.has("helperConfigEntry")) {
       if (this.helperConfigEntry?.domain === "switch_as_x") {
         this._switchAsDomain = computeDomain(this.entry.entity_id);
+        this.hass.loadBackendTranslation("title", SWITCH_AS_DOMAINS, false);
       } else {
         this._switchAsDomain = "switch";
         this._switchAsInvert = false;
@@ -755,7 +759,7 @@ export class EntityRegistrySettingsEditor extends LitElement {
         iconTrailing
         autocapitalize="none"
         autocomplete="off"
-        autocorrect="off"
+        .autocorrect=${false}
         input-spellcheck="false"
       >
         <div class="layout horizontal" slot="trailingIcon">

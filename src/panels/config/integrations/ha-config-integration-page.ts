@@ -17,6 +17,10 @@ import { customElement, property, state } from "lit/decorators";
 import { until } from "lit/directives/until";
 import memoizeOne from "memoize-one";
 import { isComponentLoaded } from "../../../common/config/is_component_loaded";
+import {
+  PROTOCOL_INTEGRATIONS,
+  protocolIntegrationPicked,
+} from "../../../common/integrations/protocolIntegrationPicked";
 import { caseInsensitiveStringCompare } from "../../../common/string/compare";
 import { nextRender } from "../../../common/util/render-status";
 import "../../../components/ha-button";
@@ -64,10 +68,6 @@ import "./ha-config-entry-row";
 import type { DataEntryFlowProgressExtended } from "./ha-config-integrations";
 import { showAddIntegrationDialog } from "./show-add-integration-dialog";
 import { showPickConfigEntryDialog } from "./show-pick-config-entry-dialog";
-import {
-  PROTOCOL_INTEGRATIONS,
-  protocolIntegrationPicked,
-} from "../../../common/integrations/protocolIntegrationPicked";
 
 export const renderConfigEntryError = (
   hass: HomeAssistant,
@@ -912,13 +912,16 @@ class HaConfigIntegrationPage extends SubscribeMixin(LitElement) {
           max-width: 1000px;
           padding: 32px;
         }
+        :host([narrow]) .container {
+          padding: 16px;
+        }
         .container > * {
           flex-grow: 1;
         }
         .header {
           display: flex;
           flex-wrap: wrap;
-          gap: 24px;
+          gap: var(--ha-space-6);
           align-items: center;
           justify-content: space-between;
           margin-bottom: 24px;
@@ -929,7 +932,7 @@ class HaConfigIntegrationPage extends SubscribeMixin(LitElement) {
         }
         .title {
           display: flex;
-          gap: 4px;
+          gap: var(--ha-space-1);
           flex-direction: column;
           justify-content: space-between;
         }
@@ -951,9 +954,6 @@ class HaConfigIntegrationPage extends SubscribeMixin(LitElement) {
         }
         .card-content {
           padding: 16px 0 8px;
-        }
-        :host([narrow]) .container {
-          padding: 16px;
         }
         .card-header {
           padding-bottom: 0;
@@ -991,7 +991,7 @@ class HaConfigIntegrationPage extends SubscribeMixin(LitElement) {
         .actions {
           display: flex;
           flex-wrap: wrap;
-          gap: 8px;
+          gap: var(--ha-space-2);
         }
         .section {
           width: 100%;
@@ -1013,7 +1013,7 @@ class HaConfigIntegrationPage extends SubscribeMixin(LitElement) {
         .integration-info {
           display: flex;
           align-items: center;
-          gap: 8px;
+          gap: var(--ha-space-2);
         }
         .integration-info ha-svg-icon {
           min-width: 24px;

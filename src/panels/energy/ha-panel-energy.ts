@@ -3,6 +3,7 @@ import { LitElement, css, html, nothing } from "lit";
 import { mdiPencil, mdiDownload } from "@mdi/js";
 import { customElement, property, state } from "lit/decorators";
 import "../../components/ha-menu-button";
+import "../../components/ha-icon-button-arrow-prev";
 import "../../components/ha-list-item";
 import "../../components/ha-top-app-bar-fixed";
 import type { LovelaceConfig } from "../../data/lovelace/config/types";
@@ -12,7 +13,7 @@ import "../lovelace/components/hui-energy-period-selector";
 import type { Lovelace } from "../lovelace/types";
 import "../lovelace/views/hui-view";
 import "../lovelace/views/hui-view-container";
-import { navigate } from "../../common/navigate";
+import { goBack, navigate } from "../../common/navigate";
 import type {
   GridSourceTypeEnergyPreference,
   SolarSourceTypeEnergyPreference,
@@ -49,6 +50,8 @@ class PanelEnergy extends LitElement {
 
   @state() private _lovelace?: Lovelace;
 
+  @state() private _searchParms = new URLSearchParams(window.location.search);
+
   public willUpdate(changedProps: PropertyValues) {
     if (!this.hasUpdated) {
       this.hass.loadFragmentTranslation("lovelace");
@@ -65,15 +68,29 @@ class PanelEnergy extends LitElement {
     }
   }
 
+  private _back(ev) {
+    ev.stopPropagation();
+    goBack();
+  }
+
   protected render(): TemplateResult {
     return html`
       <div class="header">
         <div class="toolbar">
-          <ha-menu-button
-            slot="navigationIcon"
-            .hass=${this.hass}
-            .narrow=${this.narrow}
-          ></ha-menu-button>
+          ${this._searchParms.has("historyBack")
+            ? html`
+                <ha-icon-button-arrow-prev
+                  @click=${this._back}
+                  slot="navigationIcon"
+                ></ha-icon-button-arrow-prev>
+              `
+            : html`
+                <ha-menu-button
+                  slot="navigationIcon"
+                  .hass=${this.hass}
+                  .narrow=${this.narrow}
+                ></ha-menu-button>
+              `}
           ${!this.narrow
             ? html`<div class="main-title">
                 ${this.hass.localize("panel.energy")}
@@ -479,7 +496,12 @@ class PanelEnergy extends LitElement {
           border-bottom: var(--app-header-border-bottom, none);
           position: fixed;
           top: 0;
-          width: var(--mdc-top-app-bar-width, 100%);
+          width: calc(
+            var(--mdc-top-app-bar-width, 100%) - var(
+                --safe-area-inset-right,
+                0px
+              )
+          );
           padding-top: var(--safe-area-inset-top);
           z-index: 4;
           transition: box-shadow 200ms linear;
@@ -487,6 +509,17 @@ class PanelEnergy extends LitElement {
           flex-direction: row;
           -webkit-backdrop-filter: var(--app-header-backdrop-filter, none);
           backdrop-filter: var(--app-header-backdrop-filter, none);
+          padding-top: var(--safe-area-inset-top);
+          padding-right: var(--safe-area-inset-right);
+        }
+        :host([narrow]) .header {
+          width: calc(
+            var(--mdc-top-app-bar-width, 100%) - var(
+                --safe-area-inset-left,
+                0px
+              ) - var(--safe-area-inset-right, 0px)
+          );
+          padding-left: var(--safe-area-inset-left);
         }
         :host([scrolled]) .header {
           box-shadow: var(
@@ -506,10 +539,8 @@ class PanelEnergy extends LitElement {
           font-weight: var(--ha-font-weight-normal);
           box-sizing: border-box;
         }
-        @media (max-width: 599px) {
-          .toolbar {
-            padding: 0 4px;
-          }
+        :host([narrow]) .toolbar {
+          padding: 0 4px;
         }
         .main-title {
           margin: var(--margin-title);
@@ -522,11 +553,13 @@ class PanelEnergy extends LitElement {
           min-height: 100vh;
           box-sizing: border-box;
           padding-top: calc(var(--header-height) + var(--safe-area-inset-top));
-          padding-left: var(--safe-area-inset-left);
           padding-right: var(--safe-area-inset-right);
-          padding-inline-start: var(--safe-area-inset-left);
           padding-inline-end: var(--safe-area-inset-right);
           padding-bottom: var(--safe-area-inset-bottom);
+        }
+        :host([narrow]) hui-view-container {
+          padding-left: var(--safe-area-inset-left);
+          padding-inline-start: var(--safe-area-inset-left);
         }
         hui-view {
           flex: 1 1 100%;

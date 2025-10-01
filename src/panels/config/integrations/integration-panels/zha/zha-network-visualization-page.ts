@@ -16,7 +16,6 @@ import type {
 import type { ZHADevice } from "../../../../../data/zha";
 import { fetchDevices, refreshTopology } from "../../../../../data/zha";
 import "../../../../../layouts/hass-tabs-subpage";
-import { colorVariables } from "../../../../../resources/theme/color/color.globals";
 import type { HomeAssistant, Route } from "../../../../../types";
 import { formatAsPaddedHex } from "./functions";
 import { zhaTabs } from "./zha-config-dashboard";
@@ -156,10 +155,12 @@ export class ZHANetworkVisualizationPage extends LitElement {
   }
 
   private _createChartData(devices: ZHADevice[]): NetworkData {
-    const primaryColor = colorVariables["primary-color"];
-    const routerColor = colorVariables["cyan-color"];
-    const endDeviceColor = colorVariables["teal-color"];
-    const offlineColor = colorVariables["error-color"];
+    const style = getComputedStyle(this);
+
+    const primaryColor = style.getPropertyValue("--primary-color");
+    const routerColor = style.getPropertyValue("--cyan-color");
+    const endDeviceColor = style.getPropertyValue("--teal-color");
+    const offlineColor = style.getPropertyValue("--error-color");
     const nodes: NetworkNode[] = [];
     const links: NetworkLink[] = [];
     const categories = [
@@ -282,7 +283,7 @@ export class ZHANetworkVisualizationPage extends LitElement {
                 color:
                   route.route_status === "Active"
                     ? primaryColor
-                    : colorVariables["disabled-color"],
+                    : style.getPropertyValue("--disabled-color"),
                 type: ["Child", "Parent"].includes(neighbor.relationship)
                   ? "solid"
                   : "dotted",
@@ -322,7 +323,7 @@ export class ZHANetworkVisualizationPage extends LitElement {
             symbolSize: 5,
             lineStyle: {
               width: 1,
-              color: colorVariables["disabled-color"],
+              color: style.getPropertyValue("--disabled-color"),
               type: "dotted",
             },
             ignoreForceLayout: true,

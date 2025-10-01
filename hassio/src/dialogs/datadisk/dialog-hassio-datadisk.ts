@@ -21,8 +21,8 @@ import type { HomeAssistant } from "../../../../src/types";
 import type { HassioDatatiskDialogParams } from "./show-dialog-hassio-datadisk";
 
 const calculateMoveTime = memoizeOne((supervisor: Supervisor): number => {
-  const speed = supervisor.host.disk_life_time !== "" ? 30 : 10;
-  const moveTime = (supervisor.host.disk_used * 1000) / 60 / speed;
+  // Assume a speed of 30 MB/s.
+  const moveTime = (supervisor.host.disk_used * 1000) / 60 / 30;
   const rebootTime = (supervisor.host.startup_time * 4) / 60;
   return Math.ceil((moveTime + rebootTime) / 10) * 10;
 });

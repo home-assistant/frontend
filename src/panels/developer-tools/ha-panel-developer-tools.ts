@@ -1,14 +1,15 @@
+import type { ActionDetail } from "@material/mwc-list";
 import { mdiDotsVertical } from "@mdi/js";
 import type { CSSResultGroup, TemplateResult } from "lit";
 import { css, html, LitElement } from "lit";
 import { customElement, property } from "lit/decorators";
-import type { ActionDetail } from "@material/mwc-list";
 import { navigate } from "../../common/navigate";
-import "../../components/ha-menu-button";
 import "../../components/ha-button-menu";
 import "../../components/ha-icon-button";
 import "../../components/ha-list-item";
-import "../../components/sl-tab-group";
+import "../../components/ha-menu-button";
+import "../../components/ha-tab-group";
+import "../../components/ha-tab-group-tab";
 import { haStyle } from "../../resources/styles";
 import type { HomeAssistant, Route } from "../../types";
 import "./developer-tools-router";
@@ -19,7 +20,7 @@ class PanelDeveloperTools extends LitElement {
 
   @property({ attribute: false }) public route!: Route;
 
-  @property({ type: Boolean }) public narrow = false;
+  @property({ type: Boolean, reflect: true }) public narrow = false;
 
   protected firstUpdated(changedProps) {
     super.firstUpdated(changedProps);
@@ -50,25 +51,41 @@ class PanelDeveloperTools extends LitElement {
             </ha-list-item>
           </ha-button-menu>
         </div>
-        <sl-tab-group @sl-tab-show=${this._handlePageSelected}>
-          <sl-tab slot="nav" panel="yaml" .active=${page === "yaml"}>
+        <ha-tab-group @wa-tab-show=${this._handlePageSelected}>
+          <ha-tab-group-tab slot="nav" panel="yaml" .active=${page === "yaml"}>
             ${this.hass.localize("ui.panel.developer-tools.tabs.yaml.title")}
-          </sl-tab>
-          <sl-tab slot="nav" panel="state" .active=${page === "state"}>
+          </ha-tab-group-tab>
+          <ha-tab-group-tab
+            slot="nav"
+            panel="state"
+            .active=${page === "state"}
+          >
             ${this.hass.localize("ui.panel.developer-tools.tabs.states.title")}
-          </sl-tab>
-          <sl-tab slot="nav" panel="action" .active=${page === "action"}>
+          </ha-tab-group-tab>
+          <ha-tab-group-tab
+            slot="nav"
+            panel="action"
+            .active=${page === "action"}
+          >
             ${this.hass.localize("ui.panel.developer-tools.tabs.actions.title")}
-          </sl-tab>
-          <sl-tab slot="nav" panel="template" .active=${page === "template"}>
+          </ha-tab-group-tab>
+          <ha-tab-group-tab
+            slot="nav"
+            panel="template"
+            .active=${page === "template"}
+          >
             ${this.hass.localize(
               "ui.panel.developer-tools.tabs.templates.title"
             )}
-          </sl-tab>
-          <sl-tab slot="nav" panel="event" .active=${page === "event"}>
+          </ha-tab-group-tab>
+          <ha-tab-group-tab
+            slot="nav"
+            panel="event"
+            .active=${page === "event"}
+          >
             ${this.hass.localize("ui.panel.developer-tools.tabs.events.title")}
-          </sl-tab>
-          <sl-tab
+          </ha-tab-group-tab>
+          <ha-tab-group-tab
             slot="nav"
             panel="statistics"
             .active=${page === "statistics"}
@@ -76,11 +93,14 @@ class PanelDeveloperTools extends LitElement {
             ${this.hass.localize(
               "ui.panel.developer-tools.tabs.statistics.title"
             )}
-          </sl-tab>
-          <sl-tab slot="nav" panel="assist" .active=${page === "assist"}
-            >Assist</sl-tab
+          </ha-tab-group-tab>
+          <ha-tab-group-tab
+            slot="nav"
+            panel="assist"
+            .active=${page === "assist"}
+            >Assist</ha-tab-group-tab
           >
-        </sl-tab-group>
+        </ha-tab-group>
       </div>
       <developer-tools-router
         .route=${this.route}
@@ -128,13 +148,29 @@ class PanelDeveloperTools extends LitElement {
           top: 0;
           z-index: 4;
           background-color: var(--app-header-background-color);
-          width: var(--mdc-top-app-bar-width, 100%);
+          width: calc(
+            var(--mdc-top-app-bar-width, 100%) - var(
+                --safe-area-inset-right,
+                0px
+              )
+          );
           padding-top: var(--safe-area-inset-top);
+          padding-right: var(--safe-area-inset-right);
           color: var(--app-header-text-color, white);
           border-bottom: var(--app-header-border-bottom, none);
           -webkit-backdrop-filter: var(--app-header-backdrop-filter, none);
           backdrop-filter: var(--app-header-backdrop-filter, none);
         }
+        :host([narrow]) .header {
+          width: calc(
+            var(--mdc-top-app-bar-width, 100%) - var(
+                --safe-area-inset-left,
+                0px
+              ) - var(--safe-area-inset-right, 0px)
+          );
+          padding-left: var(--safe-area-inset-left);
+        }
+
         .toolbar {
           height: var(--header-height);
           display: flex;
@@ -144,10 +180,8 @@ class PanelDeveloperTools extends LitElement {
           font-weight: var(--ha-font-weight-normal);
           box-sizing: border-box;
         }
-        @media (max-width: 599px) {
-          .toolbar {
-            padding: 4px;
-          }
+        :host([narrow]) .toolbar {
+          padding: 4px;
         }
         .main-title {
           margin: var(--margin-title);
@@ -157,13 +191,23 @@ class PanelDeveloperTools extends LitElement {
         developer-tools-router {
           display: block;
           padding-top: calc(
-            var(--header-height) + 48px + var(--safe-area-inset-top)
+            var(--header-height) + 52px + var(--safe-area-inset-top, 0px)
           );
-          padding-bottom: calc(var(--safe-area-inset-bottom));
+          padding-bottom: var(--safe-area-inset-bottom);
+          padding-right: var(--safe-area-inset-right);
           flex: 1 1 100%;
-          max-width: 100%;
+          max-width: calc(100% - var(--safe-area-inset-right, 0px));
         }
-        sl-tab-group {
+        :host([narrow]) developer-tools-router {
+          padding-left: var(--safe-area-inset-left);
+          max-width: calc(
+            100% - var(--safe-area-inset-left, 0px) - var(
+                --safe-area-inset-right,
+                0px
+              )
+          );
+        }
+        ha-tab-group {
           --ha-tab-active-text-color: var(--app-header-text-color, white);
           --ha-tab-indicator-color: var(--app-header-text-color, white);
           --ha-tab-track-color: transparent;

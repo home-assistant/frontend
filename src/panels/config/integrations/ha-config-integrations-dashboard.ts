@@ -17,11 +17,11 @@ import { navigate } from "../../../common/navigate";
 import { caseInsensitiveStringCompare } from "../../../common/string/compare";
 import { extractSearchParam } from "../../../common/url/search-params";
 import { nextRender } from "../../../common/util/render-status";
+import "../../../components/ha-button";
 import "../../../components/ha-button-menu";
 import "../../../components/ha-check-list-item";
 import "../../../components/ha-checkbox";
 import "../../../components/ha-fab";
-import "../../../components/ha-button";
 import "../../../components/ha-icon-button";
 import "../../../components/ha-svg-icon";
 import "../../../components/search-input";
@@ -478,10 +478,7 @@ class HaConfigIntegrationsDashboard extends KeyboardShortcutMixin(
                 </search-input-outlined>
                 <div class="filters">
                   ${!this._showDisabled && disabledConfigEntries.length
-                    ? html`<div
-                        class="active-filters"
-                        @click=${this._preventDefault}
-                      >
+                    ? html`<div class="active-filters">
                         ${this.hass.localize(
                           "ui.panel.config.integrations.disable.disabled_integrations",
                           { number: disabledConfigEntries.length }
@@ -496,7 +493,7 @@ class HaConfigIntegrationsDashboard extends KeyboardShortcutMixin(
                           )}
                         </ha-button>
                       </div>`
-                    : ""}
+                    : nothing}
                   ${filterMenu}
                 </div>
               </div>
@@ -666,10 +663,6 @@ class HaConfigIntegrationsDashboard extends KeyboardShortcutMixin(
         </ha-fab>
       </hass-tabs-subpage>
     `;
-  }
-
-  private _preventDefault(ev) {
-    ev.preventDefault();
   }
 
   private async _scanUSBDevices() {
@@ -1020,7 +1013,7 @@ class HaConfigIntegrationsDashboard extends KeyboardShortcutMixin(
           z-index: 2;
           background-color: var(--primary-background-color);
           padding: 0 16px;
-          gap: 16px;
+          gap: var(--ha-space-4);
           box-sizing: border-box;
           border-bottom: 1px solid var(--divider-color);
         }
@@ -1036,13 +1029,10 @@ class HaConfigIntegrationsDashboard extends KeyboardShortcutMixin(
         }
         .active-filters {
           color: var(--primary-text-color);
-          position: relative;
           display: flex;
           align-items: center;
-          padding-top: 2px;
-          padding-bottom: 2px;
-          padding-right: 2px;
-          padding-left: 8px;
+          padding: 2px 2px 2px 8px;
+          line-height: 1;
           padding-inline-start: 8px;
           padding-inline-end: 2px;
           font-size: var(--ha-font-size-m);
@@ -1050,23 +1040,14 @@ class HaConfigIntegrationsDashboard extends KeyboardShortcutMixin(
           cursor: initial;
           direction: var(--direction);
           height: 32px;
+          background-color: var(--ha-color-fill-primary-normal-resting);
+          border-radius: var(--ha-border-radius-sm);
         }
         .active-filters ha-button {
           margin-left: 8px;
           margin-inline-start: 8px;
           margin-inline-end: initial;
           direction: var(--direction);
-        }
-        .active-filters::before {
-          background-color: var(--primary-color);
-          opacity: 0.12;
-          border-radius: 4px;
-          position: absolute;
-          top: 0;
-          right: 0;
-          bottom: 0;
-          left: 0;
-          content: "";
         }
         .badge {
           min-width: 20px;

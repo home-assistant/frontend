@@ -427,7 +427,7 @@ export class HaVoiceAssistantSetupStepPipeline extends LitElement {
         width: 100%;
         height: 10px;
         display: flex;
-        gap: 4px;
+        gap: var(--ha-space-1);
         margin: 8px 0;
       }
       .segment {
