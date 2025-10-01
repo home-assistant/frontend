@@ -6,7 +6,6 @@ import Fuse from "fuse.js";
 import { css, html, LitElement, nothing } from "lit";
 import { customElement, property, query, state } from "lit/decorators";
 import { repeat } from "lit/directives/repeat";
-import { styleMap } from "lit/directives/style-map";
 import memoizeOne from "memoize-one";
 import { ensureArray } from "../../common/array/ensure-array";
 import { fireEvent } from "../../common/dom/fire_event";
@@ -35,29 +34,14 @@ interface EntityNameOption {
   value: string;
 }
 
-const SUGGESTION_ID = "___SUGGESTION___";
-
-const suggestionStyle = styleMap({
-  padding: "6px 16px",
-  "background-color": "var(--mdc-text-field-fill-color, whitesmoke)",
-  "font-weight": "normal",
-  "font-size": "var(--ha-font-size-s)",
-  color: "var(--primary-text-color)",
-});
-
-const rowRenderer: ComboBoxLitRenderer<EntityNameOption> = (item) => {
-  if (item.value === SUGGESTION_ID) {
-    return html` <div style=${suggestionStyle}>${item.primary}</div>`;
-  }
-  return html`
-    <ha-combo-box-item type="button">
-      <span slot="headline">${item.primary}</span>
-      ${item.secondary
-        ? html`<span slot="supporting-text">${item.secondary}</span>`
-        : nothing}
-    </ha-combo-box-item>
-  `;
-};
+const rowRenderer: ComboBoxLitRenderer<EntityNameOption> = (item) => html`
+  <ha-combo-box-item type="button">
+    <span slot="headline">${item.primary}</span>
+    ${item.secondary
+      ? html`<span slot="supporting-text">${item.secondary}</span>`
+      : nothing}
+  </ha-combo-box-item>
+`;
 
 @customElement("ha-entity-name-picker")
 export class HaEntityNamePicker extends LitElement {
@@ -255,10 +239,9 @@ export class HaEntityNamePicker extends LitElement {
       const initialValue =
         this._editIndex != null ? this._value[this._editIndex] : "";
 
-      this._comboBox.filteredItems = this._filterSelectedOptions(
-        options,
-        initialValue
-      );
+      const filteredItems = this._filterSelectedOptions(options, initialValue);
+
+      this._comboBox.filteredItems = filteredItems;
       this._comboBox.setInputValue(initialValue);
     } else {
       this._opened = false;
@@ -273,14 +256,6 @@ export class HaEntityNamePicker extends LitElement {
     const filteredOptions = options.filter(
       (option) => !value.includes(option.value) || option.value === current
     );
-    if (filteredOptions.length) {
-      filteredOptions.unshift({
-        primary: this.hass.localize(
-          "ui.components.entity.entity-name-picker.suggestions"
-        ),
-        value: SUGGESTION_ID,
-      });
-    }
     return filteredOptions;
   };
 
@@ -340,7 +315,7 @@ export class HaEntityNamePicker extends LitElement {
     ev.stopPropagation();
     const value = ev.detail.value;
 
-    if (this.disabled || value === "" || value === SUGGESTION_ID) {
+    if (this.disabled || value === "") {
       return;
     }
 
