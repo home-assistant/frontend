@@ -172,19 +172,35 @@ export class HaTargetPickerSelector extends LitElement {
       return;
     }
 
-    const maxItems = this._virtualizerElement.items.length - 1;
+    const items = this._virtualizerElement.items;
+
+    const maxItems = items.length - 1;
 
     if (maxItems === -1) {
       this._selectedItemIndex = -1;
       return;
     }
 
-    this._selectedItemIndex =
+    const nextIndex =
       maxItems === this._selectedItemIndex
         ? this._selectedItemIndex
         : this._selectedItemIndex + 1;
 
-    this._virtualizerElement?.scrollToIndex(this._selectedItemIndex);
+    if (!items[nextIndex]) {
+      return;
+    }
+
+    if (typeof items[nextIndex] === "string") {
+      // Skip titles and padding
+      if (nextIndex === maxItems) {
+        return;
+      }
+      this._selectedItemIndex = nextIndex + 1;
+    } else {
+      this._selectedItemIndex = nextIndex;
+    }
+
+    this._virtualizerElement?.scrollToIndex(this._selectedItemIndex, "end");
   };
 
   private _selectPreviousItem = () => {
@@ -193,9 +209,25 @@ export class HaTargetPickerSelector extends LitElement {
     }
 
     if (this._selectedItemIndex > 0) {
-      this._selectedItemIndex--;
+      const nextIndex = this._selectedItemIndex - 1;
 
-      this._virtualizerElement?.scrollToIndex(this._selectedItemIndex);
+      const items = this._virtualizerElement.items;
+
+      if (!items[nextIndex]) {
+        return;
+      }
+
+      if (typeof items[nextIndex] === "string") {
+        // Skip titles and padding
+        if (nextIndex === 0) {
+          return;
+        }
+        this._selectedItemIndex = nextIndex - 1;
+      } else {
+        this._selectedItemIndex = nextIndex;
+      }
+
+      this._virtualizerElement?.scrollToIndex(this._selectedItemIndex, "end");
     }
   };
 
@@ -292,6 +324,7 @@ export class HaTargetPickerSelector extends LitElement {
     // label or empty
     return html`
       <ha-combo-box-item
+        tabindex="-1"
         class=${this._selectedItemIndex === index ? "selected" : ""}
         .type=${item.id === EMPTY_SEARCH ? "text" : "button"}
         @click=${
@@ -568,6 +601,7 @@ export class HaTargetPickerSelector extends LitElement {
     const textfield = ev.target as HaTextField;
     const value = textfield.value.trim();
     this._searchTerm = value;
+    this._selectedItemIndex = -1;
   }
 
   private _pickTarget = (id: string, type: TargetType) => {
@@ -590,6 +624,7 @@ export class HaTargetPickerSelector extends LitElement {
 
     return html`
       <ha-combo-box-item
+        tabindex="-1"
         class=${this._selectedItemIndex === index ? "selected" : ""}
         type="button"
         style=${item.type === "area" && hasFloor
@@ -637,6 +672,7 @@ export class HaTargetPickerSelector extends LitElement {
   private _deviceRowRenderer(item: DevicePickerItem, index: number) {
     return html`
       <ha-combo-box-item
+        tabindex="-1"
         type="button"
         class=${this._selectedItemIndex === index ? "selected" : ""}
         @click=${
@@ -686,6 +722,7 @@ export class HaTargetPickerSelector extends LitElement {
 
     return html`
       <ha-combo-box-item
+        tabindex="-1"
         class=${this._selectedItemIndex === index ? "selected" : ""}
         type="button"
         compact
@@ -778,8 +815,8 @@ export class HaTargetPickerSelector extends LitElement {
       .filter {
         display: flex;
         gap: 8px;
-        flex-wrap: wrap;
         padding: 0 12px;
+        overflow: auto;
         --ha-button-border-radius: var(--ha-border-radius-md);
       }
 
