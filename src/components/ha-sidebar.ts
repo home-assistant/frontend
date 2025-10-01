@@ -377,6 +377,7 @@ class HaSidebar extends SubscribeMixin(LitElement) {
       ${!this.narrow
         ? html`
             <ha-icon-button
+              class="menu-button"
               .label=${this.hass.localize("ui.sidebar.sidebar_toggle")}
               .path=${this.hass.dockedSidebar === "docked"
                 ? mdiMenuOpen
@@ -742,6 +743,10 @@ class HaSidebar extends SubscribeMixin(LitElement) {
           color: var(--sidebar-icon-color);
           -webkit-transform: scaleX(var(--scale-direction));
           transform: scaleX(var(--scale-direction));
+        }
+        .menu-button {
+          animation: fadeInSlideDown var(--ha-animation-duration) ease-out both;
+          animation-delay: var(--ha-animation-delay-base);
         }
         ha-md-list-item {
           animation: fadeInSlideDown var(--ha-animation-duration) ease-out both;
