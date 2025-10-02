@@ -384,7 +384,6 @@ export class HuiEnergyDevicesGraphCard
   }
 
   private _handleChartClick(e: CustomEvent<ECElementEvent>): void {
-    console.log(e);
     if (
       e.detail.targetType === "axisLabel" &&
       e.detail.value &&
@@ -392,6 +391,13 @@ export class HuiEnergyDevicesGraphCard
     ) {
       fireEvent(this, "hass-more-info", {
         entityId: e.detail.value as string,
+      });
+    } else if (
+      e.detail.seriesType === "pie" &&
+      e.detail.event?.target?.type === "tspan" // label
+    ) {
+      fireEvent(this, "hass-more-info", {
+        entityId: (e.detail.data as any).id as string,
       });
     }
   }
