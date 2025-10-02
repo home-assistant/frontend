@@ -309,6 +309,15 @@ export class DialogLovelaceDashboardDetail extends LitElement {
       }
       this.closeDialog();
     } catch (err: any) {
+      if (err?.translation_key === "url_already_exists") {
+        this._error = {
+          url_path: this.hass!.localize(
+            "ui.panel.config.lovelace.dashboards.detail.url_already_exists",
+            err?.translation_placeholders
+          ),
+        };
+        return;
+      }
       this._error = { base: err?.message || "Unknown error" };
     } finally {
       this._submitting = false;
