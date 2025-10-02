@@ -267,34 +267,6 @@ export class HuiEnergyDevicesGraphCard
 
     const computedStyle = getComputedStyle(this);
 
-    if (this._chartType === "pie") {
-      const { summedData } = getSummedData(energyData);
-      const { consumption } = computeConsumptionData(summedData);
-      const totalUsed = consumption.total.used_total;
-      datasets.push({
-        type: "pie",
-        radius: ["0%", compareData ? "30%" : "40%"],
-        name: this.hass.localize(
-          "ui.panel.lovelace.cards.energy.energy_devices_graph.total_energy_usage"
-        ),
-        data: [totalUsed],
-        label: {
-          show: true,
-          position: "center",
-          color: computedStyle.getPropertyValue("--secondary-text-color"),
-          fontSize: computedStyle.getPropertyValue("--ha-font-size-l"),
-          lineHeight: 24,
-          fontWeight: "bold",
-          formatter: `{a}\n${formatNumber(totalUsed, this.hass.locale)} kWh`,
-        },
-        cursor: "default",
-        itemStyle: {
-          color: "rgba(0, 0, 0, 0)",
-        },
-        tooltip: { formatter: () => "" }, // `show: false` doesn't hide the previous tooltip
-      });
-    }
-
     this._compoundStats = energyData.prefs.device_consumption
       .map((d) => d.included_in_stat)
       .filter(Boolean) as string[];
@@ -371,9 +343,11 @@ export class HuiEnergyDevicesGraphCard
     });
 
     chartData.sort((a: any, b: any) => b.value[0] - a.value[0]);
-    datasets[1].data = chartData.map((d) =>
-      chartDataCompare.find((d2) => (d2 as any).id === d.id)
-    ) as typeof chartDataCompare;
+    if (compareData) {
+      datasets[1].data = chartData.map((d) =>
+        chartDataCompare.find((d2) => (d2 as any).id === d.id)
+      ) as typeof chartDataCompare;
+    }
 
     datasets.forEach((dataset) => {
       dataset.data!.length = Math.min(
@@ -381,6 +355,50 @@ export class HuiEnergyDevicesGraphCard
         dataset.data!.length
       );
     });
+
+    if (this._chartType === "pie") {
+      const { summedData } = getSummedData(energyData);
+      const { consumption } = computeConsumptionData(summedData);
+      const totalUsed = consumption.total.used_total;
+      const showUntracked =
+        "from_grid" in summedData ||
+        "solar" in summedData ||
+        "from_battery" in summedData;
+      const untracked = showUntracked
+        ? totalUsed -
+          chartData.reduce((acc: number, d: any) => acc + d.value[0], 0)
+        : 0;
+      datasets.push({
+        type: "pie",
+        radius: ["0%", compareData ? "30%" : "40%"],
+        name: this.hass.localize(
+          "ui.panel.lovelace.cards.energy.energy_devices_graph.total_energy_usage"
+        ),
+        data: [totalUsed],
+        label: {
+          show: true,
+          position: "center",
+          color: computedStyle.getPropertyValue("--secondary-text-color"),
+          fontSize: computedStyle.getPropertyValue("--ha-font-size-l"),
+          lineHeight: 24,
+          fontWeight: "bold",
+          formatter: `{a}\n${formatNumber(totalUsed, this.hass.locale)} kWh`,
+        },
+        cursor: "default",
+        itemStyle: {
+          color: "rgba(0, 0, 0, 0)",
+        },
+        tooltip: {
+          formatter: () =>
+            untracked > 0
+              ? this.hass.localize(
+                  "ui.panel.lovelace.cards.energy.energy_devices_graph.includes_untracked",
+                  { num: formatNumber(untracked, this.hass.locale) }
+                )
+              : "",
+        },
+      });
+    }
 
     this._chartData = datasets;
     await this.updateComplete;

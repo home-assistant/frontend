@@ -7028,7 +7028,8 @@
               "previous_energy_usage": "Previous energy usage",
               "total_energy_usage": "Total energy usage",
               "change_chart_type": "Change chart type",
-              "untracked": "untracked"
+              "untracked": "untracked",
+              "includes_untracked": "Includes {num} kWh of untracked energy"
             },
             "energy_devices_detail_graph": {
               "untracked_consumption": "Untracked consumption",
