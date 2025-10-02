@@ -12,11 +12,11 @@ export const KeyboardShortcutMixin = <T extends Constructor<LitElement>>(
   class extends superClass {
     private _keydownEvent = (event: KeyboardEvent) => {
       const supportedShortcuts = this.supportedShortcuts();
+      const key = event.shiftKey ? event.key.toUpperCase() : event.key;
       if (
         (event.ctrlKey || event.metaKey) &&
-        !event.shiftKey &&
         !event.altKey &&
-        event.key in supportedShortcuts
+        key in supportedShortcuts
       ) {
         // Only capture the event if the user is not focused on an input
         if (!canOverrideAlphanumericInput(event.composedPath())) {
@@ -27,14 +27,14 @@ export const KeyboardShortcutMixin = <T extends Constructor<LitElement>>(
           return;
         }
         event.preventDefault();
-        supportedShortcuts[event.key]();
+        supportedShortcuts[key]();
         return;
       }
 
       const supportedSingleKeyShortcuts = this.supportedSingleKeyShortcuts();
-      if (event.key in supportedSingleKeyShortcuts) {
+      if (key in supportedSingleKeyShortcuts) {
         event.preventDefault();
-        supportedSingleKeyShortcuts[event.key]();
+        supportedSingleKeyShortcuts[key]();
       }
     };
 
