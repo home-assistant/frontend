@@ -74,8 +74,10 @@ import { showMoreInfoDialog } from "../../../dialogs/more-info/show-ha-more-info
 import "../../../layouts/hass-subpage";
 import { KeyboardShortcutMixin } from "../../../mixins/keyboard-shortcut-mixin";
 import { PreventUnsavedMixin } from "../../../mixins/prevent-unsaved-mixin";
+import { UndoRedoMixin } from "../../../mixins/undo-redo-mixin";
 import { haStyle } from "../../../resources/styles";
 import type { Entries, HomeAssistant, Route } from "../../../types";
+import { isMac } from "../../../util/is_mac";
 import { showToast } from "../../../util/toast";
 import { showAssignCategoryDialog } from "../category/show-dialog-assign-category";
 import "../ha-config-section";
@@ -87,8 +89,6 @@ import {
 import "./blueprint-automation-editor";
 import "./manual-automation-editor";
 import type { HaManualAutomationEditor } from "./manual-automation-editor";
-import { UndoRedoMixin } from "../../../mixins/undo-redo-mixin";
-import { isMac } from "../../../util/is_mac";
 
 declare global {
   interface HTMLElementTagNameMap {
@@ -1249,6 +1249,7 @@ export class HaAutomationEditor extends UndoRedoMixin<
             --ha-automation-editor-width,
             1540px
           );
+          --hass-subpage-bottom-inset: 0px;
         }
         ha-fade-in {
           display: flex;

@@ -65,8 +65,10 @@ import "../../../layouts/hass-subpage";
 import { KeyboardShortcutMixin } from "../../../mixins/keyboard-shortcut-mixin";
 import { PreventUnsavedMixin } from "../../../mixins/prevent-unsaved-mixin";
 import { SubscribeMixin } from "../../../mixins/subscribe-mixin";
+import { UndoRedoMixin } from "../../../mixins/undo-redo-mixin";
 import { haStyle } from "../../../resources/styles";
 import type { Entries, HomeAssistant, Route } from "../../../types";
+import { isMac } from "../../../util/is_mac";
 import { showToast } from "../../../util/toast";
 import { showAutomationModeDialog } from "../automation/automation-mode-dialog/show-dialog-automation-mode";
 import type { EntityRegistryUpdate } from "../automation/automation-save-dialog/show-dialog-automation-save";
@@ -75,8 +77,6 @@ import { showAssignCategoryDialog } from "../category/show-dialog-assign-categor
 import "./blueprint-script-editor";
 import "./manual-script-editor";
 import type { HaManualScriptEditor } from "./manual-script-editor";
-import { UndoRedoMixin } from "../../../mixins/undo-redo-mixin";
-import { isMac } from "../../../util/is_mac";
 
 const baseEditorMixins = SubscribeMixin(
   PreventUnsavedMixin(KeyboardShortcutMixin(LitElement))
@@ -1157,6 +1157,7 @@ export class HaScriptEditor extends UndoRedoMixin<
             --ha-automation-editor-width,
             1540px
           );
+          --hass-subpage-bottom-inset: 0px;
         }
         .yaml-mode {
           height: 100%;
