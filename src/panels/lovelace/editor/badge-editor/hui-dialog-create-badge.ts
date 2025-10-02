@@ -1,18 +1,15 @@
-import "@material/mwc-tab-bar/mwc-tab-bar";
-import "@material/mwc-tab/mwc-tab";
 import { mdiClose } from "@mdi/js";
 import type { CSSResultGroup } from "lit";
 import { css, html, LitElement, nothing } from "lit";
 import { customElement, property, state } from "lit/decorators";
 import { cache } from "lit/directives/cache";
 import { classMap } from "lit/directives/class-map";
-import memoize from "memoize-one";
 import { fireEvent } from "../../../../common/dom/fire_event";
-import { computeDomain } from "../../../../common/entity/compute_domain";
-import { computeStateName } from "../../../../common/entity/compute_state_name";
-import type { DataTableRowData } from "../../../../components/data-table/ha-data-table";
+import "../../../../components/ha-button";
 import "../../../../components/ha-dialog";
 import "../../../../components/ha-dialog-header";
+import "../../../../components/ha-tab-group";
+import "../../../../components/ha-tab-group-tab";
 import type { LovelaceViewConfig } from "../../../../data/lovelace/config/view";
 import type { HassDialog } from "../../../../dialogs/make-dialog-manager";
 import { haStyleDialog } from "../../../../resources/styles";
@@ -48,7 +45,7 @@ export class HuiCreateDialogBadge
 
   @state() private _selectedEntities: string[] = [];
 
-  @state() private _currTabIndex = 0;
+  @state() private _currTab: "badge" | "entity" = "badge";
 
   public async showDialog(params: CreateBadgeDialogParams): Promise<void> {
     this._params = params;
@@ -67,7 +64,7 @@ export class HuiCreateDialogBadge
 
   public closeDialog(): boolean {
     this._params = undefined;
-    this._currTabIndex = 0;
+    this._currTab = "badge";
     this._selectedEntities = [];
     fireEvent(this, "dialog-closed", { dialog: this.localName });
     return true;
@@ -92,7 +89,7 @@ export class HuiCreateDialogBadge
         @keydown=${this._ignoreKeydown}
         @closed=${this._cancel}
         .heading=${title}
-        class=${classMap({ table: this._currTabIndex === 1 })}
+        class=${classMap({ table: this._currTab === "entity" })}
       >
         <ha-dialog-header show-border slot="heading">
           <ha-icon-button
@@ -101,26 +98,30 @@ export class HuiCreateDialogBadge
             .label=${this.hass.localize("ui.common.close")}
             .path=${mdiClose}
           ></ha-icon-button>
-          <span slot="title"> ${title} </span>
-          <mwc-tab-bar
-            .activeIndex=${this._currTabIndex}
-            @MDCTabBar:activated=${this._handleTabChanged}
-          >
-            <mwc-tab
-              .label=${this.hass!.localize(
+          <span slot="title">${title}</span>
+          <ha-tab-group @wa-tab-show=${this._handleTabChanged}>
+            <ha-tab-group-tab
+              slot="nav"
+              .active=${this._currTab === "badge"}
+              panel="badge"
+              dialogInitialFocus
+            >
+              ${this.hass!.localize(
                 "ui.panel.lovelace.editor.badge_picker.by_badge"
               )}
-              dialogInitialFocus
-            ></mwc-tab>
-            <mwc-tab
-              .label=${this.hass!.localize(
+            </ha-tab-group-tab>
+            <ha-tab-group-tab
+              slot="nav"
+              .active=${this._currTab === "entity"}
+              panel="entity"
+              >${this.hass!.localize(
                 "ui.panel.lovelace.editor.badge_picker.by_entity"
-              )}
-            ></mwc-tab>
-          </mwc-tab-bar>
+              )}</ha-tab-group-tab
+            >
+          </ha-tab-group>
         </ha-dialog-header>
         ${cache(
-          this._currTabIndex === 0
+          this._currTab === "badge"
             ? html`
                 <hui-badge-picker
                   .suggestedBadges=${this._params.suggestedBadges}
@@ -134,21 +135,20 @@ export class HuiCreateDialogBadge
                   no-label-float
                   .hass=${this.hass}
                   .narrow=${true}
-                  .entities=${this._allEntities(this.hass.states)}
                   @selected-changed=${this._handleSelectedChanged}
                 ></hui-entity-picker-table>
               `
         )}
 
         <div slot="primaryAction">
-          <mwc-button @click=${this._cancel}>
+          <ha-button appearance="plain" @click=${this._cancel}>
             ${this.hass!.localize("ui.common.cancel")}
-          </mwc-button>
+          </ha-button>
           ${this._selectedEntities.length
             ? html`
-                <mwc-button @click=${this._suggestBadges}>
+                <ha-button @click=${this._suggestBadges}>
                   ${this.hass!.localize("ui.common.continue")}
-                </mwc-button>
+                </ha-button>
               `
             : ""}
         </div>
@@ -194,7 +194,13 @@ export class HuiCreateDialogBadge
             --mdc-dialog-min-width: 1000px;
           }
         }
-
+        ha-tab-group-tab {
+          flex: 1;
+        }
+        ha-tab-group-tab::part(base) {
+          width: 100%;
+          justify-content: center;
+        }
         hui-badge-picker {
           --badge-picker-search-shape: 0;
           --badge-picker-search-margin: -2px -24px 0;
@@ -234,12 +240,12 @@ export class HuiCreateDialogBadge
   }
 
   private _handleTabChanged(ev: CustomEvent): void {
-    const newTab = ev.detail.index;
-    if (newTab === this._currTabIndex) {
+    const newTab = ev.detail.name;
+    if (newTab === this._currTab) {
       return;
     }
 
-    this._currTabIndex = ev.detail.index;
+    this._currTab = newTab;
     this._selectedEntities = [];
   }
 
@@ -267,20 +273,6 @@ export class HuiCreateDialogBadge
 
     this.closeDialog();
   }
-
-  private _allEntities = memoize((entities) =>
-    Object.keys(entities).map((entity) => {
-      const stateObj = this.hass.states[entity];
-      return {
-        icon: "",
-        entity_id: entity,
-        stateObj,
-        name: computeStateName(stateObj),
-        domain: computeDomain(entity),
-        last_changed: stateObj!.last_changed,
-      } as DataTableRowData;
-    })
-  );
 }
 
 declare global {

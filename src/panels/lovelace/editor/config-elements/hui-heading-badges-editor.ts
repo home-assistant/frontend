@@ -1,3 +1,4 @@
+import "@material/mwc-menu/mwc-menu-surface";
 import { mdiDelete, mdiDrag, mdiPencil, mdiPlus } from "@mdi/js";
 import type { ComboBoxLightOpenedChangedEvent } from "@vaadin/combo-box/vaadin-combo-box-light";
 import { LitElement, css, html, nothing } from "lit";
@@ -11,7 +12,6 @@ import "../../../../components/entity/ha-entity-picker";
 import type { HaEntityPicker } from "../../../../components/entity/ha-entity-picker";
 import "../../../../components/ha-button";
 import "../../../../components/ha-icon-button";
-import "../../../../components/ha-list-item";
 import "../../../../components/ha-sortable";
 import "../../../../components/ha-svg-icon";
 import type { HomeAssistant } from "../../../../types";
@@ -120,11 +120,11 @@ export class HuiHeadingBadgesEditor extends LitElement {
       <div class="add-container">
         <ha-button
           data-add-entity
-          outlined
-          .label=${this.hass!.localize(`ui.panel.lovelace.editor.entities.add`)}
+          appearance="filled"
           @click=${this._addEntity}
         >
-          <ha-svg-icon .path=${mdiPlus} slot="icon"></ha-svg-icon>
+          <ha-svg-icon .path=${mdiPlus} slot="start"></ha-svg-icon>
+          ${this.hass!.localize(`ui.panel.lovelace.editor.entities.add`)}
         </ha-button>
         ${this._renderPicker()}
       </div>
@@ -147,8 +147,10 @@ export class HuiHeadingBadgesEditor extends LitElement {
         <ha-entity-picker
           .hass=${this.hass}
           id="input"
-          .type=${"entity_id"}
-          .label=${this.hass.localize(
+          .placeholder=${this.hass.localize(
+            "ui.components.target-picker.add_entity_id"
+          )}
+          .searchLabel=${this.hass.localize(
             "ui.components.target-picker.add_entity_id"
           )}
           @value-changed=${this._entityPicked}
@@ -251,7 +253,7 @@ export class HuiHeadingBadgesEditor extends LitElement {
 
     .badge-content {
       height: 60px;
-      font-size: 16px;
+      font-size: var(--ha-font-size-l);
       display: flex;
       align-items: center;
       justify-content: space-between;
@@ -270,7 +272,7 @@ export class HuiHeadingBadgesEditor extends LitElement {
     }
 
     .secondary {
-      font-size: 12px;
+      font-size: var(--ha-font-size-s);
       color: var(--secondary-text-color);
     }
 

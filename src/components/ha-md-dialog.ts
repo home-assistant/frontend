@@ -1,4 +1,5 @@
-import { MdDialog } from "@material/web/dialog/dialog";
+import { Dialog } from "@material/web/dialog/internal/dialog";
+import { styles } from "@material/web/dialog/internal/dialog-styles";
 import {
   type DialogAnimation,
   DIALOG_DEFAULT_CLOSE_ANIMATION,
@@ -8,10 +9,10 @@ import { css } from "lit";
 import { customElement, property } from "lit/decorators";
 
 // workaround to be able to overlay a dialog with another dialog
-MdDialog.addInitializer(async (instance) => {
+Dialog.addInitializer(async (instance) => {
   await instance.updateComplete;
 
-  const dialogInstance = instance as MdDialog;
+  const dialogInstance = instance as HaMdDialog;
 
   // @ts-expect-error dialog is private
   dialogInstance.dialog.prepend(dialogInstance.scrim);
@@ -49,7 +50,7 @@ let DIALOG_POLYFILL: Promise<typeof import("dialog-polyfill")>;
  *
  */
 @customElement("ha-md-dialog")
-export class HaMdDialog extends MdDialog {
+export class HaMdDialog extends Dialog {
   /**
    * When true the dialog will not close when the user presses the esc key or press out of the dialog.
    */
@@ -146,7 +147,7 @@ export class HaMdDialog extends MdDialog {
   }
 
   static override styles = [
-    ...super.styles,
+    styles,
     css`
       :host {
         --md-dialog-container-color: var(--card-background-color);
@@ -154,10 +155,11 @@ export class HaMdDialog extends MdDialog {
         --md-dialog-supporting-text-color: var(--primary-text-color);
         --md-sys-color-scrim: #000000;
 
-        --md-dialog-headline-weight: 400;
-        --md-dialog-headline-size: 1.574rem;
-        --md-dialog-supporting-text-size: 1rem;
-        --md-dialog-supporting-text-line-height: 1.5rem;
+        --md-dialog-headline-weight: var(--ha-font-weight-normal);
+        --md-dialog-headline-size: var(--ha-font-size-xl);
+        --md-dialog-supporting-text-size: var(--ha-font-size-m);
+        --md-dialog-supporting-text-line-height: var(--ha-line-height-normal);
+        --md-divider-color: var(--divider-color);
       }
 
       :host([type="alert"]) {
@@ -166,20 +168,26 @@ export class HaMdDialog extends MdDialog {
 
       @media all and (max-width: 450px), all and (max-height: 500px) {
         :host(:not([type="alert"])) {
-          min-width: calc(
-            100vw - env(safe-area-inset-right) - env(safe-area-inset-left)
-          );
-          max-width: calc(
-            100vw - env(safe-area-inset-right) - env(safe-area-inset-left)
-          );
+          min-width: var(--mdc-dialog-min-width, 100vw);
           min-height: 100%;
           max-height: 100%;
           --md-dialog-container-shape: 0;
+        }
+
+        .container {
+          padding-top: var(--safe-area-inset-top);
+          padding-bottom: var(--safe-area-inset-bottom);
+          padding-left: var(--safe-area-inset-left);
+          padding-right: var(--safe-area-inset-right);
         }
       }
 
       ::slotted(ha-dialog-header[slot="headline"]) {
         display: contents;
+      }
+
+      slot[name="actions"]::slotted(*) {
+        padding: 16px;
       }
 
       .scroller {

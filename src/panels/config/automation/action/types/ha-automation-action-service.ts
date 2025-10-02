@@ -42,7 +42,7 @@ export class HaServiceAction extends LitElement implements ActionElement {
     if (
       this.action &&
       Object.entries(this.action).some(
-        ([key, val]) => key !== "data" && hasTemplate(val)
+        ([key, val]) => !["data", "target"].includes(key) && hasTemplate(val)
       )
     ) {
       fireEvent(
@@ -170,7 +170,6 @@ export class HaServiceAction extends LitElement implements ActionElement {
       padding: var(--service-control-padding, 0 16px);
     }
     ha-settings-row {
-      --paper-time-input-justify-content: flex-end;
       --settings-row-content-width: 100%;
       --settings-row-prefix-display: contents;
       border-top: var(

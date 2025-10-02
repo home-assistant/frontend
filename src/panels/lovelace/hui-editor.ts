@@ -1,5 +1,4 @@
 import { undoDepth } from "@codemirror/commands";
-import "@material/mwc-button";
 import { mdiClose } from "@mdi/js";
 import { dump, load } from "js-yaml";
 import type { CSSResultGroup, PropertyValues, TemplateResult } from "lit";
@@ -11,6 +10,7 @@ import { deepEqual } from "../../common/util/deep-equal";
 import "../../components/ha-code-editor";
 import type { HaCodeEditor } from "../../components/ha-code-editor";
 import "../../components/ha-icon-button";
+import "../../components/ha-button";
 import {
   showAlertDialog,
   showConfirmationDialog,
@@ -36,6 +36,8 @@ const strategyStruct = type({
 
 @customElement("hui-editor")
 class LovelaceFullConfigEditor extends LitElement {
+  @property({ type: Boolean }) public narrow = false;
+
   @property({ attribute: false }) public hass!: HomeAssistant;
 
   @property({ attribute: false }) public lovelace?: Lovelace;
@@ -48,7 +50,7 @@ class LovelaceFullConfigEditor extends LitElement {
 
   protected render(): TemplateResult | undefined {
     return html`
-      <ha-top-app-bar-fixed>
+      <ha-top-app-bar-fixed .narrow=${this.narrow}>
         <ha-icon-button
           slot="navigationIcon"
           .path=${mdiClose}
@@ -71,14 +73,13 @@ class LovelaceFullConfigEditor extends LitElement {
               )
             : this.hass!.localize("ui.panel.lovelace.editor.raw_editor.saved")}
         </div>
-        <mwc-button
-          raised
+        <ha-button
           slot="actionItems"
           @click=${this._handleSave}
           .disabled=${!this._changed}
           >${this.hass!.localize(
             "ui.panel.lovelace.editor.raw_editor.save"
-          )}</mwc-button
+          )}</ha-button
         >
         <div class="content">
           <ha-code-editor
@@ -89,6 +90,7 @@ class LovelaceFullConfigEditor extends LitElement {
             .hass=${this.hass}
             @value-changed=${this._yamlChanged}
             @editor-save=${this._handleSave}
+            disable-fullscreen
             dir="ltr"
           >
           </ha-code-editor>
@@ -142,22 +144,21 @@ class LovelaceFullConfigEditor extends LitElement {
           --app-header-text-color: var(--app-header-edit-text-color, #fff);
         }
 
-        mwc-button[disabled] {
-          background-color: var(--mdc-theme-on-primary);
-          border-radius: 4px;
-        }
-
         .content {
           height: calc(100vh - var(--header-height));
         }
 
         .comments {
-          font-size: 16px;
+          font-size: var(--ha-font-size-l);
+        }
+
+        ha-code-editor {
+          height: 100%;
         }
 
         .save-button {
           opacity: 0;
-          font-size: 14px;
+          font-size: var(--ha-font-size-m);
           padding: 0px 10px;
         }
 

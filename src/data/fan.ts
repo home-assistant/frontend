@@ -34,6 +34,8 @@ export interface FanEntity extends HassEntityBase {
   attributes: FanEntityAttributes;
 }
 
+export type FanDirection = "forward" | "reverse";
+
 export type FanSpeed = "off" | "low" | "medium" | "high" | "on";
 
 export const FAN_SPEEDS: Partial<Record<number, FanSpeed[]>> = {

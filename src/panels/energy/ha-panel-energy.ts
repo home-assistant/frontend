@@ -3,6 +3,7 @@ import { LitElement, css, html, nothing } from "lit";
 import { mdiPencil, mdiDownload } from "@mdi/js";
 import { customElement, property, state } from "lit/decorators";
 import "../../components/ha-menu-button";
+import "../../components/ha-icon-button-arrow-prev";
 import "../../components/ha-list-item";
 import "../../components/ha-top-app-bar-fixed";
 import type { LovelaceConfig } from "../../data/lovelace/config/types";
@@ -12,7 +13,7 @@ import "../lovelace/components/hui-energy-period-selector";
 import type { Lovelace } from "../lovelace/types";
 import "../lovelace/views/hui-view";
 import "../lovelace/views/hui-view-container";
-import { navigate } from "../../common/navigate";
+import { goBack, navigate } from "../../common/navigate";
 import type {
   GridSourceTypeEnergyPreference,
   SolarSourceTypeEnergyPreference,
@@ -22,11 +23,12 @@ import type {
   DeviceConsumptionEnergyPreference,
 } from "../../data/energy";
 import {
+  computeConsumptionData,
   getEnergyDataCollection,
-  getEnergyGasUnit,
-  getEnergyWaterUnit,
+  getSummedData,
 } from "../../data/energy";
 import { fileDownload } from "../../util/file_download";
+import type { StatisticValue } from "../../data/recorder";
 
 const ENERGY_LOVELACE_CONFIG: LovelaceConfig = {
   views: [
@@ -48,6 +50,8 @@ class PanelEnergy extends LitElement {
 
   @state() private _lovelace?: Lovelace;
 
+  @state() private _searchParms = new URLSearchParams(window.location.search);
+
   public willUpdate(changedProps: PropertyValues) {
     if (!this.hasUpdated) {
       this.hass.loadFragmentTranslation("lovelace");
@@ -64,15 +68,29 @@ class PanelEnergy extends LitElement {
     }
   }
 
+  private _back(ev) {
+    ev.stopPropagation();
+    goBack();
+  }
+
   protected render(): TemplateResult {
     return html`
       <div class="header">
         <div class="toolbar">
-          <ha-menu-button
-            slot="navigationIcon"
-            .hass=${this.hass}
-            .narrow=${this.narrow}
-          ></ha-menu-button>
+          ${this._searchParms.has("historyBack")
+            ? html`
+                <ha-icon-button-arrow-prev
+                  @click=${this._back}
+                  slot="navigationIcon"
+                ></ha-icon-button-arrow-prev>
+              `
+            : html`
+                <ha-menu-button
+                  slot="navigationIcon"
+                  .hass=${this.hass}
+                  .narrow=${this.narrow}
+                ></ha-menu-button>
+              `}
           ${!this.narrow
             ? html`<div class="main-title">
                 ${this.hass.localize("panel.energy")}
@@ -150,12 +168,7 @@ class PanelEnergy extends LitElement {
       return;
     }
 
-    const gasUnit = getEnergyGasUnit(
-      this.hass,
-      energyData.prefs,
-      energyData.state.statsMetadata
-    );
-    const waterUnit = getEnergyWaterUnit(this.hass);
+    const gasUnit = energyData.state.gasUnit;
     const electricUnit = "kWh";
 
     const energy_sources = energyData.prefs.energy_sources;
@@ -177,24 +190,34 @@ class PanelEnergy extends LitElement {
     const csv: string[] = [];
     csv[0] = headers;
 
-    const processStat = function (stat: string, type: string, unit: string) {
+    const processCsvRow = function (
+      id: string,
+      type: string,
+      unit: string,
+      data: StatisticValue[]
+    ) {
       let n = 0;
       const row: string[] = [];
-      if (!stats[stat]) {
-        return;
-      }
-      row.push(stat);
+      row.push(id);
       row.push(type);
       row.push(unit.normalize("NFKD"));
       times.forEach((t) => {
-        if (n < stats[stat].length && stats[stat][n].start === t) {
-          row.push((stats[stat][n].change ?? "").toString());
+        if (n < data.length && data[n].start === t) {
+          row.push((data[n].change ?? "").toString());
           n++;
         } else {
           row.push("");
         }
       });
       csv.push(row.join(",") + "\n");
+    };
+
+    const processStat = function (stat: string, type: string, unit: string) {
+      if (!stats[stat]) {
+        return;
+      }
+
+      processCsvRow(stat, type, unit, stats[stat]);
     };
 
     const currency = this.hass.config.currency;
@@ -322,7 +345,7 @@ class PanelEnergy extends LitElement {
     printCategory(
       "water_consumption",
       water_consumptions,
-      waterUnit,
+      energyData.state.waterUnit,
       "water_consumption_cost",
       water_consumptions_cost
     );
@@ -334,6 +357,99 @@ class PanelEnergy extends LitElement {
     });
 
     printCategory("device_consumption", devices, electricUnit);
+
+    const { summedData, compareSummedData: _ } = getSummedData(
+      energyData.state
+    );
+    const { consumption, compareConsumption: __ } = computeConsumptionData(
+      summedData,
+      undefined
+    );
+
+    const processConsumptionData = function (
+      type: string,
+      unit: string,
+      data: Record<number, number>
+    ) {
+      const data2: StatisticValue[] = [];
+
+      Object.entries(data).forEach(([t, value]) => {
+        data2.push({
+          start: Number(t),
+          end: NaN,
+          change: value,
+        });
+      });
+
+      processCsvRow("", type, unit, data2);
+    };
+
+    const hasSolar = !!solar_productions.length;
+    const hasBattery = !!battery_ins.length;
+    const hasGridReturn = !!grid_productions.length;
+    const hasGridSource = !!grid_consumptions.length;
+
+    if (hasGridSource) {
+      processConsumptionData(
+        "calculated_consumed_grid",
+        electricUnit,
+        consumption.used_grid
+      );
+      if (hasBattery) {
+        processConsumptionData(
+          "calculated_grid_to_battery",
+          electricUnit,
+          consumption.grid_to_battery
+        );
+      }
+    }
+    if (hasGridReturn && hasBattery) {
+      processConsumptionData(
+        "calculated_battery_to_grid",
+        electricUnit,
+        consumption.battery_to_grid
+      );
+    }
+    if (hasBattery) {
+      processConsumptionData(
+        "calculated_consumed_battery",
+        electricUnit,
+        consumption.used_battery
+      );
+    }
+
+    if (hasSolar) {
+      processConsumptionData(
+        "calculated_consumed_solar",
+        electricUnit,
+        consumption.used_solar
+      );
+      if (hasBattery) {
+        processConsumptionData(
+          "calculated_solar_to_battery",
+          electricUnit,
+          consumption.solar_to_battery
+        );
+      }
+      if (hasGridReturn) {
+        processConsumptionData(
+          "calculated_solar_to_grid",
+          electricUnit,
+          consumption.solar_to_grid
+        );
+      }
+    }
+
+    if (
+      (hasGridSource ? 1 : 0) + (hasSolar ? 1 : 0) + (hasBattery ? 1 : 0) >
+      1
+    ) {
+      processConsumptionData(
+        "calculated_total_consumption",
+        electricUnit,
+        consumption.used_total
+      );
+    }
 
     const blob = new Blob(csv, {
       type: "text/csv",
@@ -380,14 +496,30 @@ class PanelEnergy extends LitElement {
           border-bottom: var(--app-header-border-bottom, none);
           position: fixed;
           top: 0;
-          width: var(--mdc-top-app-bar-width, 100%);
-          padding-top: env(safe-area-inset-top);
+          width: calc(
+            var(--mdc-top-app-bar-width, 100%) - var(
+                --safe-area-inset-right,
+                0px
+              )
+          );
+          padding-top: var(--safe-area-inset-top);
           z-index: 4;
           transition: box-shadow 200ms linear;
           display: flex;
           flex-direction: row;
           -webkit-backdrop-filter: var(--app-header-backdrop-filter, none);
           backdrop-filter: var(--app-header-backdrop-filter, none);
+          padding-top: var(--safe-area-inset-top);
+          padding-right: var(--safe-area-inset-right);
+        }
+        :host([narrow]) .header {
+          width: calc(
+            var(--mdc-top-app-bar-width, 100%) - var(
+                --safe-area-inset-left,
+                0px
+              ) - var(--safe-area-inset-right, 0px)
+          );
+          padding-left: var(--safe-area-inset-left);
         }
         :host([scrolled]) .header {
           box-shadow: var(
@@ -402,19 +534,17 @@ class PanelEnergy extends LitElement {
           display: flex;
           flex: 1;
           align-items: center;
-          font-size: 20px;
+          font-size: var(--ha-font-size-xl);
           padding: 0px 12px;
-          font-weight: 400;
+          font-weight: var(--ha-font-weight-normal);
           box-sizing: border-box;
         }
-        @media (max-width: 599px) {
-          .toolbar {
-            padding: 0 4px;
-          }
+        :host([narrow]) .toolbar {
+          padding: 0 4px;
         }
         .main-title {
           margin: var(--margin-title);
-          line-height: 20px;
+          line-height: var(--ha-line-height-normal);
           flex-grow: 1;
         }
         hui-view-container {
@@ -422,12 +552,14 @@ class PanelEnergy extends LitElement {
           display: flex;
           min-height: 100vh;
           box-sizing: border-box;
-          padding-top: calc(var(--header-height) + env(safe-area-inset-top));
-          padding-left: env(safe-area-inset-left);
-          padding-right: env(safe-area-inset-right);
-          padding-inline-start: env(safe-area-inset-left);
-          padding-inline-end: env(safe-area-inset-right);
-          padding-bottom: env(safe-area-inset-bottom);
+          padding-top: calc(var(--header-height) + var(--safe-area-inset-top));
+          padding-right: var(--safe-area-inset-right);
+          padding-inline-end: var(--safe-area-inset-right);
+          padding-bottom: var(--safe-area-inset-bottom);
+        }
+        :host([narrow]) hui-view-container {
+          padding-left: var(--safe-area-inset-left);
+          padding-inline-start: var(--safe-area-inset-left);
         }
         hui-view {
           flex: 1 1 100%;

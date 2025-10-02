@@ -234,16 +234,16 @@ class MoreInfoWaterHeater extends LitElement {
 
         .current .label {
           opacity: 0.8;
-          font-size: 14px;
-          line-height: 16px;
+          font-size: var(--ha-font-size-m);
+          line-height: var(--ha-line-height-condensed);
           letter-spacing: 0.4px;
           margin-bottom: 4px;
         }
 
         .current .value {
-          font-size: 22px;
-          font-weight: 500;
-          line-height: 28px;
+          font-size: var(--ha-font-size-xl);
+          font-weight: var(--ha-font-weight-medium);
+          line-height: var(--ha-line-height-condensed);
           direction: ltr;
         }
       `,

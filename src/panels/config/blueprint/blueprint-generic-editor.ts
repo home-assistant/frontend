@@ -1,4 +1,3 @@
-import "@material/mwc-button/mwc-button";
 import type { CSSResultGroup } from "lit";
 import { css, html, LitElement, nothing } from "lit";
 import { customElement, property, state } from "lit/decorators";
@@ -173,6 +172,7 @@ export abstract class HaBlueprintGenericEditor extends LitElement {
         .content=${value?.description}
       ></ha-markdown>
       ${html`<ha-selector
+        narrow
         .hass=${this.hass}
         .selector=${selector}
         .key=${key}
@@ -271,7 +271,6 @@ export abstract class HaBlueprintGenericEditor extends LitElement {
           margin-bottom: 16px;
         }
         ha-settings-row {
-          --paper-time-input-justify-content: flex-end;
           --settings-row-content-width: 100%;
           --settings-row-prefix-display: contents;
         }

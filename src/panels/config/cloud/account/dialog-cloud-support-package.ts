@@ -1,5 +1,3 @@
-import "@material/mwc-button";
-import "@material/mwc-list/mwc-list-item";
 import { mdiClose } from "@mdi/js";
 import { css, html, LitElement, nothing } from "lit";
 import { customElement, property, query, state } from "lit/decorators";
@@ -79,7 +77,9 @@ export class DialogSupportPackage extends LitElement {
           </ha-alert>
           <hr />
           <div class="actions">
-            <ha-button @click=${this.closeDialog}>Close</ha-button>
+            <ha-button appearance="plain" @click=${this.closeDialog}
+              >Close</ha-button
+            >
             <ha-button @click=${this._download}>Download</ha-button>
           </div>
         </div>
@@ -129,7 +129,7 @@ export class DialogSupportPackage extends LitElement {
     }
     .actions {
       display: flex;
-      gap: 8px;
+      gap: var(--ha-space-2);
       justify-content: flex-end;
     }
     hr {
@@ -193,7 +193,7 @@ export class DialogSupportPackage extends LitElement {
       border-radius: 16px;
     }
     summary {
-      font-weight: bold;
+      font-weight: var(--ha-font-weight-bold);
       cursor: pointer;
     }
   `;

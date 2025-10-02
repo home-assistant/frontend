@@ -21,6 +21,9 @@ class HassioAddonInfoDashboard extends LitElement {
 
   @property({ attribute: false }) public addon?: HassioAddonDetails;
 
+  @property({ type: Boolean, attribute: "control-enabled" })
+  public controlEnabled = false;
+
   protected render(): TemplateResult {
     if (!this.addon) {
       return html`<ha-spinner></ha-spinner>`;
@@ -34,6 +37,7 @@ class HassioAddonInfoDashboard extends LitElement {
           .hass=${this.hass}
           .supervisor=${this.supervisor}
           .addon=${this.addon}
+          .controlEnabled=${this.controlEnabled}
         ></hassio-addon-info>
       </div>
     `;

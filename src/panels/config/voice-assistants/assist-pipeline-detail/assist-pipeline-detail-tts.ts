@@ -91,12 +91,10 @@ export class AssistPipelineDetailTTS extends LitElement {
        ${
          this.data?.tts_engine
            ? html`<div class="footer">
-               <ha-button
-                 .label=${this.hass.localize(
+               <ha-button @click=${this._preview}>
+                 ${this.hass.localize(
                    "ui.panel.config.voice_assistants.assistants.pipeline.detail.try_tts"
                  )}
-                 @click=${this._preview}
-               >
                </ha-button>
              </div>`
            : nothing
@@ -138,15 +136,15 @@ export class AssistPipelineDetailTTS extends LitElement {
       margin-bottom: 16px;
     }
     h3 {
-      font-weight: normal;
-      font-size: 22px;
-      line-height: 28px;
+      font-size: var(--ha-font-size-xl);
+      font-weight: var(--ha-font-weight-normal);
+      line-height: var(--ha-line-height-condensed);
       margin-top: 0;
       margin-bottom: 4px;
     }
     p {
       color: var(--secondary-text-color);
-      font-size: var(--mdc-typography-body2-font-size, 0.875rem);
+      font-size: var(--mdc-typography-body2-font-size, var(--ha-font-size-s));
       margin-top: 0;
       margin-bottom: 0;
     }

@@ -1,4 +1,3 @@
-import "@material/mwc-button/mwc-button";
 import type { UnsubscribeFunc } from "home-assistant-js-websocket";
 import type { CSSResultGroup, TemplateResult } from "lit";
 import { css, html, LitElement, nothing } from "lit";
@@ -9,10 +8,11 @@ import { fireEvent } from "../../../common/dom/fire_event";
 import { copyToClipboard } from "../../../common/util/copy-clipboard";
 import { subscribePollingCollection } from "../../../common/util/subscribe-polling";
 import "../../../components/ha-alert";
+import "../../../components/ha-button";
 import "../../../components/ha-card";
-import "../../../components/ha-spinner";
 import { createCloseHeading } from "../../../components/ha-dialog";
 import "../../../components/ha-metric";
+import "../../../components/ha-spinner";
 import type { HassioStats } from "../../../data/hassio/common";
 import { fetchHassioStats } from "../../../data/hassio/common";
 import type { HassioResolution } from "../../../data/hassio/resolution";
@@ -146,27 +146,29 @@ class DialogSystemInformation extends LitElement {
             ? html`${this._resolutionInfo.unhealthy.length
                 ? html`<ha-alert alert-type="error">
                     ${this.hass.localize("ui.dialogs.unhealthy.title")}
-                    <mwc-button
+                    <ha-button
+                      appearance="plain"
+                      size="small"
+                      variant="danger"
                       slot="action"
-                      .label=${this.hass.localize(
-                        "ui.panel.config.common.learn_more"
-                      )}
                       @click=${this._unhealthyDialog}
                     >
-                    </mwc-button
-                  ></ha-alert>`
+                      ${this.hass.localize("ui.panel.config.common.learn_more")}
+                    </ha-button></ha-alert
+                  >`
                 : ""}
               ${this._resolutionInfo.unsupported.length
                 ? html`<ha-alert alert-type="warning">
                     ${this.hass.localize("ui.dialogs.unsupported.title")}
-                    <mwc-button
+                    <ha-button
+                      appearance="plain"
+                      size="small"
+                      variant="warning"
                       slot="action"
-                      .label=${this.hass.localize(
-                        "ui.panel.config.common.learn_more"
-                      )}
                       @click=${this._unsupportedDialog}
                     >
-                    </mwc-button>
+                      ${this.hass.localize("ui.panel.config.common.learn_more")}
+                    </ha-button>
                   </ha-alert>`
                 : ""} `
             : ""}
@@ -222,11 +224,9 @@ class DialogSystemInformation extends LitElement {
                 </div>
               `}
         </div>
-        <mwc-button
-          slot="primaryAction"
-          .label=${this.hass.localize("ui.panel.config.repairs.copy")}
-          @click=${this._copyInfo}
-        ></mwc-button>
+        <ha-button slot="primaryAction" @click=${this._copyInfo}>
+          ${this.hass.localize("ui.panel.config.repairs.copy")}
+        </ha-button>
       </ha-dialog>
     `;
   }
@@ -250,7 +250,7 @@ class DialogSystemInformation extends LitElement {
                   rel="noreferrer"
                 >
                   ${this.hass.localize(
-                    `ui.dialogs.unsupported.reason.${reason}`
+                    `ui.dialogs.unsupported.reasons.${reason}`
                   ) || reason}
                 </a>
               </li>
@@ -279,7 +279,7 @@ class DialogSystemInformation extends LitElement {
                   rel="noreferrer"
                 >
                   ${this.hass.localize(
-                    `ui.dialogs.unhealthy.reason.${reason}`
+                    `ui.dialogs.unhealthy.reasons.${reason}`
                   ) || reason}
                 </a>
               </li>
@@ -301,7 +301,7 @@ class DialogSystemInformation extends LitElement {
     } else {
       const domains = Object.keys(this._systemInfo).sort(sortKeys);
       for (const domain of domains) {
-        const domainInfo = this._systemInfo[domain];
+        const domainInfo = this._systemInfo[domain]!;
         const keys: TemplateResult[] = [];
 
         for (const key of Object.keys(domainInfo.info)) {
@@ -361,13 +361,16 @@ class DialogSystemInformation extends LitElement {
               ${!domainInfo.manage_url
                 ? ""
                 : html`
-                    <a class="manage" href=${domainInfo.manage_url}>
-                      <mwc-button>
-                        ${this.hass.localize(
-                          "ui.panel.config.info.system_health.manage"
-                        )}
-                      </mwc-button>
-                    </a>
+                    <ha-button
+                      appearance="plain"
+                      size="small"
+                      class="manage"
+                      href=${domainInfo.manage_url}
+                    >
+                      ${this.hass.localize(
+                        "ui.panel.config.info.system_health.manage"
+                      )}
+                    </ha-button>
                   `}
             </div>
           `);
@@ -387,7 +390,7 @@ class DialogSystemInformation extends LitElement {
     const domainParts: string[] = [];
 
     for (const domain of Object.keys(this._systemInfo!).sort(sortKeys)) {
-      const domainInfo = this._systemInfo![domain];
+      const domainInfo = this._systemInfo![domain]!;
       let first = true;
       const parts = [
         `${
@@ -480,10 +483,6 @@ class DialogSystemInformation extends LitElement {
 
       .error {
         color: var(--error-color);
-      }
-
-      a.manage {
-        text-decoration: none;
       }
     `,
   ];

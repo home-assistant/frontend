@@ -2,9 +2,10 @@ import { mdiHelpCircle } from "@mdi/js";
 import type { HassService } from "home-assistant-js-websocket";
 import { ERR_CONNECTION_LOST } from "home-assistant-js-websocket";
 import { load } from "js-yaml";
-import type { CSSResultGroup } from "lit";
+import type { CSSResultGroup, TemplateResult } from "lit";
 import { css, html, LitElement, nothing } from "lit";
 import { customElement, property, query, state } from "lit/decorators";
+import { until } from "lit/directives/until";
 import memoizeOne from "memoize-one";
 import { storage } from "../../../common/decorators/storage";
 import { computeDomain } from "../../../common/entity/compute_domain";
@@ -37,6 +38,7 @@ import {
 import { haStyle } from "../../../resources/styles";
 import type { HomeAssistant } from "../../../types";
 import { documentationUrl } from "../../../util/documentation-url";
+import { resolveMediaSource } from "../../../data/media_source";
 
 @customElement("developer-tools-action")
 class HaPanelDevAction extends LitElement {
@@ -46,12 +48,18 @@ class HaPanelDevAction extends LitElement {
 
   @state() private _uiAvailable = true;
 
-  @state() private _response?: Record<string, any>;
+  @state() private _response?: {
+    domain: string;
+    service: string;
+    result: Record<string, any> | null;
+    media?: Promise<TemplateResult | typeof nothing>;
+  };
 
   @state() private _error?: string;
 
   private _yamlValid = true;
 
+  @state()
   @storage({
     key: "panel-dev-action-state-service-data",
     state: true,
@@ -59,6 +67,7 @@ class HaPanelDevAction extends LitElement {
   })
   private _serviceData?: ServiceAction = { action: "", target: {}, data: {} };
 
+  @state()
   @storage({
     key: "panel-dev-action-state-yaml-mode",
     state: true,
@@ -140,6 +149,7 @@ class HaPanelDevAction extends LitElement {
                   .hass=${this.hass}
                   .value=${this._serviceData?.action}
                   @value-changed=${this._serviceChanged}
+                  show-service-id
                 ></ha-service-picker>
                 <ha-yaml-editor
                   id="yaml-editor"
@@ -154,6 +164,7 @@ class HaPanelDevAction extends LitElement {
                   .value=${this._serviceData}
                   .narrow=${this.narrow}
                   show-advanced
+                  show-service-id
                   @value-changed=${this._serviceDataChanged}
                   class="card-content"
                 ></ha-service-control>
@@ -166,7 +177,8 @@ class HaPanelDevAction extends LitElement {
       <div class="button-row">
         <div class="buttons">
           <div class="switch-mode-container">
-            <mwc-button
+            <ha-button
+              appearance="plain"
               @click=${this._toggleYaml}
               .disabled=${!this._uiAvailable}
             >
@@ -177,7 +189,7 @@ class HaPanelDevAction extends LitElement {
                 : this.hass.localize(
                     "ui.panel.developer-tools.tabs.actions.yaml_mode"
                   )}
-            </mwc-button>
+            </ha-button>
             ${!this._uiAvailable
               ? html`<span class="error"
                   >${this.hass.localize(
@@ -193,8 +205,8 @@ class HaPanelDevAction extends LitElement {
           </ha-progress-button>
         </div>
       </div>
-      ${this._response
-        ? html`<div class="content">
+      ${this._response?.result
+        ? html`<div class="content response">
             <ha-card
               .header=${this.hass.localize(
                 "ui.panel.developer-tools.tabs.actions.response"
@@ -203,18 +215,21 @@ class HaPanelDevAction extends LitElement {
               <div class="card-content">
                 <ha-yaml-editor
                   .hass=${this.hass}
-                  copy-clipboard
                   read-only
                   auto-update
                   has-extra-actions
-                  .value=${this._response}
+                  .value=${this._response.result}
                 >
-                  <ha-button slot="extra-actions" @click=${this._copyTemplate}
+                  <ha-button
+                    appearance="plain"
+                    slot="extra-actions"
+                    @click=${this._copyTemplate}
                     >${this.hass.localize(
                       "ui.panel.developer-tools.tabs.actions.copy_clipboard_template"
                     )}</ha-button
                   >
                 </ha-yaml-editor>
+                ${until(this._response.media)}
               </div>
             </ha-card>
           </div>`
@@ -304,10 +319,12 @@ class HaPanelDevAction extends LitElement {
                 )}
               </table>
               ${this._yamlMode
-                ? html`<mwc-button @click=${this._fillExampleData}
+                ? html`<ha-button
+                    appearance="plain"
+                    @click=${this._fillExampleData}
                     >${this.hass.localize(
                       "ui.panel.developer-tools.tabs.actions.fill_example_data"
-                    )}</mwc-button
+                    )}</ha-button
                   >`
                 : ""}
             </ha-expansion-panel>
@@ -318,7 +335,7 @@ class HaPanelDevAction extends LitElement {
 
   private async _copyTemplate(): Promise<void> {
     await copyToClipboard(
-      `{% set ${this._serviceData?.response_variable || "action_response"} = ${JSON.stringify(this._response)} %}`
+      `{% set ${this._serviceData?.response_variable || "action_response"} = ${JSON.stringify(this._response!.result)} %}`
     );
     showToast(this, {
       message: this.hass.localize("ui.common.copied_clipboard"),
@@ -426,7 +443,7 @@ class HaPanelDevAction extends LitElement {
     const button = ev.currentTarget as HaProgressButton;
 
     if (this._yamlMode && !this._yamlValid) {
-      forwardHaptic("failure");
+      forwardHaptic(this, "failure");
       button.actionError();
       this._error = this.hass.localize(
         "ui.panel.developer-tools.tabs.actions.errors.yaml.invalid_yaml"
@@ -448,7 +465,7 @@ class HaPanelDevAction extends LitElement {
     );
 
     if (this._error !== undefined) {
-      forwardHaptic("failure");
+      forwardHaptic(this, "failure");
       button.actionError();
       return;
     }
@@ -466,8 +483,50 @@ class HaPanelDevAction extends LitElement {
     } else {
       script.push(this._serviceData!);
     }
+    button.progress = true;
     try {
-      this._response = (await callExecuteScript(this.hass, script)).response;
+      const result = (await callExecuteScript(this.hass, script)).response;
+      this._response = {
+        domain,
+        service,
+        result,
+        media:
+          result && "media_source_id" in result
+            ? resolveMediaSource(this.hass, result.media_source_id).then(
+                (resolved) =>
+                  resolved.mime_type.startsWith("image/")
+                    ? html`<img src=${resolved.url} alt="Media content" />`
+                    : resolved.mime_type.startsWith("video/")
+                      ? html`
+                          <video
+                            controls
+                            src=${resolved.url}
+                            alt="Video content"
+                          ></video>
+                        `
+                      : resolved.mime_type.startsWith("audio/")
+                        ? html`
+                            <audio
+                              controls
+                              src=${resolved.url}
+                              alt="Audio content"
+                            ></audio>
+                          `
+                        : html`
+                            <a
+                              href=${resolved.url}
+                              target="_blank"
+                              rel="noreferrer"
+                              ><ha-button>
+                                ${this.hass.localize(
+                                  "ui.panel.developer-tools.tabs.actions.open_media"
+                                )}
+                              </ha-button></a
+                            >
+                          `
+              )
+            : undefined,
+      };
     } catch (err: any) {
       if (
         err.error?.code === ERR_CONNECTION_LOST &&
@@ -475,7 +534,7 @@ class HaPanelDevAction extends LitElement {
       ) {
         return;
       }
-      forwardHaptic("failure");
+      forwardHaptic(this, "failure");
       button.actionError();
 
       let localizedErrorMessage: string | undefined;
@@ -495,6 +554,8 @@ class HaPanelDevAction extends LitElement {
           service: this._serviceData!.action!,
         }) + ` ${err.message}`;
       return;
+    } finally {
+      button.progress = false;
     }
     button.actionSuccess();
   }
@@ -531,7 +592,7 @@ class HaPanelDevAction extends LitElement {
     if (
       this._serviceData &&
       Object.entries(this._serviceData).some(
-        ([key, val]) => key !== "data" && hasTemplate(val)
+        ([key, val]) => !["data", "target"].includes(key) && hasTemplate(val)
       )
     ) {
       this._yamlMode = true;
@@ -599,19 +660,11 @@ class HaPanelDevAction extends LitElement {
       css`
         .content {
           padding: 16px;
-          padding: max(16px, env(safe-area-inset-top))
-            max(16px, env(safe-area-inset-right))
-            max(16px, env(safe-area-inset-bottom))
-            max(16px, env(safe-area-inset-left));
           max-width: 1200px;
           margin: auto;
         }
         .button-row {
           padding: 8px 16px;
-          padding: max(8px, env(safe-area-inset-top))
-            max(16px, env(safe-area-inset-right))
-            max(8px, env(safe-area-inset-bottom))
-            max(16px, env(safe-area-inset-left));
           border-top: 1px solid var(--divider-color);
           border-bottom: 1px solid var(--divider-color);
           background: var(--card-background-color);
@@ -676,6 +729,12 @@ class HaPanelDevAction extends LitElement {
           justify-content: space-between;
           display: flex;
           align-items: center;
+        }
+
+        .response img {
+          max-width: 100%;
+          height: auto;
+          margin-top: 24px;
         }
       `,
     ];

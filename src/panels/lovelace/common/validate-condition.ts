@@ -1,17 +1,21 @@
 import { ensureArray } from "../../../common/array/ensure-array";
 import type { MediaQueriesListener } from "../../../common/dom/media_query";
 import { listenMediaQuery } from "../../../common/dom/media_query";
+
 import { isValidEntityId } from "../../../common/entity/valid_entity_id";
 import { UNKNOWN } from "../../../data/entity";
+import { getUserPerson } from "../../../data/person";
 import type { HomeAssistant } from "../../../types";
 
 export type Condition =
+  | LocationCondition
   | NumericStateCondition
   | StateCondition
   | ScreenCondition
   | UserCondition
   | OrCondition
-  | AndCondition;
+  | AndCondition
+  | NotCondition;
 
 // Legacy conditional card condition
 export interface LegacyCondition {
@@ -22,6 +26,11 @@ export interface LegacyCondition {
 
 interface BaseCondition {
   condition: string;
+}
+
+export interface LocationCondition extends BaseCondition {
+  condition: "location";
+  locations?: string[];
 }
 
 export interface NumericStateCondition extends BaseCondition {
@@ -55,6 +64,11 @@ export interface OrCondition extends BaseCondition {
 
 export interface AndCondition extends BaseCondition {
   condition: "and";
+  conditions?: Condition[];
+}
+
+export interface NotCondition extends BaseCondition {
+  condition: "not";
   conditions?: Condition[];
 }
 
@@ -138,6 +152,17 @@ function checkScreenCondition(condition: ScreenCondition, _: HomeAssistant) {
     : false;
 }
 
+function checkLocationCondition(
+  condition: LocationCondition,
+  hass: HomeAssistant
+) {
+  const stateObj = getUserPerson(hass);
+  if (!stateObj) {
+    return false;
+  }
+  return condition.locations?.includes(stateObj.state);
+}
+
 function checkUserCondition(condition: UserCondition, hass: HomeAssistant) {
   return condition.users && hass.user?.id
     ? condition.users.includes(hass.user.id)
@@ -147,6 +172,11 @@ function checkUserCondition(condition: UserCondition, hass: HomeAssistant) {
 function checkAndCondition(condition: AndCondition, hass: HomeAssistant) {
   if (!condition.conditions) return true;
   return checkConditionsMet(condition.conditions, hass);
+}
+
+function checkNotCondition(condition: NotCondition, hass: HomeAssistant) {
+  if (!condition.conditions) return true;
+  return !checkConditionsMet(condition.conditions, hass);
 }
 
 function checkOrCondition(condition: OrCondition, hass: HomeAssistant) {
@@ -171,10 +201,14 @@ export function checkConditionsMet(
           return checkScreenCondition(c, hass);
         case "user":
           return checkUserCondition(c, hass);
+        case "location":
+          return checkLocationCondition(c, hass);
         case "numeric_state":
           return checkStateNumericCondition(c, hass);
         case "and":
           return checkAndCondition(c, hass);
+        case "not":
+          return checkNotCondition(c, hass);
         case "or":
           return checkOrCondition(c, hass);
         default:
@@ -243,7 +277,15 @@ function validateUserCondition(condition: UserCondition) {
   return condition.users != null;
 }
 
+function validateLocationCondition(condition: LocationCondition) {
+  return condition.locations != null;
+}
+
 function validateAndCondition(condition: AndCondition) {
+  return condition.conditions != null;
+}
+
+function validateNotCondition(condition: NotCondition) {
   return condition.conditions != null;
 }
 
@@ -272,10 +314,14 @@ export function validateConditionalConfig(
           return validateScreenCondition(c);
         case "user":
           return validateUserCondition(c);
+        case "location":
+          return validateLocationCondition(c);
         case "numeric_state":
           return validateNumericStateCondition(c);
         case "and":
           return validateAndCondition(c);
+        case "not":
+          return validateNotCondition(c);
         case "or":
           return validateOrCondition(c);
         default:

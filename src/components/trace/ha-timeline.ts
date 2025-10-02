@@ -11,8 +11,8 @@ export class HaTimeline extends LitElement {
 
   @property({ type: Boolean, reflect: true }) public raised = false;
 
-  @property({ attribute: false, reflect: true, type: Boolean }) notEnabled =
-    false;
+  @property({ attribute: "not-enabled", reflect: true, type: Boolean })
+  notEnabled = false;
 
   @property({ attribute: "last-item", type: Boolean }) public lastItem = false;
 
@@ -82,7 +82,7 @@ export class HaTimeline extends LitElement {
           margin-inline-start: initial;
           width: 24px;
         }
-        :host([notEnabled]) ha-svg-icon {
+        :host([not-enabled]) ha-svg-icon {
           opacity: 0.5;
         }
         ha-svg-icon {

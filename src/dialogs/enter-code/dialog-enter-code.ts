@@ -110,7 +110,11 @@ export class DialogEnterCode
             pattern=${ifDefined(this._dialogParams.codePattern)}
             inputmode="text"
           ></ha-textfield>
-          <ha-button slot="secondaryAction" dialogAction="cancel">
+          <ha-button
+            appearance="plain"
+            slot="secondaryAction"
+            dialogAction="cancel"
+          >
             ${this._dialogParams.cancelText ??
             this.hass.localize("ui.common.cancel")}
           </ha-button>
@@ -205,7 +209,7 @@ export class DialogEnterCode
       display: grid;
       grid-template-columns: repeat(var(--keypad-columns), auto);
       grid-auto-rows: auto;
-      grid-gap: 24px;
+      grid-gap: var(--ha-space-6);
       justify-items: center;
       align-items: center;
     }
@@ -222,13 +226,12 @@ export class DialogEnterCode
         grid-column-start: 6;
       }
     }
-
     ha-control-button {
       width: 56px;
       height: 56px;
       --control-button-border-radius: 28px;
       --mdc-icon-size: 24px;
-      font-size: 24px;
+      font-size: var(--ha-font-size-2xl);
     }
     .submit {
       --control-button-background-color: var(--green-color);
@@ -237,12 +240,6 @@ export class DialogEnterCode
     .clear {
       --control-button-background-color: var(--red-color);
       --control-button-icon-color: var(--red-color);
-    }
-    .hidden {
-      display: none;
-    }
-    .buttons {
-      margin-top: 12px;
     }
   `;
 }

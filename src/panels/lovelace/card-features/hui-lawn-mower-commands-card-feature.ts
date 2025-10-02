@@ -5,8 +5,8 @@ import { customElement, property, state } from "lit/decorators";
 import { computeDomain } from "../../../common/entity/compute_domain";
 import { supportsFeature } from "../../../common/entity/supports-feature";
 import "../../../components/ha-control-button";
-import "../../../components/ha-svg-icon";
 import "../../../components/ha-control-button-group";
+import "../../../components/ha-svg-icon";
 import { UNAVAILABLE } from "../../../data/entity";
 import type { LawnMowerEntity } from "../../../data/lawn_mower";
 import { LawnMowerEntityFeature, canDock } from "../../../data/lawn_mower";
@@ -16,6 +16,7 @@ import { cardFeatureStyles } from "./common/card-feature-styles";
 import type {
   LawnMowerCommand,
   LawnMowerCommandsCardFeatureConfig,
+  LovelaceCardFeatureContext,
 } from "./types";
 import { LAWN_MOWER_COMMANDS } from "./types";
 
@@ -74,7 +75,14 @@ export const LAWN_MOWER_COMMANDS_BUTTONS: Record<
   }),
 };
 
-export const supportsLawnMowerCommandCardFeature = (stateObj: HassEntity) => {
+export const supportsLawnMowerCommandCardFeature = (
+  hass: HomeAssistant,
+  context: LovelaceCardFeatureContext
+) => {
+  const stateObj = context.entity_id
+    ? hass.states[context.entity_id]
+    : undefined;
+  if (!stateObj) return false;
   const domain = computeDomain(stateObj.entity_id);
   return (
     domain === "lawn_mower" &&
@@ -89,14 +97,26 @@ class HuiLawnMowerCommandCardFeature
 {
   @property({ attribute: false }) public hass?: HomeAssistant;
 
-  @property({ attribute: false }) public stateObj?: HassEntity;
+  @property({ attribute: false }) public context?: LovelaceCardFeatureContext;
 
   @state() private _config?: LawnMowerCommandsCardFeatureConfig;
 
+  private get _stateObj() {
+    if (!this.hass || !this.context || !this.context.entity_id) {
+      return undefined;
+    }
+    return this.hass.states[this.context.entity_id!] as
+      | LawnMowerEntity
+      | undefined;
+  }
+
   static getStubConfig(
-    _,
-    stateObj?: HassEntity
+    hass: HomeAssistant,
+    context: LovelaceCardFeatureContext
   ): LawnMowerCommandsCardFeatureConfig {
+    const stateObj = context.entity_id
+      ? hass.states[context.entity_id]
+      : undefined;
     return {
       type: "lawn-mower-commands",
       commands: stateObj
@@ -127,7 +147,7 @@ class HuiLawnMowerCommandCardFeature
     ev.stopPropagation();
     const entry = (ev.target! as any).entry as LawnMowerButton;
     this.hass!.callService("lawn_mower", entry.serviceName, {
-      entity_id: this.stateObj!.entity_id,
+      entity_id: this._stateObj!.entity_id,
     });
   }
 
@@ -135,13 +155,14 @@ class HuiLawnMowerCommandCardFeature
     if (
       !this._config ||
       !this.hass ||
-      !this.stateObj ||
-      !supportsLawnMowerCommandCardFeature(this.stateObj)
+      !this.context ||
+      !this._stateObj ||
+      !supportsLawnMowerCommandCardFeature(this.hass, this.context)
     ) {
       return nothing;
     }
 
-    const stateObj = this.stateObj as LawnMowerEntity;
+    const stateObj = this._stateObj as LawnMowerEntity;
 
     return html`
       <ha-control-button-group>

@@ -1,4 +1,3 @@
-import "@material/mwc-button";
 import { mdiContentCopy } from "@mdi/js";
 import type { CSSResultGroup, TemplateResult } from "lit";
 import { css, html, LitElement, nothing } from "lit";
@@ -6,6 +5,7 @@ import { customElement, property, state } from "lit/decorators";
 import { fireEvent } from "../../common/dom/fire_event";
 import { createCloseHeading } from "../../components/ha-dialog";
 import "../../components/ha-textfield";
+import "../../components/ha-button";
 import "../../components/ha-icon-button";
 import { haStyleDialog } from "../../resources/styles";
 import type { HomeAssistant } from "../../types";
@@ -67,11 +67,15 @@ export class HaLongLivedAccessTokenDialog extends LitElement {
             ${this._qrCode
               ? this._qrCode
               : html`
-                  <mwc-button @click=${this._generateQR}>
+                  <ha-button
+                    appearance="plain"
+                    size="small"
+                    @click=${this._generateQR}
+                  >
                     ${this.hass.localize(
                       "ui.panel.profile.long_lived_access_tokens.generate_qr_code"
                     )}
-                  </mwc-button>
+                  </ha-button>
                 `}
           </div>
         </div>

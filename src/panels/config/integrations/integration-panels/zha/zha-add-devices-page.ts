@@ -1,8 +1,9 @@
-import "@material/mwc-button";
 import type { CSSResultGroup, PropertyValues, TemplateResult } from "lit";
 import { css, html, LitElement } from "lit";
 import { customElement, property, state } from "lit/decorators";
+import "../../../../../components/ha-button";
 import "../../../../../components/ha-spinner";
+import "../../../../../components/ha-textarea";
 import type { ZHADevice } from "../../../../../data/zha";
 import { DEVICE_MESSAGE_TYPES, LOG_OUTPUT } from "../../../../../data/zha";
 import "../../../../../layouts/hass-tabs-subpage";
@@ -11,7 +12,6 @@ import type { HomeAssistant, Route } from "../../../../../types";
 import { documentationUrl } from "../../../../../util/documentation-url";
 import { zhaTabs } from "./zha-config-dashboard";
 import "./zha-device-pairing-status-card";
-import "../../../../../components/ha-textarea";
 
 @customElement("zha-add-devices-page")
 class ZHAAddDevicesPage extends LitElement {
@@ -40,6 +40,8 @@ class ZHAAddDevicesPage extends LitElement {
   private _addDevicesTimeoutHandle: any = undefined;
 
   private _subscribed?: Promise<() => Promise<void>>;
+
+  private _wakeLock?: Promise<WakeLockSentinel>;
 
   public connectedCallback(): void {
     super.connectedCallback();
@@ -78,8 +80,12 @@ class ZHAAddDevicesPage extends LitElement {
         .route=${this.route!}
         .tabs=${zhaTabs}
       >
-        <mwc-button slot="toolbar-icon" @click=${this._toggleLogs}
-          >${this._showLogs ? "Hide logs" : "Show logs"}</mwc-button
+        <ha-button
+          appearance="plain"
+          size="small"
+          slot="toolbar-icon"
+          @click=${this._toggleLogs}
+          >${this._showLogs ? "Hide logs" : "Show logs"}</ha-button
         >
         <div class="searching">
           ${this._active
@@ -93,11 +99,15 @@ class ZHAAddDevicesPage extends LitElement {
               `
             : html`
                 <div>
-                  <mwc-button @click=${this._subscribe} class="search-button">
+                  <ha-button
+                    appearance="plain"
+                    @click=${this._subscribe}
+                    class="search-button"
+                  >
                     ${this.hass!.localize(
                       "ui.panel.config.zha.add_device_page.search_again"
                     )}
-                  </mwc-button>
+                  </ha-button>
                 </div>
               `}
         </div>
@@ -185,6 +195,7 @@ class ZHAAddDevicesPage extends LitElement {
       this._subscribed.then((unsub) => unsub());
       this._subscribed = undefined;
     }
+    this._wakeLock?.then((wakeLock) => wakeLock.release());
   }
 
   private _deactivate(): void {
@@ -192,6 +203,7 @@ class ZHAAddDevicesPage extends LitElement {
     if (this._addDevicesTimeoutHandle) {
       clearTimeout(this._addDevicesTimeoutHandle);
     }
+    this._wakeLock?.then((wakeLock) => wakeLock.release());
   }
 
   private _subscribe(): void {
@@ -211,6 +223,9 @@ class ZHAAddDevicesPage extends LitElement {
       () => this._deactivate(),
       254000
     );
+    if ("wakeLock" in navigator) {
+      this._wakeLock = navigator.wakeLock.request();
+    }
   }
 
   static get styles(): CSSResultGroup {

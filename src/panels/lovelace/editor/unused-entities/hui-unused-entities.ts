@@ -3,22 +3,19 @@ import type { PropertyValues } from "lit";
 import { css, html, LitElement, nothing } from "lit";
 import { customElement, property, state } from "lit/decorators";
 import { classMap } from "lit/directives/class-map";
-import { computeDomain } from "../../../../common/entity/compute_domain";
-import { computeStateName } from "../../../../common/entity/compute_state_name";
-import type { DataTableRowData } from "../../../../components/data-table/ha-data-table";
 import "../../../../components/ha-fab";
 import "../../../../components/ha-svg-icon";
+import type { LovelaceConfig } from "../../../../data/lovelace/config/types";
 import type { HomeAssistant } from "../../../../types";
 import { computeUnusedEntities } from "../../common/compute-unused-entities";
-import type { Lovelace } from "../../types";
-import "../card-editor/hui-entity-picker-table";
-import { showSuggestCardDialog } from "../card-editor/show-suggest-card-dialog";
-import { showSelectViewDialog } from "../select-view/show-select-view-dialog";
-import type { LovelaceConfig } from "../../../../data/lovelace/config/types";
 import {
   computeCards,
   computeSection,
 } from "../../common/generate-lovelace-config";
+import type { Lovelace } from "../../types";
+import "../card-editor/hui-entity-picker-table";
+import { showSuggestCardDialog } from "../card-editor/show-suggest-card-dialog";
+import { showSelectViewDialog } from "../select-view/show-select-view-dialog";
 
 @customElement("hui-unused-entities")
 export class HuiUnusedEntities extends LitElement {
@@ -80,17 +77,7 @@ export class HuiUnusedEntities extends LitElement {
         <hui-entity-picker-table
           .hass=${this.hass}
           .narrow=${this.narrow}
-          .entities=${this._unusedEntities.map((entity) => {
-            const stateObj = this.hass!.states[entity];
-            return {
-              icon: "",
-              entity_id: entity,
-              stateObj,
-              name: stateObj ? computeStateName(stateObj) : "Unavailable",
-              domain: computeDomain(entity),
-              last_changed: stateObj?.last_changed,
-            };
-          }) as DataTableRowData[]}
+          .entities=${this._unusedEntities}
           @selected-changed=${this._handleSelectedChanged}
         ></hui-entity-picker-table>
       </div>
@@ -177,15 +164,15 @@ export class HuiUnusedEntities extends LitElement {
     .fab {
       position: sticky;
       float: var(--float-end);
-      right: calc(16px + env(safe-area-inset-right));
-      bottom: calc(16px + env(safe-area-inset-bottom));
-      inset-inline-end: calc(16px + env(safe-area-inset-right));
+      right: calc(16px + var(--safe-area-inset-right));
+      bottom: calc(16px + var(--safe-area-inset-bottom));
+      inset-inline-end: calc(16px + var(--safe-area-inset-right));
       inset-inline-start: initial;
       z-index: 1;
     }
     ha-fab {
       position: relative;
-      bottom: calc(-80px - env(safe-area-inset-bottom));
+      bottom: calc(-80px - var(--safe-area-inset-bottom));
       transition: bottom 0.3s;
     }
     .fab.selected ha-fab {

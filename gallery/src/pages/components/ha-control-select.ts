@@ -135,7 +135,7 @@ export class DemoHaControlSelect extends LitElement {
                 .options=${options}
                 class=${ifDefined(config.class)}
                 @value-changed=${this.handleValueChanged}
-                aria-labelledby=${id}
+                .label=${label}
                 ?disabled=${config.disabled}
               >
               </ha-control-select>
@@ -156,7 +156,7 @@ export class DemoHaControlSelect extends LitElement {
                   vertical
                   class=${ifDefined(config.class)}
                   @value-changed=${this.handleValueChanged}
-                  aria-labelledby=${id}
+                  .label=${label}
                   ?disabled=${config.disabled}
                 >
                 </ha-control-select>
@@ -181,7 +181,7 @@ export class DemoHaControlSelect extends LitElement {
       margin: 0;
     }
     label {
-      font-weight: 600;
+      font-weight: var(--ha-font-weight-bold);
     }
     .custom {
       --mdc-icon-size: 24px;

@@ -1,4 +1,3 @@
-import "@material/mwc-list/mwc-list";
 import { mdiFilterVariantRemove } from "@mdi/js";
 import type { CSSResultGroup } from "lit";
 import { css, html, LitElement, nothing } from "lit";
@@ -7,14 +6,16 @@ import { repeat } from "lit/directives/repeat";
 import memoizeOne from "memoize-one";
 import { fireEvent } from "../common/dom/fire_event";
 import { stringCompare } from "../common/string/compare";
+import type { LocalizeFunc } from "../common/translations/localize";
 import type { IntegrationManifest } from "../data/integration";
-import { fetchIntegrationManifests } from "../data/integration";
+import { fetchIntegrationManifests, domainToName } from "../data/integration";
 import { haStyleScrollbar } from "../resources/styles";
 import type { HomeAssistant } from "../types";
-import "./ha-domain-icon";
-import "./search-input-outlined";
-import "./ha-expansion-panel";
 import "./ha-check-list-item";
+import "./ha-domain-icon";
+import "./ha-expansion-panel";
+import "./ha-list";
+import "./search-input-outlined";
 
 @customElement("ha-filter-integrations")
 export class HaFilterIntegrations extends LitElement {
@@ -57,13 +58,18 @@ export class HaFilterIntegrations extends LitElement {
                 @value-changed=${this._handleSearchChange}
               >
               </search-input-outlined>
-              <mwc-list
+              <ha-list
                 class="ha-scrollbar"
                 @click=${this._handleItemClick}
                 multi
               >
                 ${repeat(
-                  this._integrations(this._manifests, this._filter, this.value),
+                  this._integrations(
+                    this.hass.localize,
+                    this._manifests,
+                    this._filter,
+                    this.value
+                  ),
                   (i) => i.domain,
                   (integration) =>
                     html`<ha-check-list-item
@@ -79,10 +85,10 @@ export class HaFilterIntegrations extends LitElement {
                         .domain=${integration.domain}
                         brand-fallback
                       ></ha-domain-icon>
-                      ${integration.name || integration.domain}
+                      ${integration.name}
                     </ha-check-list-item>`
                 )}
-              </mwc-list> `
+              </ha-list> `
           : nothing}
       </ha-expansion-panel>
     `;
@@ -92,7 +98,7 @@ export class HaFilterIntegrations extends LitElement {
     if (changed.has("expanded") && this.expanded) {
       setTimeout(() => {
         if (!this.expanded) return;
-        this.renderRoot.querySelector("mwc-list")!.style.height =
+        this.renderRoot.querySelector("ha-list")!.style.height =
           `${this.clientHeight - 49 - 32}px`; // 32px is the height of the search input
       }, 300);
     }
@@ -108,11 +114,21 @@ export class HaFilterIntegrations extends LitElement {
 
   protected async firstUpdated() {
     this._manifests = await fetchIntegrationManifests(this.hass);
+    this.hass.loadBackendTranslation("title");
   }
 
   private _integrations = memoizeOne(
-    (manifest: IntegrationManifest[], filter: string | undefined, _value) =>
+    (
+      localize: LocalizeFunc,
+      manifest: IntegrationManifest[],
+      filter: string | undefined,
+      _value
+    ) =>
       manifest
+        .map((mnfst) => ({
+          ...mnfst,
+          name: domainToName(localize, mnfst.domain, mnfst),
+        }))
         .filter(
           (mnfst) =>
             (!mnfst.integration_type ||
@@ -124,11 +140,7 @@ export class HaFilterIntegrations extends LitElement {
               mnfst.domain.toLowerCase().includes(filter))
         )
         .sort((a, b) =>
-          stringCompare(
-            a.name || a.domain,
-            b.name || b.domain,
-            this.hass.locale.language
-          )
+          stringCompare(a.name, b.name, this.hass.locale.language)
         )
   );
 
@@ -195,10 +207,10 @@ export class HaFilterIntegrations extends LitElement {
           min-width: 16px;
           box-sizing: border-box;
           border-radius: 50%;
-          font-weight: 400;
-          font-size: 11px;
+          font-size: var(--ha-font-size-xs);
+          font-weight: var(--ha-font-weight-normal);
           background-color: var(--primary-color);
-          line-height: 16px;
+          line-height: var(--ha-line-height-normal);
           text-align: center;
           padding: 0px 2px;
           color: var(--text-primary-color);

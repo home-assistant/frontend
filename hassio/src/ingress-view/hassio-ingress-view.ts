@@ -3,7 +3,7 @@ import type { PropertyValues, TemplateResult } from "lit";
 import { css, html, LitElement } from "lit";
 import { customElement, property, state } from "lit/decorators";
 import { fireEvent } from "../../../src/common/dom/fire_event";
-import { navigate } from "../../../src/common/navigate";
+import { goBack, navigate } from "../../../src/common/navigate";
 import { extractSearchParam } from "../../../src/common/url/search-params";
 import { nextRender } from "../../../src/common/util/render-status";
 import "../../../src/components/ha-icon-button";
@@ -193,7 +193,7 @@ class HassioIngressView extends LitElement {
         title: addon.name,
       });
       await nextRender();
-      history.back();
+      goBack();
       return;
     }
 
@@ -275,7 +275,7 @@ class HassioIngressView extends LitElement {
         title: addon.name,
       });
       await nextRender();
-      history.back();
+      goBack();
       return;
     }
 
@@ -340,12 +340,12 @@ class HassioIngressView extends LitElement {
     .header {
       display: flex;
       align-items: center;
-      font-size: 16px;
+      font-size: var(--ha-font-size-l);
       height: 40px;
       padding: 0 16px;
       pointer-events: none;
       background-color: var(--app-header-background-color);
-      font-weight: 400;
+      font-weight: var(--ha-font-weight-normal);
       color: var(--app-header-text-color, white);
       border-bottom: var(--app-header-border-bottom, none);
       box-sizing: border-box;
@@ -354,7 +354,7 @@ class HassioIngressView extends LitElement {
 
     .main-title {
       margin: var(--margin-title);
-      line-height: 20px;
+      line-height: var(--ha-line-height-condensed);
       flex-grow: 1;
     }
 

@@ -1,6 +1,4 @@
-import "@material/mwc-button";
 import type { ActionDetail } from "@material/mwc-list";
-import "@material/mwc-list/mwc-list-item";
 import { mdiDotsVertical } from "@mdi/js";
 import { DEFAULT_SCHEMA, Type } from "js-yaml";
 import type { CSSResultGroup, PropertyValues, TemplateResult } from "lit";
@@ -13,9 +11,13 @@ import "../../../../src/components/ha-alert";
 import "../../../../src/components/ha-button-menu";
 import "../../../../src/components/ha-card";
 import "../../../../src/components/ha-form/ha-form";
-import type { HaFormSchema } from "../../../../src/components/ha-form/types";
+import type {
+  HaFormSchema,
+  HaFormDataContainer,
+} from "../../../../src/components/ha-form/types";
 import "../../../../src/components/ha-formfield";
 import "../../../../src/components/ha-icon-button";
+import "../../../../src/components/ha-list-item";
 import "../../../../src/components/ha-switch";
 import "../../../../src/components/ha-yaml-editor";
 import type { HaYamlEditor } from "../../../../src/components/ha-yaml-editor";
@@ -34,6 +36,7 @@ import { haStyle } from "../../../../src/resources/styles";
 import type { HomeAssistant } from "../../../../src/types";
 import { suggestAddonRestart } from "../../dialogs/suggestAddonRestart";
 import { hassioStyle } from "../../resources/hassio-style";
+import type { ObjectSelector, Selector } from "../../../../src/data/selector";
 
 const SUPPORTED_UI_TYPES = [
   "string",
@@ -61,6 +64,8 @@ class HassioAddonConfig extends LitElement {
 
   @property({ attribute: false }) public supervisor!: Supervisor;
 
+  @property({ type: Boolean }) public disabled = false;
+
   @state() private _configHasChanged = false;
 
   @state() private _valid = true;
@@ -77,78 +82,125 @@ class HassioAddonConfig extends LitElement {
 
   @query("ha-yaml-editor") private _editor?: HaYamlEditor;
 
-  public computeLabel = (entry: HaFormSchema): string =>
-    this.addon.translations[this.hass.language]?.configuration?.[entry.name]
-      ?.name ||
-    this.addon.translations.en?.configuration?.[entry.name]?.name ||
+  private _getTranslationEntry(
+    language: string,
+    entry: HaFormSchema,
+    options?: { path?: string[] }
+  ) {
+    let parent = this.addon.translations[language]?.configuration;
+    if (!parent) return undefined;
+    if (options?.path) {
+      for (const key of options.path) {
+        parent = parent[key]?.fields;
+        if (!parent) return undefined;
+      }
+    }
+    return parent[entry.name];
+  }
+
+  public computeLabel = (
+    entry: HaFormSchema,
+    _data: HaFormDataContainer,
+    options?: { path?: string[] }
+  ): string =>
+    this._getTranslationEntry(this.hass.language, entry, options)?.name ||
+    this._getTranslationEntry("en", entry, options)?.name ||
     entry.name;
 
-  public computeHelper = (entry: HaFormSchema): string =>
-    this.addon.translations[this.hass.language]?.configuration?.[entry.name]
+  public computeHelper = (
+    entry: HaFormSchema,
+    options?: { path?: string[] }
+  ): string =>
+    this._getTranslationEntry(this.hass.language, entry, options)
       ?.description ||
-    this.addon.translations.en?.configuration?.[entry.name]?.description ||
+    this._getTranslationEntry("en", entry, options)?.description ||
     "";
 
   private _convertSchema = memoizeOne(
     // Convert supervisor schema to selectors
-    (schema: Record<string, any>): HaFormSchema[] =>
-      schema.map((entry) =>
-        entry.type === "select"
-          ? {
-              name: entry.name,
-              required: entry.required,
-              selector: { select: { options: entry.options } },
-            }
-          : entry.type === "string"
-            ? entry.multiple
-              ? {
-                  name: entry.name,
-                  required: entry.required,
-                  selector: {
-                    select: { options: [], multiple: true, custom_value: true },
-                  },
-                }
-              : {
-                  name: entry.name,
-                  required: entry.required,
-                  selector: {
-                    text: {
-                      type: entry.format
-                        ? entry.format
-                        : MASKED_FIELDS.includes(entry.name)
-                          ? "password"
-                          : "text",
-                    },
-                  },
-                }
-            : entry.type === "boolean"
-              ? {
-                  name: entry.name,
-                  required: entry.required,
-                  selector: { boolean: {} },
-                }
-              : entry.type === "schema"
-                ? {
-                    name: entry.name,
-                    required: entry.required,
-                    selector: { object: {} },
-                  }
-                : entry.type === "float" || entry.type === "integer"
-                  ? {
-                      name: entry.name,
-                      required: entry.required,
-                      selector: {
-                        number: {
-                          mode: "box",
-                          step: entry.type === "float" ? "any" : undefined,
-                        },
-                      },
-                    }
-                  : entry
-      )
+    (schema: readonly HaFormSchema[]): HaFormSchema[] =>
+      this._convertSchemaElements(schema)
   );
 
-  private _filteredShchema = memoizeOne(
+  private _convertSchemaElements(
+    schema: readonly HaFormSchema[]
+  ): HaFormSchema[] {
+    return schema.map((entry) => this._convertSchemaElement(entry));
+  }
+
+  private _convertSchemaElement(entry: any): HaFormSchema {
+    if (entry.type === "schema" && !entry.multiple) {
+      return {
+        name: entry.name,
+        type: "expandable",
+        required: entry.required,
+        schema: this._convertSchemaElements(entry.schema),
+      };
+    }
+    const selector = this._convertSchemaElementToSelector(entry, false);
+    if (selector) {
+      return {
+        name: entry.name,
+        required: entry.required,
+        selector,
+      };
+    }
+    return entry;
+  }
+
+  private _convertSchemaElementToSelector(
+    entry: any,
+    force: boolean
+  ): Selector | null {
+    if (entry.type === "select") {
+      return { select: { options: entry.options } };
+    }
+    if (entry.type === "string") {
+      return entry.multiple
+        ? { select: { options: [], multiple: true, custom_value: true } }
+        : {
+            text: {
+              type: entry.format
+                ? entry.format
+                : MASKED_FIELDS.includes(entry.name)
+                  ? "password"
+                  : "text",
+            },
+          };
+    }
+    if (entry.type === "boolean") {
+      return { boolean: {} };
+    }
+    if (entry.type === "schema") {
+      const fields: NonNullable<ObjectSelector["object"]>["fields"] = {};
+      for (const child_entry of entry.schema) {
+        fields[child_entry.name] = {
+          required: child_entry.required,
+          selector: this._convertSchemaElementToSelector(child_entry, true)!,
+        };
+      }
+      return {
+        object: {
+          multiple: entry.multiple,
+          fields,
+        },
+      };
+    }
+    if (entry.type === "float" || entry.type === "integer") {
+      return {
+        number: {
+          mode: "box",
+          step: entry.type === "float" ? "any" : undefined,
+        },
+      };
+    }
+    if (force) {
+      return { object: {} };
+    }
+    return null;
+  }
+
+  private _filteredSchema = memoizeOne(
     (options: Record<string, unknown>, schema: HaFormSchema[]) =>
       schema.filter((entry) => entry.name in options || entry.required)
   );
@@ -160,7 +212,7 @@ class HassioAddonConfig extends LitElement {
       showForm &&
       JSON.stringify(this.addon.schema) !==
         JSON.stringify(
-          this._filteredShchema(this.addon.options, this.addon.schema!)
+          this._filteredSchema(this.addon.options, this.addon.schema!)
         );
     return html`
       <h1>${this.addon.name}</h1>
@@ -176,7 +228,7 @@ class HassioAddonConfig extends LitElement {
                 .path=${mdiDotsVertical}
                 slot="trigger"
               ></ha-icon-button>
-              <mwc-list-item .disabled=${!this._canShowSchema}>
+              <ha-list-item .disabled=${!this._canShowSchema || this.disabled}>
                 ${this._yamlMode
                   ? this.supervisor.localize(
                       "addon.configuration.options.edit_in_ui"
@@ -184,10 +236,13 @@ class HassioAddonConfig extends LitElement {
                   : this.supervisor.localize(
                       "addon.configuration.options.edit_in_yaml"
                     )}
-              </mwc-list-item>
-              <mwc-list-item class="warning">
+              </ha-list-item>
+              <ha-list-item
+                class=${!this.disabled ? "warning" : ""}
+                .disabled=${this.disabled}
+              >
                 ${this.supervisor.localize("common.reset_defaults")}
-              </mwc-list-item>
+              </ha-list-item>
             </ha-button-menu>
           </div>
         </div>
@@ -195,6 +250,8 @@ class HassioAddonConfig extends LitElement {
         <div class="card-content">
           ${showForm
             ? html`<ha-form
+                .hass=${this.hass}
+                .disabled=${this.disabled}
                 .data=${this._options!}
                 @value-changed=${this._configChanged}
                 .computeLabel=${this.computeLabel}
@@ -202,13 +259,13 @@ class HassioAddonConfig extends LitElement {
                 .schema=${this._convertSchema(
                   this._showOptional
                     ? this.addon.schema!
-                    : this._filteredShchema(
+                    : this._filteredSchema(
                         this.addon.options,
                         this.addon.schema!
                       )
                 )}
               ></ha-form>`
-            : html` <ha-yaml-editor
+            : html`<ha-yaml-editor
                 @value-changed=${this._configChanged}
                 .yamlSchema=${ADDON_YAML_SCHEMA}
               ></ha-yaml-editor>`}
@@ -244,7 +301,9 @@ class HassioAddonConfig extends LitElement {
         <div class="card-actions right">
           <ha-progress-button
             @click=${this._saveTapped}
-            .disabled=${!this._configHasChanged || !this._valid}
+            .disabled=${this.disabled ||
+            !this._configHasChanged ||
+            !this._valid}
           >
             ${this.supervisor.localize("common.save")}
           </ha-progress-button>
@@ -346,6 +405,10 @@ class HassioAddonConfig extends LitElement {
   }
 
   private async _saveTapped(ev: CustomEvent): Promise<void> {
+    if (this.disabled || !this._configHasChanged || !this._valid) {
+      return;
+    }
+
     const button = ev.currentTarget as any;
     const options: Record<string, unknown> = this._yamlMode
       ? this._editor?.value
@@ -407,7 +470,7 @@ class HassioAddonConfig extends LitElement {
           z-index: 3;
           --mdc-theme-text-primary-on-background: var(--primary-text-color);
         }
-        mwc-list-item[disabled] {
+        ha-list-item[disabled] {
           --mdc-theme-text-primary-on-background: var(--disabled-text-color);
         }
         .header {
@@ -417,13 +480,13 @@ class HassioAddonConfig extends LitElement {
         .header h2 {
           color: var(--ha-card-header-color, var(--primary-text-color));
           font-family: var(--ha-card-header-font-family, inherit);
-          font-size: var(--ha-card-header-font-size, 24px);
+          font-size: var(--ha-card-header-font-size, var(--ha-font-size-2xl));
           letter-spacing: -0.012em;
-          line-height: 48px;
+          line-height: var(--ha-line-height-expanded);
           padding: 12px 16px 16px;
           display: block;
           margin-block: 0px;
-          font-weight: normal;
+          font-weight: var(--ha-font-weight-normal);
         }
         .card-actions.right {
           justify-content: flex-end;

@@ -1,7 +1,7 @@
 import { differenceInDays, endOfDay } from "date-fns";
 import type { UnsubscribeFunc } from "home-assistant-js-websocket";
 import type { PropertyValues } from "lit";
-import { css, html, LitElement, nothing } from "lit";
+import { html, LitElement, nothing } from "lit";
 import { customElement, property, state } from "lit/decorators";
 import { formatDate } from "../../../../common/datetime/format_date";
 import type { EnergyData } from "../../../../data/energy";
@@ -154,11 +154,6 @@ export class HuiEnergyCompareCard
 
   static styles = [
     buttonLinkStyle,
-    css`
-      mwc-button {
-        width: max-content;
-      }
-    `,
   ];
 }
 

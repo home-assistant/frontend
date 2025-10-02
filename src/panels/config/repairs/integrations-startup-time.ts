@@ -1,9 +1,10 @@
-import "@material/mwc-list/mwc-list";
 import type { PropertyValues } from "lit";
 import { css, html, LitElement, nothing } from "lit";
 import { customElement, property, state } from "lit/decorators";
 import "../../../components/ha-card";
-import "../../../components/ha-clickable-list-item";
+import "../../../components/ha-list";
+import "../../../components/ha-md-list";
+import "../../../components/ha-md-list-item";
 import type {
   IntegrationManifest,
   IntegrationSetup,
@@ -39,7 +40,7 @@ class IntegrationsStartupTime extends LitElement {
     }
 
     return html`
-      <mwc-list>
+      <ha-md-list>
         ${this._setups?.map((setup) => {
           const manifest = this._manifests && this._manifests[setup.domain];
           const docLink = manifest
@@ -50,13 +51,7 @@ class IntegrationsStartupTime extends LitElement {
 
           const setupSeconds = setup.seconds?.toFixed(2);
           return html`
-            <ha-clickable-list-item
-              graphic="avatar"
-              twoline
-              hasMeta
-              open-new-tab
-              href=${docLink}
-            >
+            <ha-md-list-item .href=${docLink} type="link" target="_blank">
               <img
                 alt=""
                 loading="lazy"
@@ -68,19 +63,19 @@ class IntegrationsStartupTime extends LitElement {
                 })}
                 crossorigin="anonymous"
                 referrerpolicy="no-referrer"
-                slot="graphic"
+                slot="start"
               />
               <span>
                 ${domainToName(this.hass.localize, setup.domain, manifest)}
               </span>
-              <span slot="secondary">${setup.domain}</span>
-              <div slot="meta">
+              <span slot="supporting-text">${setup.domain}</span>
+              <div slot="end">
                 ${setupSeconds ? html`${setupSeconds} s` : ""}
               </div>
-            </ha-clickable-list-item>
+            </ha-md-list-item>
           `;
         })}
-      </mwc-list>
+      </ha-md-list>
     `;
   }
 
@@ -109,20 +104,14 @@ class IntegrationsStartupTime extends LitElement {
   }
 
   static styles = css`
-    ha-clickable-list-item {
-      --mdc-list-item-meta-size: 64px;
-      --mdc-typography-caption-font-size: 12px;
-    }
     img {
       display: block;
       max-height: 40px;
       max-width: 40px;
       border-radius: 0;
     }
-    div[slot="meta"] {
-      display: flex;
-      justify-content: center;
-      align-items: center;
+    div[slot="end"] {
+      font-size: var(--ha-font-size-s);
     }
   `;
 }

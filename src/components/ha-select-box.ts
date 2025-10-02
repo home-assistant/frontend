@@ -116,7 +116,7 @@ export class HaSelectBox extends LitElement {
     .list {
       display: grid;
       grid-template-columns: repeat(var(--columns, 1), minmax(0, 1fr));
-      gap: 12px;
+      gap: var(--ha-space-3);
     }
     .option {
       position: relative;
@@ -128,7 +128,7 @@ export class HaSelectBox extends LitElement {
       align-items: center;
       justify-content: space-between;
       padding: 12px;
-      gap: 8px;
+      gap: var(--ha-space-2);
       overflow: hidden;
       cursor: pointer;
     }
@@ -137,7 +137,7 @@ export class HaSelectBox extends LitElement {
       position: relative;
       display: flex;
       flex-direction: row;
-      gap: 8px;
+      gap: var(--ha-space-2);
       min-width: 0;
       width: 100%;
     }
@@ -148,24 +148,24 @@ export class HaSelectBox extends LitElement {
     .option .content .text {
       display: flex;
       flex-direction: column;
-      gap: 4px;
+      gap: var(--ha-space-1);
       min-width: 0;
       flex: 1;
     }
     .option .content .text .label {
       color: var(--primary-text-color);
-      font-size: 14px;
-      font-weight: 400;
-      line-height: 20px;
+      font-size: var(--ha-font-size-m);
+      font-weight: var(--ha-font-weight-normal);
+      line-height: var(--ha-line-height-condensed);
       overflow: hidden;
       white-space: nowrap;
       text-overflow: ellipsis;
     }
     .option .content .text .description {
       color: var(--secondary-text-color);
-      font-size: 13px;
-      font-weight: 400;
-      line-height: 16px;
+      font-size: var(--ha-font-size-s);
+      font-weight: var(--ha-font-weight-normal);
+      line-height: var(--ha-line-height-condensed);
     }
     img {
       position: relative;

@@ -1,13 +1,16 @@
 import { css, html, LitElement, nothing } from "lit";
-import { customElement, property } from "lit/decorators";
+import { customElement, property, query } from "lit/decorators";
 import type { Condition } from "../../data/automation";
 import type { ConditionSelector } from "../../data/selector";
 import "../../panels/config/automation/condition/ha-automation-condition";
+import type HaAutomationCondition from "../../panels/config/automation/condition/ha-automation-condition";
 import type { HomeAssistant } from "../../types";
 
 @customElement("ha-selector-condition")
 export class HaConditionSelector extends LitElement {
   @property({ attribute: false }) public hass!: HomeAssistant;
+
+  @property({ type: Boolean }) public narrow = false;
 
   @property({ attribute: false }) public selector!: ConditionSelector;
 
@@ -17,6 +20,9 @@ export class HaConditionSelector extends LitElement {
 
   @property({ type: Boolean, reflect: true }) public disabled = false;
 
+  @query("ha-automation-condition")
+  private _conditionElement?: HaAutomationCondition;
+
   protected render() {
     return html`
       ${this.label ? html`<label>${this.label}</label>` : nothing}
@@ -24,8 +30,18 @@ export class HaConditionSelector extends LitElement {
         .disabled=${this.disabled}
         .conditions=${this.value || []}
         .hass=${this.hass}
+        .narrow=${this.narrow}
+        .optionsInSidebar=${!!this.selector.condition?.optionsInSidebar}
       ></ha-automation-condition>
     `;
+  }
+
+  public expandAll() {
+    this._conditionElement?.expandAll();
+  }
+
+  public collapseAll() {
+    this._conditionElement?.collapseAll();
   }
 
   static styles = css`
@@ -36,7 +52,8 @@ export class HaConditionSelector extends LitElement {
     label {
       display: block;
       margin-bottom: 4px;
-      font-weight: 500;
+      font-weight: var(--ha-font-weight-medium);
+      color: var(--secondary-text-color);
     }
   `;
 }

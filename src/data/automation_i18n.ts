@@ -1,4 +1,4 @@
-import type { HassConfig } from "home-assistant-js-websocket";
+import type { HassConfig, HassEntity } from "home-assistant-js-websocket";
 import { ensureArray } from "../common/array/ensure-array";
 import {
   formatDurationLong,
@@ -26,6 +26,7 @@ import {
 import type { EntityRegistryEntry } from "./entity_registry";
 import type { FrontendLocaleData } from "./translation";
 import { isTriggerList } from "./trigger";
+import { hasTemplate } from "../common/string/has-template";
 
 const triggerTranslationBaseKey =
   "ui.panel.config.automation.editor.triggers.type";
@@ -155,7 +156,7 @@ const tryDescribeTrigger = (
 
     const stateObj = Array.isArray(trigger.entity_id)
       ? hass.states[trigger.entity_id[0]]
-      : hass.states[trigger.entity_id];
+      : (hass.states[trigger.entity_id] as HassEntity | undefined);
 
     if (Array.isArray(trigger.entity_id)) {
       for (const entity of trigger.entity_id.values()) {
@@ -172,12 +173,14 @@ const tryDescribeTrigger = (
     }
 
     const attribute = trigger.attribute
-      ? computeAttributeNameDisplay(
-          hass.localize,
-          stateObj,
-          hass.entities,
-          trigger.attribute
-        )
+      ? stateObj
+        ? computeAttributeNameDisplay(
+            hass.localize,
+            stateObj,
+            hass.entities,
+            trigger.attribute
+          )
+        : trigger.attribute
       : undefined;
 
     const duration = trigger.for
@@ -232,13 +235,15 @@ const tryDescribeTrigger = (
     if (trigger.attribute) {
       const stateObj = Array.isArray(trigger.entity_id)
         ? hass.states[trigger.entity_id[0]]
-        : hass.states[trigger.entity_id];
-      attribute = computeAttributeNameDisplay(
-        hass.localize,
-        stateObj,
-        hass.entities,
-        trigger.attribute
-      );
+        : (hass.states[trigger.entity_id] as HassEntity | undefined);
+      attribute = stateObj
+        ? computeAttributeNameDisplay(
+            hass.localize,
+            stateObj,
+            hass.entities,
+            trigger.attribute
+          )
+        : trigger.attribute;
     }
 
     const entityArray: string[] = ensureArray(trigger.entity_id);
@@ -250,7 +255,7 @@ const tryDescribeTrigger = (
       }
     }
 
-    const stateObj = hass.states[entityArray[0]];
+    const stateObj = hass.states[entityArray[0]] as HassEntity | undefined;
 
     let fromChoice = "other";
     let fromString = "";
@@ -266,15 +271,17 @@ const tryDescribeTrigger = (
         const from: string[] = [];
         for (const state of fromArray) {
           from.push(
-            trigger.attribute
-              ? hass
-                  .formatEntityAttributeValue(
-                    stateObj,
-                    trigger.attribute,
-                    state
-                  )
-                  .toString()
-              : hass.formatEntityState(stateObj, state)
+            stateObj
+              ? trigger.attribute
+                ? hass
+                    .formatEntityAttributeValue(
+                      stateObj,
+                      trigger.attribute,
+                      state
+                    )
+                    .toString()
+                : hass.formatEntityState(stateObj, state)
+              : state
           );
         }
         if (from.length !== 0) {
@@ -298,15 +305,17 @@ const tryDescribeTrigger = (
         const to: string[] = [];
         for (const state of toArray) {
           to.push(
-            trigger.attribute
-              ? hass
-                  .formatEntityAttributeValue(
-                    stateObj,
-                    trigger.attribute,
-                    state
-                  )
-                  .toString()
-              : hass.formatEntityState(stateObj, state).toString()
+            stateObj
+              ? trigger.attribute
+                ? hass
+                    .formatEntityAttributeValue(
+                      stateObj,
+                      trigger.attribute,
+                      state
+                    )
+                    .toString()
+                : hass.formatEntityState(stateObj, state).toString()
+              : state
           );
         }
         if (to.length !== 0) {
@@ -369,7 +378,17 @@ const tryDescribeTrigger = (
 
   // Tag Trigger
   if (trigger.trigger === "tag") {
-    return hass.localize(`${triggerTranslationBaseKey}.tag.description.full`);
+    const entity = Object.values(hass.states).find(
+      (state) =>
+        state.entity_id.startsWith("tag.") &&
+        state.attributes.tag_id === trigger.tag_id
+    );
+    return entity
+      ? hass.localize(
+          `${triggerTranslationBaseKey}.tag.description.known_tag`,
+          { tag_name: computeStateName(entity) }
+        )
+      : hass.localize(`${triggerTranslationBaseKey}.tag.description.full`);
   }
 
   // Time Trigger
@@ -391,8 +410,23 @@ const tryDescribeTrigger = (
       return `${entityStr}${offsetStr}`;
     });
 
+    // Handle weekday information if present
+    let weekdays: string[] = [];
+    if (trigger.weekday) {
+      const weekdayArray = ensureArray(trigger.weekday);
+      if (weekdayArray.length > 0) {
+        weekdays = weekdayArray.map((day) =>
+          hass.localize(
+            `ui.panel.config.automation.editor.triggers.type.time.weekdays.${day}` as any
+          )
+        );
+      }
+    }
+
     return hass.localize(`${triggerTranslationBaseKey}.time.description.full`, {
       time: formatListWithOrs(hass.locale, result),
+      hasWeekdays: weekdays.length > 0 ? "true" : "false",
+      weekdays: formatListWithOrs(hass.locale, weekdays),
     });
   }
 
@@ -725,7 +759,9 @@ const tryDescribeTrigger = (
     if (localized) {
       return localized;
     }
-    const stateObj = hass.states[config.entity_id as string];
+    const stateObj = hass.states[config.entity_id as string] as
+      | HassEntity
+      | undefined;
     return `${stateObj ? computeStateName(stateObj) : config.entity_id} ${
       config.type
     }`;
@@ -810,6 +846,12 @@ const tryDescribeCondition = (
   entityRegistry: EntityRegistryEntry[],
   ignoreAlias = false
 ) => {
+  if (typeof condition === "string" && hasTemplate(condition)) {
+    return hass.localize(
+      `${conditionsTranslationBaseKey}.template.description.full`
+    );
+  }
+
   if (condition.alias && !ignoreAlias) {
     return condition.alias;
   }
@@ -894,13 +936,15 @@ const tryDescribeCondition = (
     if (condition.attribute) {
       const stateObj = Array.isArray(condition.entity_id)
         ? hass.states[condition.entity_id[0]]
-        : hass.states[condition.entity_id];
-      attribute = computeAttributeNameDisplay(
-        hass.localize,
-        stateObj,
-        hass.entities,
-        condition.attribute
-      );
+        : (hass.states[condition.entity_id] as HassEntity | undefined);
+      attribute = stateObj
+        ? computeAttributeNameDisplay(
+            hass.localize,
+            stateObj,
+            hass.entities,
+            condition.attribute
+          )
+        : condition.attribute;
     }
 
     const entities: string[] = [];
@@ -919,37 +963,40 @@ const tryDescribeCondition = (
     }
 
     const states: string[] = [];
-    const stateObj =
-      hass.states[
-        Array.isArray(condition.entity_id)
-          ? condition.entity_id[0]
-          : condition.entity_id
-      ];
+    const stateObj = hass.states[
+      Array.isArray(condition.entity_id)
+        ? condition.entity_id[0]
+        : condition.entity_id
+    ] as HassEntity | undefined;
     if (Array.isArray(condition.state)) {
       for (const state of condition.state.values()) {
         states.push(
-          condition.attribute
-            ? hass
-                .formatEntityAttributeValue(
-                  stateObj,
-                  condition.attribute,
-                  state
-                )
-                .toString()
-            : hass.formatEntityState(stateObj, state)
+          stateObj
+            ? condition.attribute
+              ? hass
+                  .formatEntityAttributeValue(
+                    stateObj,
+                    condition.attribute,
+                    state
+                  )
+                  .toString()
+              : hass.formatEntityState(stateObj, state)
+            : state
         );
       }
     } else if (condition.state !== "") {
       states.push(
-        condition.attribute
-          ? hass
-              .formatEntityAttributeValue(
-                stateObj,
-                condition.attribute,
-                condition.state
-              )
-              .toString()
-          : hass.formatEntityState(stateObj, condition.state.toString())
+        stateObj
+          ? condition.attribute
+            ? hass
+                .formatEntityAttributeValue(
+                  stateObj,
+                  condition.attribute,
+                  condition.state
+                )
+                .toString()
+            : hass.formatEntityState(stateObj, condition.state.toString())
+          : condition.state.toString()
       );
     }
 
@@ -979,7 +1026,7 @@ const tryDescribeCondition = (
   // Numeric State Condition
   if (condition.condition === "numeric_state" && condition.entity_id) {
     const entity_ids = ensureArray(condition.entity_id);
-    const stateObj = hass.states[entity_ids[0]];
+    const stateObj = hass.states[entity_ids[0]] as HassEntity | undefined;
     const entity = formatListWithAnds(
       hass.locale,
       entity_ids.map((id) =>
@@ -988,12 +1035,14 @@ const tryDescribeCondition = (
     );
 
     const attribute = condition.attribute
-      ? computeAttributeNameDisplay(
-          hass.localize,
-          stateObj,
-          hass.entities,
-          condition.attribute
-        )
+      ? stateObj
+        ? computeAttributeNameDisplay(
+            hass.localize,
+            stateObj,
+            hass.entities,
+            condition.attribute
+          )
+        : condition.attribute
       : undefined;
 
     if (condition.above !== undefined && condition.below !== undefined) {
@@ -1187,7 +1236,9 @@ const tryDescribeCondition = (
     if (localized) {
       return localized;
     }
-    const stateObj = hass.states[config.entity_id as string];
+    const stateObj = hass.states[config.entity_id as string] as
+      | HassEntity
+      | undefined;
     return `${stateObj ? computeStateName(stateObj) : config.entity_id} ${
       config.type
     }`;

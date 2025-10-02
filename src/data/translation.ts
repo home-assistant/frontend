@@ -1,11 +1,12 @@
 import type { HomeAssistant } from "../types";
-import { fetchFrontendUserData, saveFrontendUserData } from "./frontend";
+import { saveFrontendUserData, subscribeFrontendUserData } from "./frontend";
 
 export enum NumberFormat {
   language = "language",
   system = "system",
   comma_decimal = "comma_decimal",
   decimal_comma = "decimal_comma",
+  quote_decimal = "quote_decimal",
   space_comma = "space_comma",
   none = "none",
 }
@@ -74,8 +75,10 @@ export type TranslationCategory =
   | "selector"
   | "services";
 
-export const fetchTranslationPreferences = (hass: HomeAssistant) =>
-  fetchFrontendUserData(hass.connection, "language");
+export const subscribeTranslationPreferences = (
+  hass: HomeAssistant,
+  callback: (data: { value: FrontendLocaleData | null }) => void
+) => subscribeFrontendUserData(hass.connection, "language", callback);
 
 export const saveTranslationPreferences = (
   hass: HomeAssistant,

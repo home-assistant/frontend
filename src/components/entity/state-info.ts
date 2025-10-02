@@ -36,39 +36,38 @@ class StateInfo extends LitElement {
         </div>
         ${this.inDialog
           ? html`<div class="time-ago">
-              <ha-tooltip>
-                <ha-relative-time
-                  .hass=${this.hass}
-                  .datetime=${this.stateObj.last_changed}
-                  capitalize
-                ></ha-relative-time>
-                <div slot="content">
-                  <div class="row">
-                    <span class="column-name">
-                      ${this.hass.localize(
-                        "ui.dialogs.more_info_control.last_changed"
-                      )}:
-                    </span>
-                    <ha-relative-time
-                      .hass=${this.hass}
-                      .datetime=${this.stateObj.last_changed}
-                      capitalize
-                    ></ha-relative-time>
-                  </div>
-                  <div class="row">
-                    <span>
-                      ${this.hass.localize(
-                        "ui.dialogs.more_info_control.last_updated"
-                      )}:
-                    </span>
-                    <ha-relative-time
-                      .hass=${this.hass}
-                      .datetime=${this.stateObj.last_updated}
-                      capitalize
-                    ></ha-relative-time>
-                  </div>
+              <ha-tooltip for="relative-time">
+                <div class="row">
+                  <span class="column-name">
+                    ${this.hass.localize(
+                      "ui.dialogs.more_info_control.last_changed"
+                    )}:
+                  </span>
+                  <ha-relative-time
+                    .hass=${this.hass}
+                    .datetime=${this.stateObj.last_changed}
+                    capitalize
+                  ></ha-relative-time>
+                </div>
+                <div class="row">
+                  <span>
+                    ${this.hass.localize(
+                      "ui.dialogs.more_info_control.last_updated"
+                    )}:
+                  </span>
+                  <ha-relative-time
+                    .hass=${this.hass}
+                    .datetime=${this.stateObj.last_updated}
+                    capitalize
+                  ></ha-relative-time>
                 </div>
               </ha-tooltip>
+              <ha-relative-time
+                id="relative-time"
+                .hass=${this.hass}
+                .datetime=${this.stateObj.last_changed}
+                capitalize
+              ></ha-relative-time>
             </div>`
           : html`<div class="extra-info"><slot></slot></div>`}
       </div>`;
@@ -108,7 +107,7 @@ class StateInfo extends LitElement {
 
     .name.in-dialog,
     :host([secondary-line]) .name {
-      line-height: 20px;
+      line-height: var(--ha-line-height-condensed);
     }
 
     .time-ago,

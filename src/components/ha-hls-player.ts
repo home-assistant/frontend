@@ -2,12 +2,13 @@ import type HlsType from "hls.js";
 import type { PropertyValues, TemplateResult } from "lit";
 import { css, html, LitElement } from "lit";
 import { customElement, property, query, state } from "lit/decorators";
+import { styleMap } from "lit/directives/style-map";
+import { isComponentLoaded } from "../common/config/is_component_loaded";
 import { fireEvent } from "../common/dom/fire_event";
 import { nextRender } from "../common/util/render-status";
+import { fetchStreamUrl } from "../data/camera";
 import type { HomeAssistant } from "../types";
 import "./ha-alert";
-import { fetchStreamUrl } from "../data/camera";
-import { isComponentLoaded } from "../common/config/is_component_loaded";
 
 type HlsLite = Omit<
   HlsType,
@@ -23,6 +24,10 @@ class HaHLSPlayer extends LitElement {
   @property() public url?: string;
 
   @property({ attribute: "poster-url" }) public posterUrl?: string;
+
+  @property({ attribute: false }) public aspectRatio?: number;
+
+  @property({ attribute: false }) public fitMode?: "cover" | "contain" | "fill";
 
   @property({ type: Boolean, attribute: "controls" })
   public controls = false;
@@ -54,6 +59,15 @@ class HaHLSPlayer extends LitElement {
 
   private static streamCount = 0;
 
+  private _handleVisibilityChange = () => {
+    if (document.hidden) {
+      this._cleanUp();
+    } else {
+      this._resetError();
+      this._startHls();
+    }
+  };
+
   public connectedCallback() {
     super.connectedCallback();
     HaHLSPlayer.streamCount += 1;
@@ -61,10 +75,15 @@ class HaHLSPlayer extends LitElement {
       this._resetError();
       this._startHls();
     }
+    document.addEventListener("visibilitychange", this._handleVisibilityChange);
   }
 
   public disconnectedCallback() {
     super.disconnectedCallback();
+    document.removeEventListener(
+      "visibilitychange",
+      this._handleVisibilityChange
+    );
     HaHLSPlayer.streamCount -= 1;
     this._cleanUp();
   }
@@ -87,6 +106,11 @@ class HaHLSPlayer extends LitElement {
             ?playsinline=${this.playsInline}
             ?controls=${this.controls}
             @loadeddata=${this._loadedData}
+            style=${styleMap({
+              height: this.aspectRatio == null ? "100%" : "auto",
+              aspectRatio: this.aspectRatio,
+              objectFit: this.fitMode,
+            })}
           ></video>`
         : ""}
     `;

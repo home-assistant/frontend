@@ -92,7 +92,7 @@ export class HaStateControlFanSpeed extends LitElement {
           .options=${options}
           .value=${this.speedValue}
           @value-changed=${this._speedValueChanged}
-          .ariaLabel=${computeAttributeNameDisplay(
+          .label=${computeAttributeNameDisplay(
             this.hass.localize,
             this.stateObj,
             this.hass.entities,
@@ -117,7 +117,7 @@ export class HaStateControlFanSpeed extends LitElement {
         .value=${this.sliderValue}
         .step=${this.stateObj.attributes.percentage_step ?? 1}
         @value-changed=${this._valueChanged}
-        .ariaLabel=${computeAttributeNameDisplay(
+        .label=${computeAttributeNameDisplay(
           this.hass.localize,
           this.stateObj,
           this.hass.entities,
@@ -145,7 +145,7 @@ export class HaStateControlFanSpeed extends LitElement {
       --control-slider-color: var(--primary-color);
       --control-slider-background: var(--disabled-color);
       --control-slider-background-opacity: 0.2;
-      --control-slider-tooltip-font-size: 20px;
+      --control-slider-tooltip-font-size: var(--ha-font-size-xl);
     }
     ha-control-select {
       height: 45vh;

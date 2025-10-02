@@ -18,6 +18,7 @@ import "./integration-badge";
 import { onBoardingStyles } from "./styles";
 
 const HIDDEN_DOMAINS = new Set([
+  "backup",
   "google_translate",
   "hassio",
   "met",
@@ -35,7 +36,9 @@ class OnboardingIntegrations extends SubscribeMixin(LitElement) {
 
   @state() private _entries: ConfigEntry[] = [];
 
-  @state() private _discoveredDomains = new Set<string>();
+  @state() private _discoveredDomains: Set<string> = new Set<string>();
+
+  @state() private _discoveredDomainsReceived = false;
 
   public hassSubscribe(): (UnsubscribeFunc | Promise<UnsubscribeFunc>)[] {
     return [
@@ -53,6 +56,7 @@ class OnboardingIntegrations extends SubscribeMixin(LitElement) {
           "title",
           Array.from(this._discoveredDomains)
         );
+        this._discoveredDomainsReceived = true;
       }),
       subscribeConfigEntries(
         this.hass,
@@ -97,7 +101,7 @@ class OnboardingIntegrations extends SubscribeMixin(LitElement) {
   }
 
   protected render() {
-    if (!this._discoveredDomains.size) {
+    if (!this._discoveredDomainsReceived) {
       return nothing;
     }
     // Render discovered and existing entries together sorted by localized title.
@@ -131,7 +135,7 @@ class OnboardingIntegrations extends SubscribeMixin(LitElement) {
           )}
         </p>
         <div class="footer">
-          <ha-button unelevated @click=${this._finish}>
+          <ha-button @click=${this._finish}>
             ${this.onboardingLocalize(
               "ui.panel.page-onboarding.integration.finish"
             )}
@@ -172,7 +176,7 @@ class OnboardingIntegrations extends SubscribeMixin(LitElement) {
           : nothing}
       </div>
       <div class="footer">
-        <ha-button unelevated @click=${this._finish}>
+        <ha-button @click=${this._finish}>
           ${this.onboardingLocalize(
             "ui.panel.page-onboarding.integration.finish"
           )}
@@ -208,7 +212,7 @@ class OnboardingIntegrations extends SubscribeMixin(LitElement) {
           margin-top: 24px;
           display: grid;
           grid-template-columns: repeat(auto-fill, minmax(106px, 1fr));
-          row-gap: 24px;
+          row-gap: var(--ha-space-6);
         }
         .more {
           display: flex;

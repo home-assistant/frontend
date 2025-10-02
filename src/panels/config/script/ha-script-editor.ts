@@ -1,7 +1,7 @@
-import "@material/mwc-button";
+import { consume } from "@lit/context";
 import {
+  mdiAppleKeyboardCommand,
   mdiCog,
-  mdiContentDuplicate,
   mdiContentSave,
   mdiDebugStepOver,
   mdiDelete,
@@ -11,30 +11,35 @@ import {
   mdiInformationOutline,
   mdiPlay,
   mdiPlaylistEdit,
+  mdiPlusCircleMultipleOutline,
+  mdiRedo,
   mdiRenameBox,
   mdiRobotConfused,
   mdiTag,
   mdiTransitConnection,
+  mdiUndo,
 } from "@mdi/js";
 import type { CSSResultGroup, PropertyValues, TemplateResult } from "lit";
 import { LitElement, css, html, nothing } from "lit";
 import { property, query, state } from "lit/decorators";
 import { classMap } from "lit/directives/class-map";
-import { consume } from "@lit-labs/context";
 import { fireEvent } from "../../../common/dom/fire_event";
-import { navigate } from "../../../common/navigate";
+import { goBack, navigate } from "../../../common/navigate";
 import { slugify } from "../../../common/string/slugify";
-import { computeRTL } from "../../../common/util/compute_rtl";
-import { afterNextRender } from "../../../common/util/render-status";
 import { promiseTimeout } from "../../../common/util/promise-timeout";
+import { afterNextRender } from "../../../common/util/render-status";
+import "../../../components/ha-button";
 import "../../../components/ha-button-menu";
 import "../../../components/ha-fab";
 
+import { transform } from "../../../common/decorators/transform";
 import "../../../components/ha-icon-button";
 import "../../../components/ha-list-item";
 import "../../../components/ha-svg-icon";
 import "../../../components/ha-yaml-editor";
+import { substituteBlueprint } from "../../../data/blueprint";
 import { validateConfig } from "../../../data/config";
+import { fullEntitiesContext } from "../../../data/context";
 import { UNAVAILABLE } from "../../../data/entity";
 import {
   type EntityRegistryEntry,
@@ -47,7 +52,7 @@ import {
   getScriptEditorInitData,
   getScriptStateConfig,
   hasScriptFields,
-  migrateAutomationAction,
+  normalizeScriptConfig,
   showScriptEditor,
   triggerScript,
 } from "../../../data/script";
@@ -58,25 +63,29 @@ import {
 import { showMoreInfoDialog } from "../../../dialogs/more-info/show-ha-more-info-dialog";
 import "../../../layouts/hass-subpage";
 import { KeyboardShortcutMixin } from "../../../mixins/keyboard-shortcut-mixin";
+import { PreventUnsavedMixin } from "../../../mixins/prevent-unsaved-mixin";
+import { SubscribeMixin } from "../../../mixins/subscribe-mixin";
 import { haStyle } from "../../../resources/styles";
 import type { Entries, HomeAssistant, Route } from "../../../types";
 import { showToast } from "../../../util/toast";
 import { showAutomationModeDialog } from "../automation/automation-mode-dialog/show-dialog-automation-mode";
 import type { EntityRegistryUpdate } from "../automation/automation-save-dialog/show-dialog-automation-save";
 import { showAutomationSaveDialog } from "../automation/automation-save-dialog/show-dialog-automation-save";
+import { showAssignCategoryDialog } from "../category/show-dialog-assign-category";
 import "./blueprint-script-editor";
 import "./manual-script-editor";
 import type { HaManualScriptEditor } from "./manual-script-editor";
-import { substituteBlueprint } from "../../../data/blueprint";
-import { SubscribeMixin } from "../../../mixins/subscribe-mixin";
-import { showAssignCategoryDialog } from "../category/show-dialog-assign-category";
-import { PreventUnsavedMixin } from "../../../mixins/prevent-unsaved-mixin";
-import { fullEntitiesContext } from "../../../data/context";
-import { transform } from "../../../common/decorators/transform";
+import { UndoRedoMixin } from "../../../mixins/undo-redo-mixin";
+import { isMac } from "../../../util/is_mac";
 
-export class HaScriptEditor extends SubscribeMixin(
+const baseEditorMixins = SubscribeMixin(
   PreventUnsavedMixin(KeyboardShortcutMixin(LitElement))
-) {
+);
+
+export class HaScriptEditor extends UndoRedoMixin<
+  typeof baseEditorMixins,
+  ScriptConfig
+>(baseEditorMixins) {
   @property({ attribute: false }) public hass!: HomeAssistant;
 
   @property({ attribute: false }) public scriptId: string | null = null;
@@ -105,8 +114,9 @@ export class HaScriptEditor extends SubscribeMixin(
 
   @state() private _readOnly = false;
 
+  @state()
   @consume({ context: fullEntitiesContext, subscribe: true })
-  @transform<EntityRegistryEntry | undefined, EntityRegistryEntry[]>({
+  @transform<EntityRegistryEntry[], EntityRegistryEntry>({
     transformer: function (this: HaScriptEditor, value) {
       return value.find(({ entity_id }) => entity_id === this._entityId);
     },
@@ -160,6 +170,10 @@ export class HaScriptEditor extends SubscribeMixin(
       : undefined;
 
     const useBlueprint = "use_blueprint" in this._config;
+    const shortcutIcon = isMac
+      ? html`<ha-svg-icon .path=${mdiAppleKeyboardCommand}></ha-svg-icon>`
+      : this.hass.localize("ui.panel.config.automation.editor.ctrl");
+
     return html`
       <hass-subpage
         .hass=${this.hass}
@@ -169,13 +183,60 @@ export class HaScriptEditor extends SubscribeMixin(
         .header=${this._config.alias ||
         this.hass.localize("ui.panel.config.script.editor.default_name")}
       >
+        ${this._mode === "gui" && !this.narrow
+          ? html`<ha-icon-button
+                slot="toolbar-icon"
+                .label=${this.hass.localize("ui.common.undo")}
+                .path=${mdiUndo}
+                @click=${this.undo}
+                .disabled=${!this.canUndo}
+                id="button-undo"
+              >
+              </ha-icon-button>
+              <ha-tooltip placement="bottom" for="button-undo">
+                ${this.hass.localize("ui.common.undo")}
+                <span class="shortcut">
+                  (<span>${shortcutIcon}</span>
+                  <span>+</span>
+                  <span>Z</span>)
+                </span>
+              </ha-tooltip>
+              <ha-icon-button
+                slot="toolbar-icon"
+                .label=${this.hass.localize("ui.common.redo")}
+                .path=${mdiRedo}
+                @click=${this.redo}
+                .disabled=${!this.canRedo}
+                id="button-redo"
+              >
+              </ha-icon-button>
+              <ha-tooltip placement="bottom" for="button-redo">
+                ${this.hass.localize("ui.common.redo")}
+                <span class="shortcut"
+                  >(
+                  ${isMac
+                    ? html`<span>${shortcutIcon}</span>
+                        <span>+</span>
+                        <span>Shift</span>
+                        <span>+</span>
+                        <span>Z</span>`
+                    : html`<span>${shortcutIcon}</span>
+                        <span>+</span>
+                        <span>Y</span>`})
+                </span>
+              </ha-tooltip>`
+          : nothing}
         ${this.scriptId && !this.narrow
           ? html`
-              <mwc-button @click=${this._showTrace} slot="toolbar-icon">
+              <ha-button
+                appearance="plain"
+                @click=${this._showTrace}
+                slot="toolbar-icon"
+              >
                 ${this.hass.localize(
                   "ui.panel.config.script.editor.show_trace"
                 )}
-              </mwc-button>
+              </ha-button>
             `
           : ""}
         <ha-button-menu slot="toolbar-icon">
@@ -184,6 +245,25 @@ export class HaScriptEditor extends SubscribeMixin(
             .label=${this.hass.localize("ui.common.menu")}
             .path=${mdiDotsVertical}
           ></ha-icon-button>
+
+          ${this._mode === "gui" && this.narrow
+            ? html`<ha-list-item
+                  graphic="icon"
+                  @click=${this.undo}
+                  .disabled=${!this.canUndo}
+                >
+                  ${this.hass.localize("ui.common.undo")}
+                  <ha-svg-icon slot="graphic" .path=${mdiUndo}></ha-svg-icon>
+                </ha-list-item>
+                <ha-list-item
+                  graphic="icon"
+                  @click=${this.redo}
+                  .disabled=${!this.canRedo}
+                >
+                  ${this.hass.localize("ui.common.redo")}
+                  <ha-svg-icon slot="graphic" .path=${mdiRedo}></ha-svg-icon>
+                </ha-list-item>`
+            : nothing}
 
           <ha-list-item
             graphic="icon"
@@ -302,7 +382,7 @@ export class HaScriptEditor extends SubscribeMixin(
             )}
             <ha-svg-icon
               slot="graphic"
-              .path=${mdiContentDuplicate}
+              .path=${mdiPlusCircleMultipleOutline}
             ></ha-svg-icon>
           </ha-list-item>
 
@@ -353,62 +433,10 @@ export class HaScriptEditor extends SubscribeMixin(
             </ha-svg-icon>
           </ha-list-item>
         </ha-button-menu>
-        <div
-          class="content ${classMap({
-            "yaml-mode": this._mode === "yaml",
-          })}"
-        >
-          ${this._errors || stateObj?.state === UNAVAILABLE
-            ? html`<ha-alert
-                alert-type="error"
-                .title=${stateObj?.state === UNAVAILABLE
-                  ? this.hass.localize(
-                      "ui.panel.config.script.editor.unavailable"
-                    )
-                  : undefined}
-              >
-                ${this._errors || this._validationErrors}
-                ${stateObj?.state === UNAVAILABLE
-                  ? html`<ha-svg-icon
-                      slot="icon"
-                      .path=${mdiRobotConfused}
-                    ></ha-svg-icon>`
-                  : nothing}
-              </ha-alert>`
-            : ""}
-          ${this._blueprintConfig
-            ? html`<ha-alert alert-type="info">
-                ${this.hass.localize(
-                  "ui.panel.config.script.editor.confirm_take_control"
-                )}
-                <div slot="action" style="display: flex;">
-                  <mwc-button @click=${this._takeControlSave}
-                    >${this.hass.localize("ui.common.yes")}</mwc-button
-                  >
-                  <mwc-button @click=${this._revertBlueprint}
-                    >${this.hass.localize("ui.common.no")}</mwc-button
-                  >
-                </div>
-              </ha-alert>`
-            : this._readOnly
-              ? html`<ha-alert alert-type="warning" dismissable
-                  >${this.hass.localize(
-                    "ui.panel.config.script.editor.read_only"
-                  )}
-                  <mwc-button slot="action" @click=${this._duplicate}>
-                    ${this.hass.localize(
-                      "ui.panel.config.script.editor.migrate"
-                    )}
-                  </mwc-button>
-                </ha-alert>`
-              : nothing}
+        <div class=${this._mode === "yaml" ? "yaml-mode" : ""}>
           ${this._mode === "gui"
             ? html`
-                <div
-                  class=${classMap({
-                    rtl: computeRTL(this.hass),
-                  })}
-                >
+                <div>
                   ${useBlueprint
                     ? html`
                         <blueprint-script-editor
@@ -417,7 +445,10 @@ export class HaScriptEditor extends SubscribeMixin(
                           .isWide=${this.isWide}
                           .config=${this._config}
                           .disabled=${this._readOnly}
+                          .saving=${this._saving}
+                          .dirty=${this._dirty}
                           @value-changed=${this._valueChanged}
+                          @save-script=${this._handleSaveScript}
                         ></blueprint-script-editor>
                       `
                     : html`
@@ -427,35 +458,102 @@ export class HaScriptEditor extends SubscribeMixin(
                           .isWide=${this.isWide}
                           .config=${this._config}
                           .disabled=${this._readOnly}
+                          .dirty=${this._dirty}
+                          .saving=${this._saving}
                           @value-changed=${this._valueChanged}
-                        ></manual-script-editor>
+                          @editor-save=${this._handleSaveScript}
+                          @save-script=${this._handleSaveScript}
+                          @undo-paste=${this.undo}
+                        >
+                          <div class="alert-wrapper" slot="alerts">
+                            ${this._errors || stateObj?.state === UNAVAILABLE
+                              ? html`<ha-alert
+                                  alert-type="error"
+                                  .title=${stateObj?.state === UNAVAILABLE
+                                    ? this.hass.localize(
+                                        "ui.panel.config.script.editor.unavailable"
+                                      )
+                                    : undefined}
+                                >
+                                  ${this._errors || this._validationErrors}
+                                  ${stateObj?.state === UNAVAILABLE
+                                    ? html`<ha-svg-icon
+                                        slot="icon"
+                                        .path=${mdiRobotConfused}
+                                      ></ha-svg-icon>`
+                                    : nothing}
+                                </ha-alert>`
+                              : nothing}
+                            ${this._blueprintConfig
+                              ? html`<ha-alert alert-type="info">
+                                  ${this.hass.localize(
+                                    "ui.panel.config.script.editor.confirm_take_control"
+                                  )}
+                                  <div slot="action" style="display: flex;">
+                                    <ha-button
+                                      appearance="plain"
+                                      @click=${this._takeControlSave}
+                                      >${this.hass.localize(
+                                        "ui.common.yes"
+                                      )}</ha-button
+                                    >
+                                    <ha-button
+                                      appearance="plain"
+                                      @click=${this._revertBlueprint}
+                                      >${this.hass.localize(
+                                        "ui.common.no"
+                                      )}</ha-button
+                                    >
+                                  </div>
+                                </ha-alert>`
+                              : this._readOnly
+                                ? html`<ha-alert
+                                    alert-type="warning"
+                                    dismissable
+                                    >${this.hass.localize(
+                                      "ui.panel.config.script.editor.read_only"
+                                    )}
+                                    <ha-button
+                                      appearance="plain"
+                                      slot="action"
+                                      @click=${this._duplicate}
+                                    >
+                                      ${this.hass.localize(
+                                        "ui.panel.config.script.editor.migrate"
+                                      )}
+                                    </ha-button>
+                                  </ha-alert>`
+                                : nothing}
+                          </div>
+                        </manual-script-editor>
                       `}
                 </div>
               `
             : this._mode === "yaml"
               ? html`<ha-yaml-editor
-                  copy-clipboard
-                  .hass=${this.hass}
-                  .defaultValue=${this._preprocessYaml()}
-                  .readOnly=${this._readOnly}
-                  @value-changed=${this._yamlChanged}
-                ></ha-yaml-editor>`
+                    .hass=${this.hass}
+                    .defaultValue=${this._preprocessYaml()}
+                    .readOnly=${this._readOnly}
+                    disable-fullscreen
+                    @value-changed=${this._yamlChanged}
+                    @editor-save=${this._handleSaveScript}
+                    .showErrors=${false}
+                  ></ha-yaml-editor>
+                  <ha-fab
+                    slot="fab"
+                    class=${!this._readOnly && this._dirty ? "dirty" : ""}
+                    .label=${this.hass.localize("ui.common.save")}
+                    .disabled=${this._saving}
+                    extended
+                    @click=${this._handleSaveScript}
+                  >
+                    <ha-svg-icon
+                      slot="icon"
+                      .path=${mdiContentSave}
+                    ></ha-svg-icon>
+                  </ha-fab>`
               : nothing}
         </div>
-        <ha-fab
-          slot="fab"
-          class=${classMap({
-            dirty: !this._readOnly && this._dirty,
-          })}
-          .label=${this.hass.localize(
-            "ui.panel.config.script.editor.save_script"
-          )}
-          .disabled=${this._saving}
-          extended
-          @click=${this._handleSave}
-        >
-          <ha-svg-icon slot="icon" .path=${mdiContentSave}></ha-svg-icon>
-        </ha-fab>
       </hass-subpage>
     `;
   }
@@ -499,12 +597,11 @@ export class HaScriptEditor extends SubscribeMixin(
         ...initData,
       } as ScriptConfig;
       this._readOnly = false;
-      this._dirty = true;
     }
 
     if (changedProps.has("entityId") && this.entityId) {
       getScriptStateConfig(this.hass, this.entityId).then((c) => {
-        this._config = this._normalizeConfig(c.config);
+        this._config = normalizeScriptConfig(c.config);
         this._checkValidation();
       });
       const regEntry = this.entityRegistry.find(
@@ -543,25 +640,12 @@ export class HaScriptEditor extends SubscribeMixin(
     );
   }
 
-  private _normalizeConfig(config: ScriptConfig): ScriptConfig {
-    // Normalize data: ensure sequence is a list
-    // Happens when people copy paste their scripts into the config
-    const value = config.sequence;
-    if (value && !Array.isArray(value)) {
-      config.sequence = [value];
-    }
-    if (config.sequence) {
-      config.sequence = migrateAutomationAction(config.sequence);
-    }
-    return config;
-  }
-
   private async _loadConfig() {
     fetchScriptFileConfig(this.hass, this.scriptId!).then(
       (config) => {
         this._dirty = false;
         this._readOnly = false;
-        this._config = this._normalizeConfig(config);
+        this._config = normalizeScriptConfig(config);
         const entity = this.entityRegistry.find(
           (ent) => ent.platform === "script" && ent.unique_id === this.scriptId
         );
@@ -588,12 +672,16 @@ export class HaScriptEditor extends SubscribeMixin(
                 { err_no: resp.status_code || resp.code }
               )
         );
-        history.back();
+        goBack("/config");
       }
     );
   }
 
   private _valueChanged(ev) {
+    if (this._config) {
+      this.pushToUndo(this._config);
+    }
+
     this._config = ev.detail.value;
     this._errors = undefined;
     this._dirty = true;
@@ -686,6 +774,11 @@ export class HaScriptEditor extends SubscribeMixin(
     if ("fields" in this._config!) {
       return;
     }
+
+    if (this._config) {
+      this.pushToUndo(this._config);
+    }
+
     this._manualEditor?.addFields();
     this._dirty = true;
   }
@@ -754,7 +847,7 @@ export class HaScriptEditor extends SubscribeMixin(
   private _backTapped = async () => {
     const result = await this._confirmUnsavedChanged();
     if (result) {
-      afterNextRender(() => history.back());
+      afterNextRender(() => goBack("/config"));
     }
   };
 
@@ -770,7 +863,7 @@ export class HaScriptEditor extends SubscribeMixin(
       );
 
       const newConfig = {
-        ...this._normalizeConfig(result.substituted_config),
+        ...normalizeScriptConfig(result.substituted_config),
         alias: config.alias,
         description: config.description,
       };
@@ -844,7 +937,7 @@ export class HaScriptEditor extends SubscribeMixin(
 
   private async _delete() {
     await deleteScript(this.hass, this.scriptId!);
-    history.back();
+    goBack("/config");
   }
 
   private async _switchUiMode() {
@@ -905,13 +998,15 @@ export class HaScriptEditor extends SubscribeMixin(
     });
   }
 
-  private async _handleSave() {
+  private async _handleSaveScript() {
     if (this._yamlErrors) {
       showToast(this, {
         message: this._yamlErrors,
       });
       return;
     }
+
+    this._manualEditor?.resetPastedConfig();
 
     if (!this.scriptId) {
       const saved = await this._promptScriptAlias();
@@ -1010,7 +1105,14 @@ export class HaScriptEditor extends SubscribeMixin(
 
   protected supportedShortcuts(): SupportedShortcuts {
     return {
-      s: () => this._handleSave(),
+      s: () => this._handleSaveScript(),
+      c: () => this._copySelectedRow(),
+      x: () => this._cutSelectedRow(),
+      Delete: () => this._deleteSelectedRow(),
+      Backspace: () => this._deleteSelectedRow(),
+      z: () => this.undo(),
+      Z: () => this.redo(),
+      y: () => this.redo(),
     };
   }
 
@@ -1022,17 +1124,47 @@ export class HaScriptEditor extends SubscribeMixin(
     return this._confirmUnsavedChanged();
   }
 
+  // @ts-ignore
+  private _collapseAll() {
+    this._manualEditor?.collapseAll();
+  }
+
+  // @ts-ignore
+  private _expandAll() {
+    this._manualEditor?.expandAll();
+  }
+
+  private _copySelectedRow() {
+    this._manualEditor?.copySelectedRow();
+  }
+
+  private _cutSelectedRow() {
+    this._manualEditor?.cutSelectedRow();
+  }
+
+  private _deleteSelectedRow() {
+    this._manualEditor?.deleteSelectedRow();
+  }
+
+  protected get currentConfig() {
+    return this._config;
+  }
+
+  protected applyUndoRedo(config: ScriptConfig) {
+    this._manualEditor?.triggerCloseSidebar();
+    this._config = config;
+    this._dirty = true;
+  }
+
   static get styles(): CSSResultGroup {
     return [
       haStyle,
       css`
-        p {
-          margin-bottom: 0;
-        }
-        .errors {
-          padding: 20px;
-          font-weight: bold;
-          color: var(--error-color);
+        :host {
+          --ha-automation-editor-max-width: var(
+            --ha-automation-editor-width,
+            1540px
+          );
         }
         .yaml-mode {
           height: 100%;
@@ -1040,19 +1172,56 @@ export class HaScriptEditor extends SubscribeMixin(
           flex-direction: column;
           padding-bottom: 0;
         }
-        .config-container,
         manual-script-editor,
-        blueprint-script-editor,
-        :not(.yaml-mode) > ha-alert {
+        blueprint-script-editor {
           margin: 0 auto;
           max-width: 1040px;
           padding: 28px 20px 0;
           display: block;
         }
-        .config-container ha-alert {
-          margin-bottom: 16px;
-          display: block;
+
+        :not(.yaml-mode) > .error-wrapper {
+          position: absolute;
+          top: 4px;
+          z-index: 3;
+          width: 100%;
+          display: flex;
+          flex-direction: column;
+          align-items: center;
         }
+        :not(.yaml-mode) > .error-wrapper ha-alert {
+          background-color: var(--card-background-color);
+          box-shadow: 0 2px 4px rgba(0, 0, 0, 0.2);
+          border-radius: var(--ha-border-radius-sm);
+        }
+
+        .alert-wrapper {
+          position: sticky;
+          top: -24px;
+          margin-top: -24px;
+          margin-bottom: 8px;
+          z-index: 1;
+          width: 100%;
+          display: flex;
+          flex-direction: column;
+          align-items: center;
+          gap: var(--ha-space-2);
+          pointer-events: none;
+        }
+
+        .alert-wrapper ha-alert {
+          background-color: var(--card-background-color);
+          box-shadow: 0 2px 4px rgba(0, 0, 0, 0.2);
+          border-radius: var(--ha-border-radius-sm);
+          margin-bottom: 0;
+          pointer-events: auto;
+        }
+
+        manual-script-editor {
+          max-width: var(--ha-automation-editor-max-width);
+          padding: 0 12px;
+        }
+
         ha-yaml-editor {
           flex-grow: 1;
           --actions-border-radius: 0;
@@ -1061,16 +1230,20 @@ export class HaScriptEditor extends SubscribeMixin(
           display: flex;
           flex-direction: column;
         }
+        p {
+          margin-bottom: 0;
+        }
         span[slot="introduction"] a {
           color: var(--primary-color);
         }
         ha-fab {
-          position: relative;
-          bottom: calc(-80px - env(safe-area-inset-bottom));
+          position: fixed;
+          right: 16px;
+          bottom: calc(-80px - var(--safe-area-inset-bottom));
           transition: bottom 0.3s;
         }
         ha-fab.dirty {
-          bottom: 0;
+          bottom: calc(16px + var(--safe-area-inset-bottom, 0px));
         }
         li[role="separator"] {
           border-bottom-color: var(--divider-color);
@@ -1081,8 +1254,8 @@ export class HaScriptEditor extends SubscribeMixin(
           align-items: center;
         }
         .header .name {
-          font-size: 20px;
-          font-weight: 400;
+          font-size: var(--ha-font-size-xl);
+          font-weight: var(--ha-font-weight-normal);
           flex: 1;
         }
         .header a {
@@ -1091,6 +1264,15 @@ export class HaScriptEditor extends SubscribeMixin(
         ha-button-menu a {
           text-decoration: none;
           color: var(--primary-color);
+        }
+        ha-tooltip ha-svg-icon {
+          width: 12px;
+        }
+        ha-tooltip .shortcut {
+          display: inline-flex;
+          flex-direction: row;
+          align-items: center;
+          gap: 2px;
         }
       `,
     ];
@@ -1102,5 +1284,9 @@ customElements.define("ha-script-editor", HaScriptEditor);
 declare global {
   interface HTMLElementTagNameMap {
     "ha-script-editor": HaScriptEditor;
+  }
+
+  interface HASSDomEvents {
+    "save-script": undefined;
   }
 }

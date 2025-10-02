@@ -1,15 +1,32 @@
-import { css, html, LitElement } from "lit";
-import { customElement, property } from "lit/decorators";
+import { css, html, LitElement, nothing } from "lit";
+import { customElement, property, query } from "lit/decorators";
 import memoizeOne from "memoize-one";
 import { fireEvent } from "../../../../../common/dom/fire_event";
 import { stringCompare } from "../../../../../common/string/compare";
+import { stopPropagation } from "../../../../../common/dom/stop_propagation";
 import type { LocalizeFunc } from "../../../../../common/translations/localize";
+import "../../../../../components/ha-list-item";
 import "../../../../../components/ha-select";
 import type { HaSelect } from "../../../../../components/ha-select";
 import type { Condition } from "../../../../../data/automation";
-import { CONDITION_ICONS } from "../../../../../data/condition";
+import {
+  CONDITION_BUILDING_BLOCKS,
+  CONDITION_ICONS,
+} from "../../../../../data/condition";
 import type { Entries, HomeAssistant } from "../../../../../types";
 import "../../condition/ha-automation-condition-editor";
+import type HaAutomationConditionEditor from "../../condition/ha-automation-condition-editor";
+import "../../condition/types/ha-automation-condition-and";
+import "../../condition/types/ha-automation-condition-device";
+import "../../condition/types/ha-automation-condition-not";
+import "../../condition/types/ha-automation-condition-numeric_state";
+import "../../condition/types/ha-automation-condition-or";
+import "../../condition/types/ha-automation-condition-state";
+import "../../condition/types/ha-automation-condition-sun";
+import "../../condition/types/ha-automation-condition-template";
+import "../../condition/types/ha-automation-condition-time";
+import "../../condition/types/ha-automation-condition-trigger";
+import "../../condition/types/ha-automation-condition-zone";
 import type { ActionElement } from "../ha-automation-action-row";
 
 @customElement("ha-automation-action-condition")
@@ -20,36 +37,67 @@ export class HaConditionAction extends LitElement implements ActionElement {
 
   @property({ attribute: false }) public action!: Condition;
 
+  @property({ type: Boolean }) public narrow = false;
+
+  @property({ type: Boolean, attribute: "sidebar" }) public inSidebar = false;
+
+  @property({ type: Boolean, attribute: "indent" }) public indent = false;
+
+  @query("ha-automation-condition-editor")
+  private _conditionEditor?: HaAutomationConditionEditor;
+
   public static get defaultConfig(): Omit<Condition, "state" | "entity_id"> {
     return { condition: "state" };
   }
 
   protected render() {
+    const buildingBlock = CONDITION_BUILDING_BLOCKS.includes(
+      this.action.condition
+    );
+
     return html`
-      <ha-select
-        fixedMenuPosition
-        .label=${this.hass.localize(
-          "ui.panel.config.automation.editor.conditions.type_select"
-        )}
-        .disabled=${this.disabled}
-        .value=${this.action.condition}
-        naturalMenuWidth
-        @selected=${this._typeChanged}
-      >
-        ${this._processedTypes(this.hass.localize).map(
-          ([opt, label, icon]) => html`
-            <mwc-list-item .value=${opt} graphic="icon">
-              ${label}<ha-svg-icon slot="graphic" .path=${icon}></ha-svg-icon
-            ></mwc-list-item>
+      ${this.inSidebar || (!this.inSidebar && !this.indent)
+        ? html`
+            <ha-select
+              fixedMenuPosition
+              .label=${this.hass.localize(
+                "ui.panel.config.automation.editor.conditions.type_select"
+              )}
+              .disabled=${this.disabled}
+              .value=${this.action.condition}
+              naturalMenuWidth
+              @selected=${this._typeChanged}
+              @closed=${stopPropagation}
+            >
+              ${this._processedTypes(this.hass.localize).map(
+                ([opt, label, icon]) => html`
+                  <ha-list-item .value=${opt} graphic="icon">
+                    ${label}<ha-svg-icon
+                      slot="graphic"
+                      .path=${icon}
+                    ></ha-svg-icon
+                  ></ha-list-item>
+                `
+              )}
+            </ha-select>
           `
-        )}
-      </ha-select>
-      <ha-automation-condition-editor
-        .condition=${this.action}
-        .disabled=${this.disabled}
-        .hass=${this.hass}
-        @value-changed=${this._conditionChanged}
-      ></ha-automation-condition-editor>
+        : nothing}
+      ${(this.indent && buildingBlock) ||
+      (this.inSidebar && !buildingBlock) ||
+      (!this.indent && !this.inSidebar)
+        ? html`
+            <ha-automation-condition-editor
+              .condition=${this.action}
+              .disabled=${this.disabled}
+              .hass=${this.hass}
+              @value-changed=${this._conditionChanged}
+              .narrow=${this.narrow}
+              .uiSupported=${this._uiSupported(this.action.condition)}
+              .indent=${this.indent}
+              action
+            ></ha-automation-condition-editor>
+          `
+        : nothing}
     `;
   }
 
@@ -97,6 +145,19 @@ export class HaConditionAction extends LitElement implements ActionElement {
         },
       });
     }
+  }
+
+  private _uiSupported = memoizeOne(
+    (type: string) =>
+      customElements.get(`ha-automation-condition-${type}`) !== undefined
+  );
+
+  public expandAll() {
+    this._conditionEditor?.expandAll();
+  }
+
+  public collapseAll() {
+    this._conditionEditor?.collapseAll();
   }
 
   static styles = css`

@@ -15,6 +15,7 @@ import "../../../../../components/ha-button-menu";
 import "../../../../../components/ha-dialog";
 import "../../../../../components/ha-dialog-header";
 import "../../../../../components/ha-icon-button";
+import "../../../../../components/ha-list-item";
 import type { LovelaceStrategyConfig } from "../../../../../data/lovelace/config/strategy";
 import { haStyleDialog } from "../../../../../resources/styles";
 import type { HomeAssistant } from "../../../../../types";
@@ -143,6 +144,9 @@ class DialogDashboardStrategyEditor extends LitElement {
             .path=${mdiClose}
           ></ha-icon-button>
           <span slot="title" .title=${title}>${title}</span>
+          ${this._params.title
+            ? html`<span slot="subtitle">${this._params.title}</span>`
+            : nothing}
           <ha-button-menu
             corner="BOTTOM_END"
             menu-corner="END"
@@ -190,10 +194,19 @@ class DialogDashboardStrategyEditor extends LitElement {
           ></hui-dashboard-strategy-element-editor>
         </div>
 
-        <ha-button class="danger" @click=${this._delete} slot="secondaryAction">
+        <ha-button
+          variant="danger"
+          appearance="plain"
+          @click=${this._delete}
+          slot="secondaryAction"
+        >
           ${this.hass!.localize("ui.common.delete")}
         </ha-button>
-        <ha-button @click=${this._cancel} slot="primaryAction">
+        <ha-button
+          appearance="plain"
+          @click=${this._cancel}
+          slot="primaryAction"
+        >
           ${this.hass!.localize("ui.common.cancel")}
         </ha-button>
         <ha-button @click=${this._save} slot="primaryAction">
@@ -211,8 +224,8 @@ class DialogDashboardStrategyEditor extends LitElement {
           --dialog-content-padding: 0 24px;
           --dialog-surface-position: fixed;
           --dialog-surface-top: 40px;
-          --mdc-dialog-min-width: min(600px, calc(100% - 32px));
-          --mdc-dialog-max-width: calc(100% - 32px);
+          --mdc-dialog-min-width: min(640px, calc(100% - 32px));
+          --mdc-dialog-max-width: min(640px, calc(100% - 32px));
           --mdc-dialog-max-height: calc(100% - 80px);
         }
 
@@ -226,10 +239,6 @@ class DialogDashboardStrategyEditor extends LitElement {
             --mdc-dialog-max-height: 100%;
             --dialog-content-padding: 8px;
           }
-        }
-
-        .danger {
-          --mdc-theme-primary: var(--error-color);
         }
       `,
     ];

@@ -1,5 +1,5 @@
 import type { ActionDetail } from "@material/mwc-list";
-import "@material/mwc-list/mwc-list-item";
+
 import { mdiClose, mdiDotsVertical } from "@mdi/js";
 import type { CSSResultGroup } from "lit";
 import { css, html, LitElement, nothing } from "lit";
@@ -8,15 +8,16 @@ import { atLeastVersion } from "../../../../src/common/config/version";
 import { fireEvent } from "../../../../src/common/dom/fire_event";
 import { stopPropagation } from "../../../../src/common/dom/stop_propagation";
 import { slugify } from "../../../../src/common/string/slugify";
-import "../../../../src/components/ha-md-dialog";
-import "../../../../src/components/ha-dialog-header";
-import "../../../../src/components/buttons/ha-progress-button";
 import "../../../../src/components/ha-alert";
-import "../../../../src/components/ha-spinner";
 import "../../../../src/components/ha-button";
 import "../../../../src/components/ha-button-menu";
+import "../../../../src/components/ha-dialog-header";
 import "../../../../src/components/ha-header-bar";
 import "../../../../src/components/ha-icon-button";
+import "../../../../src/components/ha-list-item";
+import "../../../../src/components/ha-md-dialog";
+import type { HaMdDialog } from "../../../../src/components/ha-md-dialog";
+import "../../../../src/components/ha-spinner";
 import { getSignedPath } from "../../../../src/data/auth";
 import type { HassioBackupDetail } from "../../../../src/data/hassio/backup";
 import {
@@ -36,7 +37,6 @@ import { fileDownload } from "../../../../src/util/file_download";
 import "../../components/supervisor-backup-content";
 import type { SupervisorBackupContent } from "../../components/supervisor-backup-content";
 import type { HassioBackupDialogParams } from "./show-dialog-hassio-backup";
-import type { HaMdDialog } from "../../../../src/components/ha-md-dialog";
 
 @customElement("dialog-hassio-backup")
 class HassioBackupDialog
@@ -121,15 +121,15 @@ class HassioBackupDialog
                   .path=${mdiDotsVertical}
                   slot="trigger"
                 ></ha-icon-button>
-                <mwc-list-item
+                <ha-list-item
                   >${this._dialogParams.supervisor.localize(
                     "backup.download_backup"
-                  )}</mwc-list-item
+                  )}</ha-list-item
                 >
-                <mwc-list-item class="error"
+                <ha-list-item class="error"
                   >${this._dialogParams.supervisor.localize(
                     "backup.delete_backup_title"
-                  )}</mwc-list-item
+                  )}</ha-list-item
                 >
               </ha-button-menu>`
             : nothing}

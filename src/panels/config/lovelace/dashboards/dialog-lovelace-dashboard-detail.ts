@@ -1,4 +1,3 @@
-import "@material/mwc-button/mwc-button";
 import type { CSSResultGroup } from "lit";
 import { css, html, LitElement, nothing } from "lit";
 import { customElement, property, state } from "lit/decorators";
@@ -7,8 +6,8 @@ import { fireEvent } from "../../../../common/dom/fire_event";
 import { slugify } from "../../../../common/string/slugify";
 import { createCloseHeading } from "../../../../components/ha-dialog";
 import "../../../../components/ha-form/ha-form";
+import "../../../../components/ha-button";
 import type { SchemaUnion } from "../../../../components/ha-form/types";
-import type { CoreFrontendUserData } from "../../../../data/frontend";
 import type {
   LovelaceDashboard,
   LovelaceDashboardCreateParams,
@@ -92,7 +91,7 @@ export class DialogLovelaceDashboardDetail extends LitElement {
                 )
               : html`
                   <ha-form
-                    .schema=${this._schema(this._params, this.hass.userData)}
+                    .schema=${this._schema(this._params)}
                     .data=${this._data}
                     .hass=${this.hass}
                     .error=${this._error}
@@ -105,20 +104,22 @@ export class DialogLovelaceDashboardDetail extends LitElement {
           ? html`
               ${this._params.dashboard?.id
                 ? html`
-                    <mwc-button
+                    <ha-button
                       slot="secondaryAction"
-                      class="warning"
+                      variant="danger"
+                      appearance="plain"
                       @click=${this._deleteDashboard}
                       .disabled=${this._submitting}
                     >
                       ${this.hass.localize(
                         "ui.panel.config.lovelace.dashboards.detail.delete"
                       )}
-                    </mwc-button>
+                    </ha-button>
                   `
                 : ""}
-              <mwc-button
+              <ha-button
                 slot="secondaryAction"
+                appearance="plain"
                 @click=${this._toggleDefault}
                 .disabled=${this._params.urlPath === "lovelace" &&
                 defaultPanelUrlPath === "lovelace"}
@@ -130,10 +131,10 @@ export class DialogLovelaceDashboardDetail extends LitElement {
                   : this.hass.localize(
                       "ui.panel.config.lovelace.dashboards.detail.set_default"
                     )}
-              </mwc-button>
+              </ha-button>
             `
           : ""}
-        <mwc-button
+        <ha-button
           slot="primaryAction"
           @click=${this._updateDashboard}
           .disabled=${(this._error && "url_path" in this._error) ||
@@ -150,16 +151,13 @@ export class DialogLovelaceDashboardDetail extends LitElement {
             : this.hass.localize(
                 "ui.panel.config.lovelace.dashboards.detail.create"
               )}
-        </mwc-button>
+        </ha-button>
       </ha-dialog>
     `;
   }
 
   private _schema = memoizeOne(
-    (
-      params: LovelaceDashboardDetailsDialogParams,
-      userData: CoreFrontendUserData | null | undefined
-    ) =>
+    (params: LovelaceDashboardDetailsDialogParams) =>
       [
         {
           name: "title",
@@ -175,7 +173,7 @@ export class DialogLovelaceDashboardDetail extends LitElement {
             icon: {},
           },
         },
-        ...(!params.dashboard && userData?.showAdvanced
+        ...(!params.dashboard
           ? ([
               {
                 name: "url_path",

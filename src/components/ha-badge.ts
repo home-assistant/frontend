@@ -54,7 +54,7 @@ export class HaBadge extends LitElement {
       flex-direction: row;
       align-items: center;
       justify-content: center;
-      gap: 8px;
+      gap: var(--ha-space-2);
       height: var(--ha-badge-size, 36px);
       min-width: var(--ha-badge-size, 36px);
       padding: 0px 12px;
@@ -95,23 +95,23 @@ export class HaBadge extends LitElement {
       text-align: center;
     }
     .label {
-      font-size: 10px;
+      font-size: var(--ha-font-size-xs);
       font-style: normal;
-      font-weight: 500;
+      font-weight: var(--ha-font-weight-medium);
       line-height: 10px;
       letter-spacing: 0.1px;
       color: var(--secondary-text-color);
     }
     .content {
-      font-size: 12px;
+      font-size: var(--ha-badge-font-size, var(--ha-font-size-s));
       font-style: normal;
-      font-weight: 500;
-      line-height: 16px;
+      font-weight: var(--ha-font-weight-medium);
+      line-height: var(--ha-line-height-condensed);
       letter-spacing: 0.1px;
       color: var(--primary-text-color);
     }
     ::slotted([slot="icon"]) {
-      --mdc-icon-size: 18px;
+      --mdc-icon-size: var(--ha-badge-icon-size, 18px);
       color: var(--badge-color);
       line-height: 0;
       margin-left: -4px;

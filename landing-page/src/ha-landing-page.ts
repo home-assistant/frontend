@@ -2,6 +2,8 @@ import "@material/mwc-linear-progress";
 import { type PropertyValues, css, html, nothing } from "lit";
 import { customElement, property, state } from "lit/decorators";
 import "../../src/components/ha-alert";
+import "../../src/components/ha-fade-in";
+import "../../src/components/ha-spinner";
 import { haStyle } from "../../src/resources/styles";
 import "../../src/onboarding/onboarding-welcome-links";
 import "./components/landing-page-network";
@@ -39,6 +41,14 @@ class HaLandingPage extends LandingPageBaseElement {
 
   render() {
     const networkIssue = this._networkInfo && !this._networkInfo.host_internet;
+
+    if (!this.localize) {
+      return html`
+        <ha-fade-in>
+          <ha-spinner size="large"></ha-spinner>
+        </ha-fade-in>
+      `;
+    }
 
     return html`
       <ha-card>
@@ -203,7 +213,7 @@ class HaLandingPage extends LandingPageBaseElement {
       ha-card .card-content {
         display: flex;
         flex-direction: column;
-        gap: 16px;
+        gap: var(--ha-space-4);
       }
       ha-alert p {
         text-align: unset;
@@ -228,6 +238,12 @@ class HaLandingPage extends LandingPageBaseElement {
         margin-right: 16px;
         margin-inline-end: 16px;
         margin-inline-start: initial;
+      }
+      ha-fade-in {
+        min-height: calc(100vh - 64px - 88px);
+        display: flex;
+        justify-content: center;
+        align-items: center;
       }
     `,
   ];

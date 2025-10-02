@@ -5,7 +5,6 @@ import "../../../components/ha-alert";
 import "../../../components/ha-button";
 import "../../../components/ha-spinner";
 import { createCloseHeading } from "../../../components/ha-dialog";
-import "../../../components/ha-formfield";
 import "../../../components/ha-icon-button";
 import "../../../components/ha-settings-row";
 import "../../../components/ha-switch";
@@ -191,24 +190,25 @@ export class DialogAddUser extends LitElement {
               `
             : nothing}
         </div>
-        ${this._loading
-          ? html`
-              <div slot="primaryAction" class="submit-spinner">
-                <ha-spinner></ha-spinner>
-              </div>
-            `
-          : html`
-              <ha-button
-                slot="primaryAction"
-                .disabled=${!this._name ||
-                !this._username ||
-                !this._password ||
-                this._password !== this._passwordConfirm}
-                @click=${this._createUser}
-              >
-                ${this.hass.localize("ui.panel.config.users.add_user.create")}
-              </ha-button>
-            `}
+
+        <ha-button
+          slot="primaryAction"
+          appearance="plain"
+          @click=${this._close}
+        >
+          ${this.hass!.localize("ui.common.cancel")}
+        </ha-button>
+        <ha-button
+          slot="primaryAction"
+          .disabled=${!this._name ||
+          !this._username ||
+          !this._password ||
+          this._password !== this._passwordConfirm}
+          @click=${this._createUser}
+          .loading=${this._loading}
+        >
+          ${this.hass.localize("ui.panel.config.users.add_user.create")}
+        </ha-button>
       </ha-dialog>
     `;
   }

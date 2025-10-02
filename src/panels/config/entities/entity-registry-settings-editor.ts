@@ -1,6 +1,4 @@
-import "@material/mwc-button/mwc-button";
-import "@material/mwc-formfield/mwc-formfield";
-import { mdiContentCopy } from "@mdi/js";
+import { mdiContentCopy, mdiRestore } from "@mdi/js";
 import type { HassEntity } from "home-assistant-js-websocket";
 import type { CSSResultGroup, PropertyValues } from "lit";
 import { css, html, LitElement, nothing } from "lit";
@@ -15,6 +13,7 @@ import { computeObjectId } from "../../../common/entity/compute_object_id";
 import { supportsFeature } from "../../../common/entity/supports-feature";
 import { formatNumber } from "../../../common/number/format_number";
 import { stringCompare } from "../../../common/string/compare";
+import { autoCaseNoun } from "../../../common/translations/auto_case_noun";
 import type {
   LocalizeFunc,
   LocalizeKeys,
@@ -25,13 +24,13 @@ import "../../../components/ha-area-picker";
 import "../../../components/ha-icon";
 import "../../../components/ha-icon-button-next";
 import "../../../components/ha-icon-picker";
+import "../../../components/ha-labels-picker";
 import "../../../components/ha-list-item";
 import "../../../components/ha-radio";
 import "../../../components/ha-select";
 import "../../../components/ha-settings-row";
 import "../../../components/ha-state-icon";
 import "../../../components/ha-switch";
-import "../../../components/ha-labels-picker";
 import type { HaSwitch } from "../../../components/ha-switch";
 import "../../../components/ha-textfield";
 import {
@@ -61,6 +60,7 @@ import type {
   SensorEntityOptions,
 } from "../../../data/entity_registry";
 import {
+  getAutomaticEntityIds,
   subscribeEntityRegistry,
   updateEntityRegistryEntry,
 } from "../../../data/entity_registry";
@@ -91,7 +91,6 @@ import { haStyle } from "../../../resources/styles";
 import type { HomeAssistant } from "../../../types";
 import { showToast } from "../../../util/toast";
 import { showDeviceRegistryDetailDialog } from "../devices/device-registry-detail/show-dialog-device-registry-detail";
-import { autoCaseNoun } from "../../../common/translations/auto_case_noun";
 
 const OVERRIDE_DEVICE_CLASSES = {
   cover: [
@@ -332,6 +331,9 @@ export class EntityRegistrySettingsEditor extends LitElement {
     }
     if (changedProps.has("_entityId")) {
       const domain = computeDomain(this.entry.entity_id);
+      if (domain === "switch") {
+        this.hass.loadBackendTranslation("title", SWITCH_AS_DOMAINS, false);
+      }
 
       if (domain === "weather") {
         const { units } = await getWeatherConvertibleUnits(this.hass);
@@ -343,6 +345,7 @@ export class EntityRegistrySettingsEditor extends LitElement {
     if (changedProps.has("helperConfigEntry")) {
       if (this.helperConfigEntry?.domain === "switch_as_x") {
         this._switchAsDomain = computeDomain(this.entry.entity_id);
+        this.hass.loadBackendTranslation("title", SWITCH_AS_DOMAINS, false);
       } else {
         this._switchAsDomain = "switch";
         this._switchAsInvert = false;
@@ -756,14 +759,19 @@ export class EntityRegistrySettingsEditor extends LitElement {
         iconTrailing
         autocapitalize="none"
         autocomplete="off"
-        autocorrect="off"
+        .autocorrect=${false}
         input-spellcheck="false"
       >
-        <ha-icon-button
-          @click=${this._copyEntityId}
-          slot="trailingIcon"
-          .path=${mdiContentCopy}
-        ></ha-icon-button>
+        <div class="layout horizontal" slot="trailingIcon">
+          <ha-icon-button
+            @click=${this._restoreEntityId}
+            .path=${mdiRestore}
+          ></ha-icon-button>
+          <ha-icon-button
+            @click=${this._copyEntityId}
+            .path=${mdiContentCopy}
+          ></ha-icon-button>
+        </div>
       </ha-textfield>
       ${!this.entry.device_id
         ? html`<ha-area-picker
@@ -1287,6 +1295,13 @@ export class EntityRegistrySettingsEditor extends LitElement {
     this._icon = ev.detail.value;
   }
 
+  private async _restoreEntityId(): Promise<void> {
+    const entityIds = await getAutomaticEntityIds(this.hass, [
+      this._origEntityId,
+    ]);
+    this._entityId = entityIds[this._origEntityId] || this._origEntityId;
+  }
+
   private async _copyEntityId(): Promise<void> {
     await copyToClipboard(this._entityId);
     showToast(this, {
@@ -1509,7 +1524,7 @@ export class EntityRegistrySettingsEditor extends LitElement {
           --text-field-prefix-padding-right: 0;
           --textfield-icon-trailing-padding: 0;
         }
-        ha-textfield.entityId > ha-icon-button {
+        ha-textfield.entityId ha-icon-button {
           position: relative;
           right: -8px;
           --mdc-icon-button-size: 36px;
@@ -1539,9 +1554,6 @@ export class EntityRegistrySettingsEditor extends LitElement {
         }
         li[divider] {
           border-bottom-color: var(--divider-color);
-        }
-        ha-alert mwc-button {
-          width: max-content;
         }
         .menu-item {
           border-radius: 4px;

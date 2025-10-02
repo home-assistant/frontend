@@ -1,4 +1,4 @@
-import { html } from "lit";
+import { html, nothing } from "lit";
 import type { ConfigEntry } from "../../data/config_entries";
 import { domainToName } from "../../data/integration";
 import {
@@ -87,7 +87,8 @@ export const showSubConfigFlowDialog = (
     renderShowFormStepFieldLabel(hass, step, field, options) {
       if (field.type === "expandable") {
         return hass.localize(
-          `component.${configEntry.domain}.config_subentries.${flowType}.step.${step.step_id}.sections.${field.name}.name`
+          `component.${configEntry.domain}.config_subentries.${flowType}.step.${step.step_id}.sections.${field.name}.name`,
+          step.description_placeholders
         );
       }
 
@@ -95,7 +96,8 @@ export const showSubConfigFlowDialog = (
 
       return (
         hass.localize(
-          `component.${configEntry.domain}.config_subentries.${flowType}.step.${step.step_id}.${prefix}data.${field.name}`
+          `component.${configEntry.domain}.config_subentries.${flowType}.step.${step.step_id}.${prefix}data.${field.name}`,
+          step.description_placeholders
         ) || field.name
       );
     },
@@ -103,7 +105,8 @@ export const showSubConfigFlowDialog = (
     renderShowFormStepFieldHelper(hass, step, field, options) {
       if (field.type === "expandable") {
         return hass.localize(
-          `component.${step.translation_domain || configEntry.domain}.config_subentries.${flowType}.step.${step.step_id}.sections.${field.name}.description`
+          `component.${step.translation_domain || configEntry.domain}.config_subentries.${flowType}.step.${step.step_id}.sections.${field.name}.description`,
+          step.description_placeholders
         );
       }
 
@@ -197,13 +200,7 @@ export const showSubConfigFlowDialog = (
                 .content=${description}
               ></ha-markdown>
             `
-          : ""}
-        <p>
-          ${hass.localize(
-            "ui.panel.config.integrations.config_flow.created_config",
-            { name: step.title }
-          )}
-        </p>
+          : nothing}
       `;
     },
 
@@ -251,6 +248,13 @@ export const showSubConfigFlowDialog = (
     renderMenuOption(hass, step, option) {
       return hass.localize(
         `component.${step.translation_domain || configEntry.domain}.config_subentries.${flowType}.step.${step.step_id}.menu_options.${option}`,
+        step.description_placeholders
+      );
+    },
+
+    renderMenuOptionDescription(hass, step, option) {
+      return hass.localize(
+        `component.${step.translation_domain || configEntry.domain}.config_subentries.${flowType}.step.${step.step_id}.menu_option_descriptions.${option}`,
         step.description_placeholders
       );
     },

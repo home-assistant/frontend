@@ -99,12 +99,7 @@ export class GridSection extends LitElement implements LovelaceSectionElement {
         @item-removed=${this._cardRemoved}
         invert-swap
       >
-        <div
-          class="container ${classMap({
-            "edit-mode": editMode,
-            "import-only": this.importOnly,
-          })}"
-        >
+        <div class="container">
           ${repeat(
             cardsConfig,
             (cardConfig) => this._getKey(cardConfig),
@@ -236,19 +231,6 @@ export class GridSection extends LitElement implements LovelaceSectionElement {
           column-gap: var(--column-gap);
           padding: 0;
           margin: 0 auto;
-        }
-
-        .container.edit-mode {
-          padding: 8px;
-          border-radius: var(--ha-card-border-radius, 12px);
-          border-start-end-radius: 0;
-          border: 2px dashed var(--divider-color);
-          min-height: var(--row-height);
-        }
-
-        .container.import-only {
-          border: none;
-          padding: 0 !important;
         }
 
         .card {

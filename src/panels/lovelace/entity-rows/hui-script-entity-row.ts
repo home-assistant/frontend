@@ -1,4 +1,3 @@
-import "@material/mwc-button/mwc-button";
 import type { PropertyValues } from "lit";
 import { css, html, LitElement, nothing } from "lit";
 import { customElement, property, state } from "lit/decorators";
@@ -9,6 +8,7 @@ import type { HomeAssistant } from "../../../types";
 import { hasConfigOrEntityChanged } from "../common/has-changed";
 import "../components/hui-generic-entity-row";
 import { createEntityNotFoundWarning } from "../components/hui-warning";
+import "../../../components/ha-button";
 import type { ActionRowConfig, LovelaceRow } from "./types";
 import { showMoreInfoDialog } from "../../../dialogs/more-info/show-ha-more-info-dialog";
 import { confirmAction } from "../common/confirm-action";
@@ -39,7 +39,7 @@ class HuiScriptEntityRow extends LitElement implements LovelaceRow {
 
     if (!stateObj) {
       return html`
-        <hui-warning>
+        <hui-warning .hass=${this.hass}>
           ${createEntityNotFoundWarning(this.hass, this._config.entity)}
         </hui-warning>
       `;
@@ -48,7 +48,12 @@ class HuiScriptEntityRow extends LitElement implements LovelaceRow {
     return html`
       <hui-generic-entity-row .hass=${this.hass} .config=${this._config}>
         ${stateObj.state === "on"
-          ? html`<mwc-button @click=${this._cancelScript}>
+          ? html`<ha-button
+              appearance="plain"
+              size="small"
+              variant="danger"
+              @click=${this._cancelScript}
+            >
               ${stateObj.attributes.mode !== "single" &&
               stateObj.attributes.current &&
               stateObj.attributes.current > 0
@@ -56,24 +61,26 @@ class HuiScriptEntityRow extends LitElement implements LovelaceRow {
                     number: stateObj.attributes.current,
                   })
                 : this.hass.localize("ui.card.script.cancel")}
-            </mwc-button>`
-          : ""}
+            </ha-button>`
+          : nothing}
         ${stateObj.state === "off" || stateObj.attributes.max
-          ? html`<mwc-button
+          ? html`<ha-button
+              appearance="plain"
+              size="small"
               @click=${this._runScript}
               .disabled=${isUnavailableState(stateObj.state) ||
               !canRun(stateObj)}
             >
               ${this._config.action_name ||
               this.hass!.localize("ui.card.script.run")}
-            </mwc-button>`
-          : ""}
+            </ha-button>`
+          : nothing}
       </hui-generic-entity-row>
     `;
   }
 
   static styles = css`
-    mwc-button:last-child {
+    ha-button:last-child {
       margin-right: -0.57em;
       margin-inline-end: -0.57em;
       margin-inline-start: initial;

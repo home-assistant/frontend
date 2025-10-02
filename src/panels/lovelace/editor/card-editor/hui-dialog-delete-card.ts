@@ -7,6 +7,7 @@ import type { LovelaceCardConfig } from "../../../../data/lovelace/config/card";
 import { haStyleDialog } from "../../../../resources/styles";
 import type { HomeAssistant } from "../../../../types";
 import "../../cards/hui-card";
+import "../../../../components/ha-button";
 import type { DeleteCardDialogParams } from "./show-delete-card-dialog";
 
 @customElement("hui-dialog-delete-card")
@@ -55,16 +56,17 @@ export class HuiDialogDeleteCard extends LitElement {
               `
             : ""}
         </div>
-        <mwc-button
-          slot="secondaryAction"
+        <ha-button
+          appearance="plain"
+          slot="primaryAction"
           @click=${this.closeDialog}
           dialogInitialFocus
         >
           ${this.hass!.localize("ui.common.cancel")}
-        </mwc-button>
-        <mwc-button slot="primaryAction" class="warning" @click=${this._delete}>
+        </ha-button>
+        <ha-button slot="primaryAction" class="warning" @click=${this._delete}>
           ${this.hass!.localize("ui.common.delete")}
-        </mwc-button>
+        </ha-button>
       </ha-dialog>
     `;
   }

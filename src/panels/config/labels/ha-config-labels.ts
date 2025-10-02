@@ -10,6 +10,7 @@ import type { PropertyValues } from "lit";
 import { LitElement, html, nothing } from "lit";
 import { customElement, property, state } from "lit/decorators";
 import memoizeOne from "memoize-one";
+import { styleMap } from "lit/directives/style-map";
 import { computeCssColor } from "../../../common/color/compute-color";
 import { formatShortDateTime } from "../../../common/datetime/format_date_time";
 import { storage } from "../../../common/decorators/storage";
@@ -55,6 +56,7 @@ export class HaConfigLabels extends LitElement {
 
   @state() private _labels: LabelRegistryEntry[] = [];
 
+  @state()
   @storage({
     storage: "sessionStorage",
     key: "labels-table-search",
@@ -103,13 +105,14 @@ export class HaConfigLabels extends LitElement {
         template: (label) =>
           label.color
             ? html`<div
-                style="
-          background-color: ${computeCssColor(label.color)};
-          border-radius: 10px;
-          border: 1px solid var(--outline-color);
-          box-sizing: border-box;
-          width: 20px;
-          height: 20px;"
+                style=${styleMap({
+                  backgroundColor: computeCssColor(label.color),
+                  borderRadius: "10px",
+                  border: "1px solid var(--outline-color)",
+                  boxSizing: "border-box",
+                  width: "20px",
+                  height: "20px",
+                })}
               ></div>`
             : nothing,
       },

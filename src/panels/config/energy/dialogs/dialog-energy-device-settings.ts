@@ -1,4 +1,3 @@
-import "@material/mwc-button/mwc-button";
 import { mdiDevices } from "@mdi/js";
 import type { CSSResultGroup } from "lit";
 import { css, html, LitElement, nothing } from "lit";
@@ -8,9 +7,10 @@ import { stopPropagation } from "../../../../common/dom/stop_propagation";
 import "../../../../components/entity/ha-entity-picker";
 import "../../../../components/entity/ha-statistic-picker";
 import "../../../../components/ha-dialog";
-import "../../../../components/ha-formfield";
 import "../../../../components/ha-radio";
+import "../../../../components/ha-button";
 import "../../../../components/ha-select";
+import "../../../../components/ha-list-item";
 import type { DeviceConsumptionEnergyPreference } from "../../../../data/energy";
 import { energyStatisticHelpUrl } from "../../../../data/energy";
 import { getStatisticLabel } from "../../../../data/recorder";
@@ -163,36 +163,40 @@ export class DialogEnergyDeviceSettings
         >
           ${!this._possibleParents.length
             ? html`
-                <mwc-list-item disabled value="-"
+                <ha-list-item disabled value="-"
                   >${this.hass.localize(
                     "ui.panel.config.energy.device_consumption.dialog.no_upstream_devices"
-                  )}</mwc-list-item
+                  )}</ha-list-item
                 >
               `
             : this._possibleParents.map(
                 (stat) => html`
-                  <mwc-list-item .value=${stat.stat_consumption}
+                  <ha-list-item .value=${stat.stat_consumption}
                     >${stat.name ||
                     getStatisticLabel(
                       this.hass,
                       stat.stat_consumption,
                       this._params?.statsMetadata?.[stat.stat_consumption]
-                    )}</mwc-list-item
+                    )}</ha-list-item
                   >
                 `
               )}
         </ha-select>
 
-        <mwc-button @click=${this.closeDialog} slot="secondaryAction">
+        <ha-button
+          appearance="plain"
+          @click=${this.closeDialog}
+          slot="primaryAction"
+        >
           ${this.hass.localize("ui.common.cancel")}
-        </mwc-button>
-        <mwc-button
+        </ha-button>
+        <ha-button
           @click=${this._save}
           .disabled=${!this._device}
           slot="primaryAction"
         >
           ${this.hass.localize("ui.common.save")}
-        </mwc-button>
+        </ha-button>
       </ha-dialog>
     `;
   }

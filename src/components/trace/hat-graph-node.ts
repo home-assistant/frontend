@@ -17,8 +17,8 @@ export class HatGraphNode extends LitElement {
 
   @property({ type: Boolean }) public error = false;
 
-  @property({ attribute: false, reflect: true, type: Boolean }) notEnabled =
-    false;
+  @property({ attribute: "not-enabled", reflect: true, type: Boolean })
+  notEnabled = false;
 
   @property({ attribute: "graph-start", reflect: true, type: Boolean })
   graphStart = false;
@@ -127,13 +127,13 @@ export class HatGraphNode extends LitElement {
       --stroke-clr: var(--hover-clr);
       --icon-clr: var(--default-icon-clr);
     }
-    :host([notEnabled]) circle {
+    :host([not-enabled]) circle {
       --stroke-clr: var(--disabled-clr);
     }
-    :host([notEnabled][active]) circle {
+    :host([not-enabled][active]) circle {
       --stroke-clr: var(--disabled-active-clr);
     }
-    :host([notEnabled]:hover) circle {
+    :host([not-enabled]:hover) circle {
       --stroke-clr: var(--disabled-hover-clr);
     }
     svg:not(.safari) {
@@ -164,7 +164,7 @@ export class HatGraphNode extends LitElement {
       stroke-width: 0;
     }
     .number text {
-      font-size: 10px;
+      font-size: var(--ha-font-size-xs);
       fill: var(--text-primary-color);
     }
     path.icon {

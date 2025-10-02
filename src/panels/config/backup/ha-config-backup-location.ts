@@ -1,33 +1,35 @@
 import type { PropertyValues } from "lit";
 import { css, html, LitElement, nothing } from "lit";
 import { customElement, property, state } from "lit/decorators";
+import { fireEvent } from "../../../common/dom/fire_event";
 import "../../../components/ha-alert";
 import "../../../components/ha-button";
-import "../../../components/ha-switch";
 import "../../../components/ha-button-menu";
 import "../../../components/ha-card";
 import "../../../components/ha-fade-in";
-import "../../../components/ha-spinner";
 import "../../../components/ha-icon-button";
-import "../../../components/ha-list-item";
 import "../../../components/ha-md-list";
 import "../../../components/ha-md-list-item";
+import "../../../components/ha-spinner";
+import "../../../components/ha-switch";
 import type {
   BackupAgent,
   BackupAgentConfig,
   BackupConfig,
+  Retention,
 } from "../../../data/backup";
 import {
   CLOUD_AGENT,
   computeBackupAgentName,
   fetchBackupAgentsInfo,
+  isLocalAgent,
   updateBackupConfig,
 } from "../../../data/backup";
 import "../../../layouts/hass-subpage";
 import type { HomeAssistant } from "../../../types";
-import "./components/ha-backup-data-picker";
 import { showConfirmationDialog } from "../../lovelace/custom-card-helpers";
-import { fireEvent } from "../../../common/dom/fire_event";
+import "./components/config/ha-backup-config-retention";
+import "./components/ha-backup-data-picker";
 
 @customElement("ha-config-backup-location")
 class HaConfigBackupDetails extends LitElement {
@@ -62,18 +64,21 @@ class HaConfigBackupDetails extends LitElement {
 
     const encrypted = this._isEncryptionTurnedOn();
 
+    const agentName =
+      (this._agent &&
+        computeBackupAgentName(
+          this.hass.localize,
+          this.agentId,
+          this.agents
+        )) ||
+      this.hass.localize("ui.panel.config.backup.location.header");
+
     return html`
       <hass-subpage
         back-path="/config/backup/settings"
         .hass=${this.hass}
         .narrow=${this.narrow}
-        .header=${(this._agent &&
-          computeBackupAgentName(
-            this.hass.localize,
-            this.agentId,
-            this.agents
-          )) ||
-        this.hass.localize("ui.panel.config.backup.location.header")}
+        .header=${agentName}
       >
         <div class="content">
           ${this._error &&
@@ -97,14 +102,14 @@ class HaConfigBackupDetails extends LitElement {
                   ><ha-spinner></ha-spinner
                 ></ha-fade-in>`
               : html`
-                  ${CLOUD_AGENT === this.agentId
-                    ? html`
-                        <ha-card>
-                          <div class="card-header">
-                            ${this.hass.localize(
-                              "ui.panel.config.backup.location.configuration.title"
-                            )}
-                          </div>
+                  <ha-card>
+                    <div class="card-header">
+                      ${this.hass.localize(
+                        "ui.panel.config.backup.location.configuration.title"
+                      )}
+                    </div>
+                    ${CLOUD_AGENT === this.agentId
+                      ? html`
                           <div class="card-content">
                             <p>
                               ${this.hass.localize(
@@ -112,9 +117,21 @@ class HaConfigBackupDetails extends LitElement {
                               )}
                             </p>
                           </div>
-                        </ha-card>
-                      `
-                    : nothing}
+                        `
+                      : html`<ha-backup-config-retention
+                          location-specific
+                          .headline=${this.hass.localize(
+                            `ui.panel.config.backup.location.retention_for_${isLocalAgent(this.agentId) ? "this_system" : "location"}`,
+                            { location: agentName }
+                          )}
+                          .hass=${this.hass}
+                          .retention=${!this.config
+                            ? undefined
+                            : this.config.agents[this.agentId]?.retention ||
+                              null}
+                          @value-changed=${this._retentionChanged}
+                        ></ha-backup-config-retention>`}
+                  </ha-card>
                   <ha-card>
                     <div class="card-header">
                       ${this.hass.localize(
@@ -141,18 +158,18 @@ class HaConfigBackupDetails extends LitElement {
                                     "ui.panel.config.backup.location.encryption.location_encrypted_cloud_description"
                                   )}
                                 </span>
-                                <a
+                                <ha-button
                                   href="https://www.nabucasa.com/config/backups/"
                                   target="_blank"
                                   slot="end"
                                   rel="noreferrer noopener"
+                                  appearance="plain"
+                                  size="small"
                                 >
-                                  <ha-button>
-                                    ${this.hass.localize(
-                                      "ui.panel.config.backup.location.encryption.location_encrypted_cloud_learn_more"
-                                    )}
-                                  </ha-button>
-                                </a>
+                                  ${this.hass.localize(
+                                    "ui.panel.config.backup.location.encryption.location_encrypted_cloud_learn_more"
+                                  )}
+                                </ha-button>
                               </ha-md-list-item>
                             `
                           : encrypted
@@ -172,7 +189,7 @@ class HaConfigBackupDetails extends LitElement {
                                   <ha-button
                                     slot="end"
                                     @click=${this._turnOffEncryption}
-                                    destructive
+                                    variant="danger"
                                   >
                                     ${this.hass.localize(
                                       "ui.panel.config.backup.location.encryption.encryption_turn_off"
@@ -248,18 +265,37 @@ class HaConfigBackupDetails extends LitElement {
     }
   }
 
-  private async _updateAgentEncryption(value: boolean) {
-    const agentsConfig = {
-      ...this.config?.agents,
-      [this.agentId]: {
-        ...this.config?.agents[this.agentId],
-        protected: value,
-      },
-    };
-    await updateBackupConfig(this.hass, {
-      agents: agentsConfig,
+  private async _updateAgentConfig(config: Partial<BackupAgentConfig>) {
+    try {
+      const agents = this.config?.agents || {};
+      agents[this.agentId] = {
+        ...(agents[this.agentId] || {}),
+        ...config,
+      };
+
+      await updateBackupConfig(this.hass, {
+        agents,
+      });
+      fireEvent(this, "ha-refresh-backup-config");
+    } catch (err: any) {
+      this._error = this.hass.localize(
+        "ui.panel.config.backup.location.save_error",
+        { error: err.message }
+      );
+    }
+  }
+
+  private _retentionChanged(ev: CustomEvent<{ value: Retention }>) {
+    const retention = ev.detail.value;
+    this._updateAgentConfig({
+      retention,
     });
-    fireEvent(this, "ha-refresh-backup-config");
+  }
+
+  private async _updateAgentEncryption(value: boolean) {
+    this._updateAgentConfig({
+      protected: value,
+    });
   }
 
   private _turnOnEncryption() {
@@ -290,7 +326,7 @@ class HaConfigBackupDetails extends LitElement {
       padding: 28px 20px 0;
       max-width: 690px;
       margin: 0 auto;
-      gap: 24px;
+      gap: var(--ha-space-6);
       display: grid;
       margin-bottom: 24px;
     }
@@ -340,8 +376,8 @@ class HaConfigBackupDetails extends LitElement {
       display: flex;
       align-items: center;
       flex-direction: row;
-      gap: 8px;
-      line-height: normal;
+      gap: var(--ha-space-2);
+      line-height: var(--ha-line-height-condensed);
     }
     .dot {
       display: block;
@@ -363,6 +399,10 @@ class HaConfigBackupDetails extends LitElement {
     }
     ha-spinner {
       margin: 24px auto;
+    }
+    ha-backup-config-retention {
+      display: block;
+      padding: 16px;
     }
   `;
 }

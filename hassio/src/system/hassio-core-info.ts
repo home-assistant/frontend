@@ -1,10 +1,9 @@
-import "@material/mwc-button";
-import "@material/mwc-list/mwc-list-item";
 import type { CSSResultGroup, TemplateResult } from "lit";
 import { css, html, LitElement } from "lit";
 import { customElement, property, state } from "lit/decorators";
 import { atLeastVersion } from "../../../src/common/config/version";
 import "../../../src/components/buttons/ha-progress-button";
+import "../../../src/components/ha-button";
 import "../../../src/components/ha-button-menu";
 import "../../../src/components/ha-card";
 import "../../../src/components/ha-settings-row";
@@ -70,12 +69,12 @@ class HassioCoreInfo extends LitElement {
               ${!atLeastVersion(this.hass.config.version, 2021, 12) &&
               this.supervisor.core.update_available
                 ? html`
-                    <a href="/hassio/update-available/core">
-                      <mwc-button
-                        .label=${this.supervisor.localize("common.show")}
-                      >
-                      </mwc-button>
-                    </a>
+                    <ha-button
+                      appearance="plain"
+                      href="/hassio/update-available/core"
+                    >
+                      ${this.supervisor.localize("common.show")}
+                    </ha-button>
                   `
                 : ""}
             </ha-settings-row>
@@ -95,7 +94,7 @@ class HassioCoreInfo extends LitElement {
         <div class="card-actions">
           <ha-progress-button
             slot="primaryAction"
-            class="warning"
+            variant="danger"
             @click=${this._coreRestart}
             .title=${this.supervisor.localize("common.restart_name", {
               name: "Core",
@@ -188,17 +187,9 @@ class HassioCoreInfo extends LitElement {
           white-space: normal;
           color: var(--secondary-text-color);
         }
-
-        .warning {
-          --mdc-theme-primary: var(--error-color);
-        }
-
         ha-button-menu {
           color: var(--secondary-text-color);
           --mdc-menu-min-width: 200px;
-        }
-        mwc-list-item ha-svg-icon {
-          color: var(--secondary-text-color);
         }
         a {
           text-decoration: none;

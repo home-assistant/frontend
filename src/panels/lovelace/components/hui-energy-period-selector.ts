@@ -1,4 +1,3 @@
-import "@material/mwc-button/mwc-button";
 import type { RequestSelectedDetail } from "@material/mwc-list/mwc-list-item";
 import { mdiDotsVertical } from "@mdi/js";
 import {
@@ -34,6 +33,7 @@ import {
 } from "../../../common/datetime/format_date";
 import { debounce } from "../../../common/util/debounce";
 import "../../../components/ha-button-menu";
+import "../../../components/ha-button";
 import "../../../components/ha-check-list-item";
 import "../../../components/ha-date-range-picker";
 import type { DateRangePickerRanges } from "../../../components/ha-date-range-picker";
@@ -205,11 +205,15 @@ export class HuiEnergyPeriodSelector extends SubscribeMixin(LitElement) {
         </div>
 
         ${!this.narrow
-          ? html`<mwc-button dense outlined @click=${this._pickNow}>
+          ? html`<ha-button
+              appearance="filled"
+              size="small"
+              @click=${this._pickNow}
+            >
               ${this.hass.localize(
                 "ui.panel.lovelace.components.energy_period_selector.now"
               )}
-            </mwc-button>`
+            </ha-button>`
           : nothing}
 
         <ha-button-menu>
@@ -297,24 +301,17 @@ export class HuiEnergyPeriodSelector extends SubscribeMixin(LitElement) {
   }
 
   private _dateRangeChanged(ev) {
-    const weekStartsOn = firstWeekdayIndex(this.hass.locale);
     this._startDate = calcDate(
       ev.detail.value.startDate,
       startOfDay,
       this.hass.locale,
-      this.hass.config,
-      {
-        weekStartsOn,
-      }
+      this.hass.config
     );
     this._endDate = calcDate(
       ev.detail.value.endDate,
       endOfDay,
       this.hass.locale,
-      this.hass.config,
-      {
-        weekStartsOn,
-      }
+      this.hass.config
     );
 
     this._updateCollectionPeriod();
@@ -477,7 +474,7 @@ export class HuiEnergyPeriodSelector extends SubscribeMixin(LitElement) {
       display: flex;
       align-items: center;
       justify-content: flex-end;
-      font-size: 20px;
+      font-size: var(--ha-font-size-xl);
       margin-left: auto;
       margin-inline-start: auto;
       margin-inline-end: initial;
@@ -487,17 +484,12 @@ export class HuiEnergyPeriodSelector extends SubscribeMixin(LitElement) {
       margin-inline-start: unset;
       margin-inline-end: initial;
     }
-    mwc-button {
+    ha-button {
       margin-left: 8px;
       margin-inline-start: 8px;
       margin-inline-end: initial;
       flex-shrink: 0;
-      --mdc-button-outline-color: currentColor;
-      --primary-color: currentColor;
-      --mdc-theme-primary: currentColor;
-      --mdc-theme-on-primary: currentColor;
-      --mdc-button-disabled-outline-color: var(--disabled-text-color);
-      --mdc-button-disabled-ink-color: var(--disabled-text-color);
+      --ha-button-theme-color: currentColor;
     }
   `;
 }

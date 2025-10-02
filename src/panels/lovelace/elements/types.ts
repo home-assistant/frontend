@@ -20,6 +20,7 @@ export type LovelaceElementConfig =
 
 export interface LovelaceElement extends HTMLElement {
   hass?: HomeAssistant;
+  preview?: boolean;
   setConfig(config: LovelaceElementConfig): void;
 }
 

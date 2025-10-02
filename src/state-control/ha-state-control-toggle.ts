@@ -46,7 +46,7 @@ export class HaStateControlToggle extends LitElement {
     if (!this.hass || !this.stateObj) {
       return;
     }
-    forwardHaptic("light");
+    forwardHaptic(this, "light");
     const stateDomain = computeDomain(this.stateObj.entity_id);
     let serviceDomain;
     let service;
@@ -117,7 +117,7 @@ export class HaStateControlToggle extends LitElement {
         .checked=${isOn}
         .showHandle=${stateActive(this.stateObj)}
         @change=${this._valueChanged}
-        .ariaLabel=${this.hass.localize("ui.card.common.toggle")}
+        .label=${this.hass.localize("ui.card.common.toggle")}
         style=${styleMap({
           "--control-switch-on-color": onColor,
           "--control-switch-off-color": offColor,

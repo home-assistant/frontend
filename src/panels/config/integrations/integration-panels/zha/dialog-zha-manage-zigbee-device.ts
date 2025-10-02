@@ -1,5 +1,3 @@
-import "@material/mwc-tab-bar/mwc-tab-bar";
-import "@material/mwc-tab/mwc-tab";
 import { mdiClose } from "@mdi/js";
 import type { CSSResultGroup, PropertyValues } from "lit";
 import { css, html, LitElement, nothing } from "lit";
@@ -10,6 +8,8 @@ import { fireEvent } from "../../../../../common/dom/fire_event";
 import "../../../../../components/ha-code-editor";
 import "../../../../../components/ha-dialog";
 import "../../../../../components/ha-dialog-header";
+import "../../../../../components/ha-tab-group";
+import "../../../../../components/ha-tab-group-tab";
 import type { ZHADevice, ZHAGroup } from "../../../../../data/zha";
 import { fetchBindableDevices, fetchGroups } from "../../../../../data/zha";
 import { haStyleDialog } from "../../../../../resources/styles";
@@ -105,20 +105,21 @@ class DialogZHAManageZigbeeDevice extends LitElement {
           >
             ${this.hass.localize("ui.dialogs.zha_manage_device.heading")}
           </span>
-          <mwc-tab-bar
-            .activeIndex=${tabs.indexOf(this._currTab)}
-            @MDCTabBar:activated=${this._handleTabChanged}
-          >
+          <ha-tab-group @wa-tab-show=${this._handleTabChanged}>
             ${tabs.map(
               (tab) => html`
-                <mwc-tab
-                  .label=${this.hass.localize(
+                <ha-tab-group-tab
+                  slot="nav"
+                  .panel=${tab}
+                  .active=${this._currTab === tab}
+                >
+                  ${this.hass.localize(
                     `ui.dialogs.zha_manage_device.tabs.${tab}`
                   )}
-                ></mwc-tab>
+                </ha-tab-group-tab>
               `
             )}
-          </mwc-tab-bar>
+          </ha-tab-group>
         </ha-dialog-header>
         <div class="content" tabindex="-1" dialogInitialFocus>
           ${cache(
@@ -187,7 +188,7 @@ class DialogZHAManageZigbeeDevice extends LitElement {
   }
 
   private _handleTabChanged(ev: CustomEvent): void {
-    const newTab = this._getTabs(this._device)[ev.detail.index];
+    const newTab = ev.detail.name as Tab;
     if (newTab === this._currTab) {
       return;
     }
@@ -228,6 +229,14 @@ class DialogZHAManageZigbeeDevice extends LitElement {
             --dialog-surface-margin-top: 40px;
             --mdc-dialog-max-height: calc(100% - 72px);
           }
+        }
+
+        ha-tab-group-tab {
+          flex: 1;
+        }
+        ha-tab-group-tab::part(base) {
+          width: 100%;
+          justify-content: center;
         }
       `,
     ];

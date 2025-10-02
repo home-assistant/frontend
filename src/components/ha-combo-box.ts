@@ -12,12 +12,14 @@ import type {
 import { registerStyles } from "@vaadin/vaadin-themable-mixin/register-styles";
 import type { TemplateResult } from "lit";
 import { css, html, LitElement } from "lit";
-import { customElement, property, query } from "lit/decorators";
+import { customElement, property, query, state } from "lit/decorators";
 import { ifDefined } from "lit/directives/if-defined";
 import { fireEvent } from "../common/dom/fire_event";
 import type { HomeAssistant } from "../types";
+import "./ha-combo-box-item";
+import "./ha-combo-box-textfield";
 import "./ha-icon-button";
-import "./ha-list-item";
+import "./ha-input-helper-text";
 import "./ha-textfield";
 import type { HaTextField } from "./ha-textfield";
 
@@ -108,9 +110,14 @@ export class HaComboBox extends LitElement {
   @property({ type: Boolean, attribute: "hide-clear-icon" })
   public hideClearIcon = false;
 
+  @property({ type: Boolean, attribute: "clear-initial-value" })
+  public clearInitialValue = false;
+
   @query("vaadin-combo-box-light", true) private _comboBox!: ComboBoxLight;
 
-  @query("ha-textfield", true) private _inputElement!: HaTextField;
+  @query("ha-combo-box-textfield", true) private _inputElement!: HaTextField;
+
+  @state({ type: Boolean }) private _forceBlankValue = false;
 
   private _overlayMutationObserver?: MutationObserver;
 
@@ -147,6 +154,10 @@ export class HaComboBox extends LitElement {
     this._comboBox.value = value;
   }
 
+  public setTextFieldValue(value: string) {
+    this._inputElement.value = value;
+  }
+
   protected render(): TemplateResult {
     return html`
       <!-- @ts-ignore Tag definition is not included in theme folder -->
@@ -167,7 +178,7 @@ export class HaComboBox extends LitElement {
         @value-changed=${this._valueChanged}
         attr-for-value="value"
       >
-        <ha-textfield
+        <ha-combo-box-textfield
           label=${ifDefined(this.label)}
           placeholder=${ifDefined(this.placeholder)}
           ?disabled=${this.disabled}
@@ -177,7 +188,7 @@ export class HaComboBox extends LitElement {
           class="input"
           autocapitalize="none"
           autocomplete="off"
-          autocorrect="off"
+          .autocorrect=${false}
           input-spellcheck="false"
           .suffix=${html`<div
             style="width: 28px;"
@@ -185,18 +196,18 @@ export class HaComboBox extends LitElement {
           ></div>`}
           .icon=${this.icon}
           .invalid=${this.invalid}
-          .helper=${this.helper}
-          helperPersistent
+          .forceBlankValue=${this._forceBlankValue}
         >
           <slot name="icon" slot="leadingIcon"></slot>
-        </ha-textfield>
+        </ha-combo-box-textfield>
         ${this.value && !this.hideClearIcon
           ? html`<ha-svg-icon
               role="button"
               tabindex="-1"
               aria-label=${ifDefined(this.hass?.localize("ui.common.clear"))}
-              class="clear-button"
+              class=${`clear-button ${this.label ? "" : "no-label"}`}
               .path=${mdiClose}
+              ?disabled=${this.disabled}
               @click=${this._clearValue}
             ></ha-svg-icon>`
           : ""}
@@ -205,21 +216,31 @@ export class HaComboBox extends LitElement {
           tabindex="-1"
           aria-label=${ifDefined(this.label)}
           aria-expanded=${this.opened ? "true" : "false"}
-          class="toggle-button"
+          class=${`toggle-button ${this.label ? "" : "no-label"}`}
           .path=${this.opened ? mdiMenuUp : mdiMenuDown}
           ?disabled=${this.disabled}
           @click=${this._toggleOpen}
         ></ha-svg-icon>
       </vaadin-combo-box-light>
+      ${this._renderHelper()}
     `;
+  }
+
+  private _renderHelper() {
+    return this.helper
+      ? html`<ha-input-helper-text .disabled=${this.disabled}
+          >${this.helper}</ha-input-helper-text
+        >`
+      : "";
   }
 
   private _defaultRowRenderer: ComboBoxLitRenderer<
     string | Record<string, any>
-  > = (item) =>
-    html`<ha-list-item>
+  > = (item) => html`
+    <ha-combo-box-item type="button">
       ${this.itemLabelPath ? item[this.itemLabelPath] : item}
-    </ha-list-item>`;
+    </ha-combo-box-item>
+  `;
 
   private _clearValue(ev: Event) {
     ev.stopPropagation();
@@ -241,8 +262,20 @@ export class HaComboBox extends LitElement {
     // delay this so we can handle click event for toggle button before setting _opened
     setTimeout(() => {
       this.opened = opened;
+      fireEvent(this, "opened-changed", { value: ev.detail.value });
     }, 0);
-    fireEvent(this, "opened-changed", { value: ev.detail.value });
+
+    if (this.clearInitialValue) {
+      this.setTextFieldValue("");
+      if (opened) {
+        // Wait 100ms to be sure vaddin-combo-box-light already tried to set the value
+        setTimeout(() => {
+          this._forceBlankValue = false;
+        }, 100);
+      } else {
+        this._forceBlankValue = true;
+      }
+    }
 
     if (opened) {
       const overlay = document.querySelector<HTMLElement>(
@@ -321,8 +354,10 @@ export class HaComboBox extends LitElement {
       // @ts-ignore
       this._comboBox._closeOnBlurIsPrevented = true;
     }
+    if (!this.opened) {
+      return;
+    }
     const newValue = ev.detail.value;
-
     if (newValue !== this.value) {
       fireEvent(this, "value-changed", { value: newValue || undefined });
     }
@@ -335,12 +370,11 @@ export class HaComboBox extends LitElement {
     }
     vaadin-combo-box-light {
       position: relative;
-      --vaadin-combo-box-overlay-max-height: calc(45vh - 56px);
     }
-    ha-textfield {
+    ha-combo-box-textfield {
       width: 100%;
     }
-    ha-textfield > ha-icon-button {
+    ha-combo-box-textfield > ha-icon-button {
       --mdc-icon-button-size: 24px;
       padding: 2px;
       color: var(--secondary-text-color);
@@ -360,9 +394,13 @@ export class HaComboBox extends LitElement {
     :host([opened]) .toggle-button {
       color: var(--primary-color);
     }
-    .toggle-button[disabled] {
+    .toggle-button[disabled],
+    .clear-button[disabled] {
       color: var(--disabled-text-color);
       pointer-events: none;
+    }
+    .toggle-button.no-label {
+      top: -3px;
     }
     .clear-button {
       --mdc-icon-size: 20px;
@@ -371,6 +409,12 @@ export class HaComboBox extends LitElement {
       inset-inline-start: initial;
       inset-inline-end: 36px;
       direction: var(--direction);
+    }
+    .clear-button.no-label {
+      top: 0;
+    }
+    ha-input-helper-text {
+      margin-top: 4px;
     }
   `;
 }
