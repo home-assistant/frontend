@@ -1,7 +1,6 @@
 import "@material/mwc-linear-progress/mwc-linear-progress";
 import {
   mdiAutoFix,
-  mdiClose,
   mdiLifebuoy,
   mdiPower,
   mdiPowerCycle,
@@ -9,16 +8,14 @@ import {
 } from "@mdi/js";
 import type { CSSResultGroup } from "lit";
 import { LitElement, css, html, nothing } from "lit";
-import { customElement, property, query, state } from "lit/decorators";
+import { customElement, property, state } from "lit/decorators";
 import { isComponentLoaded } from "../../common/config/is_component_loaded";
 import { fireEvent } from "../../common/dom/fire_event";
 import "../../components/ha-alert";
 import "../../components/ha-expansion-panel";
 import "../../components/ha-fade-in";
-import "../../components/ha-icon-button";
 import "../../components/ha-icon-next";
-import "../../components/ha-md-dialog";
-import type { HaMdDialog } from "../../components/ha-md-dialog";
+import "../../components/ha-wa-dialog";
 import "../../components/ha-md-list";
 import "../../components/ha-md-list-item";
 import "../../components/ha-spinner";
@@ -58,12 +55,14 @@ class DialogRestart extends LitElement {
   @state()
   private _hostInfo?: HassioHostInfo;
 
-  @query("ha-md-dialog") private _dialog?: HaMdDialog;
+  @state()
+  private _dialogOpen = false;
 
   public async showDialog(): Promise<void> {
     const isHassioLoaded = isComponentLoaded(this.hass, "hassio");
 
     this._open = true;
+    this._dialogOpen = true;
 
     if (isHassioLoaded && !this._hostInfo) {
       this._loadHostInfo();
@@ -92,14 +91,11 @@ class DialogRestart extends LitElement {
   }
 
   private _dialogClosed(): void {
+    this._dialogOpen = false;
     this._open = false;
     this._loadingHostInfo = false;
     this._loadingBackupInfo = false;
     fireEvent(this, "dialog-closed", { dialog: this.localName });
-  }
-
-  public closeDialog(): void {
-    this._dialog?.close();
   }
 
   protected render() {
@@ -113,17 +109,13 @@ class DialogRestart extends LitElement {
     const dialogTitle = this.hass.localize("ui.dialogs.restart.heading");
 
     return html`
-      <ha-md-dialog open @closed=${this._dialogClosed}>
-        <ha-dialog-header slot="headline">
-          <ha-icon-button
-            slot="navigationIcon"
-            .label=${this.hass.localize("ui.common.close") ?? "Close"}
-            .path=${mdiClose}
-            @click=${this.closeDialog}
-          ></ha-icon-button>
-          <span slot="title" .title=${dialogTitle}> ${dialogTitle} </span>
-        </ha-dialog-header>
-        <div slot="content" class="content">
+      <ha-wa-dialog
+        .hass=${this.hass}
+        .open=${this._dialogOpen}
+        header-title=${dialogTitle}
+        @closed=${this._dialogClosed}
+      >
+        <div class="content">
           <div class="action-loader">
             ${this._loadingBackupInfo
               ? html`<ha-fade-in .delay=${250}>
@@ -265,12 +257,12 @@ class DialogRestart extends LitElement {
                 </ha-expansion-panel>
               `}
         </div>
-      </ha-md-dialog>
+      </ha-wa-dialog>
     `;
   }
 
   private async _reload() {
-    this.closeDialog();
+    this._dialogOpen = false;
 
     showToast(this, {
       message: this.hass.localize("ui.dialogs.restart.reload.reloading"),
@@ -374,7 +366,7 @@ class DialogRestart extends LitElement {
       return;
     }
 
-    this.closeDialog();
+    this._dialogOpen = false;
 
     let actionFunc;
 
@@ -413,14 +405,8 @@ class DialogRestart extends LitElement {
       haStyle,
       haStyleDialog,
       css`
-        ha-md-dialog {
+        ha-wa-dialog {
           --dialog-content-padding: 0;
-        }
-        @media all and (min-width: 550px) {
-          ha-md-dialog {
-            min-width: 500px;
-            max-width: 500px;
-          }
         }
 
         ha-expansion-panel {
