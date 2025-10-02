@@ -12,7 +12,11 @@ import { getGraphColorByIndex } from "../../../../common/color/colors";
 import { formatNumber } from "../../../../common/number/format_number";
 import "../../../../components/chart/ha-chart-base";
 import type { EnergyData } from "../../../../data/energy";
-import { getEnergyDataCollection } from "../../../../data/energy";
+import {
+  computeConsumptionData,
+  getEnergyDataCollection,
+  getSummedData,
+} from "../../../../data/energy";
 import {
   calculateStatisticSumGrowth,
   getStatisticLabel,
@@ -29,8 +33,6 @@ import { fireEvent } from "../../../../common/dom/fire_event";
 import { measureTextWidth } from "../../../../util/text";
 import "../../../../components/ha-icon-button";
 import { storage } from "../../../../common/decorators/storage";
-
-const MAX_PIE_LABELS = 5;
 
 @customElement("hui-energy-devices-graph-card")
 export class HuiEnergyDevicesGraphCard
@@ -52,6 +54,8 @@ export class HuiEnergyDevicesGraphCard
     subscribe: false,
   })
   private _chartType: "bar" | "pie" = "bar";
+
+  private _compoundStats: string[] = [];
 
   protected hassSubscribeRequiredHostProps = ["_config"];
 
@@ -187,15 +191,18 @@ export class HuiEnergyDevicesGraphCard
   );
 
   private _getDeviceName(statisticId: string): string {
+    const suffix = this._compoundStats.includes(statisticId)
+      ? ` (${this.hass.localize("ui.panel.lovelace.cards.energy.energy_devices_graph.untracked")})`
+      : "";
     return (
-      this._data?.prefs.device_consumption.find(
+      (this._data?.prefs.device_consumption.find(
         (d) => d.stat_consumption === statisticId
       )?.name ||
-      getStatisticLabel(
-        this.hass,
-        statisticId,
-        this._data?.statsMetadata[statisticId]
-      )
+        getStatisticLabel(
+          this.hass,
+          statisticId,
+          this._data?.statsMetadata[statisticId]
+        )) + suffix
     );
   }
 
@@ -212,7 +219,7 @@ export class HuiEnergyDevicesGraphCard
     const datasets: (BarSeriesOption | PieSeriesOption)[] = [
       {
         type: this._chartType,
-        radius: ["40%", "70%"],
+        radius: [compareData ? "50%" : "40%", "70%"],
         universalTransition: true,
         name: this.hass.localize(
           "ui.panel.lovelace.cards.energy.energy_devices_graph.energy_usage"
@@ -223,6 +230,7 @@ export class HuiEnergyDevicesGraphCard
         data: chartData,
         barWidth: compareData ? 10 : 20,
         cursor: "default",
+        minShowLabelAngle: 15,
         label:
           this._chartType === "pie"
             ? {
@@ -235,6 +243,7 @@ export class HuiEnergyDevicesGraphCard
     if (compareData) {
       datasets.push({
         type: this._chartType,
+        radius: ["30%", "50%"],
         universalTransition: true,
         name: this.hass.localize(
           "ui.panel.lovelace.cards.energy.energy_devices_graph.previous_energy_usage"
@@ -245,10 +254,12 @@ export class HuiEnergyDevicesGraphCard
         data: chartDataCompare,
         barWidth: 10,
         cursor: "default",
-        label:
+        label: this._chartType === "pie" ? { show: false } : undefined,
+        emphasis:
           this._chartType === "pie"
             ? {
-                formatter: ({ name }) => this._getDeviceName(name),
+                focus: "series",
+                blurScope: "global",
               }
             : undefined,
       } as BarSeriesOption | PieSeriesOption);
@@ -256,25 +267,75 @@ export class HuiEnergyDevicesGraphCard
 
     const computedStyle = getComputedStyle(this);
 
-    const exclude = this._config?.hide_compound_stats
-      ? energyData.prefs.device_consumption
-          .map((d) => d.included_in_stat)
-          .filter(Boolean)
-      : [];
+    if (this._chartType === "pie") {
+      const { summedData } = getSummedData(energyData);
+      const { consumption } = computeConsumptionData(summedData);
+      const totalUsed = consumption.total.used_total;
+      datasets.push({
+        type: "pie",
+        radius: ["0%", compareData ? "30%" : "40%"],
+        name: this.hass.localize(
+          "ui.panel.lovelace.cards.energy.energy_devices_graph.total_energy_usage"
+        ),
+        data: [totalUsed],
+        label: {
+          show: true,
+          position: "center",
+          color: computedStyle.getPropertyValue("--secondary-text-color"),
+          fontSize: computedStyle.getPropertyValue("--ha-font-size-l"),
+          lineHeight: 24,
+          fontWeight: "bold",
+          formatter: `{a}\n${formatNumber(totalUsed, this.hass.locale)} kWh`,
+        },
+        cursor: "default",
+        itemStyle: {
+          color: "rgba(0, 0, 0, 0)",
+        },
+        tooltip: { formatter: () => "" }, // `show: false` doesn't hide the previous tooltip
+      });
+    }
 
-    energyData.prefs.device_consumption.forEach((device, id) => {
-      if (exclude.includes(device.stat_consumption)) {
-        return;
-      }
-      const value =
+    this._compoundStats = energyData.prefs.device_consumption
+      .map((d) => d.included_in_stat)
+      .filter(Boolean) as string[];
+
+    const devices = energyData.prefs.device_consumption;
+    const devicesTotals: Record<string, number> = {};
+    devices.forEach((device) => {
+      devicesTotals[device.stat_consumption] =
         device.stat_consumption in data
           ? calculateStatisticSumGrowth(data[device.stat_consumption]) || 0
           : 0;
-      const color = getGraphColorByIndex(id, computedStyle);
+    });
+    const devicesTotalsCompare: Record<string, number> = {};
+    if (compareData) {
+      devices.forEach((device) => {
+        devicesTotalsCompare[device.stat_consumption] =
+          device.stat_consumption in compareData
+            ? calculateStatisticSumGrowth(
+                compareData[device.stat_consumption]
+              ) || 0
+            : 0;
+      });
+    }
+    devices.forEach((device, idx) => {
+      let value = devicesTotals[device.stat_consumption];
+      if (!this._config?.hide_compound_stats) {
+        const childSum = devices.reduce((acc, d) => {
+          if (d.included_in_stat === device.stat_consumption) {
+            return acc + devicesTotals[d.stat_consumption];
+          }
+          return acc;
+        }, 0);
+        value -= Math.min(value, childSum);
+      } else if (this._compoundStats.includes(device.stat_consumption)) {
+        return;
+      }
+      const color = getGraphColorByIndex(idx, computedStyle);
 
       chartData.push({
-        id,
-        value: value,
+        id: device.stat_consumption,
+        value,
         name: device.stat_consumption,
         itemStyle: {
           color: color + "7F",
@@ -283,15 +344,22 @@ export class HuiEnergyDevicesGraphCard
       });
 
       if (compareData) {
-        const compareValue =
+        let compareValue =
           device.stat_consumption in compareData
             ? calculateStatisticSumGrowth(
                 compareData[device.stat_consumption]
               ) || 0
             : 0;
+        const compareChildSum = devices.reduce((acc, d) => {
+          if (d.included_in_stat === device.stat_consumption) {
+            return acc + devicesTotalsCompare[d.stat_consumption];
+          }
+          return acc;
+        }, 0);
+        compareValue -= Math.min(compareValue, compareChildSum);
 
         chartDataCompare.push({
-          id,
+          id: device.stat_consumption,
           value: compareValue,
           name: device.stat_consumption,
           itemStyle: {
@@ -309,11 +377,6 @@ export class HuiEnergyDevicesGraphCard
         this._config?.max_devices || Infinity,
         dataset.data!.length
       );
-      if (dataset.data!.length > MAX_PIE_LABELS) {
-        for (let i = MAX_PIE_LABELS; i < dataset.data!.length; i++) {
-          (dataset.data![i]! as Record<string, any>).label = { show: false };
-        }
-      }
     });
 
     this._chartData = datasets;
