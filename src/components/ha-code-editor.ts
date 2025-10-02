@@ -5,19 +5,19 @@ import type {
   CompletionResult,
   CompletionSource,
 } from "@codemirror/autocomplete";
-import { undo, undoDepth, redo, redoDepth } from "@codemirror/commands";
+import { redo, redoDepth, undo, undoDepth } from "@codemirror/commands";
 import type { Extension, TransactionSpec } from "@codemirror/state";
 import type { EditorView, KeyBinding, ViewUpdate } from "@codemirror/view";
 import {
-  mdiArrowExpand,
   mdiArrowCollapse,
+  mdiArrowExpand,
   mdiContentCopy,
-  mdiUndo,
   mdiRedo,
+  mdiUndo,
 } from "@mdi/js";
 import type { HassEntities } from "home-assistant-js-websocket";
 import type { PropertyValues } from "lit";
-import { css, ReactiveElement, html, render } from "lit";
+import { css, html, ReactiveElement, render } from "lit";
 import { customElement, property, state } from "lit/decorators";
 import memoizeOne from "memoize-one";
 import { fireEvent } from "../common/dom/fire_event";
@@ -395,6 +395,8 @@ export class HaCodeEditor extends ReactiveElement {
     // is disabled, or we have no toolbar, ensure we are not in fullscreen mode.
     this._isFullscreen =
       fullscreen && !this.disableFullscreen && this.hasToolbar;
+
+    fireEvent(this, "fullscreen-changed", this._isFullscreen);
     // Return whether successfully in requested state
     return this._isFullscreen === fullscreen;
   }
@@ -790,6 +792,12 @@ export class HaCodeEditor extends ReactiveElement {
       display: block !important;
     }
 
+    @media all and (max-width: 870px) {
+      :host(.fullscreen) {
+        top: 8px !important;
+      }
+    }
+
     :host(.hasToolbar) .cm-editor {
       padding-top: var(--code-editor-toolbar-height);
     }
@@ -833,5 +841,9 @@ export class HaCodeEditor extends ReactiveElement {
 declare global {
   interface HTMLElementTagNameMap {
     "ha-code-editor": HaCodeEditor;
+  }
+
+  interface HASSDomEvents {
+    "fullscreen-changed": boolean;
   }
 }

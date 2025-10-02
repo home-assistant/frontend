@@ -41,6 +41,8 @@ export default class HaAutomationSidebar extends LitElement {
 
   @state() private _resizing = false;
 
+  @state() private _fullscreen = false;
+
   @query("ha-resizable-bottom-sheet")
   private _bottomSheetElement?: HaResizableBottomSheet;
 
@@ -68,6 +70,7 @@ export default class HaAutomationSidebar extends LitElement {
           .sidebarKey=${this.sidebarKey}
           @toggle-yaml-mode=${this._toggleYamlMode}
           @close-sidebar=${this.triggerCloseSidebar}
+          @fullscreen-changed=${this._handleYamlEditorFullscreenChanged}
         ></ha-automation-sidebar-trigger>
       `;
     }
@@ -84,6 +87,7 @@ export default class HaAutomationSidebar extends LitElement {
           .sidebarKey=${this.sidebarKey}
           @toggle-yaml-mode=${this._toggleYamlMode}
           @close-sidebar=${this.triggerCloseSidebar}
+          @fullscreen-changed=${this._handleYamlEditorFullscreenChanged}
         ></ha-automation-sidebar-condition>
       `;
     }
@@ -100,6 +104,7 @@ export default class HaAutomationSidebar extends LitElement {
           .sidebarKey=${this.sidebarKey}
           @toggle-yaml-mode=${this._toggleYamlMode}
           @close-sidebar=${this.triggerCloseSidebar}
+          @fullscreen-changed=${this._handleYamlEditorFullscreenChanged}
         ></ha-automation-sidebar-action>
       `;
     }
@@ -129,6 +134,7 @@ export default class HaAutomationSidebar extends LitElement {
           .sidebarKey=${this.sidebarKey}
           @toggle-yaml-mode=${this._toggleYamlMode}
           @close-sidebar=${this.triggerCloseSidebar}
+          @fullscreen-changed=${this._handleYamlEditorFullscreenChanged}
         ></ha-automation-sidebar-script-field-selector>
       `;
     }
@@ -145,6 +151,7 @@ export default class HaAutomationSidebar extends LitElement {
           .sidebarKey=${this.sidebarKey}
           @toggle-yaml-mode=${this._toggleYamlMode}
           @close-sidebar=${this.triggerCloseSidebar}
+          @fullscreen-changed=${this._handleYamlEditorFullscreenChanged}
         ></ha-automation-sidebar-script-field>
       `;
     }
@@ -159,7 +166,10 @@ export default class HaAutomationSidebar extends LitElement {
 
     if (this.narrow) {
       return html`
-        <ha-resizable-bottom-sheet @bottom-sheet-closed=${this._closeSidebar}>
+        <ha-resizable-bottom-sheet
+          @bottom-sheet-closed=${this._closeSidebar}
+          .fullscreen=${this._fullscreen}
+        >
           ${this._renderContent()}
         </ha-resizable-bottom-sheet>
       `;
@@ -286,6 +296,10 @@ export default class HaAutomationSidebar extends LitElement {
     document.removeEventListener("touchmove", this._handleMouseMove);
     document.removeEventListener("touchend", this._endResizing);
     document.removeEventListener("touchcancel", this._endResizing);
+  }
+
+  private _handleYamlEditorFullscreenChanged(ev: CustomEvent<boolean>) {
+    this._fullscreen = ev.detail;
   }
 
   static styles = css`
