@@ -126,7 +126,7 @@ export class HuiEnergyDevicesGraphCard
       params.name
     )}</h4>`;
     const value = `${formatNumber(
-      params.value as number,
+      params.value[0] as number,
       this.hass.locale,
       params.value < 0.1 ? { maximumFractionDigits: 3 } : undefined
     )} kWh`;
@@ -335,7 +335,7 @@ export class HuiEnergyDevicesGraphCard
 
       chartData.push({
         id: device.stat_consumption,
-        value,
+        value: [value, device.stat_consumption] as any,
         name: device.stat_consumption,
         itemStyle: {
           color: color + "7F",
@@ -360,7 +360,7 @@ export class HuiEnergyDevicesGraphCard
 
         chartDataCompare.push({
           id: device.stat_consumption,
-          value: compareValue,
+          value: [compareValue, device.stat_consumption] as any,
           name: device.stat_consumption,
           itemStyle: {
             color: color + "32",
@@ -370,9 +370,9 @@ export class HuiEnergyDevicesGraphCard
       }
     });
 
-    datasets.forEach((dataset) => {
-      dataset.data!.sort((a: any, b: any) => b.value - a.value);
+    chartData.sort((a: any, b: any) => b.value[0] - a.value[0]);
 
+    datasets.forEach((dataset) => {
       dataset.data!.length = Math.min(
         this._config?.max_devices || Infinity,
         dataset.data!.length
@@ -384,6 +384,7 @@ export class HuiEnergyDevicesGraphCard
   }
 
   private _handleChartClick(e: CustomEvent<ECElementEvent>): void {
+    console.log(e);
     if (
       e.detail.targetType === "axisLabel" &&
       e.detail.value &&
