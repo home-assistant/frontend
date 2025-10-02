@@ -87,7 +87,7 @@ export class HaConfigLabels extends LitElement {
   })
   private _activeHiddenColumns?: string[];
 
-  @query("#overflow-menu") private _overflowMenu!: HaMdMenu;
+  @query("#overflow-menu") private _overflowMenu?: HaMdMenu;
 
   private _overflowLabel!: LabelRegistryEntry;
 
@@ -182,7 +182,7 @@ export class HaConfigLabels extends LitElement {
             .selected=${label}
             .label=${this.hass.localize("ui.common.overflow_menu")}
             .path=${mdiDotsVertical}
-            @click=${this._showOverflowMenu}
+            @click=${this._toggleOverflowMenu}
           ></ha-icon-button>
         `,
       },
@@ -197,11 +197,12 @@ export class HaConfigLabels extends LitElement {
       }))
   );
 
-  private _showOverflowMenu = (ev) => {
-    if (
-      this._overflowMenu.open &&
-      ev.target === this._overflowMenu.anchorElement
-    ) {
+  private _toggleOverflowMenu = (ev) => {
+    if (!this._overflowMenu) {
+      return;
+    }
+
+    if (this._overflowMenu.open) {
       this._overflowMenu.close();
       return;
     }
