@@ -40,7 +40,7 @@ export class HaStateControlValveToggle extends LitElement {
     if (!this.hass || !this.stateObj) {
       return;
     }
-    forwardHaptic("light");
+    forwardHaptic(this, "light");
 
     await this.hass.callService(
       "valve",

@@ -740,7 +740,7 @@ export class HaTabsSubpageDataTable extends KeyboardShortcutMixin(LitElement) {
       width: 100%;
       justify-content: space-between;
       padding: 0 16px;
-      gap: 16px;
+      gap: var(--ha-space-4);
       box-sizing: border-box;
       background: var(--primary-background-color);
       border-bottom: 1px solid var(--divider-color);
@@ -823,7 +823,7 @@ export class HaTabsSubpageDataTable extends KeyboardShortcutMixin(LitElement) {
       display: flex;
       align-items: center;
       min-width: 100%;
-      gap: 16px;
+      gap: var(--ha-space-4);
       padding: 0 16px;
       box-sizing: border-box;
       overflow-x: scroll;
@@ -852,7 +852,7 @@ export class HaTabsSubpageDataTable extends KeyboardShortcutMixin(LitElement) {
     .selection-controls {
       display: flex;
       align-items: center;
-      gap: 8px;
+      gap: var(--ha-space-2);
     }
 
     .selection-controls p {
@@ -864,7 +864,7 @@ export class HaTabsSubpageDataTable extends KeyboardShortcutMixin(LitElement) {
     .center-vertical {
       display: flex;
       align-items: center;
-      gap: 8px;
+      gap: var(--ha-space-2);
     }
 
     .relative {

@@ -74,8 +74,8 @@ class HaBackupSummaryCard extends LitElement {
     .summary {
       display: flex;
       flex-direction: row;
-      column-gap: 16px;
-      row-gap: 8px;
+      column-gap: var(--ha-space-4);
+      row-gap: var(--ha-space-2);
       align-items: center;
       padding: 16px;
       padding-bottom: 8px;

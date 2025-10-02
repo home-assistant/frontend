@@ -227,7 +227,7 @@ export class HaGridSizeEditor extends LitElement {
           "row-slider preview";
         grid-template-rows: auto auto;
         grid-template-columns: auto 1fr;
-        gap: 8px;
+        gap: var(--ha-space-2);
       }
       #columns {
         grid-area: column-slider;

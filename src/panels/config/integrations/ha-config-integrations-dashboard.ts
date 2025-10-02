@@ -1013,7 +1013,7 @@ class HaConfigIntegrationsDashboard extends KeyboardShortcutMixin(
           z-index: 2;
           background-color: var(--primary-background-color);
           padding: 0 16px;
-          gap: 16px;
+          gap: var(--ha-space-4);
           box-sizing: border-box;
           border-bottom: 1px solid var(--divider-color);
         }

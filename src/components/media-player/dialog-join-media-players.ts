@@ -217,7 +217,7 @@ class DialogJoinMediaPlayers extends LitElement {
         .content {
           display: flex;
           flex-direction: column;
-          row-gap: 16px;
+          row-gap: var(--ha-space-4);
         }
 
         ha-dialog-header ha-button {

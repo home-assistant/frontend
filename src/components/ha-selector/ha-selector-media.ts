@@ -321,7 +321,7 @@ export class HaMediaSelector extends LitElement {
       display: flex;
       align-items: center;
       padding: 8px;
-      gap: 12px;
+      gap: var(--ha-space-3);
     }
     ha-card .thumbnail {
       width: 40px;

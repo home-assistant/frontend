@@ -182,7 +182,7 @@ class HassSubpage extends LitElement {
           display: flex;
           flex-wrap: wrap;
           justify-content: flex-end;
-          gap: 8px;
+          gap: var(--ha-space-2);
         }
         :host([narrow]) #fab.tabs {
           bottom: calc(84px + var(--safe-area-inset-bottom, 0px));

@@ -213,7 +213,7 @@ class HaLandingPage extends LandingPageBaseElement {
       ha-card .card-content {
         display: flex;
         flex-direction: column;
-        gap: 16px;
+        gap: var(--ha-space-4);
       }
       ha-alert p {
         text-align: unset;

@@ -103,7 +103,8 @@
         }
       },
       "area": {
-        "area_not_found": "Area not found."
+        "area_not_found": "Area not found.",
+        "media_playing": "Media playing"
       },
       "automation": {
         "last_triggered": "Last triggered",
@@ -3416,6 +3417,8 @@
                 "url": "Open"
               },
               "open": "Open",
+              "edit": "Edit",
+              "delete": "Delete",
               "add_dashboard": "Add dashboard"
             },
             "confirm_delete_title": "Delete {dashboard_title}?",
@@ -5365,7 +5368,7 @@
           "person_not_found_title": "Person not found",
           "person_not_found": "We couldn't find the person you were trying to edit.",
           "detail": {
-            "new_person": "New person",
+            "new_person": "Add person",
             "name": "Name",
             "name_error_msg": "Name is required",
             "linked_user": "Linked user",
@@ -5376,7 +5379,6 @@
             "device_tracker_picked": "Track device",
             "device_tracker_pick": "Pick device to track",
             "delete": "Delete",
-            "create": "Create",
             "update": "Update",
             "confirm_delete_user_title": "Delete user account",
             "confirm_delete_user_text": "The user account for ''{name}'' will be permanently deleted. You can still track the user, but the person will no longer be able to log in.",
@@ -5837,7 +5839,10 @@
           "change_channel_range": "Channel must be in the range 11 to 26",
           "change_channel_text": "Initiating a channel change for your Home Assistant Thread network should be performed with caution. Some Thread devices may not migrate to the new channel automatically and, if the new channel is congested, your Thread devices may become intermittently unavailable. Some devices may need to be manually re-joined to your Thread network before they show in Home Assistant again. This action cannot be reversed (without performing another channel change).",
           "thread_network_info": "Thread network information",
-          "thread_network_delete_credentials": "Delete Thread network credentials"
+          "thread_network_delete_credentials": "Delete Thread network credentials",
+          "thread_network_send_credentials_ha": "Send credentials to Home Assistant",
+          "thread_network_send_credentials_phone": "Send credentials to phone",
+          "thread_network_make_preferred": "Make preferred network"
         },
         "ssdp": {
           "name": "Name",
@@ -7715,6 +7720,7 @@
               "show_icon": "Show icon",
               "show_name": "Show name",
               "show_state": "Show state",
+              "show_last_changed": "Show last changed",
               "tap_action": "Tap behavior",
               "interactions": "Interactions",
               "title": "Title",
@@ -8218,7 +8224,12 @@
               "water-heater-operation-modes": {
                 "label": "Water heater operation modes",
                 "operation_modes": "Operation modes",
-                "customize_modes": "Customize operation modes"
+                "customize_modes": "Customize operation modes",
+                "style": "[%key:ui::panel::lovelace::editor::features::types::climate-preset-modes::style%]",
+                "style_list": {
+                  "dropdown": "[%key:ui::panel::lovelace::editor::features::types::climate-preset-modes::style_list::dropdown%]",
+                  "icons": "[%key:ui::panel::lovelace::editor::features::types::climate-preset-modes::style_list::icons%]"
+                }
               },
               "lawn-mower-commands": {
                 "label": "Lawn mower commands",
@@ -8430,6 +8441,7 @@
             "system": "Use system locale",
             "comma_decimal": "1,234,567.89",
             "decimal_comma": "1.234.567,89",
+            "quote_decimal": "1'234'567.89",
             "space_comma": "1 234 567,89",
             "none": "None"
           }

@@ -269,7 +269,7 @@ class DialogShortcuts extends LitElement {
         display: flex;
         flex-direction: row;
         align-items: center;
-        gap: 8px;
+        gap: var(--ha-space-2);
         margin: 4px 0;
       }
 

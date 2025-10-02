@@ -325,7 +325,7 @@ class StepFlowCreateEntry extends LitElement {
         .device-info {
           display: flex;
           align-items: center;
-          gap: 8px;
+          gap: var(--ha-space-2);
         }
         .device-info img {
           width: 40px;

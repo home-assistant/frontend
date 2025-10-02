@@ -127,7 +127,7 @@ export class CloudStepIntro extends LitElement {
       .features {
         display: flex;
         flex-direction: column;
-        grid-gap: 16px;
+        grid-gap: var(--ha-space-4);
         padding: 16px;
       }
       .feature {

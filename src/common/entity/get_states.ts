@@ -18,6 +18,7 @@ export const FIXED_DOMAIN_STATES = {
     "pending",
     "triggered",
   ],
+  alert: ["on", "off", "idle"],
   assist_satellite: ["idle", "listening", "responding", "processing"],
   automation: ["on", "off"],
   binary_sensor: ["on", "off"],

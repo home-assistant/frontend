@@ -46,7 +46,7 @@ export class HaStateControlToggle extends LitElement {
     if (!this.hass || !this.stateObj) {
       return;
     }
-    forwardHaptic("light");
+    forwardHaptic(this, "light");
     const stateDomain = computeDomain(this.stateObj.entity_id);
     let serviceDomain;
     let service;

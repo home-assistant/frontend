@@ -425,7 +425,7 @@ class HuiAlarmPanelCard extends LitElement implements LovelaceCard {
       display: grid;
       grid-template-columns: repeat(var(--keypad-columns), auto);
       grid-auto-rows: auto;
-      grid-gap: 16px;
+      grid-gap: var(--ha-space-4);
       justify-items: center;
       align-items: center;
     }

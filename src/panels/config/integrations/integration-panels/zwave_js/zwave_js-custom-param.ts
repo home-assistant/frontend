@@ -224,7 +224,7 @@ class ZWaveJSCustomParam extends LitElement {
     .custom-config-form {
       display: flex;
       flex-wrap: wrap;
-      gap: 16px;
+      gap: var(--ha-space-4);
       margin-bottom: 8px;
     }
 

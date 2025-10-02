@@ -129,7 +129,7 @@ export class DialogSupportPackage extends LitElement {
     }
     .actions {
       display: flex;
-      gap: 8px;
+      gap: var(--ha-space-2);
       justify-content: flex-end;
     }
     hr {

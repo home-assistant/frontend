@@ -974,7 +974,7 @@ export class HaChartBase extends LitElement {
       right: 4px;
       display: flex;
       flex-direction: column;
-      gap: 4px;
+      gap: var(--ha-space-1);
     }
     .chart-controls.small {
       top: 0;
@@ -1011,7 +1011,7 @@ export class HaChartBase extends LitElement {
       flex-wrap: wrap;
       justify-content: center;
       align-items: center;
-      gap: 8px;
+      gap: var(--ha-space-2);
     }
     .chart-legend li {
       height: 24px;

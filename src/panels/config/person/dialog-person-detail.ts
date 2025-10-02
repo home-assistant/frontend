@@ -260,7 +260,7 @@ class DialogPersonDetail extends LitElement implements HassDialog {
         >
           ${this._params.entry
             ? this.hass!.localize("ui.common.save")
-            : this.hass!.localize("ui.panel.config.person.detail.create")}
+            : this.hass!.localize("ui.common.add")}
         </ha-button>
       </ha-dialog>
     `;

@@ -209,7 +209,7 @@ export class DialogEnterCode
       display: grid;
       grid-template-columns: repeat(var(--keypad-columns), auto);
       grid-auto-rows: auto;
-      grid-gap: 24px;
+      grid-gap: var(--ha-space-6);
       justify-items: center;
       align-items: center;
     }

@@ -118,7 +118,7 @@ export const manualEditorStyles = css`
       var(--ha-automation-editor-max-width) -
         ${CONTENT_MIN_WIDTH}px - var(--mdc-drawer-width, 0px)
     );
-    --sidebar-gap: 16px;
+    --sidebar-gap: var(--ha-space-4);
   }
 
   .fab-positioner {
@@ -188,7 +188,7 @@ export const automationRowsStyles = css`
   .rows {
     display: flex;
     flex-direction: column;
-    gap: 16px;
+    gap: var(--ha-space-4);
   }
   .rows.no-sidebar {
     margin-inline-end: 0;
@@ -225,7 +225,7 @@ export const automationRowsStyles = css`
   .buttons {
     display: flex;
     flex-wrap: wrap;
-    gap: 8px;
+    gap: var(--ha-space-2);
     order: 1;
   }
 `;
@@ -244,7 +244,7 @@ export const overflowStyles = css`
   .overflow-label {
     display: flex;
     justify-content: space-between;
-    gap: 12px;
+    gap: var(--ha-space-3);
     white-space: nowrap;
   }
   .overflow-label .shortcut {

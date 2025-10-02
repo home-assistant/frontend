@@ -9,6 +9,7 @@ import {
 import type { PropertyValues } from "lit";
 import { LitElement, html, nothing } from "lit";
 import { customElement, property, state } from "lit/decorators";
+import { styleMap } from "lit/directives/style-map";
 import memoizeOne from "memoize-one";
 import { computeCssColor } from "../../../common/color/compute-color";
 import { formatShortDateTime } from "../../../common/datetime/format_date_time";
@@ -104,13 +105,14 @@ export class HaConfigLabels extends LitElement {
         template: (label) =>
           label.color
             ? html`<div
-                style="
-          background-color: ${computeCssColor(label.color)};
-          border-radius: var(--ha-border-radius-md);
-          border: 1px solid var(--outline-color);
-          box-sizing: border-box;
-          width: 20px;
-          height: 20px;"
+                style=${styleMap({
+                  backgroundColor: computeCssColor(label.color),
+                  borderRadius: "var(--ha-border-radius-md)",
+                  border: "1px solid var(--outline-color)",
+                  boxSizing: "border-box",
+                  width: "20px",
+                  height: "20px",
+                })}
               ></div>`
             : nothing,
       },

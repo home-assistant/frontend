@@ -274,7 +274,7 @@ ${type === "object"
         }
 
         .content {
-          gap: 16px;
+          gap: var(--ha-space-4);
           padding: 16px;
         }
 

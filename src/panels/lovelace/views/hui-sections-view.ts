@@ -513,7 +513,7 @@ export class SectionsView extends LitElement implements LovelaceViewElement {
       --mdc-icon-size: 18px;
       display: flex;
       align-items: center;
-      gap: 12px;
+      gap: var(--ha-space-3);
       margin-bottom: 8px;
     }
     .imported-card-header .subtitle {

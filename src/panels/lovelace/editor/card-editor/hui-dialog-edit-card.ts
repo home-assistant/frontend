@@ -504,7 +504,7 @@ export class HuiDialogEditCard
         }
 
         [slot="primaryAction"] {
-          gap: 8px;
+          gap: var(--ha-space-2);
           display: flex;
         }
       `,

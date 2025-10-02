@@ -334,7 +334,7 @@ class HaBackupOverviewBackups extends LitElement {
           display: flex;
           flex-direction: row;
           align-items: center;
-          gap: 16px;
+          gap: var(--ha-space-4);
         }
         p {
           margin: 0;
