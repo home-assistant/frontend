@@ -1,4 +1,4 @@
-import { css, html, LitElement } from "lit";
+import { css, html, LitElement, nothing } from "lit";
 import { customElement, property, state } from "lit/decorators";
 import "@home-assistant/webawesome/dist/components/dialog/dialog";
 import { mdiClose } from "@mdi/js";
@@ -132,14 +132,18 @@ export class HaWaDialog extends LitElement {
                 .path=${mdiClose}
               ></ha-icon-button>
             </slot>
-            <slot name="title" slot="title">
-              <span @click=${this.toggleWidth} class="title">
-                ${this.headerTitle}
-              </span>
-            </slot>
-            <slot name="subtitle" slot="subtitle">
-              <span>${this.headerSubtitle}</span>
-            </slot>
+            ${this.headerTitle
+              ? html`<span
+                  slot="title"
+                  class="title"
+                  @click=${this.toggleWidth}
+                >
+                  ${this.headerTitle}
+                </span>`
+              : nothing}
+            ${this.headerSubtitle
+              ? html`<span slot="subtitle">${this.headerSubtitle}</span>`
+              : nothing}
             <slot name="actionItems" slot="actionItems"></slot>
           </ha-dialog-header>
         </slot>
