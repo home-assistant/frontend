@@ -4,7 +4,6 @@ import type { CSSResultGroup, PropertyValues, TemplateResult } from "lit";
 import { LitElement, css, html, nothing } from "lit";
 import { customElement, property, state } from "lit/decorators";
 import { classMap } from "lit/directives/class-map";
-import { styleMap } from "lit/directives/style-map";
 import { until } from "lit/directives/until";
 import memoizeOne from "memoize-one";
 import { storage } from "../../../../common/decorators/storage";
@@ -43,6 +42,7 @@ export class HuiCardPicker extends LitElement {
 
   @property({ attribute: false }) public suggestedCards?: string[];
 
+  @state()
   @storage({
     key: "dashboardCardClipboard",
     state: true,
@@ -58,10 +58,6 @@ export class HuiCardPicker extends LitElement {
   public cardPicked?: (cardConf: LovelaceCardConfig) => void;
 
   @state() private _filter = "";
-
-  @state() private _width?: number;
-
-  @state() private _height?: number;
 
   private _unusedEntities?: string[];
 
@@ -146,13 +142,7 @@ export class HuiCardPicker extends LitElement {
           "ui.panel.lovelace.editor.edit_card.search_cards"
         )}
       ></search-input>
-      <div
-        id="content"
-        style=${styleMap({
-          width: this._width ? `${this._width}px` : "auto",
-          height: this._height ? `${this._height}px` : "auto",
-        })}
-      >
+      <div id="content">
         ${this._filter
           ? html`<div class="cards-container">
               ${this._filterCards(this._cards, this._filter).map(
@@ -262,6 +252,16 @@ export class HuiCardPicker extends LitElement {
     this._loadCards();
   }
 
+  protected updated(changedProps) {
+    super.updated(changedProps);
+    if (changedProps.has("_filter")) {
+      const div = this.parentElement!.shadowRoot!.getElementById("content");
+      if (div) {
+        div.scrollTo({ behavior: "auto", top: 0 });
+      }
+    }
+  }
+
   private _loadCards() {
     let cards: Card[] = coreCards.map((card: Card) => ({
       name: this.hass!.localize(
@@ -352,30 +352,7 @@ export class HuiCardPicker extends LitElement {
   }
 
   private _handleSearchChange(ev: CustomEvent) {
-    const value = ev.detail.value;
-
-    if (!value) {
-      // Reset when we no longer filter
-      this._width = undefined;
-      this._height = undefined;
-    } else if (!this._width || !this._height) {
-      // Save height and width so the dialog doesn't jump while searching
-      const div = this.shadowRoot!.getElementById("content");
-      if (div && !this._width) {
-        const width = div.clientWidth;
-        if (width) {
-          this._width = width;
-        }
-      }
-      if (div && !this._height) {
-        const height = div.clientHeight;
-        if (height) {
-          this._height = height;
-        }
-      }
-    }
-
-    this._filter = value;
+    this._filter = ev.detail.value;
   }
 
   private _cardPicked(ev: Event): void {
@@ -498,8 +475,8 @@ export class HuiCardPicker extends LitElement {
         }
 
         .cards-container-header {
-          font-size: 16px;
-          font-weight: 500;
+          font-size: var(--ha-font-size-l);
+          font-weight: var(--ha-font-weight-medium);
           padding: 12px 8px;
           margin: 0;
           grid-column: 1 / -1;
@@ -535,10 +512,10 @@ export class HuiCardPicker extends LitElement {
         .card-header {
           color: var(--ha-card-header-color, var(--primary-text-color));
           font-family: var(--ha-card-header-font-family, inherit);
-          font-size: 16px;
-          font-weight: bold;
+          font-size: var(--ha-font-size-l);
+          font-weight: var(--ha-font-weight-bold);
           letter-spacing: -0.012em;
-          line-height: 20px;
+          line-height: var(--ha-line-height-condensed);
           padding: 12px 16px;
           display: block;
           text-align: center;

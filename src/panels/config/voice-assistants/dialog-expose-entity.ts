@@ -1,6 +1,4 @@
 import "@lit-labs/virtualizer";
-import "@material/mwc-button";
-import "@material/mwc-list";
 import { mdiClose } from "@mdi/js";
 import type { HassEntity } from "home-assistant-js-websocket";
 import type { CSSResultGroup } from "lit";
@@ -13,8 +11,10 @@ import { computeStateName } from "../../../common/entity/compute_state_name";
 import "../../../components/ha-check-list-item";
 import "../../../components/search-input";
 import "../../../components/ha-dialog";
+import "../../../components/ha-button";
 import "../../../components/ha-dialog-header";
 import "../../../components/ha-state-icon";
+import "../../../components/ha-list";
 import type { ExposeEntitySettings } from "../../../data/expose";
 import { voiceAssistants } from "../../../data/expose";
 import { haStyle } from "../../../resources/styles";
@@ -85,7 +85,7 @@ class DialogExposeEntity extends LitElement {
             @value-changed=${this._filterChanged}
           ></search-input>
         </ha-dialog-header>
-        <mwc-list multi>
+        <ha-list multi>
           <lit-virtualizer
             scroller
             class="ha-scrollbar"
@@ -94,8 +94,15 @@ class DialogExposeEntity extends LitElement {
             .renderItem=${this._renderItem}
           >
           </lit-virtualizer>
-        </mwc-list>
-        <mwc-button
+        </ha-list>
+        <ha-button
+          slot="primaryAction"
+          appearance="plain"
+          @click=${this.closeDialog}
+        >
+          ${this.hass!.localize("ui.common.cancel")}
+        </ha-button>
+        <ha-button
           slot="primaryAction"
           @click=${this._expose}
           .disabled=${this._selected.length === 0}
@@ -104,7 +111,7 @@ class DialogExposeEntity extends LitElement {
             "ui.panel.config.voice_assistants.expose.expose_dialog.expose_entities",
             { count: this._selected.length }
           )}
-        </mwc-button>
+        </ha-button>
       </ha-dialog>
     `;
   }
@@ -181,7 +188,7 @@ class DialogExposeEntity extends LitElement {
           --mdc-dialog-min-width: 500px;
           --mdc-dialog-max-width: 600px;
         }
-        mwc-list {
+        ha-list {
           position: relative;
         }
         lit-virtualizer {
@@ -196,7 +203,8 @@ class DialogExposeEntity extends LitElement {
         .header {
           margin: 0;
           pointer-events: auto;
-          -webkit-font-smoothing: antialiased;
+          -webkit-font-smoothing: var(--ha-font-smoothing);
+          -moz-osx-font-smoothing: var(--ha-moz-osx-font-smoothing);
           font-weight: inherit;
           font-size: inherit;
           box-sizing: border-box;
@@ -206,8 +214,8 @@ class DialogExposeEntity extends LitElement {
         }
         .subtitle {
           color: var(--secondary-text-color);
-          font-size: 1rem;
-          line-height: normal;
+          font-size: var(--ha-font-size-m);
+          line-height: var(--ha-line-height-condensed);
         }
         lit-virtualizer {
           width: 100%;
@@ -234,19 +242,21 @@ class DialogExposeEntity extends LitElement {
         }
         @media all and (max-width: 500px), all and (max-height: 500px) {
           ha-dialog {
-            --mdc-dialog-min-width: calc(
-              100vw - env(safe-area-inset-right) - env(safe-area-inset-left)
-            );
-            --mdc-dialog-max-width: calc(
-              100vw - env(safe-area-inset-right) - env(safe-area-inset-left)
-            );
+            --mdc-dialog-min-width: 100vw;
+            --mdc-dialog-max-width: 100vw;
             --mdc-dialog-min-height: 100%;
             --mdc-dialog-max-height: 100%;
             --vertical-align-dialog: flex-end;
             --ha-dialog-border-radius: 0px;
           }
           lit-virtualizer {
-            height: calc(100vh - 198px);
+            height: calc(
+              100vh -
+                210px - var(--safe-area-inset-top, 0px) - var(
+                  --safe-area-inset-bottom,
+                  0px
+                )
+            );
           }
           search-input {
             --text-field-suffix-padding-left: unset;

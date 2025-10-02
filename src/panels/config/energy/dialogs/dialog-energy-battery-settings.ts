@@ -1,4 +1,3 @@
-import "@material/mwc-button/mwc-button";
 import { mdiBatteryHigh } from "@mdi/js";
 import type { CSSResultGroup } from "lit";
 import { css, html, LitElement, nothing } from "lit";
@@ -6,6 +5,7 @@ import { customElement, property, state } from "lit/decorators";
 import { fireEvent } from "../../../../common/dom/fire_event";
 import "../../../../components/entity/ha-statistic-picker";
 import "../../../../components/ha-dialog";
+import "../../../../components/ha-button";
 import type { BatterySourceTypeEnergyPreference } from "../../../../data/energy";
 import {
   emptyBatteryEnergyPreference,
@@ -123,17 +123,21 @@ export class DialogEnergyBatterySettings
           @value-changed=${this._statisticFromChanged}
         ></ha-statistic-picker>
 
-        <mwc-button @click=${this.closeDialog} slot="secondaryAction">
+        <ha-button
+          appearance="plain"
+          @click=${this.closeDialog}
+          slot="primaryAction"
+        >
           ${this.hass.localize("ui.common.cancel")}
-        </mwc-button>
-        <mwc-button
+        </ha-button>
+        <ha-button
           @click=${this._save}
           .disabled=${!this._source.stat_energy_from ||
           !this._source.stat_energy_to}
           slot="primaryAction"
         >
           ${this.hass.localize("ui.common.save")}
-        </mwc-button>
+        </ha-button>
       </ha-dialog>
     `;
   }

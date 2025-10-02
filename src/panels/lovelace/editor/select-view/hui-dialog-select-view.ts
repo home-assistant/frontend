@@ -1,24 +1,24 @@
-import "@material/mwc-button/mwc-button";
-import "@material/mwc-list/mwc-list";
-import "@material/mwc-list/mwc-list-item";
-import "@material/mwc-list/mwc-radio-list-item";
 import type { CSSResultGroup } from "lit";
 import { css, html, LitElement, nothing } from "lit";
 import { customElement, state } from "lit/decorators";
 import { fireEvent } from "../../../../common/dom/fire_event";
 import { stopPropagation } from "../../../../common/dom/stop_propagation";
 import "../../../../components/ha-alert";
+import "../../../../components/ha-button";
 import { createCloseHeading } from "../../../../components/ha-dialog";
 import "../../../../components/ha-icon";
+import "../../../../components/ha-list";
+import "../../../../components/ha-list-item";
+import "../../../../components/ha-radio-list-item";
 import "../../../../components/ha-select";
 import type { LovelaceConfig } from "../../../../data/lovelace/config/types";
 import { fetchConfig } from "../../../../data/lovelace/config/types";
+import { isStrategyView } from "../../../../data/lovelace/config/view";
 import type { LovelaceDashboard } from "../../../../data/lovelace/dashboard";
 import { fetchDashboards } from "../../../../data/lovelace/dashboard";
 import { haStyleDialog } from "../../../../resources/styles";
 import type { HomeAssistant } from "../../../../types";
 import type { SelectViewDialogParams } from "./show-select-view-dialog";
-import { isStrategyView } from "../../../../data/lovelace/config/view";
 
 declare global {
   interface HASSDomEvents {
@@ -83,19 +83,19 @@ export class HuiDialogSelectView extends LitElement {
               naturalMenuWidth
               dialogInitialFocus
             >
-              <mwc-list-item
+              <ha-list-item
                 value="lovelace"
                 .disabled=${(this.hass.panels.lovelace?.config as any)?.mode ===
                 "yaml"}
               >
                 Default
-              </mwc-list-item>
+              </ha-list-item>
               ${this._dashboards.map(
                 (dashboard) => html`
-                  <mwc-list-item
+                  <ha-list-item
                     .disabled=${dashboard.mode !== "storage"}
                     .value=${dashboard.url_path}
-                    >${dashboard.title}</mwc-list-item
+                    >${dashboard.title}</ha-list-item
                   >
                 `
               )}
@@ -111,12 +111,12 @@ export class HuiDialogSelectView extends LitElement {
             >`
           : this._config.views.length > 1
             ? html`
-                <mwc-list dialogInitialFocus>
+                <ha-list dialogInitialFocus>
                   ${this._config.views.map((view, idx) => {
                     const isStrategy = isStrategyView(view);
 
                     return html`
-                      <mwc-radio-list-item
+                      <ha-radio-list-item
                         .graphic=${this._config?.views.some(({ icon }) => icon)
                           ? "icon"
                           : nothing}
@@ -133,26 +133,27 @@ export class HuiDialogSelectView extends LitElement {
                         </span>
 
                         <ha-icon .icon=${view.icon} slot="graphic"></ha-icon>
-                      </mwc-radio-list-item>
+                      </ha-radio-list-item>
                     `;
                   })}
-                </mwc-list>
+                </ha-list>
               `
             : ""}
-        <mwc-button
-          slot="secondaryAction"
+        <ha-button
+          slot="primaryAction"
           @click=${this.closeDialog}
           dialogInitialFocus
+          appearance="plain"
         >
           ${this.hass!.localize("ui.common.cancel")}
-        </mwc-button>
-        <mwc-button
+        </ha-button>
+        <ha-button
           slot="primaryAction"
           .disabled=${!this._config || (this._config.views || []).length < 1}
           @click=${this._selectView}
         >
           ${this._params.actionLabel || this.hass!.localize("ui.common.move")}
-        </mwc-button>
+        </ha-button>
       </ha-dialog>
     `;
   }

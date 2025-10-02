@@ -61,10 +61,12 @@ export class AssistPipelineRunDebug extends LitElement {
                 slot="toolbar-icon"
                 @click=${this._clearConversation}
                 .disabled=${!this._finished}
+                appearance="plain"
               >
                 ${this.hass.localize("ui.common.clear")}
               </ha-button>
               <ha-button
+                appearance="plain"
                 slot="toolbar-icon"
                 @click=${this._downloadConversation}
               >
@@ -83,13 +85,16 @@ export class AssistPipelineRunDebug extends LitElement {
                     @value-changed=${this._pipelinePicked}
                   ></ha-assist-pipeline-picker>
                   <div class="start-buttons">
-                    <ha-button raised @click=${this._runTextPipeline}>
+                    <ha-button
+                      appearance="filled"
+                      @click=${this._runTextPipeline}
+                    >
                       ${this.hass.localize(
                         "ui.panel.config.voice_assistants.debug.pipeline.run_text_pipeline"
                       )}
                     </ha-button>
                     <ha-button
-                      raised
+                      appearance="filled"
                       @click=${this._runAudioPipeline}
                       .disabled=${!window.isSecureContext ||
                       // @ts-ignore-next-line
@@ -100,7 +105,7 @@ export class AssistPipelineRunDebug extends LitElement {
                       )}
                     </ha-button>
                     <ha-button
-                      raised
+                      appearance="filled"
                       @click=${this._runAudioWakeWordPipeline}
                       .disabled=${!window.isSecureContext ||
                       // @ts-ignore-next-line
@@ -135,13 +140,19 @@ export class AssistPipelineRunDebug extends LitElement {
                   ? this._pipelineRuns[0].init_options!.start_stage ===
                     "wake_word"
                     ? html`
-                        <ha-button @click=${this._runAudioWakeWordPipeline}>
+                        <ha-button
+                          appearance="filled"
+                          @click=${this._runAudioWakeWordPipeline}
+                        >
                           ${this.hass.localize(
                             "ui.panel.config.voice_assistants.debug.pipeline.continue_listening"
                           )}
                         </ha-button>
                       `
-                    : html`<ha-button @click=${this._runAudioPipeline}>
+                    : html`<ha-button
+                        appearance="filled"
+                        @click=${this._runAudioPipeline}
+                      >
                         ${this.hass.localize(
                           "ui.panel.config.voice_assistants.debug.pipeline.continue_talking"
                         )}
@@ -459,7 +470,7 @@ export class AssistPipelineRunDebug extends LitElement {
       .start-buttons {
         display: flex;
         flex-wrap: wrap;
-        gap: 8px;
+        gap: var(--ha-space-2);
         align-items: center;
         justify-content: center;
       }

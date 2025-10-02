@@ -1,4 +1,3 @@
-import "@material/mwc-list/mwc-list-item";
 import { css, html, LitElement, nothing } from "lit";
 import { customElement, property } from "lit/decorators";
 import memoizeOne from "memoize-one";
@@ -8,6 +7,7 @@ import { stringCompare } from "../common/string/compare";
 import type { Blueprint, BlueprintDomain, Blueprints } from "../data/blueprint";
 import { fetchBlueprints } from "../data/blueprint";
 import type { HomeAssistant } from "../types";
+import "./ha-list-item";
 import "./ha-select";
 
 @customElement("ha-blueprint-picker")
@@ -64,9 +64,9 @@ class HaBluePrintPicker extends LitElement {
       >
         ${this._processedBlueprints(this.blueprints).map(
           (blueprint) => html`
-            <mwc-list-item .value=${blueprint.path}>
+            <ha-list-item .value=${blueprint.path}>
               ${blueprint.name}
-            </mwc-list-item>
+            </ha-list-item>
           `
         )}
       </ha-select>

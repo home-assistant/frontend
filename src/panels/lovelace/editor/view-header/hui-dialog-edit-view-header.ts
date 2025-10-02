@@ -8,9 +8,10 @@ import { fireEvent } from "../../../../common/dom/fire_event";
 import { stopPropagation } from "../../../../common/dom/stop_propagation";
 import { deepEqual } from "../../../../common/util/deep-equal";
 import "../../../../components/ha-button";
-import "../../../../components/ha-spinner";
 import "../../../../components/ha-dialog";
 import "../../../../components/ha-dialog-header";
+import "../../../../components/ha-list-item";
+import "../../../../components/ha-spinner";
 import "../../../../components/ha-yaml-editor";
 import type { HaYamlEditor } from "../../../../components/ha-yaml-editor";
 import type { LovelaceViewHeaderConfig } from "../../../../data/lovelace/config/view";
@@ -138,10 +139,8 @@ export class HuiDialogEditViewHeader extends LitElement {
           slot="primaryAction"
           .disabled=${!this._config || this._saving || !this._dirty}
           @click=${this._save}
+          .loading=${this._saving}
         >
-          ${this._saving
-            ? html`<ha-spinner size="small" aria-label="Saving"></ha-spinner>`
-            : nothing}
           ${this.hass!.localize("ui.common.save")}</ha-button
         >
       </ha-dialog>

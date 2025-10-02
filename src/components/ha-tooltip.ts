@@ -1,38 +1,47 @@
-import SlTooltip from "@shoelace-style/shoelace/dist/components/tooltip/tooltip.component";
-import styles from "@shoelace-style/shoelace/dist/components/tooltip/tooltip.styles";
+import Tooltip from "@home-assistant/webawesome/dist/components/tooltip/tooltip";
 import { css } from "lit";
-import { customElement } from "lit/decorators";
-import { setDefaultAnimation } from "@shoelace-style/shoelace/dist/utilities/animation-registry";
-
-setDefaultAnimation("tooltip.show", {
-  keyframes: [{ opacity: 0 }, { opacity: 1 }],
-  options: { duration: 150, easing: "ease" },
-});
-
-setDefaultAnimation("tooltip.hide", {
-  keyframes: [{ opacity: 1 }, { opacity: 0 }],
-  options: { duration: 400, easing: "ease" },
-});
+import type { CSSResultGroup } from "lit";
+import { customElement, property } from "lit/decorators";
 
 @customElement("ha-tooltip")
-export class HaTooltip extends SlTooltip {
-  static override styles = [
-    styles,
-    css`
-      :host {
-        --sl-tooltip-background-color: var(--secondary-background-color);
-        --sl-tooltip-color: var(--primary-text-color);
-        --sl-tooltip-font-family: Roboto, sans-serif;
-        --sl-tooltip-font-size: 12px;
-        --sl-tooltip-font-weight: normal;
-        --sl-tooltip-line-height: 1;
-        --sl-tooltip-padding: 8px;
-        --sl-tooltip-border-radius: var(--ha-tooltip-border-radius, 4px);
-        --sl-tooltip-arrow-size: var(--ha-tooltip-arrow-size, 8px);
-        --sl-z-index-tooltip: var(--ha-tooltip-z-index, 1000);
-      }
-    `,
-  ];
+export class HaTooltip extends Tooltip {
+  /** The amount of time to wait before showing the tooltip when the user mouses in. */
+  @property({ attribute: "show-delay", type: Number }) showDelay = 150;
+
+  /** The amount of time to wait before hiding the tooltip when the user mouses out.. */
+  @property({ attribute: "hide-delay", type: Number }) hideDelay = 400;
+
+  static get styles(): CSSResultGroup {
+    return [
+      Tooltip.styles,
+      css`
+        :host {
+          --wa-tooltip-background-color: var(--secondary-background-color);
+          --wa-tooltip-color: var(--primary-text-color);
+          --wa-tooltip-font-family: var(
+            --ha-tooltip-font-family,
+            var(--ha-font-family-body)
+          );
+          --wa-tooltip-font-size: var(
+            --ha-tooltip-font-size,
+            var(--ha-font-size-s)
+          );
+          --wa-tooltip-font-weight: var(
+            --ha-tooltip-font-weight,
+            var(--ha-font-weight-normal)
+          );
+          --wa-tooltip-line-height: var(
+            --ha-tooltip-line-height,
+            var(--ha-line-height-condensed)
+          );
+          --wa-tooltip-padding: 8px;
+          --wa-tooltip-border-radius: var(--ha-tooltip-border-radius, 4px);
+          --wa-tooltip-arrow-size: var(--ha-tooltip-arrow-size, 8px);
+          --wa-z-index-tooltip: var(--ha-tooltip-z-index, 1000);
+        }
+      `,
+    ];
+  }
 }
 
 declare global {

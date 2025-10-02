@@ -356,7 +356,7 @@ class HaConfigBackupDetails extends LitElement {
       padding: 28px 20px 0;
       max-width: 690px;
       margin: 0 auto;
-      gap: 24px;
+      gap: var(--ha-space-6);
       display: grid;
       margin-bottom: 24px;
     }
@@ -399,8 +399,8 @@ class HaConfigBackupDetails extends LitElement {
       display: flex;
       align-items: center;
       flex-direction: row;
-      gap: 8px;
-      line-height: normal;
+      gap: var(--ha-space-2);
+      line-height: var(--ha-line-height-condensed);
     }
     .dot {
       display: block;

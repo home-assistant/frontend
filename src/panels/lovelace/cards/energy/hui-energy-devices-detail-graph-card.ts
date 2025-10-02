@@ -38,6 +38,7 @@ import {
 import { storage } from "../../../../common/decorators/storage";
 import type { ECOption } from "../../../../resources/echarts";
 import { formatNumber } from "../../../../common/number/format_number";
+import type { CustomLegendOption } from "../../../../components/chart/ha-chart-base";
 
 const UNIT = "kWh";
 
@@ -54,6 +55,8 @@ export class HuiEnergyDevicesDetailGraphCard
 
   @state() private _data?: EnergyData;
 
+  @state() private _legendData?: CustomLegendOption["data"];
+
   @state() private _start = startOfToday();
 
   @state() private _end = endOfToday();
@@ -62,6 +65,7 @@ export class HuiEnergyDevicesDetailGraphCard
 
   @state() private _compareEnd?: Date;
 
+  @state()
   @storage({
     key: "energy-devices-hidden-stats",
     state: true,
@@ -77,7 +81,6 @@ export class HuiEnergyDevicesDetailGraphCard
         key: this._config?.collection_key,
       }).subscribe((data) => {
         this._data = data;
-        this._processStatistics();
       }),
     ];
   }
@@ -99,10 +102,7 @@ export class HuiEnergyDevicesDetailGraphCard
   }
 
   protected willUpdate(changedProps: PropertyValues) {
-    if (
-      (changedProps.has("_hiddenStats") || changedProps.has("_config")) &&
-      this._data
-    ) {
+    if (changedProps.has("_config") || changedProps.has("_data")) {
       this._processStatistics();
     }
   }
@@ -148,13 +148,18 @@ export class HuiEnergyDevicesDetailGraphCard
       { num: formatNumber(total, this.hass.locale), unit: UNIT }
     );
 
+  // ha-chart-base will track hidden per ID (so it will have two entries for ID and compare-ID)
+  // But it will only fire the event for the primary ID, and we will convert and store a list of statistic ids only
   private _datasetHidden(ev) {
-    this._hiddenStats = [...this._hiddenStats, ev.detail.name];
+    this._hiddenStats = [
+      ...this._hiddenStats,
+      this._getStatIdFromId(ev.detail.id),
+    ];
   }
 
   private _datasetUnhidden(ev) {
     this._hiddenStats = this._hiddenStats.filter(
-      (stat) => stat !== ev.detail.name
+      (stat) => stat !== this._getStatIdFromId(ev.detail.id)
     );
   }
 
@@ -179,17 +184,25 @@ export class HuiEnergyDevicesDetailGraphCard
         this._formatTotal
       );
 
+      const selected = this._legendData
+        ? this._legendData
+            .filter(
+              (d) =>
+                d.id && this._hiddenStats.includes(this._getStatIdFromId(d.id))
+            )
+            .reduce((acc, d) => {
+              acc[d.id!] = false;
+              return acc;
+            }, {})
+        : {};
+
       return {
         ...commonOptions,
         legend: {
           show: true,
-          type: "scroll",
-          animationDurationUpdate: 400,
-          selected: this._hiddenStats.reduce((acc, stat) => {
-            acc[stat] = false;
-            return acc;
-          }, {}),
-          icon: "circle",
+          type: "custom",
+          data: this._legendData,
+          selected,
         },
         grid: {
           top: 15,
@@ -203,7 +216,10 @@ export class HuiEnergyDevicesDetailGraphCard
   );
 
   private _processStatistics() {
-    const energyData = this._data!;
+    if (!this._data) {
+      return;
+    }
+    const energyData = this._data;
 
     this._start = energyData.start;
     this._end = energyData.end || endOfToday();
@@ -311,6 +327,15 @@ export class HuiEnergyDevicesDetailGraphCard
     );
 
     datasets.push(...processedData);
+    this._legendData = processedData.map((d) => ({
+      id: d.id as string,
+      secondaryIds: [`compare-${d.id}`],
+      name: d.name as string,
+      itemStyle: {
+        color: d.color as string,
+        borderColor: d.itemStyle?.borderColor as string,
+      },
+    }));
 
     if (showUntracked) {
       const untrackedData = this._processUntracked(
@@ -320,6 +345,15 @@ export class HuiEnergyDevicesDetailGraphCard
         false
       );
       datasets.push(untrackedData);
+      this._legendData.push({
+        id: untrackedData.id as string,
+        secondaryIds: [`compare-${untrackedData.id}`],
+        name: untrackedData.name as string,
+        itemStyle: {
+          color: untrackedData.color as string,
+          borderColor: untrackedData.itemStyle?.borderColor as string,
+        },
+      });
     }
 
     fillDataGapsAndRoundCaps(datasets);
@@ -347,12 +381,13 @@ export class HuiEnergyDevicesDetailGraphCard
     );
 
     const untrackedConsumption: BarSeriesOption["data"] = [];
-    Object.keys(consumptionData.total)
+    Object.keys(consumptionData.used_total)
       .sort((a, b) => Number(a) - Number(b))
       .forEach((time) => {
         const ts = Number(time);
         const value =
-          consumptionData.total[time] - (totalDeviceConsumption[time] || 0);
+          consumptionData.used_total[time] -
+          (totalDeviceConsumption[time] || 0);
         const dataPoint: number[] = [ts, value];
         if (compare) {
           dataPoint[2] = dataPoint[0];
@@ -375,7 +410,7 @@ export class HuiEnergyDevicesDetailGraphCard
           this.hass.themes.darkMode,
           false,
           compare,
-          "--state-unavailable-color"
+          "--history-unknown-color"
         ),
       },
       barMaxWidth: 50,
@@ -384,7 +419,7 @@ export class HuiEnergyDevicesDetailGraphCard
         this.hass.themes.darkMode,
         true,
         compare,
-        "--state-unavailable-color"
+        "--history-unknown-color"
       ),
       data: untrackedConsumption,
       stack: compare ? "devicesCompare" : "devices",

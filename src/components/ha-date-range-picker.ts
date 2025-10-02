@@ -1,15 +1,15 @@
-import "@material/mwc-button/mwc-button";
-import "@material/mwc-list/mwc-list";
 import type { ActionDetail } from "@material/mwc-list/mwc-list-foundation";
-import "@material/mwc-list/mwc-list-item";
+
 import { mdiCalendar } from "@mdi/js";
 import { isThisYear } from "date-fns";
-import { fromZonedTime, toZonedTime } from "date-fns-tz";
+import { TZDate } from "@date-fns/tz";
 import type { PropertyValues, TemplateResult } from "lit";
 import { LitElement, css, html, nothing } from "lit";
 import { customElement, property, state } from "lit/decorators";
 import { ifDefined } from "lit/directives/if-defined";
 import { shiftDateRange } from "../common/datetime/calc_date";
+import type { DateRange } from "../common/datetime/calc_date_range";
+import { calcDateRange } from "../common/datetime/calc_date_range";
 import { firstWeekdayIndex } from "../common/datetime/first_weekday";
 import {
   formatShortDateTime,
@@ -20,12 +20,13 @@ import { fireEvent } from "../common/dom/fire_event";
 import { TimeZone } from "../data/translation";
 import type { HomeAssistant } from "../types";
 import "./date-range-picker";
+import "./ha-button";
 import "./ha-icon-button";
 import "./ha-icon-button-next";
 import "./ha-icon-button-prev";
+import "./ha-list";
+import "./ha-list-item";
 import "./ha-textarea";
-import { calcDateRange } from "../common/datetime/calc_date_range";
-import type { DateRange } from "../common/datetime/calc_date_range";
 
 export type DateRangePickerRanges = Record<string, [Date, Date]>;
 
@@ -187,21 +188,21 @@ export class HaDateRangePicker extends LitElement {
         </div>
         ${this.ranges !== false && (this.ranges || this._ranges)
           ? html`<div slot="ranges" class="date-range-ranges">
-              <mwc-list @action=${this._setDateRange} activatable>
+              <ha-list @action=${this._setDateRange} activatable>
                 ${Object.keys(this.ranges || this._ranges!).map(
-                  (name) => html`<mwc-list-item>${name}</mwc-list-item>`
+                  (name) => html`<ha-list-item>${name}</ha-list-item>`
                 )}
-              </mwc-list>
+              </ha-list>
             </div>`
           : nothing}
         <div slot="footer" class="date-range-footer">
-          <mwc-button @click=${this._cancelDateRange}
-            >${this.hass.localize("ui.common.cancel")}</mwc-button
+          <ha-button appearance="plain" @click=${this._cancelDateRange}
+            >${this.hass.localize("ui.common.cancel")}</ha-button
           >
-          <mwc-button @click=${this._applyDateRange}
+          <ha-button @click=${this._applyDateRange}
             >${this.hass.localize(
               "ui.components.date-range-picker.select"
-            )}</mwc-button
+            )}</ha-button
           >
         </div>
       </date-range-picker>
@@ -253,27 +254,43 @@ export class HaDateRangePicker extends LitElement {
   }
 
   private _applyDateRange() {
-    if (this.hass.locale.time_zone === TimeZone.server) {
-      const dateRangePicker = this._dateRangePicker;
+    let start = new Date(this._dateRangePicker.start);
+    let end = new Date(this._dateRangePicker.end);
 
-      const startDate = fromZonedTime(
-        dateRangePicker.start,
-        this.hass.config.time_zone
-      );
-      const endDate = fromZonedTime(
-        dateRangePicker.end,
-        this.hass.config.time_zone
-      );
+    if (this.timePicker) {
+      start.setSeconds(0);
+      start.setMilliseconds(0);
+      end.setSeconds(0);
+      end.setMilliseconds(0);
 
-      dateRangePicker.clickRange([startDate, endDate]);
+      if (
+        end.getHours() === 0 &&
+        end.getMinutes() === 0 &&
+        start.getFullYear() === end.getFullYear() &&
+        start.getMonth() === end.getMonth() &&
+        start.getDate() === end.getDate()
+      ) {
+        end.setDate(end.getDate() + 1);
+      }
     }
 
+    if (this.hass.locale.time_zone === TimeZone.server) {
+      start = new Date(new TZDate(start, this.hass.config.time_zone).getTime());
+      end = new Date(new TZDate(end, this.hass.config.time_zone).getTime());
+    }
+
+    if (
+      start.getTime() !== this._dateRangePicker.start.getTime() ||
+      end.getTime() !== this._dateRangePicker.end.getTime()
+    ) {
+      this._dateRangePicker.clickRange([start, end]);
+    }
     this._dateRangePicker.clickedApply();
   }
 
   private _formatDate(date: Date): string {
     if (this.hass.locale.time_zone === TimeZone.server) {
-      return toZonedTime(date, this.hass.config.time_zone).toISOString();
+      return new TZDate(date, this.hass.config.time_zone).toISOString();
     }
     return date.toISOString();
   }
@@ -326,7 +343,7 @@ export class HaDateRangePicker extends LitElement {
     .date-range-inputs {
       display: flex;
       align-items: center;
-      gap: 8px;
+      gap: var(--ha-space-2);
     }
 
     .date-range-ranges {

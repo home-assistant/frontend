@@ -97,17 +97,16 @@ export class CloudStepIntro extends LitElement {
         </div>
       </div>
       <div class="footer side-by-side">
-        <a
+        <ha-button
           href="https://www.nabucasa.com"
           target="_blank"
           rel="noreferrer noopener"
+          appearance="plain"
         >
-          <ha-button>
-            <ha-svg-icon .path=${mdiOpenInNew} slot="icon"></ha-svg-icon>
-            nabucasa.com
-          </ha-button>
-        </a>
-        <ha-button unelevated @click=${this._signUp}
+          <ha-svg-icon .path=${mdiOpenInNew} slot="start"></ha-svg-icon>
+          nabucasa.com
+        </ha-button>
+        <ha-button @click=${this._signUp}
           >${this.hass.localize(
             "ui.panel.config.cloud.register.headline"
           )}</ha-button
@@ -128,7 +127,7 @@ export class CloudStepIntro extends LitElement {
       .features {
         display: flex;
         flex-direction: column;
-        grid-gap: 16px;
+        grid-gap: var(--ha-space-4);
         padding: 16px;
       }
       .feature {
@@ -153,23 +152,23 @@ export class CloudStepIntro extends LitElement {
         display: flex;
         align-items: center;
         justify-content: center;
-        font-size: 24px;
+        font-size: var(--ha-font-size-2xl);
       }
       .access .round-icon {
         color: #00aef8;
         background-color: #cceffe;
       }
       .feature h2 {
-        font-weight: 500;
-        font-size: 16px;
-        line-height: 24px;
+        font-size: var(--ha-font-size-l);
+        font-weight: var(--ha-font-weight-medium);
+        line-height: var(--ha-line-height-normal);
         margin-top: 0;
         margin-bottom: 8px;
       }
       .feature p {
-        font-weight: 400;
-        font-size: 14px;
-        line-height: 20px;
+        font-size: var(--ha-font-size-m);
+        font-weight: var(--ha-font-weight-normal);
+        line-height: var(--ha-line-height-condensed);
         margin: 0;
       }
     `,

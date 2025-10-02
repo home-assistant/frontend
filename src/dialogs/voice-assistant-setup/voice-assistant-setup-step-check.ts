@@ -51,16 +51,16 @@ export class HaVoiceAssistantSetupStepCheck extends LitElement {
               )}
             </p>
             <div class="footer">
-              <a
+              <ha-button
+                appearance="plain"
                 href=${documentationUrl(
                   this.hass,
                   "/voice_control/troubleshooting/#i-dont-get-a-voice-response"
                 )}
-                ><ha-button
-                  >${this.hass.localize(
-                    "ui.panel.config.voice_assistants.satellite_wizard.check.help"
-                  )}</ha-button
-                ></a
+              >
+                >${this.hass.localize(
+                  "ui.panel.config.voice_assistants.satellite_wizard.check.help"
+                )}</ha-button
               >
               <ha-button @click=${this._testConnection}
                 >${this.hass.localize(

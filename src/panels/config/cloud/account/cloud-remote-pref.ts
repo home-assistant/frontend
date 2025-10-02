@@ -187,7 +187,11 @@ export class CloudRemotePref extends LitElement {
                     )
                   : nothing}</span
               >
-              <ha-button @click=${this._openCertInfo}>
+              <ha-button
+                appearance="plain"
+                size="small"
+                @click=${this._openCertInfo}
+              >
                 ${this.hass.localize(
                   "ui.panel.config.cloud.account.remote.more_info"
                 )}
@@ -260,7 +264,7 @@ export class CloudRemotePref extends LitElement {
       color: var(--secondary-text-color);
     }
     .warning {
-      font-weight: bold;
+      font-weight: var(--ha-font-weight-bold);
       margin-bottom: 1em;
     }
     .break-word {

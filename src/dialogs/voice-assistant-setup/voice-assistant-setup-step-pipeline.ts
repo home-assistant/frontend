@@ -235,10 +235,7 @@ export class HaVoiceAssistantSetupStepPipeline extends LitElement {
           : nothing}
       </div>
       <div class="footer">
-        <ha-button
-          @click=${this._createPipeline}
-          unelevated
-          .disabled=${!this._value}
+        <ha-button @click=${this._createPipeline} .disabled=${!this._value}
           >${this.hass.localize("ui.common.next")}</ha-button
         >
       </div>`;
@@ -430,7 +427,7 @@ export class HaVoiceAssistantSetupStepPipeline extends LitElement {
         width: 100%;
         height: 10px;
         display: flex;
-        gap: 4px;
+        gap: var(--ha-space-1);
         margin: 8px 0;
       }
       .segment {

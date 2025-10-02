@@ -6,6 +6,8 @@ import { computeDomain } from "../../common/entity/compute_domain";
 import { stateColorProperties } from "../../common/entity/state_color";
 import { UNAVAILABLE, UNKNOWN } from "../../data/entity";
 import { computeCssValue } from "../../resources/css-variables";
+import { computeStateDomain } from "../../common/entity/compute_state_domain";
+import { FIXED_DOMAIN_STATES } from "../../common/entity/get_states";
 
 const DOMAIN_STATE_SHADES: Record<string, Record<string, number>> = {
   media_player: {
@@ -51,6 +53,28 @@ function computeTimelineStateColor(
 let colorIndex = 0;
 const stateColorMap = new Map<string, string>();
 
+function computeTimelineEnumColor(
+  state: string,
+  computedStyles: CSSStyleDeclaration,
+  stateObj?: HassEntity
+): string | undefined {
+  if (!stateObj) {
+    return undefined;
+  }
+  const domain = computeStateDomain(stateObj);
+  const states =
+    FIXED_DOMAIN_STATES[domain] ||
+    (domain === "sensor" &&
+      stateObj.attributes.device_class === "enum" &&
+      stateObj.attributes.options) ||
+    [];
+  const idx = states.indexOf(state);
+  if (idx === -1) {
+    return undefined;
+  }
+  return getGraphColorByIndex(idx, computedStyles);
+}
+
 function computeTimeLineGenericColor(
   state: string,
   computedStyles: CSSStyleDeclaration
@@ -71,6 +95,7 @@ export function computeTimelineColor(
 ): string {
   return (
     computeTimelineStateColor(state, computedStyles, stateObj) ||
+    computeTimelineEnumColor(state, computedStyles, stateObj) ||
     computeTimeLineGenericColor(state, computedStyles)
   );
 }

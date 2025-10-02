@@ -1,9 +1,9 @@
-import "@material/mwc-list/mwc-list";
 import { LitElement, css, html } from "lit";
 import { customElement, state } from "lit/decorators";
 import { formatDateTime } from "../../../../src/common/datetime/format_date_time";
 import "../../../../src/components/ha-card";
 import "../../../../src/components/ha-control-select";
+import "../../../../src/components/ha-list";
 import type { FrontendLocaleData } from "../../../../src/data/translation";
 import {
   DateFormat,
@@ -49,7 +49,7 @@ export class DemoDateTimeDateTime extends LitElement {
         @value-changed=${this.handleValueChanged}
       >
       </ha-control-select>
-      <mwc-list>
+      <ha-list>
         <div class="container header">
           <div>Language</div>
           <div class="center">Default (lang)</div>
@@ -96,7 +96,7 @@ export class DemoDateTimeDateTime extends LitElement {
             </div>
           `
         )}
-      </mwc-list>
+      </ha-list>
     `;
   }
 
@@ -106,7 +106,7 @@ export class DemoDateTimeDateTime extends LitElement {
       margin: 12px auto;
     }
     .header {
-      font-weight: bold;
+      font-weight: var(--ha-font-weight-bold);
     }
     .center {
       text-align: center;

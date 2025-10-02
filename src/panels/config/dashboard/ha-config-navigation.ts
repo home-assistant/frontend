@@ -1,5 +1,3 @@
-import "@material/mwc-list/mwc-list";
-import "@material/mwc-list/mwc-list-item";
 import type { CSSResultGroup, TemplateResult } from "lit";
 import { css, html, LitElement } from "lit";
 import { customElement, property } from "lit/decorators";
@@ -56,6 +54,9 @@ class HaConfigNavigation extends LitElement {
               `,
       }));
     return html`
+      <div class="visually-hidden" role="heading" aria-level="2">
+        ${this.hass.localize("panel.config")}
+      </div>
       <ha-navigation-list
         has-secondary
         .hass=${this.hass}
@@ -68,7 +69,18 @@ class HaConfigNavigation extends LitElement {
 
   static styles: CSSResultGroup = css`
     ha-navigation-list {
-      --navigation-list-item-title-font-size: 16px;
+      --navigation-list-item-title-font-size: var(--ha-font-size-l);
+    }
+    /* Accessibility */
+    .visually-hidden {
+      position: absolute;
+      overflow: hidden;
+      clip: rect(0 0 0 0);
+      height: 1px;
+      width: 1px;
+      margin: -1px;
+      padding: 0;
+      border: 0;
     }
   `;
 }

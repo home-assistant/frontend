@@ -1,13 +1,14 @@
-import "@material/mwc-list/mwc-list-item";
 import type { CSSResultGroup } from "lit";
 import { css, html, LitElement, nothing } from "lit";
 import { customElement, property, state } from "lit/decorators";
 import memoizeOne from "memoize-one";
 import { fireEvent } from "../../../common/dom/fire_event";
 import { stopPropagation } from "../../../common/dom/stop_propagation";
-import "../../../components/ha-spinner";
-import "../../../components/ha-select";
 import "../../../components/ha-dialog";
+import "../../../components/ha-button";
+import "../../../components/ha-list-item";
+import "../../../components/ha-select";
+import "../../../components/ha-spinner";
 import {
   extractApiErrorMessage,
   ignoreSupervisorError,
@@ -29,8 +30,8 @@ import { bytesToString } from "../../../util/bytes-to-string";
 import type { MoveDatadiskDialogParams } from "./show-dialog-move-datadisk";
 
 const calculateMoveTime = memoizeOne((hostInfo: HassioHostInfo): number => {
-  const speed = hostInfo.disk_life_time !== "" ? 30 : 10;
-  const moveTime = (hostInfo.disk_used * 1000) / 60 / speed;
+  // Assume a speed of 30 MB/s.
+  const moveTime = (hostInfo.disk_used * 1000) / 60 / 30;
   const rebootTime = (hostInfo.startup_time * 4) / 60;
   return Math.ceil((moveTime + rebootTime) / 10) * 10;
 });
@@ -137,7 +138,7 @@ class MoveDatadiskDialog extends LitElement {
               >
                 ${this._disks.map(
                   (disk) =>
-                    html`<mwc-list-item twoline .value=${disk.id}>
+                    html`<ha-list-item twoline .value=${disk.id}>
                       <span>${disk.vendor} ${disk.model}</span>
                       <span slot="secondary">
                         ${this.hass.localize(
@@ -148,25 +149,26 @@ class MoveDatadiskDialog extends LitElement {
                           }
                         )}
                       </span>
-                    </mwc-list-item>`
+                    </ha-list-item>`
                 )}
               </ha-select>
 
-              <mwc-button
-                slot="secondaryAction"
+              <ha-button
+                slot="primaryAction"
+                appearance="plain"
                 @click=${this.closeDialog}
                 dialogInitialFocus
               >
                 ${this.hass.localize("ui.panel.config.storage.datadisk.cancel")}
-              </mwc-button>
+              </ha-button>
 
-              <mwc-button
+              <ha-button
                 .disabled=${!this._selectedDevice}
                 slot="primaryAction"
                 @click=${this._moveDatadisk}
               >
                 ${this.hass.localize("ui.panel.config.storage.datadisk.move")}
-              </mwc-button>
+              </ha-button>
             `}
       </ha-dialog>
     `;

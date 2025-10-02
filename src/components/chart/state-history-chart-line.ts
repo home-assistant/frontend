@@ -66,6 +66,9 @@ export class StateHistoryChartLine extends LitElement {
   @property({ attribute: "expand-legend", type: Boolean })
   public expandLegend?: boolean;
 
+  @property({ attribute: "hide-reset-button", type: Boolean })
+  public hideResetButton?: boolean;
+
   @state() private _chartData: LineSeriesOption[] = [];
 
   @state() private _entityIds: string[] = [];
@@ -82,6 +85,8 @@ export class StateHistoryChartLine extends LitElement {
 
   private _chartTime: Date = new Date();
 
+  private _previousYAxisLabelValue = 0;
+
   protected render() {
     return html`
       <ha-chart-base
@@ -92,7 +97,9 @@ export class StateHistoryChartLine extends LitElement {
         style=${styleMap({ height: this.height })}
         @dataset-hidden=${this._datasetHidden}
         @dataset-unhidden=${this._datasetUnhidden}
+        @chart-zoom=${this._handleDataZoom}
         .expandLegend=${this.expandLegend}
+        .hideResetButton=${this.hideResetButton}
       ></ha-chart-base>
     `;
   }
@@ -109,7 +116,7 @@ export class StateHistoryChartLine extends LitElement {
     this._chartData.forEach((dataset, index) => {
       if (
         dataset.tooltip?.show === false ||
-        this._hiddenStats.has(dataset.name as string)
+        this._hiddenStats.has(dataset.id as string)
       )
         return;
       const param = params.find(
@@ -135,7 +142,7 @@ export class StateHistoryChartLine extends LitElement {
         seriesIndex: index,
         value: lastData,
         // HTML copied from echarts. May change based on options
-        marker: `<span style="display:inline-block;margin-right:4px;border-radius:10px;width:10px;height:10px;background-color:${dataset.color};"></span>`,
+        marker: `<span style="display:inline-block;margin-right:4px;margin-inline-end:4px;margin-inline-start:initial;border-radius:10px;width:10px;height:10px;background-color:${dataset.color};"></span>`,
       });
     });
     const unit = this.unit
@@ -183,11 +190,24 @@ export class StateHistoryChartLine extends LitElement {
   };
 
   private _datasetHidden(ev: CustomEvent) {
-    this._hiddenStats.add(ev.detail.name);
+    this._hiddenStats.add(ev.detail.id);
   }
 
   private _datasetUnhidden(ev: CustomEvent) {
-    this._hiddenStats.delete(ev.detail.name);
+    this._hiddenStats.delete(ev.detail.id);
+  }
+
+  public zoom(start: number, end: number) {
+    const chartBase = this.shadowRoot!.querySelector("ha-chart-base")!;
+    chartBase.zoom(start, end, true);
+  }
+
+  private _handleDataZoom(ev: CustomEvent) {
+    fireEvent(this, "chart-zoom-with-index", {
+      start: ev.detail.start ?? 0,
+      end: ev.detail.end ?? 100,
+      chartIndex: this.chartIndex,
+    });
   }
 
   public willUpdate(changedProps: PropertyValues) {
@@ -224,17 +244,25 @@ export class StateHistoryChartLine extends LitElement {
         this.maxYAxis;
       if (typeof minYAxis === "number") {
         if (this.fitYData) {
-          minYAxis = ({ min }) => Math.min(min, this.minYAxis!);
+          minYAxis = ({ min }) =>
+            Math.min(this._roundYAxis(min, Math.floor), this.minYAxis!);
         }
       } else if (this.logarithmicScale) {
-        minYAxis = ({ min }) => Math.floor(min > 0 ? min * 0.95 : min * 1.05);
+        minYAxis = ({ min }) => {
+          const value = min > 0 ? min * 0.95 : min * 1.05;
+          return this._roundYAxis(value, Math.floor);
+        };
       }
       if (typeof maxYAxis === "number") {
         if (this.fitYData) {
-          maxYAxis = ({ max }) => Math.max(max, this.maxYAxis!);
+          maxYAxis = ({ max }) =>
+            Math.max(this._roundYAxis(max, Math.ceil), this.maxYAxis!);
         }
       } else if (this.logarithmicScale) {
-        maxYAxis = ({ max }) => Math.ceil(max > 0 ? max * 1.05 : max * 0.95);
+        maxYAxis = ({ max }) => {
+          const value = max > 0 ? max * 1.05 : max * 0.95;
+          return this._roundYAxis(value, Math.ceil);
+        };
       }
       this._chartOptions = {
         xAxis: {
@@ -258,35 +286,11 @@ export class StateHistoryChartLine extends LitElement {
           },
           axisLabel: {
             margin: 5,
-            formatter: (value: number) => {
-              const formatOptions =
-                value >= 1 || value <= -1
-                  ? undefined
-                  : {
-                      // show the first significant digit for tiny values
-                      maximumFractionDigits: Math.max(
-                        2,
-                        -Math.floor(Math.log10(Math.abs(value % 1 || 1)))
-                      ),
-                    };
-              const label = formatNumber(
-                value,
-                this.hass.locale,
-                formatOptions
-              );
-              const width = measureTextWidth(label, 12) + 5;
-              if (width > this._yWidth) {
-                this._yWidth = width;
-                fireEvent(this, "y-width-changed", {
-                  value: this._yWidth,
-                  chartIndex: this.chartIndex,
-                });
-              }
-              return label;
-            },
+            formatter: this._formatYAxisLabel,
           },
         } as YAXisOption,
         legend: {
+          type: "custom",
           show: this.showNames,
         },
         grid: {
@@ -744,17 +748,45 @@ export class StateHistoryChartLine extends LitElement {
     this._visualMap = visualMap.length > 0 ? visualMap : undefined;
   }
 
+  private _formatYAxisLabel = (value: number) => {
+    // show the first significant digit for tiny values
+    const maximumFractionDigits = Math.max(
+      1,
+      // use the difference to the previous value to determine the number of significant digits #25526
+      -Math.floor(
+        Math.log10(Math.abs(value - this._previousYAxisLabelValue || 1))
+      )
+    );
+    const label = formatNumber(value, this.hass.locale, {
+      maximumFractionDigits,
+    });
+    const width = measureTextWidth(label, 12) + 5;
+    if (width > this._yWidth) {
+      this._yWidth = width;
+      fireEvent(this, "y-width-changed", {
+        value: this._yWidth,
+        chartIndex: this.chartIndex,
+      });
+    }
+    this._previousYAxisLabelValue = value;
+    return label;
+  };
+
   private _clampYAxis(value?: number | ((values: any) => number)) {
     if (this.logarithmicScale) {
       // log(0) is -Infinity, so we need to set a minimum value
       if (typeof value === "number") {
-        return Math.max(value, 0.1);
+        return Math.max(value, Number.EPSILON);
       }
       if (typeof value === "function") {
-        return (values: any) => Math.max(value(values), 0.1);
+        return (values: any) => Math.max(value(values), Number.EPSILON);
       }
     }
     return value;
+  }
+
+  private _roundYAxis(value: number, roundingFn: (value: number) => number) {
+    return Math.abs(value) < 1 ? value : roundingFn(value);
   }
 }
 customElements.define("state-history-chart-line", StateHistoryChartLine);

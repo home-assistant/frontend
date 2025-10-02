@@ -1,11 +1,5 @@
 import { ResizeController } from "@lit-labs/observers/resize-controller";
-import {
-  mdiDelete,
-  mdiDrag,
-  mdiEyeOff,
-  mdiPencil,
-  mdiViewGridPlus,
-} from "@mdi/js";
+import { mdiEyeOff, mdiViewGridPlus } from "@mdi/js";
 import type { PropertyValues } from "lit";
 import { css, html, LitElement, nothing } from "lit";
 import { customElement, property, state } from "lit/decorators";
@@ -22,28 +16,21 @@ import type { LovelaceViewElement } from "../../../data/lovelace";
 import type { LovelaceCardConfig } from "../../../data/lovelace/config/card";
 import type { LovelaceSectionConfig } from "../../../data/lovelace/config/section";
 import type { LovelaceViewConfig } from "../../../data/lovelace/config/view";
-import { showConfirmationDialog } from "../../../dialogs/generic/show-dialog-box";
 import type { HomeAssistant } from "../../../types";
 import type { HuiBadge } from "../badges/hui-badge";
-import "./hui-view-header";
 import type { HuiCard } from "../cards/hui-card";
 import "../components/hui-badge-edit-mode";
-import {
-  addSection,
-  deleteSection,
-  moveCard,
-  moveSection,
-} from "../editor/config-util";
+import "../components/hui-section-edit-mode";
+import { addSection, moveCard, moveSection } from "../editor/config-util";
 import type { LovelaceCardPath } from "../editor/lovelace-path";
 import {
-  findLovelaceContainer,
   findLovelaceItems,
   getLovelaceContainerPath,
   parseLovelaceCardPath,
 } from "../editor/lovelace-path";
-import { showEditSectionDialog } from "../editor/section-editor/show-edit-section-dialog";
 import type { HuiSection } from "../sections/hui-section";
 import type { Lovelace } from "../types";
+import "./hui-view-header";
 
 export const DEFAULT_MAX_COLUMNS = 4;
 
@@ -205,41 +192,19 @@ export class SectionsView extends LitElement implements LovelaceViewElement {
                   })}
                 >
                     ${
-                      this.lovelace?.editMode
+                      editMode
                         ? html`
-                            <div class="section-header">
-                              ${editMode
-                                ? html`
-                                    <div class="section-actions">
-                                      <ha-svg-icon
-                                        aria-hidden="true"
-                                        class="handle"
-                                        .path=${mdiDrag}
-                                      ></ha-svg-icon>
-                                      <ha-icon-button
-                                        .label=${this.hass.localize(
-                                          "ui.common.edit"
-                                        )}
-                                        @click=${this._editSection}
-                                        .index=${idx}
-                                        .path=${mdiPencil}
-                                      ></ha-icon-button>
-                                      <ha-icon-button
-                                        .label=${this.hass.localize(
-                                          "ui.common.delete"
-                                        )}
-                                        @click=${this._deleteSection}
-                                        .index=${idx}
-                                        .path=${mdiDelete}
-                                      ></ha-icon-button>
-                                    </div>
-                                  `
-                                : nothing}
-                            </div>
+                            <hui-section-edit-mode
+                              .hass=${this.hass}
+                              .lovelace=${this.lovelace}
+                              .index=${idx}
+                              .viewIndex=${this.index}
+                            >
+                              ${section}
+                            </hui-section-edit-mode>
                           `
-                        : nothing
+                        : section
                     }
-                    ${section}
                   </div>
                 </div>
               `;
@@ -375,47 +340,6 @@ export class SectionsView extends LitElement implements LovelaceViewElement {
     this.lovelace!.saveConfig(newConfig);
   }
 
-  private async _editSection(ev) {
-    const index = ev.currentTarget.index;
-
-    showEditSectionDialog(this, {
-      lovelaceConfig: this.lovelace!.config,
-      saveConfig: (newConfig) => {
-        this.lovelace!.saveConfig(newConfig);
-      },
-      viewIndex: this.index!,
-      sectionIndex: index,
-    });
-  }
-
-  private async _deleteSection(ev) {
-    const index = ev.currentTarget.index;
-
-    const path = [this.index!, index] as [number, number];
-
-    const section = findLovelaceContainer(this.lovelace!.config, path);
-
-    const cardCount = "cards" in section && section.cards?.length;
-
-    if (cardCount) {
-      const confirm = await showConfirmationDialog(this, {
-        title: this.hass.localize(
-          "ui.panel.lovelace.editor.delete_section.title"
-        ),
-        text: this.hass.localize(
-          `ui.panel.lovelace.editor.delete_section.text`
-        ),
-        confirmText: this.hass.localize("ui.common.delete"),
-        destructive: true,
-      });
-
-      if (!confirm) return;
-    }
-
-    const newConfig = deleteSection(this.lovelace!.config, this.index!, index);
-    this.lovelace!.saveConfig(newConfig);
-  }
-
   private _sectionMoved(ev: CustomEvent) {
     ev.stopPropagation();
     const { oldIndex, newIndex } = ev.detail;
@@ -485,11 +409,6 @@ export class SectionsView extends LitElement implements LovelaceViewElement {
       grid-auto-flow: row dense;
     }
 
-    .handle {
-      cursor: grab;
-      padding: 8px;
-    }
-
     .create-section-container {
       position: relative;
       display: flex;
@@ -530,9 +449,9 @@ export class SectionsView extends LitElement implements LovelaceViewElement {
 
     .drop-helper p {
       color: var(--primary-text-color);
-      font-size: 16px;
-      font-weight: 400;
-      line-height: 24px;
+      font-size: var(--ha-font-size-l);
+      font-weight: var(--ha-font-weight-normal);
+      line-height: var(--ha-line-height-normal);
       text-align: center;
     }
 
@@ -573,35 +492,6 @@ export class SectionsView extends LitElement implements LovelaceViewElement {
       );
     }
 
-    .section-header {
-      position: relative;
-      height: 34px;
-      display: flex;
-      flex-direction: column;
-      justify-content: flex-end;
-    }
-
-    .section-actions {
-      position: absolute;
-      height: 36px;
-      bottom: -2px;
-      right: 0;
-      inset-inline-end: 0;
-      inset-inline-start: initial;
-      opacity: 1;
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      transition: opacity 0.2s ease-in-out;
-      border-radius: var(--ha-card-border-radius, 12px);
-      border-bottom-left-radius: 0px;
-      border-bottom-right-radius: 0px;
-      background: var(--secondary-background-color);
-      --mdc-icon-button-size: 36px;
-      --mdc-icon-size: 20px;
-      color: var(--primary-text-color);
-    }
-
     .imported-cards {
       --column-span: var(--column-count);
       --row-span: 1;
@@ -617,21 +507,21 @@ export class SectionsView extends LitElement implements LovelaceViewElement {
     .imported-card-header .title {
       margin: 0;
       color: var(--primary-text-color);
-      font-size: 16px;
-      font-weight: 400;
-      line-height: 24px;
+      font-size: var(--ha-font-size-l);
+      font-weight: var(--ha-font-weight-normal);
+      line-height: var(--ha-line-height-normal);
       --mdc-icon-size: 18px;
       display: flex;
       align-items: center;
-      gap: 12px;
+      gap: var(--ha-space-3);
       margin-bottom: 8px;
     }
     .imported-card-header .subtitle {
       margin: 0;
       color: var(--secondary-text-color);
-      font-size: 14px;
-      font-weight: 400;
-      line-height: 20px;
+      font-size: var(--ha-font-size-m);
+      font-weight: var(--ha-font-weight-normal);
+      line-height: var(--ha-line-height-condensed);
     }
   `;
 }

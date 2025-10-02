@@ -1,4 +1,4 @@
-import { ContextProvider } from "@lit-labs/context";
+import { ContextProvider } from "@lit/context";
 import {
   mdiAccount,
   mdiBackupRestore,
@@ -553,6 +553,23 @@ class HaPanelConfig extends SubscribeMixin(HassRouterPage) {
         load: () =>
           import(
             "./integrations/integration-panels/bluetooth/bluetooth-config-dashboard-router"
+          ),
+      },
+      dhcp: {
+        tag: "dhcp-config-panel",
+        load: () =>
+          import("./integrations/integration-panels/dhcp/dhcp-config-panel"),
+      },
+      ssdp: {
+        tag: "ssdp-config-panel",
+        load: () =>
+          import("./integrations/integration-panels/ssdp/ssdp-config-panel"),
+      },
+      zeroconf: {
+        tag: "zeroconf-config-panel",
+        load: () =>
+          import(
+            "./integrations/integration-panels/zeroconf/zeroconf-config-panel"
           ),
       },
       application_credentials: {

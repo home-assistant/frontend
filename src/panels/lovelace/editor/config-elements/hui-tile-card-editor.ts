@@ -1,5 +1,4 @@
 import { mdiGestureTap, mdiListBox, mdiTextShort } from "@mdi/js";
-import type { HassEntity } from "home-assistant-js-websocket";
 import { LitElement, css, html, nothing } from "lit";
 import { customElement, property, state } from "lit/decorators";
 import memoizeOne from "memoize-one";
@@ -18,6 +17,7 @@ import {
 import type { HASSDomEvent } from "../../../../common/dom/fire_event";
 import { fireEvent } from "../../../../common/dom/fire_event";
 import type { LocalizeFunc } from "../../../../common/translations/localize";
+import { orderProperties } from "../../../../common/util/order-properties";
 import "../../../../components/ha-expansion-panel";
 import "../../../../components/ha-form/ha-form";
 import type {
@@ -45,10 +45,10 @@ const cardConfigStruct = assign(
     entity: optional(string()),
     name: optional(string()),
     icon: optional(string()),
-    hide_state: optional(boolean()),
-    state_content: optional(union([string(), array(string())])),
     color: optional(string()),
     show_entity_picture: optional(boolean()),
+    hide_state: optional(boolean()),
+    state_content: optional(union([string(), array(string())])),
     vertical: optional(boolean()),
     tap_action: optional(actionConfigStruct),
     hold_action: optional(actionConfigStruct),
@@ -60,6 +60,8 @@ const cardConfigStruct = assign(
     features_position: optional(enums(["bottom", "inline"])),
   })
 );
+
+export const fieldOrder = Object.keys(cardConfigStruct.schema);
 
 @customElement("hui-tile-card-editor")
 export class HuiTileCardEditor
@@ -74,6 +76,12 @@ export class HuiTileCardEditor
     assert(config, cardConfigStruct);
     this._config = config;
   }
+
+  private _featureContext = memoizeOne(
+    (entityId?: string): LovelaceCardFeatureContext => ({
+      entity_id: entityId,
+    })
+  );
 
   private _schema = memoizeOne(
     (
@@ -239,7 +247,8 @@ export class HuiTileCardEditor
   );
 
   private _hasCompatibleFeatures = memoizeOne(
-    (stateObj: HassEntity) => getSupportedFeaturesType(stateObj).length > 0
+    (context: LovelaceCardFeatureContext) =>
+      getSupportedFeaturesType(this.hass!, context).length > 0
   );
 
   protected render() {
@@ -248,7 +257,6 @@ export class HuiTileCardEditor
     }
 
     const entityId = this._config!.entity;
-    const stateObj = entityId ? this.hass!.states[entityId] : undefined;
 
     const schema = this._schema(
       this.hass.localize,
@@ -256,23 +264,22 @@ export class HuiTileCardEditor
       this._config.hide_state ?? false
     );
 
-    const featuresSchema = this._featuresSchema(
-      this.hass.localize,
-      this._config.vertical ?? false
-    );
+    const vertical = this._config.vertical ?? false;
+
+    const featuresSchema = this._featuresSchema(this.hass.localize, vertical);
 
     const data = {
       ...this._config,
-      content_layout: this._config.vertical ? "vertical" : "horizontal",
+      content_layout: vertical ? "vertical" : "horizontal",
     };
 
     // Default features position to bottom and force it to bottom in vertical mode
-    if (!data.features_position || data.vertical) {
+    if (!data.features_position || vertical) {
       data.features_position = "bottom";
     }
 
-    const hasCompatibleFeatures =
-      (stateObj && this._hasCompatibleFeatures(stateObj)) || false;
+    const featureContext = this._featureContext(entityId);
+    const hasCompatibleFeatures = this._hasCompatibleFeatures(featureContext);
 
     return html`
       <ha-form
@@ -306,7 +313,7 @@ export class HuiTileCardEditor
             : nothing}
           <hui-card-features-editor
             .hass=${this.hass}
-            .stateObj=${stateObj}
+            .context=${featureContext}
             .features=${this._config!.features ?? []}
             @features-changed=${this._featuresChanged}
             @edit-detail-element=${this._editDetailElement}
@@ -324,7 +331,7 @@ export class HuiTileCardEditor
 
     const newConfig = ev.detail.value as TileCardConfig;
 
-    const config: TileCardConfig = {
+    let config: TileCardConfig = {
       features: this._config.features,
       ...newConfig,
     };
@@ -342,6 +349,8 @@ export class HuiTileCardEditor
       config.vertical = config.content_layout === "vertical";
       delete config.content_layout;
     }
+
+    config = orderProperties(config, fieldOrder);
 
     fireEvent(this, "config-changed", { config });
   }
@@ -368,13 +377,12 @@ export class HuiTileCardEditor
   private _editDetailElement(ev: HASSDomEvent<EditDetailElementEvent>): void {
     const index = ev.detail.subElementConfig.index;
     const config = this._config!.features![index!];
+    const featureContext = this._featureContext(this._config!.entity);
 
     fireEvent(this, "edit-sub-element", {
       config: config,
       saveConfig: (newConfig) => this._updateFeature(index!, newConfig),
-      context: {
-        entity_id: this._config!.entity,
-      },
+      context: featureContext,
       type: "feature",
     } as EditSubElementEvent<
       LovelaceCardFeatureConfig,
@@ -385,10 +393,11 @@ export class HuiTileCardEditor
   private _updateFeature(index: number, feature: LovelaceCardFeatureConfig) {
     const features = this._config!.features!.concat();
     features[index] = feature;
-    const config = { ...this._config!, features };
-    fireEvent(this, "config-changed", {
-      config: config,
-    });
+    let config = { ...this._config!, features };
+
+    config = orderProperties(config, fieldOrder);
+
+    fireEvent(this, "config-changed", { config });
   }
 
   private _computeLabelCallback = (

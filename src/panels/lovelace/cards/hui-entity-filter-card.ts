@@ -82,18 +82,40 @@ export class HuiEntityFilterCard
     }
 
     if (
-      !(
-        (config.conditions && Array.isArray(config.conditions)) ||
-        (config.state_filter && Array.isArray(config.state_filter))
-      ) &&
-      !config.entities.every(
+      !config.conditions &&
+      !config.state_filter &&
+      !config.entities.some(
         (entity) =>
           typeof entity === "object" &&
-          entity.state_filter &&
-          Array.isArray(entity.state_filter)
+          (entity.state_filter || entity.conditions)
       )
     ) {
-      throw new Error("Incorrect filter config");
+      throw new Error("At least one conditions or state_filter is required");
+    }
+
+    if (
+      (config.conditions && !Array.isArray(config.conditions)) ||
+      (config.state_filter && !Array.isArray(config.state_filter)) ||
+      config.entities.some(
+        (entity) =>
+          typeof entity === "object" &&
+          ((entity.state_filter && !Array.isArray(entity.state_filter)) ||
+            (entity.conditions && !Array.isArray(entity.conditions)))
+      )
+    ) {
+      throw new Error("Conditions or state_filter must be an array");
+    }
+
+    if (
+      (config.conditions && config.state_filter) ||
+      config.entities.some(
+        (entity) =>
+          typeof entity === "object" && entity.state_filter && entity.conditions
+      )
+    ) {
+      throw new Error(
+        "Conditions and state_filter may not be simultaneously defined"
+      );
     }
 
     this._configEntities = processConfigEntities(config.entities);
@@ -121,8 +143,7 @@ export class HuiEntityFilterCard
       this._element.preview = this.preview;
       this._element.layout = this.layout;
     }
-
-    if (changedProps.has("_config")) {
+    if (changedProps.has("_config") || changedProps.has("preview")) {
       return true;
     }
     if (changedProps.has("hass")) {
@@ -149,7 +170,7 @@ export class HuiEntityFilterCard
       if (!stateObj) return false;
 
       const conditions = entityConf.conditions ?? this._config!.conditions;
-      if (conditions) {
+      if (conditions && !entityConf.state_filter) {
         const conditionWithEntity = conditions.map((condition) =>
           addEntityToCondition(condition, entityConf.entity)
         );
@@ -161,10 +182,14 @@ export class HuiEntityFilterCard
         return filters.some((filter) => evaluateStateFilter(stateObj, filter));
       }
 
-      return false;
+      return true;
     });
 
-    if (entitiesList.length === 0 && this._config.show_empty === false) {
+    if (
+      entitiesList.length === 0 &&
+      this._config.show_empty === false &&
+      !this.preview
+    ) {
       if (!this.hidden) {
         this.style.display = "none";
         this.toggleAttribute("hidden", true);

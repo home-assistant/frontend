@@ -151,8 +151,13 @@ class DialogSetBackupEncryptionKey extends LitElement implements HassDialog {
                   "ui.panel.config.backup.encryption_key.download_emergency_kit_description"
                 )}
               </span>
-              <ha-button slot="end" @click=${this._download}>
-                <ha-svg-icon .path=${mdiDownload} slot="icon"></ha-svg-icon>
+              <ha-button
+                size="small"
+                appearance="plain"
+                slot="end"
+                @click=${this._download}
+              >
+                <ha-svg-icon .path=${mdiDownload} slot="start"></ha-svg-icon>
                 ${this.hass.localize(
                   "ui.panel.config.backup.encryption_key.download_emergency_kit_action"
                 )}
@@ -226,16 +231,16 @@ class DialogSetBackupEncryptionKey extends LitElement implements HassDialog {
           display: flex;
           flex-direction: row;
           align-items: center;
-          gap: 24px;
+          gap: var(--ha-space-6);
         }
         .encryption-key p {
           margin: 0;
           flex: 1;
-          font-family: "Roboto Mono", "Consolas", "Menlo", monospace;
-          font-size: 20px;
+          font-size: var(--ha-font-size-xl);
+          font-family: var(--ha-font-family-code);
           font-style: normal;
-          font-weight: 400;
-          line-height: 28px;
+          font-weight: var(--ha-font-weight-normal);
+          line-height: var(--ha-line-height-condensed);
           text-align: center;
         }
         .encryption-key ha-icon-button {

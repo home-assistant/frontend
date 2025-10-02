@@ -60,17 +60,20 @@ export const generateEntityFilter = (
       }
     }
 
-    const { area, floor, device, entity } = getEntityContext(entityId, hass);
+    const { area, floor, device, entity } = getEntityContext(
+      stateObj,
+      hass.entities,
+      hass.devices,
+      hass.areas,
+      hass.floors
+    );
 
     if (entity && entity.hidden) {
       return false;
     }
 
     if (floors) {
-      if (!floor) {
-        return false;
-      }
-      if (!floors) {
+      if (!floor || !floors.has(floor.floor_id)) {
         return false;
       }
     }

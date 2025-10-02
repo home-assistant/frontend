@@ -1,4 +1,3 @@
-import "@material/mwc-list";
 import { mdiDrag, mdiEye, mdiEyeOff } from "@mdi/js";
 import type { CSSResultGroup } from "lit";
 import { LitElement, css, html, nothing } from "lit";
@@ -6,18 +5,19 @@ import { customElement, property, state } from "lit/decorators";
 import { classMap } from "lit/directives/class-map";
 import { repeat } from "lit/directives/repeat";
 import memoizeOne from "memoize-one";
+import { fireEvent } from "../../common/dom/fire_event";
 import { haStyleDialog } from "../../resources/styles";
 import type { HomeAssistant } from "../../types";
+import "../ha-button";
 import { createCloseHeading } from "../ha-dialog";
+import "../ha-list";
 import "../ha-list-item";
 import "../ha-sortable";
-import "../ha-button";
 import type {
   DataTableColumnContainer,
   DataTableColumnData,
 } from "./ha-data-table";
 import type { DataTableSettingsDialogParams } from "./show-dialog-data-table-settings";
-import { fireEvent } from "../../common/dom/fire_event";
 
 @customElement("dialog-data-table-settings")
 export class DialogDataTableSettings extends LitElement {
@@ -104,7 +104,7 @@ export class DialogDataTableSettings extends LitElement {
           draggable-selector=".draggable"
           handle-selector=".handle"
         >
-          <mwc-list>
+          <ha-list>
             ${repeat(
               columns,
               (col) => col.key,
@@ -150,9 +150,12 @@ export class DialogDataTableSettings extends LitElement {
                 </ha-list-item>`;
               }
             )}
-          </mwc-list>
+          </ha-list>
         </ha-sortable>
-        <ha-button slot="secondaryAction" @click=${this._reset}
+        <ha-button
+          appearance="plain"
+          slot="secondaryAction"
+          @click=${this._reset}
           >${localize("ui.components.data-table.settings.restore")}</ha-button
         >
         <ha-button slot="primaryAction" @click=${this.closeDialog}>

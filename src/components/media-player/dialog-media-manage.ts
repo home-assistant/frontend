@@ -1,36 +1,36 @@
 import { animate } from "@lit-labs/motion";
-import "@material/mwc-list/mwc-list";
-import "@material/mwc-list/mwc-list-item";
+
 import { mdiClose, mdiDelete } from "@mdi/js";
 import type { CSSResultGroup } from "lit";
 import { css, html, LitElement, nothing } from "lit";
 import { customElement, property, state } from "lit/decorators";
 import { repeat } from "lit/directives/repeat";
+import { isComponentLoaded } from "../../common/config/is_component_loaded";
 import { fireEvent } from "../../common/dom/fire_event";
 import { computeRTLDirection } from "../../common/util/compute_rtl";
+import { deleteImage, getIdFromUrl } from "../../data/image_upload";
 import type { MediaPlayerItem } from "../../data/media-player";
 import { MediaClassBrowserSettings } from "../../data/media-player";
 import {
   browseLocalMediaPlayer,
-  removeLocalMedia,
-  isLocalMediaSourceContentId,
   isImageUploadMediaSourceContentId,
+  isLocalMediaSourceContentId,
+  removeLocalMedia,
 } from "../../data/media_source";
-import { deleteImage, getIdFromUrl } from "../../data/image_upload";
 import { showConfirmationDialog } from "../../dialogs/generic/show-dialog-box";
 import { haStyleDialog } from "../../resources/styles";
 import type { HomeAssistant } from "../../types";
 import "../ha-button";
 import "../ha-check-list-item";
-import "../ha-spinner";
 import "../ha-dialog";
 import "../ha-dialog-header";
+import "../ha-list";
+import "../ha-spinner";
 import "../ha-svg-icon";
 import "../ha-tip";
 import "./ha-media-player-browse";
 import "./ha-media-upload-button";
 import type { MediaManageDialogParams } from "./show-media-manage-dialog";
-import { isComponentLoaded } from "../../common/config/is_component_loaded";
 
 @customElement("dialog-media-manage")
 class DialogMediaManage extends LitElement {
@@ -116,18 +116,18 @@ class DialogMediaManage extends LitElement {
               `
             : html`
                 <ha-button
-                  class="danger"
+                  variant="danger"
                   slot="navigationIcon"
                   .disabled=${this._deleting}
-                  .label=${this.hass.localize(
+                  @click=${this._handleDelete}
+                >
+                  <ha-svg-icon .path=${mdiDelete} slot="start"></ha-svg-icon>
+                  ${this.hass.localize(
                     `ui.components.media-browser.file_management.${
                       this._deleting ? "deleting" : "delete"
                     }`,
                     { count: this._selected.size }
                   )}
-                  @click=${this._handleDelete}
-                >
-                  <ha-svg-icon .path=${mdiDelete} slot="icon"></ha-svg-icon>
                 </ha-button>
 
                 ${this._deleting
@@ -135,15 +135,15 @@ class DialogMediaManage extends LitElement {
                   : html`
                       <ha-button
                         slot="actionItems"
-                        .label=${this.hass.localize(
-                          `ui.components.media-browser.file_management.deselect_all`
-                        )}
                         @click=${this._handleDeselectAll}
                       >
                         <ha-svg-icon
                           .path=${mdiClose}
-                          slot="icon"
+                          slot="start"
                         ></ha-svg-icon>
+                        ${this.hass.localize(
+                          `ui.components.media-browser.file_management.deselect_all`
+                        )}
                       </ha-button>
                     `}
               `}
@@ -170,7 +170,7 @@ class DialogMediaManage extends LitElement {
                   : ""}
               </div>`
             : html`
-                <mwc-list multi @selected=${this._handleSelected}>
+                <ha-list multi @selected=${this._handleSelected}>
                   ${repeat(
                     children,
                     (item) => item.media_content_id,
@@ -201,7 +201,7 @@ class DialogMediaManage extends LitElement {
                       `;
                     }
                   )}
-                </mwc-list>
+                </ha-list>
               `}
         ${isComponentLoaded(this.hass, "hassio")
           ? html`<ha-tip .hass=${this.hass}>
@@ -327,22 +327,8 @@ class DialogMediaManage extends LitElement {
           display: block;
         }
 
-        .danger {
-          --mdc-theme-primary: var(--error-color);
-        }
-
-        ha-svg-icon[slot="icon"] {
-          vertical-align: middle;
-        }
-
         ha-tip {
           margin: 16px;
-        }
-
-        ha-svg-icon[slot="icon"] {
-          margin-inline-start: 0px !important;
-          margin-inline-end: 8px !important;
-          direction: var(--direction);
         }
 
         .refresh {

@@ -202,8 +202,33 @@ export class HuiViewBadges extends LitElement {
       align-items: flex-start;
       flex-wrap: var(--badges-wrap, wrap);
       justify-content: var(--badges-aligmnent, center);
-      gap: 8px;
+      gap: var(--ha-space-2);
       margin: 0;
+    }
+
+    /* Use before and after because padding doesn't work well with scrolling */
+    .badges::before,
+    .badges::after {
+      content: "";
+      position: relative;
+      display: block;
+      min-width: var(--badge-padding, 0px);
+      height: 16px;
+      background-color: transparent;
+    }
+    .badges::before {
+      margin-left: -8px;
+      margin-inline-start: -8px;
+      margin-inline-end: 0;
+    }
+    .badges::after {
+      margin-right: -8px;
+      margin-inline-end: -8px;
+      margin-inline-start: 0;
+    }
+
+    .badges > * {
+      min-width: fit-content;
     }
 
     hui-badge-edit-mode {
@@ -219,7 +244,7 @@ export class HuiViewBadges extends LitElement {
       flex-direction: row;
       align-items: center;
       outline: none;
-      gap: 8px;
+      gap: var(--ha-space-2);
       height: 36px;
       padding: 6px 20px 6px 20px;
       box-sizing: border-box;
@@ -231,7 +256,7 @@ export class HuiViewBadges extends LitElement {
       border-color: var(--primary-color);
       --mdc-icon-size: 18px;
       cursor: pointer;
-      font-size: 14px;
+      font-size: var(--ha-font-size-m);
       color: var(--primary-text-color);
       --ha-ripple-color: var(--primary-color);
       --ha-ripple-hover-opacity: 0.04;

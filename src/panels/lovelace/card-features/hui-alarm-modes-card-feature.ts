@@ -1,7 +1,6 @@
 import { mdiShieldOff } from "@mdi/js";
-import type { HassEntity } from "home-assistant-js-websocket";
 import type { PropertyValues, TemplateResult } from "lit";
-import { html, LitElement } from "lit";
+import { html, LitElement, nothing } from "lit";
 import { customElement, property, state } from "lit/decorators";
 import { styleMap } from "lit/directives/style-map";
 import memoizeOne from "memoize-one";
@@ -26,9 +25,19 @@ import type { HomeAssistant } from "../../../types";
 import type { LovelaceCardFeature, LovelaceCardFeatureEditor } from "../types";
 import { cardFeatureStyles } from "./common/card-feature-styles";
 import { filterModes } from "./common/filter-modes";
-import type { AlarmModesCardFeatureConfig } from "./types";
+import type {
+  AlarmModesCardFeatureConfig,
+  LovelaceCardFeatureContext,
+} from "./types";
 
-export const supportsAlarmModesCardFeature = (stateObj: HassEntity) => {
+export const supportsAlarmModesCardFeature = (
+  hass: HomeAssistant,
+  context: LovelaceCardFeatureContext
+) => {
+  const stateObj = context.entity_id
+    ? hass.states[context.entity_id]
+    : undefined;
+  if (!stateObj) return false;
   const domain = computeDomain(stateObj.entity_id);
   return domain === "alarm_control_panel";
 };
@@ -40,7 +49,7 @@ class HuiAlarmModeCardFeature
 {
   @property({ attribute: false }) public hass?: HomeAssistant;
 
-  @property({ attribute: false }) public stateObj?: AlarmControlPanelEntity;
+  @property({ attribute: false }) public context?: LovelaceCardFeatureContext;
 
   @state() private _config?: AlarmModesCardFeatureConfig;
 
@@ -66,10 +75,26 @@ class HuiAlarmModeCardFeature
     this._config = config;
   }
 
+  private get _stateObj() {
+    if (!this.hass || !this.context || !this.context.entity_id) {
+      return undefined;
+    }
+    return this.hass.states[this.context.entity_id] as
+      | AlarmControlPanelEntity
+      | undefined;
+  }
+
   protected willUpdate(changedProp: PropertyValues): void {
     super.willUpdate(changedProp);
-    if (changedProp.has("stateObj") && this.stateObj) {
-      this._currentMode = this._getCurrentMode(this.stateObj);
+    if (
+      (changedProp.has("hass") || changedProp.has("context")) &&
+      this._stateObj
+    ) {
+      const oldHass = changedProp.get("hass") as HomeAssistant | undefined;
+      const oldStateObj = oldHass?.states[this.context!.entity_id!];
+      if (oldStateObj !== this._stateObj) {
+        this._currentMode = this._getCurrentMode(this._stateObj);
+      }
     }
   }
 
@@ -79,12 +104,12 @@ class HuiAlarmModeCardFeature
   });
 
   private async _valueChanged(ev: CustomEvent) {
-    if (!this.stateObj) return;
+    if (!this._stateObj) return;
     const mode = (ev.detail as any).value as AlarmMode;
 
-    if (mode === this.stateObj.state) return;
+    if (mode === this._stateObj.state) return;
 
-    const oldMode = this._getCurrentMode(this.stateObj);
+    const oldMode = this._getCurrentMode(this._stateObj);
     this._currentMode = mode;
 
     try {
@@ -102,24 +127,25 @@ class HuiAlarmModeCardFeature
     await setProtectedAlarmControlPanelMode(
       this,
       this.hass!,
-      this.stateObj!,
+      this._stateObj!,
       mode
     );
   }
 
-  protected render(): TemplateResult | null {
+  protected render(): TemplateResult | typeof nothing {
     if (
       !this._config ||
       !this.hass ||
-      !this.stateObj ||
-      !supportsAlarmModesCardFeature(this.stateObj)
+      !this.context ||
+      !this._stateObj ||
+      !supportsAlarmModesCardFeature(this.hass, this.context)
     ) {
-      return null;
+      return nothing;
     }
 
-    const color = stateColorCss(this.stateObj);
+    const color = stateColorCss(this._stateObj);
 
-    const supportedModes = supportedAlarmModes(this.stateObj).reverse();
+    const supportedModes = supportedAlarmModes(this._stateObj).reverse();
 
     const options = filterModes(
       supportedModes,
@@ -130,7 +156,7 @@ class HuiAlarmModeCardFeature
       path: ALARM_MODES[mode].path,
     }));
 
-    if (["triggered", "arming", "pending"].includes(this.stateObj.state)) {
+    if (["triggered", "arming", "pending"].includes(this._stateObj.state)) {
       return html`
         <ha-control-button-group>
           <ha-control-button
@@ -148,15 +174,13 @@ class HuiAlarmModeCardFeature
         .options=${options}
         .value=${this._currentMode}
         @value-changed=${this._valueChanged}
-        hide-label
-        .ariaLabel=${this.hass.localize(
-          "ui.card.alarm_control_panel.modes_label"
-        )}
+        hide-option-label
+        .label=${this.hass.localize("ui.card.alarm_control_panel.modes_label")}
         style=${styleMap({
           "--control-select-color": color,
           "--modes-count": options.length.toString(),
         })}
-        .disabled=${this.stateObj!.state === UNAVAILABLE}
+        .disabled=${this._stateObj!.state === UNAVAILABLE}
       >
       </ha-control-select>
     `;

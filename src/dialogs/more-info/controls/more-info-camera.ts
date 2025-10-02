@@ -1,13 +1,13 @@
 import { css, html, LitElement, nothing } from "lit";
 import { property, state } from "lit/decorators";
+import { slugify } from "../../../common/string/slugify";
+import "../../../components/buttons/ha-progress-button";
 import "../../../components/ha-camera-stream";
 import type { CameraEntity } from "../../../data/camera";
-import type { HomeAssistant } from "../../../types";
-import "../../../components/buttons/ha-progress-button";
 import { UNAVAILABLE } from "../../../data/entity";
+import type { HomeAssistant } from "../../../types";
 import { fileDownload } from "../../../util/file_download";
 import { showToast } from "../../../util/toast";
-import { slugify } from "../../../common/string/slugify";
 
 class MoreInfoCamera extends LitElement {
   @property({ attribute: false }) public hass!: HomeAssistant;
@@ -45,8 +45,8 @@ class MoreInfoCamera extends LitElement {
         <ha-progress-button
           @click=${this._downloadSnapshot}
           .progress=${this._waiting}
-          .disabled=${this.stateObj.state === UNAVAILABLE ||
-          this.stateObj.state === "idle"}
+          .disabled=${this.stateObj.state === UNAVAILABLE}
+          appearance="filled"
         >
           ${this.hass.localize(
             "ui.dialogs.more_info_control.camera.download_snapshot"
@@ -105,9 +105,9 @@ class MoreInfoCamera extends LitElement {
       flex-wrap: wrap;
       justify-content: flex-end;
       box-sizing: border-box;
-      padding: 12px;
+      padding: 16px;
       z-index: 1;
-      gap: 8px;
+      gap: var(--ha-space-2);
     }
   `;
 }

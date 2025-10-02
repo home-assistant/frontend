@@ -1,5 +1,5 @@
-import { consume } from "@lit-labs/context";
 import { ResizeController } from "@lit-labs/observers/resize-controller";
+import { consume } from "@lit/context";
 import {
   mdiChevronRight,
   mdiCog,
@@ -9,6 +9,7 @@ import {
   mdiHelpCircle,
   mdiInformationOutline,
   mdiMenuDown,
+  mdiOpenInNew,
   mdiPlay,
   mdiPlus,
   mdiScriptText,
@@ -44,7 +45,6 @@ import type {
   SortingChangedEvent,
 } from "../../../components/data-table/ha-data-table";
 import "../../../components/data-table/ha-data-table-labels";
-import "../../../components/ha-md-divider";
 import "../../../components/ha-fab";
 import "../../../components/ha-filter-blueprints";
 import "../../../components/ha-filter-categories";
@@ -54,6 +54,8 @@ import "../../../components/ha-filter-floor-areas";
 import "../../../components/ha-filter-labels";
 import "../../../components/ha-icon-button";
 import "../../../components/ha-icon-overflow-menu";
+import "../../../components/ha-md-divider";
+import "../../../components/ha-md-menu";
 import "../../../components/ha-md-menu-item";
 import "../../../components/ha-sub-menu";
 import "../../../components/ha-svg-icon";
@@ -85,6 +87,7 @@ import {
   deleteScript,
   fetchScriptFileConfig,
   getScriptStateConfig,
+  hasScriptFields,
   showScriptEditor,
   triggerScript,
 } from "../../../data/script";
@@ -136,6 +139,7 @@ class HaScriptPicker extends SubscribeMixin(LitElement) {
 
   @state() private _filteredScripts?: string[] | null;
 
+  @state()
   @storage({
     storage: "sessionStorage",
     key: "script-table-search",
@@ -144,6 +148,7 @@ class HaScriptPicker extends SubscribeMixin(LitElement) {
   })
   private _filter = "";
 
+  @state()
   @storage({
     storage: "sessionStorage",
     key: "script-table-filters-full",
@@ -720,7 +725,7 @@ class HaScriptPicker extends SubscribeMixin(LitElement) {
                         .path=${mdiChevronRight}
                       ></ha-svg-icon>
                     </ha-md-menu-item>
-                    <ha-menu slot="menu">${categoryItems}</ha-menu>
+                    <ha-md-menu slot="menu">${categoryItems}</ha-md-menu>
                   </ha-sub-menu>`
                 : nothing
             }
@@ -738,7 +743,7 @@ class HaScriptPicker extends SubscribeMixin(LitElement) {
                         .path=${mdiChevronRight}
                       ></ha-svg-icon>
                     </ha-md-menu-item>
-                    <ha-menu slot="menu">${labelItems}</ha-menu>
+                    <ha-md-menu slot="menu">${labelItems}</ha-md-menu>
                   </ha-sub-menu>`
                 : nothing
             }
@@ -756,7 +761,7 @@ class HaScriptPicker extends SubscribeMixin(LitElement) {
                         .path=${mdiChevronRight}
                       ></ha-svg-icon>
                     </ha-md-menu-item>
-                    <ha-menu slot="menu">${areaItems}</ha-menu>
+                    <ha-md-menu slot="menu">${areaItems}</ha-md-menu>
                   </ha-sub-menu>`
                 : nothing
             }
@@ -775,15 +780,16 @@ class HaScriptPicker extends SubscribeMixin(LitElement) {
                   "ui.panel.config.script.picker.empty_text"
                 )}
               </p>
-              <a
+              <ha-button
+                appearance="plain"
                 href=${documentationUrl(this.hass, "/docs/script/editor/")}
                 target="_blank"
                 rel="noreferrer"
+                size="small"
               >
-                <ha-button>
-                  ${this.hass.localize("ui.panel.config.common.learn_more")}
-                </ha-button>
-              </a>
+                ${this.hass.localize("ui.panel.config.common.learn_more")}
+                <ha-svg-icon slot="end" .path=${mdiOpenInNew}></ha-svg-icon>
+              </ha-button>
             </div>`
           : nothing}
         <ha-fab
@@ -1067,12 +1073,17 @@ ${rejected
     if (!entry) {
       return;
     }
-    await triggerScript(this.hass, entry.unique_id);
-    showToast(this, {
-      message: this.hass.localize("ui.notification_toast.triggered", {
-        name: computeStateName(script),
-      }),
-    });
+
+    if (hasScriptFields(this.hass, entry.unique_id)) {
+      this._showInfo(script);
+    } else {
+      await triggerScript(this.hass, entry.unique_id);
+      showToast(this, {
+        message: this.hass.localize("ui.notification_toast.triggered", {
+          name: computeStateName(script),
+        }),
+      });
+    }
   };
 
   private _showInfo(script: any) {
@@ -1205,7 +1216,6 @@ ${rejected
       createEntry: async (values) => {
         const label = await createLabelRegistryEntry(this.hass, values);
         this._bulkLabel(label.label_id, "add");
-        return label;
       },
     });
   };
@@ -1285,9 +1295,14 @@ ${rejected
           text-decoration: none;
         }
         .empty {
-          --paper-font-headline_-_font-size: 28px;
           --mdc-icon-size: 80px;
           max-width: 500px;
+        }
+        .empty ha-button {
+          --mdc-icon-size: 24px;
+        }
+        .empty h1 {
+          font-size: var(--ha-font-size-3xl);
         }
         ha-assist-chip {
           --ha-assist-chip-container-shape: 10px;

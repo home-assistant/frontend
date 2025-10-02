@@ -1,4 +1,3 @@
-import "@material/mwc-button";
 import { mdiDelete } from "@mdi/js";
 import type { CSSResultGroup, PropertyValues } from "lit";
 import { LitElement, css, html, nothing } from "lit";
@@ -6,9 +5,11 @@ import { customElement, property, query, state } from "lit/decorators";
 import type { HASSDomEvent } from "../../../../../common/dom/fire_event";
 import { navigate } from "../../../../../common/navigate";
 import type { SelectionChangedEvent } from "../../../../../components/data-table/ha-data-table";
+import "../../../../../components/ha-button";
 import "../../../../../components/ha-card";
-import "../../../../../components/ha-spinner";
 import "../../../../../components/ha-icon-button";
+import "../../../../../components/ha-list";
+import "../../../../../components/ha-list-item";
 import type { ZHADeviceEndpoint, ZHAGroup } from "../../../../../data/zha";
 import {
   addMembersToGroup,
@@ -24,8 +25,6 @@ import "../../../ha-config-section";
 import { formatAsPaddedHex } from "./functions";
 import "./zha-device-endpoint-data-table";
 import type { ZHADeviceEndpointDataTable } from "./zha-device-endpoint-data-table";
-import "@material/mwc-list/mwc-list";
-import "../../../../../components/ha-list-item";
 
 @customElement("zha-group-page")
 export class ZHAGroupPage extends LitElement {
@@ -126,7 +125,7 @@ export class ZHAGroupPage extends LitElement {
             ${this.hass.localize("ui.panel.config.zha.groups.members")}
           </div>
           <ha-card>
-            <mwc-list>
+            <ha-list>
               ${this.group.members.length
                 ? this.group.members.map(
                     (member) =>
@@ -143,7 +142,7 @@ export class ZHAGroupPage extends LitElement {
                 : html`
                     <ha-list-item> This group has no members </ha-list-item>
                   `}
-            </mwc-list>
+            </ha-list>
           </ha-card>
           ${this.group.members.length
             ? html`
@@ -164,22 +163,19 @@ export class ZHAGroupPage extends LitElement {
                 </zha-device-endpoint-data-table>
 
                 <div class="buttons">
-                  <mwc-button
+                  <ha-button
+                    appearance="plain"
+                    size="small"
+                    variant="danger"
                     .disabled=${!this._selectedDevicesToRemove.length ||
                     this._processingRemove}
                     @click=${this._removeMembersFromGroup}
                     class="button"
+                    .loading=${this._processingRemove}
                   >
-                    ${this._processingRemove
-                      ? html`<ha-spinner
-                          .ariaLabel=${this.hass.localize(
-                            "ui.panel.config.zha.groups.removing_members"
-                          )}
-                        ></ha-spinner>`
-                      : nothing}
                     ${this.hass!.localize(
                       "ui.panel.config.zha.groups.remove_members"
-                    )}</mwc-button
+                    )}</ha-button
                   >
                 </div>
               `
@@ -200,21 +196,18 @@ export class ZHAGroupPage extends LitElement {
           </zha-device-endpoint-data-table>
 
           <div class="buttons">
-            <mwc-button
+            <ha-button
+              appearance="plain"
+              size="small"
               .disabled=${!this._selectedDevicesToAdd.length ||
               this._processingAdd}
               @click=${this._addMembersToGroup}
               class="button"
+              .loading=${this._processingAdd}
             >
-              ${this._processingAdd
-                ? html`<ha-spinner
-                    size="small"
-                    aria-label="Saving"
-                  ></ha-spinner>`
-                : ""}
               ${this.hass!.localize(
                 "ui.panel.config.zha.groups.add_members"
-              )}</mwc-button
+              )}</ha-button
             >
           </div>
         </ha-config-section>
@@ -293,14 +286,12 @@ export class ZHAGroupPage extends LitElement {
           --app-header-text-color: var(--sidebar-icon-color);
         }
         .header {
-          font-family: var(--paper-font-display1_-_font-family);
-          -webkit-font-smoothing: var(
-            --paper-font-display1_-_-webkit-font-smoothing
-          );
-          font-size: var(--paper-font-display1_-_font-size);
-          font-weight: var(--paper-font-display1_-_font-weight);
-          letter-spacing: var(--paper-font-display1_-_letter-spacing);
-          line-height: var(--paper-font-display1_-_line-height);
+          font-family: var(--ha-font-family-body);
+          -webkit-font-smoothing: var(--ha-font-smoothing);
+          -moz-osx-font-smoothing: var(--ha-moz-osx-font-smoothing);
+          font-size: var(--ha-font-size-4xl);
+          font-weight: var(--ha-font-weight-normal);
+          line-height: var(--ha-line-height-condensed);
           opacity: var(--dark-primary-opacity);
         }
 
@@ -314,7 +305,7 @@ export class ZHAGroupPage extends LitElement {
         }
         .buttons {
           align-items: flex-end;
-          padding: 8px;
+          padding: 16px;
         }
         .buttons .warning {
           --mdc-theme-primary: var(--error-color);

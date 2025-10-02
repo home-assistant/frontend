@@ -1,10 +1,10 @@
 import type { PropertyValues } from "lit";
 import { css, html, LitElement, nothing } from "lit";
+import { classMap } from "lit/directives/class-map";
 import { customElement, property, state } from "lit/decorators";
 import { getColorByIndex } from "../../../common/color/colors";
 import { applyThemesOnElement } from "../../../common/dom/apply_themes_on_element";
 import type { HASSDomEvent } from "../../../common/dom/fire_event";
-import { computeStateName } from "../../../common/entity/compute_state_name";
 import { debounce } from "../../../common/util/debounce";
 import "../../../components/ha-card";
 import type { Calendar, CalendarEvent } from "../../../data/calendar";
@@ -17,7 +17,11 @@ import type {
 import "../../calendar/ha-full-calendar";
 import { findEntities } from "../common/find-entities";
 import "../components/hui-warning";
-import type { LovelaceCard, LovelaceCardEditor } from "../types";
+import type {
+  LovelaceCard,
+  LovelaceCardEditor,
+  LovelaceGridOptions,
+} from "../types";
 import type { CalendarCardConfig } from "./types";
 
 @customElement("hui-calendar-card")
@@ -48,6 +52,8 @@ export class HuiCalendarCard extends LitElement implements LovelaceCard {
   }
 
   @property({ attribute: false }) public hass?: HomeAssistant;
+
+  @property({ attribute: false }) public layout?: string;
 
   @state() private _events: CalendarEvent[] = [];
 
@@ -89,7 +95,16 @@ export class HuiCalendarCard extends LitElement implements LovelaceCard {
   }
 
   public getCardSize(): number {
-    return this._config?.header ? 1 : 0 + 11;
+    return 12;
+  }
+
+  public getGridOptions(): LovelaceGridOptions {
+    return {
+      rows: 6,
+      columns: 12,
+      min_columns: 4,
+      min_rows: 4,
+    };
   }
 
   public connectedCallback(): void {
@@ -119,6 +134,10 @@ export class HuiCalendarCard extends LitElement implements LovelaceCard {
       <ha-card>
         <div class="header">${this._config.title}</div>
         <ha-full-calendar
+          class=${classMap({
+            "is-grid": this.layout === "grid",
+            "is-panel": this.layout === "panel",
+          })}
           .narrow=${this._narrow}
           .events=${this._events}
           .hass=${this.hass}
@@ -176,17 +195,9 @@ export class HuiCalendarCard extends LitElement implements LovelaceCard {
     this._events = result.events;
 
     if (result.errors.length > 0) {
-      const nameList = result.errors
-        .map((error_entity_id) =>
-          this.hass!.states[error_entity_id]
-            ? computeStateName(this.hass!.states[error_entity_id])
-            : error_entity_id
-        )
-        .join(", ");
-
       this._error = `${this.hass!.localize(
         "ui.components.calendar.event_retrieval_error"
-      )} ${nameList}`;
+      )}`;
     }
   }
 
@@ -222,8 +233,8 @@ export class HuiCalendarCard extends LitElement implements LovelaceCard {
 
     .header {
       color: var(--ha-card-header-color, var(--primary-text-color));
-      font-size: var(--ha-card-header-font-size, 24px);
-      line-height: 1.2;
+      font-size: var(--ha-card-header-font-size, var(--ha-font-size-2xl));
+      line-height: var(--ha-line-height-condensed);
       padding-top: 16px;
       padding-left: 8px;
       padding-inline-start: 8px;
@@ -232,6 +243,11 @@ export class HuiCalendarCard extends LitElement implements LovelaceCard {
 
     ha-full-calendar {
       --calendar-height: 400px;
+    }
+
+    ha-full-calendar.is-grid,
+    ha-full-calendar.is-panel {
+      height: calc(100% - 16px);
     }
   `;
 }

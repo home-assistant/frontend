@@ -1,4 +1,4 @@
-import { consume } from "@lit-labs/context";
+import { consume } from "@lit/context";
 import {
   mdiAlertCircle,
   mdiCancel,
@@ -10,6 +10,7 @@ import {
   mdiMenuDown,
   mdiPencilOff,
   mdiPlus,
+  mdiRestore,
   mdiRestoreAlert,
   mdiToggleSwitch,
   mdiToggleSwitchOffOutline,
@@ -95,6 +96,7 @@ import {
   createLabelRegistryEntry,
   subscribeLabelRegistry,
 } from "../../../data/label_registry";
+import { regenerateEntityIds } from "../../../data/regenerate_entity_ids";
 import {
   showAlertDialog,
   showConfirmationDialog,
@@ -112,6 +114,7 @@ import { isHelperDomain } from "../helpers/const";
 import "../integrations/ha-integration-overflow-menu";
 import { showAddIntegrationDialog } from "../integrations/show-add-integration-dialog";
 import { showLabelDetailDialog } from "../labels/show-dialog-label-detail";
+import { slugify } from "../../../common/string/slugify";
 
 export interface StateEntity
   extends Omit<EntityRegistryEntry, "id" | "unique_id"> {
@@ -159,6 +162,7 @@ export class HaConfigEntities extends SubscribeMixin(LitElement) {
   @consume({ context: fullEntitiesContext, subscribe: true })
   _entities!: EntityRegistryEntry[];
 
+  @state()
   @storage({
     storage: "sessionStorage",
     key: "entities-table-search",
@@ -169,6 +173,7 @@ export class HaConfigEntities extends SubscribeMixin(LitElement) {
 
   @state() private _searchParms = new URLSearchParams(window.location.search);
 
+  @state()
   @storage({
     storage: "sessionStorage",
     key: "entities-table-filters",
@@ -388,9 +393,27 @@ export class HaConfigEntities extends SubscribeMixin(LitElement) {
                   tabindex="0"
                   style="display:inline-block; position: relative;"
                 >
+                  <ha-svg-icon
+                    .id="status-icon-${slugify(entry.entity_id)}"
+                    style=${styleMap({
+                      color: entry.unavailable ? "var(--error-color)" : "",
+                    })}
+                    .path=${entry.restored
+                      ? mdiRestoreAlert
+                      : entry.unavailable
+                        ? mdiAlertCircle
+                        : entry.disabled_by
+                          ? mdiCancel
+                          : entry.hidden_by
+                            ? mdiEyeOff
+                            : mdiPencilOff}
+                  ></ha-svg-icon>
+
                   <ha-tooltip
+                    .for="status-icon-${slugify(entry.entity_id)}"
                     placement="left"
-                    .content=${entry.restored
+                  >
+                    ${entry.restored
                       ? this.hass.localize(
                           "ui.panel.config.entities.picker.status.not_provided"
                         )
@@ -409,21 +432,6 @@ export class HaConfigEntities extends SubscribeMixin(LitElement) {
                             : this.hass.localize(
                                 "ui.panel.config.entities.picker.status.unmanageable"
                               )}
-                  >
-                    <ha-svg-icon
-                      style=${styleMap({
-                        color: entry.unavailable ? "var(--error-color)" : "",
-                      })}
-                      .path=${entry.restored
-                        ? mdiRestoreAlert
-                        : entry.unavailable
-                          ? mdiAlertCircle
-                          : entry.disabled_by
-                            ? mdiCancel
-                            : entry.hidden_by
-                              ? mdiEyeOff
-                              : mdiPencilOff}
-                    ></ha-svg-icon>
                   </ha-tooltip>
                 </div>
               `
@@ -674,7 +682,8 @@ export class HaConfigEntities extends SubscribeMixin(LitElement) {
 
         const entityName = computeEntityEntryName(
           entry as EntityRegistryEntry,
-          this.hass
+          this.hass.devices,
+          entity
         );
 
         const deviceName = device ? computeDeviceName(device) : undefined;
@@ -901,7 +910,7 @@ ${
               </div>
               <ha-svg-icon slot="end" .path=${mdiChevronRight}></ha-svg-icon>
             </ha-md-menu-item>
-            <ha-menu slot="menu">${labelItems}</ha-menu>
+            <ha-md-menu slot="menu">${labelItems}</ha-md-menu>
           </ha-sub-menu>
           <ha-md-divider role="separator" tabindex="-1"></ha-md-divider>`
       : nothing
@@ -950,6 +959,21 @@ ${
       )}
     </div>
   </ha-md-menu-item>
+
+  <ha-md-divider role="separator" tabindex="-1"></ha-md-divider>
+
+  <ha-md-menu-item .clickAction=${this._restoreEntityIdSelected}>
+    <ha-svg-icon
+      slot="start"
+      .path=${mdiRestore}
+    ></ha-svg-icon>
+    <div slot="headline">
+      ${this.hass.localize(
+        "ui.panel.config.entities.picker.restore_entity_id_selected.button"
+      )}
+    </div>
+  </ha-md-menu-item>
+
   <ha-md-divider role="separator" tabindex="-1"></ha-md-divider>
 
   <ha-md-menu-item .clickAction=${this._removeSelected} class="warning">
@@ -1080,10 +1104,10 @@ ${
   }
 
   protected firstUpdated() {
+    this._setFiltersFromUrl();
     fetchEntitySourcesWithCache(this.hass).then((sources) => {
       this._entitySources = sources;
     });
-    this._setFiltersFromUrl();
     if (Object.keys(this._filters).length) {
       return;
     }
@@ -1096,9 +1120,10 @@ ${
     const domain = this._searchParms.get("domain");
     const configEntry = this._searchParms.get("config_entry");
     const subEntry = this._searchParms.get("sub_entry");
-    const label = this._searchParms.has("label");
+    const device = this._searchParms.get("device");
+    const label = this._searchParms.get("label");
 
-    if (!domain && !configEntry && !label) {
+    if (!domain && !configEntry && !label && !device) {
       return;
     }
 
@@ -1107,20 +1132,10 @@ ${
     this._filters = {
       "ha-filter-states": [],
       "ha-filter-integrations": domain ? [domain] : [],
+      "ha-filter-devices": device ? [device] : [],
+      "ha-filter-labels": label ? [label] : [],
       config_entry: configEntry ? [configEntry] : [],
       sub_entry: subEntry ? [subEntry] : [],
-    };
-    this._filterLabel();
-  }
-
-  private _filterLabel() {
-    const label = this._searchParms.get("label");
-    if (!label) {
-      return;
-    }
-    this._filters = {
-      ...this._filters,
-      "ha-filter-labels": [label],
     };
   }
 
@@ -1131,6 +1146,11 @@ ${
 
   public willUpdate(changedProps: PropertyValues): void {
     super.willUpdate(changedProps);
+
+    if (!this.hasUpdated) {
+      this._setFiltersFromUrl();
+    }
+
     const oldHass = changedProps.get("hass");
     let changed = false;
     if (!this.hass || !this._entities) {
@@ -1365,9 +1385,14 @@ ${rejected
       createEntry: async (values) => {
         const label = await createLabelRegistryEntry(this.hass, values);
         this._bulkLabel(label.label_id, "add");
-        return label;
       },
     });
+  };
+
+  private _restoreEntityIdSelected = () => {
+    regenerateEntityIds(this, this.hass, this._selected);
+
+    this._clearSelection();
   };
 
   private _removeSelected = async () => {
@@ -1541,7 +1566,7 @@ ${rejected
           top: -4px;
         }
         .selected-txt {
-          font-weight: bold;
+          font-weight: var(--ha-font-weight-bold);
           padding-left: 16px;
           padding-inline-start: 16px;
           padding-inline-end: initial;
@@ -1551,7 +1576,7 @@ ${rejected
           margin-top: 20px;
         }
         .header-toolbar .selected-txt {
-          font-size: 16px;
+          font-size: var(--ha-font-size-l);
         }
         .header-toolbar .header-btns {
           margin-right: -12px;
@@ -1562,7 +1587,6 @@ ${rejected
         .header-btns {
           display: flex;
         }
-        .header-btns > mwc-button,
         .header-btns > ha-icon-button {
           margin: 8px;
         }

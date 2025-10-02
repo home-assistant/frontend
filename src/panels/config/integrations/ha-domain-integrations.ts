@@ -4,12 +4,14 @@ import { customElement, property } from "lit/decorators";
 import { isComponentLoaded } from "../../../common/config/is_component_loaded";
 import { fireEvent } from "../../../common/dom/fire_event";
 import {
-  protocolIntegrationPicked,
   PROTOCOL_INTEGRATIONS,
+  protocolIntegrationPicked,
 } from "../../../common/integrations/protocolIntegrationPicked";
 import { shouldHandleRequestSelectedEvent } from "../../../common/mwc/handle-request-selected-event";
 import { navigate } from "../../../common/navigate";
 import { caseInsensitiveStringCompare } from "../../../common/string/compare";
+import "../../../components/ha-list";
+import "../../../components/ha-list-item";
 import { localizeConfigFlowTitle } from "../../../data/config_flow";
 import type { DataEntryFlowProgress } from "../../../data/data_entry_flow";
 import {
@@ -38,14 +40,14 @@ class HaDomainIntegrations extends LitElement {
   public flowsInProgress?: DataEntryFlowProgress[];
 
   protected render() {
-    return html`<mwc-list>
+    return html`<ha-list>
       ${this.flowsInProgress?.length
         ? html`<h3>
               ${this.hass.localize("ui.panel.config.integrations.discovered")}
             </h3>
             ${this.flowsInProgress.map(
               (flow) =>
-                html`<mwc-list-item
+                html`<ha-list-item
                   graphic="medium"
                   .flow=${flow}
                   @request-selected=${this._flowInProgressPicked}
@@ -68,7 +70,7 @@ class HaDomainIntegrations extends LitElement {
                     >${localizeConfigFlowTitle(this.hass.localize, flow)}</span
                   >
                   <ha-icon-next slot="meta"></ha-icon-next>
-                </mwc-list-item>`
+                </ha-list-item>`
             )}
             <li divider role="separator"></li>
             ${this.integration &&
@@ -91,7 +93,7 @@ class HaDomainIntegrations extends LitElement {
             .map((standard) => {
               const domain: (typeof PROTOCOL_INTEGRATIONS)[number] =
                 standardToDomain[standard] || standard;
-              return html`<mwc-list-item
+              return html`<ha-list-item
                 graphic="medium"
                 .domain=${domain}
                 @request-selected=${this._standardPicked}
@@ -116,13 +118,14 @@ class HaDomainIntegrations extends LitElement {
                   )}</span
                 >
                 <ha-icon-next slot="meta"></ha-icon-next>
-              </mwc-list-item>`;
+              </ha-list-item>`;
             })
         : ""}
       ${this.integration &&
       "integrations" in this.integration &&
       this.integration.integrations
         ? Object.entries(this.integration.integrations)
+            .filter(([, val]) => val.integration_type !== "hardware")
             .sort((a, b) => {
               if (a[1].config_flow && !b[1].config_flow) {
                 return -1;
@@ -154,7 +157,7 @@ class HaDomainIntegrations extends LitElement {
             )
         : ""}
       ${(PROTOCOL_INTEGRATIONS as readonly string[]).includes(this.domain)
-        ? html`<mwc-list-item
+        ? html`<ha-list-item
             graphic="medium"
             .domain=${this.domain}
             @request-selected=${this._standardPicked}
@@ -181,13 +184,13 @@ class HaDomainIntegrations extends LitElement {
               )}</span
             >
             <ha-icon-next slot="meta"></ha-icon-next>
-          </mwc-list-item>`
+          </ha-list-item>`
         : ""}
       ${this.integration &&
       "config_flow" in this.integration &&
       this.integration.config_flow
         ? html`${this.flowsInProgress?.length
-            ? html`<mwc-list-item
+            ? html`<ha-list-item
                 .domain=${this.domain}
                 @request-selected=${this._integrationPicked}
                 .integration=${{
@@ -207,7 +210,7 @@ class HaDomainIntegrations extends LitElement {
                     domainToName(this.hass.localize, this.domain),
                 })}
                 <ha-icon-next slot="meta"></ha-icon-next>
-              </mwc-list-item>`
+              </ha-list-item>`
             : html`<ha-integration-list-item
                 .hass=${this.hass}
                 .domain=${this.domain}
@@ -224,7 +227,7 @@ class HaDomainIntegrations extends LitElement {
               >
               </ha-integration-list-item>`}`
         : ""}
-    </mwc-list> `;
+    </ha-list> `;
   }
 
   private async _integrationPicked(ev: CustomEvent<RequestSelectedDetail>) {
@@ -330,8 +333,8 @@ class HaDomainIntegrations extends LitElement {
       h3 {
         margin: 8px 24px 0;
         color: var(--secondary-text-color);
-        font-size: 14px;
-        font-weight: 500;
+        font-size: var(--ha-font-size-m);
+        font-weight: var(--ha-font-weight-medium);
       }
       h3:first-of-type {
         margin-top: 0;

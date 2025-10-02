@@ -2,6 +2,7 @@ import { memoize } from "@fullcalendar/core/internal";
 import { setHours, setMinutes } from "date-fns";
 import type { HassConfig } from "home-assistant-js-websocket";
 import memoizeOne from "memoize-one";
+import checkValidDate from "../common/datetime/check_valid_date";
 import {
   formatDateTime,
   formatDateTimeNumeric,
@@ -10,11 +11,10 @@ import { formatTime } from "../common/datetime/format_time";
 import type { LocalizeFunc } from "../common/translations/localize";
 import type { HomeAssistant } from "../types";
 import { fileDownload } from "../util/file_download";
+import { handleFetchPromise } from "../util/hass-call-api";
+import type { BackupManagerState, ManagerStateEvent } from "./backup_manager";
 import { domainToName } from "./integration";
 import type { FrontendLocaleData } from "./translation";
-import type { BackupManagerState, ManagerStateEvent } from "./backup_manager";
-import checkValidDate from "../common/datetime/check_valid_date";
-import { handleFetchPromise } from "../util/hass-call-api";
 
 export const enum BackupScheduleRecurrence {
   NEVER = "never",
@@ -37,6 +37,11 @@ export const BACKUP_DAYS: BackupDay[] = [
 export const sortWeekdays = (weekdays) =>
   weekdays.sort((a, b) => BACKUP_DAYS.indexOf(a) - BACKUP_DAYS.indexOf(b));
 
+export interface Retention {
+  copies?: number | null;
+  days?: number | null;
+}
+
 export interface BackupConfig {
   automatic_backups_configured: boolean;
   last_attempted_automatic_backup: string | null;
@@ -52,10 +57,7 @@ export interface BackupConfig {
     name: string | null;
     password: string | null;
   };
-  retention: {
-    copies?: number | null;
-    days?: number | null;
-  };
+  retention: Retention;
   schedule: {
     recurrence: BackupScheduleRecurrence;
     time?: string | null;
@@ -75,10 +77,7 @@ export interface BackupMutableConfig {
     name?: string | null;
     password?: string | null;
   };
-  retention?: {
-    copies?: number | null;
-    days?: number | null;
-  };
+  retention?: Retention;
   schedule?: {
     recurrence: BackupScheduleRecurrence;
     time?: string | null;
@@ -90,7 +89,8 @@ export interface BackupMutableConfig {
 export type BackupAgentsConfig = Record<string, BackupAgentConfig>;
 
 export interface BackupAgentConfig {
-  protected: boolean;
+  protected?: boolean;
+  retention?: Retention | null;
 }
 
 export interface BackupAgent {
@@ -103,12 +103,20 @@ export interface BackupContentAgent {
   protected: boolean;
 }
 
+export interface AddonInfo {
+  name: string | null;
+  slug: string;
+  version: string | null;
+}
+
 export interface BackupContent {
   backup_id: string;
   date: string;
   name: string;
   agents: Record<string, BackupContentAgent>;
   failed_agent_ids?: string[];
+  failed_addons?: AddonInfo[];
+  failed_folders?: string[];
   extra_metadata?: {
     "supervisor.addon_update"?: string;
   };
@@ -331,7 +339,7 @@ export const computeBackupSize = (backup: BackupContent) =>
 
 export type BackupType = "automatic" | "manual" | "addon_update";
 
-const BACKUP_TYPE_ORDER: BackupType[] = ["automatic", "manual", "addon_update"];
+const BACKUP_TYPE_ORDER: BackupType[] = ["automatic", "addon_update", "manual"];
 
 export const getBackupTypes = memoize((isHassio: boolean) =>
   isHassio

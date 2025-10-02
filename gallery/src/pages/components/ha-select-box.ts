@@ -123,7 +123,7 @@ export class DemoHaSelectBox extends LitElement {
       margin: 0;
     }
     label {
-      font-weight: 600;
+      font-weight: var(--ha-font-weight-bold);
       margin-bottom: 8px;
       display: block;
     }

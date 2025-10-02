@@ -4,7 +4,7 @@ import { css, html, LitElement } from "lit";
 import { customElement, property, state } from "lit/decorators";
 import type { HassServiceTarget } from "home-assistant-js-websocket";
 import memoizeOne from "memoize-one";
-import { navigate } from "../../common/navigate";
+import { goBack, navigate } from "../../common/navigate";
 import { constructUrlCurrentPath } from "../../common/url/construct-url";
 import {
   createSearchParam,
@@ -25,6 +25,8 @@ import "./ha-logbook";
 import { storage } from "../../common/decorators/storage";
 import { ensureArray } from "../../common/array/ensure-array";
 import { resolveEntityIDs } from "../../data/selector";
+import { getSensorNumericDeviceClasses } from "../../data/sensor";
+import type { HaEntityPickerEntityFilterFunc } from "../../components/entity/ha-entity-picker";
 
 @customElement("ha-panel-logbook")
 export class HaPanelLogbook extends LitElement {
@@ -39,12 +41,15 @@ export class HaPanelLogbook extends LitElement {
   @state()
   private _showBack?: boolean;
 
+  @state()
   @storage({
     key: "logbookPickedValue",
     state: true,
     subscribe: false,
   })
   private _targetPickerValue: HassServiceTarget = {};
+
+  @state() private _sensorNumericDeviceClasses?: string[] = [];
 
   public constructor() {
     super();
@@ -59,12 +64,12 @@ export class HaPanelLogbook extends LitElement {
   }
 
   private _goBack(): void {
-    history.back();
+    goBack();
   }
 
   protected render() {
     return html`
-      <ha-top-app-bar-fixed>
+      <ha-top-app-bar-fixed .narrow=${this.narrow}>
         ${this._showBack
           ? html`
               <ha-icon-button-arrow-prev
@@ -99,7 +104,7 @@ export class HaPanelLogbook extends LitElement {
 
             <ha-target-picker
               .hass=${this.hass}
-              .entityFilter=${filterLogbookCompatibleEntities}
+              .entityFilter=${this._filterFunc}
               .value=${this._targetPickerValue}
               add-on-top
               @value-changed=${this._targetsChanged}
@@ -117,6 +122,9 @@ export class HaPanelLogbook extends LitElement {
     `;
   }
 
+  private _filterFunc: HaEntityPickerEntityFilterFunc = (entity) =>
+    filterLogbookCompatibleEntities(entity, this._sensorNumericDeviceClasses);
+
   protected willUpdate(changedProps: PropertyValues) {
     super.willUpdate(changedProps);
 
@@ -127,9 +135,15 @@ export class HaPanelLogbook extends LitElement {
     this._applyURLParams();
   }
 
+  private async _loadNumericDeviceClasses() {
+    const deviceClasses = await getSensorNumericDeviceClasses(this.hass);
+    this._sensorNumericDeviceClasses = deviceClasses.numeric_device_classes;
+  }
+
   protected firstUpdated(changedProps: PropertyValues) {
     super.firstUpdated(changedProps);
     this.hass.loadBackendTranslation("title");
+    this._loadNumericDeviceClasses();
 
     const searchParams = extractSearchParamsObject();
     if (searchParams.back === "1" && history.length > 1) {
@@ -235,10 +249,6 @@ export class HaPanelLogbook extends LitElement {
   private _dateRangeChanged(ev) {
     const startDate = ev.detail.value.startDate;
     const endDate = ev.detail.value.endDate;
-    if (endDate.getHours() === 0 && endDate.getMinutes() === 0) {
-      endDate.setDate(endDate.getDate() + 1);
-      endDate.setMilliseconds(endDate.getMilliseconds() - 1);
-    }
     this._time = {
       range: [startDate, endDate],
     };
@@ -293,11 +303,23 @@ export class HaPanelLogbook extends LitElement {
       haStyle,
       css`
         ha-logbook {
-          height: calc(100vh - 136px);
+          height: calc(
+            100vh -
+              168px - var(--safe-area-inset-top, 0px) - var(
+                --safe-area-inset-bottom,
+                0px
+              )
+          );
         }
 
         :host([narrow]) ha-logbook {
-          height: calc(100vh - 198px);
+          height: calc(
+            100vh -
+              250px - var(--safe-area-inset-top, 0px) - var(
+                --safe-area-inset-bottom,
+                0px
+              )
+          );
         }
 
         ha-date-range-picker {

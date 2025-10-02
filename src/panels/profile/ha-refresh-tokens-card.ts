@@ -1,4 +1,3 @@
-import type { ActionDetail } from "@material/mwc-list";
 import {
   mdiAndroid,
   mdiApple,
@@ -14,12 +13,14 @@ import { customElement, property } from "lit/decorators";
 import memoizeOne from "memoize-one";
 import { relativeTime } from "../../common/datetime/relative_time";
 import { fireEvent } from "../../common/dom/fire_event";
-import "../../components/ha-button-menu";
+import "../../components/ha-button";
+import "../../components/ha-md-button-menu";
+import "../../components/ha-md-menu-item";
 import "../../components/ha-card";
 import "../../components/ha-icon-button";
 import "../../components/ha-label";
-import "../../components/ha-settings-row";
 import "../../components/ha-list-item";
+import "../../components/ha-settings-row";
 import { deleteAllRefreshTokens } from "../../data/auth";
 import type { RefreshToken } from "../../data/refresh_token";
 import {
@@ -145,20 +146,19 @@ class HaRefreshTokens extends LitElement {
                           )}
                     </div>
                     <div>
-                      <ha-button-menu
-                        corner="BOTTOM_END"
-                        menu-corner="END"
-                        @action=${this._handleAction}
-                        .token=${token}
-                      >
+                      <ha-md-button-menu positioning="popover">
                         <ha-icon-button
                           slot="trigger"
                           .label=${this.hass.localize("ui.common.menu")}
                           .path=${mdiDotsVertical}
                         ></ha-icon-button>
-                        <ha-list-item graphic="icon">
+                        <ha-md-menu-item
+                          graphic="icon"
+                          @click=${this._toggleTokenExpiration}
+                          .token=${token}
+                        >
                           <ha-svg-icon
-                            slot="graphic"
+                            slot="start"
                             .path=${token.expire_at
                               ? mdiClockRemoveOutline
                               : mdiClockCheckOutline}
@@ -170,20 +170,24 @@ class HaRefreshTokens extends LitElement {
                             : this.hass.localize(
                                 "ui.panel.profile.refresh_tokens.enable_token_expiration"
                               )}
-                        </ha-list-item>
-                        <ha-list-item
+                        </ha-md-menu-item>
+                        <ha-md-menu-item
                           graphic="icon"
                           class="warning"
                           .disabled=${token.is_current}
+                          @click=${this._deleteToken}
+                          .token=${token}
                         >
                           <ha-svg-icon
                             class="warning"
-                            slot="graphic"
+                            slot="start"
                             .path=${mdiDelete}
                           ></ha-svg-icon>
-                          ${this.hass.localize("ui.common.delete")}
-                        </ha-list-item>
-                      </ha-button-menu>
+                          <div slot="headline">
+                            ${this.hass.localize("ui.common.delete")}
+                          </div>
+                        </ha-md-menu-item>
+                      </ha-md-button-menu>
                     </div>
                   </ha-settings-row>
                 `
@@ -191,29 +195,23 @@ class HaRefreshTokens extends LitElement {
             : nothing}
         </div>
         <div class="card-actions">
-          <mwc-button class="warning" @click=${this._deleteAllTokens}>
+          <ha-button
+            variant="danger"
+            appearance="filled"
+            size="small"
+            @click=${this._deleteAllTokens}
+          >
             ${this.hass.localize(
               "ui.panel.profile.refresh_tokens.delete_all_tokens"
             )}
-          </mwc-button>
+          </ha-button>
         </div>
       </ha-card>
     `;
   }
 
-  private async _handleAction(ev: CustomEvent<ActionDetail>) {
-    const token = (ev.currentTarget as any).token;
-    switch (ev.detail.index) {
-      case 0:
-        this._toggleTokenExpiration(token);
-        break;
-      case 1:
-        this._deleteToken(token);
-        break;
-    }
-  }
-
-  private async _toggleTokenExpiration(token: RefreshToken): Promise<void> {
+  private async _toggleTokenExpiration(ev): Promise<void> {
+    const token = (ev.currentTarget as any).token as RefreshToken;
     const enable = !token.expire_at;
     if (!enable) {
       if (
@@ -254,7 +252,8 @@ class HaRefreshTokens extends LitElement {
     }
   }
 
-  private async _deleteToken(token: RefreshToken): Promise<void> {
+  private async _deleteToken(ev): Promise<void> {
+    const token = (ev.currentTarget as any).token as RefreshToken;
     if (
       !(await showConfirmationDialog(this, {
         title: this.hass.localize(
@@ -326,8 +325,8 @@ class HaRefreshTokens extends LitElement {
         ha-icon-button {
           color: var(--primary-text-color);
         }
-        ha-list-item[disabled],
-        ha-list-item[disabled] ha-svg-icon {
+        ha-md-list-item[disabled],
+        ha-md-list-item[disabled] ha-svg-icon {
           color: var(--disabled-text-color) !important;
         }
         ha-settings-row .current-session {

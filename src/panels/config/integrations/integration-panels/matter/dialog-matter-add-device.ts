@@ -221,12 +221,8 @@ class DialogMatterAddDevice extends LitElement {
           --horizontal-padding: 16px;
         }
         ha-dialog {
-          --mdc-dialog-min-width: calc(
-            100vw - env(safe-area-inset-right) - env(safe-area-inset-left)
-          );
-          --mdc-dialog-max-width: calc(
-            100vw - env(safe-area-inset-right) - env(safe-area-inset-left)
-          );
+          --mdc-dialog-min-width: 100vw;
+          --mdc-dialog-max-width: 100vw;
         }
       }
       .loading {

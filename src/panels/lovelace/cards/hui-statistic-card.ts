@@ -104,7 +104,20 @@ export class HuiStatisticCard extends LitElement implements LovelaceCard {
         key: this._config?.collection_key,
       }).subscribe((data) => {
         this._energyStart = data.start;
-        this._energyEnd = data.end;
+        // Energy selection defines a "day" as:
+        //   start: 00:00:00.000
+        //   end:   23:59:59.999
+        // this is fine for recorder/statistics_during_period, which returns a
+        // full 24 hour dataset for this start/end pair.
+        // recorder/statistic_during_period however expects a full day to be
+        // 00:00:00 to 00:00:00 and in some cases will only use 23 hours worth
+        // of data if the end is before midnight.
+        let end = data.end;
+        if (end && end.getMilliseconds() === 999) {
+          end = new Date(end);
+          end.setMilliseconds(1000);
+        }
+        this._energyEnd = end;
         this._fetchStatistic();
       });
     }
@@ -369,9 +382,9 @@ export class HuiStatisticCard extends LitElement implements LovelaceCard {
 
         .name {
           color: var(--secondary-text-color);
-          line-height: 40px;
-          font-weight: 500;
-          font-size: 16px;
+          line-height: var(--ha-line-height-expanded);
+          font-size: var(--ha-font-size-l);
+          font-weight: var(--ha-font-weight-medium);
           overflow: hidden;
           white-space: nowrap;
           text-overflow: ellipsis;
@@ -388,18 +401,18 @@ export class HuiStatisticCard extends LitElement implements LovelaceCard {
           overflow: hidden;
           white-space: nowrap;
           text-overflow: ellipsis;
-          line-height: 28px;
+          line-height: var(--ha-line-height-expanded);
         }
 
         .value {
-          font-size: 28px;
+          font-size: var(--ha-font-size-3xl);
           margin-right: 4px;
           margin-inline-end: 4px;
           margin-inline-start: initial;
         }
 
         .measurement {
-          font-size: 18px;
+          font-size: var(--ha-font-size-l);
           color: var(--secondary-text-color);
         }
       `,

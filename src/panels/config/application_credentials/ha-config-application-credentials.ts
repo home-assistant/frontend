@@ -11,6 +11,7 @@ import type {
   SortingChangedEvent,
 } from "../../../components/data-table/ha-data-table";
 import "../../../components/ha-fab";
+import "../../../components/ha-button";
 import "../../../components/ha-help-tooltip";
 import "../../../components/ha-svg-icon";
 import "../../../components/ha-icon-overflow-menu";
@@ -69,6 +70,7 @@ export class HaConfigApplicationCredentials extends LitElement {
   })
   private _activeHiddenColumns?: string[];
 
+  @state()
   @storage({
     storage: "sessionStorage",
     key: "application-credentials-table-search",
@@ -175,10 +177,14 @@ export class HaConfigApplicationCredentials extends LitElement {
         <div class="header-btns" slot="selection-bar">
           ${!this.narrow
             ? html`
-                <mwc-button @click=${this._deleteSelected} class="warning"
+                <ha-button
+                  appearance="plain"
+                  size="small"
+                  @click=${this._deleteSelected}
+                  variant="danger"
                   >${this.hass.localize(
                     "ui.panel.config.application_credentials.picker.remove_selected.button"
-                  )}</mwc-button
+                  )}</ha-button
                 >
               `
             : html`
@@ -329,7 +335,7 @@ export class HaConfigApplicationCredentials extends LitElement {
       top: -4px;
     }
     .selected-txt {
-      font-weight: bold;
+      font-weight: var(--ha-font-weight-bold);
       padding-left: 16px;
       padding-inline-start: 16px;
       direction: var(--direction);
@@ -338,7 +344,7 @@ export class HaConfigApplicationCredentials extends LitElement {
       margin-top: 20px;
     }
     .header-toolbar .selected-txt {
-      font-size: 16px;
+      font-size: var(--ha-font-size-l);
     }
     .header-toolbar .header-btns {
       margin-right: -12px;
@@ -348,7 +354,7 @@ export class HaConfigApplicationCredentials extends LitElement {
     .header-btns {
       display: flex;
     }
-    .header-btns > mwc-button,
+    .header-btns > ha-button,
     .header-btns > ha-icon-button {
       margin: 8px;
     }

@@ -15,6 +15,7 @@ declare global {
     "item-added": {
       index: number;
       data: any;
+      item: any;
     };
     "item-removed": {
       index: number;
@@ -180,6 +181,7 @@ export class HaSortable extends LitElement {
     fireEvent(this, "item-added", {
       index: evt.newIndex,
       data: evt.item.sortableData,
+      item: evt.item,
     });
   };
 

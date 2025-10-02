@@ -22,6 +22,7 @@ import { demoPanels } from "./demo_panels";
 import { demoServices } from "./demo_services";
 import type { Entity } from "./entity";
 import { getEntity } from "./entity";
+import type { EntityRegistryDisplayEntry } from "../data/entity_registry";
 
 const ensureArray = <T>(val: T | T[]): T[] =>
   Array.isArray(val) ? val : [val];
@@ -114,17 +115,22 @@ export const provideHass = (
       formatEntityState,
       formatEntityAttributeName,
       formatEntityAttributeValue,
+      formatEntityName,
     } = await computeFormatFunctions(
       hass().localize,
       hass().locale,
       hass().config,
       hass().entities,
+      hass().devices,
+      hass().areas,
+      hass().floors,
       [] // numericDeviceClasses
     );
     hass().updateHass({
       formatEntityState,
       formatEntityAttributeName,
       formatEntityAttributeValue,
+      formatEntityName,
     });
   }
 
@@ -142,6 +148,17 @@ export const provideHass = (
     } else {
       updateStates(states);
     }
+
+    for (const ent of ensureArray(newEntities)) {
+      hass().entities[ent.entityId] = {
+        entity_id: ent.entityId,
+        name: ent.name,
+        icon: ent.icon,
+        platform: "demo",
+        labels: [],
+      } satisfies EntityRegistryDisplayEntry;
+    }
+
     updateFormatFunctions();
   }
 

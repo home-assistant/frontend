@@ -20,7 +20,7 @@ export class HaTextField extends TextFieldBase {
 
   @property() public autocomplete?: string;
 
-  @property() public autocorrect?: string;
+  @property({ type: Boolean }) public autocorrect = true;
 
   @property({ attribute: "input-spellcheck" })
   public inputSpellcheck?: string;
@@ -57,8 +57,8 @@ export class HaTextField extends TextFieldBase {
       }
     }
     if (changedProperties.has("autocorrect")) {
-      if (this.autocorrect) {
-        this.formElement.setAttribute("autocorrect", this.autocorrect);
+      if (this.autocorrect === false) {
+        this.formElement.setAttribute("autocorrect", "off");
       } else {
         this.formElement.removeAttribute("autocorrect");
       }
@@ -136,13 +136,12 @@ export class HaTextField extends TextFieldBase {
       }
 
       .mdc-floating-label:not(.mdc-floating-label--float-above) {
-        text-overflow: ellipsis;
-        width: inherit;
-        padding-right: 30px;
-        padding-inline-end: 30px;
-        padding-inline-start: initial;
-        box-sizing: border-box;
-        direction: var(--direction);
+        max-width: calc(100% - 16px);
+      }
+
+      .mdc-floating-label--float-above {
+        max-width: calc((100% - 16px) / 0.75);
+        transition: none;
       }
 
       input {
@@ -183,11 +182,15 @@ export class HaTextField extends TextFieldBase {
       }
 
       .mdc-floating-label {
+        padding-inline-end: 16px;
+        padding-inline-start: initial;
         inset-inline-start: 16px !important;
         inset-inline-end: initial !important;
         transform-origin: var(--float-start);
         direction: var(--direction);
         text-align: var(--float-start);
+        box-sizing: border-box;
+        text-overflow: ellipsis;
       }
 
       .mdc-text-field--with-leading-icon.mdc-text-field--filled

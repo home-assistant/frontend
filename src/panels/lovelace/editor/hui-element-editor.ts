@@ -57,6 +57,8 @@ export abstract class HuiElementEditor<
 
   @property({ attribute: false }) public context?: C;
 
+  @property({ attribute: false }) public schema?;
+
   @state() private _config?: T;
 
   @state() private _configElement?: LovelaceGenericElementEditor;
@@ -81,6 +83,8 @@ export abstract class HuiElementEditor<
   @state() private _loading = false;
 
   @query("ha-yaml-editor") _yamlEditor?: HaYamlEditor;
+
+  private _loadCount = 0;
 
   public get value(): T | undefined {
     return this._config;
@@ -241,6 +245,7 @@ export abstract class HuiElementEditor<
                   @blur=${this._onBlurYaml}
                   @keydown=${this._ignoreKeydown}
                   dir="ltr"
+                  .showErrors=${false}
                 ></ha-yaml-editor>
               </div>
             `}
@@ -308,6 +313,9 @@ export abstract class HuiElementEditor<
     }
     if (this._configElement && changedProperties.has("context")) {
       this._configElement.context = this.context;
+    }
+    if (this._configElement && changedProperties.has("schema")) {
+      this._configElement.schema = this.schema;
     }
   }
 
@@ -396,6 +404,7 @@ export abstract class HuiElementEditor<
         configElement.lovelace = this.lovelace;
       }
       configElement.context = this.context;
+      configElement.schema = this.schema;
       configElement.addEventListener("config-changed", (ev) =>
         this._handleUIConfigChanged(ev as UIConfigChangedEvent<T>)
       );
@@ -411,7 +420,7 @@ export abstract class HuiElementEditor<
     if (!this.value) {
       return;
     }
-
+    const loadNum = ++this._loadCount;
     try {
       this._errors = undefined;
       this._warnings = undefined;
@@ -435,6 +444,9 @@ export abstract class HuiElementEditor<
         this.GUImode = false;
       }
     } catch (err: any) {
+      if (loadNum !== this._loadCount) {
+        return;
+      }
       if (err instanceof GUISupportError) {
         this._warnings = err.warnings ?? [err.message];
         this._errors = err.errors || undefined;

@@ -1,14 +1,11 @@
-import type { ComboBoxLitRenderer } from "@vaadin/combo-box/lit";
+import { mdiLabel, mdiPlus } from "@mdi/js";
 import type { HassEntity, UnsubscribeFunc } from "home-assistant-js-websocket";
-import type { PropertyValues, TemplateResult } from "lit";
-import { LitElement, html, nothing } from "lit";
+import type { TemplateResult } from "lit";
+import { LitElement, html } from "lit";
 import { customElement, property, query, state } from "lit/decorators";
-import { classMap } from "lit/directives/class-map";
 import memoizeOne from "memoize-one";
 import { fireEvent } from "../common/dom/fire_event";
 import { computeDomain } from "../common/entity/compute_domain";
-import type { ScorableTextItem } from "../common/string/filter/sequence-matching";
-import { fuzzyFilterSort } from "../common/string/filter/sequence-matching";
 import type {
   DeviceEntityDisplayLookup,
   DeviceRegistryEntry,
@@ -20,32 +17,19 @@ import {
   createLabelRegistryEntry,
   subscribeLabelRegistry,
 } from "../data/label_registry";
+import { showAlertDialog } from "../dialogs/generic/show-dialog-box";
 import { SubscribeMixin } from "../mixins/subscribe-mixin";
 import { showLabelDetailDialog } from "../panels/config/labels/show-dialog-label-detail";
 import type { HomeAssistant, ValueChangedEvent } from "../types";
 import type { HaDevicePickerDeviceFilterFunc } from "./device/ha-device-picker";
-import "./ha-combo-box";
-import type { HaComboBox } from "./ha-combo-box";
-import "./ha-icon-button";
-import "./ha-list-item";
+import "./ha-generic-picker";
+import type { HaGenericPicker } from "./ha-generic-picker";
+import type { PickerComboBoxItem } from "./ha-picker-combo-box";
+import type { PickerValueRenderer } from "./ha-picker-field";
 import "./ha-svg-icon";
 
-type ScorableLabelItem = ScorableTextItem & LabelRegistryEntry;
-
 const ADD_NEW_ID = "___ADD_NEW___";
-const NO_LABELS_ID = "___NO_LABELS___";
-const ADD_NEW_SUGGESTION_ID = "___ADD_NEW_SUGGESTION___";
-
-const rowRenderer: ComboBoxLitRenderer<LabelRegistryEntry> = (item) =>
-  html`<ha-list-item
-    graphic="icon"
-    class=${classMap({ "add-new": item.label_id === ADD_NEW_ID })}
-  >
-    ${item.icon
-      ? html`<ha-icon slot="graphic" .icon=${item.icon}></ha-icon>`
-      : nothing}
-    ${item.name}
-  </ha-list-item>`;
+const NO_LABELS = "___NO_LABELS___";
 
 @customElement("ha-label-picker")
 export class HaLabelPicker extends SubscribeMixin(LitElement) {
@@ -104,24 +88,13 @@ export class HaLabelPicker extends SubscribeMixin(LitElement) {
 
   @property({ type: Boolean }) public required = false;
 
-  @state() private _opened?: boolean;
-
   @state() private _labels?: LabelRegistryEntry[];
 
-  @query("ha-combo-box", true) public comboBox!: HaComboBox;
-
-  private _suggestion?: string;
-
-  private _init = false;
+  @query("ha-generic-picker") private _picker?: HaGenericPicker;
 
   public async open() {
     await this.updateComplete;
-    await this.comboBox?.open();
-  }
-
-  public async focus() {
-    await this.updateComplete;
-    await this.comboBox?.focus();
+    await this._picker?.open();
   }
 
   protected hassSubscribe(): (UnsubscribeFunc | Promise<UnsubscribeFunc>)[] {
@@ -132,20 +105,64 @@ export class HaLabelPicker extends SubscribeMixin(LitElement) {
     ];
   }
 
+  private _labelMap = memoizeOne(
+    (
+      labels: LabelRegistryEntry[] | undefined
+    ): Map<string, LabelRegistryEntry> => {
+      if (!labels) {
+        return new Map();
+      }
+      return new Map(labels.map((label) => [label.label_id, label]));
+    }
+  );
+
+  private _computeValueRenderer = memoizeOne(
+    (labels: LabelRegistryEntry[] | undefined): PickerValueRenderer =>
+      (value) => {
+        const label = this._labelMap(labels).get(value);
+
+        if (!label) {
+          return html`
+            <ha-svg-icon slot="start" .path=${mdiLabel}></ha-svg-icon>
+            <span slot="headline">${value}</span>
+          `;
+        }
+
+        return html`
+          ${label.icon
+            ? html`<ha-icon slot="start" .icon=${label.icon}></ha-icon>`
+            : html`<ha-svg-icon slot="start" .path=${mdiLabel}></ha-svg-icon>`}
+          <span slot="headline">${label.name}</span>
+        `;
+      }
+  );
+
   private _getLabels = memoizeOne(
     (
-      labels: LabelRegistryEntry[],
-      areas: HomeAssistant["areas"],
-      devices: DeviceRegistryEntry[],
-      entities: EntityRegistryDisplayEntry[],
+      labels: LabelRegistryEntry[] | undefined,
+      haAreas: HomeAssistant["areas"],
+      haDevices: HomeAssistant["devices"],
+      haEntities: HomeAssistant["entities"],
       includeDomains: this["includeDomains"],
       excludeDomains: this["excludeDomains"],
       includeDeviceClasses: this["includeDeviceClasses"],
       deviceFilter: this["deviceFilter"],
       entityFilter: this["entityFilter"],
-      noAdd: this["noAdd"],
       excludeLabels: this["excludeLabels"]
-    ): LabelRegistryEntry[] => {
+    ): PickerComboBoxItem[] => {
+      if (!labels || labels.length === 0) {
+        return [
+          {
+            id: NO_LABELS,
+            primary: this.hass.localize("ui.components.label-picker.no_labels"),
+            icon_path: mdiLabel,
+          },
+        ];
+      }
+
+      const devices = Object.values(haDevices);
+      const entities = Object.values(haEntities);
+
       let deviceEntityLookup: DeviceEntityDisplayLookup = {};
       let inputDevices: DeviceRegistryEntry[] | undefined;
       let inputEntities: EntityRegistryDisplayEntry[] | undefined;
@@ -277,7 +294,7 @@ export class HaLabelPicker extends SubscribeMixin(LitElement) {
 
       if (areaIds) {
         areaIds.forEach((areaId) => {
-          const area = areas[areaId];
+          const area = haAreas[areaId];
           area.labels.forEach((label) => usedLabels.add(label));
         });
       }
@@ -294,192 +311,146 @@ export class HaLabelPicker extends SubscribeMixin(LitElement) {
         );
       }
 
-      if (!outputLabels.length) {
-        outputLabels = [
-          {
-            label_id: NO_LABELS_ID,
-            name: this.hass.localize("ui.components.label-picker.no_match"),
-            icon: null,
-            color: null,
-            description: null,
-            created_at: 0,
-            modified_at: 0,
-          },
-        ];
-      }
+      const items = outputLabels.map<PickerComboBoxItem>((label) => ({
+        id: label.label_id,
+        primary: label.name,
+        icon: label.icon || undefined,
+        icon_path: label.icon ? undefined : mdiLabel,
+        sorting_label: label.name,
+        search_labels: [label.name, label.label_id, label.description].filter(
+          (v): v is string => Boolean(v)
+        ),
+      }));
 
-      return noAdd
-        ? outputLabels
-        : [
-            ...outputLabels,
-            {
-              label_id: ADD_NEW_ID,
-              name: this.hass.localize("ui.components.label-picker.add_new"),
-              icon: "mdi:plus",
-              color: null,
-              description: null,
-              created_at: 0,
-              modified_at: 0,
-            },
-          ];
+      return items;
     }
   );
 
-  protected updated(changedProps: PropertyValues) {
-    if (
-      (!this._init && this.hass && this._labels) ||
-      (this._init && changedProps.has("_opened") && this._opened)
-    ) {
-      this._init = true;
-      const items = this._getLabels(
-        this._labels!,
-        this.hass.areas,
-        Object.values(this.hass.devices),
-        Object.values(this.hass.entities),
-        this.includeDomains,
-        this.excludeDomains,
-        this.includeDeviceClasses,
-        this.deviceFilter,
-        this.entityFilter,
-        this.noAdd,
-        this.excludeLabels
-      ).map((label) => ({
-        ...label,
-        strings: [label.label_id, label.name],
-      }));
+  private _getItems = () =>
+    this._getLabels(
+      this._labels,
+      this.hass.areas,
+      this.hass.devices,
+      this.hass.entities,
+      this.includeDomains,
+      this.excludeDomains,
+      this.includeDeviceClasses,
+      this.deviceFilter,
+      this.entityFilter,
+      this.excludeLabels
+    );
 
-      this.comboBox.items = items;
-      this.comboBox.filteredItems = items;
+  private _allLabelNames = memoizeOne((labels?: LabelRegistryEntry[]) => {
+    if (!labels) {
+      return [];
     }
-  }
+    return [
+      ...new Set(
+        labels
+          .map((label) => label.name.toLowerCase())
+          .filter(Boolean) as string[]
+      ),
+    ];
+  });
+
+  private _getAdditionalItems = (
+    searchString?: string
+  ): PickerComboBoxItem[] => {
+    if (this.noAdd) {
+      return [];
+    }
+
+    const allLabelNames = this._allLabelNames(this._labels);
+
+    if (searchString && !allLabelNames.includes(searchString.toLowerCase())) {
+      return [
+        {
+          id: ADD_NEW_ID + searchString,
+          primary: this.hass.localize(
+            "ui.components.label-picker.add_new_sugestion",
+            {
+              name: searchString,
+            }
+          ),
+          icon_path: mdiPlus,
+        },
+      ];
+    }
+
+    return [
+      {
+        id: ADD_NEW_ID,
+        primary: this.hass.localize("ui.components.label-picker.add_new"),
+        icon_path: mdiPlus,
+      },
+    ];
+  };
 
   protected render(): TemplateResult {
+    const placeholder =
+      this.placeholder ??
+      this.hass.localize("ui.components.label-picker.label");
+
+    const valueRenderer = this._computeValueRenderer(this._labels);
+
     return html`
-      <ha-combo-box
+      <ha-generic-picker
         .hass=${this.hass}
-        .helper=${this.helper}
-        item-value-path="label_id"
-        item-id-path="label_id"
-        item-label-path="name"
-        .value=${this._value}
-        .disabled=${this.disabled}
-        .required=${this.required}
-        .label=${this.label === undefined && this.hass
-          ? this.hass.localize("ui.components.label-picker.label")
-          : this.label}
-        .placeholder=${this.placeholder
-          ? this._labels?.find((label) => label.label_id === this.placeholder)
-              ?.name
-          : undefined}
-        .renderer=${rowRenderer}
-        @filter-changed=${this._filterChanged}
-        @opened-changed=${this._openedChanged}
-        @value-changed=${this._labelChanged}
+        .autofocus=${this.autofocus}
+        .label=${this.label}
+        .notFoundLabel=${this.hass.localize(
+          "ui.components.label-picker.no_match"
+        )}
+        .placeholder=${placeholder}
+        .value=${this.value}
+        .getItems=${this._getItems}
+        .getAdditionalItems=${this._getAdditionalItems}
+        .valueRenderer=${valueRenderer}
+        @value-changed=${this._valueChanged}
       >
-      </ha-combo-box>
+      </ha-generic-picker>
     `;
   }
 
-  private _filterChanged(ev: CustomEvent): void {
-    const target = ev.target as HaComboBox;
-    const filterString = ev.detail.value;
-    if (!filterString) {
-      this.comboBox.filteredItems = this.comboBox.items;
-      return;
-    }
-
-    const filteredItems = fuzzyFilterSort<ScorableLabelItem>(
-      filterString,
-      target.items?.filter(
-        (item) => ![NO_LABELS_ID, ADD_NEW_ID].includes(item.label_id)
-      ) || []
-    );
-    if (filteredItems.length === 0) {
-      if (this.noAdd) {
-        this.comboBox.filteredItems = [
-          {
-            label_id: NO_LABELS_ID,
-            name: this.hass.localize("ui.components.label-picker.no_match"),
-            icon: null,
-            color: null,
-          },
-        ] as ScorableLabelItem[];
-      } else {
-        this._suggestion = filterString;
-        this.comboBox.filteredItems = [
-          {
-            label_id: ADD_NEW_SUGGESTION_ID,
-            name: this.hass.localize(
-              "ui.components.label-picker.add_new_sugestion",
-              { name: this._suggestion }
-            ),
-            icon: "mdi:plus",
-            color: null,
-          },
-        ] as ScorableLabelItem[];
-      }
-    } else {
-      this.comboBox.filteredItems = filteredItems;
-    }
-  }
-
-  private get _value() {
-    return this.value || "";
-  }
-
-  private _openedChanged(ev: ValueChangedEvent<boolean>) {
-    this._opened = ev.detail.value;
-  }
-
-  private _labelChanged(ev: ValueChangedEvent<string>) {
+  private _valueChanged(ev: ValueChangedEvent<string>) {
     ev.stopPropagation();
-    let newValue = ev.detail.value;
 
-    if (newValue === NO_LABELS_ID) {
-      newValue = "";
-      this.comboBox.setInputValue("");
+    const value = ev.detail.value;
+
+    if (value === NO_LABELS) {
       return;
     }
 
-    if (![ADD_NEW_SUGGESTION_ID, ADD_NEW_ID].includes(newValue)) {
-      if (newValue !== this._value) {
-        this._setValue(newValue);
-      }
+    if (!value) {
+      this._setValue(undefined);
       return;
     }
 
-    (ev.target as any).value = this._value;
+    if (value.startsWith(ADD_NEW_ID)) {
+      this.hass.loadFragmentTranslation("config");
 
-    this.hass.loadFragmentTranslation("config");
+      const suggestedName = value.substring(ADD_NEW_ID.length);
 
-    showLabelDetailDialog(this, {
-      entry: undefined,
-      suggestedName: newValue === ADD_NEW_SUGGESTION_ID ? this._suggestion : "",
-      createEntry: async (values) => {
-        const label = await createLabelRegistryEntry(this.hass, values);
-        const labels = [...this._labels!, label];
-        this.comboBox.filteredItems = this._getLabels(
-          labels,
-          this.hass.areas!,
-          Object.values(this.hass.devices)!,
-          Object.values(this.hass.entities)!,
-          this.includeDomains,
-          this.excludeDomains,
-          this.includeDeviceClasses,
-          this.deviceFilter,
-          this.entityFilter,
-          this.noAdd,
-          this.excludeLabels
-        );
-        await this.updateComplete;
-        await this.comboBox.updateComplete;
-        this._setValue(label.label_id);
-        return label;
-      },
-    });
+      showLabelDetailDialog(this, {
+        suggestedName: suggestedName,
+        createEntry: async (values) => {
+          try {
+            const label = await createLabelRegistryEntry(this.hass, values);
+            this._setValue(label.label_id);
+          } catch (err: any) {
+            showAlertDialog(this, {
+              title: this.hass.localize(
+                "ui.components.label-picker.failed_create_label"
+              ),
+              text: err.message,
+            });
+          }
+        },
+      });
+      return;
+    }
 
-    this._suggestion = undefined;
-    this.comboBox.setInputValue("");
+    this._setValue(value);
   }
 
   private _setValue(value?: string) {

@@ -98,6 +98,7 @@ class HaConfigBackupBackups extends SubscribeMixin(LitElement) {
 
   @state() private _selected: string[] = [];
 
+  @state()
   @storage({
     storage: "sessionStorage",
     key: "backups-table-filters",
@@ -188,7 +189,7 @@ class HaConfigBackupBackups extends SubscribeMixin(LitElement) {
             0
           );
           return html`
-            <div style="display: flex; gap: 4px;">
+            <div style="display: flex; gap: var(--ha-space-1);">
               ${displayedAgentIds.map((agentId) => {
                 const name = computeBackupAgentName(
                   this.hass.localize,
@@ -235,7 +236,7 @@ class HaConfigBackupBackups extends SubscribeMixin(LitElement) {
               ${agentsMore
                 ? html`
                     <span
-                      style="display: flex; align-items: center; font-size: 14px;"
+                      style="display: flex; align-items: center; font-size: var(--ha-font-size-m);"
                     >
                       +${agentsMore}
                     </span>
@@ -416,7 +417,11 @@ class HaConfigBackupBackups extends SubscribeMixin(LitElement) {
         <div slot="selection-bar">
           ${!this.narrow
             ? html`
-                <ha-button @click=${this._deleteSelected} class="warning">
+                <ha-button
+                  appearance="plain"
+                  @click=${this._deleteSelected}
+                  variant="danger"
+                >
                   ${this.hass.localize(
                     "ui.panel.config.backup.backups.delete_selected"
                   )}

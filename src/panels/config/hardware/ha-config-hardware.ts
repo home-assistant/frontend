@@ -1,22 +1,20 @@
-import "@material/mwc-list/mwc-list";
-import "@material/mwc-list/mwc-list-item";
 import { mdiPower } from "@mdi/js";
+import type { SeriesOption } from "echarts/types/dist/shared";
 import type { UnsubscribeFunc } from "home-assistant-js-websocket";
 import type { PropertyValues } from "lit";
 import { css, html, LitElement, nothing } from "lit";
 import { customElement, property, state } from "lit/decorators";
-import type { SeriesOption } from "echarts/types/dist/shared";
 import memoizeOne from "memoize-one";
 import { isComponentLoaded } from "../../../common/config/is_component_loaded";
 import { round } from "../../../common/number/round";
 import { blankBeforePercent } from "../../../common/translations/blank_before_percent";
-import "../../../components/buttons/ha-progress-button";
 import "../../../components/chart/ha-chart-base";
 import "../../../components/ha-alert";
+import "../../../components/ha-button";
 import "../../../components/ha-card";
-import "../../../components/ha-clickable-list-item";
 import "../../../components/ha-icon-button";
 import "../../../components/ha-icon-next";
+import "../../../components/ha-md-list-item";
 import "../../../components/ha-settings-row";
 import type { ConfigEntry } from "../../../data/config_entries";
 import { subscribeConfigEntries } from "../../../data/config_entries";
@@ -25,6 +23,7 @@ import type {
   SystemStatusStreamMessage,
 } from "../../../data/hardware";
 import { BOARD_NAMES } from "../../../data/hardware";
+import { extractApiErrorMessage } from "../../../data/hassio/common";
 import type { HassioHassOSInfo } from "../../../data/hassio/host";
 import { fetchHassioHassOsInfo } from "../../../data/hassio/host";
 import { scanUSBDevices } from "../../../data/usb";
@@ -32,21 +31,20 @@ import { showOptionsFlowDialog } from "../../../dialogs/config-flow/show-dialog-
 import { showRestartDialog } from "../../../dialogs/restart/show-dialog-restart";
 import "../../../layouts/hass-subpage";
 import { SubscribeMixin } from "../../../mixins/subscribe-mixin";
-import { DEFAULT_PRIMARY_COLOR } from "../../../resources/styles-data";
+import type { ECOption } from "../../../resources/echarts";
 import { haStyle } from "../../../resources/styles";
+import { DefaultPrimaryColor } from "../../../resources/theme/color/color.globals";
 import type { HomeAssistant } from "../../../types";
 import { hardwareBrandsUrl } from "../../../util/brands-url";
 import { showhardwareAvailableDialog } from "./show-dialog-hardware-available";
-import { extractApiErrorMessage } from "../../../data/hassio/common";
-import type { ECOption } from "../../../resources/echarts";
 
 const DATASAMPLES = 60;
 
 const DATA_SET_CONFIG: SeriesOption = {
   type: "line",
-  color: DEFAULT_PRIMARY_COLOR,
+  color: DefaultPrimaryColor,
   areaStyle: {
-    color: DEFAULT_PRIMARY_COLOR + "2B",
+    color: DefaultPrimaryColor + "2B",
   },
   symbolSize: 0,
   lineStyle: {
@@ -257,10 +255,10 @@ class HaConfigHardware extends SubscribeMixin(LitElement) {
                 @click=${this._showRestartDialog}
               ></ha-icon-button>
             `
-          : ""}
+          : nothing}
         ${this._error
           ? html`<ha-alert alert-type="error">${this._error}</ha-alert>`
-          : ""}
+          : nothing}
         <div class="content">
           ${boardName || isComponentLoaded(this.hass, "hassio")
             ? html`
@@ -273,7 +271,7 @@ class HaConfigHardware extends SubscribeMixin(LitElement) {
                           crossorigin="anonymous"
                           referrerpolicy="no-referrer"
                         />`
-                      : ""}
+                      : nothing}
                     <div class="board-info">
                       <p class="primary-text">
                         ${boardName ||
@@ -283,62 +281,64 @@ class HaConfigHardware extends SubscribeMixin(LitElement) {
                       </p>
                       ${boardId
                         ? html`<p class="secondary-text">${boardId}</p>`
-                        : ""}
+                        : nothing}
                     </div>
                   </div>
                   ${documentationURL
                     ? html`
-                        <mwc-list>
-                          <ha-clickable-list-item
-                            .href=${documentationURL}
-                            open-new-tab
-                            twoline
-                            hasMeta
+                        <ha-md-list-item
+                          .href=${documentationURL}
+                          type="link"
+                          target="_blank"
+                          rel="noopener noreferrer"
+                        >
+                          <span
+                            >${this.hass.localize(
+                              "ui.panel.config.hardware.documentation"
+                            )}</span
                           >
-                            <span
-                              >${this.hass.localize(
-                                "ui.panel.config.hardware.documentation"
-                              )}</span
-                            >
-                            <span slot="secondary"
-                              >${this.hass.localize(
-                                "ui.panel.config.hardware.documentation_description"
-                              )}</span
-                            >
-                            <ha-icon-next slot="meta"></ha-icon-next>
-                          </ha-clickable-list-item>
-                        </mwc-list>
+                          <span slot="supporting-text"
+                            >${this.hass.localize(
+                              "ui.panel.config.hardware.documentation_description"
+                            )}</span
+                          >
+                          <ha-icon-next slot="end"></ha-icon-next>
+                        </ha-md-list-item>
                       `
-                    : ""}
+                    : nothing}
                   ${boardConfigEntries.length ||
                   isComponentLoaded(this.hass, "hassio")
                     ? html`<div class="card-actions">
                         ${boardConfigEntries.length
                           ? html`
-                              <mwc-button
+                              <ha-button
                                 .entry=${boardConfigEntries[0]}
                                 @click=${this._openOptionsFlow}
+                                appearance="plain"
                               >
                                 ${this.hass.localize(
                                   "ui.panel.config.hardware.configure"
                                 )}
-                              </mwc-button>
+                              </ha-button>
                             `
                           : nothing}
                         ${isComponentLoaded(this.hass, "hassio")
                           ? html`
-                              <mwc-button @click=${this._openHardware}>
+                              <ha-button
+                                @click=${this._openHardware}
+                                appearance="plain"
+                              >
                                 ${this.hass.localize(
                                   "ui.panel.config.hardware.available_hardware.title"
                                 )}
-                              </mwc-button>
+                              </ha-button>
                             `
                           : nothing}
                       </div>`
-                    : ""}
+                    : nothing}
                 </ha-card>
               `
-            : ""}
+            : nothing}
           ${dongles?.length
             ? html`<ha-card outlined>
                 ${dongles.map((dongle) => {
@@ -349,19 +349,20 @@ class HaConfigHardware extends SubscribeMixin(LitElement) {
                     )[0];
                   return html`<div class="row">
                     ${dongle.name}${configEntry
-                      ? html`<mwc-button
+                      ? html`<ha-button
                           .entry=${configEntry}
                           @click=${this._openOptionsFlow}
+                          appearance="filled"
                         >
                           ${this.hass.localize(
                             "ui.panel.config.hardware.configure"
                           )}
-                        </mwc-button>`
-                      : ""}
+                        </ha-button>`
+                      : nothing}
                   </div>`;
                 })}
               </ha-card>`
-            : ""}
+            : nothing}
           ${this._systemStatusData
             ? html`<ha-card outlined>
                   <div class="header">
@@ -411,14 +412,15 @@ class HaConfigHardware extends SubscribeMixin(LitElement) {
             : isComponentLoaded(this.hass, "hardware")
               ? html`<ha-card outlined>
                   <div class="card-content">
-                    <div class="value">
+                    <ha-alert alert-type="info">
+                      <ha-spinner slot="icon"></ha-spinner>
                       ${this.hass.localize(
                         "ui.panel.config.hardware.loading_system_data"
                       )}
-                    </div>
+                    </ha-alert>
                   </div>
                 </ha-card>`
-              : ""}
+              : nothing}
         </div>
       </hass-subpage>
     `;
@@ -506,11 +508,11 @@ class HaConfigHardware extends SubscribeMixin(LitElement) {
         text-align: center;
       }
       .primary-text {
-        font-size: 16px;
+        font-size: var(--ha-font-size-l);
         margin: 0;
       }
       .secondary-text {
-        font-size: 14px;
+        font-size: var(--ha-font-size-m);
         margin-bottom: 0;
         color: var(--secondary-text-color);
       }
@@ -523,11 +525,11 @@ class HaConfigHardware extends SubscribeMixin(LitElement) {
 
       .header .title {
         color: var(--secondary-text-color);
-        font-size: 18px;
+        font-size: var(--ha-font-size-l);
       }
 
       .header .value {
-        font-size: 16px;
+        font-size: var(--ha-font-size-l);
       }
       .row {
         display: flex;
@@ -539,6 +541,14 @@ class HaConfigHardware extends SubscribeMixin(LitElement) {
       .card-actions {
         display: flex;
         justify-content: space-between;
+      }
+
+      ha-alert {
+        --ha-alert-icon-size: 24px;
+      }
+
+      ha-alert ha-spinner {
+        --ha-spinner-size: 24px;
       }
     `,
   ];

@@ -1,7 +1,10 @@
 import type {
+  HassEntity,
   HassEntityAttributeBase,
   HassEntityBase,
 } from "home-assistant-js-websocket";
+import { computeStateDomain } from "../common/entity/compute_state_domain";
+
 import type { HomeAssistant } from "../types";
 
 export interface BasePerson {
@@ -67,3 +70,28 @@ export const deletePerson = (hass: HomeAssistant, personId: string) =>
     type: "person/delete",
     person_id: personId,
   });
+
+const cachedUserPerson: Record<string, string> = {};
+
+export const getUserPerson = (hass: HomeAssistant): undefined | HassEntity => {
+  if (!hass.user?.id) {
+    return undefined;
+  }
+  const cachedPersonEntityId = cachedUserPerson[hass.user.id];
+  if (cachedPersonEntityId) {
+    const stateObj = hass.states[cachedPersonEntityId];
+    if (stateObj && stateObj.attributes.user_id === hass.user.id) {
+      return stateObj;
+    }
+  }
+
+  const result = Object.values(hass.states).find(
+    (state) =>
+      state.attributes.user_id === hass.user!.id &&
+      computeStateDomain(state) === "person"
+  );
+  if (result) {
+    cachedUserPerson[hass.user.id] = result.entity_id;
+  }
+  return result;
+};

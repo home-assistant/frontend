@@ -8,6 +8,7 @@ import {
   subscribeServices,
 } from "home-assistant-js-websocket";
 import { fireEvent } from "../common/dom/fire_event";
+import { promiseTimeout } from "../common/util/promise-timeout";
 import { subscribeAreaRegistry } from "../data/area_registry";
 import { broadcastConnectionStatus } from "../data/connection-status";
 import { subscribeDeviceRegistry } from "../data/device_registry";
@@ -22,6 +23,8 @@ import {
   TimeFormat,
   TimeZone,
 } from "../data/translation";
+import { subscribeEntityRegistryDisplay } from "../data/ws-entity_registry_display";
+import { subscribeFloorRegistry } from "../data/ws-floor_registry";
 import { subscribePanels } from "../data/ws-panels";
 import { translationMetadata } from "../resources/translations-metadata";
 import type { Constructor, HomeAssistant, ServiceCallResponse } from "../types";
@@ -30,9 +33,7 @@ import { fetchWithAuth } from "../util/fetch-with-auth";
 import { getState } from "../util/ha-pref-storage";
 import hassCallApi, { hassCallApiRaw } from "../util/hass-call-api";
 import type { HassBaseEl } from "./hass-base-mixin";
-import { promiseTimeout } from "../common/util/promise-timeout";
-import { subscribeFloorRegistry } from "../data/ws-floor_registry";
-import { subscribeEntityRegistryDisplay } from "../data/ws-entity_registry_display";
+import { computeStateName } from "../common/entity/compute_state_name";
 
 export const connectionMixin = <T extends Constructor<HassBaseEl>>(
   superClass: T
@@ -126,7 +127,7 @@ export const connectionMixin = <T extends Constructor<HassBaseEl>>(
               );
             }
             if (notifyOnError) {
-              forwardHaptic("failure");
+              forwardHaptic(this, "failure");
               const lokalize = await this.hass!.loadBackendTranslation(
                 "exceptions",
                 err.translation_domain
@@ -210,6 +211,7 @@ export const connectionMixin = <T extends Constructor<HassBaseEl>>(
           value != null ? value : (stateObj.attributes[attribute] ?? ""),
         ...getState(),
         ...this._pendingHass,
+        formatEntityName: (stateObj) => computeStateName(stateObj),
       };
 
       this.hassConnected();
@@ -280,9 +282,9 @@ export const connectionMixin = <T extends Constructor<HassBaseEl>>(
       subscribeConfig(conn, (config) => this._updateHass({ config }));
       subscribeServices(conn, (services) => this._updateHass({ services }));
       subscribePanels(conn, (panels) => this._updateHass({ panels }));
-      subscribeFrontendUserData(conn, "core", (userData) =>
-        this._updateHass({ userData })
-      );
+      subscribeFrontendUserData(conn, "core", ({ value: userData }) => {
+        this._updateHass({ userData });
+      });
 
       clearInterval(this.__backendPingInterval);
       this.__backendPingInterval = setInterval(() => {
