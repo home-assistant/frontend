@@ -104,9 +104,7 @@ export class HaWaDialog extends LitElement {
     super.updated(changedProperties);
 
     if (changedProperties.has("open")) {
-      if (this.open) {
-        this._open = this.open;
-      }
+      this._open = this.open;
     }
 
     if (changedProperties.has("width")) {
