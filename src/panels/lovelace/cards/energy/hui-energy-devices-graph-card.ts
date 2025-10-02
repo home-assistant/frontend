@@ -371,6 +371,9 @@ export class HuiEnergyDevicesGraphCard
     });
 
     chartData.sort((a: any, b: any) => b.value[0] - a.value[0]);
+    datasets[1].data = chartData.map((d) =>
+      chartDataCompare.find((d2) => (d2 as any).id === d.id)
+    ) as typeof chartDataCompare;
 
     datasets.forEach((dataset) => {
       dataset.data!.length = Math.min(
