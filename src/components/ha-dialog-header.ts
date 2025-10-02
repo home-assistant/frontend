@@ -1,22 +1,10 @@
 import { css, html, LitElement } from "lit";
-import { customElement, property, query, state } from "lit/decorators";
-import { classMap } from "lit/directives/class-map";
-import { hasSlotContent } from "../common/dom/has-slot-content";
+import { customElement, property } from "lit/decorators";
 
 @customElement("ha-dialog-header")
 export class HaDialogHeader extends LitElement {
   @property({ type: String, attribute: "subtitle-position" })
   public subtitlePosition: "above" | "below" = "below";
-
-  @state()
-  private _hasSubtitle = false;
-
-  @query('slot[name="subtitle"]')
-  private _subtitleSlot!: HTMLSlotElement;
-
-  private _checkSubtitleContent() {
-    this._hasSubtitle = hasSlotContent(this._subtitleSlot);
-  }
 
   protected render() {
     const titleSlot = html`<div class="header-title">
@@ -24,17 +12,12 @@ export class HaDialogHeader extends LitElement {
     </div>`;
 
     const subtitleSlot = html`<div class="header-subtitle">
-      <slot name="subtitle" @slotchange=${this._checkSubtitleContent}></slot>
+      <slot name="subtitle"></slot>
     </div>`;
 
     return html`
       <header class="header">
-        <div
-          class=${classMap({
-            "header-bar": true,
-            "no-subtitle": !this._hasSubtitle,
-          })}
-        >
+        <div class="header-bar">
           <section class="header-navigation-icon">
             <slot name="navigationIcon"></slot>
           </section>
@@ -66,12 +49,9 @@ export class HaDialogHeader extends LitElement {
         .header-bar {
           display: flex;
           flex-direction: row;
-          align-items: flex-start;
+          align-items: center;
           padding: 4px;
           box-sizing: border-box;
-        }
-        .header-bar.no-subtitle {
-          align-items: center;
         }
         .header-content {
           flex: 1;
