@@ -3,6 +3,7 @@ import type { CSSResultGroup } from "lit";
 import { css, html, LitElement, nothing } from "lit";
 import { property, state } from "lit/decorators";
 import memoizeOne from "memoize-one";
+import { fireEvent } from "../../../common/dom/fire_event";
 import "../../../components/entity/ha-entities-picker";
 import "../../../components/ha-button";
 import { createCloseHeading } from "../../../components/ha-dialog";
@@ -26,14 +27,13 @@ import {
   showPromptDialog,
 } from "../../../dialogs/generic/show-dialog-box";
 import type { CropOptions } from "../../../dialogs/image-cropper-dialog/show-image-cropper-dialog";
+import type { HassDialog } from "../../../dialogs/make-dialog-manager";
 import { haStyleDialog } from "../../../resources/styles";
 import type { HomeAssistant, ValueChangedEvent } from "../../../types";
 import { documentationUrl } from "../../../util/documentation-url";
 import { showAddUserDialog } from "../users/show-dialog-add-user";
 import { showAdminChangePasswordDialog } from "../users/show-dialog-admin-change-password";
 import type { PersonDetailDialogParams } from "./show-dialog-person-detail";
-import { fireEvent } from "../../../common/dom/fire_event";
-import type { HassDialog } from "../../../dialogs/make-dialog-manager";
 
 const includeDomains = ["device_tracker"];
 
@@ -546,7 +546,7 @@ class DialogPersonDetail extends LitElement implements HassDialog {
         }
         ha-picture-upload {
           margin-bottom: 16px;
-          --file-upload-image-border-radius: 50%;
+          --file-upload-image-border-radius: var(--ha-border-radius-circle);
         }
         ha-settings-row {
           padding: 0;

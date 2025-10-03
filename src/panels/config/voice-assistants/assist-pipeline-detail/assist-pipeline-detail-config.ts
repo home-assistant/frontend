@@ -2,9 +2,9 @@ import { css, html, LitElement } from "lit";
 import { customElement, property } from "lit/decorators";
 import memoizeOne from "memoize-one";
 import type { LocalizeKeys } from "../../../../common/translations/localize";
+import "../../../../components/ha-form/ha-form";
 import type { AssistPipeline } from "../../../../data/assist_pipeline";
 import type { HomeAssistant } from "../../../../types";
-import "../../../../components/ha-form/ha-form";
 
 @customElement("assist-pipeline-detail-config")
 export class AssistPipelineDetailConfig extends LitElement {
@@ -86,7 +86,7 @@ export class AssistPipelineDetailConfig extends LitElement {
   static styles = css`
     .section {
       border: 1px solid var(--divider-color);
-      border-radius: 8px;
+      border-radius: var(--ha-border-radius-md);
       box-sizing: border-box;
       padding: 16px;
     }

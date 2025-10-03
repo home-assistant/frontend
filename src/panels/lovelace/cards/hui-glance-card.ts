@@ -186,7 +186,7 @@ export class HuiGlanceCard extends LitElement implements LovelaceCard {
     .entity:focus {
       outline: none;
       background: var(--divider-color);
-      border-radius: 14px;
+      border-radius: var(--ha-border-radius-lg);
       padding: 4px;
       margin-top: -4px;
       margin-bottom: 8px;
@@ -217,7 +217,7 @@ export class HuiGlanceCard extends LitElement implements LovelaceCard {
       opacity: 0.12;
       pointer-events: none;
       content: "";
-      border-radius: 4px;
+      border-radius: var(--ha-border-radius-sm);
       background-color: var(--warning-color);
     }
     state-badge {

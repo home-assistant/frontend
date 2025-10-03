@@ -5,20 +5,20 @@ import type {
   CompletionResult,
   CompletionSource,
 } from "@codemirror/autocomplete";
-import { undo, undoDepth, redo, redoDepth } from "@codemirror/commands";
+import { redo, redoDepth, undo, undoDepth } from "@codemirror/commands";
 import type { Extension, TransactionSpec } from "@codemirror/state";
 import type { EditorView, KeyBinding, ViewUpdate } from "@codemirror/view";
 import { placeholder } from "@codemirror/view";
 import {
-  mdiArrowExpand,
   mdiArrowCollapse,
+  mdiArrowExpand,
   mdiContentCopy,
-  mdiUndo,
   mdiRedo,
+  mdiUndo,
 } from "@mdi/js";
 import type { HassEntities } from "home-assistant-js-websocket";
 import type { PropertyValues } from "lit";
-import { css, ReactiveElement, html, render } from "lit";
+import { css, html, ReactiveElement, render } from "lit";
 import { customElement, property, state } from "lit/decorators";
 import memoizeOne from "memoize-one";
 import { fireEvent } from "../common/dom/fire_event";
@@ -778,7 +778,7 @@ export class HaCodeEditor extends ReactiveElement {
       right: 8px !important;
       bottom: 8px !important;
       z-index: 6;
-      border-radius: 12px !important;
+      border-radius: var(--ha-border-radius-lg) !important;
       box-shadow: 0 2px 10px rgba(0, 0, 0, 0.3) !important;
       overflow: hidden !important;
       background-color: var(
@@ -801,7 +801,7 @@ export class HaCodeEditor extends ReactiveElement {
     :host(.fullscreen) .cm-editor {
       height: 100% !important;
       max-height: 100% !important;
-      border-radius: 0 !important;
+      border-radius: var(--ha-border-radius-square) !important;
     }
 
     :host(:not(.hasToolbar)) .code-editor-toolbar {

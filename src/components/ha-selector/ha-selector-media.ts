@@ -329,11 +329,11 @@ export class HaMediaSelector extends LitElement {
       flex-shrink: 0;
       position: relative;
       box-sizing: border-box;
-      border-radius: 8px;
+      border-radius: var(--ha-border-radius-md);
       overflow: hidden;
     }
     ha-card .image {
-      border-radius: 8px;
+      border-radius: var(--ha-border-radius-md);
     }
     .folder {
       --mdc-icon-size: 24px;

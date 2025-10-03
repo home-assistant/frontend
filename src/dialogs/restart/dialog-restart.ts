@@ -430,11 +430,11 @@ class DialogRestart extends LitElement {
           --expansion-panel-content-padding: 0;
           --expansion-panel-summary-padding: 0
             var(--mdc-list-side-padding, 20px);
-          --ha-card-border-radius: 0;
+          --ha-card-border-radius: var(--ha-border-radius-square);
         }
 
         .icon-background {
-          border-radius: 50%;
+          border-radius: var(--ha-border-radius-circle);
           color: #fff;
           display: flex;
           width: 40px;

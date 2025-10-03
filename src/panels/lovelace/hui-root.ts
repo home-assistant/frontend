@@ -1385,7 +1385,7 @@ class HUIRoot extends LitElement {
         }
         #add-view ha-svg-icon {
           background-color: var(--accent-color);
-          border-radius: 4px;
+          border-radius: var(--ha-border-radius-sm);
         }
         a {
           color: var(--text-primary-color, white);
