@@ -478,7 +478,7 @@
           "url": "Local path or web URL"
         },
         "background": {
-          "yaml_info": "Background image is set via yaml editor."
+          "yaml_info": "Background image is set via YAML editor."
         },
         "location": {
           "latitude": "[%key:ui::panel::config::zone::detail::latitude%]",
@@ -4791,7 +4791,7 @@
               "required": "Required",
               "default": "Default",
               "selector": "Selector",
-              "yaml_error": "Field yaml has invalid format.",
+              "yaml_error": "Field YAML has invalid format.",
               "key_not_null": "The field key must not be empty.",
               "key_not_unique": "The field key must not be the same value as another field.",
               "fields": "Fields",
