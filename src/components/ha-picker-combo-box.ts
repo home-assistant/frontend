@@ -186,7 +186,6 @@ export class HaPickerComboBox extends LitElement {
         item-id-path="id"
         item-value-path="id"
         item-label-path="a11y_label"
-        clear-initial-value
         .hass=${this.hass}
         .value=${this._value}
         .label=${this.label}
@@ -219,8 +218,6 @@ export class HaPickerComboBox extends LitElement {
 
   private _valueChanged(ev: ValueChangedEvent<string | undefined>) {
     ev.stopPropagation();
-    // Clear the input field to prevent showing the old value next time
-    this.comboBox.setTextFieldValue("");
     const newValue = ev.detail.value?.trim();
 
     if (newValue === NO_MATCHING_ITEMS_FOUND_ID) {
