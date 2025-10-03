@@ -313,7 +313,7 @@ class HaPanelDevAction extends LitElement {
                       <td>
                         ${this.hass.localize(
                           `component.${domain}.services.${serviceName}.fields.${field.key}.example`
-                        ) || field.example}
+                        ) || JSON.stringify(field.example)}
                       </td>
                     </tr>`
                 )}
