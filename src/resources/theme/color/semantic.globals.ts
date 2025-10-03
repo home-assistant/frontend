@@ -9,6 +9,9 @@ export const semanticColorStyles = css`
   html {
     --ha-color-focus: var(--ha-color-orange-60);
 
+    /* shadow */
+    --ha-color-shadow: #00000033;
+
     /* text */
     --ha-color-text-primary: var(--ha-color-neutral-05);
     --ha-color-text-secondary: var(--ha-color-neutral-40);
@@ -157,6 +160,9 @@ export const semanticColorStyles = css`
 
 export const darkSemanticColorStyles = css`
   html {
+    /* shadow */
+    --ha-color-shadow: #000000b2;
+
     /* text */
     --ha-color-text-primary: var(--white-color);
     --ha-color-text-secondary: var(--ha-color-neutral-80);
