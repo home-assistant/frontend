@@ -96,7 +96,7 @@
     "@webcomponents/scoped-custom-element-registry": "0.0.10",
     "@webcomponents/webcomponentsjs": "2.8.0",
     "app-datepicker": "5.1.1",
-    "barcode-detector": "3.0.5",
+    "barcode-detector": "3.0.6",
     "color-name": "2.0.2",
     "comlink": "4.4.2",
     "core-js": "3.45.1",
