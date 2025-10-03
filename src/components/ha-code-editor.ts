@@ -8,6 +8,7 @@ import type {
 import { redo, redoDepth, undo, undoDepth } from "@codemirror/commands";
 import type { Extension, TransactionSpec } from "@codemirror/state";
 import type { EditorView, KeyBinding, ViewUpdate } from "@codemirror/view";
+import { placeholder } from "@codemirror/view";
 import {
   mdiArrowCollapse,
   mdiArrowExpand,
@@ -80,6 +81,8 @@ export class HaCodeEditor extends ReactiveElement {
 
   @property({ type: Boolean, attribute: "has-toolbar" })
   public hasToolbar = true;
+
+  @property({ type: String }) public placeholder?: string;
 
   @state() private _value = "";
 
@@ -264,6 +267,7 @@ export class HaCodeEditor extends ReactiveElement {
       this._loadedCodeMirror.foldingCompartment.of(
         this._getFoldingExtensions()
       ),
+      ...(this.placeholder ? [placeholder(this.placeholder)] : []),
     ];
 
     if (!this.readOnly) {

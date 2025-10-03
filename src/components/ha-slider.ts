@@ -66,13 +66,13 @@ export class HaSlider extends Slider {
         }
 
         :host([size="medium"]) {
-          --thumb-width: var(--ha-font-size-l, 1.25em);
-          --thumb-height: var(--ha-font-size-l, 1.25em);
+          --thumb-width: 20px;
+          --thumb-height: 20px;
         }
 
         :host([size="small"]) {
-          --thumb-width: var(--ha-font-size-m, 1em);
-          --thumb-height: var(--ha-font-size-m, 1em);
+          --thumb-width: 16px;
+          --thumb-height: 16px;
         }
       `,
     ];

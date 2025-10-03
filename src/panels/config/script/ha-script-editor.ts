@@ -212,10 +212,17 @@ export class HaScriptEditor extends UndoRedoMixin<
               </ha-icon-button>
               <ha-tooltip placement="bottom" for="button-redo">
                 ${this.hass.localize("ui.common.redo")}
-                <span class="shortcut">
-                  (<span>${shortcutIcon}</span>
-                  <span>+</span>
-                  <span>Y</span>)
+                <span class="shortcut"
+                  >(
+                  ${isMac
+                    ? html`<span>${shortcutIcon}</span>
+                        <span>+</span>
+                        <span>Shift</span>
+                        <span>+</span>
+                        <span>Z</span>`
+                    : html`<span>${shortcutIcon}</span>
+                        <span>+</span>
+                        <span>Y</span>`})
                 </span>
               </ha-tooltip>`
           : nothing}
@@ -1104,6 +1111,7 @@ export class HaScriptEditor extends UndoRedoMixin<
       Delete: () => this._deleteSelectedRow(),
       Backspace: () => this._deleteSelectedRow(),
       z: () => this.undo(),
+      Z: () => this.redo(),
       y: () => this.redo(),
     };
   }
@@ -1157,6 +1165,7 @@ export class HaScriptEditor extends UndoRedoMixin<
             --ha-automation-editor-width,
             1540px
           );
+          --hass-subpage-bottom-inset: 0px;
         }
         .yaml-mode {
           height: 100%;

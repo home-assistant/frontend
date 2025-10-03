@@ -157,8 +157,10 @@ export const haStyleDialog = css`
     ha-dialog {
       --mdc-dialog-min-width: 100vw;
       --mdc-dialog-max-width: 100vw;
-      --mdc-dialog-min-height: 100%;
-      --mdc-dialog-max-height: 100%;
+      --mdc-dialog-min-height: 100vh;
+      --mdc-dialog-min-height: 100svh;
+      --mdc-dialog-max-height: 100vh;
+      --mdc-dialog-max-height: 100svh;
       --vertical-align-dialog: flex-end;
       --ha-dialog-border-radius: var(--ha-border-radius-square);
     }
