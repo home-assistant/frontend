@@ -7,7 +7,7 @@ import { isValidEntityId } from "../../common/entity/valid_entity_id";
 import type { HomeAssistant, ValueChangedEvent } from "../../types";
 import "../ha-sortable";
 import "./ha-entity-picker";
-import type { HaEntityPickerEntityFilterFunc } from "./ha-entity-picker";
+import type { HaEntityPickerEntityFilterFunc } from "../../data/entity";
 
 @customElement("ha-entities-picker")
 class HaEntitiesPicker extends LitElement {

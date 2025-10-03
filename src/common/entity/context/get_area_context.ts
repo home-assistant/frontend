@@ -8,10 +8,10 @@ interface AreaContext {
 }
 export const getAreaContext = (
   area: AreaRegistryEntry,
-  hass: HomeAssistant
+  hassFloors: HomeAssistant["floors"]
 ): AreaContext => {
   const floorId = area.floor_id;
-  const floor = floorId ? hass.floors[floorId] : undefined;
+  const floor = floorId ? hassFloors[floorId] : undefined;
 
   return {
     area: area,

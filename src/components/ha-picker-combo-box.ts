@@ -33,7 +33,7 @@ export interface PickerComboBoxItemWithLabel extends PickerComboBoxItem {
 
 const NO_MATCHING_ITEMS_FOUND_ID = "___no_matching_items_found___";
 
-const DEFAULT_ROW_RENDERER: ComboBoxLitRenderer<PickerComboBoxItem> = (
+export const DEFAULT_ROW_RENDERER: ComboBoxLitRenderer<PickerComboBoxItem> = (
   item
 ) => html`
   <ha-combo-box-item type="button" compact>

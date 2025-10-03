@@ -22,8 +22,8 @@ import type { LovelaceCardEditor } from "../../types";
 import { baseLovelaceCardConfig } from "../structs/base-card-struct";
 import { DEFAULT_HOURS_TO_SHOW } from "../../cards/hui-logbook-card";
 import { targetStruct } from "../../../../data/script";
-import type { HaEntityPickerEntityFilterFunc } from "../../../../components/entity/ha-entity-picker";
 import { getSensorNumericDeviceClasses } from "../../../../data/sensor";
+import type { HaEntityPickerEntityFilterFunc } from "../../../../data/entity";
 
 const cardConfigStruct = assign(
   baseLovelaceCardConfig,

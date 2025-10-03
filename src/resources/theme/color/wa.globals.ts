@@ -52,6 +52,13 @@ export const waColorStyles = css`
     --wa-color-danger-on-normal: var(--ha-color-on-danger-normal);
     --wa-color-danger-on-quiet: var(--ha-color-on-danger-quiet);
 
+    --wa-color-surface-default: var(--white-color);
+    --wa-panel-border-radius: var(--ha-border-radius-3xl);
+    --wa-panel-border-style: solid;
+    --wa-panel-border-width: 1px;
+    --wa-color-surface-border: var(--ha-color-border-neutral-quiet);
+
     --wa-focus-ring-color: var(--ha-color-neutral-60);
+    --wa-shadow-l: box-shadow: 4px 8px 12px 0 rgba(0, 0, 0, 0.3);
   }
 `;

@@ -107,7 +107,7 @@ export class HaAreaPicker extends LitElement {
           `;
         }
 
-        const { floor } = getAreaContext(area, this.hass);
+        const { floor } = getAreaContext(area, this.hass.floors);
 
         const areaName = area ? computeAreaName(area) : undefined;
         const floorName = floor ? computeFloorName(floor) : undefined;
@@ -279,7 +279,7 @@ export class HaAreaPicker extends LitElement {
       }
 
       const items = outputAreas.map<PickerComboBoxItem>((area) => {
-        const { floor } = getAreaContext(area, this.hass);
+        const { floor } = getAreaContext(area, this.hass.floors);
         const floorName = floor ? computeFloorName(floor) : undefined;
         const areaName = computeAreaName(area);
         return {

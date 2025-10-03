@@ -5,35 +5,24 @@ import { customElement, property, query, state } from "lit/decorators";
 import memoizeOne from "memoize-one";
 import { fireEvent } from "../../common/dom/fire_event";
 import { computeAreaName } from "../../common/entity/compute_area_name";
-import {
-  computeDeviceName,
-  computeDeviceNameDisplay,
-} from "../../common/entity/compute_device_name";
-import { computeDomain } from "../../common/entity/compute_domain";
+import { computeDeviceName } from "../../common/entity/compute_device_name";
 import { getDeviceContext } from "../../common/entity/context/get_device_context";
 import { getConfigEntries, type ConfigEntry } from "../../data/config_entries";
 import {
-  getDeviceEntityDisplayLookup,
-  type DeviceEntityDisplayLookup,
+  getDevices,
+  type DevicePickerItem,
   type DeviceRegistryEntry,
 } from "../../data/device_registry";
-import { domainToName } from "../../data/integration";
 import type { HomeAssistant } from "../../types";
 import { brandsUrl } from "../../util/brands-url";
 import "../ha-generic-picker";
 import type { HaGenericPicker } from "../ha-generic-picker";
-import type { PickerComboBoxItem } from "../ha-picker-combo-box";
 
 export type HaDevicePickerDeviceFilterFunc = (
   device: DeviceRegistryEntry
 ) => boolean;
 
 export type HaDevicePickerEntityFilterFunc = (entity: HassEntity) => boolean;
-
-interface DevicePickerItem extends PickerComboBoxItem {
-  domain?: string;
-  domain_name?: string;
-}
 
 @customElement("ha-device-picker")
 export class HaDevicePicker extends LitElement {
@@ -117,161 +106,17 @@ export class HaDevicePicker extends LitElement {
   }
 
   private _getItems = () =>
-    this._getDevices(
-      this.hass.devices,
-      this.hass.entities,
+    getDevices(
+      this.hass,
       this._configEntryLookup,
       this.includeDomains,
       this.excludeDomains,
       this.includeDeviceClasses,
       this.deviceFilter,
       this.entityFilter,
-      this.excludeDevices
+      this.excludeDevices,
+      this.value
     );
-
-  private _getDevices = memoizeOne(
-    (
-      haDevices: HomeAssistant["devices"],
-      haEntities: HomeAssistant["entities"],
-      configEntryLookup: Record<string, ConfigEntry>,
-      includeDomains: this["includeDomains"],
-      excludeDomains: this["excludeDomains"],
-      includeDeviceClasses: this["includeDeviceClasses"],
-      deviceFilter: this["deviceFilter"],
-      entityFilter: this["entityFilter"],
-      excludeDevices: this["excludeDevices"]
-    ): DevicePickerItem[] => {
-      const devices = Object.values(haDevices);
-      const entities = Object.values(haEntities);
-
-      let deviceEntityLookup: DeviceEntityDisplayLookup = {};
-
-      if (
-        includeDomains ||
-        excludeDomains ||
-        includeDeviceClasses ||
-        entityFilter
-      ) {
-        deviceEntityLookup = getDeviceEntityDisplayLookup(entities);
-      }
-
-      let inputDevices = devices.filter(
-        (device) => device.id === this.value || !device.disabled_by
-      );
-
-      if (includeDomains) {
-        inputDevices = inputDevices.filter((device) => {
-          const devEntities = deviceEntityLookup[device.id];
-          if (!devEntities || !devEntities.length) {
-            return false;
-          }
-          return deviceEntityLookup[device.id].some((entity) =>
-            includeDomains.includes(computeDomain(entity.entity_id))
-          );
-        });
-      }
-
-      if (excludeDomains) {
-        inputDevices = inputDevices.filter((device) => {
-          const devEntities = deviceEntityLookup[device.id];
-          if (!devEntities || !devEntities.length) {
-            return true;
-          }
-          return entities.every(
-            (entity) =>
-              !excludeDomains.includes(computeDomain(entity.entity_id))
-          );
-        });
-      }
-
-      if (excludeDevices) {
-        inputDevices = inputDevices.filter(
-          (device) => !excludeDevices!.includes(device.id)
-        );
-      }
-
-      if (includeDeviceClasses) {
-        inputDevices = inputDevices.filter((device) => {
-          const devEntities = deviceEntityLookup[device.id];
-          if (!devEntities || !devEntities.length) {
-            return false;
-          }
-          return deviceEntityLookup[device.id].some((entity) => {
-            const stateObj = this.hass.states[entity.entity_id];
-            if (!stateObj) {
-              return false;
-            }
-            return (
-              stateObj.attributes.device_class &&
-              includeDeviceClasses.includes(stateObj.attributes.device_class)
-            );
-          });
-        });
-      }
-
-      if (entityFilter) {
-        inputDevices = inputDevices.filter((device) => {
-          const devEntities = deviceEntityLookup[device.id];
-          if (!devEntities || !devEntities.length) {
-            return false;
-          }
-          return devEntities.some((entity) => {
-            const stateObj = this.hass.states[entity.entity_id];
-            if (!stateObj) {
-              return false;
-            }
-            return entityFilter(stateObj);
-          });
-        });
-      }
-
-      if (deviceFilter) {
-        inputDevices = inputDevices.filter(
-          (device) =>
-            // We always want to include the device of the current value
-            device.id === this.value || deviceFilter!(device)
-        );
-      }
-
-      const outputDevices = inputDevices.map<DevicePickerItem>((device) => {
-        const deviceName = computeDeviceNameDisplay(
-          device,
-          this.hass,
-          deviceEntityLookup[device.id]
-        );
-
-        const { area } = getDeviceContext(device, this.hass);
-
-        const areaName = area ? computeAreaName(area) : undefined;
-
-        const configEntry = device.primary_config_entry
-          ? configEntryLookup?.[device.primary_config_entry]
-          : undefined;
-
-        const domain = configEntry?.domain;
-        const domainName = domain
-          ? domainToName(this.hass.localize, domain)
-          : undefined;
-
-        return {
-          id: device.id,
-          label: "",
-          primary:
-            deviceName ||
-            this.hass.localize("ui.components.device-picker.unnamed_device"),
-          secondary: areaName,
-          domain: configEntry?.domain,
-          domain_name: domainName,
-          search_labels: [deviceName, areaName, domain, domainName].filter(
-            Boolean
-          ) as string[],
-          sorting_label: deviceName || "zzz",
-        };
-      });
-
-      return outputDevices;
-    }
-  );
 
   private _valueRenderer = memoizeOne(
     (configEntriesLookup: Record<string, ConfigEntry>) => (value: string) => {

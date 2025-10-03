@@ -148,10 +148,10 @@ export class HuiHeadingBadgesEditor extends LitElement {
           .hass=${this.hass}
           id="input"
           .placeholder=${this.hass.localize(
-            "ui.components.target-picker.add_entity_id"
+            "ui.components.entity.entity-picker.choose_entity"
           )}
           .searchLabel=${this.hass.localize(
-            "ui.components.target-picker.add_entity_id"
+            "ui.components.entity.entity-picker.choose_entity"
           )}
           @value-changed=${this._entityPicked}
           @click=${preventDefault}

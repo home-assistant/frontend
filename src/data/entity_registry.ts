@@ -1,12 +1,16 @@
-import type { Connection } from "home-assistant-js-websocket";
+import type { Connection, HassEntity } from "home-assistant-js-websocket";
 import { createCollection } from "home-assistant-js-websocket";
 import type { Store } from "home-assistant-js-websocket/dist/store";
 import memoizeOne from "memoize-one";
 import { computeDomain } from "../common/entity/compute_domain";
 import { computeStateName } from "../common/entity/compute_state_name";
 import { caseInsensitiveStringCompare } from "../common/string/compare";
+import { computeRTL } from "../common/util/compute_rtl";
 import { debounce } from "../common/util/debounce";
+import type { PickerComboBoxItem } from "../components/ha-picker-combo-box";
 import type { HomeAssistant } from "../types";
+import type { HaEntityPickerEntityFilterFunc } from "./entity";
+import { domainToName } from "./integration";
 import type { LightColor } from "./light";
 import type { RegistryEntry } from "./registry";
 
@@ -324,3 +328,141 @@ export const getAutomaticEntityIds = (
     type: "config/entity_registry/get_automatic_entity_ids",
     entity_ids,
   });
+
+export interface EntityComboBoxItem extends PickerComboBoxItem {
+  domain_name?: string;
+  stateObj?: HassEntity;
+}
+
+export const getEntities = (
+  hass: HomeAssistant,
+  includeDomains?: string[],
+  excludeDomains?: string[],
+  entityFilter?: HaEntityPickerEntityFilterFunc,
+  includeDeviceClasses?: string[],
+  includeUnitOfMeasurement?: string[],
+  includeEntities?: string[],
+  excludeEntities?: string[],
+  value?: string
+): EntityComboBoxItem[] =>
+  memoizeOne(
+    (
+      states: HomeAssistant["states"],
+      isRTLMemo: boolean,
+      includeDomainsMemo?: string[],
+      excludeDomainsMemo?: string[],
+      entityFilterMemo?: HaEntityPickerEntityFilterFunc,
+      includeDeviceClassesMemo?: string[],
+      includeUnitOfMeasurementMemo?: string[],
+      includeEntitiesMemo?: string[],
+      excludeEntitiesMemo?: string[]
+    ): EntityComboBoxItem[] => {
+      let items: EntityComboBoxItem[] = [];
+
+      let entityIds = Object.keys(states);
+
+      if (includeEntitiesMemo) {
+        entityIds = entityIds.filter((entityId) =>
+          includeEntitiesMemo.includes(entityId)
+        );
+      }
+
+      if (excludeEntitiesMemo) {
+        entityIds = entityIds.filter(
+          (entityId) => !excludeEntitiesMemo.includes(entityId)
+        );
+      }
+
+      if (includeDomainsMemo) {
+        entityIds = entityIds.filter((eid) =>
+          includeDomainsMemo.includes(computeDomain(eid))
+        );
+      }
+
+      if (excludeDomainsMemo) {
+        entityIds = entityIds.filter(
+          (eid) => !excludeDomainsMemo.includes(computeDomain(eid))
+        );
+      }
+
+      items = entityIds.map<EntityComboBoxItem>((entityId) => {
+        const stateObj = states[entityId];
+
+        const friendlyName = computeStateName(stateObj); // Keep this for search
+        const entityName = hass.formatEntityName(stateObj, "entity");
+        const deviceName = hass.formatEntityName(stateObj, "device");
+        const areaName = hass.formatEntityName(stateObj, "area");
+
+        const domainName = domainToName(hass.localize, computeDomain(entityId));
+
+        const primary = entityName || deviceName || entityId;
+        const secondary = [areaName, entityName ? deviceName : undefined]
+          .filter(Boolean)
+          .join(isRTLMemo ? " ◂ " : " ▸ ");
+        const a11yLabel = [deviceName, entityName].filter(Boolean).join(" - ");
+
+        return {
+          id: entityId,
+          primary: primary,
+          secondary: secondary,
+          domain_name: domainName,
+          sorting_label: [deviceName, entityName].filter(Boolean).join("_"),
+          search_labels: [
+            entityName,
+            deviceName,
+            areaName,
+            domainName,
+            friendlyName,
+            entityId,
+          ].filter(Boolean) as string[],
+          a11y_label: a11yLabel,
+          stateObj: stateObj,
+        };
+      });
+
+      if (includeDeviceClassesMemo) {
+        items = items.filter(
+          (item) =>
+            // We always want to include the entity of the current value
+            item.id === value ||
+            (item.stateObj?.attributes.device_class &&
+              includeDeviceClassesMemo.includes(
+                item.stateObj.attributes.device_class
+              ))
+        );
+      }
+
+      if (includeUnitOfMeasurementMemo) {
+        items = items.filter(
+          (item) =>
+            // We always want to include the entity of the current value
+            item.id === value ||
+            (item.stateObj?.attributes.unit_of_measurement &&
+              includeUnitOfMeasurementMemo.includes(
+                item.stateObj.attributes.unit_of_measurement
+              ))
+        );
+      }
+
+      if (entityFilterMemo) {
+        items = items.filter(
+          (item) =>
+            // We always want to include the entity of the current value
+            item.id === value ||
+            (item.stateObj && entityFilterMemo!(item.stateObj))
+        );
+      }
+
+      return items;
+    }
+  )(
+    hass.states,
+    computeRTL(hass),
+    includeDomains,
+    excludeDomains,
+    entityFilter,
+    includeDeviceClasses,
+    includeUnitOfMeasurement,
+    includeEntities,
+    excludeEntities
+  );
