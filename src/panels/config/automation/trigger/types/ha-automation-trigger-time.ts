@@ -102,7 +102,7 @@ export class HaTimeTrigger extends LitElement implements TriggerElement {
     if (!changedProperties.has("trigger")) {
       return;
     }
-    // We dont support multiple times atm.
+    // We don't support multiple times atm.
     if (this.trigger && Array.isArray(this.trigger.at)) {
       fireEvent(
         this,
