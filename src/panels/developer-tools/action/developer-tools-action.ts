@@ -415,7 +415,7 @@ class HaPanelDevAction extends LitElement {
       const fields = serviceDomains[domain][service].fields;
       const result: (HassService["fields"] & { key: string })[] = [];
 
-      // TODO: remplace any by proper type when updated in home-assistant-js-websocket
+      // TODO: replace any by proper type when updated in home-assistant-js-websocket
       const getFields = (flds: any) => {
         Object.keys(flds).forEach((field) => {
           const fieldData = flds[field];
