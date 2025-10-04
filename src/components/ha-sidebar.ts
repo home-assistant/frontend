@@ -22,6 +22,7 @@ import {
   eventOptions,
   property,
   query,
+  queryAll,
   state,
 } from "lit/decorators";
 import { classMap } from "lit/directives/class-map";
@@ -40,7 +41,7 @@ import { updateCanInstall } from "../data/update";
 import { showEditSidebarDialog } from "../dialogs/sidebar/show-dialog-edit-sidebar";
 import { SubscribeMixin } from "../mixins/subscribe-mixin";
 import { actionHandler } from "../panels/lovelace/common/directives/action-handler-directive";
-import { haStyleScrollbar } from "../resources/styles";
+import { haStyleAnimations, haStyleScrollbar } from "../resources/styles";
 import type { HomeAssistant, PanelInfo, Route } from "../types";
 import "./ha-fade-in";
 import "./ha-icon";
@@ -210,6 +211,8 @@ class HaSidebar extends SubscribeMixin(LitElement) {
 
   @query(".tooltip") private _tooltip!: HTMLDivElement;
 
+  @queryAll("ha-md-list-item") private _listItems!: NodeListOf<HaMdListItem>;
+
   public hassSubscribe() {
     return [
       subscribeFrontendUserData(
@@ -322,6 +325,15 @@ class HaSidebar extends SubscribeMixin(LitElement) {
     if (changedProps.has("alwaysExpand")) {
       toggleAttribute(this, "expanded", this.alwaysExpand);
     }
+
+    // Staggered animation for list items based on index
+    this._listItems.forEach((item, index) => {
+      (item as HTMLElement).style.setProperty(
+        "--animation-index",
+        String(index + 1)
+      );
+    });
+
     if (!changedProps.has("hass")) {
       return;
     }
@@ -693,6 +705,7 @@ class HaSidebar extends SubscribeMixin(LitElement) {
   static get styles(): CSSResultGroup {
     return [
       haStyleScrollbar,
+      haStyleAnimations,
       css`
         :host {
           overflow: visible;
@@ -739,6 +752,14 @@ class HaSidebar extends SubscribeMixin(LitElement) {
         }
         .menu ha-icon-button {
           color: var(--sidebar-icon-color);
+          animation: fadeInSlideDown var(--ha-animation-duration) ease-out both;
+          animation-delay: var(--ha-animation-delay-base) / 2;
+        }
+        ha-md-list-item {
+          animation: fadeInSlideDown var(--ha-animation-duration) ease-out both;
+          animation-delay: calc(
+            var(--ha-animation-delay-base) * var(--animation-index, 1) / 2
+          );
         }
         .title {
           margin-left: 3px;
@@ -908,11 +929,6 @@ class HaSidebar extends SubscribeMixin(LitElement) {
           background-color: var(--sidebar-text-color);
           padding: 4px;
           font-weight: var(--ha-font-weight-medium);
-        }
-
-        .menu ha-icon-button {
-          -webkit-transform: scaleX(var(--scale-direction));
-          transform: scaleX(var(--scale-direction));
         }
       `,
     ];
