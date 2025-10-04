@@ -1,7 +1,7 @@
 import { mdiCog, mdiDelete, mdiHarddisk, mdiNas } from "@mdi/js";
 import { css, html, LitElement, nothing, type TemplateResult } from "lit";
-import { join } from "lit/directives/join";
 import { customElement, property, state } from "lit/decorators";
+import { join } from "lit/directives/join";
 import memoizeOne from "memoize-one";
 import { fireEvent } from "../../../../../common/dom/fire_event";
 import { computeDomain } from "../../../../../common/entity/compute_domain";
@@ -327,7 +327,7 @@ class HaBackupConfigAgents extends LitElement {
       width: 8px;
       height: 8px;
       background-color: var(--disabled-color);
-      border-radius: 50%;
+      border-radius: var(--ha-border-radius-circle);
     }
     .dot.warning {
       background-color: var(--warning-color);

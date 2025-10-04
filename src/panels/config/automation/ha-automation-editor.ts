@@ -1286,7 +1286,7 @@ export class HaAutomationEditor extends UndoRedoMixin<
 
         ha-yaml-editor {
           flex-grow: 1;
-          --actions-border-radius: 0;
+          --actions-border-radius: var(--ha-border-radius-square);
           --code-mirror-height: 100%;
           min-height: 0;
           display: flex;

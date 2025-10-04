@@ -338,7 +338,7 @@ class HaRefreshTokens extends LitElement {
           width: 8px;
           height: 8px;
           background-color: var(--success-color);
-          border-radius: 50%;
+          border-radius: var(--ha-border-radius-circle);
           margin-right: 6px;
         }
         ha-settings-row > ha-svg-icon {

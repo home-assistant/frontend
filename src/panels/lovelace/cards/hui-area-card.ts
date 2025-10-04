@@ -664,14 +664,14 @@ export class HuiAreaCard extends LitElement implements LovelaceCard {
       left: 0;
       bottom: 0;
       right: 0;
-      border-radius: var(--ha-card-border-radius, 12px);
+      border-radius: var(--ha-card-border-radius, var(--ha-border-radius-lg));
       margin: calc(-1 * var(--ha-card-border-width, 1px));
       overflow: hidden;
     }
     .header {
       flex: 1;
       overflow: hidden;
-      border-radius: var(--ha-card-border-radius, 12px);
+      border-radius: var(--ha-card-border-radius, var(--ha-border-radius-lg));
       border-end-end-radius: 0;
       border-end-start-radius: 0;
       pointer-events: none;
@@ -789,7 +789,7 @@ export class HuiAreaCard extends LitElement implements LovelaceCard {
     }
     .alert {
       background-color: var(--orange-color);
-      border-radius: 12px;
+      border-radius: var(--ha-border-radius-lg);
       width: 24px;
       height: 24px;
       padding: 2px;

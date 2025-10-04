@@ -61,7 +61,7 @@ export class HaMarkdown extends LitElement {
     code,
     pre {
       background-color: var(--markdown-code-background-color, none);
-      border-radius: 3px;
+      border-radius: var(--ha-border-radius-sm);
     }
     svg {
       background-color: var(--markdown-svg-background-color, none);

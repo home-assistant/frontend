@@ -208,7 +208,7 @@ class HaGallery extends LitElement {
       }
 
       .sidebar a[active]::before {
-        border-radius: 12px;
+        border-radius: var(--ha-border-radius-lg);
         position: absolute;
         top: 0;
         right: 2px;
@@ -241,7 +241,7 @@ class HaGallery extends LitElement {
         text-align: center;
         margin: 16px;
         padding: 16px;
-        border-radius: 12px;
+        border-radius: var(--ha-border-radius-lg);
         background-color: var(--primary-background-color);
       }
 

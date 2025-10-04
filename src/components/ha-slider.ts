@@ -43,7 +43,10 @@ export class HaSlider extends Slider {
             var(--ha-line-height-condensed)
           );
           --wa-tooltip-padding: 8px;
-          --wa-tooltip-border-radius: var(--ha-tooltip-border-radius, 4px);
+          --wa-tooltip-border-radius: var(
+            --ha-tooltip-border-radius,
+            var(--ha-border-radius-sm)
+          );
           --wa-tooltip-arrow-size: var(--ha-tooltip-arrow-size, 8px);
           --wa-z-index-tooltip: var(--ha-tooltip-z-index, 1000);
           min-width: 100px;
@@ -70,13 +73,13 @@ export class HaSlider extends Slider {
         }
 
         :host([size="medium"]) {
-          --thumb-width: var(--ha-font-size-l, 1.25em);
-          --thumb-height: var(--ha-font-size-l, 1.25em);
+          --thumb-width: 20px;
+          --thumb-height: 20px;
         }
 
         :host([size="small"]) {
-          --thumb-width: var(--ha-font-size-m, 1em);
-          --thumb-height: var(--ha-font-size-m, 1em);
+          --thumb-width: 16px;
+          --thumb-height: 16px;
         }
       `,
     ];

@@ -19,6 +19,8 @@ export class HaTemplateSelector extends LitElement {
 
   @property() public helper?: string;
 
+  @property() public placeholder?: any;
+
   @property({ type: Boolean }) public disabled = false;
 
   @property({ type: Boolean }) public required = true;
@@ -55,6 +57,7 @@ export class HaTemplateSelector extends LitElement {
         .hass=${this.hass}
         .value=${this.value}
         .readOnly=${this.disabled}
+        .placeholder=${this.placeholder || "{{ ... }}"}
         autofocus
         autocomplete-entities
         autocomplete-icons

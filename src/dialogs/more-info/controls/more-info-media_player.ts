@@ -350,28 +350,31 @@ class MoreInfoMediaPlayer extends LitElement {
                     </ha-icon-button>`
                   : html`<span class="spacer"></span>`;
               })}
-              ${["media_play_pause", "media_pause", "media_play"].map(
-                (action) => {
-                  const control = controls?.find((c) => c.action === action);
-                  return control
-                    ? html`<ha-button
-                        variant="brand"
-                        appearance="filled"
-                        size="medium"
-                        action=${action}
-                        @click=${this._handleClick}
-                        class="center-control"
-                      >
-                        <ha-svg-icon
-                          .path=${control.icon}
-                          aria-label=${this.hass.localize(
-                            `ui.card.media_player.${control.action}`
-                          )}
-                        ></ha-svg-icon>
-                      </ha-button>`
-                    : nothing;
-                }
-              )}
+              ${[
+                "media_play_pause",
+                "media_pause",
+                "media_play",
+                "media_stop",
+              ].map((action) => {
+                const control = controls?.find((c) => c.action === action);
+                return control
+                  ? html`<ha-button
+                      variant="brand"
+                      appearance="filled"
+                      size="medium"
+                      action=${action}
+                      @click=${this._handleClick}
+                      class="center-control"
+                    >
+                      <ha-svg-icon
+                        .path=${control.icon}
+                        aria-label=${this.hass.localize(
+                          `ui.card.media_player.${control.action}`
+                        )}
+                      ></ha-svg-icon>
+                    </ha-button>`
+                  : nothing;
+              })}
               ${["media_next_track", "shuffle_set"].map((action) => {
                 const control = controls?.find((c) => c.action === action);
                 return control
@@ -463,7 +466,7 @@ class MoreInfoMediaPlayer extends LitElement {
       max-width: 100%;
       max-height: 100%;
       object-fit: cover;
-      border-radius: 4px;
+      border-radius: var(--ha-border-radius-sm);
       box-shadow: 0 2px 8px rgba(0, 0, 0, 0.15);
       position: relative;
       display: flex;
@@ -553,7 +556,7 @@ class MoreInfoMediaPlayer extends LitElement {
       align-items: center;
       height: 16px;
       min-width: 8px;
-      border-radius: 10px;
+      border-radius: var(--ha-border-radius-md);
       font-weight: var(--ha-font-weight-normal);
       font-size: var(--ha-font-size-xs);
       background-color: var(--primary-color);

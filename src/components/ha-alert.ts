@@ -99,7 +99,7 @@ class HaAlert extends LitElement {
       opacity: 0.12;
       pointer-events: none;
       content: "";
-      border-radius: 4px;
+      border-radius: var(--ha-border-radius-sm);
     }
     .icon.no-title {
       align-self: center;

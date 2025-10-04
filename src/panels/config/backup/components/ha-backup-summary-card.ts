@@ -9,8 +9,8 @@ import { css, html, LitElement, nothing } from "lit";
 import { customElement, property } from "lit/decorators";
 import "../../../../components/ha-button";
 import "../../../../components/ha-card";
-import "../../../../components/ha-spinner";
 import "../../../../components/ha-icon";
+import "../../../../components/ha-spinner";
 
 type SummaryStatus = "success" | "error" | "info" | "warning" | "loading";
 
@@ -84,7 +84,7 @@ class HaBackupSummaryCard extends LitElement {
     }
     .icon {
       position: relative;
-      border-radius: 20px;
+      border-radius: var(--ha-border-radius-2xl);
       width: 40px;
       height: 40px;
       display: flex;

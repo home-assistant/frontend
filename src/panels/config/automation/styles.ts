@@ -71,7 +71,7 @@ export const indentStyle = css`
     padding-inline-end: 0px;
     border-inline-start: 2px solid var(--ha-color-border-neutral-quiet);
     border-bottom: 2px solid var(--ha-color-border-neutral-quiet);
-    border-radius: 0;
+    border-radius: var(--ha-border-radius-square);
     border-end-start-radius: var(--ha-border-radius-lg);
   }
   .card-content.indent.selected,
