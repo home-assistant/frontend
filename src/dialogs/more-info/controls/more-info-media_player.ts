@@ -9,8 +9,9 @@ import {
   mdiVolumeOff,
   mdiVolumePlus,
 } from "@mdi/js";
+import type { PropertyValues } from "lit";
 import { css, html, LitElement, nothing } from "lit";
-import { customElement, property } from "lit/decorators";
+import { customElement, property, query } from "lit/decorators";
 import { ifDefined } from "lit/directives/if-defined";
 import { classMap } from "lit/directives/class-map";
 import { stateActive } from "../../../common/entity/state_active";
@@ -19,7 +20,7 @@ import { formatDurationDigital } from "../../../common/datetime/format_duration"
 import "../../../components/ha-icon-button";
 import "../../../components/ha-list-item";
 import "../../../components/ha-select";
-import "../../../components/ha-slider";
+import type { HaSlider } from "../../../components/ha-slider";
 import "../../../components/ha-button";
 import "../../../components/ha-svg-icon";
 import { showMediaBrowserDialog } from "../../../components/media-player/show-media-browser-dialog";
@@ -47,6 +48,16 @@ class MoreInfoMediaPlayer extends LitElement {
   @property({ attribute: false }) public hass!: HomeAssistant;
 
   @property({ attribute: false }) public stateObj?: MediaPlayerEntity;
+
+  @query("#position-slider")
+  private _positionSlider?: HaSlider;
+
+  protected firstUpdated(_changedProperties: PropertyValues) {
+    if (this._positionSlider) {
+      this._positionSlider.valueFormatter = (value: number) =>
+        this._formatDuration(value);
+    }
+  }
 
   private _formatDuration(duration: number) {
     const hours = Math.floor(duration / 3600);
@@ -316,6 +327,7 @@ class MoreInfoMediaPlayer extends LitElement {
         ? html`
             <div class="position-bar">
               <ha-slider
+                id="position-slider"
                 min="0"
                 max=${duration}
                 step="1"
