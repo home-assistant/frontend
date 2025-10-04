@@ -1,5 +1,6 @@
 import { consume } from "@lit/context";
 import {
+  mdiAppleKeyboardCommand,
   mdiCog,
   mdiContentSave,
   mdiDebugStepOver,
@@ -11,10 +12,12 @@ import {
   mdiPlay,
   mdiPlaylistEdit,
   mdiPlusCircleMultipleOutline,
+  mdiRedo,
   mdiRenameBox,
   mdiRobotConfused,
   mdiTag,
   mdiTransitConnection,
+  mdiUndo,
 } from "@mdi/js";
 import type { CSSResultGroup, PropertyValues, TemplateResult } from "lit";
 import { LitElement, css, html, nothing } from "lit";
@@ -62,8 +65,10 @@ import "../../../layouts/hass-subpage";
 import { KeyboardShortcutMixin } from "../../../mixins/keyboard-shortcut-mixin";
 import { PreventUnsavedMixin } from "../../../mixins/prevent-unsaved-mixin";
 import { SubscribeMixin } from "../../../mixins/subscribe-mixin";
+import { UndoRedoMixin } from "../../../mixins/undo-redo-mixin";
 import { haStyle } from "../../../resources/styles";
 import type { Entries, HomeAssistant, Route } from "../../../types";
+import { isMac } from "../../../util/is_mac";
 import { showToast } from "../../../util/toast";
 import { showAutomationModeDialog } from "../automation/automation-mode-dialog/show-dialog-automation-mode";
 import type { EntityRegistryUpdate } from "../automation/automation-save-dialog/show-dialog-automation-save";
@@ -73,9 +78,14 @@ import "./blueprint-script-editor";
 import "./manual-script-editor";
 import type { HaManualScriptEditor } from "./manual-script-editor";
 
-export class HaScriptEditor extends SubscribeMixin(
+const baseEditorMixins = SubscribeMixin(
   PreventUnsavedMixin(KeyboardShortcutMixin(LitElement))
-) {
+);
+
+export class HaScriptEditor extends UndoRedoMixin<
+  typeof baseEditorMixins,
+  ScriptConfig
+>(baseEditorMixins) {
   @property({ attribute: false }) public hass!: HomeAssistant;
 
   @property({ attribute: false }) public scriptId: string | null = null;
@@ -160,6 +170,10 @@ export class HaScriptEditor extends SubscribeMixin(
       : undefined;
 
     const useBlueprint = "use_blueprint" in this._config;
+    const shortcutIcon = isMac
+      ? html`<ha-svg-icon .path=${mdiAppleKeyboardCommand}></ha-svg-icon>`
+      : this.hass.localize("ui.panel.config.automation.editor.ctrl");
+
     return html`
       <hass-subpage
         .hass=${this.hass}
@@ -169,6 +183,49 @@ export class HaScriptEditor extends SubscribeMixin(
         .header=${this._config.alias ||
         this.hass.localize("ui.panel.config.script.editor.default_name")}
       >
+        ${this._mode === "gui" && !this.narrow
+          ? html`<ha-icon-button
+                slot="toolbar-icon"
+                .label=${this.hass.localize("ui.common.undo")}
+                .path=${mdiUndo}
+                @click=${this.undo}
+                .disabled=${!this.canUndo}
+                id="button-undo"
+              >
+              </ha-icon-button>
+              <ha-tooltip placement="bottom" for="button-undo">
+                ${this.hass.localize("ui.common.undo")}
+                <span class="shortcut">
+                  (<span>${shortcutIcon}</span>
+                  <span>+</span>
+                  <span>Z</span>)
+                </span>
+              </ha-tooltip>
+              <ha-icon-button
+                slot="toolbar-icon"
+                .label=${this.hass.localize("ui.common.redo")}
+                .path=${mdiRedo}
+                @click=${this.redo}
+                .disabled=${!this.canRedo}
+                id="button-redo"
+              >
+              </ha-icon-button>
+              <ha-tooltip placement="bottom" for="button-redo">
+                ${this.hass.localize("ui.common.redo")}
+                <span class="shortcut"
+                  >(
+                  ${isMac
+                    ? html`<span>${shortcutIcon}</span>
+                        <span>+</span>
+                        <span>Shift</span>
+                        <span>+</span>
+                        <span>Z</span>`
+                    : html`<span>${shortcutIcon}</span>
+                        <span>+</span>
+                        <span>Y</span>`})
+                </span>
+              </ha-tooltip>`
+          : nothing}
         ${this.scriptId && !this.narrow
           ? html`
               <ha-button
@@ -188,6 +245,25 @@ export class HaScriptEditor extends SubscribeMixin(
             .label=${this.hass.localize("ui.common.menu")}
             .path=${mdiDotsVertical}
           ></ha-icon-button>
+
+          ${this._mode === "gui" && this.narrow
+            ? html`<ha-list-item
+                  graphic="icon"
+                  @click=${this.undo}
+                  .disabled=${!this.canUndo}
+                >
+                  ${this.hass.localize("ui.common.undo")}
+                  <ha-svg-icon slot="graphic" .path=${mdiUndo}></ha-svg-icon>
+                </ha-list-item>
+                <ha-list-item
+                  graphic="icon"
+                  @click=${this.redo}
+                  .disabled=${!this.canRedo}
+                >
+                  ${this.hass.localize("ui.common.redo")}
+                  <ha-svg-icon slot="graphic" .path=${mdiRedo}></ha-svg-icon>
+                </ha-list-item>`
+            : nothing}
 
           <ha-list-item
             graphic="icon"
@@ -387,6 +463,7 @@ export class HaScriptEditor extends SubscribeMixin(
                           @value-changed=${this._valueChanged}
                           @editor-save=${this._handleSaveScript}
                           @save-script=${this._handleSaveScript}
+                          @undo-paste=${this.undo}
                         >
                           <div class="alert-wrapper" slot="alerts">
                             ${this._errors || stateObj?.state === UNAVAILABLE
@@ -454,7 +531,6 @@ export class HaScriptEditor extends SubscribeMixin(
               `
             : this._mode === "yaml"
               ? html`<ha-yaml-editor
-                    copy-clipboard
                     .hass=${this.hass}
                     .defaultValue=${this._preprocessYaml()}
                     .readOnly=${this._readOnly}
@@ -602,6 +678,10 @@ export class HaScriptEditor extends SubscribeMixin(
   }
 
   private _valueChanged(ev) {
+    if (this._config) {
+      this.pushToUndo(this._config);
+    }
+
     this._config = ev.detail.value;
     this._errors = undefined;
     this._dirty = true;
@@ -694,6 +774,11 @@ export class HaScriptEditor extends SubscribeMixin(
     if ("fields" in this._config!) {
       return;
     }
+
+    if (this._config) {
+      this.pushToUndo(this._config);
+    }
+
     this._manualEditor?.addFields();
     this._dirty = true;
   }
@@ -1025,6 +1110,9 @@ export class HaScriptEditor extends SubscribeMixin(
       x: () => this._cutSelectedRow(),
       Delete: () => this._deleteSelectedRow(),
       Backspace: () => this._deleteSelectedRow(),
+      z: () => this.undo(),
+      Z: () => this.redo(),
+      y: () => this.redo(),
     };
   }
 
@@ -1058,6 +1146,16 @@ export class HaScriptEditor extends SubscribeMixin(
     this._manualEditor?.deleteSelectedRow();
   }
 
+  protected get currentConfig() {
+    return this._config;
+  }
+
+  protected applyUndoRedo(config: ScriptConfig) {
+    this._manualEditor?.triggerCloseSidebar();
+    this._config = config;
+    this._dirty = true;
+  }
+
   static get styles(): CSSResultGroup {
     return [
       haStyle,
@@ -1067,6 +1165,7 @@ export class HaScriptEditor extends SubscribeMixin(
             --ha-automation-editor-width,
             1540px
           );
+          --hass-subpage-bottom-inset: 0px;
         }
         .yaml-mode {
           height: 100%;
@@ -1107,7 +1206,7 @@ export class HaScriptEditor extends SubscribeMixin(
           display: flex;
           flex-direction: column;
           align-items: center;
-          gap: 8px;
+          gap: var(--ha-space-2);
           pointer-events: none;
         }
 
@@ -1126,7 +1225,7 @@ export class HaScriptEditor extends SubscribeMixin(
 
         ha-yaml-editor {
           flex-grow: 1;
-          --actions-border-radius: 0;
+          --actions-border-radius: var(--ha-border-radius-square);
           --code-mirror-height: 100%;
           min-height: 0;
           display: flex;
@@ -1166,6 +1265,15 @@ export class HaScriptEditor extends SubscribeMixin(
         ha-button-menu a {
           text-decoration: none;
           color: var(--primary-color);
+        }
+        ha-tooltip ha-svg-icon {
+          width: 12px;
+        }
+        ha-tooltip .shortcut {
+          display: inline-flex;
+          flex-direction: row;
+          align-items: center;
+          gap: 2px;
         }
       `,
     ];

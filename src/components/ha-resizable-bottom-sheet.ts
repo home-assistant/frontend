@@ -1,6 +1,5 @@
 import { css, html, LitElement } from "lit";
 import { customElement, query, state } from "lit/decorators";
-import { styleMap } from "lit/directives/style-map";
 import { fireEvent } from "../common/dom/fire_event";
 import { BOTTOM_SHEET_ANIMATION_DURATION_MS } from "./ha-bottom-sheet";
 
@@ -37,13 +36,14 @@ export class HaResizableBottomSheet extends LitElement {
     return html`<dialog
       open
       @transitionend=${this._handleTransitionEnd}
-      style=${styleMap({
-        height: this._dialogViewportHeight
-          ? `${this._dialogViewportHeight}vh`
-          : "auto",
-        maxHeight: `${this._dialogMaxViewpointHeight}vh`,
-        minHeight: `${this._dialogMinViewpointHeight}vh`,
-      })}
+      style=${`
+        --height: ${this._dialogViewportHeight}vh;
+        --height: ${this._dialogViewportHeight}dvh;
+        --max-height: ${this._dialogMaxViewpointHeight}vh;
+        --max-height: ${this._dialogMaxViewpointHeight}dvh;
+        --min-height: ${this._dialogMinViewpointHeight}vh;
+        --min-height: ${this._dialogMinViewpointHeight}dvh;
+      `}
     >
       <div class="handle-wrapper">
         <div
@@ -204,7 +204,7 @@ export class HaResizableBottomSheet extends LitElement {
     }
     .handle-wrapper .handle::after {
       content: "";
-      border-radius: 8px;
+      border-radius: var(--ha-border-radius-md);
       height: 4px;
       background: var(--divider-color, #e0e0e0);
       width: 80px;
@@ -213,12 +213,14 @@ export class HaResizableBottomSheet extends LitElement {
       cursor: grabbing;
     }
     dialog {
-      height: auto;
-      max-height: 70vh;
-      min-height: 30vh;
+      height: var(--height, auto);
+      max-height: var(--max-height, 70vh);
+      max-height: var(--max-height, 70dvh);
+      min-height: var(--min-height, 30vh);
+      min-height: var(--min-height, 30dvh);
       background-color: var(
-        --ha-dialog-surface-background,
-        var(--mdc-theme-surface, #fff)
+        --ha-bottom-sheet-surface-background,
+        var(--ha-dialog-surface-background, var(--mdc-theme-surface, #fff)),
       );
       display: flex;
       flex-direction: column;
@@ -239,12 +241,12 @@ export class HaResizableBottomSheet extends LitElement {
       inset-inline-start: 0;
       box-shadow: 0px -8px 16px rgba(0, 0, 0, 0.2);
       border-top-left-radius: var(
-        --ha-dialog-border-radius,
-        var(--ha-border-radius-2xl)
+        --ha-bottom-sheet-border-radius,
+        var(--ha-dialog-border-radius, var(--ha-border-radius-2xl))
       );
       border-top-right-radius: var(
-        --ha-dialog-border-radius,
-        var(--ha-border-radius-2xl)
+        --ha-bottom-sheet-border-radius,
+        var(--ha-dialog-border-radius, var(--ha-border-radius-2xl))
       );
       transform: translateY(100%);
       transition: transform ${BOTTOM_SHEET_ANIMATION_DURATION_MS}ms ease;
@@ -254,7 +256,6 @@ export class HaResizableBottomSheet extends LitElement {
       border-bottom-width: 0;
       border-style: var(--ha-bottom-sheet-border-style);
       border-color: var(--ha-bottom-sheet-border-color);
-      margin-bottom: var(--safe-area-inset-bottom);
       margin-left: var(--safe-area-inset-left);
       margin-right: var(--safe-area-inset-right);
     }

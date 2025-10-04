@@ -46,7 +46,7 @@ export class HaStateControlToggle extends LitElement {
     if (!this.hass || !this.stateObj) {
       return;
     }
-    forwardHaptic("light");
+    forwardHaptic(this, "light");
     const stateDomain = computeDomain(this.stateObj.entity_id);
     let serviceDomain;
     let service;
@@ -134,7 +134,7 @@ export class HaStateControlToggle extends LitElement {
       max-height: 320px;
       min-height: 200px;
       --control-switch-thickness: 130px;
-      --control-switch-border-radius: 36px;
+      --control-switch-border-radius: var(--ha-border-radius-6xl);
       --control-switch-padding: 6px;
       --mdc-icon-size: 24px;
     }
@@ -151,7 +151,7 @@ export class HaStateControlToggle extends LitElement {
     ha-control-button {
       flex: 1;
       width: 100%;
-      --control-button-border-radius: 36px;
+      --control-button-border-radius: var(--ha-border-radius-6xl);
       --mdc-icon-size: 24px;
     }
     ha-control-button.active {

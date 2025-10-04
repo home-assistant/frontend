@@ -71,7 +71,7 @@ export const indentStyle = css`
     padding-inline-end: 0px;
     border-inline-start: 2px solid var(--ha-color-border-neutral-quiet);
     border-bottom: 2px solid var(--ha-color-border-neutral-quiet);
-    border-radius: 0;
+    border-radius: var(--ha-border-radius-square);
     border-end-start-radius: var(--ha-border-radius-lg);
   }
   .card-content.indent.selected,
@@ -118,7 +118,7 @@ export const manualEditorStyles = css`
       var(--ha-automation-editor-max-width) -
         ${CONTENT_MIN_WIDTH}px - var(--mdc-drawer-width, 0px)
     );
-    --sidebar-gap: 16px;
+    --sidebar-gap: var(--ha-space-4);
   }
 
   .fab-positioner {
@@ -145,24 +145,19 @@ export const manualEditorStyles = css`
 
   .content {
     padding-top: 24px;
-    padding-bottom: 72px;
+    padding-bottom: max(var(--safe-area-inset-bottom), 32px);
     transition: padding-bottom 180ms ease-in-out;
   }
 
   .content.has-bottom-sheet {
-    padding-bottom: calc(90vh - 72px);
+    padding-bottom: calc(90vh - max(var(--safe-area-inset-bottom), 32px));
   }
 
   ha-automation-sidebar {
     position: fixed;
     top: calc(var(--header-height) + 16px);
-    height: calc(
-      -81px +
-        100dvh - var(--safe-area-inset-top, 0px) - var(
-          --safe-area-inset-bottom,
-          0px
-        )
-    );
+    height: calc(-81px + 100vh - var(--safe-area-inset-top, 0px));
+    height: calc(-81px + 100dvh - var(--safe-area-inset-top, 0px));
     width: var(--sidebar-width);
     display: block;
   }
@@ -188,7 +183,7 @@ export const automationRowsStyles = css`
   .rows {
     display: flex;
     flex-direction: column;
-    gap: 16px;
+    gap: var(--ha-space-4);
   }
   .rows.no-sidebar {
     margin-inline-end: 0;
@@ -225,7 +220,7 @@ export const automationRowsStyles = css`
   .buttons {
     display: flex;
     flex-wrap: wrap;
-    gap: 8px;
+    gap: var(--ha-space-2);
     order: 1;
   }
 `;
@@ -238,10 +233,13 @@ export const sidebarEditorStyles = css`
   .description {
     padding-top: 16px;
   }
+`;
+
+export const overflowStyles = css`
   .overflow-label {
     display: flex;
     justify-content: space-between;
-    gap: 12px;
+    gap: var(--ha-space-3);
     white-space: nowrap;
   }
   .overflow-label .shortcut {

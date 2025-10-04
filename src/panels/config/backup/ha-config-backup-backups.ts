@@ -189,7 +189,7 @@ class HaConfigBackupBackups extends SubscribeMixin(LitElement) {
             0
           );
           return html`
-            <div style="display: flex; gap: 4px;">
+            <div style="display: flex; gap: var(--ha-space-1);">
               ${displayedAgentIds.map((agentId) => {
                 const name = computeBackupAgentName(
                   this.hass.localize,

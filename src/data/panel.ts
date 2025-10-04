@@ -66,9 +66,9 @@ export const getPanelIcon = (panel: PanelInfo): string | null => {
   if (!panel.icon) {
     switch (panel.component_name) {
       case "profile":
-        return "hass:account";
+        return "mdi:account";
       case "lovelace":
-        return "hass:view-dashboard";
+        return "mdi:view-dashboard";
     }
   }
 

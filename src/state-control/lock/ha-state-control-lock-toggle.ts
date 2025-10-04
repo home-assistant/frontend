@@ -3,6 +3,7 @@ import { css, html, LitElement } from "lit";
 import { customElement, property, state } from "lit/decorators";
 import { classMap } from "lit/directives/class-map";
 import { styleMap } from "lit/directives/style-map";
+import { fireEvent } from "../../common/dom/fire_event";
 import { stateColorCss } from "../../common/entity/state_color";
 import "../../components/ha-control-button";
 import "../../components/ha-control-switch";
@@ -12,7 +13,6 @@ import { forwardHaptic } from "../../data/haptics";
 import type { LockEntity } from "../../data/lock";
 import { callProtectedLockService } from "../../data/lock";
 import type { HomeAssistant } from "../../types";
-import { fireEvent } from "../../common/dom/fire_event";
 
 declare global {
   interface HASSDomEvents {
@@ -68,7 +68,7 @@ export class HaStateControlLockToggle extends LitElement {
     if (!this.hass || !this.stateObj) {
       return;
     }
-    forwardHaptic("light");
+    forwardHaptic(this, "light");
     fireEvent(this, "lock-service-called");
     callProtectedLockService(
       this,
@@ -162,7 +162,7 @@ export class HaStateControlLockToggle extends LitElement {
       max-height: 320px;
       min-height: 200px;
       --control-switch-thickness: 130px;
-      --control-switch-border-radius: 36px;
+      --control-switch-border-radius: var(--ha-border-radius-6xl);
       --control-switch-padding: 6px;
       --mdc-icon-size: 24px;
     }
@@ -182,7 +182,7 @@ export class HaStateControlLockToggle extends LitElement {
     ha-control-button {
       flex: 1;
       width: 100%;
-      --control-button-border-radius: 36px;
+      --control-button-border-radius: var(--ha-border-radius-6xl);
       --mdc-icon-size: 24px;
     }
     ha-control-button.active {

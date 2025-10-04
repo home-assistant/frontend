@@ -143,8 +143,7 @@ export class HuiEntityFilterCard
       this._element.preview = this.preview;
       this._element.layout = this.layout;
     }
-
-    if (changedProps.has("_config")) {
+    if (changedProps.has("_config") || changedProps.has("preview")) {
       return true;
     }
     if (changedProps.has("hass")) {
@@ -186,7 +185,11 @@ export class HuiEntityFilterCard
       return true;
     });
 
-    if (entitiesList.length === 0 && this._config.show_empty === false) {
+    if (
+      entitiesList.length === 0 &&
+      this._config.show_empty === false &&
+      !this.preview
+    ) {
       if (!this.hidden) {
         this.style.display = "none";
         this.toggleAttribute("hidden", true);

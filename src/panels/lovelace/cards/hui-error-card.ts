@@ -83,12 +83,12 @@ export class HuiErrorCard extends LitElement implements LovelaceCard {
       opacity: 0.12;
       pointer-events: none;
       content: "";
-      border-radius: var(--ha-card-border-radius, 12px);
+      border-radius: var(--ha-card-border-radius, var(--ha-border-radius-lg));
     }
     .header {
       display: flex;
       align-items: center;
-      gap: 8px;
+      gap: var(--ha-space-2);
       padding: 16px;
     }
     .message {

@@ -921,7 +921,7 @@ class HaConfigIntegrationPage extends SubscribeMixin(LitElement) {
         .header {
           display: flex;
           flex-wrap: wrap;
-          gap: 24px;
+          gap: var(--ha-space-6);
           align-items: center;
           justify-content: space-between;
           margin-bottom: 24px;
@@ -932,7 +932,7 @@ class HaConfigIntegrationPage extends SubscribeMixin(LitElement) {
         }
         .title {
           display: flex;
-          gap: 4px;
+          gap: var(--ha-space-1);
           flex-direction: column;
           justify-content: space-between;
         }
@@ -991,7 +991,7 @@ class HaConfigIntegrationPage extends SubscribeMixin(LitElement) {
         .actions {
           display: flex;
           flex-wrap: wrap;
-          gap: 8px;
+          gap: var(--ha-space-2);
         }
         .section {
           width: 100%;
@@ -1013,7 +1013,7 @@ class HaConfigIntegrationPage extends SubscribeMixin(LitElement) {
         .integration-info {
           display: flex;
           align-items: center;
-          gap: 8px;
+          gap: var(--ha-space-2);
         }
         .integration-info ha-svg-icon {
           min-width: 24px;
@@ -1051,7 +1051,7 @@ class HaConfigIntegrationPage extends SubscribeMixin(LitElement) {
         }
         ha-md-list {
           border: 1px solid var(--divider-color);
-          border-radius: 8px;
+          border-radius: var(--ha-border-radius-md);
           padding: 0;
         }
         .discovered {

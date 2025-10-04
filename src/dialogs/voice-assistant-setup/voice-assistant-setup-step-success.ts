@@ -368,7 +368,7 @@ export class HaVoiceAssistantSetupStepSuccess extends LitElement {
         margin-top: 24px;
       }
       .rows {
-        gap: 16px;
+        gap: var(--ha-space-4);
         display: flex;
         flex-direction: column;
       }

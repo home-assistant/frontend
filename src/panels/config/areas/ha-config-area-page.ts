@@ -7,20 +7,21 @@ import { customElement, property, state } from "lit/decorators";
 import { ifDefined } from "lit/directives/if-defined";
 import memoizeOne from "memoize-one";
 import { isComponentLoaded } from "../../../common/config/is_component_loaded";
-import { goBack } from "../../../common/navigate";
 import { computeDeviceNameDisplay } from "../../../common/entity/compute_device_name";
 import { computeDomain } from "../../../common/entity/compute_domain";
 import { computeStateName } from "../../../common/entity/compute_state_name";
+import { goBack } from "../../../common/navigate";
 import { caseInsensitiveStringCompare } from "../../../common/string/compare";
+import { slugify } from "../../../common/string/slugify";
 import { groupBy } from "../../../common/util/group-by";
 import { afterNextRender } from "../../../common/util/render-status";
+import "../../../components/ha-button";
 import "../../../components/ha-button-menu";
 import "../../../components/ha-card";
-import "../../../components/ha-button";
 import "../../../components/ha-icon-button";
 import "../../../components/ha-icon-next";
-import "../../../components/ha-list-item";
 import "../../../components/ha-list";
+import "../../../components/ha-list-item";
 import "../../../components/ha-tooltip";
 import type { AreaRegistryEntry } from "../../../data/area_registry";
 import {
@@ -51,7 +52,6 @@ import {
   loadAreaRegistryDetailDialog,
   showAreaRegistryDetailDialog,
 } from "./show-dialog-area-registry-detail";
-import { slugify } from "../../../common/string/slugify";
 
 declare interface NameAndEntity<EntityType extends HassEntity> {
   name: string;
@@ -664,7 +664,10 @@ class HaConfigAreaPage extends LitElement {
           color: var(--secondary-text-color);
         }
         img {
-          border-radius: var(--ha-card-border-radius, 12px);
+          border-radius: var(
+            --ha-card-border-radius,
+            var(--ha-border-radius-lg)
+          );
           width: 100%;
         }
 
@@ -730,7 +733,7 @@ class HaConfigAreaPage extends LitElement {
           height: 100%;
           background-color: var(--card-background-color);
           opacity: 0.5;
-          border-radius: 50%;
+          border-radius: var(--ha-border-radius-circle);
         }
         ha-logbook {
           height: 400px;

@@ -1,5 +1,5 @@
-import { consume } from "@lit/context";
 import { ResizeController } from "@lit-labs/observers/resize-controller";
+import { consume } from "@lit/context";
 import { mdiChevronDown, mdiChevronUp, mdiRestart } from "@mdi/js";
 import { differenceInMinutes } from "date-fns";
 import type { DataZoomComponentOption } from "echarts/components";
@@ -7,15 +7,16 @@ import type { EChartsType } from "echarts/core";
 import type {
   ECElementEvent,
   LegendComponentOption,
+  LineSeriesOption,
   XAXisOption,
   YAXisOption,
-  LineSeriesOption,
 } from "echarts/types/dist/shared";
 import type { PropertyValues } from "lit";
 import { css, html, LitElement, nothing } from "lit";
 import { customElement, property, state } from "lit/decorators";
 import { classMap } from "lit/directives/class-map";
 import { styleMap } from "lit/directives/style-map";
+import { ensureArray } from "../../common/array/ensure-array";
 import { getAllGraphColors } from "../../common/color/colors";
 import { fireEvent } from "../../common/dom/fire_event";
 import { listenMediaQuery } from "../../common/dom/media_query";
@@ -24,10 +25,9 @@ import type { Themes } from "../../data/ws-themes";
 import type { ECOption } from "../../resources/echarts";
 import type { HomeAssistant } from "../../types";
 import { isMac } from "../../util/is_mac";
+import "../chips/ha-assist-chip";
 import "../ha-icon-button";
 import { formatTimeLabel } from "./axis-label";
-import { ensureArray } from "../../common/array/ensure-array";
-import "../chips/ha-assist-chip";
 import { downSampleLineData } from "./down-sample";
 
 export const MIN_TIME_BETWEEN_UPDATES = 60 * 5 * 1000;
@@ -974,7 +974,7 @@ export class HaChartBase extends LitElement {
       right: 4px;
       display: flex;
       flex-direction: column;
-      gap: 4px;
+      gap: var(--ha-space-1);
     }
     .chart-controls.small {
       top: 0;
@@ -983,7 +983,7 @@ export class HaChartBase extends LitElement {
     .chart-controls ha-icon-button,
     .chart-controls ::slotted(ha-icon-button) {
       background: var(--card-background-color);
-      border-radius: 4px;
+      border-radius: var(--ha-border-radius-sm);
       --mdc-icon-button-size: 32px;
       color: var(--primary-color);
       border: 1px solid var(--divider-color);
@@ -1011,7 +1011,7 @@ export class HaChartBase extends LitElement {
       flex-wrap: wrap;
       justify-content: center;
       align-items: center;
-      gap: 8px;
+      gap: var(--ha-space-2);
     }
     .chart-legend li {
       height: 24px;
@@ -1036,7 +1036,7 @@ export class HaChartBase extends LitElement {
     .chart-legend .bullet {
       border-width: 1px;
       border-style: solid;
-      border-radius: 50%;
+      border-radius: var(--ha-border-radius-circle);
       display: block;
       height: 16px;
       width: 16px;

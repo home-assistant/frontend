@@ -318,14 +318,14 @@ class StepFlowCreateEntry extends LitElement {
         .device {
           border: 1px solid var(--divider-color);
           padding: 6px;
-          border-radius: 4px;
+          border-radius: var(--ha-border-radius-sm);
           margin: 4px;
           display: inline-block;
         }
         .device-info {
           display: flex;
           align-items: center;
-          gap: 8px;
+          gap: var(--ha-space-2);
         }
         .device-info img {
           width: 40px;

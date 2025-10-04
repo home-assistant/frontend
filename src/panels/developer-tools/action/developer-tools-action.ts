@@ -51,7 +51,7 @@ class HaPanelDevAction extends LitElement {
   @state() private _response?: {
     domain: string;
     service: string;
-    result: Record<string, any>;
+    result: Record<string, any> | null;
     media?: Promise<TemplateResult | typeof nothing>;
   };
 
@@ -205,7 +205,7 @@ class HaPanelDevAction extends LitElement {
           </ha-progress-button>
         </div>
       </div>
-      ${this._response
+      ${this._response?.result
         ? html`<div class="content response">
             <ha-card
               .header=${this.hass.localize(
@@ -215,7 +215,6 @@ class HaPanelDevAction extends LitElement {
               <div class="card-content">
                 <ha-yaml-editor
                   .hass=${this.hass}
-                  copy-clipboard
                   read-only
                   auto-update
                   has-extra-actions
@@ -444,7 +443,7 @@ class HaPanelDevAction extends LitElement {
     const button = ev.currentTarget as HaProgressButton;
 
     if (this._yamlMode && !this._yamlValid) {
-      forwardHaptic("failure");
+      forwardHaptic(this, "failure");
       button.actionError();
       this._error = this.hass.localize(
         "ui.panel.developer-tools.tabs.actions.errors.yaml.invalid_yaml"
@@ -466,7 +465,7 @@ class HaPanelDevAction extends LitElement {
     );
 
     if (this._error !== undefined) {
-      forwardHaptic("failure");
+      forwardHaptic(this, "failure");
       button.actionError();
       return;
     }
@@ -492,7 +491,7 @@ class HaPanelDevAction extends LitElement {
         service,
         result,
         media:
-          "media_source_id" in result
+          result && "media_source_id" in result
             ? resolveMediaSource(this.hass, result.media_source_id).then(
                 (resolved) =>
                   resolved.mime_type.startsWith("image/")
@@ -535,7 +534,7 @@ class HaPanelDevAction extends LitElement {
       ) {
         return;
       }
-      forwardHaptic("failure");
+      forwardHaptic(this, "failure");
       button.actionError();
 
       let localizedErrorMessage: string | undefined;

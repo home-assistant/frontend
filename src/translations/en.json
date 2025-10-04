@@ -5,7 +5,7 @@
     "config": "Settings",
     "states": "Overview",
     "map": "Map",
-    "logbook": "Logbook",
+    "logbook": "Activity",
     "history": "History",
     "todo": "To-do lists",
     "developer_tools": "Developer tools",
@@ -103,7 +103,8 @@
         }
       },
       "area": {
-        "area_not_found": "Area not found."
+        "area_not_found": "Area not found.",
+        "media_playing": "Media playing"
       },
       "automation": {
         "last_triggered": "Last triggered",
@@ -233,7 +234,8 @@
         "join": "Join",
         "media_players": "Media players",
         "select_all": "Select all",
-        "idle": "Idle"
+        "idle": "Idle",
+        "track_position": "Track position"
       },
       "persistent_notification": {
         "dismiss": "Dismiss"
@@ -416,6 +418,7 @@
       "next": "Next",
       "back": "Back",
       "undo": "Undo",
+      "redo": "Redo",
       "move": "Move",
       "save": "Save",
       "apply": "Apply",
@@ -475,7 +478,7 @@
           "url": "Local path or web URL"
         },
         "background": {
-          "yaml_info": "Background image is set via yaml editor."
+          "yaml_info": "Background image is set via YAML editor."
         },
         "location": {
           "latitude": "[%key:ui::panel::config::zone::detail::latitude%]",
@@ -526,7 +529,7 @@
         }
       },
       "logbook": {
-        "entries_not_found": "No logbook events found.",
+        "entries_not_found": "No activity found.",
         "triggered_by": "triggered by",
         "triggered_by_automation": "triggered by automation",
         "triggered_by_script": "triggered by script",
@@ -539,7 +542,7 @@
         "triggered_by_homeassistant_stopping": "triggered by Home Assistant stopping",
         "triggered_by_homeassistant_starting": "triggered by Home Assistant starting",
         "show_trace": "[%key:ui::panel::config::automation::editor::show_trace%]",
-        "retrieval_error": "Could not load logbook",
+        "retrieval_error": "Could not load activity",
         "not_loaded": "[%key:ui::dialogs::helper_settings::platform_not_loaded%]",
         "messages": {
           "was_away": "was detected away",
@@ -954,7 +957,8 @@
         "target": "Targets",
         "target_secondary": "What should this action use as targeted areas, devices or entities.",
         "action_data": "Action data",
-        "integration_doc": "Integration documentation"
+        "integration_doc": "Integration documentation",
+        "script_variables": "Script variables"
       },
       "related-items": {
         "no_related_found": "No related items found.",
@@ -1218,7 +1222,9 @@
       "yaml-editor": {
         "copy_to_clipboard": "[%key:ui::panel::config::automation::editor::copy_to_clipboard%]",
         "error": "Error in parsing YAML: {reason}",
-        "error_location": "line: {line}, column: {column}"
+        "error_location": "line: {line}, column: {column}",
+        "enter_fullscreen": "Enter fullscreen",
+        "exit_fullscreen": "Exit fullscreen"
       },
       "state-content-picker": {
         "state": "State",
@@ -1382,7 +1388,8 @@
         "info": "Information",
         "related": "Related",
         "history": "History",
-        "logbook": "Logbook",
+        "aggregate": "5-minute aggregated",
+        "logbook": "Activity",
         "device_or_service_info": "[%key:ui::panel::config::devices::device_info%]",
         "device_type": {
           "device": "[%key:ui::panel::config::devices::type::device_heading%]",
@@ -2066,7 +2073,9 @@
           "cut": "to cut the selected item and place it on the clipboard",
           "delete": "to delete the selected item",
           "paste": "to paste automation/script YAML from clipboard to editor",
-          "save": "to save automation/script"
+          "save": "to save automation/script",
+          "undo": "to undo last change",
+          "redo": "to redo last undone change"
         },
         "charts": {
           "title": "Charts",
@@ -3408,6 +3417,8 @@
                 "url": "Open"
               },
               "open": "Open",
+              "edit": "Edit",
+              "delete": "Delete",
               "add_dashboard": "Add dashboard"
             },
             "confirm_delete_title": "Delete {dashboard_title}?",
@@ -3880,6 +3891,8 @@
               "add": "Add trigger",
               "search": "Search trigger",
               "id": "Trigger ID",
+              "id_helper": "Helps identify each run based on which trigger fired.",
+              "optional": "Optional",
               "edit_id": "Edit ID",
               "duplicate": "[%key:ui::common::duplicate%]",
               "re_order": "Re-order",
@@ -4284,7 +4297,7 @@
                 },
                 "trigger": {
                   "label": "Triggered by",
-                  "no_triggers": "No triggers have an ID set. Use the three-dot menu on a trigger and select Edit ID to assign one.",
+                  "no_triggers": "There are no triggers with ID's set in this automation. Edit a trigger and give it a Trigger ID name.",
                   "id": "Trigger",
                   "description": {
                     "picker": "If the automation has been triggered by a specific trigger.",
@@ -4598,7 +4611,7 @@
             "tabs": {
               "details": "Step details",
               "timeline": "Trace timeline",
-              "logbook": "Related logbook entries",
+              "logbook": "Related activity",
               "automation_config": "Automation config",
               "step_config": "Step config",
               "changed_variables": "Changed variables",
@@ -4615,7 +4628,7 @@
               "error": "Error: {error}",
               "result": "Result:",
               "step_not_executed": "This step was not executed.",
-              "no_logbook_entries": "No logbook entries found for this step.",
+              "no_logbook_entries": "No activity found for this step.",
               "no_variables_changed": "No variables changed",
               "unable_to_find_config": "Unable to find config"
             },
@@ -4641,8 +4654,8 @@
               "disabled": "(disabled)",
               "triggered_by": "{triggeredBy, select, \n alias {{alias} triggered}\n other {Triggered} \n} {triggeredPath, select, \n trigger {by the {trigger}}\n other {manually} \n} at {time}",
               "path_error": "Unable to extract path {path}. Download trace and report as bug.",
-              "not_all_entries_are_related_automation_note": "Not all shown logbook entries might be related to this automation.",
-              "not_all_entries_are_related_script_note": "Not all shown logbook entries might be related to this script."
+              "not_all_entries_are_related_automation_note": "Not all shown activity might be related to this automation.",
+              "not_all_entries_are_related_script_note": "Not all shown activity might be related to this script."
             }
           }
         },
@@ -4778,7 +4791,7 @@
               "required": "Required",
               "default": "Default",
               "selector": "Selector",
-              "yaml_error": "Field yaml has invalid format.",
+              "yaml_error": "Field YAML has invalid format.",
               "key_not_null": "The field key must not be empty.",
               "key_not_unique": "The field key must not be the same value as another field.",
               "fields": "Fields",
@@ -5355,7 +5368,7 @@
           "person_not_found_title": "Person not found",
           "person_not_found": "We couldn't find the person you were trying to edit.",
           "detail": {
-            "new_person": "New person",
+            "new_person": "Add person",
             "name": "Name",
             "name_error_msg": "Name is required",
             "linked_user": "Linked user",
@@ -5366,7 +5379,6 @@
             "device_tracker_picked": "Track device",
             "device_tracker_pick": "Pick device to track",
             "delete": "Delete",
-            "create": "Create",
             "update": "Update",
             "confirm_delete_user_title": "Delete user account",
             "confirm_delete_user_text": "The user account for ''{name}'' will be permanently deleted. You can still track the user, but the person will no longer be able to log in.",
@@ -5827,7 +5839,10 @@
           "change_channel_range": "Channel must be in the range 11 to 26",
           "change_channel_text": "Initiating a channel change for your Home Assistant Thread network should be performed with caution. Some Thread devices may not migrate to the new channel automatically and, if the new channel is congested, your Thread devices may become intermittently unavailable. Some devices may need to be manually re-joined to your Thread network before they show in Home Assistant again. This action cannot be reversed (without performing another channel change).",
           "thread_network_info": "Thread network information",
-          "thread_network_delete_credentials": "Delete Thread network credentials"
+          "thread_network_delete_credentials": "Delete Thread network credentials",
+          "thread_network_send_credentials_ha": "Send credentials to Home Assistant",
+          "thread_network_send_credentials_phone": "Send credentials to phone",
+          "thread_network_make_preferred": "Make preferred network"
         },
         "ssdp": {
           "name": "Name",
@@ -7582,8 +7597,8 @@
               "square": "Render cards as squares"
             },
             "logbook": {
-              "name": "Logbook",
-              "description": "The Logbook card shows a list of events for entities."
+              "name": "Activity",
+              "description": "The Activity card shows a list of events for entities."
             },
             "history-graph": {
               "name": "History graph",
@@ -7705,6 +7720,7 @@
               "show_icon": "Show icon",
               "show_name": "Show name",
               "show_state": "Show state",
+              "show_last_changed": "Show last changed",
               "tap_action": "Tap behavior",
               "interactions": "Interactions",
               "title": "Title",
@@ -7825,6 +7841,18 @@
                   "description": "60 ticks (Every minute)"
                 }
               },
+              "seconds_motion": {
+                "label": "Seconds motion",
+                "description": "How the seconds hand moves on the clock",
+                "continuous": {
+                  "label": "Continuous",
+                  "description": "The seconds hand moves continuously"
+                },
+                "tick": {
+                  "label": "Tick",
+                  "description": "The seconds hand moves in 1 second steps"
+                }
+              },
               "face_style": {
                 "label": "Clock face style",
                 "description": "Which kind of indices to use for the clock face",
@@ -7919,7 +7947,7 @@
             },
             "thermostat": {
               "name": "Thermostat",
-              "description": "The Thermostat card gives control of a climate entity for heating or cooling, allowing you to set its mode and desired temperature.",
+              "description": "The Thermostat card gives control of a climate or water heater entity for heating or cooling, allowing you to set its mode and desired temperature.",
               "show_current_as_primary": "Show current temperature as primary information"
             },
             "tile": {
@@ -8196,7 +8224,12 @@
               "water-heater-operation-modes": {
                 "label": "Water heater operation modes",
                 "operation_modes": "Operation modes",
-                "customize_modes": "Customize operation modes"
+                "customize_modes": "Customize operation modes",
+                "style": "[%key:ui::panel::lovelace::editor::features::types::climate-preset-modes::style%]",
+                "style_list": {
+                  "dropdown": "[%key:ui::panel::lovelace::editor::features::types::climate-preset-modes::style_list::dropdown%]",
+                  "icons": "[%key:ui::panel::lovelace::editor::features::types::climate-preset-modes::style_list::icons%]"
+                }
               },
               "lawn-mower-commands": {
                 "label": "Lawn mower commands",
@@ -8408,6 +8441,7 @@
             "system": "Use system locale",
             "comma_decimal": "1,234,567.89",
             "decimal_comma": "1.234.567,89",
+            "quote_decimal": "1'234'567.89",
             "space_comma": "1 234 567,89",
             "none": "None"
           }
@@ -8514,7 +8548,7 @@
         },
         "entity_id_picker": {
           "title": "Display entity IDs in picker",
-          "description": "Shows the full entity IDs when selecting entities with a picker."
+          "description": "Shows the full entity IDs when selecting entities from a menu list."
         },
         "refresh_tokens": {
           "header": "Refresh tokens",
@@ -9242,7 +9276,9 @@
         "download_data": "[%key:ui::panel::history::download_data%]",
         "configure": "[%key:ui::dialogs::quick-bar::commands::navigation::energy%]",
         "compare": {
-          "info": "You are comparing the period {start} with the period {end}"
+          "info": "You are comparing the period {start} with the period {end}",
+          "compare_previous_year": "Compare previous year",
+          "compare_previous_period": "Compare previous period"
         },
         "setup": {
           "next": "Next",

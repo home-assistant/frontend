@@ -803,7 +803,7 @@ export class HassioNetwork extends LitElement {
         .address-row {
           display: flex;
           flex-direction: row;
-          gap: 8px;
+          gap: var(--ha-space-2);
           align-items: center;
         }
         .address-row ha-textfield {

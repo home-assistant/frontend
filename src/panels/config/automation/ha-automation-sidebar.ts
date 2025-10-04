@@ -171,7 +171,7 @@ export default class HaAutomationSidebar extends LitElement {
         @mousedown=${this._handleMouseDown}
         @touchstart=${this._handleMouseDown}
       >
-        ${this._resizing ? html`<div class="indicator"></div>` : nothing}
+        <div class="indicator ${this._resizing ? "" : "hidden"}"></div>
       </div>
       ${this._renderContent()}
     `;
@@ -292,9 +292,7 @@ export default class HaAutomationSidebar extends LitElement {
     :host {
       z-index: 6;
       outline: none;
-      height: calc(
-        100% - var(--safe-area-inset-top) - var(--safe-area-inset-bottom)
-      );
+      height: calc(100% - var(--safe-area-inset-top, 0px));
       --ha-card-border-radius: var(
         --ha-dialog-border-radius,
         var(--ha-border-radius-2xl)
@@ -304,7 +302,6 @@ export default class HaAutomationSidebar extends LitElement {
       --ha-bottom-sheet-border-style: solid;
       --ha-bottom-sheet-border-color: var(--primary-color);
       margin-top: var(--safe-area-inset-top);
-      margin-bottom: var(--safe-area-inset-bottom);
     }
 
     @media all and (max-width: 870px) {
@@ -323,7 +320,7 @@ export default class HaAutomationSidebar extends LitElement {
       display: flex;
       align-items: center;
       justify-content: center;
-      padding: var(--ha-card-border-radius) 0;
+      padding: var(--ha-card-border-radius) var(--ha-border-radius-square);
     }
     .handle.resizing {
       cursor: grabbing;
@@ -333,6 +330,15 @@ export default class HaAutomationSidebar extends LitElement {
       height: 100%;
       width: 4px;
       border-radius: var(--ha-border-radius-pill);
+      transform: scale3d(1, 1, 1);
+      opacity: 1;
+      transition:
+        transform 180ms ease-in-out,
+        opacity 180ms ease-in-out;
+    }
+    .handle .indicator.hidden {
+      transform: scale3d(0, 1, 1);
+      opacity: 0;
     }
   `;
 }

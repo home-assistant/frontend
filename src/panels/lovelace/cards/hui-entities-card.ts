@@ -278,15 +278,27 @@ class HuiEntitiesCard extends LitElement implements LovelaceCard {
     }
 
     .header {
-      border-top-left-radius: var(--ha-card-border-radius, 12px);
-      border-top-right-radius: var(--ha-card-border-radius, 12px);
+      border-top-left-radius: var(
+        --ha-card-border-radius,
+        var(--ha-border-radius-lg)
+      );
+      border-top-right-radius: var(
+        --ha-card-border-radius,
+        var(--ha-border-radius-lg)
+      );
       margin-bottom: 16px;
       overflow: hidden;
     }
 
     .footer {
-      border-bottom-left-radius: var(--ha-card-border-radius, 12px);
-      border-bottom-right-radius: var(--ha-card-border-radius, 12px);
+      border-bottom-left-radius: var(
+        --ha-card-border-radius,
+        var(--ha-border-radius-lg)
+      );
+      border-bottom-right-radius: var(
+        --ha-card-border-radius,
+        var(--ha-border-radius-lg)
+      );
       margin-top: -16px;
       overflow: hidden;
     }

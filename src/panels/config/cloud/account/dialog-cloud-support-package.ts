@@ -4,12 +4,12 @@ import { customElement, property, query, state } from "lit/decorators";
 import { fireEvent } from "../../../../common/dom/fire_event";
 import "../../../../components/ha-alert";
 import "../../../../components/ha-button";
-import "../../../../components/ha-spinner";
 import "../../../../components/ha-dialog-header";
 import "../../../../components/ha-markdown-element";
 import "../../../../components/ha-md-dialog";
 import type { HaMdDialog } from "../../../../components/ha-md-dialog";
 import "../../../../components/ha-select";
+import "../../../../components/ha-spinner";
 import "../../../../components/ha-textarea";
 import { fetchSupportPackage } from "../../../../data/cloud";
 import type { HomeAssistant } from "../../../../types";
@@ -129,7 +129,7 @@ export class DialogSupportPackage extends LitElement {
     }
     .actions {
       display: flex;
-      gap: 8px;
+      gap: var(--ha-space-2);
       justify-content: flex-end;
     }
     hr {
@@ -161,7 +161,7 @@ export class DialogSupportPackage extends LitElement {
     }
 
     table > tbody > tr > td {
-      border-radius: 0;
+      border-radius: var(--ha-border-radius-square);
     }
 
     table > tbody > tr {
@@ -183,14 +183,14 @@ export class DialogSupportPackage extends LitElement {
       display: table-cell;
       text-align: left;
       vertical-align: middle;
-      border-radius: 2px;
+      border-radius: var(--ha-border-radius-sm);
     }
     details {
       background-color: var(--secondary-background-color);
       padding: 16px 24px;
       margin: 8px 0;
       border: 1px solid var(--divider-color);
-      border-radius: 16px;
+      border-radius: var(--ha-border-radius-xl);
     }
     summary {
       font-weight: var(--ha-font-weight-bold);

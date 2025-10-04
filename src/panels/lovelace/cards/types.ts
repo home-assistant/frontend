@@ -176,6 +176,7 @@ export interface EnergyDevicesGraphCardConfig extends EnergyCardBaseConfig {
   type: "energy-devices-graph";
   title?: string;
   max_devices?: number;
+  hide_compound_stats?: boolean;
 }
 
 export interface EnergyDevicesDetailGraphCardConfig
@@ -282,7 +283,7 @@ export interface GlanceConfigEntity extends ConfigEntity {
   image?: string;
   show_state?: boolean;
   state_color?: boolean;
-  format: TimestampRenderingFormat;
+  format?: TimestampRenderingFormat;
 }
 
 export interface GlanceCardConfig extends LovelaceCardConfig {
@@ -375,6 +376,7 @@ export interface ClockCardConfig extends LovelaceCardConfig {
   clock_style?: "digital" | "analog";
   clock_size?: "small" | "medium" | "large";
   show_seconds?: boolean | undefined;
+  seconds_motion?: "continuous" | "tick";
   time_format?: TimeFormat;
   time_zone?: string;
   no_background?: boolean;

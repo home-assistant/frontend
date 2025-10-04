@@ -91,7 +91,7 @@ class HaLabeledSlider extends LitElement {
       flex-grow: 1;
       align-items: center;
       background-image: var(--ha-slider-background);
-      border-radius: 4px;
+      border-radius: var(--ha-border-radius-sm);
       height: 32px;
     }
 
