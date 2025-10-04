@@ -12,7 +12,7 @@ import "../../../components/ha-code-editor";
 import "../../../components/ha-language-picker";
 import "../../../components/ha-textarea";
 import type { HaTextArea } from "../../../components/ha-textarea";
-import type { AssitDebugResult } from "../../../data/conversation";
+import type { AssistDebugResult } from "../../../data/conversation";
 import { debugAgent, listAgents } from "../../../data/conversation";
 import { SubscribeMixin } from "../../../mixins/subscribe-mixin";
 import { haStyle } from "../../../resources/styles";
@@ -22,7 +22,7 @@ import { fileDownload } from "../../../util/file_download";
 interface SentenceParsingResult {
   sentence: string;
   language: string;
-  result: AssitDebugResult | null;
+  result: AssistDebugResult | null;
 }
 
 @customElement("developer-tools-assist")
