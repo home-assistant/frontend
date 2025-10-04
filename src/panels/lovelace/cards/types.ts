@@ -3,6 +3,7 @@ import type { HaDurationData } from "../../../components/ha-duration-input";
 import type { ActionConfig } from "../../../data/lovelace/config/action";
 import type { LovelaceCardConfig } from "../../../data/lovelace/config/card";
 import type { Statistic, StatisticType } from "../../../data/recorder";
+import type { TimeFormat } from "../../../data/translation";
 import type { ForecastType } from "../../../data/weather";
 import type {
   FullCalendarView,
@@ -13,6 +14,7 @@ import type {
   LovelaceCardFeatureConfig,
   LovelaceCardFeaturePosition,
 } from "../card-features/types";
+import type { EntityNameConfig } from "../common/entity/entity-display-name";
 import type { LegacyStateFilter } from "../common/evaluate-filter";
 import type { Condition, LegacyCondition } from "../common/validate-condition";
 import type { HuiImage } from "../components/hui-image";
@@ -25,7 +27,6 @@ import type {
 } from "../entity-rows/types";
 import type { LovelaceHeaderFooterConfig } from "../header-footer/types";
 import type { LovelaceHeadingBadgeConfig } from "../heading-badges/types";
-import type { TimeFormat } from "../../../data/translation";
 import type { HomeSummary } from "../strategies/home/helpers/home-summaries";
 
 export type AlarmPanelCardConfigState =
@@ -566,7 +567,7 @@ export interface WeatherForecastCardConfig extends LovelaceCardConfig {
 
 export interface TileCardConfig extends LovelaceCardConfig {
   entity: string;
-  name?: string;
+  name?: EntityNameConfig;
   hide_state?: boolean;
   state_content?: string | string[];
   icon?: string;
