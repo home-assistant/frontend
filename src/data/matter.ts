@@ -33,7 +33,7 @@ export interface MatterNodeDiagnostics {
   network_type: NetworkType;
   node_type: NodeType;
   network_name?: string;
-  ip_adresses: string[];
+  ip_addresses: string[];
   mac_address?: string;
   available: boolean;
   active_fabrics: MatterFabricData[];
