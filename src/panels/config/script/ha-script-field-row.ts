@@ -20,13 +20,13 @@ import "../../../components/ha-md-menu-item";
 import type { ScriptFieldSidebarConfig } from "../../../data/automation";
 import type { Field } from "../../../data/script";
 import { SELECTOR_SELECTOR_BUILDING_BLOCKS } from "../../../data/selector/selector_selector";
-import { showConfirmationDialog } from "../../../dialogs/generic/show-dialog-box";
 import { haStyle } from "../../../resources/styles";
 import type { HomeAssistant } from "../../../types";
 import { isMac } from "../../../util/is_mac";
 import { indentStyle, overflowStyles } from "../automation/styles";
 import "./ha-script-field-selector-editor";
 import type HaScriptFieldSelectorEditor from "./ha-script-field-selector-editor";
+import { showToast } from "../../../util/toast";
 
 @customElement("ha-script-field-row")
 export default class HaScriptFieldRow extends LitElement {
@@ -386,21 +386,19 @@ export default class HaScriptFieldRow extends LitElement {
   };
 
   private _onDelete = () => {
-    showConfirmationDialog(this, {
-      title: this.hass.localize(
-        "ui.panel.config.script.editor.field_delete_confirm_title"
-      ),
-      text: this.hass.localize(
-        "ui.panel.config.script.editor.field_delete_confirm_text"
-      ),
-      dismissText: this.hass.localize("ui.common.cancel"),
-      confirmText: this.hass.localize("ui.common.delete"),
-      destructive: true,
-      confirm: () => {
-        fireEvent(this, "value-changed", { value: null });
-        if (this._selected || this._selectorRowSelected) {
-          fireEvent(this, "close-sidebar");
-        }
+    fireEvent(this, "value-changed", { value: null });
+    if (this._selected || this._selectorRowSelected) {
+      fireEvent(this, "close-sidebar");
+    }
+
+    showToast(this, {
+      message: this.hass.localize("ui.common.successfully_deleted"),
+      duration: 4000,
+      action: {
+        text: this.hass.localize("ui.common.undo"),
+        action: () => {
+          fireEvent(window, "undo-change");
+        },
       },
     });
   };
