@@ -122,3 +122,22 @@ export const generateEntityFilter = (
     return true;
   };
 };
+
+export const findEntities = (
+  entities: string[],
+  filters: EntityFilterFunc[]
+): string[] => {
+  const seen = new Set<string>();
+  const results: string[] = [];
+
+  for (const filter of filters) {
+    for (const entity of entities) {
+      if (filter(entity) && !seen.has(entity)) {
+        seen.add(entity);
+        results.push(entity);
+      }
+    }
+  }
+
+  return results;
+};

@@ -10,7 +10,10 @@
     "todo": "To-do lists",
     "developer_tools": "Developer tools",
     "media_browser": "Media",
-    "profile": "Profile"
+    "profile": "Profile",
+    "light": "Lights",
+    "security": "Security",
+    "climate": "Climate"
   },
   "state": {
     "default": {
@@ -6883,9 +6886,6 @@
           },
           "home": {
             "summary_list": {
-              "climate": "Climate",
-              "lights": "Lights",
-              "security": "Security",
               "media_players": "Media players"
             },
             "welcome_user": "Welcome {user}",

@@ -5,7 +5,10 @@ import { ifDefined } from "lit/directives/if-defined";
 import { styleMap } from "lit/directives/style-map";
 import { computeCssColor } from "../../../common/color/compute-color";
 import { computeDomain } from "../../../common/entity/compute_domain";
-import { generateEntityFilter } from "../../../common/entity/entity_filter";
+import {
+  findEntities,
+  generateEntityFilter,
+} from "../../../common/entity/entity_filter";
 import { formatNumber } from "../../../common/number/format_number";
 import "../../../components/ha-card";
 import "../../../components/ha-icon";
@@ -19,7 +22,6 @@ import { actionHandler } from "../common/directives/action-handler-directive";
 import { handleAction } from "../common/handle-action";
 import { hasAction } from "../common/has-action";
 import {
-  findEntities,
   getSummaryLabel,
   HOME_SUMMARIES_FILTERS,
   HOME_SUMMARIES_ICONS,
@@ -29,7 +31,7 @@ import type { LovelaceCard, LovelaceGridOptions } from "../types";
 import type { HomeSummaryCard } from "./types";
 
 const COLORS: Record<HomeSummary, string> = {
-  lights: "amber",
+  light: "amber",
   climate: "deep-orange",
   security: "blue-grey",
   media_players: "blue",
@@ -92,9 +94,9 @@ export class HuiHomeSummaryCard extends LitElement implements LovelaceCard {
     const entitiesInsideArea = allEntities.filter(areasFilter);
 
     switch (this._config.summary) {
-      case "lights": {
+      case "light": {
         // Number of lights on
-        const lightsFilters = HOME_SUMMARIES_FILTERS.lights.map((filter) =>
+        const lightsFilters = HOME_SUMMARIES_FILTERS.light.map((filter) =>
           generateEntityFilter(this.hass!, filter)
         );
 
