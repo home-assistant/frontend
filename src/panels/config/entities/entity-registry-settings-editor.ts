@@ -65,6 +65,7 @@ import {
   updateEntityRegistryEntry,
 } from "../../../data/entity_registry";
 import { entityIcon, entryIcon } from "../../../data/icons";
+import { handleRecordingChange } from "./recorder-util";
 import {
   domainToName,
   fetchIntegrationManifest,
@@ -197,6 +198,8 @@ export class EntityRegistrySettingsEditor extends LitElement {
 
   @state() private _noDeviceArea?: boolean;
 
+  @state() private _recordingDisabled?: boolean;
+
   private _origEntityId!: string;
 
   private _deviceClassOptions?: string[][];
@@ -226,6 +229,9 @@ export class EntityRegistrySettingsEditor extends LitElement {
     this._switchAsInvert = this.entry.options?.switch_as_x?.invert === true;
 
     const domain = computeDomain(this.entry.entity_id);
+
+    // Fetch recording settings
+    this._fetchRecordingSettings();
 
     if (domain === "camera" && isComponentLoaded(this.hass, "stream")) {
       const stateObj: HassEntity | undefined =
@@ -972,6 +978,27 @@ export class EntityRegistrySettingsEditor extends LitElement {
         ></ha-switch>
       </ha-settings-row>
 
+      ${isComponentLoaded(this.hass, "recorder")
+        ? html`
+            <ha-settings-row>
+              <span slot="heading"
+                >${this.hass.localize(
+                  "ui.dialogs.entity_registry.editor.record_label"
+                )}</span
+              >
+              <span slot="description"
+                >${this.hass.localize(
+                  "ui.dialogs.entity_registry.editor.record_description"
+                )}</span
+              >
+              <ha-switch
+                .checked=${!this._recordingDisabled}
+                .disabled=${this.disabled}
+                @change=${this._recordingChanged}
+              ></ha-switch>
+            </ha-settings-row>
+          `
+        : ""}
       ${this.entry.device_id
         ? html`<ha-settings-row>
               <span slot="heading"
@@ -1399,6 +1426,15 @@ export class EntityRegistrySettingsEditor extends LitElement {
     this._labels = ev.detail.value;
   }
 
+  private _fetchRecordingSettings() {
+    if (!isComponentLoaded(this.hass, "recorder")) {
+      return;
+    }
+    // Get recording settings from entity registry entry options
+    const recorderOptions = this.entry.options?.recorder;
+    this._recordingDisabled = recorderOptions?.recording_disabled_by !== null;
+  }
+
   private async _fetchCameraPrefs() {
     const capabilities = await fetchCameraCapabilities(
       this.hass,
@@ -1460,6 +1496,19 @@ export class EntityRegistrySettingsEditor extends LitElement {
     } else {
       this._hiddenBy = "user";
     }
+  }
+
+  private async _recordingChanged(ev: CustomEvent): Promise<void> {
+    const checkbox = ev.currentTarget as HaSwitch;
+
+    await handleRecordingChange({
+      hass: this.hass,
+      entityId: this.entry.entity_id,
+      checkbox,
+      onSuccess: (recordingDisabled) => {
+        this._recordingDisabled = recordingDisabled;
+      },
+    });
   }
 
   private _openDeviceSettings() {
