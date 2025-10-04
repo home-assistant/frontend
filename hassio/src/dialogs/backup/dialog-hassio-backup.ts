@@ -1,5 +1,3 @@
-import type { ActionDetail } from "@material/mwc-list";
-
 import { mdiClose, mdiDotsVertical } from "@mdi/js";
 import type { CSSResultGroup } from "lit";
 import { css, html, LitElement, nothing } from "lit";
@@ -10,7 +8,8 @@ import { stopPropagation } from "../../../../src/common/dom/stop_propagation";
 import { slugify } from "../../../../src/common/string/slugify";
 import "../../../../src/components/ha-alert";
 import "../../../../src/components/ha-button";
-import "../../../../src/components/ha-button-menu";
+import "../../../../src/components/ha-md-button-menu";
+import "../../../../src/components/ha-md-menu-item";
 import "../../../../src/components/ha-dialog-header";
 import "../../../../src/components/ha-header-bar";
 import "../../../../src/components/ha-icon-button";
@@ -108,10 +107,9 @@ class HassioBackupDialog
             >${this._backup.name}</span
           >
           ${!this._dialogParams.onboarding && this._dialogParams.supervisor
-            ? html`<ha-button-menu
+            ? html`<ha-md-button-menu
                 slot="actionItems"
-                fixed
-                @action=${this._handleMenuAction}
+                positioning="fixed"
                 @closed=${stopPropagation}
               >
                 <ha-icon-button
@@ -121,17 +119,17 @@ class HassioBackupDialog
                   .path=${mdiDotsVertical}
                   slot="trigger"
                 ></ha-icon-button>
-                <ha-list-item
+                <ha-md-menu-item @click=${this._downloadClicked}
                   >${this._dialogParams.supervisor.localize(
                     "backup.download_backup"
-                  )}</ha-list-item
+                  )}</ha-md-menu-item
                 >
-                <ha-list-item class="error"
+                <ha-md-menu-item @click=${this._deleteClicked} class="error"
                   >${this._dialogParams.supervisor.localize(
                     "backup.delete_backup_title"
-                  )}</ha-list-item
+                  )}</ha-md-menu-item
                 >
-              </ha-button-menu>`
+              </ha-md-button-menu>`
             : nothing}
         </ha-dialog-header>
         <div slot="content">
@@ -162,17 +160,6 @@ class HassioBackupDialog
         </div>
       </ha-md-dialog>
     `;
-  }
-
-  private _handleMenuAction(ev: CustomEvent<ActionDetail>) {
-    switch (ev.detail.index) {
-      case 0:
-        this._downloadClicked();
-        break;
-      case 1:
-        this._deleteClicked();
-        break;
-    }
   }
 
   private async _restoreClicked() {
