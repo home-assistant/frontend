@@ -350,28 +350,31 @@ class MoreInfoMediaPlayer extends LitElement {
                     </ha-icon-button>`
                   : html`<span class="spacer"></span>`;
               })}
-              ${["media_play_pause", "media_pause", "media_play"].map(
-                (action) => {
-                  const control = controls?.find((c) => c.action === action);
-                  return control
-                    ? html`<ha-button
-                        variant="brand"
-                        appearance="filled"
-                        size="medium"
-                        action=${action}
-                        @click=${this._handleClick}
-                        class="center-control"
-                      >
-                        <ha-svg-icon
-                          .path=${control.icon}
-                          aria-label=${this.hass.localize(
-                            `ui.card.media_player.${control.action}`
-                          )}
-                        ></ha-svg-icon>
-                      </ha-button>`
-                    : nothing;
-                }
-              )}
+              ${[
+                "media_play_pause",
+                "media_pause",
+                "media_play",
+                "media_stop",
+              ].map((action) => {
+                const control = controls?.find((c) => c.action === action);
+                return control
+                  ? html`<ha-button
+                      variant="brand"
+                      appearance="filled"
+                      size="medium"
+                      action=${action}
+                      @click=${this._handleClick}
+                      class="center-control"
+                    >
+                      <ha-svg-icon
+                        .path=${control.icon}
+                        aria-label=${this.hass.localize(
+                          `ui.card.media_player.${control.action}`
+                        )}
+                      ></ha-svg-icon>
+                    </ha-button>`
+                  : nothing;
+              })}
               ${["media_next_track", "shuffle_set"].map((action) => {
                 const control = controls?.find((c) => c.action === action);
                 return control
