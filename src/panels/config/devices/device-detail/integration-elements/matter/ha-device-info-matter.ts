@@ -114,11 +114,11 @@ export class HaDeviceInfoMatter extends SubscribeMixin(LitElement) {
         <div class="row">
           <span class="name"
             >${this.hass.localize(
-              "ui.panel.config.matter.device_info.ip_adresses"
+              "ui.panel.config.matter.device_info.ip_addresses"
             )}:</span
           >
           <span class="value"
-            >${this._nodeDiagnostics.ip_adresses.map(
+            >${this._nodeDiagnostics.ip_addresses.map(
               (ip) => html`${ip}<br />`
             )}</span
           >

@@ -6587,7 +6587,7 @@
             "network_type": "Network type",
             "node_type": "Device type",
             "network_name": "Network name",
-            "ip_adresses": "IP address(es)",
+            "ip_addresses": "IP address(es)",
             "mac_address": "MAC address",
             "available": "Available?"
           },
