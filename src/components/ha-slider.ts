@@ -19,7 +19,6 @@ export class HaSlider extends Slider {
       Slider.styles,
       css`
         :host {
-          --wa-form-control-activated-color: var(--ha-control-color);
           --track-size: var(--ha-slider-track-size, 4px);
           --marker-height: calc(var(--ha-slider-track-size, 4px) / 2);
           --marker-width: calc(var(--ha-slider-track-size, 4px) / 2);
@@ -54,12 +53,20 @@ export class HaSlider extends Slider {
 
         #thumb {
           border: none;
+          background-color: var(--ha-slider-thumb-color, var(--primary-color));
         }
 
         #slider:focus-visible:not(.disabled) #thumb,
         #slider:focus-visible:not(.disabled) #thumb-min,
         #slider:focus-visible:not(.disabled) #thumb-max {
           outline: var(--wa-focus-ring);
+        }
+
+        #indicator {
+          background-color: var(
+            --ha-slider-indicator-color,
+            var(--primary-color)
+          );
         }
 
         :host([size="medium"]) {
