@@ -38,7 +38,7 @@ export interface MockHomeAssistant extends HomeAssistant {
   mockEntities: any;
   updateHass(obj: Partial<MockHomeAssistant>);
   updateStates(newStates: HassEntities);
-  addEntities(entites: Entity | Entity[], replace?: boolean);
+  addEntities(entities: Entity | Entity[], replace?: boolean);
   updateTranslations(fragment: null | string, language?: string);
   addTranslations(translations: Record<string, string>, language?: string);
   mockWS<T extends (...args) => any = any>(
