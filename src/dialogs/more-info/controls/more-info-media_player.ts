@@ -30,6 +30,8 @@ import type {
   MediaPlayerEntity,
 } from "../../../data/media-player";
 import {
+  cleanupMediaTitle,
+  computeMediaDescription,
   computeMediaControls,
   handleMediaControlClick,
   MediaPlayerEntityFeature,
@@ -269,8 +271,8 @@ class MoreInfoMediaPlayer extends LitElement {
     const remaining = Math.max(duration - position, 0);
     const remainingFormatted = this._formatDuration(remaining);
     const positionFormatted = this._formatDuration(position);
-    const primaryTitle = playerObj.primaryTitle;
-    const secondaryTitle = playerObj.secondaryTitle;
+    const primaryTitle = cleanupMediaTitle(stateObj.attributes.media_title);
+    const secondaryTitle = computeMediaDescription(stateObj);
     const turnOn = controls?.find((c) => c.action === "turn_on");
     const turnOff = controls?.find((c) => c.action === "turn_off");
 
