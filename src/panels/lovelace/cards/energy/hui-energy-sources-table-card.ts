@@ -252,7 +252,14 @@ export class HuiEnergySourcesTableCard
       water: false,
     };
 
-    const types = energySourcesByType(this._data.prefs);
+    const allTypes = energySourcesByType(this._data.prefs);
+    const types = this._config?.types
+      ? Object.fromEntries(
+          Object.entries(allTypes).filter(([key]) =>
+            this._config!.types.includes(key)
+          )
+        )
+      : allTypes;
 
     const computedStyles = getComputedStyle(this);
 
