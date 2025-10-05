@@ -27,6 +27,7 @@ import type { LovelaceHeaderFooterConfig } from "../header-footer/types";
 import type { LovelaceHeadingBadgeConfig } from "../heading-badges/types";
 import type { TimeFormat } from "../../../data/translation";
 import type { HomeSummary } from "../strategies/home/helpers/home-summaries";
+import type { EnergySourceByType } from "../../../data/energy";
 
 export type AlarmPanelCardConfigState =
   | "arm_away"
@@ -189,6 +190,7 @@ export interface EnergyDevicesDetailGraphCardConfig
 export interface EnergySourcesTableCardConfig extends EnergyCardBaseConfig {
   type: "energy-sources-table";
   title?: string;
+  types?: (keyof EnergySourceByType)[];
 }
 
 export interface EnergySolarGaugeCardConfig extends EnergyCardBaseConfig {

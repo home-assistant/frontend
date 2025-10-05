@@ -9,7 +9,7 @@ import { styleMap } from "lit/directives/style-map";
 import { formatNumber } from "../../../../common/number/format_number";
 import { getEnergyColor } from "./common/color";
 import "../../../../components/ha-card";
-import type { EnergyData } from "../../../../data/energy";
+import type { EnergyData, EnergySourceByType } from "../../../../data/energy";
 import {
   energySourcesByType,
   getEnergyDataCollection,
@@ -253,10 +253,11 @@ export class HuiEnergySourcesTableCard
     };
 
     const allTypes = energySourcesByType(this._data.prefs);
-    const types = this._config?.types
+    const pickedTypes = this._config?.types;
+    const types = pickedTypes
       ? Object.fromEntries(
           Object.entries(allTypes).filter(([key]) =>
-            this._config!.types.includes(key)
+            pickedTypes.includes(key as keyof EnergySourceByType)
           )
         )
       : allTypes;
