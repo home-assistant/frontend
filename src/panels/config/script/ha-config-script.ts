@@ -18,7 +18,7 @@ const equal = (a: ScriptEntity[], b: ScriptEntity[]): boolean => {
   if (a.length !== b.length) {
     return false;
   }
-  return a.every((enityA, index) => enityA === b[index]);
+  return a.every((entityA, index) => entityA === b[index]);
 };
 
 @customElement("ha-config-script")
