@@ -29,7 +29,7 @@
     "@babel/runtime": "7.28.4",
     "@braintree/sanitize-url": "7.1.1",
     "@codemirror/autocomplete": "6.19.0",
-    "@codemirror/commands": "6.8.1",
+    "@codemirror/commands": "6.9.0",
     "@codemirror/language": "6.11.3",
     "@codemirror/legacy-modes": "6.5.2",
     "@codemirror/search": "6.5.11",
