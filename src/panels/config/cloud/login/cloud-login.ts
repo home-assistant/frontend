@@ -136,7 +136,7 @@ export class CloudLogin extends LitElement {
     password: string,
     checkConnection: boolean
   ): Promise<"cancel" | "password-change" | string | undefined> => {
-    const errCode = err && err.body && err.body.code;
+    const errCode = err?.body?.code;
     if (errCode === "mfarequired") {
       const totpCode = await showPromptDialog(this, {
         title: this.localize(
@@ -200,9 +200,7 @@ export class CloudLogin extends LitElement {
           `ui.panel.${this.translationKeyPanel}.login.alert_totp_code_invalid`
         );
       default:
-        return err && err.body && err.body.message
-          ? err.body.message
-          : "Unknown error";
+        return err?.body?.message ?? "Unknown error";
     }
   };
 

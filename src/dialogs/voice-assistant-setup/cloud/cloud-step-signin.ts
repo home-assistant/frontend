@@ -120,7 +120,7 @@ export class CloudStepSignin extends LitElement {
           check_connection: this._checkConnection,
         });
       } catch (err: any) {
-        const errCode = err && err.body && err.body.code;
+        const errCode = err?.body?.code;
 
         if (errCode === "mfarequired") {
           const totpCode = await showPromptDialog(this, {
@@ -196,10 +196,7 @@ export class CloudStepSignin extends LitElement {
             );
             break;
           default:
-            this._error =
-              err && err.body && err.body.message
-                ? err.body.message
-                : "Unknown error";
+            this._error = err?.body?.message ?? "Unknown error";
             break;
         }
 

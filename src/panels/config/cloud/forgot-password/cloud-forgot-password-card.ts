@@ -111,14 +111,11 @@ export class CloudForgotPasswordCard extends LitElement {
       });
     } catch (err: any) {
       this._inProgress = false;
-      const errCode = err && err.body && err.body.code;
+      const errCode = err?.body?.code;
       if (errCode === "usernotfound" && email !== email.toLowerCase()) {
         await this._resetPassword(email.toLowerCase());
       } else {
-        this._error =
-          err && err.body && err.body.message
-            ? err.body.message
-            : "Unknown error";
+        this._error = err?.body?.message ?? "Unknown error";
       }
     }
   };

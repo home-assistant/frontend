@@ -227,8 +227,7 @@ class HaMfaModuleSetupFlow extends LitElement {
           this._loading = false;
         },
         (err) => {
-          this._errorMessage =
-            (err && err.body && err.body.message) || "Unknown error occurred";
+          this._errorMessage = err?.body?.message || "Unknown error occurred";
           this._loading = false;
         }
       );
