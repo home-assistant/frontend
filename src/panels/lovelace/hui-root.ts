@@ -97,7 +97,7 @@ import "./views/hui-view";
 import type { HUIView } from "./views/hui-view";
 import "./views/hui-view-background";
 import "./views/hui-view-container";
-import { UndoRedoMixin } from "../../mixins/undo-redo-mixin";
+import { UndoRedoController } from "../../common/controllers/undo-redo-controller";
 
 interface ActionItem {
   icon: string;
@@ -120,9 +120,7 @@ interface SubActionItem {
 }
 
 @customElement("hui-root")
-class HUIRoot extends UndoRedoMixin<typeof LitElement, LovelaceRawConfig>(
-  LitElement
-) {
+class HUIRoot extends LitElement {
   @property({ attribute: false }) public panel?: PanelInfo<LovelacePanelConfig>;
 
   @property({ attribute: false }) public hass!: HomeAssistant;
@@ -145,6 +143,14 @@ class HUIRoot extends UndoRedoMixin<typeof LitElement, LovelaceRawConfig>(
   private _viewScrollPositions: Record<string, number> = {};
 
   private _restoreScroll = false;
+
+  private _undoRedoController = new UndoRedoController<LovelaceRawConfig>(
+    this,
+    {
+      apply: (config) => this._applyUndoRedo(config),
+      currentConfig: () => this.lovelace!.rawConfig,
+    }
+  );
 
   private _debouncedConfigChanged: () => void;
 
@@ -170,8 +176,8 @@ class HUIRoot extends UndoRedoMixin<typeof LitElement, LovelaceRawConfig>(
         html`<ha-icon-button
             slot="toolbar-icon"
             .path=${mdiUndo}
-            @click=${this.undo}
-            .disabled=${!this.canUndo}
+            @click=${this._undo}
+            .disabled=${!this._undoRedoController.canUndo}
             id="button-undo"
           >
           </ha-icon-button>
@@ -181,8 +187,8 @@ class HUIRoot extends UndoRedoMixin<typeof LitElement, LovelaceRawConfig>(
           <ha-icon-button
             slot="toolbar-icon"
             .path=${mdiRedo}
-            @click=${this.redo}
-            .disabled=${!this.canRedo}
+            @click=${this._redo}
+            .disabled=${!this._undoRedoController.canRedo}
             id="button-redo"
           >
           </ha-icon-button>
@@ -683,7 +689,7 @@ class HUIRoot extends UndoRedoMixin<typeof LitElement, LovelaceRawConfig>(
         this.lovelace!.rawConfig !== oldLovelace!.rawConfig &&
         !this._configChangedByUndo
       ) {
-        this.pushToUndo(oldLovelace.rawConfig);
+        this._undoRedoController.commit(oldLovelace.rawConfig);
       } else {
         this._configChangedByUndo = false;
       }
@@ -1074,7 +1080,7 @@ class HUIRoot extends UndoRedoMixin<typeof LitElement, LovelaceRawConfig>(
 
   private _editModeDisable(): void {
     this.lovelace!.setEditMode(false);
-    this.clearUndoRedo();
+    this._undoRedoController.reset();
   }
 
   private async _editDashboard() {
@@ -1253,13 +1259,17 @@ class HUIRoot extends UndoRedoMixin<typeof LitElement, LovelaceRawConfig>(
     showShortcutsDialog(this);
   }
 
-  protected get currentConfig() {
-    return this.lovelace?.rawConfig;
-  }
-
-  protected applyUndoRedo(config: LovelaceRawConfig) {
+  private _applyUndoRedo(config: LovelaceRawConfig) {
     this._configChangedByUndo = true;
     this.lovelace!.saveConfig(config);
+  }
+
+  private _undo() {
+    this._undoRedoController.undo();
+  }
+
+  private _redo() {
+    this._undoRedoController.redo();
   }
 
   static get styles(): CSSResultGroup {

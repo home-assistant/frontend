@@ -2,6 +2,7 @@ import type { HomeAssistant } from "../../../types";
 import type { Lovelace } from "../types";
 import { deleteBadge } from "./config-util";
 import type { LovelaceCardPath } from "./lovelace-path";
+import { fireEvent } from "../../../common/dom/fire_event";
 
 export interface DeleteBadgeParams {
   path: LovelaceCardPath;
@@ -23,14 +24,13 @@ export async function performDeleteBadge(
       return;
     }
 
-    const action = async () => {
-      lovelace.saveConfig(oldConfig);
-    };
-
     lovelace.showToast({
       message: hass.localize("ui.common.successfully_deleted"),
       duration: 8000,
-      action: { action, text: hass.localize("ui.common.undo") },
+      action: {
+        action: () => fireEvent(window, "undo-change"),
+        text: hass.localize("ui.common.undo"),
+      },
     });
   } catch (err: any) {
     // eslint-disable-next-line no-console
