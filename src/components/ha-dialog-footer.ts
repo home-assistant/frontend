@@ -35,7 +35,7 @@ export class HaDialogFooter extends LitElement {
       css`
         .footer {
           display: flex;
-          gap: 12px;
+          gap: var(--ha-space-3);
           justify-content: flex-end;
           align-items: center;
           width: 100%;

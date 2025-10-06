@@ -38,15 +38,15 @@ export type DialogWidthOnTitleClick = DialogWidth | "none";
  * @csspart body - The scrollable body container.
  * @csspart footer - The footer container.
  *
- * @cssprop --dialog-content-padding - Padding for the dialog content sections. Defaults to 24px.
- * @cssprop --ha-dialog-show-duration - Show animation duration. Defaults to 200ms.
- * @cssprop --ha-dialog-hide-duration - Hide animation duration. Defaults to 200ms.
- * @cssprop --ha-dialog-surface-background - Dialog background color. Defaults to surface.
- * @cssprop --ha-dialog-border-radius - Border radius of the dialog surface. Defaults to 24px.
- * @cssprop --dialog-z-index - Z-index for the dialog. Defaults to 8.
- * @cssprop --dialog-surface-position - CSS position of the dialog surface. Defaults to relative.
- * @cssprop --dialog-surface-margin-top - Top margin for the dialog surface. Defaults to auto.
- * @cssprop --ha-dialog-expand-duration - Duration for width transitions when changing width. Defaults to 200ms.
+ * @cssprop --dialog-content-padding - Padding for the dialog content sections.
+ * @cssprop --ha-dialog-show-duration - Show animation duration.
+ * @cssprop --ha-dialog-hide-duration - Hide animation duration.
+ * @cssprop --ha-dialog-surface-background - Dialog background color.
+ * @cssprop --ha-dialog-border-radius - Border radius of the dialog surface.
+ * @cssprop --dialog-z-index - Z-index for the dialog.
+ * @cssprop --dialog-surface-position - CSS position of the dialog surface.
+ * @cssprop --dialog-surface-margin-top - Top margin for the dialog surface.
+ * @cssprop --ha-dialog-expand-duration - Duration for width transitions when changing width.
  *
  * @attr {boolean} open - Controls the dialog open state.
  * @attr {("small"|"medium"|"large"|"full")} width - Preferred dialog width preset. Defaults to "medium".
@@ -200,15 +200,15 @@ export class HaWaDialog extends LitElement {
           min(
             95vw,
             calc(
-              100vw - var(--safe-area-inset-left, 0px) - var(
+              100vw - var(--safe-area-inset-left, var(--ha-space-0)) - var(
                   --safe-area-inset-right,
-                  0px
+                  var(--ha-space-0)
                 )
             )
           )
         );
         --width: var(--ha-dialog-width-md, min(580px, var(--full-width)));
-        --spacing: var(--dialog-content-padding, 24px);
+        --spacing: var(--dialog-content-padding, var(--ha-space-6));
         --show-duration: var(--ha-dialog-show-duration, 200ms);
         --hide-duration: var(--ha-dialog-hide-duration, 200ms);
         --ha-dialog-surface-background: var(
@@ -245,7 +245,10 @@ export class HaWaDialog extends LitElement {
       wa-dialog::part(dialog) {
         min-width: var(--width, var(--full-width));
         max-width: var(--width, var(--full-width));
-        max-height: var(--ha-dialog-max-height, calc(100% - 80px));
+        max-height: var(
+          --ha-dialog-max-height,
+          calc(100% - var(--ha-space-20))
+        );
         position: var(--dialog-surface-position, relative);
         margin-top: var(--dialog-surface-margin-top, auto);
         transition:
@@ -258,7 +261,7 @@ export class HaWaDialog extends LitElement {
 
       @media all and (max-width: 450px), all and (max-height: 500px) {
         :host {
-          --ha-dialog-border-radius: 0px;
+          --ha-dialog-border-radius: var(--ha-space-0);
         }
 
         wa-dialog {
@@ -270,10 +273,10 @@ export class HaWaDialog extends LitElement {
           min-height: var(--ha-dialog-min-height, 100svh);
           max-height: var(--ha-dialog-max-height, 100vh);
           max-height: var(--ha-dialog-max-height, 100svh);
-          padding-top: var(--safe-area-inset-top, 0px);
-          padding-bottom: var(--safe-area-inset-bottom, 0px);
-          padding-left: var(--safe-area-inset-left, 0px);
-          padding-right: var(--safe-area-inset-right, 0px);
+          padding-top: var(--safe-area-inset-top, var(--ha-space-0));
+          padding-bottom: var(--safe-area-inset-bottom, var(--ha-space-0));
+          padding-left: var(--safe-area-inset-left, var(--ha-space-0));
+          padding-right: var(--safe-area-inset-right, var(--ha-space-0));
         }
       }
 
@@ -282,12 +285,13 @@ export class HaWaDialog extends LitElement {
         overflow: hidden;
         display: flex;
         align-items: center;
-        padding: 24px 24px 16px 24px;
-        gap: 4px;
+        padding: var(--ha-space-6) var(--ha-space-6) var(--ha-space-4)
+          var(--ha-space-6);
+        gap: var(--ha-space-1);
       }
       :host([has-custom-heading]) wa-dialog::part(header) {
         max-width: 100%;
-        padding: 0;
+        padding: var(--ha-space-0);
       }
 
       wa-dialog::part(close-button),
@@ -322,7 +326,7 @@ export class HaWaDialog extends LitElement {
         overflow: hidden;
         text-overflow: ellipsis;
         white-space: nowrap;
-        margin-right: 12px;
+        margin-right: var(--ha-space-3);
       }
 
       wa-dialog::part(body) {
@@ -335,9 +339,9 @@ export class HaWaDialog extends LitElement {
 
       .body {
         position: var(--dialog-content-position, relative);
-        padding: 0 var(--dialog-content-padding, 24px)
-          var(--dialog-content-padding, 24px)
-          var(--dialog-content-padding, 24px);
+        padding: 0 var(--dialog-content-padding, var(--ha-space-6))
+          var(--dialog-content-padding, var(--ha-space-6))
+          var(--dialog-content-padding, var(--ha-space-6));
         overflow: auto;
         flex-grow: 1;
       }
@@ -348,13 +352,14 @@ export class HaWaDialog extends LitElement {
       }
 
       wa-dialog::part(footer) {
-        padding: 0;
+        padding: var(--ha-space-0);
       }
 
       ::slotted([slot="footer"]) {
         display: flex;
-        padding: 12px 16px 16px 16px;
-        gap: 12px;
+        padding: var(--ha-space-3) var(--ha-space-4) var(--ha-space-4)
+          var(--ha-space-4);
+        gap: var(--ha-space-3);
         justify-content: flex-end;
         align-items: center;
         width: 100%;
