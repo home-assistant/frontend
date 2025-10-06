@@ -64,7 +64,7 @@ class HuiWeblinkRow extends LitElement implements LovelaceRow {
 
   protected _computeTargetValue(): string | undefined {
     return this._config &&
-      (this._config.url.indexOf("://") !== -1 ||
+      (this._config.url.includes("://") ||
         this._config.new_tab === true ||
         this._config.download === true)
       ? "_blank"

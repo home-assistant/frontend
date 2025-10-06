@@ -174,7 +174,7 @@ export class HcConnect extends LitElement {
           }
         });
 
-        if (location.search.indexOf("auth_callback=1") !== -1) {
+        if (location.search.includes("auth_callback=1")) {
           this._tryConnection("auth-callback");
         } else if (loadTokens()) {
           this._tryConnection("saved-tokens");

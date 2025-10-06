@@ -498,7 +498,7 @@ class HaLogbookRenderer extends LitElement {
     // state machine, we search the message for the entity_id and
     // replace it with _renderEntity
     //
-    if (message.indexOf(".") !== -1) {
+    if (message.includes(".")) {
       const messageParts = message.split(" ");
       for (let i = 0, size = messageParts.length; i < size; i++) {
         if (messageParts[i] in this.hass.states) {

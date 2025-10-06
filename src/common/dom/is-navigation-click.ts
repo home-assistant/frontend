@@ -25,13 +25,13 @@ export const isNavigationClick = (e: MouseEvent, preventDefault = true) => {
   }
 
   let href = anchor.href;
-  if (!href || href.indexOf("mailto:") !== -1) {
+  if (!href || href.includes("mailto:")) {
     return undefined;
   }
 
   const location = window.location;
   const origin = location.origin || location.protocol + "//" + location.host;
-  if (href.indexOf(origin) !== 0) {
+  if (!href.startsWith(origin)) {
     return undefined;
   }
   href = href.substr(origin.length);
