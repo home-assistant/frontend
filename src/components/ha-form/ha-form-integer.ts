@@ -164,7 +164,7 @@ export class HaFormInteger extends LitElement implements HaFormElement {
 
     if (this.data === value) {
       // parseInt will drop invalid text at the end, in that case update textfield
-      const newRawValue = value === undefined ? "" : String(value);
+      const newRawValue = value === undefined ? "" : `${value}`;
       if (source.value !== newRawValue) {
         source.value = newRawValue;
       }

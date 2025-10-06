@@ -36,7 +36,7 @@ export class HaNumberSelector extends LitElement {
     if (changedProps.has("value")) {
       if (this._valueStr === "" || this.value !== Number(this._valueStr)) {
         this._valueStr =
-          this.value == null || isNaN(this.value) ? "" : this.value.toString();
+          this.value == null || isNaN(this.value) ? "" : `${this.value}`;
       }
     }
   }
