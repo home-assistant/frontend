@@ -1,5 +1,5 @@
 import type { HassServiceTarget } from "home-assistant-js-websocket";
-import type { EntityNameType } from "../../../common/translations/entity-state";
+import type { EntityNameItem } from "../../../common/entity/compute_name_display";
 import type { HaDurationData } from "../../../components/ha-duration-input";
 import type { EnergySourceByType } from "../../../data/energy";
 import type { ActionConfig } from "../../../data/lovelace/config/action";
@@ -16,7 +16,6 @@ import type {
   LovelaceCardFeatureConfig,
   LovelaceCardFeaturePosition,
 } from "../card-features/types";
-import type { EntityNameConfig } from "../common/entity/entity-display-name";
 import type { LegacyStateFilter } from "../common/evaluate-filter";
 import type { Condition, LegacyCondition } from "../common/validate-condition";
 import type { HuiImage } from "../components/hui-image";
@@ -570,7 +569,7 @@ export interface WeatherForecastCardConfig extends LovelaceCardConfig {
 
 export interface TileCardConfig extends LovelaceCardConfig {
   entity: string;
-  name?: EntityNameConfig;
+  name?: string | EntityNameItem | EntityNameItem[];
   hide_state?: boolean;
   state_content?: string | string[];
   icon?: string;

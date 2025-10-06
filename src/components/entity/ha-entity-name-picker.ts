@@ -7,16 +7,12 @@ import { css, html, LitElement, nothing } from "lit";
 import { customElement, property, query, state } from "lit/decorators";
 import { repeat } from "lit/directives/repeat";
 import memoizeOne from "memoize-one";
+import { ensureArray } from "../../common/array/ensure-array";
 import { fireEvent } from "../../common/dom/fire_event";
 import { stopPropagation } from "../../common/dom/stop_propagation";
+import type { EntityNameItem } from "../../common/entity/compute_name_display";
 import { getEntityContext } from "../../common/entity/context/get_entity_context";
 import type { EntityNameType } from "../../common/translations/entity-state";
-import {
-  ensureEntityNameItems,
-  formatEntityDisplayName,
-  type EntityNameConfig,
-  type EntityNameItem,
-} from "../../panels/lovelace/common/entity/entity-display-name";
 import type { HomeAssistant, ValueChangedEvent } from "../../types";
 import "../chips/ha-assist-chip";
 import "../chips/ha-chip-set";
@@ -54,7 +50,10 @@ export class HaEntityNamePicker extends LitElement {
 
   @property({ attribute: false }) public entityId?: string;
 
-  @property() public value?: EntityNameConfig;
+  @property({ attribute: false }) public value?:
+    | string
+    | EntityNameItem
+    | EntityNameItem[];
 
   @property() public label?: string;
 
@@ -102,11 +101,9 @@ export class HaEntityNamePicker extends LitElement {
         primary: this.hass.localize(
           `ui.components.entity.entity-name-picker.types.${name}`
         ),
-        secondary: formatEntityDisplayName(
-          this.hass,
-          this.hass.states[entityId],
-          name
-        ),
+        secondary: this.hass.formatEntityName(this.hass.states[entityId], {
+          type: name,
+        }),
         value: name,
       })
     );
@@ -244,23 +241,25 @@ export class HaEntityNamePicker extends LitElement {
     return this._toItems(this.value);
   }
 
-  private _toItems = memoizeOne((value?: EntityNameConfig) =>
-    value ? ensureEntityNameItems(value) : []
-  );
-
-  private _toValue = memoizeOne((items: EntityNameItem[]): EntityNameConfig => {
-    const compactItems = items.map((item) => {
-      if (item.type === "text") {
-        return item.text;
-      }
-      return item;
-    });
-    return compactItems.length === 0
-      ? []
-      : compactItems.length === 1
-        ? compactItems[0]
-        : compactItems;
+  private _toItems = memoizeOne((value?: typeof this.value) => {
+    if (typeof value === "string") {
+      return [{ type: "text", text: value } as const];
+    }
+    return value ? ensureArray(value) : [];
   });
+
+  private _toValue = memoizeOne(
+    (items: EntityNameItem[]): typeof this.value => {
+      if (items.length === 0) {
+        return [];
+      }
+      if (items.length === 1) {
+        const item = items[0];
+        return item.type === "text" ? item.text : item;
+      }
+      return items;
+    }
+  );
 
   private _openedChanged(ev: ValueChangedEvent<boolean>) {
     const open = ev.detail.value;
