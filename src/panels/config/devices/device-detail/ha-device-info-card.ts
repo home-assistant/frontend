@@ -135,7 +135,7 @@ export class HaDeviceCard extends LitElement {
 
   protected _getAddresses() {
     return this.device.connections.filter(
-      (conn) => conn[0] === "mac" || conn[0] === "bluetooth"
+      (conn) => conn[0] === "mac" || conn[0] === "bluetooth" || conn[0] === "zigbee"
     );
   }
 
