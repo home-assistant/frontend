@@ -71,6 +71,9 @@ import { showGenerateBackupDialog } from "./dialogs/show-dialog-generate-backup"
 import { showNewBackupDialog } from "./dialogs/show-dialog-new-backup";
 import { showUploadBackupDialog } from "./dialogs/show-dialog-upload-backup";
 import { downloadBackup } from "./helper/download_backup";
+import type { HaMdMenu } from "../../../components/ha-md-menu";
+import "../../../components/ha-md-menu";
+import "../../../components/ha-md-menu-item";
 
 interface BackupRow extends DataTableRowData, BackupContent {
   formatted_type: string;
@@ -119,6 +122,10 @@ class HaConfigBackupBackups extends SubscribeMixin(LitElement) {
 
   @query("hass-tabs-subpage-data-table", true)
   private _dataTable!: HaTabsSubpageDataTable;
+
+  @query("#overflow-menu") private _overflowMenu?: HaMdMenu;
+
+  private _overflowBackup?: BackupContent;
 
   public connectedCallback() {
     super.connectedCallback();
@@ -254,24 +261,12 @@ class HaConfigBackupBackups extends SubscribeMixin(LitElement) {
         hideable: false,
         type: "overflow-menu",
         template: (backup) => html`
-          <ha-icon-overflow-menu
-            .hass=${this.hass}
-            narrow
-            .items=${[
-              {
-                label: this.hass.localize("ui.common.download"),
-                path: mdiDownload,
-                action: () => this._downloadBackup(backup),
-              },
-              {
-                label: this.hass.localize("ui.common.delete"),
-                path: mdiDelete,
-                action: () => this._deleteBackup(backup),
-                warning: true,
-              },
-            ]}
-          >
-          </ha-icon-overflow-menu>
+          <ha-icon-button
+            .selected=${backup}
+            .label=${this.hass.localize("ui.common.overflow_menu")}
+            .path=${mdiDotsVertical}
+            @click=${this._toggleOverflowMenu}
+          ></ha-icon-button>
         `,
       },
     })
@@ -289,6 +284,20 @@ class HaConfigBackupBackups extends SubscribeMixin(LitElement) {
           )
         : undefined
   );
+
+  private _toggleOverflowMenu = (ev) => {
+    if (!this._overflowMenu) {
+      return;
+    }
+
+    if (this._overflowMenu.open) {
+      this._overflowMenu.close();
+      return;
+    }
+    this._overflowBackup = ev.target.selected;
+    this._overflowMenu.anchorElement = ev.target;
+    this._overflowMenu.show();
+  };
 
   private _handleGroupingChanged(ev: CustomEvent) {
     this._activeGrouping = ev.detail.value;
@@ -366,14 +375,16 @@ class HaConfigBackupBackups extends SubscribeMixin(LitElement) {
         clickable
         id="backup_id"
         has-filters
-        .filters=${Object.values(this._filters).filter((filter) =>
-          Array.isArray(filter)
-            ? filter.length
-            : filter &&
-              Object.values(filter).some((val) =>
-                Array.isArray(val) ? val.length : val
-              )
-        ).length}
+        .filters=${
+          Object.values(this._filters).filter((filter) =>
+            Array.isArray(filter)
+              ? filter.length
+              : filter &&
+                Object.values(filter).some((val) =>
+                  Array.isArray(val) ? val.length : val
+                )
+          ).length
+        }
         selectable
         .selected=${this._selected.length}
         .initialGroupColumn=${this._activeGrouping}
@@ -415,28 +426,30 @@ class HaConfigBackupBackups extends SubscribeMixin(LitElement) {
         </div>
 
         <div slot="selection-bar">
-          ${!this.narrow
-            ? html`
-                <ha-button
-                  appearance="plain"
-                  @click=${this._deleteSelected}
-                  variant="danger"
-                >
-                  ${this.hass.localize(
-                    "ui.panel.config.backup.backups.delete_selected"
-                  )}
-                </ha-button>
-              `
-            : html`
-                <ha-icon-button
-                  .label=${this.hass.localize(
-                    "ui.panel.config.backup.backups.delete_selected"
-                  )}
-                  .path=${mdiDelete}
-                  class="warning"
-                  @click=${this._deleteSelected}
-                ></ha-icon-button>
-              `}
+          ${
+            !this.narrow
+              ? html`
+                  <ha-button
+                    appearance="plain"
+                    @click=${this._deleteSelected}
+                    variant="danger"
+                  >
+                    ${this.hass.localize(
+                      "ui.panel.config.backup.backups.delete_selected"
+                    )}
+                  </ha-button>
+                `
+              : html`
+                  <ha-icon-button
+                    .label=${this.hass.localize(
+                      "ui.panel.config.backup.backups.delete_selected"
+                    )}
+                    .path=${mdiDelete}
+                    class="warning"
+                    @click=${this._deleteSelected}
+                  ></ha-icon-button>
+                `
+          }
         </div>
 
         <ha-filter-states
@@ -449,29 +462,43 @@ class HaConfigBackupBackups extends SubscribeMixin(LitElement) {
           expanded
           .narrow=${this.narrow}
         ></ha-filter-states>
-        ${!this._needsOnboarding
-          ? html`
-              <ha-fab
-                slot="fab"
-                ?disabled=${backupInProgress}
-                .label=${this.hass.localize(
-                  "ui.panel.config.backup.backups.new_backup"
-                )}
-                extended
-                @click=${this._newBackup}
-              >
-                ${backupInProgress
-                  ? html`<div slot="icon" class="loading">
-                      <ha-spinner .size=${"small"}></ha-spinner>
-                    </div>`
-                  : html`<ha-svg-icon
-                      slot="icon"
-                      .path=${mdiPlus}
-                    ></ha-svg-icon>`}
-              </ha-fab>
-            `
-          : nothing}
+        ${
+          !this._needsOnboarding
+            ? html`
+                <ha-fab
+                  slot="fab"
+                  ?disabled=${backupInProgress}
+                  .label=${this.hass.localize(
+                    "ui.panel.config.backup.backups.new_backup"
+                  )}
+                  extended
+                  @click=${this._newBackup}
+                >
+                  ${backupInProgress
+                    ? html`<div slot="icon" class="loading">
+                        <ha-spinner .size=${"small"}></ha-spinner>
+                      </div>`
+                    : html`<ha-svg-icon
+                        slot="icon"
+                        .path=${mdiPlus}
+                      ></ha-svg-icon>`}
+                </ha-fab>
+              `
+            : nothing
+        }
       </hass-tabs-subpage-data-table>
+      <ha-md-menu id="overflow-menu" positioning="fixed">
+          <ha-md-menu-item .clickAction=${this._downloadBackup}>
+              <ha-svg-icon slot="start" .path=${mdiDownload}></ha-svg-icon>
+            ${this.hass.localize("ui.common.download")}
+          </ha-md-menu-item>
+            <ha-md-menu-item class="warning" .clickAction=${this._deleteBackup}>
+              <ha-svg-icon slot="start" .path=${mdiDelete}></ha-svg-icon>
+            ${this.hass.localize("ui.common.delete")}
+            </ha-md-menu-item>
+        </ha-md-menu>
+      >
+      </ha-icon-overflow-menu>
     `;
   }
 
@@ -545,11 +572,18 @@ class HaConfigBackupBackups extends SubscribeMixin(LitElement) {
     navigate(`/config/backup/details/${id}`);
   }
 
-  private async _downloadBackup(backup: BackupContent): Promise<void> {
-    downloadBackup(this.hass, this, backup, this.config);
+  private async _downloadBackup(): Promise<void> {
+    if (!this._overflowBackup) {
+      return;
+    }
+    downloadBackup(this.hass, this, this._overflowBackup, this.config);
   }
 
-  private async _deleteBackup(backup: BackupContent): Promise<void> {
+  private async _deleteBackup(): Promise<void> {
+    if (!this._overflowBackup) {
+      return;
+    }
+
     const confirm = await showConfirmationDialog(this, {
       title: this.hass.localize("ui.panel.config.backup.dialogs.delete.title"),
       text: this.hass.localize("ui.panel.config.backup.dialogs.delete.text"),
@@ -562,8 +596,8 @@ class HaConfigBackupBackups extends SubscribeMixin(LitElement) {
     }
 
     try {
-      await deleteBackup(this.hass, backup.backup_id);
-      if (this._selected.includes(backup.backup_id)) {
+      await deleteBackup(this.hass, this._overflowBackup.backup_id);
+      if (this._selected.includes(this._overflowBackup.backup_id)) {
         this._selected = this._selected.filter((id) => id !== backup.backup_id);
       }
     } catch (err: any) {
