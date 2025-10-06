@@ -598,7 +598,9 @@ class HaConfigBackupBackups extends SubscribeMixin(LitElement) {
     try {
       await deleteBackup(this.hass, this._overflowBackup.backup_id);
       if (this._selected.includes(this._overflowBackup.backup_id)) {
-        this._selected = this._selected.filter((id) => id !== backup.backup_id);
+        this._selected = this._selected.filter(
+          (id) => id !== this._overflowBackup!.backup_id
+        );
       }
     } catch (err: any) {
       showAlertDialog(this, {
