@@ -33,10 +33,7 @@ import { describeCondition } from "../../../../data/automation_i18n";
 import { fullEntitiesContext } from "../../../../data/context";
 import type { EntityRegistryEntry } from "../../../../data/entity_registry";
 import type { Action, Option } from "../../../../data/script";
-import {
-  showConfirmationDialog,
-  showPromptDialog,
-} from "../../../../dialogs/generic/show-dialog-box";
+import { showPromptDialog } from "../../../../dialogs/generic/show-dialog-box";
 import type { HomeAssistant } from "../../../../types";
 import { isMac } from "../../../../util/is_mac";
 import "../action/ha-automation-action";
@@ -49,6 +46,7 @@ import {
   overflowStyles,
   rowStyles,
 } from "../styles";
+import { showToast } from "../../../../util/toast";
 
 @customElement("ha-automation-option-row")
 export default class HaAutomationOptionRow extends LitElement {
@@ -365,23 +363,21 @@ export default class HaAutomationOptionRow extends LitElement {
 
   private _removeOption = () => {
     if (this.option) {
-      showConfirmationDialog(this, {
-        title: this.hass.localize(
-          "ui.panel.config.automation.editor.actions.type.choose.delete_confirm_title"
-        ),
-        text: this.hass.localize(
-          "ui.panel.config.automation.editor.actions.delete_confirm_text"
-        ),
-        dismissText: this.hass.localize("ui.common.cancel"),
-        confirmText: this.hass.localize("ui.common.delete"),
-        destructive: true,
-        confirm: () => {
-          fireEvent(this, "value-changed", {
-            value: null,
-          });
-          if (this._selected) {
-            fireEvent(this, "close-sidebar");
-          }
+      fireEvent(this, "value-changed", {
+        value: null,
+      });
+      if (this._selected) {
+        fireEvent(this, "close-sidebar");
+      }
+
+      showToast(this, {
+        message: this.hass.localize("ui.common.successfully_deleted"),
+        duration: 4000,
+        action: {
+          text: this.hass.localize("ui.common.undo"),
+          action: () => {
+            fireEvent(window, "undo-change");
+          },
         },
       });
     }
