@@ -195,7 +195,7 @@ export class HaWaDialog extends LitElement {
       }
 
       wa-dialog {
-        --full-width: min(
+        --full-width: var(--ha-dialog-width-full, min(
           95vw,
           calc(
             100vw - var(--safe-area-inset-left, 0px) - var(
@@ -203,8 +203,8 @@ export class HaWaDialog extends LitElement {
                 0px
               )
           )
-        );
-        --width: min(var(--ha-dialog-width-md, 580px), var(--full-width));
+        ));
+        --width: var(--ha-dialog-width-md, min(580px, var(--full-width)));
         --spacing: var(--dialog-content-padding, 24px);
         --show-duration: var(--ha-dialog-show-duration, 200ms);
         --hide-duration: var(--ha-dialog-hide-duration, 200ms);
@@ -225,12 +225,12 @@ export class HaWaDialog extends LitElement {
 
       :host([width="small"]),
       :host(.size-changed[width-on-title-click="small"]) wa-dialog {
-        --width: min(var(--ha-dialog-width-sm, 320px), var(--full-width));
+        --width: var(--ha-dialog-width-sm, min(320px, var(--full-width)));
       }
 
       :host([width="large"]),
       :host(.size-changed[width-on-title-click="large"]) wa-dialog {
-        --width: min(var(--ha-dialog-width-lg, 720px), var(--full-width));
+        --width: var(--ha-dialog-width-lg, min(720px, var(--full-width)));
       }
 
       :host([width="full"]),
@@ -241,7 +241,7 @@ export class HaWaDialog extends LitElement {
       wa-dialog::part(dialog) {
         min-width: var(--width, var(--full-width));
         max-width: var(--width, var(--full-width));
-        max-height: calc(100% - 80px);
+        max-height: var(--ha-dialog-max-height, calc(100% - 80px));
         position: var(--dialog-surface-position, relative);
         margin-top: var(--dialog-surface-margin-top, auto);
         transition:
@@ -258,11 +258,11 @@ export class HaWaDialog extends LitElement {
         }
 
         wa-dialog {
-          --full-width: 100vw;
+          --full-width: var(--ha-dialog-width-full, 100vw);
         }
 
         wa-dialog::part(dialog) {
-          min-height: 100%;
+          min-height: var(--ha-dialog-min-height, 100%);
           padding-top: var(--safe-area-inset-top, 0px);
           padding-bottom: var(--safe-area-inset-bottom, 0px);
           padding-left: var(--safe-area-inset-left, 0px);
