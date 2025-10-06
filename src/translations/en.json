@@ -3092,10 +3092,10 @@
             "dialog": {
               "header": "Configure battery system",
               "entity_para": "Pick sensors which measure energy going into and coming out of the battery in either of {unit}.",
-              "energy_into_battery": "Energy going into the battery",
-              "energy_out_of_battery": "Energy coming out of the battery",
-              "power_into_battery": "Power going into the battery",
-              "power_out_of_battery": "Power coming out of the battery"
+              "energy_into_battery": "Energy charged into the battery",
+              "energy_out_of_battery": "Energy discharged from the battery",
+              "power_into_battery": "Power charging the battery",
+              "power_out_of_battery": "Power discharging the battery"
             }
           },
           "gas": {
