@@ -3091,7 +3091,7 @@
             "add_battery_system": "Add battery system",
             "dialog": {
               "header": "Configure battery system",
-              "entity_para": "Pick sensors which measure energy going into and coming out of the battery in either of {unit}.",
+              "entity_para": "Pick sensors that measure the electricity flowing in and out of the battery in either of {unit}.",
               "energy_into_battery": "Energy charged into the battery",
               "energy_out_of_battery": "Energy discharged from the battery",
               "power_into_battery": "Power charging the battery",
