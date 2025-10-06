@@ -121,8 +121,8 @@ export class HaDialog extends DialogBase {
         position: var(--dialog-surface-position, relative);
         top: var(--dialog-surface-top);
         margin-top: var(--dialog-surface-margin-top);
-        min-width: var(--mdc-dialog-min-width, 100vw);
-        min-height: var(--mdc-dialog-min-height, auto);
+        min-width: var(--ha-dialog-min-width, 100vw);
+        min-height: var(--ha-dialog-min-height, auto);
         border-radius: var(
           --ha-dialog-border-radius,
           var(--ha-border-radius-3xl)
@@ -141,10 +141,10 @@ export class HaDialog extends DialogBase {
 
       @media all and (max-width: 450px), all and (max-height: 500px) {
         .mdc-dialog .mdc-dialog__surface {
-          min-height: var(--mdc-dialog-min-height, 100vh);
-          min-height: var(--mdc-dialog-min-height, 100svh);
-          max-height: var(--mdc-dialog-max-height, 100vh);
-          max-height: var(--mdc-dialog-max-height, 100svh);
+          min-height: var(--ha-dialog-min-height, 100vh);
+          min-height: var(--ha-dialog-min-height, 100svh);
+          max-height: var(--ha-dialog-max-height, 100vh);
+          max-height: var(--ha-dialog-max-height, 100svh);
           padding-top: var(--safe-area-inset-top);
           padding-bottom: var(--safe-area-inset-bottom);
           padding-left: var(--safe-area-inset-left);
