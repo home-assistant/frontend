@@ -749,7 +749,7 @@ export class MoreInfoDialog extends LitElement {
           border: none;
           outline: none;
           display: inline;
-          border-radius: 6px;
+          border-radius: var(--ha-border-radius-md);
           transition: background-color 180ms ease-in-out;
           min-width: 0;
           max-width: 100%;

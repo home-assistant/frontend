@@ -366,7 +366,7 @@ export class HaPanelLogbook extends SubscribeMixin(LitElement) {
         }
 
         .content {
-          overflow: hidden;
+          overflow-x: hidden;
         }
 
         .filters {

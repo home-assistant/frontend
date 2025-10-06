@@ -222,9 +222,9 @@ export class HuiCreateDialogBadge
   private _handleBadgePicked(ev) {
     const config = ev.detail.config;
     if (this._params!.entities && this._params!.entities.length) {
-      if (Object.keys(config).includes("entities")) {
+      if ("entities" in config) {
         config.entities = this._params!.entities;
-      } else if (Object.keys(config).includes("entity")) {
+      } else if ("entity" in config) {
         config.entity = this._params!.entities[0];
       }
     }

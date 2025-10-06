@@ -119,7 +119,10 @@ export class HuiSectionEditMode extends LitElement {
           align-items: center;
           justify-content: center;
           transition: opacity 0.2s ease-in-out;
-          border-radius: var(--ha-card-border-radius, 12px);
+          border-radius: var(
+            --ha-card-border-radius,
+            var(--ha-border-radius-lg)
+          );
           border-bottom-left-radius: 0px;
           border-bottom-right-radius: 0px;
           background: var(--secondary-background-color);
@@ -135,7 +138,10 @@ export class HuiSectionEditMode extends LitElement {
 
         .section-wrapper {
           padding: 8px;
-          border-radius: var(--ha-card-border-radius, 12px);
+          border-radius: var(
+            --ha-card-border-radius,
+            var(--ha-border-radius-lg)
+          );
           border-start-end-radius: 0;
           border: 2px dashed var(--divider-color);
           min-height: var(--row-height);

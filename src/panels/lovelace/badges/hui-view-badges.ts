@@ -249,7 +249,7 @@ export class HuiViewBadges extends LitElement {
       padding: 6px 20px 6px 20px;
       box-sizing: border-box;
       width: auto;
-      border-radius: 18px;
+      border-radius: var(--ha-border-radius-2xl);
       background-color: transparent;
       border-width: 2px;
       border-style: dashed;

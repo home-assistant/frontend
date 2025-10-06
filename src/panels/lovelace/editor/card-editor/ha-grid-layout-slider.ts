@@ -376,7 +376,7 @@ export class HaGridLayoutSlider extends LitElement {
       margin: auto;
       height: 16px;
       width: 100%;
-      border-radius: 8px;
+      border-radius: var(--ha-border-radius-md);
       overflow: hidden;
     }
     :host([vertical]) .track {
@@ -472,7 +472,7 @@ export class HaGridLayoutSlider extends LitElement {
       background-color: var(--clear-background-color);
       color: var(--primary-text-color);
       font-size: var(--control-slider-tooltip-font-size);
-      border-radius: 0.8em;
+      border-radius: var(--ha-border-radius-lg);
       padding: 0.2em 0.4em;
       opacity: 0;
       white-space: nowrap;

@@ -9,7 +9,7 @@ import { styleMap } from "lit/directives/style-map";
 import { formatNumber } from "../../../../common/number/format_number";
 import { getEnergyColor } from "./common/color";
 import "../../../../components/ha-card";
-import type { EnergyData } from "../../../../data/energy";
+import type { EnergyData, EnergySourceByType } from "../../../../data/energy";
 import {
   energySourcesByType,
   getEnergyDataCollection,
@@ -252,7 +252,15 @@ export class HuiEnergySourcesTableCard
       water: false,
     };
 
-    const types = energySourcesByType(this._data.prefs);
+    const allTypes = energySourcesByType(this._data.prefs);
+    const pickedTypes = this._config?.types;
+    const types = pickedTypes
+      ? Object.fromEntries(
+          Object.entries(allTypes).filter(([key]) =>
+            pickedTypes.includes(key as keyof EnergySourceByType)
+          )
+        )
+      : allTypes;
 
     const computedStyles = getComputedStyle(this);
 
@@ -686,7 +694,7 @@ export class HuiEnergySourcesTableCard
       .bullet {
         border-width: 1px;
         border-style: solid;
-        border-radius: 4px;
+        border-radius: var(--ha-border-radius-sm);
         height: 16px;
         width: 32px;
       }

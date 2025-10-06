@@ -9,8 +9,9 @@ import {
   mdiVolumeOff,
   mdiVolumePlus,
 } from "@mdi/js";
+import type { PropertyValues } from "lit";
 import { css, html, LitElement, nothing } from "lit";
-import { customElement, property } from "lit/decorators";
+import { customElement, property, query } from "lit/decorators";
 import { ifDefined } from "lit/directives/if-defined";
 import { classMap } from "lit/directives/class-map";
 import { stateActive } from "../../../common/entity/state_active";
@@ -19,7 +20,7 @@ import { formatDurationDigital } from "../../../common/datetime/format_duration"
 import "../../../components/ha-icon-button";
 import "../../../components/ha-list-item";
 import "../../../components/ha-select";
-import "../../../components/ha-slider";
+import type { HaSlider } from "../../../components/ha-slider";
 import "../../../components/ha-button";
 import "../../../components/ha-svg-icon";
 import { showMediaBrowserDialog } from "../../../components/media-player/show-media-browser-dialog";
@@ -30,6 +31,8 @@ import type {
   MediaPlayerEntity,
 } from "../../../data/media-player";
 import {
+  cleanupMediaTitle,
+  computeMediaDescription,
   computeMediaControls,
   handleMediaControlClick,
   MediaPlayerEntityFeature,
@@ -47,6 +50,16 @@ class MoreInfoMediaPlayer extends LitElement {
   @property({ attribute: false }) public hass!: HomeAssistant;
 
   @property({ attribute: false }) public stateObj?: MediaPlayerEntity;
+
+  @query("#position-slider")
+  private _positionSlider?: HaSlider;
+
+  protected firstUpdated(_changedProperties: PropertyValues) {
+    if (this._positionSlider) {
+      this._positionSlider.valueFormatter = (value: number) =>
+        this._formatDuration(value);
+    }
+  }
 
   private _formatDuration(duration: number) {
     const hours = Math.floor(duration / 3600);
@@ -269,8 +282,8 @@ class MoreInfoMediaPlayer extends LitElement {
     const remaining = Math.max(duration - position, 0);
     const remainingFormatted = this._formatDuration(remaining);
     const positionFormatted = this._formatDuration(position);
-    const primaryTitle = playerObj.primaryTitle;
-    const secondaryTitle = playerObj.secondaryTitle;
+    const primaryTitle = cleanupMediaTitle(stateObj.attributes.media_title);
+    const secondaryTitle = computeMediaDescription(stateObj);
     const turnOn = controls?.find((c) => c.action === "turn_on");
     const turnOff = controls?.find((c) => c.action === "turn_off");
 
@@ -316,6 +329,7 @@ class MoreInfoMediaPlayer extends LitElement {
         ? html`
             <div class="position-bar">
               <ha-slider
+                id="position-slider"
                 min="0"
                 max=${duration}
                 step="1"
@@ -350,28 +364,31 @@ class MoreInfoMediaPlayer extends LitElement {
                     </ha-icon-button>`
                   : html`<span class="spacer"></span>`;
               })}
-              ${["media_play_pause", "media_pause", "media_play"].map(
-                (action) => {
-                  const control = controls?.find((c) => c.action === action);
-                  return control
-                    ? html`<ha-button
-                        variant="brand"
-                        appearance="filled"
-                        size="medium"
-                        action=${action}
-                        @click=${this._handleClick}
-                        class="center-control"
-                      >
-                        <ha-svg-icon
-                          .path=${control.icon}
-                          aria-label=${this.hass.localize(
-                            `ui.card.media_player.${control.action}`
-                          )}
-                        ></ha-svg-icon>
-                      </ha-button>`
-                    : nothing;
-                }
-              )}
+              ${[
+                "media_play_pause",
+                "media_pause",
+                "media_play",
+                "media_stop",
+              ].map((action) => {
+                const control = controls?.find((c) => c.action === action);
+                return control
+                  ? html`<ha-button
+                      variant="brand"
+                      appearance="filled"
+                      size="medium"
+                      action=${action}
+                      @click=${this._handleClick}
+                      class="center-control"
+                    >
+                      <ha-svg-icon
+                        .path=${control.icon}
+                        aria-label=${this.hass.localize(
+                          `ui.card.media_player.${control.action}`
+                        )}
+                      ></ha-svg-icon>
+                    </ha-button>`
+                  : nothing;
+              })}
               ${["media_next_track", "shuffle_set"].map((action) => {
                 const control = controls?.find((c) => c.action === action);
                 return control
@@ -463,7 +480,7 @@ class MoreInfoMediaPlayer extends LitElement {
       max-width: 100%;
       max-height: 100%;
       object-fit: cover;
-      border-radius: 4px;
+      border-radius: var(--ha-border-radius-sm);
       box-shadow: 0 2px 8px rgba(0, 0, 0, 0.15);
       position: relative;
       display: flex;
@@ -553,7 +570,7 @@ class MoreInfoMediaPlayer extends LitElement {
       align-items: center;
       height: 16px;
       min-width: 8px;
-      border-radius: 10px;
+      border-radius: var(--ha-border-radius-md);
       font-weight: var(--ha-font-weight-normal);
       font-size: var(--ha-font-size-xs);
       background-color: var(--primary-color);

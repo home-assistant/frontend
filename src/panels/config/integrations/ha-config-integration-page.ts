@@ -442,9 +442,7 @@ class HaConfigIntegrationPage extends SubscribeMixin(LitElement) {
                     : nothing}
                   ${this._manifest?.is_built_in &&
                   this._manifest.quality_scale &&
-                  Object.keys(QUALITY_SCALE_MAP).includes(
-                    this._manifest.quality_scale
-                  )
+                  this._manifest.quality_scale in QUALITY_SCALE_MAP
                     ? html`
                         <div class="integration-info">
                           <a
@@ -1051,7 +1049,7 @@ class HaConfigIntegrationPage extends SubscribeMixin(LitElement) {
         }
         ha-md-list {
           border: 1px solid var(--divider-color);
-          border-radius: 8px;
+          border-radius: var(--ha-border-radius-md);
           padding: 0;
         }
         .discovered {

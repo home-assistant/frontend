@@ -415,7 +415,7 @@ class HaPanelDevAction extends LitElement {
       const fields = serviceDomains[domain][service].fields;
       const result: (HassService["fields"] & { key: string })[] = [];
 
-      // TODO: remplace any by proper type when updated in home-assistant-js-websocket
+      // TODO: replace any by proper type when updated in home-assistant-js-websocket
       const getFields = (flds: any) => {
         Object.keys(flds).forEach((field) => {
           const fieldData = flds[field];
@@ -539,11 +539,11 @@ class HaPanelDevAction extends LitElement {
 
       let localizedErrorMessage: string | undefined;
       if (err.translation_domain && err.translation_key) {
-        const lokalize = await this.hass.loadBackendTranslation(
+        const localize = await this.hass.loadBackendTranslation(
           "exceptions",
           err.translation_domain
         );
-        localizedErrorMessage = lokalize(
+        localizedErrorMessage = localize(
           `component.${err.translation_domain}.exceptions.${err.translation_key}.message`,
           err.translation_placeholders
         );

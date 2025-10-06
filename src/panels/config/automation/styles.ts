@@ -71,7 +71,7 @@ export const indentStyle = css`
     padding-inline-end: 0px;
     border-inline-start: 2px solid var(--ha-color-border-neutral-quiet);
     border-bottom: 2px solid var(--ha-color-border-neutral-quiet);
-    border-radius: 0;
+    border-radius: var(--ha-border-radius-square);
     border-end-start-radius: var(--ha-border-radius-lg);
   }
   .card-content.indent.selected,
@@ -145,24 +145,19 @@ export const manualEditorStyles = css`
 
   .content {
     padding-top: 24px;
-    padding-bottom: 72px;
+    padding-bottom: max(var(--safe-area-inset-bottom), 32px);
     transition: padding-bottom 180ms ease-in-out;
   }
 
   .content.has-bottom-sheet {
-    padding-bottom: calc(90vh - 72px);
+    padding-bottom: calc(90vh - max(var(--safe-area-inset-bottom), 32px));
   }
 
   ha-automation-sidebar {
     position: fixed;
     top: calc(var(--header-height) + 16px);
-    height: calc(
-      -81px +
-        100dvh - var(--safe-area-inset-top, 0px) - var(
-          --safe-area-inset-bottom,
-          0px
-        )
-    );
+    height: calc(-81px + 100vh - var(--safe-area-inset-top, 0px));
+    height: calc(-81px + 100dvh - var(--safe-area-inset-top, 0px));
     width: var(--sidebar-width);
     display: block;
   }

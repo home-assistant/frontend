@@ -3,8 +3,8 @@ import { css, html, LitElement } from "lit";
 import { customElement, state } from "lit/decorators";
 import { ifDefined } from "lit/directives/if-defined";
 import { repeat } from "lit/directives/repeat";
-import "../../../../src/components/ha-control-slider";
 import "../../../../src/components/ha-card";
+import "../../../../src/components/ha-control-slider";
 
 const sliders: {
   id: string;
@@ -151,7 +151,7 @@ export class DemoHaBarSlider extends LitElement {
       --control-slider-background: #ffcf4c;
       --control-slider-background-opacity: 0.2;
       --control-slider-thickness: 130px;
-      --control-slider-border-radius: 36px;
+      --control-slider-border-radius: var(--ha-border-radius-6xl);
     }
     .vertical-sliders {
       height: 300px;

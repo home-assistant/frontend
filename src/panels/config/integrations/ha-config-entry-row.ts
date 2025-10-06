@@ -22,9 +22,9 @@ import { css, html, LitElement, nothing } from "lit";
 import { customElement, property, state } from "lit/decorators";
 import { classMap } from "lit/directives/class-map";
 import memoizeOne from "memoize-one";
-import { caseInsensitiveStringCompare } from "../../../common/string/compare";
-import { computeDeviceNameDisplay } from "../../../common/entity/compute_device_name";
 import { isDevVersion } from "../../../common/config/version";
+import { computeDeviceNameDisplay } from "../../../common/entity/compute_device_name";
+import { caseInsensitiveStringCompare } from "../../../common/string/compare";
 import {
   deleteApplicationCredential,
   fetchApplicationCredentialsConfigEntry,
@@ -775,7 +775,7 @@ class HaConfigEntryRow extends LitElement {
       }
       ha-md-list {
         border: 1px solid var(--divider-color);
-        border-radius: var(--ha-card-border-radius, 12px);
+        border-radius: var(--ha-card-border-radius, var(--ha-border-radius-lg));
         padding: 0;
       }
       :host([narrow]) {
@@ -794,7 +794,7 @@ class HaConfigEntryRow extends LitElement {
       }
       .toggle-devices-row {
         overflow: hidden;
-        border-radius: var(--ha-card-border-radius, 12px);
+        border-radius: var(--ha-card-border-radius, var(--ha-border-radius-lg));
       }
       .toggle-devices-row.expanded {
         border-bottom-left-radius: 0;

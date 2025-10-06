@@ -67,10 +67,7 @@ function isSeparatorAtPos(value: string, index: number): boolean {
     case undefined:
       return false;
     default:
-      if (isEmojiImprecise(code)) {
-        return true;
-      }
-      return false;
+      return isEmojiImprecise(code);
   }
 }
 
