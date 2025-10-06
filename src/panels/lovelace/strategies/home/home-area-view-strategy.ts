@@ -270,15 +270,12 @@ export class HomeAreaViewStrategy extends ReactiveElement {
               })),
             ],
           } satisfies HeadingCardConfig,
-          ...entities.map((e) => {
-            const stateObj = hass.states[e];
-            return {
-              ...computeTileCard(e),
-              name:
-                hass.formatEntityName(stateObj, "entity") ||
-                hass.formatEntityName(stateObj, "device"),
-            };
-          }),
+          ...entities.map((e) => ({
+            ...computeTileCard(e),
+            name: {
+              type: "entity",
+            },
+          })),
         ],
       });
     }

@@ -260,12 +260,12 @@ export class HuiTileCard extends LitElement implements LovelaceCard {
 
     const contentClasses = { vertical: Boolean(this._config.vertical) };
 
-    const nameConfig = this._config.name || DEFAULT_NAME;
+    const nameConfig = this._config.name;
 
     const name =
       typeof nameConfig === "string"
         ? nameConfig
-        : this.hass.formatEntityName(stateObj, nameConfig);
+        : this.hass.formatEntityName(stateObj, nameConfig || DEFAULT_NAME);
 
     const active = stateActive(stateObj);
     const color = this._computeStateColor(stateObj, this._config.color);
