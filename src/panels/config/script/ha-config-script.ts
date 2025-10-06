@@ -98,7 +98,7 @@ class HaConfigScript extends HassRouterPage {
       this._currentPage === "show"
     ) {
       pageEl.creatingNew = undefined;
-      const scriptId = this.routeTail.path.substr(1);
+      const scriptId = this.routeTail.path.slice(1);
       pageEl.entityId = scriptId === "new" ? null : scriptId;
       return;
     }
@@ -108,7 +108,7 @@ class HaConfigScript extends HassRouterPage {
       this._currentPage !== "dashboard"
     ) {
       pageEl.creatingNew = undefined;
-      const scriptId = this.routeTail.path.substr(1);
+      const scriptId = this.routeTail.path.slice(1);
       pageEl.scriptId = scriptId === "new" ? null : scriptId;
     }
   }
