@@ -319,7 +319,7 @@ export class HuiTodoListCard extends LitElement implements LovelaceCard {
                   )}
                 </p>`
               : this._reordering
-                ? html`<div class="header" role="seperator">
+                ? html`<div class="header" role="separator">
                       <h2>
                         ${this.hass!.localize(
                           "ui.panel.lovelace.cards.todo-list.reorder_items"
@@ -331,7 +331,7 @@ export class HuiTodoListCard extends LitElement implements LovelaceCard {
                 : nothing}
             ${!this._reordering && uncheckedItems.length
               ? html`
-                  <div class="header" role="seperator">
+                  <div class="header" role="separator">
                     <h2>
                       ${this.hass!.localize(
                         "ui.panel.lovelace.cards.todo-list.unchecked_items"
@@ -346,9 +346,9 @@ export class HuiTodoListCard extends LitElement implements LovelaceCard {
               ? html`
                   <div>
                     ${uncheckedItems.length
-                      ? html`<div class="divider" role="seperator"></div>`
+                      ? html`<div class="divider" role="separator"></div>`
                       : nothing}
-                    <div class="header" role="seperator">
+                    <div class="header" role="separator">
                       <h2>
                         ${this.hass!.localize(
                           "ui.panel.lovelace.cards.todo-list.no_status_items"

@@ -65,7 +65,7 @@ import "../../../layouts/hass-subpage";
 import { KeyboardShortcutMixin } from "../../../mixins/keyboard-shortcut-mixin";
 import { PreventUnsavedMixin } from "../../../mixins/prevent-unsaved-mixin";
 import { SubscribeMixin } from "../../../mixins/subscribe-mixin";
-import { UndoRedoMixin } from "../../../mixins/undo-redo-mixin";
+import { UndoRedoController } from "../../../common/controllers/undo-redo-controller";
 import { haStyle } from "../../../resources/styles";
 import type { Entries, HomeAssistant, Route } from "../../../types";
 import { isMac } from "../../../util/is_mac";
@@ -78,14 +78,9 @@ import "./blueprint-script-editor";
 import "./manual-script-editor";
 import type { HaManualScriptEditor } from "./manual-script-editor";
 
-const baseEditorMixins = SubscribeMixin(
+export class HaScriptEditor extends SubscribeMixin(
   PreventUnsavedMixin(KeyboardShortcutMixin(LitElement))
-);
-
-export class HaScriptEditor extends UndoRedoMixin<
-  typeof baseEditorMixins,
-  ScriptConfig
->(baseEditorMixins) {
+) {
   @property({ attribute: false }) public hass!: HomeAssistant;
 
   @property({ attribute: false }) public scriptId: string | null = null;
@@ -141,6 +136,11 @@ export class HaScriptEditor extends UndoRedoMixin<
     value: PromiseLike<EntityRegistryEntry> | EntityRegistryEntry
   ) => void;
 
+  private _undoRedoController = new UndoRedoController<ScriptConfig>(this, {
+    apply: (config) => this._applyUndoRedo(config),
+    currentConfig: () => this._config!,
+  });
+
   protected willUpdate(changedProps) {
     super.willUpdate(changedProps);
 
@@ -188,8 +188,8 @@ export class HaScriptEditor extends UndoRedoMixin<
                 slot="toolbar-icon"
                 .label=${this.hass.localize("ui.common.undo")}
                 .path=${mdiUndo}
-                @click=${this.undo}
-                .disabled=${!this.canUndo}
+                @click=${this._undo}
+                .disabled=${!this._undoRedoController.canUndo}
                 id="button-undo"
               >
               </ha-icon-button>
@@ -205,8 +205,8 @@ export class HaScriptEditor extends UndoRedoMixin<
                 slot="toolbar-icon"
                 .label=${this.hass.localize("ui.common.redo")}
                 .path=${mdiRedo}
-                @click=${this.redo}
-                .disabled=${!this.canRedo}
+                @click=${this._redo}
+                .disabled=${!this._undoRedoController.canRedo}
                 id="button-redo"
               >
               </ha-icon-button>
@@ -249,16 +249,16 @@ export class HaScriptEditor extends UndoRedoMixin<
           ${this._mode === "gui" && this.narrow
             ? html`<ha-list-item
                   graphic="icon"
-                  @click=${this.undo}
-                  .disabled=${!this.canUndo}
+                  @click=${this._undo}
+                  .disabled=${!this._undoRedoController.canUndo}
                 >
                   ${this.hass.localize("ui.common.undo")}
                   <ha-svg-icon slot="graphic" .path=${mdiUndo}></ha-svg-icon>
                 </ha-list-item>
                 <ha-list-item
                   graphic="icon"
-                  @click=${this.redo}
-                  .disabled=${!this.canRedo}
+                  @click=${this._redo}
+                  .disabled=${!this._undoRedoController.canRedo}
                 >
                   ${this.hass.localize("ui.common.redo")}
                   <ha-svg-icon slot="graphic" .path=${mdiRedo}></ha-svg-icon>
@@ -463,7 +463,6 @@ export class HaScriptEditor extends UndoRedoMixin<
                           @value-changed=${this._valueChanged}
                           @editor-save=${this._handleSaveScript}
                           @save-script=${this._handleSaveScript}
-                          @undo-paste=${this.undo}
                         >
                           <div class="alert-wrapper" slot="alerts">
                             ${this._errors || stateObj?.state === UNAVAILABLE
@@ -679,7 +678,7 @@ export class HaScriptEditor extends UndoRedoMixin<
 
   private _valueChanged(ev) {
     if (this._config) {
-      this.pushToUndo(this._config);
+      this._undoRedoController.commit(this._config);
     }
 
     this._config = ev.detail.value;
@@ -776,7 +775,7 @@ export class HaScriptEditor extends UndoRedoMixin<
     }
 
     if (this._config) {
-      this.pushToUndo(this._config);
+      this._undoRedoController.commit(this._config);
     }
 
     this._manualEditor?.addFields();
@@ -1110,9 +1109,9 @@ export class HaScriptEditor extends UndoRedoMixin<
       x: () => this._cutSelectedRow(),
       Delete: () => this._deleteSelectedRow(),
       Backspace: () => this._deleteSelectedRow(),
-      z: () => this.undo(),
-      Z: () => this.redo(),
-      y: () => this.redo(),
+      z: () => this._undo(),
+      Z: () => this._redo(),
+      y: () => this._redo(),
     };
   }
 
@@ -1146,14 +1145,18 @@ export class HaScriptEditor extends UndoRedoMixin<
     this._manualEditor?.deleteSelectedRow();
   }
 
-  protected get currentConfig() {
-    return this._config;
-  }
-
-  protected applyUndoRedo(config: ScriptConfig) {
+  private _applyUndoRedo(config: ScriptConfig) {
     this._manualEditor?.triggerCloseSidebar();
     this._config = config;
     this._dirty = true;
+  }
+
+  private _undo() {
+    this._undoRedoController.undo();
+  }
+
+  private _redo() {
+    this._undoRedoController.redo();
   }
 
   static get styles(): CSSResultGroup {
