@@ -200,7 +200,7 @@ export class CloudLogin extends LitElement {
           `ui.panel.${this.translationKeyPanel}.login.alert_totp_code_invalid`
         );
       default:
-        return err?.body?.message ?? "Unknown error";
+        return err?.body?.message || "Unknown error";
     }
   };
 

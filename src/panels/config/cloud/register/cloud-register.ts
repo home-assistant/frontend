@@ -243,7 +243,7 @@ export class CloudRegister extends LitElement {
         if (errCode === "usernotfound" && username !== username.toLowerCase()) {
           await doResend(username.toLowerCase());
         } else {
-          this._error = err?.body?.message ?? "Unknown error";
+          this._error = err?.body?.message || "Unknown error";
         }
       }
     };

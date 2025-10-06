@@ -154,7 +154,7 @@ export class CloudStepSignup extends LitElement {
       this._verificationEmailSent();
     } catch (err: any) {
       this._password = "";
-      this._error = err?.body?.message ?? "Unknown error";
+      this._error = err?.body?.message || "Unknown error";
     } finally {
       this._requestInProgress = false;
     }

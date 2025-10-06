@@ -196,7 +196,7 @@ export class CloudStepSignin extends LitElement {
             );
             break;
           default:
-            this._error = err?.body?.message ?? "Unknown error";
+            this._error = err?.body?.message || "Unknown error";
             break;
         }
 

@@ -115,7 +115,7 @@ export class CloudForgotPasswordCard extends LitElement {
       if (errCode === "usernotfound" && email !== email.toLowerCase()) {
         await this._resetPassword(email.toLowerCase());
       } else {
-        this._error = err?.body?.message ?? "Unknown error";
+        this._error = err?.body?.message || "Unknown error";
       }
     }
   };
