@@ -262,7 +262,7 @@ export class HuiTileCard extends LitElement implements LovelaceCard {
 
     const nameConfig = this._config.name;
 
-    const name =
+    const nameDisplay =
       typeof nameConfig === "string"
         ? nameConfig
         : this.hass.formatEntityName(stateObj, nameConfig || DEFAULT_NAME);
@@ -278,7 +278,7 @@ export class HuiTileCard extends LitElement implements LovelaceCard {
             .stateObj=${stateObj}
             .hass=${this.hass}
             .content=${this._config.state_content}
-            .name=${name}
+            .name=${nameDisplay}
           >
           </state-display>
         `;
@@ -337,7 +337,7 @@ export class HuiTileCard extends LitElement implements LovelaceCard {
               ${renderTileBadge(stateObj, this.hass)}
             </ha-tile-icon>
             <ha-tile-info id="info">
-              <span slot="primary" class="primary">${nameConfig}</span>
+              <span slot="primary" class="primary">${nameDisplay}</span>
               ${stateDisplay
                 ? html`<span slot="secondary">${stateDisplay}</span>`
                 : nothing}
