@@ -5,7 +5,7 @@ import {
   computeEntityNameDisplay,
   type EntityNameItem,
   type EntityNameOptions,
-} from "../entity/compute_name_display";
+} from "../entity/compute_entity_name_display";
 import type { LocalizeFunc } from "./localize";
 
 export type FormatEntityStateFunc = (

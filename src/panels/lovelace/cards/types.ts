@@ -1,5 +1,5 @@
 import type { HassServiceTarget } from "home-assistant-js-websocket";
-import type { EntityNameItem } from "../../../common/entity/compute_name_display";
+import type { EntityNameItem } from "../../../common/entity/compute_entity_name_display";
 import type { HaDurationData } from "../../../components/ha-duration-input";
 import type { EnergySourceByType } from "../../../data/energy";
 import type { ActionConfig } from "../../../data/lovelace/config/action";

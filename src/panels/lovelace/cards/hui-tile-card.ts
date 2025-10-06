@@ -9,7 +9,7 @@ import { computeCssColor } from "../../../common/color/compute-color";
 import { hsv2rgb, rgb2hex, rgb2hsv } from "../../../common/color/convert-color";
 import { DOMAINS_TOGGLE } from "../../../common/const";
 import { computeDomain } from "../../../common/entity/compute_domain";
-import type { EntityNameItem } from "../../../common/entity/compute_name_display";
+import type { EntityNameItem } from "../../../common/entity/compute_entity_name_display";
 import { stateActive } from "../../../common/entity/state_active";
 import { stateColorCss } from "../../../common/entity/state_color";
 import "../../../components/ha-card";

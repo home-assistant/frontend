@@ -12,7 +12,7 @@ import type {
 import type {
   EntityNameItem,
   EntityNameOptions,
-} from "./common/entity/compute_name_display";
+} from "./common/entity/compute_entity_name_display";
 import type { LocalizeFunc } from "./common/translations/localize";
 import type { AreaRegistryEntry } from "./data/area_registry";
 import type { DeviceRegistryEntry } from "./data/device_registry";

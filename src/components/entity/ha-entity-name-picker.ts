@@ -10,7 +10,7 @@ import memoizeOne from "memoize-one";
 import { ensureArray } from "../../common/array/ensure-array";
 import { fireEvent } from "../../common/dom/fire_event";
 import { stopPropagation } from "../../common/dom/stop_propagation";
-import type { EntityNameItem } from "../../common/entity/compute_name_display";
+import type { EntityNameItem } from "../../common/entity/compute_entity_name_display";
 import { getEntityContext } from "../../common/entity/context/get_entity_context";
 import type { EntityNameType } from "../../common/translations/entity-state";
 import type { HomeAssistant, ValueChangedEvent } from "../../types";

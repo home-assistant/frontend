@@ -58,6 +58,31 @@ export const computeEntityNameDisplay = (
     );
   }
 
+  const names = computeEntityNameList(
+    stateObj,
+    items,
+    entities,
+    devices,
+    areas,
+    floors
+  );
+
+  // If after processing there is only one name, return that
+  if (names.length === 1) {
+    return names[0] || "";
+  }
+
+  return names.filter((n) => n).join(separator);
+};
+
+export const computeEntityNameList = (
+  stateObj: HassEntity,
+  name: EntityNameItem[],
+  entities: HomeAssistant["entities"],
+  devices: HomeAssistant["devices"],
+  areas: HomeAssistant["areas"],
+  floors: HomeAssistant["floors"]
+): (string | undefined)[] => {
   const { device, area, floor } = getEntityContext(
     stateObj,
     entities,
@@ -66,25 +91,22 @@ export const computeEntityNameDisplay = (
     floors
   );
 
-  const formattedName = items
-    .map((item) => {
-      switch (item.type) {
-        case "entity":
-          return computeEntityName(stateObj, entities, devices);
-        case "device":
-          return device ? computeDeviceName(device) : undefined;
-        case "area":
-          return area ? computeAreaName(area) : undefined;
-        case "floor":
-          return floor ? computeFloorName(floor) : undefined;
-        case "text":
-          return item.text;
-        default:
-          return "";
-      }
-    })
-    .filter((n) => n)
-    .join(separator);
+  const names = name.map((item) => {
+    switch (item.type) {
+      case "entity":
+        return computeEntityName(stateObj, entities, devices);
+      case "device":
+        return device ? computeDeviceName(device) : undefined;
+      case "area":
+        return area ? computeAreaName(area) : undefined;
+      case "floor":
+        return floor ? computeFloorName(floor) : undefined;
+      case "text":
+        return item.text;
+      default:
+        return "";
+    }
+  });
 
-  return formattedName;
+  return names;
 };
