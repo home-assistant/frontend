@@ -45,6 +45,8 @@ export class HuiErrorCard extends LitElement implements LovelaceCard {
   protected render() {
     const error =
       this._config?.error ||
+      (this.severity === "warning" &&
+        this.hass?.localize("ui.errors.config.configuration_warning")) ||
       this.hass?.localize("ui.errors.config.configuration_error");
     const showTitle =
       this.hass === undefined || this.hass?.user?.is_admin || this.preview;

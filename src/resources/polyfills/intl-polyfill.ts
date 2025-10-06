@@ -55,7 +55,7 @@ const polyfillIntl = async () => {
       import("@formatjs/intl-pluralrules/polyfill-force").then(
         // Locale data for plural rules breaks current JSON conversions as it includes functions,
         // so only import English to avoid huge bundles
-        // TODo: Setup JS imports instead of JSON fetches
+        // TODO: Setup JS imports instead of JSON fetches
         () => import("@formatjs/intl-pluralrules/locale-data/en")
       )
     );

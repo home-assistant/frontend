@@ -257,7 +257,7 @@ export const getFossilEnergyConsumption = async (
     period,
   });
 
-interface EnergySourceByType {
+export interface EnergySourceByType {
   grid?: GridSourceTypeEnergyPreference[];
   solar?: SolarSourceTypeEnergyPreference[];
   battery?: BatterySourceTypeEnergyPreference[];

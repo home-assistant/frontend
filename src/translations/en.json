@@ -10,7 +10,10 @@
     "todo": "To-do lists",
     "developer_tools": "Developer tools",
     "media_browser": "Media",
-    "profile": "Profile"
+    "profile": "Profile",
+    "light": "Lights",
+    "security": "Security",
+    "climate": "Climate"
   },
   "state": {
     "default": {
@@ -1415,7 +1418,7 @@
           "clear_skipped": "Clear skipped",
           "install": "Install",
           "update": "Update",
-          "auto_update_enabled_title": "Can not skip version",
+          "auto_update_enabled_title": "Cannot skip version",
           "auto_update_enabled_text": "Automatic updates for this item have been enabled; skipping it is, therefore, unavailable. You can either install this update now or wait for Home Assistant to do it automatically.",
           "create_backup": {
             "automatic": "Automatic backup before update",
@@ -1645,7 +1648,7 @@
         "will_rename": "{count} {count, plural,\n  one {entity ID}\n  other {entity IDs}\n} will be renamed",
         "new": "New",
         "old": "Old",
-        "cant_rename": "{count} {count, plural,\n  one {entity ID}\n  other {entity IDs}\n} can not be regenerated because they are not available",
+        "cant_rename": "{count} {count, plural,\n  one {entity ID}\n  other {entity IDs}\n} cannot be regenerated because they are not available",
         "wont_change": "{count} {count, plural,\n  one {entity ID}\n  other {entity IDs}\n} will not change",
         "update_entity_error": "Updating the entity ID of {entityId} failed",
         "confirm_no_renamable_entity_ids": "No renamable entity IDs"
@@ -2104,6 +2107,7 @@
         "visual_editor_not_supported_reason_type": "The visual editor is not available for this type of element.",
         "edit_in_yaml_supported": "You can still edit your config using YAML.",
         "configuration_error": "Configuration error",
+        "configuration_warning": "Configuration warning",
         "configuration_error_reason": "The configuration is not valid. Check the logs for more information.",
         "no_type_provided": "No type provided.",
         "editor_not_supported": "Visual editor is not supported for this configuration",
@@ -3197,7 +3201,7 @@
               "header": "General configuration",
               "introduction": "Manage your location, network, and analytics.",
               "core_config": {
-                "edit_requires_storage": "You can not change these settings in the UI, as you have config stored in 'configuration.yaml' under the 'homeassistant' key.",
+                "edit_requires_storage": "You cannot change these settings in the UI, as you have config stored in 'configuration.yaml' under the 'homeassistant' key.",
                 "location_name": "Name",
                 "latitude": "Latitude",
                 "longitude": "Longitude",
@@ -4680,7 +4684,7 @@
               "script": "scripts"
             },
             "error": "{path} could not be loaded",
-            "blueprint_in_use_title": "This blueprint is in use and can not be deleted",
+            "blueprint_in_use_title": "This blueprint is in use and cannot be deleted",
             "blueprint_in_use_text": "Please remove all below {type} that use this blueprint before deleting it. {list}",
             "blueprint_in_use_view": "view {type}",
             "confirm_delete_title": "Delete blueprint?",
@@ -5666,7 +5670,7 @@
             "local_access_only": "Local access only",
             "local_access_only_description": "Can only log in from the local network",
             "system_generated": "System user",
-            "system_generated_read_only_users": "System users can not be updated.",
+            "system_generated_read_only_users": "System users cannot be updated.",
             "unnamed_user": "Unnamed user",
             "confirm_user_deletion_title": "Delete {name}?",
             "confirm_user_deletion_text": "This user will be permanently deleted."
@@ -6883,9 +6887,6 @@
           },
           "home": {
             "summary_list": {
-              "climate": "Climate",
-              "lights": "Lights",
-              "security": "Security",
               "media_players": "Media players"
             },
             "welcome_user": "Welcome {user}",
@@ -7190,7 +7191,7 @@
             "convert_view_text": "It will create a new view using sections. This current view will stay untouched. All your cards will be imported so you can rearrange them freely.",
             "convert_view_action": "Create",
             "card_to_section_convert": "Convert your view to a section view.",
-            "section_to_card_not_supported": "You can not change your section view to an other type. Start from scratch with a new view if you want to use another view type.",
+            "section_to_card_not_supported": "You cannot change your section view to an other type. Start from scratch with a new view if you want to use another view type.",
             "types": {
               "sections": "Sections (default)",
               "masonry": "Masonry",
@@ -7425,7 +7426,7 @@
             "testing_pass": "[%key:ui::panel::config::automation::editor::conditions::testing_pass%]",
             "testing_error": "[%key:ui::panel::config::automation::editor::conditions::testing_error%]",
             "invalid_config_title": "Invalid configuration",
-            "invalid_config_text": "The condition can not be tested because the configuration is not valid.",
+            "invalid_config_text": "The condition cannot be tested because the configuration is not valid.",
             "condition": {
               "numeric_state": {
                 "label": "Entity numeric state",
@@ -9088,7 +9089,7 @@
           },
           "create_account": "Create account",
           "error": {
-            "username_not_normalized": "Username can only contain lowercase letters, and can not contain whitespace.",
+            "username_not_normalized": "Username can only contain lowercase letters, and cannot contain whitespace.",
             "password_not_match": "Passwords don't match"
           }
         },
