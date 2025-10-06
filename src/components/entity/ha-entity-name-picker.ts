@@ -96,17 +96,19 @@ export class HaEntityNamePicker extends LitElement {
       return [];
     }
 
-    const items = this._validOptions(entityId).map<EntityNameOption>(
-      (name) => ({
+    const items = this._validOptions(entityId).map<EntityNameOption>((name) => {
+      const stateObj = this.hass.states[entityId];
+      const entityName = stateObj
+        ? this.hass.formatEntityName(stateObj, { type: name })
+        : "";
+      return {
         primary: this.hass.localize(
           `ui.components.entity.entity-name-picker.types.${name}`
         ),
-        secondary: this.hass.formatEntityName(this.hass.states[entityId], {
-          type: name,
-        }),
+        secondary: entityName,
         value: name,
-      })
-    );
+      };
+    });
 
     return items;
   });
