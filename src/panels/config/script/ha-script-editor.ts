@@ -1145,7 +1145,7 @@ export class HaScriptEditor extends SubscribeMixin(
     this._manualEditor?.deleteSelectedRow();
   }
 
-  protected _applyUndoRedo(config: ScriptConfig) {
+  private _applyUndoRedo(config: ScriptConfig) {
     this._manualEditor?.triggerCloseSidebar();
     this._config = config;
     this._dirty = true;

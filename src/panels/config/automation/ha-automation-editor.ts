@@ -1239,7 +1239,7 @@ export class HaAutomationEditor extends PreventUnsavedMixin(
     this._manualEditor?.deleteSelectedRow();
   }
 
-  protected _applyUndoRedo(config: AutomationConfig) {
+  private _applyUndoRedo(config: AutomationConfig) {
     this._manualEditor?.triggerCloseSidebar();
     this._config = config;
     this._dirty = true;
