@@ -18,6 +18,7 @@ import type { HomeAssistant } from "../../../../types";
 import type { EnergySettingsBatteryDialogParams } from "./show-dialogs-energy";
 
 const energyUnitClasses = ["energy"];
+const powerUnitClasses = ["power"];
 
 @customElement("dialog-energy-battery-settings")
 export class DialogEnergyBatterySettings
@@ -32,9 +33,13 @@ export class DialogEnergyBatterySettings
 
   @state() private _energy_units?: string[];
 
+  @state() private _power_units?: string[];
+
   @state() private _error?: string;
 
   private _excludeList?: string[];
+
+  private _excludeListPower?: string[];
 
   public async showDialog(
     params: EnergySettingsBatteryDialogParams
@@ -46,6 +51,9 @@ export class DialogEnergyBatterySettings
     this._energy_units = (
       await getSensorDeviceClassConvertibleUnits(this.hass, "energy")
     ).units;
+    this._power_units = (
+      await getSensorDeviceClassConvertibleUnits(this.hass, "power")
+    ).units;
     const allSources: string[] = [];
     this._params.battery_sources.forEach((entry) => {
       allSources.push(entry.stat_energy_from);
@@ -55,6 +63,16 @@ export class DialogEnergyBatterySettings
       (id) =>
         id !== this._source?.stat_energy_from &&
         id !== this._source?.stat_energy_to
+    );
+    const allPowerSources: string[] = [];
+    this._params.battery_sources.forEach((entry) => {
+      if (entry.stat_power_from) allPowerSources.push(entry.stat_power_from);
+      if (entry.stat_power_to) allPowerSources.push(entry.stat_power_to);
+    });
+    this._excludeListPower = allPowerSources.filter(
+      (id) =>
+        id !== this._source?.stat_power_from &&
+        id !== this._source?.stat_power_to
     );
   }
 
@@ -72,8 +90,6 @@ export class DialogEnergyBatterySettings
       return nothing;
     }
 
-    const pickableUnit = this._energy_units?.join(", ") || "";
-
     return html`
       <ha-dialog
         open
@@ -85,12 +101,6 @@ export class DialogEnergyBatterySettings
         @closed=${this.closeDialog}
       >
         ${this._error ? html`<p class="error">${this._error}</p>` : ""}
-        <div>
-          ${this.hass.localize(
-            "ui.panel.config.energy.battery.dialog.entity_para",
-            { unit: pickableUnit }
-          )}
-        </div>
 
         <ha-statistic-picker
           .hass=${this.hass}
@@ -105,6 +115,10 @@ export class DialogEnergyBatterySettings
             this._source.stat_energy_from,
           ]}
           @value-changed=${this._statisticToChanged}
+          .helper=${this.hass.localize(
+            "ui.panel.config.energy.battery.dialog.entity_para",
+            { unit: this._energy_units?.join(", ") || "" }
+          )}
           dialogInitialFocus
         ></ha-statistic-picker>
 
@@ -121,6 +135,40 @@ export class DialogEnergyBatterySettings
             this._source.stat_energy_to,
           ]}
           @value-changed=${this._statisticFromChanged}
+          .helper=${this.hass.localize(
+            "ui.panel.config.energy.battery.dialog.entity_para",
+            { unit: this._energy_units?.join(", ") || "" }
+          )}
+        ></ha-statistic-picker>
+
+        <ha-statistic-picker
+          .hass=${this.hass}
+          .includeUnitClass=${powerUnitClasses}
+          .value=${this._source.stat_power_to}
+          .label=${this.hass.localize(
+            "ui.panel.config.energy.battery.dialog.power_into_battery"
+          )}
+          .excludeStatistics=${this._excludeListPower}
+          @value-changed=${this._powerToChanged}
+          .helper=${this.hass.localize(
+            "ui.panel.config.energy.battery.dialog.entity_para",
+            { unit: this._power_units?.join(", ") || "" }
+          )}
+        ></ha-statistic-picker>
+
+        <ha-statistic-picker
+          .hass=${this.hass}
+          .includeUnitClass=${powerUnitClasses}
+          .value=${this._source.stat_power_from}
+          .label=${this.hass.localize(
+            "ui.panel.config.energy.battery.dialog.power_out_of_battery"
+          )}
+          .excludeStatistics=${this._excludeListPower}
+          @value-changed=${this._powerFromChanged}
+          .helper=${this.hass.localize(
+            "ui.panel.config.energy.battery.dialog.entity_para",
+            { unit: this._power_units?.join(", ") || "" }
+          )}
         ></ha-statistic-picker>
 
         <ha-button
@@ -150,6 +198,14 @@ export class DialogEnergyBatterySettings
     this._source = { ...this._source!, stat_energy_from: ev.detail.value };
   }
 
+  private _powerToChanged(ev: CustomEvent<{ value: string }>) {
+    this._source = { ...this._source!, stat_power_to: ev.detail.value };
+  }
+
+  private _powerFromChanged(ev: CustomEvent<{ value: string }>) {
+    this._source = { ...this._source!, stat_power_from: ev.detail.value };
+  }
+
   private async _save() {
     try {
       await this._params!.saveCallback(this._source!);
@@ -168,7 +224,11 @@ export class DialogEnergyBatterySettings
           --mdc-dialog-max-width: 430px;
         }
         ha-statistic-picker {
-          width: 100%;
+          display: block;
+          margin-bottom: var(--ha-space-4);
+        }
+        ha-statistic-picker:last-of-type {
+          margin-bottom: 0;
         }
       `,
     ];

@@ -20,7 +20,6 @@ import "../ha-combo-box-item";
 import "../ha-generic-picker";
 import type { HaGenericPicker } from "../ha-generic-picker";
 import "../ha-icon-button";
-import "../ha-input-helper-text";
 import type {
   PickerComboBoxItem,
   PickerComboBoxSearchFn,
@@ -465,6 +464,7 @@ export class HaStatisticPicker extends LitElement {
         .hideClearIcon=${this.hideClearIcon}
         .searchFn=${this._searchFn}
         .valueRenderer=${this._valueRenderer}
+        .helper=${this.helper}
         @value-changed=${this._valueChanged}
       >
       </ha-generic-picker>

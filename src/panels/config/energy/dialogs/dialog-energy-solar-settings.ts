@@ -28,6 +28,7 @@ import { brandsUrl } from "../../../../util/brands-url";
 import type { EnergySettingsSolarDialogParams } from "./show-dialogs-energy";
 
 const energyUnitClasses = ["energy"];
+const powerUnitClasses = ["power"];
 
 @customElement("dialog-energy-solar-settings")
 export class DialogEnergySolarSettings
@@ -46,9 +47,13 @@ export class DialogEnergySolarSettings
 
   @state() private _energy_units?: string[];
 
+  @state() private _power_units?: string[];
+
   @state() private _error?: string;
 
   private _excludeList?: string[];
+
+  private _excludeListPower?: string[];
 
   public async showDialog(
     params: EnergySettingsSolarDialogParams
@@ -62,9 +67,15 @@ export class DialogEnergySolarSettings
     this._energy_units = (
       await getSensorDeviceClassConvertibleUnits(this.hass, "energy")
     ).units;
+    this._power_units = (
+      await getSensorDeviceClassConvertibleUnits(this.hass, "power")
+    ).units;
     this._excludeList = this._params.solar_sources
       .map((entry) => entry.stat_energy_from)
       .filter((id) => id !== this._source?.stat_energy_from);
+    this._excludeListPower = this._params.solar_sources
+      .map((entry) => entry.stat_power_from)
+      .filter((id) => id && id !== this._source?.stat_power_from) as string[];
   }
 
   public closeDialog() {
@@ -81,8 +92,6 @@ export class DialogEnergySolarSettings
       return nothing;
     }
 
-    const pickableUnit = this._energy_units?.join(", ") || "";
-
     return html`
       <ha-dialog
         open
@@ -94,12 +103,6 @@ export class DialogEnergySolarSettings
         @closed=${this.closeDialog}
       >
         ${this._error ? html`<p class="error">${this._error}</p>` : ""}
-        <div>
-          ${this.hass.localize(
-            "ui.panel.config.energy.solar.dialog.entity_para",
-            { unit: pickableUnit }
-          )}
-        </div>
 
         <ha-statistic-picker
           .hass=${this.hass}
@@ -111,7 +114,26 @@ export class DialogEnergySolarSettings
           )}
           .excludeStatistics=${this._excludeList}
           @value-changed=${this._statisticChanged}
+          .helper=${this.hass.localize(
+            "ui.panel.config.energy.solar.dialog.entity_para",
+            { unit: this._energy_units?.join(", ") || "" }
+          )}
           dialogInitialFocus
+        ></ha-statistic-picker>
+
+        <ha-statistic-picker
+          .hass=${this.hass}
+          .includeUnitClass=${powerUnitClasses}
+          .value=${this._source.stat_power_from}
+          .label=${this.hass.localize(
+            "ui.panel.config.energy.solar.dialog.solar_production_power"
+          )}
+          .excludeStatistics=${this._excludeListPower}
+          @value-changed=${this._powerStatisticChanged}
+          .helper=${this.hass.localize(
+            "ui.panel.config.energy.solar.dialog.entity_para",
+            { unit: this._power_units?.join(", ") || "" }
+          )}
         ></ha-statistic-picker>
 
         <h3>
@@ -267,6 +289,10 @@ export class DialogEnergySolarSettings
     this._source = { ...this._source!, stat_energy_from: ev.detail.value };
   }
 
+  private _powerStatisticChanged(ev: CustomEvent<{ value: string }>) {
+    this._source = { ...this._source!, stat_power_from: ev.detail.value };
+  }
+
   private async _save() {
     try {
       if (!this._forecast) {
@@ -286,6 +312,10 @@ export class DialogEnergySolarSettings
       css`
         ha-dialog {
           --mdc-dialog-max-width: 430px;
+        }
+        ha-statistic-picker {
+          display: block;
+          margin-bottom: var(--ha-space-4);
         }
         img {
           height: 24px;

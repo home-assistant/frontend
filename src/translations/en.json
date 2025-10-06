@@ -3031,6 +3031,7 @@
                 "paragraph": "Grid consumption is the energy that flows from the energy grid to your home.",
                 "entity_para": "Pick a sensor which measures grid consumption in either of {unit}.",
                 "energy_stat": "Consumed energy",
+                "power_stat": "Current power consumption",
                 "cost_para": "Select how Home Assistant should keep track of the costs of the consumed energy.",
                 "no_cost": "Do not track costs",
                 "cost_stat": "Use an entity tracking the total costs",
@@ -3045,6 +3046,7 @@
                 "paragraph": "Grid production is the energy that flows from your solar panels to the grid.",
                 "entity_para": "Pick a sensor which measures grid production in either of {unit}.",
                 "energy_stat": "Energy returned to the grid",
+                "power_stat": "Current power returned to the grid",
                 "cost_para": "Do you get money back when you return energy to the grid?",
                 "no_cost": "I do not get money back",
                 "cost_stat": "Use an entity tracking the total received money",
@@ -3071,6 +3073,7 @@
               "header": "Configure solar panels",
               "entity_para": "Pick a sensor which measures solar energy production in either of {unit}.",
               "solar_production_energy": "Solar production energy",
+              "solar_production_power": "Solar production power",
               "solar_production_forecast": "Solar production forecast",
               "solar_production_forecast_description": "Adding solar production forecast information will allow you to quickly see your expected production for today.",
               "dont_forecast_production": "Don't forecast production",
@@ -3090,7 +3093,9 @@
               "header": "Configure battery system",
               "entity_para": "Pick sensors which measure energy going into and coming out of the battery in either of {unit}.",
               "energy_into_battery": "Energy going into the battery",
-              "energy_out_of_battery": "Energy coming out of the battery"
+              "energy_out_of_battery": "Energy coming out of the battery",
+              "power_into_battery": "Power going into the battery",
+              "power_out_of_battery": "Power coming out of the battery"
             }
           },
           "gas": {
@@ -3152,10 +3157,12 @@
               "header": "Add a device",
               "display_name": "Display name",
               "device_consumption_energy": "Device energy consumption",
-              "selected_stat_intro": "Select the energy sensor that measures the device's energy usage in either of {unit}.",
+              "device_consumption_power": "Device power consumption",
+              "selected_stat_intro": "Select the sensor that measures the device's energy usage in either of {unit}.",
               "included_in_device": "Upstream device",
               "included_in_device_helper": "If this device is already counted by another device (such as a smart switch measured by a smart breaker), selecting the upstream device prevents duplicate energy tracking.",
-              "no_upstream_devices": "No eligible upstream devices"
+              "no_upstream_devices": "No eligible upstream devices",
+              "device_consumption_power_helper": "Select the sensor that measures the device's power usage in either of {unit}."
             }
           }
         },
