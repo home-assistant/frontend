@@ -803,9 +803,15 @@ const tryDescribeTrigger = (
     );
   }
 
+  const triggerType = trigger.trigger;
+  const [domain, type] = triggerType.split(".", 2);
+
   return (
     hass.localize(
-      `ui.panel.config.automation.editor.triggers.type.${trigger.trigger}.label`
+      `component.${domain}.triggers.${type || "_"}.description_configured`
+    ) ||
+    hass.localize(
+      `ui.panel.config.automation.editor.triggers.type.${triggerType}.label`
     ) ||
     hass.localize(`ui.panel.config.automation.editor.triggers.unknown_trigger`)
   );

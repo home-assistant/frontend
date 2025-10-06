@@ -73,7 +73,8 @@ export type TranslationCategory =
   | "application_credentials"
   | "issues"
   | "selector"
-  | "services";
+  | "services"
+  | "triggers";
 
 export const subscribeTranslationPreferences = (
   hass: HomeAssistant,

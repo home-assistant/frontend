@@ -1,8 +1,10 @@
 import type {
   HassEntityAttributeBase,
   HassEntityBase,
+  HassServiceTarget,
 } from "home-assistant-js-websocket";
 import { ensureArray } from "../common/array/ensure-array";
+import type { WeekdayShort } from "../common/datetime/weekday";
 import { navigate } from "../common/navigate";
 import type { LocalizeKeys } from "../common/translations/localize";
 import { createSearchParam } from "../common/url/search-params";
@@ -12,7 +14,7 @@ import { CONDITION_BUILDING_BLOCKS } from "./condition";
 import type { DeviceCondition, DeviceTrigger } from "./device_automation";
 import type { Action, Field, MODES } from "./script";
 import { migrateAutomationAction } from "./script";
-import type { WeekdayShort } from "../common/datetime/weekday";
+import type { TriggerDescription } from "./trigger";
 
 export const AUTOMATION_DEFAULT_MODE: (typeof MODES)[number] = "single";
 export const AUTOMATION_DEFAULT_MAX = 10;
@@ -86,6 +88,11 @@ export interface BaseTrigger {
   id?: string;
   variables?: Record<string, unknown>;
   enabled?: boolean;
+  options?: Record<string, unknown>;
+}
+
+export interface PlatformTrigger extends BaseTrigger {
+  target?: HassServiceTarget;
 }
 
 export interface StateTrigger extends BaseTrigger {
@@ -575,6 +582,7 @@ export interface TriggerSidebarConfig extends BaseSidebarConfig {
   insertAfter: (value: Trigger | Trigger[]) => boolean;
   toggleYamlMode: () => void;
   config: Trigger;
+  description?: TriggerDescription;
   yamlMode: boolean;
   uiSupported: boolean;
 }

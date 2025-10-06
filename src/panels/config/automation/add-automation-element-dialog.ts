@@ -40,6 +40,7 @@ import "../../../components/ha-md-list";
 import type { HaMdList } from "../../../components/ha-md-list";
 import "../../../components/ha-md-list-item";
 import "../../../components/ha-service-icon";
+import { TRIGGER_ICONS } from "../../../components/ha-trigger-icon";
 import "../../../components/ha-wa-dialog";
 import "../../../components/search-input";
 import {
@@ -65,7 +66,7 @@ import {
   domainToName,
   fetchIntegrationManifests,
 } from "../../../data/integration";
-import { TRIGGER_COLLECTIONS, TRIGGER_ICONS } from "../../../data/trigger";
+import { TRIGGER_COLLECTIONS } from "../../../data/trigger";
 import type { HassDialog } from "../../../dialogs/make-dialog-manager";
 import { KeyboardShortcutMixin } from "../../../mixins/keyboard-shortcut-mixin";
 import { HaFuse } from "../../../resources/fuse";

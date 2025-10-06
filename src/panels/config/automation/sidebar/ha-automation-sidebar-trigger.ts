@@ -23,6 +23,8 @@ import { overflowStyles, sidebarEditorStyles } from "../styles";
 import "../trigger/ha-automation-trigger-editor";
 import type HaAutomationTriggerEditor from "../trigger/ha-automation-trigger-editor";
 import "./ha-automation-sidebar-card";
+import { computeDomain } from "../../../../common/entity/compute_domain";
+import { computeObjectId } from "../../../../common/entity/compute_object_id";
 
 @customElement("ha-automation-sidebar-trigger")
 export default class HaAutomationSidebarTrigger extends LitElement {
@@ -72,9 +74,22 @@ export default class HaAutomationSidebarTrigger extends LitElement {
       "ui.panel.config.automation.editor.triggers.trigger"
     );
 
-    const title = this.hass.localize(
-      `ui.panel.config.automation.editor.triggers.type.${type}.label`
-    );
+    const domain =
+      "trigger" in this.config.config &&
+      this.config.config.trigger.includes(".")
+        ? computeDomain(this.config.config.trigger)
+        : "trigger" in this.config.config && this.config.config.trigger;
+    const triggerName =
+      "trigger" in this.config.config &&
+      this.config.config.trigger.includes(".")
+        ? computeObjectId(this.config.config.trigger)
+        : "_";
+
+    const title =
+      this.hass.localize(
+        `ui.panel.config.automation.editor.triggers.type.${type}.label`
+      ) ||
+      this.hass.localize(`component.${domain}.triggers.${triggerName}.name`);
 
     return html`
       <ha-automation-sidebar-card
@@ -268,6 +283,7 @@ export default class HaAutomationSidebarTrigger extends LitElement {
             class="sidebar-editor"
             .hass=${this.hass}
             .trigger=${this.config.config}
+            .description=${this.config.description}
             @value-changed=${this._valueChangedSidebar}
             @yaml-changed=${this._yamlChangedSidebar}
             .uiSupported=${this.config.uiSupported}

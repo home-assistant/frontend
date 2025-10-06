@@ -133,14 +133,19 @@ const resources: {
     all?: Promise<Record<string, ServiceIcons>>;
     domains: Record<string, ServiceIcons | Promise<ServiceIcons>>;
   };
+  triggers: {
+    all?: Promise<Record<string, TriggerIcons>>;
+    domains: Record<string, TriggerIcons | Promise<TriggerIcons>>;
+  };
 } = {
   entity: {},
   entity_component: {},
   services: { domains: {} },
+  triggers: { domains: {} },
 };
 
 interface IconResources<
-  T extends ComponentIcons | PlatformIcons | ServiceIcons,
+  T extends ComponentIcons | PlatformIcons | ServiceIcons | TriggerIcons,
 > {
   resources: Record<string, T>;
 }
@@ -184,12 +189,22 @@ type ServiceIcons = Record<
   { service: string; sections?: Record<string, string> }
 >;
 
-export type IconCategory = "entity" | "entity_component" | "services";
+type TriggerIcons = Record<
+  string,
+  { trigger: string; sections?: Record<string, string> }
+>;
+
+export type IconCategory =
+  | "entity"
+  | "entity_component"
+  | "services"
+  | "triggers";
 
 interface CategoryType {
   entity: PlatformIcons;
   entity_component: ComponentIcons;
   services: ServiceIcons;
+  triggers: TriggerIcons;
 }
 
 export const getHassIcons = async <T extends IconCategory>(
@@ -267,12 +282,10 @@ export const getServiceIcons = async (
     if (!force && resources.services.all) {
       return resources.services.all;
     }
-    resources.services.all = getHassIcons(hass, "services", domain).then(
-      (res) => {
-        resources.services.domains = res.resources;
-        return res?.resources;
-      }
-    );
+    resources.services.all = getHassIcons(hass, "services").then((res) => {
+      resources.services.domains = res.resources;
+      return res?.resources;
+    });
     return resources.services.all;
   }
   if (!force && domain in resources.services.domains) {
@@ -292,6 +305,40 @@ export const getServiceIcons = async (
     (res) => res?.resources[domain]
   );
   return resources.services.domains[domain];
+};
+
+export const getTriggerIcons = async (
+  hass: HomeAssistant,
+  domain?: string,
+  force = false
+): Promise<TriggerIcons | Record<string, TriggerIcons> | undefined> => {
+  if (!domain) {
+    if (!force && resources.triggers.all) {
+      return resources.triggers.all;
+    }
+    resources.triggers.all = getHassIcons(hass, "triggers").then((res) => {
+      resources.triggers.domains = res.resources;
+      return res?.resources;
+    });
+    return resources.triggers.all;
+  }
+  if (!force && domain in resources.triggers.domains) {
+    return resources.triggers.domains[domain];
+  }
+  if (resources.triggers.all && !force) {
+    await resources.triggers.all;
+    if (domain in resources.triggers.domains) {
+      return resources.triggers.domains[domain];
+    }
+  }
+  if (!isComponentLoaded(hass, domain)) {
+    return undefined;
+  }
+  const result = getHassIcons(hass, "triggers", domain);
+  resources.triggers.domains[domain] = result.then(
+    (res) => res?.resources[domain]
+  );
+  return resources.triggers.domains[domain];
 };
 
 // Cache for sorted range keys
@@ -469,6 +516,26 @@ export const attributeIcon = async (
 
       icon = getIconFromTranslations(value, translations);
     }
+  }
+  return icon;
+};
+
+export const triggerIcon = async (
+  hass: HomeAssistant,
+  trigger: string
+): Promise<string | undefined> => {
+  let icon: string | undefined;
+
+  const domain = trigger.includes(".") ? computeDomain(trigger) : trigger;
+  const triggerName = trigger.includes(".") ? computeObjectId(trigger) : "_";
+
+  const triggerIcons = await getTriggerIcons(hass, domain);
+  if (triggerIcons) {
+    const trgrIcon = triggerIcons[triggerName] as TriggerIcons[string];
+    icon = trgrIcon?.trigger;
+  }
+  if (!icon) {
+    icon = await domainIcon(hass, domain);
   }
   return icon;
 };
