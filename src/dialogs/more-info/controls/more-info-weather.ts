@@ -490,16 +490,6 @@ class MoreInfoWeather extends LitElement {
           color: var(--secondary-text-color);
         }
 
-        .hourly_day {
-          color: transparent;
-        }
-        .first-visible .hourly_day {
-          color: var(--secondary-text-color);
-        }
-        .hourly_day.midnight {
-          color: var(--primary-text-color);
-        }
-
         .content {
           display: flex;
           flex-wrap: nowrap;
