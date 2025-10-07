@@ -132,11 +132,11 @@ export class HaWaDialog extends LitElement {
     `;
   }
 
-  private async _handleShow = () => {
+  private _handleShow = async () => {
     this._open = true;
     fireEvent(this, "opened");
 
-    await this.updateComplete
+    await this.updateComplete;
     const focusElement = this.querySelector(
       "[dialogInitialFocus]"
     ) as HTMLElement;
