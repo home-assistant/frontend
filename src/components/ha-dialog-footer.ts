@@ -33,7 +33,7 @@ export class HaDialogFooter extends LitElement {
   static get styles() {
     return [
       css`
-        .footer {
+        footer {
           display: flex;
           gap: var(--ha-space-3);
           justify-content: flex-end;
