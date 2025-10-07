@@ -22,8 +22,6 @@ import "../chips/ha-filter-chip";
 import "../chips/ha-input-chip";
 import "../ha-combo-box";
 import type { HaComboBox } from "../ha-combo-box";
-import "../ha-list-item";
-import "../ha-select";
 import "../ha-sortable";
 
 interface EntityNameOption {
