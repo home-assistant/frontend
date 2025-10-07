@@ -2,6 +2,7 @@ import {
   mdiAlertCircle,
   mdiChevronDown,
   mdiCogOutline,
+  mdiContentCopy,
   mdiDelete,
   mdiDevices,
   mdiDotsVertical,
@@ -71,6 +72,8 @@ import {
 import "./ha-config-entry-device-row";
 import { renderConfigEntryError } from "./ha-config-integration-page";
 import "./ha-config-sub-entry-row";
+import { copyToClipboard } from "../../../common/util/copy-clipboard";
+import { showToast } from "../../../util/toast";
 
 @customElement("ha-config-entry-row")
 class HaConfigEntryRow extends LitElement {
@@ -307,6 +310,13 @@ class HaConfigEntryRow extends LitElement {
                 </ha-md-menu-item>
               `
             : nothing}
+
+          <ha-md-menu-item @click=${this._handleCopy} graphic="icon">
+            <ha-svg-icon slot="start" .path=${mdiContentCopy}></ha-svg-icon>
+            ${this.hass.localize(
+              "ui.panel.config.integrations.config_entry.copy"
+            )}
+          </ha-md-menu-item>
 
           <ha-md-menu-item @click=${this._handleRename} graphic="icon">
             <ha-svg-icon slot="start" .path=${mdiRenameBox}></ha-svg-icon>
@@ -620,6 +630,15 @@ class HaConfigEntryRow extends LitElement {
       manifest: await fetchIntegrationManifest(this.hass, this.entry.domain),
       entryId: this.entry.entry_id,
       navigateToResult: true,
+    });
+  }
+
+  private async _handleCopy() {
+    await copyToClipboard(this.entry.entry_id);
+    showToast(this, {
+      message:
+        this.hass?.localize("ui.common.copied_clipboard") ||
+        "Copied to clipboard",
     });
   }
 

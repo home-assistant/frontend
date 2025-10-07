@@ -5514,6 +5514,7 @@
             "entries": "{count} {count, plural,\n  one {entry}\n  other {entries}\n}",
             "no_devices_or_entities": "No devices or entities",
             "devices_without_subentry": "Devices that don't belong to a sub-entry",
+            "copy": "Copy config entry ID",
             "rename": "Rename",
             "configure": "Configure",
             "system_options": "System options",
