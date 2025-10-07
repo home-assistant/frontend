@@ -5,6 +5,7 @@ import type { IFuseOptions } from "fuse.js";
 import Fuse from "fuse.js";
 import { css, html, LitElement, nothing } from "lit";
 import { customElement, property, query, state } from "lit/decorators";
+import { classMap } from "lit/directives/class-map";
 import { repeat } from "lit/directives/repeat";
 import memoizeOne from "memoize-one";
 import { ensureArray } from "../../common/array/ensure-array";
@@ -13,6 +14,7 @@ import { stopPropagation } from "../../common/dom/stop_propagation";
 import type { EntityNameItem } from "../../common/entity/compute_entity_name_display";
 import { getEntityContext } from "../../common/entity/context/get_entity_context";
 import type { EntityNameType } from "../../common/translations/entity-state";
+import type { LocalizeKeys } from "../../common/translations/localize";
 import type { HomeAssistant, ValueChangedEvent } from "../../types";
 import "../chips/ha-assist-chip";
 import "../chips/ha-chip-set";
@@ -71,11 +73,19 @@ export class HaEntityNamePicker extends LitElement {
 
   private _editIndex?: number;
 
-  private _validOptions = memoizeOne((entityId: string) => {
-    const stateObj = this.hass.states[entityId];
-    if (!stateObj) {
-      return [];
+  private _validOptions = memoizeOne((entityId?: string) => {
+    const options = new Set<string>();
+    if (!entityId) {
+      return options;
     }
+
+    const stateObj = this.hass.states[entityId];
+
+    if (!stateObj) {
+      return options;
+    }
+
+    options.add("entity");
 
     const context = getEntityContext(
       stateObj,
@@ -84,10 +94,10 @@ export class HaEntityNamePicker extends LitElement {
       this.hass.areas,
       this.hass.floors
     );
-    const options: EntityNameType[] = ["entity"];
-    if (context.device) options.push("device");
-    if (context.area) options.push("area");
-    if (context.floor) options.push("floor");
+
+    if (context.device) options.add("device");
+    if (context.area) options.add("area");
+    if (context.floor) options.add("floor");
     return options;
   });
 
@@ -96,16 +106,26 @@ export class HaEntityNamePicker extends LitElement {
       return [];
     }
 
-    const items = this._validOptions(entityId).map<EntityNameOption>((name) => {
+    const options = this._validOptions(entityId);
+
+    const items = (
+      ["entity", "device", "area", "floor"] as const
+    ).map<EntityNameOption>((name) => {
       const stateObj = this.hass.states[entityId];
-      const entityName = stateObj
-        ? this.hass.formatEntityName(stateObj, { type: name })
-        : "";
+      const isValid = options.has(name);
+      const primary = this.hass.localize(
+        `ui.components.entity.entity-name-picker.types.${name}`
+      );
+      const secondary =
+        stateObj && isValid
+          ? this.hass.formatEntityName(stateObj, { type: name })
+          : this.hass.localize(
+              `ui.components.entity.entity-name-picker.types.${name}_missing` as LocalizeKeys
+            ) || "-";
+
       return {
-        primary: this.hass.localize(
-          `ui.components.entity.entity-name-picker.types.${name}`
-        ),
-        secondary: entityName,
+        primary,
+        secondary,
         value: name,
       };
     });
@@ -132,6 +152,7 @@ export class HaEntityNamePicker extends LitElement {
 
     const value = this._value;
     const options = this._getOptions(this.entityId);
+    const validOptions = this._validOptions(this.entityId);
 
     return html`
       ${this.label ? html`<label>${this.label}</label>` : nothing}
@@ -149,6 +170,8 @@ export class HaEntityNamePicker extends LitElement {
               (item) => item,
               (item: EntityNameItem, idx) => {
                 const label = this._formatItem(item);
+                const isValid =
+                  item.type === "text" || validOptions.has(item.type);
                 return html`
                   <ha-input-chip
                     data-idx=${idx}
@@ -157,6 +180,7 @@ export class HaEntityNamePicker extends LitElement {
                     .label=${label}
                     .selected=${!this.disabled}
                     .disabled=${this.disabled}
+                    class=${classMap({ invalid: !isValid })}
                   >
                     <ha-svg-icon slot="icon" .path=${mdiDrag}></ha-svg-icon>
                     <span>${label}</span>
@@ -450,6 +474,10 @@ export class HaEntityNamePicker extends LitElement {
 
     ha-chip-set {
       padding: 8px 8px;
+    }
+
+    .invalid {
+      text-decoration: line-through;
     }
 
     .sortable-fallback {
