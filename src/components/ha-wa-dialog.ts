@@ -25,7 +25,7 @@ export type DialogWidthOnTitleClick = DialogWidth | "none";
  * @see https://webawesome.com/docs/components/dialog/#opening-and-closing-dialogs-declaratively
  * @see src/dialogs/more-info/ha-more-info-dialog.ts#L366
  *
- * @slot heading - Replace the entire header area.
+ * @slot header - Replace the entire header area.
  * @slot navigationIcon - Leading header action (e.g. close/back button).
  * @slot title - Header title. Click can toggle width if `width-on-title-click` is not "none".
  * @slot subtitle - Header subtitle, shown under the title.
@@ -123,7 +123,7 @@ export class HaWaDialog extends LitElement {
         @wa-show=${this._handleShow}
         @wa-after-hide=${this._handleAfterHide}
       >
-        <slot name="heading">
+        <slot name="header">
           <ha-dialog-header .subtitlePosition=${this.headerSubtitlePosition}>
             <slot name="navigationIcon" slot="navigationIcon">
               <ha-icon-button
@@ -288,7 +288,7 @@ export class HaWaDialog extends LitElement {
           var(--ha-space-6);
         gap: var(--ha-space-1);
       }
-      :host([has-custom-heading]) wa-dialog::part(header) {
+      :host([has-custom-header]) wa-dialog::part(header) {
         max-width: 100%;
         padding: var(--ha-space-0);
       }
