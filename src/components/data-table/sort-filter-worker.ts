@@ -1,6 +1,9 @@
 import { expose } from "comlink";
-import { stringCompare, ipCompare } from "../../common/string/compare";
+import Fuse from "fuse.js";
+import memoizeOne from "memoize-one";
+import { ipCompare, stringCompare } from "../../common/string/compare";
 import { stripDiacritics } from "../../common/string/strip-diacritics";
+import { HaFuse } from "../../resources/fuse";
 import type {
   ClonedDataTableColumnData,
   DataTableRowData,
@@ -8,29 +11,48 @@ import type {
   SortingDirection,
 } from "./ha-data-table";
 
+const fuseIndex = memoizeOne(
+  (data: DataTableRowData[], columns: SortableColumnContainer) => {
+    const searchKeys = new Set<string>();
+    Object.entries(columns)
+      .filter(([, column]) => column.filterable)
+      .forEach(([key, column]) =>
+        searchKeys.add(
+          column.filterKey
+            ? `${column.valueColumn || key}.${column.filterKey}`
+            : key
+        )
+      );
+    return Fuse.createIndex([...searchKeys], data);
+  }
+);
+
 const filterData = (
   data: DataTableRowData[],
   columns: SortableColumnContainer,
   filter: string
 ) => {
   filter = stripDiacritics(filter.toLowerCase());
-  return data.filter((row) =>
-    Object.entries(columns).some((columnEntry) => {
-      const [key, column] = columnEntry;
-      if (column.filterable) {
-        const value = String(
-          column.filterKey
-            ? row[column.valueColumn || key][column.filterKey]
-            : row[column.valueColumn || key]
-        );
 
-        if (stripDiacritics(value).toLowerCase().includes(filter)) {
-          return true;
-        }
-      }
-      return false;
-    })
+  if (filter === "") {
+    return data;
+  }
+
+  const index = fuseIndex(data, columns);
+
+  const fuse = new HaFuse(
+    data,
+    { shouldSort: false, minMatchCharLength: 1 },
+    index
   );
+
+  const searchResults = fuse.multiTermsSearch(filter);
+
+  if (searchResults) {
+    return searchResults.map((result) => result.item);
+  }
+
+  return data;
 };
 
 const sortData = (
