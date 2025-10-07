@@ -23,7 +23,7 @@ import { customElement } from "lit/decorators";
 export class HaDialogFooter extends LitElement {
   protected render() {
     return html`
-      <footer class="footer">
+      <footer>
         <slot name="secondaryAction"></slot>
         <slot name="primaryAction"></slot>
       </footer>
