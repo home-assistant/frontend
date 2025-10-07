@@ -433,17 +433,11 @@ export class HaTargetPickerSelector extends LitElement {
               </span>
             `
           : nothing}
-        ${(item as EntityComboBoxItem).domain_name && !showEntityId
+        ${(item as EntityComboBoxItem).domain_name &&
+        (type !== "entity" || !showEntityId)
           ? html`
               <div slot="trailing-supporting-text" class="domain">
                 ${(item as EntityComboBoxItem).domain_name}
-              </div>
-            `
-          : nothing}
-        ${(item as DevicePickerItem).domain_name
-          ? html`
-              <div slot="trailing-supporting-text" class="domain">
-                ${(item as DevicePickerItem).domain_name}
               </div>
             `
           : nothing}
