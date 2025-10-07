@@ -28,7 +28,7 @@ export type DialogWidth = "small" | "medium" | "large" | "full";
  * @slot headerNavigationIcon - Leading header action (e.g. close/back button).
  * @slot title - Header title.
  * @slot subtitle - Header subtitle, shown under the title.
- * @slot actionItems - Trailing header actions (e.g. buttons, menus).
+ * @slot headerActionItems - Trailing header actions (e.g. buttons, menus).
  * @slot - Dialog content body.
  * @slot footer - Dialog footer content.
  *
@@ -121,7 +121,7 @@ export class HaWaDialog extends LitElement {
             ${this.headerSubtitle
               ? html`<span slot="subtitle">${this.headerSubtitle}</span>`
               : nothing}
-            <slot name="actionItems" slot="actionItems"></slot>
+            <slot name="headerActionItems" slot="actionItems"></slot>
           </ha-dialog-header>
         </slot>
         <div class="body ha-scrollbar">
