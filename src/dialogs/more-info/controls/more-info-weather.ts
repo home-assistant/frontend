@@ -3,6 +3,7 @@ import type { CSSResultGroup, PropertyValues } from "lit";
 import { LitElement, css, html, nothing } from "lit";
 import { customElement, property, state } from "lit/decorators";
 import memoizeOne from "memoize-one";
+import { classMap } from "lit/directives/class-map";
 import { DragScrollController } from "../../../common/controllers/drag-scroll-controller";
 import { formatDateWeekdayShort } from "../../../common/datetime/format_date";
 import { formatTime } from "../../../common/datetime/format_time";
@@ -44,6 +45,8 @@ class MoreInfoWeather extends LitElement {
   @state() private _forecastType?: ModernForecastType;
 
   @state() private _subscribed?: Promise<() => void>;
+
+  private _observer?;
 
   // @ts-ignore
   private _dragScrollController = new DragScrollController(this, {
@@ -89,6 +92,7 @@ class MoreInfoWeather extends LitElement {
   public disconnectedCallback(): void {
     super.disconnectedCallback();
     this._unsubscribeForecastEvents();
+    this._observer?.disconnect();
   }
 
   protected shouldUpdate(changedProps: PropertyValues): boolean {
@@ -127,9 +131,54 @@ class MoreInfoWeather extends LitElement {
     }
   }
 
+  protected updated(changedProps: PropertyValues): void {
+    if (
+      changedProps.has("_forecastType") ||
+      changedProps.has("_forecastEvent")
+    ) {
+      this._observer?.disconnect();
+      if (this._forecastType === "hourly" && this._forecastEvent) {
+        this._setupObserver();
+      }
+    }
+  }
+
   private _supportedForecasts = memoizeOne((stateObj: WeatherEntity) =>
     getSupportedForecastTypes(stateObj)
   );
+
+  private _setupObserver() {
+    const container = this.shadowRoot!.querySelector(".forecast");
+    const items = container!.querySelectorAll(".forecast > div");
+    this._observer = new IntersectionObserver(
+      (entries) => {
+        const visible = Array.from(entries).filter(
+          (entry) => entry.isIntersecting && entry.intersectionRatio > 0.75
+        );
+        entries.forEach((item) => {
+          if (visible.includes(item)) {
+            item.target.classList.add("visible");
+          } else {
+            item.target.classList.remove("visible");
+          }
+        });
+        let firstVisible = false;
+        items.forEach((item) => {
+          if (item.classList.contains("visible") && !firstVisible) {
+            item.classList.add("first-visible");
+            firstVisible = true;
+          } else {
+            item.classList.remove("first-visible");
+          }
+        });
+      },
+      {
+        root: container,
+        threshold: 1,
+      }
+    );
+    items.forEach((item) => this._observer.observe(item));
+  }
 
   protected render() {
     if (!this.hass || !this.stateObj) {
@@ -314,10 +363,12 @@ class MoreInfoWeather extends LitElement {
         : nothing}
       <div class="forecast">
         ${forecast?.length
-          ? forecast.map((item) =>
-              this._showValue(item.templow) || this._showValue(item.temperature)
+          ? forecast.map((item) => {
+              const hour = new Date(item.datetime).getHours();
+              return this._showValue(item.templow) ||
+                this._showValue(item.temperature)
                 ? html`
-                    <div>
+                    <div class="forecast_item">
                       <div>
                         ${dayNight
                           ? html`
@@ -336,6 +387,18 @@ class MoreInfoWeather extends LitElement {
                             `
                           : hourly
                             ? html`
+                                <div
+                                  class=${classMap({
+                                    hourly_day: true,
+                                    midnight: hour === 0,
+                                  })}
+                                >
+                                  ${formatDateWeekdayShort(
+                                    new Date(item.datetime),
+                                    this.hass!.locale,
+                                    this.hass!.config
+                                  )}
+                                </div>
                                 ${formatTime(
                                   new Date(item.datetime),
                                   this.hass!.locale,
@@ -384,8 +447,8 @@ class MoreInfoWeather extends LitElement {
                       </div>
                     </div>
                   `
-                : nothing
-            )
+                : nothing;
+            })
           : html`<ha-spinner size="medium"></ha-spinner>`}
       </div>
 
@@ -462,6 +525,16 @@ class MoreInfoWeather extends LitElement {
         .attribute,
         .time-ago {
           color: var(--secondary-text-color);
+        }
+
+        .hourly_day {
+          color: transparent;
+        }
+        .first-visible .hourly_day {
+          color: var(--secondary-text-color);
+        }
+        .hourly_day.midnight {
+          color: var(--primary-text-color);
         }
 
         .content {
