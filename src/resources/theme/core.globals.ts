@@ -44,8 +44,15 @@ export const coreStyles = css`
     --ha-space-20: 80px;
 
     /* Animation timing */
-    --ha-animation-duration: 400ms;
+    --ha-animation-duration: 350ms;
     --ha-animation-delay-base: 50ms;
+
+    @media (prefers-reduced-motion: reduce) {
+      html {
+        --ha-animation-duration: 150ms;
+        --ha-animation-delay-base: 20ms;
+      }
+    }
   }
 `;
 
