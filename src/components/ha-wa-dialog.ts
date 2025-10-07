@@ -26,8 +26,8 @@ export type DialogWidth = "small" | "medium" | "large" | "full";
  *
  * @slot header - Replace the entire header area.
  * @slot headerNavigationIcon - Leading header action (e.g. close/back button).
- * @slot title - Header title.
- * @slot subtitle - Header subtitle, shown under the title.
+ * @slot headerTitle - Header title.
+ * @slot headerSubtitle - Header subtitle, shown under the title.
  * @slot headerActionItems - Trailing header actions (e.g. buttons, menus).
  * @slot - Dialog content body.
  * @slot footer - Dialog footer content.
@@ -240,25 +240,6 @@ export class HaWaDialog extends LitElement {
           padding-left: var(--safe-area-inset-left, var(--ha-space-0));
           padding-right: var(--safe-area-inset-right, var(--ha-space-0));
         }
-      }
-
-      wa-dialog::part(header) {
-        max-width: 100%;
-        overflow: hidden;
-        display: flex;
-        align-items: center;
-        padding: var(--ha-space-6) var(--ha-space-6) var(--ha-space-4)
-          var(--ha-space-6);
-        gap: var(--ha-space-1);
-      }
-      :host([has-custom-header]) wa-dialog::part(header) {
-        max-width: 100%;
-        padding: var(--ha-space-0);
-      }
-
-      wa-dialog::part(close-button),
-      wa-dialog::part(close-button__base) {
-        display: none;
       }
 
       .header-title-container {
