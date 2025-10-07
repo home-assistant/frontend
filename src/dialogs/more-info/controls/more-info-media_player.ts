@@ -114,7 +114,7 @@ class MoreInfoMediaPlayer extends LitElement {
                 @click=${this._toggleMute}
               ></ha-icon-button>
             `
-          : ""}
+          : nothing}
         ${supportsVolumeStep
           ? html` <ha-icon-button
               action="volume_down"
