@@ -223,6 +223,12 @@ export class HaButton extends Button {
         .button.has-end {
           padding-inline-end: 8px;
         }
+
+        .label {
+          overflow: hidden;
+          text-overflow: ellipsis;
+          padding: var(--ha-space-1) 0;
+        }
       `,
     ];
   }
