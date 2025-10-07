@@ -46,12 +46,19 @@ export const coreStyles = css`
     /* Animation timing */
     --ha-animation-duration: 350ms;
     --ha-animation-delay-base: 50ms;
+  }
 
-    @media (prefers-reduced-motion: reduce) {
-      html {
-        --ha-animation-duration: 150ms;
-        --ha-animation-delay-base: 20ms;
-      }
+  @media (prefers-reduced-motion: reduce) {
+    html {
+      --ha-animation-duration: 150ms;
+      --ha-animation-delay-base: 20ms;
+    }
+  }
+
+  /* Enable View Transitions API for supported browsers */
+  @supports (view-transition-name: none) {
+    :root {
+      view-transition-name: root;
     }
   }
 `;

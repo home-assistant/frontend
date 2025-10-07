@@ -25,6 +25,10 @@ import { ifDefined } from "lit/directives/if-defined";
 import memoizeOne from "memoize-one";
 import { isComponentLoaded } from "../../common/config/is_component_loaded";
 import { fireEvent } from "../../common/dom/fire_event";
+import {
+  applyViewTransitionOnLoad,
+  startViewTransition,
+} from "../../common/dom/view_transition";
 import { shouldHandleRequestSelectedEvent } from "../../common/mwc/handle-request-selected-event";
 import { goBack, navigate } from "../../common/navigate";
 import type { LocalizeKeys } from "../../common/translations/localize";
@@ -72,7 +76,7 @@ import {
 } from "../../dialogs/quick-bar/show-dialog-quick-bar";
 import { showShortcutsDialog } from "../../dialogs/shortcuts/show-shortcuts-dialog";
 import { showVoiceCommandDialog } from "../../dialogs/voice-command-dialog/show-ha-voice-command-dialog";
-import { haStyle, haStyleAnimations } from "../../resources/styles";
+import { haStyle, haStyleViewTransitions } from "../../resources/styles";
 import type { HomeAssistant, PanelInfo } from "../../types";
 import { documentationUrl } from "../../util/documentation-url";
 import { showToast } from "../../util/toast";
@@ -626,6 +630,9 @@ class HUIRoot extends LitElement {
     window.addEventListener("scroll", this._handleWindowScroll, {
       passive: true,
     });
+
+    // Trigger view transition on initial load
+    applyViewTransitionOnLoad(this);
   }
 
   public connectedCallback(): void {
@@ -1165,43 +1172,45 @@ class HUIRoot extends LitElement {
     // Recreate a new element to clear the applied themes.
     const root = this._viewRoot;
 
-    if (root.lastChild) {
-      root.removeChild(root.lastChild);
-    }
+    startViewTransition(() => {
+      if (root.lastChild) {
+        root.removeChild(root.lastChild);
+      }
 
-    if (viewIndex === "hass-unused-entities") {
-      const unusedEntities = document.createElement("hui-unused-entities");
-      // Wait for promise to resolve so that the element has been upgraded.
-      import("./editor/unused-entities/hui-unused-entities").then(() => {
-        unusedEntities.hass = this.hass!;
-        unusedEntities.lovelace = this.lovelace!;
-        unusedEntities.narrow = this.narrow;
-      });
-      root.appendChild(unusedEntities);
-      return;
-    }
+      if (viewIndex === "hass-unused-entities") {
+        const unusedEntities = document.createElement("hui-unused-entities");
+        // Wait for promise to resolve so that the element has been upgraded.
+        import("./editor/unused-entities/hui-unused-entities").then(() => {
+          unusedEntities.hass = this.hass!;
+          unusedEntities.lovelace = this.lovelace!;
+          unusedEntities.narrow = this.narrow;
+        });
+        root.appendChild(unusedEntities);
+        return;
+      }
 
-    let view;
-    const viewConfig = this.config.views[viewIndex];
+      let view;
+      const viewConfig = this.config.views[viewIndex];
 
-    if (!viewConfig) {
-      this.lovelace!.setEditMode(true);
-      return;
-    }
+      if (!viewConfig) {
+        this.lovelace!.setEditMode(true);
+        return;
+      }
 
-    if (!force && this._viewCache![viewIndex]) {
-      view = this._viewCache![viewIndex];
-    } else {
-      view = document.createElement("hui-view");
-      view.index = viewIndex;
-      this._viewCache![viewIndex] = view;
-    }
+      if (!force && this._viewCache![viewIndex]) {
+        view = this._viewCache![viewIndex];
+      } else {
+        view = document.createElement("hui-view");
+        view.index = viewIndex;
+        this._viewCache![viewIndex] = view;
+      }
 
-    view.lovelace = this.lovelace;
-    view.hass = this.hass;
-    view.narrow = this.narrow;
+      view.lovelace = this.lovelace;
+      view.hass = this.hass;
+      view.narrow = this.narrow;
 
-    root.appendChild(view);
+      root.appendChild(view);
+    });
   }
 
   private _openShortcutDialog(ev: Event) {
@@ -1212,7 +1221,7 @@ class HUIRoot extends LitElement {
   static get styles(): CSSResultGroup {
     return [
       haStyle,
-      haStyleAnimations,
+      haStyleViewTransitions,
       css`
         :host {
           -ms-user-select: none;
@@ -1267,8 +1276,7 @@ class HUIRoot extends LitElement {
           padding: 0px 12px;
           font-weight: var(--ha-font-weight-normal);
           box-sizing: border-box;
-          animation: fadeIn var(--ha-animation-duration) ease-out both;
-          animation-delay: var(--ha-animation-delay-base);
+          view-transition-name: lovelace-toolbar;
         }
         .narrow .toolbar {
           padding: 0 4px;
@@ -1417,8 +1425,7 @@ class HUIRoot extends LitElement {
         hui-view-container > * {
           flex: 1 1 100%;
           max-width: 100%;
-          animation: fadeInSlideDown var(--ha-animation-duration) ease-out both;
-          animation-delay: var(--ha-animation-delay-base);
+          view-transition-name: lovelace-view;
         }
         /**
          * In edit mode we have the tab bar on a new line *

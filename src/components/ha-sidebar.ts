@@ -28,6 +28,7 @@ import {
 import { classMap } from "lit/directives/class-map";
 import memoizeOne from "memoize-one";
 import { fireEvent } from "../common/dom/fire_event";
+import { applyViewTransitionOnLoad } from "../common/dom/view_transition";
 import { toggleAttribute } from "../common/dom/toggle_attribute";
 import { stringCompare } from "../common/string/compare";
 import { throttle } from "../common/util/throttle";
@@ -41,7 +42,7 @@ import { updateCanInstall } from "../data/update";
 import { showEditSidebarDialog } from "../dialogs/sidebar/show-dialog-edit-sidebar";
 import { SubscribeMixin } from "../mixins/subscribe-mixin";
 import { actionHandler } from "../panels/lovelace/common/directives/action-handler-directive";
-import { haStyleAnimations, haStyleScrollbar } from "../resources/styles";
+import { haStyleScrollbar, haStyleViewTransitions } from "../resources/styles";
 import type { HomeAssistant, PanelInfo, Route } from "../types";
 import "./ha-fade-in";
 import "./ha-icon";
@@ -306,6 +307,9 @@ class HaSidebar extends SubscribeMixin(LitElement) {
   protected firstUpdated(changedProps: PropertyValues) {
     super.firstUpdated(changedProps);
     this._subscribePersistentNotifications();
+
+    // Trigger view transition on initial load
+    applyViewTransitionOnLoad(this);
   }
 
   private _subscribePersistentNotifications(): void {
@@ -326,12 +330,9 @@ class HaSidebar extends SubscribeMixin(LitElement) {
       toggleAttribute(this, "expanded", this.alwaysExpand);
     }
 
-    // Staggered animation for list items based on index
+    // Set up view transition names for staggered animations
     this._listItems.forEach((item, index) => {
-      (item as HTMLElement).style.setProperty(
-        "--animation-index",
-        String(index + 1)
-      );
+      (item as HTMLElement).style.viewTransitionName = `sidebar-item-${index}`;
     });
 
     if (!changedProps.has("hass")) {
@@ -705,7 +706,7 @@ class HaSidebar extends SubscribeMixin(LitElement) {
   static get styles(): CSSResultGroup {
     return [
       haStyleScrollbar,
-      haStyleAnimations,
+      haStyleViewTransitions,
       css`
         :host {
           overflow: visible;
@@ -752,14 +753,7 @@ class HaSidebar extends SubscribeMixin(LitElement) {
         }
         .menu ha-icon-button {
           color: var(--sidebar-icon-color);
-          animation: fadeInSlideDown var(--ha-animation-duration) ease-out both;
-          animation-delay: var(--ha-animation-delay-base) / 2;
-        }
-        ha-md-list-item {
-          animation: fadeInSlideDown var(--ha-animation-duration) ease-out both;
-          animation-delay: calc(
-            var(--ha-animation-delay-base) * var(--animation-index, 1) / 2
-          );
+          view-transition-name: sidebar-menu-button;
         }
         .title {
           margin-left: 3px;

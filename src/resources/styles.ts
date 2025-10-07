@@ -200,33 +200,72 @@ export const baseEntrypointStyles = css`
   }
 `;
 
-export const haStyleAnimations = css`
-  @keyframes fadeIn {
-    0% {
+export const haStyleViewTransitions = css`
+  /* View Transition animations for sidebar and lovelace */
+  @media (prefers-reduced-motion: no-preference) {
+    /* Toolbar fade in */
+    ::view-transition-group(lovelace-toolbar) {
+      animation-duration: var(--ha-animation-duration);
+      animation-timing-function: ease-out;
+    }
+    ::view-transition-new(lovelace-toolbar) {
+      animation: fade-in var(--ha-animation-duration) ease-out;
+      animation-delay: var(--ha-animation-delay-base);
+    }
+
+    /* View slide down */
+    ::view-transition-group(lovelace-view) {
+      animation-duration: var(--ha-animation-duration);
+      animation-timing-function: ease-out;
+    }
+    ::view-transition-new(lovelace-view) {
+      animation: fade-in-slide-down var(--ha-animation-duration) ease-out;
+      animation-delay: var(--ha-animation-delay-base);
+    }
+
+    /* Sidebar menu button */
+    ::view-transition-group(sidebar-menu-button) {
+      animation-duration: var(--ha-animation-duration);
+      animation-timing-function: ease-out;
+    }
+    ::view-transition-new(sidebar-menu-button) {
+      animation: fade-in-slide-down var(--ha-animation-duration) ease-out;
+      animation-delay: calc(var(--ha-animation-delay-base) / 2);
+    }
+
+    /* Sidebar items with staggered animation */
+    ::view-transition-group(sidebar-item-*) {
+      animation-duration: var(--ha-animation-duration);
+      animation-timing-function: ease-out;
+    }
+  }
+
+  @keyframes fade-in {
+    from {
       opacity: 0;
     }
-    100% {
+    to {
       opacity: 1;
     }
   }
 
-  @keyframes fadeInSlideUp {
-    0% {
+  @keyframes fade-in-slide-up {
+    from {
       opacity: 0;
       transform: translateY(20px);
     }
-    100% {
+    to {
       opacity: 1;
       transform: translateY(0);
     }
   }
 
-  @keyframes fadeInSlideDown {
-    0% {
+  @keyframes fade-in-slide-down {
+    from {
       opacity: 0;
       transform: translateY(-20px);
     }
-    100% {
+    to {
       opacity: 1;
       transform: translateY(0);
     }
