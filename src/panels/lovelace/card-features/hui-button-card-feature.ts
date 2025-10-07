@@ -4,7 +4,10 @@ import { customElement, property, state } from "lit/decorators";
 import { computeDomain } from "../../../common/entity/compute_domain";
 import "../../../components/ha-control-button";
 import "../../../components/ha-control-button-group";
-import { hasScriptFields } from "../../../data/script";
+import {
+  hasRequiredScriptFields,
+  requiredScriptFieldsFilled,
+} from "../../../data/script";
 import { showMoreInfoDialog } from "../../../dialogs/more-info/show-ha-more-info-dialog";
 import type { HomeAssistant } from "../../../types";
 import type { LovelaceCardFeature, LovelaceCardFeatureEditor } from "../types";
@@ -50,15 +53,28 @@ class HuiButtonCardFeature extends LitElement implements LovelaceCardFeature {
 
     if (domain === "script") {
       const entityId = this._stateObj.entity_id;
-      if (hasScriptFields(this.hass!, entityId)) {
-        showMoreInfoDialog(this, { entityId: entityId });
+      if (
+        hasRequiredScriptFields(this.hass!, entityId) &&
+        !requiredScriptFieldsFilled(this.hass!, entityId, this._config?.data)
+      ) {
+        showMoreInfoDialog(this, {
+          entityId: entityId,
+          data: this._config?.data,
+        });
         return;
       }
     }
 
-    this.hass.callService(domain, service, {
+    const serviceData = {
       entity_id: this._stateObj.entity_id,
-    });
+      ...(this._config?.data
+        ? {
+            variables: this._config.data,
+          }
+        : {}),
+    };
+
+    this.hass.callService(domain, service, serviceData);
   }
 
   static getStubConfig(): ButtonCardFeatureConfig {

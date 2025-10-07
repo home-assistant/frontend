@@ -6,6 +6,7 @@ import { customElement, property, queryAll, state } from "lit/decorators";
 import { repeat } from "lit/directives/repeat";
 import { storage } from "../../../../common/decorators/storage";
 import { fireEvent } from "../../../../common/dom/fire_event";
+import { stopPropagation } from "../../../../common/dom/stop_propagation";
 import { nextRender } from "../../../../common/util/render-status";
 import "../../../../components/ha-button";
 import "../../../../components/ha-sortable";
@@ -26,6 +27,7 @@ import {
 import { automationRowsStyles } from "../styles";
 import type HaAutomationActionRow from "./ha-automation-action-row";
 import { getAutomationActionType } from "./ha-automation-action-row";
+import { ensureArray } from "../../../../common/array/ensure-array";
 
 @customElement("ha-automation-action")
 export default class HaAutomationAction extends LitElement {
@@ -91,6 +93,7 @@ export default class HaAutomationAction extends LitElement {
                 .narrow=${this.narrow}
                 .disabled=${this.disabled}
                 @duplicate=${this._duplicateAction}
+                @insert-after=${this._insertAfter}
                 @move-down=${this._moveDown}
                 @move-up=${this._moveUp}
                 @value-changed=${this._actionChanged}
@@ -109,6 +112,7 @@ export default class HaAutomationAction extends LitElement {
                           : ""}"
                         slot="icons"
                         @keydown=${this._handleDragKeydown}
+                        @click=${stopPropagation}
                         .index=${idx}
                       >
                         <ha-svg-icon .path=${mdiDrag}></ha-svg-icon>
@@ -362,7 +366,23 @@ export default class HaAutomationAction extends LitElement {
     ev.stopPropagation();
     const index = (ev.target as any).index;
     fireEvent(this, "value-changed", {
-      value: this.actions.concat(deepClone(this.actions[index])),
+      // @ts-expect-error Requires library bump to ES2023
+      value: this.actions.toSpliced(
+        index + 1,
+        0,
+        deepClone(this.actions[index])
+      ),
+    });
+  }
+
+  private _insertAfter(ev: CustomEvent) {
+    ev.stopPropagation();
+    const index = (ev.target as any).index;
+    const inserted = ensureArray(ev.detail.value);
+    this.highlightedActions = inserted;
+    fireEvent(this, "value-changed", {
+      // @ts-expect-error Requires library bump to ES2023
+      value: this.actions.toSpliced(index + 1, 0, ...inserted),
     });
   }
 

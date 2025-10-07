@@ -74,7 +74,7 @@ class HaConfigScene extends HassRouterPage {
       this._currentPage === "edit"
     ) {
       pageEl.creatingNew = undefined;
-      const sceneId = this.routeTail.path.substr(1);
+      const sceneId = this.routeTail.path.slice(1);
       pageEl.sceneId = sceneId === "new" ? null : sceneId;
     }
   }

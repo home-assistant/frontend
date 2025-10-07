@@ -11,7 +11,10 @@ import "../../../../src/components/ha-alert";
 import "../../../../src/components/ha-button-menu";
 import "../../../../src/components/ha-card";
 import "../../../../src/components/ha-form/ha-form";
-import type { HaFormSchema } from "../../../../src/components/ha-form/types";
+import type {
+  HaFormSchema,
+  HaFormDataContainer,
+} from "../../../../src/components/ha-form/types";
 import "../../../../src/components/ha-formfield";
 import "../../../../src/components/ha-icon-button";
 import "../../../../src/components/ha-list-item";
@@ -33,6 +36,7 @@ import { haStyle } from "../../../../src/resources/styles";
 import type { HomeAssistant } from "../../../../src/types";
 import { suggestAddonRestart } from "../../dialogs/suggestAddonRestart";
 import { hassioStyle } from "../../resources/hassio-style";
+import type { ObjectSelector, Selector } from "../../../../src/data/selector";
 
 const SUPPORTED_UI_TYPES = [
   "string",
@@ -78,76 +82,123 @@ class HassioAddonConfig extends LitElement {
 
   @query("ha-yaml-editor") private _editor?: HaYamlEditor;
 
-  public computeLabel = (entry: HaFormSchema): string =>
-    this.addon.translations[this.hass.language]?.configuration?.[entry.name]
-      ?.name ||
-    this.addon.translations.en?.configuration?.[entry.name]?.name ||
+  private _getTranslationEntry(
+    language: string,
+    entry: HaFormSchema,
+    options?: { path?: string[] }
+  ) {
+    let parent = this.addon.translations[language]?.configuration;
+    if (!parent) return undefined;
+    if (options?.path) {
+      for (const key of options.path) {
+        parent = parent[key]?.fields;
+        if (!parent) return undefined;
+      }
+    }
+    return parent[entry.name];
+  }
+
+  public computeLabel = (
+    entry: HaFormSchema,
+    _data: HaFormDataContainer,
+    options?: { path?: string[] }
+  ): string =>
+    this._getTranslationEntry(this.hass.language, entry, options)?.name ||
+    this._getTranslationEntry("en", entry, options)?.name ||
     entry.name;
 
-  public computeHelper = (entry: HaFormSchema): string =>
-    this.addon.translations[this.hass.language]?.configuration?.[entry.name]
+  public computeHelper = (
+    entry: HaFormSchema,
+    options?: { path?: string[] }
+  ): string =>
+    this._getTranslationEntry(this.hass.language, entry, options)
       ?.description ||
-    this.addon.translations.en?.configuration?.[entry.name]?.description ||
+    this._getTranslationEntry("en", entry, options)?.description ||
     "";
 
   private _convertSchema = memoizeOne(
     // Convert supervisor schema to selectors
-    (schema: Record<string, any>): HaFormSchema[] =>
-      schema.map((entry) =>
-        entry.type === "select"
-          ? {
-              name: entry.name,
-              required: entry.required,
-              selector: { select: { options: entry.options } },
-            }
-          : entry.type === "string"
-            ? entry.multiple
-              ? {
-                  name: entry.name,
-                  required: entry.required,
-                  selector: {
-                    select: { options: [], multiple: true, custom_value: true },
-                  },
-                }
-              : {
-                  name: entry.name,
-                  required: entry.required,
-                  selector: {
-                    text: {
-                      type: entry.format
-                        ? entry.format
-                        : MASKED_FIELDS.includes(entry.name)
-                          ? "password"
-                          : "text",
-                    },
-                  },
-                }
-            : entry.type === "boolean"
-              ? {
-                  name: entry.name,
-                  required: entry.required,
-                  selector: { boolean: {} },
-                }
-              : entry.type === "schema"
-                ? {
-                    name: entry.name,
-                    required: entry.required,
-                    selector: { object: {} },
-                  }
-                : entry.type === "float" || entry.type === "integer"
-                  ? {
-                      name: entry.name,
-                      required: entry.required,
-                      selector: {
-                        number: {
-                          mode: "box",
-                          step: entry.type === "float" ? "any" : undefined,
-                        },
-                      },
-                    }
-                  : entry
-      )
+    (schema: readonly HaFormSchema[]): HaFormSchema[] =>
+      this._convertSchemaElements(schema)
   );
+
+  private _convertSchemaElements(
+    schema: readonly HaFormSchema[]
+  ): HaFormSchema[] {
+    return schema.map((entry) => this._convertSchemaElement(entry));
+  }
+
+  private _convertSchemaElement(entry: any): HaFormSchema {
+    if (entry.type === "schema" && !entry.multiple) {
+      return {
+        name: entry.name,
+        type: "expandable",
+        required: entry.required,
+        schema: this._convertSchemaElements(entry.schema),
+      };
+    }
+    const selector = this._convertSchemaElementToSelector(entry, false);
+    if (selector) {
+      return {
+        name: entry.name,
+        required: entry.required,
+        selector,
+      };
+    }
+    return entry;
+  }
+
+  private _convertSchemaElementToSelector(
+    entry: any,
+    force: boolean
+  ): Selector | null {
+    if (entry.type === "select") {
+      return { select: { options: entry.options } };
+    }
+    if (entry.type === "string") {
+      return entry.multiple
+        ? { select: { options: [], multiple: true, custom_value: true } }
+        : {
+            text: {
+              type: entry.format
+                ? entry.format
+                : MASKED_FIELDS.includes(entry.name)
+                  ? "password"
+                  : "text",
+            },
+          };
+    }
+    if (entry.type === "boolean") {
+      return { boolean: {} };
+    }
+    if (entry.type === "schema") {
+      const fields: NonNullable<ObjectSelector["object"]>["fields"] = {};
+      for (const child_entry of entry.schema) {
+        fields[child_entry.name] = {
+          required: child_entry.required,
+          selector: this._convertSchemaElementToSelector(child_entry, true)!,
+        };
+      }
+      return {
+        object: {
+          multiple: entry.multiple,
+          fields,
+        },
+      };
+    }
+    if (entry.type === "float" || entry.type === "integer") {
+      return {
+        number: {
+          mode: "box",
+          step: entry.type === "float" ? "any" : undefined,
+        },
+      };
+    }
+    if (force) {
+      return { object: {} };
+    }
+    return null;
+  }
 
   private _filteredSchema = memoizeOne(
     (options: Record<string, unknown>, schema: HaFormSchema[]) =>

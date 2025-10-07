@@ -155,16 +155,14 @@ export const haStyleDialog = css`
   /* make dialog fullscreen on small screens */
   @media all and (max-width: 450px), all and (max-height: 500px) {
     ha-dialog {
-      --mdc-dialog-min-width: calc(
-        100vw - var(--safe-area-inset-right) - var(--safe-area-inset-left)
-      );
-      --mdc-dialog-max-width: calc(
-        100vw - var(--safe-area-inset-right) - var(--safe-area-inset-left)
-      );
-      --mdc-dialog-min-height: 100%;
-      --mdc-dialog-max-height: 100%;
+      --mdc-dialog-min-width: 100vw;
+      --mdc-dialog-max-width: 100vw;
+      --mdc-dialog-min-height: 100vh;
+      --mdc-dialog-min-height: 100svh;
+      --mdc-dialog-max-height: 100vh;
+      --mdc-dialog-max-height: 100svh;
       --vertical-align-dialog: flex-end;
-      --ha-dialog-border-radius: 0;
+      --ha-dialog-border-radius: var(--ha-border-radius-square);
     }
   }
   .error {
@@ -179,8 +177,7 @@ export const haStyleScrollbar = css`
   }
 
   .ha-scrollbar::-webkit-scrollbar-thumb {
-    -webkit-border-radius: 4px;
-    border-radius: 4px;
+    border-radius: var(--ha-border-radius-sm);
     background: var(--scrollbar-thumb-color);
   }
 

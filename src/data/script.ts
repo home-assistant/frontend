@@ -5,17 +5,20 @@ import type {
 } from "home-assistant-js-websocket";
 import type { Describe } from "superstruct";
 import {
-  object,
-  optional,
-  string,
-  union,
   array,
   assign,
   boolean,
+  object,
+  optional,
   refine,
+  string,
+  union,
 } from "superstruct";
 import { arrayLiteralIncludes } from "../common/array/literal-includes";
+import { computeObjectId } from "../common/entity/compute_object_id";
 import { navigate } from "../common/navigate";
+import { hasTemplate } from "../common/string/has-template";
+import { createSearchParam } from "../common/url/search-params";
 import type { HomeAssistant } from "../types";
 import type {
   Condition,
@@ -26,9 +29,6 @@ import type {
 } from "./automation";
 import { migrateAutomationTrigger } from "./automation";
 import type { BlueprintInput } from "./blueprint";
-import { computeObjectId } from "../common/entity/compute_object_id";
-import { createSearchParam } from "../common/url/search-params";
-import { hasTemplate } from "../common/string/has-template";
 
 export const MODES = ["single", "restart", "queued", "parallel"] as const;
 export const MODES_MAX = ["queued", "parallel"] as const;
@@ -344,7 +344,11 @@ export const getActionType = (action: Action): ActionType => {
   if ("event" in action) {
     return "fire_event";
   }
-  if ("device_id" in action) {
+  if (
+    "device_id" in action &&
+    !("trigger" in action) &&
+    !("condition" in action)
+  ) {
     return "device_action";
   }
   if ("repeat" in action) {
@@ -380,12 +384,46 @@ export const getActionType = (action: Action): ActionType => {
   return "unknown";
 };
 
+export const isAction = (value: unknown): value is Action =>
+  getActionType(value as Action) !== "unknown";
+
 export const hasScriptFields = (
   hass: HomeAssistant,
   entityId: string
 ): boolean => {
   const fields = hass.services.script[computeObjectId(entityId)]?.fields;
   return fields !== undefined && Object.keys(fields).length > 0;
+};
+
+export const hasRequiredScriptFields = (
+  hass: HomeAssistant,
+  entityId: string
+): boolean => {
+  const fields = hass.services.script[computeObjectId(entityId)]?.fields;
+  return (
+    fields !== undefined &&
+    Object.values(fields).some((field) => field.required)
+  );
+};
+
+export const requiredScriptFieldsFilled = (
+  hass: HomeAssistant,
+  entityId: string,
+  data?: Record<string, any>
+): boolean => {
+  const fields = hass.services.script[computeObjectId(entityId)]?.fields;
+  if (fields === undefined || Object.keys(fields).length === 0) {
+    return true;
+  }
+  if (data === undefined) {
+    return false;
+  }
+  return Object.entries(fields).every(([key, field]) => {
+    if (field.required) {
+      return data[key] !== undefined;
+    }
+    return true;
+  });
 };
 
 export const migrateAutomationAction = (

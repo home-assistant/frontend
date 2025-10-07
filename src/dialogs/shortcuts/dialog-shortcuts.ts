@@ -104,6 +104,16 @@ const _SHORTCUTS: Section[] = [
         descriptionTranslationKey:
           "ui.dialogs.shortcuts.automation_script.save",
       },
+      {
+        shortcut: [CTRL_CMD, "Z"],
+        descriptionTranslationKey:
+          "ui.dialogs.shortcuts.automation_script.undo",
+      },
+      {
+        shortcut: [CTRL_CMD, "Y"],
+        descriptionTranslationKey:
+          "ui.dialogs.shortcuts.automation_script.redo",
+      },
     ],
   },
   {
@@ -259,14 +269,14 @@ class DialogShortcuts extends LitElement {
         display: flex;
         flex-direction: row;
         align-items: center;
-        gap: 8px;
+        gap: var(--ha-space-2);
         margin: 4px 0;
       }
 
       span {
         padding: 8px;
         border: 1px solid var(--outline-color);
-        border-radius: 8px;
+        border-radius: var(--ha-border-radius-md);
       }
 
       .items p {

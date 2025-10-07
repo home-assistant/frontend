@@ -9,10 +9,10 @@ import { css, html, LitElement } from "lit";
 import { customElement } from "lit/decorators";
 import { ifDefined } from "lit/directives/if-defined";
 import { repeat } from "lit/directives/repeat";
-import "../../../../src/components/ha-control-button";
 import "../../../../src/components/ha-card";
-import "../../../../src/components/ha-svg-icon";
+import "../../../../src/components/ha-control-button";
 import "../../../../src/components/ha-control-button-group";
+import "../../../../src/components/ha-svg-icon";
 
 interface Button {
   label: string;
@@ -156,17 +156,17 @@ export class DemoHaBarButton extends LitElement {
       --control-button-icon-color: var(--primary-color);
       --control-button-background-color: var(--primary-color);
       --control-button-background-opacity: 0.2;
-      --control-button-border-radius: 18px;
+      --control-button-border-radius: var(--ha-border-radius-xl);
       height: 100px;
       width: 100px;
     }
     .custom-group {
       --control-button-group-thickness: 100px;
-      --control-button-group-border-radius: 36px;
+      --control-button-group-border-radius: var(--ha-border-radius-6xl);
       --control-button-group-spacing: 20px;
     }
     .custom-group ha-control-button {
-      --control-button-border-radius: 18px;
+      --control-button-border-radius: var(--ha-border-radius-xl);
       --mdc-icon-size: 32px;
     }
     .vertical-buttons {

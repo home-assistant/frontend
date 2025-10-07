@@ -22,6 +22,7 @@ import { demoPanels } from "./demo_panels";
 import { demoServices } from "./demo_services";
 import type { Entity } from "./entity";
 import { getEntity } from "./entity";
+import type { EntityRegistryDisplayEntry } from "../data/entity_registry";
 
 const ensureArray = <T>(val: T | T[]): T[] =>
   Array.isArray(val) ? val : [val];
@@ -37,7 +38,7 @@ export interface MockHomeAssistant extends HomeAssistant {
   mockEntities: any;
   updateHass(obj: Partial<MockHomeAssistant>);
   updateStates(newStates: HassEntities);
-  addEntities(entites: Entity | Entity[], replace?: boolean);
+  addEntities(entities: Entity | Entity[], replace?: boolean);
   updateTranslations(fragment: null | string, language?: string);
   addTranslations(translations: Record<string, string>, language?: string);
   mockWS<T extends (...args) => any = any>(
@@ -147,6 +148,17 @@ export const provideHass = (
     } else {
       updateStates(states);
     }
+
+    for (const ent of ensureArray(newEntities)) {
+      hass().entities[ent.entityId] = {
+        entity_id: ent.entityId,
+        name: ent.name,
+        icon: ent.icon,
+        platform: "demo",
+        labels: [],
+      } satisfies EntityRegistryDisplayEntry;
+    }
+
     updateFormatFunctions();
   }
 
@@ -155,7 +167,7 @@ export const provideHass = (
   }
 
   mockAPI(/states\/.+/, (_method, path, parameters) => {
-    const [domain, objectId] = path.substr(7).split(".", 2);
+    const [domain, objectId] = path.slice(7).split(".", 2);
     if (!domain || !objectId) {
       return;
     }

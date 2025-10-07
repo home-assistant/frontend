@@ -1,10 +1,10 @@
 import type { TemplateResult } from "lit";
 import { LitElement, css, html } from "lit";
 import { customElement, state } from "lit/decorators";
+import { ifDefined } from "lit/directives/if-defined";
+import { repeat } from "lit/directives/repeat";
 import "../../../../src/components/ha-card";
 import "../../../../src/components/ha-control-number-buttons";
-import { repeat } from "lit/directives/repeat";
-import { ifDefined } from "lit/directives/if-defined";
 
 const buttons: {
   id: string;
@@ -94,7 +94,7 @@ export class DemoHarControlNumberButtons extends LitElement {
       --control-number-buttons-background-color: #2196f3;
       --control-number-buttons-background-opacity: 0.1;
       --control-number-buttons-thickness: 100px;
-      --control-number-buttons-border-radius: 36px;
+      --control-number-buttons-border-radius: var(--ha-border-radius-6xl);
     }
   `;
 }

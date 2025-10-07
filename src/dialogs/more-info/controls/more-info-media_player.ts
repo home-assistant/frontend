@@ -1,6 +1,7 @@
 import {
   mdiLoginVariant,
   mdiMusicNote,
+  mdiMusicNoteEighth,
   mdiPlayBoxMultiple,
   mdiSpeakerMultiple,
   mdiVolumeHigh,
@@ -8,15 +9,18 @@ import {
   mdiVolumeOff,
   mdiVolumePlus,
 } from "@mdi/js";
-import { LitElement, css, html, nothing } from "lit";
-import { customElement, property } from "lit/decorators";
-import { stopPropagation } from "../../../common/dom/stop_propagation";
+import type { PropertyValues } from "lit";
+import { css, html, LitElement, nothing } from "lit";
+import { customElement, property, query } from "lit/decorators";
+import { ifDefined } from "lit/directives/if-defined";
+import { classMap } from "lit/directives/class-map";
 import { stateActive } from "../../../common/entity/state_active";
 import { supportsFeature } from "../../../common/entity/supports-feature";
+import { formatDurationDigital } from "../../../common/datetime/format_duration";
 import "../../../components/ha-icon-button";
 import "../../../components/ha-list-item";
 import "../../../components/ha-select";
-import "../../../components/ha-slider";
+import type { HaSlider } from "../../../components/ha-slider";
 import "../../../components/ha-button";
 import "../../../components/ha-svg-icon";
 import { showMediaBrowserDialog } from "../../../components/media-player/show-media-browser-dialog";
@@ -27,12 +31,19 @@ import type {
   MediaPlayerEntity,
 } from "../../../data/media-player";
 import {
-  MediaPlayerEntityFeature,
+  cleanupMediaTitle,
+  computeMediaDescription,
   computeMediaControls,
   handleMediaControlClick,
+  MediaPlayerEntityFeature,
   mediaPlayerPlayMedia,
 } from "../../../data/media-player";
 import type { HomeAssistant } from "../../../types";
+import HassMediaPlayerEntity from "../../../util/hass-media-player-model";
+import "../../../components/ha-md-button-menu";
+import "../../../components/chips/ha-assist-chip";
+import "../../../components/ha-md-menu-item";
+import "../../../components/ha-marquee-text";
 
 @customElement("more-info-media_player")
 class MoreInfoMediaPlayer extends LitElement {
@@ -40,270 +51,589 @@ class MoreInfoMediaPlayer extends LitElement {
 
   @property({ attribute: false }) public stateObj?: MediaPlayerEntity;
 
+  @query("#position-slider")
+  private _positionSlider?: HaSlider;
+
+  protected firstUpdated(_changedProperties: PropertyValues) {
+    if (this._positionSlider) {
+      this._positionSlider.valueFormatter = (value: number) =>
+        this._formatDuration(value);
+    }
+  }
+
+  private _formatDuration(duration: number) {
+    const hours = Math.floor(duration / 3600);
+    const minutes = Math.floor((duration % 3600) / 60);
+    const seconds = Math.floor(duration % 60);
+    return formatDurationDigital(this.hass.locale, {
+      hours,
+      minutes,
+      seconds,
+    })!;
+  }
+
+  protected _renderVolumeControl() {
+    if (!this.stateObj) {
+      return nothing;
+    }
+
+    if (!stateActive(this.stateObj)) {
+      return nothing;
+    }
+
+    const supportsMute = supportsFeature(
+      this.stateObj,
+      MediaPlayerEntityFeature.VOLUME_MUTE
+    );
+    const supportsSet = supportsFeature(
+      this.stateObj,
+      MediaPlayerEntityFeature.VOLUME_SET
+    );
+
+    const supportsStep = supportsFeature(
+      this.stateObj,
+      MediaPlayerEntityFeature.VOLUME_STEP
+    );
+
+    if (!supportsMute && !supportsSet && !supportsStep) {
+      return nothing;
+    }
+
+    return html`
+      <div class="volume">
+        ${supportsMute
+          ? html`
+              <ha-icon-button
+                .path=${this.stateObj.attributes.is_volume_muted
+                  ? mdiVolumeOff
+                  : mdiVolumeHigh}
+                .label=${this.hass.localize(
+                  `ui.card.media_player.${
+                    this.stateObj.attributes.is_volume_muted
+                      ? "media_volume_unmute"
+                      : "media_volume_mute"
+                  }`
+                )}
+                @click=${this._toggleMute}
+              ></ha-icon-button>
+            `
+          : nothing}
+        ${supportsStep
+          ? html` <ha-icon-button
+              action="volume_down"
+              .path=${mdiVolumeMinus}
+              .label=${this.hass.localize(
+                "ui.card.media_player.media_volume_down"
+              )}
+              @click=${this._handleClick}
+            ></ha-icon-button>`
+          : nothing}
+        ${supportsSet
+          ? html`
+              ${!supportsMute && !supportsStep
+                ? html`<ha-svg-icon .path=${mdiVolumeHigh}></ha-svg-icon>`
+                : nothing}
+              <ha-slider
+                labeled
+                id="input"
+                .value=${Number(this.stateObj.attributes.volume_level) * 100}
+                @change=${this._selectedValueChanged}
+              ></ha-slider>
+            `
+          : nothing}
+        ${supportsStep
+          ? html`
+              <ha-icon-button
+                action="volume_up"
+                .path=${mdiVolumePlus}
+                .label=${this.hass.localize(
+                  "ui.card.media_player.media_volume_up"
+                )}
+                @click=${this._handleClick}
+              ></ha-icon-button>
+            `
+          : nothing}
+      </div>
+    `;
+  }
+
+  protected _renderSourceControl() {
+    if (
+      !this.stateObj ||
+      !supportsFeature(this.stateObj, MediaPlayerEntityFeature.SELECT_SOURCE) ||
+      !this.stateObj.attributes.source_list?.length
+    ) {
+      return nothing;
+    }
+
+    return html`<ha-md-button-menu positioning="popover">
+      <ha-button
+        slot="trigger"
+        appearance="plain"
+        variant="neutral"
+        size="small"
+        title=${this.hass.localize(`ui.card.media_player.source`)}
+      >
+        <ha-svg-icon .path=${mdiLoginVariant}></ha-svg-icon>
+      </ha-button>
+      ${this.stateObj.attributes.source_list!.map(
+        (source) =>
+          html`<ha-md-menu-item
+            data-source=${source}
+            @click=${this._handleSourceClick}
+            @keydown=${this._handleSourceClick}
+            .selected=${source === this.stateObj?.attributes.source}
+          >
+            ${source}
+          </ha-md-menu-item>`
+      )}
+    </ha-md-button-menu>`;
+  }
+
+  protected _renderSoundMode() {
+    if (
+      !this.stateObj ||
+      !supportsFeature(
+        this.stateObj,
+        MediaPlayerEntityFeature.SELECT_SOUND_MODE
+      ) ||
+      !this.stateObj.attributes.sound_mode_list?.length
+    ) {
+      return nothing;
+    }
+
+    return html`<ha-md-button-menu positioning="popover">
+      <ha-button
+        slot="trigger"
+        appearance="plain"
+        variant="neutral"
+        size="small"
+        title=${this.hass.localize(`ui.card.media_player.sound_mode`)}
+      >
+        <ha-svg-icon .path=${mdiMusicNoteEighth}></ha-svg-icon>
+      </ha-button>
+      ${this.stateObj.attributes.sound_mode_list!.map(
+        (soundMode) =>
+          html`<ha-md-menu-item
+            data-sound-mode=${soundMode}
+            @click=${this._handleSoundModeClick}
+            @keydown=${this._handleSoundModeClick}
+            .selected=${soundMode === this.stateObj?.attributes.sound_mode}
+          >
+            ${soundMode}
+          </ha-md-menu-item>`
+      )}
+    </ha-md-button-menu>`;
+  }
+
+  protected _renderGrouping() {
+    if (
+      !this.stateObj ||
+      isUnavailableState(this.stateObj.state) ||
+      !supportsFeature(this.stateObj, MediaPlayerEntityFeature.GROUPING)
+    ) {
+      return nothing;
+    }
+    const groupMembers = this.stateObj.attributes.group_members;
+    const hasMultipleMembers = groupMembers && groupMembers?.length > 1;
+
+    return html`<ha-button
+      class="grouping"
+      @click=${this._showGroupMediaPlayers}
+      appearance="plain"
+      variant="neutral"
+      size="small"
+      title=${this.hass.localize("ui.card.media_player.join")}
+    >
+      <div>
+        <ha-svg-icon .path=${mdiSpeakerMultiple}></ha-svg-icon>
+        ${hasMultipleMembers
+          ? html`<span class="badge"> ${groupMembers?.length || 4} </span>`
+          : nothing}
+      </div>
+    </ha-button>`;
+  }
+
+  protected _renderEmptyCover(title: string, icon?: string) {
+    return html`
+      <div class="cover-container">
+        <div class="cover-image empty-cover" role="img" aria-label=${title}>
+          ${icon ? html`<ha-svg-icon .path=${icon}></ha-svg-icon>` : title}
+        </div>
+      </div>
+    `;
+  }
+
   protected render() {
     if (!this.stateObj) {
       return nothing;
     }
 
+    if (isUnavailableState(this.stateObj.state)) {
+      return this._renderEmptyCover(this.hass.formatEntityState(this.stateObj));
+    }
+
     const stateObj = this.stateObj;
     const controls = computeMediaControls(stateObj, true);
-    const groupMembers = stateObj.attributes.group_members?.length;
+    const coverUrl =
+      stateObj.attributes.entity_picture_local ||
+      stateObj.attributes.entity_picture ||
+      "";
+    const playerObj = new HassMediaPlayerEntity(this.hass, this.stateObj);
+
+    const position = Math.max(Math.floor(playerObj.currentProgress || 0), 0);
+    const duration = Math.max(stateObj.attributes.media_duration || 0, 0);
+    const remaining = Math.max(duration - position, 0);
+    const remainingFormatted = this._formatDuration(remaining);
+    const positionFormatted = this._formatDuration(position);
+    const primaryTitle = cleanupMediaTitle(stateObj.attributes.media_title);
+    const secondaryTitle = computeMediaDescription(stateObj);
+    const turnOn = controls?.find((c) => c.action === "turn_on");
+    const turnOff = controls?.find((c) => c.action === "turn_off");
 
     return html`
-      <div class="controls">
-        <div class="basic-controls">
-          ${!controls
-            ? ""
-            : controls.map(
-                (control) => html`
-                  <ha-icon-button
-                    action=${control.action}
-                    @click=${this._handleClick}
-                    .path=${control.icon}
-                    .label=${this.hass.localize(
-                      `ui.card.media_player.${control.action}`
-                    )}
-                  >
-                  </ha-icon-button>
-                `
-              )}
-        </div>
-        ${!isUnavailableState(stateObj.state) &&
-        supportsFeature(stateObj, MediaPlayerEntityFeature.BROWSE_MEDIA)
-          ? html`
-              <ha-button
-                @click=${this._showBrowseMedia}
-                appearance="plain"
-                size="small"
-              >
-                <ha-svg-icon
-                  .path=${mdiPlayBoxMultiple}
-                  slot="start"
-                ></ha-svg-icon>
-                ${this.hass.localize("ui.card.media_player.browse_media")}
-              </ha-button>
-            `
-          : ""}
-        ${!isUnavailableState(stateObj.state) &&
-        supportsFeature(stateObj, MediaPlayerEntityFeature.GROUPING)
-          ? html`
-              <ha-button
-                @click=${this._showGroupMediaPlayers}
-                appearance="plain"
-                size="small"
-              >
-                <ha-svg-icon
-                  .path=${mdiSpeakerMultiple}
-                  slot="start"
-                ></ha-svg-icon>
-                ${groupMembers && groupMembers > 1
-                  ? html`<span class="badge">
-                      ${stateObj.attributes.group_members?.length || 4}
-                    </span>`
-                  : nothing}
-                ${this.hass.localize("ui.card.media_player.join")}
-              </ha-button>
-            `
-          : ""}
-      </div>
-      ${(supportsFeature(stateObj, MediaPlayerEntityFeature.VOLUME_SET) ||
-        supportsFeature(stateObj, MediaPlayerEntityFeature.VOLUME_STEP)) &&
-      stateActive(stateObj)
+      ${coverUrl
+        ? html`<div class="cover-container">
+            <img
+              class=${classMap({
+                "cover-image": true,
+                "cover-image--playing": stateObj.state === "playing",
+              })}
+              src=${coverUrl}
+              alt=${ifDefined(primaryTitle)}
+            />
+          </div>`
+        : this._renderEmptyCover(
+            this.hass.formatEntityState(this.stateObj),
+            mdiMusicNote
+          )}
+      ${primaryTitle || secondaryTitle
+        ? html`<div class="media-info-row">
+            ${primaryTitle
+              ? html`<ha-marquee-text
+                  class="media-title"
+                  speed="30"
+                  pause-on-hover
+                >
+                  ${primaryTitle}
+                </ha-marquee-text>`
+              : nothing}
+            ${secondaryTitle
+              ? html`<ha-marquee-text
+                  class="media-artist"
+                  speed="30"
+                  pause-on-hover
+                >
+                  ${secondaryTitle}
+                </ha-marquee-text>`
+              : nothing}
+          </div>`
+        : nothing}
+      ${duration && duration > 0
         ? html`
-            <div class="volume">
-              ${supportsFeature(stateObj, MediaPlayerEntityFeature.VOLUME_MUTE)
-                ? html`
-                    <ha-icon-button
-                      .path=${stateObj.attributes.is_volume_muted
-                        ? mdiVolumeOff
-                        : mdiVolumeHigh}
-                      .label=${this.hass.localize(
-                        `ui.card.media_player.${
-                          stateObj.attributes.is_volume_muted
-                            ? "media_volume_unmute"
-                            : "media_volume_mute"
-                        }`
-                      )}
-                      @click=${this._toggleMute}
-                    ></ha-icon-button>
-                  `
-                : ""}
-              ${supportsFeature(
-                stateObj,
-                MediaPlayerEntityFeature.VOLUME_SET
-              ) ||
-              supportsFeature(stateObj, MediaPlayerEntityFeature.VOLUME_STEP)
-                ? html`
-                    <ha-icon-button
-                      action="volume_down"
-                      .path=${mdiVolumeMinus}
-                      .label=${this.hass.localize(
-                        "ui.card.media_player.media_volume_down"
-                      )}
-                      @click=${this._handleClick}
-                    ></ha-icon-button>
-                    <ha-icon-button
-                      action="volume_up"
-                      .path=${mdiVolumePlus}
-                      .label=${this.hass.localize(
-                        "ui.card.media_player.media_volume_up"
-                      )}
-                      @click=${this._handleClick}
-                    ></ha-icon-button>
-                  `
-                : ""}
-              ${supportsFeature(stateObj, MediaPlayerEntityFeature.VOLUME_SET)
-                ? html`
-                    <ha-slider
-                      labeled
-                      id="input"
-                      .value=${Number(stateObj.attributes.volume_level) * 100}
-                      @change=${this._selectedValueChanged}
-                    ></ha-slider>
-                  `
-                : ""}
-            </div>
-          `
-        : ""}
-      ${stateActive(stateObj) &&
-      supportsFeature(stateObj, MediaPlayerEntityFeature.SELECT_SOURCE) &&
-      stateObj.attributes.source_list?.length
-        ? html`
-            <div class="source-input">
-              <ha-select
-                .label=${this.hass.localize("ui.card.media_player.source")}
-                icon
-                .value=${stateObj.attributes.source!}
-                @selected=${this._handleSourceChanged}
-                fixedMenuPosition
-                naturalMenuWidth
-                @closed=${stopPropagation}
-              >
-                ${stateObj.attributes.source_list!.map(
-                  (source) => html`
-                    <ha-list-item .value=${source}>
-                      ${this.hass.formatEntityAttributeValue(
-                        stateObj,
-                        "source",
-                        source
-                      )}
-                    </ha-list-item>
-                  `
+            <div class="position-bar">
+              <ha-slider
+                id="position-slider"
+                min="0"
+                max=${duration}
+                step="1"
+                .value=${position}
+                aria-label=${this.hass.localize(
+                  "ui.card.media_player.track_position"
                 )}
-                <ha-svg-icon .path=${mdiLoginVariant} slot="icon"></ha-svg-icon>
-              </ha-select>
+                @change=${this._handleMediaSeekChanged}
+                ?disabled=${!stateActive(stateObj) ||
+                !supportsFeature(stateObj, MediaPlayerEntityFeature.SEEK)}
+              >
+                <span slot="reference">${positionFormatted}</span>
+                <span slot="reference">${remainingFormatted}</span>
+              </ha-slider>
             </div>
           `
         : nothing}
-      ${stateActive(stateObj) &&
-      supportsFeature(stateObj, MediaPlayerEntityFeature.SELECT_SOUND_MODE) &&
-      stateObj.attributes.sound_mode_list?.length
-        ? html`
-            <div class="sound-input">
-              <ha-select
-                .label=${this.hass.localize("ui.card.media_player.sound_mode")}
-                .value=${stateObj.attributes.sound_mode!}
-                icon
-                fixedMenuPosition
-                naturalMenuWidth
-                @selected=${this._handleSoundModeChanged}
-                @closed=${stopPropagation}
-              >
-                ${stateObj.attributes.sound_mode_list.map(
-                  (mode) => html`
-                    <ha-list-item .value=${mode}>
-                      ${this.hass.formatEntityAttributeValue(
-                        stateObj,
-                        "sound_mode",
-                        mode
+      <div class="bottom-controls">
+        ${controls && controls.length > 0
+          ? html`<div class="main-controls">
+              ${["repeat_set", "media_previous_track"].map((action) => {
+                const control = controls?.find((c) => c.action === action);
+                return control
+                  ? html`<ha-icon-button
+                      action=${action}
+                      @click=${this._handleClick}
+                      .path=${control.icon}
+                      .label=${this.hass.localize(
+                        `ui.card.media_player.${control.action}`
                       )}
-                    </ha-list-item>
-                  `
+                    >
+                    </ha-icon-button>`
+                  : html`<span class="spacer"></span>`;
+              })}
+              ${[
+                "media_play_pause",
+                "media_pause",
+                "media_play",
+                "media_stop",
+              ].map((action) => {
+                const control = controls?.find((c) => c.action === action);
+                return control
+                  ? html`<ha-button
+                      variant="brand"
+                      appearance="filled"
+                      size="medium"
+                      action=${action}
+                      @click=${this._handleClick}
+                      class="center-control"
+                    >
+                      <ha-svg-icon
+                        .path=${control.icon}
+                        aria-label=${this.hass.localize(
+                          `ui.card.media_player.${control.action}`
+                        )}
+                      ></ha-svg-icon>
+                    </ha-button>`
+                  : nothing;
+              })}
+              ${["media_next_track", "shuffle_set"].map((action) => {
+                const control = controls?.find((c) => c.action === action);
+                return control
+                  ? html`<ha-icon-button
+                      action=${action}
+                      @click=${this._handleClick}
+                      .path=${control.icon}
+                      .label=${this.hass.localize(
+                        `ui.card.media_player.${control.action}`
+                      )}
+                    >
+                    </ha-icon-button>`
+                  : html`<span class="spacer"></span>`;
+              })}
+            </div>`
+          : nothing}
+        ${this._renderVolumeControl()}
+        <div class="controls-row">
+          ${!isUnavailableState(stateObj.state) &&
+          supportsFeature(stateObj, MediaPlayerEntityFeature.BROWSE_MEDIA)
+            ? html`
+                <ha-button
+                  @click=${this._showBrowseMedia}
+                  appearance="plain"
+                  variant="neutral"
+                  size="small"
+                  title=${this.hass.localize(
+                    "ui.card.media_player.browse_media"
+                  )}
+                >
+                  <ha-svg-icon .path=${mdiPlayBoxMultiple}></ha-svg-icon>
+                </ha-button>
+              `
+            : nothing}
+          ${this._renderGrouping()} ${this._renderSourceControl()}
+          ${this._renderSoundMode()}
+          ${turnOn
+            ? html`<ha-button
+                action=${turnOn.action}
+                @click=${this._handleClick}
+                appearance="plain"
+                variant="neutral"
+                size="small"
+                title=${this.hass.localize(
+                  `ui.card.media_player.${turnOn.action}`
                 )}
-                <ha-svg-icon .path=${mdiMusicNote} slot="icon"></ha-svg-icon>
-              </ha-select>
-            </div>
-          `
-        : ""}
+              >
+                <ha-svg-icon .path=${turnOn.icon}></ha-svg-icon>
+              </ha-button>`
+            : nothing}
+          ${turnOff
+            ? html`<ha-button
+                action=${turnOff.action}
+                @click=${this._handleClick}
+                appearance="plain"
+                variant="neutral"
+                size="small"
+                title=${this.hass.localize(
+                  `ui.card.media_player.${turnOff.action}`
+                )}
+              >
+                <ha-svg-icon .path=${turnOff.icon}></ha-svg-icon>
+              </ha-button>`
+            : nothing}
+        </div>
+      </div>
     `;
   }
 
   static styles = css`
-    ha-slider {
-      flex-grow: 1;
-    }
-
-    ha-icon-button[action="turn_off"],
-    ha-icon-button[action="turn_on"] {
-      margin-right: auto;
-      margin-left: inherit;
-      margin-inline-start: inherit;
-      margin-inline-end: auto;
-    }
-
-    .controls {
+    :host {
       display: flex;
-      flex-wrap: wrap;
+      flex-direction: column;
+      gap: var(--ha-space-6);
+      margin-top: 0;
+    }
+
+    .cover-container {
+      display: flex;
+      justify-content: center;
       align-items: center;
-      --mdc-theme-primary: currentColor;
-      direction: ltr;
+      height: 320px;
+      width: 100%;
     }
 
-    .basic-controls {
-      display: inline-flex;
-      flex-grow: 1;
+    .cover-image {
+      width: 240px;
+      height: 240px;
+      max-width: 100%;
+      max-height: 100%;
+      object-fit: cover;
+      border-radius: var(--ha-border-radius-sm);
+      box-shadow: 0 2px 8px rgba(0, 0, 0, 0.15);
+      position: relative;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      transition:
+        width 0.3s,
+        height 0.3s;
     }
 
-    .volume {
-      direction: ltr;
+    .cover-image--playing {
+      width: 320px;
+      height: 320px;
     }
 
-    .source-input,
-    .sound-input {
-      direction: var(--direction);
+    @media (max-height: 750px) {
+      .cover-container {
+        height: 120px;
+      }
+
+      .cover-image {
+        width: 100px;
+        height: 100px;
+      }
+
+      .cover-image--playing {
+        width: 120px;
+        height: 120px;
+      }
     }
 
-    .volume,
-    .source-input,
-    .sound-input {
+    .empty-cover {
+      background-color: var(--secondary-background-color);
+      font-size: 1.5em;
+      color: var(--secondary-text-color);
+    }
+
+    .main-controls {
       display: flex;
       align-items: center;
       justify-content: space-between;
     }
 
-    .source-input ha-select,
-    .sound-input ha-select {
-      margin-left: 10px;
-      flex-grow: 1;
-      margin-inline-start: 10px;
-      margin-inline-end: initial;
-      direction: var(--direction);
+    .center-control {
+      --ha-button-height: 56px;
     }
 
-    .tts {
-      margin-top: 16px;
-      font-style: italic;
+    .spacer {
+      width: 48px;
     }
 
-    ha-button > ha-svg-icon {
-      vertical-align: text-bottom;
+    .volume,
+    .position-bar,
+    .main-controls {
+      direction: ltr;
+    }
+
+    .volume ha-slider,
+    .position-bar ha-slider {
+      width: 100%;
+    }
+
+    .volume {
+      display: flex;
+      align-items: center;
+      gap: var(--ha-space-3);
+      margin-left: 8px;
+    }
+
+    .volume ha-svg-icon {
+      padding: 4px;
+      height: 16px;
+      width: 16px;
+    }
+
+    .volume ha-icon-button {
+      --mdc-icon-button-size: 32px;
+      --mdc-icon-size: 16px;
     }
 
     .badge {
       position: absolute;
-      top: -6px;
-      left: 24px;
+      top: -10px;
+      left: 16px;
       display: flex;
       justify-content: center;
       align-items: center;
       height: 16px;
       min-width: 8px;
-      border-radius: 10px;
+      border-radius: var(--ha-border-radius-md);
       font-weight: var(--ha-font-weight-normal);
       font-size: var(--ha-font-size-xs);
-      background-color: var(--accent-color);
+      background-color: var(--primary-color);
       padding: 0 4px;
-      color: var(--text-accent-color, var(--text-primary-color));
+      color: var(--primary-text-color);
+    }
+
+    .position-bar {
+      display: flex;
+      flex-direction: column;
+    }
+
+    .position-bar ha-slider::part(references) {
+      color: var(--secondary-text-color);
+    }
+
+    .media-info-row {
+      display: flex;
+      flex-direction: column;
+      justify-content: space-between;
+      margin: 8px 0 8px 8px;
+    }
+
+    .media-title {
+      font-size: var(--ha-font-size-xl);
+      font-weight: var(--ha-font-weight-bold);
+      margin-bottom: 4px;
+    }
+
+    .media-artist {
+      font-size: var(--ha-font-size-l);
+      font-weight: var(--ha-font-weight-normal);
+      color: var(--secondary-text-color);
+    }
+
+    .controls-row {
+      display: flex;
+      align-items: center;
+      justify-content: space-around;
+    }
+
+    .controls-row ha-button {
+      width: 32px;
+    }
+
+    .controls-row ha-svg-icon {
+      color: var(--ha-color-on-neutral-quiet);
+    }
+
+    .grouping::part(label) {
+      position: relative;
+    }
+
+    .bottom-controls {
+      display: flex;
+      flex-direction: column;
+      gap: var(--ha-space-6);
+      align-self: center;
+      width: 320px;
     }
   `;
 
@@ -329,29 +659,29 @@ class MoreInfoMediaPlayer extends LitElement {
     });
   }
 
-  private _handleSourceChanged(e) {
-    const newVal = e.target.value;
-
-    if (!newVal || this.stateObj!.attributes.source === newVal) {
+  private _handleSourceClick(e: Event) {
+    const source = (e.currentTarget as HTMLElement).getAttribute("data-source");
+    if (!source || this.stateObj!.attributes.source === source) {
       return;
     }
 
     this.hass.callService("media_player", "select_source", {
       entity_id: this.stateObj!.entity_id,
-      source: newVal,
+      source,
     });
   }
 
-  private _handleSoundModeChanged(e) {
-    const newVal = e.target.value;
-
-    if (!newVal || this.stateObj?.attributes.sound_mode === newVal) {
+  private _handleSoundModeClick(e: Event) {
+    const soundMode = (e.currentTarget as HTMLElement).getAttribute(
+      "data-sound-mode"
+    );
+    if (!soundMode || this.stateObj!.attributes.sound_mode === soundMode) {
       return;
     }
 
     this.hass.callService("media_player", "select_sound_mode", {
       entity_id: this.stateObj!.entity_id,
-      sound_mode: newVal,
+      sound_mode: soundMode,
     });
   }
 
@@ -372,6 +702,18 @@ class MoreInfoMediaPlayer extends LitElement {
   private _showGroupMediaPlayers(): void {
     showJoinMediaPlayersDialog(this, {
       entityId: this.stateObj!.entity_id,
+    });
+  }
+
+  private async _handleMediaSeekChanged(e: Event): Promise<void> {
+    if (!this.stateObj) {
+      return;
+    }
+
+    const newValue = (e.target as any).value;
+    this.hass.callService("media_player", "media_seek", {
+      entity_id: this.stateObj.entity_id,
+      seek_position: newValue,
     });
   }
 }

@@ -14,11 +14,12 @@ export class HaTabGroupTab extends Tab {
             --ha-tab-active-text-color,
             var(--primary-color)
           );
-2
           --wa-color-neutral-on-quiet: var(--wa-color-brand-on-quiet);
           opacity: 0.8;
 
           color: inherit;
+
+          --wa-space-l: 16px;
         }
 
         :host([active]:not([disabled])) {

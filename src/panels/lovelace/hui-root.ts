@@ -318,7 +318,7 @@ class HUIRoot extends LitElement {
               menu-corner="END"
             >
               <ha-icon-button
-                .label=${label}
+                .id="button-${index}"
                 .path=${item.icon}
                 slot="trigger"
               ></ha-icon-button>
@@ -340,6 +340,9 @@ class HUIRoot extends LitElement {
                   `
                 )}
             </ha-button-menu>
+            <ha-tooltip placement="bottom" .for="button-${index}">
+              ${label}
+            </ha-tooltip>
           `
         : html`
             <ha-icon-button
@@ -1385,7 +1388,7 @@ class HUIRoot extends LitElement {
         }
         #add-view ha-svg-icon {
           background-color: var(--accent-color);
-          border-radius: 4px;
+          border-radius: var(--ha-border-radius-sm);
         }
         a {
           color: var(--text-primary-color, white);

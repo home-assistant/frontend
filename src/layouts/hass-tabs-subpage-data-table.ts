@@ -740,7 +740,7 @@ export class HaTabsSubpageDataTable extends KeyboardShortcutMixin(LitElement) {
       width: 100%;
       justify-content: space-between;
       padding: 0 16px;
-      gap: 16px;
+      gap: var(--ha-space-4);
       box-sizing: border-box;
       background: var(--primary-background-color);
       border-bottom: 1px solid var(--divider-color);
@@ -782,7 +782,7 @@ export class HaTabsSubpageDataTable extends KeyboardShortcutMixin(LitElement) {
     .active-filters::before {
       background-color: var(--primary-color);
       opacity: 0.12;
-      border-radius: 4px;
+      border-radius: var(--ha-border-radius-sm);
       position: absolute;
       top: 0;
       right: 0;
@@ -809,7 +809,7 @@ export class HaTabsSubpageDataTable extends KeyboardShortcutMixin(LitElement) {
       inset-inline-start: initial;
       min-width: 16px;
       box-sizing: border-box;
-      border-radius: 50%;
+      border-radius: var(--ha-border-radius-circle);
       font-size: var(--ha-font-size-xs);
       font-weight: var(--ha-font-weight-normal);
       background-color: var(--primary-color);
@@ -823,7 +823,7 @@ export class HaTabsSubpageDataTable extends KeyboardShortcutMixin(LitElement) {
       display: flex;
       align-items: center;
       min-width: 100%;
-      gap: 16px;
+      gap: var(--ha-space-4);
       padding: 0 16px;
       box-sizing: border-box;
       overflow-x: scroll;
@@ -852,7 +852,7 @@ export class HaTabsSubpageDataTable extends KeyboardShortcutMixin(LitElement) {
     .selection-controls {
       display: flex;
       align-items: center;
-      gap: 8px;
+      gap: var(--ha-space-2);
     }
 
     .selection-controls p {
@@ -864,7 +864,7 @@ export class HaTabsSubpageDataTable extends KeyboardShortcutMixin(LitElement) {
     .center-vertical {
       display: flex;
       align-items: center;
-      gap: 8px;
+      gap: var(--ha-space-2);
     }
 
     .relative {
@@ -882,16 +882,12 @@ export class HaTabsSubpageDataTable extends KeyboardShortcutMixin(LitElement) {
     }
 
     ha-dialog {
-      --mdc-dialog-min-width: calc(
-        100vw - var(--safe-area-inset-right) - var(--safe-area-inset-left)
-      );
-      --mdc-dialog-max-width: calc(
-        100vw - var(--safe-area-inset-right) - var(--safe-area-inset-left)
-      );
+      --mdc-dialog-min-width: 100vw;
+      --mdc-dialog-max-width: 100vw;
       --mdc-dialog-min-height: 100%;
       --mdc-dialog-max-height: 100%;
       --vertical-align-dialog: flex-end;
-      --ha-dialog-border-radius: 0;
+      --ha-dialog-border-radius: var(--ha-border-radius-square);
       --dialog-content-padding: 0;
     }
 

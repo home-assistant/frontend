@@ -736,7 +736,7 @@ class DialogAddAutomationElement
         }
         .shortcut-label {
           display: flex;
-          gap: 12px;
+          gap: var(--ha-space-3);
           justify-content: space-between;
         }
         .shortcut-label .supporting-text {

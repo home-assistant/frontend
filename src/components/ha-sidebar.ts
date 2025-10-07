@@ -762,7 +762,7 @@ class HaSidebar extends SubscribeMixin(LitElement) {
         ha-md-list {
           height: calc(
             100% - var(--header-height) - var(--safe-area-inset-top, 0px) -
-              132px - var(--safe-area-inset-bottom, 0px)
+              132px
           );
         }
 
@@ -784,7 +784,7 @@ class HaSidebar extends SubscribeMixin(LitElement) {
           flex-shrink: 0;
           box-sizing: border-box;
           margin: 4px;
-          border-radius: 4px;
+          border-radius: var(--ha-border-radius-sm);
           --md-list-item-one-line-container-height: 40px;
           --md-list-item-top-space: 0;
           --md-list-item-bottom-space: 0;
@@ -807,7 +807,7 @@ class HaSidebar extends SubscribeMixin(LitElement) {
           --md-ripple-hover-color: var(--sidebar-selected-icon-color);
         }
         ha-md-list-item.selected::before {
-          border-radius: 4px;
+          border-radius: var(--ha-border-radius-sm);
           position: absolute;
           top: 0;
           right: 0;
@@ -857,7 +857,7 @@ class HaSidebar extends SubscribeMixin(LitElement) {
           justify-content: center;
           align-items: center;
           min-width: 8px;
-          border-radius: 10px;
+          border-radius: var(--ha-border-radius-md);
           font-weight: var(--ha-font-weight-normal);
           line-height: normal;
           background-color: var(--accent-color);
@@ -869,7 +869,7 @@ class HaSidebar extends SubscribeMixin(LitElement) {
           position: absolute;
           top: 4px;
           left: 26px;
-          border-radius: 10px;
+          border-radius: var(--ha-border-radius-md);
           font-size: 0.65em;
           line-height: var(--ha-line-height-expanded);
           padding: 0 4px;
@@ -902,7 +902,7 @@ class HaSidebar extends SubscribeMixin(LitElement) {
           display: none;
           position: absolute;
           opacity: 0.9;
-          border-radius: 2px;
+          border-radius: var(--ha-border-radius-sm);
           white-space: nowrap;
           color: var(--sidebar-background-color);
           background-color: var(--sidebar-text-color);

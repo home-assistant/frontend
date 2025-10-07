@@ -92,7 +92,7 @@ class UserBadge extends LitElement {
       width: 100%;
       height: 100%;
       background-size: cover;
-      border-radius: 50%;
+      border-radius: var(--ha-border-radius-circle);
     }
     .initials {
       display: inline-flex;
@@ -101,7 +101,7 @@ class UserBadge extends LitElement {
       box-sizing: border-box;
       width: 100%;
       height: 100%;
-      border-radius: 50%;
+      border-radius: var(--ha-border-radius-circle);
       background-color: var(--light-primary-color);
       text-decoration: none;
       color: var(--text-light-primary-color, var(--primary-text-color));

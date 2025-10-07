@@ -42,8 +42,8 @@ export class HaBottomSheet extends LitElement {
   static styles = css`
     wa-drawer {
       --wa-color-surface-raised: var(
-        --ha-dialog-surface-background,
-        var(--mdc-theme-surface, #fff)
+        --ha-bottom-sheet-surface-background,
+        var(--ha-dialog-surface-background, var(--mdc-theme-surface, #fff)),
       );
       --spacing: 0;
       --size: auto;
@@ -51,12 +51,18 @@ export class HaBottomSheet extends LitElement {
       --hide-duration: ${BOTTOM_SHEET_ANIMATION_DURATION_MS}ms;
     }
     wa-drawer::part(dialog) {
-      border-top-left-radius: var(--ha-border-radius-lg);
-      border-top-right-radius: var(--ha-border-radius-lg);
+      border-top-left-radius: var(
+        --ha-bottom-sheet-border-radius,
+        var(--ha-dialog-border-radius, var(--ha-border-radius-2xl))
+      );
+      border-top-right-radius: var(
+        --ha-bottom-sheet-border-radius,
+        var(--ha-dialog-border-radius, var(--ha-border-radius-2xl))
+      );
       max-height: 90vh;
-    }
-    wa-drawer::part(body) {
       padding-bottom: var(--safe-area-inset-bottom);
+      padding-left: var(--safe-area-inset-left);
+      padding-right: var(--safe-area-inset-right);
     }
   `;
 }

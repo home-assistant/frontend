@@ -1,11 +1,11 @@
-import type {
-  EntityFilter,
-  EntityFilterFunc,
-} from "../../../../../common/entity/entity_filter";
+import type { EntityFilter } from "../../../../../common/entity/entity_filter";
 import type { LocalizeFunc } from "../../../../../common/translations/localize";
+import { climateEntityFilters } from "../../../../climate/strategies/climate-view-strategy";
+import { lightEntityFilters } from "../../../../light/strategies/light-view-strategy";
+import { securityEntityFilters } from "../../../../security/strategies/security-view-strategy";
 
 export const HOME_SUMMARIES = [
-  "lights",
+  "light",
   "climate",
   "security",
   "media_players",
@@ -14,83 +14,25 @@ export const HOME_SUMMARIES = [
 export type HomeSummary = (typeof HOME_SUMMARIES)[number];
 
 export const HOME_SUMMARIES_ICONS: Record<HomeSummary, string> = {
-  lights: "mdi:lamps",
+  light: "mdi:lamps",
   climate: "mdi:home-thermometer",
   security: "mdi:security",
   media_players: "mdi:multimedia",
 };
 
 export const HOME_SUMMARIES_FILTERS: Record<HomeSummary, EntityFilter[]> = {
-  lights: [{ domain: "light", entity_category: "none" }],
-  climate: [
-    { domain: "climate", entity_category: "none" },
-    { domain: "humidifier", entity_category: "none" },
-    { domain: "fan", entity_category: "none" },
-    { domain: "water_heater", entity_category: "none" },
-    {
-      domain: "cover",
-      device_class: [
-        "awning",
-        "blind",
-        "curtain",
-        "shade",
-        "shutter",
-        "window",
-        "none",
-      ],
-      entity_category: "none",
-    },
-    {
-      domain: "binary_sensor",
-      device_class: ["window"],
-      entity_category: "none",
-    },
-  ],
-  security: [
-    {
-      domain: "camera",
-      entity_category: "none",
-    },
-    {
-      domain: "alarm_control_panel",
-      entity_category: "none",
-    },
-    {
-      domain: "lock",
-      entity_category: "none",
-    },
-    {
-      domain: "cover",
-      device_class: ["door", "garage", "gate"],
-      entity_category: "none",
-    },
-    {
-      domain: "binary_sensor",
-      device_class: ["door", "garage_door", "motion"],
-      entity_category: "none",
-    },
-  ],
+  light: lightEntityFilters,
+  climate: climateEntityFilters,
+  security: securityEntityFilters,
   media_players: [{ domain: "media_player", entity_category: "none" }],
 };
 
-export const findEntities = (
-  entities: string[],
-  filters: EntityFilterFunc[]
-): string[] => {
-  const seen = new Set<string>();
-  const results: string[] = [];
-
-  for (const filter of filters) {
-    for (const entity of entities) {
-      if (filter(entity) && !seen.has(entity)) {
-        seen.add(entity);
-        results.push(entity);
-      }
-    }
+export const getSummaryLabel = (
+  localize: LocalizeFunc,
+  summary: HomeSummary
+) => {
+  if (summary === "light" || summary === "climate" || summary === "security") {
+    return localize(`panel.${summary}`);
   }
-
-  return results;
+  return localize(`ui.panel.lovelace.strategy.home.summary_list.${summary}`);
 };
-
-export const getSummaryLabel = (localize: LocalizeFunc, summary: HomeSummary) =>
-  localize(`ui.panel.lovelace.strategy.home.summary_list.${summary}`);

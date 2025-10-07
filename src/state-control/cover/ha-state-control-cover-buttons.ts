@@ -280,7 +280,7 @@ export class HaStateControlCoverButtons extends LitElement {
       grid-area: stop;
     }
     ha-control-button {
-      --control-button-border-radius: 36px;
+      --control-button-border-radius: var(--ha-border-radius-6xl);
       --mdc-icon-size: 24px;
     }
   `;

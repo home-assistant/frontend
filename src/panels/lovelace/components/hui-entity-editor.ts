@@ -1,4 +1,4 @@
-import { mdiDrag } from "@mdi/js";
+import { mdiClose, mdiDrag, mdiPencil } from "@mdi/js";
 import { css, html, LitElement, nothing } from "lit";
 import { customElement, property } from "lit/decorators";
 import { repeat } from "lit/directives/repeat";
@@ -12,6 +12,7 @@ import "../../../components/ha-icon-button";
 import "../../../components/ha-sortable";
 import type { HomeAssistant } from "../../../types";
 import type { EntityConfig } from "../entity-rows/types";
+import { computeRTL } from "../../../common/util/compute_rtl";
 
 @customElement("hui-entity-editor")
 export class HuiEntityEditor extends LitElement {
@@ -24,6 +25,8 @@ export class HuiEntityEditor extends LitElement {
 
   @property() public label?: string;
 
+  @property({ attribute: "can-edit", type: Boolean }) public canEdit?;
+
   private _entityKeys = new WeakMap<EntityConfig, string>();
 
   private _getKey(action: EntityConfig) {
@@ -32,6 +35,70 @@ export class HuiEntityEditor extends LitElement {
     }
 
     return this._entityKeys.get(action)!;
+  }
+
+  private _renderItem(item: EntityConfig, index: number) {
+    const stateObj = this.hass!.states[item.entity];
+
+    const entityName =
+      stateObj && this.hass!.formatEntityName(stateObj, "entity");
+    const deviceName =
+      stateObj && this.hass!.formatEntityName(stateObj, "device");
+    const areaName = stateObj && this.hass!.formatEntityName(stateObj, "area");
+
+    const isRTL = computeRTL(this.hass!);
+
+    const primary = item.name || entityName || deviceName || item.entity;
+    const secondary = [areaName, entityName ? deviceName : undefined]
+      .filter(Boolean)
+      .join(isRTL ? " ◂ " : " ▸ ");
+
+    return html`
+      <ha-md-list-item class="item">
+        <ha-svg-icon class="handle" .path=${mdiDrag} slot="start"></ha-svg-icon>
+
+        <div slot="headline" class="label">${primary}</div>
+        ${secondary
+          ? html`<div slot="supporting-text" class="description">
+              ${secondary}
+            </div>`
+          : nothing}
+        <ha-icon-button
+          slot="end"
+          .item=${item}
+          .index=${index}
+          .label=${this.hass!.localize("ui.common.edit")}
+          .path=${mdiPencil}
+          @click=${this._editItem}
+        ></ha-icon-button>
+        <ha-icon-button
+          slot="end"
+          .index=${index}
+          .label=${this.hass!.localize("ui.common.delete")}
+          .path=${mdiClose}
+          @click=${this._deleteItem}
+        ></ha-icon-button>
+      </ha-md-list-item>
+    `;
+  }
+
+  private _editItem(ev) {
+    const index = (ev.currentTarget as any).index;
+    fireEvent(this, "edit-detail-element", {
+      subElementConfig: {
+        index,
+        type: "row",
+        elementConfig: this.entities![index],
+      },
+    });
+  }
+
+  private _deleteItem(ev) {
+    const index = ev.target.index;
+    const newConfigEntities = this.entities!.slice(0, index).concat(
+      this.entities!.slice(index + 1)
+    );
+    fireEvent(this, "entities-changed", { entities: newConfigEntities });
   }
 
   protected render() {
@@ -47,29 +114,48 @@ export class HuiEntityEditor extends LitElement {
           this.hass!.localize("ui.panel.lovelace.editor.card.config.required") +
           ")"}
       </h3>
-      <ha-sortable handle-selector=".handle" @item-moved=${this._entityMoved}>
-        <div class="entities">
-          ${repeat(
-            this.entities,
-            (entityConf) => this._getKey(entityConf),
-            (entityConf, index) => html`
-              <div class="entity" data-entity-id=${entityConf.entity}>
-                <div class="handle">
-                  <ha-svg-icon .path=${mdiDrag}></ha-svg-icon>
-                </div>
-                <ha-entity-picker
-                  .hass=${this.hass}
-                  .value=${entityConf.entity}
-                  .index=${index}
-                  .entityFilter=${this.entityFilter}
-                  @value-changed=${this._valueChanged}
-                  allow-custom-entity
-                ></ha-entity-picker>
-              </div>
-            `
-          )}
-        </div>
-      </ha-sortable>
+      ${this.canEdit
+        ? html`
+            <div class="items-container">
+              <ha-sortable
+                handle-selector=".handle"
+                draggable-selector=".item"
+                @item-moved=${this._entityMoved}
+              >
+                <ha-md-list>
+                  ${this.entities.map((item, index) =>
+                    this._renderItem(item, index)
+                  )}
+                </ha-md-list>
+              </ha-sortable>
+            </div>
+          `
+        : html` <ha-sortable
+            handle-selector=".handle"
+            @item-moved=${this._entityMoved}
+          >
+            <div class="entities">
+              ${repeat(
+                this.entities,
+                (entityConf) => this._getKey(entityConf),
+                (entityConf, index) => html`
+                  <div class="entity" data-entity-id=${entityConf.entity}>
+                    <div class="handle">
+                      <ha-svg-icon .path=${mdiDrag}></ha-svg-icon>
+                    </div>
+                    <ha-entity-picker
+                      .hass=${this.hass}
+                      .value=${entityConf.entity}
+                      .index=${index}
+                      .entityFilter=${this.entityFilter}
+                      @value-changed=${this._valueChanged}
+                      allow-custom-entity
+                    ></ha-entity-picker>
+                  </div>
+                `
+              )}
+            </div>
+          </ha-sortable>`}
       <ha-entity-picker
         class="add-entity"
         .hass=${this.hass}
@@ -147,6 +233,35 @@ export class HuiEntityEditor extends LitElement {
     }
     .entity ha-entity-picker {
       flex-grow: 1;
+    }
+    ha-md-list {
+      gap: 8px;
+    }
+    ha-md-list-item {
+      border: 1px solid var(--divider-color);
+      border-radius: 8px;
+      --ha-md-list-item-gap: 0;
+      --md-list-item-top-space: 0;
+      --md-list-item-bottom-space: 0;
+      --md-list-item-leading-space: 12px;
+      --md-list-item-trailing-space: 4px;
+      --md-list-item-two-line-container-height: 48px;
+      --md-list-item-one-line-container-height: 48px;
+    }
+    .handle {
+      cursor: move;
+      padding: 8px;
+      margin-inline-start: -8px;
+    }
+    label {
+      margin-bottom: 8px;
+      display: block;
+    }
+    ha-md-list-item .label,
+    ha-md-list-item .description {
+      text-overflow: ellipsis;
+      overflow: hidden;
+      white-space: nowrap;
     }
   `;
 }

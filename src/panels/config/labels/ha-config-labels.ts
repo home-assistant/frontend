@@ -1,6 +1,7 @@
 import {
   mdiDelete,
   mdiDevices,
+  mdiDotsVertical,
   mdiHelpCircle,
   mdiPlus,
   mdiRobot,
@@ -8,7 +9,8 @@ import {
 } from "@mdi/js";
 import type { PropertyValues } from "lit";
 import { LitElement, html, nothing } from "lit";
-import { customElement, property, state } from "lit/decorators";
+import { customElement, property, query, state } from "lit/decorators";
+import { styleMap } from "lit/directives/style-map";
 import memoizeOne from "memoize-one";
 import { computeCssColor } from "../../../common/color/compute-color";
 import { formatShortDateTime } from "../../../common/datetime/format_date_time";
@@ -22,7 +24,6 @@ import type {
 } from "../../../components/data-table/ha-data-table";
 import "../../../components/ha-fab";
 import "../../../components/ha-icon-button";
-import "../../../components/ha-icon-overflow-menu";
 import "../../../components/ha-relative-time";
 import type {
   LabelRegistryEntry,
@@ -42,6 +43,7 @@ import "../../../layouts/hass-tabs-subpage-data-table";
 import type { HomeAssistant, Route } from "../../../types";
 import { configSections } from "../ha-panel-config";
 import { showLabelDetailDialog } from "./show-dialog-label-detail";
+import type { HaMdMenu } from "../../../components/ha-md-menu";
 
 @customElement("ha-config-labels")
 export class HaConfigLabels extends LitElement {
@@ -85,6 +87,10 @@ export class HaConfigLabels extends LitElement {
   })
   private _activeHiddenColumns?: string[];
 
+  @query("#overflow-menu") private _overflowMenu?: HaMdMenu;
+
+  private _overflowLabel!: LabelRegistryEntry;
+
   private _columns = memoizeOne((localize: LocalizeFunc, narrow: boolean) => {
     const columns: DataTableColumnContainer<LabelRegistryEntry> = {
       icon: {
@@ -104,13 +110,14 @@ export class HaConfigLabels extends LitElement {
         template: (label) =>
           label.color
             ? html`<div
-                style="
-          background-color: ${computeCssColor(label.color)};
-          border-radius: 10px;
-          border: 1px solid var(--outline-color);
-          box-sizing: border-box;
-          width: 20px;
-          height: 20px;"
+                style=${styleMap({
+                  backgroundColor: computeCssColor(label.color),
+                  borderRadius: "var(--ha-border-radius-md)",
+                  border: "1px solid var(--outline-color)",
+                  boxSizing: "border-box",
+                  width: "20px",
+                  height: "20px",
+                })}
               ></div>`
             : nothing,
       },
@@ -171,34 +178,12 @@ export class HaConfigLabels extends LitElement {
         hideable: false,
         type: "overflow-menu",
         template: (label) => html`
-          <ha-icon-overflow-menu
-            .hass=${this.hass}
-            narrow
-            .items=${[
-              {
-                label: this.hass.localize("ui.panel.config.entities.caption"),
-                path: mdiShape,
-                action: () => this._navigateEntities(label),
-              },
-              {
-                label: this.hass.localize("ui.panel.config.devices.caption"),
-                path: mdiDevices,
-                action: () => this._navigateDevices(label),
-              },
-              {
-                label: this.hass.localize("ui.panel.config.automation.caption"),
-                path: mdiRobot,
-                action: () => this._navigateAutomations(label),
-              },
-              {
-                label: this.hass.localize("ui.common.delete"),
-                path: mdiDelete,
-                action: () => this._removeLabel(label),
-                warning: true,
-              },
-            ]}
-          >
-          </ha-icon-overflow-menu>
+          <ha-icon-button
+            .selected=${label}
+            .label=${this.hass.localize("ui.common.overflow_menu")}
+            .path=${mdiDotsVertical}
+            @click=${this._toggleOverflowMenu}
+          ></ha-icon-button>
         `,
       },
     };
@@ -211,6 +196,20 @@ export class HaConfigLabels extends LitElement {
         ...label,
       }))
   );
+
+  private _toggleOverflowMenu = (ev) => {
+    if (!this._overflowMenu) {
+      return;
+    }
+
+    if (this._overflowMenu.open) {
+      this._overflowMenu.close();
+      return;
+    }
+    this._overflowLabel = ev.target.selected;
+    this._overflowMenu.anchorElement = ev.target;
+    this._overflowMenu.show();
+  };
 
   protected firstUpdated(changedProperties: PropertyValues) {
     super.firstUpdated(changedProperties);
@@ -255,6 +254,32 @@ export class HaConfigLabels extends LitElement {
           <ha-svg-icon slot="icon" .path=${mdiPlus}></ha-svg-icon>
         </ha-fab>
       </hass-tabs-subpage-data-table>
+      <ha-md-menu id="overflow-menu" positioning="fixed">
+        <ha-md-menu-item .clickAction=${this._navigateEntities}>
+          <ha-svg-icon slot="start" .path=${mdiShape}></ha-svg-icon>
+          ${this.hass.localize("ui.panel.config.entities.caption")}
+        </ha-md-menu-item>
+        <ha-md-menu-item .clickAction=${this._navigateDevices}>
+          <ha-svg-icon slot="start" .path=${mdiDevices}></ha-svg-icon>
+          ${this.hass.localize("ui.panel.config.devices.caption")}
+        </ha-md-menu-item>
+        <ha-md-menu-item .clickAction=${this._navigateAutomations}>
+          <ha-svg-icon slot="start" .path=${mdiRobot}></ha-svg-icon>
+          ${this.hass.localize("ui.panel.config.automation.caption")}
+        </ha-md-menu-item>
+        <ha-md-divider role="separator" tabindex="-1"></ha-md-divider>
+        <ha-md-menu-item
+          class="warning"
+          .clickAction=${this._handleRemoveLabelClick}
+        >
+          <ha-svg-icon
+            slot="start"
+            class="warning"
+            .path=${mdiDelete}
+          ></ha-svg-icon>
+          ${this.hass.localize("ui.common.delete")}
+        </ha-md-menu-item>
+      </ha-md-menu>
     `;
   }
 
@@ -315,6 +340,10 @@ export class HaConfigLabels extends LitElement {
     return updated;
   }
 
+  private _handleRemoveLabelClick = () => {
+    this._removeLabel(this._overflowLabel);
+  };
+
   private async _removeLabel(selectedLabel: LabelRegistryEntry) {
     if (
       !(await showConfirmationDialog(this, {
@@ -342,19 +371,23 @@ export class HaConfigLabels extends LitElement {
     }
   }
 
-  private _navigateEntities(label: LabelRegistryEntry) {
-    navigate(`/config/entities?historyBack=1&label=${label.label_id}`);
-  }
-
-  private _navigateDevices(label: LabelRegistryEntry) {
-    navigate(`/config/devices/dashboard?historyBack=1&label=${label.label_id}`);
-  }
-
-  private _navigateAutomations(label: LabelRegistryEntry) {
+  private _navigateEntities = () => {
     navigate(
-      `/config/automation/dashboard?historyBack=1&label=${label.label_id}`
+      `/config/entities?historyBack=1&label=${this._overflowLabel.label_id}`
     );
-  }
+  };
+
+  private _navigateDevices = () => {
+    navigate(
+      `/config/devices/dashboard?historyBack=1&label=${this._overflowLabel.label_id}`
+    );
+  };
+
+  private _navigateAutomations = () => {
+    navigate(
+      `/config/automation/dashboard?historyBack=1&label=${this._overflowLabel.label_id}`
+    );
+  };
 
   private _handleSortingChanged(ev: CustomEvent) {
     this._activeSorting = ev.detail;

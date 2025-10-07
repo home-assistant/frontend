@@ -345,7 +345,7 @@ export class HaPanelLogbook extends LitElement {
         }
 
         .content {
-          overflow: hidden;
+          overflow-x: hidden;
         }
 
         .filters {

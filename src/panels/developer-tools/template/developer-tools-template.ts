@@ -5,10 +5,10 @@ import { customElement, property, state } from "lit/decorators";
 import { classMap } from "lit/directives/class-map";
 import { debounce } from "../../../common/util/debounce";
 import "../../../components/ha-alert";
-import "../../../components/ha-spinner";
 import "../../../components/ha-button";
-import "../../../components/ha-code-editor";
 import "../../../components/ha-card";
+import "../../../components/ha-code-editor";
+import "../../../components/ha-spinner";
 import type { RenderTemplateResult } from "../../../data/ws-templates";
 import { subscribeRenderTemplate } from "../../../data/ws-templates";
 import { showConfirmationDialog } from "../../../dialogs/generic/show-dialog-box";
@@ -274,12 +274,8 @@ ${type === "object"
         }
 
         .content {
-          gap: 16px;
+          gap: var(--ha-space-4);
           padding: 16px;
-          padding: max(16px, var(--safe-area-inset-top))
-            max(16px, var(--safe-area-inset-right))
-            max(16px, var(--safe-area-inset-bottom))
-            max(16px, var(--safe-area-inset-left));
         }
 
         .content.horizontal {
@@ -347,13 +343,16 @@ ${type === "object"
           overflow: auto;
           max-height: calc(
             var(--code-mirror-max-height) +
-              47px - var(--ha-card-border-radius, 12px)
+              47px - var(--ha-card-border-radius, var(--ha-border-radius-lg))
           );
         }
 
         .content.horizontal .render-pane {
           overflow: hidden;
-          padding-bottom: var(--ha-card-border-radius, 12px);
+          padding-bottom: var(
+            --ha-card-border-radius,
+            var(--ha-border-radius-lg)
+          );
         }
 
         .all_listeners {

@@ -1,5 +1,5 @@
-import { consume } from "@lit/context";
 import { ResizeController } from "@lit-labs/observers/resize-controller";
+import { consume } from "@lit/context";
 import { mdiChevronDown, mdiChevronUp, mdiRestart } from "@mdi/js";
 import { differenceInMinutes } from "date-fns";
 import type { DataZoomComponentOption } from "echarts/components";
@@ -7,15 +7,16 @@ import type { EChartsType } from "echarts/core";
 import type {
   ECElementEvent,
   LegendComponentOption,
+  LineSeriesOption,
   XAXisOption,
   YAXisOption,
-  LineSeriesOption,
 } from "echarts/types/dist/shared";
 import type { PropertyValues } from "lit";
 import { css, html, LitElement, nothing } from "lit";
 import { customElement, property, state } from "lit/decorators";
 import { classMap } from "lit/directives/class-map";
 import { styleMap } from "lit/directives/style-map";
+import { ensureArray } from "../../common/array/ensure-array";
 import { getAllGraphColors } from "../../common/color/colors";
 import { fireEvent } from "../../common/dom/fire_event";
 import { listenMediaQuery } from "../../common/dom/media_query";
@@ -24,10 +25,9 @@ import type { Themes } from "../../data/ws-themes";
 import type { ECOption } from "../../resources/echarts";
 import type { HomeAssistant } from "../../types";
 import { isMac } from "../../util/is_mac";
+import "../chips/ha-assist-chip";
 import "../ha-icon-button";
 import { formatTimeLabel } from "./axis-label";
-import { ensureArray } from "../../common/array/ensure-array";
-import "../chips/ha-assist-chip";
 import { downSampleLineData } from "./down-sample";
 
 export const MIN_TIME_BETWEEN_UPDATES = 60 * 5 * 1000;
@@ -62,6 +62,9 @@ export class HaChartBase extends LitElement {
 
   @property({ attribute: "small-controls", type: Boolean })
   public smallControls?: boolean;
+
+  @property({ attribute: "hide-reset-button", type: Boolean })
+  public hideResetButton?: boolean;
 
   // extraComponents is not reactive and should not trigger updates
   public extraComponents?: any[];
@@ -215,7 +218,7 @@ export class HaChartBase extends LitElement {
         </div>
         ${this._renderLegend()}
         <div class="chart-controls ${classMap({ small: this.smallControls })}">
-          ${this._isZoomed
+          ${this._isZoomed && !this.hideResetButton
             ? html`<ha-icon-button
                 class="zoom-reset"
                 .path=${mdiRestart}
@@ -353,20 +356,12 @@ export class HaChartBase extends LitElement {
 
       this.chart = echarts.init(container, "custom");
       this.chart.on("datazoom", (e: any) => {
-        const { start, end } = e.batch?.[0] ?? e;
-        this._isZoomed = start !== 0 || end !== 100;
-        this._zoomRatio = (end - start) / 100;
-        if (this._isTouchDevice) {
-          // zooming changes the axis pointer so we need to hide it
-          this.chart?.dispatchAction({
-            type: "hideTip",
-            from: "datazoom",
-          });
-        }
+        this._handleDataZoomEvent(e);
       });
       this.chart.on("click", (e: ECElementEvent) => {
         fireEvent(this, "chart-click", e);
       });
+
       if (!this.options?.dataZoom) {
         this.chart.getZr().on("dblclick", this._handleClickZoom);
       }
@@ -868,8 +863,58 @@ export class HaChartBase extends LitElement {
     });
   };
 
+  public zoom(start: number, end: number, silent = false) {
+    this.chart?.dispatchAction({
+      type: "dataZoom",
+      start,
+      end,
+      silent,
+    });
+  }
+
   private _handleZoomReset() {
     this.chart?.dispatchAction({ type: "dataZoom", start: 0, end: 100 });
+  }
+
+  private _handleDataZoomEvent(e: any) {
+    const zoomData = e.batch?.[0] ?? e;
+    let start = typeof zoomData.start === "number" ? zoomData.start : 0;
+    let end = typeof zoomData.end === "number" ? zoomData.end : 100;
+
+    if (
+      start === 0 &&
+      end === 100 &&
+      zoomData.startValue !== undefined &&
+      zoomData.endValue !== undefined
+    ) {
+      const option = this.chart!.getOption();
+      const xAxis = option.xAxis?.[0] ?? option.xAxis;
+
+      if (xAxis?.min && xAxis?.max) {
+        const axisMin = new Date(xAxis.min).getTime();
+        const axisMax = new Date(xAxis.max).getTime();
+        const axisRange = axisMax - axisMin;
+
+        start = Math.max(
+          0,
+          Math.min(100, ((zoomData.startValue - axisMin) / axisRange) * 100)
+        );
+        end = Math.max(
+          0,
+          Math.min(100, ((zoomData.endValue - axisMin) / axisRange) * 100)
+        );
+      }
+    }
+
+    this._isZoomed = start !== 0 || end !== 100;
+    this._zoomRatio = (end - start) / 100;
+    if (this._isTouchDevice) {
+      this.chart?.dispatchAction({
+        type: "hideTip",
+        from: "datazoom",
+      });
+    }
+    fireEvent(this, "chart-zoom", { start, end });
   }
 
   private _legendClick(ev: any) {
@@ -929,7 +974,7 @@ export class HaChartBase extends LitElement {
       right: 4px;
       display: flex;
       flex-direction: column;
-      gap: 4px;
+      gap: var(--ha-space-1);
     }
     .chart-controls.small {
       top: 0;
@@ -938,7 +983,7 @@ export class HaChartBase extends LitElement {
     .chart-controls ha-icon-button,
     .chart-controls ::slotted(ha-icon-button) {
       background: var(--card-background-color);
-      border-radius: 4px;
+      border-radius: var(--ha-border-radius-sm);
       --mdc-icon-button-size: 32px;
       color: var(--primary-color);
       border: 1px solid var(--divider-color);
@@ -966,7 +1011,7 @@ export class HaChartBase extends LitElement {
       flex-wrap: wrap;
       justify-content: center;
       align-items: center;
-      gap: 8px;
+      gap: var(--ha-space-2);
     }
     .chart-legend li {
       height: 24px;
@@ -991,7 +1036,7 @@ export class HaChartBase extends LitElement {
     .chart-legend .bullet {
       border-width: 1px;
       border-style: solid;
-      border-radius: 50%;
+      border-radius: var(--ha-border-radius-circle);
       display: block;
       height: 16px;
       width: 16px;
@@ -1024,5 +1069,9 @@ declare global {
     "dataset-hidden": { id: string };
     "dataset-unhidden": { id: string };
     "chart-click": ECElementEvent;
+    "chart-zoom": {
+      start: number;
+      end: number;
+    };
   }
 }
