@@ -17,7 +17,7 @@ import type { EntityConfig } from "../entity-rows/types";
 
 @customElement("hui-entity-editor")
 export class HuiEntityEditor extends LitElement {
-  @property({ attribute: false }) public hass?: HomeAssistant;
+  @property({ attribute: false }) public hass!: HomeAssistant;
 
   @property({ attribute: false }) public entities?: EntityConfig[];
 
@@ -39,24 +39,24 @@ export class HuiEntityEditor extends LitElement {
   }
 
   private _renderItem(item: EntityConfig, index: number) {
-    const stateObj = this.hass!.states[item.entity];
+    const stateObj = this.hass.states[item.entity];
 
     const useDeviceName = entityUseDeviceName(
       stateObj,
-      this.hass!.entities,
-      this.hass!.devices
+      this.hass.entities,
+      this.hass.devices
     );
 
-    const name = this.hass!.formatEntityName(
+    const name = this.hass.formatEntityName(
       stateObj,
       useDeviceName ? { type: "device" } : { type: "entity" }
     );
 
-    const isRTL = computeRTL(this.hass!);
+    const isRTL = computeRTL(this.hass);
 
     const primary = item.name || name || item.entity;
 
-    const secondary = this.hass!.formatEntityName(
+    const secondary = this.hass.formatEntityName(
       stateObj,
       useDeviceName
         ? [{ type: "area" }]
@@ -80,14 +80,14 @@ export class HuiEntityEditor extends LitElement {
           slot="end"
           .item=${item}
           .index=${index}
-          .label=${this.hass!.localize("ui.common.edit")}
+          .label=${this.hass.localize("ui.common.edit")}
           .path=${mdiPencil}
           @click=${this._editItem}
         ></ha-icon-button>
         <ha-icon-button
           slot="end"
           .index=${index}
-          .label=${this.hass!.localize("ui.common.delete")}
+          .label=${this.hass.localize("ui.common.delete")}
           .path=${mdiClose}
           @click=${this._deleteItem}
         ></ha-icon-button>
@@ -122,9 +122,9 @@ export class HuiEntityEditor extends LitElement {
     return html`
       <h3>
         ${this.label ||
-        this.hass!.localize("ui.panel.lovelace.editor.card.generic.entities") +
+        this.hass.localize("ui.panel.lovelace.editor.card.generic.entities") +
           " (" +
-          this.hass!.localize("ui.panel.lovelace.editor.card.config.required") +
+          this.hass.localize("ui.panel.lovelace.editor.card.config.required") +
           ")"}
       </h3>
       ${this.canEdit

@@ -42,7 +42,7 @@ export const computeEntityNameDisplay = (
 
   const useDeviceName = entityUseDeviceName(stateObj, entities, devices);
 
-  // If entity uses device name, and device is not already included, replace if with device name
+  // If entity uses device name, and device is not already included, replace it with device name
   if (useDeviceName) {
     const hasDevice = items.some((n) => n.type === "device");
     if (!hasDevice) {
