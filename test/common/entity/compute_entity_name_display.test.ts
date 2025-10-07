@@ -7,6 +7,7 @@ import type { HomeAssistant } from "../../../src/types";
 import {
   mockArea,
   mockDevice,
+  mockEntity,
   mockFloor,
   mockStateObj,
 } from "./context/context-mock";
@@ -65,11 +66,10 @@ describe("computeEntityNameDisplay", () => {
     const stateObj = mockStateObj({ entity_id: "light.kitchen" });
     const hass = {
       entities: {
-        "light.kitchen": {
+        "light.kitchen": mockEntity({
           entity_id: "light.kitchen",
           name: "Kitchen Light",
-          labels: [],
-        },
+        }),
       },
       devices: {},
       areas: {},
@@ -92,12 +92,11 @@ describe("computeEntityNameDisplay", () => {
     const stateObj = mockStateObj({ entity_id: "light.kitchen" });
     const hass = {
       entities: {
-        "light.kitchen": {
+        "light.kitchen": mockEntity({
           entity_id: "light.kitchen",
           name: "Kitchen Device",
           device_id: "dev1",
-          labels: [],
-        },
+        }),
       },
       devices: {
         dev1: mockDevice({
@@ -125,12 +124,11 @@ describe("computeEntityNameDisplay", () => {
     const stateObj = mockStateObj({ entity_id: "light.kitchen" });
     const hass = {
       entities: {
-        "light.kitchen": {
+        "light.kitchen": mockEntity({
           entity_id: "light.kitchen",
           name: "Kitchen Device",
           device_id: "dev1",
-          labels: [],
-        },
+        }),
       },
       devices: {
         dev1: mockDevice({
@@ -160,12 +158,11 @@ describe("computeEntityNameDisplay", () => {
     const stateObj = mockStateObj({ entity_id: "light.kitchen" });
     const hass = {
       entities: {
-        "light.kitchen": {
+        "light.kitchen": mockEntity({
           entity_id: "light.kitchen",
           name: "Ceiling Light",
           area_id: "kitchen",
-          labels: [],
-        },
+        }),
       },
       devices: {},
       areas: {
@@ -193,12 +190,11 @@ describe("computeEntityNameDisplay", () => {
     const stateObj = mockStateObj({ entity_id: "light.kitchen" });
     const hass = {
       entities: {
-        "light.kitchen": {
+        "light.kitchen": mockEntity({
           entity_id: "light.kitchen",
           name: "Light",
           device_id: "dev1",
-          labels: [],
-        },
+        }),
       },
       devices: {
         dev1: mockDevice({
@@ -232,12 +228,11 @@ describe("computeEntityNameDisplay", () => {
     const stateObj = mockStateObj({ entity_id: "light.kitchen" });
     const hass = {
       entities: {
-        "light.kitchen": {
+        "light.kitchen": mockEntity({
           entity_id: "light.kitchen",
           name: "Light",
           area_id: "kitchen",
-          labels: [],
-        },
+        }),
       },
       devices: {},
       areas: {
@@ -271,11 +266,10 @@ describe("computeEntityNameDisplay", () => {
     const stateObj = mockStateObj({ entity_id: "light.kitchen" });
     const hass = {
       entities: {
-        "light.kitchen": {
+        "light.kitchen": mockEntity({
           entity_id: "light.kitchen",
           name: "Light",
-          labels: [],
-        },
+        }),
       },
       devices: {},
       areas: {},
@@ -299,12 +293,11 @@ describe("computeEntityNameDisplay", () => {
     const stateObj = mockStateObj({ entity_id: "light.kitchen" });
     const hass = {
       entities: {
-        "light.kitchen": {
+        "light.kitchen": mockEntity({
           entity_id: "light.kitchen",
           name: "Light",
           area_id: "kitchen",
-          labels: [],
-        },
+        }),
       },
       devices: {},
       areas: {
@@ -334,13 +327,12 @@ describe("computeEntityNameList", () => {
     const stateObj = mockStateObj({ entity_id: "light.kitchen" });
     const hass = {
       entities: {
-        "light.kitchen": {
+        "light.kitchen": mockEntity({
           entity_id: "light.kitchen",
           name: "Light",
           device_id: "dev1",
           area_id: "kitchen",
-          labels: [],
-        },
+        }),
       },
       devices: {
         dev1: mockDevice({
@@ -392,11 +384,10 @@ describe("computeEntityNameList", () => {
     const stateObj = mockStateObj({ entity_id: "light.kitchen" });
     const hass = {
       entities: {
-        "light.kitchen": {
+        "light.kitchen": mockEntity({
           entity_id: "light.kitchen",
           name: "Light",
-          labels: [],
-        },
+        }),
       },
       devices: {},
       areas: {},
