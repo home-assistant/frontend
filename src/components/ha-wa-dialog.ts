@@ -26,8 +26,6 @@ export type DialogWidth = "small" | "medium" | "large" | "full";
  *
  * @slot header - Replace the entire header area.
  * @slot headerNavigationIcon - Leading header action (e.g. close/back button).
- * @slot headerTitle - Header title.
- * @slot headerSubtitle - Header subtitle, shown under the title.
  * @slot headerActionItems - Trailing header actions (e.g. buttons, menus).
  * @slot - Dialog content body.
  * @slot footer - Dialog footer content.
@@ -156,12 +154,6 @@ export class HaWaDialog extends LitElement {
   static styles = [
     haStyleScrollbar,
     css`
-      :host([scrolled]) wa-dialog::part(header) {
-        max-width: 100%;
-        border-bottom: 1px solid
-          var(--dialog-scroll-divider-color, var(--divider-color));
-      }
-
       wa-dialog {
         --full-width: var(
           --ha-dialog-width-full,
