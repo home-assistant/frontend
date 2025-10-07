@@ -3137,7 +3137,10 @@
               "cost_entity_input": "[%key:ui::panel::config::energy::grid::flow_dialog::from::cost_entity_input%]",
               "cost_number": "[%key:ui::panel::config::energy::grid::flow_dialog::from::cost_number%]",
               "cost_number_input": "[%key:ui::panel::config::energy::grid::flow_dialog::from::cost_number%]",
-              "water_usage": "Water usage"
+              "water_usage": "Water usage",
+              "included_in_water_source": "Upstream water source",
+              "included_in_water_source_helper": "If this water source is already counted by another water source, selecting the upstream source prevents duplicate water tracking.",
+              "no_upstream_sources": "No eligible upstream water sources"
             }
           },
           "device_consumption": {

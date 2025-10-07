@@ -66,6 +66,7 @@ export interface EnergySettingsWaterDialogParams {
   source?: WaterSourceTypeEnergyPreference;
   metadata?: StatisticsMetaData;
   water_sources: WaterSourceTypeEnergyPreference[];
+  statsMetadata?: Record<string, StatisticsMetaData>;
   saveCallback: (source: WaterSourceTypeEnergyPreference) => Promise<void>;
 }
 

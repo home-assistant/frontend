@@ -174,6 +174,8 @@ export interface WaterSourceTypeEnergyPreference {
 
   // $ meter
   stat_cost: string | null;
+  
+  included_in_stat?: string;
 
   // Can be used to generate costs if stat_cost omitted
   entity_energy_price: string | null;

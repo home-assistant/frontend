@@ -3,6 +3,7 @@ import type { CSSResultGroup } from "lit";
 import { css, html, LitElement, nothing } from "lit";
 import { customElement, property, state } from "lit/decorators";
 import { fireEvent } from "../../../../common/dom/fire_event";
+import { stopPropagation } from "../../../../common/dom/stop_propagation";
 import "../../../../components/entity/ha-entity-picker";
 import "../../../../components/entity/ha-statistic-picker";
 import "../../../../components/ha-dialog";
@@ -10,6 +11,8 @@ import "../../../../components/ha-button";
 import "../../../../components/ha-formfield";
 import "../../../../components/ha-radio";
 import type { HaRadio } from "../../../../components/ha-radio";
+import "../../../../components/ha-select";
+import "../../../../components/ha-list-item";
 import "../../../../components/ha-textfield";
 import type { WaterSourceTypeEnergyPreference } from "../../../../data/energy";
 import {
@@ -18,6 +21,7 @@ import {
 } from "../../../../data/energy";
 import {
   getDisplayUnit,
+  getStatisticLabel,
   getStatisticMetadata,
   isExternalStatistic,
 } from "../../../../data/recorder";
@@ -48,6 +52,8 @@ export class DialogEnergyWaterSettings
 
   private _excludeList?: string[];
 
+  private _possibleParents: WaterSourceTypeEnergyPreference[] = [];
+
   public async showDialog(
     params: EnergySettingsWaterDialogParams
   ): Promise<void> {
@@ -73,6 +79,31 @@ export class DialogEnergyWaterSettings
     this._excludeList = this._params.water_sources
       .map((entry) => entry.stat_energy_from)
       .filter((id) => id !== this._source?.stat_energy_from);
+    this._computePossibleParents();
+  }
+
+  private _computePossibleParents() {
+    if (!this._source || !this._params) {
+      this._possibleParents = [];
+      return;
+    }
+    const children: string[] = [];
+    const sources = this._params.water_sources;
+    function getChildren(stat) {
+      sources.forEach((s) => {
+        if (s.included_in_stat === stat) {
+          children.push(s.stat_energy_from);
+          getChildren(s.stat_energy_from);
+        }
+      });
+    }
+    getChildren(this._source.stat_energy_from);
+    this._possibleParents = this._params.water_sources.filter(
+      (s) =>
+        s.stat_energy_from !== this._source!.stat_energy_from &&
+        s.stat_energy_from !== this._params?.source?.stat_energy_from &&
+        !children.includes(s.stat_energy_from)
+    );
   }
 
   public closeDialog() {
@@ -101,7 +132,7 @@ export class DialogEnergyWaterSettings
     }`;
 
     const externalSource =
-      this._source.stat_energy_from &&
+      !!this._source.stat_energy_from &&
       isExternalStatistic(this._source.stat_energy_from);
 
     return html`
@@ -176,7 +207,7 @@ export class DialogEnergyWaterSettings
               class="price-options"
               .hass=${this.hass}
               statistic-types="sum"
-              .value=${this._source.stat_cost}
+              .value=${this._source.stat_cost || undefined}
               .label=${`${this.hass.localize(
                 "ui.panel.config.energy.water.dialog.cost_stat_input"
               )} (${this.hass.config.currency})`}
@@ -200,8 +231,8 @@ export class DialogEnergyWaterSettings
           ? html`<ha-entity-picker
               class="price-options"
               .hass=${this.hass}
-              include-domains='["sensor", "input_number"]'
-              .value=${this._source.entity_energy_price}
+              .include-domains=${["sensor", "input_number"]}
+              .value=${this._source.entity_energy_price || undefined}
               .label=${`${this.hass.localize(
                 "ui.panel.config.energy.water.dialog.cost_entity_input"
               )}${unitPriceSensor ? ` (${unitPriceSensor})` : ""}`}
@@ -229,12 +260,48 @@ export class DialogEnergyWaterSettings
               class="price-options"
               step="any"
               type="number"
-              .value=${this._source.number_energy_price}
+              .value=${this._source.number_energy_price?.toString() || ""}
               @change=${this._numberPriceChanged}
               .suffix=${unitPriceFixed}
             >
             </ha-textfield>`
           : ""}
+
+        <ha-select
+          .label=${this.hass.localize(
+            "ui.panel.config.energy.water.dialog.included_in_water_source"
+          )}
+          .value=${this._source?.included_in_stat || ""}
+          .helper=${this.hass.localize(
+            "ui.panel.config.energy.water.dialog.included_in_water_source_helper"
+          )}
+          .disabled=${!this._source}
+          @selected=${this._parentSelected}
+          @closed=${stopPropagation}
+          fixedMenuPosition
+          naturalMenuWidth
+          clearable
+        >
+          ${!this._possibleParents.length
+            ? html`
+                <ha-list-item disabled value="-"
+                  >${this.hass.localize(
+                    "ui.panel.config.energy.water.dialog.no_upstream_sources"
+                  )}</ha-list-item
+                >
+              `
+            : this._possibleParents.map(
+                (stat) => html`
+                  <ha-list-item .value=${stat.stat_energy_from}
+                    >${getStatisticLabel(
+                      this.hass,
+                      stat.stat_energy_from,
+                      this._params?.statsMetadata?.[stat.stat_energy_from]
+                    )}</ha-list-item
+                  >
+                `
+              )}
+        </ha-select>
 
         <ha-button
           appearance="plain"
@@ -286,6 +353,17 @@ export class DialogEnergyWaterSettings
     };
   }
 
+  private _parentSelected(ev) {
+    const newSource = {
+      ...this._source!,
+      included_in_stat: ev.target!.value,
+    } as WaterSourceTypeEnergyPreference;
+    if (!newSource.included_in_stat) {
+      delete newSource.included_in_stat;
+    }
+    this._source = newSource;
+  }
+
   private async _statisticChanged(ev: CustomEvent<{ value: string }>) {
     if (ev.detail.value) {
       const metadata = await getStatisticMetadata(this.hass, [ev.detail.value]);
@@ -304,6 +382,7 @@ export class DialogEnergyWaterSettings
       ...this._source!,
       stat_energy_from: ev.detail.value,
     };
+    this._computePossibleParents();
   }
 
   private async _save() {
@@ -337,6 +416,10 @@ export class DialogEnergyWaterSettings
           padding-inline-start: 52px;
           padding-inline-end: initial;
           margin-top: -8px;
+        }
+        ha-select {
+          margin-top: 16px;
+          width: 100%;
         }
       `,
     ];
