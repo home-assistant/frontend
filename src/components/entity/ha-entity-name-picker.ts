@@ -25,7 +25,6 @@ import type { HaComboBox } from "../ha-combo-box";
 import "../ha-list-item";
 import "../ha-select";
 import "../ha-sortable";
-import "../ha-textfield";
 
 interface EntityNameOption {
   primary: string;
@@ -426,9 +425,9 @@ export class HaEntityNamePicker extends LitElement {
     .container {
       position: relative;
       background-color: var(--mdc-text-field-fill-color, whitesmoke);
-      border-radius: 4px;
-      border-end-end-radius: 0;
-      border-end-start-radius: 0;
+      border-radius: var(--ha-border-radius-sm);
+      border-end-end-radius: var(--ha-border-radius-square);
+      border-end-start-radius: var(--ha-border-radius-square);
     }
     .container:after {
       display: block;
@@ -461,7 +460,7 @@ export class HaEntityNamePicker extends LitElement {
 
     label {
       display: block;
-      margin: 0 0 8px;
+      margin: 0 0 var(--ha-space-2);
     }
 
     .add {
@@ -473,7 +472,7 @@ export class HaEntityNamePicker extends LitElement {
     }
 
     ha-chip-set {
-      padding: 8px 8px;
+      padding: var(--ha-space-2) var(--ha-space-2);
     }
 
     .invalid {
