@@ -77,80 +77,81 @@ class MoreInfoMediaPlayer extends LitElement {
       return nothing;
     }
 
+    if (!stateActive(this.stateObj)) {
+      return nothing;
+    }
+
     const supportsMute = supportsFeature(
       this.stateObj,
       MediaPlayerEntityFeature.VOLUME_MUTE
     );
-    const supportsSliding = supportsFeature(
+    const supportsVolumeSet = supportsFeature(
       this.stateObj,
       MediaPlayerEntityFeature.VOLUME_SET
     );
 
-    return html`${(supportsFeature(
-      this.stateObj!,
-      MediaPlayerEntityFeature.VOLUME_SET
-    ) ||
-      supportsFeature(this.stateObj!, MediaPlayerEntityFeature.VOLUME_STEP)) &&
-    stateActive(this.stateObj!)
-      ? html`
-          <div class="volume">
-            ${supportsMute
-              ? html`
-                  <ha-icon-button
-                    .path=${this.stateObj.attributes.is_volume_muted
-                      ? mdiVolumeOff
-                      : mdiVolumeHigh}
-                    .label=${this.hass.localize(
-                      `ui.card.media_player.${
-                        this.stateObj.attributes.is_volume_muted
-                          ? "media_volume_unmute"
-                          : "media_volume_mute"
-                      }`
-                    )}
-                    @click=${this._toggleMute}
-                  ></ha-icon-button>
-                `
-              : ""}
-            ${supportsFeature(
-              this.stateObj,
-              MediaPlayerEntityFeature.VOLUME_STEP
-            ) && !supportsSliding
-              ? html`
-                  <ha-icon-button
-                    action="volume_down"
-                    .path=${mdiVolumeMinus}
-                    .label=${this.hass.localize(
-                      "ui.card.media_player.media_volume_down"
-                    )}
-                    @click=${this._handleClick}
-                  ></ha-icon-button>
-                  <ha-icon-button
-                    action="volume_up"
-                    .path=${mdiVolumePlus}
-                    .label=${this.hass.localize(
-                      "ui.card.media_player.media_volume_up"
-                    )}
-                    @click=${this._handleClick}
-                  ></ha-icon-button>
-                `
-              : nothing}
-            ${supportsSliding
-              ? html`
-                  ${!supportsMute
-                    ? html`<ha-svg-icon .path=${mdiVolumeHigh}></ha-svg-icon>`
-                    : nothing}
-                  <ha-slider
-                    labeled
-                    id="input"
-                    .value=${Number(this.stateObj.attributes.volume_level) *
-                    100}
-                    @change=${this._selectedValueChanged}
-                  ></ha-slider>
-                `
-              : nothing}
-          </div>
-        `
-      : nothing}`;
+    const supportsVolumeStep = false;
+
+    if (!supportsMute && !supportsVolumeSet && !supportsVolumeStep) {
+      return nothing;
+    }
+
+    return html`
+      <div class="volume">
+        ${supportsMute
+          ? html`
+              <ha-icon-button
+                .path=${this.stateObj.attributes.is_volume_muted
+                  ? mdiVolumeOff
+                  : mdiVolumeHigh}
+                .label=${this.hass.localize(
+                  `ui.card.media_player.${
+                    this.stateObj.attributes.is_volume_muted
+                      ? "media_volume_unmute"
+                      : "media_volume_mute"
+                  }`
+                )}
+                @click=${this._toggleMute}
+              ></ha-icon-button>
+            `
+          : ""}
+        ${supportsVolumeStep
+          ? html` <ha-icon-button
+              action="volume_down"
+              .path=${mdiVolumeMinus}
+              .label=${this.hass.localize(
+                "ui.card.media_player.media_volume_down"
+              )}
+              @click=${this._handleClick}
+            ></ha-icon-button>`
+          : nothing}
+        ${supportsVolumeSet
+          ? html`
+              ${!supportsMute && !supportsVolumeStep
+                ? html`<ha-svg-icon .path=${mdiVolumeHigh}></ha-svg-icon>`
+                : nothing}
+              <ha-slider
+                labeled
+                id="input"
+                .value=${Number(this.stateObj.attributes.volume_level) * 100}
+                @change=${this._selectedValueChanged}
+              ></ha-slider>
+            `
+          : nothing}
+        ${supportsVolumeStep
+          ? html`
+              <ha-icon-button
+                action="volume_up"
+                .path=${mdiVolumePlus}
+                .label=${this.hass.localize(
+                  "ui.card.media_player.media_volume_up"
+                )}
+                @click=${this._handleClick}
+              ></ha-icon-button>
+            `
+          : nothing}
+      </div>
+    `;
   }
 
   protected _renderSourceControl() {
