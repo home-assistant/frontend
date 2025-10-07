@@ -85,14 +85,17 @@ class MoreInfoMediaPlayer extends LitElement {
       this.stateObj,
       MediaPlayerEntityFeature.VOLUME_MUTE
     );
-    const supportsVolumeSet = supportsFeature(
+    const supportsSet = supportsFeature(
       this.stateObj,
       MediaPlayerEntityFeature.VOLUME_SET
     );
 
-    const supportsVolumeStep = false;
+    const supportsStep = supportsFeature(
+      this.stateObj,
+      MediaPlayerEntityFeature.VOLUME_STEP
+    );
 
-    if (!supportsMute && !supportsVolumeSet && !supportsVolumeStep) {
+    if (!supportsMute && !supportsSet && !supportsStep) {
       return nothing;
     }
 
@@ -115,7 +118,7 @@ class MoreInfoMediaPlayer extends LitElement {
               ></ha-icon-button>
             `
           : nothing}
-        ${supportsVolumeStep
+        ${supportsStep
           ? html` <ha-icon-button
               action="volume_down"
               .path=${mdiVolumeMinus}
@@ -125,9 +128,9 @@ class MoreInfoMediaPlayer extends LitElement {
               @click=${this._handleClick}
             ></ha-icon-button>`
           : nothing}
-        ${supportsVolumeSet
+        ${supportsSet
           ? html`
-              ${!supportsMute && !supportsVolumeStep
+              ${!supportsMute && !supportsStep
                 ? html`<ha-svg-icon .path=${mdiVolumeHigh}></ha-svg-icon>`
                 : nothing}
               <ha-slider
@@ -138,7 +141,7 @@ class MoreInfoMediaPlayer extends LitElement {
               ></ha-slider>
             `
           : nothing}
-        ${supportsVolumeStep
+        ${supportsStep
           ? html`
               <ha-icon-button
                 action="volume_up"
