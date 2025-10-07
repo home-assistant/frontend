@@ -42,20 +42,12 @@ export const computeEntityNameDisplay = (
 
   const useDeviceName = entityUseDeviceName(stateObj, entities, devices);
 
-  // If entity has no custom name, use device name instead of empty entity name
+  // If entity uses device name, and device is not already included, replace if with device name
   if (useDeviceName) {
-    items = items.map((n) => (n.type === "entity" ? { type: "device" } : n));
-  }
-
-  // Remove duplicates type while preserving order (only if they are known types)
-  if (items.length > 1) {
-    items = items.filter(
-      (n, i) =>
-        !(
-          n.type !== "text" &&
-          items.findIndex((item) => item.type === n.type) < i
-        )
-    );
+    const hasDevice = items.some((n) => n.type === "device");
+    if (!hasDevice) {
+      items = items.map((n) => (n.type === "entity" ? { type: "device" } : n));
+    }
   }
 
   const names = computeEntityNameList(
