@@ -22,7 +22,6 @@ export type DialogWidth = "small" | "medium" | "large" | "full";
  *
  * You can open and close the dialog declaratively by using the `data-dialog="close"` attribute.
  * @see https://webawesome.com/docs/components/dialog/#opening-and-closing-dialogs-declaratively
- * @see src/dialogs/more-info/ha-more-info-dialog.ts#L366
  *
  * @slot header - Replace the entire header area.
  * @slot headerNavigationIcon - Leading header action (e.g. close/back button).
