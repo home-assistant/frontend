@@ -26,7 +26,7 @@ export type DialogWidthOnTitleClick = DialogWidth | "none";
  * @see src/dialogs/more-info/ha-more-info-dialog.ts#L366
  *
  * @slot header - Replace the entire header area.
- * @slot navigationIcon - Leading header action (e.g. close/back button).
+ * @slot headerNavigationIcon - Leading header action (e.g. close/back button).
  * @slot title - Header title. Click can toggle width if `width-on-title-click` is not "none".
  * @slot subtitle - Header subtitle, shown under the title.
  * @slot actionItems - Trailing header actions (e.g. buttons, menus).
@@ -125,7 +125,7 @@ export class HaWaDialog extends LitElement {
       >
         <slot name="header">
           <ha-dialog-header .subtitlePosition=${this.headerSubtitlePosition}>
-            <slot name="navigationIcon" slot="navigationIcon">
+            <slot name="headerNavigationIcon" slot="navigationIcon">
               <ha-icon-button
                 data-dialog="close"
                 .label=${this.hass?.localize("ui.common.close") ?? "Close"}
