@@ -9,7 +9,6 @@ import { fireEvent } from "../common/dom/fire_event";
 import { haStyleScrollbar } from "../resources/styles";
 
 export type DialogWidth = "small" | "medium" | "large" | "full";
-export type DialogWidthOnTitleClick = DialogWidth | "none";
 
 /**
  * Home Assistant dialog component
@@ -27,7 +26,7 @@ export type DialogWidthOnTitleClick = DialogWidth | "none";
  *
  * @slot header - Replace the entire header area.
  * @slot headerNavigationIcon - Leading header action (e.g. close/back button).
- * @slot title - Header title. Click can toggle width if `width-on-title-click` is not "none".
+ * @slot title - Header title.
  * @slot subtitle - Header subtitle, shown under the title.
  * @slot actionItems - Trailing header actions (e.g. buttons, menus).
  * @slot - Dialog content body.
@@ -46,11 +45,9 @@ export type DialogWidthOnTitleClick = DialogWidth | "none";
  * @cssprop --dialog-z-index - Z-index for the dialog.
  * @cssprop --dialog-surface-position - CSS position of the dialog surface.
  * @cssprop --dialog-surface-margin-top - Top margin for the dialog surface.
- * @cssprop --ha-dialog-expand-duration - Duration for width transitions when changing width.
  *
  * @attr {boolean} open - Controls the dialog open state.
  * @attr {("small"|"medium"|"large"|"full")} width - Preferred dialog width preset. Defaults to "medium".
- * @attr {("none"|"small"|"medium"|"large"|"full")} width-on-title-click - Target width when clicking the title. "none" disables.
  * @attr {boolean} prevent-scrim-close - Prevents closing the dialog by clicking the scrim/overlay. Defaults to false.
  * @attr {string} header-title - Header title text when no custom title slot is provided.
  * @attr {string} header-subtitle - Header subtitle text when no custom subtitle slot is provided.
@@ -70,13 +67,6 @@ export class HaWaDialog extends LitElement {
   @property({ type: String, reflect: true, attribute: "width" })
   public width: DialogWidth = "medium";
 
-  @property({
-    type: String,
-    reflect: true,
-    attribute: "width-on-title-click",
-  })
-  public widthOnTitleClick: DialogWidthOnTitleClick = "none";
-
   @property({ type: Boolean, reflect: true, attribute: "prevent-scrim-close" })
   public preventScrimClose = false;
 
@@ -95,9 +85,6 @@ export class HaWaDialog extends LitElement {
   @state()
   private _open = false;
 
-  @state()
-  private _sizeChanged = false;
-
   protected updated(
     changedProperties: Map<string | number | symbol, unknown>
   ): void {
@@ -106,12 +93,6 @@ export class HaWaDialog extends LitElement {
     if (changedProperties.has("open")) {
       this._open = this.open;
     }
-
-    if (changedProperties.has("width")) {
-      this._sizeChanged = false;
-    }
-
-    this.classList.toggle("size-changed", this._sizeChanged);
   }
 
   protected render() {
@@ -133,11 +114,7 @@ export class HaWaDialog extends LitElement {
               ></ha-icon-button>
             </slot>
             ${this.headerTitle
-              ? html`<span
-                  slot="title"
-                  class="title"
-                  @click=${this.toggleWidth}
-                >
+              ? html`<span slot="title" class="title">
                   ${this.headerTitle}
                 </span>`
               : nothing}
@@ -175,14 +152,6 @@ export class HaWaDialog extends LitElement {
     super.disconnectedCallback();
     this._open = false;
   }
-
-  public toggleWidth = () => {
-    if (this.widthOnTitleClick === "none") {
-      return;
-    }
-
-    this._sizeChanged = !this._sizeChanged;
-  };
 
   static styles = [
     haStyleScrollbar,
@@ -226,18 +195,15 @@ export class HaWaDialog extends LitElement {
         max-width: var(--ha-dialog-max-width, 100svw);
       }
 
-      :host([width="small"]),
-      :host(.size-changed[width-on-title-click="small"]) wa-dialog {
+      :host([width="small"]) wa-dialog {
         --width: var(--ha-dialog-width-sm, min(320px, var(--full-width)));
       }
 
-      :host([width="large"]),
-      :host(.size-changed[width-on-title-click="large"]) wa-dialog {
+      :host([width="large"]) wa-dialog {
         --width: var(--ha-dialog-width-lg, min(720px, var(--full-width)));
       }
 
-      :host([width="full"]),
-      :host(.size-changed[width-on-title-click="full"]) wa-dialog {
+      :host([width="full"]) wa-dialog {
         --width: var(--full-width);
       }
 
@@ -250,9 +216,6 @@ export class HaWaDialog extends LitElement {
         );
         position: var(--dialog-surface-position, relative);
         margin-top: var(--dialog-surface-margin-top, auto);
-        transition:
-          min-width var(--ha-dialog-expand-duration, 200ms) ease-in-out,
-          max-width var(--ha-dialog-expand-duration, 200ms) ease-in-out;
         display: flex;
         flex-direction: column;
         overflow: hidden;
