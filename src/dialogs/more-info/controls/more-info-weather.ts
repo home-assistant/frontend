@@ -46,8 +46,6 @@ class MoreInfoWeather extends LitElement {
 
   @state() private _subscribed?: Promise<() => void>;
 
-  private _observer?;
-
   // @ts-ignore
   private _dragScrollController = new DragScrollController(this, {
     selector: ".forecast",
@@ -92,7 +90,6 @@ class MoreInfoWeather extends LitElement {
   public disconnectedCallback(): void {
     super.disconnectedCallback();
     this._unsubscribeForecastEvents();
-    this._observer?.disconnect();
   }
 
   protected shouldUpdate(changedProps: PropertyValues): boolean {
