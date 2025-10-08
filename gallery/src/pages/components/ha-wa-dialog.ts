@@ -87,7 +87,7 @@ export class DemoHaWaDialog extends LitElement {
           prevent-scrim-close
           @closed=${this._handleClosed}
         >
-          <ha-form .schema=${SCHEMA}></ha-form>
+          <ha-form autofocus .schema=${SCHEMA}></ha-form>
           <ha-dialog-footer slot="footer">
             <ha-button
               data-dialog="close"
