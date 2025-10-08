@@ -34,11 +34,15 @@ export class HuiClockCardAnalog extends LitElement {
 
   @state() private _dateTimeFormat?: Intl.DateTimeFormat;
 
+  @state() private _dateFormat?: Intl.DateTimeFormat;
+
   @state() private _hourOffsetSec?: number;
 
   @state() private _minuteOffsetSec?: number;
 
   @state() private _secondOffsetSec?: number;
+
+  @state() private _date?: string;
 
   private _initDate() {
     if (!this.config || !this.hass) {
@@ -59,6 +63,17 @@ export class HuiClockCardAnalog extends LitElement {
         this.config.time_zone ||
         resolveTimeZone(locale.time_zone, this.hass.config?.time_zone),
     });
+
+    if (this.config.date_format === "day") {
+      this._dateFormat = new Intl.DateTimeFormat(this.hass.locale.language, {
+        day: "2-digit",
+        timeZone:
+          this.config.time_zone ||
+          resolveTimeZone(locale.time_zone, this.hass.config?.time_zone),
+      });
+    } else {
+      this._dateFormat = undefined;
+    }
 
     this._computeOffsets();
   }
@@ -111,6 +126,13 @@ export class HuiClockCardAnalog extends LitElement {
     this._secondOffsetSec = secondsWithMs;
     this._minuteOffsetSec = minute * 60 + secondsWithMs;
     this._hourOffsetSec = hour12 * 3600 + minute * 60 + secondsWithMs;
+
+    if (this._dateFormat) {
+      const dateParts = this._dateFormat.formatToParts();
+      this._date = dateParts.find((part) => part.type === "day")?.value;
+    } else {
+      this._date = undefined;
+    }
   }
 
   render() {
@@ -230,6 +252,9 @@ export class HuiClockCardAnalog extends LitElement {
                     : (this._secondOffsetSec ?? 0)) as number
                 }s;`}
               ></div>`
+            : nothing}
+          ${this._date !== undefined
+            ? html`<div class="date ${sizeClass}">${this._date}</div>`
             : nothing}
         </div>
       </div>
@@ -397,6 +422,36 @@ export class HuiClockCardAnalog extends LitElement {
 
     .hand.second.step {
       animation-timing-function: steps(60, end);
+    }
+
+    .date {
+      position: absolute;
+      top: 50%;
+      right: 25%;
+      transform: translate(50%, -50%);
+      font-size: var(--ha-font-size-m);
+      font-weight: var(--ha-font-weight-medium);
+      color: var(--primary-text-color);
+      opacity: 0.6;
+      z-index: 0;
+      pointer-events: none;
+      padding: 1px 3px;
+      border-radius: 2px;
+      box-shadow:
+        inset 0 1px 2px rgba(0, 0, 0, 0.15),
+        inset 0 -1px 1px rgba(0, 0, 0, 0.1);
+    }
+
+    .date.size-medium {
+      font-size: var(--ha-font-size-l);
+      padding: 2px 4px;
+      border-radius: 2px;
+    }
+
+    .date.size-large {
+      font-size: var(--ha-font-size-xl);
+      padding: 2px 5px;
+      border-radius: 3px;
     }
 
     @keyframes ha-clock-rotate {

@@ -16,6 +16,8 @@ export class HuiClockCardDigital extends LitElement {
 
   @state() private _dateTimeFormat?: Intl.DateTimeFormat;
 
+  @state() private _dateFormat?: Intl.DateTimeFormat;
+
   @state() private _timeHour?: string;
 
   @state() private _timeMinute?: string;
@@ -23,6 +25,8 @@ export class HuiClockCardDigital extends LitElement {
   @state() private _timeSecond?: string;
 
   @state() private _timeAmPm?: string;
+
+  @state() private _date?: string;
 
   private _tickInterval?: undefined | number;
 
@@ -47,6 +51,17 @@ export class HuiClockCardDigital extends LitElement {
         this.config?.time_zone ||
         resolveTimeZone(locale.time_zone, this.hass.config?.time_zone),
     });
+
+    if (this.config?.date_format === "day") {
+      this._dateFormat = new Intl.DateTimeFormat(this.hass.locale.language, {
+        day: "2-digit",
+        timeZone:
+          this.config?.time_zone ||
+          resolveTimeZone(locale.time_zone, this.hass.config?.time_zone),
+      });
+    } else {
+      this._dateFormat = undefined;
+    }
 
     this._tick();
   }
@@ -93,6 +108,13 @@ export class HuiClockCardDigital extends LitElement {
       ? parts.find((part) => part.type === "second")?.value
       : undefined;
     this._timeAmPm = parts.find((part) => part.type === "dayPeriod")?.value;
+
+    if (this._dateFormat) {
+      const dateParts = this._dateFormat.formatToParts();
+      this._date = dateParts.find((part) => part.type === "day")?.value;
+    } else {
+      this._date = undefined;
+    }
   }
 
   render() {
@@ -113,12 +135,35 @@ export class HuiClockCardDigital extends LitElement {
           ? html`<div class="time-part am-pm">${this._timeAmPm}</div>`
           : nothing}
       </div>
+      ${this._date !== undefined
+        ? html`<div class="date ${sizeClass}">${this._date}</div>`
+        : nothing}
     `;
   }
 
   static styles = css`
     :host {
       display: block;
+    }
+
+    .date {
+      font-size: var(--ha-font-size-m);
+      font-weight: var(--ha-font-weight-medium);
+      opacity: 0.6;
+      text-align: center;
+      direction: ltr;
+      margin-top: 4px;
+      align-self: center;
+    }
+
+    .date.size-medium {
+      font-size: var(--ha-font-size-l);
+      margin-top: 6px;
+    }
+
+    .date.size-large {
+      font-size: var(--ha-font-size-xl);
+      margin-top: 8px;
     }
 
     .time-parts {
