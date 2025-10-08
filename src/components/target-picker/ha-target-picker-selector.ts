@@ -106,6 +106,8 @@ export class HaTargetPickerSelector extends LitElement {
 
   @state() private _selectedItemIndex = -1;
 
+  @state() private _filterHeader?: string;
+
   @state()
   @consume({ context: labelsContext, subscribe: true })
   _labelRegistry!: LabelRegistryEntry[];
@@ -150,6 +152,16 @@ export class HaTargetPickerSelector extends LitElement {
         .value=${this._searchTerm}
       ></ha-textfield>
       <div class="filter">${this._renderFilterButtons()}</div>
+      <div class="filter-header-wrapper">
+        <div
+          class="filter-header ${this.filterTypes.length !== 1 &&
+          this._filterHeader
+            ? "show"
+            : ""}"
+        >
+          ${this._filterHeader}
+        </div>
+      </div>
       <lit-virtualizer
         scroller
         .items=${this._getItems()}
@@ -157,9 +169,50 @@ export class HaTargetPickerSelector extends LitElement {
         @scroll=${this._onScrollList}
         class="list ${this._listScrolled ? "scrolled" : ""}"
         style="min-height: 56px;"
+        @visibilityChanged=${this._visibilityChanged}
       >
       </lit-virtualizer>
     `;
+  }
+
+  @eventOptions({ passive: true })
+  private _visibilityChanged(ev) {
+    if (this._virtualizerElement) {
+      const firstItem = this._virtualizerElement.items[ev.first];
+      const secondItem = this._virtualizerElement.items[ev.first + 1];
+
+      if (
+        firstItem === undefined ||
+        typeof firstItem === "string" ||
+        (typeof secondItem === "string" && secondItem !== "padding") ||
+        (ev.first === 0 &&
+          ev.last === this._virtualizerElement.items.length - 1)
+      ) {
+        this._filterHeader = undefined;
+        return;
+      }
+
+      const type = this._getRowType(firstItem as PickerComboBoxItem);
+      const translationType:
+        | "areas"
+        | "entities"
+        | "devices"
+        | "labels"
+        | undefined =
+        type === "area" || type === "floor"
+          ? "areas"
+          : type === "entity"
+            ? "entities"
+            : type && type !== "empty"
+              ? `${type}s`
+              : undefined;
+
+      this._filterHeader = translationType
+        ? (this._filterHeader = this.hass.localize(
+            `ui.components.target-picker.type.${translationType}`
+          ))
+        : undefined;
+    }
   }
 
   private _registerKeyboardShortcuts() {
@@ -295,12 +348,42 @@ export class HaTargetPickerSelector extends LitElement {
     });
   }
 
+  private _getRowType = (
+    item:
+      | PickerComboBoxItem
+      | (FloorComboBoxItem & { last?: boolean | undefined })
+      | EntityComboBoxItem
+      | DevicePickerItem
+  ) => {
+    if (
+      (item as FloorComboBoxItem).type === "area" ||
+      (item as FloorComboBoxItem).type === "floor"
+    ) {
+      return (item as FloorComboBoxItem).type;
+    }
+
+    if ("domain" in item) {
+      return "device";
+    }
+
+    if ("stateObj" in item) {
+      return "entity";
+    }
+
+    if (item.id === EMPTY_SEARCH) {
+      return "empty";
+    }
+
+    return "label";
+  };
+
   private _renderRow = (
     item:
       | PickerComboBoxItem
       | (FloorComboBoxItem & { last?: boolean | undefined })
       | EntityComboBoxItem
-      | DevicePickerItem,
+      | DevicePickerItem
+      | string,
     index
   ) => {
     if (!item) {
@@ -314,43 +397,23 @@ export class HaTargetPickerSelector extends LitElement {
       return html`<div class="title">${item}</div>`;
     }
 
-    let type: TargetType | "empty" = "label";
+    const type = this._getRowType(item);
     let hasFloor = false;
     let rtl = false;
     let showEntityId = false;
 
-    if (
-      (item as FloorComboBoxItem).type === "area" ||
-      (item as FloorComboBoxItem).type === "floor"
-    ) {
-      type = (item as FloorComboBoxItem).type;
+    if (type === "area" || type === "floor") {
       const areaItem = item as FloorComboBoxItem;
       item.id = item[areaItem.type]?.[`${areaItem.type}_id`];
 
       rtl = computeRTL(this.hass);
       hasFloor = areaItem.type === "area" && !!areaItem.area?.floor_id;
-      // return this._areaRowRenderer(
-      //   item as FloorComboBoxItem & { last?: boolean },
-      //   index
-      // );
     }
 
-    if ("domain" in item) {
-      type = "device";
-      // return this._deviceRowRenderer(item, index);
-    }
-
-    if ("stateObj" in item) {
-      type = "entity";
+    if (type === "entity") {
       showEntityId = !!this._showEntityId;
-      // return this._entityRowRenderer(item, index);
     }
 
-    if (item.id === EMPTY_SEARCH) {
-      type = "empty";
-    }
-
-    // label or empty
     return html`
       <ha-combo-box-item
         tabindex="-1"
@@ -453,7 +516,14 @@ export class HaTargetPickerSelector extends LitElement {
     ) => boolean
   ) {
     const fuseIndex = this._fuseIndexes[type](items);
-    const fuse = new HaFuse(items, { shouldSort: false }, fuseIndex);
+    const fuse = new HaFuse(
+      items,
+      {
+        shouldSort: false,
+        minMatchCharLength: Math.min(this._searchTerm.length, 2),
+      },
+      fuseIndex
+    );
 
     const results = fuse.multiTermsSearch(this._searchTerm);
     let filteredItems = items;
@@ -795,12 +865,16 @@ export class HaTargetPickerSelector extends LitElement {
         border: 1px solid var(--ha-color-border-neutral-quiet);
       }
 
+      .filter-header,
       .title {
-        width: 100%;
         background-color: var(--ha-color-fill-neutral-quiet-resting);
         padding: 4px 8px;
         font-weight: var(--ha-font-weight-bold);
         color: var(--secondary-text-color);
+      }
+
+      .title {
+        width: 100%;
       }
 
       :host([mode="dialog"]) .title {
@@ -818,6 +892,25 @@ export class HaTargetPickerSelector extends LitElement {
 
       ha-combo-box-item.selected {
         background-color: var(--ha-color-fill-neutral-quiet-hover);
+      }
+
+      .filter-header-wrapper {
+        height: 0;
+        position: relative;
+        margin-bottom: -12px;
+      }
+
+      .filter-header {
+        opacity: 0;
+        transition: opacity 300ms ease-in;
+        position: absolute;
+        top: 1px;
+        width: calc(100% - 32px);
+      }
+
+      .filter-header.show {
+        opacity: 1;
+        z-index: 1;
       }
 
       lit-virtualizer {
