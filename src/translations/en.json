@@ -665,7 +665,7 @@
             "entity": "Entity",
             "area_missing": "No area assigned",
             "floor_missing": "No floor assigned",
-            "device_missing": "No device associated"
+            "device_missing": "No related device"
           },
           "add": "Add"
         },
