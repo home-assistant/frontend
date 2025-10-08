@@ -39,7 +39,7 @@ export type AlarmPanelCardConfigState =
 
 export interface AlarmPanelCardConfig extends LovelaceCardConfig {
   entity: string;
-  name?: string;
+  name?: string | EntityNameItem | EntityNameItem[];
   states?: AlarmPanelCardConfigState[];
   theme?: string;
 }
@@ -257,7 +257,7 @@ export interface GaugeSegment {
 export interface GaugeCardConfig extends LovelaceCardConfig {
   entity: string;
   attribute?: string;
-  name?: string;
+  name?: string | EntityNameItem | EntityNameItem[];
   unit?: string;
   min?: number;
   max?: number;
@@ -270,11 +270,13 @@ export interface GaugeCardConfig extends LovelaceCardConfig {
   double_tap_action?: ActionConfig;
 }
 
-export interface ConfigEntity extends EntityConfig {
+export interface ActionsConfig {
   tap_action?: ActionConfig;
   hold_action?: ActionConfig;
   double_tap_action?: ActionConfig;
 }
+
+export interface ConfigEntity extends EntityConfig, ActionsConfig {}
 
 export interface PictureGlanceEntityConfig extends ConfigEntity {
   show_state?: boolean;
