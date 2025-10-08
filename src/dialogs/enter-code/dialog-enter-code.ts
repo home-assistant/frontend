@@ -191,6 +191,10 @@ export class DialogEnterCode
     ha-dialog {
       /* Place above other dialogs */
       --dialog-z-index: 104;
+      --mdc-dialog-min-width: min(320px, 100vw);
+    }
+    :host([narrow]) ha-dialog {
+      --mdc-dialog-min-width: 100vw;
     }
     ha-textfield {
       width: 100%;
