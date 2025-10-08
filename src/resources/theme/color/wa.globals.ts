@@ -59,6 +59,6 @@ export const waColorStyles = css`
     --wa-color-surface-border: var(--ha-color-border-neutral-quiet);
 
     --wa-focus-ring-color: var(--ha-color-neutral-60);
-    --wa-shadow-l: box-shadow: 4px 8px 12px 0 rgba(0, 0, 0, 0.3);
+    --wa-shadow-l: 4px 8px 12px 0 rgba(0, 0, 0, 0.3);
   }
 `;
