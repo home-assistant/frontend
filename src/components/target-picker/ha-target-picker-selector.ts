@@ -423,18 +423,18 @@ export class HaTargetPickerSelector extends LitElement {
         .targetType=${type}
         .targetId=${item.id}
         style=${(item as FloorComboBoxItem).type === "area" && hasFloor
-          ? "--md-list-item-leading-space: 48px;"
+          ? "--md-list-item-leading-space: var(--ha-space-12);"
           : ""}
       >
         ${(item as FloorComboBoxItem).type === "area" && hasFloor
           ? html`
               <ha-tree-indicator
                 style=${styleMap({
-                  width: "48px",
+                  width: "var(--ha-space-12)",
                   position: "absolute",
-                  top: "0px",
-                  left: rtl ? undefined : "4px",
-                  right: rtl ? "4px" : undefined,
+                  top: "var(--ha-space-0)",
+                  left: rtl ? undefined : "var(--ha-space-1)",
+                  right: rtl ? "var(--ha-space-1)" : undefined,
                   transform: rtl ? "scaleX(-1)" : "",
                 })}
                 .end=${(
@@ -842,25 +842,25 @@ export class HaTargetPickerSelector extends LitElement {
       :host {
         display: flex;
         flex-direction: column;
-        gap: 12px;
-        padding-top: 12px;
+        gap: var(--ha-space-3);
+        padding-top: var(--ha-space-3);
         flex: 1;
       }
 
       ha-textfield {
-        padding: 0 12px;
+        padding: 0 var(--ha-space-3);
       }
 
       .filter {
         display: flex;
-        gap: 8px;
-        padding: 0 12px;
+        gap: var(--ha-space-2);
+        padding: 0 var(--ha-space-3);
         overflow: auto;
         --ha-button-border-radius: var(--ha-border-radius-md);
       }
 
       .filter .separator {
-        height: 32px;
+        height: var(--ha-space-8);
         width: 0;
         border: 1px solid var(--ha-color-border-neutral-quiet);
       }
@@ -868,7 +868,7 @@ export class HaTargetPickerSelector extends LitElement {
       .filter-header,
       .title {
         background-color: var(--ha-color-fill-neutral-quiet-resting);
-        padding: 4px 8px;
+        padding: var(--ha-space-1) var(--ha-space-2);
         font-weight: var(--ha-font-weight-bold);
         color: var(--secondary-text-color);
       }
@@ -878,12 +878,12 @@ export class HaTargetPickerSelector extends LitElement {
       }
 
       :host([mode="dialog"]) .title {
-        padding: 4px 16px;
+        padding: var(--ha-space-1) var(--ha-space-4);
       }
 
       :host([mode="dialog"]) .filter,
       :host([mode="dialog"]) ha-textfield {
-        padding: 0 16px;
+        padding: 0 var(--ha-space-4);
       }
 
       ha-combo-box-item {
@@ -897,7 +897,7 @@ export class HaTargetPickerSelector extends LitElement {
       .filter-header-wrapper {
         height: 0;
         position: relative;
-        margin-bottom: -12px;
+        margin-bottom: calc(var(--ha-space-3) * -1);
       }
 
       .filter-header {
@@ -905,7 +905,7 @@ export class HaTargetPickerSelector extends LitElement {
         transition: opacity 300ms ease-in;
         position: absolute;
         top: 1px;
-        width: calc(100% - 32px);
+        width: calc(100% - var(--ha-space-8));
       }
 
       .filter-header.show {
@@ -922,7 +922,7 @@ export class HaTargetPickerSelector extends LitElement {
       }
 
       .bottom-padding {
-        height: max(var(--safe-area-inset-bottom, 0px), 32px);
+        height: max(var(--safe-area-inset-bottom, 0px), var(--ha-space-8));
         width: 100%;
       }
 

@@ -617,11 +617,11 @@ export class HaTargetPicker extends SubscribeMixin(LitElement) {
       .add-target-wrapper {
         display: flex;
         justify-content: flex-start;
-        margin-top: 12px;
+        margin-top: var(--ha-space-3);
       }
 
       wa-popover {
-        --wa-space-l: 0;
+        --wa-space-l: var(--ha-space-0);
       }
 
       wa-popover::part(body) {
@@ -633,10 +633,10 @@ export class HaTargetPicker extends SubscribeMixin(LitElement) {
 
       ha-bottom-sheet {
         --ha-bottom-sheet-height: 90vh;
-        --ha-bottom-sheet-height: calc(100dvh - 48px);
+        --ha-bottom-sheet-height: calc(100dvh - var(--ha-space-12));
         --ha-bottom-sheet-max-height: var(--ha-bottom-sheet-height);
         --ha-bottom-sheet-max-width: 600px;
-        --ha-bottom-sheet-padding: 0;
+        --ha-bottom-sheet-padding: var(--ha-space-0);
         --ha-bottom-sheet-surface-background: var(--card-background-color);
       }
 
@@ -645,8 +645,8 @@ export class HaTargetPicker extends SubscribeMixin(LitElement) {
         z-index: 2;
       }
       .mdc-chip-set {
-        padding: 4px 0;
-        gap: 8px;
+        padding: var(--ha-space-1) var(--ha-space-0);
+        gap: var(--ha-space-2);
       }
 
       .item-groups {

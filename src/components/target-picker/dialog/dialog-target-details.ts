@@ -104,13 +104,13 @@ class DialogTargetDetails
     ha-md-dialog {
       min-width: 400px;
       max-height: 90%;
-      --dialog-content-padding: 8px 24px
-        max(var(--safe-area-inset-bottom, 0px), 32px);
+      --dialog-content-padding: var(--ha-space-2) var(--ha-space-6)
+        max(var(--safe-area-inset-bottom, var(--ha-space-0)), var(--ha-space-8));
     }
 
     @media all and (max-width: 600px), all and (max-height: 500px) {
       ha-md-dialog {
-        --md-dialog-container-shape: 0;
+        --md-dialog-container-shape: var(--ha-space-0);
         min-width: 100%;
         min-height: 100%;
       }

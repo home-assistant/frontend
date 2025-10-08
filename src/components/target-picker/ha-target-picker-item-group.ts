@@ -83,11 +83,11 @@ export class HaTargetPickerItemGroup extends LitElement {
   static styles = css`
     :host {
       display: block;
-      --expansion-panel-content-padding: 0;
+      --expansion-panel-content-padding: var(--ha-space-0);
     }
     ha-expansion-panel::part(summary) {
       background-color: var(--ha-color-fill-neutral-quiet-resting);
-      padding: 4px 8px;
+      padding: var(--ha-space-1) var(--ha-space-2);
       font-weight: var(--ha-font-weight-bold);
       color: var(--secondary-text-color);
       display: flex;
@@ -95,7 +95,7 @@ export class HaTargetPickerItemGroup extends LitElement {
       min-height: unset;
     }
     ha-md-list {
-      padding: 0;
+      padding: var(--ha-space-0);
     }
   `;
 }

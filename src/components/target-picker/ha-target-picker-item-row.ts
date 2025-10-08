@@ -599,10 +599,10 @@ export class HaTargetPickerItemRow extends LitElement {
     buttonLinkStyle,
     css`
       :host {
-        --md-list-item-top-space: 0;
-        --md-list-item-bottom-space: 0;
-        --md-list-item-leading-space: 8px;
-        --md-list-item-trailing-space: 8px;
+        --md-list-item-top-space: var(--ha-space-0);
+        --md-list-item-bottom-space: var(--ha-space-0);
+        --md-list-item-leading-space: var(--ha-space-2);
+        --md-list-item-trailing-space: var(--ha-space-2);
         --md-list-item-two-line-container-height: 56px;
       }
 
@@ -629,7 +629,7 @@ export class HaTargetPickerItemRow extends LitElement {
         line-height: var(--ha-line-height-condensed);
       }
       :host([sub-entry]) .summary {
-        margin-right: 48px;
+        margin-right: var(--ha-space-12);
       }
       .summary .main {
         font-weight: var(--ha-font-weight-medium);
@@ -648,7 +648,7 @@ export class HaTargetPickerItemRow extends LitElement {
       }
 
       .entries-tree .line-wrapper {
-        padding: 20px;
+        padding: var(--ha-space-5);
       }
 
       .entries-tree .line-wrapper .line {

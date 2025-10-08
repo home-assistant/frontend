@@ -273,12 +273,12 @@ export class HaTargetPickerChipsSelection extends LitElement {
       background: var(--secondary-text-color);
     }
     .mdc-chip__icon.mdc-chip__icon--trailing {
-      width: 16px;
-      height: 16px;
+      width: var(--ha-space-4);
+      height: var(--ha-space-4);
       --mdc-icon-size: 14px;
       color: var(--secondary-text-color);
-      margin-inline-start: 4px !important;
-      margin-inline-end: -4px !important;
+      margin-inline-start: var(--ha-space-1) !important;
+      margin-inline-end: calc(-1 * var(--ha-space-1)) !important;
       direction: var(--direction);
     }
     .mdc-chip__icon--leading {
@@ -286,16 +286,16 @@ export class HaTargetPickerChipsSelection extends LitElement {
       align-items: center;
       justify-content: center;
       --mdc-icon-size: 20px;
-      border-radius: 50%;
+      border-radius: var(--ha-border-radius-circle);
       padding: 6px;
       margin-left: -13px !important;
       margin-inline-start: -13px !important;
-      margin-inline-end: 4px !important;
+      margin-inline-end: var(--ha-space-1) !important;
       direction: var(--direction);
     }
     .expand-btn {
-      margin-right: 0;
-      margin-inline-end: 0;
+      margin-right: var(--ha-space-0);
+      margin-inline-end: var(--ha-space-0);
       margin-inline-start: initial;
     }
     .mdc-chip.area:not(.add),
