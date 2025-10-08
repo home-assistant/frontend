@@ -47,10 +47,10 @@ export class HaObjectSelector extends LitElement {
 
   protected willUpdate(_changedProperties: PropertyValues) {
     if (_changedProperties.has("value")) {
-      if (this._isObjectReturnType) {
+      if (this._isObjectReturnType && this.selector.object?.multiple) {
         this._internalValue = this._objectToArray(this.value) || {};
       } else {
-        this._internalValue = ensureArray(this.value) || [];
+        this._internalValue = ensureArray(this.value || []);
       }
     }
   }
@@ -174,9 +174,9 @@ export class HaObjectSelector extends LitElement {
       return html`
         ${this.label ? html`<label>${this.label}</label>` : nothing}
         <div class="items-container">
-          ${this._internalValue
+          ${this.value
             ? html`<ha-md-list>
-                ${this._renderItem(this._internalValue, 0)}
+                ${this._renderItem(this.value, 0)}
               </ha-md-list>`
             : html`
                 <ha-button appearance="filled" @click=${this._addItem}>
