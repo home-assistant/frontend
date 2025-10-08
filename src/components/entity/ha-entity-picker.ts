@@ -157,7 +157,7 @@ export class HaEntityPicker extends LitElement {
     const isRTL = computeRTL(this.hass);
 
     const primary = entityName || deviceName || entityId;
-    const secondary = [areaName, entityName ? deviceName : undefined]
+    const secondary = [areaName, deviceName]
       .filter(Boolean)
       .join(isRTL ? " ◂ " : " ▸ ");
 
@@ -325,7 +325,7 @@ export class HaEntityPicker extends LitElement {
         const domainName = domainToName(hass.localize, computeDomain(entityId));
 
         const primary = entityName || deviceName || entityId;
-        const secondary = [areaName, entityName ? deviceName : undefined]
+        const secondary = [areaName, deviceName]
           .filter(Boolean)
           .join(isRTL ? " ◂ " : " ▸ ");
         const a11yLabel = [deviceName, entityName].filter(Boolean).join(" - ");
