@@ -23,7 +23,7 @@ export class HaObjectSelector extends LitElement {
 
   @property({ attribute: false }) public selector!: ObjectSelector;
 
-  @property() public value?: any;
+  @property() public value?: any[] | Record<string, any>;
 
   @property() public label?: string;
 
@@ -43,6 +43,18 @@ export class HaObjectSelector extends LitElement {
 
   private _valueChangedFromChild = false;
 
+  private _internalValue: any[] = [];
+
+  protected willUpdate(_changedProperties: PropertyValues) {
+    if (_changedProperties.has("value")) {
+      if (this._isObjectReturnType) {
+        this._internalValue = this._objectToArray(this.value) || {};
+      } else {
+        this._internalValue = ensureArray(this.value) || [];
+      }
+    }
+  }
+
   private _computeLabel = (schema: HaFormSchema): string => {
     const translationKey = this.selector.object?.translation_key;
 
@@ -57,10 +69,23 @@ export class HaObjectSelector extends LitElement {
     return this.selector.object?.fields?.[schema.name]?.label || schema.name;
   };
 
-  private _renderItem(item: any, index: number) {
-    const labelField =
+  private get _labelField() {
+    return (
       this.selector.object!.label_field ||
-      Object.keys(this.selector.object!.fields!)[0];
+      Object.keys(this.selector.object!.fields!)[0]
+    );
+  }
+
+  private get _keyField() {
+    return this.selector.object!.key_field || this._labelField;
+  }
+
+  private get _isObjectReturnType() {
+    return this.selector.object!.return_type === "object";
+  }
+
+  private _renderItem(item: any, index: number) {
+    const labelField = this._labelField;
 
     const labelSelector = this.selector.object!.fields![labelField].selector;
 
@@ -125,7 +150,6 @@ export class HaObjectSelector extends LitElement {
   protected render() {
     if (this.selector.object?.fields) {
       if (this.selector.object.multiple) {
-        const items = ensureArray(this.value ?? []);
         return html`
           ${this.label ? html`<label>${this.label}</label>` : nothing}
           <div class="items-container">
@@ -135,7 +159,9 @@ export class HaObjectSelector extends LitElement {
               @item-moved=${this._itemMoved}
             >
               <ha-md-list>
-                ${items.map((item, index) => this._renderItem(item, index))}
+                ${this._internalValue.map((item, index) =>
+                  this._renderItem(item, index)
+                )}
               </ha-md-list>
             </ha-sortable>
             <ha-button appearance="filled" @click=${this._addItem}>
@@ -148,9 +174,9 @@ export class HaObjectSelector extends LitElement {
       return html`
         ${this.label ? html`<label>${this.label}</label>` : nothing}
         <div class="items-container">
-          ${this.value
+          ${this._internalValue
             ? html`<ha-md-list>
-                ${this._renderItem(this.value, 0)}
+                ${this._renderItem(this._internalValue, 0)}
               </ha-md-list>`
             : html`
                 <ha-button appearance="filled" @click=${this._addItem}>
@@ -167,7 +193,7 @@ export class HaObjectSelector extends LitElement {
         .label=${this.label}
         .required=${this.required}
         .placeholder=${this.placeholder}
-        .defaultValue=${this.value}
+        .defaultValue=${this._internalValue}
         @value-changed=${this._handleChange}
       ></ha-yaml-editor>
       ${this.helper
@@ -195,10 +221,12 @@ export class HaObjectSelector extends LitElement {
     if (!this.selector.object!.multiple) {
       return;
     }
-    const newValue = ensureArray(this.value ?? []).concat();
+    const newValue = this._internalValue.concat();
     const item = newValue.splice(oldIndex, 1)[0];
     newValue.splice(newIndex, 0, item);
-    fireEvent(this, "value-changed", { value: newValue });
+    fireEvent(this, "value-changed", {
+      value: this._toWantedReturnType(newValue),
+    });
   }
 
   private async _addItem(ev) {
@@ -221,9 +249,11 @@ export class HaObjectSelector extends LitElement {
       return;
     }
 
-    const newValue = ensureArray(this.value ?? []).concat();
+    const newValue = this._internalValue.concat();
     newValue.push(newItem);
-    fireEvent(this, "value-changed", { value: newValue });
+    fireEvent(this, "value-changed", {
+      value: this._toWantedReturnType(newValue),
+    });
   }
 
   private async _editItem(ev) {
@@ -248,9 +278,11 @@ export class HaObjectSelector extends LitElement {
       return;
     }
 
-    const newValue = ensureArray(this.value ?? []).concat();
+    const newValue = this._internalValue.concat();
     newValue[index] = updatedItem;
-    fireEvent(this, "value-changed", { value: newValue });
+    fireEvent(this, "value-changed", {
+      value: this._toWantedReturnType(newValue),
+    });
   }
 
   private _deleteItem(ev) {
@@ -262,9 +294,11 @@ export class HaObjectSelector extends LitElement {
       return;
     }
 
-    const newValue = ensureArray(this.value ?? []).concat();
+    const newValue = this._internalValue.concat();
     newValue.splice(index, 1);
-    fireEvent(this, "value-changed", { value: newValue });
+    fireEvent(this, "value-changed", {
+      value: this._toWantedReturnType(newValue),
+    });
   }
 
   protected updated(changedProps: PropertyValues) {
@@ -273,9 +307,9 @@ export class HaObjectSelector extends LitElement {
       changedProps.has("value") &&
       !this._valueChangedFromChild &&
       this._yamlEditor &&
-      !deepEqual(this.value, changedProps.get("value"))
+      !deepEqual(this._internalValue, changedProps.get("value"))
     ) {
-      this._yamlEditor.setValue(this.value);
+      this._yamlEditor.setValue(this._internalValue);
     }
     this._valueChangedFromChild = false;
   }
@@ -287,7 +321,7 @@ export class HaObjectSelector extends LitElement {
     if (!ev.target.isValid) {
       return;
     }
-    if (this.value === value) {
+    if (this._internalValue === value) {
       return;
     }
     fireEvent(this, "value-changed", { value });
@@ -327,6 +361,36 @@ export class HaObjectSelector extends LitElement {
         }
       `,
     ];
+  }
+
+  private _toWantedReturnType(value: any): any {
+    if (this._isObjectReturnType) {
+      return this._arrayToObject(value);
+    }
+
+    return value;
+  }
+
+  private _arrayToObject(items: any[]): Record<string, any> {
+    const obj: Record<string, any> = {};
+    for (const item of items) {
+      const key = item[this._keyField];
+      delete item[this._keyField];
+      obj[key] = item;
+    }
+    return obj;
+  }
+
+  private _objectToArray(obj: any[] | Record<string, any> | undefined): any[] {
+    if (obj === undefined) {
+      return [];
+    }
+
+    const items: any[] = [];
+    for (const [key, value] of Object.entries(obj)) {
+      items.push({ [this._keyField]: key, ...value });
+    }
+    return items;
   }
 }
 

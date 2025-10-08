@@ -356,6 +356,8 @@ export interface ObjectSelector {
     translation_key?: string;
     fields?: Record<string, ObjectSelectorField>;
     multiple?: boolean;
+    key_field?: string;
+    return_type?: "list" | "object";
   } | null;
 }
 
