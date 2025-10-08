@@ -61,7 +61,7 @@ export class DemoHaSpinner extends LitElement {
       background-color: var(--primary-background-color);
       padding: 0 50px;
       margin: 16px;
-      border-radius: 8px;
+      border-radius: var(--ha-border-radius-md);
     }
     ha-card {
       margin: 24px auto;
@@ -70,7 +70,7 @@ export class DemoHaSpinner extends LitElement {
       display: flex;
       flex-direction: column;
       align-items: center;
-      gap: 24px;
+      gap: var(--ha-space-6);
     }
   `;
 }

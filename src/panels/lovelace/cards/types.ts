@@ -27,6 +27,7 @@ import type { LovelaceHeaderFooterConfig } from "../header-footer/types";
 import type { LovelaceHeadingBadgeConfig } from "../heading-badges/types";
 import type { TimeFormat } from "../../../data/translation";
 import type { HomeSummary } from "../strategies/home/helpers/home-summaries";
+import type { EnergySourceByType } from "../../../data/energy";
 
 export type AlarmPanelCardConfigState =
   | "arm_away"
@@ -176,6 +177,7 @@ export interface EnergyDevicesGraphCardConfig extends EnergyCardBaseConfig {
   type: "energy-devices-graph";
   title?: string;
   max_devices?: number;
+  hide_compound_stats?: boolean;
 }
 
 export interface EnergyDevicesDetailGraphCardConfig
@@ -188,6 +190,7 @@ export interface EnergyDevicesDetailGraphCardConfig
 export interface EnergySourcesTableCardConfig extends EnergyCardBaseConfig {
   type: "energy-sources-table";
   title?: string;
+  types?: (keyof EnergySourceByType)[];
 }
 
 export interface EnergySolarGaugeCardConfig extends EnergyCardBaseConfig {
@@ -282,7 +285,7 @@ export interface GlanceConfigEntity extends ConfigEntity {
   image?: string;
   show_state?: boolean;
   state_color?: boolean;
-  format: TimestampRenderingFormat;
+  format?: TimestampRenderingFormat;
 }
 
 export interface GlanceCardConfig extends LovelaceCardConfig {
@@ -375,6 +378,7 @@ export interface ClockCardConfig extends LovelaceCardConfig {
   clock_style?: "digital" | "analog";
   clock_size?: "small" | "medium" | "large";
   show_seconds?: boolean | undefined;
+  seconds_motion?: "continuous" | "tick";
   time_format?: TimeFormat;
   time_zone?: string;
   no_background?: boolean;

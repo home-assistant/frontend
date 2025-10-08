@@ -473,7 +473,7 @@ export class HuiDialogEditBadge
           height: max-content;
           background: var(--primary-background-color);
           padding: 10px;
-          border-radius: 4px;
+          border-radius: var(--ha-border-radius-sm);
           display: flex;
           flex-direction: column;
           justify-content: center;

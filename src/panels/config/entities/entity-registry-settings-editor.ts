@@ -1556,7 +1556,7 @@ export class EntityRegistrySettingsEditor extends LitElement {
           border-bottom-color: var(--divider-color);
         }
         .menu-item {
-          border-radius: 4px;
+          border-radius: var(--ha-border-radius-sm);
           margin-top: 3px;
           margin-bottom: 3px;
           overflow: hidden;

@@ -54,7 +54,7 @@ class HaMediaPlayerToggle extends LitElement {
         .list-item {
           display: grid;
           grid-template-columns: auto 1fr auto;
-          column-gap: 16px;
+          column-gap: var(--ha-space-4);
           align-items: center;
           width: 100%;
         }

@@ -36,15 +36,17 @@ class HaLabeledSlider extends LitElement {
       <div class="extra-container"><slot name="extra"></slot></div>
       <div class="slider-container">
         ${this.icon ? html`<ha-icon icon=${this.icon}></ha-icon>` : nothing}
-        <ha-slider
-          .min=${this.min}
-          .max=${this.max}
-          .step=${this.step}
-          .labeled=${this.labeled}
-          .disabled=${this.disabled}
-          .value=${this.value}
-          @change=${this._inputChanged}
-        ></ha-slider>
+        <div class="slider-wrapper">
+          <ha-slider
+            .min=${this.min}
+            .max=${this.max}
+            .step=${this.step}
+            .labeled=${this.labeled}
+            .disabled=${this.disabled}
+            .value=${this.value}
+            @change=${this._inputChanged}
+          ></ha-slider>
+        </div>
       </div>
       ${this.helper
         ? html`<ha-input-helper-text .disabled=${this.disabled}>
@@ -83,13 +85,18 @@ class HaLabeledSlider extends LitElement {
       color: var(--secondary-text-color);
     }
 
-    ha-slider {
+    .slider-wrapper {
+      padding: 0 8px;
       display: flex;
       flex-grow: 1;
       align-items: center;
       background-image: var(--ha-slider-background);
-      border-radius: 4px;
+      border-radius: var(--ha-border-radius-sm);
       height: 32px;
+    }
+
+    ha-slider {
+      width: 100%;
     }
   `;
 }

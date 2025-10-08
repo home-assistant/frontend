@@ -19,6 +19,7 @@ import type {
   WeatherForecastCardConfig,
 } from "../../cards/types";
 import { getAreas } from "../areas/helpers/areas-strategy-helper";
+import type { CommonControlSectionStrategyConfig } from "../usage_prediction/common-controls-section-strategy";
 
 export interface HomeMainViewStrategyConfig {
   type: "home-main";
@@ -105,18 +106,16 @@ export class HomeMainViewStrategy extends ReactiveElement {
       );
     }
 
-    const commonControlsSection = isComponentLoaded(hass, "usage_prediction")
-      ? ({
-          strategy: {
-            type: "common-controls",
-            title: hass.localize(
-              "ui.panel.lovelace.strategy.home.common_controls"
-            ),
-            exclude_entities: favoriteEntities,
-          },
-          column_span: maxColumns,
-        } as LovelaceStrategySectionConfig)
-      : undefined;
+    const commonControlsSection = {
+      strategy: {
+        type: "common-controls",
+        title: hass.localize("ui.panel.lovelace.strategy.home.common_controls"),
+        limit: 4,
+        exclude_entities: favoriteEntities,
+        hide_empty: true,
+      } satisfies CommonControlSectionStrategyConfig,
+      column_span: maxColumns,
+    } as LovelaceStrategySectionConfig;
 
     const summarySection: LovelaceSectionConfig = {
       type: "grid",
@@ -128,11 +127,11 @@ export class HomeMainViewStrategy extends ReactiveElement {
         },
         {
           type: "home-summary",
-          summary: "lights",
+          summary: "light",
           vertical: true,
           tap_action: {
             action: "navigate",
-            navigation_path: "lights",
+            navigation_path: "/light?historyBack=1",
           },
           grid_options: {
             rows: 2,
@@ -145,7 +144,7 @@ export class HomeMainViewStrategy extends ReactiveElement {
           vertical: true,
           tap_action: {
             action: "navigate",
-            navigation_path: "climate",
+            navigation_path: "/climate?historyBack=1",
           },
           grid_options: {
             rows: 2,
@@ -158,7 +157,7 @@ export class HomeMainViewStrategy extends ReactiveElement {
           vertical: true,
           tap_action: {
             action: "navigate",
-            navigation_path: "security",
+            navigation_path: "/security?historyBack=1",
           },
           grid_options: {
             rows: 2,

@@ -1,5 +1,6 @@
 import type { PropertyValues } from "lit";
 import { css, html, LitElement, nothing } from "lit";
+import { classMap } from "lit/directives/class-map";
 import { customElement, property, state } from "lit/decorators";
 import { getColorByIndex } from "../../../common/color/colors";
 import { applyThemesOnElement } from "../../../common/dom/apply_themes_on_element";
@@ -16,7 +17,11 @@ import type {
 import "../../calendar/ha-full-calendar";
 import { findEntities } from "../common/find-entities";
 import "../components/hui-warning";
-import type { LovelaceCard, LovelaceCardEditor } from "../types";
+import type {
+  LovelaceCard,
+  LovelaceCardEditor,
+  LovelaceGridOptions,
+} from "../types";
 import type { CalendarCardConfig } from "./types";
 
 @customElement("hui-calendar-card")
@@ -47,6 +52,8 @@ export class HuiCalendarCard extends LitElement implements LovelaceCard {
   }
 
   @property({ attribute: false }) public hass?: HomeAssistant;
+
+  @property({ attribute: false }) public layout?: string;
 
   @state() private _events: CalendarEvent[] = [];
 
@@ -88,7 +95,16 @@ export class HuiCalendarCard extends LitElement implements LovelaceCard {
   }
 
   public getCardSize(): number {
-    return this._config?.header ? 1 : 0 + 11;
+    return 12;
+  }
+
+  public getGridOptions(): LovelaceGridOptions {
+    return {
+      rows: 6,
+      columns: 12,
+      min_columns: 4,
+      min_rows: 4,
+    };
   }
 
   public connectedCallback(): void {
@@ -118,6 +134,10 @@ export class HuiCalendarCard extends LitElement implements LovelaceCard {
       <ha-card>
         <div class="header">${this._config.title}</div>
         <ha-full-calendar
+          class=${classMap({
+            "is-grid": this.layout === "grid",
+            "is-panel": this.layout === "panel",
+          })}
           .narrow=${this._narrow}
           .events=${this._events}
           .hass=${this.hass}
@@ -223,6 +243,11 @@ export class HuiCalendarCard extends LitElement implements LovelaceCard {
 
     ha-full-calendar {
       --calendar-height: 400px;
+    }
+
+    ha-full-calendar.is-grid,
+    ha-full-calendar.is-panel {
+      height: calc(100% - 16px);
     }
   `;
 }

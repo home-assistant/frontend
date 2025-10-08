@@ -213,7 +213,7 @@ class HaLandingPage extends LandingPageBaseElement {
       ha-card .card-content {
         display: flex;
         flex-direction: column;
-        gap: 16px;
+        gap: var(--ha-space-4);
       }
       ha-alert p {
         text-align: unset;
@@ -221,7 +221,7 @@ class HaLandingPage extends LandingPageBaseElement {
       ha-language-picker {
         display: block;
         width: 200px;
-        border-radius: 4px;
+        border-radius: var(--ha-border-radius-sm);
         overflow: hidden;
         --ha-select-height: 40px;
         --mdc-select-fill-color: none;

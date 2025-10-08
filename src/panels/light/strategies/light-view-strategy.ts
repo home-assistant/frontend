@@ -1,29 +1,35 @@
 import { ReactiveElement } from "lit";
 import { customElement } from "lit/decorators";
-import { generateEntityFilter } from "../../../../common/entity/entity_filter";
-import type { LovelaceCardConfig } from "../../../../data/lovelace/config/card";
-import type { LovelaceSectionRawConfig } from "../../../../data/lovelace/config/section";
-import type { LovelaceViewConfig } from "../../../../data/lovelace/config/view";
-import type { HomeAssistant } from "../../../../types";
+import {
+  findEntities,
+  generateEntityFilter,
+  type EntityFilter,
+} from "../../../common/entity/entity_filter";
+import type { LovelaceCardConfig } from "../../../data/lovelace/config/card";
+import type { LovelaceSectionRawConfig } from "../../../data/lovelace/config/section";
+import type { LovelaceViewConfig } from "../../../data/lovelace/config/view";
+import type { HomeAssistant } from "../../../types";
 import {
   computeAreaTileCardConfig,
   getAreas,
   getFloors,
-} from "../areas/helpers/areas-strategy-helper";
-import { getHomeStructure } from "./helpers/home-structure";
-import { findEntities, HOME_SUMMARIES_FILTERS } from "./helpers/home-summaries";
+} from "../../lovelace/strategies/areas/helpers/areas-strategy-helper";
+import { getHomeStructure } from "../../lovelace/strategies/home/helpers/home-structure";
 
-export interface HomeSecurityViewStrategyConfig {
-  type: "home-security";
+export interface LightViewStrategyConfig {
+  type: "light";
 }
 
-const processAreasForSecurity = (
+export const lightEntityFilters: EntityFilter[] = [
+  { domain: "light", entity_category: "none" },
+];
+
+const processAreasForLight = (
   areaIds: string[],
   hass: HomeAssistant,
   entities: string[]
 ): LovelaceCardConfig[] => {
   const cards: LovelaceCardConfig[] = [];
-  const computeTileCard = computeAreaTileCardConfig(hass, "", false);
 
   for (const areaId of areaIds) {
     const area = hass.areas[areaId];
@@ -32,23 +38,20 @@ const processAreasForSecurity = (
     const areaFilter = generateEntityFilter(hass, {
       area: area.area_id,
     });
-
-    const areaEntities = entities.filter(areaFilter);
+    const areaLights = entities.filter(areaFilter);
     const areaCards: LovelaceCardConfig[] = [];
 
-    for (const entityId of areaEntities) {
+    const computeTileCard = computeAreaTileCardConfig(hass, "", false);
+
+    for (const entityId of areaLights) {
       areaCards.push(computeTileCard(entityId));
     }
 
-    if (areaEntities.length > 0) {
+    if (areaCards.length > 0) {
       cards.push({
         heading_style: "subtitle",
         type: "heading",
         heading: area.name,
-        tap_action: {
-          action: "navigate",
-          navigation_path: `areas-${area.area_id}`,
-        },
       });
       cards.push(...areaCards);
     }
@@ -57,10 +60,10 @@ const processAreasForSecurity = (
   return cards;
 };
 
-@customElement("home-security-view-strategy")
-export class HomeSecurityViewStrategy extends ReactiveElement {
+@customElement("light-view-strategy")
+export class LightViewStrategy extends ReactiveElement {
   static async generate(
-    _config: HomeSecurityViewStrategyConfig,
+    _config: LightViewStrategyConfig,
     hass: HomeAssistant
   ): Promise<LovelaceViewConfig> {
     const areas = getAreas(hass.areas);
@@ -71,11 +74,11 @@ export class HomeSecurityViewStrategy extends ReactiveElement {
 
     const allEntities = Object.keys(hass.states);
 
-    const securityFilters = HOME_SUMMARIES_FILTERS.security.map((filter) =>
+    const lightFilters = lightEntityFilters.map((filter) =>
       generateEntityFilter(hass, filter)
     );
 
-    const entities = findEntities(allEntities, securityFilters);
+    const entities = findEntities(allEntities, lightFilters);
 
     const floorCount = home.floors.length + (home.areas.length ? 1 : 0);
 
@@ -99,7 +102,7 @@ export class HomeSecurityViewStrategy extends ReactiveElement {
         ],
       };
 
-      const areaCards = processAreasForSecurity(areaIds, hass, entities);
+      const areaCards = processAreasForLight(areaIds, hass, entities);
 
       if (areaCards.length > 0) {
         section.cards!.push(...areaCards);
@@ -123,7 +126,7 @@ export class HomeSecurityViewStrategy extends ReactiveElement {
         ],
       };
 
-      const areaCards = processAreasForSecurity(home.areas, hass, entities);
+      const areaCards = processAreasForLight(home.areas, hass, entities);
 
       if (areaCards.length > 0) {
         section.cards!.push(...areaCards);
@@ -141,6 +144,6 @@ export class HomeSecurityViewStrategy extends ReactiveElement {
 
 declare global {
   interface HTMLElementTagNameMap {
-    "home-security-view-strategy": HomeSecurityViewStrategy;
+    "light-view-strategy": LightViewStrategy;
   }
 }

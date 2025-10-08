@@ -380,7 +380,7 @@ export class HaControlSlider extends LitElement {
       --control-slider-background: var(--disabled-color);
       --control-slider-background-opacity: 0.2;
       --control-slider-thickness: 40px;
-      --control-slider-border-radius: 10px;
+      --control-slider-border-radius: var(--ha-border-radius-md);
       --control-slider-tooltip-font-size: var(--ha-font-size-m);
       height: var(--control-slider-thickness);
       width: 100%;
@@ -403,7 +403,7 @@ export class HaControlSlider extends LitElement {
       background-color: var(--clear-background-color);
       color: var(--primary-text-color);
       font-size: var(--control-slider-tooltip-font-size);
-      border-radius: 0.8em;
+      border-radius: var(--ha-border-radius-lg);
       padding: 0.2em 0.4em;
       opacity: 0;
       white-space: nowrap;

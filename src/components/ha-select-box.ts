@@ -1,13 +1,13 @@
-import { customElement, property } from "lit/decorators";
 import { css, html, LitElement, nothing } from "lit";
-import "./ha-radio";
+import { customElement, property } from "lit/decorators";
 import { classMap } from "lit/directives/class-map";
 import { styleMap } from "lit/directives/style-map";
-import type { HaRadio } from "./ha-radio";
 import { fireEvent } from "../common/dom/fire_event";
-import type { HomeAssistant } from "../types";
-import { computeRTL } from "../common/util/compute_rtl";
 import { stopPropagation } from "../common/dom/stop_propagation";
+import { computeRTL } from "../common/util/compute_rtl";
+import type { HomeAssistant } from "../types";
+import "./ha-radio";
+import type { HaRadio } from "./ha-radio";
 
 interface SelectBoxOptionImage {
   src: string;
@@ -116,19 +116,19 @@ export class HaSelectBox extends LitElement {
     .list {
       display: grid;
       grid-template-columns: repeat(var(--columns, 1), minmax(0, 1fr));
-      gap: 12px;
+      gap: var(--ha-space-3);
     }
     .option {
       position: relative;
       display: block;
       border: 1px solid var(--divider-color);
-      border-radius: var(--ha-card-border-radius, 12px);
+      border-radius: var(--ha-card-border-radius, var(--ha-border-radius-lg));
       display: flex;
       flex-direction: column;
       align-items: center;
       justify-content: space-between;
       padding: 12px;
-      gap: 8px;
+      gap: var(--ha-space-2);
       overflow: hidden;
       cursor: pointer;
     }
@@ -137,7 +137,7 @@ export class HaSelectBox extends LitElement {
       position: relative;
       display: flex;
       flex-direction: row;
-      gap: 8px;
+      gap: var(--ha-space-2);
       min-width: 0;
       width: 100%;
     }
@@ -148,7 +148,7 @@ export class HaSelectBox extends LitElement {
     .option .content .text {
       display: flex;
       flex-direction: column;
-      gap: 4px;
+      gap: var(--ha-space-1);
       min-width: 0;
       flex: 1;
     }

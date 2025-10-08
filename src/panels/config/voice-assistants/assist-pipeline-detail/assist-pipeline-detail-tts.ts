@@ -127,7 +127,7 @@ export class AssistPipelineDetailTTS extends LitElement {
   static styles = css`
     .section {
       border: 1px solid var(--divider-color);
-      border-radius: 8px;
+      border-radius: var(--ha-border-radius-md);
     }
     .content {
       padding: 16px;

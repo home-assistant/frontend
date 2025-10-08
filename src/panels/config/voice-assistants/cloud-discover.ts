@@ -1,12 +1,12 @@
 import { mdiMicrophoneMessage, mdiOpenInNew } from "@mdi/js";
 import { css, html, LitElement, nothing } from "lit";
 import { customElement, property } from "lit/decorators";
+import { isComponentLoaded } from "../../../common/config/is_component_loaded";
+import "../../../components/ha-button";
 import "../../../components/ha-card";
+import "../../../components/ha-svg-icon";
 import type { HomeAssistant } from "../../../types";
 import { brandsUrl } from "../../../util/brands-url";
-import "../../../components/ha-svg-icon";
-import "../../../components/ha-button";
-import { isComponentLoaded } from "../../../common/config/is_component_loaded";
 
 @customElement("cloud-discover")
 export class CloudDiscover extends LitElement {
@@ -145,7 +145,7 @@ export class CloudDiscover extends LitElement {
     .features {
       display: grid;
       grid-template-columns: auto;
-      grid-gap: 16px;
+      grid-gap: var(--ha-space-4);
       padding: 16px;
     }
     @media (min-width: 600px) {
@@ -169,7 +169,7 @@ export class CloudDiscover extends LitElement {
       margin: 0 4px;
     }
     .round-icon {
-      border-radius: 50%;
+      border-radius: var(--ha-border-radius-circle);
       color: #6e41ab;
       background-color: #e8dcf7;
       display: flex;

@@ -209,7 +209,7 @@ export class DialogEnterCode
       display: grid;
       grid-template-columns: repeat(var(--keypad-columns), auto);
       grid-auto-rows: auto;
-      grid-gap: 24px;
+      grid-gap: var(--ha-space-6);
       justify-items: center;
       align-items: center;
     }
@@ -229,7 +229,7 @@ export class DialogEnterCode
     ha-control-button {
       width: 56px;
       height: 56px;
-      --control-button-border-radius: 28px;
+      --control-button-border-radius: var(--ha-border-radius-4xl);
       --mdc-icon-size: 24px;
       font-size: var(--ha-font-size-2xl);
     }

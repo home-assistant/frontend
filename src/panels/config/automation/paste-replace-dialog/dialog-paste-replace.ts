@@ -92,7 +92,7 @@ class DialogPasteReplace extends LitElement implements HassDialog {
         }
         div[slot="primaryAction"] {
           display: flex;
-          gap: 8px;
+          gap: var(--ha-space-2);
         }
       `,
     ];

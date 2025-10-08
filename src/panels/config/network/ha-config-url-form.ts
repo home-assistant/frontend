@@ -444,7 +444,7 @@ class ConfigUrlForm extends SubscribeMixin(LitElement) {
     .url-container {
       display: flex;
       align-items: center;
-      gap: 8px;
+      gap: var(--ha-space-2);
       margin-top: 8px;
     }
     .textfield-container {

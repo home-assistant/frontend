@@ -32,6 +32,8 @@ import {
   getCommonOptions,
   getCompareTransform,
 } from "./common/energy-chart-options";
+import "./common/hui-energy-graph-chip";
+import "../../../../components/ha-tooltip";
 import type { ECOption } from "../../../../resources/echarts";
 
 @customElement("hui-energy-solar-graph-card")
@@ -52,6 +54,8 @@ export class HuiEnergySolarGraphCard
   @state() private _compareStart?: Date;
 
   @state() private _compareEnd?: Date;
+
+  @state() private _total?: number;
 
   protected hassSubscribeRequiredHostProps = ["_config"];
 
@@ -86,9 +90,16 @@ export class HuiEnergySolarGraphCard
 
     return html`
       <ha-card>
-        ${this._config.title
-          ? html`<h1 class="card-header">${this._config.title}</h1>`
-          : ""}
+        <div class="card-header">
+          <span>${this._config.title ? this._config.title : nothing}</span>
+          ${this._total
+            ? html`<hui-energy-graph-chip
+                .tooltip=${this._formatTotal(this._total)}
+              >
+                ${formatNumber(this._total, this.hass.locale)} kWh
+              </hui-energy-graph-chip>`
+            : nothing}
+        </div>
         <div
           class="content ${classMap({
             "has-header": !!this._config.title,
@@ -222,6 +233,24 @@ export class HuiEnergySolarGraphCard
     }
 
     this._chartData = datasets;
+    this._total = this._processTotal(energyData.stats, solarSources);
+  }
+
+  private _processTotal(
+    statistics: Statistics,
+    solarSources: SolarSourceTypeEnergyPreference[]
+  ) {
+    return solarSources.reduce(
+      (sum, source) =>
+        sum +
+        (source.stat_energy_from in statistics
+          ? statistics[source.stat_energy_from].reduce(
+              (acc, curr) => acc + (curr.change || 0),
+              0
+            )
+          : 0),
+      0
+    );
   }
 
   private _processDataSet(
@@ -400,6 +429,9 @@ export class HuiEnergySolarGraphCard
       height: 100%;
     }
     .card-header {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
       padding-bottom: 0;
     }
     .content {

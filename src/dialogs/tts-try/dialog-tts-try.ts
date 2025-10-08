@@ -8,6 +8,7 @@ import { createCloseHeading } from "../../components/ha-dialog";
 import "../../components/ha-textarea";
 import type { HaTextArea } from "../../components/ha-textarea";
 import { convertTextToSpeech } from "../../data/tts";
+import { haStyleDialog } from "../../resources/styles";
 import type { HomeAssistant } from "../../types";
 import { showAlertDialog } from "../generic/show-dialog-box";
 import type { TTSTryDialogParams } from "./show-dialog-tts-try";
@@ -149,21 +150,24 @@ export class TTSTryDialog extends LitElement {
     });
   }
 
-  static styles = css`
-    ha-dialog {
-      --mdc-dialog-max-width: 500px;
-    }
-    ha-textarea,
-    ha-select {
-      width: 100%;
-    }
-    ha-select {
-      margin-top: 8px;
-    }
-    .loading {
-      height: 36px;
-    }
-  `;
+  static styles = [
+    haStyleDialog,
+    css`
+      ha-dialog {
+        --mdc-dialog-max-width: 500px;
+      }
+      ha-textarea,
+      ha-select {
+        width: 100%;
+      }
+      ha-select {
+        margin-top: 8px;
+      }
+      .loading {
+        height: 36px;
+      }
+    `,
+  ];
 }
 
 declare global {

@@ -4,21 +4,23 @@ import { isComponentLoaded } from "../../../../common/config/is_component_loaded
 import type { LovelaceSectionConfig } from "../../../../data/lovelace/config/section";
 import { getCommonControlUsagePrediction } from "../../../../data/usage_prediction";
 import type { HomeAssistant } from "../../../../types";
-import type { TileCardConfig } from "../../cards/types";
+import type { HeadingCardConfig, TileCardConfig } from "../../cards/types";
 
 const DEFAULT_LIMIT = 8;
 
-export interface OriginalStatesViewStrategyConfig {
+export interface CommonControlSectionStrategyConfig {
   type: "common-controls";
   title?: string;
+  icon?: string;
   limit?: number;
   exclude_entities?: string[];
+  hide_empty?: boolean;
 }
 
 @customElement("common-controls-section-strategy")
 export class CommonControlsSectionStrategy extends ReactiveElement {
   static async generate(
-    config: OriginalStatesViewStrategyConfig,
+    config: CommonControlSectionStrategyConfig,
     hass: HomeAssistant
   ): Promise<LovelaceSectionConfig> {
     const section: LovelaceSectionConfig = {
@@ -30,7 +32,8 @@ export class CommonControlsSectionStrategy extends ReactiveElement {
       section.cards?.push({
         type: "heading",
         heading: config.title,
-      });
+        icon: config.icon,
+      } satisfies HeadingCardConfig);
     }
 
     if (!isComponentLoaded(hass, "usage_prediction")) {
@@ -40,11 +43,14 @@ export class CommonControlsSectionStrategy extends ReactiveElement {
           "ui.panel.lovelace.strategy.common_controls.not_loaded"
         ),
       });
+      section.disabled = config.hide_empty;
       return section;
     }
 
     const predictedCommonControl = await getCommonControlUsagePrediction(hass);
-    let predictedEntities = predictedCommonControl.entities;
+    let predictedEntities = predictedCommonControl.entities.filter(
+      (entity) => entity in hass.states
+    );
 
     if (config.exclude_entities) {
       predictedEntities = predictedEntities.filter(
@@ -73,6 +79,7 @@ export class CommonControlsSectionStrategy extends ReactiveElement {
           "ui.panel.lovelace.strategy.common_controls.no_data"
         ),
       });
+      section.disabled = config.hide_empty;
     }
 
     return section;
