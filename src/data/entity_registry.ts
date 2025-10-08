@@ -3,6 +3,7 @@ import { createCollection } from "home-assistant-js-websocket";
 import type { Store } from "home-assistant-js-websocket/dist/store";
 import memoizeOne from "memoize-one";
 import { computeDomain } from "../common/entity/compute_domain";
+import { computeEntityNameList } from "../common/entity/compute_entity_name_display";
 import { computeStateName } from "../common/entity/compute_state_name";
 import { caseInsensitiveStringCompare } from "../common/string/compare";
 import { computeRTL } from "../common/util/compute_rtl";
@@ -347,7 +348,7 @@ export const getEntities = (
 ): EntityComboBoxItem[] =>
   memoizeOne(
     (
-      states: HomeAssistant["states"],
+      hassMemo: HomeAssistant,
       isRTLMemo: boolean,
       includeDomainsMemo?: string[],
       excludeDomainsMemo?: string[],
@@ -359,7 +360,7 @@ export const getEntities = (
     ): EntityComboBoxItem[] => {
       let items: EntityComboBoxItem[] = [];
 
-      let entityIds = Object.keys(states);
+      let entityIds = Object.keys(hassMemo.states);
 
       if (includeEntitiesMemo) {
         entityIds = entityIds.filter((entityId) =>
@@ -386,14 +387,22 @@ export const getEntities = (
       }
 
       items = entityIds.map<EntityComboBoxItem>((entityId) => {
-        const stateObj = states[entityId];
+        const stateObj = hassMemo.states[entityId];
 
         const friendlyName = computeStateName(stateObj); // Keep this for search
-        const entityName = hass.formatEntityName(stateObj, "entity");
-        const deviceName = hass.formatEntityName(stateObj, "device");
-        const areaName = hass.formatEntityName(stateObj, "area");
+        const [entityName, deviceName, areaName] = computeEntityNameList(
+          stateObj,
+          [{ type: "entity" }, { type: "device" }, { type: "area" }],
+          hassMemo.entities,
+          hassMemo.devices,
+          hassMemo.areas,
+          hassMemo.floors
+        );
 
-        const domainName = domainToName(hass.localize, computeDomain(entityId));
+        const domainName = domainToName(
+          hassMemo.localize,
+          computeDomain(entityId)
+        );
 
         const primary = entityName || deviceName || entityId;
         const secondary = [areaName, entityName ? deviceName : undefined]
@@ -456,7 +465,7 @@ export const getEntities = (
       return items;
     }
   )(
-    hass.states,
+    hass,
     computeRTL(hass),
     includeDomains,
     excludeDomains,
