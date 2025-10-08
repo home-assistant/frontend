@@ -37,6 +37,9 @@ const cardConfigStruct = assign(
     ),
     time_format: optional(enums(Object.values(TimeFormat))),
     time_zone: optional(enums(Object.keys(timezones))),
+    date_format: optional(
+      defaulted(union([literal("none"), literal("day")]), literal("none"))
+    ),
     show_seconds: optional(boolean()),
     no_background: optional(boolean()),
     // Analog clock options
@@ -112,6 +115,20 @@ export class HuiClockCardEditor
                 value,
                 label: localize(
                   `ui.panel.lovelace.editor.card.clock.clock_sizes.${value}`
+                ),
+              })),
+            },
+          },
+        },
+        {
+          name: "date_format",
+          selector: {
+            select: {
+              mode: "dropdown",
+              options: ["none", "day"].map((value) => ({
+                value,
+                label: localize(
+                  `ui.panel.lovelace.editor.card.clock.date_formats.${value}`
                 ),
               })),
             },
@@ -265,6 +282,7 @@ export class HuiClockCardEditor
     clock_size: "small",
     time_zone: "auto",
     time_format: "auto",
+    date_format: "none",
     show_seconds: false,
     no_background: false,
     // Analog clock options
@@ -358,6 +376,10 @@ export class HuiClockCardEditor
       case "time_zone":
         return this.hass!.localize(
           `ui.panel.lovelace.editor.card.clock.time_zone`
+        );
+      case "date_format":
+        return this.hass!.localize(
+          `ui.panel.lovelace.editor.card.clock.date_format`
         );
       case "show_seconds":
         return this.hass!.localize(

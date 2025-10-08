@@ -7809,6 +7809,11 @@
               "time_zones": {
                 "auto": "Use user settings"
               },
+              "date_format": "Date format",
+              "date_formats": {
+                "none": "None",
+                "day": "Day"
+              },
               "no_background": "No background",
               "border": {
                 "label": "Border",

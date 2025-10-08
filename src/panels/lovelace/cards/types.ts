@@ -381,6 +381,7 @@ export interface ClockCardConfig extends LovelaceCardConfig {
   seconds_motion?: "continuous" | "tick";
   time_format?: TimeFormat;
   time_zone?: string;
+  date_format?: "none" | "day";
   no_background?: boolean;
   // Analog clock options
   border?: boolean;
