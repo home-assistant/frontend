@@ -142,10 +142,6 @@ export class HaEntityNamePicker extends LitElement {
   };
 
   protected render() {
-    if (!this.hass) {
-      return nothing;
-    }
-
     const value = this._value;
     const options = this._getOptions(this.entityId);
     const validOptions = this._validOptions(this.entityId);
