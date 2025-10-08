@@ -201,7 +201,6 @@ export const baseEntrypointStyles = css`
 `;
 
 export const haStyleViewTransitions = css`
-  /* View Transition animations for sidebar and lovelace */
   @media (prefers-reduced-motion: no-preference) {
     /* Toolbar fade in */
     ::view-transition-group(lovelace-toolbar) {
@@ -221,22 +220,6 @@ export const haStyleViewTransitions = css`
     ::view-transition-new(lovelace-view) {
       animation: fade-in-slide-down var(--ha-animation-duration) ease-out;
       animation-delay: var(--ha-animation-delay-base);
-    }
-
-    /* Sidebar menu button */
-    ::view-transition-group(sidebar-menu-button) {
-      animation-duration: var(--ha-animation-duration);
-      animation-timing-function: ease-out;
-    }
-    ::view-transition-new(sidebar-menu-button) {
-      animation: fade-in-slide-down var(--ha-animation-duration) ease-out;
-      animation-delay: calc(var(--ha-animation-delay-base) / 2);
-    }
-
-    /* Sidebar items with staggered animation */
-    ::view-transition-group(sidebar-item-*) {
-      animation-duration: var(--ha-animation-duration);
-      animation-timing-function: ease-out;
     }
   }
 
