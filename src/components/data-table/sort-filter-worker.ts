@@ -14,15 +14,15 @@ import type {
 const fuseIndex = memoizeOne(
   (data: DataTableRowData[], columns: SortableColumnContainer) => {
     const searchKeys = new Set<string>();
-    Object.entries(columns)
-      .filter(([, column]) => column.filterable)
-      .forEach(([key, column]) =>
+    Object.entries(columns).forEach(([key, column]) => {
+      if (column.filterable) {
         searchKeys.add(
           column.filterKey
             ? `${column.valueColumn || key}.${column.filterKey}`
             : key
-        )
-      );
+        );
+      }
+    });
     return Fuse.createIndex([...searchKeys], data);
   }
 );
