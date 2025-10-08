@@ -18,7 +18,6 @@ import type { LocalizeKeys } from "../../common/translations/localize";
 import type { HomeAssistant, ValueChangedEvent } from "../../types";
 import "../chips/ha-assist-chip";
 import "../chips/ha-chip-set";
-import "../chips/ha-filter-chip";
 import "../chips/ha-input-chip";
 import "../ha-combo-box";
 import type { HaComboBox } from "../ha-combo-box";
