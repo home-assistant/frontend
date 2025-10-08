@@ -333,10 +333,11 @@ class MoreInfoWeather extends LitElement {
         : nothing}
       <div class="forecast">
         ${forecast?.length
-          ? this._groupForecastByDay(forecast).map(
-              (dayForecast) => html`
+          ? this._groupForecastByDay(forecast).map((dayForecast) => {
+              const showDayHeader = hourly || dayNight;
+              return html`
                 <div class="forecast-day">
-                  ${hourly || dayNight
+                  ${showDayHeader
                     ? html`<div class="forecast-day-header">
                         ${formatDateWeekdayShort(
                           new Date(dayForecast[0].datetime),
@@ -351,7 +352,11 @@ class MoreInfoWeather extends LitElement {
                       this._showValue(item.temperature)
                         ? html`
                             <div class="forecast-item">
-                              <div>
+                              <div
+                                class="forecast-item-label ${showDayHeader
+                                  ? ""
+                                  : "no-header"}"
+                              >
                                 ${hourly
                                   ? formatTime(
                                       new Date(item.datetime),
@@ -410,8 +415,8 @@ class MoreInfoWeather extends LitElement {
                     )}
                   </div>
                 </div>
-              `
-            )
+              `;
+            })
           : html`<ha-spinner size="medium"></ha-spinner>`}
       </div>
 
@@ -591,9 +596,9 @@ class MoreInfoWeather extends LitElement {
           position: sticky;
           top: 0;
           left: 0;
-          color: var(--secondary-text-color);
+          color: var(--primary-text-color);
           z-index: 1;
-          padding: 0 10px 8px 10px;
+          padding: 0 var(--ha-space-3) var(--ha-space-1) var(--ha-space-3);
           width: fit-content;
           width: 40px;
           text-align: center;
@@ -607,12 +612,21 @@ class MoreInfoWeather extends LitElement {
 
         .forecast-item {
           text-align: center;
-          padding: 0 10px;
+          padding: 0 var(--ha-space-3);
+        }
+
+        .forecast-item-label {
+          font-size: var(--ha-font-size-m);
+          color: var(--secondary-text-color);
+        }
+
+        .forecast-item-label.no-header {
+          color: var(--primary-text-color);
         }
 
         .forecast .icon,
         .forecast .temp {
-          margin: 4px 0;
+          margin: var(--ha-space-1) 0;
         }
 
         .forecast .temp {
