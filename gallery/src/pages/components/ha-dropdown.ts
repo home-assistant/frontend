@@ -45,7 +45,7 @@ export class DemoHaDropdown extends LitElement {
                     ></ha-svg-icon>
                     Copy
                   </ha-dropdown-item>
-                  <ha-dropdown-item>
+                  <ha-dropdown-item disabled>
                     <ha-svg-icon
                       .path=${mdiContentPaste}
                       slot="icon"
