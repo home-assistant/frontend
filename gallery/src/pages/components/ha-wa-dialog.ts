@@ -10,7 +10,8 @@ import "../../../../src/components/ha-wa-dialog";
 import type { HaFormSchema } from "../../../../src/components/ha-form/types";
 
 const SCHEMA: HaFormSchema[] = [
-  { type: "string", name: "Name", required: true, default: "" },
+  { type: "string", name: "Name", default: "", autofocus: true },
+  { type: "string", name: "Email", default: "" },
 ];
 
 type DialogType =
