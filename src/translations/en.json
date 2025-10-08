@@ -683,7 +683,7 @@
         "entities_count": "{count} {count, plural,\n one {entity}\n other {entities}\n}",
         "target_details": "Target details",
         "no_targets": "No targets",
-        "no_target_found": "No target found for term {term}",
+        "no_target_found": "No target found for {term}",
         "selected": {
           "entity": "Entities: {count}",
           "device": "Devices: {count}",
