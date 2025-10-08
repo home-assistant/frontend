@@ -6,6 +6,7 @@ import { customElement, property, query } from "lit/decorators";
 import memoizeOne from "memoize-one";
 import { ensureArray } from "../../common/array/ensure-array";
 import { fireEvent } from "../../common/dom/fire_event";
+import { computeEntityNameList } from "../../common/entity/compute_entity_name_display";
 import { computeStateName } from "../../common/entity/compute_state_name";
 import { computeRTL } from "../../common/util/compute_rtl";
 import { domainToName } from "../../data/integration";
@@ -199,7 +200,7 @@ export class HaStatisticPicker extends LitElement {
         });
       }
 
-      const isRTL = computeRTL(this.hass);
+      const isRTL = computeRTL(hass);
 
       const output: StatisticComboBoxItem[] = [];
 
@@ -256,9 +257,15 @@ export class HaStatisticPicker extends LitElement {
         const id = meta.statistic_id;
 
         const friendlyName = computeStateName(stateObj); // Keep this for search
-        const entityName = hass.formatEntityName(stateObj, "entity");
-        const deviceName = hass.formatEntityName(stateObj, "device");
-        const areaName = hass.formatEntityName(stateObj, "area");
+
+        const [entityName, deviceName, areaName] = computeEntityNameList(
+          stateObj,
+          [{ type: "entity" }, { type: "device" }, { type: "area" }],
+          hass.entities,
+          hass.devices,
+          hass.areas,
+          hass.floors
+        );
 
         const primary = entityName || deviceName || id;
         const secondary = [areaName, entityName ? deviceName : undefined]
@@ -331,9 +338,14 @@ export class HaStatisticPicker extends LitElement {
     const stateObj = this.hass.states[statisticId];
 
     if (stateObj) {
-      const entityName = this.hass.formatEntityName(stateObj, "entity");
-      const deviceName = this.hass.formatEntityName(stateObj, "device");
-      const areaName = this.hass.formatEntityName(stateObj, "area");
+      const [entityName, deviceName, areaName] = computeEntityNameList(
+        stateObj,
+        [{ type: "entity" }, { type: "device" }, { type: "area" }],
+        this.hass.entities,
+        this.hass.devices,
+        this.hass.areas,
+        this.hass.floors
+      );
 
       const isRTL = computeRTL(this.hass);
 

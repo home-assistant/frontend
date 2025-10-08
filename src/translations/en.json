@@ -657,6 +657,18 @@
           "placeholder": "Select an entity",
           "create_helper": "Create a new {domain, select, \n undefined {} \n other {{domain} }\n } helper."
         },
+        "entity-name-picker": {
+          "types": {
+            "floor": "Floor",
+            "area": "Area",
+            "device": "Device",
+            "entity": "Entity",
+            "area_missing": "No area assigned",
+            "floor_missing": "No floor assigned",
+            "device_missing": "No device associated"
+          },
+          "add": "Add"
+        },
         "entity-attribute-picker": {
           "attribute": "Attribute",
           "show_attributes": "Show attributes"

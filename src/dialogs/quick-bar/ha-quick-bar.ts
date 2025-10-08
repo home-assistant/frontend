@@ -23,6 +23,7 @@ import { fireEvent } from "../../common/dom/fire_event";
 import { computeAreaName } from "../../common/entity/compute_area_name";
 import { computeDeviceNameDisplay } from "../../common/entity/compute_device_name";
 import { computeDomain } from "../../common/entity/compute_domain";
+import { entityUseDeviceName } from "../../common/entity/compute_entity_name";
 import { computeStateName } from "../../common/entity/compute_state_name";
 import { getDeviceContext } from "../../common/entity/context/get_device_context";
 import { navigate } from "../../common/navigate";
@@ -30,9 +31,9 @@ import { caseInsensitiveStringCompare } from "../../common/string/compare";
 import type { ScorableTextItem } from "../../common/string/filter/sequence-matching";
 import { computeRTL } from "../../common/util/compute_rtl";
 import { debounce } from "../../common/util/debounce";
+import "../../components/ha-button";
 import "../../components/ha-icon-button";
 import "../../components/ha-label";
-import "../../components/ha-button";
 import "../../components/ha-list";
 import "../../components/ha-md-list-item";
 import "../../components/ha-spinner";
@@ -631,14 +632,29 @@ export class QuickBar extends LitElement {
         const stateObj = this.hass.states[entityId];
 
         const friendlyName = computeStateName(stateObj); // Keep this for search
-        const entityName = this.hass.formatEntityName(stateObj, "entity");
-        const deviceName = this.hass.formatEntityName(stateObj, "device");
-        const areaName = this.hass.formatEntityName(stateObj, "area");
 
-        const primary = entityName || deviceName || entityId;
-        const secondary = [areaName, entityName ? deviceName : undefined]
-          .filter(Boolean)
-          .join(isRTL ? " ◂ " : " ▸ ");
+        const useDeviceName = entityUseDeviceName(
+          stateObj,
+          this.hass.entities,
+          this.hass.devices
+        );
+
+        const name = this.hass.formatEntityName(
+          stateObj,
+          useDeviceName ? { type: "device" } : { type: "entity" }
+        );
+
+        const primary = name || entityId;
+
+        const secondary = this.hass.formatEntityName(
+          stateObj,
+          useDeviceName
+            ? [{ type: "area" }]
+            : [{ type: "area" }, { type: "device" }],
+          {
+            separator: isRTL ? " ◂ " : " ▸ ",
+          }
+        );
 
         const translatedDomain = domainToName(
           this.hass.localize,
