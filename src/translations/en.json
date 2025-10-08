@@ -5841,8 +5841,8 @@
           "change_channel_initiated_text": "The channel change has been initiated and will complete in {delay} {delay, plural,\n  one {minute}\n  other {minutes}\n}.",
           "change_channel_invalid": "Invalid channel",
           "change_channel_label": "Channel",
-          "change_channel_multiprotocol_enabled_title": "The Thread radio has multiprotocol enabled",
-          "change_channel_multiprotocol_enabled_text": "To change channel when the Thread radio has multiprotocol enabled, please use the hardware settings menu.",
+          "change_channel_multiprotocol_enabled_title": "The Thread adapter has multiprotocol enabled",
+          "change_channel_multiprotocol_enabled_text": "To change channel when the Thread adapter has multiprotocol enabled, please use the hardware settings menu.",
           "change_channel_range": "Channel must be in the range 11 to 26",
           "change_channel_text": "Initiating a channel change for your Home Assistant Thread network should be performed with caution. Some Thread devices may not migrate to the new channel automatically and, if the new channel is congested, your Thread devices may become intermittently unavailable. Some devices may need to be manually re-joined to your Thread network before they show in Home Assistant again. This action cannot be reversed (without performing another channel change).",
           "thread_network_info": "Thread network information",
@@ -5887,12 +5887,12 @@
             "devices_offline": "{count} offline",
             "update_button": "Update configuration",
             "download_backup": "Download backup",
-            "migrate_radio": "Migrate radio",
+            "migrate_radio": "Migrate adapter",
             "network_settings_title": "Network settings",
             "change_channel": "Change channel",
             "channel_dialog": {
               "title": "Multiprotocol add-on in use",
-              "text": "Zigbee and Thread share the same radio and must use the same channel. Change the channel of both networks by reconfiguring multiprotocol from the hardware menu."
+              "text": "Zigbee and Thread share the same adapter and must use the same channel. Change the channel of both networks by reconfiguring multiprotocol from the hardware menu."
             }
           },
           "add_device_page": {
