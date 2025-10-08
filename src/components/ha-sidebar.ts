@@ -22,7 +22,6 @@ import {
   eventOptions,
   property,
   query,
-  queryAll,
   state,
 } from "lit/decorators";
 import { classMap } from "lit/directives/class-map";
@@ -211,8 +210,6 @@ class HaSidebar extends SubscribeMixin(LitElement) {
 
   @query(".tooltip") private _tooltip!: HTMLDivElement;
 
-  @queryAll("ha-md-list-item") private _listItems!: NodeListOf<HaMdListItem>;
-
   public hassSubscribe() {
     return [
       subscribeFrontendUserData(
@@ -325,7 +322,6 @@ class HaSidebar extends SubscribeMixin(LitElement) {
     if (changedProps.has("alwaysExpand")) {
       toggleAttribute(this, "expanded", this.alwaysExpand);
     }
-
     if (!changedProps.has("hass")) {
       return;
     }
@@ -912,6 +908,11 @@ class HaSidebar extends SubscribeMixin(LitElement) {
           background-color: var(--sidebar-text-color);
           padding: 4px;
           font-weight: var(--ha-font-weight-medium);
+        }
+
+        .menu ha-icon-button {
+          -webkit-transform: scaleX(var(--scale-direction));
+          transform: scaleX(var(--scale-direction));
         }
       `,
     ];
