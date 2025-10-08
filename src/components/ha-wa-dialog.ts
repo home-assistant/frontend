@@ -53,6 +53,14 @@ export type DialogWidth = "small" | "medium" | "large" | "full";
  *
  * @event opened - Fired when the dialog is shown.
  * @event closed - Fired after the dialog is hidden.
+ *
+ * @remarks
+ * **Focus Management:**
+ * To automatically focus an element when the dialog opens, add the `autofocus` attribute to it.
+ * Components with `delegatesFocus: true` (like `ha-form`) will forward focus to their first focusable child.
+ * Example: `<ha-form autofocus .schema=${schema}></ha-form>`
+ *
+ * @see https://github.com/home-assistant/frontend/issues/27143
  */
 @customElement("ha-wa-dialog")
 export class HaWaDialog extends LitElement {
