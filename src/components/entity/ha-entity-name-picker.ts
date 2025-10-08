@@ -5,7 +5,6 @@ import type { IFuseOptions } from "fuse.js";
 import Fuse from "fuse.js";
 import { css, html, LitElement, nothing } from "lit";
 import { customElement, property, query, state } from "lit/decorators";
-import { classMap } from "lit/directives/class-map";
 import { repeat } from "lit/directives/repeat";
 import memoizeOne from "memoize-one";
 import { ensureArray } from "../../common/array/ensure-array";
@@ -172,7 +171,7 @@ export class HaEntityNamePicker extends LitElement {
                     .label=${label}
                     .selected=${!this.disabled}
                     .disabled=${this.disabled}
-                    class=${classMap({ invalid: !isValid })}
+                    class=${!isValid ? "invalid" : ""}
                   >
                     <ha-svg-icon slot="icon" .path=${mdiDrag}></ha-svg-icon>
                     <span>${label}</span>
