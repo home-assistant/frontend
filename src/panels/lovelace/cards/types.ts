@@ -1,8 +1,11 @@
 import type { HassServiceTarget } from "home-assistant-js-websocket";
+import type { EntityNameItem } from "../../../common/entity/compute_entity_name_display";
 import type { HaDurationData } from "../../../components/ha-duration-input";
+import type { EnergySourceByType } from "../../../data/energy";
 import type { ActionConfig } from "../../../data/lovelace/config/action";
 import type { LovelaceCardConfig } from "../../../data/lovelace/config/card";
 import type { Statistic, StatisticType } from "../../../data/recorder";
+import type { TimeFormat } from "../../../data/translation";
 import type { ForecastType } from "../../../data/weather";
 import type {
   FullCalendarView,
@@ -25,9 +28,7 @@ import type {
 } from "../entity-rows/types";
 import type { LovelaceHeaderFooterConfig } from "../header-footer/types";
 import type { LovelaceHeadingBadgeConfig } from "../heading-badges/types";
-import type { TimeFormat } from "../../../data/translation";
 import type { HomeSummary } from "../strategies/home/helpers/home-summaries";
-import type { EnergySourceByType } from "../../../data/energy";
 
 export type AlarmPanelCardConfigState =
   | "arm_away"
@@ -568,7 +569,7 @@ export interface WeatherForecastCardConfig extends LovelaceCardConfig {
 
 export interface TileCardConfig extends LovelaceCardConfig {
   entity: string;
-  name?: string;
+  name?: string | EntityNameItem | EntityNameItem[];
   hide_state?: boolean;
   state_content?: string | string[];
   icon?: string;

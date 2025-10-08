@@ -41,8 +41,7 @@ export class HaButton extends Button {
     return [
       Button.styles,
       css`
-        .button {
-          /* set theme vars */
+        :host {
           --wa-form-control-padding-inline: 16px;
           --wa-font-weight-action: var(--ha-font-weight-medium);
           --wa-form-control-border-radius: var(
@@ -54,7 +53,8 @@ export class HaButton extends Button {
             --ha-button-height,
             var(--button-height, 40px)
           );
-
+        }
+        .button {
           font-size: var(--ha-font-size-m);
           line-height: 1;
 
@@ -222,6 +222,12 @@ export class HaButton extends Button {
         }
         .button.has-end {
           padding-inline-end: 8px;
+        }
+
+        .label {
+          overflow: hidden;
+          text-overflow: ellipsis;
+          padding: var(--ha-space-1) 0;
         }
       `,
     ];

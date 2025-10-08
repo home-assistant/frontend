@@ -491,7 +491,7 @@ export class HaManualScriptEditor extends LitElement {
       action: {
         text: this.hass.localize("ui.common.undo"),
         action: () => {
-          fireEvent(this, "undo-paste");
+          fireEvent(this, "undo-change");
 
           this._pastedConfig = undefined;
         },

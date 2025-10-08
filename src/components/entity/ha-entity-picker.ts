@@ -4,6 +4,7 @@ import { html, LitElement, nothing, type PropertyValues } from "lit";
 import { customElement, property, query } from "lit/decorators";
 import memoizeOne from "memoize-one";
 import { fireEvent } from "../../common/dom/fire_event";
+import { computeEntityNameList } from "../../common/entity/compute_entity_name_display";
 import { isValidEntityId } from "../../common/entity/valid_entity_id";
 import { computeRTL } from "../../common/util/compute_rtl";
 import type { HaEntityPickerEntityFilterFunc } from "../../data/entity";
@@ -136,9 +137,14 @@ export class HaEntityPicker extends LitElement {
       `;
     }
 
-    const entityName = this.hass.formatEntityName(stateObj, "entity");
-    const deviceName = this.hass.formatEntityName(stateObj, "device");
-    const areaName = this.hass.formatEntityName(stateObj, "area");
+    const [entityName, deviceName, areaName] = computeEntityNameList(
+      stateObj,
+      [{ type: "entity" }, { type: "device" }, { type: "area" }],
+      this.hass.entities,
+      this.hass.devices,
+      this.hass.areas,
+      this.hass.floors
+    );
 
     const isRTL = computeRTL(this.hass);
 

@@ -3,6 +3,7 @@ import { css, html, LitElement, nothing } from "lit";
 import { customElement, property } from "lit/decorators";
 import { repeat } from "lit/directives/repeat";
 import { fireEvent } from "../../../common/dom/fire_event";
+import { entityUseDeviceName } from "../../../common/entity/compute_entity_name";
 import { computeRTL } from "../../../common/util/compute_rtl";
 import "../../../components/entity/ha-entity-picker";
 import type { HaEntityPicker } from "../../../components/entity/ha-entity-picker";
@@ -14,7 +15,7 @@ import type { EntityConfig } from "../entity-rows/types";
 
 @customElement("hui-entity-editor")
 export class HuiEntityEditor extends LitElement {
-  @property({ attribute: false }) public hass?: HomeAssistant;
+  @property({ attribute: false }) public hass!: HomeAssistant;
 
   @property({ attribute: false }) public entities?: EntityConfig[];
 
@@ -36,20 +37,32 @@ export class HuiEntityEditor extends LitElement {
   }
 
   private _renderItem(item: EntityConfig, index: number) {
-    const stateObj = this.hass!.states[item.entity];
+    const stateObj = this.hass.states[item.entity];
 
-    const entityName =
-      stateObj && this.hass!.formatEntityName(stateObj, "entity");
-    const deviceName =
-      stateObj && this.hass!.formatEntityName(stateObj, "device");
-    const areaName = stateObj && this.hass!.formatEntityName(stateObj, "area");
+    const useDeviceName = entityUseDeviceName(
+      stateObj,
+      this.hass.entities,
+      this.hass.devices
+    );
 
-    const isRTL = computeRTL(this.hass!);
+    const name = this.hass.formatEntityName(
+      stateObj,
+      useDeviceName ? { type: "device" } : { type: "entity" }
+    );
 
-    const primary = item.name || entityName || deviceName || item.entity;
-    const secondary = [areaName, entityName ? deviceName : undefined]
-      .filter(Boolean)
-      .join(isRTL ? " ◂ " : " ▸ ");
+    const isRTL = computeRTL(this.hass);
+
+    const primary = item.name || name || item.entity;
+
+    const secondary = this.hass.formatEntityName(
+      stateObj,
+      useDeviceName
+        ? [{ type: "area" }]
+        : [{ type: "area" }, { type: "device" }],
+      {
+        separator: isRTL ? " ◂ " : " ▸ ",
+      }
+    );
 
     return html`
       <ha-md-list-item class="item">
@@ -65,14 +78,14 @@ export class HuiEntityEditor extends LitElement {
           slot="end"
           .item=${item}
           .index=${index}
-          .label=${this.hass!.localize("ui.common.edit")}
+          .label=${this.hass.localize("ui.common.edit")}
           .path=${mdiPencil}
           @click=${this._editItem}
         ></ha-icon-button>
         <ha-icon-button
           slot="end"
           .index=${index}
-          .label=${this.hass!.localize("ui.common.delete")}
+          .label=${this.hass.localize("ui.common.delete")}
           .path=${mdiClose}
           @click=${this._deleteItem}
         ></ha-icon-button>
@@ -107,9 +120,9 @@ export class HuiEntityEditor extends LitElement {
     return html`
       <h3>
         ${this.label ||
-        this.hass!.localize("ui.panel.lovelace.editor.card.generic.entities") +
+        this.hass.localize("ui.panel.lovelace.editor.card.generic.entities") +
           " (" +
-          this.hass!.localize("ui.panel.lovelace.editor.card.config.required") +
+          this.hass.localize("ui.panel.lovelace.editor.card.config.required") +
           ")"}
       </h3>
       ${this.canEdit

@@ -53,7 +53,6 @@ import type { EntityRegistryEntry } from "../../../../data/entity_registry";
 import { TRIGGER_ICONS, isTriggerList } from "../../../../data/trigger";
 import {
   showAlertDialog,
-  showConfirmationDialog,
   showPromptDialog,
 } from "../../../../dialogs/generic/show-dialog-box";
 import type { HomeAssistant } from "../../../../types";
@@ -603,22 +602,20 @@ export default class HaAutomationTriggerRow extends LitElement {
   }
 
   private _onDelete = () => {
-    showConfirmationDialog(this, {
-      title: this.hass.localize(
-        "ui.panel.config.automation.editor.triggers.delete_confirm_title"
-      ),
-      text: this.hass.localize(
-        "ui.panel.config.automation.editor.triggers.delete_confirm_text"
-      ),
-      dismissText: this.hass.localize("ui.common.cancel"),
-      confirmText: this.hass.localize("ui.common.delete"),
-      destructive: true,
-      confirm: () => {
-        fireEvent(this, "value-changed", { value: null });
+    fireEvent(this, "value-changed", { value: null });
 
-        if (this._selected) {
-          fireEvent(this, "close-sidebar");
-        }
+    if (this._selected) {
+      fireEvent(this, "close-sidebar");
+    }
+
+    showToast(this, {
+      message: this.hass.localize("ui.common.successfully_deleted"),
+      duration: 4000,
+      action: {
+        text: this.hass.localize("ui.common.undo"),
+        action: () => {
+          fireEvent(window, "undo-change");
+        },
       },
     });
   };
