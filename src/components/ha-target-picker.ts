@@ -278,8 +278,9 @@ export class HaTargetPicker extends SubscribeMixin(LitElement) {
               @wa-after-hide=${this._hidePicker}
               without-header
               .open=${this._pickerOpen}
+              @wa-after-show=${this._showSelector}
             >
-              ${this._renderTargetSelector()}
+              ${this._renderTargetSelector(true)}
             </wa-drawer>`}
       </div>
       ${this.helper
@@ -303,6 +304,7 @@ export class HaTargetPicker extends SubscribeMixin(LitElement) {
 
   private _handleResize = () => {
     this._addMode = false;
+    this._pickerPopover?.hide();
     this._pickerOpen = false;
     this._narrow =
       window.matchMedia("(max-width: 870px)").matches ||
@@ -312,8 +314,15 @@ export class HaTargetPicker extends SubscribeMixin(LitElement) {
   private _showPicker() {
     this._addTargetWidth = this._addTargetWrapper?.offsetWidth || 0;
     this._pickerOpen = true;
-    this._addMode = true;
+    if (!this._narrow) {
+      this._addMode = true;
+    }
   }
+
+  // wait for drawer animation to finish
+  private _showSelector = () => {
+    this._addMode = true;
+  };
 
   private _handleUpdatePickerFilters(ev: CustomEvent<TargetTypeFloorless[]>) {
     this._updatePickerFilters(ev.detail);
@@ -333,7 +342,7 @@ export class HaTargetPicker extends SubscribeMixin(LitElement) {
     }
   }
 
-  private _renderTargetSelector() {
+  private _renderTargetSelector(dialogMode = false) {
     if (!this._addMode) {
       return nothing;
     }
@@ -351,6 +360,7 @@ export class HaTargetPicker extends SubscribeMixin(LitElement) {
         .includeDomains=${this.includeDomains}
         .includeDeviceClasses=${this.includeDeviceClasses}
         .createDomains=${this.createDomains}
+        .mode=${dialogMode ? "dialog" : "popover"}
       ></ha-target-picker-selector>
     `;
   }
