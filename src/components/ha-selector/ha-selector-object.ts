@@ -23,7 +23,7 @@ export class HaObjectSelector extends LitElement {
 
   @property({ attribute: false }) public selector!: ObjectSelector;
 
-  @property() public value?: any[] | Record<string, any>;
+  @property() public value?: any;
 
   @property() public label?: string;
 
