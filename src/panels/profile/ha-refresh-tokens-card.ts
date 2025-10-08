@@ -29,6 +29,8 @@ import {
 } from "../../dialogs/generic/show-dialog-box";
 import { haStyle } from "../../resources/styles";
 import type { HomeAssistant } from "../../types";
+import "../../components/ha-dropdown-item";
+import "../../components/ha-dropdown";
 
 // Client ID used by iOS app
 const iOSclientId = "https://home-assistant.io/iOS";
@@ -146,19 +148,18 @@ class HaRefreshTokens extends LitElement {
                           )}
                     </div>
                     <div>
-                      <ha-md-button-menu positioning="popover">
+                      <ha-dropdown>
                         <ha-icon-button
                           slot="trigger"
                           .label=${this.hass.localize("ui.common.menu")}
                           .path=${mdiDotsVertical}
                         ></ha-icon-button>
-                        <ha-md-menu-item
-                          graphic="icon"
+                        <ha-dropdown-item
                           @click=${this._toggleTokenExpiration}
                           .token=${token}
                         >
                           <ha-svg-icon
-                            slot="start"
+                            slot="icon"
                             .path=${token.expire_at
                               ? mdiClockRemoveOutline
                               : mdiClockCheckOutline}
@@ -170,24 +171,20 @@ class HaRefreshTokens extends LitElement {
                             : this.hass.localize(
                                 "ui.panel.profile.refresh_tokens.enable_token_expiration"
                               )}
-                        </ha-md-menu-item>
-                        <ha-md-menu-item
-                          graphic="icon"
-                          class="warning"
+                        </ha-dropdown-item>
+                        <ha-dropdown-item
+                          variant="danger"
                           .disabled=${token.is_current}
                           @click=${this._deleteToken}
                           .token=${token}
                         >
                           <ha-svg-icon
-                            class="warning"
-                            slot="start"
+                            slot="icon"
                             .path=${mdiDelete}
                           ></ha-svg-icon>
-                          <div slot="headline">
-                            ${this.hass.localize("ui.common.delete")}
-                          </div>
-                        </ha-md-menu-item>
-                      </ha-md-button-menu>
+                          ${this.hass.localize("ui.common.delete")}
+                        </ha-dropdown-item>
+                      </ha-dropdown>
                     </div>
                   </ha-settings-row>
                 `

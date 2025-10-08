@@ -22,11 +22,8 @@ export const waMainStyles = css`
     --wa-border-radius-s: var(--ha-border-radius-sm);
     --wa-border-radius-m: var(--ha-border-radius-md);
     --wa-border-radius-l: var(--ha-border-radius-lg);
-    --wa-color-surface-raised: var(--ha-dialog-surface-background, var(--mdc-theme-surface, #fff));
-    --wa-color-text-normal: var(--ha-color-text-primary);
 
     --wa-line-height-condensed: 1.25;
-    --wa-font-size-smaller: var(--ha-font-size-s);
 
     --wa-space-xl: 32px;
   }
