@@ -292,17 +292,21 @@ export class HaTargetPicker extends SubscribeMixin(LitElement) {
 
   connectedCallback() {
     super.connectedCallback();
-    this._narrow = matchMedia("(max-width: 870px)").matches;
-    window.addEventListener("resize", this._setNarrow);
+    this._handleResize();
+    window.addEventListener("resize", this._handleResize);
   }
 
   public disconnectedCallback() {
     super.disconnectedCallback();
-    window.removeEventListener("resize", this._setNarrow);
+    window.removeEventListener("resize", this._handleResize);
   }
 
-  private _setNarrow = () => {
-    this._narrow = matchMedia("(max-width: 870px)").matches;
+  private _handleResize = () => {
+    this._addMode = false;
+    this._pickerOpen = false;
+    this._narrow =
+      window.matchMedia("(max-width: 870px)").matches ||
+      window.matchMedia("(max-height: 500px)").matches;
   };
 
   private _showPicker() {
@@ -629,17 +633,21 @@ export class HaTargetPicker extends SubscribeMixin(LitElement) {
         --size: calc(100dvh - 48px);
         --show-duration: ${BOTTOM_SHEET_ANIMATION_DURATION_MS}ms;
         --hide-duration: ${BOTTOM_SHEET_ANIMATION_DURATION_MS}ms;
-        --wa-color-surface-raised: var(
-          --ha-dialog-surface-background,
-          var(--mdc-theme-surface, #fff)
-        );
+        --wa-color-surface-raised: transparent;
       }
       wa-drawer::part(dialog) {
-        border-top-left-radius: var(--ha-border-radius-lg);
-        border-top-right-radius: var(--ha-border-radius-lg);
+        align-items: center;
       }
 
       wa-drawer::part(body) {
+        border-top-left-radius: var(--ha-border-radius-lg);
+        border-top-right-radius: var(--ha-border-radius-lg);
+        background-color: var(
+          --ha-dialog-surface-background,
+          var(--mdc-theme-surface, #fff)
+        );
+        max-width: 600px;
+        width: 100%;
         display: flex;
       }
 
