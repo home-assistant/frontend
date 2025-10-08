@@ -6,6 +6,7 @@ import "./ha-dialog-header";
 import "./ha-icon-button";
 import type { HomeAssistant } from "../types";
 import { fireEvent } from "../common/dom/fire_event";
+import { deepQuerySelector } from "../common/dom/deep-query-selector";
 import { haStyleScrollbar } from "../resources/styles";
 
 export type DialogWidth = "small" | "medium" | "large" | "full";
@@ -134,9 +135,8 @@ export class HaWaDialog extends LitElement {
     fireEvent(this, "opened");
 
     await this.updateComplete;
-    const focusElement = this.querySelector(
-      "[dialogInitialFocus]"
-    ) as HTMLElement;
+
+    const focusElement = await deepQuerySelector("[autofocus]", this);
     focusElement?.focus();
   };
 
