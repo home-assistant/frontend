@@ -1,4 +1,3 @@
-import "@home-assistant/webawesome/dist/components/drawer/drawer";
 import "@home-assistant/webawesome/dist/components/popover/popover";
 import type WaPopover from "@home-assistant/webawesome/dist/components/popover/popover";
 // @ts-ignore
@@ -21,7 +20,7 @@ import { SubscribeMixin } from "../mixins/subscribe-mixin";
 import { showHelperDetailDialog } from "../panels/config/helpers/show-dialog-helper-detail";
 import type { HomeAssistant } from "../types";
 import type { HaDevicePickerDeviceFilterFunc } from "./device/ha-device-picker";
-import { BOTTOM_SHEET_ANIMATION_DURATION_MS } from "./ha-bottom-sheet";
+import "./ha-bottom-sheet";
 import "./ha-button";
 import "./ha-input-helper-text";
 import "./ha-svg-icon";
@@ -273,15 +272,14 @@ export class HaTargetPicker extends SubscribeMixin(LitElement) {
                 ${this._renderTargetSelector()}
               </wa-popover>
             `
-          : html`<wa-drawer
-              placement="bottom"
-              @wa-after-hide=${this._hidePicker}
-              without-header
+          : html`<ha-bottom-sheet
+              @closed=${this._hidePicker}
               .open=${this._pickerOpen}
               @wa-after-show=${this._showSelector}
+              flexcontent
             >
               ${this._renderTargetSelector(true)}
-            </wa-drawer>`}
+            </ha-bottom-sheet>`}
       </div>
       ${this.helper
         ? html`<ha-input-helper-text .disabled=${this.disabled}
@@ -634,31 +632,12 @@ export class HaTargetPicker extends SubscribeMixin(LitElement) {
       }
 
       ha-bottom-sheet {
-        --ha-bottom-sheet-size: 100vh;
-      }
-
-      wa-drawer {
-        --spacing: 0;
-        --size: 90vh;
-        --size: calc(100dvh - 48px);
-        --show-duration: ${BOTTOM_SHEET_ANIMATION_DURATION_MS}ms;
-        --hide-duration: ${BOTTOM_SHEET_ANIMATION_DURATION_MS}ms;
-        --wa-color-surface-raised: transparent;
-      }
-      wa-drawer::part(dialog) {
-        align-items: center;
-      }
-
-      wa-drawer::part(body) {
-        border-top-left-radius: var(--ha-border-radius-lg);
-        border-top-right-radius: var(--ha-border-radius-lg);
-        background-color: var(
-          --ha-dialog-surface-background,
-          var(--mdc-theme-surface, #fff)
-        );
-        max-width: 600px;
-        width: 100%;
-        display: flex;
+        --ha-bottom-sheet-height: 90vh;
+        --ha-bottom-sheet-height: calc(100dvh - 48px);
+        --ha-bottom-sheet-max-height: var(--ha-bottom-sheet-height);
+        --ha-bottom-sheet-max-width: 600px;
+        --ha-bottom-sheet-padding: 0;
+        --ha-bottom-sheet-surface-background: var(--card-background-color);
       }
 
       ${unsafeCSS(chipStyles)}
