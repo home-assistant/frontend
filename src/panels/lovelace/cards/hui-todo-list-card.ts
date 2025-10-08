@@ -331,7 +331,7 @@ export class HuiTodoListCard extends LitElement implements LovelaceCard {
                 : nothing}
             ${!this._reordering && uncheckedItems.length
               ? html`
-                  ${!this._config.hide_status
+                  ${!this._config.hide_section_headers
                     ? html`<div class="header">
                         <h2>
                           ${this.hass!.localize(
@@ -368,7 +368,7 @@ export class HuiTodoListCard extends LitElement implements LovelaceCard {
               ? html`
                   <div>
                     <div class="divider" role="separator"></div>
-                    ${!this._config.hide_status
+                    ${!this._config.hide_section_headers
                       ? html`<div class="header">
                           <h2>
                             ${this.hass!.localize(
