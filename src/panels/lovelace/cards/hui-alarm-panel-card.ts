@@ -7,6 +7,7 @@ import { classMap } from "lit/directives/class-map";
 import { styleMap } from "lit/directives/style-map";
 import { applyThemesOnElement } from "../../../common/dom/apply_themes_on_element";
 import { fireEvent } from "../../../common/dom/fire_event";
+import { DEFAULT_ENTITY_NAME } from "../../../common/entity/compute_entity_name_display";
 import { stateColorCss } from "../../../common/entity/state_color";
 import { supportsFeature } from "../../../common/entity/supports-feature";
 import "../../../components/chips/ha-assist-chip";
@@ -232,12 +233,20 @@ class HuiAlarmPanelCard extends LitElement implements LovelaceCard {
 
     const defaultCode = this._entry?.options?.alarm_control_panel?.default_code;
 
+    const nameConfig = this._config.name;
+
+    const name =
+      typeof nameConfig === "string"
+        ? nameConfig
+        : this.hass.formatEntityName(
+            stateObj,
+            nameConfig || DEFAULT_ENTITY_NAME
+          );
+
     return html`
       <ha-card>
         <h1 class="card-header">
-          ${this._config.name ||
-          stateObj.attributes.friendly_name ||
-          stateLabel}
+          ${name}
           <ha-assist-chip
             filled
             style=${styleMap({
