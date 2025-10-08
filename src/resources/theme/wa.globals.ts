@@ -16,7 +16,15 @@ export const waMainStyles = css`
     --wa-font-weight-action: var(--ha-font-weight-medium);
     --wa-transition-fast: 75ms;
     --wa-transition-easing: ease;
-    --wa-border-width-l: var(--ha-border-radius-l);
+    --wa-border-width-s: var(--ha-border-width-sm);
+    --wa-border-width-m: var(--ha-border-width-md);
+    --wa-border-width-l: var(--ha-border-width-lg);
+    --wa-border-radius-s: var(--ha-border-radius-sm);
+    --wa-border-radius-m: var(--ha-border-radius-md);
+    --wa-border-radius-l: var(--ha-border-radius-lg);
+
+    --wa-line-height-condensed: 1.25;
+
     --wa-space-xl: 32px;
   }
 
