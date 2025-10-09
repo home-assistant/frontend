@@ -1,7 +1,7 @@
 import { fireEvent } from "../../../common/dom/fire_event";
 import type { HaEntityPickerEntityFilterFunc } from "../../../data/entity";
+import type { TargetType } from "../../../data/target";
 import type { HaDevicePickerDeviceFilterFunc } from "../../device/ha-device-picker";
-import type { TargetType } from "../ha-target-picker-item-row";
 
 export type NewBackupType = "automatic" | "manual";
 

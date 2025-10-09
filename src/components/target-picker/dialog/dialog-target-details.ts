@@ -1,13 +1,8 @@
-import { ContextProvider } from "@lit/context";
 import { mdiClose } from "@mdi/js";
-import type { UnsubscribeFunc } from "home-assistant-js-websocket";
 import { css, html, LitElement, nothing } from "lit";
 import { customElement, property, query, state } from "lit/decorators";
 import { fireEvent } from "../../../common/dom/fire_event";
-import { labelsContext } from "../../../data/context";
-import { subscribeLabelRegistry } from "../../../data/label_registry";
 import type { HassDialog } from "../../../dialogs/make-dialog-manager";
-import { SubscribeMixin } from "../../../mixins/subscribe-mixin";
 import type { HomeAssistant } from "../../../types";
 import "../../ha-dialog-header";
 import "../../ha-icon-button";
@@ -21,20 +16,12 @@ import "../ha-target-picker-item-row";
 import type { TargetDetailsDialogParams } from "./show-dialog-target-details";
 
 @customElement("ha-dialog-target-details")
-class DialogTargetDetails
-  extends SubscribeMixin(LitElement)
-  implements HassDialog
-{
+class DialogTargetDetails extends LitElement implements HassDialog {
   @property({ attribute: false }) public hass!: HomeAssistant;
 
   @state() private _params?: TargetDetailsDialogParams;
 
   @query("ha-md-dialog") private _dialog?: HaMdDialog;
-
-  private _labelsContext = new ContextProvider(this, {
-    context: labelsContext,
-    initialValue: [],
-  });
 
   public showDialog(params: TargetDetailsDialogParams): void {
     this._params = params;
@@ -48,14 +35,6 @@ class DialogTargetDetails
   private _dialogClosed() {
     fireEvent(this, "dialog-closed", { dialog: this.localName });
     this._params = undefined;
-  }
-
-  public hassSubscribe(): UnsubscribeFunc[] {
-    return [
-      subscribeLabelRegistry(this.hass.connection!, (labels) => {
-        this._labelsContext.setValue(labels);
-      }),
-    ];
   }
 
   protected render() {

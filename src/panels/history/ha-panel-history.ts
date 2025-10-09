@@ -1,4 +1,3 @@
-import { ContextProvider } from "@lit/context";
 import type { ActionDetail } from "@material/mwc-list";
 import {
   mdiDotsVertical,
@@ -37,7 +36,6 @@ import "../../components/ha-menu-button";
 import "../../components/ha-spinner";
 import "../../components/ha-target-picker";
 import "../../components/ha-top-app-bar-fixed";
-import { labelsContext } from "../../data/context";
 import type { HistoryResult } from "../../data/history";
 import {
   computeHistory,
@@ -45,18 +43,16 @@ import {
   mergeHistoryResults,
   subscribeHistory,
 } from "../../data/history";
-import { subscribeLabelRegistry } from "../../data/label_registry";
 import { fetchStatistics } from "../../data/recorder";
 import { resolveEntityIDs } from "../../data/selector";
 import { getSensorNumericDeviceClasses } from "../../data/sensor";
 import { showAlertDialog } from "../../dialogs/generic/show-dialog-box";
-import { SubscribeMixin } from "../../mixins/subscribe-mixin";
 import { haStyle } from "../../resources/styles";
 import type { HomeAssistant } from "../../types";
 import { fileDownload } from "../../util/file_download";
 import { addEntitiesToLovelaceView } from "../lovelace/editor/add-entities-to-view";
 
-class HaPanelHistory extends SubscribeMixin(LitElement) {
+class HaPanelHistory extends LitElement {
   @property({ attribute: false }) hass!: HomeAssistant;
 
   @property({ reflect: true, type: Boolean }) public narrow = false;
@@ -93,11 +89,6 @@ class HaPanelHistory extends SubscribeMixin(LitElement) {
 
   private _interval?: number;
 
-  private _labelsContext = new ContextProvider(this, {
-    context: labelsContext,
-    initialValue: [],
-  });
-
   public constructor() {
     super();
 
@@ -115,14 +106,6 @@ class HaPanelHistory extends SubscribeMixin(LitElement) {
     if (this.hasUpdated) {
       this._getHistory();
     }
-  }
-
-  public hassSubscribe(): UnsubscribeFunc[] {
-    return [
-      subscribeLabelRegistry(this.hass.connection!, (labels) => {
-        this._labelsContext.setValue(labels);
-      }),
-    ];
   }
 
   public disconnectedCallback() {

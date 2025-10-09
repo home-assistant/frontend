@@ -1,10 +1,10 @@
+import { Dialog } from "@material/web/dialog/internal/dialog";
+import { styles } from "@material/web/dialog/internal/dialog-styles";
 import {
   type DialogAnimation,
   DIALOG_DEFAULT_CLOSE_ANIMATION,
   DIALOG_DEFAULT_OPEN_ANIMATION,
 } from "@material/web/dialog/internal/animations";
-import { Dialog } from "@material/web/dialog/internal/dialog";
-import { styles } from "@material/web/dialog/internal/dialog-styles";
 import { css } from "lit";
 import { customElement, property } from "lit/decorators";
 
@@ -56,9 +56,6 @@ export class HaMdDialog extends Dialog {
    */
   @property({ attribute: "disable-cancel-action", type: Boolean })
   public disableCancelAction = false;
-
-  @property({ attribute: "flexcontent", type: Boolean, reflect: true })
-  public flexContent = false;
 
   private _polyfillDialogRegistered = false;
 
@@ -202,10 +199,6 @@ export class HaMdDialog extends Dialog {
       }
       .scrim {
         z-index: 10; /* overlay navigation */
-      }
-
-      :host([flexcontent]) .content {
-        display: flex;
       }
     `,
   ];

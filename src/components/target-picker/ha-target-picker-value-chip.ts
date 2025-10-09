@@ -27,6 +27,7 @@ import { getConfigEntry } from "../../data/config_entries";
 import { labelsContext } from "../../data/context";
 import { domainToName } from "../../data/integration";
 import type { LabelRegistryEntry } from "../../data/label_registry";
+import type { TargetType } from "../../data/target";
 import type { HomeAssistant } from "../../types";
 import { brandsUrl } from "../../util/brands-url";
 import { floorDefaultIconPath } from "../ha-floor-icon";
@@ -36,13 +37,12 @@ import "../ha-md-list";
 import "../ha-md-list-item";
 import "../ha-state-icon";
 import "../ha-tooltip";
-import type { TargetType } from "./ha-target-picker-item-row";
 
-@customElement("ha-target-picker-chips-selection")
-export class HaTargetPickerChipsSelection extends LitElement {
+@customElement("ha-target-picker-value-chip")
+export class HaTargetPickerValueChip extends LitElement {
   @property({ attribute: false }) public hass!: HomeAssistant;
 
-  @property({ reflect: true }) public type!: TargetType;
+  @property() public type!: TargetType;
 
   @property({ attribute: "item-id" }) public itemId!: string;
 
@@ -349,6 +349,6 @@ export class HaTargetPickerChipsSelection extends LitElement {
 
 declare global {
   interface HTMLElementTagNameMap {
-    "ha-target-picker-chips-selection": HaTargetPickerChipsSelection;
+    "ha-target-picker-value-chip": HaTargetPickerValueChip;
   }
 }

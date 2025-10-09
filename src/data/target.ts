@@ -4,8 +4,11 @@ import type { HaDevicePickerDeviceFilterFunc } from "../components/device/ha-dev
 import type { HomeAssistant } from "../types";
 import type { AreaRegistryEntry } from "./area_registry";
 import type { DeviceRegistryEntry } from "./device_registry";
-import type { EntityRegistryDisplayEntry } from "./entity_registry";
 import type { HaEntityPickerEntityFilterFunc } from "./entity";
+import type { EntityRegistryDisplayEntry } from "./entity_registry";
+
+export type TargetType = "entity" | "device" | "area" | "label" | "floor";
+export type TargetTypeFloorless = Exclude<TargetType, "floor">;
 
 export interface ExtractFromTargetResult {
   missing_areas: string[];

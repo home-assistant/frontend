@@ -131,6 +131,8 @@ export class HaLabelPicker extends SubscribeMixin(LitElement) {
       }
   );
 
+  private _getLabelsMemoized = memoizeOne(getLabels);
+
   private _getItems = () => {
     if (!this._labels || this._labels.length === 0) {
       return [
@@ -142,7 +144,7 @@ export class HaLabelPicker extends SubscribeMixin(LitElement) {
       ];
     }
 
-    return getLabels(
+    return this._getLabelsMemoized(
       this.hass,
       this._labels,
       this.includeDomains,

@@ -15,6 +15,8 @@ import {
   areaMeetsFilter,
   deviceMeetsFilter,
   entityRegMeetsFilter,
+  type TargetType,
+  type TargetTypeFloorless,
 } from "../data/target";
 import { SubscribeMixin } from "../mixins/subscribe-mixin";
 import { showHelperDetailDialog } from "../panels/config/helpers/show-dialog-helper-detail";
@@ -24,11 +26,9 @@ import "./ha-bottom-sheet";
 import "./ha-button";
 import "./ha-input-helper-text";
 import "./ha-svg-icon";
-import "./target-picker/ha-target-picker-chips-selection";
 import "./target-picker/ha-target-picker-item-group";
-import type { TargetType } from "./target-picker/ha-target-picker-item-row";
 import "./target-picker/ha-target-picker-selector";
-import type { TargetTypeFloorless } from "./target-picker/ha-target-picker-selector";
+import "./target-picker/ha-target-picker-value-chip";
 
 @customElement("ha-target-picker")
 export class HaTargetPicker extends SubscribeMixin(LitElement) {
@@ -110,65 +110,65 @@ export class HaTargetPicker extends SubscribeMixin(LitElement) {
             ${this.value?.floor_id
               ? ensureArray(this.value.floor_id).map(
                   (floor_id) => html`
-                    <ha-target-picker-chips-selection
+                    <ha-target-picker-value-chip
                       .hass=${this.hass}
                       .type=${"floor"}
                       .itemId=${floor_id}
                       @remove-target-item=${this._handleRemove}
                       @expand-target-item=${this._handleExpand}
-                    ></ha-target-picker-chips-selection>
+                    ></ha-target-picker-value-chip>
                   `
                 )
               : nothing}
             ${this.value?.area_id
               ? ensureArray(this.value.area_id).map(
                   (area_id) => html`
-                    <ha-target-picker-chips-selection
+                    <ha-target-picker-value-chip
                       .hass=${this.hass}
                       .type=${"area"}
                       .itemId=${area_id}
                       @remove-target-item=${this._handleRemove}
                       @expand-target-item=${this._handleExpand}
-                    ></ha-target-picker-chips-selection>
+                    ></ha-target-picker-value-chip>
                   `
                 )
               : nothing}
             ${this.value?.device_id
               ? ensureArray(this.value.device_id).map(
                   (device_id) => html`
-                    <ha-target-picker-chips-selection
+                    <ha-target-picker-value-chip
                       .hass=${this.hass}
                       .type=${"device"}
                       .itemId=${device_id}
                       @remove-target-item=${this._handleRemove}
                       @expand-target-item=${this._handleExpand}
-                    ></ha-target-picker-chips-selection>
+                    ></ha-target-picker-value-chip>
                   `
                 )
               : nothing}
             ${this.value?.entity_id
               ? ensureArray(this.value.entity_id).map(
                   (entity_id) => html`
-                    <ha-target-picker-chips-selection
+                    <ha-target-picker-value-chip
                       .hass=${this.hass}
                       .type=${"entity"}
                       .itemId=${entity_id}
                       @remove-target-item=${this._handleRemove}
                       @expand-target-item=${this._handleExpand}
-                    ></ha-target-picker-chips-selection>
+                    ></ha-target-picker-value-chip>
                   `
                 )
               : nothing}
             ${this.value?.label_id
               ? ensureArray(this.value.label_id).map(
                   (label_id) => html`
-                    <ha-target-picker-chips-selection
+                    <ha-target-picker-value-chip
                       .hass=${this.hass}
                       .type=${"label"}
                       .itemId=${label_id}
                       @remove-target-item=${this._handleRemove}
                       @expand-target-item=${this._handleExpand}
-                    ></ha-target-picker-chips-selection>
+                    ></ha-target-picker-value-chip>
                   `
                 )
               : nothing}

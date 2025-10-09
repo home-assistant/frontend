@@ -247,8 +247,10 @@ export class HaEntityPicker extends LitElement {
     }
   );
 
+  private _getEntitiesMemoized = memoizeOne(getEntities);
+
   private _getItems = () =>
-    getEntities(
+    this._getEntitiesMemoized(
       this.hass,
       this.includeDomains,
       this.excludeDomains,

@@ -93,6 +93,8 @@ export class HaDevicePicker extends LitElement {
 
   @state() private _configEntryLookup: Record<string, ConfigEntry> = {};
 
+  private _getDevicesMemoized = memoizeOne(getDevices);
+
   protected firstUpdated(_changedProperties: PropertyValues): void {
     super.firstUpdated(_changedProperties);
     this._loadConfigEntries();
@@ -106,7 +108,7 @@ export class HaDevicePicker extends LitElement {
   }
 
   private _getItems = () =>
-    getDevices(
+    this._getDevicesMemoized(
       this.hass,
       this._configEntryLookup,
       this.includeDomains,

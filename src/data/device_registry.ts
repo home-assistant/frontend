@@ -1,4 +1,3 @@
-import memoizeOne from "memoize-one";
 import { computeAreaName } from "../common/entity/compute_area_name";
 import { computeDeviceNameDisplay } from "../common/entity/compute_device_name";
 import { computeDomain } from "../common/entity/compute_domain";
@@ -188,159 +187,131 @@ export const getDevices = (
   entityFilter?: HaEntityPickerEntityFilterFunc,
   excludeDevices?: string[],
   value?: string
-): DevicePickerItem[] =>
-  memoizeOne(
-    (
-      haDevicesMemo: HomeAssistant["devices"],
-      haEntitiesMemo: HomeAssistant["entities"],
-      configEntryLookupMemo: Record<string, ConfigEntry>,
-      includeDomainsMemo?: string[],
-      excludeDomainsMemo?: string[],
-      includeDeviceClassesMemo?: string[],
-      deviceFilterMemo?: HaDevicePickerDeviceFilterFunc,
-      entityFilterMemo?: HaEntityPickerEntityFilterFunc,
-      excludeDevicesMemo?: string[]
-    ): DevicePickerItem[] => {
-      const devices = Object.values(haDevicesMemo);
-      const entities = Object.values(haEntitiesMemo);
+): DevicePickerItem[] => {
+  const devices = Object.values(hass.devices);
+  const entities = Object.values(hass.entities);
 
-      let deviceEntityLookup: DeviceEntityDisplayLookup = {};
+  let deviceEntityLookup: DeviceEntityDisplayLookup = {};
 
-      if (
-        includeDomainsMemo ||
-        excludeDomainsMemo ||
-        includeDeviceClassesMemo ||
-        entityFilterMemo
-      ) {
-        deviceEntityLookup = getDeviceEntityDisplayLookup(entities);
-      }
+  if (
+    includeDomains ||
+    excludeDomains ||
+    includeDeviceClasses ||
+    entityFilter
+  ) {
+    deviceEntityLookup = getDeviceEntityDisplayLookup(entities);
+  }
 
-      let inputDevices = devices.filter(
-        (device) => device.id === value || !device.disabled_by
-      );
-
-      if (includeDomainsMemo) {
-        inputDevices = inputDevices.filter((device) => {
-          const devEntities = deviceEntityLookup[device.id];
-          if (!devEntities || !devEntities.length) {
-            return false;
-          }
-          return deviceEntityLookup[device.id].some((entity) =>
-            includeDomainsMemo.includes(computeDomain(entity.entity_id))
-          );
-        });
-      }
-
-      if (excludeDomainsMemo) {
-        inputDevices = inputDevices.filter((device) => {
-          const devEntities = deviceEntityLookup[device.id];
-          if (!devEntities || !devEntities.length) {
-            return true;
-          }
-          return entities.every(
-            (entity) =>
-              !excludeDomainsMemo.includes(computeDomain(entity.entity_id))
-          );
-        });
-      }
-
-      if (excludeDevicesMemo) {
-        inputDevices = inputDevices.filter(
-          (device) => !excludeDevicesMemo!.includes(device.id)
-        );
-      }
-
-      if (includeDeviceClassesMemo) {
-        inputDevices = inputDevices.filter((device) => {
-          const devEntities = deviceEntityLookup[device.id];
-          if (!devEntities || !devEntities.length) {
-            return false;
-          }
-          return deviceEntityLookup[device.id].some((entity) => {
-            const stateObj = hass.states[entity.entity_id];
-            if (!stateObj) {
-              return false;
-            }
-            return (
-              stateObj.attributes.device_class &&
-              includeDeviceClassesMemo.includes(
-                stateObj.attributes.device_class
-              )
-            );
-          });
-        });
-      }
-
-      if (entityFilterMemo) {
-        inputDevices = inputDevices.filter((device) => {
-          const devEntities = deviceEntityLookup[device.id];
-          if (!devEntities || !devEntities.length) {
-            return false;
-          }
-          return devEntities.some((entity) => {
-            const stateObj = hass.states[entity.entity_id];
-            if (!stateObj) {
-              return false;
-            }
-            return entityFilterMemo(stateObj);
-          });
-        });
-      }
-
-      if (deviceFilterMemo) {
-        inputDevices = inputDevices.filter(
-          (device) =>
-            // We always want to include the device of the current value
-            device.id === value || deviceFilterMemo!(device)
-        );
-      }
-
-      const outputDevices = inputDevices.map<DevicePickerItem>((device) => {
-        const deviceName = computeDeviceNameDisplay(
-          device,
-          hass,
-          deviceEntityLookup[device.id]
-        );
-
-        const { area } = getDeviceContext(device, hass);
-
-        const areaName = area ? computeAreaName(area) : undefined;
-
-        const configEntry = device.primary_config_entry
-          ? configEntryLookupMemo?.[device.primary_config_entry]
-          : undefined;
-
-        const domain = configEntry?.domain;
-        const domainName = domain
-          ? domainToName(hass.localize, domain)
-          : undefined;
-
-        return {
-          id: device.id,
-          label: "",
-          primary:
-            deviceName ||
-            hass.localize("ui.components.device-picker.unnamed_device"),
-          secondary: areaName,
-          domain: configEntry?.domain,
-          domain_name: domainName,
-          search_labels: [deviceName, areaName, domain, domainName].filter(
-            Boolean
-          ) as string[],
-          sorting_label: deviceName || "zzz",
-        };
-      });
-
-      return outputDevices;
-    }
-  )(
-    hass.devices,
-    hass.entities,
-    configEntryLookup,
-    includeDomains,
-    excludeDomains,
-    includeDeviceClasses,
-    deviceFilter,
-    entityFilter,
-    excludeDevices
+  let inputDevices = devices.filter(
+    (device) => device.id === value || !device.disabled_by
   );
+
+  if (includeDomains) {
+    inputDevices = inputDevices.filter((device) => {
+      const devEntities = deviceEntityLookup[device.id];
+      if (!devEntities || !devEntities.length) {
+        return false;
+      }
+      return deviceEntityLookup[device.id].some((entity) =>
+        includeDomains.includes(computeDomain(entity.entity_id))
+      );
+    });
+  }
+
+  if (excludeDomains) {
+    inputDevices = inputDevices.filter((device) => {
+      const devEntities = deviceEntityLookup[device.id];
+      if (!devEntities || !devEntities.length) {
+        return true;
+      }
+      return entities.every(
+        (entity) => !excludeDomains.includes(computeDomain(entity.entity_id))
+      );
+    });
+  }
+
+  if (excludeDevices) {
+    inputDevices = inputDevices.filter(
+      (device) => !excludeDevices!.includes(device.id)
+    );
+  }
+
+  if (includeDeviceClasses) {
+    inputDevices = inputDevices.filter((device) => {
+      const devEntities = deviceEntityLookup[device.id];
+      if (!devEntities || !devEntities.length) {
+        return false;
+      }
+      return deviceEntityLookup[device.id].some((entity) => {
+        const stateObj = hass.states[entity.entity_id];
+        if (!stateObj) {
+          return false;
+        }
+        return (
+          stateObj.attributes.device_class &&
+          includeDeviceClasses.includes(stateObj.attributes.device_class)
+        );
+      });
+    });
+  }
+
+  if (entityFilter) {
+    inputDevices = inputDevices.filter((device) => {
+      const devEntities = deviceEntityLookup[device.id];
+      if (!devEntities || !devEntities.length) {
+        return false;
+      }
+      return devEntities.some((entity) => {
+        const stateObj = hass.states[entity.entity_id];
+        if (!stateObj) {
+          return false;
+        }
+        return entityFilter(stateObj);
+      });
+    });
+  }
+
+  if (deviceFilter) {
+    inputDevices = inputDevices.filter(
+      (device) =>
+        // We always want to include the device of the current value
+        device.id === value || deviceFilter!(device)
+    );
+  }
+
+  const outputDevices = inputDevices.map<DevicePickerItem>((device) => {
+    const deviceName = computeDeviceNameDisplay(
+      device,
+      hass,
+      deviceEntityLookup[device.id]
+    );
+
+    const { area } = getDeviceContext(device, hass);
+
+    const areaName = area ? computeAreaName(area) : undefined;
+
+    const configEntry = device.primary_config_entry
+      ? configEntryLookup?.[device.primary_config_entry]
+      : undefined;
+
+    const domain = configEntry?.domain;
+    const domainName = domain ? domainToName(hass.localize, domain) : undefined;
+
+    return {
+      id: device.id,
+      label: "",
+      primary:
+        deviceName ||
+        hass.localize("ui.components.device-picker.unnamed_device"),
+      secondary: areaName,
+      domain: configEntry?.domain,
+      domain_name: domainName,
+      search_labels: [deviceName, areaName, domain, domainName].filter(
+        Boolean
+      ) as string[],
+      sorting_label: deviceName || "zzz",
+    };
+  });
+
+  return outputDevices;
+};

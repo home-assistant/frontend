@@ -1,18 +1,18 @@
 import { css, html, LitElement, nothing } from "lit";
 import { customElement, property } from "lit/decorators";
 import type { HaEntityPickerEntityFilterFunc } from "../../data/entity";
+import type { TargetType, TargetTypeFloorless } from "../../data/target";
 import type { HomeAssistant } from "../../types";
 import type { HaDevicePickerDeviceFilterFunc } from "../device/ha-device-picker";
 import "../ha-expansion-panel";
 import "../ha-md-list";
 import "./ha-target-picker-item-row";
-import type { TargetType } from "./ha-target-picker-item-row";
 
 @customElement("ha-target-picker-item-group")
 export class HaTargetPickerItemGroup extends LitElement {
   @property({ attribute: false }) public hass!: HomeAssistant;
 
-  @property() public type!: "entity" | "device" | "area" | "label";
+  @property() public type!: TargetTypeFloorless;
 
   @property({ attribute: false }) public items!: Partial<
     Record<TargetType, string[]>
@@ -66,7 +66,7 @@ export class HaTargetPickerItemGroup extends LitElement {
                 (item) =>
                   html`<ha-target-picker-item-row
                     .hass=${this.hass}
-                    .type=${type as "entity" | "device" | "area" | "label"}
+                    .type=${type as TargetTypeFloorless}
                     .itemId=${item}
                     .deviceFilter=${this.deviceFilter}
                     .entityFilter=${this.entityFilter}

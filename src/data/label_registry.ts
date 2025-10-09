@@ -2,7 +2,6 @@ import { mdiLabel } from "@mdi/js";
 import type { Connection } from "home-assistant-js-websocket";
 import { createCollection } from "home-assistant-js-websocket";
 import type { Store } from "home-assistant-js-websocket/dist/store";
-import memoizeOne from "memoize-one";
 import { computeDomain } from "../common/entity/compute_domain";
 import { stringCompare } from "../common/string/compare";
 import { debounce } from "../common/util/debounce";
@@ -110,201 +109,168 @@ export const getLabels = (
   deviceFilter?: HaDevicePickerDeviceFilterFunc,
   entityFilter?: HaEntityPickerEntityFilterFunc,
   excludeLabels?: string[]
-): PickerComboBoxItem[] =>
-  memoizeOne(
-    (
-      haAreasMemo: HomeAssistant["areas"],
-      haDevicesMemo: HomeAssistant["devices"],
-      haEntitiesMemo: HomeAssistant["entities"],
-      labelsMemo?: LabelRegistryEntry[],
-      includeDomainsMemo?: string[],
-      excludeDomainsMemo?: string[],
-      includeDeviceClassesMemo?: string[],
-      deviceFilterMemo?: HaDevicePickerDeviceFilterFunc,
-      entityFilterMemo?: HaEntityPickerEntityFilterFunc,
-      excludeLabelsMemo?: string[]
-    ): PickerComboBoxItem[] => {
-      if (!labelsMemo || labelsMemo.length === 0) {
-        return [];
-      }
+): PickerComboBoxItem[] => {
+  if (!labels || labels.length === 0) {
+    return [];
+  }
 
-      const devices = Object.values(haDevicesMemo);
-      const entities = Object.values(haEntitiesMemo);
+  const devices = Object.values(hass.devices);
+  const entities = Object.values(hass.entities);
 
-      let deviceEntityLookup: DeviceEntityDisplayLookup = {};
-      let inputDevices: DeviceRegistryEntry[] | undefined;
-      let inputEntities: EntityRegistryDisplayEntry[] | undefined;
+  let deviceEntityLookup: DeviceEntityDisplayLookup = {};
+  let inputDevices: DeviceRegistryEntry[] | undefined;
+  let inputEntities: EntityRegistryDisplayEntry[] | undefined;
 
-      if (
-        includeDomainsMemo ||
-        excludeDomainsMemo ||
-        includeDeviceClassesMemo ||
-        deviceFilterMemo ||
-        entityFilterMemo
-      ) {
-        deviceEntityLookup = getDeviceEntityDisplayLookup(entities);
-        inputDevices = devices;
-        inputEntities = entities.filter((entity) => entity.labels.length > 0);
+  if (
+    includeDomains ||
+    excludeDomains ||
+    includeDeviceClasses ||
+    deviceFilter ||
+    entityFilter
+  ) {
+    deviceEntityLookup = getDeviceEntityDisplayLookup(entities);
+    inputDevices = devices;
+    inputEntities = entities.filter((entity) => entity.labels.length > 0);
 
-        if (includeDomainsMemo) {
-          inputDevices = inputDevices!.filter((device) => {
-            const devEntities = deviceEntityLookup[device.id];
-            if (!devEntities || !devEntities.length) {
-              return false;
-            }
-            return deviceEntityLookup[device.id].some((entity) =>
-              includeDomainsMemo.includes(computeDomain(entity.entity_id))
-            );
-          });
-          inputEntities = inputEntities!.filter((entity) =>
-            includeDomainsMemo.includes(computeDomain(entity.entity_id))
-          );
+    if (includeDomains) {
+      inputDevices = inputDevices!.filter((device) => {
+        const devEntities = deviceEntityLookup[device.id];
+        if (!devEntities || !devEntities.length) {
+          return false;
         }
-
-        if (excludeDomainsMemo) {
-          inputDevices = inputDevices!.filter((device) => {
-            const devEntities = deviceEntityLookup[device.id];
-            if (!devEntities || !devEntities.length) {
-              return true;
-            }
-            return entities.every(
-              (entity) =>
-                !excludeDomainsMemo.includes(computeDomain(entity.entity_id))
-            );
-          });
-          inputEntities = inputEntities!.filter(
-            (entity) =>
-              !excludeDomainsMemo.includes(computeDomain(entity.entity_id))
-          );
-        }
-
-        if (includeDeviceClassesMemo) {
-          inputDevices = inputDevices!.filter((device) => {
-            const devEntities = deviceEntityLookup[device.id];
-            if (!devEntities || !devEntities.length) {
-              return false;
-            }
-            return deviceEntityLookup[device.id].some((entity) => {
-              const stateObj = hass.states[entity.entity_id];
-              if (!stateObj) {
-                return false;
-              }
-              return (
-                stateObj.attributes.device_class &&
-                includeDeviceClassesMemo.includes(
-                  stateObj.attributes.device_class
-                )
-              );
-            });
-          });
-          inputEntities = inputEntities!.filter((entity) => {
-            const stateObj = hass.states[entity.entity_id];
-            return (
-              stateObj.attributes.device_class &&
-              includeDeviceClassesMemo.includes(
-                stateObj.attributes.device_class
-              )
-            );
-          });
-        }
-
-        if (deviceFilterMemo) {
-          inputDevices = inputDevices!.filter((device) =>
-            deviceFilterMemo!(device)
-          );
-        }
-
-        if (entityFilterMemo) {
-          inputDevices = inputDevices!.filter((device) => {
-            const devEntities = deviceEntityLookup[device.id];
-            if (!devEntities || !devEntities.length) {
-              return false;
-            }
-            return deviceEntityLookup[device.id].some((entity) => {
-              const stateObj = hass.states[entity.entity_id];
-              if (!stateObj) {
-                return false;
-              }
-              return entityFilterMemo(stateObj);
-            });
-          });
-          inputEntities = inputEntities!.filter((entity) => {
-            const stateObj = hass.states[entity.entity_id];
-            if (!stateObj) {
-              return false;
-            }
-            return entityFilterMemo!(stateObj);
-          });
-        }
-      }
-
-      let outputLabels = labelsMemo;
-      const usedLabels = new Set<string>();
-
-      let areaIds: string[] | undefined;
-
-      if (inputDevices) {
-        areaIds = inputDevices
-          .filter((device) => device.area_id)
-          .map((device) => device.area_id!);
-
-        inputDevices.forEach((device) => {
-          device.labels.forEach((label) => usedLabels.add(label));
-        });
-      }
-
-      if (inputEntities) {
-        areaIds = (areaIds ?? []).concat(
-          inputEntities
-            .filter((entity) => entity.area_id)
-            .map((entity) => entity.area_id!)
+        return deviceEntityLookup[device.id].some((entity) =>
+          includeDomains.includes(computeDomain(entity.entity_id))
         );
-        inputEntities.forEach((entity) => {
-          entity.labels.forEach((label) => usedLabels.add(label));
-        });
-      }
-
-      if (areaIds) {
-        areaIds.forEach((areaId) => {
-          const area = haAreasMemo[areaId];
-          area.labels.forEach((label) => usedLabels.add(label));
-        });
-      }
-
-      if (excludeLabelsMemo) {
-        outputLabels = outputLabels.filter(
-          (label) => !excludeLabelsMemo!.includes(label.label_id)
-        );
-      }
-
-      if (inputDevices || inputEntities) {
-        outputLabels = outputLabels.filter((label) =>
-          usedLabels.has(label.label_id)
-        );
-      }
-
-      const items = outputLabels.map<PickerComboBoxItem>((label) => ({
-        id: label.label_id,
-        primary: label.name,
-        icon: label.icon || undefined,
-        icon_path: label.icon ? undefined : mdiLabel,
-        sorting_label: label.name,
-        search_labels: [label.name, label.label_id, label.description].filter(
-          (v): v is string => Boolean(v)
-        ),
-      }));
-
-      return items;
+      });
+      inputEntities = inputEntities!.filter((entity) =>
+        includeDomains.includes(computeDomain(entity.entity_id))
+      );
     }
-  )(
-    hass.areas,
-    hass.devices,
-    hass.entities,
-    labels,
-    includeDomains,
-    excludeDomains,
-    includeDeviceClasses,
-    deviceFilter,
-    entityFilter,
-    excludeLabels
-  );
+
+    if (excludeDomains) {
+      inputDevices = inputDevices!.filter((device) => {
+        const devEntities = deviceEntityLookup[device.id];
+        if (!devEntities || !devEntities.length) {
+          return true;
+        }
+        return entities.every(
+          (entity) => !excludeDomains.includes(computeDomain(entity.entity_id))
+        );
+      });
+      inputEntities = inputEntities!.filter(
+        (entity) => !excludeDomains.includes(computeDomain(entity.entity_id))
+      );
+    }
+
+    if (includeDeviceClasses) {
+      inputDevices = inputDevices!.filter((device) => {
+        const devEntities = deviceEntityLookup[device.id];
+        if (!devEntities || !devEntities.length) {
+          return false;
+        }
+        return deviceEntityLookup[device.id].some((entity) => {
+          const stateObj = hass.states[entity.entity_id];
+          if (!stateObj) {
+            return false;
+          }
+          return (
+            stateObj.attributes.device_class &&
+            includeDeviceClasses.includes(stateObj.attributes.device_class)
+          );
+        });
+      });
+      inputEntities = inputEntities!.filter((entity) => {
+        const stateObj = hass.states[entity.entity_id];
+        return (
+          stateObj.attributes.device_class &&
+          includeDeviceClasses.includes(stateObj.attributes.device_class)
+        );
+      });
+    }
+
+    if (deviceFilter) {
+      inputDevices = inputDevices!.filter((device) => deviceFilter!(device));
+    }
+
+    if (entityFilter) {
+      inputDevices = inputDevices!.filter((device) => {
+        const devEntities = deviceEntityLookup[device.id];
+        if (!devEntities || !devEntities.length) {
+          return false;
+        }
+        return deviceEntityLookup[device.id].some((entity) => {
+          const stateObj = hass.states[entity.entity_id];
+          if (!stateObj) {
+            return false;
+          }
+          return entityFilter(stateObj);
+        });
+      });
+      inputEntities = inputEntities!.filter((entity) => {
+        const stateObj = hass.states[entity.entity_id];
+        if (!stateObj) {
+          return false;
+        }
+        return entityFilter!(stateObj);
+      });
+    }
+  }
+
+  let outputLabels = labels;
+  const usedLabels = new Set<string>();
+
+  let areaIds: string[] | undefined;
+
+  if (inputDevices) {
+    areaIds = inputDevices
+      .filter((device) => device.area_id)
+      .map((device) => device.area_id!);
+
+    inputDevices.forEach((device) => {
+      device.labels.forEach((label) => usedLabels.add(label));
+    });
+  }
+
+  if (inputEntities) {
+    areaIds = (areaIds ?? []).concat(
+      inputEntities
+        .filter((entity) => entity.area_id)
+        .map((entity) => entity.area_id!)
+    );
+    inputEntities.forEach((entity) => {
+      entity.labels.forEach((label) => usedLabels.add(label));
+    });
+  }
+
+  if (areaIds) {
+    areaIds.forEach((areaId) => {
+      const area = hass.areas[areaId];
+      area.labels.forEach((label) => usedLabels.add(label));
+    });
+  }
+
+  if (excludeLabels) {
+    outputLabels = outputLabels.filter(
+      (label) => !excludeLabels!.includes(label.label_id)
+    );
+  }
+
+  if (inputDevices || inputEntities) {
+    outputLabels = outputLabels.filter((label) =>
+      usedLabels.has(label.label_id)
+    );
+  }
+
+  const items = outputLabels.map<PickerComboBoxItem>((label) => ({
+    id: label.label_id,
+    primary: label.name,
+    icon: label.icon || undefined,
+    icon_path: label.icon ? undefined : mdiLabel,
+    sorting_label: label.name,
+    search_labels: [label.name, label.label_id, label.description].filter(
+      (v): v is string => Boolean(v)
+    ),
+  }));
+
+  return items;
+};

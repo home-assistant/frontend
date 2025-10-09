@@ -21,6 +21,7 @@ import { getEntityContext } from "../../common/entity/context/get_entity_context
 import { computeRTL } from "../../common/util/compute_rtl";
 import { getConfigEntry } from "../../data/config_entries";
 import { labelsContext } from "../../data/context";
+import type { HaEntityPickerEntityFilterFunc } from "../../data/entity";
 import { domainToName } from "../../data/integration";
 import type { LabelRegistryEntry } from "../../data/label_registry";
 import {
@@ -30,6 +31,7 @@ import {
   extractFromTarget,
   type ExtractFromTargetResult,
   type ExtractFromTargetResultReferenced,
+  type TargetType,
 } from "../../data/target";
 import { buttonLinkStyle } from "../../resources/styles";
 import type { HomeAssistant } from "../../types";
@@ -44,9 +46,6 @@ import type { HaMdListItem } from "../ha-md-list-item";
 import "../ha-state-icon";
 import "../ha-svg-icon";
 import { showTargetDetailsDialog } from "./dialog/show-dialog-target-details";
-import type { HaEntityPickerEntityFilterFunc } from "../../data/entity";
-
-export type TargetType = "entity" | "device" | "area" | "label" | "floor";
 
 @customElement("ha-target-picker-item-row")
 export class HaTargetPickerItemRow extends LitElement {
@@ -57,8 +56,6 @@ export class HaTargetPickerItemRow extends LitElement {
   @property({ attribute: "item-id" }) public itemId!: string;
 
   @property({ type: Boolean }) public expand = false;
-
-  @property({ type: Boolean, attribute: "last" }) public lastItem = false;
 
   @property({ type: Boolean, attribute: "sub-entry", reflect: true })
   public subEntry = false;
@@ -350,9 +347,6 @@ export class HaTargetPickerItemRow extends LitElement {
                 .parentEntries=${rows1Entries?.[index]}
                 .hideContext=${this.hideContext || this.type !== "label"}
                 expand
-                .lastItem=${deviceRows.length === 0 &&
-                entityRows.length === 0 &&
-                index === rows1.length - 1}
               ></ha-target-picker-item-row>
             `
           )}
@@ -366,20 +360,17 @@ export class HaTargetPickerItemRow extends LitElement {
                 .parentEntries=${deviceRowsEntries?.[index]}
                 .hideContext=${this.hideContext || this.type !== "label"}
                 expand
-                .lastItem=${entityRows.length === 0 &&
-                index === deviceRows.length - 1}
               ></ha-target-picker-item-row>
             `
           )}
           ${entityRows.map(
-            (itemId, index) => html`
+            (itemId) => html`
               <ha-target-picker-item-row
                 sub-entry
                 .hass=${this.hass}
                 type="entity"
                 .itemId=${itemId}
                 .hideContext=${this.hideContext || this.type !== "label"}
-                .lastItem=${index === entityRows.length - 1}
               ></ha-target-picker-item-row>
             `
           )}

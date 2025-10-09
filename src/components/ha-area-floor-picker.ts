@@ -188,8 +188,10 @@ export class HaAreaFloorPicker extends LitElement {
     `;
   };
 
+  private _getAreasAndFloorsMemoized = memoizeOne(getAreasAndFloors);
+
   private _getItems = () =>
-    getAreasAndFloors(
+    this._getAreasAndFloorsMemoized(
       this.hass.states,
       this.hass.floors,
       this.hass.areas,
