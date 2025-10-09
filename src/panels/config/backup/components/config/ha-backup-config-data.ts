@@ -11,6 +11,7 @@ import { customElement, property, state } from "lit/decorators";
 import memoizeOne from "memoize-one";
 import { isComponentLoaded } from "../../../../../common/config/is_component_loaded";
 import { fireEvent } from "../../../../../common/dom/fire_event";
+import "../../../../../components/ha-alert";
 import "../../../../../components/ha-button";
 import "../../../../../components/ha-expansion-panel";
 import "../../../../../components/ha-md-list";
@@ -18,10 +19,14 @@ import "../../../../../components/ha-md-list-item";
 import "../../../../../components/ha-md-select";
 import type { HaMdSelect } from "../../../../../components/ha-md-select";
 import "../../../../../components/ha-md-select-option";
+import "../../../../../components/ha-spinner";
 import "../../../../../components/ha-switch";
 import type { HaSwitch } from "../../../../../components/ha-switch";
 import { fetchHassioAddonsInfo } from "../../../../../data/hassio/addon";
+import type { HostDisksUsage } from "../../../../../data/hassio/host";
+import { fetchHostDisksUsage } from "../../../../../data/hassio/host";
 import type { HomeAssistant } from "../../../../../types";
+import { bytesToString } from "../../../../../util/bytes-to-string";
 import "../ha-backup-addons-picker";
 import type { BackupAddonItem } from "../ha-backup-addons-picker";
 import { getRecorderInfo } from "../../../../../data/recorder";
@@ -78,11 +83,14 @@ class HaBackupConfigData extends LitElement {
 
   @state() private _showDbOption = true;
 
+  @state() private _storageInfo?: HostDisksUsage | null;
+
   protected firstUpdated(changedProperties: PropertyValues): void {
     super.firstUpdated(changedProperties);
     this._checkDbOption();
     if (isComponentLoaded(this.hass, "hassio")) {
       this._fetchAddons();
+      this._fetchStorageInfo();
     }
   }
 
@@ -114,8 +122,63 @@ class HaBackupConfigData extends LitElement {
     }
   }
 
+  private async _fetchStorageInfo() {
+    try {
+      this._storageInfo = await fetchHostDisksUsage(this.hass);
+    } catch (_err: any) {
+      this._storageInfo = null;
+    }
+  }
+
   private _hasLocalAddons(addons: BackupAddonItem[]): boolean {
     return addons.some((addon) => addon.slug === "local");
+  }
+
+  private _estimateBackupSize(
+    data: FormData
+  ): { uncompressedBytes: number; compressedBytes: number } | null {
+    if (!this._storageInfo?.children) {
+      return null;
+    }
+
+    let totalBytes = 0;
+
+    const segments: Record<string, number> = {};
+    this._storageInfo.children.forEach((child) => {
+      segments[child.id] = child.used_bytes;
+    });
+
+    if (data.homeassistant) {
+      totalBytes += segments.homeassistant ?? 0;
+    }
+    if (data.media) {
+      totalBytes += segments.media ?? 0;
+    }
+    if (data.share) {
+      totalBytes += segments.share ?? 0;
+    }
+
+    const totalAddonsBytes =
+      (segments.addons_data ?? 0) + (segments.addons_config ?? 0);
+
+    if (data.addons_mode === "all") {
+      totalBytes += totalAddonsBytes;
+    } else if (data.addons_mode === "custom" && data.addons.length > 0) {
+      // Estimate based on proportion of selected addons
+      // It would be better if we could receive individual addon sizes in the WS request instead
+      const totalAddons = this._addons.length;
+      const selectedAddons = data.addons.length;
+      if (totalAddons > 0) {
+        const proportion = selectedAddons / totalAddons;
+        totalBytes += Math.round(totalAddonsBytes * proportion);
+      }
+    }
+
+    return {
+      uncompressedBytes: totalBytes,
+      // Estimate compressed size (40% reduction typical for gzip)
+      compressedBytes: Math.round(totalBytes * 0.6),
+    };
   }
 
   private _getData = memoizeOne(
@@ -171,6 +234,7 @@ class HaBackupConfigData extends LitElement {
     const isHassio = isComponentLoaded(this.hass, "hassio");
 
     return html`
+      ${this._renderSizeEstimate()}
       <ha-md-list>
         <ha-md-list-item>
           <ha-svg-icon slot="start" .path=${mdiCog}></ha-svg-icon>
@@ -381,7 +445,70 @@ class HaBackupConfigData extends LitElement {
     });
   }
 
+  private _renderSizeEstimate() {
+    if (!isComponentLoaded(this.hass, "hassio")) {
+      return nothing;
+    }
+
+    const data = this._getData(this.value, this._showAddons);
+
+    if (
+      !(
+        data.homeassistant ||
+        data.database ||
+        data.media ||
+        data.share ||
+        data.local_addons ||
+        data.addons_mode === "all" ||
+        (data.addons_mode === "custom" && data.addons.length > 0)
+      )
+    ) {
+      return nothing;
+    }
+
+    if (this._storageInfo === undefined) {
+      return html`
+        <ha-alert alert-type="info">
+          <ha-spinner slot="icon"></ha-spinner>
+          ${this.hass.localize(
+            "ui.panel.config.backup.data.estimated_size_loading"
+          )}</ha-alert
+        >
+      `;
+    }
+
+    if (!this._storageInfo || !this._storageInfo.children) {
+      return nothing;
+    }
+
+    const result = this._estimateBackupSize(data);
+    if (result === null) {
+      return nothing;
+    }
+
+    const { uncompressedBytes, compressedBytes } = result;
+
+    return html`
+      <ha-alert alert-type="info">
+        ${this.hass.localize("ui.panel.config.backup.data.estimated_size", {
+          uncompressed: bytesToString(uncompressedBytes),
+          compressed: bytesToString(compressedBytes),
+        })}
+        <br />
+        <span style="font-size: 0.9em; opacity: 0.8;">
+          ${this.hass.localize(
+            "ui.panel.config.backup.data.estimated_size_disclaimer"
+          )}
+        </span>
+      </ha-alert>
+    `;
+  }
+
   static styles = css`
+    ha-alert {
+      display: block;
+      margin-top: var(--ha-space-2);
+    }
     ha-md-list {
       background: none;
       --md-list-item-leading-space: 0;
