@@ -70,7 +70,7 @@ export class HaTargetPicker extends SubscribeMixin(LitElement) {
 
   @property({ attribute: "add-on-top", type: Boolean }) public addOnTop = false;
 
-  @state() private _addMode = false;
+  @state() private _open = false;
 
   @state() private _addTargetWidth = 0;
 
@@ -78,7 +78,7 @@ export class HaTargetPicker extends SubscribeMixin(LitElement) {
 
   @state() private _pickerFilters: TargetTypeFloorless[] = [];
 
-  @state() private _pickerOpen = false;
+  @state() private _bottomSheetOpen = false;
 
   @query(".add-target-wrapper") private _addTargetWrapper?: HTMLDivElement;
 
@@ -263,9 +263,10 @@ export class HaTargetPicker extends SubscribeMixin(LitElement) {
           <ha-svg-icon .path=${mdiPlaylistPlus} slot="start"></ha-svg-icon>
           ${this.hass.localize("ui.components.target-picker.add_target")}
         </ha-button>
-        ${!this._narrow
+        ${!this._narrow && this._open
           ? html`
               <wa-popover
+                open
                 style="--body-width: ${this._addTargetWidth}px;"
                 without-arrow
                 distance="-4"
@@ -278,14 +279,16 @@ export class HaTargetPicker extends SubscribeMixin(LitElement) {
                 ${this._renderTargetSelector()}
               </wa-popover>
             `
-          : html`<ha-bottom-sheet
-              @closed=${this._hidePicker}
-              .open=${this._pickerOpen}
-              @wa-after-show=${this._showSelector}
-              flexcontent
-            >
-              ${this._renderTargetSelector(true)}
-            </ha-bottom-sheet>`}
+          : this._bottomSheetOpen
+            ? html`<ha-bottom-sheet
+                @closed=${this._hidePicker}
+                .open=${this._bottomSheetOpen}
+                @wa-after-show=${this._showSelector}
+                flexcontent
+              >
+                ${this._renderTargetSelector(true)}
+              </ha-bottom-sheet>`
+            : nothing}
       </div>
       ${this.helper
         ? html`<ha-input-helper-text .disabled=${this.disabled}
@@ -307,9 +310,9 @@ export class HaTargetPicker extends SubscribeMixin(LitElement) {
   }
 
   private _handleResize = () => {
-    this._addMode = false;
+    this._open = false;
     this._pickerPopover?.hide();
-    this._pickerOpen = false;
+    this._bottomSheetOpen = false;
     this._narrow =
       window.matchMedia("(max-width: 870px)").matches ||
       window.matchMedia("(max-height: 500px)").matches;
@@ -317,15 +320,15 @@ export class HaTargetPicker extends SubscribeMixin(LitElement) {
 
   private _showPicker() {
     this._addTargetWidth = this._addTargetWrapper?.offsetWidth || 0;
-    this._pickerOpen = true;
+    this._bottomSheetOpen = true;
     if (!this._narrow) {
-      this._addMode = true;
+      this._open = true;
     }
   }
 
   // wait for drawer animation to finish
   private _showSelector = () => {
-    this._addMode = true;
+    this._open = true;
   };
 
   private _handleUpdatePickerFilters(ev: CustomEvent<TargetTypeFloorless[]>) {
@@ -337,8 +340,8 @@ export class HaTargetPicker extends SubscribeMixin(LitElement) {
   };
 
   private _hidePicker() {
-    this._pickerOpen = false;
-    this._addMode = false;
+    this._bottomSheetOpen = false;
+    this._open = false;
 
     if (this._newTarget) {
       this._addTarget(this._newTarget.id, this._newTarget.type);
@@ -347,7 +350,7 @@ export class HaTargetPicker extends SubscribeMixin(LitElement) {
   }
 
   private _renderTargetSelector(dialogMode = false) {
-    if (!this._addMode) {
+    if (!this._open) {
       return nothing;
     }
     return html`
@@ -400,7 +403,7 @@ export class HaTargetPicker extends SubscribeMixin(LitElement) {
   ) => {
     ev.stopPropagation();
 
-    this._pickerOpen = false;
+    this._bottomSheetOpen = false;
     this._pickerPopover?.hide();
 
     if (!ev.detail.type || !ev.detail.id) {
@@ -412,7 +415,7 @@ export class HaTargetPicker extends SubscribeMixin(LitElement) {
   };
 
   private _handleCreateDomain = (ev: CustomEvent<string>) => {
-    this._pickerOpen = false;
+    this._bottomSheetOpen = false;
     this._pickerPopover?.hide();
 
     const domain = ev.detail;
