@@ -61,3 +61,9 @@ export const computeEntityEntryName = (
 
   return name;
 };
+
+export const entityUseDeviceName = (
+  stateObj: HassEntity,
+  entities: HomeAssistant["entities"],
+  devices: HomeAssistant["devices"]
+): boolean => !computeEntityName(stateObj, entities, devices);

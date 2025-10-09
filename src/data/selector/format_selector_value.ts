@@ -76,7 +76,10 @@ export const formatSelectorValue = (
         if (!stateObj) {
           return entityId;
         }
-        const name = hass.formatEntityName(stateObj, ["device", "entity"], " ");
+        const name = hass.formatEntityName(stateObj, [
+          { type: "device" },
+          { type: "entity" },
+        ]);
         return name || entityId;
       })
       .join(", ");

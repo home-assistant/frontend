@@ -6,6 +6,7 @@ import { customElement, property, query } from "lit/decorators";
 import memoizeOne from "memoize-one";
 import { fireEvent } from "../../common/dom/fire_event";
 import { computeDomain } from "../../common/entity/compute_domain";
+import { computeEntityNameList } from "../../common/entity/compute_entity_name_display";
 import { computeStateName } from "../../common/entity/compute_state_name";
 import { isValidEntityId } from "../../common/entity/valid_entity_id";
 import { computeRTL } from "../../common/util/compute_rtl";
@@ -144,9 +145,14 @@ export class HaEntityPicker extends LitElement {
       `;
     }
 
-    const entityName = this.hass.formatEntityName(stateObj, "entity");
-    const deviceName = this.hass.formatEntityName(stateObj, "device");
-    const areaName = this.hass.formatEntityName(stateObj, "area");
+    const [entityName, deviceName, areaName] = computeEntityNameList(
+      stateObj,
+      [{ type: "entity" }, { type: "device" }, { type: "area" }],
+      this.hass.entities,
+      this.hass.devices,
+      this.hass.areas,
+      this.hass.floors
+    );
 
     const isRTL = computeRTL(this.hass);
 
@@ -300,20 +306,23 @@ export class HaEntityPicker extends LitElement {
         );
       }
 
-      const isRTL = computeRTL(this.hass);
+      const isRTL = computeRTL(hass);
 
       items = entityIds.map<EntityComboBoxItem>((entityId) => {
-        const stateObj = hass!.states[entityId];
+        const stateObj = hass.states[entityId];
 
         const friendlyName = computeStateName(stateObj); // Keep this for search
-        const entityName = this.hass.formatEntityName(stateObj, "entity");
-        const deviceName = this.hass.formatEntityName(stateObj, "device");
-        const areaName = this.hass.formatEntityName(stateObj, "area");
 
-        const domainName = domainToName(
-          this.hass.localize,
-          computeDomain(entityId)
+        const [entityName, deviceName, areaName] = computeEntityNameList(
+          stateObj,
+          [{ type: "entity" }, { type: "device" }, { type: "area" }],
+          hass.entities,
+          hass.devices,
+          hass.areas,
+          hass.floors
         );
+
+        const domainName = domainToName(hass.localize, computeDomain(entityId));
 
         const primary = entityName || deviceName || entityId;
         const secondary = [areaName, entityName ? deviceName : undefined]

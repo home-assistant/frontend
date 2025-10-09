@@ -61,6 +61,7 @@ export class HaFormString extends LitElement implements HaFormElement {
         .required=${this.schema.required}
         .autoValidate=${this.schema.required}
         .name=${this.schema.name}
+        .autofocus=${this.schema.autofocus}
         .autocomplete=${this.schema.autocomplete}
         .suffix=${this.isPassword
           ? // reserve some space for the icon.
