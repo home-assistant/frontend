@@ -153,6 +153,7 @@ class DialogLightColorFavorite extends LitElement {
       <ha-wa-dialog
         .hass=${this.hass}
         .open=${this._open}
+        width="small"
         @closed=${this._dialogClosed}
         header-title=${this._dialogParams?.title}
       >
