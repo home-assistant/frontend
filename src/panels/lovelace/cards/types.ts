@@ -30,8 +30,6 @@ import type { LovelaceHeaderFooterConfig } from "../header-footer/types";
 import type { LovelaceHeadingBadgeConfig } from "../heading-badges/types";
 import type { HomeSummary } from "../strategies/home/helpers/home-summaries";
 import type { MediaSelectorValue } from "../../../data/selector";
-import type { EnergySourceByType } from "../../../data/energy";
-
 
 export type AlarmPanelCardConfigState =
   | "arm_away"
