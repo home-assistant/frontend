@@ -521,7 +521,7 @@ export interface PlantStatusCardConfig extends LovelaceCardConfig {
 
 export interface SensorCardConfig extends LovelaceCardConfig {
   entity: string;
-  name?: string;
+  name?: string | EntityNameItem | EntityNameItem[];
   icon?: string;
   graph?: string;
   unit?: string;
