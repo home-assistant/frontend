@@ -1,9 +1,20 @@
 import { css, html, LitElement } from "lit";
-import { customElement } from "lit/decorators";
+import { customElement, property } from "lit/decorators";
 
 @customElement("ha-dialog-header")
 export class HaDialogHeader extends LitElement {
+  @property({ type: String, attribute: "subtitle-position" })
+  public subtitlePosition: "above" | "below" = "below";
+
   protected render() {
+    const titleSlot = html`<div class="header-title">
+      <slot name="title"></slot>
+    </div>`;
+
+    const subtitleSlot = html`<div class="header-subtitle">
+      <slot name="subtitle"></slot>
+    </div>`;
+
     return html`
       <header class="header">
         <div class="header-bar">
@@ -11,12 +22,9 @@ export class HaDialogHeader extends LitElement {
             <slot name="navigationIcon"></slot>
           </section>
           <section class="header-content">
-            <div class="header-title">
-              <slot name="title"></slot>
-            </div>
-            <div class="header-subtitle">
-              <slot name="subtitle"></slot>
-            </div>
+            ${this.subtitlePosition === "above"
+              ? html`${subtitleSlot}${titleSlot}`
+              : html`${titleSlot}${subtitleSlot}`}
           </section>
           <section class="header-action-items">
             <slot name="actionItems"></slot>
@@ -32,6 +40,7 @@ export class HaDialogHeader extends LitElement {
       css`
         :host {
           display: block;
+          min-height: 48px;
         }
         :host([show-border]) {
           border-bottom: 1px solid
@@ -40,7 +49,7 @@ export class HaDialogHeader extends LitElement {
         .header-bar {
           display: flex;
           flex-direction: row;
-          align-items: flex-start;
+          align-items: center;
           padding: 4px;
           box-sizing: border-box;
         }
@@ -53,13 +62,17 @@ export class HaDialogHeader extends LitElement {
           white-space: nowrap;
         }
         .header-title {
+          height: var(
+            --ha-dialog-header-title-height,
+            calc(var(--ha-font-size-xl) + 4px)
+          );
           font-size: var(--ha-font-size-xl);
           line-height: var(--ha-line-height-condensed);
-          font-weight: var(--ha-font-weight-normal);
+          font-weight: var(--ha-font-weight-medium);
         }
         .header-subtitle {
           font-size: var(--ha-font-size-m);
-          line-height: 20px;
+          line-height: var(--ha-line-height-normal);
           color: var(--secondary-text-color);
         }
         @media all and (min-width: 450px) and (min-height: 500px) {
