@@ -1,14 +1,11 @@
-import { mdiCalendarSync, mdiClose, mdiGestureTap } from "@mdi/js";
+import { mdiCalendarSync, mdiGestureTap } from "@mdi/js";
 import type { CSSResultGroup } from "lit";
 import { LitElement, css, html, nothing } from "lit";
-import { customElement, property, query, state } from "lit/decorators";
+import { customElement, property, state } from "lit/decorators";
 import { fireEvent } from "../../../../common/dom/fire_event";
-import "../../../../components/ha-dialog-header";
-import "../../../../components/ha-icon-button";
 import "../../../../components/ha-icon-next";
-import "../../../../components/ha-md-dialog";
-import type { HaMdDialog } from "../../../../components/ha-md-dialog";
 import "../../../../components/ha-md-list";
+import "../../../../components/ha-wa-dialog";
 import "../../../../components/ha-md-list-item";
 import "../../../../components/ha-svg-icon";
 import type { HassDialog } from "../../../../dialogs/make-dialog-manager";
@@ -24,27 +21,22 @@ class DialogNewBackup extends LitElement implements HassDialog {
 
   @state() private _params?: NewBackupDialogParams;
 
-  @query("ha-md-dialog") private _dialog?: HaMdDialog;
-
   public showDialog(params: NewBackupDialogParams): void {
     this._opened = true;
     this._params = params;
   }
 
   public closeDialog() {
-    this._dialog?.close();
+    this._opened = false;
     return true;
   }
 
   private _dialogClosed() {
-    if (this._params!.cancel) {
-      this._params!.cancel();
+    if (this._params?.cancel) {
+      this._params.cancel();
     }
-    if (this._opened) {
-      fireEvent(this, "dialog-closed", { dialog: this.localName });
-    }
-    this._opened = false;
     this._params = undefined;
+    fireEvent(this, "dialog-closed", { dialog: this.localName });
   }
 
   protected render() {
@@ -53,63 +45,57 @@ class DialogNewBackup extends LitElement implements HassDialog {
     }
 
     return html`
-      <ha-md-dialog open @closed=${this._dialogClosed}>
-        <ha-dialog-header slot="headline">
-          <ha-icon-button
-            slot="navigationIcon"
-            @click=${this.closeDialog}
-            .label=${this.hass.localize("ui.common.close")}
-            .path=${mdiClose}
-          ></ha-icon-button>
-          <span slot="title">
-            ${this.hass.localize("ui.panel.config.backup.dialogs.new.title")}
-          </span>
-        </ha-dialog-header>
-        <div slot="content">
-          <ha-md-list
-            innerRole="listbox"
-            itemRoles="option"
-            .innerAriaLabel=${this.hass.localize(
-              "ui.panel.config.backup.dialogs.new.options"
-            )}
-            rootTabbable
-            dialogInitialFocus
+      <ha-wa-dialog
+        .hass=${this.hass}
+        .open=${this._opened}
+        header-title=${this.hass.localize(
+          "ui.panel.config.backup.dialogs.new.title"
+        )}
+        @closed=${this._dialogClosed}
+      >
+        <ha-md-list
+          autofocus
+          innerRole="listbox"
+          itemRoles="option"
+          .innerAriaLabel=${this.hass.localize(
+            "ui.panel.config.backup.dialogs.new.options"
+          )}
+          rootTabbable
+        >
+          <ha-md-list-item
+            @click=${this._automatic}
+            type="button"
+            .disabled=${!this._params.config.create_backup.password}
           >
-            <ha-md-list-item
-              @click=${this._automatic}
-              type="button"
-              .disabled=${!this._params.config.create_backup.password}
-            >
-              <ha-svg-icon slot="start" .path=${mdiCalendarSync}></ha-svg-icon>
-              <span slot="headline">
-                ${this.hass.localize(
-                  "ui.panel.config.backup.dialogs.new.automatic.title"
-                )}
-              </span>
-              <span slot="supporting-text">
-                ${this.hass.localize(
-                  "ui.panel.config.backup.dialogs.new.automatic.description"
-                )}
-              </span>
-              <ha-icon-next slot="end"></ha-icon-next>
-            </ha-md-list-item>
-            <ha-md-list-item @click=${this._manual} type="button">
-              <ha-svg-icon slot="start" .path=${mdiGestureTap}></ha-svg-icon>
-              <span slot="headline">
-                ${this.hass.localize(
-                  "ui.panel.config.backup.dialogs.new.manual.title"
-                )}
-              </span>
-              <span slot="supporting-text">
-                ${this.hass.localize(
-                  "ui.panel.config.backup.dialogs.new.manual.description"
-                )}
-              </span>
-              <ha-icon-next slot="end"></ha-icon-next>
-            </ha-md-list-item>
-          </ha-md-list>
-        </div>
-      </ha-md-dialog>
+            <ha-svg-icon slot="start" .path=${mdiCalendarSync}></ha-svg-icon>
+            <span slot="headline">
+              ${this.hass.localize(
+                "ui.panel.config.backup.dialogs.new.automatic.title"
+              )}
+            </span>
+            <span slot="supporting-text">
+              ${this.hass.localize(
+                "ui.panel.config.backup.dialogs.new.automatic.description"
+              )}
+            </span>
+            <ha-icon-next slot="end"></ha-icon-next>
+          </ha-md-list-item>
+          <ha-md-list-item @click=${this._manual} type="button">
+            <ha-svg-icon slot="start" .path=${mdiGestureTap}></ha-svg-icon>
+            <span slot="headline">
+              ${this.hass.localize(
+                "ui.panel.config.backup.dialogs.new.manual.title"
+              )}
+            </span>
+            <span slot="supporting-text">
+              ${this.hass.localize(
+                "ui.panel.config.backup.dialogs.new.manual.description"
+              )}
+            </span>
+            <ha-icon-next slot="end"></ha-icon-next>
+          </ha-md-list-item>
+        </ha-md-list>
+      </ha-wa-dialog>
     `;
   }
 
@@ -128,23 +114,12 @@ class DialogNewBackup extends LitElement implements HassDialog {
       haStyle,
       haStyleDialog,
       css`
-        ha-md-dialog {
+        ha-wa-dialog {
           --dialog-content-padding: 0;
-          max-width: 500px;
-        }
-        @media all and (max-width: 450px), all and (max-height: 500px) {
-          ha-md-dialog {
-            max-width: none;
-          }
-          div[slot="content"] {
-            margin-top: 0;
-          }
         }
 
         ha-md-list {
           background: none;
-        }
-        ha-md-list-item {
         }
         ha-icon-next {
           width: 24px;
