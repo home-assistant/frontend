@@ -12,6 +12,7 @@ import "./feature-editor/hui-card-feature-element-editor";
 import "./header-footer-editor/hui-header-footer-element-editor";
 import "./heading-badge-editor/hui-heading-badge-element-editor";
 import type { HuiElementEditor } from "./hui-element-editor";
+import "./hui-form-element-editor";
 import "./picture-element-editor/hui-picture-element-element-editor";
 import type { GUIModeChangedEvent, SubElementEditorConfig } from "./types";
 
@@ -83,6 +84,18 @@ export class HuiSubElementEditor extends LitElement {
   private _renderEditor() {
     const type = this.config.type;
 
+    if (this.schema) {
+      return html`
+        <hui-form-element-editor
+          class="editor"
+          .hass=${this.hass}
+          .value=${this.config.elementConfig}
+          .schema=${this.schema}
+          .context=${this.config.context}
+          @config-changed=${this._handleConfigChanged}
+        ></hui-form-element-editor>
+      `;
+    }
     switch (type) {
       case "row":
         return html`
@@ -91,7 +104,6 @@ export class HuiSubElementEditor extends LitElement {
             .hass=${this.hass}
             .value=${this.config.elementConfig}
             .context=${this.config.context}
-            .schema=${this.schema}
             @config-changed=${this._handleConfigChanged}
             @GUImode-changed=${this._handleGUIModeChanged}
           ></hui-row-element-editor>
