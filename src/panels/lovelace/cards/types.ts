@@ -62,6 +62,9 @@ export interface EmptyStateCardConfig extends LovelaceCardConfig {
 }
 
 export interface EntityCardConfig extends LovelaceCardConfig {
+  entity: string;
+  name?: string | EntityNameItem | EntityNameItem[];
+  icon?: string;
   attribute?: string;
   unit?: string;
   theme?: string;
