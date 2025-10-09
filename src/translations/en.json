@@ -7934,6 +7934,8 @@
               "integration_not_loaded": "This card requires the `todo` integration to be set up.",
               "hide_completed": "Hide completed items",
               "hide_create": "Hide 'Add item' field",
+              "hide_section_headers": "Hide section headers",
+              "hide_section_headers_helper": "Removes the 'Active' and 'Completed' sections with the overflow menus.",
               "display_order": "Display order",
               "item_tap_action": "Item tap behavior",
               "actions": {
