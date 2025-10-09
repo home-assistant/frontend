@@ -1,4 +1,4 @@
-import { html, nothing } from "lit";
+import { html } from "lit";
 import { customElement, state } from "lit/decorators";
 import { HaBlueprintGenericEditor } from "./ha-blueprint-generic-editor";
 import type {
@@ -34,10 +34,6 @@ export class HaBlueprintScriptEditor extends HaBlueprintGenericEditor {
     }
 
     return config as Blueprint;
-  }
-
-  protected renderHeader() {
-    return nothing;
   }
 
   protected renderEditor() {

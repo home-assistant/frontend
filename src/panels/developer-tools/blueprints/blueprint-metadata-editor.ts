@@ -82,7 +82,7 @@ class BlueprintMetadataEditor extends LitElement {
         .container {
           margin: 0 auto;
           max-width: 1040px;
-          padding: 28px 20px 0;
+          padding: 8px 20px 0;
         }
 
         .header {

@@ -9071,8 +9071,10 @@
               "missing_path": "Cannot save blueprint without a path",
               "missing_name": "Cannot save blueprint without a name",
               "metadata": "Metadata",
-              "error": "There is a problem with the selected blueprint. Please fix it in the YAML editor.",
+              "error": "There is a problem with the selected blueprint.",
               "none_selected": "Please pick a blueprint to edit it.",
+              "overwrite_existing_title": "You are about to overwrite an existing blueprint",
+              "overwrite_existing_text": "Reimporting this blueprint will cause your changes to be lost. Are you sure?",
               "actions": {
                 "delete": "Delete",
                 "duplicate": "Duplicate",

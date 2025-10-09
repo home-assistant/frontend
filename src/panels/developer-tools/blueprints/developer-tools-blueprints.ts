@@ -71,6 +71,10 @@ class HaPanelDevBlueprints extends LitElement {
           ...this._selectedBlueprint.metadata,
           input: ev.detail.value.metadata.input,
         },
+        blueprint: {
+          ...this._selectedBlueprint.metadata,
+          input: ev.detail.value.metadata.input,
+        },
       };
     }
     this._dirty = true;
@@ -93,16 +97,20 @@ class HaPanelDevBlueprints extends LitElement {
         homeassistant: {
           min_version: ev.detail.value.minimum_version
         }
-      }
+      },
+      blueprint: {
+        ...this._selectedBlueprint.metadata,
+        domain: this._selectedBlueprintDomain!,
+        name: ev.detail.value.name,
+        author: ev.detail.value.author,
+        description: ev.detail.value.description,
+        homeassistant: {
+          min_version: ev.detail.value.minimum_version
+        }
+      },
     };
 
     this._selectedBlueprintPath = ev.detail.value.path;
-    this._dirty = true;
-  }
-
-  private _onBlueprintYamlChanged(ev: CustomEvent<{ value: Blueprint }>) {
-    ev.stopPropagation();
-    this._selectedBlueprint = ev.detail.value;
     this._dirty = true;
   }
 
@@ -137,6 +145,8 @@ class HaPanelDevBlueprints extends LitElement {
     this._selectedBlueprintDomain = domain;
     this._originalBlueprint = editorElement.defaultConfig;
     this._selectedBlueprint = editorElement.defaultConfig;
+    this._originalBlueprintPath = "new_blueprint";
+    this._selectedBlueprintPath = "new_blueprint";
   }
 
   private _pickBlueprint() {
@@ -152,14 +162,14 @@ class HaPanelDevBlueprints extends LitElement {
   }
 
   private async _saveBlueprint() {
-    if (!this._selectedBlueprintPath) {
-      // TODO
+    if (!this._selectedBlueprintPath || !this._selectedBlueprintDomain) {
+      // This shouldn't be possible!
       return;
     }
 
     if (!this._selectedBlueprint || ("error" in this._selectedBlueprint)) {
       await showAlertDialog(this, {
-        title: "",
+        title: this.hass.localize("ui.panel.developer-tools.tabs.blueprints.editor.error"),
         text: this._selectedBlueprint?.error
       })
       return;
@@ -167,9 +177,8 @@ class HaPanelDevBlueprints extends LitElement {
 
     if (this._selectedBlueprint.metadata.source_url) {
       const shouldSave = await showConfirmationDialog(this, {
-        title: "",
-        text: "",
-        confirm
+        title: this.hass.localize("ui.panel.developer-tools.tabs.blueprints.editor.overwrite_existing_title"),
+        text: this.hass.localize("ui.panel.developer-tools.tabs.blueprints.editor.overwrite_existing_text"),
       });
       if (!shouldSave) {
         return;
@@ -178,7 +187,7 @@ class HaPanelDevBlueprints extends LitElement {
 
     await saveBlueprint(
       this.hass,
-      this._selectedBlueprint.metadata.domain,
+      this._selectedBlueprintDomain,
       this._selectedBlueprintPath,
       dump(this._selectedBlueprint),
       this._selectedBlueprint.metadata.source_url,
@@ -186,6 +195,7 @@ class HaPanelDevBlueprints extends LitElement {
     );
     this._originalBlueprint = this._selectedBlueprint;
     this._originalBlueprintPath = this._selectedBlueprintPath;
+    this._dirty = false;
   }
 
   private _resetBlueprint() {
@@ -269,7 +279,6 @@ class HaPanelDevBlueprints extends LitElement {
           .value=${this._selectedBlueprint}
           .autoUpdate=${true}
           .readOnly=${true}
-          @value-changed=${this._onBlueprintYamlChanged}
         >
         </ha-yaml-editor>
       </div>

@@ -4,7 +4,6 @@ import { mdiHelpCircle } from "@mdi/js";
 import { property, state } from "lit/decorators";
 import yaml from "js-yaml";
 import "../../../layouts/hass-subpage";
-import { ContextProvider } from "@lit/context";
 import type { HomeAssistant, Route } from "../../../types";
 import "../../../components/ha-fab";
 import "../../../components/ha-button-menu";
@@ -17,7 +16,6 @@ import type {
 } from "../../../data/blueprint";
 import {
   BlueprintYamlSchema,
-  yamlSchemaContext,
   getBlueprint,
   getBlueprintEditorInitData,
 } from "../../../data/blueprint";
@@ -59,16 +57,9 @@ export abstract class HaBlueprintGenericEditor extends PreventUnsavedMixin(
 
   protected abstract renderEditor(): TemplateResult | symbol;
 
-  protected abstract renderHeader(): TemplateResult | symbol;
-
   protected abstract normalizeBlueprint(
     blueprint: Partial<Blueprint>
   ): Blueprint;
-
-  public _schemaProvider = new ContextProvider(this, {
-    context: yamlSchemaContext,
-    initialValue: BlueprintYamlSchema,
-  });
 
   protected _valueChanged(ev: CustomEvent<{ value: Blueprint }>) {
     ev.stopPropagation();
@@ -138,11 +129,12 @@ export abstract class HaBlueprintGenericEditor extends PreventUnsavedMixin(
     const oldBlueprintPath = changedProps.get("blueprintPath");
     if (
       (changedProps.has("blueprintPath") || changedProps.has("blueprints")) &&
-      this.blueprintPath &&
+      this._blueprintPath &&
       this.hass &&
       // Only refresh config if we picked a new blueprint. If same ID, don't fetch it.
-      oldBlueprintPath !== this.blueprintPath
+      oldBlueprintPath !== this._blueprintPath
     ) {
+
       this._blueprintPath = this.blueprintPath;
       this._loadBlueprint();
     }

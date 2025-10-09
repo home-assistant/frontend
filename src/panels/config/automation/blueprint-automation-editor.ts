@@ -88,7 +88,7 @@ export class BlueprintAutomationEditor extends BlueprintGenericEditor {
 
   static get styles(): CSSResultGroup {
     return [
-      HaBlueprintGenericEditor.styles,
+      BlueprintGenericEditor.styles,
       saveFabStyles,
       css`
         :host {

@@ -46,10 +46,6 @@ export class HaBlueprintAutomationEditor extends HaBlueprintGenericEditor {
     return config as Blueprint;
   }
 
-  protected renderHeader() {
-    return nothing;
-  }
-
   protected renderEditor() {
     if (!this._blueprint) {
       return nothing;
