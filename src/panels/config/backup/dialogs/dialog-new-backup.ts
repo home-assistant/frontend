@@ -40,7 +40,7 @@ class DialogNewBackup extends LitElement implements HassDialog {
   }
 
   protected render() {
-    if (!this._opened || !this._params) {
+    if (!this._params) {
       return nothing;
     }
 
