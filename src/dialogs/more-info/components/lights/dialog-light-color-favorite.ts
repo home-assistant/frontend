@@ -153,7 +153,6 @@ class DialogLightColorFavorite extends LitElement {
       <ha-wa-dialog
         .hass=${this.hass}
         .open=${this._open}
-        width="small"
         @closed=${this._dialogClosed}
         header-title=${this._dialogParams?.title}
       >
@@ -232,6 +231,7 @@ class DialogLightColorFavorite extends LitElement {
       css`
         ha-wa-dialog {
           --dialog-content-padding: 0;
+          --ha-dialog-width-md: 420px;
         }
 
         .content {
