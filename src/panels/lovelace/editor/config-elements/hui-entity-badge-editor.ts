@@ -13,6 +13,7 @@ import {
   string,
   union,
 } from "superstruct";
+import { DEFAULT_ENTITY_NAME } from "../../../../common/entity/compute_entity_name_display";
 import { fireEvent } from "../../../../common/dom/fire_event";
 import type { LocalizeFunc } from "../../../../common/translations/localize";
 import "../../../../components/ha-form/ha-form";
@@ -31,6 +32,7 @@ import type { LovelaceBadgeEditor } from "../../types";
 import "../hui-sub-element-editor";
 import { actionConfigStruct } from "../structs/action-struct";
 import { baseLovelaceBadgeConfig } from "../structs/base-badge-struct";
+import { entityNameStruct } from "../structs/entity-name-struct";
 import { configElementStyle } from "./config-elements-style";
 import "./hui-card-features-editor";
 
@@ -39,7 +41,7 @@ const badgeConfigStruct = assign(
   object({
     entity: optional(string()),
     display_type: optional(enums(DISPLAY_TYPES)),
-    name: optional(string()),
+    name: optional(entityNameStruct),
     icon: optional(string()),
     state_content: optional(union([string(), array(string())])),
     color: optional(string()),
@@ -88,8 +90,11 @@ export class HuiEntityBadgeEditor
                 {
                   name: "name",
                   selector: {
-                    text: {},
+                    entity_name: {
+                      default_name: DEFAULT_ENTITY_NAME,
+                    },
                   },
+                  context: { entity: "entity" },
                 },
                 {
                   name: "color",

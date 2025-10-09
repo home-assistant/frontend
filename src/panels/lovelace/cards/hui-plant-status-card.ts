@@ -15,7 +15,7 @@ import "../../../components/ha-card";
 import "../../../components/ha-svg-icon";
 import type { HomeAssistant } from "../../../types";
 import { actionHandler } from "../common/directives/action-handler-directive";
-import { computeCardEntityName } from "../common/entity/compute-card-entity-name";
+import { computeLovelaceEntityName } from "../common/entity/compute-lovelace-entity-name";
 import { findEntities } from "../common/find-entities";
 import { hasConfigOrEntityChanged } from "../common/has-changed";
 import { createEntityNotFoundWarning } from "../components/hui-warning";
@@ -119,7 +119,7 @@ class HuiPlantStatusCard extends LitElement implements LovelaceCard {
           style="background-image:url(${stateObj.attributes.entity_picture})"
         >
           <div class="header">
-            ${computeCardEntityName(this.hass, stateObj, this._config.name)}
+            ${computeLovelaceEntityName(this.hass, stateObj, this._config.name)}
           </div>
         </div>
         <div class="content">

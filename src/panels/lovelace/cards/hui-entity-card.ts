@@ -26,7 +26,7 @@ import { CLIMATE_HVAC_ACTION_TO_MODE } from "../../../data/climate";
 import { isUnavailableState } from "../../../data/entity";
 import type { HomeAssistant } from "../../../types";
 import { computeCardSize } from "../common/compute-card-size";
-import { computeCardEntityName } from "../common/entity/compute-card-entity-name";
+import { computeLovelaceEntityName } from "../common/entity/compute-lovelace-entity-name";
 import { findEntities } from "../common/find-entities";
 import { hasConfigOrEntityChanged } from "../common/has-changed";
 import { createEntityNotFoundWarning } from "../components/hui-warning";
@@ -125,7 +125,11 @@ export class HuiEntityCard extends LitElement implements LovelaceCard {
       ? this._config.attribute in stateObj.attributes
       : !isUnavailableState(stateObj.state);
 
-    const name = computeCardEntityName(this.hass, stateObj, this._config.name);
+    const name = computeLovelaceEntityName(
+      this.hass,
+      stateObj,
+      this._config.name
+    );
 
     const colored = stateObj && this._getStateColor(stateObj, this._config);
 

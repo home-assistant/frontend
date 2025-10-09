@@ -1,6 +1,6 @@
 import { describe, expect, it, vi } from "vitest";
 import { DEFAULT_ENTITY_NAME } from "../../../../../src/common/entity/compute_entity_name_display";
-import { computeCardEntityName } from "../../../../../src/panels/lovelace/common/entity/compute-card-entity-name";
+import { computeLovelaceEntityName } from "../../../../../src/panels/lovelace/common/entity/compute-lovelace-entity-name";
 import type { HomeAssistant } from "../../../../../src/types";
 import { mockStateObj } from "../../../../common/entity/context/context-mock";
 
@@ -11,13 +11,13 @@ const createMockHass = (
     formatEntityName: mockFormatEntityName,
   }) as unknown as HomeAssistant;
 
-describe("computeCardEntityName", () => {
+describe("computeLovelaceEntityName", () => {
   it("returns the string directly when nameConfig is a string", () => {
     const mockFormatEntityName = vi.fn();
     const hass = createMockHass(mockFormatEntityName);
     const stateObj = mockStateObj({ entity_id: "light.kitchen" });
 
-    const result = computeCardEntityName(hass, stateObj, "Custom Name");
+    const result = computeLovelaceEntityName(hass, stateObj, "Custom Name");
 
     expect(result).toBe("Custom Name");
     expect(mockFormatEntityName).not.toHaveBeenCalled();
@@ -28,7 +28,7 @@ describe("computeCardEntityName", () => {
     const hass = createMockHass(mockFormatEntityName);
     const stateObj = mockStateObj({ entity_id: "light.kitchen" });
 
-    const result = computeCardEntityName(hass, stateObj, "");
+    const result = computeLovelaceEntityName(hass, stateObj, "");
 
     expect(result).toBe("");
     expect(mockFormatEntityName).not.toHaveBeenCalled();
@@ -39,7 +39,7 @@ describe("computeCardEntityName", () => {
     const hass = createMockHass(mockFormatEntityName);
     const stateObj = mockStateObj({ entity_id: "light.kitchen" });
 
-    const result = computeCardEntityName(hass, stateObj, undefined);
+    const result = computeLovelaceEntityName(hass, stateObj, undefined);
 
     expect(result).toBe("Formatted Name");
     expect(mockFormatEntityName).toHaveBeenCalledTimes(1);
@@ -55,7 +55,7 @@ describe("computeCardEntityName", () => {
     const stateObj = mockStateObj({ entity_id: "light.bedroom" });
     const nameConfig = { type: "device" as const };
 
-    const result = computeCardEntityName(hass, stateObj, nameConfig);
+    const result = computeLovelaceEntityName(hass, stateObj, nameConfig);
 
     expect(result).toBe("Formatted Name");
     expect(mockFormatEntityName).toHaveBeenCalledTimes(1);
@@ -71,7 +71,7 @@ describe("computeCardEntityName", () => {
       { type: "entity" as const },
     ];
 
-    const result = computeCardEntityName(hass, stateObj, nameConfig);
+    const result = computeLovelaceEntityName(hass, stateObj, nameConfig);
 
     expect(result).toBe("Formatted Name");
     expect(mockFormatEntityName).toHaveBeenCalledTimes(1);
