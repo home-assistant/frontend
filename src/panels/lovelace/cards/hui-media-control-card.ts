@@ -12,7 +12,6 @@ import { classMap } from "lit/directives/class-map";
 import { styleMap } from "lit/directives/style-map";
 import { applyThemesOnElement } from "../../../common/dom/apply_themes_on_element";
 import { fireEvent } from "../../../common/dom/fire_event";
-import { computeStateName } from "../../../common/entity/compute_state_name";
 import { supportsFeature } from "../../../common/entity/supports-feature";
 import { extractColors } from "../../../common/image/extract_color";
 import { stateActive } from "../../../common/entity/state_active";
@@ -36,6 +35,7 @@ import {
   mediaPlayerPlayMedia,
 } from "../../../data/media-player";
 import type { HomeAssistant } from "../../../types";
+import { computeCardEntityName } from "../common/entity/compute-card-entity-name";
 import { findEntities } from "../common/find-entities";
 import { hasConfigOrEntityChanged } from "../common/has-changed";
 import "../components/hui-marquee";
@@ -242,8 +242,11 @@ export class HuiMediaControlCard extends LitElement implements LovelaceCard {
                 .hass=${this.hass}
               ></ha-state-icon>
               <div>
-                ${this._config!.name ||
-                computeStateName(this.hass!.states[this._config!.entity])}
+                ${computeCardEntityName(
+                  this.hass,
+                  this.hass!.states[this._config!.entity],
+                  this._config.name
+                )}
               </div>
             </div>
             <div>

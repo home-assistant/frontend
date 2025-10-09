@@ -395,6 +395,7 @@ export interface ClockCardConfig extends LovelaceCardConfig {
 
 export interface MediaControlCardConfig extends LovelaceCardConfig {
   entity: string;
+  name?: string | EntityNameItem | EntityNameItem[];
   theme?: string;
 }
 
