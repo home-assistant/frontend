@@ -95,9 +95,9 @@ export interface StatisticsValidationResultUnitsChanged {
   data: {
     statistic_id: string;
     state_unit: string;
-    state_unit_class: string;
+    state_unit_class: string | null;
     metadata_unit: string;
-    metadata_unit_class: string;
+    metadata_unit_class: string | null;
     supported_unit: string;
   };
 }
