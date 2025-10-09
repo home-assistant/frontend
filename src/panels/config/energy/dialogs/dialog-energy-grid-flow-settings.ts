@@ -213,7 +213,6 @@ export class DialogEnergyGridFlowSettings
             `ui.panel.config.energy.grid.flow_dialog.${this._params.direction}.entity_para`,
             { unit: this._power_units?.join(", ") || "" }
           )}
-          dialogInitialFocus
         ></ha-statistic-picker>
 
         <p>
