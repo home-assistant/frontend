@@ -206,8 +206,7 @@ class MoveDatadiskDialog extends LitElement {
         }
         ha-spinner {
           display: block;
-          margin: 32px;
-          text-align: center;
+          margin: 32px auto;
         }
 
         .progress-text {
