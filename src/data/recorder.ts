@@ -95,7 +95,9 @@ export interface StatisticsValidationResultUnitsChanged {
   data: {
     statistic_id: string;
     state_unit: string;
+    state_unit_class: string;
     metadata_unit: string;
+    metadata_unit_class: string;
     supported_unit: string;
   };
 }
@@ -231,12 +233,14 @@ export const validateStatistics = (hass: HomeAssistant) =>
 export const updateStatisticsMetadata = (
   hass: HomeAssistant,
   statistic_id: string,
-  unit_of_measurement: string | null
+  unit_of_measurement: string | null,
+  unit_class: string | null
 ) =>
   hass.callWS<undefined>({
     type: "recorder/update_statistics_metadata",
     statistic_id,
     unit_of_measurement,
+    unit_class,
   });
 
 export const clearStatistics = (hass: HomeAssistant, statistic_ids: string[]) =>

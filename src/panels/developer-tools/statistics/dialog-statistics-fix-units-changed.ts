@@ -139,7 +139,8 @@ export class DialogStatisticsFixUnitsChanged extends LitElement {
       await updateStatisticsMetadata(
         this.hass,
         this._params!.issue.data.statistic_id,
-        this._params!.issue.data.state_unit
+        this._params!.issue.data.state_unit,
+        this._params!.issue.data.state_unit_class
       );
     }
     this._params?.fixedCallback!();
