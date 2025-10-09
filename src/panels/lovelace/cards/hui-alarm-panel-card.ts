@@ -7,7 +7,6 @@ import { classMap } from "lit/directives/class-map";
 import { styleMap } from "lit/directives/style-map";
 import { applyThemesOnElement } from "../../../common/dom/apply_themes_on_element";
 import { fireEvent } from "../../../common/dom/fire_event";
-import { DEFAULT_ENTITY_NAME } from "../../../common/entity/compute_entity_name_display";
 import { stateColorCss } from "../../../common/entity/state_color";
 import { supportsFeature } from "../../../common/entity/supports-feature";
 import "../../../components/chips/ha-assist-chip";
@@ -29,6 +28,7 @@ import {
   subscribeEntityRegistry,
 } from "../../../data/entity_registry";
 import type { HomeAssistant } from "../../../types";
+import { computeCardEntityName } from "../common/entity/compute-card-entity-name";
 import { findEntities } from "../common/find-entities";
 import { createEntityNotFoundWarning } from "../components/hui-warning";
 import type { LovelaceCard } from "../types";
@@ -233,15 +233,7 @@ class HuiAlarmPanelCard extends LitElement implements LovelaceCard {
 
     const defaultCode = this._entry?.options?.alarm_control_panel?.default_code;
 
-    const nameConfig = this._config.name;
-
-    const name =
-      typeof nameConfig === "string"
-        ? nameConfig
-        : this.hass.formatEntityName(
-            stateObj,
-            nameConfig || DEFAULT_ENTITY_NAME
-          );
+    const name = computeCardEntityName(this.hass, stateObj, this._config.name);
 
     return html`
       <ha-card>

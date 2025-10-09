@@ -6,7 +6,6 @@ import { classMap } from "lit/directives/class-map";
 import { ifDefined } from "lit/directives/if-defined";
 import { styleMap } from "lit/directives/style-map";
 import { applyThemesOnElement } from "../../../common/dom/apply_themes_on_element";
-import { DEFAULT_ENTITY_NAME } from "../../../common/entity/compute_entity_name_display";
 import { isValidEntityId } from "../../../common/entity/valid_entity_id";
 import { getNumberFormatOptions } from "../../../common/number/format_number";
 import "../../../components/ha-card";
@@ -15,6 +14,7 @@ import { UNAVAILABLE } from "../../../data/entity";
 import type { ActionHandlerEvent } from "../../../data/lovelace/action_handler";
 import type { HomeAssistant } from "../../../types";
 import { actionHandler } from "../common/directives/action-handler-directive";
+import { computeCardEntityName } from "../common/entity/compute-card-entity-name";
 import { findEntities } from "../common/find-entities";
 import { handleAction } from "../common/handle-action";
 import { hasAction, hasAnyAction } from "../common/has-action";
@@ -126,15 +126,7 @@ class HuiGaugeCard extends LitElement implements LovelaceCard {
       `;
     }
 
-    const nameConfig = this._config.name;
-
-    const name =
-      typeof nameConfig === "string"
-        ? nameConfig
-        : this.hass.formatEntityName(
-            stateObj,
-            nameConfig || DEFAULT_ENTITY_NAME
-          );
+    const name = computeCardEntityName(this.hass, stateObj, this._config.name);
 
     // Use `stateObj.state` as value to keep formatting (e.g trailing zeros)
     // for consistent value display across gauge, entity, entity-row, etc.

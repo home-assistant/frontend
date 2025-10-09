@@ -5,7 +5,6 @@ import { classMap } from "lit/directives/class-map";
 import { ifDefined } from "lit/directives/if-defined";
 import { applyThemesOnElement } from "../../../common/dom/apply_themes_on_element";
 import { computeDomain } from "../../../common/entity/compute_domain";
-import { DEFAULT_ENTITY_NAME } from "../../../common/entity/compute_entity_name_display";
 import "../../../components/ha-card";
 import type { CameraEntity } from "../../../data/camera";
 import type { ImageEntity } from "../../../data/image";
@@ -14,6 +13,7 @@ import type { ActionHandlerEvent } from "../../../data/lovelace/action_handler";
 import type { PersonEntity } from "../../../data/person";
 import type { HomeAssistant } from "../../../types";
 import { actionHandler } from "../common/directives/action-handler-directive";
+import { computeCardEntityName } from "../common/entity/compute-card-entity-name";
 import { findEntities } from "../common/find-entities";
 import { handleAction } from "../common/handle-action";
 import { hasAction } from "../common/has-action";
@@ -126,15 +126,7 @@ class HuiPictureEntityCard extends LitElement implements LovelaceCard {
       `;
     }
 
-    const nameConfig = this._config.name;
-
-    const name =
-      typeof nameConfig === "string"
-        ? nameConfig
-        : this.hass.formatEntityName(
-            stateObj,
-            nameConfig || DEFAULT_ENTITY_NAME
-          );
+    const name = computeCardEntityName(this.hass, stateObj, this._config.name);
     const entityState = this.hass.formatEntityState(stateObj);
 
     let footer: TemplateResult | string = "";
