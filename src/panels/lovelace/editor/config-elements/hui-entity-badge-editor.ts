@@ -84,18 +84,18 @@ export class HuiEntityBadgeEditor
           iconPath: mdiTextShort,
           schema: [
             {
+              name: "name",
+              selector: {
+                entity_name: {
+                  default_name: DEFAULT_ENTITY_NAME,
+                },
+              },
+              context: { entity: "entity" },
+            },
+            {
               name: "",
               type: "grid",
               schema: [
-                {
-                  name: "name",
-                  selector: {
-                    entity_name: {
-                      default_name: DEFAULT_ENTITY_NAME,
-                    },
-                  },
-                  context: { entity: "entity" },
-                },
                 {
                   name: "color",
                   selector: {
