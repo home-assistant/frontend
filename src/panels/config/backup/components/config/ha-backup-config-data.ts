@@ -174,6 +174,7 @@ class HaBackupConfigData extends LitElement {
       compressedBytes: Math.round(totalBytes * 0.6),
       addonsNotAccurate:
         data.addons_mode === "custom" &&
+        data.addons.length > 0 &&
         data.addons.length !== this._addons.length,
     };
   }
