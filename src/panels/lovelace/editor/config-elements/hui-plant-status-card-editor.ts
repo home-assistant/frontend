@@ -2,25 +2,35 @@ import { html, LitElement, nothing } from "lit";
 import { customElement, property, state } from "lit/decorators";
 import { assert, assign, object, optional, string } from "superstruct";
 import { fireEvent } from "../../../../common/dom/fire_event";
+import { DEFAULT_ENTITY_NAME } from "../../../../common/entity/compute_entity_name_display";
 import "../../../../components/ha-form/ha-form";
 import type { SchemaUnion } from "../../../../components/ha-form/types";
 import type { HomeAssistant } from "../../../../types";
 import type { PlantStatusCardConfig } from "../../cards/types";
 import type { LovelaceCardEditor } from "../../types";
 import { baseLovelaceCardConfig } from "../structs/base-card-struct";
+import { entityNameStruct } from "../structs/entity-name-struct";
 
 const cardConfigStruct = assign(
   baseLovelaceCardConfig,
   object({
     entity: optional(string()),
-    name: optional(string()),
+    name: optional(entityNameStruct),
     theme: optional(string()),
   })
 );
 
 const SCHEMA = [
   { name: "entity", required: true, selector: { entity: { domain: "plant" } } },
-  { name: "name", selector: { text: {} } },
+  {
+    name: "name",
+    selector: {
+      entity_name: {
+        default_name: DEFAULT_ENTITY_NAME,
+      },
+    },
+    context: { entity: "entity" },
+  },
   { name: "theme", selector: { theme: {} } },
 ] as const;
 

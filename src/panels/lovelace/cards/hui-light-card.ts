@@ -7,7 +7,6 @@ import { classMap } from "lit/directives/class-map";
 import { styleMap } from "lit/directives/style-map";
 import { applyThemesOnElement } from "../../../common/dom/apply_themes_on_element";
 import { fireEvent } from "../../../common/dom/fire_event";
-import { computeStateName } from "../../../common/entity/compute_state_name";
 import { stateColorBrightness } from "../../../common/entity/state_color";
 import "../../../components/ha-card";
 import "../../../components/ha-icon-button";
@@ -18,6 +17,7 @@ import { lightSupportsBrightness } from "../../../data/light";
 import type { ActionHandlerEvent } from "../../../data/lovelace/action_handler";
 import type { HomeAssistant } from "../../../types";
 import { actionHandler } from "../common/directives/action-handler-directive";
+import { computeCardEntityName } from "../common/entity/compute-card-entity-name";
 import { findEntities } from "../common/find-entities";
 import { handleAction } from "../common/handle-action";
 import { hasAction } from "../common/has-action";
@@ -92,7 +92,7 @@ export class HuiLightCard extends LitElement implements LovelaceCard {
       ((stateObj.attributes.brightness || 0) / 255) * 100
     );
 
-    const name = this._config.name ?? computeStateName(stateObj);
+    const name = computeCardEntityName(this.hass, stateObj, this._config.name);
 
     return html`
       <ha-card>

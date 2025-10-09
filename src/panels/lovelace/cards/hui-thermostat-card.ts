@@ -7,7 +7,6 @@ import { styleMap } from "lit/directives/style-map";
 import { applyThemesOnElement } from "../../../common/dom/apply_themes_on_element";
 import { fireEvent } from "../../../common/dom/fire_event";
 import { computeDomain } from "../../../common/entity/compute_domain";
-import { computeStateName } from "../../../common/entity/compute_state_name";
 import { stateColorCss } from "../../../common/entity/state_color";
 import "../../../components/ha-card";
 import "../../../components/ha-icon-button";
@@ -16,6 +15,7 @@ import "../../../state-control/water_heater/ha-state-control-water_heater-temper
 import type { HomeAssistant } from "../../../types";
 import "../card-features/hui-card-features";
 import type { LovelaceCardFeatureContext } from "../card-features/types";
+import { computeCardEntityName } from "../common/entity/compute-card-entity-name";
 import { findEntities } from "../common/find-entities";
 import { createEntityNotFoundWarning } from "../components/hui-warning";
 import type {
@@ -132,7 +132,7 @@ export class HuiThermostatCard extends LitElement implements LovelaceCard {
     }
     const domain = computeDomain(stateObj.entity_id);
 
-    const name = this._config!.name || computeStateName(stateObj);
+    const name = computeCardEntityName(this.hass, stateObj, this._config.name);
 
     const color = stateColorCss(stateObj);
 

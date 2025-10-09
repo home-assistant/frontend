@@ -307,7 +307,7 @@ export interface GlanceCardConfig extends LovelaceCardConfig {
 export interface HumidifierCardConfig extends LovelaceCardConfig {
   entity: string;
   theme?: string;
-  name?: string;
+  name?: string | EntityNameItem | EntityNameItem[];
   show_current_as_primary?: boolean;
   features?: LovelaceCardFeatureConfig[];
 }
@@ -323,7 +323,7 @@ export interface IframeCardConfig extends LovelaceCardConfig {
 
 export interface LightCardConfig extends LovelaceCardConfig {
   entity: string;
-  name?: string;
+  name?: string | EntityNameItem | EntityNameItem[];
   theme?: string;
   icon?: string;
   tap_action?: ActionConfig;
@@ -510,7 +510,7 @@ export interface PlantAttributeTarget extends EventTarget {
 }
 
 export interface PlantStatusCardConfig extends LovelaceCardConfig {
-  name?: string;
+  name?: string | EntityNameItem | EntityNameItem[];
   entity: string;
   theme?: string;
 }
@@ -553,14 +553,14 @@ export interface GridCardConfig extends StackCardConfig {
 export interface ThermostatCardConfig extends LovelaceCardConfig {
   entity: string;
   theme?: string;
-  name?: string;
+  name?: string | EntityNameItem | EntityNameItem[];
   show_current_as_primary?: boolean;
   features?: LovelaceCardFeatureConfig[];
 }
 
 export interface WeatherForecastCardConfig extends LovelaceCardConfig {
   entity: string;
-  name?: string;
+  name?: string | EntityNameItem | EntityNameItem[];
   show_current?: boolean;
   show_forecast?: boolean;
   forecast_type?: ForecastType;
