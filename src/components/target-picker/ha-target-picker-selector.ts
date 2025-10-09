@@ -171,6 +171,7 @@ export class HaTargetPickerSelector extends LitElement {
       <lit-virtualizer
         tabindex="0"
         scroller
+        .keyFunction=${this._keyFunction}
         .items=${this._getItems(
           this.filterTypes,
           this.entityFilter,
@@ -433,11 +434,11 @@ export class HaTargetPickerSelector extends LitElement {
     let showEntityId = false;
 
     if (type === "area" || type === "floor") {
-      const areaItem = item as FloorComboBoxItem;
-      item.id = item[areaItem.type]?.[`${areaItem.type}_id`];
+      item.id = item[type]?.[`${type}_id`];
 
       rtl = computeRTL(this.hass);
-      hasFloor = areaItem.type === "area" && !!areaItem.area?.floor_id;
+      hasFloor =
+        type === "area" && !!(item as FloorComboBoxItem).area?.floor_id;
     }
 
     if (type === "entity") {
@@ -577,6 +578,27 @@ export class HaTargetPickerSelector extends LitElement {
 
     return filteredItems;
   }
+
+  private _keyFunction = (
+    item:
+      | PickerComboBoxItem
+      | (FloorComboBoxItem & { last?: boolean | undefined })
+      | EntityComboBoxItem
+      | DevicePickerItem
+      | string
+  ) => {
+    if (typeof item === "string") {
+      return item === "padding" ? "padding" : `title-${item}`;
+    }
+    const type = this._getRowType(item);
+    if (type === "empty") {
+      return `empty-search`;
+    }
+    if (type === "area" || type === "floor") {
+      return `${type}-${item[type]?.[`${type}_id`]}`;
+    }
+    return `${type}-${item.id}`;
+  };
 
   private _getItems = memoizeOne(
     (
