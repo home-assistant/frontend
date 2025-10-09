@@ -93,6 +93,148 @@ export class HaTargetPicker extends SubscribeMixin(LitElement) {
     return html` ${this._renderItems()} ${this._renderChips()} `;
   }
 
+  private _renderValueChips() {
+    return html`<div class="mdc-chip-set items">
+      ${this.value?.floor_id
+        ? ensureArray(this.value.floor_id).map(
+            (floor_id) => html`
+              <ha-target-picker-value-chip
+                .hass=${this.hass}
+                .type=${"floor"}
+                .itemId=${floor_id}
+                @remove-target-item=${this._handleRemove}
+                @expand-target-item=${this._handleExpand}
+              ></ha-target-picker-value-chip>
+            `
+          )
+        : nothing}
+      ${this.value?.area_id
+        ? ensureArray(this.value.area_id).map(
+            (area_id) => html`
+              <ha-target-picker-value-chip
+                .hass=${this.hass}
+                .type=${"area"}
+                .itemId=${area_id}
+                @remove-target-item=${this._handleRemove}
+                @expand-target-item=${this._handleExpand}
+              ></ha-target-picker-value-chip>
+            `
+          )
+        : nothing}
+      ${this.value?.device_id
+        ? ensureArray(this.value.device_id).map(
+            (device_id) => html`
+              <ha-target-picker-value-chip
+                .hass=${this.hass}
+                .type=${"device"}
+                .itemId=${device_id}
+                @remove-target-item=${this._handleRemove}
+                @expand-target-item=${this._handleExpand}
+              ></ha-target-picker-value-chip>
+            `
+          )
+        : nothing}
+      ${this.value?.entity_id
+        ? ensureArray(this.value.entity_id).map(
+            (entity_id) => html`
+              <ha-target-picker-value-chip
+                .hass=${this.hass}
+                .type=${"entity"}
+                .itemId=${entity_id}
+                @remove-target-item=${this._handleRemove}
+                @expand-target-item=${this._handleExpand}
+              ></ha-target-picker-value-chip>
+            `
+          )
+        : nothing}
+      ${this.value?.label_id
+        ? ensureArray(this.value.label_id).map(
+            (label_id) => html`
+              <ha-target-picker-value-chip
+                .hass=${this.hass}
+                .type=${"label"}
+                .itemId=${label_id}
+                @remove-target-item=${this._handleRemove}
+                @expand-target-item=${this._handleExpand}
+              ></ha-target-picker-value-chip>
+            `
+          )
+        : nothing}
+    </div>`;
+  }
+
+  private _renderValueGroups() {
+    return html`<div class="item-groups">
+      ${this.value?.floor_id || this.value?.area_id
+        ? html`
+            <ha-target-picker-item-group
+              @remove-target-item=${this._handleRemove}
+              type="area"
+              .hass=${this.hass}
+              .items=${{
+                floor: ensureArray(this.value?.floor_id),
+                area: ensureArray(this.value?.area_id),
+              }}
+              .collapsed=${this.compact}
+              .deviceFilter=${this.deviceFilter}
+              .entityFilter=${this.entityFilter}
+              .includeDomains=${this.includeDomains}
+              .includeDeviceClasses=${this.includeDeviceClasses}
+            >
+            </ha-target-picker-item-group>
+          `
+        : nothing}
+      ${this.value?.device_id
+        ? html`
+            <ha-target-picker-item-group
+              @remove-target-item=${this._handleRemove}
+              type="device"
+              .hass=${this.hass}
+              .items=${{ device: ensureArray(this.value?.device_id) }}
+              .collapsed=${this.compact}
+              .deviceFilter=${this.deviceFilter}
+              .entityFilter=${this.entityFilter}
+              .includeDomains=${this.includeDomains}
+              .includeDeviceClasses=${this.includeDeviceClasses}
+            >
+            </ha-target-picker-item-group>
+          `
+        : nothing}
+      ${this.value?.entity_id
+        ? html`
+            <ha-target-picker-item-group
+              @remove-target-item=${this._handleRemove}
+              type="entity"
+              .hass=${this.hass}
+              .items=${{ entity: ensureArray(this.value?.entity_id) }}
+              .collapsed=${this.compact}
+              .deviceFilter=${this.deviceFilter}
+              .entityFilter=${this.entityFilter}
+              .includeDomains=${this.includeDomains}
+              .includeDeviceClasses=${this.includeDeviceClasses}
+            >
+            </ha-target-picker-item-group>
+          `
+        : nothing}
+      ${this.value?.label_id
+        ? html`
+            <ha-target-picker-item-group
+              @remove-target-item=${this._handleRemove}
+              type="label"
+              .hass=${this.hass}
+              .items=${{ label: ensureArray(this.value?.label_id) }}
+              .collapsed=${this.compact}
+              .deviceFilter=${this.deviceFilter}
+              .entityFilter=${this.entityFilter}
+              .includeDomains=${this.includeDomains}
+              .includeDeviceClasses=${this.includeDeviceClasses}
+            >
+            </ha-target-picker-item-group>
+          `
+        : nothing}
+    </div>`;
+  }
+
   private _renderItems() {
     if (
       !this.value?.floor_id &&
@@ -105,143 +247,7 @@ export class HaTargetPicker extends SubscribeMixin(LitElement) {
     }
 
     return html`
-      ${this.compact
-        ? html`<div class="mdc-chip-set items">
-            ${this.value?.floor_id
-              ? ensureArray(this.value.floor_id).map(
-                  (floor_id) => html`
-                    <ha-target-picker-value-chip
-                      .hass=${this.hass}
-                      .type=${"floor"}
-                      .itemId=${floor_id}
-                      @remove-target-item=${this._handleRemove}
-                      @expand-target-item=${this._handleExpand}
-                    ></ha-target-picker-value-chip>
-                  `
-                )
-              : nothing}
-            ${this.value?.area_id
-              ? ensureArray(this.value.area_id).map(
-                  (area_id) => html`
-                    <ha-target-picker-value-chip
-                      .hass=${this.hass}
-                      .type=${"area"}
-                      .itemId=${area_id}
-                      @remove-target-item=${this._handleRemove}
-                      @expand-target-item=${this._handleExpand}
-                    ></ha-target-picker-value-chip>
-                  `
-                )
-              : nothing}
-            ${this.value?.device_id
-              ? ensureArray(this.value.device_id).map(
-                  (device_id) => html`
-                    <ha-target-picker-value-chip
-                      .hass=${this.hass}
-                      .type=${"device"}
-                      .itemId=${device_id}
-                      @remove-target-item=${this._handleRemove}
-                      @expand-target-item=${this._handleExpand}
-                    ></ha-target-picker-value-chip>
-                  `
-                )
-              : nothing}
-            ${this.value?.entity_id
-              ? ensureArray(this.value.entity_id).map(
-                  (entity_id) => html`
-                    <ha-target-picker-value-chip
-                      .hass=${this.hass}
-                      .type=${"entity"}
-                      .itemId=${entity_id}
-                      @remove-target-item=${this._handleRemove}
-                      @expand-target-item=${this._handleExpand}
-                    ></ha-target-picker-value-chip>
-                  `
-                )
-              : nothing}
-            ${this.value?.label_id
-              ? ensureArray(this.value.label_id).map(
-                  (label_id) => html`
-                    <ha-target-picker-value-chip
-                      .hass=${this.hass}
-                      .type=${"label"}
-                      .itemId=${label_id}
-                      @remove-target-item=${this._handleRemove}
-                      @expand-target-item=${this._handleExpand}
-                    ></ha-target-picker-value-chip>
-                  `
-                )
-              : nothing}
-          </div>`
-        : html`<div class="item-groups">
-            ${this.value?.floor_id || this.value?.area_id
-              ? html`
-                  <ha-target-picker-item-group
-                    @remove-target-item=${this._handleRemove}
-                    type="area"
-                    .hass=${this.hass}
-                    .items=${{
-                      floor: ensureArray(this.value?.floor_id),
-                      area: ensureArray(this.value?.area_id),
-                    }}
-                    .collapsed=${this.compact}
-                    .deviceFilter=${this.deviceFilter}
-                    .entityFilter=${this.entityFilter}
-                    .includeDomains=${this.includeDomains}
-                    .includeDeviceClasses=${this.includeDeviceClasses}
-                  >
-                  </ha-target-picker-item-group>
-                `
-              : nothing}
-            ${this.value?.device_id
-              ? html`
-                  <ha-target-picker-item-group
-                    @remove-target-item=${this._handleRemove}
-                    type="device"
-                    .hass=${this.hass}
-                    .items=${{ device: ensureArray(this.value?.device_id) }}
-                    .collapsed=${this.compact}
-                    .deviceFilter=${this.deviceFilter}
-                    .entityFilter=${this.entityFilter}
-                    .includeDomains=${this.includeDomains}
-                    .includeDeviceClasses=${this.includeDeviceClasses}
-                  >
-                  </ha-target-picker-item-group>
-                `
-              : nothing}
-            ${this.value?.entity_id
-              ? html`
-                  <ha-target-picker-item-group
-                    @remove-target-item=${this._handleRemove}
-                    type="entity"
-                    .hass=${this.hass}
-                    .items=${{ entity: ensureArray(this.value?.entity_id) }}
-                    .collapsed=${this.compact}
-                    .deviceFilter=${this.deviceFilter}
-                    .entityFilter=${this.entityFilter}
-                    .includeDomains=${this.includeDomains}
-                    .includeDeviceClasses=${this.includeDeviceClasses}
-                  >
-                  </ha-target-picker-item-group>
-                `
-              : nothing}
-            ${this.value?.label_id
-              ? html`
-                  <ha-target-picker-item-group
-                    @remove-target-item=${this._handleRemove}
-                    type="label"
-                    .hass=${this.hass}
-                    .items=${{ label: ensureArray(this.value?.label_id) }}
-                    .collapsed=${this.compact}
-                    .deviceFilter=${this.deviceFilter}
-                    .entityFilter=${this.entityFilter}
-                    .includeDomains=${this.includeDomains}
-                    .includeDeviceClasses=${this.includeDeviceClasses}
-                  >
-                  </ha-target-picker-item-group>
-                `
-              : nothing}
-          </div>`}
+      ${this.compact ? this._renderValueChips() : this._renderValueGroups()}
     `;
   }
 
