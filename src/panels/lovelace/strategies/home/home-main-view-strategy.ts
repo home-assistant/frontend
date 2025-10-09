@@ -127,11 +127,11 @@ export class HomeMainViewStrategy extends ReactiveElement {
         },
         {
           type: "home-summary",
-          summary: "lights",
+          summary: "light",
           vertical: true,
           tap_action: {
             action: "navigate",
-            navigation_path: "lights",
+            navigation_path: "/light?historyBack=1",
           },
           grid_options: {
             rows: 2,
@@ -144,7 +144,7 @@ export class HomeMainViewStrategy extends ReactiveElement {
           vertical: true,
           tap_action: {
             action: "navigate",
-            navigation_path: "climate",
+            navigation_path: "/climate?historyBack=1",
           },
           grid_options: {
             rows: 2,
@@ -157,7 +157,7 @@ export class HomeMainViewStrategy extends ReactiveElement {
           vertical: true,
           tap_action: {
             action: "navigate",
-            navigation_path: "security",
+            navigation_path: "/security?historyBack=1",
           },
           grid_options: {
             rows: 2,

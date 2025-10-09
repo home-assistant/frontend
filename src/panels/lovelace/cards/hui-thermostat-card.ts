@@ -6,6 +6,7 @@ import { customElement, property, state } from "lit/decorators";
 import { styleMap } from "lit/directives/style-map";
 import { applyThemesOnElement } from "../../../common/dom/apply_themes_on_element";
 import { fireEvent } from "../../../common/dom/fire_event";
+import { computeDomain } from "../../../common/entity/compute_domain";
 import { computeStateName } from "../../../common/entity/compute_state_name";
 import { stateColorCss } from "../../../common/entity/state_color";
 import "../../../components/ha-card";
@@ -23,7 +24,6 @@ import type {
   LovelaceGridOptions,
 } from "../types";
 import type { ThermostatCardConfig } from "./types";
-import { computeDomain } from "../../../common/entity/compute_domain";
 
 @customElement("hui-thermostat-card")
 export class HuiThermostatCard extends LitElement implements LovelaceCard {
@@ -265,7 +265,7 @@ export class HuiThermostatCard extends LitElement implements LovelaceCard {
       right: 0;
       inset-inline-end: 0px;
       inset-inline-start: initial;
-      border-radius: 100%;
+      border-radius: var(--ha-border-radius-pill);
       color: var(--secondary-text-color);
       direction: var(--direction);
     }

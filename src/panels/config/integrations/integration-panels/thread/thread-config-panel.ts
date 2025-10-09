@@ -708,7 +708,7 @@ export class ThreadConfigPanel extends SubscribeMixin(LitElement) {
         overflow: visible;
       }
       ha-list-item img {
-        border-radius: 0;
+        border-radius: var(--ha-border-radius-square);
       }
       ha-svg-icon[slot="meta"] {
         width: 24px;
@@ -729,7 +729,7 @@ export class ThreadConfigPanel extends SubscribeMixin(LitElement) {
         background-color: var(--light-primary-color);
         color: var(--secondary-text-color);
         padding: 16px;
-        border-radius: 50%;
+        border-radius: var(--ha-border-radius-circle);
         margin-bottom: 8px;
       }
       ha-card {

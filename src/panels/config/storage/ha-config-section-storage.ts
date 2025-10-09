@@ -10,8 +10,10 @@ import type { PropertyValues, TemplateResult } from "lit";
 import { LitElement, css, html, nothing } from "lit";
 import { customElement, property, state } from "lit/decorators";
 import memoizeOne from "memoize-one";
+import { getGraphColorByIndex } from "../../../common/color/colors";
 import { isComponentLoaded } from "../../../common/config/is_component_loaded";
 import { navigate } from "../../../common/navigate";
+import { blankBeforePercent } from "../../../common/translations/blank_before_percent";
 import "../../../components/ha-alert";
 import "../../../components/ha-button";
 import "../../../components/ha-button-menu";
@@ -20,6 +22,7 @@ import "../../../components/ha-icon-next";
 import "../../../components/ha-list";
 import "../../../components/ha-list-item";
 import "../../../components/ha-segmented-bar";
+import type { Segment } from "../../../components/ha-segmented-bar";
 import "../../../components/ha-svg-icon";
 import { extractApiErrorMessage } from "../../../data/hassio/common";
 import type { HassioHostInfo, HostDisksUsage } from "../../../data/hassio/host";
@@ -45,9 +48,6 @@ import { roundWithOneDecimal } from "../../../util/calculate";
 import "../core/ha-config-analytics";
 import { showMoveDatadiskDialog } from "./show-dialog-move-datadisk";
 import { showMountViewDialog } from "./show-dialog-view-mount";
-import type { Segment } from "../../../components/ha-segmented-bar";
-import { getGraphColorByIndex } from "../../../common/color/colors";
-import { blankBeforePercent } from "../../../common/translations/blank_before_percent";
 
 @customElement("ha-config-section-storage")
 class HaConfigSectionStorage extends LitElement {
@@ -508,7 +508,7 @@ class HaConfigSectionStorage extends LitElement {
       background-color: var(--light-primary-color);
       color: var(--secondary-text-color);
       padding: 16px;
-      border-radius: 50%;
+      border-radius: var(--ha-border-radius-circle);
       margin-bottom: 8px;
     }
     ha-list-item {

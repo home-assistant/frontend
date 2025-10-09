@@ -62,36 +62,6 @@ export class HomeDashboardStrategy extends ReactiveElement {
       };
     });
 
-    const lightView = {
-      title: getSummaryLabel(hass.localize, "lights"),
-      path: "lights",
-      subview: true,
-      strategy: {
-        type: "home-lights",
-      },
-      icon: HOME_SUMMARIES_ICONS.lights,
-    } satisfies LovelaceViewRawConfig;
-
-    const climateView = {
-      title: getSummaryLabel(hass.localize, "climate"),
-      path: "climate",
-      subview: true,
-      strategy: {
-        type: "home-climate",
-      },
-      icon: HOME_SUMMARIES_ICONS.climate,
-    } satisfies LovelaceViewRawConfig;
-
-    const securityView = {
-      title: getSummaryLabel(hass.localize, "security"),
-      path: "security",
-      subview: true,
-      strategy: {
-        type: "home-security",
-      },
-      icon: HOME_SUMMARIES_ICONS.security,
-    } satisfies LovelaceViewRawConfig;
-
     const mediaPlayersView = {
       title: getSummaryLabel(hass.localize, "media_players"),
       path: "media-players",
@@ -113,9 +83,6 @@ export class HomeDashboardStrategy extends ReactiveElement {
           } satisfies HomeMainViewStrategyConfig,
         },
         ...areaViews,
-        lightView,
-        climateView,
-        securityView,
         mediaPlayersView,
       ],
     };

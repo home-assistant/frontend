@@ -108,7 +108,7 @@ class IntegrationsStartupTime extends LitElement {
       display: block;
       max-height: 40px;
       max-width: 40px;
-      border-radius: 0;
+      border-radius: var(--ha-border-radius-square);
     }
     div[slot="end"] {
       font-size: var(--ha-font-size-s);

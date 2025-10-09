@@ -542,7 +542,7 @@ class HaPanelDevState extends LitElement {
           --mdc-icon-button-size: 24px;
           display: flex;
           align-items: center;
-          gap: 8px;
+          gap: var(--ha-space-2);
         }
 
         .entity-id ha-icon-button {
@@ -581,7 +581,7 @@ class HaPanelDevState extends LitElement {
           display: flex;
           margin: 8px 0;
           align-items: center;
-          gap: 8px;
+          gap: var(--ha-space-2);
         }
 
         :host([narrow]) .state-wrapper {

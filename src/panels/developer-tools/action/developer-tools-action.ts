@@ -415,7 +415,7 @@ class HaPanelDevAction extends LitElement {
       const fields = serviceDomains[domain][service].fields;
       const result: (HassService["fields"] & { key: string })[] = [];
 
-      // TODO: remplace any by proper type when updated in home-assistant-js-websocket
+      // TODO: replace any by proper type when updated in home-assistant-js-websocket
       const getFields = (flds: any) => {
         Object.keys(flds).forEach((field) => {
           const fieldData = flds[field];
@@ -443,7 +443,7 @@ class HaPanelDevAction extends LitElement {
     const button = ev.currentTarget as HaProgressButton;
 
     if (this._yamlMode && !this._yamlValid) {
-      forwardHaptic("failure");
+      forwardHaptic(this, "failure");
       button.actionError();
       this._error = this.hass.localize(
         "ui.panel.developer-tools.tabs.actions.errors.yaml.invalid_yaml"
@@ -465,7 +465,7 @@ class HaPanelDevAction extends LitElement {
     );
 
     if (this._error !== undefined) {
-      forwardHaptic("failure");
+      forwardHaptic(this, "failure");
       button.actionError();
       return;
     }
@@ -534,16 +534,16 @@ class HaPanelDevAction extends LitElement {
       ) {
         return;
       }
-      forwardHaptic("failure");
+      forwardHaptic(this, "failure");
       button.actionError();
 
       let localizedErrorMessage: string | undefined;
       if (err.translation_domain && err.translation_key) {
-        const lokalize = await this.hass.loadBackendTranslation(
+        const localize = await this.hass.loadBackendTranslation(
           "exceptions",
           err.translation_domain
         );
-        localizedErrorMessage = lokalize(
+        localizedErrorMessage = localize(
           `component.${err.translation_domain}.exceptions.${err.translation_key}.message`,
           err.translation_placeholders
         );

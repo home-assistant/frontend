@@ -43,7 +43,7 @@ jobs:
       - name: Deploy to Netlify
         id: deploy
         run: |
-          npx -y netlify-cli deploy --dir=demo/dist --prod
+          npx -y netlify-cli@23.7.3 deploy --dir=demo/dist --prod
         env:
           NETLIFY_AUTH_TOKEN: ${{ secrets.NETLIFY_AUTH_TOKEN }}
           NETLIFY_SITE_ID: ${{ secrets.NETLIFY_DEMO_DEV_SITE_ID }}
@@ -78,7 +78,7 @@ jobs:
       - name: Deploy to Netlify
         id: deploy
         run: |
-          npx -y netlify-cli deploy --dir=demo/dist --prod
+          npx -y netlify-cli@23.7.3 deploy --dir=demo/dist --prod
         env:
           NETLIFY_AUTH_TOKEN: ${{ secrets.NETLIFY_AUTH_TOKEN }}
           NETLIFY_SITE_ID: ${{ secrets.NETLIFY_DEMO_SITE_ID }}

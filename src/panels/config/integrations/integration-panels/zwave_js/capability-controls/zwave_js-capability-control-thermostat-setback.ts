@@ -209,7 +209,7 @@ class ZWaveJSCapabilityThermostatSetback extends LitElement {
       display: flex;
       flex-direction: column;
       align-items: flex-start;
-      gap: 16px;
+      gap: var(--ha-space-4);
     }
     :host > ha-select {
       width: 100%;
@@ -225,7 +225,7 @@ class ZWaveJSCapabilityThermostatSetback extends LitElement {
     .setback-state {
       width: 100%;
       display: flex;
-      gap: 16px;
+      gap: var(--ha-space-4);
     }
     .setback-state ha-select,
     ha-textfield {

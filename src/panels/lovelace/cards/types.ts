@@ -1,8 +1,11 @@
 import type { HassServiceTarget } from "home-assistant-js-websocket";
+import type { EntityNameItem } from "../../../common/entity/compute_entity_name_display";
 import type { HaDurationData } from "../../../components/ha-duration-input";
+import type { EnergySourceByType } from "../../../data/energy";
 import type { ActionConfig } from "../../../data/lovelace/config/action";
 import type { LovelaceCardConfig } from "../../../data/lovelace/config/card";
 import type { Statistic, StatisticType } from "../../../data/recorder";
+import type { TimeFormat } from "../../../data/translation";
 import type { ForecastType } from "../../../data/weather";
 import type {
   FullCalendarView,
@@ -25,7 +28,6 @@ import type {
 } from "../entity-rows/types";
 import type { LovelaceHeaderFooterConfig } from "../header-footer/types";
 import type { LovelaceHeadingBadgeConfig } from "../heading-badges/types";
-import type { TimeFormat } from "../../../data/translation";
 import type { HomeSummary } from "../strategies/home/helpers/home-summaries";
 
 export type AlarmPanelCardConfigState =
@@ -134,8 +136,10 @@ export interface ButtonCardConfig extends LovelaceCardConfig {
   tap_action?: ActionConfig;
   hold_action?: ActionConfig;
   double_tap_action?: ActionConfig;
+  /** @deprecated use `color` instead */
   state_color?: boolean;
   show_state?: boolean;
+  color?: string;
 }
 
 export interface EnergyCardBaseConfig extends LovelaceCardConfig {
@@ -176,6 +180,7 @@ export interface EnergyDevicesGraphCardConfig extends EnergyCardBaseConfig {
   type: "energy-devices-graph";
   title?: string;
   max_devices?: number;
+  hide_compound_stats?: boolean;
 }
 
 export interface EnergyDevicesDetailGraphCardConfig
@@ -188,6 +193,7 @@ export interface EnergyDevicesDetailGraphCardConfig
 export interface EnergySourcesTableCardConfig extends EnergyCardBaseConfig {
   type: "energy-sources-table";
   title?: string;
+  types?: (keyof EnergySourceByType)[];
 }
 
 export interface EnergySolarGaugeCardConfig extends EnergyCardBaseConfig {
@@ -282,7 +288,7 @@ export interface GlanceConfigEntity extends ConfigEntity {
   image?: string;
   show_state?: boolean;
   state_color?: boolean;
-  format: TimestampRenderingFormat;
+  format?: TimestampRenderingFormat;
 }
 
 export interface GlanceCardConfig extends LovelaceCardConfig {
@@ -528,6 +534,7 @@ export interface TodoListCardConfig extends LovelaceCardConfig {
   entity?: string;
   hide_completed?: boolean;
   hide_create?: boolean;
+  hide_section_headers?: boolean;
   sort?: string;
 }
 
@@ -565,7 +572,7 @@ export interface WeatherForecastCardConfig extends LovelaceCardConfig {
 
 export interface TileCardConfig extends LovelaceCardConfig {
   entity: string;
-  name?: string;
+  name?: string | EntityNameItem | EntityNameItem[];
   hide_state?: boolean;
   state_content?: string | string[];
   icon?: string;

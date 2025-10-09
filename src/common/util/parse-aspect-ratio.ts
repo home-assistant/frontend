@@ -14,7 +14,7 @@ export default function parseAspectRatio(input: string) {
   }
   try {
     if (input.endsWith("%")) {
-      return { w: 100, h: parseOrThrow(input.substr(0, input.length - 1)) };
+      return { w: 100, h: parseOrThrow(input.slice(0, -1)) };
     }
 
     const arr = input.replace(":", "x").split("x");

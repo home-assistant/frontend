@@ -104,7 +104,7 @@ export class HaIconButtonToolbar extends LitElement {
       background-color: transparent;
       padding-right: 4px;
       height: var(--icon-button-toolbar-height);
-      gap: 8px;
+      gap: var(--ha-space-2);
     }
 
     .icon-toolbar-button {

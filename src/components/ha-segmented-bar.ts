@@ -90,7 +90,7 @@ class HaSegmentedBar extends LitElement {
     .heading {
       display: flex;
       flex-direction: row;
-      gap: 8px;
+      gap: var(--ha-space-2);
     }
     .heading .title {
       flex: 1;
@@ -106,7 +106,7 @@ class HaSegmentedBar extends LitElement {
     .bar {
       display: flex;
       overflow: hidden;
-      border-radius: var(--ha-bar-border-radius, 4px);
+      border-radius: var(--ha-bar-border-radius, var(--ha-border-radius-sm));
       width: 100%;
       height: 12px;
       margin: 2px 0;
@@ -125,7 +125,7 @@ class HaSegmentedBar extends LitElement {
       display: flex;
       flex-direction: row;
       flex-wrap: wrap;
-      gap: 12px;
+      gap: var(--ha-space-3);
       margin: 12px 0;
       padding: 0;
       list-style: none;
@@ -133,13 +133,13 @@ class HaSegmentedBar extends LitElement {
     .legend li {
       display: flex;
       align-items: center;
-      gap: 4px;
+      gap: var(--ha-space-1);
       font-size: var(--ha-font-size-s);
     }
     .legend li .bullet {
       width: 12px;
       height: 12px;
-      border-radius: 50%;
+      border-radius: var(--ha-border-radius-circle);
     }
     .spacer {
       flex: 1;

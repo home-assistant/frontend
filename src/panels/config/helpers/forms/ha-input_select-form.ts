@@ -227,7 +227,7 @@ class HaInputSelectForm extends LitElement {
         }
         .option {
           border: 1px solid var(--divider-color);
-          border-radius: 4px;
+          border-radius: var(--ha-border-radius-sm);
           margin-top: 4px;
           --mdc-icon-button-size: 24px;
           --mdc-ripple-color: transparent;

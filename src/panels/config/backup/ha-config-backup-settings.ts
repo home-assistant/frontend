@@ -510,7 +510,7 @@ class HaConfigBackupSettings extends LitElement {
       padding: 28px 20px 0;
       max-width: 690px;
       margin: 0 auto;
-      gap: 24px;
+      gap: var(--ha-space-6);
       display: flex;
       flex-direction: column;
       margin-bottom: 24px;
@@ -532,7 +532,7 @@ class HaConfigBackupSettings extends LitElement {
     }
     .cloud-info .cloud-header {
       display: flex;
-      gap: 16px;
+      gap: var(--ha-space-4);
       font-size: var(--ha-font-size-xl);
       align-items: center;
       padding: 16px;

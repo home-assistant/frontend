@@ -24,6 +24,7 @@ import { computeEntityEntryName } from "../../../common/entity/compute_entity_na
 import { computeStateDomain } from "../../../common/entity/compute_state_domain";
 import { computeStateName } from "../../../common/entity/compute_state_name";
 import { stringCompare } from "../../../common/string/compare";
+import { slugify } from "../../../common/string/slugify";
 import { groupBy } from "../../../common/util/group-by";
 import "../../../components/entity/ha-battery-icon";
 import "../../../components/ha-alert";
@@ -89,7 +90,6 @@ import {
   loadDeviceRegistryDetailDialog,
   showDeviceRegistryDetailDialog,
 } from "./device-registry-detail/show-dialog-device-registry-detail";
-import { slugify } from "../../../common/string/slugify";
 
 export interface EntityRegistryStateEntry extends EntityRegistryEntry {
   stateName?: string | null;
@@ -770,43 +770,39 @@ export class HaConfigDevicePage extends LitElement {
             ${firstDeviceAction || actions.length
               ? html`
                   <div class="card-actions" slot="actions">
-                    <div>
-                      <ha-button
-                        href=${ifDefined(firstDeviceAction!.href)}
-                        rel=${ifDefined(
-                          firstDeviceAction!.target ? "noreferrer" : undefined
-                        )}
-                        appearance="plain"
-                        target=${ifDefined(firstDeviceAction!.target)}
-                        class=${ifDefined(firstDeviceAction!.classes)}
-                        .variant=${firstDeviceAction!.classes?.includes(
-                          "warning"
-                        )
-                          ? "danger"
-                          : "brand"}
-                        .action=${firstDeviceAction!.action}
-                        @click=${this._deviceActionClicked}
-                      >
-                        ${firstDeviceAction!.label}
-                        ${firstDeviceAction!.icon
-                          ? html`
-                              <ha-svg-icon
-                                class=${ifDefined(firstDeviceAction!.classes)}
-                                .path=${firstDeviceAction!.icon}
-                                slot="start"
-                              ></ha-svg-icon>
-                            `
-                          : nothing}
-                        ${firstDeviceAction!.trailingIcon
-                          ? html`
-                              <ha-svg-icon
-                                .path=${firstDeviceAction!.trailingIcon}
-                                slot="end"
-                              ></ha-svg-icon>
-                            `
-                          : nothing}
-                      </ha-button>
-                    </div>
+                    <ha-button
+                      href=${ifDefined(firstDeviceAction!.href)}
+                      rel=${ifDefined(
+                        firstDeviceAction!.target ? "noreferrer" : undefined
+                      )}
+                      appearance="plain"
+                      target=${ifDefined(firstDeviceAction!.target)}
+                      class=${ifDefined(firstDeviceAction!.classes)}
+                      .variant=${firstDeviceAction!.classes?.includes("warning")
+                        ? "danger"
+                        : "brand"}
+                      .action=${firstDeviceAction!.action}
+                      @click=${this._deviceActionClicked}
+                    >
+                      ${firstDeviceAction!.label}
+                      ${firstDeviceAction!.icon
+                        ? html`
+                            <ha-svg-icon
+                              class=${ifDefined(firstDeviceAction!.classes)}
+                              .path=${firstDeviceAction!.icon}
+                              slot="start"
+                            ></ha-svg-icon>
+                          `
+                        : nothing}
+                      ${firstDeviceAction!.trailingIcon
+                        ? html`
+                            <ha-svg-icon
+                              .path=${firstDeviceAction!.trailingIcon}
+                              slot="end"
+                            ></ha-svg-icon>
+                          `
+                        : nothing}
+                    </ha-button>
 
                     ${actions.length
                       ? html`
@@ -1618,7 +1614,10 @@ export class HaConfigDevicePage extends LitElement {
         }
 
         ha-card:has(ha-logbook) {
-          padding-bottom: var(--ha-card-border-radius, 12px);
+          padding-bottom: var(
+            --ha-card-border-radius,
+            var(--ha-border-radius-lg)
+          );
         }
 
         ha-logbook {

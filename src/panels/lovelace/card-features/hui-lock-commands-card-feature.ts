@@ -69,7 +69,7 @@ class HuiLockCommandsCardFeature
     if (!this.hass || !this._stateObj || !service) {
       return;
     }
-    forwardHaptic("light");
+    forwardHaptic(this, "light");
     callProtectedLockService(this, this.hass, this._stateObj, service);
   }
 

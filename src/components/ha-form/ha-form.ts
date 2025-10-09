@@ -105,6 +105,11 @@ export class HaForm extends LitElement implements HaFormElement {
     }
   }
 
+  static shadowRootOptions: ShadowRootInit = {
+    mode: "open",
+    delegatesFocus: true,
+  };
+
   protected render(): TemplateResult {
     return html`
       <div class="root" part="root">

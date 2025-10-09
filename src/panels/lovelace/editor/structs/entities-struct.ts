@@ -18,6 +18,8 @@ export const entitiesConfigStruct = union([
     hold_action: optional(actionConfigStruct),
     double_tap_action: optional(actionConfigStruct),
     confirmation: optional(actionConfigStructConfirmation),
+    show_last_changed: optional(boolean()),
+    show_state: optional(boolean()),
   }),
   string(),
 ]);

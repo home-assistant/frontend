@@ -10,7 +10,10 @@
     "todo": "To-do lists",
     "developer_tools": "Developer tools",
     "media_browser": "Media",
-    "profile": "Profile"
+    "profile": "Profile",
+    "light": "Lights",
+    "security": "Security",
+    "climate": "Climate"
   },
   "state": {
     "default": {
@@ -477,7 +480,7 @@
           "url": "Local path or web URL"
         },
         "background": {
-          "yaml_info": "Background image is set via yaml editor."
+          "yaml_info": "Background image is set via YAML editor."
         },
         "location": {
           "latitude": "[%key:ui::panel::config::zone::detail::latitude%]",
@@ -652,6 +655,18 @@
           "new_entity": "Create a new entity",
           "placeholder": "Select an entity",
           "create_helper": "Create a new {domain, select, \n undefined {} \n other {{domain} }\n } helper."
+        },
+        "entity-name-picker": {
+          "types": {
+            "floor": "Floor",
+            "area": "Area",
+            "device": "Device",
+            "entity": "Entity",
+            "area_missing": "No area assigned",
+            "floor_missing": "No floor assigned",
+            "device_missing": "No related device"
+          },
+          "add": "Add"
         },
         "entity-attribute-picker": {
           "attribute": "Attribute",
@@ -1414,7 +1429,7 @@
           "clear_skipped": "Clear skipped",
           "install": "Install",
           "update": "Update",
-          "auto_update_enabled_title": "Can not skip version",
+          "auto_update_enabled_title": "Cannot skip version",
           "auto_update_enabled_text": "Automatic updates for this item have been enabled; skipping it is, therefore, unavailable. You can either install this update now or wait for Home Assistant to do it automatically.",
           "create_backup": {
             "automatic": "Automatic backup before update",
@@ -1644,7 +1659,7 @@
         "will_rename": "{count} {count, plural,\n  one {entity ID}\n  other {entity IDs}\n} will be renamed",
         "new": "New",
         "old": "Old",
-        "cant_rename": "{count} {count, plural,\n  one {entity ID}\n  other {entity IDs}\n} can not be regenerated because they are not available",
+        "cant_rename": "{count} {count, plural,\n  one {entity ID}\n  other {entity IDs}\n} cannot be regenerated because they are not available",
         "wont_change": "{count} {count, plural,\n  one {entity ID}\n  other {entity IDs}\n} will not change",
         "update_entity_error": "Updating the entity ID of {entityId} failed",
         "confirm_no_renamable_entity_ids": "No renamable entity IDs"
@@ -2103,6 +2118,7 @@
         "visual_editor_not_supported_reason_type": "The visual editor is not available for this type of element.",
         "edit_in_yaml_supported": "You can still edit your config using YAML.",
         "configuration_error": "Configuration error",
+        "configuration_warning": "Configuration warning",
         "configuration_error_reason": "The configuration is not valid. Check the logs for more information.",
         "no_type_provided": "No type provided.",
         "editor_not_supported": "Visual editor is not supported for this configuration",
@@ -3196,7 +3212,7 @@
               "header": "General configuration",
               "introduction": "Manage your location, network, and analytics.",
               "core_config": {
-                "edit_requires_storage": "You can not change these settings in the UI, as you have config stored in 'configuration.yaml' under the 'homeassistant' key.",
+                "edit_requires_storage": "You cannot change these settings in the UI, as you have config stored in 'configuration.yaml' under the 'homeassistant' key.",
                 "location_name": "Name",
                 "latitude": "Latitude",
                 "longitude": "Longitude",
@@ -3902,8 +3918,6 @@
               "change_alias": "Rename trigger",
               "alias": "Trigger name",
               "delete": "[%key:ui::common::delete%]",
-              "delete_confirm_title": "Delete trigger?",
-              "delete_confirm_text": "It will be permanently deleted.",
               "unsupported_platform": "No visual editor support for platform: {platform}",
               "type_select": "Trigger type",
               "unknown_trigger": "[%key:ui::panel::config::devices::automation::triggers::unknown_trigger%]",
@@ -4167,8 +4181,6 @@
               "change_alias": "Rename condition",
               "alias": "Condition name",
               "delete": "[%key:ui::common::delete%]",
-              "delete_confirm_title": "Delete condition?",
-              "delete_confirm_text": "[%key:ui::panel::config::automation::editor::triggers::delete_confirm_text%]",
               "unsupported_condition": "No visual editor support for condition: {condition}",
               "type_select": "Condition type",
               "unknown_condition": "[%key:ui::panel::config::devices::automation::conditions::unknown_condition%]",
@@ -4338,8 +4350,6 @@
               "disable": "Disable",
               "disabled": "Disabled",
               "delete": "[%key:ui::common::delete%]",
-              "delete_confirm_title": "Delete action?",
-              "delete_confirm_text": "[%key:ui::panel::config::automation::editor::triggers::delete_confirm_text%]",
               "unsupported_action": "No visual editor support for this action",
               "type_select": "Action type",
               "continue_on_error": "Continue on error",
@@ -4679,7 +4689,7 @@
               "script": "scripts"
             },
             "error": "{path} could not be loaded",
-            "blueprint_in_use_title": "This blueprint is in use and can not be deleted",
+            "blueprint_in_use_title": "This blueprint is in use and cannot be deleted",
             "blueprint_in_use_text": "Please remove all below {type} that use this blueprint before deleting it. {list}",
             "blueprint_in_use_view": "view {type}",
             "confirm_delete_title": "Delete blueprint?",
@@ -4790,7 +4800,7 @@
               "required": "Required",
               "default": "Default",
               "selector": "Selector",
-              "yaml_error": "Field yaml has invalid format.",
+              "yaml_error": "Field YAML has invalid format.",
               "key_not_null": "The field key must not be empty.",
               "key_not_unique": "The field key must not be the same value as another field.",
               "fields": "Fields",
@@ -4801,8 +4811,6 @@
               "label": "Field",
               "field_selector": "Field selector"
             },
-            "field_delete_confirm_title": "Delete field?",
-            "field_delete_confirm_text": "[%key:ui::panel::config::automation::editor::triggers::delete_confirm_text%]",
             "header": "Script: {name}",
             "default_name": "New script",
             "modes": {
@@ -5665,7 +5673,7 @@
             "local_access_only": "Local access only",
             "local_access_only_description": "Can only log in from the local network",
             "system_generated": "System user",
-            "system_generated_read_only_users": "System users can not be updated.",
+            "system_generated_read_only_users": "System users cannot be updated.",
             "unnamed_user": "Unnamed user",
             "confirm_user_deletion_title": "Delete {name}?",
             "confirm_user_deletion_text": "This user will be permanently deleted."
@@ -5833,8 +5841,8 @@
           "change_channel_initiated_text": "The channel change has been initiated and will complete in {delay} {delay, plural,\n  one {minute}\n  other {minutes}\n}.",
           "change_channel_invalid": "Invalid channel",
           "change_channel_label": "Channel",
-          "change_channel_multiprotocol_enabled_title": "The Thread radio has multiprotocol enabled",
-          "change_channel_multiprotocol_enabled_text": "To change channel when the Thread radio has multiprotocol enabled, please use the hardware settings menu.",
+          "change_channel_multiprotocol_enabled_title": "The Thread adapter has multiprotocol enabled",
+          "change_channel_multiprotocol_enabled_text": "To change channel when the Thread adapter has multiprotocol enabled, please use the hardware settings menu.",
           "change_channel_range": "Channel must be in the range 11 to 26",
           "change_channel_text": "Initiating a channel change for your Home Assistant Thread network should be performed with caution. Some Thread devices may not migrate to the new channel automatically and, if the new channel is congested, your Thread devices may become intermittently unavailable. Some devices may need to be manually re-joined to your Thread network before they show in Home Assistant again. This action cannot be reversed (without performing another channel change).",
           "thread_network_info": "Thread network information",
@@ -5879,12 +5887,12 @@
             "devices_offline": "{count} offline",
             "update_button": "Update configuration",
             "download_backup": "Download backup",
-            "migrate_radio": "Migrate radio",
+            "migrate_radio": "Migrate adapter",
             "network_settings_title": "Network settings",
             "change_channel": "Change channel",
             "channel_dialog": {
               "title": "Multiprotocol add-on in use",
-              "text": "Zigbee and Thread share the same radio and must use the same channel. Change the channel of both networks by reconfiguring multiprotocol from the hardware menu."
+              "text": "Zigbee and Thread share the same adapter and must use the same channel. Change the channel of both networks by reconfiguring multiprotocol from the hardware menu."
             }
           },
           "add_device_page": {
@@ -6882,9 +6890,6 @@
           },
           "home": {
             "summary_list": {
-              "climate": "Climate",
-              "lights": "Lights",
-              "security": "Security",
               "media_players": "Media players"
             },
             "welcome_user": "Welcome {user}",
@@ -7189,7 +7194,7 @@
             "convert_view_text": "It will create a new view using sections. This current view will stay untouched. All your cards will be imported so you can rearrange them freely.",
             "convert_view_action": "Create",
             "card_to_section_convert": "Convert your view to a section view.",
-            "section_to_card_not_supported": "You can not change your section view to an other type. Start from scratch with a new view if you want to use another view type.",
+            "section_to_card_not_supported": "You cannot change your section view to an other type. Start from scratch with a new view if you want to use another view type.",
             "types": {
               "sections": "Sections (default)",
               "masonry": "Masonry",
@@ -7424,7 +7429,7 @@
             "testing_pass": "[%key:ui::panel::config::automation::editor::conditions::testing_pass%]",
             "testing_error": "[%key:ui::panel::config::automation::editor::conditions::testing_error%]",
             "invalid_config_title": "Invalid configuration",
-            "invalid_config_text": "The condition can not be tested because the configuration is not valid.",
+            "invalid_config_text": "The condition cannot be tested because the configuration is not valid.",
             "condition": {
               "numeric_state": {
                 "label": "Entity numeric state",
@@ -7719,6 +7724,7 @@
               "show_icon": "Show icon",
               "show_name": "Show name",
               "show_state": "Show state",
+              "show_last_changed": "Show last changed",
               "tap_action": "Tap behavior",
               "interactions": "Interactions",
               "title": "Title",
@@ -7928,6 +7934,8 @@
               "integration_not_loaded": "This card requires the `todo` integration to be set up.",
               "hide_completed": "Hide completed items",
               "hide_create": "Hide 'Add item' field",
+              "hide_section_headers": "Hide section headers",
+              "hide_section_headers_helper": "Removes the 'Active' and 'Completed' sections with the overflow menus.",
               "display_order": "Display order",
               "item_tap_action": "Item tap behavior",
               "actions": {
@@ -8439,6 +8447,7 @@
             "system": "Use system locale",
             "comma_decimal": "1,234,567.89",
             "decimal_comma": "1.234.567,89",
+            "quote_decimal": "1'234'567.89",
             "space_comma": "1 234 567,89",
             "none": "None"
           }
@@ -9179,7 +9188,7 @@
           },
           "create_account": "Create account",
           "error": {
-            "username_not_normalized": "Username can only contain lowercase letters, and can not contain whitespace.",
+            "username_not_normalized": "Username can only contain lowercase letters, and cannot contain whitespace.",
             "password_not_match": "Passwords don't match"
           }
         },
@@ -9367,7 +9376,9 @@
         "download_data": "[%key:ui::panel::history::download_data%]",
         "configure": "[%key:ui::dialogs::quick-bar::commands::navigation::energy%]",
         "compare": {
-          "info": "You are comparing the period {start} with the period {end}"
+          "info": "You are comparing the period {start} with the period {end}",
+          "compare_previous_year": "Compare previous year",
+          "compare_previous_period": "Compare previous period"
         },
         "setup": {
           "next": "Next",

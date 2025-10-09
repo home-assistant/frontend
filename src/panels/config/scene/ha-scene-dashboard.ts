@@ -1087,7 +1087,7 @@ ${rejected
         name: computeStateName(scene),
       }),
     });
-    forwardHaptic("light");
+    forwardHaptic(this, "light");
   };
 
   private _deleteConfirm(scene: SceneEntity): void {

@@ -155,11 +155,11 @@ export class DemoHaButton extends LitElement {
     .card-content {
       display: flex;
       flex-direction: column;
-      gap: 24px;
+      gap: var(--ha-space-6);
     }
     .card-content div {
       display: flex;
-      gap: 8px;
+      gap: var(--ha-space-2);
     }
   `;
 }

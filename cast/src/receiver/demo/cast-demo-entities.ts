@@ -75,7 +75,7 @@ export const castDemoEntities: () => Entity[] = () =>
         longitude: 4.8903147,
         radius: 100,
         friendly_name: "Home",
-        icon: "hass:home",
+        icon: "mdi:home",
       },
     },
     "input_number.harmonyvolume": {
@@ -88,7 +88,7 @@ export const castDemoEntities: () => Entity[] = () =>
         step: 1,
         mode: "slider",
         friendly_name: "Volume",
-        icon: "hass:volume-high",
+        icon: "mdi:volume-high",
       },
     },
     "climate.upstairs": {

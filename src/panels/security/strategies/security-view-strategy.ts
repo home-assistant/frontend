@@ -1,23 +1,72 @@
 import { ReactiveElement } from "lit";
 import { customElement } from "lit/decorators";
-import { generateEntityFilter } from "../../../../common/entity/entity_filter";
-import type { LovelaceCardConfig } from "../../../../data/lovelace/config/card";
-import type { LovelaceSectionRawConfig } from "../../../../data/lovelace/config/section";
-import type { LovelaceViewConfig } from "../../../../data/lovelace/config/view";
-import type { HomeAssistant } from "../../../../types";
+import {
+  findEntities,
+  generateEntityFilter,
+  type EntityFilter,
+} from "../../../common/entity/entity_filter";
+import type { LovelaceCardConfig } from "../../../data/lovelace/config/card";
+import type { LovelaceSectionRawConfig } from "../../../data/lovelace/config/section";
+import type { LovelaceViewConfig } from "../../../data/lovelace/config/view";
+import type { HomeAssistant } from "../../../types";
 import {
   computeAreaTileCardConfig,
   getAreas,
   getFloors,
-} from "../areas/helpers/areas-strategy-helper";
-import { getHomeStructure } from "./helpers/home-structure";
-import { findEntities, HOME_SUMMARIES_FILTERS } from "./helpers/home-summaries";
+} from "../../lovelace/strategies/areas/helpers/areas-strategy-helper";
+import { getHomeStructure } from "../../lovelace/strategies/home/helpers/home-structure";
 
-export interface HomeLightsViewStrategyConfig {
-  type: "home-lights";
+export interface SecurityViewStrategyConfig {
+  type: "security";
 }
 
-const processAreasForLights = (
+export const securityEntityFilters: EntityFilter[] = [
+  {
+    domain: "camera",
+    entity_category: "none",
+  },
+  {
+    domain: "alarm_control_panel",
+    entity_category: "none",
+  },
+  {
+    domain: "lock",
+    entity_category: "none",
+  },
+  {
+    domain: "cover",
+    device_class: ["door", "garage", "gate"],
+    entity_category: "none",
+  },
+  {
+    domain: "binary_sensor",
+    device_class: [
+      // Locks
+      "lock",
+      // Openings
+      "door",
+      "window",
+      "garage_door",
+      "opening",
+      // Safety
+      "carbon_monoxide",
+      "gas",
+      "moisture",
+      "safety",
+      "smoke",
+      "tamper",
+    ],
+    entity_category: "none",
+  },
+  // We also want the tamper sensors when they are diagnostic
+  {
+    domain: "binary_sensor",
+    device_class: ["tamper"],
+    entity_category: "diagnostic",
+  },
+];
+
+const processAreasForSecurity = (
   areaIds: string[],
   hass: HomeAssistant,
   entities: string[]
@@ -31,12 +80,12 @@ const processAreasForLights = (
     const areaFilter = generateEntityFilter(hass, {
       area: area.area_id,
     });
-    const areaLights = entities.filter(areaFilter);
+    const areaSecurityEntities = entities.filter(areaFilter);
     const areaCards: LovelaceCardConfig[] = [];
 
     const computeTileCard = computeAreaTileCardConfig(hass, "", false);
 
-    for (const entityId of areaLights) {
+    for (const entityId of areaSecurityEntities) {
       areaCards.push(computeTileCard(entityId));
     }
 
@@ -45,10 +94,6 @@ const processAreasForLights = (
         heading_style: "subtitle",
         type: "heading",
         heading: area.name,
-        tap_action: {
-          action: "navigate",
-          navigation_path: `areas-${area.area_id}`,
-        },
       });
       cards.push(...areaCards);
     }
@@ -57,10 +102,10 @@ const processAreasForLights = (
   return cards;
 };
 
-@customElement("home-lights-view-strategy")
-export class HomeLightsViewStrategy extends ReactiveElement {
+@customElement("security-view-strategy")
+export class SecurityViewStrategy extends ReactiveElement {
   static async generate(
-    _config: HomeLightsViewStrategyConfig,
+    _config: SecurityViewStrategyConfig,
     hass: HomeAssistant
   ): Promise<LovelaceViewConfig> {
     const areas = getAreas(hass.areas);
@@ -71,11 +116,11 @@ export class HomeLightsViewStrategy extends ReactiveElement {
 
     const allEntities = Object.keys(hass.states);
 
-    const lightsFilters = HOME_SUMMARIES_FILTERS.lights.map((filter) =>
+    const securityFilters = securityEntityFilters.map((filter) =>
       generateEntityFilter(hass, filter)
     );
 
-    const entities = findEntities(allEntities, lightsFilters);
+    const entities = findEntities(allEntities, securityFilters);
 
     const floorCount = home.floors.length + (home.areas.length ? 1 : 0);
 
@@ -99,7 +144,7 @@ export class HomeLightsViewStrategy extends ReactiveElement {
         ],
       };
 
-      const areaCards = processAreasForLights(areaIds, hass, entities);
+      const areaCards = processAreasForSecurity(areaIds, hass, entities);
 
       if (areaCards.length > 0) {
         section.cards!.push(...areaCards);
@@ -123,7 +168,7 @@ export class HomeLightsViewStrategy extends ReactiveElement {
         ],
       };
 
-      const areaCards = processAreasForLights(home.areas, hass, entities);
+      const areaCards = processAreasForSecurity(home.areas, hass, entities);
 
       if (areaCards.length > 0) {
         section.cards!.push(...areaCards);
@@ -141,6 +186,6 @@ export class HomeLightsViewStrategy extends ReactiveElement {
 
 declare global {
   interface HTMLElementTagNameMap {
-    "home-lights-view-strategy": HomeLightsViewStrategy;
+    "security-view-strategy": SecurityViewStrategy;
   }
 }

@@ -425,7 +425,7 @@ class HuiAlarmPanelCard extends LitElement implements LovelaceCard {
       display: grid;
       grid-template-columns: repeat(var(--keypad-columns), auto);
       grid-auto-rows: auto;
-      grid-gap: 16px;
+      grid-gap: var(--ha-space-4);
       justify-items: center;
       align-items: center;
     }
@@ -433,7 +433,7 @@ class HuiAlarmPanelCard extends LitElement implements LovelaceCard {
     ha-control-button {
       width: 56px;
       height: 56px;
-      --control-button-border-radius: 28px;
+      --control-button-border-radius: var(--ha-border-radius-4xl);
       --mdc-icon-size: 24px;
       font-size: var(--ha-font-size-2xl);
     }

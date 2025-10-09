@@ -35,7 +35,7 @@ jobs:
       - name: Deploy to Netlify
         id: deploy
         run: |
-          npx -y netlify-cli deploy --dir=gallery/dist --prod
+          npx -y netlify-cli@23.7.3 deploy --dir=gallery/dist --prod
         env:
           NETLIFY_AUTH_TOKEN: ${{ secrets.NETLIFY_AUTH_TOKEN }}
           NETLIFY_SITE_ID: ${{ secrets.NETLIFY_GALLERY_SITE_ID }}

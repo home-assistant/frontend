@@ -69,10 +69,10 @@ class HaConfigBlueprint extends HassRouterPage {
       (!changedProps || changedProps.has("route")) &&
       this._currentPage === "edit"
     ) {
-      const blueprintFullPath = this.routeTail.path.substring(1);
+      const blueprintFullPath = this.routeTail.path.slice(1);
       const firstSlash = blueprintFullPath.indexOf("/");
-      const domain = blueprintFullPath.substring(0, firstSlash);
-      const blueprintPath = blueprintFullPath.substring(firstSlash + 1);
+      const domain = blueprintFullPath.slice(0, firstSlash);
+      const blueprintPath = blueprintFullPath.slice(firstSlash + 1);
 
       pageEl.domain = domain;
       pageEl.blueprintPath = blueprintPath === "new" ? "" : blueprintPath;

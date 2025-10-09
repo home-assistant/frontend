@@ -1236,7 +1236,7 @@ export const demoLovelaceJimpower: DemoConfig["lovelace"] = () => ({
         },
       ],
       path: "security",
-      icon: "hass:shield-home",
+      icon: "mdi:shield-home",
       name: "Security",
       background:
         'center / cover no-repeat url("/assets/jimpower/background-15.jpg") fixed',

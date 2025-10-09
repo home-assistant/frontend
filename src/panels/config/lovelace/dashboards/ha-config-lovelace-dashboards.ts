@@ -238,13 +238,17 @@ export class HaConfigLovelaceDashboards extends LitElement {
             .hass=${this.hass}
             narrow
             .items=${[
-              {
-                path: mdiPencil,
-                label: this.hass.localize(
-                  "ui.panel.config.lovelace.dashboards.picker.edit"
-                ),
-                action: () => this._handleEdit(dashboard),
-              },
+              ...(this._canEdit(dashboard.url_path)
+                ? [
+                    {
+                      path: mdiPencil,
+                      label: this.hass.localize(
+                        "ui.panel.config.lovelace.dashboards.picker.edit"
+                      ),
+                      action: () => this._handleEdit(dashboard),
+                    },
+                  ]
+                : []),
               ...(this._canDelete(dashboard.url_path)
                 ? [
                     {
@@ -275,7 +279,7 @@ export class HaConfigLovelaceDashboards extends LitElement {
       const isDefault = defaultUrlPath === "lovelace";
       const result: DataTableItem[] = [
         {
-          icon: "hass:view-dashboard",
+          icon: "mdi:view-dashboard",
           title: this.hass.localize("panel.states"),
           default: isDefault,
           show_in_sidebar: isDefault,
@@ -288,13 +292,55 @@ export class HaConfigLovelaceDashboards extends LitElement {
       ];
       if (isComponentLoaded(this.hass, "energy")) {
         result.push({
-          icon: "hass:lightning-bolt",
+          icon: "mdi:lightning-bolt",
           title: this.hass.localize(`ui.panel.config.dashboard.energy.main`),
           show_in_sidebar: true,
           mode: "storage",
           url_path: "energy",
           filename: "",
-          iconColor: "var(--label-badge-yellow)",
+          iconColor: "var(--orange-color)",
+          default: false,
+          require_admin: false,
+        });
+      }
+
+      if (this.hass.panels.light) {
+        result.push({
+          icon: "mdi:lamps",
+          title: this.hass.localize("panel.light"),
+          show_in_sidebar: false,
+          mode: "storage",
+          url_path: "light",
+          filename: "",
+          iconColor: "var(--amber-color)",
+          default: false,
+          require_admin: false,
+        });
+      }
+
+      if (this.hass.panels.security) {
+        result.push({
+          icon: "mdi:security",
+          title: this.hass.localize("panel.security"),
+          show_in_sidebar: false,
+          mode: "storage",
+          url_path: "security",
+          filename: "",
+          iconColor: "var(--blue-grey-color)",
+          default: false,
+          require_admin: false,
+        });
+      }
+
+      if (this.hass.panels.climate) {
+        result.push({
+          icon: "mdi:home-thermometer",
+          title: this.hass.localize("panel.climate"),
+          show_in_sidebar: false,
+          mode: "storage",
+          url_path: "climate",
+          filename: "",
+          iconColor: "var(--deep-orange-color)",
           default: false,
           require_admin: false,
         });
@@ -397,10 +443,13 @@ export class HaConfigLovelaceDashboards extends LitElement {
   }
 
   private _canDelete(urlPath: string) {
-    if (urlPath === "lovelace" || urlPath === "energy") {
-      return false;
-    }
-    return true;
+    return !["lovelace", "energy", "light", "security", "climate"].includes(
+      urlPath
+    );
+  }
+
+  private _canEdit(urlPath: string) {
+    return !["light", "security", "climate"].includes(urlPath);
   }
 
   private _handleDelete = async (item: DataTableItem) => {

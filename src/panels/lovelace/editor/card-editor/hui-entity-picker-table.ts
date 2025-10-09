@@ -6,6 +6,7 @@ import memoizeOne from "memoize-one";
 import type { HASSDomEvent } from "../../../../common/dom/fire_event";
 import { fireEvent } from "../../../../common/dom/fire_event";
 import { computeDomain } from "../../../../common/entity/compute_domain";
+import { computeEntityNameList } from "../../../../common/entity/compute_entity_name_display";
 import type { LocalizeFunc } from "../../../../common/translations/localize";
 import { computeRTL } from "../../../../common/util/compute_rtl";
 import "../../../../components/data-table/ha-data-table";
@@ -62,9 +63,14 @@ export class HuiEntityPickerTable extends LitElement {
         (entity) => {
           const stateObj = this.hass.states[entity];
 
-          const entityName = this.hass.formatEntityName(stateObj, "entity");
-          const deviceName = this.hass.formatEntityName(stateObj, "device");
-          const areaName = this.hass.formatEntityName(stateObj, "area");
+          const [entityName, deviceName, areaName] = computeEntityNameList(
+            stateObj,
+            [{ type: "entity" }, { type: "device" }, { type: "area" }],
+            this.hass.entities,
+            this.hass.devices,
+            this.hass.areas,
+            this.hass.floors
+          );
           const name = [deviceName, entityName].filter(Boolean).join(" ");
           const domain = computeDomain(entity);
 
