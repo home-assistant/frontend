@@ -439,7 +439,7 @@ export class HaTargetPickerSelector extends LitElement {
         .type=${type === "empty" ? "text" : "button"}
         @click=${this._handlePickTarget}
         .targetType=${type}
-        .targetId=${item.id}
+        .targetId=${type !== "empty" ? item.id : undefined}
         style=${(item as FloorComboBoxItem).type === "area" && hasFloor
           ? "--md-list-item-leading-space: var(--ha-space-12);"
           : ""}
@@ -469,7 +469,7 @@ export class HaTargetPickerSelector extends LitElement {
                 slot="start"
                 .path=${item.icon_path}
               ></ha-svg-icon>`
-            : (item as EntityComboBoxItem).stateObj
+            : type === "entity" && (item as EntityComboBoxItem).stateObj
               ? html`
                   <state-badge
                     slot="start"
@@ -477,7 +477,7 @@ export class HaTargetPickerSelector extends LitElement {
                     .hass=${this.hass}
                   ></state-badge>
                 `
-              : (item as DevicePickerItem).domain
+              : type === "device" && (item as DevicePickerItem).domain
                 ? html`
                     <img
                       slot="start"
@@ -491,18 +491,19 @@ export class HaTargetPickerSelector extends LitElement {
                       })}
                     />
                   `
-                : (item as FloorComboBoxItem).type === "floor" &&
+                : type === "area" &&
+                    (item as FloorComboBoxItem).type === "floor" &&
                     (item as FloorComboBoxItem).floor
                   ? html`<ha-floor-icon
                       slot="start"
-                      .floor=${(item as FloorComboBoxItem).floor}
+                      .floor=${(item as FloorComboBoxItem).floor!}
                     ></ha-floor-icon>`
-                  : item.icon
-                    ? html`<ha-icon slot="start" .icon=${item.icon}></ha-icon>`
-                    : html`<ha-svg-icon
+                  : type === "area"
+                    ? html`<ha-svg-icon
                         slot="start"
                         .path=${item.icon_path || mdiTextureBox}
-                      ></ha-svg-icon>`}
+                      ></ha-svg-icon>`
+                    : nothing}
         <span slot="headline">${item.primary}</span>
         ${item.secondary
           ? html`<span slot="supporting-text">${item.secondary}</span>`
