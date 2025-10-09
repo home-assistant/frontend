@@ -116,8 +116,9 @@ class DialogLightColorFavorite extends LitElement {
     );
   }
 
-  private async _cancel() {
+  private _cancel() {
     this._dialogParams?.cancel?.();
+    this.closeDialog();
   }
 
   private _dialogClosed(): void {
@@ -129,7 +130,6 @@ class DialogLightColorFavorite extends LitElement {
 
   private async _save() {
     if (!this._color) {
-      this._cancel();
       return;
     }
     this._dialogParams?.submit?.(this._color);
@@ -153,7 +153,6 @@ class DialogLightColorFavorite extends LitElement {
       <ha-wa-dialog
         .hass=${this.hass}
         .open=${this._open}
-        @cancel=${this._cancel}
         @closed=${this._dialogClosed}
         header-title=${this._dialogParams?.title}
       >
@@ -209,7 +208,6 @@ class DialogLightColorFavorite extends LitElement {
           <ha-button
             slot="secondaryAction"
             appearance="plain"
-            data-dialog="close"
             @click=${this._cancel}
           >
             ${this.hass.localize("ui.common.cancel")}
