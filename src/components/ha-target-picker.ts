@@ -165,16 +165,13 @@ export class HaTargetPicker extends SubscribeMixin(LitElement) {
 
   private _renderValueGroups() {
     return html`<div class="item-groups">
-      ${this.value?.floor_id || this.value?.area_id
+      ${this.value?.entity_id
         ? html`
             <ha-target-picker-item-group
               @remove-target-item=${this._handleRemove}
-              type="area"
+              type="entity"
               .hass=${this.hass}
-              .items=${{
-                floor: ensureArray(this.value?.floor_id),
-                area: ensureArray(this.value?.area_id),
-              }}
+              .items=${{ entity: ensureArray(this.value?.entity_id) }}
               .collapsed=${this.compact}
               .deviceFilter=${this.deviceFilter}
               .entityFilter=${this.entityFilter}
@@ -200,13 +197,16 @@ export class HaTargetPicker extends SubscribeMixin(LitElement) {
             </ha-target-picker-item-group>
           `
         : nothing}
-      ${this.value?.entity_id
+      ${this.value?.floor_id || this.value?.area_id
         ? html`
             <ha-target-picker-item-group
               @remove-target-item=${this._handleRemove}
-              type="entity"
+              type="area"
               .hass=${this.hass}
-              .items=${{ entity: ensureArray(this.value?.entity_id) }}
+              .items=${{
+                floor: ensureArray(this.value?.floor_id),
+                area: ensureArray(this.value?.area_id),
+              }}
               .collapsed=${this.compact}
               .deviceFilter=${this.deviceFilter}
               .entityFilter=${this.entityFilter}

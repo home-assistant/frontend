@@ -354,6 +354,7 @@ export class HaTargetPickerSelector extends LitElement {
           size="small"
           .variant=${selected ? "brand" : "neutral"}
           appearance="filled"
+          no-shrink
         >
           ${selected
             ? html`<ha-svg-icon slot="start" .path=${mdiCheck}></ha-svg-icon>`
@@ -647,32 +648,6 @@ export class HaTargetPickerSelector extends LitElement {
         items.push(...devices);
       }
 
-      if (filterTypes.length === 0 || filterTypes.includes("label")) {
-        let labels = this._getLabelsMemoized(
-          this.hass,
-          this._labelRegistry,
-          includeDomains,
-          undefined,
-          includeDeviceClasses,
-          deviceFilter,
-          entityFilter,
-          targetValue?.label_id ? ensureArray(targetValue.label_id) : undefined
-        );
-
-        if (searchTerm) {
-          labels = this._filterGroup("label", labels);
-        }
-
-        if (labels.length > 0 && filterTypes.length !== 1) {
-          // show group title
-          items.push(
-            this.hass.localize("ui.components.target-picker.type.labels")
-          );
-        }
-
-        items.push(...labels);
-      }
-
       if (filterTypes.length === 0 || filterTypes.includes("area")) {
         let areasAndFloors = this._getAreasAndFloorsMemoized(
           this.hass.states,
@@ -723,6 +698,32 @@ export class HaTargetPickerSelector extends LitElement {
             return item;
           })
         );
+      }
+
+      if (filterTypes.length === 0 || filterTypes.includes("label")) {
+        let labels = this._getLabelsMemoized(
+          this.hass,
+          this._labelRegistry,
+          includeDomains,
+          undefined,
+          includeDeviceClasses,
+          deviceFilter,
+          entityFilter,
+          targetValue?.label_id ? ensureArray(targetValue.label_id) : undefined
+        );
+
+        if (searchTerm) {
+          labels = this._filterGroup("label", labels);
+        }
+
+        if (labels.length > 0 && filterTypes.length !== 1) {
+          // show group title
+          items.push(
+            this.hass.localize("ui.components.target-picker.type.labels")
+          );
+        }
+
+        items.push(...labels);
       }
 
       items.push(...this._getCreateItems(createDomains));
@@ -886,6 +887,10 @@ export class HaTargetPickerSelector extends LitElement {
         padding: 0 var(--ha-space-3);
         overflow: auto;
         --ha-button-border-radius: var(--ha-border-radius-md);
+      }
+
+      .filter ha-button {
+        flex-shrink: 0;
       }
 
       .filter .separator {
