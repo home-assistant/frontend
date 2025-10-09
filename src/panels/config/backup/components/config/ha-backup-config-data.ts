@@ -511,6 +511,10 @@ class HaBackupConfigData extends LitElement {
     ha-alert {
       display: block;
       margin-top: var(--ha-space-2);
+      --ha-alert-icon-size: 24px;
+    }
+    ha-alert ha-spinner {
+      --ha-spinner-size: 24px;
     }
     ha-md-list {
       background: none;
