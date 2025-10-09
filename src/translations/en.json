@@ -2677,6 +2677,7 @@
             "addons_custom": "Custom",
             "estimated_size": "Estimated backup size: {uncompressed} ({compressed} compressed)",
             "estimated_size_disclaimer": "This is an approximation based on current storage usage. The actual backup size will vary.",
+            "estimated_size_disclaimer_addons_custom": "This estimate includes all add-ons, and not individual add-on sizes.",
             "estimated_size_loading": "Loading size estimate..."
           },
           "data_picker": {

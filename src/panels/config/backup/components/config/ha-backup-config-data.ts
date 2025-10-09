@@ -134,9 +134,11 @@ class HaBackupConfigData extends LitElement {
     return addons.some((addon) => addon.slug === "local");
   }
 
-  private _estimateBackupSize(
-    data: FormData
-  ): { uncompressedBytes: number; compressedBytes: number } | null {
+  private _estimateBackupSize(data: FormData): {
+    uncompressedBytes: number;
+    compressedBytes: number;
+    addonsNotAccurate: boolean;
+  } | null {
     if (!this._storageInfo?.children) {
       return null;
     }
@@ -161,23 +163,21 @@ class HaBackupConfigData extends LitElement {
     const totalAddonsBytes =
       (segments.addons_data ?? 0) + (segments.addons_config ?? 0);
 
-    if (data.addons_mode === "all") {
-      totalBytes += totalAddonsBytes;
-    } else if (data.addons_mode === "custom" && data.addons.length > 0) {
-      // Estimate based on proportion of selected addons
+    if (
+      data.addons_mode === "all" ||
+      (data.addons_mode === "custom" && data.addons.length > 0)
+    ) {
       // It would be better if we could receive individual addon sizes in the WS request instead
-      const totalAddons = this._addons.length;
-      const selectedAddons = data.addons.length;
-      if (totalAddons > 0) {
-        const proportion = selectedAddons / totalAddons;
-        totalBytes += Math.round(totalAddonsBytes * proportion);
-      }
+      totalBytes += totalAddonsBytes;
     }
 
     return {
       uncompressedBytes: totalBytes,
       // Estimate compressed size (40% reduction typical for gzip)
       compressedBytes: Math.round(totalBytes * 0.6),
+      addonsNotAccurate:
+        data.addons_mode === "custom" &&
+        data.addons.length !== this._addons.length,
     };
   }
 
@@ -486,7 +486,7 @@ class HaBackupConfigData extends LitElement {
       return nothing;
     }
 
-    const { uncompressedBytes, compressedBytes } = result;
+    const { uncompressedBytes, compressedBytes, addonsNotAccurate } = result;
 
     return html`
       <ha-alert alert-type="info">
@@ -499,6 +499,11 @@ class HaBackupConfigData extends LitElement {
           ${this.hass.localize(
             "ui.panel.config.backup.data.estimated_size_disclaimer"
           )}
+          ${addonsNotAccurate
+            ? html`<br />${this.hass.localize(
+                  "ui.panel.config.backup.data.estimated_size_disclaimer_addons_custom"
+                )}`
+            : nothing}
         </span>
       </ha-alert>
     `;
