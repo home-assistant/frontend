@@ -5,7 +5,7 @@ import { classMap } from "lit/directives/class-map";
 import { ifDefined } from "lit/directives/if-defined";
 import { applyThemesOnElement } from "../../../common/dom/apply_themes_on_element";
 import { computeDomain } from "../../../common/entity/compute_domain";
-import { computeStateName } from "../../../common/entity/compute_state_name";
+import { DEFAULT_ENTITY_NAME } from "../../../common/entity/compute_entity_name_display";
 import "../../../components/ha-card";
 import type { CameraEntity } from "../../../data/camera";
 import type { ImageEntity } from "../../../data/image";
@@ -126,7 +126,15 @@ class HuiPictureEntityCard extends LitElement implements LovelaceCard {
       `;
     }
 
-    const name = this._config.name || computeStateName(stateObj);
+    const nameConfig = this._config.name;
+
+    const name =
+      typeof nameConfig === "string"
+        ? nameConfig
+        : this.hass.formatEntityName(
+            stateObj,
+            nameConfig || DEFAULT_ENTITY_NAME
+          );
     const entityState = this.hass.formatEntityState(stateObj);
 
     let footer: TemplateResult | string = "";
