@@ -160,15 +160,12 @@ class HaBackupConfigData extends LitElement {
       totalBytes += segments.share ?? 0;
     }
 
-    const totalAddonsBytes =
-      (segments.addons_data ?? 0) + (segments.addons_config ?? 0);
-
     if (
       data.addons_mode === "all" ||
       (data.addons_mode === "custom" && data.addons.length > 0)
     ) {
       // It would be better if we could receive individual addon sizes in the WS request instead
-      totalBytes += totalAddonsBytes;
+      totalBytes += (segments.addons_data ?? 0) + (segments.addons_config ?? 0);
     }
 
     return {
