@@ -169,6 +169,7 @@ export class HaTargetPickerSelector extends LitElement {
         </div>
       </div>
       <lit-virtualizer
+        tabindex="0"
         scroller
         .items=${this._getItems(
           this.filterTypes,
@@ -187,6 +188,7 @@ export class HaTargetPickerSelector extends LitElement {
         class="list ${this._listScrolled ? "scrolled" : ""}"
         style="min-height: 56px;"
         @visibilityChanged=${this._visibilityChanged}
+        @focus=${this._focusList}
       >
       </lit-virtualizer>
     `;
@@ -241,8 +243,14 @@ export class HaTargetPickerSelector extends LitElement {
     });
   }
 
-  private _selectNextItem = (ev: KeyboardEvent) => {
-    ev.stopPropagation();
+  private _focusList() {
+    if (this._selectedItemIndex === -1) {
+      this._selectNextItem();
+    }
+  }
+
+  private _selectNextItem = (ev?: KeyboardEvent) => {
+    ev?.stopPropagation();
     if (!this._virtualizerElement) {
       return;
     }
@@ -313,10 +321,13 @@ export class HaTargetPickerSelector extends LitElement {
     }
   };
 
-  private _pickSelectedItem = () => {
+  private _pickSelectedItem = (ev: KeyboardEvent) => {
     if (this._selectedItemIndex === -1) {
       return;
     }
+
+    // if filter button is focused
+    ev.preventDefault();
 
     const item: any = this._virtualizerElement?.items[this._selectedItemIndex];
     if (item && typeof item !== "string") {
@@ -949,6 +960,10 @@ export class HaTargetPickerSelector extends LitElement {
 
       lit-virtualizer {
         flex: 1;
+      }
+
+      lit-virtualizer:focus-visible {
+        outline: none;
       }
 
       lit-virtualizer.scrolled {
