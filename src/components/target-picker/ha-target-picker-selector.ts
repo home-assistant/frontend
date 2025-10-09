@@ -852,6 +852,7 @@ export class HaTargetPickerSelector extends LitElement {
 
   private _toggleFilter(ev: any) {
     this._selectedItemIndex = -1;
+    this._filterHeader = undefined;
     const type = ev.target.type as TargetTypeFloorless;
     if (!type) {
       return;
@@ -865,7 +866,7 @@ export class HaTargetPickerSelector extends LitElement {
 
     // Reset scroll position when filter changes
     if (this._virtualizerElement) {
-      this._virtualizerElement.scrollTop = 0;
+      this._virtualizerElement.scrollToIndex(0);
     }
 
     fireEvent(this, "filter-types-changed", this.filterTypes);
