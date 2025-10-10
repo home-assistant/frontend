@@ -144,7 +144,10 @@ class HuiPictureEntityCard extends LitElement implements LovelaceCard {
     }
 
     const domain: string = computeDomain(this._config.entity);
-    let image: string | undefined = this._config.image;
+    let image: string | undefined =
+      (typeof this._config?.image === "object" &&
+        this._config.image.media_content_id) ||
+      (this._config.image as string | undefined);
     if (!image) {
       switch (domain) {
         case "image":

@@ -470,7 +470,7 @@ export interface PictureElementsCardConfig extends LovelaceCardConfig {
 export interface PictureEntityCardConfig extends LovelaceCardConfig {
   entity: string;
   name?: string;
-  image?: string;
+  image?: string | MediaSelectorValue;
   camera_image?: string;
   camera_view?: HuiImage["cameraView"];
   state_image?: Record<string, unknown>;
