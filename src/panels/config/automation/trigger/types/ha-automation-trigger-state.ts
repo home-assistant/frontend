@@ -36,8 +36,8 @@ const stateTriggerStruct = assign(
     trigger: literal("state"),
     entity_id: optional(union([string(), array(string())])),
     attribute: optional(string()),
-    from: optional(nullable(string())),
-    to: optional(nullable(string())),
+    from: optional(union([array(string()), nullable(string())])),
+    to: optional(union([array(string()), nullable(string())])),
     for: optional(union([number(), string(), forDictStruct])),
   })
 );
@@ -53,11 +53,16 @@ export class HaStateTrigger extends LitElement implements TriggerElement {
   @property({ type: Boolean }) public disabled = false;
 
   public static get defaultConfig(): StateTrigger {
-    return { trigger: "state", entity_id: [] };
+    return { trigger: "state", entity_id: "" };
   }
 
   private _schema = memoizeOne(
-    (localize: LocalizeFunc, attribute) =>
+    (
+      localize: LocalizeFunc,
+      attribute,
+      fromSelected?: string[],
+      toSelected?: string[]
+    ) =>
       [
         {
           name: "entity_id",
@@ -131,17 +136,22 @@ export class HaStateTrigger extends LitElement implements TriggerElement {
           },
           selector: {
             state: {
-              extra_options: (attribute
+              multiple: true,
+              extra_options: attribute
                 ? []
-                : [
+                : ([
                     {
                       label: localize(
                         "ui.panel.config.automation.editor.triggers.type.state.any_state_ignore_attributes"
                       ),
                       value: ANY_STATE_VALUE,
+                      exclusive: true,
                     },
-                  ]) as any,
+                  ] as any),
               attribute: attribute,
+              hide_states: (toSelected || []).filter(
+                (v) => v !== ANY_STATE_VALUE
+              ),
             },
           },
         },
@@ -152,17 +162,22 @@ export class HaStateTrigger extends LitElement implements TriggerElement {
           },
           selector: {
             state: {
-              extra_options: (attribute
+              multiple: true,
+              extra_options: attribute
                 ? []
-                : [
+                : ([
                     {
                       label: localize(
                         "ui.panel.config.automation.editor.triggers.type.state.any_state_ignore_attributes"
                       ),
                       value: ANY_STATE_VALUE,
+                      exclusive: true,
                     },
-                  ]) as any,
+                  ] as any),
               attribute: attribute,
+              hide_states: (fromSelected || []).filter(
+                (v) => v !== ANY_STATE_VALUE
+              ),
             },
           },
         },
@@ -213,7 +228,23 @@ export class HaStateTrigger extends LitElement implements TriggerElement {
     if (!data.attribute && data.from === null) {
       data.from = ANY_STATE_VALUE;
     }
-    const schema = this._schema(this.hass.localize, this.trigger.attribute);
+    const fromSelected = Array.isArray(this.trigger.from)
+      ? this.trigger.from
+      : typeof this.trigger.from === "string"
+        ? [this.trigger.from]
+        : [];
+    const toSelected = Array.isArray(this.trigger.to)
+      ? this.trigger.to
+      : typeof this.trigger.to === "string"
+        ? [this.trigger.to]
+        : [];
+
+    const schema = this._schema(
+      this.hass.localize,
+      this.trigger.attribute,
+      fromSelected,
+      toSelected
+    );
 
     return html`
       <ha-form
@@ -231,12 +262,15 @@ export class HaStateTrigger extends LitElement implements TriggerElement {
     ev.stopPropagation();
     const newTrigger = ev.detail.value;
 
-    if (newTrigger.to === ANY_STATE_VALUE) {
-      newTrigger.to = newTrigger.attribute ? undefined : null;
-    }
-    if (newTrigger.from === ANY_STATE_VALUE) {
-      newTrigger.from = newTrigger.attribute ? undefined : null;
-    }
+    newTrigger.to = this._normalizeBoundary(
+      newTrigger.to,
+      newTrigger.attribute
+    );
+    newTrigger.from = this._normalizeBoundary(
+      newTrigger.from,
+      newTrigger.attribute
+    );
+    this._removeOverlap(newTrigger);
 
     Object.keys(newTrigger).forEach((key) =>
       newTrigger[key] === undefined || newTrigger[key] === ""
@@ -255,6 +289,43 @@ export class HaStateTrigger extends LitElement implements TriggerElement {
         ? "ui.components.entity.entity-picker.entity"
         : `ui.panel.config.automation.editor.triggers.type.state.${schema.name}`
     );
+
+  private _normalizeBoundary(
+    value: string | string[] | null | undefined,
+    attribute?: string
+  ): string | string[] | null | undefined {
+    if (Array.isArray(value)) {
+      if (value.includes(ANY_STATE_VALUE)) {
+        return attribute ? undefined : null;
+      }
+      return value.length === 0 ? undefined : value;
+    }
+    if (value === ANY_STATE_VALUE) {
+      return attribute ? undefined : null;
+    }
+    return value;
+  }
+
+  private _removeOverlap(newTrigger: any) {
+    const fromVals = this._asArray(newTrigger.from);
+    const toVals = this._asArray(newTrigger.to);
+    if (!fromVals.length || !toVals.length) return;
+
+    const fromSet = new Set<string>(
+      fromVals.filter((v) => v !== ANY_STATE_VALUE)
+    );
+    const toSet = new Set<string>(toVals.filter((v) => v !== ANY_STATE_VALUE));
+
+    const filteredTo = toVals.filter((v) => !fromSet.has(v));
+    const filteredFrom = fromVals.filter((v) => !toSet.has(v));
+
+    newTrigger.to = filteredTo.length ? filteredTo : undefined;
+    newTrigger.from = filteredFrom.length ? filteredFrom : undefined;
+  }
+
+  private _asArray(val: string | string[] | null | undefined): string[] {
+    return Array.isArray(val) ? val : typeof val === "string" ? [val] : [];
+  }
 }
 
 declare global {

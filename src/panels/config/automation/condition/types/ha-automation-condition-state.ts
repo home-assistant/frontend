@@ -10,6 +10,7 @@ import {
   optional,
   string,
   union,
+  array,
 } from "superstruct";
 import { createDurationData } from "../../../../../common/datetime/create_duration_data";
 import { fireEvent } from "../../../../../common/dom/fire_event";
@@ -25,7 +26,7 @@ const stateConditionStruct = object({
   condition: literal("state"),
   entity_id: optional(string()),
   attribute: optional(string()),
-  state: optional(string()),
+  state: optional(union([string(), array(string())])),
   for: optional(union([number(), string(), forDictStruct])),
   enabled: optional(boolean()),
 });
@@ -69,7 +70,7 @@ const SCHEMA = [
     name: "state",
     required: true,
     selector: {
-      state: {},
+      state: { multiple: true },
     },
     context: {
       filter_entity: "entity_id",
@@ -88,7 +89,7 @@ export class HaStateCondition extends LitElement implements ConditionElement {
   @property({ type: Boolean }) public disabled = false;
 
   public static get defaultConfig(): StateCondition {
-    return { condition: "state", entity_id: "", state: "" };
+    return { condition: "state", entity_id: "", state: [] };
   }
 
   public shouldUpdate(changedProperties: PropertyValues) {
@@ -105,7 +106,12 @@ export class HaStateCondition extends LitElement implements ConditionElement {
 
   protected render() {
     const trgFor = createDurationData(this.condition.for);
-    const data = { ...this.condition, for: trgFor };
+    const state = Array.isArray(this.condition.state)
+      ? this.condition.state
+      : this.condition.state === undefined || this.condition.state === ""
+        ? []
+        : [String(this.condition.state)];
+    const data = { ...this.condition, state, for: trgFor };
 
     return html`
       <ha-form
@@ -130,9 +136,9 @@ export class HaStateCondition extends LitElement implements ConditionElement {
     );
 
     // We should not cleanup state in the above, as it is required.
-    // Set it to empty string if it is undefined.
-    if (!newCondition.state) {
-      newCondition.state = "";
+    // Set it to empty array if it is undefined.
+    if (newCondition.state === undefined) {
+      newCondition.state = [];
     }
 
     fireEvent(this, "value-changed", { value: newCondition });

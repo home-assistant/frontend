@@ -57,6 +57,15 @@ export class HaEntityStatesPicker extends LitElement {
 
     const value = this.value || [];
     const hide = [...(this.hideStates || []), ...value];
+    const exclusiveValues = (this.extraOptions || [])
+      .filter((opt) => (opt as any)?.exclusive)
+      .map((opt) => (opt as any).value);
+    const anyExclusiveSelected = exclusiveValues.some((v) => value.includes(v));
+    const ANY_STATE_VALUE = "__ANY_STATE_IGNORE_ATTRIBUTES__";
+    const anyStateSelected =
+      this.extraOptions?.some(
+        (opt) => (opt as any)?.value === ANY_STATE_VALUE
+      ) && value.includes(ANY_STATE_VALUE);
 
     return html`
       ${repeat(
@@ -84,7 +93,8 @@ export class HaEntityStatesPicker extends LitElement {
         `
       )}
       <div>
-        ${this.disabled && value.length
+        ${(this.disabled || anyExclusiveSelected || anyStateSelected) &&
+        value.length
           ? nothing
           : keyed(
               value.length,

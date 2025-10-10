@@ -58,7 +58,8 @@ class HaEntityStatePicker extends LitElement {
       (changedProps.has("_opened") && this._opened) ||
       changedProps.has("entityId") ||
       changedProps.has("attribute") ||
-      changedProps.has("extraOptions")
+      changedProps.has("extraOptions") ||
+      changedProps.has("hideStates")
     ) {
       const entityIds = this.entityId ? ensureArray(this.entityId) : [];
 
