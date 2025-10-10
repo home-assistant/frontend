@@ -27,6 +27,7 @@ import {
 } from "../../../../../common/datetime/format_date";
 import { formatTime } from "../../../../../common/datetime/format_time";
 import type { ECOption } from "../../../../../resources/echarts";
+import { filterXSS } from "../../../../../common/util/xss";
 
 export function getSuggestedMax(dayDifference: number, end: Date): number {
   let suggestedMax = new Date(end);
@@ -201,7 +202,7 @@ function formatTooltip(
           countNegative++;
         }
       }
-      return `${param.marker} ${param.seriesName}: ${value} ${unit}`;
+      return `${param.marker} ${filterXSS(param.seriesName!)}: ${value} ${unit}`;
     })
     .filter(Boolean);
   let footer = "";
