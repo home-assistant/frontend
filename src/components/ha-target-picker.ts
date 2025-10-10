@@ -279,7 +279,7 @@ export class HaTargetPicker extends SubscribeMixin(LitElement) {
                 ${this._renderTargetSelector()}
               </wa-popover>
             `
-          : this._bottomSheetOpen
+          : this._bottomSheetOpen || this._open
             ? html`<ha-bottom-sheet
                 @closed=${this._hidePicker}
                 .open=${this._bottomSheetOpen}
