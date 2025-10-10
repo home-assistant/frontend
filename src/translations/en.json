@@ -7766,6 +7766,9 @@
                   "state": "[%key:ui::panel::lovelace::editor::badge::entity::displayed_elements_options::state%]"
                 }
               },
+              "button_config": {
+                "text": "Text"
+              },
               "default_heading": "Kitchen"
             },
             "map": {

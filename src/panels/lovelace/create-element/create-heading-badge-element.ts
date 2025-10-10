@@ -1,4 +1,5 @@
 import "../heading-badges/hui-entity-heading-badge";
+import "../heading-badges/hui-button-heading-badge";
 
 import {
   createLovelaceElement,
@@ -6,7 +7,7 @@ import {
 } from "./create-element-base";
 import type { LovelaceHeadingBadgeConfig } from "../heading-badges/types";
 
-const ALWAYS_LOADED_TYPES = new Set(["error", "entity"]);
+const ALWAYS_LOADED_TYPES = new Set(["error", "entity", "button"]);
 
 export const createHeadingBadgeElement = (config: LovelaceHeadingBadgeConfig) =>
   createLovelaceElement(
