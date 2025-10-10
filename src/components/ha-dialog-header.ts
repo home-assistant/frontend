@@ -40,7 +40,6 @@ export class HaDialogHeader extends LitElement {
       css`
         :host {
           display: block;
-          min-height: 48px;
         }
         :host([show-border]) {
           border-bottom: 1px solid
