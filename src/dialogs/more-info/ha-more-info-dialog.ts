@@ -15,7 +15,6 @@ import type { PropertyValues } from "lit";
 import { LitElement, css, html, nothing } from "lit";
 import { customElement, property, state } from "lit/decorators";
 import { cache } from "lit/directives/cache";
-import { join } from "lit/directives/join";
 import { keyed } from "lit/directives/keyed";
 import { dynamicElement } from "../../common/dom/dynamic-element-directive";
 import { fireEvent } from "../../common/dom/fire_event";
@@ -33,6 +32,7 @@ import {
 } from "../../common/entity/context/get_entity_context";
 import { shouldHandleRequestSelectedEvent } from "../../common/mwc/handle-request-selected-event";
 import { navigate } from "../../common/navigate";
+import { computeRTL } from "../../common/util/compute_rtl";
 import "../../components/ha-button-menu";
 import "../../components/ha-dialog";
 import "../../components/ha-dialog-header";
@@ -361,6 +361,8 @@ export class MoreInfoDialog extends LitElement {
     );
     const title = this._childView?.viewTitle || breadcrumb.pop() || entityId;
 
+    const isRTL = computeRTL(this.hass);
+
     return html`
       <ha-dialog
         open
@@ -394,17 +396,13 @@ export class MoreInfoDialog extends LitElement {
             ${breadcrumb.length > 0
               ? !__DEMO__ && isAdmin
                 ? html`
-                    <button
-                      class="breadcrumb"
-                      @click=${this._breadcrumbClick}
-                      aria-label=${breadcrumb.join(" > ")}
-                    >
-                      ${join(breadcrumb, html`<ha-icon-next></ha-icon-next>`)}
+                    <button class="breadcrumb" @click=${this._breadcrumbClick}>
+                      ${breadcrumb.join(isRTL ? " ◂ " : " ▸ ")}
                     </button>
                   `
                 : html`
                     <p class="breadcrumb">
-                      ${join(breadcrumb, html`<ha-icon-next></ha-icon-next>`)}
+                      ${breadcrumb.join(isRTL ? " ◂ " : " ▸ ")}
                     </p>
                   `
               : nothing}
