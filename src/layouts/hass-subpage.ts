@@ -5,8 +5,8 @@ import { restoreScroll } from "../common/decorators/restore-scroll";
 import { goBack } from "../common/navigate";
 import "../components/ha-icon-button-arrow-prev";
 import "../components/ha-menu-button";
-import type { HomeAssistant } from "../types";
 import { haStyleScrollbar } from "../resources/styles";
+import type { HomeAssistant } from "../types";
 
 @customElement("hass-subpage")
 class HassSubpage extends LitElement {
@@ -154,9 +154,15 @@ class HassSubpage extends LitElement {
               1px - var(--header-height, 0px) - var(
                 --safe-area-inset-top,
                 0px
-              ) - var(--safe-area-inset-bottom, 0px)
+              ) - var(
+                --hass-subpage-bottom-inset,
+                var(--safe-area-inset-bottom, 0px)
+              )
           );
-          margin-bottom: var(--safe-area-inset-bottom);
+          margin-bottom: var(
+            --hass-subpage-bottom-inset,
+            var(--safe-area-inset-bottom)
+          );
           margin-right: var(--safe-area-inset-right);
           overflow-y: auto;
           overflow: auto;

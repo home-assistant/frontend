@@ -9,6 +9,7 @@ import { ResizeController } from "@lit-labs/observers/resize-controller";
 import type { HomeAssistant } from "../../types";
 import type { ECOption } from "../../resources/echarts";
 import { measureTextWidth } from "../../util/text";
+import { filterXSS } from "../../common/util/xss";
 import "./ha-chart-base";
 import { NODE_SIZE } from "../trace/hat-graph-const";
 import "../ha-alert";
@@ -92,12 +93,12 @@ export class HaSankeyChart extends LitElement {
       : data.value;
     if (data.id) {
       const node = this.data.nodes.find((n) => n.id === data.id);
-      return `${params.marker} ${node?.label ?? data.id}<br>${value}`;
+      return `${params.marker} ${filterXSS(node?.label ?? data.id)}<br>${value}`;
     }
     if (data.source && data.target) {
       const source = this.data.nodes.find((n) => n.id === data.source);
       const target = this.data.nodes.find((n) => n.id === data.target);
-      return `${source?.label ?? data.source} → ${target?.label ?? data.target}<br>${value}`;
+      return `${filterXSS(source?.label ?? data.source)} → ${filterXSS(target?.label ?? data.target)}<br>${value}`;
     }
     return null;
   };
