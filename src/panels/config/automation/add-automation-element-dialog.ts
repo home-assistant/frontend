@@ -17,8 +17,6 @@ import { computeDomain } from "../../../common/entity/compute_domain";
 import { stringCompare } from "../../../common/string/compare";
 import type { LocalizeFunc } from "../../../common/translations/localize";
 import { deepEqual } from "../../../common/util/deep-equal";
-import "../../../components/ha-dialog";
-import type { HaDialog } from "../../../components/ha-dialog";
 import "../../../components/ha-dialog-header";
 import "../../../components/ha-domain-icon";
 import "../../../components/ha-icon-button";
@@ -26,8 +24,11 @@ import "../../../components/ha-icon-button-prev";
 import "../../../components/ha-icon-next";
 import "../../../components/ha-md-divider";
 import "../../../components/ha-md-list";
+import type { HaMdList } from "../../../components/ha-md-list";
 import "../../../components/ha-md-list-item";
 import "../../../components/ha-service-icon";
+import "../../../components/ha-wa-dialog";
+import type { HaWaDialog } from "../../../components/ha-wa-dialog";
 import "../../../components/search-input";
 import {
   ACTION_GROUPS,
@@ -111,11 +112,11 @@ class DialogAddAutomationElement
 
   @state() private _domains?: Set<string>;
 
-  @query("ha-dialog") private _dialog?: HaDialog;
+  @query("#content") private _contentElement?: HaMdList;
+
+  @query("ha-wa-dialog") private _dialogElement?: HaWaDialog;
 
   private _fullScreen = false;
-
-  @state() private _width?: number;
 
   @state() private _height?: number;
 
@@ -146,7 +147,6 @@ class DialogAddAutomationElement
       fireEvent(this, "dialog-closed", { dialog: this.localName });
     }
     this._height = undefined;
-    this._width = undefined;
     this._params = undefined;
     this._group = undefined;
     this._prev = undefined;
@@ -461,10 +461,8 @@ class DialogAddAutomationElement
   }
 
   protected _opened(): void {
-    // Store the width and height so that when we search, box doesn't jump
-    const boundingRect =
-      this.shadowRoot!.querySelector("ha-md-list")?.getBoundingClientRect();
-    this._width = boundingRect?.width;
+    // Store the height so that when we search, box doesn't jump
+    const boundingRect = this._contentElement?.getBoundingClientRect();
     this._height = boundingRect?.height;
   }
 
@@ -502,6 +500,15 @@ class DialogAddAutomationElement
           this._manifests
         );
 
+    const groupItems = this._getGroupItems(
+      this._params.type,
+      undefined,
+      undefined,
+      this.hass.localize,
+      this.hass.services,
+      this._manifests
+    );
+
     const groupName = isService(this._group)
       ? domainToName(
           this.hass.localize,
@@ -514,14 +521,13 @@ class DialogAddAutomationElement
         );
 
     return html`
-      <ha-dialog
+      <ha-wa-dialog
         open
-        hideActions
-        @opened=${this._opened}
+        persist-initial-height
+        @after-show=${this._opened}
         @closed=${this.closeDialog}
-        .heading=${true}
       >
-        <div slot="heading">
+        <div slot="header">
           <ha-dialog-header>
             <span slot="title"
               >${this._group
@@ -538,7 +544,7 @@ class DialogAddAutomationElement
               : html`<ha-icon-button
                   .path=${mdiClose}
                   slot="navigationIcon"
-                  dialogAction="cancel"
+                  data-dialog="close"
                 ></ha-icon-button>`}
           </ha-dialog-header>
           <search-input
@@ -556,100 +562,206 @@ class DialogAddAutomationElement
                 )}
           ></search-input>
         </div>
-        <ha-md-list
-          dialogInitialFocus=${ifDefined(this._fullScreen ? "" : undefined)}
+        <div
+          id="content"
           style=${styleMap({
-            width: this._width ? `${this._width}px` : "auto",
-            height: this._height ? `${Math.min(468, this._height)}px` : "auto",
+            height: this._height ? `${Math.min(468, this._height)}px` : "100vh",
           })}
         >
-          ${this._params.clipboardItem &&
-          !this._filter &&
-          (!this._group ||
-            items.find((item) => item.key === this._params!.clipboardItem))
-            ? html`<ha-md-list-item
-                  interactive
-                  type="button"
-                  class="paste"
-                  .value=${PASTE_VALUE}
-                  @click=${this._selected}
-                >
-                  <div class="shortcut-label">
-                    <div class="label">
-                      <div>
-                        ${this.hass.localize(
-                          `ui.panel.config.automation.editor.${this._params.type}s.paste`
-                        )}
+          <ha-md-list
+            class="groups"
+            dialogInitialFocus=${ifDefined(this._fullScreen ? "" : undefined)}
+          >
+            ${this._params.clipboardItem &&
+            !this._filter &&
+            (!this._group ||
+              items.find((item) => item.key === this._params!.clipboardItem))
+              ? html`<ha-md-list-item
+                    interactive
+                    type="button"
+                    class="paste"
+                    .value=${PASTE_VALUE}
+                    @click=${this._selected}
+                  >
+                    <div class="shortcut-label">
+                      <div class="label">
+                        <div>
+                          ${this.hass.localize(
+                            `ui.panel.config.automation.editor.${this._params.type}s.paste`
+                          )}
+                        </div>
+                        <div class="supporting-text">
+                          ${this.hass.localize(
+                            // @ts-ignore
+                            `ui.panel.config.automation.editor.${this._params.type}s.type.${this._params.clipboardItem}.label`
+                          )}
+                        </div>
                       </div>
-                      <div class="supporting-text">
-                        ${this.hass.localize(
-                          // @ts-ignore
-                          `ui.panel.config.automation.editor.${this._params.type}s.type.${this._params.clipboardItem}.label`
-                        )}
-                      </div>
+                      ${!this._narrow
+                        ? html`<span class="shortcut">
+                            <span
+                              >${isMac
+                                ? html`<ha-svg-icon
+                                    slot="start"
+                                    .path=${mdiAppleKeyboardCommand}
+                                  ></ha-svg-icon>`
+                                : this.hass.localize(
+                                    "ui.panel.config.automation.editor.ctrl"
+                                  )}</span
+                            >
+                            <span>+</span>
+                            <span>V</span>
+                          </span>`
+                        : nothing}
                     </div>
-                    ${!this._narrow
-                      ? html`<span class="shortcut">
-                          <span
-                            >${isMac
-                              ? html`<ha-svg-icon
-                                  slot="start"
-                                  .path=${mdiAppleKeyboardCommand}
-                                ></ha-svg-icon>`
-                              : this.hass.localize(
-                                  "ui.panel.config.automation.editor.ctrl"
-                                )}</span
-                          >
-                          <span>+</span>
-                          <span>V</span>
-                        </span>`
-                      : nothing}
-                  </div>
-                  <ha-svg-icon
-                    slot="start"
-                    .path=${mdiContentPaste}
-                  ></ha-svg-icon
-                  ><ha-svg-icon slot="end" .path=${mdiPlus}></ha-svg-icon>
-                </ha-md-list-item>
-                <ha-md-divider role="separator" tabindex="-1"></ha-md-divider>`
-            : nothing}
-          ${repeat(
-            items,
-            (item) => item.key,
-            (item) => html`
-              <ha-md-list-item
-                interactive
-                type="button"
-                .value=${item.key}
-                .group=${item.group}
-                @click=${this._selected}
-              >
-                <div slot="headline">${item.name}</div>
-                <div slot="supporting-text">${item.description}</div>
-                ${item.icon
-                  ? html`<span slot="start">${item.icon}</span>`
-                  : item.iconPath
-                    ? html`<ha-svg-icon
-                        slot="start"
-                        .path=${item.iconPath}
-                      ></ha-svg-icon>`
-                    : nothing}
-                ${item.group
-                  ? html`<ha-icon-next slot="end"></ha-icon-next>`
-                  : html`<ha-svg-icon
+                    <ha-svg-icon
+                      slot="start"
+                      .path=${mdiContentPaste}
+                    ></ha-svg-icon
+                    ><ha-svg-icon
+                      class="plus"
                       slot="end"
                       .path=${mdiPlus}
-                    ></ha-svg-icon>`}
-              </ha-md-list-item>
-            `
-          )}
-        </ha-md-list>
-      </ha-dialog>
+                    ></ha-svg-icon>
+                  </ha-md-list-item>
+                  <ha-md-divider
+                    role="separator"
+                    tabindex="-1"
+                  ></ha-md-divider>`
+              : nothing}
+            ${repeat(
+              groupItems,
+              (item) => item.key,
+              (item) => html`
+                <ha-md-list-item
+                  interactive
+                  type="button"
+                  .value=${item.key}
+                  .group=${item.group}
+                  @click=${this._selected}
+                  class=${item.key === this._group ? "selected" : ""}
+                >
+                  <div slot="headline">${item.name}</div>
+                  ${item.icon
+                    ? html`<span slot="start">${item.icon}</span>`
+                    : item.iconPath
+                      ? html`<ha-svg-icon
+                          slot="start"
+                          .path=${item.iconPath}
+                        ></ha-svg-icon>`
+                      : nothing}
+                </ha-md-list-item>
+              `
+            )}
+          </ha-md-list>
+          <div class="items ${!this._group ? "blank" : ""}">
+            ${!this._group
+              ? "Select a group"
+              : html`<h3>${this._params.type}</h3>
+                  <ha-md-list
+                    dialogInitialFocus=${ifDefined(
+                      this._fullScreen ? "" : undefined
+                    )}
+                  >
+                    ${this._params.clipboardItem &&
+                    !this._filter &&
+                    (!this._group ||
+                      items.find(
+                        (item) => item.key === this._params!.clipboardItem
+                      ))
+                      ? html`<ha-md-list-item
+                            interactive
+                            type="button"
+                            class="paste"
+                            .value=${PASTE_VALUE}
+                            @click=${this._selected}
+                          >
+                            <div class="shortcut-label">
+                              <div class="label">
+                                <div>
+                                  ${this.hass.localize(
+                                    `ui.panel.config.automation.editor.${this._params.type}s.paste`
+                                  )}
+                                </div>
+                                <div class="supporting-text">
+                                  ${this.hass.localize(
+                                    // @ts-ignore
+                                    `ui.panel.config.automation.editor.${this._params.type}s.type.${this._params.clipboardItem}.label`
+                                  )}
+                                </div>
+                              </div>
+                              ${!this._narrow
+                                ? html`<span class="shortcut">
+                                    <span
+                                      >${isMac
+                                        ? html`<ha-svg-icon
+                                            slot="start"
+                                            .path=${mdiAppleKeyboardCommand}
+                                          ></ha-svg-icon>`
+                                        : this.hass.localize(
+                                            "ui.panel.config.automation.editor.ctrl"
+                                          )}</span
+                                    >
+                                    <span>+</span>
+                                    <span>V</span>
+                                  </span>`
+                                : nothing}
+                            </div>
+                            <ha-svg-icon
+                              slot="start"
+                              .path=${mdiContentPaste}
+                            ></ha-svg-icon
+                            ><ha-svg-icon
+                              class="plus"
+                              slot="end"
+                              .path=${mdiPlus}
+                            ></ha-svg-icon>
+                          </ha-md-list-item>
+                          <ha-md-divider
+                            role="separator"
+                            tabindex="-1"
+                          ></ha-md-divider>`
+                      : nothing}
+                    ${repeat(
+                      items,
+                      (item) => item.key,
+                      (item) => html`
+                        <ha-md-list-item
+                          interactive
+                          type="button"
+                          .value=${item.key}
+                          .group=${item.group}
+                          @click=${this._selected}
+                        >
+                          <div slot="headline">${item.name}</div>
+                          <div slot="supporting-text">${item.description}</div>
+                          ${item.icon
+                            ? html`<span slot="start">${item.icon}</span>`
+                            : item.iconPath
+                              ? html`<ha-svg-icon
+                                  slot="start"
+                                  .path=${item.iconPath}
+                                ></ha-svg-icon>`
+                              : nothing}
+                          ${item.group
+                            ? html`<ha-icon-next slot="end"></ha-icon-next>`
+                            : html`<ha-svg-icon
+                                slot="end"
+                                class="plus"
+                                .path=${mdiPlus}
+                              ></ha-svg-icon>`}
+                        </ha-md-list-item>
+                      `
+                    )}
+                  </ha-md-list>`}
+          </div>
+        </div>
+      </ha-wa-dialog>
     `;
   }
 
   private _back() {
-    this._dialog!.scrollToPos(0, 0);
+    this._dialogElement?.bodyContainer.scrollTo(0, 0);
     if (this._filter) {
       this._filter = "";
       return;
@@ -663,7 +775,7 @@ class DialogAddAutomationElement
   }
 
   private _selected(ev) {
-    this._dialog!.scrollToPos(0, 0);
+    this._dialogElement?.bodyContainer.scrollTo(0, 0);
     const item = ev.currentTarget;
     if (item.group) {
       this._prev = this._group;
@@ -707,29 +819,92 @@ class DialogAddAutomationElement
       haStyle,
       haStyleDialog,
       css`
-        ha-dialog {
+        ha-wa-dialog {
           --dialog-content-padding: 0;
+          --ha-dialog-width-md: 888px;
           --mdc-dialog-max-height: 60vh;
           --mdc-dialog-max-height: 60dvh;
         }
         @media all and (min-width: 550px) {
-          ha-dialog {
+          ha-wa-dialog {
             --mdc-dialog-min-width: 500px;
           }
         }
         ha-icon-next {
           width: 24px;
         }
-        ha-md-list {
+
+        #content {
           max-height: 468px;
-          max-width: 100vw;
-          --md-list-item-leading-space: 24px;
-          --md-list-item-trailing-space: 24px;
-          --md-list-item-supporting-text-font: var(--ha-font-size-s);
+          display: flex;
+          gap: var(--ha-space-3);
+          padding: var(--ha-space-3) var(--ha-space-4);
         }
+
+        ha-md-list.groups {
+          overflow: auto;
+          flex: 3;
+          border-radius: var(--ha-border-radius-xl);
+          border: 1px solid var(--ha-color-border-neutral-quiet);
+          --md-list-item-leading-space: var(--ha-space-3);
+          --md-list-item-trailing-space: var(--md-list-item-leading-space);
+          --md-list-item-bottom-space: var(--ha-space-1);
+          --md-list-item-top-space: var(--md-list-item-bottom-space);
+          --md-list-item-supporting-text-font: var(--ha-font-size-s);
+          --md-list-item-one-line-container-height: var(--ha-space-8);
+        }
+
+        ha-md-list.groups ha-md-list-item.selected {
+          background-color: var(--ha-color-fill-primary-normal-active);
+          --md-list-item-label-text-color: var(--primary-color);
+          --icon-primary-color: var(--primary-color);
+        }
+        ha-md-list.groups ha-md-list-item.selected ha-svg-icon {
+          color: var(--primary-color);
+        }
+
+        #content .items {
+          display: flex;
+          flex-direction: column;
+          overflow: auto;
+          flex: 7;
+        }
+
+        #content .items.blank {
+          border-radius: var(--ha-border-radius-xl);
+          background-color: var(--ha-color-surface-default);
+          justify-content: center;
+          align-items: center;
+          color: var(--ha-color-text-secondary);
+        }
+
+        #content .items ha-md-list {
+          --md-list-item-two-line-container-height: var(--ha-space-12);
+          --md-list-item-leading-space: var(--ha-space-3);
+          --md-list-item-trailing-space: var(--md-list-item-leading-space);
+          --md-list-item-bottom-space: var(--ha-space-2);
+          --md-list-item-top-space: var(--md-list-item-bottom-space);
+          --md-list-item-supporting-text-font: var(--ha-font-size-s);
+          gap: var(--ha-space-2);
+        }
+
+        #content .items ha-md-list ha-md-list-item {
+          border-radius: var(--ha-border-radius-lg);
+          border: 1px solid var(--ha-color-border-neutral-quiet);
+        }
+
         ha-md-list-item img {
           width: 24px;
         }
+
+        ha-md-list-item.paste {
+          border-bottom: 1px solid var(--ha-color-border-neutral-quiet);
+        }
+
+        ha-svg-icon.plus {
+          color: var(--primary-color);
+        }
+
         search-input {
           display: block;
           margin: 0 16px;
