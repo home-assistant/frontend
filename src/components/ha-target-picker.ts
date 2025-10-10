@@ -638,6 +638,7 @@ export class HaTargetPicker extends SubscribeMixin(LitElement) {
         max-width: min(max(var(--body-width), 336px), 600px);
         max-height: 500px;
         height: 70vh;
+        overflow: hidden;
       }
 
       ha-bottom-sheet {
