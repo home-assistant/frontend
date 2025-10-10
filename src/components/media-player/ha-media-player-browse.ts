@@ -76,8 +76,8 @@ declare global {
 }
 
 export interface MediaPlayerItemId {
-  media_content_id: string | undefined;
-  media_content_type: string | undefined;
+  media_content_id?: string | undefined;
+  media_content_type?: string | undefined;
 }
 
 const MANUAL_ITEM: MediaPlayerItem = {
@@ -112,6 +112,10 @@ export class HaMediaPlayerBrowse extends LitElement {
   @property({ attribute: false }) public defaultId?: string;
 
   @property({ attribute: false }) public defaultType?: string;
+
+  @property({ attribute: false }) public hideContentType = false;
+
+  @property({ attribute: false }) public contentIdHelper?: string;
 
   // @todo Consider reworking to eliminate need for attribute since it is manipulated internally
   @property({ type: Boolean, reflect: true }) public narrow = false;
@@ -521,6 +525,8 @@ export class HaMediaPlayerBrowse extends LitElement {
                         media_content_type: this.defaultType || "",
                       }}
                       .hass=${this.hass}
+                      .hideContentType=${this.hideContentType}
+                      .contentIdHelper=${this.contentIdHelper}
                       @manual-media-picked=${this._manualPicked}
                     ></ha-browse-media-manual>`
                   : isTTSMediaSource(currentItem.media_content_id)

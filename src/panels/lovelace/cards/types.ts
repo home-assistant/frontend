@@ -29,6 +29,7 @@ import type {
 import type { LovelaceHeaderFooterConfig } from "../header-footer/types";
 import type { LovelaceHeadingBadgeConfig } from "../heading-badges/types";
 import type { HomeSummary } from "../strategies/home/helpers/home-summaries";
+import type { MediaSelectorValue } from "../../../data/selector";
 
 export type AlarmPanelCardConfigState =
   | "arm_away"
@@ -441,7 +442,7 @@ export interface StatisticCardConfig extends LovelaceCardConfig {
 }
 
 export interface PictureCardConfig extends LovelaceCardConfig {
-  image?: string;
+  image?: string | MediaSelectorValue;
   image_entity?: string;
   tap_action?: ActionConfig;
   hold_action?: ActionConfig;
