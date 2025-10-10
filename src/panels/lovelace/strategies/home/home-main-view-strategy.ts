@@ -15,7 +15,6 @@ import type {
   AreaCardConfig,
   HomeSummaryCard,
   MarkdownCardConfig,
-  TileCardConfig,
   WeatherForecastCardConfig,
 } from "../../cards/types";
 import { getAreas } from "../areas/helpers/areas-strategy-helper";
@@ -87,31 +86,14 @@ export class HomeMainViewStrategy extends ReactiveElement {
     const favoriteEntities = (config.favorite_entities || []).filter(
       (entityId) => hass.states[entityId] !== undefined
     );
-
-    if (favoriteEntities.length > 0) {
-      favoriteSection.cards!.push(
-        {
-          type: "heading",
-          heading: "",
-          heading_style: "subtitle",
-        },
-        ...favoriteEntities.map(
-          (entityId) =>
-            ({
-              type: "tile",
-              entity: entityId,
-              show_entity_picture: true,
-            }) as TileCardConfig
-        )
-      );
-    }
+    const maxCommonControls = Math.max(8, favoriteEntities.length);
 
     const commonControlsSection = {
       strategy: {
         type: "common-controls",
         title: hass.localize("ui.panel.lovelace.strategy.home.common_controls"),
-        limit: 4,
-        exclude_entities: favoriteEntities,
+        limit: maxCommonControls,
+        include_entities: favoriteEntities,
         hide_empty: true,
       } satisfies CommonControlSectionStrategyConfig,
       column_span: maxColumns,
