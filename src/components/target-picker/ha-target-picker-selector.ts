@@ -102,7 +102,7 @@ export class HaTargetPickerSelector extends LitElement {
 
   @state() private _configEntryLookup: Record<string, ConfigEntry> = {};
 
-  @state() private _selectedItemIndex = -1;
+  private _selectedItemIndex = -1;
 
   @state() private _filterHeader?: string;
 
@@ -181,8 +181,7 @@ export class HaTargetPickerSelector extends LitElement {
           this.targetValue,
           this._searchTerm,
           this.createDomains,
-          this.mode,
-          this._selectedItemIndex
+          this.mode
         )}
         .renderItem=${this._renderRow}
         @scroll=${this._onScrollList}
@@ -261,7 +260,7 @@ export class HaTargetPickerSelector extends LitElement {
     const maxItems = items.length - 1;
 
     if (maxItems === -1) {
-      this._selectedItemIndex = -1;
+      this._resetSelectedItem();
       return;
     }
 
@@ -287,7 +286,7 @@ export class HaTargetPickerSelector extends LitElement {
       this._selectedItemIndex = nextIndex;
     }
 
-    this._virtualizerElement?.scrollToIndex(this._selectedItemIndex, "end");
+    this._scrollToSelectedItem();
   };
 
   private _selectPreviousItem = (ev: KeyboardEvent) => {
@@ -318,8 +317,20 @@ export class HaTargetPickerSelector extends LitElement {
         this._selectedItemIndex = nextIndex;
       }
 
-      this._virtualizerElement?.scrollToIndex(this._selectedItemIndex, "end");
+      this._scrollToSelectedItem();
     }
+  };
+
+  private _scrollToSelectedItem = () => {
+    this._virtualizerElement
+      ?.querySelector(".selected")
+      ?.classList.remove("selected");
+
+    this._virtualizerElement?.scrollToIndex(this._selectedItemIndex, "end");
+
+    this._virtualizerElement
+      ?.querySelector(`#list-item-${this._selectedItemIndex}`)
+      ?.classList.add("selected");
   };
 
   private _pickSelectedItem = (ev: KeyboardEvent) => {
@@ -415,7 +426,7 @@ export class HaTargetPickerSelector extends LitElement {
       | EntityComboBoxItem
       | DevicePickerItem
       | string,
-    index
+    index: number
   ) => {
     if (!item) {
       return nothing;
@@ -447,8 +458,8 @@ export class HaTargetPickerSelector extends LitElement {
 
     return html`
       <ha-combo-box-item
+        id=${`list-item-${index}`}
         tabindex="-1"
-        class=${this._selectedItemIndex === index ? "selected" : ""}
         .type=${type === "empty" ? "text" : "button"}
         @click=${this._handlePickTarget}
         .targetType=${type}
@@ -610,8 +621,7 @@ export class HaTargetPickerSelector extends LitElement {
       targetValue: this["targetValue"],
       searchTerm: string,
       createDomains: this["createDomains"],
-      mode: this["mode"],
-      _selectedItemIndex: number
+      mode: this["mode"]
     ) => {
       const items: (
         | string
@@ -836,7 +846,8 @@ export class HaTargetPickerSelector extends LitElement {
     const textfield = ev.target as HaTextField;
     const value = textfield.value.trim();
     this._searchTerm = value;
-    this._selectedItemIndex = -1;
+
+    this._resetSelectedItem();
   }
 
   private _handlePickTarget = (ev) => {
@@ -873,7 +884,7 @@ export class HaTargetPickerSelector extends LitElement {
   }
 
   private _toggleFilter(ev: any) {
-    this._selectedItemIndex = -1;
+    this._resetSelectedItem();
     this._filterHeader = undefined;
     const type = ev.target.type as TargetTypeFloorless;
     if (!type) {
@@ -898,6 +909,13 @@ export class HaTargetPickerSelector extends LitElement {
   private _onScrollList(ev) {
     const top = ev.target.scrollTop ?? 0;
     this._listScrolled = top > 0;
+  }
+
+  private _resetSelectedItem() {
+    this._virtualizerElement
+      ?.querySelector(".selected")
+      ?.classList.remove("selected");
+    this._selectedItemIndex = -1;
   }
 
   static styles = [
