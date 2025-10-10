@@ -239,6 +239,8 @@ export class HaTargetPickerSelector extends LitElement {
     this._removeKeyboardShortcuts = tinykeys(this, {
       ArrowUp: this._selectPreviousItem,
       ArrowDown: this._selectNextItem,
+      Home: this._selectFirstItem,
+      End: this._selectLastItem,
       Enter: this._pickSelectedItem,
     });
   }
@@ -321,6 +323,54 @@ export class HaTargetPickerSelector extends LitElement {
     }
   };
 
+  private _selectFirstItem = (ev: KeyboardEvent) => {
+    ev.stopPropagation();
+    if (!this._virtualizerElement || !this._virtualizerElement.items.length) {
+      return;
+    }
+
+    const nextIndex = 0;
+
+    if (
+      (this._virtualizerElement.items[nextIndex] as PickerComboBoxItem)?.id ===
+      EMPTY_SEARCH
+    ) {
+      return;
+    }
+
+    if (typeof this._virtualizerElement.items[nextIndex] === "string") {
+      this._selectedItemIndex = nextIndex + 1;
+    } else {
+      this._selectedItemIndex = nextIndex;
+    }
+
+    this._scrollToSelectedItem();
+  };
+
+  private _selectLastItem = (ev: KeyboardEvent) => {
+    ev.stopPropagation();
+    if (!this._virtualizerElement || !this._virtualizerElement.items.length) {
+      return;
+    }
+
+    const nextIndex = this._virtualizerElement.items.length - 1;
+
+    if (
+      (this._virtualizerElement.items[nextIndex] as PickerComboBoxItem)?.id ===
+      EMPTY_SEARCH
+    ) {
+      return;
+    }
+
+    if (typeof this._virtualizerElement.items[nextIndex] === "string") {
+      this._selectedItemIndex = nextIndex - 1;
+    } else {
+      this._selectedItemIndex = nextIndex;
+    }
+
+    this._scrollToSelectedItem();
+  };
+
   private _scrollToSelectedItem = () => {
     this._virtualizerElement
       ?.querySelector(".selected")
@@ -328,9 +378,11 @@ export class HaTargetPickerSelector extends LitElement {
 
     this._virtualizerElement?.scrollToIndex(this._selectedItemIndex, "end");
 
-    this._virtualizerElement
-      ?.querySelector(`#list-item-${this._selectedItemIndex}`)
-      ?.classList.add("selected");
+    requestAnimationFrame(() => {
+      this._virtualizerElement
+        ?.querySelector(`#list-item-${this._selectedItemIndex}`)
+        ?.classList.add("selected");
+    });
   };
 
   private _pickSelectedItem = (ev: KeyboardEvent) => {
