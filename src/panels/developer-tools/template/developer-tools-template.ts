@@ -280,10 +280,10 @@ ${type === "object"
 
         .content.horizontal {
           --code-mirror-max-height: calc(
-            100vh - var(--header-height) - (var(--ha-line-height-normal) * 3) -
+            100vh - var(--header-height) - (22.4px * 3) -
               (1em * 2) - (max(16px, var(--safe-area-inset-top)) * 2) -
               (max(16px, var(--safe-area-inset-bottom)) * 2) -
-              (var(--ha-card-border-width, 1px) * 2) - 179px
+              (var(--ha-card-border-width, 1px) * 3) - 192px
           );
         }
 
