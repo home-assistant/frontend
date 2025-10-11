@@ -76,6 +76,15 @@ export class EnergyViewStrategy extends ReactiveElement {
       collection_key: "energy_dashboard",
     });
 
+    // @TODO: Remove this after testing
+    if (hasGrid || hasBattery) {
+      view.cards!.push({
+        title: "Test power graph",
+        type: "power-graph",
+        collection_key: "energy_dashboard",
+      });
+    }
+
     // Only include if we have a grid or battery.
     if (hasGrid || hasBattery) {
       view.cards!.push({

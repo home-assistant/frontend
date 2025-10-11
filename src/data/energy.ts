@@ -359,6 +359,40 @@ export const getReferencedStatisticIds = (
   return statIDs;
 };
 
+export const getReferencedStatisticIdsPower = (
+  prefs: EnergyPreferences
+): string[] => {
+  const statIDs: (string | undefined)[] = [];
+
+  for (const source of prefs.energy_sources) {
+    if (source.type === "gas" || source.type === "water") {
+      continue;
+    }
+
+    if (source.type === "solar") {
+      statIDs.push(source.stat_power_from);
+      continue;
+    }
+
+    if (source.type === "battery") {
+      statIDs.push(source.stat_power_from);
+      statIDs.push(source.stat_power_to);
+      continue;
+    }
+
+    // grid source
+    for (const flowFrom of source.flow_from) {
+      statIDs.push(flowFrom.stat_power_from);
+    }
+    for (const flowTo of source.flow_to) {
+      statIDs.push(flowTo.stat_power_to);
+    }
+  }
+  statIDs.push(...prefs.device_consumption.map((d) => d.stat_power));
+
+  return statIDs.filter(Boolean) as string[];
+};
+
 export const enum CompareMode {
   NONE = "",
   PREVIOUS = "previous",
@@ -406,9 +440,10 @@ const getEnergyData = async (
     "gas",
     "device",
   ]);
+  const powerStatIds = getReferencedStatisticIdsPower(prefs);
   const waterStatIds = getReferencedStatisticIds(prefs, info, ["water"]);
 
-  const allStatIDs = [...energyStatIds, ...waterStatIds];
+  const allStatIDs = [...energyStatIds, ...waterStatIds, ...powerStatIds];
 
   const dayDifference = differenceInDays(end || new Date(), start);
   const period =
@@ -419,6 +454,8 @@ const getEnergyData = async (
       : dayDifference > 2
         ? "day"
         : "hour";
+  const finePeriod =
+    dayDifference > 64 ? "day" : dayDifference > 8 ? "hour" : "5minute";
 
   const statsMetadata: Record<string, StatisticsMetaData> = {};
   const statsMetadataArray = allStatIDs.length
@@ -440,6 +477,9 @@ const getEnergyData = async (
       ? (gasUnit as (typeof VOLUME_UNITS)[number])
       : undefined,
   };
+  const powerUnits: StatisticsUnitConfiguration = {
+    power: "kW",
+  };
   const waterUnit = getEnergyWaterUnit(hass, prefs, statsMetadata);
   const waterUnits: StatisticsUnitConfiguration = {
     volume: waterUnit,
@@ -450,6 +490,12 @@ const getEnergyData = async (
         "change",
       ])
     : {};
+  const _powerStats: Statistics | Promise<Statistics> = powerStatIds.length
+    ? fetchStatistics(hass!, start, end, powerStatIds, finePeriod, powerUnits, [
+        "mean",
+      ])
+    : {};
+
   const _waterStats: Statistics | Promise<Statistics> = waterStatIds.length
     ? fetchStatistics(hass!, start, end, waterStatIds, period, waterUnits, [
         "change",
@@ -556,6 +602,7 @@ const getEnergyData = async (
 
   const [
     energyStats,
+    powerStats,
     waterStats,
     energyStatsCompare,
     waterStatsCompare,
@@ -563,13 +610,14 @@ const getEnergyData = async (
     fossilEnergyConsumptionCompare,
   ] = await Promise.all([
     _energyStats,
+    _powerStats,
     _waterStats,
     _energyStatsCompare,
     _waterStatsCompare,
     _fossilEnergyConsumption,
     _fossilEnergyConsumptionCompare,
   ]);
-  const stats = { ...energyStats, ...waterStats };
+  const stats = { ...energyStats, ...waterStats, ...powerStats };
   if (compare) {
     statsCompare = { ...energyStatsCompare, ...waterStatsCompare };
   }
