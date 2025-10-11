@@ -19,8 +19,6 @@ export const coreStyles = css`
     --ha-border-radius-pill: 9999px;
     --ha-border-radius-circle: 50%;
     --ha-border-radius-square: 0;
-<<<<<<< HEAD
-=======
 
     /* Spacing */
     --ha-space-0: 0px;
@@ -44,7 +42,6 @@ export const coreStyles = css`
     --ha-space-18: 72px;
     --ha-space-19: 76px;
     --ha-space-20: 80px;
->>>>>>> 994c1b575 (Fix intl polyfill loading (#27261))
   }
 `;
 
