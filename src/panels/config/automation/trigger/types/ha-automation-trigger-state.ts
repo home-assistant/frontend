@@ -56,7 +56,12 @@ export class HaStateTrigger extends LitElement implements TriggerElement {
   }
 
   private _schema = memoizeOne(
-    (localize: LocalizeFunc, attribute) =>
+    (
+      localize: LocalizeFunc,
+      attribute: string | undefined,
+      hideInFrom: string[],
+      hideInTo: string[]
+    ) =>
       [
         {
           name: "entity_id",
@@ -142,6 +147,7 @@ export class HaStateTrigger extends LitElement implements TriggerElement {
                     },
                   ]) as any,
               attribute: attribute,
+              hide_states: hideInFrom,
             },
           },
         },
@@ -164,6 +170,7 @@ export class HaStateTrigger extends LitElement implements TriggerElement {
                     },
                   ]) as any,
               attribute: attribute,
+              hide_states: hideInTo,
             },
           },
         },
@@ -211,7 +218,12 @@ export class HaStateTrigger extends LitElement implements TriggerElement {
 
     data.to = this._normalizeStates(this.trigger.to, data.attribute);
     data.from = this._normalizeStates(this.trigger.from, data.attribute);
-    const schema = this._schema(this.hass.localize, this.trigger.attribute);
+    const schema = this._schema(
+      this.hass.localize,
+      this.trigger.attribute,
+      data.to,
+      data.from
+    );
 
     return html`
       <ha-form
