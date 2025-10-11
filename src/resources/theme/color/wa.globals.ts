@@ -53,7 +53,9 @@ export const waColorStyles = css`
     --wa-color-danger-on-quiet: var(--ha-color-on-danger-quiet);
 
     --wa-color-text-normal: var(--ha-color-text-primary);
+    --wa-color-surface-default: var(--card-background-color);
     --wa-color-surface-raised: var(--ha-dialog-surface-background, var(--mdc-theme-surface, #fff));
+    --wa-color-surface-border: var(--ha-color-border-normal);
 
     --wa-focus-ring-color: var(--ha-color-neutral-60);
   }

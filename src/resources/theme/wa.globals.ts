@@ -16,6 +16,7 @@ export const waMainStyles = css`
     --wa-font-weight-action: var(--ha-font-weight-medium);
     --wa-transition-fast: 75ms;
     --wa-transition-easing: ease;
+    --wa-border-style: solid;
     --wa-border-width-s: var(--ha-border-width-sm);
     --wa-border-width-m: var(--ha-border-width-md);
     --wa-border-width-l: var(--ha-border-width-lg);
