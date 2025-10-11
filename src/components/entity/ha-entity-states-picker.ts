@@ -58,8 +58,7 @@ export class HaEntityStatesPicker extends LitElement {
 
     const value = this.value || [];
     const hide = [...(this.hideStates || []), ...value];
-
-    const hideAdd = (this.value || []).includes(ANY_STATE_VALUE);
+    const hideValue = value.includes(ANY_STATE_VALUE);
 
     return html`
       ${repeat(
@@ -87,7 +86,7 @@ export class HaEntityStatesPicker extends LitElement {
         `
       )}
       <div>
-        ${(this.disabled && value.length) || hideAdd
+        ${(this.disabled && value.length) || hideValue
           ? nothing
           : keyed(
               value.length,
