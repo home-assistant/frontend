@@ -4,6 +4,7 @@ import { isComponentLoaded } from "../../../../common/config/is_component_loaded
 import { generateEntityFilter } from "../../../../common/entity/entity_filter";
 import type { AreaRegistryEntry } from "../../../../data/area_registry";
 import { getEnergyPreferences } from "../../../../data/energy";
+import type { LovelaceCardConfig } from "../../../../data/lovelace/config/card";
 import type {
   LovelaceSectionConfig,
   LovelaceSectionRawConfig,
@@ -18,8 +19,9 @@ import type {
   TileCardConfig,
   WeatherForecastCardConfig,
 } from "../../cards/types";
-import { getAreas } from "../areas/helpers/areas-strategy-helper";
+import { getAreas, getFloors } from "../areas/helpers/areas-strategy-helper";
 import type { CommonControlSectionStrategyConfig } from "../usage_prediction/common-controls-section-strategy";
+import { getHomeStructure } from "./helpers/home-structure";
 
 export interface HomeMainViewStrategyConfig {
   type: "home-main";
@@ -59,24 +61,66 @@ export class HomeMainViewStrategy extends ReactiveElement {
     hass: HomeAssistant
   ): Promise<LovelaceViewConfig> {
     const areas = getAreas(hass.areas);
+    const floors = getFloors(hass.floors);
 
-    const areasSection: LovelaceSectionConfig = {
-      type: "grid",
-      column_span: 2,
-      cards: [
-        {
-          type: "heading",
-          heading_style: "title",
-          heading: hass.localize("ui.panel.lovelace.strategy.home.areas"),
-        },
-        ...areas.map<AreaCardConfig>((area) =>
-          computeAreaCard(area.area_id, hass)
-        ),
-      ],
-    };
+    const home = getHomeStructure(floors, areas);
+
+    const floorCount = home.floors.length + (home.areas.length ? 1 : 0);
 
     // Allow between 2 and 3 columns (the max should be set to define the width of the header)
     const maxColumns = 2;
+
+    const floorsSections: LovelaceSectionConfig[] = [];
+    for (const floorStructure of home.floors) {
+      const floorId = floorStructure.id;
+      const areaIds = floorStructure.areas;
+      const floor = hass.floors[floorId];
+
+      const cards: LovelaceCardConfig[] = [];
+      for (const areaId of areaIds) {
+        cards.push(computeAreaCard(areaId, hass));
+      }
+
+      if (cards.length) {
+        floorsSections.push({
+          type: "grid",
+          column_span: maxColumns,
+          cards: [
+            {
+              type: "heading",
+              heading:
+                floorCount > 1
+                  ? floor.name
+                  : hass.localize("ui.panel.lovelace.strategy.home.areas"),
+              heading_style: "title",
+            },
+            ...cards,
+          ],
+        });
+      }
+    }
+
+    if (home.areas.length) {
+      const cards: LovelaceCardConfig[] = [];
+      for (const areaId of home.areas) {
+        cards.push(computeAreaCard(areaId, hass));
+      }
+      floorsSections.push({
+        type: "grid",
+        column_span: maxColumns,
+        cards: [
+          {
+            type: "heading",
+            heading:
+              floorCount > 1
+                ? hass.localize("ui.panel.lovelace.strategy.home.other_areas")
+                : hass.localize("ui.panel.lovelace.strategy.home.areas"),
+            heading_style: "title",
+          },
+          ...cards,
+        ],
+      });
+    }
 
     const favoriteSection: LovelaceSectionConfig = {
       type: "grid",
@@ -234,7 +278,7 @@ export class HomeMainViewStrategy extends ReactiveElement {
         favoriteSection.cards && favoriteSection,
         commonControlsSection,
         summarySection,
-        areasSection,
+        ...floorsSections,
         widgetSection.cards && widgetSection,
       ] satisfies (LovelaceSectionRawConfig | undefined)[]
     ).filter(Boolean) as LovelaceSectionRawConfig[];
