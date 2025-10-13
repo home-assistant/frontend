@@ -43,6 +43,7 @@ import type { HomeAssistant, Route } from "../../../../../types";
 import { fileDownload } from "../../../../../util/file_download";
 import "../../../ha-config-section";
 import { showZHAChangeChannelDialog } from "./show-dialog-zha-change-channel";
+import { showZHAOfflineDevicesDialog } from "./show-dialog-zha-offline-devices";
 
 const MULTIPROTOCOL_ADDON_URL = "socket://core-silabs-multiprotocol:9999";
 
@@ -147,28 +148,37 @@ class ZHAConfigDashboard extends LitElement {
               </div>
             </div>
           </div>
-          ${this.configEntryId
-            ? html`<div class="card-actions">
-                <ha-button
-                  href=${`/config/devices/dashboard?historyBack=1&config_entry=${this.configEntryId}`}
-                  appearance="plain"
-                  size="small"
-                >
-                  ${this.hass.localize(
-                    "ui.panel.config.devices.caption"
-                  )}</ha-button
-                >
-                <ha-button
-                  appearance="plain"
-                  size="small"
-                  href=${`/config/entities/dashboard?historyBack=1&config_entry=${this.configEntryId}`}
-                >
-                  ${this.hass.localize(
-                    "ui.panel.config.entities.caption"
-                  )}</ha-button
-                >
-              </div>`
-            : ""}
+          <div class="card-actions" id="status-card-actions">
+            <ha-button
+              id="btn-offline-devices"
+              appearance="plain"
+              size="small"
+              @click=${this._handleShowOfflineDevices}
+              >${this.hass.localize(
+                "ui.panel.config.zha.configuration_page.button_offline_devices"
+              )}</ha-button
+            >
+            ${this.configEntryId
+              ? html` <ha-button
+                    href=${`/config/devices/dashboard?historyBack=1&config_entry=${this.configEntryId}`}
+                    appearance="plain"
+                    size="small"
+                  >
+                    ${this.hass.localize(
+                      "ui.panel.config.devices.caption"
+                    )}</ha-button
+                  >
+                  <ha-button
+                    appearance="plain"
+                    size="small"
+                    href=${`/config/entities/dashboard?historyBack=1&config_entry=${this.configEntryId}`}
+                  >
+                    ${this.hass.localize(
+                      "ui.panel.config.entities.caption"
+                    )}</ha-button
+                  >`
+              : nothing}
+          </div>
         </ha-card>
         <ha-card
           class="network-settings"
@@ -417,6 +427,10 @@ class ZHAConfigDashboard extends LitElement {
       schema.name;
   }
 
+  private _handleShowOfflineDevices() {
+    showZHAOfflineDevicesDialog(this);
+  }
+
   static get styles(): CSSResultGroup {
     return [
       haStyle,
@@ -430,6 +444,14 @@ class ZHAConfigDashboard extends LitElement {
         ha-card .card-actions {
           display: flex;
           justify-content: flex-end;
+        }
+
+        #status-card-actions {
+          justify-content: center;
+        }
+
+        .card-actions #btn-offline-devices {
+          margin-right: auto;
         }
 
         .network-settings ha-settings-row {

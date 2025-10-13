@@ -5893,7 +5893,8 @@
             "channel_dialog": {
               "title": "Multiprotocol add-on in use",
               "text": "Zigbee and Thread share the same adapter and must use the same channel. Change the channel of both networks by reconfiguring multiprotocol from the hardware menu."
-            }
+            },
+            "button_offline_devices": "Offline devices"
           },
           "add_device_page": {
             "spinner": "Searching for Zigbee devices…",
@@ -6004,6 +6005,12 @@
             "channel_has_been_changed": "Network channel has been changed",
             "devices_will_rejoin": "Devices will re-join the network over time. This may take a few minutes.",
             "channel_auto": "Smart"
+          },
+          "offline_devices_dialog": {
+            "title": "Offline devices",
+            "last_seen": "Last seen at {date}",
+            "error_loading": "Error loading offline devices: {error}",
+            "no_offline_devices": "No offline devices found"
           }
         },
         "zwave_js": {
