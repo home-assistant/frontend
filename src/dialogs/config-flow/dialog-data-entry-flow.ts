@@ -472,7 +472,10 @@ class DataEntryFlowDialog extends LitElement {
     this._step = undefined;
     await this.updateComplete;
     this._step = _step;
-    if (_step.type === "create_entry" && _step.next_flow) {
+    if (
+      (_step.type === "create_entry" || _step.type === "abort") &&
+      _step.next_flow
+    ) {
       // skip device rename if there is a chained flow
       this._step = undefined;
       this._handler = undefined;
@@ -486,7 +489,7 @@ class DataEntryFlowDialog extends LitElement {
           carryOverDevices: this._devices(
             this._params!.flowConfig.showDevices,
             Object.values(this.hass.devices),
-            _step.result?.entry_id,
+            _step.type === "create_entry" ? _step.result?.entry_id : undefined,
             this._params!.carryOverDevices
           ).map((device) => device.id),
           dialogClosedCallback: this._params!.dialogClosedCallback,
