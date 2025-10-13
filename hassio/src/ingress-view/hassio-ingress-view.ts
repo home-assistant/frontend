@@ -96,22 +96,25 @@ class HassioIngressView extends LitElement {
       </hass-subpage>`;
     }
 
-    // If webui_ha_aware is true, don't render the header and just render the iframe
-    if (this._addon.webui_ha_aware) {
+    // If webui_ha_aware is true, or if narrow or sidebar is always hidden,
+    // don't render the header and just render the iframe
+    if (
+      this._addon.webui_ha_aware ||
+      this.narrow ||
+      this.hass.dockedSidebar === "always_hidden"
+    ) {
       return iframe;
     }
 
-    return html`${this.narrow || this.hass.dockedSidebar === "always_hidden"
-      ? html`<div class="header">
-            <ha-icon-button
-              .label=${this.hass.localize("ui.sidebar.sidebar_toggle")}
-              .path=${mdiMenu}
-              @click=${this._toggleMenu}
-            ></ha-icon-button>
-            <div class="main-title">${this._addon.name}</div>
-          </div>
-          ${iframe}`
-      : iframe}`;
+    return html`<div class="header">
+        <ha-icon-button
+          .label=${this.hass.localize("ui.sidebar.sidebar_toggle")}
+          .path=${mdiMenu}
+          @click=${this._toggleMenu}
+        ></ha-icon-button>
+        <div class="main-title">${this._addon.name}</div>
+      </div>
+      ${iframe}`;
   }
 
   protected async firstUpdated(): Promise<void> {
