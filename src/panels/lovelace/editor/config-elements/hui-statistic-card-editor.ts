@@ -129,8 +129,7 @@ export class HuiStatisticCardEditor
           name: "period",
           required: true,
           selector:
-            selectedPeriodKey &&
-            Object.keys(periods).includes(selectedPeriodKey)
+            selectedPeriodKey && selectedPeriodKey in periods
               ? {
                   select: {
                     multiple: false,

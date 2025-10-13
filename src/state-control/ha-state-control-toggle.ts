@@ -1,7 +1,7 @@
 import { mdiFlash, mdiFlashOff } from "@mdi/js";
 import type { HassEntity } from "home-assistant-js-websocket";
 import type { TemplateResult } from "lit";
-import { LitElement, css, html } from "lit";
+import { LitElement, html } from "lit";
 import { customElement, property } from "lit/decorators";
 import { classMap } from "lit/directives/class-map";
 import { styleMap } from "lit/directives/style-map";
@@ -12,6 +12,7 @@ import "../components/ha-control-button";
 import "../components/ha-control-switch";
 import { UNAVAILABLE, UNKNOWN } from "../data/entity";
 import { forwardHaptic } from "../data/haptics";
+import { stateControlToggleStyle } from "../resources/state-control-styles";
 import type { HomeAssistant } from "../types";
 
 @customElement("ha-state-control-toggle")
@@ -128,42 +129,7 @@ export class HaStateControlToggle extends LitElement {
     `;
   }
 
-  static styles = css`
-    ha-control-switch {
-      height: 45vh;
-      max-height: 320px;
-      min-height: 200px;
-      --control-switch-thickness: 130px;
-      --control-switch-border-radius: var(--ha-border-radius-6xl);
-      --control-switch-padding: 6px;
-      --mdc-icon-size: 24px;
-    }
-    .buttons {
-      display: flex;
-      flex-direction: column;
-      width: 130px;
-      height: 45vh;
-      max-height: 320px;
-      min-height: 200px;
-      padding: 6px;
-      box-sizing: border-box;
-    }
-    ha-control-button {
-      flex: 1;
-      width: 100%;
-      --control-button-border-radius: var(--ha-border-radius-6xl);
-      --mdc-icon-size: 24px;
-    }
-    ha-control-button.active {
-      --control-button-icon-color: white;
-      --control-button-background-color: var(--color);
-      --control-button-focus-color: var(--color);
-      --control-button-background-opacity: 1;
-    }
-    ha-control-button:not(:last-child) {
-      margin-bottom: 6px;
-    }
-  `;
+  static styles = [stateControlToggleStyle];
 }
 
 declare global {

@@ -27,6 +27,7 @@ import type { HomeAssistant } from "../../types";
 import { isMac } from "../../util/is_mac";
 import "../chips/ha-assist-chip";
 import "../ha-icon-button";
+import { filterXSS } from "../../common/util/xss";
 import { formatTimeLabel } from "./axis-label";
 import { downSampleLineData } from "./down-sample";
 
@@ -811,7 +812,8 @@ export class HaChartBase extends LitElement {
           };
         }
       }
-      return { ...s, data };
+      const name = filterXSS(String(s.name ?? s.id ?? ""));
+      return { ...s, name, data };
     });
     return series as ECOption["series"];
   }

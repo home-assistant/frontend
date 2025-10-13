@@ -770,43 +770,39 @@ export class HaConfigDevicePage extends LitElement {
             ${firstDeviceAction || actions.length
               ? html`
                   <div class="card-actions" slot="actions">
-                    <div>
-                      <ha-button
-                        href=${ifDefined(firstDeviceAction!.href)}
-                        rel=${ifDefined(
-                          firstDeviceAction!.target ? "noreferrer" : undefined
-                        )}
-                        appearance="plain"
-                        target=${ifDefined(firstDeviceAction!.target)}
-                        class=${ifDefined(firstDeviceAction!.classes)}
-                        .variant=${firstDeviceAction!.classes?.includes(
-                          "warning"
-                        )
-                          ? "danger"
-                          : "brand"}
-                        .action=${firstDeviceAction!.action}
-                        @click=${this._deviceActionClicked}
-                      >
-                        ${firstDeviceAction!.label}
-                        ${firstDeviceAction!.icon
-                          ? html`
-                              <ha-svg-icon
-                                class=${ifDefined(firstDeviceAction!.classes)}
-                                .path=${firstDeviceAction!.icon}
-                                slot="start"
-                              ></ha-svg-icon>
-                            `
-                          : nothing}
-                        ${firstDeviceAction!.trailingIcon
-                          ? html`
-                              <ha-svg-icon
-                                .path=${firstDeviceAction!.trailingIcon}
-                                slot="end"
-                              ></ha-svg-icon>
-                            `
-                          : nothing}
-                      </ha-button>
-                    </div>
+                    <ha-button
+                      href=${ifDefined(firstDeviceAction!.href)}
+                      rel=${ifDefined(
+                        firstDeviceAction!.target ? "noreferrer" : undefined
+                      )}
+                      appearance="plain"
+                      target=${ifDefined(firstDeviceAction!.target)}
+                      class=${ifDefined(firstDeviceAction!.classes)}
+                      .variant=${firstDeviceAction!.classes?.includes("warning")
+                        ? "danger"
+                        : "brand"}
+                      .action=${firstDeviceAction!.action}
+                      @click=${this._deviceActionClicked}
+                    >
+                      ${firstDeviceAction!.label}
+                      ${firstDeviceAction!.icon
+                        ? html`
+                            <ha-svg-icon
+                              class=${ifDefined(firstDeviceAction!.classes)}
+                              .path=${firstDeviceAction!.icon}
+                              slot="start"
+                            ></ha-svg-icon>
+                          `
+                        : nothing}
+                      ${firstDeviceAction!.trailingIcon
+                        ? html`
+                            <ha-svg-icon
+                              .path=${firstDeviceAction!.trailingIcon}
+                              slot="end"
+                            ></ha-svg-icon>
+                          `
+                        : nothing}
+                    </ha-button>
 
                     ${actions.length
                       ? html`

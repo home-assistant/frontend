@@ -209,9 +209,7 @@ class OnboardingRestoreBackup extends LitElement {
       }
 
       if (this._cloudStatus?.logged_in && !this._backupId) {
-        this._backup = backups.find(({ agents }) =>
-          Object.keys(agents).includes(CLOUD_AGENT)
-        );
+        this._backup = backups.find(({ agents }) => CLOUD_AGENT in agents);
 
         if (!this._backup) {
           this._view = "empty_cloud";

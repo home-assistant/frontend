@@ -167,7 +167,7 @@ export const provideHass = (
   }
 
   mockAPI(/states\/.+/, (_method, path, parameters) => {
-    const [domain, objectId] = path.substr(7).split(".", 2);
+    const [domain, objectId] = path.slice(7).split(".", 2);
     if (!domain || !objectId) {
       return;
     }
