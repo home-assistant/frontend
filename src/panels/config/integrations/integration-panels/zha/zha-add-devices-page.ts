@@ -118,8 +118,7 @@ class ZHAAddDevicesPage extends LitElement {
                               this.hass,
                               "/integrations/zha#adding-devices"
                             )}
-                          >
-                            ${this.hass.localize(
+                            >${this.hass.localize(
                               "ui.panel.config.zha.add_device_page.pairing_mode_link"
                             )}</a
                           >
