@@ -78,7 +78,7 @@ class DialogRestartWait extends LitElement {
       <ha-wa-dialog
         .hass=${this.hass}
         .open=${this._open}
-        header-title=${this._title}
+        .headerTitle=${this._title}
         width="medium"
         @closed=${this._dialogClosed}
       >
