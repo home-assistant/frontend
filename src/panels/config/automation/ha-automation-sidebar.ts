@@ -1,5 +1,6 @@
-import { css, html, LitElement, nothing } from "lit";
+import { css, html, LitElement, nothing, type PropertyValues } from "lit";
 import { customElement, property, query, state } from "lit/decorators";
+import { tinykeys } from "tinykeys";
 import { fireEvent } from "../../../common/dom/fire_event";
 import { computeRTL } from "../../../common/util/compute_rtl";
 import "../../../components/ha-resizable-bottom-sheet";
@@ -44,11 +45,24 @@ export default class HaAutomationSidebar extends LitElement {
   @query("ha-resizable-bottom-sheet")
   private _bottomSheetElement?: HaResizableBottomSheet;
 
+  @query(".handle")
+  private _handleElement?: HTMLDivElement;
+
   private _resizeStartX = 0;
+
+  private _tinykeysUnsub?: () => void;
+
+  protected updated(changedProperties: PropertyValues) {
+    super.updated(changedProperties);
+    if (changedProperties.has("config") || changedProperties.has("narrow")) {
+      this._registerKeyboardResize();
+    }
+  }
 
   disconnectedCallback() {
     super.disconnectedCallback();
     this._unregisterResizeHandlers();
+    this._tinykeysUnsub?.();
   }
 
   private _renderContent() {
@@ -170,6 +184,8 @@ export default class HaAutomationSidebar extends LitElement {
         class="handle ${this._resizing ? "resizing" : ""}"
         @mousedown=${this._handleMouseDown}
         @touchstart=${this._handleMouseDown}
+        @blur=${this._stopKeyboardResizing}
+        tabindex="0"
       >
         <div class="indicator ${this._resizing ? "" : "hidden"}"></div>
       </div>
@@ -288,6 +304,59 @@ export default class HaAutomationSidebar extends LitElement {
     document.removeEventListener("touchcancel", this._endResizing);
   }
 
+  private _registerKeyboardResize() {
+    this._tinykeysUnsub?.();
+    this._tinykeysUnsub = undefined;
+    if (this._handleElement && !this.narrow && this.config) {
+      this._tinykeysUnsub = tinykeys(this._handleElement!, {
+        Enter: this._startKeyboardResizing,
+        Space: this._startKeyboardResizing,
+      });
+    }
+  }
+
+  private _startKeyboardResizing = (ev: KeyboardEvent) => {
+    ev.stopPropagation();
+    this._resizing = true;
+    this._resizeStartX = 0;
+    this._tinykeysUnsub?.();
+    this._tinykeysUnsub = tinykeys(this._handleElement!, {
+      ArrowLeft: this._increaseSize,
+      ArrowRight: this._decreaseSize,
+      Enter: this._stopKeyboardResizing,
+      Space: this._stopKeyboardResizing,
+      Escape: this._stopKeyboardResizing,
+    });
+  };
+
+  private _stopKeyboardResizing = (ev: KeyboardEvent) => {
+    ev.stopPropagation();
+    this._resizing = false;
+    fireEvent(this, "sidebar-resizing-stopped");
+    this._tinykeysUnsub?.();
+    this._registerKeyboardResize();
+  };
+
+  private _increaseSize = (ev: KeyboardEvent) => {
+    ev.stopPropagation();
+
+    this._resizeStartX -= computeRTL(this.hass) ? 10 : -10;
+    this._keyboardResize();
+  };
+
+  private _decreaseSize = (ev: KeyboardEvent) => {
+    ev.stopPropagation();
+
+    this._resizeStartX += computeRTL(this.hass) ? 10 : -10;
+    this._keyboardResize();
+  };
+
+  private _keyboardResize() {
+    fireEvent(this, "sidebar-resized", {
+      deltaInPx: this._resizeStartX,
+    });
+  }
+
   static styles = css`
     :host {
       z-index: 6;
@@ -341,6 +410,12 @@ export default class HaAutomationSidebar extends LitElement {
     .handle .indicator.hidden {
       transform: scale3d(0, 1, 1);
       opacity: 0;
+    }
+
+    .handle:focus-visible {
+      outline-offset: calc(var(--ha-size-1) * -1);
+      border-radius: var(--ha-border-radius-xl);
+      outline-color: var(--wa-focus-ring-color);
     }
   `;
 }
