@@ -21,8 +21,8 @@ import type { UnsubscribeFunc } from "home-assistant-js-websocket";
 import type { CSSResultGroup, PropertyValues, TemplateResult } from "lit";
 import { css, html, LitElement, nothing } from "lit";
 import { property, state } from "lit/decorators";
+import { ContextProvider, consume } from "@lit-labs/context";
 import { classMap } from "lit/directives/class-map";
-import { consume } from "@lit-labs/context";
 import { fireEvent } from "../../../common/dom/fire_event";
 import { navigate } from "../../../common/navigate";
 import { computeRTL } from "../../../common/util/compute_rtl";
@@ -78,6 +78,10 @@ import { showMoreInfoDialog } from "../../../dialogs/more-info/show-ha-more-info
 import { showAssignCategoryDialog } from "../category/show-dialog-assign-category";
 import { PreventUnsavedMixin } from "../../../mixins/prevent-unsaved-mixin";
 import { fullEntitiesContext } from "../../../data/context";
+import {
+  automationEditorContext,
+  buildAutomationLocalContext,
+} from "../../../data/automation_editor_context";
 import { transform } from "../../../common/decorators/transform";
 
 declare global {
@@ -161,6 +165,11 @@ export class HaAutomationEditor extends PreventUnsavedMixin(
   private _entityRegCreated?: (
     value: PromiseLike<EntityRegistryEntry> | EntityRegistryEntry
   ) => void;
+
+  private _automationContextProvider = new ContextProvider(this, {
+    context: automationEditorContext,
+    initialValue: undefined,
+  });
 
   protected willUpdate(changedProps) {
     super.willUpdate(changedProps);
@@ -571,6 +580,12 @@ export class HaAutomationEditor extends PreventUnsavedMixin(
       Object.values(this._configSubscriptions).forEach((sub) =>
         sub(this._config)
       );
+      const ctx = buildAutomationLocalContext(
+        this._config,
+        this.hass,
+        this.automationId ?? this._entityId ?? undefined
+      );
+      this._automationContextProvider.setValue(ctx);
     }
   }
 
