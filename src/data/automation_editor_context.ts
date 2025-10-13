@@ -1,4 +1,4 @@
-import { createContext } from "@lit-labs/context";
+import { createContext } from "@lit/context";
 import type { HomeAssistant } from "../types";
 import type { AutomationConfig } from "./automation";
 import { ensureArray } from "../common/array/ensure-array";
