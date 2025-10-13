@@ -37,7 +37,7 @@ export type HaDevicePickerDeviceFilterFunc = (
 
 export type HaDevicePickerEntityFilterFunc = (entity: HassEntity) => boolean;
 
-const reorderSuggestedFirstById = <T extends { id: string }>(
+const reorderWithSuggestedDevicesFirst = <T extends { id: string }>(
   items: T[] | undefined,
   suggested?: string[]
 ): T[] => {
@@ -269,17 +269,17 @@ export class HaDevicePicker extends LitElement {
         ];
       }
 
-      const locale = this.hass.locale.language;
       if (outputDevices.length === 1) {
         return outputDevices;
       }
 
+      const locale = this.hass.locale.language;
       outputDevices.sort((a, b) =>
         stringCompare(a.name || "", b.name || "", locale)
       );
 
       if (suggestedDevices?.length) {
-        return reorderSuggestedFirstById<ScorableDevice>(
+        return reorderWithSuggestedDevicesFirst<ScorableDevice>(
           outputDevices,
           suggestedDevices
         );
@@ -355,7 +355,7 @@ export class HaDevicePicker extends LitElement {
     const base = filterString.length
       ? fuzzyFilterSort<ScorableDevice>(filterString, source)
       : source;
-    target.filteredItems = reorderSuggestedFirstById<ScorableDevice>(
+    target.filteredItems = reorderWithSuggestedDevicesFirst<ScorableDevice>(
       base,
       this.suggestedDevices
     );
