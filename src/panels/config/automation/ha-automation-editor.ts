@@ -93,6 +93,7 @@ import {
   automationEditorContext,
   buildAutomationLocalContext,
 } from "../../../data/automation_editor_context";
+import type { AutomationLocalContext } from "../../../data/automation_editor_context";
 
 declare global {
   interface HTMLElementTagNameMap {
@@ -193,6 +194,8 @@ export class HaAutomationEditor extends PreventUnsavedMixin(
     context: automationEditorContext,
     initialValue: undefined,
   });
+
+  private _automationContextValue?: AutomationLocalContext;
 
   protected willUpdate(changedProps) {
     super.willUpdate(changedProps);
@@ -728,9 +731,11 @@ export class HaAutomationEditor extends PreventUnsavedMixin(
       const ctx = buildAutomationLocalContext(
         this._config,
         this.hass,
-        this.automationId ?? this._entityId ?? undefined
+        this.automationId ?? this._entityId ?? undefined,
+        this._automationContextValue
       );
       this._automationContextProvider.setValue(ctx);
+      this._automationContextValue = ctx;
     }
   }
 
