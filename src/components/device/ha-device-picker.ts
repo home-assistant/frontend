@@ -30,28 +30,6 @@ export type HaDevicePickerDeviceFilterFunc = (
 
 export type HaDevicePickerEntityFilterFunc = (entity: HassEntity) => boolean;
 
-// Helper: move suggested ids to front, preserving within-group order
-const reorderSuggestedFirstById = <T extends { id: string }>(
-  items: T[] | undefined,
-  suggested?: string[]
-): T[] => {
-  if (!items || !items.length) return [];
-  if (!suggested || !suggested.length) return items.slice();
-
-  const set = new Set(suggested);
-  const top: T[] = [];
-  const rest: T[] = [];
-
-  for (const it of items) {
-    if (set.has(it.id)) {
-      top.push(it);
-    } else {
-      rest.push(it);
-    }
-  }
-  return [...top, ...rest];
-};
-
 interface DevicePickerItem extends PickerComboBoxItem {
   domain?: string;
   domain_name?: string;
@@ -404,7 +382,6 @@ export class HaDevicePicker extends LitElement {
         .getItems=${this._getItems}
         .hideClearIcon=${this.hideClearIcon}
         .valueRenderer=${valueRenderer}
-        .searchFn=${this._searchFn}
         @value-changed=${this._valueChanged}
       >
       </ha-generic-picker>
@@ -422,15 +399,6 @@ export class HaDevicePicker extends LitElement {
     this.value = value;
     fireEvent(this, "value-changed", { value });
   }
-
-  // Reorder filtered results to place suggestions first while preserving
-  // the fuzzy ranking within groups.
-  private _searchFn: (
-    search: string,
-    filteredItems: PickerComboBoxItem[],
-    allItems: PickerComboBoxItem[]
-  ) => PickerComboBoxItem[] = (_s, filtered, _all) =>
-    reorderSuggestedFirstById(filtered, this.suggestedDevices);
 }
 
 declare global {
