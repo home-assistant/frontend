@@ -54,7 +54,6 @@ class DialogNewBackup extends LitElement implements HassDialog {
         @closed=${this._dialogClosed}
       >
         <ha-md-list
-          autofocus
           innerRole="listbox"
           itemRoles="option"
           .innerAriaLabel=${this.hass.localize(
