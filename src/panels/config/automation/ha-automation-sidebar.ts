@@ -55,7 +55,10 @@ export default class HaAutomationSidebar extends LitElement {
   protected updated(changedProperties: PropertyValues) {
     super.updated(changedProperties);
     if (changedProperties.has("config") || changedProperties.has("narrow")) {
-      this._registerKeyboardResize();
+      if (!this.config || this.narrow) {
+        this._tinykeysUnsub?.();
+        this._tinykeysUnsub = undefined;
+      }
     }
   }
 
@@ -184,6 +187,7 @@ export default class HaAutomationSidebar extends LitElement {
         class="handle ${this._resizing ? "resizing" : ""}"
         @mousedown=${this._handleMouseDown}
         @touchstart=${this._handleMouseDown}
+        @focus=${this._startKeyboardResizing}
         @blur=${this._stopKeyboardResizing}
         tabindex="0"
       >
@@ -304,28 +308,13 @@ export default class HaAutomationSidebar extends LitElement {
     document.removeEventListener("touchcancel", this._endResizing);
   }
 
-  private _registerKeyboardResize() {
-    this._tinykeysUnsub?.();
-    this._tinykeysUnsub = undefined;
-    if (this._handleElement && !this.narrow && this.config) {
-      this._tinykeysUnsub = tinykeys(this._handleElement!, {
-        Enter: this._startKeyboardResizing,
-        Space: this._startKeyboardResizing,
-      });
-    }
-  }
-
   private _startKeyboardResizing = (ev: KeyboardEvent) => {
     ev.stopPropagation();
     this._resizing = true;
     this._resizeStartX = 0;
-    this._tinykeysUnsub?.();
     this._tinykeysUnsub = tinykeys(this._handleElement!, {
       ArrowLeft: this._increaseSize,
       ArrowRight: this._decreaseSize,
-      Enter: this._stopKeyboardResizing,
-      Space: this._stopKeyboardResizing,
-      Escape: this._stopKeyboardResizing,
     });
   };
 
@@ -334,7 +323,7 @@ export default class HaAutomationSidebar extends LitElement {
     this._resizing = false;
     fireEvent(this, "sidebar-resizing-stopped");
     this._tinykeysUnsub?.();
-    this._registerKeyboardResize();
+    this._tinykeysUnsub = undefined;
   };
 
   private _increaseSize = (ev: KeyboardEvent) => {
@@ -413,9 +402,7 @@ export default class HaAutomationSidebar extends LitElement {
     }
 
     .handle:focus-visible {
-      outline-offset: calc(var(--ha-size-1) * -1);
-      border-radius: var(--ha-border-radius-xl);
-      outline-color: var(--wa-focus-ring-color);
+      outline: none;
     }
   `;
 }
