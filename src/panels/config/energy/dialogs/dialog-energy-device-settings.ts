@@ -145,7 +145,7 @@ export class DialogEnergyDeviceSettings
           .excludeStatistics=${this._excludeListPower}
           @value-changed=${this._powerStatisticChanged}
           .helper=${this.hass.localize(
-            "ui.panel.config.energy.device_consumption.dialog.device_consumption_power_helper",
+            "ui.panel.config.energy.device_consumption.dialog.selected_stat_intro",
             { unit: this._power_units?.join(", ") || "" }
           )}
         ></ha-statistic-picker>
