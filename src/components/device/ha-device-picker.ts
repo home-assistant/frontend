@@ -37,6 +37,28 @@ export type HaDevicePickerDeviceFilterFunc = (
 
 export type HaDevicePickerEntityFilterFunc = (entity: HassEntity) => boolean;
 
+const reorderSuggestedFirstById = <T extends { id: string }>(
+  items: T[] | undefined,
+  suggested?: string[]
+): T[] => {
+  if (!items || !items.length) return [];
+  if (!suggested || !suggested.length) return items.slice();
+
+  const set = new Set(suggested);
+  const top: T[] = [];
+  const rest: T[] = [];
+
+  for (const it of items) {
+    if (set.has(it.id)) {
+      top.push(it);
+    } else {
+      rest.push(it);
+    }
+  }
+
+  return [...top, ...rest];
+};
+
 const rowRenderer: ComboBoxLitRenderer<Device> = (item) =>
   html`<ha-list-item .twoline=${!!item.area}>
     <span>${item.name}</span>
@@ -246,25 +268,24 @@ export class HaDevicePicker extends LitElement {
           },
         ];
       }
-      // Reorder so used devices appear on top
+
       const locale = this.hass.locale.language;
-      if (outputDevices.length <= 1) {
+      if (outputDevices.length === 1) {
         return outputDevices;
       }
-      if (suggestedDevices?.length) {
-        const usedSet = new Set(suggestedDevices);
-        const used: ScorableDevice[] = [];
-        const rest: ScorableDevice[] = [];
-        for (const dev of outputDevices) {
-          (usedSet.has(dev.id) ? used : rest).push(dev);
-        }
-        used.sort((a, b) => stringCompare(a.name || "", b.name || "", locale));
-        rest.sort((a, b) => stringCompare(a.name || "", b.name || "", locale));
-        return [...used, ...rest];
-      }
-      return outputDevices.sort((a, b) =>
+
+      outputDevices.sort((a, b) =>
         stringCompare(a.name || "", b.name || "", locale)
       );
+
+      if (suggestedDevices?.length) {
+        return reorderSuggestedFirstById<ScorableDevice>(
+          outputDevices,
+          suggestedDevices
+        );
+      }
+
+      return outputDevices;
     }
   );
 
@@ -330,21 +351,14 @@ export class HaDevicePicker extends LitElement {
   private _filterChanged(ev: CustomEvent): void {
     const target = ev.target as HaComboBox;
     const filterString = ev.detail.value.toLowerCase();
+    const source = (target.items || []) as ScorableDevice[];
     const base = filterString.length
-      ? fuzzyFilterSort<ScorableDevice>(filterString, target.items || [])
-      : target.items;
-    const suggestedDevices = this.suggestedDevices;
-    if (suggestedDevices?.length && base) {
-      const usedSet = new Set(suggestedDevices);
-      const used: ScorableDevice[] = [];
-      const rest: ScorableDevice[] = [];
-      for (const dev of base as ScorableDevice[]) {
-        (usedSet.has(dev.id) ? used : rest).push(dev);
-      }
-      target.filteredItems = [...used, ...rest];
-    } else {
-      target.filteredItems = base as any;
-    }
+      ? fuzzyFilterSort<ScorableDevice>(filterString, source)
+      : source;
+    target.filteredItems = reorderSuggestedFirstById<ScorableDevice>(
+      base,
+      this.suggestedDevices
+    );
   }
 
   private _deviceChanged(ev: ValueChangedEvent<string>) {
