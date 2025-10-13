@@ -6,6 +6,9 @@ import {
 } from "@mdi/js";
 import { html, LitElement, nothing } from "lit";
 import { customElement, property, query } from "lit/decorators";
+import "../../../../components/ha-md-divider";
+import "../../../../components/ha-md-menu-item";
+import "../../../../components/ha-svg-icon";
 import type { OptionSidebarConfig } from "../../../../data/automation";
 import type { HomeAssistant } from "../../../../types";
 import { isMac } from "../../../../util/is_mac";
