@@ -1,6 +1,7 @@
 import { mdiListBox } from "@mdi/js";
 import { LitElement, css, html, nothing } from "lit";
 import { customElement, property, state } from "lit/decorators";
+import memoizeOne from "memoize-one";
 import {
   any,
   array,
@@ -85,13 +86,19 @@ export class HuiHumidifierCardEditor
     this._config = config;
   }
 
+  private _featureContext = memoizeOne(
+    (entityId?: string): LovelaceCardFeatureContext => ({
+      entity_id: entityId,
+    })
+  );
+
   protected render() {
     if (!this.hass || !this._config) {
       return nothing;
     }
 
-    const entityId = this._config!.entity;
-    const stateObj = entityId ? this.hass!.states[entityId] : undefined;
+    const entityId = this._config.entity;
+    const featureContext = this._featureContext(entityId);
 
     return html`
       <ha-form
@@ -102,8 +109,8 @@ export class HuiHumidifierCardEditor
         @value-changed=${this._valueChanged}
       ></ha-form>
       <ha-expansion-panel outlined>
+        <ha-svg-icon slot="leading-icon" .path=${mdiListBox}></ha-svg-icon>
         <h3 slot="header">
-          <ha-svg-icon .path=${mdiListBox}></ha-svg-icon>
           ${this.hass!.localize(
             "ui.panel.lovelace.editor.card.generic.features"
           )}
@@ -111,7 +118,7 @@ export class HuiHumidifierCardEditor
         <div class="content">
           <hui-card-features-editor
             .hass=${this.hass}
-            .stateObj=${stateObj}
+            .context=${featureContext}
             .featuresTypes=${COMPATIBLE_FEATURES_TYPES}
             .features=${this._config!.features ?? []}
             @features-changed=${this._featuresChanged}

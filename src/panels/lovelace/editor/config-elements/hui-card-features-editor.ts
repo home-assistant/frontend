@@ -1,5 +1,4 @@
 import { mdiDelete, mdiDrag, mdiPencil, mdiPlus } from "@mdi/js";
-import type { HassEntity } from "home-assistant-js-websocket";
 import { LitElement, css, html, nothing } from "lit";
 import { customElement, property } from "lit/decorators";
 import { repeat } from "lit/directives/repeat";
@@ -19,16 +18,21 @@ import {
 } from "../../../../data/lovelace_custom_cards";
 import type { HomeAssistant } from "../../../../types";
 import { supportsAlarmModesCardFeature } from "../../card-features/hui-alarm-modes-card-feature";
+import { supportsAreaControlsCardFeature } from "../../card-features/hui-area-controls-card-feature";
+import { supportsButtonCardFeature } from "../../card-features/hui-button-card-feature";
 import { supportsClimateFanModesCardFeature } from "../../card-features/hui-climate-fan-modes-card-feature";
 import { supportsClimateHvacModesCardFeature } from "../../card-features/hui-climate-hvac-modes-card-feature";
 import { supportsClimatePresetModesCardFeature } from "../../card-features/hui-climate-preset-modes-card-feature";
-import { supportsClimateSwingModesCardFeature } from "../../card-features/hui-climate-swing-modes-card-feature";
 import { supportsClimateSwingHorizontalModesCardFeature } from "../../card-features/hui-climate-swing-horizontal-modes-card-feature";
+import { supportsClimateSwingModesCardFeature } from "../../card-features/hui-climate-swing-modes-card-feature";
 import { supportsCounterActionsCardFeature } from "../../card-features/hui-counter-actions-card-feature";
 import { supportsCoverOpenCloseCardFeature } from "../../card-features/hui-cover-open-close-card-feature";
 import { supportsCoverPositionCardFeature } from "../../card-features/hui-cover-position-card-feature";
 import { supportsCoverTiltCardFeature } from "../../card-features/hui-cover-tilt-card-feature";
 import { supportsCoverTiltPositionCardFeature } from "../../card-features/hui-cover-tilt-position-card-feature";
+import { supportsDateSetCardFeature } from "../../card-features/hui-date-set-card-feature";
+import { supportsFanDirectionCardFeature } from "../../card-features/hui-fan-direction-card-feature";
+import { supportsFanOscilatteCardFeature } from "../../card-features/hui-fan-oscillate-card-feature";
 import { supportsFanPresetModesCardFeature } from "../../card-features/hui-fan-preset-modes-card-feature";
 import { supportsFanSpeedCardFeature } from "../../card-features/hui-fan-speed-card-feature";
 import { supportsHumidifierModesCardFeature } from "../../card-features/hui-humidifier-modes-card-feature";
@@ -38,23 +42,38 @@ import { supportsLightBrightnessCardFeature } from "../../card-features/hui-ligh
 import { supportsLightColorTempCardFeature } from "../../card-features/hui-light-color-temp-card-feature";
 import { supportsLockCommandsCardFeature } from "../../card-features/hui-lock-commands-card-feature";
 import { supportsLockOpenDoorCardFeature } from "../../card-features/hui-lock-open-door-card-feature";
+import { supportsMediaPlayerPlaybackCardFeature } from "../../card-features/hui-media-player-playback-card-feature";
 import { supportsMediaPlayerVolumeSliderCardFeature } from "../../card-features/hui-media-player-volume-slider-card-feature";
 import { supportsNumericInputCardFeature } from "../../card-features/hui-numeric-input-card-feature";
 import { supportsSelectOptionsCardFeature } from "../../card-features/hui-select-options-card-feature";
+import { supportsTrendGraphCardFeature } from "../../card-features/hui-trend-graph-card-feature";
 import { supportsTargetHumidityCardFeature } from "../../card-features/hui-target-humidity-card-feature";
 import { supportsTargetTemperatureCardFeature } from "../../card-features/hui-target-temperature-card-feature";
 import { supportsToggleCardFeature } from "../../card-features/hui-toggle-card-feature";
 import { supportsUpdateActionsCardFeature } from "../../card-features/hui-update-actions-card-feature";
 import { supportsVacuumCommandsCardFeature } from "../../card-features/hui-vacuum-commands-card-feature";
+import { supportsValveOpenCloseCardFeature } from "../../card-features/hui-valve-open-close-card-feature";
+import { supportsValvePositionCardFeature } from "../../card-features/hui-valve-position-card-feature";
+import { supportsBarGaugeCardFeature } from "../../card-features/hui-bar-gauge-card-feature";
 import { supportsWaterHeaterOperationModesCardFeature } from "../../card-features/hui-water-heater-operation-modes-card-feature";
-import type { LovelaceCardFeatureConfig } from "../../card-features/types";
+import type {
+  LovelaceCardFeatureConfig,
+  LovelaceCardFeatureContext,
+} from "../../card-features/types";
 import { getCardFeatureElementClass } from "../../create-element/create-card-feature-element";
 
 export type FeatureType = LovelaceCardFeatureConfig["type"];
-type SupportsFeature = (stateObj: HassEntity) => boolean;
+
+type SupportsFeature = (
+  hass: HomeAssistant,
+  context: LovelaceCardFeatureContext
+) => boolean;
 
 const UI_FEATURE_TYPES = [
   "alarm-modes",
+  "area-controls",
+  "bar-gauge",
+  "button",
   "climate-fan-modes",
   "climate-hvac-modes",
   "climate-preset-modes",
@@ -65,6 +84,9 @@ const UI_FEATURE_TYPES = [
   "cover-position",
   "cover-tilt-position",
   "cover-tilt",
+  "date-set",
+  "fan-direction",
+  "fan-oscillate",
   "fan-preset-modes",
   "fan-speed",
   "humidifier-modes",
@@ -74,14 +96,18 @@ const UI_FEATURE_TYPES = [
   "light-color-temp",
   "lock-commands",
   "lock-open-door",
+  "media-player-playback",
   "media-player-volume-slider",
   "numeric-input",
   "select-options",
+  "trend-graph",
   "target-humidity",
   "target-temperature",
   "toggle",
   "update-actions",
   "vacuum-commands",
+  "valve-open-close",
+  "valve-position",
   "water-heater-operation-modes",
 ] as const satisfies readonly FeatureType[];
 
@@ -89,6 +115,8 @@ type UiFeatureTypes = (typeof UI_FEATURE_TYPES)[number];
 
 const EDITABLES_FEATURE_TYPES = new Set<UiFeatureTypes>([
   "alarm-modes",
+  "area-controls",
+  "button",
   "climate-fan-modes",
   "climate-hvac-modes",
   "climate-preset-modes",
@@ -100,6 +128,7 @@ const EDITABLES_FEATURE_TYPES = new Set<UiFeatureTypes>([
   "lawn-mower-commands",
   "numeric-input",
   "select-options",
+  "trend-graph",
   "update-actions",
   "vacuum-commands",
   "water-heater-operation-modes",
@@ -110,6 +139,9 @@ const SUPPORTS_FEATURE_TYPES: Record<
   SupportsFeature | undefined
 > = {
   "alarm-modes": supportsAlarmModesCardFeature,
+  "area-controls": supportsAreaControlsCardFeature,
+  "bar-gauge": supportsBarGaugeCardFeature,
+  button: supportsButtonCardFeature,
   "climate-fan-modes": supportsClimateFanModesCardFeature,
   "climate-swing-modes": supportsClimateSwingModesCardFeature,
   "climate-swing-horizontal-modes":
@@ -121,6 +153,9 @@ const SUPPORTS_FEATURE_TYPES: Record<
   "cover-position": supportsCoverPositionCardFeature,
   "cover-tilt-position": supportsCoverTiltPositionCardFeature,
   "cover-tilt": supportsCoverTiltCardFeature,
+  "date-set": supportsDateSetCardFeature,
+  "fan-direction": supportsFanDirectionCardFeature,
+  "fan-oscillate": supportsFanOscilatteCardFeature,
   "fan-preset-modes": supportsFanPresetModesCardFeature,
   "fan-speed": supportsFanSpeedCardFeature,
   "humidifier-modes": supportsHumidifierModesCardFeature,
@@ -130,14 +165,18 @@ const SUPPORTS_FEATURE_TYPES: Record<
   "light-color-temp": supportsLightColorTempCardFeature,
   "lock-commands": supportsLockCommandsCardFeature,
   "lock-open-door": supportsLockOpenDoorCardFeature,
+  "media-player-playback": supportsMediaPlayerPlaybackCardFeature,
   "media-player-volume-slider": supportsMediaPlayerVolumeSliderCardFeature,
   "numeric-input": supportsNumericInputCardFeature,
   "select-options": supportsSelectOptionsCardFeature,
+  "trend-graph": supportsTrendGraphCardFeature,
   "target-humidity": supportsTargetHumidityCardFeature,
   "target-temperature": supportsTargetTemperatureCardFeature,
   toggle: supportsToggleCardFeature,
   "update-actions": supportsUpdateActionsCardFeature,
   "vacuum-commands": supportsVacuumCommandsCardFeature,
+  "valve-open-close": supportsValveOpenCloseCardFeature,
+  "valve-position": supportsValvePositionCardFeature,
   "water-heater-operation-modes": supportsWaterHeaterOperationModesCardFeature,
 };
 
@@ -152,7 +191,8 @@ customCardFeatures.forEach((feature) => {
 });
 
 export const getSupportedFeaturesType = (
-  stateObj: HassEntity,
+  hass: HomeAssistant,
+  context: LovelaceCardFeatureContext,
   featuresTypes?: string[]
 ) => {
   const filteredFeaturesTypes = UI_FEATURE_TYPES.filter(
@@ -164,23 +204,41 @@ export const getSupportedFeaturesType = (
   );
   return filteredFeaturesTypes
     .concat(customFeaturesTypes)
-    .filter((type) => supportsFeaturesType(stateObj, type));
+    .filter((type) => supportsFeaturesType(hass, context, type));
 };
 
-export const supportsFeaturesType = (stateObj: HassEntity, type: string) => {
+export const supportsFeaturesType = (
+  hass: HomeAssistant,
+  context: LovelaceCardFeatureContext,
+  type: string
+) => {
   if (isCustomType(type)) {
     const customType = stripCustomPrefix(type);
     const customFeatureEntry = CUSTOM_FEATURE_ENTRIES[customType];
-    if (!customFeatureEntry?.supported) return true;
+
+    if (!customFeatureEntry) {
+      return false;
+    }
     try {
-      return customFeatureEntry.supported(stateObj);
+      if (customFeatureEntry.isSupported) {
+        return customFeatureEntry.isSupported(hass, context);
+      }
+      // Fallback to the old supported method
+      if (customFeatureEntry.supported) {
+        const stateObj = context.entity_id
+          ? hass.states[context.entity_id]
+          : undefined;
+        if (!stateObj) return false;
+        return customFeatureEntry.supported(stateObj);
+      }
+      return true;
     } catch {
       return false;
     }
   }
 
   const supportsFeature = SUPPORTS_FEATURE_TYPES[type];
-  return !supportsFeature || supportsFeature(stateObj);
+  return !supportsFeature || supportsFeature(hass, context);
 };
 
 declare global {
@@ -195,7 +253,7 @@ declare global {
 export class HuiCardFeaturesEditor extends LitElement {
   @property({ attribute: false }) public hass?: HomeAssistant;
 
-  @property({ attribute: false }) public stateObj?: HassEntity;
+  @property({ attribute: false }) public context?: LovelaceCardFeatureContext;
 
   @property({ attribute: false })
   public features?: LovelaceCardFeatureConfig[];
@@ -209,13 +267,17 @@ export class HuiCardFeaturesEditor extends LitElement {
   private _featuresKeys = new WeakMap<LovelaceCardFeatureConfig, string>();
 
   private _supportsFeatureType(type: string): boolean {
-    if (!this.stateObj) return false;
-    return supportsFeaturesType(this.stateObj, type);
+    if (!this.hass || !this.context) return false;
+    return supportsFeaturesType(this.hass, this.context, type);
   }
 
   private _getSupportedFeaturesType() {
-    if (!this.stateObj) return [];
-    return getSupportedFeaturesType(this.stateObj, this.featuresTypes);
+    if (!this.hass || !this.context) return [];
+    return getSupportedFeaturesType(
+      this.hass,
+      this.context,
+      this.featuresTypes
+    );
   }
 
   private _isFeatureTypeEditable(type: string) {
@@ -288,7 +350,7 @@ export class HuiCardFeaturesEditor extends LitElement {
                   <div class="feature-content">
                     <div>
                       <span> ${this._getFeatureTypeLabel(type)} </span>
-                      ${this.stateObj && !supported
+                      ${this.context && !supported
                         ? html`
                             <span class="secondary">
                               ${this.hass!.localize(
@@ -335,14 +397,9 @@ export class HuiCardFeaturesEditor extends LitElement {
               @action=${this._addFeature}
               @closed=${stopPropagation}
             >
-              <ha-button
-                slot="trigger"
-                outlined
-                .label=${this.hass!.localize(
-                  `ui.panel.lovelace.editor.features.add`
-                )}
-              >
-                <ha-svg-icon .path=${mdiPlus} slot="icon"></ha-svg-icon>
+              <ha-button slot="trigger" appearance="filled" size="small">
+                <ha-svg-icon .path=${mdiPlus} slot="start"></ha-svg-icon>
+                ${this.hass!.localize(`ui.panel.lovelace.editor.features.add`)}
               </ha-button>
               ${types.map(
                 (type) => html`
@@ -379,7 +436,14 @@ export class HuiCardFeaturesEditor extends LitElement {
 
     let newFeature: LovelaceCardFeatureConfig;
     if (elClass && elClass.getStubConfig) {
-      newFeature = await elClass.getStubConfig(this.hass!, this.stateObj);
+      try {
+        newFeature = await elClass.getStubConfig(this.hass!, this.context!);
+      } catch (_err) {
+        const stateObj = this.context!.entity_id
+          ? this.hass!.states[this.context!.entity_id]
+          : undefined;
+        newFeature = await elClass.getStubConfig(this.hass!, stateObj);
+      }
     } else {
       newFeature = { type: value } as LovelaceCardFeatureConfig;
     }
@@ -444,7 +508,7 @@ export class HuiCardFeaturesEditor extends LitElement {
 
     .feature-content {
       height: 60px;
-      font-size: 16px;
+      font-size: var(--ha-font-size-l);
       display: flex;
       align-items: center;
       justify-content: space-between;
@@ -463,7 +527,7 @@ export class HuiCardFeaturesEditor extends LitElement {
     }
 
     .secondary {
-      font-size: 12px;
+      font-size: var(--ha-font-size-s);
       color: var(--secondary-text-color);
     }
 

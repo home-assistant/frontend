@@ -14,7 +14,7 @@ const SCHEMA = [
   {
     name: "areas",
     selector: {
-      area_filter: {},
+      areas_display: {},
     },
   },
   {

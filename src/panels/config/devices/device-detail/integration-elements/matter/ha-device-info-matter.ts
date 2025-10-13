@@ -5,8 +5,6 @@ import "../../../../../../components/ha-expansion-panel";
 import type { DeviceRegistryEntry } from "../../../../../../data/device_registry";
 import type { MatterNodeDiagnostics } from "../../../../../../data/matter";
 import { getMatterNodeDiagnostics } from "../../../../../../data/matter";
-import "@material/mwc-list";
-import "../../../../../../components/ha-list-item";
 import { SubscribeMixin } from "../../../../../../mixins/subscribe-mixin";
 import { haStyle } from "../../../../../../resources/styles";
 import type { HomeAssistant } from "../../../../../../types";
@@ -152,7 +150,7 @@ export class HaDeviceInfoMatter extends SubscribeMixin(LitElement) {
           margin: 8px -16px 0;
           --expansion-panel-summary-padding: 0 16px;
           --expansion-panel-content-padding: 0 16px;
-          --ha-card-border-radius: 0px;
+          --ha-card-border-radius: var(--ha-border-radius-square);
         }
       `,
     ];

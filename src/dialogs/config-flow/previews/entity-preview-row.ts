@@ -1,20 +1,22 @@
+import { format } from "date-fns";
 import type { HassEntity } from "home-assistant-js-websocket";
 import type { TemplateResult } from "lit";
 import { LitElement, css, html, nothing } from "lit";
 import { customElement, property, state } from "lit/decorators";
 import { ifDefined } from "lit/directives/if-defined";
-import { format } from "date-fns";
 import { computeStateName } from "../../../common/entity/compute_state_name";
+import "../../../components/entity/ha-entity-toggle";
+import "../../../components/entity/state-badge";
+import "../../../components/ha-button";
 import "../../../components/ha-climate-state";
 import "../../../components/ha-cover-controls";
 import "../../../components/ha-cover-tilt-controls";
 import "../../../components/ha-date-input";
 import "../../../components/ha-humidifier-state";
+import "../../../components/ha-list-item";
 import "../../../components/ha-select";
 import "../../../components/ha-slider";
 import "../../../components/ha-time-input";
-import "../../../components/entity/ha-entity-toggle";
-import "../../../components/entity/state-badge";
 import { isTiltOnly } from "../../../data/cover";
 import { isUnavailableState } from "../../../data/entity";
 import type { ImageEntity } from "../../../data/image";
@@ -90,7 +92,7 @@ class EntityPreviewRow extends LitElement {
       justify-content: flex-end;
       width: 100%;
     }
-    mwc-button {
+    ha-button {
       margin-right: -0.57em;
       margin-inline-end: -0.57em;
       margin-inline-start: initial;
@@ -106,9 +108,13 @@ class EntityPreviewRow extends LitElement {
 
     if (domain === "button") {
       return html`
-        <mwc-button .disabled=${isUnavailableState(stateObj.state)}>
+        <ha-button
+          appearance="plain"
+          size="small"
+          .disabled=${isUnavailableState(stateObj.state)}
+        >
           ${this.hass.localize("ui.card.button.press")}
-        </mwc-button>
+        </ha-button>
       `;
     }
 
@@ -231,14 +237,16 @@ class EntityPreviewRow extends LitElement {
 
     if (domain === "lock") {
       return html`
-        <mwc-button
+        <ha-button
           .disabled=${isUnavailableState(stateObj.state)}
           class="text-content"
+          appearance="plain"
+          size="small"
         >
           ${stateObj.state === "locked"
             ? this.hass!.localize("ui.card.lock.unlock")
             : this.hass!.localize("ui.card.lock.lock")}
-        </mwc-button>
+        </ha-button>
       `;
     }
 
@@ -293,9 +301,9 @@ class EntityPreviewRow extends LitElement {
           ${stateObj.attributes.options
             ? stateObj.attributes.options.map(
                 (option) => html`
-                  <mwc-list-item .value=${option}>
+                  <ha-list-item .value=${option}>
                     ${this.hass!.formatEntityState(stateObj, option)}
-                  </mwc-list-item>
+                  </ha-list-item>
                 `
               )
             : ""}

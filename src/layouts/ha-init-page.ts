@@ -1,6 +1,8 @@
 import type { PropertyValues } from "lit";
 import { css, html, LitElement } from "lit";
 import { property, state } from "lit/decorators";
+import "../components/ha-spinner";
+import "../components/ha-button";
 
 class HaInitPage extends LitElement {
   @property({ type: Boolean }) public error = false;
@@ -20,7 +22,9 @@ class HaInitPage extends LitElement {
           <p class="retry-text">
             Retrying in ${this._retryInSeconds} seconds...
           </p>
-          <mwc-button @click=${this._retry}>Retry now</mwc-button>
+          <ha-button size="small" appearance="plain" @click=${this._retry}
+            >Retry now</ha-button
+          >
           ${location.host.includes("ui.nabu.casa")
             ? html`
                 <p>
@@ -36,7 +40,7 @@ class HaInitPage extends LitElement {
         `
       : html`
           <div id="progress-indicator-wrapper">
-            <ha-circular-progress indeterminate></ha-circular-progress>
+            <ha-spinner></ha-spinner>
           </div>
           <div id="loading-text">
             ${this.migration
@@ -64,13 +68,13 @@ class HaInitPage extends LitElement {
 
   protected willUpdate(changedProperties: PropertyValues<this>) {
     if (changedProperties.has("error") && this.error) {
-      import("@material/mwc-button");
+      import("../components/ha-button");
     }
   }
 
   protected firstUpdated() {
     this._showProgressIndicatorTimeout = window.setTimeout(() => {
-      import("../components/ha-circular-progress");
+      import("../components/ha-spinner");
     }, 5000);
 
     this._retryInterval = window.setInterval(() => {

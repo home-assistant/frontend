@@ -1,4 +1,4 @@
-import "@material/mwc-button/mwc-button";
+import { mdiAlertOutline } from "@mdi/js";
 import type { CSSResultGroup, TemplateResult } from "lit";
 import { css, html, LitElement, nothing } from "lit";
 import { customElement, property, query, state } from "lit/decorators";
@@ -6,9 +6,15 @@ import { classMap } from "lit/directives/class-map";
 import memoizeOne from "memoize-one";
 import { isComponentLoaded } from "../../../common/config/is_component_loaded";
 import { dynamicElement } from "../../../common/dom/dynamic-element-directive";
-import "../../../components/ha-circular-progress";
+import { fireEvent } from "../../../common/dom/fire_event";
+import { stopPropagation } from "../../../common/dom/stop_propagation";
+import { stringCompare } from "../../../common/string/compare";
 import { createCloseHeading } from "../../../components/ha-dialog";
+import "../../../components/ha-list";
+import "../../../components/ha-button";
 import "../../../components/ha-list-item";
+import "../../../components/ha-spinner";
+import "../../../components/ha-svg-icon";
 import "../../../components/ha-tooltip";
 import { getConfigFlowHandlers } from "../../../data/config_flow";
 import { createCounter } from "../../../data/counter";
@@ -31,8 +37,6 @@ import { brandsUrl } from "../../../util/brands-url";
 import type { Helper, HelperDomain } from "./const";
 import { isHelperDomain } from "./const";
 import type { ShowDialogHelperDetailParams } from "./show-dialog-helper-detail";
-import { fireEvent } from "../../../common/dom/fire_event";
-import { stringCompare } from "../../../common/string/compare";
 
 type HelperCreators = Record<
   HelperDomain,
@@ -157,27 +161,26 @@ export class DialogHelperDetail extends LitElement {
             new: true,
           })}
         </div>
-        <mwc-button
+        <ha-button
           slot="primaryAction"
           @click=${this._createItem}
           .disabled=${this._submitting}
         >
           ${this.hass!.localize("ui.panel.config.helpers.dialog.create")}
-        </mwc-button>
+        </ha-button>
         ${this._params?.domain
           ? nothing
-          : html`<mwc-button
+          : html`<ha-button
+              appearance="plain"
               slot="secondaryAction"
               @click=${this._goBack}
               .disabled=${this._submitting}
             >
               ${this.hass!.localize("ui.common.back")}
-            </mwc-button>`}
+            </ha-button>`}
       `;
     } else if (this._loading || this._helperFlows === undefined) {
-      content = html`<ha-circular-progress
-        indeterminate
-      ></ha-circular-progress>`;
+      content = html`<ha-spinner></ha-spinner>`;
     } else {
       const items = this._filterHelpers(
         HELPERS,
@@ -195,7 +198,7 @@ export class DialogHelperDetail extends LitElement {
             "ui.panel.config.integrations.search_helper"
           )}
         ></search-input>
-        <mwc-list
+        <ha-list
           class="ha-scrollbar"
           innerRole="listbox"
           itemRoles="option"
@@ -210,42 +213,45 @@ export class DialogHelperDetail extends LitElement {
             const isLoaded =
               !(domain in HELPERS) || isComponentLoaded(this.hass, domain);
             return html`
-              <ha-tooltip
-                .disabled=${isLoaded}
-                .content=${this.hass.localize(
-                  "ui.dialogs.helper_settings.platform_not_loaded",
-                  { platform: domain }
-                )}
+              <ha-list-item
+                .disabled=${!isLoaded}
+                hasmeta
+                .domain=${domain}
+                @request-selected=${this._domainPicked}
+                graphic="icon"
               >
-                <div>
-                  <ha-list-item
-                    .disabled=${!isLoaded}
-                    hasmeta
-                    .domain=${domain}
-                    @request-selected=${this._domainPicked}
-                    graphic="icon"
-                  >
-                    <img
-                      slot="graphic"
-                      loading="lazy"
-                      alt=""
-                      src=${brandsUrl({
-                        domain,
-                        type: "icon",
-                        useFallback: true,
-                        darkOptimized: this.hass.themes?.darkMode,
-                      })}
-                      crossorigin="anonymous"
-                      referrerpolicy="no-referrer"
-                    />
-                    <span class="item-text"> ${label} </span>
-                    <ha-icon-next slot="meta"></ha-icon-next>
-                  </ha-list-item>
-                </div>
-              </ha-tooltip>
+                <img
+                  slot="graphic"
+                  loading="lazy"
+                  alt=""
+                  src=${brandsUrl({
+                    domain,
+                    type: "icon",
+                    useFallback: true,
+                    darkOptimized: this.hass.themes?.darkMode,
+                  })}
+                  crossorigin="anonymous"
+                  referrerpolicy="no-referrer"
+                />
+                <span class="item-text"> ${label} </span>
+                ${isLoaded
+                  ? html`<ha-icon-next slot="meta"></ha-icon-next>`
+                  : html` <ha-svg-icon
+                        slot="meta"
+                        .id="icon-${domain}"
+                        path=${mdiAlertOutline}
+                        @click=${stopPropagation}
+                      ></ha-svg-icon>
+                      <ha-tooltip .for="icon-${domain}">
+                        ${this.hass.localize(
+                          "ui.dialogs.helper_settings.platform_not_loaded",
+                          { platform: domain }
+                        )}
+                      </ha-tooltip>`}
+              </ha-list-item>
             `;
           })}
-        </mwc-list>
+        </ha-list>
       `;
     }
 
@@ -400,7 +406,7 @@ export class DialogHelperDetail extends LitElement {
         ha-dialog {
           --dialog-content-padding: 0;
           --dialog-scroll-divider-color: transparent;
-          --mdc-dialog-max-height: 60vh;
+          --mdc-dialog-max-height: 90vh;
         }
         @media all and (min-width: 550px) {
           ha-dialog {
@@ -410,6 +416,9 @@ export class DialogHelperDetail extends LitElement {
         ha-icon-next {
           width: 24px;
         }
+        ha-tooltip {
+          pointer-events: auto;
+        }
         .form {
           padding: 24px;
         }
@@ -417,12 +426,18 @@ export class DialogHelperDetail extends LitElement {
           display: block;
           margin: 16px 16px 0;
         }
-        mwc-list {
+        ha-list {
           height: calc(60vh - 184px);
         }
         @media all and (max-width: 450px), all and (max-height: 500px) {
-          mwc-list {
-            height: calc(100vh - 184px);
+          ha-list {
+            height: calc(
+              100vh -
+                184px - var(--safe-area-inset-top, 0px) - var(
+                  --safe-area-inset-bottom,
+                  0px
+                )
+            );
           }
         }
       `,

@@ -1,6 +1,6 @@
 import type { TemplateResult } from "lit";
 import { html, LitElement } from "lit";
-import { customElement, property, query } from "lit/decorators";
+import { customElement, property } from "lit/decorators";
 import { fireEvent } from "../common/dom/fire_event";
 import "./ha-base-time-input";
 import type { TimeChangedEvent } from "./ha-base-time-input";
@@ -31,14 +31,6 @@ class HaDurationInput extends LitElement {
 
   @property({ type: Boolean }) public disabled = false;
 
-  @query("paper-time-input", true) private _input?: HTMLElement;
-
-  public focus() {
-    if (this._input) {
-      this._input.focus();
-    }
-  }
-
   protected render(): TemplateResult {
     return html`
       <ha-base-time-input
@@ -60,11 +52,11 @@ class HaDurationInput extends LitElement {
         .milliseconds=${this._milliseconds}
         @value-changed=${this._durationChanged}
         no-hours-limit
-        dayLabel="dd"
-        hourLabel="hh"
-        minLabel="mm"
-        secLabel="ss"
-        millisecLabel="ms"
+        day-label="dd"
+        hour-label="hh"
+        min-label="mm"
+        sec-label="ss"
+        ms-label="ms"
       ></ha-base-time-input>
     `;
   }

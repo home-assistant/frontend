@@ -1,5 +1,3 @@
-import "@material/mwc-button/mwc-button";
-import "@material/mwc-list/mwc-list-item";
 import {
   mdiCheckCircle,
   mdiCircle,
@@ -10,17 +8,21 @@ import type { CSSResultGroup, PropertyValues, TemplateResult } from "lit";
 import { LitElement, css, html, nothing } from "lit";
 import { customElement, property, state } from "lit/decorators";
 import { classMap } from "lit/directives/class-map";
+import memoizeOne from "memoize-one";
+import { fireEvent } from "../../../../../common/dom/fire_event";
+import { computeDeviceNameDisplay } from "../../../../../common/entity/compute_device_name";
 import { groupBy } from "../../../../../common/util/group-by";
+import "../../../../../components/buttons/ha-progress-button";
+import type { HaProgressButton } from "../../../../../components/buttons/ha-progress-button";
 import "../../../../../components/ha-alert";
 import "../../../../../components/ha-card";
+import "../../../../../components/ha-list-item";
 import "../../../../../components/ha-select";
+import "../../../../../components/ha-selector/ha-selector-boolean";
 import "../../../../../components/ha-settings-row";
 import "../../../../../components/ha-svg-icon";
 import "../../../../../components/ha-textfield";
-import "../../../../../components/ha-selector/ha-selector-boolean";
-import "../../../../../components/buttons/ha-progress-button";
-import type { HaProgressButton } from "../../../../../components/buttons/ha-progress-button";
-import { computeDeviceName } from "../../../../../data/device_registry";
+import "../../../../../components/ha-combo-box";
 import type {
   ZWaveJSNodeCapabilities,
   ZWaveJSNodeConfigParam,
@@ -35,6 +37,7 @@ import {
   invokeZWaveCCApi,
   setZwaveNodeConfigParameter,
 } from "../../../../../data/zwave_js";
+import { showConfirmationDialog } from "../../../../../dialogs/generic/show-dialog-box";
 import "../../../../../layouts/hass-error-screen";
 import "../../../../../layouts/hass-loading-screen";
 import "../../../../../layouts/hass-tabs-subpage";
@@ -43,8 +46,6 @@ import type { HomeAssistant, Route } from "../../../../../types";
 import "../../../ha-config-section";
 import { configTabs } from "./zwave_js-config-router";
 import "./zwave_js-custom-param";
-import { showConfirmationDialog } from "../../../../../dialogs/generic/show-dialog-box";
-import { fireEvent } from "../../../../../common/dom/fire_event";
 
 const icons = {
   accepted: mdiCheckCircle,
@@ -54,7 +55,7 @@ const icons = {
 
 @customElement("zwave_js-node-config")
 class ZWaveJSNodeConfig extends LitElement {
-  @property({ attribute: false }) public hass!: HomeAssistant;
+  public hass!: HomeAssistant;
 
   @property({ attribute: false }) public route!: Route;
 
@@ -105,7 +106,9 @@ class ZWaveJSNodeConfig extends LitElement {
 
     const device = this.hass.devices[this.deviceId];
 
-    const deviceName = device ? computeDeviceName(device, this.hass) : "";
+    const deviceName = device
+      ? computeDeviceNameDisplay(device, this.hass)
+      : "";
 
     return html`
       <hass-tabs-subpage
@@ -291,9 +294,10 @@ class ZWaveJSNodeConfig extends LitElement {
               ? this.hass.localize(
                   item.metadata.default === 1 ? "ui.common.yes" : "ui.common.no"
                 )
-              : item.configuration_value_type === "enumerated"
-                ? item.metadata.states[item.metadata.default] ||
-                  item.metadata.default
+              : item.metadata.states?.[item.metadata.default]
+                ? item.configuration_value_type === "manual_entry"
+                  ? `${item.metadata.default} - ${item.metadata.states[item.metadata.default]}`
+                  : item.metadata.states[item.metadata.default]
                 : item.metadata.default
           }`
         : "";
@@ -316,8 +320,30 @@ class ZWaveJSNodeConfig extends LitElement {
         </div>
       `;
     }
-
     if (item.configuration_value_type === "manual_entry") {
+      if (
+        item.metadata.states &&
+        item.metadata.min != null &&
+        item.metadata.max != null &&
+        item.metadata.max - item.metadata.min <= 100
+      ) {
+        return html`
+          ${labelAndDescription}
+          <ha-combo-box
+            .hass=${this.hass}
+            .value=${item.value?.toString()}
+            allow-custom-value
+            hide-clear-icon
+            .items=${this._getComboBoxOptions(item.metadata.states)}
+            .disabled=${!item.metadata.writeable}
+            .invalid=${result?.status === "error"}
+            .placeholder=${item.metadata.unit}
+            .helper=${`${this.hass.localize("ui.panel.config.zwave_js.node_config.between_min_max", { min: item.metadata.min, max: item.metadata.max })}${defaultLabel ? `, ${defaultLabel}` : ""}`}
+            @value-changed=${this._getComboBoxValueChangedCallback(id, item)}
+          >
+          </ha-combo-box>
+        `;
+      }
       return html`${labelAndDescription}
         <ha-textfield
           type="number"
@@ -341,6 +367,7 @@ class ZWaveJSNodeConfig extends LitElement {
       return html`
         ${labelAndDescription}
         <ha-select
+          fixedMenuPosition
           .disabled=${!item.metadata.writeable}
           .value=${item.value?.toString()}
           .key=${id}
@@ -352,7 +379,7 @@ class ZWaveJSNodeConfig extends LitElement {
         >
           ${Object.entries(item.metadata.states).map(
             ([key, entityState]) => html`
-              <mwc-list-item .value=${key}>${entityState}</mwc-list-item>
+              <ha-list-item .value=${key}>${entityState}</ha-list-item>
             `
           )}
         </ha-select>
@@ -421,6 +448,15 @@ class ZWaveJSNodeConfig extends LitElement {
     if (Number(this._config![ev.target.key].value) === value) {
       return;
     }
+    if (isNaN(value)) {
+      this._setError(
+        ev.target.key,
+        this.hass.localize(
+          "ui.panel.config.zwave_js.node_config.error_not_numeric"
+        )
+      );
+      return;
+    }
     if (
       (ev.target.min !== undefined && value < ev.target.min) ||
       (ev.target.max !== undefined && value > ev.target.max)
@@ -436,6 +472,33 @@ class ZWaveJSNodeConfig extends LitElement {
     }
     this._setResult(ev.target.key, undefined);
     this._updateConfigParameter(ev.target, value);
+  }
+
+  private _getComboBoxOptions = memoizeOne((states: Record<string, string>) =>
+    Object.entries(states).map(([value, label]) => ({
+      value,
+      label: `${value} - ${label}`,
+    }))
+  );
+
+  private _getComboBoxValueChangedCallback(
+    id: string,
+    item: ZWaveJSNodeConfigParam
+  ) {
+    return (ev: CustomEvent<{ value: number }>) =>
+      this._numericInputChanged({
+        ...ev,
+        target: {
+          ...ev.target,
+          key: id,
+          min: item.metadata.min,
+          max: item.metadata.max,
+          value: ev.detail.value,
+          property: item.property,
+          endpoint: item.endpoint,
+          propertyKey: item.property_key,
+        },
+      });
   }
 
   private async _updateConfigParameter(target, value) {
@@ -599,7 +662,6 @@ class ZWaveJSNodeConfig extends LitElement {
         ha-settings-row {
           --settings-row-prefix-display: contents;
           --settings-row-content-width: 100%;
-          --paper-time-input-justify-content: flex-end;
           border-top: 1px solid var(--divider-color);
           padding: 4px 16px;
         }
@@ -616,7 +678,7 @@ class ZWaveJSNodeConfig extends LitElement {
           padding-right: 24px;
           padding-inline-end: 24px;
           padding-inline-start: initial;
-          line-height: 1.5em;
+          line-height: var(--ha-line-height-normal);
         }
 
         .prefix span {

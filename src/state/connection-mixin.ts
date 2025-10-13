@@ -8,6 +8,7 @@ import {
   subscribeServices,
 } from "home-assistant-js-websocket";
 import { fireEvent } from "../common/dom/fire_event";
+import { promiseTimeout } from "../common/util/promise-timeout";
 import { subscribeAreaRegistry } from "../data/area_registry";
 import { broadcastConnectionStatus } from "../data/connection-status";
 import { subscribeDeviceRegistry } from "../data/device_registry";
@@ -22,6 +23,8 @@ import {
   TimeFormat,
   TimeZone,
 } from "../data/translation";
+import { subscribeEntityRegistryDisplay } from "../data/ws-entity_registry_display";
+import { subscribeFloorRegistry } from "../data/ws-floor_registry";
 import { subscribePanels } from "../data/ws-panels";
 import { translationMetadata } from "../resources/translations-metadata";
 import type { Constructor, HomeAssistant, ServiceCallResponse } from "../types";
@@ -30,9 +33,7 @@ import { fetchWithAuth } from "../util/fetch-with-auth";
 import { getState } from "../util/ha-pref-storage";
 import hassCallApi, { hassCallApiRaw } from "../util/hass-call-api";
 import type { HassBaseEl } from "./hass-base-mixin";
-import { promiseTimeout } from "../common/util/promise-timeout";
-import { subscribeFloorRegistry } from "../data/ws-floor_registry";
-import { subscribeEntityRegistryDisplay } from "../data/ws-entity_registry_display";
+import { computeStateName } from "../common/entity/compute_state_name";
 
 export const connectionMixin = <T extends Constructor<HassBaseEl>>(
   superClass: T
@@ -76,7 +77,7 @@ export const connectionMixin = <T extends Constructor<HassBaseEl>>(
         translationMetadata,
         dockedSidebar: "docked",
         vibrate: true,
-        debugConnection: false,
+        debugConnection: __DEV__,
         suspendWhenHidden: true,
         enableShortcuts: true,
         moreInfoEntityId: null,
@@ -89,7 +90,7 @@ export const connectionMixin = <T extends Constructor<HassBaseEl>>(
           notifyOnError = true,
           returnResponse = false
         ) => {
-          if (__DEV__ || this.hass?.debugConnection) {
+          if (this.hass?.debugConnection) {
             // eslint-disable-next-line no-console
             console.log(
               "Calling service",
@@ -115,7 +116,7 @@ export const connectionMixin = <T extends Constructor<HassBaseEl>>(
             ) {
               return { context: { id: "" } };
             }
-            if (__DEV__ || this.hass?.debugConnection) {
+            if (this.hass?.debugConnection) {
               // eslint-disable-next-line no-console
               console.error(
                 "Error calling service",
@@ -126,12 +127,12 @@ export const connectionMixin = <T extends Constructor<HassBaseEl>>(
               );
             }
             if (notifyOnError) {
-              forwardHaptic("failure");
-              const lokalize = await this.hass!.loadBackendTranslation(
+              forwardHaptic(this, "failure");
+              const localize = await this.hass!.loadBackendTranslation(
                 "exceptions",
                 err.translation_domain
               );
-              const localizedErrorMessage = lokalize(
+              const localizedErrorMessage = localize(
                 `component.${err.translation_domain}.exceptions.${err.translation_key}.message`,
                 err.translation_placeholders
               );
@@ -167,7 +168,7 @@ export const connectionMixin = <T extends Constructor<HassBaseEl>>(
         ) => fetchWithAuth(auth, `${auth.data.hassUrl}${path}`, init),
         // For messages that do not get a response
         sendWS: (msg) => {
-          if (__DEV__ || this.hass?.debugConnection) {
+          if (this.hass?.debugConnection) {
             // eslint-disable-next-line no-console
             console.log("Sending", msg);
           }
@@ -175,14 +176,14 @@ export const connectionMixin = <T extends Constructor<HassBaseEl>>(
         },
         // For messages that expect a response
         callWS: <R>(msg) => {
-          if (__DEV__ || this.hass?.debugConnection) {
+          if (this.hass?.debugConnection) {
             // eslint-disable-next-line no-console
             console.log("Sending", msg);
           }
 
           const resp = conn.sendMessagePromise<R>(msg);
 
-          if (__DEV__ || this.hass?.debugConnection) {
+          if (this.hass?.debugConnection) {
             resp.then(
               // eslint-disable-next-line no-console
               (result) => console.log("Received", result),
@@ -210,6 +211,7 @@ export const connectionMixin = <T extends Constructor<HassBaseEl>>(
           value != null ? value : (stateObj.attributes[attribute] ?? ""),
         ...getState(),
         ...this._pendingHass,
+        formatEntityName: (stateObj) => computeStateName(stateObj),
       };
 
       this.hassConnected();
@@ -247,6 +249,7 @@ export const connectionMixin = <T extends Constructor<HassBaseEl>>(
               entity.ec !== undefined
                 ? entityReg.entity_categories[entity.ec]
                 : undefined,
+            has_entity_name: entity.hn,
             name: entity.en,
             icon: entity.ic,
             hidden: entity.hb,
@@ -279,9 +282,9 @@ export const connectionMixin = <T extends Constructor<HassBaseEl>>(
       subscribeConfig(conn, (config) => this._updateHass({ config }));
       subscribeServices(conn, (services) => this._updateHass({ services }));
       subscribePanels(conn, (panels) => this._updateHass({ panels }));
-      subscribeFrontendUserData(conn, "core", (userData) =>
-        this._updateHass({ userData })
-      );
+      subscribeFrontendUserData(conn, "core", ({ value: userData }) => {
+        this._updateHass({ userData });
+      });
 
       clearInterval(this.__backendPingInterval);
       this.__backendPingInterval = setInterval(() => {

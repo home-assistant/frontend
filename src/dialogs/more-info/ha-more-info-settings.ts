@@ -70,9 +70,7 @@ export class HaMoreInfoSettings extends LitElement {
     if (!this.entry) {
       return;
     }
-    if (
-      !Object.keys(PLATFORMS_WITH_SETTINGS_TAB).includes(this.entry.platform)
-    ) {
+    if (!(this.entry.platform in PLATFORMS_WITH_SETTINGS_TAB)) {
       this._settingsElementTag = "entity-registry-settings";
       return;
     }

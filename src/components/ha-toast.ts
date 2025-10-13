@@ -14,14 +14,18 @@ export class HaToast extends Snackbar {
 
       .mdc-snackbar {
         margin: 8px;
-        right: calc(8px + env(safe-area-inset-right));
-        bottom: calc(8px + env(safe-area-inset-bottom));
-        left: calc(8px + env(safe-area-inset-left));
+        right: calc(8px + var(--safe-area-inset-right));
+        bottom: calc(8px + var(--safe-area-inset-bottom));
+        left: calc(8px + var(--safe-area-inset-left));
       }
 
       .mdc-snackbar__surface {
         min-width: 350px;
         max-width: 650px;
+      }
+
+      .mdc-snackbar__actions {
+        color: rgba(255, 255, 255, 0.87);
       }
 
       /* Revert the default styles set by mwc-snackbar */
@@ -33,9 +37,9 @@ export class HaToast extends Snackbar {
 
       @media all and (max-width: 450px), all and (max-height: 500px) {
         .mdc-snackbar {
-          right: env(safe-area-inset-right);
-          bottom: env(safe-area-inset-bottom);
-          left: env(safe-area-inset-left);
+          right: var(--safe-area-inset-right);
+          bottom: var(--safe-area-inset-bottom);
+          left: var(--safe-area-inset-left);
         }
         .mdc-snackbar__surface {
           min-width: 100%;

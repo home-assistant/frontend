@@ -1,31 +1,34 @@
 import "@material/mwc-linear-progress/mwc-linear-progress";
 import { css, html, LitElement, nothing } from "lit";
 import { customElement, property, state } from "lit/decorators";
+import { isComponentLoaded } from "../../../common/config/is_component_loaded";
 import { BINARY_STATE_OFF } from "../../../common/const";
 import { relativeTime } from "../../../common/datetime/relative_time";
 import { supportsFeature } from "../../../common/entity/supports-feature";
 import "../../../components/ha-alert";
 import "../../../components/ha-button";
+import "../../../components/buttons/ha-progress-button";
 import "../../../components/ha-checkbox";
-import "../../../components/ha-circular-progress";
 import "../../../components/ha-faded";
-import "../../../components/ha-formfield";
 import "../../../components/ha-markdown";
 import "../../../components/ha-md-list";
 import "../../../components/ha-md-list-item";
+import "../../../components/ha-spinner";
 import "../../../components/ha-switch";
-import type { HaSwitch } from "../../../components/ha-switch";
 import type { BackupConfig } from "../../../data/backup";
 import { fetchBackupConfig } from "../../../data/backup";
 import { isUnavailableState } from "../../../data/entity";
 import type { EntitySources } from "../../../data/entity_sources";
 import { fetchEntitySourcesWithCache } from "../../../data/entity_sources";
-import type { UpdateEntity } from "../../../data/update";
+import { getSupervisorUpdateConfig } from "../../../data/supervisor/update";
+import type { UpdateEntity, UpdateType } from "../../../data/update";
 import {
   getUpdateType,
   UpdateEntityFeature,
   updateIsInstalling,
   updateReleaseNotes,
+  latestVersionIsSkipped,
+  updateButtonIsDisabled,
 } from "../../../data/update";
 import type { HomeAssistant } from "../../../types";
 import { showAlertDialog } from "../../generic/show-dialog-box";
@@ -44,15 +47,47 @@ class MoreInfoUpdate extends LitElement {
 
   @state() private _backupConfig?: BackupConfig;
 
+  @state() private _createBackup = false;
+
   @state() private _entitySources?: EntitySources;
 
   private async _fetchBackupConfig() {
-    const { config } = await fetchBackupConfig(this.hass);
-    this._backupConfig = config;
+    try {
+      const { config } = await fetchBackupConfig(this.hass);
+      this._backupConfig = config;
+    } catch (err) {
+      // ignore error, because user will get a manual backup option
+      // eslint-disable-next-line no-console
+      console.error(err);
+    }
+  }
+
+  private async _fetchUpdateBackupConfig(type: UpdateType) {
+    try {
+      const config = await getSupervisorUpdateConfig(this.hass);
+
+      // for home assistant and OS updates
+      if (this._isHaOrOsUpdate(type)) {
+        this._createBackup = config.core_backup_before_update;
+        return;
+      }
+
+      if (type === "addon") {
+        this._createBackup = config.add_on_backup_before_update;
+      }
+    } catch (err) {
+      // ignore error, because user can still set the config
+      // eslint-disable-next-line no-console
+      console.error(err);
+    }
   }
 
   private async _fetchEntitySources() {
     this._entitySources = await fetchEntitySourcesWithCache(this.hass);
+  }
+
+  private _isHaOrOsUpdate(type: UpdateType): boolean {
+    return ["home_assistant", "home_assistant_os"].includes(type);
   }
 
   private _computeCreateBackupTexts():
@@ -69,8 +104,7 @@ class MoreInfoUpdate extends LitElement {
       ? getUpdateType(this.stateObj, this._entitySources)
       : "generic";
 
-    // Automatic or manual for Home Assistant update
-    if (updateType === "home_assistant") {
+    if (this._isHaOrOsUpdate(updateType)) {
       const isBackupConfigValid =
         !!this._backupConfig &&
         !!this._backupConfig.automatic_backups_configured &&
@@ -149,11 +183,6 @@ class MoreInfoUpdate extends LitElement {
       return nothing;
     }
 
-    const skippedVersion =
-      this.stateObj.attributes.latest_version &&
-      this.stateObj.attributes.skipped_version ===
-        this.stateObj.attributes.latest_version;
-
     const createBackupTexts = this._computeCreateBackupTexts();
 
     return html`
@@ -220,15 +249,17 @@ class MoreInfoUpdate extends LitElement {
                 <hr />
                 ${this._markdownLoading ? this._renderLoader() : nothing}
               `
-            : html`
-                <hr />
-                <ha-markdown
-                  @content-resize=${this._markdownLoaded}
-                  .content=${this._releaseNotes}
-                  class=${this._markdownLoading ? "hidden" : ""}
-                ></ha-markdown>
-                ${this._markdownLoading ? this._renderLoader() : nothing}
-              `
+            : this._releaseNotes
+              ? html`
+                  <hr />
+                  <ha-markdown
+                    @content-resize=${this._markdownLoaded}
+                    .content=${this._releaseNotes}
+                    class=${this._markdownLoading ? "hidden" : ""}
+                  ></ha-markdown>
+                  ${this._markdownLoading ? this._renderLoader() : nothing}
+                `
+              : nothing
           : this.stateObj.attributes.release_summary
             ? html`
                 <hr />
@@ -256,7 +287,8 @@ class MoreInfoUpdate extends LitElement {
                     : nothing}
                   <ha-switch
                     slot="end"
-                    id="create-backup"
+                    .checked=${this._createBackup}
+                    @change=${this._createBackupChanged}
                     .disabled=${updateIsInstalling(this.stateObj)}
                   ></ha-switch>
                 </ha-md-list-item>
@@ -267,7 +299,10 @@ class MoreInfoUpdate extends LitElement {
           ${this.stateObj.state === BINARY_STATE_OFF &&
           this.stateObj.attributes.skipped_version
             ? html`
-                <ha-button @click=${this._handleClearSkipped}>
+                <ha-button
+                  appearance="plain"
+                  @click=${this._handleClearSkipped}
+                >
                   ${this.hass.localize(
                     "ui.dialogs.more_info_control.update.clear_skipped"
                   )}
@@ -275,8 +310,9 @@ class MoreInfoUpdate extends LitElement {
               `
             : html`
                 <ha-button
+                  appearance="plain"
                   @click=${this._handleSkip}
-                  .disabled=${skippedVersion ||
+                  .disabled=${latestVersionIsSkipped(this.stateObj) ||
                   this.stateObj.state === BINARY_STATE_OFF ||
                   updateIsInstalling(this.stateObj)}
                 >
@@ -289,9 +325,8 @@ class MoreInfoUpdate extends LitElement {
             ? html`
                 <ha-button
                   @click=${this._handleInstall}
-                  .disabled=${(this.stateObj.state === BINARY_STATE_OFF &&
-                    !skippedVersion) ||
-                  updateIsInstalling(this.stateObj)}
+                  .loading=${updateIsInstalling(this.stateObj)}
+                  .disabled=${updateButtonIsDisabled(this.stateObj)}
                 >
                   ${this.hass.localize(
                     "ui.dialogs.more_info_control.update.update"
@@ -307,7 +342,7 @@ class MoreInfoUpdate extends LitElement {
   private _renderLoader() {
     return html`
       <div class="flex center loader">
-        <ha-circular-progress indeterminate></ha-circular-progress>
+        <ha-spinner></ha-spinner>
       </div>
     `;
   }
@@ -319,7 +354,14 @@ class MoreInfoUpdate extends LitElement {
     if (supportsFeature(this.stateObj!, UpdateEntityFeature.BACKUP)) {
       this._fetchEntitySources().then(() => {
         const type = getUpdateType(this.stateObj!, this._entitySources!);
-        if (type === "home_assistant") {
+        if (
+          isComponentLoaded(this.hass, "hassio") &&
+          ["addon", "home_assistant", "home_assistant_os"].includes(type)
+        ) {
+          this._fetchUpdateBackupConfig(type);
+        }
+
+        if (this._isHaOrOsUpdate(type)) {
           this._fetchBackupConfig();
         }
       });
@@ -347,13 +389,7 @@ class MoreInfoUpdate extends LitElement {
     if (!supportsFeature(this.stateObj!, UpdateEntityFeature.BACKUP)) {
       return false;
     }
-    const createBackupSwitch = this.shadowRoot?.getElementById(
-      "create-backup"
-    ) as HaSwitch;
-    if (createBackupSwitch) {
-      return createBackupSwitch.checked;
-    }
-    return false;
+    return this._createBackup;
   }
 
   private _handleInstall(): void {
@@ -373,6 +409,10 @@ class MoreInfoUpdate extends LitElement {
     }
 
     this.hass.callService("update", "install", installData);
+  }
+
+  private _createBackupChanged(ev) {
+    this._createBackup = ev.target.checked;
   }
 
   private _handleSkip(): void {
@@ -434,8 +474,7 @@ class MoreInfoUpdate extends LitElement {
       position: sticky;
       bottom: 0;
       margin: 0 -24px 0 -24px;
-      margin-bottom: calc(-1 * max(env(safe-area-inset-bottom), 24px));
-      padding-bottom: env(safe-area-inset-bottom);
+      margin-bottom: calc(-1 * max(var(--safe-area-inset-bottom), 24px));
       box-sizing: border-box;
       display: flex;
       flex-direction: column;
@@ -467,9 +506,9 @@ class MoreInfoUpdate extends LitElement {
       flex-wrap: wrap;
       justify-content: flex-end;
       box-sizing: border-box;
-      padding: 12px;
+      padding: 16px;
       z-index: 1;
-      gap: 8px;
+      gap: var(--ha-space-2);
     }
 
     a {

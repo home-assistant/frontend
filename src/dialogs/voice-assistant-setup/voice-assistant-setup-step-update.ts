@@ -2,7 +2,8 @@ import type { PropertyValues } from "lit";
 import { css, html, LitElement, nothing } from "lit";
 import { customElement, property } from "lit/decorators";
 import { fireEvent } from "../../common/dom/fire_event";
-import "../../components/ha-circular-progress";
+import "../../components/ha-progress-ring";
+import "../../components/ha-spinner";
 import { ON, UNAVAILABLE } from "../../data/entity";
 import {
   updateCanInstall,
@@ -84,12 +85,13 @@ export class HaVoiceAssistantSetupStepUpdate extends LitElement {
           "ui.panel.config.voice_assistants.satellite_wizard.update.secondary"
         )}
       </p>
-      <ha-circular-progress
-        .value=${progressIsNumeric
-          ? (stateObj.attributes.update_percentage as number) / 100
-          : undefined}
-        .indeterminate=${!progressIsNumeric}
-      ></ha-circular-progress>
+      ${progressIsNumeric
+        ? html`
+            <ha-progress-ring
+              .value=${stateObj.attributes.update_percentage as number}
+            ></ha-progress-ring>
+          `
+        : html`<ha-spinner></ha-spinner>`}
       <p>
         ${stateObj?.state === UNAVAILABLE
           ? "Restarting voice assistant"
@@ -129,7 +131,7 @@ export class HaVoiceAssistantSetupStepUpdate extends LitElement {
       );
       this._refreshTimeout = window.setTimeout(() => {
         this._nextStep();
-      }, 5000);
+      }, 10000);
     } else {
       this._nextStep();
     }
@@ -145,7 +147,8 @@ export class HaVoiceAssistantSetupStepUpdate extends LitElement {
   static styles = [
     AssistantSetupStyles,
     css`
-      ha-circular-progress {
+      ha-progress-ring,
+      ha-spinner {
         margin-top: 24px;
         margin-bottom: 24px;
       }

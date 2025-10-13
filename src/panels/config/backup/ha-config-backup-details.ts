@@ -8,25 +8,26 @@ import {
 } from "@mdi/js";
 import { css, html, LitElement, nothing } from "lit";
 import { customElement, property, state } from "lit/decorators";
+import { isComponentLoaded } from "../../../common/config/is_component_loaded";
+import { fireEvent } from "../../../common/dom/fire_event";
 import { computeDomain } from "../../../common/entity/compute_domain";
 import { navigate } from "../../../common/navigate";
 import "../../../components/ha-alert";
 import "../../../components/ha-button";
 import "../../../components/ha-button-menu";
 import "../../../components/ha-card";
-import "../../../components/ha-circular-progress";
+import "../../../components/ha-fade-in";
 import "../../../components/ha-icon-button";
 import "../../../components/ha-list-item";
 import "../../../components/ha-md-list";
 import "../../../components/ha-md-list-item";
+import "../../../components/ha-spinner";
 import type {
   BackupAgent,
   BackupConfig,
   BackupContentAgent,
   BackupContentExtended,
 } from "../../../data/backup";
-import "./components/ha-backup-details-summary";
-import "./components/ha-backup-details-restore";
 import {
   compareAgents,
   computeBackupAgentName,
@@ -35,14 +36,14 @@ import {
   isLocalAgent,
   isNetworkMountAgent,
 } from "../../../data/backup";
+import { showConfirmationDialog } from "../../../dialogs/generic/show-dialog-box";
 import "../../../layouts/hass-subpage";
 import type { HomeAssistant } from "../../../types";
 import { brandsUrl } from "../../../util/brands-url";
+import "./components/ha-backup-details-restore";
+import "./components/ha-backup-details-summary";
 import { showRestoreBackupDialog } from "./dialogs/show-dialog-restore-backup";
-import { fireEvent } from "../../../common/dom/fire_event";
-import { showConfirmationDialog } from "../../../dialogs/generic/show-dialog-box";
 import { downloadBackup } from "./helper/download_backup";
-import { isComponentLoaded } from "../../../common/config/is_component_loaded";
 
 interface Agent extends BackupContentAgent {
   id: string;
@@ -146,7 +147,9 @@ class HaConfigBackupDetails extends LitElement {
                 </ha-alert>
               `
             : !this._backup
-              ? html`<ha-circular-progress active></ha-circular-progress>`
+              ? html`<ha-fade-in .delay=${1000}
+                  ><ha-spinner></ha-spinner
+                ></ha-fade-in>`
               : html`
                   <ha-backup-details-summary
                     .backup=${this._backup}
@@ -353,9 +356,12 @@ class HaConfigBackupDetails extends LitElement {
       padding: 28px 20px 0;
       max-width: 690px;
       margin: 0 auto;
-      gap: 24px;
+      gap: var(--ha-space-6);
       display: grid;
       margin-bottom: 24px;
+    }
+    ha-spinner {
+      margin: 24px auto;
     }
     .card-content {
       padding: 0 20px;
@@ -393,8 +399,8 @@ class HaConfigBackupDetails extends LitElement {
       display: flex;
       align-items: center;
       flex-direction: row;
-      gap: 8px;
-      line-height: normal;
+      gap: var(--ha-space-2);
+      line-height: var(--ha-line-height-condensed);
     }
     .dot {
       display: block;
@@ -402,7 +408,7 @@ class HaConfigBackupDetails extends LitElement {
       width: 8px;
       height: 8px;
       background-color: var(--disabled-color);
-      border-radius: 50%;
+      border-radius: var(--ha-border-radius-circle);
       flex: none;
     }
     .dot.success {

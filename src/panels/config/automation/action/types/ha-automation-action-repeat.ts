@@ -1,6 +1,6 @@
 import type { CSSResultGroup } from "lit";
 import { css, html, LitElement } from "lit";
-import { customElement, property } from "lit/decorators";
+import { customElement, property, query } from "lit/decorators";
 import memoizeOne from "memoize-one";
 import { fireEvent } from "../../../../../common/dom/fire_event";
 import "../../../../../components/ha-textfield";
@@ -11,16 +11,21 @@ import "../ha-automation-action";
 import type { ActionElement } from "../ha-automation-action-row";
 
 import { isTemplate } from "../../../../../common/string/has-template";
-import type { LocalizeFunc } from "../../../../../common/translations/localize";
 import "../../../../../components/ha-form/ha-form";
+import type { HaForm } from "../../../../../components/ha-form/ha-form";
 import type {
   HaFormSchema,
   SchemaUnion,
 } from "../../../../../components/ha-form/types";
+import type { HaSelector } from "../../../../../components/ha-selector/ha-selector";
+import type { HaActionSelector } from "../../../../../components/ha-selector/ha-selector-action";
+import type { HaConditionSelector } from "../../../../../components/ha-selector/ha-selector-condition";
 
 const OPTIONS = ["count", "while", "until", "for_each"] as const;
+type RepeatType = (typeof OPTIONS)[number];
 
-const getType = (action) => OPTIONS.find((option) => option in action);
+export const getRepeatType = (action: RepeatAction["repeat"]) =>
+  OPTIONS.find((option) => option in action);
 
 @customElement("ha-automation-action-repeat")
 export class HaRepeatAction extends LitElement implements ActionElement {
@@ -28,30 +33,30 @@ export class HaRepeatAction extends LitElement implements ActionElement {
 
   @property({ type: Boolean }) public disabled = false;
 
+  @property({ type: Boolean }) public narrow = false;
+
   @property({ attribute: false }) public action!: RepeatAction;
+
+  @property({ type: Boolean, attribute: "sidebar" }) public inSidebar = false;
+
+  @property({ type: Boolean, attribute: "indent" }) public indent = false;
+
+  @query("ha-form")
+  private _formElement?: HaForm;
 
   public static get defaultConfig(): RepeatAction {
     return { repeat: { count: 2, sequence: [] } };
   }
 
   private _schema = memoizeOne(
-    (localize: LocalizeFunc, type: string, template: boolean) =>
+    (
+      type: RepeatType,
+      template: boolean,
+      inSidebar: boolean,
+      indent: boolean
+    ) =>
       [
-        {
-          name: "type",
-          selector: {
-            select: {
-              mode: "dropdown",
-              options: OPTIONS.map((opt) => ({
-                value: opt,
-                label: localize(
-                  `ui.panel.config.automation.editor.actions.type.repeat.type.${opt}.label`
-                ),
-              })),
-            },
-          },
-        },
-        ...(type === "count"
+        ...(type === "count" && (inSidebar || (!inSidebar && !indent))
           ? ([
               {
                 name: "count",
@@ -62,17 +67,20 @@ export class HaRepeatAction extends LitElement implements ActionElement {
               },
             ] as const satisfies readonly HaFormSchema[])
           : []),
-        ...(type === "until" || type === "while"
+        ...((type === "until" || type === "while") &&
+        (indent || (!inSidebar && !indent))
           ? ([
               {
                 name: type,
                 selector: {
-                  condition: {},
+                  condition: {
+                    optionsInSidebar: indent,
+                  },
                 },
               },
             ] as const satisfies readonly HaFormSchema[])
           : []),
-        ...(type === "for_each"
+        ...(type === "for_each" && (inSidebar || (!inSidebar && !indent))
           ? ([
               {
                 name: "for_each",
@@ -81,24 +89,31 @@ export class HaRepeatAction extends LitElement implements ActionElement {
               },
             ] as const satisfies readonly HaFormSchema[])
           : []),
-        {
-          name: "sequence",
-          selector: {
-            action: {},
-          },
-        },
+        ...(indent || (!inSidebar && !indent)
+          ? ([
+              {
+                name: "sequence",
+                selector: {
+                  action: {
+                    optionsInSidebar: indent,
+                  },
+                },
+              },
+            ] as const satisfies readonly HaFormSchema[])
+          : []),
       ] as const satisfies readonly HaFormSchema[]
   );
 
   protected render() {
     const action = this.action.repeat;
-    const type = getType(action);
+    const type = getRepeatType(action);
     const schema = this._schema(
-      this.hass.localize,
       type ?? "count",
       "count" in action && typeof action.count === "string"
         ? isTemplate(action.count)
-        : false
+        : false,
+      this.inSidebar,
+      this.indent
     );
 
     const data = { ...action, type };
@@ -109,6 +124,7 @@ export class HaRepeatAction extends LitElement implements ActionElement {
       .disabled=${this.disabled}
       @value-changed=${this._valueChanged}
       .computeLabel=${this._computeLabelCallback}
+      .narrow=${this.narrow}
     ></ha-form>`;
   }
 
@@ -118,7 +134,7 @@ export class HaRepeatAction extends LitElement implements ActionElement {
 
     const newType = newVal.type;
     delete newVal.type;
-    const oldType = getType(this.action.repeat);
+    const oldType = getRepeatType(this.action.repeat);
 
     if (newType !== oldType) {
       if (newType === "count") {
@@ -166,14 +182,45 @@ export class HaRepeatAction extends LitElement implements ActionElement {
     ];
   }
 
+  private _getSelectorElements() {
+    if (this._formElement) {
+      const selectors =
+        this._formElement.shadowRoot?.querySelectorAll<HaSelector>(
+          "ha-selector"
+        );
+
+      const selectorElements: (HaConditionSelector | HaActionSelector)[] = [];
+
+      selectors?.forEach((selector) => {
+        selectorElements.push(
+          ...Array.from(
+            selector.shadowRoot?.querySelectorAll<
+              HaConditionSelector | HaActionSelector
+            >("ha-selector-condition, ha-selector-action") || []
+          )
+        );
+      });
+      return selectorElements;
+    }
+    return [];
+  }
+
+  public expandAll() {
+    this._getSelectorElements().forEach((element) => {
+      element.expandAll?.();
+    });
+  }
+
+  public collapseAll() {
+    this._getSelectorElements().forEach((element) => {
+      element.collapseAll?.();
+    });
+  }
+
   private _computeLabelCallback = (
     schema: SchemaUnion<ReturnType<typeof this._schema>>
   ): string => {
     switch (schema.name) {
-      case "type":
-        return this.hass.localize(
-          "ui.panel.config.automation.editor.actions.type.repeat.type_select"
-        );
       case "count":
         return this.hass.localize(
           "ui.panel.config.automation.editor.actions.type.repeat.type.count.label"

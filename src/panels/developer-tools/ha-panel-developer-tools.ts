@@ -1,15 +1,15 @@
+import type { ActionDetail } from "@material/mwc-list";
 import { mdiDotsVertical } from "@mdi/js";
-import "@polymer/paper-tabs/paper-tab";
-import "@polymer/paper-tabs/paper-tabs";
 import type { CSSResultGroup, TemplateResult } from "lit";
 import { css, html, LitElement } from "lit";
 import { customElement, property } from "lit/decorators";
-import type { ActionDetail } from "@material/mwc-list";
 import { navigate } from "../../common/navigate";
-import "../../components/ha-menu-button";
 import "../../components/ha-button-menu";
 import "../../components/ha-icon-button";
 import "../../components/ha-list-item";
+import "../../components/ha-menu-button";
+import "../../components/ha-tab-group";
+import "../../components/ha-tab-group-tab";
 import { haStyle } from "../../resources/styles";
 import type { HomeAssistant, Route } from "../../types";
 import "./developer-tools-router";
@@ -20,7 +20,7 @@ class PanelDeveloperTools extends LitElement {
 
   @property({ attribute: false }) public route!: Route;
 
-  @property({ type: Boolean }) public narrow = false;
+  @property({ type: Boolean, reflect: true }) public narrow = false;
 
   protected firstUpdated(changedProps) {
     super.firstUpdated(changedProps);
@@ -51,36 +51,56 @@ class PanelDeveloperTools extends LitElement {
             </ha-list-item>
           </ha-button-menu>
         </div>
-        <paper-tabs
-          scrollable
-          attr-for-selected="page-name"
-          .selected=${page}
-          @selected-changed=${this._handlePageSelected}
-        >
-          <paper-tab page-name="yaml">
+        <ha-tab-group @wa-tab-show=${this._handlePageSelected}>
+          <ha-tab-group-tab slot="nav" panel="yaml" .active=${page === "yaml"}>
             ${this.hass.localize("ui.panel.developer-tools.tabs.yaml.title")}
-          </paper-tab>
-          <paper-tab page-name="state">
+          </ha-tab-group-tab>
+          <ha-tab-group-tab
+            slot="nav"
+            panel="state"
+            .active=${page === "state"}
+          >
             ${this.hass.localize("ui.panel.developer-tools.tabs.states.title")}
-          </paper-tab>
-          <paper-tab page-name="action">
+          </ha-tab-group-tab>
+          <ha-tab-group-tab
+            slot="nav"
+            panel="action"
+            .active=${page === "action"}
+          >
             ${this.hass.localize("ui.panel.developer-tools.tabs.actions.title")}
-          </paper-tab>
-          <paper-tab page-name="template">
+          </ha-tab-group-tab>
+          <ha-tab-group-tab
+            slot="nav"
+            panel="template"
+            .active=${page === "template"}
+          >
             ${this.hass.localize(
               "ui.panel.developer-tools.tabs.templates.title"
             )}
-          </paper-tab>
-          <paper-tab page-name="event">
+          </ha-tab-group-tab>
+          <ha-tab-group-tab
+            slot="nav"
+            panel="event"
+            .active=${page === "event"}
+          >
             ${this.hass.localize("ui.panel.developer-tools.tabs.events.title")}
-          </paper-tab>
-          <paper-tab page-name="statistics">
+          </ha-tab-group-tab>
+          <ha-tab-group-tab
+            slot="nav"
+            panel="statistics"
+            .active=${page === "statistics"}
+          >
             ${this.hass.localize(
               "ui.panel.developer-tools.tabs.statistics.title"
             )}
-          </paper-tab>
-          <paper-tab page-name="assist">Assist</paper-tab>
-        </paper-tabs>
+          </ha-tab-group-tab>
+          <ha-tab-group-tab
+            slot="nav"
+            panel="assist"
+            .active=${page === "assist"}
+            >Assist</ha-tab-group-tab
+          >
+        </ha-tab-group>
       </div>
       <developer-tools-router
         .route=${this.route}
@@ -90,8 +110,11 @@ class PanelDeveloperTools extends LitElement {
     `;
   }
 
-  private _handlePageSelected(ev) {
-    const newPage = ev.detail.value;
+  private _handlePageSelected(ev: CustomEvent<{ name: string }>) {
+    const newPage = ev.detail.name;
+    if (!newPage) {
+      return;
+    }
     if (newPage !== this._page) {
       navigate(`/developer-tools/${newPage}`);
     } else {
@@ -117,7 +140,6 @@ class PanelDeveloperTools extends LitElement {
       css`
         :host {
           color: var(--primary-text-color);
-          --paper-card-header-color: var(--primary-text-color);
           display: flex;
           min-height: 100vh;
         }
@@ -126,51 +148,69 @@ class PanelDeveloperTools extends LitElement {
           top: 0;
           z-index: 4;
           background-color: var(--app-header-background-color);
-          width: var(--mdc-top-app-bar-width, 100%);
-          padding-top: env(safe-area-inset-top);
+          width: calc(
+            var(--mdc-top-app-bar-width, 100%) - var(
+                --safe-area-inset-right,
+                0px
+              )
+          );
+          padding-top: var(--safe-area-inset-top);
+          padding-right: var(--safe-area-inset-right);
           color: var(--app-header-text-color, white);
           border-bottom: var(--app-header-border-bottom, none);
           -webkit-backdrop-filter: var(--app-header-backdrop-filter, none);
           backdrop-filter: var(--app-header-backdrop-filter, none);
         }
+        :host([narrow]) .header {
+          width: calc(
+            var(--mdc-top-app-bar-width, 100%) - var(
+                --safe-area-inset-left,
+                0px
+              ) - var(--safe-area-inset-right, 0px)
+          );
+          padding-left: var(--safe-area-inset-left);
+        }
+
         .toolbar {
           height: var(--header-height);
           display: flex;
           align-items: center;
-          font-size: 20px;
+          font-size: var(--ha-font-size-xl);
           padding: 8px 12px;
-          font-weight: 400;
+          font-weight: var(--ha-font-weight-normal);
           box-sizing: border-box;
         }
-        @media (max-width: 599px) {
-          .toolbar {
-            padding: 4px;
-          }
+        :host([narrow]) .toolbar {
+          padding: 4px;
         }
         .main-title {
           margin: var(--margin-title);
-          line-height: 20px;
+          line-height: var(--ha-line-height-normal);
           flex-grow: 1;
         }
         developer-tools-router {
           display: block;
           padding-top: calc(
-            var(--header-height) + 48px + env(safe-area-inset-top)
+            var(--header-height) + 52px + var(--safe-area-inset-top, 0px)
           );
-          padding-bottom: calc(env(safe-area-inset-bottom));
+          padding-bottom: var(--safe-area-inset-bottom);
+          padding-right: var(--safe-area-inset-right);
           flex: 1 1 100%;
-          max-width: 100%;
+          max-width: calc(100% - var(--safe-area-inset-right, 0px));
         }
-        paper-tabs {
-          margin-left: max(env(safe-area-inset-left), 24px);
-          margin-right: max(env(safe-area-inset-right), 24px);
-          margin-inline-start: max(env(safe-area-inset-left), 24px);
-          margin-inline-end: max(env(safe-area-inset-right), 24px);
-          --paper-tabs-selection-bar-color: var(
-            --app-header-selection-bar-color,
-            var(--app-header-text-color, #fff)
+        :host([narrow]) developer-tools-router {
+          padding-left: var(--safe-area-inset-left);
+          max-width: calc(
+            100% - var(--safe-area-inset-left, 0px) - var(
+                --safe-area-inset-right,
+                0px
+              )
           );
-          text-transform: uppercase;
+        }
+        ha-tab-group {
+          --ha-tab-active-text-color: var(--app-header-text-color, white);
+          --ha-tab-indicator-color: var(--app-header-text-color, white);
+          --ha-tab-track-color: transparent;
         }
       `,
     ];

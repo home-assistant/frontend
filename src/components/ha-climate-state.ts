@@ -154,7 +154,7 @@ class HaClimateState extends LitElement {
     }
 
     .state-label {
-      font-weight: bold;
+      font-weight: var(--ha-font-weight-bold);
     }
 
     .unit {

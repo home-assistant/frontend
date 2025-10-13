@@ -23,6 +23,8 @@ class HuiPictureElementsCard extends LitElement implements LovelaceCard {
 
   @property({ attribute: false }) public hass?: HomeAssistant;
 
+  @property({ type: Boolean }) public preview = false;
+
   @state() private _elements?: LovelaceElement[];
 
   public static getStubConfig(
@@ -95,6 +97,12 @@ class HuiPictureElementsCard extends LitElement implements LovelaceCard {
     if (this._elements && changedProps.has("hass")) {
       for (const element of this._elements) {
         element.hass = this.hass;
+      }
+    }
+
+    if (this._elements && changedProps.has("preview")) {
+      for (const element of this._elements) {
+        element.preview = this.preview;
       }
     }
 
@@ -180,6 +188,7 @@ class HuiPictureElementsCard extends LitElement implements LovelaceCard {
     if (this.hass) {
       element.hass = this.hass;
     }
+    element.preview = this.preview;
     element.addEventListener(
       "ll-rebuild",
       (ev) => {

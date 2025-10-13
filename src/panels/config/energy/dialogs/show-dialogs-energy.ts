@@ -72,6 +72,7 @@ export interface EnergySettingsWaterDialogParams {
 export interface EnergySettingsDeviceDialogParams {
   device?: DeviceConsumptionEnergyPreference;
   device_consumptions: DeviceConsumptionEnergyPreference[];
+  statsMetadata?: Record<string, StatisticsMetaData>;
   saveCallback: (device: DeviceConsumptionEnergyPreference) => Promise<void>;
 }
 

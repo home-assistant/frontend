@@ -1,9 +1,9 @@
-import "@material/mwc-button";
 import type { CSSResultGroup, PropertyValues, TemplateResult } from "lit";
 import { css, html, LitElement } from "lit";
 import { customElement, property, state } from "lit/decorators";
 import "../../components/ha-card";
-import "../../components/ha-circular-progress";
+import "../../components/ha-button";
+import "../../components/ha-spinner";
 import "../../components/ha-textfield";
 import "../../components/ha-password-field";
 import { haStyle } from "../../resources/styles";
@@ -89,17 +89,14 @@ class HaChangePasswordCard extends LitElement {
         </div>
 
         <div class="card-actions">
-          ${this._loading
-            ? html`<div>
-                <ha-circular-progress indeterminate></ha-circular-progress>
-              </div>`
-            : html`<mwc-button
-                @click=${this._changePassword}
-                .disabled=${!this._passwordConfirm}
-                >${this.hass.localize(
-                  "ui.panel.profile.change_password.submit"
-                )}</mwc-button
-              >`}
+          <ha-button
+            .loading=${this._loading}
+            @click=${this._changePassword}
+            .disabled=${!this._passwordConfirm}
+            >${this.hass.localize(
+              "ui.panel.profile.change_password.submit"
+            )}</ha-button
+          >
         </div>
       </ha-card>
     `;
@@ -204,6 +201,10 @@ class HaChangePasswordCard extends LitElement {
         }
         #currentPassword {
           margin-top: 0;
+        }
+        .card-actions {
+          display: flex;
+          justify-content: flex-end;
         }
       `,
     ];

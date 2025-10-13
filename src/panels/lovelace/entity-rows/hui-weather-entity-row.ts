@@ -105,7 +105,7 @@ class HuiWeatherEntityRow extends LitElement implements LovelaceRow {
 
     if (!stateObj) {
       return html`
-        <hui-warning>
+        <hui-warning .hass=${this.hass}>
           ${createEntityNotFoundWarning(this.hass, this._config.entity)}
         </hui-warning>
       `;
@@ -248,7 +248,7 @@ class HuiWeatherEntityRow extends LitElement implements LovelaceRow {
         .icon-image:focus {
           outline: none;
           background-color: var(--divider-color);
-          border-radius: 50%;
+          border-radius: var(--ha-border-radius-circle);
         }
 
         .weather-icon {

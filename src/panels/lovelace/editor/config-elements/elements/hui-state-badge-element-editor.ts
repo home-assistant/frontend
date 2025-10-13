@@ -1,6 +1,7 @@
 import { html, LitElement, nothing } from "lit";
 import { customElement, property, state } from "lit/decorators";
 import { any, assert, literal, object, optional, string } from "superstruct";
+import { mdiGestureTap } from "@mdi/js";
 import { fireEvent } from "../../../../../common/dom/fire_event";
 import type { SchemaUnion } from "../../../../../components/ha-form/types";
 import type { HomeAssistant } from "../../../../../types";
@@ -23,16 +24,43 @@ const SCHEMA = [
   { name: "entity", required: true, selector: { entity: {} } },
   { name: "title", selector: { text: {} } },
   {
-    name: "tap_action",
-    selector: {
-      ui_action: {},
-    },
-  },
-  {
-    name: "hold_action",
-    selector: {
-      ui_action: {},
-    },
+    name: "interactions",
+    type: "expandable",
+    flatten: true,
+    iconPath: mdiGestureTap,
+    schema: [
+      {
+        name: "tap_action",
+        selector: {
+          ui_action: {
+            default_action: "more-info",
+          },
+        },
+      },
+      {
+        name: "hold_action",
+        selector: {
+          ui_action: {
+            default_action: "more-info",
+          },
+        },
+      },
+      {
+        name: "",
+        type: "optional_actions",
+        flatten: true,
+        schema: [
+          {
+            name: "double_tap_action",
+            selector: {
+              ui_action: {
+                default_action: "none",
+              },
+            },
+          },
+        ],
+      },
+    ],
   },
   { name: "style", selector: { object: {} } },
 ] as const;

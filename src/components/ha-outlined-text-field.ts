@@ -1,15 +1,18 @@
-import { MdOutlinedTextField } from "@material/web/textfield/outlined-text-field";
+import { OutlinedTextField } from "@material/web/textfield/internal/outlined-text-field";
+import { styles } from "@material/web/textfield/internal/outlined-styles";
+import { styles as sharedStyles } from "@material/web/textfield/internal/shared-styles";
 import { css } from "lit";
 import { customElement } from "lit/decorators";
 import { literal } from "lit/static-html";
 import "./ha-outlined-field";
 
 @customElement("ha-outlined-text-field")
-export class HaOutlinedTextField extends MdOutlinedTextField {
+export class HaOutlinedTextField extends OutlinedTextField {
   protected readonly fieldTag = literal`ha-outlined-field`;
 
   static override styles = [
-    ...super.styles,
+    sharedStyles,
+    styles,
     css`
       :host {
         --md-sys-color-on-surface: var(--primary-text-color);
@@ -34,7 +37,7 @@ export class HaOutlinedTextField extends MdOutlinedTextField {
         --mdc-icon-size: var(--md-input-chip-icon-size, 18px);
       }
       .input {
-        font-family: Roboto, sans-serif;
+        font-family: var(--ha-font-family-body);
       }
     `,
   ];

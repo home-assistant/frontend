@@ -97,8 +97,8 @@ export class HuiStatisticsGraphCard extends LitElement implements LovelaceCard {
     }
     if (this._config?.energy_date_selection) {
       this._subscribeEnergy();
-    } else {
-      this._setFetchStatisticsTimer();
+    } else if (this._interval === undefined) {
+      this._setFetchStatisticsTimer(true);
     }
   }
 
@@ -213,9 +213,7 @@ export class HuiStatisticsGraphCard extends LitElement implements LovelaceCard {
       changedProps.has("_config") &&
       oldConfig?.entities !== this._config.entities
     ) {
-      this._getStatisticsMetaData(this._entities).then(() => {
-        this._setFetchStatisticsTimer();
-      });
+      this._setFetchStatisticsTimer(true);
       return;
     }
 
@@ -230,10 +228,14 @@ export class HuiStatisticsGraphCard extends LitElement implements LovelaceCard {
     }
   }
 
-  private _setFetchStatisticsTimer() {
-    this._getStatistics();
-    // statistics are created every hour
+  private async _setFetchStatisticsTimer(fetchMetadata = false) {
     clearInterval(this._interval);
+    this._interval = 0; // block concurrent calls
+    if (fetchMetadata) {
+      await this._getStatisticsMetaData(this._entities);
+    }
+    await this._getStatistics();
+    // statistics are created every hour
     if (!this._config?.energy_date_selection) {
       this._interval = window.setInterval(
         () => this._getStatistics(),
@@ -268,6 +270,7 @@ export class HuiStatisticsGraphCard extends LitElement implements LovelaceCard {
         <div
           class="content ${classMap({
             "has-header": !!this._config.title,
+            "has-rows": !!this._config.grid_options?.rows,
           })}"
         >
           <statistics-chart
@@ -388,6 +391,9 @@ export class HuiStatisticsGraphCard extends LitElement implements LovelaceCard {
     }
     statistics-chart {
       height: 100%;
+    }
+    .has-rows {
+      --chart-max-height: 100%;
     }
   `;
 }

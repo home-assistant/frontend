@@ -1,4 +1,3 @@
-import "@material/mwc-list/mwc-list-item";
 import type { ComboBoxLitRenderer } from "@vaadin/combo-box/lit";
 import { html, LitElement, nothing } from "lit";
 import { customElement, property, query, state } from "lit/decorators";
@@ -11,6 +10,7 @@ import type { ValueChangedEvent, HomeAssistant } from "../types";
 import { brandsUrl } from "../util/brands-url";
 import "./ha-combo-box";
 import type { HaComboBox } from "./ha-combo-box";
+import "./ha-combo-box-item";
 
 export interface ConfigEntryExtended extends ConfigEntry {
   localized_domain_name?: string;
@@ -48,18 +48,20 @@ class HaConfigEntryPicker extends LitElement {
     this._getConfigEntries();
   }
 
-  private _rowRenderer: ComboBoxLitRenderer<ConfigEntryExtended> = (item) =>
-    html`<mwc-list-item twoline graphic="icon">
-      <span
-        >${item.title ||
+  private _rowRenderer: ComboBoxLitRenderer<ConfigEntryExtended> = (
+    item
+  ) => html`
+    <ha-combo-box-item type="button">
+      <span slot="headline">
+        ${item.title ||
         this.hass.localize(
           "ui.panel.config.integrations.config_entry.unnamed_entry"
-        )}</span
-      >
-      <span slot="secondary">${item.localized_domain_name}</span>
+        )}
+      </span>
+      <span slot="supporting-text">${item.localized_domain_name}</span>
       <img
         alt=""
-        slot="graphic"
+        slot="start"
         src=${brandsUrl({
           domain: item.domain,
           type: "icon",
@@ -70,7 +72,8 @@ class HaConfigEntryPicker extends LitElement {
         @error=${this._onImageError}
         @load=${this._onImageLoad}
       />
-    </mwc-list-item>`;
+    </ha-combo-box-item>
+  `;
 
   protected render() {
     if (!this._configEntries) {

@@ -1,4 +1,3 @@
-import "@material/mwc-list/mwc-list-item";
 import type { RequestSelectedDetail } from "@material/mwc-list/mwc-list-item";
 import { mdiDotsVertical, mdiRefresh } from "@mdi/js";
 import type { HassEntities } from "home-assistant-js-websocket";
@@ -13,6 +12,7 @@ import "../../../components/ha-bar";
 import "../../../components/ha-button-menu";
 import "../../../components/ha-card";
 import "../../../components/ha-check-list-item";
+import "../../../components/ha-list-item";
 import "../../../components/ha-metric";
 import { extractApiErrorMessage } from "../../../data/hassio/common";
 import type {
@@ -89,7 +89,7 @@ class HaConfigSectionUpdates extends LitElement {
             ${this._supervisorInfo
               ? html`
                   <li divider role="separator"></li>
-                  <mwc-list-item
+                  <ha-list-item
                     @request-selected=${this._toggleBeta}
                     .disabled=${this._supervisorInfo.channel === "dev"}
                   >
@@ -98,7 +98,7 @@ class HaConfigSectionUpdates extends LitElement {
                       : this.hass.localize(
                           "ui.panel.config.updates.leave_beta"
                         )}
-                  </mwc-list-item>
+                  </ha-list-item>
                 `
               : ""}
           </ha-button-menu>
@@ -195,7 +195,10 @@ class HaConfigSectionUpdates extends LitElement {
       justify-content: space-between;
       flex-direction: column;
       display: flex;
-      margin-bottom: max(24px, env(safe-area-inset-bottom));
+      margin-bottom: max(24px, var(--safe-area-inset-bottom));
+    }
+    ha-config-updates {
+      margin-bottom: 8px;
     }
 
     .card-content {

@@ -12,6 +12,7 @@ export interface Zone {
 }
 
 export interface HomeZoneMutableParams {
+  name?: string;
   latitude: number;
   longitude: number;
   radius: number;

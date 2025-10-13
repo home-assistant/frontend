@@ -1,9 +1,11 @@
 import type { HassEntity } from "home-assistant-js-websocket";
 import type { TemplateResult } from "lit";
-import { html, LitElement, nothing } from "lit";
+import { html, LitElement } from "lit";
 import { customElement, property } from "lit/decorators";
+import { join } from "lit/directives/join";
 import { ensureArray } from "../common/array/ensure-array";
 import { computeStateDomain } from "../common/entity/compute_state_domain";
+import { computeStateName } from "../common/entity/compute_state_name";
 import "../components/ha-relative-time";
 import { isUnavailableState } from "../data/entity";
 import { SENSOR_DEVICE_CLASS_TIMESTAMP } from "../data/sensor";
@@ -99,10 +101,10 @@ class StateDisplay extends LitElement {
       return this.hass!.formatEntityState(stateObj);
     }
     if (content === "name") {
-      return html`${this.name || stateObj.attributes.friendly_name}`;
+      return html`${this.name || computeStateName(stateObj)}`;
     }
 
-    let relativeDateTime: string | undefined;
+    let relativeDateTime: string | Date | undefined;
 
     // Check last-changed for backwards compatibility
     if (content === "last_changed" || content === "last-changed") {
@@ -111,6 +113,9 @@ class StateDisplay extends LitElement {
     // Check last_updated for backwards compatibility
     if (content === "last_updated" || content === "last-updated") {
       relativeDateTime = stateObj.last_updated;
+    }
+    if (domain === "input_datetime" && content === "timestamp") {
+      relativeDateTime = new Date(stateObj.attributes.timestamp * 1000);
     }
 
     if (
@@ -181,12 +186,7 @@ class StateDisplay extends LitElement {
       return html`${this.hass!.formatEntityState(stateObj)}`;
     }
 
-    return html`
-      ${values.map(
-        (value, index, array) =>
-          html`${value}${index < array.length - 1 ? " ⸱ " : nothing}`
-      )}
-    `;
+    return join(values, " · ");
   }
 }
 

@@ -7,6 +7,7 @@ This is the entry point for providing external app stuff from app entrypoint.
 
 import { fireEvent } from "../common/dom/fire_event";
 import { mainWindow } from "../common/dom/get_main_window";
+import { navigate } from "../common/navigate";
 import { showAutomationEditor } from "../data/automation";
 import type { HomeAssistantMain } from "../layouts/home-assistant-main";
 import type {
@@ -50,7 +51,7 @@ export const addExternalBarCodeListener = (
   };
 };
 
-const handleExternalMessage = (
+export const handleExternalMessage = (
   hassMainEl: HomeAssistantMain,
   msg: EMIncomingMessageCommands
 ): boolean => {
@@ -58,6 +59,14 @@ const handleExternalMessage = (
 
   if (msg.command === "restart") {
     hassMainEl.hass.connection.reconnect(true);
+    bus.fireMessage({
+      id: msg.id,
+      type: "result",
+      success: true,
+      result: null,
+    });
+  } else if (msg.command === "navigate") {
+    navigate(msg.payload.path, msg.payload.options);
     bus.fireMessage({
       id: msg.id,
       type: "result",

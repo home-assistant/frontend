@@ -1,4 +1,3 @@
-import "@material/mwc-list";
 import type { PropertyValues } from "lit";
 import { LitElement, css, html } from "lit";
 import { customElement, property, state } from "lit/decorators";
@@ -8,6 +7,7 @@ import { fireEvent } from "../../../../../common/dom/fire_event";
 import { stringCompare } from "../../../../../common/string/compare";
 import "../../../../../components/ha-check-list-item";
 import "../../../../../components/ha-switch";
+import "../../../../../components/ha-list";
 import "../../../../../components/user/ha-user-badge";
 import type { User } from "../../../../../data/user";
 import { fetchUsers } from "../../../../../data/user";
@@ -57,7 +57,7 @@ export class HaCardConditionUser extends LitElement {
     const selectedUsers = this.condition.users ?? [];
 
     return html`
-      <mwc-list>
+      <ha-list>
         ${this._sortedUsers(this._users).map(
           (user) => html`
             <ha-check-list-item
@@ -76,7 +76,7 @@ export class HaCardConditionUser extends LitElement {
             </ha-check-list-item>
           `
         )}
-      </mwc-list>
+      </ha-list>
     `;
   }
 
@@ -109,7 +109,7 @@ export class HaCardConditionUser extends LitElement {
     :host {
       display: block;
     }
-    mwc-list {
+    ha-list {
       --mdc-list-vertical-padding: 0;
     }
   `;

@@ -9,6 +9,7 @@ import { ResizeController } from "@lit-labs/observers/resize-controller";
 import type { HomeAssistant } from "../../types";
 import type { ECOption } from "../../resources/echarts";
 import { measureTextWidth } from "../../util/text";
+import { filterXSS } from "../../common/util/xss";
 import "./ha-chart-base";
 import { NODE_SIZE } from "../trace/hat-graph-const";
 import "../ha-alert";
@@ -18,7 +19,6 @@ export interface Node {
   value: number;
   index: number; // like z-index but for x/y
   label?: string;
-  tooltip?: string;
   color?: string;
   passThrough?: boolean;
 }
@@ -93,19 +93,54 @@ export class HaSankeyChart extends LitElement {
       : data.value;
     if (data.id) {
       const node = this.data.nodes.find((n) => n.id === data.id);
-      return `${params.marker} ${node?.label ?? data.id}<br>${value}`;
+      return `${params.marker} ${filterXSS(node?.label ?? data.id)}<br>${value}`;
     }
     if (data.source && data.target) {
       const source = this.data.nodes.find((n) => n.id === data.source);
       const target = this.data.nodes.find((n) => n.id === data.target);
-      return `${source?.label ?? data.source} → ${target?.label ?? data.target}<br>${value}`;
+      return `${filterXSS(source?.label ?? data.source)} → ${filterXSS(target?.label ?? data.target)}<br>${value}`;
     }
     return null;
   };
 
   private _createData = memoizeOne((data: SankeyChartData, width = 0) => {
     const filteredNodes = data.nodes.filter((n) => n.value > 0);
-    const indexes = [...new Set(filteredNodes.map((n) => n.index))];
+    const indexes = [...new Set(filteredNodes.map((n) => n.index))].sort();
+    const depthMap = new Map<number, number>();
+    const sections: Node[][] = [];
+    indexes.forEach((index, i) => {
+      depthMap.set(index, i);
+      const nodesWithIndex = filteredNodes.filter((n) => n.index === index);
+      if (nodesWithIndex.length > 0) {
+        sections.push(
+          sections.length > 0
+            ? nodesWithIndex.sort((a, b) => {
+                // sort by the order of their parents in the previous section with orphans at the end
+                const aParentIndex = this._findParentIndex(
+                  a.id,
+                  data.links,
+                  sections
+                );
+                const bParentIndex = this._findParentIndex(
+                  b.id,
+                  data.links,
+                  sections
+                );
+                if (aParentIndex === bParentIndex) {
+                  return 0;
+                }
+                if (aParentIndex === -1) {
+                  return 1;
+                }
+                if (bParentIndex === -1) {
+                  return -1;
+                }
+                return aParentIndex - bParentIndex;
+              })
+            : nodesWithIndex
+        );
+      }
+    });
     const links = this._processLinks(filteredNodes, data.links);
     const sectionWidth = width / indexes.length;
     const labelSpace = sectionWidth - NODE_SIZE - LABEL_DISTANCE;
@@ -113,13 +148,13 @@ export class HaSankeyChart extends LitElement {
     return {
       id: "sankey",
       type: "sankey",
-      nodes: filteredNodes.map((node) => ({
+      nodes: sections.flat().map((node) => ({
         id: node.id,
         value: node.value,
         itemStyle: {
           color: node.color,
         },
-        depth: node.index,
+        depth: depthMap.get(node.index),
       })),
       links,
       draggable: false,
@@ -151,23 +186,22 @@ export class HaSankeyChart extends LitElement {
               ""
             );
           const wordWidth = measureTextWidth(longestWord, FONT_SIZE);
+          const availableWidth = params.rect.width + 6;
           const fontSize = Math.min(
             FONT_SIZE,
-            (params.rect.width / wordWidth) * FONT_SIZE
+            (availableWidth / wordWidth) * FONT_SIZE
           );
           return {
             fontSize: fontSize > 1 ? fontSize : 0,
-            width: params.rect.width,
+            width: availableWidth,
             align: "center",
+            dy: -2, // shift up or the lowest row labels may be cut off
           };
         }
 
-        // estimate the number of lines after the label is wrapped
-        // this is a very rough estimate, but it works for now
-        const lineCount = Math.ceil(params.labelRect.width / labelSpace);
-        // `overflow: "break"` allows the label to overflow outside its height, so we need to account for that
+        const availableHeight = params.rect.height + 8; // account for the margin
         const fontSize = Math.min(
-          (params.rect.height / lineCount) * FONT_SIZE,
+          (availableHeight / params.labelRect.height) * FONT_SIZE,
           FONT_SIZE
         );
         return {
@@ -221,6 +255,23 @@ export class HaSankeyChart extends LitElement {
       }
     });
     return links;
+  }
+
+  private _findParentIndex(id: string, links: Link[], sections: Node[][]) {
+    const parent = links.find((l) => l.target === id)?.source;
+    if (!parent) {
+      return -1;
+    }
+    let offset = 0;
+    for (let i = sections.length - 1; i >= 0; i--) {
+      const section = sections[i];
+      const index = section.findIndex((n) => n.id === parent);
+      if (index !== -1) {
+        return offset + index;
+      }
+      offset += section.length;
+    }
+    return -1;
   }
 
   static styles = css`

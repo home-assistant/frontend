@@ -175,7 +175,7 @@ class MQTTMessages extends LitElement {
         padding-right: 4px;
         padding-inline-start: 4px;
         padding-inline-end: 4px;
-        font-family: var(--code-font-family, monospace);
+        font-family: var(--ha-font-family-code);
       }
     `;
 }

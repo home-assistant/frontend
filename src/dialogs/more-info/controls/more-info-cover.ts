@@ -57,7 +57,7 @@ class MoreInfoCover extends LitElement {
     );
 
     if (positionStateDisplay) {
-      return `${stateDisplay} ⸱ ${positionStateDisplay}`;
+      return `${stateDisplay} · ${positionStateDisplay}`;
     }
     return stateDisplay;
   }

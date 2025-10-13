@@ -1,11 +1,11 @@
 import { mdiCheckCircle, mdiDeleteForever, mdiRestore } from "@mdi/js";
-import "@material/mwc-button/mwc-button";
 import type { CSSResultGroup } from "lit";
 import { css, html, LitElement, nothing } from "lit";
 import { customElement, property, state } from "lit/decorators";
 import { fireEvent } from "../../../../../common/dom/fire_event";
 import { createCloseHeading } from "../../../../../components/ha-dialog";
 import "../../../../../components/ha-svg-icon";
+import "../../../../../components/ha-button";
 import { hardResetController } from "../../../../../data/zwave_js";
 import { haStyleDialog } from "../../../../../resources/styles";
 import type { HomeAssistant } from "../../../../../types";
@@ -77,15 +77,16 @@ class DialogZWaveJSHardResetController extends LitElement {
         </p>
       </div>
       ${this._resetStatus === ResetStatus.NotStarted
-        ? html`<mwc-button
+        ? html`<ha-button
+              appearance="plain"
               slot="primaryAction"
-              @click=${this._hardResetController}
+              @click=${this.closeDialog}
             >
-              ${this.hass.localize("ui.common.continue")}
-            </mwc-button>
-            <mwc-button slot="secondaryAction" @click=${this.closeDialog}>
               ${this.hass.localize("ui.common.cancel")}
-            </mwc-button>`
+            </ha-button>
+            <ha-button slot="primaryAction" @click=${this._hardResetController}>
+              ${this.hass.localize("ui.common.continue")}
+            </ha-button>`
         : nothing}
     </ha-dialog>`;
   }

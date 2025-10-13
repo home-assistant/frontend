@@ -4,9 +4,12 @@ import { css, html, LitElement, nothing } from "lit";
 import { customElement, property, state } from "lit/decorators";
 import memoizeOne from "memoize-one";
 import { fireEvent } from "../../../common/dom/fire_event";
+import { stopPropagation } from "../../../common/dom/stop_propagation";
+import { computeDomain } from "../../../common/entity/compute_domain";
 import "../../../components/ha-button";
 import "../../../components/ha-dialog-header";
 import "../../../components/ha-form/ha-form";
+import "../../../components/ha-list-item";
 import type {
   AssistPipeline,
   AssistPipelineMutableParams,
@@ -21,8 +24,6 @@ import "./assist-pipeline-detail/assist-pipeline-detail-tts";
 import "./assist-pipeline-detail/assist-pipeline-detail-wakeword";
 import "./debug/assist-render-pipeline-events";
 import type { VoiceAssistantPipelineDetailsDialogParams } from "./show-dialog-voice-assistant-pipeline-detail";
-import { computeDomain } from "../../../common/entity/compute_domain";
-import { stopPropagation } from "../../../common/dom/stop_propagation";
 
 @customElement("dialog-voice-assistant-pipeline-detail")
 export class DialogVoiceAssistantPipelineDetail extends LitElement {
@@ -148,11 +149,11 @@ export class DialogVoiceAssistantPipelineDetail extends LitElement {
                   .path=${mdiDotsVertical}
                   slot="trigger"
                 ></ha-icon-button>
-                <mwc-list-item>
+                <ha-list-item>
                   ${this.hass.localize(
                     "ui.panel.config.voice_assistants.assistants.pipeline.detail.add_streaming_wake_word"
                   )}
-                </mwc-list-item></ha-button-menu
+                </ha-list-item></ha-button-menu
               >`}
         </ha-dialog-header>
         <div class="content">
@@ -181,13 +182,11 @@ export class DialogVoiceAssistantPipelineDetail extends LitElement {
                   ${this.hass.localize(
                     "ui.panel.config.voice_assistants.assistants.pipeline.detail.no_cloud_message"
                   )}
-                  <a href="/config/cloud" slot="action">
-                    <ha-button>
-                      ${this.hass.localize(
-                        "ui.panel.config.voice_assistants.assistants.pipeline.detail.no_cloud_action"
-                      )}
-                    </ha-button>
-                  </a>
+                  <ha-button size="small" href="/config/cloud" slot="action">
+                    ${this.hass.localize(
+                      "ui.panel.config.voice_assistants.assistants.pipeline.detail.no_cloud_action"
+                    )}
+                  </ha-button>
                 </ha-alert>
               `
             : nothing}

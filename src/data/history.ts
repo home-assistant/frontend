@@ -578,7 +578,7 @@ export const computeHistory = (
   const unitStates = Object.keys(lineChartDevices).map((key) => {
     const splitKey = key.split("_");
     const unit = splitKey[0];
-    const deviceClass = splitKey[1] || undefined;
+    const deviceClass = splitKey.slice(1).join("_") || undefined;
     return processLineChartEntities(
       unit,
       deviceClass,
@@ -640,6 +640,12 @@ export const mergeHistoryResults = (
   }
 
   for (const item of ltsResult.line) {
+    if (item.unit === BLANK_UNIT) {
+      // disabled entities have no unit, so we need to find the unit from the history result
+      item.unit =
+        historyResult.line.find((line) => line.identifier === item.identifier)
+          ?.unit ?? BLANK_UNIT;
+    }
     const key = computeGroupKey(
       item.unit,
       item.device_class,

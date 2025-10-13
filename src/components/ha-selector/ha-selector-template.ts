@@ -19,6 +19,8 @@ export class HaTemplateSelector extends LitElement {
 
   @property() public helper?: string;
 
+  @property() public placeholder?: any;
+
   @property({ type: Boolean }) public disabled = false;
 
   @property({ type: Boolean }) public required = true;
@@ -55,6 +57,7 @@ export class HaTemplateSelector extends LitElement {
         .hass=${this.hass}
         .value=${this.value}
         .readOnly=${this.disabled}
+        .placeholder=${this.placeholder || "{{ ... }}"}
         autofocus
         autocomplete-entities
         autocomplete-icons
@@ -63,17 +66,23 @@ export class HaTemplateSelector extends LitElement {
         linewrap
       ></ha-code-editor>
       ${this.helper
-        ? html`<ha-input-helper-text>${this.helper}</ha-input-helper-text>`
+        ? html`<ha-input-helper-text .disabled=${this.disabled}
+            >${this.helper}</ha-input-helper-text
+          >`
         : nothing}
     `;
   }
 
   private _handleChange(ev) {
-    const value = ev.target.value;
+    ev.stopPropagation();
+    let value = ev.target.value;
     if (this.value === value) {
       return;
     }
     this.warn = WARNING_STRINGS.find((str) => value.includes(str));
+    if (value === "" && !this.required) {
+      value = undefined;
+    }
     fireEvent(this, "value-changed", { value });
   }
 

@@ -1,7 +1,7 @@
 const path = require("path");
 
 module.exports = {
-  polymer_dir: path.resolve(__dirname, ".."),
+  root_dir: path.resolve(__dirname, ".."),
 
   build_dir: path.resolve(__dirname, "../build"),
   app_output_root: path.resolve(__dirname, "../hass_frontend"),

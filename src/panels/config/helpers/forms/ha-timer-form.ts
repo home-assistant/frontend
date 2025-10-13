@@ -5,10 +5,14 @@ import { fireEvent } from "../../../../common/dom/fire_event";
 import "../../../../components/ha-checkbox";
 import "../../../../components/ha-formfield";
 import "../../../../components/ha-icon-picker";
+import "../../../../components/ha-duration-input";
 import "../../../../components/ha-textfield";
 import type { DurationDict, Timer } from "../../../../data/timer";
 import { haStyle } from "../../../../resources/styles";
 import type { HomeAssistant } from "../../../../types";
+import { createDurationData } from "../../../../common/datetime/create_duration_data";
+import type { HaDurationData } from "../../../../components/ha-duration-input";
+import type { ForDict } from "../../../../data/automation";
 
 @customElement("ha-timer-form")
 class HaTimerForm extends LitElement {
@@ -23,6 +27,8 @@ class HaTimerForm extends LitElement {
   @state() private _icon!: string;
 
   @state() private _duration!: string | number | DurationDict;
+
+  @state() private _duration_data!: HaDurationData | undefined;
 
   @state() private _restore!: boolean;
 
@@ -39,6 +45,8 @@ class HaTimerForm extends LitElement {
       this._duration = "00:00:00";
       this._restore = false;
     }
+
+    this._setDurationData();
   }
 
   public focus() {
@@ -79,14 +87,11 @@ class HaTimerForm extends LitElement {
             "ui.dialogs.helper_settings.generic.icon"
           )}
         ></ha-icon-picker>
-        <ha-textfield
+        <ha-duration-input
           .configValue=${"duration"}
-          .value=${this._duration}
-          @input=${this._valueChanged}
-          .label=${this.hass.localize(
-            "ui.dialogs.helper_settings.timer.duration"
-          )}
-        ></ha-textfield>
+          .data=${this._duration_data}
+          @value-changed=${this._valueChanged}
+        ></ha-duration-input>
         <ha-formfield
           .label=${this.hass.localize(
             "ui.dialogs.helper_settings.timer.restore"
@@ -131,6 +136,25 @@ class HaTimerForm extends LitElement {
     });
   }
 
+  private _setDurationData() {
+    let durationInput: string | number | ForDict;
+
+    if (typeof this._duration === "object" && this._duration !== null) {
+      const d = this._duration as DurationDict;
+      durationInput = {
+        hours: typeof d.hours === "string" ? parseFloat(d.hours) : d.hours,
+        minutes:
+          typeof d.minutes === "string" ? parseFloat(d.minutes) : d.minutes,
+        seconds:
+          typeof d.seconds === "string" ? parseFloat(d.seconds) : d.seconds,
+      };
+    } else {
+      durationInput = this._duration;
+    }
+
+    this._duration_data = createDurationData(durationInput);
+  }
+
   static get styles(): CSSResultGroup {
     return [
       haStyle,
@@ -138,7 +162,8 @@ class HaTimerForm extends LitElement {
         .form {
           color: var(--primary-text-color);
         }
-        ha-textfield {
+        ha-textfield,
+        ha-duration-input {
           display: block;
           margin: 8px 0;
         }

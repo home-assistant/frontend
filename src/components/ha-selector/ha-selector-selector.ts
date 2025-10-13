@@ -8,7 +8,6 @@ import type {
   LocalizeKeys,
 } from "../../common/translations/localize";
 import type { HomeAssistant } from "../../types";
-import "../ha-alert";
 import "../ha-form/ha-form";
 
 const SELECTOR_DEFAULTS = {
@@ -80,7 +79,16 @@ const SELECTOR_SCHEMAS = {
   ] as const,
   icon: [] as const,
   location: [] as const,
-  media: [] as const,
+  media: [
+    {
+      name: "accept",
+      selector: {
+        text: {
+          multiple: true,
+        },
+      },
+    },
+  ] as const,
   number: [
     {
       name: "min",
@@ -111,6 +119,10 @@ const SELECTOR_SCHEMAS = {
     {
       name: "entity_id",
       selector: { entity: {} },
+    },
+    {
+      name: "multiple",
+      selector: { boolean: {} },
     },
   ] as const,
   target: [] as const,
@@ -143,6 +155,8 @@ export class HaSelectorSelector extends LitElement {
 
   @property({ type: Boolean, reflect: true }) public disabled = false;
 
+  @property({ type: Boolean }) public narrow = false;
+
   @property({ type: Boolean, reflect: true }) public required = true;
 
   private _yamlMode = false;
@@ -159,10 +173,10 @@ export class HaSelectorSelector extends LitElement {
       [
         {
           name: "type",
+          required: true,
           selector: {
             select: {
               mode: "dropdown",
-              required: true,
               options: Object.keys(SELECTOR_SCHEMAS)
                 .concat("manual")
                 .map((key) => ({
@@ -215,17 +229,17 @@ export class HaSelectorSelector extends LitElement {
 
     const schema = this._schema(type, this.hass.localize);
 
-    return html`<ha-card>
-      <div class="card-content">
-        <p>${this.label ? this.label : ""}</p>
-        <ha-form
-          .hass=${this.hass}
-          .data=${data}
-          .schema=${schema}
-          .computeLabel=${this._computeLabelCallback}
-          @value-changed=${this._valueChanged}
-        ></ha-form></div
-    ></ha-card>`;
+    return html`<div>
+      <p>${this.label ? this.label : ""}</p>
+      <ha-form
+        .hass=${this.hass}
+        .data=${data}
+        .schema=${schema}
+        .computeLabel=${this._computeLabelCallback}
+        @value-changed=${this._valueChanged}
+        .narrow=${this.narrow}
+      ></ha-form>
+    </div>`;
   }
 
   private _valueChanged(ev: CustomEvent) {
@@ -272,25 +286,8 @@ export class HaSelectorSelector extends LitElement {
     ) || schema.name;
 
   static styles = css`
-    :host {
-      --expansion-panel-summary-padding: 0 16px;
-    }
-    ha-alert {
-      display: block;
-      margin-bottom: 16px;
-    }
-    ha-card {
-      margin: 0 0 16px 0;
-    }
-    ha-card.disabled {
-      pointer-events: none;
-      color: var(--disabled-text-color);
-    }
-    .card-content {
-      padding: 0px 16px 16px 16px;
-    }
     .title {
-      font-size: 16px;
+      font-size: var(--ha-font-size-l);
       padding-top: 16px;
       overflow: hidden;
       text-overflow: ellipsis;

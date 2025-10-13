@@ -51,6 +51,9 @@ export class StateHistoryChartTimeline extends LitElement {
 
   @property({ attribute: false, type: Number }) public chartIndex?;
 
+  @property({ attribute: "hide-reset-button", type: Boolean })
+  public hideResetButton?: boolean;
+
   @state() private _chartData: CustomSeriesOption[] = [];
 
   @state() private _chartOptions?: ECOption;
@@ -66,7 +69,10 @@ export class StateHistoryChartTimeline extends LitElement {
         .options=${this._chartOptions}
         .height=${`${this.data.length * 30 + 30}px`}
         .data=${this._chartData as ECOption["series"]}
+        small-controls
         @chart-click=${this._handleChartClick}
+        @chart-zoom=${this._handleDataZoom}
+        .hideResetButton=${this.hideResetButton}
       ></ha-chart-base>
     `;
   }
@@ -100,7 +106,7 @@ export class StateHistoryChartTimeline extends LitElement {
         fill: api.value(4) as string,
       },
     };
-    const text = api.value(3) as string;
+    const text = (api.value(3) as string).replaceAll("\n", " ");
     const textWidth = measureTextWidth(text, 12);
     const LABEL_PADDING = 4;
     if (textWidth < rectShape.width - LABEL_PADDING * 2) {
@@ -127,7 +133,7 @@ export class StateHistoryChartTimeline extends LitElement {
 
   private _renderTooltip: TooltipFormatterCallback<TooltipPositionCallbackParams> =
     (params: TooltipPositionCallbackParams) => {
-      const { value, name, marker, seriesName } = Array.isArray(params)
+      const { value, name, marker, seriesName, color } = Array.isArray(params)
         ? params[0]
         : params;
       const title = seriesName
@@ -138,8 +144,12 @@ export class StateHistoryChartTimeline extends LitElement {
         "ui.components.history_charts.duration"
       )}: ${millisecondsToDuration(durationInMs)}`;
 
+      const markerLocalized = !computeRTL(this.hass)
+        ? marker
+        : `<span style="direction: rtl;display:inline-block;margin-right:4px;margin-inline-end:4px;border-radius:10px;width:10px;height:10px;background-color:${color};"></span>`;
+
       const lines = [
-        marker + name,
+        markerLocalized + name,
         formatDateTimeWithSeconds(
           new Date(value![1]),
           this.hass.locale,
@@ -249,6 +259,19 @@ export class StateHistoryChartTimeline extends LitElement {
         formatter: this._renderTooltip,
       },
     };
+  }
+
+  public zoom(start: number, end: number) {
+    const chartBase = this.shadowRoot!.querySelector("ha-chart-base")!;
+    chartBase.zoom(start, end, true);
+  }
+
+  private _handleDataZoom(ev: CustomEvent) {
+    fireEvent(this, "chart-zoom-with-index", {
+      start: ev.detail.start ?? 0,
+      end: ev.detail.end ?? 100,
+      chartIndex: this.chartIndex,
+    });
   }
 
   private _generateData() {

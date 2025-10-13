@@ -82,7 +82,7 @@ export class HuiLightCard extends LitElement implements LovelaceCard {
 
     if (!stateObj) {
       return html`
-        <hui-warning>
+        <hui-warning .hass=${this.hass}>
           ${createEntityNotFoundWarning(this.hass, this._config.entity)}
         </hui-warning>
       `;
@@ -265,7 +265,7 @@ export class HuiLightCard extends LitElement implements LovelaceCard {
       right: 0;
       inset-inline-start: initial;
       inset-inline-end: 0;
-      border-radius: 100%;
+      border-radius: var(--ha-border-radius-pill);
       color: var(--secondary-text-color);
       z-index: 1;
       direction: var(--direction);
@@ -300,13 +300,13 @@ export class HuiLightCard extends LitElement implements LovelaceCard {
     }
 
     .light-button {
-      color: var(--paper-item-icon-color, #44739e);
+      color: var(--state-icon-color);
       width: 60%;
       height: auto;
       position: absolute;
       max-width: calc(100% - 40px);
       box-sizing: border-box;
-      border-radius: 100%;
+      border-radius: var(--ha-border-radius-pill);
       top: 50%;
       left: 50%;
       transform: translate(-50%, -50%);

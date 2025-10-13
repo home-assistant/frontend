@@ -75,14 +75,14 @@ export class HaIntegrationActionCard extends LitElement {
         height: 40px;
       }
       h2 {
-        font-size: 16px;
-        font-weight: 400;
+        font-size: var(--ha-font-size-l);
+        font-weight: var(--ha-font-weight-normal);
         margin-top: 8px;
         margin-bottom: 0;
         max-width: 100%;
       }
       h3 {
-        font-size: 14px;
+        font-size: var(--ha-font-size-m);
         margin: 0;
         max-width: 100%;
         text-align: center;

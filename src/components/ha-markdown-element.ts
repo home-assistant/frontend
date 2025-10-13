@@ -26,6 +26,9 @@ class HaMarkdownElement extends ReactiveElement {
 
   @property({ attribute: "allow-svg", type: Boolean }) public allowSvg = false;
 
+  @property({ attribute: "allow-data-url", type: Boolean })
+  public allowDataUrl = false;
+
   @property({ type: Boolean }) public breaks = false;
 
   @property({ type: Boolean, attribute: "lazy-images" }) public lazyImages =
@@ -66,6 +69,7 @@ class HaMarkdownElement extends ReactiveElement {
     return hash({
       content: this.content,
       allowSvg: this.allowSvg,
+      allowDataUrl: this.allowDataUrl,
       breaks: this.breaks,
     });
   }
@@ -79,6 +83,7 @@ class HaMarkdownElement extends ReactiveElement {
       },
       {
         allowSvg: this.allowSvg,
+        allowDataUrl: this.allowDataUrl,
       }
     );
 

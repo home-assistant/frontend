@@ -60,7 +60,7 @@ export interface Agent {
   supported_languages: "*" | string[];
 }
 
-export interface AssitDebugResult {
+export interface AssistDebugResult {
   intent: {
     name: string;
   };
@@ -75,7 +75,7 @@ export interface AssitDebugResult {
 }
 
 export interface AssistDebugResponse {
-  results: (AssitDebugResult | null)[];
+  results: (AssistDebugResult | null)[];
 }
 
 export const processConversationInput = (
@@ -123,4 +123,23 @@ export const debugAgent = (
     sentences: ensureArray(sentences),
     language,
     device_id,
+  });
+
+export interface LanguageScore {
+  cloud: number;
+  focused_local: number;
+  full_local: number;
+}
+
+export type LanguageScores = Record<string, LanguageScore>;
+
+export const getLanguageScores = (
+  hass: HomeAssistant,
+  language?: string,
+  country?: string
+): Promise<{ languages: LanguageScores; preferred_language: string | null }> =>
+  hass.callWS({
+    type: "conversation/agent/homeassistant/language_scores",
+    language,
+    country,
   });

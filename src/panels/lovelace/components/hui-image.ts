@@ -8,7 +8,7 @@ import { computeDomain } from "../../../common/entity/compute_domain";
 import parseAspectRatio from "../../../common/util/parse-aspect-ratio";
 import "../../../components/ha-camera-stream";
 import type { HaCameraStream } from "../../../components/ha-camera-stream";
-import "../../../components/ha-circular-progress";
+import "../../../components/ha-spinner";
 import type { CameraEntity } from "../../../data/camera";
 import { fetchThumbnailUrlWithCache } from "../../../data/camera";
 import { UNAVAILABLE } from "../../../data/entity";
@@ -54,7 +54,10 @@ export class HuiImage extends LitElement {
 
   @property({ attribute: false }) public darkModeFilter?: string;
 
-  @property({ attribute: false }) public fitMode?: "cover" | "contain" | "fill";
+  @property({ attribute: "fit-mode", type: String }) public fitMode?:
+    | "cover"
+    | "contain"
+    | "fill";
 
   @state() private _imageVisible? = false;
 
@@ -217,6 +220,10 @@ export class HuiImage extends LitElement {
                 muted
                 .hass=${this.hass}
                 .stateObj=${cameraObj}
+                .fitMode=${this.fitMode}
+                .aspectRatio=${this._ratio
+                  ? this._ratio.w / this._ratio.h
+                  : undefined}
                 @load=${this._onVideoLoad}
               ></ha-camera-stream>
             `
@@ -256,11 +263,7 @@ export class HuiImage extends LitElement {
                     : undefined,
                 })}
               >
-                <ha-circular-progress
-                  class="render-spinner"
-                  indeterminate
-                  size="small"
-                ></ha-circular-progress>
+                <ha-spinner class="render-spinner" size="small"></ha-spinner>
               </div>`
             : ""}
       </div>
@@ -402,6 +405,12 @@ export class HuiImage extends LitElement {
       height: 100%;
       width: 100%;
       object-fit: cover;
+    }
+
+    ha-camera-stream {
+      display: block;
+      height: 100%;
+      width: 100%;
     }
 
     .progress-container {

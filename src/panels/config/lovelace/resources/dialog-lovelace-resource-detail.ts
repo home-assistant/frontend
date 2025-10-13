@@ -1,4 +1,3 @@
-import "@material/mwc-button/mwc-button";
 import { html, LitElement, nothing } from "lit";
 import { customElement, property, state, query } from "lit/decorators";
 import memoizeOne from "memoize-one";
@@ -9,6 +8,7 @@ import type { HaMdDialog } from "../../../../components/ha-md-dialog";
 import "../../../../components/ha-dialog-header";
 import "../../../../components/ha-form/ha-form";
 import "../../../../components/ha-icon-button";
+import "../../../../components/ha-button";
 import type { SchemaUnion } from "../../../../components/ha-form/types";
 import type { LovelaceResourcesMutableParams } from "../../../../data/lovelace/resource";
 import type { HomeAssistant } from "../../../../types";
@@ -127,10 +127,10 @@ export class DialogLovelaceResourceDetail extends LitElement {
           ></ha-form>
         </div>
         <div slot="actions">
-          <mwc-button @click=${this.closeDialog}>
+          <ha-button appearance="plain" @click=${this.closeDialog}>
             ${this.hass!.localize("ui.common.cancel")}
-          </mwc-button>
-          <mwc-button
+          </ha-button>
+          <ha-button
             @click=${this._updateResource}
             .disabled=${urlInvalid || !this._data?.res_type || this._submitting}
           >
@@ -141,7 +141,7 @@ export class DialogLovelaceResourceDetail extends LitElement {
               : this.hass!.localize(
                   "ui.panel.config.lovelace.resources.detail.create"
                 )}
-          </mwc-button>
+          </ha-button>
         </div>
       </ha-md-dialog>
     `;

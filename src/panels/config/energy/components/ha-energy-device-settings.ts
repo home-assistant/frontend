@@ -1,11 +1,11 @@
-import "@material/mwc-button/mwc-button";
-import { mdiDelete, mdiDevices, mdiDrag, mdiPencil } from "@mdi/js";
+import { mdiDelete, mdiDevices, mdiDrag, mdiPencil, mdiPlus } from "@mdi/js";
 import type { CSSResultGroup, TemplateResult } from "lit";
 import { css, html, LitElement } from "lit";
 import { repeat } from "lit/directives/repeat";
 import { customElement, property } from "lit/decorators";
 import { fireEvent } from "../../../../common/dom/fire_event";
 import "../../../../components/ha-card";
+import "../../../../components/ha-button";
 import "../../../../components/ha-icon-button";
 import "../../../../components/ha-sortable";
 import "../../../../components/ha-svg-icon";
@@ -117,10 +117,15 @@ export class EnergyDeviceSettings extends LitElement {
           </ha-sortable>
           <div class="row">
             <ha-svg-icon .path=${mdiDevices}></ha-svg-icon>
-            <mwc-button @click=${this._addDevice}
+            <ha-button
+              @click=${this._addDevice}
+              appearance="filled"
+              size="small"
+            >
+              <ha-svg-icon slot="start" .path=${mdiPlus}></ha-svg-icon
               >${this.hass.localize(
                 "ui.panel.config.energy.device_consumption.add_device"
-              )}</mwc-button
+              )}</ha-button
             >
           </div>
         </div>
@@ -147,22 +152,26 @@ export class EnergyDeviceSettings extends LitElement {
     const origDevice: DeviceConsumptionEnergyPreference =
       ev.currentTarget.closest(".row").device;
     showEnergySettingsDeviceDialog(this, {
+      statsMetadata: this.statsMetadata,
       device: { ...origDevice },
       device_consumptions: this.preferences
         .device_consumption as DeviceConsumptionEnergyPreference[],
       saveCallback: async (newDevice) => {
-        await this._savePreferences({
+        const newPrefs = {
           ...this.preferences,
           device_consumption: this.preferences.device_consumption.map((d) =>
             d === origDevice ? newDevice : d
           ),
-        });
+        };
+        this._sanitizeParents(newPrefs);
+        await this._savePreferences(newPrefs);
       },
     });
   }
 
   private _addDevice() {
     showEnergySettingsDeviceDialog(this, {
+      statsMetadata: this.statsMetadata,
       device_consumptions: this.preferences
         .device_consumption as DeviceConsumptionEnergyPreference[],
       saveCallback: async (device) => {
@@ -172,6 +181,15 @@ export class EnergyDeviceSettings extends LitElement {
             this.preferences.device_consumption.concat(device),
         });
       },
+    });
+  }
+
+  private _sanitizeParents(prefs: EnergyPreferences) {
+    const statIds = prefs.device_consumption.map((d) => d.stat_consumption);
+    prefs.device_consumption.forEach((d) => {
+      if (d.included_in_stat && !statIds.includes(d.included_in_stat)) {
+        delete d.included_in_stat;
+      }
     });
   }
 
@@ -188,12 +206,14 @@ export class EnergyDeviceSettings extends LitElement {
     }
 
     try {
-      await this._savePreferences({
+      const newPrefs = {
         ...this.preferences,
         device_consumption: this.preferences.device_consumption.filter(
           (device) => device !== deviceToDelete
         ),
-      });
+      };
+      this._sanitizeParents(newPrefs);
+      await this._savePreferences(newPrefs);
     } catch (err: any) {
       showAlertDialog(this, { title: `Failed to save config: ${err.message}` });
     }

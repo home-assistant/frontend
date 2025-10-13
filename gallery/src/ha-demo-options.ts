@@ -34,7 +34,7 @@ class HaDemoOptions extends LitElement {
         height: 64px;
         padding: 0 16px;
         pointer-events: none;
-        font-size: 20px;
+        font-size: var(--ha-font-size-xl);
       }
     `,
   ];

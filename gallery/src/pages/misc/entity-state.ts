@@ -5,13 +5,13 @@ import type {
 import { css, html, LitElement, nothing } from "lit";
 import { customElement, property } from "lit/decorators";
 import memoizeOne from "memoize-one";
+import { mockIcons } from "../../../../demo/src/stubs/icons";
 import { computeDomain } from "../../../../src/common/entity/compute_domain";
 import { computeStateDisplay } from "../../../../src/common/entity/compute_state_display";
 import "../../../../src/components/data-table/ha-data-table";
 import type { DataTableColumnContainer } from "../../../../src/components/data-table/ha-data-table";
 import "../../../../src/components/entity/state-badge";
 import { provideHass } from "../../../../src/fake_data/provide_hass";
-import { mockIcons } from "../../../../demo/src/stubs/icons";
 import type { HomeAssistant } from "../../../../src/types";
 
 const SENSOR_DEVICE_CLASSES = [
@@ -434,7 +434,7 @@ export class DemoEntityState extends LitElement {
       display: block;
       height: 20px;
       width: 20px;
-      border-radius: 10px;
+      border-radius: var(--ha-border-radius-md);
       background-color: rgb(--color);
     }
   `;

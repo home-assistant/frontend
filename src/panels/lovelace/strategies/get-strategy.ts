@@ -1,10 +1,18 @@
 import type {
+  LovelaceSectionConfig,
+  LovelaceStrategySectionConfig,
+} from "../../../data/lovelace/config/section";
+import type { LovelaceStrategyConfig } from "../../../data/lovelace/config/strategy";
+import type {
   LovelaceConfig,
+  LovelaceDashboardStrategyConfig,
   LovelaceRawConfig,
 } from "../../../data/lovelace/config/types";
 import { isStrategyDashboard } from "../../../data/lovelace/config/types";
-import type { LovelaceStrategyConfig } from "../../../data/lovelace/config/strategy";
-import type { LovelaceViewConfig } from "../../../data/lovelace/config/view";
+import type {
+  LovelaceStrategyViewConfig,
+  LovelaceViewConfig,
+} from "../../../data/lovelace/config/view";
 import { isStrategyView } from "../../../data/lovelace/config/view";
 import type { AsyncReturnType, HomeAssistant } from "../../../types";
 import { cleanLegacyStrategyConfig, isLegacyStrategy } from "./legacy-strategy";
@@ -24,6 +32,8 @@ const STRATEGIES: Record<LovelaceStrategyConfigType, Record<string, any>> = {
       import("./original-states/original-states-dashboard-strategy"),
     map: () => import("./map/map-dashboard-strategy"),
     iframe: () => import("./iframe/iframe-dashboard-strategy"),
+    areas: () => import("./areas/areas-dashboard-strategy"),
+    home: () => import("./home/home-dashboard-strategy"),
   },
   view: {
     "original-states": () =>
@@ -31,8 +41,20 @@ const STRATEGIES: Record<LovelaceStrategyConfigType, Record<string, any>> = {
     energy: () => import("../../energy/strategies/energy-view-strategy"),
     map: () => import("./map/map-view-strategy"),
     iframe: () => import("./iframe/iframe-view-strategy"),
+    area: () => import("./areas/area-view-strategy"),
+    "areas-overview": () => import("./areas/areas-overview-view-strategy"),
+    "home-main": () => import("./home/home-main-view-strategy"),
+    "home-media-players": () =>
+      import("./home/home-media-players-view-strategy"),
+    "home-area": () => import("./home/home-area-view-strategy"),
+    light: () => import("../../light/strategies/light-view-strategy"),
+    security: () => import("../../security/strategies/security-view-strategy"),
+    climate: () => import("../../climate/strategies/climate-view-strategy"),
   },
-  section: {},
+  section: {
+    "common-controls": () =>
+      import("./usage_prediction/common-controls-section-strategy"),
+  },
 };
 
 export type LovelaceStrategyConfigType = "dashboard" | "view" | "section";
@@ -130,10 +152,11 @@ const generateStrategy = async <T extends LovelaceStrategyConfigType>(
 };
 
 export const generateLovelaceDashboardStrategy = async (
-  strategyConfig: LovelaceStrategyConfig,
+  config: LovelaceDashboardStrategyConfig,
   hass: HomeAssistant
-): Promise<LovelaceConfig> =>
-  generateStrategy(
+): Promise<LovelaceConfig> => {
+  const { strategy, ...base } = config;
+  const generated = await generateStrategy(
     "dashboard",
     (err) => ({
       views: [
@@ -148,15 +171,21 @@ export const generateLovelaceDashboardStrategy = async (
         },
       ],
     }),
-    strategyConfig,
+    strategy,
     hass
   );
+  return {
+    ...base,
+    ...generated,
+  };
+};
 
 export const generateLovelaceViewStrategy = async (
-  strategyConfig: LovelaceStrategyConfig,
+  config: LovelaceStrategyViewConfig,
   hass: HomeAssistant
-): Promise<LovelaceViewConfig> =>
-  generateStrategy(
+): Promise<LovelaceViewConfig> => {
+  const { strategy, ...base } = config;
+  const generated = await generateStrategy(
     "view",
     (err) => ({
       cards: [
@@ -166,15 +195,21 @@ export const generateLovelaceViewStrategy = async (
         },
       ],
     }),
-    strategyConfig,
+    strategy,
     hass
   );
+  return {
+    ...base,
+    ...generated,
+  };
+};
 
 export const generateLovelaceSectionStrategy = async (
-  strategyConfig: LovelaceStrategyConfig,
+  config: LovelaceStrategySectionConfig,
   hass: HomeAssistant
-): Promise<LovelaceViewConfig> =>
-  generateStrategy(
+): Promise<LovelaceSectionConfig> => {
+  const { strategy, ...base } = config;
+  const generated = await generateStrategy(
     "section",
     (err) => ({
       cards: [
@@ -184,9 +219,14 @@ export const generateLovelaceSectionStrategy = async (
         },
       ],
     }),
-    strategyConfig,
+    strategy,
     hass
   );
+  return {
+    ...base,
+    ...generated,
+  };
+};
 
 /**
  * Find all references to strategies and replaces them with the generated output
@@ -196,20 +236,20 @@ export const expandLovelaceConfigStrategies = async (
   hass: HomeAssistant
 ): Promise<LovelaceConfig> => {
   const newConfig = isStrategyDashboard(config)
-    ? await generateLovelaceDashboardStrategy(config.strategy, hass)
+    ? await generateLovelaceDashboardStrategy(config, hass)
     : { ...config };
 
   newConfig.views = await Promise.all(
     newConfig.views.map(async (view) => {
       const newView = isStrategyView(view)
-        ? await generateLovelaceViewStrategy(view.strategy, hass)
+        ? await generateLovelaceViewStrategy(view, hass)
         : { ...view };
 
       if (newView.sections) {
         newView.sections = await Promise.all(
           newView.sections.map(async (section) => {
             const newSection = isStrategyView(section)
-              ? await generateLovelaceSectionStrategy(section.strategy, hass)
+              ? await generateLovelaceSectionStrategy(section, hass)
               : { ...section };
             return newSection;
           })

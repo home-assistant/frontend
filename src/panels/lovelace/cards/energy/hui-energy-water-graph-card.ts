@@ -13,10 +13,7 @@ import type {
   EnergyData,
   WaterSourceTypeEnergyPreference,
 } from "../../../../data/energy";
-import {
-  getEnergyDataCollection,
-  getEnergyWaterUnit,
-} from "../../../../data/energy";
+import { getEnergyDataCollection } from "../../../../data/energy";
 import type { Statistics, StatisticsMetaData } from "../../../../data/recorder";
 import { getStatisticLabel } from "../../../../data/recorder";
 import type { FrontendLocaleData } from "../../../../data/translation";
@@ -32,6 +29,8 @@ import {
 } from "./common/energy-chart-options";
 import type { ECOption } from "../../../../resources/echarts";
 import { formatNumber } from "../../../../common/number/format_number";
+import "./common/hui-energy-graph-chip";
+import "../../../../components/ha-tooltip";
 
 @customElement("hui-energy-water-graph-card")
 export class HuiEnergyWaterGraphCard
@@ -53,6 +52,8 @@ export class HuiEnergyWaterGraphCard
   @state() private _compareEnd?: Date;
 
   @state() private _unit?: string;
+
+  @state() private _total?: number;
 
   protected hassSubscribeRequiredHostProps = ["_config"];
 
@@ -87,9 +88,16 @@ export class HuiEnergyWaterGraphCard
 
     return html`
       <ha-card>
-        ${this._config.title
-          ? html`<h1 class="card-header">${this._config.title}</h1>`
-          : ""}
+        <div class="card-header">
+          <span>${this._config.title ? this._config.title : nothing}</span>
+          ${this._total
+            ? html`<hui-energy-graph-chip
+                .tooltip=${this._formatTotal(this._total)}
+              >
+                ${formatNumber(this._total, this.hass.locale)} ${this._unit}
+              </hui-energy-graph-chip>`
+            : nothing}
+        </div>
         <div
           class="content ${classMap({
             "has-header": !!this._config.title,
@@ -163,7 +171,7 @@ export class HuiEnergyWaterGraphCard
         (source) => source.type === "water"
       ) as WaterSourceTypeEnergyPreference[];
 
-    this._unit = getEnergyWaterUnit(this.hass);
+    this._unit = energyData.waterUnit;
 
     const datasets: BarSeriesOption[] = [];
 
@@ -202,6 +210,24 @@ export class HuiEnergyWaterGraphCard
 
     fillDataGapsAndRoundCaps(datasets);
     this._chartData = datasets;
+    this._total = this._processTotal(energyData.stats, waterSources);
+  }
+
+  private _processTotal(
+    statistics: Statistics,
+    waterSources: WaterSourceTypeEnergyPreference[]
+  ) {
+    return waterSources.reduce(
+      (sum, source) =>
+        sum +
+        (source.stat_energy_from in statistics
+          ? statistics[source.stat_energy_from].reduce(
+              (acc, curr) => acc + (curr.change || 0),
+              0
+            )
+          : 0),
+      0
+    );
   }
 
   private _processDataSet(
@@ -291,6 +317,9 @@ export class HuiEnergyWaterGraphCard
       height: 100%;
     }
     .card-header {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
       padding-bottom: 0;
     }
     .content {

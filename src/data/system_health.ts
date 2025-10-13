@@ -26,13 +26,30 @@ export type SystemCheckValue =
   | boolean
   | SystemCheckValueObject;
 
-export type SystemHealthInfo = Record<
-  string,
-  {
+export type SystemHealthInfo = Partial<{
+  homeassistant: {
+    info: {
+      version: string;
+      installation_type: string;
+      dev: boolean;
+      hassio: boolean;
+      docker: boolean;
+      container_arch: string;
+      user: string;
+      virtualenv: boolean;
+      python_version: string;
+      os_name: string;
+      os_version: string;
+      arch: string;
+      timezone: string;
+      config_dir: string;
+    };
+  };
+  [domain: string]: {
     manage_url?: string;
     info: Record<string, SystemCheckValue>;
-  }
->;
+  };
+}>;
 
 interface SystemHealthEventInitial {
   type: "initial";

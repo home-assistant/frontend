@@ -1,4 +1,3 @@
-import "@material/mwc-button";
 import type { UnsubscribeFunc } from "home-assistant-js-websocket";
 import type { TemplateResult } from "lit";
 import { css, html, LitElement } from "lit";
@@ -6,6 +5,7 @@ import { customElement, property, state } from "lit/decorators";
 import { isComponentLoaded } from "../../../../../common/config/is_component_loaded";
 import "../../../../../components/ha-alert";
 import "../../../../../components/ha-card";
+import "../../../../../components/ha-button";
 import {
   acceptSharedMatterDevice,
   canCommissionMatterExternal,
@@ -40,9 +40,14 @@ export class MatterConfigDashboard extends LitElement {
       <hass-subpage .narrow=${this.narrow} .hass=${this.hass} header="Matter">
         ${isComponentLoaded(this.hass, "otbr")
           ? html`
-              <a href="/config/thread" slot="toolbar-icon">
-                <mwc-button>Visit Thread Panel</mwc-button>
-              </a>
+              <ha-button
+                appearance="plain"
+                size="small"
+                href="/config/thread"
+                slot="toolbar-icon"
+              >
+                Visit Thread Panel</ha-button
+              >
             `
           : ""}
         <div class="content">
@@ -62,21 +67,23 @@ export class MatterConfigDashboard extends LitElement {
             </div>
             <div class="card-actions">
               ${canCommissionMatterExternal(this.hass)
-                ? html`<mwc-button @click=${this._startMobileCommissioning}
-                    >Commission device with mobile app</mwc-button
+                ? html`<ha-button
+                    appearance="plain"
+                    @click=${this._startMobileCommissioning}
+                    >Commission device with mobile app</ha-button
                   >`
                 : ""}
-              <mwc-button @click=${this._commission}
-                >Commission device</mwc-button
+              <ha-button appearance="plain" @click=${this._commission}
+                >Commission device</ha-button
               >
-              <mwc-button @click=${this._acceptSharedDevice}
-                >Add shared device</mwc-button
+              <ha-button appearance="plain" @click=${this._acceptSharedDevice}
+                >Add shared device</ha-button
               >
-              <mwc-button @click=${this._setWifi}
-                >Set WiFi Credentials</mwc-button
+              <ha-button appearance="plain" @click=${this._setWifi}
+                >Set WiFi Credentials</ha-button
               >
-              <mwc-button @click=${this._setThread}
-                >Set Thread Credentials</mwc-button
+              <ha-button appearance="plain" @click=${this._setThread}
+                >Set Thread Credentials</ha-button
               >
             </div>
           </ha-card>

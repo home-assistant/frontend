@@ -1,6 +1,6 @@
 import { LitElement, css, html } from "lit";
 import { customElement, property } from "lit/decorators";
-import "../../../../../../components/ha-circular-progress";
+import "../../../../../../components/ha-spinner";
 import {
   canCommissionMatterExternal,
   startExternalCommissioning,
@@ -23,10 +23,7 @@ class MatterAddDeviceNew extends LitElement {
     if (canCommissionMatterExternal(this.hass)) {
       return html`
         <div class="content">
-          <ha-circular-progress
-            size="medium"
-            indeterminate
-          ></ha-circular-progress>
+          <ha-spinner size="medium"></ha-spinner>
         </div>
       `;
     }
@@ -94,7 +91,7 @@ class MatterAddDeviceNew extends LitElement {
         justify-content: space-between;
         padding: 0 24px;
         box-sizing: border-box;
-        gap: 16px;
+        gap: var(--ha-space-4);
         width: 100%;
         max-width: 400px;
       }

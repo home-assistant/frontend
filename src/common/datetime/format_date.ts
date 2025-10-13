@@ -77,7 +77,7 @@ export const formatDateNumeric = (
   const month = parts.find((value) => value.type === "month")?.value;
   const year = parts.find((value) => value.type === "year")?.value;
 
-  const lastPart = parts.at(parts.length - 1);
+  const lastPart = parts[parts.length - 1];
   let lastLiteral = lastPart?.type === "literal" ? lastPart?.value : "";
 
   if (locale.language === "bg" && locale.date_format === DateFormat.YMD) {

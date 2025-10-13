@@ -122,6 +122,7 @@ export class HaLabelsPicker extends SubscribeMixin(LitElement) {
       this.hass.locale.language
     );
     return html`
+      ${this.label ? html`<label>${this.label}</label>` : nothing}
       ${labels?.length
         ? html`<ha-chip-set>
             ${repeat(
@@ -157,9 +158,6 @@ export class HaLabelsPicker extends SubscribeMixin(LitElement) {
         .helper=${this.helper}
         .disabled=${this.disabled}
         .required=${this.required}
-        .label=${this.label === undefined && this.hass
-          ? this.hass.localize("ui.components.label-picker.add_label")
-          : this.label}
         .placeholder=${this.placeholder}
         .excludeLabels=${this.value}
         @value-changed=${this._labelChanged}
@@ -182,12 +180,7 @@ export class HaLabelsPicker extends SubscribeMixin(LitElement) {
     showLabelDetailDialog(this, {
       entry: label,
       updateEntry: async (values) => {
-        const updated = await updateLabelRegistryEntry(
-          this.hass,
-          label.label_id,
-          values
-        );
-        return updated;
+        await updateLabelRegistryEntry(this.hass, label.label_id, values);
       },
     });
   }
@@ -218,6 +211,10 @@ export class HaLabelsPicker extends SubscribeMixin(LitElement) {
       --md-input-chip-selected-container-color: var(--color, var(--grey-color));
       --ha-input-chip-selected-container-opacity: 0.5;
       --md-input-chip-selected-outline-width: 1px;
+    }
+    label {
+      display: block;
+      margin: 0 0 8px;
     }
   `;
 }

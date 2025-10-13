@@ -1,4 +1,3 @@
-import "@material/mwc-list/mwc-list";
 import {
   mdiAbTesting,
   mdiGestureTap,
@@ -13,6 +12,7 @@ import { shouldHandleRequestSelectedEvent } from "../../../../common/mwc/handle-
 import { createCloseHeading } from "../../../../components/ha-dialog";
 import "../../../../components/ha-icon-next";
 import "../../../../components/ha-list-item";
+import "../../../../components/ha-list";
 import type { AutomationConfig } from "../../../../data/automation";
 import { showAutomationEditor } from "../../../../data/automation";
 import type {
@@ -142,7 +142,7 @@ export class DialogDeviceAutomation extends LitElement {
         @closed=${this.closeDialog}
         .heading=${createCloseHeading(this.hass, title)}
       >
-        <mwc-list
+        <ha-list
           innerRole="listbox"
           itemRoles="option"
           innerAriaLabel="Create new automation"
@@ -244,7 +244,7 @@ export class DialogDeviceAutomation extends LitElement {
             </span>
             <ha-icon-next slot="meta"></ha-icon-next>
           </ha-list-item>
-        </mwc-list>
+        </ha-list>
       </ha-dialog>
     `;
   }

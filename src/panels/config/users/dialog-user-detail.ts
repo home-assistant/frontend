@@ -5,7 +5,6 @@ import { customElement, property, state } from "lit/decorators";
 import "../../../components/ha-alert";
 import "../../../components/ha-button";
 import { createCloseHeading } from "../../../components/ha-dialog";
-import "../../../components/ha-formfield";
 import "../../../components/ha-icon-button";
 import "../../../components/ha-label";
 import "../../../components/ha-settings-row";
@@ -220,28 +219,31 @@ class DialogUserDetail extends LitElement {
             : nothing}
         </div>
 
-        <div slot="secondaryAction">
-          <ha-button
-            class="warning"
-            @click=${this._deleteEntry}
-            .disabled=${this._submitting ||
-            user.system_generated ||
-            user.is_owner}
-          >
-            ${this.hass!.localize("ui.panel.config.users.editor.delete_user")}
-          </ha-button>
-        </div>
-
-        <div slot="primaryAction">
-          <ha-button
-            @click=${this._updateEntry}
-            .disabled=${!this._name ||
-            this._submitting ||
-            user.system_generated}
-          >
-            ${this.hass!.localize("ui.panel.config.users.editor.update_user")}
-          </ha-button>
-        </div>
+        <ha-button
+          slot="secondaryAction"
+          variant="danger"
+          appearance="plain"
+          @click=${this._deleteEntry}
+          .disabled=${this._submitting ||
+          user.system_generated ||
+          user.is_owner}
+        >
+          ${this.hass!.localize("ui.panel.config.users.editor.delete_user")}
+        </ha-button>
+        <ha-button
+          slot="primaryAction"
+          appearance="plain"
+          @click=${this._close}
+        >
+          ${this.hass!.localize("ui.common.cancel")}
+        </ha-button>
+        <ha-button
+          slot="primaryAction"
+          @click=${this._updateEntry}
+          .disabled=${!this._name || this._submitting || user.system_generated}
+        >
+          ${this.hass!.localize("ui.common.save")}
+        </ha-button>
       </ha-dialog>
     `;
   }

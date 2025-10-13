@@ -26,8 +26,6 @@ class HaConfigScene extends HassRouterPage {
 
   @property({ attribute: "is-wide", type: Boolean }) public isWide = false;
 
-  @property({ attribute: false }) public showAdvanced = false;
-
   @property({ attribute: false }) public scenes: SceneEntity[] = [];
 
   protected routerOptions: RouterOptions = {
@@ -62,7 +60,6 @@ class HaConfigScene extends HassRouterPage {
     pageEl.narrow = this.narrow;
     pageEl.isWide = this.isWide;
     pageEl.route = this.routeTail;
-    pageEl.showAdvanced = this.showAdvanced;
 
     if (this.hass) {
       if (!pageEl.scenes || !changedProps) {
@@ -77,7 +74,7 @@ class HaConfigScene extends HassRouterPage {
       this._currentPage === "edit"
     ) {
       pageEl.creatingNew = undefined;
-      const sceneId = this.routeTail.path.substr(1);
+      const sceneId = this.routeTail.path.slice(1);
       pageEl.sceneId = sceneId === "new" ? null : sceneId;
     }
   }

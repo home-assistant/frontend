@@ -1,22 +1,26 @@
-import { consume } from "@lit-labs/context";
+import { consume } from "@lit/context";
 import {
   mdiChevronRight,
   mdiDotsVertical,
   mdiMenuDown,
   mdiPlus,
   mdiTextureBox,
+  mdiCancel,
+  mdiDelete,
 } from "@mdi/js";
 import type { CSSResultGroup, PropertyValues, TemplateResult } from "lit";
 import { LitElement, css, html, nothing } from "lit";
 
 import { ResizeController } from "@lit-labs/observers/resize-controller";
 import type { UnsubscribeFunc } from "home-assistant-js-websocket";
-import { customElement, property, state } from "lit/decorators";
+import { customElement, property, state, query } from "lit/decorators";
 import memoizeOne from "memoize-one";
 import { computeCssColor } from "../../../common/color/compute-color";
 import { formatShortDateTime } from "../../../common/datetime/format_date_time";
 import { storage } from "../../../common/decorators/storage";
 import type { HASSDomEvent } from "../../../common/dom/fire_event";
+import { computeDeviceNameDisplay } from "../../../common/entity/compute_device_name";
+import { computeFloorName } from "../../../common/entity/compute_floor_name";
 import { computeStateDomain } from "../../../common/entity/compute_state_domain";
 import {
   PROTOCOL_INTEGRATIONS,
@@ -34,12 +38,12 @@ import type {
   SelectionChangedEvent,
   SortingChangedEvent,
 } from "../../../components/data-table/ha-data-table";
+
 import "../../../components/data-table/ha-data-table-labels";
 import "../../../components/entity/ha-battery-icon";
 import "../../../components/ha-alert";
 import "../../../components/ha-button-menu";
 import "../../../components/ha-check-list-item";
-import "../../../components/ha-md-divider";
 import "../../../components/ha-fab";
 import "../../../components/ha-filter-devices";
 import "../../../components/ha-filter-floor-areas";
@@ -47,6 +51,7 @@ import "../../../components/ha-filter-integrations";
 import "../../../components/ha-filter-labels";
 import "../../../components/ha-filter-states";
 import "../../../components/ha-icon-button";
+import "../../../components/ha-md-divider";
 import "../../../components/ha-md-menu-item";
 import "../../../components/ha-sub-menu";
 import { createAreaRegistryEntry } from "../../../data/area_registry";
@@ -63,8 +68,8 @@ import type {
   DeviceRegistryEntry,
 } from "../../../data/device_registry";
 import {
-  computeDeviceName,
   updateDeviceRegistryEntry,
+  removeConfigEntryFromDevice,
 } from "../../../data/device_registry";
 import type { EntityRegistryEntry } from "../../../data/entity_registry";
 import {
@@ -77,7 +82,11 @@ import {
   createLabelRegistryEntry,
   subscribeLabelRegistry,
 } from "../../../data/label_registry";
-import { showAlertDialog } from "../../../dialogs/generic/show-dialog-box";
+import {
+  showAlertDialog,
+  showConfirmationDialog,
+} from "../../../dialogs/generic/show-dialog-box";
+import type { HaTabsSubpageDataTable } from "../../../layouts/hass-tabs-subpage-data-table";
 import "../../../layouts/hass-tabs-subpage-data-table";
 import { SubscribeMixin } from "../../../mixins/subscribe-mixin";
 import { haStyle } from "../../../resources/styles";
@@ -121,6 +130,12 @@ export class HaConfigDeviceDashboard extends SubscribeMixin(LitElement) {
 
   @state() private _selected: string[] = [];
 
+  private _selectedCanDelete: string[] = [];
+
+  @query("hass-tabs-subpage-data-table", true)
+  private _dataTable!: HaTabsSubpageDataTable;
+
+  @state()
   @storage({
     storage: "sessionStorage",
     key: "devices-table-search",
@@ -129,6 +144,7 @@ export class HaConfigDeviceDashboard extends SubscribeMixin(LitElement) {
   })
   private _filter: string = history.state?.filter || "";
 
+  @state()
   @storage({
     storage: "sessionStorage",
     key: "devices-table-filters-full",
@@ -214,6 +230,17 @@ export class HaConfigDeviceDashboard extends SubscribeMixin(LitElement) {
     super.willUpdate(changedProps);
     if (!this.hasUpdated) {
       this._setFiltersFromUrl();
+    }
+    if (changedProps.has("_selected")) {
+      this._selectedCanDelete = this._selected.filter((d) => {
+        const device = this.hass.devices[d];
+        const entries = device.config_entries;
+        return entries.some(
+          (entryId) =>
+            this.entries.find((e) => e.entry_id === entryId)
+              ?.supports_remove_device
+        );
+      });
     }
   }
 
@@ -423,9 +450,21 @@ export class HaConfigDeviceDashboard extends SubscribeMixin(LitElement) {
           (lbl) => labelReg!.find((label) => label.label_id === lbl)!
         );
 
+        let floorName = "—";
+        if (
+          device.area_id &&
+          areas[device.area_id]?.floor_id &&
+          this.hass.floors
+        ) {
+          const floorId = areas[device.area_id].floor_id;
+          if (this.hass.floors[floorId!]) {
+            floorName = computeFloorName(this.hass.floors[floorId!]);
+          }
+        }
+
         return {
           ...device,
-          name: computeDeviceName(
+          name: computeDeviceNameDisplay(
             device,
             this.hass,
             deviceEntityLookup[device.id]
@@ -440,6 +479,7 @@ export class HaConfigDeviceDashboard extends SubscribeMixin(LitElement) {
             device.area_id && areas[device.area_id]
               ? areas[device.area_id].name
               : "—",
+          floor: floorName,
           integration: deviceEntries.length
             ? deviceEntries
                 .map(
@@ -516,6 +556,28 @@ export class HaConfigDeviceDashboard extends SubscribeMixin(LitElement) {
             : nothing}
         `,
       },
+      area: {
+        title: localize("ui.panel.config.devices.data_table.area"),
+        sortable: true,
+        filterable: true,
+        groupable: true,
+        minWidth: "120px",
+      },
+      floor: {
+        title: localize("ui.panel.config.devices.data_table.floor"),
+        sortable: true,
+        filterable: true,
+        groupable: true,
+        minWidth: "120px",
+        defaultHidden: true,
+      },
+      integration: {
+        title: localize("ui.panel.config.devices.data_table.integration"),
+        sortable: true,
+        filterable: true,
+        groupable: true,
+        minWidth: "120px",
+      },
       manufacturer: {
         title: localize("ui.panel.config.devices.data_table.manufacturer"),
         sortable: true,
@@ -529,25 +591,10 @@ export class HaConfigDeviceDashboard extends SubscribeMixin(LitElement) {
         filterable: true,
         minWidth: "120px",
       },
-      area: {
-        title: localize("ui.panel.config.devices.data_table.area"),
-        sortable: true,
-        filterable: true,
-        groupable: true,
-        minWidth: "120px",
-      },
-      integration: {
-        title: localize("ui.panel.config.devices.data_table.integration"),
-        sortable: true,
-        filterable: true,
-        groupable: true,
-        minWidth: "120px",
-      },
       battery_entity: {
         title: localize("ui.panel.config.devices.data_table.battery"),
         showNarrow: true,
         sortable: true,
-        filterable: true,
         type: "numeric",
         maxWidth: "101px",
         minWidth: "101px",
@@ -585,7 +632,6 @@ export class HaConfigDeviceDashboard extends SubscribeMixin(LitElement) {
         title: localize("ui.panel.config.generic.headers.created_at"),
         defaultHidden: true,
         sortable: true,
-        filterable: true,
         minWidth: "128px",
         template: (entry) =>
           entry.created_at
@@ -600,7 +646,6 @@ export class HaConfigDeviceDashboard extends SubscribeMixin(LitElement) {
         title: localize("ui.panel.config.generic.headers.modified_at"),
         defaultHidden: true,
         sortable: true,
-        filterable: true,
         minWidth: "128px",
         template: (entry) =>
           entry.modified_at
@@ -612,13 +657,32 @@ export class HaConfigDeviceDashboard extends SubscribeMixin(LitElement) {
             : "—",
       },
       disabled_by: {
-        title: "",
-        label: localize("ui.panel.config.devices.data_table.disabled_by"),
-        hidden: true,
+        title: localize("ui.panel.config.devices.picker.state"),
+        type: "icon",
+        defaultHidden: true,
+        sortable: true,
+        filterable: true,
+        minWidth: "80px",
+        maxWidth: "80px",
         template: (device) =>
           device.disabled_by
-            ? this.hass.localize("ui.panel.config.devices.disabled")
-            : "",
+            ? html`
+                <div
+                  tabindex="0"
+                  style="display:inline-block; position: relative;"
+                >
+                  <ha-svg-icon
+                    .id="svg-icon-${device.id}"
+                    .path=${mdiCancel}
+                  ></ha-svg-icon>
+                  <ha-tooltip .for="svg-icon-${device.id}" placement="left">
+                    ${this.hass.localize(
+                      "ui.panel.config.entities.picker.status.disabled"
+                    )}
+                  </ha-tooltip>
+                </div>
+              `
+            : "—",
       },
       labels: {
         title: "",
@@ -871,48 +935,32 @@ export class HaConfigDeviceDashboard extends SubscribeMixin(LitElement) {
                     ${areaItems}
                   </ha-md-button-menu>`}`
           : nothing}
-        ${this.narrow || areasInOverflow
-          ? html`<ha-md-button-menu has-overflow slot="selection-bar">
-              ${this.narrow
-                ? html`<ha-assist-chip
-                    .label=${this.hass.localize(
-                      "ui.panel.config.automation.picker.bulk_action"
-                    )}
-                    slot="trigger"
-                  >
-                    <ha-svg-icon
-                      slot="trailing-icon"
-                      .path=${mdiMenuDown}
-                    ></ha-svg-icon>
-                  </ha-assist-chip>`
-                : html`<ha-icon-button
-                    .path=${mdiDotsVertical}
-                    .label=${this.hass.localize(
-                      "ui.panel.config.automation.picker.bulk_action"
-                    )}
-                    slot="trigger"
-                  ></ha-icon-button>`}
-              ${this.narrow
-                ? html` <ha-sub-menu>
-                    <ha-md-menu-item slot="item">
-                      <div slot="headline">
-                        ${this.hass.localize(
-                          "ui.panel.config.automation.picker.bulk_actions.add_label"
-                        )}
-                      </div>
-                      <ha-svg-icon
-                        slot="end"
-                        .path=${mdiChevronRight}
-                      ></ha-svg-icon>
-                    </ha-md-menu-item>
-                    <ha-menu slot="menu">${labelItems}</ha-menu>
-                  </ha-sub-menu>`
-                : nothing}
-              <ha-sub-menu>
+        <ha-md-button-menu has-overflow slot="selection-bar">
+          ${this.narrow
+            ? html`<ha-assist-chip
+                .label=${this.hass.localize(
+                  "ui.panel.config.automation.picker.bulk_action"
+                )}
+                slot="trigger"
+              >
+                <ha-svg-icon
+                  slot="trailing-icon"
+                  .path=${mdiMenuDown}
+                ></ha-svg-icon>
+              </ha-assist-chip>`
+            : html`<ha-icon-button
+                .path=${mdiDotsVertical}
+                .label=${this.hass.localize(
+                  "ui.panel.config.automation.picker.bulk_action"
+                )}
+                slot="trigger"
+              ></ha-icon-button>`}
+          ${this.narrow
+            ? html` <ha-sub-menu>
                 <ha-md-menu-item slot="item">
                   <div slot="headline">
                     ${this.hass.localize(
-                      "ui.panel.config.devices.picker.bulk_actions.move_area"
+                      "ui.panel.config.automation.picker.bulk_actions.add_label"
                     )}
                   </div>
                   <ha-svg-icon
@@ -920,10 +968,39 @@ export class HaConfigDeviceDashboard extends SubscribeMixin(LitElement) {
                     .path=${mdiChevronRight}
                   ></ha-svg-icon>
                 </ha-md-menu-item>
-                <ha-menu slot="menu">${areaItems}</ha-menu>
-              </ha-sub-menu>
-            </ha-md-button-menu>`
-          : nothing}
+                <ha-md-menu slot="menu">${labelItems}</ha-md-menu>
+              </ha-sub-menu>`
+            : nothing}
+          ${areasInOverflow
+            ? html`<ha-sub-menu>
+                  <ha-md-menu-item slot="item">
+                    <div slot="headline">
+                      ${this.hass.localize(
+                        "ui.panel.config.devices.picker.bulk_actions.move_area"
+                      )}
+                    </div>
+                    <ha-svg-icon
+                      slot="end"
+                      .path=${mdiChevronRight}
+                    ></ha-svg-icon>
+                  </ha-md-menu-item>
+                  <ha-md-menu slot="menu">${areaItems}</ha-md-menu>
+                </ha-sub-menu>
+                <ha-md-divider role="separator" tabindex="-1"></ha-md-divider>`
+            : nothing}
+          <ha-md-menu-item
+            .clickAction=${this._deleteSelected}
+            .disabled=${!this._selectedCanDelete.length}
+            class="warning"
+          >
+            <ha-svg-icon slot="start" .path=${mdiDelete}></ha-svg-icon>
+            <div slot="headline">
+              ${this.hass.localize(
+                "ui.panel.config.devices.picker.bulk_actions.delete_selected.button"
+              )}
+            </div>
+          </ha-md-menu-item>
+        </ha-md-button-menu>
       </hass-tabs-subpage-data-table>
     `;
   }
@@ -1094,10 +1171,64 @@ ${rejected
       createEntry: async (values) => {
         const label = await createLabelRegistryEntry(this.hass, values);
         this._bulkLabel(label.label_id, "add");
-        return label;
       },
     });
   };
+
+  private _deleteSelected = () => {
+    showConfirmationDialog(this, {
+      title: this.hass.localize(
+        "ui.panel.config.devices.picker.bulk_actions.delete_selected.confirm_title"
+      ),
+      text:
+        this._selectedCanDelete.length === this._selected.length
+          ? this.hass.localize(
+              "ui.panel.config.devices.picker.bulk_actions.delete_selected.confirm_text"
+            )
+          : this.hass.localize(
+              "ui.panel.config.devices.picker.bulk_actions.delete_selected.confirm_partly_text",
+              {
+                deletable: this._selectedCanDelete.length,
+                selected: this._selected.length,
+              }
+            ),
+      confirmText: this.hass.localize("ui.common.delete"),
+      dismissText: this.hass.localize("ui.common.cancel"),
+      destructive: true,
+      confirm: async () => {
+        const proms: Promise<DeviceRegistryEntry>[] = [];
+        this._selectedCanDelete.forEach((deviceId) => {
+          const entries = this.hass!.devices[deviceId]?.config_entries;
+          entries.forEach((entryId) => {
+            if (
+              this.entries.find((entry) => entry.entry_id === entryId)
+                ?.supports_remove_device
+            ) {
+              proms.push(
+                removeConfigEntryFromDevice(this.hass!, deviceId, entryId)
+              );
+            }
+          });
+        });
+        const results = await Promise.allSettled(proms);
+        if (hasRejectedItems(results)) {
+          showAlertDialog(this, {
+            text: this.hass.localize(
+              "ui.panel.config.devices.picker.bulk_actions.delete_selected.partial_failure"
+            ),
+            title: this.hass.localize(
+              "ui.panel.config.devices.picker.bulk_actions.delete_selected.partial_failure_title"
+            ),
+          });
+        }
+        this._clearSelection();
+      },
+    });
+  };
+
+  private _clearSelection() {
+    this._dataTable.clearSelection();
+  }
 
   private _handleSortingChanged(ev: CustomEvent) {
     this._activeSorting = ev.detail;

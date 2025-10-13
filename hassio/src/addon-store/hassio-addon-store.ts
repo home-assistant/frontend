@@ -1,5 +1,5 @@
 import type { ActionDetail } from "@material/mwc-list/mwc-list-foundation";
-import "@material/mwc-list/mwc-list-item";
+
 import { mdiDotsVertical } from "@mdi/js";
 import type { PropertyValues, TemplateResult } from "lit";
 import { css, html, LitElement, nothing } from "lit";
@@ -11,6 +11,7 @@ import { navigate } from "../../../src/common/navigate";
 import { extractSearchParam } from "../../../src/common/url/search-params";
 import "../../../src/components/ha-button-menu";
 import "../../../src/components/ha-icon-button";
+import "../../../src/components/ha-list-item";
 import "../../../src/components/search-input";
 import type { HassioAddonRepository } from "../../../src/data/hassio/addon";
 import { reloadHassioAddons } from "../../../src/data/hassio/addon";
@@ -89,17 +90,17 @@ export class HassioAddonStore extends LitElement {
             .path=${mdiDotsVertical}
             slot="trigger"
           ></ha-icon-button>
-          <mwc-list-item>
+          <ha-list-item>
             ${this.supervisor.localize("store.check_updates")}
-          </mwc-list-item>
-          <mwc-list-item>
+          </ha-list-item>
+          <ha-list-item>
             ${this.supervisor.localize("store.repositories")}
-          </mwc-list-item>
+          </ha-list-item>
           ${this.hass.userData?.showAdvanced &&
           atLeastVersion(this.hass.config.version, 0, 117)
-            ? html`<mwc-list-item>
+            ? html`<ha-list-item>
                 ${this.supervisor.localize("store.registries")}
-              </mwc-list-item>`
+              </ha-list-item>`
             : ""}
         </ha-button-menu>
         ${repos.length === 0

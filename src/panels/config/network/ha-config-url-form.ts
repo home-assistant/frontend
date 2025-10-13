@@ -1,4 +1,3 @@
-import "@material/mwc-button/mwc-button";
 import type { PropertyValues } from "lit";
 import { css, html, LitElement, nothing } from "lit";
 import { customElement, property, state } from "lit/decorators";
@@ -7,7 +6,6 @@ import { isComponentLoaded } from "../../../common/config/is_component_loaded";
 import { isIPAddress } from "../../../common/string/is_ip_address";
 import "../../../components/ha-alert";
 import "../../../components/ha-card";
-import "../../../components/ha-formfield";
 import "../../../components/ha-switch";
 import "../../../components/ha-textfield";
 import "../../../components/ha-settings-row";
@@ -22,9 +20,10 @@ import { copyToClipboard } from "../../../common/util/copy-clipboard";
 import { showToast } from "../../../util/toast";
 import type { HaSwitch } from "../../../components/ha-switch";
 import { obfuscateUrl } from "../../../util/url";
+import { SubscribeMixin } from "../../../mixins/subscribe-mixin";
 
 @customElement("ha-config-url-form")
-class ConfigUrlForm extends LitElement {
+class ConfigUrlForm extends SubscribeMixin(LitElement) {
   @property({ attribute: false }) public hass!: HomeAssistant;
 
   @state() private _error?: string;
@@ -48,6 +47,15 @@ class ConfigUrlForm extends LitElement {
   @state() private _unmaskedInternalUrl = false;
 
   @state() private _cloudChecked = false;
+
+  protected hassSubscribe() {
+    return [
+      this.hass.connection.subscribeEvents(() => {
+        // update the data when the urls are updated in core
+        this._fetchUrls();
+      }, "core_config_updated"),
+    ];
+  }
 
   protected render() {
     const canEdit = ["storage", "default"].includes(
@@ -162,8 +170,13 @@ class ConfigUrlForm extends LitElement {
                   `
                 : nothing}
             </div>
-            <ha-button .url=${externalUrl} @click=${this._copyURL}>
-              <ha-svg-icon slot="icon" .path=${mdiContentCopy}></ha-svg-icon>
+            <ha-button
+              size="small"
+              appearance="plain"
+              .url=${externalUrl}
+              @click=${this._copyURL}
+            >
+              <ha-svg-icon slot="start" .path=${mdiContentCopy}></ha-svg-icon>
               ${this.hass.localize("ui.panel.config.common.copy_link")}
             </ha-button>
           </div>
@@ -197,13 +210,16 @@ class ConfigUrlForm extends LitElement {
                         ${this.hass.localize(
                           "ui.panel.config.url.ha_cloud_remote_not_enabled"
                         )}
-                        <a href="/config/cloud" slot="action"
-                          ><mwc-button
-                            .label=${this.hass.localize(
-                              "ui.panel.config.url.enable_remote"
-                            )}
-                          ></mwc-button
-                        ></a>
+                        <ha-button
+                          size="small"
+                          appearance="plain"
+                          href="/config/cloud"
+                          slot="action"
+                        >
+                          ${this.hass.localize(
+                            "ui.panel.config.url.enable_remote"
+                          )}
+                        </ha-button>
                       </ha-alert>
                     `}
               `
@@ -262,8 +278,13 @@ class ConfigUrlForm extends LitElement {
                   `
                 : nothing}
             </div>
-            <ha-button .url=${internalUrl} @click=${this._copyURL}>
-              <ha-svg-icon slot="icon" .path=${mdiContentCopy}></ha-svg-icon>
+            <ha-button
+              size="small"
+              appearance="plain"
+              .url=${internalUrl}
+              @click=${this._copyURL}
+            >
+              <ha-svg-icon slot="start" .path=${mdiContentCopy}></ha-svg-icon>
               ${this.hass.localize("ui.panel.config.common.copy_link")}
             </ha-button>
           </div>
@@ -293,11 +314,11 @@ class ConfigUrlForm extends LitElement {
           }
         </div>
         <div class="card-actions">
-          <mwc-button @click=${this._save} .disabled=${disabled}>
+          <ha-button @click=${this._save} .disabled=${disabled}>
             ${this.hass.localize(
               "ui.panel.config.core.section.core.core_config.save_button"
             )}
-          </mwc-button>
+          </ha-button>
         </div>
       </ha-card>
     `;
@@ -361,7 +382,6 @@ class ConfigUrlForm extends LitElement {
           ? this._internal_url || null
           : null,
       });
-      await this._fetchUrls();
     } catch (err: any) {
       this._error = err.message || err;
     } finally {
@@ -424,7 +444,7 @@ class ConfigUrlForm extends LitElement {
     .url-container {
       display: flex;
       align-items: center;
-      gap: 8px;
+      gap: var(--ha-space-2);
       margin-top: 8px;
     }
     .textfield-container {

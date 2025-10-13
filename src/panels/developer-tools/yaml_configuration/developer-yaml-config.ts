@@ -1,16 +1,16 @@
-import "@material/mwc-button";
 import type { CSSResultGroup, TemplateResult } from "lit";
 import { css, html, LitElement, nothing } from "lit";
 import { customElement, property, state } from "lit/decorators";
 import { componentsWithService } from "../../../common/config/components_with_service";
+import { stringCompare } from "../../../common/string/compare";
 import "../../../components/buttons/ha-call-service-button";
 import "../../../components/ha-alert";
+import "../../../components/ha-button";
 import "../../../components/ha-card";
-import "../../../components/ha-circular-progress";
+import "../../../components/ha-spinner";
 import type { CheckConfigResult } from "../../../data/core";
 import { checkCoreConfig } from "../../../data/core";
 import { domainToName } from "../../../data/integration";
-import { stringCompare } from "../../../common/string/compare";
 import { showRestartDialog } from "../../../dialogs/restart/show-dialog-restart";
 import { haStyle } from "../../../resources/styles";
 import type { HomeAssistant, Route, TranslationDict } from "../../../types";
@@ -94,7 +94,7 @@ export class DeveloperYamlConfig extends LitElement {
                 ? html`<div
                     class="validate-container layout vertical center-center"
                   >
-                    <ha-circular-progress indeterminate></ha-circular-progress>
+                    <ha-spinner></ha-spinner>
                   </div> `
                 : nothing
               : html`
@@ -120,9 +120,9 @@ export class DeveloperYamlConfig extends LitElement {
                               "ui.panel.developer-tools.tabs.yaml.section.validation.errors"
                             )}
                           >
-                            <span class="validate-log"
-                              >${this._validateResult.errors}</span
-                            >
+                            <!-- prettier-ignore -->
+                            <pre class="validate-log">${this._validateResult
+                              .errors}</pre>
                           </ha-alert>`
                         : ""
                     }
@@ -134,9 +134,9 @@ export class DeveloperYamlConfig extends LitElement {
                               "ui.panel.developer-tools.tabs.yaml.section.validation.warnings"
                             )}
                           >
-                            <span class="validate-log"
-                              >${this._validateResult.warnings}</span
-                            >
+                            <!-- prettier-ignore -->
+                            <pre class="validate-log">${this._validateResult
+                              .warnings}</pre>
                           </ha-alert>`
                         : ""
                     }
@@ -144,20 +144,21 @@ export class DeveloperYamlConfig extends LitElement {
                 `}
           </div>
           <div class="card-actions">
-            <mwc-button @click=${this._validateConfig}>
+            <ha-button appearance="plain" @click=${this._validateConfig}>
               ${this.hass.localize(
                 "ui.panel.developer-tools.tabs.yaml.section.validation.check_config"
               )}
-            </mwc-button>
-            <mwc-button
-              class="warning"
+            </ha-button>
+            <ha-button
+              variant="danger"
+              appearance="plain"
               @click=${this._restart}
               .disabled=${this._validateResult?.result === "invalid"}
             >
               ${this.hass.localize(
                 "ui.panel.developer-tools.tabs.yaml.section.server_management.restart"
               )}
-            </mwc-button>
+            </ha-button>
           </div>
         </ha-card>
         <ha-card
@@ -234,7 +235,7 @@ export class DeveloperYamlConfig extends LitElement {
 
         .validate-result {
           color: var(--success-color);
-          font-weight: 500;
+          font-weight: var(--ha-font-weight-medium);
           margin: 1em 0;
           text-align: center;
         }
@@ -246,14 +247,11 @@ export class DeveloperYamlConfig extends LitElement {
         .validate-log {
           white-space: pre-wrap;
           direction: ltr;
+          margin: 0;
         }
 
         .content {
           padding: 28px 20px 16px;
-          padding: max(28px, calc(12px + env(safe-area-inset-top)))
-            max(20px, calc(4px + env(safe-area-inset-right)))
-            max(16px, env(safe-area-inset-bottom))
-            max(20px, calc(4px + env(safe-area-inset-left)));
           max-width: 1040px;
           margin: 0 auto;
         }
@@ -265,6 +263,7 @@ export class DeveloperYamlConfig extends LitElement {
         .card-actions {
           display: flex;
           justify-content: space-between;
+          padding: 4px;
         }
       `,
     ];

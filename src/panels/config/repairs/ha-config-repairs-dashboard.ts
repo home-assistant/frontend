@@ -11,6 +11,7 @@ import { navigate } from "../../../common/navigate";
 import { extractSearchParam } from "../../../common/url/search-params";
 import "../../../components/ha-card";
 import "../../../components/ha-check-list-item";
+import "../../../components/ha-list-item";
 import type { RepairsIssue } from "../../../data/repairs";
 import {
   severitySort,
@@ -97,22 +98,22 @@ class HaConfigRepairsDashboard extends SubscribeMixin(LitElement) {
             ${isComponentLoaded(this.hass, "system_health") ||
             isComponentLoaded(this.hass, "hassio")
               ? html`
-                  <mwc-list-item
+                  <ha-list-item
                     @request-selected=${this._showSystemInformationDialog}
                   >
                     ${this.hass.localize(
                       "ui.panel.config.repairs.system_information"
                     )}
-                  </mwc-list-item>
+                  </ha-list-item>
                 `
               : ""}
-            <mwc-list-item
+            <ha-list-item
               @request-selected=${this._showIntegrationStartupDialog}
             >
               ${this.hass.localize(
                 "ui.panel.config.repairs.integration_startup_time"
               )}
-            </mwc-list-item>
+            </ha-list-item>
           </ha-button-menu>
         </div>
         <div class="content">
@@ -182,7 +183,7 @@ class HaConfigRepairsDashboard extends SubscribeMixin(LitElement) {
       justify-content: space-between;
       flex-direction: column;
       display: flex;
-      margin-bottom: max(24px, env(safe-area-inset-bottom));
+      margin-bottom: max(24px, var(--safe-area-inset-bottom));
     }
 
     .card-content {

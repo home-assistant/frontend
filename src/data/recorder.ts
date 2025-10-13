@@ -2,6 +2,7 @@ import type { Connection } from "home-assistant-js-websocket";
 import { computeStateName } from "../common/entity/compute_state_name";
 import type { HaDurationData } from "../components/ha-duration-input";
 import type { HomeAssistant } from "../types";
+import { firstWeekday } from "../common/datetime/first_weekday";
 
 export interface RecorderInfo {
   backlog: number | null;
@@ -36,13 +37,19 @@ export interface Statistic {
   change: number | null;
 }
 
+export enum StatisticMeanType {
+  NONE = 0,
+  ARITHMETIC = 1,
+  CIRCULAR = 2,
+}
+
 export interface StatisticsMetaData {
   statistics_unit_of_measurement: string | null;
   statistic_id: string;
   source: string;
   name?: string | null;
   has_sum: boolean;
-  has_mean: boolean;
+  mean_type: StatisticMeanType;
   unit_class: string | null;
 }
 
@@ -51,6 +58,7 @@ export const STATISTIC_TYPES: StatisticsValidationResult["type"][] = [
   "entity_no_longer_recorded",
   "state_class_removed",
   "units_changed",
+  "mean_type_changed",
   "no_state",
 ];
 
@@ -59,7 +67,8 @@ export type StatisticsValidationResult =
   | StatisticsValidationResultEntityNotRecorded
   | StatisticsValidationResultEntityNoLongerRecorded
   | StatisticsValidationResultStateClassRemoved
-  | StatisticsValidationResultUnitsChanged;
+  | StatisticsValidationResultUnitsChanged
+  | StatisticsValidationResultMeanTypeChanged;
 
 export interface StatisticsValidationResultNoState {
   type: "no_state";
@@ -86,10 +95,23 @@ export interface StatisticsValidationResultUnitsChanged {
   data: {
     statistic_id: string;
     state_unit: string;
+    state_unit_class: string | null;
     metadata_unit: string;
+    metadata_unit_class: string | null;
     supported_unit: string;
   };
 }
+
+export interface StatisticsValidationResultMeanTypeChanged {
+  type: "mean_type_changed";
+  data: {
+    statistic_id: string;
+    state_mean_type: StatisticMeanType;
+    metadata_mean_type: StatisticMeanType;
+  };
+}
+
+export const VOLUME_UNITS = ["L", "gal", "ft³", "m³", "CCF", "MCF"] as const;
 
 export interface StatisticsUnitConfiguration {
   energy?: "Wh" | "kWh" | "MWh" | "GJ";
@@ -105,7 +127,7 @@ export interface StatisticsUnitConfiguration {
     | "psi"
     | "mmHg";
   temperature?: "°C" | "°F" | "K";
-  volume?: "L" | "gal" | "ft³" | "m³";
+  volume?: (typeof VOLUME_UNITS)[number];
 }
 
 const _statisticTypes = [
@@ -152,7 +174,6 @@ export const fetchStatistics = (
   startTime: Date,
   endTime?: Date,
   statistic_ids?: string[],
-  // eslint-disable-next-line default-param-last
   period: "5minute" | "hour" | "day" | "week" | "month" = "hour",
   units?: StatisticsUnitConfiguration,
   types?: StatisticsTypes
@@ -193,7 +214,14 @@ export const fetchStatistic = (
               : period.fixed_period.end,
         }
       : undefined,
-    calendar: period.calendar,
+    calendar: period.calendar
+      ? {
+          ...(period.calendar.period === "week"
+            ? { first_weekday: firstWeekday(hass.locale).substring(0, 3) }
+            : {}),
+          ...period.calendar,
+        }
+      : undefined,
     rolling_window: period.rolling_window,
   });
 
@@ -205,12 +233,14 @@ export const validateStatistics = (hass: HomeAssistant) =>
 export const updateStatisticsMetadata = (
   hass: HomeAssistant,
   statistic_id: string,
-  unit_of_measurement: string | null
+  unit_of_measurement: string | null,
+  unit_class: string | null
 ) =>
   hass.callWS<undefined>({
     type: "recorder/update_statistics_metadata",
     statistic_id,
     unit_of_measurement,
+    unit_class,
   });
 
 export const clearStatistics = (hass: HomeAssistant, statistic_ids: string[]) =>
@@ -220,7 +250,7 @@ export const clearStatistics = (hass: HomeAssistant, statistic_ids: string[]) =>
   });
 
 export const calculateStatisticSumGrowth = (
-  values: StatisticValue[]
+  values?: StatisticValue[]
 ): number | null => {
   let growth: number | null = null;
 
@@ -279,7 +309,10 @@ export const statisticsMetaHasType = (
   metadata: StatisticsMetaData,
   type: StatisticType
 ) => {
-  if (mean_stat_types.includes(type) && metadata.has_mean) {
+  if (
+    mean_stat_types.includes(type) &&
+    metadata.mean_type !== StatisticMeanType.NONE
+  ) {
     return true;
   }
   if (sum_stat_types.includes(type) && metadata.has_sum) {

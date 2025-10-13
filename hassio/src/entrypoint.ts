@@ -1,19 +1,19 @@
-// Compat needs to be first import
-import "../../src/resources/compatibility";
+import {
+  haFontFamilyBody,
+  haFontSmoothing,
+  haMozOsxFontSmoothing,
+} from "../../src/resources/theme/typography.globals";
 import "./hassio-main";
 
-import("../../src/resources/ha-style");
-import("@polymer/polymer/lib/utils/settings").then(
-  ({ setCancelSyntheticClickEvents }) => setCancelSyntheticClickEvents(false)
-);
+import("../../src/resources/append-ha-style");
 
 const styleEl = document.createElement("style");
 styleEl.textContent = `
 body {
-  font-family: Roboto, sans-serif;
-  -moz-osx-font-smoothing: grayscale;
-  -webkit-font-smoothing: antialiased;
-  font-weight: 400;
+  font-family: ${haFontFamilyBody};
+  -moz-osx-font-smoothing: ${haMozOsxFontSmoothing};
+  -webkit-font-smoothing: ${haFontSmoothing};
+  font-weight: var(--ha-font-weight-normal);
   margin: 0;
   padding: 0;
   height: 100vh;

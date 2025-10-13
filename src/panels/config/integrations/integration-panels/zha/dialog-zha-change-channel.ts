@@ -3,16 +3,16 @@ import { html, LitElement, nothing } from "lit";
 import { customElement, property, state } from "lit/decorators";
 import { fireEvent } from "../../../../../common/dom/fire_event";
 import { stopPropagation } from "../../../../../common/dom/stop_propagation";
-import type { HassDialog } from "../../../../../dialogs/make-dialog-manager";
-import { changeZHANetworkChannel } from "../../../../../data/zha";
-import { showAlertDialog } from "../../../../../dialogs/generic/show-dialog-box";
-import { createCloseHeading } from "../../../../../components/ha-dialog";
-import type { HomeAssistant } from "../../../../../types";
 import "../../../../../components/buttons/ha-progress-button";
 import "../../../../../components/ha-alert";
 import "../../../../../components/ha-button";
-import "../../../../../components/ha-select";
+import { createCloseHeading } from "../../../../../components/ha-dialog";
 import "../../../../../components/ha-list-item";
+import "../../../../../components/ha-select";
+import { changeZHANetworkChannel } from "../../../../../data/zha";
+import { showAlertDialog } from "../../../../../dialogs/generic/show-dialog-box";
+import type { HassDialog } from "../../../../../dialogs/make-dialog-manager";
+import type { HomeAssistant } from "../../../../../types";
 import type { ZHAChangeChannelDialogParams } from "./show-dialog-zha-change-channel";
 
 const VALID_CHANNELS = [
@@ -128,6 +128,7 @@ class DialogZHAChangeChannel extends LitElement implements HassDialog {
 
         <ha-button
           slot="secondaryAction"
+          appearance="plain"
           @click=${this.closeDialog}
           .disabled=${this._migrationInProgress}
           >${this.hass.localize("ui.common.cancel")}</ha-button

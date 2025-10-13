@@ -1,11 +1,18 @@
-import { MdInputChip } from "@material/web/chips/input-chip";
+import { InputChip } from "@material/web/chips/internal/input-chip";
+import { styles } from "@material/web/chips/internal/input-styles";
+import { styles as selectableStyles } from "@material/web/chips/internal/selectable-styles";
+import { styles as sharedStyles } from "@material/web/chips/internal/shared-styles";
+import { styles as trailingIconStyles } from "@material/web/chips/internal/trailing-icon-styles";
 import { css } from "lit";
 import { customElement } from "lit/decorators";
 
 @customElement("ha-input-chip")
-export class HaInputChip extends MdInputChip {
+export class HaInputChip extends InputChip {
   static override styles = [
-    ...super.styles,
+    sharedStyles,
+    trailingIconStyles,
+    selectableStyles,
+    styles,
     css`
       :host {
         --md-sys-color-primary: var(--primary-text-color);

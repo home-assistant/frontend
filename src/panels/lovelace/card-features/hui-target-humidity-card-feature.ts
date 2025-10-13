@@ -1,4 +1,3 @@
-import type { HassEntity } from "home-assistant-js-websocket";
 import type { PropertyValues } from "lit";
 import { html, LitElement, nothing } from "lit";
 import { customElement, property, state } from "lit/decorators";
@@ -9,9 +8,19 @@ import type { HumidifierEntity } from "../../../data/humidifier";
 import type { HomeAssistant } from "../../../types";
 import type { LovelaceCardFeature } from "../types";
 import { cardFeatureStyles } from "./common/card-feature-styles";
-import type { TargetHumidityCardFeatureConfig } from "./types";
+import type {
+  LovelaceCardFeatureContext,
+  TargetHumidityCardFeatureConfig,
+} from "./types";
 
-export const supportsTargetHumidityCardFeature = (stateObj: HassEntity) => {
+export const supportsTargetHumidityCardFeature = (
+  hass: HomeAssistant,
+  context: LovelaceCardFeatureContext
+) => {
+  const stateObj = context.entity_id
+    ? hass.states[context.entity_id]
+    : undefined;
+  if (!stateObj) return false;
   const domain = computeDomain(stateObj.entity_id);
   return domain === "humidifier";
 };
@@ -23,11 +32,20 @@ class HuiTargetHumidityCardFeature
 {
   @property({ attribute: false }) public hass?: HomeAssistant;
 
-  @property({ attribute: false }) public stateObj?: HumidifierEntity;
+  @property({ attribute: false }) public context?: LovelaceCardFeatureContext;
 
   @state() private _config?: TargetHumidityCardFeatureConfig;
 
   @state() private _targetHumidity?: number;
+
+  private get _stateObj() {
+    if (!this.hass || !this.context || !this.context.entity_id) {
+      return undefined;
+    }
+    return this.hass.states[this.context.entity_id!] as
+      | HumidifierEntity
+      | undefined;
+  }
 
   static getStubConfig(): TargetHumidityCardFeatureConfig {
     return {
@@ -44,19 +62,26 @@ class HuiTargetHumidityCardFeature
 
   protected willUpdate(changedProp: PropertyValues): void {
     super.willUpdate(changedProp);
-    if (changedProp.has("stateObj")) {
-      this._targetHumidity = this.stateObj!.attributes.humidity;
+    if (
+      (changedProp.has("hass") || changedProp.has("context")) &&
+      this._stateObj
+    ) {
+      const oldHass = changedProp.get("hass") as HomeAssistant | undefined;
+      const oldStateObj = oldHass?.states[this.context!.entity_id!];
+      if (oldStateObj !== this._stateObj) {
+        this._targetHumidity = this._stateObj!.attributes.humidity;
+      }
     }
   }
 
   private _step = 1;
 
   private get _min() {
-    return this.stateObj!.attributes.min_humidity ?? 0;
+    return this._stateObj!.attributes.min_humidity ?? 0;
   }
 
   private get _max() {
-    return this.stateObj!.attributes.max_humidity ?? 100;
+    return this._stateObj!.attributes.max_humidity ?? 100;
   }
 
   private _valueChanged(ev: CustomEvent) {
@@ -68,7 +93,7 @@ class HuiTargetHumidityCardFeature
 
   private _callService() {
     this.hass!.callService("humidifier", "set_humidity", {
-      entity_id: this.stateObj!.entity_id,
+      entity_id: this._stateObj!.entity_id,
       humidity: this._targetHumidity,
     });
   }
@@ -77,21 +102,25 @@ class HuiTargetHumidityCardFeature
     if (
       !this._config ||
       !this.hass ||
-      !this.stateObj ||
-      !supportsTargetHumidityCardFeature(this.stateObj)
+      !this.context ||
+      !this._stateObj ||
+      !supportsTargetHumidityCardFeature(this.hass, this.context)
     ) {
       return nothing;
     }
 
     return html`
       <ha-control-slider
-        .value=${this.stateObj.attributes.humidity}
+        .value=${this._stateObj.attributes.humidity}
         .min=${this._min}
         .max=${this._max}
         .step=${this._step}
-        .disabled=${this.stateObj!.state === UNAVAILABLE}
+        .disabled=${this._stateObj!.state === UNAVAILABLE}
         @value-changed=${this._valueChanged}
-        .label=${this.hass.formatEntityAttributeName(this.stateObj, "humidity")}
+        .label=${this.hass.formatEntityAttributeName(
+          this._stateObj,
+          "humidity"
+        )}
         unit="%"
         .locale=${this.hass.locale}
       ></ha-control-slider>

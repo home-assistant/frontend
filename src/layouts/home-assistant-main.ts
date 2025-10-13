@@ -5,27 +5,21 @@ import type { HASSDomEvent } from "../common/dom/fire_event";
 import { fireEvent } from "../common/dom/fire_event";
 import { listenMediaQuery } from "../common/dom/media_query";
 import { toggleAttribute } from "../common/dom/toggle_attribute";
+import { computeRTLDirection } from "../common/util/compute_rtl";
 import "../components/ha-drawer";
 import { showNotificationDrawer } from "../dialogs/notifications/show-notification-drawer";
 import type { HomeAssistant, Route } from "../types";
 import "./partial-panel-resolver";
-import { computeRTLDirection } from "../common/util/compute_rtl";
 
 declare global {
   // for fire event
   interface HASSDomEvents {
     "hass-toggle-menu": undefined | { open?: boolean };
-    "hass-edit-sidebar": EditSideBarEvent;
     "hass-show-notifications": undefined;
   }
   interface HTMLElementEventMap {
-    "hass-edit-sidebar": HASSDomEvent<EditSideBarEvent>;
     "hass-toggle-menu": HASSDomEvent<HASSDomEvents["hass-toggle-menu"]>;
   }
-}
-
-interface EditSideBarEvent {
-  editMode: boolean;
 }
 
 @customElement("home-assistant-main")
@@ -63,7 +57,6 @@ export class HomeAssistantMain extends LitElement {
           .hass=${this.hass}
           .narrow=${sidebarNarrow}
           .route=${this.route}
-          .editMode=${this._sidebarEditMode}
           .alwaysExpand=${sidebarNarrow || this.hass.dockedSidebar === "docked"}
         ></ha-sidebar>
         <partial-panel-resolver
@@ -86,23 +79,6 @@ export class HomeAssistantMain extends LitElement {
         mod.attachExternalToApp(this)
       );
     }
-
-    this.addEventListener(
-      "hass-edit-sidebar",
-      (ev: HASSDomEvent<EditSideBarEvent>) => {
-        this._sidebarEditMode = ev.detail.editMode;
-
-        if (this._sidebarEditMode) {
-          if (this._sidebarNarrow) {
-            this._drawerOpen = true;
-          } else {
-            fireEvent(this, "hass-dock-sidebar", {
-              dock: "docked",
-            });
-          }
-        }
-      }
-    );
 
     this.addEventListener("hass-toggle-menu", (ev) => {
       if (this._sidebarEditMode) {
@@ -168,15 +144,18 @@ export class HomeAssistantMain extends LitElement {
       color: var(--primary-text-color);
       /* remove the grey tap highlights in iOS on the fullscreen touch targets */
       -webkit-tap-highlight-color: rgba(0, 0, 0, 0);
-      --mdc-drawer-width: 56px;
+      --mdc-drawer-width: calc(56px + var(--safe-area-inset-left, 0px));
       --mdc-top-app-bar-width: calc(100% - var(--mdc-drawer-width));
+      --safe-area-content-inset-left: 0px;
+      --safe-area-content-inset-right: var(--safe-area-inset-right);
     }
     :host([expanded]) {
-      --mdc-drawer-width: calc(256px + env(safe-area-inset-left));
+      --mdc-drawer-width: calc(256px + var(--safe-area-inset-left, 0px));
     }
     :host([modal]) {
       --mdc-drawer-width: unset;
       --mdc-top-app-bar-width: unset;
+      --safe-area-content-inset-left: var(--safe-area-inset-left);
     }
     partial-panel-resolver,
     ha-sidebar {

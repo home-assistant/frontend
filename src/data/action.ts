@@ -30,6 +30,10 @@ export const ACTION_ICONS = {
   wait_template: mdiCodeBraces,
   wait_for_trigger: mdiTrafficLight,
   repeat: mdiRefresh,
+  repeat_count: mdiRefresh,
+  repeat_while: mdiRefresh,
+  repeat_until: mdiRefresh,
+  repeat_for_each: mdiRefresh,
   choose: mdiArrowDecision,
   if: mdiCallSplit,
   device_id: mdiDevices,
@@ -57,7 +61,10 @@ export const ACTION_GROUPS: AutomationElementGroup = {
       delay: {},
       wait_template: {},
       wait_for_trigger: {},
-      repeat: {},
+      repeat_count: {},
+      repeat_while: {},
+      repeat_until: {},
+      repeat_for_each: {},
       choose: {},
       if: {},
       stop: {},
@@ -83,3 +90,28 @@ export const isService = (key: string | undefined): boolean | undefined =>
 
 export const getService = (key: string): string =>
   key.substring(SERVICE_PREFIX.length);
+
+export const COLLAPSIBLE_ACTION_ELEMENTS = [
+  "ha-automation-action-choose",
+  "ha-automation-action-condition",
+  "ha-automation-action-if",
+  "ha-automation-action-parallel",
+  "ha-automation-action-repeat",
+  "ha-automation-action-sequence",
+];
+
+export const ACTION_BUILDING_BLOCKS = [
+  "choose",
+  "if",
+  "parallel",
+  "sequence",
+  "repeat_while",
+  "repeat_until",
+];
+
+// Building blocks that have options in the sidebar
+export const ACTION_COMBINED_BLOCKS = [
+  "repeat_count", // virtual repeat variant
+  "repeat_for_each", // virtual repeat variant
+  "wait_for_trigger",
+];

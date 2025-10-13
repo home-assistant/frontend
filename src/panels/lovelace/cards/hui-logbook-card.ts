@@ -52,6 +52,8 @@ export class HuiLogbookCard extends LitElement implements LovelaceCard {
 
   @property({ attribute: false }) public hass!: HomeAssistant;
 
+  @property({ attribute: false }) public layout?: string;
+
   @state() private _config?: LogbookCardConfig;
 
   @state() private _time?: HaLogbook["time"];
@@ -139,6 +141,13 @@ export class HuiLogbookCard extends LitElement implements LovelaceCard {
       resolveEntityIDs(this.hass, targetPickerValue, entities, devices, areas)
   );
 
+  protected update(changedProperties) {
+    super.update(changedProperties);
+    if (changedProperties.has("layout")) {
+      this.toggleAttribute("ispanel", this.layout === "panel");
+    }
+  }
+
   protected updated(changedProperties: PropertyValues) {
     super.updated(changedProperties);
     if (!this._config || !this.hass) {
@@ -165,7 +174,7 @@ export class HuiLogbookCard extends LitElement implements LovelaceCard {
 
     if (!isComponentLoaded(this.hass, "logbook")) {
       return html`
-        <hui-warning>
+        <hui-warning .hass=${this.hass}>
           ${this.hass.localize("ui.components.logbook.not_loaded", {
             platform: "logbook",
           })}</hui-warning
@@ -213,6 +222,11 @@ export class HuiLogbookCard extends LitElement implements LovelaceCard {
         ha-logbook {
           height: 385px;
           display: block;
+        }
+
+        :host([ispanel]) .content,
+        :host([ispanel]) ha-logbook {
+          height: 100%;
         }
       `,
     ];

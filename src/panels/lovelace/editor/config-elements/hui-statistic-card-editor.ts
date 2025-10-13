@@ -13,6 +13,7 @@ import type {
 } from "../../../../data/recorder";
 import {
   getStatisticMetadata,
+  StatisticMeanType,
   statisticsMetaHasType,
 } from "../../../../data/recorder";
 import type { HomeAssistant } from "../../../../types";
@@ -128,8 +129,7 @@ export class HuiStatisticCardEditor
           name: "period",
           required: true,
           selector:
-            selectedPeriodKey &&
-            Object.keys(periods).includes(selectedPeriodKey)
+            selectedPeriodKey && selectedPeriodKey in periods
               ? {
                   select: {
                     multiple: false,
@@ -220,7 +220,11 @@ export class HuiStatisticCardEditor
       if (metadata && !metadata.has_sum && config.stat_type === "change") {
         config.stat_type = "mean";
       }
-      if (metadata && !metadata.has_mean && config.stat_type !== "change") {
+      if (
+        metadata &&
+        metadata.mean_type === StatisticMeanType.NONE &&
+        config.stat_type !== "change"
+      ) {
         config.stat_type = "change";
       }
     }

@@ -13,7 +13,7 @@ export class HuiGraphBase extends LitElement {
   protected render(): TemplateResult {
     return html`
       ${this._path
-        ? svg`<svg width="100%" height="100%" viewBox="0 0 500 100">
+        ? svg`<svg width="100%" height="100%" viewBox="0 0 500 100" preserveAspectRatio="none">
           <g>
             <mask id="fill">
               <path
@@ -25,8 +25,10 @@ export class HuiGraphBase extends LitElement {
             <rect height="100%" width="100%" id="fill-rect" fill="var(--accent-color)" mask="url(#fill)"></rect>
             <mask id="line">
               <path
+                vector-effect="non-scaling-stroke"
+                class='line'
                 fill="none"
-                stroke="var(--accent-color)"
+                stroke="white"
                 stroke-width="${strokeWidth}"
                 stroke-linecap="round"
                 stroke-linejoin="round"
@@ -54,6 +56,10 @@ export class HuiGraphBase extends LitElement {
     :host {
       display: flex;
       width: 100%;
+      height: 100%;
+    }
+    .line {
+      opacity: 0.8;
     }
     .fill {
       opacity: 0.1;

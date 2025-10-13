@@ -1,16 +1,16 @@
-import "@material/mwc-button/mwc-button";
 import type { CSSResultGroup } from "lit";
 import { html, LitElement, nothing } from "lit";
 import { customElement, property, state } from "lit/decorators";
-import "../../../components/ha-circular-progress";
 import { fireEvent } from "../../../common/dom/fire_event";
+import "../../../components/ha-button";
 import "../../../components/ha-dialog";
+import "../../../components/ha-spinner";
 import { clearStatistics, getStatisticLabel } from "../../../data/recorder";
 import { haStyle, haStyleDialog } from "../../../resources/styles";
 import type { HomeAssistant } from "../../../types";
 import { documentationUrl } from "../../../util/documentation-url";
-import type { DialogStatisticsFixParams } from "./show-dialog-statistics-fix";
 import { showAlertDialog } from "../../lovelace/custom-card-helpers";
+import type { DialogStatisticsFixParams } from "./show-dialog-statistics-fix";
 
 @customElement("dialog-statistics-fix")
 export class DialogStatisticsFix extends LitElement {
@@ -57,32 +57,35 @@ export class DialogStatisticsFix extends LitElement {
             {
               name: getStatisticLabel(
                 this.hass,
-                this._params.issue.data.statistic_id,
+                issue.data.statistic_id,
                 undefined
               ),
-              statistic_id: this._params.issue.data.statistic_id,
+              statistic_id: issue.data.statistic_id,
+              ...(issue.type === "mean_type_changed"
+                ? {
+                    metadata_mean_type: this.hass.localize(
+                      `ui.panel.developer-tools.tabs.statistics.mean_type.${issue.data.metadata_mean_type}`
+                    ),
+                    state_mean_type: this.hass.localize(
+                      `ui.panel.developer-tools.tabs.statistics.mean_type.${issue.data.state_mean_type}`
+                    ),
+                  }
+                : {}),
             }
           )}<br /><br />
           ${this.hass.localize(
             `ui.panel.developer-tools.tabs.statistics.fix_issue.${issue.type}.info_text_2`,
             { statistic_id: issue.data.statistic_id }
           )}
-          ${issue.type === "entity_not_recorded"
+          ${issue.type === "mean_type_changed"
             ? html`<br /><br />
-                <a
-                  href=${documentationUrl(
-                    this.hass,
-                    "/integrations/recorder/#configure-filter"
-                  )}
-                  target="_blank"
-                  rel="noreferrer noopener"
-                >
-                  ${this.hass.localize(
-                    "ui.panel.developer-tools.tabs.statistics.fix_issue.entity_not_recorded.info_text_3_link"
-                  )}</a
-                >`
-            : issue.type === "entity_no_longer_recorded"
-              ? html`<a
+                ${this.hass.localize(
+                  "ui.panel.developer-tools.tabs.statistics.fix_issue.mean_type_changed.info_text_3",
+                  { statistic_id: issue.data.statistic_id }
+                )}`
+            : issue.type === "entity_not_recorded"
+              ? html`<br /><br />
+                  <a
                     href=${documentationUrl(
                       this.hass,
                       "/integrations/recorder/#configure-filter"
@@ -91,68 +94,79 @@ export class DialogStatisticsFix extends LitElement {
                     rel="noreferrer noopener"
                   >
                     ${this.hass.localize(
-                      "ui.panel.developer-tools.tabs.statistics.fix_issue.entity_no_longer_recorded.info_text_3_link"
+                      "ui.panel.developer-tools.tabs.statistics.fix_issue.entity_not_recorded.info_text_3_link"
                     )}</a
-                  ><br /><br />
-                  ${this.hass.localize(
-                    "ui.panel.developer-tools.tabs.statistics.fix_issue.entity_no_longer_recorded.info_text_4"
-                  )}`
-              : issue.type === "state_class_removed"
-                ? html`<ul>
-                      <li>
-                        ${this.hass.localize(
-                          "ui.panel.developer-tools.tabs.statistics.fix_issue.state_class_removed.info_text_3"
-                        )}
-                      </li>
-                      <li>
-                        ${this.hass.localize(
-                          "ui.panel.developer-tools.tabs.statistics.fix_issue.state_class_removed.info_text_4"
-                        )}
-                        <a
-                          href="https://developers.home-assistant.io/docs/core/entity/sensor/#long-term-statistics"
-                          target="_blank"
-                          rel="noreferrer noopener"
-                        >
-                          ${this.hass.localize(
-                            "ui.panel.developer-tools.tabs.statistics.fix_issue.state_class_removed.info_text_4_link"
-                          )}</a
-                        >
-                      </li>
-                      <li>
-                        ${this.hass.localize(
-                          "ui.panel.developer-tools.tabs.statistics.fix_issue.state_class_removed.info_text_5"
-                        )}
-                      </li>
-                    </ul>
+                  >`
+              : issue.type === "entity_no_longer_recorded"
+                ? html`<a
+                      href=${documentationUrl(
+                        this.hass,
+                        "/integrations/recorder/#configure-filter"
+                      )}
+                      target="_blank"
+                      rel="noreferrer noopener"
+                    >
+                      ${this.hass.localize(
+                        "ui.panel.developer-tools.tabs.statistics.fix_issue.entity_no_longer_recorded.info_text_3_link"
+                      )}</a
+                    ><br /><br />
                     ${this.hass.localize(
-                      "ui.panel.developer-tools.tabs.statistics.fix_issue.state_class_removed.info_text_6",
-                      { statistic_id: issue.data.statistic_id }
+                      "ui.panel.developer-tools.tabs.statistics.fix_issue.entity_no_longer_recorded.info_text_4"
                     )}`
-                : nothing}
+                : issue.type === "state_class_removed"
+                  ? html`<ul>
+                        <li>
+                          ${this.hass.localize(
+                            "ui.panel.developer-tools.tabs.statistics.fix_issue.state_class_removed.info_text_3"
+                          )}
+                        </li>
+                        <li>
+                          ${this.hass.localize(
+                            "ui.panel.developer-tools.tabs.statistics.fix_issue.state_class_removed.info_text_4"
+                          )}
+                          <a
+                            href="https://developers.home-assistant.io/docs/core/entity/sensor/#long-term-statistics"
+                            target="_blank"
+                            rel="noreferrer noopener"
+                          >
+                            ${this.hass.localize(
+                              "ui.panel.developer-tools.tabs.statistics.fix_issue.state_class_removed.info_text_4_link"
+                            )}</a
+                          >
+                        </li>
+                        <li>
+                          ${this.hass.localize(
+                            "ui.panel.developer-tools.tabs.statistics.fix_issue.state_class_removed.info_text_5"
+                          )}
+                        </li>
+                      </ul>
+                      ${this.hass.localize(
+                        "ui.panel.developer-tools.tabs.statistics.fix_issue.state_class_removed.info_text_6",
+                        { statistic_id: issue.data.statistic_id }
+                      )}`
+                  : nothing}
         </p>
 
         ${issue.type !== "entity_not_recorded"
-          ? html`<mwc-button
+          ? html`<ha-button
+                appearance="plain"
+                slot="primaryAction"
+                @click=${this._cancel}
+              >
+                ${this.hass.localize("ui.common.close")}
+              </ha-button>
+              <ha-button
                 slot="primaryAction"
                 @click=${this._clearStatistics}
-                class="warning"
+                variants="danger"
                 .disabled=${this._clearing}
+                .loading=${this._clearing}
               >
-                ${this._clearing
-                  ? html`<ha-circular-progress
-                      indeterminate
-                      size="small"
-                      aria-label="Saving"
-                    ></ha-circular-progress>`
-                  : nothing}
                 ${this.hass.localize("ui.common.delete")}
-              </mwc-button>
-              <mwc-button slot="secondaryAction" @click=${this._cancel}>
-                ${this.hass.localize("ui.common.close")}
-              </mwc-button>`
-          : html`<mwc-button slot="primaryAction" @click=${this._cancel}>
+              </ha-button>`
+          : html`<ha-button slot="primaryAction" @click=${this._cancel}>
               ${this.hass.localize("ui.common.ok")}
-            </mwc-button>`}
+            </ha-button>`}
       </ha-dialog>
     `;
   }

@@ -42,14 +42,14 @@ class OnboardingWelcomeLink extends LitElement {
       flex-direction: column;
       align-items: center;
       text-align: center;
-      font-weight: 500;
+      font-weight: var(--ha-font-weight-medium);
       padding: 32px 16px;
       height: 100%;
     }
     ha-svg-icon {
       color: var(--text-primary-color);
       background: var(--welcome-link-color, var(--primary-color));
-      border-radius: 50%;
+      border-radius: var(--ha-border-radius-circle);
       padding: 8px;
       margin-bottom: 16px;
     }

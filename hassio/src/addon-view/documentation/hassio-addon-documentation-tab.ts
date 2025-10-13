@@ -2,7 +2,7 @@ import "../../../../src/components/ha-card";
 import type { CSSResultGroup, TemplateResult } from "lit";
 import { css, html, LitElement } from "lit";
 import "../../../../src/components/ha-alert";
-import "../../../../src/components/ha-circular-progress";
+import "../../../../src/components/ha-spinner";
 import "../../../../src/components/ha-markdown";
 import { customElement, property, state } from "lit/decorators";
 import type { HassioAddonDetails } from "../../../../src/data/hassio/addon";
@@ -33,7 +33,7 @@ class HassioAddonDocumentationDashboard extends LitElement {
 
   protected render(): TemplateResult {
     if (!this.addon) {
-      return html`<ha-circular-progress indeterminate></ha-circular-progress>`;
+      return html`<ha-spinner></ha-spinner>`;
     }
     return html`
       <div class="content">

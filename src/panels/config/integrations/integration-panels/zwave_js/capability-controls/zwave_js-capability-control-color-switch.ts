@@ -4,7 +4,7 @@ import type { DeviceRegistryEntry } from "../../../../../../data/device_registry
 import type { HomeAssistant } from "../../../../../../types";
 import { invokeZWaveCCApi } from "../../../../../../data/zwave_js";
 import "../../../../../../components/ha-alert";
-import "../../../../../../components/ha-circular-progress";
+import "../../../../../../components/ha-spinner";
 import { extractApiErrorMessage } from "../../../../../../data/hassio/common";
 import "./zwave_js-capability-control-multilevel-switch";
 
@@ -41,7 +41,7 @@ class ZWaveJSCapabilityColorSwitch extends LitElement {
       return html`<ha-alert alert-type="error">${this._error}</ha-alert>`;
     }
     if (!this._color_components) {
-      return html`<ha-circular-progress indeterminate></ha-circular-progress>`;
+      return html`<ha-spinner></ha-spinner>`;
     }
     return this._color_components.map(
       (color) =>

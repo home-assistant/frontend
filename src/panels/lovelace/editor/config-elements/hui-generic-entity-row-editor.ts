@@ -19,6 +19,7 @@ const SECONDARY_INFO_VALUES = {
   "last-updated": {},
   "last-triggered": { domains: ["automation", "script"] },
   position: { domains: ["cover"] },
+  state: {},
   "tilt-position": { domains: ["cover"] },
   brightness: { domains: ["light"] },
 };
@@ -29,6 +30,8 @@ export class HuiGenericEntityRowEditor
   implements LovelaceRowEditor
 {
   @property({ attribute: false }) public hass?: HomeAssistant;
+
+  @property({ attribute: false }) public schema?;
 
   @state() private _config?: EntitiesCardEntityConfig;
 
@@ -86,7 +89,8 @@ export class HuiGenericEntityRowEditor
       return nothing;
     }
 
-    const schema = this._schema(this._config.entity, this.hass.localize);
+    const schema =
+      this.schema || this._schema(this._config.entity, this.hass.localize);
 
     return html`
       <ha-form

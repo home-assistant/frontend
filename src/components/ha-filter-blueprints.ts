@@ -1,20 +1,20 @@
-import "@material/mwc-list/mwc-list";
 import type { SelectedDetail } from "@material/mwc-list";
-import "@material/mwc-menu/mwc-menu-surface";
 import { mdiFilterVariantRemove } from "@mdi/js";
 import type { CSSResultGroup, PropertyValues } from "lit";
 import { css, html, LitElement, nothing } from "lit";
 import { customElement, property, state } from "lit/decorators";
 import { fireEvent } from "../common/dom/fire_event";
+import { deepEqual } from "../common/util/deep-equal";
 import type { Blueprints } from "../data/blueprint";
 import { fetchBlueprints } from "../data/blueprint";
 import type { RelatedResult } from "../data/search";
 import { findRelated } from "../data/search";
 import { haStyleScrollbar } from "../resources/styles";
 import type { HomeAssistant } from "../types";
+import "./ha-check-list-item";
 import "./ha-expansion-panel";
 import "./ha-icon-button";
-import "./ha-check-list-item";
+import "./ha-list";
 
 @customElement("ha-filter-blueprints")
 export class HaFilterBlueprints extends LitElement {
@@ -35,17 +35,18 @@ export class HaFilterBlueprints extends LitElement {
   public willUpdate(properties: PropertyValues) {
     super.willUpdate(properties);
 
-    if (!this.hasUpdated) {
-      if (this.value?.length) {
-        this._findRelated();
-      }
+    if (
+      properties.has("value") &&
+      !deepEqual(this.value, properties.get("value"))
+    ) {
+      this._findRelated();
     }
   }
 
   protected render() {
     return html`
       <ha-expansion-panel
-        leftChevron
+        left-chevron
         .expanded=${this.expanded}
         @expanded-will-change=${this._expandedWillChange}
         @expanded-changed=${this._expandedChanged}
@@ -62,7 +63,7 @@ export class HaFilterBlueprints extends LitElement {
         </div>
         ${this._blueprints && this._shouldRender
           ? html`
-              <mwc-list
+              <ha-list
                 @selected=${this._blueprintsSelected}
                 multi
                 class="ha-scrollbar"
@@ -77,7 +78,7 @@ export class HaFilterBlueprints extends LitElement {
                         ${blueprint.metadata.name || id}
                       </ha-check-list-item>`
                 )}
-              </mwc-list>
+              </ha-list>
             `
           : nothing}
       </ha-expansion-panel>
@@ -95,7 +96,7 @@ export class HaFilterBlueprints extends LitElement {
     if (changed.has("expanded") && this.expanded) {
       setTimeout(() => {
         if (this.narrow || !this.expanded) return;
-        this.renderRoot.querySelector("mwc-list")!.style.height =
+        this.renderRoot.querySelector("ha-list")!.style.height =
           `${this.clientHeight - 49}px`;
       }, 300);
     }
@@ -131,17 +132,15 @@ export class HaFilterBlueprints extends LitElement {
     }
 
     this.value = value;
-
-    this._findRelated();
   }
 
   private async _findRelated() {
     if (!this.value?.length) {
+      this.value = [];
       fireEvent(this, "data-table-filter-changed", {
         value: [],
         items: undefined,
       });
-      this.value = [];
       return;
     }
 
@@ -190,7 +189,7 @@ export class HaFilterBlueprints extends LitElement {
           height: 0;
         }
         ha-expansion-panel {
-          --ha-card-border-radius: 0;
+          --ha-card-border-radius: var(--ha-border-radius-square);
           --expansion-panel-content-padding: 0;
         }
         .header {
@@ -208,11 +207,11 @@ export class HaFilterBlueprints extends LitElement {
           margin-inline-end: 0;
           min-width: 16px;
           box-sizing: border-box;
-          border-radius: 50%;
-          font-weight: 400;
-          font-size: 11px;
+          border-radius: var(--ha-border-radius-circle);
+          font-size: var(--ha-font-size-xs);
+          font-weight: var(--ha-font-weight-normal);
           background-color: var(--primary-color);
-          line-height: 16px;
+          line-height: var(--ha-line-height-normal);
           text-align: center;
           padding: 0px 2px;
           color: var(--text-primary-color);

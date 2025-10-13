@@ -10,7 +10,7 @@ import memoizeOne from "memoize-one";
 import { storage } from "../../../../common/decorators/storage";
 import { fireEvent } from "../../../../common/dom/fire_event";
 import { stringCompare } from "../../../../common/string/compare";
-import "../../../../components/ha-circular-progress";
+import "../../../../components/ha-spinner";
 import "../../../../components/search-input";
 import { isUnavailableState } from "../../../../data/entity";
 import type { LovelaceBadgeConfig } from "../../../../data/lovelace/config/badge";
@@ -43,6 +43,7 @@ export class HuiBadgePicker extends LitElement {
 
   @property({ attribute: false }) public suggestedBadges?: string[];
 
+  @state()
   @storage({
     key: "dashboardBadgeClipboard",
     state: true,
@@ -296,7 +297,7 @@ export class HuiBadgePicker extends LitElement {
         this._renderBadgeElement(badge),
         html`
           <div class="badge spinner">
-            <ha-circular-progress indeterminate></ha-circular-progress>
+            <ha-spinner></ha-spinner>
           </div>
         `
       )}`,
@@ -328,7 +329,7 @@ export class HuiBadgePicker extends LitElement {
       ),
       html`
         <div class="badge spinner">
-          <ha-circular-progress indeterminate></ha-circular-progress>
+          <ha-spinner></ha-spinner>
         </div>
       `
     )}`;
@@ -475,8 +476,8 @@ export class HuiBadgePicker extends LitElement {
         }
 
         .badges-container-header {
-          font-size: 16px;
-          font-weight: 500;
+          font-size: var(--ha-font-size-l);
+          font-weight: var(--ha-font-weight-medium);
           padding: 12px 8px 4px 8px;
           margin: 0;
           grid-column: 1 / -1;
@@ -494,7 +495,10 @@ export class HuiBadgePicker extends LitElement {
           max-width: 500px;
           display: flex;
           flex-direction: column;
-          border-radius: var(--ha-card-border-radius, 12px);
+          border-radius: var(
+            --ha-card-border-radius,
+            var(--ha-border-radius-lg)
+          );
           background: var(--primary-background-color, #fafafa);
           cursor: pointer;
           position: relative;
@@ -506,10 +510,10 @@ export class HuiBadgePicker extends LitElement {
         .badge-header {
           color: var(--ha-card-header-color, var(--primary-text-color));
           font-family: var(--ha-card-header-font-family, inherit);
-          font-size: 16px;
-          font-weight: bold;
+          font-size: var(--ha-font-size-l);
+          font-weight: var(--ha-font-weight-bold);
           letter-spacing: -0.012em;
-          line-height: 20px;
+          line-height: var(--ha-line-height-condensed);
           padding: 12px 16px;
           display: block;
           text-align: center;
@@ -544,7 +548,10 @@ export class HuiBadgePicker extends LitElement {
           height: 100%;
           z-index: 1;
           box-sizing: border-box;
-          border-radius: var(--ha-card-border-radius, 12px);
+          border-radius: var(
+            --ha-card-border-radius,
+            var(--ha-border-radius-lg)
+          );
         }
 
         .manual {
@@ -558,7 +565,7 @@ export class HuiBadgePicker extends LitElement {
           right: 8px;
           inset-inline-start: 8px;
           inset-inline-end: 8px;
-          border-radius: 50%;
+          border-radius: var(--ha-border-radius-circle);
           --mdc-icon-size: 16px;
           line-height: 16px;
           box-sizing: border-box;

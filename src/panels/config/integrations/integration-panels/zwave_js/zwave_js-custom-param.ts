@@ -4,7 +4,7 @@ import { mdiCloseCircle } from "@mdi/js";
 import "../../../../../components/ha-textfield";
 import "../../../../../components/ha-select";
 import "../../../../../components/ha-button";
-import "../../../../../components/ha-circular-progress";
+import "../../../../../components/ha-spinner";
 import "../../../../../components/ha-list-item";
 import type { HomeAssistant } from "../../../../../types";
 import {
@@ -91,15 +91,13 @@ class ZWaveJSCustomParam extends LitElement {
         </ha-select>
       </div>
       <div class="custom-config-buttons">
-        ${this._isLoading
-          ? html`<ha-circular-progress indeterminate></ha-circular-progress>`
-          : nothing}
-        <ha-button @click=${this._getCustomConfigValue}>
+        ${this._isLoading ? html`<ha-spinner></ha-spinner>` : nothing}
+        <ha-button appearance="plain" @click=${this._getCustomConfigValue}>
           ${this.hass.localize(
             "ui.panel.config.zwave_js.node_config.get_value"
           )}
         </ha-button>
-        <ha-button @click=${this._setCustomConfigValue}>
+        <ha-button appearance="plain" @click=${this._setCustomConfigValue}>
           ${this.hass.localize(
             "ui.panel.config.zwave_js.node_config.set_value"
           )}
@@ -226,7 +224,7 @@ class ZWaveJSCustomParam extends LitElement {
     .custom-config-form {
       display: flex;
       flex-wrap: wrap;
-      gap: 16px;
+      gap: var(--ha-space-4);
       margin-bottom: 8px;
     }
 

@@ -1,8 +1,7 @@
-import "@material/mwc-button";
 import { mdiPlus } from "@mdi/js";
 import type { PropertyValues } from "lit";
 import { LitElement, css, html, nothing } from "lit";
-import { customElement, property } from "lit/decorators";
+import { customElement, property, queryAll } from "lit/decorators";
 import { fireEvent } from "../../../common/dom/fire_event";
 import "../../../components/ha-button";
 import "../../../components/ha-button-menu";
@@ -19,6 +18,13 @@ export default class HaScriptFields extends LitElement {
   @property({ type: Boolean }) public disabled = false;
 
   @property({ attribute: false }) public fields!: Fields;
+
+  @property({ attribute: false }) public highlightedFields?: Fields;
+
+  @property({ type: Boolean }) public narrow = false;
+
+  @queryAll("ha-script-field-row")
+  private _fieldRowElements?: HaScriptFieldRow[];
 
   private _focusLastActionOnChange = false;
 
@@ -37,21 +43,17 @@ export default class HaScriptFields extends LitElement {
                   .disabled=${this.disabled}
                   @value-changed=${this._fieldChanged}
                   .hass=${this.hass}
+                  .highlight=${this.highlightedFields?.[key] !== undefined}
+                  .narrow=${this.narrow}
                 >
                 </ha-script-field-row>
               `
             )}
           </div> `
         : nothing}
-      <ha-button
-        outlined
-        @click=${this._addField}
-        .disabled=${this.disabled}
-        .label=${this.hass.localize(
-          "ui.panel.config.script.editor.field.add_field"
-        )}
-      >
-        <ha-svg-icon .path=${mdiPlus} slot="icon"></ha-svg-icon>
+      <ha-button @click=${this._addField} .disabled=${this.disabled}>
+        <ha-svg-icon .path=${mdiPlus} slot="start"></ha-svg-icon>
+        ${this.hass.localize("ui.panel.config.script.editor.field.add_field")}
       </ha-button>
     `;
   }
@@ -70,9 +72,17 @@ export default class HaScriptFields extends LitElement {
       "ha-script-field-row:last-of-type"
     )!;
     row.updateComplete.then(() => {
-      row.expand();
-      row.scrollIntoView();
+      row.openSidebar();
       row.focus();
+
+      if (this.narrow) {
+        window.setTimeout(() => {
+          row.scrollIntoView({
+            block: "start",
+            behavior: "smooth",
+          });
+        }, 180); // duration of transition of added padding for bottom sheet
+      }
     });
   }
 
@@ -132,6 +142,18 @@ export default class HaScriptFields extends LitElement {
       } while (key in fields);
     }
     return key;
+  }
+
+  public expandAll() {
+    this._fieldRowElements?.forEach((row) => {
+      row.expandAll();
+    });
+  }
+
+  public collapseAll() {
+    this._fieldRowElements?.forEach((row) => {
+      row.collapseAll();
+    });
   }
 
   static styles = css`

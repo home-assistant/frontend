@@ -1,16 +1,18 @@
-import "@material/mwc-list/mwc-list";
-import "@material/mwc-button/mwc-button";
 import { mdiAlertCircle, mdiCheckCircle, mdiCloseCircle } from "@mdi/js";
 import type { CSSResultGroup } from "lit";
 import { css, html, LitElement, nothing } from "lit";
 import { customElement, property, state } from "lit/decorators";
 import { fireEvent } from "../../../../../common/dom/fire_event";
-import "../../../../../components/ha-circular-progress";
-import "../../../../../components/ha-list-item";
+import { copyToClipboard } from "../../../../../common/util/copy-clipboard";
 import { createCloseHeading } from "../../../../../components/ha-dialog";
+import "../../../../../components/ha-list";
+import "../../../../../components/ha-button";
+import "../../../../../components/ha-list-item";
+import "../../../../../components/ha-spinner";
 import { pingMatterNode } from "../../../../../data/matter";
 import { haStyle, haStyleDialog } from "../../../../../resources/styles";
 import type { HomeAssistant } from "../../../../../types";
+import { showToast } from "../../../../../util/toast";
 import type { MatterPingNodeDialogParams } from "./show-dialog-matter-ping-node";
 
 @customElement("dialog-matter-ping-node")
@@ -28,6 +30,14 @@ class DialogMatterPingNode extends LitElement {
 
   public async showDialog(params: MatterPingNodeDialogParams): Promise<void> {
     this.device_id = params.device_id;
+  }
+
+  private async _copyIpToClipboard(ev) {
+    const ip = ev.currentTarget.ip;
+    await copyToClipboard(ip);
+    showToast(this, {
+      message: this.hass.localize("ui.common.copied_clipboard"),
+    });
   }
 
   protected render() {
@@ -61,9 +71,9 @@ class DialogMatterPingNode extends LitElement {
                   </p>
                 </div>
               </div>
-              <mwc-button slot="primaryAction" @click=${this.closeDialog}>
+              <ha-button slot="primaryAction" @click=${this.closeDialog}>
                 ${this.hass.localize("ui.common.close")}
-              </mwc-button>
+              </ha-button>
             `
           : this._pingResultEntries
             ? html`
@@ -72,10 +82,13 @@ class DialogMatterPingNode extends LitElement {
                     "ui.panel.config.matter.ping_node.ping_complete"
                   )}
                 </h2>
-                <mwc-list>
+                <ha-list>
                   ${this._pingResultEntries.map(
                     ([ip, success]) =>
-                      html`<ha-list-item hasMeta noninteractive
+                      html`<ha-list-item
+                        hasMeta
+                        .ip=${ip}
+                        @click=${this._copyIpToClipboard}
                         >${ip}
                         <ha-svg-icon
                           slot="meta"
@@ -84,15 +97,15 @@ class DialogMatterPingNode extends LitElement {
                         ></ha-svg-icon>
                       </ha-list-item>`
                   )}
-                </mwc-list>
-                <mwc-button slot="primaryAction" @click=${this.closeDialog}>
+                </ha-list>
+                <ha-button slot="primaryAction" @click=${this.closeDialog}>
                   ${this.hass.localize("ui.common.close")}
-                </mwc-button>
+                </ha-button>
               `
             : this._status === "started"
               ? html`
                   <div class="flex-container">
-                    <ha-circular-progress indeterminate></ha-circular-progress>
+                    <ha-spinner></ha-spinner>
                     <div class="status">
                       <p>
                         <b>
@@ -103,9 +116,9 @@ class DialogMatterPingNode extends LitElement {
                       </p>
                     </div>
                   </div>
-                  <mwc-button slot="primaryAction" @click=${this.closeDialog}>
+                  <ha-button slot="primaryAction" @click=${this.closeDialog}>
                     ${this.hass.localize("ui.common.close")}
-                  </mwc-button>
+                  </ha-button>
                 `
               : html`
                   <p>
@@ -120,11 +133,11 @@ class DialogMatterPingNode extends LitElement {
                       )}
                     </em>
                   </p>
-                  <mwc-button slot="primaryAction" @click=${this._startPing}>
+                  <ha-button slot="primaryAction" @click=${this._startPing}>
                     ${this.hass.localize(
                       "ui.panel.config.matter.ping_node.start_ping"
                     )}
-                  </mwc-button>
+                  </ha-button>
                 `}
       </ha-dialog>
     `;
@@ -181,11 +194,11 @@ class DialogMatterPingNode extends LitElement {
           padding: 8px;
         }
 
-        mwc-list {
+        ha-list {
           --mdc-list-side-padding: 0;
         }
 
-        .flex-container ha-circular-progress,
+        .flex-container ha-spinner,
         .flex-container ha-svg-icon {
           margin-right: 20px;
         }

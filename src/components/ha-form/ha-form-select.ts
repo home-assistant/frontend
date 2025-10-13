@@ -24,12 +24,16 @@ export class HaFormSelect extends LitElement implements HaFormElement {
 
   @property() public helper?: string;
 
+  @property({ attribute: false })
+  public localizeValue?: (key: string) => string;
+
   @property({ type: Boolean }) public disabled = false;
 
   private _selectSchema = memoizeOne(
-    (options): SelectSelector => ({
+    (schema: HaFormSelectSchema): SelectSelector => ({
       select: {
-        options: options.map((option) => ({
+        translation_key: schema.name,
+        options: schema.options.map((option) => ({
           value: option[0],
           label: option[1],
         })),
@@ -41,13 +45,13 @@ export class HaFormSelect extends LitElement implements HaFormElement {
     return html`
       <ha-selector-select
         .hass=${this.hass}
-        .schema=${this.schema}
         .value=${this.data}
         .label=${this.label}
         .helper=${this.helper}
         .disabled=${this.disabled}
-        .required=${this.schema.required}
-        .selector=${this._selectSchema(this.schema.options)}
+        .required=${this.schema.required || false}
+        .selector=${this._selectSchema(this.schema)}
+        .localizeValue=${this.localizeValue}
         @value-changed=${this._valueChanged}
       ></ha-selector-select>
     `;

@@ -79,7 +79,7 @@ class HaPanelDevEvent extends LitElement {
             <div class="card-actions">
               <ha-button
                 @click=${this._fireEvent}
-                raised
+                appearance="filled"
                 .disabled=${!this._isValid}
                 >${this.hass.localize(
                   "ui.panel.developer-tools.tabs.events.fire_event"
@@ -92,11 +92,11 @@ class HaPanelDevEvent extends LitElement {
         </div>
 
         <div>
-          <div class="header">
+          <h2>
             ${this.hass.localize(
               "ui.panel.developer-tools.tabs.events.active_listeners"
             )}
-          </div>
+          </h2>
           <events-list
             @event-selected=${this._eventSelected}
             .hass=${this.hass}
@@ -146,12 +146,8 @@ class HaPanelDevEvent extends LitElement {
       haStyle,
       css`
         .content {
-          gap: 16px;
+          gap: var(--ha-space-4);
           padding: 16px;
-          padding: max(16px, env(safe-area-inset-top))
-            max(16px, env(safe-area-inset-right))
-            max(16px, env(safe-area-inset-bottom))
-            max(16px, env(safe-area-inset-left));
           max-width: 1200px;
           margin: auto;
         }
@@ -160,7 +156,6 @@ class HaPanelDevEvent extends LitElement {
           -ms-user-select: initial;
           -webkit-user-select: initial;
           -moz-user-select: initial;
-          @apply --paper-font-body1;
           display: block;
         }
 
@@ -172,16 +167,12 @@ class HaPanelDevEvent extends LitElement {
           max-width: 400px;
         }
 
-        mwc-button {
+        ha-button {
           margin-top: 8px;
         }
 
         ha-textfield {
           display: block;
-        }
-
-        .header {
-          @apply --paper-font-title;
         }
 
         event-subscribe-card {

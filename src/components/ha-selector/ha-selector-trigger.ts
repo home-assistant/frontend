@@ -11,6 +11,8 @@ import type { HomeAssistant } from "../../types";
 export class HaTriggerSelector extends LitElement {
   @property({ attribute: false }) public hass!: HomeAssistant;
 
+  @property({ type: Boolean }) public narrow = false;
+
   @property({ attribute: false }) public selector!: TriggerSelector;
 
   @property({ attribute: false }) public value?: Trigger;
@@ -33,6 +35,7 @@ export class HaTriggerSelector extends LitElement {
         .disabled=${this.disabled}
         .triggers=${this._triggers(this.value)}
         .hass=${this.hass}
+        .narrow=${this.narrow}
       ></ha-automation-trigger>
     `;
   }
@@ -45,7 +48,7 @@ export class HaTriggerSelector extends LitElement {
     label {
       display: block;
       margin-bottom: 4px;
-      font-weight: 500;
+      font-weight: var(--ha-font-weight-medium);
     }
   `;
 }

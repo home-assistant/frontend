@@ -1,10 +1,10 @@
-import "@material/mwc-button/mwc-button";
 import type { CSSResultGroup, PropertyValues } from "lit";
 import { css, html, LitElement, nothing } from "lit";
 import { customElement, property, state } from "lit/decorators";
 import { isComponentLoaded } from "../../../common/config/is_component_loaded";
 import "../../../components/ha-alert";
 import "../../../components/ha-card";
+import "../../../components/ha-button";
 import "../../../components/ha-checkbox";
 import "../../../components/ha-network";
 import "../../../components/ha-settings-row";
@@ -23,10 +23,7 @@ class ConfigNetwork extends LitElement {
   @state() private _error?: { code: string; message: string };
 
   protected render() {
-    if (
-      !this.hass.userData?.showAdvanced ||
-      !isComponentLoaded(this.hass, "network")
-    ) {
+    if (!isComponentLoaded(this.hass, "network")) {
       return nothing;
     }
 
@@ -55,11 +52,11 @@ class ConfigNetwork extends LitElement {
           ></ha-network>
         </div>
         <div class="card-actions">
-          <mwc-button @click=${this._save}>
+          <ha-button @click=${this._save}>
             ${this.hass.localize(
               "ui.panel.config.core.section.core.core_config.save_button"
             )}
-          </mwc-button>
+          </ha-button>
         </div>
       </ha-card>
     `;

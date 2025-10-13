@@ -1,3 +1,4 @@
+import { mdiGestureTap } from "@mdi/js";
 import type { CSSResultGroup } from "lit";
 import { html, LitElement, nothing } from "lit";
 import { customElement, property, state } from "lit/decorators";
@@ -28,8 +29,11 @@ const cardConfigStruct = assign(
     icon_height: optional(string()),
     tap_action: optional(actionConfigStruct),
     hold_action: optional(actionConfigStruct),
+    double_tap_action: optional(actionConfigStruct),
     theme: optional(string()),
     show_state: optional(boolean()),
+    state_color: optional(boolean()),
+    color: optional(string()),
   })
 );
 
@@ -44,6 +48,19 @@ export class HuiButtonCardEditor
 
   public setConfig(config: ButtonCardConfig): void {
     assert(config, cardConfigStruct);
+
+    // Migrate state_color to color
+    if (config.state_color !== undefined) {
+      config = {
+        ...config,
+        color: config.state_color ? undefined : "none",
+      };
+      delete config.state_color;
+
+      fireEvent(this, "config-changed", { config: config });
+      return;
+    }
+
     this._config = config;
   }
 
@@ -51,11 +68,11 @@ export class HuiButtonCardEditor
     (entityId: string | undefined) =>
       [
         { name: "entity", selector: { entity: {} } },
+        { name: "name", selector: { text: {} } },
         {
           name: "",
           type: "grid",
           schema: [
-            { name: "name", selector: { text: {} } },
             {
               name: "icon",
               selector: {
@@ -65,6 +82,18 @@ export class HuiButtonCardEditor
                 icon_entity: "entity",
               },
             },
+            { name: "icon_height", selector: { text: { suffix: "px" } } },
+            {
+              name: "color",
+              selector: {
+                ui_color: {
+                  default_color: "state",
+                  include_state: true,
+                  include_none: true,
+                },
+              },
+            },
+            { name: "theme", selector: { theme: {} } },
           ],
         },
         {
@@ -78,28 +107,43 @@ export class HuiButtonCardEditor
           ],
         },
         {
-          name: "",
-          type: "grid",
+          name: "interactions",
+          type: "expandable",
+          flatten: true,
+          iconPath: mdiGestureTap,
           schema: [
-            { name: "icon_height", selector: { text: { suffix: "px" } } },
-            { name: "theme", selector: { theme: {} } },
+            {
+              name: "tap_action",
+              selector: {
+                ui_action: {
+                  default_action: getEntityDefaultButtonAction(entityId),
+                },
+              },
+            },
+            {
+              name: "hold_action",
+              selector: {
+                ui_action: {
+                  default_action: "more-info",
+                },
+              },
+            },
+            {
+              name: "",
+              type: "optional_actions",
+              flatten: true,
+              schema: [
+                {
+                  name: "double_tap_action",
+                  selector: {
+                    ui_action: {
+                      default_action: "none",
+                    },
+                  },
+                },
+              ],
+            },
           ],
-        },
-        {
-          name: "tap_action",
-          selector: {
-            ui_action: {
-              default_action: getEntityDefaultButtonAction(entityId),
-            },
-          },
-        },
-        {
-          name: "hold_action",
-          selector: {
-            ui_action: {
-              default_action: "more-info",
-            },
-          },
         },
       ] as const satisfies readonly HaFormSchema[]
   );

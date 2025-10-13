@@ -1,16 +1,23 @@
-import { MdAssistChip } from "@material/web/chips/assist-chip";
+import { AssistChip } from "@material/web/chips/internal/assist-chip";
+import { styles } from "@material/web/chips/internal/assist-styles";
+
+import { styles as sharedStyles } from "@material/web/chips/internal/shared-styles";
+import { styles as elevatedStyles } from "@material/web/chips/internal/elevated-styles";
+
 import { css, html } from "lit";
 import { customElement, property } from "lit/decorators";
 
 @customElement("ha-assist-chip")
 // @ts-ignore
-export class HaAssistChip extends MdAssistChip {
+export class HaAssistChip extends AssistChip {
   @property({ type: Boolean, reflect: true }) filled = false;
 
   @property({ type: Boolean }) active = false;
 
   static override styles = [
-    ...super.styles,
+    sharedStyles,
+    elevatedStyles,
+    styles,
     css`
       :host {
         --md-sys-color-primary: var(--primary-text-color);
@@ -53,7 +60,7 @@ export class HaAssistChip extends MdAssistChip {
         opacity: var(--ha-assist-chip-active-container-opacity);
       }
       .label {
-        font-family: Roboto, sans-serif;
+        font-family: var(--ha-font-family-body);
       }
     `,
   ];

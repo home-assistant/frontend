@@ -58,6 +58,11 @@ export class FlowPreviewGeneric extends LitElement {
   }
 
   private _setPreview = (preview: GenericPreview) => {
+    if (preview.error) {
+      this._error = preview.error;
+      this._preview = undefined;
+      return;
+    }
     const now = new Date().toISOString();
     this._preview = {
       entity_id: `${this.stepId}.___flow_preview___`,
@@ -77,9 +82,14 @@ export class FlowPreviewGeneric extends LitElement {
       (await this._unsub)();
       this._unsub = undefined;
     }
-    if (this.flowType !== "config_flow" && this.flowType !== "options_flow") {
+    if (
+      this.flowType !== "config_flow" &&
+      this.flowType !== "options_flow" &&
+      this.flowType !== "config_subentries_flow"
+    ) {
       return;
     }
+    this._error = undefined;
     try {
       this._unsub = subscribePreviewGeneric(
         this.hass,
@@ -89,6 +99,7 @@ export class FlowPreviewGeneric extends LitElement {
         this.stepData,
         this._setPreview
       );
+      await this._unsub;
       fireEvent(this, "set-flow-errors", { errors: {} });
     } catch (err: any) {
       if (typeof err.message === "string") {

@@ -6,11 +6,9 @@ import { classMap } from "lit/directives/class-map";
 import memoizeOne from "memoize-one";
 import type { BarSeriesOption } from "echarts/charts";
 import type { ECElementEvent } from "echarts/types/dist/shared";
+import { filterXSS } from "../../../../common/util/xss";
 import { getGraphColorByIndex } from "../../../../common/color/colors";
-import {
-  formatNumber,
-  getNumberFormatOptions,
-} from "../../../../common/number/format_number";
+import { formatNumber } from "../../../../common/number/format_number";
 import "../../../../components/chart/ha-chart-base";
 import type { EnergyData } from "../../../../data/energy";
 import { getEnergyDataCollection } from "../../../../data/energy";
@@ -99,13 +97,12 @@ export class HuiEnergyDevicesGraphCard
   }
 
   private _renderTooltip(params: any) {
-    const title = `<h4 style="text-align: center; margin: 0;">${this._getDeviceName(
-      params.value[1]
-    )}</h4>`;
+    const deviceName = filterXSS(this._getDeviceName(params.value[1]));
+    const title = `<h4 style="text-align: center; margin: 0;">${deviceName}</h4>`;
     const value = `${formatNumber(
       params.value[0] as number,
       this.hass.locale,
-      getNumberFormatOptions(undefined, this.hass.entities[params.value[1]])
+      params.value[0] < 0.1 ? { maximumFractionDigits: 3 } : undefined
     )} kWh`;
     return `${title}${params.marker} ${params.seriesName}: ${value}`;
   }
@@ -207,7 +204,16 @@ export class HuiEnergyDevicesGraphCard
 
     const computedStyle = getComputedStyle(this);
 
+    const exclude = this._config?.hide_compound_stats
+      ? energyData.prefs.device_consumption
+          .map((d) => d.included_in_stat)
+          .filter(Boolean)
+      : [];
+
     energyData.prefs.device_consumption.forEach((device, id) => {
+      if (exclude.includes(device.stat_consumption)) {
+        return;
+      }
       const value =
         device.stat_consumption in data
           ? calculateStatisticSumGrowth(data[device.stat_consumption]) || 0
@@ -244,7 +250,10 @@ export class HuiEnergyDevicesGraphCard
 
     chartData.sort((a: any, b: any) => b.value[0] - a.value[0]);
 
-    chartData.length = this._config?.max_devices || chartData.length;
+    chartData.length = Math.min(
+      this._config?.max_devices || Infinity,
+      chartData.length
+    );
 
     this._chartData = datasets;
     await this.updateComplete;

@@ -1,4 +1,3 @@
-import "@material/mwc-button";
 import type { CSSResultGroup, PropertyValues } from "lit";
 import { html, LitElement, nothing } from "lit";
 import { customElement, property } from "lit/decorators";
@@ -9,6 +8,7 @@ import type { HomeAssistant } from "../../types";
 import { showConfigFlowDialog } from "./show-dialog-config-flow";
 import type { DataEntryFlowDialogParams } from "./show-dialog-data-entry-flow";
 import { configFlowContentStyles } from "./styles";
+import "../../components/ha-button";
 
 @customElement("step-flow-abort")
 class StepFlowAbort extends LitElement {
@@ -19,6 +19,8 @@ class StepFlowAbort extends LitElement {
   @property({ attribute: false }) public step!: DataEntryFlowStepAbort;
 
   @property({ attribute: false }) public domain!: string;
+
+  @property({ attribute: false }) public handler!: string;
 
   protected firstUpdated(changed: PropertyValues) {
     super.firstUpdated(changed);
@@ -32,19 +34,14 @@ class StepFlowAbort extends LitElement {
       return nothing;
     }
     return html`
-      <h2>
-        ${this.params.flowConfig.renderAbortHeader
-          ? this.params.flowConfig.renderAbortHeader(this.hass, this.step)
-          : this.hass.localize(`component.${this.domain}.title`)}
-      </h2>
       <div class="content">
         ${this.params.flowConfig.renderAbortDescription(this.hass, this.step)}
       </div>
       <div class="buttons">
-        <mwc-button @click=${this._flowDone}
+        <ha-button appearance="plain" @click=${this._flowDone}
           >${this.hass.localize(
             "ui.panel.config.integrations.config_flow.close"
-          )}</mwc-button
+          )}</ha-button
         >
       </div>
     `;
@@ -58,7 +55,7 @@ class StepFlowAbort extends LitElement {
       applicationCredentialAddedCallback: () => {
         showConfigFlowDialog(this.params.dialogParentElement!, {
           dialogClosedCallback: this.params.dialogClosedCallback,
-          startFlowHandler: this.domain,
+          startFlowHandler: this.handler,
           showAdvanced: this.hass.userData?.showAdvanced,
           navigateToResult: this.params.navigateToResult,
         });

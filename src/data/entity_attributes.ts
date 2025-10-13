@@ -1,6 +1,7 @@
 import { formatDurationDigital } from "../common/datetime/format_duration";
 import type { FrontendLocaleData } from "./translation";
 
+// These attributes are hidden from the more-info window for all entities.
 export const STATE_ATTRIBUTES = [
   "entity_id",
   "assumed_state",
@@ -25,6 +26,14 @@ export const STATE_ATTRIBUTES = [
   "unit_of_measurement",
   "available_tones",
 ];
+
+// These attributes are hidden from the more-info window for entities of the
+// matching domain and device_class.
+export const STATE_ATTRIBUTES_DOMAIN_CLASS = {
+  sensor: {
+    enum: ["options"],
+  },
+};
 
 export const TEMPERATURE_ATTRIBUTES = new Set([
   "temperature",
@@ -106,4 +115,74 @@ export const DOMAIN_ATTRIBUTES_FORMATERS: Record<
       return formatDurationDigital(locale, { hours, minutes, seconds })!;
     },
   },
+  input_datetime: {
+    year: (value) => value.toString(),
+  },
 };
+
+export const NON_NUMERIC_ATTRIBUTES = [
+  "access_token",
+  "auto_update",
+  "available_modes",
+  "away_mode",
+  "changed_by",
+  "code_format",
+  "color_modes",
+  "current_activity",
+  "device_class",
+  "editable",
+  "effect_list",
+  "effect",
+  "entity_picture",
+  "event_type",
+  "event_types",
+  "fan_mode",
+  "fan_modes",
+  "fan_speed_list",
+  "forecast",
+  "friendly_name",
+  "frontend_stream_type",
+  "has_date",
+  "has_time",
+  "hs_color",
+  "hvac_mode",
+  "hvac_modes",
+  "icon",
+  "media_album_name",
+  "media_artist",
+  "media_content_type",
+  "media_position_updated_at",
+  "media_title",
+  "next_dawn",
+  "next_dusk",
+  "next_midnight",
+  "next_noon",
+  "next_rising",
+  "next_setting",
+  "operation_list",
+  "operation_mode",
+  "options",
+  "preset_mode",
+  "preset_modes",
+  "release_notes",
+  "release_summary",
+  "release_url",
+  "restored",
+  "rgb_color",
+  "rgbw_color",
+  "shuffle",
+  "sound_mode_list",
+  "sound_mode",
+  "source_list",
+  "source_type",
+  "source",
+  "state_class",
+  "supported_features",
+  "swing_mode",
+  "swing_mode",
+  "swing_modes",
+  "title",
+  "token",
+  "unit_of_measurement",
+  "xy_color",
+];

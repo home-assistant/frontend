@@ -4,7 +4,7 @@ import type {
   HassEntityBase,
   HassEvent,
 } from "home-assistant-js-websocket";
-import { BINARY_STATE_ON } from "../common/const";
+import { BINARY_STATE_ON, BINARY_STATE_OFF } from "../common/const";
 import { computeDomain } from "../common/entity/compute_domain";
 import { computeStateDomain } from "../common/entity/compute_state_domain";
 import { supportsFeature } from "../common/entity/supports-feature";
@@ -51,6 +51,15 @@ export const updateCanInstall = (
   (entity.state === BINARY_STATE_ON ||
     (showSkipped && Boolean(entity.attributes.skipped_version))) &&
   supportsFeature(entity, UpdateEntityFeature.INSTALL);
+
+export const latestVersionIsSkipped = (entity: UpdateEntity): boolean =>
+  !!(
+    entity.attributes.latest_version &&
+    entity.attributes.skipped_version === entity.attributes.latest_version
+  );
+
+export const updateButtonIsDisabled = (entity: UpdateEntity): boolean =>
+  entity.state === BINARY_STATE_OFF && !latestVersionIsSkipped(entity);
 
 export const updateIsInstalling = (entity: UpdateEntity): boolean =>
   !!entity.attributes.in_progress;
@@ -207,7 +216,11 @@ export const computeUpdateStateDisplay = (
   return hass.formatEntityState(stateObj);
 };
 
-type UpdateType = "addon" | "home_assistant" | "generic";
+export type UpdateType =
+  | "addon"
+  | "home_assistant"
+  | "home_assistant_os"
+  | "generic";
 
 export const getUpdateType = (
   stateObj: UpdateEntity,
@@ -215,6 +228,7 @@ export const getUpdateType = (
 ): UpdateType => {
   const entity_id = stateObj.entity_id;
   const domain = entitySources[entity_id]?.domain;
+
   if (domain !== "hassio") {
     return "generic";
   }
@@ -224,13 +238,11 @@ export const getUpdateType = (
     return "home_assistant";
   }
 
-  if (
-    ![
-      HOME_ASSISTANT_CORE_TITLE,
-      HOME_ASSISTANT_SUPERVISOR_TITLE,
-      HOME_ASSISTANT_OS_TITLE,
-    ].includes(title)
-  ) {
+  if (title === HOME_ASSISTANT_OS_TITLE) {
+    return "home_assistant_os";
+  }
+
+  if (title !== HOME_ASSISTANT_SUPERVISOR_TITLE) {
     return "addon";
   }
   return "generic";

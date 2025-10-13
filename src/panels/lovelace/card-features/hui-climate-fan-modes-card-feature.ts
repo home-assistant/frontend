@@ -1,5 +1,4 @@
 import { mdiFan } from "@mdi/js";
-import type { HassEntity } from "home-assistant-js-websocket";
 import type { PropertyValues, TemplateResult } from "lit";
 import { html, LitElement } from "lit";
 import { customElement, property, query, state } from "lit/decorators";
@@ -11,6 +10,7 @@ import "../../../components/ha-control-select";
 import type { ControlSelectOption } from "../../../components/ha-control-select";
 import "../../../components/ha-control-select-menu";
 import type { HaControlSelectMenu } from "../../../components/ha-control-select-menu";
+import "../../../components/ha-list-item";
 import type { ClimateEntity } from "../../../data/climate";
 import { ClimateEntityFeature } from "../../../data/climate";
 import { UNAVAILABLE } from "../../../data/entity";
@@ -18,9 +18,19 @@ import type { HomeAssistant } from "../../../types";
 import type { LovelaceCardFeature, LovelaceCardFeatureEditor } from "../types";
 import { cardFeatureStyles } from "./common/card-feature-styles";
 import { filterModes } from "./common/filter-modes";
-import type { ClimateFanModesCardFeatureConfig } from "./types";
+import type {
+  ClimateFanModesCardFeatureConfig,
+  LovelaceCardFeatureContext,
+} from "./types";
 
-export const supportsClimateFanModesCardFeature = (stateObj: HassEntity) => {
+export const supportsClimateFanModesCardFeature = (
+  hass: HomeAssistant,
+  context: LovelaceCardFeatureContext
+) => {
+  const stateObj = context.entity_id
+    ? hass.states[context.entity_id]
+    : undefined;
+  if (!stateObj) return false;
   const domain = computeDomain(stateObj.entity_id);
   return (
     domain === "climate" &&
@@ -35,7 +45,7 @@ class HuiClimateFanModesCardFeature
 {
   @property({ attribute: false }) public hass?: HomeAssistant;
 
-  @property({ attribute: false }) public stateObj?: ClimateEntity;
+  @property({ attribute: false }) public context?: LovelaceCardFeatureContext;
 
   @state() private _config?: ClimateFanModesCardFeatureConfig;
 
@@ -43,6 +53,15 @@ class HuiClimateFanModesCardFeature
 
   @query("ha-control-select-menu", true)
   private _haSelect?: HaControlSelectMenu;
+
+  private get _stateObj() {
+    if (!this.hass || !this.context || !this.context.entity_id) {
+      return undefined;
+    }
+    return this.hass.states[this.context.entity_id!] as
+      | ClimateEntity
+      | undefined;
+  }
 
   static getStubConfig(): ClimateFanModesCardFeatureConfig {
     return {
@@ -67,8 +86,15 @@ class HuiClimateFanModesCardFeature
 
   protected willUpdate(changedProp: PropertyValues): void {
     super.willUpdate(changedProp);
-    if (changedProp.has("stateObj") && this.stateObj) {
-      this._currentFanMode = this.stateObj.attributes.fan_mode;
+    if (
+      (changedProp.has("hass") || changedProp.has("context")) &&
+      this._stateObj
+    ) {
+      const oldHass = changedProp.get("hass") as HomeAssistant | undefined;
+      const oldStateObj = oldHass?.states[this.context!.entity_id!];
+      if (oldStateObj !== this._stateObj) {
+        this._currentFanMode = this._stateObj.attributes.fan_mode;
+      }
     }
   }
 
@@ -90,7 +116,7 @@ class HuiClimateFanModesCardFeature
     const fanMode =
       (ev.detail as any).value ?? ((ev.target as any).value as string);
 
-    const oldFanMode = this.stateObj!.attributes.fan_mode;
+    const oldFanMode = this._stateObj!.attributes.fan_mode;
 
     if (fanMode === oldFanMode) return;
 
@@ -105,7 +131,7 @@ class HuiClimateFanModesCardFeature
 
   private async _setMode(mode: string) {
     await this.hass!.callService("climate", "set_fan_mode", {
-      entity_id: this.stateObj!.entity_id,
+      entity_id: this._stateObj!.entity_id,
       fan_mode: mode,
     });
   }
@@ -114,13 +140,14 @@ class HuiClimateFanModesCardFeature
     if (
       !this._config ||
       !this.hass ||
-      !this.stateObj ||
-      !supportsClimateFanModesCardFeature(this.stateObj)
+      !this.context ||
+      !this._stateObj ||
+      !supportsClimateFanModesCardFeature(this.hass, this.context)
     ) {
       return null;
     }
 
-    const stateObj = this.stateObj;
+    const stateObj = this._stateObj;
 
     const options = filterModes(
       stateObj.attributes.fan_modes,
@@ -128,7 +155,7 @@ class HuiClimateFanModesCardFeature
     ).map<ControlSelectOption>((mode) => ({
       value: mode,
       label: this.hass!.formatEntityAttributeValue(
-        this.stateObj!,
+        this._stateObj!,
         "fan_mode",
         mode
       ),
@@ -147,12 +174,9 @@ class HuiClimateFanModesCardFeature
           .options=${options}
           .value=${this._currentFanMode}
           @value-changed=${this._valueChanged}
-          hide-label
-          .ariaLabel=${this.hass!.formatEntityAttributeName(
-            stateObj,
-            "fan_mode"
-          )}
-          .disabled=${this.stateObj!.state === UNAVAILABLE}
+          hide-option-label
+          .label=${this.hass!.formatEntityAttributeName(stateObj, "fan_mode")}
+          .disabled=${this._stateObj!.state === UNAVAILABLE}
         >
         </ha-control-select>
       `;
@@ -164,7 +188,7 @@ class HuiClimateFanModesCardFeature
         hide-label
         .label=${this.hass!.formatEntityAttributeName(stateObj, "fan_mode")}
         .value=${this._currentFanMode}
-        .disabled=${this.stateObj.state === UNAVAILABLE}
+        .disabled=${this._stateObj.state === UNAVAILABLE}
         fixedMenuPosition
         naturalMenuWidth
         @selected=${this._valueChanged}

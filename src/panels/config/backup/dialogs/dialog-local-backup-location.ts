@@ -2,10 +2,10 @@ import type { CSSResultGroup } from "lit";
 import { css, html, LitElement, nothing } from "lit";
 import { customElement, property, state } from "lit/decorators";
 import { fireEvent } from "../../../../common/dom/fire_event";
+import "../../../../components/ha-alert";
 import "../../../../components/ha-button";
 import { createCloseHeading } from "../../../../components/ha-dialog";
 import "../../../../components/ha-form/ha-form";
-import "../../../../components/ha-alert";
 import type {
   HaFormSchema,
   SchemaUnion,
@@ -91,6 +91,7 @@ class LocalBackupLocationDialog extends LitElement {
         </ha-alert>
         <ha-button
           slot="secondaryAction"
+          appearance="plain"
           @click=${this.closeDialog}
           dialogInitialFocus
         >

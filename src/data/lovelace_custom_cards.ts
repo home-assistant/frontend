@@ -1,4 +1,6 @@
 import type { HassEntity } from "home-assistant-js-websocket";
+import type { HomeAssistant } from "../types";
+import type { LovelaceCardFeatureContext } from "../panels/lovelace/card-features/types";
 
 export interface CustomCardEntry {
   type: string;
@@ -19,7 +21,12 @@ export interface CustomBadgeEntry {
 export interface CustomCardFeatureEntry {
   type: string;
   name?: string;
+  /** @deprecated Use `isSupported` */
   supported?: (stateObj: HassEntity) => boolean;
+  isSupported?: (
+    hass: HomeAssistant,
+    context: LovelaceCardFeatureContext
+  ) => boolean;
   configurable?: boolean;
 }
 

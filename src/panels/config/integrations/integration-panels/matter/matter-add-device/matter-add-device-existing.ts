@@ -3,8 +3,8 @@ import { LitElement, css, html } from "lit";
 import { customElement, property } from "lit/decorators";
 import { fireEvent } from "../../../../../../common/dom/fire_event";
 import "../../../../../../components/ha-icon-next";
-import "../../../../../../components/ha-md-list-item";
 import "../../../../../../components/ha-md-list";
+import "../../../../../../components/ha-md-list-item";
 import type { HomeAssistant } from "../../../../../../types";
 import type { MatterAddDeviceStep } from "../dialog-matter-add-device";
 import { sharedStyles } from "./matter-add-device-shared-styles";
@@ -100,7 +100,7 @@ class MatterAddDeviceExisting extends LitElement {
       .logo {
         width: 48px;
         height: 48px;
-        border-radius: 12px;
+        border-radius: var(--ha-border-radius-lg);
         border: 1px solid var(--divider-color);
         padding: 10px;
         box-sizing: border-box;

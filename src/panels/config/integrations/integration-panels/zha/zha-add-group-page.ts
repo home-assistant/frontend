@@ -1,11 +1,10 @@
-import "@material/mwc-button";
 import type { CSSResultGroup, PropertyValues } from "lit";
 import { css, html, LitElement } from "lit";
 import { customElement, property, state, query } from "lit/decorators";
 import type { HASSDomEvent } from "../../../../../common/dom/fire_event";
 import { navigate } from "../../../../../common/navigate";
 import type { SelectionChangedEvent } from "../../../../../components/data-table/ha-data-table";
-import "../../../../../components/ha-circular-progress";
+import "../../../../../components/ha-button";
 import type { ZHADeviceEndpoint, ZHAGroup } from "../../../../../data/zha";
 import { addGroup, fetchGroupableDevices } from "../../../../../data/zha";
 import "../../../../../layouts/hass-subpage";
@@ -97,25 +96,17 @@ export class ZHAAddGroupPage extends LitElement {
           </zha-device-endpoint-data-table>
 
           <div class="buttons">
-            <mwc-button
+            <ha-button
               .disabled=${!this._groupName ||
               this._groupName === "" ||
               this._processingAdd}
               @click=${this._createGroup}
               class="button"
+              .loading=${this._processingAdd}
             >
-              ${this._processingAdd
-                ? html`<ha-circular-progress
-                    indeterminate
-                    size="small"
-                    .ariaLabel=${this.hass!.localize(
-                      "ui.panel.config.zha.groups.creating_group"
-                    )}
-                  ></ha-circular-progress>`
-                : ""}
               ${this.hass!.localize(
                 "ui.panel.config.zha.groups.create"
-              )}</mwc-button
+              )}</ha-button
             >
           </div>
         </ha-config-section>
@@ -167,14 +158,12 @@ export class ZHAAddGroupPage extends LitElement {
     return [
       css`
         .header {
-          font-family: var(--paper-font-display1_-_font-family);
-          -webkit-font-smoothing: var(
-            --paper-font-display1_-_-webkit-font-smoothing
-          );
-          font-size: var(--paper-font-display1_-_font-size);
-          font-weight: var(--paper-font-display1_-_font-weight);
-          letter-spacing: var(--paper-font-display1_-_letter-spacing);
-          line-height: var(--paper-font-display1_-_line-height);
+          font-family: var(--ha-font-family-body);
+          -webkit-font-smoothing: var(--ha-font-smoothing);
+          -moz-osx-font-smoothing: var(--ha-moz-osx-font-smoothing);
+          font-size: var(--ha-font-size-4xl);
+          font-weight: var(--ha-font-weight-normal);
+          line-height: var(--ha-line-height-condensed);
           opacity: var(--dark-primary-opacity);
         }
 
@@ -187,7 +176,7 @@ export class ZHAAddGroupPage extends LitElement {
         }
         .buttons {
           align-items: flex-end;
-          padding: 8px;
+          padding: 16px;
         }
         .buttons .warning {
           --mdc-theme-primary: var(--error-color);

@@ -1,6 +1,3 @@
-import "@material/mwc-tab-bar/mwc-tab-bar";
-import "@material/mwc-tab/mwc-tab";
-import type { MDCTabBarActivatedEvent } from "@material/tab-bar";
 import { mdiCodeBraces, mdiContentCopy, mdiListBoxOutline } from "@mdi/js";
 import deepClone from "deep-clone-simple";
 import type { CSSResultGroup } from "lit";
@@ -12,8 +9,9 @@ import type { HASSDomEvent } from "../../../../common/dom/fire_event";
 import { fireEvent } from "../../../../common/dom/fire_event";
 import "../../../../components/ha-alert";
 import "../../../../components/ha-button";
-import "../../../../components/ha-list-item";
 import "../../../../components/ha-svg-icon";
+import "../../../../components/ha-tab-group";
+import "../../../../components/ha-tab-group-tab";
 import type { LovelaceCardConfig } from "../../../../data/lovelace/config/card";
 import type { LovelaceConfig } from "../../../../data/lovelace/config/types";
 import type { HomeAssistant } from "../../../../types";
@@ -82,21 +80,22 @@ export class HuiConditionalCardEditor
     const isGuiMode = !this._cardEditorEl || this._GUImode;
 
     return html`
-      <mwc-tab-bar
-        .activeIndex=${this._cardTab ? 1 : 0}
-        @MDCTabBar:activated=${this._selectTab}
-      >
-        <mwc-tab
-          .label=${this.hass!.localize(
+      <ha-tab-group @wa-tab-show=${this._selectTab}>
+        <ha-tab-group-tab
+          slot="nav"
+          panel="conditions"
+          .active=${!this._cardTab}
+        >
+          ${this.hass!.localize(
             "ui.panel.lovelace.editor.card.conditional.conditions"
           )}
-        ></mwc-tab>
-        <mwc-tab
-          .label=${this.hass!.localize(
+        </ha-tab-group-tab>
+        <ha-tab-group-tab slot="nav" panel="card" .active=${this._cardTab}>
+          ${this.hass!.localize(
             "ui.panel.lovelace.editor.card.conditional.card"
           )}
-        ></mwc-tab>
-      </mwc-tab-bar>
+        </ha-tab-group-tab>
+      </ha-tab-group>
       ${this._cardTab
         ? html`
             <div class="card">
@@ -121,10 +120,13 @@ export class HuiConditionalCardEditor
                         .path=${mdiContentCopy}
                         @click=${this._handleCopyCard}
                       ></ha-icon-button>
-                      <mwc-button @click=${this._handleReplaceCard}
+                      <ha-button
+                        appearance="plain"
+                        size="small"
+                        @click=${this._handleReplaceCard}
                         >${this.hass!.localize(
                           "ui.panel.lovelace.editor.card.conditional.change_type"
-                        )}</mwc-button
+                        )}</ha-button
                       >
                     </div>
                     <hui-card-element-editor
@@ -160,8 +162,8 @@ export class HuiConditionalCardEditor
     `;
   }
 
-  private _selectTab(ev: MDCTabBarActivatedEvent): void {
-    this._cardTab = ev.detail.index === 1;
+  private _selectTab(ev: CustomEvent): void {
+    this._cardTab = ev.detail.name === "card";
   }
 
   private _toggleMode(): void {
@@ -236,8 +238,13 @@ export class HuiConditionalCardEditor
     return [
       configElementStyle,
       css`
-        mwc-tab-bar {
-          border-bottom: 1px solid var(--divider-color);
+        ha-tab-group-tab {
+          flex: 1;
+        }
+
+        ha-tab-group-tab::part(base) {
+          width: 100%;
+          justify-content: center;
         }
         ha-alert {
           display: block;
@@ -258,6 +265,9 @@ export class HuiConditionalCardEditor
           display: flex;
           justify-content: flex-end;
           width: 100%;
+        }
+        .card-options {
+          align-items: center;
         }
         .gui-mode-button {
           margin-right: auto;

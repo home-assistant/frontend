@@ -7,14 +7,9 @@
     script.src = src;
     return document.head.appendChild(script);
   }
-  window.polymerSkipLoadingFontRoboto = true;
-  if (
-    !(
-      "customElements" in window &&
-      "content" in document.createElement("template")
-    )
-  ) {
+  if (!("attachShadow" in Element.prototype)) {
     _ls("/static/polyfills/webcomponents-bundle.js", true);
+    _ls("/static/polyfills/lit-polyfill-support.js", true);
   }
   // Modern browsers are detected primarily using the user agent string.
   // A feature detection which roughly lines up with the modern targets is used

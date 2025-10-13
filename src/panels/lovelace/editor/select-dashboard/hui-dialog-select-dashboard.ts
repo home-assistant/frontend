@@ -9,7 +9,7 @@ import "../../../../components/ha-icon-button";
 import "../../../../components/ha-md-select";
 import "../../../../components/ha-md-select-option";
 import "../../../../components/ha-button";
-import "../../../../components/ha-circular-progress";
+import "../../../../components/ha-spinner";
 import type { LovelaceConfig } from "../../../../data/lovelace/config/types";
 import type { LovelaceDashboard } from "../../../../data/lovelace/dashboard";
 import { fetchDashboards } from "../../../../data/lovelace/dashboard";
@@ -106,14 +106,15 @@ export class HuiDialogSelectDashboard extends LitElement {
                 </ha-md-select>
               `
             : html`<div class="loading">
-                <ha-circular-progress
-                  indeterminate
-                  size="medium"
-                ></ha-circular-progress>
+                <ha-spinner size="medium"></ha-spinner>
               </div>`}
         </div>
         <div slot="actions">
-          <ha-button @click=${this.closeDialog} .disabled=${this._saving}>
+          <ha-button
+            appearance="plain"
+            @click=${this.closeDialog}
+            .disabled=${this._saving}
+          >
             ${this.hass!.localize("ui.common.cancel")}
           </ha-button>
           <ha-button

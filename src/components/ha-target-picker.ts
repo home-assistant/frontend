@@ -1,6 +1,5 @@
 // @ts-ignore
 import chipStyles from "@material/chips/dist/mdc.chips.min.css";
-import "@material/mwc-button/mwc-button";
 import "@material/mwc-menu/mwc-menu-surface";
 import {
   mdiClose,
@@ -26,12 +25,12 @@ import { computeCssColor } from "../common/color/compute-color";
 import { hex2rgb } from "../common/color/convert-color";
 import { fireEvent } from "../common/dom/fire_event";
 import { stopPropagation } from "../common/dom/stop_propagation";
+import { computeDeviceNameDisplay } from "../common/entity/compute_device_name";
 import { computeDomain } from "../common/entity/compute_domain";
 import { computeStateName } from "../common/entity/compute_state_name";
 import { isValidEntityId } from "../common/entity/valid_entity_id";
 import type { AreaRegistryEntry } from "../data/area_registry";
 import type { DeviceRegistryEntry } from "../data/device_registry";
-import { computeDeviceName } from "../data/device_registry";
 import type { EntityRegistryDisplayEntry } from "../data/entity_registry";
 import type { LabelRegistryEntry } from "../data/label_registry";
 import { subscribeLabelRegistry } from "../data/label_registry";
@@ -45,6 +44,7 @@ import "./ha-area-floor-picker";
 import { floorDefaultIconPath } from "./ha-floor-icon";
 import "./ha-icon-button";
 import "./ha-input-helper-text";
+import "./ha-label-picker";
 import "./ha-svg-icon";
 import "./ha-tooltip";
 
@@ -150,7 +150,9 @@ export class HaTargetPicker extends SubscribeMixin(LitElement) {
               return this._renderChip(
                 "device_id",
                 device_id,
-                device ? computeDeviceName(device, this.hass) : device_id,
+                device
+                  ? computeDeviceNameDisplay(device, this.hass)
+                  : device_id,
                 undefined,
                 undefined,
                 mdiDevices
@@ -286,7 +288,9 @@ export class HaTargetPicker extends SubscribeMixin(LitElement) {
         ${this._renderPicker()}
       </div>
       ${this.helper
-        ? html`<ha-input-helper-text>${this.helper}</ha-input-helper-text>`
+        ? html`<ha-input-helper-text .disabled=${this.disabled}
+            >${this.helper}</ha-input-helper-text
+          >`
         : ""}
     `;
   }
@@ -339,40 +343,36 @@ export class HaTargetPicker extends SubscribeMixin(LitElement) {
         ${type === "entity_id"
           ? ""
           : html`<span role="gridcell">
-              <ha-tooltip
-                .content=${this.hass.localize(
+              <ha-tooltip .for="expand-${id}"
+                >${this.hass.localize(
                   `ui.components.target-picker.expand_${type}`
                 )}
-              >
-                <ha-icon-button
-                  class="expand-btn mdc-chip__icon mdc-chip__icon--trailing"
-                  .label=${this.hass.localize(
-                    "ui.components.target-picker.expand"
-                  )}
-                  .path=${mdiUnfoldMoreVertical}
-                  hide-title
-                  .id=${id}
-                  .type=${type}
-                  @click=${this._handleExpand}
-                ></ha-icon-button>
               </ha-tooltip>
+              <ha-icon-button
+                class="expand-btn mdc-chip__icon mdc-chip__icon--trailing"
+                .label=${this.hass.localize(
+                  "ui.components.target-picker.expand"
+                )}
+                .path=${mdiUnfoldMoreVertical}
+                hide-title
+                .id="expand-${id}"
+                .type=${type}
+                @click=${this._handleExpand}
+              ></ha-icon-button>
             </span>`}
         <span role="gridcell">
-          <ha-tooltip
-            .content=${this.hass.localize(
-              `ui.components.target-picker.remove_${type}`
-            )}
-          >
-            <ha-icon-button
-              class="mdc-chip__icon mdc-chip__icon--trailing"
-              .label=${this.hass.localize("ui.components.target-picker.remove")}
-              .path=${mdiClose}
-              hide-title
-              .id=${id}
-              .type=${type}
-              @click=${this._handleRemove}
-            ></ha-icon-button>
+          <ha-tooltip .for="remove-${id}">
+            ${this.hass.localize(`ui.components.target-picker.remove_${type}`)}
           </ha-tooltip>
+          <ha-icon-button
+            class="mdc-chip__icon mdc-chip__icon--trailing"
+            .label=${this.hass.localize("ui.components.target-picker.remove")}
+            .path=${mdiClose}
+            hide-title
+            .id="remove-${id}"
+            .type=${type}
+            @click=${this._handleRemove}
+          ></ha-icon-button>
         </span>
       </div>
     `;
@@ -382,12 +382,12 @@ export class HaTargetPicker extends SubscribeMixin(LitElement) {
     if (!this._addMode) {
       return nothing;
     }
+
     return html`<mwc-menu-surface
       open
       .anchor=${this._addContainer}
       @closed=${this._onClosed}
       @opened=${this._onOpened}
-      @opened-changed=${this._openedChanged}
       @input=${stopPropagation}
       >${this._addMode === "area_id"
         ? html`
@@ -395,10 +395,12 @@ export class HaTargetPicker extends SubscribeMixin(LitElement) {
               .hass=${this.hass}
               id="input"
               .type=${"area_id"}
-              .label=${this.hass.localize(
+              .placeholder=${this.hass.localize(
                 "ui.components.target-picker.add_area_id"
               )}
-              no-add
+              .searchLabel=${this.hass.localize(
+                "ui.components.target-picker.add_area_id"
+              )}
               .deviceFilter=${this.deviceFilter}
               .entityFilter=${this.entityFilter}
               .includeDeviceClasses=${this.includeDeviceClasses}
@@ -406,6 +408,7 @@ export class HaTargetPicker extends SubscribeMixin(LitElement) {
               .excludeAreas=${ensureArray(this.value?.area_id)}
               .excludeFloors=${ensureArray(this.value?.floor_id)}
               @value-changed=${this._targetPicked}
+              @opened-changed=${this._openedChanged}
               @click=${this._preventDefault}
             ></ha-area-floor-picker>
           `
@@ -415,7 +418,10 @@ export class HaTargetPicker extends SubscribeMixin(LitElement) {
                 .hass=${this.hass}
                 id="input"
                 .type=${"device_id"}
-                .label=${this.hass.localize(
+                .placeholder=${this.hass.localize(
+                  "ui.components.target-picker.add_device_id"
+                )}
+                .searchLabel=${this.hass.localize(
                   "ui.components.target-picker.add_device_id"
                 )}
                 .deviceFilter=${this.deviceFilter}
@@ -424,6 +430,7 @@ export class HaTargetPicker extends SubscribeMixin(LitElement) {
                 .includeDomains=${this.includeDomains}
                 .excludeDevices=${ensureArray(this.value?.device_id)}
                 @value-changed=${this._targetPicked}
+                @opened-changed=${this._openedChanged}
                 @click=${this._preventDefault}
               ></ha-device-picker>
             `
@@ -433,7 +440,10 @@ export class HaTargetPicker extends SubscribeMixin(LitElement) {
                   .hass=${this.hass}
                   id="input"
                   .type=${"label_id"}
-                  .label=${this.hass.localize(
+                  .placeholder=${this.hass.localize(
+                    "ui.components.target-picker.add_label_id"
+                  )}
+                  .searchLabel=${this.hass.localize(
                     "ui.components.target-picker.add_label_id"
                   )}
                   no-add
@@ -443,6 +453,7 @@ export class HaTargetPicker extends SubscribeMixin(LitElement) {
                   .includeDomains=${this.includeDomains}
                   .excludeLabels=${ensureArray(this.value?.label_id)}
                   @value-changed=${this._targetPicked}
+                  @opened-changed=${this._openedChanged}
                   @click=${this._preventDefault}
                 ></ha-label-picker>
               `
@@ -451,7 +462,10 @@ export class HaTargetPicker extends SubscribeMixin(LitElement) {
                   .hass=${this.hass}
                   id="input"
                   .type=${"entity_id"}
-                  .label=${this.hass.localize(
+                  .placeholder=${this.hass.localize(
+                    "ui.components.target-picker.add_entity_id"
+                  )}
+                  .searchLabel=${this.hass.localize(
                     "ui.components.target-picker.add_entity_id"
                   )}
                   .entityFilter=${this.entityFilter}
@@ -460,11 +474,12 @@ export class HaTargetPicker extends SubscribeMixin(LitElement) {
                   .excludeEntities=${ensureArray(this.value?.entity_id)}
                   .createDomains=${this.createDomains}
                   @value-changed=${this._targetPicked}
+                  @opened-changed=${this._openedChanged}
                   @click=${this._preventDefault}
                   allow-custom-entity
                 ></ha-entity-picker>
               `}</mwc-menu-surface
-    >`;
+    > `;
   }
 
   private _targetPicked(ev) {
@@ -507,6 +522,7 @@ export class HaTargetPicker extends SubscribeMixin(LitElement) {
 
   private _handleExpand(ev) {
     const target = ev.currentTarget as any;
+    const id = target.id.replace(/^expand-/, "");
     const newAreas: string[] = [];
     const newDevices: string[] = [];
     const newEntities: string[] = [];
@@ -514,7 +530,7 @@ export class HaTargetPicker extends SubscribeMixin(LitElement) {
     if (target.type === "floor_id") {
       Object.values(this.hass.areas).forEach((area) => {
         if (
-          area.floor_id === target.id &&
+          area.floor_id === id &&
           !this.value!.area_id?.includes(area.area_id) &&
           this._areaMeetsFilter(area)
         ) {
@@ -524,7 +540,7 @@ export class HaTargetPicker extends SubscribeMixin(LitElement) {
     } else if (target.type === "area_id") {
       Object.values(this.hass.devices).forEach((device) => {
         if (
-          device.area_id === target.id &&
+          device.area_id === id &&
           !this.value!.device_id?.includes(device.id) &&
           this._deviceMeetsFilter(device)
         ) {
@@ -533,7 +549,7 @@ export class HaTargetPicker extends SubscribeMixin(LitElement) {
       });
       Object.values(this.hass.entities).forEach((entity) => {
         if (
-          entity.area_id === target.id &&
+          entity.area_id === id &&
           !this.value!.entity_id?.includes(entity.entity_id) &&
           this._entityRegMeetsFilter(entity)
         ) {
@@ -543,7 +559,7 @@ export class HaTargetPicker extends SubscribeMixin(LitElement) {
     } else if (target.type === "device_id") {
       Object.values(this.hass.entities).forEach((entity) => {
         if (
-          entity.device_id === target.id &&
+          entity.device_id === id &&
           !this.value!.entity_id?.includes(entity.entity_id) &&
           this._entityRegMeetsFilter(entity)
         ) {
@@ -553,7 +569,7 @@ export class HaTargetPicker extends SubscribeMixin(LitElement) {
     } else if (target.type === "label_id") {
       Object.values(this.hass.areas).forEach((area) => {
         if (
-          area.labels.includes(target.id) &&
+          area.labels.includes(id) &&
           !this.value!.area_id?.includes(area.area_id) &&
           this._areaMeetsFilter(area)
         ) {
@@ -562,7 +578,7 @@ export class HaTargetPicker extends SubscribeMixin(LitElement) {
       });
       Object.values(this.hass.devices).forEach((device) => {
         if (
-          device.labels.includes(target.id) &&
+          device.labels.includes(id) &&
           !this.value!.device_id?.includes(device.id) &&
           this._deviceMeetsFilter(device)
         ) {
@@ -571,9 +587,9 @@ export class HaTargetPicker extends SubscribeMixin(LitElement) {
       });
       Object.values(this.hass.entities).forEach((entity) => {
         if (
-          entity.labels.includes(target.id) &&
+          entity.labels.includes(id) &&
           !this.value!.entity_id?.includes(entity.entity_id) &&
-          this._entityRegMeetsFilter(entity)
+          this._entityRegMeetsFilter(entity, true)
         ) {
           newEntities.push(entity.entity_id);
         }
@@ -591,14 +607,15 @@ export class HaTargetPicker extends SubscribeMixin(LitElement) {
     if (newAreas.length) {
       value = this._addItems(value, "area_id", newAreas);
     }
-    value = this._removeItem(value, target.type, target.id);
+    value = this._removeItem(value, target.type, id);
     fireEvent(this, "value-changed", { value });
   }
 
   private _handleRemove(ev) {
     const target = ev.currentTarget as any;
+    const id = target.id.replace(/^remove-/, "");
     fireEvent(this, "value-changed", {
-      value: this._removeItem(this.value, target.type, target.id),
+      value: this._removeItem(this.value, target.type, id),
     });
   }
 
@@ -698,8 +715,11 @@ export class HaTargetPicker extends SubscribeMixin(LitElement) {
     return true;
   }
 
-  private _entityRegMeetsFilter(entity: EntityRegistryDisplayEntry): boolean {
-    if (entity.entity_category) {
+  private _entityRegMeetsFilter(
+    entity: EntityRegistryDisplayEntry,
+    includeSecondary = false
+  ): boolean {
+    if (entity.hidden || (entity.entity_category && !includeSecondary)) {
       return false;
     }
 
@@ -763,7 +783,7 @@ export class HaTargetPicker extends SubscribeMixin(LitElement) {
         outline: none;
       }
       .mdc-chip ha-icon-button ha-svg-icon {
-        border-radius: 50%;
+        border-radius: var(--ha-border-radius-circle);
         background: var(--secondary-text-color);
       }
       .mdc-chip__icon.mdc-chip__icon--trailing {
@@ -780,7 +800,7 @@ export class HaTargetPicker extends SubscribeMixin(LitElement) {
         align-items: center;
         justify-content: center;
         --mdc-icon-size: 20px;
-        border-radius: 50%;
+        border-radius: var(--ha-border-radius-circle);
         padding: 6px;
         margin-left: -13px !important;
         margin-inline-start: -13px !important;

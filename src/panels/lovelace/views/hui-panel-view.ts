@@ -5,12 +5,12 @@ import { property, state } from "lit/decorators";
 import { classMap } from "lit/directives/class-map";
 import { fireEvent } from "../../../common/dom/fire_event";
 import { computeRTL } from "../../../common/util/compute_rtl";
+import "../../../components/ha-alert";
 import type { LovelaceViewElement } from "../../../data/lovelace";
 import type { LovelaceViewConfig } from "../../../data/lovelace/config/view";
 import type { HomeAssistant } from "../../../types";
 import type { HuiCard } from "../cards/hui-card";
 import type { HuiCardOptions } from "../components/hui-card-options";
-import type { HuiWarning } from "../components/hui-warning";
 import type { Lovelace } from "../types";
 
 let editCodeLoaded = false;
@@ -26,7 +26,7 @@ export class PanelView extends LitElement implements LovelaceViewElement {
 
   @property({ attribute: false }) public cards: HuiCard[] = [];
 
-  @state() private _card?: HuiCard | HuiWarning | HuiCardOptions;
+  @state() private _card?: HuiCard | HuiCardOptions;
 
   // eslint-disable-next-line @typescript-eslint/no-empty-function
   public setConfig(_config: LovelaceViewConfig): void {}
@@ -63,11 +63,11 @@ export class PanelView extends LitElement implements LovelaceViewElement {
   protected render(): TemplateResult {
     return html`
       ${this.cards!.length > 1
-        ? html`<hui-warning>
-            ${this.hass!.localize(
+        ? html`<ha-alert alert-type="warning"
+            >${this.hass!.localize(
               "ui.panel.lovelace.editor.view.panel_mode.warning_multiple_cards"
-            )}
-          </hui-warning>`
+            )}</ha-alert
+          >`
         : ""}
       ${this._card}
       ${this.lovelace?.editMode && this.cards.length === 0
@@ -122,24 +122,27 @@ export class PanelView extends LitElement implements LovelaceViewElement {
     :host {
       display: block;
       height: 100%;
-      --restore-card-border-radius: var(--ha-card-border-radius, 12px);
+      --restore-card-border-radius: var(
+        --ha-card-border-radius,
+        var(--ha-border-radius-lg)
+      );
       --restore-card-border-width: var(--ha-card-border-width, 1px);
       --restore-card-box-shadow: var(--ha-card-box-shadow, none);
     }
 
     * {
-      --ha-card-border-radius: 0;
+      --ha-card-border-radius: var(--ha-border-radius-square);
       --ha-card-border-width: 0;
       --ha-card-box-shadow: none;
     }
 
     ha-fab {
       position: fixed;
-      right: calc(16px + env(safe-area-inset-right));
-      bottom: calc(16px + env(safe-area-inset-bottom));
+      right: calc(16px + var(--safe-area-inset-right));
+      bottom: calc(16px + var(--safe-area-inset-bottom));
       z-index: 1;
       float: var(--float-end);
-      inset-inline-end: calc(16px + env(safe-area-inset-right));
+      inset-inline-end: calc(16px + var(--safe-area-inset-right));
       inset-inline-start: initial;
     }
   `;

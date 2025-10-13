@@ -58,6 +58,12 @@ interface RestoreBackupEvent {
   state: RestoreBackupState;
 }
 
+export type ManagerState =
+  | "idle"
+  | "create_backup"
+  | "receive_backup"
+  | "restore_backup";
+
 export type ManagerStateEvent =
   | IdleEvent
   | CreateBackupEvent
@@ -66,11 +72,16 @@ export type ManagerStateEvent =
 
 export const subscribeBackupEvents = (
   hass: HomeAssistant,
-  callback: (event: ManagerStateEvent) => void
+  callback: (event: ManagerStateEvent) => void,
+  preCheck?: () => boolean | Promise<boolean>
 ) =>
-  hass.connection.subscribeMessage<ManagerStateEvent>(callback, {
-    type: "backup/subscribe_events",
-  });
+  hass.connection.subscribeMessage<ManagerStateEvent>(
+    callback,
+    {
+      type: "backup/subscribe_events",
+    },
+    { preCheck }
+  );
 
 export const DEFAULT_MANAGER_STATE: ManagerStateEvent = {
   manager_state: "idle",

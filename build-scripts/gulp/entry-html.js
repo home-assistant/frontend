@@ -169,14 +169,14 @@ const APP_PAGE_ENTRIES = {
 
 gulp.task(
   "gen-pages-app-dev",
-  genPagesDevTask(APP_PAGE_ENTRIES, paths.polymer_dir, paths.app_output_root)
+  genPagesDevTask(APP_PAGE_ENTRIES, paths.root_dir, paths.app_output_root)
 );
 
 gulp.task(
   "gen-pages-app-prod",
   genPagesProdTask(
     APP_PAGE_ENTRIES,
-    paths.polymer_dir,
+    paths.root_dir,
     paths.app_output_root,
     paths.app_output_latest,
     paths.app_output_es5

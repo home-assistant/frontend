@@ -1,17 +1,18 @@
-import "@material/mwc-button";
 import type { TemplateResult } from "lit";
 import { css, html, LitElement } from "lit";
 import { customElement, property, state } from "lit/decorators";
+import { formatTime } from "../../../../../common/datetime/format_time";
 import "../../../../../components/ha-card";
+import "../../../../../components/ha-button";
 import "../../../../../components/ha-select";
 import "../../../../../components/ha-textfield";
-import { formatTime } from "../../../../../common/datetime/format_time";
 import type { MQTTMessage } from "../../../../../data/mqtt";
 import { subscribeMQTTTopic } from "../../../../../data/mqtt";
 import type { HomeAssistant } from "../../../../../types";
-import "@material/mwc-list/mwc-list-item";
+
 import { storage } from "../../../../../common/decorators/storage";
 import "../../../../../components/ha-formfield";
+import "../../../../../components/ha-list-item";
 import "../../../../../components/ha-switch";
 
 const qosLevel = ["0", "1", "2"];
@@ -20,6 +21,7 @@ const qosLevel = ["0", "1", "2"];
 class MqttSubscribeCard extends LitElement {
   @property({ attribute: false }) public hass!: HomeAssistant;
 
+  @state()
   @storage({
     key: "panel-dev-mqtt-topic-subscribe",
     state: true,
@@ -27,6 +29,7 @@ class MqttSubscribeCard extends LitElement {
   })
   private _topic = "";
 
+  @state()
   @storage({
     key: "panel-dev-mqtt-qos-subscribe",
     state: true,
@@ -34,6 +37,7 @@ class MqttSubscribeCard extends LitElement {
   })
   private _qos = "0";
 
+  @state()
   @storage({
     key: "panel-dev-mqtt-json-format",
     state: true,
@@ -93,19 +97,19 @@ class MqttSubscribeCard extends LitElement {
               .value=${this._qos}
               @selected=${this._handleQos}
               >${qosLevel.map(
-                (qos) =>
-                  html`<mwc-list-item .value=${qos}>${qos}</mwc-list-item>`
+                (qos) => html`<ha-list-item .value=${qos}>${qos}</ha-list-item>`
               )}
             </ha-select>
-            <mwc-button
+            <ha-button
+              appearance="plain"
+              size="small"
               .disabled=${this._topic === ""}
               @click=${this._handleSubmit}
-              type="submit"
             >
               ${this._subscribed
                 ? this.hass.localize("ui.panel.config.mqtt.stop_listening")
                 : this.hass.localize("ui.panel.config.mqtt.start_listening")}
-            </mwc-button>
+            </ha-button>
           </div>
         </form>
         <div class="events">
@@ -205,11 +209,11 @@ class MqttSubscribeCard extends LitElement {
       border-bottom: 0;
     }
     .bottom {
-      font-size: 80%;
+      font-size: var(--ha-font-size-s);
       color: var(--secondary-text-color);
     }
     pre {
-      font-family: var(--code-font-family, monospace);
+      font-family: var(--ha-font-family-code);
     }
     .panel-dev-mqtt-subscribe-fields {
       display: flex;

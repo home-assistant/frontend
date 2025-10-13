@@ -44,7 +44,7 @@
       }
       #ha-launch-screen .ha-launch-screen-spacer-top {
         flex: 1;
-        margin-top: calc( 2 * max(env(safe-area-inset-bottom), 48px) + 46px );
+        margin-top: calc( 2 * max(var(--safe-area-inset-top, 0px), 48px) + 46px );
         padding-top: 48px;
       }
       #ha-launch-screen .ha-launch-screen-spacer-bottom {
@@ -52,7 +52,7 @@
         padding-top: 48px;
       }
       .ohf-logo {
-        margin: max(env(safe-area-inset-bottom), 48px) 0;
+        margin: max(var(--safe-area-inset-bottom, 0px), 48px) 0;
         display: flex;
         flex-direction: column;
         align-items: center;

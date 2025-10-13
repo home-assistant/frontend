@@ -17,6 +17,15 @@ export interface DataEntryFlowProgressedEvent {
   };
 }
 
+export interface DataEntryFlowProgressEvent {
+  type: "data_entry_flow_progress_update";
+  data: {
+    handler: string;
+    flow_id: string;
+    progress: number;
+  };
+}
+
 export interface DataEntryFlowProgress {
   flow_id: string;
   handler: string;
@@ -54,6 +63,7 @@ export interface DataEntryFlowStepCreateEntry {
   type: "create_entry";
   version: number;
   flow_id: string;
+  next_flow?: [FlowType, string]; // [flow_type, flow_id]
   handler: string;
   title: string;
   result?: ConfigEntry;
@@ -88,6 +98,7 @@ export interface DataEntryFlowStepMenu {
   step_id: string;
   /** If array, use value to lookup translations in strings.json */
   menu_options: string[] | Record<string, string>;
+  sort?: boolean;
   description_placeholders?: Record<string, string>;
   translation_domain?: string;
 }
@@ -107,4 +118,13 @@ export const subscribeDataEntryFlowProgressed = (
   conn.subscribeEvents<DataEntryFlowProgressedEvent>(
     callback,
     "data_entry_flow_progressed"
+  );
+
+export const subscribeDataEntryFlowProgress = (
+  conn: Connection,
+  callback: (ev: DataEntryFlowProgressEvent) => void
+) =>
+  conn.subscribeEvents<DataEntryFlowProgressEvent>(
+    callback,
+    "data_entry_flow_progress_update"
   );

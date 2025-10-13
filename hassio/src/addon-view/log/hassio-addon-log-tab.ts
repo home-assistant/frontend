@@ -6,7 +6,7 @@ import {
   type TemplateResult,
 } from "lit";
 import { customElement, property, state } from "lit/decorators";
-import "../../../../src/components/ha-circular-progress";
+import "../../../../src/components/ha-spinner";
 import type { HassioAddonDetails } from "../../../../src/data/hassio/addon";
 import type { Supervisor } from "../../../../src/data/supervisor/supervisor";
 import { haStyle } from "../../../../src/resources/styles";
@@ -28,9 +28,7 @@ class HassioAddonLogDashboard extends LitElement {
 
   protected render(): TemplateResult {
     if (!this.addon) {
-      return html`
-        <ha-circular-progress indeterminate></ha-circular-progress>
-      `;
+      return html` <ha-spinner></ha-spinner> `;
     }
     return html`
       <div class="search">

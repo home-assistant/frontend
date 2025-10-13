@@ -10,6 +10,8 @@ import {
   addYears,
   addMonths,
   addHours,
+  startOfDay,
+  addDays,
 } from "date-fns";
 import type {
   BarSeriesOption,
@@ -20,10 +22,12 @@ import type { FrontendLocaleData } from "../../../../../data/translation";
 import { formatNumber } from "../../../../../common/number/format_number";
 import {
   formatDateMonthYear,
+  formatDateShort,
   formatDateVeryShort,
 } from "../../../../../common/datetime/format_date";
 import { formatTime } from "../../../../../common/datetime/format_time";
 import type { ECOption } from "../../../../../resources/echarts";
+import { filterXSS } from "../../../../../common/util/xss";
 
 export function getSuggestedMax(dayDifference: number, end: Date): number {
   let suggestedMax = new Date(end);
@@ -61,7 +65,10 @@ export function getCommonOptions(
   formatTotal?: (total: number) => string
 ): ECOption {
   const dayDifference = differenceInDays(end, start);
+
   const compare = compareStart !== undefined && compareEnd !== undefined;
+  const showCompareYear =
+    compare && start.getFullYear() !== compareStart.getFullYear();
 
   const options: ECOption = {
     xAxis: {
@@ -112,6 +119,7 @@ export function getCommonOptions(
                 config,
                 dayDifference,
                 compare,
+                showCompareYear,
                 unit,
                 formatTotal
               )
@@ -125,6 +133,7 @@ export function getCommonOptions(
           config,
           dayDifference,
           compare,
+          showCompareYear,
           unit,
           formatTotal
         );
@@ -140,6 +149,7 @@ function formatTooltip(
   config: HassConfig,
   dayDifference: number,
   compare: boolean | null,
+  showCompareYear: boolean,
   unit?: string,
   formatTotal?: (total: number) => string
 ) {
@@ -150,13 +160,16 @@ function formatTooltip(
   // and the real date is in the third value
   const date = new Date(params[0].value?.[2] ?? params[0].value?.[0]);
   let period: string;
-  if (dayDifference > 89) {
+
+  if (dayDifference >= 89) {
     period = `${formatDateMonthYear(date, locale, config)}`;
   } else if (dayDifference > 0) {
-    period = `${formatDateVeryShort(date, locale, config)}`;
+    period = `${(showCompareYear ? formatDateShort : formatDateVeryShort)(date, locale, config)}`;
   } else {
     period = `${
-      compare ? `${formatDateVeryShort(date, locale, config)}: ` : ""
+      compare
+        ? `${(showCompareYear ? formatDateShort : formatDateVeryShort)(date, locale, config)}: `
+        : ""
     }${formatTime(date, locale, config)} – ${formatTime(
       addHours(date, 1),
       locale,
@@ -172,7 +185,11 @@ function formatTooltip(
   const values = params
     .map((param) => {
       const y = param.value?.[1] as number;
-      const value = formatNumber(y, locale);
+      const value = formatNumber(
+        y,
+        locale,
+        y < 0.1 ? { maximumFractionDigits: 3 } : undefined
+      );
       if (value === "0") {
         return false;
       }
@@ -185,7 +202,7 @@ function formatTooltip(
           countNegative++;
         }
       }
-      return `${param.marker} ${param.seriesName}: ${value} ${unit}`;
+      return `${param.marker} ${filterXSS(param.seriesName!)}: ${value} ${unit}`;
     })
     .filter(Boolean);
   let footer = "";
@@ -281,6 +298,10 @@ export function getCompareTransform(start: Date, compareStart?: Date) {
     start.getTime() === startOfMonth(start).getTime()
   ) {
     return (ts: Date) => addMonths(ts, compareMonthDiff);
+  }
+  const compareDayDiff = differenceInDays(start, compareStart);
+  if (compareDayDiff !== 0 && start.getTime() === startOfDay(start).getTime()) {
+    return (ts: Date) => addDays(ts, compareDayDiff);
   }
   const compareOffset = start.getTime() - compareStart.getTime();
   return (ts: Date) => addMilliseconds(ts, compareOffset);

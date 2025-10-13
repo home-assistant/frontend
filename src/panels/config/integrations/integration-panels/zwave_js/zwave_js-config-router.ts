@@ -1,4 +1,4 @@
-import { mdiServerNetwork, mdiMathLog } from "@mdi/js";
+import { mdiServerNetwork, mdiMathLog, mdiNetwork } from "@mdi/js";
 import { customElement, property } from "lit/decorators";
 import type { RouterOptions } from "../../../../../layouts/hass-router-page";
 import { HassRouterPage } from "../../../../../layouts/hass-router-page";
@@ -17,6 +17,11 @@ export const configTabs: PageNavigation[] = [
     translationKey: "ui.panel.config.zwave_js.navigation.logs",
     path: `/config/zwave_js/logs`,
     iconPath: mdiMathLog,
+  },
+  {
+    translationKey: "ui.panel.config.zwave_js.navigation.visualization",
+    path: `/config/zwave_js/visualization`,
+    iconPath: mdiNetwork,
   },
 ];
 
@@ -42,7 +47,7 @@ class ZWaveJSConfigRouter extends HassRouterPage {
       },
       add: {
         tag: "zwave_js-add-node",
-        load: () => import("./zwave_js-add-node"),
+        load: () => import("./add-node/zwave_js-add-node"),
       },
       node_config: {
         tag: "zwave_js-node-config",
@@ -59,6 +64,10 @@ class ZWaveJSConfigRouter extends HassRouterPage {
       provisioned: {
         tag: "zwave_js-provisioned",
         load: () => import("./zwave_js-provisioned"),
+      },
+      visualization: {
+        tag: "zwave_js-network-visualization",
+        load: () => import("./zwave_js-network-visualization"),
       },
     },
     initialLoad: () => this._fetchConfigEntries(),

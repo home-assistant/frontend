@@ -143,7 +143,7 @@ export const demoEntitiesArsaboo: DemoConfig["entities"] = (localize) =>
       state: "on",
       attributes: {
         friendly_name: "Home Automation",
-        icon: "hass:home-automation",
+        icon: "mdi:home-automation",
       },
     },
     "input_boolean.tvtime": {

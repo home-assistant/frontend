@@ -2,13 +2,13 @@ import type { PropertyValues } from "lit";
 import { css, html, LitElement } from "lit";
 import { customElement, property, state } from "lit/decorators";
 import memoizeOne from "memoize-one";
+import { fireEvent } from "../../../../common/dom/fire_event";
 import type { LocalizeKeys } from "../../../../common/translations/localize";
 import "../../../../components/ha-form/ha-form";
 import type { AssistPipeline } from "../../../../data/assist_pipeline";
-import type { HomeAssistant } from "../../../../types";
 import type { WakeWord } from "../../../../data/wake_word";
 import { fetchWakeWordInfo } from "../../../../data/wake_word";
-import { fireEvent } from "../../../../common/dom/fire_event";
+import type { HomeAssistant } from "../../../../types";
 
 @customElement("assist-pipeline-detail-wakeword")
 export class AssistPipelineDetailWakeWord extends LitElement {
@@ -136,7 +136,7 @@ export class AssistPipelineDetailWakeWord extends LitElement {
   static styles = css`
     .section {
       border: 1px solid var(--divider-color);
-      border-radius: 8px;
+      border-radius: var(--ha-border-radius-md);
     }
     .content {
       padding: 16px;
@@ -145,15 +145,15 @@ export class AssistPipelineDetailWakeWord extends LitElement {
       margin-bottom: 16px;
     }
     h3 {
-      font-weight: normal;
-      font-size: 22px;
-      line-height: 28px;
+      font-size: var(--ha-font-size-xl);
+      font-weight: var(--ha-font-weight-normal);
+      line-height: var(--ha-line-height-condensed);
       margin-top: 0;
       margin-bottom: 4px;
     }
     p {
       color: var(--secondary-text-color);
-      font-size: var(--mdc-typography-body2-font-size, 0.875rem);
+      font-size: var(--mdc-typography-body2-font-size, var(--ha-font-size-s));
       margin-top: 0;
       margin-bottom: 0;
     }

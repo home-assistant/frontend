@@ -1,4 +1,4 @@
 import "./util/is_frontpage";
 import "./ha-demo";
 
-import("../../src/resources/ha-style");
+import("../../src/resources/append-ha-style");

@@ -1,13 +1,13 @@
-import "@material/mwc-button/mwc-button";
 import type { CSSResultGroup, TemplateResult } from "lit";
 import { css, html, LitElement, nothing } from "lit";
 import { customElement, state } from "lit/decorators";
+import { computeDeviceNameDisplay } from "../../../../../../common/entity/compute_device_name";
 import { computeStateName } from "../../../../../../common/entity/compute_state_name";
 import "../../../../../../components/ha-dialog";
 import "../../../../../../components/ha-formfield";
 import "../../../../../../components/ha-switch";
+import "../../../../../../components/ha-button";
 import type { HaSwitch } from "../../../../../../components/ha-switch";
-import { computeDeviceName } from "../../../../../../data/device_registry";
 import type { MQTTDeviceDebugInfo } from "../../../../../../data/mqtt";
 import { fetchMQTTDebugInfo } from "../../../../../../data/mqtt";
 import { haStyleDialog } from "../../../../../../resources/styles";
@@ -48,7 +48,7 @@ class DialogMQTTDeviceDebugInfo extends LitElement {
         @closed=${this._close}
         .heading=${this.hass!.localize(
           "ui.dialogs.mqtt_device_debug_info.title",
-          { device: computeDeviceName(this._params.device, this.hass) }
+          { device: computeDeviceNameDisplay(this._params.device, this.hass) }
         )}
       >
         <h4>
@@ -107,9 +107,9 @@ class DialogMQTTDeviceDebugInfo extends LitElement {
                 )}
               `}
         </ul>
-        <mwc-button slot="primaryAction" @click=${this._close}>
+        <ha-button slot="primaryAction" @click=${this._close}>
           ${this.hass!.localize("ui.common.close")}
-        </mwc-button>
+        </ha-button>
       </ha-dialog>
     `;
   }
@@ -239,12 +239,8 @@ class DialogMQTTDeviceDebugInfo extends LitElement {
         }
         @media all and (max-width: 450px), all and (max-height: 500px) {
           ha-dialog {
-            --mdc-dialog-min-width: calc(
-              100vw - env(safe-area-inset-right) - env(safe-area-inset-left)
-            );
-            --mdc-dialog-max-width: calc(
-              100vw - env(safe-area-inset-right) - env(safe-area-inset-left)
-            );
+            --mdc-dialog-min-width: 100vw;
+            --mdc-dialog-max-width: 100vw;
           }
         }
         ha-switch {

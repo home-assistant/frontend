@@ -279,3 +279,5 @@ export const setSupervisorOption = async (
     data
   );
 };
+
+export const coreLatestLogsUrl = "/api/hassio/core/logs/latest";

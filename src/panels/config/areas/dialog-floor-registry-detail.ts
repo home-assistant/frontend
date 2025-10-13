@@ -1,5 +1,3 @@
-import "@material/mwc-button";
-import "@material/mwc-list/mwc-list";
 import { mdiTextureBox } from "@mdi/js";
 import type { CSSResultGroup } from "lit";
 import { css, html, LitElement, nothing } from "lit";
@@ -10,6 +8,7 @@ import { fireEvent } from "../../../common/dom/fire_event";
 import "../../../components/chips/ha-chip-set";
 import "../../../components/chips/ha-input-chip";
 import "../../../components/ha-alert";
+import "../../../components/ha-button";
 import "../../../components/ha-aliases-editor";
 import { createCloseHeading } from "../../../components/ha-dialog";
 import "../../../components/ha-icon-picker";
@@ -227,18 +226,22 @@ class DialogFloorDetail extends LitElement {
             ></ha-aliases-editor>
           </div>
         </div>
-        <mwc-button slot="secondaryAction" @click=${this.closeDialog}>
+        <ha-button
+          appearance="plain"
+          slot="secondaryAction"
+          @click=${this.closeDialog}
+        >
           ${this.hass.localize("ui.common.cancel")}
-        </mwc-button>
-        <mwc-button
+        </ha-button>
+        <ha-button
           slot="primaryAction"
           @click=${this._updateEntry}
-          .disabled=${nameInvalid || this._submitting}
+          .disabled=${nameInvalid || !!this._submitting}
         >
           ${entry
             ? this.hass.localize("ui.common.save")
             : this.hass.localize("ui.common.create")}
-        </mwc-button>
+        </ha-button>
       </ha-dialog>
     `;
   }

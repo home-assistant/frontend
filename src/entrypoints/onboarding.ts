@@ -1,11 +1,6 @@
-// Compat needs to be first import
-import "../resources/compatibility";
 import "../onboarding/ha-onboarding";
 
-import("../resources/ha-style");
-import("@polymer/polymer/lib/utils/settings").then(
-  ({ setCancelSyntheticClickEvents }) => setCancelSyntheticClickEvents(false)
-);
+import("../resources/append-ha-style");
 
 declare global {
   interface Window {
