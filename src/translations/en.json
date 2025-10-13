@@ -9520,8 +9520,8 @@
             "description": "This will restart the add-on if it crashes"
           },
           "auto_update": {
-            "title": "Autoupdate",
-            "description": "Autoupdate the add-on when there is a new version available"
+            "title": "Automatically update",
+            "description": "Automatically update the add-on when a new version is available"
           },
           "ingress_panel": {
             "title": "Add to sidebar",

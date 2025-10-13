@@ -805,7 +805,7 @@ export class HaChartBase extends LitElement {
             sampling: undefined,
             data: downSampleLineData(
               data as LineSeriesOption["data"],
-              this.clientWidth,
+              this.clientWidth * window.devicePixelRatio,
               minX,
               maxX
             ),
