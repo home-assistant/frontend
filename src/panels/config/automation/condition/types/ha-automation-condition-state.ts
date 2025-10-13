@@ -13,6 +13,7 @@ import {
   array,
 } from "superstruct";
 import { createDurationData } from "../../../../../common/datetime/create_duration_data";
+import { ensureArray } from "../../../../../common/array/ensure-array";
 import { fireEvent } from "../../../../../common/dom/fire_event";
 import "../../../../../components/ha-form/ha-form";
 import type { SchemaUnion } from "../../../../../components/ha-form/types";
@@ -106,7 +107,11 @@ export class HaStateCondition extends LitElement implements ConditionElement {
 
   protected render() {
     const trgFor = createDurationData(this.condition.for);
-    const data = { ...this.condition, for: trgFor };
+    const data = {
+      ...this.condition,
+      state: ensureArray(this.condition.state) || [],
+      for: trgFor,
+    };
 
     return html`
       <ha-form
