@@ -83,17 +83,19 @@ class HassioIngressView extends LitElement {
       </hass-subpage>`;
     }
 
-    return html`${this.narrow || this.hass.dockedSidebar === "always_hidden"
-      ? html`<div class="header">
-            <ha-icon-button
-              .label=${this.hass.localize("ui.sidebar.sidebar_toggle")}
-              .path=${mdiMenu}
-              @click=${this._toggleMenu}
-            ></ha-icon-button>
-            <div class="main-title">${this._addon.name}</div>
-          </div>
-          ${iframe}`
-      : iframe}`;
+    return html`${this._addon.webui_ha_aware
+      ? iframe
+      : this.narrow || this.hass.dockedSidebar === "always_hidden"
+        ? html`<div class="header">
+              <ha-icon-button
+                .label=${this.hass.localize("ui.sidebar.sidebar_toggle")}
+                .path=${mdiMenu}
+                @click=${this._toggleMenu}
+              ></ha-icon-button>
+              <div class="main-title">${this._addon.name}</div>
+            </div>
+            ${iframe}`
+        : iframe}`;
   }
 
   protected async firstUpdated(): Promise<void> {
