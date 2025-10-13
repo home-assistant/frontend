@@ -3,7 +3,6 @@ import type { HassEntity } from "home-assistant-js-websocket";
 import type { PropertyValues, TemplateResult } from "lit";
 import { LitElement, html } from "lit";
 import { customElement, property, query, state } from "lit/decorators";
-import { consume } from "@lit-labs/context";
 import memoizeOne from "memoize-one";
 import { fireEvent } from "../../common/dom/fire_event";
 import { computeDomain } from "../../common/entity/compute_domain";
@@ -23,10 +22,6 @@ import type { HomeAssistant, ValueChangedEvent } from "../../types";
 import "../ha-combo-box";
 import type { HaComboBox } from "../ha-combo-box";
 import "../ha-list-item";
-import {
-  automationEditorContext,
-  type AutomationLocalContext,
-} from "../../data/automation_editor_context";
 
 interface Device {
   name: string;
@@ -106,13 +101,8 @@ export class HaDevicePicker extends LitElement {
 
   private _init = false;
 
-  @state()
-  @consume({ context: automationEditorContext, subscribe: true })
-  private _autoCtx?: AutomationLocalContext;
-
-  public get usedDevices(): string[] | undefined {
-    return this._autoCtx?.used?.devices;
-  }
+  @property({ attribute: false, type: Array })
+  public suggestedDevices?: string[];
 
   private _getDevices = memoizeOne(
     (
@@ -125,7 +115,7 @@ export class HaDevicePicker extends LitElement {
       deviceFilter: this["deviceFilter"],
       entityFilter: this["entityFilter"],
       excludeDevices: this["excludeDevices"],
-      usedDevices: this["usedDevices"]
+      suggestedDevices: this["suggestedDevices"]
     ): ScorableDevice[] => {
       if (!devices.length) {
         return [
@@ -261,8 +251,8 @@ export class HaDevicePicker extends LitElement {
       if (outputDevices.length <= 1) {
         return outputDevices;
       }
-      if (usedDevices?.length) {
-        const usedSet = new Set(usedDevices);
+      if (suggestedDevices?.length) {
+        const usedSet = new Set(suggestedDevices);
         const used: ScorableDevice[] = [];
         const rest: ScorableDevice[] = [];
         for (const dev of outputDevices) {
@@ -304,7 +294,7 @@ export class HaDevicePicker extends LitElement {
         this.deviceFilter,
         this.entityFilter,
         this.excludeDevices,
-        this.usedDevices
+        this.suggestedDevices
       );
       this.comboBox.items = devices;
       this.comboBox.filteredItems = devices;
@@ -343,9 +333,9 @@ export class HaDevicePicker extends LitElement {
     const base = filterString.length
       ? fuzzyFilterSort<ScorableDevice>(filterString, target.items || [])
       : target.items;
-    const usedDevices = this.usedDevices;
-    if (usedDevices?.length && base) {
-      const usedSet = new Set(usedDevices);
+    const suggestedDevices = this.suggestedDevices;
+    if (suggestedDevices?.length && base) {
+      const usedSet = new Set(suggestedDevices);
       const used: ScorableDevice[] = [];
       const rest: ScorableDevice[] = [];
       for (const dev of base as ScorableDevice[]) {
