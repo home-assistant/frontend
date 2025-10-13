@@ -46,8 +46,21 @@ class HassioIngressView extends LitElement {
 
   private _fetchDataTimeout?: number;
 
+  private _messageListener = (ev: MessageEvent) => {
+    if (this._addon?.webui_ha_aware && ev.data?.type === "toggle-sidebar") {
+      this._toggleMenu();
+    }
+  };
+
+  public connectedCallback() {
+    super.connectedCallback();
+    window.addEventListener("message", this._messageListener);
+  }
+
   public disconnectedCallback() {
     super.disconnectedCallback();
+
+    window.removeEventListener("message", this._messageListener);
 
     if (this._sessionKeepAlive) {
       clearInterval(this._sessionKeepAlive);
@@ -81,6 +94,11 @@ class HassioIngressView extends LitElement {
       >
         ${iframe}
       </hass-subpage>`;
+    }
+
+    // If webui_ha_aware is true, don't render the header and just render the iframe
+    if (this._addon.webui_ha_aware) {
+      return iframe;
     }
 
     return html`${this.narrow || this.hass.dockedSidebar === "always_hidden"

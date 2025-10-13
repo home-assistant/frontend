@@ -112,6 +112,7 @@ export interface HassioAddonDetails extends HassioAddonInfo {
   translations: Record<string, AddonTranslations>;
   watchdog: null | boolean;
   webui: null | string;
+  webui_ha_aware?: boolean;
 }
 
 export interface HassioAddonsInfo {
