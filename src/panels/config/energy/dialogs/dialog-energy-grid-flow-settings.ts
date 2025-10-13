@@ -85,10 +85,9 @@ export class DialogEnergyGridFlowSettings
           ? "stat_energy_from"
           : "stat_energy_to"
       ];
-    const initialSourceIdPower =
-      this._source[
-        this._params.direction === "from" ? "stat_power_from" : "stat_power_to"
-      ];
+    const initialSourceIdPower = (
+      this._source as FlowFromGridSourceEnergyPreference
+    ).stat_power;
 
     this._pickedDisplayUnit = getDisplayUnit(
       this.hass,
@@ -113,10 +112,7 @@ export class DialogEnergyGridFlowSettings
 
     this._excludeListPower = [
       ...(this._params.grid_source?.flow_from?.map(
-        (entry) => entry.stat_power_from
-      ) || []),
-      ...(this._params.grid_source?.flow_to?.map(
-        (entry) => entry.stat_power_to
+        (entry) => entry.stat_power
       ) || []),
     ].filter((id) => id && id !== initialSourceIdPower) as string[];
   }
@@ -196,24 +192,25 @@ export class DialogEnergyGridFlowSettings
           dialogInitialFocus
         ></ha-statistic-picker>
 
-        <ha-statistic-picker
-          .hass=${this.hass}
-          .includeUnitClass=${powerUnitClasses}
-          .value=${this._source[
-            this._params.direction === "from"
-              ? "stat_power_from"
-              : "stat_power_to"
-          ]}
-          .label=${this.hass.localize(
-            `ui.panel.config.energy.grid.flow_dialog.${this._params.direction}.power_stat`
-          )}
-          .excludeStatistics=${this._excludeListPower}
-          @value-changed=${this._powerStatisticChanged}
-          .helper=${this.hass.localize(
-            `ui.panel.config.energy.grid.flow_dialog.${this._params.direction}.entity_para`,
-            { unit: this._power_units?.join(", ") || "" }
-          )}
-        ></ha-statistic-picker>
+        ${this._params.direction === "from"
+          ? html`
+              <ha-statistic-picker
+                .hass=${this.hass}
+                .includeUnitClass=${powerUnitClasses}
+                .value=${(this._source as FlowFromGridSourceEnergyPreference)
+                  .stat_power}
+                .label=${this.hass.localize(
+                  `ui.panel.config.energy.grid.flow_dialog.${this._params.direction}.power_stat`
+                )}
+                .excludeStatistics=${this._excludeListPower}
+                @value-changed=${this._powerStatisticChanged}
+                .helper=${this.hass.localize(
+                  `ui.panel.config.energy.grid.flow_dialog.from.power_helper`,
+                  { unit: this._power_units?.join(", ") || "" }
+                )}
+              ></ha-statistic-picker>
+            `
+          : nothing}
 
         <p>
           ${this.hass.localize(
@@ -377,9 +374,7 @@ export class DialogEnergyGridFlowSettings
   private _powerStatisticChanged(ev: CustomEvent<{ value: string }>) {
     this._source = {
       ...this._source!,
-      [this._params!.direction === "from"
-        ? "stat_power_from"
-        : "stat_power_to"]: ev.detail.value,
+      stat_power: ev.detail.value,
     };
   }
 

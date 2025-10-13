@@ -64,16 +64,9 @@ export class DialogEnergyBatterySettings
         id !== this._source?.stat_energy_from &&
         id !== this._source?.stat_energy_to
     );
-    const allPowerSources: string[] = [];
-    this._params.battery_sources.forEach((entry) => {
-      if (entry.stat_power_from) allPowerSources.push(entry.stat_power_from);
-      if (entry.stat_power_to) allPowerSources.push(entry.stat_power_to);
-    });
-    this._excludeListPower = allPowerSources.filter(
-      (id) =>
-        id !== this._source?.stat_power_from &&
-        id !== this._source?.stat_power_to
-    );
+    this._excludeListPower = this._params.battery_sources
+      .map((entry) => entry.stat_power)
+      .filter((id) => id && id !== this._source?.stat_power) as string[];
   }
 
   public closeDialog() {
@@ -116,7 +109,7 @@ export class DialogEnergyBatterySettings
           ]}
           @value-changed=${this._statisticToChanged}
           .helper=${this.hass.localize(
-            "ui.panel.config.energy.battery.dialog.entity_para",
+            "ui.panel.config.energy.battery.dialog.energy_helper_into",
             { unit: this._energy_units?.join(", ") || "" }
           )}
           dialogInitialFocus
@@ -136,7 +129,7 @@ export class DialogEnergyBatterySettings
           ]}
           @value-changed=${this._statisticFromChanged}
           .helper=${this.hass.localize(
-            "ui.panel.config.energy.battery.dialog.entity_para",
+            "ui.panel.config.energy.battery.dialog.energy_helper_out",
             { unit: this._energy_units?.join(", ") || "" }
           )}
         ></ha-statistic-picker>
@@ -144,29 +137,14 @@ export class DialogEnergyBatterySettings
         <ha-statistic-picker
           .hass=${this.hass}
           .includeUnitClass=${powerUnitClasses}
-          .value=${this._source.stat_power_to}
+          .value=${this._source.stat_power}
           .label=${this.hass.localize(
-            "ui.panel.config.energy.battery.dialog.power_into_battery"
+            "ui.panel.config.energy.battery.dialog.power"
           )}
           .excludeStatistics=${this._excludeListPower}
-          @value-changed=${this._powerToChanged}
+          @value-changed=${this._powerChanged}
           .helper=${this.hass.localize(
-            "ui.panel.config.energy.battery.dialog.entity_para",
-            { unit: this._power_units?.join(", ") || "" }
-          )}
-        ></ha-statistic-picker>
-
-        <ha-statistic-picker
-          .hass=${this.hass}
-          .includeUnitClass=${powerUnitClasses}
-          .value=${this._source.stat_power_from}
-          .label=${this.hass.localize(
-            "ui.panel.config.energy.battery.dialog.power_out_of_battery"
-          )}
-          .excludeStatistics=${this._excludeListPower}
-          @value-changed=${this._powerFromChanged}
-          .helper=${this.hass.localize(
-            "ui.panel.config.energy.battery.dialog.entity_para",
+            "ui.panel.config.energy.battery.dialog.power_helper",
             { unit: this._power_units?.join(", ") || "" }
           )}
         ></ha-statistic-picker>
@@ -198,12 +176,8 @@ export class DialogEnergyBatterySettings
     this._source = { ...this._source!, stat_energy_from: ev.detail.value };
   }
 
-  private _powerToChanged(ev: CustomEvent<{ value: string }>) {
-    this._source = { ...this._source!, stat_power_to: ev.detail.value };
-  }
-
-  private _powerFromChanged(ev: CustomEvent<{ value: string }>) {
-    this._source = { ...this._source!, stat_power_from: ev.detail.value };
+  private _powerChanged(ev: CustomEvent<{ value: string }>) {
+    this._source = { ...this._source!, stat_power: ev.detail.value };
   }
 
   private async _save() {

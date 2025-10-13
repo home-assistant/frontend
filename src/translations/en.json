@@ -3032,6 +3032,7 @@
                 "entity_para": "Pick a sensor which measures grid consumption in either of {unit}.",
                 "energy_stat": "Consumed energy",
                 "power_stat": "Current power consumption",
+                "power_helper": "Pick a sensor which measures grid power in either of {unit}. Positive values indicate consumption, negative values indicate production.",
                 "cost_para": "Select how Home Assistant should keep track of the costs of the consumed energy.",
                 "no_cost": "Do not track costs",
                 "cost_stat": "Use an entity tracking the total costs",
@@ -3091,11 +3092,12 @@
             "add_battery_system": "Add battery system",
             "dialog": {
               "header": "Configure battery system",
-              "entity_para": "Pick sensors that measure the electricity flowing in and out of the battery in either of {unit}.",
+              "energy_helper_into": "Pick a sensor that measures the electricity flowing into the battery in either of {unit}.",
+              "energy_helper_out": "Pick a sensor that measures the electricity flowing out of the battery in either of {unit}.",
               "energy_into_battery": "Energy charged into the battery",
               "energy_out_of_battery": "Energy discharged from the battery",
-              "power_into_battery": "Power charging the battery",
-              "power_out_of_battery": "Power discharging the battery"
+              "power": "Battery power",
+              "power_helper": "Pick a sensor which measures the electricity flowing into and out of the battery in either of {unit}. Positive values indicate discharging the battery, negative values indicate charging the battery."
             }
           },
           "gas": {
@@ -3158,11 +3160,10 @@
               "display_name": "Display name",
               "device_consumption_energy": "Device energy consumption",
               "device_consumption_power": "Device power consumption",
-              "selected_stat_intro": "Select the sensor that measures the device's energy usage in either of {unit}.",
+              "selected_stat_intro": "Select the sensor that measures the device's electricity usage in either of {unit}.",
               "included_in_device": "Upstream device",
               "included_in_device_helper": "If this device is already counted by another device (such as a smart switch measured by a smart breaker), selecting the upstream device prevents duplicate energy tracking.",
-              "no_upstream_devices": "No eligible upstream devices",
-              "device_consumption_power_helper": "Select the sensor that measures the device's power usage in either of {unit}."
+              "no_upstream_devices": "No eligible upstream devices"
             }
           }
         },
