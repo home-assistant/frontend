@@ -500,7 +500,7 @@ class ZHAConfigDashboard extends LitElement {
         }
 
         .container {
-          padding: 8px 16px 16px;
+          padding: var(--ha-space-2) var(--ha-space-4) var(--ha-space-4);
         }
       `,
     ];
