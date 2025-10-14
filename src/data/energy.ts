@@ -707,17 +707,6 @@ export const getEnergyDataCollection = (
         // This will raise if not found.
         // Detect by checking `e.code === "not_found"
         collection.prefs = await getEnergyPreferences(hass);
-        collection.prefs.energy_sources.forEach((source) => {
-          if (source.type === "solar") {
-            source.stat_power = "sensor.solar_power";
-          } else if (source.type === "battery") {
-            source.stat_power = "sensor.battery_power";
-          } else if (source.type === "grid") {
-            source.flow_from.forEach((flow) => {
-              flow.stat_power = "sensor.grid_power";
-            });
-          }
-        });
       }
 
       scheduleHourlyRefresh(collection);
