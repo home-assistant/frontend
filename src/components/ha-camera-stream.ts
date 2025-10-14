@@ -86,7 +86,8 @@ export class HaCameraStream extends LitElement {
     const streams = this._streams(
       this._capabilities?.frontend_stream_types,
       this._hlsStreams,
-      this._webRtcStreams
+      this._webRtcStreams,
+      this.muted
     );
     return html`${repeat(
       streams,
@@ -190,7 +191,8 @@ export class HaCameraStream extends LitElement {
     (
       supportedTypes?: StreamType[],
       hlsStreams?: { hasAudio: boolean; hasVideo: boolean },
-      webRtcStreams?: { hasAudio: boolean; hasVideo: boolean }
+      webRtcStreams?: { hasAudio: boolean; hasVideo: boolean },
+      muted?: boolean
     ): Stream[] => {
       if (__DEMO__) {
         return [{ type: MJPEG_STREAM, visible: true }];
@@ -221,7 +223,7 @@ export class HaCameraStream extends LitElement {
           hlsStreams.hasVideo &&
           hlsStreams.hasAudio &&
           !webRtcStreams.hasAudio &&
-          !this.muted
+          !muted
         ) {
           // webRTC stream is missing audio and video is not muted, use HLS
           return [{ type: STREAM_TYPE_HLS, visible: true }];
