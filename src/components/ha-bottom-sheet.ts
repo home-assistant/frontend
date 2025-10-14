@@ -52,16 +52,19 @@ export class HaBottomSheet extends LitElement {
     haStyleScrollbar,
     css`
       wa-drawer {
-        --wa-color-surface-raised: var(
-          --ha-bottom-sheet-surface-background,
-          var(--ha-dialog-surface-background, var(--mdc-theme-surface, #fff)),
-        );
+        --wa-color-surface-raised: transparent;
         --spacing: 0;
-        --size: auto;
+        --size: var(--ha-bottom-sheet-height, auto);
         --show-duration: ${BOTTOM_SHEET_ANIMATION_DURATION_MS}ms;
         --hide-duration: ${BOTTOM_SHEET_ANIMATION_DURATION_MS}ms;
       }
       wa-drawer::part(dialog) {
+        max-height: var(--ha-bottom-sheet-max-height, 90vh);
+        align-items: center;
+      }
+      wa-drawer::part(body) {
+        max-width: var(--ha-bottom-sheet-max-width);
+        width: 100%;
         border-top-left-radius: var(
           --ha-bottom-sheet-border-radius,
           var(--ha-dialog-border-radius, var(--ha-border-radius-2xl))
@@ -70,19 +73,15 @@ export class HaBottomSheet extends LitElement {
           --ha-bottom-sheet-border-radius,
           var(--ha-dialog-border-radius, var(--ha-border-radius-2xl))
         );
-        max-height: 90vh;
-        padding-bottom: var(--safe-area-inset-bottom);
-        padding-left: var(--safe-area-inset-left);
-        padding-right: var(--safe-area-inset-right);
-      }
-
-      .body {
-        position: var(--dialog-content-position, relative);
-        padding: 0 var(--dialog-content-padding, var(--ha-space-6))
-          var(--dialog-content-padding, var(--ha-space-6))
-          var(--dialog-content-padding, var(--ha-space-6));
-        overflow: auto;
-        flex-grow: 1;
+        background-color: var(
+          --ha-bottom-sheet-surface-background,
+          var(--ha-dialog-surface-background, var(--mdc-theme-surface, #fff)),
+        );
+        padding: var(
+          --ha-bottom-sheet-padding,
+          0 var(--safe-area-inset-right) var(--safe-area-inset-bottom)
+            var(--safe-area-inset-left)
+        );
       }
 
       :host([flexcontent]) wa-drawer::part(body) {
