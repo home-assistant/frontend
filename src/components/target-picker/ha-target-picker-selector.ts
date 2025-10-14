@@ -976,7 +976,6 @@ export class HaTargetPickerSelector extends LitElement {
       :host {
         display: flex;
         flex-direction: column;
-        gap: var(--ha-space-3);
         padding-top: var(--ha-space-3);
         flex: 1;
       }
@@ -988,7 +987,7 @@ export class HaTargetPickerSelector extends LitElement {
       .filter {
         display: flex;
         gap: var(--ha-space-2);
-        padding: 0 var(--ha-space-3);
+        padding: var(--ha-space-3) var(--ha-space-3);
         overflow: auto;
         --ha-button-border-radius: var(--ha-border-radius-md);
       }
@@ -1035,7 +1034,6 @@ export class HaTargetPickerSelector extends LitElement {
       .filter-header-wrapper {
         height: 0;
         position: relative;
-        margin-bottom: calc(var(--ha-space-3) * -1);
       }
 
       .filter-header {
