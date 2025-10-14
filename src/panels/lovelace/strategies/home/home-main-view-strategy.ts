@@ -179,11 +179,11 @@ export class HomeMainViewStrategy extends ReactiveElement {
         } satisfies HomeSummaryCard,
         {
           type: "home-summary",
-          summary: "security",
+          summary: "safety",
           vertical: true,
           tap_action: {
             action: "navigate",
-            navigation_path: "/security?historyBack=1",
+            navigation_path: "/safety?historyBack=1",
           },
           grid_options: {
             rows: 2,

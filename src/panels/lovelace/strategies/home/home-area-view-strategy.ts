@@ -115,7 +115,7 @@ export class HomeAreaViewStrategy extends ReactiveElement {
           computeHeadingCard(
             getSummaryLabel(hass.localize, "light"),
             HOME_SUMMARIES_ICONS.light,
-            "/lights?historyBack=1"
+            "/light?historyBack=1"
           ),
           ...light.map(computeTileCard),
         ],
@@ -129,7 +129,7 @@ export class HomeAreaViewStrategy extends ReactiveElement {
           computeHeadingCard(
             getSummaryLabel(hass.localize, "climate"),
             HOME_SUMMARIES_ICONS.climate,
-            "climate"
+            "/climate?historyBack=1"
           ),
           ...climate.map(computeTileCard),
         ],
@@ -143,7 +143,7 @@ export class HomeAreaViewStrategy extends ReactiveElement {
           computeHeadingCard(
             getSummaryLabel(hass.localize, "safety"),
             HOME_SUMMARIES_ICONS.safety,
-            "safety"
+            "/safety?historyBack=1"
           ),
           ...safety.map(computeTileCard),
         ],
@@ -157,7 +157,7 @@ export class HomeAreaViewStrategy extends ReactiveElement {
           computeHeadingCard(
             getSummaryLabel(hass.localize, "media_players"),
             HOME_SUMMARIES_ICONS.media_players,
-            "media-players"
+            "/media-players"
           ),
           ...mediaPlayers.map(computeTileCard),
         ],
