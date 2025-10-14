@@ -103,7 +103,7 @@ export class HuiPowerSourcesGraphCard
                       "ui.panel.lovelace.cards.energy.no_data_period"
                     )}
               </div>`
-            : ""}
+            : nothing}
         </div>
       </ha-card>
     `;
@@ -117,8 +117,8 @@ export class HuiPowerSourcesGraphCard
       config: HassConfig,
       compareStart?: Date,
       compareEnd?: Date
-    ): ECOption => {
-      const commonOptions = getCommonOptions(
+    ): ECOption =>
+      getCommonOptions(
         start,
         end,
         locale,
@@ -126,9 +126,7 @@ export class HuiPowerSourcesGraphCard
         "kW",
         compareStart,
         compareEnd
-      );
-      return commonOptions;
-    }
+      )
   );
 
   private async _getStatistics(energyData: EnergyData): Promise<void> {
