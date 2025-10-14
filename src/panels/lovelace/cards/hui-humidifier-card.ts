@@ -6,7 +6,6 @@ import { customElement, property, state } from "lit/decorators";
 import { styleMap } from "lit/directives/style-map";
 import { applyThemesOnElement } from "../../../common/dom/apply_themes_on_element";
 import { fireEvent } from "../../../common/dom/fire_event";
-import { computeStateName } from "../../../common/entity/compute_state_name";
 import { stateColorCss } from "../../../common/entity/state_color";
 import "../../../components/ha-card";
 import "../../../components/ha-icon-button";
@@ -15,6 +14,7 @@ import "../../../state-control/humidifier/ha-state-control-humidifier-humidity";
 import type { HomeAssistant } from "../../../types";
 import "../card-features/hui-card-features";
 import type { LovelaceCardFeatureContext } from "../card-features/types";
+import { computeLovelaceEntityName } from "../common/entity/compute-lovelace-entity-name";
 import { findEntities } from "../common/find-entities";
 import { createEntityNotFoundWarning } from "../components/hui-warning";
 import type {
@@ -133,7 +133,11 @@ export class HuiHumidifierCard extends LitElement implements LovelaceCard {
       `;
     }
 
-    const name = this._config!.name || computeStateName(stateObj);
+    const name = computeLovelaceEntityName(
+      this.hass,
+      stateObj,
+      this._config.name
+    );
 
     const color = stateColorCss(stateObj);
 
