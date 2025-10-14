@@ -16,7 +16,9 @@ import {
 } from "superstruct";
 import type { HASSDomEvent } from "../../../../common/dom/fire_event";
 import { fireEvent } from "../../../../common/dom/fire_event";
+import { DEFAULT_ENTITY_NAME } from "../../../../common/entity/compute_entity_name_display";
 import type { LocalizeFunc } from "../../../../common/translations/localize";
+import { orderProperties } from "../../../../common/util/order-properties";
 import "../../../../components/ha-expansion-panel";
 import "../../../../components/ha-form/ha-form";
 import type {
@@ -34,6 +36,7 @@ import type { TileCardConfig } from "../../cards/types";
 import type { LovelaceCardEditor } from "../../types";
 import { actionConfigStruct } from "../structs/action-struct";
 import { baseLovelaceCardConfig } from "../structs/base-card-struct";
+import { entityNameStruct } from "../structs/entity-name-struct";
 import type { EditDetailElementEvent, EditSubElementEvent } from "../types";
 import { configElementStyle } from "./config-elements-style";
 import { getSupportedFeaturesType } from "./hui-card-features-editor";
@@ -42,12 +45,12 @@ const cardConfigStruct = assign(
   baseLovelaceCardConfig,
   object({
     entity: optional(string()),
-    name: optional(string()),
+    name: optional(entityNameStruct),
     icon: optional(string()),
-    hide_state: optional(boolean()),
-    state_content: optional(union([string(), array(string())])),
     color: optional(string()),
     show_entity_picture: optional(boolean()),
+    hide_state: optional(boolean()),
+    state_content: optional(union([string(), array(string())])),
     vertical: optional(boolean()),
     tap_action: optional(actionConfigStruct),
     hold_action: optional(actionConfigStruct),
@@ -59,6 +62,8 @@ const cardConfigStruct = assign(
     features_position: optional(enums(["bottom", "inline"])),
   })
 );
+
+export const fieldOrder = Object.keys(cardConfigStruct.schema);
 
 @customElement("hui-tile-card-editor")
 export class HuiTileCardEditor
@@ -95,10 +100,18 @@ export class HuiTileCardEditor
           iconPath: mdiTextShort,
           schema: [
             {
+              name: "name",
+              selector: {
+                entity_name: {
+                  default_name: DEFAULT_ENTITY_NAME,
+                },
+              },
+              context: { entity: "entity" },
+            },
+            {
               name: "",
               type: "grid",
               schema: [
-                { name: "name", selector: { text: {} } },
                 {
                   name: "icon",
                   selector: {
@@ -328,7 +341,7 @@ export class HuiTileCardEditor
 
     const newConfig = ev.detail.value as TileCardConfig;
 
-    const config: TileCardConfig = {
+    let config: TileCardConfig = {
       features: this._config.features,
       ...newConfig,
     };
@@ -346,6 +359,8 @@ export class HuiTileCardEditor
       config.vertical = config.content_layout === "vertical";
       delete config.content_layout;
     }
+
+    config = orderProperties(config, fieldOrder);
 
     fireEvent(this, "config-changed", { config });
   }
@@ -388,10 +403,11 @@ export class HuiTileCardEditor
   private _updateFeature(index: number, feature: LovelaceCardFeatureConfig) {
     const features = this._config!.features!.concat();
     features[index] = feature;
-    const config = { ...this._config!, features };
-    fireEvent(this, "config-changed", {
-      config: config,
-    });
+    let config = { ...this._config!, features };
+
+    config = orderProperties(config, fieldOrder);
+
+    fireEvent(this, "config-changed", { config });
   }
 
   private _computeLabelCallback = (

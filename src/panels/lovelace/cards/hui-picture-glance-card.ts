@@ -7,6 +7,7 @@ import { DOMAINS_TOGGLE } from "../../../common/const";
 import { applyThemesOnElement } from "../../../common/dom/apply_themes_on_element";
 import { computeDomain } from "../../../common/entity/compute_domain";
 import { computeStateName } from "../../../common/entity/compute_state_name";
+import { stateActive } from "../../../common/entity/state_active";
 import "../../../components/ha-card";
 import "../../../components/ha-icon-button";
 import "../../../components/ha-state-icon";
@@ -29,15 +30,6 @@ import type {
   PictureGlanceEntityConfig,
 } from "./types";
 import type { PersonEntity } from "../../../data/person";
-
-const STATES_OFF = new Set([
-  "closed",
-  "locked",
-  "not_home",
-  "off",
-  "unavailable",
-  "unknown",
-]);
 
 @customElement("hui-picture-glance-card")
 class HuiPictureGlanceCard extends LitElement implements LovelaceCard {
@@ -303,7 +295,7 @@ class HuiPictureGlanceCard extends LitElement implements LovelaceCard {
           .disabled=${!hasAction(entityConf.tap_action)}
           .config=${entityConf}
           class=${classMap({
-            "state-on": !STATES_OFF.has(stateObj.state),
+            "state-on": stateActive(stateObj),
           })}
           title=${`${computeStateName(
             stateObj

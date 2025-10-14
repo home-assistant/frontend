@@ -1,15 +1,15 @@
-import "@awesome.me/webawesome/dist/components/animation/animation";
+import "@home-assistant/webawesome/dist/components/animation/animation";
 import { mdiRestart } from "@mdi/js";
 
-import { customElement, property } from "lit/decorators";
 import { css, html, LitElement, nothing } from "lit";
-import type { HomeAssistant } from "../../../../../../types";
+import { customElement, property } from "lit/decorators";
 import { fireEvent } from "../../../../../../common/dom/fire_event";
 import { InclusionStrategy } from "../../../../../../data/zwave_js";
+import type { HomeAssistant } from "../../../../../../types";
 
-import "../../../../../../components/ha-spinner";
-import "../../../../../../components/ha-button";
 import "../../../../../../components/ha-alert";
+import "../../../../../../components/ha-button";
+import "../../../../../../components/ha-spinner";
 import { WakeLockMixin } from "../../../../../../mixins/wakelock-mixin";
 
 @customElement("zwave-js-add-node-searching-devices")
@@ -133,7 +133,7 @@ export class ZWaveJsAddNodeSearchingDevices extends WakeLockMixin(LitElement) {
       height: 128px;
     }
     .searching-spinner .circle {
-      border-radius: 50%;
+      border-radius: var(--ha-border-radius-circle);
       background-color: var(--light-primary-color);
       position: absolute;
       width: calc(100% - 32px);

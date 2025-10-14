@@ -137,6 +137,12 @@ export interface FlowConfig {
     option: string
   ): string;
 
+  renderMenuOptionDescription(
+    hass: HomeAssistant,
+    step: DataEntryFlowStepMenu,
+    option: string
+  ): string;
+
   renderLoadingDescription(
     hass: HomeAssistant,
     loadingReason: LoadingReason,
@@ -164,6 +170,7 @@ export interface DataEntryFlowDialogParams {
   showAdvanced?: boolean;
   dialogParentElement?: HTMLElement;
   navigateToResult?: boolean;
+  carryOverDevices?: string[];
 }
 
 export const loadDataEntryFlowDialog = () => import("./dialog-data-entry-flow");

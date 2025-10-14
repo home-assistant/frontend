@@ -15,6 +15,9 @@ import {
 import { fireEvent } from "../../../../common/dom/fire_event";
 import type { LocalizeFunc } from "../../../../common/translations/localize";
 import "../../../../components/ha-form/ha-form";
+import "../hui-sub-element-editor";
+import type { EditDetailElementEvent, SubElementEditorConfig } from "../types";
+import type { HASSDomEvent } from "../../../../common/dom/fire_event";
 import type {
   HaFormSchema,
   SchemaUnion,
@@ -29,6 +32,8 @@ import { actionConfigStruct } from "../structs/action-struct";
 import { baseLovelaceCardConfig } from "../structs/base-card-struct";
 import { entitiesConfigStruct } from "../structs/entities-struct";
 import { configElementStyle } from "./config-elements-style";
+import { DOMAINS_TOGGLE } from "../../../../common/const";
+import { computeDomain } from "../../../../common/entity/compute_domain";
 
 const cardConfigStruct = assign(
   baseLovelaceCardConfig,
@@ -57,6 +62,8 @@ export class HuiPictureGlanceCardEditor
   @property({ attribute: false }) public hass?: HomeAssistant;
 
   @state() private _config?: PictureGlanceCardConfig;
+
+  @state() private _subElementEditorConfig?: SubElementEditorConfig;
 
   @state() private _configEntities?: EntityConfig[];
 
@@ -151,6 +158,54 @@ export class HuiPictureGlanceCardEditor
       ] as const satisfies HaFormSchema[]
   );
 
+  private _subSchema = memoizeOne(
+    (entityId: string) =>
+      [
+        { name: "entity", selector: { entity: {} }, required: true },
+        {
+          type: "grid",
+          name: "",
+          schema: [
+            {
+              name: "icon",
+              selector: {
+                icon: {},
+              },
+              context: {
+                icon_entity: "entity",
+              },
+            },
+            { name: "show_state", selector: { boolean: {} } },
+          ],
+        },
+        {
+          name: "tap_action",
+          selector: {
+            ui_action: {
+              default_action: DOMAINS_TOGGLE.has(computeDomain(entityId))
+                ? "toggle"
+                : "more-info",
+            },
+          },
+        },
+        {
+          name: "",
+          type: "optional_actions",
+          flatten: true,
+          schema: (["hold_action", "double_tap_action"] as const).map(
+            (action) => ({
+              name: action,
+              selector: {
+                ui_action: {
+                  default_action: "none" as const,
+                },
+              },
+            })
+          ),
+        },
+      ] as const
+  );
+
   public setConfig(config: PictureGlanceCardConfig): void {
     assert(config, cardConfigStruct);
     this._config = config;
@@ -160,6 +215,21 @@ export class HuiPictureGlanceCardEditor
   protected render() {
     if (!this.hass || !this._config) {
       return nothing;
+    }
+
+    if (this._subElementEditorConfig) {
+      return html`
+        <hui-sub-element-editor
+          .hass=${this.hass}
+          .config=${this._subElementEditorConfig}
+          .schema=${this._subSchema(
+            (this._subElementEditorConfig.elementConfig! as EntityConfig).entity
+          )}
+          @go-back=${this._goBack}
+          @config-changed=${this._handleSubEntityChanged}
+        >
+        </hui-sub-element-editor>
+      `;
     }
 
     const data = { camera_view: "auto", fit_mode: "cover", ...this._config };
@@ -176,11 +246,41 @@ export class HuiPictureGlanceCardEditor
       <div class="card-config">
         <hui-entity-editor
           .hass=${this.hass}
+          can-edit
           .entities=${this._configEntities}
           @entities-changed=${this._changed}
+          @edit-detail-element=${this._editDetailElement}
         ></hui-entity-editor>
       </div>
     `;
+  }
+
+  private _goBack(): void {
+    this._subElementEditorConfig = undefined;
+  }
+
+  private _editDetailElement(ev: HASSDomEvent<EditDetailElementEvent>): void {
+    this._subElementEditorConfig = ev.detail.subElementConfig;
+  }
+
+  private _handleSubEntityChanged(ev: CustomEvent): void {
+    ev.stopPropagation();
+
+    const index = this._subElementEditorConfig!.index!;
+
+    const newEntities = this._configEntities!.concat();
+    const newConfig = ev.detail.config as EntityConfig;
+    this._subElementEditorConfig = {
+      ...this._subElementEditorConfig!,
+      elementConfig: newConfig,
+    };
+    newEntities[index] = newConfig;
+    let config = this._config!;
+    config = { ...config, entities: newEntities };
+    this._config = config;
+    this._configEntities = processEditorEntities(config.entities);
+
+    fireEvent(this, "config-changed", { config });
   }
 
   private _valueChanged(ev: CustomEvent): void {

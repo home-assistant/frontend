@@ -471,7 +471,7 @@ export class HuiDialogEditCard
           height: max-content;
           background: var(--primary-background-color);
           padding: 4px;
-          border-radius: 4px;
+          border-radius: var(--ha-border-radius-sm);
           position: sticky;
           top: 0;
         }
@@ -504,7 +504,7 @@ export class HuiDialogEditCard
         }
 
         [slot="primaryAction"] {
-          gap: 8px;
+          gap: var(--ha-space-2);
           display: flex;
         }
       `,

@@ -60,17 +60,20 @@ export const generateEntityFilter = (
       }
     }
 
-    const { area, floor, device, entity } = getEntityContext(stateObj, hass);
+    const { area, floor, device, entity } = getEntityContext(
+      stateObj,
+      hass.entities,
+      hass.devices,
+      hass.areas,
+      hass.floors
+    );
 
     if (entity && entity.hidden) {
       return false;
     }
 
     if (floors) {
-      if (!floor) {
-        return false;
-      }
-      if (!floors) {
+      if (!floor || !floors.has(floor.floor_id)) {
         return false;
       }
     }
@@ -118,4 +121,23 @@ export const generateEntityFilter = (
 
     return true;
   };
+};
+
+export const findEntities = (
+  entities: string[],
+  filters: EntityFilterFunc[]
+): string[] => {
+  const seen = new Set<string>();
+  const results: string[] = [];
+
+  for (const filter of filters) {
+    for (const entity of entities) {
+      if (filter(entity) && !seen.has(entity)) {
+        seen.add(entity);
+        results.push(entity);
+      }
+    }
+  }
+
+  return results;
 };

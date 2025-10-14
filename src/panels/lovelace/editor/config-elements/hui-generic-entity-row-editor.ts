@@ -31,6 +31,8 @@ export class HuiGenericEntityRowEditor
 {
   @property({ attribute: false }) public hass?: HomeAssistant;
 
+  @property({ attribute: false }) public schema?;
+
   @state() private _config?: EntitiesCardEntityConfig;
 
   public setConfig(config: EntitiesCardEntityConfig): void {
@@ -87,7 +89,8 @@ export class HuiGenericEntityRowEditor
       return nothing;
     }
 
-    const schema = this._schema(this._config.entity, this.hass.localize);
+    const schema =
+      this.schema || this._schema(this._config.entity, this.hass.localize);
 
     return html`
       <ha-form

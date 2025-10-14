@@ -300,12 +300,12 @@ class DialogChangeBackupEncryptionKey extends LitElement implements HassDialog {
         .encryption-key {
           border: 1px solid var(--divider-color);
           background-color: var(--primary-background-color);
-          border-radius: 8px;
+          border-radius: var(--ha-border-radius-md);
           padding: 16px;
           display: flex;
           flex-direction: row;
           align-items: center;
-          gap: 24px;
+          gap: var(--ha-space-6);
         }
         .encryption-key p {
           margin: 0;

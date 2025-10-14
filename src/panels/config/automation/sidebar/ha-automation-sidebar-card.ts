@@ -1,4 +1,6 @@
+import { ResizeController } from "@lit-labs/observers/resize-controller";
 import { mdiClose, mdiDotsVertical } from "@mdi/js";
+import type { PropertyValues } from "lit";
 import { css, html, LitElement, nothing } from "lit";
 import {
   customElement,
@@ -43,7 +45,22 @@ export default class HaAutomationSidebarCard extends LitElement {
 
   @state() private _contentScrolled = false;
 
-  @query(".card-content") private _contentElement?: HTMLDivElement;
+  @state() private _contentScrollable = false;
+
+  @query(".card-content") private _contentElement!: HTMLDivElement;
+
+  private _contentSize = new ResizeController(this, {
+    target: null,
+    callback: (entries) => {
+      if (entries[0]?.target) {
+        this._canScrollDown(entries[0].target);
+      }
+    },
+  });
+
+  protected firstUpdated(_changedProperties: PropertyValues): void {
+    this._contentSize.observe(this._contentElement);
+  }
 
   protected render() {
     return html`
@@ -67,10 +84,13 @@ export default class HaAutomationSidebarCard extends LitElement {
           <slot slot="subtitle" name="subtitle"></slot>
           <slot name="overflow-menu" slot="actionItems">
             <ha-md-button-menu
+              quick
               @click=${this._openOverflowMenu}
               @keydown=${stopPropagation}
               @closed=${stopPropagation}
               .positioning=${this.narrow ? "absolute" : "fixed"}
+              anchor-corner="end-end"
+              menu-corner="start-end"
             >
               <ha-icon-button
                 slot="trigger"
@@ -91,14 +111,29 @@ export default class HaAutomationSidebarCard extends LitElement {
         <div class="card-content" @scroll=${this._onScroll}>
           <slot></slot>
         </div>
+        <div
+          class=${classMap({ fade: true, scrollable: this._contentScrollable })}
+        ></div>
       </ha-card>
     `;
   }
 
   @eventOptions({ passive: true })
-  private _onScroll() {
-    const top = this._contentElement?.scrollTop ?? 0;
+  private _onScroll(ev) {
+    const top = ev.target.scrollTop ?? 0;
     this._contentScrolled = top > 0;
+
+    this._canScrollDown(ev.target);
+  }
+
+  private _canScrollDown(element: HTMLElement) {
+    const safeAreaInsetBottom =
+      parseFloat(
+        getComputedStyle(element).getPropertyValue("--safe-area-inset-bottom")
+      ) || 0;
+    this._contentScrollable =
+      (element.scrollHeight ?? 0) - (element.clientHeight ?? 0) >
+      (element.scrollTop ?? 0) + safeAreaInsetBottom + 16;
   }
 
   private _closeSidebar() {
@@ -112,16 +147,19 @@ export default class HaAutomationSidebarCard extends LitElement {
 
   static styles = css`
     ha-card {
+      position: relative;
       height: 100%;
       width: 100%;
       border-color: var(--primary-color);
       border-width: 2px;
-      display: block;
+      display: flex;
+      flex-direction: column;
     }
 
     @media all and (max-width: 870px) {
       ha-card.mobile {
         border: none;
+        box-shadow: none;
       }
       ha-card.mobile {
         border-bottom-right-radius: var(--ha-border-radius-square);
@@ -135,7 +173,6 @@ export default class HaAutomationSidebarCard extends LitElement {
       transition: box-shadow 180ms ease-in-out;
       border-bottom-left-radius: 0;
       border-bottom-right-radius: 0;
-      z-index: 6;
       position: relative;
       background-color: var(
         --ha-dialog-surface-background,
@@ -144,18 +181,47 @@ export default class HaAutomationSidebarCard extends LitElement {
     }
 
     ha-dialog-header.scrolled {
-      box-shadow: 0 2px 8px rgba(0, 0, 0, 0.12);
+      box-shadow: var(--bar-box-shadow);
+    }
+
+    .fade {
+      position: absolute;
+      bottom: 1px;
+      left: 1px;
+      right: 1px;
+      height: 16px;
+      pointer-events: none;
+      transition: box-shadow 180ms ease-in-out;
+      background-color: var(
+        --ha-dialog-surface-background,
+        var(--mdc-theme-surface, #fff)
+      );
+      transform: rotate(180deg);
+      border-radius: var(--ha-card-border-radius);
+      border-bottom-left-radius: var(--ha-border-radius-square);
+      border-bottom-right-radius: var(--ha-border-radius-square);
+    }
+
+    .fade.scrollable {
+      box-shadow: var(--bar-box-shadow);
     }
 
     .card-content {
-      max-height: calc(100% - 80px);
+      flex: 1 1 auto;
+      min-height: 0;
       overflow: auto;
+      margin-top: 0;
+      padding-bottom: max(var(--safe-area-inset-bottom, 0px), 32px);
     }
 
-    @media (min-width: 450px) and (min-height: 500px) {
+    @media all and (max-width: 870px) {
+      .fade {
+        bottom: 0;
+        border-radius: var(--ha-border-radius-square);
+      }
+
       .card-content {
-        max-height: calc(100% - 104px);
-        overflow: auto;
+        padding-bottom: 42px;
       }
     }
   `;

@@ -61,6 +61,8 @@ export class HuiSection extends ReactiveElement {
 
   private _listeners: MediaQueriesListener[] = [];
 
+  private _config: LovelaceSectionConfig | undefined;
+
   @storage({
     key: "dashboardCardClipboard",
     state: false,
@@ -117,7 +119,9 @@ export class HuiSection extends ReactiveElement {
 
   public connectedCallback() {
     super.connectedCallback();
-    this._listenMediaQueries();
+    if (this.hasUpdated) {
+      this._listenMediaQueries();
+    }
     this._updateElement();
   }
 
@@ -161,17 +165,17 @@ export class HuiSection extends ReactiveElement {
 
   private _listenMediaQueries() {
     this._clearMediaQueries();
-    if (!this.config?.visibility) {
+    if (!this._config?.visibility) {
       return;
     }
-    const conditions = this.config.visibility;
+    const conditions = this._config.visibility;
     const hasOnlyMediaQuery =
       conditions.length === 1 &&
       conditions[0].condition === "screen" &&
       conditions[0].media_query != null;
 
     this._listeners = attachConditionMediaQueriesListeners(
-      this.config.visibility,
+      this._config.visibility,
       (matches) => {
         this._updateElement(hasOnlyMediaQuery && matches);
       }
@@ -194,6 +198,10 @@ export class HuiSection extends ReactiveElement {
       ...sectionConfig,
       type: sectionConfig.type || DEFAULT_SECTION_LAYOUT,
     };
+    this._config = sectionConfig;
+    if (this.isConnected) {
+      this._listenMediaQueries();
+    }
 
     // Create a new layout element if necessary.
     let addLayoutElement = false;
@@ -203,7 +211,7 @@ export class HuiSection extends ReactiveElement {
       this._layoutElementType !== sectionConfig.type
     ) {
       addLayoutElement = true;
-      this._createLayoutElement(sectionConfig);
+      this._createLayoutElement(this._config);
     }
 
     this._createCards(sectionConfig);
@@ -222,15 +230,31 @@ export class HuiSection extends ReactiveElement {
     }
   }
 
-  private _updateElement(forceVisible?: boolean) {
-    if (!this._layoutElement) {
+  private _updateElement(ignoreConditions?: boolean) {
+    if (!this._layoutElement || !this._config) {
       return;
     }
+
+    if (this.preview) {
+      this._setElementVisibility(true);
+      return;
+    }
+
+    if (this._config.disabled) {
+      this._setElementVisibility(false);
+      return;
+    }
+
     const visible =
-      forceVisible ||
-      this.preview ||
-      !this.config.visibility ||
-      checkConditionsMet(this.config.visibility, this.hass);
+      ignoreConditions ||
+      !this._config.visibility ||
+      checkConditionsMet(this._config.visibility, this.hass);
+
+    this._setElementVisibility(visible);
+  }
+
+  private _setElementVisibility(visible: boolean) {
+    if (!this._layoutElement) return;
 
     if (this.hidden !== !visible) {
       this.style.setProperty("display", visible ? "" : "none");

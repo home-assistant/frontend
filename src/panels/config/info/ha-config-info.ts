@@ -23,13 +23,13 @@ import type { HassioHassOSInfo } from "../../../data/hassio/host";
 import { fetchHassioHassOsInfo } from "../../../data/hassio/host";
 import type { HassioInfo } from "../../../data/hassio/supervisor";
 import { fetchHassioInfo } from "../../../data/hassio/supervisor";
+import { subscribeSystemHealthInfo } from "../../../data/system_health";
 import { showShortcutsDialog } from "../../../dialogs/shortcuts/show-shortcuts-dialog";
 import "../../../layouts/hass-subpage";
 import { mdiHomeAssistant } from "../../../resources/home-assistant-logo-svg";
 import { haStyle } from "../../../resources/styles";
 import type { HomeAssistant, Route } from "../../../types";
 import { documentationUrl } from "../../../util/documentation-url";
-import { subscribeSystemHealthInfo } from "../../../data/system_health";
 
 const JS_TYPE = __BUILD__;
 const JS_VERSION = __VERSION__;
@@ -133,7 +133,7 @@ class HaConfigInfo extends LitElement {
               <li>
                 <span class="version-label"
                   >${this.hass.localize(
-                    `ui.panel.config.info.installation_method`
+                    "ui.panel.config.info.installation_method"
                   )}</span
                 >
                 <span class="version">${this._installationMethod || "…"}</span>
@@ -170,6 +170,20 @@ class HaConfigInfo extends LitElement {
                   ${JS_VERSION}${JS_TYPE !== "modern" ? ` · ${JS_TYPE}` : ""}
                 </span>
               </li>
+              ${this.hass.auth.external?.config.appVersion
+                ? html`
+                    <li>
+                      <span class="version-label"
+                        >${this.hass.localize(
+                          "ui.panel.config.info.external_app_version"
+                        )}</span
+                      >
+                      <span class="version"
+                        >${this.hass.auth.external?.config.appVersion}</span
+                      >
+                    </li>
+                  `
+                : nothing}
             </ul>
           </ha-card>
           <ha-card outlined class="ohf">
@@ -379,7 +393,7 @@ class HaConfigInfo extends LitElement {
         }
 
         .icon-background {
-          border-radius: 50%;
+          border-radius: var(--ha-border-radius-circle);
         }
 
         .custom-ui {

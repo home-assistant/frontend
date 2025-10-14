@@ -76,7 +76,7 @@ export class HaCopyTextfield extends LitElement {
     .container {
       display: flex;
       align-items: center;
-      gap: 8px;
+      gap: var(--ha-space-2);
       margin-top: 8px;
     }
 

@@ -131,7 +131,7 @@ export class DemoHaSelectBox extends LitElement {
       --mdc-icon-size: 24px;
       --control-select-color: var(--state-fan-active-color);
       --control-select-thickness: 130px;
-      --control-select-border-radius: 36px;
+      --control-select-border-radius: var(--ha-border-radius-6xl);
     }
 
     p.title {

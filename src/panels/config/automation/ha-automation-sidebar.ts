@@ -1,8 +1,10 @@
-import { css, html, LitElement, nothing } from "lit";
+import { css, html, LitElement, nothing, type PropertyValues } from "lit";
 import { customElement, property, query, state } from "lit/decorators";
+import { tinykeys } from "tinykeys";
 import { fireEvent } from "../../../common/dom/fire_event";
-import "../../../components/ha-bottom-sheet";
-import type { HaBottomSheet } from "../../../components/ha-bottom-sheet";
+import { computeRTL } from "../../../common/util/compute_rtl";
+import "../../../components/ha-resizable-bottom-sheet";
+import type { HaResizableBottomSheet } from "../../../components/ha-resizable-bottom-sheet";
 import {
   isCondition,
   isScriptField,
@@ -34,9 +36,37 @@ export default class HaAutomationSidebar extends LitElement {
 
   @property({ type: Boolean }) public narrow = false;
 
+  @property({ attribute: "sidebar-key" }) public sidebarKey?: string;
+
   @state() private _yamlMode = false;
 
-  @query("ha-bottom-sheet") private _bottomSheetElement?: HaBottomSheet;
+  @state() private _resizing = false;
+
+  @query("ha-resizable-bottom-sheet")
+  private _bottomSheetElement?: HaResizableBottomSheet;
+
+  @query(".handle")
+  private _handleElement?: HTMLDivElement;
+
+  private _resizeStartX = 0;
+
+  private _tinykeysUnsub?: () => void;
+
+  protected updated(changedProperties: PropertyValues) {
+    super.updated(changedProperties);
+    if (changedProperties.has("config") || changedProperties.has("narrow")) {
+      if (!this.config || this.narrow) {
+        this._tinykeysUnsub?.();
+        this._tinykeysUnsub = undefined;
+      }
+    }
+  }
+
+  disconnectedCallback() {
+    super.disconnectedCallback();
+    this._unregisterResizeHandlers();
+    this._tinykeysUnsub?.();
+  }
 
   private _renderContent() {
     // get config type
@@ -52,8 +82,9 @@ export default class HaAutomationSidebar extends LitElement {
           .narrow=${this.narrow}
           .disabled=${this.disabled}
           .yamlMode=${this._yamlMode}
+          .sidebarKey=${this.sidebarKey}
           @toggle-yaml-mode=${this._toggleYamlMode}
-          @close-sidebar=${this._handleCloseSidebar}
+          @close-sidebar=${this.triggerCloseSidebar}
         ></ha-automation-sidebar-trigger>
       `;
     }
@@ -67,8 +98,9 @@ export default class HaAutomationSidebar extends LitElement {
           .narrow=${this.narrow}
           .disabled=${this.disabled}
           .yamlMode=${this._yamlMode}
+          .sidebarKey=${this.sidebarKey}
           @toggle-yaml-mode=${this._toggleYamlMode}
-          @close-sidebar=${this._handleCloseSidebar}
+          @close-sidebar=${this.triggerCloseSidebar}
         ></ha-automation-sidebar-condition>
       `;
     }
@@ -82,8 +114,9 @@ export default class HaAutomationSidebar extends LitElement {
           .narrow=${this.narrow}
           .disabled=${this.disabled}
           .yamlMode=${this._yamlMode}
+          .sidebarKey=${this.sidebarKey}
           @toggle-yaml-mode=${this._toggleYamlMode}
-          @close-sidebar=${this._handleCloseSidebar}
+          @close-sidebar=${this.triggerCloseSidebar}
         ></ha-automation-sidebar-action>
       `;
     }
@@ -96,7 +129,7 @@ export default class HaAutomationSidebar extends LitElement {
           .isWide=${this.isWide}
           .narrow=${this.narrow}
           .disabled=${this.disabled}
-          @close-sidebar=${this._handleCloseSidebar}
+          @close-sidebar=${this.triggerCloseSidebar}
         ></ha-automation-sidebar-option>
       `;
     }
@@ -110,8 +143,9 @@ export default class HaAutomationSidebar extends LitElement {
           .narrow=${this.narrow}
           .disabled=${this.disabled}
           .yamlMode=${this._yamlMode}
+          .sidebarKey=${this.sidebarKey}
           @toggle-yaml-mode=${this._toggleYamlMode}
-          @close-sidebar=${this._handleCloseSidebar}
+          @close-sidebar=${this.triggerCloseSidebar}
         ></ha-automation-sidebar-script-field-selector>
       `;
     }
@@ -125,8 +159,9 @@ export default class HaAutomationSidebar extends LitElement {
           .narrow=${this.narrow}
           .disabled=${this.disabled}
           .yamlMode=${this._yamlMode}
+          .sidebarKey=${this.sidebarKey}
           @toggle-yaml-mode=${this._toggleYamlMode}
-          @close-sidebar=${this._handleCloseSidebar}
+          @close-sidebar=${this.triggerCloseSidebar}
         ></ha-automation-sidebar-script-field>
       `;
     }
@@ -141,13 +176,25 @@ export default class HaAutomationSidebar extends LitElement {
 
     if (this.narrow) {
       return html`
-        <ha-bottom-sheet @bottom-sheet-closed=${this._closeSidebar}>
+        <ha-resizable-bottom-sheet @bottom-sheet-closed=${this._closeSidebar}>
           ${this._renderContent()}
-        </ha-bottom-sheet>
+        </ha-resizable-bottom-sheet>
       `;
     }
 
-    return this._renderContent();
+    return html`
+      <div
+        class="handle ${this._resizing ? "resizing" : ""}"
+        @mousedown=${this._handleMouseDown}
+        @touchstart=${this._handleMouseDown}
+        @focus=${this._startKeyboardResizing}
+        @blur=${this._stopKeyboardResizing}
+        tabindex="0"
+      >
+        <div class="indicator ${this._resizing ? "" : "hidden"}"></div>
+      </div>
+      ${this._renderContent()}
+    `;
   }
 
   private _getType() {
@@ -182,8 +229,8 @@ export default class HaAutomationSidebar extends LitElement {
     return undefined;
   }
 
-  private _handleCloseSidebar(ev: CustomEvent) {
-    ev.stopPropagation();
+  public triggerCloseSidebar(ev?: CustomEvent) {
+    ev?.stopPropagation();
     if (this.narrow) {
       this._bottomSheetElement?.closeSheet();
       return;
@@ -193,23 +240,117 @@ export default class HaAutomationSidebar extends LitElement {
   }
 
   private _closeSidebar() {
-    this.config?.close();
+    this.config?.close(true);
   }
 
   private _toggleYamlMode = () => {
-    this._yamlMode = this.config!.toggleYamlMode();
-    fireEvent(this, "value-changed", {
-      value: {
-        ...this.config,
-        yamlMode: this._yamlMode,
-      },
+    (this.config as ActionSidebarConfig)?.toggleYamlMode();
+  };
+
+  private _handleMouseDown = (ev: MouseEvent | TouchEvent) => {
+    // Prevent the browser from interpreting this as a scroll/PTR gesture.
+    ev.preventDefault();
+    this._startResizing(
+      (ev as TouchEvent).touches?.length
+        ? (ev as TouchEvent).touches[0].clientX
+        : (ev as MouseEvent).clientX
+    );
+  };
+
+  private _startResizing(clientX: number) {
+    // register event listeners for drag handling
+    document.addEventListener("mousemove", this._handleMouseMove);
+    document.addEventListener("mouseup", this._endResizing);
+    document.addEventListener("touchmove", this._handleMouseMove, {
+      passive: false,
+    });
+    document.addEventListener("touchend", this._endResizing);
+    document.addEventListener("touchcancel", this._endResizing);
+
+    this._resizing = true;
+    this._resizeStartX = clientX;
+  }
+
+  private _handleMouseMove = (ev: MouseEvent | TouchEvent) => {
+    this._updateSize(
+      (ev as TouchEvent).touches?.length
+        ? (ev as TouchEvent).touches[0].clientX
+        : (ev as MouseEvent).clientX
+    );
+  };
+
+  private _updateSize(clientX: number) {
+    let delta = this._resizeStartX - clientX;
+
+    if (computeRTL(this.hass)) {
+      delta = -delta;
+    }
+
+    requestAnimationFrame(() => {
+      fireEvent(this, "sidebar-resized", {
+        deltaInPx: delta,
+      });
+    });
+  }
+
+  private _endResizing = () => {
+    this._unregisterResizeHandlers();
+    this._resizing = false;
+    document.body.style.removeProperty("cursor");
+    fireEvent(this, "sidebar-resizing-stopped");
+  };
+
+  private _unregisterResizeHandlers() {
+    document.removeEventListener("mousemove", this._handleMouseMove);
+    document.removeEventListener("mouseup", this._endResizing);
+    document.removeEventListener("touchmove", this._handleMouseMove);
+    document.removeEventListener("touchend", this._endResizing);
+    document.removeEventListener("touchcancel", this._endResizing);
+  }
+
+  private _startKeyboardResizing = (ev: KeyboardEvent) => {
+    ev.stopPropagation();
+    this._resizing = true;
+    this._resizeStartX = 0;
+    this._tinykeysUnsub = tinykeys(this._handleElement!, {
+      ArrowLeft: this._increaseSize,
+      ArrowRight: this._decreaseSize,
     });
   };
 
+  private _stopKeyboardResizing = (ev: KeyboardEvent) => {
+    ev.stopPropagation();
+    this._resizing = false;
+    fireEvent(this, "sidebar-resizing-stopped");
+    this._tinykeysUnsub?.();
+    this._tinykeysUnsub = undefined;
+  };
+
+  private _increaseSize = (ev: KeyboardEvent) => {
+    ev.stopPropagation();
+
+    this._resizeStartX -= computeRTL(this.hass) ? 10 : -10;
+    this._keyboardResize();
+  };
+
+  private _decreaseSize = (ev: KeyboardEvent) => {
+    ev.stopPropagation();
+
+    this._resizeStartX += computeRTL(this.hass) ? 10 : -10;
+    this._keyboardResize();
+  };
+
+  private _keyboardResize() {
+    fireEvent(this, "sidebar-resized", {
+      deltaInPx: this._resizeStartX,
+    });
+  }
+
   static styles = css`
     :host {
+      z-index: 6;
       outline: none;
-      height: 100%;
+      height: calc(100% - var(--safe-area-inset-top, 0px));
       --ha-card-border-radius: var(
         --ha-dialog-border-radius,
         var(--ha-border-radius-2xl)
@@ -218,12 +359,50 @@ export default class HaAutomationSidebar extends LitElement {
       --ha-bottom-sheet-border-width: 2px;
       --ha-bottom-sheet-border-style: solid;
       --ha-bottom-sheet-border-color: var(--primary-color);
+      margin-top: var(--safe-area-inset-top);
+
+      --ha-bottom-sheet-surface-background: var(--card-background-color);
     }
 
     @media all and (max-width: 870px) {
       .sidebar-content {
         max-height: 100%;
       }
+    }
+
+    .handle {
+      position: absolute;
+      margin-inline-start: -11px;
+      height: calc(100% - (2 * var(--ha-card-border-radius)));
+      width: 24px;
+      z-index: 7;
+      cursor: ew-resize;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      padding: var(--ha-card-border-radius) var(--ha-border-radius-square);
+    }
+    .handle.resizing {
+      cursor: grabbing;
+    }
+    .handle .indicator {
+      background-color: var(--primary-color);
+      height: 100%;
+      width: 4px;
+      border-radius: var(--ha-border-radius-pill);
+      transform: scale3d(1, 1, 1);
+      opacity: 1;
+      transition:
+        transform 180ms ease-in-out,
+        opacity 180ms ease-in-out;
+    }
+    .handle .indicator.hidden {
+      transform: scale3d(0, 1, 1);
+      opacity: 0;
+    }
+
+    .handle:focus-visible {
+      outline: none;
     }
   `;
 }
@@ -235,5 +414,12 @@ declare global {
 
   interface HASSDomEvents {
     "toggle-yaml-mode": undefined;
+    "yaml-changed": {
+      value: unknown;
+    };
+    "sidebar-resized": {
+      deltaInPx: number;
+    };
+    "sidebar-resizing-stopped": undefined;
   }
 }

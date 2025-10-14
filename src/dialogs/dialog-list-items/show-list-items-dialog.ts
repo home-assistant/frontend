@@ -11,6 +11,7 @@ interface ListItem {
 export interface ListItemsDialogParams {
   title?: string;
   items: ListItem[];
+  mode?: "dialog" | "bottom-sheet";
 }
 
 export const showListItemsDialog = (

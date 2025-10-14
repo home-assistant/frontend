@@ -362,7 +362,7 @@ class DialogZWaveJSRemoveNode extends LitElement {
           display: flex;
           align-items: center;
           flex-direction: column;
-          gap: 16px;
+          gap: var(--ha-space-4);
           text-align: center;
         }
 

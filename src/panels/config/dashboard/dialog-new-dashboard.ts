@@ -49,8 +49,8 @@ const STRATEGIES = [
   {
     type: "home",
     images: {
-      light: "/static/images/dashboard-options/light/icon-dashboard-areas.svg",
-      dark: "/static/images/dashboard-options/dark/icon-dashboard-areas.svg",
+      light: "/static/images/dashboard-options/light/icon-dashboard-home.svg",
+      dark: "/static/images/dashboard-options/dark/icon-dashboard-home.svg",
     },
     name: "ui.panel.config.lovelace.dashboards.dialog_new.strategy.home.title",
     description:

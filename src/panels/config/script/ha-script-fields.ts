@@ -43,7 +43,7 @@ export default class HaScriptFields extends LitElement {
                   .disabled=${this.disabled}
                   @value-changed=${this._fieldChanged}
                   .hass=${this.hass}
-                  ?highlight=${this.highlightedFields?.[key] !== undefined}
+                  .highlight=${this.highlightedFields?.[key] !== undefined}
                   .narrow=${this.narrow}
                 >
                 </ha-script-field-row>
@@ -76,10 +76,12 @@ export default class HaScriptFields extends LitElement {
       row.focus();
 
       if (this.narrow) {
-        row.scrollIntoView({
-          block: "start",
-          behavior: "smooth",
-        });
+        window.setTimeout(() => {
+          row.scrollIntoView({
+            block: "start",
+            behavior: "smooth",
+          });
+        }, 180); // duration of transition of added padding for bottom sheet
       }
     });
   }

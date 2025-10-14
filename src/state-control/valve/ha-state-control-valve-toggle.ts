@@ -1,6 +1,6 @@
 import type { HassEntity } from "home-assistant-js-websocket";
 import type { TemplateResult } from "lit";
-import { css, html, LitElement } from "lit";
+import { html, LitElement } from "lit";
 import { customElement, property } from "lit/decorators";
 import { classMap } from "lit/directives/class-map";
 import { styleMap } from "lit/directives/style-map";
@@ -10,6 +10,7 @@ import "../../components/ha-control-switch";
 import "../../components/ha-state-icon";
 import { UNAVAILABLE, UNKNOWN } from "../../data/entity";
 import { forwardHaptic } from "../../data/haptics";
+import { stateControlToggleStyle } from "../../resources/state-control-styles";
 import type { HomeAssistant } from "../../types";
 
 @customElement("ha-state-control-valve-toggle")
@@ -40,7 +41,7 @@ export class HaStateControlValveToggle extends LitElement {
     if (!this.hass || !this.stateObj) {
       return;
     }
-    forwardHaptic("light");
+    forwardHaptic(this, "light");
 
     await this.hass.callService(
       "valve",
@@ -137,42 +138,7 @@ export class HaStateControlValveToggle extends LitElement {
     `;
   }
 
-  static styles = css`
-    ha-control-switch {
-      height: 45vh;
-      max-height: 320px;
-      min-height: 200px;
-      --control-switch-thickness: 130px;
-      --control-switch-border-radius: 36px;
-      --control-switch-padding: 6px;
-      --mdc-icon-size: 24px;
-    }
-    .buttons {
-      display: flex;
-      flex-direction: column;
-      width: 130px;
-      height: 45vh;
-      max-height: 320px;
-      min-height: 200px;
-      padding: 6px;
-      box-sizing: border-box;
-    }
-    ha-control-button {
-      flex: 1;
-      width: 100%;
-      --control-button-border-radius: 36px;
-      --mdc-icon-size: 24px;
-    }
-    ha-control-button.active {
-      --control-button-icon-color: white;
-      --control-button-background-color: var(--color);
-      --control-button-focus-color: var(--color);
-      --control-button-background-opacity: 1;
-    }
-    ha-control-button:not(:last-child) {
-      margin-bottom: 6px;
-    }
-  `;
+  static styles = [stateControlToggleStyle];
 }
 
 declare global {

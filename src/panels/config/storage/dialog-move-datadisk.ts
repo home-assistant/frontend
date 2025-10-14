@@ -110,7 +110,7 @@ class MoveDatadiskDialog extends LitElement {
       >
         ${this._moving
           ? html`
-              <ha-spinner aria-label="Moving" size="large"> </ha-spinner>
+              <ha-spinner aria-label="Moving" size="large"></ha-spinner>
               <p class="progress-text">
                 ${this.hass.localize(
                   "ui.panel.config.storage.datadisk.moving_desc"
@@ -206,8 +206,7 @@ class MoveDatadiskDialog extends LitElement {
         }
         ha-spinner {
           display: block;
-          margin: 32px;
-          text-align: center;
+          margin: 32px auto;
         }
 
         .progress-text {

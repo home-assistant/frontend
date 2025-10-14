@@ -328,9 +328,13 @@ export class BarMediaPlayer extends SubscribeMixin(LitElement) {
                       </span>
                       ${this.narrow
                         ? nothing
-                        : stateObj
-                          ? computeStateName(stateObj)
-                          : this.entityId}
+                        : isBrowser
+                          ? this.hass.localize(
+                              "ui.components.media-browser.web-browser"
+                            )
+                          : stateObj
+                            ? computeStateName(stateObj)
+                            : this.entityId}
                       <ha-svg-icon
                         slot="end"
                         .path=${mdiChevronDown}
@@ -560,7 +564,10 @@ export class BarMediaPlayer extends SubscribeMixin(LitElement) {
         var(--card-background-color, white)
       );
       border-top: 1px solid var(--divider-color);
-      padding-bottom: var(--safe-area-inset-bottom);
+      margin-right: var(--safe-area-inset-right);
+    }
+    :host([narrow]) {
+      margin-left: var(--safe-area-inset-left);
     }
 
     mwc-linear-progress {

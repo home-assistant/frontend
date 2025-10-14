@@ -40,7 +40,7 @@ import type { DateRangePickerRanges } from "../../../components/ha-date-range-pi
 import "../../../components/ha-icon-button-next";
 import "../../../components/ha-icon-button-prev";
 import type { EnergyData } from "../../../data/energy";
-import { getEnergyDataCollection } from "../../../data/energy";
+import { CompareMode, getEnergyDataCollection } from "../../../data/energy";
 import { SubscribeMixin } from "../../../mixins/subscribe-mixin";
 import type { HomeAssistant } from "../../../types";
 import { calcDateRange } from "../../../common/datetime/calc_date_range";
@@ -449,7 +449,9 @@ export class HuiEnergyPeriodSelector extends SubscribeMixin(LitElement) {
     const energyCollection = getEnergyDataCollection(this.hass, {
       key: this.collectionKey,
     });
-    energyCollection.setCompare(this._compare);
+    energyCollection.setCompare(
+      this._compare ? CompareMode.PREVIOUS : CompareMode.NONE
+    );
     energyCollection.refresh();
   }
 

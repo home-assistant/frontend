@@ -51,6 +51,9 @@ export class StateHistoryChartTimeline extends LitElement {
 
   @property({ attribute: false, type: Number }) public chartIndex?;
 
+  @property({ attribute: "hide-reset-button", type: Boolean })
+  public hideResetButton?: boolean;
+
   @state() private _chartData: CustomSeriesOption[] = [];
 
   @state() private _chartOptions?: ECOption;
@@ -68,6 +71,8 @@ export class StateHistoryChartTimeline extends LitElement {
         .data=${this._chartData as ECOption["series"]}
         small-controls
         @chart-click=${this._handleChartClick}
+        @chart-zoom=${this._handleDataZoom}
+        .hideResetButton=${this.hideResetButton}
       ></ha-chart-base>
     `;
   }
@@ -254,6 +259,19 @@ export class StateHistoryChartTimeline extends LitElement {
         formatter: this._renderTooltip,
       },
     };
+  }
+
+  public zoom(start: number, end: number) {
+    const chartBase = this.shadowRoot!.querySelector("ha-chart-base")!;
+    chartBase.zoom(start, end, true);
+  }
+
+  private _handleDataZoom(ev: CustomEvent) {
+    fireEvent(this, "chart-zoom-with-index", {
+      start: ev.detail.start ?? 0,
+      end: ev.detail.end ?? 100,
+      chartIndex: this.chartIndex,
+    });
   }
 
   private _generateData() {

@@ -23,10 +23,7 @@ class ConfigNetwork extends LitElement {
   @state() private _error?: { code: string; message: string };
 
   protected render() {
-    if (
-      !this.hass.userData?.showAdvanced ||
-      !isComponentLoaded(this.hass, "network")
-    ) {
+    if (!isComponentLoaded(this.hass, "network")) {
       return nothing;
     }
 

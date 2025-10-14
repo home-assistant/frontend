@@ -27,7 +27,7 @@ export default class HaAutomationTriggerEditor extends LitElement {
   @property({ type: Boolean, attribute: "supported" }) public uiSupported =
     false;
 
-  @property({ type: Boolean, attribute: "show-id" }) public showId = false;
+  @property({ type: Boolean, attribute: "sidebar" }) public inSidebar = false;
 
   @query("ha-yaml-editor") public yamlEditor?: HaYamlEditor;
 
@@ -35,7 +35,6 @@ export default class HaAutomationTriggerEditor extends LitElement {
     const type = isTriggerList(this.trigger) ? "list" : this.trigger.trigger;
 
     const yamlMode = this.yamlMode || !this.uiSupported;
-    const showId = "id" in this.trigger || this.showId;
 
     return html`
       <div
@@ -47,6 +46,7 @@ export default class HaAutomationTriggerEditor extends LitElement {
               this.trigger.enabled === false &&
               !this.yamlMode),
           yaml: yamlMode,
+          card: !this.inSidebar,
         })}
       >
         ${yamlMode
@@ -70,19 +70,23 @@ export default class HaAutomationTriggerEditor extends LitElement {
               ></ha-yaml-editor>
             `
           : html`
-              ${showId && !isTriggerList(this.trigger)
+              ${!isTriggerList(this.trigger)
                 ? html`
                     <ha-textfield
-                      .label=${this.hass.localize(
+                      .label=${`${this.hass.localize(
                         "ui.panel.config.automation.editor.triggers.id"
-                      )}
+                      )} (${this.hass.localize(
+                        "ui.panel.config.automation.editor.triggers.optional"
+                      )})`}
                       .value=${this.trigger.id || ""}
                       .disabled=${this.disabled}
                       @change=${this._idChanged}
-                    >
-                    </ha-textfield>
+                      .helper=${this.hass.localize(
+                        "ui.panel.config.automation.editor.triggers.id_helper"
+                      )}
+                    ></ha-textfield>
                   `
-                : ""}
+                : nothing}
               <div @value-changed=${this._onUiChanged}>
                 ${dynamicElement(`ha-automation-trigger-${type}`, {
                   hass: this.hass,
@@ -118,7 +122,7 @@ export default class HaAutomationTriggerEditor extends LitElement {
     if (!ev.detail.isValid) {
       return;
     }
-    fireEvent(this, "value-changed", {
+    fireEvent(this, this.inSidebar ? "yaml-changed" : "value-changed", {
       value: migrateAutomationTrigger(ev.detail.value),
     });
   }
@@ -138,13 +142,9 @@ export default class HaAutomationTriggerEditor extends LitElement {
       haStyle,
       css`
         .disabled {
-          opacity: 0.5;
           pointer-events: none;
         }
 
-        .card-content {
-          padding: 16px;
-        }
         .card-content.yaml {
           padding: 0 1px;
           border-top: 1px solid var(--divider-color);

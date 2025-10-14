@@ -152,7 +152,12 @@ export default class HaScriptFieldEditor extends LitElement {
     ev.stopPropagation();
     const value = { ...ev.detail.value };
 
-    if (typeof value !== "object" || Object.keys(value).length !== 1) {
+    if (
+      typeof value !== "object" ||
+      Object.keys(value).length !== 1 ||
+      !value[Object.keys(value)[0]] ||
+      !value[Object.keys(value)[0]].selector
+    ) {
       this._yamlError = "yaml_error";
       return;
     }
@@ -165,7 +170,7 @@ export default class HaScriptFieldEditor extends LitElement {
 
     const newValue = { ...value[key], key };
 
-    fireEvent(this, "value-changed", { value: newValue });
+    fireEvent(this, "yaml-changed", { value: newValue });
   }
 
   private _computeLabelCallback = (

@@ -1,6 +1,9 @@
 import { ReactiveElement } from "lit";
 import { customElement } from "lit/decorators";
-import { generateEntityFilter } from "../../../../common/entity/entity_filter";
+import {
+  findEntities,
+  generateEntityFilter,
+} from "../../../../common/entity/entity_filter";
 import type { LovelaceCardConfig } from "../../../../data/lovelace/config/card";
 import type { LovelaceSectionRawConfig } from "../../../../data/lovelace/config/section";
 import type { LovelaceViewConfig } from "../../../../data/lovelace/config/view";
@@ -8,7 +11,7 @@ import type { HomeAssistant } from "../../../../types";
 import type { MediaControlCardConfig } from "../../cards/types";
 import { getAreas, getFloors } from "../areas/helpers/areas-strategy-helper";
 import { getHomeStructure } from "./helpers/home-structure";
-import { findEntities, HOME_SUMMARIES_FILTERS } from "./helpers/home-summaries";
+import { HOME_SUMMARIES_FILTERS } from "./helpers/home-summaries";
 
 export interface HomeMediaPlayersViewStrategyConfig {
   type: "home-media-players";
@@ -29,8 +32,16 @@ const processAreasForMediaPlayers = (
       area: area.area_id,
     });
     const areaEntities = entities.filter(areaFilter);
+    const areaCards: LovelaceCardConfig[] = [];
 
-    if (areaEntities.length > 0) {
+    for (const entityId of areaEntities) {
+      areaCards.push({
+        type: "media-control",
+        entity: entityId,
+      } satisfies MediaControlCardConfig);
+    }
+
+    if (areaCards.length > 0) {
       cards.push({
         heading_style: "subtitle",
         type: "heading",
@@ -40,13 +51,7 @@ const processAreasForMediaPlayers = (
           navigation_path: `areas-${area.area_id}`,
         },
       });
-
-      for (const entityId of areaEntities) {
-        cards.push({
-          type: "media-control",
-          entity: entityId,
-        } satisfies MediaControlCardConfig);
-      }
+      cards.push(...areaCards);
     }
   }
 
@@ -87,7 +92,10 @@ export class HomeMMediaPlayersViewStrategy extends ReactiveElement {
         cards: [
           {
             type: "heading",
-            heading: floorCount > 1 ? floor.name : "Areas",
+            heading:
+              floorCount > 1
+                ? floor.name
+                : hass.localize("ui.panel.lovelace.strategy.home.areas"),
           },
         ],
       };
@@ -108,7 +116,10 @@ export class HomeMMediaPlayersViewStrategy extends ReactiveElement {
         cards: [
           {
             type: "heading",
-            heading: floorCount > 1 ? "Other areas" : "Areas",
+            heading:
+              floorCount > 1
+                ? hass.localize("ui.panel.lovelace.strategy.home.other_areas")
+                : hass.localize("ui.panel.lovelace.strategy.home.areas"),
           },
         ],
       };

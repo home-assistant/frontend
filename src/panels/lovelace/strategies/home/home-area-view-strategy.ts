@@ -1,9 +1,11 @@
 import { ReactiveElement } from "lit";
 import { customElement } from "lit/decorators";
 import { computeDeviceName } from "../../../../common/entity/compute_device_name";
-import { computeEntityName } from "../../../../common/entity/compute_entity_name";
 import { getEntityContext } from "../../../../common/entity/context/get_entity_context";
-import { generateEntityFilter } from "../../../../common/entity/entity_filter";
+import {
+  findEntities,
+  generateEntityFilter,
+} from "../../../../common/entity/entity_filter";
 import { clamp } from "../../../../common/number/clamp";
 import type { LovelaceBadgeConfig } from "../../../../data/lovelace/config/badge";
 import type { LovelaceCardConfig } from "../../../../data/lovelace/config/card";
@@ -13,11 +15,11 @@ import type { HomeAssistant } from "../../../../types";
 import type { HeadingCardConfig } from "../../cards/types";
 import { computeAreaTileCardConfig } from "../areas/helpers/areas-strategy-helper";
 import {
-  findEntities,
+  getSummaryLabel,
   HOME_SUMMARIES,
   HOME_SUMMARIES_FILTERS,
   HOME_SUMMARIES_ICONS,
-  type HomeSummaries,
+  type HomeSummary,
 } from "./helpers/home-summaries";
 
 export interface HomeAreaViewStrategyConfig {
@@ -96,22 +98,26 @@ export class HomeAreaViewStrategy extends ReactiveElement {
         acc[summary] = findEntities(areaEntities, filterFunctions);
         return acc;
       },
-      {} as Record<HomeSummaries, string[]>
+      {} as Record<HomeSummary, string[]>
     );
 
     const {
-      lights,
+      light,
       climate,
       security,
       media_players: mediaPlayers,
     } = entitiesBySummary;
 
-    if (lights.length > 0) {
+    if (light.length > 0) {
       sections.push({
         type: "grid",
         cards: [
-          computeHeadingCard("Lights", HOME_SUMMARIES_ICONS.lights, "lights"),
-          ...lights.map(computeTileCard),
+          computeHeadingCard(
+            getSummaryLabel(hass.localize, "light"),
+            HOME_SUMMARIES_ICONS.light,
+            "/lights?historyBack=1"
+          ),
+          ...light.map(computeTileCard),
         ],
       });
     }
@@ -121,7 +127,7 @@ export class HomeAreaViewStrategy extends ReactiveElement {
         type: "grid",
         cards: [
           computeHeadingCard(
-            "Climate",
+            getSummaryLabel(hass.localize, "climate"),
             HOME_SUMMARIES_ICONS.climate,
             "climate"
           ),
@@ -135,7 +141,7 @@ export class HomeAreaViewStrategy extends ReactiveElement {
         type: "grid",
         cards: [
           computeHeadingCard(
-            "Security",
+            getSummaryLabel(hass.localize, "security"),
             HOME_SUMMARIES_ICONS.security,
             "security"
           ),
@@ -149,7 +155,7 @@ export class HomeAreaViewStrategy extends ReactiveElement {
         type: "grid",
         cards: [
           computeHeadingCard(
-            "Media players",
+            getSummaryLabel(hass.localize, "media_players"),
             HOME_SUMMARIES_ICONS.media_players,
             "media-players"
           ),
@@ -172,7 +178,13 @@ export class HomeAreaViewStrategy extends ReactiveElement {
     for (const entityId of otherEntities) {
       const stateObj = hass.states[entityId];
       if (!stateObj) continue;
-      const { device } = getEntityContext(stateObj, hass);
+      const { device } = getEntityContext(
+        stateObj,
+        hass.entities,
+        hass.devices,
+        hass.areas,
+        hass.floors
+      );
       if (!device) {
         unassignedEntities.push(entityId);
         continue;
@@ -229,9 +241,11 @@ export class HomeAreaViewStrategy extends ReactiveElement {
       const device = hass.devices[deviceId];
       let heading = "";
       if (device) {
-        heading = computeDeviceName(device) || "Unnamed device";
+        heading =
+          computeDeviceName(device) ||
+          hass.localize("ui.panel.lovelace.strategy.home.unamed_device");
       } else {
-        heading = "Others";
+        heading = hass.localize("ui.panel.lovelace.strategy.home.others");
       }
 
       deviceSections.push({
@@ -256,15 +270,12 @@ export class HomeAreaViewStrategy extends ReactiveElement {
               })),
             ],
           } satisfies HeadingCardConfig,
-          ...entities.map((e) => {
-            const stateObj = hass.states[e];
-            return {
-              ...computeTileCard(e),
-              name:
-                computeEntityName(stateObj, hass) ||
-                (device ? computeDeviceName(device) : ""),
-            };
-          }),
+          ...entities.map((e) => ({
+            ...computeTileCard(e),
+            name: {
+              type: "entity",
+            },
+          })),
         ],
       });
     }

@@ -1,23 +1,30 @@
 import { ReactiveElement } from "lit";
 import { customElement } from "lit/decorators";
-import { generateEntityFilter } from "../../../../common/entity/entity_filter";
-import type { LovelaceCardConfig } from "../../../../data/lovelace/config/card";
-import type { LovelaceSectionRawConfig } from "../../../../data/lovelace/config/section";
-import type { LovelaceViewConfig } from "../../../../data/lovelace/config/view";
-import type { HomeAssistant } from "../../../../types";
+import {
+  findEntities,
+  generateEntityFilter,
+  type EntityFilter,
+} from "../../../common/entity/entity_filter";
+import type { LovelaceCardConfig } from "../../../data/lovelace/config/card";
+import type { LovelaceSectionRawConfig } from "../../../data/lovelace/config/section";
+import type { LovelaceViewConfig } from "../../../data/lovelace/config/view";
+import type { HomeAssistant } from "../../../types";
 import {
   computeAreaTileCardConfig,
   getAreas,
   getFloors,
-} from "../areas/helpers/areas-strategy-helper";
-import { getHomeStructure } from "./helpers/home-structure";
-import { findEntities, HOME_SUMMARIES_FILTERS } from "./helpers/home-summaries";
+} from "../../lovelace/strategies/areas/helpers/areas-strategy-helper";
+import { getHomeStructure } from "../../lovelace/strategies/home/helpers/home-structure";
 
-export interface HomeLightsViewStrategyConfig {
-  type: "home-lights";
+export interface LightViewStrategyConfig {
+  type: "light";
 }
 
-const processAreasForLights = (
+export const lightEntityFilters: EntityFilter[] = [
+  { domain: "light", entity_category: "none" },
+];
+
+const processAreasForLight = (
   areaIds: string[],
   hass: HomeAssistant,
   entities: string[]
@@ -32,33 +39,31 @@ const processAreasForLights = (
       area: area.area_id,
     });
     const areaLights = entities.filter(areaFilter);
+    const areaCards: LovelaceCardConfig[] = [];
 
     const computeTileCard = computeAreaTileCardConfig(hass, "", false);
 
-    if (areaLights.length > 0) {
+    for (const entityId of areaLights) {
+      areaCards.push(computeTileCard(entityId));
+    }
+
+    if (areaCards.length > 0) {
       cards.push({
         heading_style: "subtitle",
         type: "heading",
         heading: area.name,
-        tap_action: {
-          action: "navigate",
-          navigation_path: `areas-${area.area_id}`,
-        },
       });
-
-      for (const entityId of areaLights) {
-        cards.push(computeTileCard(entityId));
-      }
+      cards.push(...areaCards);
     }
   }
 
   return cards;
 };
 
-@customElement("home-lights-view-strategy")
-export class HomeLightsViewStrategy extends ReactiveElement {
+@customElement("light-view-strategy")
+export class LightViewStrategy extends ReactiveElement {
   static async generate(
-    _config: HomeLightsViewStrategyConfig,
+    _config: LightViewStrategyConfig,
     hass: HomeAssistant
   ): Promise<LovelaceViewConfig> {
     const areas = getAreas(hass.areas);
@@ -69,11 +74,11 @@ export class HomeLightsViewStrategy extends ReactiveElement {
 
     const allEntities = Object.keys(hass.states);
 
-    const lightsFilters = HOME_SUMMARIES_FILTERS.lights.map((filter) =>
+    const lightFilters = lightEntityFilters.map((filter) =>
       generateEntityFilter(hass, filter)
     );
 
-    const entities = findEntities(allEntities, lightsFilters);
+    const entities = findEntities(allEntities, lightFilters);
 
     const floorCount = home.floors.length + (home.areas.length ? 1 : 0);
 
@@ -89,12 +94,15 @@ export class HomeLightsViewStrategy extends ReactiveElement {
         cards: [
           {
             type: "heading",
-            heading: floorCount > 1 ? floor.name : "Areas",
+            heading:
+              floorCount > 1
+                ? floor.name
+                : hass.localize("ui.panel.lovelace.strategy.home.areas"),
           },
         ],
       };
 
-      const areaCards = processAreasForLights(areaIds, hass, entities);
+      const areaCards = processAreasForLight(areaIds, hass, entities);
 
       if (areaCards.length > 0) {
         section.cards!.push(...areaCards);
@@ -110,12 +118,15 @@ export class HomeLightsViewStrategy extends ReactiveElement {
         cards: [
           {
             type: "heading",
-            heading: floorCount > 1 ? "Other areas" : "Areas",
+            heading:
+              floorCount > 1
+                ? hass.localize("ui.panel.lovelace.strategy.home.other_areas")
+                : hass.localize("ui.panel.lovelace.strategy.home.areas"),
           },
         ],
       };
 
-      const areaCards = processAreasForLights(home.areas, hass, entities);
+      const areaCards = processAreasForLight(home.areas, hass, entities);
 
       if (areaCards.length > 0) {
         section.cards!.push(...areaCards);
@@ -133,6 +144,6 @@ export class HomeLightsViewStrategy extends ReactiveElement {
 
 declare global {
   interface HTMLElementTagNameMap {
-    "home-lights-view-strategy": HomeLightsViewStrategy;
+    "light-view-strategy": LightViewStrategy;
   }
 }

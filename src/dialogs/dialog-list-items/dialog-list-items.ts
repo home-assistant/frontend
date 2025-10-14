@@ -1,6 +1,7 @@
 import { css, html, LitElement, nothing } from "lit";
 import { customElement, property, state } from "lit/decorators";
 import { fireEvent } from "../../common/dom/fire_event";
+import "../../components/ha-bottom-sheet";
 import { createCloseHeading } from "../../components/ha-dialog";
 import "../../components/ha-icon";
 import "../../components/ha-md-list";
@@ -40,6 +41,54 @@ export class ListItemsDialog
       return nothing;
     }
 
+    const content = html`
+      <div class="container">
+        <ha-md-list>
+          ${this._params.items.map(
+            (item) => html`
+              <ha-md-list-item
+                type="button"
+                @click=${this._itemClicked}
+                .item=${item}
+              >
+                ${item.iconPath
+                  ? html`
+                      <ha-svg-icon
+                        .path=${item.iconPath}
+                        slot="start"
+                        class="item-icon"
+                      ></ha-svg-icon>
+                    `
+                  : item.icon
+                    ? html`
+                        <ha-icon
+                          icon=${item.icon}
+                          slot="start"
+                          class="item-icon"
+                        ></ha-icon>
+                      `
+                    : nothing}
+                <span class="headline">${item.label}</span>
+                ${item.description
+                  ? html`
+                      <span class="supporting-text">${item.description}</span>
+                    `
+                  : nothing}
+              </ha-md-list-item>
+            `
+          )}
+        </ha-md-list>
+      </div>
+    `;
+
+    if (this._params.mode === "bottom-sheet") {
+      return html`
+        <ha-bottom-sheet placement="bottom" open @closed=${this._dialogClosed}>
+          ${content}
+        </ha-bottom-sheet>
+      `;
+    }
+
     return html`
       <ha-dialog
         open
@@ -47,43 +96,7 @@ export class ListItemsDialog
         @closed=${this._dialogClosed}
         hideActions
       >
-        <div class="container">
-          <ha-md-list>
-            ${this._params.items.map(
-              (item) => html`
-                <ha-md-list-item
-                  type="button"
-                  @click=${this._itemClicked}
-                  .item=${item}
-                >
-                  ${item.iconPath
-                    ? html`
-                        <ha-svg-icon
-                          .path=${item.iconPath}
-                          slot="start"
-                          class="item-icon"
-                        ></ha-svg-icon>
-                      `
-                    : item.icon
-                      ? html`
-                          <ha-icon
-                            icon=${item.icon}
-                            slot="start"
-                            class="item-icon"
-                          ></ha-icon>
-                        `
-                      : nothing}
-                  <span class="headline">${item.label}</span>
-                  ${item.description
-                    ? html`
-                        <span class="supporting-text">${item.description}</span>
-                      `
-                    : nothing}
-                </ha-md-list-item>
-              `
-            )}
-          </ha-md-list>
-        </div>
+        ${content}
       </ha-dialog>
     `;
   }

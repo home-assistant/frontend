@@ -95,7 +95,8 @@ class HcLayout extends LitElement {
     }
 
     .hero {
-      border-radius: 4px 4px 0 0;
+      border-radius: var(--ha-border-radius-sm) var(--ha-border-radius-sm)
+        var(--ha-border-radius-square) var(--ha-border-radius-square);
     }
     .subtitle {
       font-size: var(--ha-font-size-m);

@@ -63,6 +63,7 @@ export interface DataEntryFlowStepCreateEntry {
   type: "create_entry";
   version: number;
   flow_id: string;
+  next_flow?: [FlowType, string]; // [flow_type, flow_id]
   handler: string;
   title: string;
   result?: ConfigEntry;
@@ -97,6 +98,7 @@ export interface DataEntryFlowStepMenu {
   step_id: string;
   /** If array, use value to lookup translations in strings.json */
   menu_options: string[] | Record<string, string>;
+  sort?: boolean;
   description_placeholders?: Record<string, string>;
   translation_domain?: string;
 }

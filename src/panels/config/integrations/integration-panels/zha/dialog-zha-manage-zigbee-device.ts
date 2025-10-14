@@ -8,6 +8,8 @@ import { fireEvent } from "../../../../../common/dom/fire_event";
 import "../../../../../components/ha-code-editor";
 import "../../../../../components/ha-dialog";
 import "../../../../../components/ha-dialog-header";
+import "../../../../../components/ha-tab-group";
+import "../../../../../components/ha-tab-group-tab";
 import type { ZHADevice, ZHAGroup } from "../../../../../data/zha";
 import { fetchBindableDevices, fetchGroups } from "../../../../../data/zha";
 import { haStyleDialog } from "../../../../../resources/styles";
@@ -103,10 +105,10 @@ class DialogZHAManageZigbeeDevice extends LitElement {
           >
             ${this.hass.localize("ui.dialogs.zha_manage_device.heading")}
           </span>
-          <sl-tab-group @sl-tab-show=${this._handleTabChanged}>
+          <ha-tab-group @wa-tab-show=${this._handleTabChanged}>
             ${tabs.map(
               (tab) => html`
-                <sl-tab
+                <ha-tab-group-tab
                   slot="nav"
                   .panel=${tab}
                   .active=${this._currTab === tab}
@@ -114,10 +116,10 @@ class DialogZHAManageZigbeeDevice extends LitElement {
                   ${this.hass.localize(
                     `ui.dialogs.zha_manage_device.tabs.${tab}`
                   )}
-                </sl-tab>
+                </ha-tab-group-tab>
               `
             )}
-          </sl-tab-group>
+          </ha-tab-group>
         </ha-dialog-header>
         <div class="content" tabindex="-1" dialogInitialFocus>
           ${cache(
@@ -229,10 +231,10 @@ class DialogZHAManageZigbeeDevice extends LitElement {
           }
         }
 
-        sl-tab {
+        ha-tab-group-tab {
           flex: 1;
         }
-        sl-tab::part(base) {
+        ha-tab-group-tab::part(base) {
           width: 100%;
           justify-content: center;
         }

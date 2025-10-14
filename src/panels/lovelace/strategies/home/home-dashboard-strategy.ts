@@ -6,7 +6,10 @@ import type { LovelaceViewRawConfig } from "../../../../data/lovelace/config/vie
 import type { HomeAssistant } from "../../../../types";
 import { getAreas } from "../areas/helpers/areas-strategy-helper";
 import type { LovelaceStrategyEditor } from "../types";
-import { HOME_SUMMARIES_ICONS } from "./helpers/home-summaries";
+import {
+  getSummaryLabel,
+  HOME_SUMMARIES_ICONS,
+} from "./helpers/home-summaries";
 import type { HomeAreaViewStrategyConfig } from "./home-area-view-strategy";
 import type { HomeMainViewStrategyConfig } from "./home-main-view-strategy";
 
@@ -59,38 +62,8 @@ export class HomeDashboardStrategy extends ReactiveElement {
       };
     });
 
-    const lightView = {
-      title: "Lights",
-      path: "lights",
-      subview: true,
-      strategy: {
-        type: "home-lights",
-      },
-      icon: HOME_SUMMARIES_ICONS.lights,
-    } satisfies LovelaceViewRawConfig;
-
-    const climateView = {
-      title: "Climate",
-      path: "climate",
-      subview: true,
-      strategy: {
-        type: "home-climate",
-      },
-      icon: HOME_SUMMARIES_ICONS.climate,
-    } satisfies LovelaceViewRawConfig;
-
-    const securityView = {
-      title: "Security",
-      path: "security",
-      subview: true,
-      strategy: {
-        type: "home-security",
-      },
-      icon: HOME_SUMMARIES_ICONS.security,
-    } satisfies LovelaceViewRawConfig;
-
     const mediaPlayersView = {
-      title: "Media players",
+      title: getSummaryLabel(hass.localize, "media_players"),
       path: "media-players",
       subview: true,
       strategy: {
@@ -110,9 +83,6 @@ export class HomeDashboardStrategy extends ReactiveElement {
           } satisfies HomeMainViewStrategyConfig,
         },
         ...areaViews,
-        lightView,
-        climateView,
-        securityView,
         mediaPlayersView,
       ],
     };

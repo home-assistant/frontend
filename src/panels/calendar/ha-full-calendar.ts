@@ -21,11 +21,11 @@ import { useAmPm } from "../../common/datetime/use_am_pm";
 import { fireEvent } from "../../common/dom/fire_event";
 import { supportsFeature } from "../../common/entity/supports-feature";
 import type { LocalizeFunc } from "../../common/translations/localize";
+import "../../components/ha-button";
 import "../../components/ha-button-toggle-group";
 import "../../components/ha-fab";
 import "../../components/ha-icon-button-next";
 import "../../components/ha-icon-button-prev";
-import "../../components/ha-button";
 import type {
   Calendar as CalendarData,
   CalendarEvent,
@@ -39,9 +39,9 @@ import type {
   HomeAssistant,
   ToggleButton,
 } from "../../types";
+import "../lovelace/components/hui-warning";
 import { showCalendarEventDetailDialog } from "./show-dialog-calendar-event-detail";
 import { showCalendarEventEditDialog } from "./show-dialog-calendar-event-editor";
-import "../lovelace/components/hui-warning";
 
 declare global {
   interface HTMLElementTagNameMap {
@@ -161,6 +161,8 @@ export class HAFullCalendar extends LitElement {
                     <ha-button-toggle-group
                       .buttons=${viewToggleButtons}
                       .active=${this._activeView}
+                      size="small"
+                      no-wrap
                       @value-changed=${this._handleView}
                     ></ha-button-toggle-group>
                   `
@@ -195,6 +197,8 @@ export class HAFullCalendar extends LitElement {
                       <ha-button-toggle-group
                         .buttons=${viewToggleButtons}
                         .active=${this._activeView}
+                        size="small"
+                        no-wrap
                         @value-changed=${this._handleView}
                       ></ha-button-toggle-group>
                     </div>
@@ -582,7 +586,7 @@ export class HAFullCalendar extends LitElement {
           height: 26px;
           color: var(--text-primary-color) !important;
           background-color: var(--primary-color);
-          border-radius: 50%;
+          border-radius: var(--ha-border-radius-circle);
           display: inline-block;
           text-align: center;
           white-space: nowrap;
@@ -595,7 +599,7 @@ export class HAFullCalendar extends LitElement {
         }
 
         .fc-event {
-          border-radius: 4px;
+          border-radius: var(--ha-border-radius-sm);
           line-height: var(--ha-line-height-normal);
           cursor: pointer;
         }
@@ -684,8 +688,7 @@ export class HAFullCalendar extends LitElement {
         }
 
         .fc-scroller::-webkit-scrollbar-thumb {
-          -webkit-border-radius: 4px;
-          border-radius: 4px;
+          border-radius: var(--ha-border-radius-sm);
           background: var(--scrollbar-thumb-color);
         }
 

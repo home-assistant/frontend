@@ -1,6 +1,7 @@
 import type { CSSResultGroup, TemplateResult } from "lit";
 import { css, html, LitElement } from "lit";
 import { customElement, property } from "lit/decorators";
+import { goBack } from "../common/navigate";
 import "../components/ha-icon-button-arrow-prev";
 import "../components/ha-button";
 import "../components/ha-menu-button";
@@ -50,7 +51,7 @@ class HassErrorScreen extends LitElement {
   }
 
   private _handleBack(): void {
-    history.back();
+    goBack();
   }
 
   static get styles(): CSSResultGroup {

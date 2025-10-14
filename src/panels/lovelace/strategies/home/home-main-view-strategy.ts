@@ -4,18 +4,23 @@ import { isComponentLoaded } from "../../../../common/config/is_component_loaded
 import { generateEntityFilter } from "../../../../common/entity/entity_filter";
 import type { AreaRegistryEntry } from "../../../../data/area_registry";
 import { getEnergyPreferences } from "../../../../data/energy";
-import type { LovelaceSectionConfig } from "../../../../data/lovelace/config/section";
+import type { LovelaceCardConfig } from "../../../../data/lovelace/config/card";
+import type {
+  LovelaceSectionConfig,
+  LovelaceSectionRawConfig,
+  LovelaceStrategySectionConfig,
+} from "../../../../data/lovelace/config/section";
 import type { LovelaceViewConfig } from "../../../../data/lovelace/config/view";
 import type { HomeAssistant } from "../../../../types";
 import type {
   AreaCardConfig,
-  ButtonCardConfig,
+  HomeSummaryCard,
   MarkdownCardConfig,
-  TileCardConfig,
   WeatherForecastCardConfig,
 } from "../../cards/types";
-import { getAreas } from "../areas/helpers/areas-strategy-helper";
-import { HOME_SUMMARIES_ICONS } from "./helpers/home-summaries";
+import { getAreas, getFloors } from "../areas/helpers/areas-strategy-helper";
+import type { CommonControlSectionStrategyConfig } from "../usage_prediction/common-controls-section-strategy";
+import { getHomeStructure } from "./helpers/home-structure";
 
 export interface HomeMainViewStrategyConfig {
   type: "home-main";
@@ -55,24 +60,66 @@ export class HomeMainViewStrategy extends ReactiveElement {
     hass: HomeAssistant
   ): Promise<LovelaceViewConfig> {
     const areas = getAreas(hass.areas);
+    const floors = getFloors(hass.floors);
 
-    const areasSection: LovelaceSectionConfig = {
-      type: "grid",
-      column_span: 2,
-      cards: [
-        {
-          type: "heading",
-          heading_style: "title",
-          heading: "Areas",
-        },
-        ...areas.map<AreaCardConfig>((area) =>
-          computeAreaCard(area.area_id, hass)
-        ),
-      ],
-    };
+    const home = getHomeStructure(floors, areas);
+
+    const floorCount = home.floors.length + (home.areas.length ? 1 : 0);
 
     // Allow between 2 and 3 columns (the max should be set to define the width of the header)
     const maxColumns = 2;
+
+    const floorsSections: LovelaceSectionConfig[] = [];
+    for (const floorStructure of home.floors) {
+      const floorId = floorStructure.id;
+      const areaIds = floorStructure.areas;
+      const floor = hass.floors[floorId];
+
+      const cards: LovelaceCardConfig[] = [];
+      for (const areaId of areaIds) {
+        cards.push(computeAreaCard(areaId, hass));
+      }
+
+      if (cards.length) {
+        floorsSections.push({
+          type: "grid",
+          column_span: maxColumns,
+          cards: [
+            {
+              type: "heading",
+              heading:
+                floorCount > 1
+                  ? floor.name
+                  : hass.localize("ui.panel.lovelace.strategy.home.areas"),
+              heading_style: "title",
+            },
+            ...cards,
+          ],
+        });
+      }
+    }
+
+    if (home.areas.length) {
+      const cards: LovelaceCardConfig[] = [];
+      for (const areaId of home.areas) {
+        cards.push(computeAreaCard(areaId, hass));
+      }
+      floorsSections.push({
+        type: "grid",
+        column_span: maxColumns,
+        cards: [
+          {
+            type: "heading",
+            heading:
+              floorCount > 1
+                ? hass.localize("ui.panel.lovelace.strategy.home.other_areas")
+                : hass.localize("ui.panel.lovelace.strategy.home.areas"),
+            heading_style: "title",
+          },
+          ...cards,
+        ],
+      });
+    }
 
     const favoriteSection: LovelaceSectionConfig = {
       type: "grid",
@@ -83,23 +130,18 @@ export class HomeMainViewStrategy extends ReactiveElement {
     const favoriteEntities = (config.favorite_entities || []).filter(
       (entityId) => hass.states[entityId] !== undefined
     );
+    const maxCommonControls = Math.max(8, favoriteEntities.length);
 
-    if (favoriteEntities.length > 0) {
-      favoriteSection.cards!.push(
-        {
-          type: "heading",
-          heading: "",
-          heading_style: "subtitle",
-        },
-        ...favoriteEntities.map(
-          (entityId) =>
-            ({
-              type: "tile",
-              entity: entityId,
-            }) as TileCardConfig
-        )
-      );
-    }
+    const commonControlsSection = {
+      strategy: {
+        type: "common-controls",
+        title: hass.localize("ui.panel.lovelace.strategy.home.common_controls"),
+        limit: maxCommonControls,
+        include_entities: favoriteEntities,
+        hide_empty: true,
+      } satisfies CommonControlSectionStrategyConfig,
+      column_span: maxColumns,
+    } as LovelaceStrategySectionConfig;
 
     const summarySection: LovelaceSectionConfig = {
       type: "grid",
@@ -107,64 +149,60 @@ export class HomeMainViewStrategy extends ReactiveElement {
       cards: [
         {
           type: "heading",
-          heading: "Summaries",
+          heading: hass.localize("ui.panel.lovelace.strategy.home.summaries"),
         },
         {
-          type: "button",
-          icon: HOME_SUMMARIES_ICONS.lights,
-          name: "Lights",
-          icon_height: "24px",
-          grid_options: {
-            rows: 2,
-            columns: 4,
-          },
+          type: "home-summary",
+          summary: "light",
+          vertical: true,
           tap_action: {
             action: "navigate",
-            navigation_path: "lights",
+            navigation_path: "/light?historyBack=1",
           },
-        } satisfies ButtonCardConfig,
-        {
-          type: "button",
-          icon: HOME_SUMMARIES_ICONS.climate,
-          name: "Climate",
-          icon_height: "30px",
           grid_options: {
             rows: 2,
             columns: 4,
           },
+        } satisfies HomeSummaryCard,
+        {
+          type: "home-summary",
+          summary: "climate",
+          vertical: true,
           tap_action: {
             action: "navigate",
-            navigation_path: "climate",
+            navigation_path: "/climate?historyBack=1",
           },
-        } satisfies ButtonCardConfig,
-        {
-          type: "button",
-          icon: HOME_SUMMARIES_ICONS.security,
-          name: "Security",
-          icon_height: "30px",
           grid_options: {
             rows: 2,
             columns: 4,
           },
+        } satisfies HomeSummaryCard,
+        {
+          type: "home-summary",
+          summary: "security",
+          vertical: true,
           tap_action: {
             action: "navigate",
-            navigation_path: "security",
+            navigation_path: "/security?historyBack=1",
           },
-        } satisfies ButtonCardConfig,
-        {
-          type: "button",
-          icon: HOME_SUMMARIES_ICONS.media_players,
-          name: "Media Players",
-          icon_height: "30px",
           grid_options: {
             rows: 2,
             columns: 4,
           },
+        } satisfies HomeSummaryCard,
+        {
+          type: "home-summary",
+          summary: "media_players",
+          vertical: true,
           tap_action: {
             action: "navigate",
             navigation_path: "media-players",
           },
-        } satisfies ButtonCardConfig,
+          grid_options: {
+            rows: 2,
+            columns: 4,
+          },
+        } satisfies HomeSummaryCard,
       ],
     };
 
@@ -211,17 +249,22 @@ export class HomeMainViewStrategy extends ReactiveElement {
             "ui.panel.lovelace.cards.energy.energy_distribution.title_today"
           ),
           type: "energy-distribution",
+          collection_key: "energy_home_dashboard",
           link_dashboard: true,
         });
       }
     }
 
-    const sections = [
-      ...(favoriteSection.cards ? [favoriteSection] : []),
-      summarySection,
-      areasSection,
-      ...(widgetSection.cards ? [widgetSection] : []),
-    ];
+    const sections = (
+      [
+        favoriteSection.cards && favoriteSection,
+        commonControlsSection,
+        summarySection,
+        ...floorsSections,
+        widgetSection.cards && widgetSection,
+      ] satisfies (LovelaceSectionRawConfig | undefined)[]
+    ).filter(Boolean) as LovelaceSectionRawConfig[];
+
     return {
       type: "sections",
       max_columns: maxColumns,
@@ -231,7 +274,7 @@ export class HomeMainViewStrategy extends ReactiveElement {
         card: {
           type: "markdown",
           text_only: true,
-          content: "## Welcome {{user}}",
+          content: `## ${hass.localize("ui.panel.lovelace.strategy.home.welcome_user", { user: "{{ user }}" })}`,
         } satisfies MarkdownCardConfig,
       },
     };

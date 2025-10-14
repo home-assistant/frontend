@@ -110,14 +110,11 @@ class HuiEnergySelfSufficiencyGaugeCard
                   "--gauge-color": this._computeSeverity(value),
                 })}
               ></ha-gauge>
-              <ha-tooltip
-                placement="left"
-                .content=${this.hass.localize(
+              <ha-svg-icon id="info" .path=${mdiInformation}></ha-svg-icon>
+              <ha-tooltip for="info" placement="left">
+                ${this.hass.localize(
                   "ui.panel.lovelace.cards.energy.self_sufficiency_gauge.card_indicates_self_sufficiency_quota"
                 )}
-                hoist
-              >
-                <ha-svg-icon .path=${mdiInformation}></ha-svg-icon>
               </ha-tooltip>
               <div class="name">
                 ${this.hass.localize(

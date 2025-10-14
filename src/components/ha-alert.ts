@@ -86,6 +86,10 @@ class HaAlert extends LitElement {
       padding: 8px;
       display: flex;
     }
+    .icon {
+      height: var(--ha-alert-icon-size, 24px);
+      width: var(--ha-alert-icon-size, 24px);
+    }
     .issue-type::after {
       position: absolute;
       top: 0;
@@ -95,7 +99,7 @@ class HaAlert extends LitElement {
       opacity: 0.12;
       pointer-events: none;
       content: "";
-      border-radius: 4px;
+      border-radius: var(--ha-border-radius-sm);
     }
     .icon.no-title {
       align-self: center;
@@ -119,10 +123,11 @@ class HaAlert extends LitElement {
     .main-content {
       overflow-wrap: anywhere;
       word-break: break-word;
+      line-height: normal;
       margin-left: 8px;
       margin-right: 0;
       margin-inline-start: 8px;
-      margin-inline-end: 0;
+      margin-inline-end: 8px;
     }
     .title {
       margin-top: 2px;

@@ -367,6 +367,7 @@ class ZWaveJSNodeConfig extends LitElement {
       return html`
         ${labelAndDescription}
         <ha-select
+          fixedMenuPosition
           .disabled=${!item.metadata.writeable}
           .value=${item.value?.toString()}
           .key=${id}

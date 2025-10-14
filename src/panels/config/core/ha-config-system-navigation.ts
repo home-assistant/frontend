@@ -118,6 +118,7 @@ class HaConfigSystemNavigation extends LitElement {
         .hass=${this.hass}
         back-path="/config"
         .header=${this.hass.localize("ui.panel.config.dashboard.system.main")}
+        .narrow=${this.narrow}
       >
         <ha-icon-button
           slot="toolbar-icon"
@@ -256,7 +257,7 @@ class HaConfigSystemNavigation extends LitElement {
         @media all and (max-width: 600px) {
           ha-card {
             border-width: 1px 0;
-            border-radius: 0;
+            border-radius: var(--ha-border-radius-square);
             box-shadow: unset;
           }
           ha-config-section {

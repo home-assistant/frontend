@@ -248,7 +248,7 @@ class HuiWeatherEntityRow extends LitElement implements LovelaceRow {
         .icon-image:focus {
           outline: none;
           background-color: var(--divider-color);
-          border-radius: 50%;
+          border-radius: var(--ha-border-radius-circle);
         }
 
         .weather-icon {

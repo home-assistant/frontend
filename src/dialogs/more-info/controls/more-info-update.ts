@@ -475,7 +475,6 @@ class MoreInfoUpdate extends LitElement {
       bottom: 0;
       margin: 0 -24px 0 -24px;
       margin-bottom: calc(-1 * max(var(--safe-area-inset-bottom), 24px));
-      padding-bottom: var(--safe-area-inset-bottom);
       box-sizing: border-box;
       display: flex;
       flex-direction: column;
@@ -509,7 +508,7 @@ class MoreInfoUpdate extends LitElement {
       box-sizing: border-box;
       padding: 16px;
       z-index: 1;
-      gap: 8px;
+      gap: var(--ha-space-2);
     }
 
     a {

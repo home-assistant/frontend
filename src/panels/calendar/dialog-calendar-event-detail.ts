@@ -1,5 +1,5 @@
 import { mdiCalendarClock } from "@mdi/js";
-import { toDate } from "date-fns-tz";
+import { TZDate } from "@date-fns/tz";
 import { addDays, isSameDay } from "date-fns";
 import type { CSSResultGroup } from "lit";
 import { LitElement, css, html, nothing } from "lit";
@@ -143,8 +143,8 @@ class DialogCalendarEventDetail extends LitElement {
       this.hass.locale.time_zone,
       this.hass.config.time_zone
     );
-    const start = toDate(this._data!.dtstart, { timeZone: timeZone });
-    const endValue = toDate(this._data!.dtend, { timeZone: timeZone });
+    const start = new TZDate(this._data!.dtstart, timeZone);
+    const endValue = new TZDate(this._data!.dtend, timeZone);
     // All day events should be displayed as a day earlier
     const end = isDate(this._data.dtend) ? addDays(endValue, -1) : endValue;
     // The range can be shortened when the start and end are on the same day.

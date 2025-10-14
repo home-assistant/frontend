@@ -3,6 +3,7 @@ import { css, html, LitElement, nothing } from "lit";
 import { customElement, property, state } from "lit/decorators";
 import memoizeOne from "memoize-one";
 import { isComponentLoaded } from "../../../common/config/is_component_loaded";
+import { atLeastVersion } from "../../../common/config/version";
 import { fireEvent } from "../../../common/dom/fire_event";
 import type { LocalizeFunc } from "../../../common/translations/localize";
 import "../../../components/buttons/ha-call-service-button";
@@ -14,6 +15,7 @@ import "../../../components/ha-list-item";
 import "../../../components/ha-spinner";
 import { getSignedPath } from "../../../data/auth";
 import { getErrorLogDownloadUrl } from "../../../data/error_log";
+import { coreLatestLogsUrl } from "../../../data/hassio/supervisor";
 import { domainToName } from "../../../data/integration";
 import type { LoggedError } from "../../../data/system_log";
 import {
@@ -23,7 +25,6 @@ import {
 } from "../../../data/system_log";
 import type { HomeAssistant } from "../../../types";
 import { fileDownload } from "../../../util/file_download";
-import { showDownloadLogsDialog } from "./show-dialog-download-logs";
 import { showSystemLogDetailDialog } from "./show-dialog-system-log-detail";
 import { formatSystemLogTime } from "./util";
 
@@ -229,20 +230,12 @@ export class SystemLogCard extends LitElement {
   }
 
   private async _downloadLogs() {
-    // download logs via supervisor
-    if (isComponentLoaded(this.hass, "hassio")) {
-      showDownloadLogsDialog(this, {
-        header: this.header,
-        provider: "core",
-        defaultLineCount: 100,
-        boot: 0,
-      });
-      return;
-    }
-
-    // download logs from core
     const timeString = new Date().toISOString().replace(/:/g, "-");
-    const downloadUrl = getErrorLogDownloadUrl;
+    const downloadUrl =
+      isComponentLoaded(this.hass, "hassio") &&
+      atLeastVersion(this.hass.config.version, 2025, 10)
+        ? coreLatestLogsUrl
+        : getErrorLogDownloadUrl;
     const logFileName = `home-assistant_${timeString}.log`;
     const signedUrl = await getSignedPath(this.hass, downloadUrl);
     fileDownload(signedUrl.path, logFileName);

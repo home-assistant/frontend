@@ -14,6 +14,7 @@ import {
 } from "superstruct";
 import { fireEvent } from "../../../../common/dom/fire_event";
 import { computeDomain } from "../../../../common/entity/compute_domain";
+import { DEFAULT_ENTITY_NAME } from "../../../../common/entity/compute_entity_name_display";
 import type { LocalizeFunc } from "../../../../common/translations/localize";
 import "../../../../components/ha-form/ha-form";
 import type {
@@ -26,6 +27,7 @@ import type { PictureEntityCardConfig } from "../../cards/types";
 import type { LovelaceCardEditor } from "../../types";
 import { actionConfigStruct } from "../structs/action-struct";
 import { baseLovelaceCardConfig } from "../structs/base-card-struct";
+import { entityNameStruct } from "../structs/entity-name-struct";
 import { configElementStyle } from "./config-elements-style";
 
 const cardConfigStruct = assign(
@@ -33,7 +35,7 @@ const cardConfigStruct = assign(
   object({
     entity: optional(string()),
     image: optional(string()),
-    name: optional(string()),
+    name: optional(entityNameStruct),
     camera_image: optional(string()),
     camera_view: optional(enums(["auto", "live"])),
     aspect_ratio: optional(string()),
@@ -65,7 +67,15 @@ export class HuiPictureEntityCardEditor
     (localize: LocalizeFunc) =>
       [
         { name: "entity", required: true, selector: { entity: {} } },
-        { name: "name", selector: { text: {} } },
+        {
+          name: "name",
+          selector: {
+            entity_name: {
+              default_name: DEFAULT_ENTITY_NAME,
+            },
+          },
+          context: { entity: "entity" },
+        },
         { name: "image", selector: { image: {} } },
         { name: "camera_image", selector: { entity: { domain: "camera" } } },
         {

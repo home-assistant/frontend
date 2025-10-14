@@ -10,8 +10,10 @@ import type { PropertyValues, TemplateResult } from "lit";
 import { LitElement, css, html, nothing } from "lit";
 import { customElement, property, state } from "lit/decorators";
 import memoizeOne from "memoize-one";
+import { getGraphColorByIndex } from "../../../common/color/colors";
 import { isComponentLoaded } from "../../../common/config/is_component_loaded";
 import { navigate } from "../../../common/navigate";
+import { blankBeforePercent } from "../../../common/translations/blank_before_percent";
 import "../../../components/ha-alert";
 import "../../../components/ha-button";
 import "../../../components/ha-button-menu";
@@ -20,6 +22,7 @@ import "../../../components/ha-icon-next";
 import "../../../components/ha-list";
 import "../../../components/ha-list-item";
 import "../../../components/ha-segmented-bar";
+import type { Segment } from "../../../components/ha-segmented-bar";
 import "../../../components/ha-svg-icon";
 import { extractApiErrorMessage } from "../../../data/hassio/common";
 import type { HassioHostInfo, HostDisksUsage } from "../../../data/hassio/host";
@@ -45,9 +48,6 @@ import { roundWithOneDecimal } from "../../../util/calculate";
 import "../core/ha-config-analytics";
 import { showMoveDatadiskDialog } from "./show-dialog-move-datadisk";
 import { showMountViewDialog } from "./show-dialog-view-mount";
-import type { Segment } from "../../../components/ha-segmented-bar";
-import { getGraphColorByIndex } from "../../../common/color/colors";
-import { blankBeforePercent } from "../../../common/translations/blank_before_percent";
 
 @customElement("ha-config-section-storage")
 class HaConfigSectionStorage extends LitElement {
@@ -327,8 +327,7 @@ class HaConfigSectionStorage extends LitElement {
             >${roundWithOneDecimal(freeSpaceGB)} GB</span
           >`,
       });
-      const chart = html`
-        <ha-segmented-bar
+      return html`<ha-segmented-bar
           .heading=${this.hass.localize("ui.panel.config.storage.used_space")}
           .description=${this.hass.localize(
             "ui.panel.config.storage.detailed_description",
@@ -339,17 +338,15 @@ class HaConfigSectionStorage extends LitElement {
           )}
           .segments=${segments}
         ></ha-segmented-bar>
-      `;
-      return storageInfo || storageInfo === null
-        ? chart
-        : html`
-            <div class="loading-container">
-              ${chart}
-              <div class="loading-overlay">
-                <ha-spinner></ha-spinner>
-              </div>
-            </div>
-          `;
+
+        ${!storageInfo || storageInfo === null
+          ? html`<ha-alert alert-type="info">
+              <ha-spinner slot="icon"></ha-spinner>
+              ${this.hass.localize(
+                "ui.panel.config.storage.loading_detailed"
+              )}</ha-alert
+            >`
+          : nothing}`;
     }
   );
 
@@ -511,7 +508,7 @@ class HaConfigSectionStorage extends LitElement {
       background-color: var(--light-primary-color);
       color: var(--secondary-text-color);
       padding: 16px;
-      border-radius: 50%;
+      border-radius: var(--ha-border-radius-circle);
       margin-bottom: 8px;
     }
     ha-list-item {
@@ -521,6 +518,14 @@ class HaConfigSectionStorage extends LitElement {
     ha-svg-icon,
     ha-icon-next {
       width: 24px;
+    }
+
+    ha-alert {
+      --ha-alert-icon-size: 24px;
+    }
+
+    ha-alert ha-spinner {
+      --ha-spinner-size: 24px;
     }
   `;
 }

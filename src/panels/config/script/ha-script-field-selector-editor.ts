@@ -132,7 +132,7 @@ export default class HaScriptFieldSelectorEditor extends LitElement {
       return;
     }
 
-    fireEvent(this, "value-changed", { value });
+    fireEvent(this, "yaml-changed", { value });
   }
 
   private _computeLabelCallback = (

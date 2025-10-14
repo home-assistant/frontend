@@ -32,7 +32,10 @@ export class HaIconOverflowMenu extends LitElement {
 
   @property({ type: Boolean }) public narrow = false;
 
-  protected render(): TemplateResult {
+  protected render(): TemplateResult | typeof nothing {
+    if (this.items.length === 0) {
+      return nothing;
+    }
     return html`
       ${this.narrow
         ? html` <!-- Collapsed representation for small screens -->
@@ -74,16 +77,16 @@ export class HaIconOverflowMenu extends LitElement {
                 : item.divider
                   ? html`<div role="separator"></div>`
                   : html`<ha-tooltip
-                      .disabled=${!item.tooltip}
-                      .content=${item.tooltip ?? ""}
-                    >
-                      <ha-icon-button
+                        .disabled=${!item.tooltip}
+                        .for="icon-button-${item.label}"
+                        >${item.tooltip ?? ""} </ha-tooltip
+                      ><ha-icon-button
+                        .id="icon-button-${item.label}"
                         @click=${item.action}
                         .label=${item.label}
                         .path=${item.path}
                         ?disabled=${item.disabled}
-                      ></ha-icon-button>
-                    </ha-tooltip>`
+                      ></ha-icon-button> `
             )}
           `}
     `;

@@ -332,7 +332,7 @@ class OnboardingRestoreBackupRestore extends LitElement {
           display: flex;
           align-items: center;
           flex-direction: row;
-          gap: 8px;
+          gap: var(--ha-space-2);
           line-height: var(--ha-line-height-condensed);
         }
         h2 {

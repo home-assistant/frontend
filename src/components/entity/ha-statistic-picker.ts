@@ -6,11 +6,8 @@ import { customElement, property, query } from "lit/decorators";
 import memoizeOne from "memoize-one";
 import { ensureArray } from "../../common/array/ensure-array";
 import { fireEvent } from "../../common/dom/fire_event";
-import { computeAreaName } from "../../common/entity/compute_area_name";
-import { computeDeviceName } from "../../common/entity/compute_device_name";
-import { computeEntityName } from "../../common/entity/compute_entity_name";
+import { computeEntityNameList } from "../../common/entity/compute_entity_name_display";
 import { computeStateName } from "../../common/entity/compute_state_name";
-import { getEntityContext } from "../../common/entity/context/get_entity_context";
 import { computeRTL } from "../../common/util/compute_rtl";
 import { domainToName } from "../../data/integration";
 import {
@@ -203,7 +200,7 @@ export class HaStatisticPicker extends LitElement {
         });
       }
 
-      const isRTL = computeRTL(this.hass);
+      const isRTL = computeRTL(hass);
 
       const output: StatisticComboBoxItem[] = [];
 
@@ -259,12 +256,16 @@ export class HaStatisticPicker extends LitElement {
         }
         const id = meta.statistic_id;
 
-        const { area, device } = getEntityContext(stateObj, hass);
-
         const friendlyName = computeStateName(stateObj); // Keep this for search
-        const entityName = computeEntityName(stateObj, hass);
-        const deviceName = device ? computeDeviceName(device) : undefined;
-        const areaName = area ? computeAreaName(area) : undefined;
+
+        const [entityName, deviceName, areaName] = computeEntityNameList(
+          stateObj,
+          [{ type: "entity" }, { type: "device" }, { type: "area" }],
+          hass.entities,
+          hass.devices,
+          hass.areas,
+          hass.floors
+        );
 
         const primary = entityName || deviceName || id;
         const secondary = [areaName, entityName ? deviceName : undefined]
@@ -337,11 +338,14 @@ export class HaStatisticPicker extends LitElement {
     const stateObj = this.hass.states[statisticId];
 
     if (stateObj) {
-      const { area, device } = getEntityContext(stateObj, this.hass);
-
-      const entityName = computeEntityName(stateObj, this.hass);
-      const deviceName = device ? computeDeviceName(device) : undefined;
-      const areaName = area ? computeAreaName(area) : undefined;
+      const [entityName, deviceName, areaName] = computeEntityNameList(
+        stateObj,
+        [{ type: "entity" }, { type: "device" }, { type: "area" }],
+        this.hass.entities,
+        this.hass.devices,
+        this.hass.areas,
+        this.hass.floors
+      );
 
       const isRTL = computeRTL(this.hass);
 
