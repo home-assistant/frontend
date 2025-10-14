@@ -25,6 +25,7 @@ import "../ha-sortable";
 interface EntityNameOption {
   primary: string;
   secondary?: string;
+  field_label: string;
   value: string;
 }
 
@@ -121,6 +122,7 @@ export class HaEntityNamePicker extends LitElement {
       return {
         primary,
         secondary,
+        field_label: primary,
         value: name,
       };
     });
@@ -214,7 +216,7 @@ export class HaEntityNamePicker extends LitElement {
             allow-custom-value
             item-id-path="value"
             item-value-path="value"
-            item-label-path="primary"
+            item-label-path="field_label"
             .renderer=${rowRenderer}
             @opened-changed=${this._openedChanged}
             @value-changed=${this._comboBoxValueChanged}
@@ -294,6 +296,16 @@ export class HaEntityNamePicker extends LitElement {
 
       const filteredItems = this._filterSelectedOptions(options, initialValue);
 
+      if (initialItem && initialItem.type === "text" && initialItem.text) {
+        filteredItems.push({
+          primary: this.hass.localize(
+            "ui.components.entity.entity-name-picker.use_custom_name"
+          ),
+          secondary: `"${initialItem.text}"`,
+          field_label: initialItem.text,
+          value: initialItem.text,
+        });
+      }
       this._comboBox.filteredItems = filteredItems;
       this._comboBox.setInputValue(initialValue);
     } else {
@@ -352,6 +364,14 @@ export class HaEntityNamePicker extends LitElement {
     const fuse = new Fuse(this._comboBox.filteredItems, fuseOptions);
     const filteredItems = fuse.search(filter).map((result) => result.item);
 
+    filteredItems.push({
+      primary: this.hass.localize(
+        "ui.components.entity.entity-name-picker.use_custom_name"
+      ),
+      secondary: `"${input}"`,
+      field_label: input,
+      value: input,
+    });
     this._comboBox.filteredItems = filteredItems;
   }
 
