@@ -6,12 +6,7 @@ import { customElement, property, state } from "lit/decorators";
 import { classMap } from "lit/directives/class-map";
 import memoizeOne from "memoize-one";
 import type { LineSeriesOption } from "echarts/charts";
-import type {
-  TooltipOption,
-  TopLevelFormatterParams,
-} from "echarts/types/dist/shared";
 import { graphic } from "echarts";
-import { formatNumber } from "../../../../common/number/format_number";
 import "../../../../components/chart/ha-chart-base";
 import "../../../../components/ha-card";
 import type { EnergyData } from "../../../../data/energy";
@@ -21,20 +16,20 @@ import type { FrontendLocaleData } from "../../../../data/translation";
 import { SubscribeMixin } from "../../../../mixins/subscribe-mixin";
 import type { HomeAssistant } from "../../../../types";
 import type { LovelaceCard } from "../../types";
-import type { PowerGraphCardConfig } from "../types";
+import type { PowerSourcesGraphCardConfig } from "../types";
 import { hasConfigChanged } from "../../common/has-changed";
 import { getCommonOptions, fillLineGaps } from "./common/energy-chart-options";
 import type { ECOption } from "../../../../resources/echarts";
 import { hex2rgb } from "../../../../common/color/convert-color";
 
-@customElement("hui-power-graph-card")
-export class HuiPowerGraphCard
+@customElement("hui-power-sources-graph-card")
+export class HuiPowerSourcesGraphCard
   extends SubscribeMixin(LitElement)
   implements LovelaceCard
 {
   @property({ attribute: false }) public hass!: HomeAssistant;
 
-  @state() private _config?: PowerGraphCardConfig;
+  @state() private _config?: PowerSourcesGraphCardConfig;
 
   @state() private _chartData: LineSeriesOption[] = [];
 
@@ -60,7 +55,7 @@ export class HuiPowerGraphCard
     return 3;
   }
 
-  public setConfig(config: PowerGraphCardConfig): void {
+  public setConfig(config: PowerSourcesGraphCardConfig): void {
     this._config = config;
   }
 
@@ -130,7 +125,7 @@ export class HuiPowerGraphCard
         config,
         "kW",
         compareStart,
-        compareEnd,
+        compareEnd
       );
       return commonOptions;
     }
@@ -141,22 +136,25 @@ export class HuiPowerGraphCard
 
     const statIds = {
       solar: {
-        positive: [] as string[],
-        negative: [] as string[],
+        stats: [] as string[],
         color: "--energy-solar-color",
-        name: this.hass.localize("ui.panel.lovelace.cards.energy.power_graph.solar"),
+        name: this.hass.localize(
+          "ui.panel.lovelace.cards.energy.power_graph.solar"
+        ),
       },
       grid: {
-        positive: [] as string[],
-        negative: [] as string[],
+        stats: [] as string[],
         color: "--energy-grid-consumption-color",
-        name: this.hass.localize("ui.panel.lovelace.cards.energy.power_graph.grid"),
+        name: this.hass.localize(
+          "ui.panel.lovelace.cards.energy.power_graph.grid"
+        ),
       },
       battery: {
-        positive: [] as string[],
-        negative: [] as string[],
+        stats: [] as string[],
         color: "--energy-battery-out-color",
-        name: this.hass.localize("ui.panel.lovelace.cards.energy.power_graph.battery"),
+        name: this.hass.localize(
+          "ui.panel.lovelace.cards.energy.power_graph.battery"
+        ),
       },
     };
 
@@ -164,18 +162,15 @@ export class HuiPowerGraphCard
 
     for (const source of energyData.prefs.energy_sources) {
       if (source.type === "solar") {
-        if (source.stat_power_from) {
-          statIds.solar.positive.push(source.stat_power_from);
+        if (source.stat_power) {
+          statIds.solar.stats.push(source.stat_power);
         }
         continue;
       }
 
       if (source.type === "battery") {
-        if (source.stat_power_to) {
-          statIds.battery.negative.push(source.stat_power_to);
-        }
-        if (source.stat_power_from) {
-          statIds.battery.positive.push(source.stat_power_from);
+        if (source.stat_power) {
+          statIds.battery.stats.push(source.stat_power);
         }
         continue;
       }
@@ -186,13 +181,8 @@ export class HuiPowerGraphCard
 
       // grid source
       for (const flowFrom of source.flow_from) {
-        if (flowFrom.stat_power_from) {
-          statIds.grid.positive.push(flowFrom.stat_power_from);
-        }
-      }
-      for (const flowTo of source.flow_to) {
-        if (flowTo.stat_power_to) {
-          statIds.grid.negative.push(flowTo.stat_power_to);
+        if (flowFrom.stat_power) {
+          statIds.grid.stats.push(flowFrom.stat_power);
         }
       }
     }
@@ -205,60 +195,55 @@ export class HuiPowerGraphCard
       },
     };
 
-    Object.keys(statIds).forEach((key) => {
-      if (statIds[key].positive.length || statIds[key].negative.length) {
+    Object.keys(statIds).forEach((key, keyIndex) => {
+      if (statIds[key].stats.length || statIds[key].negative.length) {
         const colorHex = computedStyles.getPropertyValue(statIds[key].color);
         const rgb = hex2rgb(colorHex);
-        const data = this._processData(
-          statIds[key].positive.map(
-            (id: string) => energyData.stats[id] ?? []
-          ),
-          statIds[key].negative.map(
-            (id: string) => energyData.stats[id] ?? []
-          )
+        const { positive, negative } = this._processData(
+          statIds[key].stats.map((id: string) => energyData.stats[id] ?? [])
         );
-        if (statIds[key].positive.length) {
-          datasets.push({
-            ...commonSeriesOptions,
-            id: key,
-            name: statIds[key].name,
-            color: colorHex,
-            stack: "positive",
-            areaStyle: {
-              color: new graphic.LinearGradient(0, 0, 0, 1, [
-                {
-                  offset: 0,
-                  color: `rgba(${rgb[0]}, ${rgb[1]}, ${rgb[2]}, 0.6)`,
-                },
-                {
-                  offset: 1,
-                  color: `rgba(${rgb[0]}, ${rgb[1]}, ${rgb[2]}, 0.2)`,
-                },
-              ]),
-            },
-            data: data.map((d) => [d![0], Math.max(d![1], 0)]),
-          });
-        }
-        if (statIds[key].negative.length) {
+        datasets.push({
+          ...commonSeriesOptions,
+          id: key,
+          name: statIds[key].name,
+          color: colorHex,
+          stack: "positive",
+          areaStyle: {
+            color: new graphic.LinearGradient(0, 0, 0, 1, [
+              {
+                offset: 0,
+                color: `rgba(${rgb[0]}, ${rgb[1]}, ${rgb[2]}, 0.75)`,
+              },
+              {
+                offset: 1,
+                color: `rgba(${rgb[0]}, ${rgb[1]}, ${rgb[2]}, 0.25)`,
+              },
+            ]),
+          },
+          data: positive,
+          z: 3 - keyIndex, // draw in reverse order so 0 value lines are overwritten
+        });
+        if (key !== "solar") {
           datasets.push({
             ...commonSeriesOptions,
             id: `${key}-negative`,
-            name: `${statIds[key].name}-negative`,
+            name: statIds[key].name,
             color: colorHex,
             stack: "negative",
             areaStyle: {
-              color: new graphic.LinearGradient(0, 0, 0, 1, [
+              color: new graphic.LinearGradient(0, 1, 0, 0, [
                 {
                   offset: 0,
-                  color: `rgba(${rgb[0]}, ${rgb[1]}, ${rgb[2]}, 0.6)`,
+                  color: `rgba(${rgb[0]}, ${rgb[1]}, ${rgb[2]}, 0.75)`,
                 },
                 {
                   offset: 1,
-                  color: `rgba(${rgb[0]}, ${rgb[1]}, ${rgb[2]}, 0.2)`,
+                  color: `rgba(${rgb[0]}, ${rgb[1]}, ${rgb[2]}, 0.25)`,
                 },
               ]),
             },
-            data: data.map((d) => [d![0], Math.min(d![1], 0)]),
+            data: negative,
+            z: 4 - keyIndex, // draw in reverse order but above positive series
           });
         }
       }
@@ -268,15 +253,11 @@ export class HuiPowerGraphCard
     this._end = energyData.end || endOfToday();
 
     this._chartData = fillLineGaps(datasets);
-    console.log(this._chartData);
   }
 
-  private _processData(
-    positive: StatisticValue[][],
-    negative: StatisticValue[][]
-  ): NonNullable<LineSeriesOption["data"]> {
+  private _processData(stats: StatisticValue[][]) {
     const data: Record<number, number[]> = {};
-    positive.forEach((statSet) => {
+    stats.forEach((statSet) => {
       statSet.forEach((point) => {
         if (point.mean == null) {
           return;
@@ -285,19 +266,15 @@ export class HuiPowerGraphCard
         data[x] = [...(data[x] ?? []), point.mean];
       });
     });
-    negative.forEach((statSet) => {
-      statSet.forEach((point) => {
-        if (point.mean == null) {
-          return;
-        }
-        const x = (point.start + point.end) / 2;
-        data[x] = [...(data[x] ?? []), -point.mean];
-      });
+    const positive: [number, number][] = [];
+    const negative: [number, number][] = [];
+    Object.entries(data).forEach(([x, y]) => {
+      const ts = Number(x);
+      const meanY = y.reduce((a, b) => a + b, 0) / y.length;
+      positive.push([ts, Math.max(0, meanY)]);
+      negative.push([ts, Math.min(0, meanY)]);
     });
-    return Object.entries(data).map(([x, y]) => [
-      Number(x),
-      y.reduce((a, b) => a + b, 0) / y.length,
-    ]);
+    return { positive, negative };
   }
 
   static styles = css`
@@ -333,6 +310,6 @@ export class HuiPowerGraphCard
 
 declare global {
   interface HTMLElementTagNameMap {
-    "hui-power-graph-card": HuiPowerGraphCard;
+    "hui-power-sources-graph-card": HuiPowerSourcesGraphCard;
   }
 }

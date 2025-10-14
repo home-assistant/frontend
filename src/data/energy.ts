@@ -367,22 +367,18 @@ export const getReferencedStatisticIdsPower = (
     }
 
     if (source.type === "solar") {
-      statIDs.push(source.stat_power_from);
+      statIDs.push(source.stat_power);
       continue;
     }
 
     if (source.type === "battery") {
-      statIDs.push(source.stat_power_from);
-      statIDs.push(source.stat_power_to);
+      statIDs.push(source.stat_power);
       continue;
     }
 
     // grid source
     for (const flowFrom of source.flow_from) {
-      statIDs.push(flowFrom.stat_power_from);
-    }
-    for (const flowTo of source.flow_to) {
-      statIDs.push(flowTo.stat_power_to);
+      statIDs.push(flowFrom.stat_power);
     }
   }
   statIDs.push(...prefs.device_consumption.map((d) => d.stat_power));
@@ -711,6 +707,17 @@ export const getEnergyDataCollection = (
         // This will raise if not found.
         // Detect by checking `e.code === "not_found"
         collection.prefs = await getEnergyPreferences(hass);
+        collection.prefs.energy_sources.forEach((source) => {
+          if (source.type === "solar") {
+            source.stat_power = "sensor.solar_power";
+          } else if (source.type === "battery") {
+            source.stat_power = "sensor.battery_power";
+          } else if (source.type === "grid") {
+            source.flow_from.forEach((flow) => {
+              flow.stat_power = "sensor.grid_power";
+            });
+          }
+        });
       }
 
       scheduleHourlyRefresh(collection);

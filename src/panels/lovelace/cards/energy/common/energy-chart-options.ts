@@ -302,12 +302,36 @@ export function fillLineGaps(datasets: LineSeriesOption[]) {
         continue;
       }
       if (Number(x) !== bucket) {
-        const prevItem = datasets[i].data![index-1] ?? [0, 0];
-        const y = typeof prevItem === "object" && "value" in prevItem ? prevItem.value?.[1] : prevItem[1];
-        datasets[i].data?.splice(index, 0, [bucket, y]);
+        datasets[i].data?.splice(index, 0, [bucket, 0]);
       }
     }
   });
+  // datasets.forEach((dataset) => {
+  //   dataset.data?.forEach((dataPoint, index) => {
+  //     const prevPoint = dataset.data![index - 1];
+  //     const nextPoint = dataset.data![index + 1];
+  //     if (!prevPoint || !nextPoint) {
+  //       return;
+  //     }
+  //     const prevY =
+  //       typeof prevPoint === "object" && "value" in prevPoint
+  //         ? prevPoint.value![1]
+  //         : prevPoint[1];
+  //     const nextY =
+  //       typeof nextPoint === "object" && "value" in nextPoint
+  //         ? nextPoint.value![1]
+  //         : nextPoint[1];
+  //     const item: any =
+  //       dataPoint && typeof dataPoint === "object" && "value" in dataPoint
+  //         ? dataPoint
+  //         : { value: dataPoint };
+  //     if (item.value[1] === 0 && !prevY && !nextY) {
+  //       item.value[1] = null;
+  //       // item.itemStyle = { borderWidth: 0 };
+  //       dataset.data![index] = item;
+  //     }
+  //   });
+  // });
   return datasets;
 }
 
