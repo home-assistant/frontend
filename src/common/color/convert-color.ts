@@ -1,4 +1,5 @@
 import {
+  converter,
   convertHsvToRgb,
   convertLabToRgb,
   convertRgbToHsv,
@@ -15,13 +16,14 @@ import {
  */
 export const hex2rgb = (hex: string): [number, number, number] => {
   const color = parse(hex);
-  if (!color || color.mode !== "rgb") {
+  if (!color) {
     throw new Error(`Invalid hex color: ${hex}`);
   }
+  const rgb = converter("rgb")(color);
   return [
-    Math.round(color.r * 255),
-    Math.round(color.g * 255),
-    Math.round(color.b * 255),
+    Math.round(rgb.r * 255),
+    Math.round(rgb.g * 255),
+    Math.round(rgb.b * 255),
   ];
 };
 
