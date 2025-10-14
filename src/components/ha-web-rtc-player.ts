@@ -321,6 +321,10 @@ class HaWebRtcPlayer extends LitElement {
     if (!this._remoteStream) {
       return;
     }
+    // If the track is audio and the player is muted, we do not add it to the stream.
+    if (event.track.kind === "audio" && this.muted) {
+      return;
+    }
     this._remoteStream.addTrack(event.track);
     if (!this.hasUpdated) {
       await this.updateComplete;
