@@ -338,7 +338,7 @@ class HaBlueprintOverview extends LitElement {
           extended
           @click=${this._addBlueprintClicked}
         >
-          <ha-svg-icon slot="icon" .path=${mdiPlus}></ha-svg-icon>
+          <ha-svg-icon slot="icon" .path=${mdiDownload}></ha-svg-icon>
         </ha-fab>
       </hass-tabs-subpage-data-table>
     `;
@@ -396,7 +396,7 @@ class HaBlueprintOverview extends LitElement {
       });
       return;
     }
-    navigate(`/config/blueprint/edit/${blueprint.fullpath}`);
+    this._createNew(blueprint);
   }
 
   private _showUsed = (blueprint: BlueprintMetaDataPath) => {

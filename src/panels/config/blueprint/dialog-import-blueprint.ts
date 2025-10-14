@@ -1,21 +1,21 @@
-import { mdiOpenInNew, mdiClose } from "@mdi/js";
+import { mdiClose, mdiOpenInNew } from "@mdi/js";
 import { css, html, LitElement, nothing } from "lit";
 import { customElement, property, query, state } from "lit/decorators";
 import { fireEvent } from "../../../common/dom/fire_event";
-import "../../../components/ha-spinner";
-import "../../../components/ha-expansion-panel";
-import "../../../components/ha-markdown";
 import "../../../components/ha-alert";
-import "../../../components/ha-textfield";
+import "../../../components/ha-button";
+import "../../../components/ha-code-editor";
 import "../../../components/ha-dialog";
 import "../../../components/ha-dialog-header";
-import "../../../components/ha-code-editor";
+import "../../../components/ha-expansion-panel";
+import "../../../components/ha-markdown";
+import "../../../components/ha-spinner";
+import "../../../components/ha-textfield";
 import type { HaTextField } from "../../../components/ha-textfield";
 import type { BlueprintImportResult } from "../../../data/blueprint";
 import { importBlueprint, saveBlueprint } from "../../../data/blueprint";
 import { haStyleDialog } from "../../../resources/styles";
 import type { HomeAssistant } from "../../../types";
-import "../../../components/ha-button";
 
 @customElement("ha-dialog-import-blueprint")
 class DialogImportBlueprint extends LitElement {
@@ -137,7 +137,9 @@ class DialogImportBlueprint extends LitElement {
                     "ui.panel.config.blueprint.add.import_introduction"
                   )}
                 </p>
-                <a
+                <ha-button
+                  size="small"
+                  appearance="plain"
                   href="https://www.home-assistant.io/get-blueprints"
                   target="_blank"
                   rel="noreferrer noopener"
@@ -145,8 +147,8 @@ class DialogImportBlueprint extends LitElement {
                   ${this.hass.localize(
                     "ui.panel.config.blueprint.add.community_forums"
                   )}
-                  <ha-svg-icon .path=${mdiOpenInNew}></ha-svg-icon>
-                </a>
+                  <ha-svg-icon slot="end" .path=${mdiOpenInNew}></ha-svg-icon>
+                </ha-button>
                 <ha-textfield
                   id="input"
                   .label=${this.hass.localize(
@@ -158,6 +160,7 @@ class DialogImportBlueprint extends LitElement {
               `}
         </div>
         <ha-button
+          appearance="plain"
           slot="primaryAction"
           @click=${this.closeDialog}
           .disabled=${this._saving}
@@ -170,15 +173,11 @@ class DialogImportBlueprint extends LitElement {
                 slot="primaryAction"
                 @click=${this._import}
                 .disabled=${this._importing}
+                .loading=${this._importing}
+                .ariaLabel=${this.hass.localize(
+                  `ui.panel.config.blueprint.add.${this._importing ? "importing" : "import_btn"}`
+                )}
               >
-                ${this._importing
-                  ? html`<ha-spinner
-                      size="small"
-                      .ariaLabel=${this.hass.localize(
-                        "ui.panel.config.blueprint.add.importing"
-                      )}
-                    ></ha-spinner>`
-                  : ""}
                 ${this.hass.localize(
                   "ui.panel.config.blueprint.add.import_btn"
                 )}
@@ -188,16 +187,12 @@ class DialogImportBlueprint extends LitElement {
               <ha-button
                 slot="primaryAction"
                 @click=${this._save}
-                .disabled=${this._saving || this._result.validation_errors}
+                .disabled=${this._saving || !!this._result.validation_errors}
+                .loading=${this._saving}
+                .ariaLabel=${this.hass.localize(
+                  `ui.panel.config.blueprint.add.${this._saving ? "saving" : this._result.exists ? "save_btn_override" : "save_btn"}`
+                )}
               >
-                ${this._saving
-                  ? html`<ha-spinner
-                      size="small"
-                      .ariaLabel=${this.hass.localize(
-                        "ui.panel.config.blueprint.add.saving"
-                      )}
-                    ></ha-spinner>`
-                  : ""}
                 ${this._result.exists
                   ? this.hass.localize(
                       "ui.panel.config.blueprint.add.save_btn_override"
