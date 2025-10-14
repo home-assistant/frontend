@@ -1,7 +1,7 @@
 import { mdiClose } from "@mdi/js";
 import type { CSSResultGroup, PropertyValues } from "lit";
 import { css, html, LitElement, nothing } from "lit";
-import { customElement, property, query, state } from "lit/decorators";
+import { customElement, property, state } from "lit/decorators";
 import { isComponentLoaded } from "../../../../common/config/is_component_loaded";
 import { fireEvent } from "../../../../common/dom/fire_event";
 import "../../../../components/ha-alert";
@@ -9,9 +9,9 @@ import "../../../../components/ha-button";
 import "../../../../components/ha-dialog-header";
 import "../../../../components/ha-expansion-panel";
 import "../../../../components/ha-icon-button";
+import "../../../../components/ha-dialog-footer";
 import "../../../../components/ha-icon-button-prev";
-import "../../../../components/ha-md-dialog";
-import type { HaMdDialog } from "../../../../components/ha-md-dialog";
+import "../../../../components/ha-wa-dialog";
 import "../../../../components/ha-md-list";
 import "../../../../components/ha-md-list-item";
 import "../../../../components/ha-md-select";
@@ -73,12 +73,13 @@ class DialogGenerateBackup extends LitElement implements HassDialog {
 
   @state() private _formData?: FormData;
 
-  @query("ha-md-dialog") private _dialog?: HaMdDialog;
+  @state() private _open = false;
 
   public showDialog(_params: GenerateBackupDialogParams): void {
     this._step = STEPS[0];
     this._formData = INITIAL_DATA;
     this._params = _params;
+    this._open = true;
 
     this._fetchAgents();
     this._fetchBackupConfig();
@@ -88,6 +89,7 @@ class DialogGenerateBackup extends LitElement implements HassDialog {
     if (this._params!.cancel) {
       this._params!.cancel();
     }
+    this._open = false;
     this._step = undefined;
     this._formData = undefined;
     this._agents = [];
@@ -114,7 +116,7 @@ class DialogGenerateBackup extends LitElement implements HassDialog {
   }
 
   public closeDialog() {
-    this._dialog?.close();
+    this._open = false;
     return true;
   }
 
@@ -179,15 +181,19 @@ class DialogGenerateBackup extends LitElement implements HassDialog {
     const selectedAgents = this._formData.agent_ids;
 
     return html`
-      <ha-md-dialog open disable-cancel-action @closed=${this._dialogClosed}>
-        <ha-dialog-header slot="headline">
+      <ha-wa-dialog
+        .hass=${this.hass}
+        .open=${this._open}
+        @closed=${this._dialogClosed}
+      >
+        <ha-dialog-header slot="header">
           ${isFirstStep
             ? html`
                 <ha-icon-button
                   slot="navigationIcon"
+                  data-dialog="close"
                   .label=${this.hass.localize("ui.common.close")}
                   .path=${mdiClose}
-                  @click=${this.closeDialog}
                 ></ha-icon-button>
               `
             : html`
@@ -198,13 +204,17 @@ class DialogGenerateBackup extends LitElement implements HassDialog {
               `}
           <span slot="title" .title=${dialogTitle}> ${dialogTitle} </span>
         </ha-dialog-header>
-        <div slot="content" class="content">
+        <div class="content">
           ${this._step === "data" ? this._renderData() : this._renderSync()}
         </div>
-        <div slot="actions">
+        <ha-dialog-footer slot="footer">
           ${isFirstStep
             ? html`
-                <ha-button @click=${this.closeDialog} appearance="plain">
+                <ha-button
+                  slot="secondaryAction"
+                  @click=${this.closeDialog}
+                  appearance="plain"
+                >
                   ${this.hass.localize("ui.common.cancel")}
                 </ha-button>
               `
@@ -212,6 +222,7 @@ class DialogGenerateBackup extends LitElement implements HassDialog {
           ${isLastStep
             ? html`
                 <ha-button
+                  slot="primaryAction"
                   @click=${this._submit}
                   .disabled=${this._formData.agents_mode === "custom" &&
                   !selectedAgents.length}
@@ -223,14 +234,15 @@ class DialogGenerateBackup extends LitElement implements HassDialog {
               `
             : html`
                 <ha-button
+                  slot="primaryAction"
                   @click=${this._nextStep}
                   .disabled=${this._step === "data" && this._noDataSelected}
                 >
                   ${this.hass.localize("ui.common.next")}
                 </ha-button>
               `}
-        </div>
-      </ha-md-dialog>
+        </ha-dialog-footer>
+      </ha-wa-dialog>
     `;
   }
 
@@ -436,9 +448,8 @@ class DialogGenerateBackup extends LitElement implements HassDialog {
       haStyle,
       haStyleDialog,
       css`
-        ha-md-dialog {
+        ha-wa-dialog {
           --dialog-content-padding: 24px;
-          max-height: calc(100vh - 48px);
         }
         ha-md-list {
           background: none;

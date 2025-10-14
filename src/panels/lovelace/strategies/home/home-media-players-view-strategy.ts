@@ -1,6 +1,9 @@
 import { ReactiveElement } from "lit";
 import { customElement } from "lit/decorators";
-import { generateEntityFilter } from "../../../../common/entity/entity_filter";
+import {
+  findEntities,
+  generateEntityFilter,
+} from "../../../../common/entity/entity_filter";
 import type { LovelaceCardConfig } from "../../../../data/lovelace/config/card";
 import type { LovelaceSectionRawConfig } from "../../../../data/lovelace/config/section";
 import type { LovelaceViewConfig } from "../../../../data/lovelace/config/view";
@@ -8,7 +11,7 @@ import type { HomeAssistant } from "../../../../types";
 import type { MediaControlCardConfig } from "../../cards/types";
 import { getAreas, getFloors } from "../areas/helpers/areas-strategy-helper";
 import { getHomeStructure } from "./helpers/home-structure";
-import { findEntities, HOME_SUMMARIES_FILTERS } from "./helpers/home-summaries";
+import { HOME_SUMMARIES_FILTERS } from "./helpers/home-summaries";
 
 export interface HomeMediaPlayersViewStrategyConfig {
   type: "home-media-players";

@@ -8,6 +8,7 @@ import memoizeOne from "memoize-one";
 import type { BarSeriesOption, PieSeriesOption } from "echarts/charts";
 import { PieChart } from "echarts/charts";
 import type { ECElementEvent } from "echarts/types/dist/shared";
+import { filterXSS } from "../../../../common/util/xss";
 import { getGraphColorByIndex } from "../../../../common/color/colors";
 import { formatNumber } from "../../../../common/number/format_number";
 import "../../../../components/chart/ha-chart-base";
@@ -122,9 +123,8 @@ export class HuiEnergyDevicesGraphCard
   }
 
   private _renderTooltip(params: any) {
-    const title = `<h4 style="text-align: center; margin: 0;">${this._getDeviceName(
-      params.name
-    )}</h4>`;
+    const deviceName = filterXSS(this._getDeviceName(params.name));
+    const title = `<h4 style="text-align: center; margin: 0;">${deviceName}</h4>`;
     const value = `${formatNumber(
       params.value[0] as number,
       this.hass.locale,

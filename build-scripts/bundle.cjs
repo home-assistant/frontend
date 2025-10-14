@@ -183,7 +183,6 @@ module.exports.babelOptions = ({
       include: /\/node_modules\//,
       exclude: [
         "element-internals-polyfill",
-        "@shoelace-style",
         "@?lit(?:-labs|-element|-html)?",
       ].map((p) => new RegExp(`/node_modules/${p}/`)),
     },

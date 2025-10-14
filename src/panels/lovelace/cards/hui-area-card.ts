@@ -1,4 +1,4 @@
-import { mdiPlay, mdiTextureBox } from "@mdi/js";
+import { mdiTextureBox } from "@mdi/js";
 import type { HassEntity } from "home-assistant-js-websocket";
 import {
   css,
@@ -13,10 +13,6 @@ import { classMap } from "lit/directives/class-map";
 import { ifDefined } from "lit/directives/if-defined";
 import { styleMap } from "lit/directives/style-map";
 import memoizeOne from "memoize-one";
-import {
-  computeActiveAreaMediaStates,
-  type MediaPlayerEntity,
-} from "../../../data/media-player";
 import { computeCssColor } from "../../../common/color/compute-color";
 import { BINARY_STATE_ON } from "../../../common/const";
 import { computeAreaName } from "../../../common/entity/compute_area_name";
@@ -289,49 +285,21 @@ export class HuiAreaCard extends LitElement implements LovelaceCard {
     );
   }
 
-  private _computeActiveAreaMediaStates(): MediaPlayerEntity[] {
-    return computeActiveAreaMediaStates(this.hass, this._config?.area || "");
-  }
+  private _renderAlertSensorBadge(): TemplateResult<1> | typeof nothing {
+    const states = this._computeActiveAlertStates();
 
-  private _renderAlertSensorBadge(
-    alertStates: HassEntity[]
-  ): TemplateResult<1> | typeof nothing {
-    if (alertStates.length === 0) {
+    if (states.length === 0) {
       return nothing;
     }
 
     // Only render the first one when using a badge
-    const stateObj = alertStates[0] as HassEntity | undefined;
+    const stateObj = states[0] as HassEntity | undefined;
 
     return html`
       <ha-tile-badge class="alert-badge">
         <ha-state-icon .hass=${this.hass} .stateObj=${stateObj}></ha-state-icon>
       </ha-tile-badge>
     `;
-  }
-
-  private _renderMediaBadge(): TemplateResult<1> | typeof nothing {
-    const states = this._computeActiveAreaMediaStates();
-
-    if (states.length === 0) {
-      return nothing;
-    }
-
-    return html`
-      <ha-tile-badge
-        class="media-badge"
-        .label=${this.hass.localize("ui.card.area.media_playing")}
-      >
-        <ha-svg-icon .path=${mdiPlay}></ha-svg-icon>
-      </ha-tile-badge>
-    `;
-  }
-
-  private _renderCompactBadge(): TemplateResult<1> | typeof nothing {
-    const alertStates = this._computeActiveAlertStates();
-    return alertStates.length > 0
-      ? this._renderAlertSensorBadge(alertStates)
-      : this._renderMediaBadge();
   }
 
   private _renderAlertSensors(): TemplateResult<1> | typeof nothing {
@@ -595,7 +563,7 @@ export class HuiAreaCard extends LitElement implements LovelaceCard {
           <div class="content ${classMap(contentClasses)}">
             <ha-tile-icon>
               ${displayType === "compact"
-                ? this._renderCompactBadge()
+                ? this._renderAlertSensorBadge()
                 : nothing}
               ${icon
                 ? html`<ha-icon slot="icon" .icon=${icon}></ha-icon>`
@@ -664,14 +632,14 @@ export class HuiAreaCard extends LitElement implements LovelaceCard {
       left: 0;
       bottom: 0;
       right: 0;
-      border-radius: var(--ha-card-border-radius, 12px);
+      border-radius: var(--ha-card-border-radius, var(--ha-border-radius-lg));
       margin: calc(-1 * var(--ha-card-border-width, 1px));
       overflow: hidden;
     }
     .header {
       flex: 1;
       overflow: hidden;
-      border-radius: var(--ha-card-border-radius, 12px);
+      border-radius: var(--ha-card-border-radius, var(--ha-border-radius-lg));
       border-end-end-radius: 0;
       border-end-start-radius: 0;
       pointer-events: none;
@@ -773,9 +741,6 @@ export class HuiAreaCard extends LitElement implements LovelaceCard {
     .alert-badge {
       --tile-badge-background-color: var(--orange-color);
     }
-    .media-badge {
-      --tile-badge-background-color: var(--light-blue-color);
-    }
     .alerts {
       position: absolute;
       top: 0;
@@ -789,7 +754,7 @@ export class HuiAreaCard extends LitElement implements LovelaceCard {
     }
     .alert {
       background-color: var(--orange-color);
-      border-radius: 12px;
+      border-radius: var(--ha-border-radius-lg);
       width: 24px;
       height: 24px;
       padding: 2px;

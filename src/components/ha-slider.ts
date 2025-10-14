@@ -19,7 +19,6 @@ export class HaSlider extends Slider {
       Slider.styles,
       css`
         :host {
-          --wa-form-control-activated-color: var(--ha-control-color);
           --track-size: var(--ha-slider-track-size, 4px);
           --marker-height: calc(var(--ha-slider-track-size, 4px) / 2);
           --marker-width: calc(var(--ha-slider-track-size, 4px) / 2);
@@ -44,7 +43,10 @@ export class HaSlider extends Slider {
             var(--ha-line-height-condensed)
           );
           --wa-tooltip-padding: 8px;
-          --wa-tooltip-border-radius: var(--ha-tooltip-border-radius, 4px);
+          --wa-tooltip-border-radius: var(
+            --ha-tooltip-border-radius,
+            var(--ha-border-radius-sm)
+          );
           --wa-tooltip-arrow-size: var(--ha-tooltip-arrow-size, 8px);
           --wa-z-index-tooltip: var(--ha-tooltip-z-index, 1000);
           min-width: 100px;
@@ -54,6 +56,7 @@ export class HaSlider extends Slider {
 
         #thumb {
           border: none;
+          background-color: var(--ha-slider-thumb-color, var(--primary-color));
         }
 
         #slider:focus-visible:not(.disabled) #thumb,
@@ -62,14 +65,21 @@ export class HaSlider extends Slider {
           outline: var(--wa-focus-ring);
         }
 
+        #indicator {
+          background-color: var(
+            --ha-slider-indicator-color,
+            var(--primary-color)
+          );
+        }
+
         :host([size="medium"]) {
-          --thumb-width: var(--ha-font-size-l, 1.25em);
-          --thumb-height: var(--ha-font-size-l, 1.25em);
+          --thumb-width: 20px;
+          --thumb-height: 20px;
         }
 
         :host([size="small"]) {
-          --thumb-width: var(--ha-font-size-m, 1em);
-          --thumb-height: var(--ha-font-size-m, 1em);
+          --thumb-width: 16px;
+          --thumb-height: 16px;
         }
       `,
     ];

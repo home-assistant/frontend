@@ -1053,7 +1053,7 @@ export class HaDataTable extends LitElement {
 
         .mdc-data-table {
           background-color: var(--data-table-background-color);
-          border-radius: 4px;
+          border-radius: var(--ha-border-radius-sm);
           border-width: 1px;
           border-style: solid;
           border-color: var(--divider-color);

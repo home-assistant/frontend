@@ -187,7 +187,7 @@ export class HaControlNumberButton extends LitElement {
       --control-number-buttons-focus-color: var(--secondary-text-color);
       --control-number-buttons-background-color: var(--disabled-color);
       --control-number-buttons-background-opacity: 0.2;
-      --control-number-buttons-border-radius: 10px;
+      --control-number-buttons-border-radius: var(--ha-border-radius-md);
       --mdc-icon-size: 16px;
       height: var(--feature-height);
       width: 100%;

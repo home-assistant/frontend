@@ -364,7 +364,7 @@ class HaBackupOverviewBackups extends LitElement {
           animation-name: loading;
           animation-timing-function: linear;
           animation-duration: 1.2s;
-          border-radius: 4px;
+          border-radius: var(--ha-border-radius-sm);
           height: 16px;
           margin: 2px 0;
           background: linear-gradient(

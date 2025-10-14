@@ -13,6 +13,7 @@ import { fireEvent } from "../common/dom/fire_event";
 import { computeDomain } from "../common/entity/compute_domain";
 import { computeObjectId } from "../common/entity/compute_object_id";
 import { supportsFeature } from "../common/entity/supports-feature";
+import { hasTemplate } from "../common/string/has-template";
 import {
   fetchIntegrationManifest,
   type IntegrationManifest,
@@ -34,11 +35,10 @@ import "./ha-checkbox";
 import "./ha-icon-button";
 import "./ha-selector/ha-selector";
 import "./ha-service-picker";
+import "./ha-service-section-icon";
 import "./ha-settings-row";
 import "./ha-yaml-editor";
 import type { HaYamlEditor } from "./ha-yaml-editor";
-import "./ha-service-section-icon";
-import { hasTemplate } from "../common/string/has-template";
 
 const attributeFilter = (values: any[], attribute: any) => {
   if (typeof attribute === "object") {
@@ -999,7 +999,7 @@ export class HaServiceControl extends LitElement {
       direction: ltr;
     }
     ha-expansion-panel {
-      --ha-card-border-radius: 0;
+      --ha-card-border-radius: var(--ha-border-radius-square);
       --expansion-panel-summary-padding: 0 16px;
       --expansion-panel-content-padding: 0;
     }

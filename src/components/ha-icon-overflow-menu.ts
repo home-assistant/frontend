@@ -32,7 +32,10 @@ export class HaIconOverflowMenu extends LitElement {
 
   @property({ type: Boolean }) public narrow = false;
 
-  protected render(): TemplateResult {
+  protected render(): TemplateResult | typeof nothing {
+    if (this.items.length === 0) {
+      return nothing;
+    }
     return html`
       ${this.narrow
         ? html` <!-- Collapsed representation for small screens -->

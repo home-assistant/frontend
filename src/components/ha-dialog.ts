@@ -121,30 +121,23 @@ export class HaDialog extends DialogBase {
         position: var(--dialog-surface-position, relative);
         top: var(--dialog-surface-top);
         margin-top: var(--dialog-surface-margin-top);
-        min-width: var(--mdc-dialog-min-width, 100vw);
+        min-width: var(--mdc-dialog-min-width, auto);
         min-height: var(--mdc-dialog-min-height, auto);
-        border-radius: var(--ha-dialog-border-radius, 24px);
+        border-radius: var(
+          --ha-dialog-border-radius,
+          var(--ha-border-radius-3xl)
+        );
         -webkit-backdrop-filter: var(--ha-dialog-surface-backdrop-filter, none);
         backdrop-filter: var(--ha-dialog-surface-backdrop-filter, none);
         background: var(
           --ha-dialog-surface-background,
           var(--mdc-theme-surface, #fff)
         );
+        padding: var(--dialog-surface-padding);
       }
       :host([flexContent]) .mdc-dialog .mdc-dialog__content {
         display: flex;
         flex-direction: column;
-      }
-
-      @media all and (max-width: 450px), all and (max-height: 500px) {
-        .mdc-dialog .mdc-dialog__surface {
-          min-height: 100vh;
-          max-height: 100vh;
-          padding-top: var(--safe-area-inset-top);
-          padding-bottom: var(--safe-area-inset-bottom);
-          padding-left: var(--safe-area-inset-left);
-          padding-right: var(--safe-area-inset-right);
-        }
       }
 
       .header_title {

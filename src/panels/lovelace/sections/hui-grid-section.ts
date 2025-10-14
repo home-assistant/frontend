@@ -234,7 +234,10 @@ export class GridSection extends LitElement implements LovelaceSectionElement {
         }
 
         .card {
-          border-radius: var(--ha-card-border-radius, 12px);
+          border-radius: var(
+            --ha-card-border-radius,
+            var(--ha-border-radius-lg)
+          );
           position: relative;
           grid-row: span var(--row-size, 1);
           grid-column: span min(var(--column-size, 1), var(--grid-column-count));
@@ -271,7 +274,10 @@ export class GridSection extends LitElement implements LovelaceSectionElement {
           grid-column: span 3;
           background: none;
           cursor: pointer;
-          border-radius: var(--ha-card-border-radius, 12px);
+          border-radius: var(
+            --ha-card-border-radius,
+            var(--ha-border-radius-lg)
+          );
           border: 2px dashed var(--primary-color);
           height: var(--row-height);
           order: 1;
@@ -283,7 +289,10 @@ export class GridSection extends LitElement implements LovelaceSectionElement {
           border-style: solid;
         }
         .sortable-ghost {
-          border-radius: var(--ha-card-border-radius, 12px);
+          border-radius: var(
+            --ha-card-border-radius,
+            var(--ha-border-radius-lg)
+          );
         }
       `,
     ];

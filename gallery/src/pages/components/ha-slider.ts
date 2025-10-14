@@ -79,7 +79,7 @@ export class DemoHaSlider extends LitElement {
       background-color: var(--primary-background-color);
       padding: 0 50px;
       margin: 16px;
-      border-radius: 8px;
+      border-radius: var(--ha-border-radius-md);
     }
     ha-card {
       margin: 24px auto;

@@ -1,21 +1,49 @@
 import { ReactiveElement } from "lit";
 import { customElement } from "lit/decorators";
-import { generateEntityFilter } from "../../../../common/entity/entity_filter";
-import type { LovelaceCardConfig } from "../../../../data/lovelace/config/card";
-import type { LovelaceSectionRawConfig } from "../../../../data/lovelace/config/section";
-import type { LovelaceViewConfig } from "../../../../data/lovelace/config/view";
-import type { HomeAssistant } from "../../../../types";
+import {
+  findEntities,
+  generateEntityFilter,
+  type EntityFilter,
+} from "../../../common/entity/entity_filter";
+import type { LovelaceCardConfig } from "../../../data/lovelace/config/card";
+import type { LovelaceSectionRawConfig } from "../../../data/lovelace/config/section";
+import type { LovelaceViewConfig } from "../../../data/lovelace/config/view";
+import type { HomeAssistant } from "../../../types";
 import {
   computeAreaTileCardConfig,
   getAreas,
   getFloors,
-} from "../areas/helpers/areas-strategy-helper";
-import { getHomeStructure } from "./helpers/home-structure";
-import { findEntities, HOME_SUMMARIES_FILTERS } from "./helpers/home-summaries";
+} from "../../lovelace/strategies/areas/helpers/areas-strategy-helper";
+import { getHomeStructure } from "../../lovelace/strategies/home/helpers/home-structure";
 
-export interface HomeClimateViewStrategyConfig {
-  type: "home-climate";
+export interface ClimateViewStrategyConfig {
+  type: "climate";
 }
+
+export const climateEntityFilters: EntityFilter[] = [
+  { domain: "climate", entity_category: "none" },
+  { domain: "humidifier", entity_category: "none" },
+  { domain: "fan", entity_category: "none" },
+  { domain: "water_heater", entity_category: "none" },
+  {
+    domain: "cover",
+    device_class: [
+      "awning",
+      "blind",
+      "curtain",
+      "shade",
+      "shutter",
+      "window",
+      "none",
+    ],
+    entity_category: "none",
+  },
+  {
+    domain: "binary_sensor",
+    device_class: ["window"],
+    entity_category: "none",
+  },
+];
 
 const processAreasForClimate = (
   areaIds: string[],
@@ -32,9 +60,10 @@ const processAreasForClimate = (
     const areaFilter = generateEntityFilter(hass, {
       area: area.area_id,
     });
-    const areaEntities = entities.filter(areaFilter);
+    const areaClimateEntities = entities.filter(areaFilter);
     const areaCards: LovelaceCardConfig[] = [];
 
+    // Add temperature and humidity sensors with trend graphs for areas
     const temperatureEntityId = area.temperature_entity_id;
     if (temperatureEntityId && hass.states[temperatureEntityId]) {
       areaCards.push({
@@ -42,6 +71,7 @@ const processAreasForClimate = (
         features: [{ type: "trend-graph" }],
       });
     }
+
     const humidityEntityId = area.humidity_entity_id;
     if (humidityEntityId && hass.states[humidityEntityId]) {
       areaCards.push({
@@ -50,8 +80,25 @@ const processAreasForClimate = (
       });
     }
 
-    for (const entityId of areaEntities) {
-      areaCards.push(computeTileCard(entityId));
+    // Add other climate entities
+    for (const entityId of areaClimateEntities) {
+      // Skip if already added as temperature/humidity sensor
+      if (entityId === temperatureEntityId || entityId === humidityEntityId) {
+        continue;
+      }
+
+      const state = hass.states[entityId];
+      if (
+        state?.attributes.device_class === "temperature" ||
+        state?.attributes.device_class === "humidity"
+      ) {
+        areaCards.push({
+          ...computeTileCard(entityId),
+          features: [{ type: "trend-graph" }],
+        });
+      } else {
+        areaCards.push(computeTileCard(entityId));
+      }
     }
 
     if (areaCards.length > 0) {
@@ -59,10 +106,6 @@ const processAreasForClimate = (
         heading_style: "subtitle",
         type: "heading",
         heading: area.name,
-        tap_action: {
-          action: "navigate",
-          navigation_path: `areas-${area.area_id}`,
-        },
       });
       cards.push(...areaCards);
     }
@@ -71,10 +114,10 @@ const processAreasForClimate = (
   return cards;
 };
 
-@customElement("home-climate-view-strategy")
-export class HomeClimateViewStrategy extends ReactiveElement {
+@customElement("climate-view-strategy")
+export class ClimateViewStrategy extends ReactiveElement {
   static async generate(
-    _config: HomeClimateViewStrategyConfig,
+    _config: ClimateViewStrategyConfig,
     hass: HomeAssistant
   ): Promise<LovelaceViewConfig> {
     const areas = getAreas(hass.areas);
@@ -85,11 +128,11 @@ export class HomeClimateViewStrategy extends ReactiveElement {
 
     const allEntities = Object.keys(hass.states);
 
-    const filterFunctions = HOME_SUMMARIES_FILTERS.climate.map((filter) =>
+    const climateFilters = climateEntityFilters.map((filter) =>
       generateEntityFilter(hass, filter)
     );
 
-    const entities = findEntities(allEntities, filterFunctions);
+    const entities = findEntities(allEntities, climateFilters);
 
     const floorCount = home.floors.length + (home.areas.length ? 1 : 0);
 
@@ -155,6 +198,6 @@ export class HomeClimateViewStrategy extends ReactiveElement {
 
 declare global {
   interface HTMLElementTagNameMap {
-    "home-climate-view-strategy": HomeClimateViewStrategy;
+    "climate-view-strategy": ClimateViewStrategy;
   }
 }

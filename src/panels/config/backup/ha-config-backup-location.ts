@@ -385,7 +385,7 @@ class HaConfigBackupDetails extends LitElement {
       width: 8px;
       height: 8px;
       background-color: var(--disabled-color);
-      border-radius: 50%;
+      border-radius: var(--ha-border-radius-circle);
       flex: none;
     }
     .dot.success {

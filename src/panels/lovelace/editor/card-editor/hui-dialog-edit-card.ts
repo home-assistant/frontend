@@ -471,7 +471,7 @@ export class HuiDialogEditCard
           height: max-content;
           background: var(--primary-background-color);
           padding: 4px;
-          border-radius: 4px;
+          border-radius: var(--ha-border-radius-sm);
           position: sticky;
           top: 0;
         }

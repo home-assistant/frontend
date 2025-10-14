@@ -264,7 +264,7 @@ export class HaGridSizeEditor extends LitElement {
         left: 0;
         background-color: var(--primary-color);
         opacity: 0.3;
-        border-radius: 8px;
+        border-radius: var(--ha-border-radius-md);
         height: calc(var(--rows, 1) * 30px);
         width: calc(var(--columns, 1) * 100% / var(--total-columns, 12));
         pointer-events: none;

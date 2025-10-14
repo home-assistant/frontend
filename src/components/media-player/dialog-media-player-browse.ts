@@ -167,6 +167,8 @@ class DialogMediaPlayerBrowse extends LitElement {
           .accept=${this._params.accept}
           .defaultId=${this._params.defaultId}
           .defaultType=${this._params.defaultType}
+          .hideContentType=${this._params.hideContentType}
+          .contentIdHelper=${this._params.contentIdHelper}
           @close-dialog=${this.closeDialog}
           @media-picked=${this._mediaPicked}
           @media-browsed=${this._mediaBrowsed}

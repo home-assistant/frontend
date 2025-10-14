@@ -275,7 +275,7 @@ class HaConfigSubEntryRow extends LitElement {
     }
     ha-md-list {
       border: 1px solid var(--divider-color);
-      border-radius: var(--ha-card-border-radius, 12px);
+      border-radius: var(--ha-card-border-radius, var(--ha-border-radius-lg));
       padding: 0;
       margin: 16px;
       margin-top: 0;

@@ -1,4 +1,4 @@
-import { LitElement, html, css } from "lit";
+import { LitElement, css, html } from "lit";
 import { customElement, property } from "lit/decorators";
 import "../../../components/ha-ripple";
 
@@ -48,7 +48,7 @@ export class DashboardCard extends LitElement {
       display: flex;
       flex-direction: row;
       justify-content: space-between;
-      border-radius: 12px;
+      border-radius: var(--ha-border-radius-lg);
       background: var(--primary-background-color, #fafafa);
       cursor: pointer;
       position: relative;

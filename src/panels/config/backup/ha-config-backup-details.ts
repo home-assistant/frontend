@@ -8,6 +8,8 @@ import {
 } from "@mdi/js";
 import { css, html, LitElement, nothing } from "lit";
 import { customElement, property, state } from "lit/decorators";
+import { isComponentLoaded } from "../../../common/config/is_component_loaded";
+import { fireEvent } from "../../../common/dom/fire_event";
 import { computeDomain } from "../../../common/entity/compute_domain";
 import { navigate } from "../../../common/navigate";
 import "../../../components/ha-alert";
@@ -15,19 +17,17 @@ import "../../../components/ha-button";
 import "../../../components/ha-button-menu";
 import "../../../components/ha-card";
 import "../../../components/ha-fade-in";
-import "../../../components/ha-spinner";
 import "../../../components/ha-icon-button";
 import "../../../components/ha-list-item";
 import "../../../components/ha-md-list";
 import "../../../components/ha-md-list-item";
+import "../../../components/ha-spinner";
 import type {
   BackupAgent,
   BackupConfig,
   BackupContentAgent,
   BackupContentExtended,
 } from "../../../data/backup";
-import "./components/ha-backup-details-summary";
-import "./components/ha-backup-details-restore";
 import {
   compareAgents,
   computeBackupAgentName,
@@ -36,14 +36,14 @@ import {
   isLocalAgent,
   isNetworkMountAgent,
 } from "../../../data/backup";
+import { showConfirmationDialog } from "../../../dialogs/generic/show-dialog-box";
 import "../../../layouts/hass-subpage";
 import type { HomeAssistant } from "../../../types";
 import { brandsUrl } from "../../../util/brands-url";
+import "./components/ha-backup-details-restore";
+import "./components/ha-backup-details-summary";
 import { showRestoreBackupDialog } from "./dialogs/show-dialog-restore-backup";
-import { fireEvent } from "../../../common/dom/fire_event";
-import { showConfirmationDialog } from "../../../dialogs/generic/show-dialog-box";
 import { downloadBackup } from "./helper/download_backup";
-import { isComponentLoaded } from "../../../common/config/is_component_loaded";
 
 interface Agent extends BackupContentAgent {
   id: string;
@@ -408,7 +408,7 @@ class HaConfigBackupDetails extends LitElement {
       width: 8px;
       height: 8px;
       background-color: var(--disabled-color);
-      border-radius: 50%;
+      border-radius: var(--ha-border-radius-circle);
       flex: none;
     }
     .dot.success {
