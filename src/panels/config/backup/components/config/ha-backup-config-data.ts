@@ -135,7 +135,6 @@ class HaBackupConfigData extends LitElement {
   }
 
   private _estimateBackupSize(data: FormData): {
-    uncompressedBytes: number;
     compressedBytes: number;
     addonsNotAccurate: boolean;
   } | null {
@@ -169,7 +168,6 @@ class HaBackupConfigData extends LitElement {
     }
 
     return {
-      uncompressedBytes: totalBytes,
       // Estimate compressed size (40% reduction typical for gzip)
       compressedBytes: Math.round(totalBytes * 0.6),
       addonsNotAccurate:
@@ -484,12 +482,11 @@ class HaBackupConfigData extends LitElement {
       return nothing;
     }
 
-    const { uncompressedBytes, compressedBytes, addonsNotAccurate } = result;
+    const { compressedBytes, addonsNotAccurate } = result;
 
     return html`
       <ha-alert alert-type="info">
         ${this.hass.localize("ui.panel.config.backup.data.estimated_size", {
-          uncompressed: bytesToString(uncompressedBytes),
           compressed: bytesToString(compressedBytes),
         })}
         <br />
