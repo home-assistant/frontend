@@ -9,6 +9,9 @@ export const BOTTOM_SHEET_ANIMATION_DURATION_MS = 300;
 export class HaBottomSheet extends LitElement {
   @property({ type: Boolean }) public open = false;
 
+  @property({ type: Boolean, reflect: true, attribute: "flexcontent" })
+  public flexContent = false;
+
   @state() private _drawerOpen = false;
 
   @query(".body") public bodyContainer!: HTMLDivElement;
@@ -80,6 +83,10 @@ export class HaBottomSheet extends LitElement {
           var(--dialog-content-padding, var(--ha-space-6));
         overflow: auto;
         flex-grow: 1;
+      }
+
+      :host([flexcontent]) wa-drawer::part(body) {
+        display: flex;
       }
     `,
   ];

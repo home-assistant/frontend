@@ -138,7 +138,7 @@ export class HaAreasFloorsDisplayEditor extends LitElement {
       );
       const groupedItems: Record<string, DisplayItem[]> = areas.reduce(
         (acc, area) => {
-          const { floor } = getAreaContext(area, this.hass!);
+          const { floor } = getAreaContext(area, this.hass.floors);
           const floorId = floor?.floor_id ?? UNASSIGNED_FLOOR;
 
           if (!acc[floorId]) {
