@@ -42,6 +42,23 @@ const KNOWN_TYPES = new Set(["entity", "device", "area", "floor"]);
 
 const UNIQUE_TYPES = new Set(["entity", "device", "area", "floor"]);
 
+const formatOptionValue = (item: EntityNameItem) => {
+  if (item.type === "text" && item.text) {
+    return item.text;
+  }
+  return `___${item.type}___`;
+};
+
+const parseOptionValue = (value: string): EntityNameItem => {
+  if (value.startsWith("___") && value.endsWith("___")) {
+    const type = value.slice(3, -3);
+    if (KNOWN_TYPES.has(type)) {
+      return { type: type as EntityNameType };
+    }
+  }
+  return { type: "text", text: value };
+};
+
 @customElement("ha-entity-name-picker")
 export class HaEntityNamePicker extends LitElement {
   @property({ attribute: false }) public hass!: HomeAssistant;
@@ -123,12 +140,21 @@ export class HaEntityNamePicker extends LitElement {
         primary,
         secondary,
         field_label: primary,
-        value: name,
+        value: formatOptionValue({ type: name }),
       };
     });
 
     return items;
   });
+
+  private _customTextOption = memoizeOne((text: string) => ({
+    primary: this.hass.localize(
+      "ui.components.entity.entity-name-picker.use_custom_name"
+    ),
+    secondary: `"${text}"`,
+    field_label: text,
+    value: formatOptionValue({ type: "text", text }),
+  }));
 
   private _formatItem = (item: EntityNameItem) => {
     if (item.type === "text") {
@@ -288,23 +314,12 @@ export class HaEntityNamePicker extends LitElement {
       const initialItem =
         this._editIndex != null ? this._value[this._editIndex] : undefined;
 
-      const initialValue = initialItem
-        ? initialItem.type === "text"
-          ? initialItem.text
-          : initialItem.type
-        : "";
+      const initialValue = initialItem ? formatOptionValue(initialItem) : "";
 
       const filteredItems = this._filterSelectedOptions(options, initialValue);
 
       if (initialItem && initialItem.type === "text" && initialItem.text) {
-        filteredItems.push({
-          primary: this.hass.localize(
-            "ui.components.entity.entity-name-picker.use_custom_name"
-          ),
-          secondary: `"${initialItem.text}"`,
-          field_label: initialItem.text,
-          value: initialItem.text,
-        });
+        filteredItems.push(this._customTextOption(initialItem.text));
       }
       this._comboBox.filteredItems = filteredItems;
       this._comboBox.setInputValue(initialValue);
@@ -338,11 +353,7 @@ export class HaEntityNamePicker extends LitElement {
     const currentItem =
       this._editIndex != null ? this._value[this._editIndex] : undefined;
 
-    const currentValue = currentItem
-      ? currentItem.type === "text"
-        ? currentItem.text
-        : currentItem.type
-      : "";
+    const currentValue = currentItem ? formatOptionValue(currentItem) : "";
 
     this._comboBox.filteredItems = this._filterSelectedOptions(
       options,
@@ -364,14 +375,7 @@ export class HaEntityNamePicker extends LitElement {
     const fuse = new Fuse(this._comboBox.filteredItems, fuseOptions);
     const filteredItems = fuse.search(filter).map((result) => result.item);
 
-    filteredItems.push({
-      primary: this.hass.localize(
-        "ui.components.entity.entity-name-picker.use_custom_name"
-      ),
-      secondary: `"${input}"`,
-      field_label: input,
-      value: input,
-    });
+    filteredItems.push(this._customTextOption(input));
     this._comboBox.filteredItems = filteredItems;
   }
 
@@ -405,9 +409,7 @@ export class HaEntityNamePicker extends LitElement {
       return;
     }
 
-    const item: EntityNameItem = KNOWN_TYPES.has(value as any)
-      ? { type: value as EntityNameType }
-      : { type: "text", text: value };
+    const item: EntityNameItem = parseOptionValue(value);
 
     const newValue = [...this._value];
 
