@@ -485,32 +485,39 @@ class HaBackupConfigData extends LitElement {
     const { compressedBytes, addonsNotAccurate } = result;
 
     return html`
-      <ha-alert alert-type="info">
-        ${this.hass.localize("ui.panel.config.backup.data.estimated_size", {
-          compressed: bytesToString(compressedBytes),
-        })}
-        <br />
-        <span style="font-size: 0.9em; opacity: 0.8;">
-          ${this.hass.localize(
-            "ui.panel.config.backup.data.estimated_size_disclaimer"
-          )}
-          ${addonsNotAccurate
-            ? html`<br />${this.hass.localize(
-                  "ui.panel.config.backup.data.estimated_size_disclaimer_addons_custom"
-                )}`
-            : nothing}
+      <span class="estimated-size">
+        <span class="estimated-size-heading">
+          ${this.hass.localize("ui.panel.config.backup.data.estimated_size")}
         </span>
-      </ha-alert>
+        ${bytesToString(compressedBytes)}
+      </span>
+      <span class="estimated-size-disclaimer">
+        ${this.hass.localize(
+          "ui.panel.config.backup.data.estimated_size_disclaimer"
+        )}
+        ${addonsNotAccurate
+          ? html`<br />${this.hass.localize(
+                "ui.panel.config.backup.data.estimated_size_disclaimer_addons_custom"
+              )}`
+          : nothing}
+      </span>
     `;
   }
 
   static styles = css`
-    ha-alert {
+    .estimated-size {
       display: block;
       margin-top: var(--ha-space-2);
-      --ha-alert-icon-size: 24px;
+      font-size: var(--ha-font-size-m);
     }
-    ha-alert ha-spinner {
+    .estimated-size-heading {
+      font-weight: var(--ha-font-weight-medium);
+    }
+    .estimated-size-disclaimer {
+      font-size: var(--ha-font-size-s);
+      color: var(--secondary-text-color);
+    }
+    ha-spinner {
       --ha-spinner-size: 24px;
     }
     ha-md-list {
