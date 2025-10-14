@@ -93,7 +93,6 @@ export class HuiPowerSourcesGraphCard
               this._compareStart,
               this._compareEnd
             )}
-            chart-type="bar"
           ></ha-chart-base>
           ${!this._chartData.some((dataset) => dataset.data!.length)
             ? html`<div class="no-data">
@@ -194,7 +193,7 @@ export class HuiPowerSourcesGraphCard
     };
 
     Object.keys(statIds).forEach((key, keyIndex) => {
-      if (statIds[key].stats.length || statIds[key].negative.length) {
+      if (statIds[key].stats.length) {
         const colorHex = computedStyles.getPropertyValue(statIds[key].color);
         const rgb = hex2rgb(colorHex);
         const { positive, negative } = this._processData(
