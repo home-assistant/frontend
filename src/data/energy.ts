@@ -380,9 +380,8 @@ export const getReferencedStatisticIdsPower = (
       continue;
     }
 
-    // grid source
-    for (const flowFrom of source.flow_from) {
-      statIDs.push(flowFrom.stat_power);
+    if (source.power) {
+      statIDs.push(...source.power.map((p) => p.stat_power));
     }
   }
   statIDs.push(...prefs.device_consumption.map((d) => d.stat_power));
