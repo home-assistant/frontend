@@ -52,7 +52,7 @@ export const waColorStyles = css`
     --wa-color-danger-on-normal: var(--ha-color-on-danger-normal);
     --wa-color-danger-on-quiet: var(--ha-color-on-danger-quiet);
 
-    --wa-color-surface-default: var(--white-color);
+    --wa-color-surface-default: var(--card-background-color);
     --wa-panel-border-radius: var(--ha-border-radius-3xl);
     --wa-panel-border-style: solid;
     --wa-panel-border-width: 1px;

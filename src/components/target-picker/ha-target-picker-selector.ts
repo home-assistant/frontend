@@ -1042,6 +1042,12 @@ export class HaTargetPickerSelector extends LitElement {
         background-color: var(--ha-color-fill-neutral-quiet-hover);
       }
 
+      @media (prefers-color-scheme: dark) {
+        ha-combo-box-item.selected {
+          background-color: var(--ha-color-fill-neutral-normal-hover);
+        }
+      }
+
       .filter-header-wrapper {
         height: 0;
         position: relative;
