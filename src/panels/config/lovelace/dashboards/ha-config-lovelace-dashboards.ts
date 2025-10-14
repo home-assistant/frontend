@@ -318,13 +318,13 @@ export class HaConfigLovelaceDashboards extends LitElement {
         });
       }
 
-      if (this.hass.panels.security) {
+      if (this.hass.panels.safety) {
         result.push({
           icon: "mdi:security",
-          title: this.hass.localize("panel.security"),
+          title: this.hass.localize("panel.safety"),
           show_in_sidebar: false,
           mode: "storage",
-          url_path: "security",
+          url_path: "safety",
           filename: "",
           iconColor: "var(--blue-grey-color)",
           default: false,

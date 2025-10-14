@@ -93,17 +93,21 @@ export class HuiPictureCard extends LitElement implements LovelaceCard {
       changedProps.has("_config") &&
       changedProps.get("_config")?.image !== this._config?.image;
 
+    const image =
+      (typeof this._config?.image === "object" &&
+        this._config.image.media_content_id) ||
+      (this._config.image as string | undefined);
     if (
       (firstHass || imageChanged) &&
-      typeof this._config?.image === "string" &&
-      isMediaSourceContentId(this._config.image)
+      typeof image === "string" &&
+      isMediaSourceContentId(image)
     ) {
       this._resolvedImage = undefined;
-      resolveMediaSource(this.hass, this._config?.image).then((result) => {
+      resolveMediaSource(this.hass, image).then((result) => {
         this._resolvedImage = result.url;
       });
     } else if (imageChanged) {
-      this._resolvedImage = this._config?.image;
+      this._resolvedImage = image;
     }
   }
 

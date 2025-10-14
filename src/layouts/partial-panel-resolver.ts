@@ -33,7 +33,7 @@ const COMPONENTS = {
   "media-browser": () =>
     import("../panels/media-browser/ha-panel-media-browser"),
   light: () => import("../panels/light/ha-panel-light"),
-  security: () => import("../panels/security/ha-panel-security"),
+  safety: () => import("../panels/safety/ha-panel-safety"),
   climate: () => import("../panels/climate/ha-panel-climate"),
 };
 

@@ -12,6 +12,7 @@ import {
   string,
   union,
 } from "superstruct";
+import { DEFAULT_ENTITY_NAME } from "../../../../common/entity/compute_entity_name_display";
 import type { LocalizeFunc } from "../../../../common/translations/localize";
 import { fireEvent } from "../../../../common/dom/fire_event";
 import "../../../../components/ha-form/ha-form";
@@ -20,6 +21,7 @@ import type { HomeAssistant } from "../../../../types";
 import type { SensorCardConfig } from "../../cards/types";
 import type { LovelaceCardEditor } from "../../types";
 import { baseLovelaceCardConfig } from "../structs/base-card-struct";
+import { entityNameStruct } from "../structs/entity-name-struct";
 import { configElementStyle } from "./config-elements-style";
 import { DEFAULT_HOURS_TO_SHOW } from "../../cards/hui-sensor-card";
 
@@ -27,7 +29,7 @@ const cardConfigStruct = assign(
   baseLovelaceCardConfig,
   object({
     entity: optional(string()),
-    name: optional(string()),
+    name: optional(entityNameStruct),
     icon: optional(string()),
     graph: optional(union([literal("line"), literal("none")])),
     unit: optional(string()),
@@ -66,7 +68,15 @@ export class HuiSensorCardEditor
             entity: { domain: ["counter", "input_number", "number", "sensor"] },
           },
         },
-        { name: "name", selector: { text: {} } },
+        {
+          name: "name",
+          selector: {
+            entity_name: {
+              default_name: DEFAULT_ENTITY_NAME,
+            },
+          },
+          context: { entity: "entity" },
+        },
         {
           type: "grid",
           name: "",

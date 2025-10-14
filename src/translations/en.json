@@ -12,7 +12,7 @@
     "media_browser": "Media",
     "profile": "Profile",
     "light": "Lights",
-    "security": "Security",
+    "safety": "Safety",
     "climate": "Climate"
   },
   "state": {
@@ -5546,6 +5546,7 @@
             "entries": "{count} {count, plural,\n  one {entry}\n  other {entries}\n}",
             "no_devices_or_entities": "No devices or entities",
             "devices_without_subentry": "Devices that don't belong to a sub-entry",
+            "copy": "Copy entry ID",
             "rename": "Rename",
             "configure": "Configure",
             "system_options": "System options",
@@ -7050,7 +7051,11 @@
             },
             "energy_devices_graph": {
               "energy_usage": "Energy usage",
-              "previous_energy_usage": "Previous energy usage"
+              "previous_energy_usage": "Previous energy usage",
+              "total_energy_usage": "Total energy usage",
+              "change_chart_type": "Change chart type",
+              "untracked": "untracked",
+              "includes_untracked": "Includes {num} kWh of untracked energy"
             },
             "energy_devices_detail_graph": {
               "untracked_consumption": "Untracked consumption",
@@ -7901,7 +7906,8 @@
             },
             "picture": {
               "name": "Picture",
-              "description": "The Picture card allows you to set an image to use for navigation to various paths in your interface or to perform an action."
+              "description": "The Picture card allows you to set an image to use for navigation to various paths in your interface or to perform an action.",
+              "content_id_helper": "Enter a media_source id or a URL for the image to be displayed."
             },
             "picture-elements": {
               "name": "Picture elements",
@@ -7956,7 +7962,7 @@
               "hide_completed": "Hide completed items",
               "hide_create": "Hide 'Add item' field",
               "hide_section_headers": "Hide section headers",
-              "hide_section_headers_helper": "Removes the 'Active' and 'Completed' sections with the overflow menus.",
+              "hide_section_headers_helper": "Removes the 'Active' and 'Completed' section headers and their overflow menus.",
               "display_order": "Display order",
               "item_tap_action": "Item tap behavior",
               "actions": {
@@ -9540,8 +9546,8 @@
             "description": "This will restart the add-on if it crashes"
           },
           "auto_update": {
-            "title": "Autoupdate",
-            "description": "Autoupdate the add-on when there is a new version available"
+            "title": "Automatically update",
+            "description": "Automatically update the add-on when a new version is available"
           },
           "ingress_panel": {
             "title": "Add to sidebar",
