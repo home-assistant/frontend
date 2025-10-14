@@ -183,6 +183,7 @@ export class HaTargetPickerSelector extends LitElement {
           this.targetValue,
           this._searchTerm,
           this.createDomains,
+          this._configEntryLookup,
           this.mode
         )}
         .renderItem=${this._renderRow}
@@ -679,6 +680,7 @@ export class HaTargetPickerSelector extends LitElement {
       targetValue: this["targetValue"],
       searchTerm: string,
       createDomains: this["createDomains"],
+      configEntryLookup: Record<string, ConfigEntry>,
       mode: this["mode"]
     ) => {
       const items: (
@@ -724,7 +726,7 @@ export class HaTargetPickerSelector extends LitElement {
       if (filterTypes.length === 0 || filterTypes.includes("device")) {
         let devices = this._getDevicesMemoized(
           this.hass,
-          this._configEntryLookup,
+          configEntryLookup,
           includeDomains,
           undefined,
           includeDeviceClasses,
