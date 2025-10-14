@@ -646,6 +646,7 @@
       },
       "entity": {
         "entity-picker": {
+          "choose_entity": "Choose entity",
           "entity": "Entity",
           "edit": "Edit",
           "clear": "Clear",
@@ -682,16 +683,36 @@
         "expand_area_id": "Split this area into separate devices and entities.",
         "expand_device_id": "Split this device into separate entities.",
         "expand_label_id": "Split this label into separate areas, devices and entities.",
+        "add_target": "Add target",
         "remove": "Remove",
         "remove_floor_id": "Remove floor",
         "remove_area_id": "Remove area",
         "remove_device_id": "Remove device",
         "remove_entity_id": "Remove entity",
         "remove_label_id": "Remove label",
-        "add_area_id": "Choose area",
-        "add_device_id": "Choose device",
-        "add_entity_id": "Choose entity",
-        "add_label_id": "Choose label"
+        "devices_count": "{count} {count, plural,\n one {device}\n other {devices}\n}",
+        "entities_count": "{count} {count, plural,\n one {entity}\n other {entities}\n}",
+        "target_details": "Target details",
+        "no_targets": "No targets",
+        "no_target_found": "No target found for {term}",
+        "selected": {
+          "entity": "Entities: {count}",
+          "device": "Devices: {count}",
+          "area": "Areas: {count}",
+          "label": "Labels: {count}",
+          "floor": "Floors: {count}"
+        },
+        "type": {
+          "area": "Area",
+          "areas": "Areas",
+          "device": "Device",
+          "devices": "Devices",
+          "entity": "Entity",
+          "entities": "Entities",
+          "label": "Label",
+          "labels": "Labels",
+          "floor": "Floor"
+        }
       },
       "subpage-data-table": {
         "filters": "Filters",

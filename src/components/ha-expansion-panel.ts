@@ -49,6 +49,7 @@ export class HaExpansionPanel extends LitElement {
           tabindex=${this.noCollapse ? -1 : 0}
           aria-expanded=${this.expanded}
           aria-controls="sect1"
+          part="summary"
         >
           ${this.leftChevron ? chevronIcon : nothing}
           <slot name="leading-icon"></slot>
@@ -170,6 +171,11 @@ export class HaExpansionPanel extends LitElement {
       margin-left: 8px;
       margin-inline-start: 8px;
       margin-inline-end: initial;
+      border-radius: var(--ha-border-radius-circle);
+    }
+
+    #summary:focus-visible ha-svg-icon.summary-icon {
+      background-color: var(--ha-color-fill-neutral-normal-active);
     }
 
     :host([left-chevron]) .summary-icon,

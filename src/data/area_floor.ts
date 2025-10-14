@@ -1,13 +1,11 @@
-import { mdiLabel } from "@mdi/js";
-import type { Connection } from "home-assistant-js-websocket";
-import { createCollection } from "home-assistant-js-websocket";
-import type { Store } from "home-assistant-js-websocket/dist/store";
+import { computeAreaName } from "../common/entity/compute_area_name";
 import { computeDomain } from "../common/entity/compute_domain";
+import { computeFloorName } from "../common/entity/compute_floor_name";
 import { stringCompare } from "../common/string/compare";
-import { debounce } from "../common/util/debounce";
 import type { HaDevicePickerDeviceFilterFunc } from "../components/device/ha-device-picker";
 import type { PickerComboBoxItem } from "../components/ha-picker-combo-box";
 import type { HomeAssistant } from "../types";
+import type { AreaRegistryEntry } from "./area_registry";
 import {
   getDeviceEntityDisplayLookup,
   type DeviceEntityDisplayLookup,
@@ -15,107 +13,38 @@ import {
 } from "./device_registry";
 import type { HaEntityPickerEntityFilterFunc } from "./entity";
 import type { EntityRegistryDisplayEntry } from "./entity_registry";
-import type { RegistryEntry } from "./registry";
+import { getFloorAreaLookup, type FloorRegistryEntry } from "./floor_registry";
 
-export interface LabelRegistryEntry extends RegistryEntry {
-  label_id: string;
-  name: string;
-  icon: string | null;
-  color: string | null;
-  description: string | null;
+export interface FloorComboBoxItem extends PickerComboBoxItem {
+  type: "floor" | "area";
+  floor?: FloorRegistryEntry;
+  area?: AreaRegistryEntry;
 }
 
-export interface LabelRegistryEntryMutableParams {
-  name: string;
-  icon?: string | null;
-  color?: string | null;
-  description?: string | null;
+export interface AreaFloorValue {
+  id: string;
+  type: "floor" | "area";
 }
 
-export const fetchLabelRegistry = (conn: Connection) =>
-  conn
-    .sendMessagePromise({
-      type: "config/label_registry/list",
-    })
-    .then((labels) =>
-      (labels as LabelRegistryEntry[]).sort((ent1, ent2) =>
-        stringCompare(ent1.name, ent2.name)
-      )
-    );
-
-export const subscribeLabelRegistryUpdates = (
-  conn: Connection,
-  store: Store<LabelRegistryEntry[]>
-) =>
-  conn.subscribeEvents(
-    debounce(
-      () =>
-        fetchLabelRegistry(conn).then((labels: LabelRegistryEntry[]) =>
-          store.setState(labels, true)
-        ),
-      500,
-      true
-    ),
-    "label_registry_updated"
-  );
-
-export const subscribeLabelRegistry = (
-  conn: Connection,
-  onChange: (labels: LabelRegistryEntry[]) => void
-) =>
-  createCollection<LabelRegistryEntry[]>(
-    "_labelRegistry",
-    fetchLabelRegistry,
-    subscribeLabelRegistryUpdates,
-    conn,
-    onChange
-  );
-
-export const createLabelRegistryEntry = (
-  hass: HomeAssistant,
-  values: LabelRegistryEntryMutableParams
-) =>
-  hass.callWS<LabelRegistryEntry>({
-    type: "config/label_registry/create",
-    ...values,
-  });
-
-export const updateLabelRegistryEntry = (
-  hass: HomeAssistant,
-  labelId: string,
-  updates: Partial<LabelRegistryEntryMutableParams>
-) =>
-  hass.callWS<LabelRegistryEntry>({
-    type: "config/label_registry/update",
-    label_id: labelId,
-    ...updates,
-  });
-
-export const deleteLabelRegistryEntry = (
-  hass: HomeAssistant,
-  labelId: string
-) =>
-  hass.callWS({
-    type: "config/label_registry/delete",
-    label_id: labelId,
-  });
-
-export const getLabels = (
-  hass: HomeAssistant,
-  labels?: LabelRegistryEntry[],
+export const getAreasAndFloors = (
+  states: HomeAssistant["states"],
+  haFloors: HomeAssistant["floors"],
+  haAreas: HomeAssistant["areas"],
+  haDevices: HomeAssistant["devices"],
+  haEntities: HomeAssistant["entities"],
+  formatId: (value: AreaFloorValue) => string,
   includeDomains?: string[],
   excludeDomains?: string[],
   includeDeviceClasses?: string[],
   deviceFilter?: HaDevicePickerDeviceFilterFunc,
   entityFilter?: HaEntityPickerEntityFilterFunc,
-  excludeLabels?: string[]
-): PickerComboBoxItem[] => {
-  if (!labels || labels.length === 0) {
-    return [];
-  }
-
-  const devices = Object.values(hass.devices);
-  const entities = Object.values(hass.entities);
+  excludeAreas?: string[],
+  excludeFloors?: string[]
+): FloorComboBoxItem[] => {
+  const floors = Object.values(haFloors);
+  const areas = Object.values(haAreas);
+  const devices = Object.values(haDevices);
+  const entities = Object.values(haEntities);
 
   let deviceEntityLookup: DeviceEntityDisplayLookup = {};
   let inputDevices: DeviceRegistryEntry[] | undefined;
@@ -130,7 +59,7 @@ export const getLabels = (
   ) {
     deviceEntityLookup = getDeviceEntityDisplayLookup(entities);
     inputDevices = devices;
-    inputEntities = entities.filter((entity) => entity.labels.length > 0);
+    inputEntities = entities.filter((entity) => entity.area_id);
 
     if (includeDomains) {
       inputDevices = inputDevices!.filter((device) => {
@@ -169,7 +98,7 @@ export const getLabels = (
           return false;
         }
         return deviceEntityLookup[device.id].some((entity) => {
-          const stateObj = hass.states[entity.entity_id];
+          const stateObj = states[entity.entity_id];
           if (!stateObj) {
             return false;
           }
@@ -180,7 +109,7 @@ export const getLabels = (
         });
       });
       inputEntities = inputEntities!.filter((entity) => {
-        const stateObj = hass.states[entity.entity_id];
+        const stateObj = states[entity.entity_id];
         return (
           stateObj.attributes.device_class &&
           includeDeviceClasses.includes(stateObj.attributes.device_class)
@@ -199,7 +128,7 @@ export const getLabels = (
           return false;
         }
         return deviceEntityLookup[device.id].some((entity) => {
-          const stateObj = hass.states[entity.entity_id];
+          const stateObj = states[entity.entity_id];
           if (!stateObj) {
             return false;
           }
@@ -207,7 +136,7 @@ export const getLabels = (
         });
       });
       inputEntities = inputEntities!.filter((entity) => {
-        const stateObj = hass.states[entity.entity_id];
+        const stateObj = states[entity.entity_id];
         if (!stateObj) {
           return false;
         }
@@ -216,8 +145,7 @@ export const getLabels = (
     }
   }
 
-  let outputLabels = labels;
-  const usedLabels = new Set<string>();
+  let outputAreas = areas;
 
   let areaIds: string[] | undefined;
 
@@ -225,10 +153,6 @@ export const getLabels = (
     areaIds = inputDevices
       .filter((device) => device.area_id)
       .map((device) => device.area_id!);
-
-    inputDevices.forEach((device) => {
-      device.labels.forEach((label) => usedLabels.add(label));
-    });
   }
 
   if (inputEntities) {
@@ -237,40 +161,99 @@ export const getLabels = (
         .filter((entity) => entity.area_id)
         .map((entity) => entity.area_id!)
     );
-    inputEntities.forEach((entity) => {
-      entity.labels.forEach((label) => usedLabels.add(label));
-    });
   }
 
   if (areaIds) {
-    areaIds.forEach((areaId) => {
-      const area = hass.areas[areaId];
-      area.labels.forEach((label) => usedLabels.add(label));
+    outputAreas = outputAreas.filter((area) => areaIds!.includes(area.area_id));
+  }
+
+  if (excludeAreas) {
+    outputAreas = outputAreas.filter(
+      (area) => !excludeAreas!.includes(area.area_id)
+    );
+  }
+
+  if (excludeFloors) {
+    outputAreas = outputAreas.filter(
+      (area) => !area.floor_id || !excludeFloors!.includes(area.floor_id)
+    );
+  }
+
+  const floorAreaLookup = getFloorAreaLookup(outputAreas);
+  const unassignedAreas = Object.values(outputAreas).filter(
+    (area) => !area.floor_id || !floorAreaLookup[area.floor_id]
+  );
+
+  // @ts-ignore
+  const floorAreaEntries: [
+    FloorRegistryEntry | undefined,
+    AreaRegistryEntry[],
+  ][] = Object.entries(floorAreaLookup)
+    .map(([floorId, floorAreas]) => {
+      const floor = floors.find((fl) => fl.floor_id === floorId)!;
+      return [floor, floorAreas] as const;
+    })
+    .sort(([floorA], [floorB]) => {
+      if (floorA.level !== floorB.level) {
+        return (floorA.level ?? 0) - (floorB.level ?? 0);
+      }
+      return stringCompare(floorA.name, floorB.name);
     });
-  }
 
-  if (excludeLabels) {
-    outputLabels = outputLabels.filter(
-      (label) => !excludeLabels!.includes(label.label_id)
+  const items: FloorComboBoxItem[] = [];
+
+  floorAreaEntries.forEach(([floor, floorAreas]) => {
+    if (floor) {
+      const floorName = computeFloorName(floor);
+
+      const areaSearchLabels = floorAreas
+        .map((area) => {
+          const areaName = computeAreaName(area) || area.area_id;
+          return [area.area_id, areaName, ...area.aliases];
+        })
+        .flat();
+
+      items.push({
+        id: formatId({ id: floor.floor_id, type: "floor" }),
+        type: "floor",
+        primary: floorName,
+        floor: floor,
+        search_labels: [
+          floor.floor_id,
+          floorName,
+          ...floor.aliases,
+          ...areaSearchLabels,
+        ],
+      });
+    }
+    items.push(
+      ...floorAreas.map((area) => {
+        const areaName = computeAreaName(area) || area.area_id;
+        return {
+          id: formatId({ id: area.area_id, type: "area" }),
+          type: "area" as const,
+          primary: areaName,
+          area: area,
+          icon: area.icon || undefined,
+          search_labels: [area.area_id, areaName, ...area.aliases],
+        };
+      })
     );
-  }
+  });
 
-  if (inputDevices || inputEntities) {
-    outputLabels = outputLabels.filter((label) =>
-      usedLabels.has(label.label_id)
-    );
-  }
-
-  const items = outputLabels.map<PickerComboBoxItem>((label) => ({
-    id: label.label_id,
-    primary: label.name,
-    icon: label.icon || undefined,
-    icon_path: label.icon ? undefined : mdiLabel,
-    sorting_label: label.name,
-    search_labels: [label.name, label.label_id, label.description].filter(
-      (v): v is string => Boolean(v)
-    ),
-  }));
+  items.push(
+    ...unassignedAreas.map((area) => {
+      const areaName = computeAreaName(area) || area.area_id;
+      return {
+        id: formatId({ id: area.area_id, type: "area" }),
+        type: "area" as const,
+        primary: areaName,
+        area: area,
+        icon: area.icon || undefined,
+        search_labels: [area.area_id, areaName, ...area.aliases],
+      };
+    })
+  );
 
   return items;
 };
