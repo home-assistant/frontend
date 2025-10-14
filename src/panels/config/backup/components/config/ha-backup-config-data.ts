@@ -2,6 +2,7 @@ import {
   mdiChartBox,
   mdiCog,
   mdiFolder,
+  mdiInformation,
   mdiPlayBoxMultiple,
   mdiPuzzle,
 } from "@mdi/js";
@@ -22,6 +23,7 @@ import "../../../../../components/ha-md-select-option";
 import "../../../../../components/ha-spinner";
 import "../../../../../components/ha-switch";
 import type { HaSwitch } from "../../../../../components/ha-switch";
+import "../../../../../components/ha-tooltip";
 import { fetchHassioAddonsInfo } from "../../../../../data/hassio/addon";
 import type { HostDisksUsage } from "../../../../../data/hassio/host";
 import { fetchHostDisksUsage } from "../../../../../data/hassio/host";
@@ -488,18 +490,24 @@ class HaBackupConfigData extends LitElement {
       <span class="estimated-size">
         <span class="estimated-size-heading">
           ${this.hass.localize("ui.panel.config.backup.data.estimated_size")}
+          <ha-svg-icon
+            id="estimated-size-info"
+            .path=${mdiInformation}
+          ></ha-svg-icon>
+          <ha-tooltip for="estimated-size-info" placement="right">
+            ${this.hass.localize(
+              "ui.panel.config.backup.data.estimated_size_disclaimer"
+            )}
+            ${addonsNotAccurate
+              ? html`<br /><br />${this.hass.localize(
+                    "ui.panel.config.backup.data.estimated_size_disclaimer_addons_custom"
+                  )}`
+              : nothing}
+          </ha-tooltip>
         </span>
-        ${bytesToString(compressedBytes)}
-      </span>
-      <span class="estimated-size-disclaimer">
-        ${this.hass.localize(
-          "ui.panel.config.backup.data.estimated_size_disclaimer"
-        )}
-        ${addonsNotAccurate
-          ? html`<br />${this.hass.localize(
-                "ui.panel.config.backup.data.estimated_size_disclaimer_addons_custom"
-              )}`
-          : nothing}
+        <span class="estimated-size-value">
+          ${bytesToString(compressedBytes)}
+        </span>
       </span>
     `;
   }
@@ -511,9 +519,17 @@ class HaBackupConfigData extends LitElement {
       font-size: var(--ha-font-size-m);
     }
     .estimated-size-heading {
-      font-weight: var(--ha-font-weight-medium);
+      font-size: var(--ha-font-size-m);
+      line-height: var(--ha-line-height-expanded);
     }
-    .estimated-size-disclaimer {
+    .estimated-size-heading ha-svg-icon {
+      --mdc-icon-size: 16px;
+      color: var(--secondary-text-color);
+      margin-inline-start: var(--ha-space-1);
+      vertical-align: middle;
+    }
+    .estimated-size-value {
+      display: block;
       font-size: var(--ha-font-size-s);
       color: var(--secondary-text-color);
     }
