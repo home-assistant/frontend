@@ -1,5 +1,4 @@
 import "@home-assistant/webawesome/dist/components/popover/popover";
-import type WaPopover from "@home-assistant/webawesome/dist/components/popover/popover";
 // @ts-ignore
 import chipStyles from "@material/chips/dist/mdc.chips.min.css";
 import { mdiPlaylistPlus } from "@mdi/js";
@@ -78,11 +77,9 @@ export class HaTargetPicker extends SubscribeMixin(LitElement) {
 
   @state() private _pickerFilters: TargetTypeFloorless[] = [];
 
-  @state() private _bottomSheetOpen = false;
+  @state() private _pickerWrapperOpen = false;
 
   @query(".add-target-wrapper") private _addTargetWrapper?: HTMLDivElement;
-
-  @query("wa-popover") private _pickerPopover?: WaPopover;
 
   private _newTarget?: { type: TargetType; id: string };
 
@@ -263,28 +260,29 @@ export class HaTargetPicker extends SubscribeMixin(LitElement) {
           <ha-svg-icon .path=${mdiPlaylistPlus} slot="start"></ha-svg-icon>
           ${this.hass.localize("ui.components.target-picker.add_target")}
         </ha-button>
-        ${!this._narrow && this._open
+        ${!this._narrow && (this._pickerWrapperOpen || this._open)
           ? html`
               <wa-popover
-                open
+                .open=${this._pickerWrapperOpen}
                 style="--body-width: ${this._addTargetWidth}px;"
                 without-arrow
                 distance="-4"
                 placement="bottom-start"
                 for="add-target-button"
-                @wa-after-hide=${this._hidePicker}
                 auto-size="vertical"
                 auto-size-padding="16"
+                @wa-after-show=${this._showSelector}
+                @wa-after-hide=${this._hidePicker}
               >
                 ${this._renderTargetSelector()}
               </wa-popover>
             `
-          : this._bottomSheetOpen || this._open
+          : this._pickerWrapperOpen || this._open
             ? html`<ha-bottom-sheet
-                @closed=${this._hidePicker}
-                .open=${this._bottomSheetOpen}
-                @wa-after-show=${this._showSelector}
                 flexcontent
+                .open=${this._pickerWrapperOpen}
+                @wa-after-show=${this._showSelector}
+                @closed=${this._hidePicker}
               >
                 ${this._renderTargetSelector(true)}
               </ha-bottom-sheet>`
@@ -311,8 +309,7 @@ export class HaTargetPicker extends SubscribeMixin(LitElement) {
 
   private _handleResize = () => {
     this._open = false;
-    this._pickerPopover?.hide();
-    this._bottomSheetOpen = false;
+    this._pickerWrapperOpen = false;
     this._narrow =
       window.matchMedia("(max-width: 870px)").matches ||
       window.matchMedia("(max-height: 500px)").matches;
@@ -320,10 +317,7 @@ export class HaTargetPicker extends SubscribeMixin(LitElement) {
 
   private _showPicker() {
     this._addTargetWidth = this._addTargetWrapper?.offsetWidth || 0;
-    this._bottomSheetOpen = true;
-    if (!this._narrow) {
-      this._open = true;
-    }
+    this._pickerWrapperOpen = true;
   }
 
   // wait for drawer animation to finish
@@ -340,7 +334,6 @@ export class HaTargetPicker extends SubscribeMixin(LitElement) {
   };
 
   private _hidePicker() {
-    this._bottomSheetOpen = false;
     this._open = false;
 
     if (this._newTarget) {
@@ -403,8 +396,7 @@ export class HaTargetPicker extends SubscribeMixin(LitElement) {
   ) => {
     ev.stopPropagation();
 
-    this._bottomSheetOpen = false;
-    this._pickerPopover?.hide();
+    this._pickerWrapperOpen = false;
 
     if (!ev.detail.type || !ev.detail.id) {
       return;
@@ -415,8 +407,7 @@ export class HaTargetPicker extends SubscribeMixin(LitElement) {
   };
 
   private _handleCreateDomain = (ev: CustomEvent<string>) => {
-    this._bottomSheetOpen = false;
-    this._pickerPopover?.hide();
+    this._pickerWrapperOpen = false;
 
     const domain = ev.detail;
 
