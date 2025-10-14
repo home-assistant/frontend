@@ -1000,6 +1000,10 @@ export class HaTargetPickerSelector extends LitElement {
         --ha-button-border-radius: var(--ha-border-radius-md);
       }
 
+      :host([mode="dialog"]) .filter {
+        padding: var(--ha-space-3) var(--ha-space-4);
+      }
+
       .filter ha-button {
         flex-shrink: 0;
       }
@@ -1026,7 +1030,6 @@ export class HaTargetPickerSelector extends LitElement {
         padding: var(--ha-space-1) var(--ha-space-4);
       }
 
-      :host([mode="dialog"]) .filter,
       :host([mode="dialog"]) ha-textfield {
         padding: 0 var(--ha-space-4);
       }
