@@ -275,7 +275,7 @@ export class HuiPowerSourcesGraphCard
       padding-bottom: 0;
     }
     .content {
-      padding: 16px;
+      padding: var(--ha-space-4);
     }
     .has-header {
       padding-top: 0;
@@ -290,8 +290,8 @@ export class HuiPowerSourcesGraphCard
       justify-content: center;
       align-items: center;
       padding: 20%;
-      margin-left: 32px;
-      margin-inline-start: 32px;
+      margin-left: var(--ha-space-8);
+      margin-inline-start: var(--ha-space-8);
       margin-inline-end: initial;
       box-sizing: border-box;
     }
