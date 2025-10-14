@@ -518,6 +518,7 @@ class HUIRoot extends LitElement {
                   ${isSubview
                     ? html`
                         <ha-icon-button-arrow-prev
+                          .hass=${this.hass}
                           slot="navigationIcon"
                           @click=${this._goBack}
                         ></ha-icon-button-arrow-prev>
