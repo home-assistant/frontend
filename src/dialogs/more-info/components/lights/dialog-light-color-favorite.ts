@@ -281,7 +281,9 @@ class DialogLightColorFavorite extends LitElement {
       >
         <div class="header">${this._renderModes()}</div>
         <div class="content">${this._renderColorPicker()}</div>
-        <ha-dialog-footer slot="footer">${this._renderButtons()}</ha-dialog-footer>
+        <ha-dialog-footer slot="footer"
+          >${this._renderButtons()}</ha-dialog-footer
+        >
       </ha-wa-dialog>
     `;
   }
