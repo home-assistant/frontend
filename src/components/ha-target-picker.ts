@@ -27,6 +27,7 @@ import "./ha-input-helper-text";
 import "./ha-svg-icon";
 import "./target-picker/ha-target-picker-item-group";
 import "./target-picker/ha-target-picker-selector";
+import type { HaTargetPickerSelector } from "./target-picker/ha-target-picker-selector";
 import "./target-picker/ha-target-picker-value-chip";
 
 @customElement("ha-target-picker")
@@ -80,6 +81,9 @@ export class HaTargetPicker extends SubscribeMixin(LitElement) {
   @state() private _pickerWrapperOpen = false;
 
   @query(".add-target-wrapper") private _addTargetWrapper?: HTMLDivElement;
+
+  @query("ha-target-picker-selector")
+  private _targetPickerSelectorElement?: HaTargetPickerSelector;
 
   private _newTarget?: { type: TargetType; id: string };
 
@@ -323,6 +327,9 @@ export class HaTargetPicker extends SubscribeMixin(LitElement) {
   // wait for drawer animation to finish
   private _showSelector = () => {
     this._open = true;
+    requestAnimationFrame(() => {
+      this._targetPickerSelectorElement?.focus();
+    });
   };
 
   private _handleUpdatePickerFilters(ev: CustomEvent<TargetTypeFloorless[]>) {
@@ -335,6 +342,7 @@ export class HaTargetPicker extends SubscribeMixin(LitElement) {
 
   private _hidePicker() {
     this._open = false;
+    this._pickerWrapperOpen = false;
 
     if (this._newTarget) {
       this._addTarget(this._newTarget.id, this._newTarget.type);
@@ -351,7 +359,6 @@ export class HaTargetPicker extends SubscribeMixin(LitElement) {
         .hass=${this.hass}
         @filter-types-changed=${this._handleUpdatePickerFilters}
         .filterTypes=${this._pickerFilters}
-        autofocus
         @target-picked=${this._handleTargetPicked}
         @create-domain-picked=${this._handleCreateDomain}
         .targetValue=${this.value}
