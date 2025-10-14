@@ -97,8 +97,8 @@ export class HuiEnergyDevicesGraphCard
         <div class="card-header">
           <span>${this._config.title ? this._config.title : nothing}</span>
           <ha-icon-button
-            path=${this._chartType === "pie" ? mdiChartBar : mdiChartDonut}
-            label=${this.hass.localize(
+            .path=${this._chartType === "pie" ? mdiChartBar : mdiChartDonut}
+            .label=${this.hass.localize(
               "ui.panel.lovelace.cards.energy.energy_devices_graph.change_chart_type"
             )}
             @click=${this._handleChartTypeChange}
