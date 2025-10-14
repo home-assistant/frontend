@@ -136,48 +136,55 @@ class HaBackupConfigData extends LitElement {
     return addons.some((addon) => addon.slug === "local");
   }
 
-  private _estimateBackupSize(data: FormData): {
-    compressedBytes: number;
-    addonsNotAccurate: boolean;
-  } | null {
-    if (!this._storageInfo?.children) {
-      return null;
-    }
+  private _estimateBackupSize = memoizeOne(
+    (
+      data: FormData,
+      storageInfo: HostDisksUsage | null | undefined,
+      addonsLength: number
+    ): {
+      compressedBytes: number;
+      addonsNotAccurate: boolean;
+    } | null => {
+      if (!storageInfo?.children) {
+        return null;
+      }
 
-    let totalBytes = 0;
+      let totalBytes = 0;
 
-    const segments: Record<string, number> = {};
-    this._storageInfo.children.forEach((child) => {
-      segments[child.id] = child.used_bytes;
-    });
+      const segments: Record<string, number> = {};
+      storageInfo.children.forEach((child) => {
+        segments[child.id] = child.used_bytes;
+      });
 
-    if (data.homeassistant) {
-      totalBytes += segments.homeassistant ?? 0;
-    }
-    if (data.media) {
-      totalBytes += segments.media ?? 0;
-    }
-    if (data.share) {
-      totalBytes += segments.share ?? 0;
-    }
+      if (data.homeassistant) {
+        totalBytes += segments.homeassistant ?? 0;
+      }
+      if (data.media) {
+        totalBytes += segments.media ?? 0;
+      }
+      if (data.share) {
+        totalBytes += segments.share ?? 0;
+      }
 
-    if (
-      data.addons_mode === "all" ||
-      (data.addons_mode === "custom" && data.addons.length > 0)
-    ) {
-      // It would be better if we could receive individual addon sizes in the WS request instead
-      totalBytes += (segments.addons_data ?? 0) + (segments.addons_config ?? 0);
-    }
+      if (
+        data.addons_mode === "all" ||
+        (data.addons_mode === "custom" && data.addons.length > 0)
+      ) {
+        // It would be better if we could receive individual addon sizes in the WS request instead
+        totalBytes +=
+          (segments.addons_data ?? 0) + (segments.addons_config ?? 0);
+      }
 
-    return {
-      // Estimate compressed size (40% reduction typical for gzip)
-      compressedBytes: Math.round(totalBytes * 0.6),
-      addonsNotAccurate:
-        data.addons_mode === "custom" &&
-        data.addons.length > 0 &&
-        data.addons.length !== this._addons.length,
-    };
-  }
+      return {
+        // Estimate compressed size (40% reduction typical for gzip)
+        compressedBytes: Math.round(totalBytes * 0.6),
+        addonsNotAccurate:
+          data.addons_mode === "custom" &&
+          data.addons.length > 0 &&
+          data.addons.length !== addonsLength,
+      };
+    }
+  );
 
   private _getData = memoizeOne(
     (value: BackupConfigData | undefined, showAddon: boolean): FormData => {
@@ -479,7 +486,11 @@ class HaBackupConfigData extends LitElement {
       return nothing;
     }
 
-    const result = this._estimateBackupSize(data);
+    const result = this._estimateBackupSize(
+      data,
+      this._storageInfo,
+      this._addons.length
+    );
     if (result === null) {
       return nothing;
     }
