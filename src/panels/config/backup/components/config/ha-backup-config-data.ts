@@ -470,8 +470,8 @@ class HaBackupConfigData extends LitElement {
           <ha-spinner slot="icon"></ha-spinner>
           ${this.hass.localize(
             "ui.panel.config.backup.data.estimated_size_loading"
-          )}</ha-alert
-        >
+          )}
+        </ha-alert>
       `;
     }
 
