@@ -225,7 +225,7 @@ export class HaCameraStream extends LitElement {
           !webRtcStreams.hasAudio &&
           !muted
         ) {
-          // webRTC stream is missing audio and video is not muted, use HLS
+          // webRTC stream is missing audio and audio is not muted, use HLS
           return [{ type: STREAM_TYPE_HLS, visible: true }];
         }
         if (webRtcStreams.hasVideo) {
