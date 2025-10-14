@@ -96,6 +96,8 @@ export class HaTargetPickerSelector extends LitElement {
 
   @query("lit-virtualizer") private _virtualizerElement?: LitVirtualizer;
 
+  @query("ha-textfield") private _searchFieldElement?: HaTextField;
+
   @state() private _searchTerm = "";
 
   @state() private _listScrolled = false;
@@ -253,9 +255,12 @@ export class HaTargetPickerSelector extends LitElement {
 
   private _selectNextItem = (ev?: KeyboardEvent) => {
     ev?.stopPropagation();
+    ev?.preventDefault();
     if (!this._virtualizerElement) {
       return;
     }
+
+    this._searchFieldElement?.focus();
 
     const items = this._virtualizerElement.items;
 
@@ -293,6 +298,7 @@ export class HaTargetPickerSelector extends LitElement {
 
   private _selectPreviousItem = (ev: KeyboardEvent) => {
     ev.stopPropagation();
+    ev.preventDefault();
     if (!this._virtualizerElement) {
       return;
     }
