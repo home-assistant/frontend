@@ -27,7 +27,7 @@ class SankeyView extends EchartsSankeyView {
        * Monkey patching warning:
        * This code overrides the `buildPath` method of the ECharts internal Path object for Sankey edges.
        *
-       * Compatibility: Tested with ECharts v5.x (update this if you upgrade ECharts).
+       * Compatibility: Tested with ECharts v6 (update this if you upgrade ECharts).
        *
        * Reason: ECharts does not currently provide a public API for customizing Sankey edge paths.
        *         To customize the edge shape, we must override the internal method on each edge instance.
