@@ -302,6 +302,8 @@ export default class HaAutomationSidebar extends LitElement {
       --ha-bottom-sheet-border-style: solid;
       --ha-bottom-sheet-border-color: var(--primary-color);
       margin-top: var(--safe-area-inset-top);
+
+      --ha-bottom-sheet-surface-background: var(--card-background-color);
     }
 
     @media all and (max-width: 870px) {

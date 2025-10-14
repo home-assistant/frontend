@@ -321,7 +321,7 @@ class HaHLSPlayer extends LitElement {
               } else if (data.response.code >= 400) {
                 error += " (Stream never started)";
               } else {
-                error += " (" + data.response.code + ")";
+                error += ` (${data.response.code})`;
               }
             }
             this._setRetryableError(error);

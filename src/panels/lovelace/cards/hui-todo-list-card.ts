@@ -331,14 +331,16 @@ export class HuiTodoListCard extends LitElement implements LovelaceCard {
                 : nothing}
             ${!this._reordering && uncheckedItems.length
               ? html`
-                  <div class="header" role="separator">
-                    <h2>
-                      ${this.hass!.localize(
-                        "ui.panel.lovelace.cards.todo-list.unchecked_items"
-                      )}
-                    </h2>
-                    ${this._renderMenu(this._config, unavailable)}
-                  </div>
+                  ${!this._config.hide_section_headers
+                    ? html`<div class="header">
+                        <h2>
+                          ${this.hass!.localize(
+                            "ui.panel.lovelace.cards.todo-list.unchecked_items"
+                          )}
+                        </h2>
+                        ${this._renderMenu(this._config, unavailable)}
+                      </div>`
+                    : nothing}
                   ${this._renderItems(uncheckedItems, unavailable)}
                 `
               : nothing}
@@ -366,39 +368,41 @@ export class HuiTodoListCard extends LitElement implements LovelaceCard {
               ? html`
                   <div>
                     <div class="divider" role="separator"></div>
-                    <div class="header">
-                      <h2>
-                        ${this.hass!.localize(
-                          "ui.panel.lovelace.cards.todo-list.checked_items"
-                        )}
-                      </h2>
-                      ${this._todoListSupportsFeature(
-                        TodoListEntityFeature.DELETE_TODO_ITEM
-                      )
-                        ? html`<ha-button-menu
-                            @closed=${stopPropagation}
-                            fixed
-                            @action=${this._handleCompletedMenuAction}
-                          >
-                            <ha-icon-button
-                              slot="trigger"
-                              .path=${mdiDotsVertical}
-                            ></ha-icon-button>
-                            <ha-list-item graphic="icon" class="warning">
-                              ${this.hass!.localize(
-                                "ui.panel.lovelace.cards.todo-list.clear_items"
-                              )}
-                              <ha-svg-icon
-                                class="warning"
-                                slot="graphic"
-                                .path=${mdiDeleteSweep}
-                                .disabled=${unavailable}
+                    ${!this._config.hide_section_headers
+                      ? html`<div class="header">
+                          <h2>
+                            ${this.hass!.localize(
+                              "ui.panel.lovelace.cards.todo-list.checked_items"
+                            )}
+                          </h2>
+                          ${this._todoListSupportsFeature(
+                            TodoListEntityFeature.DELETE_TODO_ITEM
+                          )
+                            ? html`<ha-button-menu
+                                @closed=${stopPropagation}
+                                fixed
+                                @action=${this._handleCompletedMenuAction}
                               >
-                              </ha-svg-icon>
-                            </ha-list-item>
-                          </ha-button-menu>`
-                        : nothing}
-                    </div>
+                                <ha-icon-button
+                                  slot="trigger"
+                                  .path=${mdiDotsVertical}
+                                ></ha-icon-button>
+                                <ha-list-item graphic="icon" class="warning">
+                                  ${this.hass!.localize(
+                                    "ui.panel.lovelace.cards.todo-list.clear_items"
+                                  )}
+                                  <ha-svg-icon
+                                    class="warning"
+                                    slot="graphic"
+                                    .path=${mdiDeleteSweep}
+                                    .disabled=${unavailable}
+                                  >
+                                  </ha-svg-icon>
+                                </ha-list-item>
+                              </ha-button-menu>`
+                            : nothing}
+                        </div>`
+                      : nothing}
                   </div>
                   ${this._renderItems(checkedItems, unavailable)}
                 `

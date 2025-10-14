@@ -70,7 +70,7 @@ export class ZHAClusterCommands extends LitElement {
             ${this._commands.map(
               (entry) => html`
                 <ha-list-item .value=${String(entry.id)}>
-                  ${entry.name + " (id: " + formatAsPaddedHex(entry.id) + ")"}
+                  ${entry.name} (id: ${formatAsPaddedHex(entry.id)})
                 </ha-list-item>
               `
             )}

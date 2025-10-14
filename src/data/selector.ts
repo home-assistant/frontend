@@ -18,6 +18,7 @@ import type {
   EntityRegistryEntry,
 } from "./entity_registry";
 import type { EntitySources } from "./entity_sources";
+import type { EntityNameItem } from "../common/entity/compute_entity_name_display";
 
 export type Selector =
   | ActionSelector
@@ -41,6 +42,7 @@ export type Selector =
   | LegacyDeviceSelector
   | DurationSelector
   | EntitySelector
+  | EntityNameSelector
   | LegacyEntitySelector
   | FileSelector
   | IconSelector
@@ -310,6 +312,10 @@ export interface LocationSelectorValue {
 export interface MediaSelector {
   media: {
     accept?: string[];
+    image_upload?: boolean;
+    clearable?: boolean;
+    hide_content_type?: boolean;
+    content_id_helper?: string;
   } | null;
 }
 
@@ -496,6 +502,13 @@ export interface UiStateContentSelector {
   ui_state_content: {
     entity_id?: string;
     allow_name?: boolean;
+  } | null;
+}
+
+export interface EntityNameSelector {
+  entity_name: {
+    entity_id?: string;
+    default_name?: EntityNameItem | EntityNameItem[] | string;
   } | null;
 }
 

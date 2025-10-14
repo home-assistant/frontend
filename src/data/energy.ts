@@ -110,8 +110,6 @@ export interface DeviceConsumptionEnergyPreference {
 export interface FlowFromGridSourceEnergyPreference {
   // kWh meter
   stat_energy_from: string;
-  // W meter
-  stat_power?: string;
 
   // $ meter
   stat_cost: string | null;
@@ -133,11 +131,17 @@ export interface FlowToGridSourceEnergyPreference {
   number_energy_price: number | null;
 }
 
+export interface GridPowerSourceEnergyPreference {
+  // W meter
+  stat_power: string;
+}
+
 export interface GridSourceTypeEnergyPreference {
   type: "grid";
 
   flow_from: FlowFromGridSourceEnergyPreference[];
   flow_to: FlowToGridSourceEnergyPreference[];
+  power?: GridPowerSourceEnergyPreference[];
 
   cost_adjustment_day: number;
 }
