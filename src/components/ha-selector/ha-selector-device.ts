@@ -36,6 +36,8 @@ export class HaDeviceSelector extends LitElement {
 
   @property() public helper?: string;
 
+  @property() public placeholder?: any;
+
   @property({ type: Boolean }) public disabled = false;
 
   @property({ type: Boolean }) public required = true;
@@ -102,6 +104,7 @@ export class HaDeviceSelector extends LitElement {
           .entityFilter=${this.selector.device?.entity
             ? this._filterEntities
             : undefined}
+          .placeholder=${this.placeholder}
           .disabled=${this.disabled}
           .required=${this.required}
           allow-custom-entity
