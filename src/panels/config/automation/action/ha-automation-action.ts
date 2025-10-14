@@ -1,9 +1,10 @@
 import { mdiDrag, mdiPlus } from "@mdi/js";
 import deepClone from "deep-clone-simple";
 import type { PropertyValues } from "lit";
-import { LitElement, html, nothing } from "lit";
+import { html, LitElement, nothing } from "lit";
 import { customElement, property, queryAll, state } from "lit/decorators";
 import { repeat } from "lit/directives/repeat";
+import { ensureArray } from "../../../../common/array/ensure-array";
 import { storage } from "../../../../common/decorators/storage";
 import { fireEvent } from "../../../../common/dom/fire_event";
 import { stopPropagation } from "../../../../common/dom/stop_propagation";
@@ -15,19 +16,18 @@ import {
   ACTION_BUILDING_BLOCKS,
   getService,
   isService,
+  VIRTUAL_ACTIONS,
 } from "../../../../data/action";
 import type { AutomationClipboard } from "../../../../data/automation";
 import type { Action } from "../../../../data/script";
 import type { HomeAssistant } from "../../../../types";
 import {
   PASTE_VALUE,
-  VIRTUAL_ACTIONS,
   showAddAutomationElementDialog,
 } from "../show-add-automation-element-dialog";
 import { automationRowsStyles } from "../styles";
 import type HaAutomationActionRow from "./ha-automation-action-row";
 import { getAutomationActionType } from "./ha-automation-action-row";
-import { ensureArray } from "../../../../common/array/ensure-array";
 
 @customElement("ha-automation-action")
 export default class HaAutomationAction extends LitElement {

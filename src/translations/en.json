@@ -3897,6 +3897,7 @@
             "item_pasted": "{item} pasted",
             "ctrl": "Ctrl",
             "del": "Del",
+            "blocks": "Blocks",
             "triggers": {
               "name": "Triggers",
               "header": "When",
@@ -3925,7 +3926,12 @@
               "trigger": "Trigger",
               "copied_to_clipboard": "Trigger copied to clipboard",
               "cut_to_clipboard": "Trigger cut to clipboard",
+              "select": "Select a trigger",
               "groups": {
+                "device": {
+                  "label": "Device",
+                  "description": "When something happens to a device. Great way to start."
+                },
                 "entity": {
                   "label": "Entity",
                   "description": "When something happens to an entity."
@@ -4187,6 +4193,7 @@
               "condition": "Condition",
               "copied_to_clipboard": "Condition copied to clipboard",
               "cut_to_clipboard": "Condition cut to clipboard",
+              "select": "Select a condition",
               "groups": {
                 "entity": {
                   "label": "Entity",
@@ -4356,6 +4363,7 @@
               "action": "Action",
               "copied_to_clipboard": "Action copied to clipboard",
               "cut_to_clipboard": "Action cut to clipboard",
+              "select": "Select an action",
               "groups": {
                 "helpers": {
                   "label": "Helpers"
