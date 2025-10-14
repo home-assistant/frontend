@@ -59,24 +59,22 @@ export class HaTargetPickerItemGroup extends LitElement {
           }
         )}
       </div>
-      <ha-md-list>
-        ${Object.entries(this.items).map(([type, items]) =>
-          items
-            ? items.map(
-                (item) =>
-                  html`<ha-target-picker-item-row
-                    .hass=${this.hass}
-                    .type=${type as TargetTypeFloorless}
-                    .itemId=${item}
-                    .deviceFilter=${this.deviceFilter}
-                    .entityFilter=${this.entityFilter}
-                    .includeDomains=${this.includeDomains}
-                    .includeDeviceClasses=${this.includeDeviceClasses}
-                  ></ha-target-picker-item-row>`
-              )
-            : nothing
-        )}
-      </ha-md-list>
+      ${Object.entries(this.items).map(([type, items]) =>
+        items
+          ? items.map(
+              (item) =>
+                html`<ha-target-picker-item-row
+                  .hass=${this.hass}
+                  .type=${type as TargetTypeFloorless}
+                  .itemId=${item}
+                  .deviceFilter=${this.deviceFilter}
+                  .entityFilter=${this.entityFilter}
+                  .includeDomains=${this.includeDomains}
+                  .includeDeviceClasses=${this.includeDeviceClasses}
+                ></ha-target-picker-item-row>`
+            )
+          : nothing
+      )}
     </ha-expansion-panel>`;
   }
 
