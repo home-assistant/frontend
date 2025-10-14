@@ -3043,7 +3043,7 @@
             "power_dialog": {
               "header": "Configure grid power",
               "power_stat": "Power sensor",
-              "power_helper": "Pick a sensor which measures grid power in either of {unit}. Positive values indicate consumption, negative values indicate production."
+              "power_helper": "Pick a sensor which measures grid power in either of {unit}. Positive values indicate using electricity from the grid, negative values indicate exporting electricity."
             },
             "flow_dialog": {
               "from": {
