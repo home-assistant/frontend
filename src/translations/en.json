@@ -3036,14 +3036,21 @@
             "grid_carbon_footprint": "Grid carbon footprint",
             "remove_co2_signal": "Remove Electricity Maps integration",
             "add_co2_signal": "Add Electricity Maps integration",
+            "grid_power": "Grid power",
+            "add_power": "Add power sensor",
+            "edit_power": "Edit power sensor",
+            "delete_power": "Delete power sensor",
+            "power_dialog": {
+              "header": "Configure grid power",
+              "power_stat": "Power sensor",
+              "power_helper": "Pick a sensor which measures grid power in either of {unit}. Positive values indicate consumption, negative values indicate production."
+            },
             "flow_dialog": {
               "from": {
                 "header": "Configure grid consumption",
                 "paragraph": "Grid consumption is the energy that flows from the energy grid to your home.",
                 "entity_para": "Pick a sensor which measures grid consumption in either of {unit}.",
                 "energy_stat": "Consumed energy",
-                "power_stat": "Power consumption",
-                "power_helper": "Pick a sensor which measures grid power in either of {unit}. Positive values indicate consumption, negative values indicate production.",
                 "cost_para": "Select how Home Assistant should keep track of the costs of the consumed energy.",
                 "no_cost": "Do not track costs",
                 "cost_stat": "Use an entity tracking the total costs",
