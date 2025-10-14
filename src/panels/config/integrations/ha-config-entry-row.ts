@@ -311,17 +311,17 @@ class HaConfigEntryRow extends LitElement {
               `
             : nothing}
 
-          <ha-md-menu-item @click=${this._handleCopy} graphic="icon">
-            <ha-svg-icon slot="start" .path=${mdiContentCopy}></ha-svg-icon>
-            ${this.hass.localize(
-              "ui.panel.config.integrations.config_entry.copy"
-            )}
-          </ha-md-menu-item>
-
           <ha-md-menu-item @click=${this._handleRename} graphic="icon">
             <ha-svg-icon slot="start" .path=${mdiRenameBox}></ha-svg-icon>
             ${this.hass.localize(
               "ui.panel.config.integrations.config_entry.rename"
+            )}
+          </ha-md-menu-item>
+
+          <ha-md-menu-item @click=${this._handleCopy} graphic="icon">
+            <ha-svg-icon slot="start" .path=${mdiContentCopy}></ha-svg-icon>
+            ${this.hass.localize(
+              "ui.panel.config.integrations.config_entry.copy"
             )}
           </ha-md-menu-item>
 
