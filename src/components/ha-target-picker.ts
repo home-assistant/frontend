@@ -312,8 +312,6 @@ export class HaTargetPicker extends SubscribeMixin(LitElement) {
   }
 
   private _handleResize = () => {
-    this._open = false;
-    this._pickerWrapperOpen = false;
     this._narrow =
       window.matchMedia("(max-width: 870px)").matches ||
       window.matchMedia("(max-height: 500px)").matches;
