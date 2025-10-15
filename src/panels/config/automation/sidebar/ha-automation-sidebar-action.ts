@@ -1,3 +1,4 @@
+import { consume } from "@lit/context";
 import {
   mdiAppleKeyboardCommand,
   mdiContentCopy,
@@ -13,6 +14,7 @@ import {
 import { html, LitElement, nothing } from "lit";
 import { customElement, property, query, state } from "lit/decorators";
 import { keyed } from "lit/directives/keyed";
+import { capitalizeFirstLetter } from "../../../../common/string/capitalize-first-letter";
 import { fireEvent } from "../../../../common/dom/fire_event";
 import { handleStructError } from "../../../../common/structs/handle-errors";
 import type { LocalizeKeys } from "../../../../common/translations/localize";
@@ -20,7 +22,16 @@ import "../../../../components/ha-md-divider";
 import "../../../../components/ha-md-menu-item";
 import { ACTION_BUILDING_BLOCKS } from "../../../../data/action";
 import type { ActionSidebarConfig } from "../../../../data/automation";
+import {
+  floorsContext,
+  fullEntitiesContext,
+  labelsContext,
+} from "../../../../data/context";
+import type { EntityRegistryEntry } from "../../../../data/entity_registry";
+import type { FloorRegistryEntry } from "../../../../data/floor_registry";
+import type { LabelRegistryEntry } from "../../../../data/label_registry";
 import type { RepeatAction } from "../../../../data/script";
+import { describeAction } from "../../../../data/script_i18n";
 import type { HomeAssistant } from "../../../../types";
 import { isMac } from "../../../../util/is_mac";
 import type HaAutomationConditionEditor from "../action/ha-automation-action-editor";
@@ -47,6 +58,18 @@ export default class HaAutomationSidebarAction extends LitElement {
   @property({ attribute: "sidebar-key" }) public sidebarKey?: string;
 
   @state() private _warnings?: string[];
+
+  @state()
+  @consume({ context: fullEntitiesContext, subscribe: true })
+  _entityReg!: EntityRegistryEntry[];
+
+  @state()
+  @consume({ context: labelsContext, subscribe: true })
+  _labelReg!: LabelRegistryEntry[];
+
+  @state()
+  @consume({ context: floorsContext, subscribe: true })
+  _floorReg!: Record<string, FloorRegistryEntry>;
 
   @query(".sidebar-editor")
   public editor?: HaAutomationConditionEditor;
@@ -78,14 +101,29 @@ export default class HaAutomationSidebarAction extends LitElement {
 
     const isBuildingBlock = ACTION_BUILDING_BLOCKS.includes(type || "");
 
-    const subtitle = this.hass.localize(
-      "ui.panel.config.automation.editor.actions.action"
-    );
-
-    const title =
+    const actionTypeLabel =
       this.hass.localize(
         `ui.panel.config.automation.editor.actions.type.${type}.label` as LocalizeKeys
       ) || type;
+
+    // Get descriptive title using describeAction (includes alias if present)
+    const actionDescription = capitalizeFirstLetter(
+      describeAction(
+        this.hass,
+        this._entityReg,
+        this._labelReg,
+        this._floorReg,
+        actionConfig
+      )
+    );
+
+    // If action has an alias, show alias as title and action type as subtitle
+    // Otherwise, show action type label as title and "Action" as subtitle
+    const hasAlias = "alias" in actionConfig && actionConfig.alias;
+    const title = hasAlias ? actionDescription : actionTypeLabel;
+    const subtitle = hasAlias
+      ? actionTypeLabel
+      : this.hass.localize("ui.panel.config.automation.editor.actions.action");
 
     const description = isBuildingBlock
       ? this.hass.localize(
