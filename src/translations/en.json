@@ -3455,12 +3455,17 @@
                 "require_admin": "Admin only",
                 "sidebar": "In sidebar",
                 "filename": "Filename",
-                "url": "Open"
+                "url": "Open",
+                "type": "Type"
               },
               "open": "Open",
               "edit": "Edit",
               "delete": "Delete",
-              "add_dashboard": "Add dashboard"
+              "add_dashboard": "Add dashboard",
+              "type": {
+                "user_created": "User created",
+                "built_in": "Built-in"
+              }
             },
             "confirm_delete_title": "Delete {dashboard_title}?",
             "confirm_delete_text": "This dashboard will be permanently deleted.",
