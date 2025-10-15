@@ -101,7 +101,7 @@ export class HaTargetPicker extends SubscribeMixin(LitElement) {
             (floor_id) => html`
               <ha-target-picker-value-chip
                 .hass=${this.hass}
-                .type=${"floor"}
+                type="floor"
                 .itemId=${floor_id}
                 @remove-target-item=${this._handleRemove}
                 @expand-target-item=${this._handleExpand}
@@ -114,7 +114,7 @@ export class HaTargetPicker extends SubscribeMixin(LitElement) {
             (area_id) => html`
               <ha-target-picker-value-chip
                 .hass=${this.hass}
-                .type=${"area"}
+                type="area"
                 .itemId=${area_id}
                 @remove-target-item=${this._handleRemove}
                 @expand-target-item=${this._handleExpand}
@@ -127,7 +127,7 @@ export class HaTargetPicker extends SubscribeMixin(LitElement) {
             (device_id) => html`
               <ha-target-picker-value-chip
                 .hass=${this.hass}
-                .type=${"device"}
+                type="device"
                 .itemId=${device_id}
                 @remove-target-item=${this._handleRemove}
                 @expand-target-item=${this._handleExpand}
@@ -140,7 +140,7 @@ export class HaTargetPicker extends SubscribeMixin(LitElement) {
             (entity_id) => html`
               <ha-target-picker-value-chip
                 .hass=${this.hass}
-                .type=${"entity"}
+                type="entity"
                 .itemId=${entity_id}
                 @remove-target-item=${this._handleRemove}
                 @expand-target-item=${this._handleExpand}
@@ -153,7 +153,7 @@ export class HaTargetPicker extends SubscribeMixin(LitElement) {
             (label_id) => html`
               <ha-target-picker-value-chip
                 .hass=${this.hass}
-                .type=${"label"}
+                type="label"
                 .itemId=${label_id}
                 @remove-target-item=${this._handleRemove}
                 @expand-target-item=${this._handleExpand}
