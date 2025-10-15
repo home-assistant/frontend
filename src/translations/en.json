@@ -667,7 +667,8 @@
             "floor_missing": "No floor assigned",
             "device_missing": "No related device"
           },
-          "add": "Add"
+          "add": "Add",
+          "custom_name": "Custom name"
         },
         "entity-attribute-picker": {
           "attribute": "Attribute",

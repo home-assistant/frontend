@@ -25,6 +25,7 @@ import "../ha-sortable";
 interface EntityNameOption {
   primary: string;
   secondary?: string;
+  field_label: string;
   value: string;
 }
 
@@ -40,6 +41,23 @@ const rowRenderer: ComboBoxLitRenderer<EntityNameOption> = (item) => html`
 const KNOWN_TYPES = new Set(["entity", "device", "area", "floor"]);
 
 const UNIQUE_TYPES = new Set(["entity", "device", "area", "floor"]);
+
+const formatOptionValue = (item: EntityNameItem) => {
+  if (item.type === "text" && item.text) {
+    return item.text;
+  }
+  return `___${item.type}___`;
+};
+
+const parseOptionValue = (value: string): EntityNameItem => {
+  if (value.startsWith("___") && value.endsWith("___")) {
+    const type = value.slice(3, -3);
+    if (KNOWN_TYPES.has(type)) {
+      return { type: type as EntityNameType };
+    }
+  }
+  return { type: "text", text: value };
+};
 
 @customElement("ha-entity-name-picker")
 export class HaEntityNamePicker extends LitElement {
@@ -121,12 +139,22 @@ export class HaEntityNamePicker extends LitElement {
       return {
         primary,
         secondary,
-        value: name,
+        field_label: primary,
+        value: formatOptionValue({ type: name }),
       };
     });
 
     return items;
   });
+
+  private _customNameOption = memoizeOne((text: string) => ({
+    primary: this.hass.localize(
+      "ui.components.entity.entity-name-picker.custom_name"
+    ),
+    secondary: `"${text}"`,
+    field_label: text,
+    value: formatOptionValue({ type: "text", text }),
+  }));
 
   private _formatItem = (item: EntityNameItem) => {
     if (item.type === "text") {
@@ -214,7 +242,7 @@ export class HaEntityNamePicker extends LitElement {
             allow-custom-value
             item-id-path="value"
             item-value-path="value"
-            item-label-path="primary"
+            item-label-path="field_label"
             .renderer=${rowRenderer}
             @opened-changed=${this._openedChanged}
             @value-changed=${this._comboBoxValueChanged}
@@ -286,14 +314,13 @@ export class HaEntityNamePicker extends LitElement {
       const initialItem =
         this._editIndex != null ? this._value[this._editIndex] : undefined;
 
-      const initialValue = initialItem
-        ? initialItem.type === "text"
-          ? initialItem.text
-          : initialItem.type
-        : "";
+      const initialValue = initialItem ? formatOptionValue(initialItem) : "";
 
       const filteredItems = this._filterSelectedOptions(options, initialValue);
 
+      if (initialItem && initialItem.type === "text" && initialItem.text) {
+        filteredItems.push(this._customNameOption(initialItem.text));
+      }
       this._comboBox.filteredItems = filteredItems;
       this._comboBox.setInputValue(initialValue);
     } else {
@@ -326,11 +353,7 @@ export class HaEntityNamePicker extends LitElement {
     const currentItem =
       this._editIndex != null ? this._value[this._editIndex] : undefined;
 
-    const currentValue = currentItem
-      ? currentItem.type === "text"
-        ? currentItem.text
-        : currentItem.type
-      : "";
+    const currentValue = currentItem ? formatOptionValue(currentItem) : "";
 
     this._comboBox.filteredItems = this._filterSelectedOptions(
       options,
@@ -352,6 +375,7 @@ export class HaEntityNamePicker extends LitElement {
     const fuse = new Fuse(this._comboBox.filteredItems, fuseOptions);
     const filteredItems = fuse.search(filter).map((result) => result.item);
 
+    filteredItems.push(this._customNameOption(input));
     this._comboBox.filteredItems = filteredItems;
   }
 
@@ -385,9 +409,7 @@ export class HaEntityNamePicker extends LitElement {
       return;
     }
 
-    const item: EntityNameItem = KNOWN_TYPES.has(value as any)
-      ? { type: value as EntityNameType }
-      : { type: "text", text: value };
+    const item: EntityNameItem = parseOptionValue(value);
 
     const newValue = [...this._value];
 
