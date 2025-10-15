@@ -1009,6 +1009,7 @@ class DialogAddAutomationElement
         }
 
         #content {
+          flex: 1;
           height: 100%;
           display: flex;
           gap: var(--ha-space-3);
