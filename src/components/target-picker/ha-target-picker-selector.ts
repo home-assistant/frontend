@@ -1055,7 +1055,6 @@ export class HaTargetPickerSelector extends LitElement {
 
       .filter-header {
         opacity: 0;
-        transition: opacity 300ms ease-in;
         position: absolute;
         top: 1px;
         width: calc(100% - var(--ha-space-8));
