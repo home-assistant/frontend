@@ -130,7 +130,7 @@ export class HaTargetPickerItemRow extends LitElement {
 
     return html`
       <ha-md-list-item type="text">
-        <div slot="start">
+        <div class="icon" slot="start">
           ${this.subEntry
             ? html`
                 <div class="horizontal-line-wrapper">
@@ -606,6 +606,11 @@ export class HaTargetPickerItemRow extends LitElement {
       state-badge {
         color: var(--ha-color-on-neutral-quiet);
       }
+
+      .icon {
+        display: flex;
+      }
+
       img {
         width: 24px;
         height: 24px;
