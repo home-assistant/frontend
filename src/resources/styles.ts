@@ -233,22 +233,22 @@ export const haStyleViewTransitions = css`
   }
 
   @media (prefers-reduced-motion: no-preference) {
-    /* Toolbar fade in */
-    ::view-transition-group(lovelace-toolbar) {
+    /* Fade in animation */
+    ::view-transition-group(fade-in) {
       animation-duration: var(--ha-animation-duration);
       animation-timing-function: ease-out;
     }
-    ::view-transition-new(lovelace-toolbar) {
+    ::view-transition-new(fade-in) {
       animation: fade-in var(--ha-animation-duration) ease-out;
       animation-delay: var(--ha-animation-delay-base);
     }
 
-    /* View slide down */
-    ::view-transition-group(lovelace-view) {
+    /* Fade in slide down animation */
+    ::view-transition-group(fade-in-slide-down) {
       animation-duration: var(--ha-animation-duration);
       animation-timing-function: ease-out;
     }
-    ::view-transition-new(lovelace-view) {
+    ::view-transition-new(fade-in-slide-down) {
       animation: fade-in-slide-down var(--ha-animation-duration) ease-out;
       animation-delay: var(--ha-animation-delay-base);
     }
