@@ -11,7 +11,7 @@ export const startViewTransition = async (
     !document.startViewTransition ||
     window.matchMedia("(prefers-reduced-motion: reduce)").matches
   ) {
-    // Fallback: just run the update without transition
+    // Fallback: run the update without a transition
     await updateCallback();
     return;
   }
@@ -23,10 +23,8 @@ export const startViewTransition = async (
 
   try {
     await transition.finished;
-  } catch (error) {
-    // Transitions can be skipped, which is fine
-    // eslint-disable-next-line no-console
-    console.debug("View transition skipped or failed:", error);
+  } catch (_error) {
+    // Transitions can be skipped
   }
 };
 
