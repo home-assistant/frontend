@@ -201,28 +201,6 @@ export const baseEntrypointStyles = css`
 `;
 
 export const haStyleViewTransitions = css`
-  @media (prefers-reduced-motion: no-preference) {
-    /* Toolbar fade in */
-    ::view-transition-group(lovelace-toolbar) {
-      animation-duration: var(--ha-animation-duration);
-      animation-timing-function: ease-out;
-    }
-    ::view-transition-new(lovelace-toolbar) {
-      animation: fade-in var(--ha-animation-duration) ease-out;
-      animation-delay: var(--ha-animation-delay-base);
-    }
-
-    /* View slide down */
-    ::view-transition-group(lovelace-view) {
-      animation-duration: var(--ha-animation-duration);
-      animation-timing-function: ease-out;
-    }
-    ::view-transition-new(lovelace-view) {
-      animation: fade-in-slide-down var(--ha-animation-duration) ease-out;
-      animation-delay: var(--ha-animation-delay-base);
-    }
-  }
-
   @keyframes fade-in {
     from {
       opacity: 0;
@@ -251,6 +229,28 @@ export const haStyleViewTransitions = css`
     to {
       opacity: 1;
       transform: translateY(0);
+    }
+  }
+
+  @media (prefers-reduced-motion: no-preference) {
+    /* Toolbar fade in */
+    ::view-transition-group(lovelace-toolbar) {
+      animation-duration: var(--ha-animation-duration);
+      animation-timing-function: ease-out;
+    }
+    ::view-transition-new(lovelace-toolbar) {
+      animation: fade-in var(--ha-animation-duration) ease-out;
+      animation-delay: var(--ha-animation-delay-base);
+    }
+
+    /* View slide down */
+    ::view-transition-group(lovelace-view) {
+      animation-duration: var(--ha-animation-duration);
+      animation-timing-function: ease-out;
+    }
+    ::view-transition-new(lovelace-view) {
+      animation: fade-in-slide-down var(--ha-animation-duration) ease-out;
+      animation-delay: var(--ha-animation-delay-base);
     }
   }
 `;
