@@ -1,6 +1,6 @@
 import type { LitVirtualizer } from "@lit-labs/virtualizer";
 import { consume } from "@lit/context";
-import { mdiCheck, mdiPlus, mdiTextureBox } from "@mdi/js";
+import { mdiPlus, mdiTextureBox } from "@mdi/js";
 import Fuse from "fuse.js";
 import type { HassServiceTarget } from "home-assistant-js-websocket";
 import { css, html, LitElement, nothing, type PropertyValues } from "lit";
@@ -43,9 +43,9 @@ import { haStyleScrollbar } from "../../resources/styles";
 import { loadVirtualizer } from "../../resources/virtualizer";
 import type { HomeAssistant } from "../../types";
 import { brandsUrl } from "../../util/brands-url";
+import "../chips/ha-filter-chip";
 import type { HaDevicePickerDeviceFilterFunc } from "../device/ha-device-picker";
 import "../entity/state-badge";
-import "../ha-button";
 import "../ha-combo-box-item";
 import "../ha-floor-icon";
 import "../ha-md-list";
@@ -430,21 +430,15 @@ export class HaTargetPickerSelector extends LitElement {
 
       const selected = this.filterTypes.includes(filterType);
       return html`
-        <ha-button
+        <ha-filter-chip
           @click=${this._toggleFilter}
           .type=${filterType}
-          size="small"
-          .variant=${selected ? "brand" : "neutral"}
-          appearance="filled"
-          no-shrink
-        >
-          ${selected
-            ? html`<ha-svg-icon slot="start" .path=${mdiCheck}></ha-svg-icon>`
-            : nothing}
-          ${this.hass.localize(
+          .selected=${selected}
+          .label=${this.hass.localize(
             `ui.components.target-picker.type.${filterType === "entity" ? "entities" : `${filterType}s`}` as LocalizeKeys
           )}
-        </ha-button>
+        >
+        </ha-filter-chip>
       `;
     });
   }
@@ -944,6 +938,7 @@ export class HaTargetPickerSelector extends LitElement {
   }
 
   private _toggleFilter(ev: any) {
+    ev.stopPropagation();
     this._resetSelectedItem();
     this._filterHeader = undefined;
     const type = ev.target.type as TargetTypeFloorless;
@@ -997,15 +992,18 @@ export class HaTargetPickerSelector extends LitElement {
         gap: var(--ha-space-2);
         padding: var(--ha-space-3) var(--ha-space-3);
         overflow: auto;
-        --ha-button-border-radius: var(--ha-border-radius-md);
       }
 
       :host([mode="dialog"]) .filter {
         padding: var(--ha-space-3) var(--ha-space-4);
       }
 
-      .filter ha-button {
+      .filter ha-filter-chip {
         flex-shrink: 0;
+        --md-filter-chip-selected-container-color: var(
+          --ha-color-fill-primary-normal-hover
+        );
+        color: var(--primary-color);
       }
 
       .filter .separator {
