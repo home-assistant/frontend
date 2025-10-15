@@ -101,13 +101,7 @@ export default class HaAutomationSidebarAction extends LitElement {
 
     const isBuildingBlock = ACTION_BUILDING_BLOCKS.includes(type || "");
 
-    const actionTypeLabel =
-      this.hass.localize(
-        `ui.panel.config.automation.editor.actions.type.${type}.label` as LocalizeKeys
-      ) || type;
-
-    // Get descriptive title using describeAction (includes alias if present)
-    const actionDescription = capitalizeFirstLetter(
+    const title = capitalizeFirstLetter(
       describeAction(
         this.hass,
         this._entityReg,
@@ -117,13 +111,9 @@ export default class HaAutomationSidebarAction extends LitElement {
       )
     );
 
-    // If action has an alias, show alias as title and action type as subtitle
-    // Otherwise, show action type label as title and "Action" as subtitle
-    const hasAlias = "alias" in actionConfig && actionConfig.alias;
-    const title = hasAlias ? actionDescription : actionTypeLabel;
-    const subtitle = hasAlias
-      ? actionTypeLabel
-      : this.hass.localize("ui.panel.config.automation.editor.actions.action");
+    const subtitle = this.hass.localize(
+      "ui.panel.config.automation.editor.actions.action"
+    );
 
     const description = isBuildingBlock
       ? this.hass.localize(
