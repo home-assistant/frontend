@@ -218,6 +218,7 @@ export class HaWaDialog extends LitElement {
           --ha-dialog-max-height,
           calc(100% - var(--ha-space-20))
         );
+        min-height: var(--ha-dialog-min-height);
         position: var(--dialog-surface-position, relative);
         margin-top: var(--dialog-surface-margin-top, auto);
         display: flex;
@@ -294,6 +295,7 @@ export class HaWaDialog extends LitElement {
       }
       :host([flexcontent]) .body {
         max-width: 100%;
+        flex: 1;
         display: flex;
         flex-direction: column;
       }

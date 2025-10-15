@@ -134,17 +134,6 @@ export default class HaAutomationAction extends LitElement {
                 "ui.panel.config.automation.editor.actions.add"
               )}
             </ha-button>
-            <ha-button
-              .disabled=${this.disabled}
-              @click=${this._addActionBuildingBlockDialog}
-              appearance="plain"
-              .size=${this.root ? "medium" : "small"}
-            >
-              <ha-svg-icon .path=${mdiPlus} slot="start"></ha-svg-icon>
-              ${this.hass.localize(
-                "ui.panel.config.automation.editor.actions.add_building_block"
-              )}
-            </ha-button>
           </div>
         </div>
       </ha-sortable>
@@ -217,15 +206,6 @@ export default class HaAutomationAction extends LitElement {
       type: "action",
       add: this._addAction,
       clipboardItem: getAutomationActionType(this._clipboard?.action),
-    });
-  }
-
-  private _addActionBuildingBlockDialog() {
-    showAddAutomationElementDialog(this, {
-      type: "action",
-      add: this._addAction,
-      clipboardItem: getAutomationActionType(this._clipboard?.action),
-      group: "building_blocks",
     });
   }
 

@@ -83,9 +83,15 @@ export class HaBottomSheet extends LitElement {
             var(--safe-area-inset-left)
         );
       }
-
       :host([flexcontent]) wa-drawer::part(body) {
         display: flex;
+        flex-direction: column;
+      }
+      :host([flexcontent]) .body {
+        flex: 1;
+        max-width: 100%;
+        display: flex;
+        flex-direction: column;
       }
     `,
   ];

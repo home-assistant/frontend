@@ -41,15 +41,6 @@ export const CONDITION_COLLECTIONS: AutomationElementGroupCollection[] = [
     },
   },
   {
-    titleKey:
-      "ui.panel.config.automation.editor.conditions.groups.building_blocks.label",
-    groups: {
-      and: {},
-      or: {},
-      not: {},
-    },
-  },
-  {
     titleKey: "ui.panel.config.automation.editor.conditions.groups.other.label",
     groups: {
       template: {},
@@ -57,6 +48,12 @@ export const CONDITION_COLLECTIONS: AutomationElementGroupCollection[] = [
     },
   },
 ] as const;
+
+export const CONDITION_BUILDING_BLOCKS_GROUP = {
+  and: {},
+  or: {},
+  not: {},
+};
 
 export const CONDITION_BUILDING_BLOCKS = ["and", "or", "not"];
 

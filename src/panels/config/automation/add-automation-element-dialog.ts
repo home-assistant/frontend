@@ -7,11 +7,16 @@ import {
 import Fuse from "fuse.js";
 import type { CSSResultGroup, PropertyValues, TemplateResult } from "lit";
 import { LitElement, css, html, nothing } from "lit";
-import { customElement, property, query, state } from "lit/decorators";
+import {
+  customElement,
+  eventOptions,
+  property,
+  query,
+  state,
+} from "lit/decorators";
 import { classMap } from "lit/directives/class-map";
 import { ifDefined } from "lit/directives/if-defined";
 import { repeat } from "lit/directives/repeat";
-import { styleMap } from "lit/directives/style-map";
 import memoizeOne from "memoize-one";
 import { fireEvent } from "../../../common/dom/fire_event";
 import { computeDomain } from "../../../common/entity/compute_domain";
@@ -20,6 +25,7 @@ import type {
   LocalizeFunc,
   LocalizeKeys,
 } from "../../../common/translations/localize";
+import { debounce } from "../../../common/util/debounce";
 import { deepEqual } from "../../../common/util/deep-equal";
 import "../../../components/ha-bottom-sheet";
 import type { HaBottomSheet } from "../../../components/ha-bottom-sheet";
@@ -31,13 +37,13 @@ import "../../../components/ha-icon-button-prev";
 import "../../../components/ha-icon-next";
 import "../../../components/ha-md-divider";
 import "../../../components/ha-md-list";
-import type { HaMdList } from "../../../components/ha-md-list";
 import "../../../components/ha-md-list-item";
 import "../../../components/ha-service-icon";
 import "../../../components/ha-wa-dialog";
 import type { HaWaDialog } from "../../../components/ha-wa-dialog";
 import "../../../components/search-input";
 import {
+  ACTION_BUILDING_BLOCKS_GROUP,
   ACTION_COLLECTIONS,
   ACTION_ICONS,
   SERVICE_PREFIX,
@@ -49,6 +55,7 @@ import type {
   AutomationElementGroupCollection,
 } from "../../../data/automation";
 import {
+  CONDITION_BUILDING_BLOCKS_GROUP,
   CONDITION_COLLECTIONS,
   CONDITION_ICONS,
 } from "../../../data/condition";
@@ -62,7 +69,6 @@ import { TRIGGER_COLLECTIONS, TRIGGER_ICONS } from "../../../data/trigger";
 import type { HassDialog } from "../../../dialogs/make-dialog-manager";
 import { KeyboardShortcutMixin } from "../../../mixins/keyboard-shortcut-mixin";
 import { HaFuse } from "../../../resources/fuse";
-import { haStyle, haStyleDialog } from "../../../resources/styles";
 import type { HomeAssistant } from "../../../types";
 import { isMac } from "../../../util/is_mac";
 import { showToast } from "../../../util/toast";
@@ -130,7 +136,11 @@ class DialogAddAutomationElement
 
   @state() private _open = true;
 
-  @query("#content") private _contentElement?: HaMdList;
+  @state() private _itemsScrolled = false;
+
+  @state() private _bottomSheetMode = false;
+
+  @state() private _narrow = false;
 
   @query("ha-wa-dialog, ha-bottom-sheet") private _dialogElement?:
     | HaWaDialog
@@ -138,13 +148,8 @@ class DialogAddAutomationElement
 
   private _fullScreen = false;
 
-  @state() private _height?: number;
-
-  @state() private _narrow = false;
-
   public showDialog(params): void {
     this._params = params;
-    this._selectedGroup = params.group;
 
     this.addKeyboardShortcuts();
 
@@ -158,9 +163,11 @@ class DialogAddAutomationElement
       "all and (max-width: 450px), all and (max-height: 500px)"
     ).matches;
 
-    this._narrow =
-      window.matchMedia("(max-width: 870px)").matches ||
-      window.matchMedia("(max-height: 500px)").matches;
+    window.addEventListener("resize", this._updateNarrow);
+    this._updateNarrow();
+
+    // prevent view mode switch when resizing window
+    this._bottomSheetMode = this._narrow;
   }
 
   public closeDialog() {
@@ -169,9 +176,11 @@ class DialogAddAutomationElement
       fireEvent(this, "dialog-closed", { dialog: this.localName });
     }
     this._open = true;
-    this._height = undefined;
+    this._itemsScrolled = false;
+    this._bottomSheetMode = false;
     this._params = undefined;
     this._selectedGroup = undefined;
+    this._tab = "groups";
     this._selectedCollectionIndex = undefined;
     this._filter = "";
     this._manifests = undefined;
@@ -181,16 +190,29 @@ class DialogAddAutomationElement
 
   private _getGroups = (
     type: AddAutomationElementDialogParams["type"],
-    group: string | undefined,
-    collectionIndex: number | undefined
-  ): AutomationElementGroup =>
-    group && collectionIndex !== undefined
-      ? isService(group)
-        ? {}
-        : TYPES[type].collections[collectionIndex].groups[group].members || {
-            [group]: {},
-          }
-      : TYPES[type].collections[0].groups;
+    group?: string,
+    collectionIndex?: number
+  ): AutomationElementGroup => {
+    if (group && collectionIndex !== undefined) {
+      return (
+        TYPES[type].collections[collectionIndex].groups[group].members || {
+          [group]: {},
+        }
+      );
+    }
+
+    return {
+      ...TYPES[type].collections.reduce(
+        (acc, collection) => ({ ...acc, ...collection.groups }),
+        {} as AutomationElementGroup
+      ),
+      ...(type === "action"
+        ? ACTION_BUILDING_BLOCKS_GROUP
+        : type === "condition"
+          ? CONDITION_BUILDING_BLOCKS_GROUP
+          : {}),
+    };
+  };
 
   private _convertToItem = (
     key: string,
@@ -217,28 +239,22 @@ class DialogAddAutomationElement
   private _getFilteredItems = memoizeOne(
     (
       type: AddAutomationElementDialogParams["type"],
-      group: string | undefined,
-      collectionIndex: number | undefined,
       filter: string,
-      domains: Set<string> | undefined,
       localize: LocalizeFunc,
       services: HomeAssistant["services"],
       manifests?: DomainManifestLookup
     ): ListItem[] => {
-      const items = this._items(
-        type,
-        group,
-        collectionIndex,
-        localize,
-        services,
-        manifests
-      );
+      const items = this._items(type, localize, services, manifests);
 
       const index = this._fuseIndex(items);
 
       const fuse = new HaFuse(
         items,
-        { ignoreLocation: true, includeScore: true },
+        {
+          ignoreLocation: true,
+          includeScore: true,
+          minMatchCharLength: Math.min(2, this._filter.length),
+        },
         index
       );
 
@@ -246,28 +262,18 @@ class DialogAddAutomationElement
       if (results) {
         return results.map((result) => result.item);
       }
-      return this._getGroupItems(
-        type,
-        group,
-        collectionIndex,
-        domains,
-        localize,
-        services,
-        manifests
-      );
+      return items;
     }
   );
 
   private _items = memoizeOne(
     (
       type: AddAutomationElementDialogParams["type"],
-      group: string | undefined,
-      collectionIndex: number | undefined,
       localize: LocalizeFunc,
       services: HomeAssistant["services"],
       manifests?: DomainManifestLookup
     ): ListItem[] => {
-      const groups = this._getGroups(type, group, collectionIndex);
+      const groups = this._getGroups(type);
 
       const flattenGroups = (grp: AutomationElementGroup) =>
         Object.entries(grp).map(([key, options]) =>
@@ -278,7 +284,7 @@ class DialogAddAutomationElement
 
       const items = flattenGroups(groups).flat();
       if (type === "action") {
-        items.push(...this._services(localize, services, manifests, group));
+        items.push(...this._services(localize, services, manifests));
       }
       return items;
     }
@@ -348,20 +354,36 @@ class DialogAddAutomationElement
     }
   );
 
+  private _getBlockItems = memoizeOne(
+    (
+      type: AddAutomationElementDialogParams["type"],
+      localize: LocalizeFunc
+    ): ListItem[] => {
+      const groups =
+        type === "action"
+          ? ACTION_BUILDING_BLOCKS_GROUP
+          : CONDITION_BUILDING_BLOCKS_GROUP;
+
+      const result = Object.entries(groups).map(([key, options]) =>
+        this._convertToItem(key, options, type, localize)
+      );
+
+      return result.sort((a, b) =>
+        stringCompare(a.name, b.name, this.hass.locale.language)
+      );
+    }
+  );
+
   private _getGroupItems = memoizeOne(
     (
       type: AddAutomationElementDialogParams["type"],
-      group: string | undefined,
-      collectionIndex: number | undefined,
+      group: string,
+      collectionIndex: number,
       domains: Set<string> | undefined,
       localize: LocalizeFunc,
       services: HomeAssistant["services"],
       manifests?: DomainManifestLookup
     ): ListItem[] => {
-      if (!group) {
-        return [];
-      }
-
       if (type === "action" && isService(group)) {
         return this._services(localize, services, manifests, group);
       }
@@ -549,12 +571,6 @@ class DialogAddAutomationElement
     }
   }
 
-  protected _opened(): void {
-    // Store the height so that when we search, box doesn't jump
-    const boundingRect = this._contentElement?.getBoundingClientRect();
-    this._height = boundingRect?.height;
-  }
-
   protected willUpdate(changedProperties: PropertyValues): void {
     if (
       this._params?.type === "action" &&
@@ -571,23 +587,24 @@ class DialogAddAutomationElement
     const items = this._filter
       ? this._getFilteredItems(
           automationElementType,
-          this._selectedGroup,
-          this._selectedCollectionIndex,
           this._filter,
-          this._domains,
           this.hass.localize,
           this.hass.services,
           this._manifests
         )
-      : this._getGroupItems(
-          automationElementType,
-          this._selectedGroup,
-          this._selectedCollectionIndex,
-          this._domains,
-          this.hass.localize,
-          this.hass.services,
-          this._manifests
-        );
+      : this._tab === "blocks"
+        ? this._getBlockItems(automationElementType, this.hass.localize)
+        : this._selectedGroup
+          ? this._getGroupItems(
+              automationElementType,
+              this._selectedGroup,
+              this._selectedCollectionIndex ?? 0,
+              this._domains,
+              this.hass.localize,
+              this.hass.services,
+              this._manifests
+            )
+          : undefined;
 
     const collections = this._getCollections(
       automationElementType,
@@ -616,7 +633,7 @@ class DialogAddAutomationElement
     const tabButtons = [
       {
         label: this.hass.localize(
-          `ui.panel.config.automation.editor.${automationElementType}s.header`
+          `ui.panel.config.automation.editor.${automationElementType}s.name`
         ),
         value: "groups",
       },
@@ -625,6 +642,11 @@ class DialogAddAutomationElement
         value: "blocks",
       },
     ];
+
+    const hideCollections =
+      this._filter ||
+      this._tab === "blocks" ||
+      (this._narrow && this._selectedGroup);
 
     return html`
       <div slot="header">
@@ -638,9 +660,7 @@ class DialogAddAutomationElement
           ${this._narrow && this._selectedGroup
             ? html`<span slot="subtitle">${typeTitle}</span>`
             : nothing}
-          ${this._narrow &&
-          this._selectedGroup &&
-          this._selectedGroup !== this._params!.group
+          ${this._narrow && this._selectedGroup
             ? html`<ha-icon-button-prev
                 slot="navigationIcon"
                 @click=${this._back}
@@ -651,37 +671,39 @@ class DialogAddAutomationElement
                 slot="navigationIcon"
               ></ha-icon-button>`}
         </ha-dialog-header>
-        <search-input
-          dialogInitialFocus=${ifDefined(this._fullScreen ? undefined : "")}
-          .hass=${this.hass}
-          .filter=${this._filter}
-          @value-changed=${this._filterChanged}
-          .label=${groupName
-            ? this.hass.localize(
-                "ui.panel.config.automation.editor.search_in",
-                { group: groupName }
-              )
-            : this.hass.localize(
-                `ui.panel.config.automation.editor.${automationElementType}s.search`
-              )}
-        ></search-input>
-
-        <ha-button-toggle-group
-          .buttons=${tabButtons}
-          .active=${this._tab}
-          @value-changed=${this._switchTab}
-        ></ha-button-toggle-group>
+        ${!this._bottomSheetMode || !this._selectedGroup
+          ? html`
+              <search-input
+                ?autofocus=${!this._bottomSheetMode}
+                dialogInitialFocus=${ifDefined(
+                  this._fullScreen ? undefined : ""
+                )}
+                .hass=${this.hass}
+                .filter=${this._filter}
+                @value-changed=${this._debounceFilterChanged}
+                .label=${this.hass.localize(`ui.common.search`)}
+              ></search-input>
+            `
+          : nothing}
+        ${this._params?.type !== "trigger" &&
+        !this._filter &&
+        (!this._bottomSheetMode || !this._selectedGroup)
+          ? html`<ha-button-toggle-group
+              variant="neutral"
+              active-variant="brand"
+              .buttons=${tabButtons}
+              .active=${this._tab}
+              size="small"
+              full-width
+              @value-changed=${this._switchTab}
+            ></ha-button-toggle-group>`
+          : nothing}
       </div>
-      <div
-        id="content"
-        style=${styleMap({
-          height: this._height ? `${Math.min(468, this._height)}px` : "100vh",
-        })}
-      >
+      <div id="content">
         <ha-md-list
           class=${classMap({
             groups: true,
-            hidden: this._narrow && this._selectedGroup,
+            hidden: hideCollections,
           })}
           dialogInitialFocus=${ifDefined(this._fullScreen ? "" : undefined)}
         >
@@ -771,58 +793,76 @@ class DialogAddAutomationElement
           )}
         </ha-md-list>
         <div
+          id="items"
           class=${classMap({
-            items: true,
-            blank: !this._selectedGroup,
-            hidden: this._narrow && !this._selectedGroup,
+            blank:
+              !this._selectedGroup && !this._filter && this._tab === "groups",
+            "empty-search": !items?.length && this._filter,
+            hidden:
+              this._narrow &&
+              !this._selectedGroup &&
+              !this._filter &&
+              this._tab === "groups",
           })}
+          @scroll=${this._onItemsScroll}
         >
-          ${!this._selectedGroup
+          ${this._tab === "groups" && !this._selectedGroup && !this._filter
             ? this.hass.localize(
                 `ui.panel.config.automation.editor.${automationElementType}s.select`
               )
-            : html`<div class="items-title">
-                  ${this.hass.localize(
-                    `ui.panel.config.automation.editor.${automationElementType}s.name`
-                  )}
-                </div>
-                <ha-md-list
-                  dialogInitialFocus=${ifDefined(
-                    this._fullScreen ? "" : undefined
-                  )}
-                >
-                  ${repeat(
-                    items,
-                    (item) => item.key,
-                    (item) => html`
-                      <ha-md-list-item
-                        interactive
-                        type="button"
-                        .value=${item.key}
-                        .group=${item.group}
-                        @click=${this._selected}
-                      >
-                        <div slot="headline">${item.name}</div>
-                        <div slot="supporting-text">${item.description}</div>
-                        ${item.icon
-                          ? html`<span slot="start">${item.icon}</span>`
-                          : item.iconPath
-                            ? html`<ha-svg-icon
-                                slot="start"
-                                .path=${item.iconPath}
-                              ></ha-svg-icon>`
-                            : nothing}
-                        ${item.group
-                          ? html`<ha-icon-next slot="end"></ha-icon-next>`
-                          : html`<ha-svg-icon
-                              slot="end"
-                              class="plus"
-                              .path=${mdiPlus}
-                            ></ha-svg-icon>`}
-                      </ha-md-list-item>
-                    `
-                  )}
-                </ha-md-list>`}
+            : !items?.length && this._filter
+              ? html`<span
+                  >${this.hass.localize(
+                    `ui.panel.config.automation.editor.${automationElementType}s.empty_search`,
+                    {
+                      term: html`<b>‘${this._filter}’</b>`,
+                    }
+                  )}</span
+                >`
+              : html`<div
+                    class="items-title ${this._itemsScrolled ? "elevated" : ""}"
+                  >
+                    ${this.hass.localize(
+                      `ui.panel.config.automation.editor.${automationElementType}s.name`
+                    )}
+                  </div>
+                  <ha-md-list
+                    dialogInitialFocus=${ifDefined(
+                      this._fullScreen ? "" : undefined
+                    )}
+                  >
+                    ${repeat(
+                      items,
+                      (item) => item.key,
+                      (item) => html`
+                        <ha-md-list-item
+                          interactive
+                          type="button"
+                          .value=${item.key}
+                          .group=${item.group}
+                          @click=${this._selected}
+                        >
+                          <div slot="headline">${item.name}</div>
+                          <div slot="supporting-text">${item.description}</div>
+                          ${item.icon
+                            ? html`<span slot="start">${item.icon}</span>`
+                            : item.iconPath
+                              ? html`<ha-svg-icon
+                                  slot="start"
+                                  .path=${item.iconPath}
+                                ></ha-svg-icon>`
+                              : nothing}
+                          ${item.group
+                            ? html`<ha-icon-next slot="end"></ha-icon-next>`
+                            : html`<ha-svg-icon
+                                slot="end"
+                                class="plus"
+                                .path=${mdiPlus}
+                              ></ha-svg-icon>`}
+                        </ha-md-list-item>
+                      `
+                    )}
+                  </ha-md-list>`}
         </div>
       </div>
     `;
@@ -833,12 +873,12 @@ class DialogAddAutomationElement
       return nothing;
     }
 
-    if (this._narrow) {
+    if (this._bottomSheetMode) {
       return html`
         <ha-bottom-sheet
           .open=${this._open}
-          @after-show=${this._opened}
           @closed=${this.closeDialog}
+          flexcontent
         >
           ${this._renderContent()}
         </ha-bottom-sheet>
@@ -846,15 +886,22 @@ class DialogAddAutomationElement
     }
 
     return html`
-      <ha-wa-dialog
-        .open=${this._open}
-        @after-show=${this._opened}
-        @closed=${this.closeDialog}
-      >
+      <ha-wa-dialog .open=${this._open} @closed=${this.closeDialog} flexcontent>
         ${this._renderContent()}
       </ha-wa-dialog>
     `;
   }
+
+  public disconnectedCallback(): void {
+    super.disconnectedCallback();
+    window.removeEventListener("resize", this._updateNarrow);
+  }
+
+  private _updateNarrow = () => {
+    this._narrow =
+      window.matchMedia("(max-width: 870px)").matches ||
+      window.matchMedia("(max-height: 500px)").matches;
+  };
 
   private _close() {
     this._open = false;
@@ -887,9 +934,14 @@ class DialogAddAutomationElement
     this.closeDialog();
   }
 
-  private _filterChanged(ev) {
+  private _debounceFilterChanged = debounce(
+    (ev) => this._filterChanged(ev),
+    200
+  );
+
+  private _filterChanged = (ev) => {
     this._filter = ev.detail.value;
-  }
+  };
 
   private _addClipboard = () => {
     if (this._params?.clipboardItem) {
@@ -917,33 +969,50 @@ class DialogAddAutomationElement
 
   private _switchTab(ev) {
     this._tab = ev.detail.value;
-    this._selectedGroup = undefined;
-    this._selectedCollectionIndex = undefined;
-    this._filter = "";
+  }
+
+  @eventOptions({ passive: true })
+  private _onItemsScroll(ev) {
+    const top = ev.target.scrollTop ?? 0;
+    this._itemsScrolled = top > 0;
   }
 
   static get styles(): CSSResultGroup {
     return [
-      haStyle,
-      haStyleDialog,
       css`
-        ha-wa-dialog,
-        ha-bottom-sheet {
-          --dialog-content-padding: 0;
+        ha-wa-dialog {
+          --dialog-content-padding: var(--ha-space-0);
           --ha-dialog-width-md: 888px;
+          --ha-dialog-min-height: min(648px, calc(100vh - var(--ha-space-8)));
+          --ha-dialog-min-height: min(648px, calc(100dvh - var(--ha-space-8)));
+        }
+
+        ha-bottom-sheet {
+          --ha-bottom-sheet-height: 90vh;
+          --ha-bottom-sheet-height: calc(100dvh - var(--ha-space-12));
+          --ha-bottom-sheet-max-height: var(--ha-bottom-sheet-height);
+          --ha-bottom-sheet-max-width: 888px;
+          --ha-bottom-sheet-padding: var(--ha-space-0);
+          --ha-bottom-sheet-surface-background: var(--card-background-color);
         }
         ha-icon-next {
-          width: 24px;
+          width: var(--ha-space-6);
         }
+
+        ha-button-toggle-group {
+          --ha-button-toggle-group-padding: var(--ha-space-3) var(--ha-space-4)
+            0;
+        }
+
         ha-md-list {
           padding: 0;
         }
 
         #content {
-          max-height: 468px;
+          height: 100%;
           display: flex;
           gap: var(--ha-space-3);
-          padding: var(--ha-space-3) var(--ha-space-4);
+          padding: var(--ha-space-0) var(--ha-space-4);
         }
 
         ha-md-list.groups {
@@ -951,6 +1020,7 @@ class DialogAddAutomationElement
           flex: 3;
           border-radius: var(--ha-border-radius-xl);
           border: 1px solid var(--ha-color-border-neutral-quiet);
+          margin: var(--ha-space-3) var(--ha-space-0);
           --md-list-item-leading-space: var(--ha-space-3);
           --md-list-item-trailing-space: var(--md-list-item-leading-space);
           --md-list-item-bottom-space: var(--ha-space-1);
@@ -968,22 +1038,45 @@ class DialogAddAutomationElement
           color: var(--primary-color);
         }
 
-        #content .items {
+        #items {
           display: flex;
           flex-direction: column;
           overflow: auto;
           flex: 7;
         }
 
-        #content .items.blank {
-          border-radius: var(--ha-border-radius-xl);
-          background-color: var(--ha-color-surface-default);
-          justify-content: center;
-          align-items: center;
-          color: var(--ha-color-text-secondary);
+        ha-wa-dialog #items {
+          margin-top: var(--ha-space-3);
         }
 
-        #content .items ha-md-list {
+        #items,
+        ha-md-list.groups {
+          padding-bottom: max(var(--safe-area-inset-bottom), var(--ha-space-3));
+        }
+
+        ha-bottom-sheet ha-md-list.groups {
+          padding-bottom: max(var(--safe-area-inset-bottom), var(--ha-space-4));
+        }
+
+        #items.blank,
+        #items.empty-search {
+          border-radius: var(--ha-border-radius-xl);
+          background-color: var(--ha-color-surface-default);
+          align-items: center;
+          color: var(--ha-color-text-secondary);
+          padding-bottom: 0;
+          margin-bottom: max(var(--safe-area-inset-bottom), var(--ha-space-3));
+        }
+
+        #items.blank {
+          justify-content: center;
+        }
+        #items.empty-search {
+          padding-top: var(--ha-space-6);
+          justify-content: start;
+        }
+
+        #items ha-md-list {
           --md-list-item-two-line-container-height: var(--ha-space-12);
           --md-list-item-leading-space: var(--ha-space-3);
           --md-list-item-trailing-space: var(--md-list-item-leading-space);
@@ -993,19 +1086,32 @@ class DialogAddAutomationElement
           gap: var(--ha-space-2);
         }
 
-        #content .items ha-md-list ha-md-list-item {
+        #items ha-md-list ha-md-list-item {
           border-radius: var(--ha-border-radius-lg);
           border: 1px solid var(--ha-color-border-neutral-quiet);
         }
 
-        #content .items.hidden,
+        #items.hidden,
         ha-md-list.groups.hidden {
           display: none;
         }
 
-        #content .items .items-title {
+        #items .items-title {
           font-weight: var(--ha-font-weight-medium);
-          margin-bottom: var(--ha-space-2);
+          padding-bottom: var(--ha-space-2);
+          padding-left: var(--ha-space-4);
+          position: sticky;
+          top: 0;
+          z-index: 1;
+          background-color: var(--card-background-color);
+        }
+
+        ha-bottom-sheet #items .items-title {
+          margin-top: var(--ha-space-3);
+        }
+
+        #items .items-title.elevated {
+          box-shadow: var(--bar-box-shadow);
         }
 
         .collection-title {
