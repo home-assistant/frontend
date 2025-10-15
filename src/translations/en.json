@@ -667,7 +667,7 @@
             "device_missing": "No related device"
           },
           "add": "Add",
-          "use_custom_name": "Use custom name"
+          "custom_name": "Custom name"
         },
         "entity-attribute-picker": {
           "attribute": "Attribute",

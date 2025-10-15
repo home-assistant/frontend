@@ -147,9 +147,9 @@ export class HaEntityNamePicker extends LitElement {
     return items;
   });
 
-  private _customTextOption = memoizeOne((text: string) => ({
+  private _customNameOption = memoizeOne((text: string) => ({
     primary: this.hass.localize(
-      "ui.components.entity.entity-name-picker.use_custom_name"
+      "ui.components.entity.entity-name-picker.custom_name"
     ),
     secondary: `"${text}"`,
     field_label: text,
@@ -319,7 +319,7 @@ export class HaEntityNamePicker extends LitElement {
       const filteredItems = this._filterSelectedOptions(options, initialValue);
 
       if (initialItem && initialItem.type === "text" && initialItem.text) {
-        filteredItems.push(this._customTextOption(initialItem.text));
+        filteredItems.push(this._customNameOption(initialItem.text));
       }
       this._comboBox.filteredItems = filteredItems;
       this._comboBox.setInputValue(initialValue);
@@ -375,7 +375,7 @@ export class HaEntityNamePicker extends LitElement {
     const fuse = new Fuse(this._comboBox.filteredItems, fuseOptions);
     const filteredItems = fuse.search(filter).map((result) => result.item);
 
-    filteredItems.push(this._customTextOption(input));
+    filteredItems.push(this._customNameOption(input));
     this._comboBox.filteredItems = filteredItems;
   }
 
