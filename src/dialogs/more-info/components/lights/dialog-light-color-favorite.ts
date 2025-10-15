@@ -321,9 +321,9 @@ class DialogLightColorFavorite extends LitElement {
         .buttons {
           display: flex;
           justify-content: flex-end;
-          gap: 8px;
-          padding: 16px 24px;
-          padding-bottom: max(16px, env(safe-area-inset-bottom));
+          gap: var(--ha-space-2);
+          padding: var(--ha-space-4) var(--ha-space-6);
+          padding-bottom: max(var(--ha-space-4), env(safe-area-inset-bottom));
         }
 
         .content {
@@ -331,14 +331,14 @@ class DialogLightColorFavorite extends LitElement {
           flex-direction: column;
           align-items: center;
           justify-content: center;
-          padding: 24px;
+          padding: var(--ha-space-6);
           flex: 1;
         }
         .modes {
           display: flex;
           flex-direction: row;
           justify-content: flex-end;
-          padding: 0 24px;
+          padding: 0 var(--ha-space-6);
         }
         .wheel {
           width: 30px;
