@@ -25,10 +25,6 @@ import { ifDefined } from "lit/directives/if-defined";
 import memoizeOne from "memoize-one";
 import { isComponentLoaded } from "../../common/config/is_component_loaded";
 import { fireEvent } from "../../common/dom/fire_event";
-import {
-  applyViewTransitionOnLoad,
-  startViewTransition,
-} from "../../common/dom/view_transition";
 import { shouldHandleRequestSelectedEvent } from "../../common/mwc/handle-request-selected-event";
 import { goBack, navigate } from "../../common/navigate";
 import type { LocalizeKeys } from "../../common/translations/localize";
@@ -76,6 +72,7 @@ import {
 } from "../../dialogs/quick-bar/show-dialog-quick-bar";
 import { showShortcutsDialog } from "../../dialogs/shortcuts/show-shortcuts-dialog";
 import { showVoiceCommandDialog } from "../../dialogs/voice-command-dialog/show-ha-voice-command-dialog";
+import { ViewTransitionMixin } from "../../mixins/view-transition-mixin";
 import { haStyle, haStyleViewTransitions } from "../../resources/styles";
 import type { HomeAssistant, PanelInfo } from "../../types";
 import { documentationUrl } from "../../util/documentation-url";
@@ -118,7 +115,7 @@ interface SubActionItem {
 }
 
 @customElement("hui-root")
-class HUIRoot extends LitElement {
+class HUIRoot extends ViewTransitionMixin(LitElement) {
   @property({ attribute: false }) public panel?: PanelInfo<LovelacePanelConfig>;
 
   @property({ attribute: false }) public hass!: HomeAssistant;
@@ -630,9 +627,6 @@ class HUIRoot extends LitElement {
     window.addEventListener("scroll", this._handleWindowScroll, {
       passive: true,
     });
-
-    // Trigger view transition on initial load
-    applyViewTransitionOnLoad(this);
   }
 
   public connectedCallback(): void {
@@ -1172,7 +1166,7 @@ class HUIRoot extends LitElement {
     // Recreate a new element to clear the applied themes.
     const root = this._viewRoot;
 
-    startViewTransition(() => {
+    this.startViewTransition(() => {
       if (root.lastChild) {
         root.removeChild(root.lastChild);
       }
