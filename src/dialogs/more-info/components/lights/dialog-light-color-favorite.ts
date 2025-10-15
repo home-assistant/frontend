@@ -172,20 +172,20 @@ class DialogLightColorFavorite extends LitElement {
     return html`
       <div class="modes">
         ${this._modes.map(
-          (value) => html`
+      (value) => html`
             <ha-icon-button-toggle
               border-only
               .selected=${value === this._mode}
               .label=${this.hass.localize(
-                `ui.dialogs.more_info_control.light.color_picker.mode.${value}`
-              )}
+        `ui.dialogs.more_info_control.light.color_picker.mode.${value}`
+      )}
               .mode=${value}
               @click=${this._modeChanged}
             >
               <span class="wheel ${classMap({ [value]: true })}"></span>
             </ha-icon-button-toggle>
           `
-        )}
+    )}
       </div>
     `;
   }
@@ -276,8 +276,8 @@ class DialogLightColorFavorite extends LitElement {
       <ha-wa-dialog
         .hass=${this.hass}
         .open=${this._open}
+        .headerTitle=${this._dialogParams?.title ?? ""}
         @closed=${this._dialogClosed}
-        header-title=${this._dialogParams?.title}
       >
         <div class="header">${this._renderModes()}</div>
         <div class="content">${this._renderColorPicker()}</div>
