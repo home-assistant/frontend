@@ -1,4 +1,4 @@
-import { mdiDrag, mdiTextureBox } from "@mdi/js";
+import { mdiDragHorizontalVariant, mdiTextureBox } from "@mdi/js";
 import type { TemplateResult } from "lit";
 import { LitElement, css, html, nothing } from "lit";
 import { customElement, property } from "lit/decorators";
@@ -105,7 +105,7 @@ export class HaAreasFloorsDisplayEditor extends LitElement {
                       <ha-svg-icon
                         class="handle"
                         slot="icons"
-                        .path=${mdiDrag}
+                        .path=${mdiDragHorizontalVariant}
                       ></ha-svg-icon>
                     `}
                 <ha-items-display-editor
