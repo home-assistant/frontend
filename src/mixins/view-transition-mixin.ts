@@ -8,10 +8,12 @@ export const ViewTransitionMixin = <T extends Constructor<LitElement>>(
     /**
      * Trigger a view transition if supported by the browser
      * @param updateCallback - Callback function that updates the DOM
+     * @param transitionName - Optional transition name to apply. Default is used otherwise (defined in src/resources/styles.ts)
      * @returns Promise that resolves when the transition is complete
      */
     protected async startViewTransition(
-      updateCallback: () => void | Promise<void>
+      updateCallback: () => void | Promise<void>,
+      transitionName?: string
     ): Promise<void> {
       if (
         !document.startViewTransition ||
@@ -22,6 +24,10 @@ export const ViewTransitionMixin = <T extends Constructor<LitElement>>(
         return;
       }
 
+      if (transitionName) {
+        this.dataset.viewTransition = transitionName;
+      }
+
       const transition = document.startViewTransition(async () => {
         await updateCallback();
       });
@@ -30,6 +36,11 @@ export const ViewTransitionMixin = <T extends Constructor<LitElement>>(
         await transition.finished;
       } catch (_error) {
         // Transitions can be skipped
+      } finally {
+        // Clean up transition name if provided
+        if (transitionName) {
+          delete this.dataset.viewTransition;
+        }
       }
     }
 
