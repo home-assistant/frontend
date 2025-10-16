@@ -574,9 +574,7 @@ export class HaTargetPickerSelector extends LitElement {
                       })}
                     />
                   `
-                : type === "area" &&
-                    (item as FloorComboBoxItem).type === "floor" &&
-                    (item as FloorComboBoxItem).floor
+                : type === "floor"
                   ? html`<ha-floor-icon
                       slot="start"
                       .floor=${(item as FloorComboBoxItem).floor!}
