@@ -51,6 +51,10 @@ export class TopAppBarBaseBase extends ViewTransitionMixin(BaseElement) {
 
   @state() private _loaded = false;
 
+  protected waitForSlottedContent(): boolean {
+    return false;
+  }
+
   protected onLoadTransition(): void {
     // Trigger the transition when content is slotted
     this.startViewTransition(() => {

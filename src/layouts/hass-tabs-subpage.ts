@@ -74,29 +74,6 @@ class HassTabsSubpage extends ViewTransitionMixin(LitElement) {
     });
   }
 
-  protected override firstUpdated(changedProps) {
-    super.firstUpdated(changedProps);
-    // Wait for slotted content to be ready
-    const slot = this.shadowRoot?.querySelector("slot:not([name])");
-    if (slot) {
-      const checkContent = () => {
-        const nodes = (slot as HTMLSlotElement).assignedNodes({
-          flatten: true,
-        });
-        if (nodes.length > 0) {
-          this.onLoadTransition();
-        }
-      };
-      // Check immediately in case content is already there
-      checkContent();
-      // Also listen for slotchange
-      slot.addEventListener("slotchange", checkContent, { once: true });
-    } else {
-      // No slot, just trigger immediately
-      this.onLoadTransition();
-    }
-  }
-
   private _getTabs = memoizeOne(
     (
       tabs: PageNavigation[],

@@ -46,9 +46,41 @@ export const ViewTransitionMixin = <
     }
 
     /**
+     * Override this method to control whether to wait for slotted content before triggering transition
+     * @returns Whether to wait for slotted content to be ready
+     */
+    protected waitForSlottedContent(): boolean {
+      return true;
+    }
+
+    /**
      * Optional callback to execute during the load transition
      */
     protected onLoadTransition?(): void;
+
+    /**
+     * Wait for slotted content to be ready, then trigger transition
+     */
+    private _waitForSlotThenTransition(): void {
+      const slot = this.shadowRoot?.querySelector("slot:not([name])");
+      if (slot) {
+        const checkContent = () => {
+          const nodes = (slot as HTMLSlotElement).assignedNodes({
+            flatten: true,
+          });
+          if (nodes.length > 0) {
+            this.onLoadTransition?.();
+          }
+        };
+        // Check immediately in case content is already there
+        checkContent();
+        // Also listen for slotchange
+        slot.addEventListener("slotchange", checkContent, { once: true });
+      } else {
+        // No slot, just trigger immediately
+        this.onLoadTransition?.();
+      }
+    }
 
     /**
      * Automatically apply view transition on first render
@@ -58,7 +90,11 @@ export const ViewTransitionMixin = <
       super.firstUpdated(changedProperties);
 
       if (!this.enableLoadTransition()) {
-        this.onLoadTransition?.();
+        if (this.waitForSlottedContent()) {
+          this._waitForSlotThenTransition();
+        } else {
+          this.onLoadTransition?.();
+        }
         return;
       }
 
