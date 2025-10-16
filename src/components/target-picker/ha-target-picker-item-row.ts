@@ -172,7 +172,9 @@ export class HaTargetPickerItemRow extends LitElement {
         ((entries && (showEntities || showDevices)) || this._domainName)
           ? html`
               <div slot="end" class="summary">
-                ${showEntities && !this.expand
+                ${showEntities &&
+                !this.expand &&
+                entries?.referenced_entities.length
                   ? html`<button class="main link" @click=${this._openDetails}>
                       ${this.hass.localize(
                         "ui.components.target-picker.entities_count",
