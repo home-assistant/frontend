@@ -6,11 +6,15 @@ import { fireEvent } from "../../../../common/dom/fire_event";
 import { computeDomain } from "../../../../common/entity/compute_domain";
 import type { LocalizeFunc } from "../../../../common/translations/localize";
 import "../../../../components/ha-form/ha-form";
-import type { SchemaUnion } from "../../../../components/ha-form/types";
+import type {
+  HaFormSchema,
+  SchemaUnion,
+} from "../../../../components/ha-form/types";
 import type { HomeAssistant } from "../../../../types";
 import type { EntitiesCardEntityConfig } from "../../cards/types";
 import type { LovelaceRowEditor } from "../../types";
 import { entitiesConfigStruct } from "../structs/entities-struct";
+import { DEFAULT_ENTITY_NAME } from "../../../../common/entity/compute_entity_name_display";
 
 const SECONDARY_INFO_VALUES = {
   none: {},
@@ -46,10 +50,18 @@ export class HuiGenericEntityRowEditor
     return [
       { name: "entity", required: true, selector: { entity: {} } },
       {
+        name: "name",
+        selector: {
+          entity_name: {
+            default_name: DEFAULT_ENTITY_NAME,
+          },
+        },
+        context: { entity: "entity" },
+      },
+      {
         type: "grid",
         name: "",
         schema: [
-          { name: "name", selector: { text: {} } },
           {
             name: "icon",
             selector: {
@@ -81,7 +93,7 @@ export class HuiGenericEntityRowEditor
           },
         },
       },
-    ] as const;
+    ] as const satisfies HaFormSchema[];
   });
 
   protected render() {

@@ -5,6 +5,7 @@ import { customElement, property, state } from "lit/decorators";
 import memoizeOne from "memoize-one";
 import { assert, assign, boolean, object, optional, string } from "superstruct";
 import { fireEvent } from "../../../../common/dom/fire_event";
+import { DEFAULT_ENTITY_NAME } from "../../../../common/entity/compute_entity_name_display";
 import "../../../../components/ha-form/ha-form";
 import type {
   HaFormSchema,
@@ -16,13 +17,14 @@ import type { ButtonCardConfig } from "../../cards/types";
 import type { LovelaceCardEditor } from "../../types";
 import { actionConfigStruct } from "../structs/action-struct";
 import { baseLovelaceCardConfig } from "../structs/base-card-struct";
+import { entityNameStruct } from "../structs/entity-name-struct";
 import { configElementStyle } from "./config-elements-style";
 
 const cardConfigStruct = assign(
   baseLovelaceCardConfig,
   object({
     entity: optional(string()),
-    name: optional(string()),
+    name: optional(entityNameStruct),
     show_name: optional(boolean()),
     icon: optional(string()),
     show_icon: optional(boolean()),
@@ -68,7 +70,13 @@ export class HuiButtonCardEditor
     (entityId: string | undefined) =>
       [
         { name: "entity", selector: { entity: {} } },
-        { name: "name", selector: { text: {} } },
+        {
+          name: "name",
+          selector: {
+            entity_name: { default_name: DEFAULT_ENTITY_NAME },
+          },
+          context: { entity: "entity" },
+        },
         {
           name: "",
           type: "grid",

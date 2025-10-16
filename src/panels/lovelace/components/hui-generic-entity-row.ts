@@ -4,19 +4,19 @@ import { customElement, property } from "lit/decorators";
 import { classMap } from "lit/directives/class-map";
 import { ifDefined } from "lit/directives/if-defined";
 import { DOMAINS_INPUT_ROW } from "../../../common/const";
+import { stopPropagation } from "../../../common/dom/stop_propagation";
 import { toggleAttribute } from "../../../common/dom/toggle_attribute";
 import { computeDomain } from "../../../common/entity/compute_domain";
-import { computeStateName } from "../../../common/entity/compute_state_name";
 import "../../../components/entity/state-badge";
 import "../../../components/ha-relative-time";
 import type { ActionHandlerEvent } from "../../../data/lovelace/action_handler";
 import type { HomeAssistant } from "../../../types";
 import type { EntitiesCardEntityConfig } from "../cards/types";
 import { actionHandler } from "../common/directives/action-handler-directive";
+import { computeLovelaceEntityName } from "../common/entity/compute-lovelace-entity-name";
 import { handleAction } from "../common/handle-action";
 import { hasAction, hasAnyAction } from "../common/has-action";
 import { createEntityNotFoundWarning } from "./hui-warning";
-import { stopPropagation } from "../../../common/dom/stop_propagation";
 
 @customElement("hui-generic-entity-row")
 export class HuiGenericEntityRow extends LitElement {
@@ -59,7 +59,11 @@ export class HuiGenericEntityRow extends LitElement {
     const pointer = hasAnyAction(this.config);
 
     const hasSecondary = this.secondaryText || this.config.secondary_info;
-    const name = this.config.name ?? computeStateName(stateObj);
+    const name = computeLovelaceEntityName(
+      this.hass,
+      stateObj,
+      this.config.name
+    );
 
     return html`
       <div
@@ -87,7 +91,7 @@ export class HuiGenericEntityRow extends LitElement {
               class="info ${classMap({ "text-content": !hasSecondary })}"
               .title=${name}
             >
-              ${this.config.name || computeStateName(stateObj)}
+              ${name}
               ${hasSecondary
                 ? html`
                     <div class="secondary">

@@ -11,20 +11,24 @@ import {
   string,
   union,
 } from "superstruct";
-import { fireEvent } from "../../../../common/dom/fire_event";
-import "../../../../components/ha-form/ha-form";
-import "../hui-sub-element-editor";
-import type { EditDetailElementEvent, SubElementEditorConfig } from "../types";
 import type { HASSDomEvent } from "../../../../common/dom/fire_event";
-import type { SchemaUnion } from "../../../../components/ha-form/types";
+import { fireEvent } from "../../../../common/dom/fire_event";
+import { DEFAULT_ENTITY_NAME } from "../../../../common/entity/compute_entity_name_display";
+import "../../../../components/ha-form/ha-form";
+import type {
+  HaFormSchema,
+  SchemaUnion,
+} from "../../../../components/ha-form/types";
 import type { HomeAssistant } from "../../../../types";
 import type { ConfigEntity, GlanceCardConfig } from "../../cards/types";
 import "../../components/hui-entity-editor";
+import type { EntityConfig } from "../../entity-rows/types";
 import type { LovelaceCardEditor } from "../../types";
+import "../hui-sub-element-editor";
 import { processEditorEntities } from "../process-editor-entities";
 import { baseLovelaceCardConfig } from "../structs/base-card-struct";
 import { entitiesConfigStruct } from "../structs/entities-struct";
-import type { EntityConfig } from "../../entity-rows/types";
+import type { EditDetailElementEvent, SubElementEditorConfig } from "../types";
 
 const cardConfigStruct = assign(
   baseLovelaceCardConfig,
@@ -43,10 +47,14 @@ const cardConfigStruct = assign(
 const SUB_SCHEMA = [
   { name: "entity", selector: { entity: {} }, required: true },
   {
+    name: "name",
+    selector: { entity_name: { default_name: DEFAULT_ENTITY_NAME } },
+    context: { entity: "entity" },
+  },
+  {
     type: "grid",
     name: "",
     schema: [
-      { name: "name", selector: { text: {} } },
       {
         name: "icon",
         selector: {
@@ -81,7 +89,7 @@ const SUB_SCHEMA = [
       },
     })),
   },
-] as const;
+] as const satisfies HaFormSchema[];
 
 const SCHEMA = [
   { name: "title", selector: { text: {} } },
@@ -104,7 +112,7 @@ const SCHEMA = [
     ],
   },
   { name: "state_color", selector: { boolean: {} } },
-] as const;
+] as const satisfies HaFormSchema[];
 
 @customElement("hui-glance-card-editor")
 export class HuiGlanceCardEditor

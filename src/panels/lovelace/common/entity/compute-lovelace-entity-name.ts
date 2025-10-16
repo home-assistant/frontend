@@ -4,6 +4,7 @@ import {
   type EntityNameItem,
 } from "../../../../common/entity/compute_entity_name_display";
 import type { HomeAssistant } from "../../../../types";
+import { ensureArray } from "../../../../common/array/ensure-array";
 
 /**
  * Computes the display name for an entity in Lovelace (cards and badges).
@@ -15,9 +16,21 @@ import type { HomeAssistant } from "../../../../types";
  */
 export const computeLovelaceEntityName = (
   hass: HomeAssistant,
-  stateObj: HassEntity,
+  stateObj: HassEntity | undefined,
   nameConfig: string | EntityNameItem | EntityNameItem[] | undefined
-): string =>
-  typeof nameConfig === "string"
-    ? nameConfig
-    : hass.formatEntityName(stateObj, nameConfig || DEFAULT_ENTITY_NAME);
+): string => {
+  if (typeof nameConfig === "string") {
+    return nameConfig;
+  }
+  const config = ensureArray(nameConfig || DEFAULT_ENTITY_NAME);
+  if (stateObj) {
+    return hass.formatEntityName(stateObj, config);
+  }
+  const textParts = config
+    .filter((item) => item.type === "text")
+    .map((item) => ("text" in item ? item.text : ""));
+  if (textParts.length) {
+    return textParts.join(" ");
+  }
+  return "";
+};
