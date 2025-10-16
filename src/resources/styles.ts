@@ -228,7 +228,7 @@ export const haStyleViewTransitions = css`
       animation: none;
     }
 
-    /* Layout fade out transition */
+    /* Elements leaving the view (loading screen) */
     ::view-transition-group(layout-fade-out) {
       animation-duration: var(--ha-animation-layout-duration);
       animation-timing-function: ease-out;
@@ -240,7 +240,8 @@ export const haStyleViewTransitions = css`
       animation: none;
     }
 
-    /* Layout fade in transition */
+    /* New content entering (panels, subpages)
+       Uses base delay to be less abrupt and allow for elements to render */
     ::view-transition-group(layout-fade-in) {
       animation-duration: var(--ha-animation-layout-duration);
       animation-timing-function: ease-out;
