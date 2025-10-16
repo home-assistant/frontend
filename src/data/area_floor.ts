@@ -218,6 +218,7 @@ export const getAreasAndFloors = (
         type: "floor",
         primary: floorName,
         floor: floor,
+        icon: floor.icon || undefined,
         search_labels: [
           floor.floor_id,
           floorName,

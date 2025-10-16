@@ -1,4 +1,4 @@
-import { mdiDelete, mdiDrag, mdiPencil } from "@mdi/js";
+import { mdiDelete, mdiDragHorizontalVariant, mdiPencil } from "@mdi/js";
 import type { CSSResultGroup, TemplateResult } from "lit";
 import { LitElement, css, html } from "lit";
 import { customElement, property } from "lit/decorators";
@@ -31,7 +31,7 @@ export class HuiSectionEditMode extends LitElement {
           <ha-svg-icon
             aria-hidden="true"
             class="handle"
-            .path=${mdiDrag}
+            .path=${mdiDragHorizontalVariant}
           ></ha-svg-icon>
           <ha-icon-button
             .label=${this.hass.localize("ui.common.edit")}
