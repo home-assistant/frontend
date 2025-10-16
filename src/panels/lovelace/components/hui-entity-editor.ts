@@ -45,13 +45,14 @@ export class HuiEntityEditor extends LitElement {
       this.hass.devices
     );
 
+    const name = this.hass.formatEntityName(
+      stateObj,
+      useDeviceName ? { type: "device" } : { type: "entity" }
+    );
+
     const isRTL = computeRTL(this.hass);
 
-    const primary =
-      this.hass.formatEntityName(
-        stateObj,
-        useDeviceName ? { type: "device" } : { type: "entity" }
-      ) || item.entity;
+    const primary = item.name || name || item.entity;
 
     const secondary = this.hass.formatEntityName(
       stateObj,

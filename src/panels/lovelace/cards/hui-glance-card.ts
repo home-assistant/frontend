@@ -5,6 +5,7 @@ import { classMap } from "lit/directives/class-map";
 import { ifDefined } from "lit/directives/if-defined";
 import { applyThemesOnElement } from "../../../common/dom/apply_themes_on_element";
 import { computeDomain } from "../../../common/entity/compute_domain";
+import { computeStateName } from "../../../common/entity/compute_state_name";
 import "../../../components/entity/state-badge";
 import "../../../components/ha-card";
 import "../../../components/ha-icon";
@@ -18,7 +19,6 @@ import type {
 import { SENSOR_DEVICE_CLASS_TIMESTAMP } from "../../../data/sensor";
 import type { HomeAssistant } from "../../../types";
 import { actionHandler } from "../common/directives/action-handler-directive";
-import { computeLovelaceEntityName } from "../common/entity/compute-lovelace-entity-name";
 import { findEntities } from "../common/find-entities";
 import { handleAction } from "../common/handle-action";
 import { hasAction, hasAnyAction } from "../common/has-action";
@@ -252,11 +252,7 @@ export class HuiGlanceCard extends LitElement implements LovelaceCard {
       </div>`;
     }
 
-    const name = computeLovelaceEntityName(
-      this.hass!,
-      stateObj,
-      entityConf.name
-    );
+    const name = entityConf.name ?? computeStateName(stateObj);
 
     return html`
       <div
@@ -273,9 +269,9 @@ export class HuiGlanceCard extends LitElement implements LovelaceCard {
             : undefined
         )}
       >
-        ${this._config!.show_name && name
-          ? html`<div class="name" .title=${name}>${name}</div>`
-          : nothing}
+        ${this._config!.show_name
+          ? html` <div class="name" .title=${name}>${name}</div> `
+          : ""}
         ${this._config!.show_icon
           ? html`
               <state-badge

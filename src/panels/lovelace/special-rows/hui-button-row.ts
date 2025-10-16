@@ -2,15 +2,15 @@ import { css, html, LitElement, nothing } from "lit";
 import { customElement, state } from "lit/decorators";
 import { DOMAINS_TOGGLE } from "../../../common/const";
 import { computeDomain } from "../../../common/entity/compute_domain";
-import "../../../components/ha-button";
+import { computeStateName } from "../../../common/entity/compute_state_name";
 import "../../../components/ha-state-icon";
-import type { ActionHandlerEvent } from "../../../data/lovelace/action_handler";
+import "../../../components/ha-button";
 import type { HomeAssistant } from "../../../types";
 import { actionHandler } from "../common/directives/action-handler-directive";
-import { computeLovelaceEntityName } from "../common/entity/compute-lovelace-entity-name";
 import { handleAction } from "../common/handle-action";
 import { hasAction } from "../common/has-action";
 import type { ButtonRowConfig, LovelaceRow } from "../entity-rows/types";
+import type { ActionHandlerEvent } from "../../../data/lovelace/action_handler";
 
 @customElement("hui-button-row")
 export class HuiButtonRow extends LitElement implements LovelaceRow {
@@ -40,7 +40,7 @@ export class HuiButtonRow extends LitElement implements LovelaceRow {
   }
 
   protected render() {
-    if (!this._config || !this.hass) {
+    if (!this._config) {
       return nothing;
     }
 
@@ -49,11 +49,8 @@ export class HuiButtonRow extends LitElement implements LovelaceRow {
         ? this.hass.states[this._config.entity]
         : undefined;
 
-    const name = computeLovelaceEntityName(
-      this.hass,
-      stateObj,
-      this._config.name
-    );
+    const name =
+      this._config.name ?? (stateObj ? computeStateName(stateObj) : "");
 
     return html`
       <ha-state-icon

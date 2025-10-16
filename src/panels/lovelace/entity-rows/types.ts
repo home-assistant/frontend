@@ -1,4 +1,3 @@
-import type { EntityNameItem } from "../../../common/entity/compute_entity_name_display";
 import type {
   ActionConfig,
   ConfirmationRestrictionConfig,
@@ -11,7 +10,7 @@ import type { TimestampRenderingFormat } from "../components/types";
 export interface EntityConfig {
   entity: string;
   type?: string;
-  name?: string | EntityNameItem | EntityNameItem[];
+  name?: string;
   icon?: string;
   image?: string;
 }
@@ -51,7 +50,6 @@ export interface TextConfig {
 }
 export interface CallServiceConfig extends EntityConfig {
   type: "call-service" | "perform-action";
-  name?: string;
   /** @deprecated use "action" instead */
   service?: string;
   action: string;

@@ -1,7 +1,6 @@
 import type { CSSResultGroup } from "lit";
 import { css, html, LitElement, nothing } from "lit";
 import { customElement, property, state } from "lit/decorators";
-import memoizeOne from "memoize-one";
 import {
   any,
   array,
@@ -18,6 +17,7 @@ import {
   type,
   union,
 } from "superstruct";
+import memoizeOne from "memoize-one";
 import type { HASSDomEvent } from "../../../../common/dom/fire_event";
 import { fireEvent } from "../../../../common/dom/fire_event";
 import { customType } from "../../../../common/structs/is-custom-type";
@@ -29,9 +29,7 @@ import "../../../../components/ha-textfield";
 import "../../../../components/ha-theme-picker";
 import { isCustomType } from "../../../../data/lovelace_custom_cards";
 import type { HomeAssistant } from "../../../../types";
-import { computeShowHeaderToggle } from "../../cards/hui-entities-card";
 import type { EntitiesCardConfig } from "../../cards/types";
-import { processConfigEntities } from "../../common/process-config-entities";
 import { TIMESTAMP_RENDERING_FORMATS } from "../../components/types";
 import type { LovelaceRowConfig } from "../../entity-rows/types";
 import { headerFooterConfigStructs } from "../../header-footer/structs";
@@ -44,18 +42,19 @@ import { actionConfigStruct } from "../structs/action-struct";
 import { baseLovelaceCardConfig } from "../structs/base-card-struct";
 import { buttonEntityConfigStruct } from "../structs/button-entity-struct";
 import { entitiesConfigStruct } from "../structs/entities-struct";
-import { entityNameStruct } from "../structs/entity-name-struct";
 import type {
-  EditDetailElementEvent,
   EditorTarget,
+  EditDetailElementEvent,
   SubElementEditorConfig,
 } from "../types";
 import { configElementStyle } from "./config-elements-style";
+import { computeShowHeaderToggle } from "../../cards/hui-entities-card";
+import { processConfigEntities } from "../../common/process-config-entities";
 
 const buttonEntitiesRowConfigStruct = object({
   type: literal("button"),
   entity: optional(string()),
-  name: optional(entityNameStruct),
+  name: optional(string()),
   icon: optional(string()),
   action_name: optional(string()),
   tap_action: actionConfigStruct,
@@ -118,7 +117,7 @@ const attributeEntitiesRowConfigStruct = object({
   attribute: string(),
   prefix: optional(string()),
   suffix: optional(string()),
-  name: optional(entityNameStruct),
+  name: optional(string()),
   icon: optional(string()),
   format: optional(enums(TIMESTAMP_RENDERING_FORMATS)),
 });
