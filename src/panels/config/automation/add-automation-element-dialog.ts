@@ -18,6 +18,7 @@ import { classMap } from "lit/directives/class-map";
 import { ifDefined } from "lit/directives/if-defined";
 import { repeat } from "lit/directives/repeat";
 import memoizeOne from "memoize-one";
+import { tinykeys } from "tinykeys";
 import { fireEvent } from "../../../common/dom/fire_event";
 import { computeDomain } from "../../../common/entity/compute_domain";
 import { stringCompare } from "../../../common/string/compare";
@@ -37,6 +38,7 @@ import "../../../components/ha-icon-button-prev";
 import "../../../components/ha-icon-next";
 import "../../../components/ha-md-divider";
 import "../../../components/ha-md-list";
+import type { HaMdList } from "../../../components/ha-md-list";
 import "../../../components/ha-md-list-item";
 import "../../../components/ha-service-icon";
 import "../../../components/ha-wa-dialog";
@@ -146,7 +148,12 @@ class DialogAddAutomationElement
     | HaWaDialog
     | HaBottomSheet;
 
+  @query(".items ha-md-list ha-md-list-item")
+  private _itemsListFirstElement?: HaMdList;
+
   private _fullScreen = false;
+
+  private _removeKeyboardShortcuts?: () => void;
 
   public showDialog(params): void {
     this._params = params;
@@ -201,17 +208,10 @@ class DialogAddAutomationElement
       );
     }
 
-    return {
-      ...TYPES[type].collections.reduce(
-        (acc, collection) => ({ ...acc, ...collection.groups }),
-        {} as AutomationElementGroup
-      ),
-      ...(type === "action"
-        ? ACTION_BUILDING_BLOCKS_GROUP
-        : type === "condition"
-          ? CONDITION_BUILDING_BLOCKS_GROUP
-          : {}),
-    };
+    return TYPES[type].collections.reduce(
+      (acc, collection) => ({ ...acc, ...collection.groups }),
+      {} as AutomationElementGroup
+    );
   };
 
   private _convertToItem = (
@@ -266,6 +266,43 @@ class DialogAddAutomationElement
     }
   );
 
+  private _getFilteredBuildingBlocks = memoizeOne(
+    (
+      type: AddAutomationElementDialogParams["type"],
+      filter: string,
+      localize: LocalizeFunc
+    ): ListItem[] => {
+      const groups =
+        type === "action"
+          ? ACTION_BUILDING_BLOCKS_GROUP
+          : type === "condition"
+            ? CONDITION_BUILDING_BLOCKS_GROUP
+            : {};
+
+      const items = Object.keys(groups).map((key) =>
+        this._convertToItem(key, {}, type, localize)
+      );
+
+      const index = this._fuseIndexBlock(items);
+
+      const fuse = new HaFuse(
+        items,
+        {
+          ignoreLocation: true,
+          includeScore: true,
+          minMatchCharLength: Math.min(2, this._filter.length),
+        },
+        index
+      );
+
+      const results = fuse.multiTermsSearch(filter);
+      if (results) {
+        return results.map((result) => result.item);
+      }
+      return items;
+    }
+  );
+
   private _items = memoizeOne(
     (
       type: AddAutomationElementDialogParams["type"],
@@ -291,6 +328,10 @@ class DialogAddAutomationElement
   );
 
   private _fuseIndex = memoizeOne((items: ListItem[]) =>
+    Fuse.createIndex(["key", "name", "description"], items)
+  );
+
+  private _fuseIndexBlock = memoizeOne((items: ListItem[]) =>
     Fuse.createIndex(["key", "name", "description"], items)
   );
 
@@ -606,6 +647,15 @@ class DialogAddAutomationElement
             )
           : undefined;
 
+    const filteredBlockItems =
+      this._filter && automationElementType !== "trigger"
+        ? this._getFilteredBuildingBlocks(
+            automationElementType,
+            this._filter,
+            this.hass.localize
+          )
+        : undefined;
+
     const collections = this._getCollections(
       automationElementType,
       TYPES[automationElementType].collections,
@@ -671,10 +721,10 @@ class DialogAddAutomationElement
                 slot="navigationIcon"
               ></ha-icon-button>`}
         </ha-dialog-header>
-        ${!this._bottomSheetMode || !this._selectedGroup
+        ${!this._narrow || !this._selectedGroup
           ? html`
               <search-input
-                ?autofocus=${!this._bottomSheetMode}
+                ?autofocus=${!this._narrow}
                 dialogInitialFocus=${ifDefined(
                   this._fullScreen ? undefined : ""
                 )}
@@ -682,12 +732,14 @@ class DialogAddAutomationElement
                 .filter=${this._filter}
                 @value-changed=${this._debounceFilterChanged}
                 .label=${this.hass.localize(`ui.common.search`)}
+                @focus=${this._onSearchFocus}
+                @blur=${this._removeSearchKeybindings}
               ></search-input>
             `
           : nothing}
         ${this._params?.type !== "trigger" &&
         !this._filter &&
-        (!this._bottomSheetMode || !this._selectedGroup)
+        (!this._narrow || !this._selectedGroup)
           ? html`<ha-button-toggle-group
               variant="neutral"
               active-variant="brand"
@@ -699,7 +751,7 @@ class DialogAddAutomationElement
             ></ha-button-toggle-group>`
           : nothing}
       </div>
-      <div id="content">
+      <div class="content">
         <ha-md-list
           class=${classMap({
             groups: true,
@@ -793,8 +845,8 @@ class DialogAddAutomationElement
           )}
         </ha-md-list>
         <div
-          id="items"
           class=${classMap({
+            items: true,
             blank:
               !this._selectedGroup && !this._filter && this._tab === "groups",
             "empty-search": !items?.length && this._filter,
@@ -806,11 +858,19 @@ class DialogAddAutomationElement
           })}
           @scroll=${this._onItemsScroll}
         >
+          ${filteredBlockItems && filteredBlockItems.length
+            ? this._renderItemList(
+                this.hass.localize(`ui.panel.config.automation.editor.blocks`),
+                filteredBlockItems
+              )
+            : nothing}
           ${this._tab === "groups" && !this._selectedGroup && !this._filter
             ? this.hass.localize(
                 `ui.panel.config.automation.editor.${automationElementType}s.select`
               )
-            : !items?.length && this._filter
+            : !items?.length &&
+                this._filter &&
+                (!filteredBlockItems || !filteredBlockItems.length)
               ? html`<span
                   >${this.hass.localize(
                     `ui.panel.config.automation.editor.${automationElementType}s.empty_search`,
@@ -819,52 +879,61 @@ class DialogAddAutomationElement
                     }
                   )}</span
                 >`
-              : html`<div
-                    class="items-title ${this._itemsScrolled ? "elevated" : ""}"
-                  >
-                    ${this.hass.localize(
-                      `ui.panel.config.automation.editor.${automationElementType}s.name`
-                    )}
-                  </div>
-                  <ha-md-list
-                    dialogInitialFocus=${ifDefined(
-                      this._fullScreen ? "" : undefined
-                    )}
-                  >
-                    ${repeat(
-                      items,
-                      (item) => item.key,
-                      (item) => html`
-                        <ha-md-list-item
-                          interactive
-                          type="button"
-                          .value=${item.key}
-                          .group=${item.group}
-                          @click=${this._selected}
-                        >
-                          <div slot="headline">${item.name}</div>
-                          <div slot="supporting-text">${item.description}</div>
-                          ${item.icon
-                            ? html`<span slot="start">${item.icon}</span>`
-                            : item.iconPath
-                              ? html`<ha-svg-icon
-                                  slot="start"
-                                  .path=${item.iconPath}
-                                ></ha-svg-icon>`
-                              : nothing}
-                          ${item.group
-                            ? html`<ha-icon-next slot="end"></ha-icon-next>`
-                            : html`<ha-svg-icon
-                                slot="end"
-                                class="plus"
-                                .path=${mdiPlus}
-                              ></ha-svg-icon>`}
-                        </ha-md-list-item>
-                      `
-                    )}
-                  </ha-md-list>`}
+              : this._renderItemList(
+                  this.hass.localize(
+                    `ui.panel.config.automation.editor.${automationElementType}s.name`
+                  ),
+                  items
+                )}
         </div>
       </div>
+    `;
+  }
+
+  private _renderItemList(title, items?: ListItem[]) {
+    if (!items) {
+      return nothing;
+    }
+
+    return html`
+      <div class="items-title ${this._itemsScrolled ? "scrolled" : ""}">
+        ${title}
+      </div>
+      <ha-md-list
+        dialogInitialFocus=${ifDefined(this._fullScreen ? "" : undefined)}
+      >
+        ${repeat(
+          items,
+          (item) => item.key,
+          (item) => html`
+            <ha-md-list-item
+              interactive
+              type="button"
+              .value=${item.key}
+              .group=${item.group}
+              @click=${this._selected}
+            >
+              <div slot="headline">${item.name}</div>
+              <div slot="supporting-text">${item.description}</div>
+              ${item.icon
+                ? html`<span slot="start">${item.icon}</span>`
+                : item.iconPath
+                  ? html`<ha-svg-icon
+                      slot="start"
+                      .path=${item.iconPath}
+                    ></ha-svg-icon>`
+                  : nothing}
+              ${item.group
+                ? html`<ha-icon-next slot="end"></ha-icon-next>`
+                : html`<ha-svg-icon
+                    slot="end"
+                    class="plus"
+                    .path=${mdiPlus}
+                  ></ha-svg-icon>`}
+            </ha-md-list-item>
+          `
+        )}
+      </ha-md-list>
     `;
   }
 
@@ -895,6 +964,7 @@ class DialogAddAutomationElement
   public disconnectedCallback(): void {
     super.disconnectedCallback();
     window.removeEventListener("resize", this._updateNarrow);
+    this._removeSearchKeybindings();
   }
 
   private _updateNarrow = () => {
@@ -977,9 +1047,37 @@ class DialogAddAutomationElement
     this._itemsScrolled = top > 0;
   }
 
+  private _onSearchFocus(ev) {
+    this._removeKeyboardShortcuts = tinykeys(ev.target, {
+      ArrowDown: this._focusSearchList,
+    });
+  }
+
+  private _removeSearchKeybindings() {
+    this._removeKeyboardShortcuts?.();
+  }
+
+  private _focusSearchList = (ev) => {
+    if (!this._filter || !this._itemsListFirstElement) {
+      return;
+    }
+
+    ev.preventDefault();
+    this._itemsListFirstElement.focus();
+  };
+
   static get styles(): CSSResultGroup {
     return [
       css`
+        ha-bottom-sheet {
+          --ha-bottom-sheet-height: 90vh;
+          --ha-bottom-sheet-height: calc(100dvh - var(--ha-space-12));
+          --ha-bottom-sheet-max-height: var(--ha-bottom-sheet-height);
+          --ha-bottom-sheet-max-width: 888px;
+          --ha-bottom-sheet-padding: var(--ha-space-0);
+          --ha-bottom-sheet-surface-background: var(--card-background-color);
+        }
+
         ha-wa-dialog {
           --dialog-content-padding: var(--ha-space-0);
           --ha-dialog-width-md: 888px;
@@ -1004,16 +1102,9 @@ class DialogAddAutomationElement
           --ha-dialog-max-height: var(--ha-dialog-min-height);
         }
 
-        ha-bottom-sheet {
-          --ha-bottom-sheet-height: 90vh;
-          --ha-bottom-sheet-height: calc(100dvh - var(--ha-space-12));
-          --ha-bottom-sheet-max-height: var(--ha-bottom-sheet-height);
-          --ha-bottom-sheet-max-width: 888px;
-          --ha-bottom-sheet-padding: var(--ha-space-0);
-          --ha-bottom-sheet-surface-background: var(--card-background-color);
-        }
-        ha-icon-next {
-          width: var(--ha-space-6);
+        search-input {
+          display: block;
+          margin: 0 16px;
         }
 
         ha-button-toggle-group {
@@ -1021,24 +1112,29 @@ class DialogAddAutomationElement
             0;
         }
 
+        .content {
+          flex: 1;
+          min-height: 0;
+          height: 100%;
+          display: flex;
+        }
+
         ha-md-list {
           padding: 0;
         }
 
-        #content {
-          flex: 1;
-          height: 100%;
-          display: flex;
-          gap: var(--ha-space-3);
-          padding: var(--ha-space-0) var(--ha-space-4);
+        .items ha-md-list,
+        .groups {
+          padding-bottom: max(var(--safe-area-inset-bottom), var(--ha-space-3));
         }
 
-        ha-md-list.groups {
+        .groups {
           overflow: auto;
           flex: 3;
           border-radius: var(--ha-border-radius-xl);
           border: 1px solid var(--ha-color-border-neutral-quiet);
-          margin: var(--ha-space-3) var(--ha-space-0);
+          margin: var(--ha-space-3) var(--ha-space-0) var(--ha-space-3)
+            var(--ha-space-3);
           --md-list-item-leading-space: var(--ha-space-3);
           --md-list-item-trailing-space: var(--md-list-item-leading-space);
           --md-list-item-bottom-space: var(--ha-space-1);
@@ -1046,90 +1142,16 @@ class DialogAddAutomationElement
           --md-list-item-supporting-text-font: var(--ha-font-size-s);
           --md-list-item-one-line-container-height: var(--ha-space-8);
         }
-
-        ha-md-list.groups ha-md-list-item.selected {
+        ha-bottom-sheet .groups {
+          margin: var(--ha-space-3);
+        }
+        .groups .selected {
           background-color: var(--ha-color-fill-primary-normal-active);
           --md-list-item-label-text-color: var(--primary-color);
           --icon-primary-color: var(--primary-color);
         }
-        ha-md-list.groups ha-md-list-item.selected ha-svg-icon {
+        .groups .selected ha-svg-icon {
           color: var(--primary-color);
-        }
-
-        #items {
-          display: flex;
-          flex-direction: column;
-          overflow: auto;
-          flex: 7;
-        }
-
-        ha-wa-dialog #items {
-          margin-top: var(--ha-space-3);
-        }
-
-        #items,
-        ha-md-list.groups {
-          padding-bottom: max(var(--safe-area-inset-bottom), var(--ha-space-3));
-        }
-
-        ha-bottom-sheet ha-md-list.groups {
-          padding-bottom: max(var(--safe-area-inset-bottom), var(--ha-space-4));
-        }
-
-        #items.blank,
-        #items.empty-search {
-          border-radius: var(--ha-border-radius-xl);
-          background-color: var(--ha-color-surface-default);
-          align-items: center;
-          color: var(--ha-color-text-secondary);
-          padding-bottom: 0;
-          margin-bottom: max(var(--safe-area-inset-bottom), var(--ha-space-3));
-        }
-
-        #items.blank {
-          justify-content: center;
-        }
-        #items.empty-search {
-          padding-top: var(--ha-space-6);
-          justify-content: start;
-        }
-
-        #items ha-md-list {
-          --md-list-item-two-line-container-height: var(--ha-space-12);
-          --md-list-item-leading-space: var(--ha-space-3);
-          --md-list-item-trailing-space: var(--md-list-item-leading-space);
-          --md-list-item-bottom-space: var(--ha-space-2);
-          --md-list-item-top-space: var(--md-list-item-bottom-space);
-          --md-list-item-supporting-text-font: var(--ha-font-size-s);
-          gap: var(--ha-space-2);
-        }
-
-        #items ha-md-list ha-md-list-item {
-          border-radius: var(--ha-border-radius-lg);
-          border: 1px solid var(--ha-color-border-neutral-quiet);
-        }
-
-        #items.hidden,
-        ha-md-list.groups.hidden {
-          display: none;
-        }
-
-        #items .items-title {
-          font-weight: var(--ha-font-weight-medium);
-          padding-bottom: var(--ha-space-2);
-          padding-left: var(--ha-space-4);
-          position: sticky;
-          top: 0;
-          z-index: 1;
-          background-color: var(--card-background-color);
-        }
-
-        ha-bottom-sheet #items .items-title {
-          margin-top: var(--ha-space-3);
-        }
-
-        #items .items-title.elevated {
-          box-shadow: var(--bar-box-shadow);
         }
 
         .collection-title {
@@ -1142,8 +1164,81 @@ class DialogAddAutomationElement
           z-index: 1;
         }
 
-        ha-md-list-item img {
-          width: 24px;
+        .items {
+          display: flex;
+          flex-direction: column;
+          overflow: auto;
+          flex: 7;
+          padding: var(--ha-space-0) var(--ha-space-4);
+        }
+
+        ha-wa-dialog .items {
+          margin-top: var(--ha-space-3);
+        }
+
+        ha-bottom-sheet .groups {
+          padding-bottom: max(var(--safe-area-inset-bottom), var(--ha-space-4));
+        }
+
+        .items.hidden,
+        .groups.hidden {
+          display: none;
+        }
+        .items.blank,
+        .items.empty-search {
+          border-radius: var(--ha-border-radius-xl);
+          background-color: var(--ha-color-surface-default);
+          align-items: center;
+          color: var(--ha-color-text-secondary);
+          padding: var(--ha-space-0);
+          margin: var(--ha-space-3) var(--ha-space-4)
+            max(var(--safe-area-inset-bottom), var(--ha-space-3));
+        }
+
+        .items ha-md-list {
+          --md-list-item-two-line-container-height: var(--ha-space-12);
+          --md-list-item-leading-space: var(--ha-space-3);
+          --md-list-item-trailing-space: var(--md-list-item-leading-space);
+          --md-list-item-bottom-space: var(--ha-space-2);
+          --md-list-item-top-space: var(--md-list-item-bottom-space);
+          --md-list-item-supporting-text-font: var(--ha-font-size-s);
+          gap: var(--ha-space-2);
+        }
+        .items ha-md-list ha-md-list-item {
+          border-radius: var(--ha-border-radius-lg);
+          border: 1px solid var(--ha-color-border-neutral-quiet);
+        }
+
+        .items.blank {
+          justify-content: center;
+        }
+        .items.empty-search {
+          padding-top: var(--ha-space-6);
+          justify-content: start;
+        }
+
+        .items-title {
+          position: sticky;
+          display: flex;
+          align-items: center;
+          font-weight: var(--ha-font-weight-medium);
+          padding: var(--ha-space-2) var(--ha-space-3) var(--ha-space-2)
+            var(--ha-space-8);
+          top: 0;
+          z-index: 1;
+          background-color: var(--card-background-color);
+          margin: var(--ha-space-0) calc(var(--ha-space-4) * -1);
+        }
+        ha-bottom-sheet .items-title {
+          padding-top: var(--ha-space-3);
+        }
+        .items-title.scrolled:first-of-type {
+          box-shadow: var(--bar-box-shadow);
+          border-bottom: 1px solid var(--ha-color-border-neutral-quiet);
+        }
+
+        ha-icon-next {
+          width: var(--ha-space-6);
         }
 
         ha-md-list-item.paste {
@@ -1152,11 +1247,6 @@ class DialogAddAutomationElement
 
         ha-svg-icon.plus {
           color: var(--primary-color);
-        }
-
-        search-input {
-          display: block;
-          margin: 0 16px;
         }
         .shortcut-label {
           display: flex;
