@@ -43,6 +43,7 @@ import { haStyleScrollbar } from "../../resources/styles";
 import { loadVirtualizer } from "../../resources/virtualizer";
 import type { HomeAssistant } from "../../types";
 import { brandsUrl } from "../../util/brands-url";
+import "../chips/ha-chip-set";
 import "../chips/ha-filter-chip";
 import type { HaDevicePickerDeviceFilterFunc } from "../device/ha-device-picker";
 import "../entity/state-badge";
@@ -63,8 +64,7 @@ const CREATE_ID = "___create-new-entity___";
 export class HaTargetPickerSelector extends LitElement {
   @property({ attribute: false }) public hass!: HomeAssistant;
 
-  @property({ attribute: false }) public filterTypes: TargetTypeFloorless[] =
-    [];
+  @property({ attribute: false }) public filterType?: TargetTypeFloorless;
 
   @property({ reflect: true }) public mode: "popover" | "dialog" = "popover";
 
@@ -159,11 +159,10 @@ export class HaTargetPickerSelector extends LitElement {
         @input=${this._searchChanged}
         .value=${this._searchTerm}
       ></ha-textfield>
-      <div class="filter">${this._renderFilterButtons()}</div>
+      <ha-chip-set class="filter">${this._renderFilterButtons()}</ha-chip-set>
       <div class="filter-header-wrapper">
         <div
-          class="filter-header ${this.filterTypes.length !== 1 &&
-          this._filterHeader
+          class="filter-header ${!this.filterType && this._filterHeader
             ? "show"
             : ""}"
         >
@@ -175,7 +174,6 @@ export class HaTargetPickerSelector extends LitElement {
         scroller
         .keyFunction=${this._keyFunction}
         .items=${this._getItems(
-          this.filterTypes,
           this.entityFilter,
           this.deviceFilter,
           this.includeDomains,
@@ -184,7 +182,8 @@ export class HaTargetPickerSelector extends LitElement {
           this._searchTerm,
           this.createDomains,
           this._configEntryLookup,
-          this.mode
+          this.mode,
+          this.filterType
         )}
         .renderItem=${this._renderRow}
         @scroll=${this._onScrollList}
@@ -428,7 +427,7 @@ export class HaTargetPickerSelector extends LitElement {
         return html`<div class="separator"></div>`;
       }
 
-      const selected = this.filterTypes.includes(filterType);
+      const selected = this.filterType === filterType;
       return html`
         <ha-filter-chip
           @click=${this._toggleFilter}
@@ -666,7 +665,6 @@ export class HaTargetPickerSelector extends LitElement {
 
   private _getItems = memoizeOne(
     (
-      filterTypes: TargetTypeFloorless[],
       entityFilter: this["entityFilter"],
       deviceFilter: this["deviceFilter"],
       includeDomains: this["includeDomains"],
@@ -675,7 +673,8 @@ export class HaTargetPickerSelector extends LitElement {
       searchTerm: string,
       createDomains: this["createDomains"],
       configEntryLookup: Record<string, ConfigEntry>,
-      mode: this["mode"]
+      mode: this["mode"],
+      filterType?: TargetTypeFloorless
     ) => {
       const items: (
         | string
@@ -684,7 +683,7 @@ export class HaTargetPickerSelector extends LitElement {
         | PickerComboBoxItem
       )[] = [];
 
-      if (filterTypes.length === 0 || filterTypes.includes("entity")) {
+      if (!filterType || filterType === "entity") {
         let entities = this._getEntitiesMemoized(
           this.hass,
           includeDomains,
@@ -707,7 +706,7 @@ export class HaTargetPickerSelector extends LitElement {
           ) as EntityComboBoxItem[];
         }
 
-        if (entities.length > 0 && filterTypes.length !== 1) {
+        if (!filterType) {
           // show group title
           items.push(
             this.hass.localize("ui.components.target-picker.type.entities")
@@ -717,7 +716,7 @@ export class HaTargetPickerSelector extends LitElement {
         items.push(...entities);
       }
 
-      if (filterTypes.length === 0 || filterTypes.includes("device")) {
+      if (!filterType || filterType === "device") {
         let devices = this._getDevicesMemoized(
           this.hass,
           configEntryLookup,
@@ -735,7 +734,7 @@ export class HaTargetPickerSelector extends LitElement {
           devices = this._filterGroup("device", devices);
         }
 
-        if (devices.length > 0 && filterTypes.length !== 1) {
+        if (!filterType) {
           // show group title
           items.push(
             this.hass.localize("ui.components.target-picker.type.devices")
@@ -745,7 +744,7 @@ export class HaTargetPickerSelector extends LitElement {
         items.push(...devices);
       }
 
-      if (filterTypes.length === 0 || filterTypes.includes("area")) {
+      if (!filterType || filterType === "area") {
         let areasAndFloors = this._getAreasAndFloorsMemoized(
           this.hass.states,
           this.hass.floors,
@@ -771,7 +770,7 @@ export class HaTargetPickerSelector extends LitElement {
           ) as FloorComboBoxItem[];
         }
 
-        if (areasAndFloors.length > 0 && filterTypes.length !== 1) {
+        if (!filterType) {
           // show group title
           items.push(
             this.hass.localize("ui.components.target-picker.type.areas")
@@ -797,7 +796,7 @@ export class HaTargetPickerSelector extends LitElement {
         );
       }
 
-      if (filterTypes.length === 0 || filterTypes.includes("label")) {
+      if (!filterType || filterType === "label") {
         let labels = this._getLabelsMemoized(
           this.hass,
           this._labelRegistry,
@@ -813,7 +812,7 @@ export class HaTargetPickerSelector extends LitElement {
           labels = this._filterGroup("label", labels);
         }
 
-        if (labels.length > 0 && filterTypes.length !== 1) {
+        if (!filterType) {
           // show group title
           items.push(
             this.hass.localize("ui.components.target-picker.type.labels")
@@ -945,11 +944,10 @@ export class HaTargetPickerSelector extends LitElement {
     if (!type) {
       return;
     }
-    const index = this.filterTypes.indexOf(type);
-    if (index === -1) {
-      this.filterTypes = [...this.filterTypes, type];
+    if (this.filterType === type) {
+      this.filterType = undefined;
     } else {
-      this.filterTypes = this.filterTypes.filter((t) => t !== type);
+      this.filterType = type;
     }
 
     // Reset scroll position when filter changes
@@ -957,7 +955,7 @@ export class HaTargetPickerSelector extends LitElement {
       this._virtualizerElement.scrollToIndex(0);
     }
 
-    fireEvent(this, "filter-types-changed", this.filterTypes);
+    fireEvent(this, "filter-type-changed", this.filterType);
   }
 
   @eventOptions({ passive: true })
@@ -989,6 +987,7 @@ export class HaTargetPickerSelector extends LitElement {
 
       .filter {
         display: flex;
+        flex-wrap: nowrap;
         gap: var(--ha-space-2);
         padding: var(--ha-space-3) var(--ha-space-3);
         overflow: auto;
@@ -1095,7 +1094,7 @@ declare global {
   }
 
   interface HASSDomEvents {
-    "filter-types-changed": TargetTypeFloorless[];
+    "filter-type-changed": TargetTypeFloorless | undefined;
     "target-picked": {
       type: TargetType;
       id: string;
