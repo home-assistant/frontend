@@ -238,15 +238,5 @@ export const haStyleViewTransitions = css`
       animation: fade-in var(--ha-animation-layout-duration) ease-out;
       animation-delay: var(--ha-animation-layout-delay-base);
     }
-
-    /* Fade in slide down animation */
-    ::view-transition-group(fade-in-slide-down) {
-      animation-duration: var(--ha-animation-layout-duration);
-      animation-timing-function: ease-out;
-    }
-    ::view-transition-new(fade-in-slide-down) {
-      animation: fade-in-slide-down var(--ha-animation-layout-duration) ease-out;
-      animation-delay: var(--ha-animation-layout-delay-base);
-    }
   }
 `;
