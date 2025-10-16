@@ -275,7 +275,7 @@ export class HaTargetPicker extends SubscribeMixin(LitElement) {
                 auto-size-padding="16"
                 @wa-after-show=${this._showSelector}
                 @wa-after-hide=${this._hidePicker}
-                focus-trap
+                trap-focus
                 role="dialog"
                 aria-modal="true"
                 aria-label=${this.hass.localize(
