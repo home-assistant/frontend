@@ -29,7 +29,6 @@ import type {
 import { debounce } from "../../../common/util/debounce";
 import { deepEqual } from "../../../common/util/deep-equal";
 import "../../../components/ha-bottom-sheet";
-import type { HaBottomSheet } from "../../../components/ha-bottom-sheet";
 import "../../../components/ha-button-toggle-group";
 import "../../../components/ha-dialog-header";
 import "../../../components/ha-domain-icon";
@@ -42,7 +41,6 @@ import type { HaMdList } from "../../../components/ha-md-list";
 import "../../../components/ha-md-list-item";
 import "../../../components/ha-service-icon";
 import "../../../components/ha-wa-dialog";
-import type { HaWaDialog } from "../../../components/ha-wa-dialog";
 import "../../../components/search-input";
 import {
   ACTION_BUILDING_BLOCKS_GROUP,
@@ -144,12 +142,11 @@ class DialogAddAutomationElement
 
   @state() private _narrow = false;
 
-  @query("ha-wa-dialog, ha-bottom-sheet") private _dialogElement?:
-    | HaWaDialog
-    | HaBottomSheet;
-
   @query(".items ha-md-list ha-md-list-item")
   private _itemsListFirstElement?: HaMdList;
+
+  @query(".items")
+  private _itemsListElement?: HTMLDivElement;
 
   private _fullScreen = false;
 
@@ -672,8 +669,10 @@ class DialogAddAutomationElement
           this._manifests?.[getService(this._selectedGroup!)]
         )
       : this.hass.localize(
-          // @ts-ignore
-          `ui.panel.config.automation.editor.${this._params.type}s.groups.${this._selectedGroup}.label`
+          `ui.panel.config.automation.editor.${this._params!.type}s.groups.${this._selectedGroup}.label` as LocalizeKeys
+        ) ||
+        this.hass.localize(
+          `ui.panel.config.automation.editor.${this._params!.type}s.type.${this._selectedGroup}.label` as LocalizeKeys
         );
 
     const typeTitle = this.hass.localize(
@@ -725,9 +724,6 @@ class DialogAddAutomationElement
           ? html`
               <search-input
                 ?autofocus=${!this._narrow}
-                dialogInitialFocus=${ifDefined(
-                  this._fullScreen ? undefined : ""
-                )}
                 .hass=${this.hass}
                 .filter=${this._filter}
                 @value-changed=${this._debounceFilterChanged}
@@ -757,7 +753,6 @@ class DialogAddAutomationElement
             groups: true,
             hidden: hideCollections,
           })}
-          dialogInitialFocus=${ifDefined(this._fullScreen ? "" : undefined)}
         >
           ${this._params!.clipboardItem && !this._filter
             ? html`<ha-md-list-item
@@ -978,11 +973,6 @@ class DialogAddAutomationElement
   }
 
   private _back() {
-    this._dialogElement?.bodyContainer.scrollTo(0, 0);
-    if (this._filter) {
-      this._filter = "";
-      return;
-    }
     this._selectedGroup = undefined;
   }
 
@@ -993,9 +983,11 @@ class DialogAddAutomationElement
       this._selectedCollectionIndex = undefined;
       return;
     }
-    this._dialogElement?.bodyContainer.scrollTo(0, 0);
     this._selectedGroup = group.value;
     this._selectedCollectionIndex = ev.currentTarget.index;
+    requestAnimationFrame(() => {
+      this._itemsListElement?.scrollTo(0, 0);
+    });
   }
 
   private _selected(ev) {
@@ -1104,7 +1096,7 @@ class DialogAddAutomationElement
 
         search-input {
           display: block;
-          margin: 0 16px;
+          margin: var(--ha-space-0) var(--ha-space-4);
         }
 
         ha-button-toggle-group {
@@ -1133,14 +1125,14 @@ class DialogAddAutomationElement
           flex: 3;
           border-radius: var(--ha-border-radius-xl);
           border: 1px solid var(--ha-color-border-neutral-quiet);
-          margin: var(--ha-space-3) var(--ha-space-0) var(--ha-space-3)
-            var(--ha-space-3);
+          margin: var(--ha-space-3);
+          margin-inline-end: var(--ha-space-0);
           --md-list-item-leading-space: var(--ha-space-3);
           --md-list-item-trailing-space: var(--md-list-item-leading-space);
           --md-list-item-bottom-space: var(--ha-space-1);
           --md-list-item-top-space: var(--md-list-item-bottom-space);
           --md-list-item-supporting-text-font: var(--ha-font-size-s);
-          --md-list-item-one-line-container-height: var(--ha-space-8);
+          --md-list-item-one-line-container-height: var(--ha-space-10);
         }
         ha-bottom-sheet .groups {
           margin: var(--ha-space-3);
@@ -1161,6 +1153,9 @@ class DialogAddAutomationElement
           color: var(--secondary-text-color);
           top: 0;
           position: sticky;
+          min-height: var(--ha-space-6);
+          display: flex;
+          align-items: center;
           z-index: 1;
         }
 
@@ -1169,7 +1164,6 @@ class DialogAddAutomationElement
           flex-direction: column;
           overflow: auto;
           flex: 7;
-          padding: var(--ha-space-0) var(--ha-space-4);
         }
 
         ha-wa-dialog .items {
@@ -1203,6 +1197,7 @@ class DialogAddAutomationElement
           --md-list-item-top-space: var(--md-list-item-bottom-space);
           --md-list-item-supporting-text-font: var(--ha-font-size-s);
           gap: var(--ha-space-2);
+          padding: var(--ha-space-0) var(--ha-space-4);
         }
         .items ha-md-list ha-md-list-item {
           border-radius: var(--ha-border-radius-lg);
@@ -1222,12 +1217,13 @@ class DialogAddAutomationElement
           display: flex;
           align-items: center;
           font-weight: var(--ha-font-weight-medium);
-          padding: var(--ha-space-2) var(--ha-space-3) var(--ha-space-2)
-            var(--ha-space-8);
+          padding-top: var(--ha-space-2);
+          padding-bottom: var(--ha-space-2);
+          padding-inline-start: var(--ha-space-8);
+          padding-inline-end: var(--ha-space-3);
           top: 0;
           z-index: 1;
           background-color: var(--card-background-color);
-          margin: var(--ha-space-0) calc(var(--ha-space-4) * -1);
         }
         ha-bottom-sheet .items-title {
           padding-top: var(--ha-space-3);
@@ -1258,7 +1254,7 @@ class DialogAddAutomationElement
           font-size: var(--ha-font-size-s);
         }
         .shortcut-label .shortcut {
-          --mdc-icon-size: 12px;
+          --mdc-icon-size: var(--ha-space-3);
           display: inline-flex;
           flex-direction: row;
           align-items: center;

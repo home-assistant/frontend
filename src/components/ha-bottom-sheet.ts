@@ -1,6 +1,6 @@
 import "@home-assistant/webawesome/dist/components/drawer/drawer";
 import { css, html, LitElement, type PropertyValues } from "lit";
-import { customElement, property, query, state } from "lit/decorators";
+import { customElement, property, state } from "lit/decorators";
 import { haStyleScrollbar } from "../resources/styles";
 
 export const BOTTOM_SHEET_ANIMATION_DURATION_MS = 300;
@@ -13,8 +13,6 @@ export class HaBottomSheet extends LitElement {
   public flexContent = false;
 
   @state() private _drawerOpen = false;
-
-  @query(".body") public bodyContainer!: HTMLDivElement;
 
   private _handleAfterHide() {
     this.open = false;
