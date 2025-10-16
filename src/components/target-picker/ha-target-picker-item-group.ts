@@ -18,7 +18,7 @@ export class HaTargetPickerItemGroup extends LitElement {
     Record<TargetType, string[]>
   >;
 
-  @property({ type: Boolean }) public collapsed = false;
+  @property({ type: Boolean, reflect: true }) public collapsed = false;
 
   @property({ attribute: false })
   public deviceFilter?: HaDevicePickerDeviceFilterFunc;
