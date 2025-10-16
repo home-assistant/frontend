@@ -220,6 +220,14 @@ export const haStyleViewTransitions = css`
   }
 
   @media (prefers-reduced-motion: no-preference) {
+    /* Prevent root cross-fade during view transitions (pseudo-element) */
+    ::view-transition-old(root) {
+      animation: none;
+    }
+    ::view-transition-new(root) {
+      animation: none;
+    }
+
     /* Layout fade out transition */
     ::view-transition-group(layout-fade-out) {
       animation-duration: var(--ha-animation-layout-duration);
@@ -227,6 +235,9 @@ export const haStyleViewTransitions = css`
     }
     ::view-transition-old(layout-fade-out) {
       animation: fade-out var(--ha-animation-layout-duration) ease-out;
+    }
+    ::view-transition-new(layout-fade-out) {
+      animation: none;
     }
 
     /* Layout fade in transition */
