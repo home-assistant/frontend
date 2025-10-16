@@ -36,8 +36,6 @@ export class HaTargetPicker extends SubscribeMixin(LitElement) {
 
   @property({ attribute: false }) public value?: HassServiceTarget;
 
-  @property() public label?: string;
-
   @property() public helper?: string;
 
   @property({ type: Boolean, reflect: true }) public compact = false;
@@ -277,6 +275,12 @@ export class HaTargetPicker extends SubscribeMixin(LitElement) {
                 auto-size-padding="16"
                 @wa-after-show=${this._showSelector}
                 @wa-after-hide=${this._hidePicker}
+                focus-trap
+                role="dialog"
+                aria-modal="true"
+                aria-label=${this.hass.localize(
+                  "ui.components.target-picker.add_target"
+                )}
               >
                 ${this._renderTargetSelector()}
               </wa-popover>
@@ -287,6 +291,11 @@ export class HaTargetPicker extends SubscribeMixin(LitElement) {
                 .open=${this._pickerWrapperOpen}
                 @wa-after-show=${this._showSelector}
                 @closed=${this._hidePicker}
+                role="dialog"
+                aria-modal="true"
+                aria-label=${this.hass.localize(
+                  "ui.components.target-picker.add_target"
+                )}
               >
                 ${this._renderTargetSelector(true)}
               </ha-bottom-sheet>`
