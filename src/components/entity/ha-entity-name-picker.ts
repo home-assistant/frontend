@@ -288,7 +288,10 @@ export class HaEntityNamePicker extends LitElement {
 
   private _toItems = memoizeOne((value?: typeof this.value) => {
     if (typeof value === "string") {
-      return [{ type: "text", text: value } as const];
+      if (value === "") {
+        return [];
+      }
+      return [{ type: "text", text: value } satisfies EntityNameItem];
     }
     return value ? ensureArray(value) : [];
   });
@@ -296,7 +299,7 @@ export class HaEntityNamePicker extends LitElement {
   private _toValue = memoizeOne(
     (items: EntityNameItem[]): typeof this.value => {
       if (items.length === 0) {
-        return [];
+        return "";
       }
       if (items.length === 1) {
         const item = items[0];
