@@ -37,6 +37,7 @@
         flex-direction: column;
         justify-content: center;
         align-items: center;
+        view-transition-name: loading-screen;
       }
       #ha-launch-screen svg {
         width: 112px;

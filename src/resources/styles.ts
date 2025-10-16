@@ -210,6 +210,15 @@ export const haStyleViewTransitions = css`
     }
   }
 
+  @keyframes fade-out {
+    from {
+      opacity: 1;
+    }
+    to {
+      opacity: 0;
+    }
+  }
+
   @keyframes fade-in-slide-up {
     from {
       opacity: 0;
@@ -233,7 +242,15 @@ export const haStyleViewTransitions = css`
   }
 
   @media (prefers-reduced-motion: no-preference) {
-    /* Fade in animation */
+    /* Loading screen fade out */
+    ::view-transition-group(loading-screen) {
+      animation-duration: var(--ha-animation-duration);
+      animation-timing-function: ease-out;
+    }
+    ::view-transition-old(loading-screen) {
+      animation: fade-out var(--ha-animation-duration) ease-out;
+    }
+
     ::view-transition-group(fade-in) {
       animation-duration: var(--ha-animation-duration);
       animation-timing-function: ease-out;
