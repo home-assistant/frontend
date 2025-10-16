@@ -54,7 +54,7 @@ export class HaDialogHeader extends LitElement {
         }
         .header-content {
           flex: 1;
-          padding: 10px 4px;
+          padding: 10px var(--ha-space-1);
           display: flex;
           flex-direction: column;
           justify-content: center;
@@ -67,7 +67,7 @@ export class HaDialogHeader extends LitElement {
         .header-title {
           height: var(
             --ha-dialog-header-title-height,
-            calc(var(--ha-font-size-xl) + 4px)
+            calc(var(--ha-font-size-xl) + var(--ha-space-1))
           );
           font-size: var(--ha-font-size-xl);
           line-height: var(--ha-line-height-condensed);
@@ -85,14 +85,14 @@ export class HaDialogHeader extends LitElement {
         }
         .header-navigation-icon {
           flex: none;
-          min-width: 8px;
+          min-width: var(--ha-space-2);
           height: 100%;
           display: flex;
           flex-direction: row;
         }
         .header-action-items {
           flex: none;
-          min-width: 8px;
+          min-width: var(--ha-space-2);
           height: 100%;
           display: flex;
           flex-direction: row;
