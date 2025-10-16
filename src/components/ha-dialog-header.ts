@@ -55,6 +55,10 @@ export class HaDialogHeader extends LitElement {
         .header-content {
           flex: 1;
           padding: 10px 4px;
+          display: flex;
+          flex-direction: column;
+          justify-content: center;
+          min-height: var(--ha-space-12);
           min-width: 0;
           overflow: hidden;
           text-overflow: ellipsis;
