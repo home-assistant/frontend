@@ -10,6 +10,8 @@ export const ViewTransitionMixin = <
   abstract class ViewTransitionClass extends superClass {
     private _slot?: HTMLSlotElement;
 
+    private _transitionTriggered = false;
+
     /**
      * Trigger a view transition if supported by the browser
      * @param updateCallback - Callback function that updates the DOM
@@ -47,9 +49,15 @@ export const ViewTransitionMixin = <
      * Check if slot has content and trigger transition if it does
      */
     private _checkSlotContent = (): void => {
+      // Guard against multiple slotchange events triggering the transition multiple times
+      if (this._transitionTriggered) {
+        return;
+      }
+
       if (this._slot) {
         const elements = this._slot.assignedElements();
         if (elements.length > 0) {
+          this._transitionTriggered = true;
           this.onLoadTransition?.();
         }
       }
