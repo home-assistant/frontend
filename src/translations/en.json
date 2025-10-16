@@ -4216,6 +4216,9 @@
               "cut_to_clipboard": "Condition cut to clipboard",
               "select": "Select a condition",
               "groups": {
+                "device": {
+                  "label": "Device"
+                },
                 "entity": {
                   "label": "Entity"
                 },
@@ -4383,6 +4386,9 @@
               "cut_to_clipboard": "Action cut to clipboard",
               "select": "Select an action",
               "groups": {
+                "device_id": {
+                  "label": "Device"
+                },
                 "helpers": {
                   "label": "Helpers"
                 },
