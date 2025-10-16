@@ -29,7 +29,6 @@ import type {
 import { debounce } from "../../../common/util/debounce";
 import { deepEqual } from "../../../common/util/deep-equal";
 import "../../../components/ha-bottom-sheet";
-import type { HaBottomSheet } from "../../../components/ha-bottom-sheet";
 import "../../../components/ha-button-toggle-group";
 import "../../../components/ha-dialog-header";
 import "../../../components/ha-domain-icon";
@@ -42,7 +41,6 @@ import type { HaMdList } from "../../../components/ha-md-list";
 import "../../../components/ha-md-list-item";
 import "../../../components/ha-service-icon";
 import "../../../components/ha-wa-dialog";
-import type { HaWaDialog } from "../../../components/ha-wa-dialog";
 import "../../../components/search-input";
 import {
   ACTION_BUILDING_BLOCKS_GROUP,
@@ -140,18 +138,20 @@ class DialogAddAutomationElement
 
   @state() private _itemsScrolled = false;
 
+  @state() private _groupsScrolled = false;
+
   @state() private _bottomSheetMode = false;
 
   @state() private _narrow = false;
 
-  @query("ha-wa-dialog, ha-bottom-sheet") private _dialogElement?:
-    | HaWaDialog
-    | HaBottomSheet;
-
   @query(".items ha-md-list ha-md-list-item")
   private _itemsListFirstElement?: HaMdList;
 
+  @query(".content") private _contentElement?: HTMLDivElement;
+
   private _fullScreen = false;
+
+  private _lockResizeBottomSheet = false;
 
   private _removeKeyboardShortcuts?: () => void;
 
@@ -184,6 +184,7 @@ class DialogAddAutomationElement
     }
     this._open = true;
     this._itemsScrolled = false;
+    this._groupsScrolled = false;
     this._bottomSheetMode = false;
     this._params = undefined;
     this._selectedGroup = undefined;
@@ -758,6 +759,7 @@ class DialogAddAutomationElement
             hidden: hideCollections,
           })}
           dialogInitialFocus=${ifDefined(this._fullScreen ? "" : undefined)}
+          @scroll=${this._onGroupsScroll}
         >
           ${this._params!.clipboardItem && !this._filter
             ? html`<ha-md-list-item
@@ -978,12 +980,8 @@ class DialogAddAutomationElement
   }
 
   private _back() {
-    this._dialogElement?.bodyContainer.scrollTo(0, 0);
-    if (this._filter) {
-      this._filter = "";
-      return;
-    }
     this._selectedGroup = undefined;
+    this._checkBottomSHeetResizeLock();
   }
 
   private _groupSelected(ev) {
@@ -993,9 +991,9 @@ class DialogAddAutomationElement
       this._selectedCollectionIndex = undefined;
       return;
     }
-    this._dialogElement?.bodyContainer.scrollTo(0, 0);
     this._selectedGroup = group.value;
     this._selectedCollectionIndex = ev.currentTarget.index;
+    this._checkBottomSHeetResizeLock();
   }
 
   private _selected(ev) {
@@ -1045,7 +1043,45 @@ class DialogAddAutomationElement
   private _onItemsScroll(ev) {
     const top = ev.target.scrollTop ?? 0;
     this._itemsScrolled = top > 0;
+    this._checkBottomSHeetResizeLock();
   }
+
+  @eventOptions({ passive: true })
+  private _onGroupsScroll(ev) {
+    const top = ev.target.scrollTop ?? 0;
+    this._groupsScrolled = top > 0;
+    this._checkBottomSHeetResizeLock();
+  }
+
+  private _checkBottomSHeetResizeLock = () => {
+    if (!this._bottomSheetMode || !this._contentElement) {
+      return;
+    }
+
+    if (
+      this._lockResizeBottomSheet &&
+      ((!this._selectedGroup && !this._filter && !this._groupsScrolled) ||
+        ((this._filter || this._selectedGroup) && !this._itemsScrolled))
+    ) {
+      this._lockResizeBottomSheet = false;
+      fireEvent(
+        this._contentElement,
+        "bottom-sheet-lock-resize-changed",
+        this._lockResizeBottomSheet
+      );
+    } else if (
+      !this._lockResizeBottomSheet &&
+      ((!this._selectedGroup && !this._filter && this._groupsScrolled) ||
+        ((this._filter || this._selectedGroup) && this._itemsScrolled))
+    ) {
+      this._lockResizeBottomSheet = true;
+      fireEvent(
+        this._contentElement,
+        "bottom-sheet-lock-resize-changed",
+        this._lockResizeBottomSheet
+      );
+    }
+  };
 
   private _onSearchFocus(ev) {
     this._removeKeyboardShortcuts = tinykeys(ev.target, {
