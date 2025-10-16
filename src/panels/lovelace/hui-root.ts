@@ -503,7 +503,7 @@ class HUIRoot extends ViewTransitionMixin(LitElement) {
         class=${classMap({
           "edit-mode": this._editMode,
           narrow: this.narrow,
-          loaded: this._loaded,
+          loading: !this._loaded,
         })}
       >
         <div class="header">
@@ -1229,13 +1229,21 @@ class HUIRoot extends ViewTransitionMixin(LitElement) {
           -webkit-user-select: none;
           -moz-user-select: none;
         }
+
         :host > div {
+          view-transition-name: hui-root-container;
+        }
+        :host > div.loading {
           opacity: 0;
-          transition: opacity 0.3s ease-in;
         }
-        :host > div.loaded {
-          opacity: 1;
+
+        @media (prefers-reduced-motion: no-preference) {
+          ::view-transition-new(hui-root-container) {
+            animation: fade-in var(--ha-animation-layout-duration) ease-out;
+            animation-delay: var(--ha-animation-layout-delay-base);
+          }
         }
+
         .header {
           background-color: var(--app-header-background-color);
           color: var(--app-header-text-color, white);
@@ -1284,7 +1292,6 @@ class HUIRoot extends ViewTransitionMixin(LitElement) {
           padding: 0px 12px;
           font-weight: var(--ha-font-weight-normal);
           box-sizing: border-box;
-          view-transition-name: layout-fade-in;
         }
         .narrow .toolbar {
           padding: 0 4px;

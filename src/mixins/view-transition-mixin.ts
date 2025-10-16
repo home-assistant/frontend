@@ -12,20 +12,15 @@ export const ViewTransitionMixin = <T extends Constructor<LitElement>>(
      * @returns Promise that resolves when the transition is complete
      */
     protected async startViewTransition(
-      updateCallback: () => void | Promise<void>,
-      transitionName?: string
+      updateCallback: () => void | Promise<void>
     ): Promise<void> {
       if (
         !document.startViewTransition ||
         window.matchMedia("(prefers-reduced-motion: reduce)").matches
       ) {
-        // Fallback: run the update without a transition
+        // Fallback: update without view transition
         await updateCallback();
         return;
-      }
-
-      if (transitionName) {
-        this.dataset.viewTransition = transitionName;
       }
 
       const transition = document.startViewTransition(async () => {
@@ -35,12 +30,7 @@ export const ViewTransitionMixin = <T extends Constructor<LitElement>>(
       try {
         await transition.finished;
       } catch (_error) {
-        // Transitions can be skipped
-      } finally {
-        // Clean up transition name if provided
-        if (transitionName) {
-          delete this.dataset.viewTransition;
-        }
+        // View transition skipped
       }
     }
 
