@@ -135,7 +135,6 @@ export class HomeMainViewStrategy extends ReactiveElement {
     const commonControlsSection = {
       strategy: {
         type: "common-controls",
-        title: hass.localize("ui.panel.lovelace.strategy.home.common_controls"),
         limit: maxCommonControls,
         include_entities: favoriteEntities,
         hide_empty: true,

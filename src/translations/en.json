@@ -6929,8 +6929,7 @@
             "areas": "Areas",
             "other_areas": "Other areas",
             "unamed_device": "Unnamed device",
-            "others": "Others",
-            "common_controls": "Commonly used"
+            "others": "Others"
           },
           "common_controls": {
             "not_loaded": "Usage Prediction integration is not loaded.",
