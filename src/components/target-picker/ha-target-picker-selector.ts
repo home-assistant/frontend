@@ -1019,10 +1019,14 @@ export class HaTargetPickerSelector extends LitElement {
         padding: var(--ha-space-1) var(--ha-space-2);
         font-weight: var(--ha-font-weight-bold);
         color: var(--secondary-text-color);
+        min-height: var(--ha-space-6);
+        display: flex;
+        align-items: center;
       }
 
       .title {
         width: 100%;
+        min-height: var(--ha-space-8);
       }
 
       :host([mode="dialog"]) .title {
