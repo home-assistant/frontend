@@ -26,6 +26,9 @@ export const computeLovelaceEntityName = (
   if (stateObj) {
     return hass.formatEntityName(stateObj, config);
   }
+  // If entity is not found, fall back to text parts in config
+  // This allows for static names even when the entity is missing
+  // e.g. for a card that doesn't require an entity
   const textParts = ensureArray(config)
     .filter((item) => item.type === "text")
     .map((item) => ("text" in item ? item.text : ""));
