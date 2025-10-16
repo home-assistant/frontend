@@ -1,4 +1,4 @@
-import { mdiClose, mdiDrag, mdiPencil } from "@mdi/js";
+import { mdiClose, mdiDragHorizontalVariant, mdiPencil } from "@mdi/js";
 import { css, html, LitElement, nothing } from "lit";
 import { customElement, property } from "lit/decorators";
 import { repeat } from "lit/directives/repeat";
@@ -66,7 +66,11 @@ export class HuiEntityEditor extends LitElement {
 
     return html`
       <ha-md-list-item class="item">
-        <ha-svg-icon class="handle" .path=${mdiDrag} slot="start"></ha-svg-icon>
+        <ha-svg-icon
+          class="handle"
+          .path=${mdiDragHorizontalVariant}
+          slot="start"
+        ></ha-svg-icon>
 
         <div slot="headline" class="label">${primary}</div>
         ${secondary
@@ -152,7 +156,9 @@ export class HuiEntityEditor extends LitElement {
                 (entityConf, index) => html`
                   <div class="entity" data-entity-id=${entityConf.entity}>
                     <div class="handle">
-                      <ha-svg-icon .path=${mdiDrag}></ha-svg-icon>
+                      <ha-svg-icon
+                        .path=${mdiDragHorizontalVariant}
+                      ></ha-svg-icon>
                     </div>
                     <ha-entity-picker
                       .hass=${this.hass}

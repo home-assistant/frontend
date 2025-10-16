@@ -520,6 +520,7 @@ export class HaTargetPickerSelector extends LitElement {
         id=${`list-item-${index}`}
         tabindex="-1"
         .type=${type === "empty" ? "text" : "button"}
+        class=${type === "empty" ? "empty" : ""}
         @click=${this._handlePickTarget}
         .targetType=${type}
         .targetId=${type !== "empty" ? item.id : undefined}
@@ -574,9 +575,7 @@ export class HaTargetPickerSelector extends LitElement {
                       })}
                     />
                   `
-                : type === "area" &&
-                    (item as FloorComboBoxItem).type === "floor" &&
-                    (item as FloorComboBoxItem).floor
+                : type === "floor"
                   ? html`<ha-floor-icon
                       slot="start"
                       .floor=${(item as FloorComboBoxItem).floor!}
@@ -836,7 +835,7 @@ export class HaTargetPickerSelector extends LitElement {
           id: EMPTY_SEARCH,
           primary: this.hass.localize(
             "ui.components.target-picker.no_target_found",
-            { term: html`<span class="search-term">"${searchTerm}"</span>` }
+            { term: html`<div><b>‘${searchTerm}’</b></div>` }
           ),
         });
       } else if (items.length === 0) {
@@ -1023,10 +1022,14 @@ export class HaTargetPickerSelector extends LitElement {
         padding: var(--ha-space-1) var(--ha-space-2);
         font-weight: var(--ha-font-weight-bold);
         color: var(--secondary-text-color);
+        min-height: var(--ha-space-6);
+        display: flex;
+        align-items: center;
       }
 
       .title {
         width: 100%;
+        min-height: var(--ha-space-8);
       }
 
       :host([mode="dialog"]) .title {
@@ -1058,7 +1061,6 @@ export class HaTargetPickerSelector extends LitElement {
 
       .filter-header {
         opacity: 0;
-        transition: opacity 300ms ease-in;
         position: absolute;
         top: 1px;
         width: calc(100% - var(--ha-space-8));
@@ -1086,9 +1088,8 @@ export class HaTargetPickerSelector extends LitElement {
         width: 100%;
       }
 
-      .search-term {
-        color: var(--primary-color);
-        font-weight: var(--ha-font-weight-medium);
+      .empty {
+        text-align: center;
       }
     `,
   ];

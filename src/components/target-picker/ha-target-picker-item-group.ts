@@ -18,7 +18,7 @@ export class HaTargetPickerItemGroup extends LitElement {
     Record<TargetType, string[]>
   >;
 
-  @property({ type: Boolean }) public collapsed = false;
+  @property({ type: Boolean, reflect: true }) public collapsed = false;
 
   @property({ attribute: false })
   public deviceFilter?: HaDevicePickerDeviceFilterFunc;
@@ -50,7 +50,11 @@ export class HaTargetPickerItemGroup extends LitElement {
       }
     });
 
-    return html`<ha-expansion-panel .expanded=${!this.collapsed} left-chevron>
+    return html`<ha-expansion-panel
+      .expanded=${!this.collapsed}
+      left-chevron
+      @expanded-changed=${this._expandedChanged}
+    >
       <div slot="header" class="heading">
         ${this.hass.localize(
           `ui.components.target-picker.selected.${this.type}`,
@@ -76,6 +80,10 @@ export class HaTargetPickerItemGroup extends LitElement {
           : nothing
       )}
     </ha-expansion-panel>`;
+  }
+
+  private _expandedChanged(ev: CustomEvent) {
+    this.collapsed = !ev.detail.expanded;
   }
 
   static styles = css`

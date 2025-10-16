@@ -130,7 +130,7 @@ export class HaTargetPickerItemRow extends LitElement {
 
     return html`
       <ha-md-list-item type="text">
-        <div slot="start">
+        <div class="icon" slot="start">
           ${this.subEntry
             ? html`
                 <div class="horizontal-line-wrapper">
@@ -172,7 +172,9 @@ export class HaTargetPickerItemRow extends LitElement {
         ((entries && (showEntities || showDevices)) || this._domainName)
           ? html`
               <div slot="end" class="summary">
-                ${showEntities && !this.expand
+                ${showEntities &&
+                !this.expand &&
+                entries?.referenced_entities.length
                   ? html`<button class="main link" @click=${this._openDetails}>
                       ${this.hass.localize(
                         "ui.components.target-picker.entities_count",
@@ -606,6 +608,11 @@ export class HaTargetPickerItemRow extends LitElement {
       state-badge {
         color: var(--ha-color-on-neutral-quiet);
       }
+
+      .icon {
+        display: flex;
+      }
+
       img {
         width: 24px;
         height: 24px;
@@ -628,9 +635,6 @@ export class HaTargetPickerItemRow extends LitElement {
       .summary .secondary {
         font-size: var(--ha-font-size-s);
         color: var(--secondary-text-color);
-      }
-      .domain {
-        font-family: var(--ha-font-family-code);
       }
 
       .entries-tree {
