@@ -65,19 +65,15 @@ export const ViewTransitionMixin = <
       const slot = this.shadowRoot?.querySelector("slot:not([name])");
       if (slot) {
         const checkContent = () => {
-          const nodes = (slot as HTMLSlotElement).assignedNodes({
-            flatten: true,
-          });
-          if (nodes.length > 0) {
+          const elements = (slot as HTMLSlotElement).assignedElements();
+          if (elements.length > 0) {
             this.onLoadTransition?.();
           }
         };
-        // Check immediately in case content is already there
         checkContent();
-        // Also listen for slotchange
         slot.addEventListener("slotchange", checkContent, { once: true });
       } else {
-        // No slot, just trigger immediately
+        // Start transition immediately if no slot is found
         this.onLoadTransition?.();
       }
     }
@@ -103,7 +99,6 @@ export const ViewTransitionMixin = <
         return;
       }
 
-      // Use requestAnimationFrame to ensure DOM is ready
       requestAnimationFrame(() => {
         this.startViewTransition(() => {
           this.onLoadTransition?.();
