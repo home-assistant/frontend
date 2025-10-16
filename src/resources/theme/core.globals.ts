@@ -44,14 +44,14 @@ export const coreStyles = css`
     --ha-space-20: 80px;
 
     /* Animation timing */
-    --ha-animation-duration: 350ms;
-    --ha-animation-delay-base: 50ms;
+    --ha-animation-layout-duration: 350ms;
+    --ha-animation-layout-delay-base: 100ms;
   }
 
   @media (prefers-reduced-motion: reduce) {
     html {
-      --ha-animation-duration: 150ms;
-      --ha-animation-delay-base: 20ms;
+      --ha-animation-layout-duration: 0ms;
+      --ha-animation-layout-delay-base: 0ms;
     }
   }
 

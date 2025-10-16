@@ -244,31 +244,31 @@ export const haStyleViewTransitions = css`
   @media (prefers-reduced-motion: no-preference) {
     /* Loading screen fade out */
     ::view-transition-group(loading-screen) {
-      animation-duration: var(--ha-animation-duration);
+      animation-duration: var(--ha-animation-layout-duration);
       animation-timing-function: ease-out;
     }
     ::view-transition-old(loading-screen) {
-      animation: fade-out var(--ha-animation-duration) ease-out;
+      animation: fade-out var(--ha-animation-layout-duration) ease-out;
     }
 
     /* Fade in animation */
     ::view-transition-group(fade-in) {
-      animation-duration: var(--ha-animation-duration);
+      animation-duration: var(--ha-animation-layout-duration);
       animation-timing-function: ease-out;
     }
     ::view-transition-new(fade-in) {
-      animation: fade-in var(--ha-animation-duration) ease-out;
-      animation-delay: var(--ha-animation-delay-base);
+      animation: fade-in var(--ha-animation-layout-duration) ease-out;
+      animation-delay: var(--ha-animation-layout-delay-base);
     }
 
     /* Fade in slide down animation */
     ::view-transition-group(fade-in-slide-down) {
-      animation-duration: var(--ha-animation-duration);
+      animation-duration: var(--ha-animation-layout-duration);
       animation-timing-function: ease-out;
     }
     ::view-transition-new(fade-in-slide-down) {
-      animation: fade-in-slide-down var(--ha-animation-duration) ease-out;
-      animation-delay: var(--ha-animation-delay-base);
+      animation: fade-in-slide-down var(--ha-animation-layout-duration) ease-out;
+      animation-delay: var(--ha-animation-layout-delay-base);
     }
   }
 `;
