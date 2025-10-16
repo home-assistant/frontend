@@ -1,15 +1,17 @@
 import type { CSSResultGroup, TemplateResult } from "lit";
 import { css, html, LitElement } from "lit";
-import { customElement, eventOptions, property } from "lit/decorators";
+import { customElement, eventOptions, property, state } from "lit/decorators";
+import { classMap } from "lit/directives/class-map";
 import { restoreScroll } from "../common/decorators/restore-scroll";
 import { goBack } from "../common/navigate";
 import "../components/ha-icon-button-arrow-prev";
 import "../components/ha-menu-button";
-import { haStyleScrollbar } from "../resources/styles";
+import { ViewTransitionMixin } from "../mixins/view-transition-mixin";
+import { haStyleScrollbar, haStyleViewTransitions } from "../resources/styles";
 import type { HomeAssistant } from "../types";
 
 @customElement("hass-subpage")
-class HassSubpage extends LitElement {
+class HassSubpage extends ViewTransitionMixin(LitElement) {
   @property({ attribute: false }) public hass!: HomeAssistant;
 
   @property() public header?: string;
@@ -24,8 +26,45 @@ class HassSubpage extends LitElement {
 
   @property({ type: Boolean }) public supervisor = false;
 
+  @state() private _loaded = false;
+
   // @ts-ignore
   @restoreScroll(".content") private _savedScrollPos?: number;
+
+  protected onLoadTransition(): void {
+    // Trigger the transition when content is slotted
+    this.startViewTransition(() => {
+      this._loaded = true;
+    });
+  }
+
+  protected override enableLoadTransition(): boolean {
+    // Disable automatic transition, we'll trigger it manually
+    return false;
+  }
+
+  protected override firstUpdated(changedProps) {
+    super.firstUpdated(changedProps);
+    // Wait for slotted content to be ready
+    const slot = this.shadowRoot?.querySelector("slot:not([name])");
+    if (slot) {
+      const checkContent = () => {
+        const nodes = (slot as HTMLSlotElement).assignedNodes({
+          flatten: true,
+        });
+        if (nodes.length > 0) {
+          this.onLoadTransition();
+        }
+      };
+      // Check immediately in case content is already there
+      checkContent();
+      // Also listen for slotchange
+      slot.addEventListener("slotchange", checkContent, { once: true });
+    } else {
+      // No slot, just trigger immediately
+      this.onLoadTransition();
+    }
+  }
 
   protected render(): TemplateResult {
     return html`
@@ -60,7 +99,14 @@ class HassSubpage extends LitElement {
           <slot name="toolbar-icon"></slot>
         </div>
       </div>
-      <div class="content ha-scrollbar" @scroll=${this._saveScrollPos}>
+      <div
+        class=${classMap({
+          content: true,
+          "ha-scrollbar": true,
+          loading: !this._loaded,
+        })}
+        @scroll=${this._saveScrollPos}
+      >
         <slot></slot>
       </div>
       <div id="fab">
@@ -85,6 +131,7 @@ class HassSubpage extends LitElement {
   static get styles(): CSSResultGroup {
     return [
       haStyleScrollbar,
+      haStyleViewTransitions,
       css`
         :host {
           display: block;
@@ -167,6 +214,11 @@ class HassSubpage extends LitElement {
           overflow-y: auto;
           overflow: auto;
           -webkit-overflow-scrolling: touch;
+          view-transition-name: layout-fade-in;
+          transition: opacity var(--ha-animation-layout-duration) ease-out;
+        }
+        .content.loading {
+          opacity: 0;
         }
         :host([narrow]) .content {
           width: calc(

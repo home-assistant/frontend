@@ -2,13 +2,54 @@ import { TopAppBarFixedBase } from "@material/mwc-top-app-bar-fixed/mwc-top-app-
 import { styles } from "@material/mwc-top-app-bar/mwc-top-app-bar.css";
 import { css } from "lit";
 import { customElement, property } from "lit/decorators";
+import { ViewTransitionMixin } from "../mixins/view-transition-mixin";
+import { haStyleViewTransitions } from "../resources/styles";
 
 @customElement("ha-top-app-bar-fixed")
-export class HaTopAppBarFixed extends TopAppBarFixedBase {
+export class HaTopAppBarFixed extends ViewTransitionMixin(TopAppBarFixedBase) {
   @property({ type: Boolean, reflect: true }) public narrow = false;
+
+  @property({ type: Boolean, reflect: true, attribute: "content-loading" })
+  public contentLoading = true;
+
+  protected onLoadTransition(): void {
+    // Trigger the transition when content is slotted
+    this.startViewTransition(() => {
+      this.contentLoading = false;
+    });
+  }
+
+  protected override enableLoadTransition(): boolean {
+    // Disable automatic transition, we'll trigger it manually
+    return false;
+  }
+
+  protected override firstUpdated() {
+    super.firstUpdated();
+    // Wait for slotted content to be ready
+    const slot = this.shadowRoot?.querySelector("slot:not([name])");
+    if (slot) {
+      const checkContent = () => {
+        const nodes = (slot as HTMLSlotElement).assignedNodes({
+          flatten: true,
+        });
+        if (nodes.length > 0) {
+          this.onLoadTransition();
+        }
+      };
+      // Check immediately in case content is already there
+      checkContent();
+      // Also listen for slotchange
+      slot.addEventListener("slotchange", checkContent, { once: true });
+    } else {
+      // No slot, just trigger immediately
+      this.onLoadTransition();
+    }
+  }
 
   static override styles = [
     styles,
+    haStyleViewTransitions,
     css`
       header {
         padding-top: var(--safe-area-inset-top);
@@ -23,6 +64,11 @@ export class HaTopAppBarFixed extends TopAppBarFixedBase {
         );
         padding-bottom: var(--safe-area-inset-bottom);
         padding-right: var(--safe-area-inset-right);
+        view-transition-name: layout-fade-in;
+        transition: opacity var(--ha-animation-layout-duration) ease-out;
+      }
+      :host([content-loading]) .mdc-top-app-bar--fixed-adjust {
+        opacity: 0;
       }
       :host([narrow]) .mdc-top-app-bar--fixed-adjust {
         padding-left: var(--safe-area-inset-left);

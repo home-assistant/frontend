@@ -11,7 +11,8 @@ import "../components/ha-icon-button-arrow-prev";
 import "../components/ha-menu-button";
 import "../components/ha-svg-icon";
 import "../components/ha-tab";
-import { haStyleScrollbar } from "../resources/styles";
+import { ViewTransitionMixin } from "../mixins/view-transition-mixin";
+import { haStyleScrollbar, haStyleViewTransitions } from "../resources/styles";
 import type { HomeAssistant, Route } from "../types";
 
 export interface PageNavigation {
@@ -29,7 +30,7 @@ export interface PageNavigation {
 }
 
 @customElement("hass-tabs-subpage")
-class HassTabsSubpage extends LitElement {
+class HassTabsSubpage extends ViewTransitionMixin(LitElement) {
   @property({ attribute: false }) public hass!: HomeAssistant;
 
   @property({ type: Boolean }) public supervisor = false;
@@ -61,8 +62,45 @@ class HassTabsSubpage extends LitElement {
 
   @state() private _activeTab?: PageNavigation;
 
+  @state() private _loaded = false;
+
   // @ts-ignore
   @restoreScroll(".content") private _savedScrollPos?: number;
+
+  protected onLoadTransition(): void {
+    // Trigger the transition when content is slotted
+    this.startViewTransition(() => {
+      this._loaded = true;
+    });
+  }
+
+  protected override enableLoadTransition(): boolean {
+    // Disable automatic transition, we'll trigger it manually
+    return false;
+  }
+
+  protected override firstUpdated(changedProps) {
+    super.firstUpdated(changedProps);
+    // Wait for slotted content to be ready
+    const slot = this.shadowRoot?.querySelector("slot:not([name])");
+    if (slot) {
+      const checkContent = () => {
+        const nodes = (slot as HTMLSlotElement).assignedNodes({
+          flatten: true,
+        });
+        if (nodes.length > 0) {
+          this.onLoadTransition();
+        }
+      };
+      // Check immediately in case content is already there
+      checkContent();
+      // Also listen for slotchange
+      slot.addEventListener("slotchange", checkContent, { once: true });
+    } else {
+      // No slot, just trigger immediately
+      this.onLoadTransition();
+    }
+  }
 
   private _getTabs = memoizeOne(
     (
@@ -185,7 +223,12 @@ class HassTabsSubpage extends LitElement {
             </div>`
           : nothing}
         <div
-          class="content ha-scrollbar ${classMap({ tabs: showTabs })}"
+          class=${classMap({
+            content: true,
+            "ha-scrollbar": true,
+            tabs: showTabs,
+            loading: !this._loaded,
+          })}
           @scroll=${this._saveScrollPos}
         >
           <slot></slot>
@@ -214,6 +257,7 @@ class HassTabsSubpage extends LitElement {
   static get styles(): CSSResultGroup {
     return [
       haStyleScrollbar,
+      haStyleViewTransitions,
       css`
         :host {
           display: block;
@@ -332,6 +376,11 @@ class HassTabsSubpage extends LitElement {
           margin-bottom: var(--safe-area-inset-bottom);
           overflow: auto;
           -webkit-overflow-scrolling: touch;
+          view-transition-name: layout-fade-in;
+          transition: opacity var(--ha-animation-layout-duration) ease-out;
+        }
+        .content.loading {
+          opacity: 0;
         }
         :host([narrow]) .content {
           margin-left: var(--safe-area-inset-left);

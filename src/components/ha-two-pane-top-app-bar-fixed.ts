@@ -7,17 +7,18 @@ import type { MDCTopAppBarAdapter } from "@material/top-app-bar/adapter";
 import { strings } from "@material/top-app-bar/constants";
 import MDCFixedTopAppBarFoundation from "@material/top-app-bar/fixed/foundation";
 import { html, css, nothing } from "lit";
-import { property, query, customElement } from "lit/decorators";
+import { property, query, customElement, state } from "lit/decorators";
 import { classMap } from "lit/directives/class-map";
 import { styles } from "@material/mwc-top-app-bar/mwc-top-app-bar.css";
-import { haStyleScrollbar } from "../resources/styles";
+import { ViewTransitionMixin } from "../mixins/view-transition-mixin";
+import { haStyleScrollbar, haStyleViewTransitions } from "../resources/styles";
 
 export const passiveEventOptionsIfSupported = supportsPassiveEventListener
   ? { passive: true }
   : undefined;
 
 @customElement("ha-two-pane-top-app-bar-fixed")
-export class TopAppBarBaseBase extends BaseElement {
+export class TopAppBarBaseBase extends ViewTransitionMixin(BaseElement) {
   protected override mdcFoundation!: MDCFixedTopAppBarFoundation;
 
   protected override mdcFoundationClass = MDCFixedTopAppBarFoundation;
@@ -47,6 +48,20 @@ export class TopAppBarBaseBase extends BaseElement {
   @query(".content") private _contentElement!: HTMLElement;
 
   @query(".pane .ha-scrollbar") private _paneElement?: HTMLElement;
+
+  @state() private _loaded = false;
+
+  protected onLoadTransition(): void {
+    // Trigger the transition when content is slotted
+    this.startViewTransition(() => {
+      this._loaded = true;
+    });
+  }
+
+  protected enableLoadTransition(): boolean {
+    // Disable automatic transition, we'll trigger it manually
+    return false;
+  }
 
   @property({ attribute: false, type: Object })
   get scrollTarget() {
@@ -144,7 +159,12 @@ export class TopAppBarBaseBase extends BaseElement {
           : nothing}
         <div class="main">
           ${this.pane ? html`<div class="shadow-container"></div>` : nothing}
-          <div class="content">
+          <div
+            class=${classMap({
+              content: true,
+              loading: !this._loaded,
+            })}
+          >
             <slot></slot>
           </div>
         </div>
@@ -235,6 +255,26 @@ export class TopAppBarBaseBase extends BaseElement {
     super.firstUpdated();
     this.updateRootPosition();
     this.registerListeners();
+
+    // Wait for slotted content to be ready for view transition
+    const slot = this.shadowRoot?.querySelector("slot:not([name])");
+    if (slot) {
+      const checkContent = () => {
+        const nodes = (slot as HTMLSlotElement).assignedNodes({
+          flatten: true,
+        });
+        if (nodes.length > 0) {
+          this.onLoadTransition();
+        }
+      };
+      // Check immediately in case content is already there
+      checkContent();
+      // Also listen for slotchange
+      slot.addEventListener("slotchange", checkContent, { once: true });
+    } else {
+      // No slot, just trigger immediately
+      this.onLoadTransition();
+    }
   }
 
   override disconnectedCallback() {
@@ -245,6 +285,7 @@ export class TopAppBarBaseBase extends BaseElement {
   static override styles = [
     styles,
     haStyleScrollbar,
+    haStyleViewTransitions,
     css`
       header {
         padding-top: var(--safe-area-inset-top);
@@ -341,6 +382,11 @@ export class TopAppBarBaseBase extends BaseElement {
       .mdc-top-app-bar--pane .content {
         height: 100%;
         overflow: auto;
+        view-transition-name: layout-fade-in;
+        transition: opacity var(--ha-animation-layout-duration) ease-out;
+      }
+      .content.loading {
+        opacity: 0;
       }
       .mdc-top-app-bar__title {
         font-size: var(--ha-font-size-xl);

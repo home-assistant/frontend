@@ -3,6 +3,7 @@ import { ReactiveElement } from "lit";
 import { property } from "lit/decorators";
 import memoizeOne from "memoize-one";
 import { navigate } from "../common/navigate";
+import { ViewTransitionMixin } from "../mixins/view-transition-mixin";
 import type { Route } from "../types";
 
 const extractPage = (path: string, defaultPage: string) => {
@@ -43,7 +44,7 @@ export interface RouterOptions {
 // Time to wait for code to load before we show loading screen.
 const LOADING_SCREEN_THRESHOLD = 400; // ms
 
-export class HassRouterPage extends ReactiveElement {
+export class HassRouterPage extends ViewTransitionMixin(ReactiveElement) {
   @property({ attribute: false }) public route?: Route;
 
   protected routerOptions!: RouterOptions;
@@ -310,16 +311,19 @@ export class HassRouterPage extends ReactiveElement {
     page: string,
     routeOptions: RouteOptions
   ) {
-    if (this.lastChild) {
-      this.removeChild(this.lastChild);
-    }
+    this.startViewTransition(() => {
+      if (this.lastChild) {
+        this.removeChild(this.lastChild);
+      }
 
-    const panelEl = this._cache[page] || this.createElement(routeOptions.tag);
-    this.updatePageEl(panelEl);
-    this.appendChild(panelEl);
+      const panelEl = this._cache[page] || this.createElement(routeOptions.tag);
+      (panelEl as HTMLElement).style.viewTransitionName = "layout-fade-in";
+      this.updatePageEl(panelEl);
+      this.appendChild(panelEl);
 
-    if (routerOptions.cacheAll || routeOptions.cache) {
-      this._cache[page] = panelEl;
-    }
+      if (routerOptions.cacheAll || routeOptions.cache) {
+        this._cache[page] = panelEl;
+      }
+    });
   }
 }

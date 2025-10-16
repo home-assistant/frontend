@@ -1,10 +1,13 @@
-import type { LitElement, PropertyValues } from "lit";
-import type { Constructor } from "../types";
+import type { PropertyValues, ReactiveElement } from "lit";
 
-export const ViewTransitionMixin = <T extends Constructor<LitElement>>(
+type AbstractConstructor<T = object> = abstract new (...args: any[]) => T;
+
+export const ViewTransitionMixin = <
+  T extends AbstractConstructor<ReactiveElement>,
+>(
   superClass: T
-) =>
-  class ViewTransitionClass extends superClass {
+) => {
+  abstract class ViewTransitionClass extends superClass {
     /**
      * Trigger a view transition if supported by the browser
      * @param updateCallback - Callback function that updates the DOM
@@ -71,4 +74,6 @@ export const ViewTransitionMixin = <T extends Constructor<LitElement>>(
         });
       });
     }
-  };
+  }
+  return ViewTransitionClass;
+};
