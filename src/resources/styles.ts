@@ -219,28 +219,6 @@ export const haStyleViewTransitions = css`
     }
   }
 
-  @keyframes fade-in-slide-up {
-    from {
-      opacity: 0;
-      transform: translateY(20px);
-    }
-    to {
-      opacity: 1;
-      transform: translateY(0);
-    }
-  }
-
-  @keyframes fade-in-slide-down {
-    from {
-      opacity: 0;
-      transform: translateY(-20px);
-    }
-    to {
-      opacity: 1;
-      transform: translateY(0);
-    }
-  }
-
   @media (prefers-reduced-motion: no-preference) {
     /* Loading screen fade out */
     ::view-transition-group(loading-screen) {
