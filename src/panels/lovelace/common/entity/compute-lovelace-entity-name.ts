@@ -22,11 +22,11 @@ export const computeLovelaceEntityName = (
   if (typeof nameConfig === "string") {
     return nameConfig;
   }
-  const config = ensureArray(nameConfig || DEFAULT_ENTITY_NAME);
+  const config = nameConfig || DEFAULT_ENTITY_NAME;
   if (stateObj) {
     return hass.formatEntityName(stateObj, config);
   }
-  const textParts = config
+  const textParts = ensureArray(config)
     .filter((item) => item.type === "text")
     .map((item) => ("text" in item ? item.text : ""));
   if (textParts.length) {
