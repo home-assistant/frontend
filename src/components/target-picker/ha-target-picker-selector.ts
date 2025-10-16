@@ -969,6 +969,9 @@ export class HaTargetPickerSelector extends LitElement {
   private _onScrollList(ev) {
     const top = ev.target.scrollTop ?? 0;
     this._listScrolled = top > 0;
+    if (this.mode === "dialog") {
+      fireEvent(this, "bottom-sheet-lock-resize-changed", this._listScrolled);
+    }
   }
 
   private _resetSelectedItem() {
