@@ -49,7 +49,7 @@ export class HaDialogHeader extends LitElement {
           display: flex;
           flex-direction: row;
           align-items: center;
-          padding: 4px;
+          padding: 0 var(--ha-space-1);
           box-sizing: border-box;
         }
         .header-content {
