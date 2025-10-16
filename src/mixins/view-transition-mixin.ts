@@ -43,6 +43,19 @@ export const ViewTransitionMixin = <
     protected onLoadTransition?(): void;
 
     /**
+     * Check if slot has content and trigger transition if it does
+     */
+    private _checkSlotContent = (): void => {
+      const slot = this.shadowRoot?.querySelector("slot:not([name])");
+      if (slot) {
+        const elements = (slot as HTMLSlotElement).assignedElements();
+        if (elements.length > 0) {
+          this.onLoadTransition?.();
+        }
+      }
+    };
+
+    /**
      * Automatically apply view transition on first render
      * @param changedProperties - Properties that changed
      */
@@ -52,17 +65,19 @@ export const ViewTransitionMixin = <
       // Wait for slotted content to be ready, then trigger transition
       const slot = this.shadowRoot?.querySelector("slot:not([name])");
       if (slot) {
-        const checkContent = () => {
-          const elements = (slot as HTMLSlotElement).assignedElements();
-          if (elements.length > 0) {
-            this.onLoadTransition?.();
-          }
-        };
-        checkContent();
-        slot.addEventListener("slotchange", checkContent, { once: true });
+        this._checkSlotContent();
+        slot.addEventListener("slotchange", this._checkSlotContent);
       } else {
         // Start transition immediately if no slot is found
         this.onLoadTransition?.();
+      }
+    }
+
+    override disconnectedCallback(): void {
+      super.disconnectedCallback();
+      const slot = this.shadowRoot?.querySelector("slot:not([name])");
+      if (slot) {
+        slot.removeEventListener("slotchange", this._checkSlotContent);
       }
     }
   }
