@@ -131,6 +131,8 @@ class HUIRoot extends ViewTransitionMixin(LitElement) {
 
   @state() private _curView?: number | "hass-unused-entities";
 
+  @state() private _loaded = false;
+
   private _viewCache?: Record<string, HUIView>;
 
   private _viewScrollPositions: Record<string, number> = {};
@@ -152,6 +154,10 @@ class HUIRoot extends ViewTransitionMixin(LitElement) {
       100,
       false
     );
+  }
+
+  protected onLoadTransition(): void {
+    this._loaded = true;
   }
 
   private _renderActionItems(): TemplateResult {
@@ -497,6 +503,7 @@ class HUIRoot extends ViewTransitionMixin(LitElement) {
         class=${classMap({
           "edit-mode": this._editMode,
           narrow: this.narrow,
+          loaded: this._loaded,
         })}
       >
         <div class="header">
@@ -1221,6 +1228,13 @@ class HUIRoot extends ViewTransitionMixin(LitElement) {
           -ms-user-select: none;
           -webkit-user-select: none;
           -moz-user-select: none;
+        }
+        :host > div {
+          opacity: 0;
+          transition: opacity 0.3s ease-in;
+        }
+        :host > div.loaded {
+          opacity: 1;
         }
         .header {
           background-color: var(--app-header-background-color);
