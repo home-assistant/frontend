@@ -54,13 +54,6 @@ export const coreStyles = css`
       --ha-animation-layout-delay-base: 0ms;
     }
   }
-
-  /* Enable View Transitions API for supported browsers */
-  @supports (view-transition-name: none) {
-    :root {
-      view-transition-name: root;
-    }
-  }
 `;
 
 export const coreDerivedVariables = extractDerivedVars(coreStyles);
