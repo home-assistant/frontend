@@ -520,6 +520,7 @@ export class HaTargetPickerSelector extends LitElement {
         id=${`list-item-${index}`}
         tabindex="-1"
         .type=${type === "empty" ? "text" : "button"}
+        class=${type === "empty" ? "empty" : ""}
         @click=${this._handlePickTarget}
         .targetType=${type}
         .targetId=${type !== "empty" ? item.id : undefined}
@@ -834,7 +835,7 @@ export class HaTargetPickerSelector extends LitElement {
           id: EMPTY_SEARCH,
           primary: this.hass.localize(
             "ui.components.target-picker.no_target_found",
-            { term: html`<span class="search-term">"${searchTerm}"</span>` }
+            { term: html`<div><b>‘${searchTerm}’</b></div>` }
           ),
         });
       } else if (items.length === 0) {
@@ -1080,9 +1081,8 @@ export class HaTargetPickerSelector extends LitElement {
         width: 100%;
       }
 
-      .search-term {
-        color: var(--primary-color);
-        font-weight: var(--ha-font-weight-medium);
+      .empty {
+        text-align: center;
       }
     `,
   ];
