@@ -1230,13 +1230,6 @@ class HUIRoot extends ViewTransitionMixin(LitElement) {
           -moz-user-select: none;
         }
 
-        :host > div {
-          view-transition-name: hui-root-container;
-        }
-        :host > div.loading {
-          opacity: 0;
-        }
-
         @media (prefers-reduced-motion: no-preference) {
           ::view-transition-new(hui-root-container) {
             animation: fade-in var(--ha-animation-layout-duration) ease-out;
@@ -1432,6 +1425,11 @@ class HUIRoot extends ViewTransitionMixin(LitElement) {
           padding-right: var(--safe-area-inset-right);
           padding-inline-end: var(--safe-area-inset-right);
           padding-bottom: var(--safe-area-inset-bottom);
+          view-transition-name: hui-root-container;
+          transition: opacity var(--ha-animation-layout-duration) ease-out;
+        }
+        .loading hui-view-container {
+          opacity: 0;
         }
         .narrow hui-view-container {
           padding-left: var(--safe-area-inset-left);
