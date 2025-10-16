@@ -1,5 +1,5 @@
 import "@material/mwc-menu/mwc-menu-surface";
-import { mdiDrag, mdiPlus } from "@mdi/js";
+import { mdiDragHorizontalVariant, mdiPlus } from "@mdi/js";
 import type { ComboBoxLitRenderer } from "@vaadin/combo-box/lit";
 import type { IFuseOptions } from "fuse.js";
 import Fuse from "fuse.js";
@@ -201,7 +201,10 @@ export class HaEntityNamePicker extends LitElement {
                     .disabled=${this.disabled}
                     class=${!isValid ? "invalid" : ""}
                   >
-                    <ha-svg-icon slot="icon" .path=${mdiDrag}></ha-svg-icon>
+                    <ha-svg-icon
+                      slot="icon"
+                      .path=${mdiDragHorizontalVariant}
+                    ></ha-svg-icon>
                     <span>${label}</span>
                   </ha-input-chip>
                 `;

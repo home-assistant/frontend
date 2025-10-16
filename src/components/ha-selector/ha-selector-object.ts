@@ -1,4 +1,9 @@
-import { mdiClose, mdiDelete, mdiDrag, mdiPencil } from "@mdi/js";
+import {
+  mdiClose,
+  mdiDelete,
+  mdiDragHorizontalVariant,
+  mdiPencil,
+} from "@mdi/js";
 import { css, html, LitElement, nothing, type PropertyValues } from "lit";
 import { customElement, property, query } from "lit/decorators";
 import memoizeOne from "memoize-one";
@@ -92,7 +97,7 @@ export class HaObjectSelector extends LitElement {
           ? html`
               <ha-svg-icon
                 class="handle"
-                .path=${mdiDrag}
+                .path=${mdiDragHorizontalVariant}
                 slot="start"
               ></ha-svg-icon>
             `
