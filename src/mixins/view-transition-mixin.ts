@@ -8,10 +8,11 @@ export const ViewTransitionMixin = <
   superClass: T
 ) => {
   abstract class ViewTransitionClass extends superClass {
+    private _slot?: HTMLSlotElement;
+
     /**
      * Trigger a view transition if supported by the browser
      * @param updateCallback - Callback function that updates the DOM
-     * @param transitionName - Optional transition name to apply. Default is used otherwise (defined in src/resources/styles.ts)
      * @returns Promise that resolves when the transition is complete
      */
     protected async startViewTransition(
@@ -46,9 +47,8 @@ export const ViewTransitionMixin = <
      * Check if slot has content and trigger transition if it does
      */
     private _checkSlotContent = (): void => {
-      const slot = this.shadowRoot?.querySelector("slot:not([name])");
-      if (slot) {
-        const elements = (slot as HTMLSlotElement).assignedElements();
+      if (this._slot) {
+        const elements = this._slot.assignedElements();
         if (elements.length > 0) {
           this.onLoadTransition?.();
         }
@@ -63,10 +63,12 @@ export const ViewTransitionMixin = <
       super.firstUpdated(changedProperties);
 
       // Wait for slotted content to be ready, then trigger transition
-      const slot = this.shadowRoot?.querySelector("slot:not([name])");
-      if (slot) {
+      this._slot = this.shadowRoot?.querySelector(
+        "slot:not([name])"
+      ) as HTMLSlotElement | undefined;
+      if (this._slot) {
         this._checkSlotContent();
-        slot.addEventListener("slotchange", this._checkSlotContent);
+        this._slot.addEventListener("slotchange", this._checkSlotContent);
       } else {
         // Start transition immediately if no slot is found
         this.onLoadTransition?.();
@@ -75,9 +77,8 @@ export const ViewTransitionMixin = <
 
     override disconnectedCallback(): void {
       super.disconnectedCallback();
-      const slot = this.shadowRoot?.querySelector("slot:not([name])");
-      if (slot) {
-        slot.removeEventListener("slotchange", this._checkSlotContent);
+      if (this._slot) {
+        this._slot.removeEventListener("slotchange", this._checkSlotContent);
       }
     }
   }
