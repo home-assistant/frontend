@@ -1,4 +1,4 @@
-import { mdiDrag } from "@mdi/js";
+import { mdiDragHorizontalVariant } from "@mdi/js";
 import type { HassEntity } from "home-assistant-js-websocket";
 import type { PropertyValues } from "lit";
 import { LitElement, css, html, nothing } from "lit";
@@ -195,7 +195,10 @@ class HaEntityStatePicker extends LitElement {
                         .label=${label}
                         selected
                       >
-                        <ha-svg-icon slot="icon" .path=${mdiDrag}></ha-svg-icon>
+                        <ha-svg-icon
+                          slot="icon"
+                          .path=${mdiDragHorizontalVariant}
+                        ></ha-svg-icon>
                         ${label}
                       </ha-input-chip>
                     `;

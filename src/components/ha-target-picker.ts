@@ -1,52 +1,34 @@
+import "@home-assistant/webawesome/dist/components/popover/popover";
 // @ts-ignore
 import chipStyles from "@material/chips/dist/mdc.chips.min.css";
-import "@material/mwc-menu/mwc-menu-surface";
-import {
-  mdiClose,
-  mdiDevices,
-  mdiHome,
-  mdiLabel,
-  mdiPlus,
-  mdiTextureBox,
-  mdiUnfoldMoreVertical,
-} from "@mdi/js";
-import type { ComboBoxLightOpenedChangedEvent } from "@vaadin/combo-box/vaadin-combo-box-light";
-import type {
-  HassEntity,
-  HassServiceTarget,
-  UnsubscribeFunc,
-} from "home-assistant-js-websocket";
+import { mdiPlaylistPlus } from "@mdi/js";
+import type { HassServiceTarget } from "home-assistant-js-websocket";
 import type { CSSResultGroup } from "lit";
 import { LitElement, css, html, nothing, unsafeCSS } from "lit";
 import { customElement, property, query, state } from "lit/decorators";
-import { classMap } from "lit/directives/class-map";
 import { ensureArray } from "../common/array/ensure-array";
-import { computeCssColor } from "../common/color/compute-color";
-import { hex2rgb } from "../common/color/convert-color";
 import { fireEvent } from "../common/dom/fire_event";
-import { stopPropagation } from "../common/dom/stop_propagation";
-import { computeDeviceNameDisplay } from "../common/entity/compute_device_name";
-import { computeDomain } from "../common/entity/compute_domain";
-import { computeStateName } from "../common/entity/compute_state_name";
 import { isValidEntityId } from "../common/entity/valid_entity_id";
-import type { AreaRegistryEntry } from "../data/area_registry";
-import type { DeviceRegistryEntry } from "../data/device_registry";
-import type { EntityRegistryDisplayEntry } from "../data/entity_registry";
-import type { LabelRegistryEntry } from "../data/label_registry";
-import { subscribeLabelRegistry } from "../data/label_registry";
+import type { HaEntityPickerEntityFilterFunc } from "../data/entity";
+import {
+  areaMeetsFilter,
+  deviceMeetsFilter,
+  entityRegMeetsFilter,
+  type TargetType,
+  type TargetTypeFloorless,
+} from "../data/target";
 import { SubscribeMixin } from "../mixins/subscribe-mixin";
+import { showHelperDetailDialog } from "../panels/config/helpers/show-dialog-helper-detail";
 import type { HomeAssistant } from "../types";
-import "./device/ha-device-picker";
 import type { HaDevicePickerDeviceFilterFunc } from "./device/ha-device-picker";
-import "./entity/ha-entity-picker";
-import type { HaEntityPickerEntityFilterFunc } from "./entity/ha-entity-picker";
-import "./ha-area-floor-picker";
-import { floorDefaultIconPath } from "./ha-floor-icon";
-import "./ha-icon-button";
+import "./ha-bottom-sheet";
+import "./ha-button";
 import "./ha-input-helper-text";
-import "./ha-label-picker";
 import "./ha-svg-icon";
-import "./ha-tooltip";
+import "./target-picker/ha-target-picker-item-group";
+import "./target-picker/ha-target-picker-selector";
+import type { HaTargetPickerSelector } from "./target-picker/ha-target-picker-selector";
+import "./target-picker/ha-target-picker-value-chip";
 
 @customElement("ha-target-picker")
 export class HaTargetPicker extends SubscribeMixin(LitElement) {
@@ -57,6 +39,8 @@ export class HaTargetPicker extends SubscribeMixin(LitElement) {
   @property() public label?: string;
 
   @property() public helper?: string;
+
+  @property({ type: Boolean, reflect: true }) public compact = false;
 
   @property({ attribute: false, type: Array }) public createDomains?: string[];
 
@@ -86,27 +70,22 @@ export class HaTargetPicker extends SubscribeMixin(LitElement) {
 
   @property({ attribute: "add-on-top", type: Boolean }) public addOnTop = false;
 
-  @state() private _addMode?:
-    | "area_id"
-    | "entity_id"
-    | "device_id"
-    | "label_id";
+  @state() private _open = false;
 
-  @query("#input") private _inputElement?;
+  @state() private _addTargetWidth = 0;
 
-  @query(".add-container", true) private _addContainer?: HTMLDivElement;
+  @state() private _narrow = false;
 
-  @state() private _labels?: LabelRegistryEntry[];
+  @state() private _pickerFilters: TargetTypeFloorless[] = [];
 
-  private _opened = false;
+  @state() private _pickerWrapperOpen = false;
 
-  protected hassSubscribe(): (UnsubscribeFunc | Promise<UnsubscribeFunc>)[] {
-    return [
-      subscribeLabelRegistry(this.hass.connection, (labels) => {
-        this._labels = labels;
-      }),
-    ];
-  }
+  @query(".add-target-wrapper") private _addTargetWrapper?: HTMLDivElement;
+
+  @query("ha-target-picker-selector")
+  private _targetPickerSelectorElement?: HaTargetPickerSelector;
+
+  private _newTarget?: { type: TargetType; id: string };
 
   protected render() {
     if (this.addOnTop) {
@@ -115,396 +94,293 @@ export class HaTargetPicker extends SubscribeMixin(LitElement) {
     return html` ${this._renderItems()} ${this._renderChips()} `;
   }
 
+  private _renderValueChips() {
+    return html`<div class="mdc-chip-set items">
+      ${this.value?.floor_id
+        ? ensureArray(this.value.floor_id).map(
+            (floor_id) => html`
+              <ha-target-picker-value-chip
+                .hass=${this.hass}
+                .type=${"floor"}
+                .itemId=${floor_id}
+                @remove-target-item=${this._handleRemove}
+                @expand-target-item=${this._handleExpand}
+              ></ha-target-picker-value-chip>
+            `
+          )
+        : nothing}
+      ${this.value?.area_id
+        ? ensureArray(this.value.area_id).map(
+            (area_id) => html`
+              <ha-target-picker-value-chip
+                .hass=${this.hass}
+                .type=${"area"}
+                .itemId=${area_id}
+                @remove-target-item=${this._handleRemove}
+                @expand-target-item=${this._handleExpand}
+              ></ha-target-picker-value-chip>
+            `
+          )
+        : nothing}
+      ${this.value?.device_id
+        ? ensureArray(this.value.device_id).map(
+            (device_id) => html`
+              <ha-target-picker-value-chip
+                .hass=${this.hass}
+                .type=${"device"}
+                .itemId=${device_id}
+                @remove-target-item=${this._handleRemove}
+                @expand-target-item=${this._handleExpand}
+              ></ha-target-picker-value-chip>
+            `
+          )
+        : nothing}
+      ${this.value?.entity_id
+        ? ensureArray(this.value.entity_id).map(
+            (entity_id) => html`
+              <ha-target-picker-value-chip
+                .hass=${this.hass}
+                .type=${"entity"}
+                .itemId=${entity_id}
+                @remove-target-item=${this._handleRemove}
+                @expand-target-item=${this._handleExpand}
+              ></ha-target-picker-value-chip>
+            `
+          )
+        : nothing}
+      ${this.value?.label_id
+        ? ensureArray(this.value.label_id).map(
+            (label_id) => html`
+              <ha-target-picker-value-chip
+                .hass=${this.hass}
+                .type=${"label"}
+                .itemId=${label_id}
+                @remove-target-item=${this._handleRemove}
+                @expand-target-item=${this._handleExpand}
+              ></ha-target-picker-value-chip>
+            `
+          )
+        : nothing}
+    </div>`;
+  }
+
+  private _renderValueGroups() {
+    return html`<div class="item-groups">
+      ${this.value?.entity_id
+        ? html`
+            <ha-target-picker-item-group
+              @remove-target-item=${this._handleRemove}
+              type="entity"
+              .hass=${this.hass}
+              .items=${{ entity: ensureArray(this.value?.entity_id) }}
+              .collapsed=${this.compact}
+              .deviceFilter=${this.deviceFilter}
+              .entityFilter=${this.entityFilter}
+              .includeDomains=${this.includeDomains}
+              .includeDeviceClasses=${this.includeDeviceClasses}
+            >
+            </ha-target-picker-item-group>
+          `
+        : nothing}
+      ${this.value?.device_id
+        ? html`
+            <ha-target-picker-item-group
+              @remove-target-item=${this._handleRemove}
+              type="device"
+              .hass=${this.hass}
+              .items=${{ device: ensureArray(this.value?.device_id) }}
+              .collapsed=${this.compact}
+              .deviceFilter=${this.deviceFilter}
+              .entityFilter=${this.entityFilter}
+              .includeDomains=${this.includeDomains}
+              .includeDeviceClasses=${this.includeDeviceClasses}
+            >
+            </ha-target-picker-item-group>
+          `
+        : nothing}
+      ${this.value?.floor_id || this.value?.area_id
+        ? html`
+            <ha-target-picker-item-group
+              @remove-target-item=${this._handleRemove}
+              type="area"
+              .hass=${this.hass}
+              .items=${{
+                floor: ensureArray(this.value?.floor_id),
+                area: ensureArray(this.value?.area_id),
+              }}
+              .collapsed=${this.compact}
+              .deviceFilter=${this.deviceFilter}
+              .entityFilter=${this.entityFilter}
+              .includeDomains=${this.includeDomains}
+              .includeDeviceClasses=${this.includeDeviceClasses}
+            >
+            </ha-target-picker-item-group>
+          `
+        : nothing}
+      ${this.value?.label_id
+        ? html`
+            <ha-target-picker-item-group
+              @remove-target-item=${this._handleRemove}
+              type="label"
+              .hass=${this.hass}
+              .items=${{ label: ensureArray(this.value?.label_id) }}
+              .collapsed=${this.compact}
+              .deviceFilter=${this.deviceFilter}
+              .entityFilter=${this.entityFilter}
+              .includeDomains=${this.includeDomains}
+              .includeDeviceClasses=${this.includeDeviceClasses}
+            >
+            </ha-target-picker-item-group>
+          `
+        : nothing}
+    </div>`;
+  }
+
   private _renderItems() {
+    if (
+      !this.value?.floor_id &&
+      !this.value?.area_id &&
+      !this.value?.device_id &&
+      !this.value?.entity_id &&
+      !this.value?.label_id
+    ) {
+      return nothing;
+    }
+
     return html`
-      <div class="mdc-chip-set items">
-        ${this.value?.floor_id
-          ? ensureArray(this.value.floor_id).map((floor_id) => {
-              const floor = this.hass.floors[floor_id];
-              return this._renderChip(
-                "floor_id",
-                floor_id,
-                floor?.name || floor_id,
-                undefined,
-                floor?.icon,
-                floor ? floorDefaultIconPath(floor) : mdiHome
-              );
-            })
-          : ""}
-        ${this.value?.area_id
-          ? ensureArray(this.value.area_id).map((area_id) => {
-              const area = this.hass.areas![area_id];
-              return this._renderChip(
-                "area_id",
-                area_id,
-                area?.name || area_id,
-                undefined,
-                area?.icon,
-                mdiTextureBox
-              );
-            })
-          : nothing}
-        ${this.value?.device_id
-          ? ensureArray(this.value.device_id).map((device_id) => {
-              const device = this.hass.devices![device_id];
-              return this._renderChip(
-                "device_id",
-                device_id,
-                device
-                  ? computeDeviceNameDisplay(device, this.hass)
-                  : device_id,
-                undefined,
-                undefined,
-                mdiDevices
-              );
-            })
-          : nothing}
-        ${this.value?.entity_id
-          ? ensureArray(this.value.entity_id).map((entity_id) => {
-              const entity = this.hass.states[entity_id];
-              return this._renderChip(
-                "entity_id",
-                entity_id,
-                entity ? computeStateName(entity) : entity_id,
-                entity
-              );
-            })
-          : nothing}
-        ${this.value?.label_id
-          ? ensureArray(this.value.label_id).map((label_id) => {
-              const label = this._labels?.find(
-                (lbl) => lbl.label_id === label_id
-              );
-              let color = label?.color
-                ? computeCssColor(label.color)
-                : undefined;
-              if (color?.startsWith("var(")) {
-                const computedStyles = getComputedStyle(this);
-                color = computedStyles.getPropertyValue(
-                  color.substring(4, color.length - 1)
-                );
-              }
-              if (color?.startsWith("#")) {
-                color = hex2rgb(color).join(",");
-              }
-              return this._renderChip(
-                "label_id",
-                label_id,
-                label ? label.name : label_id,
-                undefined,
-                label?.icon,
-                mdiLabel,
-                color
-              );
-            })
-          : nothing}
-      </div>
+      ${this.compact ? this._renderValueChips() : this._renderValueGroups()}
     `;
   }
 
   private _renderChips() {
     return html`
-      <div class="mdc-chip-set add-container">
-        <div
-          class="mdc-chip area_id add"
-          .type=${"area_id"}
+      <div class="add-target-wrapper">
+        <ha-button
+          id="add-target-button"
+          size="small"
+          appearance="filled"
           @click=${this._showPicker}
         >
-          <div class="mdc-chip__ripple"></div>
-          <ha-svg-icon
-            class="mdc-chip__icon mdc-chip__icon--leading"
-            .path=${mdiPlus}
-          ></ha-svg-icon>
-          <span role="gridcell">
-            <span role="button" tabindex="0" class="mdc-chip__primary-action">
-              <span class="mdc-chip__text"
-                >${this.hass.localize(
-                  "ui.components.target-picker.add_area_id"
-                )}</span
+          <ha-svg-icon .path=${mdiPlaylistPlus} slot="start"></ha-svg-icon>
+          ${this.hass.localize("ui.components.target-picker.add_target")}
+        </ha-button>
+        ${!this._narrow && (this._pickerWrapperOpen || this._open)
+          ? html`
+              <wa-popover
+                .open=${this._pickerWrapperOpen}
+                style="--body-width: ${this._addTargetWidth}px;"
+                without-arrow
+                distance="-4"
+                placement="bottom-start"
+                for="add-target-button"
+                auto-size="vertical"
+                auto-size-padding="16"
+                @wa-after-show=${this._showSelector}
+                @wa-after-hide=${this._hidePicker}
               >
-            </span>
-          </span>
-        </div>
-        <div
-          class="mdc-chip device_id add"
-          .type=${"device_id"}
-          @click=${this._showPicker}
-        >
-          <div class="mdc-chip__ripple"></div>
-          <ha-svg-icon
-            class="mdc-chip__icon mdc-chip__icon--leading"
-            .path=${mdiPlus}
-          ></ha-svg-icon>
-          <span role="gridcell">
-            <span role="button" tabindex="0" class="mdc-chip__primary-action">
-              <span class="mdc-chip__text"
-                >${this.hass.localize(
-                  "ui.components.target-picker.add_device_id"
-                )}</span
+                ${this._renderTargetSelector()}
+              </wa-popover>
+            `
+          : this._pickerWrapperOpen || this._open
+            ? html`<ha-bottom-sheet
+                flexcontent
+                .open=${this._pickerWrapperOpen}
+                @wa-after-show=${this._showSelector}
+                @closed=${this._hidePicker}
               >
-            </span>
-          </span>
-        </div>
-        <div
-          class="mdc-chip entity_id add"
-          .type=${"entity_id"}
-          @click=${this._showPicker}
-        >
-          <div class="mdc-chip__ripple"></div>
-          <ha-svg-icon
-            class="mdc-chip__icon mdc-chip__icon--leading"
-            .path=${mdiPlus}
-          ></ha-svg-icon>
-          <span role="gridcell">
-            <span role="button" tabindex="0" class="mdc-chip__primary-action">
-              <span class="mdc-chip__text"
-                >${this.hass.localize(
-                  "ui.components.target-picker.add_entity_id"
-                )}</span
-              >
-            </span>
-          </span>
-        </div>
-        <div
-          class="mdc-chip label_id add"
-          .type=${"label_id"}
-          @click=${this._showPicker}
-        >
-          <div class="mdc-chip__ripple"></div>
-          <ha-svg-icon
-            class="mdc-chip__icon mdc-chip__icon--leading"
-            .path=${mdiPlus}
-          ></ha-svg-icon>
-          <span role="gridcell">
-            <span role="button" tabindex="0" class="mdc-chip__primary-action">
-              <span class="mdc-chip__text"
-                >${this.hass.localize(
-                  "ui.components.target-picker.add_label_id"
-                )}</span
-              >
-            </span>
-          </span>
-        </div>
-        ${this._renderPicker()}
+                ${this._renderTargetSelector(true)}
+              </ha-bottom-sheet>`
+            : nothing}
       </div>
       ${this.helper
         ? html`<ha-input-helper-text .disabled=${this.disabled}
             >${this.helper}</ha-input-helper-text
           >`
-        : ""}
+        : nothing}
     `;
   }
 
-  private _showPicker(ev) {
-    this._addMode = ev.currentTarget.type;
+  connectedCallback() {
+    super.connectedCallback();
+    this._handleResize();
+    window.addEventListener("resize", this._handleResize);
   }
 
-  private _renderChip(
-    type: "floor_id" | "area_id" | "device_id" | "entity_id" | "label_id",
-    id: string,
-    name: string,
-    entityState?: HassEntity,
-    icon?: string | null,
-    fallbackIconPath?: string,
-    color?: string
-  ) {
-    return html`
-      <div
-        class="mdc-chip ${classMap({
-          [type]: true,
-        })}"
-        style=${color
-          ? `--color: rgb(${color}); --background-color: rgba(${color}, .5)`
-          : ""}
-      >
-        ${icon
-          ? html`<ha-icon
-              class="mdc-chip__icon mdc-chip__icon--leading"
-              .icon=${icon}
-            ></ha-icon>`
-          : fallbackIconPath
-            ? html`<ha-svg-icon
-                class="mdc-chip__icon mdc-chip__icon--leading"
-                .path=${fallbackIconPath}
-              ></ha-svg-icon>`
-            : ""}
-        ${entityState
-          ? html`<ha-state-icon
-              class="mdc-chip__icon mdc-chip__icon--leading"
-              .hass=${this.hass}
-              .stateObj=${entityState}
-            ></ha-state-icon>`
-          : ""}
-        <span role="gridcell">
-          <span role="button" tabindex="0" class="mdc-chip__primary-action">
-            <span class="mdc-chip__text">${name}</span>
-          </span>
-        </span>
-        ${type === "entity_id"
-          ? ""
-          : html`<span role="gridcell">
-              <ha-tooltip .for="expand-${id}"
-                >${this.hass.localize(
-                  `ui.components.target-picker.expand_${type}`
-                )}
-              </ha-tooltip>
-              <ha-icon-button
-                class="expand-btn mdc-chip__icon mdc-chip__icon--trailing"
-                .label=${this.hass.localize(
-                  "ui.components.target-picker.expand"
-                )}
-                .path=${mdiUnfoldMoreVertical}
-                hide-title
-                .id="expand-${id}"
-                .type=${type}
-                @click=${this._handleExpand}
-              ></ha-icon-button>
-            </span>`}
-        <span role="gridcell">
-          <ha-tooltip .for="remove-${id}">
-            ${this.hass.localize(`ui.components.target-picker.remove_${type}`)}
-          </ha-tooltip>
-          <ha-icon-button
-            class="mdc-chip__icon mdc-chip__icon--trailing"
-            .label=${this.hass.localize("ui.components.target-picker.remove")}
-            .path=${mdiClose}
-            hide-title
-            .id="remove-${id}"
-            .type=${type}
-            @click=${this._handleRemove}
-          ></ha-icon-button>
-        </span>
-      </div>
-    `;
+  public disconnectedCallback() {
+    super.disconnectedCallback();
+    window.removeEventListener("resize", this._handleResize);
   }
 
-  private _renderPicker() {
-    if (!this._addMode) {
+  private _handleResize = () => {
+    this._narrow =
+      window.matchMedia("(max-width: 870px)").matches ||
+      window.matchMedia("(max-height: 500px)").matches;
+  };
+
+  private _showPicker() {
+    this._addTargetWidth = this._addTargetWrapper?.offsetWidth || 0;
+    this._pickerWrapperOpen = true;
+  }
+
+  // wait for drawer animation to finish
+  private _showSelector = () => {
+    this._open = true;
+    requestAnimationFrame(() => {
+      this._targetPickerSelectorElement?.focus();
+    });
+  };
+
+  private _handleUpdatePickerFilters(ev: CustomEvent<TargetTypeFloorless[]>) {
+    this._updatePickerFilters(ev.detail);
+  }
+
+  private _updatePickerFilters = (filters: TargetTypeFloorless[]) => {
+    this._pickerFilters = filters;
+  };
+
+  private _hidePicker() {
+    this._open = false;
+    this._pickerWrapperOpen = false;
+
+    if (this._newTarget) {
+      this._addTarget(this._newTarget.id, this._newTarget.type);
+      this._newTarget = undefined;
+    }
+  }
+
+  private _renderTargetSelector(dialogMode = false) {
+    if (!this._open) {
       return nothing;
     }
-
-    return html`<mwc-menu-surface
-      open
-      .anchor=${this._addContainer}
-      @closed=${this._onClosed}
-      @opened=${this._onOpened}
-      @input=${stopPropagation}
-      >${this._addMode === "area_id"
-        ? html`
-            <ha-area-floor-picker
-              .hass=${this.hass}
-              id="input"
-              .type=${"area_id"}
-              .placeholder=${this.hass.localize(
-                "ui.components.target-picker.add_area_id"
-              )}
-              .searchLabel=${this.hass.localize(
-                "ui.components.target-picker.add_area_id"
-              )}
-              .deviceFilter=${this.deviceFilter}
-              .entityFilter=${this.entityFilter}
-              .includeDeviceClasses=${this.includeDeviceClasses}
-              .includeDomains=${this.includeDomains}
-              .excludeAreas=${ensureArray(this.value?.area_id)}
-              .excludeFloors=${ensureArray(this.value?.floor_id)}
-              @value-changed=${this._targetPicked}
-              @opened-changed=${this._openedChanged}
-              @click=${this._preventDefault}
-            ></ha-area-floor-picker>
-          `
-        : this._addMode === "device_id"
-          ? html`
-              <ha-device-picker
-                .hass=${this.hass}
-                id="input"
-                .type=${"device_id"}
-                .placeholder=${this.hass.localize(
-                  "ui.components.target-picker.add_device_id"
-                )}
-                .searchLabel=${this.hass.localize(
-                  "ui.components.target-picker.add_device_id"
-                )}
-                .deviceFilter=${this.deviceFilter}
-                .entityFilter=${this.entityFilter}
-                .includeDeviceClasses=${this.includeDeviceClasses}
-                .includeDomains=${this.includeDomains}
-                .excludeDevices=${ensureArray(this.value?.device_id)}
-                @value-changed=${this._targetPicked}
-                @opened-changed=${this._openedChanged}
-                @click=${this._preventDefault}
-              ></ha-device-picker>
-            `
-          : this._addMode === "label_id"
-            ? html`
-                <ha-label-picker
-                  .hass=${this.hass}
-                  id="input"
-                  .type=${"label_id"}
-                  .placeholder=${this.hass.localize(
-                    "ui.components.target-picker.add_label_id"
-                  )}
-                  .searchLabel=${this.hass.localize(
-                    "ui.components.target-picker.add_label_id"
-                  )}
-                  no-add
-                  .deviceFilter=${this.deviceFilter}
-                  .entityFilter=${this.entityFilter}
-                  .includeDeviceClasses=${this.includeDeviceClasses}
-                  .includeDomains=${this.includeDomains}
-                  .excludeLabels=${ensureArray(this.value?.label_id)}
-                  @value-changed=${this._targetPicked}
-                  @opened-changed=${this._openedChanged}
-                  @click=${this._preventDefault}
-                ></ha-label-picker>
-              `
-            : html`
-                <ha-entity-picker
-                  .hass=${this.hass}
-                  id="input"
-                  .type=${"entity_id"}
-                  .placeholder=${this.hass.localize(
-                    "ui.components.target-picker.add_entity_id"
-                  )}
-                  .searchLabel=${this.hass.localize(
-                    "ui.components.target-picker.add_entity_id"
-                  )}
-                  .entityFilter=${this.entityFilter}
-                  .includeDeviceClasses=${this.includeDeviceClasses}
-                  .includeDomains=${this.includeDomains}
-                  .excludeEntities=${ensureArray(this.value?.entity_id)}
-                  .createDomains=${this.createDomains}
-                  @value-changed=${this._targetPicked}
-                  @opened-changed=${this._openedChanged}
-                  @click=${this._preventDefault}
-                  allow-custom-entity
-                ></ha-entity-picker>
-              `}</mwc-menu-surface
-    > `;
+    return html`
+      <ha-target-picker-selector
+        .hass=${this.hass}
+        @filter-types-changed=${this._handleUpdatePickerFilters}
+        .filterTypes=${this._pickerFilters}
+        @target-picked=${this._handleTargetPicked}
+        @create-domain-picked=${this._handleCreateDomain}
+        .targetValue=${this.value}
+        .deviceFilter=${this.deviceFilter}
+        .entityFilter=${this.entityFilter}
+        .includeDomains=${this.includeDomains}
+        .includeDeviceClasses=${this.includeDeviceClasses}
+        .createDomains=${this.createDomains}
+        .mode=${dialogMode ? "dialog" : "popover"}
+      ></ha-target-picker-selector>
+    `;
   }
 
-  private _targetPicked(ev) {
-    ev.stopPropagation();
-    if (!ev.detail.value) {
-      return;
-    }
-    let value = ev.detail.value;
-    const target = ev.currentTarget;
-    let type = target.type;
+  private _addTarget(id: string, type: TargetType) {
+    const typeId = `${type}_id`;
 
-    if (type === "entity_id" && !isValidEntityId(value)) {
+    if (typeId === "entity_id" && !isValidEntityId(id)) {
       return;
     }
 
-    if (type === "area_id") {
-      value = ev.detail.value.id;
-      type = `${ev.detail.value.type}_id`;
-    }
-
-    target.value = "";
     if (
       this.value &&
-      this.value[type] &&
-      ensureArray(this.value[type]).includes(value)
+      this.value[typeId] &&
+      ensureArray(this.value[typeId]).includes(id)
     ) {
       return;
     }
@@ -512,84 +388,179 @@ export class HaTargetPicker extends SubscribeMixin(LitElement) {
       value: this.value
         ? {
             ...this.value,
-            [type]: this.value[type]
-              ? [...ensureArray(this.value[type]), value]
-              : value,
+            [typeId]: this.value[typeId]
+              ? [...ensureArray(this.value[typeId]), id]
+              : id,
           }
-        : { [type]: value },
+        : { [typeId]: id },
+    });
+  }
+
+  private _handleTargetPicked = async (
+    ev: CustomEvent<{ type: TargetType; id: string }>
+  ) => {
+    ev.stopPropagation();
+
+    this._pickerWrapperOpen = false;
+
+    if (!ev.detail.type || !ev.detail.id) {
+      return;
+    }
+
+    // save new target temporarily to add it after dialog closes
+    this._newTarget = ev.detail;
+  };
+
+  private _handleCreateDomain = (ev: CustomEvent<string>) => {
+    this._pickerWrapperOpen = false;
+
+    const domain = ev.detail;
+
+    showHelperDetailDialog(this, {
+      domain,
+      dialogClosedCallback: (item) => {
+        if (item.entityId) {
+          // prevent error that new entity_id isn't in hass object
+          requestAnimationFrame(() => {
+            this._addTarget(item.entityId!, "entity");
+          });
+        }
+      },
+    });
+  };
+
+  private _handleRemove(ev) {
+    const { type, id } = ev.detail;
+    fireEvent(this, "value-changed", {
+      value: this._removeItem(this.value, type, id),
     });
   }
 
   private _handleExpand(ev) {
-    const target = ev.currentTarget as any;
-    const id = target.id.replace(/^expand-/, "");
+    const type = ev.detail.type;
+    const itemId = ev.detail.id;
     const newAreas: string[] = [];
     const newDevices: string[] = [];
     const newEntities: string[] = [];
 
-    if (target.type === "floor_id") {
+    if (type === "floor") {
       Object.values(this.hass.areas).forEach((area) => {
         if (
-          area.floor_id === id &&
+          area.floor_id === itemId &&
           !this.value!.area_id?.includes(area.area_id) &&
-          this._areaMeetsFilter(area)
+          areaMeetsFilter(
+            area,
+            this.hass.devices,
+            this.hass.entities,
+            this.deviceFilter,
+            this.includeDomains,
+            this.includeDeviceClasses,
+            this.hass.states,
+            this.entityFilter
+          )
         ) {
           newAreas.push(area.area_id);
         }
       });
-    } else if (target.type === "area_id") {
+    } else if (type === "area") {
       Object.values(this.hass.devices).forEach((device) => {
         if (
-          device.area_id === id &&
+          device.area_id === itemId &&
           !this.value!.device_id?.includes(device.id) &&
-          this._deviceMeetsFilter(device)
+          deviceMeetsFilter(
+            device,
+            this.hass.entities,
+            this.deviceFilter,
+            this.includeDomains,
+            this.includeDeviceClasses,
+            this.hass.states,
+            this.entityFilter
+          )
         ) {
           newDevices.push(device.id);
         }
       });
       Object.values(this.hass.entities).forEach((entity) => {
         if (
-          entity.area_id === id &&
+          entity.area_id === itemId &&
           !this.value!.entity_id?.includes(entity.entity_id) &&
-          this._entityRegMeetsFilter(entity)
+          entityRegMeetsFilter(
+            entity,
+            false,
+            this.includeDomains,
+            this.includeDeviceClasses,
+            this.hass.states,
+            this.entityFilter
+          )
         ) {
           newEntities.push(entity.entity_id);
         }
       });
-    } else if (target.type === "device_id") {
+    } else if (type === "device") {
       Object.values(this.hass.entities).forEach((entity) => {
         if (
-          entity.device_id === id &&
+          entity.device_id === itemId &&
           !this.value!.entity_id?.includes(entity.entity_id) &&
-          this._entityRegMeetsFilter(entity)
+          entityRegMeetsFilter(
+            entity,
+            false,
+            this.includeDomains,
+            this.includeDeviceClasses,
+            this.hass.states,
+            this.entityFilter
+          )
         ) {
           newEntities.push(entity.entity_id);
         }
       });
-    } else if (target.type === "label_id") {
+    } else if (type === "label") {
       Object.values(this.hass.areas).forEach((area) => {
         if (
-          area.labels.includes(id) &&
+          area.labels.includes(itemId) &&
           !this.value!.area_id?.includes(area.area_id) &&
-          this._areaMeetsFilter(area)
+          areaMeetsFilter(
+            area,
+            this.hass.devices,
+            this.hass.entities,
+            this.deviceFilter,
+            this.includeDomains,
+            this.includeDeviceClasses,
+            this.hass.states,
+            this.entityFilter
+          )
         ) {
           newAreas.push(area.area_id);
         }
       });
       Object.values(this.hass.devices).forEach((device) => {
         if (
-          device.labels.includes(id) &&
+          device.labels.includes(itemId) &&
           !this.value!.device_id?.includes(device.id) &&
-          this._deviceMeetsFilter(device)
+          deviceMeetsFilter(
+            device,
+            this.hass.entities,
+            this.deviceFilter,
+            this.includeDomains,
+            this.includeDeviceClasses,
+            this.hass.states,
+            this.entityFilter
+          )
         ) {
           newDevices.push(device.id);
         }
       });
       Object.values(this.hass.entities).forEach((entity) => {
         if (
-          entity.labels.includes(id) &&
+          entity.labels.includes(itemId) &&
           !this.value!.entity_id?.includes(entity.entity_id) &&
-          this._entityRegMeetsFilter(entity, true)
+          entityRegMeetsFilter(
+            entity,
+            true,
+            this.includeDomains,
+            this.includeDeviceClasses,
+            this.hass.states,
+            this.entityFilter
+          )
         ) {
           newEntities.push(entity.entity_id);
         }
@@ -607,16 +578,8 @@ export class HaTargetPicker extends SubscribeMixin(LitElement) {
     if (newAreas.length) {
       value = this._addItems(value, "area_id", newAreas);
     }
-    value = this._removeItem(value, target.type, id);
+    value = this._removeItem(value, type, itemId);
     fireEvent(this, "value-changed", { value });
-  }
-
-  private _handleRemove(ev) {
-    const target = ev.currentTarget as any;
-    const id = target.id.replace(/^remove-/, "");
-    fireEvent(this, "value-changed", {
-      value: this._removeItem(this.value, target.type, id),
-    });
   }
 
   private _addItems(
@@ -632,239 +595,76 @@ export class HaTargetPicker extends SubscribeMixin(LitElement) {
 
   private _removeItem(
     value: this["value"],
-    type: string,
+    type: TargetType,
     id: string
   ): this["value"] {
-    const newVal = ensureArray(value![type])!.filter(
+    const typeId = `${type}_id`;
+
+    const newVal = ensureArray(value![typeId])!.filter(
       (val) => String(val) !== id
     );
     if (newVal.length) {
       return {
         ...value,
-        [type]: newVal,
+        [typeId]: newVal,
       };
     }
     const val = { ...value }!;
-    delete val[type];
+    delete val[typeId];
     if (Object.keys(val).length) {
       return val;
     }
     return undefined;
   }
 
-  private _onClosed(ev) {
-    ev.stopPropagation();
-    ev.target.open = true;
-  }
-
-  private async _onOpened() {
-    if (!this._addMode) {
-      return;
-    }
-    await this._inputElement?.focus();
-    await this._inputElement?.open();
-    this._opened = true;
-  }
-
-  private _openedChanged(ev: ComboBoxLightOpenedChangedEvent) {
-    if (this._opened && !ev.detail.value) {
-      this._opened = false;
-      this._addMode = undefined;
-    }
-  }
-
-  private _preventDefault(ev: Event) {
-    ev.preventDefault();
-  }
-
-  private _areaMeetsFilter(area: AreaRegistryEntry): boolean {
-    const areaDevices = Object.values(this.hass.devices).filter(
-      (device) => device.area_id === area.area_id
-    );
-
-    if (areaDevices.some((device) => this._deviceMeetsFilter(device))) {
-      return true;
-    }
-
-    const areaEntities = Object.values(this.hass.entities).filter(
-      (entity) => entity.area_id === area.area_id
-    );
-
-    if (areaEntities.some((entity) => this._entityRegMeetsFilter(entity))) {
-      return true;
-    }
-
-    return false;
-  }
-
-  private _deviceMeetsFilter(device: DeviceRegistryEntry): boolean {
-    const devEntities = Object.values(this.hass.entities).filter(
-      (entity) => entity.device_id === device.id
-    );
-
-    if (!devEntities.some((entity) => this._entityRegMeetsFilter(entity))) {
-      return false;
-    }
-
-    if (this.deviceFilter) {
-      if (!this.deviceFilter(device)) {
-        return false;
-      }
-    }
-
-    return true;
-  }
-
-  private _entityRegMeetsFilter(
-    entity: EntityRegistryDisplayEntry,
-    includeSecondary = false
-  ): boolean {
-    if (entity.hidden || (entity.entity_category && !includeSecondary)) {
-      return false;
-    }
-
-    if (
-      this.includeDomains &&
-      !this.includeDomains.includes(computeDomain(entity.entity_id))
-    ) {
-      return false;
-    }
-    if (this.includeDeviceClasses) {
-      const stateObj = this.hass.states[entity.entity_id];
-      if (!stateObj) {
-        return false;
-      }
-      if (
-        !stateObj.attributes.device_class ||
-        !this.includeDeviceClasses!.includes(stateObj.attributes.device_class)
-      ) {
-        return false;
-      }
-    }
-
-    if (this.entityFilter) {
-      const stateObj = this.hass.states[entity.entity_id];
-      if (!stateObj) {
-        return false;
-      }
-      if (!this.entityFilter!(stateObj)) {
-        return false;
-      }
-    }
-    return true;
-  }
-
   static get styles(): CSSResultGroup {
     return css`
-      ${unsafeCSS(chipStyles)}
-      .mdc-chip {
-        color: var(--primary-text-color);
+      .add-target-wrapper {
+        display: flex;
+        justify-content: flex-start;
+        margin-top: var(--ha-space-3);
       }
+
+      wa-popover {
+        --wa-space-l: var(--ha-space-0);
+      }
+
+      wa-popover::part(body) {
+        width: min(max(var(--body-width), 336px), 600px);
+        max-width: min(max(var(--body-width), 336px), 600px);
+        max-height: 500px;
+        height: 70vh;
+        overflow: hidden;
+      }
+
+      @media (max-height: 1000px) {
+        wa-popover::part(body) {
+          max-height: 400px;
+        }
+      }
+
+      ha-bottom-sheet {
+        --ha-bottom-sheet-height: 90vh;
+        --ha-bottom-sheet-height: calc(100dvh - var(--ha-space-12));
+        --ha-bottom-sheet-max-height: var(--ha-bottom-sheet-height);
+        --ha-bottom-sheet-max-width: 600px;
+        --ha-bottom-sheet-padding: var(--ha-space-0);
+        --ha-bottom-sheet-surface-background: var(--card-background-color);
+      }
+
+      ${unsafeCSS(chipStyles)}
       .items {
         z-index: 2;
       }
       .mdc-chip-set {
-        padding: 4px 0;
+        padding: var(--ha-space-1) var(--ha-space-0);
+        gap: var(--ha-space-2);
       }
-      .mdc-chip.add {
-        color: rgba(0, 0, 0, 0.87);
-      }
-      .add-container {
-        position: relative;
-        display: inline-flex;
-      }
-      .mdc-chip:not(.add) {
-        cursor: default;
-      }
-      .mdc-chip ha-icon-button {
-        --mdc-icon-button-size: 24px;
-        display: flex;
-        align-items: center;
-        outline: none;
-      }
-      .mdc-chip ha-icon-button ha-svg-icon {
-        border-radius: var(--ha-border-radius-circle);
-        background: var(--secondary-text-color);
-      }
-      .mdc-chip__icon.mdc-chip__icon--trailing {
-        width: 16px;
-        height: 16px;
-        --mdc-icon-size: 14px;
-        color: var(--secondary-text-color);
-        margin-inline-start: 4px !important;
-        margin-inline-end: -4px !important;
-        direction: var(--direction);
-      }
-      .mdc-chip__icon--leading {
-        display: flex;
-        align-items: center;
-        justify-content: center;
-        --mdc-icon-size: 20px;
-        border-radius: var(--ha-border-radius-circle);
-        padding: 6px;
-        margin-left: -13px !important;
-        margin-inline-start: -13px !important;
-        margin-inline-end: 4px !important;
-        direction: var(--direction);
-      }
-      .expand-btn {
-        margin-right: 0;
-        margin-inline-end: 0;
-        margin-inline-start: initial;
-      }
-      .mdc-chip.area_id:not(.add),
-      .mdc-chip.floor_id:not(.add) {
-        border: 1px solid #fed6a4;
-        background: var(--card-background-color);
-      }
-      .mdc-chip.area_id:not(.add) .mdc-chip__icon--leading,
-      .mdc-chip.area_id.add,
-      .mdc-chip.floor_id:not(.add) .mdc-chip__icon--leading,
-      .mdc-chip.floor_id.add {
-        background: #fed6a4;
-      }
-      .mdc-chip.device_id:not(.add) {
-        border: 1px solid #a8e1fb;
-        background: var(--card-background-color);
-      }
-      .mdc-chip.device_id:not(.add) .mdc-chip__icon--leading,
-      .mdc-chip.device_id.add {
-        background: #a8e1fb;
-      }
-      .mdc-chip.entity_id:not(.add) {
-        border: 1px solid #d2e7b9;
-        background: var(--card-background-color);
-      }
-      .mdc-chip.entity_id:not(.add) .mdc-chip__icon--leading,
-      .mdc-chip.entity_id.add {
-        background: #d2e7b9;
-      }
-      .mdc-chip.label_id:not(.add) {
-        border: 1px solid var(--color, #e0e0e0);
-        background: var(--card-background-color);
-      }
-      .mdc-chip.label_id:not(.add) .mdc-chip__icon--leading,
-      .mdc-chip.label_id.add {
-        background: var(--background-color, #e0e0e0);
-      }
-      .mdc-chip:hover {
-        z-index: 5;
-      }
-      :host([disabled]) .mdc-chip {
-        opacity: var(--light-disabled-opacity);
-        pointer-events: none;
-      }
-      mwc-menu-surface {
-        --mdc-menu-min-width: 100%;
-      }
-      ha-entity-picker,
-      ha-device-picker,
-      ha-area-floor-picker {
-        display: block;
-        width: 100%;
-      }
-      ha-tooltip {
-        --ha-tooltip-arrow-size: 0;
+
+      .item-groups {
+        overflow: hidden;
+        border: 2px solid var(--divider-color);
+        border-radius: var(--ha-border-radius-lg);
       }
     `;
   }
@@ -873,5 +673,17 @@ export class HaTargetPicker extends SubscribeMixin(LitElement) {
 declare global {
   interface HTMLElementTagNameMap {
     "ha-target-picker": HaTargetPicker;
+  }
+
+  interface HASSDomEvents {
+    "remove-target-item": {
+      type: string;
+      id: string;
+    };
+    "expand-target-item": {
+      type: string;
+      id: string;
+    };
+    "remove-target-group": string;
   }
 }

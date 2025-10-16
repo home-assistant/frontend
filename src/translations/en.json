@@ -12,7 +12,7 @@
     "media_browser": "Media",
     "profile": "Profile",
     "light": "Lights",
-    "security": "Security",
+    "safety": "Safety",
     "climate": "Climate"
   },
   "state": {
@@ -646,6 +646,7 @@
       },
       "entity": {
         "entity-picker": {
+          "choose_entity": "Choose entity",
           "entity": "Entity",
           "edit": "Edit",
           "clear": "Clear",
@@ -666,7 +667,8 @@
             "floor_missing": "No floor assigned",
             "device_missing": "No related device"
           },
-          "add": "Add"
+          "add": "Add",
+          "custom_name": "Custom name"
         },
         "entity-attribute-picker": {
           "attribute": "Attribute",
@@ -682,16 +684,36 @@
         "expand_area_id": "Split this area into separate devices and entities.",
         "expand_device_id": "Split this device into separate entities.",
         "expand_label_id": "Split this label into separate areas, devices and entities.",
+        "add_target": "Add target",
         "remove": "Remove",
         "remove_floor_id": "Remove floor",
         "remove_area_id": "Remove area",
         "remove_device_id": "Remove device",
         "remove_entity_id": "Remove entity",
         "remove_label_id": "Remove label",
-        "add_area_id": "Choose area",
-        "add_device_id": "Choose device",
-        "add_entity_id": "Choose entity",
-        "add_label_id": "Choose label"
+        "devices_count": "{count} {count, plural,\n one {device}\n other {devices}\n}",
+        "entities_count": "{count} {count, plural,\n one {entity}\n other {entities}\n}",
+        "target_details": "Target details",
+        "no_targets": "No targets",
+        "no_target_found": "No target found for {term}",
+        "selected": {
+          "entity": "Entities: {count}",
+          "device": "Devices: {count}",
+          "area": "Areas: {count}",
+          "label": "Labels: {count}",
+          "floor": "Floors: {count}"
+        },
+        "type": {
+          "area": "Area",
+          "areas": "Areas",
+          "device": "Device",
+          "devices": "Devices",
+          "entity": "Entity",
+          "entities": "Entities",
+          "label": "Label",
+          "labels": "Labels",
+          "floor": "Floor"
+        }
       },
       "subpage-data-table": {
         "filters": "Filters",
@@ -2674,7 +2696,11 @@
             "addons_description": "Select what add-ons you want to include.",
             "addons_all": "All",
             "addons_none": "None",
-            "addons_custom": "Custom"
+            "addons_custom": "Custom",
+            "estimated_size": "Estimated backup size",
+            "estimated_size_disclaimer": "This is an approximation based on storage usage and compression. The actual backup size will vary.",
+            "estimated_size_disclaimer_addons_custom": "This estimate includes all add-ons, and not individual add-on sizes.",
+            "estimated_size_loading": "Loading size estimate..."
           },
           "data_picker": {
             "settings": "Settings",
@@ -3429,12 +3455,17 @@
                 "require_admin": "Admin only",
                 "sidebar": "In sidebar",
                 "filename": "Filename",
-                "url": "Open"
+                "url": "Open",
+                "type": "Type"
               },
               "open": "Open",
               "edit": "Edit",
               "delete": "Delete",
-              "add_dashboard": "Add dashboard"
+              "add_dashboard": "Add dashboard",
+              "type": {
+                "user_created": "User created",
+                "built_in": "Built-in"
+              }
             },
             "confirm_delete_title": "Delete {dashboard_title}?",
             "confirm_delete_text": "This dashboard will be permanently deleted.",
@@ -5525,6 +5556,7 @@
             "entries": "{count} {count, plural,\n  one {entry}\n  other {entries}\n}",
             "no_devices_or_entities": "No devices or entities",
             "devices_without_subentry": "Devices that don't belong to a sub-entry",
+            "copy": "Copy entry ID",
             "rename": "Rename",
             "configure": "Configure",
             "system_options": "System options",
@@ -7029,7 +7061,11 @@
             },
             "energy_devices_graph": {
               "energy_usage": "Energy usage",
-              "previous_energy_usage": "Previous energy usage"
+              "previous_energy_usage": "Previous energy usage",
+              "total_energy_usage": "Total energy usage",
+              "change_chart_type": "Change chart type",
+              "untracked": "untracked",
+              "includes_untracked": "Includes {num} kWh of untracked energy"
             },
             "energy_devices_detail_graph": {
               "untracked_consumption": "Untracked consumption",

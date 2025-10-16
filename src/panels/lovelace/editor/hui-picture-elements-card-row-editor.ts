@@ -153,13 +153,21 @@ export class HuiPictureElementsCardRowEditor extends LitElement {
           (element as ServiceButtonElementConfig).service ??
           ""
         );
-      case "image":
-        return (
-          element.title ??
-          (element as ImageElementConfig).image ??
-          (element as ImageElementConfig).camera_image ??
-          ""
-        );
+      case "image": {
+        if (element.title) {
+          return element.title;
+        }
+        const config = element as ImageElementConfig;
+        if (config.image) {
+          if (typeof config.image === "string") {
+            return config.image;
+          }
+          return (
+            config.image.metadata?.title || config.image.media_content_id || ""
+          );
+        }
+        return config.camera_image || "";
+      }
       case "conditional":
         return (
           element.title ??

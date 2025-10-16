@@ -459,7 +459,7 @@ export interface PictureCardConfig extends LovelaceCardConfig {
 
 export interface PictureElementsCardConfig extends LovelaceCardConfig {
   title?: string;
-  image?: string;
+  image?: string | MediaSelectorValue;
   image_entity?: string;
   camera_image?: string;
   camera_view?: HuiImage["cameraView"];
@@ -469,14 +469,14 @@ export interface PictureElementsCardConfig extends LovelaceCardConfig {
   entity?: string;
   elements: LovelaceElementConfig[];
   theme?: string;
-  dark_mode_image?: string;
+  dark_mode_image?: string | MediaSelectorValue;
   dark_mode_filter?: string;
 }
 
 export interface PictureEntityCardConfig extends LovelaceCardConfig {
   entity: string;
   name?: string | EntityNameItem | EntityNameItem[];
-  image?: string;
+  image?: string | MediaSelectorValue;
   camera_image?: string;
   camera_view?: HuiImage["cameraView"];
   state_image?: Record<string, unknown>;
@@ -494,7 +494,7 @@ export interface PictureEntityCardConfig extends LovelaceCardConfig {
 export interface PictureGlanceCardConfig extends LovelaceCardConfig {
   entities: (string | PictureGlanceEntityConfig)[];
   title?: string;
-  image?: string;
+  image?: string | MediaSelectorValue;
   image_entity?: string;
   camera_image?: string;
   camera_view?: HuiImage["cameraView"];
