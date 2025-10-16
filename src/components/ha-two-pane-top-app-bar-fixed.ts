@@ -358,7 +358,6 @@ export class TopAppBarBaseBase extends ViewTransitionMixin(BaseElement) {
         height: 100%;
         overflow: auto;
         view-transition-name: layout-fade-in;
-        transition: opacity var(--ha-animation-layout-duration) ease-out;
       }
       .content.loading {
         opacity: 0;

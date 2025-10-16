@@ -37,7 +37,6 @@ export class HaTopAppBarFixed extends ViewTransitionMixin(TopAppBarFixedBase) {
         padding-bottom: var(--safe-area-inset-bottom);
         padding-right: var(--safe-area-inset-right);
         view-transition-name: layout-fade-in;
-        transition: opacity var(--ha-animation-layout-duration) ease-out;
       }
       :host([content-loading]) .mdc-top-app-bar--fixed-adjust {
         opacity: 0;

@@ -349,7 +349,6 @@ class HassTabsSubpage extends ViewTransitionMixin(LitElement) {
           overflow: auto;
           -webkit-overflow-scrolling: touch;
           view-transition-name: layout-fade-in;
-          transition: opacity var(--ha-animation-layout-duration) ease-out;
         }
         .content.loading {
           opacity: 0;

@@ -1426,7 +1426,6 @@ class HUIRoot extends ViewTransitionMixin(LitElement) {
           padding-inline-end: var(--safe-area-inset-right);
           padding-bottom: var(--safe-area-inset-bottom);
           view-transition-name: hui-root-container;
-          transition: opacity var(--ha-animation-layout-duration) ease-out;
         }
         .loading hui-view-container {
           opacity: 0;
