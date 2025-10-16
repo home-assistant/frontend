@@ -636,9 +636,6 @@ export class HaTargetPickerItemRow extends LitElement {
         font-size: var(--ha-font-size-s);
         color: var(--secondary-text-color);
       }
-      .domain {
-        font-family: var(--ha-font-family-code);
-      }
 
       .entries-tree {
         display: flex;
