@@ -51,10 +51,6 @@ export class TopAppBarBaseBase extends ViewTransitionMixin(BaseElement) {
 
   @state() private _loaded = false;
 
-  protected waitForSlottedContent(): boolean {
-    return false;
-  }
-
   protected onLoadTransition(): void {
     // Trigger the transition when content is slotted
     this.startViewTransition(() => {
@@ -254,26 +250,6 @@ export class TopAppBarBaseBase extends ViewTransitionMixin(BaseElement) {
     super.firstUpdated();
     this.updateRootPosition();
     this.registerListeners();
-
-    // Wait for slotted content to be ready for view transition
-    const slot = this.shadowRoot?.querySelector("slot:not([name])");
-    if (slot) {
-      const checkContent = () => {
-        const nodes = (slot as HTMLSlotElement).assignedNodes({
-          flatten: true,
-        });
-        if (nodes.length > 0) {
-          this.onLoadTransition();
-        }
-      };
-      // Check immediately in case content is already there
-      checkContent();
-      // Also listen for slotchange
-      slot.addEventListener("slotchange", checkContent, { once: true });
-    } else {
-      // No slot, just trigger immediately
-      this.onLoadTransition();
-    }
   }
 
   override disconnectedCallback() {

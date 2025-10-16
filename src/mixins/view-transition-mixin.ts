@@ -38,30 +38,18 @@ export const ViewTransitionMixin = <
     }
 
     /**
-     * Override this method to enable automatic load transition
-     * @returns Whether to enable transition on first render
-     */
-    protected enableLoadTransition(): boolean {
-      return false;
-    }
-
-    /**
-     * Override this method to control whether to wait for slotted content before triggering transition
-     * @returns Whether to wait for slotted content to be ready
-     */
-    protected waitForSlottedContent(): boolean {
-      return true;
-    }
-
-    /**
      * Optional callback to execute during the load transition
      */
     protected onLoadTransition?(): void;
 
     /**
-     * Wait for slotted content to be ready, then trigger transition
+     * Automatically apply view transition on first render
+     * @param changedProperties - Properties that changed
      */
-    private _waitForSlotThenTransition(): void {
+    protected firstUpdated(changedProperties: PropertyValues): void {
+      super.firstUpdated(changedProperties);
+
+      // Wait for slotted content to be ready, then trigger transition
       const slot = this.shadowRoot?.querySelector("slot:not([name])");
       if (slot) {
         const checkContent = () => {
@@ -76,34 +64,6 @@ export const ViewTransitionMixin = <
         // Start transition immediately if no slot is found
         this.onLoadTransition?.();
       }
-    }
-
-    /**
-     * Automatically apply view transition on first render
-     * @param changedProperties - Properties that changed
-     */
-    protected firstUpdated(changedProperties: PropertyValues): void {
-      super.firstUpdated(changedProperties);
-
-      if (!this.enableLoadTransition()) {
-        if (this.waitForSlottedContent()) {
-          this._waitForSlotThenTransition();
-        } else {
-          this.onLoadTransition?.();
-        }
-        return;
-      }
-
-      if (!document.startViewTransition) {
-        this.onLoadTransition?.();
-        return;
-      }
-
-      requestAnimationFrame(() => {
-        this.startViewTransition(() => {
-          this.onLoadTransition?.();
-        });
-      });
     }
   }
   return ViewTransitionClass;
