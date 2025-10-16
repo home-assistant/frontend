@@ -38,11 +38,11 @@ export const ViewTransitionMixin = <
     }
 
     /**
-     * Override this method to disable automatic load transition
+     * Override this method to enable automatic load transition
      * @returns Whether to enable transition on first render
      */
     protected enableLoadTransition(): boolean {
-      return true;
+      return false;
     }
 
     /**

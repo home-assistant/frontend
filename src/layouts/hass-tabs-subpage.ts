@@ -74,11 +74,6 @@ class HassTabsSubpage extends ViewTransitionMixin(LitElement) {
     });
   }
 
-  protected override enableLoadTransition(): boolean {
-    // Disable automatic transition, we'll trigger it manually
-    return false;
-  }
-
   protected override firstUpdated(changedProps) {
     super.firstUpdated(changedProps);
     // Wait for slotted content to be ready

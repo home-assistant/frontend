@@ -58,11 +58,6 @@ export class TopAppBarBaseBase extends ViewTransitionMixin(BaseElement) {
     });
   }
 
-  protected enableLoadTransition(): boolean {
-    // Disable automatic transition, we'll trigger it manually
-    return false;
-  }
-
   @property({ attribute: false, type: Object })
   get scrollTarget() {
     return this._scrollTarget || window;

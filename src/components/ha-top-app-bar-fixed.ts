@@ -19,11 +19,6 @@ export class HaTopAppBarFixed extends ViewTransitionMixin(TopAppBarFixedBase) {
     });
   }
 
-  protected override enableLoadTransition(): boolean {
-    // Disable automatic transition, we'll trigger it manually
-    return false;
-  }
-
   protected override firstUpdated() {
     super.firstUpdated();
     // Wait for slotted content to be ready
