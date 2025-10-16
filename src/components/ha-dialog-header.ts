@@ -78,11 +78,6 @@ export class HaDialogHeader extends LitElement {
           line-height: var(--ha-line-height-normal);
           color: var(--secondary-text-color);
         }
-        @media all and (min-width: 450px) and (min-height: 500px) {
-          .header-bar {
-            padding: 16px;
-          }
-        }
         .header-navigation-icon {
           flex: none;
           min-width: 8px;
