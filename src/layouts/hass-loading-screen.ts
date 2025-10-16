@@ -61,6 +61,7 @@ class HassLoadingScreen extends LitElement {
           display: block;
           height: 100%;
           background-color: var(--primary-background-color);
+          view-transition-name: loading-screen;
         }
         .toolbar {
           display: flex;

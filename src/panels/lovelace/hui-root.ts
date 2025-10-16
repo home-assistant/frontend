@@ -1419,7 +1419,7 @@ class HUIRoot extends ViewTransitionMixin(LitElement) {
         hui-view-container > * {
           flex: 1 1 100%;
           max-width: 100%;
-          view-transition-name: fade-in-slide-down;
+          view-transition-name: fade-in;
         }
         /**
          * In edit mode we have the tab bar on a new line *

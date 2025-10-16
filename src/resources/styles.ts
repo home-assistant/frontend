@@ -251,6 +251,7 @@ export const haStyleViewTransitions = css`
       animation: fade-out var(--ha-animation-duration) ease-out;
     }
 
+    /* Fade in animation */
     ::view-transition-group(fade-in) {
       animation-duration: var(--ha-animation-duration);
       animation-timing-function: ease-out;
