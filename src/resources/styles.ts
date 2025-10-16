@@ -220,21 +220,21 @@ export const haStyleViewTransitions = css`
   }
 
   @media (prefers-reduced-motion: no-preference) {
-    /* Loading screen fade out */
-    ::view-transition-group(loading-screen) {
+    /* Layout fade out transition */
+    ::view-transition-group(layout-fade-out) {
       animation-duration: var(--ha-animation-layout-duration);
       animation-timing-function: ease-out;
     }
-    ::view-transition-old(loading-screen) {
+    ::view-transition-old(layout-fade-out) {
       animation: fade-out var(--ha-animation-layout-duration) ease-out;
     }
 
-    /* Fade in animation */
-    ::view-transition-group(fade-in) {
+    /* Layout fade in transition */
+    ::view-transition-group(layout-fade-in) {
       animation-duration: var(--ha-animation-layout-duration);
       animation-timing-function: ease-out;
     }
-    ::view-transition-new(fade-in) {
+    ::view-transition-new(layout-fade-in) {
       animation: fade-in var(--ha-animation-layout-duration) ease-out;
       animation-delay: var(--ha-animation-layout-delay-base);
     }

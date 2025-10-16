@@ -1284,7 +1284,7 @@ class HUIRoot extends ViewTransitionMixin(LitElement) {
           padding: 0px 12px;
           font-weight: var(--ha-font-weight-normal);
           box-sizing: border-box;
-          view-transition-name: fade-in;
+          view-transition-name: layout-fade-in;
         }
         .narrow .toolbar {
           padding: 0 4px;
@@ -1433,7 +1433,7 @@ class HUIRoot extends ViewTransitionMixin(LitElement) {
         hui-view-container > * {
           flex: 1 1 100%;
           max-width: 100%;
-          view-transition-name: fade-in;
+          view-transition-name: layout-fade-in;
         }
         /**
          * In edit mode we have the tab bar on a new line *
