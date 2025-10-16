@@ -1,19 +1,21 @@
 import { mdiMagnify } from "@mdi/js";
 import type { ComboBoxLitRenderer } from "@vaadin/combo-box/lit";
 import Fuse from "fuse.js";
-import type { PropertyValues, TemplateResult } from "lit";
-import { html, LitElement, nothing } from "lit";
-import { customElement, property, query, state } from "lit/decorators";
+import { css, html, LitElement, nothing } from "lit";
+import { customElement, property, query } from "lit/decorators";
 import memoizeOne from "memoize-one";
 import { fireEvent } from "../common/dom/fire_event";
 import { caseInsensitiveStringCompare } from "../common/string/compare";
 import type { LocalizeFunc } from "../common/translations/localize";
 import { HaFuse } from "../resources/fuse";
+import { haStyleScrollbar } from "../resources/styles";
+import { loadVirtualizer } from "../resources/virtualizer";
 import type { HomeAssistant, ValueChangedEvent } from "../types";
 import "./ha-combo-box";
 import type { HaComboBox } from "./ha-combo-box";
 import "./ha-combo-box-item";
 import "./ha-icon";
+import type { HaTextField } from "./ha-textfield";
 
 export interface PickerComboBoxItem {
   id: string;
@@ -93,7 +95,7 @@ export class HaPickerComboBox extends LitElement {
   @property({ attribute: false })
   public searchFn?: PickerComboBoxSearchFn<PickerComboBoxItem>;
 
-  @state() private _opened = false;
+  @property({ reflect: true }) public mode: "popover" | "dialog" = "popover";
 
   @query("ha-combo-box", true) public comboBox!: HaComboBox;
 
@@ -106,8 +108,6 @@ export class HaPickerComboBox extends LitElement {
     await this.updateComplete;
     await this.comboBox?.focus();
   }
-
-  private _initialItems = false;
 
   private _items: PickerComboBoxItemWithLabel[] = [];
 
@@ -159,62 +159,32 @@ export class HaPickerComboBox extends LitElement {
     return sortedItems;
   };
 
-  protected shouldUpdate(changedProps: PropertyValues) {
-    if (
-      changedProps.has("value") ||
-      changedProps.has("label") ||
-      changedProps.has("disabled")
-    ) {
-      return true;
-    }
-    return !(!changedProps.has("_opened") && this._opened);
-  }
-
-  public willUpdate(changedProps: PropertyValues) {
-    if (changedProps.has("_opened") && this._opened) {
+  public willUpdate() {
+    if (!this.hasUpdated) {
+      loadVirtualizer();
       this._items = this._getItems();
-      if (this._initialItems) {
-        this.comboBox.filteredItems = this._items;
-      }
-      this._initialItems = true;
     }
   }
 
-  protected render(): TemplateResult {
-    return html`
-      <ha-combo-box
-        item-id-path="id"
-        item-value-path="id"
-        item-label-path="a11y_label"
-        clear-initial-value
-        .hass=${this.hass}
-        .value=${this._value}
-        .label=${this.label}
-        .helper=${this.helper}
-        .allowCustomValue=${this.allowCustomValue}
-        .filteredItems=${this._items}
-        .renderer=${this.rowRenderer || DEFAULT_ROW_RENDERER}
-        .required=${this.required}
-        .disabled=${this.disabled}
-        .hideClearIcon=${this.hideClearIcon}
-        @opened-changed=${this._openedChanged}
+  protected render() {
+    return html`<ha-textfield
+        .label=${this.hass.localize("ui.common.search")}
+        @input=${this._filterChanged}
+      ></ha-textfield>
+      <lit-virtualizer
+        tabindex="0"
+        scroller
+        .items=${this._items}
+        .renderItem=${this.rowRenderer || DEFAULT_ROW_RENDERER}
+        class="list"
+        style="min-height: 56px;"
         @value-changed=${this._valueChanged}
-        @filter-changed=${this._filterChanged}
       >
-      </ha-combo-box>
-    `;
+      </lit-virtualizer> `;
   }
 
   private get _value() {
     return this.value || "";
-  }
-
-  private _openedChanged(ev: ValueChangedEvent<boolean>) {
-    ev.stopPropagation();
-    if (ev.detail.value !== this._opened) {
-      this._opened = ev.detail.value;
-      fireEvent(this, "opened-changed", { value: this._opened });
-    }
   }
 
   private _valueChanged(ev: ValueChangedEvent<string | undefined>) {
@@ -236,11 +206,9 @@ export class HaPickerComboBox extends LitElement {
     Fuse.createIndex(["search_labels"], states)
   );
 
-  private _filterChanged(ev: CustomEvent): void {
-    if (!this._opened) return;
-
-    const target = ev.target as HaComboBox;
-    const searchString = ev.detail.value.trim() as string;
+  private _filterChanged = (ev: Event) => {
+    const textfield = ev.target as HaTextField;
+    const searchString = textfield.value.trim();
 
     const index = this._fuseIndex(this._items);
     const fuse = new HaFuse(this._items, { shouldSort: false }, index);
@@ -263,14 +231,71 @@ export class HaPickerComboBox extends LitElement {
       filteredItems = this.searchFn(searchString, filteredItems, this._items);
     }
 
-    target.filteredItems = filteredItems;
-  }
+    // TODO
+    this._items = filteredItems as PickerComboBoxItemWithLabel[];
+  };
 
   private _setValue(value: string | undefined) {
     setTimeout(() => {
       fireEvent(this, "value-changed", { value });
     }, 0);
   }
+
+  static styles = [
+    haStyleScrollbar,
+    css`
+      :host {
+        display: flex;
+        flex-direction: column;
+        padding-top: var(--ha-space-3);
+        flex: 1;
+      }
+
+      ha-textfield {
+        padding: 0 var(--ha-space-3);
+        margin-bottom: var(--ha-space-3);
+      }
+
+      :host([mode="dialog"]) ha-textfield {
+        padding: 0 var(--ha-space-4);
+      }
+
+      ha-combo-box-item {
+        width: 100%;
+      }
+
+      ha-combo-box-item.selected {
+        background-color: var(--ha-color-fill-neutral-quiet-hover);
+      }
+
+      @media (prefers-color-scheme: dark) {
+        ha-combo-box-item.selected {
+          background-color: var(--ha-color-fill-neutral-normal-hover);
+        }
+      }
+
+      lit-virtualizer {
+        flex: 1;
+      }
+
+      lit-virtualizer:focus-visible {
+        outline: none;
+      }
+
+      lit-virtualizer.scrolled {
+        border-top: 1px solid var(--ha-color-border-neutral-quiet);
+      }
+
+      .bottom-padding {
+        height: max(var(--safe-area-inset-bottom, 0px), var(--ha-space-8));
+        width: 100%;
+      }
+
+      .empty {
+        text-align: center;
+      }
+    `,
+  ];
 }
 
 declare global {
