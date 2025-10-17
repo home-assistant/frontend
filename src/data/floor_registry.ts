@@ -68,7 +68,7 @@ export const getFloorAreaLookup = (
 };
 
 export const floorCompare =
-  (entries?: FloorRegistryEntry[], order?: string[]) =>
+  (entries?: HomeAssistant["floors"], order?: string[]) =>
   (a: string, b: string) => {
     const indexA = order ? order.indexOf(a) : -1;
     const indexB = order ? order.indexOf(b) : -1;
