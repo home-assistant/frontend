@@ -1,7 +1,6 @@
 import { computeAreaName } from "../common/entity/compute_area_name";
 import { computeDomain } from "../common/entity/compute_domain";
 import { computeFloorName } from "../common/entity/compute_floor_name";
-import { stringCompare } from "../common/string/compare";
 import type { HaDevicePickerDeviceFilterFunc } from "../components/device/ha-device-picker";
 import type { PickerComboBoxItem } from "../components/ha-picker-combo-box";
 import type { HomeAssistant } from "../types";
@@ -13,7 +12,11 @@ import {
 } from "./device_registry";
 import type { HaEntityPickerEntityFilterFunc } from "./entity";
 import type { EntityRegistryDisplayEntry } from "./entity_registry";
-import { getFloorAreaLookup, type FloorRegistryEntry } from "./floor_registry";
+import {
+  floorCompare,
+  getFloorAreaLookup,
+  type FloorRegistryEntry,
+} from "./floor_registry";
 
 export interface FloorComboBoxItem extends PickerComboBoxItem {
   type: "floor" | "area";
@@ -184,6 +187,8 @@ export const getAreasAndFloors = (
     (area) => !area.floor_id || !floorAreaLookup[area.floor_id]
   );
 
+  const compare = floorCompare(haFloors);
+
   // @ts-ignore
   const floorAreaEntries: [
     FloorRegistryEntry | undefined,
@@ -193,12 +198,7 @@ export const getAreasAndFloors = (
       const floor = floors.find((fl) => fl.floor_id === floorId)!;
       return [floor, floorAreas] as const;
     })
-    .sort(([floorA], [floorB]) => {
-      if (floorA.level !== floorB.level) {
-        return (floorA.level ?? 0) - (floorB.level ?? 0);
-      }
-      return stringCompare(floorA.name, floorB.name);
-    });
+    .sort(([floorA], [floorB]) => compare(floorA.floor_id, floorB.floor_id));
 
   const items: FloorComboBoxItem[] = [];
 
