@@ -26,19 +26,44 @@ describe("floorCompare", () => {
   });
 
   describe("floorCompare(entries)", () => {
-    it("sorts by floor name from entries", () => {
+    it("sorts by level, then by name", () => {
       const entries = {
-        floor1: { name: "Ground Floor" } as FloorRegistryEntry,
-        floor2: { name: "First Floor" } as FloorRegistryEntry,
-        floor3: { name: "Basement" } as FloorRegistryEntry,
+        floor1: { name: "Ground Floor", level: 0 } as FloorRegistryEntry,
+        floor2: { name: "First Floor", level: 1 } as FloorRegistryEntry,
+        floor3: { name: "Basement", level: -1 } as FloorRegistryEntry,
       };
       const floors = ["floor1", "floor2", "floor3"];
 
       expect(floors.sort(floorCompare(entries))).toEqual([
         "floor3",
-        "floor2",
         "floor1",
+        "floor2",
       ]);
+    });
+
+    it("treats null level as 0", () => {
+      const entries = {
+        floor1: { name: "Ground Floor", level: 0 } as FloorRegistryEntry,
+        floor2: { name: "First Floor", level: 1 } as FloorRegistryEntry,
+        floor3: { name: "Basement", level: null } as FloorRegistryEntry,
+      };
+      const floors = ["floor2", "floor3", "floor1"];
+
+      expect(floors.sort(floorCompare(entries))).toEqual([
+        "floor3",
+        "floor1",
+        "floor2",
+      ]);
+    });
+
+    it("sorts by name when levels are equal", () => {
+      const entries = {
+        floor1: { name: "Suite B", level: 1 } as FloorRegistryEntry,
+        floor2: { name: "Suite A", level: 1 } as FloorRegistryEntry,
+      };
+      const floors = ["floor1", "floor2"];
+
+      expect(floors.sort(floorCompare(entries))).toEqual(["floor2", "floor1"]);
     });
 
     it("falls back to floor ID when entry not found", () => {
