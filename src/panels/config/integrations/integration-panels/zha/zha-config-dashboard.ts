@@ -89,7 +89,7 @@ class ZHAConfigDashboard extends LitElement {
 
   @state() private _generatingBackup = false;
 
-  @query("#config-save-button") private _configSaveButton?: HaProgressButton;
+  @query("#config-save-button") private _configSaveButton!: HaProgressButton;
 
   protected firstUpdated(changedProperties: PropertyValues) {
     super.firstUpdated(changedProperties);
