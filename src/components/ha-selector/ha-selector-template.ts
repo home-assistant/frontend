@@ -1,11 +1,16 @@
+import type { PropertyValues } from "lit";
 import { css, html, nothing, LitElement } from "lit";
 import { customElement, property, state } from "lit/decorators";
+import type { UnsubscribeFunc } from "home-assistant-js-websocket";
 import { fireEvent } from "../../common/dom/fire_event";
 import type { HomeAssistant } from "../../types";
 import { documentationUrl } from "../../util/documentation-url";
 import "../ha-code-editor";
 import "../ha-input-helper-text";
 import "../ha-alert";
+import type { RenderTemplateResult } from "../../data/ws-templates";
+import { subscribeRenderTemplate } from "../../data/ws-templates";
+import { debounce } from "../../common/util/debounce";
 
 const WARNING_STRINGS = ["template:", "sensor:", "state:", "trigger: template"];
 
@@ -26,6 +31,37 @@ export class HaTemplateSelector extends LitElement {
   @property({ type: Boolean }) public required = true;
 
   @state() private warn: string | undefined = undefined;
+
+  @state() private _test = false;
+
+  @state() private _error?: string;
+
+  @state() private _errorLevel?: "ERROR" | "WARNING";
+
+  @state() private _templateResult?: RenderTemplateResult;
+
+  @state() private _unsubRenderTemplate?: Promise<UnsubscribeFunc>;
+
+  private _debounceError = debounce(
+    (error, level) => {
+      this._error = error;
+      this._errorLevel = level;
+      this._templateResult = undefined;
+    },
+    500,
+    false
+  );
+
+  public disconnectedCallback() {
+    super.disconnectedCallback();
+    this._debounceError.cancel();
+  }
+
+  protected updated(changedProps: PropertyValues) {
+    if (changedProps.has("value") && this._test) {
+      this._subscribeTemplate();
+    }
+  }
 
   protected render() {
     return html`
@@ -61,16 +97,96 @@ export class HaTemplateSelector extends LitElement {
         autofocus
         autocomplete-entities
         autocomplete-icons
+        has-test
         @value-changed=${this._handleChange}
+        @test-toggle=${this._testToggle}
         dir="ltr"
         linewrap
       ></ha-code-editor>
+      ${this._test && this._error
+        ? html`<ha-alert alert-type="error">${this._error}</ha-alert>`
+        : this._test && this._templateResult
+          ? html`<ha-alert alert-type="info">
+              <pre>
+${typeof this._templateResult.result === "object"
+                  ? JSON.stringify(this._templateResult.result, null, 2)
+                  : this._templateResult.result}</pre
+              >
+            </ha-alert>`
+          : nothing}
       ${this.helper
         ? html`<ha-input-helper-text .disabled=${this.disabled}
             >${this.helper}</ha-input-helper-text
           >`
         : nothing}
     `;
+  }
+
+  private _testToggle() {
+    this._test = !this._test;
+    if (this._test) {
+      this._subscribeTemplate();
+    } else {
+      this._unsubscribeTemplate();
+    }
+  }
+
+  private async _subscribeTemplate() {
+    await this._unsubscribeTemplate();
+
+    const template = this.value || "";
+
+    try {
+      this._unsubRenderTemplate = subscribeRenderTemplate(
+        this.hass.connection,
+        (result) => {
+          if ("error" in result) {
+            // We show the latest error, or a warning if there are no errors
+            if (result.level === "ERROR" || this._errorLevel !== "ERROR") {
+              this._debounceError(result.error, result.level);
+            }
+          } else {
+            this._debounceError.cancel();
+            this._error = undefined;
+            this._errorLevel = undefined;
+            this._templateResult = result;
+          }
+        },
+        {
+          template,
+          timeout: 3,
+          report_errors: true,
+        }
+      );
+      await this._unsubRenderTemplate;
+    } catch (err: any) {
+      this._error = "Unknown error";
+      this._errorLevel = undefined;
+      if (err.message) {
+        this._error = err.message;
+        this._errorLevel = undefined;
+        this._templateResult = undefined;
+      }
+      this._unsubRenderTemplate = undefined;
+    }
+  }
+
+  private async _unsubscribeTemplate(): Promise<void> {
+    if (!this._unsubRenderTemplate) {
+      return;
+    }
+
+    try {
+      const unsub = await this._unsubRenderTemplate;
+      unsub();
+      this._unsubRenderTemplate = undefined;
+    } catch (err: any) {
+      if (err.code === "not_found") {
+        // If we get here, the connection was probably already closed. Ignore.
+      } else {
+        throw err;
+      }
+    }
   }
 
   private _handleChange(ev) {
