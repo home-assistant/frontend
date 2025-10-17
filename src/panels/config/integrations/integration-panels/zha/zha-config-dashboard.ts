@@ -420,18 +420,14 @@ class ZHAConfigDashboard extends LitElement {
   }
 
   private async _updateConfiguration(): Promise<any> {
-    if (!this._configSaveButton) {
-      return;
-    }
-
-    this._configSaveButton.progress = true;
+    this._configSaveButton!.progress = true;
     try {
       await updateZHAConfiguration(this.hass!, this._configuration!.data);
-      this._configSaveButton.actionSuccess();
+      this._configSaveButton!.actionSuccess();
     } catch (_err: any) {
-      this._configSaveButton.actionError();
+      this._configSaveButton!.actionError();
     } finally {
-      this._configSaveButton.progress = false;
+      this._configSaveButton!.progress = false;
     }
   }
 
