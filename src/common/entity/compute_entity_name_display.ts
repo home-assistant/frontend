@@ -9,6 +9,11 @@ import { getEntityContext } from "./context/get_entity_context";
 
 const DEFAULT_SEPARATOR = " ";
 
+export const DEFAULT_ENTITY_NAME = [
+  { type: "device" },
+  { type: "entity" },
+] satisfies EntityNameItem[];
+
 export type EntityNameItem =
   | {
       type: "entity" | "device" | "area" | "floor";
@@ -24,14 +29,14 @@ export interface EntityNameOptions {
 
 export const computeEntityNameDisplay = (
   stateObj: HassEntity,
-  name: EntityNameItem | EntityNameItem[],
+  name: EntityNameItem | EntityNameItem[] | undefined,
   entities: HomeAssistant["entities"],
   devices: HomeAssistant["devices"],
   areas: HomeAssistant["areas"],
   floors: HomeAssistant["floors"],
   options?: EntityNameOptions
 ) => {
-  let items = ensureArray(name);
+  let items = ensureArray(name || DEFAULT_ENTITY_NAME);
 
   const separator = options?.separator ?? DEFAULT_SEPARATOR;
 

@@ -16,6 +16,7 @@ import {
 } from "superstruct";
 import type { HASSDomEvent } from "../../../../common/dom/fire_event";
 import { fireEvent } from "../../../../common/dom/fire_event";
+import { DEFAULT_ENTITY_NAME } from "../../../../common/entity/compute_entity_name_display";
 import type { LocalizeFunc } from "../../../../common/translations/localize";
 import { orderProperties } from "../../../../common/util/order-properties";
 import "../../../../components/ha-expansion-panel";
@@ -30,10 +31,7 @@ import type {
   LovelaceCardFeatureConfig,
   LovelaceCardFeatureContext,
 } from "../../card-features/types";
-import {
-  DEFAULT_NAME,
-  getEntityDefaultTileIconAction,
-} from "../../cards/hui-tile-card";
+import { getEntityDefaultTileIconAction } from "../../cards/hui-tile-card";
 import type { TileCardConfig } from "../../cards/types";
 import type { LovelaceCardEditor } from "../../types";
 import { actionConfigStruct } from "../structs/action-struct";
@@ -105,7 +103,7 @@ export class HuiTileCardEditor
               name: "name",
               selector: {
                 entity_name: {
-                  default_name: DEFAULT_NAME,
+                  default_name: DEFAULT_ENTITY_NAME,
                 },
               },
               context: { entity: "entity" },
