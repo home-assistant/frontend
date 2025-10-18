@@ -16,11 +16,11 @@ import {
 } from "../../lovelace/strategies/areas/helpers/areas-strategy-helper";
 import { getHomeStructure } from "../../lovelace/strategies/home/helpers/home-structure";
 
-export interface SecurityViewStrategyConfig {
-  type: "security";
+export interface SafetyViewStrategyConfig {
+  type: "safety";
 }
 
-export const securityEntityFilters: EntityFilter[] = [
+export const safetyEntityFilters: EntityFilter[] = [
   {
     domain: "camera",
     entity_category: "none",
@@ -66,7 +66,7 @@ export const securityEntityFilters: EntityFilter[] = [
   },
 ];
 
-const processAreasForSecurity = (
+const processAreasForSafety = (
   areaIds: string[],
   hass: HomeAssistant,
   entities: string[]
@@ -80,12 +80,12 @@ const processAreasForSecurity = (
     const areaFilter = generateEntityFilter(hass, {
       area: area.area_id,
     });
-    const areaSecurityEntities = entities.filter(areaFilter);
+    const areaSafetyEntities = entities.filter(areaFilter);
     const areaCards: LovelaceCardConfig[] = [];
 
     const computeTileCard = computeAreaTileCardConfig(hass, "", false);
 
-    for (const entityId of areaSecurityEntities) {
+    for (const entityId of areaSafetyEntities) {
       areaCards.push(computeTileCard(entityId));
     }
 
@@ -102,10 +102,10 @@ const processAreasForSecurity = (
   return cards;
 };
 
-@customElement("security-view-strategy")
-export class SecurityViewStrategy extends ReactiveElement {
+@customElement("safety-view-strategy")
+export class SafetyViewStrategy extends ReactiveElement {
   static async generate(
-    _config: SecurityViewStrategyConfig,
+    _config: SafetyViewStrategyConfig,
     hass: HomeAssistant
   ): Promise<LovelaceViewConfig> {
     const areas = getAreas(hass.areas);
@@ -116,11 +116,11 @@ export class SecurityViewStrategy extends ReactiveElement {
 
     const allEntities = Object.keys(hass.states);
 
-    const securityFilters = securityEntityFilters.map((filter) =>
+    const safetyFilters = safetyEntityFilters.map((filter) =>
       generateEntityFilter(hass, filter)
     );
 
-    const entities = findEntities(allEntities, securityFilters);
+    const entities = findEntities(allEntities, safetyFilters);
 
     const floorCount = home.floors.length + (home.areas.length ? 1 : 0);
 
@@ -144,7 +144,7 @@ export class SecurityViewStrategy extends ReactiveElement {
         ],
       };
 
-      const areaCards = processAreasForSecurity(areaIds, hass, entities);
+      const areaCards = processAreasForSafety(areaIds, hass, entities);
 
       if (areaCards.length > 0) {
         section.cards!.push(...areaCards);
@@ -168,7 +168,7 @@ export class SecurityViewStrategy extends ReactiveElement {
         ],
       };
 
-      const areaCards = processAreasForSecurity(home.areas, hass, entities);
+      const areaCards = processAreasForSafety(home.areas, hass, entities);
 
       if (areaCards.length > 0) {
         section.cards!.push(...areaCards);
@@ -186,6 +186,6 @@ export class SecurityViewStrategy extends ReactiveElement {
 
 declare global {
   interface HTMLElementTagNameMap {
-    "security-view-strategy": SecurityViewStrategy;
+    "safety-view-strategy": SafetyViewStrategy;
   }
 }
