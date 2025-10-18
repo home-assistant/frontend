@@ -1,4 +1,4 @@
-import type { CSSResultGroup} from "lit";
+import type { CSSResultGroup } from "lit";
 import { css, LitElement, html, nothing } from "lit";
 import { customElement, property, state } from "lit/decorators";
 import "../../../components/ha-yaml-editor";
@@ -15,11 +15,18 @@ import type {
   BlueprintOrError,
   Blueprints,
 } from "../../../data/blueprint";
-import { saveBlueprint, fetchBlueprints, BlueprintYamlSchema } from "../../../data/blueprint";
+import {
+  saveBlueprint,
+  fetchBlueprints,
+  BlueprintYamlSchema,
+} from "../../../data/blueprint";
 import "./ha-blueprint-editor";
 import "./blueprint-metadata-editor";
 import { showPickBlueprintDialog } from "./pick-blueprint-dialog/show-dialog-pick-blueprint";
-import { showAlertDialog, showConfirmationDialog } from "../../../dialogs/generic/show-dialog-box";
+import {
+  showAlertDialog,
+  showConfirmationDialog,
+} from "../../../dialogs/generic/show-dialog-box";
 
 @customElement("developer-tools-blueprints")
 class HaPanelDevBlueprints extends LitElement {
@@ -80,7 +87,9 @@ class HaPanelDevBlueprints extends LitElement {
     this._dirty = true;
   }
 
-  private _onBlueprintMetadataChanged(ev: CustomEvent<{ value: BlueprintMetaDataEditorSchema }>) {
+  private _onBlueprintMetadataChanged(
+    ev: CustomEvent<{ value: BlueprintMetaDataEditorSchema }>
+  ) {
     ev.stopPropagation();
     if (!this._selectedBlueprint || "error" in this._selectedBlueprint) {
       return;
@@ -95,8 +104,8 @@ class HaPanelDevBlueprints extends LitElement {
         author: ev.detail.value.author,
         description: ev.detail.value.description,
         homeassistant: {
-          min_version: ev.detail.value.minimum_version
-        }
+          min_version: ev.detail.value.minimum_version,
+        },
       },
       blueprint: {
         ...this._selectedBlueprint.metadata,
@@ -105,8 +114,8 @@ class HaPanelDevBlueprints extends LitElement {
         author: ev.detail.value.author,
         description: ev.detail.value.description,
         homeassistant: {
-          min_version: ev.detail.value.minimum_version
-        }
+          min_version: ev.detail.value.minimum_version,
+        },
       },
     };
 
@@ -121,9 +130,9 @@ class HaPanelDevBlueprints extends LitElement {
 
     const allBlueprints = [
       ...Object.entries(this._blueprints.script),
-      ...Object.entries(this._blueprints.automation)
+      ...Object.entries(this._blueprints.automation),
     ];
-    const entry = allBlueprints.find(([blueprintId]) => blueprintId === id)
+    const entry = allBlueprints.find(([blueprintId]) => blueprintId === id);
     if (entry) {
       this._dirty = false;
       this._originalBlueprint = entry[1];
@@ -167,18 +176,24 @@ class HaPanelDevBlueprints extends LitElement {
       return;
     }
 
-    if (!this._selectedBlueprint || ("error" in this._selectedBlueprint)) {
+    if (!this._selectedBlueprint || "error" in this._selectedBlueprint) {
       await showAlertDialog(this, {
-        title: this.hass.localize("ui.panel.developer-tools.tabs.blueprints.editor.error"),
-        text: this._selectedBlueprint?.error
-      })
+        title: this.hass.localize(
+          "ui.panel.developer-tools.tabs.blueprints.editor.error"
+        ),
+        text: this._selectedBlueprint?.error,
+      });
       return;
     }
 
     if (this._selectedBlueprint.metadata.source_url) {
       const shouldSave = await showConfirmationDialog(this, {
-        title: this.hass.localize("ui.panel.developer-tools.tabs.blueprints.editor.overwrite_existing_title"),
-        text: this.hass.localize("ui.panel.developer-tools.tabs.blueprints.editor.overwrite_existing_text"),
+        title: this.hass.localize(
+          "ui.panel.developer-tools.tabs.blueprints.editor.overwrite_existing_title"
+        ),
+        text: this.hass.localize(
+          "ui.panel.developer-tools.tabs.blueprints.editor.overwrite_existing_text"
+        ),
       });
       if (!shouldSave) {
         return;
@@ -213,65 +228,78 @@ class HaPanelDevBlueprints extends LitElement {
       return nothing;
     }
 
-    const blueprints = Object
-      .values(this._blueprints)
-      .flatMap(b => Object.values(b))
-      .filter(b => !("error" in b)) as Blueprint[];
-    const blueprintMetadata = !this._selectedBlueprint || "error" in this._selectedBlueprint
-      ? {
-        name: "",
-        description: "",
-        minimum_version: "",
-        path: "",
-        author: "",
-      } as BlueprintMetaDataEditorSchema
-      : {
-        name: this._selectedBlueprint.metadata.name,
-        description: this._selectedBlueprint.metadata.description,
-        minimum_version: this._selectedBlueprint.metadata.homeassistant?.min_version,
-        path: this._selectedBlueprintPath,
-        author: this._selectedBlueprint.metadata.author,
-      } as BlueprintMetaDataEditorSchema;
+    const blueprints = Object.values(this._blueprints)
+      .flatMap((b) => Object.values(b))
+      .filter((b) => !("error" in b)) as Blueprint[];
+    const blueprintMetadata =
+      !this._selectedBlueprint || "error" in this._selectedBlueprint
+        ? ({
+            name: "",
+            description: "",
+            minimum_version: "",
+            path: "",
+            author: "",
+          } as BlueprintMetaDataEditorSchema)
+        : ({
+            name: this._selectedBlueprint.metadata.name,
+            description: this._selectedBlueprint.metadata.description,
+            minimum_version:
+              this._selectedBlueprint.metadata.homeassistant?.min_version,
+            path: this._selectedBlueprintPath,
+            author: this._selectedBlueprint.metadata.author,
+          } as BlueprintMetaDataEditorSchema);
 
     return html`
       <div class="container">
         <div class="full-row">
           <ha-button @click=${this._pickBlueprint}>
-            ${this.hass.localize("ui.panel.developer-tools.tabs.blueprints.editor.actions.pick")}
+            ${this.hass.localize(
+              "ui.panel.developer-tools.tabs.blueprints.editor.actions.pick"
+            )}
           </ha-button>
           <ha-button @click=${this._saveBlueprint} .disabled=${!this._dirty}>
-            ${this.hass.localize("ui.panel.developer-tools.tabs.blueprints.editor.actions.save")}
+            ${this.hass.localize(
+              "ui.panel.developer-tools.tabs.blueprints.editor.actions.save"
+            )}
           </ha-button>
           <ha-button @click=${this._resetBlueprint} .disabled=${!this._dirty}>
-            ${this.hass.localize("ui.panel.developer-tools.tabs.blueprints.editor.actions.reset")}
+            ${this.hass.localize(
+              "ui.panel.developer-tools.tabs.blueprints.editor.actions.reset"
+            )}
           </ha-button>
         </div>
         <ha-card>
-          ${!this._selectedBlueprint 
+          ${!this._selectedBlueprint
             ? html`
-              ${this.hass.localize("ui.panel.developer-tools.tabs.blueprints.editor.none_selected")}
-            `
+                ${this.hass.localize(
+                  "ui.panel.developer-tools.tabs.blueprints.editor.none_selected"
+                )}
+              `
             : "error" in this._selectedBlueprint
               ? html`
-                ${this.hass.localize("ui.panel.developer-tools.tabs.blueprints.editor.error")}
-              `
+                  ${this.hass.localize(
+                    "ui.panel.developer-tools.tabs.blueprints.editor.error"
+                  )}
+                `
               : html`
-                <blueprint-metadata-editor
-                  .hass=${this.hass}
-                  .metadata=${blueprintMetadata}
-                  @value-changed=${this._onBlueprintMetadataChanged}
-                ></blueprint-metadata-editor>
-                <ha-blueprint-editor
-                  .hass=${this.hass}
-                  .narrow=${this.narrow}
-                  .isWide=${!this.narrow}
-                  .blueprints=${blueprints}
-                  .blueprintPath=${this._originalBlueprintPath ?? ""}
-                  .domain=${this._selectedBlueprint.metadata.domain}
-                  @value-changed=${this._onBlueprintContentChanged}
-                >
-                </ha-blueprint-editor>
-              `}
+                  <blueprint-metadata-editor
+                    .hass=${this.hass}
+                    .metadata=${blueprintMetadata}
+                    @value-changed=${this._onBlueprintMetadataChanged}
+                  ></blueprint-metadata-editor>
+                  <ha-blueprint-editor
+                    .hass=${this.hass}
+                    .narrow=${this.narrow}
+                    .isWide=${!this.narrow}
+                    .blueprints=${blueprints}
+                    .blueprintPath=${this._originalBlueprintPath ?? ""}
+                    .domain=${this._selectedBlueprint.blueprint?.domain ??
+                    this._selectedBlueprint.metadata.domain ??
+                    ""}
+                    @value-changed=${this._onBlueprintContentChanged}
+                  >
+                  </ha-blueprint-editor>
+                `}
         </ha-card>
         <ha-yaml-editor
           .hass=${this.hass}
@@ -299,7 +327,7 @@ class HaPanelDevBlueprints extends LitElement {
         ha-card {
           padding: 8px;
         }
-        
+
         .full-row {
           flex: 1 0 100%;
         }

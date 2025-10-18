@@ -12,7 +12,7 @@ import type {
   Blueprint,
   BlueprintDomain,
   BlueprintInput,
-  Blueprints
+  Blueprints,
 } from "../../../data/blueprint";
 import {
   BlueprintYamlSchema,
@@ -126,20 +126,20 @@ export abstract class HaBlueprintGenericEditor extends PreventUnsavedMixin(
   protected updated(changedProps: PropertyValues) {
     super.updated(changedProps);
 
-    const oldBlueprintPath = changedProps.get("blueprintPath");
-    if (
-      (changedProps.has("blueprintPath") || changedProps.has("blueprints")) &&
-      this._blueprintPath &&
-      this.hass &&
-      // Only refresh config if we picked a new blueprint. If same ID, don't fetch it.
-      oldBlueprintPath !== this._blueprintPath
-    ) {
-
-      this._blueprintPath = this.blueprintPath;
-      this._loadBlueprint();
+    // The HASS object is a prerequisite to load blueprints
+    if (!this.hass) {
+      return;
     }
 
-    if (changedProps.has("blueprintPath") && !this.blueprintPath && this.hass) {
+    // If we already have a blueprint path and the path didn't change,
+    // there's no need to update anything
+    if (this._blueprintPath && !changedProps.has("blueprintPath")) {
+      return;
+    }
+
+    // If the blueprint path changed to an empty string, then we should load
+    // the default blueprint
+    if (changedProps.has("blueprintPath") && !this.blueprintPath) {
       const initData = getBlueprintEditorInitData();
       this._blueprint = {
         ...this.getDefaultBlueprint(),
@@ -149,6 +149,9 @@ export abstract class HaBlueprintGenericEditor extends PreventUnsavedMixin(
       this._readOnly = false;
       fireEvent(this, "value-changed", { value: this._blueprint });
     }
+
+    this._blueprintPath = this.blueprintPath;
+    this._loadBlueprint();
   }
 
   protected render() {
@@ -311,8 +314,9 @@ export abstract class HaBlueprintGenericEditor extends PreventUnsavedMixin(
           display: block;
           margin-bottom: 16px;
         }
-        
-        manual-automation-editor, manual-script-editor {
+
+        manual-automation-editor,
+        manual-script-editor {
           margin-top: -48px;
         }
       `,
