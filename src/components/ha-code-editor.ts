@@ -364,7 +364,7 @@ export class HaCodeEditor extends ReactiveElement {
     }
 
     this._editorToolbar.items = [
-      ...(this.hasTest
+      ...(this.hasTest && !this._isFullscreen
         ? [
             {
               id: "test",

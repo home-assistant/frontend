@@ -11,12 +11,15 @@ import "../ha-alert";
 import type { RenderTemplateResult } from "../../data/ws-templates";
 import { subscribeRenderTemplate } from "../../data/ws-templates";
 import { debounce } from "../../common/util/debounce";
+import type { TemplateSelector } from "../../data/selector";
 
 const WARNING_STRINGS = ["template:", "sensor:", "state:", "trigger: template"];
 
 @customElement("ha-selector-template")
 export class HaTemplateSelector extends LitElement {
   @property({ attribute: false }) public hass!: HomeAssistant;
+
+  @property({ attribute: false }) public selector!: TemplateSelector;
 
   @property() public value?: string;
 
@@ -97,7 +100,7 @@ export class HaTemplateSelector extends LitElement {
         autofocus
         autocomplete-entities
         autocomplete-icons
-        has-test
+        .hasTest=${this.selector.template?.preview !== false}
         @value-changed=${this._handleChange}
         @test-toggle=${this._testToggle}
         dir="ltr"
