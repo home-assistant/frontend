@@ -11,6 +11,7 @@ import {
   object,
   optional,
   string,
+  union,
 } from "superstruct";
 import { fireEvent } from "../../../../common/dom/fire_event";
 import type { LocalizeFunc } from "../../../../common/translations/localize";
@@ -40,7 +41,7 @@ const cardConfigStruct = assign(
   object({
     title: optional(string()),
     entity: optional(string()),
-    image: optional(string()),
+    image: optional(union([string(), object()])),
     image_entity: optional(string()),
     camera_image: optional(string()),
     camera_view: optional(enums(["auto", "live"])),
@@ -71,7 +72,20 @@ export class HuiPictureGlanceCardEditor
     (localize: LocalizeFunc) =>
       [
         { name: "title", selector: { text: {} } },
-        { name: "image", selector: { image: {} } },
+        {
+          name: "image",
+          selector: {
+            media: {
+              accept: ["image/*"] as string[],
+              clearable: true,
+              image_upload: true,
+              hide_content_type: true,
+              content_id_helper: localize(
+                "ui.panel.lovelace.editor.card.picture.content_id_helper"
+              ),
+            },
+          },
+        },
         {
           name: "image_entity",
           selector: { entity: { domain: ["image", "person"] } },
@@ -232,12 +246,10 @@ export class HuiPictureGlanceCardEditor
       `;
     }
 
-    const data = { camera_view: "auto", fit_mode: "cover", ...this._config };
-
     return html`
       <ha-form
         .hass=${this.hass}
-        .data=${data}
+        .data=${this._processData(this._config)}
         .schema=${this._schema(this.hass.localize)}
         .computeLabel=${this._computeLabelCallback}
         .computeHelper=${this._computeHelperCallback}
@@ -254,6 +266,15 @@ export class HuiPictureGlanceCardEditor
       </div>
     `;
   }
+
+  private _processData = memoizeOne((config: PictureGlanceCardConfig) => ({
+    camera_view: "auto",
+    fit_mode: "cover",
+    ...config,
+    ...(typeof config.image === "string"
+      ? { image: { media_content_id: config.image } }
+      : {}),
+  }));
 
   private _goBack(): void {
     this._subElementEditorConfig = undefined;

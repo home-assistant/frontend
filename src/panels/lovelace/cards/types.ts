@@ -29,6 +29,7 @@ import type {
 import type { LovelaceHeaderFooterConfig } from "../header-footer/types";
 import type { LovelaceHeadingBadgeConfig } from "../heading-badges/types";
 import type { HomeSummary } from "../strategies/home/helpers/home-summaries";
+import type { MediaSelectorValue } from "../../../data/selector";
 
 export type AlarmPanelCardConfigState =
   | "arm_away"
@@ -39,7 +40,7 @@ export type AlarmPanelCardConfigState =
 
 export interface AlarmPanelCardConfig extends LovelaceCardConfig {
   entity: string;
-  name?: string;
+  name?: string | EntityNameItem | EntityNameItem[];
   states?: AlarmPanelCardConfigState[];
   theme?: string;
 }
@@ -62,6 +63,9 @@ export interface EmptyStateCardConfig extends LovelaceCardConfig {
 }
 
 export interface EntityCardConfig extends LovelaceCardConfig {
+  entity: string;
+  name?: string | EntityNameItem | EntityNameItem[];
+  icon?: string;
   attribute?: string;
   unit?: string;
   theme?: string;
@@ -257,7 +261,7 @@ export interface GaugeSegment {
 export interface GaugeCardConfig extends LovelaceCardConfig {
   entity: string;
   attribute?: string;
-  name?: string;
+  name?: string | EntityNameItem | EntityNameItem[];
   unit?: string;
   min?: number;
   max?: number;
@@ -270,11 +274,13 @@ export interface GaugeCardConfig extends LovelaceCardConfig {
   double_tap_action?: ActionConfig;
 }
 
-export interface ConfigEntity extends EntityConfig {
+export interface ActionsConfig {
   tap_action?: ActionConfig;
   hold_action?: ActionConfig;
   double_tap_action?: ActionConfig;
 }
+
+export interface ConfigEntity extends EntityConfig, ActionsConfig {}
 
 export interface PictureGlanceEntityConfig extends ConfigEntity {
   show_state?: boolean;
@@ -305,7 +311,7 @@ export interface GlanceCardConfig extends LovelaceCardConfig {
 export interface HumidifierCardConfig extends LovelaceCardConfig {
   entity: string;
   theme?: string;
-  name?: string;
+  name?: string | EntityNameItem | EntityNameItem[];
   show_current_as_primary?: boolean;
   features?: LovelaceCardFeatureConfig[];
 }
@@ -321,7 +327,7 @@ export interface IframeCardConfig extends LovelaceCardConfig {
 
 export interface LightCardConfig extends LovelaceCardConfig {
   entity: string;
-  name?: string;
+  name?: string | EntityNameItem | EntityNameItem[];
   theme?: string;
   icon?: string;
   tap_action?: ActionConfig;
@@ -393,6 +399,7 @@ export interface ClockCardConfig extends LovelaceCardConfig {
 
 export interface MediaControlCardConfig extends LovelaceCardConfig {
   entity: string;
+  name?: string | EntityNameItem | EntityNameItem[];
   theme?: string;
 }
 
@@ -441,7 +448,7 @@ export interface StatisticCardConfig extends LovelaceCardConfig {
 }
 
 export interface PictureCardConfig extends LovelaceCardConfig {
-  image?: string;
+  image?: string | MediaSelectorValue;
   image_entity?: string;
   tap_action?: ActionConfig;
   hold_action?: ActionConfig;
@@ -452,7 +459,7 @@ export interface PictureCardConfig extends LovelaceCardConfig {
 
 export interface PictureElementsCardConfig extends LovelaceCardConfig {
   title?: string;
-  image?: string;
+  image?: string | MediaSelectorValue;
   image_entity?: string;
   camera_image?: string;
   camera_view?: HuiImage["cameraView"];
@@ -462,14 +469,14 @@ export interface PictureElementsCardConfig extends LovelaceCardConfig {
   entity?: string;
   elements: LovelaceElementConfig[];
   theme?: string;
-  dark_mode_image?: string;
+  dark_mode_image?: string | MediaSelectorValue;
   dark_mode_filter?: string;
 }
 
 export interface PictureEntityCardConfig extends LovelaceCardConfig {
   entity: string;
-  name?: string;
-  image?: string;
+  name?: string | EntityNameItem | EntityNameItem[];
+  image?: string | MediaSelectorValue;
   camera_image?: string;
   camera_view?: HuiImage["cameraView"];
   state_image?: Record<string, unknown>;
@@ -487,7 +494,7 @@ export interface PictureEntityCardConfig extends LovelaceCardConfig {
 export interface PictureGlanceCardConfig extends LovelaceCardConfig {
   entities: (string | PictureGlanceEntityConfig)[];
   title?: string;
-  image?: string;
+  image?: string | MediaSelectorValue;
   image_entity?: string;
   camera_image?: string;
   camera_view?: HuiImage["cameraView"];
@@ -508,14 +515,14 @@ export interface PlantAttributeTarget extends EventTarget {
 }
 
 export interface PlantStatusCardConfig extends LovelaceCardConfig {
-  name?: string;
+  name?: string | EntityNameItem | EntityNameItem[];
   entity: string;
   theme?: string;
 }
 
 export interface SensorCardConfig extends LovelaceCardConfig {
   entity: string;
-  name?: string;
+  name?: string | EntityNameItem | EntityNameItem[];
   icon?: string;
   graph?: string;
   unit?: string;
@@ -551,14 +558,14 @@ export interface GridCardConfig extends StackCardConfig {
 export interface ThermostatCardConfig extends LovelaceCardConfig {
   entity: string;
   theme?: string;
-  name?: string;
+  name?: string | EntityNameItem | EntityNameItem[];
   show_current_as_primary?: boolean;
   features?: LovelaceCardFeatureConfig[];
 }
 
 export interface WeatherForecastCardConfig extends LovelaceCardConfig {
   entity: string;
-  name?: string;
+  name?: string | EntityNameItem | EntityNameItem[];
   show_current?: boolean;
   show_forecast?: boolean;
   forecast_type?: ForecastType;

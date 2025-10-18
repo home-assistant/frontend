@@ -1,4 +1,9 @@
-import { mdiDelete, mdiDrag, mdiPencil, mdiPlus } from "@mdi/js";
+import {
+  mdiDelete,
+  mdiDragHorizontalVariant,
+  mdiPencil,
+  mdiPlus,
+} from "@mdi/js";
 import { LitElement, css, html, nothing } from "lit";
 import { customElement, property } from "lit/decorators";
 import { repeat } from "lit/directives/repeat";
@@ -345,7 +350,9 @@ export class HuiCardFeaturesEditor extends LitElement {
               return html`
                 <div class="feature">
                   <div class="handle">
-                    <ha-svg-icon .path=${mdiDrag}></ha-svg-icon>
+                    <ha-svg-icon
+                      .path=${mdiDragHorizontalVariant}
+                    ></ha-svg-icon>
                   </div>
                   <div class="feature-content">
                     <div>
