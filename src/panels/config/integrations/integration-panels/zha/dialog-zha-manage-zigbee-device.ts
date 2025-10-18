@@ -220,6 +220,9 @@ class DialogZHAManageZigbeeDevice extends LitElement {
 
         .content {
           outline: none;
+          display: flex;
+          flex-direction: column;
+          gap: var(--ha-space-2);
         }
 
         @media all and (min-width: 600px) and (min-height: 501px) {
