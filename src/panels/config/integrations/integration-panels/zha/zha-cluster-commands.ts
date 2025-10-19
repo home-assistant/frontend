@@ -108,6 +108,7 @@ export class ZHAClusterCommands extends LitElement {
                   service="issue_zigbee_cluster_command"
                   .data=${this._issueClusterCommandServiceData}
                   .disabled=${!this._canIssueCommand}
+                  appearance="accent"
                 >
                   ${this.hass!.localize(
                     "ui.panel.config.zha.cluster_commands.issue_zigbee_command"
@@ -187,6 +188,10 @@ export class ZHAClusterCommands extends LitElement {
     return [
       haStyle,
       css`
+        ha-card {
+          border: none;
+        }
+
         ha-select {
           margin-top: 16px;
         }
@@ -238,6 +243,11 @@ export class ZHAClusterCommands extends LitElement {
           padding-inline-end: 0px;
           padding-inline-start: initial;
           color: var(--primary-color);
+        }
+
+        .card-actions {
+          display: flex;
+          justify-content: flex-end;
         }
       `,
     ];

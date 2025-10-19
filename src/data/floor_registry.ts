@@ -68,13 +68,18 @@ export const getFloorAreaLookup = (
 };
 
 export const floorCompare =
-  (entries?: FloorRegistryEntry[], order?: string[]) =>
+  (entries?: HomeAssistant["floors"], order?: string[]) =>
   (a: string, b: string) => {
     const indexA = order ? order.indexOf(a) : -1;
     const indexB = order ? order.indexOf(b) : -1;
     if (indexA === -1 && indexB === -1) {
-      const nameA = entries?.[a]?.name ?? a;
-      const nameB = entries?.[b]?.name ?? b;
+      const floorA = entries?.[a];
+      const floorB = entries?.[b];
+      if (floorA && floorB && floorA.level !== floorB.level) {
+        return (floorA.level ?? 0) - (floorB.level ?? 0);
+      }
+      const nameA = floorA?.name ?? a;
+      const nameB = floorB?.name ?? b;
       return stringCompare(nameA, nameB);
     }
     if (indexA === -1) {

@@ -12,7 +12,7 @@
     "media_browser": "Media",
     "profile": "Profile",
     "light": "Lights",
-    "security": "Security",
+    "safety": "Safety",
     "climate": "Climate"
   },
   "state": {
@@ -106,8 +106,7 @@
         }
       },
       "area": {
-        "area_not_found": "Area not found.",
-        "media_playing": "Media playing"
+        "area_not_found": "Area not found."
       },
       "automation": {
         "last_triggered": "Last triggered",
@@ -647,6 +646,7 @@
       },
       "entity": {
         "entity-picker": {
+          "choose_entity": "Choose entity",
           "entity": "Entity",
           "edit": "Edit",
           "clear": "Clear",
@@ -656,6 +656,19 @@
           "new_entity": "Create a new entity",
           "placeholder": "Select an entity",
           "create_helper": "Create a new {domain, select, \n undefined {} \n other {{domain} }\n } helper."
+        },
+        "entity-name-picker": {
+          "types": {
+            "floor": "Floor",
+            "area": "Area",
+            "device": "Device",
+            "entity": "Entity",
+            "area_missing": "No area assigned",
+            "floor_missing": "No floor assigned",
+            "device_missing": "No related device"
+          },
+          "add": "Add",
+          "custom_name": "Custom name"
         },
         "entity-attribute-picker": {
           "attribute": "Attribute",
@@ -671,16 +684,36 @@
         "expand_area_id": "Split this area into separate devices and entities.",
         "expand_device_id": "Split this device into separate entities.",
         "expand_label_id": "Split this label into separate areas, devices and entities.",
+        "add_target": "Add target",
         "remove": "Remove",
         "remove_floor_id": "Remove floor",
         "remove_area_id": "Remove area",
         "remove_device_id": "Remove device",
         "remove_entity_id": "Remove entity",
         "remove_label_id": "Remove label",
-        "add_area_id": "Choose area",
-        "add_device_id": "Choose device",
-        "add_entity_id": "Choose entity",
-        "add_label_id": "Choose label"
+        "devices_count": "{count} {count, plural,\n one {device}\n other {devices}\n}",
+        "entities_count": "{count} {count, plural,\n one {entity}\n other {entities}\n}",
+        "target_details": "Target details",
+        "no_targets": "No targets",
+        "no_target_found": "No target found for {term}",
+        "selected": {
+          "entity": "Entities: {count}",
+          "device": "Devices: {count}",
+          "area": "Areas: {count}",
+          "label": "Labels: {count}",
+          "floor": "Floors: {count}"
+        },
+        "type": {
+          "area": "Area",
+          "areas": "Areas",
+          "device": "Device",
+          "devices": "Devices",
+          "entity": "Entity",
+          "entities": "Entities",
+          "label": "Label",
+          "labels": "Labels",
+          "floor": "Floor"
+        }
       },
       "subpage-data-table": {
         "filters": "Filters",
@@ -2663,7 +2696,11 @@
             "addons_description": "Select what add-ons you want to include.",
             "addons_all": "All",
             "addons_none": "None",
-            "addons_custom": "Custom"
+            "addons_custom": "Custom",
+            "estimated_size": "Estimated backup size",
+            "estimated_size_disclaimer": "This is an approximation based on storage usage and compression. The actual backup size will vary.",
+            "estimated_size_disclaimer_addons_custom": "This estimate includes all add-ons, and not individual add-on sizes.",
+            "estimated_size_loading": "Loading size estimate..."
           },
           "data_picker": {
             "settings": "Settings",
@@ -3418,12 +3455,17 @@
                 "require_admin": "Admin only",
                 "sidebar": "In sidebar",
                 "filename": "Filename",
-                "url": "Open"
+                "url": "Open",
+                "type": "Type"
               },
               "open": "Open",
               "edit": "Edit",
               "delete": "Delete",
-              "add_dashboard": "Add dashboard"
+              "add_dashboard": "Add dashboard",
+              "type": {
+                "user_created": "User created",
+                "built_in": "Built-in"
+              }
             },
             "confirm_delete_title": "Delete {dashboard_title}?",
             "confirm_delete_text": "This dashboard will be permanently deleted.",
@@ -5514,6 +5556,7 @@
             "entries": "{count} {count, plural,\n  one {entry}\n  other {entries}\n}",
             "no_devices_or_entities": "No devices or entities",
             "devices_without_subentry": "Devices that don't belong to a sub-entry",
+            "copy": "Copy entry ID",
             "rename": "Rename",
             "configure": "Configure",
             "system_options": "System options",
@@ -5830,8 +5873,8 @@
           "change_channel_initiated_text": "The channel change has been initiated and will complete in {delay} {delay, plural,\n  one {minute}\n  other {minutes}\n}.",
           "change_channel_invalid": "Invalid channel",
           "change_channel_label": "Channel",
-          "change_channel_multiprotocol_enabled_title": "The Thread radio has multiprotocol enabled",
-          "change_channel_multiprotocol_enabled_text": "To change channel when the Thread radio has multiprotocol enabled, please use the hardware settings menu.",
+          "change_channel_multiprotocol_enabled_title": "The Thread adapter has multiprotocol enabled",
+          "change_channel_multiprotocol_enabled_text": "To change channel when the Thread adapter has multiprotocol enabled, please use the hardware settings menu.",
           "change_channel_range": "Channel must be in the range 11 to 26",
           "change_channel_text": "Initiating a channel change for your Home Assistant Thread network should be performed with caution. Some Thread devices may not migrate to the new channel automatically and, if the new channel is congested, your Thread devices may become intermittently unavailable. Some devices may need to be manually re-joined to your Thread network before they show in Home Assistant again. This action cannot be reversed (without performing another channel change).",
           "thread_network_info": "Thread network information",
@@ -5876,12 +5919,12 @@
             "devices_offline": "{count} offline",
             "update_button": "Update configuration",
             "download_backup": "Download backup",
-            "migrate_radio": "Migrate radio",
+            "migrate_radio": "Migrate adapter",
             "network_settings_title": "Network settings",
             "change_channel": "Change channel",
             "channel_dialog": {
               "title": "Multiprotocol add-on in use",
-              "text": "Zigbee and Thread share the same radio and must use the same channel. Change the channel of both networks by reconfiguring multiprotocol from the hardware menu."
+              "text": "Zigbee and Thread share the same adapter and must use the same channel. Change the channel of both networks by reconfiguring multiprotocol from the hardware menu."
             }
           },
           "add_device_page": {
@@ -6886,8 +6929,7 @@
             "areas": "Areas",
             "other_areas": "Other areas",
             "unamed_device": "Unnamed device",
-            "others": "Others",
-            "common_controls": "Commonly used"
+            "others": "Others"
           },
           "common_controls": {
             "not_loaded": "Usage Prediction integration is not loaded.",
@@ -7018,7 +7060,11 @@
             },
             "energy_devices_graph": {
               "energy_usage": "Energy usage",
-              "previous_energy_usage": "Previous energy usage"
+              "previous_energy_usage": "Previous energy usage",
+              "total_energy_usage": "Total energy usage",
+              "change_chart_type": "Change chart type",
+              "untracked": "untracked",
+              "includes_untracked": "Includes {num} kWh of untracked energy"
             },
             "energy_devices_detail_graph": {
               "untracked_consumption": "Untracked consumption",
@@ -7869,7 +7915,8 @@
             },
             "picture": {
               "name": "Picture",
-              "description": "The Picture card allows you to set an image to use for navigation to various paths in your interface or to perform an action."
+              "description": "The Picture card allows you to set an image to use for navigation to various paths in your interface or to perform an action.",
+              "content_id_helper": "Enter a media_source id or a URL for the image to be displayed."
             },
             "picture-elements": {
               "name": "Picture elements",
@@ -7923,6 +7970,8 @@
               "integration_not_loaded": "This card requires the `todo` integration to be set up.",
               "hide_completed": "Hide completed items",
               "hide_create": "Hide 'Add item' field",
+              "hide_section_headers": "Hide section headers",
+              "hide_section_headers_helper": "Removes the 'Active' and 'Completed' section headers and their overflow menus.",
               "display_order": "Display order",
               "item_tap_action": "Item tap behavior",
               "actions": {
@@ -9506,8 +9555,8 @@
             "description": "This will restart the add-on if it crashes"
           },
           "auto_update": {
-            "title": "Autoupdate",
-            "description": "Autoupdate the add-on when there is a new version available"
+            "title": "Automatically update",
+            "description": "Automatically update the add-on when a new version is available"
           },
           "ingress_panel": {
             "title": "Add to sidebar",

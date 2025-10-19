@@ -20,6 +20,11 @@ export class HuiDialogWebBrowserPlayMedia extends LitElement {
 
   public closeDialog() {
     this._params = undefined;
+    const img = this.renderRoot.querySelector("img");
+    if (img) {
+      // Unload streaming images so the connection can be closed
+      img.src = "";
+    }
     fireEvent(this, "dialog-closed", { dialog: this.localName });
   }
 

@@ -1,5 +1,10 @@
 import "@material/mwc-menu/mwc-menu-surface";
-import { mdiDelete, mdiDrag, mdiPencil, mdiPlus } from "@mdi/js";
+import {
+  mdiDelete,
+  mdiDragHorizontalVariant,
+  mdiPencil,
+  mdiPlus,
+} from "@mdi/js";
 import type { ComboBoxLightOpenedChangedEvent } from "@vaadin/combo-box/vaadin-combo-box-light";
 import { LitElement, css, html, nothing } from "lit";
 import { customElement, property, query, state } from "lit/decorators";
@@ -86,7 +91,9 @@ export class HuiHeadingBadgesEditor extends LitElement {
                     return html`
                       <div class="badge">
                         <div class="handle">
-                          <ha-svg-icon .path=${mdiDrag}></ha-svg-icon>
+                          <ha-svg-icon
+                            .path=${mdiDragHorizontalVariant}
+                          ></ha-svg-icon>
                         </div>
                         <div class="badge-content">
                           <span>${label}</span>
@@ -148,10 +155,10 @@ export class HuiHeadingBadgesEditor extends LitElement {
           .hass=${this.hass}
           id="input"
           .placeholder=${this.hass.localize(
-            "ui.components.target-picker.add_entity_id"
+            "ui.components.entity.entity-picker.choose_entity"
           )}
           .searchLabel=${this.hass.localize(
-            "ui.components.target-picker.add_entity_id"
+            "ui.components.entity.entity-picker.choose_entity"
           )}
           @value-changed=${this._entityPicked}
           @click=${preventDefault}

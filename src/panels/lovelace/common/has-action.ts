@@ -1,11 +1,11 @@
 import type { ActionConfig } from "../../../data/lovelace/config/action";
-import type { ConfigEntity } from "../cards/types";
+import type { ActionsConfig } from "../cards/types";
 
 export function hasAction(config?: ActionConfig): boolean {
   return config !== undefined && config.action !== "none";
 }
 
-export function hasAnyAction(config: ConfigEntity): boolean {
+export function hasAnyAction(config: ActionsConfig): boolean {
   return (
     !config.tap_action ||
     hasAction(config.tap_action) ||

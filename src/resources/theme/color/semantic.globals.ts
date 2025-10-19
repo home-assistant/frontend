@@ -152,6 +152,9 @@ export const semanticColorStyles = css`
     --ha-color-on-success-quiet: var(--ha-color-green-50);
     --ha-color-on-success-normal: var(--ha-color-green-40);
     --ha-color-on-success-loud: var(--white-color);
+
+    /* Surfaces */
+    --ha-color-surface-default: var(--ha-color-neutral-95);
   }
 `;
 
@@ -280,5 +283,8 @@ export const darkSemanticColorStyles = css`
     --ha-color-on-success-quiet: var(--ha-color-green-70);
     --ha-color-on-success-normal: var(--ha-color-green-60);
     --ha-color-on-success-loud: var(--white-color);
+
+    /* Surfaces */
+    --ha-color-surface-default: var(--ha-color-neutral-10);
   }
 `;

@@ -11,9 +11,11 @@ import {
   object,
   optional,
   string,
+  union,
 } from "superstruct";
 import { fireEvent } from "../../../../common/dom/fire_event";
 import { computeDomain } from "../../../../common/entity/compute_domain";
+import { DEFAULT_ENTITY_NAME } from "../../../../common/entity/compute_entity_name_display";
 import type { LocalizeFunc } from "../../../../common/translations/localize";
 import "../../../../components/ha-form/ha-form";
 import type {
@@ -26,14 +28,15 @@ import type { PictureEntityCardConfig } from "../../cards/types";
 import type { LovelaceCardEditor } from "../../types";
 import { actionConfigStruct } from "../structs/action-struct";
 import { baseLovelaceCardConfig } from "../structs/base-card-struct";
+import { entityNameStruct } from "../structs/entity-name-struct";
 import { configElementStyle } from "./config-elements-style";
 
 const cardConfigStruct = assign(
   baseLovelaceCardConfig,
   object({
     entity: optional(string()),
-    image: optional(string()),
-    name: optional(string()),
+    image: optional(union([string(), object()])),
+    name: optional(entityNameStruct),
     camera_image: optional(string()),
     camera_view: optional(enums(["auto", "live"])),
     aspect_ratio: optional(string()),
@@ -65,8 +68,29 @@ export class HuiPictureEntityCardEditor
     (localize: LocalizeFunc) =>
       [
         { name: "entity", required: true, selector: { entity: {} } },
-        { name: "name", selector: { text: {} } },
-        { name: "image", selector: { image: {} } },
+        {
+          name: "name",
+          selector: {
+            entity_name: {
+              default_name: DEFAULT_ENTITY_NAME,
+            },
+          },
+          context: { entity: "entity" },
+        },
+        {
+          name: "image",
+          selector: {
+            media: {
+              accept: ["image/*"] as string[],
+              clearable: true,
+              image_upload: true,
+              hide_content_type: true,
+              content_id_helper: localize(
+                "ui.panel.lovelace.editor.card.picture.content_id_helper"
+              ),
+            },
+          },
+        },
         { name: "camera_image", selector: { entity: { domain: "camera" } } },
         {
           name: "",
@@ -159,21 +183,11 @@ export class HuiPictureEntityCardEditor
       return nothing;
     }
 
-    const data = {
-      show_state: true,
-      show_name: true,
-      camera_view: "auto",
-      fit_mode: "cover",
-      ...this._config,
-    };
-
-    const schema = this._schema(this.hass.localize);
-
     return html`
       <ha-form
         .hass=${this.hass}
-        .data=${data}
-        .schema=${schema}
+        .data=${this._processData(this._config)}
+        .schema=${this._schema(this.hass.localize)}
         .computeLabel=${this._computeLabelCallback}
         .computeHelper=${this._computeHelperCallback}
         @value-changed=${this._valueChanged}
@@ -181,6 +195,17 @@ export class HuiPictureEntityCardEditor
       </div>
     `;
   }
+
+  private _processData = memoizeOne((config: PictureEntityCardConfig) => ({
+    show_state: true,
+    show_name: true,
+    camera_view: "auto",
+    fit_mode: "cover",
+    ...config,
+    ...(typeof config.image === "string"
+      ? { image: { media_content_id: config.image } }
+      : {}),
+  }));
 
   private _valueChanged(ev: CustomEvent): void {
     const config = ev.detail.value;
