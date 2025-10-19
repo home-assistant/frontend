@@ -15,7 +15,6 @@ import type { PropertyValues } from "lit";
 import { LitElement, css, html, nothing } from "lit";
 import { customElement, property, state } from "lit/decorators";
 import { cache } from "lit/directives/cache";
-import { join } from "lit/directives/join";
 import { keyed } from "lit/directives/keyed";
 import { dynamicElement } from "../../common/dom/dynamic-element-directive";
 import { fireEvent } from "../../common/dom/fire_event";
@@ -23,10 +22,17 @@ import { stopPropagation } from "../../common/dom/stop_propagation";
 import { computeAreaName } from "../../common/entity/compute_area_name";
 import { computeDeviceName } from "../../common/entity/compute_device_name";
 import { computeDomain } from "../../common/entity/compute_domain";
-import { computeEntityEntryName } from "../../common/entity/compute_entity_name";
-import { getEntityEntryContext } from "../../common/entity/context/get_entity_context";
+import {
+  computeEntityEntryName,
+  computeEntityName,
+} from "../../common/entity/compute_entity_name";
+import {
+  getEntityContext,
+  getEntityEntryContext,
+} from "../../common/entity/context/get_entity_context";
 import { shouldHandleRequestSelectedEvent } from "../../common/mwc/handle-request-selected-event";
 import { navigate } from "../../common/navigate";
+import { computeRTL } from "../../common/util/compute_rtl";
 import "../../components/ha-button-menu";
 import "../../components/ha-dialog";
 import "../../components/ha-dialog-header";
@@ -321,33 +327,41 @@ export class MoreInfoDialog extends LitElement {
       (isDefaultView && this._parentEntityIds.length === 0) ||
       isSpecificInitialView;
 
-    let entityName: string | undefined;
-    let deviceName: string | undefined;
-    let areaName: string | undefined;
+    const context = stateObj
+      ? getEntityContext(
+          stateObj,
+          this.hass.entities,
+          this.hass.devices,
+          this.hass.areas,
+          this.hass.floors
+        )
+      : this._entry
+        ? getEntityEntryContext(
+            this._entry,
+            this.hass.entities,
+            this.hass.devices,
+            this.hass.areas,
+            this.hass.floors
+          )
+        : undefined;
 
-    if (stateObj) {
-      entityName = this.hass.formatEntityName(stateObj, "entity");
-      deviceName = this.hass.formatEntityName(stateObj, "device");
-      areaName = this.hass.formatEntityName(stateObj, "area");
-    } else if (this._entry) {
-      const { device, area } = getEntityEntryContext(
-        this._entry,
-        this.hass.entities,
-        this.hass.devices,
-        this.hass.areas,
-        this.hass.floors
-      );
-      entityName = computeEntityEntryName(this._entry, this.hass.devices);
-      deviceName = device ? computeDeviceName(device) : undefined;
-      areaName = area ? computeAreaName(area) : undefined;
-    } else {
-      entityName = entityId;
-    }
+    const entityName = stateObj
+      ? computeEntityName(stateObj, this.hass.entities, this.hass.devices)
+      : this._entry
+        ? computeEntityEntryName(this._entry, this.hass.devices)
+        : entityId;
+
+    const deviceName = context?.device
+      ? computeDeviceName(context.device)
+      : undefined;
+    const areaName = context?.area ? computeAreaName(context.area) : undefined;
 
     const breadcrumb = [areaName, deviceName, entityName].filter(
       (v): v is string => Boolean(v)
     );
     const title = this._childView?.viewTitle || breadcrumb.pop() || entityId;
+
+    const isRTL = computeRTL(this.hass);
 
     return html`
       <ha-dialog
@@ -382,17 +396,13 @@ export class MoreInfoDialog extends LitElement {
             ${breadcrumb.length > 0
               ? !__DEMO__ && isAdmin
                 ? html`
-                    <button
-                      class="breadcrumb"
-                      @click=${this._breadcrumbClick}
-                      aria-label=${breadcrumb.join(" > ")}
-                    >
-                      ${join(breadcrumb, html`<ha-icon-next></ha-icon-next>`)}
+                    <button class="breadcrumb" @click=${this._breadcrumbClick}>
+                      ${breadcrumb.join(isRTL ? " ◂ " : " ▸ ")}
                     </button>
                   `
                 : html`
                     <p class="breadcrumb">
-                      ${join(breadcrumb, html`<ha-icon-next></ha-icon-next>`)}
+                      ${breadcrumb.join(isRTL ? " ◂ " : " ▸ ")}
                     </p>
                   `
               : nothing}

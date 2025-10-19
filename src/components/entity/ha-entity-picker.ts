@@ -1,14 +1,17 @@
 import { mdiPlus, mdiShape } from "@mdi/js";
 import type { ComboBoxLitRenderer } from "@vaadin/combo-box/lit";
-import type { HassEntity } from "home-assistant-js-websocket";
 import { html, LitElement, nothing, type PropertyValues } from "lit";
 import { customElement, property, query } from "lit/decorators";
 import memoizeOne from "memoize-one";
 import { fireEvent } from "../../common/dom/fire_event";
-import { computeDomain } from "../../common/entity/compute_domain";
-import { computeStateName } from "../../common/entity/compute_state_name";
+import { computeEntityNameList } from "../../common/entity/compute_entity_name_display";
 import { isValidEntityId } from "../../common/entity/valid_entity_id";
 import { computeRTL } from "../../common/util/compute_rtl";
+import type { HaEntityPickerEntityFilterFunc } from "../../data/entity";
+import {
+  getEntities,
+  type EntityComboBoxItem,
+} from "../../data/entity_registry";
 import { domainToName } from "../../data/integration";
 import {
   isHelperDomain,
@@ -19,20 +22,10 @@ import type { HomeAssistant } from "../../types";
 import "../ha-combo-box-item";
 import "../ha-generic-picker";
 import type { HaGenericPicker } from "../ha-generic-picker";
-import type {
-  PickerComboBoxItem,
-  PickerComboBoxSearchFn,
-} from "../ha-picker-combo-box";
+import type { PickerComboBoxSearchFn } from "../ha-picker-combo-box";
 import type { PickerValueRenderer } from "../ha-picker-field";
 import "../ha-svg-icon";
 import "./state-badge";
-
-interface EntityComboBoxItem extends PickerComboBoxItem {
-  domain_name?: string;
-  stateObj?: HassEntity;
-}
-
-export type HaEntityPickerEntityFilterFunc = (entity: HassEntity) => boolean;
 
 const CREATE_ID = "___create-new-entity___";
 
@@ -144,9 +137,14 @@ export class HaEntityPicker extends LitElement {
       `;
     }
 
-    const entityName = this.hass.formatEntityName(stateObj, "entity");
-    const deviceName = this.hass.formatEntityName(stateObj, "device");
-    const areaName = this.hass.formatEntityName(stateObj, "area");
+    const [entityName, deviceName, areaName] = computeEntityNameList(
+      stateObj,
+      [{ type: "entity" }, { type: "device" }, { type: "area" }],
+      this.hass.entities,
+      this.hass.devices,
+      this.hass.areas,
+      this.hass.floors
+    );
 
     const isRTL = computeRTL(this.hass);
 
@@ -249,8 +247,10 @@ export class HaEntityPicker extends LitElement {
     }
   );
 
+  private _getEntitiesMemoized = memoizeOne(getEntities);
+
   private _getItems = () =>
-    this._getEntities(
+    this._getEntitiesMemoized(
       this.hass,
       this.includeDomains,
       this.excludeDomains,
@@ -258,124 +258,9 @@ export class HaEntityPicker extends LitElement {
       this.includeDeviceClasses,
       this.includeUnitOfMeasurement,
       this.includeEntities,
-      this.excludeEntities
+      this.excludeEntities,
+      this.value
     );
-
-  private _getEntities = memoizeOne(
-    (
-      hass: this["hass"],
-      includeDomains: this["includeDomains"],
-      excludeDomains: this["excludeDomains"],
-      entityFilter: this["entityFilter"],
-      includeDeviceClasses: this["includeDeviceClasses"],
-      includeUnitOfMeasurement: this["includeUnitOfMeasurement"],
-      includeEntities: this["includeEntities"],
-      excludeEntities: this["excludeEntities"]
-    ): EntityComboBoxItem[] => {
-      let items: EntityComboBoxItem[] = [];
-
-      let entityIds = Object.keys(hass.states);
-
-      if (includeEntities) {
-        entityIds = entityIds.filter((entityId) =>
-          includeEntities.includes(entityId)
-        );
-      }
-
-      if (excludeEntities) {
-        entityIds = entityIds.filter(
-          (entityId) => !excludeEntities.includes(entityId)
-        );
-      }
-
-      if (includeDomains) {
-        entityIds = entityIds.filter((eid) =>
-          includeDomains.includes(computeDomain(eid))
-        );
-      }
-
-      if (excludeDomains) {
-        entityIds = entityIds.filter(
-          (eid) => !excludeDomains.includes(computeDomain(eid))
-        );
-      }
-
-      const isRTL = computeRTL(this.hass);
-
-      items = entityIds.map<EntityComboBoxItem>((entityId) => {
-        const stateObj = hass!.states[entityId];
-
-        const friendlyName = computeStateName(stateObj); // Keep this for search
-        const entityName = this.hass.formatEntityName(stateObj, "entity");
-        const deviceName = this.hass.formatEntityName(stateObj, "device");
-        const areaName = this.hass.formatEntityName(stateObj, "area");
-
-        const domainName = domainToName(
-          this.hass.localize,
-          computeDomain(entityId)
-        );
-
-        const primary = entityName || deviceName || entityId;
-        const secondary = [areaName, entityName ? deviceName : undefined]
-          .filter(Boolean)
-          .join(isRTL ? " ◂ " : " ▸ ");
-        const a11yLabel = [deviceName, entityName].filter(Boolean).join(" - ");
-
-        return {
-          id: entityId,
-          primary: primary,
-          secondary: secondary,
-          domain_name: domainName,
-          sorting_label: [deviceName, entityName].filter(Boolean).join("_"),
-          search_labels: [
-            entityName,
-            deviceName,
-            areaName,
-            domainName,
-            friendlyName,
-            entityId,
-          ].filter(Boolean) as string[],
-          a11y_label: a11yLabel,
-          stateObj: stateObj,
-        };
-      });
-
-      if (includeDeviceClasses) {
-        items = items.filter(
-          (item) =>
-            // We always want to include the entity of the current value
-            item.id === this.value ||
-            (item.stateObj?.attributes.device_class &&
-              includeDeviceClasses.includes(
-                item.stateObj.attributes.device_class
-              ))
-        );
-      }
-
-      if (includeUnitOfMeasurement) {
-        items = items.filter(
-          (item) =>
-            // We always want to include the entity of the current value
-            item.id === this.value ||
-            (item.stateObj?.attributes.unit_of_measurement &&
-              includeUnitOfMeasurement.includes(
-                item.stateObj.attributes.unit_of_measurement
-              ))
-        );
-      }
-
-      if (entityFilter) {
-        items = items.filter(
-          (item) =>
-            // We always want to include the entity of the current value
-            item.id === this.value ||
-            (item.stateObj && entityFilter!(item.stateObj))
-        );
-      }
-
-      return items;
-    }
-  );
 
   protected render() {
     const placeholder =

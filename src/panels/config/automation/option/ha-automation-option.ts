@@ -1,4 +1,4 @@
-import { mdiDrag, mdiPlus } from "@mdi/js";
+import { mdiDragHorizontalVariant, mdiPlus } from "@mdi/js";
 import deepClone from "deep-clone-simple";
 import type { PropertyValues } from "lit";
 import { LitElement, css, html, nothing } from "lit";
@@ -100,7 +100,9 @@ export default class HaAutomationOption extends LitElement {
                         @click=${stopPropagation}
                         .index=${idx}
                       >
-                        <ha-svg-icon .path=${mdiDrag}></ha-svg-icon>
+                        <ha-svg-icon
+                          .path=${mdiDragHorizontalVariant}
+                        ></ha-svg-icon>
                       </div>
                     `
                   : nothing}

@@ -999,6 +999,7 @@ class ZWaveJSConfigDashboard extends SubscribeMixin(LitElement) {
           display: flex;
           gap: var(--ha-space-2);
           margin-left: auto;
+          flex-wrap: wrap;
         }
 
         .container {

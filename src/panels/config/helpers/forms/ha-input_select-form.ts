@@ -1,4 +1,4 @@
-import { mdiDelete, mdiDrag } from "@mdi/js";
+import { mdiDelete, mdiDragHorizontalVariant } from "@mdi/js";
 import type { CSSResultGroup } from "lit";
 import { LitElement, css, html, nothing } from "lit";
 import { customElement, property, query, state } from "lit/decorators";
@@ -111,7 +111,9 @@ class HaInputSelectForm extends LitElement {
                     <ha-list-item class="option" hasMeta>
                       <div class="optioncontent">
                         <div class="handle">
-                          <ha-svg-icon .path=${mdiDrag}></ha-svg-icon>
+                          <ha-svg-icon
+                            .path=${mdiDragHorizontalVariant}
+                          ></ha-svg-icon>
                         </div>
                         ${option}
                       </div>

@@ -318,7 +318,7 @@ class HUIRoot extends LitElement {
               menu-corner="END"
             >
               <ha-icon-button
-                .label=${label}
+                .id="button-${index}"
                 .path=${item.icon}
                 slot="trigger"
               ></ha-icon-button>
@@ -340,6 +340,9 @@ class HUIRoot extends LitElement {
                   `
                 )}
             </ha-button-menu>
+            <ha-tooltip placement="bottom" .for="button-${index}">
+              ${label}
+            </ha-tooltip>
           `
         : html`
             <ha-icon-button
@@ -515,6 +518,7 @@ class HUIRoot extends LitElement {
                   ${isSubview
                     ? html`
                         <ha-icon-button-arrow-prev
+                          .hass=${this.hass}
                           slot="navigationIcon"
                           @click=${this._goBack}
                         ></ha-icon-button-arrow-prev>

@@ -1,5 +1,5 @@
 import { ResizeController } from "@lit-labs/observers/resize-controller";
-import { mdiDrag, mdiEye, mdiEyeOff } from "@mdi/js";
+import { mdiDragHorizontalVariant, mdiEye, mdiEyeOff } from "@mdi/js";
 import type { TemplateResult } from "lit";
 import { LitElement, css, html, nothing } from "lit";
 import { customElement, property, state } from "lit/decorators";
@@ -178,7 +178,7 @@ export class HaItemDisplayEditor extends LitElement {
                             ? this._dragHandleKeydown
                             : undefined}
                           class="handle"
-                          .path=${mdiDrag}
+                          .path=${mdiDragHorizontalVariant}
                           slot="end"
                         ></ha-svg-icon>
                       `
