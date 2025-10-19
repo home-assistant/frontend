@@ -36,7 +36,7 @@ export class HaDeviceSelector extends LitElement {
 
   @property() public helper?: string;
 
-  @property() public placeholder?: any;
+  @property() public placeholder?: string;
 
   @property({ type: Boolean }) public disabled = false;
 
