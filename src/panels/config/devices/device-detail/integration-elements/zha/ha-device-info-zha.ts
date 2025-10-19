@@ -38,7 +38,6 @@ export class HaDeviceInfoZha extends LitElement {
     }
     return html`
       <ha-expansion-panel header="Zigbee info">
-        <div>IEEE: ${this._zhaDevice.ieee}</div>
         <div>Nwk: ${formatAsPaddedHex(this._zhaDevice.nwk)}</div>
         <div>Device Type: ${this._zhaDevice.device_type}</div>
         <div>
