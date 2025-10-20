@@ -457,6 +457,9 @@ export class HaTargetPickerItemRow extends LitElement {
           }
           if (
             (this.type === "area" && entity.area_id === this.itemId) ||
+            (this.type === "floor" &&
+              entity.area_id &&
+              entries.referenced_areas.includes(entity.area_id)) ||
             (this.type === "label" && entity.labels.includes(this.itemId)) ||
             entries.referenced_devices.includes(entity.device_id || "")
           ) {
