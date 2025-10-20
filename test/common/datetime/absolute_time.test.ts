@@ -27,6 +27,11 @@ describe("absoluteTime", () => {
     from.setUTCMonth(9, 20);
     from.setUTCHours(13, 23);
     const result = absoluteTime(from, locale, config);
+    const now = new Date();
+    if (now.getUTCMonth() === 9 && now.getUTCDate() === 20) {
+      expect(result).toBe("13:23");
+      return;
+    }
     expect(result).toBe("Oct 20, 13:23");
   });
 
