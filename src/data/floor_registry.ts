@@ -76,7 +76,7 @@ export const floorCompare =
       const floorA = entries?.[a];
       const floorB = entries?.[b];
       if (floorA && floorB && floorA.level !== floorB.level) {
-        return (floorA.level ?? 0) - (floorB.level ?? 0);
+        return (floorA.level ?? 9999) - (floorB.level ?? 9999);
       }
       const nameA = floorA?.name ?? a;
       const nameB = floorB?.name ?? b;
