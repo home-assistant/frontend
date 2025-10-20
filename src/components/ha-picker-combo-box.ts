@@ -1,20 +1,27 @@
+import type { LitVirtualizer } from "@lit-labs/virtualizer";
+import type { RenderItemFunction } from "@lit-labs/virtualizer/virtualize";
 import { mdiMagnify } from "@mdi/js";
-import type { ComboBoxLitRenderer } from "@vaadin/combo-box/lit";
 import Fuse from "fuse.js";
 import { css, html, LitElement, nothing } from "lit";
-import { customElement, property, query } from "lit/decorators";
+import {
+  customElement,
+  eventOptions,
+  property,
+  query,
+  state,
+} from "lit/decorators";
 import memoizeOne from "memoize-one";
+import { tinykeys } from "tinykeys";
 import { fireEvent } from "../common/dom/fire_event";
 import { caseInsensitiveStringCompare } from "../common/string/compare";
 import type { LocalizeFunc } from "../common/translations/localize";
 import { HaFuse } from "../resources/fuse";
 import { haStyleScrollbar } from "../resources/styles";
 import { loadVirtualizer } from "../resources/virtualizer";
-import type { HomeAssistant, ValueChangedEvent } from "../types";
-import "./ha-combo-box";
-import type { HaComboBox } from "./ha-combo-box";
+import type { HomeAssistant } from "../types";
 import "./ha-combo-box-item";
 import "./ha-icon";
+import "./ha-textfield";
 import type { HaTextField } from "./ha-textfield";
 
 export interface PickerComboBoxItem {
@@ -35,7 +42,7 @@ export interface PickerComboBoxItemWithLabel extends PickerComboBoxItem {
 
 const NO_MATCHING_ITEMS_FOUND_ID = "___no_matching_items_found___";
 
-const DEFAULT_ROW_RENDERER: ComboBoxLitRenderer<PickerComboBoxItem> = (
+const DEFAULT_ROW_RENDERER: RenderItemFunction<PickerComboBoxItem> = (
   item
 ) => html`
   <ha-combo-box-item type="button" compact>
@@ -75,7 +82,7 @@ export class HaPickerComboBox extends LitElement {
 
   @property() public value?: string;
 
-  @property() public helper?: string;
+  @state() private _listScrolled = false;
 
   @property({ attribute: false, type: Array })
   public getItems?: () => PickerComboBoxItem[];
@@ -84,7 +91,7 @@ export class HaPickerComboBox extends LitElement {
   public getAdditionalItems?: (searchString?: string) => PickerComboBoxItem[];
 
   @property({ attribute: false })
-  public rowRenderer?: ComboBoxLitRenderer<PickerComboBoxItem>;
+  public rowRenderer?: RenderItemFunction<PickerComboBoxItem>;
 
   @property({ attribute: "hide-clear-icon", type: Boolean })
   public hideClearIcon = false;
@@ -97,19 +104,57 @@ export class HaPickerComboBox extends LitElement {
 
   @property({ reflect: true }) public mode: "popover" | "dialog" = "popover";
 
-  @query("ha-combo-box", true) public comboBox!: HaComboBox;
+  @query("lit-virtualizer") private _virtualizerElement?: LitVirtualizer;
 
-  public async open() {
-    await this.updateComplete;
-    await this.comboBox?.open();
+  @query("ha-textfield") private _searchFieldElement?: HaTextField;
+
+  @state() private _items: PickerComboBoxItemWithLabel[] = [];
+
+  private _allItems: PickerComboBoxItemWithLabel[] = [];
+
+  private _selectedItemIndex = -1;
+
+  static shadowRootOptions = {
+    ...LitElement.shadowRootOptions,
+    delegatesFocus: true,
+  };
+
+  private _removeKeyboardShortcuts?: () => void;
+
+  protected firstUpdated() {
+    this._registerKeyboardShortcuts();
   }
 
-  public async focus() {
-    await this.updateComplete;
-    await this.comboBox?.focus();
+  public willUpdate() {
+    if (!this.hasUpdated) {
+      loadVirtualizer();
+      this._allItems = this._getItems();
+      this._items = this._allItems;
+    }
   }
 
-  private _items: PickerComboBoxItemWithLabel[] = [];
+  disconnectedCallback() {
+    super.disconnectedCallback();
+    this._removeKeyboardShortcuts?.();
+  }
+
+  protected render() {
+    return html`<ha-textfield
+        .label=${this.hass.localize("ui.common.search")}
+        @input=${this._filterChanged}
+      ></ha-textfield>
+      <lit-virtualizer
+        @scroll=${this._onScrollList}
+        tabindex="0"
+        scroller
+        .items=${this._items}
+        .renderItem=${this._renderItem}
+        style="min-height: 36px;"
+        class=${this._listScrolled ? "scrolled" : ""}
+        @focus=${this._focusList}
+      >
+      </lit-virtualizer> `;
+  }
 
   private _defaultNotFoundItem = memoizeOne(
     (
@@ -159,48 +204,40 @@ export class HaPickerComboBox extends LitElement {
     return sortedItems;
   };
 
-  public willUpdate() {
-    if (!this.hasUpdated) {
-      loadVirtualizer();
-      this._items = this._getItems();
-    }
-  }
+  private _renderItem = (item: PickerComboBoxItem, index: number) => {
+    const renderer = this.rowRenderer || DEFAULT_ROW_RENDERER;
+    return html`<div
+      id=${`list-item-${index}`}
+      class="combo-box-row ${this._value === item.id ? "current-value" : ""}"
+      .value=${item.id}
+      .index=${index}
+      @click=${this._valueSelected}
+    >
+      ${renderer(item, index)}
+    </div>`;
+  };
 
-  protected render() {
-    return html`<ha-textfield
-        .label=${this.hass.localize("ui.common.search")}
-        @input=${this._filterChanged}
-      ></ha-textfield>
-      <lit-virtualizer
-        tabindex="0"
-        scroller
-        .items=${this._items}
-        .renderItem=${this.rowRenderer || DEFAULT_ROW_RENDERER}
-        class="list"
-        style="min-height: 56px;"
-        @value-changed=${this._valueChanged}
-      >
-      </lit-virtualizer> `;
+  @eventOptions({ passive: true })
+  private _onScrollList(ev) {
+    const top = ev.target.scrollTop ?? 0;
+    this._listScrolled = top > 0;
   }
 
   private get _value() {
     return this.value || "";
   }
 
-  private _valueChanged(ev: ValueChangedEvent<string | undefined>) {
+  private _valueSelected = (ev: Event) => {
     ev.stopPropagation();
-    // Clear the input field to prevent showing the old value next time
-    this.comboBox.setTextFieldValue("");
-    const newValue = ev.detail.value?.trim();
+    const value = (ev.currentTarget as any).value as string;
+    const newValue = value?.trim();
 
     if (newValue === NO_MATCHING_ITEMS_FOUND_ID) {
       return;
     }
 
-    if (newValue !== this._value) {
-      this._setValue(newValue);
-    }
-  }
+    fireEvent(this, "value-changed", { value: newValue });
+  };
 
   private _fuseIndex = memoizeOne((states: PickerComboBoxItem[]) =>
     Fuse.createIndex(["search_labels"], states)
@@ -210,11 +247,11 @@ export class HaPickerComboBox extends LitElement {
     const textfield = ev.target as HaTextField;
     const searchString = textfield.value.trim();
 
-    const index = this._fuseIndex(this._items);
-    const fuse = new HaFuse(this._items, { shouldSort: false }, index);
+    const index = this._fuseIndex(this._allItems);
+    const fuse = new HaFuse(this._allItems, { shouldSort: false }, index);
 
     const results = fuse.multiTermsSearch(searchString);
-    let filteredItems = this._items as PickerComboBoxItem[];
+    let filteredItems = this._allItems as PickerComboBoxItem[];
     if (results) {
       const items = results.map((result) => result.item);
       if (items.length === 0) {
@@ -228,17 +265,188 @@ export class HaPickerComboBox extends LitElement {
     }
 
     if (this.searchFn) {
-      filteredItems = this.searchFn(searchString, filteredItems, this._items);
+      filteredItems = this.searchFn(
+        searchString,
+        filteredItems,
+        this._allItems
+      );
     }
 
-    // TODO
     this._items = filteredItems as PickerComboBoxItemWithLabel[];
+    this._selectedItemIndex = -1;
+    if (this._virtualizerElement) {
+      this._virtualizerElement.scrollTo(0, 0);
+    }
   };
 
-  private _setValue(value: string | undefined) {
-    setTimeout(() => {
-      fireEvent(this, "value-changed", { value });
-    }, 0);
+  private _registerKeyboardShortcuts() {
+    this._removeKeyboardShortcuts = tinykeys(this, {
+      ArrowUp: this._selectPreviousItem,
+      ArrowDown: this._selectNextItem,
+      Home: this._selectFirstItem,
+      End: this._selectLastItem,
+      Enter: this._pickSelectedItem,
+    });
+  }
+
+  private _focusList() {
+    if (this._selectedItemIndex === -1) {
+      this._selectNextItem();
+    }
+  }
+
+  private _selectNextItem = (ev?: KeyboardEvent) => {
+    ev?.stopPropagation();
+    ev?.preventDefault();
+    if (!this._virtualizerElement) {
+      return;
+    }
+
+    this._searchFieldElement?.focus();
+
+    const items = this._virtualizerElement.items as PickerComboBoxItem[];
+
+    const maxItems = items.length - 1;
+
+    if (maxItems === -1) {
+      this._resetSelectedItem();
+      return;
+    }
+
+    const nextIndex =
+      maxItems === this._selectedItemIndex
+        ? this._selectedItemIndex
+        : this._selectedItemIndex + 1;
+
+    if (!items[nextIndex]) {
+      return;
+    }
+
+    if (items[nextIndex].id === NO_MATCHING_ITEMS_FOUND_ID) {
+      // Skip titles, padding and empty search
+      if (nextIndex === maxItems) {
+        return;
+      }
+      this._selectedItemIndex = nextIndex + 1;
+    } else {
+      this._selectedItemIndex = nextIndex;
+    }
+
+    this._scrollToSelectedItem();
+  };
+
+  private _selectPreviousItem = (ev: KeyboardEvent) => {
+    ev.stopPropagation();
+    ev.preventDefault();
+    if (!this._virtualizerElement) {
+      return;
+    }
+
+    if (this._selectedItemIndex > 0) {
+      const nextIndex = this._selectedItemIndex - 1;
+
+      const items = this._virtualizerElement.items as PickerComboBoxItem[];
+
+      if (!items[nextIndex]) {
+        return;
+      }
+
+      if (items[nextIndex]?.id === NO_MATCHING_ITEMS_FOUND_ID) {
+        // Skip titles, padding and empty search
+        if (nextIndex === 0) {
+          return;
+        }
+        this._selectedItemIndex = nextIndex - 1;
+      } else {
+        this._selectedItemIndex = nextIndex;
+      }
+
+      this._scrollToSelectedItem();
+    }
+  };
+
+  private _selectFirstItem = (ev: KeyboardEvent) => {
+    ev.stopPropagation();
+    if (!this._virtualizerElement || !this._virtualizerElement.items.length) {
+      return;
+    }
+
+    const nextIndex = 0;
+
+    if (
+      (this._virtualizerElement.items[nextIndex] as PickerComboBoxItem)?.id ===
+      NO_MATCHING_ITEMS_FOUND_ID
+    ) {
+      return;
+    }
+
+    if (typeof this._virtualizerElement.items[nextIndex] === "string") {
+      this._selectedItemIndex = nextIndex + 1;
+    } else {
+      this._selectedItemIndex = nextIndex;
+    }
+
+    this._scrollToSelectedItem();
+  };
+
+  private _selectLastItem = (ev: KeyboardEvent) => {
+    ev.stopPropagation();
+    if (!this._virtualizerElement || !this._virtualizerElement.items.length) {
+      return;
+    }
+
+    const nextIndex = this._virtualizerElement.items.length - 1;
+
+    if (
+      (this._virtualizerElement.items[nextIndex] as PickerComboBoxItem)?.id ===
+      NO_MATCHING_ITEMS_FOUND_ID
+    ) {
+      return;
+    }
+
+    if (typeof this._virtualizerElement.items[nextIndex] === "string") {
+      this._selectedItemIndex = nextIndex - 1;
+    } else {
+      this._selectedItemIndex = nextIndex;
+    }
+
+    this._scrollToSelectedItem();
+  };
+
+  private _scrollToSelectedItem = () => {
+    this._virtualizerElement
+      ?.querySelector(".selected")
+      ?.classList.remove("selected");
+
+    this._virtualizerElement?.scrollToIndex(this._selectedItemIndex, "end");
+
+    requestAnimationFrame(() => {
+      this._virtualizerElement
+        ?.querySelector(`#list-item-${this._selectedItemIndex}`)
+        ?.classList.add("selected");
+    });
+  };
+
+  private _pickSelectedItem = (ev: KeyboardEvent) => {
+    ev.stopPropagation();
+    if (this._selectedItemIndex === -1) {
+      return;
+    }
+
+    // if filter button is focused
+    ev.preventDefault();
+
+    const item: any = this._virtualizerElement?.items[this._selectedItemIndex];
+    if (item && item.id !== NO_MATCHING_ITEMS_FOUND_ID) {
+      fireEvent(this, "value-changed", { value: item.id });
+    }
+  };
+
+  private _resetSelectedItem() {
+    this._virtualizerElement
+      ?.querySelector(".selected")
+      ?.classList.remove("selected");
+    this._selectedItemIndex = -1;
   }
 
   static styles = [
@@ -293,6 +501,27 @@ export class HaPickerComboBox extends LitElement {
 
       .empty {
         text-align: center;
+      }
+
+      .combo-box-row {
+        display: flex;
+        width: 100%;
+        align-items: center;
+        box-sizing: border-box;
+        min-height: 36px;
+      }
+      .combo-box-row.current-value {
+        background-color: var(--ha-color-fill-primary-quiet-resting);
+      }
+
+      .combo-box-row.selected {
+        background-color: var(--ha-color-fill-neutral-quiet-hover);
+      }
+
+      @media (prefers-color-scheme: dark) {
+        .combo-box-row.selected {
+          background-color: var(--ha-color-fill-neutral-normal-hover);
+        }
       }
     `,
   ];

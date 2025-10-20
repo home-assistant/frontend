@@ -80,6 +80,9 @@ export class HaGenericPicker extends LitElement {
 
   @state() private _addTargetWidth = 0;
 
+  // helper to set new value after closing picker, to avoid flicker
+  private _newValue?: string;
+
   protected render() {
     return html`
       ${this.label
@@ -89,6 +92,7 @@ export class HaGenericPicker extends LitElement {
         <ha-picker-field
           id="picker"
           type="button"
+          class=${this._opened ? "opened" : ""}
           compact
           aria-label=${ifDefined(this.label)}
           @click=${this.open}
@@ -151,7 +155,6 @@ export class HaGenericPicker extends LitElement {
     return html`
       <ha-picker-combo-box
         .hass=${this.hass}
-        .autofocus=${this.autofocus}
         .allowCustomValue=${this.allowCustomValue}
         .label=${this.searchLabel ?? this.hass.localize("ui.common.search")}
         .value=${this.value}
@@ -164,6 +167,7 @@ export class HaGenericPicker extends LitElement {
         .getAdditionalItems=${this.getAdditionalItems}
         .searchFn=${this.searchFn}
         .mode=${dialogMode ? "dialog" : "popover"}
+        .helper=${this.helper}
       ></ha-picker-combo-box>
     `;
   }
@@ -178,17 +182,18 @@ export class HaGenericPicker extends LitElement {
 
   private _dialogOpened = () => {
     this._opened = true;
-    this._comboBox?.focus();
-    this._comboBox?.open();
-    if (this.autofocus) {
-      requestAnimationFrame(() => {
-        this._comboBox?.focus();
-      });
-    }
+    requestAnimationFrame(() => {
+      this._comboBox?.focus();
+    });
   };
 
   private _hidePicker(ev) {
     ev.stopPropagation();
+    if (this._newValue) {
+      fireEvent(this, "value-changed", { value: this._newValue });
+      this._newValue = undefined;
+    }
+
     this._opened = false;
     this._pickerWrapperOpen = false;
   }
@@ -199,7 +204,8 @@ export class HaGenericPicker extends LitElement {
     if (!value) {
       return;
     }
-    fireEvent(this, "value-changed", { value });
+    this._pickerWrapperOpen = false;
+    this._newValue = value;
   }
 
   private _clear(e) {
@@ -290,6 +296,10 @@ export class HaGenericPicker extends LitElement {
           --ha-bottom-sheet-max-width: 600px;
           --ha-bottom-sheet-padding: var(--ha-space-0);
           --ha-bottom-sheet-surface-background: var(--card-background-color);
+        }
+
+        ha-picker-field.opened {
+          --mdc-text-field-idle-line-color: var(--primary-color);
         }
       `,
     ];
