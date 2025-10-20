@@ -73,6 +73,11 @@ export class HuiCalendarCard extends LitElement implements LovelaceCard {
 
   private _resizeObserver?: ResizeObserver;
 
+  private _refreshInterval?: number;
+
+  // Refresh interval in milliseconds (5 minutes)
+  private static readonly REFRESH_INTERVAL_MS = 5 * 60 * 1000;
+
   public setConfig(config: CalendarCardConfig): void {
     if (!config.entities?.length) {
       throw new Error("Entities must be specified");
@@ -110,6 +115,7 @@ export class HuiCalendarCard extends LitElement implements LovelaceCard {
   public connectedCallback(): void {
     super.connectedCallback();
     this.updateComplete.then(() => this._attachObserver());
+    this._startRefreshInterval();
   }
 
   public disconnectedCallback(): void {
@@ -117,6 +123,7 @@ export class HuiCalendarCard extends LitElement implements LovelaceCard {
     if (this._resizeObserver) {
       this._resizeObserver.disconnect();
     }
+    this._stopRefreshInterval();
   }
 
   protected render() {
@@ -170,6 +177,17 @@ export class HuiCalendarCard extends LitElement implements LovelaceCard {
     ) {
       applyThemesOnElement(this, this.hass.themes, this._config!.theme);
     }
+
+    // Refresh calendar events if any of the calendar entities' states have changed
+    if (changedProps.has("hass") && oldHass) {
+      const calendarStateChanged = this._calendars.some(
+        (cal) =>
+          oldHass.states[cal.entity_id] !== this.hass!.states[cal.entity_id]
+      );
+      if (calendarStateChanged) {
+        this._fetchCalendarEvents();
+      }
+    }
   }
 
   private _handleViewChanged(ev: HASSDomEvent<CalendarViewChanged>): void {
@@ -221,6 +239,20 @@ export class HuiCalendarCard extends LitElement implements LovelaceCard {
       return;
     }
     this._resizeObserver.observe(card);
+  }
+
+  private _startRefreshInterval(): void {
+    this._stopRefreshInterval();
+    this._refreshInterval = window.setInterval(() => {
+      this._fetchCalendarEvents();
+    }, HuiCalendarCard.REFRESH_INTERVAL_MS);
+  }
+
+  private _stopRefreshInterval(): void {
+    if (this._refreshInterval !== undefined) {
+      clearInterval(this._refreshInterval);
+      this._refreshInterval = undefined;
+    }
   }
 
   static styles = css`

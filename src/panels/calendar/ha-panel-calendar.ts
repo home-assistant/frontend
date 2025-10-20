@@ -61,6 +61,11 @@ class PanelCalendar extends LitElement {
 
   private _headerHeight = 56;
 
+  private _refreshInterval?: number;
+
+  // Refresh interval in milliseconds (5 minutes)
+  private static readonly REFRESH_INTERVAL_MS = 5 * 60 * 1000;
+
   public connectedCallback() {
     super.connectedCallback();
     this._mql = window.matchMedia(
@@ -72,12 +77,14 @@ class PanelCalendar extends LitElement {
     this._headerHeight = Number(
       computedStyles.getPropertyValue("--header-height").replace("px", "")
     );
+    this._startRefreshInterval();
   }
 
   public disconnectedCallback() {
     super.disconnectedCallback();
     this._mql?.removeListener(this._setIsMobile!);
     this._mql = undefined;
+    this._stopRefreshInterval();
   }
 
   private _setIsMobile = (ev: MediaQueryListEvent) => {
@@ -88,6 +95,20 @@ class PanelCalendar extends LitElement {
     super.willUpdate(changedProps);
     if (!this.hasUpdated) {
       this._calendars = getCalendars(this.hass);
+    }
+
+    // Refresh calendar events if any of the calendar entities' states have changed
+    if (changedProps.has("hass") && this.hasUpdated) {
+      const oldHass = changedProps.get("hass") as HomeAssistant | undefined;
+      if (oldHass) {
+        const calendarStateChanged = this._calendars.some(
+          (cal) =>
+            oldHass.states[cal.entity_id] !== this.hass.states[cal.entity_id]
+        );
+        if (calendarStateChanged) {
+          this._handleRefresh();
+        }
+      }
     }
   }
 
@@ -287,6 +308,20 @@ class PanelCalendar extends LitElement {
       this._error = `${this.hass!.localize(
         "ui.components.calendar.event_retrieval_error"
       )} ${nameList}`;
+    }
+  }
+
+  private _startRefreshInterval(): void {
+    this._stopRefreshInterval();
+    this._refreshInterval = window.setInterval(() => {
+      this._handleRefresh();
+    }, PanelCalendar.REFRESH_INTERVAL_MS);
+  }
+
+  private _stopRefreshInterval(): void {
+    if (this._refreshInterval !== undefined) {
+      clearInterval(this._refreshInterval);
+      this._refreshInterval = undefined;
     }
   }
 
