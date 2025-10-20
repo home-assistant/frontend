@@ -41,18 +41,18 @@ describe("floorCompare", () => {
       ]);
     });
 
-    it("treats null level as 0", () => {
+    it("treats null level as 9999, placing it at the end", () => {
       const entries = {
         floor1: { name: "Ground Floor", level: 0 } as FloorRegistryEntry,
         floor2: { name: "First Floor", level: 1 } as FloorRegistryEntry,
-        floor3: { name: "Basement", level: null } as FloorRegistryEntry,
+        floor3: { name: "Unassigned", level: null } as FloorRegistryEntry,
       };
       const floors = ["floor2", "floor3", "floor1"];
 
       expect(floors.sort(floorCompare(entries))).toEqual([
-        "floor3",
         "floor1",
         "floor2",
+        "floor3",
       ]);
     });
 
