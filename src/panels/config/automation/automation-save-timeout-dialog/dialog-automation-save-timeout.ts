@@ -76,7 +76,12 @@ class DialogAutomationSaveTimeout extends LitElement {
           )}
           <p></p>
           ${this.hass.localize(
-            "ui.panel.config.automation.editor.new_automation_setup_keep_waiting"
+            "ui.panel.config.automation.editor.new_automation_setup_keep_waiting",
+            {
+              type: this.hass.localize(
+                `ui.panel.config.automation.editor.type_${this._params.type}`
+              ),
+            }
           )}
           ${this._saveComplete
             ? html`<p></p>
