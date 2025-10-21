@@ -61,18 +61,20 @@ export class ZHADeviceBindingControl extends LitElement {
         </div>
         <div class="card-actions">
           <ha-progress-button
+            @click=${this._onUnbindDevicesClick}
+            .disabled=${!(this._deviceToBind && this.device) ||
+            this._bindingOperationInProgress}
+            variant="danger"
+            appearance="plain"
+          >
+            ${this.hass!.localize("ui.panel.config.zha.device_binding.unbind")}
+          </ha-progress-button>
+          <ha-progress-button
             @click=${this._onBindDevicesClick}
             .disabled=${!(this._deviceToBind && this.device) ||
             this._bindingOperationInProgress}
           >
             ${this.hass!.localize("ui.panel.config.zha.device_binding.bind")}
-          </ha-progress-button>
-          <ha-progress-button
-            @click=${this._onUnbindDevicesClick}
-            .disabled=${!(this._deviceToBind && this.device) ||
-            this._bindingOperationInProgress}
-          >
-            ${this.hass!.localize("ui.panel.config.zha.device_binding.unbind")}
           </ha-progress-button>
         </div>
       </ha-card>
@@ -133,6 +135,10 @@ export class ZHADeviceBindingControl extends LitElement {
           width: 100%;
         }
 
+        .content {
+          padding-top: var(--ha-space-2);
+        }
+
         .command-picker {
           align-items: center;
           padding-left: 28px;
@@ -144,6 +150,11 @@ export class ZHADeviceBindingControl extends LitElement {
 
         .header {
           flex-grow: 1;
+        }
+        .card-actions {
+          display: flex;
+          justify-content: flex-end;
+          gap: var(--ha-space-1);
         }
       `,
     ];

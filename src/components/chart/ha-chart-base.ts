@@ -22,7 +22,7 @@ import { fireEvent } from "../../common/dom/fire_event";
 import { listenMediaQuery } from "../../common/dom/media_query";
 import { themesContext } from "../../data/context";
 import type { Themes } from "../../data/ws-themes";
-import type { ECOption } from "../../resources/echarts";
+import type { ECOption } from "../../resources/echarts/echarts";
 import type { HomeAssistant } from "../../types";
 import { isMac } from "../../util/is_mac";
 import "../chips/ha-assist-chip";
@@ -346,7 +346,7 @@ export class HaChartBase extends LitElement {
       if (this.chart) {
         this.chart.dispose();
       }
-      const echarts = (await import("../../resources/echarts")).default;
+      const echarts = (await import("../../resources/echarts/echarts")).default;
 
       if (this.extraComponents?.length) {
         echarts.use(this.extraComponents);
@@ -805,7 +805,7 @@ export class HaChartBase extends LitElement {
             sampling: undefined,
             data: downSampleLineData(
               data as LineSeriesOption["data"],
-              this.clientWidth,
+              this.clientWidth * window.devicePixelRatio,
               minX,
               maxX
             ),
