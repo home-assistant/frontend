@@ -89,6 +89,7 @@ import {
 import "./blueprint-automation-editor";
 import "./manual-automation-editor";
 import type { HaManualAutomationEditor } from "./manual-automation-editor";
+import { showAutomationSaveTimeoutDialog } from "./automation-save-timeout-dialog/show-dialog-automation-save-timeout";
 
 declare global {
   interface HTMLElementTagNameMap {
@@ -1136,28 +1137,22 @@ export class HaAutomationEditor extends PreventUnsavedMixin(
             entityId = automation.entity_id;
           } catch (e) {
             if (e instanceof Error && e.name === "TimeoutError") {
-              showAlertDialog(this, {
-                title: this.hass.localize(
-                  "ui.panel.config.automation.editor.new_automation_setup_failed_title",
-                  {
-                    type: this.hass.localize(
-                      "ui.panel.config.automation.editor.type_automation"
-                    ),
-                  }
-                ),
-                text: this.hass.localize(
-                  "ui.panel.config.automation.editor.new_automation_setup_failed_text",
-                  {
-                    type: this.hass.localize(
-                      "ui.panel.config.automation.editor.type_automation"
-                    ),
-                    types: this.hass.localize(
-                      "ui.panel.config.automation.editor.type_automation_plural"
-                    ),
-                  }
-                ),
-                warning: true,
+              // Show the dialog and give user a chance to wait for the registry
+              // to respond.
+              await showAutomationSaveTimeoutDialog(this, {
+                savedPromise: entityRegPromise,
+                type: "automation",
               });
+              try {
+                // We already gave the user a chance to wait once, so if they skipped
+                // the dialog and it's still not there just immediately timeout.
+                const automation = await promiseTimeout(0, entityRegPromise);
+                entityId = automation.entity_id;
+              } catch (e2) {
+                if (!(e2 instanceof Error && e.name === "TimeoutError")) {
+                  throw e2;
+                }
+              }
             } else {
               throw e;
             }
