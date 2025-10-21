@@ -1149,7 +1149,7 @@ export class HaAutomationEditor extends PreventUnsavedMixin(
                 const automation = await promiseTimeout(0, entityRegPromise);
                 entityId = automation.entity_id;
               } catch (e2) {
-                if (!(e2 instanceof Error && e.name === "TimeoutError")) {
+                if (!(e2 instanceof Error && e2.name === "TimeoutError")) {
                   throw e2;
                 }
               }
