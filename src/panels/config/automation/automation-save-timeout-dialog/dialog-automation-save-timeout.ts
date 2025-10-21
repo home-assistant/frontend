@@ -109,9 +109,6 @@ class DialogAutomationSaveTimeout extends LitElement {
       haStyle,
       haStyleDialog,
       css`
-        /* ha-wa-dialog {
-          --dialog-content-padding: 0;
-        } */
         .loading {
           display: flex;
           justify-content: center;
