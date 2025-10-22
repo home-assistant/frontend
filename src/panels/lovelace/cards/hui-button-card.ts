@@ -9,13 +9,14 @@ import { LitElement, css, html, nothing } from "lit";
 import { customElement, state } from "lit/decorators";
 import { ifDefined } from "lit/directives/if-defined";
 import { styleMap } from "lit/directives/style-map";
+import { computeCssColor } from "../../../common/color/compute-color";
 import { DOMAINS_TOGGLE } from "../../../common/const";
 import { transform } from "../../../common/decorators/transform";
 import { applyThemesOnElement } from "../../../common/dom/apply_themes_on_element";
 import { fireEvent } from "../../../common/dom/fire_event";
 import { computeDomain } from "../../../common/entity/compute_domain";
 import { computeStateDomain } from "../../../common/entity/compute_state_domain";
-import { computeStateName } from "../../../common/entity/compute_state_name";
+import { stateActive } from "../../../common/entity/state_active";
 import {
   stateColorBrightness,
   stateColorCss,
@@ -40,6 +41,7 @@ import type { FrontendLocaleData } from "../../../data/translation";
 import type { Themes } from "../../../data/ws-themes";
 import type { HomeAssistant } from "../../../types";
 import { actionHandler } from "../common/directives/action-handler-directive";
+import { computeLovelaceEntityName } from "../common/entity/compute-lovelace-entity-name";
 import { findEntities } from "../common/find-entities";
 import { hasAction } from "../common/has-action";
 import { createEntityNotFoundWarning } from "../components/hui-warning";
@@ -49,8 +51,6 @@ import type {
   LovelaceGridOptions,
 } from "../types";
 import type { ButtonCardConfig } from "./types";
-import { computeCssColor } from "../../../common/color/compute-color";
-import { stateActive } from "../../../common/entity/state_active";
 
 export const getEntityDefaultButtonAction = (entityId?: string) =>
   entityId && DOMAINS_TOGGLE.has(computeDomain(entityId))
@@ -183,9 +183,11 @@ export class HuiButtonCard extends LitElement implements LovelaceCard {
       `;
     }
 
-    const name = this._config.show_name
-      ? this._config.name || (stateObj ? computeStateName(stateObj) : "")
-      : "";
+    const name = computeLovelaceEntityName(
+      this.hass,
+      stateObj,
+      this._config.name
+    );
 
     return html`
       <ha-card
@@ -195,8 +197,7 @@ export class HuiButtonCard extends LitElement implements LovelaceCard {
           hasDoubleClick: hasAction(this._config!.double_tap_action),
         })}
         role="button"
-        aria-label=${this._config.name ||
-        (stateObj ? computeStateName(stateObj) : "")}
+        aria-label=${name}
         tabindex=${ifDefined(
           hasAction(this._config.tap_action) ? "0" : undefined
         )}

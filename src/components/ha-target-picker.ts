@@ -74,7 +74,7 @@ export class HaTargetPicker extends SubscribeMixin(LitElement) {
 
   @state() private _narrow = false;
 
-  @state() private _pickerFilters: TargetTypeFloorless[] = [];
+  @state() private _pickerFilter?: TargetTypeFloorless;
 
   @state() private _pickerWrapperOpen = false;
 
@@ -335,12 +335,16 @@ export class HaTargetPicker extends SubscribeMixin(LitElement) {
     });
   };
 
-  private _handleUpdatePickerFilters(ev: CustomEvent<TargetTypeFloorless[]>) {
-    this._updatePickerFilters(ev.detail);
+  private _handleUpdatePickerFilter(
+    ev: CustomEvent<TargetTypeFloorless | undefined>
+  ) {
+    this._updatePickerFilter(
+      typeof ev.detail === "string" ? ev.detail : undefined
+    );
   }
 
-  private _updatePickerFilters = (filters: TargetTypeFloorless[]) => {
-    this._pickerFilters = filters;
+  private _updatePickerFilter = (filter?: TargetTypeFloorless) => {
+    this._pickerFilter = filter;
   };
 
   private _hidePicker() {
@@ -360,8 +364,8 @@ export class HaTargetPicker extends SubscribeMixin(LitElement) {
     return html`
       <ha-target-picker-selector
         .hass=${this.hass}
-        @filter-types-changed=${this._handleUpdatePickerFilters}
-        .filterTypes=${this._pickerFilters}
+        @filter-type-changed=${this._handleUpdatePickerFilter}
+        .filterType=${this._pickerFilter}
         @target-picked=${this._handleTargetPicked}
         @create-domain-picked=${this._handleCreateDomain}
         .targetValue=${this.value}

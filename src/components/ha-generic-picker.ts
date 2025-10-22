@@ -179,7 +179,7 @@ export class HaGenericPicker extends LitElement {
         }
         ha-input-helper-text {
           display: block;
-          margin: 8px 0 0;
+          margin: var(--ha-space-2) 0 0;
         }
       `,
     ];
