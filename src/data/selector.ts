@@ -219,11 +219,16 @@ export interface DurationSelector {
   } | null;
 }
 
+export interface Predicate<T> {
+  test(value: T): boolean;
+}
+
 interface EntitySelectorFilter {
   integration?: string;
   domain?: string | readonly string[];
   device_class?: string | readonly string[];
   supported_features?: number | [number];
+  predicate?: Predicate<HassEntity>;
 }
 
 export interface EntitySelector {
@@ -795,6 +800,7 @@ export const filterSelectorEntities = (
     device_class: filterDeviceClass,
     supported_features: filterSupportedFeature,
     integration: filterIntegration,
+    predicate: filterPredicate,
   } = filterEntity;
 
   if (filterDomain) {
@@ -833,6 +839,10 @@ export const filterSelectorEntities = (
     filterIntegration &&
     entitySources?.[entity.entity_id]?.domain !== filterIntegration
   ) {
+    return false;
+  }
+
+  if (filterPredicate && !filterPredicate.test(entity)) {
     return false;
   }
 
