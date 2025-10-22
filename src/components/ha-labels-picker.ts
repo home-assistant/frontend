@@ -123,9 +123,12 @@ export class HaLabelsPicker extends SubscribeMixin(LitElement) {
     );
     return html`
       ${this.label ? html`<label>${this.label}</label>` : nothing}
-      ${labels?.length
-        ? html`<ha-chip-set>
-            ${repeat(
+      <ha-chip-set
+        @click=${this._openPicker}
+        class=${!labels?.length ? "clickable" : ""}
+      >
+        ${labels?.length
+          ? repeat(
               labels,
               (label) => label?.label_id,
               (label) => {
@@ -137,6 +140,7 @@ export class HaLabelsPicker extends SubscribeMixin(LitElement) {
                     .item=${label}
                     @remove=${this._removeItem}
                     @click=${this._openDetail}
+                    .disabled=${this.disabled}
                     .label=${label?.name}
                     selected
                     style=${color ? `--color: ${color}` : ""}
@@ -150,9 +154,11 @@ export class HaLabelsPicker extends SubscribeMixin(LitElement) {
                   </ha-input-chip>
                 `;
               }
-            )}
-          </ha-chip-set>`
-        : nothing}
+            )
+          : html`<div class="placeholder">
+              ${this.hass.localize("ui.components.label-picker.labels")}
+            </div>`}
+      </ha-chip-set>
       <ha-label-picker
         .hass=${this.hass}
         .helper=${this.helper}
@@ -203,9 +209,35 @@ export class HaLabelsPicker extends SubscribeMixin(LitElement) {
     }, 0);
   }
 
+  private _openPicker(ev: Event) {
+    const labels = this._sortedLabels(
+      this.value,
+      this._labels,
+      this.hass.locale.language
+    );
+    if (!labels?.length) {
+      ev.stopPropagation();
+      this.labelPicker.open();
+    }
+  }
+
   static styles = css`
     ha-chip-set {
       margin-bottom: 8px;
+      background-color: var(--mdc-text-field-fill-color);
+      border-bottom: 1px solid var(--ha-color-border-neutral-normal);
+      border-top-right-radius: var(--ha-border-radius-sm);
+      border-top-left-radius: var(--ha-border-radius-sm);
+      padding: var(--ha-space-3);
+    }
+    ha-chip-set.clickable {
+      cursor: pointer;
+    }
+    .placeholder {
+      color: var(--mdc-text-field-label-ink-color);
+      display: flex;
+      align-items: center;
+      height: var(--ha-space-8);
     }
     ha-input-chip {
       --md-input-chip-selected-container-color: var(--color, var(--grey-color));

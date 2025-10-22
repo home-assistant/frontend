@@ -147,6 +147,7 @@ class HaEntitiesPicker extends LitElement {
           .createDomains=${this.createDomains}
           .required=${this.required && !currentEntities.length}
           @value-changed=${this._addEntity}
+          add-button
         ></ha-entity-picker>
       </div>
     `;

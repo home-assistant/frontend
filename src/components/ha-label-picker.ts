@@ -211,12 +211,14 @@ export class HaLabelPicker extends SubscribeMixin(LitElement) {
 
     return html`
       <ha-generic-picker
+        .disabled=${this.disabled}
         .hass=${this.hass}
         .autofocus=${this.autofocus}
         .label=${this.label}
         .notFoundLabel=${this.hass.localize(
           "ui.components.label-picker.no_match"
         )}
+        .addButtonLabel=${this.hass.localize("ui.components.label-picker.add")}
         .placeholder=${placeholder}
         .value=${this.value}
         .getItems=${this._getItems}

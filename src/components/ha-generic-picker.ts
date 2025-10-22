@@ -1,5 +1,6 @@
 import "@home-assistant/webawesome/dist/components/popover/popover";
 import type { RenderItemFunction } from "@lit-labs/virtualizer/virtualize";
+import { mdiPlaylistPlus } from "@mdi/js";
 import { css, html, LitElement, nothing, type CSSResultGroup } from "lit";
 import { customElement, property, query, state } from "lit/decorators";
 import { ifDefined } from "lit/directives/if-defined";
@@ -7,6 +8,7 @@ import { tinykeys } from "tinykeys";
 import { fireEvent } from "../common/dom/fire_event";
 import type { HomeAssistant } from "../types";
 import "./ha-bottom-sheet";
+import "./ha-button";
 import "./ha-combo-box-item";
 import "./ha-icon-button";
 import "./ha-input-helper-text";
@@ -66,6 +68,9 @@ export class HaGenericPicker extends LitElement {
   @property({ attribute: "not-found-label", type: String })
   public notFoundLabel?: string;
 
+  /** If set picker shows an add button instead of textbox when value isn't set */
+  @property({ attribute: "add-button-label" }) public addButtonLabel?: string;
+
   @query(".container") private _containerElement?: HTMLDivElement;
 
   @query("ha-picker-combo-box") private _comboBox?: HaPickerComboBox;
@@ -91,22 +96,33 @@ export class HaGenericPicker extends LitElement {
         ? html`<label ?disabled=${this.disabled}>${this.label}</label>`
         : nothing}
       <div class="container">
-        <ha-picker-field
-          id="picker"
-          type="button"
-          class=${this._opened ? "opened" : ""}
-          compact
-          aria-label=${ifDefined(this.label)}
-          @click=${this.open}
-          @clear=${this._clear}
-          .placeholder=${this.placeholder}
-          .value=${this.value}
-          .required=${this.required}
-          .disabled=${this.disabled}
-          .hideClearIcon=${this.hideClearIcon}
-          .valueRenderer=${this.valueRenderer}
-        >
-        </ha-picker-field>
+        ${this.addButtonLabel && !this.value
+          ? html`<ha-button
+              id="picker"
+              size="small"
+              appearance="filled"
+              @click=${this.open}
+              .disabled=${this.disabled}
+            >
+              <ha-svg-icon .path=${mdiPlaylistPlus} slot="start"></ha-svg-icon>
+              ${this.addButtonLabel}
+            </ha-button>`
+          : html`<ha-picker-field
+              id="picker"
+              type="button"
+              class=${this._opened ? "opened" : ""}
+              compact
+              aria-label=${ifDefined(this.label)}
+              @click=${this.open}
+              @clear=${this._clear}
+              .placeholder=${this.placeholder}
+              .value=${this.value}
+              .required=${this.required}
+              .disabled=${this.disabled}
+              .hideClearIcon=${this.hideClearIcon}
+              .valueRenderer=${this.valueRenderer}
+            >
+            </ha-picker-field>`}
         ${!this._openedNarrow && (this._pickerWrapperOpen || this._opened)
           ? html`
               <wa-popover

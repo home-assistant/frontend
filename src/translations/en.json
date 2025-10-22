@@ -648,6 +648,7 @@
         "entity-picker": {
           "choose_entity": "Choose entity",
           "entity": "Entity",
+          "add": "Add entity",
           "edit": "Edit",
           "clear": "Clear",
           "no_entities": "You don't have any entities",
@@ -806,6 +807,7 @@
         "labels": "Labels",
         "add_new_sugestion": "Add new label ''{name}''",
         "add_new": "Add new label…",
+        "add": "Add label",
         "no_labels": "You don't have any labels",
         "no_match": "No matching labels found",
         "failed_create_label": "Failed to create label."

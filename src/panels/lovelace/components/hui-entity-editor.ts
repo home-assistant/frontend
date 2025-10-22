@@ -174,10 +174,10 @@ export class HuiEntityEditor extends LitElement {
             </div>
           </ha-sortable>`}
       <ha-entity-picker
-        class="add-entity"
         .hass=${this.hass}
         .entityFilter=${this.entityFilter}
         @value-changed=${this._addEntity}
+        add-button
       ></ha-entity-picker>
     `;
   }
@@ -225,13 +225,6 @@ export class HuiEntityEditor extends LitElement {
   static styles = css`
     ha-entity-picker {
       margin-top: 8px;
-    }
-    .add-entity {
-      display: block;
-      margin-left: 31px;
-      margin-inline-start: 31px;
-      margin-inline-end: initial;
-      direction: var(--direction);
     }
     .entity {
       display: flex;
