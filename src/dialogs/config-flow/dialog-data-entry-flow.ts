@@ -516,11 +516,16 @@ class DataEntryFlowDialog extends LitElement {
         }
       } else if (_step.next_flow[0] === "config_subentries_flow") {
         if (_step.type === "create_entry") {
-          showSubConfigFlowDialog(this, _step.result!, "", {
-            continueFlowId: _step.next_flow[1],
-            navigateToResult: this._params!.navigateToResult,
-            dialogClosedCallback: this._params!.dialogClosedCallback,
-          });
+          showSubConfigFlowDialog(
+            this._params!.dialogParentElement!,
+            _step.result!,
+            _step.next_flow[2],
+            {
+              continueFlowId: _step.next_flow[1],
+              navigateToResult: this._params!.navigateToResult,
+              dialogClosedCallback: this._params!.dialogClosedCallback,
+            }
+          );
         }
       } else {
         this.closeDialog();
