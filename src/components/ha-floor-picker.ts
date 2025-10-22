@@ -29,7 +29,10 @@ import "./ha-floor-icon";
 import "./ha-generic-picker";
 import type { HaGenericPicker } from "./ha-generic-picker";
 import "./ha-icon-button";
-import type { PickerComboBoxItem } from "./ha-picker-combo-box";
+import {
+  NO_MATCHING_ITEMS_FOUND_ID,
+  type PickerComboBoxItem,
+} from "./ha-picker-combo-box";
 import type { PickerValueRenderer } from "./ha-picker-field";
 import "./ha-svg-icon";
 
@@ -297,7 +300,10 @@ export class HaFloorPicker extends LitElement {
   );
 
   private _rowRenderer: ComboBoxLitRenderer<FloorComboBoxItem> = (item) => html`
-    <ha-combo-box-item type="button" compact>
+    <ha-combo-box-item
+      .type=${item.id === NO_MATCHING_ITEMS_FOUND_ID ? "text" : "button"}
+      compact
+    >
       ${item.icon_path
         ? html`
             <ha-svg-icon

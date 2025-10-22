@@ -22,7 +22,10 @@ import type { HomeAssistant } from "../../types";
 import "../ha-combo-box-item";
 import "../ha-generic-picker";
 import type { HaGenericPicker } from "../ha-generic-picker";
-import type { PickerComboBoxSearchFn } from "../ha-picker-combo-box";
+import {
+  NO_MATCHING_ITEMS_FOUND_ID,
+  type PickerComboBoxSearchFn,
+} from "../ha-picker-combo-box";
 import type { PickerValueRenderer } from "../ha-picker-field";
 import "../ha-svg-icon";
 import "./state-badge";
@@ -175,7 +178,11 @@ export class HaEntityPicker extends LitElement {
     const showEntityId = this._showEntityId;
 
     return html`
-      <ha-combo-box-item type="button" compact .borderTop=${index !== 0}>
+      <ha-combo-box-item
+        .type=${item.id === NO_MATCHING_ITEMS_FOUND_ID ? "text" : "button"}
+        compact
+        .borderTop=${index !== 0}
+      >
         ${item.icon_path
           ? html`
               <ha-svg-icon

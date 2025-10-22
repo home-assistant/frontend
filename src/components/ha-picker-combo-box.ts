@@ -40,12 +40,15 @@ export interface PickerComboBoxItemWithLabel extends PickerComboBoxItem {
   a11y_label: string;
 }
 
-const NO_MATCHING_ITEMS_FOUND_ID = "___no_matching_items_found___";
+export const NO_MATCHING_ITEMS_FOUND_ID = "___no_matching_items_found___";
 
 const DEFAULT_ROW_RENDERER: RenderItemFunction<PickerComboBoxItem> = (
   item
 ) => html`
-  <ha-combo-box-item type="button" compact>
+  <ha-combo-box-item
+    .type=${item.id === NO_MATCHING_ITEMS_FOUND_ID ? "text" : "button"}
+    compact
+  >
     ${item.icon
       ? html`<ha-icon slot="start" .icon=${item.icon}></ha-icon>`
       : item.icon_path
