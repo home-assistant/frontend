@@ -93,9 +93,6 @@ export class HaPickerComboBox extends LitElement {
   @property({ attribute: false })
   public rowRenderer?: RenderItemFunction<PickerComboBoxItem>;
 
-  @property({ attribute: "hide-clear-icon", type: Boolean })
-  public hideClearIcon = false;
-
   @property({ attribute: "not-found-label", type: String })
   public notFoundLabel?: string;
 
@@ -140,7 +137,7 @@ export class HaPickerComboBox extends LitElement {
 
   protected render() {
     return html`<ha-textfield
-        .label=${this.hass.localize("ui.common.search")}
+        .label=${this.label ?? this.hass.localize("ui.common.search")}
         @input=${this._filterChanged}
       ></ha-textfield>
       <lit-virtualizer

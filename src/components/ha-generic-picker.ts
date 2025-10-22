@@ -1,9 +1,9 @@
 import "@home-assistant/webawesome/dist/components/popover/popover";
-import type { ComboBoxLitRenderer } from "@vaadin/combo-box/lit";
-import type { ComboBoxLightOpenedChangedEvent } from "@vaadin/combo-box/vaadin-combo-box-light";
+import type { RenderItemFunction } from "@lit-labs/virtualizer/virtualize";
 import { css, html, LitElement, nothing, type CSSResultGroup } from "lit";
 import { customElement, property, query, state } from "lit/decorators";
 import { ifDefined } from "lit/directives/if-defined";
+import { tinykeys } from "tinykeys";
 import { fireEvent } from "../common/dom/fire_event";
 import type { HomeAssistant } from "../types";
 import "./ha-bottom-sheet";
@@ -17,7 +17,7 @@ import type {
   PickerComboBoxSearchFn,
 } from "./ha-picker-combo-box";
 import "./ha-picker-field";
-import type { HaPickerField, PickerValueRenderer } from "./ha-picker-field";
+import type { PickerValueRenderer } from "./ha-picker-field";
 import "./ha-svg-icon";
 
 @customElement("ha-generic-picker")
@@ -55,7 +55,7 @@ export class HaGenericPicker extends LitElement {
   public getAdditionalItems?: (searchString?: string) => PickerComboBoxItem[];
 
   @property({ attribute: false })
-  public rowRenderer?: ComboBoxLitRenderer<PickerComboBoxItem>;
+  public rowRenderer?: RenderItemFunction<PickerComboBoxItem>;
 
   @property({ attribute: false })
   public valueRenderer?: PickerValueRenderer;
@@ -68,20 +68,22 @@ export class HaGenericPicker extends LitElement {
 
   @query(".container") private _containerElement?: HTMLDivElement;
 
-  @query("ha-picker-field") private _field?: HaPickerField;
-
   @query("ha-picker-combo-box") private _comboBox?: HaPickerComboBox;
 
   @state() private _opened = false;
 
   @state() private _pickerWrapperOpen = false;
 
-  @state() private _narrow = false;
+  @state() private _popoverWidth = 0;
 
-  @state() private _addTargetWidth = 0;
+  @state() private _openedNarrow = false;
+
+  private _narrow = false;
 
   // helper to set new value after closing picker, to avoid flicker
   private _newValue?: string;
+
+  private _unsubscribeTinyKeys?: () => void;
 
   protected render() {
     return html`
@@ -105,11 +107,11 @@ export class HaGenericPicker extends LitElement {
           .valueRenderer=${this.valueRenderer}
         >
         </ha-picker-field>
-        ${!this._narrow && (this._pickerWrapperOpen || this._opened)
+        ${!this._openedNarrow && (this._pickerWrapperOpen || this._opened)
           ? html`
               <wa-popover
                 .open=${this._pickerWrapperOpen}
-                style="--body-width: ${this._addTargetWidth}px;"
+                style="--body-width: ${this._popoverWidth}px;"
                 without-arrow
                 distance="-4"
                 placement="bottom-start"
@@ -158,8 +160,6 @@ export class HaGenericPicker extends LitElement {
         .allowCustomValue=${this.allowCustomValue}
         .label=${this.searchLabel ?? this.hass.localize("ui.common.search")}
         .value=${this.value}
-        hide-clear-icon
-        @opened-changed=${this._openedChanged}
         @value-changed=${this._valueChanged}
         .rowRenderer=${this.rowRenderer}
         .notFoundLabel=${this.notFoundLabel}
@@ -167,7 +167,6 @@ export class HaGenericPicker extends LitElement {
         .getAdditionalItems=${this.getAdditionalItems}
         .searchFn=${this.searchFn}
         .mode=${dialogMode ? "dialog" : "popover"}
-        .helper=${this.helper}
       ></ha-picker-combo-box>
     `;
   }
@@ -196,6 +195,7 @@ export class HaGenericPicker extends LitElement {
 
     this._opened = false;
     this._pickerWrapperOpen = false;
+    this._unsubscribeTinyKeys?.();
   }
 
   private _valueChanged(ev: CustomEvent) {
@@ -222,17 +222,12 @@ export class HaGenericPicker extends LitElement {
     if (this.disabled) {
       return;
     }
-    this._addTargetWidth = this._containerElement?.offsetWidth || 0;
+    this._openedNarrow = this._narrow;
+    this._popoverWidth = this._containerElement?.offsetWidth || 250;
     this._pickerWrapperOpen = true;
-  }
-
-  private async _openedChanged(ev: ComboBoxLightOpenedChangedEvent) {
-    const opened = ev.detail.value;
-    if (this._opened && !opened) {
-      this._opened = false;
-      await this.updateComplete;
-      this._field?.focus();
-    }
+    this._unsubscribeTinyKeys = tinykeys(this, {
+      Escape: this._handleEscClose,
+    });
   }
 
   connectedCallback() {
@@ -244,12 +239,21 @@ export class HaGenericPicker extends LitElement {
   public disconnectedCallback() {
     super.disconnectedCallback();
     window.removeEventListener("resize", this._handleResize);
+    this._unsubscribeTinyKeys?.();
   }
 
   private _handleResize = () => {
     this._narrow =
       window.matchMedia("(max-width: 870px)").matches ||
       window.matchMedia("(max-height: 500px)").matches;
+
+    if (!this._openedNarrow && this._pickerWrapperOpen) {
+      this._popoverWidth = this._containerElement?.offsetWidth || 250;
+    }
+  };
+
+  private _handleEscClose = (ev: KeyboardEvent) => {
+    ev.stopPropagation();
   };
 
   static get styles(): CSSResultGroup {
@@ -296,6 +300,7 @@ export class HaGenericPicker extends LitElement {
           --ha-bottom-sheet-max-width: 600px;
           --ha-bottom-sheet-padding: var(--ha-space-0);
           --ha-bottom-sheet-surface-background: var(--card-background-color);
+          --ha-bottom-sheet-border-radius: var(--ha-border-radius-2xl);
         }
 
         ha-picker-field.opened {
