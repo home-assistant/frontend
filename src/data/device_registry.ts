@@ -186,6 +186,7 @@ export const getDevices = (
   deviceFilter?: HaDevicePickerDeviceFilterFunc,
   entityFilter?: HaEntityPickerEntityFilterFunc,
   excludeDevices?: string[],
+  suggestedDevices?: string[],
   value?: string
 ): DevicePickerItem[] => {
   const devices = Object.values(hass.devices);
@@ -297,6 +298,10 @@ export const getDevices = (
     const domain = configEntry?.domain;
     const domainName = domain ? domainToName(hass.localize, domain) : undefined;
 
+    const suggestedPrefix = suggestedDevices?.includes(device.id)
+      ? "0|"
+      : "1|";
+
     return {
       id: device.id,
       label: "",
@@ -309,7 +314,7 @@ export const getDevices = (
       search_labels: [deviceName, areaName, domain, domainName].filter(
         Boolean
       ) as string[],
-      sorting_label: deviceName || "zzz",
+      sorting_label: `${suggestedPrefix}${deviceName || "zzz"}`,
     };
   });
 

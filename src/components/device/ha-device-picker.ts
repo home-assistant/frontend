@@ -80,6 +80,14 @@ export class HaDevicePicker extends LitElement {
   @property({ type: Array, attribute: "exclude-devices" })
   public excludeDevices?: string[];
 
+  /**
+   * List of devices to be suggested at the top of the list.
+   * @type {Array}
+   * @attr suggested-devices
+   */
+  @property({ attribute: false, type: Array })
+  public suggestedDevices?: string[];
+
   @property({ attribute: false })
   public deviceFilter?: HaDevicePickerDeviceFilterFunc;
 
@@ -117,6 +125,7 @@ export class HaDevicePicker extends LitElement {
       this.deviceFilter,
       this.entityFilter,
       this.excludeDevices,
+      this.suggestedDevices,
       this.value
     );
 

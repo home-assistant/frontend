@@ -8,6 +8,10 @@ import "../../../../../components/device/ha-device-action-picker";
 import "../../../../../components/device/ha-device-picker";
 import "../../../../../components/ha-form/ha-form";
 import { fullEntitiesContext } from "../../../../../data/context";
+import {
+  automationEditorContext,
+  type AutomationLocalContext,
+} from "../../../../../data/automation_editor_context";
 import type {
   DeviceAction,
   DeviceCapabilities,
@@ -36,6 +40,10 @@ export class HaDeviceAction extends LitElement {
   @state()
   @consume({ context: fullEntitiesContext, subscribe: true })
   _entityReg!: EntityRegistryEntry[];
+
+  @state()
+  @consume({ context: automationEditorContext, subscribe: true })
+  private _automationCtx?: AutomationLocalContext;
 
   private _origAction?: DeviceAction;
 
@@ -87,6 +95,7 @@ export class HaDeviceAction extends LitElement {
     return html`
       <ha-device-picker
         .value=${deviceId}
+        .suggestedDevices=${this._automationCtx?.used?.devices}
         .disabled=${this.disabled}
         @value-changed=${this._devicePicked}
         .hass=${this.hass}

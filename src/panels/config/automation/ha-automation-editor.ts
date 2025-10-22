@@ -1,4 +1,4 @@
-import { consume } from "@lit/context";
+import { consume, ContextProvider } from "@lit/context";
 import {
   mdiAppleKeyboardCommand,
   mdiCog,
@@ -89,6 +89,11 @@ import {
 import "./blueprint-automation-editor";
 import "./manual-automation-editor";
 import type { HaManualAutomationEditor } from "./manual-automation-editor";
+import {
+  automationEditorContext,
+  buildAutomationLocalContext,
+} from "../../../data/automation_editor_context";
+import type { AutomationLocalContext } from "../../../data/automation_editor_context";
 
 declare global {
   interface HTMLElementTagNameMap {
@@ -184,6 +189,13 @@ export class HaAutomationEditor extends PreventUnsavedMixin(
     apply: (config) => this._applyUndoRedo(config),
     currentConfig: () => this._config!,
   });
+
+  private _automationContextProvider = new ContextProvider(this, {
+    context: automationEditorContext,
+    initialValue: undefined,
+  });
+
+  private _automationContextValue?: AutomationLocalContext;
 
   protected willUpdate(changedProps) {
     super.willUpdate(changedProps);
@@ -716,6 +728,14 @@ export class HaAutomationEditor extends PreventUnsavedMixin(
       Object.values(this._configSubscriptions).forEach((sub) =>
         sub(this._config)
       );
+      const ctx = buildAutomationLocalContext(
+        this._config,
+        this.hass,
+        this.automationId ?? this._entityId ?? undefined,
+        this._automationContextValue
+      );
+      this._automationContextProvider.setValue(ctx);
+      this._automationContextValue = ctx;
     }
   }
 
