@@ -63,7 +63,7 @@ export interface DataEntryFlowStepCreateEntry {
   type: "create_entry";
   version: number;
   flow_id: string;
-  next_flow?: [FlowType, string]; // [flow_type, flow_id]
+  next_flow?: [FlowType, string, string]; // [flow_type, flow_id, subentry_type]
   handler: string;
   title: string;
   result?: ConfigEntry;
@@ -79,7 +79,7 @@ export interface DataEntryFlowStepAbort {
   reason: string;
   description_placeholders?: Record<string, string>;
   translation_domain?: string;
-  next_flow?: [FlowType, string]; // [flow_type, flow_id]
+  next_flow?: [FlowType, string, string]; // [flow_type, flow_id, subentry_type]
 }
 
 export interface DataEntryFlowStepProgress {
