@@ -13,7 +13,7 @@ export const removeLaunchScreen = () => {
     !window.matchMedia("(prefers-reduced-motion: reduce)").matches
   ) {
     document.startViewTransition(() => {
-      launchScreenElement.parentElement.removeChild(launchScreenElement);
+      launchScreenElement.parentElement?.removeChild(launchScreenElement);
     });
   } else {
     // Fallback: Direct removal without transition
