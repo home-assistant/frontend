@@ -88,9 +88,17 @@ export class HaChartBase extends LitElement {
 
   private _lastTapTime?: number;
 
-  // @ts-ignore
   private _resizeController = new ResizeController(this, {
-    callback: () => this.chart?.resize(),
+    callback: () => {
+      if (this.chart) {
+        this.chart.resize();
+        // Force recalculation of dynamic elements like pie chart labels
+        // by calling resize again in the next animation frame
+        requestAnimationFrame(() => {
+          this.chart?.resize();
+        });
+      }
+    },
   });
 
   private _loading = false;
