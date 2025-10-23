@@ -1,10 +1,17 @@
 import type { PropertyValues, ReactiveElement } from "lit";
 import { state } from "lit/decorators";
 
-type AbstractConstructor<T = object> = abstract new (...args: any[]) => T;
+/**
+ * Abstract constructor type for a class that extends a reactive element
+ * @param T - The type of the reactive element
+ * @returns The abstract constructor
+ */
+type AbstractConstructor<T extends ReactiveElement> = abstract new (
+  ...args: any[]
+) => T;
 
 /**
- * ViewTransitionMixin - Adds view transition support to Lit components
+ * ViewTransitionMixin - Adds view transition support to reactive elements
  *
  * This mixin provides automatic fade-in transitions when content loads using the
  * View Transition API. User preferences are respected for reduced motion.
