@@ -1,17 +1,15 @@
-import { mdiClose } from "@mdi/js";
-import { css, html, LitElement, nothing } from "lit";
-import { customElement, property, query, state } from "lit/decorators";
+import { html, LitElement, nothing } from "lit";
+import { customElement, property, state } from "lit/decorators";
 import { fireEvent } from "../../../common/dom/fire_event";
 import type { HassDialog } from "../../../dialogs/make-dialog-manager";
 import type { HomeAssistant } from "../../../types";
 import "../../ha-dialog-header";
 import "../../ha-icon-button";
 import "../../ha-icon-next";
-import "../../ha-md-dialog";
-import type { HaMdDialog } from "../../ha-md-dialog";
 import "../../ha-md-list";
 import "../../ha-md-list-item";
 import "../../ha-svg-icon";
+import "../../ha-wa-dialog";
 import "../ha-target-picker-item-row";
 import type { TargetDetailsDialogParams } from "./show-dialog-target-details";
 
@@ -21,14 +19,15 @@ class DialogTargetDetails extends LitElement implements HassDialog {
 
   @state() private _params?: TargetDetailsDialogParams;
 
-  @query("ha-md-dialog") private _dialog?: HaMdDialog;
+  @state() private _opened = false;
 
   public showDialog(params: TargetDetailsDialogParams): void {
     this._params = params;
+    this._opened = true;
   }
 
   public closeDialog() {
-    this._dialog?.close();
+    this._opened = false;
     return true;
   }
 
@@ -43,58 +42,31 @@ class DialogTargetDetails extends LitElement implements HassDialog {
     }
 
     return html`
-      <ha-md-dialog open @closed=${this._dialogClosed}>
-        <ha-dialog-header slot="headline">
-          <ha-icon-button
-            slot="navigationIcon"
-            @click=${this.closeDialog}
-            .label=${this.hass.localize("ui.common.close")}
-            .path=${mdiClose}
-          ></ha-icon-button>
-          <span slot="title"
-            >${this.hass.localize(
-              "ui.components.target-picker.target_details"
-            )}</span
-          >
-          <span slot="subtitle"
-            >${this.hass.localize(
-              `ui.components.target-picker.type.${this._params.type}`
-            )}:
-            ${this._params.title}</span
-          >
-        </ha-dialog-header>
-        <div slot="content">
-          <ha-target-picker-item-row
-            .hass=${this.hass}
-            .type=${this._params.type}
-            .itemId=${this._params.itemId}
-            .deviceFilter=${this._params.deviceFilter}
-            .entityFilter=${this._params.entityFilter}
-            .includeDomains=${this._params.includeDomains}
-            .includeDeviceClasses=${this._params.includeDeviceClasses}
-            expand
-          ></ha-target-picker-item-row>
-        </div>
-      </ha-md-dialog>
+      <ha-wa-dialog
+        .hass=${this.hass}
+        .open=${this._opened}
+        header-title=${this.hass.localize(
+          "ui.components.target-picker.target_details"
+        )}
+        header-subtitle=${`${this.hass.localize(
+          `ui.components.target-picker.type.${this._params.type}`
+        )}:
+            ${this._params.title}`}
+        @closed=${this._dialogClosed}
+      >
+        <ha-target-picker-item-row
+          .hass=${this.hass}
+          .type=${this._params.type}
+          .itemId=${this._params.itemId}
+          .deviceFilter=${this._params.deviceFilter}
+          .entityFilter=${this._params.entityFilter}
+          .includeDomains=${this._params.includeDomains}
+          .includeDeviceClasses=${this._params.includeDeviceClasses}
+          expand
+        ></ha-target-picker-item-row>
+      </ha-wa-dialog>
     `;
   }
-
-  static styles = css`
-    ha-md-dialog {
-      min-width: 400px;
-      max-height: 90%;
-      --dialog-content-padding: var(--ha-space-2) var(--ha-space-6)
-        max(var(--safe-area-inset-bottom, var(--ha-space-0)), var(--ha-space-8));
-    }
-
-    @media all and (max-width: 600px), all and (max-height: 500px) {
-      ha-md-dialog {
-        --md-dialog-container-shape: var(--ha-space-0);
-        min-width: 100%;
-        min-height: 100%;
-      }
-    }
-  `;
 }
 
 declare global {
