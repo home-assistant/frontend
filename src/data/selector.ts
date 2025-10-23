@@ -352,7 +352,7 @@ export interface NumberSelector {
 interface ObjectSelectorField {
   selector: Selector;
   label?: string;
-  description?: string;
+  helper?: string;
   required?: boolean;
 }
 
