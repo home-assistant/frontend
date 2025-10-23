@@ -7,8 +7,8 @@ type AbstractConstructor<T = object> = abstract new (...args: any[]) => T;
  * ViewTransitionMixin - Adds view transition support to Lit components
  *
  * This mixin provides automatic fade-in transitions when content loads using the
- * View Transition API. It respects user preferences for reduced motion and gracefully
- * falls back for browsers that don't support the API.
+ * View Transition API. User preferences are respected for reduced motion.
+ * Falls back to synchronous updates for browsers that don't support the API.
  *
  * @example
  * Basic usage:
