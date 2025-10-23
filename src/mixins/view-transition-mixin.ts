@@ -7,7 +7,7 @@ import { state } from "lit/decorators";
  * @returns The abstract constructor
  */
 type AbstractConstructor<T extends ReactiveElement> = abstract new (
-  ...args: any[]
+  ...args: unknown[]
 ) => T;
 
 /**
