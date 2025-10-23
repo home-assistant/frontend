@@ -676,6 +676,9 @@
         },
         "entity-state-picker": {
           "state": "State"
+        },
+        "entity-state-content-picker": {
+          "add": "Add"
         }
       },
       "target-picker": {
