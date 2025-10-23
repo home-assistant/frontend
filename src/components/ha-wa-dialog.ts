@@ -1,7 +1,7 @@
 import "@home-assistant/webawesome/dist/components/dialog/dialog";
 import { mdiClose } from "@mdi/js";
 import { css, html, LitElement, nothing } from "lit";
-import { customElement, property, state, eventOptions } from "lit/decorators";
+import { customElement, eventOptions, property, state } from "lit/decorators";
 import { fireEvent } from "../common/dom/fire_event";
 import { haStyleScrollbar } from "../resources/styles";
 import type { HomeAssistant } from "../types";
@@ -164,8 +164,7 @@ export class HaWaDialog extends LitElement {
 
   @eventOptions({ passive: true })
   private _handleBodyScroll(ev: Event) {
-    const target = ev.target as HTMLElement;
-    this._bodyScrolled = target.scrollTop > 0;
+    this._bodyScrolled = (ev.target as HTMLDivElement).scrollTop > 0;
   }
 
   static styles = [
