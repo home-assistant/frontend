@@ -377,6 +377,7 @@ export class HaManualAutomationEditor extends LitElement {
         return;
       }
       this._sidebarConfig?.close();
+      this._sidebarKey = 0;
     }
   }
 

@@ -539,6 +539,7 @@ export class HaManualScriptEditor extends LitElement {
         return;
       }
       this._sidebarConfig?.close();
+      this._sidebarKey = 0;
     }
   }
 
