@@ -317,7 +317,6 @@ export class HassRouterPage extends ViewTransitionMixin(ReactiveElement) {
       }
 
       const panelEl = this._cache[page] || this.createElement(routeOptions.tag);
-      (panelEl as HTMLElement).style.viewTransitionName = "layout-fade-in";
       this.updatePageEl(panelEl);
       this.appendChild(panelEl);
 
