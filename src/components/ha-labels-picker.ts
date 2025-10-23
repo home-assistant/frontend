@@ -141,8 +141,8 @@ export class HaLabelsPicker extends SubscribeMixin(LitElement) {
                     .disabled=${label?.description === undefined ||
                     label?.description
                       ?.trim()
-                      .replace("\n", "")
-                      .replace("\r", "") === ""}
+                      .replaceAll("\n", "")
+                      .replaceAll("\r", "") === ""}
                   >
                     ${label?.description ?? ""}
                   </ha-tooltip>
