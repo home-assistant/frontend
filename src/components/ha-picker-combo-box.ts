@@ -40,7 +40,7 @@ export interface PickerComboBoxItemWithLabel extends PickerComboBoxItem {
   a11y_label: string;
 }
 
-export const NO_MATCHING_ITEMS_FOUND_ID = "___no_matching_items_found___";
+const NO_MATCHING_ITEMS_FOUND_ID = "___no_matching_items_found___";
 
 const DEFAULT_ROW_RENDERER: RenderItemFunction<PickerComboBoxItem> = (
   item
@@ -213,7 +213,9 @@ export class HaPickerComboBox extends LitElement {
       .index=${index}
       @click=${this._valueSelected}
     >
-      ${renderer(item, index)}
+      ${item.id === NO_MATCHING_ITEMS_FOUND_ID
+        ? DEFAULT_ROW_RENDERER(item, index)
+        : renderer(item, index)}
     </div>`;
   };
 

@@ -12,10 +12,7 @@ import type { HomeAssistant, ValueChangedEvent } from "../types";
 import "./ha-combo-box-item";
 import "./ha-generic-picker";
 import type { HaGenericPicker } from "./ha-generic-picker";
-import {
-  NO_MATCHING_ITEMS_FOUND_ID,
-  type PickerComboBoxItem,
-} from "./ha-picker-combo-box";
+import type { PickerComboBoxItem } from "./ha-picker-combo-box";
 import type { PickerValueRenderer } from "./ha-picker-field";
 import "./ha-service-icon";
 
@@ -56,10 +53,7 @@ class HaServicePicker extends LitElement {
     item,
     { index }
   ) => html`
-    <ha-combo-box-item
-      .type=${item.id === NO_MATCHING_ITEMS_FOUND_ID ? "text" : "button"}
-      .borderTop=${index !== 0}
-    >
+    <ha-combo-box-item type="button" .borderTop=${index !== 0}>
       <ha-service-icon
         slot="start"
         .hass=${this.hass}

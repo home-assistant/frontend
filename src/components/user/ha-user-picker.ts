@@ -9,10 +9,7 @@ import { fetchUsers } from "../../data/user";
 import type { HomeAssistant } from "../../types";
 import "../ha-combo-box-item";
 import "../ha-generic-picker";
-import {
-  NO_MATCHING_ITEMS_FOUND_ID,
-  type PickerComboBoxItem,
-} from "../ha-picker-combo-box";
+import type { PickerComboBoxItem } from "../ha-picker-combo-box";
 import type { PickerValueRenderer } from "../ha-picker-field";
 import "./ha-user-badge";
 
@@ -73,10 +70,7 @@ class HaUserPicker extends LitElement {
   private _rowRenderer: ComboBoxLitRenderer<UserComboBoxItem> = (item) => {
     const user = item.user;
     if (!user) {
-      return html`<ha-combo-box-item
-        .type=${item.id === NO_MATCHING_ITEMS_FOUND_ID ? "text" : "button"}
-        compact
-      >
+      return html`<ha-combo-box-item type="button" compact>
         ${item.icon
           ? html`<ha-icon slot="start" .icon=${item.icon}></ha-icon>`
           : item.icon_path
@@ -93,10 +87,7 @@ class HaUserPicker extends LitElement {
     }
 
     return html`
-      <ha-combo-box-item
-        .type=${item.id === NO_MATCHING_ITEMS_FOUND_ID ? "text" : "button"}
-        compact
-      >
+      <ha-combo-box-item type="button" compact>
         <ha-user-badge
           slot="start"
           .hass=${this.hass}

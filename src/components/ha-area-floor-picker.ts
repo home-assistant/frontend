@@ -25,7 +25,6 @@ import "./ha-icon-button";
 import type { PickerValueRenderer } from "./ha-picker-field";
 import "./ha-svg-icon";
 import "./ha-tree-indicator";
-import { NO_MATCHING_ITEMS_FOUND_ID } from "./ha-picker-combo-box";
 
 const SEPARATOR = "________";
 
@@ -152,7 +151,7 @@ export class HaAreaFloorPicker extends LitElement {
 
     return html`
       <ha-combo-box-item
-        .type=${item.id === NO_MATCHING_ITEMS_FOUND_ID ? "text" : "button"}
+        type="button"
         style=${item.type === "area" && hasFloor
           ? "--md-list-item-leading-space: 48px;"
           : ""}

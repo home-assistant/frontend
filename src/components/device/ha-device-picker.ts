@@ -17,7 +17,6 @@ import type { HomeAssistant } from "../../types";
 import { brandsUrl } from "../../util/brands-url";
 import "../ha-generic-picker";
 import type { HaGenericPicker } from "../ha-generic-picker";
-import { NO_MATCHING_ITEMS_FOUND_ID } from "../ha-picker-combo-box";
 
 export type HaDevicePickerDeviceFilterFunc = (
   device: DeviceRegistryEntry
@@ -163,9 +162,7 @@ export class HaDevicePicker extends LitElement {
   );
 
   private _rowRenderer: ComboBoxLitRenderer<DevicePickerItem> = (item) => html`
-    <ha-combo-box-item
-      .type=${item.id === NO_MATCHING_ITEMS_FOUND_ID ? "text" : "button"}
-    >
+    <ha-combo-box-item type="button">
       ${item.domain
         ? html`
             <img
