@@ -3,7 +3,7 @@ import { render } from "lit";
 
 export const removeLaunchScreen = () => {
   const launchScreenElement = document.getElementById("ha-launch-screen");
-  if (!launchScreenElement) {
+  if (!launchScreenElement?.parentElement) {
     return;
   }
 
@@ -13,11 +13,11 @@ export const removeLaunchScreen = () => {
     !window.matchMedia("(prefers-reduced-motion: reduce)").matches
   ) {
     document.startViewTransition(() => {
-      launchScreenElement.parentElement!.removeChild(launchScreenElement);
+      launchScreenElement.parentElement.removeChild(launchScreenElement);
     });
   } else {
     // Fallback: Direct removal without transition
-    launchScreenElement.parentElement!.removeChild(launchScreenElement);
+    launchScreenElement.parentElement.removeChild(launchScreenElement);
   }
 };
 
