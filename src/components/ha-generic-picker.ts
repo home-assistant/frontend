@@ -96,33 +96,38 @@ export class HaGenericPicker extends LitElement {
         ? html`<label ?disabled=${this.disabled}>${this.label}</label>`
         : nothing}
       <div class="container">
-        ${this.addButtonLabel && !this.value
-          ? html`<ha-button
-              id="picker"
-              size="small"
-              appearance="filled"
-              @click=${this.open}
-              .disabled=${this.disabled}
-            >
-              <ha-svg-icon .path=${mdiPlaylistPlus} slot="start"></ha-svg-icon>
-              ${this.addButtonLabel}
-            </ha-button>`
-          : html`<ha-picker-field
-              id="picker"
-              type="button"
-              class=${this._opened ? "opened" : ""}
-              compact
-              aria-label=${ifDefined(this.label)}
-              @click=${this.open}
-              @clear=${this._clear}
-              .placeholder=${this.placeholder}
-              .value=${this.value}
-              .required=${this.required}
-              .disabled=${this.disabled}
-              .hideClearIcon=${this.hideClearIcon}
-              .valueRenderer=${this.valueRenderer}
-            >
-            </ha-picker-field>`}
+        <div id="picker">
+          <slot name="field">
+            ${this.addButtonLabel && !this.value
+              ? html`<ha-button
+                  size="small"
+                  appearance="filled"
+                  @click=${this.open}
+                  .disabled=${this.disabled}
+                >
+                  <ha-svg-icon
+                    .path=${mdiPlaylistPlus}
+                    slot="start"
+                  ></ha-svg-icon>
+                  ${this.addButtonLabel}
+                </ha-button>`
+              : html`<ha-picker-field
+                  type="button"
+                  class=${this._opened ? "opened" : ""}
+                  compact
+                  aria-label=${ifDefined(this.label)}
+                  @click=${this.open}
+                  @clear=${this._clear}
+                  .placeholder=${this.placeholder}
+                  .value=${this.value}
+                  .required=${this.required}
+                  .disabled=${this.disabled}
+                  .hideClearIcon=${this.hideClearIcon}
+                  .valueRenderer=${this.valueRenderer}
+                >
+                </ha-picker-field>`}
+          </slot>
+        </div>
         ${!this._openedNarrow && (this._pickerWrapperOpen || this._opened)
           ? html`
               <wa-popover
@@ -234,7 +239,8 @@ export class HaGenericPicker extends LitElement {
     fireEvent(this, "value-changed", { value });
   }
 
-  public async open() {
+  public async open(ev?: Event) {
+    ev?.stopPropagation();
     if (this.disabled) {
       return;
     }

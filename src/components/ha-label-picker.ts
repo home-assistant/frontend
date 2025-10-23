@@ -2,7 +2,13 @@ import { mdiLabel, mdiPlus } from "@mdi/js";
 import type { HassEntity, UnsubscribeFunc } from "home-assistant-js-websocket";
 import type { TemplateResult } from "lit";
 import { LitElement, html } from "lit";
-import { customElement, property, query, state } from "lit/decorators";
+import {
+  customElement,
+  property,
+  query,
+  queryAssignedElements,
+  state,
+} from "lit/decorators";
 import memoizeOne from "memoize-one";
 import { fireEvent } from "../common/dom/fire_event";
 import type { LabelRegistryEntry } from "../data/label_registry";
@@ -83,6 +89,9 @@ export class HaLabelPicker extends SubscribeMixin(LitElement) {
   @property({ type: Boolean }) public required = false;
 
   @state() private _labels?: LabelRegistryEntry[];
+
+  @queryAssignedElements({ flatten: true })
+  private _slotNodes?: NodeListOf<HTMLElement>;
 
   @query("ha-generic-picker") private _picker?: HaGenericPicker;
 
@@ -226,6 +235,7 @@ export class HaLabelPicker extends SubscribeMixin(LitElement) {
         .valueRenderer=${valueRenderer}
         @value-changed=${this._valueChanged}
       >
+        <slot .slot=${this._slotNodes?.length ? "field" : undefined}></slot>
       </ha-generic-picker>
     `;
   }
