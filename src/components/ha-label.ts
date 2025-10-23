@@ -1,14 +1,27 @@
 import type { CSSResultGroup, TemplateResult } from "lit";
 import { css, html, LitElement } from "lit";
 import { customElement, property } from "lit/decorators";
+import { uid } from "../common/util/uid";
+import "./ha-tooltip";
 
 @customElement("ha-label")
 class HaLabel extends LitElement {
   @property({ type: Boolean, reflect: true }) dense = false;
 
+  @property({ attribute: "description" })
+  public description?: string;
+
   protected render(): TemplateResult {
+    const elementId = "label-" + uid();
     return html`
-      <span class="content">
+      <ha-tooltip
+        .for=${elementId}
+        .disabled=${this.description === undefined ||
+        this.description?.trim().replace("\n", "").replace("\r", "") === ""}
+      >
+        ${this.description}
+      </ha-tooltip>
+      <span class="content" .id=${elementId}>
         <slot name="icon"></slot>
         <slot></slot>
       </span>
