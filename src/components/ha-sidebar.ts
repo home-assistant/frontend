@@ -876,20 +876,13 @@ class HaSidebar extends SubscribeMixin(LitElement) {
         }
 
         ha-md-list-item.user {
-          --md-list-item-leading-space: 0;
-          --md-list-item-trailing-space: 0;
+          --md-list-item-leading-icon-size: 40px;
+          --md-list-item-leading-space: 4px;
         }
 
         ha-user-badge {
           flex-shrink: 0;
-          display: flex;
-          justify-content: center;
-          width: 100%;
-        }
-
-        ha-user-badge::part(picture) {
-          width: 40px;
-          height: 40px;
+          margin-right: -8px;
         }
 
         .spacer {
