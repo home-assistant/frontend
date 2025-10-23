@@ -1,23 +1,13 @@
 import type { Connection } from "home-assistant-js-websocket";
 import { createCollection } from "home-assistant-js-websocket";
 import type { Store } from "home-assistant-js-websocket/dist/store";
-import { stringCompare } from "../common/string/compare";
 import { debounce } from "../common/util/debounce";
 import type { FloorRegistryEntry } from "./floor_registry";
 
 const fetchFloorRegistry = (conn: Connection) =>
-  conn
-    .sendMessagePromise({
-      type: "config/floor_registry/list",
-    })
-    .then((floors) =>
-      (floors as FloorRegistryEntry[]).sort((ent1, ent2) => {
-        if (ent1.level !== ent2.level) {
-          return (ent1.level ?? 9999) - (ent2.level ?? 9999);
-        }
-        return stringCompare(ent1.name, ent2.name);
-      })
-    );
+  conn.sendMessagePromise<FloorRegistryEntry[]>({
+    type: "config/floor_registry/list",
+  });
 
 const subscribeFloorRegistryUpdates = (
   conn: Connection,

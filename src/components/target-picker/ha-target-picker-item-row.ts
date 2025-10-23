@@ -114,7 +114,6 @@ export class HaTargetPickerItemRow extends LitElement {
     const { name, context, iconPath, fallbackIconPath, stateObject } =
       this._itemData(this.type, this.itemId);
 
-    const showDevices = ["floor", "area", "label"].includes(this.type);
     const showEntities = this.type !== "entity";
 
     const entries = this.parentEntries || this._entries;
@@ -168,8 +167,7 @@ export class HaTargetPickerItemRow extends LitElement {
                 >${this._domainName}</span
               >`
             : nothing}
-        ${!this.subEntry &&
-        ((entries && (showEntities || showDevices)) || this._domainName)
+        ${!this.subEntry && entries && showEntities
           ? html`
               <div slot="end" class="summary">
                 ${showEntities &&
@@ -193,21 +191,6 @@ export class HaTargetPickerItemRow extends LitElement {
                         )}
                       </span>`
                     : nothing}
-                ${showDevices
-                  ? html`<span class="secondary"
-                      >${this.hass.localize(
-                        "ui.components.target-picker.devices_count",
-                        {
-                          count: entries?.referenced_devices.length,
-                        }
-                      )}</span
-                    >`
-                  : nothing}
-                ${this._domainName && !showDevices
-                  ? html`<span class="secondary domain"
-                      >${this._domainName}</span
-                    >`
-                  : nothing}
               </div>
             `
           : nothing}
@@ -457,6 +440,9 @@ export class HaTargetPickerItemRow extends LitElement {
           }
           if (
             (this.type === "area" && entity.area_id === this.itemId) ||
+            (this.type === "floor" &&
+              entity.area_id &&
+              entries.referenced_areas.includes(entity.area_id)) ||
             (this.type === "label" && entity.labels.includes(this.itemId)) ||
             entries.referenced_devices.includes(entity.device_id || "")
           ) {

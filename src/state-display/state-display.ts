@@ -5,7 +5,6 @@ import { customElement, property } from "lit/decorators";
 import { join } from "lit/directives/join";
 import { ensureArray } from "../common/array/ensure-array";
 import { computeStateDomain } from "../common/entity/compute_state_domain";
-import { computeStateName } from "../common/entity/compute_state_name";
 import "../components/ha-relative-time";
 import { isUnavailableState } from "../data/entity";
 import { SENSOR_DEVICE_CLASS_TIMESTAMP } from "../data/sensor";
@@ -100,8 +99,8 @@ class StateDisplay extends LitElement {
 
       return this.hass!.formatEntityState(stateObj);
     }
-    if (content === "name") {
-      return html`${this.name || computeStateName(stateObj)}`;
+    if (content === "name" && this.name) {
+      return html`${this.name}`;
     }
 
     let relativeDateTime: string | Date | undefined;
