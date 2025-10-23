@@ -7,6 +7,7 @@ import memoizeOne from "memoize-one";
 import { computeCssColor } from "../common/color/compute-color";
 import { fireEvent } from "../common/dom/fire_event";
 import { stringCompare } from "../common/string/compare";
+import { uid } from "../common/util/uid";
 import type { LabelRegistryEntry } from "../data/label_registry";
 import {
   subscribeLabelRegistry,
@@ -20,6 +21,7 @@ import "./chips/ha-input-chip";
 import type { HaDevicePickerDeviceFilterFunc } from "./device/ha-device-picker";
 import "./ha-label-picker";
 import type { HaLabelPicker } from "./ha-label-picker";
+import "./ha-tooltip";
 
 @customElement("ha-labels-picker")
 export class HaLabelsPicker extends SubscribeMixin(LitElement) {
@@ -132,9 +134,21 @@ export class HaLabelsPicker extends SubscribeMixin(LitElement) {
                 const color = label?.color
                   ? computeCssColor(label.color)
                   : undefined;
+                const elementId = "label-" + uid();
                 return html`
+                  <ha-tooltip
+                    .for=${elementId}
+                    .disabled=${label?.description === undefined ||
+                    label?.description
+                      ?.trim()
+                      .replace("\n", "")
+                      .replace("\r", "") === ""}
+                  >
+                    ${label?.description ?? ""}
+                  </ha-tooltip>
                   <ha-input-chip
                     .item=${label}
+                    .id=${elementId}
                     @remove=${this._removeItem}
                     @click=${this._openDetail}
                     .label=${label?.name}
