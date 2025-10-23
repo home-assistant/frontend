@@ -162,7 +162,9 @@ class HaServicePicker extends LitElement {
             const description =
               this.hass.localize(
                 `component.${domain}.services.${service}.description`
-              ) || services[domain][service].description;
+              ) ||
+              services[domain][service].description ||
+              "";
 
             items.push({
               id: serviceId,
