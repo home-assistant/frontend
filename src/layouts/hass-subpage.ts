@@ -1,6 +1,6 @@
 import type { CSSResultGroup, TemplateResult } from "lit";
 import { css, html, LitElement } from "lit";
-import { customElement, eventOptions, property, state } from "lit/decorators";
+import { customElement, eventOptions, property } from "lit/decorators";
 import { classMap } from "lit/directives/class-map";
 import { restoreScroll } from "../common/decorators/restore-scroll";
 import { goBack } from "../common/navigate";
@@ -26,17 +26,8 @@ class HassSubpage extends ViewTransitionMixin(LitElement) {
 
   @property({ type: Boolean }) public supervisor = false;
 
-  @state() private _loaded = false;
-
   // @ts-ignore
   @restoreScroll(".content") private _savedScrollPos?: number;
-
-  protected onLoadTransition(): void {
-    // Trigger the transition when content is slotted
-    this.startViewTransition(() => {
-      this._loaded = true;
-    });
-  }
 
   protected render(): TemplateResult {
     return html`

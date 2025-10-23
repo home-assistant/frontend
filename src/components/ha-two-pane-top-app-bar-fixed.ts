@@ -7,7 +7,7 @@ import type { MDCTopAppBarAdapter } from "@material/top-app-bar/adapter";
 import { strings } from "@material/top-app-bar/constants";
 import MDCFixedTopAppBarFoundation from "@material/top-app-bar/fixed/foundation";
 import { html, css, nothing } from "lit";
-import { property, query, customElement, state } from "lit/decorators";
+import { property, query, customElement } from "lit/decorators";
 import { classMap } from "lit/directives/class-map";
 import { styles } from "@material/mwc-top-app-bar/mwc-top-app-bar.css";
 import { ViewTransitionMixin } from "../mixins/view-transition-mixin";
@@ -48,15 +48,6 @@ export class TopAppBarBaseBase extends ViewTransitionMixin(BaseElement) {
   @query(".content") private _contentElement!: HTMLElement;
 
   @query(".pane .ha-scrollbar") private _paneElement?: HTMLElement;
-
-  @state() private _loaded = false;
-
-  protected onLoadTransition(): void {
-    // Trigger the transition when content is slotted
-    this.startViewTransition(() => {
-      this._loaded = true;
-    });
-  }
 
   @property({ attribute: false, type: Object })
   get scrollTarget() {

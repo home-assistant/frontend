@@ -62,17 +62,8 @@ class HassTabsSubpage extends ViewTransitionMixin(LitElement) {
 
   @state() private _activeTab?: PageNavigation;
 
-  @state() private _loaded = false;
-
   // @ts-ignore
   @restoreScroll(".content") private _savedScrollPos?: number;
-
-  protected onLoadTransition(): void {
-    // Trigger the transition when content is slotted
-    this.startViewTransition(() => {
-      this._loaded = true;
-    });
-  }
 
   private _getTabs = memoizeOne(
     (

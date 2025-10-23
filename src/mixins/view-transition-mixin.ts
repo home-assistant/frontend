@@ -1,4 +1,5 @@
 import type { PropertyValues, ReactiveElement } from "lit";
+import { state } from "lit/decorators";
 
 type AbstractConstructor<T = object> = abstract new (...args: any[]) => T;
 
@@ -11,6 +12,8 @@ export const ViewTransitionMixin = <
     private _slot?: HTMLSlotElement;
 
     private _transitionTriggered = false;
+
+    @state() protected _loaded = false;
 
     /**
      * Trigger a view transition if supported by the browser
@@ -41,9 +44,14 @@ export const ViewTransitionMixin = <
     }
 
     /**
-     * Optional callback to execute during the load transition
+     * Callback to execute during the load transition
+     * Components can override this for custom behavior
      */
-    protected onLoadTransition?(): void;
+    protected onLoadTransition(): void {
+      this.startViewTransition(() => {
+        this._loaded = true;
+      });
+    }
 
     /**
      * Check if slot has content and trigger transition if it does
@@ -58,7 +66,7 @@ export const ViewTransitionMixin = <
         const elements = this._slot.assignedElements();
         if (elements.length > 0) {
           this._transitionTriggered = true;
-          this.onLoadTransition?.();
+          this.onLoadTransition();
         }
       }
     };
@@ -79,7 +87,7 @@ export const ViewTransitionMixin = <
         this._slot.addEventListener("slotchange", this._checkSlotContent);
       } else {
         // Start transition immediately if no slot is found
-        this.onLoadTransition?.();
+        this.onLoadTransition();
       }
     }
 
