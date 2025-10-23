@@ -162,11 +162,12 @@ export class HaTargetPickerItemRow extends LitElement {
         <div slot="headline">${name}</div>
         ${context && !this.hideContext
           ? html`<span slot="supporting-text">${context}</span>`
-          : this._domainName && this.subEntry
-            ? html`<span slot="supporting-text" class="domain"
-                >${this._domainName}</span
-              >`
-            : nothing}
+          : nothing}
+        ${this._domainName && this.subEntry
+          ? html`<span slot="supporting-text" class="domain"
+              >${this._domainName}</span
+            >`
+          : nothing}
         ${!this.subEntry && entries && showEntities
           ? html`
               <div slot="end" class="summary">
@@ -673,6 +674,14 @@ export class HaTargetPickerItemRow extends LitElement {
       button.link:hover,
       button.link:focus {
         text-decoration: underline;
+      }
+
+      .domain {
+        width: fit-content;
+        border-radius: var(--ha-border-radius-md);
+        background-color: var(--ha-color-fill-neutral-quiet-resting);
+        padding: var(--ha-space-1);
+        font-family: var(--ha-font-family-code);
       }
     `,
   ];
