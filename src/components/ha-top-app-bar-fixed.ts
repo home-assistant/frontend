@@ -12,8 +12,8 @@ export class HaTopAppBarFixed extends ViewTransitionMixin(TopAppBarFixedBase) {
   @property({ type: Boolean, reflect: true, attribute: "content-loading" })
   public contentLoading = true;
 
-  protected onLoadTransition(): void {
-    // Trigger the transition when content is slotted
+  protected override onLoadTransition(): void {
+    // Use reflected property since we can't add class to base component's rendered elements
     this.startViewTransition(() => {
       this.contentLoading = false;
     });
