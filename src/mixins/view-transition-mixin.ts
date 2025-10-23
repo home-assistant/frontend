@@ -7,7 +7,7 @@ import { state } from "lit/decorators";
  * @returns The abstract constructor
  */
 type AbstractConstructor<T extends ReactiveElement> = abstract new (
-  ...args: unknown[]
+  ...args: any[]
 ) => T;
 
 /**
@@ -122,9 +122,8 @@ export const ViewTransitionMixin = <
 
       try {
         await transition.finished;
-      } catch (error) {
-        // eslint-disable-next-line no-console
-        console.warn("View transition failed to finish:", error);
+      } catch {
+        // View transition failed - this is non-critical, continue silently
       }
     }
 
