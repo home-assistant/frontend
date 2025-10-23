@@ -71,9 +71,9 @@ export const ViewTransitionMixin = <
       super.firstUpdated(changedProperties);
 
       // Wait for slotted content to be ready, then trigger transition
-      this._slot = this.shadowRoot?.querySelector(
-        "slot:not([name])"
-      ) as HTMLSlotElement | undefined;
+      this._slot = this.shadowRoot?.querySelector("slot:not([name])") as
+        | HTMLSlotElement
+        | undefined;
       if (this._slot) {
         this._checkSlotContent();
         this._slot.addEventListener("slotchange", this._checkSlotContent);
