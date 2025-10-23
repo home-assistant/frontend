@@ -54,7 +54,6 @@ class UserBadge extends LitElement {
           backgroundImage: `url(${this.hass.hassUrl(picture)})`,
         })}
         class="picture"
-        part="picture"
       ></div>`;
     }
     const initials = computeUserInitials(this.user.name);
