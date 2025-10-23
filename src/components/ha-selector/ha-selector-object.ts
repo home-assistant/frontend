@@ -74,7 +74,7 @@ export class HaObjectSelector extends LitElement {
         return helper;
       }
     }
-    return this.selector.object?.fields?.[schema.name]?.helper || "";
+    return this.selector.object?.fields?.[schema.name]?.description || "";
   };
 
   private _renderItem(item: any, index: number) {
