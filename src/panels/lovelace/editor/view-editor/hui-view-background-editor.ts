@@ -1,5 +1,6 @@
 import memoizeOne from "memoize-one";
 import { LitElement, css, html, nothing } from "lit";
+import type { PropertyValues } from "lit";
 import { customElement, property, state } from "lit/decorators";
 import { fireEvent } from "../../../../common/dom/fire_event";
 import "../../../../components/ha-form/ha-form";
@@ -8,11 +9,18 @@ import type { LovelaceViewConfig } from "../../../../data/lovelace/config/view";
 import type { HomeAssistant } from "../../../../types";
 import type { LocalizeFunc } from "../../../../common/translations/localize";
 
+import {
+  isMediaSourceContentId,
+  resolveMediaSource,
+} from "../../../../data/media_source";
+
 @customElement("hui-view-background-editor")
 export class HuiViewBackgroundEditor extends LitElement {
   @property({ attribute: false }) public hass!: HomeAssistant;
 
   @state() private _config!: LovelaceViewConfig;
+
+  @state({ attribute: false }) private _resolvedImage?: string;
 
   set config(config: LovelaceViewConfig) {
     this._config = config;
@@ -115,6 +123,34 @@ export class HuiViewBackgroundEditor extends LitElement {
       ] as const
   );
 
+  protected updated(changedProps: PropertyValues) {
+    if (
+      this._config &&
+      this.hass &&
+      (changedProps.has("_config") ||
+        (changedProps.has("hass") && !changedProps.get("hass")))
+    ) {
+      const background = this._backgroundData(this._config);
+      this.style.setProperty(
+        "--picture-opacity",
+        `${(background.opacity ?? 100) / 100}`
+      );
+
+      const backgroundImage =
+        typeof background.image === "object"
+          ? background.image.media_content_id
+          : background.image;
+
+      if (backgroundImage && isMediaSourceContentId(backgroundImage)) {
+        resolveMediaSource(this.hass, backgroundImage).then((result) => {
+          this._resolvedImage = result.url;
+        });
+      } else {
+        this._resolvedImage = backgroundImage;
+      }
+    }
+  }
+
   protected render() {
     if (!this.hass) {
       return nothing;
@@ -123,6 +159,16 @@ export class HuiViewBackgroundEditor extends LitElement {
     const background = this._backgroundData(this._config);
 
     return html`
+      ${this._resolvedImage
+        ? html`<div class="previewContainer">
+            <img
+              src=${this._resolvedImage}
+              alt=${this.hass.localize(
+                "ui.components.picture-upload.current_image_alt"
+              )}
+            />
+          </div>`
+        : nothing}
       <ha-form
         .hass=${this.hass}
         .data=${background}
@@ -130,7 +176,6 @@ export class HuiViewBackgroundEditor extends LitElement {
         .computeLabel=${this._computeLabelCallback}
         @value-changed=${this._valueChanged}
         .localizeValue=${this._localizeValueCallback}
-        style=${`--picture-opacity: ${(background.opacity ?? 100) / 100};`}
       ></ha-form>
     `;
   }
@@ -220,6 +265,23 @@ export class HuiViewBackgroundEditor extends LitElement {
     :host {
       display: block;
       --file-upload-image-border-radius: var(--ha-border-radius-sm);
+    }
+    .previewContainer {
+      width: 100%;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+    }
+    img {
+      max-width: 100%;
+      max-height: 200px;
+      margin-bottom: 4px;
+      border-radius: var(--file-upload-image-border-radius);
+      transition: opacity 0.3s;
+      opacity: var(--picture-opacity, 1);
+    }
+    img:hover {
+      opacity: 1;
     }
   `;
 }
