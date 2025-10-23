@@ -154,10 +154,6 @@ class HUIRoot extends ViewTransitionMixin(LitElement) {
     );
   }
 
-  protected onLoadTransition(): void {
-    this._loaded = true;
-  }
-
   private _renderActionItems(): TemplateResult {
     const result: TemplateResult[] = [];
     if (this._editMode) {
