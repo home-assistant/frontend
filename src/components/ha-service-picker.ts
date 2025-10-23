@@ -58,7 +58,6 @@ class HaServicePicker extends LitElement {
   ) => html`
     <ha-combo-box-item
       .type=${item.id === NO_MATCHING_ITEMS_FOUND_ID ? "text" : "button"}
-      border-top
       .borderTop=${index !== 0}
     >
       <ha-service-icon
