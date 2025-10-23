@@ -191,6 +191,9 @@ export const ViewTransitionMixin = <
       super.disconnectedCallback();
       if (this._slot) {
         this._slot.removeEventListener("slotchange", this._checkSlotContent);
+        this._slot = undefined;
+        this._transitionTriggered = false;
+        this._loaded = false;
       }
     }
   }
