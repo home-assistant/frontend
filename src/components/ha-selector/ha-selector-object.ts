@@ -52,14 +52,29 @@ export class HaObjectSelector extends LitElement {
     const translationKey = this.selector.object?.translation_key;
 
     if (this.localizeValue && translationKey) {
-      const label = this.localizeValue(
-        `${translationKey}.fields.${schema.name}`
-      );
+      const label =
+        this.localizeValue(`${translationKey}.fields.${schema.name}.name`) ||
+        // Fallback for backward compatibility
+        this.localizeValue(`${translationKey}.fields.${schema.name}`);
       if (label) {
         return label;
       }
     }
     return this.selector.object?.fields?.[schema.name]?.label || schema.name;
+  };
+
+  private _computeHelper = (schema: HaFormSchema): string => {
+    const translationKey = this.selector.object?.translation_key;
+
+    if (this.localizeValue && translationKey) {
+      const helper = this.localizeValue(
+        `${translationKey}.fields.${schema.name}.description`
+      );
+      if (helper) {
+        return helper;
+      }
+    }
+    return this.selector.object?.fields?.[schema.name]?.description || "";
   };
 
   private _renderItem(item: any, index: number) {
@@ -214,6 +229,7 @@ export class HaObjectSelector extends LitElement {
       schema: this._schema(this.selector),
       data: {},
       computeLabel: this._computeLabel,
+      computeHelper: this._computeHelper,
       submitText: this.hass.localize("ui.common.add"),
     });
 
