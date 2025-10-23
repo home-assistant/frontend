@@ -231,9 +231,11 @@ export class HaTargetPickerItemRow extends LitElement {
     const rows1 =
       (nextType === "area"
         ? entries?.referenced_areas
-        : nextType === "device"
+        : nextType === "device" && this.type !== "label"
           ? entries?.referenced_devices
-          : entries?.referenced_entities) || [];
+          : this.type !== "label"
+            ? entries?.referenced_entities
+            : []) || [];
 
     const devicesInAreas = [] as string[];
 
@@ -284,9 +286,13 @@ export class HaTargetPickerItemRow extends LitElement {
 
     const entityRows =
       this.type === "label" && entries
-        ? entries.referenced_entities.filter((entity_id) =>
-            this.hass.entities[entity_id].labels.includes(this.itemId)
-          )
+        ? entries.referenced_entities.filter((entity_id) => {
+            const entity = this.hass.entities[entity_id];
+            return (
+              entity.labels.includes(this.itemId) &&
+              !entries.referenced_devices.includes(entity.device_id || "")
+            );
+          })
         : nextType === "device" && entries
           ? entries.referenced_entities.filter(
               (entity_id) =>
@@ -412,7 +418,6 @@ export class HaTargetPickerItemRow extends LitElement {
             const device = this.hass.devices[device_id];
             if (
               !hiddenAreaIds.includes(device.area_id || "") &&
-              (this.type !== "label" || device.labels.includes(this.itemId)) &&
               deviceMeetsFilter(
                 device,
                 this.hass.entities,
