@@ -131,8 +131,6 @@ class HUIRoot extends ViewTransitionMixin(LitElement) {
 
   @state() private _curView?: number | "hass-unused-entities";
 
-  @state() private _loaded = false;
-
   private _viewCache?: Record<string, HUIView>;
 
   private _viewScrollPositions: Record<string, number> = {};
