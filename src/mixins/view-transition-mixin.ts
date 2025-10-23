@@ -122,8 +122,9 @@ export const ViewTransitionMixin = <
 
       try {
         await transition.finished;
-      } catch (_error) {
-        // View transition skipped
+      } catch (error) {
+        // eslint-disable-next-line no-console
+        console.warn("View transition failed to finish:", error);
       }
     }
 
