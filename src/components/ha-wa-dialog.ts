@@ -1,7 +1,7 @@
 import "@home-assistant/webawesome/dist/components/dialog/dialog";
 import { mdiClose } from "@mdi/js";
 import { css, html, LitElement, nothing } from "lit";
-import { customElement, property, query, state } from "lit/decorators";
+import { customElement, eventOptions, property, query, state } from "lit/decorators";
 import { fireEvent } from "../common/dom/fire_event";
 import { haStyleScrollbar } from "../resources/styles";
 import type { HomeAssistant } from "../types";
@@ -92,6 +92,9 @@ export class HaWaDialog extends LitElement {
 
   @query(".body") public bodyContainer!: HTMLDivElement;
 
+  @state()
+  private _bodyScrolled = false;
+
   protected updated(
     changedProperties: Map<string | number | symbol, unknown>
   ): void {
@@ -113,7 +116,10 @@ export class HaWaDialog extends LitElement {
         @wa-after-hide=${this._handleAfterHide}
       >
         <slot name="header">
-          <ha-dialog-header .subtitlePosition=${this.headerSubtitlePosition}>
+          <ha-dialog-header
+            .subtitlePosition=${this.headerSubtitlePosition}
+            .showBorder=${this._bodyScrolled}
+          >
             <slot name="headerNavigationIcon" slot="navigationIcon">
               <ha-icon-button
                 data-dialog="close"
@@ -132,7 +138,7 @@ export class HaWaDialog extends LitElement {
             <slot name="headerActionItems" slot="actionItems"></slot>
           </ha-dialog-header>
         </slot>
-        <div class="body ha-scrollbar">
+        <div class="body ha-scrollbar" @scroll=${this._handleBodyScroll}>
           <slot></slot>
         </div>
         <slot name="footer" slot="footer"></slot>
@@ -161,6 +167,11 @@ export class HaWaDialog extends LitElement {
   public disconnectedCallback(): void {
     super.disconnectedCallback();
     this._open = false;
+  }
+
+  @eventOptions({ passive: true })
+  private _handleBodyScroll(ev: Event) {
+    this._bodyScrolled = (ev.target as HTMLDivElement).scrollTop > 0;
   }
 
   static styles = [

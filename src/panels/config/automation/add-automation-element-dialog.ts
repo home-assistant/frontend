@@ -556,7 +556,9 @@ class DialogAddAutomationElement
             description:
               this.hass.localize(
                 `component.${dmn}.services.${service}.description`
-              ) || services[dmn][service]?.description,
+              ) ||
+              services[dmn][service]?.description ||
+              "",
           });
         }
       };
