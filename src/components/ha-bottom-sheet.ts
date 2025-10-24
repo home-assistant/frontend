@@ -1,12 +1,6 @@
 import "@home-assistant/webawesome/dist/components/drawer/drawer";
 import { css, html, LitElement, type PropertyValues } from "lit";
-import {
-  customElement,
-  eventOptions,
-  property,
-  query,
-  state,
-} from "lit/decorators";
+import { customElement, property, query, state } from "lit/decorators";
 import { haStyleScrollbar } from "../resources/styles";
 
 export const BOTTOM_SHEET_ANIMATION_DURATION_MS = 300;
@@ -20,9 +14,7 @@ export class HaBottomSheet extends LitElement {
 
   @state() private _drawerOpen = false;
 
-  @query("#body") public bodyContainer!: HTMLDivElement;
-
-  private _lockResize = false;
+  @query("#drawer") private _drawer!: HTMLElement;
 
   private _resizeStartY = 0;
 
@@ -47,6 +39,7 @@ export class HaBottomSheet extends LitElement {
   render() {
     return html`
       <wa-drawer
+        id="drawer"
         placement="bottom"
         .open=${this._drawerOpen}
         @wa-after-hide=${this._handleAfterHide}
@@ -54,32 +47,22 @@ export class HaBottomSheet extends LitElement {
         @touchstart=${this._handleTouchStart}
       >
         <slot name="header"></slot>
-        <div id="body" class="body ha-scrollbar" @scroll=${this._handleScroll}>
+        <div id="body" class="body ha-scrollbar">
           <slot></slot>
         </div>
       </wa-drawer>
     `;
   }
 
-  @eventOptions({ passive: true })
-  private _handleScroll(ev: Event) {
-    const target = ev.target as HTMLElement;
-    this._lockResize = target.scrollTop > 0;
-  }
-
   private _handleTouchStart = (ev: TouchEvent) => {
-    if (this._lockResize) {
-      return;
-    }
-
-    // Check if any element inside body in the composed path has scrollTop > 0
+    // Check if any element inside drawer in the composed path has scrollTop > 0
     for (const path of ev.composedPath()) {
       const el = path as HTMLElement;
+      if (el === this._drawer) {
+        break;
+      }
       if (el.scrollTop > 0) {
         return;
-      }
-      if (el === this.bodyContainer) {
-        break;
       }
     }
 
