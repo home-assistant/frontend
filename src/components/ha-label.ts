@@ -22,10 +22,12 @@ class HaLabel extends LitElement {
       >
         ${this.description}
       </ha-tooltip>
-      <span class="content" .id=${elementId}>
-        <slot name="icon"></slot>
-        <slot></slot>
-      </span>
+      <div class="container" .id=${elementId}>
+        <span class="content">
+          <slot name="icon"></slot>
+          <slot></slot>
+        </span>
+      </div>
     `;
   }
 
@@ -50,9 +52,7 @@ class HaLabel extends LitElement {
           font-weight: var(--ha-font-weight-medium);
           line-height: var(--ha-line-height-condensed);
           letter-spacing: 0.1px;
-          vertical-align: middle;
           height: 32px;
-          padding: 0 16px;
           border-radius: var(--ha-border-radius-xl);
           color: var(--ha-label-text-color);
           --mdc-icon-size: 12px;
@@ -80,14 +80,23 @@ class HaLabel extends LitElement {
           display: flex;
         }
 
+        .container {
+          display: flex;
+          position: relative;
+          height: 100%;
+          padding: 0 16px;
+        }
+
         span {
           display: inline-flex;
         }
 
         :host([dense]) {
           height: 20px;
-          padding: 0 12px;
           border-radius: var(--ha-border-radius-md);
+        }
+        :host([dense]) .container {
+          padding: 0 12px;
         }
         :host([dense]) ::slotted([slot="icon"]) {
           margin-right: 4px;
