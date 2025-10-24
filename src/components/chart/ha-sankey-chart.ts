@@ -1,14 +1,15 @@
 import { customElement, property, state } from "lit/decorators";
 import { LitElement, html, css } from "lit";
 import type { EChartsType } from "echarts/core";
-import type { CallbackDataParams } from "echarts/types/dist/shared";
 import type { SankeySeriesOption } from "echarts/types/dist/echarts";
-import { SankeyChart } from "echarts/charts";
+import type { CallbackDataParams } from "echarts/types/src/util/types";
 import memoizeOne from "memoize-one";
 import { ResizeController } from "@lit-labs/observers/resize-controller";
+import SankeyChart from "../../resources/echarts/components/sankey/install";
 import type { HomeAssistant } from "../../types";
-import type { ECOption } from "../../resources/echarts";
+import type { ECOption } from "../../resources/echarts/echarts";
 import { measureTextWidth } from "../../util/text";
+import { filterXSS } from "../../common/util/xss";
 import "./ha-chart-base";
 import { NODE_SIZE } from "../trace/hat-graph-const";
 import "../ha-alert";
@@ -38,7 +39,7 @@ type ProcessedLink = Link & {
 
 const OVERFLOW_MARGIN = 5;
 const FONT_SIZE = 12;
-const NODE_GAP = 8;
+const NODE_GAP = 6;
 const LABEL_DISTANCE = 5;
 
 @customElement("ha-sankey-chart")
@@ -92,12 +93,12 @@ export class HaSankeyChart extends LitElement {
       : data.value;
     if (data.id) {
       const node = this.data.nodes.find((n) => n.id === data.id);
-      return `${params.marker} ${node?.label ?? data.id}<br>${value}`;
+      return `${params.marker} ${filterXSS(node?.label ?? data.id)}<br>${value}`;
     }
     if (data.source && data.target) {
       const source = this.data.nodes.find((n) => n.id === data.source);
       const target = this.data.nodes.find((n) => n.id === data.target);
-      return `${source?.label ?? data.source} → ${target?.label ?? data.target}<br>${value}`;
+      return `${filterXSS(source?.label ?? data.source)} → ${filterXSS(target?.label ?? data.target)}<br>${value}`;
     }
     return null;
   };
@@ -163,6 +164,7 @@ export class HaSankeyChart extends LitElement {
       lineStyle: {
         color: "gradient",
         opacity: 0.4,
+        curveness: 0.5,
       },
       layoutIterations: 0,
       label: {

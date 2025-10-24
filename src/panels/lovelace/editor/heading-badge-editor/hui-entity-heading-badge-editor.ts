@@ -13,6 +13,7 @@ import {
   union,
 } from "superstruct";
 import { fireEvent } from "../../../../common/dom/fire_event";
+import { DEFAULT_ENTITY_NAME } from "../../../../common/entity/compute_entity_name_display";
 import type { LocalizeFunc } from "../../../../common/translations/localize";
 import "../../../../components/ha-expansion-panel";
 import "../../../../components/ha-form/ha-form";
@@ -27,6 +28,7 @@ import type { LovelaceGenericElementEditor } from "../../types";
 import "../conditions/ha-card-conditions-editor";
 import { configElementStyle } from "../config-elements/config-elements-style";
 import { actionConfigStruct } from "../structs/action-struct";
+import { entityNameStruct } from "../structs/entity-name-struct";
 
 export const DEFAULT_CONFIG: Partial<EntityHeadingBadgeConfig> = {
   type: "entity",
@@ -37,7 +39,7 @@ export const DEFAULT_CONFIG: Partial<EntityHeadingBadgeConfig> = {
 const entityConfigStruct = object({
   type: optional(string()),
   entity: optional(string()),
-  name: optional(string()),
+  name: optional(entityNameStruct),
   icon: optional(string()),
   state_content: optional(union([string(), array(string())])),
   show_state: optional(boolean()),
@@ -92,8 +94,11 @@ export class HuiHeadingEntityEditor
                 {
                   name: "name",
                   selector: {
-                    text: {},
+                    entity_name: {
+                      default_name: DEFAULT_ENTITY_NAME,
+                    },
                   },
+                  context: { entity: "entity" },
                 },
                 {
                   name: "icon",

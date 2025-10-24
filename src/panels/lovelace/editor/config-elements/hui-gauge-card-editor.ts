@@ -14,8 +14,10 @@ import {
   string,
 } from "superstruct";
 import { fireEvent } from "../../../../common/dom/fire_event";
+import { DEFAULT_ENTITY_NAME } from "../../../../common/entity/compute_entity_name_display";
 import "../../../../components/ha-form/ha-form";
 import type { SchemaUnion } from "../../../../components/ha-form/types";
+import { NON_NUMERIC_ATTRIBUTES } from "../../../../data/entity_attributes";
 import type { HomeAssistant } from "../../../../types";
 import { DEFAULT_MAX, DEFAULT_MIN } from "../../cards/hui-gauge-card";
 import type { GaugeCardConfig } from "../../cards/types";
@@ -23,7 +25,7 @@ import type { UiAction } from "../../components/hui-action-editor";
 import type { LovelaceCardEditor } from "../../types";
 import { actionConfigStruct } from "../structs/action-struct";
 import { baseLovelaceCardConfig } from "../structs/base-card-struct";
-import { NON_NUMERIC_ATTRIBUTES } from "../../../../data/entity_attributes";
+import { entityNameStruct } from "../structs/entity-name-struct";
 
 const TAP_ACTIONS: UiAction[] = [
   "more-info",
@@ -43,7 +45,7 @@ const gaugeSegmentStruct = object({
 const cardConfigStruct = assign(
   baseLovelaceCardConfig,
   object({
-    name: optional(string()),
+    name: optional(entityNameStruct),
     entity: optional(string()),
     attribute: optional(string()),
     unit: optional(string()),
@@ -98,13 +100,15 @@ export class HuiGaugeCardEditor
           },
         },
         {
-          name: "",
-          type: "grid",
-          schema: [
-            { name: "name", selector: { text: {} } },
-            { name: "unit", selector: { text: {} } },
-          ],
+          name: "name",
+          selector: {
+            entity_name: {
+              default_name: DEFAULT_ENTITY_NAME,
+            },
+          },
+          context: { entity: "entity" },
         },
+        { name: "unit", selector: { text: {} } },
         { name: "theme", selector: { theme: {} } },
         {
           name: "",

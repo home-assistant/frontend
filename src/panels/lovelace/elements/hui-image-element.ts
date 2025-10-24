@@ -50,6 +50,12 @@ export class HuiImageElement extends LitElement implements LovelaceElement {
       stateObj = this.hass.states[this._config.image_entity] as ImageEntity;
     }
 
+    const image = stateObj
+      ? computeImageUrl(stateObj)
+      : (typeof this._config?.image === "object" &&
+          this._config.image.media_content_id) ||
+        (this._config.image as string | undefined);
+
     return html`
       <div
         @action=${this._handleAction}
@@ -67,7 +73,7 @@ export class HuiImageElement extends LitElement implements LovelaceElement {
         <hui-image
           .hass=${this.hass}
           .entity=${this._config.entity}
-          .image=${stateObj ? computeImageUrl(stateObj) : this._config.image}
+          .image=${image}
           .stateImage=${this._config.state_image}
           .cameraImage=${this._config.camera_image}
           .cameraView=${this._config.camera_view}

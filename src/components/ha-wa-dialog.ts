@@ -247,10 +247,7 @@ export class HaWaDialog extends LitElement {
       .header-title {
         margin: 0;
         margin-bottom: 0;
-        color: var(
-          --ha-dialog-header-title-color,
-          var(--ha-color-on-surface-default, var(--primary-text-color))
-        );
+        color: var(--ha-dialog-header-title-color, var(--primary-text-color));
         font-size: var(
           --ha-dialog-header-title-font-size,
           var(--ha-font-size-2xl)

@@ -1,10 +1,10 @@
+import type { ActionDetail } from "@material/mwc-list";
 import {
   mdiDotsVertical,
   mdiDownload,
   mdiFilterRemove,
   mdiImagePlus,
 } from "@mdi/js";
-import type { ActionDetail } from "@material/mwc-list";
 import { differenceInHours } from "date-fns";
 import type {
   HassServiceTarget,
@@ -27,21 +27,21 @@ import {
 import { MIN_TIME_BETWEEN_UPDATES } from "../../components/chart/ha-chart-base";
 import "../../components/chart/state-history-charts";
 import type { StateHistoryCharts } from "../../components/chart/state-history-charts";
-import "../../components/ha-spinner";
+import "../../components/ha-button-menu";
 import "../../components/ha-date-range-picker";
 import "../../components/ha-icon-button";
-import "../../components/ha-button-menu";
-import "../../components/ha-list-item";
 import "../../components/ha-icon-button-arrow-prev";
+import "../../components/ha-list-item";
 import "../../components/ha-menu-button";
+import "../../components/ha-spinner";
 import "../../components/ha-target-picker";
 import "../../components/ha-top-app-bar-fixed";
 import type { HistoryResult } from "../../data/history";
 import {
   computeHistory,
-  subscribeHistory,
-  mergeHistoryResults,
   convertStatisticsToHistory,
+  mergeHistoryResults,
+  subscribeHistory,
 } from "../../data/history";
 import { fetchStatistics } from "../../data/recorder";
 import { resolveEntityIDs } from "../../data/selector";
@@ -182,6 +182,7 @@ class HaPanelHistory extends LitElement {
               .disabled=${this._isLoading}
               add-on-top
               @value-changed=${this._targetsChanged}
+              compact
             ></ha-target-picker>
           </div>
           ${this._isLoading
@@ -647,6 +648,10 @@ class HaPanelHistory extends LitElement {
           margin-inline-start: initial;
           max-width: 100%;
           direction: var(--direction);
+        }
+
+        ha-target-picker {
+          flex: 1;
         }
 
         @media all and (max-width: 1025px) {
