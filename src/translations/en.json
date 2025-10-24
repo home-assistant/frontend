@@ -758,6 +758,7 @@
       },
       "language-picker": {
         "language": "Language",
+        "no_match": "No matching languages found",
         "no_languages": "No languages available"
       },
       "tts-picker": {
