@@ -38,7 +38,7 @@ class AdvancedModeRow extends LitElement {
           </a>
         </span>
         <ha-switch
-          .checked=${this.coreUserData && this.coreUserData.showAdvanced}
+          .checked=${!!this.coreUserData && !!this.coreUserData.showAdvanced}
           .disabled=${this.coreUserData === undefined}
           @change=${this._advancedToggled}
         ></ha-switch>
