@@ -47,7 +47,7 @@ class HuiMediaPlayerVolumeButtonsCardFeature
     if (!this.hass || !this.context || !this.context.entity_id) {
       return undefined;
     }
-    return this.hass.states[this.context.entity_id!] as
+    return this.hass.states[this.context.entity_id] as
       | MediaPlayerEntity
       | undefined;
   }
