@@ -248,7 +248,7 @@ export class HaFilterDevices extends LitElement {
         }
         search-input-outlined {
           display: block;
-          padding: 0 8px;
+          padding: 4px 8px 0;
         }
       `,
     ];
