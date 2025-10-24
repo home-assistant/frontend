@@ -113,6 +113,9 @@ export class HaEntityPicker extends LitElement {
   @property({ attribute: "hide-clear-icon", type: Boolean })
   public hideClearIcon = false;
 
+  @property({ attribute: "add-button", type: Boolean })
+  public addButton = false;
+
   @query("ha-generic-picker") private _picker?: HaGenericPicker;
 
   protected firstUpdated(changedProperties: PropertyValues): void {
@@ -281,7 +284,7 @@ export class HaEntityPicker extends LitElement {
         .searchLabel=${this.searchLabel}
         .notFoundLabel=${notFoundLabel}
         .placeholder=${placeholder}
-        .value=${this.value}
+        .value=${this.addButton ? undefined : this.value}
         .rowRenderer=${this._rowRenderer}
         .getItems=${this._getItems}
         .getAdditionalItems=${this._getAdditionalItems}
@@ -289,6 +292,9 @@ export class HaEntityPicker extends LitElement {
         .searchFn=${this._searchFn}
         .valueRenderer=${this._valueRenderer}
         @value-changed=${this._valueChanged}
+        .addButtonLabel=${this.addButton
+          ? this.hass.localize("ui.components.entity.entity-picker.add")
+          : undefined}
       >
       </ha-generic-picker>
     `;
