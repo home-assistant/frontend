@@ -1,7 +1,13 @@
 import "@home-assistant/webawesome/dist/components/dialog/dialog";
 import { mdiClose } from "@mdi/js";
 import { css, html, LitElement, nothing } from "lit";
-import { customElement, eventOptions, property, state } from "lit/decorators";
+import {
+  customElement,
+  eventOptions,
+  property,
+  query,
+  state,
+} from "lit/decorators";
 import { fireEvent } from "../common/dom/fire_event";
 import { haStyleScrollbar } from "../resources/styles";
 import type { HomeAssistant } from "../types";
@@ -90,6 +96,8 @@ export class HaWaDialog extends LitElement {
   @state()
   private _open = false;
 
+  @query(".body") public bodyContainer!: HTMLDivElement;
+
   @state()
   private _bodyScrolled = false;
 
@@ -110,6 +118,7 @@ export class HaWaDialog extends LitElement {
         .lightDismiss=${!this.preventScrimClose}
         without-header
         @wa-show=${this._handleShow}
+        @wa-after-show=${this._handleAfterShow}
         @wa-after-hide=${this._handleAfterHide}
       >
         <slot name="header">
@@ -152,6 +161,10 @@ export class HaWaDialog extends LitElement {
     (this.querySelector("[autofocus]") as HTMLElement | null)?.focus();
   };
 
+  private _handleAfterShow = () => {
+    fireEvent(this, "after-show");
+  };
+
   private _handleAfterHide = () => {
     this._open = false;
     fireEvent(this, "closed");
@@ -183,7 +196,7 @@ export class HaWaDialog extends LitElement {
             )
           )
         );
-        --width: var(--ha-dialog-width-md, min(580px, var(--full-width)));
+        --width: min(var(--ha-dialog-width-md, 580px), var(--full-width));
         --spacing: var(--dialog-content-padding, var(--ha-space-6));
         --show-duration: var(--ha-dialog-show-duration, 200ms);
         --hide-duration: var(--ha-dialog-hide-duration, 200ms);
@@ -204,11 +217,11 @@ export class HaWaDialog extends LitElement {
       }
 
       :host([width="small"]) wa-dialog {
-        --width: var(--ha-dialog-width-sm, min(320px, var(--full-width)));
+        --width: min(var(--ha-dialog-width-sm, 320px), var(--full-width));
       }
 
       :host([width="large"]) wa-dialog {
-        --width: var(--ha-dialog-width-lg, min(720px, var(--full-width)));
+        --width: min(var(--ha-dialog-width-lg, 720px), var(--full-width));
       }
 
       :host([width="full"]) wa-dialog {
@@ -222,6 +235,7 @@ export class HaWaDialog extends LitElement {
           --ha-dialog-max-height,
           calc(100% - var(--ha-space-20))
         );
+        min-height: var(--ha-dialog-min-height);
         position: var(--dialog-surface-position, relative);
         margin-top: var(--dialog-surface-margin-top, auto);
         display: flex;
@@ -295,6 +309,7 @@ export class HaWaDialog extends LitElement {
       }
       :host([flexcontent]) .body {
         max-width: 100%;
+        flex: 1;
         display: flex;
         flex-direction: column;
       }
@@ -323,6 +338,7 @@ declare global {
 
   interface HASSDomEvents {
     opened: undefined;
+    "after-show": undefined;
     closed: undefined;
   }
 }

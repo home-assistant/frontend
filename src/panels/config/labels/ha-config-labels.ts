@@ -115,8 +115,8 @@ export class HaConfigLabels extends LitElement {
                   borderRadius: "var(--ha-border-radius-md)",
                   border: "1px solid var(--outline-color)",
                   boxSizing: "border-box",
-                  width: "20px",
-                  height: "20px",
+                  width: "var(--ha-space-5)",
+                  height: "var(--ha-space-5)",
                 })}
               ></div>`
             : nothing,
