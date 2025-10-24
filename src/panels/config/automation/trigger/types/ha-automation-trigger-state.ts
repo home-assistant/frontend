@@ -285,13 +285,12 @@ export class HaStateTrigger extends LitElement implements TriggerElement {
     // If no attribute is selected and backend value is null,
     // expose it as the special ANY state option in the UI.
     if (!attribute && value === null) {
-      return [ANY_STATE_VALUE] as any;
+      return [ANY_STATE_VALUE];
     }
-    const arr = ensureArray(value);
-    if (arr) {
-      return arr as any;
+    if (value === undefined || value === null) {
+      return [];
     }
-    return [];
+    return ensureArray(value);
   }
 
   private _computeLabelCallback = (
