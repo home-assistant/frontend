@@ -138,7 +138,8 @@ export class HaLabelsPicker extends SubscribeMixin(LitElement) {
                 return html`
                   <ha-tooltip
                     .for=${elementId}
-                    .disabled=${label?.description === undefined ||
+                    .disabled=${label?.description == null ||
+                    label?.description === undefined ||
                     label?.description
                       ?.trim()
                       .replaceAll("\n", "")
