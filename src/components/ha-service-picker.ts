@@ -53,7 +53,7 @@ class HaServicePicker extends LitElement {
     item,
     { index }
   ) => html`
-    <ha-combo-box-item type="button" border-top .borderTop=${index !== 0}>
+    <ha-combo-box-item type="button" .borderTop=${index !== 0}>
       <ha-service-icon
         slot="start"
         .hass=${this.hass}
@@ -162,7 +162,9 @@ class HaServicePicker extends LitElement {
             const description =
               this.hass.localize(
                 `component.${domain}.services.${service}.description`
-              ) || services[domain][service].description;
+              ) ||
+              services[domain][service].description ||
+              "";
 
             items.push({
               id: serviceId,
