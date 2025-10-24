@@ -492,7 +492,7 @@ export class EntityRegistrySettingsEditor extends LitElement {
                         )}</span
                       >
                       <ha-switch
-                        .checked=${this.entry.options?.switch_as_x?.invert}
+                        .checked=${!!this.entry.options?.switch_as_x?.invert}
                         @change=${this._switchAsInvertChanged}
                       ></ha-switch>
                     </ha-settings-row>

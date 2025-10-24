@@ -32,7 +32,8 @@ class EntityIdPickerRow extends LitElement {
           ${this.hass.localize("ui.panel.profile.entity_id_picker.description")}
         </span>
         <ha-switch
-          .checked=${this.coreUserData && this.coreUserData.showEntityIdPicker}
+          .checked=${!!this.coreUserData &&
+          !!this.coreUserData.showEntityIdPicker}
           .disabled=${this.coreUserData === undefined}
           @change=${this._toggled}
         ></ha-switch>

@@ -495,7 +495,7 @@ export class HuiCardFeaturesEditor extends LitElement {
       flex-direction: column;
     }
     ha-button-menu {
-      margin-top: 8px;
+      margin-top: var(--ha-space-2);
     }
     .feature {
       display: flex;
@@ -504,8 +504,8 @@ export class HuiCardFeaturesEditor extends LitElement {
     .feature .handle {
       cursor: move; /* fallback if grab cursor is unsupported */
       cursor: grab;
-      padding-right: 8px;
-      padding-inline-end: 8px;
+      padding-right: var(--ha-space-2);
+      padding-inline-end: var(--ha-space-2);
       padding-inline-start: initial;
       direction: var(--direction);
     }
@@ -514,7 +514,7 @@ export class HuiCardFeaturesEditor extends LitElement {
     }
 
     .feature-content {
-      height: 60px;
+      height: var(--ha-space-15);
       font-size: var(--ha-font-size-l);
       display: flex;
       align-items: center;
@@ -529,7 +529,7 @@ export class HuiCardFeaturesEditor extends LitElement {
 
     .remove-icon,
     .edit-icon {
-      --mdc-icon-button-size: 36px;
+      --mdc-icon-button-size: var(--ha-space-9);
       color: var(--secondary-text-color);
     }
 
