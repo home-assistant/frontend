@@ -210,7 +210,7 @@ export class HaStateTrigger extends LitElement implements TriggerElement {
   protected render() {
     const trgFor = createDurationData(this.trigger.for);
 
-    const data: any = {
+    const data = {
       ...this.trigger,
       entity_id: ensureArray(this.trigger.entity_id),
       for: trgFor,
