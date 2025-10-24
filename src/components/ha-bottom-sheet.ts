@@ -165,6 +165,11 @@ export class HaBottomSheet extends LitElement {
           --ha-bottom-sheet-surface-background,
           var(--ha-dialog-surface-background, var(--mdc-theme-surface, #fff)),
         );
+        padding: var(
+          --ha-bottom-sheet-padding,
+          0 var(--safe-area-inset-right) var(--safe-area-inset-bottom)
+            var(--safe-area-inset-left)
+        );
       }
       :host([flexcontent]) wa-drawer::part(body) {
         display: flex;

@@ -88,9 +88,19 @@ export class HaChartBase extends LitElement {
 
   private _lastTapTime?: number;
 
+  private _shouldResizeChart = false;
+
   // @ts-ignore
   private _resizeController = new ResizeController(this, {
-    callback: () => this.chart?.resize(),
+    callback: () => {
+      if (this.chart) {
+        if (!this.chart.getZr().animation.isFinished()) {
+          this._shouldResizeChart = true;
+        } else {
+          this.chart.resize();
+        }
+      }
+    },
   });
 
   private _loading = false;
@@ -366,6 +376,7 @@ export class HaChartBase extends LitElement {
       if (!this.options?.dataZoom) {
         this.chart.getZr().on("dblclick", this._handleClickZoom);
       }
+      this.chart.on("finished", this._handleChartRenderFinished);
       if (this._isTouchDevice) {
         this.chart.getZr().on("click", (e: ECElementEvent) => {
           if (!e.zrByTouch) {
@@ -944,6 +955,13 @@ export class HaChartBase extends LitElement {
       this.chart?.resize();
     });
   }
+
+  private _handleChartRenderFinished = () => {
+    if (this._shouldResizeChart) {
+      this.chart?.resize();
+      this._shouldResizeChart = false;
+    }
+  };
 
   static styles = css`
     :host {

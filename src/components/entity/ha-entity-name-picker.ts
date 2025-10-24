@@ -20,6 +20,7 @@ import "../chips/ha-chip-set";
 import "../chips/ha-input-chip";
 import "../ha-combo-box";
 import type { HaComboBox } from "../ha-combo-box";
+import "../ha-input-helper-text";
 import "../ha-sortable";
 
 interface EntityNameOption {
@@ -239,7 +240,6 @@ export class HaEntityNamePicker extends LitElement {
             .autofocus=${this.autofocus}
             .disabled=${this.disabled}
             .required=${this.required && !value.length}
-            .helper=${this.helper}
             .items=${options}
             allow-custom-value
             item-id-path="value"
@@ -253,7 +253,18 @@ export class HaEntityNamePicker extends LitElement {
           </ha-combo-box>
         </mwc-menu-surface>
       </div>
+      ${this._renderHelper()}
     `;
+  }
+
+  private _renderHelper() {
+    return this.helper
+      ? html`
+          <ha-input-helper-text .disabled=${this.disabled}>
+            ${this.helper}
+          </ha-input-helper-text>
+        `
+      : nothing;
   }
 
   private _onClosed(ev) {
@@ -509,6 +520,11 @@ export class HaEntityNamePicker extends LitElement {
 
     .sortable-drag {
       cursor: grabbing;
+    }
+
+    ha-input-helper-text {
+      display: block;
+      margin: var(--ha-space-2) 0 0;
     }
   `;
 }
