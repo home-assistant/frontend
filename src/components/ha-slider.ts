@@ -76,6 +76,16 @@ export class HaSlider extends Slider {
           outline: var(--wa-focus-ring);
         }
 
+        #track:after {
+          content: "";
+          position: absolute;
+          top: calc(-50% - 4px);
+          left: 0;
+          width: 100%;
+          height: calc(var(--track-size) * 2 + 8px);
+          cursor: pointer;
+        }
+
         #indicator {
           background-color: var(
             --ha-slider-indicator-color,
