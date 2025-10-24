@@ -3,6 +3,7 @@ import {
   mdiDevices,
   mdiDotsVertical,
   mdiHelpCircle,
+  mdiLabelOutline,
   mdiPlus,
   mdiRobot,
   mdiShape,
@@ -23,8 +24,10 @@ import type {
   SortingChangedEvent,
 } from "../../../components/data-table/ha-data-table";
 import "../../../components/ha-fab";
+import "../../../components/ha-icon";
 import "../../../components/ha-icon-button";
-import "../../../components/ha-relative-time";
+import type { HaMdMenu } from "../../../components/ha-md-menu";
+import "../../../components/ha-svg-icon";
 import type {
   LabelRegistryEntry,
   LabelRegistryEntryMutableParams,
@@ -43,7 +46,6 @@ import "../../../layouts/hass-tabs-subpage-data-table";
 import type { HomeAssistant, Route } from "../../../types";
 import { configSections } from "../ha-panel-config";
 import { showLabelDetailDialog } from "./show-dialog-label-detail";
-import type { HaMdMenu } from "../../../components/ha-md-menu";
 
 @customElement("ha-config-labels")
 export class HaConfigLabels extends LitElement {
@@ -100,7 +102,9 @@ export class HaConfigLabels extends LitElement {
         label: localize("ui.panel.config.labels.headers.icon"),
         type: "icon",
         template: (label) =>
-          label.icon ? html`<ha-icon .icon=${label.icon}></ha-icon>` : nothing,
+          label.icon
+            ? html`<ha-icon .icon=${label.icon}></ha-icon>`
+            : html`<ha-svg-icon .path=${mdiLabelOutline}></ha-svg-icon>`,
       },
       color: {
         title: "",
@@ -108,18 +112,18 @@ export class HaConfigLabels extends LitElement {
         label: localize("ui.panel.config.labels.headers.color"),
         type: "icon",
         template: (label) =>
-          label.color
-            ? html`<div
-                style=${styleMap({
-                  backgroundColor: computeCssColor(label.color),
-                  borderRadius: "var(--ha-border-radius-md)",
-                  border: "1px solid var(--outline-color)",
-                  boxSizing: "border-box",
-                  width: "20px",
-                  height: "20px",
-                })}
-              ></div>`
-            : nothing,
+          html`<div
+            style=${styleMap({
+              backgroundColor: label.color
+                ? computeCssColor(label.color)
+                : undefined,
+              borderRadius: "var(--ha-border-radius-md)",
+              border: "1px solid var(--outline-color)",
+              boxSizing: "border-box",
+              width: "20px",
+              height: "20px",
+            })}
+          ></div>`,
       },
       name: {
         title: localize("ui.panel.config.labels.headers.name"),
