@@ -217,7 +217,7 @@ export class HaFilterIntegrations extends LitElement {
         }
         search-input-outlined {
           display: block;
-          padding: 4px 8px 0;
+          padding: var(--ha-space-1) var(--ha-space-2) 0;
         }
       `,
     ];
