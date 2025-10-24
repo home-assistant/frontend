@@ -34,6 +34,7 @@ import { fireEvent } from "../../../../common/dom/fire_event";
 import { measureTextWidth } from "../../../../util/text";
 import "../../../../components/ha-icon-button";
 import { storage } from "../../../../common/decorators/storage";
+import { listenMediaQuery } from "../../../../common/dom/media_query";
 
 @customElement("hui-energy-devices-graph-card")
 export class HuiEnergyDevicesGraphCard
@@ -56,6 +57,8 @@ export class HuiEnergyDevicesGraphCard
   })
   private _chartType: "bar" | "pie" = "bar";
 
+  @state() private _isMobile = false;
+
   private _compoundStats: string[] = [];
 
   protected hassSubscribeRequiredHostProps = ["_config"];
@@ -68,6 +71,12 @@ export class HuiEnergyDevicesGraphCard
         this._data = data;
         this._getStatistics(data);
       }),
+      listenMediaQuery(
+        "all and (max-width: 450px), all and (max-height: 500px)",
+        (matches) => {
+          this._isMobile = matches;
+        }
+      ),
     ];
   }
 
@@ -154,9 +163,6 @@ export class HuiEnergyDevicesGraphCard
         yAxis: { show: false },
       };
       if (chartType === "bar") {
-        const isMobile = window.matchMedia(
-          "all and (max-width: 450px), all and (max-height: 500px)"
-        ).matches;
         options.xAxis = {
           show: true,
           type: "value",
@@ -175,7 +181,7 @@ export class HuiEnergyDevicesGraphCard
             fontSize: 12,
             margin: 5,
             width: Math.min(
-              isMobile ? 100 : 200,
+              this._isMobile ? 100 : 200,
               Math.max(
                 ...(data[0]?.data?.map(
                   (d: any) =>
@@ -235,8 +241,14 @@ export class HuiEnergyDevicesGraphCard
           this._chartType === "pie"
             ? {
                 formatter: ({ name }) => this._getDeviceName(name),
+                overflow: "break",
+                alignTo: this._isMobile ? "edge" : "none",
+                edgeDistance: 1,
               }
             : undefined,
+        labelLine: {
+          length2: 10,
+        },
       } as BarSeriesOption | PieSeriesOption,
     ];
 
