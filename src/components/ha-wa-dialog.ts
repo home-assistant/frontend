@@ -1,7 +1,13 @@
 import "@home-assistant/webawesome/dist/components/dialog/dialog";
 import { mdiClose } from "@mdi/js";
 import { css, html, LitElement, nothing } from "lit";
-import { customElement, eventOptions, property, query, state } from "lit/decorators";
+import {
+  customElement,
+  eventOptions,
+  property,
+  query,
+  state,
+} from "lit/decorators";
 import { fireEvent } from "../common/dom/fire_event";
 import { haStyleScrollbar } from "../resources/styles";
 import type { HomeAssistant } from "../types";
