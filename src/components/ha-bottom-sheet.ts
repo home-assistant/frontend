@@ -20,11 +20,9 @@ export class HaBottomSheet extends LitElement {
 
   @state() private _drawerOpen = false;
 
-  @query(".body") public bodyContainer!: HTMLDivElement;
+  @query("#body") public bodyContainer!: HTMLDivElement;
 
   private _lockResize = false;
-
-  private _lockResizeByChild = false;
 
   private _resizeStartY = 0;
 
@@ -56,11 +54,7 @@ export class HaBottomSheet extends LitElement {
         @touchstart=${this._handleTouchStart}
       >
         <slot name="header"></slot>
-        <div
-          class="body ha-scrollbar"
-          @scroll=${this._handleScroll}
-          @bottom-sheet-lock-resize-changed=${this._handleLockResizeByChild}
-        >
+        <div id="body" class="body ha-scrollbar" @scroll=${this._handleScroll}>
           <slot></slot>
         </div>
       </wa-drawer>
@@ -73,17 +67,20 @@ export class HaBottomSheet extends LitElement {
     this._lockResize = target.scrollTop > 0;
   }
 
-  private _handleLockResizeByChild = (ev: CustomEvent<boolean>) => {
-    this._lockResizeByChild = ev.detail;
-
-    if (this._lockResizeByChild) {
-      this._endResizing();
-    }
-  };
-
   private _handleTouchStart = (ev: TouchEvent) => {
-    if (this._lockResize || this._lockResizeByChild) {
+    if (this._lockResize) {
       return;
+    }
+
+    // Check if any element inside body in the composed path has scrollTop > 0
+    for (const path of ev.composedPath()) {
+      const el = path as HTMLElement;
+      if (el.scrollTop > 0) {
+        return;
+      }
+      if (el === this.bodyContainer) {
+        break;
+      }
     }
 
     this._startResizing(ev.touches[0].clientY);
