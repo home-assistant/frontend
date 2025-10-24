@@ -37,6 +37,7 @@ export class HuiMediaPlayerVolumeButtonsCardFeatureEditor
               step: 1,
               min: 1,
               max: 100,
+              unit_of_measurement: "%",
             },
           },
         },
