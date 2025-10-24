@@ -846,7 +846,8 @@ class DialogAddAutomationElement
             items: true,
             blank:
               !this._selectedGroup && !this._filter && this._tab === "groups",
-            "empty-search": !items?.length && this._filter,
+            "empty-search":
+              !items?.length && !filteredBlockItems?.length && this._filter,
             hidden:
               this._narrow &&
               !this._selectedGroup &&
@@ -855,7 +856,7 @@ class DialogAddAutomationElement
           })}
           @scroll=${this._onItemsScroll}
         >
-          ${filteredBlockItems && filteredBlockItems.length
+          ${filteredBlockItems
             ? this._renderItemList(
                 this.hass.localize(`ui.panel.config.automation.editor.blocks`),
                 filteredBlockItems
@@ -888,7 +889,7 @@ class DialogAddAutomationElement
   }
 
   private _renderItemList(title, items?: ListItem[]) {
-    if (!items) {
+    if (!items || !items.length) {
       return nothing;
     }
 
@@ -1117,11 +1118,6 @@ class DialogAddAutomationElement
           padding: 0;
         }
 
-        .items ha-md-list,
-        .groups {
-          padding-bottom: max(var(--safe-area-inset-bottom), var(--ha-space-3));
-        }
-
         .groups {
           overflow: auto;
           flex: 3;
@@ -1204,6 +1200,11 @@ class DialogAddAutomationElement
         .items ha-md-list ha-md-list-item {
           border-radius: var(--ha-border-radius-lg);
           border: 1px solid var(--ha-color-border-neutral-quiet);
+        }
+
+        .items ha-md-list,
+        .groups {
+          padding-bottom: max(var(--safe-area-inset-bottom), var(--ha-space-3));
         }
 
         .items.blank {
