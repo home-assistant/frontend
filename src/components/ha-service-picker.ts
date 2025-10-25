@@ -39,6 +39,7 @@ class HaServicePicker extends LitElement {
   @query("ha-generic-picker") private _picker?: HaGenericPicker;
 
   public async open() {
+    await this.hass.loadBackendTranslation("services");
     await this.updateComplete;
     await this._picker?.open();
   }
@@ -92,8 +93,14 @@ class HaServicePicker extends LitElement {
           `;
         }
 
+        const descriptionPlaceholders =
+          this.hass.services[domain]?.[service]?.description_placeholders;
+
         const serviceName =
-          localize(`component.${domain}.services.${service}.name`) ||
+          localize(
+            `component.${domain}.services.${service}.name`,
+            descriptionPlaceholders
+          ) ||
           services[domain][service].name ||
           service;
 
@@ -163,16 +170,21 @@ class HaServicePicker extends LitElement {
             const serviceId = `${domain}.${service}`;
             const domainName = domainToName(localize, domain);
 
+            const descriptionPlaceholders =
+              this.hass.services[domain]?.[service]?.description_placeholders;
+
             const name =
               this.hass.localize(
-                `component.${domain}.services.${service}.name`
+                `component.${domain}.services.${service}.name`,
+                descriptionPlaceholders
               ) ||
               services[domain][service].name ||
               service;
 
             const description =
               this.hass.localize(
-                `component.${domain}.services.${service}.description`
+                `component.${domain}.services.${service}.description`,
+                descriptionPlaceholders
               ) ||
               services[domain][service].description ||
               "";
