@@ -158,8 +158,10 @@ export class HaSelect extends SelectBase {
         padding-inline-end: var(--select-selected-text-padding-end, 0px);
       }
       :host([clearable]) .mdc-select__selected-text-container {
-        padding-inline-end: var(--select-selected-text-padding-end,
-          var(--ha-space-4));
+        padding-inline-end: var(
+          --select-selected-text-padding-end,
+          var(--ha-space-4)
+        );
       }
       ha-icon-button {
         position: absolute;
