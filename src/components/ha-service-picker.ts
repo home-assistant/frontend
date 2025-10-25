@@ -76,34 +76,39 @@ class HaServicePicker extends LitElement {
     </ha-combo-box-item>
   `;
 
-  private _valueRenderer: PickerValueRenderer = (value) => {
-    const serviceId = value;
-    const [domain, service] = serviceId.split(".");
+  private _valueRenderer = memoizeOne(
+    (localize: LocalizeFunc): PickerValueRenderer =>
+      (value) => {
+        const serviceId = value;
+        const [domain, service] = serviceId.split(".");
 
-    if (!this.hass.services[domain]?.[service]) {
-      return html`
-        <ha-svg-icon slot="start" .path=${mdiRoomService}></ha-svg-icon>
-        <span slot="headline">${value}</span>
-      `;
-    }
+        if (!this.hass.services[domain]?.[service]) {
+          return html`
+            <ha-svg-icon slot="start" .path=${mdiRoomService}></ha-svg-icon>
+            <span slot="headline">${value}</span>
+          `;
+        }
 
-    const serviceName =
-      this.hass.localize(`component.${domain}.services.${service}.name`) ||
-      this.hass.services[domain][service].name ||
-      service;
+        const serviceName =
+          localize(`component.${domain}.services.${service}.name`) ||
+          this.hass.services[domain][service].name ||
+          service;
 
-    return html`
-      <ha-service-icon
-        slot="start"
-        .hass=${this.hass}
-        .service=${serviceId}
-      ></ha-service-icon>
-      <span slot="headline">${serviceName}</span>
-      ${this.showServiceId
-        ? html`<span slot="supporting-text" class="code">${serviceId}</span>`
-        : nothing}
-    `;
-  };
+        return html`
+          <ha-service-icon
+            slot="start"
+            .hass=${this.hass}
+            .service=${serviceId}
+          ></ha-service-icon>
+          <span slot="headline">${serviceName}</span>
+          ${this.showServiceId
+            ? html`<span slot="supporting-text" class="code"
+                >${serviceId}</span
+              >`
+            : nothing}
+        `;
+      }
+  );
 
   protected render(): TemplateResult {
     const placeholder =
@@ -123,7 +128,7 @@ class HaServicePicker extends LitElement {
         .value=${this.value}
         .getItems=${this._getItems}
         .rowRenderer=${this._rowRenderer}
-        .valueRenderer=${this._valueRenderer}
+        .valueRenderer=${this._valueRenderer(this.hass.localize)}
         @value-changed=${this._valueChanged}
       >
       </ha-generic-picker>
