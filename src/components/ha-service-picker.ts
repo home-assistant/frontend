@@ -39,7 +39,6 @@ class HaServicePicker extends LitElement {
   @query("ha-generic-picker") private _picker?: HaGenericPicker;
 
   public async open() {
-    await this.hass.loadBackendTranslation("services");
     await this.updateComplete;
     await this._picker?.open();
   }
