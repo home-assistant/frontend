@@ -44,6 +44,7 @@ export const showSubConfigFlowDialog = (
         hass.loadBackendTranslation("config_subentries", configEntry.domain),
         hass.loadBackendTranslation("selector", configEntry.domain),
       ]);
+      flowType = step.handler[1]; // Update flowType based on fetched step
       return step;
     },
     handleFlowStep: handleSubConfigFlowStep,

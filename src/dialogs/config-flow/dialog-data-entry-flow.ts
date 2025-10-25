@@ -511,7 +511,7 @@ class DataEntryFlowDialog extends LitElement {
           showSubConfigFlowDialog(
             this._params!.dialogParentElement!,
             _step.result!,
-            _step.next_flow[2],
+            _step.next_flow[0],
             {
               continueFlowId: _step.next_flow[1],
               navigateToResult: this._params!.navigateToResult,
