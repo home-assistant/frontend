@@ -137,7 +137,7 @@ export class HaSelect extends SelectBase {
         height: var(--ha-select-height, 56px);
       }
       .mdc-select--filled .mdc-floating-label {
-        inset-inline-start: 12px;
+        inset-inline-start: var(--ha-space-4);
         inset-inline-end: initial;
         direction: var(--direction);
       }
@@ -147,7 +147,7 @@ export class HaSelect extends SelectBase {
         direction: var(--direction);
       }
       .mdc-select .mdc-select__anchor {
-        padding-inline-start: 12px;
+        padding-inline-start: var(--ha-space-4);
         padding-inline-end: 0px;
         direction: var(--direction);
       }
@@ -158,7 +158,10 @@ export class HaSelect extends SelectBase {
         padding-inline-end: var(--select-selected-text-padding-end, 0px);
       }
       :host([clearable]) .mdc-select__selected-text-container {
-        padding-inline-end: var(--select-selected-text-padding-end, 12px);
+        padding-inline-end: var(
+          --select-selected-text-padding-end,
+          var(--ha-space-4)
+        );
       }
       ha-icon-button {
         position: absolute;
