@@ -77,12 +77,15 @@ class HaServicePicker extends LitElement {
   `;
 
   private _valueRenderer = memoizeOne(
-    (localize: LocalizeFunc): PickerValueRenderer =>
+    (
+      localize: LocalizeFunc,
+      services: HomeAssistant["services"]
+    ): PickerValueRenderer =>
       (value) => {
         const serviceId = value;
         const [domain, service] = serviceId.split(".");
 
-        if (!this.hass.services[domain]?.[service]) {
+        if (!services[domain]?.[service]) {
           return html`
             <ha-svg-icon slot="start" .path=${mdiRoomService}></ha-svg-icon>
             <span slot="headline">${value}</span>
@@ -91,7 +94,7 @@ class HaServicePicker extends LitElement {
 
         const serviceName =
           localize(`component.${domain}.services.${service}.name`) ||
-          this.hass.services[domain][service].name ||
+          services[domain][service].name ||
           service;
 
         return html`
@@ -128,7 +131,10 @@ class HaServicePicker extends LitElement {
         .value=${this.value}
         .getItems=${this._getItems}
         .rowRenderer=${this._rowRenderer}
-        .valueRenderer=${this._valueRenderer(this.hass.localize)}
+        .valueRenderer=${this._valueRenderer(
+          this.hass.localize,
+          this.hass.services
+        )}
         @value-changed=${this._valueChanged}
       >
       </ha-generic-picker>
