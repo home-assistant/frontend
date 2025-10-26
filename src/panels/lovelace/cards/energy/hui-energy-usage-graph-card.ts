@@ -220,10 +220,13 @@ export class HuiEnergyUsageGraphCard
 
       if (source.type === "battery") {
         if (statIds.to_battery) {
-          statIds.to_battery.push(source.stat_energy_to);
-          statIds.from_battery!.push(source.stat_energy_from);
+          statIds.to_battery.unshift(source.stat_energy_to);
         } else {
           statIds.to_battery = [source.stat_energy_to];
+        }
+        if (statIds.from_battery) {
+          statIds.from_battery!.unshift(source.stat_energy_from);
+        } else {
           statIds.from_battery = [source.stat_energy_from];
         }
         continue;
@@ -239,6 +242,12 @@ export class HuiEnergyUsageGraphCard
           statIds.from_grid.push(flowFrom.stat_energy_from);
         } else {
           statIds.from_grid = [flowFrom.stat_energy_from];
+        }
+
+        if (statIds.to_battery) {
+          statIds.to_battery.push(flowFrom.stat_energy_from);
+        } else {
+          statIds.to_battery = [flowFrom.stat_energy_from];
         }
       }
       for (const flowTo of source.flow_to) {
@@ -403,36 +412,41 @@ export class HuiEnergyUsageGraphCard
       used_battery: consumptionData.used_battery,
     };
 
-    if (combinedData.from_grid && summedData.to_battery) {
+    if (
+      combinedData.from_grid &&
+      combinedData.to_battery &&
+      summedData.to_battery
+    ) {
       const used_grid = {};
       // If we have to_battery and multiple grid sources in the same period, we
-      // can't determine which source was used. So delete all the individual
-      // sources and replace with a 'combined from grid' value.
+      // can't determine which source was used. So we just fill it up with the
+      // order given in combinedData.to_battery[] and subtract the used up
+      // energy from their respective bars in the chart.
       for (const [start, grid_to_battery] of Object.entries(
         consumptionData.grid_to_battery
       )) {
-        if (!grid_to_battery) {
-          continue;
-        }
-        let noOfSources = 0;
-        let source: string;
+        let energyToDistribute = grid_to_battery;
         for (const [key, stats] of Object.entries(combinedData.from_grid)) {
-          if (stats[start]) {
-            source = key;
-            noOfSources++;
+          combinedData.to_battery[key][start] = Math.min(
+            combinedData.to_battery[key][start],
+            energyToDistribute
+          );
+          stats[start] -= combinedData.to_battery[key][start];
+
+          let energyToSubtract = combinedData.to_battery[key][start];
+          for (const [key2, stats2] of Object.entries(
+            combinedData.to_battery
+          )) {
+            if (!(key2 in combinedData.from_grid)) {
+              stats2[start] = Math.max(0, stats2[start] - energyToSubtract);
+              energyToSubtract = Math.max(0, energyToSubtract - stats2[start]);
+            }
           }
-          if (noOfSources > 1) {
-            break;
-          }
-        }
-        if (noOfSources === 1) {
-          combinedData.from_grid[source!][start] =
-            consumptionData.used_grid[start];
-        } else {
-          Object.values(combinedData.from_grid).forEach((stats) => {
-            delete stats[start];
-          });
-          used_grid[start] = consumptionData.used_grid[start];
+
+          energyToDistribute = Math.max(
+            0,
+            energyToDistribute - combinedData.from_grid[key][start]
+          );
         }
       }
       combinedData.used_grid = { used_grid };
@@ -481,7 +495,10 @@ export class HuiEnergyUsageGraphCard
             type === "used_solar"
               ? 1
               : type === "to_battery"
-                ? Object.keys(combinedData).length
+                ? // @ts-expect-error
+                  !(statId in combinedData.from_grid)
+                  ? Object.keys(combinedData).length + 1
+                  : Object.keys(combinedData).length
                 : idx + 2,
           barMaxWidth: 50,
           itemStyle: {
