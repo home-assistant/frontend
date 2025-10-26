@@ -563,7 +563,7 @@ class HuiWeatherForecastCard extends LitElement implements LovelaceCard {
         .name,
         .attribute {
           font-size: var(--ha-font-size-m);
-          line-height: 1;
+          line-height: var(--ha-line-height-condensed);
         }
 
         .name-state {
@@ -729,7 +729,7 @@ class HuiWeatherForecastCard extends LitElement implements LovelaceCard {
         .short .state,
         .short .temp-attribute .temp {
           font-size: 24px;
-          line-height: 1.25;
+          line-height: var(--ha-line-height-condensed);
         }
 
         .short .content + .forecast {
