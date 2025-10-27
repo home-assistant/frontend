@@ -214,6 +214,8 @@ export class HaWaDialog extends LitElement {
         );
         max-width: var(--ha-dialog-max-width, 100vw);
         max-width: var(--ha-dialog-max-width, 100svw);
+        /* TODO: animate view transition between width changes. 
+        Needs https://github.com/home-assistant/frontend/pull/27281 for mixin */
       }
 
       :host([width="small"]) wa-dialog {
