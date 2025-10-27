@@ -128,6 +128,10 @@ export class AssistPipelineDebug extends LitElement {
       clearRefresh = true;
     }
     if (changedProperties.has("_runId")) {
+      if (this._unsubChatLogUpdates) {
+        this._unsubChatLogUpdates.then((unsub) => unsub());
+        this._unsubChatLogUpdates = undefined;
+      }
       this._fetchEvents();
       clearRefresh = true;
     }
@@ -209,6 +213,9 @@ export class AssistPipelineDebug extends LitElement {
           }
         }
       );
+      this._unsubChatLogUpdates.catch(() => {
+        this._unsubChatLogUpdates = undefined;
+      });
     }
     if (
       // If the last event is not a finish run event, the run is still ongoing.
