@@ -2,6 +2,7 @@ import type { RenderItemFunction } from "@lit-labs/virtualizer/virtualize";
 import type { TemplateResult } from "lit";
 import { LitElement, css, html } from "lit";
 import { customElement, property } from "lit/decorators";
+import memoizeOne from "memoize-one";
 import { fireEvent } from "../common/dom/fire_event";
 import { customIcons } from "../data/custom_icons";
 import type { HomeAssistant, ValueChangedEvent } from "../types";
@@ -127,53 +128,52 @@ export class HaIconPicker extends LitElement {
   }
 
   // Filter can take a significant chunk of frame (up to 3-5 ms)
-  private _filterIcons = (
-    filter: string,
-    items: PickerComboBoxItem[]
-  ): PickerComboBoxItem[] => {
-    if (!filter) {
-      return items;
-    }
-
-    const filteredItems: RankedIcon[] = [];
-    const addIcon = (item: PickerComboBoxItem, rank: number) =>
-      filteredItems.push({ item, rank });
-
-    // Filter and rank such that exact matches rank higher, and prefer icon name matches over keywords
-    for (const item of items) {
-      const iconName = item.id.split(":")[1] || item.id;
-      const parts = iconName.split("-");
-      const keywords = item.search_labels?.slice(1) || [];
-
-      if (parts.includes(filter)) {
-        addIcon(item, 1);
-      } else if (keywords.includes(filter)) {
-        addIcon(item, 2);
-      } else if (item.id.includes(filter)) {
-        addIcon(item, 3);
-      } else if (keywords.some((word) => word.includes(filter))) {
-        addIcon(item, 4);
+  private _filterIcons = memoizeOne(
+    (filter: string, items: PickerComboBoxItem[]): PickerComboBoxItem[] => {
+      if (!filter) {
+        return items;
       }
-    }
 
-    // Allow preview for custom icon not in list
-    if (filteredItems.length === 0) {
-      addIcon(
-        {
-          id: filter,
-          primary: filter,
-          icon: filter,
-          search_labels: [filter],
-          sorting_label: filter,
-        },
-        0
-      );
-    }
+      const filteredItems: RankedIcon[] = [];
+      const addIcon = (item: PickerComboBoxItem, rank: number) =>
+        filteredItems.push({ item, rank });
 
-    return filteredItems
-      .sort((itemA, itemB) => itemA.rank - itemB.rank)
-      .map((item) => item.item);
-  };
+      // Filter and rank such that exact matches rank higher, and prefer icon name matches over keywords
+      for (const item of items) {
+        const iconName = item.id.split(":")[1] || item.id;
+        const parts = iconName.split("-");
+        const keywords = item.search_labels?.slice(1) || [];
+
+        if (parts.includes(filter)) {
+          addIcon(item, 1);
+        } else if (keywords.includes(filter)) {
+          addIcon(item, 2);
+        } else if (item.id.includes(filter)) {
+          addIcon(item, 3);
+        } else if (keywords.some((word) => word.includes(filter))) {
+          addIcon(item, 4);
+        }
+      }
+
+      // Allow preview for custom icon not in list
+      if (filteredItems.length === 0) {
+        addIcon(
+          {
+            id: filter,
+            primary: filter,
+            icon: filter,
+            search_labels: [filter],
+            sorting_label: filter,
+          },
+          0
+        );
+      }
+
+      return filteredItems
+        .sort((itemA, itemB) => itemA.rank - itemB.rank)
+        .map((item) => item.item);
+    }
+  );
 
   private _getItems = (): PickerComboBoxItem[] => ICONS;
 
