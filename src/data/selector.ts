@@ -5,7 +5,6 @@ import type {
 import { ensureArray } from "../common/array/ensure-array";
 import { computeStateDomain } from "../common/entity/compute_state_domain";
 import { supportsFeature } from "../common/entity/supports-feature";
-import type { CropOptions } from "../dialogs/image-cropper-dialog/show-image-cropper-dialog";
 import { isHelperDomain } from "../panels/config/helpers/const";
 import type { UiAction } from "../panels/lovelace/components/hui-action-editor";
 import type { HomeAssistant } from "../types";
@@ -47,8 +46,6 @@ export type Selector =
   | FileSelector
   | IconSelector
   | LabelSelector
-  | ImageSelector
-  | BackgroundSelector
   | LanguageSelector
   | LocationSelector
   | MediaSelector
@@ -271,14 +268,6 @@ export interface IconSelector {
     placeholder?: string;
     fallbackPath?: string;
   } | null;
-}
-
-export interface ImageSelector {
-  image: { original?: boolean; crop?: CropOptions } | null;
-}
-
-export interface BackgroundSelector {
-  background: { original?: boolean; crop?: CropOptions } | null;
 }
 
 export interface LabelSelector {
