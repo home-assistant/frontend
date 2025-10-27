@@ -19,6 +19,8 @@ export class HaBottomSheet extends LitElement {
 
   private _gestureRecognizer = new SwipeGestureRecognizer();
 
+  private _isDragging = false;
+
   private _handleAfterHide() {
     this.open = false;
     const ev = new Event("closed", {
@@ -85,11 +87,14 @@ export class HaBottomSheet extends LitElement {
 
     if (delta < 0) {
       ev.preventDefault();
+      this._isDragging = true;
       requestAnimationFrame(() => {
-        this.style.setProperty(
-          "--dialog-transform",
-          `translateY(${delta * -1}px)`
-        );
+        if (this._isDragging) {
+          this.style.setProperty(
+            "--dialog-transform",
+            `translateY(${delta * -1}px)`
+          );
+        }
       });
     }
   };
@@ -112,6 +117,8 @@ export class HaBottomSheet extends LitElement {
 
   private _handleTouchEnd = () => {
     this._unregisterResizeHandlers();
+
+    this._isDragging = false;
 
     const result = this._gestureRecognizer.end();
 
@@ -156,6 +163,7 @@ export class HaBottomSheet extends LitElement {
   disconnectedCallback() {
     super.disconnectedCallback();
     this._unregisterResizeHandlers();
+    this._isDragging = false;
   }
 
   static styles = [
@@ -217,9 +225,5 @@ export class HaBottomSheet extends LitElement {
 declare global {
   interface HTMLElementTagNameMap {
     "ha-bottom-sheet": HaBottomSheet;
-  }
-
-  interface HASSDomEvents {
-    "bottom-sheet-lock-resize-changed": boolean;
   }
 }
