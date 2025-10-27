@@ -4,7 +4,7 @@ export const slugify = (value: string, delimiter = "_") => {
     "àáâäæãåāăąабçćčđďдèéêëēėęěеёэфğǵгḧхîïíīįìıİийкłлḿмñńǹňнôöòóœøōõőоṕпŕřрßśšşșсťțтûüùúūǘůűųувẃẍÿýыžźżз·";
   const b = `aaaaaaaaaaabcccdddeeeeeeeeeeefggghhiiiiiiiiijkllmmnnnnnoooooooooopprrrsssssstttuuuuuuuuuuvwxyyyzzzz${delimiter}`;
   const p = new RegExp(a.split("").join("|"), "g");
-  const complex_cyrillic = {
+  const complex_cyrillic: Record<string, string> = {
     ж: "zh",
     х: "kh",
     ц: "ts",
@@ -15,25 +15,26 @@ export const slugify = (value: string, delimiter = "_") => {
     я: "ia",
   };
 
-  let slugified;
+  let slugified: string;
 
   if (value === "") {
     slugified = "";
-  } else {
-    slugified = value
-      .toString()
-      .toLowerCase()
-      .replace(p, (c) => b.charAt(a.indexOf(c))) // Replace special characters
-      .replace(/[а-я]/g, (c) => complex_cyrillic[c] || "") // Replace some cyrillic characters
-      .replace(/(\d),(?=\d)/g, "$1") // Remove Commas between numbers
-      .replace(/[^a-z0-9]+/g, delimiter) // Replace all non-word characters
-      .replace(new RegExp(`(${delimiter})\\1+`, "g"), "$1") // Replace multiple delimiters with single delimiter
-      .replace(new RegExp(`^${delimiter}+`), "") // Trim delimiter from start of text
-      .replace(new RegExp(`${delimiter}+$`), ""); // Trim delimiter from end of text
+    return slugified;
+  }
 
-    if (slugified === "") {
-      slugified = "unknown";
-    }
+  slugified = value
+    .toString()
+    .toLowerCase()
+    .replace(p, (c) => b.charAt(a.indexOf(c))) // Replace special characters
+    .replace(/[а-я]/g, (c) => complex_cyrillic[c] || "") // Replace some cyrillic characters
+    .replace(/(\d),(?=\d)/g, "$1") // Remove Commas between numbers
+    .replace(/[^a-z0-9]+/g, delimiter) // Replace all non-word characters
+    .replace(new RegExp(`(${delimiter})\\1+`, "g"), "$1") // Replace multiple delimiters with single delimiter
+    .replace(new RegExp(`^${delimiter}+`), "") // Trim delimiter from start of text
+    .replace(new RegExp(`${delimiter}+$`), ""); // Trim delimiter from end of text
+
+  if (slugified === "") {
+    slugified = "unknown";
   }
 
   return slugified;
