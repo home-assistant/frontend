@@ -101,16 +101,6 @@ export class HaIconPicker extends LitElement {
 
   @property({ type: Boolean }) public invalid = false;
 
-  protected firstUpdated() {
-    if (!ICONS_LOADED) {
-      loadIcons().then(() => {
-        this.requestUpdate();
-      });
-    }
-  }
-
-  private _getItems = (): PickerComboBoxItem[] => ICONS;
-
   protected render(): TemplateResult {
     return html`
       <ha-generic-picker
@@ -184,6 +174,16 @@ export class HaIconPicker extends LitElement {
       .sort((itemA, itemB) => itemA.rank - itemB.rank)
       .map((item) => item.item);
   };
+
+  private _getItems = (): PickerComboBoxItem[] => ICONS;
+
+  protected firstUpdated() {
+    if (!ICONS_LOADED) {
+      loadIcons().then(() => {
+        this.requestUpdate();
+      });
+    }
+  }
 
   private _valueChanged(ev: ValueChangedEvent<string>) {
     ev.stopPropagation();
