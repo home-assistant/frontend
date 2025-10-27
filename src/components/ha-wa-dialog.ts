@@ -31,6 +31,8 @@ export type DialogWidth = "small" | "medium" | "large" | "full";
  *
  * @slot header - Replace the entire header area.
  * @slot headerNavigationIcon - Leading header action (e.g. close/back button).
+ * @slot headerTitle - Custom title content (only used when header-title is true).
+ * @slot headerSubtitle - Custom subtitle content (only used when header-subtitle is true).
  * @slot headerActionItems - Trailing header actions (e.g. buttons, menus).
  * @slot - Dialog content body.
  * @slot footer - Dialog footer content.
@@ -52,8 +54,8 @@ export type DialogWidth = "small" | "medium" | "large" | "full";
  * @attr {boolean} open - Controls the dialog open state.
  * @attr {("small"|"medium"|"large"|"full")} width - Preferred dialog width preset. Defaults to "medium".
  * @attr {boolean} prevent-scrim-close - Prevents closing the dialog by clicking the scrim/overlay. Defaults to false.
- * @attr {string} header-title - Header title text when no custom title slot is provided.
- * @attr {string} header-subtitle - Header subtitle text when no custom subtitle slot is provided.
+ * @attr {string|boolean} header-title - Header title text, or true to enable the headerTitle slot.
+ * @attr {string|boolean} header-subtitle - Header subtitle text, or true to enable the headerSubtitle slot.
  * @attr {("above"|"below")} header-subtitle-position - Position of the subtitle relative to the title. Defaults to "below".
  * @attr {boolean} flexcontent - Makes the dialog body a flex container for flexible layouts.
  *
@@ -81,11 +83,11 @@ export class HaWaDialog extends LitElement {
   @property({ type: Boolean, reflect: true, attribute: "prevent-scrim-close" })
   public preventScrimClose = false;
 
-  @property({ type: String, attribute: "header-title" })
-  public headerTitle = "";
+  @property({ attribute: "header-title" })
+  public headerTitle: string | boolean = false;
 
-  @property({ type: String, attribute: "header-subtitle" })
-  public headerSubtitle = "";
+  @property({ attribute: "header-subtitle" })
+  public headerSubtitle: string | boolean = false;
 
   @property({ type: String, attribute: "header-subtitle-position" })
   public headerSubtitlePosition: "above" | "below" = "below";
@@ -134,13 +136,17 @@ export class HaWaDialog extends LitElement {
               ></ha-icon-button>
             </slot>
             ${this.headerTitle
-              ? html`<span slot="title" class="title">
-                  ${this.headerTitle}
-                </span>`
+              ? this.headerTitle === true
+                ? html`<slot name="headerTitle" slot="title"></slot>`
+                : html`<span slot="title" class="title">
+                    ${this.headerTitle}
+                  </span>`
               : nothing}
-            ${this.headerSubtitle
-              ? html`<span slot="subtitle">${this.headerSubtitle}</span>`
-              : nothing}
+            ${this.headerSubtitle === true
+              ? html`<slot name="headerSubtitle" slot="subtitle"></slot>`
+              : this.headerSubtitle
+                ? html`<span slot="subtitle">${this.headerSubtitle}</span>`
+                : nothing}
             <slot name="headerActionItems" slot="actionItems"></slot>
           </ha-dialog-header>
         </slot>
