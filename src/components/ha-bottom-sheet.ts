@@ -1,6 +1,7 @@
 import "@home-assistant/webawesome/dist/components/drawer/drawer";
 import { css, html, LitElement, type PropertyValues } from "lit";
 import { customElement, property, query, state } from "lit/decorators";
+import { SwipeGestureRecognizer } from "../common/util/swipe-gesture-recognizer";
 import { haStyleScrollbar } from "../resources/styles";
 
 export const BOTTOM_SHEET_ANIMATION_DURATION_MS = 300;
@@ -16,9 +17,7 @@ export class HaBottomSheet extends LitElement {
 
   @query("#drawer") private _drawer!: HTMLElement;
 
-  private _resizeStartY = 0;
-
-  private _resizeDelta = 0;
+  private _gestureRecognizer = new SwipeGestureRecognizer();
 
   private _handleAfterHide() {
     this.open = false;
@@ -77,31 +76,75 @@ export class HaBottomSheet extends LitElement {
     document.addEventListener("touchend", this._endResizing);
     document.addEventListener("touchcancel", this._endResizing);
 
-    this._resizeStartY = clientY;
+    this._gestureRecognizer.start(clientY);
   }
 
   private _handleMouseMove = (ev: TouchEvent) => {
-    this._resizeDelta = this._resizeStartY - ev.touches[0].clientY;
-    if (this._resizeDelta < 0) {
+    const currentY = ev.touches[0].clientY;
+    const delta = this._gestureRecognizer.move(currentY);
+
+    if (delta < 0) {
       ev.preventDefault();
       requestAnimationFrame(() => {
         this.style.setProperty(
           "--dialog-transform",
-          `translateY(${this._resizeDelta * -1}px)`
+          `translateY(${delta * -1}px)`
         );
       });
     }
   };
 
+  private _animateSnapBack() {
+    // Add transition for smooth animation
+    this.style.setProperty(
+      "--dialog-transition",
+      `transform ${BOTTOM_SHEET_ANIMATION_DURATION_MS}ms ease-out`
+    );
+
+    // Reset transform to snap back
+    this.style.removeProperty("--dialog-transform");
+
+    // Remove transition after animation completes
+    setTimeout(() => {
+      this.style.removeProperty("--dialog-transition");
+    }, BOTTOM_SHEET_ANIMATION_DURATION_MS);
+  }
+
   private _endResizing = () => {
     this._unregisterResizeHandlers();
 
-    if (this._resizeDelta > -50) {
-      this.style.removeProperty("--dialog-transform");
+    const result = this._gestureRecognizer.end();
+
+    // If velocity exceeds threshold, use velocity direction to determine action
+    if (result.isSwipe) {
+      if (result.isDownwardSwipe) {
+        // Downward swipe - close the bottom sheet
+        this._drawerOpen = false;
+      } else {
+        // Upward swipe - keep open and animate back
+        this._animateSnapBack();
+      }
       return;
     }
 
-    this._drawerOpen = false;
+    // If velocity is below threshold, use position-based logic
+    // Get the drawer height to calculate 50% threshold
+    const drawerBody = this._drawer.shadowRoot?.querySelector(
+      '[part="body"]'
+    ) as HTMLElement;
+    const drawerHeight = drawerBody?.offsetHeight || 0;
+
+    // delta is negative when dragging down
+    // Close if dragged down past 50% of the drawer height
+    if (
+      drawerHeight > 0 &&
+      result.delta < 0 &&
+      Math.abs(result.delta) > drawerHeight * 0.5
+    ) {
+      this._drawerOpen = false;
+    } else {
+      this._animateSnapBack();
+    }
   };
 
   private _unregisterResizeHandlers = () => {
@@ -129,6 +172,7 @@ export class HaBottomSheet extends LitElement {
         max-height: var(--ha-bottom-sheet-max-height, 90vh);
         align-items: center;
         transform: var(--dialog-transform);
+        transition: var(--dialog-transition);
       }
       wa-drawer::part(body) {
         max-width: var(--ha-bottom-sheet-max-width);
