@@ -70,16 +70,16 @@ export class HaBottomSheet extends LitElement {
 
   private _startResizing(clientY: number) {
     // register event listeners for drag handling
-    document.addEventListener("touchmove", this._handleMouseMove, {
+    document.addEventListener("touchmove", this._handleTouchMove, {
       passive: false,
     });
-    document.addEventListener("touchend", this._endResizing);
-    document.addEventListener("touchcancel", this._endResizing);
+    document.addEventListener("touchend", this._handleTouchEnd);
+    document.addEventListener("touchcancel", this._handleTouchEnd);
 
     this._gestureRecognizer.start(clientY);
   }
 
-  private _handleMouseMove = (ev: TouchEvent) => {
+  private _handleTouchMove = (ev: TouchEvent) => {
     const currentY = ev.touches[0].clientY;
     const delta = this._gestureRecognizer.move(currentY);
 
@@ -110,7 +110,7 @@ export class HaBottomSheet extends LitElement {
     }, BOTTOM_SHEET_ANIMATION_DURATION_MS);
   }
 
-  private _endResizing = () => {
+  private _handleTouchEnd = () => {
     this._unregisterResizeHandlers();
 
     const result = this._gestureRecognizer.end();
@@ -148,9 +148,9 @@ export class HaBottomSheet extends LitElement {
   };
 
   private _unregisterResizeHandlers = () => {
-    document.removeEventListener("touchmove", this._handleMouseMove);
-    document.removeEventListener("touchend", this._unregisterResizeHandlers);
-    document.removeEventListener("touchcancel", this._unregisterResizeHandlers);
+    document.removeEventListener("touchmove", this._handleTouchMove);
+    document.removeEventListener("touchend", this._handleTouchEnd);
+    document.removeEventListener("touchcancel", this._handleTouchEnd);
   };
 
   disconnectedCallback() {
