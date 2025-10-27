@@ -1,5 +1,5 @@
 import type { TemplateResult } from "lit";
-import { css, html, LitElement } from "lit";
+import { css, html, LitElement, nothing } from "lit";
 import { customElement, property } from "lit/decorators";
 import "../../../../components/ha-card";
 import "../../../../components/ha-alert";
@@ -12,6 +12,12 @@ import { formatNumber } from "../../../../common/number/format_number";
 import "../../../../components/ha-yaml-editor";
 import { showAlertDialog } from "../../../../dialogs/generic/show-dialog-box";
 import type { LocalizeKeys } from "../../../../common/translations/localize";
+import type {
+  ChatLogAssistantContent,
+  ChatLog,
+  ChatLogContent,
+  ChatLogUserContent,
+} from "../../../../data/chat_log";
 
 const RUN_DATA = ["pipeline", "language"];
 const WAKE_WORD_DATA = ["engine"];
@@ -119,7 +125,7 @@ const dataMinusKeysRender = (
     result[key] = data[key];
   }
   return render
-    ? html`<ha-expansion-panel>
+    ? html`<ha-expansion-panel class="yaml-expansion">
         <span slot="header"
           >${hass.localize("ui.panel.config.voice_assistants.debug.raw")}</span
         >
@@ -134,6 +140,8 @@ export class AssistPipelineDebug extends LitElement {
 
   @property({ attribute: false }) public pipelineRun!: PipelineRun;
 
+  @property({ attribute: false }) public chatLog?: ChatLog;
+
   private _audioElement?: HTMLAudioElement;
 
   private get _isPlaying(): boolean {
@@ -147,31 +155,47 @@ export class AssistPipelineDebug extends LitElement {
         ) || "ready"
       : "ready";
 
-    const messages: { from: string; text: string }[] = [];
+    let messages: ChatLogContent[];
 
-    const userMessage =
-      (this.pipelineRun.init_options &&
-      "text" in this.pipelineRun.init_options.input
-        ? this.pipelineRun.init_options.input.text
-        : undefined) ||
-      this.pipelineRun?.stt?.stt_output?.text ||
-      this.pipelineRun?.intent?.intent_input;
+    if (this.chatLog) {
+      messages = this.chatLog.content.filter(
+        this.pipelineRun.finished
+          ? (content: ChatLogContent) =>
+              content.role === "system" ||
+              (content.created >= this.pipelineRun.started &&
+                content.created <= this.pipelineRun.finished!)
+          : (content: ChatLogContent) =>
+              content.role === "system" ||
+              content.created >= this.pipelineRun.started
+      );
+    } else {
+      messages = [];
 
-    if (userMessage) {
-      messages.push({
-        from: "user",
-        text: userMessage,
-      });
-    }
+      // We don't have the chat log everywhere yet, just fallback for now.
+      const userMessage =
+        (this.pipelineRun.init_options &&
+        "text" in this.pipelineRun.init_options.input
+          ? this.pipelineRun.init_options.input.text
+          : undefined) ||
+        this.pipelineRun?.stt?.stt_output?.text ||
+        this.pipelineRun?.intent?.intent_input;
 
-    if (
-      this.pipelineRun?.intent?.intent_output?.response?.speech?.plain?.speech
-    ) {
-      messages.push({
-        from: "hass",
-        text: this.pipelineRun.intent.intent_output.response.speech.plain
-          .speech,
-      });
+      if (userMessage) {
+        messages.push({
+          role: "user",
+          content: userMessage,
+        } as ChatLogUserContent);
+      }
+
+      if (
+        this.pipelineRun?.intent?.intent_output?.response?.speech?.plain?.speech
+      ) {
+        messages.push({
+          role: "assistant",
+          content:
+            this.pipelineRun.intent.intent_output.response.speech.plain.speech,
+        } as ChatLogAssistantContent);
+      }
     }
 
     return html`
@@ -190,10 +214,58 @@ export class AssistPipelineDebug extends LitElement {
           ${messages.length > 0
             ? html`
                 <div class="messages">
-                  ${messages.map(
-                    ({ from, text }) => html`
-                      <div class=${`message ${from}`}>${text}</div>
-                    `
+                  ${messages.map((content) =>
+                    content.role === "system" || content.role === "tool_result"
+                      ? html`
+                          <ha-expansion-panel
+                            class="content-expansion ${content.role}"
+                          >
+                            <div slot="header">
+                              ${content.role === "system"
+                                ? "System"
+                                : `Result for ${content.tool_name}`}
+                            </div>
+                            ${content.role === "system"
+                              ? html`<pre>${content.content}</pre>`
+                              : html`
+                                  <ha-yaml-editor
+                                    read-only
+                                    auto-update
+                                    .value=${content}
+                                  ></ha-yaml-editor>
+                                `}
+                          </ha-expansion-panel>
+                        `
+                      : html`
+                          ${content.content
+                            ? html`
+                                <div class=${`message ${content.role}`}>
+                                  ${content.content}
+                                </div>
+                              `
+                            : nothing}
+                          ${content.role === "assistant" &&
+                          content.tool_calls?.length
+                            ? html`
+                                <ha-expansion-panel
+                                  class="content-expansion assistant"
+                                >
+                                  <span slot="header">
+                                    Call
+                                    ${content.tool_calls.length === 1
+                                      ? content.tool_calls[0].tool_name
+                                      : `${content.tool_calls.length} tools`}
+                                  </span>
+
+                                  <ha-yaml-editor
+                                    read-only
+                                    auto-update
+                                    .value=${content.tool_calls}
+                                  ></ha-yaml-editor>
+                                </ha-expansion-panel>
+                              `
+                            : nothing}
+                        `
                   )}
                 </div>
                 <div style="clear:both"></div>
@@ -442,7 +514,7 @@ export class AssistPipelineDebug extends LitElement {
         : ""}
       ${maybeRenderError(this.pipelineRun, "tts", lastRunStage)}
       <ha-card>
-        <ha-expansion-panel>
+        <ha-expansion-panel class="yaml-expansion">
           <span slot="header"
             >${this.hass.localize(
               "ui.panel.config.voice_assistants.debug.raw"
@@ -519,12 +591,12 @@ export class AssistPipelineDebug extends LitElement {
     .row > div:last-child {
       text-align: right;
     }
-    ha-expansion-panel {
+    .yaml-expansion {
       padding-left: 8px;
       padding-inline-start: 8px;
       padding-inline-end: initial;
     }
-    .card-content ha-expansion-panel {
+    .card-content .yaml-expansion {
       padding-left: 0px;
       padding-inline-start: 0px;
       padding-inline-end: initial;
@@ -540,27 +612,59 @@ export class AssistPipelineDebug extends LitElement {
       margin-top: 8px;
     }
 
+    .content-expansion {
+      margin: 8px 0;
+      border-radius: var(--ha-border-radius-xl);
+      clear: both;
+      padding: 0 8px;
+      --input-fill-color: none;
+      max-width: calc(100% - 24px);
+      --expansion-panel-summary-padding: 0px;
+      --expansion-panel-content-padding: 0px;
+    }
+
+    .content-expansion *[slot="header"] {
+      font-weight: var(--ha-font-weight-normal);
+    }
+
+    .system {
+      background-color: var(--success-color);
+    }
+
     .message {
+      padding: 8px;
+    }
+
+    .message,
+    .content-expansion {
       font-size: var(--ha-font-size-l);
       margin: 8px 0;
-      padding: 8px;
       border-radius: var(--ha-border-radius-xl);
       clear: both;
     }
 
-    .message.user {
+    .messages pre {
+      white-space: pre-wrap;
+    }
+
+    .user,
+    .tool_result {
       margin-left: 24px;
       margin-inline-start: 24px;
       margin-inline-end: initial;
       float: var(--float-end);
-      text-align: right;
       border-bottom-right-radius: 0px;
       background-color: var(--light-primary-color);
       color: var(--text-light-primary-color, var(--primary-text-color));
       direction: var(--direction);
     }
 
-    .message.hass {
+    .message.user,
+    .content-expansion div[slot="header"] {
+      text-align: right;
+    }
+
+    .assistant {
       margin-right: 24px;
       margin-inline-end: 24px;
       margin-inline-start: initial;
