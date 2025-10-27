@@ -2,7 +2,6 @@ import { ReactiveElement } from "lit";
 import { customElement } from "lit/decorators";
 import { isComponentLoaded } from "../../../../common/config/is_component_loaded";
 import { generateEntityFilter } from "../../../../common/entity/entity_filter";
-import { floorDefaultIcon } from "../../../../components/ha-floor-icon";
 import type { AreaRegistryEntry } from "../../../../data/area_registry";
 import { getEnergyPreferences } from "../../../../data/energy";
 import type { LovelaceCardConfig } from "../../../../data/lovelace/config/card";
@@ -93,7 +92,7 @@ export class HomeMainViewStrategy extends ReactiveElement {
                   ? floor.name
                   : hass.localize("ui.panel.lovelace.strategy.home.areas"),
               heading_style: "title",
-              icon: floor.icon || floorDefaultIcon(floor),
+              icon: floor.icon,
             },
             ...cards,
           ],
