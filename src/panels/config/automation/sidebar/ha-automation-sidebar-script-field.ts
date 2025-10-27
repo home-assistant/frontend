@@ -25,7 +25,8 @@ export default class HaAutomationSidebarScriptField extends LitElement {
 
   @property({ type: Boolean }) public narrow = false;
 
-  @property({ attribute: "sidebar-key" }) public sidebarKey?: string;
+  @property({ type: Number, attribute: "sidebar-key" })
+  public sidebarKey?: number;
 
   @state() private _warnings?: string[];
 

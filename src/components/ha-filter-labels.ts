@@ -256,7 +256,7 @@ export class HaFilterLabels extends SubscribeMixin(LitElement) {
         }
         search-input-outlined {
           display: block;
-          padding: 0 8px;
+          padding: var(--ha-space-1) var(--ha-space-2) 0;
         }
       `,
     ];

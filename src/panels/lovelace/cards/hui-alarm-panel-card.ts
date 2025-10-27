@@ -433,6 +433,7 @@ class HuiAlarmPanelCard extends LitElement implements LovelaceCard {
       grid-gap: var(--ha-space-4);
       justify-items: center;
       align-items: center;
+      direction: ltr;
     }
 
     ha-control-button {

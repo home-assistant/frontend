@@ -264,6 +264,7 @@ export const getLabels = (
   const items = outputLabels.map<PickerComboBoxItem>((label) => ({
     id: label.label_id,
     primary: label.name,
+    secondary: label.description ?? "",
     icon: label.icon || undefined,
     icon_path: label.icon ? undefined : mdiLabel,
     sorting_label: label.name,

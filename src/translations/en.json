@@ -648,6 +648,7 @@
         "entity-picker": {
           "choose_entity": "Choose entity",
           "entity": "Entity",
+          "add": "Add entity",
           "edit": "Edit",
           "clear": "Clear",
           "no_entities": "You don't have any entities",
@@ -676,6 +677,9 @@
         },
         "entity-state-picker": {
           "state": "State"
+        },
+        "entity-state-content-picker": {
+          "add": "Add"
         }
       },
       "target-picker": {
@@ -754,6 +758,7 @@
       },
       "language-picker": {
         "language": "Language",
+        "no_match": "No matching languages found",
         "no_languages": "No languages available"
       },
       "tts-picker": {
@@ -806,6 +811,7 @@
         "labels": "Labels",
         "add_new_sugestion": "Add new label ''{name}''",
         "add_new": "Add new label…",
+        "add": "Add label",
         "no_labels": "You don't have any labels",
         "no_match": "No matching labels found",
         "failed_create_label": "Failed to create label."
@@ -3915,7 +3921,6 @@
             "edit_yaml": "Edit in YAML",
             "edit_ui": "Edit in visual editor",
             "copy_to_clipboard": "Copy to clipboard",
-            "search_in": "Search · {group}",
             "unknown_entity": "unknown entity",
             "edit_unknown_device": "Editor not available for unknown device",
             "switch_ui_yaml_error": "There are currently YAML errors in the automation, and it cannot be parsed. Switching to UI mode may cause pending changes to be lost. Press cancel to correct any errors before proceeding to prevent loss of pending changes, or continue if you are sure.",
@@ -3923,11 +3928,14 @@
             "type_script": "script",
             "type_automation_plural": "[%key:ui::panel::config::blueprint::overview::types_plural::automation%]",
             "type_script_plural": "[%key:ui::panel::config::blueprint::overview::types_plural::script%]",
-            "new_automation_setup_failed_title": "New {type} setup failed",
+            "new_automation_setup_failed_title": "New {type} setup timed out",
             "new_automation_setup_failed_text": "Your new {type} has saved, but waiting for it to setup has timed out. This could be due to errors parsing your configuration.yaml, please check the configuration in developer tools. Your {type} will not be visible until this is corrected, and {types} are reloaded. Changes to area, category, or labels were not saved and must be reapplied.",
+            "new_automation_setup_keep_waiting": "You may continue to wait for a response from the server, in case it is just taking an unusually long time to process this {type}.",
+            "new_automation_setup_timedout_success": "The server has responded and this has now setup successfully. You may now close this dialog.",
             "item_pasted": "{item} pasted",
             "ctrl": "Ctrl",
             "del": "Del",
+            "blocks": "Blocks",
             "triggers": {
               "name": "Triggers",
               "header": "When",
@@ -3935,7 +3943,7 @@
               "learn_more": "Learn more about triggers",
               "triggered": "Triggered",
               "add": "Add trigger",
-              "search": "Search trigger",
+              "empty_search": "No triggers found for {term}",
               "id": "Trigger ID",
               "id_helper": "Helps identify each run based on which trigger fired.",
               "optional": "Optional",
@@ -3956,14 +3964,16 @@
               "trigger": "Trigger",
               "copied_to_clipboard": "Trigger copied to clipboard",
               "cut_to_clipboard": "Trigger cut to clipboard",
+              "select": "Select a trigger",
               "groups": {
+                "device": {
+                  "label": "Device"
+                },
                 "entity": {
-                  "label": "Entity",
-                  "description": "When something happens to an entity."
+                  "label": "Entity"
                 },
                 "time_location": {
-                  "label": "Time and location",
-                  "description": "When someone enters or leaves a zone, or at a specific time."
+                  "label": "Time and location"
                 },
                 "other": {
                   "label": "Other triggers"
@@ -4196,7 +4206,7 @@
               "description": "All conditions added here need to be satisfied for the automation to run. A condition can be satisfied or not at any given time, for example: ''If {user} is home''. You can use building blocks to create more complex conditions.",
               "learn_more": "Learn more about conditions",
               "add": "Add condition",
-              "search": "Search condition",
+              "empty_search": "No conditions and blocks found for {term}",
               "add_building_block": "Add building block",
               "test": "Test",
               "testing_error": "Condition did not pass",
@@ -4218,21 +4228,22 @@
               "condition": "Condition",
               "copied_to_clipboard": "Condition copied to clipboard",
               "cut_to_clipboard": "Condition cut to clipboard",
+              "select": "Select a condition",
               "groups": {
+                "device": {
+                  "label": "Device"
+                },
                 "entity": {
-                  "label": "Entity",
-                  "description": "If an entity is in a specific state."
+                  "label": "Entity"
                 },
                 "time_location": {
-                  "label": "Time and location",
-                  "description": "If someone is in a zone or if the current time is before or after a specified time."
+                  "label": "Time and location"
                 },
                 "other": {
                   "label": "Other conditions"
                 },
                 "building_blocks": {
-                  "label": "Building blocks",
-                  "description": "Build more complex conditions."
+                  "label": "Building blocks"
                 }
               },
               "type": {
@@ -4363,7 +4374,7 @@
               "description": "All actions added here will be performed in sequence when the automation runs. An action usually controls one of your areas, devices, or entities, for example: 'Turn on the lights'. You can use building blocks to create more complex sequences of actions.",
               "learn_more": "Learn more about actions",
               "add": "Add action",
-              "search": "Search action",
+              "empty_search": "No actions and blocks found for {term}",
               "add_building_block": "Add building block",
               "invalid_action": "Invalid action",
               "run": "Run action",
@@ -4387,7 +4398,11 @@
               "action": "Action",
               "copied_to_clipboard": "Action copied to clipboard",
               "cut_to_clipboard": "Action cut to clipboard",
+              "select": "Select an action",
               "groups": {
+                "device_id": {
+                  "label": "Device"
+                },
                 "helpers": {
                   "label": "Helpers"
                 },
@@ -4395,8 +4410,7 @@
                   "label": "Other actions"
                 },
                 "building_blocks": {
-                  "label": "Building blocks",
-                  "description": "Build more complex sequences of actions."
+                  "label": "Building blocks"
                 }
               },
               "type": {

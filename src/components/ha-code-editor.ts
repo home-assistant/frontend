@@ -239,6 +239,7 @@ export class HaCodeEditor extends ReactiveElement {
       this._loadedCodeMirror.crosshairCursor(),
       this._loadedCodeMirror.highlightSelectionMatches(),
       this._loadedCodeMirror.highlightActiveLine(),
+      this._loadedCodeMirror.dropCursor(),
       this._loadedCodeMirror.indentationMarkers({
         thickness: 0,
         activeThickness: 1,
