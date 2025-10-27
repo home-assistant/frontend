@@ -390,11 +390,14 @@ class HUIRoot extends LitElement {
         <ha-button-menu slot="actionItems">
           <ha-icon-button
             slot="trigger"
-            .label=${this.hass!.localize("ui.panel.lovelace.editor.menu.open")}
+            id="dashboardmenu"
             .path=${mdiDotsVertical}
           ></ha-icon-button>
           ${listItems}
         </ha-button-menu>
+        <ha-tooltip placement="bottom" for="dashboardmenu">
+          ${this.hass!.localize("ui.panel.lovelace.editor.menu.open")}
+        </ha-tooltip>
       `);
     }
     return html`${result}`;

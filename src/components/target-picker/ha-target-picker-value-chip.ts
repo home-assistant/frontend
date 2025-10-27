@@ -16,6 +16,7 @@ import memoizeOne from "memoize-one";
 import { computeCssColor } from "../../common/color/compute-color";
 import { hex2rgb } from "../../common/color/convert-color";
 import { fireEvent } from "../../common/dom/fire_event";
+import { slugify } from "../../common/string/slugify";
 import {
   computeDeviceName,
   computeDeviceNameDisplay,
@@ -102,7 +103,7 @@ export class HaTargetPickerValueChip extends LitElement {
         ${this.type === "entity"
           ? nothing
           : html`<span role="gridcell">
-              <ha-tooltip .for="expand-${this.itemId}"
+              <ha-tooltip .for="expand-${slugify(this.itemId)}"
                 >${this.hass.localize(
                   `ui.components.target-picker.expand_${this.type}_id`
                 )}
@@ -114,13 +115,13 @@ export class HaTargetPickerValueChip extends LitElement {
                 )}
                 .path=${mdiUnfoldMoreVertical}
                 hide-title
-                .id="expand-${this.itemId}"
+                .id="expand-${slugify(this.itemId)}"
                 .type=${this.type}
                 @click=${this._handleExpand}
               ></ha-icon-button>
             </span>`}
         <span role="gridcell">
-          <ha-tooltip .for="remove-${this.itemId}">
+          <ha-tooltip .for="remove-${slugify(this.itemId)}">
             ${this.hass.localize(
               `ui.components.target-picker.remove_${this.type}_id`
             )}
@@ -130,7 +131,7 @@ export class HaTargetPickerValueChip extends LitElement {
             .label=${this.hass.localize("ui.components.target-picker.remove")}
             .path=${mdiClose}
             hide-title
-            .id="remove-${this.itemId}"
+            .id="remove-${slugify(this.itemId)}"
             .type=${this.type}
             @click=${this._removeItem}
           ></ha-icon-button>

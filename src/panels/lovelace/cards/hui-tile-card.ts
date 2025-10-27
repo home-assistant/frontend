@@ -272,7 +272,6 @@ export class HuiTileCard extends LitElement implements LovelaceCard {
             .stateObj=${stateObj}
             .hass=${this.hass}
             .content=${this._config.state_content}
-            .name=${name}
           >
           </state-display>
         `;
@@ -448,13 +447,13 @@ export class HuiTileCard extends LitElement implements LovelaceCard {
     }
     hui-card-features {
       --feature-color: var(--tile-color);
-      padding: 0 12px 12px 12px;
+      padding: 0 var(--ha-space-3) var(--ha-space-3) var(--ha-space-3);
     }
     .container.horizontal hui-card-features {
-      width: calc(50% - var(--column-gap, 0px) / 2 - 12px);
+      width: calc(50% - var(--column-gap, 0px) / 2 - var(--ha-space-3));
       flex: none;
-      --feature-height: 36px;
-      padding: 0 12px;
+      --feature-height: var(--ha-space-9);
+      padding: 0 var(--ha-space-3);
       padding-inline-start: 0;
     }
 

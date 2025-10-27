@@ -4,6 +4,7 @@ import type {
 } from "home-assistant-js-websocket";
 import { ensureArray } from "../common/array/ensure-array";
 import { navigate } from "../common/navigate";
+import type { LocalizeKeys } from "../common/translations/localize";
 import { createSearchParam } from "../common/url/search-params";
 import type { Context, HomeAssistant } from "../types";
 import type { BlueprintInput } from "./blueprint";
@@ -291,6 +292,11 @@ export interface ShorthandOrCondition extends ShorthandBaseCondition {
 
 export interface ShorthandNotCondition extends ShorthandBaseCondition {
   not: Condition[];
+}
+
+export interface AutomationElementGroupCollection {
+  titleKey?: LocalizeKeys;
+  groups: AutomationElementGroup;
 }
 
 export type AutomationElementGroup = Record<

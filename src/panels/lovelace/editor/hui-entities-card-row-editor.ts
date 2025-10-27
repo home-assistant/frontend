@@ -115,6 +115,7 @@ export class HuiEntitiesCardRowEditor extends LitElement {
         class="add-entity"
         .hass=${this.hass}
         @value-changed=${this._addEntity}
+        add-button
       ></ha-entity-picker>
     `;
   }
