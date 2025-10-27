@@ -4821,12 +4821,12 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@types/qrcode@npm:1.5.5":
-  version: 1.5.5
-  resolution: "@types/qrcode@npm:1.5.5"
+"@types/qrcode@npm:1.5.6":
+  version: 1.5.6
+  resolution: "@types/qrcode@npm:1.5.6"
   dependencies:
     "@types/node": "npm:*"
-  checksum: 10/a25686339bd2718e6a93943e7807ed68dd9c74a9da28aa77212086ee0ce9a173c0a232af9e3f6835acd09938dfc8a0f98c6bccf1a6c6a905fb003ab07f9e08f2
+  checksum: 10/61aa00ba56a874a71a82006a55715d2ff2dc65689b582314c6f955c72c830938c93d0ee1e3376d370a1dcd6bac61b05afe75ad8d1f4a47ebcdd6344d39f70847
   languageName: node
   linkType: hard
 
@@ -9291,7 +9291,7 @@ __metadata:
     "@types/lodash.merge": "npm:4.6.9"
     "@types/luxon": "npm:3.7.1"
     "@types/mocha": "npm:10.0.10"
-    "@types/qrcode": "npm:1.5.5"
+    "@types/qrcode": "npm:1.5.6"
     "@types/sortablejs": "npm:1.15.8"
     "@types/tar": "npm:6.1.13"
     "@types/ua-parser-js": "npm:0.7.39"
