@@ -69,7 +69,7 @@ export type PickerComboBoxSearchFn<T extends PickerComboBoxItem> = (
 
 @customElement("ha-picker-combo-box")
 export class HaPickerComboBox extends LitElement {
-  @property({ attribute: false }) public hass!: HomeAssistant;
+  @property({ attribute: false }) public hass?: HomeAssistant;
 
   // eslint-disable-next-line lit/no-native-attributes
   @property({ type: Boolean }) public autofocus = false;
@@ -140,7 +140,9 @@ export class HaPickerComboBox extends LitElement {
 
   protected render() {
     return html`<ha-textfield
-        .label=${this.label ?? this.hass.localize("ui.common.search")}
+        .label=${this.label ??
+        this.hass?.localize("ui.common.search") ??
+        "Search"}
         @input=${this._filterChanged}
       ></ha-textfield>
       <lit-virtualizer
@@ -159,12 +161,18 @@ export class HaPickerComboBox extends LitElement {
   private _defaultNotFoundItem = memoizeOne(
     (
       label: this["notFoundLabel"],
-      localize: LocalizeFunc
+      localize?: LocalizeFunc
     ): PickerComboBoxItemWithLabel => ({
       id: NO_MATCHING_ITEMS_FOUND_ID,
-      primary: label || localize("ui.components.combo-box.no_match"),
+      primary:
+        label ||
+        (localize && localize("ui.components.combo-box.no_match")) ||
+        "No matching items found",
       icon_path: mdiMagnify,
-      a11y_label: label || localize("ui.components.combo-box.no_match"),
+      a11y_label:
+        label ||
+        (localize && localize("ui.components.combo-box.no_match")) ||
+        "No matching items found",
     })
   );
 
@@ -189,13 +197,13 @@ export class HaPickerComboBox extends LitElement {
         caseInsensitiveStringCompare(
           entityA.sorting_label!,
           entityB.sorting_label!,
-          this.hass.locale.language
+          this.hass?.locale.language ?? navigator.language
         )
       );
 
     if (!sortedItems.length) {
       sortedItems.push(
-        this._defaultNotFoundItem(this.notFoundLabel, this.hass.localize)
+        this._defaultNotFoundItem(this.notFoundLabel, this.hass?.localize)
       );
     }
 
@@ -249,8 +257,20 @@ export class HaPickerComboBox extends LitElement {
     const textfield = ev.target as HaTextField;
     const searchString = textfield.value.trim();
 
+    if (!searchString) {
+      this._items = this._allItems;
+      return;
+    }
+
     const index = this._fuseIndex(this._allItems);
-    const fuse = new HaFuse(this._allItems, { shouldSort: false }, index);
+    const fuse = new HaFuse(
+      this._allItems,
+      {
+        shouldSort: false,
+        minMatchCharLength: Math.min(searchString.length, 2),
+      },
+      index
+    );
 
     const results = fuse.multiTermsSearch(searchString);
     let filteredItems = this._allItems as PickerComboBoxItem[];
@@ -258,7 +278,7 @@ export class HaPickerComboBox extends LitElement {
       const items = results.map((result) => result.item);
       if (items.length === 0) {
         items.push(
-          this._defaultNotFoundItem(this.notFoundLabel, this.hass.localize)
+          this._defaultNotFoundItem(this.notFoundLabel, this.hass?.localize)
         );
       }
       const additionalItems = this._getAdditionalItems(searchString);
@@ -431,6 +451,17 @@ export class HaPickerComboBox extends LitElement {
 
   private _pickSelectedItem = (ev: KeyboardEvent) => {
     ev.stopPropagation();
+    const firstItem = this._virtualizerElement?.items[0] as PickerComboBoxItem;
+
+    if (
+      this._virtualizerElement?.items.length === 1 &&
+      firstItem.id !== NO_MATCHING_ITEMS_FOUND_ID
+    ) {
+      fireEvent(this, "value-changed", {
+        value: firstItem.id,
+      });
+    }
+
     if (this._selectedItemIndex === -1) {
       return;
     }
@@ -438,7 +469,9 @@ export class HaPickerComboBox extends LitElement {
     // if filter button is focused
     ev.preventDefault();
 
-    const item: any = this._virtualizerElement?.items[this._selectedItemIndex];
+    const item = this._virtualizerElement?.items[
+      this._selectedItemIndex
+    ] as PickerComboBoxItem;
     if (item && item.id !== NO_MATCHING_ITEMS_FOUND_ID) {
       fireEvent(this, "value-changed", { value: item.id });
     }
