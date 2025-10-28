@@ -1,4 +1,4 @@
-import { mdiAlertOutline } from "@mdi/js";
+import { mdiAlertOutline, mdiClose } from "@mdi/js";
 import { css, html, LitElement, nothing } from "lit";
 import { customElement, property, query, state } from "lit/decorators";
 import { ifDefined } from "lit/directives/if-defined";
@@ -70,6 +70,15 @@ class DialogBox extends LitElement {
         aria-describedby="dialog-box-description"
       >
         <ha-dialog-header slot="header">
+          ${!confirmPrompt
+            ? html`<slot name="headerNavigationIcon" slot="navigationIcon">
+                <ha-icon-button
+                  data-dialog="close"
+                  .label=${this.hass?.localize("ui.common.close") ?? "Close"}
+                  .path=${mdiClose}
+                ></ha-icon-button
+              ></slot>`
+            : nothing}
           <span slot="title" id="dialog-box-title">
             ${this._params.warning
               ? html`<ha-svg-icon
