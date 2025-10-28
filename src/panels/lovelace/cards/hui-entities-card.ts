@@ -1,6 +1,6 @@
 import type { PropertyValues, TemplateResult } from "lit";
 import { css, html, LitElement, nothing } from "lit";
-import { customElement, state } from "lit/decorators";
+import { customElement, property, state } from "lit/decorators";
 import { DOMAINS_TOGGLE } from "../../../common/const";
 import { applyThemesOnElement } from "../../../common/dom/apply_themes_on_element";
 import { computeDomain } from "../../../common/entity/compute_domain";
@@ -20,6 +20,7 @@ import type {
 import type {
   LovelaceCard,
   LovelaceCardEditor,
+  LovelaceGridOptions,
   LovelaceHeaderFooter,
 } from "../types";
 import type { EntitiesCardConfig } from "./types";
@@ -74,6 +75,8 @@ class HuiEntitiesCard extends LitElement implements LovelaceCard {
   @state() private _config?: EntitiesCardConfig;
 
   private _hass?: HomeAssistant;
+
+  @property({ attribute: false }) public layout?: string;
 
   private _configEntities?: LovelaceRowConfig[];
 
@@ -137,6 +140,14 @@ class HuiEntitiesCard extends LitElement implements LovelaceCard {
     }
 
     return size;
+  }
+
+  public getGridOptions(): LovelaceGridOptions {
+    return {
+      columns: 12,
+      min_columns: 6,
+      min_rows: 2,
+    };
   }
 
   public setConfig(config: EntitiesCardConfig): void {
