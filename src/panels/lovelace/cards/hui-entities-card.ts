@@ -24,6 +24,7 @@ import type {
   LovelaceHeaderFooter,
 } from "../types";
 import type { EntitiesCardConfig } from "./types";
+import { haStyleScrollbar } from "../../../resources/styles";
 
 export const computeShowHeaderToggle = <
   T extends EntityConfig | LovelaceRowConfig,
@@ -244,7 +245,7 @@ class HuiEntitiesCard extends LitElement implements LovelaceCard {
                     `}
               </h1>
             `}
-        <div id="states" class="card-content">
+        <div id="states" class="card-content ha-scrollbar">
           ${this._configEntities!.map((entityConf) =>
             this._renderEntity(entityConf)
           )}
@@ -257,70 +258,73 @@ class HuiEntitiesCard extends LitElement implements LovelaceCard {
     `;
   }
 
-  static styles = css`
-    ha-card {
-      height: 100%;
-      display: flex;
-      flex-direction: column;
-      justify-content: space-between;
-    }
-    .card-header {
-      display: flex;
-      justify-content: space-between;
-    }
+  static styles = [
+    haStyleScrollbar,
+    css`
+      ha-card {
+        height: 100%;
+        display: flex;
+        flex-direction: column;
+        justify-content: space-between;
+      }
+      .card-header {
+        display: flex;
+        justify-content: space-between;
+      }
 
-    .card-header .name {
-      white-space: nowrap;
-      overflow: hidden;
-      text-overflow: ellipsis;
-    }
+      .card-header .name {
+        white-space: nowrap;
+        overflow: hidden;
+        text-overflow: ellipsis;
+      }
 
-    #states {
-      flex: 1;
-      display: flex;
-      flex-direction: column;
-      gap: var(--entities-card-row-gap, var(--card-row-gap, 8px));
-      overflow-y: auto;
-    }
+      #states {
+        flex: 1;
+        display: flex;
+        flex-direction: column;
+        gap: var(--entities-card-row-gap, var(--card-row-gap, 8px));
+        overflow-y: auto;
+      }
 
-    #states > div > * {
-      overflow: clip visible;
-    }
+      #states > div > * {
+        overflow: clip visible;
+      }
 
-    #states > div {
-      position: relative;
-    }
+      #states > div {
+        position: relative;
+      }
 
-    .icon {
-      padding: 0px 18px 0px 8px;
-    }
+      .icon {
+        padding: 0px 18px 0px 8px;
+      }
 
-    .header {
-      border-top-left-radius: var(
-        --ha-card-border-radius,
-        var(--ha-border-radius-lg)
-      );
-      border-top-right-radius: var(
-        --ha-card-border-radius,
-        var(--ha-border-radius-lg)
-      );
-      margin-bottom: 16px;
-      overflow: hidden;
-    }
+      .header {
+        border-top-left-radius: var(
+          --ha-card-border-radius,
+          var(--ha-border-radius-lg)
+        );
+        border-top-right-radius: var(
+          --ha-card-border-radius,
+          var(--ha-border-radius-lg)
+        );
+        margin-bottom: 16px;
+        overflow: hidden;
+      }
 
-    .footer {
-      border-bottom-left-radius: var(
-        --ha-card-border-radius,
-        var(--ha-border-radius-lg)
-      );
-      border-bottom-right-radius: var(
-        --ha-card-border-radius,
-        var(--ha-border-radius-lg)
-      );
-      margin-top: -16px;
-      overflow: hidden;
-    }
-  `;
+      .footer {
+        border-bottom-left-radius: var(
+          --ha-card-border-radius,
+          var(--ha-border-radius-lg)
+        );
+        border-bottom-right-radius: var(
+          --ha-card-border-radius,
+          var(--ha-border-radius-lg)
+        );
+        margin-top: -16px;
+        overflow: hidden;
+      }
+    `,
+  ];
 
   private _renderEntity(entityConf: LovelaceRowConfig): TemplateResult {
     const element = createRowElement(
