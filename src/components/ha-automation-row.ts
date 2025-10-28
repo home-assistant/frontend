@@ -118,7 +118,7 @@ export class HaAutomationRow extends LitElement {
     }
     .row {
       display: flex;
-      padding: 0 8px;
+      padding: var(--ha-space-0) var(--ha-space-2);
       min-height: 48px;
       align-items: center;
       cursor: pointer;
@@ -134,12 +134,12 @@ export class HaAutomationRow extends LitElement {
     .expand-button {
       transition: transform 150ms cubic-bezier(0.4, 0, 0.2, 1);
       color: var(--ha-color-on-neutral-quiet);
-      margin-left: -8px;
+      margin-left: calc(var(--ha-space-2) * -1);
     }
     :host([building-block]) .leading-icon-wrapper {
       background-color: var(--ha-color-fill-neutral-loud-resting);
       border-radius: var(--ha-border-radius-md);
-      padding: 4px;
+      padding: var(--ha-space-1);
       display: flex;
       justify-content: center;
       align-items: center;
@@ -149,7 +149,7 @@ export class HaAutomationRow extends LitElement {
       color: var(--ha-color-on-neutral-quiet);
     }
     :host([building-block]) ::slotted([slot="leading-icon"]) {
-      --mdc-icon-size: 20px;
+      --mdc-icon-size: var(--ha-space-5);
       color: var(--white-color);
       transform: rotate(-45deg);
     }
@@ -170,7 +170,7 @@ export class HaAutomationRow extends LitElement {
     ::slotted([slot="header"]) {
       flex: 1;
       overflow-wrap: anywhere;
-      margin: 0 12px;
+      margin: var(--ha-space-0) var(--ha-space-3);
     }
     :host([sort-selected]) .row {
       outline: solid;
