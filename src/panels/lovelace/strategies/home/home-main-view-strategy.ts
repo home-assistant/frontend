@@ -92,6 +92,7 @@ export class HomeMainViewStrategy extends ReactiveElement {
                   ? floor.name
                   : hass.localize("ui.panel.lovelace.strategy.home.areas"),
               heading_style: "title",
+              icon: floor.icon,
             },
             ...cards,
           ],
