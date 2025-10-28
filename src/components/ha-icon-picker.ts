@@ -11,30 +11,31 @@ import "./ha-generic-picker";
 import "./ha-icon";
 import type { PickerComboBoxItem } from "./ha-picker-combo-box";
 
+interface IconItem {
+  icon: string;
+  parts: Set<string>;
+  keywords: string[];
+}
+
 interface RankedIcon {
   item: PickerComboBoxItem;
   rank: number;
 }
 
-let ICONS: PickerComboBoxItem[] = [];
+let ICONS: IconItem[] = [];
 let ICONS_LOADED = false;
 
 const loadIcons = async () => {
   ICONS_LOADED = true;
 
   const iconList = await import("../../build/mdi/iconList.json");
-  ICONS = iconList.default.map((icon) => {
-    const iconId = `mdi:${icon.name}`;
-    return {
-      id: iconId,
-      primary: iconId,
-      icon: iconId,
-      search_labels: [icon.name, ...icon.keywords],
-      sorting_label: iconId,
-    };
-  });
+  ICONS = iconList.default.map((icon) => ({
+    icon: `mdi:${icon.name}`,
+    parts: new Set(icon.name.split("-")),
+    keywords: icon.keywords,
+  }));
 
-  const customIconLoads: Promise<PickerComboBoxItem[]>[] = [];
+  const customIconLoads: Promise<IconItem[]>[] = [];
   Object.keys(customIcons).forEach((iconSet) => {
     customIconLoads.push(loadCustomIconItems(iconSet));
   });
@@ -43,25 +44,18 @@ const loadIcons = async () => {
   });
 };
 
-const loadCustomIconItems = async (
-  iconsetPrefix: string
-): Promise<PickerComboBoxItem[]> => {
+const loadCustomIconItems = async (iconsetPrefix: string) => {
   try {
     const getIconList = customIcons[iconsetPrefix].getIconList;
     if (typeof getIconList !== "function") {
       return [];
     }
     const iconList = await getIconList();
-    const customIconItems = iconList.map((icon) => {
-      const iconId = `${iconsetPrefix}:${icon.name}`;
-      return {
-        id: iconId,
-        primary: iconId,
-        icon: iconId,
-        search_labels: [icon.name, ...(icon.keywords ?? [])],
-        sorting_label: iconId,
-      };
-    });
+    const customIconItems = iconList.map((icon) => ({
+      icon: `${iconsetPrefix}:${icon.name}`,
+      parts: new Set(icon.name.split("-")),
+      keywords: icon.keywords ?? [],
+    }));
     return customIconItems;
   } catch (_err) {
     // eslint-disable-next-line no-console
@@ -175,7 +169,18 @@ export class HaIconPicker extends LitElement {
     }
   );
 
-  private _getItems = (): PickerComboBoxItem[] => ICONS;
+  private _getItems = (): PickerComboBoxItem[] =>
+    ICONS.map((icon: IconItem) => ({
+      id: icon.icon,
+      primary: icon.icon,
+      icon: icon.icon,
+      search_labels: [
+        icon.icon.split(":")[1] || icon.icon,
+        ...Array.from(icon.parts),
+        ...icon.keywords,
+      ],
+      sorting_label: icon.icon,
+    }));
 
   protected firstUpdated() {
     if (!ICONS_LOADED) {
