@@ -8154,6 +8154,10 @@
               "media-player-playback": {
                 "label": "Media player playback controls"
               },
+              "media-player-volume-buttons": {
+                "label": "Media player volume buttons",
+                "step": "Step size"
+              },
               "media-player-volume-slider": {
                 "label": "Media player volume slider"
               },

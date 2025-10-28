@@ -48,6 +48,7 @@ import { supportsLightColorTempCardFeature } from "../../card-features/hui-light
 import { supportsLockCommandsCardFeature } from "../../card-features/hui-lock-commands-card-feature";
 import { supportsLockOpenDoorCardFeature } from "../../card-features/hui-lock-open-door-card-feature";
 import { supportsMediaPlayerPlaybackCardFeature } from "../../card-features/hui-media-player-playback-card-feature";
+import { supportsMediaPlayerVolumeButtonsCardFeature } from "../../card-features/hui-media-player-volume-buttons-card-feature";
 import { supportsMediaPlayerVolumeSliderCardFeature } from "../../card-features/hui-media-player-volume-slider-card-feature";
 import { supportsNumericInputCardFeature } from "../../card-features/hui-numeric-input-card-feature";
 import { supportsSelectOptionsCardFeature } from "../../card-features/hui-select-options-card-feature";
@@ -102,6 +103,7 @@ const UI_FEATURE_TYPES = [
   "lock-commands",
   "lock-open-door",
   "media-player-playback",
+  "media-player-volume-buttons",
   "media-player-volume-slider",
   "numeric-input",
   "select-options",
@@ -131,6 +133,7 @@ const EDITABLES_FEATURE_TYPES = new Set<UiFeatureTypes>([
   "fan-preset-modes",
   "humidifier-modes",
   "lawn-mower-commands",
+  "media-player-volume-buttons",
   "numeric-input",
   "select-options",
   "trend-graph",
@@ -171,6 +174,7 @@ const SUPPORTS_FEATURE_TYPES: Record<
   "lock-commands": supportsLockCommandsCardFeature,
   "lock-open-door": supportsLockOpenDoorCardFeature,
   "media-player-playback": supportsMediaPlayerPlaybackCardFeature,
+  "media-player-volume-buttons": supportsMediaPlayerVolumeButtonsCardFeature,
   "media-player-volume-slider": supportsMediaPlayerVolumeSliderCardFeature,
   "numeric-input": supportsNumericInputCardFeature,
   "select-options": supportsSelectOptionsCardFeature,
