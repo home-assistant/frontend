@@ -147,7 +147,9 @@ class HuiEntitiesCard extends LitElement implements LovelaceCard {
     return {
       columns: 12,
       min_columns: 6,
-      min_rows: (this._config?.title || this._showHeaderToggle ? 2 : 1) + this._config.entities.length,
+      min_rows:
+        (this._config?.title || this._showHeaderToggle ? 2 : 1) +
+        this._config.entities.length,
     };
   }
 
