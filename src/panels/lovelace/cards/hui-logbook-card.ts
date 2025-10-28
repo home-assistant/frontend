@@ -189,6 +189,7 @@ export class HuiLogbookCard extends LitElement implements LovelaceCard {
       >
         <div class="content">
           <ha-logbook
+            class=${classMap({ "is-masonry": this.layout === "masonry" })}
             .hass=${this.hass}
             .time=${this._time}
             .entityIds=${this._getEntityIds()}
@@ -212,6 +213,7 @@ export class HuiLogbookCard extends LitElement implements LovelaceCard {
         }
 
         .content {
+          height: 100%;
           padding: 0 16px 16px;
         }
 
@@ -220,8 +222,12 @@ export class HuiLogbookCard extends LitElement implements LovelaceCard {
         }
 
         ha-logbook {
-          height: 385px;
           display: block;
+          height: 100%;
+        }
+
+        ha-logbook.is-masonry {
+          height: 385px;
         }
 
         :host([ispanel]) .content,
