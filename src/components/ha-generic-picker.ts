@@ -24,7 +24,7 @@ import "./ha-svg-icon";
 
 @customElement("ha-generic-picker")
 export class HaGenericPicker extends LitElement {
-  @property({ attribute: false }) public hass!: HomeAssistant;
+  @property({ attribute: false }) public hass?: HomeAssistant;
 
   // eslint-disable-next-line lit/no-native-attributes
   @property({ type: Boolean }) public autofocus = false;
@@ -67,6 +67,21 @@ export class HaGenericPicker extends LitElement {
 
   @property({ attribute: "not-found-label", type: String })
   public notFoundLabel?: string;
+
+  @property({ attribute: "popover-placement" })
+  public popoverPlacement:
+    | "bottom"
+    | "top"
+    | "left"
+    | "right"
+    | "top-start"
+    | "top-end"
+    | "right-start"
+    | "right-end"
+    | "bottom-start"
+    | "bottom-end"
+    | "left-start"
+    | "left-end" = "bottom-start";
 
   /** If set picker shows an add button instead of textbox when value isn't set */
   @property({ attribute: "add-button-label" }) public addButtonLabel?: string;
@@ -135,7 +150,7 @@ export class HaGenericPicker extends LitElement {
                 style="--body-width: ${this._popoverWidth}px;"
                 without-arrow
                 distance="-4"
-                placement="bottom-start"
+                .placement=${this.popoverPlacement}
                 for="picker"
                 auto-size="vertical"
                 auto-size-padding="16"
@@ -144,9 +159,7 @@ export class HaGenericPicker extends LitElement {
                 trap-focus
                 role="dialog"
                 aria-modal="true"
-                aria-label=${this.hass.localize(
-                  "ui.components.target-picker.add_target"
-                )}
+                aria-label=${this.label || "Select option"}
               >
                 ${this._renderComboBox()}
               </wa-popover>
@@ -159,9 +172,7 @@ export class HaGenericPicker extends LitElement {
                 @closed=${this._hidePicker}
                 role="dialog"
                 aria-modal="true"
-                aria-label=${this.hass.localize(
-                  "ui.components.target-picker.add_target"
-                )}
+                aria-label=${this.label || "Select option"}
               >
                 ${this._renderComboBox(true)}
               </ha-bottom-sheet>`
@@ -179,7 +190,8 @@ export class HaGenericPicker extends LitElement {
       <ha-picker-combo-box
         .hass=${this.hass}
         .allowCustomValue=${this.allowCustomValue}
-        .label=${this.searchLabel ?? this.hass.localize("ui.common.search")}
+        .label=${this.searchLabel ??
+        (this.hass?.localize("ui.common.search") || "Search")}
         .value=${this.value}
         @value-changed=${this._valueChanged}
         .rowRenderer=${this.rowRenderer}
