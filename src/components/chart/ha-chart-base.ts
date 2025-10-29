@@ -206,10 +206,14 @@ export class HaChartBase extends LitElement {
     if (changedProps.has("options")) {
       chartOptions = { ...chartOptions, ...this._createOptions() };
       if (
-        (this.chart.getOption().legend as any)?.show !==
-        (chartOptions.legend as any)?.show
+        ensureArray(changedProps.get("options").legend).some(
+          (l: any) => l.show && l.type === "custom"
+        ) !==
+        ensureArray(this.options?.legend).some(
+          (l: any) => l.show && l.type === "custom"
+        )
       ) {
-        // legend changes may require a resize to layout properly
+        // custom legend changes may require a resize to layout properly
         this._shouldResizeChart = true;
       }
     } else if (this._isTouchDevice && changedProps.has("_isZoomed")) {
