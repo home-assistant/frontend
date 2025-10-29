@@ -108,6 +108,8 @@ export class HaIconPicker extends LitElement {
         .disabled=${this.disabled}
         .required=${this.required}
         .placeholder=${this.placeholder}
+        .errorMessage=${this.errorMessage}
+        .invalid=${this.invalid}
         .rowRenderer=${rowRenderer}
         .valueRenderer=${valueRenderer}
         .searchFn=${this._filterIcons}
