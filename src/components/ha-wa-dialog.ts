@@ -8,6 +8,7 @@ import {
   query,
   state,
 } from "lit/decorators";
+import { ifDefined } from "lit/directives/if-defined";
 import { fireEvent } from "../common/dom/fire_event";
 import { haStyleScrollbar } from "../resources/styles";
 import type { HomeAssistant } from "../types";
@@ -74,6 +75,12 @@ export type DialogWidth = "small" | "medium" | "large" | "full";
 export class HaWaDialog extends LitElement {
   @property({ attribute: false }) public hass!: HomeAssistant;
 
+  @property({ attribute: "aria-labelledby" })
+  public ariaLabelledBy?: string;
+
+  @property({ attribute: "aria-describedby" })
+  public ariaDescribedBy?: string;
+
   @property({ type: Boolean, reflect: true })
   public open = false;
 
@@ -100,6 +107,8 @@ export class HaWaDialog extends LitElement {
 
   @query(".body") public bodyContainer!: HTMLDivElement;
 
+  @query("wa-dialog") private _waDialog?: any;
+
   @state()
   private _bodyScrolled = false;
 
@@ -113,12 +122,41 @@ export class HaWaDialog extends LitElement {
     }
   }
 
+  private _setAriaAttributes() {
+    const internalDialog = this._waDialog?.shadowRoot?.querySelector(
+      ".dialog"
+    ) as HTMLDialogElement | null;
+
+    if (internalDialog) {
+      const labelledBy =
+        this.ariaLabelledBy ||
+        (this.headerTitle !== undefined ? "ha-wa-dialog-title" : undefined);
+
+      if (labelledBy) {
+        internalDialog.setAttribute("aria-labelledby", labelledBy);
+      } else {
+        internalDialog.removeAttribute("aria-labelledby");
+      }
+
+      if (this.ariaDescribedBy) {
+        internalDialog.setAttribute("aria-describedby", this.ariaDescribedBy);
+      } else {
+        internalDialog.removeAttribute("aria-describedby");
+      }
+    }
+  }
+
   protected render() {
     return html`
       <wa-dialog
         .open=${this._open}
         .lightDismiss=${!this.preventScrimClose}
         without-header
+        aria-labelledby=${ifDefined(
+          this.ariaLabelledBy ||
+            (this.headerTitle !== undefined ? "ha-wa-dialog-title" : undefined)
+        )}
+        aria-describedby=${ifDefined(this.ariaDescribedBy)}
         @wa-show=${this._handleShow}
         @wa-after-show=${this._handleAfterShow}
         @wa-after-hide=${this._handleAfterHide}
@@ -136,7 +174,7 @@ export class HaWaDialog extends LitElement {
               ></ha-icon-button>
             </slot>
             ${this.headerTitle !== undefined
-              ? html`<span slot="title" class="title">
+              ? html`<span slot="title" class="title" id="ha-wa-dialog-title">
                   ${this.headerTitle}
                 </span>`
               : html`<slot name="headerTitle" slot="title"></slot>`}
@@ -159,6 +197,8 @@ export class HaWaDialog extends LitElement {
     fireEvent(this, "opened");
 
     await this.updateComplete;
+
+    this._setAriaAttributes();
 
     (this.querySelector("[autofocus]") as HTMLElement | null)?.focus();
   };

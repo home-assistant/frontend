@@ -66,6 +66,7 @@ class DialogRepairsIssue extends LitElement {
         .hass=${this.hass}
         .open=${this._open}
         header-title=${dialogTitle}
+        aria-describedby="dialog-repairs-issue-description"
         @closed=${this._dialogClosed}
       >
         <dialog-repairs-issue-subtitle
