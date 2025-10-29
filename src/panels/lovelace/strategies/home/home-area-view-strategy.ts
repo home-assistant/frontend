@@ -168,9 +168,17 @@ export class HomeAreaViewStrategy extends ReactiveElement {
 
     const summaryEntities = Object.values(entitiesBySummary).flat();
 
+    // Automations section
+    const automationFilter = generateEntityFilter(hass, {
+      domain: "automation",
+      entity_category: "none",
+    });
+    const automations = areaEntities.filter(automationFilter);
+
     // Rest of entities grouped by device
     const otherEntities = areaEntities.filter(
-      (entityId) => !summaryEntities.includes(entityId)
+      (entityId) =>
+        !summaryEntities.includes(entityId) && !automations.includes(entityId)
     );
 
     const entitiesByDevice: Record<string, string[]> = {};
@@ -293,6 +301,21 @@ export class HomeAreaViewStrategy extends ReactiveElement {
         ],
       } satisfies LovelaceSectionRawConfig);
       sections.push(...deviceSections);
+    }
+
+    // Show automations last, if they exist
+    if (automations.length > 0) {
+      sections.push({
+        type: "grid",
+        cards: [
+          computeHeadingCard(
+            hass.localize("ui.panel.lovelace.strategy.home.automations"),
+            "mdi:robot",
+            "/config/automation/dashboard"
+          ),
+          ...automations.map(computeTileCard),
+        ],
+      });
     }
 
     // Allow between 2 and 3 columns (the max should be set to define the width of the header)
