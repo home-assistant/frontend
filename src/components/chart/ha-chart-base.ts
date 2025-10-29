@@ -30,6 +30,7 @@ import "../ha-icon-button";
 import { filterXSS } from "../../common/util/xss";
 import { formatTimeLabel } from "./axis-label";
 import { downSampleLineData } from "./down-sample";
+import { request } from "http";
 
 export const MIN_TIME_BETWEEN_UPDATES = 60 * 5 * 1000;
 const LEGEND_OVERFLOW_LIMIT = 10;
@@ -205,6 +206,13 @@ export class HaChartBase extends LitElement {
     }
     if (changedProps.has("options")) {
       chartOptions = { ...chartOptions, ...this._createOptions() };
+      if (
+        (this.chart.getOption().legend as any)?.show !==
+        (chartOptions.legend as any)?.show
+      ) {
+        // legend changes may require a resize to layout properly
+        this._shouldResizeChart = true;
+      }
     } else if (this._isTouchDevice && changedProps.has("_isZoomed")) {
       chartOptions.dataZoom = this._getDataZoomConfig();
     }
@@ -296,7 +304,7 @@ export class HaChartBase extends LitElement {
           itemStyle = {
             color: dataset?.color as string,
             ...(dataset?.itemStyle as { borderColor?: string }),
-            itemStyle,
+            ...itemStyle,
           };
           const color = itemStyle?.color as string;
           const borderColor = itemStyle?.borderColor as string;
@@ -508,6 +516,7 @@ export class HaChartBase extends LitElement {
         );
       }
     });
+    this.requestUpdate("_hiddenDatasets");
   }
 
   private _getDataZoomConfig(): DataZoomComponentOption | undefined {
@@ -958,7 +967,9 @@ export class HaChartBase extends LitElement {
 
   private _handleChartRenderFinished = () => {
     if (this._shouldResizeChart) {
-      this.chart?.resize();
+      this.chart?.resize({
+        animation: this._reducedMotion ? undefined : { duration: 250 },
+      });
       this._shouldResizeChart = false;
     }
   };
