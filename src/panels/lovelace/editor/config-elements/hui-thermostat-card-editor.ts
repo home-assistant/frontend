@@ -14,6 +14,7 @@ import {
 } from "superstruct";
 import type { HASSDomEvent } from "../../../../common/dom/fire_event";
 import { fireEvent } from "../../../../common/dom/fire_event";
+import { DEFAULT_ENTITY_NAME } from "../../../../common/entity/compute_entity_name_display";
 import "../../../../components/ha-expansion-panel";
 import "../../../../components/ha-form/ha-form";
 import type {
@@ -29,47 +30,34 @@ import type {
 import type { ThermostatCardConfig } from "../../cards/types";
 import type { LovelaceCardEditor } from "../../types";
 import { baseLovelaceCardConfig } from "../structs/base-card-struct";
+import { entityNameStruct } from "../structs/entity-name-struct";
 import type { EditDetailElementEvent, EditSubElementEvent } from "../types";
 import { configElementStyle } from "./config-elements-style";
 import "./hui-card-features-editor";
 import type { FeatureType } from "./hui-card-features-editor";
+import { computeDomain } from "../../../../common/entity/compute_domain";
 
-const COMPATIBLE_FEATURES_TYPES: FeatureType[] = [
-  "climate-hvac-modes",
-  "climate-preset-modes",
-  "climate-fan-modes",
-  "climate-swing-modes",
-  "climate-swing-horizontal-modes",
-];
+const COMPATIBLE_FEATURES_TYPES: Record<string, FeatureType[]> = {
+  climate: [
+    "climate-hvac-modes",
+    "climate-preset-modes",
+    "climate-fan-modes",
+    "climate-swing-modes",
+    "climate-swing-horizontal-modes",
+  ],
+  water_heater: ["water-heater-operation-modes"],
+};
 
 const cardConfigStruct = assign(
   baseLovelaceCardConfig,
   object({
     entity: optional(string()),
-    name: optional(string()),
+    name: optional(entityNameStruct),
     theme: optional(string()),
     show_current_as_primary: optional(boolean()),
     features: optional(array(any())),
   })
 );
-
-const SCHEMA = [
-  { name: "entity", selector: { entity: { domain: "climate" } } },
-  {
-    type: "grid",
-    name: "",
-    schema: [
-      { name: "name", selector: { text: {} } },
-      { name: "theme", selector: { theme: {} } },
-    ],
-  },
-  {
-    name: "show_current_as_primary",
-    selector: {
-      boolean: {},
-    },
-  },
-] as const satisfies readonly HaFormSchema[];
 
 @customElement("hui-thermostat-card-editor")
 export class HuiThermostatCardEditor
@@ -91,19 +79,54 @@ export class HuiThermostatCardEditor
     })
   );
 
+  private _schema = memoizeOne(
+    (domain: string) =>
+      [
+        {
+          name: "entity",
+          selector: { entity: { domain: ["climate", "water_heater"] } },
+        },
+        {
+          name: "name",
+          selector: {
+            entity_name: {
+              default_name: DEFAULT_ENTITY_NAME,
+            },
+          },
+          context: { entity: "entity" },
+        },
+        {
+          type: "grid",
+          name: "",
+          schema: [{ name: "theme", selector: { theme: {} } }],
+        },
+        ...(domain === "climate"
+          ? [
+              {
+                name: "show_current_as_primary",
+                selector: {
+                  boolean: {},
+                },
+              },
+            ]
+          : []),
+      ] as const satisfies readonly HaFormSchema[]
+  );
+
   protected render() {
     if (!this.hass || !this._config) {
       return nothing;
     }
 
     const entityId = this._config.entity;
+    const domain = computeDomain(entityId);
     const featureContext = this._featureContext(entityId);
 
     return html`
       <ha-form
         .hass=${this.hass}
         .data=${this._config}
-        .schema=${SCHEMA}
+        .schema=${this._schema(domain)}
         .computeLabel=${this._computeLabelCallback}
         @value-changed=${this._valueChanged}
       ></ha-form>
@@ -118,7 +141,7 @@ export class HuiThermostatCardEditor
           <hui-card-features-editor
             .hass=${this.hass}
             .context=${featureContext}
-            .featuresTypes=${COMPATIBLE_FEATURES_TYPES}
+            .featuresTypes=${COMPATIBLE_FEATURES_TYPES[domain]}
             .features=${this._config!.features ?? []}
             @features-changed=${this._featuresChanged}
             @edit-detail-element=${this._editDetailElement}
@@ -177,7 +200,9 @@ export class HuiThermostatCardEditor
     });
   }
 
-  private _computeLabelCallback = (schema: SchemaUnion<typeof SCHEMA>) => {
+  private _computeLabelCallback = (
+    schema: SchemaUnion<ReturnType<typeof this._schema>>
+  ) => {
     if (schema.name === "show_current_as_primary") {
       return this.hass!.localize(
         "ui.panel.lovelace.editor.card.thermostat.show_current_as_primary"

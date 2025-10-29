@@ -162,7 +162,7 @@ export class HuiHistoryGraphCard extends LitElement implements LovelaceCard {
   private async _fetchStatistics(sensorNumericDeviceClasses: string[]) {
     const now = new Date();
     const start = new Date();
-    start.setHours(start.getHours() - this._hoursToShow);
+    start.setHours(start.getHours() - this._hoursToShow - 1);
 
     const statistics = await fetchStatistics(
       this.hass!,

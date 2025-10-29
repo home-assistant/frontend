@@ -130,8 +130,8 @@ class HuiHumidifierToggleCardFeature
         .options=${options}
         .value=${this._currentState}
         @value-changed=${this._valueChanged}
-        hide-label
-        .ariaLabel=${this.hass.localize("ui.card.humidifier.state")}
+        hide-option-label
+        .label=${this.hass.localize("ui.card.humidifier.state")}
         style=${styleMap({
           "--control-select-color": color,
         })}

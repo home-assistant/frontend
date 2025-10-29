@@ -23,6 +23,8 @@ class HuiPictureElementsCard extends LitElement implements LovelaceCard {
 
   @property({ attribute: false }) public hass?: HomeAssistant;
 
+  @property({ type: Boolean }) public preview = false;
+
   @state() private _elements?: LovelaceElement[];
 
   public static getStubConfig(
@@ -98,6 +100,12 @@ class HuiPictureElementsCard extends LitElement implements LovelaceCard {
       }
     }
 
+    if (this._elements && changedProps.has("preview")) {
+      for (const element of this._elements) {
+        element.preview = this.preview;
+      }
+    }
+
     const oldHass = changedProps.get("hass") as HomeAssistant | undefined;
     const oldConfig = changedProps.get("_config") as
       | PictureElementsCardConfig
@@ -118,7 +126,16 @@ class HuiPictureElementsCard extends LitElement implements LovelaceCard {
       return nothing;
     }
 
-    let image: string | undefined = this._config.image;
+    let image: string | undefined =
+      (typeof this._config?.image === "object" &&
+        this._config.image.media_content_id) ||
+      (this._config.image as string | undefined);
+
+    const darkModeImage: string | undefined =
+      (typeof this._config?.dark_mode_image === "object" &&
+        this._config.dark_mode_image.media_content_id) ||
+      (this._config.dark_mode_image as string | undefined);
+
     if (this._config.image_entity) {
       const stateObj: ImageEntity | PersonEntity | undefined =
         this.hass.states[this._config.image_entity];
@@ -148,7 +165,7 @@ class HuiPictureElementsCard extends LitElement implements LovelaceCard {
             .entity=${this._config.entity}
             .aspectRatio=${this._config.aspect_ratio}
             .darkModeFilter=${this._config.dark_mode_filter}
-            .darkModeImage=${this._config.dark_mode_image}
+            .darkModeImage=${darkModeImage}
           ></hui-image>
           ${this._elements}
         </div>
@@ -180,6 +197,7 @@ class HuiPictureElementsCard extends LitElement implements LovelaceCard {
     if (this.hass) {
       element.hass = this.hass;
     }
+    element.preview = this.preview;
     element.addEventListener(
       "ll-rebuild",
       (ev) => {

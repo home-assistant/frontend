@@ -1,4 +1,3 @@
-import "@material/mwc-button";
 import deepFreeze from "deep-freeze";
 import type { UnsubscribeFunc } from "home-assistant-js-websocket";
 import type { PropertyValues, TemplateResult } from "lit";
@@ -35,6 +34,7 @@ import { checkLovelaceConfig } from "./common/check-lovelace-config";
 import { loadLovelaceResources } from "./common/load-resources";
 import { showSaveDialog } from "./editor/show-save-config-dialog";
 import "./hui-root";
+import "../../components/ha-button";
 import { generateLovelaceDashboardStrategy } from "./strategies/get-strategy";
 import type { Lovelace } from "./types";
 
@@ -147,9 +147,9 @@ export class LovelacePanel extends LitElement {
           title=${domainToName(this.hass!.localize, "lovelace")}
           .error=${this._errorMsg}
         >
-          <mwc-button raised @click=${this._forceFetchConfig}>
+          <ha-button @click=${this._forceFetchConfig}>
             ${this.hass!.localize("ui.panel.lovelace.reload_lovelace")}
-          </mwc-button>
+          </ha-button>
         </hass-error-screen>
       `;
     }
@@ -157,6 +157,7 @@ export class LovelacePanel extends LitElement {
     if (panelState === "yaml-editor") {
       return html`
         <hui-editor
+          .narrow=${this.narrow}
           .hass=${this.hass}
           .lovelace=${this.lovelace}
           .closeEditor=${this._closeEditor}

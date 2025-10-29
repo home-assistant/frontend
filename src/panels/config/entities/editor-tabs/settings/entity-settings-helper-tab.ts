@@ -22,6 +22,7 @@ import "../../../helpers/forms/ha-schedule-form";
 import "../../../helpers/forms/ha-timer-form";
 import "../../../voice-assistants/entity-voice-settings";
 import "../../entity-registry-settings-editor";
+import "../../../../../components/ha-button";
 import type { EntityRegistrySettingsEditor } from "../../entity-registry-settings-editor";
 
 @customElement("entity-settings-helper-tab")
@@ -97,20 +98,21 @@ export class EntitySettingsHelperTab extends LitElement {
         ></entity-registry-settings-editor>
       </div>
       <div class="buttons">
-        <mwc-button
-          class="warning"
+        <ha-button
+          variant="danger"
+          appearance="plain"
           @click=${this._confirmDeleteItem}
           .disabled=${this._submitting ||
           (!this._item && !stateObj?.attributes.restored)}
         >
           ${this.hass.localize("ui.dialogs.entity_registry.editor.delete")}
-        </mwc-button>
-        <mwc-button
+        </ha-button>
+        <ha-button
           @click=${this._updateItem}
           .disabled=${this._submitting || (this._item && !this._item.name)}
         >
           ${this.hass.localize("ui.dialogs.entity_registry.editor.update")}
-        </mwc-button>
+        </ha-button>
       </div>
     `;
   }
@@ -200,7 +202,7 @@ export class EntitySettingsHelperTab extends LitElement {
           box-sizing: border-box;
           display: flex;
           justify-content: space-between;
-          padding: 0 24px 24px 24px;
+          padding: 16px;
           background-color: var(--mdc-theme-surface, #fff);
         }
         .error {

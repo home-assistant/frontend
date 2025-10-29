@@ -114,6 +114,7 @@ import { isHelperDomain } from "../helpers/const";
 import "../integrations/ha-integration-overflow-menu";
 import { showAddIntegrationDialog } from "../integrations/show-add-integration-dialog";
 import { showLabelDetailDialog } from "../labels/show-dialog-label-detail";
+import { slugify } from "../../../common/string/slugify";
 
 export interface StateEntity
   extends Omit<EntityRegistryEntry, "id" | "unique_id"> {
@@ -392,9 +393,27 @@ export class HaConfigEntities extends SubscribeMixin(LitElement) {
                   tabindex="0"
                   style="display:inline-block; position: relative;"
                 >
+                  <ha-svg-icon
+                    .id="status-icon-${slugify(entry.entity_id)}"
+                    style=${styleMap({
+                      color: entry.unavailable ? "var(--error-color)" : "",
+                    })}
+                    .path=${entry.restored
+                      ? mdiRestoreAlert
+                      : entry.unavailable
+                        ? mdiAlertCircle
+                        : entry.disabled_by
+                          ? mdiCancel
+                          : entry.hidden_by
+                            ? mdiEyeOff
+                            : mdiPencilOff}
+                  ></ha-svg-icon>
+
                   <ha-tooltip
+                    .for="status-icon-${slugify(entry.entity_id)}"
                     placement="left"
-                    .content=${entry.restored
+                  >
+                    ${entry.restored
                       ? this.hass.localize(
                           "ui.panel.config.entities.picker.status.not_provided"
                         )
@@ -413,21 +432,6 @@ export class HaConfigEntities extends SubscribeMixin(LitElement) {
                             : this.hass.localize(
                                 "ui.panel.config.entities.picker.status.unmanageable"
                               )}
-                  >
-                    <ha-svg-icon
-                      style=${styleMap({
-                        color: entry.unavailable ? "var(--error-color)" : "",
-                      })}
-                      .path=${entry.restored
-                        ? mdiRestoreAlert
-                        : entry.unavailable
-                          ? mdiAlertCircle
-                          : entry.disabled_by
-                            ? mdiCancel
-                            : entry.hidden_by
-                              ? mdiEyeOff
-                              : mdiPencilOff}
-                    ></ha-svg-icon>
                   </ha-tooltip>
                 </div>
               `
@@ -678,7 +682,8 @@ export class HaConfigEntities extends SubscribeMixin(LitElement) {
 
         const entityName = computeEntityEntryName(
           entry as EntityRegistryEntry,
-          this.hass
+          this.hass.devices,
+          entity
         );
 
         const deviceName = device ? computeDeviceName(device) : undefined;
@@ -1582,7 +1587,6 @@ ${rejected
         .header-btns {
           display: flex;
         }
-        .header-btns > mwc-button,
         .header-btns > ha-icon-button {
           margin: 8px;
         }

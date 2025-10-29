@@ -1,6 +1,5 @@
-import Spinner from "@shoelace-style/shoelace/dist/components/spinner/spinner.component";
-import spinnerStyles from "@shoelace-style/shoelace/dist/components/spinner/spinner.styles";
-import type { PropertyValues } from "lit";
+import Spinner from "@home-assistant/webawesome/dist/components/spinner/spinner";
+import type { CSSResultGroup, PropertyValues } from "lit";
 import { css } from "lit";
 import { customElement, property } from "lit/decorators";
 
@@ -32,21 +31,23 @@ export class HaSpinner extends Spinner {
     }
   }
 
-  static override styles = [
-    spinnerStyles,
-    css`
-      :host {
-        --indicator-color: var(
-          --ha-spinner-indicator-color,
-          var(--primary-color)
-        );
-        --track-color: var(--ha-spinner-divider-color, var(--divider-color));
-        --track-width: 4px;
-        --speed: 3.5s;
-        font-size: var(--ha-spinner-size, 48px);
-      }
-    `,
-  ];
+  static get styles(): CSSResultGroup {
+    return [
+      Spinner.styles,
+      css`
+        :host {
+          --indicator-color: var(
+            --ha-spinner-indicator-color,
+            var(--primary-color)
+          );
+          --track-color: var(--ha-spinner-divider-color, var(--divider-color));
+          --track-width: 4px;
+          --speed: 3.5s;
+          font-size: var(--ha-spinner-size, 48px);
+        }
+      `,
+    ];
+  }
 }
 
 declare global {

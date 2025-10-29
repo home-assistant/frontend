@@ -26,7 +26,6 @@ import type {
   EventAction,
   IfAction,
   ParallelAction,
-  PlayMediaAction,
   RepeatAction,
   SequenceAction,
   SetConversationResponseAction,
@@ -301,27 +300,6 @@ const tryDescribeAction = <T extends ActionType>(
     return hass.localize(`${actionTranslationBaseKey}.delay.description.full`, {
       duration: duration,
     });
-  }
-
-  if (actionType === "play_media") {
-    const config = action as PlayMediaAction;
-    const entityId = config.target?.entity_id || config.entity_id;
-    const mediaStateObj = entityId ? hass.states[entityId] : undefined;
-    return hass.localize(
-      `${actionTranslationBaseKey}.play_media.description.full`,
-      {
-        hasMedia:
-          config.metadata.title || config.data.media_content_id
-            ? "true"
-            : "false",
-        media:
-          (config.metadata.title as string | undefined) ||
-          config.data.media_content_id,
-        hasMediaPlayer:
-          mediaStateObj || entityId !== undefined ? "true" : "false",
-        mediaPlayer: mediaStateObj ? computeStateName(mediaStateObj) : entityId,
-      }
-    );
   }
 
   if (actionType === "wait_for_trigger") {

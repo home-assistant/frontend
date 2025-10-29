@@ -1,4 +1,9 @@
-import { mdiClose, mdiDelete, mdiDrag, mdiPencil } from "@mdi/js";
+import {
+  mdiClose,
+  mdiDelete,
+  mdiDragHorizontalVariant,
+  mdiPencil,
+} from "@mdi/js";
 import { css, html, LitElement, nothing, type PropertyValues } from "lit";
 import { customElement, property, query } from "lit/decorators";
 import memoizeOne from "memoize-one";
@@ -15,6 +20,7 @@ import "../ha-md-list-item";
 import "../ha-sortable";
 import "../ha-yaml-editor";
 import type { HaYamlEditor } from "../ha-yaml-editor";
+import { deepEqual } from "../../common/util/deep-equal";
 
 @customElement("ha-selector-object")
 export class HaObjectSelector extends LitElement {
@@ -46,14 +52,29 @@ export class HaObjectSelector extends LitElement {
     const translationKey = this.selector.object?.translation_key;
 
     if (this.localizeValue && translationKey) {
-      const label = this.localizeValue(
-        `${translationKey}.fields.${schema.name}`
-      );
+      const label =
+        this.localizeValue(`${translationKey}.fields.${schema.name}.name`) ||
+        // Fallback for backward compatibility
+        this.localizeValue(`${translationKey}.fields.${schema.name}`);
       if (label) {
         return label;
       }
     }
     return this.selector.object?.fields?.[schema.name]?.label || schema.name;
+  };
+
+  private _computeHelper = (schema: HaFormSchema): string => {
+    const translationKey = this.selector.object?.translation_key;
+
+    if (this.localizeValue && translationKey) {
+      const helper = this.localizeValue(
+        `${translationKey}.fields.${schema.name}.description`
+      );
+      if (helper) {
+        return helper;
+      }
+    }
+    return this.selector.object?.fields?.[schema.name]?.description || "";
   };
 
   private _renderItem(item: any, index: number) {
@@ -91,7 +112,7 @@ export class HaObjectSelector extends LitElement {
           ? html`
               <ha-svg-icon
                 class="handle"
-                .path=${mdiDrag}
+                .path=${mdiDragHorizontalVariant}
                 slot="start"
               ></ha-svg-icon>
             `
@@ -137,7 +158,7 @@ export class HaObjectSelector extends LitElement {
                 ${items.map((item, index) => this._renderItem(item, index))}
               </ha-md-list>
             </ha-sortable>
-            <ha-button outlined @click=${this._addItem}>
+            <ha-button appearance="filled" @click=${this._addItem}>
               ${this.hass.localize("ui.common.add")}
             </ha-button>
           </div>
@@ -152,7 +173,7 @@ export class HaObjectSelector extends LitElement {
                 ${this._renderItem(this.value, 0)}
               </ha-md-list>`
             : html`
-                <ha-button outlined @click=${this._addItem}>
+                <ha-button appearance="filled" @click=${this._addItem}>
                   ${this.hass.localize("ui.common.add")}
                 </ha-button>
               `}
@@ -208,6 +229,7 @@ export class HaObjectSelector extends LitElement {
       schema: this._schema(this.selector),
       data: {},
       computeLabel: this._computeLabel,
+      computeHelper: this._computeHelper,
       submitText: this.hass.localize("ui.common.add"),
     });
 
@@ -271,7 +293,8 @@ export class HaObjectSelector extends LitElement {
     if (
       changedProps.has("value") &&
       !this._valueChangedFromChild &&
-      this._yamlEditor
+      this._yamlEditor &&
+      !deepEqual(this.value, changedProps.get("value"))
     ) {
       this._yamlEditor.setValue(this.value);
     }
@@ -279,6 +302,7 @@ export class HaObjectSelector extends LitElement {
   }
 
   private _handleChange(ev) {
+    ev.stopPropagation();
     this._valueChangedFromChild = true;
     const value = ev.target.value;
     if (!ev.target.isValid) {
@@ -294,11 +318,11 @@ export class HaObjectSelector extends LitElement {
     return [
       css`
         ha-md-list {
-          gap: 8px;
+          gap: var(--ha-space-2);
         }
         ha-md-list-item {
           border: 1px solid var(--divider-color);
-          border-radius: 8px;
+          border-radius: var(--ha-border-radius-md);
           --ha-md-list-item-gap: 0;
           --md-list-item-top-space: 0;
           --md-list-item-bottom-space: 0;

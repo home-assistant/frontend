@@ -1,9 +1,9 @@
-import "@material/mwc-button";
 import type { CSSResultGroup } from "lit";
 import { LitElement, css, html, nothing } from "lit";
 import { customElement, property, state } from "lit/decorators";
 import { fireEvent } from "../../../common/dom/fire_event";
 import "../../../components/ha-alert";
+import "../../../components/ha-button";
 import "../../../components/ha-color-picker";
 import { createCloseHeading } from "../../../components/ha-dialog";
 import "../../../components/ha-icon-picker";
@@ -133,17 +133,18 @@ class DialogLabelDetail
         </div>
         ${this._params.entry && this._params.removeEntry
           ? html`
-              <mwc-button
+              <ha-button
                 slot="secondaryAction"
-                class="warning"
+                variant="danger"
+                appearance="plain"
                 @click=${this._deleteEntry}
                 .disabled=${this._submitting}
               >
                 ${this.hass!.localize("ui.panel.config.labels.detail.delete")}
-              </mwc-button>
+              </ha-button>
             `
           : nothing}
-        <mwc-button
+        <ha-button
           slot="primaryAction"
           @click=${this._updateEntry}
           .disabled=${this._submitting || !this._name}
@@ -151,7 +152,7 @@ class DialogLabelDetail
           ${this._params.entry
             ? this.hass!.localize("ui.panel.config.labels.detail.update")
             : this.hass!.localize("ui.panel.config.labels.detail.create")}
-        </mwc-button>
+        </ha-button>
       </ha-dialog>
     `;
   }

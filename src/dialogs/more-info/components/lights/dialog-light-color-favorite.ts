@@ -228,7 +228,7 @@ class DialogLightColorFavorite extends LitElement {
           </div>
         </div>
         <div slot="actions">
-          <ha-button @click=${this._cancelDialog}>
+          <ha-button appearance="plain" @click=${this._cancelDialog}>
             ${this.hass.localize("ui.common.cancel")}
           </ha-button>
           <ha-button @click=${this._save} .disabled=${!this._color}
@@ -281,7 +281,7 @@ class DialogLightColorFavorite extends LitElement {
           width: 30px;
           height: 30px;
           flex: none;
-          border-radius: 15px;
+          border-radius: var(--ha-border-radius-xl);
         }
         .wheel.color {
           background-image: url("/static/images/color_wheel.png");

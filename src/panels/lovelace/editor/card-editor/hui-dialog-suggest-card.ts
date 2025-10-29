@@ -3,10 +3,11 @@ import type { CSSResultGroup } from "lit";
 import { css, html, LitElement, nothing } from "lit";
 import { customElement, property, query, state } from "lit/decorators";
 import { fireEvent } from "../../../../common/dom/fire_event";
+import "../../../../components/ha-button";
 import "../../../../components/ha-yaml-editor";
 
-import type { HaYamlEditor } from "../../../../components/ha-yaml-editor";
 import "../../../../components/ha-spinner";
+import type { HaYamlEditor } from "../../../../components/ha-yaml-editor";
 import type { LovelaceCardConfig } from "../../../../data/lovelace/config/card";
 import type { LovelaceSectionConfig } from "../../../../data/lovelace/config/section";
 import type { LovelaceConfig } from "../../../../data/lovelace/config/types";
@@ -14,11 +15,11 @@ import { isStrategyView } from "../../../../data/lovelace/config/view";
 import { haStyleDialog } from "../../../../resources/styles";
 import type { HomeAssistant } from "../../../../types";
 import { showSaveSuccessToast } from "../../../../util/toast-saved-success";
+import "../../cards/hui-card";
 import "../../sections/hui-section";
 import { addCards, addSection } from "../config-util";
 import type { LovelaceContainerPath } from "../lovelace-path";
 import { parseLovelaceContainerPath } from "../lovelace-path";
-import "../../cards/hui-card";
 import { showCreateCardDialog } from "./show-create-card-dialog";
 import type { SuggestCardDialogParams } from "./show-suggest-card-dialog";
 
@@ -124,39 +125,41 @@ export class HuiDialogSuggestCard extends LitElement {
               `
             : nothing}
         </div>
-        <mwc-button
+        <ha-button
           slot="secondaryAction"
           @click=${this.closeDialog}
+          appearance="plain"
           dialogInitialFocus
         >
           ${this._params.yaml
             ? this.hass!.localize("ui.common.close")
             : this.hass!.localize("ui.common.cancel")}
-        </mwc-button>
+        </ha-button>
         ${!this._params.yaml
           ? html`
               ${!(this._sectionConfig && this._viewSupportsSection)
                 ? html`
-                    <mwc-button slot="primaryAction" @click=${this._pickCard}>
+                    <ha-button
+                      appearance="plain"
+                      slot="primaryAction"
+                      @click=${this._pickCard}
+                    >
                       ${this.hass!.localize(
                         "ui.panel.lovelace.editor.suggest_card.create_own"
                       )}
-                    </mwc-button>
+                    </ha-button>
                   `
                 : nothing}
-              <mwc-button
+              <ha-button
                 slot="primaryAction"
                 .disabled=${this._saving}
                 @click=${this._save}
+                .loading=${this._saving}
               >
-                ${this._saving
-                  ? html`
-                      <ha-spinner aria-label="Saving" size="small"></ha-spinner>
-                    `
-                  : this.hass!.localize(
-                      "ui.panel.lovelace.editor.suggest_card.add"
-                    )}
-              </mwc-button>
+                ${this.hass!.localize(
+                  "ui.panel.lovelace.editor.suggest_card.add"
+                )}
+              </ha-button>
             `
           : nothing}
       </ha-dialog>

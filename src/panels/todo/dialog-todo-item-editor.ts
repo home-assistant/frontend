@@ -1,5 +1,4 @@
-import "@material/mwc-button";
-import { formatInTimeZone, toDate } from "date-fns-tz";
+import { TZDate } from "@date-fns/tz";
 import type { CSSResultGroup } from "lit";
 import { LitElement, css, html, nothing } from "lit";
 import { customElement, property, state } from "lit/decorators";
@@ -8,6 +7,7 @@ import { resolveTimeZone } from "../../common/datetime/resolve-time-zone";
 import { fireEvent } from "../../common/dom/fire_event";
 import { supportsFeature } from "../../common/entity/supports-feature";
 import "../../components/ha-alert";
+import "../../components/ha-button";
 import "../../components/ha-checkbox";
 import "../../components/ha-date-input";
 import { createCloseHeading } from "../../components/ha-dialog";
@@ -188,34 +188,35 @@ class DialogTodoItemEditor extends LitElement {
         </div>
         ${isCreate
           ? html`
-              <mwc-button
+              <ha-button
                 slot="primaryAction"
                 @click=${this._createItem}
                 .disabled=${this._submitting}
               >
                 ${this.hass.localize("ui.components.todo.item.add")}
-              </mwc-button>
+              </ha-button>
             `
           : html`
-              <mwc-button
+              <ha-button
                 slot="primaryAction"
                 @click=${this._saveItem}
                 .disabled=${!canUpdate || this._submitting}
               >
                 ${this.hass.localize("ui.components.todo.item.save")}
-              </mwc-button>
+              </ha-button>
               ${this._todoListSupportsFeature(
                 TodoListEntityFeature.DELETE_TODO_ITEM
               )
                 ? html`
-                    <mwc-button
+                    <ha-button
                       slot="secondaryAction"
-                      class="warning"
+                      variant="danger"
+                      appearance="plain"
                       @click=${this._deleteItem}
                       .disabled=${this._submitting}
                     >
                       ${this.hass.localize("ui.components.todo.item.delete")}
-                    </mwc-button>
+                    </ha-button>
                   `
                 : ""}
             `}
@@ -238,7 +239,8 @@ class DialogTodoItemEditor extends LitElement {
 
   // Formats a date in specified timezone, or defaulting to browser display timezone
   private _formatDate(date: Date, timeZone: string = this._timeZone!): string {
-    return formatInTimeZone(date, timeZone, "yyyy-MM-dd");
+    const tzDate = new TZDate(date, timeZone);
+    return tzDate.toISOString().split("T")[0]; // Get YYYY-MM-DD format
   }
 
   // Formats a time in specified timezone, or defaulting to browser display timezone
@@ -246,14 +248,15 @@ class DialogTodoItemEditor extends LitElement {
     date: Date,
     timeZone: string = this._timeZone!
   ): string | undefined {
-    return this._hasTime
-      ? formatInTimeZone(date, timeZone, "HH:mm:ss")
-      : undefined; // 24 hr
+    if (!this._hasTime) return undefined;
+    const tzDate = new TZDate(date, timeZone);
+    return tzDate.toISOString().split("T")[1].split(".")[0]; // Get HH:mm:ss format
   }
 
   // Parse a date in the browser timezone
   private _parseDate(dateStr: string): Date {
-    return toDate(dateStr, { timeZone: this._timeZone! });
+    const tzDate = new TZDate(dateStr, this._timeZone!);
+    return new Date(tzDate.getTime());
   }
 
   private _checkedCanged(ev) {

@@ -97,17 +97,16 @@ export class CloudStepIntro extends LitElement {
         </div>
       </div>
       <div class="footer side-by-side">
-        <a
+        <ha-button
           href="https://www.nabucasa.com"
           target="_blank"
           rel="noreferrer noopener"
+          appearance="plain"
         >
-          <ha-button>
-            <ha-svg-icon .path=${mdiOpenInNew} slot="icon"></ha-svg-icon>
-            nabucasa.com
-          </ha-button>
-        </a>
-        <ha-button unelevated @click=${this._signUp}
+          <ha-svg-icon .path=${mdiOpenInNew} slot="start"></ha-svg-icon>
+          nabucasa.com
+        </ha-button>
+        <ha-button @click=${this._signUp}
           >${this.hass.localize(
             "ui.panel.config.cloud.register.headline"
           )}</ha-button
@@ -128,7 +127,7 @@ export class CloudStepIntro extends LitElement {
       .features {
         display: flex;
         flex-direction: column;
-        grid-gap: 16px;
+        grid-gap: var(--ha-space-4);
         padding: 16px;
       }
       .feature {
@@ -147,7 +146,7 @@ export class CloudStepIntro extends LitElement {
         margin: 0 4px;
       }
       .round-icon {
-        border-radius: 50%;
+        border-radius: var(--ha-border-radius-circle);
         color: #6e41ab;
         background-color: #e8dcf7;
         display: flex;

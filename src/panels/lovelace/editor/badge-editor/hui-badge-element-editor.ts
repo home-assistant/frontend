@@ -1,7 +1,8 @@
 import type { CSSResultGroup, TemplateResult } from "lit";
 import { css, html, nothing } from "lit";
 import { customElement, state } from "lit/decorators";
-import "../../../../components/sl-tab-group";
+import "../../../../components/ha-tab-group";
+import "../../../../components/ha-tab-group-tab";
 import type { LovelaceBadgeConfig } from "../../../../data/lovelace/config/badge";
 import { getBadgeElementClass } from "../../create-element/create-badge-element";
 import type { LovelaceCardEditor, LovelaceConfigForm } from "../../types";
@@ -67,17 +68,21 @@ export class HuiBadgeElementEditor extends HuiTypedElementEditor<LovelaceBadgeCo
         break;
     }
     return html`
-      <sl-tab-group @sl-tab-show=${this._handleTabChanged}>
+      <ha-tab-group @wa-tab-show=${this._handleTabChanged}>
         ${tabs.map(
           (tab) => html`
-            <sl-tab slot="nav" .panel=${tab} .active=${this._currTab === tab}>
+            <ha-tab-group-tab
+              slot="nav"
+              .panel=${tab}
+              .active=${this._currTab === tab}
+            >
               ${this.hass!.localize(
                 `ui.panel.lovelace.editor.edit_badge.tab_${tab}`
               )}
-            </sl-tab>
+            </ha-tab-group-tab>
           `
         )}
-      </sl-tab-group>
+      </ha-tab-group>
       ${content}
     `;
   }
@@ -86,13 +91,13 @@ export class HuiBadgeElementEditor extends HuiTypedElementEditor<LovelaceBadgeCo
     return [
       HuiTypedElementEditor.styles,
       css`
-        sl-tab-group {
+        ha-tab-group {
           margin-bottom: 16px;
         }
-        sl-tab {
+        ha-tab-group-tab {
           flex: 1;
         }
-        sl-tab::part(base) {
+        ha-tab-group-tab::part(base) {
           width: 100%;
           justify-content: center;
         }

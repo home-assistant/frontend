@@ -9,6 +9,7 @@ import {
   startOfDay,
   isFirstDayOfMonth,
   isLastDayOfMonth,
+  addYears,
 } from "date-fns";
 import type { Collection } from "home-assistant-js-websocket";
 import { getCollection } from "home-assistant-js-websocket";
@@ -26,7 +27,12 @@ import type {
   StatisticsMetaData,
   StatisticsUnitConfiguration,
 } from "./recorder";
-import { fetchStatistics, getStatisticMetadata } from "./recorder";
+import {
+  fetchStatistics,
+  getDisplayUnit,
+  getStatisticMetadata,
+  VOLUME_UNITS,
+} from "./recorder";
 import { calcDateRange } from "../common/datetime/calc_date_range";
 import type { DateRange } from "../common/datetime/calc_date_range";
 import { formatNumber } from "../common/number/format_number";
@@ -251,7 +257,7 @@ export const getFossilEnergyConsumption = async (
     period,
   });
 
-interface EnergySourceByType {
+export interface EnergySourceByType {
   grid?: GridSourceTypeEnergyPreference[];
   solar?: SolarSourceTypeEnergyPreference[];
   battery?: BatterySourceTypeEnergyPreference[];
@@ -267,6 +273,7 @@ export interface EnergyData {
   end?: Date;
   startCompare?: Date;
   endCompare?: Date;
+  compareMode?: CompareMode;
   prefs: EnergyPreferences;
   info: EnergyInfo;
   stats: Statistics;
@@ -275,6 +282,8 @@ export interface EnergyData {
   co2SignalEntity?: string;
   fossilEnergyConsumption?: FossilEnergyConsumption;
   fossilEnergyConsumptionCompare?: FossilEnergyConsumption;
+  waterUnit: string;
+  gasUnit: string;
 }
 
 export const getReferencedStatisticIds = (
@@ -342,12 +351,18 @@ export const getReferencedStatisticIds = (
   return statIDs;
 };
 
+export const enum CompareMode {
+  NONE = "",
+  PREVIOUS = "previous",
+  YOY = "yoy",
+}
+
 const getEnergyData = async (
   hass: HomeAssistant,
   prefs: EnergyPreferences,
   start: Date,
   end?: Date,
-  compare?: boolean
+  compare?: CompareMode
 ): Promise<EnergyData> => {
   const info = await getEnergyInfo(hass);
 
@@ -397,13 +412,29 @@ const getEnergyData = async (
         ? "day"
         : "hour";
 
-  const lengthUnit = hass.config.unit_system.length || "";
+  const statsMetadata: Record<string, StatisticsMetaData> = {};
+  const statsMetadataArray = allStatIDs.length
+    ? await getStatisticMetadata(hass, allStatIDs)
+    : [];
+
+  if (allStatIDs.length) {
+    statsMetadataArray.forEach((x) => {
+      statsMetadata[x.statistic_id] = x;
+    });
+  }
+
+  const gasUnit = getEnergyGasUnit(hass, prefs, statsMetadata);
+  const gasIsVolume = VOLUME_UNITS.includes(gasUnit as any);
+
   const energyUnits: StatisticsUnitConfiguration = {
     energy: "kWh",
-    volume: lengthUnit === "km" ? "m³" : "ft³",
+    volume: gasIsVolume
+      ? (gasUnit as (typeof VOLUME_UNITS)[number])
+      : undefined,
   };
+  const waterUnit = getEnergyWaterUnit(hass, prefs, statsMetadata);
   const waterUnits: StatisticsUnitConfiguration = {
-    volume: lengthUnit === "km" ? "L" : "gal",
+    volume: waterUnit,
   };
 
   const _energyStats: Statistics | Promise<Statistics> = energyStatIds.length
@@ -422,46 +453,50 @@ const getEnergyData = async (
   let endCompare;
   let _energyStatsCompare: Statistics | Promise<Statistics> = {};
   let _waterStatsCompare: Statistics | Promise<Statistics> = {};
-
   if (compare) {
-    if (
-      (calcDateProperty(
-        start,
-        isFirstDayOfMonth,
-        hass.locale,
-        hass.config
-      ) as boolean) &&
-      (calcDateProperty(
-        end || new Date(),
-        isLastDayOfMonth,
-        hass.locale,
-        hass.config
-      ) as boolean)
-    ) {
-      // When comparing a month (or multiple), we want to start at the beginning of the month
-      startCompare = calcDate(
-        start,
-        addMonths,
-        hass.locale,
-        hass.config,
-        -(calcDateDifferenceProperty(
-          end || new Date(),
+    if (compare === CompareMode.PREVIOUS) {
+      if (
+        (calcDateProperty(
           start,
-          differenceInMonths,
+          isFirstDayOfMonth,
           hass.locale,
           hass.config
-        ) as number) - 1
-      );
-    } else {
-      startCompare = calcDate(
-        start,
-        addDays,
-        hass.locale,
-        hass.config,
-        (dayDifference + 1) * -1
-      );
+        ) as boolean) &&
+        (calcDateProperty(
+          end || new Date(),
+          isLastDayOfMonth,
+          hass.locale,
+          hass.config
+        ) as boolean)
+      ) {
+        // When comparing a month (or multiple), we want to start at the beginning of the month
+        startCompare = calcDate(
+          start,
+          addMonths,
+          hass.locale,
+          hass.config,
+          -(calcDateDifferenceProperty(
+            end || new Date(),
+            start,
+            differenceInMonths,
+            hass.locale,
+            hass.config
+          ) as number) - 1
+        );
+      } else {
+        startCompare = calcDate(
+          start,
+          addDays,
+          hass.locale,
+          hass.config,
+          (dayDifference + 1) * -1
+        );
+      }
+      endCompare = addMilliseconds(start, -1);
+    } else if (compare === CompareMode.YOY) {
+      startCompare = calcDate(start, addYears, hass.locale, hass.config, -1);
+      endCompare = calcDate(end!, addYears, hass.locale, hass.config, -1);
     }
-    endCompare = addMilliseconds(start, -1);
     if (energyStatIds.length) {
       _energyStatsCompare = fetchStatistics(
         hass!,
@@ -511,18 +546,11 @@ const getEnergyData = async (
     }
   }
 
-  const statsMetadata: Record<string, StatisticsMetaData> = {};
-  const _getStatisticMetadata:
-    | Promise<StatisticsMetaData[]>
-    | StatisticsMetaData[] = allStatIDs.length
-    ? getStatisticMetadata(hass, allStatIDs)
-    : [];
   const [
     energyStats,
     waterStats,
     energyStatsCompare,
     waterStatsCompare,
-    statsMetadataArray,
     fossilEnergyConsumption,
     fossilEnergyConsumptionCompare,
   ] = await Promise.all([
@@ -530,7 +558,6 @@ const getEnergyData = async (
     _waterStats,
     _energyStatsCompare,
     _waterStatsCompare,
-    _getStatisticMetadata,
     _fossilEnergyConsumption,
     _fossilEnergyConsumptionCompare,
   ]);
@@ -538,17 +565,13 @@ const getEnergyData = async (
   if (compare) {
     statsCompare = { ...energyStatsCompare, ...waterStatsCompare };
   }
-  if (allStatIDs.length) {
-    statsMetadataArray.forEach((x) => {
-      statsMetadata[x.statistic_id] = x;
-    });
-  }
 
   const data: EnergyData = {
     start,
     end,
     startCompare,
     endCompare,
+    compareMode: compare,
     info,
     prefs,
     stats,
@@ -557,6 +580,8 @@ const getEnergyData = async (
     co2SignalEntity,
     fossilEnergyConsumption,
     fossilEnergyConsumptionCompare,
+    waterUnit,
+    gasUnit,
   };
 
   return data;
@@ -565,11 +590,11 @@ const getEnergyData = async (
 export interface EnergyCollection extends Collection<EnergyData> {
   start: Date;
   end?: Date;
-  compare?: boolean;
+  compare?: CompareMode;
   prefs?: EnergyPreferences;
   clearPrefs(): void;
   setPeriod(newStart: Date, newEnd?: Date): void;
-  setCompare(compare: boolean): void;
+  setCompare(compare: CompareMode): void;
   _refreshTimeout?: number;
   _updatePeriodTimeout?: number;
   _active: number;
@@ -727,7 +752,7 @@ export const getEnergyDataCollection = (
       scheduleUpdatePeriod();
     }
   };
-  collection.setCompare = (compare: boolean) => {
+  collection.setCompare = (compare: CompareMode) => {
     collection.compare = compare;
   };
   return collection;
@@ -765,7 +790,7 @@ export const getEnergyGasUnitClass = (
   return undefined;
 };
 
-export const getEnergyGasUnit = (
+const getEnergyGasUnit = (
   hass: HomeAssistant,
   prefs: EnergyPreferences,
   statisticsMetaData: Record<string, StatisticsMetaData> = {}
@@ -775,11 +800,54 @@ export const getEnergyGasUnit = (
     return "kWh";
   }
 
+  const units = prefs.energy_sources
+    .filter((s) => s.type === "gas")
+    .map((s) =>
+      getDisplayUnit(
+        hass,
+        s.stat_energy_from,
+        statisticsMetaData[s.stat_energy_from]
+      )
+    );
+  if (units.length) {
+    const first = units[0];
+    if (
+      VOLUME_UNITS.includes(first as any) &&
+      units.every((u) => u === first)
+    ) {
+      return first as (typeof VOLUME_UNITS)[number];
+    }
+  }
+
   return hass.config.unit_system.length === "km" ? "m³" : "ft³";
 };
 
-export const getEnergyWaterUnit = (hass: HomeAssistant): string =>
-  hass.config.unit_system.length === "km" ? "L" : "gal";
+const getEnergyWaterUnit = (
+  hass: HomeAssistant,
+  prefs: EnergyPreferences,
+  statisticsMetaData: Record<string, StatisticsMetaData>
+): (typeof VOLUME_UNITS)[number] => {
+  const units = prefs.energy_sources
+    .filter((s) => s.type === "water")
+    .map((s) =>
+      getDisplayUnit(
+        hass,
+        s.stat_energy_from,
+        statisticsMetaData[s.stat_energy_from]
+      )
+    );
+  if (units.length) {
+    const first = units[0];
+    if (
+      VOLUME_UNITS.includes(first as any) &&
+      units.every((u) => u === first)
+    ) {
+      return first as (typeof VOLUME_UNITS)[number];
+    }
+  }
+
+  return hass.config.unit_system.length === "km" ? "L" : "gal";
+};
 
 export const energyStatisticHelpUrl =
   "/docs/energy/faq/#troubleshooting-missing-entities";

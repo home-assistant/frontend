@@ -1,4 +1,3 @@
-import "@material/mwc-button/mwc-button";
 import { mdiChevronLeft, mdiClose, mdiMenuDown } from "@mdi/js";
 import type { CSSResultGroup } from "lit";
 import { css, html, LitElement, nothing } from "lit";
@@ -194,12 +193,12 @@ export class HaVoiceAssistantSetupDialog extends LitElement {
                     ).map(
                       (lang) =>
                         html`<ha-md-menu-item
-                          .value=${lang.value}
+                          .value=${lang.id}
                           @click=${this._handlePickLanguage}
                           @keydown=${this._handlePickLanguage}
-                          .selected=${this._language === lang.value}
+                          .selected=${this._language === lang.id}
                         >
-                          ${lang.label}
+                          ${lang.primary}
                         </ha-md-menu-item>`
                     )}
                   </ha-md-button-menu>`

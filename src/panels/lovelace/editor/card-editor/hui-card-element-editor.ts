@@ -1,7 +1,8 @@
 import type { TemplateResult } from "lit";
 import { css, html, nothing } from "lit";
 import { customElement, property, state } from "lit/decorators";
-import "../../../../components/sl-tab-group";
+import "../../../../components/ha-tab-group";
+import "../../../../components/ha-tab-group-tab";
 import type { LovelaceCardConfig } from "../../../../data/lovelace/config/card";
 import type { LovelaceSectionConfig } from "../../../../data/lovelace/config/section";
 import { getCardElementClass } from "../../create-element/create-card-element";
@@ -90,17 +91,21 @@ export class HuiCardElementEditor extends HuiTypedElementEditor<LovelaceCardConf
         `;
     }
     return html`
-      <sl-tab-group @sl-tab-show=${this._handleTabChanged}>
+      <ha-tab-group @wa-tab-show=${this._handleTabChanged}>
         ${displayedTabs.map(
           (tab) => html`
-            <sl-tab slot="nav" .active=${this._currTab === tab} panel=${tab}>
+            <ha-tab-group-tab
+              slot="nav"
+              .active=${this._currTab === tab}
+              panel=${tab}
+            >
               ${this.hass.localize(
                 `ui.panel.lovelace.editor.edit_card.tab_${tab}`
               )}
-            </sl-tab>
+            </ha-tab-group-tab>
           `
         )}
-      </sl-tab-group>
+      </ha-tab-group>
       ${content}
     `;
   }
@@ -115,15 +120,15 @@ export class HuiCardElementEditor extends HuiTypedElementEditor<LovelaceCardConf
 
   static override styles = [
     css`
-      sl-tab-group {
+      ha-tab-group {
         margin-bottom: 16px;
       }
 
-      sl-tab {
+      ha-tab-group-tab {
         flex: 1;
       }
 
-      sl-tab::part(base) {
+      ha-tab-group-tab::part(base) {
         width: 100%;
         justify-content: center;
       }

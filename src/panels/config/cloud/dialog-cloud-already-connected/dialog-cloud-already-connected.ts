@@ -1,17 +1,17 @@
+import { mdiEye, mdiEyeOff } from "@mdi/js";
 import type { CSSResultGroup } from "lit";
 import { css, html, LitElement, nothing } from "lit";
 import { customElement, state } from "lit/decorators";
-import { mdiEye, mdiEyeOff } from "@mdi/js";
 import { formatDateTime } from "../../../../common/datetime/format_date_time";
 import { fireEvent } from "../../../../common/dom/fire_event";
 import "../../../../components/ha-alert";
 import "../../../../components/ha-button";
-import "../../../../components/ha-icon-button";
 import { createCloseHeading } from "../../../../components/ha-dialog";
+import "../../../../components/ha-icon-button";
 import { haStyleDialog } from "../../../../resources/styles";
 import type { HomeAssistant } from "../../../../types";
-import type { CloudAlreadyConnectedParams as CloudAlreadyConnectedDialogParams } from "./show-dialog-cloud-already-connected";
 import { obfuscateUrl } from "../../../../util/url";
+import type { CloudAlreadyConnectedParams as CloudAlreadyConnectedDialogParams } from "./show-dialog-cloud-already-connected";
 
 @customElement("dialog-cloud-already-connected")
 class DialogCloudAlreadyConnected extends LitElement {
@@ -131,7 +131,11 @@ class DialogCloudAlreadyConnected extends LitElement {
           )}
         </ha-alert>
 
-        <ha-button @click=${this.closeDialog} slot="secondaryAction">
+        <ha-button
+          appearance="plain"
+          @click=${this.closeDialog}
+          slot="secondaryAction"
+        >
           ${this.hass!.localize("ui.common.cancel")}
         </ha-button>
         <ha-button @click=${this._logInHere} slot="primaryAction">

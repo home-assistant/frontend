@@ -1,7 +1,7 @@
-import "@material/mwc-button";
 import { LitElement, css, html } from "lit";
 import { customElement, property } from "lit/decorators";
 import { supportsFeature } from "../common/entity/supports-feature";
+import "./ha-button";
 import type { LawnMowerEntity, LawnMowerEntityState } from "../data/lawn_mower";
 import { LawnMowerEntityFeature } from "../data/lawn_mower";
 import type { HomeAssistant } from "../types";
@@ -49,16 +49,21 @@ class HaLawnMowerActionButton extends LitElement {
 
     if (action && supportsFeature(this.stateObj, action.feature)) {
       return html`
-        <mwc-button @click=${this.callService} .service=${action.service}>
+        <ha-button
+          appearance="plain"
+          @click=${this.callService}
+          .service=${action.service}
+          size="small"
+        >
           ${this.hass.localize(`ui.card.lawn_mower.actions.${action.action}`)}
-        </mwc-button>
+        </ha-button>
       `;
     }
 
     return html`
-      <mwc-button disabled>
+      <ha-button appearance="plain" disabled>
         ${this.hass.formatEntityState(this.stateObj)}
-      </mwc-button>
+      </ha-button>
     `;
   }
 
@@ -72,16 +77,12 @@ class HaLawnMowerActionButton extends LitElement {
   }
 
   static styles = css`
-    mwc-button {
+    ha-button {
       top: 3px;
       height: 37px;
       margin-right: -0.57em;
       margin-inline-end: -0.57em;
       margin-inline-start: initial;
-    }
-    mwc-button[disabled] {
-      background-color: transparent;
-      color: var(--secondary-text-color);
     }
   `;
 }

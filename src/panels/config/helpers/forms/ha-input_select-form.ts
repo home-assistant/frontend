@@ -1,4 +1,4 @@
-import { mdiDelete, mdiDrag } from "@mdi/js";
+import { mdiDelete, mdiDragHorizontalVariant } from "@mdi/js";
 import type { CSSResultGroup } from "lit";
 import { LitElement, css, html, nothing } from "lit";
 import { customElement, property, query, state } from "lit/decorators";
@@ -111,7 +111,9 @@ class HaInputSelectForm extends LitElement {
                     <ha-list-item class="option" hasMeta>
                       <div class="optioncontent">
                         <div class="handle">
-                          <ha-svg-icon .path=${mdiDrag}></ha-svg-icon>
+                          <ha-svg-icon
+                            .path=${mdiDragHorizontalVariant}
+                          ></ha-svg-icon>
                         </div>
                         ${option}
                       </div>
@@ -145,7 +147,7 @@ class HaInputSelectForm extends LitElement {
             )}
             @keydown=${this._handleKeyAdd}
           ></ha-textfield>
-          <ha-button @click=${this._addOption}
+          <ha-button size="small" appearance="plain" @click=${this._addOption}
             >${this.hass!.localize(
               "ui.dialogs.helper_settings.input_select.add"
             )}</ha-button
@@ -227,18 +229,13 @@ class HaInputSelectForm extends LitElement {
         }
         .option {
           border: 1px solid var(--divider-color);
-          border-radius: 4px;
+          border-radius: var(--ha-border-radius-sm);
           margin-top: 4px;
           --mdc-icon-button-size: 24px;
           --mdc-ripple-color: transparent;
           --mdc-list-side-padding: 16px;
           cursor: default;
           background-color: var(--card-background-color);
-        }
-        mwc-button {
-          margin-left: 8px;
-          margin-inline-start: 8px;
-          margin-inline-end: initial;
         }
         ha-textfield {
           display: block;

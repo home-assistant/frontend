@@ -1,6 +1,6 @@
 import type { TemplateResult } from "lit";
 import { css, html, LitElement, nothing } from "lit";
-import { customElement, property, state } from "lit/decorators";
+import { customElement, property, state, query } from "lit/decorators";
 import { UNIT_C } from "../../../common/const";
 import { stopPropagation } from "../../../common/dom/stop_propagation";
 import { navigate } from "../../../common/navigate";
@@ -8,6 +8,7 @@ import "../../../components/buttons/ha-progress-button";
 import type { HaProgressButton } from "../../../components/buttons/ha-progress-button";
 import "../../../components/ha-alert";
 import "../../../components/ha-card";
+import "../../../components/ha-button";
 import "../../../components/ha-checkbox";
 import type { HaCheckbox } from "../../../components/ha-checkbox";
 import "../../../components/ha-country-picker";
@@ -26,9 +27,9 @@ import { saveCoreConfig } from "../../../data/core";
 import { showConfirmationDialog } from "../../../dialogs/generic/show-dialog-box";
 import "../../../layouts/hass-subpage";
 import "./ai-task-pref";
+import type { AITaskPref } from "./ai-task-pref";
 import { haStyle } from "../../../resources/styles";
 import type { HomeAssistant, ValueChangedEvent } from "../../../types";
-import { isComponentLoaded } from "../../../common/config/is_component_loaded";
 
 @customElement("ha-config-section-general")
 class HaConfigSectionGeneral extends LitElement {
@@ -57,6 +58,8 @@ class HaConfigSectionGeneral extends LitElement {
   @state() private _error?: string;
 
   @state() private _updateUnits?: boolean;
+
+  @query("ai-task-pref") private _aiTaskPref!: AITaskPref;
 
   protected render(): TemplateResult {
     const canEdit = ["storage", "default"].includes(
@@ -254,8 +257,12 @@ class HaConfigSectionGeneral extends LitElement {
                   "ui.panel.config.core.section.core.core_config.edit_location_description"
                 )}
               </div>
-              <mwc-button @click=${this._editLocation} .disabled=${disabled}
-                >${this.hass.localize("ui.common.edit")}</mwc-button
+              <ha-button
+                appearance="plain"
+                size="small"
+                @click=${this._editLocation}
+                .disabled=${disabled}
+                >${this.hass.localize("ui.common.edit")}</ha-button
               >
             </ha-settings-row>
             <div class="card-actions">
@@ -263,16 +270,14 @@ class HaConfigSectionGeneral extends LitElement {
                 @click=${this._updateEntry}
                 .disabled=${disabled}
               >
-                ${this.hass!.localize("ui.panel.config.zone.detail.update")}
+                ${this.hass!.localize("ui.common.save")}
               </ha-progress-button>
             </div>
           </ha-card>
-          ${isComponentLoaded(this.hass, "ai_task")
-            ? html`<ai-task-pref
-                .hass=${this.hass}
-                .narrow=${this.narrow}
-              ></ai-task-pref>`
-            : nothing}
+          <ai-task-pref
+            .hass=${this.hass}
+            .narrow=${this.narrow}
+          ></ai-task-pref>
         </div>
       </hass-subpage>
     `;
@@ -293,6 +298,12 @@ class HaConfigSectionGeneral extends LitElement {
     this._timeZone = this.hass.config.time_zone || "Etc/GMT";
     this._name = this.hass.config.location_name;
     this._updateUnits = true;
+
+    if (window.location.hash === "#ai-task") {
+      this._aiTaskPref.updateComplete.then(() => {
+        this._aiTaskPref.scrollIntoView();
+      });
+    }
   }
 
   private _handleValueChanged(ev: ValueChangedEvent<string>) {

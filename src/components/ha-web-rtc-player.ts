@@ -61,6 +61,14 @@ class HaWebRtcPlayer extends LitElement {
 
   private _candidatesList: RTCIceCandidate[] = [];
 
+  private _handleVisibilityChange = () => {
+    if (document.hidden) {
+      this._cleanUp();
+    } else {
+      this._startWebRtc();
+    }
+  };
+
   protected override render(): TemplateResult {
     if (this._error) {
       return html`<ha-alert alert-type="error">${this._error}</ha-alert>`;
@@ -88,10 +96,15 @@ class HaWebRtcPlayer extends LitElement {
     if (this.hasUpdated && this.entityid) {
       this._startWebRtc();
     }
+    document.addEventListener("visibilitychange", this._handleVisibilityChange);
   }
 
   public override disconnectedCallback() {
     super.disconnectedCallback();
+    document.removeEventListener(
+      "visibilitychange",
+      this._handleVisibilityChange
+    );
     this._cleanUp();
   }
 
@@ -306,6 +319,10 @@ class HaWebRtcPlayer extends LitElement {
 
   private _addTrack = async (event: RTCTrackEvent) => {
     if (!this._remoteStream) {
+      return;
+    }
+    // If the track is audio and the player is muted, we do not add it to the stream.
+    if (event.track.kind === "audio" && this.muted) {
       return;
     }
     this._remoteStream.addTrack(event.track);

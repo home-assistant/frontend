@@ -94,7 +94,7 @@ class DownloadLogsDialog extends LitElement {
           </ha-md-select>
         </div>
         <div slot="actions">
-          <ha-button @click=${this.closeDialog}>
+          <ha-button appearance="plain" @click=${this.closeDialog}>
             ${this.hass.localize("ui.common.cancel")}
           </ha-button>
           <ha-button @click=${this._downloadLogs}>
@@ -141,7 +141,7 @@ class DownloadLogsDialog extends LitElement {
           display: flex;
           flex-direction: column;
           align-items: center;
-          gap: 8px;
+          gap: var(--ha-space-2);
         }
       `,
     ];

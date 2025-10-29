@@ -162,6 +162,7 @@ class ZWaveJSLogs extends SubscribeMixin(LitElement) {
         textarea {
           flex-grow: 1;
           padding: 16px;
+          font-family: var(--ha-font-family-code);
         }
         ha-card {
           margin: 16px 0;

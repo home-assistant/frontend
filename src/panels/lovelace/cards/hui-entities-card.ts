@@ -1,6 +1,6 @@
 import type { PropertyValues, TemplateResult } from "lit";
 import { css, html, LitElement, nothing } from "lit";
-import { customElement, state } from "lit/decorators";
+import { customElement, property, state } from "lit/decorators";
 import { DOMAINS_TOGGLE } from "../../../common/const";
 import { applyThemesOnElement } from "../../../common/dom/apply_themes_on_element";
 import { computeDomain } from "../../../common/entity/compute_domain";
@@ -20,9 +20,34 @@ import type {
 import type {
   LovelaceCard,
   LovelaceCardEditor,
+  LovelaceGridOptions,
   LovelaceHeaderFooter,
 } from "../types";
 import type { EntitiesCardConfig } from "./types";
+import { haStyleScrollbar } from "../../../resources/styles";
+
+export const computeShowHeaderToggle = <
+  T extends EntityConfig | LovelaceRowConfig,
+>(
+  config: EntitiesCardConfig,
+  entities: T[]
+): boolean => {
+  if (config.title !== undefined && config.show_header_toggle === undefined) {
+    // Default value is show toggle if we can at least toggle 2 entities.
+    let toggleable = 0;
+    for (const rowConf of entities) {
+      if (!("entity" in rowConf)) {
+        continue;
+      }
+      toggleable += Number(DOMAINS_TOGGLE.has(computeDomain(rowConf.entity)));
+      if (toggleable === 2) {
+        break;
+      }
+    }
+    return toggleable === 2;
+  }
+  return !!config.show_header_toggle;
+};
 
 @customElement("hui-entities-card")
 class HuiEntitiesCard extends LitElement implements LovelaceCard {
@@ -52,6 +77,8 @@ class HuiEntitiesCard extends LitElement implements LovelaceCard {
 
   private _hass?: HomeAssistant;
 
+  @property({ attribute: false }) public layout?: string;
+
   private _configEntities?: LovelaceRowConfig[];
 
   private _showHeaderToggle?: boolean;
@@ -59,6 +86,21 @@ class HuiEntitiesCard extends LitElement implements LovelaceCard {
   private _headerElement?: LovelaceHeaderFooter;
 
   private _footerElement?: LovelaceHeaderFooter;
+
+  connectedCallback(): void {
+    super.connectedCallback();
+    this.addEventListener("row-visibility-changed", (ev) =>
+      this._updateRowVisibility(ev)
+    );
+  }
+
+  disconnectedCallback(): void {
+    super.disconnectedCallback();
+    this.removeEventListener(
+      "row-visibility-changed",
+      this._updateRowVisibility
+    );
+  }
 
   set hass(hass: HomeAssistant) {
     this._hass = hass;
@@ -101,6 +143,14 @@ class HuiEntitiesCard extends LitElement implements LovelaceCard {
     return size;
   }
 
+  public getGridOptions(): LovelaceGridOptions {
+    return {
+      columns: 12,
+      min_columns: 6,
+      min_rows: this._config?.title || this._showHeaderToggle ? 3 : 2,
+    };
+  }
+
   public setConfig(config: EntitiesCardConfig): void {
     if (!config.entities || !Array.isArray(config.entities)) {
       throw new Error("Entities must be specified");
@@ -110,23 +160,7 @@ class HuiEntitiesCard extends LitElement implements LovelaceCard {
 
     this._config = config;
     this._configEntities = entities;
-    if (config.title !== undefined && config.show_header_toggle === undefined) {
-      // Default value is show toggle if we can at least toggle 2 entities.
-      let toggleable = 0;
-      for (const rowConf of entities) {
-        if (!("entity" in rowConf)) {
-          continue;
-        }
-        toggleable += Number(DOMAINS_TOGGLE.has(computeDomain(rowConf.entity)));
-        if (toggleable === 2) {
-          break;
-        }
-      }
-      this._showHeaderToggle = toggleable === 2;
-    } else {
-      this._showHeaderToggle = config.show_header_toggle;
-    }
-
+    this._showHeaderToggle = computeShowHeaderToggle(config, entities);
     if (this._config.header) {
       this._headerElement = createHeaderFooterElement(
         this._config.header
@@ -211,7 +245,7 @@ class HuiEntitiesCard extends LitElement implements LovelaceCard {
                     `}
               </h1>
             `}
-        <div id="states" class="card-content">
+        <div id="states" class="card-content ha-scrollbar">
           ${this._configEntities!.map((entityConf) =>
             this._renderEntity(entityConf)
           )}
@@ -224,66 +258,73 @@ class HuiEntitiesCard extends LitElement implements LovelaceCard {
     `;
   }
 
-  static styles = css`
-    ha-card {
-      height: 100%;
-      display: flex;
-      flex-direction: column;
-      justify-content: space-between;
-    }
-    .card-header {
-      display: flex;
-      justify-content: space-between;
-    }
+  static styles = [
+    haStyleScrollbar,
+    css`
+      ha-card {
+        height: 100%;
+        display: flex;
+        flex-direction: column;
+        justify-content: space-between;
+      }
+      .card-header {
+        display: flex;
+        justify-content: space-between;
+      }
 
-    .card-header .name {
-      white-space: nowrap;
-      overflow: hidden;
-      text-overflow: ellipsis;
-    }
+      .card-header .name {
+        white-space: nowrap;
+        overflow: hidden;
+        text-overflow: ellipsis;
+      }
 
-    #states {
-      flex: 1;
-    }
+      #states {
+        flex: 1;
+        display: flex;
+        flex-direction: column;
+        gap: var(--entities-card-row-gap, var(--card-row-gap, 8px));
+        overflow-y: auto;
+      }
 
-    #states > * {
-      margin: 8px 0;
-    }
+      #states > div > * {
+        overflow: clip visible;
+      }
 
-    #states > *:first-child {
-      margin-top: 0;
-    }
+      #states > div {
+        position: relative;
+      }
 
-    #states > *:last-child {
-      margin-bottom: 0;
-    }
+      .icon {
+        padding: 0px 18px 0px 8px;
+      }
 
-    #states > div > * {
-      overflow: clip visible;
-    }
+      .header {
+        border-top-left-radius: var(
+          --ha-card-border-radius,
+          var(--ha-border-radius-lg)
+        );
+        border-top-right-radius: var(
+          --ha-card-border-radius,
+          var(--ha-border-radius-lg)
+        );
+        margin-bottom: 16px;
+        overflow: hidden;
+      }
 
-    #states > div {
-      position: relative;
-    }
-
-    .icon {
-      padding: 0px 18px 0px 8px;
-    }
-
-    .header {
-      border-top-left-radius: var(--ha-card-border-radius, 12px);
-      border-top-right-radius: var(--ha-card-border-radius, 12px);
-      margin-bottom: 16px;
-      overflow: hidden;
-    }
-
-    .footer {
-      border-bottom-left-radius: var(--ha-card-border-radius, 12px);
-      border-bottom-right-radius: var(--ha-card-border-radius, 12px);
-      margin-top: -16px;
-      overflow: hidden;
-    }
-  `;
+      .footer {
+        border-bottom-left-radius: var(
+          --ha-card-border-radius,
+          var(--ha-border-radius-lg)
+        );
+        border-bottom-right-radius: var(
+          --ha-card-border-radius,
+          var(--ha-border-radius-lg)
+        );
+        margin-top: -16px;
+        overflow: hidden;
+      }
+    `,
+  ];
 
   private _renderEntity(entityConf: LovelaceRowConfig): TemplateResult {
     const element = createRowElement(
@@ -301,8 +342,16 @@ class HuiEntitiesCard extends LitElement implements LovelaceCard {
       element.hass = this._hass;
     }
 
-    return html`<div>${element}</div>`;
+    return html`<div ?hidden=${element.hidden}>${element}</div>`;
   }
+
+  private _updateRowVisibility = (ev) => {
+    if (ev.detail?.value === false) {
+      ev.detail?.row?.parentElement!.style.setProperty("display", "none");
+    } else {
+      ev.detail?.row?.parentElement!.style.setProperty("display", "");
+    }
+  };
 }
 
 declare global {

@@ -146,7 +146,11 @@ export class HuiGenericEntityRow extends LitElement {
                                           100
                                       )}
                                       %`
-                                    : nothing)}
+                                    : this.config.secondary_info === "state"
+                                      ? html`${this.hass.formatEntityState(
+                                          stateObj
+                                        )}`
+                                      : nothing)}
                     </div>
                   `
                 : nothing}

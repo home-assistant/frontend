@@ -1,5 +1,3 @@
-import "@material/mwc-button";
-
 import { mdiClose, mdiHelpCircle } from "@mdi/js";
 import type { CSSResultGroup } from "lit";
 import { LitElement, css, html, nothing } from "lit";
@@ -10,6 +8,7 @@ import "../../../../components/ha-icon-button";
 import "../../../../components/ha-md-list-item";
 import "../../../../components/ha-md-list";
 import "../../../../components/ha-radio";
+import "../../../../components/ha-button";
 import "../../../../components/ha-textfield";
 import "../../../../components/ha-dialog";
 
@@ -158,12 +157,16 @@ class DialogAutomationMode extends LitElement implements HassDialog {
             `
           : nothing}
 
-        <mwc-button @click=${this.closeDialog} slot="secondaryAction">
+        <ha-button
+          appearance="plain"
+          @click=${this.closeDialog}
+          slot="primaryAction"
+        >
           ${this.hass.localize("ui.common.cancel")}
-        </mwc-button>
-        <mwc-button @click=${this._save} slot="primaryAction">
+        </ha-button>
+        <ha-button @click=${this._save} slot="primaryAction">
           ${this.hass.localize("ui.panel.config.automation.editor.change_mode")}
-        </mwc-button>
+        </ha-button>
       </ha-dialog>
     `;
   }

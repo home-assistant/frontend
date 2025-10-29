@@ -97,8 +97,12 @@ export default <T extends Constructor<HassBaseEl>>(superClass: T) =>
         ? this.hass.themes.themes[themeName]
         : undefined;
 
-      if (selectedTheme && darkMode && !selectedTheme.modes) {
-        darkMode = false;
+      if (selectedTheme) {
+        if (!selectedTheme.modes || !("dark" in selectedTheme.modes)) {
+          darkMode = false;
+        } else if (!("light" in selectedTheme.modes)) {
+          darkMode = true;
+        }
       }
 
       themeSettings = { ...themeSettings, dark: darkMode };

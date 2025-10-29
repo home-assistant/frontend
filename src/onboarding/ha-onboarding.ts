@@ -516,7 +516,7 @@ class HaOnboarding extends litLocalizeLiteMixin(HassElement) {
     ha-language-picker {
       display: block;
       width: 200px;
-      border-radius: 4px;
+      border-radius: var(--ha-border-radius-sm);
       overflow: hidden;
       --ha-select-height: 40px;
       --mdc-select-fill-color: none;

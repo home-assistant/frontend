@@ -5,7 +5,6 @@ import type {
 import { ensureArray } from "../common/array/ensure-array";
 import { computeStateDomain } from "../common/entity/compute_state_domain";
 import { supportsFeature } from "../common/entity/supports-feature";
-import type { CropOptions } from "../dialogs/image-cropper-dialog/show-image-cropper-dialog";
 import { isHelperDomain } from "../panels/config/helpers/const";
 import type { UiAction } from "../panels/lovelace/components/hui-action-editor";
 import type { HomeAssistant } from "../types";
@@ -18,6 +17,7 @@ import type {
   EntityRegistryEntry,
 } from "./entity_registry";
 import type { EntitySources } from "./entity_sources";
+import type { EntityNameItem } from "../common/entity/compute_entity_name_display";
 
 export type Selector =
   | ActionSelector
@@ -41,12 +41,11 @@ export type Selector =
   | LegacyDeviceSelector
   | DurationSelector
   | EntitySelector
+  | EntityNameSelector
   | LegacyEntitySelector
   | FileSelector
   | IconSelector
   | LabelSelector
-  | ImageSelector
-  | BackgroundSelector
   | LanguageSelector
   | LocationSelector
   | MediaSelector
@@ -74,7 +73,9 @@ export type Selector =
   | BackupLocationSelector;
 
 export interface ActionSelector {
-  action: {} | null;
+  action: {
+    optionsInSidebar?: boolean;
+  } | null;
 }
 
 export interface AddonSelector {
@@ -98,7 +99,7 @@ export interface AreasDisplaySelector {
 
 export interface AttributeSelector {
   attribute: {
-    entity_id?: string;
+    entity_id?: string | string[];
     hide_attributes?: readonly string[];
   } | null;
 }
@@ -130,7 +131,9 @@ export interface ColorTempSelector {
 }
 
 export interface ConditionSelector {
-  condition: {} | null;
+  condition: {
+    optionsInSidebar?: boolean;
+  } | null;
 }
 
 export interface ConversationAgentSelector {
@@ -226,6 +229,7 @@ export interface EntitySelector {
     include_entities?: string[];
     exclude_entities?: string[];
     filter?: EntitySelectorFilter | readonly EntitySelectorFilter[];
+    reorder?: boolean;
   } | null;
 }
 
@@ -266,14 +270,6 @@ export interface IconSelector {
   } | null;
 }
 
-export interface ImageSelector {
-  image: { original?: boolean; crop?: CropOptions } | null;
-}
-
-export interface BackgroundSelector {
-  background: { original?: boolean; crop?: CropOptions } | null;
-}
-
 export interface LabelSelector {
   label: {
     multiple?: boolean;
@@ -305,6 +301,10 @@ export interface LocationSelectorValue {
 export interface MediaSelector {
   media: {
     accept?: string[];
+    image_upload?: boolean;
+    clearable?: boolean;
+    hide_content_type?: boolean;
+    content_id_helper?: string;
   } | null;
 }
 
@@ -318,6 +318,7 @@ export interface MediaSelectorValue {
     media_class?: string;
     children_media_class?: string | null;
     navigateIds?: { media_content_type: string; media_content_id: string }[];
+    browse_entity_id?: string;
   };
 }
 
@@ -340,6 +341,7 @@ export interface NumberSelector {
 interface ObjectSelectorField {
   selector: Selector;
   label?: string;
+  description?: string;
   required?: boolean;
 }
 
@@ -393,8 +395,10 @@ export interface SelectorSelector {
 export interface StateSelector {
   state: {
     extra_options?: { label: string; value: any }[];
-    entity_id?: string;
+    entity_id?: string | string[];
     attribute?: string;
+    hide_states?: string[];
+    multiple?: boolean;
   } | null;
 }
 
@@ -488,6 +492,13 @@ export interface UiStateContentSelector {
   ui_state_content: {
     entity_id?: string;
     allow_name?: boolean;
+  } | null;
+}
+
+export interface EntityNameSelector {
+  entity_name: {
+    entity_id?: string;
+    default_name?: EntityNameItem | EntityNameItem[] | string;
   } | null;
 }
 

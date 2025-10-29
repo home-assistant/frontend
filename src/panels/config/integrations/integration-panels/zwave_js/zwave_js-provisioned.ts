@@ -6,6 +6,7 @@ import type { DataTableColumnContainer } from "../../../../../components/data-ta
 import type { ZwaveJSProvisioningEntry } from "../../../../../data/zwave_js";
 import {
   fetchZwaveProvisioningEntries,
+  ProvisioningEntryStatus,
   SecurityClass,
   unprovisionZwaveSmartStartNode,
 } from "../../../../../data/zwave_js";
@@ -67,6 +68,14 @@ class ZWaveJSProvisioned extends LitElement {
                   .path=${mdiCloseCircleOutline}
                 ></ha-svg-icon>
               `,
+      },
+      active: {
+        title: localize("ui.panel.config.zwave_js.provisioned.active"),
+        type: "icon",
+        template: (entry) =>
+          entry.status === ProvisioningEntryStatus.Active
+            ? html`<ha-svg-icon .path=${mdiCheckCircle}></ha-svg-icon>`
+            : html`<ha-svg-icon .path=${mdiCloseCircleOutline}></ha-svg-icon>`,
       },
       dsk: {
         main: true,

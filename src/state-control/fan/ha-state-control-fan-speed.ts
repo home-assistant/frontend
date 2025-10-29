@@ -92,7 +92,7 @@ export class HaStateControlFanSpeed extends LitElement {
           .options=${options}
           .value=${this.speedValue}
           @value-changed=${this._speedValueChanged}
-          .ariaLabel=${computeAttributeNameDisplay(
+          .label=${computeAttributeNameDisplay(
             this.hass.localize,
             this.stateObj,
             this.hass.entities,
@@ -117,7 +117,7 @@ export class HaStateControlFanSpeed extends LitElement {
         .value=${this.sliderValue}
         .step=${this.stateObj.attributes.percentage_step ?? 1}
         @value-changed=${this._valueChanged}
-        .ariaLabel=${computeAttributeNameDisplay(
+        .label=${computeAttributeNameDisplay(
           this.hass.localize,
           this.stateObj,
           this.hass.entities,
@@ -141,7 +141,7 @@ export class HaStateControlFanSpeed extends LitElement {
       max-height: 320px;
       min-height: 200px;
       --control-slider-thickness: 130px;
-      --control-slider-border-radius: 36px;
+      --control-slider-border-radius: var(--ha-border-radius-6xl);
       --control-slider-color: var(--primary-color);
       --control-slider-background: var(--disabled-color);
       --control-slider-background-opacity: 0.2;
@@ -152,7 +152,7 @@ export class HaStateControlFanSpeed extends LitElement {
       max-height: 320px;
       min-height: 200px;
       --control-select-thickness: 130px;
-      --control-select-border-radius: 36px;
+      --control-select-border-radius: var(--ha-border-radius-6xl);
       --control-select-color: var(--primary-color);
       --control-select-background: var(--disabled-color);
       --control-select-background-opacity: 0.2;

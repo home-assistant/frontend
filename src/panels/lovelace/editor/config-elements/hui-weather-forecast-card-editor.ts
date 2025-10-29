@@ -12,6 +12,7 @@ import {
   string,
 } from "superstruct";
 import { fireEvent } from "../../../../common/dom/fire_event";
+import { DEFAULT_ENTITY_NAME } from "../../../../common/entity/compute_entity_name_display";
 import { supportsFeature } from "../../../../common/entity/supports-feature";
 import type { LocalizeFunc } from "../../../../common/translations/localize";
 import "../../../../components/ha-form/ha-form";
@@ -24,12 +25,13 @@ import type { WeatherForecastCardConfig } from "../../cards/types";
 import type { LovelaceCardEditor } from "../../types";
 import { actionConfigStruct } from "../structs/action-struct";
 import { baseLovelaceCardConfig } from "../structs/base-card-struct";
+import { entityNameStruct } from "../structs/entity-name-struct";
 
 const cardConfigStruct = assign(
   baseLovelaceCardConfig,
   object({
     entity: optional(string()),
-    name: optional(string()),
+    name: optional(entityNameStruct),
     theme: optional(string()),
     show_current: optional(boolean()),
     show_forecast: optional(boolean()),
@@ -148,7 +150,15 @@ export class HuiWeatherForecastCardEditor
           required: true,
           selector: { entity: { domain: "weather" } },
         },
-        { name: "name", selector: { text: {} } },
+        {
+          name: "name",
+          selector: {
+            entity_name: {
+              default_name: DEFAULT_ENTITY_NAME,
+            },
+          },
+          context: { entity: "entity" },
+        },
         {
           name: "",
           type: "grid",
@@ -211,6 +221,7 @@ export class HuiWeatherForecastCardEditor
           ? ([
               {
                 name: "forecast",
+                default: "show_both",
                 selector: {
                   select: {
                     options: [
