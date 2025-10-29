@@ -1,4 +1,5 @@
 import { assert, assign, boolean, object, optional, string } from "superstruct";
+import { DEFAULT_ENTITY_NAME } from "../../../../common/entity/compute_entity_name_display";
 import type { LocalizeFunc } from "../../../../common/translations/localize";
 import type { HaFormSchema } from "../../../../components/ha-form/types";
 import { headerFooterConfigStructs } from "../../header-footer/structs";
@@ -25,7 +26,9 @@ const SCHEMA = [
   {
     name: "name",
     selector: {
-      entity_name: {},
+      entity_name: {
+        default_name: DEFAULT_ENTITY_NAME,
+      },
     },
     context: { entity: "entity" },
   },

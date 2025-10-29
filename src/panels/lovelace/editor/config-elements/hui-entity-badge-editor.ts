@@ -13,6 +13,7 @@ import {
   string,
   union,
 } from "superstruct";
+import { DEFAULT_ENTITY_NAME } from "../../../../common/entity/compute_entity_name_display";
 import { fireEvent } from "../../../../common/dom/fire_event";
 import type { LocalizeFunc } from "../../../../common/translations/localize";
 import "../../../../components/ha-form/ha-form";
@@ -85,7 +86,9 @@ export class HuiEntityBadgeEditor
             {
               name: "name",
               selector: {
-                entity_name: {},
+                entity_name: {
+                  default_name: DEFAULT_ENTITY_NAME,
+                },
               },
               context: { entity: "entity" },
             },

@@ -1,9 +1,10 @@
-import { mdiGestureTap } from "@mdi/js";
 import type { CSSResultGroup } from "lit";
 import { html, LitElement, nothing } from "lit";
 import { customElement, property, state } from "lit/decorators";
 import { assert, assign, object, optional, string } from "superstruct";
+import { mdiGestureTap } from "@mdi/js";
 import { fireEvent } from "../../../../common/dom/fire_event";
+import { DEFAULT_ENTITY_NAME } from "../../../../common/entity/compute_entity_name_display";
 import "../../../../components/ha-form/ha-form";
 import type { SchemaUnion } from "../../../../components/ha-form/types";
 import type { HomeAssistant } from "../../../../types";
@@ -36,7 +37,9 @@ const SCHEMA = [
   {
     name: "name",
     selector: {
-      entity_name: {},
+      entity_name: {
+        default_name: DEFAULT_ENTITY_NAME,
+      },
     },
     context: { entity: "entity" },
   },
