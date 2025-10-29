@@ -92,6 +92,7 @@ export class HomeMainViewStrategy extends ReactiveElement {
                   ? floor.name
                   : hass.localize("ui.panel.lovelace.strategy.home.areas"),
               heading_style: "title",
+              icon: floor.icon,
             },
             ...cards,
           ],
@@ -215,7 +216,9 @@ export class HomeMainViewStrategy extends ReactiveElement {
       column_span: maxColumns,
       cards: [],
     };
-    const weatherEntity = Object.keys(hass.states).find(weatherFilter);
+    const weatherEntity = Object.keys(hass.states)
+      .filter(weatherFilter)
+      .sort()[0];
 
     if (weatherEntity) {
       widgetSection.cards!.push(
