@@ -1,6 +1,7 @@
 import { getColorByIndex } from "../common/color/colors";
 import { computeDomain } from "../common/entity/compute_domain";
 import { computeStateName } from "../common/entity/compute_state_name";
+import { isDate } from "../common/string/is_date";
 import type { HomeAssistant } from "../types";
 import { isUnavailableState } from "./entity";
 
@@ -15,6 +16,7 @@ export interface CalendarEvent {
   title: string;
   start: string;
   end?: string;
+  allDay?: boolean;
   backgroundColor?: string;
   borderColor?: string;
   calendar: string;
@@ -104,6 +106,7 @@ export const fetchCalendarEvents = async (
       const event: CalendarEvent = {
         start: eventStart,
         end: eventEnd,
+        allDay: isDate(eventStart),
         title: ev.summary,
         backgroundColor: cal.backgroundColor,
         borderColor: cal.backgroundColor,
