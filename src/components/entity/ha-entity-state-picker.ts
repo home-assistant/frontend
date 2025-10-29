@@ -77,16 +77,26 @@ class HaEntityStatePicker extends LitElement {
         }));
       });
 
-      const options: StateOption[] = [];
-      const optionsSet = new Set<string>();
+      const optionLabels: Record<string, string[]> = {};
       for (const entityOptions of entitiesOptions) {
         for (const option of entityOptions) {
-          if (!optionsSet.has(option.value)) {
-            optionsSet.add(option.value);
-            options.push(option);
+          if (!(option.value in optionLabels)) {
+            optionLabels[option.value] = [option.label];
+          } else {
+            const labels = optionLabels[option.value];
+            if (!labels.includes(option.label)) {
+              labels.push(option.label);
+            }
           }
         }
       }
+
+      const options = Object.entries(optionLabels).map<StateOption>(
+        ([value, labels]) => ({
+          value,
+          label: labels.join(" / "),
+        })
+      );
 
       if (this.extraOptions) {
         options.unshift(...this.extraOptions);
