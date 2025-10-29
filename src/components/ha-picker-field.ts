@@ -39,6 +39,10 @@ export class HaPickerField extends LitElement {
   @property({ attribute: false })
   public valueRenderer?: PickerValueRenderer;
 
+  @property({ attribute: "error-message" }) public errorMessage?: string;
+
+  @property({ type: Boolean, reflect: true }) public invalid = false;
+
   @query("ha-combo-box-item", true) public item!: HaComboBoxItem;
 
   public async focus() {
@@ -140,6 +144,11 @@ export class HaPickerField extends LitElement {
         ha-combo-box-item:focus:after {
           height: 2px;
           background-color: var(--mdc-theme-primary);
+        }
+
+        :host([invalid]) ha-combo-box-item:after {
+          height: 2px;
+          background-color: var(--mdc-theme-error, var(--error-color, #b00020));
         }
 
         .clear {
