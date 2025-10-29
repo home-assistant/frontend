@@ -13,7 +13,6 @@ import {
   union,
 } from "superstruct";
 import { fireEvent } from "../../../../common/dom/fire_event";
-import { DEFAULT_ENTITY_NAME } from "../../../../common/entity/compute_entity_name_display";
 import type { LocalizeFunc } from "../../../../common/translations/localize";
 import "../../../../components/ha-expansion-panel";
 import "../../../../components/ha-form/ha-form";
@@ -94,9 +93,7 @@ export class HuiHeadingEntityEditor
                 {
                   name: "name",
                   selector: {
-                    entity_name: {
-                      default_name: DEFAULT_ENTITY_NAME,
-                    },
+                    entity_name: {},
                   },
                   context: { entity: "entity" },
                 },
