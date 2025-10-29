@@ -1,28 +1,29 @@
 import type { HassEntity } from "home-assistant-js-websocket";
-import {
-  DEFAULT_ENTITY_NAME,
-  type EntityNameItem,
-} from "../../../../common/entity/compute_entity_name_display";
-import type { HomeAssistant } from "../../../../types";
 import { ensureArray } from "../../../../common/array/ensure-array";
+import type { EntityNameItem } from "../../../../common/entity/compute_entity_name_display";
+import { computeStateName } from "../../../../common/entity/compute_state_name";
+import type { HomeAssistant } from "../../../../types";
 
 /**
  * Computes the display name for an entity in Lovelace (cards and badges).
  *
  * @param hass - The Home Assistant instance
  * @param stateObj - The entity state object
- * @param nameConfig - The name configuration (string for override, or EntityNameItem[] for structured naming)
+ * @param config - The name configuration (string for override, or EntityNameItem[] for structured naming)
  * @returns The computed entity name
  */
 export const computeLovelaceEntityName = (
   hass: HomeAssistant,
   stateObj: HassEntity | undefined,
-  nameConfig: string | EntityNameItem | EntityNameItem[] | undefined
+  config: string | EntityNameItem | EntityNameItem[] | undefined
 ): string => {
-  if (typeof nameConfig === "string") {
-    return nameConfig;
+  // If no config is provided, fall back to the default state name
+  if (!config) {
+    return stateObj ? computeStateName(stateObj) : "";
   }
-  const config = nameConfig || DEFAULT_ENTITY_NAME;
+  if (typeof config === "string") {
+    return config;
+  }
   if (stateObj) {
     return hass.formatEntityName(stateObj, config);
   }
