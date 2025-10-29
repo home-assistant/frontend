@@ -259,14 +259,17 @@ const tryDescribeTrigger = (
 
     let fromChoice = "other";
     let fromString = "";
-    if (trigger.from !== undefined) {
+    const fromIsNeg = trigger.not_from !== undefined;
+    const fromValue = fromIsNeg ? trigger.not_from : trigger.from;
+    if (fromValue !== undefined) {
       let fromArray: string[] = [];
-      if (trigger.from === null) {
+      if (fromValue === null) {
         if (!trigger.attribute) {
+          // Note: no separate translation for negative null; fallback to "any state"
           fromChoice = "null";
         }
       } else {
-        fromArray = ensureArray(trigger.from);
+        fromArray = ensureArray(fromValue);
 
         const from: string[] = [];
         for (const state of fromArray) {
@@ -286,21 +289,24 @@ const tryDescribeTrigger = (
         }
         if (from.length !== 0) {
           fromString = formatListWithOrs(hass.locale, from);
-          fromChoice = "fromUsed";
+          fromChoice = fromIsNeg ? "fromNotUsed" : "fromUsed";
         }
       }
     }
 
     let toChoice = "other";
     let toString = "";
-    if (trigger.to !== undefined) {
+    const toIsNeg = trigger.not_to !== undefined;
+    const toValue = toIsNeg ? trigger.not_to : trigger.to;
+    if (toValue !== undefined) {
       let toArray: string[] = [];
-      if (trigger.to === null) {
+      if (toValue === null) {
         if (!trigger.attribute) {
+          // Note: no separate translation for negative null; fallback to "any state"
           toChoice = "null";
         }
       } else {
-        toArray = ensureArray(trigger.to);
+        toArray = ensureArray(toValue);
 
         const to: string[] = [];
         for (const state of toArray) {
@@ -320,7 +326,7 @@ const tryDescribeTrigger = (
         }
         if (to.length !== 0) {
           toString = formatListWithOrs(hass.locale, to);
-          toChoice = "toUsed";
+          toChoice = toIsNeg ? "toNotUsed" : "toUsed";
         }
       }
     }
@@ -328,7 +334,9 @@ const tryDescribeTrigger = (
     if (
       !trigger.attribute &&
       trigger.from === undefined &&
-      trigger.to === undefined
+      trigger.not_from === undefined &&
+      trigger.to === undefined &&
+      trigger.not_to === undefined
     ) {
       toChoice = "special";
     }
