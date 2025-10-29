@@ -30,6 +30,14 @@ import type {
   SchemaUnion,
 } from "../../../../../components/ha-form/types";
 
+// Extended form data used only in the UI form. These fields do not exist on the
+// persisted StateTrigger type, but are convenient for toggling between positive
+// and negative matches in the editor.
+type StateTriggerFormData = StateTrigger & {
+  from_match?: "is" | "is_not";
+  to_match?: "is" | "is_not";
+};
+
 const stateTriggerStruct = assign(
   baseTriggerStruct,
   object({
@@ -254,7 +262,7 @@ export class HaStateTrigger extends LitElement implements TriggerElement {
   protected render() {
     const trgFor = createDurationData(this.trigger.for);
 
-    const data = {
+    const data: StateTriggerFormData = {
       ...this.trigger,
       entity_id: ensureArray(this.trigger.entity_id),
       for: trgFor,
