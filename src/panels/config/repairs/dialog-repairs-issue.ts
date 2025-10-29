@@ -66,7 +66,6 @@ class DialogRepairsIssue extends LitElement {
         .hass=${this.hass}
         .open=${this._open}
         header-title=${dialogTitle}
-        .headerSubtitle=${true}
         @closed=${this._dialogClosed}
       >
         <dialog-repairs-issue-subtitle
