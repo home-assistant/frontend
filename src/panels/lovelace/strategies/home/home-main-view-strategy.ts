@@ -21,6 +21,7 @@ import type {
 import { getAreas, getFloors } from "../areas/helpers/areas-strategy-helper";
 import type { CommonControlSectionStrategyConfig } from "../usage_prediction/common-controls-section-strategy";
 import { getHomeStructure } from "./helpers/home-structure";
+import { floorDefaultIcon } from "../../../../components/ha-floor-icon";
 
 export interface HomeMainViewStrategyConfig {
   type: "home-main";
@@ -92,7 +93,7 @@ export class HomeMainViewStrategy extends ReactiveElement {
                   ? floor.name
                   : hass.localize("ui.panel.lovelace.strategy.home.areas"),
               heading_style: "title",
-              icon: floor.icon,
+              icon: floor.icon || floorDefaultIcon(floor),
             },
             ...cards,
           ],

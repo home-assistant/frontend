@@ -5,6 +5,7 @@ import {
   generateEntityFilter,
   type EntityFilter,
 } from "../../../common/entity/entity_filter";
+import { floorDefaultIcon } from "../../../components/ha-floor-icon";
 import type { LovelaceCardConfig } from "../../../data/lovelace/config/card";
 import type { LovelaceSectionRawConfig } from "../../../data/lovelace/config/section";
 import type { LovelaceViewConfig } from "../../../data/lovelace/config/view";
@@ -140,6 +141,7 @@ export class SafetyViewStrategy extends ReactiveElement {
               floorCount > 1
                 ? floor.name
                 : hass.localize("ui.panel.lovelace.strategy.home.areas"),
+            icon: floor.icon || floorDefaultIcon(floor),
           },
         ],
       };
