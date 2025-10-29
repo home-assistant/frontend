@@ -399,7 +399,7 @@ export class HuiEnergyDevicesGraphCard
         "from_battery" in summedData;
       const untracked = showUntracked
         ? totalUsed -
-          chartData.reduce((acc: number, d: any) => acc + d.value[0] - 1, 0)
+          chartData.reduce((acc: number, d: any) => acc + d.value[0], 0)
         : 0;
       if (untracked > 0) {
         const color = getEnergyColor(
@@ -413,7 +413,7 @@ export class HuiEnergyDevicesGraphCard
           id: "untracked",
           value: [untracked, "untracked"] as any,
           name: this.hass.localize(
-            "ui.panel.lovelace.cards.energy.energy_devices_detail_graph.untracked_consumption"
+            "ui.panel.lovelace.cards.energy.energy_devices_graph.untracked_consumption"
           ),
           itemStyle: {
             color: color + "7F",
@@ -424,7 +424,7 @@ export class HuiEnergyDevicesGraphCard
           const compareUntracked =
             compareConsumption!.total.used_total -
             chartDataCompare.reduce(
-              (acc: number, d: any) => acc + d.value[0] - 1,
+              (acc: number, d: any) => acc + d.value[0],
               0
             );
           if (compareUntracked > 0) {
@@ -521,12 +521,12 @@ export class HuiEnergyDevicesGraphCard
     this._getStatistics(this._data!);
   }
 
-  private _datasetHidden(ev) {
+  private _datasetHidden(ev: CustomEvent<{ id: string }>) {
     this._hiddenStats = [...this._hiddenStats, ev.detail.id];
     this._getStatistics(this._data!);
   }
 
-  private _datasetUnhidden(ev) {
+  private _datasetUnhidden(ev: CustomEvent<{ id: string }>) {
     this._hiddenStats = this._hiddenStats.filter(
       (stat) => stat !== ev.detail.id
     );
