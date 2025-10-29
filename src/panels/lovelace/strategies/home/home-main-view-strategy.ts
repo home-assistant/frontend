@@ -216,7 +216,9 @@ export class HomeMainViewStrategy extends ReactiveElement {
       column_span: maxColumns,
       cards: [],
     };
-    const weatherEntity = Object.keys(hass.states).find(weatherFilter);
+    const weatherEntity = Object.keys(hass.states)
+      .filter(weatherFilter)
+      .sort()[0];
 
     if (weatherEntity) {
       widgetSection.cards!.push(
