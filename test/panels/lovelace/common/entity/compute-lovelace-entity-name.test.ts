@@ -25,7 +25,8 @@ describe("computeLovelaceEntityName", () => {
   it("return state name when nameConfig is empty string", () => {
     const mockFormatEntityName = vi.fn();
     const hass = createMockHass(mockFormatEntityName);
-    const stateObj = mockStateObj({ entity_id: "light.kitchen" });
+    const stateObj = mockStateObj({ entity_id: "light.kitchen", attributes: { friendly_name: "Kitchen Light" },
+ });
 
     const result = computeLovelaceEntityName(hass, stateObj, "");
 
