@@ -1,5 +1,5 @@
 import type { HassEntities, HassEntity } from "home-assistant-js-websocket";
-import { SENSOR_ENTITIES, ASSIST_ENTITIES } from "../../../common/const";
+import { ASSIST_ENTITIES, SENSOR_ENTITIES } from "../../../common/const";
 import { computeDomain } from "../../../common/entity/compute_domain";
 import { computeStateDomain } from "../../../common/entity/compute_state_domain";
 import { computeStateName } from "../../../common/entity/compute_state_name";
@@ -14,12 +14,14 @@ import type {
   GridSourceTypeEnergyPreference,
 } from "../../../data/energy";
 import { domainToName } from "../../../data/integration";
+import type { LovelaceBadgeConfig } from "../../../data/lovelace/config/badge";
 import type { LovelaceCardConfig } from "../../../data/lovelace/config/card";
 import type { LovelaceSectionConfig } from "../../../data/lovelace/config/section";
 import type { LovelaceViewConfig } from "../../../data/lovelace/config/view";
 import { computeUserInitials } from "../../../data/user";
 import type { HomeAssistant } from "../../../types";
 import { HELPER_DOMAINS } from "../../config/helpers/const";
+import type { EntityBadgeConfig } from "../badges/types";
 import type {
   AlarmPanelCardConfig,
   EntitiesCardConfig,
@@ -31,8 +33,7 @@ import type {
 } from "../cards/types";
 import type { EntityConfig } from "../entity-rows/types";
 import type { ButtonsHeaderFooterConfig } from "../header-footer/types";
-import type { LovelaceBadgeConfig } from "../../../data/lovelace/config/badge";
-import type { EntityBadgeConfig } from "../badges/types";
+import { computeLovelaceEntityName } from "./entity/compute-lovelace-entity-name";
 
 const HIDE_DOMAIN = new Set([
   "ai_task",
@@ -125,13 +126,13 @@ export const computeSection = (
 });
 
 export const computeCards = (
-  states: HassEntities,
+  hass: HomeAssistant,
   entityIds: string[],
   entityCardOptions: Partial<EntitiesCardConfig>,
   renderFooterEntities = true
 ): LovelaceCardConfig[] => {
   const cards: LovelaceCardConfig[] = [];
-
+  const states = hass.states;
   // For entity card
   const entitiesConf: (string | EntityConfig)[] = [];
 
@@ -270,19 +271,23 @@ export const computeCards = (
         ? states[a]
           ? computeStateName(states[a])
           : ""
-        : a.name || "",
+        : states[a.entity]
+          ? computeLovelaceEntityName(hass, states[a.entity], a.name)
+          : "",
       typeof b === "string"
         ? states[b]
           ? computeStateName(states[b])
           : ""
-        : b.name || ""
+        : states[b.entity]
+          ? computeLovelaceEntityName(hass, states[b.entity], b.name)
+          : ""
     );
   });
 
   // If we ended up with footer entities but no normal entities,
   // render the footer entities as normal entities.
   if (entitiesConf.length === 0 && footerEntities.length > 0) {
-    return computeCards(states, entityIds, entityCardOptions, false);
+    return computeCards(hass, entityIds, entityCardOptions, false);
   }
 
   if (entitiesConf.length > 0 || footerEntities.length > 0) {
@@ -360,14 +365,14 @@ const computeDefaultViewStates = (
 };
 
 export const generateViewConfig = (
-  localize: LocalizeFunc,
+  hass: HomeAssistant,
   path: string,
   title: string | undefined,
   icon: string | undefined,
   entities: HassEntities
 ): LovelaceViewConfig => {
   const ungroupedEntitites: Record<string, string[]> = {};
-
+  const { localize } = hass;
   // Organize ungrouped entities in ungrouped things
   for (const entityId of Object.keys(entities)) {
     const state = entities[entityId];
@@ -470,7 +475,7 @@ export const generateViewConfig = (
     .forEach((domain) => {
       cards.push(
         ...computeCards(
-          entities,
+          hass,
           ungroupedEntitites[domain].sort((a, b) =>
             stringCompare(
               computeStateName(entities[a]),
@@ -498,16 +503,17 @@ export const generateViewConfig = (
 };
 
 export const generateDefaultViewConfig = (
-  areaEntries: HomeAssistant["areas"],
-  deviceEntries: HomeAssistant["devices"],
-  entityEntries: HomeAssistant["entities"],
-  entities: HassEntities,
+  hass: HomeAssistant,
   localize: LocalizeFunc,
   energyPrefs?: EnergyPreferences,
   areasPrefs?: AreasDisplayValue,
   hideEntitiesWithoutAreas?: boolean,
   hideEnergy?: boolean
 ): LovelaceViewConfig => {
+  const entities = hass.states;
+  const areaEntries = hass.areas;
+  const deviceEntries = hass.devices;
+  const entityEntries = hass.entities;
   const states = computeDefaultViewStates(entities, entityEntries);
   const path = "default_view";
   const title = "Home";
@@ -549,7 +555,7 @@ export const generateDefaultViewConfig = (
 
   for (const groupEntity of splittedByGroups.groups) {
     groupCards.push(
-      ...computeCards(entities, groupEntity.attributes.entity_id, {
+      ...computeCards(hass, groupEntity.attributes.entity_id, {
         title: computeStateName(groupEntity),
         show_header_toggle: groupEntity.attributes.control !== "hidden",
       })
@@ -557,7 +563,7 @@ export const generateDefaultViewConfig = (
   }
 
   const config = generateViewConfig(
-    localize,
+    hass,
     path,
     title,
     icon,
@@ -575,7 +581,7 @@ export const generateDefaultViewConfig = (
     const area = areaEntries[areaId];
     areaCards.push(
       ...computeCards(
-        entities,
+        hass,
         areaEntities.map((entity) => entity.entity_id),
         {
           title: area.name,
@@ -601,7 +607,7 @@ export const generateDefaultViewConfig = (
     const device = deviceEntries[deviceId];
     deviceCards.push(
       ...computeCards(
-        entities,
+        hass,
         deviceEntities.map((entity) => entity.entity_id),
         {
           title:
