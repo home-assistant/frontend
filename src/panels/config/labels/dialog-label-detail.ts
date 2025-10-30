@@ -5,9 +5,10 @@ import { fireEvent } from "../../../common/dom/fire_event";
 import "../../../components/ha-alert";
 import "../../../components/ha-button";
 import "../../../components/ha-color-picker";
-import { createCloseHeading } from "../../../components/ha-dialog";
+import "../../../components/ha-dialog-footer";
 import "../../../components/ha-icon-picker";
 import "../../../components/ha-switch";
+import "../../../components/ha-wa-dialog";
 import "../../../components/ha-textarea";
 import "../../../components/ha-textfield";
 import type { LabelRegistryEntryMutableParams } from "../../../data/label/label_registry";
@@ -37,6 +38,8 @@ class DialogLabelDetail
 
   @state() private _submitting = false;
 
+  @state() private _open = false;
+
   public showDialog(params: LabelDetailDialogParams): void {
     this._params = params;
     this._error = undefined;
@@ -51,20 +54,17 @@ class DialogLabelDetail
       this._color = "";
       this._description = "";
     }
-    document.body.addEventListener("keydown", this._handleKeyPress);
+    this._open = true;
   }
 
-  private _handleKeyPress = (ev: KeyboardEvent) => {
-    if (ev.key === "Escape") {
-      ev.stopPropagation();
-    }
-  };
-
   public closeDialog() {
+    this._open = false;
+    return true;
+  }
+
+  private _dialogClosed(): void {
     this._params = undefined;
     fireEvent(this, "dialog-closed", { dialog: this.localName });
-    document.body.removeEventListener("keydown", this._handleKeyPress);
-    return true;
   }
 
   protected render() {
@@ -73,17 +73,13 @@ class DialogLabelDetail
     }
 
     return html`
-      <ha-dialog
-        open
-        @closed=${this.closeDialog}
-        scrimClickAction
-        escapeKeyAction
-        .heading=${createCloseHeading(
-          this.hass,
-          this._params.entry
-            ? this._params.entry.name || this._params.entry.label_id
-            : this.hass!.localize("ui.dialogs.label-detail.new_label")
-        )}
+      <ha-wa-dialog
+        .hass=${this.hass}
+        .open=${this._open}
+        header-title=${this._params.entry
+          ? this._params.entry.name || this._params.entry.label_id
+          : this.hass!.localize("ui.dialogs.label-detail.new_label")}
+        @closed=${this._dialogClosed}
       >
         <div>
           ${this._error
@@ -91,7 +87,7 @@ class DialogLabelDetail
             : ""}
           <div class="form">
             <ha-textfield
-              dialogInitialFocus
+              autofocus
               .value=${this._name}
               .configValue=${"name"}
               @input=${this._input}
@@ -125,29 +121,32 @@ class DialogLabelDetail
             ></ha-textarea>
           </div>
         </div>
-        ${this._params.entry && this._params.removeEntry
-          ? html`
-              <ha-button
-                slot="secondaryAction"
-                variant="danger"
-                appearance="plain"
-                @click=${this._deleteEntry}
-                .disabled=${this._submitting}
-              >
-                ${this.hass!.localize("ui.common.delete")}
-              </ha-button>
-            `
-          : nothing}
-        <ha-button
-          slot="primaryAction"
-          @click=${this._updateEntry}
-          .disabled=${this._submitting || !this._name}
-        >
-          ${this._params.entry
-            ? this.hass!.localize("ui.common.update")
-            : this.hass!.localize("ui.common.create")}
-        </ha-button>
-      </ha-dialog>
+
+        <ha-dialog-footer slot="footer">
+          ${this._params.entry && this._params.removeEntry
+            ? html`
+                <ha-button
+                  slot="secondaryAction"
+                  variant="danger"
+                  appearance="plain"
+                  @click=${this._deleteEntry}
+                  .disabled=${this._submitting}
+                >
+                  ${this.hass!.localize("ui.common.delete")}
+                </ha-button>
+              `
+            : nothing}
+          <ha-button
+            slot="primaryAction"
+            @click=${this._updateEntry}
+            .disabled=${this._submitting || !this._name}
+          >
+            ${this._params.entry
+              ? this.hass!.localize("ui.common.update")
+              : this.hass!.localize("ui.common.create")}
+          </ha-button>
+        </ha-dialog-footer>
+      </ha-wa-dialog>
     `;
   }
 
