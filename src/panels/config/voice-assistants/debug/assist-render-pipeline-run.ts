@@ -1,6 +1,6 @@
 import type { TemplateResult } from "lit";
 import { css, html, LitElement } from "lit";
-import { customElement, property } from "lit/decorators";
+import { customElement, property, state } from "lit/decorators";
 import "../../../../components/ha-card";
 import "../../../../components/ha-alert";
 import "../../../../components/ha-button";
@@ -138,6 +138,10 @@ export class AssistPipelineDebug extends LitElement {
   @property({ attribute: false }) public hass!: HomeAssistant;
 
   @property({ attribute: false }) public pipelineRun!: PipelineRun;
+
+  @state() private _isPlaying = false;
+
+  private _audioElement?: HTMLAudioElement;
 
   protected render(): TemplateResult {
     const lastRunStage: string = this.pipelineRun
@@ -349,8 +353,10 @@ export class AssistPipelineDebug extends LitElement {
               ${this.pipelineRun?.tts?.tts_output
                 ? html`
                     <div class="card-actions">
-                      <ha-button @click=${this._playTTS}>
-                        Play Audio
+                      <ha-button
+                        @click=${this._isPlaying ? this._stopTTS : this._playTTS}
+                      >
+                        ${this._isPlaying ? "Stop audio" : "Play audio"}
                       </ha-button>
                     </div>
                   `
@@ -373,14 +379,39 @@ export class AssistPipelineDebug extends LitElement {
   }
 
   private _playTTS(): void {
+    // Stop any existing audio first
+    this._stopTTS();
+
     const url = this.pipelineRun!.tts!.tts_output!.url;
-    const audio = new Audio(url);
-    audio.addEventListener("error", () => {
+    this._audioElement = new Audio(url);
+
+    this._audioElement.addEventListener("error", () => {
+      this._isPlaying = false;
       showAlertDialog(this, { title: "Error", text: "Error playing audio" });
     });
-    audio.addEventListener("canplaythrough", () => {
-      audio.play();
+
+    this._audioElement.addEventListener("ended", () => {
+      this._isPlaying = false;
     });
+
+    this._audioElement.addEventListener("canplaythrough", () => {
+      this._audioElement!.play();
+      this._isPlaying = true;
+    });
+  }
+
+  private _stopTTS(): void {
+    if (this._audioElement) {
+      this._audioElement.pause();
+      this._audioElement.currentTime = 0;
+      this._audioElement = undefined;
+    }
+    this._isPlaying = false;
+  }
+
+  public disconnectedCallback(): void {
+    super.disconnectedCallback();
+    this._stopTTS();
   }
 
   static styles = css`
