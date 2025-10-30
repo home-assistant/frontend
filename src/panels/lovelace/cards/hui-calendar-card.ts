@@ -229,6 +229,7 @@ export class HuiCalendarCard extends LitElement implements LovelaceCard {
       padding: 0 8px 8px;
       box-sizing: border-box;
       height: 100%;
+      overflow: hidden;
     }
 
     .header {
@@ -243,11 +244,12 @@ export class HuiCalendarCard extends LitElement implements LovelaceCard {
 
     ha-full-calendar {
       --calendar-height: 400px;
+      height: var(--calendar-height);
     }
 
     ha-full-calendar.is-grid,
     ha-full-calendar.is-panel {
-      height: calc(100% - 16px);
+      --calendar-height: calc(100% - 16px);
     }
   `;
 }
