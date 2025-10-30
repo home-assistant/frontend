@@ -1,6 +1,6 @@
 import type { TemplateResult } from "lit";
 import { css, html, LitElement } from "lit";
-import { customElement, property, state } from "lit/decorators";
+import { customElement, property } from "lit/decorators";
 import "../../../../components/ha-card";
 import "../../../../components/ha-alert";
 import "../../../../components/ha-button";
@@ -139,9 +139,11 @@ export class AssistPipelineDebug extends LitElement {
 
   @property({ attribute: false }) public pipelineRun!: PipelineRun;
 
-  @state() private _isPlaying = false;
-
   private _audioElement?: HTMLAudioElement;
+
+  private get _isPlaying(): boolean {
+    return this._audioElement != null && !this._audioElement.paused;
+  }
 
   protected render(): TemplateResult {
     const lastRunStage: string = this.pipelineRun
@@ -389,17 +391,19 @@ export class AssistPipelineDebug extends LitElement {
     this._audioElement = new Audio(url);
 
     this._audioElement.addEventListener("error", () => {
-      this._isPlaying = false;
       showAlertDialog(this, { title: "Error", text: "Error playing audio" });
     });
 
+    this._audioElement.addEventListener("play", () => {
+      this.requestUpdate();
+    });
+
     this._audioElement.addEventListener("ended", () => {
-      this._isPlaying = false;
+      this.requestUpdate();
     });
 
     this._audioElement.addEventListener("canplaythrough", () => {
       this._audioElement!.play();
-      this._isPlaying = true;
     });
   }
 
@@ -408,8 +412,8 @@ export class AssistPipelineDebug extends LitElement {
       this._audioElement.pause();
       this._audioElement.currentTime = 0;
       this._audioElement = undefined;
+      this.requestUpdate();
     }
-    this._isPlaying = false;
   }
 
   public disconnectedCallback(): void {
