@@ -321,6 +321,8 @@ class HUIRoot extends LitElement {
                 .id="button-${index}"
                 .path=${item.icon}
                 slot="trigger"
+                .label=${label}
+                hide-title
               ></ha-icon-button>
               ${item.subItems
                 .filter((subItem) => subItem.visible)
@@ -340,9 +342,6 @@ class HUIRoot extends LitElement {
                   `
                 )}
             </ha-button-menu>
-            <ha-tooltip placement="bottom" .for="button-${index}">
-              ${label}
-            </ha-tooltip>
           `
         : html`
             <ha-icon-button
