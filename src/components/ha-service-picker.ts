@@ -93,7 +93,7 @@ class HaServicePicker extends LitElement {
         }
 
         const descriptionPlaceholders =
-          this.hass.services[domain]?.[service]?.description_placeholders;
+          this.hass.services[domain][service].description_placeholders;
 
         const serviceName =
           localize(
@@ -170,7 +170,7 @@ class HaServicePicker extends LitElement {
             const domainName = domainToName(localize, domain);
 
             const descriptionPlaceholders =
-              this.hass.services[domain]?.[service]?.description_placeholders;
+              this.hass.services[domain][service].description_placeholders;
 
             const name =
               this.hass.localize(

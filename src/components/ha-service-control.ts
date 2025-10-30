@@ -466,7 +466,7 @@ export class HaServiceControl extends LitElement {
 
     const descriptionPlaceholders =
       domain && serviceName
-        ? this.hass.services[domain]?.[serviceName]?.description_placeholders
+        ? this.hass.services[domain][serviceName].description_placeholders
         : undefined;
 
     const description =
@@ -620,7 +620,7 @@ export class HaServiceControl extends LitElement {
     return this.hass!.localize(
       `component.${domain}.services.${serviceName}.sections.${dataField.key}.description`,
       domain && serviceName
-        ? this.hass.services[domain]?.[serviceName]?.description_placeholders
+        ? this.hass.services[domain][serviceName].description_placeholders
         : undefined
     );
   }
@@ -670,7 +670,7 @@ export class HaServiceControl extends LitElement {
     const showOptional = showOptionalToggle(dataField);
     const descriptionPlaceholders =
       domain && serviceName
-        ? this.hass.services[domain]?.[serviceName]?.description_placeholders
+        ? this.hass.services[domain][serviceName].description_placeholders
         : undefined;
 
     return dataField.selector &&

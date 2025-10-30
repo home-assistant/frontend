@@ -558,7 +558,7 @@ class DialogAddAutomationElement
             name: `${domain ? "" : `${domainToName(localize, dmn)}: `}${
               this.hass.localize(
                 `component.${dmn}.services.${service}.name`,
-                this.hass.services[dmn]?.[service]?.description_placeholders
+                this.hass.services[dmn][service].description_placeholders
               ) ||
               services[dmn][service]?.name ||
               service
@@ -566,7 +566,7 @@ class DialogAddAutomationElement
             description:
               this.hass.localize(
                 `component.${dmn}.services.${service}.description`,
-                this.hass.services[dmn]?.[service]?.description_placeholders
+                this.hass.services[dmn][service].description_placeholders
               ) ||
               services[dmn][service]?.description ||
               "",

@@ -401,8 +401,8 @@ class HaLogbookRenderer extends LitElement {
       ${
         this.hass.localize(
           `component.${item.context_domain}.services.${item.context_service}.name`,
-          this.hass.services[item.context_domain]?.[item.context_service]
-            ?.description_placeholders
+          this.hass.services[item.context_domain][item.context_service]
+            .description_placeholders
         ) ||
         this.hass.services[item.context_domain]?.[item.context_service]?.name ||
         item.context_service

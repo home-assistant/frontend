@@ -137,7 +137,7 @@ class HaPanelDevAction extends LitElement {
 
     const descriptionPlaceholders =
       domain && serviceName
-        ? this.hass.services[domain]?.[serviceName]?.description_placeholders
+        ? this.hass.services[domain][serviceName].description_placeholders
         : undefined;
 
     return html`
@@ -652,8 +652,8 @@ class HaPanelDevAction extends LitElement {
             this.hass.localize(
               `component.${domain}.services.${serviceName}.fields.${field.key}.example`,
               domain && serviceName
-                ? this.hass.services[domain]?.[serviceName]
-                    ?.description_placeholders
+                ? this.hass.services[domain][serviceName]
+                    .description_placeholders
                 : undefined
             ) || field.example;
         }
