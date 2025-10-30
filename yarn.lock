@@ -3884,12 +3884,12 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@rsbuild/plugin-check-syntax@npm:1.4.0":
-  version: 1.4.0
-  resolution: "@rsbuild/plugin-check-syntax@npm:1.4.0"
+"@rsbuild/plugin-check-syntax@npm:1.5.0":
+  version: 1.5.0
+  resolution: "@rsbuild/plugin-check-syntax@npm:1.5.0"
   dependencies:
     acorn: "npm:^8.15.0"
-    browserslist-to-es-version: "npm:^1.1.0"
+    browserslist-to-es-version: "npm:^1.1.1"
     htmlparser2: "npm:10.0.0"
     picocolors: "npm:^1.1.1"
     source-map: "npm:^0.7.6"
@@ -3898,85 +3898,86 @@ __metadata:
   peerDependenciesMeta:
     "@rsbuild/core":
       optional: true
-  checksum: 10/1e6ee37cc072bbf459ecd493a78cab2798e08c2e046828e0d93f618581738a4b7a6b6f3bf8b890a58b67b5a879d0a778810b33b834f75dadd89817cf16c73a38
+  checksum: 10/69f537d24aa298b9913c1e21378eded13a6deff21e597257bdfeb1ddbe42c711d21d068543190cdd2f6537531fea24feb84cf1637e2492c9fc5d2fcc1f9a53d6
   languageName: node
   linkType: hard
 
-"@rsdoctor/client@npm:1.3.4":
-  version: 1.3.4
-  resolution: "@rsdoctor/client@npm:1.3.4"
-  checksum: 10/0f3d35ce16264c20294f317efc063153cc62b0d7d5f5f11aa444ace2cbf9617f1ea26828e1d8e5f7fe4ce6f6e276ea6cd8312fd4e4f3214a8a3c8d3728f0fc1f
+"@rsdoctor/client@npm:1.3.5":
+  version: 1.3.5
+  resolution: "@rsdoctor/client@npm:1.3.5"
+  checksum: 10/1a8d02015e3f2dc55b96f1a2731f16a25bed624ae24296254ee58dd8898f2ca942bc91c0b5c6d270f9bdca8410aab4a28293829d2709eb9e21e76992a28ee16b
   languageName: node
   linkType: hard
 
-"@rsdoctor/core@npm:1.3.4":
-  version: 1.3.4
-  resolution: "@rsdoctor/core@npm:1.3.4"
+"@rsdoctor/core@npm:1.3.5":
+  version: 1.3.5
+  resolution: "@rsdoctor/core@npm:1.3.5"
   dependencies:
-    "@rsbuild/plugin-check-syntax": "npm:1.4.0"
-    "@rsdoctor/graph": "npm:1.3.4"
-    "@rsdoctor/sdk": "npm:1.3.4"
-    "@rsdoctor/types": "npm:1.3.4"
-    "@rsdoctor/utils": "npm:1.3.4"
+    "@rsbuild/plugin-check-syntax": "npm:1.5.0"
+    "@rsdoctor/graph": "npm:1.3.5"
+    "@rsdoctor/sdk": "npm:1.3.5"
+    "@rsdoctor/types": "npm:1.3.5"
+    "@rsdoctor/utils": "npm:1.3.5"
     browserslist-load-config: "npm:^1.0.1"
     enhanced-resolve: "npm:5.12.0"
+    es-toolkit: "npm:^1.41.0"
     filesize: "npm:^10.1.6"
     fs-extra: "npm:^11.1.1"
     semver: "npm:^7.7.3"
     source-map: "npm:^0.7.6"
-  checksum: 10/852f79ea59b6e2d6bcf0301136e3a9dd6f8acc2c011277128b791f8378a5d291e91c385ab691440bdba454f2130bde1097c3a3ba7eedf35e0a48cf1462d4d7c8
+  checksum: 10/166b6d0e35cc6ee671060d45d6ca2ef32a7b75421cdcb98b7d372c247fc31fcd14e63b94332fcdf77fb02cf2a54c9bb7325324df8fd7198daea59d936e529692
   languageName: node
   linkType: hard
 
-"@rsdoctor/graph@npm:1.3.4":
-  version: 1.3.4
-  resolution: "@rsdoctor/graph@npm:1.3.4"
+"@rsdoctor/graph@npm:1.3.5":
+  version: 1.3.5
+  resolution: "@rsdoctor/graph@npm:1.3.5"
   dependencies:
-    "@rsdoctor/types": "npm:1.3.4"
-    "@rsdoctor/utils": "npm:1.3.4"
-    es-toolkit: "npm:^1.40.0"
+    "@rsdoctor/types": "npm:1.3.5"
+    "@rsdoctor/utils": "npm:1.3.5"
+    es-toolkit: "npm:^1.41.0"
     path-browserify: "npm:1.0.1"
     source-map: "npm:^0.7.6"
-  checksum: 10/77b50fa73e97c1bd01ef14134d5c81ba63dacba6c4119f712fff139c39adc787a71f4cca793565a7d4faa4d2dbdd869fa72e955632671121ece92ff945adfa83
+  checksum: 10/b55d65ff46b359196886cfc949317c5b014dc5bb739052e8a8e8006ea2997e8ed6ecdf7c6f325624b622a47b4e93760ab32eed46138892f0789aae1fe0d8d86c
   languageName: node
   linkType: hard
 
-"@rsdoctor/rspack-plugin@npm:1.3.4":
-  version: 1.3.4
-  resolution: "@rsdoctor/rspack-plugin@npm:1.3.4"
+"@rsdoctor/rspack-plugin@npm:1.3.5":
+  version: 1.3.5
+  resolution: "@rsdoctor/rspack-plugin@npm:1.3.5"
   dependencies:
-    "@rsdoctor/core": "npm:1.3.4"
-    "@rsdoctor/graph": "npm:1.3.4"
-    "@rsdoctor/sdk": "npm:1.3.4"
-    "@rsdoctor/types": "npm:1.3.4"
-    "@rsdoctor/utils": "npm:1.3.4"
+    "@rsdoctor/core": "npm:1.3.5"
+    "@rsdoctor/graph": "npm:1.3.5"
+    "@rsdoctor/sdk": "npm:1.3.5"
+    "@rsdoctor/types": "npm:1.3.5"
+    "@rsdoctor/utils": "npm:1.3.5"
   peerDependencies:
     "@rspack/core": "*"
   peerDependenciesMeta:
     "@rspack/core":
       optional: true
-  checksum: 10/bc09ae1f19c624011961f65e1185889420d60d8aea8ca404766368f60c9d4381bbff146d17e166db66d88080246a7a3029714285bac8f2a2d797130822e787d5
+  checksum: 10/ac2dfa56c8fea6d7467d4673a26f9a614a0de2983b4586043b23d8109875c9f52cce5af6ce40b5224dd30c6dc577299870bfbb69bea2cfebafaaaa5068debe71
   languageName: node
   linkType: hard
 
-"@rsdoctor/sdk@npm:1.3.4":
-  version: 1.3.4
-  resolution: "@rsdoctor/sdk@npm:1.3.4"
+"@rsdoctor/sdk@npm:1.3.5":
+  version: 1.3.5
+  resolution: "@rsdoctor/sdk@npm:1.3.5"
   dependencies:
-    "@rsdoctor/client": "npm:1.3.4"
-    "@rsdoctor/graph": "npm:1.3.4"
-    "@rsdoctor/types": "npm:1.3.4"
-    "@rsdoctor/utils": "npm:1.3.4"
+    "@rsdoctor/client": "npm:1.3.5"
+    "@rsdoctor/graph": "npm:1.3.5"
+    "@rsdoctor/types": "npm:1.3.5"
+    "@rsdoctor/utils": "npm:1.3.5"
     safer-buffer: "npm:2.1.2"
     socket.io: "npm:4.8.1"
     tapable: "npm:2.2.3"
-  checksum: 10/9e57d1c9f51c4404a6c262c2f4602c19c6d3a9e467ca63456a81d8f614690d85a2574d5e936f03ca5672813a61544f02ca3c4e5f10eb5833f0116f8d2214572b
+  checksum: 10/6f9a05a4316ec357e0303a2778d2824bb4f2e92216d83d1f0a2e4dc7b4b5970454c9af0c594675ed39626cd12c5141f9c420a438423f42b809fae07f371bbb70
   languageName: node
   linkType: hard
 
-"@rsdoctor/types@npm:1.3.4":
-  version: 1.3.4
-  resolution: "@rsdoctor/types@npm:1.3.4"
+"@rsdoctor/types@npm:1.3.5":
+  version: 1.3.5
+  resolution: "@rsdoctor/types@npm:1.3.5"
   dependencies:
     "@types/connect": "npm:3.4.38"
     "@types/estree": "npm:1.0.5"
@@ -3990,16 +3991,16 @@ __metadata:
       optional: true
     webpack:
       optional: true
-  checksum: 10/56ce0af51c6d78eaac6fa6236dba1c5753b52dd021f8ffc4d3fe40d7f52f079ecec7e2c247ac3ca6e44d8a6f274bb20b9c7310baa9ce7bf7e60d8ee16ec8c0c4
+  checksum: 10/a5d14c032138bbb80c1a7573807fb9bb8017b6ca2f45fabfcdecb4e51ae8c34e29fbf3801254636acb9ffdb9478d2323e7b27746e9224085f33c0ecf228a1a63
   languageName: node
   linkType: hard
 
-"@rsdoctor/utils@npm:1.3.4":
-  version: 1.3.4
-  resolution: "@rsdoctor/utils@npm:1.3.4"
+"@rsdoctor/utils@npm:1.3.5":
+  version: 1.3.5
+  resolution: "@rsdoctor/utils@npm:1.3.5"
   dependencies:
     "@babel/code-frame": "npm:7.26.2"
-    "@rsdoctor/types": "npm:1.3.4"
+    "@rsdoctor/types": "npm:1.3.5"
     "@types/estree": "npm:1.0.5"
     acorn: "npm:^8.10.0"
     acorn-import-attributes: "npm:^1.9.5"
@@ -4013,7 +4014,7 @@ __metadata:
     picocolors: "npm:^1.1.1"
     rslog: "npm:^1.2.11"
     strip-ansi: "npm:^6.0.1"
-  checksum: 10/04b72e7ab1b63cad77ef83a468cb5c5b1468662dd29d03fbae7ef16aa81d3d91b54958d8630ee53655b794c32b12effb5ff3162cc309174c5ec784373d3f0560
+  checksum: 10/700040434bee69c6eb8a425a67a084cff704901ac3b176f84f3bdf147edaa19174bf7aea3099a8385c4c230422cc74dbd28f4490b0f42861d35f6dd43a4c1e8e
   languageName: node
   linkType: hard
 
@@ -6146,12 +6147,12 @@ __metadata:
   languageName: node
   linkType: hard
 
-"baseline-browser-mapping@npm:^2.8.9":
-  version: 2.8.16
-  resolution: "baseline-browser-mapping@npm:2.8.16"
+"baseline-browser-mapping@npm:^2.8.19":
+  version: 2.8.21
+  resolution: "baseline-browser-mapping@npm:2.8.21"
   bin:
     baseline-browser-mapping: dist/cli.js
-  checksum: 10/52a5807591daeffc810b783b1afa20c4017dd94e5bb74934bcde4dd408758e492610e330cfe6e609a0f0bde5ce210dd934271540fb931389d6838db17ec8cfef
+  checksum: 10/4154199589f9d5ca0cf80962494f34967e5bcbe2a3df234f4eb4b7a1766b263062ed47640686ab1d949f1156f5153bdc382ff7815368e365bc86916dc099d61b
   languageName: node
   linkType: hard
 
@@ -6298,12 +6299,12 @@ __metadata:
   languageName: node
   linkType: hard
 
-"browserslist-to-es-version@npm:^1.1.0":
-  version: 1.1.1
-  resolution: "browserslist-to-es-version@npm:1.1.1"
+"browserslist-to-es-version@npm:^1.1.1":
+  version: 1.2.0
+  resolution: "browserslist-to-es-version@npm:1.2.0"
   dependencies:
-    browserslist: "npm:^4.25.1"
-  checksum: 10/efce2f27e67bda030ee3957f6df5aaa8594ee5cf017d3567f1226f6abcea7c3840c1ba73105b6bd661c5f57339e44c6819804609e1f064cfdfb8d53894a9f777
+    browserslist: "npm:^4.26.2"
+  checksum: 10/a9af676f4b736fc17cd42cbc98edc735e7f1e775ccb71443afc5ec7184203669f4c6c37ec2d73964c598d7f8fa42ae6ce2ec0e9a9c64fcb1bc297110dbfbd0c9
   languageName: node
   linkType: hard
 
@@ -6325,18 +6326,18 @@ __metadata:
   languageName: node
   linkType: hard
 
-"browserslist@npm:^4.24.0, browserslist@npm:^4.25.1, browserslist@npm:^4.25.3":
-  version: 4.26.3
-  resolution: "browserslist@npm:4.26.3"
+"browserslist@npm:^4.24.0, browserslist@npm:^4.25.3, browserslist@npm:^4.26.2":
+  version: 4.27.0
+  resolution: "browserslist@npm:4.27.0"
   dependencies:
-    baseline-browser-mapping: "npm:^2.8.9"
-    caniuse-lite: "npm:^1.0.30001746"
-    electron-to-chromium: "npm:^1.5.227"
-    node-releases: "npm:^2.0.21"
-    update-browserslist-db: "npm:^1.1.3"
+    baseline-browser-mapping: "npm:^2.8.19"
+    caniuse-lite: "npm:^1.0.30001751"
+    electron-to-chromium: "npm:^1.5.238"
+    node-releases: "npm:^2.0.26"
+    update-browserslist-db: "npm:^1.1.4"
   bin:
     browserslist: cli.js
-  checksum: 10/49add06fd753a2514d84c75a7de8d9fb3d70be675e53b72981d87f0c0ff40d8a8cd0bd92f77400381704be0bf1c9c5c65aef95d03843d69475ff55188aa12124
+  checksum: 10/56db4cdb98b5c93797a47e5a60decb144f73a2ae41c60a16c41b75516fabcb0db0116b8cfcf3a26c960cc6c9ab1c4f4801d8d3a743ec72f27acfe5380153ba2f
   languageName: node
   linkType: hard
 
@@ -6480,10 +6481,10 @@ __metadata:
   languageName: node
   linkType: hard
 
-"caniuse-lite@npm:^1.0.30001746":
-  version: 1.0.30001750
-  resolution: "caniuse-lite@npm:1.0.30001750"
-  checksum: 10/2b912758d817cd2c2c179246e282f8b598695ec733bc446183e1d381eada60889c4770a1dfd86075e046a43d55f9922e2eaed1501347fcb12a38716cc14be297
+"caniuse-lite@npm:^1.0.30001751":
+  version: 1.0.30001751
+  resolution: "caniuse-lite@npm:1.0.30001751"
+  checksum: 10/608f7e1248b7023020382c7dbb0ef389693b3fc98193c3ccea2d44126306d6ac905a5061cf9e62bf640535a86e7a98e563b34c02f909296cfe228f41627a4dc7
   languageName: node
   linkType: hard
 
@@ -7455,10 +7456,10 @@ __metadata:
   languageName: node
   linkType: hard
 
-"electron-to-chromium@npm:^1.5.227":
-  version: 1.5.235
-  resolution: "electron-to-chromium@npm:1.5.235"
-  checksum: 10/fbc227d58a07dbb1b01e4a0f624a2fae03881f160a7c2e4416a68f30c83c1ca29b8f0e04056cb2851a6f493ebaf0d3b24bc2c7721d9e779cccbc9faeffef1c0e
+"electron-to-chromium@npm:^1.5.238":
+  version: 1.5.243
+  resolution: "electron-to-chromium@npm:1.5.243"
+  checksum: 10/cc1d566936aa05edcdef45c837bd3bf3c640b297f16d961d6b2b8536efb82bf1938a3dbc6d930e7561ffe4545c3d683dd6ffe57da37c1f6230defd32818785ab
   languageName: node
   linkType: hard
 
@@ -7744,7 +7745,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"es-toolkit@npm:^1.40.0":
+"es-toolkit@npm:^1.41.0":
   version: 1.41.0
   resolution: "es-toolkit@npm:1.41.0"
   dependenciesMeta:
@@ -9271,7 +9272,7 @@ __metadata:
     "@octokit/plugin-retry": "npm:8.0.2"
     "@octokit/rest": "npm:22.0.0"
     "@replit/codemirror-indentation-markers": "npm:6.5.3"
-    "@rsdoctor/rspack-plugin": "npm:1.3.4"
+    "@rsdoctor/rspack-plugin": "npm:1.3.5"
     "@rspack/core": "npm:1.5.8"
     "@rspack/dev-server": "npm:1.1.4"
     "@swc/helpers": "npm:0.5.17"
@@ -11429,10 +11430,10 @@ __metadata:
   languageName: node
   linkType: hard
 
-"node-releases@npm:^2.0.21":
-  version: 2.0.21
-  resolution: "node-releases@npm:2.0.21"
-  checksum: 10/5344d634b39d20f47c0d85a1c64567fdb9cf46f7b27ed3d141f752642faab47dae326835c2109636f823758afb16ffbed7b0c0fe6f800ef91cec9f2beb4f2b4a
+"node-releases@npm:^2.0.26":
+  version: 2.0.27
+  resolution: "node-releases@npm:2.0.27"
+  checksum: 10/f6c78ddb392ae500719644afcbe68a9ea533242c02312eb6a34e8478506eb7482a3fb709c70235b01c32fe65625b68dfa9665113f816d87f163bc3819b62b106
   languageName: node
   linkType: hard
 
@@ -14537,9 +14538,9 @@ __metadata:
   languageName: node
   linkType: hard
 
-"update-browserslist-db@npm:^1.1.3":
-  version: 1.1.3
-  resolution: "update-browserslist-db@npm:1.1.3"
+"update-browserslist-db@npm:^1.1.4":
+  version: 1.1.4
+  resolution: "update-browserslist-db@npm:1.1.4"
   dependencies:
     escalade: "npm:^3.2.0"
     picocolors: "npm:^1.1.1"
@@ -14547,7 +14548,7 @@ __metadata:
     browserslist: ">= 4.21.0"
   bin:
     update-browserslist-db: cli.js
-  checksum: 10/87af2776054ffb9194cf95e0201547d041f72ee44ce54b144da110e65ea7ca01379367407ba21de5c9edd52c74d95395366790de67f3eb4cc4afa0fe4424e76f
+  checksum: 10/79b2c0a31e9b837b49dc55d5cb7b77f44a69502847c7be352a44b1d35ac2032bf0e1bb7543f992809ed427bf9d32aa3f7ad41cef96198fa959c1666870174c06
   languageName: node
   linkType: hard
 
