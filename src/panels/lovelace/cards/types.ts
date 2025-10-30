@@ -442,7 +442,7 @@ export interface StatisticsGraphCardConfig extends EnergyCardBaseConfig {
 }
 
 export interface StatisticCardConfig extends LovelaceCardConfig {
-  name?: string;
+  name?: string | EntityNameItem | EntityNameItem[];
   entities: (EntityConfig | string)[];
   period:
     | {
