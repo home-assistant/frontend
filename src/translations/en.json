@@ -1429,6 +1429,7 @@
         "back_to_info": "Back to info",
         "info": "Information",
         "related": "Related",
+        "add_entity_to": "Add to",
         "history": "History",
         "aggregate": "5-minute aggregated",
         "logbook": "Activity",
@@ -1441,10 +1442,12 @@
         "last_updated": "Last updated",
         "show_more": "Show more",
         "exit_edit_mode": "Exit edit mode",
-        "add_entity_to": "Add to",
         "script": {
           "last_action": "Last action",
           "last_triggered": "Last triggered"
+        },
+        "add_to": {
+          "no_actions": "No actions available"
         },
         "sun": {
           "azimuth": "Azimuth",

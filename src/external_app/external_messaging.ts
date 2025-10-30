@@ -171,11 +171,11 @@ interface EMOutgoingMessageThreadStoreInPlatformKeychain extends EMMessage {
   };
 }
 
-interface EMOutgoingMessageAddEntityTo extends EMMessage {
+interface EMOutgoingMessageEntityAddTo extends EMMessage {
   type: "entity/add_to";
   payload: {
     entity_id: string;
-    action_id: string; // The ID of the action to perform from the external app
+    app_payload: string; // Opaque string received from get_actions
   };
 }
 
@@ -200,7 +200,7 @@ type EMOutgoingMessageWithoutAnswer =
   | EMOutgoingMessageThreadStoreInPlatformKeychain
   | EMOutgoingMessageImprovScan
   | EMOutgoingMessageImprovConfigureDevice
-  | EMOutgoingMessageAddEntityTo;
+  | EMOutgoingMessageEntityAddTo;
 
 export interface EMIncomingMessageRestart {
   id: number;
@@ -328,13 +328,15 @@ export interface ExternalConfig {
   canSetupImprov: boolean;
   downloadFileSupported: boolean;
   appVersion: string;
-  canAddEntityToApp: boolean;
+  hasAddTo: boolean;
 }
 
 export interface ExternalEntityAddToAction {
-  id: string; // Unique identifier for the action given by the external app itself
+  enabled: boolean;
   name: string; // Translated name of the action to be displayed in the UI
-  icon: string; // TODO MDI icon name?
+  details?: string; // Optional translated details of the action to be displayed in the UI
+  mdi_icon: string;
+  app_payload: string; // Opaque string to be sent back when the action is selected
 }
 
 export interface ExternalEntityAddToActions {
