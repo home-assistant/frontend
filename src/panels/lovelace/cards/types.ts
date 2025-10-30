@@ -345,6 +345,7 @@ export interface LogbookCardConfig extends LovelaceCardConfig {
   title?: string;
   hours_to_show?: number;
   theme?: string;
+  state_filter?: string[];
 }
 
 interface GeoLocationSourceConfig {

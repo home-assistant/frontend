@@ -7651,7 +7651,8 @@
             },
             "logbook": {
               "name": "Activity",
-              "description": "The Activity card shows a list of events for entities."
+              "description": "The Activity card shows a list of events for entities.",
+              "state_filter": "State filter"
             },
             "history-graph": {
               "name": "History graph",
