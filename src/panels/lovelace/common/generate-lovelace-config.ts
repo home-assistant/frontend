@@ -6,6 +6,7 @@ import { computeStateName } from "../../../common/entity/compute_state_name";
 import { splitByGroups } from "../../../common/entity/split_by_groups";
 import { stripPrefixFromEntityName } from "../../../common/entity/strip_prefix_from_entity_name";
 import { stringCompare } from "../../../common/string/compare";
+import type { LocalizeFunc } from "../../../common/translations/localize";
 import type { AreasDisplayValue } from "../../../components/ha-areas-display-editor";
 import { areaCompare } from "../../../data/area_registry";
 import type {
@@ -503,6 +504,7 @@ export const generateViewConfig = (
 
 export const generateDefaultViewConfig = (
   hass: HomeAssistant,
+  localize: LocalizeFunc,
   energyPrefs?: EnergyPreferences,
   areasPrefs?: AreasDisplayValue,
   hideEntitiesWithoutAreas?: boolean,
@@ -512,7 +514,6 @@ export const generateDefaultViewConfig = (
   const areaEntries = hass.areas;
   const deviceEntries = hass.devices;
   const entityEntries = hass.entities;
-  const localize = hass.localize;
   const states = computeDefaultViewStates(entities, entityEntries);
   const path = "default_view";
   const title = "Home";

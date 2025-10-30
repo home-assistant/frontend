@@ -33,7 +33,7 @@ export class OriginalStatesViewStrategy extends ReactiveElement {
       };
     }
 
-    const [_, energyPrefs] = await Promise.all([
+    const [localize, energyPrefs] = await Promise.all([
       hass.loadBackendTranslation("title"),
       isComponentLoaded(hass, "energy")
         ? // It raises if not configured, just swallow that.
@@ -45,6 +45,7 @@ export class OriginalStatesViewStrategy extends ReactiveElement {
     // that contains all entities.
     const view = generateDefaultViewConfig(
       hass,
+      localize,
       energyPrefs,
       config.areas,
       config.hide_entities_without_area,
