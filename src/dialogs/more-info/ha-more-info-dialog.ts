@@ -197,7 +197,7 @@ export class MoreInfoDialog extends LitElement {
   }
 
   private _shouldShowAddEntityTo(): boolean {
-    return !!this.hass.auth.external?.config.hasAddTo;
+    return !!this.hass.auth.external?.config.hasEntityAddTo;
   }
 
   private _getDeviceId(): string | null {

@@ -24,7 +24,7 @@ export class HaMoreInfoAddTo extends LitElement {
   @state() private _loading = true;
 
   private async _loadExternalActions() {
-    if (this.hass.auth.external?.config.hasAddTo) {
+    if (this.hass.auth.external?.config.hasEntityAddTo) {
       this._externalActions =
         await this.hass.auth.external?.sendMessage<"entity/add_to/get_actions">(
           {
