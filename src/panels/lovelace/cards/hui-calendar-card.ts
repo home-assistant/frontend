@@ -241,6 +241,8 @@ export class HuiCalendarCard extends LitElement implements LovelaceCard {
       padding-left: 8px;
       padding-inline-start: 8px;
       direction: var(--direction);
+      white-space: nowrap;
+      text-overflow: ellipsis;
     }
 
     ha-full-calendar {
