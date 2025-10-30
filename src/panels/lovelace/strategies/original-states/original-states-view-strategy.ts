@@ -33,7 +33,7 @@ export class OriginalStatesViewStrategy extends ReactiveElement {
       };
     }
 
-    const [localize, energyPrefs] = await Promise.all([
+    const [_, energyPrefs] = await Promise.all([
       hass.loadBackendTranslation("title"),
       isComponentLoaded(hass, "energy")
         ? // It raises if not configured, just swallow that.
@@ -44,11 +44,7 @@ export class OriginalStatesViewStrategy extends ReactiveElement {
     // User can override default view. If they didn't, we will add one
     // that contains all entities.
     const view = generateDefaultViewConfig(
-      hass.areas,
-      hass.devices,
-      hass.entities,
-      hass.states,
-      localize,
+      hass,
       energyPrefs,
       config.areas,
       config.hide_entities_without_area,
