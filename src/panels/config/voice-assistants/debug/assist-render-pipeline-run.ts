@@ -12,30 +12,42 @@ import { formatNumber } from "../../../../common/number/format_number";
 import "../../../../components/ha-yaml-editor";
 import { showAlertDialog } from "../../../../dialogs/generic/show-dialog-box";
 
-const RUN_DATA = {
-  pipeline: "Pipeline",
-  language: "Language",
-};
-const WAKE_WORD_DATA = {
-  engine: "Engine",
-};
+const RUN_DATA = (hass: HomeAssistant) => ({
+  pipeline: hass.localize(
+    "ui.panel.config.voice_assistants.debug.stages.pipeline"
+  ),
+  language: hass.localize(
+    "ui.panel.config.voice_assistants.debug.stages.language"
+  ),
+});
+const WAKE_WORD_DATA = (hass: HomeAssistant) => ({
+  engine: hass.localize("ui.panel.config.voice_assistants.debug.stages.engine"),
+});
 
-const STT_DATA = {
-  engine: "Engine",
-};
+const STT_DATA = (hass: HomeAssistant) => ({
+  engine: hass.localize("ui.panel.config.voice_assistants.debug.stages.engine"),
+});
 
-const INTENT_DATA = {
-  engine: "Engine",
-  language: "Language",
-  intent_input: "Input",
-};
+const INTENT_DATA = (hass: HomeAssistant) => ({
+  engine: hass.localize("ui.panel.config.voice_assistants.debug.stages.engine"),
+  language: hass.localize(
+    "ui.panel.config.voice_assistants.debug.stages.language"
+  ),
+  intent_input: hass.localize(
+    "ui.panel.config.voice_assistants.debug.stages.input"
+  ),
+});
 
-const TTS_DATA = {
-  engine: "Engine",
-  language: "Language",
-  voice: "Voice",
-  tts_input: "Input",
-};
+const TTS_DATA = (hass: HomeAssistant) => ({
+  engine: hass.localize("ui.panel.config.voice_assistants.debug.stages.engine"),
+  language: hass.localize(
+    "ui.panel.config.voice_assistants.debug.stages.language"
+  ),
+  voice: hass.localize("ui.panel.config.voice_assistants.debug.stages.voice"),
+  tts_input: hass.localize(
+    "ui.panel.config.voice_assistants.debug.stages.input"
+  ),
+});
 
 const STAGES: Record<PipelineRun["stage"], number> = {
   ready: 0,
@@ -113,6 +125,7 @@ const renderData = (data: Record<string, any>, keys: Record<string, string>) =>
   );
 
 const dataMinusKeysRender = (
+  hass: HomeAssistant,
   data: Record<string, any>,
   keys: Record<string, string>
 ) => {
@@ -127,7 +140,9 @@ const dataMinusKeysRender = (
   }
   return render
     ? html`<ha-expansion-panel>
-        <span slot="header">Raw</span>
+        <span slot="header"
+          >${hass.localize("ui.panel.config.voice_assistants.debug.raw")}</span
+        >
         <ha-yaml-editor readOnly autoUpdate .value=${result}></ha-yaml-editor>
       </ha-expansion-panel>`
     : "";
@@ -183,11 +198,15 @@ export class AssistPipelineDebug extends LitElement {
       <ha-card>
         <div class="card-content">
           <div class="row heading">
-            <div>Run</div>
+            <div>
+              ${this.hass.localize(
+                "ui.panel.config.voice_assistants.debug.run"
+              )}
+            </div>
             <div>${this.pipelineRun.stage}</div>
           </div>
 
-          ${renderData(this.pipelineRun.run, RUN_DATA)}
+          ${renderData(this.pipelineRun.run, RUN_DATA(this.hass))}
           ${messages.length > 0
             ? html`
                 <div class="messages">
@@ -209,23 +228,38 @@ export class AssistPipelineDebug extends LitElement {
             <ha-card>
               <div class="card-content">
                 <div class="row heading">
-                  <span>Wake word</span>
+                  <span
+                    >${this.hass.localize(
+                      "ui.panel.config.voice_assistants.debug.stages.wake_word"
+                    )}</span
+                  >
                   ${renderProgress(this.hass, this.pipelineRun, "wake_word")}
                 </div>
                 ${this.pipelineRun.wake_word
                   ? html`
                       <div class="card-content">
-                        ${renderData(this.pipelineRun.wake_word, STT_DATA)}
+                        ${renderData(
+                          this.pipelineRun.wake_word,
+                          STT_DATA(this.hass)
+                        )}
                         ${this.pipelineRun.wake_word.wake_word_output
                           ? html`<div class="row">
-                                <div>Model</div>
+                                <div>
+                                  ${this.hass.localize(
+                                    "ui.panel.config.voice_assistants.debug.stages.model"
+                                  )}
+                                </div>
                                 <div>
                                   ${this.pipelineRun.wake_word.wake_word_output
                                     .ww_id}
                                 </div>
                               </div>
                               <div class="row">
-                                <div>Timestamp</div>
+                                <div>
+                                  ${this.hass.localize(
+                                    "ui.panel.config.voice_assistants.debug.stages.timestamp"
+                                  )}
+                                </div>
                                 <div>
                                   ${this.pipelineRun.wake_word.wake_word_output
                                     .timestamp}
@@ -233,8 +267,9 @@ export class AssistPipelineDebug extends LitElement {
                               </div>`
                           : ""}
                         ${dataMinusKeysRender(
+                          this.hass,
                           this.pipelineRun.wake_word,
-                          WAKE_WORD_DATA
+                          WAKE_WORD_DATA(this.hass)
                         )}
                       </div>
                     `
@@ -249,7 +284,11 @@ export class AssistPipelineDebug extends LitElement {
             <ha-card>
               <div class="card-content">
                 <div class="row heading">
-                  <span>Speech-to-text</span>
+                  <span
+                    >${this.hass.localize(
+                      "ui.panel.config.voice_assistants.debug.stages.speech_to_text"
+                    )}</span
+                  >
                   ${renderProgress(
                     this.hass,
                     this.pipelineRun,
@@ -260,18 +299,30 @@ export class AssistPipelineDebug extends LitElement {
                 ${this.pipelineRun.stt
                   ? html`
                       <div class="card-content">
-                        ${renderData(this.pipelineRun.stt, STT_DATA)}
+                        ${renderData(this.pipelineRun.stt, STT_DATA(this.hass))}
                         <div class="row">
-                          <div>Language</div>
+                          <div>
+                            ${this.hass.localize(
+                              "ui.panel.config.voice_assistants.debug.stages.language"
+                            )}
+                          </div>
                           <div>${this.pipelineRun.stt.metadata.language}</div>
                         </div>
                         ${this.pipelineRun.stt.stt_output
                           ? html`<div class="row">
-                              <div>Output</div>
+                              <div>
+                                ${this.hass.localize(
+                                  "ui.panel.config.voice_assistants.debug.stages.output"
+                                )}
+                              </div>
                               <div>${this.pipelineRun.stt.stt_output.text}</div>
                             </div>`
                           : ""}
-                        ${dataMinusKeysRender(this.pipelineRun.stt, STT_DATA)}
+                        ${dataMinusKeysRender(
+                          this.hass,
+                          this.pipelineRun.stt,
+                          STT_DATA(this.hass)
+                        )}
                       </div>
                     `
                   : ""}
@@ -285,16 +336,27 @@ export class AssistPipelineDebug extends LitElement {
             <ha-card>
               <div class="card-content">
                 <div class="row heading">
-                  <span>Natural Language Processing</span>
+                  <span
+                    >${this.hass.localize(
+                      "ui.panel.config.voice_assistants.debug.stages.natural_language_processing"
+                    )}</span
+                  >
                   ${renderProgress(this.hass, this.pipelineRun, "intent")}
                 </div>
                 ${this.pipelineRun.intent
                   ? html`
                       <div class="card-content">
-                        ${renderData(this.pipelineRun.intent, INTENT_DATA)}
+                        ${renderData(
+                          this.pipelineRun.intent,
+                          INTENT_DATA(this.hass)
+                        )}
                         ${this.pipelineRun.intent.intent_output
                           ? html`<div class="row">
-                                <div>Response type</div>
+                                <div>
+                                  ${this.hass.localize(
+                                    "ui.panel.config.voice_assistants.debug.stages.response_type"
+                                  )}
+                                </div>
                                 <div>
                                   ${this.pipelineRun.intent.intent_output
                                     .response.response_type}
@@ -303,7 +365,11 @@ export class AssistPipelineDebug extends LitElement {
                               ${this.pipelineRun.intent.intent_output.response
                                 .response_type === "error"
                                 ? html`<div class="row">
-                                    <div>Error code</div>
+                                    <div>
+                                      ${this.hass.localize(
+                                        "ui.panel.config.voice_assistants.debug.error.code"
+                                      )}
+                                    </div>
                                     <div>
                                       ${this.pipelineRun.intent.intent_output
                                         .response.data.code}
@@ -312,20 +378,29 @@ export class AssistPipelineDebug extends LitElement {
                                 : ""}`
                           : ""}
                         <div class="row">
-                          <div>Prefer handling locally</div>
+                          <div>
+                            ${this.hass.localize(
+                              "ui.panel.config.voice_assistants.debug.stages.prefer_local"
+                            )}
+                          </div>
                           <div>
                             ${this.pipelineRun.intent.prefer_local_intents}
                           </div>
                         </div>
                         <div class="row">
-                          <div>Processed locally</div>
+                          <div>
+                            ${this.hass.localize(
+                              "ui.panel.config.voice_assistants.debug.stages.processed_locally"
+                            )}
+                          </div>
                           <div>
                             ${this.pipelineRun.intent.processed_locally}
                           </div>
                         </div>
                         ${dataMinusKeysRender(
+                          this.hass,
                           this.pipelineRun.intent,
-                          INTENT_DATA
+                          INTENT_DATA(this.hass)
                         )}
                       </div>
                     `
@@ -340,14 +415,22 @@ export class AssistPipelineDebug extends LitElement {
             <ha-card>
               <div class="card-content">
                 <div class="row heading">
-                  <span>Text-to-speech</span>
+                  <span
+                    >${this.hass.localize(
+                      "ui.panel.config.voice_assistants.debug.stages.text_to_speech"
+                    )}</span
+                  >
                   ${renderProgress(this.hass, this.pipelineRun, "tts")}
                 </div>
                 ${this.pipelineRun.tts
                   ? html`
                       <div class="card-content">
-                        ${renderData(this.pipelineRun.tts, TTS_DATA)}
-                        ${dataMinusKeysRender(this.pipelineRun.tts, TTS_DATA)}
+                        ${renderData(this.pipelineRun.tts, TTS_DATA(this.hass))}
+                        ${dataMinusKeysRender(
+                          this.hass,
+                          this.pipelineRun.tts,
+                          TTS_DATA(this.hass)
+                        )}
                       </div>
                     `
                   : ""}
@@ -361,7 +444,13 @@ export class AssistPipelineDebug extends LitElement {
                           ? this._stopTTS
                           : this._playTTS}
                       >
-                        ${this._isPlaying ? "Stop audio" : "Play audio"}
+                        ${this._isPlaying
+                          ? this.hass.localize(
+                              "ui.panel.config.voice_assistants.debug.stop_audio"
+                            )
+                          : this.hass.localize(
+                              "ui.panel.config.voice_assistants.debug.play_audio"
+                            )}
                       </ha-button>
                     </div>
                   `
@@ -372,7 +461,11 @@ export class AssistPipelineDebug extends LitElement {
       ${maybeRenderError(this.pipelineRun, "tts", lastRunStage)}
       <ha-card>
         <ha-expansion-panel>
-          <span slot="header">Raw</span>
+          <span slot="header"
+            >${this.hass.localize(
+              "ui.panel.config.voice_assistants.debug.raw"
+            )}</span
+          >
           <ha-yaml-editor
             read-only
             auto-update
@@ -391,7 +484,14 @@ export class AssistPipelineDebug extends LitElement {
     this._audioElement = new Audio(url);
 
     this._audioElement.addEventListener("error", () => {
-      showAlertDialog(this, { title: "Error", text: "Error playing audio" });
+      showAlertDialog(this, {
+        title: this.hass.localize(
+          "ui.panel.config.voice_assistants.debug.error.title"
+        ),
+        text: this.hass.localize(
+          "ui.panel.config.voice_assistants.debug.error.playing_audio"
+        ),
+      });
     });
 
     this._audioElement.addEventListener("play", () => {
