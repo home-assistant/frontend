@@ -354,7 +354,10 @@ export class AssistPipelineDebug extends LitElement {
                 ? html`
                     <div class="card-actions">
                       <ha-button
-                        @click=${this._isPlaying ? this._stopTTS : this._playTTS}
+                        .variant=${this._isPlaying ? "danger" : "brand"}
+                        @click=${this._isPlaying
+                          ? this._stopTTS
+                          : this._playTTS}
                       >
                         ${this._isPlaying ? "Stop audio" : "Play audio"}
                       </ha-button>
