@@ -5,6 +5,7 @@ import type { EnergySourceByType } from "../../../data/energy";
 import type { ActionConfig } from "../../../data/lovelace/config/action";
 import type { LovelaceCardConfig } from "../../../data/lovelace/config/card";
 import type { Statistic, StatisticType } from "../../../data/recorder";
+import type { MediaSelectorValue } from "../../../data/selector";
 import type { TimeFormat } from "../../../data/translation";
 import type { ForecastType } from "../../../data/weather";
 import type {
@@ -29,7 +30,6 @@ import type {
 import type { LovelaceHeaderFooterConfig } from "../header-footer/types";
 import type { LovelaceHeadingBadgeConfig } from "../heading-badges/types";
 import type { HomeSummary } from "../strategies/home/helpers/home-summaries";
-import type { MediaSelectorValue } from "../../../data/selector";
 
 export type AlarmPanelCardConfigState =
   | "arm_away"
@@ -348,7 +348,15 @@ export interface LogbookCardConfig extends LovelaceCardConfig {
   state_filter?: string[];
 }
 
-interface GeoLocationSourceConfig {
+export interface MapEntityConfig extends EntityConfig {
+  label_mode?: "state" | "attribute" | "name";
+  attribute?: string;
+  unit?: string;
+  focus?: boolean;
+  name?: string;
+}
+
+export interface GeoLocationSourceConfig {
   source: string;
   label_mode?: "name" | "state" | "attribute" | "icon";
   attribute?: string;
@@ -363,7 +371,7 @@ export interface MapCardConfig extends LovelaceCardConfig {
   auto_fit?: boolean;
   fit_zones?: boolean;
   default_zoom?: number;
-  entities?: (EntityConfig | string)[];
+  entities?: (MapEntityConfig | string)[];
   hours_to_show?: number;
   geo_location_sources?: (GeoLocationSourceConfig | string)[];
   dark_mode?: boolean;
@@ -435,7 +443,7 @@ export interface StatisticsGraphCardConfig extends EnergyCardBaseConfig {
 }
 
 export interface StatisticCardConfig extends LovelaceCardConfig {
-  name?: string;
+  name?: string | EntityNameItem | EntityNameItem[];
   entities: (EntityConfig | string)[];
   period:
     | {
