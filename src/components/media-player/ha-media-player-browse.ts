@@ -15,6 +15,7 @@ import { classMap } from "lit/directives/class-map";
 import { styleMap } from "lit/directives/style-map";
 import { until } from "lit/directives/until";
 import { fireEvent } from "../../common/dom/fire_event";
+import { slugify } from "../../common/string/slugify";
 import { debounce } from "../../common/util/debounce";
 import { isUnavailableState } from "../../data/entity";
 import type {
@@ -76,8 +77,8 @@ declare global {
 }
 
 export interface MediaPlayerItemId {
-  media_content_id: string | undefined;
-  media_content_type: string | undefined;
+  media_content_id?: string | undefined;
+  media_content_type?: string | undefined;
 }
 
 const MANUAL_ITEM: MediaPlayerItem = {
@@ -112,6 +113,10 @@ export class HaMediaPlayerBrowse extends LitElement {
   @property({ attribute: false }) public defaultId?: string;
 
   @property({ attribute: false }) public defaultType?: string;
+
+  @property({ attribute: false }) public hideContentType = false;
+
+  @property({ attribute: false }) public contentIdHelper?: string;
 
   // @todo Consider reworking to eliminate need for attribute since it is manipulated internally
   @property({ type: Boolean, reflect: true }) public narrow = false;
@@ -521,6 +526,8 @@ export class HaMediaPlayerBrowse extends LitElement {
                         media_content_type: this.defaultType || "",
                       }}
                       .hass=${this.hass}
+                      .hideContentType=${this.hideContentType}
+                      .contentIdHelper=${this.contentIdHelper}
                       @manual-media-picked=${this._manualPicked}
                     ></ha-browse-media-manual>`
                   : isTTSMediaSource(currentItem.media_content_id)
@@ -687,10 +694,12 @@ export class HaMediaPlayerBrowse extends LitElement {
                 `
               : ""}
           </div>
-          <ha-tooltip .for="grid-${child.title}" distance="-4">
+          <ha-tooltip .for="grid-${slugify(child.title)}" distance="-4">
             ${child.title}
           </ha-tooltip>
-          <div .id="grid-${child.title}" class="title">${child.title}</div>
+          <div .id="grid-${slugify(child.title)}" class="title">
+            ${child.title}
+          </div>
         </ha-card>
       </div>
     `;

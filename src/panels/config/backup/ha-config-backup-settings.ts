@@ -244,7 +244,8 @@ class HaConfigBackupSettings extends LitElement {
                   `
                 : nothing}
             </div>
-            ${!this.cloudStatus?.logged_in
+            ${!this.cloudStatus?.logged_in &&
+            isComponentLoaded(this.hass, "cloud")
               ? html`<ha-card class="cloud-info">
                   <div class="cloud-header">
                     <img
@@ -279,7 +280,10 @@ class HaConfigBackupSettings extends LitElement {
                         "ui.panel.config.voice_assistants.assistants.cloud.sign_in"
                       )}
                     </ha-button>
-                    <ha-button href="/config/cloud/register">
+                    <ha-button
+                      href="/config/cloud/register"
+                      appearance="filled"
+                    >
                       ${this.hass.localize(
                         "ui.panel.config.voice_assistants.assistants.cloud.try_one_month"
                       )}

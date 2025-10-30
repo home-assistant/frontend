@@ -101,7 +101,7 @@ export class HaManualAutomationEditor extends LitElement {
 
   @state() private _sidebarConfig?: SidebarConfig;
 
-  @state() private _sidebarKey?: string;
+  @state() private _sidebarKey = 0;
 
   @storage({
     key: "automation-sidebar-width",
@@ -350,7 +350,9 @@ export class HaManualAutomationEditor extends LitElement {
     // deselect previous selected row
     this._sidebarConfig?.close?.();
     this._sidebarConfig = ev.detail;
-    this._sidebarKey = JSON.stringify(this._sidebarConfig);
+
+    // be sure the sidebar editor is recreated
+    this._sidebarKey++;
 
     await this._sidebarElement?.updateComplete;
     this._sidebarElement?.focus();
@@ -375,6 +377,7 @@ export class HaManualAutomationEditor extends LitElement {
         return;
       }
       this._sidebarConfig?.close();
+      this._sidebarKey = 0;
     }
   }
 

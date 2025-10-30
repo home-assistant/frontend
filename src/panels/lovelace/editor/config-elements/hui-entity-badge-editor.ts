@@ -31,6 +31,7 @@ import type { LovelaceBadgeEditor } from "../../types";
 import "../hui-sub-element-editor";
 import { actionConfigStruct } from "../structs/action-struct";
 import { baseLovelaceBadgeConfig } from "../structs/base-badge-struct";
+import { entityNameStruct } from "../structs/entity-name-struct";
 import { configElementStyle } from "./config-elements-style";
 import "./hui-card-features-editor";
 
@@ -39,7 +40,7 @@ const badgeConfigStruct = assign(
   object({
     entity: optional(string()),
     display_type: optional(enums(DISPLAY_TYPES)),
-    name: optional(string()),
+    name: optional(entityNameStruct),
     icon: optional(string()),
     state_content: optional(union([string(), array(string())])),
     color: optional(string()),
@@ -82,15 +83,16 @@ export class HuiEntityBadgeEditor
           iconPath: mdiTextShort,
           schema: [
             {
+              name: "name",
+              selector: {
+                entity_name: {},
+              },
+              context: { entity: "entity" },
+            },
+            {
               name: "",
               type: "grid",
               schema: [
-                {
-                  name: "name",
-                  selector: {
-                    text: {},
-                  },
-                },
                 {
                   name: "color",
                   selector: {

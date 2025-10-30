@@ -32,9 +32,9 @@ import {
   getCommonOptions,
   getCompareTransform,
 } from "./common/energy-chart-options";
+import type { ECOption } from "../../../../resources/echarts/echarts";
 import "./common/hui-energy-graph-chip";
 import "../../../../components/ha-tooltip";
-import type { ECOption } from "../../../../resources/echarts";
 
 @customElement("hui-energy-solar-graph-card")
 export class HuiEnergySolarGraphCard

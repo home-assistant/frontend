@@ -14,6 +14,7 @@ export interface CommonControlSectionStrategyConfig {
   icon?: string;
   limit?: number;
   exclude_entities?: string[];
+  include_entities?: string[];
   hide_empty?: boolean;
 }
 
@@ -52,9 +53,20 @@ export class CommonControlsSectionStrategy extends ReactiveElement {
       (entity) => entity in hass.states
     );
 
-    if (config.exclude_entities) {
+    if (config.exclude_entities?.length) {
       predictedEntities = predictedEntities.filter(
         (entity) => !config.exclude_entities!.includes(entity)
+      );
+    }
+
+    if (config.include_entities?.length) {
+      // Remove included entities from predicted list to avoid duplicates
+      predictedEntities = predictedEntities.filter(
+        (entity) => !config.include_entities!.includes(entity)
+      );
+      // Add included entities to the start of the list
+      predictedEntities.unshift(
+        ...config.include_entities!.filter((entity) => entity in hass.states)
       );
     }
 

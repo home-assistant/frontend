@@ -50,7 +50,7 @@ export class HaMarkdown extends LitElement {
     }
     ha-alert {
       display: block;
-      margin: 4px 0;
+      margin: var(--ha-space-1) 0;
     }
     a {
       color: var(--primary-color);
@@ -75,7 +75,7 @@ export class HaMarkdown extends LitElement {
       padding: 0;
     }
     pre {
-      padding: 16px;
+      padding: var(--ha-space-4);
       overflow: auto;
       line-height: var(--ha-line-height-condensed);
       font-family: var(--ha-font-family-code);
@@ -95,7 +95,7 @@ export class HaMarkdown extends LitElement {
     hr {
       border-color: var(--divider-color);
       border-bottom: none;
-      margin: 16px 0;
+      margin: var(--ha-space-4) 0;
     }
   ` as CSSResultGroup;
 }

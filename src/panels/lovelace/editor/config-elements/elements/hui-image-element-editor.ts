@@ -2,7 +2,15 @@ import memoizeOne from "memoize-one";
 import { mdiGestureTap } from "@mdi/js";
 import { html, LitElement, nothing } from "lit";
 import { customElement, property, state } from "lit/decorators";
-import { any, assert, literal, object, optional, string } from "superstruct";
+import {
+  any,
+  assert,
+  literal,
+  object,
+  optional,
+  string,
+  union,
+} from "superstruct";
 import type { LocalizeFunc } from "../../../../../common/translations/localize";
 import { fireEvent } from "../../../../../common/dom/fire_event";
 import "../../../../../components/ha-form/ha-form";
@@ -15,7 +23,7 @@ import { actionConfigStruct } from "../../structs/action-struct";
 const imageElementConfigStruct = object({
   type: literal("image"),
   entity: optional(string()),
-  image: optional(string()),
+  image: optional(union([string(), object()])),
   style: optional(any()),
   title: optional(string()),
   tap_action: optional(actionConfigStruct),
@@ -87,7 +95,20 @@ export class HuiImageElementEditor
             },
           ],
         },
-        { name: "image", selector: { image: {} } },
+        {
+          name: "image",
+          selector: {
+            media: {
+              accept: ["image/*"] as string[],
+              clearable: true,
+              image_upload: true,
+              hide_content_type: true,
+              content_id_helper: localize(
+                "ui.panel.lovelace.editor.card.picture.content_id_helper"
+              ),
+            },
+          },
+        },
         { name: "camera_image", selector: { entity: { domain: "camera" } } },
         {
           name: "camera_view",
@@ -119,13 +140,20 @@ export class HuiImageElementEditor
     return html`
       <ha-form
         .hass=${this.hass}
-        .data=${this._config}
+        .data=${this._processData(this._config)}
         .schema=${this._schema(this.hass.localize)}
         .computeLabel=${this._computeLabelCallback}
         @value-changed=${this._valueChanged}
       ></ha-form>
     `;
   }
+
+  private _processData = memoizeOne((config: ImageElementConfig) => ({
+    ...config,
+    ...(typeof config.image === "string"
+      ? { image: { media_content_id: config.image } }
+      : {}),
+  }));
 
   private _valueChanged(ev: CustomEvent): void {
     fireEvent(this, "config-changed", { config: ev.detail.value });

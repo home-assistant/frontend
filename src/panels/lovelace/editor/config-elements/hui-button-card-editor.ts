@@ -16,13 +16,14 @@ import type { ButtonCardConfig } from "../../cards/types";
 import type { LovelaceCardEditor } from "../../types";
 import { actionConfigStruct } from "../structs/action-struct";
 import { baseLovelaceCardConfig } from "../structs/base-card-struct";
+import { entityNameStruct } from "../structs/entity-name-struct";
 import { configElementStyle } from "./config-elements-style";
 
 const cardConfigStruct = assign(
   baseLovelaceCardConfig,
   object({
     entity: optional(string()),
-    name: optional(string()),
+    name: optional(entityNameStruct),
     show_name: optional(boolean()),
     icon: optional(string()),
     show_icon: optional(boolean()),
@@ -32,6 +33,8 @@ const cardConfigStruct = assign(
     double_tap_action: optional(actionConfigStruct),
     theme: optional(string()),
     show_state: optional(boolean()),
+    state_color: optional(boolean()),
+    color: optional(string()),
   })
 );
 
@@ -46,6 +49,19 @@ export class HuiButtonCardEditor
 
   public setConfig(config: ButtonCardConfig): void {
     assert(config, cardConfigStruct);
+
+    // Migrate state_color to color
+    if (config.state_color !== undefined) {
+      config = {
+        ...config,
+        color: config.state_color ? undefined : "none",
+      };
+      delete config.state_color;
+
+      fireEvent(this, "config-changed", { config: config });
+      return;
+    }
+
     this._config = config;
   }
 
@@ -54,10 +70,16 @@ export class HuiButtonCardEditor
       [
         { name: "entity", selector: { entity: {} } },
         {
+          name: "name",
+          selector: {
+            entity_name: {},
+          },
+          context: { entity: "entity" },
+        },
+        {
           name: "",
           type: "grid",
           schema: [
-            { name: "name", selector: { text: {} } },
             {
               name: "icon",
               selector: {
@@ -67,6 +89,18 @@ export class HuiButtonCardEditor
                 icon_entity: "entity",
               },
             },
+            { name: "icon_height", selector: { text: { suffix: "px" } } },
+            {
+              name: "color",
+              selector: {
+                ui_color: {
+                  default_color: "state",
+                  include_state: true,
+                  include_none: true,
+                },
+              },
+            },
+            { name: "theme", selector: { theme: {} } },
           ],
         },
         {
@@ -77,14 +111,6 @@ export class HuiButtonCardEditor
             { name: "show_name", selector: { boolean: {} } },
             { name: "show_state", selector: { boolean: {} } },
             { name: "show_icon", selector: { boolean: {} } },
-          ],
-        },
-        {
-          name: "",
-          type: "grid",
-          schema: [
-            { name: "icon_height", selector: { text: { suffix: "px" } } },
-            { name: "theme", selector: { theme: {} } },
           ],
         },
         {
