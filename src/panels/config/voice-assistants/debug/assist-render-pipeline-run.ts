@@ -139,6 +139,12 @@ export class AssistPipelineDebug extends LitElement {
 
   @property({ attribute: false }) public pipelineRun!: PipelineRun;
 
+  private _audioElement?: HTMLAudioElement;
+
+  private get _isPlaying(): boolean {
+    return this._audioElement != null && !this._audioElement.paused;
+  }
+
   protected render(): TemplateResult {
     const lastRunStage: string = this.pipelineRun
       ? ["tts", "intent", "stt", "wake_word"].find(
@@ -349,8 +355,13 @@ export class AssistPipelineDebug extends LitElement {
               ${this.pipelineRun?.tts?.tts_output
                 ? html`
                     <div class="card-actions">
-                      <ha-button @click=${this._playTTS}>
-                        Play Audio
+                      <ha-button
+                        .variant=${this._isPlaying ? "danger" : "brand"}
+                        @click=${this._isPlaying
+                          ? this._stopTTS
+                          : this._playTTS}
+                      >
+                        ${this._isPlaying ? "Stop audio" : "Play audio"}
                       </ha-button>
                     </div>
                   `
@@ -373,14 +384,41 @@ export class AssistPipelineDebug extends LitElement {
   }
 
   private _playTTS(): void {
+    // Stop any existing audio first
+    this._stopTTS();
+
     const url = this.pipelineRun!.tts!.tts_output!.url;
-    const audio = new Audio(url);
-    audio.addEventListener("error", () => {
+    this._audioElement = new Audio(url);
+
+    this._audioElement.addEventListener("error", () => {
       showAlertDialog(this, { title: "Error", text: "Error playing audio" });
     });
-    audio.addEventListener("canplaythrough", () => {
-      audio.play();
+
+    this._audioElement.addEventListener("play", () => {
+      this.requestUpdate();
     });
+
+    this._audioElement.addEventListener("ended", () => {
+      this.requestUpdate();
+    });
+
+    this._audioElement.addEventListener("canplaythrough", () => {
+      this._audioElement!.play();
+    });
+  }
+
+  private _stopTTS(): void {
+    if (this._audioElement) {
+      this._audioElement.pause();
+      this._audioElement.currentTime = 0;
+      this._audioElement = undefined;
+      this.requestUpdate();
+    }
+  }
+
+  public disconnectedCallback(): void {
+    super.disconnectedCallback();
+    this._stopTTS();
   }
 
   static styles = css`

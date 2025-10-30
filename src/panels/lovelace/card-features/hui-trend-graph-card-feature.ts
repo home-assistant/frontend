@@ -94,7 +94,7 @@ class HuiHistoryChartCardFeature
     }
     if (!this._coordinates) {
       return html`
-        <div class="container">
+        <div class="container loading">
           <ha-spinner size="small"></ha-spinner>
         </div>
       `;
@@ -153,6 +153,14 @@ class HuiHistoryChartCardFeature
       align-items: flex-end;
       pointer-events: none !important;
     }
+
+    .container.loading {
+      width: 100%;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+    }
+
     hui-graph-base {
       width: 100%;
       --accent-color: var(--feature-color);

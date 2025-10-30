@@ -3945,7 +3945,6 @@
               "add": "Add trigger",
               "empty_search": "No triggers found for {term}",
               "id": "Trigger ID",
-              "id_helper": "Helps identify each run based on which trigger fired.",
               "optional": "Optional",
               "edit_id": "Edit ID",
               "duplicate": "[%key:ui::common::duplicate%]",
@@ -7652,7 +7651,8 @@
             },
             "logbook": {
               "name": "Activity",
-              "description": "The Activity card shows a list of events for entities."
+              "description": "The Activity card shows a list of events for entities.",
+              "state_filter": "State filter"
             },
             "history-graph": {
               "name": "History graph",
