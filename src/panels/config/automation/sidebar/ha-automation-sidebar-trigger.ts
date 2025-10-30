@@ -3,6 +3,7 @@ import {
   mdiContentCopy,
   mdiContentCut,
   mdiDelete,
+  mdiIdentifier,
   mdiPlayCircleOutline,
   mdiPlaylistEdit,
   mdiPlusCircleMultipleOutline,
@@ -40,6 +41,8 @@ export default class HaAutomationSidebarTrigger extends LitElement {
   @property({ type: Number, attribute: "sidebar-key" })
   public sidebarKey?: number;
 
+  @state() private _requestShowId = false;
+
   @state() private _warnings?: string[];
 
   @query(".sidebar-editor")
@@ -47,6 +50,7 @@ export default class HaAutomationSidebarTrigger extends LitElement {
 
   protected willUpdate(changedProperties) {
     if (changedProperties.has("config")) {
+      this._requestShowId = false;
       this._warnings = undefined;
       if (this.config) {
         this.yamlMode = this.config.yamlMode;
@@ -100,6 +104,24 @@ export default class HaAutomationSidebarTrigger extends LitElement {
             <span class="shortcut-placeholder ${isMac ? "mac" : ""}"></span>
           </div>
         </ha-md-menu-item>
+
+        ${!this.yamlMode &&
+        !("id" in this.config.config) &&
+        !this._requestShowId
+          ? html`<ha-md-menu-item
+              slot="menu-items"
+              .clickAction=${this._showTriggerId}
+              .disabled=${this.disabled || type === "list"}
+            >
+              <ha-svg-icon slot="start" .path=${mdiIdentifier}></ha-svg-icon>
+              <div class="overflow-label">
+                ${this.hass.localize(
+                  "ui.panel.config.automation.editor.triggers.edit_id"
+                )}
+                <span class="shortcut-placeholder ${isMac ? "mac" : ""}"></span>
+              </div>
+            </ha-md-menu-item>`
+          : nothing}
 
         <ha-md-divider
           slot="menu-items"
@@ -250,6 +272,7 @@ export default class HaAutomationSidebarTrigger extends LitElement {
             @value-changed=${this._valueChangedSidebar}
             @yaml-changed=${this._yamlChangedSidebar}
             .uiSupported=${this.config.uiSupported}
+            .showId=${this._requestShowId}
             .yamlMode=${this.yamlMode}
             .disabled=${this.disabled}
             @ui-mode-not-available=${this._handleUiModeNotAvailable}
@@ -290,6 +313,10 @@ export default class HaAutomationSidebarTrigger extends LitElement {
 
   private _toggleYamlMode = () => {
     fireEvent(this, "toggle-yaml-mode");
+  };
+
+  private _showTriggerId = () => {
+    this._requestShowId = true;
   };
 
   static styles = [sidebarEditorStyles, overflowStyles];
