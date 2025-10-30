@@ -119,6 +119,11 @@ interface SubActionItem {
   visible: boolean | undefined;
 }
 
+interface UndoStackItem {
+  location: string;
+  config: LovelaceRawConfig;
+}
+
 @customElement("hui-root")
 class HUIRoot extends LitElement {
   @property({ attribute: false }) public panel?: PanelInfo<LovelacePanelConfig>;
@@ -144,13 +149,13 @@ class HUIRoot extends LitElement {
 
   private _restoreScroll = false;
 
-  private _undoRedoController = new UndoRedoController<LovelaceRawConfig>(
-    this,
-    {
-      apply: (config) => this._applyUndoRedo(config),
-      currentConfig: () => this.lovelace!.rawConfig,
-    }
-  );
+  private _undoRedoController = new UndoRedoController<UndoStackItem>(this, {
+    apply: (config) => this._applyUndoRedo(config),
+    currentConfig: () => ({
+      location: this.route!.path,
+      config: this.lovelace!.rawConfig,
+    }),
+  });
 
   private _debouncedConfigChanged: () => void;
 
@@ -695,7 +700,10 @@ class HUIRoot extends LitElement {
         this.lovelace!.rawConfig !== oldLovelace!.rawConfig &&
         !this._configChangedByUndo
       ) {
-        this._undoRedoController.commit(oldLovelace.rawConfig);
+        this._undoRedoController.commit({
+          location: this.route!.path,
+          config: oldLovelace.rawConfig,
+        });
       } else {
         this._configChangedByUndo = false;
       }
@@ -1265,9 +1273,10 @@ class HUIRoot extends LitElement {
     showShortcutsDialog(this);
   }
 
-  private _applyUndoRedo(config: LovelaceRawConfig) {
+  private _applyUndoRedo(item: UndoStackItem) {
     this._configChangedByUndo = true;
-    this.lovelace!.saveConfig(config);
+    this.lovelace!.saveConfig(item.config);
+    this._navigateToView(item.location);
   }
 
   private _undo() {
