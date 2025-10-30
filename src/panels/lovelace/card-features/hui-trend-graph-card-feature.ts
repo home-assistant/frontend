@@ -135,7 +135,7 @@ class HuiHistoryChartCardFeature
             this.clientHeight,
             this.clientWidth / 5 // sample to 1 point per 5 pixels
           );
-        // this._coordinates = points;
+        this._coordinates = points;
         this._yAxisOrigin = yAxisOrigin;
       },
       hourToShow,
