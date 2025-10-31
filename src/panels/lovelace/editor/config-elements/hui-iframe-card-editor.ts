@@ -16,6 +16,7 @@ const cardConfigStruct = assign(
     url: optional(string()),
     aspect_ratio: optional(string()),
     allow_open_top_navigation: optional(boolean()),
+    hide_background: optional(boolean()),
   })
 );
 
@@ -29,6 +30,7 @@ const SCHEMA = [
       { name: "aspect_ratio", selector: { text: {} } },
     ],
   },
+  { name: "hide_background", selector: { boolean: {} } },
 ] as const;
 
 @customElement("hui-iframe-card-editor")
@@ -66,6 +68,9 @@ export class HuiIframeCardEditor
   }
 
   private _computeLabelCallback = (schema: SchemaUnion<typeof SCHEMA>) =>
+    this.hass!.localize(
+      `ui.panel.lovelace.editor.card.iframe.${schema.name}`
+    ) ??
     this.hass!.localize(`ui.panel.lovelace.editor.card.generic.${schema.name}`);
 }
 
