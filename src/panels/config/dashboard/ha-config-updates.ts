@@ -58,10 +58,13 @@ class HaConfigUpdates extends SubscribeMixin(LitElement) {
   );
 
   private _renderUpdateProgress(entity: UpdateEntity) {
-    if (entity.attributes.update_percentage !== null) {
+    if (entity.attributes.update_percentage != null) {
       return html`<ha-progress-ring
         size="small"
         .value=${entity.attributes.update_percentage}
+        .label=${this.hass.localize(
+          "ui.panel.config.updates.update_in_progress"
+        )}
       ></ha-progress-ring>`;
     }
 
