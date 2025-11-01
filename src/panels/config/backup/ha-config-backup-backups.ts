@@ -262,7 +262,7 @@ class HaConfigBackupBackups extends SubscribeMixin(LitElement) {
         type: "overflow-menu",
         template: (backup) => html`
           <ha-icon-button
-            .selected=${backup}
+            .backup=${backup}
             .label=${this.hass.localize("ui.common.overflow_menu")}
             .path=${mdiDotsVertical}
             @click=${this._toggleOverflowMenu}
@@ -294,7 +294,7 @@ class HaConfigBackupBackups extends SubscribeMixin(LitElement) {
       this._overflowMenu.close();
       return;
     }
-    this._overflowBackup = ev.target.selected;
+    this._overflowBackup = ev.target.backup;
     this._overflowMenu.anchorElement = ev.target;
     this._overflowMenu.show();
   };
@@ -572,15 +572,17 @@ class HaConfigBackupBackups extends SubscribeMixin(LitElement) {
     navigate(`/config/backup/details/${id}`);
   }
 
-  private async _downloadBackup(): Promise<void> {
-    if (!this._overflowBackup) {
+  private async _downloadBackup(ev): Promise<void> {
+    const backup = ev.parentElement.anchorElement.backup;
+    if (!backup) {
       return;
     }
-    downloadBackup(this.hass, this, this._overflowBackup, this.config);
+    downloadBackup(this.hass, this, backup, this.config);
   }
 
-  private async _deleteBackup(): Promise<void> {
-    if (!this._overflowBackup) {
+  private async _deleteBackup(ev): Promise<void> {
+    const backup = ev.parentElement.anchorElement.backup;
+    if (!backup) {
       return;
     }
 
@@ -596,8 +598,8 @@ class HaConfigBackupBackups extends SubscribeMixin(LitElement) {
     }
 
     try {
-      await deleteBackup(this.hass, this._overflowBackup.backup_id);
-      if (this._selected.includes(this._overflowBackup.backup_id)) {
+      await deleteBackup(this.hass, backup.backup_id);
+      if (this._selected.includes(backup.backup_id)) {
         this._selected = this._selected.filter(
           (id) => id !== this._overflowBackup!.backup_id
         );
