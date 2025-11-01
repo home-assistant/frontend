@@ -7088,6 +7088,11 @@
               "card_indicates_energy_used": "This card indicates how much of the electricity consumed by your home was generated using non-fossil fuels like solar, wind, and nuclear. The higher, the better!",
               "low_carbon_energy_consumed": "Low-carbon electricity consumed",
               "low_carbon_energy_not_calculated": "Consumed low-carbon electricity couldn't be calculated"
+            },
+            "energy_compare": {
+              "info": "You are comparing the period {start} with the period {end}",
+              "compare_previous_year": "Compare previous year",
+              "compare_previous_period": "Compare previous period"
             }
           },
           "heading": {
@@ -9336,11 +9341,6 @@
       "energy": {
         "download_data": "[%key:ui::panel::history::download_data%]",
         "configure": "[%key:ui::dialogs::quick-bar::commands::navigation::energy%]",
-        "compare": {
-          "info": "You are comparing the period {start} with the period {end}",
-          "compare_previous_year": "Compare previous year",
-          "compare_previous_period": "Compare previous period"
-        },
         "setup": {
           "next": "Next",
           "back": "Back",
