@@ -42,6 +42,25 @@ export const coreStyles = css`
     --ha-space-18: 72px;
     --ha-space-19: 76px;
     --ha-space-20: 80px;
+
+    /* Shadow tokens */
+    --ha-shadow-offset-x-sm: 0px;
+    --ha-shadow-offset-x-md: 0px;
+    --ha-shadow-offset-x-lg: 0px;
+    --ha-shadow-offset-y-sm: 2px;
+    --ha-shadow-offset-y-md: 4px;
+    --ha-shadow-offset-y-lg: 8px;
+    --ha-shadow-blur-sm: 4px;
+    --ha-shadow-blur-md: 8px;
+    --ha-shadow-blur-lg: 12px;
+    --ha-shadow-spread-sm: 0px;
+    --ha-shadow-spread-md: 0px;
+    --ha-shadow-spread-lg: 0px;
+
+    /* Compound shadow styles */
+    --ha-shadow-sm: var(--ha-shadow-offset-x-sm) var(--ha-shadow-offset-y-sm) var(--ha-shadow-blur-sm) var(--ha-shadow-spread-sm) var(--ha-color-shadow);
+    --ha-shadow-md: var(--ha-shadow-offset-x-md) var(--ha-shadow-offset-y-md) var(--ha-shadow-blur-md) var(--ha-shadow-spread-md) var(--ha-color-shadow);
+    --ha-shadow-lg: var(--ha-shadow-offset-x-lg) var(--ha-shadow-offset-y-lg) var(--ha-shadow-blur-lg) var(--ha-shadow-spread-lg) var(--ha-color-shadow);
   }
 `;
 
