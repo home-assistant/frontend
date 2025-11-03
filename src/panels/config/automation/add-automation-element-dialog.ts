@@ -1137,11 +1137,11 @@ class DialogAddAutomationElement
         }
         .groups .selected {
           background-color: var(--ha-color-fill-primary-normal-active);
-          --md-list-item-label-text-color: var(--primary-color);
-          --icon-primary-color: var(--primary-color);
+          --md-list-item-label-text-color: var(--ha-color-on-primary-normal);
+          --icon-primary-color: var(--ha-color-on-primary-normal);
         }
         .groups .selected ha-svg-icon {
-          color: var(--primary-color);
+          color: var(--ha-color-on-primary-normal);
         }
 
         .collection-title {
