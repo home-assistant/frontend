@@ -43,6 +43,8 @@ export class DialogVoiceAssistantPipelineDetail extends LitElement {
 
   @state() private _supportedLanguages?: string[];
 
+  @state() private _supportedConversationLanguages?: string[];
+
   public showDialog(params: VoiceAssistantPipelineDetailsDialogParams): void {
     this._params = params;
     this._error = undefined;
@@ -173,6 +175,8 @@ export class DialogVoiceAssistantPipelineDetail extends LitElement {
             .data=${this._data}
             keys="conversation_engine,conversation_language,prefer_local_intents"
             @value-changed=${this._valueChanged}
+            @supported-languages-changed=${this
+              ._supportedConversationLanguagesChanged}
           ></assist-pipeline-detail-conversation>
           ${!this._cloudActive &&
           (this._data.tts_engine === "cloud" ||
@@ -214,7 +218,7 @@ export class DialogVoiceAssistantPipelineDetail extends LitElement {
         <ha-button
           slot="primaryAction"
           @click=${this._updatePipeline}
-          .disabled=${this._submitting}
+          .loading=${this._submitting}
           dialogInitialFocus
         >
           ${this._params.pipeline?.id
@@ -253,7 +257,10 @@ export class DialogVoiceAssistantPipelineDetail extends LitElement {
         name: data.name!,
         language: data.language!,
         conversation_engine: data.conversation_engine!,
-        conversation_language: data.conversation_language ?? null,
+        conversation_language:
+          data.conversation_language ??
+          this._supportedConversationLanguages?.[0] ??
+          null,
         prefer_local_intents: data.prefer_local_intents ?? true,
         stt_engine: data.stt_engine ?? null,
         stt_language: data.stt_language ?? null,
@@ -276,6 +283,19 @@ export class DialogVoiceAssistantPipelineDetail extends LitElement {
       this._error = err?.message || "Unknown error";
     } finally {
       this._submitting = false;
+    }
+  }
+
+  private _supportedConversationLanguagesChanged(ev) {
+    this._supportedConversationLanguages = ev.detail.value;
+    if (
+      this._data?.conversation_language &&
+      !this._supportedConversationLanguages?.includes(
+        this._data.conversation_engine!
+      )
+    ) {
+      this._data.conversation_language =
+        this._supportedConversationLanguages?.[0];
     }
   }
 
