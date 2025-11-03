@@ -415,7 +415,7 @@ class ErrorLogCard extends LitElement {
       const downloadUrl =
         this.provider && this.provider !== "core"
           ? getHassioLogDownloadUrl(this.provider)
-          : getErrorLogDownloadUrl;
+          : getErrorLogDownloadUrl(this.hass);
       const logFileName =
         this.provider && this.provider !== "core"
           ? `${this.provider}_${timeString}.log`
