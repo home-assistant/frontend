@@ -1711,6 +1711,14 @@
         "update": "[%key:ui::panel::config::devices::update%]",
         "unknown_error": "[%key:ui::panel::config::devices::unknown_error%]"
       },
+      "label-detail": {
+        "new_label": "New label",
+        "name": "Name",
+        "icon": "Icon",
+        "color": "Color",
+        "description": "Description",
+        "required_error_msg": "[%key:ui::panel::config::zone::detail::required_error_msg%]"
+      },
       "voice-settings": {
         "expose_header": "Expose",
         "aliases_header": "Aliases",
@@ -2411,18 +2419,7 @@
           "introduction": "Labels can help you organize your areas, devices, and entities. They can be used to filter in the UI, or use them as a target in automations.",
           "introduction2": "Go to the area, device, or entity you want to add a label to, and press the edit button to assign labels to them.",
           "confirm_remove_title": "Remove label?",
-          "confirm_remove": "Are you sure you want to remove label {label}? It will be removed from all areas, devices, and entities.",
-          "detail": {
-            "new_label": "New label",
-            "name": "Name",
-            "icon": "Icon",
-            "color": "Color",
-            "description": "Description",
-            "delete": "Delete",
-            "update": "Update",
-            "create": "Create",
-            "required_error_msg": "[%key:ui::panel::config::zone::detail::required_error_msg%]"
-          }
+          "confirm_remove": "Are you sure you want to remove label {label}? It will be removed from all areas, devices, and entities."
         },
         "areas": {
           "caption": "Areas",
@@ -3634,6 +3631,36 @@
             "older_run": "Older run",
             "newer_run": "Newer run",
             "start_debug_run": "Start debug run",
+            "error": {
+              "code": "Error code",
+              "fetch_events": "Failed to fetch events",
+              "fetch_runs": "Failed to fetch pipeline runs",
+              "playing_audio": "Error playing audio",
+              "showing_run": "Error showing run",
+              "title": "Error"
+            },
+            "no_events": "There were no events in this run.",
+            "play_audio": "Play audio",
+            "raw": "Raw",
+            "run": "Run",
+            "stages": {
+              "engine": "Engine",
+              "input": "Input",
+              "language": "Language",
+              "model": "Model",
+              "natural_language_processing": "Natural language processing",
+              "output": "Output",
+              "pipeline": "Pipeline",
+              "prefer_local": "Prefer handling locally",
+              "processed_locally": "Processed locally",
+              "response_type": "Response type",
+              "speech_to_text": "Speech-to-text",
+              "text_to_speech": "Text-to-speech",
+              "timestamp": "Timestamp",
+              "voice": "Voice",
+              "wake_word": "Wake word"
+            },
+            "stop_audio": "Stop audio",
             "pipeline": {
               "header": "Assist pipeline",
               "run_text_pipeline": "Run text pipeline",
@@ -7093,6 +7120,11 @@
               "card_indicates_energy_used": "This card indicates how much of the electricity consumed by your home was generated using non-fossil fuels like solar, wind, and nuclear. The higher, the better!",
               "low_carbon_energy_consumed": "Low-carbon electricity consumed",
               "low_carbon_energy_not_calculated": "Consumed low-carbon electricity couldn't be calculated"
+            },
+            "energy_compare": {
+              "info": "You are comparing the period {start} with the period {end}",
+              "compare_previous_year": "Compare previous year",
+              "compare_previous_period": "Compare previous period"
             }
           },
           "heading": {
@@ -9341,11 +9373,6 @@
       "energy": {
         "download_data": "[%key:ui::panel::history::download_data%]",
         "configure": "[%key:ui::dialogs::quick-bar::commands::navigation::energy%]",
-        "compare": {
-          "info": "You are comparing the period {start} with the period {end}",
-          "compare_previous_year": "Compare previous year",
-          "compare_previous_period": "Compare previous period"
-        },
         "setup": {
           "next": "Next",
           "back": "Back",
