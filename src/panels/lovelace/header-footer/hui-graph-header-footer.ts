@@ -218,6 +218,9 @@ export class HuiGraphHeaderFooter
   }
 
   static styles = css`
+    :host {
+      display: block;
+    }
     ha-spinner {
       position: absolute;
       top: calc(50% - 14px);
