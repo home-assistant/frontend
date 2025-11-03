@@ -11,36 +11,16 @@ import type { HomeAssistant } from "../../../../types";
 import { formatNumber } from "../../../../common/number/format_number";
 import "../../../../components/ha-yaml-editor";
 import { showAlertDialog } from "../../../../dialogs/generic/show-dialog-box";
+import type { LocalizeKeys } from "../../../../common/translations/localize";
 
 const RUN_DATA = ["pipeline", "language"];
-const WAKE_WORD_DATA = (hass: HomeAssistant) => ({
-  engine: hass.localize("ui.panel.config.voice_assistants.debug.stages.engine"),
-});
+const WAKE_WORD_DATA = ["engine"];
 
-const STT_DATA = (hass: HomeAssistant) => ({
-  engine: hass.localize("ui.panel.config.voice_assistants.debug.stages.engine"),
-});
+const STT_DATA = ["engine"];
 
-const INTENT_DATA = (hass: HomeAssistant) => ({
-  engine: hass.localize("ui.panel.config.voice_assistants.debug.stages.engine"),
-  language: hass.localize(
-    "ui.panel.config.voice_assistants.debug.stages.language"
-  ),
-  intent_input: hass.localize(
-    "ui.panel.config.voice_assistants.debug.stages.input"
-  ),
-});
+const INTENT_DATA = ["engine", "language", "intent_input"];
 
-const TTS_DATA = (hass: HomeAssistant) => ({
-  engine: hass.localize("ui.panel.config.voice_assistants.debug.stages.engine"),
-  language: hass.localize(
-    "ui.panel.config.voice_assistants.debug.stages.language"
-  ),
-  voice: hass.localize("ui.panel.config.voice_assistants.debug.stages.voice"),
-  tts_input: hass.localize(
-    "ui.panel.config.voice_assistants.debug.stages.input"
-  ),
-});
+const TTS_DATA = ["engine", "language", "voice", "tts_input"];
 
 const STAGES: Record<PipelineRun["stage"], number> = {
   ready: 0,
@@ -107,25 +87,32 @@ const renderProgress = (
   return html`${durationString}s ✅`;
 };
 
-const renderData = (data: Record<string, any>, keys: Record<string, string>) =>
-  Object.entries(keys).map(
-    ([key, label]) => html`
+const renderData = (
+  hass: HomeAssistant,
+  data: Record<string, any>,
+  keys: string[]
+) =>
+  keys.map((key) => {
+    const label = hass.localize(
+      `ui.panel.config.voice_assistants.debug.stages.${key}` as LocalizeKeys
+    );
+    return html`
       <div class="row">
         <div>${label}</div>
         <div>${data[key]}</div>
       </div>
-    `
-  );
+    `;
+  });
 
 const dataMinusKeysRender = (
   hass: HomeAssistant,
   data: Record<string, any>,
-  keys: Record<string, string>
+  keys: string[]
 ) => {
   const result = {};
   let render = false;
   for (const key in data) {
-    if (key in keys || key === "done") {
+    if (keys.includes(key) || key === "done") {
       continue;
     }
     render = true;
@@ -199,7 +186,7 @@ export class AssistPipelineDebug extends LitElement {
             <div>${this.pipelineRun.stage}</div>
           </div>
 
-          ${renderData(this.pipelineRun.run, RUN_DATA(this.hass))}
+          ${renderData(this.hass, this.pipelineRun.run, RUN_DATA)}
           ${messages.length > 0
             ? html`
                 <div class="messages">
@@ -232,8 +219,9 @@ export class AssistPipelineDebug extends LitElement {
                   ? html`
                       <div class="card-content">
                         ${renderData(
+                          this.hass,
                           this.pipelineRun.wake_word,
-                          STT_DATA(this.hass)
+                          WAKE_WORD_DATA
                         )}
                         ${this.pipelineRun.wake_word.wake_word_output
                           ? html`<div class="row">
@@ -262,7 +250,7 @@ export class AssistPipelineDebug extends LitElement {
                         ${dataMinusKeysRender(
                           this.hass,
                           this.pipelineRun.wake_word,
-                          WAKE_WORD_DATA(this.hass)
+                          WAKE_WORD_DATA
                         )}
                       </div>
                     `
@@ -292,7 +280,7 @@ export class AssistPipelineDebug extends LitElement {
                 ${this.pipelineRun.stt
                   ? html`
                       <div class="card-content">
-                        ${renderData(this.pipelineRun.stt, STT_DATA(this.hass))}
+                        ${renderData(this.hass, this.pipelineRun.stt, STT_DATA)}
                         <div class="row">
                           <div>
                             ${this.hass.localize(
@@ -314,7 +302,7 @@ export class AssistPipelineDebug extends LitElement {
                         ${dataMinusKeysRender(
                           this.hass,
                           this.pipelineRun.stt,
-                          STT_DATA(this.hass)
+                          STT_DATA
                         )}
                       </div>
                     `
@@ -340,8 +328,9 @@ export class AssistPipelineDebug extends LitElement {
                   ? html`
                       <div class="card-content">
                         ${renderData(
+                          this.hass,
                           this.pipelineRun.intent,
-                          INTENT_DATA(this.hass)
+                          INTENT_DATA
                         )}
                         ${this.pipelineRun.intent.intent_output
                           ? html`<div class="row">
@@ -393,7 +382,7 @@ export class AssistPipelineDebug extends LitElement {
                         ${dataMinusKeysRender(
                           this.hass,
                           this.pipelineRun.intent,
-                          INTENT_DATA(this.hass)
+                          INTENT_DATA
                         )}
                       </div>
                     `
@@ -418,11 +407,11 @@ export class AssistPipelineDebug extends LitElement {
                 ${this.pipelineRun.tts
                   ? html`
                       <div class="card-content">
-                        ${renderData(this.pipelineRun.tts, TTS_DATA(this.hass))}
+                        ${renderData(this.hass, this.pipelineRun.tts, TTS_DATA)}
                         ${dataMinusKeysRender(
                           this.hass,
                           this.pipelineRun.tts,
-                          TTS_DATA(this.hass)
+                          TTS_DATA
                         )}
                       </div>
                     `
