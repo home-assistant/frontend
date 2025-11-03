@@ -43,7 +43,7 @@ export class DialogVoiceAssistantPipelineDetail extends LitElement {
 
   @state() private _supportedLanguages?: string[];
 
-  @state() private _supportedConversationLanguages?: string[];
+  @state() private _supportedConversationLanguages?: string[] | "*";
 
   public showDialog(params: VoiceAssistantPipelineDetailsDialogParams): void {
     this._params = params;
@@ -249,6 +249,16 @@ export class DialogVoiceAssistantPipelineDetail extends LitElement {
     this._data = { ...this._data, ...value };
   }
 
+  private _getDefaultConversationLanguage() {
+    if (
+      !this._supportedConversationLanguages ||
+      this._supportedConversationLanguages === "*"
+    ) {
+      return this._supportedLanguages?.[0] ?? null;
+    }
+    return this._supportedConversationLanguages[0];
+  }
+
   private async _updatePipeline() {
     this._submitting = true;
     try {
@@ -257,10 +267,7 @@ export class DialogVoiceAssistantPipelineDetail extends LitElement {
         name: data.name!,
         language: data.language!,
         conversation_engine: data.conversation_engine!,
-        conversation_language:
-          data.conversation_language ??
-          this._supportedConversationLanguages?.[0] ??
-          null,
+        conversation_language: this._getDefaultConversationLanguage(),
         prefer_local_intents: data.prefer_local_intents ?? true,
         stt_engine: data.stt_engine ?? null,
         stt_language: data.stt_language ?? null,
@@ -289,12 +296,8 @@ export class DialogVoiceAssistantPipelineDetail extends LitElement {
   private _supportedConversationLanguagesChanged(
     ev: CustomEvent<{ value: "*" | string[] | undefined }>
   ) {
-    const value = ev.detail.value;
-    if (value && value !== "*") {
-      this._supportedConversationLanguages = ev.detail.value as string[];
-    }
+    this._supportedConversationLanguages = ev.detail.value;
     if (
-      value &&
       this._data?.conversation_language &&
       !this._supportedConversationLanguages?.includes(
         this._data.conversation_language!
@@ -302,7 +305,7 @@ export class DialogVoiceAssistantPipelineDetail extends LitElement {
     ) {
       this._data = {
         ...this._data,
-        conversation_language: this._supportedConversationLanguages?.[0],
+        conversation_language: this._getDefaultConversationLanguage(),
       };
     }
   }
