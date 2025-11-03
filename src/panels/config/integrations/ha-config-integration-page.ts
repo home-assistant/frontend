@@ -790,7 +790,10 @@ class HaConfigIntegrationPage extends SubscribeMixin(LitElement) {
     );
     const timeString = new Date().toISOString().replace(/:/g, "-");
     const logFileName = `home-assistant_${integration}_${timeString}.log`;
-    const signedUrl = await getSignedPath(this.hass, getErrorLogDownloadUrl);
+    const signedUrl = await getSignedPath(
+      this.hass,
+      getErrorLogDownloadUrl(this.hass)
+    );
     fileDownload(signedUrl.path, logFileName);
   }
 
