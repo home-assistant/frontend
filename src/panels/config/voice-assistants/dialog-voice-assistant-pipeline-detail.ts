@@ -286,16 +286,24 @@ export class DialogVoiceAssistantPipelineDetail extends LitElement {
     }
   }
 
-  private _supportedConversationLanguagesChanged(ev) {
-    this._supportedConversationLanguages = ev.detail.value;
+  private _supportedConversationLanguagesChanged(
+    ev: CustomEvent<{ value: "*" | string[] | undefined }>
+  ) {
+    const value = ev.detail.value;
+    if (value && value !== "*") {
+      this._supportedConversationLanguages = ev.detail.value as string[];
+    }
     if (
+      value &&
       this._data?.conversation_language &&
       !this._supportedConversationLanguages?.includes(
-        this._data.conversation_engine!
+        this._data.conversation_language!
       )
     ) {
-      this._data.conversation_language =
-        this._supportedConversationLanguages?.[0];
+      this._data = {
+        ...this._data,
+        conversation_language: this._supportedConversationLanguages?.[0],
+      };
     }
   }
 
