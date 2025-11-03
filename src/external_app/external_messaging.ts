@@ -328,14 +328,14 @@ export interface ExternalConfig {
   canSetupImprov: boolean;
   downloadFileSupported: boolean;
   appVersion: string;
-  hasEntityAddTo: boolean;
+  hasEntityAddTo: boolean; // Supports "Add to" from more-info dialog, with action coming from external app
 }
 
 export interface ExternalEntityAddToAction {
   enabled: boolean;
   name: string; // Translated name of the action to be displayed in the UI
   details?: string; // Optional translated details of the action to be displayed in the UI
-  mdi_icon: string;
+  mdi_icon: string; // MDI icon name to be displayed in the UI (e.g., "mdi:car")
   app_payload: string; // Opaque string to be sent back when the action is selected
 }
 

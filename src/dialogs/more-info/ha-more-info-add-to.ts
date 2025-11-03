@@ -8,6 +8,7 @@ import type {
   ExternalEntityAddToActions,
   ExternalEntityAddToAction,
 } from "../../external_app/external_messaging";
+import { showToast } from "../../util/toast";
 
 import type { HomeAssistant } from "../../types";
 
@@ -29,7 +30,7 @@ export class HaMoreInfoAddTo extends LitElement {
         await this.hass.auth.external?.sendMessage<"entity/add_to/get_actions">(
           {
             type: "entity/add_to/get_actions",
-            payload: { entity_id: this.entityId! },
+            payload: { entity_id: this.entityId },
           }
         );
     }
@@ -51,10 +52,11 @@ export class HaMoreInfoAddTo extends LitElement {
         },
       });
     } catch (err: any) {
-      // TODO
-      // Error handling - could show an alert here if needed
-      // eslint-disable-next-line no-console
-      console.error("Failed to send action to external app", err);
+      showToast(this, {
+        message: this.hass.localize("ui.dialogs.more_info_control.add_to.action_failed", {
+          error: err.message || err
+        }),
+      });
     }
   }
 

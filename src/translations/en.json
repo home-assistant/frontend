@@ -1447,7 +1447,8 @@
           "last_triggered": "Last triggered"
         },
         "add_to": {
-          "no_actions": "No actions available"
+          "no_actions": "No actions available",
+          "action_failed": "Failed to perform the action {error}"
         },
         "sun": {
           "azimuth": "Azimuth",
