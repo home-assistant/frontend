@@ -12,7 +12,7 @@ import { formatNumber } from "../../../../common/number/format_number";
 import "../../../../components/ha-yaml-editor";
 import { showAlertDialog } from "../../../../dialogs/generic/show-dialog-box";
 
-const RUN_DATA = ["pipeline", "language];
+const RUN_DATA = ["pipeline", "language"];
 const WAKE_WORD_DATA = (hass: HomeAssistant) => ({
   engine: hass.localize("ui.panel.config.voice_assistants.debug.stages.engine"),
 });
