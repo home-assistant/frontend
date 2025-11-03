@@ -53,9 +53,12 @@ export class HaMoreInfoAddTo extends LitElement {
       });
     } catch (err: any) {
       showToast(this, {
-        message: this.hass.localize("ui.dialogs.more_info_control.add_to.action_failed", {
-          error: err.message || err
-        }),
+        message: this.hass.localize(
+          "ui.dialogs.more_info_control.add_to.action_failed",
+          {
+            error: err.message || err,
+          }
+        ),
       });
     }
   }
