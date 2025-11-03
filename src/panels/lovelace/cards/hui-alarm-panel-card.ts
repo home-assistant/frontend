@@ -28,6 +28,7 @@ import {
   subscribeEntityRegistry,
 } from "../../../data/entity_registry";
 import type { HomeAssistant } from "../../../types";
+import { computeLovelaceEntityName } from "../common/entity/compute-lovelace-entity-name";
 import { findEntities } from "../common/find-entities";
 import { createEntityNotFoundWarning } from "../components/hui-warning";
 import type { LovelaceCard } from "../types";
@@ -232,12 +233,16 @@ class HuiAlarmPanelCard extends LitElement implements LovelaceCard {
 
     const defaultCode = this._entry?.options?.alarm_control_panel?.default_code;
 
+    const name = computeLovelaceEntityName(
+      this.hass,
+      stateObj,
+      this._config.name
+    );
+
     return html`
       <ha-card>
         <h1 class="card-header">
-          ${this._config.name ||
-          stateObj.attributes.friendly_name ||
-          stateLabel}
+          ${name}
           <ha-assist-chip
             filled
             style=${styleMap({
@@ -428,6 +433,7 @@ class HuiAlarmPanelCard extends LitElement implements LovelaceCard {
       grid-gap: var(--ha-space-4);
       justify-items: center;
       align-items: center;
+      direction: ltr;
     }
 
     ha-control-button {

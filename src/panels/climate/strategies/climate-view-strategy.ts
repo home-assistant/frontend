@@ -15,6 +15,7 @@ import {
   getFloors,
 } from "../../lovelace/strategies/areas/helpers/areas-strategy-helper";
 import { getHomeStructure } from "../../lovelace/strategies/home/helpers/home-structure";
+import { floorDefaultIcon } from "../../../components/ha-floor-icon";
 
 export interface ClimateViewStrategyConfig {
   type: "climate";
@@ -152,6 +153,7 @@ export class ClimateViewStrategy extends ReactiveElement {
               floorCount > 1
                 ? floor.name
                 : hass.localize("ui.panel.lovelace.strategy.home.areas"),
+            icon: floor.icon || floorDefaultIcon(floor),
           },
         ],
       };

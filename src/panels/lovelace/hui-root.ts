@@ -321,6 +321,8 @@ class HUIRoot extends LitElement {
                 .id="button-${index}"
                 .path=${item.icon}
                 slot="trigger"
+                .label=${label}
+                hide-title
               ></ha-icon-button>
               ${item.subItems
                 .filter((subItem) => subItem.visible)
@@ -340,9 +342,6 @@ class HUIRoot extends LitElement {
                   `
                 )}
             </ha-button-menu>
-            <ha-tooltip placement="bottom" .for="button-${index}">
-              ${label}
-            </ha-tooltip>
           `
         : html`
             <ha-icon-button
@@ -390,8 +389,10 @@ class HUIRoot extends LitElement {
         <ha-button-menu slot="actionItems">
           <ha-icon-button
             slot="trigger"
-            .label=${this.hass!.localize("ui.panel.lovelace.editor.menu.open")}
+            id="dashboardmenu"
             .path=${mdiDotsVertical}
+            .label=${this.hass!.localize("ui.panel.lovelace.editor.menu.open")}
+            hide-title
           ></ha-icon-button>
           ${listItems}
         </ha-button-menu>
@@ -518,6 +519,7 @@ class HUIRoot extends LitElement {
                   ${isSubview
                     ? html`
                         <ha-icon-button-arrow-prev
+                          .hass=${this.hass}
                           slot="navigationIcon"
                           @click=${this._goBack}
                         ></ha-icon-button-arrow-prev>

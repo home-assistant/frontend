@@ -33,7 +33,7 @@ import type { HomeSummaryCard } from "./types";
 const COLORS: Record<HomeSummary, string> = {
   light: "amber",
   climate: "deep-orange",
-  security: "blue-grey",
+  safety: "blue-grey",
   media_players: "blue",
 };
 
@@ -147,23 +147,20 @@ export class HuiHomeSummaryCard extends LitElement implements LovelaceCard {
           ? `${formattedMinTemp}°`
           : `${formattedMinTemp} - ${formattedMaxTemp}°`;
       }
-      case "security": {
+      case "safety": {
         // Alarm and lock status
-        const securityFilters = HOME_SUMMARIES_FILTERS.security.map((filter) =>
+        const safetyFilters = HOME_SUMMARIES_FILTERS.safety.map((filter) =>
           generateEntityFilter(this.hass!, filter)
         );
 
-        const securityEntities = findEntities(
-          entitiesInsideArea,
-          securityFilters
-        );
+        const safetyEntities = findEntities(entitiesInsideArea, safetyFilters);
 
-        const locks = securityEntities.filter((entityId) => {
+        const locks = safetyEntities.filter((entityId) => {
           const domain = computeDomain(entityId);
           return domain === "lock";
         });
 
-        const alarms = securityEntities.filter((entityId) => {
+        const alarms = safetyEntities.filter((entityId) => {
           const domain = computeDomain(entityId);
           return domain === "alarm_control_panel";
         });

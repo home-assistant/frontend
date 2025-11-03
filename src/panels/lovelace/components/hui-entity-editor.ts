@@ -1,4 +1,4 @@
-import { mdiClose, mdiDrag, mdiPencil } from "@mdi/js";
+import { mdiClose, mdiDragHorizontalVariant, mdiPencil } from "@mdi/js";
 import { css, html, LitElement, nothing } from "lit";
 import { customElement, property } from "lit/decorators";
 import { repeat } from "lit/directives/repeat";
@@ -6,12 +6,10 @@ import { fireEvent } from "../../../common/dom/fire_event";
 import { entityUseDeviceName } from "../../../common/entity/compute_entity_name";
 import { computeRTL } from "../../../common/util/compute_rtl";
 import "../../../components/entity/ha-entity-picker";
-import type {
-  HaEntityPicker,
-  HaEntityPickerEntityFilterFunc,
-} from "../../../components/entity/ha-entity-picker";
+import type { HaEntityPicker } from "../../../components/entity/ha-entity-picker";
 import "../../../components/ha-icon-button";
 import "../../../components/ha-sortable";
+import type { HaEntityPickerEntityFilterFunc } from "../../../data/entity";
 import type { HomeAssistant } from "../../../types";
 import type { EntityConfig } from "../entity-rows/types";
 
@@ -47,14 +45,13 @@ export class HuiEntityEditor extends LitElement {
       this.hass.devices
     );
 
-    const name = this.hass.formatEntityName(
-      stateObj,
-      useDeviceName ? { type: "device" } : { type: "entity" }
-    );
-
     const isRTL = computeRTL(this.hass);
 
-    const primary = item.name || name || item.entity;
+    const primary =
+      this.hass.formatEntityName(
+        stateObj,
+        useDeviceName ? { type: "device" } : { type: "entity" }
+      ) || item.entity;
 
     const secondary = this.hass.formatEntityName(
       stateObj,
@@ -68,7 +65,11 @@ export class HuiEntityEditor extends LitElement {
 
     return html`
       <ha-md-list-item class="item">
-        <ha-svg-icon class="handle" .path=${mdiDrag} slot="start"></ha-svg-icon>
+        <ha-svg-icon
+          class="handle"
+          .path=${mdiDragHorizontalVariant}
+          slot="start"
+        ></ha-svg-icon>
 
         <div slot="headline" class="label">${primary}</div>
         ${secondary
@@ -154,7 +155,9 @@ export class HuiEntityEditor extends LitElement {
                 (entityConf, index) => html`
                   <div class="entity" data-entity-id=${entityConf.entity}>
                     <div class="handle">
-                      <ha-svg-icon .path=${mdiDrag}></ha-svg-icon>
+                      <ha-svg-icon
+                        .path=${mdiDragHorizontalVariant}
+                      ></ha-svg-icon>
                     </div>
                     <ha-entity-picker
                       .hass=${this.hass}
@@ -170,10 +173,10 @@ export class HuiEntityEditor extends LitElement {
             </div>
           </ha-sortable>`}
       <ha-entity-picker
-        class="add-entity"
         .hass=${this.hass}
         .entityFilter=${this.entityFilter}
         @value-changed=${this._addEntity}
+        add-button
       ></ha-entity-picker>
     `;
   }
@@ -221,13 +224,6 @@ export class HuiEntityEditor extends LitElement {
   static styles = css`
     ha-entity-picker {
       margin-top: 8px;
-    }
-    .add-entity {
-      display: block;
-      margin-left: 31px;
-      margin-inline-start: 31px;
-      margin-inline-end: initial;
-      direction: var(--direction);
     }
     .entity {
       display: flex;

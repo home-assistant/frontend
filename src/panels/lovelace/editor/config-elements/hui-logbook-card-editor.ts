@@ -10,6 +10,7 @@ import {
   string,
 } from "superstruct";
 import type { HassServiceTarget } from "home-assistant-js-websocket";
+import memoizeOne from "memoize-one";
 import { fireEvent } from "../../../../common/dom/fire_event";
 import "../../../../components/entity/ha-entities-picker";
 import "../../../../components/ha-target-picker";
@@ -22,8 +23,9 @@ import type { LovelaceCardEditor } from "../../types";
 import { baseLovelaceCardConfig } from "../structs/base-card-struct";
 import { DEFAULT_HOURS_TO_SHOW } from "../../cards/hui-logbook-card";
 import { targetStruct } from "../../../../data/script";
-import type { HaEntityPickerEntityFilterFunc } from "../../../../components/entity/ha-entity-picker";
 import { getSensorNumericDeviceClasses } from "../../../../data/sensor";
+import type { HaEntityPickerEntityFilterFunc } from "../../../../data/entity";
+import { resolveEntityIDs } from "../../../../data/selector";
 
 const cardConfigStruct = assign(
   baseLovelaceCardConfig,
@@ -33,6 +35,7 @@ const cardConfigStruct = assign(
     hours_to_show: optional(number()),
     theme: optional(string()),
     target: optional(targetStruct),
+    state_filter: optional(array(string())),
   })
 );
 
@@ -49,6 +52,13 @@ const SCHEMA = [
         selector: { number: { mode: "box", min: 1 } },
       },
     ],
+  },
+  {
+    name: "state_filter",
+    context: {
+      filter_entity: "context_entities",
+    },
+    selector: { state: { multiple: true } },
   },
 ] as const;
 
@@ -106,7 +116,13 @@ export class HuiLogbookCardEditor
     return html`
       <ha-form
         .hass=${this.hass}
-        .data=${this._config}
+        .data=${this._data(
+          this._config,
+          this._targetPicker,
+          this.hass.entities,
+          this.hass.devices,
+          this.hass.areas
+        )}
         .schema=${SCHEMA}
         .computeLabel=${this._computeLabelCallback}
         @value-changed=${this._valueChanged}
@@ -122,6 +138,25 @@ export class HuiLogbookCardEditor
     `;
   }
 
+  private _data = memoizeOne(
+    (
+      config: LogbookCardConfig,
+      target: HassServiceTarget,
+      entities: HomeAssistant["entities"],
+      devices: HomeAssistant["devices"],
+      areas: HomeAssistant["areas"]
+    ) => ({
+      ...config,
+      context_entities: resolveEntityIDs(
+        this.hass!,
+        target,
+        entities,
+        devices,
+        areas
+      ),
+    })
+  );
+
   private _filterFunc: HaEntityPickerEntityFilterFunc = (entity) =>
     filterLogbookCompatibleEntities(entity, this._sensorNumericDeviceClasses);
 
@@ -131,7 +166,9 @@ export class HuiLogbookCardEditor
   }
 
   private _valueChanged(ev: CustomEvent): void {
-    fireEvent(this, "config-changed", { config: ev.detail.value });
+    const newConfig = { ...ev.detail.value };
+    delete newConfig.context_entities;
+    fireEvent(this, "config-changed", { config: newConfig });
   }
 
   private _computeLabelCallback = (schema: SchemaUnion<typeof SCHEMA>) => {
@@ -142,6 +179,10 @@ export class HuiLogbookCardEditor
         )} (${this.hass!.localize(
           "ui.panel.lovelace.editor.card.config.optional"
         )})`;
+      case "state_filter":
+        return this.hass!.localize(
+          "ui.panel.lovelace.editor.card.logbook.state_filter"
+        );
       default:
         return this.hass!.localize(
           `ui.panel.lovelace.editor.card.generic.${schema.name}`

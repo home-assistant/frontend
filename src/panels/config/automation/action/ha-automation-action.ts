@@ -1,9 +1,10 @@
-import { mdiDrag, mdiPlus } from "@mdi/js";
+import { mdiDragHorizontalVariant, mdiPlus } from "@mdi/js";
 import deepClone from "deep-clone-simple";
 import type { PropertyValues } from "lit";
-import { LitElement, html, nothing } from "lit";
+import { html, LitElement, nothing } from "lit";
 import { customElement, property, queryAll, state } from "lit/decorators";
 import { repeat } from "lit/directives/repeat";
+import { ensureArray } from "../../../../common/array/ensure-array";
 import { storage } from "../../../../common/decorators/storage";
 import { fireEvent } from "../../../../common/dom/fire_event";
 import { stopPropagation } from "../../../../common/dom/stop_propagation";
@@ -15,19 +16,18 @@ import {
   ACTION_BUILDING_BLOCKS,
   getService,
   isService,
+  VIRTUAL_ACTIONS,
 } from "../../../../data/action";
 import type { AutomationClipboard } from "../../../../data/automation";
 import type { Action } from "../../../../data/script";
 import type { HomeAssistant } from "../../../../types";
 import {
   PASTE_VALUE,
-  VIRTUAL_ACTIONS,
   showAddAutomationElementDialog,
 } from "../show-add-automation-element-dialog";
 import { automationRowsStyles } from "../styles";
 import type HaAutomationActionRow from "./ha-automation-action-row";
 import { getAutomationActionType } from "./ha-automation-action-row";
-import { ensureArray } from "../../../../common/array/ensure-array";
 
 @customElement("ha-automation-action")
 export default class HaAutomationAction extends LitElement {
@@ -115,7 +115,9 @@ export default class HaAutomationAction extends LitElement {
                         @click=${stopPropagation}
                         .index=${idx}
                       >
-                        <ha-svg-icon .path=${mdiDrag}></ha-svg-icon>
+                        <ha-svg-icon
+                          .path=${mdiDragHorizontalVariant}
+                        ></ha-svg-icon>
                       </div>
                     `
                   : nothing}
@@ -132,17 +134,6 @@ export default class HaAutomationAction extends LitElement {
               <ha-svg-icon .path=${mdiPlus} slot="start"></ha-svg-icon>
               ${this.hass.localize(
                 "ui.panel.config.automation.editor.actions.add"
-              )}
-            </ha-button>
-            <ha-button
-              .disabled=${this.disabled}
-              @click=${this._addActionBuildingBlockDialog}
-              appearance="plain"
-              .size=${this.root ? "medium" : "small"}
-            >
-              <ha-svg-icon .path=${mdiPlus} slot="start"></ha-svg-icon>
-              ${this.hass.localize(
-                "ui.panel.config.automation.editor.actions.add_building_block"
               )}
             </ha-button>
           </div>
@@ -217,15 +208,6 @@ export default class HaAutomationAction extends LitElement {
       type: "action",
       add: this._addAction,
       clipboardItem: getAutomationActionType(this._clipboard?.action),
-    });
-  }
-
-  private _addActionBuildingBlockDialog() {
-    showAddAutomationElementDialog(this, {
-      type: "action",
-      add: this._addAction,
-      clipboardItem: getAutomationActionType(this._clipboard?.action),
-      group: "building_blocks",
     });
   }
 

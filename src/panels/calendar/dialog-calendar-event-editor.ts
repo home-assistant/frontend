@@ -332,6 +332,15 @@ class DialogCalendarEventEditor extends LitElement {
 
   private _allDayToggleChanged(ev) {
     this._allDay = ev.target.checked;
+    // When switching to all-day mode, normalize dates to midnight so time portions don't interfere with date comparisons
+    if (this._allDay && this._dtstart && this._dtend) {
+      this._dtstart = new Date(
+        formatDate(this._dtstart, this._timeZone!) + "T00:00:00"
+      );
+      this._dtend = new Date(
+        formatDate(this._dtend, this._timeZone!) + "T00:00:00"
+      );
+    }
   }
 
   private _startDateChanged(ev: CustomEvent) {

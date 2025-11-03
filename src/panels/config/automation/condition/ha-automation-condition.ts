@@ -1,4 +1,4 @@
-import { mdiDrag, mdiPlus } from "@mdi/js";
+import { mdiDragHorizontalVariant, mdiPlus } from "@mdi/js";
 import deepClone from "deep-clone-simple";
 import type { PropertyValues } from "lit";
 import { html, LitElement, nothing } from "lit";
@@ -193,7 +193,9 @@ export default class HaAutomationCondition extends LitElement {
                         @click=${stopPropagation}
                         .index=${idx}
                       >
-                        <ha-svg-icon .path=${mdiDrag}></ha-svg-icon>
+                        <ha-svg-icon
+                          .path=${mdiDragHorizontalVariant}
+                        ></ha-svg-icon>
                       </div>
                     `
                   : nothing}
@@ -212,17 +214,6 @@ export default class HaAutomationCondition extends LitElement {
                 "ui.panel.config.automation.editor.conditions.add"
               )}
             </ha-button>
-            <ha-button
-              .disabled=${this.disabled}
-              appearance="plain"
-              .size=${this.root ? "medium" : "small"}
-              @click=${this._addConditionBuildingBlockDialog}
-            >
-              <ha-svg-icon .path=${mdiPlus} slot="start"></ha-svg-icon>
-              ${this.hass.localize(
-                "ui.panel.config.automation.editor.conditions.add_building_block"
-              )}
-            </ha-button>
           </div>
         </div>
       </ha-sortable>
@@ -237,15 +228,6 @@ export default class HaAutomationCondition extends LitElement {
       type: "condition",
       add: this._addCondition,
       clipboardItem: this._clipboard?.condition?.condition,
-    });
-  }
-
-  private _addConditionBuildingBlockDialog() {
-    showAddAutomationElementDialog(this, {
-      type: "condition",
-      add: this._addCondition,
-      clipboardItem: this._clipboard?.condition?.condition,
-      group: "building_blocks",
     });
   }
 
