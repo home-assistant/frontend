@@ -30,16 +30,26 @@ export class AssistPipelineEvents extends LitElement {
     const run = this._processEvents(this.events);
     if (!run) {
       if (this.events.length) {
-        return html`<ha-alert alert-type="error">Error showing run</ha-alert>
+        return html`<ha-alert alert-type="error"
+            >${this.hass.localize(
+              "ui.panel.config.voice_assistants.debug.error.showing_run"
+            )}</ha-alert
+          >
           <ha-card>
             <ha-expansion-panel>
-              <span slot="header">Raw</span>
+              <span slot="header"
+                >${this.hass.localize(
+                  "ui.panel.config.voice_assistants.debug.raw"
+                )}</span
+              >
               <pre>${JSON.stringify(this.events, null, 2)}</pre>
             </ha-expansion-panel>
           </ha-card>`;
       }
       return html`<ha-alert alert-type="warning"
-        >There were no events in this run.</ha-alert
+        >${this.hass.localize(
+          "ui.panel.config.voice_assistants.debug.no_events"
+        )}</ha-alert
       >`;
     }
     return html`
