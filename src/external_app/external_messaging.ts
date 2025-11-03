@@ -82,9 +82,6 @@ interface EMOutgoingMessageWithAnswer {
     request: EMOutgoingMessageConfigGet;
     response: ExternalConfig;
   };
-}
-
-interface EMOutgoingMessageWithAnswer {
   "entity/add_to/get_actions": {
     request: EMOutgoingMessageEntityAddToGetActions;
     response: ExternalEntityAddToActions;
