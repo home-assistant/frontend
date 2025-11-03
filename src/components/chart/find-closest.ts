@@ -21,7 +21,6 @@ export function findClosestDataIndexByTime(
     let candidateIndex = -1;
 
     while (left < right) {
-      // Geändert: left < right statt left <= right
       const mid = Math.floor((left + right) / 2);
       const midTime = Array.isArray(data[mid]) ? data[mid][0] : data[mid];
 
@@ -31,13 +30,12 @@ export function findClosestDataIndexByTime(
       }
       if (midTime < timeValue) {
         candidateIndex = mid;
-        left = mid + 1; // Bereich rechts von mid
+        left = mid + 1;
       } else {
-        right = mid; // Bereich links von mid (inkl. mid)
+        right = mid;
       }
     }
 
-    // Prüfe auch den letzten verbleibenden Index
     if (candidateIndex === -1 && left === right) {
       const leftTime = Array.isArray(data[left]) ? data[left][0] : data[left];
       if (leftTime <= timeValue) {
