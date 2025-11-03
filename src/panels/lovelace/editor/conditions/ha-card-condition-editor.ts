@@ -1,18 +1,19 @@
 import type { ActionDetail } from "@material/mwc-list";
 import {
+  mdiAlert,
   mdiContentCopy,
   mdiContentCut,
   mdiContentDuplicate,
   mdiDelete,
   mdiDotsVertical,
-  mdiFlask,
+  mdiEye,
+  mdiEyeOff,
   mdiPlaylistEdit,
 } from "@mdi/js";
 import deepClone from "deep-clone-simple";
 import type { PropertyValues } from "lit";
 import { LitElement, css, html, nothing } from "lit";
 import { customElement, property, state } from "lit/decorators";
-import { classMap } from "lit/directives/class-map";
 import { storage } from "../../../../common/decorators/storage";
 import { dynamicElement } from "../../../../common/dom/dynamic-element-directive";
 import { fireEvent } from "../../../../common/dom/fire_event";
@@ -27,7 +28,6 @@ import "../../../../components/ha-icon-button";
 import "../../../../components/ha-list-item";
 import "../../../../components/ha-svg-icon";
 import "../../../../components/ha-yaml-editor";
-import { showAlertDialog } from "../../../../dialogs/generic/show-dialog-box";
 import { haStyle } from "../../../../resources/styles";
 import type { HomeAssistant } from "../../../../types";
 import { ICON_CONDITION } from "../../common/icon-condition";
@@ -36,10 +36,13 @@ import type {
   LegacyCondition,
 } from "../../common/validate-condition";
 import {
+  attachConditionMediaQueriesListeners,
   checkConditionsMet,
   validateConditionalConfig,
 } from "../../common/validate-condition";
 import type { LovelaceConditionEditorConstructor } from "./types";
+import type { MediaQueriesListener } from "../../../../common/dom/media_query";
+import { slugify } from "../../../../common/string/slugify";
 
 @customElement("ha-card-condition-editor")
 export class HaCardConditionEditor extends LitElement {
@@ -63,13 +66,27 @@ export class HaCardConditionEditor extends LitElement {
 
   @state() _condition?: Condition;
 
-  @state() private _testingResult?: boolean;
+  private _validCondition = true;
+
+  private _listeners: MediaQueriesListener[] = [];
+
+  private _id = slugify(Math.random().toString());
 
   private get _editor() {
     if (!this._condition) return undefined;
     return customElements.get(
       `ha-card-condition-${this._condition.condition}`
     ) as LovelaceConditionEditorConstructor | undefined;
+  }
+
+  public disconnectedCallback() {
+    super.disconnectedCallback();
+    this._clearMediaQueries();
+  }
+
+  public connectedCallback() {
+    super.connectedCallback();
+    this._listenMediaQueries();
   }
 
   public expand() {
@@ -84,6 +101,8 @@ export class HaCardConditionEditor extends LitElement {
         condition: "state",
         ...this.condition,
       };
+      this._validCondition = validateConditionalConfig([this.condition]);
+      this._listenMediaQueries();
       const validator = this._editor?.validateUIConfig;
       if (validator) {
         try {
@@ -113,6 +132,27 @@ export class HaCardConditionEditor extends LitElement {
 
     if (!condition) return nothing;
 
+    let icon: string;
+    let tooltip: string;
+    if (this._validCondition) {
+      if (checkConditionsMet([condition], this.hass)) {
+        icon = mdiEye;
+        tooltip = this.hass.localize(
+          "ui.panel.lovelace.editor.condition-editor.testing_pass"
+        );
+      } else {
+        icon = mdiEyeOff;
+        tooltip = this.hass.localize(
+          "ui.panel.lovelace.editor.condition-editor.testing_error"
+        );
+      }
+    } else {
+      icon = mdiAlert;
+      tooltip = this.hass.localize(
+        "ui.panel.lovelace.editor.condition-editor.invalid_config_title"
+      );
+    }
+
     return html`
       <div class="container">
         <ha-expansion-panel left-chevron>
@@ -126,6 +166,12 @@ export class HaCardConditionEditor extends LitElement {
               `ui.panel.lovelace.editor.condition-editor.condition.${condition.condition}.label`
             ) || condition.condition}
           </h3>
+          <ha-svg-icon
+            .id="svg-icon-${this._id}"
+            slot="icons"
+            .path=${icon}
+          ></ha-svg-icon>
+          <ha-tooltip .for="svg-icon-${this._id}">${tooltip}</ha-tooltip>
           <ha-button-menu
             slot="icons"
             @action=${this._handleAction}
@@ -141,13 +187,6 @@ export class HaCardConditionEditor extends LitElement {
               .path=${mdiDotsVertical}
             >
             </ha-icon-button>
-
-            <ha-list-item graphic="icon">
-              ${this.hass.localize(
-                "ui.panel.lovelace.editor.condition-editor.test"
-              )}
-              <ha-svg-icon slot="graphic" .path=${mdiFlask}></ha-svg-icon>
-            </ha-list-item>
 
             <ha-list-item graphic="icon">
               ${this.hass.localize(
@@ -231,23 +270,6 @@ export class HaCardConditionEditor extends LitElement {
                 `}
           </div>
         </ha-expansion-panel>
-        <div
-          class="testing ${classMap({
-            active: this._testingResult !== undefined,
-            pass: this._testingResult === true,
-            error: this._testingResult === false,
-          })}"
-        >
-          ${this._testingResult
-            ? this.hass.localize(
-                "ui.panel.lovelace.editor.condition-editor.testing_pass"
-              )
-            : this._testingResult === false
-              ? this.hass.localize(
-                  "ui.panel.lovelace.editor.condition-editor.testing_error"
-                )
-              : nothing}
-        </div>
       </div>
     `;
   }
@@ -255,55 +277,21 @@ export class HaCardConditionEditor extends LitElement {
   private async _handleAction(ev: CustomEvent<ActionDetail>) {
     switch (ev.detail.index) {
       case 0:
-        await this._testCondition();
-        break;
-      case 1:
         this._duplicateCondition();
         break;
-      case 2:
+      case 1:
         this._copyCondition();
         break;
-      case 3:
+      case 2:
         this._cutCondition();
         break;
-      case 4:
+      case 3:
         this._yamlMode = !this._yamlMode;
         break;
-      case 5:
+      case 4:
         this._delete();
         break;
     }
-  }
-
-  private _timeout?: number;
-
-  private async _testCondition() {
-    if (this._timeout) {
-      window.clearTimeout(this._timeout);
-      this._timeout = undefined;
-    }
-    this._testingResult = undefined;
-    const condition = this.condition;
-
-    const validateResult = validateConditionalConfig([this.condition]);
-
-    if (!validateResult) {
-      showAlertDialog(this, {
-        title: this.hass.localize(
-          "ui.panel.lovelace.editor.condition-editor.invalid_config_title"
-        ),
-        text: this.hass.localize(
-          "ui.panel.lovelace.editor.condition-editor.invalid_config_text"
-        ),
-      });
-      return;
-    }
-
-    this._testingResult = checkConditionsMet([condition], this.hass);
-
-    this._timeout = window.setTimeout(() => {
-      this._testingResult = undefined;
-    }, 2500);
   }
 
   private _duplicateCondition() {
@@ -332,6 +320,25 @@ export class HaCardConditionEditor extends LitElement {
     }
     // @ts-ignore
     fireEvent(this, "value-changed", { value: ev.detail.value });
+  }
+
+  private _clearMediaQueries() {
+    this._listeners.forEach((unsub) => unsub());
+    this._listeners = [];
+  }
+
+  private _listenMediaQueries() {
+    this._clearMediaQueries();
+    if (!this._condition) {
+      return;
+    }
+
+    this._listeners = attachConditionMediaQueriesListeners(
+      [this._condition],
+      () => {
+        this.requestUpdate();
+      }
+    );
   }
 
   static styles = [
@@ -368,42 +375,6 @@ export class HaCardConditionEditor extends LitElement {
       .disabled {
         opacity: 0.5;
         pointer-events: none;
-      }
-      .testing {
-        position: absolute;
-        top: 0px;
-        right: 0px;
-        left: 0px;
-        text-transform: uppercase;
-        font-size: var(--ha-font-size-m);
-        font-weight: var(--ha-font-weight-bold);
-        background-color: var(--divider-color, #e0e0e0);
-        color: var(--text-primary-color);
-        max-height: 0px;
-        overflow: hidden;
-        transition: max-height 0.3s;
-        text-align: center;
-        border-top-right-radius: calc(
-          var(--ha-card-border-radius, var(--ha-border-radius-lg)) - var(
-              --ha-card-border-width,
-              1px
-            )
-        );
-        border-top-left-radius: calc(
-          var(--ha-card-border-radius, var(--ha-border-radius-lg)) - var(
-              --ha-card-border-width,
-              1px
-            )
-        );
-      }
-      .testing.active {
-        max-height: 100px;
-      }
-      .testing.error {
-        background-color: var(--accent-color);
-      }
-      .testing.pass {
-        background-color: var(--success-color);
       }
       .container {
         position: relative;
