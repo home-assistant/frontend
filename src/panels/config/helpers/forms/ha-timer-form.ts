@@ -136,6 +136,9 @@ class HaTimerForm extends LitElement {
   }
 
   private _toggleRestore() {
+    if (this.disabled) {
+      return;
+    }
     this._restore = !this._restore;
     fireEvent(this, "value-changed", {
       value: { ...this._item, restore: this._restore },
