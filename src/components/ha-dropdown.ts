@@ -2,6 +2,16 @@ import Dropdown from "@home-assistant/webawesome/dist/components/dropdown/dropdo
 import { css, type CSSResultGroup } from "lit";
 import { customElement, property } from "lit/decorators";
 
+/**
+ * Home Assistant dropdown component
+ *
+ * @element ha-dropdown
+ * @extends {Dropdown}
+ *
+ * @summary
+ * A stylable dropdown component supporting Home Assistant theming, variants, and appearances based on webawesome dropdown.
+ *
+ */
 @customElement("ha-dropdown")
 export class HaDropdown extends Dropdown {
   @property({ attribute: false }) dropdownTag = "ha-dropdown";
