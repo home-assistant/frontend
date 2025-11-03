@@ -89,6 +89,11 @@ export class StateHistoryChartLine extends LitElement {
 
   private _yAxisMaximumFractionDigits = 0;
 
+  public isVisible(): boolean {
+    const chartBase = this.shadowRoot!.querySelector("ha-chart-base")!;
+    return chartBase.isVisible();
+  }
+
   protected render() {
     return html`
       <ha-chart-base
@@ -100,6 +105,8 @@ export class StateHistoryChartLine extends LitElement {
         @dataset-hidden=${this._datasetHidden}
         @dataset-unhidden=${this._datasetUnhidden}
         @chart-zoom=${this._handleDataZoom}
+        @chart-move-pointer=${this._handleMovePointer}
+        @chart-hide-pointer=${this._handleHidePointer}
         .expandLegend=${this.expandLegend}
         .hideResetButton=${this.hideResetButton}
       ></ha-chart-base>
@@ -204,10 +211,34 @@ export class StateHistoryChartLine extends LitElement {
     chartBase.zoom(start, end, true);
   }
 
+  public updatePointerPos(timeValue: number) {
+    const chartBase = this.shadowRoot!.querySelector("ha-chart-base")!;
+    chartBase.updatePointerPos(timeValue);
+  }
+
+  public hidePointer() {
+    const chartBase = this.shadowRoot!.querySelector("ha-chart-base")!;
+    chartBase.hidePointer();
+  }
+
   private _handleDataZoom(ev: CustomEvent) {
     fireEvent(this, "chart-zoom-with-index", {
       start: ev.detail.start ?? 0,
       end: ev.detail.end ?? 100,
+      chartIndex: this.chartIndex,
+    });
+  }
+
+  private _handleMovePointer(ev: any) {
+    const { timeValue } = ev.detail;
+    fireEvent(this, "chart-move-pointer-with-index", {
+      chartIndex: this.chartIndex,
+      timeValue: timeValue,
+    });
+  }
+
+  private _handleHidePointer() {
+    fireEvent(this, "chart-hide-pointer-with-index", {
       chartIndex: this.chartIndex,
     });
   }

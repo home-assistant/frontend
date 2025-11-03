@@ -30,6 +30,9 @@ import "../ha-icon-button";
 import { filterXSS } from "../../common/util/xss";
 import { formatTimeLabel } from "./axis-label";
 import { downSampleLineData } from "./down-sample";
+import { findClosestDataIndexByTime } from "./find-closest";
+import type { VisibiltyObservableElement } from "./visibility-controller";
+import { VisibilityController } from "./visibility-controller";
 
 export const MIN_TIME_BETWEEN_UPDATES = 60 * 5 * 1000;
 const LEGEND_OVERFLOW_LIMIT = 10;
@@ -48,7 +51,10 @@ export type CustomLegendOption = ECOption["legend"] & {
 };
 
 @customElement("ha-chart-base")
-export class HaChartBase extends LitElement {
+export class HaChartBase
+  extends LitElement
+  implements VisibiltyObservableElement
+{
   public chart?: EChartsType;
 
   @property({ attribute: false }) public hass!: HomeAssistant;
@@ -82,6 +88,8 @@ export class HaChartBase extends LitElement {
   @state() private _minutesDifference = 24 * 60;
 
   @state() private _hiddenDatasets = new Set<string>();
+
+  private _visibility = new VisibilityController(this);
 
   private _modifierPressed = false;
 
@@ -220,6 +228,16 @@ export class HaChartBase extends LitElement {
     }
     if (Object.keys(chartOptions).length > 0) {
       this._setChartOptions(chartOptions);
+    }
+  }
+
+  public isVisible(): boolean {
+    return this._visibility.isVisible;
+  }
+
+  onVisibilityChanged(): void {
+    if (!this.isVisible()) {
+      this.hidePointer();
     }
   }
 
@@ -381,6 +399,31 @@ export class HaChartBase extends LitElement {
       });
       this.chart.on("click", (e: ECElementEvent) => {
         fireEvent(this, "chart-click", e);
+      });
+
+      this.chart.on("updateAxisPointer", (e: any) => {
+        if (!this._isTouchDevice) {
+          if (e.axesInfo && e.axesInfo.length > 0) {
+            const { dataIndex, seriesIndex } = e;
+
+            const option = this.chart?.getOption();
+            const series = option?.series?.[seriesIndex];
+
+            if (series?.data && dataIndex < series.data.length) {
+              const dataPoint = series.data[dataIndex];
+              const timeValue = Array.isArray(dataPoint)
+                ? dataPoint[0]
+                : dataPoint;
+
+              fireEvent(this, "chart-move-pointer", { timeValue });
+            }
+          }
+        } else {
+          fireEvent(this, "chart-hide-pointer");
+        }
+      });
+      this.chart.on("hideTip", (_e: any) => {
+        fireEvent(this, "chart-hide-pointer");
       });
 
       if (!this.options?.dataZoom) {
@@ -903,6 +946,30 @@ export class HaChartBase extends LitElement {
     });
   }
 
+  public updatePointerPos(timeValue: number) {
+    const option = this.chart?.getOption();
+    const result = findClosestDataIndexByTime(
+      option?.series as any[],
+      timeValue
+    );
+
+    this.chart?.dispatchAction({
+      type: "showTip",
+      seriesIndex: result.seriesIndex,
+      dataIndex: result.dataIndex,
+    });
+  }
+
+  public hidePointer() {
+    this.chart?.dispatchAction({
+      type: "hideTip",
+    });
+    this.chart?.dispatchAction({
+      type: "updateAxisPointer",
+      currTrigger: "leave",
+    });
+  }
+
   private _handleZoomReset() {
     this.chart?.dispatchAction({ type: "dataZoom", start: 0, end: 100 });
   }
@@ -1127,6 +1194,8 @@ declare global {
     "dataset-hidden": { id: string };
     "dataset-unhidden": { id: string };
     "chart-click": ECElementEvent;
+    "chart-move-pointer": any;
+    "chart-hide-pointer": any;
     "chart-zoom": {
       start: number;
       end: number;

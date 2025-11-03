@@ -62,6 +62,11 @@ export class StateHistoryChartTimeline extends LitElement {
 
   private _chartTime: Date = new Date();
 
+  public isVisible(): boolean {
+    const chartBase = this.shadowRoot!.querySelector("ha-chart-base")!;
+    return chartBase.isVisible();
+  }
+
   protected render() {
     return html`
       <ha-chart-base
@@ -264,6 +269,14 @@ export class StateHistoryChartTimeline extends LitElement {
   public zoom(start: number, end: number) {
     const chartBase = this.shadowRoot!.querySelector("ha-chart-base")!;
     chartBase.zoom(start, end, true);
+  }
+
+  public updatePointerPos(_timeValue: number) {
+    // Not supported!
+  }
+
+  public hidePointer() {
+    // Not supported!
   }
 
   private _handleDataZoom(ev: CustomEvent) {

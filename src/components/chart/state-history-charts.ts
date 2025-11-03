@@ -39,6 +39,8 @@ declare global {
       end: number;
       chartIndex: number;
     };
+    "chart-move-pointer-with-index": any;
+    "chart-hide-pointer-with-index": any;
   }
 }
 
@@ -191,6 +193,8 @@ export class StateHistoryCharts extends LitElement {
           .fitYData=${this.fitYData}
           @y-width-changed=${this._yWidthChanged}
           @chart-zoom-with-index=${this._handleTimelineSync}
+          @chart-move-pointer-with-index=${this._handlePointerSync}
+          @chart-hide-pointer-with-index=${this._handleHidePointerSync}
           .height=${this.virtualize ? undefined : this.height}
           .expandLegend=${this.expandLegend}
           ?hide-reset-button=${this.syncCharts}
@@ -313,6 +317,52 @@ export class StateHistoryCharts extends LitElement {
 
     this._hasZoomedCharts = start !== 0 || end !== 100;
     this._syncZoomToAllCharts(start, end, chartIndex);
+  }
+
+  private _handlePointerSync(ev: any) {
+    this._syncChartsAction(ev, (chartComponent, detail) => {
+      chartComponent.updatePointerPos(detail.timeValue);
+    });
+  }
+
+  private _handleHidePointerSync(ev: any) {
+    this._syncChartsAction(ev, (chartComponent) => {
+      chartComponent.hidePointer();
+    });
+  }
+
+  private _syncChartsAction(
+    ev: any,
+    action: (
+      chartComponent: StateHistoryChartLine | StateHistoryChartTimeline,
+      detail: any
+    ) => void
+  ) {
+    if (!this.syncCharts || this._isSyncing) {
+      return;
+    }
+
+    this._isSyncing = true;
+
+    try {
+      const { chartIndex } = ev.detail;
+
+      if (chartIndex === undefined) {
+        return;
+      }
+
+      const chartComponents = this.renderRoot.querySelectorAll(
+        "state-history-chart-line, state-history-chart-timeline"
+      ) as unknown as (StateHistoryChartLine | StateHistoryChartTimeline)[];
+
+      for (const [index, chartComponent] of chartComponents.entries()) {
+        if (index !== chartIndex && chartComponent.isVisible()) {
+          action(chartComponent, ev.detail);
+        }
+      }
+    } finally {
+      this._isSyncing = false;
+    }
   }
 
   private _syncZoomToAllCharts(
