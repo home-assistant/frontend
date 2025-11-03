@@ -125,8 +125,6 @@ class HaConfigBackupBackups extends SubscribeMixin(LitElement) {
 
   @query("#overflow-menu") private _overflowMenu?: HaMdMenu;
 
-  private _overflowBackup?: BackupContent;
-
   public connectedCallback() {
     super.connectedCallback();
     window.addEventListener("location-changed", this._locationChanged);
@@ -294,7 +292,6 @@ class HaConfigBackupBackups extends SubscribeMixin(LitElement) {
       this._overflowMenu.close();
       return;
     }
-    this._overflowBackup = ev.target.backup;
     this._overflowMenu.anchorElement = ev.target;
     this._overflowMenu.show();
   };
@@ -600,9 +597,7 @@ class HaConfigBackupBackups extends SubscribeMixin(LitElement) {
     try {
       await deleteBackup(this.hass, backup.backup_id);
       if (this._selected.includes(backup.backup_id)) {
-        this._selected = this._selected.filter(
-          (id) => id !== backup.backup_id
-        );
+        this._selected = this._selected.filter((id) => id !== backup.backup_id);
       }
     } catch (err: any) {
       showAlertDialog(this, {
