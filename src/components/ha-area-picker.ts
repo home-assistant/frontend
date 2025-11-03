@@ -357,7 +357,11 @@ export class HaAreaPicker extends LitElement {
 
   protected render(): TemplateResult {
     const placeholder =
-      this.placeholder ?? this.hass.localize("ui.components.area-picker.area");
+      this.placeholder ??
+      this.hass.localize("ui.components.area-picker.placeholder");
+    const notFoundLabel = this.hass.localize(
+      "ui.components.area-picker.no_match"
+    );
 
     const valueRenderer = this._computeValueRenderer(this.hass.areas);
 
@@ -367,9 +371,7 @@ export class HaAreaPicker extends LitElement {
         .autofocus=${this.autofocus}
         .label=${this.label}
         .helper=${this.helper}
-        .notFoundLabel=${this.hass.localize(
-          "ui.components.area-picker.no_match"
-        )}
+        .notFoundLabel=${notFoundLabel}
         .placeholder=${placeholder}
         .value=${this.value}
         .getItems=${this._getItems}

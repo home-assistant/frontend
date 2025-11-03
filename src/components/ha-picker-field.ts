@@ -8,6 +8,7 @@ import {
   type TemplateResult,
 } from "lit";
 import { customElement, property, query } from "lit/decorators";
+import { ifDefined } from "lit/directives/if-defined";
 import { fireEvent } from "../common/dom/fire_event";
 import "./ha-combo-box-item";
 import type { HaComboBoxItem } from "./ha-combo-box-item";
@@ -33,6 +34,8 @@ export class HaPickerField extends LitElement {
 
   @property() public placeholder?: string;
 
+  @property() public label?: string;
+
   @property({ attribute: "hide-clear-icon", type: Boolean })
   public hideClearIcon = false;
 
@@ -51,15 +54,35 @@ export class HaPickerField extends LitElement {
       !!this.value && !this.required && !this.disabled && !this.hideClearIcon;
 
     return html`
-      <ha-combo-box-item .disabled=${this.disabled} type="button" compact>
+      <ha-combo-box-item
+        .disabled=${this.disabled}
+        type="button"
+        compact
+        aria-label=${ifDefined(this.label)}
+      >
         ${this.value
           ? this.valueRenderer
             ? this.valueRenderer(this.value)
-            : html`<slot name="headline">${this.value}</slot>`
+            : html`<span slot="headline">${this.value}</span>`
           : html`
-              <span slot="headline" class="placeholder">
-                ${this.placeholder}
-              </span>
+              ${this.label
+                ? html`
+                    <span
+                      slot="headline"
+                      class="label ${this.placeholder
+                        ? "with-placeholder"
+                        : ""}"
+                      >${this.label}</span
+                    >
+                  `
+                : nothing}
+              ${this.placeholder
+                ? html`
+                    <span slot="headline" class="placeholder">
+                      ${this.placeholder}
+                    </span>
+                  `
+                : nothing}
             `}
         ${showClearIcon
           ? html`
@@ -152,9 +175,24 @@ export class HaPickerField extends LitElement {
           width: 32px;
         }
 
+        .label {
+          padding: 0 8px;
+          color: var(--secondary-text-color);
+          line-height: var(--ha-line-height-normal);
+          font-size: var(--ha-font-size-m);
+          white-space: nowrap;
+        }
+
+        .label.with-placeholder {
+          line-height: var(--ha-line-height-condensed);
+          font-size: var(--ha-font-size-xs);
+        }
+
         .placeholder {
           color: var(--secondary-text-color);
           padding: 0 8px;
+          line-height: var(--ha-line-height-normal);
+          font-size: var(--ha-font-size-m);
         }
       `,
     ];

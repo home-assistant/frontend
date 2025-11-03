@@ -824,6 +824,7 @@
         "add_new": "Add new area…",
         "no_areas": "You don't have any areas",
         "no_match": "No matching areas found",
+        "placeholder": "Select an area",
         "unassigned_areas": "Unassigned areas",
         "failed_create_area": "Failed to create area."
       },
