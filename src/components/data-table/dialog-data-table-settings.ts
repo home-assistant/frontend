@@ -1,4 +1,4 @@
-import { mdiDrag, mdiEye, mdiEyeOff } from "@mdi/js";
+import { mdiDragHorizontalVariant, mdiEye, mdiEyeOff } from "@mdi/js";
 import type { CSSResultGroup } from "lit";
 import { LitElement, css, html, nothing } from "lit";
 import { customElement, property, state } from "lit/decorators";
@@ -129,7 +129,7 @@ export class DialogDataTableSettings extends LitElement {
                   ${canMove && isVisible
                     ? html`<ha-svg-icon
                         class="handle"
-                        .path=${mdiDrag}
+                        .path=${mdiDragHorizontalVariant}
                         slot="graphic"
                       ></ha-svg-icon>`
                     : nothing}

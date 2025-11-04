@@ -195,7 +195,7 @@ export class DialogEnergySolarSettings
                     <ha-checkbox
                       .entry=${entry}
                       @change=${this._forecastCheckChanged}
-                      .checked=${this._source?.config_entry_solar_forecast?.includes(
+                      .checked=${!!this._source?.config_entry_solar_forecast?.includes(
                         entry.entry_id
                       )}
                     >

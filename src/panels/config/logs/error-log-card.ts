@@ -415,7 +415,7 @@ class ErrorLogCard extends LitElement {
       const downloadUrl =
         this.provider && this.provider !== "core"
           ? getHassioLogDownloadUrl(this.provider)
-          : getErrorLogDownloadUrl;
+          : getErrorLogDownloadUrl(this.hass);
       const logFileName =
         this.provider && this.provider !== "core"
           ? `${this.provider}_${timeString}.log`
@@ -803,8 +803,8 @@ class ErrorLogCard extends LitElement {
       padding-top: 16px;
       padding-bottom: 16px;
       overflow-y: scroll;
-      min-height: var(--error-log-card-height, calc(100vh - 240px));
-      max-height: var(--error-log-card-height, calc(100vh - 240px));
+      min-height: var(--error-log-card-height, calc(100vh - 244px));
+      max-height: var(--error-log-card-height, calc(100vh - 244px));
       border-top: 1px solid var(--divider-color);
       direction: ltr;
     }

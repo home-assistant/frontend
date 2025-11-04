@@ -5,7 +5,7 @@ import {
   mdiDelete,
   mdiDeleteSweep,
   mdiDotsVertical,
-  mdiDrag,
+  mdiDragHorizontalVariant,
   mdiPlus,
   mdiSort,
 } from "@mdi/js";
@@ -522,7 +522,7 @@ export class HuiTodoListCard extends LitElement implements LovelaceCard {
                         "ui.panel.lovelace.cards.todo-list.drag_and_drop"
                       )}
                       class="reorderButton handle"
-                      .path=${mdiDrag}
+                      .path=${mdiDragHorizontalVariant}
                       slot="meta"
                     >
                     </ha-svg-icon>

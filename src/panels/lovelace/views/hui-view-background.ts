@@ -1,8 +1,12 @@
 import { css, LitElement, nothing } from "lit";
 import type { PropertyValues } from "lit";
-import { customElement, property } from "lit/decorators";
+import { customElement, property, state } from "lit/decorators";
 import type { HomeAssistant } from "../../../types";
 import type { LovelaceViewBackgroundConfig } from "../../../data/lovelace/config/view";
+import {
+  isMediaSourceContentId,
+  resolveMediaSource,
+} from "../../../data/media_source";
 
 @customElement("hui-view-background")
 export class HUIViewBackground extends LitElement {
@@ -13,8 +17,27 @@ export class HUIViewBackground extends LitElement {
     | LovelaceViewBackgroundConfig
     | undefined;
 
+  @state({ attribute: false }) resolvedImage?: string;
+
   protected render() {
     return nothing;
+  }
+
+  private _fetchMedia() {
+    const backgroundImage =
+      typeof this.background === "string"
+        ? this.background
+        : typeof this.background?.image === "object"
+          ? this.background.image.media_content_id
+          : this.background?.image;
+
+    if (backgroundImage && isMediaSourceContentId(backgroundImage)) {
+      resolveMediaSource(this.hass, backgroundImage).then((result) => {
+        this.resolvedImage = result.url;
+      });
+    } else {
+      this.resolvedImage = undefined;
+    }
   }
 
   private _applyTheme() {
@@ -52,13 +75,23 @@ export class HUIViewBackground extends LitElement {
     background?: string | LovelaceViewBackgroundConfig
   ) {
     if (typeof background === "object" && background.image) {
+      const image =
+        typeof background.image === "object"
+          ? background.image.media_content_id || ""
+          : background.image;
+      if (isMediaSourceContentId(image) && !this.resolvedImage) {
+        return null;
+      }
       const alignment = background.alignment ?? "center";
       const size = background.size ?? "cover";
       const repeat = background.repeat ?? "no-repeat";
-      return `${alignment} / ${size} ${repeat} url('${this.hass.hassUrl(background.image)}')`;
+      return `${alignment} / ${size} ${repeat} url('${this.hass.hassUrl(this.resolvedImage || image)}')`;
     }
     if (typeof background === "string") {
-      return background;
+      if (isMediaSourceContentId(background) && !this.resolvedImage) {
+        return null;
+      }
+      return this.resolvedImage || background;
     }
     return null;
   }
@@ -89,6 +122,10 @@ export class HUIViewBackground extends LitElement {
     }
 
     if (changedProperties.has("background")) {
+      this._applyTheme();
+      this._fetchMedia();
+    }
+    if (changedProperties.has("resolvedImage")) {
       this._applyTheme();
     }
   }

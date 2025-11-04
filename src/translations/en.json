@@ -12,7 +12,7 @@
     "media_browser": "Media",
     "profile": "Profile",
     "light": "Lights",
-    "security": "Security",
+    "safety": "Safety",
     "climate": "Climate"
   },
   "state": {
@@ -646,7 +646,9 @@
       },
       "entity": {
         "entity-picker": {
+          "choose_entity": "Choose entity",
           "entity": "Entity",
+          "add": "Add entity",
           "edit": "Edit",
           "clear": "Clear",
           "no_entities": "You don't have any entities",
@@ -666,7 +668,8 @@
             "floor_missing": "No floor assigned",
             "device_missing": "No related device"
           },
-          "add": "Add"
+          "add": "Add",
+          "custom_name": "Custom name"
         },
         "entity-attribute-picker": {
           "attribute": "Attribute",
@@ -674,6 +677,9 @@
         },
         "entity-state-picker": {
           "state": "State"
+        },
+        "entity-state-content-picker": {
+          "add": "Add"
         }
       },
       "target-picker": {
@@ -682,16 +688,36 @@
         "expand_area_id": "Split this area into separate devices and entities.",
         "expand_device_id": "Split this device into separate entities.",
         "expand_label_id": "Split this label into separate areas, devices and entities.",
+        "add_target": "Add target",
         "remove": "Remove",
         "remove_floor_id": "Remove floor",
         "remove_area_id": "Remove area",
         "remove_device_id": "Remove device",
         "remove_entity_id": "Remove entity",
         "remove_label_id": "Remove label",
-        "add_area_id": "Choose area",
-        "add_device_id": "Choose device",
-        "add_entity_id": "Choose entity",
-        "add_label_id": "Choose label"
+        "devices_count": "{count} {count, plural,\n one {device}\n other {devices}\n}",
+        "entities_count": "{count} {count, plural,\n one {entity}\n other {entities}\n}",
+        "target_details": "Target details",
+        "no_targets": "No targets",
+        "no_target_found": "No target found for {term}",
+        "selected": {
+          "entity": "Entities: {count}",
+          "device": "Devices: {count}",
+          "area": "Areas: {count}",
+          "label": "Labels: {count}",
+          "floor": "Floors: {count}"
+        },
+        "type": {
+          "area": "Area",
+          "areas": "Areas",
+          "device": "Device",
+          "devices": "Devices",
+          "entity": "Entity",
+          "entities": "Entities",
+          "label": "Label",
+          "labels": "Labels",
+          "floor": "Floor"
+        }
       },
       "subpage-data-table": {
         "filters": "Filters",
@@ -732,6 +758,7 @@
       },
       "language-picker": {
         "language": "Language",
+        "no_match": "No matching languages found",
         "no_languages": "No languages available"
       },
       "tts-picker": {
@@ -784,6 +811,7 @@
         "labels": "Labels",
         "add_new_sugestion": "Add new label ''{name}''",
         "add_new": "Add new label…",
+        "add": "Add label",
         "no_labels": "You don't have any labels",
         "no_match": "No matching labels found",
         "failed_create_label": "Failed to create label."
@@ -1678,6 +1706,14 @@
         "update": "[%key:ui::panel::config::devices::update%]",
         "unknown_error": "[%key:ui::panel::config::devices::unknown_error%]"
       },
+      "label-detail": {
+        "new_label": "New label",
+        "name": "Name",
+        "icon": "Icon",
+        "color": "Color",
+        "description": "Description",
+        "required_error_msg": "[%key:ui::panel::config::zone::detail::required_error_msg%]"
+      },
       "voice-settings": {
         "expose_header": "Expose",
         "aliases_header": "Aliases",
@@ -2378,18 +2414,7 @@
           "introduction": "Labels can help you organize your areas, devices, and entities. They can be used to filter in the UI, or use them as a target in automations.",
           "introduction2": "Go to the area, device, or entity you want to add a label to, and press the edit button to assign labels to them.",
           "confirm_remove_title": "Remove label?",
-          "confirm_remove": "Are you sure you want to remove label {label}? It will be removed from all areas, devices, and entities.",
-          "detail": {
-            "new_label": "New label",
-            "name": "Name",
-            "icon": "Icon",
-            "color": "Color",
-            "description": "Description",
-            "delete": "Delete",
-            "update": "Update",
-            "create": "Create",
-            "required_error_msg": "[%key:ui::panel::config::zone::detail::required_error_msg%]"
-          }
+          "confirm_remove": "Are you sure you want to remove label {label}? It will be removed from all areas, devices, and entities."
         },
         "areas": {
           "caption": "Areas",
@@ -2674,7 +2699,11 @@
             "addons_description": "Select what add-ons you want to include.",
             "addons_all": "All",
             "addons_none": "None",
-            "addons_custom": "Custom"
+            "addons_custom": "Custom",
+            "estimated_size": "Estimated backup size",
+            "estimated_size_disclaimer": "This is an approximation based on storage usage and compression. The actual backup size will vary.",
+            "estimated_size_disclaimer_addons_custom": "This estimate includes all add-ons, and not individual add-on sizes.",
+            "estimated_size_loading": "Loading size estimate..."
           },
           "data_picker": {
             "settings": "Settings",
@@ -3443,12 +3472,17 @@
                 "require_admin": "Admin only",
                 "sidebar": "In sidebar",
                 "filename": "Filename",
-                "url": "Open"
+                "url": "Open",
+                "type": "Type"
               },
               "open": "Open",
               "edit": "Edit",
               "delete": "Delete",
-              "add_dashboard": "Add dashboard"
+              "add_dashboard": "Add dashboard",
+              "type": {
+                "user_created": "User created",
+                "built_in": "Built-in"
+              }
             },
             "confirm_delete_title": "Delete {dashboard_title}?",
             "confirm_delete_text": "This dashboard will be permanently deleted.",
@@ -3606,6 +3640,36 @@
             "older_run": "Older run",
             "newer_run": "Newer run",
             "start_debug_run": "Start debug run",
+            "error": {
+              "code": "Error code",
+              "fetch_events": "Failed to fetch events",
+              "fetch_runs": "Failed to fetch pipeline runs",
+              "playing_audio": "Error playing audio",
+              "showing_run": "Error showing run",
+              "title": "Error"
+            },
+            "no_events": "There were no events in this run.",
+            "play_audio": "Play audio",
+            "raw": "Raw",
+            "run": "Run",
+            "stages": {
+              "engine": "Engine",
+              "input": "Input",
+              "language": "Language",
+              "model": "Model",
+              "natural_language_processing": "Natural language processing",
+              "output": "Output",
+              "pipeline": "Pipeline",
+              "prefer_local": "Prefer handling locally",
+              "processed_locally": "Processed locally",
+              "response_type": "Response type",
+              "speech_to_text": "Speech-to-text",
+              "text_to_speech": "Text-to-speech",
+              "timestamp": "Timestamp",
+              "voice": "Voice",
+              "wake_word": "Wake word"
+            },
+            "stop_audio": "Stop audio",
             "pipeline": {
               "header": "Assist pipeline",
               "run_text_pipeline": "Run text pipeline",
@@ -3898,7 +3962,6 @@
             "edit_yaml": "Edit in YAML",
             "edit_ui": "Edit in visual editor",
             "copy_to_clipboard": "Copy to clipboard",
-            "search_in": "Search · {group}",
             "unknown_entity": "unknown entity",
             "edit_unknown_device": "Editor not available for unknown device",
             "switch_ui_yaml_error": "There are currently YAML errors in the automation, and it cannot be parsed. Switching to UI mode may cause pending changes to be lost. Press cancel to correct any errors before proceeding to prevent loss of pending changes, or continue if you are sure.",
@@ -3906,11 +3969,14 @@
             "type_script": "script",
             "type_automation_plural": "[%key:ui::panel::config::blueprint::overview::types_plural::automation%]",
             "type_script_plural": "[%key:ui::panel::config::blueprint::overview::types_plural::script%]",
-            "new_automation_setup_failed_title": "New {type} setup failed",
+            "new_automation_setup_failed_title": "New {type} setup timed out",
             "new_automation_setup_failed_text": "Your new {type} has saved, but waiting for it to setup has timed out. This could be due to errors parsing your configuration.yaml, please check the configuration in developer tools. Your {type} will not be visible until this is corrected, and {types} are reloaded. Changes to area, category, or labels were not saved and must be reapplied.",
+            "new_automation_setup_keep_waiting": "You may continue to wait for a response from the server, in case it is just taking an unusually long time to process this {type}.",
+            "new_automation_setup_timedout_success": "The server has responded and this has now setup successfully. You may now close this dialog.",
             "item_pasted": "{item} pasted",
             "ctrl": "Ctrl",
             "del": "Del",
+            "blocks": "Blocks",
             "triggers": {
               "name": "Triggers",
               "header": "When",
@@ -3918,9 +3984,8 @@
               "learn_more": "Learn more about triggers",
               "triggered": "Triggered",
               "add": "Add trigger",
-              "search": "Search trigger",
+              "empty_search": "No triggers found for {term}",
               "id": "Trigger ID",
-              "id_helper": "Helps identify each run based on which trigger fired.",
               "optional": "Optional",
               "edit_id": "Edit ID",
               "duplicate": "[%key:ui::common::duplicate%]",
@@ -3939,14 +4004,16 @@
               "trigger": "Trigger",
               "copied_to_clipboard": "Trigger copied to clipboard",
               "cut_to_clipboard": "Trigger cut to clipboard",
+              "select": "Select a trigger",
               "groups": {
+                "device": {
+                  "label": "Device"
+                },
                 "entity": {
-                  "label": "Entity",
-                  "description": "When something happens to an entity."
+                  "label": "Entity"
                 },
                 "time_location": {
-                  "label": "Time and location",
-                  "description": "When someone enters or leaves a zone, or at a specific time."
+                  "label": "Time and location"
                 },
                 "other": {
                   "label": "Other triggers"
@@ -4179,7 +4246,7 @@
               "description": "All conditions added here need to be satisfied for the automation to run. A condition can be satisfied or not at any given time, for example: ''If {user} is home''. You can use building blocks to create more complex conditions.",
               "learn_more": "Learn more about conditions",
               "add": "Add condition",
-              "search": "Search condition",
+              "empty_search": "No conditions and blocks found for {term}",
               "add_building_block": "Add building block",
               "test": "Test",
               "testing_error": "Condition did not pass",
@@ -4201,21 +4268,22 @@
               "condition": "Condition",
               "copied_to_clipboard": "Condition copied to clipboard",
               "cut_to_clipboard": "Condition cut to clipboard",
+              "select": "Select a condition",
               "groups": {
+                "device": {
+                  "label": "Device"
+                },
                 "entity": {
-                  "label": "Entity",
-                  "description": "If an entity is in a specific state."
+                  "label": "Entity"
                 },
                 "time_location": {
-                  "label": "Time and location",
-                  "description": "If someone is in a zone or if the current time is before or after a specified time."
+                  "label": "Time and location"
                 },
                 "other": {
                   "label": "Other conditions"
                 },
                 "building_blocks": {
-                  "label": "Building blocks",
-                  "description": "Build more complex conditions."
+                  "label": "Building blocks"
                 }
               },
               "type": {
@@ -4346,7 +4414,7 @@
               "description": "All actions added here will be performed in sequence when the automation runs. An action usually controls one of your areas, devices, or entities, for example: 'Turn on the lights'. You can use building blocks to create more complex sequences of actions.",
               "learn_more": "Learn more about actions",
               "add": "Add action",
-              "search": "Search action",
+              "empty_search": "No actions and blocks found for {term}",
               "add_building_block": "Add building block",
               "invalid_action": "Invalid action",
               "run": "Run action",
@@ -4370,7 +4438,11 @@
               "action": "Action",
               "copied_to_clipboard": "Action copied to clipboard",
               "cut_to_clipboard": "Action cut to clipboard",
+              "select": "Select an action",
               "groups": {
+                "device_id": {
+                  "label": "Device"
+                },
                 "helpers": {
                   "label": "Helpers"
                 },
@@ -4378,8 +4450,7 @@
                   "label": "Other actions"
                 },
                 "building_blocks": {
-                  "label": "Building blocks",
-                  "description": "Build more complex sequences of actions."
+                  "label": "Building blocks"
                 }
               },
               "type": {
@@ -5539,6 +5610,7 @@
             "entries": "{count} {count, plural,\n  one {entry}\n  other {entries}\n}",
             "no_devices_or_entities": "No devices or entities",
             "devices_without_subentry": "Devices that don't belong to a sub-entry",
+            "copy": "Copy entry ID",
             "rename": "Rename",
             "configure": "Configure",
             "system_options": "System options",
@@ -6912,7 +6984,7 @@
             "other_areas": "Other areas",
             "unamed_device": "Unnamed device",
             "others": "Others",
-            "common_controls": "Commonly used"
+            "automations": "Automations"
           },
           "common_controls": {
             "not_loaded": "Usage Prediction integration is not loaded.",
@@ -7043,7 +7115,11 @@
             },
             "energy_devices_graph": {
               "energy_usage": "Energy usage",
-              "previous_energy_usage": "Previous energy usage"
+              "previous_energy_usage": "Previous energy usage",
+              "total_energy_usage": "Total",
+              "change_chart_type": "Change chart type",
+              "untracked_consumption": "Untracked consumption",
+              "untracked": "untracked"
             },
             "energy_devices_detail_graph": {
               "untracked_consumption": "Untracked consumption",
@@ -7053,6 +7129,11 @@
               "card_indicates_energy_used": "This card indicates how much of the electricity consumed by your home was generated using non-fossil fuels like solar, wind, and nuclear. The higher, the better!",
               "low_carbon_energy_consumed": "Low-carbon electricity consumed",
               "low_carbon_energy_not_calculated": "Consumed low-carbon electricity couldn't be calculated"
+            },
+            "energy_compare": {
+              "info": "You are comparing the period {start} with the period {end}",
+              "compare_previous_year": "Compare previous year",
+              "compare_previous_period": "Compare previous period"
             }
           },
           "heading": {
@@ -7616,7 +7697,8 @@
             },
             "logbook": {
               "name": "Activity",
-              "description": "The Activity card shows a list of events for entities."
+              "description": "The Activity card shows a list of events for entities.",
+              "state_filter": "State filter"
             },
             "history-graph": {
               "name": "History graph",
@@ -8118,6 +8200,10 @@
               },
               "media-player-playback": {
                 "label": "Media player playback controls"
+              },
+              "media-player-volume-buttons": {
+                "label": "Media player volume buttons",
+                "step": "Step size"
               },
               "media-player-volume-slider": {
                 "label": "Media player volume slider"
@@ -9296,11 +9382,6 @@
       "energy": {
         "download_data": "[%key:ui::panel::history::download_data%]",
         "configure": "[%key:ui::dialogs::quick-bar::commands::navigation::energy%]",
-        "compare": {
-          "info": "You are comparing the period {start} with the period {end}",
-          "compare_previous_year": "Compare previous year",
-          "compare_previous_period": "Compare previous period"
-        },
         "setup": {
           "next": "Next",
           "back": "Back",
@@ -9534,8 +9615,8 @@
             "description": "This will restart the add-on if it crashes"
           },
           "auto_update": {
-            "title": "Autoupdate",
-            "description": "Autoupdate the add-on when there is a new version available"
+            "title": "Automatically update",
+            "description": "Automatically update the add-on when a new version is available"
           },
           "ingress_panel": {
             "title": "Add to sidebar",

@@ -80,41 +80,44 @@ export class HuiEnergyCompareCard
 
     return html`
       <ha-alert dismissable @alert-dismissed-clicked=${this._stopCompare}>
-        ${this.hass.localize("ui.panel.energy.compare.info", {
-          start: html`<b
-            >${formatDate(
-              this._start!,
-              this.hass.locale,
-              this.hass.config
-            )}${dayDifference > 0
-              ? ` -
+        ${this.hass.localize(
+          "ui.panel.lovelace.cards.energy.energy_compare.info",
+          {
+            start: html`<b
+              >${formatDate(
+                this._start!,
+                this.hass.locale,
+                this.hass.config
+              )}${dayDifference > 0
+                ? ` -
           ${formatDate(
             this._end || endOfDay(new Date()),
             this.hass.locale,
             this.hass.config
           )}`
-              : ""}</b
-          >`,
-          end: html`<b
-              >${formatDate(
-                this._startCompare,
-                this.hass.locale,
-                this.hass.config
-              )}${dayDifference > 0
-                ? ` -
-          ${formatDate(this._endCompare, this.hass.locale, this.hass.config)}`
                 : ""}</b
-            >
-            <button class="link" @click=${this._changeCompareMode}>
-              (${this._compareMode === CompareMode.PREVIOUS
-                ? this.hass.localize(
-                    "ui.panel.energy.compare.compare_previous_year"
-                  )
-                : this.hass.localize(
-                    "ui.panel.energy.compare.compare_previous_period"
-                  )})
-            </button>`,
-        })}
+            >`,
+            end: html`<b
+                >${formatDate(
+                  this._startCompare,
+                  this.hass.locale,
+                  this.hass.config
+                )}${dayDifference > 0
+                  ? ` -
+          ${formatDate(this._endCompare, this.hass.locale, this.hass.config)}`
+                  : ""}</b
+              >
+              <button class="link" @click=${this._changeCompareMode}>
+                (${this._compareMode === CompareMode.PREVIOUS
+                  ? this.hass.localize(
+                      "ui.panel.lovelace.cards.energy.energy_compare.compare_previous_year"
+                    )
+                  : this.hass.localize(
+                      "ui.panel.lovelace.cards.energy.energy_compare.compare_previous_period"
+                    )})
+              </button>`,
+          }
+        )}
       </ha-alert>
     `;
   }
