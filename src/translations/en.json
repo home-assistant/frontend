@@ -6975,6 +6975,22 @@
           "common_controls": {
             "not_loaded": "Usage Prediction integration is not loaded.",
             "no_data": "This place will soon fill up with the entities you use most often, based on your activity."
+          },
+          "light": {
+            "lights": "Lights",
+            "other_lights": "Other lights"
+          },
+          "safety": {
+            "devices": "Devices",
+            "other_devices": "Other devices"
+          },
+          "climate": {
+            "devices": "Devices",
+            "other_devices": "Other devices"
+          },
+          "home_media_players": {
+            "media_players": "Media players",
+            "other_media_players": "Other media players"
           }
         },
         "cards": {

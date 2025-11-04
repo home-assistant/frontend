@@ -103,6 +103,24 @@ const processAreasForSafety = (
   return cards;
 };
 
+const processUnassignedEntities = (
+  hass: HomeAssistant,
+  entities: string[]
+): LovelaceCardConfig[] => {
+  const unassignedFilter = generateEntityFilter(hass, {
+    area: null,
+  });
+  const unassignedLights = entities.filter(unassignedFilter);
+  const areaCards: LovelaceCardConfig[] = [];
+  const computeTileCard = computeAreaTileCardConfig(hass, "", false);
+
+  for (const entityId of unassignedLights) {
+    areaCards.push(computeTileCard(entityId));
+  }
+
+  return areaCards;
+};
+
 @customElement("safety-view-strategy")
 export class SafetyViewStrategy extends ReactiveElement {
   static async generate(
@@ -178,10 +196,33 @@ export class SafetyViewStrategy extends ReactiveElement {
       }
     }
 
+    // Process unassigned entities
+    const unassignedCards = processUnassignedEntities(hass, entities);
+
+    if (unassignedCards.length > 0) {
+      const section: LovelaceSectionRawConfig = {
+        type: "grid",
+        column_span: 2,
+        cards: [
+          {
+            type: "heading",
+            heading:
+              sections.length > 0
+                ? hass.localize(
+                    "ui.panel.lovelace.strategy.safety.other_devices"
+                  )
+                : hass.localize("ui.panel.lovelace.strategy.safety.devices"),
+          },
+          ...unassignedCards,
+        ],
+      };
+      sections.push(section);
+    }
+
     return {
       type: "sections",
       max_columns: 2,
-      sections: sections || [],
+      sections: sections,
     };
   }
 }

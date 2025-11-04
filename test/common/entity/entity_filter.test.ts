@@ -388,4 +388,70 @@ describe("generateEntityFilter", () => {
       expect(filter("light.no_area")).toBe(false);
     });
   });
+
+  describe("null filtering", () => {
+    it("should filter entities with no area when null is used", () => {
+      const filter = generateEntityFilter(mockHass, { area: null });
+
+      expect(filter("light.no_area")).toBe(true);
+      expect(filter("light.living_room")).toBe(false);
+    });
+
+    it("should filter entities with specific area OR no area when null is in array", () => {
+      const filter = generateEntityFilter(mockHass, {
+        area: ["living_room", null],
+      });
+
+      expect(filter("light.living_room")).toBe(true);
+      expect(filter("sensor.temperature")).toBe(true);
+      expect(filter("light.no_area")).toBe(true);
+      expect(filter("switch.kitchen")).toBe(false);
+    });
+
+    it("should filter entities with no floor when null is used", () => {
+      const filter = generateEntityFilter(mockHass, { floor: null });
+
+      expect(filter("light.no_area")).toBe(true);
+      expect(filter("light.living_room")).toBe(false);
+    });
+
+    it("should filter entities with specific floor OR no floor", () => {
+      const filter = generateEntityFilter(mockHass, {
+        floor: ["main_floor", null],
+      });
+
+      expect(filter("light.living_room")).toBe(true);
+      expect(filter("switch.kitchen")).toBe(true);
+      expect(filter("light.no_area")).toBe(true);
+      expect(filter("light.bedroom")).toBe(false);
+    });
+
+    it("should filter entities with no device when null is used", () => {
+      const filter = generateEntityFilter(mockHass, { device: null });
+
+      expect(filter("light.living_room")).toBe(false);
+      expect(filter("light.no_area")).toBe(false);
+    });
+
+    it("should filter entities with specific device OR no device", () => {
+      const filter = generateEntityFilter(mockHass, {
+        device: ["device1", null],
+      });
+
+      expect(filter("light.living_room")).toBe(true);
+      expect(filter("switch.kitchen")).toBe(false);
+    });
+
+    it("should combine null filtering with other criteria", () => {
+      const filter = generateEntityFilter(mockHass, {
+        domain: "light",
+        area: ["living_room", null],
+      });
+
+      expect(filter("light.living_room")).toBe(true);
+      expect(filter("light.no_area")).toBe(true);
+      expect(filter("light.bedroom")).toBe(false);
+      expect(filter("sensor.temperature")).toBe(false);
+    });
+  });
 });
