@@ -19,7 +19,7 @@ import type { LovelaceCard } from "../../types";
 import type { PowerSourcesGraphCardConfig } from "../types";
 import { hasConfigChanged } from "../../common/has-changed";
 import { getCommonOptions, fillLineGaps } from "./common/energy-chart-options";
-import type { ECOption } from "../../../../resources/echarts";
+import type { ECOption } from "../../../../resources/echarts/echarts";
 import { hex2rgb } from "../../../../common/color/convert-color";
 
 @customElement("hui-power-sources-graph-card")
@@ -243,6 +243,26 @@ export class HuiPowerSourcesGraphCard
     this._end = energyData.end || endOfToday();
 
     this._chartData = fillLineGaps(datasets);
+
+    const usageData: number[][] = [];
+    this._chartData[0].data!.forEach((item, i) => {
+      // fillLineGaps ensures all datasets have the same x values
+      usageData[i] = [item![0], 0];
+      this._chartData.forEach((dataset) => {
+        usageData[i][1] += dataset.data![i]![1] as number;
+      });
+    });
+    this._chartData.push({
+      ...commonSeriesOptions,
+      id: "usage",
+      name: this.hass.localize(
+        "ui.panel.lovelace.cards.energy.power_graph.usage"
+      ),
+      color: computedStyles.getPropertyValue("--primary-color"),
+      lineStyle: { width: 2 },
+      data: usageData,
+      z: 5,
+    });
   }
 
   private _processData(stats: StatisticValue[][]) {

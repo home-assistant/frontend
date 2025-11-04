@@ -7133,7 +7133,8 @@
             "power_graph": {
               "grid": "Grid",
               "solar": "Solar",
-              "battery": "Battery"
+              "battery": "Battery",
+              "usage": "Used"
             },
             "energy_compare": {
               "info": "You are comparing the period {start} with the period {end}",
