@@ -162,7 +162,7 @@ export class HomeMainViewStrategy extends ReactiveElement {
       generateEntityFilter(hass, filter)
     );
 
-    const safetyFilters = HOME_SUMMARIES_FILTERS.safety.map((filter) =>
+    const securityFilters = HOME_SUMMARIES_FILTERS.security.map((filter) =>
       generateEntityFilter(hass, filter)
     );
 
@@ -170,7 +170,7 @@ export class HomeMainViewStrategy extends ReactiveElement {
     const hasMediaPlayers =
       findEntities(allEntities, mediaPlayerFilter).length > 0;
     const hasClimate = findEntities(allEntities, climateFilters).length > 0;
-    const hasSafety = findEntities(allEntities, safetyFilters).length > 0;
+    const hasSecurity = findEntities(allEntities, securityFilters).length > 0;
 
     const summaryCards: LovelaceCardConfig[] = [
       hasLights &&
@@ -201,14 +201,14 @@ export class HomeMainViewStrategy extends ReactiveElement {
             columns: 4,
           },
         } satisfies HomeSummaryCard),
-      hasSafety &&
+      hasSecurity &&
         ({
           type: "home-summary",
-          summary: "safety",
+          summary: "security",
           vertical: true,
           tap_action: {
             action: "navigate",
-            navigation_path: "/safety?historyBack=1",
+            navigation_path: "/security?historyBack=1",
           },
           grid_options: {
             rows: 2,

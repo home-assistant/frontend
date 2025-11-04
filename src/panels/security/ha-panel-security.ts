@@ -20,8 +20,8 @@ const SECURITY_LOVELACE_VIEW_CONFIG: LovelaceStrategyViewConfig = {
   },
 };
 
-@customElement("ha-panel-safety")
-class PanelSafety extends LitElement {
+@customElement("ha-panel-security")
+class PanelSecurity extends LitElement {
   @property({ attribute: false }) public hass!: HomeAssistant;
 
   @property({ type: Boolean, reflect: true }) public narrow = false;
@@ -146,7 +146,7 @@ class PanelSafety extends LitElement {
       config: config,
       rawConfig: rawConfig,
       editMode: false,
-      urlPath: "safety",
+      urlPath: "security",
       mode: "generated",
       locale: this.hass.locale,
       enableFullEditMode: () => undefined,
@@ -248,6 +248,6 @@ class PanelSafety extends LitElement {
 
 declare global {
   interface HTMLElementTagNameMap {
-    "ha-panel-safety": PanelSafety;
+    "ha-panel-security": PanelSecurity;
   }
 }
