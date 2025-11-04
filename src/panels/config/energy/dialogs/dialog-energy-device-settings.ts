@@ -62,8 +62,8 @@ export class DialogEnergyDeviceSettings
       .map((entry) => entry.stat_consumption)
       .filter((id) => id !== this._device?.stat_consumption);
     this._excludeListPower = this._params.device_consumptions
-      .map((entry) => entry.stat_power)
-      .filter((id) => id && id !== this._device?.stat_power) as string[];
+      .map((entry) => entry.stat_rate)
+      .filter((id) => id && id !== this._device?.stat_rate) as string[];
   }
 
   private _computePossibleParents() {
@@ -138,7 +138,7 @@ export class DialogEnergyDeviceSettings
         <ha-statistic-picker
           .hass=${this.hass}
           .includeUnitClass=${powerUnitClasses}
-          .value=${this._device?.stat_power}
+          .value=${this._device?.stat_rate}
           .label=${this.hass.localize(
             "ui.panel.config.energy.device_consumption.dialog.device_consumption_power"
           )}
@@ -238,10 +238,10 @@ export class DialogEnergyDeviceSettings
     }
     const newDevice = {
       ...this._device,
-      stat_power: ev.detail.value,
+      stat_rate: ev.detail.value,
     } as DeviceConsumptionEnergyPreference;
-    if (!newDevice.stat_power) {
-      delete newDevice.stat_power;
+    if (!newDevice.stat_rate) {
+      delete newDevice.stat_rate;
     }
     this._device = newDevice;
   }

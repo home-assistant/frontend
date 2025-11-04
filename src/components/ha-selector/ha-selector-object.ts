@@ -1,4 +1,9 @@
-import { mdiClose, mdiDelete, mdiDrag, mdiPencil } from "@mdi/js";
+import {
+  mdiClose,
+  mdiDelete,
+  mdiDragHorizontalVariant,
+  mdiPencil,
+} from "@mdi/js";
 import { css, html, LitElement, nothing, type PropertyValues } from "lit";
 import { customElement, property, query } from "lit/decorators";
 import memoizeOne from "memoize-one";
@@ -47,14 +52,29 @@ export class HaObjectSelector extends LitElement {
     const translationKey = this.selector.object?.translation_key;
 
     if (this.localizeValue && translationKey) {
-      const label = this.localizeValue(
-        `${translationKey}.fields.${schema.name}`
-      );
+      const label =
+        this.localizeValue(`${translationKey}.fields.${schema.name}.name`) ||
+        // Fallback for backward compatibility
+        this.localizeValue(`${translationKey}.fields.${schema.name}`);
       if (label) {
         return label;
       }
     }
     return this.selector.object?.fields?.[schema.name]?.label || schema.name;
+  };
+
+  private _computeHelper = (schema: HaFormSchema): string => {
+    const translationKey = this.selector.object?.translation_key;
+
+    if (this.localizeValue && translationKey) {
+      const helper = this.localizeValue(
+        `${translationKey}.fields.${schema.name}.description`
+      );
+      if (helper) {
+        return helper;
+      }
+    }
+    return this.selector.object?.fields?.[schema.name]?.description || "";
   };
 
   private _renderItem(item: any, index: number) {
@@ -92,7 +112,7 @@ export class HaObjectSelector extends LitElement {
           ? html`
               <ha-svg-icon
                 class="handle"
-                .path=${mdiDrag}
+                .path=${mdiDragHorizontalVariant}
                 slot="start"
               ></ha-svg-icon>
             `
@@ -209,6 +229,7 @@ export class HaObjectSelector extends LitElement {
       schema: this._schema(this.selector),
       data: {},
       computeLabel: this._computeLabel,
+      computeHelper: this._computeHelper,
       submitText: this.hass.localize("ui.common.add"),
     });
 

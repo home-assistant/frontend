@@ -50,6 +50,11 @@ export interface MediaPlayerVolumeSliderCardFeatureConfig {
   type: "media-player-volume-slider";
 }
 
+export interface MediaPlayerVolumeButtonsCardFeatureConfig {
+  type: "media-player-volume-buttons";
+  step?: number;
+}
+
 export interface FanDirectionCardFeatureConfig {
   type: "fan-direction";
 }
@@ -252,6 +257,7 @@ export type LovelaceCardFeatureConfig =
   | LockCommandsCardFeatureConfig
   | LockOpenDoorCardFeatureConfig
   | MediaPlayerPlaybackCardFeatureConfig
+  | MediaPlayerVolumeButtonsCardFeatureConfig
   | MediaPlayerVolumeSliderCardFeatureConfig
   | NumericInputCardFeatureConfig
   | SelectOptionsCardFeatureConfig

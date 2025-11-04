@@ -11,7 +11,7 @@ import { computeRTL } from "../../common/util/compute_rtl";
 import type { LineChartEntity, LineChartState } from "../../data/history";
 import type { HomeAssistant } from "../../types";
 import { MIN_TIME_BETWEEN_UPDATES } from "./ha-chart-base";
-import type { ECOption } from "../../resources/echarts";
+import type { ECOption } from "../../resources/echarts/echarts";
 import { formatDateTimeWithSeconds } from "../../common/datetime/format_date_time";
 import {
   getNumberFormatOptions,
@@ -86,6 +86,8 @@ export class StateHistoryChartLine extends LitElement {
   private _chartTime: Date = new Date();
 
   private _previousYAxisLabelValue = 0;
+
+  private _yAxisMaximumFractionDigits = 0;
 
   protected render() {
     return html`
@@ -757,8 +759,12 @@ export class StateHistoryChartLine extends LitElement {
         Math.log10(Math.abs(value - this._previousYAxisLabelValue || 1))
       )
     );
+    this._yAxisMaximumFractionDigits = Math.max(
+      this._yAxisMaximumFractionDigits,
+      maximumFractionDigits
+    );
     const label = formatNumber(value, this.hass.locale, {
-      maximumFractionDigits,
+      maximumFractionDigits: this._yAxisMaximumFractionDigits,
     });
     const width = measureTextWidth(label, 12) + 5;
     if (width > this._yWidth) {

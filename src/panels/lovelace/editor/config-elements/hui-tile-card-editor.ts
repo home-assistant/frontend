@@ -30,10 +30,7 @@ import type {
   LovelaceCardFeatureConfig,
   LovelaceCardFeatureContext,
 } from "../../card-features/types";
-import {
-  DEFAULT_NAME,
-  getEntityDefaultTileIconAction,
-} from "../../cards/hui-tile-card";
+import { getEntityDefaultTileIconAction } from "../../cards/hui-tile-card";
 import type { TileCardConfig } from "../../cards/types";
 import type { LovelaceCardEditor } from "../../types";
 import { actionConfigStruct } from "../structs/action-struct";
@@ -104,9 +101,7 @@ export class HuiTileCardEditor
             {
               name: "name",
               selector: {
-                entity_name: {
-                  default_name: DEFAULT_NAME,
-                },
+                entity_name: {},
               },
               context: { entity: "entity" },
             },

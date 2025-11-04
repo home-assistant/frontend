@@ -107,14 +107,15 @@ export class HaMediaSelector extends LitElement {
         supportsFeature(stateObj, MediaPlayerEntityFeature.BROWSE_MEDIA));
 
     if (this.selector.media?.image_upload && !this.value) {
-      return html`<ha-picture-upload
-        .hass=${this.hass}
-        .value=${null}
-        .contentIdHelper=${this.selector.media?.content_id_helper}
-        select-media
-        full-media
-        @media-picked=${this._pictureUploadMediaPicked}
-      ></ha-picture-upload>`;
+      return html`${this.label ? html`<label>${this.label}</label>` : nothing}
+        <ha-picture-upload
+          .hass=${this.hass}
+          .value=${null}
+          .contentIdHelper=${this.selector.media?.content_id_helper}
+          select-media
+          full-media
+          @media-picked=${this._pictureUploadMediaPicked}
+        ></ha-picture-upload>`;
     }
 
     return html`
@@ -141,6 +142,7 @@ export class HaMediaSelector extends LitElement {
           `}
       ${!supportsBrowse
         ? html`
+            ${this.label ? html`<label>${this.label}</label>` : nothing}
             <ha-alert>
               ${this.hass.localize(
                 "ui.components.selectors.media.browse_not_supported"
@@ -154,7 +156,8 @@ export class HaMediaSelector extends LitElement {
               .computeHelper=${this._computeHelperCallback}
             ></ha-form>
           `
-        : html`<ha-card
+        : html`${this.label ? html`<label>${this.label}</label>` : nothing}
+            <ha-card
               outlined
               tabindex="0"
               role="button"

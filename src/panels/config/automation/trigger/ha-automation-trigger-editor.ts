@@ -29,12 +29,16 @@ export default class HaAutomationTriggerEditor extends LitElement {
 
   @property({ type: Boolean, attribute: "sidebar" }) public inSidebar = false;
 
+  @property({ type: Boolean, attribute: "show-id" }) public showId = false;
+
   @query("ha-yaml-editor") public yamlEditor?: HaYamlEditor;
 
   protected render() {
     const type = isTriggerList(this.trigger) ? "list" : this.trigger.trigger;
 
     const yamlMode = this.yamlMode || !this.uiSupported;
+
+    const showId = "id" in this.trigger || this.showId;
 
     return html`
       <div
@@ -70,20 +74,15 @@ export default class HaAutomationTriggerEditor extends LitElement {
               ></ha-yaml-editor>
             `
           : html`
-              ${!isTriggerList(this.trigger)
+              ${showId && !isTriggerList(this.trigger)
                 ? html`
                     <ha-textfield
-                      .label=${`${this.hass.localize(
+                      .label=${this.hass.localize(
                         "ui.panel.config.automation.editor.triggers.id"
-                      )} (${this.hass.localize(
-                        "ui.panel.config.automation.editor.triggers.optional"
-                      )})`}
+                      )}
                       .value=${this.trigger.id || ""}
                       .disabled=${this.disabled}
                       @change=${this._idChanged}
-                      .helper=${this.hass.localize(
-                        "ui.panel.config.automation.editor.triggers.id_helper"
-                      )}
                     ></ha-textfield>
                   `
                 : nothing}

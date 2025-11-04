@@ -232,7 +232,7 @@ export class EnergyGridSettings extends LitElement {
             ${this.hass.localize("ui.panel.config.energy.grid.grid_power")}
           </h3>
           ${gridSource.power?.map((power) => {
-            const entityState = this.hass.states[power.stat_power];
+            const entityState = this.hass.states[power.stat_rate];
             return html`
               <div class="row" .source=${power}>
                 ${entityState?.attributes.icon
@@ -245,8 +245,8 @@ export class EnergyGridSettings extends LitElement {
                 <span class="content"
                   >${getStatisticLabel(
                     this.hass,
-                    power.stat_power,
-                    this.statsMetadata?.[power.stat_power]
+                    power.stat_rate,
+                    this.statsMetadata?.[power.stat_rate]
                   )}</span
                 >
                 <ha-icon-button

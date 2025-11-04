@@ -14,6 +14,7 @@ import {
 } from "superstruct";
 import type { HASSDomEvent } from "../../../../common/dom/fire_event";
 import { fireEvent } from "../../../../common/dom/fire_event";
+import { computeDomain } from "../../../../common/entity/compute_domain";
 import "../../../../components/ha-expansion-panel";
 import "../../../../components/ha-form/ha-form";
 import type {
@@ -29,11 +30,11 @@ import type {
 import type { ThermostatCardConfig } from "../../cards/types";
 import type { LovelaceCardEditor } from "../../types";
 import { baseLovelaceCardConfig } from "../structs/base-card-struct";
+import { entityNameStruct } from "../structs/entity-name-struct";
 import type { EditDetailElementEvent, EditSubElementEvent } from "../types";
 import { configElementStyle } from "./config-elements-style";
 import "./hui-card-features-editor";
 import type { FeatureType } from "./hui-card-features-editor";
-import { computeDomain } from "../../../../common/entity/compute_domain";
 
 const COMPATIBLE_FEATURES_TYPES: Record<string, FeatureType[]> = {
   climate: [
@@ -50,7 +51,7 @@ const cardConfigStruct = assign(
   baseLovelaceCardConfig,
   object({
     entity: optional(string()),
-    name: optional(string()),
+    name: optional(entityNameStruct),
     theme: optional(string()),
     show_current_as_primary: optional(boolean()),
     features: optional(array(any())),
@@ -85,12 +86,16 @@ export class HuiThermostatCardEditor
           selector: { entity: { domain: ["climate", "water_heater"] } },
         },
         {
+          name: "name",
+          selector: {
+            entity_name: {},
+          },
+          context: { entity: "entity" },
+        },
+        {
           type: "grid",
           name: "",
-          schema: [
-            { name: "name", selector: { text: {} } },
-            { name: "theme", selector: { theme: {} } },
-          ],
+          schema: [{ name: "theme", selector: { theme: {} } }],
         },
         ...(domain === "climate"
           ? [

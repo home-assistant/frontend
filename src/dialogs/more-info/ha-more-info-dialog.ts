@@ -15,7 +15,6 @@ import type { PropertyValues } from "lit";
 import { LitElement, css, html, nothing } from "lit";
 import { customElement, property, state } from "lit/decorators";
 import { cache } from "lit/directives/cache";
-import { join } from "lit/directives/join";
 import { keyed } from "lit/directives/keyed";
 import { dynamicElement } from "../../common/dom/dynamic-element-directive";
 import { fireEvent } from "../../common/dom/fire_event";
@@ -33,6 +32,7 @@ import {
 } from "../../common/entity/context/get_entity_context";
 import { shouldHandleRequestSelectedEvent } from "../../common/mwc/handle-request-selected-event";
 import { navigate } from "../../common/navigate";
+import { computeRTL } from "../../common/util/compute_rtl";
 import "../../components/ha-button-menu";
 import "../../components/ha-dialog";
 import "../../components/ha-dialog-header";
@@ -361,6 +361,8 @@ export class MoreInfoDialog extends LitElement {
     );
     const title = this._childView?.viewTitle || breadcrumb.pop() || entityId;
 
+    const isRTL = computeRTL(this.hass);
+
     return html`
       <ha-dialog
         open
@@ -394,17 +396,13 @@ export class MoreInfoDialog extends LitElement {
             ${breadcrumb.length > 0
               ? !__DEMO__ && isAdmin
                 ? html`
-                    <button
-                      class="breadcrumb"
-                      @click=${this._breadcrumbClick}
-                      aria-label=${breadcrumb.join(" > ")}
-                    >
-                      ${join(breadcrumb, html`<ha-icon-next></ha-icon-next>`)}
+                    <button class="breadcrumb" @click=${this._breadcrumbClick}>
+                      ${breadcrumb.join(isRTL ? " ◂ " : " ▸ ")}
                     </button>
                   `
                 : html`
                     <p class="breadcrumb">
-                      ${join(breadcrumb, html`<ha-icon-next></ha-icon-next>`)}
+                      ${breadcrumb.join(isRTL ? " ◂ " : " ▸ ")}
                     </p>
                   `
               : nothing}
@@ -680,8 +678,8 @@ export class MoreInfoDialog extends LitElement {
           /* Set the top top of the dialog to a fixed position, so it doesnt jump when the content changes size */
           --vertical-align-dialog: flex-start;
           --dialog-surface-margin-top: max(
-            40px,
-            var(--safe-area-inset-top, 0px)
+            var(--ha-space-10),
+            var(--safe-area-inset-top, var(--ha-space-0))
           );
           --dialog-content-padding: 0;
         }
@@ -700,14 +698,15 @@ export class MoreInfoDialog extends LitElement {
         }
 
         ha-more-info-history-and-logbook {
-          padding: 8px 24px 24px 24px;
+          padding: var(--ha-space-2) var(--ha-space-6) var(--ha-space-6)
+            var(--ha-space-6);
           display: block;
         }
 
         @media all and (max-width: 450px), all and (max-height: 500px) {
           /* When in fullscreen dialog should be attached to top */
           ha-dialog {
-            --dialog-surface-margin-top: 0px;
+            --dialog-surface-margin-top: var(--ha-space-0);
           }
         }
 
@@ -732,7 +731,8 @@ export class MoreInfoDialog extends LitElement {
           display: flex;
           flex-direction: column;
           align-items: flex-start;
-          margin: 0 0 -10px 0;
+          margin: var(--ha-space-0) var(--ha-space-0)
+            calc(var(--ha-space-2) * -1) var(--ha-space-0);
         }
 
         .title p {
@@ -754,9 +754,9 @@ export class MoreInfoDialog extends LitElement {
           font-size: var(--ha-font-size-m);
           line-height: 16px;
           --mdc-icon-size: 16px;
-          padding: 4px;
-          margin: -4px;
-          margin-top: -10px;
+          padding: var(--ha-space-1);
+          margin: calc(var(--ha-space-1) * -1);
+          margin-top: calc(var(--ha-space-2) * -1);
           background: none;
           border: none;
           outline: none;

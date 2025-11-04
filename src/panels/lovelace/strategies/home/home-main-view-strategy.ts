@@ -16,12 +16,12 @@ import type {
   AreaCardConfig,
   HomeSummaryCard,
   MarkdownCardConfig,
-  TileCardConfig,
   WeatherForecastCardConfig,
 } from "../../cards/types";
 import { getAreas, getFloors } from "../areas/helpers/areas-strategy-helper";
 import type { CommonControlSectionStrategyConfig } from "../usage_prediction/common-controls-section-strategy";
 import { getHomeStructure } from "./helpers/home-structure";
+import { floorDefaultIcon } from "../../../../components/ha-floor-icon";
 
 export interface HomeMainViewStrategyConfig {
   type: "home-main";
@@ -93,6 +93,7 @@ export class HomeMainViewStrategy extends ReactiveElement {
                   ? floor.name
                   : hass.localize("ui.panel.lovelace.strategy.home.areas"),
               heading_style: "title",
+              icon: floor.icon || floorDefaultIcon(floor),
             },
             ...cards,
           ],
@@ -131,31 +132,13 @@ export class HomeMainViewStrategy extends ReactiveElement {
     const favoriteEntities = (config.favorite_entities || []).filter(
       (entityId) => hass.states[entityId] !== undefined
     );
-
-    if (favoriteEntities.length > 0) {
-      favoriteSection.cards!.push(
-        {
-          type: "heading",
-          heading: "",
-          heading_style: "subtitle",
-        },
-        ...favoriteEntities.map(
-          (entityId) =>
-            ({
-              type: "tile",
-              entity: entityId,
-              show_entity_picture: true,
-            }) as TileCardConfig
-        )
-      );
-    }
+    const maxCommonControls = Math.max(8, favoriteEntities.length);
 
     const commonControlsSection = {
       strategy: {
         type: "common-controls",
-        title: hass.localize("ui.panel.lovelace.strategy.home.common_controls"),
-        limit: 4,
-        exclude_entities: favoriteEntities,
+        limit: maxCommonControls,
+        include_entities: favoriteEntities,
         hide_empty: true,
       } satisfies CommonControlSectionStrategyConfig,
       column_span: maxColumns,
@@ -197,11 +180,11 @@ export class HomeMainViewStrategy extends ReactiveElement {
         } satisfies HomeSummaryCard,
         {
           type: "home-summary",
-          summary: "security",
+          summary: "safety",
           vertical: true,
           tap_action: {
             action: "navigate",
-            navigation_path: "/security?historyBack=1",
+            navigation_path: "/safety?historyBack=1",
           },
           grid_options: {
             rows: 2,
@@ -234,7 +217,9 @@ export class HomeMainViewStrategy extends ReactiveElement {
       column_span: maxColumns,
       cards: [],
     };
-    const weatherEntity = Object.keys(hass.states).find(weatherFilter);
+    const weatherEntity = Object.keys(hass.states)
+      .filter(weatherFilter)
+      .sort()[0];
 
     if (weatherEntity) {
       widgetSection.cards!.push(

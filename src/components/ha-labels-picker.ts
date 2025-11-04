@@ -1,3 +1,4 @@
+import { mdiPlaylistPlus } from "@mdi/js";
 import type { HassEntity, UnsubscribeFunc } from "home-assistant-js-websocket";
 import type { TemplateResult } from "lit";
 import { LitElement, css, html, nothing } from "lit";
@@ -123,36 +124,6 @@ export class HaLabelsPicker extends SubscribeMixin(LitElement) {
     );
     return html`
       ${this.label ? html`<label>${this.label}</label>` : nothing}
-      ${labels?.length
-        ? html`<ha-chip-set>
-            ${repeat(
-              labels,
-              (label) => label?.label_id,
-              (label) => {
-                const color = label?.color
-                  ? computeCssColor(label.color)
-                  : undefined;
-                return html`
-                  <ha-input-chip
-                    .item=${label}
-                    @remove=${this._removeItem}
-                    @click=${this._openDetail}
-                    .label=${label?.name}
-                    selected
-                    style=${color ? `--color: ${color}` : ""}
-                  >
-                    ${label?.icon
-                      ? html`<ha-icon
-                          slot="icon"
-                          .icon=${label.icon}
-                        ></ha-icon>`
-                      : nothing}
-                  </ha-input-chip>
-                `;
-              }
-            )}
-          </ha-chip-set>`
-        : nothing}
       <ha-label-picker
         .hass=${this.hass}
         .helper=${this.helper}
@@ -162,6 +133,47 @@ export class HaLabelsPicker extends SubscribeMixin(LitElement) {
         .excludeLabels=${this.value}
         @value-changed=${this._labelChanged}
       >
+        <ha-chip-set>
+          ${labels?.length
+            ? repeat(
+                labels,
+                (label) => label?.label_id,
+                (label) => {
+                  const color = label?.color
+                    ? computeCssColor(label.color)
+                    : undefined;
+                  return html`
+                    <ha-input-chip
+                      .item=${label}
+                      @remove=${this._removeItem}
+                      @click=${this._openDetail}
+                      .disabled=${this.disabled}
+                      .label=${label?.name}
+                      selected
+                      style=${color ? `--color: ${color}` : ""}
+                    >
+                      ${label?.icon
+                        ? html`<ha-icon
+                            slot="icon"
+                            .icon=${label.icon}
+                          ></ha-icon>`
+                        : nothing}
+                    </ha-input-chip>
+                  `;
+                }
+              )
+            : nothing}
+          <ha-button
+            id="picker"
+            size="small"
+            appearance="filled"
+            @click=${this._openPicker}
+            .disabled=${this.disabled}
+          >
+            <ha-svg-icon .path=${mdiPlaylistPlus} slot="start"></ha-svg-icon>
+            ${this.hass.localize("ui.components.label-picker.add")}
+          </ha-button>
+        </ha-chip-set>
       </ha-label-picker>
     `;
   }
@@ -203,9 +215,25 @@ export class HaLabelsPicker extends SubscribeMixin(LitElement) {
     }, 0);
   }
 
+  private _openPicker(ev: Event) {
+    ev.stopPropagation();
+    this.labelPicker.open();
+  }
+
   static styles = css`
     ha-chip-set {
       margin-bottom: 8px;
+      background-color: var(--mdc-text-field-fill-color);
+      border-bottom: 1px solid var(--ha-color-border-neutral-normal);
+      border-top-right-radius: var(--ha-border-radius-sm);
+      border-top-left-radius: var(--ha-border-radius-sm);
+      padding: var(--ha-space-3);
+    }
+    .placeholder {
+      color: var(--mdc-text-field-label-ink-color);
+      display: flex;
+      align-items: center;
+      height: var(--ha-space-8);
     }
     ha-input-chip {
       --md-input-chip-selected-container-color: var(--color, var(--grey-color));

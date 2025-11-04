@@ -1,4 +1,9 @@
-import { mdiDelete, mdiDrag, mdiPencil, mdiPlus } from "@mdi/js";
+import {
+  mdiDelete,
+  mdiDragHorizontalVariant,
+  mdiPencil,
+  mdiPlus,
+} from "@mdi/js";
 import { LitElement, css, html, nothing } from "lit";
 import { customElement, property } from "lit/decorators";
 import { repeat } from "lit/directives/repeat";
@@ -43,6 +48,7 @@ import { supportsLightColorTempCardFeature } from "../../card-features/hui-light
 import { supportsLockCommandsCardFeature } from "../../card-features/hui-lock-commands-card-feature";
 import { supportsLockOpenDoorCardFeature } from "../../card-features/hui-lock-open-door-card-feature";
 import { supportsMediaPlayerPlaybackCardFeature } from "../../card-features/hui-media-player-playback-card-feature";
+import { supportsMediaPlayerVolumeButtonsCardFeature } from "../../card-features/hui-media-player-volume-buttons-card-feature";
 import { supportsMediaPlayerVolumeSliderCardFeature } from "../../card-features/hui-media-player-volume-slider-card-feature";
 import { supportsNumericInputCardFeature } from "../../card-features/hui-numeric-input-card-feature";
 import { supportsSelectOptionsCardFeature } from "../../card-features/hui-select-options-card-feature";
@@ -97,6 +103,7 @@ const UI_FEATURE_TYPES = [
   "lock-commands",
   "lock-open-door",
   "media-player-playback",
+  "media-player-volume-buttons",
   "media-player-volume-slider",
   "numeric-input",
   "select-options",
@@ -126,6 +133,7 @@ const EDITABLES_FEATURE_TYPES = new Set<UiFeatureTypes>([
   "fan-preset-modes",
   "humidifier-modes",
   "lawn-mower-commands",
+  "media-player-volume-buttons",
   "numeric-input",
   "select-options",
   "trend-graph",
@@ -166,6 +174,7 @@ const SUPPORTS_FEATURE_TYPES: Record<
   "lock-commands": supportsLockCommandsCardFeature,
   "lock-open-door": supportsLockOpenDoorCardFeature,
   "media-player-playback": supportsMediaPlayerPlaybackCardFeature,
+  "media-player-volume-buttons": supportsMediaPlayerVolumeButtonsCardFeature,
   "media-player-volume-slider": supportsMediaPlayerVolumeSliderCardFeature,
   "numeric-input": supportsNumericInputCardFeature,
   "select-options": supportsSelectOptionsCardFeature,
@@ -345,7 +354,9 @@ export class HuiCardFeaturesEditor extends LitElement {
               return html`
                 <div class="feature">
                   <div class="handle">
-                    <ha-svg-icon .path=${mdiDrag}></ha-svg-icon>
+                    <ha-svg-icon
+                      .path=${mdiDragHorizontalVariant}
+                    ></ha-svg-icon>
                   </div>
                   <div class="feature-content">
                     <div>
@@ -488,7 +499,7 @@ export class HuiCardFeaturesEditor extends LitElement {
       flex-direction: column;
     }
     ha-button-menu {
-      margin-top: 8px;
+      margin-top: var(--ha-space-2);
     }
     .feature {
       display: flex;
@@ -497,8 +508,8 @@ export class HuiCardFeaturesEditor extends LitElement {
     .feature .handle {
       cursor: move; /* fallback if grab cursor is unsupported */
       cursor: grab;
-      padding-right: 8px;
-      padding-inline-end: 8px;
+      padding-right: var(--ha-space-2);
+      padding-inline-end: var(--ha-space-2);
       padding-inline-start: initial;
       direction: var(--direction);
     }
@@ -507,7 +518,7 @@ export class HuiCardFeaturesEditor extends LitElement {
     }
 
     .feature-content {
-      height: 60px;
+      height: var(--ha-space-15);
       font-size: var(--ha-font-size-l);
       display: flex;
       align-items: center;
@@ -522,7 +533,7 @@ export class HuiCardFeaturesEditor extends LitElement {
 
     .remove-icon,
     .edit-icon {
-      --mdc-icon-button-size: 36px;
+      --mdc-icon-button-size: var(--ha-space-9);
       color: var(--secondary-text-color);
     }
 

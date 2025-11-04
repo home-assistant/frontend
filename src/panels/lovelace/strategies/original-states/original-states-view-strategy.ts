@@ -44,10 +44,7 @@ export class OriginalStatesViewStrategy extends ReactiveElement {
     // User can override default view. If they didn't, we will add one
     // that contains all entities.
     const view = generateDefaultViewConfig(
-      hass.areas,
-      hass.devices,
-      hass.entities,
-      hass.states,
+      hass,
       localize,
       energyPrefs,
       config.areas,

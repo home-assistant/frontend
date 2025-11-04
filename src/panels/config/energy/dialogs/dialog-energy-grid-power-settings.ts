@@ -37,16 +37,16 @@ export class DialogEnergyGridPowerSettings
     params: EnergySettingsGridPowerDialogParams
   ): Promise<void> {
     this._params = params;
-    this._source = params.source ? { ...params.source } : { stat_power: "" };
+    this._source = params.source ? { ...params.source } : { stat_rate: "" };
 
-    const initialSourceIdPower = this._source.stat_power;
+    const initialSourceIdPower = this._source.stat_rate;
 
     this._power_units = (
       await getSensorDeviceClassConvertibleUnits(this.hass, "power")
     ).units;
 
     this._excludeListPower = [
-      ...(this._params.grid_source?.power?.map((entry) => entry.stat_power) ||
+      ...(this._params.grid_source?.power?.map((entry) => entry.stat_rate) ||
         []),
     ].filter((id) => id && id !== initialSourceIdPower) as string[];
   }
@@ -83,7 +83,7 @@ export class DialogEnergyGridPowerSettings
           .hass=${this.hass}
           .helpMissingEntityUrl=${energyStatisticHelpUrl}
           .includeUnitClass=${powerUnitClasses}
-          .value=${this._source.stat_power}
+          .value=${this._source.stat_rate}
           .label=${this.hass.localize(
             "ui.panel.config.energy.grid.power_dialog.power_stat"
           )}
@@ -105,7 +105,7 @@ export class DialogEnergyGridPowerSettings
         </ha-button>
         <ha-button
           @click=${this._save}
-          .disabled=${!this._source.stat_power}
+          .disabled=${!this._source.stat_rate}
           slot="primaryAction"
         >
           ${this.hass.localize("ui.common.save")}
@@ -117,7 +117,7 @@ export class DialogEnergyGridPowerSettings
   private _powerStatisticChanged(ev: CustomEvent<{ value: string }>) {
     this._source = {
       ...this._source!,
-      stat_power: ev.detail.value,
+      stat_rate: ev.detail.value,
     };
   }
 

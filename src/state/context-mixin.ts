@@ -1,4 +1,5 @@
 import { ContextProvider } from "@lit/context";
+import type { UnsubscribeFunc } from "home-assistant-js-websocket";
 import {
   areasContext,
   configContext,
@@ -6,6 +7,7 @@ import {
   devicesContext,
   entitiesContext,
   floorsContext,
+  labelsContext,
   localeContext,
   localizeContext,
   panelsContext,
@@ -15,6 +17,7 @@ import {
   userContext,
   userDataContext,
 } from "../data/context";
+import { subscribeLabelRegistry } from "../data/label_registry";
 import type { Constructor, HomeAssistant } from "../types";
 import type { HassBaseEl } from "./hass-base-mixin";
 
@@ -22,6 +25,8 @@ export const contextMixin = <T extends Constructor<HassBaseEl>>(
   superClass: T
 ) =>
   class extends superClass {
+    private _unsubscribeLabels?: UnsubscribeFunc;
+
     private __contextProviders: Record<
       string,
       ContextProvider<any> | undefined
@@ -92,6 +97,10 @@ export const contextMixin = <T extends Constructor<HassBaseEl>>(
         context: floorsContext,
         initialValue: this.hass ? this.hass.floors : this._pendingHass.floors,
       }),
+      labels: new ContextProvider(this, {
+        context: labelsContext,
+        initialValue: [],
+      }),
     };
 
     protected hassConnected() {
@@ -101,6 +110,13 @@ export const contextMixin = <T extends Constructor<HassBaseEl>>(
           this.__contextProviders[key]!.setValue(value);
         }
       }
+
+      this._unsubscribeLabels = subscribeLabelRegistry(
+        this.hass!.connection!,
+        (labels) => {
+          this.__contextProviders.labels!.setValue(labels);
+        }
+      );
     }
 
     protected _updateHass(obj: Partial<HomeAssistant>) {
@@ -110,5 +126,10 @@ export const contextMixin = <T extends Constructor<HassBaseEl>>(
           this.__contextProviders[key]!.setValue(value);
         }
       }
+    }
+
+    public disconnectedCallback() {
+      super.disconnectedCallback();
+      this._unsubscribeLabels?.();
     }
   };

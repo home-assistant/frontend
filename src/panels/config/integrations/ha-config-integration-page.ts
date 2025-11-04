@@ -528,18 +528,20 @@ class HaConfigIntegrationPage extends SubscribeMixin(LitElement) {
                     </ha-button>
                   `
                 : nothing}
-              <ha-button
-                .appearance=${canAddDevice ? "filled" : "accent"}
-                @click=${this._addIntegration}
-              >
-                ${this._manifest?.integration_type
-                  ? this.hass.localize(
-                      `ui.panel.config.integrations.integration_page.add_${this._manifest.integration_type}`
-                    )
-                  : this.hass.localize(
-                      `ui.panel.config.integrations.integration_page.add_entry`
-                    )}
-              </ha-button>
+              ${this._manifest?.integration_type !== "hardware"
+                ? html`<ha-button
+                    .appearance=${canAddDevice ? "filled" : "accent"}
+                    @click=${this._addIntegration}
+                  >
+                    ${this._manifest?.integration_type
+                      ? this.hass.localize(
+                          `ui.panel.config.integrations.integration_page.add_${this._manifest.integration_type}`
+                        )
+                      : this.hass.localize(
+                          `ui.panel.config.integrations.integration_page.add_entry`
+                        )}
+                  </ha-button>`
+                : nothing}
               ${Array.from(supportedSubentryTypes).map(
                 (flowType) =>
                   html`<ha-button
@@ -788,7 +790,10 @@ class HaConfigIntegrationPage extends SubscribeMixin(LitElement) {
     );
     const timeString = new Date().toISOString().replace(/:/g, "-");
     const logFileName = `home-assistant_${integration}_${timeString}.log`;
-    const signedUrl = await getSignedPath(this.hass, getErrorLogDownloadUrl);
+    const signedUrl = await getSignedPath(
+      this.hass,
+      getErrorLogDownloadUrl(this.hass)
+    );
     fileDownload(signedUrl.path, logFileName);
   }
 
