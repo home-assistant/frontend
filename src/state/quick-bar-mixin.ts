@@ -190,9 +190,6 @@ export default <T extends Constructor<HassElement>>(superClass: T) =>
     }
 
     private _canShowQuickBar() {
-      return (
-        this.hass?.user?.is_admin &&
-        this.hass.enableShortcuts
-      );
+      return this.hass?.user?.is_admin && this.hass.enableShortcuts;
     }
   };
