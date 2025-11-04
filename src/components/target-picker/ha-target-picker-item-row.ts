@@ -615,7 +615,7 @@ export class HaTargetPickerItemRow extends LitElement {
       }
 
       .error [slot="supporting-text"] {
-        color: var(--warning-color);
+        color: var(--ha-color-on-warning-normal);
         font-weight: var(--ha-font-weight-bold);
       }
 
