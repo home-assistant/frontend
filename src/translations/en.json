@@ -7778,7 +7778,8 @@
             },
             "iframe": {
               "name": "Webpage",
-              "description": "The Webpage card allows you to embed your favorite webpage right into Home Assistant."
+              "description": "The Webpage card allows you to embed your favorite webpage right into Home Assistant.",
+              "hide_background": "Hide background"
             },
             "light": {
               "name": "Light",
@@ -8394,7 +8395,6 @@
               "hide_energy": "Hide energy"
             },
             "iframe": {
-              "hide_background": "Hide background",
               "url": "URL"
             },
             "areas": {
