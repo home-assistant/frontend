@@ -87,11 +87,6 @@ export class HuiHomeSummaryCard extends LitElement implements LovelaceCard {
     const allEntities = Object.keys(this.hass!.states);
 
     const areas = Object.values(this.hass.areas);
-    const areasFilter = generateEntityFilter(this.hass, {
-      area: areas.map((area) => area.area_id),
-    });
-
-    const entitiesInsideArea = allEntities.filter(areasFilter);
 
     switch (this._config.summary) {
       case "light": {
@@ -100,7 +95,7 @@ export class HuiHomeSummaryCard extends LitElement implements LovelaceCard {
           generateEntityFilter(this.hass!, filter)
         );
 
-        const lightEntities = findEntities(entitiesInsideArea, lightsFilters);
+        const lightEntities = findEntities(allEntities, lightsFilters);
 
         const onLights = lightEntities.filter((entityId) => {
           const s = this.hass!.states[entityId]?.state;
@@ -153,7 +148,7 @@ export class HuiHomeSummaryCard extends LitElement implements LovelaceCard {
           generateEntityFilter(this.hass!, filter)
         );
 
-        const safetyEntities = findEntities(entitiesInsideArea, safetyFilters);
+        const safetyEntities = findEntities(allEntities, safetyFilters);
 
         const locks = safetyEntities.filter((entityId) => {
           const domain = computeDomain(entityId);
@@ -204,7 +199,7 @@ export class HuiHomeSummaryCard extends LitElement implements LovelaceCard {
         );
 
         const mediaPlayerEntities = findEntities(
-          entitiesInsideArea,
+          allEntities,
           mediaPlayerFilters
         );
 

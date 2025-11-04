@@ -9,15 +9,27 @@ type EntityCategory = "none" | "config" | "diagnostic";
 export interface EntityFilter {
   domain?: string | string[];
   device_class?: string | string[];
-  device?: string | string[];
-  area?: string | string[];
-  floor?: string | string[];
+  device?: string | null | (string | null)[];
+  area?: string | null | (string | null)[];
+  floor?: string | null | (string | null)[];
   label?: string | string[];
   entity_category?: EntityCategory | EntityCategory[];
   hidden_platform?: string | string[];
 }
 
 export type EntityFilterFunc = (entityId: string) => boolean;
+
+const normalizeFilterArray = <T>(
+  value: T | null | T[] | (T | null)[] | undefined
+): Set<T | null> | undefined => {
+  if (value === undefined) {
+    return undefined;
+  }
+  if (value === null) {
+    return new Set([null]);
+  }
+  return new Set(ensureArray(value));
+};
 
 export const generateEntityFilter = (
   hass: HomeAssistant,
@@ -29,11 +41,9 @@ export const generateEntityFilter = (
   const deviceClasses = filter.device_class
     ? new Set(ensureArray(filter.device_class))
     : undefined;
-  const floors = filter.floor ? new Set(ensureArray(filter.floor)) : undefined;
-  const areas = filter.area ? new Set(ensureArray(filter.area)) : undefined;
-  const devices = filter.device
-    ? new Set(ensureArray(filter.device))
-    : undefined;
+  const floors = normalizeFilterArray(filter.floor);
+  const areas = normalizeFilterArray(filter.area);
+  const devices = normalizeFilterArray(filter.device);
   const entityCategories = filter.entity_category
     ? new Set(ensureArray(filter.entity_category))
     : undefined;
@@ -73,23 +83,20 @@ export const generateEntityFilter = (
     }
 
     if (floors) {
-      if (!floor || !floors.has(floor.floor_id)) {
+      const floorId = floor?.floor_id ?? null;
+      if (!floors.has(floorId)) {
         return false;
       }
     }
     if (areas) {
-      if (!area) {
-        return false;
-      }
-      if (!areas.has(area.area_id)) {
+      const areaId = area?.area_id ?? null;
+      if (!areas.has(areaId)) {
         return false;
       }
     }
     if (devices) {
-      if (!device) {
-        return false;
-      }
-      if (!devices.has(device.id)) {
+      const deviceId = device?.id ?? null;
+      if (!devices.has(deviceId)) {
         return false;
       }
     }
