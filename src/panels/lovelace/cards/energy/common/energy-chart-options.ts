@@ -19,6 +19,7 @@ import type {
   LineSeriesOption,
   TopLevelFormatterParams,
 } from "echarts/types/dist/shared";
+import type { LineDataItemOption } from "echarts/types/src/chart/line/LineSeries";
 import type { FrontendLocaleData } from "../../../../../data/translation";
 import { formatNumber } from "../../../../../common/number/format_number";
 import {
@@ -294,10 +295,10 @@ export function fillLineGaps(datasets: LineSeriesOption[]) {
   buckets.forEach((bucket, index) => {
     for (let i = datasets.length - 1; i >= 0; i--) {
       const dataPoint = datasets[i].data![index];
-      const item: any =
+      const item: LineDataItemOption =
         dataPoint && typeof dataPoint === "object" && "value" in dataPoint
           ? dataPoint
-          : { value: dataPoint };
+          : ({ value: dataPoint } as LineDataItemOption);
       const x = item.value?.[0];
       if (x === undefined) {
         continue;

@@ -244,12 +244,20 @@ export class HuiPowerSourcesGraphCard
 
     this._chartData = fillLineGaps(datasets);
 
-    const usageData: number[][] = [];
-    this._chartData[0].data!.forEach((item, i) => {
+    const usageData: NonNullable<LineSeriesOption["data"]> = [];
+    this._chartData[0]?.data!.forEach((item, i) => {
       // fillLineGaps ensures all datasets have the same x values
-      usageData[i] = [item![0], 0];
+      const x =
+        typeof item === "object" && "value" in item!
+          ? item.value![0]
+          : item![0];
+      usageData[i] = [x, 0];
       this._chartData.forEach((dataset) => {
-        usageData[i][1] += dataset.data![i]![1] as number;
+        const y =
+          typeof dataset.data![i] === "object" && "value" in dataset.data![i]!
+            ? dataset.data![i].value![1]
+            : dataset.data![i]![1];
+        usageData[i]![1] += y as number;
       });
     });
     this._chartData.push({
