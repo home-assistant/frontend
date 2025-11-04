@@ -614,9 +614,12 @@ export class HaTargetPickerItemRow extends LitElement {
         border-radius: var(--ha-card-border-radius, var(--ha-border-radius-lg));
       }
 
+      .error {
+        background: var(--ha-color-fill-warning-quiet-resting);
+      }
+
       .error [slot="supporting-text"] {
         color: var(--ha-color-on-warning-normal);
-        font-weight: var(--ha-font-weight-bold);
       }
 
       state-badge {
