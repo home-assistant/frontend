@@ -159,21 +159,21 @@ export class HuiPowerSourcesGraphCard
 
     for (const source of energyData.prefs.energy_sources) {
       if (source.type === "solar") {
-        if (source.stat_power) {
-          statIds.solar.stats.push(source.stat_power);
+        if (source.stat_rate) {
+          statIds.solar.stats.push(source.stat_rate);
         }
         continue;
       }
 
       if (source.type === "battery") {
-        if (source.stat_power) {
-          statIds.battery.stats.push(source.stat_power);
+        if (source.stat_rate) {
+          statIds.battery.stats.push(source.stat_rate);
         }
         continue;
       }
 
       if (source.type === "grid" && source.power) {
-        statIds.grid.stats.push(...source.power.map((p) => p.stat_power));
+        statIds.grid.stats.push(...source.power.map((p) => p.stat_rate));
       }
     }
     const commonSeriesOptions: LineSeriesOption = {

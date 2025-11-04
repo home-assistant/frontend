@@ -371,20 +371,20 @@ export const getReferencedStatisticIdsPower = (
     }
 
     if (source.type === "solar") {
-      statIDs.push(source.stat_power);
+      statIDs.push(source.stat_rate);
       continue;
     }
 
     if (source.type === "battery") {
-      statIDs.push(source.stat_power);
+      statIDs.push(source.stat_rate);
       continue;
     }
 
     if (source.power) {
-      statIDs.push(...source.power.map((p) => p.stat_power));
+      statIDs.push(...source.power.map((p) => p.stat_rate));
     }
   }
-  statIDs.push(...prefs.device_consumption.map((d) => d.stat_power));
+  statIDs.push(...prefs.device_consumption.map((d) => d.stat_rate));
 
   return statIDs.filter(Boolean) as string[];
 };
