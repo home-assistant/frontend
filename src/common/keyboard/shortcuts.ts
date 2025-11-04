@@ -27,7 +27,7 @@ function registerShortcuts(
 
   Object.entries(shortcuts).forEach(([key, handler]) => {
     wrappedShortcuts[key] = (event: KeyboardEvent) => {
-      // Don't capture the event if the user is not focused on an input
+      // Don't capture the event if the user is focused on an input field
       if (!canOverrideAlphanumericInput(event.composedPath())) {
         return;
       }
