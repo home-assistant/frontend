@@ -1,25 +1,23 @@
-import type { CSSResultGroup, PropertyValues, TemplateResult } from "lit";
-import { LitElement, css, html } from "lit";
+import type { CSSResultGroup, PropertyValues } from "lit";
+import { LitElement, css, html, nothing } from "lit";
 import { customElement, property, state } from "lit/decorators";
 import { goBack } from "../../common/navigate";
 import { debounce } from "../../common/util/debounce";
+import { deepEqual } from "../../common/util/deep-equal";
 import "../../components/ha-icon-button-arrow-prev";
 import "../../components/ha-menu-button";
-import type { LovelaceConfig } from "../../data/lovelace/config/types";
+import type { LovelaceStrategyViewConfig } from "../../data/lovelace/config/view";
 import { haStyle } from "../../resources/styles";
 import type { HomeAssistant } from "../../types";
+import { generateLovelaceViewStrategy } from "../lovelace/strategies/get-strategy";
 import type { Lovelace } from "../lovelace/types";
 import "../lovelace/views/hui-view";
 import "../lovelace/views/hui-view-container";
 
-const SECURITY_LOVELACE_CONFIG: LovelaceConfig = {
-  views: [
-    {
-      strategy: {
-        type: "security",
-      },
-    },
-  ],
+const SECURITY_LOVELACE_VIEW_CONFIG: LovelaceStrategyViewConfig = {
+  strategy: {
+    type: "security",
+  },
 };
 
 @customElement("ha-panel-security")
@@ -90,46 +88,63 @@ class PanelSecurity extends LitElement {
     goBack();
   }
 
-  protected render(): TemplateResult {
+  protected render() {
     return html`
       <div class="header">
         <div class="toolbar">
-          ${this._searchParms.has("historyBack")
-            ? html`
-                <ha-icon-button-arrow-prev
-                  @click=${this._back}
-                  slot="navigationIcon"
-                ></ha-icon-button-arrow-prev>
-              `
-            : html`
-                <ha-menu-button
-                  slot="navigationIcon"
-                  .hass=${this.hass}
-                  .narrow=${this.narrow}
-                ></ha-menu-button>
-              `}
+          ${
+            this._searchParms.has("historyBack")
+              ? html`
+                  <ha-icon-button-arrow-prev
+                    @click=${this._back}
+                    slot="navigationIcon"
+                  ></ha-icon-button-arrow-prev>
+                `
+              : html`
+                  <ha-menu-button
+                    slot="navigationIcon"
+                    .hass=${this.hass}
+                    .narrow=${this.narrow}
+                  ></ha-menu-button>
+                `
+          }
           <div class="main-title">${this.hass.localize("panel.security")}</div>
         </div>
       </div>
-
-      <hui-view-container .hass=${this.hass}>
-        <hui-view
-          .hass=${this.hass}
-          .narrow=${this.narrow}
-          .lovelace=${this._lovelace}
-          .index=${this._viewIndex}
-        ></hui-view>
+      ${
+        this._lovelace
+          ? html`
+              <hui-view-container .hass=${this.hass}>
+                <hui-view
+                  .hass=${this.hass}
+                  .narrow=${this.narrow}
+                  .lovelace=${this._lovelace}
+                  .index=${this._viewIndex}
+                ></hui-view
+              ></hui-view-container>
+            `
+          : nothing
+      }
       </hui-view-container>
     `;
   }
 
-  private _setLovelace() {
-    // Create a new views to force re-render of hui-view
-    const config = { ...SECURITY_LOVELACE_CONFIG };
-    config.views = config.views.map((view) => ({ ...view }));
+  private async _setLovelace() {
+    const viewConfig = await generateLovelaceViewStrategy(
+      SECURITY_LOVELACE_VIEW_CONFIG,
+      this.hass
+    );
+
+    const config = { views: [viewConfig] };
+    const rawConfig = { views: [SECURITY_LOVELACE_VIEW_CONFIG] };
+
+    if (deepEqual(config, this._lovelace?.config)) {
+      return;
+    }
+
     this._lovelace = {
       config: config,
-      rawConfig: config,
+      rawConfig: rawConfig,
       editMode: false,
       urlPath: "security",
       mode: "generated",
