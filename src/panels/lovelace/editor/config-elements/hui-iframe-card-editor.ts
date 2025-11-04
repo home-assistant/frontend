@@ -58,6 +58,7 @@ export class HuiIframeCardEditor
         .data=${this._config}
         .schema=${SCHEMA}
         .computeLabel=${this._computeLabelCallback}
+        .computeHelper=${this._computeHelperCallback}
         @value-changed=${this._valueChanged}
       ></ha-form>
     `;
@@ -77,6 +78,17 @@ export class HuiIframeCardEditor
         return this.hass!.localize(
           `ui.panel.lovelace.editor.card.generic.${schema.name}`
         );
+    }
+  };
+
+  private _computeHelperCallback = (schema: SchemaUnion<typeof SCHEMA>) => {
+    switch (schema.name) {
+      case "hide_background":
+        return this.hass!.localize(
+          "ui.panel.lovelace.editor.card.iframe.hide_background_helper"
+        );
+      default:
+        return "";
     }
   };
 }
