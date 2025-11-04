@@ -128,6 +128,9 @@ export class EntitySettingsHelperTab extends LitElement {
   }
 
   private _valueChanged(ev: CustomEvent): void {
+    if (this._item === null) {
+      return;
+    }
     this._error = undefined;
     this._item = ev.detail.value;
   }
