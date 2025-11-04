@@ -5,11 +5,11 @@ export type ShortcutHandler = (event: KeyboardEvent) => void;
 
 interface ShortcutEntry {
   /**
-   * The keys that the shortcut is registered to.
+   * The key that the shortcut is registered to.
    */
-  keys: Set<string>;
+  key: string;
   /**
-   * A function to remove the shortcuts.
+   * A function to remove the shortcut.
    */
   disposer: () => void;
 }
@@ -55,10 +55,11 @@ export class ShortcutManager {
    *   Uses tinykeys syntax. See https://github.com/jamiebuilds/tinykeys#usage.
    */
   public add(shortcuts: Record<string, ShortcutHandler>) {
-    const disposer = registerShortcuts(shortcuts);
-    const keys = new Set(Object.keys(shortcuts));
-    const entry: ShortcutEntry = { keys, disposer };
-    this.shortcutEntries.push(entry);
+    Object.entries(shortcuts).forEach(([key, handler]) => {
+      const disposer = registerShortcuts({ [key]: handler });
+      const entry: ShortcutEntry = { key, disposer };
+      this.shortcutEntries.push(entry);
+    });
   }
 
   /**
@@ -73,7 +74,7 @@ export class ShortcutManager {
       const entriesToRemove: ShortcutEntry[] = [];
 
       for (const entry of this.shortcutEntries) {
-        if (keys.some((key) => entry.keys.has(key))) {
+        if (keys.includes(entry.key)) {
           entry.disposer();
           entriesToRemove.push(entry);
         }
