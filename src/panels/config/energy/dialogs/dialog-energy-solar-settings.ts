@@ -74,8 +74,8 @@ export class DialogEnergySolarSettings
       .map((entry) => entry.stat_energy_from)
       .filter((id) => id !== this._source?.stat_energy_from);
     this._excludeListPower = this._params.solar_sources
-      .map((entry) => entry.stat_power)
-      .filter((id) => id && id !== this._source?.stat_power) as string[];
+      .map((entry) => entry.stat_rate)
+      .filter((id) => id && id !== this._source?.stat_rate) as string[];
   }
 
   public closeDialog() {
@@ -124,7 +124,7 @@ export class DialogEnergySolarSettings
         <ha-statistic-picker
           .hass=${this.hass}
           .includeUnitClass=${powerUnitClasses}
-          .value=${this._source.stat_power}
+          .value=${this._source.stat_rate}
           .label=${this.hass.localize(
             "ui.panel.config.energy.solar.dialog.solar_production_power"
           )}
@@ -290,7 +290,7 @@ export class DialogEnergySolarSettings
   }
 
   private _powerStatisticChanged(ev: CustomEvent<{ value: string }>) {
-    this._source = { ...this._source!, stat_power: ev.detail.value };
+    this._source = { ...this._source!, stat_rate: ev.detail.value };
   }
 
   private async _save() {

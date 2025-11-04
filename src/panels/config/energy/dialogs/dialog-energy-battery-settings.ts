@@ -65,8 +65,8 @@ export class DialogEnergyBatterySettings
         id !== this._source?.stat_energy_to
     );
     this._excludeListPower = this._params.battery_sources
-      .map((entry) => entry.stat_power)
-      .filter((id) => id && id !== this._source?.stat_power) as string[];
+      .map((entry) => entry.stat_rate)
+      .filter((id) => id && id !== this._source?.stat_rate) as string[];
   }
 
   public closeDialog() {
@@ -137,7 +137,7 @@ export class DialogEnergyBatterySettings
         <ha-statistic-picker
           .hass=${this.hass}
           .includeUnitClass=${powerUnitClasses}
-          .value=${this._source.stat_power}
+          .value=${this._source.stat_rate}
           .label=${this.hass.localize(
             "ui.panel.config.energy.battery.dialog.power"
           )}
@@ -177,7 +177,7 @@ export class DialogEnergyBatterySettings
   }
 
   private _powerChanged(ev: CustomEvent<{ value: string }>) {
-    this._source = { ...this._source!, stat_power: ev.detail.value };
+    this._source = { ...this._source!, stat_rate: ev.detail.value };
   }
 
   private async _save() {
