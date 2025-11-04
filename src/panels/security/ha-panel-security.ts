@@ -2,6 +2,7 @@ import type { CSSResultGroup, PropertyValues, TemplateResult } from "lit";
 import { LitElement, css, html } from "lit";
 import { customElement, property, state } from "lit/decorators";
 import { goBack } from "../../common/navigate";
+import { debounce } from "../../common/util/debounce";
 import "../../components/ha-icon-button-arrow-prev";
 import "../../components/ha-menu-button";
 import type { LovelaceConfig } from "../../data/lovelace/config/types";
@@ -34,17 +35,55 @@ class PanelSecurity extends LitElement {
   @state() private _searchParms = new URLSearchParams(window.location.search);
 
   public willUpdate(changedProps: PropertyValues) {
+    super.willUpdate(changedProps);
+    // Initial setup
     if (!this.hasUpdated) {
       this.hass.loadFragmentTranslation("lovelace");
+      this._setLovelace();
+      return;
     }
+
     if (!changedProps.has("hass")) {
       return;
     }
+
     const oldHass = changedProps.get("hass") as this["hass"];
-    if (oldHass?.locale !== this.hass.locale) {
+    if (oldHass && oldHass.localize !== this.hass.localize) {
       this._setLovelace();
+      return;
+    }
+
+    if (oldHass && this.hass) {
+      // If the entity registry changed, ask the user if they want to refresh the config
+      if (
+        oldHass.entities !== this.hass.entities ||
+        oldHass.devices !== this.hass.devices ||
+        oldHass.areas !== this.hass.areas ||
+        oldHass.floors !== this.hass.floors
+      ) {
+        if (this.hass.config.state === "RUNNING") {
+          this._debounceRegistriesChanged();
+          return;
+        }
+      }
+      // If ha started, refresh the config
+      if (
+        this.hass.config.state === "RUNNING" &&
+        oldHass.config.state !== "RUNNING"
+      ) {
+        this._setLovelace();
+      }
     }
   }
+
+  private _debounceRegistriesChanged = debounce(
+    () => this._registriesChanged(),
+    200
+  );
+
+  private _registriesChanged = async () => {
+    this._setLovelace();
+  };
 
   private _back(ev) {
     ev.stopPropagation();
@@ -85,9 +124,12 @@ class PanelSecurity extends LitElement {
   }
 
   private _setLovelace() {
+    // Create a new views to force re-render of hui-view
+    const config = { ...SECURITY_LOVELACE_CONFIG };
+    config.views = config.views.map((view) => ({ ...view }));
     this._lovelace = {
-      config: SECURITY_LOVELACE_CONFIG,
-      rawConfig: SECURITY_LOVELACE_CONFIG,
+      config: config,
+      rawConfig: config,
       editMode: false,
       urlPath: "security",
       mode: "generated",
