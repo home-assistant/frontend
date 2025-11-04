@@ -1,6 +1,6 @@
 import type { PropertyValues } from "lit";
 import { html, LitElement } from "lit";
-import { property, state } from "lit/decorators";
+import { property, query, state } from "lit/decorators";
 import type { VisualMapComponentOption } from "echarts/components";
 import type { LineSeriesOption } from "echarts/charts";
 import type { YAXisOption } from "echarts/types/dist/shared";
@@ -10,7 +10,8 @@ import { computeRTL } from "../../common/util/compute_rtl";
 
 import type { LineChartEntity, LineChartState } from "../../data/history";
 import type { HomeAssistant } from "../../types";
-import { HaChartBase, MIN_TIME_BETWEEN_UPDATES } from "./ha-chart-base";
+import type { HaChartBase } from "./ha-chart-base";
+import { MIN_TIME_BETWEEN_UPDATES } from "./ha-chart-base";
 import type { ECOption } from "../../resources/echarts/echarts";
 import { formatDateTimeWithSeconds } from "../../common/datetime/format_date_time";
 import {
@@ -21,7 +22,6 @@ import { measureTextWidth } from "../../util/text";
 import { fireEvent } from "../../common/dom/fire_event";
 import { CLIMATE_HVAC_ACTION_TO_MODE } from "../../data/climate";
 import { blankBeforeUnit } from "../../common/translations/blank_before_unit";
-import { query } from "lit/decorators";
 
 const safeParseFloat = (value) => {
   const parsed = parseFloat(value);
