@@ -11,18 +11,18 @@ import type { Lovelace } from "../lovelace/types";
 import "../lovelace/views/hui-view";
 import "../lovelace/views/hui-view-container";
 
-const SAFETY_LOVELACE_CONFIG: LovelaceConfig = {
+const SECURITY_LOVELACE_CONFIG: LovelaceConfig = {
   views: [
     {
       strategy: {
-        type: "safety",
+        type: "security",
       },
     },
   ],
 };
 
-@customElement("ha-panel-safety")
-class PanelSafety extends LitElement {
+@customElement("ha-panel-security")
+class PanelSecurity extends LitElement {
   @property({ attribute: false }) public hass!: HomeAssistant;
 
   @property({ type: Boolean, reflect: true }) public narrow = false;
@@ -69,7 +69,7 @@ class PanelSafety extends LitElement {
                   .narrow=${this.narrow}
                 ></ha-menu-button>
               `}
-          <div class="main-title">${this.hass.localize("panel.safety")}</div>
+          <div class="main-title">${this.hass.localize("panel.security")}</div>
         </div>
       </div>
 
@@ -86,10 +86,10 @@ class PanelSafety extends LitElement {
 
   private _setLovelace() {
     this._lovelace = {
-      config: SAFETY_LOVELACE_CONFIG,
-      rawConfig: SAFETY_LOVELACE_CONFIG,
+      config: SECURITY_LOVELACE_CONFIG,
+      rawConfig: SECURITY_LOVELACE_CONFIG,
       editMode: false,
-      urlPath: "safety",
+      urlPath: "security",
       mode: "generated",
       locale: this.hass.locale,
       enableFullEditMode: () => undefined,
@@ -191,6 +191,6 @@ class PanelSafety extends LitElement {
 
 declare global {
   interface HTMLElementTagNameMap {
-    "ha-panel-safety": PanelSafety;
+    "ha-panel-security": PanelSecurity;
   }
 }
