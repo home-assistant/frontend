@@ -14,7 +14,6 @@ import type { HassElement } from "./hass-element";
 import { ShortcutManager } from "../common/keyboard/shortcuts";
 import { extractSearchParamsObject } from "../common/url/search-params";
 import { showVoiceCommandDialog } from "../dialogs/voice-command-dialog/show-ha-voice-command-dialog";
-import { canOverrideAlphanumericInput } from "../common/dom/can-override-input";
 import { showShortcutsDialog } from "../dialogs/shortcuts/show-shortcuts-dialog";
 import type { Redirects } from "../panels/my/ha-panel-my";
 
@@ -88,7 +87,6 @@ export default <T extends Constructor<HassElement>>(superClass: T) =>
     private _showVoiceCommandDialog(e: KeyboardEvent) {
       if (
         !this.hass?.enableShortcuts ||
-        !canOverrideAlphanumericInput(e.composedPath()) ||
         !this._conversation(this.hass.config.components)
       ) {
         return;
@@ -106,7 +104,7 @@ export default <T extends Constructor<HassElement>>(superClass: T) =>
       e: KeyboardEvent,
       mode: QuickBarMode = QuickBarMode.Entity
     ) {
-      if (!this._canShowQuickBar(e)) {
+      if (!this._canShowQuickBar()) {
         return;
       }
 
@@ -119,7 +117,7 @@ export default <T extends Constructor<HassElement>>(superClass: T) =>
     }
 
     private _showShortcutDialog(e: KeyboardEvent) {
-      if (!this._canShowQuickBar(e)) {
+      if (!this._canShowQuickBar()) {
         return;
       }
 
@@ -132,10 +130,7 @@ export default <T extends Constructor<HassElement>>(superClass: T) =>
     }
 
     private async _createMyLink(e: KeyboardEvent) {
-      if (
-        !this.hass?.enableShortcuts ||
-        !canOverrideAlphanumericInput(e.composedPath())
-      ) {
+      if (!this.hass?.enableShortcuts) {
         return;
       }
 
@@ -194,11 +189,10 @@ export default <T extends Constructor<HassElement>>(superClass: T) =>
       });
     }
 
-    private _canShowQuickBar(e: KeyboardEvent) {
+    private _canShowQuickBar() {
       return (
         this.hass?.user?.is_admin &&
-        this.hass.enableShortcuts &&
-        canOverrideAlphanumericInput(e.composedPath())
+        this.hass.enableShortcuts
       );
     }
   };
