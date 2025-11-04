@@ -64,19 +64,19 @@ export default <T extends Constructor<HassElement>>(superClass: T) =>
       const shortcutManager = new ShortcutManager();
       shortcutManager.add({
         // Those are for latin keyboards that have e, c, m keys
-        e: (ev) => this._showQuickBar(ev),
-        c: (ev) => this._showQuickBar(ev, QuickBarMode.Command),
-        m: (ev) => this._createMyLink(ev),
-        a: (ev) => this._showVoiceCommandDialog(ev),
-        d: (ev) => this._showQuickBar(ev, QuickBarMode.Device),
+        e: { handler: (ev) => this._showQuickBar(ev) },
+        c: { handler: (ev) => this._showQuickBar(ev, QuickBarMode.Command) },
+        m: { handler: (ev) => this._createMyLink(ev) },
+        a: { handler: (ev) => this._showVoiceCommandDialog(ev) },
+        d: { handler: (ev) => this._showQuickBar(ev, QuickBarMode.Device) },
         // Workaround see https://github.com/jamiebuilds/tinykeys/issues/130
-        "Shift+?": (ev) => this._showShortcutDialog(ev),
+        "Shift+?": { handler: (ev) => this._showShortcutDialog(ev) },
         // Those are fallbacks for non-latin keyboards that don't have e, c, m keys (qwerty-based shortcuts)
-        KeyE: (ev) => this._showQuickBar(ev),
-        KeyC: (ev) => this._showQuickBar(ev, QuickBarMode.Command),
-        KeyM: (ev) => this._createMyLink(ev),
-        KeyA: (ev) => this._showVoiceCommandDialog(ev),
-        KeyD: (ev) => this._showQuickBar(ev, QuickBarMode.Device),
+        KeyE: { handler: (ev) => this._showQuickBar(ev) },
+        KeyC: { handler: (ev) => this._showQuickBar(ev, QuickBarMode.Command) },
+        KeyM: { handler: (ev) => this._createMyLink(ev) },
+        KeyA: { handler: (ev) => this._showVoiceCommandDialog(ev) },
+        KeyD: { handler: (ev) => this._showQuickBar(ev, QuickBarMode.Device) },
       });
     }
 
