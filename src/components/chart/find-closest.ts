@@ -1,8 +1,13 @@
+import type { ECOption } from "../../resources/echarts/echarts";
+import { ensureArray } from "../../common/array/ensure-array";
+
 export function findClosestDataIndexByTime(
-  series: any[],
-  timeValue: number
+  series: ECOption["series"],
+  timeValue: Date
 ): { seriesIndex: number; dataIndex: number } {
-  if (!series || series.length === 0) {
+  const seriesArray = ensureArray(series);
+
+  if (!seriesArray || seriesArray.length === 0) {
     return { seriesIndex: 0, dataIndex: 0 };
   }
 
@@ -10,8 +15,8 @@ export function findClosestDataIndexByTime(
   let bestDataIndex = 0;
   let minDiff = Infinity;
 
-  for (const [seriesIndex, serie] of series.entries()) {
-    const data = serie?.data;
+  for (const [seriesIndex, serie] of seriesArray.entries()) {
+    const data = serie?.data as [Date, number][];
     if (!data || data.length === 0) {
       continue;
     }
@@ -22,7 +27,7 @@ export function findClosestDataIndexByTime(
 
     while (left < right) {
       const mid = Math.floor((left + right) / 2);
-      const midTime = Array.isArray(data[mid]) ? data[mid][0] : data[mid];
+      const midTime = data[mid][0];
 
       if (midTime === timeValue) {
         candidateIndex = mid;
@@ -37,7 +42,7 @@ export function findClosestDataIndexByTime(
     }
 
     if (candidateIndex === -1 && left === right) {
-      const leftTime = Array.isArray(data[left]) ? data[left][0] : data[left];
+      const leftTime = data[left][0];
       if (leftTime <= timeValue) {
         candidateIndex = left;
       }
@@ -47,10 +52,8 @@ export function findClosestDataIndexByTime(
       continue;
     }
 
-    const candidateTime = Array.isArray(data[candidateIndex])
-      ? data[candidateIndex][0]
-      : data[candidateIndex];
-    const diff = timeValue - candidateTime;
+    const candidateTime = data[candidateIndex][0];
+    const diff = timeValue.getTime() - candidateTime.getTime();
 
     if (diff < minDiff) {
       minDiff = diff;

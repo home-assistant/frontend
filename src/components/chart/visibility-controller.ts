@@ -1,18 +1,18 @@
 import type { ReactiveController, ReactiveControllerHost } from "lit";
 
-export interface VisibiltyObservableElement {
+export interface VisibilityObservableElement {
   onVisibilityChanged(): void;
 }
 
 export class VisibilityController implements ReactiveController {
-  host: ReactiveControllerHost & HTMLElement & VisibiltyObservableElement;
+  host: ReactiveControllerHost & HTMLElement & VisibilityObservableElement;
 
   isVisible = false;
 
   private observer?: IntersectionObserver;
 
   constructor(
-    host: ReactiveControllerHost & HTMLElement & VisibiltyObservableElement
+    host: ReactiveControllerHost & HTMLElement & VisibilityObservableElement
   ) {
     this.host = host;
     host.addController(this);

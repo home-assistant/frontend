@@ -31,7 +31,7 @@ import { filterXSS } from "../../common/util/xss";
 import { formatTimeLabel } from "./axis-label";
 import { downSampleLineData } from "./down-sample";
 import { findClosestDataIndexByTime } from "./find-closest";
-import type { VisibiltyObservableElement } from "./visibility-controller";
+import type { VisibilityObservableElement } from "./visibility-controller";
 import { VisibilityController } from "./visibility-controller";
 
 export const MIN_TIME_BETWEEN_UPDATES = 60 * 5 * 1000;
@@ -53,7 +53,7 @@ export type CustomLegendOption = ECOption["legend"] & {
 @customElement("ha-chart-base")
 export class HaChartBase
   extends LitElement
-  implements VisibiltyObservableElement
+  implements VisibilityObservableElement
 {
   public chart?: EChartsType;
 
@@ -946,10 +946,10 @@ export class HaChartBase
     });
   }
 
-  public updatePointerPos(timeValue: number) {
+  public updatePointerPos(timeValue: Date) {
     const option = this.chart?.getOption();
     const result = findClosestDataIndexByTime(
-      option?.series as any[],
+      option?.series as ECOption["series"],
       timeValue
     );
 
@@ -1194,8 +1194,8 @@ declare global {
     "dataset-hidden": { id: string };
     "dataset-unhidden": { id: string };
     "chart-click": ECElementEvent;
-    "chart-move-pointer": any;
-    "chart-hide-pointer": any;
+    "chart-move-pointer": { timeValue: Date };
+    "chart-hide-pointer": {};
     "chart-zoom": {
       start: number;
       end: number;

@@ -271,7 +271,7 @@ export class StateHistoryChartTimeline extends LitElement {
     chartBase.zoom(start, end, true);
   }
 
-  public updatePointerPos(_timeValue: number) {
+  public updatePointerPos(_timeValue: Date) {
     // Not supported!
   }
 

@@ -39,8 +39,8 @@ declare global {
       end: number;
       chartIndex: number;
     };
-    "chart-move-pointer-with-index": any;
-    "chart-hide-pointer-with-index": any;
+    "chart-move-pointer-with-index": { chartIndex: number; timeValue: Date };
+    "chart-hide-pointer-with-index": { chartIndex: number };
   }
 }
 
@@ -321,7 +321,7 @@ export class StateHistoryCharts extends LitElement {
 
   private _handlePointerSync(ev: any) {
     this._syncChartsAction(ev, (chartComponent, detail) => {
-      chartComponent.updatePointerPos(detail.timeValue);
+      chartComponent.updatePointerPos(detail.timeValue as Date);
     });
   }
 

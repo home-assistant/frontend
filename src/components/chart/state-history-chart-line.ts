@@ -10,7 +10,7 @@ import { computeRTL } from "../../common/util/compute_rtl";
 
 import type { LineChartEntity, LineChartState } from "../../data/history";
 import type { HomeAssistant } from "../../types";
-import { MIN_TIME_BETWEEN_UPDATES } from "./ha-chart-base";
+import { HaChartBase, MIN_TIME_BETWEEN_UPDATES } from "./ha-chart-base";
 import type { ECOption } from "../../resources/echarts/echarts";
 import { formatDateTimeWithSeconds } from "../../common/datetime/format_date_time";
 import {
@@ -21,6 +21,7 @@ import { measureTextWidth } from "../../util/text";
 import { fireEvent } from "../../common/dom/fire_event";
 import { CLIMATE_HVAC_ACTION_TO_MODE } from "../../data/climate";
 import { blankBeforeUnit } from "../../common/translations/blank_before_unit";
+import { query } from "lit/decorators";
 
 const safeParseFloat = (value) => {
   const parsed = parseFloat(value);
@@ -89,9 +90,10 @@ export class StateHistoryChartLine extends LitElement {
 
   private _yAxisMaximumFractionDigits = 0;
 
+  @query("ha-chart-base") private _baseChart?: HaChartBase;
+
   public isVisible(): boolean {
-    const chartBase = this.shadowRoot!.querySelector("ha-chart-base")!;
-    return chartBase.isVisible();
+    return this._baseChart!.isVisible();
   }
 
   protected render() {
@@ -211,7 +213,7 @@ export class StateHistoryChartLine extends LitElement {
     chartBase.zoom(start, end, true);
   }
 
-  public updatePointerPos(timeValue: number) {
+  public updatePointerPos(timeValue: Date) {
     const chartBase = this.shadowRoot!.querySelector("ha-chart-base")!;
     chartBase.updatePointerPos(timeValue);
   }
@@ -229,7 +231,7 @@ export class StateHistoryChartLine extends LitElement {
     });
   }
 
-  private _handleMovePointer(ev: any) {
+  private _handleMovePointer(ev: CustomEvent) {
     const { timeValue } = ev.detail;
     fireEvent(this, "chart-move-pointer-with-index", {
       chartIndex: this.chartIndex,
