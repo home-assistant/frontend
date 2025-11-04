@@ -152,11 +152,15 @@ export class HaTargetPickerItemRow extends LitElement {
                 />`
               : fallbackIconPath
                 ? html`<ha-svg-icon .path=${fallbackIconPath}></ha-svg-icon>`
-                : stateObject
+                : this.type === "entity"
                   ? html`
                       <ha-state-icon
                         .hass=${this.hass}
-                        .stateObj=${stateObject}
+                        .stateObj=${stateObject ||
+                        ({
+                          entity_id: this.itemId,
+                          attributes: {},
+                        } as HassEntity)}
                       >
                       </ha-state-icon>
                     `
