@@ -12,7 +12,7 @@
     "media_browser": "Media",
     "profile": "Profile",
     "light": "Lights",
-    "safety": "Safety",
+    "security": "Security",
     "climate": "Climate"
   },
   "state": {
@@ -6980,7 +6980,7 @@
             "lights": "Lights",
             "other_lights": "Other lights"
           },
-          "safety": {
+          "security": {
             "devices": "Devices",
             "other_devices": "Other devices"
           },

@@ -104,7 +104,7 @@ export class HomeAreaViewStrategy extends ReactiveElement {
     const {
       light,
       climate,
-      safety,
+      security,
       media_players: mediaPlayers,
     } = entitiesBySummary;
 
@@ -136,16 +136,16 @@ export class HomeAreaViewStrategy extends ReactiveElement {
       });
     }
 
-    if (safety.length > 0) {
+    if (security.length > 0) {
       sections.push({
         type: "grid",
         cards: [
           computeHeadingCard(
-            getSummaryLabel(hass.localize, "safety"),
-            HOME_SUMMARIES_ICONS.safety,
-            "/safety?historyBack=1"
+            getSummaryLabel(hass.localize, "security"),
+            HOME_SUMMARIES_ICONS.security,
+            "/security?historyBack=1"
           ),
-          ...safety.map(computeTileCard),
+          ...security.map(computeTileCard),
         ],
       });
     }
