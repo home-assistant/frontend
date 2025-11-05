@@ -257,7 +257,7 @@ class DialogAddAutomationElement
 
       const results = fuse.multiTermsSearch(filter);
       if (results) {
-        return results.map((result) => result.item);
+        return results.map((result) => result.item).filter((item) => item.name);
       }
       return items;
     }
@@ -294,7 +294,7 @@ class DialogAddAutomationElement
 
       const results = fuse.multiTermsSearch(filter);
       if (results) {
-        return results.map((result) => result.item);
+        return results.map((result) => result.item).filter((item) => item.name);
       }
       return items;
     }
