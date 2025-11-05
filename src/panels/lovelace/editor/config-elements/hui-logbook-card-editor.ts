@@ -1,5 +1,7 @@
-import { html, LitElement, nothing } from "lit";
+import type { HassServiceTarget } from "home-assistant-js-websocket";
+import { css, html, LitElement, nothing } from "lit";
 import { customElement, property, state } from "lit/decorators";
+import memoizeOne from "memoize-one";
 import {
   array,
   assert,
@@ -9,23 +11,21 @@ import {
   optional,
   string,
 } from "superstruct";
-import type { HassServiceTarget } from "home-assistant-js-websocket";
-import memoizeOne from "memoize-one";
 import { fireEvent } from "../../../../common/dom/fire_event";
 import "../../../../components/entity/ha-entities-picker";
-import "../../../../components/ha-target-picker";
 import "../../../../components/ha-form/ha-form";
 import type { SchemaUnion } from "../../../../components/ha-form/types";
+import "../../../../components/ha-target-picker";
+import type { HaEntityPickerEntityFilterFunc } from "../../../../data/entity";
 import { filterLogbookCompatibleEntities } from "../../../../data/logbook";
+import { targetStruct } from "../../../../data/script";
+import { resolveEntityIDs } from "../../../../data/selector";
+import { getSensorNumericDeviceClasses } from "../../../../data/sensor";
 import type { HomeAssistant } from "../../../../types";
+import { DEFAULT_HOURS_TO_SHOW } from "../../cards/hui-logbook-card";
 import type { LogbookCardConfig } from "../../cards/types";
 import type { LovelaceCardEditor } from "../../types";
 import { baseLovelaceCardConfig } from "../structs/base-card-struct";
-import { DEFAULT_HOURS_TO_SHOW } from "../../cards/hui-logbook-card";
-import { targetStruct } from "../../../../data/script";
-import { getSensorNumericDeviceClasses } from "../../../../data/sensor";
-import type { HaEntityPickerEntityFilterFunc } from "../../../../data/entity";
-import { resolveEntityIDs } from "../../../../data/selector";
 
 const cardConfigStruct = assign(
   baseLovelaceCardConfig,
@@ -132,7 +132,6 @@ export class HuiLogbookCardEditor
         .hass=${this.hass}
         .entityFilter=${this._filterFunc}
         .value=${this._targetPicker}
-        add-on-top
         @value-changed=${this._entitiesChanged}
       ></ha-target-picker>
     `;
@@ -189,6 +188,13 @@ export class HuiLogbookCardEditor
         );
     }
   };
+
+  static styles = css`
+    ha-target-picker {
+      display: block;
+      margin-top: 16px;
+    }
+  `;
 }
 
 declare global {
