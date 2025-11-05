@@ -8,7 +8,6 @@ import {
   query,
   state,
 } from "lit/decorators";
-import { ifDefined } from "lit/directives/if-defined";
 import { fireEvent } from "../common/dom/fire_event";
 import { haStyleScrollbar } from "../resources/styles";
 import type { HomeAssistant } from "../types";
@@ -152,11 +151,6 @@ export class HaWaDialog extends LitElement {
         .open=${this._open}
         .lightDismiss=${!this.preventScrimClose}
         without-header
-        aria-labelledby=${ifDefined(
-          this.ariaLabelledBy ||
-            (this.headerTitle !== undefined ? "ha-wa-dialog-title" : undefined)
-        )}
-        aria-describedby=${ifDefined(this.ariaDescribedBy)}
         @wa-show=${this._handleShow}
         @wa-after-show=${this._handleAfterShow}
         @wa-after-hide=${this._handleAfterHide}
