@@ -383,9 +383,16 @@ class DialogAddAutomationElement
 
         generatedCollections.push({
           titleKey: collection.titleKey,
-          groups: groups.sort((a, b) =>
-            stringCompare(a.name, b.name, this.hass.locale.language)
-          ),
+          groups: groups.sort((a, b) => {
+            // make sure device is always on top
+            if (a.key === "device" || a.key === "device_id") {
+              return -1;
+            }
+            if (b.key === "device" || b.key === "device_id") {
+              return 1;
+            }
+            return stringCompare(a.name, b.name, this.hass.locale.language);
+          }),
         });
       });
       return generatedCollections;
