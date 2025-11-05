@@ -250,13 +250,17 @@ export class DialogVoiceAssistantPipelineDetail extends LitElement {
   }
 
   private _getDefaultConversationLanguage() {
+    const selectedLanguage = this._data?.conversation_language;
     if (
       !this._supportedConversationLanguages ||
       this._supportedConversationLanguages === "*"
     ) {
-      return this._supportedLanguages?.[0] ?? null;
+      return selectedLanguage ?? this._supportedLanguages?.[0] ?? null;
     }
-    return this._supportedConversationLanguages[0];
+    return selectedLanguage &&
+      this._supportedConversationLanguages.includes(selectedLanguage)
+      ? selectedLanguage
+      : this._supportedConversationLanguages[0];
   }
 
   private async _updatePipeline() {
