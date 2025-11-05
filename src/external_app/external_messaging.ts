@@ -325,7 +325,7 @@ export interface ExternalConfig {
   canSetupImprov: boolean;
   downloadFileSupported: boolean;
   appVersion: string;
-  hasEntityAddTo: boolean; // Supports "Add to" from more-info dialog, with action coming from external app
+  hasEntityAddTo?: boolean; // Supports "Add to" from more-info dialog, with action coming from external app
 }
 
 export interface ExternalEntityAddToAction {

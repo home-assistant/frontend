@@ -113,7 +113,6 @@ export class HaMoreInfoAddTo extends LitElement {
   static styles = css`
     :host {
       display: block;
-      min-height: 200px; // TODO what should we use?
       padding: var(--ha-space-2) var(--ha-space-6) var(--ha-space-6)
         var(--ha-space-6);
     }
