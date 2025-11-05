@@ -42,6 +42,10 @@ export const getLanguageOptions = (
         primary,
         search_labels: [
           primary,
+          formatLanguageCode(
+            lang,
+            locale || ({ language: navigator.language } as FrontendLocaleData)
+          ),
           formatLanguageCode(lang, { language: "en" } as FrontendLocaleData),
         ],
       };
