@@ -1,6 +1,7 @@
+import { mdiMenuDown } from "@mdi/js";
 import type { PropertyValues } from "lit";
-import { css, html, LitElement } from "lit";
-import { customElement, property, state } from "lit/decorators";
+import { css, html, LitElement, nothing } from "lit";
+import { customElement, property, query, state } from "lit/decorators";
 import memoizeOne from "memoize-one";
 import { fireEvent } from "../common/dom/fire_event";
 import { formatLanguageCode } from "../common/language/format_language";
@@ -8,10 +9,10 @@ import { caseInsensitiveStringCompare } from "../common/string/compare";
 import type { FrontendLocaleData } from "../data/translation";
 import { translationMetadata } from "../resources/translations-metadata";
 import type { HomeAssistant, ValueChangedEvent } from "../types";
+import "./ha-button";
 import "./ha-generic-picker";
-import "./ha-list-item";
+import type { HaGenericPicker } from "./ha-generic-picker";
 import type { PickerComboBoxItem } from "./ha-picker-combo-box";
-import "./ha-select";
 
 export const getLanguageOptions = (
   languages: string[],
@@ -75,12 +76,17 @@ export class HaLanguagePicker extends LitElement {
   @property({ attribute: "native-name", type: Boolean })
   public nativeName = false;
 
+  @property({ type: Boolean, attribute: "button-style" })
+  public buttonStyle = false;
+
   @property({ attribute: "no-sort", type: Boolean }) public noSort = false;
 
   @property({ attribute: "inline-arrow", type: Boolean })
   public inlineArrow = false;
 
   @state() _defaultLanguages: string[] = [];
+
+  @query("ha-generic-picker", true) public genericPicker!: HaGenericPicker;
 
   protected firstUpdated(changedProps: PropertyValues) {
     super.firstUpdated(changedProps);
@@ -101,12 +107,13 @@ export class HaLanguagePicker extends LitElement {
       this.hass?.locale
     );
 
-  private _valueRenderer = (value) => {
-    const language = this._getItems().find(
-      (lang) => lang.id === value
-    )?.primary;
-    return html`<span slot="headline">${language ?? value}</span> `;
-  };
+  private _getLanguageName = (lang?: string) =>
+    this._getItems().find((language) => language.id === lang)?.primary;
+
+  private _valueRenderer = (value) =>
+    html`<span slot="headline"
+      >${this._getLanguageName(value) ?? value}</span
+    > `;
 
   protected render() {
     const value =
@@ -130,8 +137,26 @@ export class HaLanguagePicker extends LitElement {
         .getItems=${this._getItems}
         @value-changed=${this._changed}
         hide-clear-icon
-      ></ha-generic-picker>
+      >
+        ${this.buttonStyle
+          ? html`<ha-button
+              slot="field"
+              .disabled=${this.disabled}
+              @click=${this._openPicker}
+              appearance="plain"
+              variant="neutral"
+            >
+              ${this._getLanguageName(value)}
+              <ha-svg-icon slot="end" .path=${mdiMenuDown}></ha-svg-icon>
+            </ha-button>`
+          : nothing}
+      </ha-generic-picker>
     `;
+  }
+
+  private _openPicker(ev: Event) {
+    ev.stopPropagation();
+    this.genericPicker.open();
   }
 
   static styles = css`
