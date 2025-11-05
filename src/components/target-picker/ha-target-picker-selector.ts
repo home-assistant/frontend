@@ -705,7 +705,7 @@ export class HaTargetPickerSelector extends LitElement {
           ) as EntityComboBoxItem[];
         }
 
-        if (!filterType) {
+        if (!filterType && entities.length) {
           // show group title
           items.push(
             this.hass.localize("ui.components.target-picker.type.entities")
@@ -733,7 +733,7 @@ export class HaTargetPickerSelector extends LitElement {
           devices = this._filterGroup("device", devices);
         }
 
-        if (!filterType) {
+        if (!filterType && devices.length) {
           // show group title
           items.push(
             this.hass.localize("ui.components.target-picker.type.devices")
@@ -769,7 +769,7 @@ export class HaTargetPickerSelector extends LitElement {
           ) as FloorComboBoxItem[];
         }
 
-        if (!filterType) {
+        if (!filterType && areasAndFloors.length) {
           // show group title
           items.push(
             this.hass.localize("ui.components.target-picker.type.areas")
@@ -811,7 +811,7 @@ export class HaTargetPickerSelector extends LitElement {
           labels = this._filterGroup("label", labels);
         }
 
-        if (!filterType) {
+        if (!filterType && labels.length) {
           // show group title
           items.push(
             this.hass.localize("ui.components.target-picker.type.labels")
