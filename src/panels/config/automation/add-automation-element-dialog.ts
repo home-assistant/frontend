@@ -895,7 +895,9 @@ class DialogAddAutomationElement
 
     return html`
       <div class="items-title ${this._itemsScrolled ? "scrolled" : ""}">
-        ${title}
+        ${this._tab === "blocks" && !this._filter
+          ? this.hass.localize("ui.panel.config.automation.editor.blocks")
+          : title}
       </div>
       <ha-md-list
         dialogInitialFocus=${ifDefined(this._fullScreen ? "" : undefined)}
