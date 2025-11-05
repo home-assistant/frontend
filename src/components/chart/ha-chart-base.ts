@@ -89,14 +89,14 @@ export class HaChartBase extends LitElement {
 
   private _lastTapTime?: number;
 
-  private _shouldResizeChart = false;
+  private _shouldResizeChart: boolean | number = false; // number means animation duration
 
   // @ts-ignore
   private _resizeController = new ResizeController(this, {
     callback: () => {
       if (this.chart) {
         if (!this.chart.getZr().animation.isFinished()) {
-          this._shouldResizeChart = true;
+          this._shouldResizeChart = this._shouldResizeChart || true;
         } else {
           this.chart.resize();
         }
@@ -213,7 +213,7 @@ export class HaChartBase extends LitElement {
         )
       ) {
         // custom legend changes may require a resize to layout properly
-        this._shouldResizeChart = true;
+        this._shouldResizeChart = RESIZE_ANIMATION_DURATION;
       }
     } else if (this._isTouchDevice && changedProps.has("_isZoomed")) {
       chartOptions.dataZoom = this._getDataZoomConfig();
@@ -977,9 +977,10 @@ export class HaChartBase extends LitElement {
   private _handleChartRenderFinished = () => {
     if (this._shouldResizeChart) {
       this.chart?.resize({
-        animation: this._reducedMotion
-          ? undefined
-          : { duration: RESIZE_ANIMATION_DURATION },
+        animation:
+          this._reducedMotion || typeof this._shouldResizeChart !== "number"
+            ? undefined
+            : { duration: this._shouldResizeChart },
       });
       this._shouldResizeChart = false;
     }
