@@ -107,7 +107,7 @@ export class HaWaDialog extends LitElement {
 
   @query(".body") public bodyContainer!: HTMLDivElement;
 
-  @query("wa-dialog") private _waDialog?: any;
+  @query("wa-dialog") private _waDialog?: WaDialog;
 
   @state()
   private _bodyScrolled = false;
