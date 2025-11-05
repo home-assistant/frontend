@@ -347,7 +347,8 @@ export class HaTargetPicker extends SubscribeMixin(LitElement) {
     this._pickerFilter = filter;
   };
 
-  private _hidePicker() {
+  private _hidePicker(ev) {
+    ev.stopPropagation();
     this._open = false;
     this._pickerWrapperOpen = false;
 
