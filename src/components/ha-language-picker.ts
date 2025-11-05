@@ -40,14 +40,22 @@ export const getLanguageOptions = (
       return {
         id: lang,
         primary,
-        search_labels: [primary],
+        search_labels: [
+          primary,
+          formatLanguageCode(lang, { language: "en" } as FrontendLocaleData),
+        ],
       };
     });
   } else if (locale) {
     options = languages.map((lang) => ({
       id: lang,
       primary: formatLanguageCode(lang, locale),
-      search_labels: [formatLanguageCode(lang, locale)],
+      search_labels: [
+        formatLanguageCode(lang, locale),
+        ...(locale.language !== "en"
+          ? [formatLanguageCode(lang, { language: "en" } as FrontendLocaleData)]
+          : []),
+      ],
     }));
   }
 
