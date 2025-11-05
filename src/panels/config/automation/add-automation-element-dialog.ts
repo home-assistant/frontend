@@ -685,7 +685,7 @@ class DialogAddAutomationElement
         );
 
     const typeTitle = this.hass.localize(
-      `ui.panel.config.automation.editor.${automationElementType}s.header`
+      `ui.panel.config.automation.editor.${automationElementType}s.add`
     );
 
     const tabButtons = [
