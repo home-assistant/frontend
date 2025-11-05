@@ -124,7 +124,7 @@ export class AssistPipelineDetailConversation extends LitElement {
         if (this._supportedLanguages === "*") {
           value.conversation_language = "*";
         } else {
-          value.conversation_language = this._supportedLanguages?.[0] || null;
+          value.conversation_language = this._supportedLanguages?.[0] ?? null;
         }
         fireEvent(this, "value-changed", { value });
       }, 0);
