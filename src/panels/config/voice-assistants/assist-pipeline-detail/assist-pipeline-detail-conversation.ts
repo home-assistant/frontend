@@ -109,15 +109,26 @@ export class AssistPipelineDetailConversation extends LitElement {
   }
 
   private _supportedLanguagesChanged(ev) {
-    if (ev.detail.value === "*") {
+    this._supportedLanguages = ev.detail.value;
+
+    if (
+      this._supportedLanguages === "*" ||
+      !this._supportedLanguages?.includes(
+        this.data?.conversation_language || ""
+      ) ||
+      !this.data?.conversation_language
+    ) {
       // wait for update of conversation_engine
       setTimeout(() => {
         const value = { ...this.data };
-        value.conversation_language = "*";
+        if (this._supportedLanguages === "*") {
+          value.conversation_language = "*";
+        } else {
+          value.conversation_language = this._supportedLanguages?.[0] || null;
+        }
         fireEvent(this, "value-changed", { value });
       }, 0);
     }
-    this._supportedLanguages = ev.detail.value;
   }
 
   static styles = css`

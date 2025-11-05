@@ -43,8 +43,6 @@ export class DialogVoiceAssistantPipelineDetail extends LitElement {
 
   @state() private _supportedLanguages?: string[];
 
-  @state() private _supportedConversationLanguages?: string[] | "*";
-
   public showDialog(params: VoiceAssistantPipelineDetailsDialogParams): void {
     this._params = params;
     this._error = undefined;
@@ -175,8 +173,6 @@ export class DialogVoiceAssistantPipelineDetail extends LitElement {
             .data=${this._data}
             keys="conversation_engine,conversation_language,prefer_local_intents"
             @value-changed=${this._valueChanged}
-            @supported-languages-changed=${this
-              ._supportedConversationLanguagesChanged}
           ></assist-pipeline-detail-conversation>
           ${!this._cloudActive &&
           (this._data.tts_engine === "cloud" ||
@@ -249,20 +245,6 @@ export class DialogVoiceAssistantPipelineDetail extends LitElement {
     this._data = { ...this._data, ...value };
   }
 
-  private _getDefaultConversationLanguage() {
-    const selectedLanguage = this._data?.conversation_language;
-    if (
-      !this._supportedConversationLanguages ||
-      this._supportedConversationLanguages === "*"
-    ) {
-      return selectedLanguage ?? this._supportedLanguages?.[0] ?? null;
-    }
-    return selectedLanguage &&
-      this._supportedConversationLanguages.includes(selectedLanguage)
-      ? selectedLanguage
-      : this._supportedConversationLanguages[0];
-  }
-
   private async _updatePipeline() {
     this._submitting = true;
     try {
@@ -271,7 +253,7 @@ export class DialogVoiceAssistantPipelineDetail extends LitElement {
         name: data.name!,
         language: data.language!,
         conversation_engine: data.conversation_engine!,
-        conversation_language: this._getDefaultConversationLanguage(),
+        conversation_language: data.conversation_language || null,
         prefer_local_intents: data.prefer_local_intents ?? true,
         stt_engine: data.stt_engine ?? null,
         stt_language: data.stt_language ?? null,
@@ -294,23 +276,6 @@ export class DialogVoiceAssistantPipelineDetail extends LitElement {
       this._error = err?.message || "Unknown error";
     } finally {
       this._submitting = false;
-    }
-  }
-
-  private _supportedConversationLanguagesChanged(
-    ev: CustomEvent<{ value: "*" | string[] | undefined }>
-  ) {
-    this._supportedConversationLanguages = ev.detail.value;
-    if (
-      this._data?.conversation_language &&
-      !this._supportedConversationLanguages?.includes(
-        this._data.conversation_language!
-      )
-    ) {
-      this._data = {
-        ...this._data,
-        conversation_language: this._getDefaultConversationLanguage(),
-      };
     }
   }
 
