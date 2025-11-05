@@ -192,7 +192,7 @@ export class HuiLogbookCardEditor
   static styles = css`
     ha-target-picker {
       display: block;
-      margin-top: 16px;
+      margin-top: var(--ha-space-4);
     }
   `;
 }
