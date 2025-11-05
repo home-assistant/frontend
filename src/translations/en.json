@@ -12,7 +12,7 @@
     "media_browser": "Media",
     "profile": "Profile",
     "light": "Lights",
-    "safety": "Safety",
+    "security": "Security",
     "climate": "Climate"
   },
   "state": {
@@ -695,6 +695,11 @@
         "remove_device_id": "Remove device",
         "remove_entity_id": "Remove entity",
         "remove_label_id": "Remove label",
+        "floor_not_found": "Floor not found",
+        "area_not_found": "Area not found",
+        "device_not_found": "Device not found",
+        "entity_not_found": "Entity not found",
+        "label_not_found": "Label not found",
         "devices_count": "{count} {count, plural,\n one {device}\n other {devices}\n}",
         "entities_count": "{count} {count, plural,\n one {entity}\n other {entities}\n}",
         "target_details": "Target details",
@@ -758,6 +763,7 @@
       },
       "language-picker": {
         "language": "Language",
+        "no_match": "No matching languages found",
         "no_languages": "No languages available"
       },
       "tts-picker": {
@@ -1705,6 +1711,14 @@
         "update": "[%key:ui::panel::config::devices::update%]",
         "unknown_error": "[%key:ui::panel::config::devices::unknown_error%]"
       },
+      "label-detail": {
+        "new_label": "New label",
+        "name": "Name",
+        "icon": "Icon",
+        "color": "Color",
+        "description": "Description",
+        "required_error_msg": "[%key:ui::panel::config::zone::detail::required_error_msg%]"
+      },
       "voice-settings": {
         "expose_header": "Expose",
         "aliases_header": "Aliases",
@@ -2405,18 +2419,7 @@
           "introduction": "Labels can help you organize your areas, devices, and entities. They can be used to filter in the UI, or use them as a target in automations.",
           "introduction2": "Go to the area, device, or entity you want to add a label to, and press the edit button to assign labels to them.",
           "confirm_remove_title": "Remove label?",
-          "confirm_remove": "Are you sure you want to remove label {label}? It will be removed from all areas, devices, and entities.",
-          "detail": {
-            "new_label": "New label",
-            "name": "Name",
-            "icon": "Icon",
-            "color": "Color",
-            "description": "Description",
-            "delete": "Delete",
-            "update": "Update",
-            "create": "Create",
-            "required_error_msg": "[%key:ui::panel::config::zone::detail::required_error_msg%]"
-          }
+          "confirm_remove": "Are you sure you want to remove label {label}? It will be removed from all areas, devices, and entities."
         },
         "areas": {
           "caption": "Areas",
@@ -3628,6 +3631,36 @@
             "older_run": "Older run",
             "newer_run": "Newer run",
             "start_debug_run": "Start debug run",
+            "error": {
+              "code": "Error code",
+              "fetch_events": "Failed to fetch events",
+              "fetch_runs": "Failed to fetch pipeline runs",
+              "playing_audio": "Error playing audio",
+              "showing_run": "Error showing run",
+              "title": "Error"
+            },
+            "no_events": "There were no events in this run.",
+            "play_audio": "Play audio",
+            "raw": "Raw",
+            "run": "Run",
+            "stages": {
+              "engine": "Engine",
+              "input": "Input",
+              "language": "Language",
+              "model": "Model",
+              "natural_language_processing": "Natural language processing",
+              "output": "Output",
+              "pipeline": "Pipeline",
+              "prefer_local": "Prefer handling locally",
+              "processed_locally": "Processed locally",
+              "response_type": "Response type",
+              "speech_to_text": "Speech-to-text",
+              "text_to_speech": "Text-to-speech",
+              "timestamp": "Timestamp",
+              "voice": "Voice",
+              "wake_word": "Wake word"
+            },
+            "stop_audio": "Stop audio",
             "pipeline": {
               "header": "Assist pipeline",
               "run_text_pipeline": "Run text pipeline",
@@ -3944,7 +3977,6 @@
               "add": "Add trigger",
               "empty_search": "No triggers found for {term}",
               "id": "Trigger ID",
-              "id_helper": "Helps identify each run based on which trigger fired.",
               "optional": "Optional",
               "edit_id": "Edit ID",
               "duplicate": "[%key:ui::common::duplicate%]",
@@ -6942,11 +6974,28 @@
             "areas": "Areas",
             "other_areas": "Other areas",
             "unamed_device": "Unnamed device",
-            "others": "Others"
+            "others": "Others",
+            "automations": "Automations"
           },
           "common_controls": {
             "not_loaded": "Usage Prediction integration is not loaded.",
             "no_data": "This place will soon fill up with the entities you use most often, based on your activity."
+          },
+          "light": {
+            "lights": "Lights",
+            "other_lights": "Other lights"
+          },
+          "security": {
+            "devices": "Devices",
+            "other_devices": "Other devices"
+          },
+          "climate": {
+            "devices": "Devices",
+            "other_devices": "Other devices"
+          },
+          "home_media_players": {
+            "media_players": "Media players",
+            "other_media_players": "Other media players"
           }
         },
         "cards": {
@@ -7074,10 +7123,10 @@
             "energy_devices_graph": {
               "energy_usage": "Energy usage",
               "previous_energy_usage": "Previous energy usage",
-              "total_energy_usage": "Total energy usage",
+              "total_energy_usage": "Total",
               "change_chart_type": "Change chart type",
-              "untracked": "untracked",
-              "includes_untracked": "Includes {num} kWh of untracked energy"
+              "untracked_consumption": "Untracked consumption",
+              "untracked": "untracked"
             },
             "energy_devices_detail_graph": {
               "untracked_consumption": "Untracked consumption",
@@ -7087,6 +7136,11 @@
               "card_indicates_energy_used": "This card indicates how much of the electricity consumed by your home was generated using non-fossil fuels like solar, wind, and nuclear. The higher, the better!",
               "low_carbon_energy_consumed": "Low-carbon electricity consumed",
               "low_carbon_energy_not_calculated": "Consumed low-carbon electricity couldn't be calculated"
+            },
+            "energy_compare": {
+              "info": "You are comparing the period {start} with the period {end}",
+              "compare_previous_year": "Compare previous year",
+              "compare_previous_period": "Compare previous period"
             }
           },
           "heading": {
@@ -7650,7 +7704,8 @@
             },
             "logbook": {
               "name": "Activity",
-              "description": "The Activity card shows a list of events for entities."
+              "description": "The Activity card shows a list of events for entities.",
+              "state_filter": "State filter"
             },
             "history-graph": {
               "name": "History graph",
@@ -8152,6 +8207,10 @@
               },
               "media-player-playback": {
                 "label": "Media player playback controls"
+              },
+              "media-player-volume-buttons": {
+                "label": "Media player volume buttons",
+                "step": "Step size"
               },
               "media-player-volume-slider": {
                 "label": "Media player volume slider"
@@ -9424,11 +9483,6 @@
       "energy": {
         "download_data": "[%key:ui::panel::history::download_data%]",
         "configure": "[%key:ui::dialogs::quick-bar::commands::navigation::energy%]",
-        "compare": {
-          "info": "You are comparing the period {start} with the period {end}",
-          "compare_previous_year": "Compare previous year",
-          "compare_previous_period": "Compare previous period"
-        },
         "setup": {
           "next": "Next",
           "back": "Back",

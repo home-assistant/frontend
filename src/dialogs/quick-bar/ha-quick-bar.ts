@@ -1011,8 +1011,8 @@ export class QuickBar extends LitElement {
             --mdc-dialog-max-width: 800px;
             --mdc-dialog-min-width: 500px;
             --dialog-surface-position: fixed;
-            --dialog-surface-top: 40px;
-            --mdc-dialog-max-height: calc(100% - 72px);
+            --dialog-surface-top: var(--ha-space-10);
+            --mdc-dialog-max-height: calc(100% - var(--ha-space-18));
           }
         }
 
@@ -1055,8 +1055,8 @@ export class QuickBar extends LitElement {
         }
 
         span.command-text {
-          margin-left: 8px;
-          margin-inline-start: 8px;
+          margin-left: var(--ha-space-2);
+          margin-inline-start: var(--ha-space-2);
           margin-inline-end: initial;
           direction: var(--direction);
         }
@@ -1069,8 +1069,8 @@ export class QuickBar extends LitElement {
         ha-md-list-item.two-line {
           --md-list-item-one-line-container-height: 64px;
           --md-list-item-two-line-container-height: 64px;
-          --md-list-item-top-space: 8px;
-          --md-list-item-bottom-space: 8px;
+          --md-list-item-top-space: var(--ha-space-2);
+          --md-list-item-bottom-space: var(--ha-space-2);
         }
 
         ha-md-list-item.three-line {
@@ -1078,8 +1078,8 @@ export class QuickBar extends LitElement {
           --md-list-item-one-line-container-height: 72px;
           --md-list-item-two-line-container-height: 72px;
           --md-list-item-three-line-container-height: 72px;
-          --md-list-item-top-space: 8px;
-          --md-list-item-bottom-space: 8px;
+          --md-list-item-top-space: var(--ha-space-2);
+          --md-list-item-bottom-space: var(--ha-space-2);
         }
 
         ha-md-list-item .code {
@@ -1104,11 +1104,11 @@ export class QuickBar extends LitElement {
         }
 
         ha-tip {
-          padding: 20px;
+          padding: var(--ha-space-5);
         }
 
         .nothing-found {
-          padding: 16px 0px;
+          padding: var(--ha-space-4) var(--ha-space-0);
           text-align: center;
         }
 

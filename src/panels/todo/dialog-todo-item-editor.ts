@@ -255,6 +255,10 @@ class DialogTodoItemEditor extends LitElement {
 
   // Parse a date in the browser timezone
   private _parseDate(dateStr: string): Date {
+    // If it's a date-only string (no 'T'), parse as midnight in browser time to avoid offset issues
+    if (!dateStr.includes("T")) {
+      return new Date(dateStr + "T00:00:00");
+    }
     const tzDate = new TZDate(dateStr, this._timeZone!);
     return new Date(tzDate.getTime());
   }

@@ -313,9 +313,14 @@ class HaPanelHistory extends LitElement {
       return;
     }
 
+    const statsStartDate = new Date(this._startDate);
+    // History uses the end datapoint of the statistic, so if we want the
+    // graph to start at 7AM, need to fetch the statistic from 6AM.
+    statsStartDate.setHours(statsStartDate.getHours() - 1);
+
     const statistics = await fetchStatistics(
       this.hass!,
-      this._startDate,
+      statsStartDate,
       this._endDate,
       statisticIds,
       "hour",
