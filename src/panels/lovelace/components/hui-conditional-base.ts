@@ -1,11 +1,9 @@
 import type { PropertyValues } from "lit";
 import { ReactiveElement } from "lit";
 import { customElement, property, state } from "lit/decorators";
-import { deepEqual } from "../../../common/util/deep-equal";
 import type { HomeAssistant } from "../../../types";
 import {
   ConditionalListenerMixin,
-  extractMediaQueries,
   setupMediaQueryListeners,
 } from "../../../mixins/conditional-listener-mixin";
 import type { HuiCard } from "../cards/hui-card";
@@ -34,8 +32,6 @@ export class HuiConditionalBase extends ConditionalListenerMixin(
   @state() protected _config?: ConditionalCardConfig | ConditionalRowConfig;
 
   protected _element?: HuiCard | LovelaceRow;
-
-  private _mediaQueries: string[] = [];
 
   protected createRenderRoot() {
     return this;
@@ -80,12 +76,6 @@ export class HuiConditionalBase extends ConditionalListenerMixin(
     const supportedConditions = this._config.conditions.filter(
       (c) => "condition" in c
     ) as Condition[];
-    const mediaQueries = extractMediaQueries(supportedConditions);
-
-    if (deepEqual(mediaQueries, this._mediaQueries)) return;
-
-    this.clearConditionalListeners();
-    this._mediaQueries = mediaQueries;
 
     setupMediaQueryListeners(
       supportedConditions,
