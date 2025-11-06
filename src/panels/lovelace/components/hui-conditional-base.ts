@@ -37,13 +37,6 @@ export class HuiConditionalBase extends ConditionalListenerMixin(
 
   private _mediaQueries: string[] = [];
 
-  protected conditionalListenerProps = [
-    "_config",
-    "_element",
-    "hass",
-    "preview",
-  ];
-
   protected createRenderRoot() {
     return this;
   }

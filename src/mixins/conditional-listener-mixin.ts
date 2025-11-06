@@ -1,4 +1,4 @@
-import type { PropertyValues, ReactiveElement } from "lit";
+import type { ReactiveElement } from "lit";
 import { listenMediaQuery } from "../common/dom/media_query";
 import type { HomeAssistant } from "../types";
 import type { Condition } from "../panels/lovelace/common/validate-condition";
@@ -53,6 +53,22 @@ export function setupMediaQueryListeners(
   });
 }
 
+/**
+ * Mixin to handle conditional listeners for visibility control
+ *
+ * Provides lifecycle management for listeners (media queries, time-based, state changes, etc.)
+ * that control conditional visibility of components.
+ *
+ * Usage:
+ * 1. Extend your component with ConditionalListenerMixin(ReactiveElement)
+ * 2. Override setupConditionalListeners() to setup your listeners
+ * 3. Use addConditionalListener() to register unsubscribe functions
+ * 4. Call clearConditionalListeners() and setupConditionalListeners() when config changes
+ *
+ * The mixin automatically:
+ * - Sets up listeners when component connects to DOM
+ * - Cleans up listeners when component disconnects from DOM
+ */
 export const ConditionalListenerMixin = <
   T extends Constructor<ReactiveElement>,
 >(
@@ -69,14 +85,6 @@ export const ConditionalListenerMixin = <
     public disconnectedCallback() {
       super.disconnectedCallback();
       this.clearConditionalListeners();
-    }
-
-    protected updated(changedProps: PropertyValues) {
-      super.updated(changedProps);
-      if (changedProps.has("config")) {
-        this.clearConditionalListeners();
-        this.setupConditionalListeners();
-      }
     }
 
     protected clearConditionalListeners(): void {
