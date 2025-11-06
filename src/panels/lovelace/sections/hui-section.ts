@@ -157,18 +157,12 @@ export class HuiSection extends ConditionalListenerMixin(ReactiveElement) {
       return;
     }
 
-    const conditions = this._config.visibility;
-    const hasOnlyMediaQuery =
-      conditions.length === 1 &&
-      conditions[0].condition === "screen" &&
-      !!conditions[0].media_query;
-
     setupMediaQueryListeners(
       this._config.visibility,
       this.hass,
       (unsub) => this.addConditionalListener(unsub),
       (conditionsMet) => {
-        this._updateElement(hasOnlyMediaQuery && conditionsMet);
+        this._updateElement(conditionsMet);
       }
     );
   }
