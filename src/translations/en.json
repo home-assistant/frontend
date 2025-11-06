@@ -12,7 +12,7 @@
     "media_browser": "Media",
     "profile": "Profile",
     "light": "Lights",
-    "safety": "Safety",
+    "security": "Security",
     "climate": "Climate"
   },
   "state": {
@@ -695,6 +695,11 @@
         "remove_device_id": "Remove device",
         "remove_entity_id": "Remove entity",
         "remove_label_id": "Remove label",
+        "floor_not_found": "Floor not found",
+        "area_not_found": "Area not found",
+        "device_not_found": "Device not found",
+        "entity_not_found": "Entity not found",
+        "label_not_found": "Label not found",
         "devices_count": "{count} {count, plural,\n one {device}\n other {devices}\n}",
         "entities_count": "{count} {count, plural,\n one {entity}\n other {entities}\n}",
         "target_details": "Target details",
@@ -3071,6 +3076,7 @@
             "remove_co2_signal": "Remove Electricity Maps integration",
             "add_co2_signal": "Add Electricity Maps integration",
             "flow_dialog": {
+              "cost_entity_helper": "Any sensor with a unit of `{currency}/(valid energy unit)` (e.g. `{currency}/Wh` or `{currency}/kWh`) may be used and will be automatically converted.",
               "from": {
                 "header": "Configure grid consumption",
                 "paragraph": "Grid consumption is the energy that flows from the energy grid to your home.",
@@ -6980,6 +6986,22 @@
           "common_controls": {
             "not_loaded": "Usage Prediction integration is not loaded.",
             "no_data": "This place will soon fill up with the entities you use most often, based on your activity."
+          },
+          "light": {
+            "lights": "Lights",
+            "other_lights": "Other lights"
+          },
+          "security": {
+            "devices": "Devices",
+            "other_devices": "Other devices"
+          },
+          "climate": {
+            "devices": "Devices",
+            "other_devices": "Other devices"
+          },
+          "home_media_players": {
+            "media_players": "Media players",
+            "other_media_players": "Other media players"
           }
         },
         "cards": {
@@ -7767,7 +7789,9 @@
             },
             "iframe": {
               "name": "Webpage",
-              "description": "The Webpage card allows you to embed your favorite webpage right into Home Assistant."
+              "description": "The Webpage card allows you to embed your favorite webpage right into Home Assistant.",
+              "hide_background": "Hide background",
+              "hide_background_helper": "Useful for pages which allow a transparent background."
             },
             "light": {
               "name": "Light",

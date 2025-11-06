@@ -33,7 +33,7 @@ import type { HomeSummaryCard } from "./types";
 const COLORS: Record<HomeSummary, string> = {
   light: "amber",
   climate: "deep-orange",
-  safety: "blue-grey",
+  security: "blue-grey",
   media_players: "blue",
 };
 
@@ -87,11 +87,6 @@ export class HuiHomeSummaryCard extends LitElement implements LovelaceCard {
     const allEntities = Object.keys(this.hass!.states);
 
     const areas = Object.values(this.hass.areas);
-    const areasFilter = generateEntityFilter(this.hass, {
-      area: areas.map((area) => area.area_id),
-    });
-
-    const entitiesInsideArea = allEntities.filter(areasFilter);
 
     switch (this._config.summary) {
       case "light": {
@@ -100,7 +95,7 @@ export class HuiHomeSummaryCard extends LitElement implements LovelaceCard {
           generateEntityFilter(this.hass!, filter)
         );
 
-        const lightEntities = findEntities(entitiesInsideArea, lightsFilters);
+        const lightEntities = findEntities(allEntities, lightsFilters);
 
         const onLights = lightEntities.filter((entityId) => {
           const s = this.hass!.states[entityId]?.state;
@@ -147,20 +142,20 @@ export class HuiHomeSummaryCard extends LitElement implements LovelaceCard {
           ? `${formattedMinTemp}°`
           : `${formattedMinTemp} - ${formattedMaxTemp}°`;
       }
-      case "safety": {
+      case "security": {
         // Alarm and lock status
-        const safetyFilters = HOME_SUMMARIES_FILTERS.safety.map((filter) =>
+        const securityFilters = HOME_SUMMARIES_FILTERS.security.map((filter) =>
           generateEntityFilter(this.hass!, filter)
         );
 
-        const safetyEntities = findEntities(entitiesInsideArea, safetyFilters);
+        const securityEntities = findEntities(allEntities, securityFilters);
 
-        const locks = safetyEntities.filter((entityId) => {
+        const locks = securityEntities.filter((entityId) => {
           const domain = computeDomain(entityId);
           return domain === "lock";
         });
 
-        const alarms = safetyEntities.filter((entityId) => {
+        const alarms = securityEntities.filter((entityId) => {
           const domain = computeDomain(entityId);
           return domain === "alarm_control_panel";
         });
@@ -204,7 +199,7 @@ export class HuiHomeSummaryCard extends LitElement implements LovelaceCard {
         );
 
         const mediaPlayerEntities = findEntities(
-          entitiesInsideArea,
+          allEntities,
           mediaPlayerFilters
         );
 

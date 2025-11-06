@@ -313,18 +313,18 @@ type EMIncomingMessage =
 type EMIncomingMessageHandler = (msg: EMIncomingMessageCommands) => boolean;
 
 export interface ExternalConfig {
-  hasSettingsScreen: boolean;
-  hasSidebar: boolean;
-  canWriteTag: boolean;
-  hasExoPlayer: boolean;
-  canCommissionMatter: boolean;
-  canImportThreadCredentials: boolean;
-  canTransferThreadCredentialsToKeychain: boolean;
-  hasAssist: boolean;
-  hasBarCodeScanner: number;
-  canSetupImprov: boolean;
-  downloadFileSupported: boolean;
-  appVersion: string;
+  hasSettingsScreen?: boolean;
+  hasSidebar?: boolean;
+  canWriteTag?: boolean;
+  hasExoPlayer?: boolean;
+  canCommissionMatter?: boolean;
+  canImportThreadCredentials?: boolean;
+  canTransferThreadCredentialsToKeychain?: boolean;
+  hasAssist?: boolean;
+  hasBarCodeScanner?: number;
+  canSetupImprov?: boolean;
+  downloadFileSupported?: boolean;
+  appVersion?: string;
   hasEntityAddTo?: boolean; // Supports "Add to" from more-info dialog, with action coming from external app
 }
 

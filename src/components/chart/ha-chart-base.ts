@@ -652,6 +652,13 @@ export class HaChartBase extends LitElement {
           textBorderWidth: 2,
         },
       },
+      pie: {
+        label: {
+          color: style.getPropertyValue("--primary-text-color"),
+          textBorderColor: style.getPropertyValue("--primary-background-color"),
+          textBorderWidth: 2,
+        },
+      },
       sankey: {
         label: {
           color: style.getPropertyValue("--primary-text-color"),
