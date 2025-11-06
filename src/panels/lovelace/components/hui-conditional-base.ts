@@ -1,16 +1,18 @@
 import type { PropertyValues } from "lit";
 import { ReactiveElement } from "lit";
 import { customElement, property, state } from "lit/decorators";
-import type { MediaQueriesListener } from "../../../common/dom/media_query";
 import { deepEqual } from "../../../common/util/deep-equal";
 import type { HomeAssistant } from "../../../types";
+import {
+  ConditionalListenerMixin,
+  extractMediaQueries,
+  setupMediaQueryListeners,
+} from "../../../mixins/conditional-listener-mixin";
 import type { HuiCard } from "../cards/hui-card";
 import type { ConditionalCardConfig } from "../cards/types";
 import type { Condition } from "../common/validate-condition";
 import {
-  attachConditionMediaQueriesListeners,
   checkConditionsMet,
-  extractMediaQueries,
   validateConditionalConfig,
 } from "../common/validate-condition";
 import type { ConditionalRowConfig, LovelaceRow } from "../entity-rows/types";
@@ -22,7 +24,9 @@ declare global {
 }
 
 @customElement("hui-conditional-base")
-export class HuiConditionalBase extends ReactiveElement {
+export class HuiConditionalBase extends ConditionalListenerMixin(
+  ReactiveElement
+) {
   @property({ attribute: false }) public hass?: HomeAssistant;
 
   @property({ type: Boolean }) public preview = false;
@@ -31,9 +35,14 @@ export class HuiConditionalBase extends ReactiveElement {
 
   protected _element?: HuiCard | LovelaceRow;
 
-  private _listeners: MediaQueriesListener[] = [];
-
   private _mediaQueries: string[] = [];
+
+  protected conditionalListenerProps = [
+    "_config",
+    "_element",
+    "hass",
+    "preview",
+  ];
 
   protected createRenderRoot() {
     return this;
@@ -63,21 +72,14 @@ export class HuiConditionalBase extends ReactiveElement {
 
   public disconnectedCallback() {
     super.disconnectedCallback();
-    this._clearMediaQueries();
   }
 
   public connectedCallback() {
     super.connectedCallback();
-    this._listenMediaQueries();
     this._updateVisibility();
   }
 
-  private _clearMediaQueries() {
-    this._listeners.forEach((unsub) => unsub());
-    this._listeners = [];
-  }
-
-  private _listenMediaQueries() {
+  protected setupConditionalListeners() {
     if (!this._config || !this.hass) {
       return;
     }
@@ -89,7 +91,8 @@ export class HuiConditionalBase extends ReactiveElement {
 
     if (deepEqual(mediaQueries, this._mediaQueries)) return;
 
-    this._clearMediaQueries();
+    this.clearConditionalListeners();
+    this._mediaQueries = mediaQueries;
 
     const conditions = this._config.conditions;
     const hasOnlyMediaQuery =
@@ -98,14 +101,16 @@ export class HuiConditionalBase extends ReactiveElement {
       conditions[0].condition === "screen" &&
       !!conditions[0].media_query;
 
-    this._listeners = attachConditionMediaQueriesListeners(
+    setupMediaQueryListeners(
       supportedConditions,
-      (matches) => {
+      this.hass,
+      (unsub) => this.addConditionalListener(unsub),
+      (conditionsMet) => {
         if (hasOnlyMediaQuery) {
-          this.setVisibility(matches);
-          return;
+          this.setVisibility(conditionsMet);
+        } else {
+          this._updateVisibility();
         }
-        this._updateVisibility();
       }
     );
   }
@@ -119,7 +124,6 @@ export class HuiConditionalBase extends ReactiveElement {
       changed.has("hass") ||
       changed.has("preview")
     ) {
-      this._listenMediaQueries();
       this._updateVisibility();
     }
   }

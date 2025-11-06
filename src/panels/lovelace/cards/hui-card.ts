@@ -2,16 +2,16 @@ import type { PropertyValues } from "lit";
 import { ReactiveElement } from "lit";
 import { customElement, property } from "lit/decorators";
 import { fireEvent } from "../../../common/dom/fire_event";
-import type { MediaQueriesListener } from "../../../common/dom/media_query";
 import "../../../components/ha-svg-icon";
 import type { LovelaceCardConfig } from "../../../data/lovelace/config/card";
 import type { HomeAssistant } from "../../../types";
+import {
+  ConditionalListenerMixin,
+  setupMediaQueryListeners,
+} from "../../../mixins/conditional-listener-mixin";
 import { migrateLayoutToGridOptions } from "../common/compute-card-grid-size";
 import { computeCardSize } from "../common/compute-card-size";
-import {
-  attachConditionMediaQueriesListeners,
-  checkConditionsMet,
-} from "../common/validate-condition";
+import { checkConditionsMet } from "../common/validate-condition";
 import { tryCreateCardElement } from "../create-element/create-card-element";
 import { createErrorCardElement } from "../create-element/create-element-base";
 import type { LovelaceCard, LovelaceGridOptions } from "../types";
@@ -24,7 +24,7 @@ declare global {
 }
 
 @customElement("hui-card")
-export class HuiCard extends ReactiveElement {
+export class HuiCard extends ConditionalListenerMixin(ReactiveElement) {
   @property({ type: Boolean }) public preview = false;
 
   @property({ attribute: false }) public config?: LovelaceCardConfig;
@@ -44,20 +44,16 @@ export class HuiCard extends ReactiveElement {
 
   private _element?: LovelaceCard;
 
-  private _listeners: MediaQueriesListener[] = [];
-
   protected createRenderRoot() {
     return this;
   }
 
   public disconnectedCallback() {
     super.disconnectedCallback();
-    this._clearMediaQueries();
   }
 
   public connectedCallback() {
     super.connectedCallback();
-    this._listenMediaQueries();
     this._updateVisibility();
   }
 
@@ -251,27 +247,16 @@ export class HuiCard extends ReactiveElement {
     }
   }
 
-  private _clearMediaQueries() {
-    this._listeners.forEach((unsub) => unsub());
-    this._listeners = [];
-  }
-
-  private _listenMediaQueries() {
-    this._clearMediaQueries();
-    if (!this.config?.visibility) {
+  protected setupConditionalListeners() {
+    if (!this.config?.visibility || !this.hass) {
       return;
     }
-    const conditions = this.config.visibility;
-    const hasOnlyMediaQuery =
-      conditions.length === 1 &&
-      conditions[0].condition === "screen" &&
-      !!conditions[0].media_query;
 
-    this._listeners = attachConditionMediaQueriesListeners(
+    setupMediaQueryListeners(
       this.config.visibility,
-      (matches) => {
-        this._updateVisibility(hasOnlyMediaQuery && matches);
-      }
+      this.hass,
+      (unsub) => this.addConditionalListener(unsub),
+      () => this._updateVisibility()
     );
   }
 

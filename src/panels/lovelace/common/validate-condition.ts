@@ -1,6 +1,4 @@
 import { ensureArray } from "../../../common/array/ensure-array";
-import type { MediaQueriesListener } from "../../../common/dom/media_query";
-import { listenMediaQuery } from "../../../common/dom/media_query";
 
 import { isValidEntityId } from "../../../common/entity/valid_entity_id";
 import { UNKNOWN } from "../../../data/entity";
@@ -361,32 +359,4 @@ export function addEntityToCondition(
     };
   }
   return condition;
-}
-
-export function extractMediaQueries(conditions: Condition[]): string[] {
-  return conditions.reduce<string[]>((array, c) => {
-    if ("conditions" in c && c.conditions) {
-      array.push(...extractMediaQueries(c.conditions));
-    }
-    if (c.condition === "screen" && c.media_query) {
-      array.push(c.media_query);
-    }
-    return array;
-  }, []);
-}
-
-export function attachConditionMediaQueriesListeners(
-  conditions: Condition[],
-  onChange: (visibility: boolean) => void
-): MediaQueriesListener[] {
-  const mediaQueries = extractMediaQueries(conditions);
-
-  const listeners = mediaQueries.map((query) => {
-    const listener = listenMediaQuery(query, (matches) => {
-      onChange(matches);
-    });
-    return listener;
-  });
-
-  return listeners;
 }
