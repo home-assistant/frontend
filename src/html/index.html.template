@@ -20,9 +20,18 @@
     <meta name="color-scheme" content="dark light" />
     <%= renderTemplate("_style_base.html.template") %>
     <style>
+      @keyframes fade-out {
+        from {
+          opacity: 1;
+        }
+        to {
+          opacity: 0;
+        }
+      }
       ::view-transition-group(launch-screen) {
         animation-duration: var(--ha-animation-base-duration, 350ms);
         animation-timing-function: ease-out;
+        animation-delay: 500ms;
       }
       ::view-transition-old(launch-screen) {
         animation: fade-out var(--ha-animation-base-duration, 350ms) ease-out;
@@ -39,12 +48,28 @@
         }
       }
       #ha-launch-screen {
+        position: fixed;
+        top: 0;
+        left: 0;
+        right: 0;
+        bottom: 0;
+        width: 100%;
         height: 100%;
         display: flex;
         flex-direction: column;
         justify-content: center;
         align-items: center;
         view-transition-name: launch-screen;
+        background-color: var(--primary-background-color, #fafafa);
+        z-index: 100;
+      }
+      @media (prefers-color-scheme: dark) {
+        #ha-launch-screen {
+          background-color: var(--primary-background-color, #111111);
+        }
+      }
+      #ha-launch-screen.removing {
+        opacity: 0;
       }
       #ha-launch-screen svg {
         width: 112px;

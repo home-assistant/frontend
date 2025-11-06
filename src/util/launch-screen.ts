@@ -1,6 +1,13 @@
 import type { TemplateResult } from "lit";
 import { render } from "lit";
 
+const removeElement = (launchScreenElement: HTMLElement) => {
+  launchScreenElement.classList.add("removing");
+  setTimeout(() => {
+    launchScreenElement.parentElement?.removeChild(launchScreenElement);
+  }, 500);
+};
+
 export const removeLaunchScreen = () => {
   const launchScreenElement = document.getElementById("ha-launch-screen");
   if (!launchScreenElement?.parentElement) {
@@ -9,11 +16,11 @@ export const removeLaunchScreen = () => {
 
   if (document.startViewTransition) {
     document.startViewTransition(() => {
-      launchScreenElement.parentElement?.removeChild(launchScreenElement);
+      removeElement(launchScreenElement);
     });
   } else {
     // Fallback: Direct removal without transition
-    launchScreenElement.parentElement.removeChild(launchScreenElement);
+    removeElement(launchScreenElement);
   }
 };
 
