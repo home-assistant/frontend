@@ -20,7 +20,8 @@ import "../../../../components/ha-md-divider";
 import "../../../../components/ha-md-menu-item";
 import { ACTION_BUILDING_BLOCKS } from "../../../../data/action";
 import type { ActionSidebarConfig } from "../../../../data/automation";
-import type { RepeatAction } from "../../../../data/script";
+import { domainToName } from "../../../../data/integration";
+import type { RepeatAction, ServiceAction } from "../../../../data/script";
 import type { HomeAssistant } from "../../../../types";
 import { isMac } from "../../../../util/is_mac";
 import type HaAutomationConditionEditor from "../action/ha-automation-action-editor";
@@ -83,10 +84,21 @@ export default class HaAutomationSidebarAction extends LitElement {
       "ui.panel.config.automation.editor.actions.action"
     );
 
-    const title =
+    let title =
       this.hass.localize(
         `ui.panel.config.automation.editor.actions.type.${type}.label` as LocalizeKeys
       ) || type;
+
+    if (type === "service" && (actionConfig as ServiceAction).action) {
+      const [domain, service] = (actionConfig as ServiceAction).action!.split(
+        "."
+      );
+      title = `${domainToName(this.hass.localize, domain)}: ${
+        this.hass.localize(`component.${domain}.services.${service}.name`) ||
+        this.hass.services[domain][service]?.name ||
+        title
+      }`;
+    }
 
     const description = isBuildingBlock
       ? this.hass.localize(
