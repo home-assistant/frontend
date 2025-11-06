@@ -8,7 +8,6 @@ import {
 } from "lit/decorators";
 import { ifDefined } from "lit/directives/if-defined";
 import { mdiClose } from "@mdi/js";
-import type WaDialog from "@home-assistant/webawesome/dist/components/dialog/dialog";
 import "@home-assistant/webawesome/dist/components/dialog/dialog";
 import { fireEvent } from "../common/dom/fire_event";
 import { haStyleScrollbar } from "../resources/styles";
@@ -108,8 +107,6 @@ export class HaWaDialog extends LitElement {
 
   @query(".body") public bodyContainer!: HTMLDivElement;
 
-  @query("wa-dialog") private _waDialog?: WaDialog;
-
   @state()
   private _bodyScrolled = false;
 
@@ -120,30 +117,6 @@ export class HaWaDialog extends LitElement {
 
     if (changedProperties.has("open")) {
       this._open = this.open;
-    }
-  }
-
-  private _setAriaAttributes() {
-    const internalDialog = this._waDialog?.shadowRoot?.querySelector(
-      ".dialog"
-    ) as HTMLDialogElement | null;
-
-    if (internalDialog) {
-      const labelledBy =
-        this.ariaLabelledBy ||
-        (this.headerTitle !== undefined ? "ha-wa-dialog-title" : undefined);
-
-      if (labelledBy) {
-        internalDialog.setAttribute("aria-labelledby", labelledBy);
-      } else {
-        internalDialog.removeAttribute("aria-labelledby");
-      }
-
-      if (this.ariaDescribedBy) {
-        internalDialog.setAttribute("aria-describedby", this.ariaDescribedBy);
-      } else {
-        internalDialog.removeAttribute("aria-describedby");
-      }
     }
   }
 
