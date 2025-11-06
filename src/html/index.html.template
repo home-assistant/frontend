@@ -27,9 +27,6 @@
       ::view-transition-old(launch-screen) {
         animation: fade-out var(--ha-animation-base-duration, 350ms) ease-out;
       }
-      ::view-transition-new(launch-screen) {
-        animation: none;
-      }
       html {
         background-color: var(--primary-background-color, #fafafa);
         color: var(--primary-text-color, #212121);

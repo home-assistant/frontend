@@ -7,7 +7,6 @@ export const removeLaunchScreen = () => {
     return;
   }
 
-  // Use View Transition API if available and user doesn't prefer reduced motion
   if (document.startViewTransition) {
     document.startViewTransition(() => {
       launchScreenElement.parentElement?.removeChild(launchScreenElement);
