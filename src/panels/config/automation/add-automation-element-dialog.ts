@@ -1054,6 +1054,7 @@ class DialogAddAutomationElement
   private _onSearchFocus(ev) {
     this._removeKeyboardShortcuts = tinykeys(ev.target, {
       ArrowDown: this._focusSearchList,
+      Enter: this._pickSingleItem,
     });
   }
 
@@ -1068,6 +1069,39 @@ class DialogAddAutomationElement
 
     ev.preventDefault();
     this._itemsListFirstElement.focus();
+  };
+
+  private _pickSingleItem = (ev) => {
+    if (!this._filter) {
+      return;
+    }
+
+    ev.preventDefault();
+    const automationElementType = this._params!.type;
+
+    const items = [
+      ...this._getFilteredItems(
+        automationElementType,
+        this._filter,
+        this.hass.localize,
+        this.hass.services,
+        this._manifests
+      ),
+      ...(automationElementType !== "trigger"
+        ? this._getFilteredBuildingBlocks(
+            automationElementType,
+            this._filter,
+            this.hass.localize
+          )
+        : []),
+    ];
+
+    if (items.length !== 1) {
+      return;
+    }
+
+    this._params!.add(items[0].key);
+    this.closeDialog();
   };
 
   static get styles(): CSSResultGroup {
