@@ -31,7 +31,6 @@
       ::view-transition-group(launch-screen) {
         animation-duration: var(--ha-animation-base-duration, 350ms);
         animation-timing-function: ease-out;
-        animation-delay: 500ms;
       }
       ::view-transition-old(launch-screen) {
         animation: fade-out var(--ha-animation-base-duration, 350ms) ease-out;
@@ -69,7 +68,7 @@
         }
       }
       #ha-launch-screen.removing {
-        opacity: 0;
+        opacity: 0.01;
       }
       #ha-launch-screen svg {
         width: 112px;
