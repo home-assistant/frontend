@@ -87,6 +87,8 @@ export class HaAreaPicker extends LitElement {
 
   @property({ type: Boolean }) public required = false;
 
+  @property({ attribute: "add-button-label" }) public addButtonLabel?: string;
+
   @query("ha-generic-picker") private _picker?: HaGenericPicker;
 
   public async open() {
@@ -375,6 +377,7 @@ export class HaAreaPicker extends LitElement {
         .getItems=${this._getItems}
         .getAdditionalItems=${this._getAdditionalItems}
         .valueRenderer=${valueRenderer}
+        .addButtonLabel=${this.addButtonLabel}
         @value-changed=${this._valueChanged}
       >
       </ha-generic-picker>
