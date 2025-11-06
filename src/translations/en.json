@@ -1434,6 +1434,7 @@
         "back_to_info": "Back to info",
         "info": "Information",
         "related": "Related",
+        "add_entity_to": "Add to",
         "history": "History",
         "aggregate": "5-minute aggregated",
         "logbook": "Activity",
@@ -1449,6 +1450,10 @@
         "script": {
           "last_action": "Last action",
           "last_triggered": "Last triggered"
+        },
+        "add_to": {
+          "no_actions": "No actions available",
+          "action_failed": "Failed to perform the action {error}"
         },
         "sun": {
           "azimuth": "Azimuth",
