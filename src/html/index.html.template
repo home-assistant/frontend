@@ -20,6 +20,16 @@
     <meta name="color-scheme" content="dark light" />
     <%= renderTemplate("_style_base.html.template") %>
     <style>
+      ::view-transition-group(launch-screen) {
+        animation-duration: var(--ha-animation-base-duration, 350ms);
+        animation-timing-function: ease-out;
+      }
+      ::view-transition-old(launch-screen) {
+        animation: fade-out var(--ha-animation-base-duration, 350ms) ease-out;
+      }
+      ::view-transition-new(launch-screen) {
+        animation: none;
+      }
       html {
         background-color: var(--primary-background-color, #fafafa);
         color: var(--primary-text-color, #212121);
@@ -37,6 +47,7 @@
         flex-direction: column;
         justify-content: center;
         align-items: center;
+        view-transition-name: launch-screen;
       }
       #ha-launch-screen svg {
         width: 112px;
