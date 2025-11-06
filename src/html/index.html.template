@@ -68,7 +68,7 @@
         }
       }
       #ha-launch-screen.removing {
-        opacity: 0.01;
+        opacity: 0;
       }
       #ha-launch-screen svg {
         width: 112px;
