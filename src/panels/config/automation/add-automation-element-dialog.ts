@@ -1071,7 +1071,7 @@ class DialogAddAutomationElement
     this._itemsListFirstElement.focus();
   };
 
-  private _pickSingleItem = (ev) => {
+  private _pickSingleItem = (ev: KeyboardEvent) => {
     if (!this._filter) {
       return;
     }
