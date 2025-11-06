@@ -87,23 +87,12 @@ export class HuiConditionalBase extends ConditionalListenerMixin(
     this.clearConditionalListeners();
     this._mediaQueries = mediaQueries;
 
-    const conditions = this._config.conditions;
-    const hasOnlyMediaQuery =
-      conditions.length === 1 &&
-      "condition" in conditions[0] &&
-      conditions[0].condition === "screen" &&
-      !!conditions[0].media_query;
-
     setupMediaQueryListeners(
       supportedConditions,
       this.hass,
       (unsub) => this.addConditionalListener(unsub),
       (conditionsMet) => {
-        if (hasOnlyMediaQuery) {
-          this.setVisibility(conditionsMet);
-        } else {
-          this._updateVisibility();
-        }
+        this.setVisibility(conditionsMet);
       }
     );
   }
