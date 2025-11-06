@@ -3208,6 +3208,22 @@
               "included_in_device_helper": "If this device is already counted by another device (such as a smart switch measured by a smart breaker), selecting the upstream device prevents duplicate energy tracking.",
               "no_upstream_devices": "No eligible upstream devices"
             }
+          },
+          "device_consumption_water": {
+            "title": "Individual water devices",
+            "sub": "Tracking the water usage of individual devices allows Home Assistant to break down your water usage by device.",
+            "learn_more": "More information on how to get started.",
+            "devices": "Devices",
+            "add_device": "Add device",
+            "dialog": {
+              "header": "Add a water device",
+              "display_name": "Display name",
+              "device_consumption_water": "Device water consumption",
+              "selected_stat_intro": "Select the water sensor that measures the device's water usage in either of {unit}.",
+              "included_in_device": "Upstream device",
+              "included_in_device_helper": "If this device is already counted by another device (such as a water meter measured by the main water supply), selecting the upstream device prevents duplicate water tracking.",
+              "no_upstream_devices": "No eligible upstream devices"
+            }
           }
         },
         "helpers": {
