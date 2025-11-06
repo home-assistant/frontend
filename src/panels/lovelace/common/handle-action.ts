@@ -67,7 +67,7 @@ export const handleAction = async (
         await hass.loadBackendTranslation("title");
         const localize = await hass.loadBackendTranslation("services");
         serviceName = `${domainToName(localize, domain)}: ${
-          localize(`component.${domain}.services.${serviceName}.name`) ||
+          localize(`component.${domain}.services.${service}.name`) ||
           serviceDomains[domain][service].name ||
           service
         }`;
