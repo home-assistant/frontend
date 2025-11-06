@@ -138,11 +138,19 @@ export class HuiBadge extends ConditionalListenerMixin(ReactiveElement) {
       return;
     }
 
+    const conditions = this.config.visibility;
+    const hasOnlyMediaQuery =
+      conditions.length === 1 &&
+      conditions[0].condition === "screen" &&
+      !!conditions[0].media_query;
+
     setupMediaQueryListeners(
       this.config.visibility,
       this.hass,
       (unsub) => this.addConditionalListener(unsub),
-      () => this._updateVisibility()
+      (conditionsMet) => {
+        this._updateVisibility(hasOnlyMediaQuery && conditionsMet);
+      }
     );
   }
 
