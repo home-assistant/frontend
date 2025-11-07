@@ -164,7 +164,7 @@ class DialogRepairsIssue extends LitElement {
         padding-top: 0;
       }
       ha-alert {
-        margin-bottom: 16px;
+        margin-bottom: var(--ha-space-4);
         display: block;
       }
       .dismissed {
