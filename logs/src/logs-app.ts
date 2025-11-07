@@ -1,14 +1,17 @@
 import { LitElement, css, html } from "lit";
 import { customElement } from "lit/decorators";
+import "../../../src/components/ha-card";
 
 @customElement("logs-app")
 class LogsApp extends LitElement {
   render() {
     return html`
-      <div class="container">
-        <h1>Logs Application</h1>
-        <p>This is a minimal logs frontend application.</p>
-      </div>
+      <main class="container">
+        <ha-card>
+          <h1>Home Assistant Logs</h1>
+          <p>View and search logs to diagnose issues</p>
+        </ha-card>
+      </main>
     `;
   }
 
@@ -20,21 +23,21 @@ class LogsApp extends LitElement {
     }
 
     .container {
-      padding: var(--ha-space-3xl);
+      padding: var(--ha-space-12);
       max-width: 1200px;
       margin: 0 auto;
     }
 
     h1 {
       font-size: var(--ha-font-size-4xl);
-      font-weight: var(--ha-font-weight-regular);
-      line-height: var(--ha-line-height-tight);
-      margin: 0 0 var(--ha-space-md) 0;
+      font-weight: var(--ha-font-weight-normal);
+      line-height: var(--ha-line-height-condensed);
+      margin: 0 0 var(--ha-space-4) 0;
       color: var(--ha-color-text-primary);
     }
 
     p {
-      font-size: var(--ha-font-size-md);
+      font-size: var(--ha-font-size-m);
       line-height: var(--ha-line-height-normal);
       color: var(--ha-color-text-secondary);
     }
