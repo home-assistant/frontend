@@ -172,7 +172,6 @@ export class HaWaDialog extends LitElement {
 
     await this.updateComplete;
 
-
     (this.querySelector("[autofocus]") as HTMLElement | null)?.focus();
   };
 
