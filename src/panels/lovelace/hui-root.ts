@@ -34,7 +34,6 @@ import {
   extractSearchParamsObject,
   removeSearchParam,
 } from "../../common/url/search-params";
-import { debounce } from "../../common/util/debounce";
 import { afterNextRender } from "../../common/util/render-status";
 import "../../components/ha-button";
 import "../../components/ha-button-menu";
@@ -88,8 +87,8 @@ import { showEditViewDialog } from "./editor/view-editor/show-edit-view-dialog";
 import { getLovelaceStrategy } from "./strategies/get-strategy";
 import { isLegacyStrategyConfig } from "./strategies/legacy-strategy";
 import type { Lovelace } from "./types";
-import "./views/hui-view";
-import type { HUIView } from "./views/hui-view";
+import "./editor/unused-entities/hui-unused-entities";
+import "./hui-lovelace";
 import "./views/hui-view-background";
 import "./views/hui-view-container";
 
@@ -130,28 +129,9 @@ class HUIRoot extends LitElement {
 
   @state() private _curView?: number | "hass-unused-entities";
 
-  private _viewCache?: Record<string, HUIView>;
-
-  private _viewScrollPositions: Record<string, number> = {};
-
-  private _restoreScroll = false;
-
-  private _debouncedConfigChanged: () => void;
-
   private _conversation = memoizeOne((_components) =>
     isComponentLoaded(this.hass, "conversation")
   );
-
-  constructor() {
-    super();
-    // The view can trigger a re-render when it knows that certain
-    // web components have been loaded.
-    this._debouncedConfigChanged = debounce(
-      () => this._selectView(this._curView, true),
-      100,
-      false
-    );
-  }
 
   private _renderActionItems(): TemplateResult {
     const result: TemplateResult[] = [];
@@ -411,8 +391,6 @@ class HUIRoot extends LitElement {
       ? getPanelTitle(this.hass, this.panel)
       : undefined;
 
-    const background = curViewConfig?.background || this.config.background;
-
     const _isTabHiddenForUser = (view: LovelaceViewConfig) =>
       view.visible !== undefined &&
       ((Array.isArray(view.visible) &&
@@ -560,27 +538,28 @@ class HUIRoot extends LitElement {
               `
             : nothing}
         </div>
-        <hui-view-container
-          class=${this._editMode ? "has-tab-bar" : ""}
-          .hass=${this.hass}
-          .theme=${curViewConfig?.theme}
-          id="view"
-          @ll-rebuild=${this._debouncedConfigChanged}
-        >
-          <hui-view-background .hass=${this.hass} .background=${background}>
-          </hui-view-background>
-        </hui-view-container>
+        ${this._curView === "hass-unused-entities"
+          ? html`
+              <hui-view-container .hass=${this.hass}>
+                <hui-unused-entities
+                  .hass=${this.hass}
+                  .lovelace=${this.lovelace}
+                  .narrow=${this.narrow}
+                ></hui-unused-entities>
+              </hui-view-container>
+            `
+          : html`
+              <hui-lovelace
+                class=${this._editMode ? "has-tab-bar" : ""}
+                .hass=${this.hass}
+                .narrow=${this.narrow}
+                .lovelace=${this.lovelace}
+                .curView=${typeof this._curView === "number" ? this._curView : 0}
+              ></hui-lovelace>
+            `}
       </div>
     `;
   }
-
-  private _handleWindowScroll = () => {
-    this.toggleAttribute("scrolled", window.scrollY !== 0);
-  };
-
-  private _handlePopState = () => {
-    this._restoreScroll = true;
-  };
 
   private _isVisible = (view: LovelaceViewConfig) =>
     Boolean(
@@ -620,59 +599,26 @@ class HUIRoot extends LitElement {
         this._showMoreInfoDialog(entityId);
       });
     }
-
-    window.addEventListener("scroll", this._handleWindowScroll, {
-      passive: true,
-    });
-  }
-
-  public connectedCallback(): void {
-    super.connectedCallback();
-    window.addEventListener("scroll", this._handleWindowScroll, {
-      passive: true,
-    });
-    window.addEventListener("popstate", this._handlePopState);
-    // Disable history scroll restoration because it is managed manually here
-    window.history.scrollRestoration = "manual";
-  }
-
-  public disconnectedCallback(): void {
-    super.disconnectedCallback();
-    window.removeEventListener("scroll", this._handleWindowScroll);
-    window.removeEventListener("popstate", this._handlePopState);
-    this.toggleAttribute("scrolled", window.scrollY !== 0);
-    // Re-enable history scroll restoration when leaving the page
-    window.history.scrollRestoration = "auto";
   }
 
   protected updated(changedProperties: PropertyValues): void {
     super.updated(changedProperties);
 
-    const view = this._viewRoot;
-    const huiView = view.lastChild as HUIView;
-
-    if (changedProperties.has("hass") && huiView) {
-      huiView.hass = this.hass;
+    if (!this.route || !this.lovelace) {
+      return;
     }
 
-    if (changedProperties.has("narrow") && huiView) {
-      huiView.narrow = this.narrow;
-    }
-
-    let newSelectView;
-    let force = false;
-
-    let viewPath: string | undefined = this.route!.path.split("/")[1];
+    let viewPath: string | undefined = this.route.path.split("/")[1];
     viewPath = viewPath ? decodeURI(viewPath) : undefined;
 
     if (changedProperties.has("route")) {
       const views = this.config.views;
 
       if (!viewPath && views.length) {
-        newSelectView = views.findIndex(this._isVisible);
+        const newSelectView = views.findIndex(this._isVisible);
         this._navigateToView(views[newSelectView].path || newSelectView, true);
       } else if (viewPath === "hass-unused-entities") {
-        newSelectView = "hass-unused-entities";
+        this._curView = "hass-unused-entities";
       } else if (viewPath) {
         const selectedView = viewPath;
         const selectedViewInt = Number(selectedView);
@@ -683,7 +629,7 @@ class HUIRoot extends LitElement {
             break;
           }
         }
-        newSelectView = index;
+        this._curView = index;
       }
     }
 
@@ -692,49 +638,21 @@ class HUIRoot extends LitElement {
         | Lovelace
         | undefined;
 
-      if (!oldLovelace || oldLovelace.config !== this.lovelace!.config) {
-        // On config change, recreate the current view from scratch.
-        force = true;
-      }
-
-      if (!oldLovelace || oldLovelace.editMode !== this.lovelace!.editMode) {
+      if (!oldLovelace || oldLovelace.editMode !== this.lovelace.editMode) {
         const views = this.config && this.config.views;
 
         // Leave unused entities when leaving edit mode
         if (
-          this.lovelace!.mode === "storage" &&
+          this.lovelace.mode === "storage" &&
           viewPath === "hass-unused-entities"
         ) {
-          newSelectView = views.findIndex(this._isVisible);
+          const newSelectView = views.findIndex(this._isVisible);
           this._navigateToView(
             views[newSelectView].path || newSelectView,
             true
           );
         }
       }
-
-      if (!force && huiView) {
-        huiView.lovelace = this.lovelace!;
-      }
-    }
-
-    if (newSelectView !== undefined || force) {
-      if (force && newSelectView === undefined) {
-        newSelectView = this._curView;
-      }
-      // Will allow for ripples to start rendering
-      afterNextRender(() => {
-        if (changedProperties.has("route")) {
-          const position =
-            (this._restoreScroll && this._viewScrollPositions[newSelectView]) ||
-            0;
-          this._restoreScroll = false;
-          requestAnimationFrame(() =>
-            scrollTo({ behavior: "auto", top: position })
-          );
-        }
-        this._selectView(newSelectView, force);
-      });
     }
   }
 
@@ -748,10 +666,6 @@ class HUIRoot extends LitElement {
 
   private get _editMode() {
     return this.lovelace!.editMode;
-  }
-
-  private get _viewRoot(): HTMLDivElement {
-    return this.shadowRoot!.getElementById("view") as HTMLDivElement;
   }
 
   private _handleRefresh(ev: CustomEvent<RequestSelectedDetail>): void {
@@ -1141,67 +1055,6 @@ class HUIRoot extends LitElement {
     }
   }
 
-  private _selectView(viewIndex: HUIRoot["_curView"], force: boolean): void {
-    if (!force && this._curView === viewIndex) {
-      return;
-    }
-
-    // Save scroll position of current view
-    if (this._curView != null) {
-      this._viewScrollPositions[this._curView] = window.scrollY;
-    }
-
-    viewIndex = viewIndex === undefined ? 0 : viewIndex;
-
-    this._curView = viewIndex;
-
-    if (force) {
-      this._viewCache = {};
-      this._viewScrollPositions = {};
-    }
-
-    // Recreate a new element to clear the applied themes.
-    const root = this._viewRoot;
-
-    if (root.lastChild) {
-      root.removeChild(root.lastChild);
-    }
-
-    if (viewIndex === "hass-unused-entities") {
-      const unusedEntities = document.createElement("hui-unused-entities");
-      // Wait for promise to resolve so that the element has been upgraded.
-      import("./editor/unused-entities/hui-unused-entities").then(() => {
-        unusedEntities.hass = this.hass!;
-        unusedEntities.lovelace = this.lovelace!;
-        unusedEntities.narrow = this.narrow;
-      });
-      root.appendChild(unusedEntities);
-      return;
-    }
-
-    let view;
-    const viewConfig = this.config.views[viewIndex];
-
-    if (!viewConfig) {
-      this.lovelace!.setEditMode(true);
-      return;
-    }
-
-    if (!force && this._viewCache![viewIndex]) {
-      view = this._viewCache![viewIndex];
-    } else {
-      view = document.createElement("hui-view");
-      view.index = viewIndex;
-      this._viewCache![viewIndex] = view;
-    }
-
-    view.lovelace = this.lovelace;
-    view.hass = this.hass;
-    view.narrow = this.narrow;
-
-    root.appendChild(view);
-  }
-
   private _openShortcutDialog(ev: Event) {
     ev.preventDefault();
     showShortcutsDialog(this);
@@ -1395,6 +1248,7 @@ class HUIRoot extends LitElement {
         a {
           color: var(--text-primary-color, white);
         }
+        hui-lovelace,
         hui-view-container {
           position: relative;
           display: flex;
@@ -1405,21 +1259,17 @@ class HUIRoot extends LitElement {
           padding-inline-end: var(--safe-area-inset-right);
           padding-bottom: var(--safe-area-inset-bottom);
         }
+        .narrow hui-lovelace,
         .narrow hui-view-container {
           padding-left: var(--safe-area-inset-left);
           padding-inline-start: var(--safe-area-inset-left);
         }
-        hui-view-container > * {
-          flex: 1 1 100%;
-          max-width: 100%;
-        }
         /**
-         * In edit mode we have the tab bar on a new line *
+         * In edit mode we have the tab bar on a new line
          */
-        hui-view-container.has-tab-bar {
+        hui-lovelace.has-tab-bar {
           padding-top: calc(
-            var(--header-height, 56px) +
-              calc(var(--tab-bar-height, 56px) - 2px) +
+            var(--header-height, 56px) + var(--tab-bar-height, 56px) - 2px +
               var(--safe-area-inset-top, 0px)
           );
         }
