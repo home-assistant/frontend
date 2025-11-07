@@ -6,4 +6,84 @@ set -e
 
 cd "$(dirname "$0")/.."
 
+# Parse command line arguments
+SUPERVISOR_ENDPOINT=""
+SUPERVISOR_API_TOKEN=""
+
+while getopts "c:t:h" opt; do
+  case $opt in
+    c)
+      SUPERVISOR_ENDPOINT="$OPTARG"
+      ;;
+    t)
+      SUPERVISOR_API_TOKEN="$OPTARG"
+      ;;
+    h)
+      echo "Usage: $0 -c SUPERVISOR_ENDPOINT -t SUPERVISOR_API_TOKEN"
+      echo ""
+      echo "Options:"
+      echo "  -c  SUPERVISOR_ENDPOINT (e.g., http://192.168.1.2) [required]"
+      echo "  -t  SUPERVISOR_API_TOKEN (from remote_api add-on) [required]"
+      echo "  -h  Show this help message"
+      echo ""
+      echo "Example:"
+      echo "  $0 -c http://192.168.1.2 -t your_token_here"
+      exit 0
+      ;;
+    \?)
+      echo "Invalid option: -$OPTARG" >&2
+      echo "Use -h for help"
+      exit 1
+      ;;
+  esac
+done
+
+# Validate that both -c and -t are provided
+if [ -z "$SUPERVISOR_ENDPOINT" ] || [ -z "$SUPERVISOR_API_TOKEN" ]; then
+  echo "Error: Both -c and -t are required" >&2
+  echo "Use -h for help"
+  exit 1
+fi
+
+# Cleanup function
+cleanup() {
+  echo ""
+  echo "Shutting down..."
+  echo "Stopping HA CLI container..."
+  docker stop ha-cli-dev 2>/dev/null || true
+  exit 0
+}
+
+# Set up trap to cleanup on exit
+trap cleanup INT TERM EXIT
+
+# Run HA CLI container
+echo "Starting HA CLI container..."
+
+# Build the container if needed
+if ! docker images | grep -q "ha-cli:local"; then
+  echo "Building HA CLI container..."
+  (cd logs && docker compose build)
+fi
+
+# Clean up any existing container
+docker stop ha-cli-dev 2>/dev/null || true
+
+# Run the container in background (not detached, so it shares stdout)
+docker run \
+  --name ha-cli-dev \
+  --rm \
+  -e SUPERVISOR_ENDPOINT="$SUPERVISOR_ENDPOINT" \
+  -e SUPERVISOR_API_TOKEN="$SUPERVISOR_API_TOKEN" \
+  ha-cli:local \
+  sh -c 'echo "HA CLI ready. Use: docker exec -it ha-cli-dev ha <command>"; tail -f /dev/null' &
+
+# Store the docker process ID
+DOCKER_PID=$!
+
+# Wait a moment for container to start
+sleep 2
+echo ""
+
+# Run gulp (this will block until Ctrl+C)
 ./node_modules/.bin/gulp develop-logs

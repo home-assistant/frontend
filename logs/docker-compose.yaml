@@ -1,0 +1,12 @@
+---
+services:
+  ha-cli:
+    build:
+      context: .
+      args:
+        BUILD_FROM: alpine:3.22
+        BUILD_ARCH: amd64
+        CLI_VERSION: 4.42.0
+    image: ha-cli:local
+    stdin_open: true
+    tty: true

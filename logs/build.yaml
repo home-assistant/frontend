@@ -1,0 +1,19 @@
+---
+image: ghcr.io/home-assistant/{arch}-hassio-cli
+build_from:
+  aarch64: ghcr.io/home-assistant/aarch64-base:3.22
+  armhf: ghcr.io/home-assistant/armhf-base:3.22
+  armv7: ghcr.io/home-assistant/armv7-base:3.22
+  amd64: ghcr.io/home-assistant/amd64-base:3.22
+  i386: ghcr.io/home-assistant/i386-base:3.22
+args:
+  CLI_VERSION: 4.42.0
+cosign:
+  enabled: true
+  repository_name: home-assistant/cli
+  repository_owner: home-assistant
+labels:
+  org.opencontainers.image.title: Home Assistant CLI
+  org.opencontainers.image.description: Home Assistant CLI for container environments
+  org.opencontainers.image.source: https://github.com/home-assistant/cli
+  org.opencontainers.image.licenses: Apache-2.0
