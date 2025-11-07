@@ -16,6 +16,7 @@ import { deepEqual } from "../../common/util/deep-equal";
 export interface NetworkNode {
   id: string;
   name?: string;
+  context?: string;
   category?: number;
   value?: number;
   symbolSize?: number;
@@ -188,6 +189,25 @@ export class HaNetworkGraph extends SubscribeMixin(LitElement) {
       label: {
         show: showLabels,
         position: "right",
+        formatter: (params: any) => {
+          const node = params.data;
+          if (node.context) {
+            return `{primary|${node.name}}\n{secondary|${node.context}}`;
+          }
+          return node.name;
+        },
+        rich: {
+          primary: {
+            fontSize: 12,
+          },
+          secondary: {
+            fontSize: 12,
+            color: getComputedStyle(document.body).getPropertyValue(
+              "--secondary-text-color"
+            ),
+            lineHeight: 16,
+          },
+        },
       },
       emphasis: {
         focus: isMobile ? "none" : "adjacency",
@@ -225,6 +245,7 @@ export class HaNetworkGraph extends SubscribeMixin(LitElement) {
           ({
             id: node.id,
             name: node.name,
+            context: node.context,
             category: node.category,
             value: node.value,
             symbolSize: node.symbolSize || 30,

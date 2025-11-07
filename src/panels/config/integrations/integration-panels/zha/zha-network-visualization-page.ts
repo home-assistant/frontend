@@ -203,11 +203,13 @@ export class ZHANetworkVisualizationPage extends LitElement {
       } else {
         category = 2; // End Device
       }
+      const area = device.area_id ? this.hass.areas[device.area_id] : undefined;
 
       // Create node
       nodes.push({
         id: device.ieee,
         name: device.user_given_name || device.name || device.ieee,
+        context: area?.name,
         category,
         value: isCoordinator ? 3 : device.device_type === "Router" ? 2 : 1,
         symbolSize: isCoordinator
