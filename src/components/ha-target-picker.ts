@@ -40,14 +40,11 @@ import { HaFuse } from "../resources/fuse";
 import type { HomeAssistant } from "../types";
 import { brandsUrl } from "../util/brands-url";
 import type { HaDevicePickerDeviceFilterFunc } from "./device/ha-device-picker";
-import "./ha-bottom-sheet";
-import "./ha-button";
 import "./ha-generic-picker";
-import "./ha-input-helper-text";
 import type { PickerComboBoxItem } from "./ha-picker-combo-box";
 import "./ha-svg-icon";
+import "./ha-tree-indicator";
 import "./target-picker/ha-target-picker-item-group";
-import "./target-picker/ha-target-picker-selector";
 import "./target-picker/ha-target-picker-value-chip";
 
 const EMPTY_SEARCH = "___EMPTY_SEARCH___";
