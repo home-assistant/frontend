@@ -6562,7 +6562,8 @@
             "model": "Model",
             "status": "Status",
             "version": "Version",
-            "data_rate": "Data rate"
+            "data_rate": "Data rate",
+            "area": "Area"
           },
           "node_status": {
             "0": "Unknown",
