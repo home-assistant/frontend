@@ -1311,6 +1311,14 @@ class DialogAddAutomationElement
           font-family: var(--ha-font-family-code);
           color: var(--ha-color-text-secondary);
         }
+
+        /* Fix for touch devices: prevent hover states from persisting during scroll */
+        @media (hover: none) and (pointer: coarse) {
+          .groups ha-md-list-item,
+          .items ha-md-list ha-md-list-item {
+            --md-ripple-hover-opacity: 0;
+          }
+        }
       `,
     ];
   }
