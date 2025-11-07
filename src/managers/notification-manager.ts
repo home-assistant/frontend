@@ -11,6 +11,8 @@ import type { HomeAssistant } from "../types";
 export interface ShowToastParams {
   // Unique ID for the toast. If a new toast is shown with the same ID as the previous toast, it will be replaced to avoid flickering.
   id?: string;
+  // Priority level - critical toasts cannot be overridden by lower priority toasts
+  priority?: "critical" | "high" | "normal" | "low";
   message:
     | string
     | { translationKey: LocalizeKeys; args?: Record<string, string> };
@@ -34,6 +36,21 @@ class NotificationManager extends LitElement {
   @query("ha-toast") private _toast!: HaToast | undefined;
 
   public async showDialog(parameters: ShowToastParams) {
+    // Check priority - don't override critical/high priority toasts with lower priority ones
+    if (this._parameters) {
+      const currentPriority = this._parameters.priority || "normal";
+      const newPriority = parameters.priority || "normal";
+      const priorityOrder = { critical: 3, high: 2, normal: 1, low: 0 };
+
+      if (
+        priorityOrder[currentPriority] > priorityOrder[newPriority] &&
+        parameters.id !== this._parameters.id
+      ) {
+        // Don't show new toast if current has higher priority
+        return;
+      }
+    }
+
     if (!parameters.id || this._parameters?.id !== parameters.id) {
       this._toast?.close();
     }

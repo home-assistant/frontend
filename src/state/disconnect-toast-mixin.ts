@@ -33,6 +33,8 @@ export default <T extends Constructor<HassBaseEl>>(superClass: T) =>
       if (oldHass?.config?.state !== this.hass!.config.state) {
         if (this.hass!.config.state === STATE_NOT_RUNNING) {
           showToast(this, {
+            id: "ha_starting",
+            priority: "high",
             message:
               this.hass!.localize("ui.notification_toast.starting") ||
               "Home Assistant is starting. Not everything will be available until it is finished.",
@@ -56,6 +58,8 @@ export default <T extends Constructor<HassBaseEl>>(superClass: T) =>
         ) {
           this._unsubscribeBootstrapIntegrations();
           showToast(this, {
+            id: "ha_started",
+            priority: "normal",
             message: this.hass!.localize("ui.notification_toast.started"),
             duration: 5000,
           });
@@ -105,6 +109,8 @@ export default <T extends Constructor<HassBaseEl>>(superClass: T) =>
       this._disconnectedTimeout = window.setTimeout(() => {
         this._disconnectedTimeout = undefined;
         showToast(this, {
+          id: "connection_lost",
+          priority: "high",
           message: this.hass!.localize("ui.notification_toast.connection_lost"),
           duration: -1,
           dismissable: false,
@@ -119,6 +125,8 @@ export default <T extends Constructor<HassBaseEl>>(superClass: T) =>
 
       if (Object.keys(message).length === 0) {
         showToast(this, {
+          id: "wrapping_up_startup",
+          priority: "high",
           message:
             this.hass!.localize("ui.notification_toast.wrapping_up_startup") ||
             `Wrapping up startup. Not everything will be available until it is finished.`,
@@ -142,6 +150,7 @@ export default <T extends Constructor<HassBaseEl>>(superClass: T) =>
 
       showToast(this, {
         id: "integration_starting",
+        priority: "normal",
         message:
           this.hass!.localize("ui.notification_toast.integration_starting", {
             integration: domainToName(this.hass!.localize, integration),

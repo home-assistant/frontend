@@ -23,6 +23,26 @@ export const registerServiceWorker = async (
     return;
   }
 
+  // Periodically check for updates every 20 minutes
+  const CHECK_INTERVAL = 20 * 60 * 1000; // 20 minutes
+  setInterval(() => {
+    // Only check when page is visible to avoid unnecessary network requests
+    if (!document.hidden) {
+      reg.update().catch(() => {
+        // Silently ignore update check failures
+      });
+    }
+  }, CHECK_INTERVAL);
+
+  // Check for updates when tab becomes visible again
+  document.addEventListener("visibilitychange", () => {
+    if (!document.hidden) {
+      reg.update().catch(() => {
+        // Silently ignore update check failures
+      });
+    }
+  });
+
   reg.addEventListener("updatefound", () => {
     const installingWorker = reg.installing;
 
@@ -40,6 +60,8 @@ export const registerServiceWorker = async (
 
       // Notify users a new frontend is available.
       showToast(rootEl, {
+        id: "frontend_update_available",
+        priority: "critical",
         message: {
           translationKey: "ui.notification_toast.new_version_available",
         },
