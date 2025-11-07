@@ -7561,12 +7561,6 @@
                 "state_equal": "State is equal to",
                 "state_not_equal": "State is not equal to"
               },
-              "time": {
-                "label": "Time",
-                "after": "After",
-                "before": "Before",
-                "weekdays": "Weekdays"
-              },
               "location": {
                 "label": "Location",
                 "locations": "Locations",
