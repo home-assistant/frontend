@@ -8,5 +8,9 @@ services:
         BUILD_ARCH: amd64
         CLI_VERSION: 4.42.0
     image: ha-cli:local
+    ports:
+      - "5642:5642"
+    environment:
+      - PORT=5642
     stdin_open: true
     tty: true

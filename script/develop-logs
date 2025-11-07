@@ -73,16 +73,23 @@ docker stop ha-cli-dev 2>/dev/null || true
 docker run \
   --name ha-cli-dev \
   --rm \
+  -p 5642:5642 \
   -e SUPERVISOR_ENDPOINT="$SUPERVISOR_ENDPOINT" \
   -e SUPERVISOR_API_TOKEN="$SUPERVISOR_API_TOKEN" \
-  ha-cli:local \
-  sh -c 'echo "HA CLI ready. Use: docker exec -it ha-cli-dev ha <command>"; tail -f /dev/null' &
+  -e PORT=5642 \
+  ha-cli:local &
 
 # Store the docker process ID
 DOCKER_PID=$!
 
 # Wait a moment for container to start
 sleep 2
+echo ""
+echo "HA Logs Backend API: http://localhost:5642"
+echo "  GET  /api/logs - List endpoints"
+echo "  GET  /api/logs/core - Core logs"
+echo "  GET  /api/logs/supervisor - Supervisor logs"
+echo "  GET  /health - Health check"
 echo ""
 
 # Run gulp (this will block until Ctrl+C)

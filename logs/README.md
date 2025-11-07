@@ -11,17 +11,35 @@ The CLI container is integrated into the `script/develop-logs` workflow. Both fl
 script/develop-logs -c http://192.168.1.2 -t your_token_here
 ```
 
-When started with credentials, both the gulp dev server and CLI container run together. The container shares stdout with the script and automatically stops when you press Ctrl+C.
+When started with credentials, the container runs a Go backend that proxies HA CLI logs commands. The backend API is available at `http://localhost:5642`.
 
-While running, use the CLI with:
+**API Endpoints:**
+
+```bash
+# List all endpoints
+curl http://localhost:5642/api/logs
+
+# Get core logs
+curl http://localhost:5642/api/logs/core
+
+# Get supervisor logs
+curl http://localhost:5642/api/logs/supervisor
+
+# Get host logs
+curl http://localhost:5642/api/logs/host
+
+# Health check
+curl http://localhost:5642/health
+```
+
+You can also execute HA CLI commands directly:
 
 ```bash
 docker exec -it ha-cli-dev ha info
 docker exec -it ha-cli-dev ha supervisor info
-docker exec -it ha-cli-dev ha core logs
 ```
 
-Stop everything with Ctrl+C (both the dev server and CLI container will stop automatically).
+Stop everything with Ctrl+C (both the dev server and backend will stop automatically).
 
 ### Getting API Token
 
