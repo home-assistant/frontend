@@ -195,8 +195,12 @@ export class BluetoothNetworkVisualization extends LitElement {
       ];
       const links: NetworkLink[] = [];
       Object.values(scanners).forEach((scanner) => {
-        const scannerDevice = this._sourceDevices[scanner.source];
-        const { area } = getDeviceContext(scannerDevice, this.hass);
+        const scannerDevice = this._sourceDevices[scanner.source] as
+          | DeviceRegistryEntry
+          | undefined;
+        const area = scannerDevice
+          ? getDeviceContext(scannerDevice, this.hass).area
+          : undefined;
         nodes.push({
           id: scanner.source,
           name:
@@ -234,8 +238,12 @@ export class BluetoothNetworkVisualization extends LitElement {
           });
           return;
         }
-        const device = this._sourceDevices[node.address];
-        const { area } = getDeviceContext(device, this.hass);
+        const device = this._sourceDevices[node.address] as
+          | DeviceRegistryEntry
+          | undefined;
+        const area = device
+          ? getDeviceContext(device, this.hass).area
+          : undefined;
         nodes.push({
           id: node.address,
           name: this._getBluetoothDeviceName(node.address),
