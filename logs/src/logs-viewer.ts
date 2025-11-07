@@ -1,21 +1,27 @@
 import {
+  mdiArrowCollapseDown,
   mdiChevronDown,
+  mdiCircle,
   mdiDownload,
-  mdiPause,
-  mdiPlay,
   mdiRefresh,
   mdiWrap,
   mdiWrapDisabled,
 } from "@mdi/js";
 import type { CSSResultGroup } from "lit";
-import { LitElement, css, html } from "lit";
-import { customElement, property, state } from "lit/decorators";
+import { LitElement, css, html, nothing } from "lit";
+import { customElement, property, query, state } from "lit/decorators";
+import { classMap } from "lit/directives/class-map";
+// eslint-disable-next-line import/extensions
+import { IntersectionController } from "@lit-labs/observers/intersection-controller.js";
+import "../../src/components/ha-ansi-to-html";
+import type { HaAnsiToHtml } from "../../src/components/ha-ansi-to-html";
 import "../../src/components/ha-button";
 import "../../src/components/ha-button-menu";
 import "../../src/components/ha-card";
 import "../../src/components/ha-icon-button";
 import "../../src/components/ha-list-item";
 import "../../src/components/ha-spinner";
+import "../../src/components/ha-svg-icon";
 
 // Data types
 interface LogProvider {
@@ -31,15 +37,32 @@ export class LogsViewer extends LitElement {
 
   @state() private _logProviders: LogProvider[] = [];
 
-  @state() private _logText = "";
-
   @state() private _loading = false;
 
   @state() private _wrapLines = true;
 
-  @state() private _following = false;
-
   @state() private _error?: string;
+
+  @state() private _newLogsIndicator?: boolean;
+
+  @query(".error-log") private _logElement?: HTMLElement;
+
+  @query("#scroll-top-marker") private _scrollTopMarkerElement?: HTMLElement;
+
+  @query("#scroll-bottom-marker")
+  private _scrollBottomMarkerElement?: HTMLElement;
+
+  @query("ha-ansi-to-html") private _ansiToHtmlElement?: HaAnsiToHtml;
+
+  @state() private _scrolledToBottomController =
+    new IntersectionController<boolean>(this, {
+      callback(this: IntersectionController<boolean>, entries) {
+        return entries[0].isIntersecting;
+      },
+    });
+
+  @state() private _scrolledToTopController =
+    new IntersectionController<boolean>(this, {});
 
   private _ws: WebSocket | null = null;
 
@@ -53,7 +76,14 @@ export class LogsViewer extends LitElement {
     this._loading = true;
     this._error = undefined;
 
+    // Stop any existing websocket
+    this._stopFollowing();
+
+    // Clear existing logs
+    this._ansiToHtmlElement?.clear();
+
     try {
+      // First, fetch the latest logs
       const response = await fetch(
         `${this._apiUrl}/api/logs/${this._selectedLogProvider}`
       );
@@ -66,13 +96,30 @@ export class LogsViewer extends LitElement {
         throw new Error(data.error);
       }
 
-      this._logText = data.output || "";
+      const logText = data.output || "";
+
+      // Parse and display initial logs
+      if (logText.trim()) {
+        this._ansiToHtmlElement?.parseTextToColoredPre(logText);
+
+        // Add divider line
+        this._ansiToHtmlElement?.parseLineToColoredPre(
+          "--- Live logs start here ---"
+        );
+      }
+
+      this._loading = false;
+
+      // Scroll to bottom after loading
+      this._scrollToBottom();
+
+      // Start streaming
+      this._startFollowing();
     } catch (err) {
       this._error = `Error loading logs: ${err}`;
-      this._logText = "";
-      console.error("Error fetching logs:", err);
-    } finally {
       this._loading = false;
+      // eslint-disable-next-line
+      console.error("Error fetching logs:", err);
     }
   }
 
@@ -90,7 +137,7 @@ export class LogsViewer extends LitElement {
       // Convert object to array of providers, filter out health endpoint, and sort
       this._logProviders = Object.entries(providers)
         .filter(([key]) => key !== "health")
-        .map(([key, value]) => ({
+        .map(([key]) => ({
           key,
           name: key.charAt(0).toUpperCase() + key.slice(1),
         }))
@@ -103,6 +150,7 @@ export class LogsViewer extends LitElement {
       }
     } catch (err) {
       this._error = `Failed to load log providers: ${err}`;
+      // eslint-disable-next-line
       console.error("Error fetching log providers:", err);
     }
   }
@@ -117,35 +165,35 @@ export class LogsViewer extends LitElement {
     this._stopFollowing();
   }
 
-  private _selectProvider(ev: Event) {
-    const target = ev.currentTarget as any;
-    this._selectedLogProvider = target.provider;
-    if (this._following) {
-      this._stopFollowing();
-      this._startFollowing();
-    } else {
-      this._fetchLogs();
+  protected firstUpdated() {
+    this._scrolledToBottomController.observe(this._scrollBottomMarkerElement!);
+    this._scrolledToTopController.observe(this._scrollTopMarkerElement!);
+  }
+
+  protected updated() {
+    if (this._newLogsIndicator && this._scrolledToBottomController.value) {
+      this._newLogsIndicator = false;
     }
   }
 
+  private _selectProvider(ev: Event) {
+    const target = ev.currentTarget as any;
+    this._selectedLogProvider = target.provider;
+    this._fetchLogs();
+  }
+
   private _refresh() {
-    if (this._following) {
-      this._stopFollowing();
-      this._startFollowing();
-    } else {
-      this._fetchLogs();
-    }
+    this._fetchLogs();
   }
 
   private _toggleLineWrap() {
     this._wrapLines = !this._wrapLines;
   }
 
-  private _toggleFollow() {
-    if (this._following) {
-      this._stopFollowing();
-    } else {
-      this._startFollowing();
+  private _scrollToBottom(): void {
+    if (this._logElement) {
+      this._newLogsIndicator = false;
+      this._logElement.scrollTo(0, this._logElement.scrollHeight);
     }
   }
 
@@ -155,8 +203,6 @@ export class LogsViewer extends LitElement {
     }
 
     this._stopFollowing();
-    this._following = true;
-    this._logText = "";
     this._error = undefined;
 
     const wsProtocol = window.location.protocol === "https:" ? "wss:" : "ws:";
@@ -166,34 +212,37 @@ export class LogsViewer extends LitElement {
       this._ws = new WebSocket(wsUrl);
 
       this._ws.onopen = () => {
+        // eslint-disable-next-line
         console.log("WebSocket connected");
       };
 
       this._ws.onmessage = (event) => {
-        this._logText += event.data + "\n";
-        // Auto-scroll to bottom
-        this.requestUpdate().then(() => {
-          const logElement = this.shadowRoot?.querySelector(".error-log");
-          if (logElement) {
-            logElement.scrollTop = logElement.scrollHeight;
-          }
-        });
+        const scrolledToBottom = this._scrolledToBottomController.value;
+
+        // Add the new line to the display
+        this._ansiToHtmlElement?.parseLineToColoredPre(event.data);
+
+        // Auto-scroll if user is at bottom
+        if (scrolledToBottom && this._logElement) {
+          this._scrollToBottom();
+        } else {
+          this._newLogsIndicator = true;
+        }
       };
 
       this._ws.onerror = (error) => {
+        // eslint-disable-next-line
         console.error("WebSocket error:", error);
         this._error = "WebSocket connection error";
       };
 
       this._ws.onclose = () => {
+        // eslint-disable-next-line
         console.log("WebSocket disconnected");
-        if (this._following) {
-          this._following = false;
-        }
       };
     } catch (err) {
       this._error = `Failed to start following logs: ${err}`;
-      this._following = false;
+      // eslint-disable-next-line
       console.error("Error starting WebSocket:", err);
     }
   }
@@ -203,16 +252,24 @@ export class LogsViewer extends LitElement {
       this._ws.close();
       this._ws = null;
     }
-    this._following = false;
   }
 
   private _downloadLogs() {
-    if (!this._selectedLogProvider || !this._logText) {
+    if (!this._selectedLogProvider || !this._ansiToHtmlElement) {
+      return;
+    }
+
+    // Get the text content from the logs
+    const logText =
+      this._ansiToHtmlElement.shadowRoot?.querySelector("pre")?.textContent ||
+      "";
+
+    if (!logText.trim()) {
       return;
     }
 
     // Create blob from log text
-    const blob = new Blob([this._logText], { type: "text/plain" });
+    const blob = new Blob([logText], { type: "text/plain" });
     const url = URL.createObjectURL(blob);
 
     // Create download link and trigger it
@@ -231,13 +288,12 @@ export class LogsViewer extends LitElement {
     const currentProvider = this._logProviders.find(
       (p) => p.key === this._selectedLogProvider
     );
-    const hasLogs = this._logText.trim().length > 0;
 
     return html`
       <div class="container">
         <div class="toolbar">
-          <ha-button-menu .disabled=${this._following}>
-            <ha-button slot="trigger" appearance="filled" .disabled=${this._following}>
+          <ha-button-menu>
+            <ha-button slot="trigger" appearance="filled">
               <ha-svg-icon slot="end" .path=${mdiChevronDown}></ha-svg-icon>
               ${currentProvider?.name || "Select Provider"}
             </ha-button>
@@ -262,16 +318,10 @@ export class LogsViewer extends LitElement {
                 <h1 class="card-header">${currentProvider?.name || "Logs"}</h1>
                 <div class="action-buttons">
                   <ha-icon-button
-                    .path=${this._following ? mdiPause : mdiPlay}
-                    @click=${this._toggleFollow}
-                    .label=${this._following ? "Stop following" : "Follow logs"}
-                    .disabled=${!this._selectedLogProvider}
-                  ></ha-icon-button>
-                  <ha-icon-button
                     .path=${mdiDownload}
                     @click=${this._downloadLogs}
                     .label=${"Download logs"}
-                    .disabled=${!this._logText}
+                    .disabled=${!this._ansiToHtmlElement}
                   ></ha-icon-button>
                   <ha-icon-button
                     .path=${this._wrapLines ? mdiWrapDisabled : mdiWrap}
@@ -286,19 +336,45 @@ export class LogsViewer extends LitElement {
                   ></ha-icon-button>
                 </div>
               </div>
-              <div
-                class="card-content error-log ${this._wrapLines
-                  ? ""
-                  : "nowrap"}"
-              >
-                ${this._error
-                  ? html`<div class="error">${this._error}</div>`
-                  : this._loading
-                    ? html`<div>Loading logs...</div>`
-                    : !hasLogs
-                      ? html`<div>No logs available${this._following ? " yet..." : ""}</div>`
-                      : html`<pre>${this._logText}</pre>`}
+              <div class="card-content error-log">
+                <div id="scroll-top-marker"></div>
+                ${this._loading
+                  ? html`<div>Loading logs...</div>`
+                  : this._error
+                    ? html`<div class="error">${this._error}</div>`
+                    : nothing}
+                <ha-ansi-to-html
+                  ?wrap-disabled=${!this._wrapLines}
+                ></ha-ansi-to-html>
+                <div id="scroll-bottom-marker"></div>
               </div>
+              <ha-button
+                class="new-logs-indicator ${classMap({
+                  visible:
+                    (this._newLogsIndicator &&
+                      !this._scrolledToBottomController.value) ||
+                    false,
+                })}"
+                size="small"
+                appearance="filled"
+                @click=${this._scrollToBottom}
+              >
+                <ha-svg-icon
+                  .path=${mdiArrowCollapseDown}
+                  slot="start"
+                ></ha-svg-icon>
+                Scroll down
+                <ha-svg-icon
+                  .path=${mdiArrowCollapseDown}
+                  slot="end"
+                ></ha-svg-icon>
+              </ha-button>
+              ${this._ws && !this._error
+                ? html`<div class="live-indicator">
+                    <ha-svg-icon .path=${mdiCircle}></ha-svg-icon>
+                    Live
+                  </div>`
+                : nothing}
             </ha-card>
           </div>
         </div>
@@ -318,9 +394,10 @@ export class LogsViewer extends LitElement {
     }
 
     .toolbar {
-      padding: 16px;
+      padding: var(--ha-space-2) var(--ha-space-4);
       display: flex;
-      gap: 8px;
+      justify-content: flex-end;
+      gap: var(--ha-space-2);
     }
 
     .content {
@@ -329,18 +406,18 @@ export class LogsViewer extends LitElement {
 
     .error-log-intro {
       text-align: center;
-      margin: 16px;
+      margin: 0 var(--ha-space-4);
     }
 
     ha-card {
-      padding-top: 8px;
+      padding-top: var(--ha-space-2);
       position: relative;
     }
 
     .header {
       display: flex;
       justify-content: space-between;
-      padding: 0 16px;
+      padding: 0 var(--ha-space-4);
     }
 
     .action-buttons {
@@ -365,11 +442,12 @@ export class LogsViewer extends LitElement {
     }
 
     .error-log {
-      font-family: var(--code-font-family, monospace);
+      position: relative;
+      font-family: var(--ha-font-family-code);
       clear: both;
       text-align: start;
-      padding-top: 16px;
-      padding-bottom: 16px;
+      padding-top: var(--ha-space-4);
+      padding-bottom: var(--ha-space-4);
       overflow-y: scroll;
       min-height: var(--error-log-card-height, calc(100vh - 244px));
       max-height: var(--error-log-card-height, calc(100vh - 244px));
@@ -377,37 +455,54 @@ export class LogsViewer extends LitElement {
       direction: ltr;
     }
 
-    .error-log.nowrap {
-      overflow-x: scroll;
-    }
-
     .error-log > div {
-      padding: 0 16px;
+      padding: 0 var(--ha-space-4);
       overflow: auto;
-    }
-
-    .error-log pre {
-      margin: 0;
-      padding: 0 16px;
-      white-space: pre-wrap;
-      word-wrap: break-word;
-      overflow-wrap: break-word;
-      font-family: inherit;
-    }
-
-    .error-log.nowrap pre {
-      white-space: pre;
-      word-wrap: normal;
-      overflow-wrap: normal;
-    }
-
-    .error-log > div:hover {
-      background-color: var(--secondary-background-color);
     }
 
     .error {
       color: var(--error-color);
-      padding: 16px;
+      padding: var(--ha-space-4);
+    }
+
+    .new-logs-indicator {
+      overflow: hidden;
+      position: absolute;
+      bottom: var(--ha-space-1);
+      left: var(--ha-space-1);
+      height: 0;
+      transition: height 0.4s ease-out;
+    }
+
+    .new-logs-indicator.visible {
+      height: 32px;
+    }
+
+    @keyframes breathe {
+      from {
+        opacity: 0.8;
+      }
+      to {
+        opacity: 0;
+      }
+    }
+
+    .live-indicator {
+      position: absolute;
+      bottom: 0;
+      inset-inline-end: var(--ha-space-4);
+      border-top-right-radius: var(--ha-space-2);
+      border-top-left-radius: var(--ha-space-2);
+      background-color: var(--primary-color);
+      color: var(--text-primary-color);
+      padding: var(--ha-space-1) var(--ha-space-2);
+      opacity: 0.8;
+    }
+
+    .live-indicator ha-svg-icon {
+      animation: breathe 1s cubic-bezier(0.5, 0, 1, 1) infinite alternate;
+      height: 14px;
+      width: 14px;
     }
 
     @media all and (max-width: 870px) {
@@ -419,9 +514,11 @@ export class LogsViewer extends LitElement {
       ha-button-menu {
         max-width: 50%;
       }
+
       ha-button {
         max-width: 100%;
       }
+
       ha-button::part(label) {
         overflow: hidden;
         white-space: nowrap;
