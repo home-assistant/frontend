@@ -569,15 +569,15 @@ class HaConfigBackupBackups extends SubscribeMixin(LitElement) {
     navigate(`/config/backup/details/${id}`);
   }
 
-  private async _downloadBackup(ev): Promise<void> {
+  private _downloadBackup = async (ev): Promise<void> => {
     const backup = ev.parentElement.anchorElement.backup;
     if (!backup) {
       return;
     }
     downloadBackup(this.hass, this, backup, this.config);
-  }
+  };
 
-  private async _deleteBackup(ev): Promise<void> {
+  private _deleteBackup = async (ev): Promise<void> => {
     const backup = ev.parentElement.anchorElement.backup;
     if (!backup) {
       return;
@@ -609,7 +609,7 @@ class HaConfigBackupBackups extends SubscribeMixin(LitElement) {
       return;
     }
     fireEvent(this, "ha-refresh-backup-info");
-  }
+  };
 
   private async _deleteSelected() {
     const confirm = await showConfirmationDialog(this, {
