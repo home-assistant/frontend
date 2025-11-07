@@ -5,7 +5,8 @@ A Go backend that proxies Home Assistant CLI logs commands through a secure HTTP
 ## Features
 
 - Only allows `logs` commands (security-restricted)
-- GET-only endpoints for each component
+- GET endpoints for static logs
+- WebSocket endpoints for streaming logs (follow mode)
 - CORS enabled for frontend integration
 - Simple JSON API
 
@@ -51,6 +52,20 @@ Health check endpoint.
   "error": "error message if any"
 }
 ```
+
+### WS /api/logs/*/follow
+
+WebSocket endpoints for streaming logs in real-time.
+
+Available endpoints:
+- `WS /api/logs/core/follow` - Stream core logs
+- `WS /api/logs/supervisor/follow` - Stream supervisor logs
+- `WS /api/logs/host/follow` - Stream host logs
+- `WS /api/logs/audio/follow` - Stream audio logs
+- `WS /api/logs/dns/follow` - Stream DNS logs
+- `WS /api/logs/multicast/follow` - Stream multicast logs
+
+Each WebSocket message contains a single log line as plain text. The connection streams output from `ha {component} logs --follow` command.
 
 ## Running Locally
 

@@ -13,23 +13,30 @@ script/develop-logs -c http://192.168.1.2 -t your_token_here
 
 When started with credentials, the container runs a Go backend that proxies HA CLI logs commands. The backend API is available at `http://localhost:5642`.
 
+**Frontend Features:**
+- Dropdown menu to select log provider (core, supervisor, host, audio, dns, multicast)
+- Follow mode with WebSocket streaming (`ha core logs --follow`)
+- Manual refresh to fetch latest logs
+- Download logs as text file
+- Line wrapping toggle
+- Auto-scroll to bottom when following
+- Error display with retry
+
 **API Endpoints:**
 
 ```bash
 # List all endpoints
 curl http://localhost:5642/api/logs
 
-# Get core logs
+# Get static logs
 curl http://localhost:5642/api/logs/core
-
-# Get supervisor logs
 curl http://localhost:5642/api/logs/supervisor
-
-# Get host logs
-curl http://localhost:5642/api/logs/host
 
 # Health check
 curl http://localhost:5642/health
+
+# WebSocket streaming (requires websocat or browser)
+websocat ws://localhost:5642/api/logs/core/follow
 ```
 
 You can also execute HA CLI commands directly:

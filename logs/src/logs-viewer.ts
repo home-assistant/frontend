@@ -1,6 +1,8 @@
 import {
   mdiChevronDown,
   mdiDownload,
+  mdiPause,
+  mdiPlay,
   mdiRefresh,
   mdiWrap,
   mdiWrapDisabled,
@@ -35,66 +37,194 @@ export class LogsViewer extends LitElement {
 
   @state() private _wrapLines = true;
 
-  // CONNECTION POINT: Replace with actual data fetching
+  @state() private _following = false;
+
+  @state() private _error?: string;
+
+  private _ws: WebSocket | null = null;
+
+  private _apiUrl = `http://${window.location.hostname}:5642`;
+
   private async _fetchLogs(): Promise<void> {
     if (!this._selectedLogProvider) {
       return;
     }
 
     this._loading = true;
-    // TODO: Replace with actual API call
-    // Example: const logs = await fetchLogsFromApi(this._selectedLogProvider);
-    // For streaming: use fetchHassioLogsFollow or fetchErrorLog
+    this._error = undefined;
+
     try {
-      // Your fetch logic here
-      this._logText = "";
+      const response = await fetch(
+        `${this._apiUrl}/api/logs/${this._selectedLogProvider}`
+      );
+      if (!response.ok) {
+        throw new Error(`HTTP error! status: ${response.status}`);
+      }
+
+      const data = await response.json();
+      if (data.error) {
+        throw new Error(data.error);
+      }
+
+      this._logText = data.output || "";
     } catch (err) {
-      // Handle error
-      this._logText = `Error loading logs: ${err}`;
+      this._error = `Error loading logs: ${err}`;
+      this._logText = "";
+      console.error("Error fetching logs:", err);
     } finally {
       this._loading = false;
     }
   }
 
-  // CONNECTION POINT: Replace with actual provider list fetching
   private async _fetchLogProviders(): Promise<void> {
-    // TODO: Replace with actual API call to get available log providers
-    // Example: const providers = await fetchAvailableProviders();
-    this._logProviders = [];
+    try {
+      const response = await fetch(`${this._apiUrl}/api/logs`);
+      if (!response.ok) {
+        throw new Error(`HTTP error! status: ${response.status}`);
+      }
+      const providers = await response.json();
 
-    // Set default provider once loaded
-    if (this._logProviders.length > 0 && !this._selectedLogProvider) {
-      this._selectedLogProvider = this._logProviders[0].key;
+      // Define the order (matching backend registration order)
+      const order = ["core", "supervisor", "host", "audio", "dns", "multicast"];
+
+      // Convert object to array of providers, filter out health endpoint, and sort
+      this._logProviders = Object.entries(providers)
+        .filter(([key]) => key !== "health")
+        .map(([key, value]) => ({
+          key,
+          name: key.charAt(0).toUpperCase() + key.slice(1),
+        }))
+        .sort((a, b) => order.indexOf(a.key) - order.indexOf(b.key));
+
+      // Set default provider once loaded
+      if (this._logProviders.length > 0 && !this._selectedLogProvider) {
+        this._selectedLogProvider = this._logProviders[0].key;
+        await this._fetchLogs();
+      }
+    } catch (err) {
+      this._error = `Failed to load log providers: ${err}`;
+      console.error("Error fetching log providers:", err);
     }
   }
 
   connectedCallback() {
     super.connectedCallback();
-    this._fetchLogs();
     this._fetchLogProviders();
+  }
+
+  disconnectedCallback() {
+    super.disconnectedCallback();
+    this._stopFollowing();
   }
 
   private _selectProvider(ev: Event) {
     const target = ev.currentTarget as any;
     this._selectedLogProvider = target.provider;
-    this._fetchLogs();
+    if (this._following) {
+      this._stopFollowing();
+      this._startFollowing();
+    } else {
+      this._fetchLogs();
+    }
   }
 
   private _refresh() {
-    this._fetchLogs();
+    if (this._following) {
+      this._stopFollowing();
+      this._startFollowing();
+    } else {
+      this._fetchLogs();
+    }
   }
 
   private _toggleLineWrap() {
     this._wrapLines = !this._wrapLines;
   }
 
-  private _downloadLogs() {
-    // CONNECTION POINT: Replace with actual download implementation
-    // Example: const url = await getLogDownloadUrl(this._selectedLogProvider);
-    // fileDownload(url, `logs_${Date.now()}.log`);
-    if (this._selectedLogProvider) {
-      // Your download logic here
+  private _toggleFollow() {
+    if (this._following) {
+      this._stopFollowing();
+    } else {
+      this._startFollowing();
     }
+  }
+
+  private _startFollowing() {
+    if (!this._selectedLogProvider) {
+      return;
+    }
+
+    this._stopFollowing();
+    this._following = true;
+    this._logText = "";
+    this._error = undefined;
+
+    const wsProtocol = window.location.protocol === "https:" ? "wss:" : "ws:";
+    const wsUrl = `${wsProtocol}//${window.location.hostname}:5642/api/logs/${this._selectedLogProvider}/follow`;
+
+    try {
+      this._ws = new WebSocket(wsUrl);
+
+      this._ws.onopen = () => {
+        console.log("WebSocket connected");
+      };
+
+      this._ws.onmessage = (event) => {
+        this._logText += event.data + "\n";
+        // Auto-scroll to bottom
+        this.requestUpdate().then(() => {
+          const logElement = this.shadowRoot?.querySelector(".error-log");
+          if (logElement) {
+            logElement.scrollTop = logElement.scrollHeight;
+          }
+        });
+      };
+
+      this._ws.onerror = (error) => {
+        console.error("WebSocket error:", error);
+        this._error = "WebSocket connection error";
+      };
+
+      this._ws.onclose = () => {
+        console.log("WebSocket disconnected");
+        if (this._following) {
+          this._following = false;
+        }
+      };
+    } catch (err) {
+      this._error = `Failed to start following logs: ${err}`;
+      this._following = false;
+      console.error("Error starting WebSocket:", err);
+    }
+  }
+
+  private _stopFollowing() {
+    if (this._ws) {
+      this._ws.close();
+      this._ws = null;
+    }
+    this._following = false;
+  }
+
+  private _downloadLogs() {
+    if (!this._selectedLogProvider || !this._logText) {
+      return;
+    }
+
+    // Create blob from log text
+    const blob = new Blob([this._logText], { type: "text/plain" });
+    const url = URL.createObjectURL(blob);
+
+    // Create download link and trigger it
+    const a = document.createElement("a");
+    a.href = url;
+    a.download = `${this._selectedLogProvider}-logs-${Date.now()}.txt`;
+    document.body.appendChild(a);
+    a.click();
+
+    // Cleanup
+    document.body.removeChild(a);
+    URL.revokeObjectURL(url);
   }
 
   render() {
@@ -106,8 +236,8 @@ export class LogsViewer extends LitElement {
     return html`
       <div class="container">
         <div class="toolbar">
-          <ha-button-menu>
-            <ha-button slot="trigger" appearance="filled">
+          <ha-button-menu .disabled=${this._following}>
+            <ha-button slot="trigger" appearance="filled" .disabled=${this._following}>
               <ha-svg-icon slot="end" .path=${mdiChevronDown}></ha-svg-icon>
               ${currentProvider?.name || "Select Provider"}
             </ha-button>
@@ -132,9 +262,16 @@ export class LogsViewer extends LitElement {
                 <h1 class="card-header">${currentProvider?.name || "Logs"}</h1>
                 <div class="action-buttons">
                   <ha-icon-button
+                    .path=${this._following ? mdiPause : mdiPlay}
+                    @click=${this._toggleFollow}
+                    .label=${this._following ? "Stop following" : "Follow logs"}
+                    .disabled=${!this._selectedLogProvider}
+                  ></ha-icon-button>
+                  <ha-icon-button
                     .path=${mdiDownload}
                     @click=${this._downloadLogs}
                     .label=${"Download logs"}
+                    .disabled=${!this._logText}
                   ></ha-icon-button>
                   <ha-icon-button
                     .path=${this._wrapLines ? mdiWrapDisabled : mdiWrap}
@@ -145,6 +282,7 @@ export class LogsViewer extends LitElement {
                     .path=${mdiRefresh}
                     @click=${this._refresh}
                     .label=${"Refresh"}
+                    .disabled=${!this._selectedLogProvider}
                   ></ha-icon-button>
                 </div>
               </div>
@@ -153,11 +291,13 @@ export class LogsViewer extends LitElement {
                   ? ""
                   : "nowrap"}"
               >
-                ${this._loading
-                  ? html`<div>Loading logs...</div>`
-                  : !hasLogs
-                    ? html`<div>No logs available</div>`
-                    : html`<pre>${this._logText}</pre>`}
+                ${this._error
+                  ? html`<div class="error">${this._error}</div>`
+                  : this._loading
+                    ? html`<div>Loading logs...</div>`
+                    : !hasLogs
+                      ? html`<div>No logs available${this._following ? " yet..." : ""}</div>`
+                      : html`<pre>${this._logText}</pre>`}
               </div>
             </ha-card>
           </div>
@@ -263,6 +403,11 @@ export class LogsViewer extends LitElement {
 
     .error-log > div:hover {
       background-color: var(--secondary-background-color);
+    }
+
+    .error {
+      color: var(--error-color);
+      padding: 16px;
     }
 
     @media all and (max-width: 870px) {
