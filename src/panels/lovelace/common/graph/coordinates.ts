@@ -20,10 +20,10 @@ const calcPoints = (
     }
   });
   const rangeY = maxY - minY || minY * 0.1;
+  // add top margin to prevent cropping
+  maxY += rangeY * 0.1;
   if (maxY < 0) {
     // all values are negative
-    // add margin
-    maxY += rangeY * 0.1;
     maxY = Math.min(0, maxY);
     yAxisOrigin = 0;
   } else if (minY < 0) {
@@ -31,7 +31,7 @@ const calcPoints = (
     yAxisOrigin = (maxY / (maxY - minY || 1)) * height;
   } else {
     // all values are positive
-    // add margin
+    // add bottom margin
     minY -= rangeY * 0.1;
     minY = Math.max(0, minY);
   }
