@@ -740,8 +740,4 @@ declare global {
   interface HTMLElementTagNameMap {
     "ha-picker-combo-box": HaPickerComboBox;
   }
-
-  interface HASSDomEvents {
-    "section-changed": string | undefined;
-  }
 }
