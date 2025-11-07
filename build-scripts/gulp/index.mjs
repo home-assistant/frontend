@@ -7,6 +7,7 @@ import "./download-translations.js";
 import "./entry-html.js";
 import "./fetch-nightly-translations.js";
 import "./gallery.js";
+import "./logs.js";
 import "./gather-static.js";
 import "./gen-icons-json.js";
 import "./hassio.js";

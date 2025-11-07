@@ -327,6 +327,20 @@ module.exports.config = {
     };
   },
 
+  logs({ isProdBuild, latestBuild, isStatsBuild }) {
+    return {
+      name: "logs" + nameSuffix(latestBuild),
+      entry: {
+        entrypoint: path.resolve(paths.logs_dir, "src/entrypoint.ts"),
+      },
+      outputPath: outputPath(paths.logs_output_root, latestBuild),
+      publicPath: publicPath(latestBuild),
+      isProdBuild,
+      latestBuild,
+      isStatsBuild,
+    };
+  },
+
   landingPage({ isProdBuild, latestBuild }) {
     return {
       name: "landing-page" + nameSuffix(latestBuild),

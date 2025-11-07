@@ -40,6 +40,13 @@ gulp.task(
 );
 
 gulp.task(
+  "clean-logs",
+  gulp.parallel("clean-translations", async () =>
+    deleteSync([paths.logs_output_root, paths.build_dir])
+  )
+);
+
+gulp.task(
   "clean-landing-page",
   gulp.parallel("clean-translations", async () =>
     deleteSync([

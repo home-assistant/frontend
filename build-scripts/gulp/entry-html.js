@@ -245,6 +245,24 @@ gulp.task(
   )
 );
 
+const LOGS_PAGE_ENTRIES = { "index.html": ["entrypoint"] };
+
+gulp.task(
+  "gen-pages-logs-dev",
+  genPagesDevTask(LOGS_PAGE_ENTRIES, paths.logs_dir, paths.logs_output_root)
+);
+
+gulp.task(
+  "gen-pages-logs-prod",
+  genPagesProdTask(
+    LOGS_PAGE_ENTRIES,
+    paths.logs_dir,
+    paths.logs_output_root,
+    paths.logs_output_latest,
+    paths.logs_output_es5
+  )
+);
+
 const LANDING_PAGE_PAGE_ENTRIES = { "index.html": ["entrypoint"] };
 
 gulp.task(

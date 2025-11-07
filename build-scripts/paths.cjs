@@ -59,5 +59,11 @@ module.exports = {
   hassio_output_es5: path.resolve(__dirname, "../hassio/build/frontend_es5"),
   hassio_publicPath: "/api/hassio/app",
 
+  logs_dir: path.resolve(__dirname, "../logs"),
+  logs_output_root: path.resolve(__dirname, "../logs/dist"),
+  logs_output_static: path.resolve(__dirname, "../logs/dist/static"),
+  logs_output_latest: path.resolve(__dirname, "../logs/dist/frontend_latest"),
+  logs_output_es5: path.resolve(__dirname, "../logs/dist/frontend_es5"),
+
   translations_src: path.resolve(__dirname, "../src/translations"),
 };

@@ -15,6 +15,7 @@ import {
   createGalleryConfig,
   createHassioConfig,
   createLandingPageConfig,
+  createLogsConfig,
 } from "../rspack.cjs";
 
 const bothBuilds = (createConfigFunc, params) => [
@@ -200,6 +201,25 @@ gulp.task("rspack-prod-gallery", () =>
     createGalleryConfig({
       isProdBuild: true,
       latestBuild: true,
+    })
+  )
+);
+
+gulp.task("rspack-dev-server-logs", () =>
+  runDevServer({
+    compiler: rspack(
+      createLogsConfig({ isProdBuild: false, latestBuild: true })
+    ),
+    contentBase: paths.logs_output_root,
+    port: 5647,
+  })
+);
+
+gulp.task("rspack-prod-logs", () =>
+  prodBuild(
+    bothBuilds(createLogsConfig, {
+      isProdBuild: true,
+      isStatsBuild: env.isStatsBuild(),
     })
   )
 );

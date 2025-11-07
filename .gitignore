@@ -5,6 +5,7 @@
 build/
 dist/
 /hass_frontend/
+/logs/dist/
 /translations/
 
 # yarn

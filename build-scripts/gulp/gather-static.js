@@ -202,6 +202,16 @@ gulp.task("copy-static-gallery", async () => {
   copyMdiIcons(paths.gallery_output_static);
 });
 
+gulp.task("copy-static-logs", async () => {
+  // Copy app static files
+  fs.copySync(polyPath("public/static"), paths.logs_output_static);
+
+  copyFonts(paths.logs_output_static);
+  copyTranslations(paths.logs_output_static);
+  copyLocaleData(paths.logs_output_static);
+  copyMdiIcons(paths.logs_output_static);
+});
+
 gulp.task("copy-static-landing-page", async () => {
   // Copy landing-page static files
   fs.copySync(
