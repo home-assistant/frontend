@@ -828,7 +828,7 @@ export class HaTargetPickerSelector extends LitElement {
           id: EMPTY_SEARCH,
           primary: this.hass.localize(
             "ui.components.target-picker.no_target_found",
-            { term: html`<div><b>‘${searchTerm}’</b></div>` }
+            { term: html`<b>‘${searchTerm}’</b>` }
           ),
         });
       } else if (items.length === 0) {
