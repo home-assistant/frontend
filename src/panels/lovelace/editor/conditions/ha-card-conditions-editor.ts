@@ -25,6 +25,7 @@ import "./types/ha-card-condition-numeric_state";
 import "./types/ha-card-condition-or";
 import "./types/ha-card-condition-screen";
 import "./types/ha-card-condition-state";
+import "./types/ha-card-condition-time";
 import "./types/ha-card-condition-user";
 import { storage } from "../../../../common/decorators/storage";
 
@@ -33,6 +34,7 @@ const UI_CONDITION = [
   "numeric_state",
   "state",
   "screen",
+  "time",
   "user",
   "and",
   "not",

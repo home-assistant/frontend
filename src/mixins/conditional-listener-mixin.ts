@@ -1,6 +1,9 @@
 import type { ReactiveElement } from "lit";
 import type { HomeAssistant } from "../types";
-import { setupMediaQueryListeners } from "../common/condition/listeners";
+import {
+  setupMediaQueryListeners,
+  setupTimeListeners,
+} from "../common/condition/listeners";
 import type { Condition } from "../panels/lovelace/common/validate-condition";
 
 type Constructor<T> = abstract new (...args: any[]) => T;
@@ -112,6 +115,13 @@ export const ConditionalListenerMixin = <
       };
 
       setupMediaQueryListeners(
+        finalConditions,
+        this.hass,
+        (unsub) => this.addConditionalListener(unsub),
+        onUpdate
+      );
+
+      setupTimeListeners(
         finalConditions,
         this.hass,
         (unsub) => this.addConditionalListener(unsub),
