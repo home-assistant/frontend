@@ -8,6 +8,7 @@ import { css, html, LitElement } from "lit";
 import { customElement, property, state } from "lit/decorators";
 import memoizeOne from "memoize-one";
 import { relativeTime } from "../../../../../common/datetime/relative_time";
+import { getDeviceContext } from "../../../../../common/entity/context/get_device_context";
 import { navigate } from "../../../../../common/navigate";
 import { throttle } from "../../../../../common/util/throttle";
 import "../../../../../components/chart/ha-network-graph";
@@ -28,7 +29,6 @@ import type { DeviceRegistryEntry } from "../../../../../data/device_registry";
 import "../../../../../layouts/hass-subpage";
 import type { HomeAssistant, Route } from "../../../../../types";
 import { bluetoothAdvertisementMonitorTabs } from "./bluetooth-advertisement-monitor";
-import { getDeviceContext } from "../../../../../common/entity/context/get_device_context";
 
 const UPDATE_THROTTLE_TIME = 10000;
 
@@ -308,8 +308,8 @@ export class BluetoothNetworkVisualization extends LitElement {
       if (btDevice) {
         tooltipText = `<b>${name}</b><br><b>${this.hass.localize("ui.panel.config.bluetooth.address")}:</b> ${address}<br><b>${this.hass.localize("ui.panel.config.bluetooth.rssi")}:</b> ${btDevice.rssi}<br><b>${this.hass.localize("ui.panel.config.bluetooth.source")}:</b> ${btDevice.source}<br><b>${this.hass.localize("ui.panel.config.bluetooth.updated")}:</b> ${relativeTime(new Date(btDevice.time * 1000), this.hass.locale)}`;
         const device = this._sourceDevices[address];
-        if (device?.area_id) {
-          const area = this.hass.areas[device.area_id];
+        if (device) {
+          const area = getDeviceContext(device, this.hass).area;
           if (area) {
             tooltipText += `<br><b>${this.hass.localize("ui.panel.config.bluetooth.area")}: </b>${area.name}`;
           }
@@ -318,11 +318,9 @@ export class BluetoothNetworkVisualization extends LitElement {
         const device = this._sourceDevices[address];
         if (device) {
           tooltipText = `<b>${name}</b><br><b>${this.hass.localize("ui.panel.config.bluetooth.address")}:</b> ${address}`;
-          if (device.area_id) {
-            const area = this.hass.areas[device.area_id];
-            if (area) {
-              tooltipText += `<br><b>${this.hass.localize("ui.panel.config.bluetooth.area")}: </b>${area.name}`;
-            }
+          const area = getDeviceContext(device, this.hass).area;
+          if (area) {
+            tooltipText += `<br><b>${this.hass.localize("ui.panel.config.bluetooth.area")}: </b>${area.name}`;
           }
         }
       }

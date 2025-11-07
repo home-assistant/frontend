@@ -125,7 +125,7 @@ export class ZWaveJSNetworkVisualization extends SubscribeMixin(LitElement) {
       return tip;
     }
     const { id, name } = data as any;
-    const device = this._devices[id];
+    const device = this._devices[id] as DeviceRegistryEntry | undefined;
     const nodeStatus = this._nodeStatuses[id];
     let tip = `${(params as any).marker} ${name}`;
     tip += `<br><b>${this.hass.localize("ui.panel.config.zwave_js.visualization.node_id")}:</b> ${id}`;
@@ -139,8 +139,8 @@ export class ZWaveJSNetworkVisualization extends SubscribeMixin(LitElement) {
         tip += `<br><b>Z-Wave Plus:</b> ${this.hass.localize("ui.panel.config.zwave_js.visualization.version")} ${nodeStatus.zwave_plus_version}`;
       }
     }
-    if (device?.area_id) {
-      const area = this.hass.areas[device.area_id];
+    if (device) {
+      const area = getDeviceContext(device, this.hass).area;
       if (area) {
         tip += `<br><b>${this.hass.localize("ui.panel.config.zwave_js.visualization.area")}:</b> ${area.name}`;
       }
@@ -204,8 +204,12 @@ export class ZWaveJSNetworkVisualization extends SubscribeMixin(LitElement) {
         if (node.is_controller_node) {
           controllerNode = node.node_id;
         }
-        const device = this._devices[node.node_id];
-        const { area } = getDeviceContext(device, this.hass);
+        const device = this._devices[node.node_id] as
+          | DeviceRegistryEntry
+          | undefined;
+        const area = device
+          ? getDeviceContext(device, this.hass).area
+          : undefined;
         nodes.push({
           id: String(node.node_id),
           name: device?.name_by_user ?? device?.name ?? String(node.node_id),
