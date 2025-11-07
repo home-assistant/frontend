@@ -20,8 +20,9 @@ const calcPoints = (
     }
   });
   const rangeY = maxY - minY || minY * 0.1;
-  // add top margin to prevent cropping
+  // add top and bottom margins to prevent cropping
   maxY += rangeY * 0.1;
+  minY -= rangeY * 0.1;
   if (maxY < 0) {
     // all values are negative
     maxY = Math.min(0, maxY);
@@ -31,8 +32,6 @@ const calcPoints = (
     yAxisOrigin = (maxY / (maxY - minY || 1)) * height;
   } else {
     // all values are positive
-    // add bottom margin
-    minY -= rangeY * 0.1;
     minY = Math.max(0, minY);
   }
   const yDenom = maxY - minY || 1;
