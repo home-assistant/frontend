@@ -7,6 +7,7 @@
       content="width=device-width, initial-scale=1, shrink-to-fit=no"
     />
     <meta name="theme-color" content="#03a9f4" />
+    <meta name="color-scheme" content="dark light" />
     <title>Home Assistant Logs</title>
     <% for (const entry of latestEntryJS) { %>
       <script type="module" src="<%= entry %>"></script>

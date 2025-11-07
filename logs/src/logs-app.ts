@@ -16,25 +16,27 @@ class LogsApp extends LitElement {
     :host {
       display: block;
       height: 100vh;
+      background-color: var(--ha-color-surface-default);
     }
 
     .container {
-      padding: 24px;
+      padding: var(--ha-space-3xl);
       max-width: 1200px;
       margin: 0 auto;
     }
 
     h1 {
-      font-size: 32px;
-      font-weight: 400;
-      margin: 0 0 16px 0;
-      color: var(--primary-text-color, #212121);
+      font-size: var(--ha-font-size-4xl);
+      font-weight: var(--ha-font-weight-regular);
+      line-height: var(--ha-line-height-tight);
+      margin: 0 0 var(--ha-space-md) 0;
+      color: var(--ha-color-text-primary);
     }
 
     p {
-      font-size: 16px;
-      line-height: 1.5;
-      color: var(--secondary-text-color, #727272);
+      font-size: var(--ha-font-size-md);
+      line-height: var(--ha-line-height-normal);
+      color: var(--ha-color-text-secondary);
     }
   `;
 }
