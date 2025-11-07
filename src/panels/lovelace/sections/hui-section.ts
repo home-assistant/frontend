@@ -13,10 +13,7 @@ import type {
 } from "../../../data/lovelace/config/section";
 import { isStrategySection } from "../../../data/lovelace/config/section";
 import type { HomeAssistant } from "../../../types";
-import {
-  ConditionalListenerMixin,
-  setupMediaQueryListeners,
-} from "../../../mixins/conditional-listener-mixin";
+import { ConditionalListenerMixin } from "../../../mixins/conditional-listener-mixin";
 import "../cards/hui-card";
 import type { HuiCard } from "../cards/hui-card";
 import { checkConditionsMet } from "../common/validate-condition";
@@ -150,21 +147,6 @@ export class HuiSection extends ConditionalListenerMixin(ReactiveElement) {
         this._updateElement();
       }
     }
-  }
-
-  protected setupConditionalListeners() {
-    if (!this._config?.visibility || !this.hass) {
-      return;
-    }
-
-    setupMediaQueryListeners(
-      this._config.visibility,
-      this.hass,
-      (unsub) => this.addConditionalListener(unsub),
-      (conditionsMet) => {
-        this._updateElement(conditionsMet);
-      }
-    );
   }
 
   private async _initializeConfig() {

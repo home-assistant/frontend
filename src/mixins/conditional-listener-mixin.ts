@@ -1,73 +1,25 @@
 import type { ReactiveElement } from "lit";
-import { listenMediaQuery } from "../common/dom/media_query";
 import type { HomeAssistant } from "../types";
-import type { Condition } from "../panels/lovelace/common/validate-condition";
-import { checkConditionsMet } from "../panels/lovelace/common/validate-condition";
+import { setupMediaQueryListeners } from "../common/condition/listeners";
 
 type Constructor<T> = abstract new (...args: any[]) => T;
 
 /**
- * Extract media queries from conditions recursively
- */
-export function extractMediaQueries(conditions: Condition[]): string[] {
-  return conditions.reduce<string[]>((array, c) => {
-    if ("conditions" in c && c.conditions) {
-      array.push(...extractMediaQueries(c.conditions));
-    }
-    if (c.condition === "screen" && c.media_query) {
-      array.push(c.media_query);
-    }
-    return array;
-  }, []);
-}
-
-/**
- * Helper to setup media query listeners for conditional visibility
- */
-export function setupMediaQueryListeners(
-  conditions: Condition[],
-  hass: HomeAssistant,
-  addListener: (unsub: () => void) => void,
-  onUpdate: (conditionsMet: boolean) => void
-): void {
-  const mediaQueries = extractMediaQueries(conditions);
-
-  if (mediaQueries.length === 0) return;
-
-  // Optimization for single media query
-  const hasOnlyMediaQuery =
-    conditions.length === 1 &&
-    conditions[0].condition === "screen" &&
-    !!conditions[0].media_query;
-
-  mediaQueries.forEach((mediaQuery) => {
-    const unsub = listenMediaQuery(mediaQuery, (matches) => {
-      if (hasOnlyMediaQuery) {
-        onUpdate(matches);
-      } else {
-        const conditionsMet = checkConditionsMet(conditions, hass);
-        onUpdate(conditionsMet);
-      }
-    });
-    addListener(unsub);
-  });
-}
-
-/**
  * Mixin to handle conditional listeners for visibility control
  *
- * Provides lifecycle management for listeners (media queries, time-based, state changes, etc.)
- * that control conditional visibility of components.
+ * Provides lifecycle management for listeners that control conditional
+ * visibility of components.
  *
  * Usage:
  * 1. Extend your component with ConditionalListenerMixin(ReactiveElement)
- * 2. Override setupConditionalListeners() to setup your listeners
- * 3. Use addConditionalListener() to register unsubscribe functions
- * 4. Call clearConditionalListeners() and setupConditionalListeners() when config changes
+ * 2. Ensure component has config.visibility or _config.visibility property with conditions
+ * 3. Ensure component has _updateVisibility() or _updateElement() method
+ * 4. Override setupConditionalListeners() if custom behavior needed (e.g., filter conditions)
  *
  * The mixin automatically:
  * - Sets up listeners when component connects to DOM
  * - Cleans up listeners when component disconnects from DOM
+ * - Handles conditional visibility based on defined conditions
  */
 export const ConditionalListenerMixin = <
   T extends Constructor<ReactiveElement>,
@@ -76,6 +28,9 @@ export const ConditionalListenerMixin = <
 ) => {
   abstract class ConditionalListenerClass extends superClass {
     private __listeners: (() => void)[] = [];
+
+    // Type hint for hass property (should be provided by subclass)
+    abstract hass?: HomeAssistant;
 
     public connectedCallback() {
       super.connectedCallback();
@@ -96,8 +51,44 @@ export const ConditionalListenerMixin = <
       this.__listeners.push(unsubscribe);
     }
 
-    protected setupConditionalListeners(): void {
-      // Override in subclass
+    /**
+     * Setup conditional listeners for visibility control
+     *
+     * Default implementation:
+     * - Checks config.visibility or _config.visibility for conditions (if not provided)
+     * - Sets up appropriate listeners based on condition types
+     * - Calls _updateVisibility() or _updateElement() when conditions change
+     *
+     * Override this method to customize behavior (e.g., filter conditions first)
+     * and call super.setupConditionalListeners(customConditions) to reuse the base implementation
+     *
+     * @param conditions - Optional conditions array. If not provided, will check config.visibility or _config.visibility
+     */
+    protected setupConditionalListeners(conditions?: any[]): void {
+      const component = this as any;
+      const finalConditions =
+        conditions ||
+        component.config?.visibility ||
+        component._config?.visibility;
+
+      if (!finalConditions || !this.hass) {
+        return;
+      }
+
+      const onUpdate = (conditionsMet: boolean) => {
+        if (component._updateVisibility) {
+          component._updateVisibility(conditionsMet);
+        } else if (component._updateElement) {
+          component._updateElement(conditionsMet);
+        }
+      };
+
+      setupMediaQueryListeners(
+        finalConditions,
+        this.hass,
+        (unsub) => this.addConditionalListener(unsub),
+        onUpdate
+      );
     }
   }
   return ConditionalListenerClass;

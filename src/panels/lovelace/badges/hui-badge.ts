@@ -5,10 +5,7 @@ import { fireEvent } from "../../../common/dom/fire_event";
 import "../../../components/ha-svg-icon";
 import type { LovelaceBadgeConfig } from "../../../data/lovelace/config/badge";
 import type { HomeAssistant } from "../../../types";
-import {
-  ConditionalListenerMixin,
-  setupMediaQueryListeners,
-} from "../../../mixins/conditional-listener-mixin";
+import { ConditionalListenerMixin } from "../../../mixins/conditional-listener-mixin";
 import { checkConditionsMet } from "../common/validate-condition";
 import { createBadgeElement } from "../create-element/create-badge-element";
 import { createErrorBadgeConfig } from "../create-element/create-element-base";
@@ -131,21 +128,6 @@ export class HuiBadge extends ConditionalListenerMixin(ReactiveElement) {
     if (changedProps.has("hass") || changedProps.has("preview")) {
       this._updateVisibility();
     }
-  }
-
-  protected setupConditionalListeners() {
-    if (!this.config?.visibility || !this.hass) {
-      return;
-    }
-
-    setupMediaQueryListeners(
-      this.config.visibility,
-      this.hass,
-      (unsub) => this.addConditionalListener(unsub),
-      (conditionsMet) => {
-        this._updateVisibility(conditionsMet);
-      }
-    );
   }
 
   private _updateVisibility(ignoreConditions?: boolean) {

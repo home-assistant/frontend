@@ -5,10 +5,7 @@ import { fireEvent } from "../../../common/dom/fire_event";
 import "../../../components/ha-svg-icon";
 import type { LovelaceCardConfig } from "../../../data/lovelace/config/card";
 import type { HomeAssistant } from "../../../types";
-import {
-  ConditionalListenerMixin,
-  setupMediaQueryListeners,
-} from "../../../mixins/conditional-listener-mixin";
+import { ConditionalListenerMixin } from "../../../mixins/conditional-listener-mixin";
 import { migrateLayoutToGridOptions } from "../common/compute-card-grid-size";
 import { computeCardSize } from "../common/compute-card-size";
 import { checkConditionsMet } from "../common/validate-condition";
@@ -245,21 +242,6 @@ export class HuiCard extends ConditionalListenerMixin(ReactiveElement) {
     if (changedProps.has("hass") || changedProps.has("preview")) {
       this._updateVisibility();
     }
-  }
-
-  protected setupConditionalListeners() {
-    if (!this.config?.visibility || !this.hass) {
-      return;
-    }
-
-    setupMediaQueryListeners(
-      this.config.visibility,
-      this.hass,
-      (unsub) => this.addConditionalListener(unsub),
-      (conditionsMet) => {
-        this._updateVisibility(conditionsMet);
-      }
-    );
   }
 
   private _updateVisibility(ignoreConditions?: boolean) {

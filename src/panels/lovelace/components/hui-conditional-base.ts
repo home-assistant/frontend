@@ -2,10 +2,7 @@ import type { PropertyValues } from "lit";
 import { ReactiveElement } from "lit";
 import { customElement, property, state } from "lit/decorators";
 import type { HomeAssistant } from "../../../types";
-import {
-  ConditionalListenerMixin,
-  setupMediaQueryListeners,
-} from "../../../mixins/conditional-listener-mixin";
+import { ConditionalListenerMixin } from "../../../mixins/conditional-listener-mixin";
 import type { HuiCard } from "../cards/hui-card";
 import type { ConditionalCardConfig } from "../cards/types";
 import type { Condition } from "../common/validate-condition";
@@ -73,18 +70,13 @@ export class HuiConditionalBase extends ConditionalListenerMixin(
       return;
     }
 
+    // Filter to supported conditions (those with 'condition' property)
     const supportedConditions = this._config.conditions.filter(
       (c) => "condition" in c
     ) as Condition[];
 
-    setupMediaQueryListeners(
-      supportedConditions,
-      this.hass,
-      (unsub) => this.addConditionalListener(unsub),
-      (conditionsMet) => {
-        this.setVisibility(conditionsMet);
-      }
-    );
+    // Pass filtered conditions to parent implementation
+    super.setupConditionalListeners(supportedConditions);
   }
 
   protected update(changed: PropertyValues): void {
@@ -102,17 +94,15 @@ export class HuiConditionalBase extends ConditionalListenerMixin(
     }
   }
 
-  private _updateVisibility() {
+  private _updateVisibility(conditionsMet?: boolean) {
     if (!this._element || !this.hass || !this._config) {
       return;
     }
 
     this._element.preview = this.preview;
 
-    const conditionMet = checkConditionsMet(
-      this._config!.conditions,
-      this.hass!
-    );
+    const conditionMet =
+      conditionsMet ?? checkConditionsMet(this._config.conditions, this.hass);
 
     this.setVisibility(conditionMet);
   }
