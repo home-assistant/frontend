@@ -91,7 +91,8 @@ export default class HaAutomationSidebarAction extends LitElement {
 
     if (type === "service" && (actionConfig as ServiceAction).action) {
       const [domain, service] = (actionConfig as ServiceAction).action!.split(
-        "."
+        ".",
+        2
       );
       title = `${domainToName(this.hass.localize, domain)}: ${
         this.hass.localize(`component.${domain}.services.${service}.name`) ||
