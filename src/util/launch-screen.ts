@@ -1,8 +1,16 @@
 import type { TemplateResult } from "lit";
 import { render } from "lit";
 
-const removeElement = (launchScreenElement: HTMLElement) => {
+const removeElement = (
+  launchScreenElement: HTMLElement,
+  skipAnimation: boolean
+) => {
   launchScreenElement.classList.add("removing");
+
+  if (skipAnimation) {
+    launchScreenElement.parentElement?.removeChild(launchScreenElement);
+    return;
+  }
 
   const durationFromCss = getComputedStyle(document.documentElement)
     .getPropertyValue("--ha-animation-base-duration")
@@ -32,11 +40,11 @@ export const removeLaunchScreen = () => {
 
   if (document.startViewTransition) {
     document.startViewTransition(() => {
-      removeElement(launchScreenElement);
+      removeElement(launchScreenElement, false);
     });
   } else {
     // Fallback: Direct removal without transition
-    removeElement(launchScreenElement);
+    removeElement(launchScreenElement, true);
   }
 };
 
