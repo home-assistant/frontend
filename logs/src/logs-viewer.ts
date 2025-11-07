@@ -15,68 +15,57 @@ import "../../src/components/ha-icon-button";
 import "../../src/components/ha-list-item";
 import "../../src/components/ha-spinner";
 
-// Mock data types - replace with actual types from your data layer
-interface MockLogProvider {
+// Data types
+interface LogProvider {
   key: string;
   name: string;
 }
-
-// Mock log providers - replace with actual data source
-const mockLogProviders: MockLogProvider[] = [
-  { key: "core", name: "Home Assistant Core" },
-  { key: "supervisor", name: "Supervisor" },
-  { key: "custom", name: "Custom Component" },
-];
-
-// Mock log data - replace with actual data fetching (raw text)
-const mockLogText = `2025-01-07 10:30:45 ERROR (MainThread) [homeassistant.components.example] Connection timeout to device
-Traceback (most recent call last):
-  File "/usr/src/homeassistant/homeassistant/components/example/sensor.py", line 123, in async_update
-    await self._client.connect()
-TimeoutError: Connection timeout after 30 seconds
-
-2025-01-07 10:29:12 WARNING (MainThread) [homeassistant.components.api] Slow response from API endpoint
-Response time: 5.2 seconds
-
-2025-01-07 10:28:03 INFO (MainThread) [homeassistant.core] System started successfully
-Home Assistant version: 2025.1.0
-Python version: 3.12.0
-
-2025-01-07 10:27:30 DEBUG (MainThread) [homeassistant.loader] Loading integration example
-2025-01-07 10:27:29 DEBUG (MainThread) [homeassistant.loader] Loading integration api`;
 
 @customElement("logs-viewer")
 export class LogsViewer extends LitElement {
   @property({ type: Boolean }) public narrow = false;
 
-  @state() private _selectedLogProvider = "core";
+  @state() private _selectedLogProvider?: string;
 
-  @state() private _logProviders = mockLogProviders;
+  @state() private _logProviders: LogProvider[] = [];
 
-  @state() private _logText = mockLogText;
+  @state() private _logText = "";
 
   @state() private _loading = false;
 
   @state() private _wrapLines = true;
 
-  // MOCK CONNECTION POINT: Replace with actual data fetching
+  // CONNECTION POINT: Replace with actual data fetching
   private async _fetchLogs(): Promise<void> {
+    if (!this._selectedLogProvider) {
+      return;
+    }
+
     this._loading = true;
     // TODO: Replace with actual API call
     // Example: const logs = await fetchLogsFromApi(this._selectedLogProvider);
     // For streaming: use fetchHassioLogsFollow or fetchErrorLog
-    await new Promise((resolve) => {
-      setTimeout(resolve, 500);
-    }); // Simulate network delay
-    this._logText = mockLogText;
-    this._loading = false;
+    try {
+      // Your fetch logic here
+      this._logText = "";
+    } catch (err) {
+      // Handle error
+      this._logText = `Error loading logs: ${err}`;
+    } finally {
+      this._loading = false;
+    }
   }
 
-  // MOCK CONNECTION POINT: Replace with actual provider list fetching
+  // CONNECTION POINT: Replace with actual provider list fetching
   private async _fetchLogProviders(): Promise<void> {
     // TODO: Replace with actual API call to get available log providers
     // Example: const providers = await fetchAvailableProviders();
-    this._logProviders = mockLogProviders;
+    this._logProviders = [];
+
+    // Set default provider once loaded
+    if (this._logProviders.length > 0 && !this._selectedLogProvider) {
+      this._selectedLogProvider = this._logProviders[0].key;
+    }
   }
 
   connectedCallback() {
@@ -100,11 +89,12 @@ export class LogsViewer extends LitElement {
   }
 
   private _downloadLogs() {
-    // MOCK CONNECTION POINT: Replace with actual download implementation
+    // CONNECTION POINT: Replace with actual download implementation
     // Example: const url = await getLogDownloadUrl(this._selectedLogProvider);
     // fileDownload(url, `logs_${Date.now()}.log`);
-    // eslint-disable-next-line no-console
-    console.log("Download logs for", this._selectedLogProvider);
+    if (this._selectedLogProvider) {
+      // Your download logic here
+    }
   }
 
   render() {
