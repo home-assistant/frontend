@@ -2,7 +2,10 @@ import type { EChartsType } from "echarts/core";
 import type { GraphSeriesOption } from "echarts/charts";
 import { css, html, LitElement, nothing } from "lit";
 import { customElement, property, state, query } from "lit/decorators";
-import type { TopLevelFormatterParams } from "echarts/types/dist/shared";
+import type {
+  CallbackDataParams,
+  TopLevelFormatterParams,
+} from "echarts/types/dist/shared";
 import { mdiFormatTextVariant, mdiGoogleCirclesGroup } from "@mdi/js";
 import memoizeOne from "memoize-one";
 import { listenMediaQuery } from "../../common/dom/media_query";
@@ -189,12 +192,12 @@ export class HaNetworkGraph extends SubscribeMixin(LitElement) {
       label: {
         show: showLabels,
         position: "right",
-        formatter: (params: any) => {
-          const node = params.data;
+        formatter: (params: CallbackDataParams) => {
+          const node = params.data as NetworkNode;
           if (node.context) {
-            return `{primary|${node.name}}\n{secondary|${node.context}}`;
+            return `{primary|${node.name ?? ""}}\n{secondary|${node.context}}`;
           }
-          return node.name;
+          return node.name ?? "";
         },
         rich: {
           primary: {
