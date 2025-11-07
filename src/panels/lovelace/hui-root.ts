@@ -554,7 +554,9 @@ class HUIRoot extends LitElement {
                 .hass=${this.hass}
                 .narrow=${this.narrow}
                 .lovelace=${this.lovelace}
-                .curView=${typeof this._curView === "number" ? this._curView : 0}
+                .curView=${typeof this._curView === "number"
+                  ? this._curView
+                  : 0}
               ></hui-lovelace>
             `}
       </div>
