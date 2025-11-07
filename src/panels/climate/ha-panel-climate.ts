@@ -25,8 +25,6 @@ class PanelClimate extends LitElement {
 
   @property({ type: Boolean, reflect: true }) public narrow = false;
 
-  @state() private _curView = 0;
-
   @state() private _lovelace?: Lovelace;
 
   @state() private _searchParms = new URLSearchParams(window.location.search);
@@ -114,7 +112,7 @@ class PanelClimate extends LitElement {
               .hass=${this.hass}
               .narrow=${this.narrow}
               .lovelace=${this._lovelace}
-              .curView=${this._curView}
+              .curView=${0}
             ></hui-lovelace>
           `
         : nothing}
