@@ -371,7 +371,11 @@ export class HaManualScriptEditor extends LitElement {
       }
     }
 
-    if (!["sequence", "unknown"].includes(getActionType(config))) {
+    const actionType = getActionType(config);
+    if (
+      !["sequence", "unknown"].includes(actionType) ||
+      (actionType === "sequence" && "metadata" in config)
+    ) {
       config = { sequence: [config] };
     }
 

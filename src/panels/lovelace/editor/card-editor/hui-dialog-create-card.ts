@@ -296,11 +296,7 @@ export class HuiCreateDialogCard
   }
 
   private _suggestCards(): void {
-    const cardConfig = computeCards(
-      this.hass.states,
-      this._selectedEntities,
-      {}
-    );
+    const cardConfig = computeCards(this.hass, this._selectedEntities, {});
 
     let sectionOptions: Partial<LovelaceSectionConfig> = {};
 

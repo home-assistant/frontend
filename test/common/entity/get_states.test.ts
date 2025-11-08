@@ -201,6 +201,7 @@ describe("getStates", () => {
           "pm1",
           "pm10",
           "pm25",
+          "pm4",
           "power_factor",
           "power",
           "pressure",
@@ -215,7 +216,7 @@ describe("getStates", () => {
           "volume_flow_rate",
         ])
       );
-      expect(result.length).toBe(34);
+      expect(result.length).toBe(35);
     });
 
     it("should return empty array for unknown attribute", () => {

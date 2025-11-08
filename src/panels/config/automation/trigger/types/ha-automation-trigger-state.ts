@@ -245,18 +245,20 @@ export class HaStateTrigger extends LitElement implements TriggerElement {
       newTrigger.to,
       newTrigger.attribute
     );
+    if (Array.isArray(newTrigger.to) && newTrigger.to.length === 0) {
+      delete newTrigger.to;
+    }
     newTrigger.from = this._applyAnyStateExclusive(
       newTrigger.from,
       newTrigger.attribute
     );
+    if (Array.isArray(newTrigger.from) && newTrigger.from.length === 0) {
+      delete newTrigger.from;
+    }
 
     Object.keys(newTrigger).forEach((key) => {
       const val = newTrigger[key];
-      if (
-        val === undefined ||
-        val === "" ||
-        (Array.isArray(val) && val.length === 0)
-      ) {
+      if (val === undefined || val === "") {
         delete newTrigger[key];
       }
     });

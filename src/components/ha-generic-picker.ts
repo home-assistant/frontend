@@ -10,7 +10,6 @@ import type { HomeAssistant } from "../types";
 import "./ha-bottom-sheet";
 import "./ha-button";
 import "./ha-combo-box-item";
-import "./ha-icon-button";
 import "./ha-input-helper-text";
 import "./ha-picker-combo-box";
 import type {

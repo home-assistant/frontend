@@ -588,7 +588,11 @@ export default class HaAutomationActionRow extends LitElement {
       ...this._clipboard,
       action: deepClone(this.action),
     };
-    copyToClipboard(dump(this.action));
+    let action = this.action;
+    if ("sequence" in action) {
+      action = { ...this.action, metadata: {} };
+    }
+    copyToClipboard(dump(action));
   }
 
   private _onDisable = () => {

@@ -5,6 +5,7 @@ import {
   generateEntityFilter,
   type EntityFilter,
 } from "../../../common/entity/entity_filter";
+import { floorDefaultIcon } from "../../../components/ha-floor-icon";
 import type { LovelaceCardConfig } from "../../../data/lovelace/config/card";
 import type { LovelaceSectionRawConfig } from "../../../data/lovelace/config/section";
 import type { LovelaceViewConfig } from "../../../data/lovelace/config/view";
@@ -60,6 +61,24 @@ const processAreasForLight = (
   return cards;
 };
 
+const processUnassignedLights = (
+  hass: HomeAssistant,
+  entities: string[]
+): LovelaceCardConfig[] => {
+  const unassignedFilter = generateEntityFilter(hass, {
+    area: null,
+  });
+  const unassignedLights = entities.filter(unassignedFilter);
+  const areaCards: LovelaceCardConfig[] = [];
+  const computeTileCard = computeAreaTileCardConfig(hass, "", false);
+
+  for (const entityId of unassignedLights) {
+    areaCards.push(computeTileCard(entityId));
+  }
+
+  return areaCards;
+};
+
 @customElement("light-view-strategy")
 export class LightViewStrategy extends ReactiveElement {
   static async generate(
@@ -98,6 +117,7 @@ export class LightViewStrategy extends ReactiveElement {
               floorCount > 1
                 ? floor.name
                 : hass.localize("ui.panel.lovelace.strategy.home.areas"),
+            icon: floor.icon || floorDefaultIcon(floor),
           },
         ],
       };
@@ -134,10 +154,30 @@ export class LightViewStrategy extends ReactiveElement {
       }
     }
 
+    // Process unassigned lights
+    const unassignedCards = processUnassignedLights(hass, entities);
+    if (unassignedCards.length > 0) {
+      const section: LovelaceSectionRawConfig = {
+        type: "grid",
+        column_span: 2,
+        cards: [
+          {
+            type: "heading",
+            heading:
+              sections.length > 0
+                ? hass.localize("ui.panel.lovelace.strategy.light.other_lights")
+                : hass.localize("ui.panel.lovelace.strategy.light.lights"),
+          },
+          ...unassignedCards,
+        ],
+      };
+      sections.push(section);
+    }
+
     return {
       type: "sections",
       max_columns: 2,
-      sections: sections || [],
+      sections: sections,
     };
   }
 }
