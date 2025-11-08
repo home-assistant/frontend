@@ -320,9 +320,9 @@ export class HaConfigLovelaceDashboards extends LitElement {
 
       if (this.hass.panels.light) {
         result.push({
-          icon: "mdi:lamps",
+          icon: this.hass.panels.light.icon || "mdi:lamps",
           title: this.hass.localize("panel.light"),
-          show_in_sidebar: false,
+          show_in_sidebar: true,
           mode: "storage",
           url_path: "light",
           filename: "",
@@ -334,9 +334,9 @@ export class HaConfigLovelaceDashboards extends LitElement {
 
       if (this.hass.panels.security) {
         result.push({
-          icon: "mdi:security",
+          icon: this.hass.panels.security.icon || "mdi:security",
           title: this.hass.localize("panel.security"),
-          show_in_sidebar: false,
+          show_in_sidebar: true,
           mode: "storage",
           url_path: "security",
           filename: "",
@@ -348,9 +348,9 @@ export class HaConfigLovelaceDashboards extends LitElement {
 
       if (this.hass.panels.climate) {
         result.push({
-          icon: "mdi:home-thermometer",
+          icon: this.hass.panels.climate.icon || "mdi:home-thermometer",
           title: this.hass.localize("panel.climate"),
-          show_in_sidebar: false,
+          show_in_sidebar: true,
           mode: "storage",
           url_path: "climate",
           filename: "",
