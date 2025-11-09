@@ -413,7 +413,7 @@ class HaWebRtcPlayer extends LitElement {
     }
   };
 
-  private _iceGatheringStateChanged = (event) => {
+  private _iceGatheringStateChanged = () => {
     this._logEvent(
       "ice gathering state change",
       this._peerConnection?.iceGatheringState
