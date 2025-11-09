@@ -4,10 +4,10 @@ import { fireEvent } from "../../common/dom/fire_event";
 import "../../components/ha-button";
 import { createCloseHeading } from "../../components/ha-dialog";
 import "../../components/ha-form/ha-form";
+import { haStyleDialog } from "../../resources/styles";
 import type { HomeAssistant } from "../../types";
 import type { HassDialog } from "../make-dialog-manager";
 import type { FormDialogData, FormDialogParams } from "./show-form-dialog";
-import { haStyleDialog } from "../../resources/styles";
 
 @customElement("dialog-form")
 export class DialogForm
@@ -69,7 +69,11 @@ export class DialogForm
           @value-changed=${this._valueChanged}
         >
         </ha-form>
-        <ha-button @click=${this._cancel} slot="secondaryAction">
+        <ha-button
+          appearance="plain"
+          @click=${this._cancel}
+          slot="secondaryAction"
+        >
           ${this._params.cancelText || this.hass.localize("ui.common.cancel")}
         </ha-button>
         <ha-button @click=${this._submit} slot="primaryAction">

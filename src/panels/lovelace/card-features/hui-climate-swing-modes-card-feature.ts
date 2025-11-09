@@ -176,7 +176,7 @@ class HuiClimateSwingModesCardFeature
           .options=${options}
           .value=${this._currentSwingMode}
           @value-changed=${this._valueChanged}
-          hide-label
+          hide-option-label
           .ariaLabel=${this.hass!.formatEntityAttributeName(
             stateObj,
             "swing_mode"

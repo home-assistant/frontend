@@ -40,6 +40,7 @@ const STATE_COLORED_DOMAIN = new Set([
   "vacuum",
   "valve",
   "water_heater",
+  "weather",
 ]);
 
 export const stateColorCss = (stateObj: HassEntity, state?: string) => {

@@ -49,7 +49,7 @@ class OnboardingWelcomeLink extends LitElement {
     ha-svg-icon {
       color: var(--text-primary-color);
       background: var(--welcome-link-color, var(--primary-color));
-      border-radius: 50%;
+      border-radius: var(--ha-border-radius-circle);
       padding: 8px;
       margin-bottom: 16px;
     }

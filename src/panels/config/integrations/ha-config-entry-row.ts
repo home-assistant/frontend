@@ -2,6 +2,7 @@ import {
   mdiAlertCircle,
   mdiChevronDown,
   mdiCogOutline,
+  mdiContentCopy,
   mdiDelete,
   mdiDevices,
   mdiDotsVertical,
@@ -23,6 +24,8 @@ import { customElement, property, state } from "lit/decorators";
 import { classMap } from "lit/directives/class-map";
 import memoizeOne from "memoize-one";
 import { isDevVersion } from "../../../common/config/version";
+import { computeDeviceNameDisplay } from "../../../common/entity/compute_device_name";
+import { caseInsensitiveStringCompare } from "../../../common/string/compare";
 import {
   deleteApplicationCredential,
   fetchApplicationCredentialsConfigEntry,
@@ -69,6 +72,8 @@ import {
 import "./ha-config-entry-device-row";
 import { renderConfigEntryError } from "./ha-config-integration-page";
 import "./ha-config-sub-entry-row";
+import { copyToClipboard } from "../../../common/util/copy-clipboard";
+import { showToast } from "../../../util/toast";
 
 @customElement("ha-config-entry-row")
 class HaConfigEntryRow extends LitElement {
@@ -205,7 +210,7 @@ class HaConfigEntryRow extends LitElement {
             : nothing}
         </div>
         ${item.disabled_by === "user"
-          ? html`<ha-button unelevated slot="end" @click=${this._handleEnable}>
+          ? html`<ha-button slot="end" @click=${this._handleEnable}>
               ${this.hass.localize("ui.common.enable")}
             </ha-button>`
           : configPanel &&
@@ -310,6 +315,13 @@ class HaConfigEntryRow extends LitElement {
             <ha-svg-icon slot="start" .path=${mdiRenameBox}></ha-svg-icon>
             ${this.hass.localize(
               "ui.panel.config.integrations.config_entry.rename"
+            )}
+          </ha-md-menu-item>
+
+          <ha-md-menu-item @click=${this._handleCopy} graphic="icon">
+            <ha-svg-icon slot="start" .path=${mdiContentCopy}></ha-svg-icon>
+            ${this.hass.localize(
+              "ui.panel.config.integrations.config_entry.copy"
             )}
           </ha-md-menu-item>
 
@@ -474,7 +486,13 @@ class HaConfigEntryRow extends LitElement {
 
   private async _fetchSubEntries() {
     this._subEntries = this.entry.num_subentries
-      ? await getSubEntries(this.hass, this.entry.entry_id)
+      ? (await getSubEntries(this.hass, this.entry.entry_id)).sort((a, b) =>
+          caseInsensitiveStringCompare(
+            a.title,
+            b.title,
+            this.hass.locale.language
+          )
+        )
       : undefined;
   }
 
@@ -491,18 +509,34 @@ class HaConfigEntryRow extends LitElement {
     );
 
   private _getDevices = (): DeviceRegistryEntry[] =>
-    Object.values(this.hass.devices).filter(
-      (device) =>
-        device.config_entries.includes(this.entry.entry_id) &&
-        device.entry_type !== "service"
-    );
+    Object.values(this.hass.devices)
+      .filter(
+        (device) =>
+          device.config_entries.includes(this.entry.entry_id) &&
+          device.entry_type !== "service"
+      )
+      .sort((a, b) =>
+        caseInsensitiveStringCompare(
+          computeDeviceNameDisplay(a, this.hass),
+          computeDeviceNameDisplay(b, this.hass),
+          this.hass.locale.language
+        )
+      );
 
   private _getServices = (): DeviceRegistryEntry[] =>
-    Object.values(this.hass.devices).filter(
-      (device) =>
-        device.config_entries.includes(this.entry.entry_id) &&
-        device.entry_type === "service"
-    );
+    Object.values(this.hass.devices)
+      .filter(
+        (device) =>
+          device.config_entries.includes(this.entry.entry_id) &&
+          device.entry_type === "service"
+      )
+      .sort((a, b) =>
+        caseInsensitiveStringCompare(
+          computeDeviceNameDisplay(a, this.hass),
+          computeDeviceNameDisplay(b, this.hass),
+          this.hass.locale.language
+        )
+      );
 
   private _toggleExpand() {
     this._expanded = !this._expanded;
@@ -596,6 +630,15 @@ class HaConfigEntryRow extends LitElement {
       manifest: await fetchIntegrationManifest(this.hass, this.entry.domain),
       entryId: this.entry.entry_id,
       navigateToResult: true,
+    });
+  }
+
+  private async _handleCopy() {
+    await copyToClipboard(this.entry.entry_id);
+    showToast(this, {
+      message:
+        this.hass?.localize("ui.common.copied_clipboard") ||
+        "Copied to clipboard",
     });
   }
 
@@ -751,7 +794,7 @@ class HaConfigEntryRow extends LitElement {
       }
       ha-md-list {
         border: 1px solid var(--divider-color);
-        border-radius: var(--ha-card-border-radius, 12px);
+        border-radius: var(--ha-card-border-radius, var(--ha-border-radius-lg));
         padding: 0;
       }
       :host([narrow]) {
@@ -770,7 +813,7 @@ class HaConfigEntryRow extends LitElement {
       }
       .toggle-devices-row {
         overflow: hidden;
-        border-radius: var(--ha-card-border-radius, 12px);
+        border-radius: var(--ha-card-border-radius, var(--ha-border-radius-lg));
       }
       .toggle-devices-row.expanded {
         border-bottom-left-radius: 0;

@@ -30,7 +30,8 @@ import type {
 import "../../../../components/ha-icon-button";
 import "../../../../components/ha-icon-button-arrow-next";
 import "../../../../components/ha-icon-button-arrow-prev";
-import "../../../../components/sl-tab-group";
+import "../../../../components/ha-tab-group";
+import "../../../../components/ha-tab-group-tab";
 import type { LovelaceCardConfig } from "../../../../data/lovelace/config/card";
 import type { LovelaceConfig } from "../../../../data/lovelace/config/types";
 import type { HomeAssistant } from "../../../../types";
@@ -123,14 +124,18 @@ export class HuiStackCardEditor
       ></ha-form>
       <div class="card-config">
         <div class="toolbar">
-          <sl-tab-group @sl-tab-show=${this._handleSelectedCard}>
+          <ha-tab-group @wa-tab-show=${this._handleSelectedCard}>
             ${this._config.cards.map(
               (_card, i) =>
-                html`<sl-tab slot="nav" .panel=${i} .active=${i === selected}>
+                html`<ha-tab-group-tab
+                  slot="nav"
+                  .panel=${i}
+                  .active=${i === selected}
+                >
                   ${i + 1}
-                </sl-tab>`
+                </ha-tab-group-tab>`
             )}
-          </sl-tab-group>
+          </ha-tab-group>
           <ha-icon-button
             @click=${this._handleAddCard}
             .path=${mdiPlus}
@@ -229,8 +234,6 @@ export class HuiStackCardEditor
 
   protected async _handleAddCard() {
     this._selectedCard = this._config!.cards.length;
-    await this.updateComplete;
-    this.renderRoot.querySelector("sl-tab-group")!.syncIndicator();
   }
 
   protected _handleSelectedCard(ev) {
@@ -335,7 +338,7 @@ export class HuiStackCardEditor
           justify-content: space-between;
           align-items: center;
         }
-        sl-tab-group {
+        ha-tab-group {
           flex-grow: 1;
           min-width: 0;
           --ha-tab-track-color: var(--card-background-color);

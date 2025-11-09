@@ -4,6 +4,7 @@ import type { CSSResultGroup, PropertyValues } from "lit";
 import { css, html, LitElement, nothing } from "lit";
 import { customElement, property, state } from "lit/decorators";
 import { fireEvent } from "../common/dom/fire_event";
+import { deepEqual } from "../common/util/deep-equal";
 import type { Blueprints } from "../data/blueprint";
 import { fetchBlueprints } from "../data/blueprint";
 import type { RelatedResult } from "../data/search";
@@ -14,7 +15,6 @@ import "./ha-check-list-item";
 import "./ha-expansion-panel";
 import "./ha-icon-button";
 import "./ha-list";
-import { deepEqual } from "../common/util/deep-equal";
 
 @customElement("ha-filter-blueprints")
 export class HaFilterBlueprints extends LitElement {
@@ -189,7 +189,7 @@ export class HaFilterBlueprints extends LitElement {
           height: 0;
         }
         ha-expansion-panel {
-          --ha-card-border-radius: 0;
+          --ha-card-border-radius: var(--ha-border-radius-square);
           --expansion-panel-content-padding: 0;
         }
         .header {
@@ -207,7 +207,7 @@ export class HaFilterBlueprints extends LitElement {
           margin-inline-end: 0;
           min-width: 16px;
           box-sizing: border-box;
-          border-radius: 50%;
+          border-radius: var(--ha-border-radius-circle);
           font-size: var(--ha-font-size-xs);
           font-weight: var(--ha-font-weight-normal);
           background-color: var(--primary-color);

@@ -1,4 +1,3 @@
-import "@material/mwc-button";
 import type { CSSResultGroup, PropertyValues, TemplateResult } from "lit";
 import { css, html, LitElement, nothing } from "lit";
 import { customElement, property, state } from "lit/decorators";
@@ -11,6 +10,7 @@ import {
 import { computeDomain } from "../../common/entity/compute_domain";
 import { navigate } from "../../common/navigate";
 import "../../components/ha-area-picker";
+import "../../components/ha-button";
 import { assistSatelliteSupportsSetupFlow } from "../../data/assist_satellite";
 import type { DataEntryFlowStepCreateEntry } from "../../data/data_entry_flow";
 import type { DeviceRegistryEntry } from "../../data/device_registry";
@@ -27,6 +27,7 @@ import { showAlertDialog } from "../generic/show-dialog-box";
 import { showVoiceAssistantSetupDialog } from "../voice-assistant-setup/show-voice-assistant-setup-dialog";
 import type { FlowConfig } from "./show-dialog-data-entry-flow";
 import { configFlowContentStyles } from "./styles";
+import { getConfigEntries } from "../../data/config_entries";
 
 @customElement("step-flow-create-entry")
 class StepFlowCreateEntry extends LitElement {
@@ -37,6 +38,8 @@ class StepFlowCreateEntry extends LitElement {
   @property({ attribute: false }) public step!: DataEntryFlowStepCreateEntry;
 
   @property({ attribute: false }) public devices!: DeviceRegistryEntry[];
+
+  private _domains: Record<string, string> = {};
 
   public navigateToResult = false;
 
@@ -57,6 +60,11 @@ class StepFlowCreateEntry extends LitElement {
           (!domain || computeDomain(entity.entity_id) === domain)
       )
   );
+
+  protected firstUpdated(changedProps: PropertyValues) {
+    super.firstUpdated(changedProps);
+    this._loadDomains();
+  }
 
   protected willUpdate(changedProps: PropertyValues) {
     if (!changedProps.has("devices") && !changedProps.has("hass")) {
@@ -92,6 +100,12 @@ class StepFlowCreateEntry extends LitElement {
 
   protected render(): TemplateResult {
     const localize = this.hass.localize;
+    const domains = this.step.result
+      ? {
+          ...this._domains,
+          [this.step.result.entry_id]: this.step.result.domain,
+        }
+      : this._domains;
     return html`
       <div class="content">
         ${this.flowConfig.renderCreateEntryDescription(this.hass, this.step)}
@@ -118,15 +132,16 @@ class StepFlowCreateEntry extends LitElement {
                     (device) => html`
                       <div class="device">
                         <div class="device-info">
-                          ${this.step.result?.domain
+                          ${device.primary_config_entry &&
+                          domains[device.primary_config_entry]
                             ? html`<img
                                 slot="graphic"
                                 alt=${domainToName(
                                   this.hass.localize,
-                                  this.step.result.domain
+                                  domains[device.primary_config_entry]
                                 )}
                                 src=${brandsUrl({
-                                  domain: this.step.result.domain,
+                                  domain: domains[device.primary_config_entry],
                                   type: "icon",
                                   darkOptimized: this.hass.themes?.darkMode,
                                 })}
@@ -171,13 +186,24 @@ class StepFlowCreateEntry extends LitElement {
               `}
       </div>
       <div class="buttons">
-        <mwc-button @click=${this._flowDone}
+        <ha-button @click=${this._flowDone}
           >${localize(
-            `ui.panel.config.integrations.config_flow.${!this.devices.length || Object.keys(this._deviceUpdate).length ? "finish" : "finish_skip"}`
-          )}</mwc-button
+            `ui.panel.config.integrations.config_flow.${
+              !this.devices.length || Object.keys(this._deviceUpdate).length
+                ? "finish"
+                : "finish_skip"
+            }`
+          )}</ha-button
         >
       </div>
     `;
+  }
+
+  private async _loadDomains() {
+    const entries = await getConfigEntries(this.hass);
+    this._domains = Object.fromEntries(
+      entries.map((entry) => [entry.entry_id, entry.domain])
+    );
   }
 
   private async _flowDone(): Promise<void> {
@@ -212,7 +238,10 @@ class StepFlowCreateEntry extends LitElement {
         entityIds.push(...entities.map((entity) => entity.entity_id));
       });
 
-      const entityIdsMapping = getAutomaticEntityIds(this.hass, entityIds);
+      const entityIdsMapping = await getAutomaticEntityIds(
+        this.hass,
+        entityIds
+      );
 
       Object.entries(entityIdsMapping).forEach(([oldEntityId, newEntityId]) => {
         if (newEntityId) {
@@ -289,14 +318,14 @@ class StepFlowCreateEntry extends LitElement {
         .device {
           border: 1px solid var(--divider-color);
           padding: 6px;
-          border-radius: 4px;
+          border-radius: var(--ha-border-radius-sm);
           margin: 4px;
           display: inline-block;
         }
         .device-info {
           display: flex;
           align-items: center;
-          gap: 8px;
+          gap: var(--ha-space-2);
         }
         .device-info img {
           width: 40px;

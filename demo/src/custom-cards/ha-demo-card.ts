@@ -89,11 +89,14 @@ export class HADemoCard extends LitElement implements LovelaceCard {
           )}
         </div>
         <div class="actions small-hidden">
-          <a href="https://www.home-assistant.io" target="_blank">
-            <ha-button>
-              ${this.hass.localize("ui.panel.page-demo.cards.demo.learn_more")}
-            </ha-button>
-          </a>
+          <ha-button
+            appearance="plain"
+            size="small"
+            href="https://www.home-assistant.io"
+            target="_blank"
+          >
+            ${this.hass.localize("ui.panel.page-demo.cards.demo.learn_more")}
+          </ha-button>
         </div>
       </ha-card>
     `;

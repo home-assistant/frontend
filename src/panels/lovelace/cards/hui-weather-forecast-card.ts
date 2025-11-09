@@ -7,7 +7,6 @@ import { classMap } from "lit/directives/class-map";
 import { formatDateWeekdayShort } from "../../../common/datetime/format_date";
 import { formatTime } from "../../../common/datetime/format_time";
 import { applyThemesOnElement } from "../../../common/dom/apply_themes_on_element";
-import { computeStateName } from "../../../common/entity/compute_state_name";
 import { isValidEntityId } from "../../../common/entity/valid_entity_id";
 import { formatNumber } from "../../../common/number/format_number";
 import "../../../components/ha-card";
@@ -27,6 +26,7 @@ import {
 } from "../../../data/weather";
 import type { HomeAssistant } from "../../../types";
 import { actionHandler } from "../common/directives/action-handler-directive";
+import { computeLovelaceEntityName } from "../common/entity/compute-lovelace-entity-name";
 import { findEntities } from "../common/find-entities";
 import { handleAction } from "../common/handle-action";
 import { hasAction } from "../common/has-action";
@@ -229,7 +229,7 @@ class HuiWeatherForecastCard extends LitElement implements LovelaceCard {
       return html`
         <ha-card class="unavailable" @click=${this._handleAction}>
           ${this.hass.localize("ui.panel.lovelace.warning.entity_unavailable", {
-            entity: `${computeStateName(stateObj)} (${this._config.entity})`,
+            entity: `${computeLovelaceEntityName(this.hass, stateObj, this._config.name)} (${this._config.entity})`,
           })}
         </ha-card>
       `;
@@ -260,7 +260,11 @@ class HuiWeatherForecastCard extends LitElement implements LovelaceCard {
     const dayNight = forecastData?.type === "twice_daily";
 
     const weatherStateIcon = getWeatherStateIcon(stateObj.state, this);
-    const name = this._config.name ?? computeStateName(stateObj);
+    const name = computeLovelaceEntityName(
+      this.hass,
+      stateObj,
+      this._config.name
+    );
 
     return html`
       <ha-card
@@ -464,10 +468,11 @@ class HuiWeatherForecastCard extends LitElement implements LovelaceCard {
     if (this._config?.show_forecast !== false) {
       rows += 1;
       min_rows += 1;
+      if (this._config?.forecast_type === "daily") {
+        rows += 1;
+      }
     }
-    if (this._config?.forecast_type === "daily") {
-      rows += 1;
-    }
+
     return {
       columns: 12,
       rows: rows,
@@ -558,7 +563,7 @@ class HuiWeatherForecastCard extends LitElement implements LovelaceCard {
         .name,
         .attribute {
           font-size: var(--ha-font-size-m);
-          line-height: 1;
+          line-height: var(--ha-line-height-condensed);
         }
 
         .name-state {
@@ -724,7 +729,7 @@ class HuiWeatherForecastCard extends LitElement implements LovelaceCard {
         .short .state,
         .short .temp-attribute .temp {
           font-size: 24px;
-          line-height: 1.25;
+          line-height: var(--ha-line-height-condensed);
         }
 
         .short .content + .forecast {

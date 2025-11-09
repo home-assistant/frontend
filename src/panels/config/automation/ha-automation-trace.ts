@@ -16,6 +16,7 @@ import { isComponentLoaded } from "../../../common/config/is_component_loaded";
 import { formatDateTimeWithSeconds } from "../../../common/datetime/format_date_time";
 import { fireEvent } from "../../../common/dom/fire_event";
 import { computeRTL } from "../../../common/util/compute_rtl";
+import "../../../components/ha-button";
 import "../../../components/ha-button-menu";
 import "../../../components/ha-icon-button";
 import "../../../components/ha-list-item";
@@ -99,19 +100,19 @@ export class HaAutomationTrace extends LitElement {
       <hass-subpage .hass=${this.hass} .narrow=${this.narrow} .header=${title}>
         ${!this.narrow && stateObj?.attributes.id
           ? html`
-              <a
+              <ha-button
+                appearance="plain"
+                size="small"
                 class="trace-link"
                 href="/config/automation/edit/${encodeURIComponent(
                   stateObj.attributes.id
                 )}"
                 slot="toolbar-icon"
               >
-                <mwc-button>
-                  ${this.hass.localize(
-                    "ui.panel.config.automation.trace.edit_automation"
-                  )}
-                </mwc-button>
-              </a>
+                ${this.hass.localize(
+                  "ui.panel.config.automation.trace.edit_automation"
+                )}
+              </ha-button>
             `
           : ""}
         <ha-button-menu slot="toolbar-icon">

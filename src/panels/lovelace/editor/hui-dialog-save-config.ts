@@ -1,10 +1,9 @@
-import "@material/mwc-button";
 import { mdiClose, mdiHelpCircle } from "@mdi/js";
 import type { CSSResultGroup } from "lit";
 import { LitElement, css, html, nothing } from "lit";
 import { customElement, property, state } from "lit/decorators";
 import { fireEvent } from "../../../common/dom/fire_event";
-import "../../../components/ha-spinner";
+import "../../../components/ha-button";
 import "../../../components/ha-dialog";
 import "../../../components/ha-dialog-header";
 import "../../../components/ha-formfield";
@@ -133,30 +132,28 @@ export class HuiSaveConfig extends LitElement implements HassDialog {
         </div>
         ${this._params.mode === "storage"
           ? html`
-              <mwc-button slot="primaryAction" @click=${this.closeDialog}>
-                ${this.hass!.localize("ui.common.cancel")}
-              </mwc-button>
-              <mwc-button
+              <ha-button
+                appearance="plain"
                 slot="primaryAction"
-                ?disabled=${this._saving}
-                @click=${this._saveConfig}
+                @click=${this.closeDialog}
               >
-                ${this._saving
-                  ? html`<ha-spinner
-                      size="small"
-                      aria-label="Saving"
-                    ></ha-spinner>`
-                  : ""}
+                ${this.hass!.localize("ui.common.cancel")}
+              </ha-button>
+              <ha-button
+                slot="primaryAction"
+                @click=${this._saveConfig}
+                .loading=${this._saving}
+              >
                 ${this.hass!.localize(
                   "ui.panel.lovelace.editor.save_config.save"
                 )}
-              </mwc-button>
+              </ha-button>
             `
           : html`
-              <mwc-button slot="primaryAction" @click=${this.closeDialog}>
+              <ha-button slot="primaryAction" @click=${this.closeDialog}>
                 ${this.hass!.localize(
                   "ui.panel.lovelace.editor.save_config.close"
-                )}</mwc-button
+                )}</ha-button
               >
             `}
       </ha-dialog>

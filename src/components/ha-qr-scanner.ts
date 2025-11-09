@@ -103,7 +103,7 @@ class HaQrScanner extends LitElement {
         >
           ${this._error || this._warning}
           ${this._error
-            ? html` <ha-button @click=${this._retry} slot="action">
+            ? html`<ha-button @click=${this._retry} slot="action">
                 ${this.hass.localize("ui.components.qr-scanner.retry")}
               </ha-button>`
             : nothing}
@@ -354,7 +354,7 @@ class HaQrScanner extends LitElement {
     }
     canvas {
       width: 100%;
-      border-radius: 16px;
+      border-radius: var(--ha-border-radius-xl);
     }
     #canvas-container {
       position: relative;
@@ -367,7 +367,7 @@ class HaQrScanner extends LitElement {
       inset-inline-start: initial;
       background: #727272b2;
       color: white;
-      border-radius: 50%;
+      border-radius: var(--ha-border-radius-circle);
     }
     .row {
       display: flex;

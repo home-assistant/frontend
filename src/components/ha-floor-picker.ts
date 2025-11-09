@@ -433,6 +433,7 @@ export class HaFloorPicker extends LitElement {
           }
         },
       });
+      return;
     }
 
     this._setValue(value);

@@ -10,12 +10,12 @@ import {
   mdiPlusCircle,
   mdiRestore,
 } from "@mdi/js";
+import type { HassEntity } from "home-assistant-js-websocket";
 import type { CSSResultGroup, PropertyValues, TemplateResult } from "lit";
 import { LitElement, css, html, nothing } from "lit";
 import { customElement, property, state } from "lit/decorators";
 import { ifDefined } from "lit/directives/if-defined";
 import memoizeOne from "memoize-one";
-import type { HassEntity } from "home-assistant-js-websocket";
 import { isComponentLoaded } from "../../../common/config/is_component_loaded";
 import { ASSIST_ENTITIES, SENSOR_ENTITIES } from "../../../common/const";
 import { computeDeviceNameDisplay } from "../../../common/entity/compute_device_name";
@@ -24,9 +24,11 @@ import { computeEntityEntryName } from "../../../common/entity/compute_entity_na
 import { computeStateDomain } from "../../../common/entity/compute_state_domain";
 import { computeStateName } from "../../../common/entity/compute_state_name";
 import { stringCompare } from "../../../common/string/compare";
+import { slugify } from "../../../common/string/slugify";
 import { groupBy } from "../../../common/util/group-by";
 import "../../../components/entity/ha-battery-icon";
 import "../../../components/ha-alert";
+import "../../../components/ha-button";
 import "../../../components/ha-button-menu";
 import "../../../components/ha-icon-button";
 import "../../../components/ha-icon-next";
@@ -405,9 +407,13 @@ export class HaConfigDevicePage extends LitElement {
         ${device.disabled_by === "user"
           ? html`
               <div class="card-actions" slot="actions">
-                <mwc-button unelevated @click=${this._enableDevice}>
+                <ha-button
+                  variant="warning"
+                  size="small"
+                  @click=${this._enableDevice}
+                >
                   ${this.hass.localize("ui.common.enable")}
-                </mwc-button>
+                </ha-button>
               </div>
             `
           : ""}
@@ -550,16 +556,21 @@ export class HaConfigDevicePage extends LitElement {
                               </a>
                             `
                           : html`
+                              <ha-list-item
+                                .id="scene-${slugify(entityState.entity_id)}"
+                                hasMeta
+                                .scene=${entityState}
+                              >
+                                ${computeStateName(entityState)}
+                                <ha-icon-next slot="meta"></ha-icon-next>
+                              </ha-list-item>
                               <ha-tooltip
+                                .for="scene-${slugify(entityState.entity_id)}"
                                 placement="left"
-                                .content=${this.hass.localize(
+                              >
+                                ${this.hass.localize(
                                   "ui.panel.config.devices.cant_edit"
                                 )}
-                              >
-                                <ha-list-item hasMeta .scene=${entityState}>
-                                  ${computeStateName(entityState)}
-                                  <ha-icon-next slot="meta"></ha-icon-next>
-                                </ha-list-item>
                               </ha-tooltip>
                             `;
                       })}
@@ -759,41 +770,39 @@ export class HaConfigDevicePage extends LitElement {
             ${firstDeviceAction || actions.length
               ? html`
                   <div class="card-actions" slot="actions">
-                    <div>
-                      <a
-                        href=${ifDefined(firstDeviceAction!.href)}
-                        rel=${ifDefined(
-                          firstDeviceAction!.target ? "noreferrer" : undefined
-                        )}
-                        target=${ifDefined(firstDeviceAction!.target)}
-                      >
-                        <mwc-button
-                          class=${ifDefined(firstDeviceAction!.classes)}
-                          .action=${firstDeviceAction!.action}
-                          @click=${this._deviceActionClicked}
-                          graphic="icon"
-                        >
-                          ${firstDeviceAction!.label}
-                          ${firstDeviceAction!.icon
-                            ? html`
-                                <ha-svg-icon
-                                  class=${ifDefined(firstDeviceAction!.classes)}
-                                  .path=${firstDeviceAction!.icon}
-                                  slot="graphic"
-                                ></ha-svg-icon>
-                              `
-                            : ""}
-                          ${firstDeviceAction!.trailingIcon
-                            ? html`
-                                <ha-svg-icon
-                                  .path=${firstDeviceAction!.trailingIcon}
-                                  slot="trailingIcon"
-                                ></ha-svg-icon>
-                              `
-                            : ""}
-                        </mwc-button>
-                      </a>
-                    </div>
+                    <ha-button
+                      href=${ifDefined(firstDeviceAction!.href)}
+                      rel=${ifDefined(
+                        firstDeviceAction!.target ? "noreferrer" : undefined
+                      )}
+                      appearance="plain"
+                      target=${ifDefined(firstDeviceAction!.target)}
+                      class=${ifDefined(firstDeviceAction!.classes)}
+                      .variant=${firstDeviceAction!.classes?.includes("warning")
+                        ? "danger"
+                        : "brand"}
+                      .action=${firstDeviceAction!.action}
+                      @click=${this._deviceActionClicked}
+                    >
+                      ${firstDeviceAction!.label}
+                      ${firstDeviceAction!.icon
+                        ? html`
+                            <ha-svg-icon
+                              class=${ifDefined(firstDeviceAction!.classes)}
+                              .path=${firstDeviceAction!.icon}
+                              slot="start"
+                            ></ha-svg-icon>
+                          `
+                        : nothing}
+                      ${firstDeviceAction!.trailingIcon
+                        ? html`
+                            <ha-svg-icon
+                              .path=${firstDeviceAction!.trailingIcon}
+                              slot="end"
+                            ></ha-svg-icon>
+                          `
+                        : nothing}
+                    </ha-button>
 
                     ${actions.length
                       ? html`
@@ -1225,7 +1234,7 @@ export class HaConfigDevicePage extends LitElement {
   private _computeEntityName(entity: EntityRegistryEntry) {
     const device = this.hass.devices[this.deviceId];
     return (
-      computeEntityEntryName(entity, this.hass) ||
+      computeEntityEntryName(entity, this.hass.devices) ||
       computeDeviceNameDisplay(device, this.hass)
     );
   }
@@ -1440,11 +1449,11 @@ export class HaConfigDevicePage extends LitElement {
   }
 
   private async _signUrl(ev) {
-    const anchor = ev.currentTarget.closest("a");
-    const signedUrl = await getSignedPath(
-      this.hass,
-      anchor.getAttribute("href")
-    );
+    const a = ev.currentTarget.getAttribute("href")
+      ? ev.currentTarget
+      : ev.currentTarget.closest("a");
+
+    const signedUrl = await getSignedPath(this.hass, a.getAttribute("href"));
     fileDownload(signedUrl.path);
   }
 
@@ -1475,6 +1484,9 @@ export class HaConfigDevicePage extends LitElement {
           max-width: 1000px;
           margin-top: 32px;
           margin-bottom: 32px;
+        }
+        :host([narrow]) .container {
+          margin-top: 0;
         }
 
         .card-header {
@@ -1575,10 +1587,6 @@ export class HaConfigDevicePage extends LitElement {
           width: 100%;
         }
 
-        :host([narrow]) .container {
-          margin-top: 0;
-        }
-
         a {
           text-decoration: none;
           color: var(--primary-color);
@@ -1606,7 +1614,10 @@ export class HaConfigDevicePage extends LitElement {
         }
 
         ha-card:has(ha-logbook) {
-          padding-bottom: var(--ha-card-border-radius, 12px);
+          padding-bottom: var(
+            --ha-card-border-radius,
+            var(--ha-border-radius-lg)
+          );
         }
 
         ha-logbook {
@@ -1620,6 +1631,7 @@ export class HaConfigDevicePage extends LitElement {
           display: flex;
           justify-content: space-between;
           align-items: center;
+          padding: 4px 16px 4px 4px;
         }
       `,
     ];

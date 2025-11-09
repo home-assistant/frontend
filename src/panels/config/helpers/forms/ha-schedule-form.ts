@@ -17,9 +17,9 @@ import "../../../../components/ha-textfield";
 import type { Schedule, ScheduleDay } from "../../../../data/schedule";
 import { weekdays } from "../../../../data/schedule";
 import { TimeZone } from "../../../../data/translation";
-import { showScheduleBlockInfoDialog } from "./show-dialog-schedule-block-info";
 import { haStyle } from "../../../../resources/styles";
 import type { HomeAssistant } from "../../../../types";
+import { showScheduleBlockInfoDialog } from "./show-dialog-schedule-block-info";
 
 const defaultFullCalendarConfig: CalendarOptions = {
   plugins: [timeGridPlugin, interactionPlugin],
@@ -42,6 +42,8 @@ class HaScheduleForm extends LitElement {
   @property({ attribute: false }) public hass!: HomeAssistant;
 
   @property({ type: Boolean }) public new = false;
+
+  @property({ type: Boolean }) public disabled = false;
 
   @state() private _name!: string;
 
@@ -132,6 +134,7 @@ class HaScheduleForm extends LitElement {
             "ui.dialogs.helper_settings.required_error_msg"
           )}
           dialogInitialFocus
+          .disabled=${this.disabled}
         ></ha-textfield>
         <ha-icon-picker
           .hass=${this.hass}
@@ -141,8 +144,9 @@ class HaScheduleForm extends LitElement {
           .label=${this.hass!.localize(
             "ui.dialogs.helper_settings.generic.icon"
           )}
+          .disabled=${this.disabled}
         ></ha-icon-picker>
-        <div id="calendar"></div>
+        ${!this.disabled ? html`<div id="calendar"></div>` : nothing}
       </div>
     `;
   }
@@ -175,7 +179,9 @@ class HaScheduleForm extends LitElement {
   }
 
   protected firstUpdated(): void {
-    this._setupCalendar();
+    if (!this.disabled) {
+      this._setupCalendar();
+    }
   }
 
   private _setupCalendar(): void {
@@ -459,8 +465,7 @@ class HaScheduleForm extends LitElement {
           height: 0.4rem;
         }
         .fc-scroller::-webkit-scrollbar-thumb {
-          -webkit-border-radius: 4px;
-          border-radius: 4px;
+          border-radius: var(--ha-border-radius-sm);
           background: var(--scrollbar-thumb-color);
         }
         .fc-scroller {

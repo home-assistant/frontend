@@ -43,7 +43,7 @@ export type ModernForecastType = "hourly" | "daily" | "twice_daily";
 
 export type ForecastType = ModernForecastType | "legacy";
 
-interface ForecastAttribute {
+export interface ForecastAttribute {
   temperature: number;
   datetime: string;
   templow?: number;
@@ -146,7 +146,12 @@ const cloudyStates = new Set<string>([
   "lightning-rainy",
 ]);
 
-const rainStates = new Set<string>(["hail", "rainy", "pouring"]);
+const rainStates = new Set<string>([
+  "hail",
+  "rainy",
+  "pouring",
+  "lightning-rainy",
+]);
 
 const windyStates = new Set<string>(["windy", "windy-variant"]);
 

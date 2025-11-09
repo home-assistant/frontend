@@ -102,6 +102,17 @@ class DialogEditSidebar extends LitElement {
       this.hass.locale
     );
 
+    // Add default hidden panels that are missing in hidden
+    for (const panel of panels) {
+      if (
+        !panel.default_visible &&
+        !this._order.includes(panel.url_path) &&
+        !this._hidden.includes(panel.url_path)
+      ) {
+        this._hidden.push(panel.url_path);
+      }
+    }
+
     const items = [
       ...beforeSpacer,
       ...panels.filter((panel) => this._hidden!.includes(panel.url_path)),
@@ -160,7 +171,7 @@ class DialogEditSidebar extends LitElement {
         </ha-dialog-header>
         <div slot="content" class="content">${this._renderContent()}</div>
         <div slot="actions">
-          <ha-button @click=${this.closeDialog}>
+          <ha-button appearance="plain" @click=${this.closeDialog}>
             ${this.hass.localize("ui.common.cancel")}
           </ha-button>
           <ha-button
@@ -208,6 +219,7 @@ class DialogEditSidebar extends LitElement {
     ha-md-dialog {
       min-width: 600px;
       max-height: 90%;
+      --dialog-content-padding: 8px 24px;
     }
 
     @media all and (max-width: 600px), all and (max-height: 500px) {

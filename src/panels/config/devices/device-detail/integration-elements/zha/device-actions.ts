@@ -5,7 +5,7 @@ import {
   mdiGroup,
   mdiPlus,
 } from "@mdi/js";
-import { navigate } from "../../../../../../common/navigate";
+import { goBack, navigate } from "../../../../../../common/navigate";
 import type { DeviceRegistryEntry } from "../../../../../../data/device_registry";
 import { fetchZHADevice } from "../../../../../../data/zha";
 import { showConfirmationDialog } from "../../../../../../dialogs/generic/show-dialog-box";
@@ -102,7 +102,7 @@ export const getZHADeviceActions = async (
           ieee: zhaDevice.ieee,
         });
 
-        history.back();
+        goBack("/config");
       },
     });
   }

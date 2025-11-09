@@ -4,6 +4,7 @@ import { customElement, property, query, state } from "lit/decorators";
 import { isComponentLoaded } from "../../../../../common/config/is_component_loaded";
 import { dynamicElement } from "../../../../../common/dom/dynamic-element-directive";
 import { fireEvent } from "../../../../../common/dom/fire_event";
+import "../../../../../components/ha-button";
 import type { ExtEntityRegistryEntry } from "../../../../../data/entity_registry";
 import { removeEntityRegistryEntry } from "../../../../../data/entity_registry";
 import { HELPERS_CRUD } from "../../../../../data/helpers_crud";
@@ -71,22 +72,28 @@ export class EntitySettingsHelperTab extends LitElement {
         ${this._error
           ? html`<ha-alert alert-type="error">${this._error}</ha-alert>`
           : ""}
+        ${this._item === null
+          ? html`<ha-alert alert-type="info"
+              >${this.hass.localize(
+                "ui.dialogs.helper_settings.yaml_not_editable"
+              )}</ha-alert
+            >`
+          : nothing}
         ${!this._componentLoaded
           ? this.hass.localize(
               "ui.dialogs.helper_settings.platform_not_loaded",
               { platform: this.entry.platform }
             )
-          : this._item === null
-            ? this.hass.localize("ui.dialogs.helper_settings.yaml_not_editable")
-            : html`
-                <span @value-changed=${this._valueChanged}>
-                  ${dynamicElement(`ha-${this.entry.platform}-form`, {
-                    hass: this.hass,
-                    item: this._item,
-                    entry: this.entry,
-                  })}
-                </span>
-              `}
+          : html`
+              <span @value-changed=${this._valueChanged}>
+                ${dynamicElement(`ha-${this.entry.platform}-form`, {
+                  hass: this.hass,
+                  item: this._item,
+                  entry: this.entry,
+                  disabled: this._item === null,
+                })}
+              </span>
+            `}
         <entity-registry-settings-editor
           .hass=${this.hass}
           .entry=${this.entry}
@@ -97,20 +104,21 @@ export class EntitySettingsHelperTab extends LitElement {
         ></entity-registry-settings-editor>
       </div>
       <div class="buttons">
-        <mwc-button
-          class="warning"
+        <ha-button
+          variant="danger"
+          appearance="plain"
           @click=${this._confirmDeleteItem}
           .disabled=${this._submitting ||
           (!this._item && !stateObj?.attributes.restored)}
         >
           ${this.hass.localize("ui.dialogs.entity_registry.editor.delete")}
-        </mwc-button>
-        <mwc-button
+        </ha-button>
+        <ha-button
           @click=${this._updateItem}
           .disabled=${this._submitting || (this._item && !this._item.name)}
         >
           ${this.hass.localize("ui.dialogs.entity_registry.editor.update")}
-        </mwc-button>
+        </ha-button>
       </div>
     `;
   }
@@ -120,6 +128,9 @@ export class EntitySettingsHelperTab extends LitElement {
   }
 
   private _valueChanged(ev: CustomEvent): void {
+    if (this._item === null) {
+      return;
+    }
     this._error = undefined;
     this._item = ev.detail.value;
   }
@@ -193,6 +204,10 @@ export class EntitySettingsHelperTab extends LitElement {
           display: block;
           padding: 0 !important;
         }
+        ha-alert {
+          display: block;
+          margin-bottom: var(--ha-space-4);
+        }
         .form {
           padding: 20px 24px;
         }
@@ -200,7 +215,7 @@ export class EntitySettingsHelperTab extends LitElement {
           box-sizing: border-box;
           display: flex;
           justify-content: space-between;
-          padding: 0 24px 24px 24px;
+          padding: 16px;
           background-color: var(--mdc-theme-surface, #fff);
         }
         .error {

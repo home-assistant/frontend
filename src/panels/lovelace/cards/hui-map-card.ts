@@ -35,19 +35,11 @@ import {
   hasConfigOrEntitiesChanged,
 } from "../common/has-changed";
 import { processConfigEntities } from "../common/process-config-entities";
-import type { EntityConfig } from "../entity-rows/types";
 import type { LovelaceCard, LovelaceGridOptions } from "../types";
-import type { MapCardConfig } from "./types";
+import type { MapCardConfig, MapEntityConfig } from "./types";
 
 export const DEFAULT_HOURS_TO_SHOW = 0;
 export const DEFAULT_ZOOM = 14;
-
-interface MapEntityConfig extends EntityConfig {
-  label_mode?: "state" | "attribute" | "name";
-  attribute?: string;
-  unit?: string;
-  focus?: boolean;
-}
 
 interface GeoEntity {
   entity_id: string;
@@ -239,7 +231,7 @@ class HuiMapCard extends LitElement implements LovelaceCard {
               )}
               .path=${mdiImageFilterCenterFocus}
               style=${isDarkMode ? "color:#ffffff" : "color:#000000"}
-              @click=${this._fitMap}
+              @click=${this._resetFocus}
               tabindex="0"
             ></ha-icon-button>
           </div>
@@ -389,8 +381,8 @@ class HuiMapCard extends LitElement implements LovelaceCard {
         : (root.style.paddingBottom = "100%");
   }
 
-  private _fitMap() {
-    this._map?.fitMap();
+  private _resetFocus() {
+    this._map?.fitMap({ unpause_autofit: true });
   }
 
   private _toggleClusterMarkers() {
@@ -541,7 +533,7 @@ class HuiMapCard extends LitElement implements LovelaceCard {
       width: 100%;
       height: 100%;
       background: inherit;
-      border-radius: var(--ha-card-border-radius, 12px);
+      border-radius: var(--ha-card-border-radius, var(--ha-border-radius-lg));
       overflow: hidden;
     }
 

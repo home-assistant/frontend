@@ -1,4 +1,3 @@
-import "@material/mwc-button";
 import type { CSSResultGroup } from "lit";
 import { css, html, LitElement, nothing } from "lit";
 import { customElement, state } from "lit/decorators";
@@ -7,6 +6,7 @@ import { fireEvent } from "../../../../common/dom/fire_event";
 import { createCloseHeading } from "../../../../components/ha-dialog";
 import { haStyleDialog } from "../../../../resources/styles";
 import type { HomeAssistant } from "../../../../types";
+import "../../../../components/ha-button";
 import type { CloudCertificateParams as CloudCertificateDialogParams } from "./show-dialog-cloud-certificate";
 
 @customElement("dialog-cloud-certificate")
@@ -74,11 +74,11 @@ class DialogCloudCertificate extends LitElement {
           </ul>
         </div>
 
-        <mwc-button @click=${this.closeDialog} slot="primaryAction">
+        <ha-button @click=${this.closeDialog} slot="primaryAction">
           ${this.hass!.localize(
             "ui.panel.config.cloud.dialog_certificate.close"
           )}
-        </mwc-button>
+        </ha-button>
       </ha-dialog>
     `;
   }

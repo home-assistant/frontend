@@ -2,16 +2,16 @@ import type { HassEntity } from "home-assistant-js-websocket";
 import { computeDomain } from "../../../common/entity/compute_domain";
 import type { HomeAssistant } from "../../../types";
 
-const arrayFilter = (
-  array: any[],
-  conditions: ((value: any) => boolean)[],
+const arrayFilter = <T>(
+  array: T[],
+  conditions: ((value: T) => boolean)[],
   maxSize: number
-) => {
+): T[] => {
   if (!maxSize || maxSize > array.length) {
     maxSize = array.length;
   }
 
-  const filteredArray: any[] = [];
+  const filteredArray: T[] = [];
 
   for (let i = 0; i < array.length && filteredArray.length < maxSize; i++) {
     let meetsConditions = true;

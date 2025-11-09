@@ -3,7 +3,6 @@ import { LitElement, css, html, nothing } from "lit";
 import { customElement, property, state } from "lit/decorators";
 import { classMap } from "lit/directives/class-map";
 import { ifDefined } from "lit/directives/if-defined";
-import { computeStateName } from "../../../common/entity/compute_state_name";
 import { isUnavailableState } from "../../../data/entity";
 import type { ActionHandlerEvent } from "../../../data/lovelace/action_handler";
 import type { ForecastEvent, WeatherEntity } from "../../../data/weather";
@@ -24,6 +23,7 @@ import { hasConfigOrEntityChanged } from "../common/has-changed";
 import "../components/hui-generic-entity-row";
 import { createEntityNotFoundWarning } from "../components/hui-warning";
 import type { LovelaceRow } from "./types";
+import { computeLovelaceEntityName } from "../common/entity/compute-lovelace-entity-name";
 
 @customElement("hui-weather-entity-row")
 class HuiWeatherEntityRow extends LitElement implements LovelaceRow {
@@ -119,6 +119,12 @@ class HuiWeatherEntityRow extends LitElement implements LovelaceRow {
     const forecastData = getForecast(stateObj.attributes, this._forecastEvent);
     const forecast = forecastData?.forecast;
 
+    const name = computeLovelaceEntityName(
+      this.hass!,
+      stateObj,
+      this._config.name
+    );
+
     return html`
       <div
         class="icon-image ${classMap({
@@ -155,7 +161,7 @@ class HuiWeatherEntityRow extends LitElement implements LovelaceRow {
           hasDoubleClick: hasAction(this._config!.double_tap_action),
         })}
       >
-        ${this._config.name || computeStateName(stateObj)}
+        ${name}
         ${hasSecondary
           ? html`
               <div class="secondary">
@@ -248,7 +254,7 @@ class HuiWeatherEntityRow extends LitElement implements LovelaceRow {
         .icon-image:focus {
           outline: none;
           background-color: var(--divider-color);
-          border-radius: 50%;
+          border-radius: var(--ha-border-radius-circle);
         }
 
         .weather-icon {

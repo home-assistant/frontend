@@ -1,15 +1,12 @@
 import "@material/mwc-menu/mwc-menu-surface";
-import { mdiDelete, mdiDrag, mdiPencil, mdiPlus } from "@mdi/js";
-import type { ComboBoxLightOpenedChangedEvent } from "@vaadin/combo-box/vaadin-combo-box-light";
+import { mdiDelete, mdiDragHorizontalVariant, mdiPencil } from "@mdi/js";
 import { LitElement, css, html, nothing } from "lit";
-import { customElement, property, query, state } from "lit/decorators";
+import { customElement, property } from "lit/decorators";
 import { repeat } from "lit/directives/repeat";
 import { fireEvent } from "../../../../common/dom/fire_event";
 import { preventDefault } from "../../../../common/dom/prevent_default";
-import { stopPropagation } from "../../../../common/dom/stop_propagation";
 import { computeStateName } from "../../../../common/entity/compute_state_name";
 import "../../../../components/entity/ha-entity-picker";
-import type { HaEntityPicker } from "../../../../components/entity/ha-entity-picker";
 import "../../../../components/ha-button";
 import "../../../../components/ha-icon-button";
 import "../../../../components/ha-sortable";
@@ -30,14 +27,6 @@ export class HuiHeadingBadgesEditor extends LitElement {
 
   @property({ attribute: false })
   public badges?: LovelaceHeadingBadgeConfig[];
-
-  @query(".add-container", true) private _addContainer?: HTMLDivElement;
-
-  @query("ha-entity-picker") private _entityPicker?: HaEntityPicker;
-
-  @state() private _addMode = false;
-
-  private _opened = false;
 
   private _badgesKeys = new WeakMap<LovelaceHeadingBadgeConfig, string>();
 
@@ -86,7 +75,9 @@ export class HuiHeadingBadgesEditor extends LitElement {
                     return html`
                       <div class="badge">
                         <div class="handle">
-                          <ha-svg-icon .path=${mdiDrag}></ha-svg-icon>
+                          <ha-svg-icon
+                            .path=${mdiDragHorizontalVariant}
+                          ></ha-svg-icon>
                         </div>
                         <div class="badge-content">
                           <span>${label}</span>
@@ -118,73 +109,23 @@ export class HuiHeadingBadgesEditor extends LitElement {
           `
         : nothing}
       <div class="add-container">
-        <ha-button
-          data-add-entity
-          outlined
-          .label=${this.hass!.localize(`ui.panel.lovelace.editor.entities.add`)}
-          @click=${this._addEntity}
-        >
-          <ha-svg-icon .path=${mdiPlus} slot="icon"></ha-svg-icon>
-        </ha-button>
-        ${this._renderPicker()}
-      </div>
-    `;
-  }
-
-  private _renderPicker() {
-    if (!this._addMode) {
-      return nothing;
-    }
-    return html`
-      <mwc-menu-surface
-        open
-        .anchor=${this._addContainer}
-        @closed=${this._onClosed}
-        @opened=${this._onOpened}
-        @opened-changed=${this._openedChanged}
-        @input=${stopPropagation}
-      >
         <ha-entity-picker
           .hass=${this.hass}
           id="input"
           .placeholder=${this.hass.localize(
-            "ui.components.target-picker.add_entity_id"
+            "ui.components.entity.entity-picker.choose_entity"
           )}
           .searchLabel=${this.hass.localize(
-            "ui.components.target-picker.add_entity_id"
+            "ui.components.entity.entity-picker.choose_entity"
           )}
           @value-changed=${this._entityPicked}
+          .value=${undefined}
           @click=${preventDefault}
           allow-custom-entity
+          add-button
         ></ha-entity-picker>
-      </mwc-menu-surface>
+      </div>
     `;
-  }
-
-  private _onClosed(ev) {
-    ev.stopPropagation();
-    ev.target.open = true;
-  }
-
-  private async _onOpened() {
-    if (!this._addMode) {
-      return;
-    }
-    await this._entityPicker?.focus();
-    await this._entityPicker?.open();
-    this._opened = true;
-  }
-
-  private _openedChanged(ev: ComboBoxLightOpenedChangedEvent) {
-    if (this._opened && !ev.detail.value) {
-      this._opened = false;
-      this._addMode = false;
-    }
-  }
-
-  private async _addEntity(ev): Promise<void> {
-    ev.stopPropagation();
-    this._addMode = true;
   }
 
   private _entityPicked(ev) {

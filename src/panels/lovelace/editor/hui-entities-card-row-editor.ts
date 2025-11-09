@@ -1,4 +1,4 @@
-import { mdiClose, mdiDrag, mdiPencil } from "@mdi/js";
+import { mdiClose, mdiDragHorizontalVariant, mdiPencil } from "@mdi/js";
 import { LitElement, css, html, nothing } from "lit";
 import { customElement, property } from "lit/decorators";
 import { repeat } from "lit/directives/repeat";
@@ -59,7 +59,7 @@ export class HuiEntitiesCardRowEditor extends LitElement {
             (entityConf, index) => html`
               <div class="entity">
                 <div class="handle">
-                  <ha-svg-icon .path=${mdiDrag}></ha-svg-icon>
+                  <ha-svg-icon .path=${mdiDragHorizontalVariant}></ha-svg-icon>
                 </div>
                 ${entityConf.type
                   ? html`
@@ -115,6 +115,7 @@ export class HuiEntitiesCardRowEditor extends LitElement {
         class="add-entity"
         .hass=${this.hass}
         @value-changed=${this._addEntity}
+        add-button
       ></ha-entity-picker>
     `;
   }

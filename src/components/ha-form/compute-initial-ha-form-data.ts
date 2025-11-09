@@ -106,6 +106,8 @@ export const computeInitialHaFormData = (
         data[field.name] = [];
       } else if ("media" in selector || "target" in selector) {
         data[field.name] = {};
+      } else if ("state" in selector) {
+        data[field.name] = selector.state?.multiple ? [] : "";
       } else {
         throw new Error(
           `Selector ${Object.keys(selector)[0]} not supported in initial form data`

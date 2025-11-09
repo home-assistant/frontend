@@ -1,12 +1,13 @@
-import "@material/mwc-button/mwc-button";
 import { mdiCloseCircle } from "@mdi/js";
 import type { CSSResultGroup } from "lit";
 import { LitElement, css, html, nothing } from "lit";
 import { customElement, property, state } from "lit/decorators";
 import { fireEvent } from "../../../../../common/dom/fire_event";
-import "../../../../../components/ha-spinner";
+import { copyToClipboard } from "../../../../../common/util/copy-clipboard";
+import "../../../../../components/ha-button";
 import { createCloseHeading } from "../../../../../components/ha-dialog";
 import "../../../../../components/ha-qr-code";
+import "../../../../../components/ha-spinner";
 import { domainToName } from "../../../../../data/integration";
 import type { MatterCommissioningParameters } from "../../../../../data/matter";
 import { openMatterCommissioningWindow } from "../../../../../data/matter";
@@ -14,7 +15,6 @@ import { haStyleDialog } from "../../../../../resources/styles";
 import type { HomeAssistant } from "../../../../../types";
 import { brandsUrl } from "../../../../../util/brands-url";
 import type { MatterOpenCommissioningWindowDialogParams } from "./show-dialog-matter-open-commissioning-window";
-import { copyToClipboard } from "../../../../../common/util/copy-clipboard";
 
 @customElement("dialog-matter-open-commissioning-window")
 class DialogMatterOpenCommissioningWindow extends LitElement {
@@ -90,11 +90,11 @@ class DialogMatterOpenCommissioningWindow extends LitElement {
                   >
                 </div>
               </div>
-              <mwc-button slot="primaryAction" @click=${this._copyCode}>
+              <ha-button slot="primaryAction" @click=${this._copyCode}>
                 ${this.hass.localize(
                   "ui.panel.config.matter.open_commissioning_window.copy_code"
                 )}
-              </mwc-button>
+              </ha-button>
             `
           : this._status === "started"
             ? html`
@@ -110,9 +110,9 @@ class DialogMatterOpenCommissioningWindow extends LitElement {
                     </p>
                   </div>
                 </div>
-                <mwc-button slot="primaryAction" @click=${this.closeDialog}>
+                <ha-button slot="primaryAction" @click=${this.closeDialog}>
                   ${this.hass.localize("ui.common.close")}
-                </mwc-button>
+                </ha-button>
               `
             : this._status === "failed"
               ? html`
@@ -129,9 +129,9 @@ class DialogMatterOpenCommissioningWindow extends LitElement {
                       </p>
                     </div>
                   </div>
-                  <mwc-button slot="primaryAction" @click=${this.closeDialog}>
+                  <ha-button slot="primaryAction" @click=${this.closeDialog}>
                     ${this.hass.localize("ui.common.close")}
-                  </mwc-button>
+                  </ha-button>
                 `
               : html`
                   <p>
@@ -151,11 +151,11 @@ class DialogMatterOpenCommissioningWindow extends LitElement {
                       "ui.panel.config.matter.open_commissioning_window.prevent_misuse_description"
                     )}
                   </p>
-                  <mwc-button slot="primaryAction" @click=${this._start}>
+                  <ha-button slot="primaryAction" @click=${this._start}>
                     ${this.hass.localize(
                       "ui.panel.config.matter.open_commissioning_window.start_commissioning"
                     )}
-                  </mwc-button>
+                  </ha-button>
                 `}
       </ha-dialog>
     `;
@@ -246,7 +246,7 @@ class DialogMatterOpenCommissioningWindow extends LitElement {
           flex-direction: column;
           align-items: center;
           border: 2px solid;
-          border-radius: 16px;
+          border-radius: var(--ha-border-radius-xl);
           padding: 16px;
         }
 

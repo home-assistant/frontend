@@ -1,4 +1,3 @@
-import "@material/mwc-button";
 import type { ActionDetail } from "@material/mwc-list";
 
 import { mdiBackupRestore, mdiDelete, mdiDotsVertical, mdiPlus } from "@mdi/js";
@@ -17,6 +16,7 @@ import type {
 } from "../../../src/components/data-table/ha-data-table";
 import "../../../src/components/ha-button-menu";
 import "../../../src/components/ha-fab";
+import "../../../src/components/ha-button";
 import "../../../src/components/ha-icon-button";
 import "../../../src/components/ha-list-item";
 import "../../../src/components/ha-svg-icon";
@@ -241,12 +241,13 @@ export class HassioBackups extends LitElement {
               <div class="header-btns">
                 ${!this.narrow
                   ? html`
-                      <mwc-button
+                      <ha-button
+                        appearance="plain"
+                        variant="danger"
                         @click=${this._deleteSelected}
-                        class="warning"
                       >
                         ${this.supervisor.localize("backup.delete_selected")}
-                      </mwc-button>
+                      </ha-button>
                     `
                   : html`
                       <ha-icon-button
@@ -408,7 +409,7 @@ export class HassioBackups extends LitElement {
           margin-inline-end: -12px;
           margin-inline-start: initial;
         }
-        .header-btns > mwc-button,
+        .header-btns > ha-button,
         .header-btns > ha-icon-button {
           margin: 8px;
         }

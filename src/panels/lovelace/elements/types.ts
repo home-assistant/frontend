@@ -3,6 +3,7 @@ import type { ActionConfig } from "../../../data/lovelace/config/action";
 import type { HomeAssistant } from "../../../types";
 import type { Condition } from "../common/validate-condition";
 import type { HuiImage } from "../components/hui-image";
+import type { MediaSelectorValue } from "../../../data/selector";
 
 interface LovelaceElementConfigBase {
   type: string;
@@ -20,6 +21,7 @@ export type LovelaceElementConfig =
 
 export interface LovelaceElement extends HTMLElement {
   hass?: HomeAssistant;
+  preview?: boolean;
   setConfig(config: LovelaceElementConfig): void;
 }
 
@@ -44,7 +46,7 @@ export interface ImageElementConfig extends LovelaceElementConfigBase {
   tap_action?: ActionConfig;
   hold_action?: ActionConfig;
   double_tap_action?: ActionConfig;
-  image?: string;
+  image?: string | MediaSelectorValue;
   image_entity?: string;
   state_image?: string;
   camera_image?: string;

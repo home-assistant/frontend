@@ -1,4 +1,3 @@
-import "@material/mwc-button/mwc-button";
 import type { CSSResultGroup } from "lit";
 import { css, html, LitElement, nothing } from "lit";
 import { customElement, property, state } from "lit/decorators";
@@ -7,6 +6,7 @@ import { computeDeviceNameDisplay } from "../../../../common/entity/compute_devi
 import "../../../../components/ha-alert";
 import "../../../../components/ha-area-picker";
 import "../../../../components/ha-dialog";
+import "../../../../components/ha-button";
 import "../../../../components/ha-labels-picker";
 import type { HaSwitch } from "../../../../components/ha-switch";
 import "../../../../components/ha-textfield";
@@ -131,20 +131,21 @@ class DialogDeviceRegistryDetail extends LitElement {
             </div>
           </div>
         </div>
-        <mwc-button
+        <ha-button
           slot="secondaryAction"
           @click=${this.closeDialog}
           .disabled=${this._submitting}
+          appearance="plain"
         >
           ${this.hass.localize("ui.common.cancel")}
-        </mwc-button>
-        <mwc-button
+        </ha-button>
+        <ha-button
           slot="primaryAction"
           @click=${this._updateEntry}
           .disabled=${this._submitting}
         >
           ${this.hass.localize("ui.dialogs.device-registry-detail.update")}
-        </mwc-button>
+        </ha-button>
       </ha-dialog>
     `;
   }
@@ -190,7 +191,7 @@ class DialogDeviceRegistryDetail extends LitElement {
       haStyle,
       haStyleDialog,
       css`
-        mwc-button.warning {
+        ha-button.warning {
           margin-right: auto;
           margin-inline-end: auto;
           margin-inline-start: initial;

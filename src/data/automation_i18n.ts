@@ -378,7 +378,17 @@ const tryDescribeTrigger = (
 
   // Tag Trigger
   if (trigger.trigger === "tag") {
-    return hass.localize(`${triggerTranslationBaseKey}.tag.description.full`);
+    const entity = Object.values(hass.states).find(
+      (state) =>
+        state.entity_id.startsWith("tag.") &&
+        state.attributes.tag_id === trigger.tag_id
+    );
+    return entity
+      ? hass.localize(
+          `${triggerTranslationBaseKey}.tag.description.known_tag`,
+          { tag_name: computeStateName(entity) }
+        )
+      : hass.localize(`${triggerTranslationBaseKey}.tag.description.full`);
   }
 
   // Time Trigger
@@ -400,8 +410,23 @@ const tryDescribeTrigger = (
       return `${entityStr}${offsetStr}`;
     });
 
+    // Handle weekday information if present
+    let weekdays: string[] = [];
+    if (trigger.weekday) {
+      const weekdayArray = ensureArray(trigger.weekday);
+      if (weekdayArray.length > 0) {
+        weekdays = weekdayArray.map((day) =>
+          hass.localize(
+            `ui.panel.config.automation.editor.triggers.type.time.weekdays.${day}` as any
+          )
+        );
+      }
+    }
+
     return hass.localize(`${triggerTranslationBaseKey}.time.description.full`, {
       time: formatListWithOrs(hass.locale, result),
+      hasWeekdays: weekdays.length > 0 ? "true" : "false",
+      weekdays: formatListWithOrs(hass.locale, weekdays),
     });
   }
 

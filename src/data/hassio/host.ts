@@ -8,7 +8,7 @@ export interface HassioHostInfo {
   chassis: string;
   cpe: string;
   deployment: string;
-  disk_life_time: number | "";
+  disk_life_time: number | null;
   disk_free: number;
   disk_total: number;
   disk_used: number;
@@ -42,6 +42,14 @@ export interface Datadisk {
 export interface DatadiskList {
   devices: string[];
   disks: Datadisk[];
+}
+
+export interface HostDisksUsage {
+  total_bytes?: number;
+  used_bytes: number;
+  id: string;
+  label: string;
+  children?: HostDisksUsage[];
 }
 
 export const fetchHassioHostInfo = async (
@@ -178,5 +186,23 @@ export const listDatadisks = async (
 
   return hassioApiResultExtractor(
     await hass.callApi<HassioResponse<DatadiskList>>("GET", "/os/datadisk/list")
+  );
+};
+
+export const fetchHostDisksUsage = async (hass: HomeAssistant) => {
+  if (atLeastVersion(hass.config.version, 2021, 2, 4)) {
+    return hass.callWS<HostDisksUsage>({
+      type: "supervisor/api",
+      endpoint: "/host/disks/default/usage",
+      method: "get",
+      timeout: 3600, // seconds. This can take a while
+    });
+  }
+
+  return hassioApiResultExtractor(
+    await hass.callApi<HassioResponse<HostDisksUsage>>(
+      "GET",
+      "hassio/host/disks/default/usage"
+    )
   );
 };

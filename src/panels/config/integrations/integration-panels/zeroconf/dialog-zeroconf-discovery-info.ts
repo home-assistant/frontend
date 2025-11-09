@@ -2,13 +2,13 @@ import type { TemplateResult } from "lit";
 import { html, LitElement, nothing } from "lit";
 import { customElement, property, state } from "lit/decorators";
 import { fireEvent } from "../../../../../common/dom/fire_event";
-import type { HassDialog } from "../../../../../dialogs/make-dialog-manager";
-import { createCloseHeading } from "../../../../../components/ha-dialog";
-import type { HomeAssistant } from "../../../../../types";
-import type { ZeroconfDiscoveryInfoDialogParams } from "./show-dialog-zeroconf-discovery-info";
-import "../../../../../components/ha-button";
-import { showToast } from "../../../../../util/toast";
 import { copyToClipboard } from "../../../../../common/util/copy-clipboard";
+import "../../../../../components/ha-button";
+import { createCloseHeading } from "../../../../../components/ha-dialog";
+import type { HassDialog } from "../../../../../dialogs/make-dialog-manager";
+import type { HomeAssistant } from "../../../../../types";
+import { showToast } from "../../../../../util/toast";
+import type { ZeroconfDiscoveryInfoDialogParams } from "./show-dialog-zeroconf-discovery-info";
 
 @customElement("dialog-zeroconf-device-info")
 class DialogZeroconfDiscoveryInfo extends LitElement implements HassDialog {
@@ -95,7 +95,10 @@ class DialogZeroconfDiscoveryInfo extends LitElement implements HassDialog {
           </tbody>
         </table>
 
-        <ha-button slot="secondaryAction" @click=${this._copyToClipboard}
+        <ha-button
+          appearance="plain"
+          slot="secondaryAction"
+          @click=${this._copyToClipboard}
           >${this.hass.localize(
             "ui.panel.config.zeroconf.copy_to_clipboard"
           )}</ha-button

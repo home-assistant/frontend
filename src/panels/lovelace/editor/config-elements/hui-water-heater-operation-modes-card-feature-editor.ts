@@ -16,6 +16,7 @@ import type {
 } from "../../card-features/types";
 import type { LovelaceCardFeatureEditor } from "../../types";
 import { compareWaterHeaterOperationMode } from "../../../../data/water_heater";
+import type { LocalizeFunc } from "../../../../common/translations/localize";
 
 type WaterHeaterOperationModesCardFeatureData =
   WaterHeaterOperationModesCardFeatureConfig & {
@@ -39,11 +40,27 @@ export class HuiWaterHeaterOperationModesCardFeatureEditor
 
   private _schema = memoizeOne(
     (
+      localize: LocalizeFunc,
       formatEntityState: FormatEntityStateFunc,
       stateObj: HassEntity | undefined,
       customizeModes: boolean
     ) =>
       [
+        {
+          name: "style",
+          selector: {
+            select: {
+              multiple: false,
+              mode: "list",
+              options: ["dropdown", "icons"].map((mode) => ({
+                value: mode,
+                label: localize(
+                  `ui.panel.lovelace.editor.features.types.water-heater-operation-modes.style_list.${mode}`
+                ),
+              })),
+            },
+          },
+        },
         {
           name: "customize_modes",
           selector: {
@@ -85,11 +102,13 @@ export class HuiWaterHeaterOperationModesCardFeatureEditor
       : undefined;
 
     const data: WaterHeaterOperationModesCardFeatureData = {
+      style: "icons",
       ...this._config,
       customize_modes: this._config.operation_modes !== undefined,
     };
 
     const schema = this._schema(
+      this.hass.localize,
       this.hass.formatEntityState,
       stateObj,
       data.customize_modes
@@ -131,6 +150,7 @@ export class HuiWaterHeaterOperationModesCardFeatureEditor
   ) => {
     switch (schema.name) {
       case "operation_modes":
+      case "style":
       case "customize_modes":
         return this.hass!.localize(
           `ui.panel.lovelace.editor.features.types.water-heater-operation-modes.${schema.name}`

@@ -87,6 +87,8 @@ export class HaAreaPicker extends LitElement {
 
   @property({ type: Boolean }) public required = false;
 
+  @property({ attribute: "add-button-label" }) public addButtonLabel?: string;
+
   @query("ha-generic-picker") private _picker?: HaGenericPicker;
 
   public async open() {
@@ -107,7 +109,7 @@ export class HaAreaPicker extends LitElement {
           `;
         }
 
-        const { floor } = getAreaContext(area, this.hass);
+        const { floor } = getAreaContext(area, this.hass.floors);
 
         const areaName = area ? computeAreaName(area) : undefined;
         const floorName = floor ? computeFloorName(floor) : undefined;
@@ -279,7 +281,7 @@ export class HaAreaPicker extends LitElement {
       }
 
       const items = outputAreas.map<PickerComboBoxItem>((area) => {
-        const { floor } = getAreaContext(area, this.hass);
+        const { floor } = getAreaContext(area, this.hass.floors);
         const floorName = floor ? computeFloorName(floor) : undefined;
         const areaName = computeAreaName(area);
         return {
@@ -375,6 +377,7 @@ export class HaAreaPicker extends LitElement {
         .getItems=${this._getItems}
         .getAdditionalItems=${this._getAdditionalItems}
         .valueRenderer=${valueRenderer}
+        .addButtonLabel=${this.addButtonLabel}
         @value-changed=${this._valueChanged}
       >
       </ha-generic-picker>
@@ -411,6 +414,7 @@ export class HaAreaPicker extends LitElement {
           }
         },
       });
+      return;
     }
 
     this._setValue(value);

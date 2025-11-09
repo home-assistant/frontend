@@ -18,6 +18,7 @@ const UNASSIGNED_FLOOR = "__unassigned__";
 
 interface AreaOptions {
   groups_options?: Record<string, EntitiesDisplay>;
+  card_size?: "small" | "large";
 }
 
 export interface AreasViewStrategyConfig {
@@ -97,10 +98,11 @@ export class AreasOverviewViewStrategy extends ReactiveElement {
             sensorClasses.push("humidity");
           }
 
+          const isLarge = areaOptions.card_size === "large";
           return {
             type: "area",
             area: area.area_id,
-            display_type: "compact",
+            display_type: isLarge ? "camera" : "compact",
             sensor_classes: sensorClasses,
             exclude_entities: hiddenEntities,
             features: filteredControls.length
@@ -112,7 +114,7 @@ export class AreasOverviewViewStrategy extends ReactiveElement {
                 ]
               : [],
             grid_options: {
-              rows: 1,
+              rows: isLarge ? 4 : 1,
               columns: 12,
             },
             features_position: "inline",

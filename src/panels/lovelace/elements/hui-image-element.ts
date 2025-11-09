@@ -10,8 +10,8 @@ import { actionHandler } from "../common/directives/action-handler-directive";
 import { handleAction } from "../common/handle-action";
 import { hasAction } from "../common/has-action";
 import "../components/hui-image";
-import type { ImageElementConfig, LovelaceElement } from "./types";
 import type { LovelacePictureElementEditor } from "../types";
+import type { ImageElementConfig, LovelaceElement } from "./types";
 
 @customElement("hui-image-element")
 export class HuiImageElement extends LitElement implements LovelaceElement {
@@ -50,20 +50,14 @@ export class HuiImageElement extends LitElement implements LovelaceElement {
       stateObj = this.hass.states[this._config.image_entity] as ImageEntity;
     }
 
+    const image = stateObj
+      ? computeImageUrl(stateObj)
+      : (typeof this._config?.image === "object" &&
+          this._config.image.media_content_id) ||
+        (this._config.image as string | undefined);
+
     return html`
-      <hui-image
-        .hass=${this.hass}
-        .entity=${this._config.entity}
-        .image=${stateObj ? computeImageUrl(stateObj) : this._config.image}
-        .stateImage=${this._config.state_image}
-        .cameraImage=${this._config.camera_image}
-        .cameraView=${this._config.camera_view}
-        .filter=${this._config.filter}
-        .stateFilter=${this._config.state_filter}
-        .title=${computeTooltip(this.hass, this._config)}
-        .aspectRatio=${this._config.aspect_ratio}
-        .darkModeImage=${this._config.dark_mode_image}
-        .darkModeFilter=${this._config.dark_mode_filter}
+      <div
         @action=${this._handleAction}
         .actionHandler=${actionHandler({
           hasHold: hasAction(this._config!.hold_action),
@@ -72,7 +66,25 @@ export class HuiImageElement extends LitElement implements LovelaceElement {
         tabindex=${ifDefined(
           hasAction(this._config.tap_action) ? "0" : undefined
         )}
-      ></hui-image>
+        role=${ifDefined(
+          hasAction(this._config.tap_action) ? "button" : undefined
+        )}
+      >
+        <hui-image
+          .hass=${this.hass}
+          .entity=${this._config.entity}
+          .image=${image}
+          .stateImage=${this._config.state_image}
+          .cameraImage=${this._config.camera_image}
+          .cameraView=${this._config.camera_view}
+          .filter=${this._config.filter}
+          .stateFilter=${this._config.state_filter}
+          .title=${computeTooltip(this.hass, this._config)}
+          .aspectRatio=${this._config.aspect_ratio}
+          .darkModeImage=${this._config.dark_mode_image}
+          .darkModeFilter=${this._config.dark_mode_filter}
+        ></hui-image>
+      </div>
     `;
   }
 
@@ -84,11 +96,14 @@ export class HuiImageElement extends LitElement implements LovelaceElement {
     }
     hui-image {
       -webkit-user-select: none !important;
+      pointer-events: none;
     }
-    hui-image:focus {
+    div:focus {
       outline: none;
+    }
+    div:focus hui-image {
       background: var(--divider-color);
-      border-radius: 100%;
+      border-radius: var(--ha-border-radius-pill);
     }
   `;
 

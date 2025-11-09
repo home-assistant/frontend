@@ -64,8 +64,8 @@ class OnboardingWelcomeLinks extends LitElement {
       display: grid;
       grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
       margin-top: 16px;
-      column-gap: 16px;
-      row-gap: 16px;
+      column-gap: var(--ha-space-4);
+      row-gap: var(--ha-space-4);
     }
     @media (max-width: 550px) {
       :host {

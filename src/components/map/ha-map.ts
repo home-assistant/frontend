@@ -7,27 +7,27 @@ import type {
   Layer,
   Map,
   Marker,
-  Polyline,
   MarkerClusterGroup,
+  Polyline,
 } from "leaflet";
 import type { PropertyValues } from "lit";
 import { css, ReactiveElement } from "lit";
 import { customElement, property, state } from "lit/decorators";
-import { fireEvent } from "../../common/dom/fire_event";
 import { formatDateTime } from "../../common/datetime/format_date_time";
 import {
   formatTimeWeekday,
   formatTimeWithSeconds,
 } from "../../common/datetime/format_time";
+import { fireEvent } from "../../common/dom/fire_event";
 import type { LeafletModuleType } from "../../common/dom/setup-leaflet-map";
 import { setupLeafletMap } from "../../common/dom/setup-leaflet-map";
 import { computeStateDomain } from "../../common/entity/compute_state_domain";
 import { computeStateName } from "../../common/entity/compute_state_name";
+import { DecoratedMarker } from "../../common/map/decorated_marker";
 import type { HomeAssistant, ThemeMode } from "../../types";
 import { isTouch } from "../../util/is_touch";
 import "../ha-icon-button";
 import "./ha-entity-marker";
-import { DecoratedMarker } from "../../common/map/decorated_marker";
 
 declare global {
   // for fire event
@@ -35,6 +35,8 @@ declare global {
     "map-clicked": { location: [number, number] };
   }
 }
+
+const PROGRAMMITIC_FIT_DELAY = 250;
 
 const getEntityId = (entity: string | HaMapEntity): string =>
   typeof entity === "string" ? entity : entity.entity_id;
@@ -113,14 +115,33 @@ export class HaMap extends ReactiveElement {
 
   private _clickCount = 0;
 
+  private _isProgrammaticFit = false;
+
+  private _pauseAutoFit = false;
+
   public connectedCallback(): void {
+    this._pauseAutoFit = false;
+    document.addEventListener("visibilitychange", this._handleVisibilityChange);
+    this._handleVisibilityChange();
     super.connectedCallback();
     this._loadMap();
     this._attachObserver();
   }
 
+  private _handleVisibilityChange = async () => {
+    if (!document.hidden) {
+      setTimeout(() => {
+        this._pauseAutoFit = false;
+      }, 500);
+    }
+  };
+
   public disconnectedCallback(): void {
     super.disconnectedCallback();
+    document.removeEventListener(
+      "visibilitychange",
+      this._handleVisibilityChange
+    );
     if (this.leafletMap) {
       this.leafletMap.remove();
       this.leafletMap = undefined;
@@ -145,7 +166,7 @@ export class HaMap extends ReactiveElement {
 
     if (changedProps.has("_loaded") || changedProps.has("entities")) {
       this._drawEntities();
-      autoFitRequired = true;
+      autoFitRequired = !this._pauseAutoFit;
     } else if (this._loaded && oldHass && this.entities) {
       // Check if any state has changed
       for (const entity of this.entities) {
@@ -154,7 +175,7 @@ export class HaMap extends ReactiveElement {
           this.hass!.states[getEntityId(entity)]
         ) {
           this._drawEntities();
-          autoFitRequired = true;
+          autoFitRequired = !this._pauseAutoFit;
           break;
         }
       }
@@ -178,7 +199,11 @@ export class HaMap extends ReactiveElement {
     }
 
     if (changedProps.has("zoom")) {
+      this._isProgrammaticFit = true;
       this.leafletMap!.setZoom(this.zoom);
+      setTimeout(() => {
+        this._isProgrammaticFit = false;
+      }, PROGRAMMITIC_FIT_DELAY);
     }
 
     if (
@@ -234,13 +259,30 @@ export class HaMap extends ReactiveElement {
         }
         this._clickCount++;
       });
+      this.leafletMap.on("zoomstart", () => {
+        if (!this._isProgrammaticFit) {
+          this._pauseAutoFit = true;
+        }
+      });
+      this.leafletMap.on("movestart", () => {
+        if (!this._isProgrammaticFit) {
+          this._pauseAutoFit = true;
+        }
+      });
       this._loaded = true;
     } finally {
       this._loading = false;
     }
   }
 
-  public fitMap(options?: { zoom?: number; pad?: number }): void {
+  public fitMap(options?: {
+    zoom?: number;
+    pad?: number;
+    unpause_autofit?: boolean;
+  }): void {
+    if (options?.unpause_autofit) {
+      this._pauseAutoFit = false;
+    }
     if (!this.leafletMap || !this.Leaflet || !this.hass) {
       return;
     }
@@ -250,6 +292,7 @@ export class HaMap extends ReactiveElement {
       !this._mapFocusZones.length &&
       !this.layers?.length
     ) {
+      this._isProgrammaticFit = true;
       this.leafletMap.setView(
         new this.Leaflet.LatLng(
           this.hass.config.latitude,
@@ -257,6 +300,9 @@ export class HaMap extends ReactiveElement {
         ),
         options?.zoom || this.zoom
       );
+      setTimeout(() => {
+        this._isProgrammaticFit = false;
+      }, PROGRAMMITIC_FIT_DELAY);
       return;
     }
 
@@ -277,8 +323,11 @@ export class HaMap extends ReactiveElement {
     });
 
     bounds = bounds.pad(options?.pad ?? 0.5);
-
+    this._isProgrammaticFit = true;
     this.leafletMap.fitBounds(bounds, { maxZoom: options?.zoom || this.zoom });
+    setTimeout(() => {
+      this._isProgrammaticFit = false;
+    }, PROGRAMMITIC_FIT_DELAY);
   }
 
   public fitBounds(
@@ -291,7 +340,11 @@ export class HaMap extends ReactiveElement {
     const bounds = this.Leaflet.latLngBounds(boundingbox).pad(
       options?.pad ?? 0.5
     );
+    this._isProgrammaticFit = true;
     this.leafletMap.fitBounds(bounds, { maxZoom: options?.zoom || this.zoom });
+    setTimeout(() => {
+      this._isProgrammaticFit = false;
+    }, PROGRAMMITIC_FIT_DELAY);
   }
 
   private _drawLayers(prevLayers: Layer[] | undefined): void {
@@ -657,7 +710,7 @@ export class HaMap extends ReactiveElement {
       cursor: move !important;
     }
     .leaflet-edit-resize {
-      border-radius: 50%;
+      border-radius: var(--ha-border-radius-circle);
       cursor: nesw-resize !important;
     }
     .named-icon {
@@ -681,7 +734,7 @@ export class HaMap extends ReactiveElement {
       font-size: var(--ha-font-size-s);
       background: rgba(80, 80, 80, 0.9) !important;
       color: white !important;
-      border-radius: 4px;
+      border-radius: var(--ha-border-radius-sm);
       box-shadow: none !important;
       text-align: center;
     }
@@ -692,7 +745,7 @@ export class HaMap extends ReactiveElement {
       border: 3px solid rgba(var(--rgb-primary-color), 0.2);
       width: 32px;
       height: 32px;
-      border-radius: 20px;
+      border-radius: var(--ha-border-radius-2xl);
       text-align: center;
       color: var(--text-primary-color);
       font-size: var(--ha-font-size-m);

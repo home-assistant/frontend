@@ -6,8 +6,9 @@ import { repeat } from "lit/directives/repeat";
 import memoizeOne from "memoize-one";
 import { fireEvent } from "../common/dom/fire_event";
 import { stringCompare } from "../common/string/compare";
+import type { LocalizeFunc } from "../common/translations/localize";
 import type { IntegrationManifest } from "../data/integration";
-import { fetchIntegrationManifests } from "../data/integration";
+import { domainToName, fetchIntegrationManifests } from "../data/integration";
 import { haStyleScrollbar } from "../resources/styles";
 import type { HomeAssistant } from "../types";
 import "./ha-check-list-item";
@@ -63,7 +64,12 @@ export class HaFilterIntegrations extends LitElement {
                 multi
               >
                 ${repeat(
-                  this._integrations(this._manifests, this._filter, this.value),
+                  this._integrations(
+                    this.hass.localize,
+                    this._manifests,
+                    this._filter,
+                    this.value
+                  ),
                   (i) => i.domain,
                   (integration) =>
                     html`<ha-check-list-item
@@ -79,7 +85,7 @@ export class HaFilterIntegrations extends LitElement {
                         .domain=${integration.domain}
                         brand-fallback
                       ></ha-domain-icon>
-                      ${integration.name || integration.domain}
+                      ${integration.name}
                     </ha-check-list-item>`
                 )}
               </ha-list> `
@@ -108,11 +114,21 @@ export class HaFilterIntegrations extends LitElement {
 
   protected async firstUpdated() {
     this._manifests = await fetchIntegrationManifests(this.hass);
+    this.hass.loadBackendTranslation("title");
   }
 
   private _integrations = memoizeOne(
-    (manifest: IntegrationManifest[], filter: string | undefined, _value) =>
+    (
+      localize: LocalizeFunc,
+      manifest: IntegrationManifest[],
+      filter: string | undefined,
+      _value
+    ) =>
       manifest
+        .map((mnfst) => ({
+          ...mnfst,
+          name: domainToName(localize, mnfst.domain, mnfst),
+        }))
         .filter(
           (mnfst) =>
             (!mnfst.integration_type ||
@@ -124,11 +140,7 @@ export class HaFilterIntegrations extends LitElement {
               mnfst.domain.toLowerCase().includes(filter))
         )
         .sort((a, b) =>
-          stringCompare(
-            a.name || a.domain,
-            b.name || b.domain,
-            this.hass.locale.language
-          )
+          stringCompare(a.name, b.name, this.hass.locale.language)
         )
   );
 
@@ -176,7 +188,7 @@ export class HaFilterIntegrations extends LitElement {
           height: 0;
         }
         ha-expansion-panel {
-          --ha-card-border-radius: 0;
+          --ha-card-border-radius: var(--ha-border-radius-square);
           --expansion-panel-content-padding: 0;
         }
         .header {
@@ -194,7 +206,7 @@ export class HaFilterIntegrations extends LitElement {
           margin-inline-end: 0;
           min-width: 16px;
           box-sizing: border-box;
-          border-radius: 50%;
+          border-radius: var(--ha-border-radius-circle);
           font-size: var(--ha-font-size-xs);
           font-weight: var(--ha-font-weight-normal);
           background-color: var(--primary-color);
@@ -205,7 +217,7 @@ export class HaFilterIntegrations extends LitElement {
         }
         search-input-outlined {
           display: block;
-          padding: 0 8px;
+          padding: var(--ha-space-1) var(--ha-space-2) 0;
         }
       `,
     ];

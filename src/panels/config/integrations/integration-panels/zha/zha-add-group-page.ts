@@ -1,11 +1,10 @@
-import "@material/mwc-button";
 import type { CSSResultGroup, PropertyValues } from "lit";
 import { css, html, LitElement } from "lit";
 import { customElement, property, state, query } from "lit/decorators";
 import type { HASSDomEvent } from "../../../../../common/dom/fire_event";
 import { navigate } from "../../../../../common/navigate";
 import type { SelectionChangedEvent } from "../../../../../components/data-table/ha-data-table";
-import "../../../../../components/ha-spinner";
+import "../../../../../components/ha-button";
 import type { ZHADeviceEndpoint, ZHAGroup } from "../../../../../data/zha";
 import { addGroup, fetchGroupableDevices } from "../../../../../data/zha";
 import "../../../../../layouts/hass-subpage";
@@ -97,24 +96,17 @@ export class ZHAAddGroupPage extends LitElement {
           </zha-device-endpoint-data-table>
 
           <div class="buttons">
-            <mwc-button
+            <ha-button
               .disabled=${!this._groupName ||
               this._groupName === "" ||
               this._processingAdd}
               @click=${this._createGroup}
               class="button"
+              .loading=${this._processingAdd}
             >
-              ${this._processingAdd
-                ? html`<ha-spinner
-                    size="small"
-                    .ariaLabel=${this.hass!.localize(
-                      "ui.panel.config.zha.groups.creating_group"
-                    )}
-                  ></ha-spinner>`
-                : ""}
               ${this.hass!.localize(
                 "ui.panel.config.zha.groups.create"
-              )}</mwc-button
+              )}</ha-button
             >
           </div>
         </ha-config-section>
@@ -184,7 +176,7 @@ export class ZHAAddGroupPage extends LitElement {
         }
         .buttons {
           align-items: flex-end;
-          padding: 8px;
+          padding: 16px;
         }
         .buttons .warning {
           --mdc-theme-primary: var(--error-color);

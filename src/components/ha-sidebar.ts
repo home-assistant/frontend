@@ -14,6 +14,7 @@ import {
   mdiTooltipAccount,
   mdiViewDashboard,
 } from "@mdi/js";
+import type { UnsubscribeFunc } from "home-assistant-js-websocket";
 import type { CSSResultGroup, PropertyValues } from "lit";
 import { LitElement, css, html, nothing } from "lit";
 import {
@@ -28,6 +29,7 @@ import memoizeOne from "memoize-one";
 import { fireEvent } from "../common/dom/fire_event";
 import { toggleAttribute } from "../common/dom/toggle_attribute";
 import { stringCompare } from "../common/string/compare";
+import { computeRTL } from "../common/util/compute_rtl";
 import { throttle } from "../common/util/throttle";
 import { subscribeFrontendUserData } from "../data/frontend";
 import type { ActionHandlerDetail } from "../data/lovelace/action_handler";
@@ -155,7 +157,8 @@ export const computePanels = memoizeOne(
     Object.values(panels).forEach((panel) => {
       if (
         hiddenPanels.includes(panel.url_path) ||
-        (!panel.title && panel.url_path !== defaultPanel)
+        (!panel.title && panel.url_path !== defaultPanel) ||
+        (!panel.default_visible && !panelsOrder.includes(panel.url_path))
       ) {
         return;
       }
@@ -205,6 +208,8 @@ class HaSidebar extends SubscribeMixin(LitElement) {
 
   private _recentKeydownActiveUntil = 0;
 
+  private _unsubPersistentNotifications: UnsubscribeFunc | undefined;
+
   @query(".tooltip") private _tooltip!: HTMLDivElement;
 
   public hassSubscribe() {
@@ -227,9 +232,6 @@ class HaSidebar extends SubscribeMixin(LitElement) {
           }
         }
       ),
-      subscribeNotifications(this.hass.connection, (notifications) => {
-        this._notifications = notifications;
-      }),
       ...(this.hass.user?.is_admin
         ? [
             subscribeRepairsIssueRegistry(this.hass.connection!, (repairs) => {
@@ -300,6 +302,23 @@ class HaSidebar extends SubscribeMixin(LitElement) {
     );
   }
 
+  protected firstUpdated(changedProps: PropertyValues) {
+    super.firstUpdated(changedProps);
+    this._subscribePersistentNotifications();
+  }
+
+  private _subscribePersistentNotifications(): void {
+    if (this._unsubPersistentNotifications) {
+      this._unsubPersistentNotifications();
+    }
+    this._unsubPersistentNotifications = subscribeNotifications(
+      this.hass.connection,
+      (notifications) => {
+        this._notifications = notifications;
+      }
+    );
+  }
+
   protected updated(changedProps) {
     super.updated(changedProps);
     if (changedProps.has("alwaysExpand")) {
@@ -310,6 +329,14 @@ class HaSidebar extends SubscribeMixin(LitElement) {
     }
 
     const oldHass = changedProps.get("hass") as HomeAssistant | undefined;
+
+    if (
+      this.hass &&
+      oldHass?.connected === false &&
+      this.hass.connected === true
+    ) {
+      this._subscribePersistentNotifications();
+    }
 
     this._calculateCounts();
 
@@ -511,11 +538,17 @@ class HaSidebar extends SubscribeMixin(LitElement) {
   }
 
   private _renderUserItem(selectedPanel: string) {
+    const isRTL = computeRTL(this.hass);
+
     return html`
       <ha-md-list-item
         href="/profile"
         type="link"
-        class="user ${selectedPanel === "profile" ? " selected" : ""}"
+        class=${classMap({
+          user: true,
+          selected: selectedPanel === "profile",
+          rtl: isRTL,
+        })}
         @mouseenter=${this._itemMouseEnter}
         @mouseleave=${this._itemMouseLeave}
       >
@@ -641,7 +674,7 @@ class HaSidebar extends SubscribeMixin(LitElement) {
     tooltip.style.display = "block";
     tooltip.style.position = "fixed";
     tooltip.style.top = `${top}px`;
-    tooltip.style.left = `${item.offsetLeft + item.clientWidth + 8}px`;
+    tooltip.style.left = `calc(${item.offsetLeft + item.clientWidth + 8}px + var(--safe-area-inset-left, var(--ha-space-0)))`;
   }
 
   private _hideTooltip() {
@@ -680,12 +713,17 @@ class HaSidebar extends SubscribeMixin(LitElement) {
           background-color: var(--sidebar-background-color);
           width: 100%;
           box-sizing: border-box;
+          padding-bottom: calc(
+            14px + var(--safe-area-inset-bottom, var(--ha-space-0))
+          );
         }
         .menu {
-          height: var(--header-height);
+          height: calc(
+            var(--header-height) + var(--safe-area-inset-top, var(--ha-space-0))
+          );
           box-sizing: border-box;
           display: flex;
-          padding: 0 4px;
+          padding: 0 var(--ha-space-1);
           border-bottom: 1px solid transparent;
           white-space: nowrap;
           font-weight: var(--ha-font-weight-normal);
@@ -700,12 +738,20 @@ class HaSidebar extends SubscribeMixin(LitElement) {
           );
           font-size: var(--ha-font-size-xl);
           align-items: center;
-          padding-left: calc(4px + var(--safe-area-inset-left));
-          padding-inline-start: calc(4px + var(--safe-area-inset-left));
+          padding-left: calc(
+            var(--ha-space-1) + var(--safe-area-inset-left, var(--ha-space-0))
+          );
+          padding-inline-start: calc(
+            var(--ha-space-1) + var(--safe-area-inset-left, var(--ha-space-0))
+          );
           padding-inline-end: initial;
+          padding-top: var(--safe-area-inset-top, var(--ha-space-0));
         }
         :host([expanded]) .menu {
-          width: calc(256px + var(--safe-area-inset-left));
+          width: calc(256px + var(--safe-area-inset-left, var(--ha-space-0)));
+        }
+        :host([narrow][expanded]) .menu {
+          width: 100%;
         }
         .menu ha-icon-button {
           color: var(--sidebar-icon-color);
@@ -718,8 +764,8 @@ class HaSidebar extends SubscribeMixin(LitElement) {
           display: none;
         }
         :host([narrow]) .title {
-          margin: 0;
-          padding: 0 16px;
+          margin: var(--ha-space-0);
+          padding: var(--ha-space-0) var(--ha-space-4);
         }
         :host([expanded]) .title {
           display: initial;
@@ -731,42 +777,48 @@ class HaSidebar extends SubscribeMixin(LitElement) {
         ha-fade-in,
         ha-md-list {
           height: calc(
-            100% - var(--header-height) - 132px - var(--safe-area-inset-bottom)
+            100% - var(--header-height) - var(
+                --safe-area-inset-top,
+                var(--ha-space-0)
+              ) -
+              132px
           );
         }
 
         ha-fade-in {
+          padding: var(--ha-space-1) var(--ha-space-0);
+          box-sizing: border-box;
           display: flex;
           justify-content: center;
           align-items: center;
         }
 
         ha-md-list {
-          padding: 4px 0;
-          box-sizing: border-box;
           overflow-x: hidden;
           background: none;
-          margin-left: var(--safe-area-inset-left);
+          margin-left: var(--safe-area-inset-left, var(--ha-space-0));
         }
 
         ha-md-list-item {
           flex-shrink: 0;
           box-sizing: border-box;
-          margin: 4px;
-          border-radius: 4px;
-          --md-list-item-one-line-container-height: 40px;
+          margin: var(--ha-space-1);
+          border-radius: var(--ha-border-radius-sm);
+          --md-list-item-one-line-container-height: var(--ha-space-10);
           --md-list-item-top-space: 0;
           --md-list-item-bottom-space: 0;
-          width: 48px;
+          width: var(--ha-space-12);
           position: relative;
           --md-list-item-label-text-color: var(--sidebar-text-color);
-          --md-list-item-leading-space: 12px;
-          --md-list-item-trailing-space: 12px;
-          --md-list-item-leading-icon-size: 24px;
+          --md-list-item-leading-space: var(--ha-space-3);
+          --md-list-item-trailing-space: var(--ha-space-3);
+          --md-list-item-leading-icon-size: var(--ha-space-6);
         }
         :host([expanded]) ha-md-list-item {
           width: 248px;
-          width: calc(248px - var(--safe-area-inset-left));
+        }
+        :host([narrow][expanded]) ha-md-list-item {
+          width: calc(240px - var(--safe-area-inset-left, var(--ha-space-0)));
         }
 
         ha-md-list-item.selected {
@@ -774,7 +826,7 @@ class HaSidebar extends SubscribeMixin(LitElement) {
           --md-ripple-hover-color: var(--sidebar-selected-icon-color);
         }
         ha-md-list-item.selected::before {
-          border-radius: 4px;
+          border-radius: var(--ha-border-radius-sm);
           position: absolute;
           top: 0;
           right: 0;
@@ -790,7 +842,7 @@ class HaSidebar extends SubscribeMixin(LitElement) {
 
         ha-icon[slot="start"],
         ha-svg-icon[slot="start"] {
-          width: 24px;
+          width: var(--ha-space-6);
           flex-shrink: 0;
           color: var(--sidebar-icon-color);
         }
@@ -823,8 +875,8 @@ class HaSidebar extends SubscribeMixin(LitElement) {
           display: flex;
           justify-content: center;
           align-items: center;
-          min-width: 8px;
-          border-radius: 10px;
+          min-width: var(--ha-space-2);
+          border-radius: var(--ha-border-radius-xl);
           font-weight: var(--ha-font-weight-normal);
           line-height: normal;
           background-color: var(--accent-color);
@@ -834,22 +886,26 @@ class HaSidebar extends SubscribeMixin(LitElement) {
 
         ha-svg-icon + .badge {
           position: absolute;
-          top: 4px;
+          top: var(--ha-space-1);
           left: 26px;
-          border-radius: 10px;
+          border-radius: var(--ha-border-radius-md);
           font-size: 0.65em;
           line-height: var(--ha-line-height-expanded);
-          padding: 0 4px;
+          padding: var(--ha-space-0) var(--ha-space-1);
         }
 
         ha-md-list-item.user {
-          --md-list-item-leading-icon-size: 40px;
-          --md-list-item-leading-space: 4px;
+          --md-list-item-leading-icon-size: var(--ha-space-10);
+          --md-list-item-leading-space: var(--ha-space-1);
+        }
+
+        ha-md-list-item.user.rtl {
+          --md-list-item-leading-space: var(--ha-space-3);
         }
 
         ha-user-badge {
           flex-shrink: 0;
-          margin-right: -8px;
+          margin-right: calc(var(--ha-space-2) * -1);
         }
 
         .spacer {
@@ -861,7 +917,7 @@ class HaSidebar extends SubscribeMixin(LitElement) {
           color: var(--sidebar-text-color);
           font-size: var(--ha-font-size-m);
           font-weight: var(--ha-font-weight-medium);
-          padding: 16px;
+          padding: var(--ha-space-4);
           white-space: nowrap;
         }
 
@@ -869,11 +925,11 @@ class HaSidebar extends SubscribeMixin(LitElement) {
           display: none;
           position: absolute;
           opacity: 0.9;
-          border-radius: 2px;
+          border-radius: var(--ha-border-radius-sm);
           white-space: nowrap;
           color: var(--sidebar-background-color);
           background-color: var(--sidebar-text-color);
-          padding: 4px;
+          padding: var(--ha-space-1);
           font-weight: var(--ha-font-weight-medium);
         }
 

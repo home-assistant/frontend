@@ -164,13 +164,6 @@ export class CloudRegister extends LitElement {
                 ></ha-password-field>
               </div>
               <div class="card-actions">
-                <ha-progress-button
-                  @click=${this._handleRegister}
-                  .progress=${this._requestInProgress}
-                  >${this.hass.localize(
-                    "ui.panel.config.cloud.register.start_trial"
-                  )}</ha-progress-button
-                >
                 <button
                   class="link"
                   .disabled=${this._requestInProgress}
@@ -180,6 +173,13 @@ export class CloudRegister extends LitElement {
                     "ui.panel.config.cloud.register.resend_confirm_email"
                   )}
                 </button>
+                <ha-progress-button
+                  @click=${this._handleRegister}
+                  .progress=${this._requestInProgress}
+                  >${this.hass.localize(
+                    "ui.panel.config.cloud.register.start_trial"
+                  )}</ha-progress-button
+                >
               </div>
             </ha-card>
           </ha-config-section>

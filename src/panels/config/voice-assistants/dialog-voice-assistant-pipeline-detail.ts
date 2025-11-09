@@ -182,13 +182,11 @@ export class DialogVoiceAssistantPipelineDetail extends LitElement {
                   ${this.hass.localize(
                     "ui.panel.config.voice_assistants.assistants.pipeline.detail.no_cloud_message"
                   )}
-                  <a href="/config/cloud" slot="action">
-                    <ha-button>
-                      ${this.hass.localize(
-                        "ui.panel.config.voice_assistants.assistants.pipeline.detail.no_cloud_action"
-                      )}
-                    </ha-button>
-                  </a>
+                  <ha-button size="small" href="/config/cloud" slot="action">
+                    ${this.hass.localize(
+                      "ui.panel.config.voice_assistants.assistants.pipeline.detail.no_cloud_action"
+                    )}
+                  </ha-button>
                 </ha-alert>
               `
             : nothing}
@@ -216,7 +214,7 @@ export class DialogVoiceAssistantPipelineDetail extends LitElement {
         <ha-button
           slot="primaryAction"
           @click=${this._updatePipeline}
-          .disabled=${this._submitting}
+          .loading=${this._submitting}
           dialogInitialFocus
         >
           ${this._params.pipeline?.id

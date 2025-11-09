@@ -9,6 +9,10 @@ import type {
   HassServiceTarget,
   MessageBase,
 } from "home-assistant-js-websocket";
+import type {
+  EntityNameItem,
+  EntityNameOptions,
+} from "./common/entity/compute_entity_name_display";
 import type { LocalizeFunc } from "./common/translations/localize";
 import type { AreaRegistryEntry } from "./data/area_registry";
 import type { DeviceRegistryEntry } from "./data/device_registry";
@@ -134,6 +138,7 @@ export interface PanelInfo<T = Record<string, any> | null> {
   title: string | null;
   url_path: string;
   config_panel_domain?: string;
+  default_visible?: boolean;
 }
 
 export type Panels = Record<string, PanelInfo>;
@@ -285,6 +290,11 @@ export interface HomeAssistant {
     value?: any
   ): string;
   formatEntityAttributeName(stateObj: HassEntity, attribute: string): string;
+  formatEntityName(
+    stateObj: HassEntity,
+    type: EntityNameItem | EntityNameItem[],
+    separator?: EntityNameOptions
+  ): string;
 }
 
 export interface Route {

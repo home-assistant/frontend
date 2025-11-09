@@ -1,1 +1,1 @@
-export const strokeWidth = 5;
+export const strokeWidth = 2;

@@ -1,9 +1,9 @@
-import "@material/mwc-button";
 import type { TemplateResult } from "lit";
 import { css, html, LitElement } from "lit";
 import { customElement, property, state } from "lit/decorators";
 import { formatTime } from "../../../../../common/datetime/format_time";
 import "../../../../../components/ha-card";
+import "../../../../../components/ha-button";
 import "../../../../../components/ha-select";
 import "../../../../../components/ha-textfield";
 import type { MQTTMessage } from "../../../../../data/mqtt";
@@ -100,15 +100,16 @@ class MqttSubscribeCard extends LitElement {
                 (qos) => html`<ha-list-item .value=${qos}>${qos}</ha-list-item>`
               )}
             </ha-select>
-            <mwc-button
+            <ha-button
+              appearance="plain"
+              size="small"
               .disabled=${this._topic === ""}
               @click=${this._handleSubmit}
-              type="submit"
             >
               ${this._subscribed
                 ? this.hass.localize("ui.panel.config.mqtt.stop_listening")
                 : this.hass.localize("ui.panel.config.mqtt.start_listening")}
-            </mwc-button>
+            </ha-button>
           </div>
         </form>
         <div class="events">

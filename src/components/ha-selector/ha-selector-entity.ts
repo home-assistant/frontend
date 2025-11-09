@@ -29,6 +29,8 @@ export class HaEntitySelector extends LitElement {
 
   @property() public helper?: string;
 
+  @property() public placeholder?: any;
+
   @property({ type: Boolean }) public disabled = false;
 
   @property({ type: Boolean }) public required = true;
@@ -69,6 +71,7 @@ export class HaEntitySelector extends LitElement {
         .excludeEntities=${this.selector.entity?.exclude_entities}
         .entityFilter=${this._filterEntities}
         .createDomains=${this._createDomains}
+        .placeholder=${this.placeholder}
         .disabled=${this.disabled}
         .required=${this.required}
         allow-custom-entity
@@ -83,8 +86,10 @@ export class HaEntitySelector extends LitElement {
         .helper=${this.helper}
         .includeEntities=${this.selector.entity.include_entities}
         .excludeEntities=${this.selector.entity.exclude_entities}
+        .reorder=${this.selector.entity.reorder ?? false}
         .entityFilter=${this._filterEntities}
         .createDomains=${this._createDomains}
+        .placeholder=${this.placeholder}
         .disabled=${this.disabled}
         .required=${this.required}
       ></ha-entities-picker>

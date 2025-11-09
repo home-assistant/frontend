@@ -1,8 +1,8 @@
+import { mdiGestureTap } from "@mdi/js";
 import type { CSSResultGroup } from "lit";
 import { html, LitElement, nothing } from "lit";
 import { customElement, property, state } from "lit/decorators";
 import { assert, assign, object, optional, string } from "superstruct";
-import { mdiGestureTap } from "@mdi/js";
 import { fireEvent } from "../../../../common/dom/fire_event";
 import "../../../../components/ha-form/ha-form";
 import type { SchemaUnion } from "../../../../components/ha-form/types";
@@ -11,12 +11,13 @@ import type { LightCardConfig } from "../../cards/types";
 import type { LovelaceCardEditor } from "../../types";
 import { actionConfigStruct } from "../structs/action-struct";
 import { baseLovelaceCardConfig } from "../structs/base-card-struct";
+import { entityNameStruct } from "../structs/entity-name-struct";
 import { configElementStyle } from "./config-elements-style";
 
 const cardConfigStruct = assign(
   baseLovelaceCardConfig,
   object({
-    name: optional(string()),
+    name: optional(entityNameStruct),
     entity: optional(string()),
     theme: optional(string()),
     icon: optional(string()),
@@ -33,10 +34,16 @@ const SCHEMA = [
     selector: { entity: { domain: "light" } },
   },
   {
+    name: "name",
+    selector: {
+      entity_name: {},
+    },
+    context: { entity: "entity" },
+  },
+  {
     type: "grid",
     name: "",
     schema: [
-      { name: "name", selector: { text: {} } },
       {
         name: "icon",
         selector: {

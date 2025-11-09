@@ -1,11 +1,10 @@
-import "@material/mwc-button/mwc-button";
-
 import type { CSSResultGroup } from "lit";
 import { css, html, LitElement, nothing } from "lit";
 import { customElement, state } from "lit/decorators";
 import { fireEvent } from "../../../../common/dom/fire_event";
 import { stopPropagation } from "../../../../common/dom/stop_propagation";
 import "../../../../components/ha-alert";
+import "../../../../components/ha-button";
 import { createCloseHeading } from "../../../../components/ha-dialog";
 import "../../../../components/ha-icon";
 import "../../../../components/ha-list";
@@ -140,20 +139,21 @@ export class HuiDialogSelectView extends LitElement {
                 </ha-list>
               `
             : ""}
-        <mwc-button
-          slot="secondaryAction"
+        <ha-button
+          slot="primaryAction"
           @click=${this.closeDialog}
           dialogInitialFocus
+          appearance="plain"
         >
           ${this.hass!.localize("ui.common.cancel")}
-        </mwc-button>
-        <mwc-button
+        </ha-button>
+        <ha-button
           slot="primaryAction"
           .disabled=${!this._config || (this._config.views || []).length < 1}
           @click=${this._selectView}
         >
           ${this._params.actionLabel || this.hass!.localize("ui.common.move")}
-        </mwc-button>
+        </ha-button>
       </ha-dialog>
     `;
   }

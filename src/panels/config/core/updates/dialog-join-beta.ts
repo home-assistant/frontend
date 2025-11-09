@@ -1,10 +1,10 @@
-import "@material/mwc-button/mwc-button";
 import { mdiOpenInNew } from "@mdi/js";
 import type { CSSResultGroup } from "lit";
 import { css, html, LitElement, nothing } from "lit";
 import { customElement, property, state } from "lit/decorators";
 import { fireEvent } from "../../../../common/dom/fire_event";
 import "../../../../components/ha-alert";
+import "../../../../components/ha-button";
 import { createCloseHeading } from "../../../../components/ha-dialog";
 import type { HassDialog } from "../../../../dialogs/make-dialog-manager";
 import { haStyleDialog } from "../../../../resources/styles";
@@ -67,12 +67,16 @@ export class DialogJoinBeta
           )}
           <ha-svg-icon .path=${mdiOpenInNew}></ha-svg-icon>
         </a>
-        <mwc-button slot="primaryAction" @click=${this._cancel}>
+        <ha-button
+          appearance="plain"
+          slot="primaryAction"
+          @click=${this._cancel}
+        >
           ${this.hass.localize("ui.common.cancel")}
-        </mwc-button>
-        <mwc-button slot="primaryAction" @click=${this._join}>
+        </ha-button>
+        <ha-button slot="primaryAction" @click=${this._join}>
           ${this.hass.localize("ui.dialogs.join_beta_channel.join")}
-        </mwc-button>
+        </ha-button>
       </ha-dialog>
     `;
   }

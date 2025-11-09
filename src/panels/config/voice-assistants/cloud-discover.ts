@@ -1,12 +1,12 @@
 import { mdiMicrophoneMessage, mdiOpenInNew } from "@mdi/js";
 import { css, html, LitElement, nothing } from "lit";
 import { customElement, property } from "lit/decorators";
+import { isComponentLoaded } from "../../../common/config/is_component_loaded";
+import "../../../components/ha-button";
 import "../../../components/ha-card";
+import "../../../components/ha-svg-icon";
 import type { HomeAssistant } from "../../../types";
 import { brandsUrl } from "../../../util/brands-url";
-import "../../../components/ha-svg-icon";
-import "../../../components/ha-button";
-import { isComponentLoaded } from "../../../common/config/is_component_loaded";
 
 @customElement("cloud-discover")
 export class CloudDiscover extends LitElement {
@@ -81,31 +81,33 @@ export class CloudDiscover extends LitElement {
             </div>
           </div>
           <div class="more">
-            <a href="https://www.nabucasa.com" target="_blank" rel="noreferrer">
+            <ha-button
+              appearance="plain"
+              size="small"
+              href="https://www.nabucasa.com"
+              target="_blank"
+              rel="noreferrer"
+            >
               ${this.hass.localize(
                 "ui.panel.config.voice_assistants.assistants.cloud.and_more"
               )}
-              <ha-svg-icon .path=${mdiOpenInNew}></ha-svg-icon>
-            </a>
+              <ha-svg-icon slot="end" .path=${mdiOpenInNew}></ha-svg-icon>
+            </ha-button>
           </div>
         </div>
         ${isComponentLoaded(this.hass, "cloud")
           ? html`
               <div class="card-actions">
-                <a href="/config/cloud/login">
-                  <ha-button>
-                    ${this.hass.localize(
-                      "ui.panel.config.voice_assistants.assistants.cloud.sign_in"
-                    )}
-                  </ha-button>
-                </a>
-                <a href="/config/cloud/register">
-                  <ha-button unelevated>
-                    ${this.hass.localize(
-                      "ui.panel.config.voice_assistants.assistants.cloud.try_one_month"
-                    )}
-                  </ha-button>
-                </a>
+                <ha-button appearance="plain" href="/config/cloud/login">
+                  ${this.hass.localize(
+                    "ui.panel.config.voice_assistants.assistants.cloud.sign_in"
+                  )}
+                </ha-button>
+                <ha-button href="/config/cloud/register" appearance="filled">
+                  ${this.hass.localize(
+                    "ui.panel.config.voice_assistants.assistants.cloud.try_one_month"
+                  )}
+                </ha-button>
               </div>
             `
           : nothing}
@@ -143,7 +145,7 @@ export class CloudDiscover extends LitElement {
     .features {
       display: grid;
       grid-template-columns: auto;
-      grid-gap: 16px;
+      grid-gap: var(--ha-space-4);
       padding: 16px;
     }
     @media (min-width: 600px) {
@@ -167,7 +169,7 @@ export class CloudDiscover extends LitElement {
       margin: 0 4px;
     }
     .round-icon {
-      border-radius: 50%;
+      border-radius: var(--ha-border-radius-circle);
       color: #6e41ab;
       background-color: #e8dcf7;
       display: flex;

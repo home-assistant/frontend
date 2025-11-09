@@ -1,40 +1,39 @@
+import type { HassEntity } from "home-assistant-js-websocket";
 import type { CSSResultGroup } from "lit";
 import { css, html, LitElement, nothing } from "lit";
 import { property, state } from "lit/decorators";
-import type { HassEntity } from "home-assistant-js-websocket";
 import { fireEvent } from "../../../common/dom/fire_event";
+import "../../../components/entity/ha-entity-picker";
+import type { HaEntityPicker } from "../../../components/entity/ha-entity-picker";
 import "../../../components/ha-alert";
 import "../../../components/ha-aliases-editor";
+import { createCloseHeading } from "../../../components/ha-dialog";
+import "../../../components/ha-floor-picker";
+import "../../../components/ha-icon-picker";
+import "../../../components/ha-labels-picker";
 import "../../../components/ha-picture-upload";
 import type { HaPictureUpload } from "../../../components/ha-picture-upload";
 import "../../../components/ha-settings-row";
-import "../../../components/ha-icon-picker";
-import "../../../components/ha-floor-picker";
-import "../../../components/entity/ha-entity-picker";
-import type { HaEntityPicker } from "../../../components/entity/ha-entity-picker";
 import "../../../components/ha-textfield";
-import "../../../components/ha-labels-picker";
 import type {
   AreaRegistryEntry,
   AreaRegistryEntryMutableParams,
 } from "../../../data/area_registry";
 import { deleteAreaRegistryEntry } from "../../../data/area_registry";
-import type { CropOptions } from "../../../dialogs/image-cropper-dialog/show-image-cropper-dialog";
-import { haStyleDialog } from "../../../resources/styles";
-import type { HomeAssistant, ValueChangedEvent } from "../../../types";
-import type { AreaRegistryDetailDialogParams } from "./show-dialog-area-registry-detail";
 import {
   SENSOR_DEVICE_CLASS_HUMIDITY,
   SENSOR_DEVICE_CLASS_TEMPERATURE,
 } from "../../../data/sensor";
 import { showConfirmationDialog } from "../../../dialogs/generic/show-dialog-box";
-import { createCloseHeading } from "../../../components/ha-dialog";
+import type { CropOptions } from "../../../dialogs/image-cropper-dialog/show-image-cropper-dialog";
+import { haStyleDialog } from "../../../resources/styles";
+import type { HomeAssistant, ValueChangedEvent } from "../../../types";
+import type { AreaRegistryDetailDialogParams } from "./show-dialog-area-registry-detail";
 
 const cropOptions: CropOptions = {
   round: false,
   type: "image/jpeg",
   quality: 0.75,
-  aspectRatio: 1.78,
 };
 
 const SENSOR_DOMAINS = ["sensor"];
@@ -139,6 +138,7 @@ class DialogAreaDetail extends LitElement {
       ></ha-floor-picker>
 
       <ha-labels-picker
+        .label=${this.hass.localize("ui.components.label-picker.labels")}
         .hass=${this.hass}
         .value=${this._labels}
         @value-changed=${this._labelsChanged}
@@ -258,25 +258,22 @@ class DialogAreaDetail extends LitElement {
         ${!isNew
           ? html`<ha-button
               slot="secondaryAction"
-              destructive
+              variant="danger"
+              appearance="plain"
               @click=${this._deleteArea}
             >
               ${this.hass.localize("ui.common.delete")}
             </ha-button>`
           : nothing}
-        <div slot="primaryAction">
-          <ha-button @click=${this.closeDialog}>
-            ${this.hass.localize("ui.common.cancel")}
-          </ha-button>
-          <ha-button
-            @click=${this._updateEntry}
-            .disabled=${nameInvalid || this._submitting}
-          >
-            ${entry
-              ? this.hass.localize("ui.common.save")
-              : this.hass.localize("ui.common.create")}
-          </ha-button>
-        </div>
+        <ha-button
+          slot="primaryAction"
+          @click=${this._updateEntry}
+          .disabled=${nameInvalid || !!this._submitting}
+        >
+          ${entry
+            ? this.hass.localize("ui.common.save")
+            : this.hass.localize("ui.common.create")}
+        </ha-button>
       </ha-dialog>
     `;
   }

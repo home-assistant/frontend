@@ -1,5 +1,5 @@
 import { ResizeController } from "@lit-labs/observers/resize-controller";
-import { mdiDrag, mdiEye, mdiEyeOff } from "@mdi/js";
+import { mdiDragHorizontalVariant, mdiEye, mdiEyeOff } from "@mdi/js";
 import type { TemplateResult } from "lit";
 import { LitElement, css, html, nothing } from "lit";
 import { customElement, property, state } from "lit/decorators";
@@ -9,6 +9,7 @@ import { repeat } from "lit/directives/repeat";
 import { until } from "lit/directives/until";
 import memoizeOne from "memoize-one";
 import { fireEvent } from "../common/dom/fire_event";
+import { stopPropagation } from "../common/dom/stop_propagation";
 import { orderCompare } from "../common/string/compare";
 import type { HomeAssistant } from "../types";
 import "./ha-icon";
@@ -141,13 +142,18 @@ export class HaItemDisplayEditor extends LitElement {
                             ></ha-svg-icon>
                           `
                         : nothing}
-                  ${this.actionsRenderer
+                  ${this.showNavigationButton
                     ? html`
-                        <span slot="end"> ${this.actionsRenderer(item)} </span>
+                        <ha-icon-next slot="end"></ha-icon-next>
+                        <div slot="end" class="separator"></div>
                       `
                     : nothing}
-                  ${this.showNavigationButton
-                    ? html`<ha-icon-next slot="end"></ha-icon-next>`
+                  ${this.actionsRenderer
+                    ? html`
+                        <div slot="end" @click=${stopPropagation}>
+                          ${this.actionsRenderer(item)}
+                        </div>
+                      `
                     : nothing}
                   <ha-icon-button
                     .path=${isVisible ? mdiEye : mdiEyeOff}
@@ -172,7 +178,7 @@ export class HaItemDisplayEditor extends LitElement {
                             ? this._dragHandleKeydown
                             : undefined}
                           class="handle"
-                          .path=${mdiDrag}
+                          .path=${mdiDragHorizontalVariant}
                           slot="end"
                         ></ha-svg-icon>
                       `
@@ -369,6 +375,12 @@ export class HaItemDisplayEditor extends LitElement {
       padding: 8px;
       margin: -8px;
     }
+    .separator {
+      width: 1px;
+      background-color: var(--divider-color);
+      height: 21px;
+      margin: 0 -4px;
+    }
     ha-md-list {
       padding: 0;
     }
@@ -381,10 +393,13 @@ export class HaItemDisplayEditor extends LitElement {
       --md-list-item-one-line-container-height: 48px;
     }
     ha-md-list-item.drag-selected {
-      box-shadow:
-        0px 0px 8px 4px rgba(var(--rgb-accent-color), 0.8),
-        inset 0px 2px 8px 4px rgba(var(--rgb-accent-color), 0.4);
-      border-radius: 8px;
+      --md-focus-ring-color: rgba(var(--rgb-accent-color), 0.6);
+      border-radius: var(--ha-border-radius-md);
+      outline: solid;
+      outline-color: rgba(var(--rgb-accent-color), 0.6);
+      outline-offset: -2px;
+      outline-width: 2px;
+      background-color: rgba(var(--rgb-accent-color), 0.08);
     }
     ha-md-list-item ha-icon-button {
       margin-left: -12px;

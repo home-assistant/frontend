@@ -112,7 +112,7 @@ class HuiToggleCardFeature extends LitElement implements LovelaceCardFeature {
     if (!this.hass || !this._stateObj) {
       return;
     }
-    forwardHaptic("light");
+    forwardHaptic(this, "light");
     const stateDomain = computeDomain(this._stateObj.entity_id);
     const serviceDomain = stateDomain;
     const service = turnOn ? "turn_on" : "turn_off";
@@ -185,7 +185,7 @@ class HuiToggleCardFeature extends LitElement implements LovelaceCardFeature {
         .pathOff=${offIcon}
         .checked=${isOn}
         @change=${this._valueChanged}
-        .ariaLabel=${this.hass.localize("ui.card.common.toggle")}
+        .label=${this.hass.localize("ui.card.common.toggle")}
         .disabled=${this._stateObj.state === UNAVAILABLE}
       >
       </ha-control-switch>

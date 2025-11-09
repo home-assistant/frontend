@@ -70,8 +70,10 @@ describe("Energy Short Format Test", () => {
   const hass = { locale: defaultLocale } as HomeAssistant;
   it("No Unit conversion", () => {
     assert.strictEqual(formatConsumptionShort(hass, 0, "Wh"), "0 Wh");
-    assert.strictEqual(formatConsumptionShort(hass, 0, "kWh"), "0 kWh");
-    assert.strictEqual(formatConsumptionShort(hass, 0, "GWh"), "0 GWh");
+    assert.strictEqual(formatConsumptionShort(hass, 0, "kWh"), "0 Wh");
+    assert.strictEqual(formatConsumptionShort(hass, 0, "kWh", "kWh"), "0 kWh");
+    assert.strictEqual(formatConsumptionShort(hass, 0, "GWh"), "0 Wh");
+    assert.strictEqual(formatConsumptionShort(hass, 0, "GWh", "GWh"), "0 GWh");
     assert.strictEqual(formatConsumptionShort(hass, 0, "gal"), "0 gal");
 
     assert.strictEqual(
@@ -137,6 +139,36 @@ describe("Energy Short Format Test", () => {
     assert.strictEqual(
       formatConsumptionShort(hass, -0.001234, "kWh"),
       "-1.23 Wh"
+    );
+  });
+  it("Conversion with target unit", () => {
+    assert.strictEqual(
+      formatConsumptionShort(hass, 0.00012, "kWh", "Wh"),
+      "0.12 Wh"
+    );
+    assert.strictEqual(
+      formatConsumptionShort(hass, 0.00012, "kWh", "kWh"),
+      "0 kWh"
+    );
+    assert.strictEqual(
+      formatConsumptionShort(hass, 0.01012, "kWh", "kWh"),
+      "0.01 kWh"
+    );
+    assert.strictEqual(
+      formatConsumptionShort(hass, 0.00012, "kWh", "MWh"),
+      "0 MWh"
+    );
+    assert.strictEqual(
+      formatConsumptionShort(hass, 10.12345, "kWh", "kWh"),
+      "10.1 kWh"
+    );
+    assert.strictEqual(
+      formatConsumptionShort(hass, 10.12345, "kWh", "ZZZZZWh"),
+      "10.1 kWh"
+    );
+    assert.strictEqual(
+      formatConsumptionShort(hass, 151234.5678, "kWh", "MWh"),
+      "151 MWh"
     );
   });
 });

@@ -5,7 +5,6 @@ import memoizeOne from "memoize-one";
 import { fireEvent } from "../../../common/dom/fire_event";
 import type { LocalizeFunc } from "../../../common/translations/localize";
 import "../../../components/buttons/ha-call-service-button";
-import "../../../components/buttons/ha-progress-button";
 import "../../../components/ha-button-menu";
 import "../../../components/ha-card";
 import "../../../components/ha-icon-button";
@@ -229,7 +228,7 @@ export class SystemLogCard extends LitElement {
 
   private async _downloadLogs() {
     const timeString = new Date().toISOString().replace(/:/g, "-");
-    const downloadUrl = getErrorLogDownloadUrl;
+    const downloadUrl = getErrorLogDownloadUrl(this.hass);
     const logFileName = `home-assistant_${timeString}.log`;
     const signedUrl = await getSignedPath(this.hass, downloadUrl);
     fileDownload(signedUrl.path, logFileName);

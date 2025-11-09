@@ -1,8 +1,21 @@
 import type { HomeAssistant } from "../types";
 import type { Selector } from "./selector";
 
+export const enum AITaskEntityFeature {
+  GENERATE_DATA = 1,
+  SUPPORT_ATTACHMENTS = 2,
+  GENERATE_IMAGE = 4,
+}
 export interface AITaskPreferences {
   gen_data_entity_id: string | null;
+  gen_image_entity_id: string | null;
+}
+
+export interface GenDataTask {
+  task_name: string;
+  entity_id?: string;
+  instructions: string;
+  structure?: AITaskStructure;
 }
 
 export interface GenDataTaskResult<T = string> {
@@ -34,12 +47,7 @@ export const saveAITaskPreferences = (
 
 export const generateDataAITask = async <T = string>(
   hass: HomeAssistant,
-  task: {
-    task_name: string;
-    entity_id?: string;
-    instructions: string;
-    structure?: AITaskStructure;
-  }
+  task: GenDataTask
 ): Promise<GenDataTaskResult<T>> => {
   const result = await hass.callService<GenDataTaskResult<T>>(
     "ai_task",
