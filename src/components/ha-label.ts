@@ -11,18 +11,12 @@ class HaLabel extends LitElement {
   @property({ attribute: "description" })
   public description?: string;
 
-  private _uid;
-
-  constructor() {
-    super();
-    this._uid = uid();
-  }
+  private _elementId = "label-" + uid();
 
   protected render(): TemplateResult {
-    const elementId = "label-" + this._uid;
     return html`
       <ha-tooltip
-        .for=${elementId}
+        .for=${this._elementId}
         .disabled=${this.description == null ||
         this.description === undefined ||
         this.description.trim().replaceAll("\n", "").replaceAll("\r", "") ===
@@ -30,7 +24,7 @@ class HaLabel extends LitElement {
       >
         ${this.description}
       </ha-tooltip>
-      <div class="container" .id=${elementId}>
+      <div class="container" .id=${this._elementId}>
         <span class="content">
           <slot name="icon"></slot>
           <slot></slot>
