@@ -155,7 +155,7 @@ export class HaLabelsPicker extends SubscribeMixin(LitElement) {
                         .replaceAll("\n", "")
                         .replaceAll("\r", "") === ""}
                     >
-                      ${label?.description ?? ""}
+                      ${label?.description}
                     </ha-tooltip>
                     <ha-input-chip
                       .item=${label}
