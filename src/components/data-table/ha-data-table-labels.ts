@@ -62,7 +62,7 @@ class HaDataTableLabels extends LitElement {
         @click=${clickAction ? this._labelClicked : undefined}
         @keydown=${clickAction ? this._labelClicked : undefined}
         style=${color ? `--color: ${color}` : ""}
-        .description=${label.description ?? ""}
+        .description=${label.description}
       >
         ${label?.icon
           ? html`<ha-icon slot="icon" .icon=${label.icon}></ha-icon>`
