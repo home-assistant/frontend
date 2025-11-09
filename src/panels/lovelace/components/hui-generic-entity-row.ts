@@ -67,11 +67,9 @@ export class HuiGenericEntityRow extends LitElement {
       this.config.name
     );
 
-    const elementId = [
-      "last-changed",
-      "last-updated",
-      "last-triggered",
-    ].includes(this.config.secondary_info)
+    const elementId = (this.config.secondary_info === "last-changed" ||
+      this.config.secondary_info === "last-updated" ||
+      this.config.secondary_info === "last-triggered")
       ? uid()
       : undefined;
     return html`
