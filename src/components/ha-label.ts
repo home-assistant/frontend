@@ -18,8 +18,9 @@ class HaLabel extends LitElement {
     return html`
       <ha-tooltip
         .for=${elementId}
-        .disabled=${this.description === undefined ||
-        this.description?.trim().replaceAll("\n", "").replaceAll("\r", "") ===
+        .disabled=${this.description == null ||
+        this.description === undefined ||
+        this.description.trim().replaceAll("\n", "").replaceAll("\r", "") ===
           ""}
       >
         ${this.description}
