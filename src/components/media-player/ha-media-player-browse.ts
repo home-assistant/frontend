@@ -419,9 +419,13 @@ export class HaMediaPlayerBrowse extends LitElement {
         )
       : "none";
 
+    const canPickCurrent =
+      currentItem?.can_play ||
+      (currentItem && this.accept?.includes("directory"));
+
     return html`
               ${
-                currentItem.can_play
+                canPickCurrent
                   ? html`
                       <div
                         class="header ${classMap({
@@ -441,7 +445,7 @@ export class HaMediaPlayerBrowse extends LitElement {
                                   )}"
                                 >
                                   ${this.narrow &&
-                                  currentItem?.can_play &&
+                                  canPickCurrent &&
                                   (!this.accept ||
                                     canPlayChildren.has(
                                       currentItem.media_content_id
@@ -477,7 +481,7 @@ export class HaMediaPlayerBrowse extends LitElement {
                                 ? html` <h2 class="subtitle">${subtitle}</h2> `
                                 : ""}
                             </div>
-                            ${currentItem.can_play &&
+                            ${canPickCurrent &&
                             (!currentItem.thumbnail || !this.narrow)
                               ? html`
                                   <ha-button
