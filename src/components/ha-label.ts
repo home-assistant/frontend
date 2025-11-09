@@ -11,9 +11,12 @@ class HaLabel extends LitElement {
   @property({ attribute: "description" })
   public description?: string;
 
-  /* eslint-disable */
-  private _uid = uid();
-  /* eslint-enable */
+  private _uid;
+
+  constructor() {
+    super();
+    this._uid = uid();
+  }
 
   protected render(): TemplateResult {
     const elementId = "label-" + this._uid;
