@@ -11,8 +11,10 @@ class HaLabel extends LitElement {
   @property({ attribute: "description" })
   public description?: string;
 
+  private _uid = uid();
+
   protected render(): TemplateResult {
-    const elementId = "label-" + uid();
+    const elementId = "label-" + this._uid;
     return html`
       <ha-tooltip
         .for=${elementId}
