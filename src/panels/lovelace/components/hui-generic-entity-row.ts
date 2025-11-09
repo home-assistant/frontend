@@ -4,9 +4,11 @@ import { customElement, property } from "lit/decorators";
 import { classMap } from "lit/directives/class-map";
 import { ifDefined } from "lit/directives/if-defined";
 import { DOMAINS_INPUT_ROW } from "../../../common/const";
+import { uid } from "../../../common/util/uid";
 import { stopPropagation } from "../../../common/dom/stop_propagation";
 import { toggleAttribute } from "../../../common/dom/toggle_attribute";
 import { computeDomain } from "../../../common/entity/compute_domain";
+import { formatDateTimeWithSeconds } from "../../../common/datetime/format_date_time";
 import "../../../components/entity/state-badge";
 import "../../../components/ha-relative-time";
 import type { ActionHandlerEvent } from "../../../data/lovelace/action_handler";
@@ -65,6 +67,13 @@ export class HuiGenericEntityRow extends LitElement {
       this.config.name
     );
 
+    const elementId = [
+      "last-changed",
+      "last-updated",
+      "last-triggered",
+    ].includes(this.config.secondary_info)
+      ? uid()
+      : undefined;
     return html`
       <div
         class="row ${classMap({ pointer })}"
@@ -100,7 +109,18 @@ export class HuiGenericEntityRow extends LitElement {
                         ? stateObj.entity_id
                         : this.config.secondary_info === "last-changed"
                           ? html`
+                              <ha-tooltip
+                                for="last-changed-${elementId}"
+                                placement="right"
+                              >
+                                ${formatDateTimeWithSeconds(
+                                  new Date(stateObj.last_changed),
+                                  this.hass.locale,
+                                  this.hass.config
+                                )}
+                              </ha-tooltip>
                               <ha-relative-time
+                                id="last-changed-${elementId}"
                                 .hass=${this.hass}
                                 .datetime=${stateObj.last_changed}
                                 capitalize
@@ -108,7 +128,18 @@ export class HuiGenericEntityRow extends LitElement {
                             `
                           : this.config.secondary_info === "last-updated"
                             ? html`
+                                <ha-tooltip
+                                  for="last-updated-${elementId}"
+                                  placement="right"
+                                >
+                                  ${formatDateTimeWithSeconds(
+                                    new Date(stateObj.last_updated),
+                                    this.hass.locale,
+                                    this.hass.config
+                                  )}
+                                </ha-tooltip>
                                 <ha-relative-time
+                                  id="last-updated-${elementId}"
                                   .hass=${this.hass}
                                   .datetime=${stateObj.last_updated}
                                   capitalize
@@ -117,7 +148,20 @@ export class HuiGenericEntityRow extends LitElement {
                             : this.config.secondary_info === "last-triggered"
                               ? stateObj.attributes.last_triggered
                                 ? html`
+                                    <ha-tooltip
+                                      for="last-triggered-${elementId}"
+                                      placement="right"
+                                    >
+                                      ${formatDateTimeWithSeconds(
+                                        new Date(
+                                          stateObj.attributes.last_triggered
+                                        ),
+                                        this.hass.locale,
+                                        this.hass.config
+                                      )}
+                                    </ha-tooltip>
                                     <ha-relative-time
+                                      id="last-triggered-${elementId}"
                                       .hass=${this.hass}
                                       .datetime=${stateObj.attributes
                                         .last_triggered}
