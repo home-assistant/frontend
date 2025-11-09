@@ -121,8 +121,8 @@ type Thresholds = Record<
 export const DEFAULT_THRESHOLDS: Thresholds = {
   second: 59, // seconds to minute
   minute: 59, // minutes to hour
-  hour: 23, // hour to day
-  day: 6, // day to week
+  hour: 22, // hour to day
+  day: 5, // day to week
   week: 4, // week to months
   month: 11, // month to years
 };
