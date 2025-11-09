@@ -68,11 +68,12 @@ export class HuiGenericEntityRow extends LitElement {
       this.config.name
     );
 
-    const elementId = (this.config.secondary_info === "last-changed" ||
+    const elementId =
+      this.config.secondary_info === "last-changed" ||
       this.config.secondary_info === "last-updated" ||
-      this.config.secondary_info === "last-triggered")
-      ? uid()
-      : undefined;
+      this.config.secondary_info === "last-triggered"
+        ? uid()
+        : undefined;
     return html`
       <div
         class="row ${classMap({ pointer })}"
