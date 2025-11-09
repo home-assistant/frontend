@@ -111,7 +111,7 @@ export class HaFilterLabels extends SubscribeMixin(LitElement) {
                     >
                       <ha-label
                         style=${color ? `--color: ${color}` : ""}
-                        .description=${label.description ?? ""}
+                        .description=${label.description}
                       >
                         ${label.icon
                           ? html`<ha-icon
