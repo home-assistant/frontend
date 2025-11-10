@@ -442,13 +442,18 @@ export class HuiEnergyDevicesGraphCard
           }
         }
       }
+      const totalChart = chartData.reduce(
+        (acc: number, d: any) =>
+          this._hiddenStats.includes(d.id) ? acc : acc + d.value[0],
+        0
+      );
       datasets.push({
         type: "pie",
         radius: ["0%", compareData ? "30%" : "40%"],
         name: this.hass.localize(
           "ui.panel.lovelace.cards.energy.energy_devices_graph.total_energy_usage"
         ),
-        data: [totalUsed],
+        data: [totalChart],
         label: {
           show: true,
           position: "center",
@@ -456,7 +461,7 @@ export class HuiEnergyDevicesGraphCard
           fontSize: computedStyle.getPropertyValue("--ha-font-size-l"),
           lineHeight: 24,
           fontWeight: "bold",
-          formatter: `{a}\n${formatNumber(totalUsed, this.hass.locale)} kWh`,
+          formatter: `{a}\n${formatNumber(totalChart, this.hass.locale)} kWh`,
         },
         cursor: "default",
         itemStyle: {
