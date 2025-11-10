@@ -426,9 +426,8 @@ export class HaChartBase extends LitElement {
                         size: 20,
                         ...axis.axisPointer?.handle,
                         show: true,
-                        // Prevent the handle from showing its own tooltip on touch
-                        triggerTooltip: false,
                       },
+                      label: { show: false },
                     },
                   }
                 : axis
