@@ -652,7 +652,7 @@
           "edit": "Edit",
           "clear": "Clear",
           "no_entities": "You don't have any entities",
-          "no_match": "No matching entities found",
+          "no_match": "No entities found for {term}",
           "show_entities": "Show entities",
           "new_entity": "Create a new entity",
           "placeholder": "Select an entity",
@@ -763,7 +763,7 @@
       },
       "language-picker": {
         "language": "Language",
-        "no_match": "No matching languages found",
+        "no_match": "No languages found for {term}",
         "no_languages": "No languages available"
       },
       "tts-picker": {
@@ -775,7 +775,7 @@
         "none": "None"
       },
       "user-picker": {
-        "no_match": "No matching users found",
+        "no_match": "No users found for {term}",
         "user": "User",
         "add_user": "Add user"
       },
@@ -786,8 +786,8 @@
         "clear": "Clear",
         "toggle": "Toggle",
         "show_devices": "Show devices",
-        "no_devices": "You don't have any devices",
-        "no_match": "No matching devices found",
+        "no_devices": "No devices available",
+        "no_match": "No devices found for {term}",
         "device": "Device",
         "unnamed_device": "Unnamed device",
         "no_area": "No area",
@@ -801,8 +801,8 @@
         "add_category": "Add category",
         "add_new_sugestion": "Add new category ''{name}''",
         "add_new": "Add new category…",
-        "no_categories": "You don't have any categories",
-        "no_match": "No matching categories found",
+        "no_categories": "No categories available",
+        "no_match": "No categories found for {term}",
         "add_dialog": {
           "title": "Add new category",
           "text": "Enter the name of the new category.",
@@ -817,8 +817,8 @@
         "add_new_sugestion": "Add new label ''{name}''",
         "add_new": "Add new label…",
         "add": "Add label",
-        "no_labels": "You don't have any labels",
-        "no_match": "No matching labels found",
+        "no_labels": "No labels available",
+        "no_match": "No labels found for {term}",
         "failed_create_label": "Failed to create label."
       },
       "area-picker": {
@@ -827,8 +827,8 @@
         "area": "Area",
         "add_new_sugestion": "Add new area ''{name}''",
         "add_new": "Add new area…",
-        "no_areas": "You don't have any areas",
-        "no_match": "No matching areas found",
+        "no_areas": "No areas available",
+        "no_match": "No areas found for {term}",
         "unassigned_areas": "Unassigned areas",
         "failed_create_area": "Failed to create area."
       },
@@ -838,8 +838,8 @@
         "floor": "Floor",
         "add_new_sugestion": "Add new floor ''{name}''",
         "add_new": "Add new floor…",
-        "no_floors": "You don't have any floors",
-        "no_match": "No matching floors found",
+        "no_floors": "No floors available",
+        "no_match": "No floors found for {term}",
         "failed_create_floor": "Failed to create floor."
       },
       "area-filter": {
@@ -853,8 +853,8 @@
       "statistic-picker": {
         "statistic": "Statistic",
         "placeholder": "Select a statistic",
-        "no_statistics": "You don't have any statistics",
-        "no_match": "No matching statistics found",
+        "no_statistics": "No statistics available",
+        "no_match": "No statistics found for {term}",
         "no_state": "Entity without state",
         "missing_entity": "Why is my entity not listed?",
         "learn_more": "Learn more about statistics"
@@ -1292,7 +1292,8 @@
         "add": "Add interaction"
       },
       "combo-box": {
-        "no_match": "No matching items found"
+        "no_match": "No matching items found",
+        "no_items": "No items available"
       },
       "suggest_with_ai": {
         "label": "Suggest",
