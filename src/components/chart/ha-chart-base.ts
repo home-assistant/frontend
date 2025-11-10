@@ -627,6 +627,10 @@ export class HaChartBase extends LitElement {
   }
 
   private _createTheme(style: CSSStyleDeclaration) {
+    const textBorderColor =
+      style.getPropertyValue("--ha-card-background") ||
+      style.getPropertyValue("--card-background-color");
+    const textBorderWidth = 2;
     return {
       color: getAllGraphColors(style),
       backgroundColor: "transparent",
@@ -650,22 +654,22 @@ export class HaChartBase extends LitElement {
       graph: {
         label: {
           color: style.getPropertyValue("--primary-text-color"),
-          textBorderColor: style.getPropertyValue("--primary-background-color"),
-          textBorderWidth: 2,
+          textBorderColor,
+          textBorderWidth,
         },
       },
       pie: {
         label: {
           color: style.getPropertyValue("--primary-text-color"),
-          textBorderColor: style.getPropertyValue("--primary-background-color"),
-          textBorderWidth: 2,
+          textBorderColor,
+          textBorderWidth,
         },
       },
       sankey: {
         label: {
           color: style.getPropertyValue("--primary-text-color"),
-          textBorderColor: style.getPropertyValue("--primary-background-color"),
-          textBorderWidth: 2,
+          textBorderColor,
+          textBorderWidth,
         },
       },
       categoryAxis: {
