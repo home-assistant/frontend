@@ -155,10 +155,12 @@ export class HuiGraphHeaderFooter
         }
         const width = this.clientWidth || this.offsetWidth;
         // sample to 1 point per hour or 1 point per 5 pixels
-        const maxDetails =
+        const maxDetails = Math.max(
+          10,
           this._config.detail! > 1
             ? Math.max(width / 5, this._config.hours_to_show!)
-            : this._config.hours_to_show!;
+            : this._config.hours_to_show!
+        );
         const useMean = this._config.detail !== 2;
         const { points } = coordinatesMinimalResponseCompressedState(
           combinedHistory[this._config.entity],
