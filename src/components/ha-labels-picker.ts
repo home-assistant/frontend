@@ -21,6 +21,7 @@ import "./chips/ha-input-chip";
 import type { HaDevicePickerDeviceFilterFunc } from "./device/ha-device-picker";
 import "./ha-label-picker";
 import type { HaLabelPicker } from "./ha-label-picker";
+import "./ha-tooltip";
 
 @customElement("ha-labels-picker")
 export class HaLabelsPicker extends SubscribeMixin(LitElement) {
@@ -142,9 +143,17 @@ export class HaLabelsPicker extends SubscribeMixin(LitElement) {
                   const color = label?.color
                     ? computeCssColor(label.color)
                     : undefined;
+                  const elementId = "label-" + label.label_id;
                   return html`
+                    <ha-tooltip
+                      .for=${elementId}
+                      .disabled=${!label?.description?.trim()}
+                    >
+                      ${label?.description}
+                    </ha-tooltip>
                     <ha-input-chip
                       .item=${label}
+                      .id=${elementId}
                       @remove=${this._removeItem}
                       @click=${this._openDetail}
                       .disabled=${this.disabled}
