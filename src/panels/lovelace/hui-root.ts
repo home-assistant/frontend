@@ -130,8 +130,6 @@ class HUIRoot extends LitElement {
 
   @state() private _curView?: number | "hass-unused-entities";
 
-  @property({ type: Boolean, attribute: "no-edit" }) noEdit = false;
-
   private _viewCache?: Record<string, HUIView>;
 
   private _viewScrollPositions: Record<string, number> = {};
