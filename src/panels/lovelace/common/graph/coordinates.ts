@@ -51,7 +51,8 @@ export const coordinates = (
   width: number,
   height: number,
   maxDetails: number,
-  limits?: { minX?: number; maxX?: number; minY?: number; maxY?: number }
+  limits?: { minX?: number; maxX?: number; minY?: number; maxY?: number },
+  useMean = false
 ) => {
   history = history.filter((item) => !Number.isNaN(item[1]));
 
@@ -59,7 +60,8 @@ export const coordinates = (
     history,
     maxDetails,
     limits?.minX,
-    limits?.maxX
+    limits?.maxX,
+    useMean
   );
   return calcPoints(sampledData, width, height, limits);
 };
@@ -69,7 +71,8 @@ export const coordinatesMinimalResponseCompressedState = (
   width: number,
   height: number,
   maxDetails: number,
-  limits?: { minX?: number; maxX?: number; minY?: number; maxY?: number }
+  limits?: { minX?: number; maxX?: number; minY?: number; maxY?: number },
+  useMean = false
 ) => {
   if (!history?.length) {
     return { points: [], yAxisOrigin: 0 };
@@ -81,5 +84,5 @@ export const coordinatesMinimalResponseCompressedState = (
     item.lu * 1000,
     Number(item.s),
   ]);
-  return coordinates(mappedHistory, width, height, maxDetails, limits);
+  return coordinates(mappedHistory, width, height, maxDetails, limits, useMean);
 };
