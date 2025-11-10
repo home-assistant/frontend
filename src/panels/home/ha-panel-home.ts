@@ -5,9 +5,10 @@ import { debounce } from "../../common/util/debounce";
 import { deepEqual } from "../../common/util/deep-equal";
 import type { LovelaceDashboardStrategyConfig } from "../../data/lovelace/config/types";
 import type { HomeAssistant, PanelInfo, Route } from "../../types";
+import "../lovelace/hui-root";
 import { generateLovelaceDashboardStrategy } from "../lovelace/strategies/get-strategy";
 import type { Lovelace } from "../lovelace/types";
-import "../lovelace/hui-root";
+import { showAlertDialog } from "../lovelace/custom-card-helpers";
 
 const HOME_LOVELACE_CONFIG: LovelaceDashboardStrategyConfig = {
   strategy: {
@@ -90,7 +91,6 @@ class PanelHome extends LitElement {
         .lovelace=${this._lovelace}
         .route=${this.route}
         .panel=${this.panel}
-        no-edit
       ></hui-root>
     `;
   }
@@ -101,15 +101,13 @@ class PanelHome extends LitElement {
       this.hass
     );
 
-    const rawConfig = HOME_LOVELACE_CONFIG;
-
     if (deepEqual(config, this._lovelace?.config)) {
       return;
     }
 
     this._lovelace = {
       config: config,
-      rawConfig: rawConfig,
+      rawConfig: config,
       editMode: false,
       urlPath: "home",
       mode: "generated",
@@ -117,10 +115,20 @@ class PanelHome extends LitElement {
       enableFullEditMode: () => undefined,
       saveConfig: async () => undefined,
       deleteConfig: async () => undefined,
-      setEditMode: () => undefined,
+      setEditMode: this._setEditMode,
       showToast: () => undefined,
     };
   }
+
+  private _setEditMode = () => {
+    // For now, we just show an alert that edit mode is not supported.
+    // This will be expanded in the future.
+    showAlertDialog(this, {
+      title: "Edit mode not available",
+      text: "The Home panel does not support edit mode.",
+      confirmText: this.hass.localize("ui.common.ok"),
+    });
+  };
 
   static readonly styles: CSSResultGroup = css`
     :host {

@@ -289,10 +289,7 @@ class HUIRoot extends LitElement {
             "yaml",
         overflow: true,
       },
-    ];
-
-    if (!this.noEdit) {
-      items.push({
+      {
         icon: mdiPencil,
         key: "ui.panel.lovelace.menu.configure_ui",
         overflowAction: this._handleEnableEditMode,
@@ -303,8 +300,8 @@ class HUIRoot extends LitElement {
           !this.hass!.config.recovery_mode,
         overflow: true,
         overflow_can_promote: true,
-      });
-    }
+      },
+    ];
 
     const overflowItems = items.filter((i) => i.visible && i.overflow);
     const overflowCanPromote =
