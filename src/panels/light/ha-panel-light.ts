@@ -11,7 +11,8 @@ import { haStyle } from "../../resources/styles";
 import type { HomeAssistant } from "../../types";
 import { generateLovelaceViewStrategy } from "../lovelace/strategies/get-strategy";
 import type { Lovelace } from "../lovelace/types";
-import "../lovelace/hui-lovelace";
+import "../lovelace/views/hui-view";
+import "../lovelace/views/hui-view-container";
 
 const LIGHT_LOVELACE_VIEW_CONFIG: LovelaceStrategyViewConfig = {
   strategy: {
@@ -24,6 +25,8 @@ class PanelLight extends LitElement {
   @property({ attribute: false }) public hass!: HomeAssistant;
 
   @property({ type: Boolean, reflect: true }) public narrow = false;
+
+  @state() private _viewIndex = 0;
 
   @state() private _lovelace?: Lovelace;
 
@@ -89,33 +92,40 @@ class PanelLight extends LitElement {
     return html`
       <div class="header">
         <div class="toolbar">
-          ${this._searchParms.has("historyBack")
-            ? html`
-                <ha-icon-button-arrow-prev
-                  @click=${this._back}
-                  slot="navigationIcon"
-                ></ha-icon-button-arrow-prev>
-              `
-            : html`
-                <ha-menu-button
-                  slot="navigationIcon"
-                  .hass=${this.hass}
-                  .narrow=${this.narrow}
-                ></ha-menu-button>
-              `}
+          ${
+            this._searchParms.has("historyBack")
+              ? html`
+                  <ha-icon-button-arrow-prev
+                    @click=${this._back}
+                    slot="navigationIcon"
+                  ></ha-icon-button-arrow-prev>
+                `
+              : html`
+                  <ha-menu-button
+                    slot="navigationIcon"
+                    .hass=${this.hass}
+                    .narrow=${this.narrow}
+                  ></ha-menu-button>
+                `
+          }
           <div class="main-title">${this.hass.localize("panel.light")}</div>
         </div>
       </div>
-      ${this._lovelace
-        ? html`
-            <hui-lovelace
-              .hass=${this.hass}
-              .narrow=${this.narrow}
-              .lovelace=${this._lovelace}
-              .curView=${0}
-            ></hui-lovelace>
-          `
-        : nothing}
+      ${
+        this._lovelace
+          ? html`
+              <hui-view-container .hass=${this.hass}>
+                <hui-view
+                  .hass=${this.hass}
+                  .narrow=${this.narrow}
+                  .lovelace=${this._lovelace}
+                  .index=${this._viewIndex}
+                ></hui-view
+              ></hui-view-container>
+            `
+          : nothing
+      }
+      </hui-view-container>
     `;
   }
 
@@ -133,8 +143,8 @@ class PanelLight extends LitElement {
     }
 
     this._lovelace = {
-      config,
-      rawConfig,
+      config: config,
+      rawConfig: rawConfig,
       editMode: false,
       urlPath: "light",
       mode: "generated",
@@ -213,7 +223,7 @@ class PanelLight extends LitElement {
           line-height: var(--ha-line-height-normal);
           flex-grow: 1;
         }
-        hui-lovelace {
+        hui-view-container {
           position: relative;
           display: flex;
           min-height: 100vh;
@@ -223,9 +233,13 @@ class PanelLight extends LitElement {
           padding-inline-end: var(--safe-area-inset-right);
           padding-bottom: var(--safe-area-inset-bottom);
         }
-        :host([narrow]) hui-lovelace {
+        :host([narrow]) hui-view-container {
           padding-left: var(--safe-area-inset-left);
           padding-inline-start: var(--safe-area-inset-left);
+        }
+        hui-view {
+          flex: 1 1 100%;
+          max-width: 100%;
         }
       `,
     ];
