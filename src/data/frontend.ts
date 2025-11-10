@@ -14,6 +14,7 @@ declare global {
   interface FrontendUserData {
     core: CoreFrontendUserData;
     sidebar: SidebarFrontendUserData;
+    default_panel: string;
   }
 }
 

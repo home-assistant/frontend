@@ -30,7 +30,7 @@ import { translationMetadata } from "../resources/translations-metadata";
 import type { Constructor, HomeAssistant, ServiceCallResponse } from "../types";
 import { getLocalLanguage } from "../util/common-translation";
 import { fetchWithAuth } from "../util/fetch-with-auth";
-import { getState } from "../util/ha-pref-storage";
+import { getState, storeState } from "../util/ha-pref-storage";
 import hassCallApi, { hassCallApiRaw } from "../util/hass-call-api";
 import type { HassBaseEl } from "./hass-base-mixin";
 import { computeStateName } from "../common/entity/compute_state_name";
@@ -285,6 +285,14 @@ export const connectionMixin = <T extends Constructor<HassBaseEl>>(
       subscribeFrontendUserData(conn, "core", ({ value: userData }) => {
         this._updateHass({ userData });
       });
+      subscribeFrontendUserData(
+        conn,
+        "default_panel",
+        ({ value: defaultPanel }) => {
+          this._updateHass({ defaultPanel: defaultPanel || DEFAULT_PANEL });
+          storeState(this.hass!);
+        }
+      );
 
       clearInterval(this.__backendPingInterval);
       this.__backendPingInterval = setInterval(() => {
