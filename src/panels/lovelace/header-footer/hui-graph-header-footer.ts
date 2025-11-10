@@ -159,12 +159,14 @@ export class HuiGraphHeaderFooter
           this._config.detail! > 1
             ? Math.max(width / 5, this._config.hours_to_show!)
             : this._config.hours_to_show!;
+        const useMean = this._config.detail !== 2;
         const { points } = coordinatesMinimalResponseCompressedState(
           combinedHistory[this._config.entity],
           width,
           width / 5,
           maxDetails,
-          { minY: this._config.limits?.min, maxY: this._config.limits?.max }
+          { minY: this._config.limits?.min, maxY: this._config.limits?.max },
+          useMean
         );
         this._coordinates = points;
       },
