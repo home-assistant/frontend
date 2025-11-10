@@ -30,6 +30,7 @@ export class HaFilterChip extends FilterChip {
           var(--rgb-primary-text-color),
           0.15
         );
+        --_label-text-font: var(--ha-font-family-body);
         border-radius: var(--ha-border-radius-md);
       }
     `,

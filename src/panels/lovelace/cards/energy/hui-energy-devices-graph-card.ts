@@ -157,7 +157,7 @@ export class HuiEnergyDevicesGraphCard
       this.hass.locale,
       params.value < 0.1 ? { maximumFractionDigits: 3 } : undefined
     )} kWh`;
-    return `${title}${params.marker} ${params.seriesName}: ${value}`;
+    return `${title}${params.marker} ${params.seriesName}: <div style="direction:ltr; display: inline;">${value}</div>`;
   }
 
   private _createOptions = memoizeOne(
