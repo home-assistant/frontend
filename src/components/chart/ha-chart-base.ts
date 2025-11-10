@@ -426,6 +426,7 @@ export class HaChartBase extends LitElement {
                         size: 20,
                         ...axis.axisPointer?.handle,
                         show: true,
+                        triggerTooltip: false,
                       },
                     },
                   }
