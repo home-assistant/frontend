@@ -79,6 +79,11 @@ export abstract class HuiStackCard<T extends StackCardConfig = StackCardConfig>
           this._errorCard.preview = this.preview;
         }
       }
+      if (changedProperties.has("layout")) {
+        this._cards.forEach((card) => {
+          card.layout = this.layout;
+        });
+      }
     }
 
     if (changedProperties.has("layout")) {
@@ -90,6 +95,7 @@ export abstract class HuiStackCard<T extends StackCardConfig = StackCardConfig>
     const element = document.createElement("hui-card");
     element.hass = this.hass;
     element.preview = this.preview;
+    element.layout = this.layout;
     element.config = cardConfig;
     element.load();
     return element;
