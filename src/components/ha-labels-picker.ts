@@ -8,7 +8,6 @@ import memoizeOne from "memoize-one";
 import { computeCssColor } from "../common/color/compute-color";
 import { fireEvent } from "../common/dom/fire_event";
 import { stringCompare } from "../common/string/compare";
-import { uid } from "../common/util/uid";
 import type { LabelRegistryEntry } from "../data/label_registry";
 import {
   subscribeLabelRegistry,
@@ -144,15 +143,11 @@ export class HaLabelsPicker extends SubscribeMixin(LitElement) {
                   const color = label?.color
                     ? computeCssColor(label.color)
                     : undefined;
-                  const elementId = "label-" + uid();
+                  const elementId = "label-" + label.label_id;
                   return html`
                     <ha-tooltip
                       .for=${elementId}
-                      .disabled=${!(label?.description &&
-                      label.description
-                        .trim()
-                        .replaceAll("\n", "")
-                        .replaceAll("\r", ""))}
+                      .disabled=${!label?.description?.trim()}
                     >
                       ${label?.description}
                     </ha-tooltip>
