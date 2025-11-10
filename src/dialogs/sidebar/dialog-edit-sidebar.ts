@@ -105,7 +105,7 @@ class DialogEditSidebar extends LitElement {
     // Add default hidden panels that are missing in hidden
     for (const panel of panels) {
       if (
-        !panel.default_visible &&
+        panel.default_visible === false &&
         !this._order.includes(panel.url_path) &&
         !this._hidden.includes(panel.url_path)
       ) {

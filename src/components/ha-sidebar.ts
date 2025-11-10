@@ -158,7 +158,8 @@ export const computePanels = memoizeOne(
       if (
         hiddenPanels.includes(panel.url_path) ||
         (!panel.title && panel.url_path !== defaultPanel) ||
-        (!panel.default_visible && !panelsOrder.includes(panel.url_path))
+        (panel.default_visible === false &&
+          !panelsOrder.includes(panel.url_path))
       ) {
         return;
       }
