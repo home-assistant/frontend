@@ -545,7 +545,7 @@ export class HaTargetPickerItemRow extends LitElement {
         name: entityName || deviceName || item,
         context,
         stateObject,
-        notFound: !stateObject && item !== "all",
+        notFound: !stateObject && item !== "all" && item !== "none",
       };
     }
 
