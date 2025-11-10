@@ -393,11 +393,11 @@ export class HaPickerComboBox extends LitElement {
     }
   };
 
-  private _toggleSection(ev: any) {
+  private _toggleSection(ev: Event) {
     ev.stopPropagation();
     this._resetSelectedItem();
     this._sectionTitle = undefined;
-    const section = ev.target["section-id"] as string;
+    const section = (ev.target as HTMLElement)["section-id"] as string;
     if (!section) {
       return;
     }
