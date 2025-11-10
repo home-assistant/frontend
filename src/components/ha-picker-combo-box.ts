@@ -359,7 +359,7 @@ export class HaPickerComboBox extends LitElement {
       );
 
       const results = fuse.multiTermsSearch(searchString);
-      let filteredItems = [ ...this._allItems ];
+      let filteredItems = [...this._allItems];
 
       if (results) {
         const items: (PickerComboBoxItem | string)[] = results.map(
