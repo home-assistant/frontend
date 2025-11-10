@@ -60,5 +60,7 @@ export const waColorStyles = css`
 
     --wa-focus-ring-color: var(--ha-color-neutral-60);
     --wa-shadow-l: 4px 8px 12px 0 rgba(0, 0, 0, 0.3);
+
+    --wa-color-text-normal: var(--ha-color-text-primary);
   }
 `;

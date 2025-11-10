@@ -18,6 +18,8 @@ export const waMainStyles = css`
     --wa-transition-easing: ease;
     --wa-border-width-l: var(--ha-border-radius-lg);
     --wa-space-xl: 32px;
+
+    --wa-font-size-m: var(--ha-font-size-m);
   }
 
   ${scrollLockStyles}

@@ -72,6 +72,7 @@ import { HaFuse } from "../../../resources/fuse";
 import type { HomeAssistant } from "../../../types";
 import { isMac } from "../../../util/is_mac";
 import { showToast } from "../../../util/toast";
+import "./add-automation-element/ha-automation-add-from-target";
 import type { AddAutomationElementDialogParams } from "./show-add-automation-element-dialog";
 import { PASTE_VALUE } from "./show-add-automation-element-dialog";
 
@@ -757,6 +758,7 @@ class DialogAddAutomationElement
           : nothing}
       </div>
       <div class="content">
+        <ha-automation-add-from-target> </ha-automation-add-from-target>
         <ha-md-list
           class=${classMap({
             groups: true,
