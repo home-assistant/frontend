@@ -3,7 +3,6 @@ import type { RenderItemFunction } from "@lit-labs/virtualizer/virtualize";
 import { mdiPlaylistPlus } from "@mdi/js";
 import { css, html, LitElement, nothing, type CSSResultGroup } from "lit";
 import { customElement, property, query, state } from "lit/decorators";
-import { ifDefined } from "lit/directives/if-defined";
 import { tinykeys } from "tinykeys";
 import { fireEvent } from "../common/dom/fire_event";
 import type { HomeAssistant } from "../types";
@@ -106,9 +105,6 @@ export class HaGenericPicker extends LitElement {
 
   protected render() {
     return html`
-      ${this.label
-        ? html`<label ?disabled=${this.disabled}>${this.label}</label>`
-        : nothing}
       <div class="container">
         <div id="picker">
           <slot name="field">
@@ -129,7 +125,7 @@ export class HaGenericPicker extends LitElement {
                   type="button"
                   class=${this._opened ? "opened" : ""}
                   compact
-                  aria-label=${ifDefined(this.label)}
+                  .label=${this.label}
                   @click=${this.open}
                   @clear=${this._clear}
                   .placeholder=${this.placeholder}
