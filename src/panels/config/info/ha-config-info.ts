@@ -206,28 +206,25 @@ class HaConfigInfo extends LitElement {
             <ha-md-list>
               ${!isMobileClient
                 ? html`
-                  <ha-md-list-item
-                    type="button"
-                    @click=${this._showShortcuts}
-                  >
-                    <div
-                      slot="start"
-                      class="icon-background"
-                      style="background-color: #9e4dd1;"
+                    <ha-md-list-item
+                      type="button"
+                      @click=${this._showShortcuts}
                     >
-                      <ha-svg-icon
-                        .path=${mdiKeyboard}
-                      ></ha-svg-icon>
-                    </div>
-                    <span
-                      >${this.hass.localize(
-                        "ui.panel.config.info.shortcuts"
-                      )}</span
-                    >
-                  </ha-md-list-item>
+                      <div
+                        slot="start"
+                        class="icon-background"
+                        style="background-color: #9e4dd1;"
+                      >
+                        <ha-svg-icon .path=${mdiKeyboard}></ha-svg-icon>
+                      </div>
+                      <span
+                        >${this.hass.localize(
+                          "ui.panel.config.info.shortcuts"
+                        )}</span
+                      >
+                    </ha-md-list-item>
                   `
                 : nothing}
-
               ${PAGES.map(
                 (page) => html`
                   <ha-md-list-item
