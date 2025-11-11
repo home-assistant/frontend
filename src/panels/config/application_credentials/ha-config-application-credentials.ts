@@ -104,7 +104,6 @@ export class HaConfigApplicationCredentials extends LitElement {
           ),
           sortable: true,
           filterable: true,
-          direction: "asc",
         },
         actions: {
           title: "",
