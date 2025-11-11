@@ -200,7 +200,6 @@ export class HuiCalendarCard extends LitElement implements LovelaceCard {
     }
 
     this._error = undefined;
-    this._events = [];
 
     this._calendars.forEach((calendar) => {
       const unsub = subscribeCalendarEvents(
