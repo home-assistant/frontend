@@ -182,13 +182,11 @@ class HaBlueprintOverview extends LitElement {
         sortable: true,
         filterable: true,
         groupable: true,
-        direction: "asc",
       },
       path: {
         title: localize("ui.panel.config.blueprint.overview.headers.file_name"),
         sortable: true,
         filterable: true,
-        direction: "asc",
         flex: 2,
       },
       fullpath: {
