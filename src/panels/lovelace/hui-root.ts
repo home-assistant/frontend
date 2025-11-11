@@ -1273,9 +1273,24 @@ class HUIRoot extends LitElement {
     showShortcutsDialog(this);
   }
 
-  private _applyUndoRedo(item: UndoStackItem) {
+  private async _applyUndoRedo(item: UndoStackItem) {
     this._configChangedByUndo = true;
-    this.lovelace!.saveConfig(item.config);
+    try {
+      await this.lovelace!.saveConfig(item.config);
+    } catch (err: any) {
+      showToast(this, {
+        message: this.hass.localize(
+          "ui.panel.lovelace.editor.undo_redo_failed_to_apply_changes",
+          {
+            error: err.message,
+          }
+        ),
+        duration: 4000,
+        dismissable: true,
+      });
+      return;
+    }
+
     this._navigateToView(item.location);
   }
 
