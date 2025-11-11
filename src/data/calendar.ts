@@ -56,18 +56,6 @@ export const enum CalendarEntityFeature {
 /** Type for date values that can come from REST API or subscription */
 type CalendarDateValue = string | { dateTime: string } | { date: string };
 
-/** Calendar event data from REST API */
-interface CalendarEventRestData {
-  summary: string;
-  start: CalendarDateValue;
-  end: CalendarDateValue;
-  description?: string | null;
-  location?: string | null;
-  uid?: string | null;
-  recurrence_id?: string | null;
-  rrule?: string | null;
-}
-
 export const fetchCalendarEvents = async (
   hass: HomeAssistant,
   start: Date,
@@ -80,11 +68,11 @@ export const fetchCalendarEvents = async (
 
   const calEvents: CalendarEvent[] = [];
   const errors: string[] = [];
-  const promises: Promise<CalendarEventRestData[]>[] = [];
+  const promises: Promise<CalendarEventSubscriptionData[]>[] = [];
 
   calendars.forEach((cal) => {
     promises.push(
-      hass.callApi<CalendarEventRestData[]>(
+      hass.callApi<CalendarEventSubscriptionData[]>(
         "GET",
         `calendars/${cal.entity_id}${params}`
       )
@@ -92,7 +80,7 @@ export const fetchCalendarEvents = async (
   });
 
   for (const [idx, promise] of promises.entries()) {
-    let result: CalendarEventRestData[];
+    let result: CalendarEventSubscriptionData[];
     try {
       // eslint-disable-next-line no-await-in-loop
       result = await promise;
@@ -170,6 +158,10 @@ export const deleteCalendarEvent = (
     recurrence_range,
   });
 
+/**
+ * Calendar event data from both REST API and WebSocket subscription.
+ * Both APIs use the same data format.
+ */
 export interface CalendarEventSubscriptionData {
   summary: string;
   start: CalendarDateValue;
