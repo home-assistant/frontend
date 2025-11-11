@@ -9,6 +9,7 @@ import "../../../../components/ha-dialog";
 import "../../../../components/ha-button";
 import "../../../../components/ha-formfield";
 import "../../../../components/ha-radio";
+import "../../../../components/ha-markdown";
 import type { HaRadio } from "../../../../components/ha-radio";
 import type {
   FlowFromGridSourceEnergyPreference,
@@ -19,11 +20,7 @@ import {
   emptyFlowToGridSourceEnergyPreference,
   energyStatisticHelpUrl,
 } from "../../../../data/energy";
-import {
-  getDisplayUnit,
-  getStatisticMetadata,
-  isExternalStatistic,
-} from "../../../../data/recorder";
+import { isExternalStatistic } from "../../../../data/recorder";
 import { getSensorDeviceClassConvertibleUnits } from "../../../../data/sensor";
 import type { HassDialog } from "../../../../dialogs/make-dialog-manager";
 import { haStyleDialog } from "../../../../resources/styles";
@@ -46,8 +43,6 @@ export class DialogEnergyGridFlowSettings
     | FlowToGridSourceEnergyPreference;
 
   @state() private _costs?: "no-costs" | "number" | "entity" | "statistic";
-
-  @state() private _pickedDisplayUnit?: string | null;
 
   @state() private _energy_units?: string[];
 
@@ -81,11 +76,6 @@ export class DialogEnergyGridFlowSettings
           : "stat_energy_to"
       ];
 
-    this._pickedDisplayUnit = getDisplayUnit(
-      this.hass,
-      initialSourceId,
-      params.metadata
-    );
     this._energy_units = (
       await getSensorDeviceClassConvertibleUnits(this.hass, "energy")
     ).units;
@@ -103,7 +93,6 @@ export class DialogEnergyGridFlowSettings
   public closeDialog() {
     this._params = undefined;
     this._source = undefined;
-    this._pickedDisplayUnit = undefined;
     this._error = undefined;
     this._excludeList = undefined;
     fireEvent(this, "dialog-closed", { dialog: this.localName });
@@ -114,10 +103,6 @@ export class DialogEnergyGridFlowSettings
     if (!this._params || !this._source) {
       return nothing;
     }
-
-    const unitPriceSensor = this._pickedDisplayUnit
-      ? `${this.hass.config.currency}/${this._pickedDisplayUnit}`
-      : undefined;
 
     const unitPriceFixed = `${this.hass.config.currency}/kWh`;
 
@@ -240,9 +225,15 @@ export class DialogEnergyGridFlowSettings
               .hass=${this.hass}
               include-domains='["sensor", "input_number"]'
               .value=${this._source.entity_energy_price}
-              .label=${`${this.hass.localize(
+              .label=${this.hass.localize(
                 `ui.panel.config.energy.grid.flow_dialog.${this._params.direction}.cost_entity_input`
-              )} ${unitPriceSensor ? ` (${unitPriceSensor})` : ""}`}
+              )}
+              .helper=${html`<ha-markdown
+                .content=${this.hass.localize(
+                  "ui.panel.config.energy.grid.flow_dialog.cost_entity_helper",
+                  { currency: this.hass.config.currency }
+                )}
+              ></ha-markdown>`}
               @value-changed=${this._priceEntityChanged}
             ></ha-entity-picker>`
           : ""}
@@ -335,16 +326,6 @@ export class DialogEnergyGridFlowSettings
   }
 
   private async _statisticChanged(ev: CustomEvent<{ value: string }>) {
-    if (ev.detail.value) {
-      const metadata = await getStatisticMetadata(this.hass, [ev.detail.value]);
-      this._pickedDisplayUnit = getDisplayUnit(
-        this.hass,
-        ev.detail.value,
-        metadata[0]
-      );
-    } else {
-      this._pickedDisplayUnit = undefined;
-    }
     this._source = {
       ...this._source!,
       [this._params!.direction === "from"

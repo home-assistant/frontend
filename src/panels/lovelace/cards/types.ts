@@ -323,6 +323,7 @@ export interface IframeCardConfig extends LovelaceCardConfig {
   title?: string;
   allow?: string;
   url: string;
+  hide_background?: boolean;
 }
 
 export interface LightCardConfig extends LovelaceCardConfig {
