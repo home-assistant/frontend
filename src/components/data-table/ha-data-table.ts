@@ -240,7 +240,7 @@ export class HaDataTable extends LitElement {
 
     for (const columnId in this.columns) {
       if (this.columns[columnId].direction) {
-        this._defaultSortDirection = this.columns[columnId].direction!;
+        this._defaultSortDirection = this.columns[columnId].direction;
         this._defaultSortColumn = columnId;
         break;
       }
