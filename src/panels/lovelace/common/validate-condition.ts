@@ -4,6 +4,9 @@ import { isValidEntityId } from "../../../common/entity/valid_entity_id";
 import { UNKNOWN } from "../../../data/entity";
 import { getUserPerson } from "../../../data/person";
 import type { HomeAssistant } from "../../../types";
+import { createDurationData } from "../../../common/datetime/create_duration_data";
+import type { HaDurationData } from "../../../components/ha-duration-input";
+import { HaDurationDataToMilliseconds } from "../../../common/datetime/duration_to_seconds";
 
 export type Condition =
   | LocationCondition
@@ -20,6 +23,7 @@ export interface LegacyCondition {
   entity?: string;
   state?: string | string[];
   state_not?: string | string[];
+  for?: number | string | HaDurationData;
 }
 
 interface BaseCondition {
@@ -43,6 +47,7 @@ export interface StateCondition extends BaseCondition {
   entity?: string;
   state?: string | string[];
   state_not?: string | string[];
+  for?: number | string | HaDurationData;
 }
 
 export interface ScreenCondition extends BaseCondition {
@@ -89,6 +94,10 @@ function checkStateCondition(
       ? hass.states[condition.entity].state
       : UNKNOWN;
   let value = condition.state ?? condition.state_not;
+  const stateLastChanged =
+    condition.entity && hass.states[condition.entity]
+      ? hass.states[condition.entity].last_changed
+      : UNKNOWN;
 
   // Handle entity_id, UI should be updated for conditional card (filters does not have UI for now)
   if (Array.isArray(value)) {
@@ -104,9 +113,22 @@ function checkStateCondition(
     }
   }
 
+  const forDuration =
+    HaDurationDataToMilliseconds(createDurationData(condition.for)) || 0;
+
+  const numericStateLastChanged = new Date(stateLastChanged).getTime();
+  if (isNaN(numericStateLastChanged)) {
+    return false;
+  }
+  const numericFor = numericStateLastChanged + forDuration;
+
+  const now = new Date().getTime();
+  const lastChangedCondition =
+    condition.for == null || isNaN(numericFor) || now > numericFor;
+
   return condition.state != null
-    ? ensureArray(value).includes(state)
-    : !ensureArray(value).includes(state);
+    ? ensureArray(value).includes(state) && lastChangedCondition
+    : !ensureArray(value).includes(state) && lastChangedCondition;
 }
 
 function checkStateNumericCondition(
