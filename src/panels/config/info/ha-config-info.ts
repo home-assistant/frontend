@@ -30,6 +30,7 @@ import { mdiHomeAssistant } from "../../../resources/home-assistant-logo-svg";
 import { haStyle } from "../../../resources/styles";
 import type { HomeAssistant, Route } from "../../../types";
 import { documentationUrl } from "../../../util/documentation-url";
+import { isMobileClient } from "../../../util/is_mobile";
 
 const JS_TYPE = __BUILD__;
 const JS_VERSION = __VERSION__;
@@ -203,18 +204,23 @@ class HaConfigInfo extends LitElement {
 
           <ha-card outlined class="pages">
             <ha-md-list>
-              <ha-md-list-item type="button" @click=${this._showShortcuts}>
-                <div
-                  slot="start"
-                  class="icon-background"
-                  style="background-color: #9e4dd1;"
-                >
-                  <ha-svg-icon .path=${mdiKeyboard}></ha-svg-icon>
-                </div>
-                <span
-                  >${this.hass.localize("ui.panel.config.info.shortcuts")}</span
-                >
-              </ha-md-list-item>
+              ${!isMobileClient
+                ? html`
+                  <ha-md-list-item type="button" @click=${this._showShortcuts}>
+                    <div
+                      slot="start"
+                      class="icon-background"
+                      style="background-color: #9e4dd1;"
+                    >
+                      <ha-svg-icon .path=${mdiKeyboard}></ha-svg-icon>
+                    </div>
+                    <span
+                      >${this.hass.localize("ui.panel.config.info.shortcuts")
+                      }</span
+                    >
+                  </ha-md-list-item>
+                  `
+                : nothing}
 
               ${PAGES.map(
                 (page) => html`
