@@ -266,10 +266,11 @@ class PanelCalendar extends LitElement {
     }
 
     // Add new events from this calendar
-    const newEvents: CalendarEvent[] = update.events.map(
-      (eventData: CalendarEventSubscriptionData) =>
+    const newEvents: CalendarEvent[] = update.events
+      .map((eventData: CalendarEventSubscriptionData) =>
         normalizeSubscriptionEventData(eventData, calendar)
-    );
+      )
+      .filter((event): event is CalendarEvent => event !== null);
 
     this._events = [...this._events, ...newEvents];
   }

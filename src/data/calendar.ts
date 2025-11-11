@@ -65,19 +65,16 @@ export const fetchCalendarEvents = async (
 
   const calEvents: CalendarEvent[] = [];
   const errors: string[] = [];
-  const promises: Promise<CalendarEvent[]>[] = [];
+  const promises: Promise<any[]>[] = [];
 
   calendars.forEach((cal) => {
     promises.push(
-      hass.callApi<CalendarEvent[]>(
-        "GET",
-        `calendars/${cal.entity_id}${params}`
-      )
+      hass.callApi<any[]>("GET", `calendars/${cal.entity_id}${params}`)
     );
   });
 
   for (const [idx, promise] of promises.entries()) {
-    let result: CalendarEvent[];
+    let result: any[];
     try {
       // eslint-disable-next-line no-await-in-loop
       result = await promise;
@@ -87,44 +84,14 @@ export const fetchCalendarEvents = async (
     }
     const cal = calendars[idx];
     result.forEach((ev) => {
-      const eventStart = getCalendarDate(ev.start);
-      const eventEnd = getCalendarDate(ev.end);
-      if (!eventStart || !eventEnd) {
-        return;
+      const normalized = normalizeSubscriptionEventData(ev, cal);
+      if (normalized) {
+        calEvents.push(normalized);
       }
-
-      // Convert REST API format to subscription format, then normalize
-      const subscriptionFormat: CalendarEventSubscriptionData = {
-        summary: ev.summary,
-        start: eventStart,
-        end: eventEnd,
-        description: ev.description,
-        uid: ev.uid,
-        recurrence_id: ev.recurrence_id,
-        rrule: ev.rrule,
-      };
-
-      calEvents.push(normalizeSubscriptionEventData(subscriptionFormat, cal));
     });
   }
 
   return { events: calEvents, errors };
-};
-
-const getCalendarDate = (dateObj: any): string | undefined => {
-  if (typeof dateObj === "string") {
-    return dateObj;
-  }
-
-  if (dateObj.dateTime) {
-    return dateObj.dateTime;
-  }
-
-  if (dateObj.date) {
-    return dateObj.date;
-  }
-
-  return undefined;
 };
 
 export const getCalendars = (hass: HomeAssistant): Calendar[] =>
@@ -187,8 +154,8 @@ export const deleteCalendarEvent = (
 
 export interface CalendarEventSubscriptionData {
   summary: string;
-  start: string;
-  end: string;
+  start: string | any; // Can be string or {dateTime: string} or {date: string}
+  end: string | any;
   description?: string | null;
   location?: string | null;
   uid?: string | null;
@@ -214,18 +181,42 @@ export const subscribeCalendarEvents = (
     end: end.toISOString(),
   });
 
+const getCalendarDate = (dateObj: any): string | undefined => {
+  if (typeof dateObj === "string") {
+    return dateObj;
+  }
+
+  if (dateObj?.dateTime) {
+    return dateObj.dateTime;
+  }
+
+  if (dateObj?.date) {
+    return dateObj.date;
+  }
+
+  return undefined;
+};
+
 /**
- * Normalize calendar event data from subscription format to internal format.
- * Subscription returns { start, end, ... } but internal format uses { dtstart, dtend, ... }
+ * Normalize calendar event data from API format to internal format.
+ * Handles both REST API format (with dateTime/date objects) and subscription format (strings).
+ * Converts to internal format with { dtstart, dtend, ... }
  */
 export const normalizeSubscriptionEventData = (
   eventData: CalendarEventSubscriptionData,
   calendar: Calendar
-): CalendarEvent => {
+): CalendarEvent | null => {
+  const eventStart = getCalendarDate(eventData.start);
+  const eventEnd = getCalendarDate(eventData.end);
+
+  if (!eventStart || !eventEnd) {
+    return null;
+  }
+
   const normalizedEventData: CalendarEventData = {
     summary: eventData.summary,
-    dtstart: eventData.start,
-    dtend: eventData.end,
+    dtstart: eventStart,
+    dtend: eventEnd,
     description: eventData.description ?? undefined,
     uid: eventData.uid ?? undefined,
     recurrence_id: eventData.recurrence_id ?? undefined,
@@ -233,8 +224,8 @@ export const normalizeSubscriptionEventData = (
   };
 
   return {
-    start: eventData.start,
-    end: eventData.end,
+    start: eventStart,
+    end: eventEnd,
     title: eventData.summary,
     backgroundColor: calendar.backgroundColor,
     borderColor: calendar.backgroundColor,
