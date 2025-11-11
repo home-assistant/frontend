@@ -215,7 +215,9 @@ class HaConfigInfo extends LitElement {
                       class="icon-background"
                       style="background-color: #9e4dd1;"
                     >
-                      <ha-svg-icon .path=${mdiKeyboard}></ha-svg-icon>
+                      <ha-svg-icon
+                        .path=${mdiKeyboard}
+                      ></ha-svg-icon>
                     </div>
                     <span
                       >${this.hass.localize(
