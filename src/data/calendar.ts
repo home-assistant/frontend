@@ -191,3 +191,21 @@ export const deleteCalendarEvent = (
     recurrence_id,
     recurrence_range,
   });
+
+export interface CalendarEventSubscription {
+  events: CalendarEventData[] | null;
+}
+
+export const subscribeCalendarEvents = (
+  hass: HomeAssistant,
+  entity_id: string,
+  start: Date,
+  end: Date,
+  callback: (update: CalendarEventSubscription) => void
+) =>
+  hass.connection.subscribeMessage<CalendarEventSubscription>(callback, {
+    type: "calendar/event/subscribe",
+    entity_id,
+    start: start.toISOString(),
+    end: end.toISOString(),
+  });

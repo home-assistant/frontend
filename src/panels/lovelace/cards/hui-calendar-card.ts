@@ -1,3 +1,4 @@
+import type { UnsubscribeFunc } from "home-assistant-js-websocket";
 import type { PropertyValues } from "lit";
 import { css, html, LitElement, nothing } from "lit";
 import { classMap } from "lit/directives/class-map";
@@ -7,8 +8,13 @@ import { applyThemesOnElement } from "../../../common/dom/apply_themes_on_elemen
 import type { HASSDomEvent } from "../../../common/dom/fire_event";
 import { debounce } from "../../../common/util/debounce";
 import "../../../components/ha-card";
-import type { Calendar, CalendarEvent } from "../../../data/calendar";
-import { fetchCalendarEvents } from "../../../data/calendar";
+import type {
+  Calendar,
+  CalendarEvent,
+  CalendarEventData,
+  CalendarEventSubscription,
+} from "../../../data/calendar";
+import { subscribeCalendarEvents } from "../../../data/calendar";
 import type {
   CalendarViewChanged,
   FullCalendarView,
@@ -71,6 +77,8 @@ export class HuiCalendarCard extends LitElement implements LovelaceCard {
 
   private _resizeObserver?: ResizeObserver;
 
+  private _unsubs: Record<string, Promise<UnsubscribeFunc>> = {};
+
   public setConfig(config: CalendarCardConfig): void {
     if (!config.entities?.length) {
       throw new Error("Entities must be specified");
@@ -86,7 +94,8 @@ export class HuiCalendarCard extends LitElement implements LovelaceCard {
     }));
 
     if (this._config?.entities !== config.entities) {
-      this._fetchCalendarEvents();
+      this._unsubscribeAll();
+      this._subscribeCalendarEvents();
     }
 
     this._config = { initial_view: "dayGridMonth", ...config };
@@ -115,6 +124,7 @@ export class HuiCalendarCard extends LitElement implements LovelaceCard {
     if (this._resizeObserver) {
       this._resizeObserver.disconnect();
     }
+    this._unsubscribeAll();
   }
 
   protected render() {
@@ -173,28 +183,70 @@ export class HuiCalendarCard extends LitElement implements LovelaceCard {
   private _handleViewChanged(ev: HASSDomEvent<CalendarViewChanged>): void {
     this._startDate = ev.detail.start;
     this._endDate = ev.detail.end;
-    this._fetchCalendarEvents();
+    this._unsubscribeAll();
+    this._subscribeCalendarEvents();
   }
 
-  private async _fetchCalendarEvents(): Promise<void> {
-    if (!this._startDate || !this._endDate) {
+  private _subscribeCalendarEvents(): void {
+    if (!this.hass || !this._startDate || !this._endDate) {
       return;
     }
 
     this._error = undefined;
-    const result = await fetchCalendarEvents(
-      this.hass!,
-      this._startDate,
-      this._endDate,
-      this._calendars
-    );
-    this._events = result.events;
+    this._events = [];
 
-    if (result.errors.length > 0) {
+    this._calendars.forEach((calendar) => {
+      const unsub = subscribeCalendarEvents(
+        this.hass!,
+        calendar.entity_id,
+        this._startDate!,
+        this._endDate!,
+        (update: CalendarEventSubscription) => {
+          this._handleCalendarUpdate(calendar, update);
+        }
+      );
+      this._unsubs[calendar.entity_id] = unsub;
+    });
+  }
+
+  private _handleCalendarUpdate(
+    calendar: Calendar,
+    update: CalendarEventSubscription
+  ): void {
+    // Remove events from this calendar
+    this._events = this._events.filter(
+      (event) => event.calendar !== calendar.entity_id
+    );
+
+    if (update.events === null) {
+      // Error fetching events
       this._error = `${this.hass!.localize(
         "ui.components.calendar.event_retrieval_error"
       )}`;
+      return;
     }
+
+    // Add new events from this calendar
+    const newEvents: CalendarEvent[] = update.events.map(
+      (eventData: CalendarEventData) => ({
+        start: eventData.dtstart,
+        end: eventData.dtend,
+        title: eventData.summary,
+        backgroundColor: calendar.backgroundColor,
+        borderColor: calendar.backgroundColor,
+        calendar: calendar.entity_id,
+        eventData,
+      })
+    );
+
+    this._events = [...this._events, ...newEvents];
+  }
+
+  private _unsubscribeAll(): void {
+    Object.values(this._unsubs).forEach((unsub) => {
+      unsub.then((unsubFunc) => unsubFunc());
+    });
+    this._unsubs = {};
   }
 
   private _measureCard() {
