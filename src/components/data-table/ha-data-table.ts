@@ -173,7 +173,7 @@ export class HaDataTable extends LitElement {
 
   private _sortColumns: SortableColumnContainer = {};
 
-  private _defaultSortColumn = "";
+  private _defaultSortColumn?: string;
 
   private _defaultSortDirection: SortingDirection = null;
 
