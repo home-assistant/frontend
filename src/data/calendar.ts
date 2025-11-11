@@ -92,26 +92,19 @@ export const fetchCalendarEvents = async (
       if (!eventStart || !eventEnd) {
         return;
       }
-      const eventData: CalendarEventData = {
-        uid: ev.uid,
+
+      // Convert REST API format to subscription format, then normalize
+      const subscriptionFormat: CalendarEventSubscriptionData = {
         summary: ev.summary,
+        start: eventStart,
+        end: eventEnd,
         description: ev.description,
-        dtstart: eventStart,
-        dtend: eventEnd,
+        uid: ev.uid,
         recurrence_id: ev.recurrence_id,
         rrule: ev.rrule,
       };
-      const event: CalendarEvent = {
-        start: eventStart,
-        end: eventEnd,
-        title: ev.summary,
-        backgroundColor: cal.backgroundColor,
-        borderColor: cal.backgroundColor,
-        calendar: cal.entity_id,
-        eventData: eventData,
-      };
 
-      calEvents.push(event);
+      calEvents.push(normalizeSubscriptionEventData(subscriptionFormat, cal));
     });
   }
 
