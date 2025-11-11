@@ -23,7 +23,7 @@ export class HaDropdown extends Dropdown {
       Dropdown.styles,
       css`
         :host {
-          --wa-color-surface-border: var(--ha-color-border-normal);
+          --wa-color-surface-border: 0px;
           --wa-color-surface-raised: var(
             --card-background-color,
             var(--ha-dialog-surface-background, var(--mdc-theme-surface, #fff)),
@@ -31,7 +31,9 @@ export class HaDropdown extends Dropdown {
         }
 
         #menu {
-          --wa-shadow-m: 0px 4px 8px 0px var(--ha-color-shadow);
+          --wa-shadow-m: var(--ha-space-0) var(--ha-space-1) var(--ha-space-2)
+            var(--ha-space-0) var(--ha-color-shadow);
+          padding: var(--ha-space-1);
         }
       `,
     ];

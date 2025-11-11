@@ -25,7 +25,7 @@ export const waMainStyles = css`
     --wa-border-radius-m: var(--ha-border-radius-md);
     --wa-border-radius-l: var(--ha-border-radius-lg);
 
-    --wa-line-height-condensed: 1.25;
+    --wa-line-height-condensed: var(--ha-line-height-condensed);
 
     --wa-space-xl: 32px;
   }

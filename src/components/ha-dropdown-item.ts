@@ -19,7 +19,15 @@ export class HaDropdownItem extends DropdownItem {
       DropdownItem.styles,
       css`
         :host {
-          min-height: 40px;
+          min-height: var(--ha-space-10);
+        }
+
+        #icon ::slotted(*) {
+          color: var(--ha-color-on-neutral-normal);
+        }
+
+        :host([variant="danger"]) #icon ::slotted(*) {
+          color: var(--ha-color-on-danger-quiet);
         }
       `,
     ];
