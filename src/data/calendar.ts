@@ -192,8 +192,19 @@ export const deleteCalendarEvent = (
     recurrence_range,
   });
 
+export interface CalendarEventSubscriptionData {
+  summary: string;
+  start: string;
+  end: string;
+  description?: string | null;
+  location?: string | null;
+  uid?: string | null;
+  recurrence_id?: string | null;
+  rrule?: string | null;
+}
+
 export interface CalendarEventSubscription {
-  events: CalendarEventData[] | null;
+  events: CalendarEventSubscriptionData[] | null;
 }
 
 export const subscribeCalendarEvents = (

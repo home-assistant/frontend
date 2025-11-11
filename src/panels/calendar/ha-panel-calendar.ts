@@ -26,6 +26,7 @@ import type {
   CalendarEvent,
   CalendarEventData,
   CalendarEventSubscription,
+  CalendarEventSubscriptionData,
 } from "../../data/calendar";
 import { getCalendars, subscribeCalendarEvents } from "../../data/calendar";
 import { fetchIntegrationManifest } from "../../data/integration";
@@ -211,6 +212,15 @@ class PanelCalendar extends LitElement {
     this._error = undefined;
 
     calendars.forEach((calendar) => {
+      // Unsubscribe existing subscription if any
+      if (calendar.entity_id in this._unsubs) {
+        this._unsubs[calendar.entity_id]
+          .then((unsubFunc) => unsubFunc())
+          .catch(() => {
+            // Subscription may have already been closed
+          });
+      }
+
       const unsub = subscribeCalendarEvents(
         this.hass,
         calendar.entity_id,
@@ -240,42 +250,54 @@ class PanelCalendar extends LitElement {
     }
 
     // Add new events from this calendar
-    const newEvents: CalendarEvent[] = update.events.map((eventData: any) => {
-      // Subscription returns start/end, but we need dtstart/dtend for eventData
-      const normalizedEventData: CalendarEventData = {
-        summary: eventData.summary,
-        dtstart: eventData.start,
-        dtend: eventData.end,
-        description: eventData.description,
-        uid: eventData.uid,
-        recurrence_id: eventData.recurrence_id,
-        rrule: eventData.rrule,
-      };
+    const newEvents: CalendarEvent[] = update.events.map(
+      (eventData: CalendarEventSubscriptionData) => {
+        // Subscription returns start/end, but we need dtstart/dtend for eventData
+        const normalizedEventData: CalendarEventData = {
+          summary: eventData.summary,
+          dtstart: eventData.start,
+          dtend: eventData.end,
+          description: eventData.description ?? undefined,
+          uid: eventData.uid ?? undefined,
+          recurrence_id: eventData.recurrence_id ?? undefined,
+          rrule: eventData.rrule ?? undefined,
+        };
 
-      return {
-        start: eventData.start,
-        end: eventData.end,
-        title: eventData.summary,
-        backgroundColor: calendar.backgroundColor,
-        borderColor: calendar.backgroundColor,
-        calendar: calendar.entity_id,
-        eventData: normalizedEventData,
-      };
-    });
+        return {
+          start: eventData.start,
+          end: eventData.end,
+          title: eventData.summary,
+          backgroundColor: calendar.backgroundColor,
+          borderColor: calendar.backgroundColor,
+          calendar: calendar.entity_id,
+          eventData: normalizedEventData,
+        };
+      }
+    );
 
     this._events = [...this._events, ...newEvents];
   }
 
-  private _unsubscribeAll(): void {
-    Object.values(this._unsubs).forEach((unsub) => {
-      unsub.then((unsubFunc) => unsubFunc());
-    });
+  private async _unsubscribeAll(): Promise<void> {
+    await Promise.all(
+      Object.values(this._unsubs).map((unsub) =>
+        unsub
+          .then((unsubFunc) => unsubFunc())
+          .catch(() => {
+            // Subscription may have already been closed
+          })
+      )
+    );
     this._unsubs = {};
   }
 
   private _unsubscribeCalendar(entityId: string): void {
     if (entityId in this._unsubs) {
-      this._unsubs[entityId].then((unsubFunc) => unsubFunc());
+      this._unsubs[entityId]
+        .then((unsubFunc) => unsubFunc())
+        .catch(() => {
+          // Subscription may have already been closed
+        });
       delete this._unsubs[entityId];
     }
   }
@@ -296,6 +318,10 @@ class PanelCalendar extends LitElement {
       );
       if (!calendar) {
         return;
+      }
+      // Prevent duplicate subscriptions: unsubscribe if already subscribed
+      if (calendar.entity_id in this._unsubs) {
+        this._unsubscribeCalendar(calendar.entity_id);
       }
       this._subscribeCalendarEvents([calendar]);
     } else {
@@ -320,16 +346,18 @@ class PanelCalendar extends LitElement {
     });
   }
 
-  private _handleViewChanged(ev: HASSDomEvent<CalendarViewChanged>): void {
+  private async _handleViewChanged(
+    ev: HASSDomEvent<CalendarViewChanged>
+  ): Promise<void> {
     this._start = ev.detail.start;
     this._end = ev.detail.end;
-    this._unsubscribeAll();
+    await this._unsubscribeAll();
     this._events = [];
     this._subscribeCalendarEvents(this._selectedCalendars);
   }
 
-  private _handleRefresh(): void {
-    this._unsubscribeAll();
+  private async _handleRefresh(): Promise<void> {
+    await this._unsubscribeAll();
     this._events = [];
     this._subscribeCalendarEvents(this._selectedCalendars);
   }

@@ -13,6 +13,7 @@ import type {
   CalendarEvent,
   CalendarEventData,
   CalendarEventSubscription,
+  CalendarEventSubscriptionData,
 } from "../../../data/calendar";
 import { subscribeCalendarEvents } from "../../../data/calendar";
 import type {
@@ -70,6 +71,8 @@ export class HuiCalendarCard extends LitElement implements LovelaceCard {
   @state() private _narrow = false;
 
   @state() private _error?: string = undefined;
+
+  private _errorCalendars: string[] = [];
 
   private _startDate?: Date;
 
@@ -180,10 +183,12 @@ export class HuiCalendarCard extends LitElement implements LovelaceCard {
     }
   }
 
-  private _handleViewChanged(ev: HASSDomEvent<CalendarViewChanged>): void {
+  private async _handleViewChanged(
+    ev: HASSDomEvent<CalendarViewChanged>
+  ): Promise<void> {
     this._startDate = ev.detail.start;
     this._endDate = ev.detail.end;
-    this._unsubscribeAll();
+    await this._unsubscribeAll();
     this._subscribeCalendarEvents();
   }
 
@@ -220,43 +225,62 @@ export class HuiCalendarCard extends LitElement implements LovelaceCard {
 
     if (update.events === null) {
       // Error fetching events
+      if (!this._errorCalendars.includes(calendar.entity_id)) {
+        this._errorCalendars.push(calendar.entity_id);
+      }
       this._error = `${this.hass!.localize(
         "ui.components.calendar.event_retrieval_error"
       )}`;
       return;
     }
 
-    // Add new events from this calendar
-    const newEvents: CalendarEvent[] = update.events.map((eventData: any) => {
-      // Subscription returns start/end, but we need dtstart/dtend for eventData
-      const normalizedEventData: CalendarEventData = {
-        summary: eventData.summary,
-        dtstart: eventData.start,
-        dtend: eventData.end,
-        description: eventData.description,
-        uid: eventData.uid,
-        recurrence_id: eventData.recurrence_id,
-        rrule: eventData.rrule,
-      };
+    // Remove from error list if successfully loaded
+    this._errorCalendars = this._errorCalendars.filter(
+      (id) => id !== calendar.entity_id
+    );
+    if (this._errorCalendars.length === 0) {
+      this._error = undefined;
+    }
 
-      return {
-        start: eventData.start,
-        end: eventData.end,
-        title: eventData.summary,
-        backgroundColor: calendar.backgroundColor,
-        borderColor: calendar.backgroundColor,
-        calendar: calendar.entity_id,
-        eventData: normalizedEventData,
-      };
-    });
+    // Add new events from this calendar
+    const newEvents: CalendarEvent[] = update.events.map(
+      (eventData: CalendarEventSubscriptionData) => {
+        // Subscription returns start/end, but we need dtstart/dtend for eventData
+        const normalizedEventData: CalendarEventData = {
+          summary: eventData.summary,
+          dtstart: eventData.start,
+          dtend: eventData.end,
+          description: eventData.description ?? undefined,
+          uid: eventData.uid ?? undefined,
+          recurrence_id: eventData.recurrence_id ?? undefined,
+          rrule: eventData.rrule ?? undefined,
+        };
+
+        return {
+          start: eventData.start,
+          end: eventData.end,
+          title: eventData.summary,
+          backgroundColor: calendar.backgroundColor,
+          borderColor: calendar.backgroundColor,
+          calendar: calendar.entity_id,
+          eventData: normalizedEventData,
+        };
+      }
+    );
 
     this._events = [...this._events, ...newEvents];
   }
 
-  private _unsubscribeAll(): void {
-    Object.values(this._unsubs).forEach((unsub) => {
-      unsub.then((unsubFunc) => unsubFunc());
-    });
+  private async _unsubscribeAll(): Promise<void> {
+    await Promise.all(
+      Object.values(this._unsubs).map((unsub) =>
+        unsub
+          .then((unsubFunc) => unsubFunc())
+          .catch(() => {
+            // Subscription may have already been closed
+          })
+      )
+    );
     this._unsubs = {};
   }
 
