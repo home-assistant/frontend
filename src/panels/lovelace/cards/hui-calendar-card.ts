@@ -74,7 +74,7 @@ export class HuiCalendarCard extends LitElement implements LovelaceCard {
 
   @state() private _error?: string = undefined;
 
-  private _errorCalendars: string[] = [];
+  @state() private _errorCalendars: string[] = [];
 
   private _startDate?: Date;
 

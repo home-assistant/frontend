@@ -52,6 +52,8 @@ class PanelCalendar extends LitElement {
 
   @state() private _error?: string = undefined;
 
+  @state() private _errorCalendars: string[] = [];
+
   @state()
   @storage({
     key: "deSelectedCalendars",
@@ -248,8 +250,19 @@ class PanelCalendar extends LitElement {
 
     if (update.events === null) {
       // Error fetching events
-      this._handleErrors([calendar.entity_id]);
+      if (!this._errorCalendars.includes(calendar.entity_id)) {
+        this._errorCalendars.push(calendar.entity_id);
+      }
+      this._handleErrors(this._errorCalendars);
       return;
+    }
+
+    // Remove from error list if successfully loaded
+    this._errorCalendars = this._errorCalendars.filter(
+      (id) => id !== calendar.entity_id
+    );
+    if (this._errorCalendars.length === 0) {
+      this._error = undefined;
     }
 
     // Add new events from this calendar
@@ -301,10 +314,6 @@ class PanelCalendar extends LitElement {
       );
       if (!calendar) {
         return;
-      }
-      // Prevent duplicate subscriptions: unsubscribe if already subscribed
-      if (calendar.entity_id in this._unsubs) {
-        this._unsubscribeCalendar(calendar.entity_id);
       }
       this._subscribeCalendarEvents([calendar]);
     } else {
