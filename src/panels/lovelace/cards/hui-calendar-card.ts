@@ -227,17 +227,28 @@ export class HuiCalendarCard extends LitElement implements LovelaceCard {
     }
 
     // Add new events from this calendar
-    const newEvents: CalendarEvent[] = update.events.map(
-      (eventData: CalendarEventData) => ({
-        start: eventData.dtstart,
-        end: eventData.dtend,
+    const newEvents: CalendarEvent[] = update.events.map((eventData: any) => {
+      // Subscription returns start/end, but we need dtstart/dtend for eventData
+      const normalizedEventData: CalendarEventData = {
+        summary: eventData.summary,
+        dtstart: eventData.start,
+        dtend: eventData.end,
+        description: eventData.description,
+        uid: eventData.uid,
+        recurrence_id: eventData.recurrence_id,
+        rrule: eventData.rrule,
+      };
+
+      return {
+        start: eventData.start,
+        end: eventData.end,
         title: eventData.summary,
         backgroundColor: calendar.backgroundColor,
         borderColor: calendar.backgroundColor,
         calendar: calendar.entity_id,
-        eventData,
-      })
-    );
+        eventData: normalizedEventData,
+      };
+    });
 
     this._events = [...this._events, ...newEvents];
   }
