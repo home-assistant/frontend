@@ -24,11 +24,14 @@ import "../../components/ha-two-pane-top-app-bar-fixed";
 import type {
   Calendar,
   CalendarEvent,
-  CalendarEventData,
   CalendarEventSubscription,
   CalendarEventSubscriptionData,
 } from "../../data/calendar";
-import { getCalendars, subscribeCalendarEvents } from "../../data/calendar";
+import {
+  getCalendars,
+  normalizeSubscriptionEventData,
+  subscribeCalendarEvents,
+} from "../../data/calendar";
 import { fetchIntegrationManifest } from "../../data/integration";
 import { showConfigFlowDialog } from "../../dialogs/config-flow/show-dialog-config-flow";
 import { haStyle } from "../../resources/styles";
@@ -251,28 +254,8 @@ class PanelCalendar extends LitElement {
 
     // Add new events from this calendar
     const newEvents: CalendarEvent[] = update.events.map(
-      (eventData: CalendarEventSubscriptionData) => {
-        // Subscription returns start/end, but we need dtstart/dtend for eventData
-        const normalizedEventData: CalendarEventData = {
-          summary: eventData.summary,
-          dtstart: eventData.start,
-          dtend: eventData.end,
-          description: eventData.description ?? undefined,
-          uid: eventData.uid ?? undefined,
-          recurrence_id: eventData.recurrence_id ?? undefined,
-          rrule: eventData.rrule ?? undefined,
-        };
-
-        return {
-          start: eventData.start,
-          end: eventData.end,
-          title: eventData.summary,
-          backgroundColor: calendar.backgroundColor,
-          borderColor: calendar.backgroundColor,
-          calendar: calendar.entity_id,
-          eventData: normalizedEventData,
-        };
-      }
+      (eventData: CalendarEventSubscriptionData) =>
+        normalizeSubscriptionEventData(eventData, calendar)
     );
 
     this._events = [...this._events, ...newEvents];

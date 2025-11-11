@@ -220,3 +220,32 @@ export const subscribeCalendarEvents = (
     start: start.toISOString(),
     end: end.toISOString(),
   });
+
+/**
+ * Normalize calendar event data from subscription format to internal format.
+ * Subscription returns { start, end, ... } but internal format uses { dtstart, dtend, ... }
+ */
+export const normalizeSubscriptionEventData = (
+  eventData: CalendarEventSubscriptionData,
+  calendar: Calendar
+): CalendarEvent => {
+  const normalizedEventData: CalendarEventData = {
+    summary: eventData.summary,
+    dtstart: eventData.start,
+    dtend: eventData.end,
+    description: eventData.description ?? undefined,
+    uid: eventData.uid ?? undefined,
+    recurrence_id: eventData.recurrence_id ?? undefined,
+    rrule: eventData.rrule ?? undefined,
+  };
+
+  return {
+    start: eventData.start,
+    end: eventData.end,
+    title: eventData.summary,
+    backgroundColor: calendar.backgroundColor,
+    borderColor: calendar.backgroundColor,
+    calendar: calendar.entity_id,
+    eventData: normalizedEventData,
+  };
+};

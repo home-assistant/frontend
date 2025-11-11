@@ -11,11 +11,13 @@ import "../../../components/ha-card";
 import type {
   Calendar,
   CalendarEvent,
-  CalendarEventData,
   CalendarEventSubscription,
   CalendarEventSubscriptionData,
 } from "../../../data/calendar";
-import { subscribeCalendarEvents } from "../../../data/calendar";
+import {
+  normalizeSubscriptionEventData,
+  subscribeCalendarEvents,
+} from "../../../data/calendar";
 import type {
   CalendarViewChanged,
   FullCalendarView,
@@ -244,28 +246,8 @@ export class HuiCalendarCard extends LitElement implements LovelaceCard {
 
     // Add new events from this calendar
     const newEvents: CalendarEvent[] = update.events.map(
-      (eventData: CalendarEventSubscriptionData) => {
-        // Subscription returns start/end, but we need dtstart/dtend for eventData
-        const normalizedEventData: CalendarEventData = {
-          summary: eventData.summary,
-          dtstart: eventData.start,
-          dtend: eventData.end,
-          description: eventData.description ?? undefined,
-          uid: eventData.uid ?? undefined,
-          recurrence_id: eventData.recurrence_id ?? undefined,
-          rrule: eventData.rrule ?? undefined,
-        };
-
-        return {
-          start: eventData.start,
-          end: eventData.end,
-          title: eventData.summary,
-          backgroundColor: calendar.backgroundColor,
-          borderColor: calendar.backgroundColor,
-          calendar: calendar.entity_id,
-          eventData: normalizedEventData,
-        };
-      }
+      (eventData: CalendarEventSubscriptionData) =>
+        normalizeSubscriptionEventData(eventData, calendar)
     );
 
     this._events = [...this._events, ...newEvents];
