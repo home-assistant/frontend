@@ -227,7 +227,7 @@ export class HuiCalendarCard extends LitElement implements LovelaceCard {
     if (update.events === null) {
       // Error fetching events
       if (!this._errorCalendars.includes(calendar.entity_id)) {
-        this._errorCalendars.push(calendar.entity_id);
+        this._errorCalendars = [...this._errorCalendars, calendar.entity_id];
       }
       this._error = `${this.hass!.localize(
         "ui.components.calendar.event_retrieval_error"
