@@ -173,6 +173,10 @@ export class HaDataTable extends LitElement {
 
   private _sortColumns: SortableColumnContainer = {};
 
+  private _defaultSortColumn = "";
+
+  private _defaultSortDirection: SortingDirection = null;
+
   private _curRequest = 0;
 
   private _lastUpdate = 0;
@@ -232,6 +236,14 @@ export class HaDataTable extends LitElement {
     if (this._filteredData.length) {
       // Force update of location of rows
       this._filteredData = [...this._filteredData];
+    }
+
+    for (const columnId in this.columns) {
+      if (this.columns[columnId].direction) {
+        this._defaultSortDirection = this.columns[columnId].direction!;
+        this._defaultSortColumn = columnId;
+        break;
+      }
     }
   }
 
@@ -830,9 +842,13 @@ export class HaDataTable extends LitElement {
     }
 
     this.sortColumn = this.sortDirection === null ? undefined : columnId;
+    if (!this.sortColumn) {
+      this.sortDirection = this._defaultSortDirection;
+      this.sortColumn = this._defaultSortColumn;
+    }
 
     fireEvent(this, "sorting-changed", {
-      column: columnId,
+      column: this.sortColumn,
       direction: this.sortDirection,
     });
   }
