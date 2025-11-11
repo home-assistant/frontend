@@ -25,9 +25,6 @@ import "./ha-svg-icon";
 export class HaGenericPicker extends LitElement {
   @property({ attribute: false }) public hass?: HomeAssistant;
 
-  // eslint-disable-next-line lit/no-native-attributes
-  @property({ type: Boolean }) public autofocus = false;
-
   @property({ type: Boolean }) public disabled = false;
 
   @property({ type: Boolean }) public required = false;
@@ -49,8 +46,11 @@ export class HaGenericPicker extends LitElement {
   @property({ attribute: "hide-clear-icon", type: Boolean })
   public hideClearIcon = false;
 
-  @property({ attribute: false, type: Array })
-  public getItems?: () => PickerComboBoxItem[];
+  @property({ attribute: false })
+  public getItems?: (
+    searchString?: string,
+    section?: string
+  ) => (PickerComboBoxItem | string)[];
 
   @property({ attribute: false, type: Array })
   public getAdditionalItems?: (searchString?: string) => PickerComboBoxItem[];
@@ -64,8 +64,11 @@ export class HaGenericPicker extends LitElement {
   @property({ attribute: false })
   public searchFn?: PickerComboBoxSearchFn<PickerComboBoxItem>;
 
-  @property({ attribute: "not-found-label", type: String })
-  public notFoundLabel?: string;
+  @property({ attribute: false })
+  public notFoundLabel?: string | ((search: string) => string);
+
+  @property({ attribute: "empty-label" })
+  public emptyLabel?: string;
 
   @property({ attribute: "popover-placement" })
   public popoverPlacement:
@@ -85,6 +88,25 @@ export class HaGenericPicker extends LitElement {
   /** If set picker shows an add button instead of textbox when value isn't set */
   @property({ attribute: "add-button-label" }) public addButtonLabel?: string;
 
+  /** Section filter buttons for the list, section headers needs to be defined in getItems as strings */
+  @property({ attribute: false }) public sections?: (
+    | {
+        id: string;
+        label: string;
+      }
+    | "separator"
+  )[];
+
+  @property({ attribute: false }) public sectionTitleFunction?: (listInfo: {
+    firstIndex: number;
+    lastIndex: number;
+    firstItem: PickerComboBoxItem | string;
+    secondItem: PickerComboBoxItem | string;
+    itemsCount: number;
+  }) => string | undefined;
+
+  @property({ attribute: "selected-section" }) public selectedSection?: string;
+
   @query(".container") private _containerElement?: HTMLDivElement;
 
   @query("ha-picker-combo-box") private _comboBox?: HaPickerComboBox;
@@ -96,6 +118,11 @@ export class HaGenericPicker extends LitElement {
   @state() private _popoverWidth = 0;
 
   @state() private _openedNarrow = false;
+
+  static shadowRootOptions = {
+    ...LitElement.shadowRootOptions,
+    delegatesFocus: true,
+  };
 
   private _narrow = false;
 
@@ -189,16 +216,19 @@ export class HaGenericPicker extends LitElement {
       <ha-picker-combo-box
         .hass=${this.hass}
         .allowCustomValue=${this.allowCustomValue}
-        .label=${this.searchLabel ??
-        (this.hass?.localize("ui.common.search") || "Search")}
+        .label=${this.searchLabel}
         .value=${this.value}
         @value-changed=${this._valueChanged}
         .rowRenderer=${this.rowRenderer}
         .notFoundLabel=${this.notFoundLabel}
+        .emptyLabel=${this.emptyLabel}
         .getItems=${this.getItems}
         .getAdditionalItems=${this.getAdditionalItems}
         .searchFn=${this.searchFn}
         .mode=${dialogMode ? "dialog" : "popover"}
+        .sections=${this.sections}
+        .sectionTitleFunction=${this.sectionTitleFunction}
+        .selectedSection=${this.selectedSection}
       ></ha-picker-combo-box>
     `;
   }

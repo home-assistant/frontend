@@ -108,7 +108,8 @@ export const getLabels = (
   includeDeviceClasses?: string[],
   deviceFilter?: HaDevicePickerDeviceFilterFunc,
   entityFilter?: HaEntityPickerEntityFilterFunc,
-  excludeLabels?: string[]
+  excludeLabels?: string[],
+  idPrefix = ""
 ): PickerComboBoxItem[] => {
   if (!labels || labels.length === 0) {
     return [];
@@ -262,7 +263,7 @@ export const getLabels = (
   }
 
   const items = outputLabels.map<PickerComboBoxItem>((label) => ({
-    id: label.label_id,
+    id: `${idPrefix}${label.label_id}`,
     primary: label.name,
     secondary: label.description ?? "",
     icon: label.icon || undefined,
