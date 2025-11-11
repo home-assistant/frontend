@@ -53,6 +53,21 @@ export const enum CalendarEntityFeature {
   UPDATE_EVENT = 4,
 }
 
+/** Type for date values that can come from REST API or subscription */
+type CalendarDateValue = string | { dateTime: string } | { date: string };
+
+/** Calendar event data from REST API */
+interface CalendarEventRestData {
+  summary: string;
+  start: CalendarDateValue;
+  end: CalendarDateValue;
+  description?: string | null;
+  location?: string | null;
+  uid?: string | null;
+  recurrence_id?: string | null;
+  rrule?: string | null;
+}
+
 export const fetchCalendarEvents = async (
   hass: HomeAssistant,
   start: Date,
@@ -65,16 +80,19 @@ export const fetchCalendarEvents = async (
 
   const calEvents: CalendarEvent[] = [];
   const errors: string[] = [];
-  const promises: Promise<any[]>[] = [];
+  const promises: Promise<CalendarEventRestData[]>[] = [];
 
   calendars.forEach((cal) => {
     promises.push(
-      hass.callApi<any[]>("GET", `calendars/${cal.entity_id}${params}`)
+      hass.callApi<CalendarEventRestData[]>(
+        "GET",
+        `calendars/${cal.entity_id}${params}`
+      )
     );
   });
 
   for (const [idx, promise] of promises.entries()) {
-    let result: any[];
+    let result: CalendarEventRestData[];
     try {
       // eslint-disable-next-line no-await-in-loop
       result = await promise;
@@ -154,8 +172,8 @@ export const deleteCalendarEvent = (
 
 export interface CalendarEventSubscriptionData {
   summary: string;
-  start: string | any; // Can be string or {dateTime: string} or {date: string}
-  end: string | any;
+  start: CalendarDateValue;
+  end: CalendarDateValue;
   description?: string | null;
   location?: string | null;
   uid?: string | null;
@@ -181,16 +199,16 @@ export const subscribeCalendarEvents = (
     end: end.toISOString(),
   });
 
-const getCalendarDate = (dateObj: any): string | undefined => {
+const getCalendarDate = (dateObj: CalendarDateValue): string | undefined => {
   if (typeof dateObj === "string") {
     return dateObj;
   }
 
-  if (dateObj?.dateTime) {
+  if ("dateTime" in dateObj) {
     return dateObj.dateTime;
   }
 
-  if (dateObj?.date) {
+  if ("date" in dateObj) {
     return dateObj.date;
   }
 
