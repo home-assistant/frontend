@@ -251,7 +251,7 @@ class PanelCalendar extends LitElement {
     if (update.events === null) {
       // Error fetching events
       if (!this._errorCalendars.includes(calendar.entity_id)) {
-        this._errorCalendars.push(calendar.entity_id);
+        this._errorCalendars = [...this._errorCalendars, calendar.entity_id];
       }
       this._handleErrors(this._errorCalendars);
       return;
