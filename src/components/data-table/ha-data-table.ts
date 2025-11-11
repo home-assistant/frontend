@@ -848,7 +848,7 @@ export class HaDataTable extends LitElement {
     }
 
     fireEvent(this, "sorting-changed", {
-      column: this.sortColumn,
+      column: this.sortColumn!,
       direction: this.sortDirection,
     });
   }
