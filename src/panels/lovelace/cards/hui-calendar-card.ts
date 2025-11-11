@@ -95,7 +95,7 @@ export class HuiCalendarCard extends LitElement implements LovelaceCard {
 
     if (this._config?.entities !== config.entities) {
       this._unsubscribeAll();
-      this._subscribeCalendarEvents();
+      // Subscription will happen when view-changed event fires
     }
 
     this._config = { initial_view: "dayGridMonth", ...config };
