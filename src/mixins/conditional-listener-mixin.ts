@@ -51,11 +51,26 @@ export const ConditionalListenerMixin = <
       this.clearConditionalListeners();
     }
 
+    /**
+     * Clear conditional listeners
+     *
+     * This method is called when the component is disconnected from the DOM.
+     * It clears all the listeners that were set up by the setupConditionalListeners() method.
+     */
     protected clearConditionalListeners(): void {
       this.__listeners.forEach((unsub) => unsub());
       this.__listeners = [];
     }
 
+    /**
+     * Add a conditional listener to the list of listeners
+     *
+     * This method is called when a new listener is added.
+     * It adds the listener to the list of listeners.
+     *
+     * @param unsubscribe - The unsubscribe function to call when the listener is no longer needed
+     * @returns void
+     */
     protected addConditionalListener(unsubscribe: () => void): void {
       this.__listeners.push(unsubscribe);
     }
