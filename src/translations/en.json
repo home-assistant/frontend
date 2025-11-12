@@ -12,8 +12,9 @@
     "media_browser": "Media",
     "profile": "Profile",
     "light": "Lights",
-    "safety": "Safety",
-    "climate": "Climate"
+    "security": "Security",
+    "climate": "Climate",
+    "home": "Home"
   },
   "state": {
     "default": {
@@ -652,7 +653,7 @@
           "edit": "Edit",
           "clear": "Clear",
           "no_entities": "You don't have any entities",
-          "no_match": "No matching entities found",
+          "no_match": "No entities found for {term}",
           "show_entities": "Show entities",
           "new_entity": "Create a new entity",
           "placeholder": "Select an entity",
@@ -684,10 +685,10 @@
       },
       "target-picker": {
         "expand": "Expand",
-        "expand_floor_id": "Split this floor into separate areas.",
-        "expand_area_id": "Split this area into separate devices and entities.",
-        "expand_device_id": "Split this device into separate entities.",
-        "expand_label_id": "Split this label into separate areas, devices and entities.",
+        "expand_floor_id": "Split this floor into separate areas",
+        "expand_area_id": "Split this area into separate devices and entities",
+        "expand_device_id": "Split this device into separate entities",
+        "expand_label_id": "Split this label into separate areas, devices and entities",
         "add_target": "Add target",
         "remove": "Remove",
         "remove_floor_id": "Remove floor",
@@ -695,6 +696,11 @@
         "remove_device_id": "Remove device",
         "remove_entity_id": "Remove entity",
         "remove_label_id": "Remove label",
+        "floor_not_found": "Floor not found",
+        "area_not_found": "Area not found",
+        "device_not_found": "Device not found",
+        "entity_not_found": "Entity not found",
+        "label_not_found": "Label not found",
         "devices_count": "{count} {count, plural,\n one {device}\n other {devices}\n}",
         "entities_count": "{count} {count, plural,\n one {entity}\n other {entities}\n}",
         "target_details": "Target details",
@@ -758,7 +764,7 @@
       },
       "language-picker": {
         "language": "Language",
-        "no_match": "No matching languages found",
+        "no_match": "No languages found for {term}",
         "no_languages": "No languages available"
       },
       "tts-picker": {
@@ -770,7 +776,7 @@
         "none": "None"
       },
       "user-picker": {
-        "no_match": "No matching users found",
+        "no_match": "No users found for {term}",
         "user": "User",
         "add_user": "Add user"
       },
@@ -781,8 +787,8 @@
         "clear": "Clear",
         "toggle": "Toggle",
         "show_devices": "Show devices",
-        "no_devices": "You don't have any devices",
-        "no_match": "No matching devices found",
+        "no_devices": "No devices available",
+        "no_match": "No devices found for {term}",
         "device": "Device",
         "unnamed_device": "Unnamed device",
         "no_area": "No area",
@@ -796,8 +802,8 @@
         "add_category": "Add category",
         "add_new_sugestion": "Add new category ''{name}''",
         "add_new": "Add new category…",
-        "no_categories": "You don't have any categories",
-        "no_match": "No matching categories found",
+        "no_categories": "No categories available",
+        "no_match": "No categories found for {term}",
         "add_dialog": {
           "title": "Add new category",
           "text": "Enter the name of the new category.",
@@ -812,8 +818,8 @@
         "add_new_sugestion": "Add new label ''{name}''",
         "add_new": "Add new label…",
         "add": "Add label",
-        "no_labels": "You don't have any labels",
-        "no_match": "No matching labels found",
+        "no_labels": "No labels available",
+        "no_match": "No labels found for {term}",
         "failed_create_label": "Failed to create label."
       },
       "area-picker": {
@@ -822,8 +828,8 @@
         "area": "Area",
         "add_new_sugestion": "Add new area ''{name}''",
         "add_new": "Add new area…",
-        "no_areas": "You don't have any areas",
-        "no_match": "No matching areas found",
+        "no_areas": "No areas available",
+        "no_match": "No areas found for {term}",
         "unassigned_areas": "Unassigned areas",
         "failed_create_area": "Failed to create area."
       },
@@ -833,8 +839,8 @@
         "floor": "Floor",
         "add_new_sugestion": "Add new floor ''{name}''",
         "add_new": "Add new floor…",
-        "no_floors": "You don't have any floors",
-        "no_match": "No matching floors found",
+        "no_floors": "No floors available",
+        "no_match": "No floors found for {term}",
         "failed_create_floor": "Failed to create floor."
       },
       "area-filter": {
@@ -848,8 +854,8 @@
       "statistic-picker": {
         "statistic": "Statistic",
         "placeholder": "Select a statistic",
-        "no_statistics": "You don't have any statistics",
-        "no_match": "No matching statistics found",
+        "no_statistics": "No statistics available",
+        "no_match": "No statistics found for {term}",
         "no_state": "Entity without state",
         "missing_entity": "Why is my entity not listed?",
         "learn_more": "Learn more about statistics"
@@ -1287,7 +1293,8 @@
         "add": "Add interaction"
       },
       "combo-box": {
-        "no_match": "No matching items found"
+        "no_match": "No matching items found",
+        "no_items": "No items available"
       },
       "suggest_with_ai": {
         "label": "Suggest",
@@ -1429,6 +1436,7 @@
         "back_to_info": "Back to info",
         "info": "Information",
         "related": "Related",
+        "add_entity_to": "Add to",
         "history": "History",
         "aggregate": "5-minute aggregated",
         "logbook": "Activity",
@@ -1444,6 +1452,10 @@
         "script": {
           "last_action": "Last action",
           "last_triggered": "Last triggered"
+        },
+        "add_to": {
+          "no_actions": "No actions available",
+          "action_failed": "Failed to perform the action {error}"
         },
         "sun": {
           "azimuth": "Azimuth",
@@ -3075,6 +3087,7 @@
               "power_helper": "Pick a sensor which measures grid power in either of {unit}. Positive values indicate importing electricity from the grid, negative values indicate exporting electricity to the grid."
             },
             "flow_dialog": {
+              "cost_entity_helper": "Any sensor with a unit of `{currency}/(valid energy unit)` (e.g. `{currency}/Wh` or `{currency}/kWh`) may be used and will be automatically converted.",
               "from": {
                 "header": "Configure grid consumption",
                 "paragraph": "Grid consumption is the energy that flows from the energy grid to your home.",
@@ -3970,7 +3983,7 @@
             "type_automation_plural": "[%key:ui::panel::config::blueprint::overview::types_plural::automation%]",
             "type_script_plural": "[%key:ui::panel::config::blueprint::overview::types_plural::script%]",
             "new_automation_setup_failed_title": "New {type} setup timed out",
-            "new_automation_setup_failed_text": "Your new {type} has saved, but waiting for it to setup has timed out. This could be due to errors parsing your configuration.yaml, please check the configuration in developer tools. Your {type} will not be visible until this is corrected, and {types} are reloaded. Changes to area, category, or labels were not saved and must be reapplied.",
+            "new_automation_setup_failed_text": "Your new {type} was saved, but waiting for it to set up has timed out. This could be due to errors parsing your configuration.yaml, please check the configuration in developer tools. Your {type} will not be visible until this is corrected and {types} are reloaded. Changes to area, category, or labels were not saved and must be reapplied.",
             "new_automation_setup_keep_waiting": "You may continue to wait for a response from the server, in case it is just taking an unusually long time to process this {type}.",
             "new_automation_setup_timedout_success": "The server has responded and this has now setup successfully. You may now close this dialog.",
             "item_pasted": "{item} pasted",
@@ -6565,7 +6578,8 @@
             "model": "Model",
             "status": "Status",
             "version": "Version",
-            "data_rate": "Data rate"
+            "data_rate": "Data rate",
+            "area": "Area"
           },
           "node_status": {
             "0": "Unknown",
@@ -6984,11 +6998,28 @@
             "other_areas": "Other areas",
             "unamed_device": "Unnamed device",
             "others": "Others",
+            "scenes": "Scenes",
             "automations": "Automations"
           },
           "common_controls": {
             "not_loaded": "Usage Prediction integration is not loaded.",
             "no_data": "This place will soon fill up with the entities you use most often, based on your activity."
+          },
+          "light": {
+            "lights": "Lights",
+            "other_lights": "Other lights"
+          },
+          "security": {
+            "devices": "Devices",
+            "other_devices": "Other devices"
+          },
+          "climate": {
+            "devices": "Devices",
+            "other_devices": "Other devices"
+          },
+          "home_media_players": {
+            "media_players": "Media players",
+            "other_media_players": "Other media players"
           }
         },
         "cards": {
@@ -7782,7 +7813,9 @@
             },
             "iframe": {
               "name": "Webpage",
-              "description": "The Webpage card allows you to embed your favorite webpage right into Home Assistant."
+              "description": "The Webpage card allows you to embed your favorite webpage right into Home Assistant.",
+              "hide_background": "Hide background",
+              "hide_background_helper": "Useful for pages which allow a transparent background."
             },
             "light": {
               "name": "Light",

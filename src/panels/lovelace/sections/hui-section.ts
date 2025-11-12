@@ -4,7 +4,6 @@ import { ReactiveElement } from "lit";
 import { customElement, property, state } from "lit/decorators";
 import { storage } from "../../../common/decorators/storage";
 import { fireEvent } from "../../../common/dom/fire_event";
-import type { MediaQueriesListener } from "../../../common/dom/media_query";
 import "../../../components/ha-svg-icon";
 import type { LovelaceSectionElement } from "../../../data/lovelace";
 import type { LovelaceCardConfig } from "../../../data/lovelace/config/card";
@@ -14,12 +13,13 @@ import type {
 } from "../../../data/lovelace/config/section";
 import { isStrategySection } from "../../../data/lovelace/config/section";
 import type { HomeAssistant } from "../../../types";
+import {
+  ConditionalListenerMixin,
+  setupMediaQueryListeners,
+} from "../../../mixins/conditional-listener-mixin";
 import "../cards/hui-card";
 import type { HuiCard } from "../cards/hui-card";
-import {
-  attachConditionMediaQueriesListeners,
-  checkConditionsMet,
-} from "../common/validate-condition";
+import { checkConditionsMet } from "../common/validate-condition";
 import { createSectionElement } from "../create-element/create-section-element";
 import { showCreateCardDialog } from "../editor/card-editor/show-create-card-dialog";
 import { showEditCardDialog } from "../editor/card-editor/show-edit-card-dialog";
@@ -37,7 +37,7 @@ declare global {
 }
 
 @customElement("hui-section")
-export class HuiSection extends ReactiveElement {
+export class HuiSection extends ConditionalListenerMixin(ReactiveElement) {
   @property({ attribute: false }) public hass!: HomeAssistant;
 
   @property({ attribute: false }) public config!: LovelaceSectionRawConfig;
@@ -58,8 +58,6 @@ export class HuiSection extends ReactiveElement {
   private _layoutElementType?: string;
 
   private _layoutElement?: LovelaceSectionElement;
-
-  private _listeners: MediaQueriesListener[] = [];
 
   private _config: LovelaceSectionConfig | undefined;
 
@@ -114,14 +112,10 @@ export class HuiSection extends ReactiveElement {
 
   public disconnectedCallback() {
     super.disconnectedCallback();
-    this._clearMediaQueries();
   }
 
   public connectedCallback() {
     super.connectedCallback();
-    if (this.hasUpdated) {
-      this._listenMediaQueries();
-    }
     this._updateElement();
   }
 
@@ -158,26 +152,17 @@ export class HuiSection extends ReactiveElement {
     }
   }
 
-  private _clearMediaQueries() {
-    this._listeners.forEach((unsub) => unsub());
-    this._listeners = [];
-  }
-
-  private _listenMediaQueries() {
-    this._clearMediaQueries();
-    if (!this._config?.visibility) {
+  protected setupConditionalListeners() {
+    if (!this._config?.visibility || !this.hass) {
       return;
     }
-    const conditions = this._config.visibility;
-    const hasOnlyMediaQuery =
-      conditions.length === 1 &&
-      conditions[0].condition === "screen" &&
-      conditions[0].media_query != null;
 
-    this._listeners = attachConditionMediaQueriesListeners(
+    setupMediaQueryListeners(
       this._config.visibility,
-      (matches) => {
-        this._updateElement(hasOnlyMediaQuery && matches);
+      this.hass,
+      (unsub) => this.addConditionalListener(unsub),
+      (conditionsMet) => {
+        this._updateElement(conditionsMet);
       }
     );
   }
@@ -199,9 +184,6 @@ export class HuiSection extends ReactiveElement {
       type: sectionConfig.type || DEFAULT_SECTION_LAYOUT,
     };
     this._config = sectionConfig;
-    if (this.isConnected) {
-      this._listenMediaQueries();
-    }
 
     // Create a new layout element if necessary.
     let addLayoutElement = false;

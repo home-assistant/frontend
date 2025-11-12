@@ -17,11 +17,11 @@ import {
 } from "../../lovelace/strategies/areas/helpers/areas-strategy-helper";
 import { getHomeStructure } from "../../lovelace/strategies/home/helpers/home-structure";
 
-export interface SafetyViewStrategyConfig {
-  type: "safety";
+export interface SecurityViewStrategyConfig {
+  type: "security";
 }
 
-export const safetyEntityFilters: EntityFilter[] = [
+export const securityEntityFilters: EntityFilter[] = [
   {
     domain: "camera",
     entity_category: "none",
@@ -67,7 +67,7 @@ export const safetyEntityFilters: EntityFilter[] = [
   },
 ];
 
-const processAreasForSafety = (
+const processAreasForSecurity = (
   areaIds: string[],
   hass: HomeAssistant,
   entities: string[]
@@ -81,12 +81,12 @@ const processAreasForSafety = (
     const areaFilter = generateEntityFilter(hass, {
       area: area.area_id,
     });
-    const areaSafetyEntities = entities.filter(areaFilter);
+    const areaSecurityEntities = entities.filter(areaFilter);
     const areaCards: LovelaceCardConfig[] = [];
 
     const computeTileCard = computeAreaTileCardConfig(hass, "", false);
 
-    for (const entityId of areaSafetyEntities) {
+    for (const entityId of areaSecurityEntities) {
       areaCards.push(computeTileCard(entityId));
     }
 
@@ -103,10 +103,28 @@ const processAreasForSafety = (
   return cards;
 };
 
-@customElement("safety-view-strategy")
-export class SafetyViewStrategy extends ReactiveElement {
+const processUnassignedEntities = (
+  hass: HomeAssistant,
+  entities: string[]
+): LovelaceCardConfig[] => {
+  const unassignedFilter = generateEntityFilter(hass, {
+    area: null,
+  });
+  const unassignedLights = entities.filter(unassignedFilter);
+  const areaCards: LovelaceCardConfig[] = [];
+  const computeTileCard = computeAreaTileCardConfig(hass, "", false);
+
+  for (const entityId of unassignedLights) {
+    areaCards.push(computeTileCard(entityId));
+  }
+
+  return areaCards;
+};
+
+@customElement("security-view-strategy")
+export class SecurityViewStrategy extends ReactiveElement {
   static async generate(
-    _config: SafetyViewStrategyConfig,
+    _config: SecurityViewStrategyConfig,
     hass: HomeAssistant
   ): Promise<LovelaceViewConfig> {
     const areas = getAreas(hass.areas);
@@ -117,11 +135,11 @@ export class SafetyViewStrategy extends ReactiveElement {
 
     const allEntities = Object.keys(hass.states);
 
-    const safetyFilters = safetyEntityFilters.map((filter) =>
+    const securityFilters = securityEntityFilters.map((filter) =>
       generateEntityFilter(hass, filter)
     );
 
-    const entities = findEntities(allEntities, safetyFilters);
+    const entities = findEntities(allEntities, securityFilters);
 
     const floorCount = home.floors.length + (home.areas.length ? 1 : 0);
 
@@ -146,7 +164,7 @@ export class SafetyViewStrategy extends ReactiveElement {
         ],
       };
 
-      const areaCards = processAreasForSafety(areaIds, hass, entities);
+      const areaCards = processAreasForSecurity(areaIds, hass, entities);
 
       if (areaCards.length > 0) {
         section.cards!.push(...areaCards);
@@ -170,7 +188,7 @@ export class SafetyViewStrategy extends ReactiveElement {
         ],
       };
 
-      const areaCards = processAreasForSafety(home.areas, hass, entities);
+      const areaCards = processAreasForSecurity(home.areas, hass, entities);
 
       if (areaCards.length > 0) {
         section.cards!.push(...areaCards);
@@ -178,16 +196,39 @@ export class SafetyViewStrategy extends ReactiveElement {
       }
     }
 
+    // Process unassigned entities
+    const unassignedCards = processUnassignedEntities(hass, entities);
+
+    if (unassignedCards.length > 0) {
+      const section: LovelaceSectionRawConfig = {
+        type: "grid",
+        column_span: 2,
+        cards: [
+          {
+            type: "heading",
+            heading:
+              sections.length > 0
+                ? hass.localize(
+                    "ui.panel.lovelace.strategy.security.other_devices"
+                  )
+                : hass.localize("ui.panel.lovelace.strategy.security.devices"),
+          },
+          ...unassignedCards,
+        ],
+      };
+      sections.push(section);
+    }
+
     return {
       type: "sections",
       max_columns: 2,
-      sections: sections || [],
+      sections: sections,
     };
   }
 }
 
 declare global {
   interface HTMLElementTagNameMap {
-    "safety-view-strategy": SafetyViewStrategy;
+    "security-view-strategy": SecurityViewStrategy;
   }
 }

@@ -8,6 +8,7 @@ import {
   mdiPencil,
   mdiPencilOff,
   mdiPencilOutline,
+  mdiPlusBoxMultipleOutline,
   mdiTransitConnectionVariant,
 } from "@mdi/js";
 import type { HassEntity } from "home-assistant-js-websocket";
@@ -60,6 +61,7 @@ import {
   computeShowLogBookComponent,
 } from "./const";
 import "./controls/more-info-default";
+import "./ha-more-info-add-to";
 import "./ha-more-info-history-and-logbook";
 import "./ha-more-info-info";
 import "./ha-more-info-settings";
@@ -73,7 +75,7 @@ export interface MoreInfoDialogParams {
   data?: Record<string, any>;
 }
 
-type View = "info" | "history" | "settings" | "related";
+type View = "info" | "history" | "settings" | "related" | "add_to";
 
 interface ChildView {
   viewTag: string;
@@ -194,6 +196,10 @@ export class MoreInfoDialog extends LitElement {
     );
   }
 
+  private _shouldShowAddEntityTo(): boolean {
+    return !!this.hass.auth.external?.config.hasEntityAddTo;
+  }
+
   private _getDeviceId(): string | null {
     const entity = this.hass.entities[this._entityId!] as
       | EntityRegistryEntry
@@ -293,6 +299,11 @@ export class MoreInfoDialog extends LitElement {
   private _goToRelated(ev): void {
     if (!shouldHandleRequestSelectedEvent(ev)) return;
     this._setView("related");
+  }
+
+  private _goToAddEntityTo(ev) {
+    if (!shouldHandleRequestSelectedEvent(ev)) return;
+    this._setView("add_to");
   }
 
   private _breadcrumbClick(ev: Event) {
@@ -521,6 +532,22 @@ export class MoreInfoDialog extends LitElement {
                             .path=${mdiInformationOutline}
                           ></ha-svg-icon>
                         </ha-list-item>
+                        ${this._shouldShowAddEntityTo()
+                          ? html`
+                              <ha-list-item
+                                graphic="icon"
+                                @request-selected=${this._goToAddEntityTo}
+                              >
+                                ${this.hass.localize(
+                                  "ui.dialogs.more_info_control.add_entity_to"
+                                )}
+                                <ha-svg-icon
+                                  slot="graphic"
+                                  .path=${mdiPlusBoxMultipleOutline}
+                                ></ha-svg-icon>
+                              </ha-list-item>
+                            `
+                          : nothing}
                       </ha-button-menu>
                     `
                   : nothing}
@@ -613,7 +640,14 @@ export class MoreInfoDialog extends LitElement {
                                   : "entity"}
                               ></ha-related-items>
                             `
-                          : nothing
+                          : this._currView === "add_to"
+                            ? html`
+                                <ha-more-info-add-to
+                                  .hass=${this.hass}
+                                  .entityId=${entityId}
+                                ></ha-more-info-add-to>
+                              `
+                            : nothing
               )}
             </div>
           `

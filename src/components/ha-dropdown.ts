@@ -1,0 +1,47 @@
+import Dropdown from "@home-assistant/webawesome/dist/components/dropdown/dropdown";
+import { css, type CSSResultGroup } from "lit";
+import { customElement, property } from "lit/decorators";
+
+/**
+ * Home Assistant dropdown component
+ *
+ * @element ha-dropdown
+ * @extends {Dropdown}
+ *
+ * @summary
+ * A stylable dropdown component supporting Home Assistant theming, variants, and appearances based on webawesome dropdown.
+ *
+ */
+@customElement("ha-dropdown")
+export class HaDropdown extends Dropdown {
+  @property({ attribute: false }) dropdownTag = "ha-dropdown";
+
+  @property({ attribute: false }) dropdownItemTag = "ha-dropdown-item";
+
+  static get styles(): CSSResultGroup {
+    return [
+      Dropdown.styles,
+      css`
+        :host {
+          --wa-color-surface-border: 0px;
+          --wa-color-surface-raised: var(
+            --card-background-color,
+            var(--ha-dialog-surface-background, var(--mdc-theme-surface, #fff)),
+          );
+        }
+
+        #menu {
+          --wa-shadow-m: var(--ha-space-0) var(--ha-space-1) var(--ha-space-2)
+            var(--ha-space-0) var(--ha-color-shadow);
+          padding: var(--ha-space-1);
+        }
+      `,
+    ];
+  }
+}
+
+declare global {
+  interface HTMLElementTagNameMap {
+    "ha-dropdown": HaDropdown;
+  }
+}
