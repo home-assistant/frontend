@@ -712,6 +712,7 @@ export class HaTargetPicker extends SubscribeMixin(LitElement) {
     this._selectedSection = section as TargetTypeFloorless | undefined;
 
     return this._getItemsMemoized(
+      this.hass.localize,
       this.entityFilter,
       this.deviceFilter,
       this.includeDomains,
@@ -725,6 +726,7 @@ export class HaTargetPicker extends SubscribeMixin(LitElement) {
 
   private _getItemsMemoized = memoizeOne(
     (
+      localize: HomeAssistant["localize"],
       entityFilter: this["entityFilter"],
       deviceFilter: this["deviceFilter"],
       includeDomains: this["includeDomains"],
@@ -742,7 +744,7 @@ export class HaTargetPicker extends SubscribeMixin(LitElement) {
       )[] = [];
 
       if (!filterType || filterType === "entity") {
-        let entities = this._getEntitiesMemoized(
+        let entityItems = this._getEntitiesMemoized(
           this.hass,
           includeDomains,
           undefined,
@@ -758,27 +760,25 @@ export class HaTargetPicker extends SubscribeMixin(LitElement) {
         );
 
         if (searchTerm) {
-          entities = this._filterGroup(
+          entityItems = this._filterGroup(
             "entity",
-            entities,
+            entityItems,
             searchTerm,
             (item: EntityComboBoxItem) =>
               item.stateObj?.entity_id === searchTerm
           ) as EntityComboBoxItem[];
         }
 
-        if (!filterType && entities.length) {
+        if (!filterType && entityItems.length) {
           // show group title
-          items.push(
-            this.hass.localize("ui.components.target-picker.type.entities")
-          );
+          items.push(localize("ui.components.target-picker.type.entities"));
         }
 
-        items.push(...entities);
+        items.push(...entityItems);
       }
 
       if (!filterType || filterType === "device") {
-        let devices = this._getDevicesMemoized(
+        let deviceItems = this._getDevicesMemoized(
           this.hass,
           configEntryLookup,
           includeDomains,
@@ -794,17 +794,15 @@ export class HaTargetPicker extends SubscribeMixin(LitElement) {
         );
 
         if (searchTerm) {
-          devices = this._filterGroup("device", devices, searchTerm);
+          deviceItems = this._filterGroup("device", deviceItems, searchTerm);
         }
 
-        if (!filterType && devices.length) {
+        if (!filterType && deviceItems.length) {
           // show group title
-          items.push(
-            this.hass.localize("ui.components.target-picker.type.devices")
-          );
+          items.push(localize("ui.components.target-picker.type.devices"));
         }
 
-        items.push(...devices);
+        items.push(...deviceItems);
       }
 
       if (!filterType || filterType === "area") {
@@ -836,9 +834,7 @@ export class HaTargetPicker extends SubscribeMixin(LitElement) {
 
         if (!filterType && areasAndFloors.length) {
           // show group title
-          items.push(
-            this.hass.localize("ui.components.target-picker.type.areas")
-          );
+          items.push(localize("ui.components.target-picker.type.areas"));
         }
 
         items.push(
@@ -879,9 +875,7 @@ export class HaTargetPicker extends SubscribeMixin(LitElement) {
 
         if (!filterType && labels.length) {
           // show group title
-          items.push(
-            this.hass.localize("ui.components.target-picker.type.labels")
-          );
+          items.push(localize("ui.components.target-picker.type.labels"));
         }
 
         items.push(...labels);
