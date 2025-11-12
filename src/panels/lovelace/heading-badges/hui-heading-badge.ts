@@ -132,7 +132,7 @@ export class HuiHeadingBadge extends ConditionalListenerMixin<LovelaceHeadingBad
     }
   }
 
-  protected _updateVisibility(forceVisible?: boolean) {
+  protected _updateVisibility(conditionsMet?: boolean) {
     if (!this._element || !this.hass) {
       return;
     }
@@ -142,11 +142,20 @@ export class HuiHeadingBadge extends ConditionalListenerMixin<LovelaceHeadingBad
       return;
     }
 
+    if (this.preview) {
+      this._setElementVisibility(true);
+      return;
+    }
+
+    if (this.config?.disabled) {
+      this._setElementVisibility(false);
+      return;
+    }
+
     const visible =
-      forceVisible ||
-      this.preview ||
-      !this.config?.visibility ||
-      checkConditionsMet(this.config.visibility, this.hass);
+      conditionsMet ??
+      (!this.config?.visibility ||
+        checkConditionsMet(this.config.visibility, this.hass));
     this._setElementVisibility(visible);
   }
 
