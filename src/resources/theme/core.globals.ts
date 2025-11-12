@@ -55,6 +55,13 @@ export const coreStyles = css`
     --ha-shadow-spread-s: 0;
     --ha-shadow-spread-m: 0;
     --ha-shadow-spread-l: 0;
+    --ha-animation-base-duration: 350ms;
+  }
+
+  @media (prefers-reduced-motion: reduce) {
+    html {
+      --ha-animation-base-duration: 0ms;
+    }
   }
 `;
 
