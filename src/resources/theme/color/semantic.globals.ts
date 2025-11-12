@@ -155,6 +155,10 @@ export const semanticColorStyles = css`
 
     /* Surfaces */
     --ha-color-surface-default: var(--ha-color-neutral-95);
+    --ha-color-on-surface-default: var(--ha-color-neutral-05);
+
+    /* shadow */
+    --ha-color-shadow: rgba(0, 0, 0, 0.2);
   }
 `;
 
@@ -286,5 +290,9 @@ export const darkSemanticColorStyles = css`
 
     /* Surfaces */
     --ha-color-surface-default: var(--ha-color-neutral-10);
+    --ha-color-on-surface-default: var(--ha-color-neutral-95);
+
+    /* shadow */
+    --ha-color-shadow: rgba(255, 255, 255, 0.2);
   }
 `;
