@@ -102,6 +102,7 @@ export type EnergySolarForecasts = Record<string, EnergySolarForecast>;
 export interface DeviceConsumptionEnergyPreference {
   // This is an ever increasing value
   stat_consumption: string;
+  stat_rate?: string;
   name?: string;
   included_in_stat?: string;
 }
@@ -130,11 +131,17 @@ export interface FlowToGridSourceEnergyPreference {
   number_energy_price: number | null;
 }
 
+export interface GridPowerSourceEnergyPreference {
+  // W meter
+  stat_rate: string;
+}
+
 export interface GridSourceTypeEnergyPreference {
   type: "grid";
 
   flow_from: FlowFromGridSourceEnergyPreference[];
   flow_to: FlowToGridSourceEnergyPreference[];
+  power?: GridPowerSourceEnergyPreference[];
 
   cost_adjustment_day: number;
 }
@@ -143,6 +150,7 @@ export interface SolarSourceTypeEnergyPreference {
   type: "solar";
 
   stat_energy_from: string;
+  stat_rate?: string;
   config_entry_solar_forecast: string[] | null;
 }
 
@@ -150,6 +158,7 @@ export interface BatterySourceTypeEnergyPreference {
   type: "battery";
   stat_energy_from: string;
   stat_energy_to: string;
+  stat_rate?: string;
 }
 export interface GasSourceTypeEnergyPreference {
   type: "gas";
