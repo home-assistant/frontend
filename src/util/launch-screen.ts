@@ -5,12 +5,12 @@ const removeElement = (
   launchScreenElement: HTMLElement,
   skipAnimation: boolean
 ) => {
-  launchScreenElement.classList.add("removing");
-
   if (skipAnimation) {
     launchScreenElement.parentElement?.removeChild(launchScreenElement);
     return;
   }
+
+  launchScreenElement.classList.add("removing");
 
   const durationFromCss = getComputedStyle(document.documentElement)
     .getPropertyValue("--ha-animation-base-duration")
