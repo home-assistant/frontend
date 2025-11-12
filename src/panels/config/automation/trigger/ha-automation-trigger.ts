@@ -13,10 +13,12 @@ import "../../../../components/ha-button";
 import "../../../../components/ha-button-menu";
 import "../../../../components/ha-sortable";
 import "../../../../components/ha-svg-icon";
-import type {
-  AutomationClipboard,
-  Trigger,
-  TriggerList,
+import {
+  getValueFromDynamic,
+  isDynamic,
+  type AutomationClipboard,
+  type Trigger,
+  type TriggerList,
 } from "../../../../data/automation";
 import type { TriggerDescriptions } from "../../../../data/trigger";
 import { isTriggerList, subscribeTriggers } from "../../../../data/trigger";
@@ -29,7 +31,6 @@ import {
 import { automationRowsStyles } from "../styles";
 import "./ha-automation-trigger-row";
 import type HaAutomationTriggerRow from "./ha-automation-trigger-row";
-import { getValueFromDynamic, isDynamic } from "../../../../data/action";
 
 @customElement("ha-automation-trigger")
 export default class HaAutomationTrigger extends SubscribeMixin(LitElement) {
