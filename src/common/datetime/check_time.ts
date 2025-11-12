@@ -6,18 +6,26 @@ import { WEEKDAY_MAP } from "./weekday";
 import type { TimeCondition } from "../../panels/lovelace/common/validate-condition";
 
 /**
- * Parse a time string (HH:MM or HH:MM:SS) and set it on today's date in the given timezone
- * @param timeString The time string to parse
- * @param timezone The timezone to use
- * @returns The Date object
+ * Validate a time string format and value ranges without creating Date objects
+ * @param timeString Time string to validate (HH:MM or HH:MM:SS)
+ * @returns true if valid, false otherwise
  */
-export const parseTimeString = (timeString: string, timezone: string): Date => {
+export function isValidTimeString(timeString: string): boolean {
+  // Reject empty strings
+  if (!timeString || timeString.trim() === "") {
+    return false;
+  }
+
   const parts = timeString.split(":");
 
   if (parts.length < 2 || parts.length > 3) {
-    throw new Error(
-      `Invalid time format: ${timeString}. Expected HH:MM or HH:MM:SS`
-    );
+    return false;
+  }
+
+  // Ensure each part contains only digits (and optional leading zeros)
+  // This prevents "8:00 AM" from passing validation
+  if (!parts.every((part) => /^\d+$/.test(part))) {
+    return false;
   }
 
   const hours = parseInt(parts[0], 10);
@@ -25,19 +33,37 @@ export const parseTimeString = (timeString: string, timezone: string): Date => {
   const seconds = parts.length === 3 ? parseInt(parts[2], 10) : 0;
 
   if (isNaN(hours) || isNaN(minutes) || isNaN(seconds)) {
-    throw new Error(`Invalid time values in: ${timeString}`);
+    return false;
   }
 
-  // Add range validation
-  if (hours < 0 || hours > 23) {
-    throw new Error(`Invalid hours in: ${timeString}. Must be 0-23`);
+  return (
+    hours >= 0 &&
+    hours <= 23 &&
+    minutes >= 0 &&
+    minutes <= 59 &&
+    seconds >= 0 &&
+    seconds <= 59
+  );
+}
+
+/**
+ * Parse a time string (HH:MM or HH:MM:SS) and set it on today's date in the given timezone
+ * @param timeString The time string to parse
+ * @param timezone The timezone to use
+ * @returns The Date object
+ * @throws Error if time string is invalid
+ */
+export const parseTimeString = (timeString: string, timezone: string): Date => {
+  if (!isValidTimeString(timeString)) {
+    throw new Error(
+      `Invalid time format: ${timeString}. Expected HH:MM or HH:MM:SS with valid ranges (hours: 0-23, minutes: 0-59, seconds: 0-59)`
+    );
   }
-  if (minutes < 0 || minutes > 59) {
-    throw new Error(`Invalid minutes in: ${timeString}. Must be 0-59`);
-  }
-  if (seconds < 0 || seconds > 59) {
-    throw new Error(`Invalid seconds in: ${timeString}. Must be 0-59`);
-  }
+
+  const parts = timeString.split(":");
+  const hours = parseInt(parts[0], 10);
+  const minutes = parseInt(parts[1], 10);
+  const seconds = parts.length === 3 ? parseInt(parts[2], 10) : 0;
 
   const now = new TZDate(new Date(), timezone);
   const dateWithTime = new TZDate(

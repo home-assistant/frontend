@@ -1,5 +1,8 @@
 import { describe, it, expect, vi, beforeEach, afterEach } from "vitest";
-import { checkTimeInRange } from "../../../src/common/datetime/check_time";
+import {
+  checkTimeInRange,
+  isValidTimeString,
+} from "../../../src/common/datetime/check_time";
 import type { HomeAssistant } from "../../../src/types";
 import {
   NumberFormat,
@@ -8,6 +11,43 @@ import {
   DateFormat,
   TimeZone,
 } from "../../../src/data/translation";
+
+describe("isValidTimeString", () => {
+  it("should accept valid HH:MM format", () => {
+    expect(isValidTimeString("08:00")).toBe(true);
+    expect(isValidTimeString("23:59")).toBe(true);
+    expect(isValidTimeString("00:00")).toBe(true);
+  });
+
+  it("should accept valid HH:MM:SS format", () => {
+    expect(isValidTimeString("08:00:30")).toBe(true);
+    expect(isValidTimeString("23:59:59")).toBe(true);
+    expect(isValidTimeString("00:00:00")).toBe(true);
+  });
+
+  it("should reject invalid formats", () => {
+    expect(isValidTimeString("")).toBe(false);
+    expect(isValidTimeString("8")).toBe(false);
+    expect(isValidTimeString("8:00 AM")).toBe(false);
+    expect(isValidTimeString("08:00:00:00")).toBe(false);
+  });
+
+  it("should reject invalid hour values", () => {
+    expect(isValidTimeString("24:00")).toBe(false);
+    expect(isValidTimeString("-01:00")).toBe(false);
+    expect(isValidTimeString("25:00")).toBe(false);
+  });
+
+  it("should reject invalid minute values", () => {
+    expect(isValidTimeString("08:60")).toBe(false);
+    expect(isValidTimeString("08:-01")).toBe(false);
+  });
+
+  it("should reject invalid second values", () => {
+    expect(isValidTimeString("08:00:60")).toBe(false);
+    expect(isValidTimeString("08:00:-01")).toBe(false);
+  });
+});
 
 describe("checkTimeInRange", () => {
   let mockHass: HomeAssistant;
