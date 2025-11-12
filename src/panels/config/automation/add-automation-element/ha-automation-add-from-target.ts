@@ -1,14 +1,16 @@
 import "@home-assistant/webawesome/dist/components/tree-item/tree-item";
 import "@home-assistant/webawesome/dist/components/tree/tree";
-import type { WaLazyLoadEvent } from "@home-assistant/webawesome/dist/events/lazy-load";
 import type { WaSelectionChangeEvent } from "@home-assistant/webawesome/dist/events/selection-change";
 import { consume } from "@lit/context";
 import { mdiSelectionMarker, mdiTextureBox } from "@mdi/js";
 import type { HassServiceTarget } from "home-assistant-js-websocket";
-import { css, html, LitElement, nothing } from "lit";
+import { css, html, LitElement, nothing, type PropertyValues } from "lit";
 import { customElement, property, state } from "lit/decorators";
 import memoizeOne from "memoize-one";
 import { fireEvent } from "../../../../common/dom/fire_event";
+import { computeDeviceName } from "../../../../common/entity/compute_device_name";
+import { computeEntityNameList } from "../../../../common/entity/compute_entity_name_display";
+import "../../../../components/entity/state-badge";
 import "../../../../components/ha-floor-icon";
 import "../../../../components/ha-icon";
 import "../../../../components/ha-md-list";
@@ -20,7 +22,12 @@ import {
   type AreaFloorValue,
   type FloorComboBoxItem,
   type FloorNestedComboBoxItem,
+  type UnassignedAreasFloorComboBoxItem,
 } from "../../../../data/area_floor";
+import {
+  getConfigEntries,
+  type ConfigEntry,
+} from "../../../../data/config_entries";
 import {
   areasContext,
   devicesContext,
@@ -36,8 +43,20 @@ import {
 } from "../../../../data/label_registry";
 import { extractFromTarget } from "../../../../data/target";
 import type { HomeAssistant } from "../../../../types";
+import { brandsUrl } from "../../../../util/brands-url";
 
 const SEPARATOR = "________";
+
+interface DeviceEntries {
+  open: boolean;
+  entities: string[];
+}
+
+interface AreaEntries {
+  open: boolean;
+  devices: Record<string, DeviceEntries>;
+  entities: string[];
+}
 
 @customElement("ha-automation-add-from-target")
 export default class HaAutomationAddFromTarget extends LitElement {
@@ -77,20 +96,28 @@ export default class HaAutomationAddFromTarget extends LitElement {
   // #endregion context
 
   @state()
-  private _areaEntries: Record<
-    string,
-    {
-      devices: string[];
-      entities: string[];
-    }
-  > = {};
+  private _floorAreas: (
+    | FloorNestedComboBoxItem
+    | UnassignedAreasFloorComboBoxItem
+  )[] = [];
 
-  private _getAreasAndFloorsMemoized = memoizeOne(getAreasNestedInFloors);
+  @state()
+  private _areaEntries: Record<string, AreaEntries> = {};
 
   private _getLabelsMemoized = memoizeOne(getLabels);
 
+  private _configEntryLookup: Record<string, ConfigEntry> = {};
+
+  public willUpdate(changedProps: PropertyValues) {
+    super.willUpdate(changedProps);
+
+    if (!this.hasUpdated) {
+      this._loadConfigEntries();
+      this._getTreeData();
+    }
+  }
+
   protected render() {
-    const areaFloors = this._getAreaFloors();
     const labels = this._getLabelsMemoized(
       this.states,
       this.areas,
@@ -113,7 +140,7 @@ export default class HaAutomationAddFromTarget extends LitElement {
         )}</ha-section-title
       >
       <wa-tree @wa-selection-change=${this._handleSelectionChange}>
-        ${areaFloors.map((floor, index) =>
+        ${this._floorAreas.map((floor, index) =>
           index === 0 && !floor.id
             ? this._renderAreas(floor.areas)
             : html`<wa-tree-item
@@ -173,58 +200,108 @@ export default class HaAutomationAddFromTarget extends LitElement {
   }
 
   private _renderAreas(areas: FloorComboBoxItem[] = []) {
-    return areas.map(
-      ({ id, primary, icon, icon_path }) =>
-        html`<wa-tree-item
-          lazy
-          @wa-lazy-load=${this._loadArea}
-          .target=${id}
-          .selected=${this._getSelectedTargetId(this.value) === id}
-        >
-          ${icon
-            ? html`<ha-icon .icon=${icon}></ha-icon>`
-            : html`<ha-svg-icon
-                .path=${icon_path || mdiTextureBox}
-              ></ha-svg-icon>`}
-          ${primary}
-          ${this._areaEntries[id]?.devices.length
-            ? this._renderDevices(this._areaEntries[id]?.devices)
-            : nothing}
-          ${this._areaEntries[id]?.entities.length
-            ? this._renderEntities(this._areaEntries[id]?.entities)
-            : nothing}
-        </wa-tree-item>`
-    );
+    return areas.map(({ id, primary, icon, icon_path }) => {
+      if (!this._areaEntries[id]) {
+        return nothing;
+      }
+
+      const { open, devices, entities } = this._areaEntries[id];
+      const numberOfDevices = Object.keys(devices).length;
+      const numberOfItems = numberOfDevices + entities.length;
+
+      return html`<wa-tree-item
+        .target=${id}
+        .selected=${this._getSelectedTargetId(this.value) === id}
+        .lazy=${!open && !!numberOfItems}
+        @wa-lazy-load=${this._expandItem}
+        @wa-collapse=${this._collapseItem}
+      >
+        ${icon
+          ? html`<ha-icon .icon=${icon}></ha-icon>`
+          : html`<ha-svg-icon
+              .path=${icon_path || mdiTextureBox}
+            ></ha-svg-icon>`}
+        ${primary}
+        ${open
+          ? html`
+              ${numberOfDevices ? this._renderDevices(devices) : nothing}
+              ${entities.length ? this._renderEntities(entities) : nothing}
+            `
+          : nothing}
+      </wa-tree-item>`;
+    });
   }
 
-  private _renderDevices(devices: string[] = []) {
-    return devices.map(
-      (deviceId) =>
-        html`<wa-tree-item
-          lazy
-          @wa-lazy-load=${this._loadArea}
-          .target=${`device${SEPARATOR}${deviceId}`}
-          .selected=${this._getSelectedTargetId(this.value) ===
-          `device${SEPARATOR}${deviceId}`}
-        >
-          ${deviceId}
-        </wa-tree-item>`
-    );
+  private _renderDevices(devices: Record<string, DeviceEntries>) {
+    return Object.keys(devices).map((deviceId) => {
+      if (!this.devices[deviceId]) {
+        return nothing;
+      }
+
+      const { open, entities } = devices[deviceId];
+
+      const device = this.devices[deviceId];
+      const configEntry = device.primary_config_entry
+        ? this._configEntryLookup?.[device.primary_config_entry]
+        : undefined;
+      const domain = configEntry?.domain;
+
+      const deviceName = computeDeviceName(device) || deviceId;
+
+      return html`<wa-tree-item
+        .target=${`device${SEPARATOR}${deviceId}`}
+        .selected=${this._getSelectedTargetId(this.value) ===
+        `device${SEPARATOR}${deviceId}`}
+        .lazy=${!open && !!entities.length}
+        @wa-lazy-load=${this._expandItem}
+        @wa-collapse=${this._collapseItem}
+        .title=${deviceName}
+      >
+        ${domain
+          ? html`
+              <img
+                alt=""
+                crossorigin="anonymous"
+                referrerpolicy="no-referrer"
+                src=${brandsUrl({
+                  domain,
+                  type: "icon",
+                  darkOptimized: this.hass.themes?.darkMode,
+                })}
+              />
+            `
+          : nothing}
+        <span class="item-label">${deviceName}</span>
+        ${open ? this._renderEntities(entities) : nothing}
+      </wa-tree-item>`;
+    });
   }
 
   private _renderEntities(entities: string[] = []) {
-    return entities.map(
-      (entityId) =>
-        html`<wa-tree-item
-          lazy
-          @wa-lazy-load=${this._loadArea}
-          .target=${`entity${SEPARATOR}${entityId}`}
-          .selected=${this._getSelectedTargetId(this.value) ===
-          `entity${SEPARATOR}${entityId}`}
-        >
-          ${entityId}
-        </wa-tree-item>`
-    );
+    return entities.map((entityId) => {
+      const stateObj = this.hass.states[entityId];
+
+      const [entityName, deviceName] = computeEntityNameList(
+        stateObj,
+        [{ type: "entity" }, { type: "device" }, { type: "area" }],
+        this.entities,
+        this.devices,
+        this.areas,
+        this.floors
+      );
+
+      const label = entityName || deviceName || entityId;
+
+      return html`<wa-tree-item
+        .target=${`entity${SEPARATOR}${entityId}`}
+        .selected=${this._getSelectedTargetId(this.value) ===
+        `entity${SEPARATOR}${entityId}`}
+        .title=${label}
+      >
+        <state-badge .stateObj=${stateObj} .hass=${this.hass}></state-badge>
+        <span class="item-label">${label}</span>
+      </wa-tree-item>`;
+    });
   }
 
   private _getSelectedTargetId = memoizeOne(
@@ -234,8 +311,8 @@ export default class HaAutomationAddFromTarget extends LitElement {
         : undefined
   );
 
-  private _getAreaFloors = () =>
-    this._getAreasAndFloorsMemoized(
+  private _getTreeData() {
+    this._floorAreas = getAreasNestedInFloors(
       this.states,
       this.floors,
       this.areas,
@@ -251,6 +328,13 @@ export default class HaAutomationAddFromTarget extends LitElement {
       undefined,
       true
     );
+
+    for (const floor of this._floorAreas) {
+      for (const area of floor.areas) {
+        this._loadArea(area);
+      }
+    }
+  }
 
   private _formatId = memoizeOne((value: AreaFloorValue): string =>
     [value.type, value.id].join(SEPARATOR)
@@ -282,40 +366,102 @@ export default class HaAutomationAddFromTarget extends LitElement {
     });
   }
 
-  private async _loadArea(ev: WaLazyLoadEvent) {
-    const treeItem = ev.target as unknown as { target?: string };
+  private async _loadArea(area: FloorComboBoxItem) {
+    try {
+      const [, id] = area.id.split(SEPARATOR, 2);
+      const targetEntries = await extractFromTarget(this.hass, {
+        area_id: id,
+      });
 
-    if (treeItem.target) {
-      const [type, id] = treeItem.target.split(SEPARATOR, 2);
-      try {
-        const targetEntries = await extractFromTarget(this.hass, {
-          [`${type}_id`]: id,
-        });
+      const devices: Record<string, DeviceEntries> = {};
 
-        const areaEntries: {
-          devices: string[];
-          entities: string[];
-        } = {
-          devices: targetEntries.referenced_devices,
+      targetEntries.referenced_devices.forEach((device_id) => {
+        devices[device_id] = {
+          open: false,
           entities: [],
         };
+      });
 
-        areaEntries.entities = targetEntries.referenced_entities.filter(
-          (entity_id) => {
-            const entity = this.hass.entities[entity_id];
-            return !areaEntries.devices.includes(entity.device_id || "");
-          }
-        );
+      const entities: string[] = [];
 
+      targetEntries.referenced_entities.forEach((entity_id) => {
+        const entity = this.hass.entities[entity_id];
+        if (entity.device_id && devices[entity.device_id]) {
+          devices[entity.device_id].entities.push(entity_id);
+        } else {
+          entities.push(entity_id);
+        }
+      });
+
+      this._areaEntries = {
+        ...this._areaEntries,
+        [area.id]: {
+          open: false,
+          devices,
+          entities,
+        },
+      };
+    } catch (e) {
+      // eslint-disable-next-line no-console
+      console.error("Failed to extract target", e);
+    }
+  }
+
+  private _expandItem(ev) {
+    const targetId = ev.target.target;
+    const [type, id] = targetId.split(SEPARATOR, 2);
+
+    if (type === "area") {
+      this._areaEntries = {
+        ...this._areaEntries,
+        [targetId]: {
+          ...this._areaEntries[targetId],
+          open: true,
+        },
+      };
+    } else if (type === "device") {
+      const areaEntry = Object.values(this._areaEntries).find((area) =>
+        Object.keys(area.devices).includes(id)
+      );
+      if (areaEntry) {
+        areaEntry.devices[id].open = true;
         this._areaEntries = {
           ...this._areaEntries,
-          [treeItem.target]: areaEntries,
         };
-      } catch (e) {
-        // eslint-disable-next-line no-console
-        console.error("Failed to extract target", e);
       }
     }
+  }
+
+  private _collapseItem(ev) {
+    const targetId = ev.target.target;
+    const [type, id] = targetId.split(SEPARATOR, 2);
+
+    if (type === "area") {
+      this._areaEntries = {
+        ...this._areaEntries,
+        [targetId]: {
+          ...this._areaEntries[targetId],
+          open: false,
+        },
+      };
+    } else if (type === "device") {
+      const areaEntry = Object.values(this._areaEntries).find((area) =>
+        Object.keys(area.devices).includes(id)
+      );
+      if (areaEntry) {
+        areaEntry.devices[id].open = false;
+        this._areaEntries = {
+          ...this._areaEntries,
+        };
+      }
+    }
+  }
+
+  private async _loadConfigEntries() {
+    const configEntries = await getConfigEntries(this.hass);
+    this._configEntryLookup = Object.fromEntries(
+      configEntries.map((entry) => [entry.entry_id, entry])
+    );
   }
 
   static styles = css`
@@ -339,6 +485,12 @@ export default class HaAutomationAddFromTarget extends LitElement {
       gap: var(--ha-space-3);
       font-family: var(--ha-font-family-heading);
       font-weight: var(--ha-font-weight-medium);
+      overflow: hidden;
+    }
+    .item-label {
+      white-space: nowrap;
+      overflow: hidden;
+      text-overflow: ellipsis;
     }
 
     ha-svg-icon,
@@ -350,6 +502,19 @@ export default class HaAutomationAddFromTarget extends LitElement {
 
     wa-tree-item::part(item):hover {
       background-color: var(--ha-color-fill-neutral-quiet-hover);
+    }
+
+    img {
+      width: 24px;
+      height: 24px;
+      padding: var(--ha-space-1);
+    }
+
+    state-badge {
+      min-width: 32px;
+      max-width: 32px;
+      min-height: 32px;
+      max-height: 32px;
     }
 
     wa-tree-item[selected],
