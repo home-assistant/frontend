@@ -42,6 +42,19 @@ export const coreStyles = css`
     --ha-space-18: 72px;
     --ha-space-19: 76px;
     --ha-space-20: 80px;
+
+    --ha-shadow-offset-x-s: 0;
+    --ha-shadow-offset-x-m: 0;
+    --ha-shadow-offset-x-l: 0;
+    --ha-shadow-offset-y-s: 2px;
+    --ha-shadow-offset-y-m: 4px;
+    --ha-shadow-offset-y-l: 8px;
+    --ha-shadow-blur-s: 4px;
+    --ha-shadow-blur-m: 8px;
+    --ha-shadow-blur-l: 12px;
+    --ha-shadow-spread-s: 0;
+    --ha-shadow-spread-m: 0;
+    --ha-shadow-spread-l: 0;
   }
 `;
 
