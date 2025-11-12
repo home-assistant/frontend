@@ -80,7 +80,7 @@ export const PANEL_ICONS = {
 
 const panelSorter = (
   reverseSort: string[],
-  defaultPanel: string,
+  defaultPanel: string | null,
   a: PanelInfo,
   b: PanelInfo,
   language: string
@@ -97,7 +97,7 @@ const panelSorter = (
 };
 
 const defaultPanelSorter = (
-  defaultPanel: string,
+  defaultPanel: string | null,
   a: PanelInfo,
   b: PanelInfo,
   language: string
