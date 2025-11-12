@@ -51,15 +51,8 @@ export function isValidTimeString(timeString: string): boolean {
  * @param timeString The time string to parse
  * @param timezone The timezone to use
  * @returns The Date object
- * @throws Error if time string is invalid
  */
 export const parseTimeString = (timeString: string, timezone: string): Date => {
-  if (!isValidTimeString(timeString)) {
-    throw new Error(
-      `Invalid time format: ${timeString}. Expected HH:MM or HH:MM:SS with valid ranges (hours: 0-23, minutes: 0-59, seconds: 0-59)`
-    );
-  }
-
   const parts = timeString.split(":");
   const hours = parseInt(parts[0], 10);
   const minutes = parseInt(parts[1], 10);
