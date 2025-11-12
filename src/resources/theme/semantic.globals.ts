@@ -7,17 +7,17 @@ import { extractVars } from "../../common/style/derived-css-vars";
  */
 export const semanticStyles = css`
   html {
-    --ha-box-shadow-s: var(--ha-shadow-offset-x-s) var(--ha-shadow-offset-y-s) var(--ha-shadow-blur-s) var(--ha-shadow-spread-s) var(--ha-color-shadow-light);
-    --ha-box-shadow-m: var(--ha-shadow-offset-x-m) var(--ha-shadow-offset-y-m) var(--ha-shadow-blur-m) var(--ha-shadow-spread-m) var(--ha-color-shadow-light);
-    --ha-box-shadow-l: var(--ha-shadow-offset-x-l) var(--ha-shadow-offset-y-l) var(--ha-shadow-blur-l) var(--ha-shadow-spread-l) var(--ha-color-shadow-light);
+    --ha-box-shadow-s: var(--ha-shadow-offset-x-sm) var(--ha-shadow-offset-y-sm) var(--ha-shadow-blur-sm) var(--ha-shadow-spread-sm) var(--ha-color-shadow-light);
+    --ha-box-shadow-m: var(--ha-shadow-offset-x-md) var(--ha-shadow-offset-y-md) var(--ha-shadow-blur-md) var(--ha-shadow-spread-md) var(--ha-color-shadow-light);
+    --ha-box-shadow-l: var(--ha-shadow-offset-x-lg) var(--ha-shadow-offset-y-lg) var(--ha-shadow-blur-lg) var(--ha-shadow-spread-lg) var(--ha-color-shadow-light);
   }
 `;
 
 export const darkSemanticStyles = css`
   html {
-    --ha-box-shadow-s: var(--ha-shadow-offset-x-s) var(--ha-shadow-offset-y-s) var(--ha-shadow-blur-s) var(--ha-shadow-spread-s) var(--ha-color-shadow-dark);
-    --ha-box-shadow-m: var(--ha-shadow-offset-x-m) var(--ha-shadow-offset-y-m) var(--ha-shadow-blur-m) var(--ha-shadow-spread-m) var(--ha-color-shadow-dark);
-    --ha-box-shadow-l: var(--ha-shadow-offset-x-l) var(--ha-shadow-offset-y-l) var(--ha-shadow-blur-l) var(--ha-shadow-spread-l) var(--ha-color-shadow-dark);
+    --ha-box-shadow-s: var(--ha-shadow-offset-x-sm) var(--ha-shadow-offset-y-sm) var(--ha-shadow-blur-sm) var(--ha-shadow-spread-sm) var(--ha-color-shadow-dark);
+    --ha-box-shadow-m: var(--ha-shadow-offset-x-md) var(--ha-shadow-offset-y-md) var(--ha-shadow-blur-md) var(--ha-shadow-spread-md) var(--ha-color-shadow-dark);
+    --ha-box-shadow-l: var(--ha-shadow-offset-x-lg) var(--ha-shadow-offset-y-lg) var(--ha-shadow-blur-lg) var(--ha-shadow-spread-lg) var(--ha-color-shadow-dark);
   }
 `;
 

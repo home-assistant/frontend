@@ -43,18 +43,18 @@ export const coreStyles = css`
     --ha-space-19: 76px;
     --ha-space-20: 80px;
 
-    --ha-shadow-offset-x-s: 0;
-    --ha-shadow-offset-x-m: 0;
-    --ha-shadow-offset-x-l: 0;
-    --ha-shadow-offset-y-s: 2px;
-    --ha-shadow-offset-y-m: 4px;
-    --ha-shadow-offset-y-l: 8px;
-    --ha-shadow-blur-s: 4px;
-    --ha-shadow-blur-m: 8px;
-    --ha-shadow-blur-l: 12px;
-    --ha-shadow-spread-s: 0;
-    --ha-shadow-spread-m: 0;
-    --ha-shadow-spread-l: 0;
+    --ha-shadow-offset-x-sm: 0;
+    --ha-shadow-offset-x-md: 0;
+    --ha-shadow-offset-x-lg: 0;
+    --ha-shadow-offset-y-sm: 2px;
+    --ha-shadow-offset-y-md: 4px;
+    --ha-shadow-offset-y-lg: 8px;
+    --ha-shadow-blur-sm: 4px;
+    --ha-shadow-blur-md: 8px;
+    --ha-shadow-blur-lg: 12px;
+    --ha-shadow-spread-sm: 0;
+    --ha-shadow-spread-md: 0;
+    --ha-shadow-spread-lg: 0;
     --ha-animation-base-duration: 350ms;
   }
 
