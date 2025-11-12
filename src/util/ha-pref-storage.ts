@@ -9,7 +9,9 @@ const STORED_STATE = [
   "suspendWhenHidden",
   "enableShortcuts",
   "defaultPanel",
-];
+] as const;
+
+type StoredHomeAssistant = Pick<HomeAssistant, (typeof STORED_STATE)[number]>;
 
 export function storeState(hass: HomeAssistant) {
   try {
@@ -31,8 +33,8 @@ export function storeState(hass: HomeAssistant) {
   }
 }
 
-export function getState() {
-  const state = {};
+export function getState(): Partial<StoredHomeAssistant> {
+  const state = {} as Partial<StoredHomeAssistant>;
 
   STORED_STATE.forEach((key) => {
     const storageItem = window.localStorage.getItem(key);

@@ -8,13 +8,18 @@ import {
   subscribeServices,
 } from "home-assistant-js-websocket";
 import { fireEvent } from "../common/dom/fire_event";
+import { computeStateName } from "../common/entity/compute_state_name";
 import { promiseTimeout } from "../common/util/promise-timeout";
 import { subscribeAreaRegistry } from "../data/area_registry";
 import { broadcastConnectionStatus } from "../data/connection-status";
 import { subscribeDeviceRegistry } from "../data/device_registry";
-import { subscribeFrontendUserData } from "../data/frontend";
+import {
+  fetchFrontendSystemData,
+  fetchFrontendUserData,
+  subscribeFrontendSystemData,
+  subscribeFrontendUserData,
+} from "../data/frontend";
 import { forwardHaptic } from "../data/haptics";
-import { DEFAULT_PANEL } from "../data/panel";
 import { serviceCallWillDisconnect } from "../data/service";
 import {
   DateFormat,
@@ -33,7 +38,7 @@ import { fetchWithAuth } from "../util/fetch-with-auth";
 import { getState, storeState } from "../util/ha-pref-storage";
 import hassCallApi, { hassCallApiRaw } from "../util/hass-call-api";
 import type { HassBaseEl } from "./hass-base-mixin";
-import { computeStateName } from "../common/entity/compute_state_name";
+import { DEFAULT_PANEL } from "../data/panel";
 
 export const connectionMixin = <T extends Constructor<HassBaseEl>>(
   superClass: T
@@ -73,7 +78,6 @@ export const connectionMixin = <T extends Constructor<HassBaseEl>>(
         },
         resources: null as any,
         localize: () => "",
-
         translationMetadata,
         dockedSidebar: "docked",
         vibrate: true,
@@ -204,14 +208,28 @@ export const connectionMixin = <T extends Constructor<HassBaseEl>>(
         loadFragmentTranslation: (fragment) =>
           // @ts-ignore
           this._loadFragmentTranslations(this.hass?.language, fragment),
+        loadDefaultPanel: async () => {
+          const [user, system] = await Promise.all([
+            fetchFrontendUserData(conn, "default_panel"),
+            fetchFrontendSystemData(conn, "default_panel"),
+          ]);
+          const defaultPanel = user || system;
+          this._updateHass({
+            userDefaultPanel: user,
+            systemDefaultPanel: system,
+            defaultPanel,
+          });
+          storeState(this.hass!);
+          return defaultPanel;
+        },
         formatEntityState: (stateObj, state) =>
           (state != null ? state : stateObj.state) ?? "",
         formatEntityAttributeName: (_stateObj, attribute) => attribute,
         formatEntityAttributeValue: (stateObj, attribute, value) =>
           value != null ? value : (stateObj.attributes[attribute] ?? ""),
+        formatEntityName: (stateObj) => computeStateName(stateObj),
         ...getState(),
         ...this._pendingHass,
-        formatEntityName: (stateObj) => computeStateName(stateObj),
       };
 
       this.hassConnected();
@@ -289,11 +307,34 @@ export const connectionMixin = <T extends Constructor<HassBaseEl>>(
         conn,
         "default_panel",
         ({ value: defaultPanel }) => {
-          this._updateHass({ defaultPanel: defaultPanel || DEFAULT_PANEL });
+          this._updateHass({
+            userDefaultPanel: defaultPanel,
+          });
+          // Update default panel taking into account user and system default panel
+          this._updateHass({
+            defaultPanel:
+              this.hass!.userDefaultPanel || this.hass!.systemDefaultPanel,
+          });
+          // Store updated default panel in local storage
           storeState(this.hass!);
         }
       );
-
+      subscribeFrontendSystemData(
+        conn,
+        "default_panel",
+        ({ value: defaultPanel }) => {
+          this._updateHass({
+            systemDefaultPanel: defaultPanel,
+          });
+          // Update default panel taking into account user and system default panel
+          this._updateHass({
+            defaultPanel:
+              this.hass!.userDefaultPanel || this.hass!.systemDefaultPanel,
+          });
+          // Store updated default panel in local storage
+          storeState(this.hass!);
+        }
+      );
       clearInterval(this.__backendPingInterval);
       this.__backendPingInterval = setInterval(() => {
         if (this.hass?.connected) {

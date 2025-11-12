@@ -54,9 +54,10 @@ export class HomeAssistantAppEl extends QuickBarMixin(HassElement) {
     const path = curPath();
 
     if (["", "/"].includes(path)) {
-      navigate(`/${getStorageDefaultPanelUrlPath()}${location.search}`, {
-        replace: true,
-      });
+      const defaultPanel = getStorageDefaultPanelUrlPath();
+      if (defaultPanel) {
+        navigate(`/${defaultPanel}${location.search}`, { replace: true });
+      }
     }
     this._route = {
       prefix: "",
