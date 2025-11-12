@@ -292,15 +292,74 @@ function validateScreenCondition(condition: ScreenCondition) {
   return condition.media_query != null;
 }
 
+/**
+ * Validate a time string format and value ranges
+ * @param timeString Time string to validate (HH:MM or HH:MM:SS)
+ * @returns true if valid, false otherwise
+ */
+function isValidTimeString(timeString: string): boolean {
+  // Reject empty strings
+  if (!timeString || timeString.trim() === "") {
+    return false;
+  }
+
+  const parts = timeString.split(":");
+
+  if (parts.length < 2 || parts.length > 3) {
+    return false;
+  }
+
+  // Ensure each part contains only digits (and optional leading zeros)
+  // This prevents "8:00 AM" from passing validation
+  if (!parts.every((part) => /^\d+$/.test(part))) {
+    return false;
+  }
+
+  const hours = parseInt(parts[0], 10);
+  const minutes = parseInt(parts[1], 10);
+  const seconds = parts.length === 3 ? parseInt(parts[2], 10) : 0;
+
+  if (isNaN(hours) || isNaN(minutes) || isNaN(seconds)) {
+    return false;
+  }
+
+  return (
+    hours >= 0 &&
+    hours <= 23 &&
+    minutes >= 0 &&
+    minutes <= 59 &&
+    seconds >= 0 &&
+    seconds <= 59
+  );
+}
+
 function validateTimeCondition(condition: TimeCondition) {
-  const hasTime = condition.after != null || condition.before != null;
+  // Check if time strings are present and non-empty
+  const hasAfter = condition.after != null && condition.after !== "";
+  const hasBefore = condition.before != null && condition.before !== "";
+  const hasTime = hasAfter || hasBefore;
+
   const hasWeekdays =
     condition.weekdays != null && condition.weekdays.length > 0;
   const weekdaysValid =
     !hasWeekdays ||
     condition.weekdays!.every((w: WeekdayShort) => WEEKDAYS_SHORT.includes(w));
 
-  return (hasTime || hasWeekdays) && weekdaysValid;
+  // Validate time string formats if present
+  const timeStringsValid =
+    (!hasAfter || isValidTimeString(condition.after!)) &&
+    (!hasBefore || isValidTimeString(condition.before!));
+
+  // Prevent after and before being identical (creates zero-length interval)
+  const timeRangeValid =
+    !hasAfter || !hasBefore || condition.after !== condition.before;
+
+  return (
+    (hasTime || hasWeekdays) &&
+    weekdaysValid &&
+    timeStringsValid &&
+    timeRangeValid
+  );
 }
 
 function validateUserCondition(condition: UserCondition) {
