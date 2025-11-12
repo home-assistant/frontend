@@ -64,7 +64,7 @@ export const ConditionalListenerMixin = <
      *
      * @param conditions - Optional conditions array. If not provided, will check config.visibility or _config.visibility
      */
-    protected setupConditionalListeners(conditions?: any[]): void {
+    protected setupConditionalListeners(conditions?: Condition[]): void {
       const component = this as any;
       const finalConditions =
         conditions ||
