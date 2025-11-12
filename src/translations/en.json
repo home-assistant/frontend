@@ -13,7 +13,8 @@
     "profile": "Profile",
     "light": "Lights",
     "security": "Security",
-    "climate": "Climate"
+    "climate": "Climate",
+    "home": "Home"
   },
   "state": {
     "default": {
@@ -3076,6 +3077,15 @@
             "grid_carbon_footprint": "Grid carbon footprint",
             "remove_co2_signal": "Remove Electricity Maps integration",
             "add_co2_signal": "Add Electricity Maps integration",
+            "grid_power": "Grid power",
+            "add_power": "Add power sensor",
+            "edit_power": "Edit power sensor",
+            "delete_power": "Delete power sensor",
+            "power_dialog": {
+              "header": "Configure grid power",
+              "power_stat": "Power sensor",
+              "power_helper": "Pick a sensor which measures grid power in either of {unit}. Positive values indicate importing electricity from the grid, negative values indicate exporting electricity to the grid."
+            },
             "flow_dialog": {
               "cost_entity_helper": "Any sensor with a unit of `{currency}/(valid energy unit)` (e.g. `{currency}/Wh` or `{currency}/kWh`) may be used and will be automatically converted.",
               "from": {
@@ -3123,6 +3133,7 @@
               "header": "Configure solar panels",
               "entity_para": "Pick a sensor which measures solar energy production in either of {unit}.",
               "solar_production_energy": "Solar production energy",
+              "solar_production_power": "Solar production power",
               "solar_production_forecast": "Solar production forecast",
               "solar_production_forecast_description": "Adding solar production forecast information will allow you to quickly see your expected production for today.",
               "dont_forecast_production": "Don't forecast production",
@@ -3140,9 +3151,12 @@
             "add_battery_system": "Add battery system",
             "dialog": {
               "header": "Configure battery system",
-              "entity_para": "Pick sensors which measure energy going into and coming out of the battery in either of {unit}.",
-              "energy_into_battery": "Energy going into the battery",
-              "energy_out_of_battery": "Energy coming out of the battery"
+              "energy_helper_into": "Pick a sensor that measures the electricity flowing into the battery in either of {unit}.",
+              "energy_helper_out": "Pick a sensor that measures the electricity flowing out of the battery in either of {unit}.",
+              "energy_into_battery": "Energy charged into the battery",
+              "energy_out_of_battery": "Energy discharged from the battery",
+              "power": "Battery power",
+              "power_helper": "Pick a sensor which measures the electricity flowing into and out of the battery in either of {unit}. Positive values indicate discharging the battery, negative values indicate charging the battery."
             }
           },
           "gas": {
@@ -3204,7 +3218,8 @@
               "header": "Add a device",
               "display_name": "Display name",
               "device_consumption_energy": "Device energy consumption",
-              "selected_stat_intro": "Select the energy sensor that measures the device's energy usage in either of {unit}.",
+              "device_consumption_power": "Device power consumption",
+              "selected_stat_intro": "Select the sensor that measures the device's electricity usage in either of {unit}.",
               "included_in_device": "Upstream device",
               "included_in_device_helper": "If this device is already counted by another device (such as a smart switch measured by a smart breaker), selecting the upstream device prevents duplicate energy tracking.",
               "no_upstream_devices": "No eligible upstream devices"
@@ -7562,6 +7577,12 @@
                 "label": "Entity state",
                 "state_equal": "State is equal to",
                 "state_not_equal": "State is not equal to"
+              },
+              "time": {
+                "label": "Time",
+                "after": "After",
+                "before": "Before",
+                "weekdays": "Weekdays"
               },
               "location": {
                 "label": "Location",

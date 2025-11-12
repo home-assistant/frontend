@@ -12,6 +12,7 @@ import { CONDITION_BUILDING_BLOCKS } from "./condition";
 import type { DeviceCondition, DeviceTrigger } from "./device_automation";
 import type { Action, Field, MODES } from "./script";
 import { migrateAutomationAction } from "./script";
+import type { WeekdayShort } from "../common/datetime/weekday";
 
 export const AUTOMATION_DEFAULT_MODE: (typeof MODES)[number] = "single";
 export const AUTOMATION_DEFAULT_MAX = 10;
@@ -257,13 +258,11 @@ export interface ZoneCondition extends BaseCondition {
   zone: string;
 }
 
-type Weekday = "sun" | "mon" | "tue" | "wed" | "thu" | "fri" | "sat";
-
 export interface TimeCondition extends BaseCondition {
   condition: "time";
   after?: string;
   before?: string;
-  weekday?: Weekday | Weekday[];
+  weekday?: WeekdayShort | WeekdayShort[];
 }
 
 export interface TemplateCondition extends BaseCondition {

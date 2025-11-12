@@ -360,6 +360,20 @@ export class HaConfigLovelaceDashboards extends LitElement {
         });
       }
 
+      if (this.hass.panels.home) {
+        result.push({
+          icon: this.hass.panels.home.icon || "mdi:home",
+          title: this.hass.localize("panel.home"),
+          show_in_sidebar: true,
+          mode: "storage",
+          url_path: "home",
+          filename: "",
+          default: false,
+          require_admin: false,
+          type: this._localizeType("built_in"),
+        });
+      }
+
       result.push(
         ...dashboards
           .sort((a, b) =>
@@ -470,13 +484,18 @@ export class HaConfigLovelaceDashboards extends LitElement {
   }
 
   private _canDelete(urlPath: string) {
-    return !["lovelace", "energy", "light", "security", "climate"].includes(
-      urlPath
-    );
+    return ![
+      "lovelace",
+      "energy",
+      "light",
+      "security",
+      "climate",
+      "home",
+    ].includes(urlPath);
   }
 
   private _canEdit(urlPath: string) {
-    return !["light", "security", "climate"].includes(urlPath);
+    return !["light", "security", "climate", "home"].includes(urlPath);
   }
 
   private _handleDelete = async (item: DataTableItem) => {
