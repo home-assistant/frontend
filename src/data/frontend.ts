@@ -14,10 +14,10 @@ declare global {
   interface FrontendUserData {
     core: CoreFrontendUserData;
     sidebar: SidebarFrontendUserData;
-    default_panel?: string;
+    default_panel: string | null;
   }
   interface FrontendSystemData {
-    default_panel?: string;
+    default_panel: string | null;
   }
 }
 

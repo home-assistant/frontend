@@ -38,7 +38,6 @@ import { fetchWithAuth } from "../util/fetch-with-auth";
 import { getState, storeState } from "../util/ha-pref-storage";
 import hassCallApi, { hassCallApiRaw } from "../util/hass-call-api";
 import type { HassBaseEl } from "./hass-base-mixin";
-import { DEFAULT_PANEL } from "../data/panel";
 
 export const connectionMixin = <T extends Constructor<HassBaseEl>>(
   superClass: T
@@ -65,7 +64,9 @@ export const connectionMixin = <T extends Constructor<HassBaseEl>>(
         services: null as any,
         user: null as any,
         panelUrl: (this as any)._panelUrl,
-        defaultPanel: DEFAULT_PANEL,
+        defaultPanel: null,
+        systemDefaultPanel: null,
+        userDefaultPanel: null,
         language,
         selectedLanguage: null,
         locale: {

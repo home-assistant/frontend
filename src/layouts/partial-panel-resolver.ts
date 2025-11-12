@@ -188,7 +188,7 @@ class PartialPanelResolver extends HassRouterPage {
   }
 
   private async _updateRoutes(oldPanels?: HomeAssistant["panels"]) {
-    if (this.hass.defaultPanel) {
+    if (!this.hass.defaultPanel) {
       await this.hass.loadDefaultPanel();
     }
 
