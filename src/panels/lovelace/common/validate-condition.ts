@@ -2,6 +2,14 @@ import type { HomeAssistant } from "../../../types";
 import { UNKNOWN } from "../../../data/entity";
 import { getUserPerson } from "../../../data/person";
 import { ensureArray } from "../../../common/array/ensure-array";
+import {
+  checkTimeInRange,
+  isValidTimeString,
+} from "../../../common/datetime/check_time";
+import {
+  WEEKDAYS_SHORT,
+  type WeekdayShort,
+} from "../../../common/datetime/weekday";
 import { isValidEntityId } from "../../../common/entity/valid_entity_id";
 
 export type Condition =
@@ -9,6 +17,7 @@ export type Condition =
   | NumericStateCondition
   | StateCondition
   | ScreenCondition
+  | TimeCondition
   | UserCondition
   | OrCondition
   | AndCondition
@@ -47,6 +56,13 @@ export interface StateCondition extends BaseCondition {
 export interface ScreenCondition extends BaseCondition {
   condition: "screen";
   media_query?: string;
+}
+
+export interface TimeCondition extends BaseCondition {
+  condition: "time";
+  after?: string;
+  before?: string;
+  weekdays?: WeekdayShort[];
 }
 
 export interface UserCondition extends BaseCondition {
@@ -149,6 +165,13 @@ function checkScreenCondition(condition: ScreenCondition, _: HomeAssistant) {
     : false;
 }
 
+function checkTimeCondition(
+  condition: Omit<TimeCondition, "condition">,
+  hass: HomeAssistant
+) {
+  return checkTimeInRange(hass, condition);
+}
+
 function checkLocationCondition(
   condition: LocationCondition,
   hass: HomeAssistant
@@ -194,6 +217,8 @@ export function checkConditionsMet(
   return conditions.every((c) => {
     if ("condition" in c) {
       switch (c.condition) {
+        case "time":
+          return checkTimeCondition(c, hass);
         case "screen":
           return checkScreenCondition(c, hass);
         case "user":
@@ -270,6 +295,35 @@ function validateScreenCondition(condition: ScreenCondition) {
   return condition.media_query != null;
 }
 
+function validateTimeCondition(condition: TimeCondition) {
+  // Check if time strings are present and non-empty
+  const hasAfter = condition.after != null && condition.after !== "";
+  const hasBefore = condition.before != null && condition.before !== "";
+  const hasTime = hasAfter || hasBefore;
+
+  const hasWeekdays =
+    condition.weekdays != null && condition.weekdays.length > 0;
+  const weekdaysValid =
+    !hasWeekdays ||
+    condition.weekdays!.every((w: WeekdayShort) => WEEKDAYS_SHORT.includes(w));
+
+  // Validate time string formats if present
+  const timeStringsValid =
+    (!hasAfter || isValidTimeString(condition.after!)) &&
+    (!hasBefore || isValidTimeString(condition.before!));
+
+  // Prevent after and before being identical (creates zero-length interval)
+  const timeRangeValid =
+    !hasAfter || !hasBefore || condition.after !== condition.before;
+
+  return (
+    (hasTime || hasWeekdays) &&
+    weekdaysValid &&
+    timeStringsValid &&
+    timeRangeValid
+  );
+}
+
 function validateUserCondition(condition: UserCondition) {
   return condition.users != null;
 }
@@ -309,6 +363,8 @@ export function validateConditionalConfig(
       switch (c.condition) {
         case "screen":
           return validateScreenCondition(c);
+        case "time":
+          return validateTimeCondition(c);
         case "user":
           return validateUserCondition(c);
         case "location":
