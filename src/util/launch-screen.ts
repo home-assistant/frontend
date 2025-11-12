@@ -1,6 +1,7 @@
 import type { TemplateResult } from "lit";
 import { render } from "lit";
 import { parseAnimationDuration } from "../common/util/parse-animation-duration";
+import { withViewTransition } from "../common/util/view-transition";
 
 const removeElement = (
   launchScreenElement: HTMLElement,
@@ -28,14 +29,9 @@ export const removeLaunchScreen = () => {
     return;
   }
 
-  if (document.startViewTransition) {
-    document.startViewTransition(() => {
-      removeElement(launchScreenElement, false);
-    });
-  } else {
-    // Fallback: Direct removal without transition
-    removeElement(launchScreenElement, true);
-  }
+  withViewTransition(() => {
+    removeElement(launchScreenElement, false);
+  });
 };
 
 export const renderLaunchScreenInfoBox = (content: TemplateResult) => {
