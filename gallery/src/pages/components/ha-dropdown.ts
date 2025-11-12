@@ -1,3 +1,7 @@
+import "@home-assistant/webawesome/dist/components/button/button";
+import "@home-assistant/webawesome/dist/components/dropdown/dropdown";
+import "@home-assistant/webawesome/dist/components/icon/icon";
+import "@home-assistant/webawesome/dist/components/popup/popup";
 import {
   mdiContentCopy,
   mdiContentCut,
@@ -7,17 +11,13 @@ import {
 import type { TemplateResult } from "lit";
 import { css, html, LitElement } from "lit";
 import { customElement } from "lit/decorators";
+import { applyThemesOnElement } from "../../../../src/common/dom/apply_themes_on_element";
 import "../../../../src/components/ha-button";
 import "../../../../src/components/ha-card";
-import "../../../../src/components/ha-svg-icon";
-import "../../../../src/components/ha-dropdown-item";
-import "@home-assistant/webawesome/dist/components/icon/icon";
-import "@home-assistant/webawesome/dist/components/button/button";
-import "@home-assistant/webawesome/dist/components/dropdown/dropdown";
 import "../../../../src/components/ha-dropdown";
-import "@home-assistant/webawesome/dist/components/popup/popup";
-import { applyThemesOnElement } from "../../../../src/common/dom/apply_themes_on_element";
+import "../../../../src/components/ha-dropdown-item";
 import "../../../../src/components/ha-icon-button";
+import "../../../../src/components/ha-svg-icon";
 
 @customElement("demo-components-ha-dropdown")
 export class DemoHaDropdown extends LitElement {
