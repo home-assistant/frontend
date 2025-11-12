@@ -142,7 +142,7 @@ const defaultPanelSorter = (
 export const computePanels = memoizeOne(
   (
     panels: HomeAssistant["panels"],
-    defaultPanel: HomeAssistant["defaultPanel"],
+    defaultPanel: HomeAssistant["defaultBrowserPanel"],
     panelsOrder: string[],
     hiddenPanels: string[],
     locale: HomeAssistant["locale"]
@@ -298,7 +298,7 @@ class HaSidebar extends SubscribeMixin(LitElement) {
       hass.localize !== oldHass.localize ||
       hass.locale !== oldHass.locale ||
       hass.states !== oldHass.states ||
-      hass.defaultPanel !== oldHass.defaultPanel ||
+      hass.defaultBrowserPanel !== oldHass.defaultBrowserPanel ||
       hass.connected !== oldHass.connected
     );
   }
@@ -403,7 +403,7 @@ class HaSidebar extends SubscribeMixin(LitElement) {
 
     const [beforeSpacer, afterSpacer] = computePanels(
       this.hass.panels,
-      this.hass.defaultPanel,
+      this.hass.defaultBrowserPanel,
       this._panelOrder,
       this._hiddenPanels,
       this.hass.locale
@@ -430,11 +430,11 @@ class HaSidebar extends SubscribeMixin(LitElement) {
     return panels.map((panel) =>
       this._renderPanel(
         panel.url_path,
-        panel.url_path === this.hass.defaultPanel
+        panel.url_path === this.hass.defaultBrowserPanel
           ? panel.title || this.hass.localize("panel.states")
           : this.hass.localize(`panel.${panel.title}`) || panel.title,
         panel.icon,
-        panel.url_path === this.hass.defaultPanel && !panel.icon
+        panel.url_path === this.hass.defaultBrowserPanel && !panel.icon
           ? PANEL_ICONS.lovelace
           : panel.url_path in PANEL_ICONS
             ? PANEL_ICONS[panel.url_path]

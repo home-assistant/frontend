@@ -402,7 +402,7 @@ export class HaConfigLovelaceDashboards extends LitElement {
           this._dashboards,
           this.hass.localize
         )}
-        .data=${this._getItems(this._dashboards, this.hass.defaultPanel)}
+        .data=${this._getItems(this._dashboards, this.hass.defaultBrowserPanel)}
         .initialGroupColumn=${this._activeGrouping}
         .initialCollapsedGroups=${this._activeCollapsed}
         .initialSorting=${this._activeSorting}

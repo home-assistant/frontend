@@ -6,14 +6,27 @@ import "../../components/ha-select";
 import "../../components/ha-settings-row";
 import type { LovelaceDashboard } from "../../data/lovelace/dashboard";
 import { fetchDashboards } from "../../data/lovelace/dashboard";
-import { setDefaultPanel } from "../../data/panel";
 import type { HomeAssistant } from "../../types";
+import type { LocalizeKeys } from "../../common/translations/localize";
+import { DEFAULT_PANEL } from "../../data/panel";
 
 @customElement("ha-pick-dashboard-row")
 class HaPickDashboardRow extends LitElement {
   @property({ attribute: false }) public hass!: HomeAssistant;
 
   @property({ type: Boolean }) public narrow = false;
+
+  @property({ type: String, attribute: "header-key" })
+  public headerKey!: LocalizeKeys;
+
+  @property({ type: String, attribute: "description-key" })
+  public descriptionKey!: LocalizeKeys;
+
+  @property({ type: String, attribute: "selected-dashboard" })
+  public selectedDashboard?: string;
+
+  @property({ attribute: false })
+  public setDashboard!: (element: HTMLElement, urlPath: string) => void;
 
   @state() private _dashboards?: LovelaceDashboard[];
 
@@ -25,11 +38,9 @@ class HaPickDashboardRow extends LitElement {
   protected render(): TemplateResult {
     return html`
       <ha-settings-row .narrow=${this.narrow}>
-        <span slot="heading">
-          ${this.hass.localize("ui.panel.profile.dashboard.header")}
-        </span>
+        <span slot="heading"> ${this.hass.localize(this.headerKey)} </span>
         <span slot="description">
-          ${this.hass.localize("ui.panel.profile.dashboard.description")}
+          ${this.hass.localize(this.descriptionKey)}
         </span>
         ${this._dashboards
           ? html`<ha-select
@@ -37,7 +48,7 @@ class HaPickDashboardRow extends LitElement {
                 "ui.panel.profile.dashboard.dropdown_label"
               )}
               .disabled=${!this._dashboards?.length}
-              .value=${this.hass.defaultPanel}
+              .value=${this.selectedDashboard || DEFAULT_PANEL}
               @selected=${this._dashboardChanged}
               naturalMenuWidth
             >
@@ -72,11 +83,7 @@ class HaPickDashboardRow extends LitElement {
   }
 
   private _dashboardChanged(ev) {
-    const urlPath = ev.target.value;
-    if (!urlPath || urlPath === this.hass.defaultPanel) {
-      return;
-    }
-    setDefaultPanel(this, urlPath);
+    this.setDashboard(this, ev.target.value);
   }
 }
 

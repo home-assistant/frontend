@@ -8634,8 +8634,14 @@
           "use_default": "Use default theme"
         },
         "dashboard": {
-          "header": "Dashboard",
-          "description": "Pick a default dashboard for this device.",
+          "user": {
+            "header": "Default Dashboard",
+            "description": "Choose your default dashboard across all devices and browsers."
+          },
+          "browser": {
+            "header": "Browser Override Dashboard",
+            "description": "Pick a default dashboard for this device."
+          },
           "dropdown_label": "Dashboard",
           "default_dashboard_label": "Overview (default)"
         },

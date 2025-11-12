@@ -13,7 +13,7 @@ import type {
   LovelaceDashboardCreateParams,
   LovelaceDashboardMutableParams,
 } from "../../../../data/lovelace/dashboard";
-import { DEFAULT_PANEL, setDefaultPanel } from "../../../../data/panel";
+import { DEFAULT_PANEL, setDefaultBrowserPanel } from "../../../../data/panel";
 import { haStyleDialog } from "../../../../resources/styles";
 import type { HomeAssistant } from "../../../../types";
 import type { LovelaceDashboardDetailsDialogParams } from "./show-dialog-lovelace-dashboard-detail";
@@ -59,7 +59,7 @@ export class DialogLovelaceDashboardDetail extends LitElement {
     if (!this._params || !this._data) {
       return nothing;
     }
-    const defaultPanelUrlPath = this.hass.defaultPanel;
+    const defaultPanelUrlPath = this.hass.defaultBrowserPanel;
     const titleInvalid = !this._data.title || !this._data.title.trim();
 
     return html`
@@ -256,9 +256,9 @@ export class DialogLovelaceDashboardDetail extends LitElement {
     if (!urlPath) {
       return;
     }
-    setDefaultPanel(
+    setDefaultBrowserPanel(
       this,
-      urlPath === this.hass.defaultPanel ? DEFAULT_PANEL : urlPath
+      urlPath === this.hass.defaultBrowserPanel ? DEFAULT_PANEL : urlPath
     );
   }
 

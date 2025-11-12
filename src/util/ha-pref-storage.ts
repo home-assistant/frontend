@@ -8,7 +8,7 @@ const STORED_STATE = [
   "debugConnection",
   "suspendWhenHidden",
   "enableShortcuts",
-  "defaultPanel",
+  "defaultBrowserPanel",
 ];
 
 export function storeState(hass: HomeAssistant) {
@@ -49,6 +49,17 @@ export function getState() {
       state[key] = value;
     }
   });
+
+  // TODO: remove this migration eventually. Here for backwards compatibility.
+  // Migrate from old defaultPanel key to defaultBrowserPanel (added 20251111)
+  if (!state.defaultBrowserPanel) {
+    const oldDefaultPanel = window.localStorage.getItem("defaultPanel");
+    if (oldDefaultPanel !== null) {
+      state.defaultBrowserPanel = JSON.parse(oldDefaultPanel);
+    }
+  }
+  // END TODO
+
   return state;
 }
 

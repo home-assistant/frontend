@@ -4,7 +4,6 @@ import { customElement, state } from "lit/decorators";
 import type { Connection } from "home-assistant-js-websocket";
 import { isNavigationClick } from "../common/dom/is-navigation-click";
 import { navigate } from "../common/navigate";
-import { getStorageDefaultPanelUrlPath } from "../data/panel";
 import type { WindowWithPreloads } from "../data/preloads";
 import type { RecorderInfo } from "../data/recorder";
 import { getRecorderInfo } from "../data/recorder";
@@ -53,11 +52,6 @@ export class HomeAssistantAppEl extends QuickBarMixin(HassElement) {
     super();
     const path = curPath();
 
-    if (["", "/"].includes(path)) {
-      navigate(`/${getStorageDefaultPanelUrlPath()}${location.search}`, {
-        replace: true,
-      });
-    }
     this._route = {
       prefix: "",
       path,

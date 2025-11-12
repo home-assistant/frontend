@@ -143,7 +143,7 @@ export class HuiDialogSelectDashboard extends LitElement {
       ...(this._params!.dashboards || (await fetchDashboards(this.hass))),
     ];
 
-    const currentPath = this._fromUrlPath || this.hass.defaultPanel;
+    const currentPath = this._fromUrlPath || this.hass.defaultBrowserPanel;
     for (const dashboard of this._dashboards!) {
       if (dashboard.url_path !== currentPath) {
         this._toUrlPath = dashboard.url_path;

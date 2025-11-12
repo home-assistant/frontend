@@ -31,6 +31,7 @@ import "./ha-pick-time-zone-row";
 import "./ha-push-notifications-row";
 import "./ha-set-suspend-row";
 import "./ha-set-vibrate-row";
+import { setDefaultBrowserPanel, setDefaultUserPanel } from "../../data/panel";
 
 @customElement("ha-profile-section-general")
 class HaProfileSectionGeneral extends LitElement {
@@ -175,6 +176,14 @@ class HaProfileSectionGeneral extends LitElement {
                 )}
               </ha-button>
             </ha-settings-row>
+            <ha-pick-dashboard-row
+              .narrow=${this.narrow}
+              .hass=${this.hass}
+              .headerKey=${"ui.panel.profile.dashboard.user.header"}
+              .descriptionKey=${"ui.panel.profile.dashboard.user.description"}
+              .selectedDashboard=${this.hass?.userData?.defaultPanel}
+              .setDashboard=${setDefaultUserPanel}
+              ></ha-pick-dashboard-row>
             ${this.hass.user!.is_admin
               ? html`
                   <ha-advanced-mode-row
@@ -211,6 +220,10 @@ class HaProfileSectionGeneral extends LitElement {
             <ha-pick-dashboard-row
               .narrow=${this.narrow}
               .hass=${this.hass}
+              .headerKey=${"ui.panel.profile.dashboard.browser.header"}
+              .descriptionKey=${"ui.panel.profile.dashboard.browser.description"}
+              .selectedDashboard=${this.hass.defaultBrowserPanel}
+              .setDashboard=${setDefaultBrowserPanel}
             ></ha-pick-dashboard-row>
             ${this.hass.dockedSidebar !== "auto" || !this.narrow
               ? html`

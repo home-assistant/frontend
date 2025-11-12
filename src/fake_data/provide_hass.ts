@@ -261,7 +261,7 @@ export const provideHass = (
       name: "Demo User",
     },
     panelUrl: "lovelace",
-    defaultPanel: DEFAULT_PANEL,
+    defaultBrowserPanel: DEFAULT_PANEL,
     language: localLanguage,
     selectedLanguage: localLanguage,
     locale: {

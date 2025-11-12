@@ -110,4 +110,49 @@ describe("ha-pref-storage", () => {
     clearState();
     expect(window.localStorage.length).toEqual(0);
   });
+
+  test("getState migrates from old defaultPanel key", async () => {
+    const { getState } = await import("../../src/util/ha-pref-storage");
+
+    // Set old defaultPanel key but no new defaultBrowserPanel
+    window.localStorage.setItem("defaultPanel", JSON.stringify("custom-dashboard"));
+    window.localStorage.setItem("selectedTheme", JSON.stringify("test"));
+
+    const state = getState();
+    expect(state).toEqual({
+      selectedTheme: { theme: "test" },
+      defaultBrowserPanel: "custom-dashboard",
+    });
+  });
+
+  test("getState prefers new defaultBrowserPanel over old defaultPanel", async () => {
+    const { getState } = await import("../../src/util/ha-pref-storage");
+
+    // Set both old and new keys - new should take precedence
+    window.localStorage.setItem("defaultPanel", JSON.stringify("old-dashboard"));
+    window.localStorage.setItem("defaultBrowserPanel", JSON.stringify("new-dashboard"));
+
+    const state = getState();
+    expect(state).toEqual({
+      defaultBrowserPanel: "new-dashboard",
+    });
+  });
+
+  test("storeState stores defaultBrowserPanel", async () => {
+    const { storeState } = await import("../../src/util/ha-pref-storage");
+
+    const hassWithPanel = {
+      ...mockHass,
+      defaultBrowserPanel: "my-dashboard",
+    };
+
+    window.localStorage.setItem = vi.fn();
+
+    storeState(hassWithPanel as unknown as HomeAssistant);
+    
+    expect(window.localStorage.setItem).toHaveBeenCalledWith(
+      "defaultBrowserPanel",
+      JSON.stringify("my-dashboard")
+    );
+  });
 });

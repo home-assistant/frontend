@@ -248,7 +248,7 @@ export interface HomeAssistant {
   vibrate: boolean;
   debugConnection: boolean;
   dockedSidebar: "docked" | "always_hidden" | "auto";
-  defaultPanel: string;
+  defaultBrowserPanel: string;
   moreInfoEntityId: string | null;
   user?: CurrentUser;
   userData?: CoreFrontendUserData | null;

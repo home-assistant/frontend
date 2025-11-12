@@ -4,23 +4,27 @@ import type { HomeAssistant, PanelInfo } from "../types";
 /** Panel to show when no panel is picked. */
 export const DEFAULT_PANEL = "lovelace";
 
-export const getStorageDefaultPanelUrlPath = (): string => {
-  const defaultPanel = window.localStorage.getItem("defaultPanel");
-
-  return defaultPanel ? JSON.parse(defaultPanel) : DEFAULT_PANEL;
-};
-
-export const setDefaultPanel = (
+export const setDefaultBrowserPanel = (
   element: HTMLElement,
   urlPath: string
 ): void => {
-  fireEvent(element, "hass-default-panel", { defaultPanel: urlPath });
+  fireEvent(element, "hass-default-browser-panel", { defaultPanel: urlPath });
 };
 
-export const getDefaultPanel = (hass: HomeAssistant): PanelInfo =>
-  hass.panels[hass.defaultPanel]
-    ? hass.panels[hass.defaultPanel]
-    : hass.panels[DEFAULT_PANEL];
+export const setDefaultUserPanel = (
+  element: HTMLElement,
+  urlPath: string | undefined
+): void => {
+  fireEvent(element, "hass-default-user-panel", { defaultPanel: urlPath });
+};
+
+export const getDefaultPanel = (hass: HomeAssistant): PanelInfo => {
+  const preferred =
+    hass.defaultBrowserPanel !== DEFAULT_PANEL
+      ? hass.defaultBrowserPanel
+      : hass.userData?.defaultPanel ?? DEFAULT_PANEL;
+  return hass.panels[preferred] ?? hass.panels[DEFAULT_PANEL];
+};
 
 export const getPanelNameTranslationKey = (panel: PanelInfo) => {
   if (panel.url_path === "lovelace") {

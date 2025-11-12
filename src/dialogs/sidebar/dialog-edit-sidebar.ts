@@ -96,7 +96,7 @@ class DialogEditSidebar extends LitElement {
 
     const [beforeSpacer, afterSpacer] = computePanels(
       this.hass.panels,
-      this.hass.defaultPanel,
+      this.hass.defaultBrowserPanel,
       this._order,
       this._hidden,
       this.hass.locale
@@ -120,12 +120,12 @@ class DialogEditSidebar extends LitElement {
     ].map((panel) => ({
       value: panel.url_path,
       label:
-        panel.url_path === this.hass.defaultPanel
+        panel.url_path === this.hass.defaultBrowserPanel
           ? panel.title || this.hass.localize("panel.states")
           : this.hass.localize(`panel.${panel.title}`) || panel.title || "?",
       icon: panel.icon || undefined,
       iconPath:
-        panel.url_path === this.hass.defaultPanel && !panel.icon
+        panel.url_path === this.hass.defaultBrowserPanel && !panel.icon
           ? PANEL_ICONS.lovelace
           : panel.url_path in PANEL_ICONS
             ? PANEL_ICONS[panel.url_path]
