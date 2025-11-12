@@ -53,6 +53,7 @@ export class ShortcutManager {
    * Uses tinykeys syntax: https://github.com/jamiebuilds/tinykeys#usage
    */
   public add(shortcuts: Record<string, ShortcutConfig>) {
+    this._disposer?.();
     this._disposer = registerShortcuts(shortcuts);
   }
 
