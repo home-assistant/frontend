@@ -15,17 +15,17 @@ A compact, accessible dropdown menu for choosing actions or settings. `ha-dropdo
   <ha-button slot="trigger" with-caret>Dropdown</ha-button>
 
   <ha-dropdown-item>
-    <ha-svg-icon .path="${mdiContentCut}" slot="icon"></ha-svg-icon>
+    <ha-svg-icon .path="mdiContentCut" slot="icon"></ha-svg-icon>
     Cut
   </ha-dropdown-item>
 
   <ha-dropdown-item>
-    <ha-svg-icon .path="${mdiContentCopy}" slot="icon"></ha-svg-icon>
+    <ha-svg-icon .path="mdiContentCopy" slot="icon"></ha-svg-icon>
     Copy
   </ha-dropdown-item>
 
   <ha-dropdown-item disabled>
-    <ha-svg-icon .path="${mdiContentPaste}" slot="icon"></ha-svg-icon>
+    <ha-svg-icon .path="mdiContentPaste" slot="icon"></ha-svg-icon>
     Paste
   </ha-dropdown-item>
 
@@ -43,7 +43,7 @@ A compact, accessible dropdown menu for choosing actions or settings. `ha-dropdo
   <ha-dropdown-item type="checkbox" checked>Word wrap</ha-dropdown-item>
 
   <ha-dropdown-item variant="danger">
-    <ha-svg-icon .path="${mdiDelete}" slot="icon"></ha-svg-icon>
+    <ha-svg-icon .path="mdiDelete" slot="icon"></ha-svg-icon>
     Delete
   </ha-dropdown-item>
 </ha-dropdown>
