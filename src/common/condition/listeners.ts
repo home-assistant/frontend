@@ -51,21 +51,27 @@ export function setupTimeListeners(
   if (timeConditions.length === 0) return;
 
   timeConditions.forEach((timeCondition) => {
+    let timeoutId: ReturnType<typeof setTimeout> | undefined;
+
     const scheduleUpdate = () => {
       const delay = calculateNextTimeUpdate(hass, timeCondition);
 
       if (delay === undefined) return;
 
-      const timeoutId = setTimeout(() => {
+      timeoutId = setTimeout(() => {
         const conditionsMet = checkConditionsMet(conditions, hass);
         onUpdate(conditionsMet);
         // Reschedule for next boundary
         scheduleUpdate();
       }, delay);
-
-      // Store cleanup function
-      addListener(() => clearTimeout(timeoutId));
     };
+
+    // Register cleanup function once, outside of scheduleUpdate
+    addListener(() => {
+      if (timeoutId !== undefined) {
+        clearTimeout(timeoutId);
+      }
+    });
 
     scheduleUpdate();
   });
