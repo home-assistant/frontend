@@ -94,6 +94,9 @@ export class HaServiceControl extends LitElement {
   @property({ attribute: "hide-picker", type: Boolean, reflect: true })
   public hidePicker = false;
 
+  @property({ attribute: "hide-description", type: Boolean })
+  public hideDescription = false;
+
   @state() private _value!: this["value"];
 
   @state() private _checkedKeys = new Set();
@@ -469,135 +472,136 @@ export class HaServiceControl extends LitElement {
       serviceData?.description;
 
     return html`${this.hidePicker
-        ? nothing
-        : html`<ha-service-picker
-            .hass=${this.hass}
-            .value=${this._value?.action}
-            .disabled=${this.disabled}
-            @value-changed=${this._serviceChanged}
-            .showServiceId=${this.showServiceId}
-          ></ha-service-picker>`}
-
-      <div class="description">
-        ${description ? html`<p>${description}</p>` : ""}
-        ${this._manifest
-          ? html` <a
-              href=${this._manifest.is_built_in
-                ? documentationUrl(
-                    this.hass,
-                    `/integrations/${this._manifest.domain}`
-                  )
-                : this._manifest.documentation}
-              title=${this.hass.localize(
-                "ui.components.service-control.integration_doc"
-              )}
-              target="_blank"
-              rel="noreferrer"
-            >
-              <ha-icon-button
-                .path=${mdiHelpCircle}
-                class="help-icon"
-              ></ha-icon-button>
-            </a>`
-          : nothing}
-      </div>
-      ${serviceData && "target" in serviceData
-        ? html`<ha-settings-row .narrow=${this.narrow}>
-            ${hasOptional
-              ? html`<div slot="prefix" class="checkbox-spacer"></div>`
-              : ""}
-            <span slot="heading"
-              >${this.hass.localize(
-                "ui.components.service-control.target"
-              )}</span
-            >
-            <span slot="description"
-              >${this.hass.localize(
-                "ui.components.service-control.target_secondary"
-              )}</span
-            ><ha-selector
-              .hass=${this.hass}
-              .selector=${this._targetSelector(
-                serviceData.target as TargetSelector,
-                this._value?.target
-              )}
-              .disabled=${this.disabled}
-              @value-changed=${this._targetChanged}
-              .value=${this._value?.target}
-            ></ha-selector
-          ></ha-settings-row>`
-        : entityId
-          ? html`<ha-entity-picker
-              .hass=${this.hass}
-              .disabled=${this.disabled}
-              .value=${this._value?.data?.entity_id}
-              .label=${this.hass.localize(
-                `component.${domain}.services.${serviceName}.fields.entity_id.description`
-              ) || entityId.description}
-              @value-changed=${this._entityPicked}
-              allow-custom-entity
-            ></ha-entity-picker>`
-          : ""}
-      ${shouldRenderServiceDataYaml
-        ? html`<ha-yaml-editor
-            .hass=${this.hass}
-            .label=${this.hass.localize(
-              "ui.components.service-control.action_data"
-            )}
-            .name=${"data"}
-            .readOnly=${this.disabled}
-            .defaultValue=${this._value?.data}
-            @value-changed=${this._dataChanged}
-          ></ha-yaml-editor>`
-        : serviceData?.fields.map((dataField) => {
-            if (!dataField.fields) {
-              return this._renderField(
-                dataField,
-                hasOptional,
-                domain,
-                serviceName,
-                targetEntities
-              );
-            }
-
-            const fields = Object.entries(dataField.fields).map(
-              ([key, field]) => ({ key, ...field })
-            );
-
-            return fields.length &&
-              this._hasFilteredFields(fields, targetEntities)
-              ? html`<ha-expansion-panel
-                  left-chevron
-                  .expanded=${!dataField.collapsed}
-                  .header=${this.hass.localize(
-                    `component.${domain}.services.${serviceName}.sections.${dataField.key}.name`
-                  ) ||
-                  dataField.name ||
-                  dataField.key}
-                  .secondary=${this._getSectionDescription(
-                    dataField,
-                    domain,
-                    serviceName
+      ? nothing
+      : html`<ha-service-picker
+          .hass=${this.hass}
+          .value=${this._value?.action}
+          .disabled=${this.disabled}
+          @value-changed=${this._serviceChanged}
+          .showServiceId=${this.showServiceId}
+        ></ha-service-picker>`}
+    ${this.hideDescription
+      ? nothing
+      : html`
+          <div class="description">
+            ${description ? html`<p>${description}</p>` : ""}
+            ${this._manifest
+              ? html` <a
+                  href=${this._manifest.is_built_in
+                    ? documentationUrl(
+                        this.hass,
+                        `/integrations/${this._manifest.domain}`
+                      )
+                    : this._manifest.documentation}
+                  title=${this.hass.localize(
+                    "ui.components.service-control.integration_doc"
                   )}
+                  target="_blank"
+                  rel="noreferrer"
                 >
-                  <ha-service-section-icon
-                    slot="icons"
-                    .hass=${this.hass}
-                    .service=${this._value!.action}
-                    .section=${dataField.key}
-                  ></ha-service-section-icon>
-                  ${Object.entries(dataField.fields).map(([key, field]) =>
-                    this._renderField(
-                      { key, ...field },
-                      hasOptional,
-                      domain,
-                      serviceName,
-                      targetEntities
-                    )
-                  )}
-                </ha-expansion-panel>`
-              : nothing;
-          })} `;
+                  <ha-icon-button
+                    .path=${mdiHelpCircle}
+                    class="help-icon"
+                  ></ha-icon-button>
+                </a>`
+              : nothing}
+          </div>
+        `}
+    ${serviceData && "target" in serviceData
+      ? html`<ha-settings-row .narrow=${this.narrow}>
+          ${hasOptional
+            ? html`<div slot="prefix" class="checkbox-spacer"></div>`
+            : ""}
+          <span slot="heading"
+            >${this.hass.localize("ui.components.service-control.target")}</span
+          >
+          <span slot="description"
+            >${this.hass.localize(
+              "ui.components.service-control.target_secondary"
+            )}</span
+          ><ha-selector
+            .hass=${this.hass}
+            .selector=${this._targetSelector(
+              serviceData.target as TargetSelector,
+              this._value?.target
+            )}
+            .disabled=${this.disabled}
+            @value-changed=${this._targetChanged}
+            .value=${this._value?.target}
+          ></ha-selector
+        ></ha-settings-row>`
+      : entityId
+        ? html`<ha-entity-picker
+            .hass=${this.hass}
+            .disabled=${this.disabled}
+            .value=${this._value?.data?.entity_id}
+            .label=${this.hass.localize(
+              `component.${domain}.services.${serviceName}.fields.entity_id.description`
+            ) || entityId.description}
+            @value-changed=${this._entityPicked}
+            allow-custom-entity
+          ></ha-entity-picker>`
+        : ""}
+    ${shouldRenderServiceDataYaml
+      ? html`<ha-yaml-editor
+          .hass=${this.hass}
+          .label=${this.hass.localize(
+            "ui.components.service-control.action_data"
+          )}
+          .name=${"data"}
+          .readOnly=${this.disabled}
+          .defaultValue=${this._value?.data}
+          @value-changed=${this._dataChanged}
+        ></ha-yaml-editor>`
+      : serviceData?.fields.map((dataField) => {
+          if (!dataField.fields) {
+            return this._renderField(
+              dataField,
+              hasOptional,
+              domain,
+              serviceName,
+              targetEntities
+            );
+          }
+
+          const fields = Object.entries(dataField.fields).map(
+            ([key, field]) => ({ key, ...field })
+          );
+
+          return fields.length &&
+            this._hasFilteredFields(fields, targetEntities)
+            ? html`<ha-expansion-panel
+                left-chevron
+                .expanded=${!dataField.collapsed}
+                .header=${this.hass.localize(
+                  `component.${domain}.services.${serviceName}.sections.${dataField.key}.name`
+                ) ||
+                dataField.name ||
+                dataField.key}
+                .secondary=${this._getSectionDescription(
+                  dataField,
+                  domain,
+                  serviceName
+                )}
+              >
+                <ha-service-section-icon
+                  slot="icons"
+                  .hass=${this.hass}
+                  .service=${this._value!.action}
+                  .section=${dataField.key}
+                ></ha-service-section-icon>
+                ${Object.entries(dataField.fields).map(([key, field]) =>
+                  this._renderField(
+                    { key, ...field },
+                    hasOptional,
+                    domain,
+                    serviceName,
+                    targetEntities
+                  )
+                )}
+              </ha-expansion-panel>`
+            : nothing;
+        })} `;
   }
 
   private _getSectionDescription(

@@ -9,9 +9,6 @@ import { computeObjectId } from "../../../../../common/entity/compute_object_id"
 import "../../../../../components/ha-checkbox";
 import "../../../../../components/ha-selector/ha-selector";
 import "../../../../../components/ha-settings-row";
-import "../../../../../components/ha-textfield";
-import "../../../../../components/ha-yaml-editor";
-import "../../../../../components/user/ha-users-picker";
 import type { PlatformTrigger } from "../../../../../data/automation";
 import type { IntegrationManifest } from "../../../../../data/integration";
 import { fetchIntegrationManifest } from "../../../../../data/integration";
