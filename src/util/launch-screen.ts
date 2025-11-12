@@ -1,5 +1,6 @@
 import type { TemplateResult } from "lit";
 import { render } from "lit";
+import { parseAnimationDuration } from "../common/util/parse-animation-duration";
 
 const removeElement = (
   launchScreenElement: HTMLElement,
@@ -15,21 +16,10 @@ const removeElement = (
   const durationFromCss = getComputedStyle(document.documentElement)
     .getPropertyValue("--ha-animation-base-duration")
     .trim();
-  let timeout = parseFloat(durationFromCss);
-  if (isNaN(timeout)) {
-    if (durationFromCss.endsWith("ms")) {
-      timeout = parseFloat(durationFromCss.slice(0, -2));
-    } else if (durationFromCss.endsWith("s")) {
-      timeout = parseFloat(durationFromCss.slice(0, -1)) * 1000;
-    }
-  }
-  if (!isFinite(timeout) || timeout < 0) {
-    timeout = 0;
-  }
 
   setTimeout(() => {
     launchScreenElement.parentElement?.removeChild(launchScreenElement);
-  }, timeout);
+  }, parseAnimationDuration(durationFromCss));
 };
 
 export const removeLaunchScreen = () => {
