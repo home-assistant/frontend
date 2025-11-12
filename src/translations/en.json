@@ -13,7 +13,8 @@
     "profile": "Profile",
     "light": "Lights",
     "security": "Security",
-    "climate": "Climate"
+    "climate": "Climate",
+    "home": "Home"
   },
   "state": {
     "default": {
