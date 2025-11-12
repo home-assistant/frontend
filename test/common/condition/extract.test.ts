@@ -165,10 +165,7 @@ describe("extractMediaQueries", () => {
 
     const result = extractMediaQueries(conditions);
 
-    expect(result).toEqual([
-      "(max-width: 600px)",
-      "(orientation: landscape)",
-    ]);
+    expect(result).toEqual(["(max-width: 600px)", "(orientation: landscape)"]);
   });
 
   it("should handle empty conditions array", () => {
