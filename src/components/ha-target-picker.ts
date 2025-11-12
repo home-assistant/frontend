@@ -862,7 +862,10 @@ export class HaTargetPicker extends SubscribeMixin(LitElement) {
 
       if (!filterType || filterType === "label") {
         let labels = this._getLabelsMemoized(
-          this.hass,
+          this.hass.states,
+          this.hass.areas,
+          this.hass.devices,
+          this.hass.entities,
           this._labelRegistry,
           includeDomains,
           undefined,

@@ -3974,6 +3974,9 @@
             "item_pasted": "{item} pasted",
             "ctrl": "Ctrl",
             "del": "Del",
+            "targets": "Targets",
+            "select_target": "Select a target",
+            "home": "Home",
             "blocks": "Blocks",
             "triggers": {
               "name": "Triggers",

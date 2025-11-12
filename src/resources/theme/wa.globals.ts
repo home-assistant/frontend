@@ -9,11 +9,16 @@ export const waMainStyles = css`
     --wa-focus-ring-offset: 2px;
     --wa-focus-ring: var(--wa-focus-ring-style) var(--wa-focus-ring-width) var(--wa-focus-ring-color);
 
-    --wa-space-l: 24px;
+    --wa-space-xs: var(--ha-space-2);
+    --wa-space-m: var(--ha-space-4);
+    --wa-space-l: var(--ha-space-6);
+
     --wa-shadow-l: 0 8px 8px -4px rgba(0, 0, 0, 0.2);
     --wa-form-control-padding-block: 0.75em;
+    --wa-form-control-value-line-height: var(--ha-line-height-condensed);
 
     --wa-font-weight-action: var(--ha-font-weight-medium);
+    --wa-transition-normal: 150ms;
     --wa-transition-fast: 75ms;
     --wa-transition-easing: ease;
     --wa-border-width-l: var(--ha-border-radius-lg);

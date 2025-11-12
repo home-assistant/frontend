@@ -154,7 +154,10 @@ export class HaLabelPicker extends SubscribeMixin(LitElement) {
     }
 
     return this._getLabelsMemoized(
-      this.hass,
+      this.hass.states,
+      this.hass.areas,
+      this.hass.devices,
+      this.hass.entities,
       this._labels,
       this.includeDomains,
       this.excludeDomains,

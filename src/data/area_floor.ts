@@ -18,8 +18,6 @@ import {
   type FloorRegistryEntry,
 } from "./floor_registry";
 
-export const UNASSIGNED_FLOOR_ID = "-----unassigned-areas-----" as const;
-
 export interface FloorComboBoxItem extends PickerComboBoxItem {
   type: "floor" | "area";
   floor?: FloorRegistryEntry;
@@ -27,11 +25,11 @@ export interface FloorComboBoxItem extends PickerComboBoxItem {
 }
 
 export interface FloorNestedComboBoxItem extends PickerComboBoxItem {
+  floor?: FloorRegistryEntry;
   areas: FloorComboBoxItem[];
 }
 
 export interface UnassignedAreasFloorComboBoxItem extends PickerComboBoxItem {
-  id: typeof UNASSIGNED_FLOOR_ID;
   areas: FloorComboBoxItem[];
 }
 
@@ -53,7 +51,8 @@ export const getAreasNestedInFloors = (
   deviceFilter?: HaDevicePickerDeviceFilterFunc,
   entityFilter?: HaEntityPickerEntityFilterFunc,
   excludeAreas?: string[],
-  excludeFloors?: string[]
+  excludeFloors?: string[],
+  includeEmptyFloors = false
 ) =>
   getAreasAndFloorsItems(
     states,
@@ -69,6 +68,7 @@ export const getAreasNestedInFloors = (
     entityFilter,
     excludeAreas,
     excludeFloors,
+    includeEmptyFloors,
     true
   ) as (FloorNestedComboBoxItem | UnassignedAreasFloorComboBoxItem)[];
 
@@ -85,7 +85,8 @@ export const getAreasAndFloors = (
   deviceFilter?: HaDevicePickerDeviceFilterFunc,
   entityFilter?: HaEntityPickerEntityFilterFunc,
   excludeAreas?: string[],
-  excludeFloors?: string[]
+  excludeFloors?: string[],
+  includeEmptyFloors = false
 ) =>
   getAreasAndFloorsItems(
     states,
@@ -100,7 +101,8 @@ export const getAreasAndFloors = (
     deviceFilter,
     entityFilter,
     excludeAreas,
-    excludeFloors
+    excludeFloors,
+    includeEmptyFloors
   ) as FloorComboBoxItem[];
 
 const getAreasAndFloorsItems = (
@@ -117,6 +119,7 @@ const getAreasAndFloorsItems = (
   entityFilter?: HaEntityPickerEntityFilterFunc,
   excludeAreas?: string[],
   excludeFloors?: string[],
+  includeEmptyFloors = false,
   nested = false
 ): (
   | FloorComboBoxItem
@@ -268,6 +271,14 @@ const getAreasAndFloorsItems = (
 
   const compare = floorCompare(haFloors);
 
+  if (includeEmptyFloors) {
+    Object.values(haFloors).forEach((floor) => {
+      if (!floorAreaLookup[floor.floor_id]) {
+        floorAreaLookup[floor.floor_id] = [];
+      }
+    });
+  }
+
   // @ts-ignore
   const floorAreaEntries: [
     FloorRegistryEntry | undefined,
@@ -351,9 +362,9 @@ const getAreasAndFloorsItems = (
     items.push({
       areas: unassignedAreaItems,
     } as UnassignedAreasFloorComboBoxItem);
+  } else {
+    items.push(...unassignedAreaItems);
   }
-
-  items.push(...unassignedAreaItems);
 
   return items;
 };
