@@ -1,9 +1,8 @@
-import { ensureArray } from "../../../common/array/ensure-array";
-
-import { isValidEntityId } from "../../../common/entity/valid_entity_id";
+import type { HomeAssistant } from "../../../types";
 import { UNKNOWN } from "../../../data/entity";
 import { getUserPerson } from "../../../data/person";
-import type { HomeAssistant } from "../../../types";
+import { ensureArray } from "../../../common/array/ensure-array";
+import { isValidEntityId } from "../../../common/entity/valid_entity_id";
 
 export type Condition =
   | LocationCondition

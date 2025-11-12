@@ -13,10 +13,7 @@ import type {
 } from "../../../data/lovelace/config/section";
 import { isStrategySection } from "../../../data/lovelace/config/section";
 import type { HomeAssistant } from "../../../types";
-import {
-  ConditionalListenerMixin,
-  setupMediaQueryListeners,
-} from "../../../mixins/conditional-listener-mixin";
+import { ConditionalListenerMixin } from "../../../mixins/conditional-listener-mixin";
 import "../cards/hui-card";
 import type { HuiCard } from "../cards/hui-card";
 import { checkConditionsMet } from "../common/validate-condition";
@@ -37,7 +34,9 @@ declare global {
 }
 
 @customElement("hui-section")
-export class HuiSection extends ConditionalListenerMixin(ReactiveElement) {
+export class HuiSection extends ConditionalListenerMixin<LovelaceSectionConfig>(
+  ReactiveElement
+) {
   @property({ attribute: false }) public hass!: HomeAssistant;
 
   @property({ attribute: false }) public config!: LovelaceSectionRawConfig;
@@ -58,8 +57,6 @@ export class HuiSection extends ConditionalListenerMixin(ReactiveElement) {
   private _layoutElementType?: string;
 
   private _layoutElement?: LovelaceSectionElement;
-
-  private _config: LovelaceSectionConfig | undefined;
 
   @storage({
     key: "dashboardCardClipboard",
@@ -116,7 +113,7 @@ export class HuiSection extends ConditionalListenerMixin(ReactiveElement) {
 
   public connectedCallback() {
     super.connectedCallback();
-    this._updateElement();
+    this._updateVisibility();
   }
 
   protected update(changedProperties) {
@@ -147,24 +144,9 @@ export class HuiSection extends ConditionalListenerMixin(ReactiveElement) {
         this._layoutElement.cards = this._cards;
       }
       if (changedProperties.has("hass") || changedProperties.has("preview")) {
-        this._updateElement();
+        this._updateVisibility();
       }
     }
-  }
-
-  protected setupConditionalListeners() {
-    if (!this._config?.visibility || !this.hass) {
-      return;
-    }
-
-    setupMediaQueryListeners(
-      this._config.visibility,
-      this.hass,
-      (unsub) => this.addConditionalListener(unsub),
-      (conditionsMet) => {
-        this._updateElement(conditionsMet);
-      }
-    );
   }
 
   private async _initializeConfig() {
@@ -208,11 +190,11 @@ export class HuiSection extends ConditionalListenerMixin(ReactiveElement) {
       while (this.lastChild) {
         this.removeChild(this.lastChild);
       }
-      this._updateElement();
+      this._updateVisibility();
     }
   }
 
-  private _updateElement(ignoreConditions?: boolean) {
+  protected _updateVisibility(conditionsMet?: boolean) {
     if (!this._layoutElement || !this._config) {
       return;
     }
@@ -228,9 +210,9 @@ export class HuiSection extends ConditionalListenerMixin(ReactiveElement) {
     }
 
     const visible =
-      ignoreConditions ||
-      !this._config.visibility ||
-      checkConditionsMet(this._config.visibility, this.hass);
+      conditionsMet ??
+      (!this._config.visibility ||
+        checkConditionsMet(this._config.visibility, this.hass));
 
     this._setElementVisibility(visible);
   }
