@@ -12,6 +12,7 @@ export const TRIGGER_COLLECTIONS: AutomationElementGroupCollection[] = [
   {
     groups: {
       device: {},
+      dynamicGroups: {},
       entity: { icon: mdiShape, members: { state: {}, numeric_state: {} } },
       time_location: {
         icon: mdiMapClock,

@@ -29,6 +29,7 @@ import {
 import { automationRowsStyles } from "../styles";
 import "./ha-automation-trigger-row";
 import type HaAutomationTriggerRow from "./ha-automation-trigger-row";
+import { getValueFromDynamic, isDynamic } from "../../../../data/action";
 
 @customElement("ha-automation-trigger")
 export default class HaAutomationTrigger extends SubscribeMixin(LitElement) {
@@ -176,6 +177,10 @@ export default class HaAutomationTrigger extends SubscribeMixin(LitElement) {
     let triggers: Trigger[];
     if (value === PASTE_VALUE) {
       triggers = this.triggers.concat(deepClone(this._clipboard!.trigger));
+    } else if (isDynamic(value)) {
+      triggers = this.triggers.concat({
+        trigger: getValueFromDynamic(value),
+      });
     } else {
       const trigger = value as Exclude<Trigger, TriggerList>["trigger"];
       const elClass = customElements.get(

@@ -19,6 +19,14 @@ import type { TriggerDescription } from "./trigger";
 export const AUTOMATION_DEFAULT_MODE: (typeof MODES)[number] = "single";
 export const AUTOMATION_DEFAULT_MAX = 10;
 
+export const DYNAMIC_PREFIX = "__DYNAMIC__";
+
+export const isDynamic = (key: string | undefined): boolean | undefined =>
+  key?.startsWith(DYNAMIC_PREFIX);
+
+export const getValueFromDynamic = (key: string): string =>
+  key.substring(DYNAMIC_PREFIX.length);
+
 export interface AutomationEntity extends HassEntityBase {
   attributes: HassEntityAttributeBase & {
     id?: string;
