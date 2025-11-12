@@ -1,6 +1,7 @@
 import type { ReactiveElement } from "lit";
 import type { HomeAssistant } from "../types";
 import { setupMediaQueryListeners } from "../common/condition/listeners";
+import type { Condition } from "../data/automation";
 
 type Constructor<T> = abstract new (...args: any[]) => T;
 
