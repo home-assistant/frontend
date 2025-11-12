@@ -1,7 +1,8 @@
 import type { ReactiveElement } from "lit";
 import type { HomeAssistant } from "../types";
 import { setupMediaQueryListeners } from "../common/condition/listeners";
-import type { Condition } from "../data/automation";
+import type { Condition } from "../panels/lovelace/common/validate-condition";
+import type { LovelaceCardConfig } from "../data/lovelace/config/card";
 
 type Constructor<T> = abstract new (...args: any[]) => T;
 
@@ -30,8 +31,15 @@ export const ConditionalListenerMixin = <
   abstract class ConditionalListenerClass extends superClass {
     private __listeners: (() => void)[] = [];
 
-    // Type hint for hass property (should be provided by subclass)
+    abstract _config?: LovelaceCardConfig;
+
+    abstract config?: LovelaceCardConfig;
+
     abstract hass?: HomeAssistant;
+
+    abstract _updateElement?: (config: LovelaceCardConfig) => void;
+
+    abstract _updateVisibility?: (conditionsMet: boolean) => void;
 
     public connectedCallback() {
       super.connectedCallback();
@@ -66,21 +74,18 @@ export const ConditionalListenerMixin = <
      * @param conditions - Optional conditions array. If not provided, will check config.visibility or _config.visibility
      */
     protected setupConditionalListeners(conditions?: Condition[]): void {
-      const component = this as any;
       const finalConditions =
-        conditions ||
-        component.config?.visibility ||
-        component._config?.visibility;
+        conditions || this.config?.visibility || this._config?.visibility;
 
       if (!finalConditions || !this.hass) {
         return;
       }
 
       const onUpdate = (conditionsMet: boolean) => {
-        if (component._updateVisibility) {
-          component._updateVisibility(conditionsMet);
-        } else if (component._updateElement) {
-          component._updateElement(conditionsMet);
+        if (this._updateVisibility) {
+          this._updateVisibility(conditionsMet);
+        } else if (this._updateElement && this.config) {
+          this._updateElement(this.config);
         }
       };
 
