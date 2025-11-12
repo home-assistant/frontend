@@ -25,7 +25,7 @@ import type {
   Calendar,
   CalendarEvent,
   CalendarEventSubscription,
-  CalendarEventSubscriptionData,
+  CalendarEventApiData,
 } from "../../data/calendar";
 import {
   getCalendars,
@@ -265,7 +265,7 @@ class PanelCalendar extends LitElement {
 
     // Add new events from this calendar
     const newEvents: CalendarEvent[] = update.events
-      .map((eventData: CalendarEventSubscriptionData) =>
+      .map((eventData: CalendarEventApiData) =>
         normalizeSubscriptionEventData(eventData, calendar)
       )
       .filter((event): event is CalendarEvent => event !== null);
