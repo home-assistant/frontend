@@ -111,9 +111,27 @@ describe("checkTimeInRange", () => {
       ).toBe(true);
     });
 
+    it("should return true exactly at the after boundary", () => {
+      // Set time to 10:00 PM
+      vi.setSystemTime(new Date(2024, 0, 15, 22, 0, 0));
+
+      expect(
+        checkTimeInRange(mockHass, { after: "22:00", before: "06:00" })
+      ).toBe(true);
+    });
+
     it("should return true when current time is after midnight", () => {
       // Set time to 3:00 AM
       vi.setSystemTime(new Date(2024, 0, 15, 3, 0, 0));
+
+      expect(
+        checkTimeInRange(mockHass, { after: "22:00", before: "06:00" })
+      ).toBe(true);
+    });
+
+    it("should return true exactly at the before boundary", () => {
+      // Set time to 6:00 AM
+      vi.setSystemTime(new Date(2024, 0, 15, 6, 0, 0));
 
       expect(
         checkTimeInRange(mockHass, { after: "22:00", before: "06:00" })

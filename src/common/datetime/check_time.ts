@@ -48,7 +48,12 @@ export function isValidTimeString(timeString: string): boolean {
 
 /**
  * Parse a time string (HH:MM or HH:MM:SS) and set it on today's date in the given timezone
- * @param timeString The time string to parse
+ *
+ * Note: This function assumes the time string has already been validated by
+ * isValidTimeString() at configuration time. It does not re-validate at runtime
+ * for consistency with other condition types (screen, user, location, etc.)
+ *
+ * @param timeString The time string to parse (must be pre-validated)
  * @param timezone The timezone to use
  * @returns The Date object
  */
@@ -109,7 +114,7 @@ export const checkTimeInRange = (
   if (afterDate && beforeDate) {
     if (isBefore(beforeDate, afterDate)) {
       // Crosses midnight (e.g., 22:00 to 06:00)
-      return isAfter(now, afterDate) || isBefore(now, beforeDate);
+      return !isBefore(now, afterDate) || !isAfter(now, beforeDate);
     }
     return isWithinInterval(now, { start: afterDate, end: beforeDate });
   }
