@@ -68,11 +68,11 @@ export const fetchCalendarEvents = async (
 
   const calEvents: CalendarEvent[] = [];
   const errors: string[] = [];
-  const promises: Promise<CalendarEventSubscriptionData[]>[] = [];
+  const promises: Promise<CalendarEventApiData[]>[] = [];
 
   calendars.forEach((cal) => {
     promises.push(
-      hass.callApi<CalendarEventSubscriptionData[]>(
+      hass.callApi<CalendarEventApiData[]>(
         "GET",
         `calendars/${cal.entity_id}${params}`
       )
@@ -80,7 +80,7 @@ export const fetchCalendarEvents = async (
   });
 
   for (const [idx, promise] of promises.entries()) {
-    let result: CalendarEventSubscriptionData[];
+    let result: CalendarEventApiData[];
     try {
       // eslint-disable-next-line no-await-in-loop
       result = await promise;
@@ -162,7 +162,7 @@ export const deleteCalendarEvent = (
  * Calendar event data from both REST API and WebSocket subscription.
  * Both APIs use the same data format.
  */
-export interface CalendarEventSubscriptionData {
+export interface CalendarEventApiData {
   summary: string;
   start: CalendarDateValue;
   end: CalendarDateValue;
@@ -174,7 +174,7 @@ export interface CalendarEventSubscriptionData {
 }
 
 export interface CalendarEventSubscription {
-  events: CalendarEventSubscriptionData[] | null;
+  events: CalendarEventApiData[] | null;
 }
 
 export const subscribeCalendarEvents = (
@@ -213,7 +213,7 @@ const getCalendarDate = (dateObj: CalendarDateValue): string | undefined => {
  * Converts to internal format with { dtstart, dtend, ... }
  */
 export const normalizeSubscriptionEventData = (
-  eventData: CalendarEventSubscriptionData,
+  eventData: CalendarEventApiData,
   calendar: Calendar
 ): CalendarEvent | null => {
   const eventStart = getCalendarDate(eventData.start);

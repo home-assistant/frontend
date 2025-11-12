@@ -261,9 +261,7 @@ class PanelCalendar extends LitElement {
     this._errorCalendars = this._errorCalendars.filter(
       (id) => id !== calendar.entity_id
     );
-    if (this._errorCalendars.length === 0) {
-      this._error = undefined;
-    }
+    this._handleErrors(this._errorCalendars);
 
     // Add new events from this calendar
     const newEvents: CalendarEvent[] = update.events
