@@ -19,7 +19,9 @@ declare global {
 }
 
 @customElement("hui-badge")
-export class HuiBadge extends ConditionalListenerMixin(ReactiveElement) {
+export class HuiBadge extends ConditionalListenerMixin<LovelaceBadgeConfig>(
+  ReactiveElement
+) {
   @property({ type: Boolean }) public preview = false;
 
   @property({ attribute: false }) public config?: LovelaceBadgeConfig;
@@ -50,7 +52,7 @@ export class HuiBadge extends ConditionalListenerMixin(ReactiveElement) {
     this._updateVisibility();
   }
 
-  private _updateElement(config: LovelaceBadgeConfig) {
+  protected _updateElement(config: LovelaceBadgeConfig) {
     if (!this._element) {
       return;
     }
@@ -130,7 +132,7 @@ export class HuiBadge extends ConditionalListenerMixin(ReactiveElement) {
     }
   }
 
-  private _updateVisibility(ignoreConditions?: boolean) {
+  protected _updateVisibility(conditionsMet?: boolean) {
     if (!this._element || !this.hass) {
       return;
     }
@@ -151,9 +153,9 @@ export class HuiBadge extends ConditionalListenerMixin(ReactiveElement) {
     }
 
     const visible =
-      ignoreConditions ||
-      !this.config?.visibility ||
-      checkConditionsMet(this.config.visibility, this.hass);
+      conditionsMet ??
+      (!this.config?.visibility ||
+        checkConditionsMet(this.config.visibility, this.hass));
     this._setElementVisibility(visible);
   }
 

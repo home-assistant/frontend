@@ -21,7 +21,9 @@ declare global {
 }
 
 @customElement("hui-card")
-export class HuiCard extends ConditionalListenerMixin(ReactiveElement) {
+export class HuiCard extends ConditionalListenerMixin<LovelaceCardConfig>(
+  ReactiveElement
+) {
   @property({ type: Boolean }) public preview = false;
 
   @property({ attribute: false }) public config?: LovelaceCardConfig;
@@ -118,7 +120,7 @@ export class HuiCard extends ConditionalListenerMixin(ReactiveElement) {
     return {};
   }
 
-  private _updateElement(config: LovelaceCardConfig) {
+  protected _updateElement(config: LovelaceCardConfig) {
     if (!this._element) {
       return;
     }
@@ -244,7 +246,7 @@ export class HuiCard extends ConditionalListenerMixin(ReactiveElement) {
     }
   }
 
-  private _updateVisibility(ignoreConditions?: boolean) {
+  protected _updateVisibility(conditionsMet?: boolean) {
     if (!this._element || !this.hass) {
       return;
     }
@@ -265,9 +267,9 @@ export class HuiCard extends ConditionalListenerMixin(ReactiveElement) {
     }
 
     const visible =
-      ignoreConditions ||
-      !this.config?.visibility ||
-      checkConditionsMet(this.config.visibility, this.hass);
+      conditionsMet ??
+      (!this.config?.visibility ||
+        checkConditionsMet(this.config.visibility, this.hass));
     this._setElementVisibility(visible);
   }
 

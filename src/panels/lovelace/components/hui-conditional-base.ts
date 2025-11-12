@@ -19,9 +19,9 @@ declare global {
 }
 
 @customElement("hui-conditional-base")
-export class HuiConditionalBase extends ConditionalListenerMixin(
-  ReactiveElement
-) {
+export class HuiConditionalBase extends ConditionalListenerMixin<
+  ConditionalCardConfig | ConditionalRowConfig
+>(ReactiveElement) {
   @property({ attribute: false }) public hass?: HomeAssistant;
 
   @property({ type: Boolean }) public preview = false;
@@ -94,7 +94,7 @@ export class HuiConditionalBase extends ConditionalListenerMixin(
     }
   }
 
-  private _updateVisibility(conditionsMet?: boolean) {
+  protected _updateVisibility(conditionsMet?: boolean) {
     if (!this._element || !this.hass || !this._config) {
       return;
     }

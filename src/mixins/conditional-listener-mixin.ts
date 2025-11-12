@@ -2,9 +2,16 @@ import type { ReactiveElement } from "lit";
 import type { HomeAssistant } from "../types";
 import { setupMediaQueryListeners } from "../common/condition/listeners";
 import type { Condition } from "../panels/lovelace/common/validate-condition";
-import type { LovelaceCardConfig } from "../data/lovelace/config/card";
 
 type Constructor<T> = abstract new (...args: any[]) => T;
+
+/**
+ * Base config type that can be used with conditional listeners
+ */
+export interface ConditionalConfig {
+  visibility?: Condition[];
+  [key: string]: any;
+}
 
 /**
  * Mixin to handle conditional listeners for visibility control
@@ -13,7 +20,7 @@ type Constructor<T> = abstract new (...args: any[]) => T;
  * visibility of components.
  *
  * Usage:
- * 1. Extend your component with ConditionalListenerMixin(ReactiveElement)
+ * 1. Extend your component with ConditionalListenerMixin<YourConfigType>(ReactiveElement)
  * 2. Ensure component has config.visibility or _config.visibility property with conditions
  * 3. Ensure component has _updateVisibility() or _updateElement() method
  * 4. Override setupConditionalListeners() if custom behavior needed (e.g., filter conditions)
@@ -24,22 +31,22 @@ type Constructor<T> = abstract new (...args: any[]) => T;
  * - Handles conditional visibility based on defined conditions
  */
 export const ConditionalListenerMixin = <
-  T extends Constructor<ReactiveElement>,
+  TConfig extends ConditionalConfig = ConditionalConfig,
 >(
-  superClass: T
+  superClass: Constructor<ReactiveElement>
 ) => {
   abstract class ConditionalListenerClass extends superClass {
     private __listeners: (() => void)[] = [];
 
-    abstract _config?: LovelaceCardConfig;
+    protected _config?: TConfig;
 
-    abstract config?: LovelaceCardConfig;
+    public config?: TConfig;
 
-    abstract hass?: HomeAssistant;
+    public hass?: HomeAssistant;
 
-    abstract _updateElement?: (config: LovelaceCardConfig) => void;
+    protected _updateElement?(config: TConfig): void;
 
-    abstract _updateVisibility?: (conditionsMet: boolean) => void;
+    protected _updateVisibility?(conditionsMet?: boolean): void;
 
     public connectedCallback() {
       super.connectedCallback();
@@ -89,8 +96,8 @@ export const ConditionalListenerMixin = <
      * @param conditions - Optional conditions array. If not provided, will check config.visibility or _config.visibility
      */
     protected setupConditionalListeners(conditions?: Condition[]): void {
-      const finalConditions =
-        conditions || this.config?.visibility || this._config?.visibility;
+      const config = this.config || this._config;
+      const finalConditions = conditions || config?.visibility;
 
       if (!finalConditions || !this.hass) {
         return;
@@ -99,8 +106,8 @@ export const ConditionalListenerMixin = <
       const onUpdate = (conditionsMet: boolean) => {
         if (this._updateVisibility) {
           this._updateVisibility(conditionsMet);
-        } else if (this._updateElement && this.config) {
-          this._updateElement(this.config);
+        } else if (this._updateElement && config) {
+          this._updateElement(config);
         }
       };
 
