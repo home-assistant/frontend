@@ -5,6 +5,13 @@ import { checkConditionsMet } from "../../panels/lovelace/common/validate-condit
 import { extractMediaQueries, extractTimeConditions } from "./extract";
 import { calculateNextTimeUpdate } from "./time-calculator";
 
+/** Maximum delay for setTimeout (2^31 - 1 milliseconds, ~24.8 days)
+ * Values exceeding this will overflow and execute immediately
+ *
+ * @see https://developer.mozilla.org/en-US/docs/Web/API/Window/setTimeout#maximum_delay_value
+ */
+const MAX_TIMEOUT_DELAY = 2147483647;
+
 /**
  * Helper to setup media query listeners for conditional visibility
  */
@@ -58,12 +65,16 @@ export function setupTimeListeners(
 
       if (delay === undefined) return;
 
+      // Cap delay to prevent setTimeout overflow
+      const cappedDelay = Math.min(delay, MAX_TIMEOUT_DELAY);
+
       timeoutId = setTimeout(() => {
-        const conditionsMet = checkConditionsMet(conditions, hass);
-        onUpdate(conditionsMet);
-        // Reschedule for next boundary
+        if (delay <= MAX_TIMEOUT_DELAY) {
+          const conditionsMet = checkConditionsMet(conditions, hass);
+          onUpdate(conditionsMet);
+        }
         scheduleUpdate();
-      }, delay);
+      }, cappedDelay);
     };
 
     // Register cleanup function once, outside of scheduleUpdate
