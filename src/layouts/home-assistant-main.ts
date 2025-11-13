@@ -47,9 +47,7 @@ export class HomeAssistantMain extends LitElement {
     const sidebarNarrow = this._sidebarNarrow || this._externalSidebar;
 
     const isPanelReady =
-      this.hass.panels &&
-      this.hass.userData !== undefined &&
-      this.hass.systemData !== undefined;
+      this.hass.panels && this.hass.userData && this.hass.systemData;
 
     return html`
       <ha-drawer

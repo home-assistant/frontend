@@ -253,8 +253,8 @@ export interface HomeAssistant {
   dockedSidebar: "docked" | "always_hidden" | "auto";
   moreInfoEntityId: string | null;
   user?: CurrentUser;
-  userData?: CoreFrontendUserData | null;
-  systemData?: CoreFrontendSystemData | null;
+  userData?: CoreFrontendUserData;
+  systemData?: CoreFrontendSystemData;
   hassUrl(path?): string;
   callService<T = any>(
     domain: ServiceCallRequest["domain"],

@@ -288,18 +288,18 @@ export const connectionMixin = <T extends Constructor<HassBaseEl>>(
       // if the backend isn't up to date) and set to null so frontend can
       // continue
       subscribeFrontendUserData(conn, "core", ({ value: userData }) =>
-        this._updateHass({ userData })
+        this._updateHass({ userData: userData || {} })
       ).catch(() => {
         // eslint-disable-next-line no-console
         console.error("Failed to subscribe to user data, setting to null");
-        this._updateHass({ userData: null });
+        this._updateHass({ userData: {} });
       });
       subscribeFrontendSystemData(conn, "core", ({ value: systemData }) =>
-        this._updateHass({ systemData })
+        this._updateHass({ systemData: systemData || {} })
       ).catch(() => {
         // eslint-disable-next-line no-console
         console.error("Failed to subscribe to system data, setting to null");
-        this._updateHass({ systemData: null });
+        this._updateHass({ systemData: {} });
       });
       clearInterval(this.__backendPingInterval);
       this.__backendPingInterval = setInterval(() => {
