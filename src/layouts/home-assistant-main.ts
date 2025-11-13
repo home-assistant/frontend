@@ -1,5 +1,5 @@
 import type { PropertyValues, TemplateResult } from "lit";
-import { css, html, LitElement } from "lit";
+import { css, html, LitElement, nothing } from "lit";
 import { customElement, property, state } from "lit/decorators";
 import type { HASSDomEvent } from "../common/dom/fire_event";
 import { fireEvent } from "../common/dom/fire_event";
@@ -46,10 +46,15 @@ export class HomeAssistantMain extends LitElement {
   protected render(): TemplateResult {
     const sidebarNarrow = this._sidebarNarrow || this._externalSidebar;
 
+    const isPanelReady =
+      this.hass.panels &&
+      this.hass.userData !== undefined &&
+      this.hass.systemData !== undefined;
+
     return html`
       <ha-drawer
         .type=${sidebarNarrow ? "modal" : ""}
-        .open=${sidebarNarrow ? this._drawerOpen : undefined}
+        .open=${sidebarNarrow ? this._drawerOpen : false}
         .direction=${computeRTLDirection(this.hass)}
         @MDCDrawer:closed=${this._drawerClosed}
       >
@@ -59,12 +64,14 @@ export class HomeAssistantMain extends LitElement {
           .route=${this.route}
           .alwaysExpand=${sidebarNarrow || this.hass.dockedSidebar === "docked"}
         ></ha-sidebar>
-        <partial-panel-resolver
-          .narrow=${this.narrow}
-          .hass=${this.hass}
-          .route=${this.route}
-          slot="appContent"
-        ></partial-panel-resolver>
+        ${isPanelReady
+          ? html`<partial-panel-resolver
+              .narrow=${this.narrow}
+              .hass=${this.hass}
+              .route=${this.route}
+              slot="appContent"
+            ></partial-panel-resolver>`
+          : nothing}
       </ha-drawer>
     `;
   }
