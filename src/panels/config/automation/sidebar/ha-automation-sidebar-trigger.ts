@@ -16,15 +16,17 @@ import { keyed } from "lit/directives/keyed";
 import { fireEvent } from "../../../../common/dom/fire_event";
 import { handleStructError } from "../../../../common/structs/handle-errors";
 import type { TriggerSidebarConfig } from "../../../../data/automation";
-import { isTriggerList } from "../../../../data/trigger";
+import {
+  getTriggerDomain,
+  getTriggerObjectId,
+  isTriggerList,
+} from "../../../../data/trigger";
 import type { HomeAssistant } from "../../../../types";
 import { isMac } from "../../../../util/is_mac";
 import { overflowStyles, sidebarEditorStyles } from "../styles";
 import "../trigger/ha-automation-trigger-editor";
 import type HaAutomationTriggerEditor from "../trigger/ha-automation-trigger-editor";
 import "./ha-automation-sidebar-card";
-import { computeDomain } from "../../../../common/entity/compute_domain";
-import { computeObjectId } from "../../../../common/entity/compute_object_id";
 
 @customElement("ha-automation-sidebar-trigger")
 export default class HaAutomationSidebarTrigger extends LitElement {
@@ -76,14 +78,10 @@ export default class HaAutomationSidebarTrigger extends LitElement {
 
     const domain =
       "trigger" in this.config.config &&
-      this.config.config.trigger.includes(".")
-        ? computeDomain(this.config.config.trigger)
-        : "trigger" in this.config.config && this.config.config.trigger;
+      getTriggerDomain(this.config.config.trigger);
     const triggerName =
       "trigger" in this.config.config &&
-      this.config.config.trigger.includes(".")
-        ? computeObjectId(this.config.config.trigger)
-        : "_";
+      getTriggerObjectId(this.config.config.trigger);
 
     const title =
       this.hass.localize(

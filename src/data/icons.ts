@@ -59,6 +59,7 @@ import type {
 } from "./entity_registry";
 
 import { mdiHomeAssistant } from "../resources/home-assistant-logo-svg";
+import { getTriggerDomain, getTriggerObjectId } from "./trigger";
 
 /** Icon to use when no icon specified for service. */
 export const DEFAULT_SERVICE_ICON = mdiRoomService;
@@ -273,73 +274,58 @@ export const getComponentIcons = async (
   return resources.entity_component.resources.then((res) => res[domain]);
 };
 
-export const getServiceIcons = async (
+export const getCategoryIcons = async <
+  T extends Exclude<IconCategory, "entity" | "entity_component">,
+>(
   hass: HomeAssistant,
+  category: T,
   domain?: string,
   force = false
-): Promise<ServiceIcons | Record<string, ServiceIcons> | undefined> => {
+): Promise<CategoryType[T] | Record<string, CategoryType[T]> | undefined> => {
   if (!domain) {
-    if (!force && resources.services.all) {
-      return resources.services.all;
+    if (!force && resources[category].all) {
+      return resources[category].all as Promise<
+        Record<string, CategoryType[T]>
+      >;
     }
-    resources.services.all = getHassIcons(hass, "services").then((res) => {
-      resources.services.domains = res.resources;
-      return res?.resources;
-    });
-    return resources.services.all;
+    resources[category].all = getHassIcons(hass, category).then((res) => {
+      resources[category].domains = res.resources as any;
+      return res?.resources as Record<string, CategoryType[T]>;
+    }) as any;
+    return resources[category].all as Promise<Record<string, CategoryType[T]>>;
   }
-  if (!force && domain in resources.services.domains) {
-    return resources.services.domains[domain];
+  if (!force && domain in resources[category].domains) {
+    return resources[category].domains[domain] as Promise<CategoryType[T]>;
   }
-  if (resources.services.all && !force) {
-    await resources.services.all;
-    if (domain in resources.services.domains) {
-      return resources.services.domains[domain];
+  if (resources[category].all && !force) {
+    await resources[category].all;
+    if (domain in resources[category].domains) {
+      return resources[category].domains[domain] as Promise<CategoryType[T]>;
     }
   }
   if (!isComponentLoaded(hass, domain)) {
     return undefined;
   }
-  const result = getHassIcons(hass, "services", domain);
-  resources.services.domains[domain] = result.then(
+  const result = getHassIcons(hass, category, domain);
+  resources[category].domains[domain] = result.then(
     (res) => res?.resources[domain]
-  );
-  return resources.services.domains[domain];
+  ) as any;
+  return resources[category].domains[domain] as Promise<CategoryType[T]>;
 };
+
+export const getServiceIcons = async (
+  hass: HomeAssistant,
+  domain?: string,
+  force = false
+): Promise<ServiceIcons | Record<string, ServiceIcons> | undefined> =>
+  getCategoryIcons(hass, "services", domain, force);
 
 export const getTriggerIcons = async (
   hass: HomeAssistant,
   domain?: string,
   force = false
-): Promise<TriggerIcons | Record<string, TriggerIcons> | undefined> => {
-  if (!domain) {
-    if (!force && resources.triggers.all) {
-      return resources.triggers.all;
-    }
-    resources.triggers.all = getHassIcons(hass, "triggers").then((res) => {
-      resources.triggers.domains = res.resources;
-      return res?.resources;
-    });
-    return resources.triggers.all;
-  }
-  if (!force && domain in resources.triggers.domains) {
-    return resources.triggers.domains[domain];
-  }
-  if (resources.triggers.all && !force) {
-    await resources.triggers.all;
-    if (domain in resources.triggers.domains) {
-      return resources.triggers.domains[domain];
-    }
-  }
-  if (!isComponentLoaded(hass, domain)) {
-    return undefined;
-  }
-  const result = getHassIcons(hass, "triggers", domain);
-  resources.triggers.domains[domain] = result.then(
-    (res) => res?.resources[domain]
-  );
-  return resources.triggers.domains[domain];
-};
+): Promise<TriggerIcons | Record<string, TriggerIcons> | undefined> =>
+  getCategoryIcons(hass, "triggers", domain, force);
 
 // Cache for sorted range keys
 const sortedRangeCache = new WeakMap<Record<string, string>, number[]>();
@@ -526,8 +512,8 @@ export const triggerIcon = async (
 ): Promise<string | undefined> => {
   let icon: string | undefined;
 
-  const domain = trigger.includes(".") ? computeDomain(trigger) : trigger;
-  const triggerName = trigger.includes(".") ? computeObjectId(trigger) : "_";
+  const domain = getTriggerDomain(trigger);
+  const triggerName = getTriggerObjectId(trigger);
 
   const triggerIcons = await getTriggerIcons(hass, domain);
   if (triggerIcons) {

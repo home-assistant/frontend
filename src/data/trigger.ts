@@ -1,5 +1,7 @@
 import { mdiMapClock, mdiShape } from "@mdi/js";
 
+import { computeDomain } from "../common/entity/compute_domain";
+import { computeObjectId } from "../common/entity/compute_object_id";
 import type { HomeAssistant } from "../types";
 import type {
   AutomationElementGroupCollection,
@@ -68,3 +70,9 @@ export const subscribeTriggers = (
   hass.connection.subscribeMessage<TriggerDescriptions>(callback, {
     type: "trigger_platforms/subscribe",
   });
+
+export const getTriggerDomain = (trigger: string) =>
+  trigger.includes(".") ? computeDomain(trigger) : trigger;
+
+export const getTriggerObjectId = (trigger: string) =>
+  trigger.includes(".") ? computeObjectId(trigger) : "_";

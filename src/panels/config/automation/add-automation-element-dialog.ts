@@ -22,7 +22,6 @@ import memoizeOne from "memoize-one";
 import { tinykeys } from "tinykeys";
 import { fireEvent } from "../../../common/dom/fire_event";
 import { computeDomain } from "../../../common/entity/compute_domain";
-import { computeObjectId } from "../../../common/entity/compute_object_id";
 import { stringCompare } from "../../../common/string/compare";
 import type {
   LocalizeFunc,
@@ -69,7 +68,12 @@ import {
   fetchIntegrationManifests,
 } from "../../../data/integration";
 import type { TriggerDescriptions } from "../../../data/trigger";
-import { TRIGGER_COLLECTIONS, subscribeTriggers } from "../../../data/trigger";
+import {
+  TRIGGER_COLLECTIONS,
+  getTriggerDomain,
+  getTriggerObjectId,
+  subscribeTriggers,
+} from "../../../data/trigger";
 import type { HassDialog } from "../../../dialogs/make-dialog-manager";
 import { KeyboardShortcutMixin } from "../../../mixins/keyboard-shortcut-mixin";
 import { HaFuse } from "../../../resources/fuse";
@@ -601,7 +605,7 @@ class DialogAddAutomationElement
     const result: ListItem[] = [];
     const addedDomains = new Set<string>();
     Object.keys(triggers).forEach((trigger) => {
-      const domain = trigger.includes(".") ? computeDomain(trigger) : trigger;
+      const domain = getTriggerDomain(trigger);
 
       if (addedDomains.has(domain)) {
         return;
@@ -656,10 +660,8 @@ class DialogAddAutomationElement
       const result: ListItem[] = [];
 
       for (const trigger of Object.keys(triggers)) {
-        const domain = trigger.includes(".") ? computeDomain(trigger) : trigger;
-        const triggerName = trigger.includes(".")
-          ? computeObjectId(trigger)
-          : "_";
+        const domain = getTriggerDomain(trigger);
+        const triggerName = getTriggerObjectId(trigger);
 
         if (group && group !== `${DYNAMIC_PREFIX}${domain}`) {
           continue;

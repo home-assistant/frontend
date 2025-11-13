@@ -5,7 +5,6 @@ import { customElement, property, state } from "lit/decorators";
 import memoizeOne from "memoize-one";
 import { fireEvent } from "../../../../../common/dom/fire_event";
 import { computeDomain } from "../../../../../common/entity/compute_domain";
-import { computeObjectId } from "../../../../../common/entity/compute_object_id";
 import "../../../../../components/ha-checkbox";
 import "../../../../../components/ha-selector/ha-selector";
 import "../../../../../components/ha-settings-row";
@@ -13,11 +12,15 @@ import type { PlatformTrigger } from "../../../../../data/automation";
 import type { IntegrationManifest } from "../../../../../data/integration";
 import { fetchIntegrationManifest } from "../../../../../data/integration";
 import type { TargetSelector } from "../../../../../data/selector";
-import type { TriggerDescription } from "../../../../../data/trigger";
+import {
+  getTriggerDomain,
+  getTriggerObjectId,
+  type TriggerDescription,
+} from "../../../../../data/trigger";
 import type { HomeAssistant } from "../../../../../types";
 import { documentationUrl } from "../../../../../util/documentation-url";
 
-const showOptionalToggle = (field) =>
+const showOptionalToggle = (field: TriggerDescription["fields"][string]) =>
   field.selector &&
   !field.required &&
   !("boolean" in field.selector && field.default);
@@ -31,8 +34,6 @@ export class HaPlatformTrigger extends LitElement {
   @property({ attribute: false }) public description?: TriggerDescription;
 
   @property({ type: Boolean }) public disabled = false;
-
-  @property({ type: Boolean }) public narrow = true;
 
   @state() private _checkedKeys = new Set();
 
@@ -58,13 +59,9 @@ export class HaPlatformTrigger extends LitElement {
     // Fetch the manifest if we have a trigger selected and the trigger domain changed.
     // If no trigger is selected, clear the manifest.
     if (this.trigger?.trigger) {
-      const domain = this.trigger.trigger.includes(".")
-        ? computeDomain(this.trigger.trigger)
-        : this.trigger.trigger;
+      const domain = getTriggerDomain(this.trigger.trigger);
 
-      const oldDomain = oldValue?.trigger.includes(".")
-        ? computeDomain(oldValue.trigger)
-        : oldValue?.trigger;
+      const oldDomain = getTriggerDomain(oldValue?.trigger || "");
 
       if (domain !== oldDomain) {
         this._fetchManifest(domain);
@@ -75,12 +72,8 @@ export class HaPlatformTrigger extends LitElement {
   }
 
   protected render() {
-    const domain = this.trigger.trigger.includes(".")
-      ? computeDomain(this.trigger.trigger)
-      : this.trigger.trigger;
-    const triggerName = this.trigger.trigger.includes(".")
-      ? computeObjectId(this.trigger.trigger)
-      : "_";
+    const domain = getTriggerDomain(this.trigger.trigger);
+    const triggerName = getTriggerObjectId(this.trigger.trigger);
 
     const description = this.hass.localize(
       `component.${domain}.triggers.${triggerName}.description`
@@ -99,9 +92,9 @@ export class HaPlatformTrigger extends LitElement {
 
     return html`
       <div class="description">
-        ${description ? html`<p>${description}</p>` : ""}
+        ${description ? html`<p>${description}</p>` : nothing}
         ${this._manifest
-          ? html` <a
+          ? html`<a
               href=${this._manifest.is_built_in
                 ? documentationUrl(
                     this.hass,
@@ -122,10 +115,10 @@ export class HaPlatformTrigger extends LitElement {
           : nothing}
       </div>
       ${triggerDesc && "target" in triggerDesc
-        ? html`<ha-settings-row .narrow=${this.narrow}>
+        ? html`<ha-settings-row narrow>
             ${hasOptional
               ? html`<div slot="prefix" class="checkbox-spacer"></div>`
-              : ""}
+              : nothing}
             <span slot="heading"
               >${this.hass.localize(
                 "ui.components.service-control.target"
@@ -184,11 +177,11 @@ export class HaPlatformTrigger extends LitElement {
     const showOptional = showOptionalToggle(dataField);
 
     return dataField.selector
-      ? html`<ha-settings-row .narrow=${this.narrow}>
+      ? html`<ha-settings-row narrow>
           ${!showOptional
             ? hasOptional
               ? html`<div slot="prefix" class="checkbox-spacer"></div>`
-              : ""
+              : nothing
             : html`<ha-checkbox
                 .key=${fieldName}
                 .checked=${this._checkedKeys.has(fieldName) ||
@@ -226,7 +219,7 @@ export class HaPlatformTrigger extends LitElement {
             .localizeValue=${this._localizeValueCallback}
           ></ha-selector>
         </ha-settings-row>`
-      : "";
+      : nothing;
   };
 
   private _generateContext(
@@ -354,16 +347,18 @@ export class HaPlatformTrigger extends LitElement {
     try {
       this._manifest = await fetchIntegrationManifest(this.hass, integration);
     } catch (_err: any) {
+      // eslint-disable-next-line no-console
+      console.log(`Unable to fetch integration manifest for ${integration}`);
       // Ignore if loading manifest fails. Probably bad JSON in manifest
     }
   }
 
   static styles = css`
     ha-settings-row {
-      padding: var(--service-control-padding, 0 16px);
+      padding: 0 var(--ha-space-4);
     }
     ha-settings-row[narrow] {
-      padding-bottom: 8px;
+      padding-bottom: var(--ha-space-2);
     }
     ha-settings-row {
       --settings-row-content-width: 100%;
@@ -377,14 +372,14 @@ export class HaPlatformTrigger extends LitElement {
     ha-entity-picker,
     ha-yaml-editor {
       display: block;
-      margin: var(--service-control-padding, 0 16px);
+      margin: 0 var(--ha-space-4);
     }
     ha-yaml-editor {
-      padding: 16px 0;
+      padding: var(--ha-space-4) 0;
     }
     p {
-      margin: var(--service-control-padding, 0 16px);
-      padding: 16px 0;
+      margin: 0 var(--ha-space-4);
+      padding: var(--ha-space-4) 0;
     }
     :host([hide-picker]) p {
       padding-top: 0;
@@ -393,8 +388,8 @@ export class HaPlatformTrigger extends LitElement {
       width: 32px;
     }
     ha-checkbox {
-      margin-left: -16px;
-      margin-inline-start: -16px;
+      margin-left: calc(var(--ha-space-4) * -1);
+      margin-inline-start: calc(var(--ha-space-4) * -1);
       margin-inline-end: initial;
     }
     .help-icon {
