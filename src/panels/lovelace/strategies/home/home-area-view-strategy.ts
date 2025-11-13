@@ -168,6 +168,27 @@ export class HomeAreaViewStrategy extends ReactiveElement {
 
     const summaryEntities = Object.values(entitiesBySummary).flat();
 
+    // Scenes section
+    const sceneFilter = generateEntityFilter(hass, {
+      domain: "scene",
+      entity_category: "none",
+    });
+    const scenes = areaEntities.filter(sceneFilter);
+
+    if (scenes.length > 0) {
+      sections.push({
+        type: "grid",
+        cards: [
+          computeHeadingCard(
+            hass.localize("ui.panel.lovelace.strategy.home.scenes"),
+            "mdi:palette",
+            "/config/scene/dashboard"
+          ),
+          ...scenes.map(computeTileCard),
+        ],
+      });
+    }
+
     // Automations section
     const automationFilter = generateEntityFilter(hass, {
       domain: "automation",
@@ -178,7 +199,9 @@ export class HomeAreaViewStrategy extends ReactiveElement {
     // Rest of entities grouped by device
     const otherEntities = areaEntities.filter(
       (entityId) =>
-        !summaryEntities.includes(entityId) && !automations.includes(entityId)
+        !summaryEntities.includes(entityId) &&
+        !scenes.includes(entityId) &&
+        !automations.includes(entityId)
     );
 
     const entitiesByDevice: Record<string, string[]> = {};

@@ -1,6 +1,4 @@
-import "@home-assistant/webawesome/dist/components/dialog/dialog";
-import { mdiClose } from "@mdi/js";
-import { css, html, LitElement, nothing } from "lit";
+import { css, html, LitElement } from "lit";
 import {
   customElement,
   eventOptions,
@@ -8,6 +6,9 @@ import {
   query,
   state,
 } from "lit/decorators";
+import { ifDefined } from "lit/directives/if-defined";
+import { mdiClose } from "@mdi/js";
+import "@home-assistant/webawesome/dist/components/dialog/dialog";
 import { fireEvent } from "../common/dom/fire_event";
 import { haStyleScrollbar } from "../resources/styles";
 import type { HomeAssistant } from "../types";
@@ -31,6 +32,8 @@ export type DialogWidth = "small" | "medium" | "large" | "full";
  *
  * @slot header - Replace the entire header area.
  * @slot headerNavigationIcon - Leading header action (e.g. close/back button).
+ * @slot headerTitle - Custom title content (used when header-title is not set).
+ * @slot headerSubtitle - Custom subtitle content (used when header-subtitle is not set).
  * @slot headerActionItems - Trailing header actions (e.g. buttons, menus).
  * @slot - Dialog content body.
  * @slot footer - Dialog footer content.
@@ -52,8 +55,8 @@ export type DialogWidth = "small" | "medium" | "large" | "full";
  * @attr {boolean} open - Controls the dialog open state.
  * @attr {("small"|"medium"|"large"|"full")} width - Preferred dialog width preset. Defaults to "medium".
  * @attr {boolean} prevent-scrim-close - Prevents closing the dialog by clicking the scrim/overlay. Defaults to false.
- * @attr {string} header-title - Header title text when no custom title slot is provided.
- * @attr {string} header-subtitle - Header subtitle text when no custom subtitle slot is provided.
+ * @attr {string} header-title - Header title text. If not set, the headerTitle slot is used.
+ * @attr {string} header-subtitle - Header subtitle text. If not set, the headerSubtitle slot is used.
  * @attr {("above"|"below")} header-subtitle-position - Position of the subtitle relative to the title. Defaults to "below".
  * @attr {boolean} flexcontent - Makes the dialog body a flex container for flexible layouts.
  *
@@ -72,6 +75,12 @@ export type DialogWidth = "small" | "medium" | "large" | "full";
 export class HaWaDialog extends LitElement {
   @property({ attribute: false }) public hass!: HomeAssistant;
 
+  @property({ attribute: "aria-labelledby" })
+  public ariaLabelledBy?: string;
+
+  @property({ attribute: "aria-describedby" })
+  public ariaDescribedBy?: string;
+
   @property({ type: Boolean, reflect: true })
   public open = false;
 
@@ -81,11 +90,11 @@ export class HaWaDialog extends LitElement {
   @property({ type: Boolean, reflect: true, attribute: "prevent-scrim-close" })
   public preventScrimClose = false;
 
-  @property({ type: String, attribute: "header-title" })
-  public headerTitle = "";
+  @property({ attribute: "header-title" })
+  public headerTitle?: string;
 
-  @property({ type: String, attribute: "header-subtitle" })
-  public headerSubtitle = "";
+  @property({ attribute: "header-subtitle" })
+  public headerSubtitle?: string;
 
   @property({ type: String, attribute: "header-subtitle-position" })
   public headerSubtitlePosition: "above" | "below" = "below";
@@ -117,6 +126,11 @@ export class HaWaDialog extends LitElement {
         .open=${this._open}
         .lightDismiss=${!this.preventScrimClose}
         without-header
+        aria-labelledby=${ifDefined(
+          this.ariaLabelledBy ||
+            (this.headerTitle !== undefined ? "ha-wa-dialog-title" : undefined)
+        )}
+        aria-describedby=${ifDefined(this.ariaDescribedBy)}
         @wa-show=${this._handleShow}
         @wa-after-show=${this._handleAfterShow}
         @wa-after-hide=${this._handleAfterHide}
@@ -133,14 +147,14 @@ export class HaWaDialog extends LitElement {
                 .path=${mdiClose}
               ></ha-icon-button>
             </slot>
-            ${this.headerTitle
-              ? html`<span slot="title" class="title">
+            ${this.headerTitle !== undefined
+              ? html`<span slot="title" class="title" id="ha-wa-dialog-title">
                   ${this.headerTitle}
                 </span>`
-              : nothing}
-            ${this.headerSubtitle
+              : html`<slot name="headerTitle" slot="title"></slot>`}
+            ${this.headerSubtitle !== undefined
               ? html`<span slot="subtitle">${this.headerSubtitle}</span>`
-              : nothing}
+              : html`<slot name="headerSubtitle" slot="subtitle"></slot>`}
             <slot name="headerActionItems" slot="actionItems"></slot>
           </ha-dialog-header>
         </slot>

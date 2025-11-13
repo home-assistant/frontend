@@ -8,6 +8,7 @@ import memoizeOne from "memoize-one";
 import type { BarSeriesOption, PieSeriesOption } from "echarts/charts";
 import { PieChart } from "echarts/charts";
 import type { ECElementEvent } from "echarts/types/dist/shared";
+import type { PieDataItemOption } from "echarts/types/src/chart/pie/PieSeries";
 import { filterXSS } from "../../../../common/util/xss";
 import { getGraphColorByIndex } from "../../../../common/color/colors";
 import { formatNumber } from "../../../../common/number/format_number";
@@ -387,6 +388,7 @@ export class HuiEnergyDevicesGraphCard
     });
 
     if (this._chartType === "pie") {
+      const pieChartData = chartData as NonNullable<PieSeriesOption["data"]>;
       const { summedData, compareSummedData } = getSummedData(energyData);
       const { consumption, compareConsumption } = computeConsumptionData(
         summedData,
@@ -399,7 +401,10 @@ export class HuiEnergyDevicesGraphCard
         "from_battery" in summedData;
       const untracked = showUntracked
         ? totalUsed -
-          chartData.reduce((acc: number, d: any) => acc + d.value[0], 0)
+          pieChartData.reduce(
+            (acc: number, d) => acc + (d as PieDataItemOption).value![0],
+            0
+          )
         : 0;
       if (untracked > 0) {
         const color = getEnergyColor(
@@ -409,7 +414,7 @@ export class HuiEnergyDevicesGraphCard
           false,
           "--history-unknown-color"
         );
-        chartData.push({
+        pieChartData.push({
           id: "untracked",
           value: [untracked, "untracked"] as any,
           name: this.hass.localize(
@@ -442,13 +447,20 @@ export class HuiEnergyDevicesGraphCard
           }
         }
       }
+      const totalChart = pieChartData.reduce(
+        (acc: number, d) =>
+          this._hiddenStats.includes((d as PieDataItemOption).id as string)
+            ? acc
+            : acc + (d as PieDataItemOption).value![0],
+        0
+      );
       datasets.push({
         type: "pie",
         radius: ["0%", compareData ? "30%" : "40%"],
         name: this.hass.localize(
           "ui.panel.lovelace.cards.energy.energy_devices_graph.total_energy_usage"
         ),
-        data: [totalUsed],
+        data: [totalChart],
         label: {
           show: true,
           position: "center",
@@ -456,7 +468,7 @@ export class HuiEnergyDevicesGraphCard
           fontSize: computedStyle.getPropertyValue("--ha-font-size-l"),
           lineHeight: 24,
           fontWeight: "bold",
-          formatter: `{a}\n${formatNumber(totalUsed, this.hass.locale)} kWh`,
+          formatter: `{a}\n${formatNumber(totalChart, this.hass.locale)} kWh`,
         },
         cursor: "default",
         itemStyle: {

@@ -230,6 +230,11 @@ export interface EnergySankeyCardConfig extends EnergyCardBaseConfig {
   group_by_area?: boolean;
 }
 
+export interface PowerSourcesGraphCardConfig extends EnergyCardBaseConfig {
+  type: "power-sources-graph";
+  title?: string;
+}
+
 export interface EntityFilterCardConfig extends LovelaceCardConfig {
   type: "entity-filter";
   entities: (EntityFilterEntityConfig | string)[];
@@ -323,6 +328,7 @@ export interface IframeCardConfig extends LovelaceCardConfig {
   title?: string;
   allow?: string;
   url: string;
+  hide_background?: boolean;
 }
 
 export interface LightCardConfig extends LovelaceCardConfig {

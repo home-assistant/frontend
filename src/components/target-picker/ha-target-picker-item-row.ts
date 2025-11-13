@@ -545,7 +545,7 @@ export class HaTargetPickerItemRow extends LitElement {
         name: entityName || deviceName || item,
         context,
         stateObject,
-        notFound: !stateObject,
+        notFound: !stateObject && item !== "all" && item !== "none",
       };
     }
 
@@ -638,6 +638,7 @@ export class HaTargetPickerItemRow extends LitElement {
       img {
         width: 24px;
         height: 24px;
+        z-index: 1;
       }
       ha-icon-button {
         --mdc-icon-button-size: 32px;

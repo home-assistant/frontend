@@ -257,7 +257,7 @@ class DialogAddAutomationElement
 
       const results = fuse.multiTermsSearch(filter);
       if (results) {
-        return results.map((result) => result.item);
+        return results.map((result) => result.item).filter((item) => item.name);
       }
       return items;
     }
@@ -294,7 +294,7 @@ class DialogAddAutomationElement
 
       const results = fuse.multiTermsSearch(filter);
       if (results) {
-        return results.map((result) => result.item);
+        return results.map((result) => result.item).filter((item) => item.name);
       }
       return items;
     }
@@ -383,9 +383,16 @@ class DialogAddAutomationElement
 
         generatedCollections.push({
           titleKey: collection.titleKey,
-          groups: groups.sort((a, b) =>
-            stringCompare(a.name, b.name, this.hass.locale.language)
-          ),
+          groups: groups.sort((a, b) => {
+            // make sure device is always on top
+            if (a.key === "device" || a.key === "device_id") {
+              return -1;
+            }
+            if (b.key === "device" || b.key === "device_id") {
+              return 1;
+            }
+            return stringCompare(a.name, b.name, this.hass.locale.language);
+          }),
         });
       });
       return generatedCollections;
@@ -678,7 +685,7 @@ class DialogAddAutomationElement
         );
 
     const typeTitle = this.hass.localize(
-      `ui.panel.config.automation.editor.${automationElementType}s.header`
+      `ui.panel.config.automation.editor.${automationElementType}s.add`
     );
 
     const tabButtons = [
@@ -895,7 +902,9 @@ class DialogAddAutomationElement
 
     return html`
       <div class="items-title ${this._itemsScrolled ? "scrolled" : ""}">
-        ${title}
+        ${this._tab === "blocks" && !this._filter
+          ? this.hass.localize("ui.panel.config.automation.editor.blocks")
+          : title}
       </div>
       <ha-md-list
         dialogInitialFocus=${ifDefined(this._fullScreen ? "" : undefined)}
@@ -1045,6 +1054,7 @@ class DialogAddAutomationElement
   private _onSearchFocus(ev) {
     this._removeKeyboardShortcuts = tinykeys(ev.target, {
       ArrowDown: this._focusSearchList,
+      Enter: this._pickSingleItem,
     });
   }
 
@@ -1059,6 +1069,39 @@ class DialogAddAutomationElement
 
     ev.preventDefault();
     this._itemsListFirstElement.focus();
+  };
+
+  private _pickSingleItem = (ev: KeyboardEvent) => {
+    if (!this._filter) {
+      return;
+    }
+
+    ev.preventDefault();
+    const automationElementType = this._params!.type;
+
+    const items = [
+      ...this._getFilteredItems(
+        automationElementType,
+        this._filter,
+        this.hass.localize,
+        this.hass.services,
+        this._manifests
+      ),
+      ...(automationElementType !== "trigger"
+        ? this._getFilteredBuildingBlocks(
+            automationElementType,
+            this._filter,
+            this.hass.localize
+          )
+        : []),
+    ];
+
+    if (items.length !== 1) {
+      return;
+    }
+
+    this._params!.add(items[0].key);
+    this.closeDialog();
   };
 
   static get styles(): CSSResultGroup {
