@@ -6,8 +6,8 @@ import "../../components/ha-select";
 import "../../components/ha-settings-row";
 import type { LovelaceDashboard } from "../../data/lovelace/dashboard";
 import { fetchDashboards } from "../../data/lovelace/dashboard";
-import { setDefaultPanel } from "../../data/panel";
 import type { HomeAssistant } from "../../types";
+import { saveFrontendUserData } from "../../data/frontend";
 
 @customElement("ha-pick-dashboard-row")
 class HaPickDashboardRow extends LitElement {
@@ -73,10 +73,13 @@ class HaPickDashboardRow extends LitElement {
 
   private _dashboardChanged(ev) {
     const urlPath = ev.target.value;
-    if (!urlPath || urlPath === this.hass.defaultPanel) {
+    if (!urlPath || urlPath === this.hass.userData?.defaultPanel) {
       return;
     }
-    setDefaultPanel(this, urlPath);
+    saveFrontendUserData(this.hass.connection, "core", {
+      ...this.hass.userData,
+      defaultPanel: urlPath,
+    });
   }
 }
 

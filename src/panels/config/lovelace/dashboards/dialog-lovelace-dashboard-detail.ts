@@ -13,10 +13,11 @@ import type {
   LovelaceDashboardCreateParams,
   LovelaceDashboardMutableParams,
 } from "../../../../data/lovelace/dashboard";
-import { DEFAULT_PANEL, setDefaultPanel } from "../../../../data/panel";
+import { DEFAULT_PANEL } from "../../../../data/panel";
 import { haStyleDialog } from "../../../../resources/styles";
 import type { HomeAssistant } from "../../../../types";
 import type { LovelaceDashboardDetailsDialogParams } from "./show-dialog-lovelace-dashboard-detail";
+import { saveFrontendUserData } from "../../../../data/frontend";
 
 @customElement("dialog-lovelace-dashboard-detail")
 export class DialogLovelaceDashboardDetail extends LitElement {
@@ -256,10 +257,11 @@ export class DialogLovelaceDashboardDetail extends LitElement {
     if (!urlPath) {
       return;
     }
-    setDefaultPanel(
-      this,
-      urlPath === this.hass.defaultPanel ? DEFAULT_PANEL : urlPath
-    );
+    saveFrontendUserData(this.hass.connection, "core", {
+      ...this.hass.userData,
+      defaultPanel:
+        urlPath === this.hass.userData?.defaultPanel ? DEFAULT_PANEL : urlPath,
+    });
   }
 
   private async _updateDashboard() {

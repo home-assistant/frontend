@@ -249,8 +249,6 @@ export interface HomeAssistant {
   debugConnection: boolean;
   dockedSidebar: "docked" | "always_hidden" | "auto";
   defaultPanel: string | null;
-  userDefaultPanel: string | null;
-  systemDefaultPanel: string | null;
   moreInfoEntityId: string | null;
   user?: CurrentUser;
   userData?: CoreFrontendUserData | null;
@@ -285,7 +283,7 @@ export interface HomeAssistant {
     configFlow?: Parameters<typeof getHassTranslations>[4]
   ): Promise<LocalizeFunc>;
   loadFragmentTranslation(fragment: string): Promise<LocalizeFunc | undefined>;
-  loadDefaultPanel(): Promise<string | null | undefined>;
+  loadDefaultPanel(): Promise<void>;
   formatEntityState(stateObj: HassEntity, state?: string): string;
   formatEntityAttributeValue(
     stateObj: HassEntity,

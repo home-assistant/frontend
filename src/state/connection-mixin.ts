@@ -14,12 +14,11 @@ import { subscribeAreaRegistry } from "../data/area_registry";
 import { broadcastConnectionStatus } from "../data/connection-status";
 import { subscribeDeviceRegistry } from "../data/device_registry";
 import {
-  fetchFrontendSystemData,
   fetchFrontendUserData,
-  subscribeFrontendSystemData,
   subscribeFrontendUserData,
 } from "../data/frontend";
 import { forwardHaptic } from "../data/haptics";
+import { getCachedDefaultPanelUrlPath } from "../data/panel";
 import { serviceCallWillDisconnect } from "../data/service";
 import {
   DateFormat,
@@ -64,9 +63,7 @@ export const connectionMixin = <T extends Constructor<HassBaseEl>>(
         services: null as any,
         user: null as any,
         panelUrl: (this as any)._panelUrl,
-        defaultPanel: null,
-        systemDefaultPanel: null,
-        userDefaultPanel: null,
+        defaultPanel: getCachedDefaultPanelUrlPath(),
         language,
         selectedLanguage: null,
         locale: {
@@ -206,23 +203,18 @@ export const connectionMixin = <T extends Constructor<HassBaseEl>>(
             integration,
             configFlow
           ),
+        loadDefaultPanel: async () => {
+          const userData = await fetchFrontendUserData(
+            this.hass!.connection,
+            "core"
+          );
+          if (userData?.defaultPanel !== undefined) {
+            this._updateHass({ defaultPanel: userData.defaultPanel });
+          }
+        },
         loadFragmentTranslation: (fragment) =>
           // @ts-ignore
           this._loadFragmentTranslations(this.hass?.language, fragment),
-        loadDefaultPanel: async () => {
-          const [user, system] = await Promise.all([
-            fetchFrontendUserData(conn, "default_panel"),
-            fetchFrontendSystemData(conn, "default_panel"),
-          ]);
-          const defaultPanel = user || system;
-          this._updateHass({
-            userDefaultPanel: user,
-            systemDefaultPanel: system,
-            defaultPanel,
-          });
-          storeState(this.hass!);
-          return defaultPanel;
-        },
         formatEntityState: (stateObj, state) =>
           (state != null ? state : stateObj.state) ?? "",
         formatEntityAttributeName: (_stateObj, attribute) => attribute,
@@ -303,39 +295,11 @@ export const connectionMixin = <T extends Constructor<HassBaseEl>>(
       subscribePanels(conn, (panels) => this._updateHass({ panels }));
       subscribeFrontendUserData(conn, "core", ({ value: userData }) => {
         this._updateHass({ userData });
+        if (userData?.defaultPanel !== undefined) {
+          this._updateHass({ defaultPanel: userData.defaultPanel });
+          storeState(this.hass!);
+        }
       });
-      subscribeFrontendUserData(
-        conn,
-        "default_panel",
-        ({ value: defaultPanel }) => {
-          this._updateHass({
-            userDefaultPanel: defaultPanel,
-          });
-          // Update default panel taking into account user and system default panel
-          this._updateHass({
-            defaultPanel:
-              this.hass!.userDefaultPanel || this.hass!.systemDefaultPanel,
-          });
-          // Store updated default panel in local storage
-          storeState(this.hass!);
-        }
-      );
-      subscribeFrontendSystemData(
-        conn,
-        "default_panel",
-        ({ value: defaultPanel }) => {
-          this._updateHass({
-            systemDefaultPanel: defaultPanel,
-          });
-          // Update default panel taking into account user and system default panel
-          this._updateHass({
-            defaultPanel:
-              this.hass!.userDefaultPanel || this.hass!.systemDefaultPanel,
-          });
-          // Store updated default panel in local storage
-          storeState(this.hass!);
-        }
-      );
       clearInterval(this.__backendPingInterval);
       this.__backendPingInterval = setInterval(() => {
         if (this.hass?.connected) {
