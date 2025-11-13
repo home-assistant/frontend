@@ -2,8 +2,6 @@ import { mdiDotsVertical, mdiDownload, mdiRefresh, mdiText } from "@mdi/js";
 import { css, html, LitElement, nothing } from "lit";
 import { customElement, property, state } from "lit/decorators";
 import memoizeOne from "memoize-one";
-import { isComponentLoaded } from "../../../common/config/is_component_loaded";
-import { atLeastVersion } from "../../../common/config/version";
 import { fireEvent } from "../../../common/dom/fire_event";
 import type { LocalizeFunc } from "../../../common/translations/localize";
 import "../../../components/buttons/ha-call-service-button";
@@ -15,7 +13,6 @@ import "../../../components/ha-list-item";
 import "../../../components/ha-spinner";
 import { getSignedPath } from "../../../data/auth";
 import { getErrorLogDownloadUrl } from "../../../data/error_log";
-import { coreLatestLogsUrl } from "../../../data/hassio/supervisor";
 import { domainToName } from "../../../data/integration";
 import type { LoggedError } from "../../../data/system_log";
 import {
@@ -231,11 +228,7 @@ export class SystemLogCard extends LitElement {
 
   private async _downloadLogs() {
     const timeString = new Date().toISOString().replace(/:/g, "-");
-    const downloadUrl =
-      isComponentLoaded(this.hass, "hassio") &&
-      atLeastVersion(this.hass.config.version, 2025, 10)
-        ? coreLatestLogsUrl
-        : getErrorLogDownloadUrl;
+    const downloadUrl = getErrorLogDownloadUrl(this.hass);
     const logFileName = `home-assistant_${timeString}.log`;
     const signedUrl = await getSignedPath(this.hass, downloadUrl);
     fileDownload(signedUrl.path, logFileName);

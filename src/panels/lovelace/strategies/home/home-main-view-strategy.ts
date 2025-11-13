@@ -1,7 +1,11 @@
 import { ReactiveElement } from "lit";
 import { customElement } from "lit/decorators";
 import { isComponentLoaded } from "../../../../common/config/is_component_loaded";
-import { generateEntityFilter } from "../../../../common/entity/entity_filter";
+import {
+  findEntities,
+  generateEntityFilter,
+} from "../../../../common/entity/entity_filter";
+import { floorDefaultIcon } from "../../../../components/ha-floor-icon";
 import type { AreaRegistryEntry } from "../../../../data/area_registry";
 import { getEnergyPreferences } from "../../../../data/energy";
 import type { LovelaceCardConfig } from "../../../../data/lovelace/config/card";
@@ -21,6 +25,7 @@ import type {
 import { getAreas, getFloors } from "../areas/helpers/areas-strategy-helper";
 import type { CommonControlSectionStrategyConfig } from "../usage_prediction/common-controls-section-strategy";
 import { getHomeStructure } from "./helpers/home-structure";
+import { HOME_SUMMARIES_FILTERS } from "./helpers/home-summaries";
 
 export interface HomeMainViewStrategyConfig {
   type: "home-main";
@@ -92,6 +97,7 @@ export class HomeMainViewStrategy extends ReactiveElement {
                   ? floor.name
                   : hass.localize("ui.panel.lovelace.strategy.home.areas"),
               heading_style: "title",
+              icon: floor.icon || floorDefaultIcon(floor),
             },
             ...cards,
           ],
@@ -142,15 +148,33 @@ export class HomeMainViewStrategy extends ReactiveElement {
       column_span: maxColumns,
     } as LovelaceStrategySectionConfig;
 
-    const summarySection: LovelaceSectionConfig = {
-      type: "grid",
-      column_span: maxColumns,
-      cards: [
-        {
-          type: "heading",
-          heading: hass.localize("ui.panel.lovelace.strategy.home.summaries"),
-        },
-        {
+    const allEntities = Object.keys(hass.states);
+
+    const mediaPlayerFilter = HOME_SUMMARIES_FILTERS.media_players.map(
+      (filter) => generateEntityFilter(hass, filter)
+    );
+
+    const lightsFilters = HOME_SUMMARIES_FILTERS.light.map((filter) =>
+      generateEntityFilter(hass, filter)
+    );
+
+    const climateFilters = HOME_SUMMARIES_FILTERS.climate.map((filter) =>
+      generateEntityFilter(hass, filter)
+    );
+
+    const securityFilters = HOME_SUMMARIES_FILTERS.security.map((filter) =>
+      generateEntityFilter(hass, filter)
+    );
+
+    const hasLights = findEntities(allEntities, lightsFilters).length > 0;
+    const hasMediaPlayers =
+      findEntities(allEntities, mediaPlayerFilter).length > 0;
+    const hasClimate = findEntities(allEntities, climateFilters).length > 0;
+    const hasSecurity = findEntities(allEntities, securityFilters).length > 0;
+
+    const summaryCards: LovelaceCardConfig[] = [
+      hasLights &&
+        ({
           type: "home-summary",
           summary: "light",
           vertical: true,
@@ -162,8 +186,9 @@ export class HomeMainViewStrategy extends ReactiveElement {
             rows: 2,
             columns: 4,
           },
-        } satisfies HomeSummaryCard,
-        {
+        } satisfies HomeSummaryCard),
+      hasClimate &&
+        ({
           type: "home-summary",
           summary: "climate",
           vertical: true,
@@ -175,21 +200,23 @@ export class HomeMainViewStrategy extends ReactiveElement {
             rows: 2,
             columns: 4,
           },
-        } satisfies HomeSummaryCard,
-        {
+        } satisfies HomeSummaryCard),
+      hasSecurity &&
+        ({
           type: "home-summary",
-          summary: "safety",
+          summary: "security",
           vertical: true,
           tap_action: {
             action: "navigate",
-            navigation_path: "/safety?historyBack=1",
+            navigation_path: "/security?historyBack=1",
           },
           grid_options: {
             rows: 2,
             columns: 4,
           },
-        } satisfies HomeSummaryCard,
-        {
+        } satisfies HomeSummaryCard),
+      hasMediaPlayers &&
+        ({
           type: "home-summary",
           summary: "media_players",
           vertical: true,
@@ -201,9 +228,24 @@ export class HomeMainViewStrategy extends ReactiveElement {
             rows: 2,
             columns: 4,
           },
-        } satisfies HomeSummaryCard,
-      ],
+        } satisfies HomeSummaryCard),
+    ].filter(Boolean) as LovelaceCardConfig[];
+
+    const summarySection: LovelaceSectionConfig = {
+      type: "grid",
+      column_span: maxColumns,
+      cards: [],
     };
+
+    if (summaryCards.length) {
+      summarySection.cards!.push(
+        {
+          type: "heading",
+          heading: hass.localize("ui.panel.lovelace.strategy.home.summaries"),
+        },
+        ...summaryCards
+      );
+    }
 
     const weatherFilter = generateEntityFilter(hass, {
       domain: "weather",
@@ -215,7 +257,9 @@ export class HomeMainViewStrategy extends ReactiveElement {
       column_span: maxColumns,
       cards: [],
     };
-    const weatherEntity = Object.keys(hass.states).find(weatherFilter);
+    const weatherEntity = Object.keys(hass.states)
+      .filter(weatherFilter)
+      .sort()[0];
 
     if (weatherEntity) {
       widgetSection.cards!.push(
@@ -258,7 +302,7 @@ export class HomeMainViewStrategy extends ReactiveElement {
       [
         favoriteSection.cards && favoriteSection,
         commonControlsSection,
-        summarySection,
+        summarySection.cards && summarySection,
         ...floorsSections,
         widgetSection.cards && widgetSection,
       ] satisfies (LovelaceSectionRawConfig | undefined)[]

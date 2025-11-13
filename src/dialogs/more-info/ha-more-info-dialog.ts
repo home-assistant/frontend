@@ -8,6 +8,7 @@ import {
   mdiPencil,
   mdiPencilOff,
   mdiPencilOutline,
+  mdiPlusBoxMultipleOutline,
   mdiTransitConnectionVariant,
 } from "@mdi/js";
 import type { HassEntity } from "home-assistant-js-websocket";
@@ -60,6 +61,7 @@ import {
   computeShowLogBookComponent,
 } from "./const";
 import "./controls/more-info-default";
+import "./ha-more-info-add-to";
 import "./ha-more-info-history-and-logbook";
 import "./ha-more-info-info";
 import "./ha-more-info-settings";
@@ -73,7 +75,7 @@ export interface MoreInfoDialogParams {
   data?: Record<string, any>;
 }
 
-type View = "info" | "history" | "settings" | "related";
+type View = "info" | "history" | "settings" | "related" | "add_to";
 
 interface ChildView {
   viewTag: string;
@@ -194,6 +196,10 @@ export class MoreInfoDialog extends LitElement {
     );
   }
 
+  private _shouldShowAddEntityTo(): boolean {
+    return !!this.hass.auth.external?.config.hasEntityAddTo;
+  }
+
   private _getDeviceId(): string | null {
     const entity = this.hass.entities[this._entityId!] as
       | EntityRegistryEntry
@@ -293,6 +299,11 @@ export class MoreInfoDialog extends LitElement {
   private _goToRelated(ev): void {
     if (!shouldHandleRequestSelectedEvent(ev)) return;
     this._setView("related");
+  }
+
+  private _goToAddEntityTo(ev) {
+    if (!shouldHandleRequestSelectedEvent(ev)) return;
+    this._setView("add_to");
   }
 
   private _breadcrumbClick(ev: Event) {
@@ -521,6 +532,22 @@ export class MoreInfoDialog extends LitElement {
                             .path=${mdiInformationOutline}
                           ></ha-svg-icon>
                         </ha-list-item>
+                        ${this._shouldShowAddEntityTo()
+                          ? html`
+                              <ha-list-item
+                                graphic="icon"
+                                @request-selected=${this._goToAddEntityTo}
+                              >
+                                ${this.hass.localize(
+                                  "ui.dialogs.more_info_control.add_entity_to"
+                                )}
+                                <ha-svg-icon
+                                  slot="graphic"
+                                  .path=${mdiPlusBoxMultipleOutline}
+                                ></ha-svg-icon>
+                              </ha-list-item>
+                            `
+                          : nothing}
                       </ha-button-menu>
                     `
                   : nothing}
@@ -613,7 +640,14 @@ export class MoreInfoDialog extends LitElement {
                                   : "entity"}
                               ></ha-related-items>
                             `
-                          : nothing
+                          : this._currView === "add_to"
+                            ? html`
+                                <ha-more-info-add-to
+                                  .hass=${this.hass}
+                                  .entityId=${entityId}
+                                ></ha-more-info-add-to>
+                              `
+                            : nothing
               )}
             </div>
           `
@@ -678,8 +712,8 @@ export class MoreInfoDialog extends LitElement {
           /* Set the top top of the dialog to a fixed position, so it doesnt jump when the content changes size */
           --vertical-align-dialog: flex-start;
           --dialog-surface-margin-top: max(
-            40px,
-            var(--safe-area-inset-top, 0px)
+            var(--ha-space-10),
+            var(--safe-area-inset-top, var(--ha-space-0))
           );
           --dialog-content-padding: 0;
         }
@@ -698,14 +732,15 @@ export class MoreInfoDialog extends LitElement {
         }
 
         ha-more-info-history-and-logbook {
-          padding: 8px 24px 24px 24px;
+          padding: var(--ha-space-2) var(--ha-space-6) var(--ha-space-6)
+            var(--ha-space-6);
           display: block;
         }
 
         @media all and (max-width: 450px), all and (max-height: 500px) {
           /* When in fullscreen dialog should be attached to top */
           ha-dialog {
-            --dialog-surface-margin-top: 0px;
+            --dialog-surface-margin-top: var(--ha-space-0);
           }
         }
 
@@ -730,7 +765,8 @@ export class MoreInfoDialog extends LitElement {
           display: flex;
           flex-direction: column;
           align-items: flex-start;
-          margin: 0 0 -10px 0;
+          margin: var(--ha-space-0) var(--ha-space-0)
+            calc(var(--ha-space-2) * -1) var(--ha-space-0);
         }
 
         .title p {
@@ -752,9 +788,9 @@ export class MoreInfoDialog extends LitElement {
           font-size: var(--ha-font-size-m);
           line-height: 16px;
           --mdc-icon-size: 16px;
-          padding: 4px;
-          margin: -4px;
-          margin-top: -10px;
+          padding: var(--ha-space-1);
+          margin: calc(var(--ha-space-1) * -1);
+          margin-top: calc(var(--ha-space-2) * -1);
           background: none;
           border: none;
           outline: none;

@@ -320,9 +320,9 @@ export class HaConfigLovelaceDashboards extends LitElement {
 
       if (this.hass.panels.light) {
         result.push({
-          icon: "mdi:lamps",
+          icon: this.hass.panels.light.icon || "mdi:lamps",
           title: this.hass.localize("panel.light"),
-          show_in_sidebar: false,
+          show_in_sidebar: true,
           mode: "storage",
           url_path: "light",
           filename: "",
@@ -332,13 +332,13 @@ export class HaConfigLovelaceDashboards extends LitElement {
         });
       }
 
-      if (this.hass.panels.safety) {
+      if (this.hass.panels.security) {
         result.push({
-          icon: "mdi:security",
-          title: this.hass.localize("panel.safety"),
-          show_in_sidebar: false,
+          icon: this.hass.panels.security.icon || "mdi:security",
+          title: this.hass.localize("panel.security"),
+          show_in_sidebar: true,
           mode: "storage",
-          url_path: "safety",
+          url_path: "security",
           filename: "",
           default: false,
           require_admin: false,
@@ -348,11 +348,25 @@ export class HaConfigLovelaceDashboards extends LitElement {
 
       if (this.hass.panels.climate) {
         result.push({
-          icon: "mdi:home-thermometer",
+          icon: this.hass.panels.climate.icon || "mdi:home-thermometer",
           title: this.hass.localize("panel.climate"),
-          show_in_sidebar: false,
+          show_in_sidebar: true,
           mode: "storage",
           url_path: "climate",
+          filename: "",
+          default: false,
+          require_admin: false,
+          type: this._localizeType("built_in"),
+        });
+      }
+
+      if (this.hass.panels.home) {
+        result.push({
+          icon: this.hass.panels.home.icon || "mdi:home",
+          title: this.hass.localize("panel.home"),
+          show_in_sidebar: true,
+          mode: "storage",
+          url_path: "home",
           filename: "",
           default: false,
           require_admin: false,
@@ -470,13 +484,18 @@ export class HaConfigLovelaceDashboards extends LitElement {
   }
 
   private _canDelete(urlPath: string) {
-    return !["lovelace", "energy", "light", "safety", "climate"].includes(
-      urlPath
-    );
+    return ![
+      "lovelace",
+      "energy",
+      "light",
+      "security",
+      "climate",
+      "home",
+    ].includes(urlPath);
   }
 
   private _canEdit(urlPath: string) {
-    return !["light", "safety", "climate"].includes(urlPath);
+    return !["light", "security", "climate", "home"].includes(urlPath);
   }
 
   private _handleDelete = async (item: DataTableItem) => {

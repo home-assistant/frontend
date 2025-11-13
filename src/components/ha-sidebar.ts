@@ -157,7 +157,9 @@ export const computePanels = memoizeOne(
     Object.values(panels).forEach((panel) => {
       if (
         hiddenPanels.includes(panel.url_path) ||
-        (!panel.title && panel.url_path !== defaultPanel)
+        (!panel.title && panel.url_path !== defaultPanel) ||
+        (panel.default_visible === false &&
+          !panelsOrder.includes(panel.url_path))
       ) {
         return;
       }

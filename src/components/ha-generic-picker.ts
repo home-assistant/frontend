@@ -10,7 +10,6 @@ import type { HomeAssistant } from "../types";
 import "./ha-bottom-sheet";
 import "./ha-button";
 import "./ha-combo-box-item";
-import "./ha-icon-button";
 import "./ha-input-helper-text";
 import "./ha-picker-combo-box";
 import type {
@@ -24,10 +23,7 @@ import "./ha-svg-icon";
 
 @customElement("ha-generic-picker")
 export class HaGenericPicker extends LitElement {
-  @property({ attribute: false }) public hass!: HomeAssistant;
-
-  // eslint-disable-next-line lit/no-native-attributes
-  @property({ type: Boolean }) public autofocus = false;
+  @property({ attribute: false }) public hass?: HomeAssistant;
 
   @property({ type: Boolean }) public disabled = false;
 
@@ -50,8 +46,11 @@ export class HaGenericPicker extends LitElement {
   @property({ attribute: "hide-clear-icon", type: Boolean })
   public hideClearIcon = false;
 
-  @property({ attribute: false, type: Array })
-  public getItems?: () => PickerComboBoxItem[];
+  @property({ attribute: false })
+  public getItems?: (
+    searchString?: string,
+    section?: string
+  ) => (PickerComboBoxItem | string)[];
 
   @property({ attribute: false, type: Array })
   public getAdditionalItems?: (searchString?: string) => PickerComboBoxItem[];
@@ -65,11 +64,48 @@ export class HaGenericPicker extends LitElement {
   @property({ attribute: false })
   public searchFn?: PickerComboBoxSearchFn<PickerComboBoxItem>;
 
-  @property({ attribute: "not-found-label", type: String })
-  public notFoundLabel?: string;
+  @property({ attribute: false })
+  public notFoundLabel?: string | ((search: string) => string);
+
+  @property({ attribute: "empty-label" })
+  public emptyLabel?: string;
+
+  @property({ attribute: "popover-placement" })
+  public popoverPlacement:
+    | "bottom"
+    | "top"
+    | "left"
+    | "right"
+    | "top-start"
+    | "top-end"
+    | "right-start"
+    | "right-end"
+    | "bottom-start"
+    | "bottom-end"
+    | "left-start"
+    | "left-end" = "bottom-start";
 
   /** If set picker shows an add button instead of textbox when value isn't set */
   @property({ attribute: "add-button-label" }) public addButtonLabel?: string;
+
+  /** Section filter buttons for the list, section headers needs to be defined in getItems as strings */
+  @property({ attribute: false }) public sections?: (
+    | {
+        id: string;
+        label: string;
+      }
+    | "separator"
+  )[];
+
+  @property({ attribute: false }) public sectionTitleFunction?: (listInfo: {
+    firstIndex: number;
+    lastIndex: number;
+    firstItem: PickerComboBoxItem | string;
+    secondItem: PickerComboBoxItem | string;
+    itemsCount: number;
+  }) => string | undefined;
+
+  @property({ attribute: "selected-section" }) public selectedSection?: string;
 
   @query(".container") private _containerElement?: HTMLDivElement;
 
@@ -82,6 +118,11 @@ export class HaGenericPicker extends LitElement {
   @state() private _popoverWidth = 0;
 
   @state() private _openedNarrow = false;
+
+  static shadowRootOptions = {
+    ...LitElement.shadowRootOptions,
+    delegatesFocus: true,
+  };
 
   private _narrow = false;
 
@@ -135,7 +176,7 @@ export class HaGenericPicker extends LitElement {
                 style="--body-width: ${this._popoverWidth}px;"
                 without-arrow
                 distance="-4"
-                placement="bottom-start"
+                .placement=${this.popoverPlacement}
                 for="picker"
                 auto-size="vertical"
                 auto-size-padding="16"
@@ -144,9 +185,7 @@ export class HaGenericPicker extends LitElement {
                 trap-focus
                 role="dialog"
                 aria-modal="true"
-                aria-label=${this.hass.localize(
-                  "ui.components.target-picker.add_target"
-                )}
+                aria-label=${this.label || "Select option"}
               >
                 ${this._renderComboBox()}
               </wa-popover>
@@ -159,9 +198,7 @@ export class HaGenericPicker extends LitElement {
                 @closed=${this._hidePicker}
                 role="dialog"
                 aria-modal="true"
-                aria-label=${this.hass.localize(
-                  "ui.components.target-picker.add_target"
-                )}
+                aria-label=${this.label || "Select option"}
               >
                 ${this._renderComboBox(true)}
               </ha-bottom-sheet>`
@@ -179,15 +216,19 @@ export class HaGenericPicker extends LitElement {
       <ha-picker-combo-box
         .hass=${this.hass}
         .allowCustomValue=${this.allowCustomValue}
-        .label=${this.searchLabel ?? this.hass.localize("ui.common.search")}
+        .label=${this.searchLabel}
         .value=${this.value}
         @value-changed=${this._valueChanged}
         .rowRenderer=${this.rowRenderer}
         .notFoundLabel=${this.notFoundLabel}
+        .emptyLabel=${this.emptyLabel}
         .getItems=${this.getItems}
         .getAdditionalItems=${this.getAdditionalItems}
         .searchFn=${this.searchFn}
         .mode=${dialogMode ? "dialog" : "popover"}
+        .sections=${this.sections}
+        .sectionTitleFunction=${this.sectionTitleFunction}
+        .selectedSection=${this.selectedSection}
       ></ha-picker-combo-box>
     `;
   }

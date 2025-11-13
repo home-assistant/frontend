@@ -90,6 +90,8 @@ export class HaChartBase extends LitElement {
 
   private _shouldResizeChart = false;
 
+  private _resizeAnimationDuration?: number;
+
   // @ts-ignore
   private _resizeController = new ResizeController(this, {
     callback: () => {
@@ -205,6 +207,16 @@ export class HaChartBase extends LitElement {
     }
     if (changedProps.has("options")) {
       chartOptions = { ...chartOptions, ...this._createOptions() };
+      if (
+        this._compareCustomLegendOptions(
+          changedProps.get("options"),
+          this.options
+        )
+      ) {
+        // custom legend changes may require a resize to layout properly
+        this._shouldResizeChart = true;
+        this._resizeAnimationDuration = 250;
+      }
     } else if (this._isTouchDevice && changedProps.has("_isZoomed")) {
       chartOptions.dataZoom = this._getDataZoomConfig();
     }
@@ -296,7 +308,7 @@ export class HaChartBase extends LitElement {
           itemStyle = {
             color: dataset?.color as string,
             ...(dataset?.itemStyle as { borderColor?: string }),
-            itemStyle,
+            ...itemStyle,
           };
           const color = itemStyle?.color as string;
           const borderColor = itemStyle?.borderColor as string;
@@ -415,6 +427,7 @@ export class HaChartBase extends LitElement {
                         ...axis.axisPointer?.handle,
                         show: true,
                       },
+                      label: { show: false },
                     },
                   }
                 : axis
@@ -508,6 +521,7 @@ export class HaChartBase extends LitElement {
         );
       }
     });
+    this.requestUpdate("_hiddenDatasets");
   }
 
   private _getDataZoomConfig(): DataZoomComponentOption | undefined {
@@ -614,6 +628,10 @@ export class HaChartBase extends LitElement {
   }
 
   private _createTheme(style: CSSStyleDeclaration) {
+    const textBorderColor =
+      style.getPropertyValue("--ha-card-background") ||
+      style.getPropertyValue("--card-background-color");
+    const textBorderWidth = 2;
     return {
       color: getAllGraphColors(style),
       backgroundColor: "transparent",
@@ -637,15 +655,22 @@ export class HaChartBase extends LitElement {
       graph: {
         label: {
           color: style.getPropertyValue("--primary-text-color"),
-          textBorderColor: style.getPropertyValue("--primary-background-color"),
-          textBorderWidth: 2,
+          textBorderColor,
+          textBorderWidth,
+        },
+      },
+      pie: {
+        label: {
+          color: style.getPropertyValue("--primary-text-color"),
+          textBorderColor,
+          textBorderWidth,
         },
       },
       sankey: {
         label: {
           color: style.getPropertyValue("--primary-text-color"),
-          textBorderColor: style.getPropertyValue("--primary-background-color"),
-          textBorderWidth: 2,
+          textBorderColor,
+          textBorderWidth,
         },
       },
       categoryAxis: {
@@ -958,10 +983,33 @@ export class HaChartBase extends LitElement {
 
   private _handleChartRenderFinished = () => {
     if (this._shouldResizeChart) {
-      this.chart?.resize();
+      this.chart?.resize({
+        animation:
+          this._reducedMotion ||
+          typeof this._resizeAnimationDuration !== "number"
+            ? undefined
+            : { duration: this._resizeAnimationDuration },
+      });
       this._shouldResizeChart = false;
+      this._resizeAnimationDuration = undefined;
     }
   };
+
+  private _compareCustomLegendOptions(
+    oldOptions: ECOption | undefined,
+    newOptions: ECOption | undefined
+  ): boolean {
+    const oldLegends = ensureArray(
+      oldOptions?.legend || []
+    ) as LegendComponentOption[];
+    const newLegends = ensureArray(
+      newOptions?.legend || []
+    ) as LegendComponentOption[];
+    return (
+      oldLegends.some((l) => l.show && l.type === "custom") !==
+      newLegends.some((l) => l.show && l.type === "custom")
+    );
+  }
 
   static styles = css`
     :host {

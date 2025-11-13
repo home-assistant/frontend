@@ -8,6 +8,7 @@ import memoizeOne from "memoize-one";
 import type { BarSeriesOption, PieSeriesOption } from "echarts/charts";
 import { PieChart } from "echarts/charts";
 import type { ECElementEvent } from "echarts/types/dist/shared";
+import type { PieDataItemOption } from "echarts/types/src/chart/pie/PieSeries";
 import { filterXSS } from "../../../../common/util/xss";
 import { getGraphColorByIndex } from "../../../../common/color/colors";
 import { formatNumber } from "../../../../common/number/format_number";
@@ -35,6 +36,8 @@ import { measureTextWidth } from "../../../../util/text";
 import "../../../../components/ha-icon-button";
 import { storage } from "../../../../common/decorators/storage";
 import { listenMediaQuery } from "../../../../common/dom/media_query";
+import { getEnergyColor } from "./common/color";
+import type { CustomLegendOption } from "../../../../components/chart/ha-chart-base";
 
 @customElement("hui-energy-devices-graph-card")
 export class HuiEnergyDevicesGraphCard
@@ -49,6 +52,8 @@ export class HuiEnergyDevicesGraphCard
 
   @state() private _data?: EnergyData;
 
+  @state() private _legendData: NonNullable<CustomLegendOption["data"]> = [];
+
   @state()
   @storage({
     key: "energy-devices-graph-chart-type",
@@ -56,6 +61,14 @@ export class HuiEnergyDevicesGraphCard
     subscribe: false,
   })
   private _chartType: "bar" | "pie" = "bar";
+
+  @state()
+  @storage({
+    key: "energy-devices-pie-hidden-stats",
+    state: true,
+    subscribe: false,
+  })
+  private _hiddenStats: string[] = [];
 
   @state() private _isMobile = false;
 
@@ -121,10 +134,16 @@ export class HuiEnergyDevicesGraphCard
           <ha-chart-base
             .hass=${this.hass}
             .data=${this._chartData}
-            .options=${this._createOptions(this._chartData, this._chartType)}
-            .height=${`${Math.max(300, (this._chartData[0]?.data?.length || 0) * 28 + 50)}px`}
-            @chart-click=${this._handleChartClick}
+            .options=${this._createOptions(
+              this._chartData,
+              this._chartType,
+              this._legendData
+            )}
+            .height=${`${Math.max(300, (this._legendData?.length || 0) * 28 + 50)}px`}
             .extraComponents=${[PieChart]}
+            @chart-click=${this._handleChartClick}
+            @dataset-hidden=${this._datasetHidden}
+            @dataset-unhidden=${this._datasetUnhidden}
           ></ha-chart-base>
         </div>
       </ha-card>
@@ -145,7 +164,8 @@ export class HuiEnergyDevicesGraphCard
   private _createOptions = memoizeOne(
     (
       data: (BarSeriesOption | PieSeriesOption)[],
-      chartType: "bar" | "pie"
+      chartType: "bar" | "pie",
+      legendData: typeof this._legendData
     ): ECOption => {
       const options: ECOption = {
         grid: {
@@ -161,6 +181,7 @@ export class HuiEnergyDevicesGraphCard
         },
         xAxis: { show: false },
         yAxis: { show: false },
+        legend: { type: "custom", show: false },
       };
       if (chartType === "bar") {
         options.xAxis = {
@@ -190,6 +211,18 @@ export class HuiEnergyDevicesGraphCard
               )
             ),
           },
+        };
+      } else {
+        options.legend = {
+          type: "custom",
+          show: true,
+          data: legendData,
+          selected: legendData
+            .filter((d) => d.id && this._hiddenStats.includes(d.id))
+            .reduce((acc, d) => {
+              acc[d.id!] = false;
+              return acc;
+            }, {}),
         };
       }
       return options;
@@ -354,23 +387,13 @@ export class HuiEnergyDevicesGraphCard
       }
     });
 
-    chartData.sort((a: any, b: any) => b.value[0] - a.value[0]);
-    if (compareData) {
-      datasets[1].data = chartData.map((d) =>
-        chartDataCompare.find((d2) => (d2 as any).id === d.id)
-      ) as typeof chartDataCompare;
-    }
-
-    datasets.forEach((dataset) => {
-      dataset.data!.length = Math.min(
-        this._config?.max_devices || Infinity,
-        dataset.data!.length
-      );
-    });
-
     if (this._chartType === "pie") {
-      const { summedData } = getSummedData(energyData);
-      const { consumption } = computeConsumptionData(summedData);
+      const pieChartData = chartData as NonNullable<PieSeriesOption["data"]>;
+      const { summedData, compareSummedData } = getSummedData(energyData);
+      const { consumption, compareConsumption } = computeConsumptionData(
+        summedData,
+        compareSummedData
+      );
       const totalUsed = consumption.total.used_total;
       const showUntracked =
         "from_grid" in summedData ||
@@ -378,15 +401,66 @@ export class HuiEnergyDevicesGraphCard
         "from_battery" in summedData;
       const untracked = showUntracked
         ? totalUsed -
-          chartData.reduce((acc: number, d: any) => acc + d.value[0], 0)
+          pieChartData.reduce(
+            (acc: number, d) => acc + (d as PieDataItemOption).value![0],
+            0
+          )
         : 0;
+      if (untracked > 0) {
+        const color = getEnergyColor(
+          computedStyle,
+          this.hass.themes.darkMode,
+          false,
+          false,
+          "--history-unknown-color"
+        );
+        pieChartData.push({
+          id: "untracked",
+          value: [untracked, "untracked"] as any,
+          name: this.hass.localize(
+            "ui.panel.lovelace.cards.energy.energy_devices_graph.untracked_consumption"
+          ),
+          itemStyle: {
+            color: color + "7F",
+            borderColor: color,
+          },
+        });
+        if (compareData) {
+          const compareUntracked =
+            compareConsumption!.total.used_total -
+            chartDataCompare.reduce(
+              (acc: number, d: any) => acc + d.value[0],
+              0
+            );
+          if (compareUntracked > 0) {
+            chartDataCompare.push({
+              id: "untracked",
+              value: [compareUntracked, "untracked"] as any,
+              name: this.hass.localize(
+                "ui.panel.lovelace.cards.energy.energy_devices_graph.untracked_consumption"
+              ),
+              itemStyle: {
+                color: color + "32",
+                borderColor: color + "7F",
+              },
+            });
+          }
+        }
+      }
+      const totalChart = pieChartData.reduce(
+        (acc: number, d) =>
+          this._hiddenStats.includes((d as PieDataItemOption).id as string)
+            ? acc
+            : acc + (d as PieDataItemOption).value![0],
+        0
+      );
       datasets.push({
         type: "pie",
         radius: ["0%", compareData ? "30%" : "40%"],
         name: this.hass.localize(
           "ui.panel.lovelace.cards.energy.energy_devices_graph.total_energy_usage"
         ),
-        data: [totalUsed],
+        data: [totalChart],
         label: {
           show: true,
           position: "center",
@@ -394,22 +468,41 @@ export class HuiEnergyDevicesGraphCard
           fontSize: computedStyle.getPropertyValue("--ha-font-size-l"),
           lineHeight: 24,
           fontWeight: "bold",
-          formatter: `{a}\n${formatNumber(totalUsed, this.hass.locale)} kWh`,
+          formatter: `{a}\n${formatNumber(totalChart, this.hass.locale)} kWh`,
         },
         cursor: "default",
         itemStyle: {
           color: "rgba(0, 0, 0, 0)",
         },
         tooltip: {
-          formatter: () =>
-            untracked > 0
-              ? this.hass.localize(
-                  "ui.panel.lovelace.cards.energy.energy_devices_graph.includes_untracked",
-                  { num: formatNumber(untracked, this.hass.locale) }
-                )
-              : "",
+          show: false,
         },
       });
+    }
+
+    chartData.sort((a: any, b: any) => b.value[0] - a.value[0]);
+    if (
+      this._config?.max_devices &&
+      chartData.length > this._config.max_devices
+    ) {
+      chartData.splice(this._config.max_devices);
+    }
+
+    this._legendData = chartData.map((d) => ({
+      ...d,
+      name: this._getDeviceName(d.name),
+    }));
+    // filter out hidden stats in place
+    for (let i = chartData.length - 1; i >= 0; i--) {
+      if (this._hiddenStats.includes((chartData[i] as any).id)) {
+        chartData.splice(i, 1);
+      }
+    }
+
+    if (compareData) {
+      datasets[1].data = chartData.map((d) =>
+        chartDataCompare.find((d2) => (d2 as any).id === d.id)
+      ) as typeof chartDataCompare;
     }
 
     this._chartData = datasets;
@@ -437,6 +530,18 @@ export class HuiEnergyDevicesGraphCard
 
   private _handleChartTypeChange(): void {
     this._chartType = this._chartType === "pie" ? "bar" : "pie";
+    this._getStatistics(this._data!);
+  }
+
+  private _datasetHidden(ev: CustomEvent<{ id: string }>) {
+    this._hiddenStats = [...this._hiddenStats, ev.detail.id];
+    this._getStatistics(this._data!);
+  }
+
+  private _datasetUnhidden(ev: CustomEvent<{ id: string }>) {
+    this._hiddenStats = this._hiddenStats.filter(
+      (stat) => stat !== ev.detail.id
+    );
     this._getStatistics(this._data!);
   }
 

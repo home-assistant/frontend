@@ -39,30 +39,31 @@ export class HuiEntityEditor extends LitElement {
   private _renderItem(item: EntityConfig, index: number) {
     const stateObj = this.hass.states[item.entity];
 
-    const useDeviceName = entityUseDeviceName(
-      stateObj,
-      this.hass.entities,
-      this.hass.devices
-    );
-
-    const name = this.hass.formatEntityName(
-      stateObj,
-      useDeviceName ? { type: "device" } : { type: "entity" }
-    );
+    const useDeviceName =
+      stateObj &&
+      entityUseDeviceName(stateObj, this.hass.entities, this.hass.devices);
 
     const isRTL = computeRTL(this.hass);
 
-    const primary = item.name || name || item.entity;
+    const primary =
+      (stateObj &&
+        this.hass.formatEntityName(
+          stateObj,
+          useDeviceName ? { type: "device" } : { type: "entity" }
+        )) ||
+      item.entity;
 
-    const secondary = this.hass.formatEntityName(
-      stateObj,
-      useDeviceName
-        ? [{ type: "area" }]
-        : [{ type: "area" }, { type: "device" }],
-      {
-        separator: isRTL ? " ◂ " : " ▸ ",
-      }
-    );
+    const secondary =
+      stateObj &&
+      this.hass.formatEntityName(
+        stateObj,
+        useDeviceName
+          ? [{ type: "area" }]
+          : [{ type: "area" }, { type: "device" }],
+        {
+          separator: isRTL ? " ◂ " : " ▸ ",
+        }
+      );
 
     return html`
       <ha-md-list-item class="item">

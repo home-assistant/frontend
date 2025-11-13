@@ -419,13 +419,15 @@ class HuiEnergySankeyCard
     };
     deviceNodes.forEach((deviceNode) => {
       const entity = this.hass.states[deviceNode.id];
-      const { area, floor } = getEntityContext(
-        entity,
-        this.hass.entities,
-        this.hass.devices,
-        this.hass.areas,
-        this.hass.floors
-      );
+      const { area, floor } = entity
+        ? getEntityContext(
+            entity,
+            this.hass.entities,
+            this.hass.devices,
+            this.hass.areas,
+            this.hass.floors
+          )
+        : { area: null, floor: null };
       if (area) {
         if (area.area_id in areas) {
           areas[area.area_id].value += deviceNode.value;

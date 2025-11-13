@@ -61,8 +61,6 @@ export class HuiCalendarCard extends LitElement implements LovelaceCard {
 
   @state() private _calendars: Calendar[] = [];
 
-  @state() private _eventDisplay = "list-item";
-
   @state() private _narrow = false;
 
   @state() private _error?: string = undefined;
@@ -137,13 +135,13 @@ export class HuiCalendarCard extends LitElement implements LovelaceCard {
           class=${classMap({
             "is-grid": this.layout === "grid",
             "is-panel": this.layout === "panel",
+            "has-title": !!this._config.title,
           })}
           .narrow=${this._narrow}
           .events=${this._events}
           .hass=${this.hass}
           .views=${views}
           .initialView=${this._config.initial_view!}
-          .eventDisplay=${this._eventDisplay}
           .error=${this._error}
           @view-changed=${this._handleViewChanged}
         ></ha-full-calendar>
@@ -173,8 +171,6 @@ export class HuiCalendarCard extends LitElement implements LovelaceCard {
   }
 
   private _handleViewChanged(ev: HASSDomEvent<CalendarViewChanged>): void {
-    this._eventDisplay =
-      ev.detail.view === "dayGridMonth" ? "list-item" : "auto";
     this._startDate = ev.detail.start;
     this._endDate = ev.detail.end;
     this._fetchCalendarEvents();
@@ -229,6 +225,7 @@ export class HuiCalendarCard extends LitElement implements LovelaceCard {
       padding: 0 8px 8px;
       box-sizing: border-box;
       height: 100%;
+      overflow: hidden;
     }
 
     .header {
@@ -239,15 +236,25 @@ export class HuiCalendarCard extends LitElement implements LovelaceCard {
       padding-left: 8px;
       padding-inline-start: 8px;
       direction: var(--direction);
+      white-space: nowrap;
+      text-overflow: ellipsis;
     }
 
     ha-full-calendar {
       --calendar-height: 400px;
+      height: var(--calendar-height);
     }
 
     ha-full-calendar.is-grid,
     ha-full-calendar.is-panel {
-      height: calc(100% - 16px);
+      --calendar-height: calc(100% - 16px);
+    }
+
+    ha-full-calendar.is-grid.has-title,
+    ha-full-calendar.is-panel.has-title {
+      --calendar-height: calc(
+        100% - var(--ha-card-header-font-size, var(--ha-font-size-2xl)) - 22px
+      );
     }
   `;
 }

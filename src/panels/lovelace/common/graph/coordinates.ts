@@ -20,10 +20,11 @@ const calcPoints = (
     }
   });
   const rangeY = maxY - minY || minY * 0.1;
+  // add top and bottom margins to prevent cropping
+  maxY += rangeY * 0.1;
+  minY -= rangeY * 0.1;
   if (maxY < 0) {
     // all values are negative
-    // add margin
-    maxY += rangeY * 0.1;
     maxY = Math.min(0, maxY);
     yAxisOrigin = 0;
   } else if (minY < 0) {
@@ -31,8 +32,6 @@ const calcPoints = (
     yAxisOrigin = (maxY / (maxY - minY || 1)) * height;
   } else {
     // all values are positive
-    // add margin
-    minY -= rangeY * 0.1;
     minY = Math.max(0, minY);
   }
   const yDenom = maxY - minY || 1;
@@ -51,7 +50,8 @@ export const coordinates = (
   width: number,
   height: number,
   maxDetails: number,
-  limits?: { minX?: number; maxX?: number; minY?: number; maxY?: number }
+  limits?: { minX?: number; maxX?: number; minY?: number; maxY?: number },
+  useMean = false
 ) => {
   history = history.filter((item) => !Number.isNaN(item[1]));
 
@@ -59,7 +59,8 @@ export const coordinates = (
     history,
     maxDetails,
     limits?.minX,
-    limits?.maxX
+    limits?.maxX,
+    useMean
   );
   return calcPoints(sampledData, width, height, limits);
 };
@@ -69,7 +70,8 @@ export const coordinatesMinimalResponseCompressedState = (
   width: number,
   height: number,
   maxDetails: number,
-  limits?: { minX?: number; maxX?: number; minY?: number; maxY?: number }
+  limits?: { minX?: number; maxX?: number; minY?: number; maxY?: number },
+  useMean = false
 ) => {
   if (!history?.length) {
     return { points: [], yAxisOrigin: 0 };
@@ -81,5 +83,5 @@ export const coordinatesMinimalResponseCompressedState = (
     item.lu * 1000,
     Number(item.s),
   ]);
-  return coordinates(mappedHistory, width, height, maxDetails, limits);
+  return coordinates(mappedHistory, width, height, maxDetails, limits, useMean);
 };

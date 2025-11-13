@@ -62,7 +62,7 @@ jobs:
           skip-existing: true
 
       - name: Upload release assets
-        uses: softprops/action-gh-release@6da8fa9354ddfdc4aeace5fc48d7f679b5214090 # v2.4.1
+        uses: softprops/action-gh-release@5be0e66d93ac7ed76da52eca8bb058f665c3a5fe # v2.4.2
         with:
           files: |
             dist/*.whl
@@ -115,7 +115,7 @@ jobs:
       - name: Tar folder
         run: tar -czf landing-page/home_assistant_frontend_landingpage-${{ github.event.release.tag_name }}.tar.gz -C landing-page/dist .
       - name: Upload release asset
-        uses: softprops/action-gh-release@6da8fa9354ddfdc4aeace5fc48d7f679b5214090 # v2.4.1
+        uses: softprops/action-gh-release@5be0e66d93ac7ed76da52eca8bb058f665c3a5fe # v2.4.2
         with:
           files: landing-page/home_assistant_frontend_landingpage-${{ github.event.release.tag_name }}.tar.gz
 
@@ -144,6 +144,6 @@ jobs:
       - name: Tar folder
         run: tar -czf hassio/home_assistant_frontend_supervisor-${{ github.event.release.tag_name }}.tar.gz -C hassio/build .
       - name: Upload release asset
-        uses: softprops/action-gh-release@6da8fa9354ddfdc4aeace5fc48d7f679b5214090 # v2.4.1
+        uses: softprops/action-gh-release@5be0e66d93ac7ed76da52eca8bb058f665c3a5fe # v2.4.2
         with:
           files: hassio/home_assistant_frontend_supervisor-${{ github.event.release.tag_name }}.tar.gz
