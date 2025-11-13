@@ -1,26 +1,7 @@
 import type { TemplateResult } from "lit";
 import { render } from "lit";
 import { parseAnimationDuration } from "../common/util/parse-animation-duration";
-
-const removeElement = (
-  launchScreenElement: HTMLElement,
-  skipAnimation: boolean
-) => {
-  if (skipAnimation) {
-    launchScreenElement.parentElement?.removeChild(launchScreenElement);
-    return;
-  }
-
-  launchScreenElement.classList.add("removing");
-
-  const durationFromCss = getComputedStyle(document.documentElement)
-    .getPropertyValue("--ha-animation-base-duration")
-    .trim();
-
-  setTimeout(() => {
-    launchScreenElement.parentElement?.removeChild(launchScreenElement);
-  }, parseAnimationDuration(durationFromCss));
-};
+import { withViewTransition } from "../common/util/view-transition";
 
 export const removeLaunchScreen = () => {
   const launchScreenElement = document.getElementById("ha-launch-screen");
@@ -28,14 +9,22 @@ export const removeLaunchScreen = () => {
     return;
   }
 
-  if (document.startViewTransition) {
-    document.startViewTransition(() => {
-      removeElement(launchScreenElement, false);
-    });
-  } else {
-    // Fallback: Direct removal without transition
-    removeElement(launchScreenElement, true);
-  }
+  withViewTransition((viewTransitionAvailable: boolean) => {
+    if (!viewTransitionAvailable) {
+      launchScreenElement.parentElement?.removeChild(launchScreenElement);
+      return;
+    }
+
+    launchScreenElement.classList.add("removing");
+
+    const durationFromCss = getComputedStyle(document.documentElement)
+      .getPropertyValue("--ha-animation-base-duration")
+      .trim();
+
+    setTimeout(() => {
+      launchScreenElement.parentElement?.removeChild(launchScreenElement);
+    }, parseAnimationDuration(durationFromCss));
+  });
 };
 
 export const renderLaunchScreenInfoBox = (content: TemplateResult) => {
