@@ -87,6 +87,8 @@ export class StateHistoryChartLine extends LitElement {
 
   private _previousYAxisLabelValue = 0;
 
+  private _yAxisMaximumFractionDigits = 0;
+
   protected render() {
     return html`
       <ha-chart-base
@@ -757,8 +759,12 @@ export class StateHistoryChartLine extends LitElement {
         Math.log10(Math.abs(value - this._previousYAxisLabelValue || 1))
       )
     );
+    this._yAxisMaximumFractionDigits = Math.max(
+      this._yAxisMaximumFractionDigits,
+      maximumFractionDigits
+    );
     const label = formatNumber(value, this.hass.locale, {
-      maximumFractionDigits,
+      maximumFractionDigits: this._yAxisMaximumFractionDigits,
     });
     const width = measureTextWidth(label, 12) + 5;
     if (width > this._yWidth) {

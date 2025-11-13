@@ -77,6 +77,7 @@ import { showAssignCategoryDialog } from "../category/show-dialog-assign-categor
 import "./blueprint-script-editor";
 import "./manual-script-editor";
 import type { HaManualScriptEditor } from "./manual-script-editor";
+import { showAutomationSaveTimeoutDialog } from "../automation/automation-save-timeout-dialog/show-dialog-automation-save-timeout";
 
 export class HaScriptEditor extends SubscribeMixin(
   PreventUnsavedMixin(KeyboardShortcutMixin(LitElement))
@@ -1051,28 +1052,22 @@ export class HaScriptEditor extends SubscribeMixin(
           } catch (e) {
             entityId = undefined;
             if (e instanceof Error && e.name === "TimeoutError") {
-              showAlertDialog(this, {
-                title: this.hass.localize(
-                  "ui.panel.config.automation.editor.new_automation_setup_failed_title",
-                  {
-                    type: this.hass.localize(
-                      "ui.panel.config.automation.editor.type_script"
-                    ),
-                  }
-                ),
-                text: this.hass.localize(
-                  "ui.panel.config.automation.editor.new_automation_setup_failed_text",
-                  {
-                    type: this.hass.localize(
-                      "ui.panel.config.automation.editor.type_script"
-                    ),
-                    types: this.hass.localize(
-                      "ui.panel.config.automation.editor.type_script_plural"
-                    ),
-                  }
-                ),
-                warning: true,
+              // Show the dialog and give user a chance to wait for the registry
+              // to respond.
+              await showAutomationSaveTimeoutDialog(this, {
+                savedPromise: entityRegPromise,
+                type: "script",
               });
+              try {
+                // We already gave the user a chance to wait once, so if they skipped
+                // the dialog and it's still not there just immediately timeout.
+                const automation = await promiseTimeout(0, entityRegPromise);
+                entityId = automation.entity_id;
+              } catch (e2) {
+                if (!(e2 instanceof Error && e2.name === "TimeoutError")) {
+                  throw e2;
+                }
+              }
             } else {
               throw e;
             }

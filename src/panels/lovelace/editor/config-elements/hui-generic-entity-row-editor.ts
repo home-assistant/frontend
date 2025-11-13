@@ -46,20 +46,18 @@ export class HuiGenericEntityRowEditor
     return [
       { name: "entity", required: true, selector: { entity: {} } },
       {
-        type: "grid",
-        name: "",
-        schema: [
-          { name: "name", selector: { text: {} } },
-          {
-            name: "icon",
-            selector: {
-              icon: {},
-            },
-            context: {
-              icon_entity: "entity",
-            },
-          },
-        ],
+        name: "name",
+        selector: { entity_name: {} },
+        context: { entity: "entity" },
+      },
+      {
+        name: "icon",
+        selector: {
+          icon: {},
+        },
+        context: {
+          icon_entity: "entity",
+        },
       },
       {
         name: "secondary_info",

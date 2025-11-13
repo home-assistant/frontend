@@ -332,13 +332,13 @@ export class HaConfigLovelaceDashboards extends LitElement {
         });
       }
 
-      if (this.hass.panels.safety) {
+      if (this.hass.panels.security) {
         result.push({
           icon: "mdi:security",
-          title: this.hass.localize("panel.safety"),
+          title: this.hass.localize("panel.security"),
           show_in_sidebar: false,
           mode: "storage",
-          url_path: "safety",
+          url_path: "security",
           filename: "",
           default: false,
           require_admin: false,
@@ -470,13 +470,13 @@ export class HaConfigLovelaceDashboards extends LitElement {
   }
 
   private _canDelete(urlPath: string) {
-    return !["lovelace", "energy", "light", "safety", "climate"].includes(
+    return !["lovelace", "energy", "light", "security", "climate"].includes(
       urlPath
     );
   }
 
   private _canEdit(urlPath: string) {
-    return !["light", "safety", "climate"].includes(urlPath);
+    return !["light", "security", "climate"].includes(urlPath);
   }
 
   private _handleDelete = async (item: DataTableItem) => {

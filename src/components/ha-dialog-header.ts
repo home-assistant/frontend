@@ -6,6 +6,9 @@ export class HaDialogHeader extends LitElement {
   @property({ type: String, attribute: "subtitle-position" })
   public subtitlePosition: "above" | "below" = "below";
 
+  @property({ type: Boolean, reflect: true, attribute: "show-border" })
+  public showBorder = false;
+
   protected render() {
     const titleSlot = html`<div class="header-title">
       <slot name="title"></slot>

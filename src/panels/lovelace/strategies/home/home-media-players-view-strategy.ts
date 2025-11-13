@@ -4,6 +4,7 @@ import {
   findEntities,
   generateEntityFilter,
 } from "../../../../common/entity/entity_filter";
+import { floorDefaultIcon } from "../../../../components/ha-floor-icon";
 import type { LovelaceCardConfig } from "../../../../data/lovelace/config/card";
 import type { LovelaceSectionRawConfig } from "../../../../data/lovelace/config/section";
 import type { LovelaceViewConfig } from "../../../../data/lovelace/config/view";
@@ -58,6 +59,26 @@ const processAreasForMediaPlayers = (
   return cards;
 };
 
+const processUnassignedEntities = (
+  hass: HomeAssistant,
+  entities: string[]
+): LovelaceCardConfig[] => {
+  const unassignedFilter = generateEntityFilter(hass, {
+    area: null,
+  });
+  const unassignedEntities = entities.filter(unassignedFilter);
+  const areaCards: LovelaceCardConfig[] = [];
+
+  for (const entityId of unassignedEntities) {
+    areaCards.push({
+      type: "media-control",
+      entity: entityId,
+    } satisfies MediaControlCardConfig);
+  }
+
+  return areaCards;
+};
+
 @customElement("home-media-players-view-strategy")
 export class HomeMMediaPlayersViewStrategy extends ReactiveElement {
   static async generate(
@@ -96,6 +117,7 @@ export class HomeMMediaPlayersViewStrategy extends ReactiveElement {
               floorCount > 1
                 ? floor.name
                 : hass.localize("ui.panel.lovelace.strategy.home.areas"),
+            icon: floor.icon || floorDefaultIcon(floor),
           },
         ],
       };
@@ -132,10 +154,35 @@ export class HomeMMediaPlayersViewStrategy extends ReactiveElement {
       }
     }
 
+    // Process unassigned entities
+    const unassignedCards = processUnassignedEntities(hass, entities);
+
+    if (unassignedCards.length > 0) {
+      const section: LovelaceSectionRawConfig = {
+        type: "grid",
+        column_span: 2,
+        cards: [
+          {
+            type: "heading",
+            heading:
+              sections.length > 0
+                ? hass.localize(
+                    "ui.panel.lovelace.strategy.home_media_players.other_media_players"
+                  )
+                : hass.localize(
+                    "ui.panel.lovelace.strategy.home_media_players.media_players"
+                  ),
+          },
+          ...unassignedCards,
+        ],
+      };
+      sections.push(section);
+    }
+
     return {
       type: "sections",
       max_columns: 2,
-      sections: sections || [],
+      sections: sections,
     };
   }
 }

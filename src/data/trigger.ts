@@ -4,7 +4,6 @@ import {
   mdiClockOutline,
   mdiCodeBraces,
   mdiDevices,
-  mdiDotsHorizontal,
   mdiFormatListBulleted,
   mdiGestureDoubleTap,
   mdiMapClock,
@@ -23,7 +22,7 @@ import {
 
 import { mdiHomeAssistant } from "../resources/home-assistant-logo-svg";
 import type {
-  AutomationElementGroup,
+  AutomationElementGroupCollection,
   Trigger,
   TriggerList,
 } from "./automation";
@@ -49,16 +48,26 @@ export const TRIGGER_ICONS = {
   list: mdiFormatListBulleted,
 };
 
-export const TRIGGER_GROUPS: AutomationElementGroup = {
-  device: {},
-  entity: { icon: mdiShape, members: { state: {}, numeric_state: {} } },
-  time_location: {
-    icon: mdiMapClock,
-    members: { calendar: {}, sun: {}, time: {}, time_pattern: {}, zone: {} },
+export const TRIGGER_COLLECTIONS: AutomationElementGroupCollection[] = [
+  {
+    groups: {
+      device: {},
+      entity: { icon: mdiShape, members: { state: {}, numeric_state: {} } },
+      time_location: {
+        icon: mdiMapClock,
+        members: {
+          calendar: {},
+          sun: {},
+          time: {},
+          time_pattern: {},
+          zone: {},
+        },
+      },
+    },
   },
-  other: {
-    icon: mdiDotsHorizontal,
-    members: {
+  {
+    titleKey: "ui.panel.config.automation.editor.triggers.groups.other.label",
+    groups: {
       event: {},
       geo_location: {},
       homeassistant: {},
@@ -70,7 +79,7 @@ export const TRIGGER_GROUPS: AutomationElementGroup = {
       persistent_notification: {},
     },
   },
-} as const;
+] as const;
 
 export const isTriggerList = (trigger: Trigger): trigger is TriggerList =>
   "triggers" in trigger;

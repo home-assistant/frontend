@@ -492,7 +492,7 @@ export class EntityRegistrySettingsEditor extends LitElement {
                         )}</span
                       >
                       <ha-switch
-                        .checked=${this.entry.options?.switch_as_x?.invert}
+                        .checked=${!!this.entry.options?.switch_as_x?.invert}
                         @change=${this._switchAsInvertChanged}
                       ></ha-switch>
                     </ha-settings-row>
@@ -784,7 +784,7 @@ export class EntityRegistrySettingsEditor extends LitElement {
       <ha-labels-picker
         .hass=${this.hass}
         .value=${this._labels}
-        .disabled=${this.disabled}
+        .disabled=${!!this.disabled}
         @value-changed=${this._labelsChanged}
       ></ha-labels-picker>
       ${this._cameraPrefs

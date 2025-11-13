@@ -214,17 +214,6 @@ export default class HaAutomationCondition extends LitElement {
                 "ui.panel.config.automation.editor.conditions.add"
               )}
             </ha-button>
-            <ha-button
-              .disabled=${this.disabled}
-              appearance="plain"
-              .size=${this.root ? "medium" : "small"}
-              @click=${this._addConditionBuildingBlockDialog}
-            >
-              <ha-svg-icon .path=${mdiPlus} slot="start"></ha-svg-icon>
-              ${this.hass.localize(
-                "ui.panel.config.automation.editor.conditions.add_building_block"
-              )}
-            </ha-button>
           </div>
         </div>
       </ha-sortable>
@@ -239,15 +228,6 @@ export default class HaAutomationCondition extends LitElement {
       type: "condition",
       add: this._addCondition,
       clipboardItem: this._clipboard?.condition?.condition,
-    });
-  }
-
-  private _addConditionBuildingBlockDialog() {
-    showAddAutomationElementDialog(this, {
-      type: "condition",
-      add: this._addCondition,
-      clipboardItem: this._clipboard?.condition?.condition,
-      group: "building_blocks",
     });
   }
 

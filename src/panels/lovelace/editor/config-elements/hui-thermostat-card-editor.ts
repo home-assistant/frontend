@@ -14,7 +14,7 @@ import {
 } from "superstruct";
 import type { HASSDomEvent } from "../../../../common/dom/fire_event";
 import { fireEvent } from "../../../../common/dom/fire_event";
-import { DEFAULT_ENTITY_NAME } from "../../../../common/entity/compute_entity_name_display";
+import { computeDomain } from "../../../../common/entity/compute_domain";
 import "../../../../components/ha-expansion-panel";
 import "../../../../components/ha-form/ha-form";
 import type {
@@ -35,7 +35,6 @@ import type { EditDetailElementEvent, EditSubElementEvent } from "../types";
 import { configElementStyle } from "./config-elements-style";
 import "./hui-card-features-editor";
 import type { FeatureType } from "./hui-card-features-editor";
-import { computeDomain } from "../../../../common/entity/compute_domain";
 
 const COMPATIBLE_FEATURES_TYPES: Record<string, FeatureType[]> = {
   climate: [
@@ -89,9 +88,7 @@ export class HuiThermostatCardEditor
         {
           name: "name",
           selector: {
-            entity_name: {
-              default_name: DEFAULT_ENTITY_NAME,
-            },
+            entity_name: {},
           },
           context: { entity: "entity" },
         },

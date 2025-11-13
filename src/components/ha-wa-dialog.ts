@@ -1,12 +1,18 @@
-import { css, html, LitElement, nothing } from "lit";
-import { customElement, property, state } from "lit/decorators";
 import "@home-assistant/webawesome/dist/components/dialog/dialog";
 import { mdiClose } from "@mdi/js";
-import "./ha-dialog-header";
-import "./ha-icon-button";
-import type { HomeAssistant } from "../types";
+import { css, html, LitElement, nothing } from "lit";
+import {
+  customElement,
+  eventOptions,
+  property,
+  query,
+  state,
+} from "lit/decorators";
 import { fireEvent } from "../common/dom/fire_event";
 import { haStyleScrollbar } from "../resources/styles";
+import type { HomeAssistant } from "../types";
+import "./ha-dialog-header";
+import "./ha-icon-button";
 
 export type DialogWidth = "small" | "medium" | "large" | "full";
 
@@ -90,6 +96,11 @@ export class HaWaDialog extends LitElement {
   @state()
   private _open = false;
 
+  @query(".body") public bodyContainer!: HTMLDivElement;
+
+  @state()
+  private _bodyScrolled = false;
+
   protected updated(
     changedProperties: Map<string | number | symbol, unknown>
   ): void {
@@ -107,10 +118,14 @@ export class HaWaDialog extends LitElement {
         .lightDismiss=${!this.preventScrimClose}
         without-header
         @wa-show=${this._handleShow}
+        @wa-after-show=${this._handleAfterShow}
         @wa-after-hide=${this._handleAfterHide}
       >
         <slot name="header">
-          <ha-dialog-header .subtitlePosition=${this.headerSubtitlePosition}>
+          <ha-dialog-header
+            .subtitlePosition=${this.headerSubtitlePosition}
+            .showBorder=${this._bodyScrolled}
+          >
             <slot name="headerNavigationIcon" slot="navigationIcon">
               <ha-icon-button
                 data-dialog="close"
@@ -129,7 +144,7 @@ export class HaWaDialog extends LitElement {
             <slot name="headerActionItems" slot="actionItems"></slot>
           </ha-dialog-header>
         </slot>
-        <div class="body ha-scrollbar">
+        <div class="body ha-scrollbar" @scroll=${this._handleBodyScroll}>
           <slot></slot>
         </div>
         <slot name="footer" slot="footer"></slot>
@@ -146,6 +161,10 @@ export class HaWaDialog extends LitElement {
     (this.querySelector("[autofocus]") as HTMLElement | null)?.focus();
   };
 
+  private _handleAfterShow = () => {
+    fireEvent(this, "after-show");
+  };
+
   private _handleAfterHide = () => {
     this._open = false;
     fireEvent(this, "closed");
@@ -154,6 +173,11 @@ export class HaWaDialog extends LitElement {
   public disconnectedCallback(): void {
     super.disconnectedCallback();
     this._open = false;
+  }
+
+  @eventOptions({ passive: true })
+  private _handleBodyScroll(ev: Event) {
+    this._bodyScrolled = (ev.target as HTMLDivElement).scrollTop > 0;
   }
 
   static styles = [
@@ -172,7 +196,7 @@ export class HaWaDialog extends LitElement {
             )
           )
         );
-        --width: var(--ha-dialog-width-md, min(580px, var(--full-width)));
+        --width: min(var(--ha-dialog-width-md, 580px), var(--full-width));
         --spacing: var(--dialog-content-padding, var(--ha-space-6));
         --show-duration: var(--ha-dialog-show-duration, 200ms);
         --hide-duration: var(--ha-dialog-hide-duration, 200ms);
@@ -193,11 +217,11 @@ export class HaWaDialog extends LitElement {
       }
 
       :host([width="small"]) wa-dialog {
-        --width: var(--ha-dialog-width-sm, min(320px, var(--full-width)));
+        --width: min(var(--ha-dialog-width-sm, 320px), var(--full-width));
       }
 
       :host([width="large"]) wa-dialog {
-        --width: var(--ha-dialog-width-lg, min(720px, var(--full-width)));
+        --width: min(var(--ha-dialog-width-lg, 720px), var(--full-width));
       }
 
       :host([width="full"]) wa-dialog {
@@ -211,6 +235,7 @@ export class HaWaDialog extends LitElement {
           --ha-dialog-max-height,
           calc(100% - var(--ha-space-20))
         );
+        min-height: var(--ha-dialog-min-height);
         position: var(--dialog-surface-position, relative);
         margin-top: var(--dialog-surface-margin-top, auto);
         display: flex;
@@ -284,6 +309,7 @@ export class HaWaDialog extends LitElement {
       }
       :host([flexcontent]) .body {
         max-width: 100%;
+        flex: 1;
         display: flex;
         flex-direction: column;
       }
@@ -312,6 +338,7 @@ declare global {
 
   interface HASSDomEvents {
     opened: undefined;
+    "after-show": undefined;
     closed: undefined;
   }
 }
