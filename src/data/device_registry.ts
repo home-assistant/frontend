@@ -107,11 +107,12 @@ export const sortDeviceRegistryByName = (
   );
 
 export const getDeviceEntityLookup = (
-  entities: EntityRegistryEntry[]
+  entities: EntityRegistryEntry[],
+  filterHidden = false
 ): DeviceEntityLookup => {
   const deviceEntityLookup: DeviceEntityLookup = {};
   for (const entity of entities) {
-    if (!entity.device_id) {
+    if (!entity.device_id || (filterHidden && entity.hidden_by)) {
       continue;
     }
     if (!(entity.device_id in deviceEntityLookup)) {

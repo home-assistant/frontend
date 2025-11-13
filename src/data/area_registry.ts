@@ -60,11 +60,12 @@ export const deleteAreaRegistryEntry = (hass: HomeAssistant, areaId: string) =>
   });
 
 export const getAreaEntityLookup = (
-  entities: EntityRegistryEntry[]
+  entities: EntityRegistryEntry[],
+  filterHidden = false
 ): AreaEntityLookup => {
   const areaEntityLookup: AreaEntityLookup = {};
   for (const entity of entities) {
-    if (!entity.area_id) {
+    if (!entity.area_id || (filterHidden && entity.hidden_by)) {
       continue;
     }
     if (!(entity.area_id in areaEntityLookup)) {
