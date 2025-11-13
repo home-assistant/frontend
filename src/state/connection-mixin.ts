@@ -284,9 +284,8 @@ export const connectionMixin = <T extends Constructor<HassBaseEl>>(
       subscribeConfig(conn, (config) => this._updateHass({ config }));
       subscribeServices(conn, (services) => this._updateHass({ services }));
       subscribePanels(conn, (panels) => this._updateHass({ panels }));
-      // Catch errors to userData and systemData subscription (e.g., for Cast
-      // if the backend isn't up to date) and set to null so frontend can
-      // continue
+      // Catch errors to userData and systemData subscription (e.g. if the
+      // backend isn't up to date) and set to null so frontend can continue
       subscribeFrontendUserData(conn, "core", ({ value: userData }) =>
         this._updateHass({ userData: userData || {} })
       ).catch(() => {
