@@ -284,18 +284,21 @@ export const connectionMixin = <T extends Constructor<HassBaseEl>>(
       subscribeConfig(conn, (config) => this._updateHass({ config }));
       subscribeServices(conn, (services) => this._updateHass({ services }));
       subscribePanels(conn, (panels) => this._updateHass({ panels }));
+      // Catch errors to userData and systemData subscription (e.g., for Cast
+      // if the backend isn't up to date) and set to null so frontend can
+      // continue
       subscribeFrontendUserData(conn, "core", ({ value: userData }) =>
         this._updateHass({ userData })
       ).catch(() => {
-        // Catch errors to systemData subscription (e.g., for Cast if the backend
-        // isn't up to date) and set to null so frontend can continue
+        // eslint-disable-next-line no-console
+        console.error("Failed to subscribe to user data, setting to null");
         this._updateHass({ userData: null });
       });
       subscribeFrontendSystemData(conn, "core", ({ value: systemData }) =>
         this._updateHass({ systemData })
       ).catch(() => {
-        // Catch errors to systemData subscription (e.g., for Cast if the backend
-        // isn't up to date) and set to null so frontend can continue
+        // eslint-disable-next-line no-console
+        console.error("Failed to subscribe to system data, setting to null");
         this._updateHass({ systemData: null });
       });
       clearInterval(this.__backendPingInterval);
