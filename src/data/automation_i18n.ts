@@ -16,8 +16,9 @@ import {
   formatListWithAnds,
   formatListWithOrs,
 } from "../common/string/format-list";
+import { hasTemplate } from "../common/string/has-template";
 import type { HomeAssistant } from "../types";
-import type { Condition, ForDict, Trigger } from "./automation";
+import type { Condition, ForDict, LegacyTrigger, Trigger } from "./automation";
 import type { DeviceCondition, DeviceTrigger } from "./device_automation";
 import {
   localizeDeviceAutomationCondition,
@@ -25,8 +26,7 @@ import {
 } from "./device_automation";
 import type { EntityRegistryEntry } from "./entity_registry";
 import type { FrontendLocaleData } from "./translation";
-import { isTriggerList } from "./trigger";
-import { hasTemplate } from "../common/string/has-template";
+import { getTriggerDomain, getTriggerObjectId, isTriggerList } from "./trigger";
 
 const triggerTranslationBaseKey =
   "ui.panel.config.automation.editor.triggers.type";
@@ -121,6 +121,37 @@ const tryDescribeTrigger = (
     return trigger.alias;
   }
 
+  const description = describeLegacyTrigger(
+    trigger as LegacyTrigger,
+    hass,
+    entityRegistry
+  );
+
+  if (description) {
+    return description;
+  }
+
+  const triggerType = trigger.trigger;
+
+  const domain = getTriggerDomain(trigger.trigger);
+  const type = getTriggerObjectId(trigger.trigger);
+
+  return (
+    hass.localize(
+      `component.${domain}.triggers.${type}.description_configured`
+    ) ||
+    hass.localize(
+      `ui.panel.config.automation.editor.triggers.type.${triggerType as LegacyTrigger["trigger"]}.label`
+    ) ||
+    hass.localize(`ui.panel.config.automation.editor.triggers.unknown_trigger`)
+  );
+};
+
+const describeLegacyTrigger = (
+  trigger: LegacyTrigger,
+  hass: HomeAssistant,
+  entityRegistry: EntityRegistryEntry[]
+) => {
   // Event Trigger
   if (trigger.trigger === "event" && trigger.event_type) {
     const eventTypes: string[] = [];
@@ -802,13 +833,7 @@ const tryDescribeTrigger = (
       }
     );
   }
-
-  return (
-    hass.localize(
-      `ui.panel.config.automation.editor.triggers.type.${trigger.trigger}.label`
-    ) ||
-    hass.localize(`ui.panel.config.automation.editor.triggers.unknown_trigger`)
-  );
+  return undefined;
 };
 
 export const describeCondition = (

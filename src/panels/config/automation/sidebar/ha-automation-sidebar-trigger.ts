@@ -15,8 +15,15 @@ import { customElement, property, query, state } from "lit/decorators";
 import { keyed } from "lit/directives/keyed";
 import { fireEvent } from "../../../../common/dom/fire_event";
 import { handleStructError } from "../../../../common/structs/handle-errors";
-import type { TriggerSidebarConfig } from "../../../../data/automation";
-import { isTriggerList } from "../../../../data/trigger";
+import type {
+  LegacyTrigger,
+  TriggerSidebarConfig,
+} from "../../../../data/automation";
+import {
+  getTriggerDomain,
+  getTriggerObjectId,
+  isTriggerList,
+} from "../../../../data/trigger";
 import type { HomeAssistant } from "../../../../types";
 import { isMac } from "../../../../util/is_mac";
 import { overflowStyles, sidebarEditorStyles } from "../styles";
@@ -72,9 +79,18 @@ export default class HaAutomationSidebarTrigger extends LitElement {
       "ui.panel.config.automation.editor.triggers.trigger"
     );
 
-    const title = this.hass.localize(
-      `ui.panel.config.automation.editor.triggers.type.${type}.label`
-    );
+    const domain =
+      "trigger" in this.config.config &&
+      getTriggerDomain(this.config.config.trigger);
+    const triggerName =
+      "trigger" in this.config.config &&
+      getTriggerObjectId(this.config.config.trigger);
+
+    const title =
+      this.hass.localize(
+        `ui.panel.config.automation.editor.triggers.type.${type as LegacyTrigger["trigger"]}.label`
+      ) ||
+      this.hass.localize(`component.${domain}.triggers.${triggerName}.name`);
 
     return html`
       <ha-automation-sidebar-card
@@ -268,6 +284,7 @@ export default class HaAutomationSidebarTrigger extends LitElement {
             class="sidebar-editor"
             .hass=${this.hass}
             .trigger=${this.config.config}
+            .description=${this.config.description}
             @value-changed=${this._valueChangedSidebar}
             @yaml-changed=${this._yamlChangedSidebar}
             .uiSupported=${this.config.uiSupported}
