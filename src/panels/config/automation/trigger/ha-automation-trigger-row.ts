@@ -15,6 +15,7 @@ import {
   mdiStopCircleOutline,
 } from "@mdi/js";
 import type { UnsubscribeFunc } from "home-assistant-js-websocket";
+import { DEFAULT_SCHEMA, Schema } from "js-yaml";
 import { dump } from "js-yaml";
 import type { CSSResultGroup, PropertyValues, TemplateResult } from "lit";
 import { LitElement, css, html, nothing } from "lit";
@@ -80,6 +81,7 @@ import "./types/ha-automation-trigger-time";
 import "./types/ha-automation-trigger-time_pattern";
 import "./types/ha-automation-trigger-webhook";
 import "./types/ha-automation-trigger-zone";
+import { yamlSchemaContext } from "../../../../data/blueprint";
 
 export interface TriggerElement extends LitElement {
   trigger: Trigger;
@@ -156,6 +158,9 @@ export default class HaAutomationTriggerRow extends LitElement {
   @state()
   @consume({ context: fullEntitiesContext, subscribe: true })
   _entityReg!: EntityRegistryEntry[];
+
+  @consume({ context: yamlSchemaContext })
+  private _yamlSchema?: Schema;
 
   get selected() {
     return this._selected;

@@ -21,7 +21,6 @@ import type { PropertyValues, TemplateResult } from "lit";
 import { LitElement, html, nothing } from "lit";
 import { customElement, property, query, state } from "lit/decorators";
 import memoizeOne from "memoize-one";
-import type { Schema } from "js-yaml";
 import { ensureArray } from "../../../../common/array/ensure-array";
 import { storage } from "../../../../common/decorators/storage";
 import { fireEvent } from "../../../../common/dom/fire_event";
@@ -94,7 +93,6 @@ import "./types/ha-automation-action-set_conversation_response";
 import "./types/ha-automation-action-stop";
 import "./types/ha-automation-action-wait_for_trigger";
 import "./types/ha-automation-action-wait_template";
-import { yamlSchemaContext } from "../../../../data/blueprint";
 
 export const getAutomationActionType = memoizeOne(
   (action: Action | undefined) => {
@@ -185,9 +183,6 @@ export default class HaAutomationActionRow extends LitElement {
   @consume({ context: floorsContext, subscribe: true })
   _floorReg!: Record<string, FloorRegistryEntry>;
 
-  @consume({ context: yamlSchemaContext })
-  private _yamlSchema?: Schema;
-
   @state() private _warnings?: string[];
 
   @state() private _uiModeAvailable = true;
@@ -197,8 +192,6 @@ export default class HaAutomationActionRow extends LitElement {
   @state() private _selected = false;
 
   @state() private _collapsed = true;
-
-  @state() private _warnings?: string[];
 
   @query("ha-automation-action-editor")
   private _actionEditor?: HaAutomationActionEditor;
