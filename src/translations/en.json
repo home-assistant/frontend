@@ -7161,6 +7161,12 @@
               "low_carbon_energy_consumed": "Low-carbon electricity consumed",
               "low_carbon_energy_not_calculated": "Consumed low-carbon electricity couldn't be calculated"
             },
+            "power_graph": {
+              "grid": "Grid",
+              "solar": "Solar",
+              "battery": "Battery",
+              "usage": "Used"
+            },
             "energy_compare": {
               "info": "You are comparing the period {start} with the period {end}",
               "compare_previous_year": "Compare previous year",

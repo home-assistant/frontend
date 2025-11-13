@@ -16,8 +16,10 @@ import {
 import type {
   BarSeriesOption,
   CallbackDataParams,
+  LineSeriesOption,
   TopLevelFormatterParams,
 } from "echarts/types/dist/shared";
+import type { LineDataItemOption } from "echarts/types/src/chart/line/LineSeries";
 import type { FrontendLocaleData } from "../../../../../data/translation";
 import { formatNumber } from "../../../../../common/number/format_number";
 import {
@@ -170,11 +172,10 @@ function formatTooltip(
       compare
         ? `${(showCompareYear ? formatDateShort : formatDateVeryShort)(date, locale, config)}: `
         : ""
-    }${formatTime(date, locale, config)} – ${formatTime(
-      addHours(date, 1),
-      locale,
-      config
-    )}`;
+    }${formatTime(date, locale, config)}`;
+    if (params[0].componentSubType === "bar") {
+      period += ` – ${formatTime(addHours(date, 1), locale, config)}`;
+    }
   }
   const title = `<h4 style="text-align: center; margin: 0;">${period}</h4>`;
 
@@ -279,6 +280,35 @@ export function fillDataGapsAndRoundCaps(datasets: BarSeriesOption[]) {
       }
     }
   });
+}
+
+export function fillLineGaps(datasets: LineSeriesOption[]) {
+  const buckets = Array.from(
+    new Set(
+      datasets
+        .map((dataset) =>
+          dataset.data!.map((datapoint) => Number(datapoint![0]))
+        )
+        .flat()
+    )
+  ).sort((a, b) => a - b);
+  buckets.forEach((bucket, index) => {
+    for (let i = datasets.length - 1; i >= 0; i--) {
+      const dataPoint = datasets[i].data![index];
+      const item: LineDataItemOption =
+        dataPoint && typeof dataPoint === "object" && "value" in dataPoint
+          ? dataPoint
+          : ({ value: dataPoint } as LineDataItemOption);
+      const x = item.value?.[0];
+      if (x === undefined) {
+        continue;
+      }
+      if (Number(x) !== bucket) {
+        datasets[i].data?.splice(index, 0, [bucket, 0]);
+      }
+    }
+  });
+  return datasets;
 }
 
 export function getCompareTransform(start: Date, compareStart?: Date) {
