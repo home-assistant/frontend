@@ -13,11 +13,14 @@ export const getLegacyDefaultPanelUrlPath = (): string | null => {
   return defaultPanel ? JSON.parse(defaultPanel) : null;
 };
 
+export const getDefaultPanelUrlPath = (hass: HomeAssistant): string =>
+  hass.userData?.defaultPanel ||
+  hass.systemData?.defaultPanel ||
+  getLegacyDefaultPanelUrlPath() ||
+  DEFAULT_PANEL;
+
 export const getDefaultPanel = (hass: HomeAssistant): PanelInfo => {
-  const panel =
-    hass.userData?.defaultPanel ||
-    hass.systemData?.defaultPanel ||
-    getLegacyDefaultPanelUrlPath();
+  const panel = getDefaultPanelUrlPath(hass);
 
   return (panel ? hass.panels[panel] : undefined) ?? hass.panels[DEFAULT_PANEL];
 };

@@ -1,10 +1,10 @@
+import type { Connection } from "home-assistant-js-websocket";
 import type { PropertyValues } from "lit";
 import { html } from "lit";
 import { customElement, state } from "lit/decorators";
-import type { Connection } from "home-assistant-js-websocket";
+import { storage } from "../common/decorators/storage";
 import { isNavigationClick } from "../common/dom/is-navigation-click";
 import { navigate } from "../common/navigate";
-import { getCachedDefaultPanelUrlPath } from "../data/panel";
 import type { WindowWithPreloads } from "../data/preloads";
 import type { RecorderInfo } from "../data/recorder";
 import { getRecorderInfo } from "../data/recorder";
@@ -23,7 +23,6 @@ import {
 } from "../util/register-service-worker";
 import "./ha-init-page";
 import "./home-assistant-main";
-import { storage } from "../common/decorators/storage";
 
 const useHash = __DEMO__;
 const curPath = () =>

@@ -3515,8 +3515,12 @@
               "delete": "Delete",
               "update": "Update",
               "create": "Create",
-              "set_default": "Set as default on this device",
-              "remove_default": "Remove as default on this device"
+              "set_default": "Set as default",
+              "remove_default": "Remove as default",
+              "set_default_confirm_title": "Set as default dashboard?",
+              "set_default_confirm_text": "This will replace the current default dashboard. Users can still override their default dashboard in their profile settings.",
+              "remove_default_confirm_title": "Remove default dashboard?",
+              "remove_default_confirm_text": "The default dashboard will be changed to Overview for every user. Users can still override their default dashboard in their profile settings."
             }
           },
           "resources": {

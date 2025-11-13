@@ -33,6 +33,7 @@ import { computeRTL } from "../common/util/compute_rtl";
 import { throttle } from "../common/util/throttle";
 import { subscribeFrontendUserData } from "../data/frontend";
 import type { ActionHandlerDetail } from "../data/lovelace/action_handler";
+import { getDefaultPanelUrlPath } from "../data/panel";
 import type { PersistentNotification } from "../data/persistent_notification";
 import { subscribeNotifications } from "../data/persistent_notification";
 import { subscribeRepairsIssueRegistry } from "../data/repairs";
@@ -80,7 +81,7 @@ export const PANEL_ICONS = {
 
 const panelSorter = (
   reverseSort: string[],
-  defaultPanel: string | null,
+  defaultPanel: string,
   a: PanelInfo,
   b: PanelInfo,
   language: string
@@ -97,7 +98,7 @@ const panelSorter = (
 };
 
 const defaultPanelSorter = (
-  defaultPanel: string | null,
+  defaultPanel: string,
   a: PanelInfo,
   b: PanelInfo,
   language: string
@@ -142,7 +143,7 @@ const defaultPanelSorter = (
 export const computePanels = memoizeOne(
   (
     panels: HomeAssistant["panels"],
-    defaultPanel: HomeAssistant["defaultPanel"],
+    defaultPanel: string,
     panelsOrder: string[],
     hiddenPanels: string[],
     locale: HomeAssistant["locale"]
@@ -298,7 +299,8 @@ class HaSidebar extends SubscribeMixin(LitElement) {
       hass.localize !== oldHass.localize ||
       hass.locale !== oldHass.locale ||
       hass.states !== oldHass.states ||
-      hass.defaultPanel !== oldHass.defaultPanel ||
+      hass.userData !== oldHass.userData ||
+      hass.systemData !== oldHass.systemData ||
       hass.connected !== oldHass.connected
     );
   }
@@ -401,9 +403,11 @@ class HaSidebar extends SubscribeMixin(LitElement) {
       `;
     }
 
+    const defaultPanel = getDefaultPanelUrlPath(this.hass);
+
     const [beforeSpacer, afterSpacer] = computePanels(
       this.hass.panels,
-      this.hass.defaultPanel,
+      defaultPanel,
       this._panelOrder,
       this._hiddenPanels,
       this.hass.locale
@@ -418,23 +422,27 @@ class HaSidebar extends SubscribeMixin(LitElement) {
         @scroll=${this._listboxScroll}
         @keydown=${this._listboxKeydown}
       >
-        ${this._renderPanels(beforeSpacer, selectedPanel)}
+        ${this._renderPanels(beforeSpacer, selectedPanel, defaultPanel)}
         ${this._renderSpacer()}
-        ${this._renderPanels(afterSpacer, selectedPanel)}
+        ${this._renderPanels(afterSpacer, selectedPanel, defaultPanel)}
         ${this._renderExternalConfiguration()}
       </ha-md-list>
     `;
   }
 
-  private _renderPanels(panels: PanelInfo[], selectedPanel: string) {
+  private _renderPanels(
+    panels: PanelInfo[],
+    selectedPanel: string,
+    defaultPanel: string
+  ) {
     return panels.map((panel) =>
       this._renderPanel(
         panel.url_path,
-        panel.url_path === this.hass.defaultPanel
+        panel.url_path === defaultPanel
           ? panel.title || this.hass.localize("panel.states")
           : this.hass.localize(`panel.${panel.title}`) || panel.title,
         panel.icon,
-        panel.url_path === this.hass.defaultPanel && !panel.icon
+        panel.url_path === defaultPanel && !panel.icon
           ? PANEL_ICONS.lovelace
           : panel.url_path in PANEL_ICONS
             ? PANEL_ICONS[panel.url_path]

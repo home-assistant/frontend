@@ -404,6 +404,8 @@ export class HaConfigLovelaceDashboards extends LitElement {
       return html` <hass-loading-screen></hass-loading-screen> `;
     }
 
+    const defaultPanel = this.hass.systemData?.defaultPanel || DEFAULT_PANEL;
+
     return html`
       <hass-tabs-subpage-data-table
         .hass=${this.hass}
@@ -417,10 +419,7 @@ export class HaConfigLovelaceDashboards extends LitElement {
           this._dashboards,
           this.hass.localize
         )}
-        .data=${this._getItems(
-          this._dashboards,
-          this.hass.defaultPanel || DEFAULT_PANEL
-        )}
+        .data=${this._getItems(this._dashboards, defaultPanel)}
         .initialGroupColumn=${this._activeGrouping}
         .initialCollapsedGroups=${this._activeCollapsed}
         .initialSorting=${this._activeSorting}
