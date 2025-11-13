@@ -1,7 +1,7 @@
 /**
  * Executes a callback within a View Transition if supported, otherwise runs it directly.
  *
- * @param callback - Function to execute. Can be synchronous or return a Promise.
+ * @param callback - Function to execute. Can be synchronous or return a Promise. The callback will be passed a boolean indicating whether the view transition is available.
  * @returns Promise that resolves when the transition completes (or immediately if not supported)
  *
  * @example
