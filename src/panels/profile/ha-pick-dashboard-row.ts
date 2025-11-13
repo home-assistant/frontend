@@ -9,6 +9,8 @@ import { fetchDashboards } from "../../data/lovelace/dashboard";
 import type { HomeAssistant } from "../../types";
 import { saveFrontendUserData } from "../../data/frontend";
 
+const USE_SYSTEM_VALUE = "___use_system___";
+
 @customElement("ha-pick-dashboard-row")
 class HaPickDashboardRow extends LitElement {
   @property({ attribute: false }) public hass!: HomeAssistant;
@@ -23,6 +25,7 @@ class HaPickDashboardRow extends LitElement {
   }
 
   protected render(): TemplateResult {
+    const value = this.hass.userData?.defaultPanel || USE_SYSTEM_VALUE;
     return html`
       <ha-settings-row .narrow=${this.narrow}>
         <span slot="heading">
@@ -37,14 +40,18 @@ class HaPickDashboardRow extends LitElement {
                 "ui.panel.profile.dashboard.dropdown_label"
               )}
               .disabled=${!this._dashboards?.length}
-              .value=${this.hass.defaultPanel}
+              .value=${value}
               @selected=${this._dashboardChanged}
               naturalMenuWidth
             >
+              <ha-list-item .value=${USE_SYSTEM_VALUE}>
+                ${this.hass.localize("ui.panel.profile.dashboard.system")}
+              </ha-list-item>
               <ha-list-item value="lovelace">
-                ${this.hass.localize(
-                  "ui.panel.profile.dashboard.default_dashboard_label"
-                )}
+                ${this.hass.localize("ui.panel.profile.dashboard.lovelace")}
+              </ha-list-item>
+              <ha-list-item value="home">
+                ${this.hass.localize("ui.panel.profile.dashboard.home")}
               </ha-list-item>
               ${this._dashboards.map((dashboard) => {
                 if (!this.hass.user!.is_admin && dashboard.require_admin) {
@@ -72,8 +79,12 @@ class HaPickDashboardRow extends LitElement {
   }
 
   private _dashboardChanged(ev) {
-    const urlPath = ev.target.value;
-    if (!urlPath || urlPath === this.hass.userData?.defaultPanel) {
+    const value = ev.target.value as string;
+    if (!value) {
+      return;
+    }
+    const urlPath = value === USE_SYSTEM_VALUE ? undefined : value;
+    if (urlPath === this.hass.userData?.defaultPanel) {
       return;
     }
     saveFrontendUserData(this.hass.connection, "core", {

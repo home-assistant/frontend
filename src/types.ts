@@ -18,7 +18,10 @@ import type { AreaRegistryEntry } from "./data/area_registry";
 import type { DeviceRegistryEntry } from "./data/device_registry";
 import type { EntityRegistryDisplayEntry } from "./data/entity_registry";
 import type { FloorRegistryEntry } from "./data/floor_registry";
-import type { CoreFrontendUserData } from "./data/frontend";
+import type {
+  CoreFrontendSystemData,
+  CoreFrontendUserData,
+} from "./data/frontend";
 import type {
   FrontendLocaleData,
   getHassTranslations,
@@ -248,10 +251,10 @@ export interface HomeAssistant {
   vibrate: boolean;
   debugConnection: boolean;
   dockedSidebar: "docked" | "always_hidden" | "auto";
-  defaultPanel: string | null;
   moreInfoEntityId: string | null;
   user?: CurrentUser;
   userData?: CoreFrontendUserData | null;
+  systemData?: CoreFrontendSystemData | null;
   hassUrl(path?): string;
   callService<T = any>(
     domain: ServiceCallRequest["domain"],
@@ -283,7 +286,6 @@ export interface HomeAssistant {
     configFlow?: Parameters<typeof getHassTranslations>[4]
   ): Promise<LocalizeFunc>;
   loadFragmentTranslation(fragment: string): Promise<LocalizeFunc | undefined>;
-  loadDefaultPanel(): Promise<void>;
   formatEntityState(stateObj: HassEntity, state?: string): string;
   formatEntityAttributeValue(
     stateObj: HassEntity,

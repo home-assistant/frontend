@@ -53,12 +53,12 @@ export class HomeAssistantAppEl extends QuickBarMixin(HassElement) {
     super();
     const path = curPath();
 
-    if (["", "/"].includes(path)) {
-      const defaultPanel = getCachedDefaultPanelUrlPath();
-      if (defaultPanel) {
-        navigate(`/${defaultPanel}${location.search}`, { replace: true });
-      }
-    }
+    // if (["", "/"].includes(path)) {
+    //   const defaultPanel = getCachedDefaultPanelUrlPath();
+    //   if (defaultPanel) {
+    //     navigate(`/${defaultPanel}${location.search}`, { replace: true });
+    //   }
+    // }
     this._route = {
       prefix: "",
       path,

@@ -8665,7 +8665,9 @@
           "header": "Dashboard",
           "description": "Pick a default dashboard for this device.",
           "dropdown_label": "Dashboard",
-          "default_dashboard_label": "Overview (default)"
+          "lovelace": "Overview",
+          "home": "Home",
+          "system": "Auto (use system settings)"
         },
         "change_password": {
           "header": "Change password",

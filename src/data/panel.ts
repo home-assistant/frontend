@@ -8,14 +8,18 @@ export const getCachedDefaultPanelUrlPath = (): string | null => {
   return defaultPanel ? JSON.parse(defaultPanel) : null;
 };
 
-export const getDefaultPanel = (hass: HomeAssistant): PanelInfo => {
-  if (!hass.defaultPanel) {
-    return hass.panels[DEFAULT_PANEL];
-  }
+export const getLegacyDefaultPanelUrlPath = (): string | null => {
+  const defaultPanel = window.localStorage.getItem("defaultPanel");
+  return defaultPanel ? JSON.parse(defaultPanel) : null;
+};
 
-  return hass.panels[hass.defaultPanel]
-    ? hass.panels[hass.defaultPanel]
-    : hass.panels[DEFAULT_PANEL];
+export const getDefaultPanel = (hass: HomeAssistant): PanelInfo => {
+  const panel =
+    hass.userData?.defaultPanel ||
+    hass.systemData?.defaultPanel ||
+    getLegacyDefaultPanelUrlPath();
+
+  return (panel ? hass.panels[panel] : undefined) ?? hass.panels[DEFAULT_PANEL];
 };
 
 export const getPanelNameTranslationKey = (panel: PanelInfo) => {

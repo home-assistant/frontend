@@ -14,11 +14,10 @@ import { subscribeAreaRegistry } from "../data/area_registry";
 import { broadcastConnectionStatus } from "../data/connection-status";
 import { subscribeDeviceRegistry } from "../data/device_registry";
 import {
-  fetchFrontendUserData,
+  subscribeFrontendSystemData,
   subscribeFrontendUserData,
 } from "../data/frontend";
 import { forwardHaptic } from "../data/haptics";
-import { getCachedDefaultPanelUrlPath } from "../data/panel";
 import { serviceCallWillDisconnect } from "../data/service";
 import {
   DateFormat,
@@ -34,7 +33,7 @@ import { translationMetadata } from "../resources/translations-metadata";
 import type { Constructor, HomeAssistant, ServiceCallResponse } from "../types";
 import { getLocalLanguage } from "../util/common-translation";
 import { fetchWithAuth } from "../util/fetch-with-auth";
-import { getState, storeState } from "../util/ha-pref-storage";
+import { getState } from "../util/ha-pref-storage";
 import hassCallApi, { hassCallApiRaw } from "../util/hass-call-api";
 import type { HassBaseEl } from "./hass-base-mixin";
 
@@ -62,8 +61,9 @@ export const connectionMixin = <T extends Constructor<HassBaseEl>>(
         panels: null as any,
         services: null as any,
         user: null as any,
+        userData: undefined,
+        systemData: undefined,
         panelUrl: (this as any)._panelUrl,
-        defaultPanel: getCachedDefaultPanelUrlPath(),
         language,
         selectedLanguage: null,
         locale: {
@@ -203,15 +203,6 @@ export const connectionMixin = <T extends Constructor<HassBaseEl>>(
             integration,
             configFlow
           ),
-        loadDefaultPanel: async () => {
-          const userData = await fetchFrontendUserData(
-            this.hass!.connection,
-            "core"
-          );
-          if (userData?.defaultPanel !== undefined) {
-            this._updateHass({ defaultPanel: userData.defaultPanel });
-          }
-        },
         loadFragmentTranslation: (fragment) =>
           // @ts-ignore
           this._loadFragmentTranslations(this.hass?.language, fragment),
@@ -293,13 +284,12 @@ export const connectionMixin = <T extends Constructor<HassBaseEl>>(
       subscribeConfig(conn, (config) => this._updateHass({ config }));
       subscribeServices(conn, (services) => this._updateHass({ services }));
       subscribePanels(conn, (panels) => this._updateHass({ panels }));
-      subscribeFrontendUserData(conn, "core", ({ value: userData }) => {
-        this._updateHass({ userData });
-        if (userData?.defaultPanel !== undefined) {
-          this._updateHass({ defaultPanel: userData.defaultPanel });
-          storeState(this.hass!);
-        }
-      });
+      subscribeFrontendUserData(conn, "core", ({ value: userData }) =>
+        this._updateHass({ userData })
+      );
+      subscribeFrontendSystemData(conn, "core", ({ value: systemData }) =>
+        this._updateHass({ systemData })
+      );
       clearInterval(this.__backendPingInterval);
       this.__backendPingInterval = setInterval(() => {
         if (this.hass?.connected) {
