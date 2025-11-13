@@ -12,8 +12,8 @@ export const waMainStyles = css`
     --wa-space-xs: var(--ha-space-2);
     --wa-space-m: var(--ha-space-4);
     --wa-space-l: var(--ha-space-6);
+    --wa-space-xl: var(--ha-space-8);
 
-    --wa-shadow-l: 0 8px 8px -4px rgba(0, 0, 0, 0.2);
     --wa-form-control-padding-block: 0.75em;
     --wa-form-control-value-line-height: var(--ha-line-height-condensed);
 
@@ -32,9 +32,10 @@ export const waMainStyles = css`
 
     --wa-line-height-condensed: var(--ha-line-height-condensed);
 
-    --wa-space-xl: 32px;
-
     --wa-font-size-m: var(--ha-font-size-m);
+    --wa-shadow-s: var(--ha-box-shadow-s);
+    --wa-shadow-m: var(--ha-box-shadow-m);
+    --wa-shadow-l: var(--ha-box-shadow-l);
   }
 
   ${scrollLockStyles}

@@ -14,12 +14,14 @@ import memoizeOne from "memoize-one";
 import { relativeTime } from "../../common/datetime/relative_time";
 import { fireEvent } from "../../common/dom/fire_event";
 import "../../components/ha-button";
-import "../../components/ha-md-button-menu";
-import "../../components/ha-md-menu-item";
 import "../../components/ha-card";
+import "../../components/ha-dropdown";
+import "../../components/ha-dropdown-item";
 import "../../components/ha-icon-button";
 import "../../components/ha-label";
 import "../../components/ha-list-item";
+import "../../components/ha-md-button-menu";
+import "../../components/ha-md-menu-item";
 import "../../components/ha-settings-row";
 import { deleteAllRefreshTokens } from "../../data/auth";
 import type { RefreshToken } from "../../data/refresh_token";
@@ -29,8 +31,6 @@ import {
 } from "../../dialogs/generic/show-dialog-box";
 import { haStyle } from "../../resources/styles";
 import type { HomeAssistant } from "../../types";
-import "../../components/ha-dropdown-item";
-import "../../components/ha-dropdown";
 
 // Client ID used by iOS app
 const iOSclientId = "https://home-assistant.io/iOS";
@@ -148,15 +148,15 @@ class HaRefreshTokens extends LitElement {
                           )}
                     </div>
                     <div>
-                      <ha-dropdown>
+                      <ha-dropdown @wa-select=${this._handleDropdownSelect}>
                         <ha-icon-button
                           slot="trigger"
                           .label=${this.hass.localize("ui.common.menu")}
                           .path=${mdiDotsVertical}
                         ></ha-icon-button>
                         <ha-dropdown-item
-                          @click=${this._toggleTokenExpiration}
                           .token=${token}
+                          .action=${"toggle_expiration"}
                         >
                           <ha-svg-icon
                             slot="icon"
@@ -173,10 +173,10 @@ class HaRefreshTokens extends LitElement {
                               )}
                         </ha-dropdown-item>
                         <ha-dropdown-item
+                          .token=${token}
+                          .action=${"delete_token"}
                           variant="danger"
                           .disabled=${token.is_current}
-                          @click=${this._deleteToken}
-                          .token=${token}
                         >
                           <ha-svg-icon
                             slot="icon"
@@ -207,8 +207,17 @@ class HaRefreshTokens extends LitElement {
     `;
   }
 
-  private async _toggleTokenExpiration(ev): Promise<void> {
-    const token = (ev.currentTarget as any).token as RefreshToken;
+  private _handleDropdownSelect(
+    ev: CustomEvent<{ item: { action: string; token: RefreshToken } }>
+  ) {
+    if (ev.detail.item.action === "toggle_expiration") {
+      this._toggleTokenExpiration(ev.detail.item.token);
+    } else if (ev.detail.item.action === "delete_token") {
+      this._deleteToken(ev.detail.item.token);
+    }
+  }
+
+  private async _toggleTokenExpiration(token: RefreshToken): Promise<void> {
     const enable = !token.expire_at;
     if (!enable) {
       if (
@@ -249,8 +258,7 @@ class HaRefreshTokens extends LitElement {
     }
   }
 
-  private async _deleteToken(ev): Promise<void> {
-    const token = (ev.currentTarget as any).token as RefreshToken;
+  private async _deleteToken(token: RefreshToken): Promise<void> {
     if (
       !(await showConfirmationDialog(this, {
         title: this.hass.localize(
