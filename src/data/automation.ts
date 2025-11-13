@@ -100,6 +100,7 @@ export interface BaseTrigger {
 }
 
 export interface PlatformTrigger extends BaseTrigger {
+  trigger: Exclude<string, LegacyTrigger["trigger"]>;
   target?: HassServiceTarget;
 }
 
@@ -210,7 +211,7 @@ export interface CalendarTrigger extends BaseTrigger {
   offset: string;
 }
 
-export type Trigger =
+export type LegacyTrigger =
   | StateTrigger
   | MqttTrigger
   | GeoLocationTrigger
@@ -227,8 +228,9 @@ export type Trigger =
   | TemplateTrigger
   | EventTrigger
   | DeviceTrigger
-  | CalendarTrigger
-  | TriggerList;
+  | CalendarTrigger;
+
+export type Trigger = LegacyTrigger | TriggerList | PlatformTrigger;
 
 interface BaseCondition {
   condition: string;

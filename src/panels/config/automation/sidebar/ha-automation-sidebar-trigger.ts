@@ -15,7 +15,10 @@ import { customElement, property, query, state } from "lit/decorators";
 import { keyed } from "lit/directives/keyed";
 import { fireEvent } from "../../../../common/dom/fire_event";
 import { handleStructError } from "../../../../common/structs/handle-errors";
-import type { TriggerSidebarConfig } from "../../../../data/automation";
+import type {
+  LegacyTrigger,
+  TriggerSidebarConfig,
+} from "../../../../data/automation";
 import {
   getTriggerDomain,
   getTriggerObjectId,
@@ -85,7 +88,7 @@ export default class HaAutomationSidebarTrigger extends LitElement {
 
     const title =
       this.hass.localize(
-        `ui.panel.config.automation.editor.triggers.type.${type}.label`
+        `ui.panel.config.automation.editor.triggers.type.${type as LegacyTrigger["trigger"]}.label`
       ) ||
       this.hass.localize(`component.${domain}.triggers.${triggerName}.name`);
 
