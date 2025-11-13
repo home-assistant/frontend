@@ -63,8 +63,7 @@ export default class HaAutomationSidebarTrigger extends LitElement {
 
   protected render() {
     const rowDisabled =
-      this.disabled ||
-      ("enabled" in this.config.config && this.config.config.enabled === false);
+      "enabled" in this.config.config && this.config.config.enabled === false;
     const type = isTriggerList(this.config.config)
       ? "list"
       : this.config.config.trigger;
