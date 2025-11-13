@@ -216,6 +216,7 @@ export class HaPlatformTrigger extends LitElement {
                 this.trigger.options[fieldName] === undefined))}
             .hass=${this.hass}
             .selector=${selector}
+            .context=${this._generateContext(dataField)}
             .key=${fieldName}
             @value-changed=${this._dataChanged}
             .value=${this.trigger?.options
@@ -227,6 +228,23 @@ export class HaPlatformTrigger extends LitElement {
         </ha-settings-row>`
       : "";
   };
+
+  private _generateContext(
+    field: TriggerDescription["fields"][string]
+  ): Record<string, any> | undefined {
+    if (!field.context) {
+      return undefined;
+    }
+
+    const context = {};
+    for (const [context_key, data_key] of Object.entries(field.context)) {
+      context[context_key] =
+        data_key === "target"
+          ? this.trigger.target
+          : this.trigger.options?.[data_key];
+    }
+    return context;
+  }
 
   private _dataChanged(ev: CustomEvent) {
     ev.stopPropagation();

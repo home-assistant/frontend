@@ -54,6 +54,7 @@ export interface TriggerDescription {
       default?: unknown;
       required?: boolean;
       selector?: Selector;
+      context?: Record<string, string>;
     }
   >;
 }
