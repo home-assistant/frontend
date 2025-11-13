@@ -189,6 +189,8 @@ export class HuiPowerSourcesGraphCard
       if (statIds[key].stats.length) {
         const colorHex = computedStyles.getPropertyValue(statIds[key].color);
         const rgb = hex2rgb(colorHex);
+        // Echarts is supposed to handle that but it is bugged when you use it together with stacking.
+        // The interpolation breaks the stacking, so this positive/negative is a workaround
         const { positive, negative } = this._processData(
           statIds[key].stats.map((id: string) => energyData.stats[id] ?? [])
         );
