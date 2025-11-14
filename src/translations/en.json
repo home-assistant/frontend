@@ -6781,14 +6781,14 @@
             },
             "snapshots": {
               "title": "Devices",
-              "description": "Details about your devices and how they are setup.",
+              "description": "Generic information of your devices.",
               "header": "Device analytics",
-              "info": "Contribute to the device database of the Open Home Foundation. Only device-specific, ananymized information is shared. No personal data is included.",
-              "learn_more": "Learn more about the device database and how we process your data."
+              "info": "Anonymously share data about your devices to help build the Open Home Foundation’s device database. This free, open source resource helps users find useful information about smart home devices. Only device-specific details (like model or manufacturer) are shared — never personally identifying information (like the names you assign).",
+              "learn_more": "Learn more about the device database and how we process your data"
             }
           },
           "need_base_enabled": "You need to enable basic analytics for this option to be available",
-          "learn_more": "Learn how we process your data.",
+          "learn_more": "Learn how we process your data",
           "intro": "Share anonymized information from your installation to help make Home Assistant better and help us convince manufacturers to add local control and privacy-focused features.",
           "download_device_info": "Preview device analytics"
         },

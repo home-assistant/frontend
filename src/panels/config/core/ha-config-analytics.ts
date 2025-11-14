@@ -48,8 +48,8 @@ class ConfigAnalytics extends LitElement {
               href=${documentationUrl(this.hass, "/integrations/analytics/")}
               target="_blank"
               rel="noreferrer"
-              >${this.hass.localize("ui.panel.config.analytics.learn_more")}
-            </a>
+              >${this.hass.localize("ui.panel.config.analytics.learn_more")} </a
+            >.
           </p>
           <ha-analytics
             translation_key_panel="config"
@@ -77,8 +77,8 @@ class ConfigAnalytics extends LitElement {
                   rel="noreferrer"
                   >${this.hass.localize(
                     "ui.panel.config.analytics.preferences.snapshots.learn_more"
-                  )}
-                </a>
+                  )} </a
+                >.
               </p>
               <ha-settings-row>
                 <span slot="heading" data-for="snapshots">
