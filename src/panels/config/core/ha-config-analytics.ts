@@ -72,7 +72,7 @@ class ConfigAnalytics extends LitElement {
                   "ui.panel.config.analytics.preferences.snapshots.info"
                 )}
                 <a
-                  href="https://devices.openhomefoundation.org/"
+                  href=${documentationUrl(this.hass, "/device-database/")}
                   target="_blank"
                   rel="noreferrer"
                   >${this.hass.localize(
