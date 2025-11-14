@@ -14,6 +14,7 @@ import {
   mdiArrowExpand,
   mdiContentCopy,
   mdiFlask,
+  mdiFlaskOff,
   mdiRedo,
   mdiUndo,
 } from "@mdi/js";
@@ -86,6 +87,8 @@ export class HaCodeEditor extends ReactiveElement {
 
   @property({ type: Boolean, attribute: "has-test" })
   public hasTest = false;
+
+  @property({ attribute: false }) public testing = false;
 
   @property({ type: String }) public placeholder?: string;
 
@@ -218,7 +221,8 @@ export class HaCodeEditor extends ReactiveElement {
     if (
       changedProps.has("_canCopy") ||
       changedProps.has("_canUndo") ||
-      changedProps.has("_canRedo")
+      changedProps.has("_canRedo") ||
+      changedProps.has("testing")
     ) {
       this._updateToolbarButtons();
     }
@@ -368,8 +372,11 @@ export class HaCodeEditor extends ReactiveElement {
         ? [
             {
               id: "test",
-              label: this.hass?.localize("ui.common.test") || "Test",
-              path: mdiFlask,
+              label:
+                this.hass?.localize(
+                  `ui.components.yaml-editor.test_${this.testing ? "off" : "on"}`
+                ) || "Test",
+              path: this.testing ? mdiFlaskOff : mdiFlask,
               action: (e: Event) => this._handleTestClick(e),
             },
           ]

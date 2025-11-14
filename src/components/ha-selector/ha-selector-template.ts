@@ -101,6 +101,7 @@ export class HaTemplateSelector extends LitElement {
         autocomplete-entities
         autocomplete-icons
         .hasTest=${this.selector.template?.preview !== false}
+        .testing=${this._test}
         @value-changed=${this._handleChange}
         @test-toggle=${this._testToggle}
         dir="ltr"
