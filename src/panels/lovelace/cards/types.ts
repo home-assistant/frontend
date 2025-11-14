@@ -185,6 +185,7 @@ export interface EnergyDevicesGraphCardConfig extends EnergyCardBaseConfig {
   title?: string;
   max_devices?: number;
   hide_compound_stats?: boolean;
+  modes?: ("bar" | "pie")[];
 }
 
 export interface EnergyDevicesDetailGraphCardConfig
