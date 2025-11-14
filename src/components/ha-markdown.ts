@@ -33,15 +33,6 @@ export class HaMarkdown extends LitElement {
     ></ha-markdown-element>`;
   }
 
-  async getUpdateComplete(): Promise<boolean> {
-    const result = await super.getUpdateComplete();
-    const markdownEl = this.shadowRoot?.querySelector("ha-markdown-element");
-    if (markdownEl?.updateComplete) {
-      await markdownEl.updateComplete;
-    }
-    return result;
-  }
-
   static styles = css`
     :host {
       display: block;

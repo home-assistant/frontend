@@ -20,8 +20,6 @@ const _gitHubMarkdownAlerts = {
   },
 };
 
-let renderPromise: Promise<unknown> | null = null;
-
 @customElement("ha-markdown-element")
 class HaMarkdownElement extends ReactiveElement {
   @property() public content?;
@@ -46,15 +44,6 @@ class HaMarkdownElement extends ReactiveElement {
     }
   }
 
-  async getUpdateComplete(): Promise<boolean> {
-    const result = await super.getUpdateComplete();
-    if (renderPromise) {
-      await renderPromise;
-      renderPromise = null;
-    }
-    return result;
-  }
-
   protected createRenderRoot() {
     return this;
   }
@@ -62,7 +51,7 @@ class HaMarkdownElement extends ReactiveElement {
   protected update(changedProps) {
     super.update(changedProps);
     if (this.content !== undefined) {
-      renderPromise = this._render();
+      this._render();
     }
   }
 
