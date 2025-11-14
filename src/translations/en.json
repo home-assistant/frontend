@@ -6760,6 +6760,7 @@
         },
         "analytics": {
           "caption": "Analytics",
+          "header": "Home Assistant analytics",
           "description": "Learn how to share data to improve Home Assistant",
           "preferences": {
             "base": {
@@ -6777,10 +6778,17 @@
             "diagnostics": {
               "title": "Diagnostics",
               "description": "Share crash reports when unexpected errors occur."
+            },
+            "snapshots": {
+              "title": "Devices",
+              "description": "Details about your devices and how they are setup.",
+              "header": "Device analytics",
+              "info": "Contribute to the device database of the Open Home Foundation. Only device-specific, ananymized information is shared. No personal data is included.",
+              "learn_more": "Learn more about the device database and how we process your data."
             }
           },
           "need_base_enabled": "You need to enable basic analytics for this option to be available",
-          "learn_more": "How we process your data",
+          "learn_more": "Learn how we process your data.",
           "intro": "Share anonymized information from your installation to help make Home Assistant better and help us convince manufacturers to add local control and privacy-focused features.",
           "download_device_info": "Preview device analytics"
         },
