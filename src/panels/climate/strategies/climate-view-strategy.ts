@@ -16,6 +16,7 @@ import {
 } from "../../lovelace/strategies/areas/helpers/areas-strategy-helper";
 import { getHomeStructure } from "../../lovelace/strategies/home/helpers/home-structure";
 import { floorDefaultIcon } from "../../../components/ha-floor-icon";
+import type { EntitiesCardConfig } from "../../lovelace/cards/types";
 
 export interface ClimateViewStrategyConfig {
   type: "climate";
@@ -155,74 +156,56 @@ export class ClimateViewStrategy extends ReactiveElement {
 
     const floorCount = home.floors.length + (home.areas.length ? 1 : 0);
 
-    // Find single heating thermostat
-    const heatingThermostats = allEntities.filter((entityId) => {
-      const state = hass.states[entityId];
-      if (!state || !entityId.startsWith("climate.")) return false;
-      const hvacModes = state.attributes.hvac_modes || [];
-      return hvacModes.includes("heat") || hvacModes.includes("heat_cool");
-    });
-
-    // Find single weather entity
-    const weatherEntities = allEntities.filter((entityId) =>
-      entityId.startsWith("weather.")
-    );
-
-    // Add thermostat graph at top if there's exactly one heating thermostat
-    if (heatingThermostats.length === 1) {
-      const thermostatId = heatingThermostats[0];
-      const graphCards: LovelaceCardConfig[] = [
-        {
-          type: "thermostat",
-          entity: thermostatId,
-          features: [{ type: "trend-graph", hours_to_show: 24 }],
-        },
-      ];
-
-      // Add weather card if there's exactly one weather entity
-      if (weatherEntities.length === 1) {
-        graphCards.push({
-          type: "weather-forecast",
-          entity: weatherEntities[0],
-          show_current: true,
-          show_forecast: true,
-        });
-      }
-
-      const graphSection: LovelaceSectionRawConfig = {
-        type: "grid",
-        column_span: 2,
-        cards: graphCards,
-      };
-
-      sections.push(graphSection);
-    }
+    const roomTemperatureCards: LovelaceCardConfig[] = [];
 
     // Collect all temperature sensors from areas
-    const temperatureSensors: string[] = [];
+    const temperatureSensors: EntitiesCardConfig["entities"] = [];
     for (const area of Object.values(hass.areas)) {
-      if (area.temperature_entity_id && hass.states[area.temperature_entity_id]) {
-        temperatureSensors.push(area.temperature_entity_id);
+      if (
+        area.temperature_entity_id &&
+        hass.states[area.temperature_entity_id]
+      ) {
+        temperatureSensors.push({
+          name: area.name,
+          entity: area.temperature_entity_id,
+        });
       }
     }
 
-    // Add entities card for room temperatures if there are any
     if (temperatureSensors.length > 0) {
-      const entitiesSection: LovelaceSectionRawConfig = {
+      roomTemperatureCards.push({
+        type: "entities",
+        entities: temperatureSensors,
+        state_color: false,
+      });
+    }
+    // climate entities
+    const climateEntities = allEntities.filter((entityId) =>
+      entityId.startsWith("climate.")
+    );
+
+    if (temperatureSensors.length > 0 || climateEntities.length > 0) {
+      roomTemperatureCards.push({
+        type: "history-graph",
+        entities: [...temperatureSensors, ...climateEntities],
+        hours_to_show: 24,
+      });
+    }
+
+    if (roomTemperatureCards.length > 0) {
+      sections.push({
         type: "grid",
         column_span: 2,
         cards: [
           {
-            type: "entities",
-            title: hass.localize(
+            type: "heading",
+            heading: hass.localize(
               "ui.panel.lovelace.strategy.climate.room_temperatures"
             ),
-            entities: temperatureSensors,
-            state_color: false,
           },
+          ...roomTemperatureCards,
         ],
-      };
-      sections.push(entitiesSection);
+      });
     }
 
     // Process floors
