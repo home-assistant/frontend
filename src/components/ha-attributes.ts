@@ -3,11 +3,15 @@ import type { CSSResultGroup, PropertyValues } from "lit";
 import { css, html, LitElement, nothing } from "lit";
 import { customElement, property, state } from "lit/decorators";
 import { computeAttributeNameDisplay } from "../common/entity/compute_attribute_display";
-import { STATE_ATTRIBUTES } from "../data/entity_attributes";
+import {
+  STATE_ATTRIBUTES,
+  STATE_ATTRIBUTES_DOMAIN_CLASS,
+} from "../data/entity_attributes";
 import { haStyle } from "../resources/styles";
 import type { HomeAssistant } from "../types";
 import "./ha-attribute-value";
 import "./ha-expansion-panel";
+import { computeStateDomain } from "../common/entity/compute_state_domain";
 
 @customElement("ha-attributes")
 class HaAttributes extends LitElement {
@@ -22,7 +26,12 @@ class HaAttributes extends LitElement {
   private get _filteredAttributes() {
     return this._computeDisplayAttributes(
       STATE_ATTRIBUTES.concat(
-        this.extraFilters ? this.extraFilters.split(",") : []
+        this.extraFilters ? this.extraFilters.split(",") : [],
+        (this.stateObj &&
+          STATE_ATTRIBUTES_DOMAIN_CLASS[computeStateDomain(this.stateObj)]?.[
+            this.stateObj.attributes?.device_class
+          ]) ||
+          []
       )
     );
   }

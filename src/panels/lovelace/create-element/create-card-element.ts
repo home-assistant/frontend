@@ -66,8 +66,11 @@ const LAZY_LOAD_TYPES = {
   "energy-usage-graph": () =>
     import("../cards/energy/hui-energy-usage-graph-card"),
   "energy-sankey": () => import("../cards/energy/hui-energy-sankey-card"),
+  "power-sources-graph": () =>
+    import("../cards/energy/hui-power-sources-graph-card"),
   "entity-filter": () => import("../cards/hui-entity-filter-card"),
   error: () => import("../cards/hui-error-card"),
+  "home-summary": () => import("../cards/hui-home-summary-card"),
   gauge: () => import("../cards/hui-gauge-card"),
   "history-graph": () => import("../cards/hui-history-graph-card"),
   "horizontal-stack": () => import("../cards/hui-horizontal-stack-card"),

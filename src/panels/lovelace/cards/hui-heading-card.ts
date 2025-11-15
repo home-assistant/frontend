@@ -138,6 +138,7 @@ export class HuiHeadingCard extends LitElement implements LovelaceCard {
       flex-direction: column;
       justify-content: flex-end;
       height: 100%;
+      min-height: 24px;
     }
     [role="button"] {
       cursor: pointer;
@@ -147,13 +148,13 @@ export class HuiHeadingCard extends LitElement implements LovelaceCard {
       transition: transform 180ms ease-in-out;
     }
     .container {
-      padding: 2px 4px;
+      padding: 0 4px;
       display: flex;
       flex-direction: row;
       justify-content: space-between;
       align-items: center;
       overflow: hidden;
-      gap: 8px;
+      gap: var(--ha-space-2);
     }
     .content:hover ha-icon-next {
       transform: translateX(calc(4px * var(--scale-direction)));
@@ -172,7 +173,7 @@ export class HuiHeadingCard extends LitElement implements LovelaceCard {
       display: flex;
       flex-direction: row;
       align-items: center;
-      gap: 8px;
+      gap: var(--ha-space-2);
       color: var(--ha-heading-card-title-color, var(--primary-text-color));
       font-size: var(--ha-heading-card-title-font-size, var(--ha-font-size-l));
       font-weight: var(

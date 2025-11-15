@@ -18,7 +18,7 @@ export class HaIconButtonToggle extends HaIconButton {
       opacity: 0;
       transition: opacity 180ms ease-in-out;
       background-color: var(--primary-text-color);
-      border-radius: 20px;
+      border-radius: var(--ha-border-radius-2xl);
       height: 40px;
       width: 40px;
       content: "";

@@ -1,9 +1,9 @@
+import { styles as elevatedStyles } from "@material/web/chips/internal/elevated-styles";
 import { FilterChip } from "@material/web/chips/internal/filter-chip";
 import { styles } from "@material/web/chips/internal/filter-styles";
 import { styles as selectableStyles } from "@material/web/chips/internal/selectable-styles";
 import { styles as sharedStyles } from "@material/web/chips/internal/shared-styles";
 import { styles as trailingIconStyles } from "@material/web/chips/internal/trailing-icon-styles";
-import { styles as elevatedStyles } from "@material/web/chips/internal/elevated-styles";
 import { css, html } from "lit";
 import { customElement, property } from "lit/decorators";
 
@@ -30,6 +30,7 @@ export class HaFilterChip extends FilterChip {
           var(--rgb-primary-text-color),
           0.15
         );
+        border-radius: var(--ha-border-radius-md);
       }
     `,
   ];

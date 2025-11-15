@@ -61,7 +61,7 @@ export class HuiGraphHeaderFooter
 
   @state() protected _config?: GraphHeaderFooterConfig;
 
-  @state() private _coordinates?: number[][];
+  @state() private _coordinates?: [number, number][];
 
   private _error?: string;
 
@@ -153,14 +153,24 @@ export class HuiGraphHeaderFooter
           // Message came in before we had a chance to unload
           return;
         }
-        this._coordinates =
-          coordinatesMinimalResponseCompressedState(
-            combinedHistory[this._config.entity],
-            this._config.hours_to_show!,
-            500,
-            this._config.detail!,
-            this._config.limits
-          ) || [];
+        const width = this.clientWidth || this.offsetWidth;
+        // sample to 1 point per hour or 1 point per 5 pixels
+        const maxDetails = Math.max(
+          10,
+          this._config.detail! > 1
+            ? Math.max(width / 5, this._config.hours_to_show!)
+            : this._config.hours_to_show!
+        );
+        const useMean = this._config.detail !== 2;
+        const { points } = coordinatesMinimalResponseCompressedState(
+          combinedHistory[this._config.entity],
+          width,
+          width / 5,
+          maxDetails,
+          { minY: this._config.limits?.min, maxY: this._config.limits?.max },
+          useMean
+        );
+        this._coordinates = points;
       },
       this._config.hours_to_show!,
       [this._config.entity]
@@ -212,6 +222,9 @@ export class HuiGraphHeaderFooter
   }
 
   static styles = css`
+    :host {
+      display: block;
+    }
     ha-spinner {
       position: absolute;
       top: calc(50% - 14px);

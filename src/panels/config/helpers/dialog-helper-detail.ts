@@ -236,17 +236,18 @@ export class DialogHelperDetail extends LitElement {
                 <span class="item-text"> ${label} </span>
                 ${isLoaded
                   ? html`<ha-icon-next slot="meta"></ha-icon-next>`
-                  : html`<ha-tooltip
-                      hoist
-                      slot="meta"
-                      .content=${this.hass.localize(
-                        "ui.dialogs.helper_settings.platform_not_loaded",
-                        { platform: domain }
-                      )}
-                      @click=${stopPropagation}
-                    >
-                      <ha-svg-icon path=${mdiAlertOutline}></ha-svg-icon>
-                    </ha-tooltip>`}
+                  : html` <ha-svg-icon
+                        slot="meta"
+                        .id="icon-${domain}"
+                        path=${mdiAlertOutline}
+                        @click=${stopPropagation}
+                      ></ha-svg-icon>
+                      <ha-tooltip .for="icon-${domain}">
+                        ${this.hass.localize(
+                          "ui.dialogs.helper_settings.platform_not_loaded",
+                          { platform: domain }
+                        )}
+                      </ha-tooltip>`}
               </ha-list-item>
             `;
           })}
@@ -430,7 +431,13 @@ export class DialogHelperDetail extends LitElement {
         }
         @media all and (max-width: 450px), all and (max-height: 500px) {
           ha-list {
-            height: calc(100vh - 184px);
+            height: calc(
+              100vh -
+                184px - var(--safe-area-inset-top, 0px) - var(
+                  --safe-area-inset-bottom,
+                  0px
+                )
+            );
           }
         }
       `,

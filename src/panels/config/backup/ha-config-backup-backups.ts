@@ -71,6 +71,9 @@ import { showGenerateBackupDialog } from "./dialogs/show-dialog-generate-backup"
 import { showNewBackupDialog } from "./dialogs/show-dialog-new-backup";
 import { showUploadBackupDialog } from "./dialogs/show-dialog-upload-backup";
 import { downloadBackup } from "./helper/download_backup";
+import type { HaMdMenu } from "../../../components/ha-md-menu";
+import "../../../components/ha-md-menu";
+import "../../../components/ha-md-menu-item";
 
 interface BackupRow extends DataTableRowData, BackupContent {
   formatted_type: string;
@@ -119,6 +122,8 @@ class HaConfigBackupBackups extends SubscribeMixin(LitElement) {
 
   @query("hass-tabs-subpage-data-table", true)
   private _dataTable!: HaTabsSubpageDataTable;
+
+  @query("#overflow-menu") private _overflowMenu?: HaMdMenu;
 
   public connectedCallback() {
     super.connectedCallback();
@@ -189,7 +194,7 @@ class HaConfigBackupBackups extends SubscribeMixin(LitElement) {
             0
           );
           return html`
-            <div style="display: flex; gap: 4px;">
+            <div style="display: flex; gap: var(--ha-space-1);">
               ${displayedAgentIds.map((agentId) => {
                 const name = computeBackupAgentName(
                   this.hass.localize,
@@ -254,24 +259,12 @@ class HaConfigBackupBackups extends SubscribeMixin(LitElement) {
         hideable: false,
         type: "overflow-menu",
         template: (backup) => html`
-          <ha-icon-overflow-menu
-            .hass=${this.hass}
-            narrow
-            .items=${[
-              {
-                label: this.hass.localize("ui.common.download"),
-                path: mdiDownload,
-                action: () => this._downloadBackup(backup),
-              },
-              {
-                label: this.hass.localize("ui.common.delete"),
-                path: mdiDelete,
-                action: () => this._deleteBackup(backup),
-                warning: true,
-              },
-            ]}
-          >
-          </ha-icon-overflow-menu>
+          <ha-icon-button
+            .backup=${backup}
+            .label=${this.hass.localize("ui.common.overflow_menu")}
+            .path=${mdiDotsVertical}
+            @click=${this._toggleOverflowMenu}
+          ></ha-icon-button>
         `,
       },
     })
@@ -289,6 +282,19 @@ class HaConfigBackupBackups extends SubscribeMixin(LitElement) {
           )
         : undefined
   );
+
+  private _toggleOverflowMenu = (ev) => {
+    if (!this._overflowMenu) {
+      return;
+    }
+
+    if (this._overflowMenu.open) {
+      this._overflowMenu.close();
+      return;
+    }
+    this._overflowMenu.anchorElement = ev.target;
+    this._overflowMenu.show();
+  };
 
   private _handleGroupingChanged(ev: CustomEvent) {
     this._activeGrouping = ev.detail.value;
@@ -472,6 +478,16 @@ class HaConfigBackupBackups extends SubscribeMixin(LitElement) {
             `
           : nothing}
       </hass-tabs-subpage-data-table>
+      <ha-md-menu id="overflow-menu" positioning="fixed">
+        <ha-md-menu-item .clickAction=${this._downloadBackup}>
+          <ha-svg-icon slot="start" .path=${mdiDownload}></ha-svg-icon>
+          ${this.hass.localize("ui.common.download")}
+        </ha-md-menu-item>
+        <ha-md-menu-item class="warning" .clickAction=${this._deleteBackup}>
+          <ha-svg-icon slot="start" .path=${mdiDelete}></ha-svg-icon>
+          ${this.hass.localize("ui.common.delete")}
+        </ha-md-menu-item>
+      </ha-md-menu>
     `;
   }
 
@@ -545,11 +561,20 @@ class HaConfigBackupBackups extends SubscribeMixin(LitElement) {
     navigate(`/config/backup/details/${id}`);
   }
 
-  private async _downloadBackup(backup: BackupContent): Promise<void> {
+  private _downloadBackup = async (ev): Promise<void> => {
+    const backup = ev.parentElement.anchorElement.backup;
+    if (!backup) {
+      return;
+    }
     downloadBackup(this.hass, this, backup, this.config);
-  }
+  };
 
-  private async _deleteBackup(backup: BackupContent): Promise<void> {
+  private _deleteBackup = async (ev): Promise<void> => {
+    const backup = ev.parentElement.anchorElement.backup;
+    if (!backup) {
+      return;
+    }
+
     const confirm = await showConfirmationDialog(this, {
       title: this.hass.localize("ui.panel.config.backup.dialogs.delete.title"),
       text: this.hass.localize("ui.panel.config.backup.dialogs.delete.text"),
@@ -576,7 +601,7 @@ class HaConfigBackupBackups extends SubscribeMixin(LitElement) {
       return;
     }
     fireEvent(this, "ha-refresh-backup-info");
-  }
+  };
 
   private async _deleteSelected() {
     const confirm = await showConfirmationDialog(this, {

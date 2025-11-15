@@ -307,14 +307,18 @@ class DialogZHAReconfigureDevice extends LitElement {
                                               `
                                             : html`
                                                 <span class="stage">
+                                                  <ha-svg-icon
+                                                    .id="svg-icon-${clusterStatus
+                                                      .cluster.name}"
+                                                    .path=${mdiCloseCircle}
+                                                    class="failed"
+                                                  ></ha-svg-icon>
                                                   <ha-tooltip
+                                                    .for="svg-icon-${clusterStatus
+                                                      .cluster.name}"
                                                     placement="top"
-                                                    .content=${attribute.status}
                                                   >
-                                                    <ha-svg-icon
-                                                      .path=${mdiCloseCircle}
-                                                      class="failed"
-                                                    ></ha-svg-icon>
+                                                    ${attribute.status}
                                                   </ha-tooltip>
                                                 </span>
                                               `}
@@ -422,6 +426,10 @@ class DialogZHAReconfigureDevice extends LitElement {
     return [
       haStyleDialog,
       css`
+        ha-dialog {
+          --mdc-dialog-max-width: 800px;
+        }
+
         .wrapper {
           display: grid;
           grid-template-columns: 3fr 1fr 2fr;

@@ -125,7 +125,7 @@ export class HaWebhookTrigger extends LitElement {
             .path=${mdiContentCopy}
           ></ha-icon-button>
         </ha-textfield>
-        <ha-button-menu multi @closed=${stopPropagation}>
+        <ha-button-menu multi @closed=${stopPropagation} fixed>
           <ha-icon-button
             slot="trigger"
             .label=${this.hass!.localize(

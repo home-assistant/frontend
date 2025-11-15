@@ -21,23 +21,19 @@ import { componentsWithService } from "../../common/config/components_with_servi
 import { isComponentLoaded } from "../../common/config/is_component_loaded";
 import { fireEvent } from "../../common/dom/fire_event";
 import { computeAreaName } from "../../common/entity/compute_area_name";
-import {
-  computeDeviceName,
-  computeDeviceNameDisplay,
-} from "../../common/entity/compute_device_name";
+import { computeDeviceNameDisplay } from "../../common/entity/compute_device_name";
 import { computeDomain } from "../../common/entity/compute_domain";
-import { computeEntityName } from "../../common/entity/compute_entity_name";
+import { entityUseDeviceName } from "../../common/entity/compute_entity_name";
 import { computeStateName } from "../../common/entity/compute_state_name";
 import { getDeviceContext } from "../../common/entity/context/get_device_context";
-import { getEntityContext } from "../../common/entity/context/get_entity_context";
 import { navigate } from "../../common/navigate";
 import { caseInsensitiveStringCompare } from "../../common/string/compare";
 import type { ScorableTextItem } from "../../common/string/filter/sequence-matching";
 import { computeRTL } from "../../common/util/compute_rtl";
 import { debounce } from "../../common/util/debounce";
+import "../../components/ha-button";
 import "../../components/ha-icon-button";
 import "../../components/ha-label";
-import "../../components/ha-button";
 import "../../components/ha-list";
 import "../../components/ha-md-list-item";
 import "../../components/ha-spinner";
@@ -281,11 +277,11 @@ export class QuickBar extends LitElement {
                         class="ha-scrollbar"
                         style=${styleMap({
                           height: this._narrow
-                            ? "calc(100vh - 56px)"
-                            : `${Math.min(
+                            ? "calc(100vh - 56px - var(--safe-area-inset-top, 0px) - var(--safe-area-inset-bottom, 0px))"
+                            : `calc(${Math.min(
                                 items.length * (commandMode ? 56 : 72) + 26,
                                 500
-                              )}px`,
+                              )}px - var(--safe-area-inset-top, 0px) - var(--safe-area-inset-bottom, 0px))`,
                         })}
                         .items=${items}
                         .renderItem=${this._renderItem}
@@ -635,17 +631,30 @@ export class QuickBar extends LitElement {
       .map((entityId) => {
         const stateObj = this.hass.states[entityId];
 
-        const { area, device } = getEntityContext(stateObj, this.hass);
-
         const friendlyName = computeStateName(stateObj); // Keep this for search
-        const entityName = computeEntityName(stateObj, this.hass);
-        const deviceName = device ? computeDeviceName(device) : undefined;
-        const areaName = area ? computeAreaName(area) : undefined;
 
-        const primary = entityName || deviceName || entityId;
-        const secondary = [areaName, entityName ? deviceName : undefined]
-          .filter(Boolean)
-          .join(isRTL ? " ◂ " : " ▸ ");
+        const useDeviceName = entityUseDeviceName(
+          stateObj,
+          this.hass.entities,
+          this.hass.devices
+        );
+
+        const name = this.hass.formatEntityName(
+          stateObj,
+          useDeviceName ? { type: "device" } : { type: "entity" }
+        );
+
+        const primary = name || entityId;
+
+        const secondary = this.hass.formatEntityName(
+          stateObj,
+          useDeviceName
+            ? [{ type: "area" }]
+            : [{ type: "area" }, { type: "device" }],
+          {
+            separator: isRTL ? " ◂ " : " ▸ ",
+          }
+        );
 
         const translatedDomain = domainToName(
           this.hass.localize,
@@ -840,7 +849,9 @@ export class QuickBar extends LitElement {
     const additionalItems = [
       {
         path: "",
-        primaryText: this.hass.localize("ui.panel.config.info.shortcuts"),
+        primaryText: this.hass.localize(
+          "ui.dialogs.quick-bar.commands.navigation.shortcuts"
+        ),
         action: () => showShortcutsDialog(this),
         iconPath: mdiKeyboard,
       },
@@ -856,7 +867,9 @@ export class QuickBar extends LitElement {
 
   private _generateNavigationPanelCommands(): BaseNavigationCommand[] {
     return Object.keys(this.hass.panels)
-      .filter((panelKey) => panelKey !== "_my_redirect")
+      .filter(
+        (panelKey) => panelKey !== "_my_redirect" && panelKey !== "hassio"
+      )
       .map((panelKey) => {
         const panel = this.hass.panels[panelKey];
         const translationKey = getPanelNameTranslationKey(panel);
@@ -998,8 +1011,8 @@ export class QuickBar extends LitElement {
             --mdc-dialog-max-width: 800px;
             --mdc-dialog-min-width: 500px;
             --dialog-surface-position: fixed;
-            --dialog-surface-top: 40px;
-            --mdc-dialog-max-height: calc(100% - 72px);
+            --dialog-surface-top: var(--ha-space-10);
+            --mdc-dialog-max-height: calc(100% - var(--ha-space-18));
           }
         }
 
@@ -1042,8 +1055,8 @@ export class QuickBar extends LitElement {
         }
 
         span.command-text {
-          margin-left: 8px;
-          margin-inline-start: 8px;
+          margin-left: var(--ha-space-2);
+          margin-inline-start: var(--ha-space-2);
           margin-inline-end: initial;
           direction: var(--direction);
         }
@@ -1056,8 +1069,8 @@ export class QuickBar extends LitElement {
         ha-md-list-item.two-line {
           --md-list-item-one-line-container-height: 64px;
           --md-list-item-two-line-container-height: 64px;
-          --md-list-item-top-space: 8px;
-          --md-list-item-bottom-space: 8px;
+          --md-list-item-top-space: var(--ha-space-2);
+          --md-list-item-bottom-space: var(--ha-space-2);
         }
 
         ha-md-list-item.three-line {
@@ -1065,8 +1078,8 @@ export class QuickBar extends LitElement {
           --md-list-item-one-line-container-height: 72px;
           --md-list-item-two-line-container-height: 72px;
           --md-list-item-three-line-container-height: 72px;
-          --md-list-item-top-space: 8px;
-          --md-list-item-bottom-space: 8px;
+          --md-list-item-top-space: var(--ha-space-2);
+          --md-list-item-bottom-space: var(--ha-space-2);
         }
 
         ha-md-list-item .code {
@@ -1091,11 +1104,11 @@ export class QuickBar extends LitElement {
         }
 
         ha-tip {
-          padding: 20px;
+          padding: var(--ha-space-5);
         }
 
         .nothing-found {
-          padding: 16px 0px;
+          padding: var(--ha-space-4) var(--ha-space-0);
           text-align: center;
         }
 

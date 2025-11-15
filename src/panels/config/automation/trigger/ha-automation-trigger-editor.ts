@@ -9,10 +9,12 @@ import "../../../../components/ha-yaml-editor";
 import type { HaYamlEditor } from "../../../../components/ha-yaml-editor";
 import type { Trigger } from "../../../../data/automation";
 import { migrateAutomationTrigger } from "../../../../data/automation";
+import type { TriggerDescription } from "../../../../data/trigger";
 import { isTriggerList } from "../../../../data/trigger";
 import { haStyle } from "../../../../resources/styles";
 import type { HomeAssistant } from "../../../../types";
 import "../ha-automation-editor-warning";
+import "./types/ha-automation-trigger-platform";
 
 @customElement("ha-automation-trigger-editor")
 export default class HaAutomationTriggerEditor extends LitElement {
@@ -27,7 +29,11 @@ export default class HaAutomationTriggerEditor extends LitElement {
   @property({ type: Boolean, attribute: "supported" }) public uiSupported =
     false;
 
+  @property({ type: Boolean, attribute: "sidebar" }) public inSidebar = false;
+
   @property({ type: Boolean, attribute: "show-id" }) public showId = false;
+
+  @property({ attribute: false }) public description?: TriggerDescription;
 
   @query("ha-yaml-editor") public yamlEditor?: HaYamlEditor;
 
@@ -35,6 +41,7 @@ export default class HaAutomationTriggerEditor extends LitElement {
     const type = isTriggerList(this.trigger) ? "list" : this.trigger.trigger;
 
     const yamlMode = this.yamlMode || !this.uiSupported;
+
     const showId = "id" in this.trigger || this.showId;
 
     return html`
@@ -47,6 +54,7 @@ export default class HaAutomationTriggerEditor extends LitElement {
               this.trigger.enabled === false &&
               !this.yamlMode),
           yaml: yamlMode,
+          card: !this.inSidebar,
         })}
       >
         ${yamlMode
@@ -79,16 +87,22 @@ export default class HaAutomationTriggerEditor extends LitElement {
                       .value=${this.trigger.id || ""}
                       .disabled=${this.disabled}
                       @change=${this._idChanged}
-                    >
-                    </ha-textfield>
+                    ></ha-textfield>
                   `
-                : ""}
+                : nothing}
               <div @value-changed=${this._onUiChanged}>
-                ${dynamicElement(`ha-automation-trigger-${type}`, {
-                  hass: this.hass,
-                  trigger: this.trigger,
-                  disabled: this.disabled,
-                })}
+                ${this.description
+                  ? html`<ha-automation-trigger-platform
+                      .hass=${this.hass}
+                      .trigger=${this.trigger}
+                      .description=${this.description}
+                      .disabled=${this.disabled}
+                    ></ha-automation-trigger-platform>`
+                  : dynamicElement(`ha-automation-trigger-${type}`, {
+                      hass: this.hass,
+                      trigger: this.trigger,
+                      disabled: this.disabled,
+                    })}
               </div>
             `}
       </div>
@@ -118,7 +132,7 @@ export default class HaAutomationTriggerEditor extends LitElement {
     if (!ev.detail.isValid) {
       return;
     }
-    fireEvent(this, "value-changed", {
+    fireEvent(this, this.inSidebar ? "yaml-changed" : "value-changed", {
       value: migrateAutomationTrigger(ev.detail.value),
     });
   }
@@ -138,13 +152,9 @@ export default class HaAutomationTriggerEditor extends LitElement {
       haStyle,
       css`
         .disabled {
-          opacity: 0.5;
           pointer-events: none;
         }
 
-        .card-content {
-          padding: 16px;
-        }
         .card-content.yaml {
           padding: 0 1px;
           border-top: 1px solid var(--divider-color);

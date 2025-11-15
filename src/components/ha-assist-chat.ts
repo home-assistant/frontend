@@ -1,25 +1,25 @@
-import type { PropertyValues, TemplateResult } from "lit";
-import { css, LitElement, html, nothing } from "lit";
 import { mdiAlertCircle, mdiMicrophone, mdiSend } from "@mdi/js";
+import type { PropertyValues, TemplateResult } from "lit";
+import { css, html, LitElement, nothing } from "lit";
 import { customElement, property, query, state } from "lit/decorators";
 import { classMap } from "lit/directives/class-map";
-import type { HomeAssistant } from "../types";
+import { supportsFeature } from "../common/entity/supports-feature";
 import {
-  type PipelineRunEvent,
   runAssistPipeline,
   type AssistPipeline,
   type ConversationChatLogAssistantDelta,
   type ConversationChatLogToolResultDelta,
+  type PipelineRunEvent,
 } from "../data/assist_pipeline";
-import { supportsFeature } from "../common/entity/supports-feature";
 import { ConversationEntityFeature } from "../data/conversation";
+import { showAlertDialog } from "../dialogs/generic/show-dialog-box";
+import type { HomeAssistant } from "../types";
 import { AudioRecorder } from "../util/audio-recorder";
+import { documentationUrl } from "../util/documentation-url";
 import "./ha-alert";
+import "./ha-markdown";
 import "./ha-textfield";
 import type { HaTextField } from "./ha-textfield";
-import { documentationUrl } from "../util/documentation-url";
-import { showAlertDialog } from "../dialogs/generic/show-dialog-box";
-import "./ha-markdown";
 
 interface AssistMessage {
   who: string;
@@ -599,7 +599,7 @@ export class HaAssistChat extends LitElement {
       clear: both;
       margin: 8px 0;
       padding: 8px;
-      border-radius: 15px;
+      border-radius: var(--ha-border-radius-xl);
     }
     .message code {
       background-color: none;
@@ -672,7 +672,7 @@ export class HaAssistChat extends LitElement {
     .double-bounce2 {
       width: 48px;
       height: 48px;
-      border-radius: 50%;
+      border-radius: var(--ha-border-radius-circle);
       background-color: var(--primary-color);
       opacity: 0.2;
       position: absolute;

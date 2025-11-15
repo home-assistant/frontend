@@ -1,4 +1,9 @@
-import { mdiDelete, mdiDrag, mdiPencil, mdiPlus } from "@mdi/js";
+import {
+  mdiDelete,
+  mdiDragHorizontalVariant,
+  mdiPencil,
+  mdiPlus,
+} from "@mdi/js";
 import { LitElement, css, html, nothing } from "lit";
 import { customElement, property } from "lit/decorators";
 import { repeat } from "lit/directives/repeat";
@@ -42,9 +47,12 @@ import { supportsLightBrightnessCardFeature } from "../../card-features/hui-ligh
 import { supportsLightColorTempCardFeature } from "../../card-features/hui-light-color-temp-card-feature";
 import { supportsLockCommandsCardFeature } from "../../card-features/hui-lock-commands-card-feature";
 import { supportsLockOpenDoorCardFeature } from "../../card-features/hui-lock-open-door-card-feature";
+import { supportsMediaPlayerPlaybackCardFeature } from "../../card-features/hui-media-player-playback-card-feature";
+import { supportsMediaPlayerVolumeButtonsCardFeature } from "../../card-features/hui-media-player-volume-buttons-card-feature";
 import { supportsMediaPlayerVolumeSliderCardFeature } from "../../card-features/hui-media-player-volume-slider-card-feature";
 import { supportsNumericInputCardFeature } from "../../card-features/hui-numeric-input-card-feature";
 import { supportsSelectOptionsCardFeature } from "../../card-features/hui-select-options-card-feature";
+import { supportsTrendGraphCardFeature } from "../../card-features/hui-trend-graph-card-feature";
 import { supportsTargetHumidityCardFeature } from "../../card-features/hui-target-humidity-card-feature";
 import { supportsTargetTemperatureCardFeature } from "../../card-features/hui-target-temperature-card-feature";
 import { supportsToggleCardFeature } from "../../card-features/hui-toggle-card-feature";
@@ -52,6 +60,7 @@ import { supportsUpdateActionsCardFeature } from "../../card-features/hui-update
 import { supportsVacuumCommandsCardFeature } from "../../card-features/hui-vacuum-commands-card-feature";
 import { supportsValveOpenCloseCardFeature } from "../../card-features/hui-valve-open-close-card-feature";
 import { supportsValvePositionCardFeature } from "../../card-features/hui-valve-position-card-feature";
+import { supportsBarGaugeCardFeature } from "../../card-features/hui-bar-gauge-card-feature";
 import { supportsWaterHeaterOperationModesCardFeature } from "../../card-features/hui-water-heater-operation-modes-card-feature";
 import type {
   LovelaceCardFeatureConfig,
@@ -69,6 +78,7 @@ type SupportsFeature = (
 const UI_FEATURE_TYPES = [
   "alarm-modes",
   "area-controls",
+  "bar-gauge",
   "button",
   "climate-fan-modes",
   "climate-hvac-modes",
@@ -92,9 +102,12 @@ const UI_FEATURE_TYPES = [
   "light-color-temp",
   "lock-commands",
   "lock-open-door",
+  "media-player-playback",
+  "media-player-volume-buttons",
   "media-player-volume-slider",
   "numeric-input",
   "select-options",
+  "trend-graph",
   "target-humidity",
   "target-temperature",
   "toggle",
@@ -120,8 +133,10 @@ const EDITABLES_FEATURE_TYPES = new Set<UiFeatureTypes>([
   "fan-preset-modes",
   "humidifier-modes",
   "lawn-mower-commands",
+  "media-player-volume-buttons",
   "numeric-input",
   "select-options",
+  "trend-graph",
   "update-actions",
   "vacuum-commands",
   "water-heater-operation-modes",
@@ -133,6 +148,7 @@ const SUPPORTS_FEATURE_TYPES: Record<
 > = {
   "alarm-modes": supportsAlarmModesCardFeature,
   "area-controls": supportsAreaControlsCardFeature,
+  "bar-gauge": supportsBarGaugeCardFeature,
   button: supportsButtonCardFeature,
   "climate-fan-modes": supportsClimateFanModesCardFeature,
   "climate-swing-modes": supportsClimateSwingModesCardFeature,
@@ -157,9 +173,12 @@ const SUPPORTS_FEATURE_TYPES: Record<
   "light-color-temp": supportsLightColorTempCardFeature,
   "lock-commands": supportsLockCommandsCardFeature,
   "lock-open-door": supportsLockOpenDoorCardFeature,
+  "media-player-playback": supportsMediaPlayerPlaybackCardFeature,
+  "media-player-volume-buttons": supportsMediaPlayerVolumeButtonsCardFeature,
   "media-player-volume-slider": supportsMediaPlayerVolumeSliderCardFeature,
   "numeric-input": supportsNumericInputCardFeature,
   "select-options": supportsSelectOptionsCardFeature,
+  "trend-graph": supportsTrendGraphCardFeature,
   "target-humidity": supportsTargetHumidityCardFeature,
   "target-temperature": supportsTargetTemperatureCardFeature,
   toggle: supportsToggleCardFeature,
@@ -335,7 +354,9 @@ export class HuiCardFeaturesEditor extends LitElement {
               return html`
                 <div class="feature">
                   <div class="handle">
-                    <ha-svg-icon .path=${mdiDrag}></ha-svg-icon>
+                    <ha-svg-icon
+                      .path=${mdiDragHorizontalVariant}
+                    ></ha-svg-icon>
                   </div>
                   <div class="feature-content">
                     <div>
@@ -478,7 +499,7 @@ export class HuiCardFeaturesEditor extends LitElement {
       flex-direction: column;
     }
     ha-button-menu {
-      margin-top: 8px;
+      margin-top: var(--ha-space-2);
     }
     .feature {
       display: flex;
@@ -487,8 +508,8 @@ export class HuiCardFeaturesEditor extends LitElement {
     .feature .handle {
       cursor: move; /* fallback if grab cursor is unsupported */
       cursor: grab;
-      padding-right: 8px;
-      padding-inline-end: 8px;
+      padding-right: var(--ha-space-2);
+      padding-inline-end: var(--ha-space-2);
       padding-inline-start: initial;
       direction: var(--direction);
     }
@@ -497,7 +518,7 @@ export class HuiCardFeaturesEditor extends LitElement {
     }
 
     .feature-content {
-      height: 60px;
+      height: var(--ha-space-15);
       font-size: var(--ha-font-size-l);
       display: flex;
       align-items: center;
@@ -512,7 +533,7 @@ export class HuiCardFeaturesEditor extends LitElement {
 
     .remove-icon,
     .edit-icon {
-      --mdc-icon-button-size: 36px;
+      --mdc-icon-button-size: var(--ha-space-9);
       color: var(--secondary-text-color);
     }
 

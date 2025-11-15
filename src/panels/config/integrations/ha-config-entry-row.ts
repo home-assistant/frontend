@@ -2,6 +2,7 @@ import {
   mdiAlertCircle,
   mdiChevronDown,
   mdiCogOutline,
+  mdiContentCopy,
   mdiDelete,
   mdiDevices,
   mdiDotsVertical,
@@ -22,9 +23,9 @@ import { css, html, LitElement, nothing } from "lit";
 import { customElement, property, state } from "lit/decorators";
 import { classMap } from "lit/directives/class-map";
 import memoizeOne from "memoize-one";
-import { caseInsensitiveStringCompare } from "../../../common/string/compare";
-import { computeDeviceNameDisplay } from "../../../common/entity/compute_device_name";
 import { isDevVersion } from "../../../common/config/version";
+import { computeDeviceNameDisplay } from "../../../common/entity/compute_device_name";
+import { caseInsensitiveStringCompare } from "../../../common/string/compare";
 import {
   deleteApplicationCredential,
   fetchApplicationCredentialsConfigEntry,
@@ -71,6 +72,8 @@ import {
 import "./ha-config-entry-device-row";
 import { renderConfigEntryError } from "./ha-config-integration-page";
 import "./ha-config-sub-entry-row";
+import { copyToClipboard } from "../../../common/util/copy-clipboard";
+import { showToast } from "../../../util/toast";
 
 @customElement("ha-config-entry-row")
 class HaConfigEntryRow extends LitElement {
@@ -312,6 +315,13 @@ class HaConfigEntryRow extends LitElement {
             <ha-svg-icon slot="start" .path=${mdiRenameBox}></ha-svg-icon>
             ${this.hass.localize(
               "ui.panel.config.integrations.config_entry.rename"
+            )}
+          </ha-md-menu-item>
+
+          <ha-md-menu-item @click=${this._handleCopy} graphic="icon">
+            <ha-svg-icon slot="start" .path=${mdiContentCopy}></ha-svg-icon>
+            ${this.hass.localize(
+              "ui.panel.config.integrations.config_entry.copy"
             )}
           </ha-md-menu-item>
 
@@ -623,6 +633,15 @@ class HaConfigEntryRow extends LitElement {
     });
   }
 
+  private async _handleCopy() {
+    await copyToClipboard(this.entry.entry_id);
+    showToast(this, {
+      message:
+        this.hass?.localize("ui.common.copied_clipboard") ||
+        "Copied to clipboard",
+    });
+  }
+
   private async _handleRename() {
     const newName = await showPromptDialog(this, {
       title: this.hass.localize("ui.panel.config.integrations.rename_dialog"),
@@ -775,7 +794,7 @@ class HaConfigEntryRow extends LitElement {
       }
       ha-md-list {
         border: 1px solid var(--divider-color);
-        border-radius: var(--ha-card-border-radius, 12px);
+        border-radius: var(--ha-card-border-radius, var(--ha-border-radius-lg));
         padding: 0;
       }
       :host([narrow]) {
@@ -794,7 +813,7 @@ class HaConfigEntryRow extends LitElement {
       }
       .toggle-devices-row {
         overflow: hidden;
-        border-radius: var(--ha-card-border-radius, 12px);
+        border-radius: var(--ha-card-border-radius, var(--ha-border-radius-lg));
       }
       .toggle-devices-row.expanded {
         border-bottom-left-radius: 0;

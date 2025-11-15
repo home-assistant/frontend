@@ -45,7 +45,7 @@ export class HaCodeEditorCompletionItems extends LitElement {
       margin: 0 3px;
       padding: 3px;
       background-color: var(--markdown-code-background-color, none);
-      border-radius: var(--ha-border-radius-sm, 4px);
+      border-radius: var(--ha-border-radius-sm);
       line-height: var(--ha-line-height-condensed);
     }
   `;

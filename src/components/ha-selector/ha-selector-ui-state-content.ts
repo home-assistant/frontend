@@ -36,7 +36,7 @@ export class HaSelectorUiStateContent extends SubscribeMixin(LitElement) {
         .helper=${this.helper}
         .disabled=${this.disabled}
         .required=${this.required}
-        .allowName=${this.selector.ui_state_content?.allow_name}
+        .allowName=${this.selector.ui_state_content?.allow_name || false}
       ></ha-entity-state-content-picker>
     `;
   }

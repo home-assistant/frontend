@@ -16,8 +16,22 @@ export class HaMdButtonMenu extends LitElement {
 
   @property() public positioning?: "fixed" | "absolute" | "popover";
 
+  @property({ attribute: "anchor-corner" }) public anchorCorner:
+    | "start-start"
+    | "start-end"
+    | "end-start"
+    | "end-end" = "end-start";
+
+  @property({ attribute: "menu-corner" }) public menuCorner:
+    | "start-start"
+    | "start-end"
+    | "end-start"
+    | "end-end" = "start-start";
+
   @property({ type: Boolean, attribute: "has-overflow" }) public hasOverflow =
     false;
+
+  @property({ type: Boolean }) public quick = false;
 
   @query("ha-md-menu", true) private _menu!: HaMdMenu;
 
@@ -39,8 +53,11 @@ export class HaMdButtonMenu extends LitElement {
         <slot name="trigger" @slotchange=${this._setTriggerAria}></slot>
       </div>
       <ha-md-menu
+        .quick=${this.quick}
         .positioning=${this.positioning}
         .hasOverflow=${this.hasOverflow}
+        .anchorCorner=${this.anchorCorner}
+        .menuCorner=${this.menuCorner}
         @opening=${this._handleOpening}
         @closing=${this._handleClosing}
       >

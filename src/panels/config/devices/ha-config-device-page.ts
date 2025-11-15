@@ -24,6 +24,7 @@ import { computeEntityEntryName } from "../../../common/entity/compute_entity_na
 import { computeStateDomain } from "../../../common/entity/compute_state_domain";
 import { computeStateName } from "../../../common/entity/compute_state_name";
 import { stringCompare } from "../../../common/string/compare";
+import { slugify } from "../../../common/string/slugify";
 import { groupBy } from "../../../common/util/group-by";
 import "../../../components/entity/ha-battery-icon";
 import "../../../components/ha-alert";
@@ -555,16 +556,21 @@ export class HaConfigDevicePage extends LitElement {
                               </a>
                             `
                           : html`
+                              <ha-list-item
+                                .id="scene-${slugify(entityState.entity_id)}"
+                                hasMeta
+                                .scene=${entityState}
+                              >
+                                ${computeStateName(entityState)}
+                                <ha-icon-next slot="meta"></ha-icon-next>
+                              </ha-list-item>
                               <ha-tooltip
+                                .for="scene-${slugify(entityState.entity_id)}"
                                 placement="left"
-                                .content=${this.hass.localize(
+                              >
+                                ${this.hass.localize(
                                   "ui.panel.config.devices.cant_edit"
                                 )}
-                              >
-                                <ha-list-item hasMeta .scene=${entityState}>
-                                  ${computeStateName(entityState)}
-                                  <ha-icon-next slot="meta"></ha-icon-next>
-                                </ha-list-item>
                               </ha-tooltip>
                             `;
                       })}
@@ -764,38 +770,39 @@ export class HaConfigDevicePage extends LitElement {
             ${firstDeviceAction || actions.length
               ? html`
                   <div class="card-actions" slot="actions">
-                    <div>
-                      <ha-button
-                        href=${ifDefined(firstDeviceAction!.href)}
-                        rel=${ifDefined(
-                          firstDeviceAction!.target ? "noreferrer" : undefined
-                        )}
-                        appearance="plain"
-                        target=${ifDefined(firstDeviceAction!.target)}
-                        class=${ifDefined(firstDeviceAction!.classes)}
-                        .action=${firstDeviceAction!.action}
-                        @click=${this._deviceActionClicked}
-                      >
-                        ${firstDeviceAction!.label}
-                        ${firstDeviceAction!.icon
-                          ? html`
-                              <ha-svg-icon
-                                class=${ifDefined(firstDeviceAction!.classes)}
-                                .path=${firstDeviceAction!.icon}
-                                slot="start"
-                              ></ha-svg-icon>
-                            `
-                          : nothing}
-                        ${firstDeviceAction!.trailingIcon
-                          ? html`
-                              <ha-svg-icon
-                                .path=${firstDeviceAction!.trailingIcon}
-                                slot="end"
-                              ></ha-svg-icon>
-                            `
-                          : nothing}
-                      </ha-button>
-                    </div>
+                    <ha-button
+                      href=${ifDefined(firstDeviceAction!.href)}
+                      rel=${ifDefined(
+                        firstDeviceAction!.target ? "noreferrer" : undefined
+                      )}
+                      appearance="plain"
+                      target=${ifDefined(firstDeviceAction!.target)}
+                      class=${ifDefined(firstDeviceAction!.classes)}
+                      .variant=${firstDeviceAction!.classes?.includes("warning")
+                        ? "danger"
+                        : "brand"}
+                      .action=${firstDeviceAction!.action}
+                      @click=${this._deviceActionClicked}
+                    >
+                      ${firstDeviceAction!.label}
+                      ${firstDeviceAction!.icon
+                        ? html`
+                            <ha-svg-icon
+                              class=${ifDefined(firstDeviceAction!.classes)}
+                              .path=${firstDeviceAction!.icon}
+                              slot="start"
+                            ></ha-svg-icon>
+                          `
+                        : nothing}
+                      ${firstDeviceAction!.trailingIcon
+                        ? html`
+                            <ha-svg-icon
+                              .path=${firstDeviceAction!.trailingIcon}
+                              slot="end"
+                            ></ha-svg-icon>
+                          `
+                        : nothing}
+                    </ha-button>
 
                     ${actions.length
                       ? html`
@@ -1227,7 +1234,7 @@ export class HaConfigDevicePage extends LitElement {
   private _computeEntityName(entity: EntityRegistryEntry) {
     const device = this.hass.devices[this.deviceId];
     return (
-      computeEntityEntryName(entity, this.hass) ||
+      computeEntityEntryName(entity, this.hass.devices) ||
       computeDeviceNameDisplay(device, this.hass)
     );
   }
@@ -1478,6 +1485,9 @@ export class HaConfigDevicePage extends LitElement {
           margin-top: 32px;
           margin-bottom: 32px;
         }
+        :host([narrow]) .container {
+          margin-top: 0;
+        }
 
         .card-header {
           display: flex;
@@ -1577,10 +1587,6 @@ export class HaConfigDevicePage extends LitElement {
           width: 100%;
         }
 
-        :host([narrow]) .container {
-          margin-top: 0;
-        }
-
         a {
           text-decoration: none;
           color: var(--primary-color);
@@ -1608,7 +1614,10 @@ export class HaConfigDevicePage extends LitElement {
         }
 
         ha-card:has(ha-logbook) {
-          padding-bottom: var(--ha-card-border-radius, 12px);
+          padding-bottom: var(
+            --ha-card-border-radius,
+            var(--ha-border-radius-lg)
+          );
         }
 
         ha-logbook {

@@ -34,9 +34,10 @@ import type {
 } from "../../card-features/types";
 import {
   DEVICE_CLASSES,
+  SUM_DEVICE_CLASSES,
   type AreaCardFeatureContext,
 } from "../../cards/hui-area-card";
-import type { AreaCardConfig } from "../../cards/types";
+import type { AreaCardConfig, AreaCardDisplayType } from "../../cards/types";
 import type { LovelaceCardEditor } from "../../types";
 import { baseLovelaceCardConfig } from "../structs/base-card-struct";
 import type { EditDetailElementEvent, EditSubElementEvent } from "../types";
@@ -52,6 +53,7 @@ const cardConfigStruct = assign(
     navigation_path: optional(string()),
     show_camera: optional(boolean()),
     display_type: optional(enums(["compact", "icon", "picture", "camera"])),
+    vertical: optional(boolean()),
     camera_view: optional(string()),
     alert_classes: optional(array(string())),
     sensor_classes: optional(array(string())),
@@ -78,7 +80,7 @@ export class HuiAreaCardEditor
   private _schema = memoizeOne(
     (
       localize: LocalizeFunc,
-      showCamera: boolean,
+      displayType: AreaCardDisplayType,
       binaryClasses: SelectOption[],
       sensorClasses: SelectOption[]
     ) =>
@@ -113,7 +115,28 @@ export class HuiAreaCardEditor
                     },
                   },
                 },
-                ...(showCamera
+                ...(displayType === "compact"
+                  ? ([
+                      {
+                        name: "content_layout",
+                        required: true,
+                        selector: {
+                          select: {
+                            mode: "dropdown",
+                            options: ["horizontal", "vertical"].map(
+                              (value) => ({
+                                label: localize(
+                                  `ui.panel.lovelace.editor.card.area.content_layout_options.${value}`
+                                ),
+                                value,
+                              })
+                            ),
+                          },
+                        },
+                      },
+                    ] as const satisfies readonly HaFormSchema[])
+                  : []),
+                ...(displayType === "camera"
                   ? ([
                       {
                         name: "camera_view",
@@ -241,13 +264,28 @@ export class HuiAreaCardEditor
     currentClasses: string[]
   ): SelectOption[] {
     const options = [...new Set([...possibleClasses, ...currentClasses])].map(
-      (deviceClass) => ({
-        value: deviceClass,
-        label:
-          this.hass!.localize(
-            `component.${domain}.entity_component.${deviceClass}.name`
-          ) || deviceClass,
-      })
+      (deviceClass) => {
+        const labelSuffix =
+          domain === "sensor"
+            ? ` (${
+                SUM_DEVICE_CLASSES.includes(deviceClass)
+                  ? this.hass!.localize(
+                      "ui.panel.lovelace.editor.card.area.sum"
+                    )
+                  : this.hass!.localize(
+                      "ui.panel.lovelace.editor.card.area.median"
+                    )
+              })`
+            : "";
+        return {
+          value: deviceClass,
+          label: `${
+            this.hass!.localize(
+              `component.${domain}.entity_component.${deviceClass}.name`
+            ) || deviceClass
+          }${labelSuffix}`,
+        };
+      }
     );
     options.sort((a, b) =>
       caseInsensitiveStringCompare(a.label, b.label, this.hass!.locale.language)
@@ -282,7 +320,7 @@ export class HuiAreaCardEditor
   }
 
   private _featuresSchema = memoizeOne(
-    (localize: LocalizeFunc) =>
+    (localize: LocalizeFunc, vertical: boolean) =>
       [
         {
           name: "features_position",
@@ -303,6 +341,7 @@ export class HuiAreaCardEditor
                   src_dark: `/static/images/form/tile_features_position_${value}_dark.svg`,
                   flip_rtl: true,
                 },
+                disabled: vertical && value === "inline",
               })),
             },
           },
@@ -338,30 +377,34 @@ export class HuiAreaCardEditor
       this._config.sensor_classes || DEVICE_CLASSES.sensor
     );
 
-    const showCamera = this._config.display_type === "camera";
-
     const displayType =
-      this._config.display_type || this._config.show_camera
-        ? "camera"
-        : "picture";
+      this._config.display_type ||
+      (this._config.show_camera ? "camera" : "picture");
 
     const schema = this._schema(
       this.hass.localize,
-      showCamera,
+      displayType,
       binarySelectOptions,
       sensorSelectOptions
     );
 
-    const featuresSchema = this._featuresSchema(this.hass.localize);
+    const vertical = this._config.vertical && displayType === "compact";
+
+    const featuresSchema = this._featuresSchema(this.hass.localize, vertical);
 
     const data = {
       camera_view: "auto",
       alert_classes: DEVICE_CLASSES.binary_sensor,
       sensor_classes: DEVICE_CLASSES.sensor,
-      features_position: "bottom",
       display_type: displayType,
+      content_layout: vertical ? "vertical" : "horizontal",
       ...this._config,
     };
+
+    // Default features position to bottom and force it to bottom in vertical mode
+    if (!data.features_position || vertical) {
+      data.features_position = "bottom";
+    }
 
     const hasCompatibleFeatures = this._hasCompatibleFeatures(
       this._featureContext
@@ -418,6 +461,12 @@ export class HuiAreaCardEditor
 
     if (config.display_type !== "camera") {
       delete config.camera_view;
+    }
+
+    // Convert content_layout to vertical
+    if (config.content_layout) {
+      config.vertical = config.content_layout === "vertical";
+      delete config.content_layout;
     }
 
     fireEvent(this, "config-changed", { config });

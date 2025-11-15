@@ -435,9 +435,9 @@ export const convertStatisticsToHistory = (
   Object.entries(orderedStatistics).forEach(([key, value]) => {
     const entityHistoryStates: EntityHistoryState[] = value.map((e) => ({
       s: e.mean != null ? e.mean.toString() : e.state!.toString(),
-      lc: e.start / 1000,
+      lc: e.end / 1000,
       a: {},
-      lu: e.start / 1000,
+      lu: e.end / 1000,
     }));
     statsHistoryStates[key] = entityHistoryStates;
   });

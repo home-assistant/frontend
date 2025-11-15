@@ -4,6 +4,11 @@ import { customElement, property, state } from "lit/decorators";
 import { computeDomain } from "../../../common/entity/compute_domain";
 import "../../../components/ha-control-button";
 import "../../../components/ha-control-button-group";
+import {
+  hasRequiredScriptFields,
+  requiredScriptFieldsFilled,
+} from "../../../data/script";
+import { showMoreInfoDialog } from "../../../dialogs/more-info/show-ha-more-info-dialog";
 import type { HomeAssistant } from "../../../types";
 import type { LovelaceCardFeature, LovelaceCardFeatureEditor } from "../types";
 import { cardFeatureStyles } from "./common/card-feature-styles";
@@ -21,7 +26,7 @@ export const supportsButtonCardFeature = (
     : undefined;
   if (!stateObj) return false;
   const domain = computeDomain(stateObj.entity_id);
-  return ["button", "input_button", "script"].includes(domain);
+  return ["button", "input_button", "scene", "script"].includes(domain);
 };
 
 @customElement("hui-button-card-feature")
@@ -46,9 +51,30 @@ class HuiButtonCardFeature extends LitElement implements LovelaceCardFeature {
     const service =
       domain === "button" || domain === "input_button" ? "press" : "turn_on";
 
-    this.hass.callService(domain, service, {
+    if (domain === "script") {
+      const entityId = this._stateObj.entity_id;
+      if (
+        hasRequiredScriptFields(this.hass!, entityId) &&
+        !requiredScriptFieldsFilled(this.hass!, entityId, this._config?.data)
+      ) {
+        showMoreInfoDialog(this, {
+          entityId: entityId,
+          data: this._config?.data,
+        });
+        return;
+      }
+    }
+
+    const serviceData = {
       entity_id: this._stateObj.entity_id,
-    });
+      ...(this._config?.data
+        ? {
+            variables: this._config.data,
+          }
+        : {}),
+    };
+
+    this.hass.callService(domain, service, serviceData);
   }
 
   static getStubConfig(): ButtonCardFeatureConfig {
@@ -78,7 +104,7 @@ class HuiButtonCardFeature extends LitElement implements LovelaceCardFeature {
     return html`
       <ha-control-button-group>
         <ha-control-button
-          .disabled=${["unavailable", "unknown"].includes(this._stateObj.state)}
+          .disabled=${this._stateObj.state === "unavailable"}
           class="press-button"
           @click=${this._pressButton}
         >

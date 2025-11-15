@@ -1,4 +1,4 @@
-import { mdiDrag, mdiEye, mdiEyeOff } from "@mdi/js";
+import { mdiDragHorizontalVariant, mdiEye, mdiEyeOff } from "@mdi/js";
 import type { CSSResultGroup } from "lit";
 import { LitElement, css, html, nothing } from "lit";
 import { customElement, property, state } from "lit/decorators";
@@ -129,7 +129,7 @@ export class DialogDataTableSettings extends LitElement {
                   ${canMove && isVisible
                     ? html`<ha-svg-icon
                         class="handle"
-                        .path=${mdiDrag}
+                        .path=${mdiDragHorizontalVariant}
                         slot="graphic"
                       ></ha-svg-icon>`
                     : nothing}
@@ -290,7 +290,9 @@ export class DialogDataTableSettings extends LitElement {
           ha-dialog {
             --vertical-align-dialog: flex-start;
             --dialog-surface-margin-top: 250px;
-            --ha-dialog-border-radius: 28px 28px 0 0;
+            --ha-dialog-border-radius: var(--ha-border-radius-4xl)
+              var(--ha-border-radius-4xl) var(--ha-border-radius-square)
+              var(--ha-border-radius-square);
             --mdc-dialog-min-height: calc(100% - 250px);
             --mdc-dialog-max-height: calc(100% - 250px);
           }

@@ -46,6 +46,7 @@ import "../ha-config-section";
 import { configSections } from "../ha-panel-config";
 import { showHomeZoneDetailDialog } from "./show-dialog-home-zone-detail";
 import { showZoneDetailDialog } from "./show-dialog-zone-detail";
+import { slugify } from "../../../common/string/slugify";
 
 @customElement("ha-config-zone")
 export class HaConfigZone extends SubscribeMixin(LitElement) {
@@ -165,9 +166,9 @@ export class HaConfigZone extends SubscribeMixin(LitElement) {
                               .entry=${entry}
                               @click=${this._openEditEntry}
                               .path=${mdiPencil}
-                              .label=${hass.localize(
-                                "ui.panel.config.zone.edit_zone"
-                              )}
+                              .label=${hass.localize("ui.common.edit_item", {
+                                name: entry.name,
+                              })}
                             ></ha-icon-button>
                           </div>
                         `
@@ -200,17 +201,8 @@ export class HaConfigZone extends SubscribeMixin(LitElement) {
                     stateObject.entity_id === "zone.home" &&
                     !this._canEditCore
                       ? nothing
-                      : html`<ha-tooltip
-                          slot="meta"
-                          placement="left"
-                          .content=${hass.localize(
-                            "ui.panel.config.zone.configured_in_yaml"
-                          )}
-                          .disabled=${stateObject.entity_id === "zone.home"}
-                          hoist
-                        >
-                          <ha-icon-button
-                            .id=${!this.narrow ? stateObject.entity_id : ""}
+                      : html`<ha-icon-button
+                            .id="zone-${slugify(stateObject.entity_id)}"
                             .entityId=${stateObject.entity_id}
                             .noEdit=${stateObject.entity_id !== "zone.home" ||
                             !this._canEditCore}
@@ -218,12 +210,22 @@ export class HaConfigZone extends SubscribeMixin(LitElement) {
                             this._canEditCore
                               ? mdiPencil
                               : mdiPencilOff}
-                            .label=${stateObject.entity_id === "zone.home"
-                              ? hass.localize("ui.panel.config.zone.edit_home")
-                              : hass.localize("ui.panel.config.zone.edit_zone")}
+                            .label=${hass.localize("ui.common.edit_item", {
+                              name: hass.config.location_name,
+                            })}
                             @click=${this._editHomeZone}
+                            slot="meta"
                           ></ha-icon-button>
-                        </ha-tooltip>`}
+                          <ha-tooltip
+                            .for="zone-${slugify(stateObject.entity_id)}"
+                            placement="left"
+                            .disabled=${stateObject.entity_id === "zone.home"}
+                            hoist
+                          >
+                            ${hass.localize(
+                              "ui.panel.config.zone.configured_in_yaml"
+                            )}
+                          </ha-tooltip>`}
                   </ha-list-item>
                 `
               )}

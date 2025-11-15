@@ -323,6 +323,9 @@ export const getMyRedirects = (): Redirects => ({
       category: "string?",
     },
   },
+  lights: {
+    redirect: "/lights",
+  },
 });
 
 const getRedirect = (path: string): Redirect | undefined =>

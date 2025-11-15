@@ -3,8 +3,6 @@ import {
   mdiClockOutline,
   mdiCodeBraces,
   mdiDevices,
-  mdiDotsHorizontal,
-  mdiExcavator,
   mdiGateOr,
   mdiIdentifier,
   mdiMapClock,
@@ -15,7 +13,7 @@ import {
   mdiStateMachine,
   mdiWeatherSunny,
 } from "@mdi/js";
-import type { AutomationElementGroup } from "./automation";
+import type { AutomationElementGroupCollection } from "./automation";
 
 export const CONDITION_ICONS = {
   device: mdiDevices,
@@ -31,24 +29,36 @@ export const CONDITION_ICONS = {
   zone: mdiMapMarkerRadius,
 };
 
-export const CONDITION_GROUPS: AutomationElementGroup = {
-  device: {},
-  entity: { icon: mdiShape, members: { state: {}, numeric_state: {} } },
-  time_location: {
-    icon: mdiMapClock,
-    members: { sun: {}, time: {}, zone: {} },
+export const CONDITION_COLLECTIONS: AutomationElementGroupCollection[] = [
+  {
+    groups: {
+      device: {},
+      entity: { icon: mdiShape, members: { state: {}, numeric_state: {} } },
+      time_location: {
+        icon: mdiMapClock,
+        members: { sun: {}, time: {}, zone: {} },
+      },
+    },
   },
-  building_blocks: {
-    icon: mdiExcavator,
-    members: { and: {}, or: {}, not: {} },
-  },
-  other: {
-    icon: mdiDotsHorizontal,
-    members: {
+  {
+    titleKey: "ui.panel.config.automation.editor.conditions.groups.other.label",
+    groups: {
       template: {},
       trigger: {},
     },
   },
-} as const;
+] as const;
+
+export const CONDITION_BUILDING_BLOCKS_GROUP = {
+  and: {},
+  or: {},
+  not: {},
+};
 
 export const CONDITION_BUILDING_BLOCKS = ["and", "or", "not"];
+
+export const COLLAPSIBLE_CONDITION_ELEMENTS = [
+  "ha-automation-condition-and",
+  "ha-automation-condition-not",
+  "ha-automation-condition-or",
+];

@@ -1,11 +1,12 @@
-import { customElement, property, state } from "lit/decorators";
 import { css, type CSSResultGroup, html, LitElement, nothing } from "lit";
-import type { HassDialog } from "../../../../dialogs/make-dialog-manager";
-import type { HomeAssistant } from "../../../../types";
+import { customElement, property, state } from "lit/decorators";
 import { fireEvent } from "../../../../common/dom/fire_event";
-import { haStyle, haStyleDialog } from "../../../../resources/styles";
+import "../../../../components/ha-button";
 import { createCloseHeading } from "../../../../components/ha-dialog";
-import "../trigger/ha-automation-trigger-row";
+import "../../../../components/ha-yaml-editor";
+import type { HassDialog } from "../../../../dialogs/make-dialog-manager";
+import { haStyle, haStyleDialog } from "../../../../resources/styles";
+import type { HomeAssistant } from "../../../../types";
 import type { PasteReplaceDialogParams } from "./show-dialog-paste-replace";
 
 @customElement("ha-dialog-paste-replace")
@@ -91,7 +92,7 @@ class DialogPasteReplace extends LitElement implements HassDialog {
         }
         div[slot="primaryAction"] {
           display: flex;
-          gap: 8px;
+          gap: var(--ha-space-2);
         }
       `,
     ];

@@ -781,7 +781,7 @@ class HassioAddonInfo extends LitElement {
 
       ${this.addon.long_description
         ? html`
-            <ha-card outlined>
+            <ha-card class="long-description" outlined>
               <div class="card-content">
                 <ha-markdown
                   .content=${this.addon.long_description}
@@ -1332,6 +1332,9 @@ class HassioAddonInfo extends LitElement {
         }
         .description a {
           color: var(--primary-color);
+        }
+        .long-description {
+          direction: ltr;
         }
         ha-assist-chip {
           --md-sys-color-primary: var(--text-primary-color);

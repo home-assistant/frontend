@@ -2,9 +2,12 @@ import type { AlarmMode } from "../../../data/alarm_control_panel";
 import type { HvacMode } from "../../../data/climate";
 import type { OperationMode } from "../../../data/water_heater";
 
+export type ButtonCardData = Record<string, any>;
+
 export interface ButtonCardFeatureConfig {
   type: "button";
   action_name?: string;
+  data?: ButtonCardData;
 }
 
 export interface CoverOpenCloseCardFeatureConfig {
@@ -39,8 +42,17 @@ export interface LockOpenDoorCardFeatureConfig {
   type: "lock-open-door";
 }
 
+export interface MediaPlayerPlaybackCardFeatureConfig {
+  type: "media-player-playback";
+}
+
 export interface MediaPlayerVolumeSliderCardFeatureConfig {
   type: "media-player-volume-slider";
+}
+
+export interface MediaPlayerVolumeButtonsCardFeatureConfig {
+  type: "media-player-volume-buttons";
+  step?: number;
 }
 
 export interface FanDirectionCardFeatureConfig {
@@ -133,6 +145,7 @@ export interface ToggleCardFeatureConfig {
 
 export interface WaterHeaterOperationModesCardFeatureConfig {
   type: "water-heater-operation-modes";
+  style?: "dropdown" | "icons";
   operation_modes?: OperationMode[];
 }
 
@@ -183,6 +196,11 @@ export interface UpdateActionsCardFeatureConfig {
   backup?: "yes" | "no" | "ask";
 }
 
+export interface TrendGraphCardFeatureConfig {
+  type: "trend-graph";
+  hours_to_show?: number;
+}
+
 export const AREA_CONTROLS = [
   "light",
   "fan",
@@ -206,6 +224,10 @@ export interface AreaControlsCardFeatureConfig {
   controls?: AreaControl[];
 }
 
+export interface BarGaugeCardFeatureConfig {
+  type: "bar-gauge";
+}
+
 export type LovelaceCardFeaturePosition = "bottom" | "inline";
 
 export type LovelaceCardFeatureConfig =
@@ -226,6 +248,7 @@ export type LovelaceCardFeatureConfig =
   | FanOscillateCardFeatureConfig
   | FanPresetModesCardFeatureConfig
   | FanSpeedCardFeatureConfig
+  | TrendGraphCardFeatureConfig
   | HumidifierToggleCardFeatureConfig
   | HumidifierModesCardFeatureConfig
   | LawnMowerCommandsCardFeatureConfig
@@ -233,9 +256,12 @@ export type LovelaceCardFeatureConfig =
   | LightColorTempCardFeatureConfig
   | LockCommandsCardFeatureConfig
   | LockOpenDoorCardFeatureConfig
+  | MediaPlayerPlaybackCardFeatureConfig
+  | MediaPlayerVolumeButtonsCardFeatureConfig
   | MediaPlayerVolumeSliderCardFeatureConfig
   | NumericInputCardFeatureConfig
   | SelectOptionsCardFeatureConfig
+  | TrendGraphCardFeatureConfig
   | TargetHumidityCardFeatureConfig
   | TargetTemperatureCardFeatureConfig
   | ToggleCardFeatureConfig
@@ -244,7 +270,8 @@ export type LovelaceCardFeatureConfig =
   | ValveOpenCloseCardFeatureConfig
   | ValvePositionCardFeatureConfig
   | WaterHeaterOperationModesCardFeatureConfig
-  | AreaControlsCardFeatureConfig;
+  | AreaControlsCardFeatureConfig
+  | BarGaugeCardFeatureConfig;
 
 export interface LovelaceCardFeatureContext {
   entity_id?: string;

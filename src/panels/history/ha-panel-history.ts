@@ -1,10 +1,10 @@
+import type { ActionDetail } from "@material/mwc-list";
 import {
   mdiDotsVertical,
   mdiDownload,
   mdiFilterRemove,
   mdiImagePlus,
 } from "@mdi/js";
-import type { ActionDetail } from "@material/mwc-list";
 import { differenceInHours } from "date-fns";
 import type {
   HassServiceTarget,
@@ -17,7 +17,7 @@ import memoizeOne from "memoize-one";
 import { ensureArray } from "../../common/array/ensure-array";
 import { storage } from "../../common/decorators/storage";
 import { computeDomain } from "../../common/entity/compute_domain";
-import { navigate } from "../../common/navigate";
+import { goBack, navigate } from "../../common/navigate";
 import { constructUrlCurrentPath } from "../../common/url/construct-url";
 import {
   createSearchParam,
@@ -27,21 +27,21 @@ import {
 import { MIN_TIME_BETWEEN_UPDATES } from "../../components/chart/ha-chart-base";
 import "../../components/chart/state-history-charts";
 import type { StateHistoryCharts } from "../../components/chart/state-history-charts";
-import "../../components/ha-spinner";
+import "../../components/ha-button-menu";
 import "../../components/ha-date-range-picker";
 import "../../components/ha-icon-button";
-import "../../components/ha-button-menu";
-import "../../components/ha-list-item";
 import "../../components/ha-icon-button-arrow-prev";
+import "../../components/ha-list-item";
 import "../../components/ha-menu-button";
+import "../../components/ha-spinner";
 import "../../components/ha-target-picker";
 import "../../components/ha-top-app-bar-fixed";
 import type { HistoryResult } from "../../data/history";
 import {
   computeHistory,
-  subscribeHistory,
-  mergeHistoryResults,
   convertStatisticsToHistory,
+  mergeHistoryResults,
+  subscribeHistory,
 } from "../../data/history";
 import { fetchStatistics } from "../../data/recorder";
 import { resolveEntityIDs } from "../../data/selector";
@@ -114,13 +114,13 @@ class HaPanelHistory extends LitElement {
   }
 
   private _goBack(): void {
-    history.back();
+    goBack();
   }
 
   protected render() {
     const entitiesSelected = this._getEntityIds().length > 0;
     return html`
-      <ha-top-app-bar-fixed>
+      <ha-top-app-bar-fixed .narrow=${this.narrow}>
         ${this._showBack
           ? html`
               <ha-icon-button-arrow-prev
@@ -182,6 +182,7 @@ class HaPanelHistory extends LitElement {
               .disabled=${this._isLoading}
               add-on-top
               @value-changed=${this._targetsChanged}
+              compact
             ></ha-target-picker>
           </div>
           ${this._isLoading
@@ -199,6 +200,7 @@ class HaPanelHistory extends LitElement {
                     .startTime=${this._startDate}
                     .endTime=${this._endDate}
                     .narrow=${this.narrow}
+                    sync-charts
                   >
                   </state-history-charts>
                 `}
@@ -311,9 +313,14 @@ class HaPanelHistory extends LitElement {
       return;
     }
 
+    const statsStartDate = new Date(this._startDate);
+    // History uses the end datapoint of the statistic, so if we want the
+    // graph to start at 7AM, need to fetch the statistic from 6AM.
+    statsStartDate.setHours(statsStartDate.getHours() - 1);
+
     const statistics = await fetchStatistics(
       this.hass!,
-      this._startDate,
+      statsStartDate,
       this._endDate,
       statisticIds,
       "hour",
@@ -620,7 +627,6 @@ class HaPanelHistory extends LitElement {
 
         .content {
           padding: 0 16px 16px;
-          padding-bottom: max(var(--safe-area-inset-bottom), 16px);
         }
 
         :host([virtualize]) {
@@ -647,6 +653,10 @@ class HaPanelHistory extends LitElement {
           margin-inline-start: initial;
           max-width: 100%;
           direction: var(--direction);
+        }
+
+        ha-target-picker {
+          flex: 1;
         }
 
         @media all and (max-width: 1025px) {

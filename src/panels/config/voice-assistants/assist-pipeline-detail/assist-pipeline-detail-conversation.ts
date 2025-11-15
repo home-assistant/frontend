@@ -1,11 +1,11 @@
 import { css, html, LitElement } from "lit";
 import { customElement, property, state } from "lit/decorators";
 import memoizeOne from "memoize-one";
+import { fireEvent } from "../../../../common/dom/fire_event";
 import type { LocalizeKeys } from "../../../../common/translations/localize";
+import "../../../../components/ha-form/ha-form";
 import type { AssistPipeline } from "../../../../data/assist_pipeline";
 import type { HomeAssistant } from "../../../../types";
-import "../../../../components/ha-form/ha-form";
-import { fireEvent } from "../../../../common/dom/fire_event";
 
 @customElement("assist-pipeline-detail-conversation")
 export class AssistPipelineDetailConversation extends LitElement {
@@ -109,21 +109,32 @@ export class AssistPipelineDetailConversation extends LitElement {
   }
 
   private _supportedLanguagesChanged(ev) {
-    if (ev.detail.value === "*") {
+    this._supportedLanguages = ev.detail.value;
+
+    if (
+      this._supportedLanguages === "*" ||
+      !this._supportedLanguages?.includes(
+        this.data?.conversation_language || ""
+      ) ||
+      !this.data?.conversation_language
+    ) {
       // wait for update of conversation_engine
       setTimeout(() => {
         const value = { ...this.data };
-        value.conversation_language = "*";
+        if (this._supportedLanguages === "*") {
+          value.conversation_language = "*";
+        } else {
+          value.conversation_language = this._supportedLanguages?.[0] ?? null;
+        }
         fireEvent(this, "value-changed", { value });
       }, 0);
     }
-    this._supportedLanguages = ev.detail.value;
   }
 
   static styles = css`
     .section {
       border: 1px solid var(--divider-color);
-      border-radius: 8px;
+      border-radius: var(--ha-border-radius-md);
       box-sizing: border-box;
       padding: 16px;
     }

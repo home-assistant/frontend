@@ -3,17 +3,16 @@ import { computeStateName } from "../../../../../common/entity/compute_state_nam
 import type { EntityFilterFunc } from "../../../../../common/entity/entity_filter";
 import { generateEntityFilter } from "../../../../../common/entity/entity_filter";
 import { stripPrefixFromEntityName } from "../../../../../common/entity/strip_prefix_from_entity_name";
-import {
-  orderCompare,
-  stringCompare,
-} from "../../../../../common/string/compare";
+import { orderCompare } from "../../../../../common/string/compare";
 import type { AreaRegistryEntry } from "../../../../../data/area_registry";
 import { areaCompare } from "../../../../../data/area_registry";
 import type { FloorRegistryEntry } from "../../../../../data/floor_registry";
+import { floorCompare } from "../../../../../data/floor_registry";
 import type { LovelaceCardConfig } from "../../../../../data/lovelace/config/card";
 import type { HomeAssistant } from "../../../../../types";
 import { supportsAlarmModesCardFeature } from "../../../card-features/hui-alarm-modes-card-feature";
 import { supportsCoverOpenCloseCardFeature } from "../../../card-features/hui-cover-open-close-card-feature";
+import { supportsFanSpeedCardFeature } from "../../../card-features/hui-fan-speed-card-feature";
 import { supportsLightBrightnessCardFeature } from "../../../card-features/hui-light-brightness-card-feature";
 import { supportsLockCommandsCardFeature } from "../../../card-features/hui-lock-commands-card-feature";
 import { supportsTargetTemperatureCardFeature } from "../../../card-features/hui-target-temperature-card-feature";
@@ -248,6 +247,10 @@ export const computeAreaTileCardConfig =
         feature = {
           type: "target-temperature",
         };
+      } else if (supportsFanSpeedCardFeature(hass, context)) {
+        feature = {
+          type: "fan-speed",
+        };
       } else if (supportsAlarmModesCardFeature(hass, context)) {
         feature = {
           type: "alarm-modes",
@@ -299,18 +302,11 @@ export const getFloors = (
   floorsOrder?: string[]
 ): FloorRegistryEntry[] => {
   const floors = Object.values(entries);
-  const compare = orderCompare(floorsOrder || []);
+  const compare = floorCompare(entries, floorsOrder);
 
-  return floors.sort((floorA, floorB) => {
-    const order = compare(floorA.floor_id, floorB.floor_id);
-    if (order !== 0) {
-      return order;
-    }
-    if (floorA.level !== floorB.level) {
-      return (floorA.level ?? 0) - (floorB.level ?? 0);
-    }
-    return stringCompare(floorA.name, floorB.name);
-  });
+  return floors.sort((floorA, floorB) =>
+    compare(floorA.floor_id, floorB.floor_id)
+  );
 };
 
 export const computeAreaPath = (areaId: string): string => `areas-${areaId}`;

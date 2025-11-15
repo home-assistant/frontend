@@ -20,14 +20,15 @@ import {
 } from "../../../data/recorder";
 import type { HomeAssistant } from "../../../types";
 import { computeCardSize } from "../common/compute-card-size";
+import { computeLovelaceEntityName } from "../common/entity/compute-lovelace-entity-name";
 import { findEntities } from "../common/find-entities";
 import { hasConfigOrEntityChanged } from "../common/has-changed";
 import { createHeaderFooterElement } from "../create-element/create-header-footer-element";
 import type {
   LovelaceCard,
   LovelaceCardEditor,
-  LovelaceHeaderFooter,
   LovelaceGridOptions,
+  LovelaceHeaderFooter,
 } from "../types";
 import type { HuiErrorCard } from "./hui-error-card";
 import type { EntityCardConfig, StatisticCardConfig } from "./types";
@@ -104,7 +105,20 @@ export class HuiStatisticCard extends LitElement implements LovelaceCard {
         key: this._config?.collection_key,
       }).subscribe((data) => {
         this._energyStart = data.start;
-        this._energyEnd = data.end;
+        // Energy selection defines a "day" as:
+        //   start: 00:00:00.000
+        //   end:   23:59:59.999
+        // this is fine for recorder/statistics_during_period, which returns a
+        // full 24 hour dataset for this start/end pair.
+        // recorder/statistic_during_period however expects a full day to be
+        // 00:00:00 to 00:00:00 and in some cases will only use 23 hours worth
+        // of data if the end is before midnight.
+        let end = data.end;
+        if (end && end.getMilliseconds() === 999) {
+          end = new Date(end);
+          end.setMilliseconds(1000);
+        }
+        this._energyEnd = end;
         this._fetchStatistic();
       });
     }
@@ -167,7 +181,9 @@ export class HuiStatisticCard extends LitElement implements LovelaceCard {
 
     const stateObj = this.hass.states[this._config.entity];
     const name =
-      this._config.name ||
+      (this._config.name
+        ? computeLovelaceEntityName(this.hass, stateObj, this._config.name)
+        : "") ||
       getStatisticLabel(this.hass, this._config.entity, this._metadata);
 
     return html`

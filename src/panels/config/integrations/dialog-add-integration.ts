@@ -461,7 +461,9 @@ class AddIntegrationDialog extends LitElement {
               class="ha-scrollbar"
               style=${styleMap({
                 width: `${this._width}px`,
-                height: this._narrow ? "calc(100vh - 184px)" : "500px",
+                height: this._narrow
+                  ? "calc(100vh - 184px - var(--safe-area-inset-top, 0px) - var(--safe-area-inset-bottom, 0px))"
+                  : "500px",
               })}
               @click=${this._integrationPicked}
               @keypress=${this._handleKeyPress}

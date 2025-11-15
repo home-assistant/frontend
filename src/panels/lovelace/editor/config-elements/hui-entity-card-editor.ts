@@ -1,16 +1,16 @@
 import { assert, assign, boolean, object, optional, string } from "superstruct";
 import type { LocalizeFunc } from "../../../../common/translations/localize";
 import type { HaFormSchema } from "../../../../components/ha-form/types";
-import type { EntityCardConfig } from "../../cards/types";
 import { headerFooterConfigStructs } from "../../header-footer/structs";
 import type { LovelaceConfigForm } from "../../types";
 import { baseLovelaceCardConfig } from "../structs/base-card-struct";
+import { entityNameStruct } from "../structs/entity-name-struct";
 
 const struct = assign(
   baseLovelaceCardConfig,
   object({
     entity: optional(string()),
-    name: optional(string()),
+    name: optional(entityNameStruct),
     icon: optional(string()),
     attribute: optional(string()),
     unit: optional(string()),
@@ -23,10 +23,16 @@ const struct = assign(
 const SCHEMA = [
   { name: "entity", required: true, selector: { entity: {} } },
   {
+    name: "name",
+    selector: {
+      entity_name: {},
+    },
+    context: { entity: "entity" },
+  },
+  {
     type: "grid",
     name: "",
     schema: [
-      { name: "name", selector: { text: {} } },
       {
         name: "icon",
         selector: {
@@ -54,7 +60,7 @@ const SCHEMA = [
 
 const entityCardConfigForm: LovelaceConfigForm = {
   schema: SCHEMA,
-  assertConfig: (config: EntityCardConfig) => assert(config, struct),
+  assertConfig: (config) => assert(config, struct),
   computeLabel: (schema: HaFormSchema, localize: LocalizeFunc) => {
     if (schema.name === "theme") {
       return `${localize(

@@ -9,13 +9,14 @@ import { LitElement, css, html, nothing } from "lit";
 import { customElement, state } from "lit/decorators";
 import { ifDefined } from "lit/directives/if-defined";
 import { styleMap } from "lit/directives/style-map";
+import { computeCssColor } from "../../../common/color/compute-color";
 import { DOMAINS_TOGGLE } from "../../../common/const";
 import { transform } from "../../../common/decorators/transform";
 import { applyThemesOnElement } from "../../../common/dom/apply_themes_on_element";
 import { fireEvent } from "../../../common/dom/fire_event";
 import { computeDomain } from "../../../common/entity/compute_domain";
 import { computeStateDomain } from "../../../common/entity/compute_state_domain";
-import { computeStateName } from "../../../common/entity/compute_state_name";
+import { stateActive } from "../../../common/entity/state_active";
 import {
   stateColorBrightness,
   stateColorCss,
@@ -40,6 +41,7 @@ import type { FrontendLocaleData } from "../../../data/translation";
 import type { Themes } from "../../../data/ws-themes";
 import type { HomeAssistant } from "../../../types";
 import { actionHandler } from "../common/directives/action-handler-directive";
+import { computeLovelaceEntityName } from "../common/entity/compute-lovelace-entity-name";
 import { findEntities } from "../common/find-entities";
 import { hasAction } from "../common/has-action";
 import { createEntityNotFoundWarning } from "../components/hui-warning";
@@ -122,11 +124,6 @@ export class HuiButtonCard extends LitElement implements LovelaceCard {
   })
   _entity?: EntityRegistryDisplayEntry;
 
-  private _getStateColor(stateObj: HassEntity, config: ButtonCardConfig) {
-    const domain = stateObj ? computeStateDomain(stateObj) : undefined;
-    return config && (config.state_color ?? domain === "light");
-  }
-
   public getCardSize(): number {
     return (
       (this._config?.show_icon ? 4 : 0) + (this._config?.show_name ? 1 : 0)
@@ -166,7 +163,8 @@ export class HuiButtonCard extends LitElement implements LovelaceCard {
       double_tap_action: { action: "none" },
       show_icon: true,
       show_name: true,
-      state_color: true,
+      color:
+        config.color ?? (config.state_color === false ? "none" : undefined),
       ...config,
     };
   }
@@ -185,11 +183,11 @@ export class HuiButtonCard extends LitElement implements LovelaceCard {
       `;
     }
 
-    const name = this._config.show_name
-      ? this._config.name || (stateObj ? computeStateName(stateObj) : "")
-      : "";
-
-    const colored = stateObj && this._getStateColor(stateObj, this._config);
+    const name = computeLovelaceEntityName(
+      this.hass,
+      stateObj,
+      this._config.name
+    );
 
     return html`
       <ha-card
@@ -199,13 +197,15 @@ export class HuiButtonCard extends LitElement implements LovelaceCard {
           hasDoubleClick: hasAction(this._config!.double_tap_action),
         })}
         role="button"
-        aria-label=${this._config.name ||
-        (stateObj ? computeStateName(stateObj) : "")}
+        aria-label=${name}
         tabindex=${ifDefined(
           hasAction(this._config.tap_action) ? "0" : undefined
         )}
         style=${styleMap({
-          "--state-color": colored ? this._computeColor(stateObj) : undefined,
+          "--state-color":
+            this._config.color !== "none"
+              ? this._computeColor(stateObj, this._config)
+              : undefined,
         })}
       >
         <ha-ripple></ha-ripple>
@@ -221,7 +221,7 @@ export class HuiButtonCard extends LitElement implements LovelaceCard {
                 .hass=${this.hass}
                 .stateObj=${stateObj}
                 style=${styleMap({
-                  filter: colored ? stateColorBrightness(stateObj) : undefined,
+                  filter: stateObj ? stateColorBrightness(stateObj) : undefined,
                   height: this._config.icon_height
                     ? this._config.icon_height
                     : undefined,
@@ -334,7 +334,20 @@ export class HuiButtonCard extends LitElement implements LovelaceCard {
     ];
   }
 
-  private _computeColor(stateObj: HassEntity): string | undefined {
+  private _computeColor(
+    stateObj: HassEntity | undefined,
+    config: ButtonCardConfig
+  ): string | undefined {
+    if (config.color) {
+      return !stateObj || stateActive(stateObj)
+        ? computeCssColor(config.color)
+        : undefined;
+    }
+
+    if (!stateObj) {
+      return undefined;
+    }
+
     if (stateObj.attributes.rgb_color) {
       return `rgb(${stateObj.attributes.rgb_color.join(",")})`;
     }

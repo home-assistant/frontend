@@ -24,12 +24,13 @@ import type { WeatherForecastCardConfig } from "../../cards/types";
 import type { LovelaceCardEditor } from "../../types";
 import { actionConfigStruct } from "../structs/action-struct";
 import { baseLovelaceCardConfig } from "../structs/base-card-struct";
+import { entityNameStruct } from "../structs/entity-name-struct";
 
 const cardConfigStruct = assign(
   baseLovelaceCardConfig,
   object({
     entity: optional(string()),
-    name: optional(string()),
+    name: optional(entityNameStruct),
     theme: optional(string()),
     show_current: optional(boolean()),
     show_forecast: optional(boolean()),
@@ -148,7 +149,13 @@ export class HuiWeatherForecastCardEditor
           required: true,
           selector: { entity: { domain: "weather" } },
         },
-        { name: "name", selector: { text: {} } },
+        {
+          name: "name",
+          selector: {
+            entity_name: {},
+          },
+          context: { entity: "entity" },
+        },
         {
           name: "",
           type: "grid",

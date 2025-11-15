@@ -1,4 +1,3 @@
-import type { ActionDetail } from "@material/mwc-list";
 import {
   mdiAndroid,
   mdiApple,
@@ -15,11 +14,14 @@ import memoizeOne from "memoize-one";
 import { relativeTime } from "../../common/datetime/relative_time";
 import { fireEvent } from "../../common/dom/fire_event";
 import "../../components/ha-button";
-import "../../components/ha-button-menu";
 import "../../components/ha-card";
+import "../../components/ha-dropdown";
+import "../../components/ha-dropdown-item";
 import "../../components/ha-icon-button";
 import "../../components/ha-label";
 import "../../components/ha-list-item";
+import "../../components/ha-md-button-menu";
+import "../../components/ha-md-menu-item";
 import "../../components/ha-settings-row";
 import { deleteAllRefreshTokens } from "../../data/auth";
 import type { RefreshToken } from "../../data/refresh_token";
@@ -146,20 +148,18 @@ class HaRefreshTokens extends LitElement {
                           )}
                     </div>
                     <div>
-                      <ha-button-menu
-                        corner="BOTTOM_END"
-                        menu-corner="END"
-                        @action=${this._handleAction}
-                        .token=${token}
-                      >
+                      <ha-dropdown @wa-select=${this._handleDropdownSelect}>
                         <ha-icon-button
                           slot="trigger"
                           .label=${this.hass.localize("ui.common.menu")}
                           .path=${mdiDotsVertical}
                         ></ha-icon-button>
-                        <ha-list-item graphic="icon">
+                        <ha-dropdown-item
+                          .token=${token}
+                          .action=${"toggle_expiration"}
+                        >
                           <ha-svg-icon
-                            slot="graphic"
+                            slot="icon"
                             .path=${token.expire_at
                               ? mdiClockRemoveOutline
                               : mdiClockCheckOutline}
@@ -171,20 +171,20 @@ class HaRefreshTokens extends LitElement {
                             : this.hass.localize(
                                 "ui.panel.profile.refresh_tokens.enable_token_expiration"
                               )}
-                        </ha-list-item>
-                        <ha-list-item
-                          graphic="icon"
-                          class="warning"
+                        </ha-dropdown-item>
+                        <ha-dropdown-item
+                          .token=${token}
+                          .action=${"delete_token"}
+                          variant="danger"
                           .disabled=${token.is_current}
                         >
                           <ha-svg-icon
-                            class="warning"
-                            slot="graphic"
+                            slot="icon"
                             .path=${mdiDelete}
                           ></ha-svg-icon>
                           ${this.hass.localize("ui.common.delete")}
-                        </ha-list-item>
-                      </ha-button-menu>
+                        </ha-dropdown-item>
+                      </ha-dropdown>
                     </div>
                   </ha-settings-row>
                 `
@@ -207,15 +207,13 @@ class HaRefreshTokens extends LitElement {
     `;
   }
 
-  private async _handleAction(ev: CustomEvent<ActionDetail>) {
-    const token = (ev.currentTarget as any).token;
-    switch (ev.detail.index) {
-      case 0:
-        this._toggleTokenExpiration(token);
-        break;
-      case 1:
-        this._deleteToken(token);
-        break;
+  private _handleDropdownSelect(
+    ev: CustomEvent<{ item: { action: string; token: RefreshToken } }>
+  ) {
+    if (ev.detail.item.action === "toggle_expiration") {
+      this._toggleTokenExpiration(ev.detail.item.token);
+    } else if (ev.detail.item.action === "delete_token") {
+      this._deleteToken(ev.detail.item.token);
     }
   }
 
@@ -332,8 +330,8 @@ class HaRefreshTokens extends LitElement {
         ha-icon-button {
           color: var(--primary-text-color);
         }
-        ha-list-item[disabled],
-        ha-list-item[disabled] ha-svg-icon {
+        ha-md-list-item[disabled],
+        ha-md-list-item[disabled] ha-svg-icon {
           color: var(--disabled-text-color) !important;
         }
         ha-settings-row .current-session {
@@ -345,7 +343,7 @@ class HaRefreshTokens extends LitElement {
           width: 8px;
           height: 8px;
           background-color: var(--success-color);
-          border-radius: 50%;
+          border-radius: var(--ha-border-radius-circle);
           margin-right: 6px;
         }
         ha-settings-row > ha-svg-icon {

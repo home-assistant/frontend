@@ -243,7 +243,7 @@ class ErrorLogCard extends LitElement {
               ${!streaming || this._error
                 ? html`<ha-icon-button
                     .path=${mdiRefresh}
-                    @click=${this._loadLogs}
+                    @click=${this._handleRefresh}
                     .label=${localize("ui.common.refresh")}
                   ></ha-icon-button>`
                 : nothing}
@@ -415,7 +415,7 @@ class ErrorLogCard extends LitElement {
       const downloadUrl =
         this.provider && this.provider !== "core"
           ? getHassioLogDownloadUrl(this.provider)
-          : getErrorLogDownloadUrl;
+          : getErrorLogDownloadUrl(this.hass);
       const logFileName =
         this.provider && this.provider !== "core"
           ? `${this.provider}_${timeString}.log`
@@ -715,6 +715,10 @@ class ErrorLogCard extends LitElement {
     this._wrapLines = !this._wrapLines;
   }
 
+  private _handleRefresh() {
+    this._loadLogs();
+  }
+
   private _handleOverflowAction(ev: CustomEvent<ActionDetail>) {
     let index = ev.detail.index;
     if (this.provider === "core") {
@@ -799,8 +803,8 @@ class ErrorLogCard extends LitElement {
       padding-top: 16px;
       padding-bottom: 16px;
       overflow-y: scroll;
-      min-height: var(--error-log-card-height, calc(100vh - 240px));
-      max-height: var(--error-log-card-height, calc(100vh - 240px));
+      min-height: var(--error-log-card-height, calc(100vh - 244px));
+      max-height: var(--error-log-card-height, calc(100vh - 244px));
       border-top: 1px solid var(--divider-color);
       direction: ltr;
     }

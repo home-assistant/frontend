@@ -244,7 +244,8 @@ class HaConfigBackupSettings extends LitElement {
                   `
                 : nothing}
             </div>
-            ${!this.cloudStatus?.logged_in
+            ${!this.cloudStatus?.logged_in &&
+            isComponentLoaded(this.hass, "cloud")
               ? html`<ha-card class="cloud-info">
                   <div class="cloud-header">
                     <img
@@ -279,7 +280,10 @@ class HaConfigBackupSettings extends LitElement {
                         "ui.panel.config.voice_assistants.assistants.cloud.sign_in"
                       )}
                     </ha-button>
-                    <ha-button href="/config/cloud/register">
+                    <ha-button
+                      href="/config/cloud/register"
+                      appearance="filled"
+                    >
                       ${this.hass.localize(
                         "ui.panel.config.voice_assistants.assistants.cloud.try_one_month"
                       )}
@@ -510,7 +514,7 @@ class HaConfigBackupSettings extends LitElement {
       padding: 28px 20px 0;
       max-width: 690px;
       margin: 0 auto;
-      gap: 24px;
+      gap: var(--ha-space-6);
       display: flex;
       flex-direction: column;
       margin-bottom: 24px;
@@ -532,7 +536,7 @@ class HaConfigBackupSettings extends LitElement {
     }
     .cloud-info .cloud-header {
       display: flex;
-      gap: 16px;
+      gap: var(--ha-space-4);
       font-size: var(--ha-font-size-xl);
       align-items: center;
       padding: 16px;

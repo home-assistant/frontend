@@ -1,20 +1,11 @@
-import ProgressRing from "@awesome.me/webawesome/dist/components/progress-ring/progress-ring";
+import ProgressRing from "@home-assistant/webawesome/dist/components/progress-ring/progress-ring";
 import { css } from "lit";
 import type { CSSResultGroup } from "lit";
 import { customElement, property } from "lit/decorators";
-import { StateSet } from "../resources/polyfills/stateset";
 
 @customElement("ha-progress-ring")
 export class HaProgressRing extends ProgressRing {
   @property() public size?: "tiny" | "small" | "medium" | "large";
-
-  attachInternals() {
-    const internals = super.attachInternals();
-    Object.defineProperty(internals, "states", {
-      value: new StateSet(this, internals.states),
-    });
-    return internals;
-  }
 
   public updated(changedProps) {
     super.updated(changedProps);

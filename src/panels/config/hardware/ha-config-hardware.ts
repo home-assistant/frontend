@@ -31,7 +31,7 @@ import { showOptionsFlowDialog } from "../../../dialogs/config-flow/show-dialog-
 import { showRestartDialog } from "../../../dialogs/restart/show-dialog-restart";
 import "../../../layouts/hass-subpage";
 import { SubscribeMixin } from "../../../mixins/subscribe-mixin";
-import type { ECOption } from "../../../resources/echarts";
+import type { ECOption } from "../../../resources/echarts/echarts";
 import { haStyle } from "../../../resources/styles";
 import { DefaultPrimaryColor } from "../../../resources/theme/color/color.globals";
 import type { HomeAssistant } from "../../../types";
@@ -153,6 +153,8 @@ class HaConfigHardware extends SubscribeMixin(LitElement) {
         },
         yAxis: {
           type: "value",
+          min: 0,
+          max: 100,
           splitLine: {
             show: true,
           },
@@ -255,10 +257,10 @@ class HaConfigHardware extends SubscribeMixin(LitElement) {
                 @click=${this._showRestartDialog}
               ></ha-icon-button>
             `
-          : ""}
+          : nothing}
         ${this._error
           ? html`<ha-alert alert-type="error">${this._error}</ha-alert>`
-          : ""}
+          : nothing}
         <div class="content">
           ${boardName || isComponentLoaded(this.hass, "hassio")
             ? html`
@@ -271,7 +273,7 @@ class HaConfigHardware extends SubscribeMixin(LitElement) {
                           crossorigin="anonymous"
                           referrerpolicy="no-referrer"
                         />`
-                      : ""}
+                      : nothing}
                     <div class="board-info">
                       <p class="primary-text">
                         ${boardName ||
@@ -281,7 +283,7 @@ class HaConfigHardware extends SubscribeMixin(LitElement) {
                       </p>
                       ${boardId
                         ? html`<p class="secondary-text">${boardId}</p>`
-                        : ""}
+                        : nothing}
                     </div>
                   </div>
                   ${documentationURL
@@ -305,7 +307,7 @@ class HaConfigHardware extends SubscribeMixin(LitElement) {
                           <ha-icon-next slot="end"></ha-icon-next>
                         </ha-md-list-item>
                       `
-                    : ""}
+                    : nothing}
                   ${boardConfigEntries.length ||
                   isComponentLoaded(this.hass, "hassio")
                     ? html`<div class="card-actions">
@@ -335,10 +337,10 @@ class HaConfigHardware extends SubscribeMixin(LitElement) {
                             `
                           : nothing}
                       </div>`
-                    : ""}
+                    : nothing}
                 </ha-card>
               `
-            : ""}
+            : nothing}
           ${dongles?.length
             ? html`<ha-card outlined>
                 ${dongles.map((dongle) => {
@@ -358,11 +360,11 @@ class HaConfigHardware extends SubscribeMixin(LitElement) {
                             "ui.panel.config.hardware.configure"
                           )}
                         </ha-button>`
-                      : ""}
+                      : nothing}
                   </div>`;
                 })}
               </ha-card>`
-            : ""}
+            : nothing}
           ${this._systemStatusData
             ? html`<ha-card outlined>
                   <div class="header">
@@ -412,14 +414,15 @@ class HaConfigHardware extends SubscribeMixin(LitElement) {
             : isComponentLoaded(this.hass, "hardware")
               ? html`<ha-card outlined>
                   <div class="card-content">
-                    <div class="value">
+                    <ha-alert alert-type="info">
+                      <ha-spinner slot="icon"></ha-spinner>
                       ${this.hass.localize(
                         "ui.panel.config.hardware.loading_system_data"
                       )}
-                    </div>
+                    </ha-alert>
                   </div>
                 </ha-card>`
-              : ""}
+              : nothing}
         </div>
       </hass-subpage>
     `;
@@ -540,6 +543,14 @@ class HaConfigHardware extends SubscribeMixin(LitElement) {
       .card-actions {
         display: flex;
         justify-content: space-between;
+      }
+
+      ha-alert {
+        --ha-alert-icon-size: 24px;
+      }
+
+      ha-alert ha-spinner {
+        --ha-spinner-size: 24px;
       }
     `,
   ];

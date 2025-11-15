@@ -15,6 +15,8 @@ import "../../../../src/components/ha-list";
 import "../../../../src/components/ha-list-item";
 import "../../../../src/components/ha-password-field";
 import "../../../../src/components/ha-radio";
+import "../../../../src/components/ha-tab-group";
+import "../../../../src/components/ha-tab-group-tab";
 import "../../../../src/components/ha-textfield";
 import type { HaTextField } from "../../../../src/components/ha-textfield";
 import { extractApiErrorMessage } from "../../../../src/data/hassio/common";
@@ -36,7 +38,6 @@ import type { HassDialog } from "../../../../src/dialogs/make-dialog-manager";
 import { haStyleDialog } from "../../../../src/resources/styles";
 import type { HomeAssistant } from "../../../../src/types";
 import type { HassioNetworkDialogParams } from "./show-dialog-network";
-import "../../../../src/components/sl-tab-group";
 
 const IP_VERSIONS = ["ipv4", "ipv6"];
 
@@ -114,19 +115,19 @@ export class DialogHassioNetwork
             ></ha-icon-button>
           </ha-header-bar>
           ${this._interfaces.length > 1
-            ? html`<sl-tab-group @sl-tab-show=${this._handleTabActivated}
+            ? html`<ha-tab-group @wa-tab-show=${this._handleTabActivated}
                 >${this._interfaces.map(
                   (device, index) =>
-                    html`<sl-tab
+                    html`<ha-tab-group-tab
                       slot="nav"
                       .id=${device.interface}
                       .panel=${index.toString()}
                       .active=${this._curTabIndex === index}
                     >
                       ${device.interface}
-                    </sl-tab>`
+                    </ha-tab-group-tab>`
                 )}
-              </sl-tab-group>`
+              </ha-tab-group>`
             : ""}
         </div>
         ${cache(this._renderTab())}
@@ -627,10 +628,10 @@ export class DialogHassioNetwork
           --mdc-list-side-padding: 10px;
         }
 
-        sl-tab {
+        ha-tab-group-tab {
           flex: 1;
         }
-        sl-tab::part(base) {
+        ha-tab-group-tab::part(base) {
           width: 100%;
           justify-content: center;
         }

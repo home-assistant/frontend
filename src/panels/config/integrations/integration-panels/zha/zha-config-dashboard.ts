@@ -9,7 +9,7 @@ import {
 } from "@mdi/js";
 import type { CSSResultGroup, PropertyValues, TemplateResult } from "lit";
 import { css, html, LitElement, nothing } from "lit";
-import { customElement, property, state } from "lit/decorators";
+import { customElement, property, query, state } from "lit/decorators";
 import "../../../../../components/buttons/ha-progress-button";
 import "../../../../../components/ha-alert";
 import "../../../../../components/ha-button";
@@ -43,6 +43,7 @@ import type { HomeAssistant, Route } from "../../../../../types";
 import { fileDownload } from "../../../../../util/file_download";
 import "../../../ha-config-section";
 import { showZHAChangeChannelDialog } from "./show-dialog-zha-change-channel";
+import type { HaProgressButton } from "../../../../../components/buttons/ha-progress-button";
 
 const MULTIPROTOCOL_ADDON_URL = "socket://core-silabs-multiprotocol:9999";
 
@@ -88,6 +89,8 @@ class ZHAConfigDashboard extends LitElement {
 
   @state() private _generatingBackup = false;
 
+  @query("#config-save-button") private _configSaveButton?: HaProgressButton;
+
   protected firstUpdated(changedProperties: PropertyValues) {
     super.firstUpdated(changedProperties);
     if (this.hass) {
@@ -110,191 +113,201 @@ class ZHAConfigDashboard extends LitElement {
         back-path="/config/integrations"
         has-fab
       >
-        <ha-card class="content network-status">
-          ${this._error
-            ? html`<ha-alert alert-type="error">${this._error}</ha-alert>`
-            : nothing}
-          <div class="card-content">
-            <div class="heading">
-              <div class="icon">
-                <ha-svg-icon
-                  .path=${deviceOnline ? mdiCheckCircle : mdiAlertCircle}
-                  class=${deviceOnline ? "online" : "offline"}
-                ></ha-svg-icon>
-              </div>
-              <div class="details">
-                ZHA
-                ${this.hass.localize(
-                  "ui.panel.config.zha.configuration_page.status_title"
-                )}:
-                ${this.hass.localize(
-                  `ui.panel.config.zha.configuration_page.status_${deviceOnline ? "online" : "offline"}`
-                )}<br />
-                <small>
+        <div class="container">
+          <ha-card class="content network-status">
+            ${this._error
+              ? html`<ha-alert alert-type="error">${this._error}</ha-alert>`
+              : nothing}
+            <div class="card-content">
+              <div class="heading">
+                <div class="icon">
+                  <ha-svg-icon
+                    .path=${deviceOnline ? mdiCheckCircle : mdiAlertCircle}
+                    class=${deviceOnline ? "online" : "offline"}
+                  ></ha-svg-icon>
+                </div>
+                <div class="details">
+                  ZHA
                   ${this.hass.localize(
-                    "ui.panel.config.zha.configuration_page.devices",
-                    { count: this._totalDevices }
-                  )}
-                </small>
-                <small class="offline">
-                  ${this._offlineDevices > 0
-                    ? html`(${this.hass.localize(
-                        "ui.panel.config.zha.configuration_page.devices_offline",
-                        { count: this._offlineDevices }
-                      )})`
-                    : nothing}
-                </small>
+                    "ui.panel.config.zha.configuration_page.status_title"
+                  )}:
+                  ${this.hass.localize(
+                    `ui.panel.config.zha.configuration_page.status_${deviceOnline ? "online" : "offline"}`
+                  )}<br />
+                  <small>
+                    ${this.hass.localize(
+                      "ui.panel.config.zha.configuration_page.devices",
+                      { count: this._totalDevices }
+                    )}
+                  </small>
+                  <small class="offline">
+                    ${this._offlineDevices > 0
+                      ? html`(${this.hass.localize(
+                          "ui.panel.config.zha.configuration_page.devices_offline",
+                          { count: this._offlineDevices }
+                        )})`
+                      : nothing}
+                  </small>
+                </div>
               </div>
             </div>
-          </div>
-          ${this.configEntryId
-            ? html`<div class="card-actions">
-                <ha-button
-                  href=${`/config/devices/dashboard?historyBack=1&config_entry=${this.configEntryId}`}
-                  appearance="plain"
-                  size="small"
-                >
-                  ${this.hass.localize(
-                    "ui.panel.config.devices.caption"
-                  )}</ha-button
-                >
-                <ha-button
-                  appearance="plain"
-                  size="small"
-                  href=${`/config/entities/dashboard?historyBack=1&config_entry=${this.configEntryId}`}
-                >
-                  ${this.hass.localize(
-                    "ui.panel.config.entities.caption"
-                  )}</ha-button
-                >
-              </div>`
-            : ""}
-        </ha-card>
-        <ha-card
-          class="network-settings"
-          header=${this.hass.localize(
-            "ui.panel.config.zha.configuration_page.network_settings_title"
-          )}
-        >
-          ${this._networkSettings
-            ? html`<div class="card-content">
-                <ha-settings-row>
-                  <span slot="description">PAN ID</span>
-                  <span slot="heading"
-                    >${this._networkSettings.settings.network_info.pan_id}</span
+            ${this.configEntryId
+              ? html`<div class="card-actions">
+                  <ha-button
+                    href=${`/config/devices/dashboard?historyBack=1&config_entry=${this.configEntryId}`}
+                    appearance="plain"
+                    size="small"
                   >
-                </ha-settings-row>
-
-                <ha-settings-row>
-                  <span slot="heading"
-                    >${this._networkSettings.settings.network_info
-                      .extended_pan_id}</span
+                    ${this.hass.localize(
+                      "ui.panel.config.devices.caption"
+                    )}</ha-button
                   >
-                  <span slot="description">Extended PAN ID</span>
-                </ha-settings-row>
-
-                <ha-settings-row>
-                  <span slot="description">Channel</span>
-                  <span slot="heading"
-                    >${this._networkSettings.settings.network_info
-                      .channel}</span
+                  <ha-button
+                    appearance="plain"
+                    size="small"
+                    href=${`/config/entities/dashboard?historyBack=1&config_entry=${this.configEntryId}`}
                   >
-
-                  <ha-icon-button
-                    .label=${this.hass.localize(
-                      "ui.panel.config.zha.configuration_page.change_channel"
-                    )}
-                    .path=${mdiPencil}
-                    @click=${this._showChannelMigrationDialog}
+                    ${this.hass.localize(
+                      "ui.panel.config.entities.caption"
+                    )}</ha-button
                   >
-                  </ha-icon-button>
-                </ha-settings-row>
+                </div>`
+              : ""}
+          </ha-card>
+          <ha-card
+            class="network-settings"
+            header=${this.hass.localize(
+              "ui.panel.config.zha.configuration_page.network_settings_title"
+            )}
+          >
+            ${this._networkSettings
+              ? html`<div class="card-content">
+                  <ha-settings-row>
+                    <span slot="description">PAN ID</span>
+                    <span slot="heading"
+                      >${this._networkSettings.settings.network_info
+                        .pan_id}</span
+                    >
+                  </ha-settings-row>
 
-                <ha-settings-row>
-                  <span slot="description">Coordinator IEEE</span>
-                  <span slot="heading"
-                    >${this._networkSettings.settings.node_info.ieee}</span
-                  >
-                </ha-settings-row>
+                  <ha-settings-row>
+                    <span slot="heading"
+                      >${this._networkSettings.settings.network_info
+                        .extended_pan_id}</span
+                    >
+                    <span slot="description">Extended PAN ID</span>
+                  </ha-settings-row>
 
-                <ha-settings-row>
-                  <span slot="description">Radio type</span>
-                  <span slot="heading"
-                    >${this._networkSettings.radio_type}</span
-                  >
-                </ha-settings-row>
+                  <ha-settings-row>
+                    <span slot="description">Channel</span>
+                    <span slot="heading"
+                      >${this._networkSettings.settings.network_info
+                        .channel}</span
+                    >
 
-                <ha-settings-row>
-                  <span slot="description">Serial port</span>
-                  <span slot="heading"
-                    >${this._networkSettings.device.path}</span
-                  >
-                </ha-settings-row>
-
-                ${this._networkSettings.device.baudrate &&
-                !this._networkSettings.device.path.startsWith("socket://")
-                  ? html`
-                      <ha-settings-row>
-                        <span slot="description">Baudrate</span>
-                        <span slot="heading"
-                          >${this._networkSettings.device.baudrate}</span
-                        >
-                      </ha-settings-row>
-                    `
-                  : ""}
-              </div>`
-            : ""}
-          <div class="card-actions">
-            <ha-progress-button
-              appearance="plain"
-              @click=${this._createAndDownloadBackup}
-              .progress=${this._generatingBackup}
-              .disabled=${!this._networkSettings || this._generatingBackup}
-            >
-              ${this.hass.localize(
-                "ui.panel.config.zha.configuration_page.download_backup"
-              )}
-            </ha-progress-button>
-            <ha-button variant="danger" @click=${this._openOptionFlow}>
-              ${this.hass.localize(
-                "ui.panel.config.zha.configuration_page.migrate_radio"
-              )}
-            </ha-button>
-          </div>
-        </ha-card>
-        ${this._configuration
-          ? Object.entries(this._configuration.schemas).map(
-              ([section, schema]) =>
-                html`<ha-card
-                  header=${this.hass.localize(
-                    `component.zha.config_panel.${section}.title`
-                  )}
-                >
-                  <div class="card-content">
-                    <ha-form
-                      .hass=${this.hass}
-                      .schema=${schema}
-                      .data=${this._configuration!.data[section]}
-                      @value-changed=${this._dataChanged}
-                      .section=${section}
-                      .computeLabel=${this._computeLabelCallback(
-                        this.hass.localize,
-                        section
+                    <ha-icon-button
+                      .label=${this.hass.localize(
+                        "ui.panel.config.zha.configuration_page.change_channel"
                       )}
-                    ></ha-form>
-                  </div>
-                </ha-card>`
-            )
-          : ""}
-        <ha-card>
-          <div class="card-actions">
-            <ha-button @click=${this._updateConfiguration}>
-              ${this.hass.localize(
-                "ui.panel.config.zha.configuration_page.update_button"
-              )}
-            </ha-button>
-          </div>
-        </ha-card>
+                      .path=${mdiPencil}
+                      @click=${this._showChannelMigrationDialog}
+                    >
+                    </ha-icon-button>
+                  </ha-settings-row>
+
+                  <ha-settings-row>
+                    <span slot="description">Coordinator IEEE</span>
+                    <span slot="heading"
+                      >${this._networkSettings.settings.node_info.ieee}</span
+                    >
+                  </ha-settings-row>
+
+                  <ha-settings-row>
+                    <span slot="description">Radio type</span>
+                    <span slot="heading"
+                      >${this._networkSettings.radio_type}</span
+                    >
+                  </ha-settings-row>
+
+                  <ha-settings-row>
+                    <span slot="description">Serial port</span>
+                    <span slot="heading"
+                      >${this._networkSettings.device.path}</span
+                    >
+                  </ha-settings-row>
+
+                  ${this._networkSettings.device.baudrate &&
+                  !this._networkSettings.device.path.startsWith("socket://")
+                    ? html`
+                        <ha-settings-row>
+                          <span slot="description">Baudrate</span>
+                          <span slot="heading"
+                            >${this._networkSettings.device.baudrate}</span
+                          >
+                        </ha-settings-row>
+                      `
+                    : nothing}
+                </div>`
+              : nothing}
+            <div class="card-actions">
+              <ha-progress-button
+                appearance="plain"
+                @click=${this._createAndDownloadBackup}
+                .progress=${this._generatingBackup}
+                .disabled=${!this._networkSettings || this._generatingBackup}
+              >
+                ${this.hass.localize(
+                  "ui.panel.config.zha.configuration_page.download_backup"
+                )}
+              </ha-progress-button>
+              <ha-button
+                appearance="filled"
+                variant="brand"
+                @click=${this._openOptionFlow}
+              >
+                ${this.hass.localize(
+                  "ui.panel.config.zha.configuration_page.migrate_radio"
+                )}
+              </ha-button>
+            </div>
+          </ha-card>
+          ${this._configuration
+            ? Object.entries(this._configuration.schemas).map(
+                ([section, schema]) =>
+                  html`<ha-card
+                    header=${this.hass.localize(
+                      `component.zha.config_panel.${section}.title`
+                    )}
+                  >
+                    <div class="card-content">
+                      <ha-form
+                        .hass=${this.hass}
+                        .schema=${schema}
+                        .data=${this._configuration!.data[section]}
+                        @value-changed=${this._dataChanged}
+                        .section=${section}
+                        .computeLabel=${this._computeLabelCallback(
+                          this.hass.localize,
+                          section
+                        )}
+                      ></ha-form>
+                    </div>
+                    <div class="card-actions">
+                      <ha-progress-button
+                        id="config-save-button"
+                        appearance="filled"
+                        variant="brand"
+                        @click=${this._updateConfiguration}
+                      >
+                        ${this.hass.localize(
+                          "ui.panel.config.zha.configuration_page.update_button"
+                        )}
+                      </ha-progress-button>
+                    </div>
+                  </ha-card>`
+              )
+            : nothing}
+        </div>
 
         <a href="/config/zha/add" slot="fab">
           <ha-fab
@@ -407,7 +420,15 @@ class ZHAConfigDashboard extends LitElement {
   }
 
   private async _updateConfiguration(): Promise<any> {
-    await updateZHAConfiguration(this.hass!, this._configuration!.data);
+    this._configSaveButton!.progress = true;
+    try {
+      await updateZHAConfiguration(this.hass!, this._configuration!.data);
+      this._configSaveButton!.actionSuccess();
+    } catch (_err: any) {
+      this._configSaveButton!.actionError();
+    } finally {
+      this._configSaveButton!.progress = false;
+    }
   }
 
   private _computeLabelCallback(localize, section: string) {
@@ -488,6 +509,10 @@ class ZHAConfigDashboard extends LitElement {
 
         .network-status .offline {
           color: var(--error-color, var(--error-color));
+        }
+
+        .container {
+          padding: var(--ha-space-2) var(--ha-space-4) var(--ha-space-4);
         }
       `,
     ];

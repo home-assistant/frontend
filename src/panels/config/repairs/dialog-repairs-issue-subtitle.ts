@@ -41,7 +41,6 @@ class DialogRepairsIssueSubtitle extends LitElement {
     :host {
       display: block;
       font-size: var(--ha-font-size-m);
-      margin-bottom: 8px;
       color: var(--secondary-text-color);
       text-overflow: ellipsis;
       overflow: hidden;

@@ -302,7 +302,7 @@ class LandingPageLogs extends LitElement {
         max-height: 300px;
         overflow: auto;
         border: 1px solid var(--divider-color);
-        border-radius: 4px;
+        border-radius: var(--ha-border-radius-sm);
         padding: 4px;
       }
 

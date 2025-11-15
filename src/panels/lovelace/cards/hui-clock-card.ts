@@ -1,6 +1,6 @@
-import type { PropertyValues } from "lit";
 import { css, html, LitElement, nothing } from "lit";
 import { customElement, property, state } from "lit/decorators";
+import { classMap } from "lit/directives/class-map";
 import "../../../components/ha-alert";
 import "../../../components/ha-card";
 import type { HomeAssistant } from "../../../types";
@@ -10,10 +10,6 @@ import type {
   LovelaceGridOptions,
 } from "../types";
 import type { ClockCardConfig } from "./types";
-import { useAmPm } from "../../../common/datetime/use_am_pm";
-import { resolveTimeZone } from "../../../common/datetime/resolve-time-zone";
-
-const INTERVAL = 1000;
 
 @customElement("hui-clock-card")
 export class HuiClockCard extends LitElement implements LovelaceCard {
@@ -32,45 +28,14 @@ export class HuiClockCard extends LitElement implements LovelaceCard {
 
   @state() private _config?: ClockCardConfig;
 
-  @state() private _dateTimeFormat?: Intl.DateTimeFormat;
-
-  @state() private _timeHour?: string;
-
-  @state() private _timeMinute?: string;
-
-  @state() private _timeSecond?: string;
-
-  @state() private _timeAmPm?: string;
-
-  private _tickInterval?: undefined | number;
-
   public setConfig(config: ClockCardConfig): void {
     this._config = config;
-    this._initDate();
-  }
-
-  private _initDate() {
-    if (!this._config || !this.hass) {
-      return;
+    // Dynamically import the clock type based on the configuration
+    if (config.clock_style === "analog") {
+      import("./clock/hui-clock-card-analog");
+    } else {
+      import("./clock/hui-clock-card-digital");
     }
-
-    let locale = this.hass?.locale;
-
-    if (this._config?.time_format) {
-      locale = { ...locale, time_format: this._config.time_format };
-    }
-
-    this._dateTimeFormat = new Intl.DateTimeFormat(this.hass.locale.language, {
-      hour: "2-digit",
-      minute: "2-digit",
-      second: "2-digit",
-      hourCycle: useAmPm(locale) ? "h12" : "h23",
-      timeZone:
-        this._config?.time_zone ||
-        resolveTimeZone(locale.time_zone, this.hass.config?.time_zone),
-    });
-
-    this._tick();
   }
 
   public getCardSize(): number {
@@ -79,84 +44,70 @@ export class HuiClockCard extends LitElement implements LovelaceCard {
   }
 
   public getGridOptions(): LovelaceGridOptions {
-    if (this._config?.clock_size === "medium") {
-      return {
-        min_rows: this._config?.title ? 2 : 1,
-        rows: 2,
-        max_rows: 4,
-        min_columns: 4,
-        columns: 6,
-      };
+    switch (this._config?.clock_style) {
+      case "analog":
+        switch (this._config?.clock_size) {
+          case "medium":
+            return {
+              min_rows: this._config?.title ? 4 : 3,
+              rows: 3,
+              min_columns: 5,
+              columns: 6,
+            };
+          case "large":
+            return {
+              min_rows: this._config?.title ? 5 : 4,
+              rows: 4,
+              min_columns: 6,
+              columns: 6,
+            };
+          default:
+            return {
+              min_rows: this._config?.title ? 3 : 2,
+              rows: 2,
+              min_columns: 2,
+              columns: 6,
+            };
+        }
+      default:
+        switch (this._config?.clock_size) {
+          case "medium":
+            return {
+              min_rows: this._config?.title ? 2 : 1,
+              rows: 2,
+              max_rows: 4,
+              min_columns: 4,
+              columns: 6,
+            };
+          case "large":
+            return {
+              min_rows: 2,
+              rows: 2,
+              max_rows: 4,
+              min_columns: 6,
+              columns: 6,
+            };
+          default:
+            return {
+              min_rows: 1,
+              rows: 1,
+              max_rows: 4,
+              min_columns: 3,
+              columns: 6,
+            };
+        }
     }
-
-    if (this._config?.clock_size === "large") {
-      return {
-        min_rows: 2,
-        rows: 2,
-        max_rows: 4,
-        min_columns: 6,
-        columns: 6,
-      };
-    }
-
-    return {
-      min_rows: 1,
-      rows: 1,
-      max_rows: 4,
-      min_columns: 3,
-      columns: 6,
-    };
-  }
-
-  protected updated(changedProps: PropertyValues) {
-    if (changedProps.has("hass")) {
-      const oldHass = changedProps.get("hass");
-      if (!oldHass || oldHass.locale !== this.hass?.locale) {
-        this._initDate();
-      }
-    }
-  }
-
-  public connectedCallback() {
-    super.connectedCallback();
-    this._startTick();
-  }
-
-  public disconnectedCallback() {
-    super.disconnectedCallback();
-    this._stopTick();
-  }
-
-  private _startTick() {
-    this._tickInterval = window.setInterval(() => this._tick(), INTERVAL);
-    this._tick();
-  }
-
-  private _stopTick() {
-    if (this._tickInterval) {
-      clearInterval(this._tickInterval);
-      this._tickInterval = undefined;
-    }
-  }
-
-  private _tick() {
-    if (!this._dateTimeFormat) return;
-
-    const parts = this._dateTimeFormat.formatToParts();
-
-    this._timeHour = parts.find((part) => part.type === "hour")?.value;
-    this._timeMinute = parts.find((part) => part.type === "minute")?.value;
-    this._timeSecond = this._config?.show_seconds
-      ? parts.find((part) => part.type === "second")?.value
-      : undefined;
-    this._timeAmPm = parts.find((part) => part.type === "dayPeriod")?.value;
   }
 
   protected render() {
     if (!this._config) return nothing;
 
     return html`
-      <ha-card>
+      <ha-card
+        class=${classMap({
+          "no-background": this._config.no_background ?? false,
+        })}
+      >
         <div
           class="time-wrapper ${this._config.clock_size
             ? `size-${this._config.clock_size}`
@@ -165,16 +116,19 @@ export class HuiClockCard extends LitElement implements LovelaceCard {
           ${this._config.title !== undefined
             ? html`<div class="time-title">${this._config.title}</div>`
             : nothing}
-          <div class="time-parts">
-            <div class="time-part hour">${this._timeHour}</div>
-            <div class="time-part minute">${this._timeMinute}</div>
-            ${this._timeSecond !== undefined
-              ? html`<div class="time-part second">${this._timeSecond}</div>`
-              : nothing}
-            ${this._timeAmPm !== undefined
-              ? html`<div class="time-part am-pm">${this._timeAmPm}</div>`
-              : nothing}
-          </div>
+          ${this._config.clock_style === "analog"
+            ? html`
+                <hui-clock-card-analog
+                  .hass=${this.hass}
+                  .config=${this._config}
+                ></hui-clock-card-analog>
+              `
+            : html`
+                <hui-clock-card-digital
+                  .hass=${this.hass}
+                  .config=${this._config}
+                ></hui-clock-card-digital>
+              `}
         </div>
       </ha-card>
     `;
@@ -183,6 +137,12 @@ export class HuiClockCard extends LitElement implements LovelaceCard {
   static styles = css`
     ha-card {
       height: 100%;
+    }
+
+    .no-background {
+      background: none;
+      box-shadow: none;
+      border: none;
     }
 
     .time-wrapper {
@@ -199,7 +159,7 @@ export class HuiClockCard extends LitElement implements LovelaceCard {
     .time-wrapper.size-large {
       height: calc(100% - 32px);
       padding: 16px;
-      row-gap: 12px;
+      row-gap: var(--ha-space-3);
     }
 
     .time-title {
@@ -222,74 +182,6 @@ export class HuiClockCard extends LitElement implements LovelaceCard {
     .time-wrapper.size-large .time-title {
       font-size: var(--ha-font-size-2xl);
       line-height: var(--ha-line-height-condensed);
-    }
-
-    .time-parts {
-      align-items: center;
-      display: grid;
-      grid-template-areas:
-        "hour minute second"
-        "hour minute am-pm";
-
-      font-size: 2rem;
-      font-weight: var(--ha-font-weight-medium);
-      line-height: 0.8;
-      direction: ltr;
-    }
-
-    .time-title + .time-parts {
-      font-size: 1.5rem;
-    }
-
-    .time-wrapper.size-medium .time-parts {
-      font-size: 3rem;
-    }
-
-    .time-wrapper.size-large .time-parts {
-      font-size: 4rem;
-    }
-
-    .time-wrapper.size-medium .time-parts .time-part.second,
-    .time-wrapper.size-medium .time-parts .time-part.am-pm {
-      font-size: var(--ha-font-size-l);
-      margin-left: 6px;
-    }
-
-    .time-wrapper.size-large .time-parts .time-part.second,
-    .time-wrapper.size-large .time-parts .time-part.am-pm {
-      font-size: var(--ha-font-size-2xl);
-      margin-left: 8px;
-    }
-
-    .time-parts .time-part.hour {
-      grid-area: hour;
-    }
-
-    .time-parts .time-part.minute {
-      grid-area: minute;
-    }
-
-    .time-parts .time-part.second {
-      grid-area: second;
-      line-height: 0.9;
-      opacity: 0.4;
-    }
-
-    .time-parts .time-part.am-pm {
-      grid-area: am-pm;
-      line-height: 0.9;
-      opacity: 0.6;
-    }
-
-    .time-parts .time-part.second,
-    .time-parts .time-part.am-pm {
-      font-size: var(--ha-font-size-xs);
-      margin-left: 4px;
-    }
-
-    .time-parts .time-part.hour:after {
-      content: ":";
-      margin: 0 2px;
     }
   `;
 }

@@ -127,7 +127,7 @@ export class CloudStepIntro extends LitElement {
       .features {
         display: flex;
         flex-direction: column;
-        grid-gap: 16px;
+        grid-gap: var(--ha-space-4);
         padding: 16px;
       }
       .feature {
@@ -146,7 +146,7 @@ export class CloudStepIntro extends LitElement {
         margin: 0 4px;
       }
       .round-icon {
-        border-radius: 50%;
+        border-radius: var(--ha-border-radius-circle);
         color: #6e41ab;
         background-color: #e8dcf7;
         display: flex;

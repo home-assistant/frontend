@@ -1,4 +1,4 @@
-import { mdiDelete, mdiDrag } from "@mdi/js";
+import { mdiDelete, mdiDragHorizontalVariant } from "@mdi/js";
 import type { CSSResultGroup } from "lit";
 import { LitElement, css, html, nothing } from "lit";
 import { customElement, property, query, state } from "lit/decorators";
@@ -22,6 +22,8 @@ class HaInputSelectForm extends LitElement {
   @property({ attribute: false }) public hass!: HomeAssistant;
 
   @property({ type: Boolean }) public new = false;
+
+  @property({ type: Boolean }) public disabled = false;
 
   private _item?: InputSelect;
 
@@ -86,6 +88,7 @@ class HaInputSelectForm extends LitElement {
           )}
           .configValue=${"name"}
           @input=${this._valueChanged}
+          .disabled=${this.disabled}
         ></ha-textfield>
         <ha-icon-picker
           .hass=${this.hass}
@@ -95,13 +98,18 @@ class HaInputSelectForm extends LitElement {
           .label=${this.hass!.localize(
             "ui.dialogs.helper_settings.generic.icon"
           )}
+          .disabled=${this.disabled}
         ></ha-icon-picker>
         <div class="header">
           ${this.hass!.localize(
             "ui.dialogs.helper_settings.input_select.options"
           )}:
         </div>
-        <ha-sortable @item-moved=${this._optionMoved} handle-selector=".handle">
+        <ha-sortable
+          @item-moved=${this._optionMoved}
+          handle-selector=".handle"
+          .disabled=${this.disabled}
+        >
           <ha-list class="options">
             ${this._options.length
               ? repeat(
@@ -111,7 +119,9 @@ class HaInputSelectForm extends LitElement {
                     <ha-list-item class="option" hasMeta>
                       <div class="optioncontent">
                         <div class="handle">
-                          <ha-svg-icon .path=${mdiDrag}></ha-svg-icon>
+                          <ha-svg-icon
+                            .path=${mdiDragHorizontalVariant}
+                          ></ha-svg-icon>
                         </div>
                         ${option}
                       </div>
@@ -122,6 +132,7 @@ class HaInputSelectForm extends LitElement {
                           "ui.dialogs.helper_settings.input_select.remove_option"
                         )}
                         @click=${this._removeOption}
+                        .disabled=${this.disabled}
                         .path=${mdiDelete}
                       ></ha-icon-button>
                     </ha-list-item>
@@ -144,8 +155,13 @@ class HaInputSelectForm extends LitElement {
               "ui.dialogs.helper_settings.input_select.add_option"
             )}
             @keydown=${this._handleKeyAdd}
+            .disabled=${this.disabled}
           ></ha-textfield>
-          <ha-button size="small" appearance="plain" @click=${this._addOption}
+          <ha-button
+            size="small"
+            appearance="plain"
+            @click=${this._addOption}
+            .disabled=${this.disabled}
             >${this.hass!.localize(
               "ui.dialogs.helper_settings.input_select.add"
             )}</ha-button
@@ -227,7 +243,7 @@ class HaInputSelectForm extends LitElement {
         }
         .option {
           border: 1px solid var(--divider-color);
-          border-radius: 4px;
+          border-radius: var(--ha-border-radius-sm);
           margin-top: 4px;
           --mdc-icon-button-size: 24px;
           --mdc-ripple-color: transparent;

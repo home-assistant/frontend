@@ -1,6 +1,5 @@
-import { describe, it, expect } from "vitest";
+import { describe, expect, it } from "vitest";
 import { getAreaContext } from "../../../../src/common/entity/context/get_area_context";
-import type { HomeAssistant } from "../../../../src/types";
 import { mockArea, mockFloor } from "./context-mock";
 
 describe("getAreaContext", () => {
@@ -9,14 +8,7 @@ describe("getAreaContext", () => {
       area_id: "area_1",
     });
 
-    const hass = {
-      areas: {
-        area_1: area,
-      },
-      floors: {},
-    } as unknown as HomeAssistant;
-
-    const result = getAreaContext(area, hass);
+    const result = getAreaContext(area, {});
 
     expect(result).toEqual({
       area,
@@ -34,16 +26,9 @@ describe("getAreaContext", () => {
       floor_id: "floor_1",
     });
 
-    const hass = {
-      areas: {
-        area_2: area,
-      },
-      floors: {
-        floor_1: floor,
-      },
-    } as unknown as HomeAssistant;
-
-    const result = getAreaContext(area, hass);
+    const result = getAreaContext(area, {
+      floor_1: floor,
+    });
 
     expect(result).toEqual({
       area,

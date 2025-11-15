@@ -16,9 +16,9 @@ import {
 } from "../../../../src/common/auth/token_storage";
 import { atLeastVersion } from "../../../../src/common/config/version";
 import { toggleAttribute } from "../../../../src/common/dom/toggle_attribute";
+import "../../../../src/components/ha-button";
 import "../../../../src/components/ha-icon";
 import "../../../../src/components/ha-list";
-import "../../../../src/components/ha-button";
 import "../../../../src/components/ha-list-item";
 import "../../../../src/components/ha-svg-icon";
 import {
@@ -28,7 +28,6 @@ import {
 import { isStrategyDashboard } from "../../../../src/data/lovelace/config/types";
 import type { LovelaceViewConfig } from "../../../../src/data/lovelace/config/view";
 import "../../../../src/layouts/hass-loading-screen";
-import { generateDefaultViewConfig } from "../../../../src/panels/lovelace/common/generate-lovelace-config";
 import "./hc-layout";
 
 @customElement("hc-cast")
@@ -96,7 +95,9 @@ class HcCast extends LitElement {
                 <ha-list @action=${this._handlePickView} activatable>
                   ${(
                     this.lovelaceViews ?? [
-                      generateDefaultViewConfig({}, {}, {}, {}, () => ""),
+                      {
+                        title: "Home",
+                      },
                     ]
                   ).map(
                     (view, idx) => html`
@@ -242,7 +243,7 @@ class HcCast extends LitElement {
     }
 
     .question:before {
-      border-radius: 4px;
+      border-radius: var(--ha-border-radius-sm);
       position: absolute;
       top: 0;
       right: 0;

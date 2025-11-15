@@ -57,7 +57,7 @@ export class HaFormfield extends FormfieldBase {
       }
       .mdc-form-field {
         align-items: var(--ha-formfield-align-items, center);
-        gap: 4px;
+        gap: var(--ha-space-1);
       }
       .mdc-form-field > label {
         direction: var(--direction);
