@@ -94,6 +94,8 @@ export class HuiTodoListCard extends LitElement implements LovelaceCard {
 
   @state() private _searchTerm = "";
 
+  @state() private _addError?: string;
+
   private _unsubItems?: Promise<UnsubscribeFunc>;
 
   connectedCallback(): void {
@@ -305,6 +307,7 @@ export class HuiTodoListCard extends LitElement implements LovelaceCard {
                     "ui.panel.lovelace.cards.todo-list.add_item"
                   )}
                   @keydown=${this._addKeyPress}
+                  @input=${this._clearAddError}
                   .disabled=${unavailable}
                 ></ha-textfield>
                 <ha-icon-button
@@ -318,6 +321,9 @@ export class HuiTodoListCard extends LitElement implements LovelaceCard {
                 >
                 </ha-icon-button>
               </div>
+              ${this._addError
+                ? html`<div class="addError">${this._addError}</div>`
+                : nothing}
             `
           : nothing}
         <div class="searchRow">
@@ -703,12 +709,54 @@ export class HuiTodoListCard extends LitElement implements LovelaceCard {
 
   private _addItem(ev): void {
     const newItem = this._newItem;
-    if (newItem.value!.length > 0) {
-      createItem(this.hass!, this._entityId!, {
-        summary: newItem.value!,
-      });
+    const rawValue = newItem.value ?? "";
+    const value = rawValue.trim();
+
+    // Empty input: just clear error and do nothing
+    if (!value.length) {
+      this._addError = undefined;
+      return;
     }
 
+    const normalized = value.toLowerCase();
+
+    // Look for an existing item with the same summary (trimmed, case-insensitive)
+    const existing = this._items?.find((item) => {
+      const summary = (item.summary ?? "").trim().toLowerCase();
+      return summary === normalized;
+    });
+
+    if (existing) {
+      // If existing item is completed, "revive" it (set back to NeedsAction)
+      if (existing.status === TodoItemStatus.Completed) {
+        updateItem(this.hass!, this._entityId!, {
+          uid: existing.uid,
+          summary: existing.summary,
+          status: TodoItemStatus.NeedsAction,
+        });
+        this._addError = undefined;
+      } else {
+        // Already active: show a small message and do NOT create a duplicate
+        this._addError =
+          this.hass?.localize(
+            "ui.panel.lovelace.cards.todo-list.item_already_exists"
+          ) || "Item is already in the list";
+        // this._addError = msg;
+      }
+
+      newItem.value = "";
+      if (ev) {
+        newItem.focus();
+      }
+      return;
+    }
+
+    // No existing item: create a fresh one
+    createItem(this.hass!, this._entityId!, {
+      summary: value,
+    });
+
+    this._addError = undefined;
     newItem.value = "";
     if (ev) {
       newItem.focus();
@@ -726,6 +774,12 @@ export class HuiTodoListCard extends LitElement implements LovelaceCard {
   private _addKeyPress(ev): void {
     if (ev.key === "Enter") {
       this._addItem(null);
+    }
+  }
+
+  private _clearAddError(): void {
+    if (this._addError) {
+      this._addError = undefined;
     }
   }
 
@@ -810,6 +864,12 @@ export class HuiTodoListCard extends LitElement implements LovelaceCard {
 
     .has-header {
       padding-top: 0;
+    }
+
+    .addError {
+      padding: 4px 16px 0;
+      color: var(--error-color);
+      font-size: var(--ha-font-size-s);
     }
 
     .addRow {
