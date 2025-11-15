@@ -7016,7 +7016,12 @@
           },
           "climate": {
             "devices": "Devices",
-            "other_devices": "Other devices"
+            "other_devices": "Other devices",
+            "temperatures": "Temperatures",
+            "heating": "Heating",
+            "history": "History",
+            "current_temperature": "Current temperature",
+            "climate_history": "Climate history"
           },
           "home_media_players": {
             "media_players": "Media players",
