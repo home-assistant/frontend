@@ -7016,7 +7016,8 @@
           },
           "climate": {
             "devices": "Devices",
-            "other_devices": "Other devices"
+            "other_devices": "Other devices",
+            "room_temperatures": "Room temperatures"
           },
           "home_media_players": {
             "media_players": "Media players",
