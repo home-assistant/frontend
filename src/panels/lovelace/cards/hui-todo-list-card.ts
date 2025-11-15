@@ -92,6 +92,8 @@ export class HuiTodoListCard extends LitElement implements LovelaceCard {
 
   @state() private _reordering = false;
 
+  @state() private _searchTerm = "";
+
   private _unsubItems?: Promise<UnsubscribeFunc>;
 
   connectedCallback(): void {
@@ -192,6 +194,17 @@ export class HuiTodoListCard extends LitElement implements LovelaceCard {
         : []
   );
 
+  private _filterItems(items?: TodoItem[]): TodoItem[] {
+    if (!items) {
+      return [];
+    }
+    const query = this._searchTerm.trim().toLowerCase();
+    if (!query) {
+      return items;
+    }
+    return items.filter((item) => item.summary.toLowerCase().includes(query));
+  }
+
   private _getItemsWithoutStatus = memoizeOne(
     (items?: TodoItem[], sort?: string | undefined): TodoItem[] =>
       items
@@ -252,23 +265,25 @@ export class HuiTodoListCard extends LitElement implements LovelaceCard {
 
     const unavailable = isUnavailableState(stateObj.state);
 
+    const filteredItems = this._filterItems(this._items);
+
     const checkedItems = this._getCheckedItems(
-      this._items,
+      filteredItems,
       this._config.display_order
     );
     const uncheckedItems = this._getUncheckedItems(
-      this._items,
+      filteredItems,
       this._config.display_order
     );
 
     const itemsWithoutStatus = this._getItemsWithoutStatus(
-      this._items,
+      filteredItems,
       this._config.display_order
     );
 
     const reorderableItems = this._reordering
       ? this._getUncheckedAndItemsWithoutStatus(
-          this._items,
+          filteredItems,
           this._config.display_order
         )
       : undefined;
@@ -305,6 +320,16 @@ export class HuiTodoListCard extends LitElement implements LovelaceCard {
               </div>
             `
           : nothing}
+        <div class="searchRow">
+          <ha-textfield
+            class="searchBox"
+            placeholder="Search items"
+            .value=${this._searchTerm}
+            @input=${this._handleSearchInput}
+            .disabled=${unavailable}
+          ></ha-textfield>
+        </div>
+
         <ha-sortable
           handle-selector="ha-svg-icon"
           draggable-selector=".draggable"
@@ -704,6 +729,11 @@ export class HuiTodoListCard extends LitElement implements LovelaceCard {
     }
   }
 
+  private _handleSearchInput(ev: Event): void {
+    const target = ev.currentTarget as HaTextField;
+    this._searchTerm = target.value ?? "";
+  }
+
   private _handlePrimaryMenuAction(ev: CustomEvent<ActionDetail>) {
     switch (ev.detail.index) {
       case 0:
@@ -800,6 +830,17 @@ export class HuiTodoListCard extends LitElement implements LovelaceCard {
       display: flex;
       flex-direction: row;
       align-items: center;
+    }
+
+    .searchRow {
+      padding: 8px 16px 0;
+      display: flex;
+      flex-direction: row;
+      align-items: center;
+    }
+
+    .searchBox {
+      width: 100%;
     }
 
     .header {
