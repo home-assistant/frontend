@@ -6,6 +6,7 @@ export interface ThemeVars {
   "primary-color": string;
   "text-primary-color": string;
   "accent-color": string;
+  "sidebar-logo": string;
   [key: string]: string;
 }
 

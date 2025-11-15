@@ -370,6 +370,7 @@ class HaSidebar extends SubscribeMixin(LitElement) {
   }, 5000);
 
   private _renderHeader() {
+    const logo = this.hass.themes?.themes[this.hass.themes.theme]?.["sidebar-logo"];
     return html`<div
       class="menu"
       @action=${this._handleAction}
@@ -388,7 +389,9 @@ class HaSidebar extends SubscribeMixin(LitElement) {
             ></ha-icon-button>
           `
         : ""}
-      <div class="title">Home Assistant</div>
+      <div class="title">
+        ${logo ? html`<img class="logo" src=${logo} />` : "Home Assistant"}
+      </div>
     </div>`;
   }
 
@@ -756,6 +759,11 @@ class HaSidebar extends SubscribeMixin(LitElement) {
         }
         .menu ha-icon-button {
           color: var(--sidebar-icon-color);
+        }
+        .logo {
+          height: var(--header-height);
+          padding: 8px;
+          box-sizing: border-box;
         }
         .title {
           margin-left: 3px;
