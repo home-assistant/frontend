@@ -109,6 +109,43 @@ export class HuiHomeSummaryCard extends LitElement implements LovelaceCard {
           : this.hass.localize("ui.card.home-summary.all_lights_off");
       }
       case "climate": {
+        // Get all climate entities
+        const climateFilters = HOME_SUMMARIES_FILTERS.climate.map((filter) =>
+          generateEntityFilter(this.hass!, filter)
+        );
+
+        const climateEntities = findEntities(allEntities, climateFilters);
+
+        // Filter for climate entities that are on (not off)
+        const onClimateEntities = climateEntities.filter((entityId) => {
+          const s = this.hass!.states[entityId]?.state;
+          return s !== "off" && s !== "unavailable" && s !== "unknown";
+        });
+
+        // Check hvac_action for active climate entities
+        let hvacActionText = "";
+        if (onClimateEntities.length > 0) {
+          const hvacActions = onClimateEntities
+            .map((entityId) => {
+              const state = this.hass!.states[entityId];
+              return state?.attributes?.hvac_action;
+            })
+            .filter(Boolean);
+
+          // If there's only one climate entity on, or all have the same hvac_action
+          if (
+            hvacActions.length > 0 &&
+            (onClimateEntities.length === 1 ||
+              hvacActions.every((action) => action === hvacActions[0]))
+          ) {
+            const action = hvacActions[0];
+            if (action && typeof action === "string") {
+              // Capitalize the action for display
+              hvacActionText = action.charAt(0).toUpperCase() + action.slice(1);
+            }
+          }
+        }
+
         // Min/Max temperature of the areas
         const areaSensors = areas
           .map((area) => area.temperature_entity_id)
@@ -121,13 +158,13 @@ export class HuiHomeSummaryCard extends LitElement implements LovelaceCard {
           .filter((value) => !isNaN(value));
 
         if (sensorsValues.length === 0) {
-          return "";
+          return hvacActionText;
         }
         const minTemp = Math.min(...sensorsValues);
         const maxTemp = Math.max(...sensorsValues);
 
         if (isNaN(minTemp) || isNaN(maxTemp)) {
-          return "";
+          return hvacActionText;
         }
 
         const formattedMinTemp = formatNumber(minTemp, this.hass?.locale, {
@@ -138,9 +175,13 @@ export class HuiHomeSummaryCard extends LitElement implements LovelaceCard {
           minimumFractionDigits: 1,
           maximumFractionDigits: 1,
         });
-        return formattedMinTemp === formattedMaxTemp
-          ? `${formattedMinTemp}°`
-          : `${formattedMinTemp} - ${formattedMaxTemp}°`;
+        const tempText =
+          formattedMinTemp === formattedMaxTemp
+            ? `${formattedMinTemp}°`
+            : `${formattedMinTemp} - ${formattedMaxTemp}°`;
+
+        // Combine temperature and hvac action if available
+        return hvacActionText ? `${tempText} • ${hvacActionText}` : tempText;
       }
       case "security": {
         // Alarm and lock status
