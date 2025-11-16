@@ -76,6 +76,8 @@ export class HaMarkdown extends LitElement {
       max-width: 100%;
       min-height: 2lh;
       height: auto;
+      width: auto;
+      text-indent: 4px;
       transition: height 0.2s ease-in-out;
     }
     p:first-child > img:first-child {
