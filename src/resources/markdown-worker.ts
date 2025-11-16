@@ -15,7 +15,7 @@ const renderMarkdown = async (
     allowSvg?: boolean;
     allowDataUrl?: boolean;
   } = {}
-): Promise<string> => {
+): Promise<string[]> => {
   if (!whiteListNormal) {
     whiteListNormal = {
       ...getDefaultWhiteList(),
@@ -53,38 +53,43 @@ const renderMarkdown = async (
     whiteList.a.push("download");
   }
 
-  return filterXSS(await marked(content, markedOptions), {
-    whiteList,
-    onTagAttr: (
-      tag: string,
-      name: string,
-      value: string
-    ): string | undefined => {
-      // Override the default `onTagAttr` behavior to only render
-      // our markdown checkboxes.
-      // Returning undefined causes the default measure to be taken
-      // in the xss library.
-      if (tag === "input") {
-        if (
-          (name === "type" && value === "checkbox") ||
-          name === "checked" ||
-          name === "disabled"
-        ) {
-          return undefined;
+  marked.setOptions(markedOptions);
+
+  const tokens = marked.lexer(content);
+  return tokens.map((token) =>
+    filterXSS(marked.parser([token]), {
+      whiteList,
+      onTagAttr: (
+        tag: string,
+        name: string,
+        value: string
+      ): string | undefined => {
+        // Override the default `onTagAttr` behavior to only render
+        // our markdown checkboxes.
+        // Returning undefined causes the default measure to be taken
+        // in the xss library.
+        if (tag === "input") {
+          if (
+            (name === "type" && value === "checkbox") ||
+            name === "checked" ||
+            name === "disabled"
+          ) {
+            return undefined;
+          }
+          return "";
         }
-        return "";
-      }
-      if (
-        hassOptions.allowDataUrl &&
-        tag === "a" &&
-        name === "href" &&
-        value.startsWith("data:")
-      ) {
-        return `href="${value}"`;
-      }
-      return undefined;
-    },
-  });
+        if (
+          hassOptions.allowDataUrl &&
+          tag === "a" &&
+          name === "href" &&
+          value.startsWith("data:")
+        ) {
+          return `href="${value}"`;
+        }
+        return undefined;
+      },
+    })
+  );
 };
 
 const api = {
