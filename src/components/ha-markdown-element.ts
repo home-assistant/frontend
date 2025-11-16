@@ -101,7 +101,7 @@ class HaMarkdownElement extends ReactiveElement {
 
     render(
       elements.map((e) => h(unsafeHTML(e))),
-      this
+      this.renderRoot
     );
 
     this._resize();
