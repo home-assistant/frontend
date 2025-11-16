@@ -32,10 +32,19 @@ declare global {
     customPanel:
       | {
           navigate: (path: string, options?: NavigateOptions) => void;
+          toggleMenu: () => void;
           hass: HomeAssistant;
           narrow: boolean;
           route: Route;
           supervisor: Supervisor;
+          subscribe: (
+            callback: (properties: {
+              hass: HomeAssistant;
+              narrow: boolean;
+              route: Route;
+              supervisor: Supervisor;
+            }) => void
+          ) => () => void;
         }
       | undefined;
   }
@@ -57,9 +66,18 @@ class HassioIngressView extends LitElement {
 
   @state() private _loadingMessage?: string;
 
+  @state() private _addonSubscribed = false;
+
   private _sessionKeepAlive?: number;
 
   private _fetchDataTimeout?: number;
+
+  private _propertyCallback?: (properties: {
+    hass: HomeAssistant;
+    narrow: boolean;
+    route: Route;
+    supervisor: Supervisor;
+  }) => void;
 
   public disconnectedCallback() {
     super.disconnectedCallback();
@@ -80,14 +98,33 @@ class HassioIngressView extends LitElement {
     window.customPanel = {
       navigate: (path: string, options?: NavigateOptions) =>
         navigate(path, options),
+      toggleMenu: () => this._toggleMenu(),
       hass: this.hass,
       narrow: this.narrow,
       route: this.route,
       supervisor: this.supervisor,
+      subscribe: (callback) => {
+        this._propertyCallback = callback;
+        this._addonSubscribed = true;
+        // Call immediately with current values
+        callback({
+          hass: this.hass,
+          narrow: this.narrow,
+          route: this.route,
+          supervisor: this.supervisor,
+        });
+        // Return unsubscribe function
+        return () => {
+          this._propertyCallback = undefined;
+          this._addonSubscribed = false;
+        };
+      },
     };
   }
 
   private _cleanupCustomPanel() {
+    this._propertyCallback = undefined;
+    this._addonSubscribed = false;
     delete window.customPanel;
   }
 
@@ -115,7 +152,11 @@ class HassioIngressView extends LitElement {
       </hass-subpage>`;
     }
 
-    return html`${this.narrow || this.hass.dockedSidebar === "always_hidden"
+    // Only show header if narrow/sidebar hidden AND add-on hasn't subscribed
+    // (subscribed add-ons handle their own menu button)
+    return html`${(this.narrow ||
+      this.hass.dockedSidebar === "always_hidden") &&
+    !this._addonSubscribed
       ? html`<div class="header">
             <ha-icon-button
               .label=${this.hass.localize("ui.sidebar.sidebar_toggle")}
@@ -199,6 +240,16 @@ class HassioIngressView extends LitElement {
       window.customPanel.narrow = this.narrow;
       window.customPanel.route = this.route;
       window.customPanel.supervisor = this.supervisor;
+
+      // Notify subscribed add-ons of property changes
+      if (this._propertyCallback) {
+        this._propertyCallback({
+          hass: this.hass,
+          narrow: this.narrow,
+          route: this.route,
+          supervisor: this.supervisor,
+        });
+      }
     }
   }
 
