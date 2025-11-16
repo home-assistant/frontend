@@ -41,7 +41,11 @@ export class HaAssistChat extends LitElement {
 
   @query("#message-input") private _messageInput!: HaTextField;
 
-  @query("#scroll-container") private _scrollContainer!: HTMLDivElement;
+  @query(".message:last-child")
+  private _lastChatMessage!: LitElement;
+
+  @query(".message:last-child > img:last-of-type")
+  private _lastChatMessageImage: HTMLImageElement | undefined;
 
   @state() private _conversation: AssistMessage[] = [];
 
@@ -113,7 +117,7 @@ export class HaAssistChat extends LitElement {
     const supportsSTT = this.pipeline?.stt_engine && !this.disableSpeech;
 
     return html`
-      <div class="messages" id="scroll-container">
+      <div class="messages">
         ${controlHA
           ? nothing
           : html`
@@ -126,14 +130,16 @@ export class HaAssistChat extends LitElement {
         <div class="spacer"></div>
         ${this._conversation!.map(
           (message) => html`
-            <div
+            <ha-markdown
               class="message ${classMap({
                 error: !!message.error,
                 [message.who]: true,
               })}"
+              breaks
+              cache
+              .content=${message.text}
             >
-              <ha-markdown breaks .content=${message.text}></ha-markdown>
-            </div>
+            </ha-markdown>
           `
         )}
       </div>
@@ -196,14 +202,22 @@ export class HaAssistChat extends LitElement {
   }
 
   private async _scrollMessagesBottom() {
-    const markdownElements =
-      this.shadowRoot?.querySelectorAll("ha-markdown") ?? [];
-    await markdownElements[markdownElements.length - 1].updateComplete;
-    const scrollContainer = this._scrollContainer;
-    if (!scrollContainer) {
-      return;
+    const lastChatMessage = this._lastChatMessage;
+    if (!lastChatMessage.hasUpdated) {
+      await lastChatMessage.updateComplete;
     }
-    scrollContainer.scrollTo(0, scrollContainer.scrollHeight);
+    if (
+      this._lastChatMessageImage &&
+      !this._lastChatMessageImage.naturalHeight
+    ) {
+      await this._lastChatMessageImage.decode();
+    }
+    const isLastMessageFullyVisible =
+      lastChatMessage.getBoundingClientRect().y <
+      this.getBoundingClientRect().top + 24;
+    if (!isLastMessageFullyVisible) {
+      lastChatMessage.scrollIntoView({ behavior: "smooth", block: "start" });
+    }
   }
 
   private _handleKeyUp(ev: KeyboardEvent) {

@@ -1,5 +1,4 @@
-import { css, html, LitElement, nothing, type CSSResultGroup } from "lit";
-import { customElement, property } from "lit/decorators";
+import { customElement, property, query } from "lit/decorators";
 import "./ha-markdown-element";
 
 @customElement("ha-markdown")
@@ -17,6 +16,14 @@ export class HaMarkdown extends LitElement {
     false;
 
   @property({ type: Boolean }) public cache = false;
+
+  @query("ha-markdown-element") private _markdownElement!: ReactiveElement;
+
+  protected async getUpdateComplete() {
+    const result = await super.getUpdateComplete();
+    await this._markdownElement.updateComplete;
+    return result;
+  }
 
   protected render() {
     if (!this.content) {
