@@ -611,44 +611,30 @@ export class HaAssistChat extends LitElement {
     .message {
       font-size: var(--ha-font-size-l);
       clear: both;
+      max-width: -webkit-fill-available;
+      overflow-wrap: break-word;
+      scroll-margin-top: 24px;
       margin: 8px 0;
       padding: 8px;
       border-radius: var(--ha-border-radius-xl);
     }
-    .message code {
-      background-color: none;
-    }
-    .message img {
-      border-radius: 8px;
-    }
-    .message th {
-      text-align: left;
-    }
-    .message p {
-      margin: 0;
-    }
-    .message:last-child {
-      margin-bottom: 0;
-    }
-
     @media all and (max-width: 450px), all and (max-height: 500px) {
       .message {
         font-size: var(--ha-font-size-l);
       }
     }
-
     .message.user {
       margin-left: 24px;
       margin-inline-start: 24px;
       margin-inline-end: initial;
       align-self: flex-end;
-      text-align: right;
+      text-align: left;
       border-bottom-right-radius: 0px;
+      --markdown-link-color: var(--text-primary-color);
       background-color: var(--chat-background-color-user, var(--primary-color));
       color: var(--text-primary-color);
       direction: var(--direction);
     }
-
     .message.hass {
       margin-right: 24px;
       margin-inline-end: 24px;
@@ -663,20 +649,21 @@ export class HaAssistChat extends LitElement {
       color: var(--primary-text-color);
       direction: var(--direction);
     }
-
-    .message.user a {
-      color: var(--text-primary-color);
-    }
-
-    .message.hass a {
-      color: var(--primary-text-color);
-    }
-
     .message.error {
       background-color: var(--error-color);
       color: var(--text-primary-color);
     }
-
+    ha-markdown {
+      --markdown-image-border-radius: calc(var(--ha-border-radius-xl) / 2);
+      --markdown-table-border-color: var(--divider-color);
+      --markdown-code-background-color: var(--primary-background-color);
+      --markdown-code-text-color: var(--primary-text-color);
+      &:not(:has(ha-markdown-element)) {
+        min-height: 1lh;
+        min-width: 1lh;
+        flex-shrink: 0;
+      }
+    }
     .bouncer {
       width: 48px;
       height: 48px;

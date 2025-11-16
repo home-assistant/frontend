@@ -68,19 +68,44 @@ export class HaMarkdown extends LitElement {
       margin: var(--ha-space-1) 0;
     }
     a {
-      color: var(--primary-color);
+      color: var(--markdown-link-color, var(--primary-color));
     }
     img {
+      background-color: rgba(10, 10, 10, 0.15);
+      border-radius: var(--markdown-image-border-radius);
       max-width: 100%;
+      min-height: 2lh;
+      height: auto;
+      transition: height 0.2s ease-in-out;
+    }
+    p:first-child > img:first-child {
+      vertical-align: top;
+    }
+    p:first-child > img:last-child {
+      vertical-align: top;
+    }
+    ol,
+    ul {
+      list-style-position: inside;
+      padding-inline-start: 0;
+    }
+    li {
+      &:has(input[type="checkbox"]) {
+        list-style: none;
+        & > input[type="checkbox"] {
+          margin-left: 0;
+        }
+      }
+    }
+    svg {
+      background-color: var(--markdown-svg-background-color, none);
+      color: var(--markdown-svg-color, none);
     }
     code,
     pre {
       background-color: var(--markdown-code-background-color, none);
       border-radius: var(--ha-border-radius-sm);
-    }
-    svg {
-      background-color: var(--markdown-svg-background-color, none);
-      color: var(--markdown-svg-color, none);
+      color: var(--markdown-code-text-color, inherit);
     }
     code {
       font-size: var(--ha-font-size-s);
@@ -111,6 +136,24 @@ export class HaMarkdown extends LitElement {
       border-color: var(--divider-color);
       border-bottom: none;
       margin: var(--ha-space-4) 0;
+    }
+    table {
+      border-collapse: collapse;
+      display: block;
+      overflow-x: scroll;
+    }
+    th {
+      text-align: justify;
+    }
+    td,
+    th {
+      border: 1px solid var(--markdown-table-border-color, transparent);
+      padding: 0.25em 0.5em;
+    }
+    blockquote {
+      border-left: 4px solid var(--divider-color);
+      margin-inline: 0;
+      padding-inline: 1em;
     }
   ` as CSSResultGroup;
 }
