@@ -60,6 +60,10 @@ class HaHLSPlayer extends LitElement {
   private static streamCount = 0;
 
   private _handleVisibilityChange = () => {
+    if (document.pictureInPictureElement !== null) {
+      // video is playing in picture-in-picture mode, don't do anything
+      return;
+    }
     if (document.hidden) {
       this._cleanUp();
     } else {
