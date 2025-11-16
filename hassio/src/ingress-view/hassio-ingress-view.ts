@@ -3,6 +3,7 @@ import type { PropertyValues, TemplateResult } from "lit";
 import { css, html, LitElement } from "lit";
 import { customElement, property, state } from "lit/decorators";
 import { fireEvent } from "../../../src/common/dom/fire_event";
+import type { NavigateOptions } from "../../../src/common/navigate";
 import { goBack, navigate } from "../../../src/common/navigate";
 import { extractSearchParam } from "../../../src/common/url/search-params";
 import { nextRender } from "../../../src/common/util/render-status";
@@ -25,6 +26,20 @@ import {
 import "../../../src/layouts/hass-loading-screen";
 import "../../../src/layouts/hass-subpage";
 import type { HomeAssistant, Route } from "../../../src/types";
+
+declare global {
+  interface Window {
+    customPanel:
+      | {
+          navigate: (path: string, options?: NavigateOptions) => void;
+          hass: HomeAssistant;
+          narrow: boolean;
+          route: Route;
+          supervisor: Supervisor;
+        }
+      | undefined;
+  }
+}
 
 @customElement("hassio-ingress-view")
 class HassioIngressView extends LitElement {
@@ -57,6 +72,23 @@ class HassioIngressView extends LitElement {
       clearInterval(this._fetchDataTimeout);
       this._fetchDataTimeout = undefined;
     }
+    this._cleanupCustomPanel();
+  }
+
+  private _setupCustomPanel() {
+    // Expose customPanel API for ingress add-ons
+    window.customPanel = {
+      navigate: (path: string, options?: NavigateOptions) =>
+        navigate(path, options),
+      hass: this.hass,
+      narrow: this.narrow,
+      route: this.route,
+      supervisor: this.supervisor,
+    };
+  }
+
+  private _cleanupCustomPanel() {
+    delete window.customPanel;
   }
 
   protected render(): TemplateResult {
@@ -148,6 +180,25 @@ class HassioIngressView extends LitElement {
     if (addon && addon !== oldAddon) {
       this._loadingMessage = undefined;
       this._fetchData(addon);
+    }
+  }
+
+  protected updated(changedProps: PropertyValues) {
+    super.updated(changedProps);
+
+    // Update customPanel properties when they change
+    if (
+      this._addon &&
+      window.customPanel &&
+      (changedProps.has("hass") ||
+        changedProps.has("narrow") ||
+        changedProps.has("route") ||
+        changedProps.has("supervisor"))
+    ) {
+      window.customPanel.hass = this.hass;
+      window.customPanel.narrow = this.narrow;
+      window.customPanel.route = this.route;
+      window.customPanel.supervisor = this.supervisor;
     }
   }
 
@@ -291,6 +342,7 @@ class HassioIngressView extends LitElement {
     }, 60000);
 
     this._addon = addon;
+    this._setupCustomPanel();
   }
 
   private async _checkLoaded(ev): Promise<void> {
