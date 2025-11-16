@@ -44,7 +44,7 @@ export class HaAssistChat extends LitElement {
   @query(".message:last-child")
   private _lastChatMessage!: LitElement;
 
-  @query(".message:last-child > img:last-of-type")
+  @query(".message:last-child img:last-of-type")
   private _lastChatMessageImage: HTMLImageElement | undefined;
 
   @state() private _conversation: AssistMessage[] = [];
