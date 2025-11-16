@@ -1,3 +1,11 @@
+import {
+  css,
+  html,
+  LitElement,
+  nothing,
+  type ReactiveElement,
+  type CSSResultGroup,
+} from "lit";
 import { customElement, property, query } from "lit/decorators";
 import "./ha-markdown-element";
 
