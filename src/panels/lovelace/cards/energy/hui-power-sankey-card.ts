@@ -4,7 +4,7 @@ import { css, html, LitElement, nothing } from "lit";
 import { customElement, property, state } from "lit/decorators";
 import "../../../../components/ha-card";
 import "../../../../components/ha-svg-icon";
-import type { EnergyData } from "../../../../data/energy";
+import type { EnergyData, EnergyPreferences } from "../../../../data/energy";
 import { getEnergyDataCollection } from "../../../../data/energy";
 import { SubscribeMixin } from "../../../../mixins/subscribe-mixin";
 import type { HomeAssistant } from "../../../../types";
@@ -21,6 +21,22 @@ const DEFAULT_CONFIG: Partial<PowerSankeyCardConfig> = {
   group_by_floor: true,
   group_by_area: true,
 };
+
+interface PowerData {
+  solar: number;
+  from_grid: number;
+  to_grid: number;
+  from_battery: number;
+  to_battery: number;
+  grid_to_battery: number;
+  battery_to_grid: number;
+  solar_to_battery: number;
+  solar_to_grid: number;
+  used_solar: number;
+  used_grid: number;
+  used_battery: number;
+  used_total: number;
+}
 
 @customElement("hui-power-sankey-card")
 class HuiPowerSankeyCard
@@ -103,200 +119,131 @@ class HuiPowerSankeyCard
     }
 
     const prefs = this._data.prefs;
+    const powerData = this._computePowerData(prefs);
     const computedStyle = getComputedStyle(this);
-
-    // Clear tracked entities and rebuild the set during render
-    this._entities.clear();
 
     const nodes: Node[] = [];
     const links: Link[] = [];
 
-    // Collect all sources with their power values
-    const sources: {
-      id: string;
-      value: number;
-      type: string;
-      color: string;
-    }[] = [];
-
-    // Collect solar sources
-    prefs.energy_sources
-      .filter((source) => source.type === "solar")
-      .forEach((source) => {
-        if (source.type !== "solar" || !source.stat_rate) return;
-        const value = this._getCurrentPower(source.stat_rate);
-        if (value >= 0.01) {
-          sources.push({
-            id: source.stat_rate,
-            value,
-            type: "solar",
-            color: computedStyle
-              .getPropertyValue("--energy-solar-color")
-              .trim(),
-          });
-        }
-      });
-
-    // Collect grid import sources
-    const gridSources = prefs.energy_sources.filter(
-      (source) => source.type === "grid" && source.power
-    );
-    gridSources.forEach((source) => {
-      if (source.type !== "grid" || !source.power) return;
-      source.power.forEach((powerSource) => {
-        const value = this._getCurrentPower(powerSource.stat_rate);
-        if (value >= 0.01) {
-          sources.push({
-            id: powerSource.stat_rate,
-            value,
-            type: "grid",
-            color: computedStyle
-              .getPropertyValue("--energy-grid-consumption-color")
-              .trim(),
-          });
-        }
-      });
-    });
-
-    // Collect battery discharge sources
-    const batterySources = prefs.energy_sources.filter(
-      (source) => source.type === "battery"
-    );
-    batterySources.forEach((source) => {
-      if (source.type !== "battery" || !source.stat_rate) return;
-      const value = this._getCurrentPower(source.stat_rate);
-      if (value >= 0.01) {
-        sources.push({
-          id: source.stat_rate,
-          value,
-          type: "battery",
-          color: computedStyle
-            .getPropertyValue("--energy-battery-out-color")
-            .trim(),
-        });
-      }
-    });
-
-    // Create source nodes
-    sources.forEach((source) => {
-      nodes.push({
-        id: source.id,
-        label: this._getEntityLabel(source.id),
-        value: source.value,
-        color: source.color,
-        index: 0,
-      });
-    });
-
-    // Create home node early (value will be calculated later)
+    // Create home node
     const homeNode: Node = {
       id: "home",
       label: this.hass.localize(
         "ui.panel.lovelace.cards.energy.energy_distribution.home"
       ),
-      value: 0, // Will be updated later
+      value: Math.max(0, powerData.used_total),
       color: computedStyle.getPropertyValue("--primary-color").trim(),
       index: 1,
     };
     nodes.push(homeNode);
 
-    // Collect consumers (battery charging, grid return)
-    const consumers: { id: string; value: number }[] = [];
-    let batteryChargingPower = 0;
-    let gridReturnPower = 0;
-
-    // Add battery charging as consumer
-    batterySources.forEach((source) => {
-      if (source.type !== "battery" || !source.stat_rate) return;
-      const value = this._getCurrentPower(source.stat_rate);
-      if (value < -0.01) {
-        const chargingPower = Math.abs(value);
-        batteryChargingPower += chargingPower;
-        consumers.push({
-          id: `${source.stat_rate}_charge`,
-          value: chargingPower,
-        });
-        nodes.push({
-          id: `${source.stat_rate}_charge`,
-          label: this._getEntityLabel(source.stat_rate),
-          value: chargingPower,
-          color: computedStyle
-            .getPropertyValue("--energy-battery-in-color")
-            .trim(),
-          index: 1,
-        });
-      }
-    });
-
-    // Add grid return as consumer
-    gridSources.forEach((source) => {
-      if (source.type !== "grid" || !source.power) return;
-      source.power.forEach((powerSource) => {
-        const value = this._getCurrentPower(powerSource.stat_rate);
-        if (value < -0.01) {
-          const returnPower = Math.abs(value);
-          gridReturnPower += returnPower;
-          consumers.push({
-            id: `${powerSource.stat_rate}_return`,
-            value: returnPower,
-          });
-          nodes.push({
-            id: `${powerSource.stat_rate}_return`,
-            label: this._getEntityLabel(powerSource.stat_rate),
-            value: returnPower,
-            color: computedStyle
-              .getPropertyValue("--energy-grid-return-color")
-              .trim(),
-            index: 2,
-          });
-        }
+    // Add battery source and sink if available
+    if (powerData.from_battery > 0) {
+      nodes.push({
+        id: "battery",
+        label: this.hass.localize(
+          "ui.panel.lovelace.cards.energy.energy_distribution.battery"
+        ),
+        value: powerData.from_battery,
+        color: computedStyle
+          .getPropertyValue("--energy-battery-out-color")
+          .trim(),
+        index: 0,
       });
-    });
-
-    // Calculate home consumption from energy conservation:
-    // Home = Total sources - Battery charging - Grid return
-    const totalSourcePower = sources.reduce((sum, s) => sum + s.value, 0);
-    homeNode.value = Math.max(
-      0,
-      totalSourcePower - batteryChargingPower - gridReturnPower
-    );
-
-    // Link sources to home (sankey component will distribute values)
-    sources.forEach((source) => {
       links.push({
-        source: source.id,
+        source: "battery",
         target: "home",
       });
-    });
+    }
 
-    // Link sources to other consumers with constraints:
-    // - Grid import can power: battery charging
-    // - Solar can power: battery charging, grid return
-    // - Battery discharge can power: grid return
-    consumers.forEach((consumer) => {
-      const isGridReturn = consumer.id.includes("_return");
-      const isBatteryCharging = consumer.id.includes("_charge");
-
-      // Filter sources based on consumer type
-      const validSources = sources.filter((source) => {
-        if (isGridReturn) {
-          // Grid return can only come from solar or battery discharge
-          return source.type === "solar" || source.type === "battery";
-        }
-        if (isBatteryCharging) {
-          // Battery charging can come from grid or solar (not from battery discharge)
-          return source.type === "grid" || source.type === "solar";
-        }
-        return true;
+    if (powerData.to_battery > 0) {
+      nodes.push({
+        id: "battery_in",
+        label: this.hass.localize(
+          "ui.panel.lovelace.cards.energy.energy_distribution.battery"
+        ),
+        value: powerData.to_battery,
+        color: computedStyle
+          .getPropertyValue("--energy-battery-in-color")
+          .trim(),
+        index: 1,
       });
-
-      validSources.forEach((source) => {
+      if (powerData.grid_to_battery > 0) {
         links.push({
-          source: source.id,
-          target: consumer.id,
+          source: "grid",
+          target: "battery_in",
         });
+      }
+      if (powerData.solar_to_battery > 0) {
+        links.push({
+          source: "solar",
+          target: "battery_in",
+        });
+      }
+    }
+
+    // Add grid source if available
+    if (powerData.from_grid > 0) {
+      nodes.push({
+        id: "grid",
+        label: this.hass.localize(
+          "ui.panel.lovelace.cards.energy.energy_distribution.grid"
+        ),
+        value: powerData.from_grid,
+        color: computedStyle
+          .getPropertyValue("--energy-grid-consumption-color")
+          .trim(),
+        index: 0,
       });
-    });
+      links.push({
+        source: "grid",
+        target: "home",
+      });
+    }
+
+    // Add solar if available
+    if (powerData.solar > 0) {
+      nodes.push({
+        id: "solar",
+        label: this.hass.localize(
+          "ui.panel.lovelace.cards.energy.energy_distribution.solar"
+        ),
+        value: powerData.solar,
+        color: computedStyle.getPropertyValue("--energy-solar-color").trim(),
+        index: 0,
+      });
+      links.push({
+        source: "solar",
+        target: "home",
+      });
+    }
+
+    // Add grid return if available
+    if (powerData.to_grid > 0) {
+      nodes.push({
+        id: "grid_return",
+        label: this.hass.localize(
+          "ui.panel.lovelace.cards.energy.energy_distribution.grid"
+        ),
+        value: powerData.to_grid,
+        color: computedStyle
+          .getPropertyValue("--energy-grid-return-color")
+          .trim(),
+        index: 2,
+      });
+      if (powerData.battery_to_grid > 0) {
+        links.push({
+          source: "battery",
+          target: "grid_return",
+        });
+      }
+      if (powerData.solar_to_grid > 0) {
+        links.push({
+          source: "solar",
+          target: "grid_return",
+        });
+      }
+    }
 
     let untrackedConsumption = homeNode.value;
     const deviceNodes: Node[] = [];
@@ -316,7 +263,7 @@ class HuiPowerSankeyCard
         label: device.name || this._getEntityLabel(device.stat_rate),
         value,
         color: getGraphColorByIndex(idx, computedStyle),
-        index: 5,
+        index: 4,
         parent: device.included_in_stat,
       };
       if (node.parent) {
@@ -413,7 +360,7 @@ class HuiPowerSankeyCard
     });
 
     // untracked consumption
-    if (untrackedConsumption > 0.01) {
+    if (untrackedConsumption > 0) {
       nodes.push({
         id: "untracked",
         label: this.hass.localize(
@@ -459,6 +406,146 @@ class HuiPowerSankeyCard
     `<div style="direction:ltr; display: inline;">
       ${formatNumber(value, this.hass.locale, value < 0.1 ? { maximumFractionDigits: 3 } : undefined)}
       kW</div>`;
+
+  /**
+   * Compute real-time power data from current entity states.
+   * Similar to computeConsumptionData but for instantaneous power.
+   */
+  private _computePowerData(prefs: EnergyPreferences): PowerData {
+    // Clear tracked entities and rebuild the set
+    this._entities.clear();
+
+    let solar = 0;
+    let from_grid = 0;
+    let to_grid = 0;
+    let from_battery = 0;
+    let to_battery = 0;
+
+    // Collect solar power
+    prefs.energy_sources
+      .filter((source) => source.type === "solar")
+      .forEach((source) => {
+        if (source.type === "solar" && source.stat_rate) {
+          const value = this._getCurrentPower(source.stat_rate);
+          if (value > 0) {
+            solar += value;
+          }
+        }
+      });
+
+    // Collect grid power (positive = import, negative = export)
+    prefs.energy_sources
+      .filter((source) => source.type === "grid" && source.power)
+      .forEach((source) => {
+        if (source.type === "grid" && source.power) {
+          source.power.forEach((powerSource) => {
+            const value = this._getCurrentPower(powerSource.stat_rate);
+            if (value > 0) {
+              from_grid += value;
+            } else if (value < 0) {
+              to_grid += Math.abs(value);
+            }
+          });
+        }
+      });
+
+    // Collect battery power (positive = discharge, negative = charge)
+    prefs.energy_sources
+      .filter((source) => source.type === "battery")
+      .forEach((source) => {
+        if (source.type === "battery" && source.stat_rate) {
+          const value = this._getCurrentPower(source.stat_rate);
+          if (value > 0) {
+            from_battery += value;
+          } else if (value < 0) {
+            to_battery += Math.abs(value);
+          }
+        }
+      });
+
+    // Calculate total consumption
+    const used_total = from_grid + solar + from_battery - to_grid - to_battery;
+
+    // Determine power routing using priority logic
+    // Priority: Solar -> Battery_In, Solar -> Grid_Out, Battery_Out -> Grid_Out,
+    // Grid_In -> Battery_In, Solar -> Consumption, Battery_Out -> Consumption, Grid_In -> Consumption
+
+    let solar_remaining = solar;
+    let grid_remaining = from_grid;
+    let battery_remaining = from_battery;
+    let to_battery_remaining = to_battery;
+    let to_grid_remaining = to_grid;
+    let used_total_remaining = Math.max(used_total, 0);
+
+    let grid_to_battery = 0;
+    let battery_to_grid = 0;
+    let solar_to_battery = 0;
+    let solar_to_grid = 0;
+    let used_solar = 0;
+    let used_battery = 0;
+    let used_grid = 0;
+
+    // Handle excess grid input to battery first
+    const excess_grid_in_after_consumption = Math.max(
+      0,
+      Math.min(to_battery_remaining, grid_remaining - used_total_remaining)
+    );
+    grid_to_battery += excess_grid_in_after_consumption;
+    to_battery_remaining -= excess_grid_in_after_consumption;
+    grid_remaining -= excess_grid_in_after_consumption;
+
+    // Solar -> Battery_In
+    solar_to_battery = Math.min(solar_remaining, to_battery_remaining);
+    to_battery_remaining -= solar_to_battery;
+    solar_remaining -= solar_to_battery;
+
+    // Solar -> Grid_Out
+    solar_to_grid = Math.min(solar_remaining, to_grid_remaining);
+    to_grid_remaining -= solar_to_grid;
+    solar_remaining -= solar_to_grid;
+
+    // Battery_Out -> Grid_Out
+    battery_to_grid = Math.min(battery_remaining, to_grid_remaining);
+    battery_remaining -= battery_to_grid;
+    to_grid_remaining -= battery_to_grid;
+
+    // Grid_In -> Battery_In (second pass)
+    const grid_to_battery_2 = Math.min(grid_remaining, to_battery_remaining);
+    grid_to_battery += grid_to_battery_2;
+    grid_remaining -= grid_to_battery_2;
+    to_battery_remaining -= grid_to_battery_2;
+
+    // Solar -> Consumption
+    used_solar = Math.min(used_total_remaining, solar_remaining);
+    used_total_remaining -= used_solar;
+    solar_remaining -= used_solar;
+
+    // Battery_Out -> Consumption
+    used_battery = Math.min(battery_remaining, used_total_remaining);
+    battery_remaining -= used_battery;
+    used_total_remaining -= used_battery;
+
+    // Grid_In -> Consumption
+    used_grid = Math.min(used_total_remaining, grid_remaining);
+    grid_remaining -= used_grid;
+    used_total_remaining -= used_grid;
+
+    return {
+      solar,
+      from_grid,
+      to_grid,
+      from_battery,
+      to_battery,
+      grid_to_battery,
+      battery_to_grid,
+      solar_to_battery,
+      solar_to_grid,
+      used_solar,
+      used_grid,
+      used_battery,
+      used_total: Math.max(0, used_total),
+    };
+  }
 
   protected _groupByFloorAndArea(deviceNodes: Node[]) {
     const areas: Record<string, { value: number; devices: Node[] }> = {
@@ -523,10 +610,6 @@ class HuiPowerSankeyCard
 
   /**
    * Organizes device nodes into hierarchical sections based on parent-child relationships.
-   *
-   * @param parentLinks - Mapping of child device IDs to their parent device IDs.
-   * @param deviceNodes - Array of device nodes to organize.
-   * @returns Array of device node sections, ordered by hierarchy level.
    */
   protected _getDeviceSections(
     parentLinks: Record<string, string>,
