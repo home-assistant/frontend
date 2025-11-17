@@ -1401,6 +1401,18 @@ class DialogAddAutomationElement
         return this.hass.localize("ui.components.area-picker.unassigned_areas");
       }
 
+      if (targetId === undefined && targetType === "area") {
+        return this.hass.localize(
+          "ui.panel.config.automation.editor.unassigned_devices"
+        );
+      }
+
+      if (targetId === undefined && targetType === "device") {
+        return this.hass.localize(
+          "ui.panel.config.automation.editor.unassigned_entities"
+        );
+      }
+
       if (targetId) {
         if (targetType === "floor") {
           return computeFloorName(this.hass.floors[targetId]) || targetId;
@@ -1546,6 +1558,10 @@ class DialogAddAutomationElement
       }
     }
 
+    if (this._selectedTarget && Object.values(this._selectedTarget)[0]) {
+      classes.push("selected-target");
+    }
+
     if (this._targetPickerFullHeight) {
       classes.push("full-height");
     }
@@ -1651,7 +1667,7 @@ class DialogAddAutomationElement
         }
 
         @media all and (max-width: 870px), all and (max-height: 500px) {
-          ha-automation-add-from-target {
+          ha-automation-add-from-target.selected-target {
             max-height: 50%;
             overflow: hidden;
           }

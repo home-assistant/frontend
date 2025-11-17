@@ -3993,8 +3993,11 @@
             "targets": "Targets",
             "select_target": "Select a target",
             "home": "Home",
+            "unassigned": "Unassigned",
             "blocks": "Blocks",
             "show_more": "Show more",
+            "unassigned_entities": "Unassigned entities",
+            "unassigned_devices": "Unassigned devices",
             "triggers": {
               "name": "Triggers",
               "header": "When",
