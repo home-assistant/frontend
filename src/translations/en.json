@@ -3994,6 +3994,7 @@
             "select_target": "Select a target",
             "home": "Home",
             "blocks": "Blocks",
+            "show_more": "Show more",
             "triggers": {
               "name": "Triggers",
               "header": "When",
