@@ -343,7 +343,7 @@ class HuiPowerSankeyCard
               const areaNodeId = `area_${areaId}`;
               nodes.push({
                 id: areaNodeId,
-                label: this.hass.areas[areaId]!.name,
+                label: this.hass.areas[areaId]?.name || areaId,
                 value: areas[areaId].value,
                 index: 3,
                 color: computedStyle.getPropertyValue("--primary-color").trim(),
@@ -493,6 +493,10 @@ class HuiPowerSankeyCard
 
   /**
    * Organizes device nodes into hierarchical sections based on parent-child relationships.
+   *
+   * @param parentLinks - Mapping of child device IDs to their parent device IDs.
+   * @param deviceNodes - Array of device nodes to organize.
+   * @returns Array of device node sections, ordered by hierarchy level.
    */
   protected _getDeviceSections(
     parentLinks: Record<string, string>,
@@ -535,6 +539,8 @@ class HuiPowerSankeyCard
 
   /**
    * Get current power value from entity state, normalized to kW
+   * @param entityId - The entity ID to get power value from
+   * @returns Power value in kW, or 0 if entity not found or invalid
    */
   private _getCurrentPower(entityId: string): number {
     // Track this entity for state change detection
@@ -565,6 +571,8 @@ class HuiPowerSankeyCard
 
   /**
    * Get entity label (friendly name or entity ID)
+   * @param entityId - The entity ID to get label for
+   * @returns Friendly name if available, otherwise the entity ID
    */
   private _getEntityLabel(entityId: string): string {
     const stateObj = this.hass.states[entityId];
