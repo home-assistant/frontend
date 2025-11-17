@@ -3,11 +3,8 @@ import { css, html, LitElement, nothing } from "lit";
 import { customElement, property, state } from "lit/decorators";
 import { isComponentLoaded } from "../../../common/config/is_component_loaded";
 import "../../../components/ha-analytics";
-import "../../../components/ha-button";
 import "../../../components/ha-card";
-import "../../../components/ha-checkbox";
 import "../../../components/ha-settings-row";
-import "../../../components/ha-svg-icon";
 import type { Analytics } from "../../../data/analytics";
 import {
   getAnalyticsDetails,
@@ -48,7 +45,7 @@ class ConfigAnalytics extends LitElement {
               href=${documentationUrl(this.hass, "/integrations/analytics/")}
               target="_blank"
               rel="noreferrer"
-              >${this.hass.localize("ui.panel.config.analytics.learn_more")} </a
+              >${this.hass.localize("ui.panel.config.analytics.learn_more")}</a
             >.
           </p>
           <ha-analytics
@@ -77,7 +74,7 @@ class ConfigAnalytics extends LitElement {
                   rel="noreferrer"
                   >${this.hass.localize(
                     "ui.panel.config.analytics.preferences.snapshots.learn_more"
-                  )} </a
+                  )}</a
                 >.
               </p>
               <ha-settings-row>
@@ -168,22 +165,8 @@ class ConfigAnalytics extends LitElement {
         p {
           margin-top: 0;
         }
-        .card-actions {
-          display: flex;
-          flex-direction: row-reverse;
-          justify-content: space-between;
-          align-items: center;
-        }
-        .footer {
-          padding: 32px 0 16px;
-          text-align: center;
-        }
         ha-card:not(:first-of-type) {
           margin-top: 24px;
-        }
-
-        ha-button[size="small"] ha-svg-icon {
-          --mdc-icon-size: 16px;
         }
       `, // row-reverse so we tab first to "save"
     ];
