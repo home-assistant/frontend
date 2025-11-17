@@ -168,7 +168,7 @@ class ConfigAnalytics extends LitElement {
         ha-card:not(:first-of-type) {
           margin-top: 24px;
         }
-      `, // row-reverse so we tab first to "save"
+      `,
     ];
   }
 }

@@ -6781,7 +6781,7 @@
             },
             "snapshots": {
               "title": "Devices",
-              "description": "Generic information of your devices.",
+              "description": "Generic information about your devices.",
               "header": "Device analytics",
               "info": "Anonymously share data about your devices to help build the Open Home Foundation’s device database. This free, open source resource helps users find useful information about smart home devices. Only device-specific details (like model or manufacturer) are shared — never personally identifying information (like the names you assign).",
               "learn_more": "Learn more about the device database and how we process your data"
