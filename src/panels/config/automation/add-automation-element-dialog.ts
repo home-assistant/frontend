@@ -1,4 +1,3 @@
-import { consume } from "@lit/context";
 import {
   mdiAppleKeyboardCommand,
   mdiClose,
@@ -75,9 +74,7 @@ import {
   CONDITION_COLLECTIONS,
   CONDITION_ICONS,
 } from "../../../data/condition";
-import { fullEntitiesContext } from "../../../data/context";
 import { getDeviceEntityLookup } from "../../../data/device_registry";
-import type { EntityRegistryEntry } from "../../../data/entity_registry";
 import { getFloorAreaLookup } from "../../../data/floor_registry";
 import { getServiceIcons, getTriggerIcons } from "../../../data/icons";
 import type { IntegrationManifest } from "../../../data/integration";
@@ -171,10 +168,6 @@ class DialogAddAutomationElement
   @state() private _bottomSheetMode = false;
 
   @state() private _narrow = false;
-
-  @state()
-  @consume({ context: fullEntitiesContext, subscribe: true })
-  private fullEntities!: EntityRegistryEntry[];
 
   @state() private _triggerDescriptions: TriggerDescriptions = {};
 
@@ -1460,9 +1453,15 @@ class DialogAddAutomationElement
       getAreaDeviceLookup(Object.values(devices))
   );
 
-  private _getAreaEntityLookupMemoized = memoizeOne(getAreaEntityLookup);
+  private _getAreaEntityLookupMemoized = memoizeOne(
+    (entities: HomeAssistant["entities"]) =>
+      getAreaEntityLookup(Object.values(entities), true)
+  );
 
-  private _getDeviceEntityLookupMemoized = memoizeOne(getDeviceEntityLookup);
+  private _getDeviceEntityLookupMemoized = memoizeOne(
+    (entities: HomeAssistant["entities"]) =>
+      getDeviceEntityLookup(Object.values(entities), true)
+  );
 
   private _extractTypeAndIdFromTarget = memoizeOne(
     (target: SingleHassServiceTarget): [string, string | undefined] => {
@@ -1481,17 +1480,24 @@ class DialogAddAutomationElement
       if (
         targetId &&
         ((targetType === "floor" &&
-          this._getFloorAreaLookupMemoized(this.hass.areas)[targetId]
-            ?.length === 0) ||
+          !(
+            this._getFloorAreaLookupMemoized(this.hass.areas)[targetId]
+              ?.length > 0
+          )) ||
           (targetType === "area" &&
-            this._getAreaDeviceLookupMemoized(this.hass.devices)[targetId]
-              ?.length === 0 &&
-            this._getAreaEntityLookupMemoized(this.fullEntities, true)[targetId]
-              ?.length === 0) ||
+            !(
+              this._getAreaDeviceLookupMemoized(this.hass.devices)[targetId]
+                ?.length > 0
+            ) &&
+            !(
+              this._getAreaEntityLookupMemoized(this.hass.entities)[targetId]
+                ?.length > 0
+            )) ||
           (targetType === "device" &&
-            this._getDeviceEntityLookupMemoized(this.fullEntities, true)[
-              targetId
-            ]?.length === 0) ||
+            !(
+              this._getDeviceEntityLookupMemoized(this.hass.entities)[targetId]
+                ?.length > 0
+            )) ||
           targetType === "entity")
       ) {
         return "hidden";

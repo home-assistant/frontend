@@ -1,7 +1,10 @@
 import { stringCompare } from "../common/string/compare";
 import type { HomeAssistant } from "../types";
 import type { DeviceRegistryEntry } from "./device_registry";
-import type { EntityRegistryEntry } from "./entity_registry";
+import type {
+  EntityRegistryDisplayEntry,
+  EntityRegistryEntry,
+} from "./entity_registry";
 import type { RegistryEntry } from "./registry";
 
 export { subscribeAreaRegistry } from "./ws-area_registry";
@@ -18,7 +21,10 @@ export interface AreaRegistryEntry extends RegistryEntry {
   temperature_entity_id: string | null;
 }
 
-export type AreaEntityLookup = Record<string, EntityRegistryEntry[]>;
+export type AreaEntityLookup = Record<
+  string,
+  (EntityRegistryEntry | EntityRegistryDisplayEntry)[]
+>;
 
 export type AreaDeviceLookup = Record<string, DeviceRegistryEntry[]>;
 
@@ -60,12 +66,17 @@ export const deleteAreaRegistryEntry = (hass: HomeAssistant, areaId: string) =>
   });
 
 export const getAreaEntityLookup = (
-  entities: EntityRegistryEntry[],
+  entities: (EntityRegistryEntry | EntityRegistryDisplayEntry)[],
   filterHidden = false
 ): AreaEntityLookup => {
   const areaEntityLookup: AreaEntityLookup = {};
   for (const entity of entities) {
-    if (!entity.area_id || (filterHidden && entity.hidden_by)) {
+    if (
+      !entity.area_id ||
+      (filterHidden &&
+        ((entity as EntityRegistryDisplayEntry).hidden ||
+          (entity as EntityRegistryEntry).hidden_by))
+    ) {
       continue;
     }
     if (!(entity.area_id in areaEntityLookup)) {

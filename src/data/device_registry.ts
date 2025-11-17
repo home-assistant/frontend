@@ -50,7 +50,10 @@ export type DeviceEntityDisplayLookup = Record<
   EntityRegistryDisplayEntry[]
 >;
 
-export type DeviceEntityLookup = Record<string, EntityRegistryEntry[]>;
+export type DeviceEntityLookup = Record<
+  string,
+  (EntityRegistryEntry | EntityRegistryDisplayEntry)[]
+>;
 
 export interface DeviceRegistryEntryMutableParams {
   area_id?: string | null;
@@ -107,12 +110,17 @@ export const sortDeviceRegistryByName = (
   );
 
 export const getDeviceEntityLookup = (
-  entities: EntityRegistryEntry[],
+  entities: (EntityRegistryEntry | EntityRegistryDisplayEntry)[],
   filterHidden = false
 ): DeviceEntityLookup => {
   const deviceEntityLookup: DeviceEntityLookup = {};
   for (const entity of entities) {
-    if (!entity.device_id || (filterHidden && entity.hidden_by)) {
+    if (
+      !entity.device_id ||
+      (filterHidden &&
+        ((entity as EntityRegistryDisplayEntry).hidden ||
+          (entity as EntityRegistryEntry).hidden_by))
+    ) {
       continue;
     }
     if (!(entity.device_id in deviceEntityLookup)) {
