@@ -62,7 +62,7 @@ class HaWebRtcPlayer extends LitElement {
   private _candidatesList: RTCIceCandidate[] = [];
 
   private _handleVisibilityChange = () => {
-    if (document.pictureInPictureElement !== null) {
+    if (document.pictureInPictureElement) {
       // video is playing in picture-in-picture mode, don't do anything
       return;
     }
