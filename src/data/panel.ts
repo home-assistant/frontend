@@ -3,11 +3,6 @@ import type { HomeAssistant, PanelInfo } from "../types";
 /** Panel to show when no panel is picked. */
 export const DEFAULT_PANEL = "lovelace";
 
-export const getCachedDefaultPanelUrlPath = (): string | null => {
-  const defaultPanel = window.localStorage.getItem("defaultPanel");
-  return defaultPanel ? JSON.parse(defaultPanel) : null;
-};
-
 export const getLegacyDefaultPanelUrlPath = (): string | null => {
   const defaultPanel = window.localStorage.getItem("defaultPanel");
   return defaultPanel ? JSON.parse(defaultPanel) : null;

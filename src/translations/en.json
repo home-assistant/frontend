@@ -8667,7 +8667,7 @@
         },
         "dashboard": {
           "header": "Dashboard",
-          "description": "Pick a default dashboard for this device.",
+          "description": "Pick a default dashboard to show.",
           "dropdown_label": "Dashboard",
           "lovelace": "Overview",
           "home": "Home",
