@@ -1,7 +1,13 @@
 import type { LitVirtualizer } from "@lit-labs/virtualizer";
 import { grid } from "@lit-labs/virtualizer/layouts/grid";
 
-import { mdiArrowUpRight, mdiKeyboard, mdiPlay, mdiPlus } from "@mdi/js";
+import {
+  mdiArrowUpRight,
+  mdiCodeBraces,
+  mdiKeyboard,
+  mdiPlay,
+  mdiPlus,
+} from "@mdi/js";
 import type { CSSResultGroup, PropertyValues, TemplateResult } from "lit";
 import { css, html, LitElement, nothing } from "lit";
 import {
@@ -16,6 +22,7 @@ import { styleMap } from "lit/directives/style-map";
 import { until } from "lit/directives/until";
 import { fireEvent } from "../../common/dom/fire_event";
 import { slugify } from "../../common/string/slugify";
+import { copyToClipboard } from "../../common/util/copy-clipboard";
 import { debounce } from "../../common/util/debounce";
 import { isUnavailableState } from "../../data/entity";
 import type {
@@ -39,6 +46,7 @@ import { showAlertDialog } from "../../dialogs/generic/show-dialog-box";
 import { haStyle } from "../../resources/styles";
 import { loadVirtualizer } from "../../resources/virtualizer";
 import type { HomeAssistant } from "../../types";
+import { showToast } from "../../util/toast";
 import {
   brandsUrl,
   extractDomainFromBrandUrl,
@@ -177,6 +185,45 @@ export class HaMediaPlayerBrowse extends LitElement {
       this._runAction(this._currentItem);
     }
   }
+
+  private _generateAutomationYaml(item: MediaPlayerItem): string {
+    const entityId = this.entityId && this.entityId !== BROWSER_PLAYER
+      ? this.entityId
+      : "media_player.YOUR_PLAYER";
+
+    const yaml = `action: media_player.play_media
+target:
+  entity_id: ${entityId}
+data:
+  media_content_type: ${item.media_content_type}
+  media_content_id: ${item.media_content_id}`;
+
+    return yaml;
+  }
+
+  private _copyAutomationAction = async (ev: MouseEvent): Promise<void> => {
+    ev.stopPropagation();
+    const item = (ev.currentTarget as any).item;
+
+    if (!item) {
+      return;
+    }
+
+    try {
+      const yaml = this._generateAutomationYaml(item);
+      await copyToClipboard(yaml);
+      showToast(this, {
+        message: this.hass.localize(
+          "ui.components.media-browser.copied_to_clipboard"
+        ),
+      });
+    } catch (err: any) {
+      showToast(this, {
+        message: this.hass.localize("ui.common.error_clipboard"),
+        duration: 3000,
+      });
+    }
+  };
 
   public willUpdate(changedProps: PropertyValues<this>): void {
     super.willUpdate(changedProps);
@@ -691,6 +738,17 @@ export class HaMediaPlayerBrowse extends LitElement {
                     .path=${this.action === "play" ? mdiPlay : mdiPlus}
                     @click=${this._actionClicked}
                   ></ha-icon-button>
+                  <ha-icon-button
+                    class="copy-automation ${classMap({
+                      can_expand: child.can_expand,
+                    })}"
+                    .item=${child}
+                    .label=${this.hass.localize(
+                      "ui.components.media-browser.copy_as_automation_action"
+                    )}
+                    .path=${mdiCodeBraces}
+                    @click=${this._copyAutomationAction}
+                  ></ha-icon-button>
                 `
               : ""}
           </div>
@@ -754,6 +812,18 @@ export class HaMediaPlayerBrowse extends LitElement {
                 : nothing}
             </div>`}
         <span class="title">${child.title}</span>
+        ${child.can_play
+          ? html`<ha-icon-button
+              class="copy-automation-list"
+              slot="meta"
+              .item=${child}
+              .label=${this.hass.localize(
+                "ui.components.media-browser.copy_as_automation_action"
+              )}
+              .path=${mdiCodeBraces}
+              @click=${this._copyAutomationAction}
+            ></ha-icon-button>`
+          : nothing}
       </ha-list-item>
     `;
   };
@@ -1261,6 +1331,41 @@ export class HaMediaPlayerBrowse extends LitElement {
           transition:
             bottom 0.1s ease-out,
             opacity 0.1s ease-out;
+        }
+
+        .child .copy-automation {
+          position: absolute;
+          transition: color 0.5s;
+          border-radius: var(--ha-border-radius-circle);
+          top: calc(50% - 40px);
+          right: calc(50% - 110px);
+          opacity: 0;
+          transition: opacity 0.1s ease-out;
+          background-color: rgba(var(--rgb-card-background-color), 0.8);
+          --mdc-icon-button-size: 40px;
+          --mdc-icon-size: 24px;
+        }
+
+        ha-card:hover .copy-automation {
+          opacity: 1;
+        }
+
+        ha-card:hover .copy-automation.can_expand {
+          bottom: 8px;
+        }
+
+        .child .copy-automation.can_expand {
+          background-color: rgba(var(--rgb-card-background-color), 0.5);
+          top: auto;
+          bottom: 0px;
+          right: 56px;
+          transition:
+            bottom 0.1s ease-out,
+            opacity 0.1s ease-out;
+        }
+
+        .copy-automation-list {
+          color: var(--secondary-text-color);
         }
 
         .child .title {
