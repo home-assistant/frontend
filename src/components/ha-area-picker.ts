@@ -369,9 +369,10 @@ export class HaAreaPicker extends LitElement {
         .autofocus=${this.autofocus}
         .label=${this.label}
         .helper=${this.helper}
-        .notFoundLabel=${this.hass.localize(
-          "ui.components.area-picker.no_match"
-        )}
+        .notFoundLabel=${this._notFoundLabel}
+        .emptyLabel=${this.hass.localize("ui.components.area-picker.no_areas")}
+        .disabled=${this.disabled}
+        .required=${this.required}
         .placeholder=${placeholder}
         .value=${this.value}
         .getItems=${this._getItems}
@@ -425,6 +426,11 @@ export class HaAreaPicker extends LitElement {
     fireEvent(this, "value-changed", { value });
     fireEvent(this, "change");
   }
+
+  private _notFoundLabel = (search: string) =>
+    this.hass.localize("ui.components.area-picker.no_match", {
+      term: html`<b>‘${search}’</b>`,
+    });
 }
 
 declare global {

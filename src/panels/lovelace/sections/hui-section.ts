@@ -4,7 +4,6 @@ import { ReactiveElement } from "lit";
 import { customElement, property, state } from "lit/decorators";
 import { storage } from "../../../common/decorators/storage";
 import { fireEvent } from "../../../common/dom/fire_event";
-import type { MediaQueriesListener } from "../../../common/dom/media_query";
 import "../../../components/ha-svg-icon";
 import type { LovelaceSectionElement } from "../../../data/lovelace";
 import type { LovelaceCardConfig } from "../../../data/lovelace/config/card";
@@ -14,12 +13,10 @@ import type {
 } from "../../../data/lovelace/config/section";
 import { isStrategySection } from "../../../data/lovelace/config/section";
 import type { HomeAssistant } from "../../../types";
+import { ConditionalListenerMixin } from "../../../mixins/conditional-listener-mixin";
 import "../cards/hui-card";
 import type { HuiCard } from "../cards/hui-card";
-import {
-  attachConditionMediaQueriesListeners,
-  checkConditionsMet,
-} from "../common/validate-condition";
+import { checkConditionsMet } from "../common/validate-condition";
 import { createSectionElement } from "../create-element/create-section-element";
 import { showCreateCardDialog } from "../editor/card-editor/show-create-card-dialog";
 import { showEditCardDialog } from "../editor/card-editor/show-edit-card-dialog";
@@ -37,7 +34,9 @@ declare global {
 }
 
 @customElement("hui-section")
-export class HuiSection extends ReactiveElement {
+export class HuiSection extends ConditionalListenerMixin<LovelaceSectionConfig>(
+  ReactiveElement
+) {
   @property({ attribute: false }) public hass!: HomeAssistant;
 
   @property({ attribute: false }) public config!: LovelaceSectionRawConfig;
@@ -58,10 +57,6 @@ export class HuiSection extends ReactiveElement {
   private _layoutElementType?: string;
 
   private _layoutElement?: LovelaceSectionElement;
-
-  private _listeners: MediaQueriesListener[] = [];
-
-  private _config: LovelaceSectionConfig | undefined;
 
   @storage({
     key: "dashboardCardClipboard",
@@ -114,15 +109,11 @@ export class HuiSection extends ReactiveElement {
 
   public disconnectedCallback() {
     super.disconnectedCallback();
-    this._clearMediaQueries();
   }
 
   public connectedCallback() {
     super.connectedCallback();
-    if (this.hasUpdated) {
-      this._listenMediaQueries();
-    }
-    this._updateElement();
+    this._updateVisibility();
   }
 
   protected update(changedProperties) {
@@ -153,33 +144,9 @@ export class HuiSection extends ReactiveElement {
         this._layoutElement.cards = this._cards;
       }
       if (changedProperties.has("hass") || changedProperties.has("preview")) {
-        this._updateElement();
+        this._updateVisibility();
       }
     }
-  }
-
-  private _clearMediaQueries() {
-    this._listeners.forEach((unsub) => unsub());
-    this._listeners = [];
-  }
-
-  private _listenMediaQueries() {
-    this._clearMediaQueries();
-    if (!this._config?.visibility) {
-      return;
-    }
-    const conditions = this._config.visibility;
-    const hasOnlyMediaQuery =
-      conditions.length === 1 &&
-      conditions[0].condition === "screen" &&
-      conditions[0].media_query != null;
-
-    this._listeners = attachConditionMediaQueriesListeners(
-      this._config.visibility,
-      (matches) => {
-        this._updateElement(hasOnlyMediaQuery && matches);
-      }
-    );
   }
 
   private async _initializeConfig() {
@@ -199,9 +166,6 @@ export class HuiSection extends ReactiveElement {
       type: sectionConfig.type || DEFAULT_SECTION_LAYOUT,
     };
     this._config = sectionConfig;
-    if (this.isConnected) {
-      this._listenMediaQueries();
-    }
 
     // Create a new layout element if necessary.
     let addLayoutElement = false;
@@ -226,11 +190,11 @@ export class HuiSection extends ReactiveElement {
       while (this.lastChild) {
         this.removeChild(this.lastChild);
       }
-      this._updateElement();
+      this._updateVisibility();
     }
   }
 
-  private _updateElement(ignoreConditions?: boolean) {
+  protected _updateVisibility(conditionsMet?: boolean) {
     if (!this._layoutElement || !this._config) {
       return;
     }
@@ -246,9 +210,9 @@ export class HuiSection extends ReactiveElement {
     }
 
     const visible =
-      ignoreConditions ||
-      !this._config.visibility ||
-      checkConditionsMet(this._config.visibility, this.hass);
+      conditionsMet ??
+      (!this._config.visibility ||
+        checkConditionsMet(this._config.visibility, this.hass));
 
     this._setElementVisibility(visible);
   }

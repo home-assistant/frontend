@@ -128,9 +128,7 @@ class HaUserPicker extends LitElement {
         .hass=${this.hass}
         .autofocus=${this.autofocus}
         .label=${this.label}
-        .notFoundLabel=${this.hass.localize(
-          "ui.components.user-picker.no_match"
-        )}
+        .notFoundLabel=${this._notFoundLabel}
         .placeholder=${placeholder}
         .value=${this.value}
         .getItems=${this._getItems}
@@ -149,6 +147,11 @@ class HaUserPicker extends LitElement {
     fireEvent(this, "value-changed", { value });
     fireEvent(this, "change");
   }
+
+  private _notFoundLabel = (search: string) =>
+    this.hass.localize("ui.components.user-picker.no_match", {
+      term: html`<b>‘${search}’</b>`,
+    });
 }
 
 declare global {

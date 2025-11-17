@@ -7,6 +7,7 @@ import type {
   FlowFromGridSourceEnergyPreference,
   FlowToGridSourceEnergyPreference,
   GasSourceTypeEnergyPreference,
+  GridPowerSourceEnergyPreference,
   GridSourceTypeEnergyPreference,
   SolarSourceTypeEnergyPreference,
   WaterSourceTypeEnergyPreference,
@@ -39,6 +40,12 @@ export interface EnergySettingsGridFlowToDialogParams {
   metadata?: StatisticsMetaData;
   grid_source?: GridSourceTypeEnergyPreference;
   saveCallback: (source: FlowToGridSourceEnergyPreference) => Promise<void>;
+}
+
+export interface EnergySettingsGridPowerDialogParams {
+  source?: GridPowerSourceEnergyPreference;
+  grid_source?: GridSourceTypeEnergyPreference;
+  saveCallback: (source: GridPowerSourceEnergyPreference) => Promise<void>;
 }
 
 export interface EnergySettingsSolarDialogParams {
@@ -167,6 +174,17 @@ export const showEnergySettingsDeviceWaterDialog = (
   fireEvent(element, "show-dialog", {
     dialogTag: "dialog-energy-device-settings-water",
     dialogImport: () => import("./dialog-energy-device-settings-water"),
+    dialogParams: dialogParams,
+  });
+};
+
+export const showEnergySettingsGridPowerDialog = (
+  element: HTMLElement,
+  dialogParams: EnergySettingsGridPowerDialogParams
+): void => {
+  fireEvent(element, "show-dialog", {
+    dialogTag: "dialog-energy-grid-power-settings",
+    dialogImport: () => import("./dialog-energy-grid-power-settings"),
     dialogParams: dialogParams,
   });
 };

@@ -102,6 +102,7 @@ export type EnergySolarForecasts = Record<string, EnergySolarForecast>;
 export interface DeviceConsumptionEnergyPreference {
   // This is an ever increasing value
   stat_consumption: string;
+  stat_rate?: string;
   name?: string;
   included_in_stat?: string;
 }
@@ -130,11 +131,17 @@ export interface FlowToGridSourceEnergyPreference {
   number_energy_price: number | null;
 }
 
+export interface GridPowerSourceEnergyPreference {
+  // W meter
+  stat_rate: string;
+}
+
 export interface GridSourceTypeEnergyPreference {
   type: "grid";
 
   flow_from: FlowFromGridSourceEnergyPreference[];
   flow_to: FlowToGridSourceEnergyPreference[];
+  power?: GridPowerSourceEnergyPreference[];
 
   cost_adjustment_day: number;
 }
@@ -143,6 +150,7 @@ export interface SolarSourceTypeEnergyPreference {
   type: "solar";
 
   stat_energy_from: string;
+  stat_rate?: string;
   config_entry_solar_forecast: string[] | null;
 }
 
@@ -150,6 +158,7 @@ export interface BatterySourceTypeEnergyPreference {
   type: "battery";
   stat_energy_from: string;
   stat_energy_to: string;
+  stat_rate?: string;
 }
 export interface GasSourceTypeEnergyPreference {
   type: "gas";
@@ -357,6 +366,35 @@ export const getReferencedStatisticIds = (
   return statIDs;
 };
 
+export const getReferencedStatisticIdsPower = (
+  prefs: EnergyPreferences
+): string[] => {
+  const statIDs: (string | undefined)[] = [];
+
+  for (const source of prefs.energy_sources) {
+    if (source.type === "gas" || source.type === "water") {
+      continue;
+    }
+
+    if (source.type === "solar") {
+      statIDs.push(source.stat_rate);
+      continue;
+    }
+
+    if (source.type === "battery") {
+      statIDs.push(source.stat_rate);
+      continue;
+    }
+
+    if (source.power) {
+      statIDs.push(...source.power.map((p) => p.stat_rate));
+    }
+  }
+  statIDs.push(...prefs.device_consumption.map((d) => d.stat_rate));
+
+  return statIDs.filter(Boolean) as string[];
+};
+
 export const enum CompareMode {
   NONE = "",
   PREVIOUS = "previous",
@@ -404,9 +442,10 @@ const getEnergyData = async (
     "gas",
     "device",
   ]);
+  const powerStatIds = getReferencedStatisticIdsPower(prefs);
   const waterStatIds = getReferencedStatisticIds(prefs, info, ["water"]);
 
-  const allStatIDs = [...energyStatIds, ...waterStatIds];
+  const allStatIDs = [...energyStatIds, ...waterStatIds, ...powerStatIds];
 
   const dayDifference = differenceInDays(end || new Date(), start);
   const period =
@@ -417,6 +456,8 @@ const getEnergyData = async (
       : dayDifference > 2
         ? "day"
         : "hour";
+  const finePeriod =
+    dayDifference > 64 ? "day" : dayDifference > 8 ? "hour" : "5minute";
 
   const statsMetadata: Record<string, StatisticsMetaData> = {};
   const statsMetadataArray = allStatIDs.length
@@ -438,6 +479,9 @@ const getEnergyData = async (
       ? (gasUnit as (typeof VOLUME_UNITS)[number])
       : undefined,
   };
+  const powerUnits: StatisticsUnitConfiguration = {
+    power: "kW",
+  };
   const waterUnit = getEnergyWaterUnit(hass, prefs, statsMetadata);
   const waterUnits: StatisticsUnitConfiguration = {
     volume: waterUnit,
@@ -448,6 +492,12 @@ const getEnergyData = async (
         "change",
       ])
     : {};
+  const _powerStats: Statistics | Promise<Statistics> = powerStatIds.length
+    ? fetchStatistics(hass!, start, end, powerStatIds, finePeriod, powerUnits, [
+        "mean",
+      ])
+    : {};
+
   const _waterStats: Statistics | Promise<Statistics> = waterStatIds.length
     ? fetchStatistics(hass!, start, end, waterStatIds, period, waterUnits, [
         "change",
@@ -554,6 +604,7 @@ const getEnergyData = async (
 
   const [
     energyStats,
+    powerStats,
     waterStats,
     energyStatsCompare,
     waterStatsCompare,
@@ -561,13 +612,14 @@ const getEnergyData = async (
     fossilEnergyConsumptionCompare,
   ] = await Promise.all([
     _energyStats,
+    _powerStats,
     _waterStats,
     _energyStatsCompare,
     _waterStatsCompare,
     _fossilEnergyConsumption,
     _fossilEnergyConsumptionCompare,
   ]);
-  const stats = { ...energyStats, ...waterStats };
+  const stats = { ...energyStats, ...waterStats, ...powerStats };
   if (compare) {
     statsCompare = { ...energyStatsCompare, ...waterStatsCompare };
   }

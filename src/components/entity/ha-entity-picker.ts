@@ -269,9 +269,6 @@ export class HaEntityPicker extends LitElement {
     const placeholder =
       this.placeholder ??
       this.hass.localize("ui.components.entity.entity-picker.placeholder");
-    const notFoundLabel = this.hass.localize(
-      "ui.components.entity.entity-picker.no_match"
-    );
 
     return html`
       <ha-generic-picker
@@ -282,7 +279,7 @@ export class HaEntityPicker extends LitElement {
         .label=${this.label}
         .helper=${this.helper}
         .searchLabel=${this.searchLabel}
-        .notFoundLabel=${notFoundLabel}
+        .notFoundLabel=${this._notFoundLabel}
         .placeholder=${placeholder}
         .value=${this.addButton ? undefined : this.value}
         .rowRenderer=${this._rowRenderer}
@@ -356,6 +353,11 @@ export class HaEntityPicker extends LitElement {
     fireEvent(this, "value-changed", { value });
     fireEvent(this, "change");
   }
+
+  private _notFoundLabel = (search: string) =>
+    this.hass.localize("ui.components.entity.entity-picker.no_match", {
+      term: html`<b>‘${search}’</b>`,
+    });
 }
 
 declare global {

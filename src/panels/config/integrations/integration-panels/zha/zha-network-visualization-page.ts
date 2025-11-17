@@ -19,6 +19,8 @@ import "../../../../../layouts/hass-tabs-subpage";
 import type { HomeAssistant, Route } from "../../../../../types";
 import { formatAsPaddedHex } from "./functions";
 import { zhaTabs } from "./zha-config-dashboard";
+import type { DeviceRegistryEntry } from "../../../../../data/device_registry";
+import { getDeviceContext } from "../../../../../common/entity/context/get_device_context";
 
 @customElement("zha-network-visualization-page")
 export class ZHANetworkVisualizationPage extends LitElement {
@@ -117,8 +119,11 @@ export class ZHANetworkVisualizationPage extends LitElement {
     } else {
       label += `<br><b>${this.hass.localize("ui.panel.config.zha.visualization.device_not_in_db")}</b>`;
     }
-    if (device.area_id) {
-      const area = this.hass.areas[device.area_id];
+    const haDevice = this.hass.devices[device.device_reg_id] as
+      | DeviceRegistryEntry
+      | undefined;
+    if (haDevice) {
+      const area = getDeviceContext(haDevice, this.hass).area;
       if (area) {
         label += `<br><b>${this.hass.localize("ui.panel.config.zha.visualization.area")}: </b>${area.name}`;
       }
@@ -204,10 +209,17 @@ export class ZHANetworkVisualizationPage extends LitElement {
         category = 2; // End Device
       }
 
+      const haDevice = this.hass.devices[device.device_reg_id] as
+        | DeviceRegistryEntry
+        | undefined;
+      const area = haDevice
+        ? getDeviceContext(haDevice, this.hass).area
+        : undefined;
       // Create node
       nodes.push({
         id: device.ieee,
         name: device.user_given_name || device.name || device.ieee,
+        context: area?.name,
         category,
         value: isCoordinator ? 3 : device.device_type === "Router" ? 2 : 1,
         symbolSize: isCoordinator

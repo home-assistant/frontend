@@ -186,7 +186,8 @@ export const getDevices = (
   deviceFilter?: HaDevicePickerDeviceFilterFunc,
   entityFilter?: HaEntityPickerEntityFilterFunc,
   excludeDevices?: string[],
-  value?: string
+  value?: string,
+  idPrefix = ""
 ): DevicePickerItem[] => {
   const devices = Object.values(hass.devices);
   const entities = Object.values(hass.entities);
@@ -298,7 +299,7 @@ export const getDevices = (
     const domainName = domain ? domainToName(hass.localize, domain) : undefined;
 
     return {
-      id: device.id,
+      id: `${idPrefix}${device.id}`,
       label: "",
       primary:
         deviceName ||
