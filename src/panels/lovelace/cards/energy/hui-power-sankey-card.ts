@@ -555,18 +555,24 @@ class HuiPowerSankeyCard
       return 0;
     }
 
-    // Normalize to kW based on unit of measurement
-    const unit = stateObj.attributes.unit_of_measurement?.toLowerCase();
-    if (unit === "w") {
-      // Convert W to kW
-      return value / 1000;
+    // Normalize to kW based on unit of measurement (case-sensitive)
+    // Supported units: GW, kW, MW, mW, TW, W
+    const unit = stateObj.attributes.unit_of_measurement;
+    switch (unit) {
+      case "W":
+        return value / 1000;
+      case "mW":
+        return value / 1000000;
+      case "MW":
+        return value * 1000;
+      case "GW":
+        return value * 1000000;
+      case "TW":
+        return value * 1000000000;
+      default:
+        // Assume kW if no unit or unit is kW
+        return value;
     }
-    if (unit === "mw") {
-      // Convert MW to kW
-      return value * 1000;
-    }
-    // Assume kW if no unit or unit is kW
-    return value;
   }
 
   /**
