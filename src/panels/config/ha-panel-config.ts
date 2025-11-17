@@ -88,7 +88,7 @@ export const configSections: Record<string, PageNavigation[]> = {
       component: "hassio",
     },
     {
-      path: "/config/lovelace/dashboards",
+      path: "/config/dashboards",
       translationKey: "dashboards",
       iconPath: mdiViewDashboard,
       iconColor: "#B1345C",
@@ -238,7 +238,7 @@ export const configSections: Record<string, PageNavigation[]> = {
   lovelace: [
     {
       component: "lovelace",
-      path: "/config/lovelace/dashboards",
+      path: "/config/dashboards",
       translationKey: "ui.panel.config.lovelace.caption",
       iconPath: mdiViewDashboard,
       iconColor: "#B1345C",
@@ -466,6 +466,11 @@ class HaPanelConfig extends SubscribeMixin(HassRouterPage) {
       labels: {
         tag: "ha-config-labels",
         load: () => import("./labels/ha-config-labels"),
+      },
+      dashboards: {
+        tag: "ha-config-lovelace-dashboards",
+        load: () =>
+          import("./lovelace/dashboards/ha-config-lovelace-dashboards"),
       },
       lovelace: {
         tag: "ha-config-lovelace",

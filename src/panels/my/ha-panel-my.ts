@@ -197,7 +197,7 @@ export const getMyRedirects = (): Redirects => ({
   },
   lovelace_dashboards: {
     component: "lovelace",
-    redirect: "/config/lovelace/dashboards",
+    redirect: "/config/dashboards",
   },
   lovelace_resources: {
     component: "lovelace",

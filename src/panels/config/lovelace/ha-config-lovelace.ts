@@ -6,7 +6,7 @@ import type { HomeAssistant } from "../../../types";
 
 export const lovelaceTabs = [
   {
-    path: "/config/lovelace/dashboards",
+    path: "/config/dashboards",
     translationKey: "ui.panel.config.lovelace.dashboards.caption",
     iconPath: mdiViewDashboard,
   },

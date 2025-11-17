@@ -918,7 +918,7 @@ class HUIRoot extends LitElement {
     if (!shouldHandleRequestSelectedEvent(ev)) {
       return;
     }
-    navigate("/config/lovelace/dashboards");
+    navigate("/config/dashboards");
   }
 
   private _handleManageResources(ev: CustomEvent<RequestSelectedDetail>): void {

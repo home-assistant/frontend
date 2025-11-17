@@ -84,7 +84,7 @@ class HaConfigEnergy extends LitElement {
         .narrow=${this.narrow}
         .backPath=${this._searchParms.has("historyBack")
           ? undefined
-          : "/config/lovelace/dashboards"}
+          : "/config/dashboards"}
         .header=${this.hass.localize("ui.panel.config.energy.caption")}
       >
         <ha-icon-button
