@@ -1325,7 +1325,8 @@ class DialogAddAutomationElement
           (targetType === "device" &&
             this._getDeviceEntityLookupMemoized(this.fullEntities, true)[
               targetId
-            ]?.length === 0))
+            ]?.length === 0) ||
+          targetType === "entity")
       ) {
         return "hidden";
       }
