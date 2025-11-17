@@ -60,7 +60,7 @@ export class HuiEnergyDevicesGraphCard
     state: true,
     subscribe: false,
   })
-  private _chartType: "bar" | "pie" = "bar";
+  private _chartType?: "bar" | "pie";
 
   @state()
   @storage({
@@ -101,6 +101,14 @@ export class HuiEnergyDevicesGraphCard
     this._config = config;
   }
 
+  private _getAllowedModes(): ("bar" | "pie")[] {
+    // Empty array or undefined = allow all modes
+    if (!this._config?.modes || this._config.modes.length === 0) {
+      return ["bar", "pie"];
+    }
+    return this._config.modes;
+  }
+
   protected shouldUpdate(changedProps: PropertyValues): boolean {
     return (
       hasConfigChanged(this, changedProps) ||
@@ -109,8 +117,21 @@ export class HuiEnergyDevicesGraphCard
     );
   }
 
+  protected willUpdate(changedProps: PropertyValues): void {
+    super.willUpdate(changedProps);
+
+    if (changedProps.has("_config") && this._config) {
+      const allowedModes = this._getAllowedModes();
+
+      // If _chartType is not set or not in allowed modes, use first from config
+      if (!this._chartType || !allowedModes.includes(this._chartType)) {
+        this._chartType = allowedModes[0];
+      }
+    }
+  }
+
   protected render() {
-    if (!this.hass || !this._config) {
+    if (!this.hass || !this._config || !this._chartType) {
       return nothing;
     }
 
@@ -118,13 +139,19 @@ export class HuiEnergyDevicesGraphCard
       <ha-card>
         <div class="card-header">
           <span>${this._config.title ? this._config.title : nothing}</span>
-          <ha-icon-button
-            .path=${this._chartType === "pie" ? mdiChartBar : mdiChartDonut}
-            .label=${this.hass.localize(
-              "ui.panel.lovelace.cards.energy.energy_devices_graph.change_chart_type"
-            )}
-            @click=${this._handleChartTypeChange}
-          ></ha-icon-button>
+          ${this._getAllowedModes().length > 1
+            ? html`
+                <ha-icon-button
+                  .path=${this._chartType === "pie"
+                    ? mdiChartBar
+                    : mdiChartDonut}
+                  .label=${this.hass.localize(
+                    "ui.panel.lovelace.cards.energy.energy_devices_graph.change_chart_type"
+                  )}
+                  @click=${this._handleChartTypeChange}
+                ></ha-icon-button>
+              `
+            : nothing}
         </div>
         <div
           class="content ${classMap({
@@ -158,7 +185,7 @@ export class HuiEnergyDevicesGraphCard
       this.hass.locale,
       params.value < 0.1 ? { maximumFractionDigits: 3 } : undefined
     )} kWh`;
-    return `${title}${params.marker} ${params.seriesName}: ${value}`;
+    return `${title}${params.marker} ${params.seriesName}: <div style="direction:ltr; display: inline;">${value}</div>`;
   }
 
   private _createOptions = memoizeOne(
@@ -529,7 +556,13 @@ export class HuiEnergyDevicesGraphCard
   }
 
   private _handleChartTypeChange(): void {
-    this._chartType = this._chartType === "pie" ? "bar" : "pie";
+    if (!this._chartType) {
+      return;
+    }
+    const allowedModes = this._getAllowedModes();
+    const currentIndex = allowedModes.indexOf(this._chartType);
+    const nextIndex = (currentIndex + 1) % allowedModes.length;
+    this._chartType = allowedModes[nextIndex];
     this._getStatistics(this._data!);
   }
 

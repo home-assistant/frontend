@@ -109,6 +109,7 @@ export class HUIViewBackground extends LitElement {
 
   protected willUpdate(changedProperties: PropertyValues<this>) {
     super.willUpdate(changedProperties);
+    let applyTheme = false;
     if (changedProperties.has("hass") && this.hass) {
       const oldHass = changedProperties.get("hass");
       if (
@@ -116,16 +117,18 @@ export class HUIViewBackground extends LitElement {
         this.hass.themes !== oldHass.themes ||
         this.hass.selectedTheme !== oldHass.selectedTheme
       ) {
-        this._applyTheme();
-        return;
+        applyTheme = true;
       }
     }
 
     if (changedProperties.has("background")) {
-      this._applyTheme();
+      applyTheme = true;
       this._fetchMedia();
     }
     if (changedProperties.has("resolvedImage")) {
+      applyTheme = true;
+    }
+    if (applyTheme) {
       this._applyTheme();
     }
   }

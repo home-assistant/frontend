@@ -40,12 +40,6 @@
         color: var(--primary-text-color, #212121);
         height: 100vh;
       }
-      @media (prefers-color-scheme: dark) {
-        html {
-          background-color: var(--primary-background-color, #111111);
-          color: var(--primary-text-color, #e1e1e1);
-        }
-      }
       #ha-launch-screen {
         position: fixed;
         top: 0;
@@ -61,12 +55,6 @@
         view-transition-name: launch-screen;
         background-color: var(--primary-background-color, #fafafa);
         z-index: 100;
-      }
-      @media (prefers-color-scheme: dark) {
-        /* body selector to avoid minification causing bad jinja2 */
-        body #ha-launch-screen {
-          background-color: var(--primary-background-color, #111111);
-        }
       }
       #ha-launch-screen.removing {
         opacity: 0;
@@ -92,6 +80,14 @@
         opacity: .66;
       }
       @media (prefers-color-scheme: dark) {
+        html {
+          background-color: var(--primary-background-color, #111111);
+          color: var(--primary-text-color, #e1e1e1);
+        }
+        /* body selector to avoid minification causing bad jinja2 */
+        body #ha-launch-screen {
+          background-color: var(--primary-background-color, #111111);
+        }
         .ohf-logo {
           filter: invert(1);
         }

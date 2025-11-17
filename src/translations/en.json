@@ -1130,6 +1130,7 @@
           "edit": "Edit item",
           "save": "Save item",
           "due": "Due date",
+          "completed_time": "Completed { datetime }",
           "not_all_required_fields": "Not all required fields are filled in",
           "confirm_delete": {
             "delete": "Delete item",
@@ -7163,6 +7164,12 @@
               "card_indicates_energy_used": "This card indicates how much of the electricity consumed by your home was generated using non-fossil fuels like solar, wind, and nuclear. The higher, the better!",
               "low_carbon_energy_consumed": "Low-carbon electricity consumed",
               "low_carbon_energy_not_calculated": "Consumed low-carbon electricity couldn't be calculated"
+            },
+            "power_graph": {
+              "grid": "Grid",
+              "solar": "Solar",
+              "battery": "Battery",
+              "usage": "Used"
             },
             "energy_compare": {
               "info": "You are comparing the period {start} with the period {end}",
