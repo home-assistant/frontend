@@ -2,6 +2,7 @@ import type { UnsubscribeFunc } from "home-assistant-js-websocket";
 import type { PropertyValues } from "lit";
 import { css, html, LitElement, nothing } from "lit";
 import { customElement, property, state } from "lit/decorators";
+import { classMap } from "lit/directives/class-map";
 import "../../../../components/ha-card";
 import "../../../../components/ha-svg-icon";
 import type { EnergyData, EnergyPreferences } from "../../../../data/energy";
@@ -44,6 +45,8 @@ class HuiPowerSankeyCard
   implements LovelaceCard
 {
   @property({ attribute: false }) public hass!: HomeAssistant;
+
+  @property({ attribute: false }) public layout?: string;
 
   @state() private _config?: PowerSankeyCardConfig;
 
@@ -386,7 +389,14 @@ class HuiPowerSankeyCard
       (this._config.layout !== "horizontal" && this._isMobileSize);
 
     return html`
-      <ha-card .header=${this._config.title}>
+      <ha-card
+        .header=${this._config.title}
+        class=${classMap({
+          "is-grid": this.layout === "grid",
+          "is-panel": this.layout === "panel",
+          "is-vertical": vertical,
+        })}
+      >
         <div class="card-content">
           ${hasData
             ? html`<ha-sankey-chart
@@ -702,17 +712,18 @@ class HuiPowerSankeyCard
   }
 
   static styles = css`
-    :host {
-      display: block;
-      height: calc(
-        var(--row-size, 8) *
-          (var(--row-height, 50px) + var(--row-gap, 0px)) - var(--row-gap, 0px)
-      );
-    }
     ha-card {
-      height: 100%;
+      height: 400px;
       display: flex;
       flex-direction: column;
+      --chart-max-height: none;
+    }
+    ha-card.is-vertical {
+      height: 500px;
+    }
+    ha-card.is-grid,
+    ha-card.is-panel {
+      height: 100%;
     }
     .card-content {
       flex: 1;
