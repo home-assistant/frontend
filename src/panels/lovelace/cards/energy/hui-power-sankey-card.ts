@@ -111,161 +111,191 @@ class HuiPowerSankeyCard
     const nodes: Node[] = [];
     const links: Link[] = [];
 
-    // Calculate total power consumption from all devices
-    let totalPowerConsumption = 0;
-    prefs.device_consumption.forEach((device) => {
-      if (!device.stat_rate) {
-        return;
-      }
-      const value = this._getCurrentPower(device.stat_rate);
-      if (value > 0) {
-        totalPowerConsumption += value;
+    // Collect all sources with their power values
+    const sources: {
+      id: string;
+      value: number;
+      type: string;
+      color: string;
+    }[] = [];
+
+    // Collect solar sources
+    prefs.energy_sources
+      .filter((source) => source.type === "solar")
+      .forEach((source) => {
+        if (source.type !== "solar" || !source.stat_rate) return;
+        const value = this._getCurrentPower(source.stat_rate);
+        if (value >= 0.01) {
+          sources.push({
+            id: source.stat_rate,
+            value,
+            type: "solar",
+            color: computedStyle
+              .getPropertyValue("--energy-solar-color")
+              .trim(),
+          });
+        }
+      });
+
+    // Collect grid import sources
+    const gridSources = prefs.energy_sources.filter(
+      (source) => source.type === "grid" && source.power
+    );
+    gridSources.forEach((source) => {
+      if (source.type !== "grid" || !source.power) return;
+      source.power.forEach((powerSource) => {
+        const value = this._getCurrentPower(powerSource.stat_rate);
+        if (value >= 0.01) {
+          sources.push({
+            id: powerSource.stat_rate,
+            value,
+            type: "grid",
+            color: computedStyle
+              .getPropertyValue("--energy-grid-consumption-color")
+              .trim(),
+          });
+        }
+      });
+    });
+
+    // Collect battery discharge sources
+    const batterySources = prefs.energy_sources.filter(
+      (source) => source.type === "battery"
+    );
+    batterySources.forEach((source) => {
+      if (source.type !== "battery" || !source.stat_rate) return;
+      const value = this._getCurrentPower(source.stat_rate);
+      if (value >= 0.01) {
+        sources.push({
+          id: source.stat_rate,
+          value,
+          type: "battery",
+          color: computedStyle
+            .getPropertyValue("--energy-battery-out-color")
+            .trim(),
+        });
       }
     });
 
-    // Create home/consumption node
+    // Create source nodes
+    sources.forEach((source) => {
+      nodes.push({
+        id: source.id,
+        label: this._getEntityLabel(source.id),
+        value: source.value,
+        color: source.color,
+        index: 0,
+      });
+    });
+
+    // Create home node early (value will be calculated later)
     const homeNode: Node = {
       id: "home",
       label: this.hass.localize(
         "ui.panel.lovelace.cards.energy.energy_distribution.home"
       ),
-      value: Math.max(0, totalPowerConsumption),
+      value: 0, // Will be updated later
       color: computedStyle.getPropertyValue("--primary-color").trim(),
       index: 1,
     };
     nodes.push(homeNode);
 
-    // Add solar source nodes
-    const solarSources = prefs.energy_sources.filter(
-      (source) => source.type === "solar"
-    );
-    solarSources.forEach((source) => {
-      if (source.type !== "solar" || !source.stat_rate) {
-        return;
-      }
+    // Collect consumers (battery charging, grid return)
+    const consumers: { id: string; value: number }[] = [];
+    let batteryChargingPower = 0;
+    let gridReturnPower = 0;
+
+    // Add battery charging as consumer
+    batterySources.forEach((source) => {
+      if (source.type !== "battery" || !source.stat_rate) return;
       const value = this._getCurrentPower(source.stat_rate);
-
-      if (value < 0.01) {
-        return;
+      if (value < -0.01) {
+        const chargingPower = Math.abs(value);
+        batteryChargingPower += chargingPower;
+        consumers.push({
+          id: `${source.stat_rate}_charge`,
+          value: chargingPower,
+        });
+        nodes.push({
+          id: `${source.stat_rate}_charge`,
+          label: this._getEntityLabel(source.stat_rate),
+          value: chargingPower,
+          color: computedStyle
+            .getPropertyValue("--energy-battery-in-color")
+            .trim(),
+          index: 1,
+        });
       }
-
-      nodes.push({
-        id: source.stat_rate,
-        label: this._getEntityLabel(source.stat_rate),
-        value,
-        color: computedStyle.getPropertyValue("--energy-solar-color").trim(),
-        index: 0,
-      });
-
-      links.push({
-        source: source.stat_rate,
-        target: "home",
-        value,
-      });
     });
 
-    // Add grid source nodes
-    const gridSources = prefs.energy_sources.filter(
-      (source) => source.type === "grid" && source.power
-    );
+    // Add grid return as consumer
     gridSources.forEach((source) => {
-      if (source.type !== "grid" || !source.power) {
-        return;
-      }
+      if (source.type !== "grid" || !source.power) return;
       source.power.forEach((powerSource) => {
         const value = this._getCurrentPower(powerSource.stat_rate);
-
-        if (Math.abs(value) < 0.01) {
-          return;
-        }
-
-        if (value > 0) {
-          // Consuming from grid
-          nodes.push({
-            id: powerSource.stat_rate,
-            label: this._getEntityLabel(powerSource.stat_rate),
-            value,
-            color: computedStyle
-              .getPropertyValue("--energy-grid-consumption-color")
-              .trim(),
-            index: 0,
+        if (value < -0.01) {
+          const returnPower = Math.abs(value);
+          gridReturnPower += returnPower;
+          consumers.push({
+            id: `${powerSource.stat_rate}_return`,
+            value: returnPower,
           });
-
-          links.push({
-            source: powerSource.stat_rate,
-            target: "home",
-            value,
-          });
-        } else {
-          // Returning to grid
           nodes.push({
             id: `${powerSource.stat_rate}_return`,
             label: this._getEntityLabel(powerSource.stat_rate),
-            value: Math.abs(value),
+            value: returnPower,
             color: computedStyle
               .getPropertyValue("--energy-grid-return-color")
               .trim(),
             index: 2,
           });
-
-          links.push({
-            source: "home",
-            target: `${powerSource.stat_rate}_return`,
-            value: Math.abs(value),
-          });
         }
       });
     });
 
-    // Add battery source nodes
-    const batterySources = prefs.energy_sources.filter(
-      (source) => source.type === "battery"
+    // Calculate home consumption from energy conservation:
+    // Home = Total sources - Battery charging - Grid return
+    const totalSourcePower = sources.reduce((sum, s) => sum + s.value, 0);
+    homeNode.value = Math.max(
+      0,
+      totalSourcePower - batteryChargingPower - gridReturnPower
     );
-    batterySources.forEach((source) => {
-      if (source.type !== "battery" || !source.stat_rate) {
-        return;
-      }
-      const value = this._getCurrentPower(source.stat_rate);
 
-      if (Math.abs(value) < 0.01) {
-        return;
-      }
+    // Link sources to home (sankey component will distribute values)
+    sources.forEach((source) => {
+      links.push({
+        source: source.id,
+        target: "home",
+      });
+    });
 
-      if (value > 0) {
-        // Discharging from battery
-        nodes.push({
-          id: source.stat_rate,
-          label: this._getEntityLabel(source.stat_rate),
-          value,
-          color: computedStyle
-            .getPropertyValue("--energy-battery-out-color")
-            .trim(),
-          index: 0,
-        });
+    // Link sources to other consumers with constraints:
+    // - Grid import can power: battery charging
+    // - Solar can power: battery charging, grid return
+    // - Battery discharge can power: grid return
+    consumers.forEach((consumer) => {
+      const isGridReturn = consumer.id.includes("_return");
+      const isBatteryCharging = consumer.id.includes("_charge");
 
+      // Filter sources based on consumer type
+      const validSources = sources.filter((source) => {
+        if (isGridReturn) {
+          // Grid return can only come from solar or battery discharge
+          return source.type === "solar" || source.type === "battery";
+        }
+        if (isBatteryCharging) {
+          // Battery charging can come from grid or solar (not from battery discharge)
+          return source.type === "grid" || source.type === "solar";
+        }
+        return true;
+      });
+
+      validSources.forEach((source) => {
         links.push({
-          source: source.stat_rate,
-          target: "home",
-          value,
+          source: source.id,
+          target: consumer.id,
         });
-      } else {
-        // Charging battery
-        nodes.push({
-          id: `${source.stat_rate}_charge`,
-          label: this._getEntityLabel(source.stat_rate),
-          value: Math.abs(value),
-          color: computedStyle
-            .getPropertyValue("--energy-battery-in-color")
-            .trim(),
-          index: 2,
-        });
-
-        links.push({
-          source: "home",
-          target: `${source.stat_rate}_charge`,
-          value: Math.abs(value),
-        });
-      }
+      });
     });
 
     let untrackedConsumption = homeNode.value;
@@ -286,7 +316,7 @@ class HuiPowerSankeyCard
         label: device.name || this._getEntityLabel(device.stat_rate),
         value,
         color: getGraphColorByIndex(idx, computedStyle),
-        index: 4,
+        index: 5,
         parent: device.included_in_stat,
       };
       if (node.parent) {
