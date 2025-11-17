@@ -17,7 +17,6 @@ import "../../../../components/ha-dialog-header";
 import "../../../../components/ha-icon-button";
 import "../../../../components/ha-md-button-menu";
 import "../../../../components/ha-md-divider";
-import "../../../../components/ha-md-menu-item";
 import type { HomeAssistant } from "../../../../types";
 import "../ha-automation-editor-warning";
 

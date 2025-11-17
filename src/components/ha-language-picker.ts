@@ -125,9 +125,10 @@ export class HaLanguagePicker extends LitElement {
         .hass=${this.hass}
         .autofocus=${this.autofocus}
         popover-placement="bottom-end"
-        .notFoundLabel=${this.hass?.localize(
-          "ui.components.language-picker.no_match"
-        )}
+        .notFoundLabel=${this._notFoundLabel}
+        .emptyLabel=${this.hass?.localize(
+          "ui.components.language-picker.no_languages"
+        ) || "No languages available"}
         .placeholder=${this.label ??
         (this.hass?.localize("ui.components.language-picker.language") ||
           "Language")}
@@ -172,6 +173,15 @@ export class HaLanguagePicker extends LitElement {
     this.value = ev.detail.value;
     fireEvent(this, "value-changed", { value: this.value });
   }
+
+  private _notFoundLabel = (search: string) => {
+    const term = html`<b>‘${search}’</b>`;
+    return this.hass
+      ? this.hass.localize("ui.components.language-picker.no_match", {
+          term,
+        })
+      : html`No languages found for ${term}`;
+  };
 }
 
 declare global {

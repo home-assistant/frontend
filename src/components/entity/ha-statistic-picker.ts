@@ -21,7 +21,6 @@ import "../ha-combo-box-item";
 import "../ha-generic-picker";
 import type { HaGenericPicker } from "../ha-generic-picker";
 import "../ha-icon-button";
-import "../ha-input-helper-text";
 import type {
   PickerComboBoxItem,
   PickerComboBoxSearchFn,
@@ -271,7 +270,6 @@ export class HaStatisticPicker extends LitElement {
         const secondary = [areaName, entityName ? deviceName : undefined]
           .filter(Boolean)
           .join(isRTL ? " ◂ " : " ▸ ");
-        const a11yLabel = [deviceName, entityName].filter(Boolean).join(" - ");
 
         const sortingPrefix = `${TYPE_ORDER.indexOf("entity")}`;
         output.push({
@@ -279,7 +277,6 @@ export class HaStatisticPicker extends LitElement {
           statistic_id: id,
           primary,
           secondary,
-          a11y_label: a11yLabel,
           stateObj: stateObj,
           type: "entity",
           sorting_label: [sortingPrefix, deviceName, entityName].join("_"),
@@ -458,9 +455,6 @@ export class HaStatisticPicker extends LitElement {
     const placeholder =
       this.placeholder ??
       this.hass.localize("ui.components.statistic-picker.placeholder");
-    const notFoundLabel = this.hass.localize(
-      "ui.components.statistic-picker.no_match"
-    );
 
     return html`
       <ha-generic-picker
@@ -468,7 +462,10 @@ export class HaStatisticPicker extends LitElement {
         .autofocus=${this.autofocus}
         .allowCustomValue=${this.allowCustomEntity}
         .label=${this.label}
-        .notFoundLabel=${notFoundLabel}
+        .notFoundLabel=${this._notFoundLabel}
+        .emptyLabel=${this.hass.localize(
+          "ui.components.statistic-picker.no_statistics"
+        )}
         .placeholder=${placeholder}
         .value=${this.value}
         .rowRenderer=${this._rowRenderer}
@@ -477,6 +474,7 @@ export class HaStatisticPicker extends LitElement {
         .hideClearIcon=${this.hideClearIcon}
         .searchFn=${this._searchFn}
         .valueRenderer=${this._valueRenderer}
+        .helper=${this.helper}
         @value-changed=${this._valueChanged}
       >
       </ha-generic-picker>
@@ -521,6 +519,11 @@ export class HaStatisticPicker extends LitElement {
     await this.updateComplete;
     await this._picker?.open();
   }
+
+  private _notFoundLabel = (search: string) =>
+    this.hass.localize("ui.components.statistic-picker.no_match", {
+      term: html`<b>‘${search}’</b>`,
+    });
 }
 
 declare global {

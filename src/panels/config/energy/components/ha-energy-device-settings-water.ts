@@ -74,6 +74,14 @@ export class EnergyDeviceSettingsWater extends LitElement {
               )}</a
             >
           </p>
+          ${this.validationResult?.device_consumption.map(
+            (result) => html`
+              <ha-energy-validation-result
+                .hass=${this.hass}
+                .issues=${result}
+              ></ha-energy-validation-result>
+            `
+          )}
           <h3>
             ${this.hass.localize(
               "ui.panel.config.energy.device_consumption_water.devices"

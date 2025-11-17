@@ -104,8 +104,6 @@ export class DialogEnergyGridFlowSettings
       return nothing;
     }
 
-    const pickableUnit = this._energy_units?.join(", ") || "";
-
     const unitPriceFixed = `${this.hass.config.currency}/kWh`;
 
     const externalSource =
@@ -135,19 +133,11 @@ export class DialogEnergyGridFlowSettings
         @closed=${this.closeDialog}
       >
         ${this._error ? html`<p class="error">${this._error}</p>` : ""}
-        <div>
-          <p>
-            ${this.hass.localize(
-              `ui.panel.config.energy.grid.flow_dialog.${this._params.direction}.paragraph`
-            )}
-          </p>
-          <p>
-            ${this.hass.localize(
-              `ui.panel.config.energy.grid.flow_dialog.${this._params.direction}.entity_para`,
-              { unit: pickableUnit }
-            )}
-          </p>
-        </div>
+        <p>
+          ${this.hass.localize(
+            `ui.panel.config.energy.grid.flow_dialog.${this._params.direction}.paragraph`
+          )}
+        </p>
 
         <ha-statistic-picker
           .hass=${this.hass}
@@ -163,6 +153,10 @@ export class DialogEnergyGridFlowSettings
           )}
           .excludeStatistics=${this._excludeList}
           @value-changed=${this._statisticChanged}
+          .helper=${this.hass.localize(
+            `ui.panel.config.energy.grid.flow_dialog.${this._params.direction}.entity_para`,
+            { unit: this._energy_units?.join(", ") || "" }
+          )}
           dialogInitialFocus
         ></ha-statistic-picker>
 
@@ -360,6 +354,10 @@ export class DialogEnergyGridFlowSettings
       css`
         ha-dialog {
           --mdc-dialog-max-width: 430px;
+        }
+        ha-statistic-picker {
+          display: block;
+          margin: var(--ha-space-4) 0;
         }
         ha-formfield {
           display: block;

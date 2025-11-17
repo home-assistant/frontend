@@ -185,6 +185,7 @@ export interface EnergyDevicesGraphCardConfig extends EnergyCardBaseConfig {
   title?: string;
   max_devices?: number;
   hide_compound_stats?: boolean;
+  modes?: ("bar" | "pie")[];
 }
 
 export interface EnergyDevicesDetailGraphCardConfig
@@ -236,6 +237,11 @@ export interface WaterSankeyCardConfig extends EnergyCardBaseConfig {
   layout?: "vertical" | "horizontal" | "auto";
   group_by_floor?: boolean;
   group_by_area?: boolean;
+}
+
+export interface PowerSourcesGraphCardConfig extends EnergyCardBaseConfig {
+  type: "power-sources-graph";
+  title?: string;
 }
 
 export interface EntityFilterCardConfig extends LovelaceCardConfig {
