@@ -54,7 +54,7 @@ import { extractFromTarget } from "../../../../data/target";
 import type { HomeAssistant } from "../../../../types";
 import { brandsUrl } from "../../../../util/brands-url";
 
-const SEPARATOR = "________";
+export const TARGET_SEPARATOR = "________";
 
 interface DeviceEntries {
   open: boolean;
@@ -182,7 +182,8 @@ export default class HaAutomationAddFromTarget extends LitElement {
       return this._renderAreas(
         this._floorAreas.find(
           (floor) =>
-            (valueId && floor.id === `${valueType}${SEPARATOR}${valueId}`) ||
+            (valueId &&
+              floor.id === `${valueType}${TARGET_SEPARATOR}${valueId}`) ||
             (!valueId && !floor.id)
         )?.areas
       );
@@ -190,7 +191,7 @@ export default class HaAutomationAddFromTarget extends LitElement {
 
     if (valueType === "area") {
       const { devices, entities } =
-        this._areaEntries[`area${SEPARATOR}${valueId ?? ""}`];
+        this._areaEntries[`area${TARGET_SEPARATOR}${valueId ?? ""}`];
       const numberOfDevices = Object.keys(devices).length;
 
       return html`
@@ -202,8 +203,9 @@ export default class HaAutomationAddFromTarget extends LitElement {
     if (valueType === "device" && this.devices[valueId]) {
       const deviceArea = this.devices[valueId].area_id!;
       return this._renderEntities(
-        this._areaEntries[`area${SEPARATOR}${deviceArea}`]?.devices[valueId]
-          ?.entities
+        this._areaEntries[`area${TARGET_SEPARATOR}${deviceArea}`]?.devices[
+          valueId
+        ]?.entities
       );
     }
     if (valueType === "device" && !valueId) {
@@ -238,7 +240,7 @@ export default class HaAutomationAddFromTarget extends LitElement {
                     : html`<ha-md-list-item
                         interactive
                         type="button"
-                        .target=${floor.id || `floor${SEPARATOR}`}
+                        .target=${floor.id || `floor${TARGET_SEPARATOR}`}
                         @click=${this._selectItem}
                       >
                         ${floor.id && (floor as FloorNestedComboBoxItem).floor
@@ -305,7 +307,7 @@ export default class HaAutomationAddFromTarget extends LitElement {
       undefined,
       undefined,
       undefined,
-      `label${SEPARATOR}`
+      `label${TARGET_SEPARATOR}`
     );
 
     if (!labels.length) {
@@ -353,8 +355,9 @@ export default class HaAutomationAddFromTarget extends LitElement {
 
     if (
       !unassignedAreas?.areas.length &&
-      !this._areaEntries[`area${SEPARATOR}`] &&
-      !Object.keys(this._areaEntries[`area${SEPARATOR}`]?.devices).length &&
+      !this._areaEntries[`area${TARGET_SEPARATOR}`] &&
+      !Object.keys(this._areaEntries[`area${TARGET_SEPARATOR}`]?.devices)
+        .length &&
       !unassignedEntities.length
     ) {
       return nothing;
@@ -370,7 +373,7 @@ export default class HaAutomationAddFromTarget extends LitElement {
               ? html`<ha-md-list-item
                   interactive
                   type="button"
-                  .target=${`floor${SEPARATOR}`}
+                  .target=${`floor${TARGET_SEPARATOR}`}
                   @click=${this._selectItem}
                 >
                   <ha-svg-icon
@@ -383,12 +386,13 @@ export default class HaAutomationAddFromTarget extends LitElement {
                   <ha-icon-next slot="end"></ha-icon-next>
                 </ha-md-list-item>`
               : nothing}
-            ${this._areaEntries[`area${SEPARATOR}`] &&
-            Object.keys(this._areaEntries[`area${SEPARATOR}`]?.devices).length
+            ${this._areaEntries[`area${TARGET_SEPARATOR}`] &&
+            Object.keys(this._areaEntries[`area${TARGET_SEPARATOR}`]?.devices)
+              .length
               ? html`<ha-md-list-item
                   interactive
                   type="button"
-                  .target=${`area${SEPARATOR}`}
+                  .target=${`area${TARGET_SEPARATOR}`}
                   @click=${this._selectItem}
                 >
                   <ha-svg-icon slot="start" .path=${mdiDevices}></ha-svg-icon>
@@ -402,7 +406,7 @@ export default class HaAutomationAddFromTarget extends LitElement {
               ? html`<ha-md-list-item
                   interactive
                   type="button"
-                  .target=${`device${SEPARATOR}`}
+                  .target=${`device${TARGET_SEPARATOR}`}
                   @click=${this._selectItem}
                 >
                   <ha-svg-icon
@@ -426,13 +430,14 @@ export default class HaAutomationAddFromTarget extends LitElement {
                   ${this._renderAreas(unassignedAreas.areas)}
                 </wa-tree-item>`
               : nothing}
-            ${this._areaEntries[`area${SEPARATOR}`] &&
-            Object.keys(this._areaEntries[`area${SEPARATOR}`]?.devices).length
+            ${this._areaEntries[`area${TARGET_SEPARATOR}`] &&
+            Object.keys(this._areaEntries[`area${TARGET_SEPARATOR}`]?.devices)
+              .length
               ? html`<wa-tree-item disabled-selection>
                   <ha-svg-icon .path=${mdiDevices}></ha-svg-icon>
                   ${this.localize("ui.components.target-picker.type.devices")}
                   ${this._renderDevices(
-                    this._areaEntries[`area${SEPARATOR}`]?.devices
+                    this._areaEntries[`area${TARGET_SEPARATOR}`]?.devices
                   )}
                 </wa-tree-item>`
               : nothing}
@@ -543,7 +548,7 @@ export default class HaAutomationAddFromTarget extends LitElement {
           return html`<ha-md-list-item
             interactive
             type="button"
-            .target=${`device${SEPARATOR}${deviceId}`}
+            .target=${`device${TARGET_SEPARATOR}${deviceId}`}
             @click=${this._selectItem}
           >
             ${domain
@@ -569,9 +574,9 @@ export default class HaAutomationAddFromTarget extends LitElement {
         const { open, entities } = devices[deviceId];
 
         return html`<wa-tree-item
-          .target=${`device${SEPARATOR}${deviceId}`}
+          .target=${`device${TARGET_SEPARATOR}${deviceId}`}
           .selected=${this._getSelectedTargetId(this.value) ===
-          `device${SEPARATOR}${deviceId}`}
+          `device${TARGET_SEPARATOR}${deviceId}`}
           .lazy=${!open && !!entities.length}
           @wa-lazy-load=${this._expandItem}
           @wa-collapse=${this._collapseItem}
@@ -637,7 +642,7 @@ export default class HaAutomationAddFromTarget extends LitElement {
           return html`<ha-md-list-item
             interactive
             type="button"
-            .target=${`entity${SEPARATOR}${entityId}`}
+            .target=${`entity${TARGET_SEPARATOR}${entityId}`}
             @click=${this._selectItem}
           >
             <state-badge
@@ -651,9 +656,9 @@ export default class HaAutomationAddFromTarget extends LitElement {
         }
 
         return html`<wa-tree-item
-          .target=${`entity${SEPARATOR}${entityId}`}
+          .target=${`entity${TARGET_SEPARATOR}${entityId}`}
           .selected=${this._getSelectedTargetId(this.value) ===
-          `entity${SEPARATOR}${entityId}`}
+          `entity${TARGET_SEPARATOR}${entityId}`}
           .title=${label}
         >
           <state-badge .stateObj=${stateObj} .hass=${this.hass}></state-badge>
@@ -685,7 +690,7 @@ export default class HaAutomationAddFromTarget extends LitElement {
   private _getSelectedTargetId = memoizeOne(
     (value: SingleHassServiceTarget | undefined) =>
       value && Object.keys(value).length
-        ? `${Object.keys(value)[0].replace("_id", "")}${SEPARATOR}${Object.values(value)[0]}`
+        ? `${Object.keys(value)[0].replace("_id", "")}${TARGET_SEPARATOR}${Object.values(value)[0]}`
         : undefined
   );
 
@@ -717,7 +722,7 @@ export default class HaAutomationAddFromTarget extends LitElement {
   }
 
   private _formatId = memoizeOne((value: AreaFloorValue): string =>
-    [value.type, value.id].join(SEPARATOR)
+    [value.type, value.id].join(TARGET_SEPARATOR)
   );
 
   private _handleSelectionChange(ev: WaSelectionChangeEvent) {
@@ -739,7 +744,7 @@ export default class HaAutomationAddFromTarget extends LitElement {
   }
 
   private _valueChanged(itemId: string) {
-    const [type, id] = itemId.split(SEPARATOR, 2);
+    const [type, id] = itemId.split(TARGET_SEPARATOR, 2);
 
     fireEvent(this, "value-changed", {
       value: { [`${type}_id`]: id || undefined },
@@ -774,7 +779,7 @@ export default class HaAutomationAddFromTarget extends LitElement {
     if (Object.keys(devices).length) {
       this._areaEntries = {
         ...this._areaEntries,
-        [`area${SEPARATOR}`]: {
+        [`area${TARGET_SEPARATOR}`]: {
           open: false,
           devices,
           entities: [],
@@ -785,7 +790,7 @@ export default class HaAutomationAddFromTarget extends LitElement {
 
   private async _loadArea(area: FloorComboBoxItem) {
     try {
-      const [, id] = area.id.split(SEPARATOR, 2);
+      const [, id] = area.id.split(TARGET_SEPARATOR, 2);
       const targetEntries = await extractFromTarget(this.hass, {
         area_id: id,
       });
@@ -826,7 +831,7 @@ export default class HaAutomationAddFromTarget extends LitElement {
 
   private _expandItem(ev) {
     const targetId = ev.target.target;
-    const [type, id] = targetId.split(SEPARATOR, 2);
+    const [type, id] = targetId.split(TARGET_SEPARATOR, 2);
 
     if (type === "area") {
       this._areaEntries = {
@@ -851,7 +856,7 @@ export default class HaAutomationAddFromTarget extends LitElement {
 
   private _collapseItem(ev) {
     const targetId = ev.target.target;
-    const [type, id] = targetId.split(SEPARATOR, 2);
+    const [type, id] = targetId.split(TARGET_SEPARATOR, 2);
 
     if (type === "area") {
       this._areaEntries = {
@@ -918,7 +923,7 @@ export default class HaAutomationAddFromTarget extends LitElement {
 
         if (areaEntry.entities.includes(valueId)) {
           fireEvent(this, "value-changed", {
-            value: { area_id: areaId.split(SEPARATOR, 2)[1] },
+            value: { area_id: areaId.split(TARGET_SEPARATOR, 2)[1] },
           });
           return;
         }

@@ -9,7 +9,6 @@ class HaSectionTitle extends LitElement {
 
   static styles = css`
     :host {
-      display: block;
       background-color: var(--ha-color-fill-neutral-quiet-resting);
       padding: var(--ha-space-1) var(--ha-space-2);
       font-weight: var(--ha-font-weight-bold);

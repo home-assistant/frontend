@@ -1,11 +1,16 @@
 import type { HassServiceTarget } from "home-assistant-js-websocket";
 import { computeDomain } from "../common/entity/compute_domain";
 import type { HaDevicePickerDeviceFilterFunc } from "../components/device/ha-device-picker";
+import type { PickerComboBoxItem } from "../components/ha-picker-combo-box";
 import type { HomeAssistant } from "../types";
+import type { FloorComboBoxItem } from "./area_floor";
 import type { AreaRegistryEntry } from "./area_registry";
-import type { DeviceRegistryEntry } from "./device_registry";
+import type { DevicePickerItem, DeviceRegistryEntry } from "./device_registry";
 import type { HaEntityPickerEntityFilterFunc } from "./entity";
-import type { EntityRegistryDisplayEntry } from "./entity_registry";
+import type {
+  EntityComboBoxItem,
+  EntityRegistryDisplayEntry,
+} from "./entity_registry";
 
 export type TargetType = "entity" | "device" | "area" | "label" | "floor";
 export type TargetTypeFloorless = Exclude<TargetType, "floor">;
@@ -161,4 +166,33 @@ export const entityRegMeetsFilter = (
     return entityFilter!(stateObj);
   }
   return true;
+};
+
+export const getTargetComboBoxItemType = (
+  item:
+    | PickerComboBoxItem
+    | (FloorComboBoxItem & { last?: boolean | undefined })
+    | EntityComboBoxItem
+    | DevicePickerItem
+) => {
+  if (
+    (item as FloorComboBoxItem).type === "area" ||
+    (item as FloorComboBoxItem).type === "floor"
+  ) {
+    return (item as FloorComboBoxItem).type;
+  }
+
+  if ("domain" in item) {
+    return "device";
+  }
+
+  if ("stateObj" in item) {
+    return "entity";
+  }
+
+  if (item.id === "___EMPTY_SEARCH___") {
+    return "empty";
+  }
+
+  return "label";
 };
