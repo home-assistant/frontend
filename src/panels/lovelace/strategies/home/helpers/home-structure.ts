@@ -1,7 +1,7 @@
 import type { AreaRegistryEntry } from "../../../../../data/area_registry";
 import type { FloorRegistryEntry } from "../../../../../data/floor_registry";
 
-interface HomeStructure {
+export interface HomeStructure {
   floors: {
     id: string;
     areas: string[];
@@ -37,3 +37,17 @@ export const getHomeStructure = (
 
   return homeStructure;
 };
+
+export const getAreasOrder = (home: HomeStructure): string[] => {
+  const order: string[] = [];
+
+  for (const floor of home.floors) {
+    order.push(...floor.areas);
+  }
+  order.push(...home.areas);
+
+  return order;
+};
+
+export const getFloorOrder = (home: HomeStructure): string[] =>
+  home.floors.map((floor) => floor.id);
