@@ -170,10 +170,6 @@ class DialogAddAutomationElement
 
   @state() private _narrow = false;
 
-  @state() private _showTargetShowMoreButton?: boolean;
-
-  @state() private _targetPickerFullHeight = false;
-
   @state() private _triggerDescriptions: TriggerDescriptions = {};
 
   @query(".items ha-md-list ha-md-list-item")
@@ -201,26 +197,6 @@ class DialogAddAutomationElement
       changedProps.get("hass")?.states !== this.hass.states
     ) {
       this._calculateUsedDomains();
-    }
-
-    if (
-      changedProps.has("_tab") ||
-      changedProps.has("_selectedTarget") ||
-      changedProps.has("_narrow")
-    ) {
-      this._targetPickerFullHeight = false;
-    }
-  }
-
-  protected updated(changedProps: PropertyValues) {
-    if (
-      (changedProps.has("_tab") ||
-        changedProps.has("_selectedTarget") ||
-        changedProps.has("_narrow") ||
-        this._showTargetShowMoreButton === undefined) &&
-      this._narrow
-    ) {
-      this._setShowTargetShowMoreButton();
     }
   }
 
@@ -949,28 +925,12 @@ class DialogAddAutomationElement
       >
         ${this._tab === "targets"
           ? html`<ha-automation-add-from-target
-                .hass=${this.hass}
-                .value=${this._selectedTarget}
-                @value-changed=${this._handleTargetSelected}
-                .narrow=${this._narrow}
-                class=${this._getAddFromTargetHidden()}
-              ></ha-automation-add-from-target>
-              ${this._narrow &&
-              this._showTargetShowMoreButton &&
-              !this._targetPickerFullHeight
-                ? html`
-                    <div class="targets-show-more">
-                      <ha-button
-                        appearance="plain"
-                        @click=${this._expandTargetList}
-                      >
-                        ${this.hass.localize(
-                          `ui.panel.config.automation.editor.show_more`
-                        )}
-                      </ha-button>
-                    </div>
-                  `
-                : nothing} `
+              .hass=${this.hass}
+              .value=${this._selectedTarget}
+              @value-changed=${this._handleTargetSelected}
+              .narrow=${this._narrow}
+              class=${this._getAddFromTargetHidden()}
+            ></ha-automation-add-from-target>`
           : html`
               <ha-md-list
                 class=${classMap({
@@ -1525,7 +1485,6 @@ class DialogAddAutomationElement
   );
 
   private _getAddFromTargetHidden() {
-    const classes: string[] = [];
     if (this._narrow && this._selectedTarget) {
       const [targetType, targetId] = this._extractTypeAndIdFromTarget(
         this._selectedTarget
@@ -1554,30 +1513,11 @@ class DialogAddAutomationElement
             )) ||
           targetType === "entity")
       ) {
-        classes.push("hidden");
+        return "hidden";
       }
     }
 
-    if (this._selectedTarget && Object.values(this._selectedTarget)[0]) {
-      classes.push("selected-target");
-    }
-
-    if (this._targetPickerFullHeight) {
-      classes.push("full-height");
-    }
-    return classes.join(" ");
-  }
-
-  private async _setShowTargetShowMoreButton() {
-    await this._targetPickerElement?.updateComplete;
-    this._showTargetShowMoreButton =
-      this._targetPickerElement &&
-      this._targetPickerElement.scrollHeight >
-        this._targetPickerElement.clientHeight;
-  }
-
-  private _expandTargetList() {
-    this._targetPickerFullHeight = true;
+    return "";
   }
 
   static get styles(): CSSResultGroup {
@@ -1651,34 +1591,14 @@ class DialogAddAutomationElement
           margin-inline-end: var(--ha-space-0);
         }
 
-        .targets-show-more {
-          display: flex;
-          justify-content: center;
-          position: absolute;
-          top: 50%;
-          width: calc(100% - var(--ha-space-6));
-          padding-bottom: var(--ha-space-2);
-          box-shadow: inset var(--ha-shadow-offset-x-lg)
-            calc(var(--ha-shadow-offset-y-lg) * -1) var(--ha-shadow-blur-lg)
-            var(--ha-shadow-spread-lg) var(--ha-color-shadow-light);
-          margin: 0 var(--ha-space-3);
-          border-end-end-radius: var(--ha-border-radius-xl);
-          border-end-start-radius: var(--ha-border-radius-xl);
+        ha-automation-add-from-target.hidden {
+          display: none;
         }
 
         @media all and (max-width: 870px), all and (max-height: 500px) {
-          ha-automation-add-from-target.selected-target {
-            max-height: 50%;
+          ha-automation-add-from-target {
             overflow: hidden;
           }
-
-          ha-automation-add-from-target.full-height {
-            max-height: none;
-          }
-        }
-
-        ha-automation-add-from-target.hidden {
-          display: none;
         }
 
         .groups {

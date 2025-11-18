@@ -112,6 +112,10 @@ export default class HaAutomationAddFromTarget extends LitElement {
   @state()
   private _areaEntries: Record<string, AreaEntries> = {};
 
+  @state() private _showShowMoreButton?: boolean;
+
+  @state() private _fullHeight = false;
+
   private _getLabelsMemoized = memoizeOne(getLabels);
 
   private _configEntryLookup: Record<string, ConfigEntry> = {};
@@ -123,7 +127,25 @@ export default class HaAutomationAddFromTarget extends LitElement {
       this._loadConfigEntries();
       this._getTreeData();
     }
+
+    if (changedProps.has("value") || changedProps.has("narrow")) {
+      this._fullHeight =
+        !this.narrow || !this.value || !Object.values(this.value)[0];
+      this.style.setProperty("--max-height", this._fullHeight ? "none" : "50%");
+    }
   }
+
+  protected updated(changedProps: PropertyValues) {
+    if (
+      changedProps.has("value") ||
+      changedProps.has("narrow") ||
+      this._showShowMoreButton === undefined
+    ) {
+      this._setShowTargetShowMoreButton();
+    }
+  }
+
+  // #region render
 
   protected render() {
     return html`
@@ -131,6 +153,17 @@ export default class HaAutomationAddFromTarget extends LitElement {
       ${this.narrow && this.value ? this._renderNarrow(this.value) : nothing}
       ${!this.narrow || !this.value ? this._renderLabels() : nothing}
       ${!this.narrow || !this.value ? this._renderUnassigned() : nothing}
+      ${this.narrow && this._showShowMoreButton && !this._fullHeight
+        ? html`
+            <div class="targets-show-more">
+              <ha-button appearance="plain" @click=${this._expandHeight}>
+                ${this.hass.localize(
+                  `ui.panel.config.automation.editor.show_more`
+                )}
+              </ha-button>
+            </div>
+          `
+        : nothing}
     `;
   }
 
@@ -306,13 +339,6 @@ export default class HaAutomationAddFromTarget extends LitElement {
         )}
       </ha-md-list>`;
   }
-
-  private _getUnassignedEntities = memoizeOne(
-    (entities: HomeAssistant["entities"]): string[] =>
-      Object.values(entities)
-        .filter((entity) => !entity.area_id && !entity.device_id)
-        .map(({ entity_id }) => entity_id)
-  );
 
   private _renderUnassigned() {
     const unassignedAreas =
@@ -628,6 +654,15 @@ export default class HaAutomationAddFromTarget extends LitElement {
     return renderedEntites;
   }
 
+  // #endregion render
+
+  private _getUnassignedEntities = memoizeOne(
+    (entities: HomeAssistant["entities"]): string[] =>
+      Object.values(entities)
+        .filter((entity) => !entity.area_id && !entity.device_id)
+        .map(({ entity_id }) => entity_id)
+  );
+
   private _getSelectedTargetId = memoizeOne(
     (value: SingleHassServiceTarget | undefined) =>
       value && Object.keys(value).length
@@ -876,9 +911,24 @@ export default class HaAutomationAddFromTarget extends LitElement {
     }
   }
 
+  private _expandHeight() {
+    this._fullHeight = true;
+    this.style.setProperty("--max-height", "none");
+  }
+
+  private async _setShowTargetShowMoreButton() {
+    await this.updateComplete;
+    this._showShowMoreButton =
+      this.narrow &&
+      this.value &&
+      !!Object.values(this.value)[0] &&
+      this.scrollHeight > this.clientHeight;
+  }
+
   static styles = css`
     :host {
       --wa-color-neutral-fill-quiet: var(--ha-color-fill-primary-normal-active);
+      position: relative;
     }
 
     ha-section-title {
@@ -963,6 +1013,25 @@ export default class HaAutomationAddFromTarget extends LitElement {
     ha-md-list-item.selected ha-icon,
     ha-md-list-item.selected ha-svg-icon {
       color: var(--ha-color-on-primary-normal);
+    }
+
+    .targets-show-more {
+      display: flex;
+      justify-content: center;
+      position: absolute;
+      bottom: 0;
+      width: 100%;
+      padding-bottom: var(--ha-space-2);
+      box-shadow: inset var(--ha-shadow-offset-x-lg)
+        calc(var(--ha-shadow-offset-y-lg) * -1) var(--ha-shadow-blur-lg)
+        var(--ha-shadow-spread-lg) var(--ha-color-shadow-light);
+    }
+
+    @media all and (max-width: 870px), all and (max-height: 500px) {
+      :host {
+        max-height: var(--max-height, 50%);
+        overflow: hidden;
+      }
     }
   `;
 }
