@@ -1210,7 +1210,6 @@ class DialogAddAutomationElement
   ) => {
     this._selectedTarget = ev.detail.value;
 
-    // TODO fix on mobile
     requestAnimationFrame(() => {
       if (this._narrow) {
         this._contentElement?.scrollTo(0, 0);
