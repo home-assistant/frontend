@@ -290,14 +290,18 @@ export const connectionMixin = <T extends Constructor<HassBaseEl>>(
         this._updateHass({ userData: userData || {} })
       ).catch(() => {
         // eslint-disable-next-line no-console
-        console.error("Failed to subscribe to user data, setting to empty object");
+        console.error(
+          "Failed to subscribe to user data, setting to empty object"
+        );
         this._updateHass({ userData: {} });
       });
       subscribeFrontendSystemData(conn, "core", ({ value: systemData }) =>
         this._updateHass({ systemData: systemData || {} })
       ).catch(() => {
         // eslint-disable-next-line no-console
-        console.error("Failed to subscribe to system data, setting to empty object");
+        console.error(
+          "Failed to subscribe to system data, setting to empty object"
+        );
         this._updateHass({ systemData: {} });
       });
       clearInterval(this.__backendPingInterval);
