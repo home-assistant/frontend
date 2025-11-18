@@ -1183,10 +1183,10 @@ ${rejected
       );
       if (entry) {
         await deleteScript(this.hass, entry.unique_id);
+        this._selected = this._selected.filter(
+          (entityId) => entityId !== script.entity_id
+        );
       }
-      this._selected = this._selected.filter(
-        (entityId) => entityId !== script.entity_id
-      );
     } catch (err: any) {
       await showAlertDialog(this, {
         text:
