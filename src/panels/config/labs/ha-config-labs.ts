@@ -114,7 +114,9 @@ class HaConfigLabs extends LitElement {
                   <ha-svg-icon .path=${mdiFlask}></ha-svg-icon>
                 </div>
                 <div class="intro-title">
-                  <h1>${this.hass.localize("ui.panel.config.labs.intro_title")}</h1>
+                  <h1>
+                    ${this.hass.localize("ui.panel.config.labs.intro_title")}
+                  </h1>
                   <p class="intro-subtitle">
                     ${this.hass.localize("ui.panel.config.labs.intro_subtitle")}
                   </p>
@@ -122,7 +124,9 @@ class HaConfigLabs extends LitElement {
               </div>
               <ha-markdown
                 class="intro-text"
-                .content=${this.hass.localize("ui.panel.config.labs.intro_message")}
+                .content=${this.hass.localize(
+                  "ui.panel.config.labs.intro_message"
+                )}
                 breaks
               ></ha-markdown>
             </div>
@@ -143,7 +147,9 @@ class HaConfigLabs extends LitElement {
       `component.${feature.domain}.labs_features.${feature.feature}.description`
     );
 
-    const integrationName = this.hass.localize(`component.${feature.domain}.title`);
+    const integrationName = this.hass.localize(
+      `component.${feature.domain}.title`
+    );
 
     return html`
       <ha-card outlined>
@@ -204,7 +210,10 @@ class HaConfigLabs extends LitElement {
                           target="_blank"
                           rel="noopener noreferrer"
                         >
-                          <ha-svg-icon slot="start" .path=${mdiBug}></ha-svg-icon>
+                          <ha-svg-icon
+                            slot="start"
+                            .path=${mdiBug}
+                          ></ha-svg-icon>
                           ${this.hass.localize(
                             "ui.panel.config.labs.report_issue"
                           )}
