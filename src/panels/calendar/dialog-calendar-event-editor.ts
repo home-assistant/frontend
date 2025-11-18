@@ -63,6 +63,8 @@ class DialogCalendarEventEditor extends LitElement {
 
   @state() private _description? = "";
 
+  @state() private _location? = "";
+
   @state() private _rrule?: string;
 
   @state() private _allDay = false;
@@ -78,6 +80,8 @@ class DialogCalendarEventEditor extends LitElement {
   // events are persisted, they are relative to the Home Assistant
   // timezone, but floating without a timezone.
   private _timeZone?: string;
+
+  private _hasLocation = false;
 
   public showDialog(params: CalendarEventEditDialogParams): void {
     this._error = undefined;
@@ -99,6 +103,10 @@ class DialogCalendarEventEditor extends LitElement {
       this._allDay = isDate(entry.dtstart);
       this._summary = entry.summary;
       this._description = entry.description;
+      if (entry.location) {
+        this._hasLocation = true;
+        this._location = entry.location || "";
+      }
       this._rrule = entry.rrule;
       if (this._allDay) {
         this._dtstart = new Date(entry.dtstart + "T00:00:00");
@@ -130,6 +138,8 @@ class DialogCalendarEventEditor extends LitElement {
     this._dtend = undefined;
     this._summary = "";
     this._description = "";
+    this._location = "";
+    this._hasLocation = false;
     this._rrule = undefined;
     fireEvent(this, "dialog-closed", { dialog: this.localName });
   }
@@ -180,6 +190,15 @@ class DialogCalendarEventEditor extends LitElement {
             @input=${this._handleSummaryChanged}
             .validationMessage=${this.hass.localize("ui.common.error_required")}
             dialogInitialFocus
+          ></ha-textfield>
+          <ha-textfield
+            class="location"
+            name="location"
+            .label=${this.hass.localize(
+              "ui.components.calendar.event.location"
+            )}
+            .value=${this._location}
+            @change=${this._handleLocationChanged}
           ></ha-textfield>
           <ha-textarea
             class="description"
@@ -326,6 +345,10 @@ class DialogCalendarEventEditor extends LitElement {
     this._description = ev.target.value;
   }
 
+  private _handleLocationChanged(ev) {
+    this._location = ev.target.value;
+  }
+
   private _handleRRuleChanged(ev) {
     this._rrule = ev.detail.value;
   }
@@ -399,6 +422,7 @@ class DialogCalendarEventEditor extends LitElement {
     const data: CalendarEventMutableParams = {
       summary: this._summary,
       description: this._description,
+      location: this._location || (this._hasLocation ? "" : undefined),
       rrule: this._rrule || undefined,
       dtstart: "",
       dtend: "",
