@@ -74,7 +74,7 @@ export class EnergyDeviceSettingsWater extends LitElement {
               )}</a
             >
           </p>
-          ${this.validationResult?.device_consumption.map(
+          ${this.validationResult?.device_consumption_water.map(
             (result) => html`
               <ha-energy-validation-result
                 .hass=${this.hass}
