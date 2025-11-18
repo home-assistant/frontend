@@ -1,7 +1,7 @@
-import type { AreaRegistryEntry } from "../../../../../data/area_registry";
-import type { FloorRegistryEntry } from "../../../../../data/floor_registry";
+import type { AreaRegistryEntry } from "../../data/area_registry";
+import type { FloorRegistryEntry } from "../../data/floor_registry";
 
-export interface HomeStructure {
+export interface AreasFloorHierarchy {
   floors: {
     id: string;
     areas: string[];
@@ -9,10 +9,10 @@ export interface HomeStructure {
   areas: string[];
 }
 
-export const getHomeStructure = (
+export const getAreasFloorHierarchy = (
   floors: FloorRegistryEntry[],
   areas: AreaRegistryEntry[]
-): HomeStructure => {
+): AreasFloorHierarchy => {
   const floorAreas = new Map<string, string[]>();
   const unassignedAreas: string[] = [];
 
@@ -27,7 +27,7 @@ export const getHomeStructure = (
     }
   }
 
-  const homeStructure: HomeStructure = {
+  const hierarchy: AreasFloorHierarchy = {
     floors: floors.map((floor) => ({
       id: floor.floor_id,
       areas: floorAreas.get(floor.floor_id) || [],
@@ -35,19 +35,19 @@ export const getHomeStructure = (
     areas: unassignedAreas,
   };
 
-  return homeStructure;
+  return hierarchy;
 };
 
-export const getAreasOrder = (home: HomeStructure): string[] => {
+export const getAreasOrder = (hierarchy: AreasFloorHierarchy): string[] => {
   const order: string[] = [];
 
-  for (const floor of home.floors) {
+  for (const floor of hierarchy.floors) {
     order.push(...floor.areas);
   }
-  order.push(...home.areas);
+  order.push(...hierarchy.areas);
 
   return order;
 };
 
-export const getFloorOrder = (home: HomeStructure): string[] =>
-  home.floors.map((floor) => floor.id);
+export const getFloorOrder = (hierarchy: AreasFloorHierarchy): string[] =>
+  hierarchy.floors.map((floor) => floor.id);

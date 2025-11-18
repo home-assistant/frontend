@@ -48,9 +48,9 @@ import type { HomeAssistant, Route } from "../../../types";
 import {
   getAreasOrder,
   getFloorOrder,
-  getHomeStructure,
-  type HomeStructure,
-} from "../../lovelace/strategies/home/helpers/home-structure";
+  getAreasFloorHierarchy,
+  type AreasFloorHierarchy,
+} from "../../../common/areas/areas-floor-hierarchy";
 import "../ha-config-section";
 import { configSections } from "../ha-panel-config";
 import {
@@ -83,9 +83,9 @@ export class HaConfigAreasDashboard extends LitElement {
 
   @property({ attribute: false }) public route!: Route;
 
-  @state() private _home?: HomeStructure;
+  @state() private _hierarchy?: AreasFloorHierarchy;
 
-  private _blockHomeUpdate = false;
+  private _blockHierarchy = false;
 
   private _processAreasStats = memoizeOne(
     (
@@ -135,9 +135,9 @@ export class HaConfigAreasDashboard extends LitElement {
       if (
         (this.hass.areas !== oldHass?.areas ||
           this.hass.floors !== oldHass?.floors) &&
-        !this._blockHomeUpdate
+        !this._blockHierarchy
       ) {
-        this._home = getHomeStructure(
+        this._hierarchy = getAreasFloorHierarchy(
           Object.values(this.hass.floors),
           Object.values(this.hass.areas)
         );
@@ -146,7 +146,7 @@ export class HaConfigAreasDashboard extends LitElement {
   }
 
   protected render(): TemplateResult<1> | typeof nothing {
-    if (!this._home) {
+    if (!this._hierarchy) {
       return nothing;
     }
     const areasStats = this._processAreasStats(
@@ -181,7 +181,7 @@ export class HaConfigAreasDashboard extends LitElement {
             invert-swap
           >
             <div class="floors">
-              ${this._home.floors.map(({ areas, id }) => {
+              ${this._hierarchy.floors.map(({ areas, id }) => {
                 const floor = this.hass.floors[id];
                 if (!floor) {
                   return nothing;
@@ -254,7 +254,7 @@ export class HaConfigAreasDashboard extends LitElement {
             </div>
           </ha-sortable>
 
-          ${this._home.areas.length
+          ${this._hierarchy.areas.length
             ? html`
                 <div class="floor">
                   <div class="header">
@@ -274,7 +274,7 @@ export class HaConfigAreasDashboard extends LitElement {
                     .floor=${UNASSIGNED_FLOOR}
                   >
                     <div class="areas">
-                      ${this._home.areas.map((areaId) => {
+                      ${this._hierarchy.areas.map((areaId) => {
                         const area = this.hass.areas[areaId];
                         if (!area) {
                           return nothing;
@@ -386,13 +386,13 @@ export class HaConfigAreasDashboard extends LitElement {
 
   private async _floorMoved(ev) {
     ev.stopPropagation();
-    if (!this.hass || !this._home) {
+    if (!this.hass || !this._hierarchy) {
       return;
     }
     const { oldIndex, newIndex } = ev.detail;
 
     const reorderFloors = (
-      floors: HomeStructure["floors"],
+      floors: AreasFloorHierarchy["floors"],
       oldIdx: number,
       newIdx: number
     ) => {
@@ -402,20 +402,20 @@ export class HaConfigAreasDashboard extends LitElement {
       return newFloors;
     };
 
-    this._home = {
-      ...this._home,
-      floors: reorderFloors(this._home.floors, oldIndex, newIndex),
+    this._hierarchy = {
+      ...this._hierarchy,
+      floors: reorderFloors(this._hierarchy.floors, oldIndex, newIndex),
     };
 
-    const areaOrder = getAreasOrder(this._home);
-    const floorOrder = getFloorOrder(this._home);
+    const areaOrder = getAreasOrder(this._hierarchy);
+    const floorOrder = getFloorOrder(this._hierarchy);
     await reorderAreaRegistryEntries(this.hass, areaOrder);
     await reorderFloorRegistryEntries(this.hass, floorOrder);
   }
 
   private async _areaMoved(ev) {
     ev.stopPropagation();
-    if (!this.hass || !this._home) {
+    if (!this.hass || !this._hierarchy) {
       return;
     }
     const { floor } = ev.currentTarget;
@@ -431,9 +431,9 @@ export class HaConfigAreasDashboard extends LitElement {
       return newAreas;
     };
 
-    this._home = {
-      ...this._home,
-      floors: this._home.floors.map((f) => {
+    this._hierarchy = {
+      ...this._hierarchy,
+      floors: this._hierarchy.floors.map((f) => {
         if (f.id === floorId) {
           return {
             ...f,
@@ -444,17 +444,17 @@ export class HaConfigAreasDashboard extends LitElement {
       }),
       areas:
         floorId === null
-          ? reorderAreas(this._home.areas, oldIndex, newIndex)
-          : this._home.areas,
+          ? reorderAreas(this._hierarchy.areas, oldIndex, newIndex)
+          : this._hierarchy.areas,
     };
 
-    const areaOrder = getAreasOrder(this._home);
+    const areaOrder = getAreasOrder(this._hierarchy);
     await reorderAreaRegistryEntries(this.hass, areaOrder);
   }
 
   private async _areaAdded(ev) {
     ev.stopPropagation();
-    if (!this.hass || !this._home) {
+    if (!this.hass || !this._hierarchy) {
       return;
     }
     const { floor } = ev.currentTarget;
@@ -470,9 +470,9 @@ export class HaConfigAreasDashboard extends LitElement {
     };
 
     // Remove area from old location and add to new location at the right index
-    this._home = {
-      ...this._home,
-      floors: this._home.floors.map((f) => {
+    this._hierarchy = {
+      ...this._hierarchy,
+      floors: this._hierarchy.floors.map((f) => {
         if (f.id === newFloorId) {
           return {
             ...f,
@@ -486,17 +486,17 @@ export class HaConfigAreasDashboard extends LitElement {
       }),
       areas:
         newFloorId === null
-          ? insertAtIndex(this._home.areas, area.area_id, index)
-          : this._home.areas.filter((id) => id !== area.area_id),
+          ? insertAtIndex(this._hierarchy.areas, area.area_id, index)
+          : this._hierarchy.areas.filter((id) => id !== area.area_id),
     };
 
-    const areaOrder = getAreasOrder(this._home);
+    const areaOrder = getAreasOrder(this._hierarchy);
 
-    // Block home structure updates for 500ms to avoid flickering
+    // Block hierarchy updates for 500ms to avoid flickering
     // (because the registry is updated twice asynchronously)
-    this._blockHomeUpdate = true;
+    this._blockHierarchy = true;
     setTimeout(() => {
-      this._blockHomeUpdate = false;
+      this._blockHierarchy = false;
     }, 500);
 
     await reorderAreaRegistryEntries(this.hass, areaOrder);
