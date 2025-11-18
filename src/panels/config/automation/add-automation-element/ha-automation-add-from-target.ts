@@ -8,7 +8,10 @@ import {
   mdiSelectionMarker,
   mdiTextureBox,
 } from "@mdi/js";
-import type { SingleHassServiceTarget } from "home-assistant-js-websocket";
+import type {
+  HassEntity,
+  SingleHassServiceTarget,
+} from "home-assistant-js-websocket";
 import { css, html, LitElement, nothing, type PropertyValues } from "lit";
 import { customElement, property, state } from "lit/decorators";
 import memoizeOne from "memoize-one";
@@ -448,6 +451,8 @@ export default class HaAutomationAddFromTarget extends LitElement {
       return nothing;
     }
 
+    areas.sort((a, b) => a.primary.localeCompare(b.primary));
+
     if (this.narrow) {
       return html`<ha-section-title
           >${this.localize(
@@ -513,30 +518,68 @@ export default class HaAutomationAddFromTarget extends LitElement {
   }
 
   private _renderDevices(devices: Record<string, DeviceEntries>) {
-    const renderedDevices = Object.keys(devices).map((deviceId) => {
-      if (!this.devices[deviceId]) {
-        return nothing;
-      }
+    const renderedDevices = Object.keys(devices)
+      .filter((deviceId) => this.devices[deviceId])
+      .map((deviceId) => {
+        const device = this.devices[deviceId];
+        const configEntry = device.primary_config_entry
+          ? this._configEntryLookup?.[device.primary_config_entry]
+          : undefined;
+        const domain = configEntry?.domain;
 
-      const device = this.devices[deviceId];
-      const configEntry = device.primary_config_entry
-        ? this._configEntryLookup?.[device.primary_config_entry]
-        : undefined;
-      const domain = configEntry?.domain;
+        const deviceName = computeDeviceName(device) || deviceId;
 
-      const deviceName = computeDeviceName(device) || deviceId;
+        return [deviceId, deviceName, domain] as [
+          string,
+          string | undefined,
+          string | undefined,
+        ];
+      })
+      .sort(([, deviceNameA = "zzz"], [, deviceNameB = "zzz"]) =>
+        deviceNameA.localeCompare(deviceNameB)
+      )
+      .map(([deviceId, deviceName, domain]) => {
+        if (this.narrow) {
+          return html`<ha-md-list-item
+            interactive
+            type="button"
+            .target=${`device${SEPARATOR}${deviceId}`}
+            @click=${this._selectItem}
+          >
+            ${domain
+              ? html`
+                  <img
+                    slot="start"
+                    alt=""
+                    crossorigin="anonymous"
+                    referrerpolicy="no-referrer"
+                    src=${brandsUrl({
+                      domain,
+                      type: "icon",
+                      darkOptimized: this.hass.themes?.darkMode,
+                    })}
+                  />
+                `
+              : nothing}
+            <div slot="headline">${deviceName}</div>
+            <ha-icon-next slot="end"></ha-icon-next>
+          </ha-md-list-item>`;
+        }
 
-      if (this.narrow) {
-        return html`<ha-md-list-item
-          interactive
-          type="button"
+        const { open, entities } = devices[deviceId];
+
+        return html`<wa-tree-item
           .target=${`device${SEPARATOR}${deviceId}`}
-          @click=${this._selectItem}
+          .selected=${this._getSelectedTargetId(this.value) ===
+          `device${SEPARATOR}${deviceId}`}
+          .lazy=${!open && !!entities.length}
+          @wa-lazy-load=${this._expandItem}
+          @wa-collapse=${this._collapseItem}
+          .title=${deviceName}
         >
           ${domain
             ? html`
                 <img
-                  slot="start"
                   alt=""
                   crossorigin="anonymous"
                   referrerpolicy="no-referrer"
@@ -548,40 +591,10 @@ export default class HaAutomationAddFromTarget extends LitElement {
                 />
               `
             : nothing}
-          <div slot="headline">${deviceName}</div>
-          <ha-icon-next slot="end"></ha-icon-next>
-        </ha-md-list-item>`;
-      }
-
-      const { open, entities } = devices[deviceId];
-
-      return html`<wa-tree-item
-        .target=${`device${SEPARATOR}${deviceId}`}
-        .selected=${this._getSelectedTargetId(this.value) ===
-        `device${SEPARATOR}${deviceId}`}
-        .lazy=${!open && !!entities.length}
-        @wa-lazy-load=${this._expandItem}
-        @wa-collapse=${this._collapseItem}
-        .title=${deviceName}
-      >
-        ${domain
-          ? html`
-              <img
-                alt=""
-                crossorigin="anonymous"
-                referrerpolicy="no-referrer"
-                src=${brandsUrl({
-                  domain,
-                  type: "icon",
-                  darkOptimized: this.hass.themes?.darkMode,
-                })}
-              />
-            `
-          : nothing}
-        <span class="item-label">${deviceName}</span>
-        ${open ? this._renderEntities(entities) : nothing}
-      </wa-tree-item>`;
-    });
+          <span class="item-label">${deviceName}</span>
+          ${open ? this._renderEntities(entities) : nothing}
+        </wa-tree-item>`;
+      });
 
     if (this.narrow) {
       return html`<ha-section-title
@@ -600,47 +613,53 @@ export default class HaAutomationAddFromTarget extends LitElement {
       return nothing;
     }
 
-    const renderedEntites = entities.map((entityId) => {
-      const stateObj = this.hass.states[entityId];
+    const renderedEntites = entities
+      .filter((entityId) => this.hass.states[entityId])
+      .map((entityId) => {
+        const stateObj = this.hass.states[entityId];
 
-      const [entityName, deviceName] = computeEntityNameList(
-        stateObj,
-        [{ type: "entity" }, { type: "device" }, { type: "area" }],
-        this.entities,
-        this.devices,
-        this.areas,
-        this.floors
-      );
+        const [entityName, deviceName] = computeEntityNameList(
+          stateObj,
+          [{ type: "entity" }, { type: "device" }, { type: "area" }],
+          this.entities,
+          this.devices,
+          this.areas,
+          this.floors
+        );
 
-      const label = entityName || deviceName || entityId;
+        const label = entityName || deviceName || entityId;
 
-      if (this.narrow) {
-        return html`<ha-md-list-item
-          interactive
-          type="button"
+        return [entityId, label, stateObj] as [string, string, HassEntity];
+      })
+      .sort(([, labelA], [, labelB]) => labelA.localeCompare(labelB))
+      .map(([entityId, label, stateObj]) => {
+        if (this.narrow) {
+          return html`<ha-md-list-item
+            interactive
+            type="button"
+            .target=${`entity${SEPARATOR}${entityId}`}
+            @click=${this._selectItem}
+          >
+            <state-badge
+              slot="start"
+              .stateObj=${stateObj}
+              .hass=${this.hass}
+            ></state-badge>
+            <div slot="headline" class="item-label">${label}</div>
+            <ha-icon-next slot="end"></ha-icon-next>
+          </ha-md-list-item>`;
+        }
+
+        return html`<wa-tree-item
           .target=${`entity${SEPARATOR}${entityId}`}
-          @click=${this._selectItem}
+          .selected=${this._getSelectedTargetId(this.value) ===
+          `entity${SEPARATOR}${entityId}`}
+          .title=${label}
         >
-          <state-badge
-            slot="start"
-            .stateObj=${stateObj}
-            .hass=${this.hass}
-          ></state-badge>
-          <div slot="headline" class="item-label">${label}</div>
-          <ha-icon-next slot="end"></ha-icon-next>
-        </ha-md-list-item>`;
-      }
-
-      return html`<wa-tree-item
-        .target=${`entity${SEPARATOR}${entityId}`}
-        .selected=${this._getSelectedTargetId(this.value) ===
-        `entity${SEPARATOR}${entityId}`}
-        .title=${label}
-      >
-        <state-badge .stateObj=${stateObj} .hass=${this.hass}></state-badge>
-        <span class="item-label">${label}</span>
-      </wa-tree-item>`;
-    });
+          <state-badge .stateObj=${stateObj} .hass=${this.hass}></state-badge>
+          <span class="item-label">${label}</span>
+        </wa-tree-item>`;
+      });
 
     if (this.narrow) {
       return html`<ha-section-title
