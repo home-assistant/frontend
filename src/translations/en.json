@@ -6784,6 +6784,23 @@
           "intro": "Share anonymized information from your installation to help make Home Assistant better and help us convince manufacturers to add local control and privacy-focused features.",
           "download_device_info": "Preview device analytics"
         },
+        "labs": {
+          "caption": "Labs",
+          "description": "Preview new features",
+          "intro_title": "Home Assistant Labs",
+          "intro_subtitle": "Preview upcoming features",
+          "intro_message": "Home Assistant Labs lets you preview new features we're actively working on. These features are stable and fully functional, but may not yet include the complete feature set we envision. We're still refining the design and approach based on your feedback.\n\nThese preview features may change significantly or be replaced with different solutions in future releases. Your feedback and issue reports help us shape these features before they become generally available.",
+          "empty": {
+            "title": "No preview features available",
+            "description": "There are currently no preview features available to try. Check back in future releases for new features!"
+          },
+          "learn_more": "Learn more",
+          "provide_feedback": "Provide feedback",
+          "report_issue": "Report issue",
+          "confirm_title": "Are you sure?",
+          "confirm_enable": "You are enabling {feature}, which is a preview feature. This feature works as designed but may change significantly or be replaced with a different approach in future releases based on feedback. Do you wish to proceed?",
+          "confirm_disable": "You are disabling {feature}. This will turn off the preview functionality. Are you sure?"
+        },
         "network": {
           "caption": "Network",
           "description": "External access {state}",

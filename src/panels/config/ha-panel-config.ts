@@ -7,6 +7,7 @@ import {
   mdiCog,
   mdiDatabase,
   mdiDevices,
+  mdiFlask,
   mdiInformation,
   mdiInformationOutline,
   mdiLabel,
@@ -329,6 +330,13 @@ export const configSections: Record<string, PageNavigation[]> = {
       iconColor: "#f1c447",
     },
     {
+      path: "/config/labs",
+      translationKey: "labs",
+      iconPath: mdiFlask,
+      iconColor: "#8E24AA",
+      core: true,
+    },
+    {
       path: "/config/network",
       translationKey: "network",
       iconPath: mdiNetwork,
@@ -514,6 +522,10 @@ class HaPanelConfig extends SubscribeMixin(HassRouterPage) {
       general: {
         tag: "ha-config-section-general",
         load: () => import("./core/ha-config-section-general"),
+      },
+      labs: {
+        tag: "ha-config-labs",
+        load: () => import("./labs/ha-config-labs"),
       },
       zha: {
         tag: "zha-config-dashboard-router",
