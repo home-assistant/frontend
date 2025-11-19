@@ -2391,7 +2391,7 @@ class DialogAddAutomationElement
 
         .section-title-wrapper ha-section-title {
           position: absolute;
-          top: 1px;
+          top: 0;
           width: calc(100% - var(--ha-space-4));
           z-index: 1;
         }
@@ -2431,10 +2431,6 @@ class DialogAddAutomationElement
 
         lit-virtualizer:focus-visible {
           outline: none;
-        }
-
-        lit-virtualizer.scrolled {
-          border-top: 1px solid var(--ha-color-border-neutral-quiet);
         }
 
         ha-combo-box-item {
