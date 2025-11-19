@@ -191,7 +191,8 @@ export const getMyRedirects = (): Redirects => ({
   labs: {
     redirect: "/config/labs",
     params: {
-      feature: "string?",
+      domain: "string?",
+      preview_feature: "string?",
     },
   },
   tags: {

@@ -45,13 +45,15 @@ class HaConfigLabs extends LitElement {
     await this._loadFeatures();
     this._subscribeToLabsUpdates();
 
-    // Check for feature parameter in URL
-    const featureParam = extractSearchParam("feature");
-    if (featureParam) {
-      this._highlightedFeature = featureParam;
+    // Check for feature parameters in URL
+    const domain = extractSearchParam("domain");
+    const previewFeature = extractSearchParam("preview_feature");
+    if (domain && previewFeature) {
+      const featureId = `${domain}.${previewFeature}`;
+      this._highlightedFeature = featureId;
       // Wait for next render to ensure cards are in DOM
       await this.updateComplete;
-      this._scrollToFeature(featureParam);
+      this._scrollToFeature(featureId);
     }
   }
 
