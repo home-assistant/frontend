@@ -46,7 +46,11 @@ import { getPanelNameTranslationKey } from "../../data/panel";
 import type { PageNavigation } from "../../layouts/hass-tabs-subpage";
 import { configSections } from "../../panels/config/ha-panel-config";
 import { HaFuse } from "../../resources/fuse";
-import { haStyleDialog, haStyleScrollbar } from "../../resources/styles";
+import {
+  haStyleDialog,
+  haStyleDialogFixedTop,
+  haStyleScrollbar,
+} from "../../resources/styles";
 import { loadVirtualizer } from "../../resources/virtualizer";
 import type { HomeAssistant } from "../../types";
 import { brandsUrl } from "../../util/brands-url";
@@ -986,6 +990,7 @@ export class QuickBar extends LitElement {
     return [
       haStyleScrollbar,
       haStyleDialog,
+      haStyleDialogFixedTop,
       css`
         ha-list {
           position: relative;
@@ -1010,8 +1015,6 @@ export class QuickBar extends LitElement {
           ha-dialog {
             --mdc-dialog-max-width: 800px;
             --mdc-dialog-min-width: 500px;
-            --dialog-surface-position: fixed;
-            --dialog-surface-top: var(--ha-space-10);
             --mdc-dialog-max-height: calc(100% - var(--ha-space-18));
           }
         }
