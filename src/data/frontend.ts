@@ -3,6 +3,7 @@ import type { Connection } from "home-assistant-js-websocket";
 export interface CoreFrontendUserData {
   showAdvanced?: boolean;
   showEntityIdPicker?: boolean;
+  defaultPanel?: string;
 }
 
 export interface SidebarFrontendUserData {
@@ -10,14 +11,23 @@ export interface SidebarFrontendUserData {
   hiddenPanels: string[];
 }
 
+export interface CoreFrontendSystemData {
+  defaultPanel?: string;
+}
+
 declare global {
   interface FrontendUserData {
     core: CoreFrontendUserData;
     sidebar: SidebarFrontendUserData;
   }
+  interface FrontendSystemData {
+    core: CoreFrontendSystemData;
+  }
 }
 
 export type ValidUserDataKey = keyof FrontendUserData;
+
+export type ValidSystemDataKey = keyof FrontendSystemData;
 
 export const fetchFrontendUserData = async <
   UserDataKey extends ValidUserDataKey,
@@ -57,5 +67,48 @@ export const subscribeFrontendUserData = <UserDataKey extends ValidUserDataKey>(
     {
       type: "frontend/subscribe_user_data",
       key: userDataKey,
+    }
+  );
+
+export const fetchFrontendSystemData = async <
+  SystemDataKey extends ValidSystemDataKey,
+>(
+  conn: Connection,
+  key: SystemDataKey
+): Promise<FrontendSystemData[SystemDataKey] | null> => {
+  const result = await conn.sendMessagePromise<{
+    value: FrontendSystemData[SystemDataKey] | null;
+  }>({
+    type: "frontend/get_system_data",
+    key,
+  });
+  return result.value;
+};
+
+export const saveFrontendSystemData = async <
+  SystemDataKey extends ValidSystemDataKey,
+>(
+  conn: Connection,
+  key: SystemDataKey,
+  value: FrontendSystemData[SystemDataKey]
+): Promise<void> =>
+  conn.sendMessagePromise<undefined>({
+    type: "frontend/set_system_data",
+    key,
+    value,
+  });
+
+export const subscribeFrontendSystemData = <
+  SystemDataKey extends ValidSystemDataKey,
+>(
+  conn: Connection,
+  systemDataKey: SystemDataKey,
+  onChange: (data: { value: FrontendSystemData[SystemDataKey] | null }) => void
+) =>
+  conn.subscribeMessage<{ value: FrontendSystemData[SystemDataKey] | null }>(
+    onChange,
+    {
+      type: "frontend/subscribe_system_data",
+      key: systemDataKey,
     }
   );
