@@ -34,6 +34,10 @@ import {
   type UnassignedAreasFloorComboBoxItem,
 } from "../../../../data/area_floor";
 import {
+  getAreaDeviceLookup,
+  getAreaEntityLookup,
+} from "../../../../data/area_registry";
+import {
   getConfigEntries,
   type ConfigEntry,
 } from "../../../../data/config_entries";
@@ -46,11 +50,11 @@ import {
   localizeContext,
   statesContext,
 } from "../../../../data/context";
+import { getDeviceEntityLookup } from "../../../../data/device_registry";
 import {
   getLabels,
   type LabelRegistryEntry,
 } from "../../../../data/label_registry";
-import { extractFromTarget } from "../../../../data/target";
 import type { HomeAssistant } from "../../../../types";
 import { brandsUrl } from "../../../../util/brands-url";
 
@@ -680,6 +684,21 @@ export default class HaAutomationAddFromTarget extends LitElement {
 
   // #endregion render
 
+  private _getAreaDeviceLookupMemoized = memoizeOne(
+    (devices: HomeAssistant["devices"]) =>
+      getAreaDeviceLookup(Object.values(devices))
+  );
+
+  private _getAreaEntityLookupMemoized = memoizeOne(
+    (entities: HomeAssistant["entities"]) =>
+      getAreaEntityLookup(Object.values(entities), true)
+  );
+
+  private _getDeviceEntityLookupMemoized = memoizeOne(
+    (entities: HomeAssistant["entities"]) =>
+      getDeviceEntityLookup(Object.values(entities), true)
+  );
+
   private _getUnassignedEntities = memoizeOne(
     (entities: HomeAssistant["entities"]): string[] =>
       Object.values(entities)
@@ -751,30 +770,22 @@ export default class HaAutomationAddFromTarget extends LitElement {
     });
   }
 
-  private async _loadUnassignedDevices() {
+  private _loadUnassignedDevices() {
     const unassignedDevices = Object.values(this.devices)
       .filter((device) => !device.area_id)
       .map(({ id }) => id);
 
     const devices: Record<string, DeviceEntries> = {};
 
-    await Promise.all(
-      unassignedDevices.map(async (deviceId) => {
-        try {
-          const targetEntries = await extractFromTarget(this.hass, {
-            device_id: deviceId,
-          });
-
-          devices[deviceId] = {
-            open: false,
-            entities: targetEntries.referenced_entities,
-          };
-        } catch (e) {
-          // eslint-disable-next-line no-console
-          console.error("Failed to extract target", e);
-        }
-      })
-    );
+    unassignedDevices.forEach((deviceId) => {
+      devices[deviceId] = {
+        open: false,
+        entities:
+          this._getDeviceEntityLookupMemoized(this.entities)[deviceId]?.map(
+            (entity) => entity.entity_id
+          ) || [],
+      };
+    });
 
     if (Object.keys(devices).length) {
       this._areaEntries = {
@@ -788,45 +799,41 @@ export default class HaAutomationAddFromTarget extends LitElement {
     }
   }
 
-  private async _loadArea(area: FloorComboBoxItem) {
-    try {
-      const [, id] = area.id.split(TARGET_SEPARATOR, 2);
-      const targetEntries = await extractFromTarget(this.hass, {
-        area_id: id,
-      });
+  private _loadArea(area: FloorComboBoxItem) {
+    const [, id] = area.id.split(TARGET_SEPARATOR, 2);
+    const referenced_devices =
+      this._getAreaDeviceLookupMemoized(this.devices)[id] || [];
+    const referenced_entities =
+      this._getAreaEntityLookupMemoized(this.entities)[id] || [];
 
-      const devices: Record<string, DeviceEntries> = {};
+    const devices: Record<string, DeviceEntries> = {};
 
-      targetEntries.referenced_devices.forEach((device_id) => {
-        devices[device_id] = {
-          open: false,
-          entities: [],
-        };
-      });
-
-      const entities: string[] = [];
-
-      targetEntries.referenced_entities.forEach((entity_id) => {
-        const entity = this.hass.entities[entity_id];
-        if (entity.device_id && devices[entity.device_id]) {
-          devices[entity.device_id].entities.push(entity_id);
-        } else {
-          entities.push(entity_id);
-        }
-      });
-
-      this._areaEntries = {
-        ...this._areaEntries,
-        [area.id]: {
-          open: false,
-          devices,
-          entities,
-        },
+    referenced_devices.forEach(({ id: deviceId }) => {
+      devices[deviceId] = {
+        open: false,
+        entities:
+          this._getDeviceEntityLookupMemoized(this.entities)[deviceId]?.map(
+            (entity) => entity.entity_id
+          ) || [],
       };
-    } catch (e) {
-      // eslint-disable-next-line no-console
-      console.error("Failed to extract target", e);
-    }
+    });
+
+    const entities: string[] = [];
+
+    referenced_entities.forEach((entity) => {
+      if (!entity.device_id || !devices[entity.device_id]) {
+        entities.push(entity.entity_id);
+      }
+    });
+
+    this._areaEntries = {
+      ...this._areaEntries,
+      [area.id]: {
+        open: false,
+        devices,
+        entities,
+      },
+    };
   }
 
   private _expandItem(ev) {

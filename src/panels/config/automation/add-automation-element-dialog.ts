@@ -1540,8 +1540,6 @@ class DialogAddAutomationElement
     let showEntityId = false;
 
     if (type === "area" || type === "floor") {
-      item.id = item[type]?.[`${type}_id`];
-
       rtl = computeRTL(this.hass);
       hasFloor =
         type === "area" && !!(item as FloorComboBoxItem).area?.floor_id;
@@ -1683,11 +1681,10 @@ class DialogAddAutomationElement
       this.closeDialog();
     }
 
-    // TODO open all parent tree levels if in desktop mode
     const targetType = getTargetComboBoxItemType(item);
     this._filter = "";
     this._selectedTarget = {
-      [`${targetType}_id`]: item.id,
+      [`${targetType}_id`]: item.id.split(TARGET_SEPARATOR, 2)[1],
     };
     this._tab = "targets";
   }
