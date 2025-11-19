@@ -31,6 +31,7 @@ export class HuiBarGaugeCardFeatureEditor
       [
         {
           name: "min",
+          default: 0,
           selector: {
             number: {
               mode: "box",
@@ -39,6 +40,7 @@ export class HuiBarGaugeCardFeatureEditor
         },
         {
           name: "max",
+          default: 100,
           selector: {
             number: {
               mode: "box",
@@ -53,18 +55,12 @@ export class HuiBarGaugeCardFeatureEditor
       return nothing;
     }
 
-    const data: BarGaugeCardFeatureConfig = {
-      type: "bar-gauge",
-      min: this._config.min ?? 0,
-      max: this._config.max ?? 100,
-    };
-
     const schema = this._schema();
 
     return html`
       <ha-form
         .hass=${this.hass}
-        .data=${data}
+        .data=${this._config}
         .schema=${schema}
         .computeLabel=${this._computeLabelCallback}
         @value-changed=${this._valueChanged}
