@@ -3998,6 +3998,13 @@
             "show_more": "Show more",
             "unassigned_entities": "Unassigned entities",
             "unassigned_devices": "Unassigned devices",
+            "empty_section_search": {
+              "block": "No blocks found for {term}",
+              "entity": "No entities found for {term}",
+              "device": "No devices found for {term}",
+              "area": "No areas or floors found for {term}",
+              "label": "No labels found for {term}"
+            },
             "triggers": {
               "name": "Triggers",
               "header": "When",
@@ -4005,7 +4012,10 @@
               "learn_more": "Learn more about triggers",
               "triggered": "Triggered",
               "add": "Add trigger",
-              "empty_search": "No triggers found for {term}",
+              "empty_search": {
+                "global": "No triggers and targets found for {term}",
+                "item": "No triggers found for {term}"
+              },
               "id": "Trigger ID",
               "optional": "Optional",
               "edit_id": "Edit ID",
@@ -4267,7 +4277,10 @@
               "description": "All conditions added here need to be satisfied for the automation to run. A condition can be satisfied or not at any given time, for example: ''If {user} is home''. You can use building blocks to create more complex conditions.",
               "learn_more": "Learn more about conditions",
               "add": "Add condition",
-              "empty_search": "No conditions and blocks found for {term}",
+              "empty_search": {
+                "global": "No conditions, blocks and targets found for {term}",
+                "item": "No conditions found for {term}"
+              },
               "add_building_block": "Add building block",
               "test": "Test",
               "testing_error": "Condition did not pass",
@@ -4435,7 +4448,10 @@
               "description": "All actions added here will be performed in sequence when the automation runs. An action usually controls one of your areas, devices, or entities, for example: 'Turn on the lights'. You can use building blocks to create more complex sequences of actions.",
               "learn_more": "Learn more about actions",
               "add": "Add action",
-              "empty_search": "No actions and blocks found for {term}",
+              "empty_search": {
+                "global": "No actions, blocks and targets found for {term}",
+                "item": "No actions found for {term}"
+              },
               "add_building_block": "Add building block",
               "invalid_action": "Invalid action",
               "run": "Run action",

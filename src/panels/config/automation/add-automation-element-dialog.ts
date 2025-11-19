@@ -491,6 +491,64 @@ class DialogAddAutomationElement
         | PickerComboBoxItem
       )[] = [];
 
+      if (!selectedSection || selectedSection === "item") {
+        let items = this._convertItemsToComboBoxItems(
+          this._items(type, localize, services, manifests),
+          type
+        );
+        if (searchTerm) {
+          items = this._filterGroup("item", items, searchTerm, {
+            ignoreLocation: true,
+            includeScore: true,
+            minMatchCharLength: Math.min(2, this._filter.length),
+          }) as AutomationItemComboBoxItem[];
+        }
+
+        if (!selectedSection && items.length) {
+          // show group title
+          resultItems.push(
+            localize(`ui.panel.config.automation.editor.${type}s.name`)
+          );
+        }
+
+        resultItems.push(...items);
+      }
+
+      if (
+        type !== "trigger" &&
+        (!selectedSection || selectedSection === "block")
+      ) {
+        const groups =
+          type === "action"
+            ? ACTION_BUILDING_BLOCKS_GROUP
+            : type === "condition"
+              ? CONDITION_BUILDING_BLOCKS_GROUP
+              : {};
+
+        let blocks = this._convertItemsToComboBoxItems(
+          Object.keys(groups).map((key) =>
+            this._convertToItem(key, {}, type, localize)
+          ),
+          "block"
+        );
+
+        if (searchTerm) {
+          blocks = this._filterGroup("block", blocks, searchTerm, {
+            ignoreLocation: true,
+            includeScore: true,
+            minMatchCharLength: Math.min(2, this._filter.length),
+          }) as AutomationItemComboBoxItem[];
+        }
+
+        if (!selectedSection && blocks.length) {
+          // show group title
+          resultItems.push(
+            localize("ui.panel.config.automation.editor.blocks")
+          );
+        }
+        resultItems.push(...blocks);
+      }
+
       if (!selectedSection || selectedSection === "entity") {
         let entityItems = this._getEntitiesMemoized(
           this.hass,
@@ -626,63 +684,6 @@ class DialogAddAutomationElement
         resultItems.push(...labels);
       }
 
-      if (
-        type !== "trigger" &&
-        (!selectedSection || selectedSection === "block")
-      ) {
-        const groups =
-          type === "action"
-            ? ACTION_BUILDING_BLOCKS_GROUP
-            : type === "condition"
-              ? CONDITION_BUILDING_BLOCKS_GROUP
-              : {};
-
-        let blocks = this._convertItemsToComboBoxItems(
-          Object.keys(groups).map((key) =>
-            this._convertToItem(key, {}, type, localize)
-          ),
-          "block"
-        );
-
-        if (searchTerm) {
-          blocks = this._filterGroup("block", blocks, searchTerm, {
-            ignoreLocation: true,
-            includeScore: true,
-            minMatchCharLength: Math.min(2, this._filter.length),
-          }) as AutomationItemComboBoxItem[];
-        }
-
-        if (!selectedSection && blocks.length) {
-          // show group title
-          resultItems.push(
-            localize("ui.panel.config.automation.editor.blocks")
-          );
-        }
-        resultItems.push(...blocks);
-      }
-      if (!selectedSection || selectedSection === "item") {
-        let items = this._convertItemsToComboBoxItems(
-          this._items(type, localize, services, manifests),
-          type
-        );
-        if (searchTerm) {
-          items = this._filterGroup("item", items, searchTerm, {
-            ignoreLocation: true,
-            includeScore: true,
-            minMatchCharLength: Math.min(2, this._filter.length),
-          }) as AutomationItemComboBoxItem[];
-        }
-
-        if (!selectedSection && resultItems.length) {
-          // show group title
-          resultItems.push(
-            localize(`ui.panel.config.automation.editor.${type}s.name`)
-          );
-        }
-
-        resultItems.push(...items);
-      }
-
       return resultItems;
     }
   );
@@ -712,7 +713,8 @@ class DialogAddAutomationElement
       if (type === "action") {
         items.push(...this._services(localize, services, manifests));
       }
-      return items;
+
+      return items.filter(({ name }) => name);
     }
   );
 
@@ -1338,7 +1340,6 @@ class DialogAddAutomationElement
                   blank:
                     (this._tab === "groups" && !this._selectedGroup) ||
                     (this._tab === "targets" && !this._selectedTarget),
-                  "empty-search": !items?.length && this._filter,
                   hidden:
                     this._narrow &&
                     !this._selectedGroup &&
@@ -1449,13 +1450,15 @@ class DialogAddAutomationElement
         ${SEARCH_SECTIONS.map((section) =>
           section === "separator"
             ? html`<div class="separator"></div>`
-            : html`<ha-filter-chip
-                @click=${this._toggleSection}
-                .section-id=${section}
-                .selected=${this._selectedSearchSection === section}
-                .label=${this._getSearchSectionLabel(section)}
-              >
-              </ha-filter-chip>`
+            : this._params!.type !== "trigger" || section !== "block"
+              ? html`<ha-filter-chip
+                  @click=${this._toggleSection}
+                  .section-id=${section}
+                  .selected=${this._selectedSearchSection === section}
+                  .label=${this._getSearchSectionLabel(section)}
+                >
+                </ha-filter-chip>`
+              : nothing
         )}
       </ha-chip-set>
     `;
@@ -1473,17 +1476,21 @@ class DialogAddAutomationElement
     );
 
     if (!items.length) {
-      return html`<span
-        >${this.hass.localize(
-          `ui.panel.config.automation.editor.${this._params!.type}s.empty_search`,
-          {
-            term: html`<b>‘${this._filter}’</b>`,
-          }
-        )}</span
-      >`;
+      const emptySearchTranslation = !this._selectedSearchSection
+        ? `ui.panel.config.automation.editor.${this._params!.type}s.empty_search.global`
+        : this._selectedSearchSection === "item"
+          ? `ui.panel.config.automation.editor.${this._params!.type}s.empty_search.item`
+          : `ui.panel.config.automation.editor.empty_section_search.${this._selectedSearchSection}`;
+
+      return html`<div class="empty-search">
+        ${this.hass.localize(emptySearchTranslation as LocalizeKeys, {
+          term: html`<b>‘${this._filter}’</b>`,
+        })}
+      </div>`;
     }
 
-    return html`<div class="section-title-wrapper">
+    return html`<div class="search-results">
+      <div class="section-title-wrapper">
         ${!this._selectedSearchSection && this._searchSectionTitle
           ? html`<ha-section-title>
               ${this._searchSectionTitle}
@@ -1502,7 +1509,8 @@ class DialogAddAutomationElement
         @focus=${this._focusSearchList}
         @visibilityChanged=${this._visibilityChanged}
       >
-      </lit-virtualizer>`;
+      </lit-virtualizer>
+    </div>`;
   }
 
   private _renderSearchResultRow = (
@@ -1701,10 +1709,12 @@ class DialogAddAutomationElement
         secondItem === undefined ||
         typeof firstItem === "string" ||
         typeof secondItem === "string" ||
+        ev.first === 0 ||
         (ev.first === 0 &&
           ev.last === this._virtualizerElement.items.length - 1)
       ) {
         this._searchSectionTitle = undefined;
+        return;
       }
 
       let section: SearchSection;
@@ -1726,12 +1736,21 @@ class DialogAddAutomationElement
   }
 
   private _getSearchSectionLabel(section: SearchSection) {
+    if (section === "block") {
+      return this.hass.localize("ui.panel.config.automation.editor.blocks");
+    }
+
+    if (
+      section === "item" ||
+      ["trigger", "condition", "action"].includes(section)
+    ) {
+      return this.hass.localize(
+        `ui.panel.config.automation.editor.${this._params!.type}s.name`
+      );
+    }
+
     return this.hass.localize(
-      section === "item"
-        ? `ui.panel.config.automation.editor.${this._params!.type}s.name`
-        : section === "block"
-          ? "ui.panel.config.automation.editor.blocks"
-          : `ui.components.target-picker.type.${section}`
+      `ui.components.target-picker.type.${section === "entity" ? "entities" : `${section as "area" | "device" | "floor"}s`}` as LocalizeKeys
     );
   }
 
@@ -2182,13 +2201,25 @@ class DialogAddAutomationElement
         }
 
         ha-automation-add-from-target,
+        .search-results,
         .groups {
-          overflow: auto;
-          flex: 3;
           border-radius: var(--ha-border-radius-xl);
           border: 1px solid var(--ha-color-border-neutral-quiet);
           margin: var(--ha-space-3);
+        }
+
+        ha-automation-add-from-target,
+        .groups {
+          overflow: auto;
+          flex: 3;
           margin-inline-end: var(--ha-space-0);
+        }
+
+        .search-results {
+          overflow: hidden;
+          flex: 1;
+          display: flex;
+          flex-direction: column;
         }
 
         ha-automation-add-from-target.hidden {
@@ -2253,7 +2284,7 @@ class DialogAddAutomationElement
           display: none;
         }
         .items.blank,
-        .items.empty-search {
+        .empty-search {
           border-radius: var(--ha-border-radius-xl);
           background-color: var(--ha-color-surface-default);
           align-items: center;
@@ -2261,6 +2292,14 @@ class DialogAddAutomationElement
           padding: var(--ha-space-0);
           margin: var(--ha-space-3) var(--ha-space-4)
             max(var(--safe-area-inset-bottom), var(--ha-space-3));
+          line-height: var(--ha-line-height-expanded);
+        }
+
+        .empty-search {
+          display: flex;
+          flex-direction: column;
+          flex: 1;
+          padding: var(--ha-space-3);
         }
 
         .items ha-md-list {
@@ -2351,10 +2390,9 @@ class DialogAddAutomationElement
         }
 
         .section-title-wrapper ha-section-title {
-          opacity: 0;
           position: absolute;
           top: 1px;
-          width: calc(100% - var(--ha-space-8));
+          width: calc(100% - var(--ha-space-4));
           z-index: 1;
         }
 
@@ -2362,8 +2400,11 @@ class DialogAddAutomationElement
           display: flex;
           flex-wrap: nowrap;
           gap: var(--ha-space-2);
-          padding: var(--ha-space-3) var(--ha-space-3);
+          padding: var(--ha-space-3);
+          margin-bottom: calc(var(--ha-space-3) * -1);
           overflow: auto;
+          overflow-x: auto;
+          overflow-y: hidden;
         }
 
         .sections ha-filter-chip {

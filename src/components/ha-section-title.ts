@@ -16,6 +16,7 @@ class HaSectionTitle extends LitElement {
       min-height: var(--ha-space-6);
       display: flex;
       align-items: center;
+      box-sizing: border-box;
     }
   `;
 }
