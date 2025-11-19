@@ -70,8 +70,7 @@ export class HomeMainViewStrategy extends ReactiveElement {
 
     const floorCount = home.floors.length + (home.areas.length ? 1 : 0);
 
-    // Allow between 2 and 3 columns (the max should be set to define the width of the header)
-    const maxColumns = 2;
+    const maxColumns = 3;
 
     const floorsSections: LovelaceSectionConfig[] = [];
     for (const floorStructure of home.floors) {
@@ -176,74 +175,66 @@ export class HomeMainViewStrategy extends ReactiveElement {
         ({
           type: "home-summary",
           summary: "light",
-          vertical: true,
           tap_action: {
             action: "navigate",
             navigation_path: "/light?historyBack=1",
           },
           grid_options: {
-            rows: 2,
-            columns: 4,
+            columns: 12,
           },
         } satisfies HomeSummaryCard),
       hasClimate &&
         ({
           type: "home-summary",
           summary: "climate",
-          vertical: true,
           tap_action: {
             action: "navigate",
             navigation_path: "/climate?historyBack=1",
           },
           grid_options: {
-            rows: 2,
-            columns: 4,
+            columns: 12,
           },
         } satisfies HomeSummaryCard),
       hasSecurity &&
         ({
           type: "home-summary",
           summary: "security",
-          vertical: true,
           tap_action: {
             action: "navigate",
             navigation_path: "/security?historyBack=1",
           },
           grid_options: {
-            rows: 2,
-            columns: 4,
+            columns: 12,
           },
         } satisfies HomeSummaryCard),
       hasMediaPlayers &&
         ({
           type: "home-summary",
           summary: "media_players",
-          vertical: true,
           tap_action: {
             action: "navigate",
             navigation_path: "media-players",
           },
           grid_options: {
-            rows: 2,
-            columns: 4,
+            columns: 12,
           },
         } satisfies HomeSummaryCard),
     ].filter(Boolean) as LovelaceCardConfig[];
 
-    const summarySection: LovelaceSectionConfig = {
+    const forYouSection: LovelaceSectionConfig = {
       type: "grid",
       column_span: maxColumns,
-      cards: [],
+      cards: [
+        {
+          type: "heading",
+          heading: "For you",
+          heading_style: "title",
+        },
+      ],
     };
 
     if (summaryCards.length) {
-      summarySection.cards!.push(
-        {
-          type: "heading",
-          heading: hass.localize("ui.panel.lovelace.strategy.home.summaries"),
-        },
-        ...summaryCards
-      );
+      forYouSection.cards!.push(...summaryCards);
     }
 
     const weatherFilter = generateEntityFilter(hass, {
@@ -251,28 +242,16 @@ export class HomeMainViewStrategy extends ReactiveElement {
       entity_category: "none",
     });
 
-    const widgetSection: LovelaceSectionConfig = {
-      type: "grid",
-      column_span: maxColumns,
-      cards: [],
-    };
     const weatherEntity = Object.keys(hass.states)
       .filter(weatherFilter)
       .sort()[0];
 
     if (weatherEntity) {
-      widgetSection.cards!.push(
-        {
-          type: "heading",
-          heading: "",
-          heading_style: "subtitle",
-        },
-        {
-          type: "weather-forecast",
-          entity: weatherEntity,
-          forecast_type: "daily",
-        } as WeatherForecastCardConfig
-      );
+      forYouSection.cards!.push({
+        type: "weather-forecast",
+        entity: weatherEntity,
+        forecast_type: "daily",
+      } as WeatherForecastCardConfig);
     }
 
     const energyPrefs = isComponentLoaded(hass, "energy")
@@ -286,7 +265,7 @@ export class HomeMainViewStrategy extends ReactiveElement {
       );
 
       if (grid && grid.flow_from.length > 0) {
-        widgetSection.cards!.push({
+        forYouSection.cards!.push({
           title: hass.localize(
             "ui.panel.lovelace.cards.energy.energy_distribution.title_today"
           ),
@@ -301,9 +280,7 @@ export class HomeMainViewStrategy extends ReactiveElement {
       [
         favoriteSection.cards && favoriteSection,
         commonControlsSection,
-        summarySection.cards && summarySection,
         ...floorsSections,
-        widgetSection.cards && widgetSection,
       ] satisfies (LovelaceSectionRawConfig | undefined)[]
     ).filter(Boolean) as LovelaceSectionRawConfig[];
 
@@ -318,6 +295,9 @@ export class HomeMainViewStrategy extends ReactiveElement {
           text_only: true,
           content: `## ${hass.localize("ui.panel.lovelace.strategy.home.welcome_user", { user: "{{ user }}" })}`,
         } satisfies MarkdownCardConfig,
+      },
+      sidebar: {
+        sections: [forYouSection],
       },
     };
   }
