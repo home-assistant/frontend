@@ -142,10 +142,8 @@ export const haStyleDialog = css`
     --mdc-dialog-max-width: 600px;
     --mdc-dialog-max-width: min(600px, 95vw);
     --justify-action-buttons: space-between;
-    --dialog-container-padding: var(--safe-area-inset-top, var(--ha-space-0))
-      var(--safe-area-inset-right, var(--ha-space-0))
-      var(--safe-area-inset-bottom, var(--ha-space-0))
-      var(--safe-area-inset-left, var(--ha-space-0));
+    --dialog-container-padding: var(--safe-area-inset-x, var(--ha-space-0))
+      var(--safe-area-inset-y, var(--ha-space-0));
     --dialog-surface-padding: var(--ha-space-0);
   }
 
