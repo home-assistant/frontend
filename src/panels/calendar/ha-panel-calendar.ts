@@ -1,5 +1,6 @@
 import { ResizeController } from "@lit-labs/observers/resize-controller";
 import type { RequestSelectedDetail } from "@material/mwc-list/mwc-list-item";
+import type { UnsubscribeFunc } from "home-assistant-js-websocket";
 import { mdiChevronDown, mdiPlus, mdiRefresh } from "@mdi/js";
 import type { CSSResultGroup, PropertyValues, TemplateResult } from "lit";
 import { LitElement, css, html, nothing } from "lit";
@@ -20,8 +21,17 @@ import "../../components/ha-menu-button";
 import "../../components/ha-state-icon";
 import "../../components/ha-svg-icon";
 import "../../components/ha-two-pane-top-app-bar-fixed";
-import type { Calendar, CalendarEvent } from "../../data/calendar";
-import { fetchCalendarEvents, getCalendars } from "../../data/calendar";
+import type {
+  Calendar,
+  CalendarEvent,
+  CalendarEventSubscription,
+  CalendarEventApiData,
+} from "../../data/calendar";
+import {
+  getCalendars,
+  normalizeSubscriptionEventData,
+  subscribeCalendarEvents,
+} from "../../data/calendar";
 import { fetchIntegrationManifest } from "../../data/integration";
 import { showConfigFlowDialog } from "../../dialogs/config-flow/show-dialog-config-flow";
 import { haStyle } from "../../resources/styles";
@@ -42,6 +52,8 @@ class PanelCalendar extends LitElement {
 
   @state() private _error?: string = undefined;
 
+  @state() private _errorCalendars: string[] = [];
+
   @state()
   @storage({
     key: "deSelectedCalendars",
@@ -52,6 +64,8 @@ class PanelCalendar extends LitElement {
   private _start?: Date;
 
   private _end?: Date;
+
+  private _unsubs: Record<string, Promise<UnsubscribeFunc>> = {};
 
   private _showPaneController = new ResizeController(this, {
     callback: (entries) => entries[0]?.contentRect.width > 750,
@@ -78,6 +92,7 @@ class PanelCalendar extends LitElement {
     super.disconnectedCallback();
     this._mql?.removeListener(this._setIsMobile!);
     this._mql = undefined;
+    this._unsubscribeAll();
   }
 
   private _setIsMobile = (ev: MediaQueryListEvent) => {
@@ -194,19 +209,95 @@ class PanelCalendar extends LitElement {
       .map((cal) => cal);
   }
 
-  private async _fetchEvents(
-    start: Date | undefined,
-    end: Date | undefined,
-    calendars: Calendar[]
-  ): Promise<{ events: CalendarEvent[]; errors: string[] }> {
-    if (!calendars.length || !start || !end) {
-      return { events: [], errors: [] };
+  private _subscribeCalendarEvents(calendars: Calendar[]): void {
+    if (!this._start || !this._end || calendars.length === 0) {
+      return;
     }
 
-    return fetchCalendarEvents(this.hass, start, end, calendars);
+    this._error = undefined;
+
+    calendars.forEach((calendar) => {
+      // Unsubscribe existing subscription if any
+      if (calendar.entity_id in this._unsubs) {
+        this._unsubs[calendar.entity_id]
+          .then((unsubFunc) => unsubFunc())
+          .catch(() => {
+            // Subscription may have already been closed
+          });
+      }
+
+      const unsub = subscribeCalendarEvents(
+        this.hass,
+        calendar.entity_id,
+        this._start!,
+        this._end!,
+        (update: CalendarEventSubscription) => {
+          this._handleCalendarUpdate(calendar, update);
+        }
+      );
+      this._unsubs[calendar.entity_id] = unsub;
+    });
   }
 
-  private async _requestSelected(ev: CustomEvent<RequestSelectedDetail>) {
+  private _handleCalendarUpdate(
+    calendar: Calendar,
+    update: CalendarEventSubscription
+  ): void {
+    // Remove events from this calendar
+    this._events = this._events.filter(
+      (event) => event.calendar !== calendar.entity_id
+    );
+
+    if (update.events === null) {
+      // Error fetching events
+      if (!this._errorCalendars.includes(calendar.entity_id)) {
+        this._errorCalendars = [...this._errorCalendars, calendar.entity_id];
+      }
+      this._handleErrors(this._errorCalendars);
+      return;
+    }
+
+    // Remove from error list if successfully loaded
+    this._errorCalendars = this._errorCalendars.filter(
+      (id) => id !== calendar.entity_id
+    );
+    this._handleErrors(this._errorCalendars);
+
+    // Add new events from this calendar
+    const newEvents: CalendarEvent[] = update.events
+      .map((eventData: CalendarEventApiData) =>
+        normalizeSubscriptionEventData(eventData, calendar)
+      )
+      .filter((event): event is CalendarEvent => event !== null);
+
+    this._events = [...this._events, ...newEvents];
+  }
+
+  private async _unsubscribeAll(): Promise<void> {
+    await Promise.all(
+      Object.values(this._unsubs).map((unsub) =>
+        unsub
+          .then((unsubFunc) => unsubFunc())
+          .catch(() => {
+            // Subscription may have already been closed
+          })
+      )
+    );
+    this._unsubs = {};
+  }
+
+  private _unsubscribeCalendar(entityId: string): void {
+    if (entityId in this._unsubs) {
+      this._unsubs[entityId]
+        .then((unsubFunc) => unsubFunc())
+        .catch(() => {
+          // Subscription may have already been closed
+        });
+      delete this._unsubs[entityId];
+    }
+  }
+
+  private _requestSelected(ev: CustomEvent<RequestSelectedDetail>) {
     ev.stopPropagation();
     const entityId = (ev.target as HaListItem).value;
     if (ev.detail.selected) {
@@ -223,13 +314,10 @@ class PanelCalendar extends LitElement {
       if (!calendar) {
         return;
       }
-      const result = await this._fetchEvents(this._start, this._end, [
-        calendar,
-      ]);
-      this._events = [...this._events, ...result.events];
-      this._handleErrors(result.errors);
+      this._subscribeCalendarEvents([calendar]);
     } else {
       this._deSelectedCalendars = [...this._deSelectedCalendars, entityId];
+      this._unsubscribeCalendar(entityId);
       this._events = this._events.filter(
         (event) => event.calendar !== entityId
       );
@@ -254,23 +342,15 @@ class PanelCalendar extends LitElement {
   ): Promise<void> {
     this._start = ev.detail.start;
     this._end = ev.detail.end;
-    const result = await this._fetchEvents(
-      this._start,
-      this._end,
-      this._selectedCalendars
-    );
-    this._events = result.events;
-    this._handleErrors(result.errors);
+    await this._unsubscribeAll();
+    this._events = [];
+    this._subscribeCalendarEvents(this._selectedCalendars);
   }
 
   private async _handleRefresh(): Promise<void> {
-    const result = await this._fetchEvents(
-      this._start,
-      this._end,
-      this._selectedCalendars
-    );
-    this._events = result.events;
-    this._handleErrors(result.errors);
+    await this._unsubscribeAll();
+    this._events = [];
+    this._subscribeCalendarEvents(this._selectedCalendars);
   }
 
   private _handleErrors(error_entity_ids: string[]) {

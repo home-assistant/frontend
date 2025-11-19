@@ -53,6 +53,9 @@ export const enum CalendarEntityFeature {
   UPDATE_EVENT = 4,
 }
 
+/** Type for date values that can come from REST API or subscription */
+type CalendarDateValue = string | { dateTime: string } | { date: string };
+
 export const fetchCalendarEvents = async (
   hass: HomeAssistant,
   start: Date,
@@ -65,11 +68,11 @@ export const fetchCalendarEvents = async (
 
   const calEvents: CalendarEvent[] = [];
   const errors: string[] = [];
-  const promises: Promise<CalendarEvent[]>[] = [];
+  const promises: Promise<CalendarEventApiData[]>[] = [];
 
   calendars.forEach((cal) => {
     promises.push(
-      hass.callApi<CalendarEvent[]>(
+      hass.callApi<CalendarEventApiData[]>(
         "GET",
         `calendars/${cal.entity_id}${params}`
       )
@@ -77,7 +80,7 @@ export const fetchCalendarEvents = async (
   });
 
   for (const [idx, promise] of promises.entries()) {
-    let result: CalendarEvent[];
+    let result: CalendarEventApiData[];
     try {
       // eslint-disable-next-line no-await-in-loop
       result = await promise;
@@ -87,51 +90,14 @@ export const fetchCalendarEvents = async (
     }
     const cal = calendars[idx];
     result.forEach((ev) => {
-      const eventStart = getCalendarDate(ev.start);
-      const eventEnd = getCalendarDate(ev.end);
-      if (!eventStart || !eventEnd) {
-        return;
+      const normalized = normalizeSubscriptionEventData(ev, cal);
+      if (normalized) {
+        calEvents.push(normalized);
       }
-      const eventData: CalendarEventData = {
-        uid: ev.uid,
-        summary: ev.summary,
-        description: ev.description,
-        dtstart: eventStart,
-        dtend: eventEnd,
-        recurrence_id: ev.recurrence_id,
-        rrule: ev.rrule,
-      };
-      const event: CalendarEvent = {
-        start: eventStart,
-        end: eventEnd,
-        title: ev.summary,
-        backgroundColor: cal.backgroundColor,
-        borderColor: cal.backgroundColor,
-        calendar: cal.entity_id,
-        eventData: eventData,
-      };
-
-      calEvents.push(event);
     });
   }
 
   return { events: calEvents, errors };
-};
-
-const getCalendarDate = (dateObj: any): string | undefined => {
-  if (typeof dateObj === "string") {
-    return dateObj;
-  }
-
-  if (dateObj.dateTime) {
-    return dateObj.dateTime;
-  }
-
-  if (dateObj.date) {
-    return dateObj.date;
-  }
-
-  return undefined;
 };
 
 export const getCalendars = (hass: HomeAssistant): Calendar[] =>
@@ -191,3 +157,89 @@ export const deleteCalendarEvent = (
     recurrence_id,
     recurrence_range,
   });
+
+/**
+ * Calendar event data from both REST API and WebSocket subscription.
+ * Both APIs use the same data format.
+ */
+export interface CalendarEventApiData {
+  summary: string;
+  start: CalendarDateValue;
+  end: CalendarDateValue;
+  description?: string | null;
+  location?: string | null;
+  uid?: string | null;
+  recurrence_id?: string | null;
+  rrule?: string | null;
+}
+
+export interface CalendarEventSubscription {
+  events: CalendarEventApiData[] | null;
+}
+
+export const subscribeCalendarEvents = (
+  hass: HomeAssistant,
+  entity_id: string,
+  start: Date,
+  end: Date,
+  callback: (update: CalendarEventSubscription) => void
+) =>
+  hass.connection.subscribeMessage<CalendarEventSubscription>(callback, {
+    type: "calendar/event/subscribe",
+    entity_id,
+    start: start.toISOString(),
+    end: end.toISOString(),
+  });
+
+const getCalendarDate = (dateObj: CalendarDateValue): string | undefined => {
+  if (typeof dateObj === "string") {
+    return dateObj;
+  }
+
+  if ("dateTime" in dateObj) {
+    return dateObj.dateTime;
+  }
+
+  if ("date" in dateObj) {
+    return dateObj.date;
+  }
+
+  return undefined;
+};
+
+/**
+ * Normalize calendar event data from API format to internal format.
+ * Handles both REST API format (with dateTime/date objects) and subscription format (strings).
+ * Converts to internal format with { dtstart, dtend, ... }
+ */
+export const normalizeSubscriptionEventData = (
+  eventData: CalendarEventApiData,
+  calendar: Calendar
+): CalendarEvent | null => {
+  const eventStart = getCalendarDate(eventData.start);
+  const eventEnd = getCalendarDate(eventData.end);
+
+  if (!eventStart || !eventEnd) {
+    return null;
+  }
+
+  const normalizedEventData: CalendarEventData = {
+    summary: eventData.summary,
+    dtstart: eventStart,
+    dtend: eventEnd,
+    description: eventData.description ?? undefined,
+    uid: eventData.uid ?? undefined,
+    recurrence_id: eventData.recurrence_id ?? undefined,
+    rrule: eventData.rrule ?? undefined,
+  };
+
+  return {
+    start: eventStart,
+    end: eventEnd,
+    title: eventData.summary,
+    backgroundColor: calendar.backgroundColor,
+    borderColor: calendar.backgroundColor,
+    calendar: calendar.entity_id,
+    eventData: normalizedEventData,
+  };
+};
