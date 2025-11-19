@@ -1152,7 +1152,7 @@ class DialogAddAutomationElement
     const items =
       !this._filter && this._tab === "blocks"
         ? this._getBlockItems(automationElementType, this.hass.localize)
-        : !this._filter && this._selectedGroup
+        : !this._filter && this._tab === "groups" && this._selectedGroup
           ? this._getGroupItems(
               automationElementType,
               this._selectedGroup,
@@ -1162,7 +1162,10 @@ class DialogAddAutomationElement
               this.hass.services,
               this._manifests
             )
-          : !this._filter && this._selectedTarget && this._targetItems
+          : !this._filter &&
+              this._tab === "targets" &&
+              this._selectedTarget &&
+              this._targetItems
             ? this._targetItems
             : undefined;
 
@@ -1474,7 +1477,12 @@ class DialogAddAutomationElement
     }
 
     return html`
-      <ha-wa-dialog .open=${this._open} @closed=${this.closeDialog} flexcontent>
+      <ha-wa-dialog
+        width="large"
+        .open=${this._open}
+        @closed=${this.closeDialog}
+        flexcontent
+      >
         ${this._renderContent()}
       </ha-wa-dialog>
     `;
@@ -2315,7 +2323,6 @@ class DialogAddAutomationElement
 
         ha-wa-dialog {
           --dialog-content-padding: var(--ha-space-0);
-          --ha-dialog-width-md: 888px;
           --ha-dialog-min-height: min(
             648px,
             calc(
@@ -2373,7 +2380,7 @@ class DialogAddAutomationElement
         ha-automation-add-from-target,
         .groups {
           overflow: auto;
-          flex: 3;
+          flex: 4;
           margin-inline-end: var(--ha-space-0);
         }
 
@@ -2425,7 +2432,7 @@ class DialogAddAutomationElement
           display: flex;
           flex-direction: column;
           overflow: auto;
-          flex: 7;
+          flex: 6;
         }
 
         .content.column ha-automation-add-from-target,
