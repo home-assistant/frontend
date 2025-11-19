@@ -232,15 +232,21 @@ class DialogMediaPlayerBrowse extends LitElement {
 
         ha-media-player-browse {
           --media-browser-max-height: calc(
-            100vh - 65px - var(--safe-area-inset-top, 0) -
-              var(--safe-area-inset-bottom, 0)
+            100vh -
+              65px - var(--safe-area-inset-top, var(--ha-space-0)) - var(
+                --safe-area-inset-bottom,
+                var(--ha-space-0)
+              )
           );
         }
 
         :host(.opened) ha-media-player-browse {
           height: calc(
-            100vh - 65px - var(--safe-area-inset-top, 0) -
-              var(--safe-area-inset-bottom, 0)
+            100vh -
+              65px - var(--safe-area-inset-top, var(--ha-space-0)) - var(
+                --safe-area-inset-bottom,
+                var(--ha-space-0)
+              )
           );
         }
 
@@ -252,8 +258,11 @@ class DialogMediaPlayerBrowse extends LitElement {
           ha-media-player-browse {
             position: initial;
             --media-browser-max-height: calc(
-              100vh - 145px - var(--safe-area-inset-top, 0) -
-                var(--safe-area-inset-bottom, 0)
+              100vh -
+                145px - var(--safe-area-inset-top, var(--ha-space-0)) - var(
+                  --safe-area-inset-bottom,
+                  var(--ha-space-0)
+                )
             );
             width: 700px;
           }
