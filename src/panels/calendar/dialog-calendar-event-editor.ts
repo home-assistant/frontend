@@ -105,7 +105,7 @@ class DialogCalendarEventEditor extends LitElement {
       this._description = entry.description;
       if (entry.location) {
         this._hasLocation = true;
-        this._location = entry.location || "";
+        this._location = entry.location;
       }
       this._rrule = entry.rrule;
       if (this._allDay) {
@@ -345,8 +345,8 @@ class DialogCalendarEventEditor extends LitElement {
     this._description = ev.target.value;
   }
 
-  private _handleLocationChanged(ev) {
-    this._location = ev.target.value;
+  private _handleLocationChanged(ev: Event) {
+    this._location = (ev.target as HTMLInputElement).value;
   }
 
   private _handleRRuleChanged(ev) {
