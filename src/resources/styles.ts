@@ -167,10 +167,8 @@ export const haStyleDialog = css`
       --mdc-dialog-max-height: 100vh;
       --mdc-dialog-max-height: 100svh;
       --dialog-container-padding: var(--ha-space-0);
-      --dialog-surface-padding: var(--safe-area-inset-top, var(--ha-space-0))
-        var(--safe-area-inset-right, var(--ha-space-0))
-        var(--safe-area-inset-bottom, var(--ha-space-0))
-        var(--safe-area-inset-left, var(--ha-space-0));
+      --dialog-surface-padding: var(--safe-area-inset-x, var(--ha-space-0))
+        var(--safe-area-inset-y, var(--ha-space-0));
       --vertical-align-dialog: flex-end;
       --ha-dialog-border-radius: var(--ha-border-radius-square);
     }
@@ -187,25 +185,25 @@ export const haStyleDialogFixedTop = css`
     --dialog-surface-margin-top: var(--ha-space-10);
     --mdc-dialog-min-height: calc(
       100vh - var(--dialog-surface-margin-top) - var(
-          --safe-area-inset-top,
+          --safe-area-inset-y,
           var(--ha-space-0)
         )
     );
     --mdc-dialog-min-height: calc(
       100svh - var(--dialog-surface-margin-top) - var(
-          --safe-area-inset-top,
+          --safe-area-inset-y,
           var(--ha-space-0)
         )
     );
     --mdc-dialog-max-height: calc(
       100vh - var(--dialog-surface-margin-top) - var(
-          --safe-area-inset-top,
+          --safe-area-inset-y,
           var(--ha-space-0)
         )
     );
     --mdc-dialog-max-height: calc(
       100svh - var(--dialog-surface-margin-top) - var(
-          --safe-area-inset-top,
+          --safe-area-inset-y,
           var(--ha-space-0)
         )
     );
