@@ -135,6 +135,11 @@ class HaPanelDevAction extends LitElement {
       ? computeObjectId(this._serviceData?.action)
       : undefined;
 
+    const descriptionPlaceholders =
+      domain && serviceName
+        ? this.hass.services[domain][serviceName].description_placeholders
+        : undefined;
+
     return html`
       <div class="content">
         <p>
@@ -307,12 +312,14 @@ class HaPanelDevAction extends LitElement {
                       <td><pre>${field.key}</pre></td>
                       <td>
                         ${this.hass.localize(
-                          `component.${domain}.services.${serviceName}.fields.${field.key}.description`
+                          `component.${domain}.services.${serviceName}.fields.${field.key}.description`,
+                          descriptionPlaceholders
                         ) || field.description}
                       </td>
                       <td>
                         ${this.hass.localize(
-                          `component.${domain}.services.${serviceName}.fields.${field.key}.example`
+                          `component.${domain}.services.${serviceName}.fields.${field.key}.example`,
+                          descriptionPlaceholders
                         ) || field.example}
                       </td>
                     </tr>`
@@ -643,7 +650,11 @@ class HaPanelDevAction extends LitElement {
         } catch (_err: any) {
           value =
             this.hass.localize(
-              `component.${domain}.services.${serviceName}.fields.${field.key}.example`
+              `component.${domain}.services.${serviceName}.fields.${field.key}.example`,
+              domain && serviceName
+                ? this.hass.services[domain][serviceName]
+                    .description_placeholders
+                : undefined
             ) || field.example;
         }
         example[field.key] = value;

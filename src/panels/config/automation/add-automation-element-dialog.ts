@@ -719,13 +719,17 @@ class DialogAddAutomationElement
             `,
             key: `${DYNAMIC_PREFIX}${dmn}.${service}`,
             name: `${domain ? "" : `${domainToName(localize, dmn)}: `}${
-              this.hass.localize(`component.${dmn}.services.${service}.name`) ||
+              this.hass.localize(
+                `component.${dmn}.services.${service}.name`,
+                this.hass.services[dmn][service].description_placeholders
+              ) ||
               services[dmn][service]?.name ||
               service
             }`,
             description:
               this.hass.localize(
-                `component.${dmn}.services.${service}.description`
+                `component.${dmn}.services.${service}.description`,
+                this.hass.services[dmn][service].description_placeholders
               ) ||
               services[dmn][service]?.description ||
               "",
