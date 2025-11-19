@@ -4007,6 +4007,8 @@
             },
             "load_target_items_failed": "Failed to load target items for",
             "other_areas": "Other areas",
+            "services": "Services",
+            "helpers": "Helpers",
             "triggers": {
               "name": "Triggers",
               "header": "When",

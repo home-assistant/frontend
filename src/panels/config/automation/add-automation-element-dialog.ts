@@ -108,7 +108,7 @@ import {
 } from "../../../data/entity_registry";
 import { getFloorAreaLookup } from "../../../data/floor_registry";
 import { getServiceIcons, getTriggerIcons } from "../../../data/icons";
-import type { IntegrationManifest } from "../../../data/integration";
+import type { DomainManifestLookup } from "../../../data/integration";
 import {
   domainToName,
   fetchIntegrationManifests,
@@ -165,8 +165,6 @@ interface ListItem {
   iconPath?: string;
   icon?: TemplateResult;
 }
-
-type DomainManifestLookup = Record<string, IntegrationManifest>;
 
 const ENTITY_DOMAINS_OTHER = new Set([
   "date",
@@ -1249,6 +1247,7 @@ class DialogAddAutomationElement
                 @value-changed=${this._handleTargetSelected}
                 .narrow=${this._narrow}
                 class=${this._getAddFromTargetHidden()}
+                .manifests=${this._manifests}
               ></ha-automation-add-from-target>`
             : html`
                 <ha-md-list
@@ -2102,7 +2101,9 @@ class DialogAddAutomationElement
       this._extractTypeAndIdFromTarget(selectedTarget);
 
     if (targetId === undefined && targetType === "floor") {
-      return this.hass.localize("ui.components.area-picker.unassigned_areas");
+      return this.hass.localize(
+        "ui.panel.config.automation.editor.other_areas"
+      );
     }
 
     if (targetId === undefined && targetType === "area") {
@@ -2111,10 +2112,18 @@ class DialogAddAutomationElement
       );
     }
 
+    if (targetId === undefined && targetType === "service") {
+      return this.hass.localize("ui.panel.config.automation.editor.services");
+    }
+
     if (targetId === undefined && targetType === "device") {
       return this.hass.localize(
         "ui.panel.config.automation.editor.unassigned_entities"
       );
+    }
+
+    if (targetId === undefined && targetType === "helper") {
+      return this.hass.localize("ui.panel.config.automation.editor.helpers");
     }
 
     if (targetId) {

@@ -2,7 +2,7 @@ import "@home-assistant/webawesome/dist/components/tree-item/tree-item";
 import "@home-assistant/webawesome/dist/components/tree/tree";
 import type { WaSelectionChangeEvent } from "@home-assistant/webawesome/dist/events/selection-change";
 import { consume } from "@lit/context";
-import { mdiCubeOutline, mdiDevices, mdiTextureBox } from "@mdi/js";
+import { mdiTextureBox } from "@mdi/js";
 import type {
   HassEntity,
   SingleHassServiceTarget,
@@ -46,6 +46,7 @@ import {
   statesContext,
 } from "../../../../data/context";
 import { getDeviceEntityLookup } from "../../../../data/device_registry";
+import type { DomainManifestLookup } from "../../../../data/integration";
 import {
   getLabels,
   type LabelRegistryEntry,
@@ -74,6 +75,8 @@ export default class HaAutomationAddFromTarget extends LitElement {
   public value?: SingleHassServiceTarget;
 
   @property({ type: Boolean }) public narrow = false;
+
+  @property({ attribute: false }) public manifests?: DomainManifestLookup;
 
   // #region context
   @state()
@@ -186,9 +189,9 @@ export default class HaAutomationAddFromTarget extends LitElement {
       );
     }
 
-    if (valueType === "area") {
+    if (valueType === "area" || valueType === "service") {
       const { devices, entities } =
-        this._areaEntries[`area${TARGET_SEPARATOR}${valueId ?? ""}`];
+        this._areaEntries[`${valueType}${TARGET_SEPARATOR}${valueId ?? ""}`];
       const numberOfDevices = Object.keys(devices).length;
 
       return html`
@@ -206,7 +209,14 @@ export default class HaAutomationAddFromTarget extends LitElement {
       );
     }
     if (valueType === "device" && !valueId) {
-      return this._renderEntities(this._getUnassignedEntities(this.entities));
+      return this._renderEntities(
+        this._getUnassignedEntities(this.entities, this.manifests).entities
+      );
+    }
+    if (valueType === "helper" && !valueId) {
+      return this._renderEntities(
+        this._getUnassignedEntities(this.entities, this.manifests).helpers
+      );
     }
 
     return nothing;
@@ -339,13 +349,20 @@ export default class HaAutomationAddFromTarget extends LitElement {
   }
 
   private _renderUnassigned() {
-    const unassignedEntities = this._getUnassignedEntities(this.entities);
+    const { entities, helpers } = this._getUnassignedEntities(
+      this.entities,
+      this.manifests
+    );
 
     if (
       !this._areaEntries[`area${TARGET_SEPARATOR}`] &&
       !Object.keys(this._areaEntries[`area${TARGET_SEPARATOR}`]?.devices)
         .length &&
-      !unassignedEntities.length
+      !this._areaEntries[`service${TARGET_SEPARATOR}`] &&
+      !Object.keys(this._areaEntries[`service${TARGET_SEPARATOR}`]?.devices)
+        .length &&
+      !entities.length &&
+      !helpers.length
     ) {
       return nothing;
     }
@@ -356,6 +373,36 @@ export default class HaAutomationAddFromTarget extends LitElement {
         )}</ha-section-title
       >${this.narrow
         ? html`<ha-md-list>
+            ${entities.length
+              ? html`<ha-md-list-item
+                  interactive
+                  type="button"
+                  .target=${`device${TARGET_SEPARATOR}`}
+                  @click=${this._selectItem}
+                >
+                  <div slot="headline">
+                    ${this.localize(
+                      "ui.components.target-picker.type.entities"
+                    )}
+                  </div>
+                  <ha-icon-next slot="end"></ha-icon-next>
+                </ha-md-list-item>`
+              : nothing}
+            ${helpers.length
+              ? html`<ha-md-list-item
+                  interactive
+                  type="button"
+                  .target=${`helper${TARGET_SEPARATOR}`}
+                  @click=${this._selectItem}
+                >
+                  <div slot="headline">
+                    ${this.localize(
+                      "ui.panel.config.automation.editor.helpers"
+                    )}
+                  </div>
+                  <ha-icon-next slot="end"></ha-icon-next>
+                </ha-md-list-item>`
+              : nothing}
             ${this._areaEntries[`area${TARGET_SEPARATOR}`] &&
             Object.keys(this._areaEntries[`area${TARGET_SEPARATOR}`]?.devices)
               .length
@@ -365,27 +412,25 @@ export default class HaAutomationAddFromTarget extends LitElement {
                   .target=${`area${TARGET_SEPARATOR}`}
                   @click=${this._selectItem}
                 >
-                  <ha-svg-icon slot="start" .path=${mdiDevices}></ha-svg-icon>
                   <div slot="headline">
                     ${this.localize("ui.components.target-picker.type.devices")}
                   </div>
                   <ha-icon-next slot="end"></ha-icon-next>
                 </ha-md-list-item>`
               : nothing}
-            ${unassignedEntities.length
+            ${this._areaEntries[`service${TARGET_SEPARATOR}`] &&
+            Object.keys(
+              this._areaEntries[`service${TARGET_SEPARATOR}`]?.devices
+            ).length
               ? html`<ha-md-list-item
                   interactive
                   type="button"
-                  .target=${`device${TARGET_SEPARATOR}`}
+                  .target=${`service${TARGET_SEPARATOR}`}
                   @click=${this._selectItem}
                 >
-                  <ha-svg-icon
-                    slot="start"
-                    .path=${mdiCubeOutline}
-                  ></ha-svg-icon>
                   <div slot="headline">
                     ${this.localize(
-                      "ui.components.target-picker.type.entities"
+                      "ui.panel.config.automation.editor.services"
                     )}
                   </div>
                   <ha-icon-next slot="end"></ha-icon-next>
@@ -393,22 +438,37 @@ export default class HaAutomationAddFromTarget extends LitElement {
               : nothing}
           </ha-md-list>`
         : html`<wa-tree @wa-selection-change=${this._handleSelectionChange}>
+            ${entities.length
+              ? html`<wa-tree-item prevent-selection>
+                  ${this.localize("ui.components.target-picker.type.entities")}
+                  ${this._renderEntities(entities)}
+                </wa-tree-item>`
+              : nothing}
+            ${helpers.length
+              ? html`<wa-tree-item prevent-selection>
+                  ${this.localize("ui.panel.config.automation.editor.helpers")}
+                  ${this._renderEntities(helpers)}
+                </wa-tree-item>`
+              : nothing}
             ${this._areaEntries[`area${TARGET_SEPARATOR}`] &&
             Object.keys(this._areaEntries[`area${TARGET_SEPARATOR}`]?.devices)
               .length
               ? html`<wa-tree-item prevent-selection>
-                  <ha-svg-icon .path=${mdiDevices}></ha-svg-icon>
                   ${this.localize("ui.components.target-picker.type.devices")}
                   ${this._renderDevices(
                     this._areaEntries[`area${TARGET_SEPARATOR}`]?.devices
                   )}
                 </wa-tree-item>`
               : nothing}
-            ${unassignedEntities.length
+            ${this._areaEntries[`service${TARGET_SEPARATOR}`] &&
+            Object.keys(
+              this._areaEntries[`service${TARGET_SEPARATOR}`]?.devices
+            ).length
               ? html`<wa-tree-item prevent-selection>
-                  <ha-svg-icon .path=${mdiCubeOutline}></ha-svg-icon>
-                  ${this.localize("ui.components.target-picker.type.entities")}
-                  ${this._renderEntities(unassignedEntities)}
+                  ${this.localize("ui.panel.config.automation.editor.services")}
+                  ${this._renderDevices(
+                    this._areaEntries[`service${TARGET_SEPARATOR}`]?.devices
+                  )}
                 </wa-tree-item>`
               : nothing}
           </wa-tree>`} `;
@@ -659,10 +719,27 @@ export default class HaAutomationAddFromTarget extends LitElement {
   );
 
   private _getUnassignedEntities = memoizeOne(
-    (entities: HomeAssistant["entities"]): string[] =>
+    (
+      entities: HomeAssistant["entities"],
+      manifests?: DomainManifestLookup
+    ): { entities: string[]; helpers: string[] } => {
+      const unassignedEntities: string[] = [];
+      const unassignedHelpers: string[] = [];
+
       Object.values(entities)
         .filter((entity) => !entity.area_id && !entity.device_id)
-        .map(({ entity_id }) => entity_id)
+        .forEach(({ entity_id }) => {
+          const domain = entity_id.split(".", 2)[0];
+          const manifest = manifests ? manifests[domain] : undefined;
+          if (manifest?.integration_type === "helper") {
+            unassignedHelpers.push(entity_id);
+            return;
+          }
+
+          unassignedEntities.push(entity_id);
+        });
+      return { entities: unassignedEntities, helpers: unassignedHelpers };
+    }
   );
 
   private _getSelectedTargetId = memoizeOne(
@@ -730,20 +807,28 @@ export default class HaAutomationAddFromTarget extends LitElement {
   }
 
   private _loadUnassignedDevices() {
-    const unassignedDevices = Object.values(this.devices)
-      .filter((device) => !device.area_id)
-      .map(({ id }) => id);
+    const unassignedDevices = Object.values(this.devices).filter(
+      (device) => !device.area_id
+    );
 
     const devices: Record<string, DeviceEntries> = {};
 
-    unassignedDevices.forEach((deviceId) => {
-      devices[deviceId] = {
+    const services: Record<string, DeviceEntries> = {};
+
+    unassignedDevices.forEach(({ id: deviceId, entry_type }) => {
+      const deviceEntry = {
         open: false,
         entities:
           this._getDeviceEntityLookupMemoized(this.entities)[deviceId]?.map(
             (entity) => entity.entity_id
           ) || [],
       };
+      if (entry_type === "service") {
+        services[deviceId] = deviceEntry;
+        return;
+      }
+
+      devices[deviceId] = deviceEntry;
     });
 
     if (Object.keys(devices).length) {
@@ -752,6 +837,17 @@ export default class HaAutomationAddFromTarget extends LitElement {
         [`area${TARGET_SEPARATOR}`]: {
           open: false,
           devices,
+          entities: [],
+        },
+      };
+    }
+
+    if (Object.keys(services).length) {
+      this._areaEntries = {
+        ...this._areaEntries,
+        [`service${TARGET_SEPARATOR}`]: {
+          open: false,
+          devices: services,
           entities: [],
         },
       };
@@ -873,6 +969,16 @@ export default class HaAutomationAddFromTarget extends LitElement {
     }
 
     if (valueType === "device") {
+      if (
+        !this.devices[valueId].area_id &&
+        this.devices[valueId].entry_type === "service"
+      ) {
+        fireEvent(this, "value-changed", {
+          value: { service_id: undefined },
+        });
+        return;
+      }
+
       fireEvent(this, "value-changed", {
         value: { area_id: this.devices[valueId].area_id },
       });
@@ -890,6 +996,17 @@ export default class HaAutomationAddFromTarget extends LitElement {
         if (areaEntry.entities.includes(valueId)) {
           fireEvent(this, "value-changed", {
             value: { area_id: areaId.split(TARGET_SEPARATOR, 2)[1] },
+          });
+          return;
+        }
+      }
+
+      if (!this.entities[valueId].device_id) {
+        const domain = valueId.split(".", 2)[0];
+        const manifest = this.manifests ? this.manifests[domain] : undefined;
+        if (manifest?.integration_type === "helper") {
+          fireEvent(this, "value-changed", {
+            value: { helper_id: undefined },
           });
           return;
         }
@@ -963,10 +1080,8 @@ export default class HaAutomationAddFromTarget extends LitElement {
     }
 
     state-badge {
-      min-width: 32px;
-      max-width: 32px;
-      min-height: 32px;
-      max-height: 32px;
+      width: 24px;
+      height: 24px;
     }
 
     wa-tree-item[selected],
