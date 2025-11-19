@@ -1237,7 +1237,8 @@
             "times": "times"
           },
           "summary": "Summary",
-          "description": "Description"
+          "description": "Description",
+          "location": "Location"
         },
         "views": {
           "dayGridMonth": "[%key:ui::panel::lovelace::editor::card::calendar::views::dayGridMonth%]",
