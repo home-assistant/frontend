@@ -8427,7 +8427,8 @@
                 "label": "Bar gauge"
               },
               "trend-graph": {
-                "label": "Trend graph"
+                "label": "Trend graph",
+                "detail": "Show more detail"
               }
             }
           },
