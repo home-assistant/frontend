@@ -7,8 +7,8 @@ import type { LovelaceViewConfig } from "../../../data/lovelace/config/view";
 import type { LovelaceStrategyConfig } from "../../../data/lovelace/config/strategy";
 import { DEFAULT_ENERGY_COLLECTION_KEY } from "../ha-panel-energy";
 
-@customElement("energy-view-strategy")
-export class EnergyViewStrategy extends ReactiveElement {
+@customElement("energy-electricity-view-strategy")
+export class EnergyElectricityViewStrategy extends ReactiveElement {
   static async generate(
     _config: LovelaceStrategyConfig,
     hass: HomeAssistant
@@ -161,6 +161,6 @@ export class EnergyViewStrategy extends ReactiveElement {
 
 declare global {
   interface HTMLElementTagNameMap {
-    "energy-view-strategy": EnergyViewStrategy;
+    "energy-electricity-view-strategy": EnergyElectricityViewStrategy;
   }
 }

@@ -44,7 +44,7 @@ const ENERGY_LOVELACE_CONFIG: LovelaceConfig = {
     },
     {
       strategy: {
-        type: "energy",
+        type: "energy-electricity",
         collection_key: DEFAULT_ENERGY_COLLECTION_KEY,
       },
       path: "electricity",
