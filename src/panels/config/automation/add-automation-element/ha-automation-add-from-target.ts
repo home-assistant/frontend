@@ -164,9 +164,7 @@ export default class HaAutomationAddFromTarget extends LitElement {
         ? html`
             <div class="targets-show-more">
               <ha-button appearance="plain" @click=${this._expandHeight}>
-                ${this.hass.localize(
-                  `ui.panel.config.automation.editor.show_more`
-                )}
+                ${this.localize("ui.panel.config.automation.editor.show_more")}
               </ha-button>
             </div>
           `
@@ -623,9 +621,9 @@ export default class HaAutomationAddFromTarget extends LitElement {
     }
 
     const renderedEntites = entities
-      .filter((entityId) => this.hass.states[entityId])
+      .filter((entityId) => this.states[entityId])
       .map((entityId) => {
-        const stateObj = this.hass.states[entityId];
+        const stateObj = this.states[entityId];
 
         const [entityName, deviceName] = computeEntityNameList(
           stateObj,
