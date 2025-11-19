@@ -21,7 +21,10 @@ import {
 } from "../../../../data/lovelace_custom_cards";
 import { showConfirmationDialog } from "../../../../dialogs/generic/show-dialog-box";
 import type { HassDialog } from "../../../../dialogs/make-dialog-manager";
-import { haStyleDialog } from "../../../../resources/styles";
+import {
+  haStyleDialog,
+  haStyleDialogFixedTop,
+} from "../../../../resources/styles";
 import type { HomeAssistant } from "../../../../types";
 import { showToast } from "../../../../util/toast";
 import { showSaveSuccessToast } from "../../../../util/toast-saved-success";
@@ -371,6 +374,7 @@ export class HuiDialogEditCard
   static get styles(): CSSResultGroup {
     return [
       haStyleDialog,
+      haStyleDialogFixedTop,
       css`
         :host {
           --code-mirror-max-height: calc(100vh - 176px);
@@ -379,8 +383,6 @@ export class HuiDialogEditCard
         ha-dialog {
           --mdc-dialog-max-width: 100px;
           --dialog-z-index: 6;
-          --dialog-surface-position: fixed;
-          --dialog-surface-top: 40px;
           --mdc-dialog-max-width: 90vw;
           --dialog-content-padding: 24px 12px;
         }
