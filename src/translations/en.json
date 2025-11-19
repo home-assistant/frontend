@@ -4005,6 +4005,7 @@
               "area": "No areas or floors found for {term}",
               "label": "No labels found for {term}"
             },
+            "load_target_items_failed": "Failed to load target items for",
             "triggers": {
               "name": "Triggers",
               "header": "When",
@@ -4036,6 +4037,7 @@
               "copied_to_clipboard": "Trigger copied to clipboard",
               "cut_to_clipboard": "Trigger cut to clipboard",
               "select": "Select a trigger",
+              "no_items_for_target": "No triggers available for",
               "groups": {
                 "device": {
                   "label": "Device"
@@ -4303,6 +4305,7 @@
               "copied_to_clipboard": "Condition copied to clipboard",
               "cut_to_clipboard": "Condition cut to clipboard",
               "select": "Select a condition",
+              "no_items_for_target": "No conditions available for",
               "groups": {
                 "device": {
                   "label": "Device"
@@ -4476,6 +4479,7 @@
               "copied_to_clipboard": "Action copied to clipboard",
               "cut_to_clipboard": "Action cut to clipboard",
               "select": "Select an action",
+              "no_items_for_target": "No actions available for",
               "groups": {
                 "device_id": {
                   "label": "Device"

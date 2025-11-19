@@ -40,6 +40,17 @@ export const extractFromTarget = async (
     target,
   });
 
+export const getTriggersForTarget = async (
+  callWS: HomeAssistant["callWS"],
+  target: HassServiceTarget,
+  expandGroup = false
+) =>
+  callWS<string[]>({
+    type: "get_triggers_for_target",
+    target,
+    expand_group: expandGroup,
+  });
+
 export const areaMeetsFilter = (
   area: AreaRegistryEntry,
   devices: HomeAssistant["devices"],
