@@ -719,6 +719,9 @@ class AddIntegrationDialog extends LitElement {
           --mdc-dialog-min-width: 500px;
         }
       }
+      ha-dialog {
+        --dialog-content-padding: 0;
+      }
       search-input {
         display: block;
         margin: 16px 16px 0;
