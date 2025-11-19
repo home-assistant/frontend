@@ -161,9 +161,10 @@ export const haStyleDialog = css`
       --mdc-dialog-min-height: 100svh;
       --mdc-dialog-max-height: 100vh;
       --mdc-dialog-max-height: 100svh;
-      --dialog-surface-padding: var(--safe-area-inset-top)
-        var(--safe-area-inset-right) var(--safe-area-inset-bottom)
-        var(--safe-area-inset-left);
+      --dialog-surface-padding: var(--safe-area-inset-top, var(--ha-space-0))
+        var(--safe-area-inset-right, var(--ha-space-0))
+        var(--safe-area-inset-bottom, var(--ha-space-0))
+        var(--safe-area-inset-left, var(--ha-space-0));
       --vertical-align-dialog: flex-end;
       --ha-dialog-border-radius: var(--ha-border-radius-square);
     }
