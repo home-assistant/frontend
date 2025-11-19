@@ -17,7 +17,10 @@ import "../../../../../components/ha-dialog-header";
 import "../../../../../components/ha-icon-button";
 import "../../../../../components/ha-list-item";
 import type { LovelaceStrategyConfig } from "../../../../../data/lovelace/config/strategy";
-import { haStyleDialog } from "../../../../../resources/styles";
+import {
+  haStyleDialog,
+  haStyleDialogFixedTop,
+} from "../../../../../resources/styles";
 import type { HomeAssistant } from "../../../../../types";
 import { showSaveSuccessToast } from "../../../../../util/toast-saved-success";
 import { cleanLegacyStrategyConfig } from "../../../strategies/legacy-strategy";
@@ -219,6 +222,7 @@ class DialogDashboardStrategyEditor extends LitElement {
   static get styles(): CSSResultGroup {
     return [
       haStyleDialog,
+      haStyleDialogFixedTop,
       css`
         ha-dialog {
           --dialog-content-padding: 0 24px;
