@@ -33,8 +33,8 @@ export const mainStyles = css`
     --safe-area-inset-left: var(--app-safe-area-inset-left, env(safe-area-inset-left, 0));
     --safe-area-inset-right: var(--app-safe-area-inset-right, env(safe-area-inset-right, 0));
 
-    --safe-area-inset-y: calc(var(--safe-area-inset-top, 0) + var(--safe-area-inset-bottom, 0));
-    --safe-area-inset-x: calc(var(--safe-area-inset-left, 0) + var(--safe-area-inset-right, 0));
+    --safe-area-inset-y: calc(var(--safe-area-inset-top, 0px) + var(--safe-area-inset-bottom, 0px));
+    --safe-area-inset-x: calc(var(--safe-area-inset-left, 0px) + var(--safe-area-inset-right, 0px));
   }
 `;
 
