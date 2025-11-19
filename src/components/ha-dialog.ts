@@ -100,6 +100,7 @@ export class HaDialog extends DialogBase {
       }
       .mdc-dialog__container {
         align-items: var(--vertical-align-dialog, center);
+        padding: var(--dialog-container-padding, var(--ha-space-0));
       }
       .mdc-dialog__title {
         padding: 16px 16px 0 16px;
@@ -133,7 +134,7 @@ export class HaDialog extends DialogBase {
           --ha-dialog-surface-background,
           var(--mdc-theme-surface, #fff)
         );
-        padding: var(--dialog-surface-padding);
+        padding: var(--dialog-surface-padding, var(--ha-space-0));
       }
       :host([flexContent]) .mdc-dialog .mdc-dialog__content {
         display: flex;
