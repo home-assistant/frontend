@@ -19,7 +19,7 @@ import type {
   MediaPlayerItem,
   MediaPlayerLayoutType,
 } from "../../data/media-player";
-import { haStyleDialog } from "../../resources/styles";
+import { haStyleDialog, haStyleDialogFixedTop } from "../../resources/styles";
 import type { HomeAssistant } from "../../types";
 import "../ha-dialog";
 import "../ha-dialog-header";
@@ -223,6 +223,7 @@ class DialogMediaPlayerBrowse extends LitElement {
   static get styles(): CSSResultGroup {
     return [
       haStyleDialog,
+      haStyleDialogFixedTop,
       css`
         ha-dialog {
           --dialog-z-index: 9;
@@ -230,23 +231,30 @@ class DialogMediaPlayerBrowse extends LitElement {
         }
 
         ha-media-player-browse {
-          --media-browser-max-height: calc(100vh - 65px);
+          --media-browser-max-height: calc(
+            100vh - 65px - var(--safe-area-inset-top, 0) -
+              var(--safe-area-inset-bottom, 0)
+          );
         }
 
         :host(.opened) ha-media-player-browse {
-          height: calc(100vh - 65px);
+          height: calc(
+            100vh - 65px - var(--safe-area-inset-top, 0) -
+              var(--safe-area-inset-bottom, 0)
+          );
         }
 
         @media (min-width: 800px) {
           ha-dialog {
             --mdc-dialog-max-width: 800px;
-            --dialog-surface-position: fixed;
-            --dialog-surface-top: 40px;
-            --mdc-dialog-max-height: calc(100vh - 72px);
+            --mdc-dialog-max-height: calc(100% - 72px);
           }
           ha-media-player-browse {
             position: initial;
-            --media-browser-max-height: calc(100vh - 145px);
+            --media-browser-max-height: calc(
+              100vh - 145px - var(--safe-area-inset-top, 0) -
+                var(--safe-area-inset-bottom, 0)
+            );
             width: 700px;
           }
         }
