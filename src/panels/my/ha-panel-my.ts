@@ -188,6 +188,12 @@ export const getMyRedirects = (): Redirects => ({
   helpers: {
     redirect: "/config/helpers",
   },
+  labs: {
+    redirect: "/config/labs",
+    params: {
+      feature: "string?",
+    },
+  },
   tags: {
     component: "tag",
     redirect: "/config/tags",

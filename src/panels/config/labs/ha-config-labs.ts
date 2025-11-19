@@ -8,6 +8,7 @@ import {
 import type { PropertyValues, TemplateResult } from "lit";
 import { LitElement, css, html, nothing } from "lit";
 import { customElement, property, state } from "lit/decorators";
+import { extractSearchParam } from "../../../common/url/search-params";
 import { fetchLabFeatures, labsUpdateFeature } from "../../../data/labs";
 import type { LabFeature } from "../../../data/labs";
 import { showConfirmationDialog } from "../../../dialogs/generic/show-dialog-box";
@@ -28,6 +29,8 @@ class HaConfigLabs extends LitElement {
 
   @state() private _features: LabFeature[] = [];
 
+  @state() private _highlightedFeature?: string;
+
   private _unsubscribe?: () => void;
 
   public disconnectedCallback(): void {
@@ -41,6 +44,15 @@ class HaConfigLabs extends LitElement {
     super.firstUpdated(changedProps);
     await this._loadFeatures();
     this._subscribeToLabsUpdates();
+
+    // Check for feature parameter in URL
+    const featureParam = extractSearchParam("feature");
+    if (featureParam) {
+      this._highlightedFeature = featureParam;
+      // Wait for next render to ensure cards are in DOM
+      await this.updateComplete;
+      this._scrollToFeature(featureParam);
+    }
   }
 
   private async _loadFeatures(): Promise<void> {
@@ -151,8 +163,15 @@ class HaConfigLabs extends LitElement {
       `component.${feature.domain}.title`
     );
 
+    const featureId = `${feature.domain}.${feature.feature}`;
+    const isHighlighted = this._highlightedFeature === featureId;
+
     return html`
-      <ha-card outlined>
+      <ha-card
+        outlined
+        data-feature-id=${featureId}
+        class=${isHighlighted ? "highlighted" : ""}
+      >
         <ha-switch
           class="toggle"
           .checked=${feature.enabled}
@@ -244,6 +263,19 @@ class HaConfigLabs extends LitElement {
     `;
   }
 
+  private _scrollToFeature(featureId: string): void {
+    const card = this.shadowRoot?.querySelector(
+      `[data-feature-id="${featureId}"]`
+    ) as HTMLElement;
+    if (card) {
+      card.scrollIntoView({ behavior: "smooth", block: "center" });
+      // Clear highlight after animation
+      setTimeout(() => {
+        this._highlightedFeature = undefined;
+      }, 3000);
+    }
+  }
+
   private async _handleToggle(ev: Event): Promise<void> {
     const switchEl = ev.target as HTMLElement & {
       feature: LabFeature;
@@ -305,6 +337,24 @@ class HaConfigLabs extends LitElement {
     ha-card {
       margin-bottom: 16px;
       position: relative;
+      transition: box-shadow 0.3s ease;
+    }
+
+    ha-card.highlighted {
+      animation: highlight-fade 2.5s ease-out forwards;
+    }
+
+    @keyframes highlight-fade {
+      0% {
+        box-shadow:
+          0 0 0 2px var(--primary-color),
+          0 0 12px rgba(var(--rgb-primary-color), 0.4);
+      }
+      100% {
+        box-shadow:
+          0 0 0 2px transparent,
+          0 0 0 transparent;
+      }
     }
 
     .card-content {
