@@ -186,11 +186,12 @@ export const haStyleDialogFixedTop = css`
     --vertical-align-dialog: flex-start;
     --dialog-surface-margin-top: max(
       var(--ha-space-10),
-      calc(
-        var(--safe-area-inset-top, var(--ha-space-0)) +
-          var(--safe-area-inset-bottom, var(--ha-space-0))
-      )
+      var(--safe-area-inset-top, var(--ha-space-0))
     );
+    --mdc-dialog-min-height: calc(100vh - var(--dialog-surface-margin-top));
+    --mdc-dialog-min-height: calc(100svh - var(--dialog-surface-margin-top));
+    --mdc-dialog-max-height: calc(100vh - var(--dialog-surface-margin-top));
+    --mdc-dialog-max-height: calc(100svh - var(--dialog-surface-margin-top));
   }
 
   @media all and (max-width: 450px), all and (max-height: 500px) {
