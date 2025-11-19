@@ -462,7 +462,7 @@ class AddIntegrationDialog extends LitElement {
               style=${styleMap({
                 width: `${this._width}px`,
                 height: this._narrow
-                  ? "calc(100vh - 184px - var(--safe-area-inset-top, 0px) - var(--safe-area-inset-bottom, 0px))"
+                  ? "calc(100vh - 184px - var(--safe-area-inset-top, var(--ha-space-0)) - var(--safe-area-inset-bottom, var(--ha-space-0)))"
                   : "500px",
               })}
               @click=${this._integrationPicked}
@@ -718,9 +718,6 @@ class AddIntegrationDialog extends LitElement {
         ha-dialog {
           --mdc-dialog-min-width: 500px;
         }
-      }
-      ha-dialog {
-        --dialog-content-padding: 0;
       }
       search-input {
         display: block;
