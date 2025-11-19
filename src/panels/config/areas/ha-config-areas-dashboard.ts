@@ -18,6 +18,12 @@ import {
 import { customElement, property, state } from "lit/decorators";
 import { styleMap } from "lit/directives/style-map";
 import memoizeOne from "memoize-one";
+import {
+  getAreasFloorHierarchy,
+  getAreasOrder,
+  getFloorOrder,
+  type AreasFloorHierarchy,
+} from "../../../common/areas/areas-floor-hierarchy";
 import { formatListWithAnds } from "../../../common/string/format-list";
 import "../../../components/ha-fab";
 import "../../../components/ha-floor-icon";
@@ -45,12 +51,7 @@ import {
 } from "../../../dialogs/generic/show-dialog-box";
 import "../../../layouts/hass-tabs-subpage";
 import type { HomeAssistant, Route } from "../../../types";
-import {
-  getAreasOrder,
-  getFloorOrder,
-  getAreasFloorHierarchy,
-  type AreasFloorHierarchy,
-} from "../../../common/areas/areas-floor-hierarchy";
+import { showToast } from "../../../util/toast";
 import "../ha-config-section";
 import { configSections } from "../ha-panel-config";
 import {
@@ -58,7 +59,6 @@ import {
   showAreaRegistryDetailDialog,
 } from "./show-dialog-area-registry-detail";
 import { showFloorRegistryDetailDialog } from "./show-dialog-floor-registry-detail";
-import { showToast } from "../../../util/toast";
 
 const UNASSIGNED_FLOOR = "__unassigned__";
 
@@ -550,7 +550,7 @@ export class HaConfigAreasDashboard extends LitElement {
   private _blockHierarchyUpdateFor(time: number) {
     this._blockHierarchyUpdate = true;
     if (this._blockHierarchyUpdateTimeout) {
-      clearTimeout(this._blockHierarchyUpdateTimeout);
+      window.clearTimeout(this._blockHierarchyUpdateTimeout);
     }
     this._blockHierarchyUpdateTimeout = window.setTimeout(() => {
       this._blockHierarchyUpdate = false;
