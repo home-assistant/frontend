@@ -1341,6 +1341,9 @@ class DialogAddAutomationElement
                                     .path=${item.iconPath}
                                   ></ha-svg-icon>`
                                 : nothing}
+                            ${this._narrow
+                              ? html`<ha-icon-next slot="end"></ha-icon-next>`
+                              : nothing}
                           </ha-md-list-item>
                         `
                       )}
@@ -1688,7 +1691,9 @@ class DialogAddAutomationElement
               slot="end"
               .path=${mdiPlus}
             ></ha-svg-icon>`
-          : nothing}
+          : this._narrow
+            ? html`<ha-icon-next slot="end"></ha-icon-next>`
+            : nothing}
       </ha-combo-box-item>
     `;
   };

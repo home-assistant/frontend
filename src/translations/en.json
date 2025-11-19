@@ -4006,6 +4006,7 @@
               "label": "No labels found for {term}"
             },
             "load_target_items_failed": "Failed to load target items for",
+            "other_areas": "Other areas",
             "triggers": {
               "name": "Triggers",
               "header": "When",

@@ -2,12 +2,7 @@ import "@home-assistant/webawesome/dist/components/tree-item/tree-item";
 import "@home-assistant/webawesome/dist/components/tree/tree";
 import type { WaSelectionChangeEvent } from "@home-assistant/webawesome/dist/events/selection-change";
 import { consume } from "@lit/context";
-import {
-  mdiCubeOutline,
-  mdiDevices,
-  mdiSelectionMarker,
-  mdiTextureBox,
-} from "@mdi/js";
+import { mdiCubeOutline, mdiDevices, mdiTextureBox } from "@mdi/js";
 import type {
   HassEntity,
   SingleHassServiceTarget,
@@ -158,8 +153,8 @@ export default class HaAutomationAddFromTarget extends LitElement {
     return html`
       ${!this.narrow || !this.value ? this._renderFloors() : nothing}
       ${this.narrow && this.value ? this._renderNarrow(this.value) : nothing}
-      ${!this.narrow || !this.value ? this._renderLabels() : nothing}
       ${!this.narrow || !this.value ? this._renderUnassigned() : nothing}
+      ${!this.narrow || !this.value ? this._renderLabels() : nothing}
       ${this.narrow && this._showShowMoreButton && !this._fullHeight
         ? html`
             <div class="targets-show-more">
@@ -237,61 +232,57 @@ export default class HaAutomationAddFromTarget extends LitElement {
               ${this._floorAreas.map((floor, index) =>
                 index === 0 && !floor.id
                   ? this._renderAreas(floor.areas)
-                  : !floor.id
-                    ? nothing
-                    : html`<ha-md-list-item
-                        interactive
-                        type="button"
-                        .target=${floor.id || `floor${TARGET_SEPARATOR}`}
-                        @click=${this._selectItem}
-                      >
-                        ${floor.id && (floor as FloorNestedComboBoxItem).floor
-                          ? html`<ha-floor-icon
-                              slot="start"
-                              .floor=${(floor as FloorNestedComboBoxItem).floor}
-                            ></ha-floor-icon>`
-                          : html`<ha-svg-icon
-                              slot="start"
-                              .path=${mdiSelectionMarker}
-                            ></ha-svg-icon>`}
+                  : html`<ha-md-list-item
+                      interactive
+                      type="button"
+                      .target=${floor.id || `floor${TARGET_SEPARATOR}`}
+                      @click=${this._selectItem}
+                    >
+                      ${floor.id && (floor as FloorNestedComboBoxItem).floor
+                        ? html`<ha-floor-icon
+                            slot="start"
+                            .floor=${(floor as FloorNestedComboBoxItem).floor}
+                          ></ha-floor-icon>`
+                        : html`<ha-svg-icon
+                            slot="start"
+                            .path=${mdiTextureBox}
+                          ></ha-svg-icon>`}
 
-                        <div slot="headline">
-                          ${!floor.id
-                            ? this.localize(
-                                "ui.components.area-picker.unassigned_areas"
-                              )
-                            : floor.primary}
-                        </div>
-                        <ha-icon-next slot="end"></ha-icon-next>
-                      </ha-md-list-item>`
+                      <div slot="headline">
+                        ${!floor.id
+                          ? this.localize(
+                              "ui.panel.config.automation.editor.other_areas"
+                            )
+                          : floor.primary}
+                      </div>
+                      <ha-icon-next slot="end"></ha-icon-next>
+                    </ha-md-list-item>`
               )}
             </ha-md-list>`
           : html`<wa-tree @wa-selection-change=${this._handleSelectionChange}>
               ${this._floorAreas.map((floor, index) =>
                 index === 0 && !floor.id
                   ? this._renderAreas(floor.areas)
-                  : !floor.id
-                    ? nothing
-                    : html`<wa-tree-item
-                        .disabledSelection=${!floor.id}
-                        .target=${floor.id}
-                        .selected=${!!floor.id &&
-                        this._getSelectedTargetId(this.value) === floor.id}
-                      >
-                        ${floor.id && (floor as FloorNestedComboBoxItem).floor
-                          ? html`<ha-floor-icon
-                              .floor=${(floor as FloorNestedComboBoxItem).floor}
-                            ></ha-floor-icon>`
-                          : html`<ha-svg-icon
-                              .path=${mdiSelectionMarker}
-                            ></ha-svg-icon>`}
-                        ${!floor.id
-                          ? this.localize(
-                              "ui.components.area-picker.unassigned_areas"
-                            )
-                          : floor.primary}
-                        ${this._renderAreas(floor.areas)}
-                      </wa-tree-item>`
+                  : html`<wa-tree-item
+                      .preventSelection=${!floor.id}
+                      .target=${floor.id || `floor${TARGET_SEPARATOR}`}
+                      .selected=${!!floor.id &&
+                      this._getSelectedTargetId(this.value) === floor.id}
+                    >
+                      ${floor.id && (floor as FloorNestedComboBoxItem).floor
+                        ? html`<ha-floor-icon
+                            .floor=${(floor as FloorNestedComboBoxItem).floor}
+                          ></ha-floor-icon>`
+                        : html`<ha-svg-icon
+                            .path=${mdiTextureBox}
+                          ></ha-svg-icon>`}
+                      ${!floor.id
+                        ? this.localize(
+                            "ui.panel.config.automation.editor.other_areas"
+                          )
+                        : floor.primary}
+                      ${this._renderAreas(floor.areas)}
+                    </wa-tree-item>`
               )}
             </wa-tree>`} `;
   }
@@ -348,15 +339,9 @@ export default class HaAutomationAddFromTarget extends LitElement {
   }
 
   private _renderUnassigned() {
-    const unassignedAreas =
-      this._floorAreas.length > 1
-        ? this._floorAreas.find((floor) => !floor.id)
-        : undefined;
-
     const unassignedEntities = this._getUnassignedEntities(this.entities);
 
     if (
-      !unassignedAreas?.areas.length &&
       !this._areaEntries[`area${TARGET_SEPARATOR}`] &&
       !Object.keys(this._areaEntries[`area${TARGET_SEPARATOR}`]?.devices)
         .length &&
@@ -371,23 +356,6 @@ export default class HaAutomationAddFromTarget extends LitElement {
         )}</ha-section-title
       >${this.narrow
         ? html`<ha-md-list>
-            ${unassignedAreas?.areas.length
-              ? html`<ha-md-list-item
-                  interactive
-                  type="button"
-                  .target=${`floor${TARGET_SEPARATOR}`}
-                  @click=${this._selectItem}
-                >
-                  <ha-svg-icon
-                    slot="start"
-                    .path=${mdiTextureBox}
-                  ></ha-svg-icon>
-                  <div slot="headline">
-                    ${this.localize("ui.components.target-picker.type.areas")}
-                  </div>
-                  <ha-icon-next slot="end"></ha-icon-next>
-                </ha-md-list-item>`
-              : nothing}
             ${this._areaEntries[`area${TARGET_SEPARATOR}`] &&
             Object.keys(this._areaEntries[`area${TARGET_SEPARATOR}`]?.devices)
               .length
@@ -425,17 +393,10 @@ export default class HaAutomationAddFromTarget extends LitElement {
               : nothing}
           </ha-md-list>`
         : html`<wa-tree @wa-selection-change=${this._handleSelectionChange}>
-            ${unassignedAreas?.areas.length
-              ? html`<wa-tree-item disabled-selection>
-                  <ha-svg-icon .path=${mdiSelectionMarker}></ha-svg-icon>
-                  ${this.localize("ui.components.target-picker.type.areas")}
-                  ${this._renderAreas(unassignedAreas.areas)}
-                </wa-tree-item>`
-              : nothing}
             ${this._areaEntries[`area${TARGET_SEPARATOR}`] &&
             Object.keys(this._areaEntries[`area${TARGET_SEPARATOR}`]?.devices)
               .length
-              ? html`<wa-tree-item disabled-selection>
+              ? html`<wa-tree-item prevent-selection>
                   <ha-svg-icon .path=${mdiDevices}></ha-svg-icon>
                   ${this.localize("ui.components.target-picker.type.devices")}
                   ${this._renderDevices(
@@ -444,7 +405,7 @@ export default class HaAutomationAddFromTarget extends LitElement {
                 </wa-tree-item>`
               : nothing}
             ${unassignedEntities.length
-              ? html`<wa-tree-item disabled-selection>
+              ? html`<wa-tree-item prevent-selection>
                   <ha-svg-icon .path=${mdiCubeOutline}></ha-svg-icon>
                   ${this.localize("ui.components.target-picker.type.entities")}
                   ${this._renderEntities(unassignedEntities)}
