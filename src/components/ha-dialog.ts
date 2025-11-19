@@ -113,10 +113,10 @@ export class HaDialog extends DialogBase {
       }
       .mdc-dialog .mdc-dialog__content {
         position: var(--dialog-content-position, relative);
-        padding: var(--dialog-content-padding, 24px);
+        padding: var(--dialog-content-padding, var(--ha-space-6));
       }
       :host([hideactions]) .mdc-dialog .mdc-dialog__content {
-        padding-bottom: var(--dialog-content-padding, 24px);
+        padding-bottom: var(--dialog-content-padding, var(--ha-space-6));
       }
       .mdc-dialog .mdc-dialog__surface {
         position: var(--dialog-surface-position, relative);
