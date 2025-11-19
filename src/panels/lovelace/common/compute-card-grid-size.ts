@@ -45,9 +45,9 @@ export const computeCardGridSize = (
 ): CardGridSize => {
   const rows = options.rows ?? DEFAULT_GRID_SIZE.rows;
   const columns = options.columns ?? DEFAULT_GRID_SIZE.columns;
-  const minRows = options.min_rows;
+  const minRows = 0.5;
   const maxRows = options.max_rows;
-  const minColumns = options.min_columns;
+  const minColumns = 0.5;
   const maxColumns = options.max_columns;
 
   const clampedRows =
