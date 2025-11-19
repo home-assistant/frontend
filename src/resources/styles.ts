@@ -186,7 +186,10 @@ export const haStyleDialogFixedTop = css`
     --vertical-align-dialog: flex-start;
     --dialog-surface-margin-top: max(
       var(--ha-space-10),
-      var(--safe-area-inset-top, var(--ha-space-0))
+      calc(
+        var(--safe-area-inset-top, var(--ha-space-0)) +
+          var(--safe-area-inset-bottom, var(--ha-space-0))
+      )
     );
   }
 
