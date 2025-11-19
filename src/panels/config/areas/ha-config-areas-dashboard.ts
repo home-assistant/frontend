@@ -58,6 +58,7 @@ import {
   showAreaRegistryDetailDialog,
 } from "./show-dialog-area-registry-detail";
 import { showFloorRegistryDetailDialog } from "./show-dialog-floor-registry-detail";
+import { showToast } from "../../../util/toast";
 
 const UNASSIGNED_FLOOR = "__unassigned__";
 
@@ -85,7 +86,9 @@ export class HaConfigAreasDashboard extends LitElement {
 
   @state() private _hierarchy?: AreasFloorHierarchy;
 
-  private _blockHierarchy = false;
+  private _blockHierarchyUpdate = false;
+
+  private _blockHierarchyUpdateTimeout?: number;
 
   private _processAreasStats = memoizeOne(
     (
@@ -135,14 +138,18 @@ export class HaConfigAreasDashboard extends LitElement {
       if (
         (this.hass.areas !== oldHass?.areas ||
           this.hass.floors !== oldHass?.floors) &&
-        !this._blockHierarchy
+        !this._blockHierarchyUpdate
       ) {
-        this._hierarchy = getAreasFloorHierarchy(
-          Object.values(this.hass.floors),
-          Object.values(this.hass.areas)
-        );
+        this._computeHierarchy();
       }
     }
+  }
+
+  private _computeHierarchy() {
+    this._hierarchy = getAreasFloorHierarchy(
+      Object.values(this.hass.floors),
+      Object.values(this.hass.areas)
+    );
   }
 
   protected render(): TemplateResult<1> | typeof nothing {
@@ -402,6 +409,7 @@ export class HaConfigAreasDashboard extends LitElement {
       return newFloors;
     };
 
+    // Optimistically update UI
     this._hierarchy = {
       ...this._hierarchy,
       floors: reorderFloors(this._hierarchy.floors, oldIndex, newIndex),
@@ -409,8 +417,23 @@ export class HaConfigAreasDashboard extends LitElement {
 
     const areaOrder = getAreasOrder(this._hierarchy);
     const floorOrder = getFloorOrder(this._hierarchy);
-    await reorderAreaRegistryEntries(this.hass, areaOrder);
-    await reorderFloorRegistryEntries(this.hass, floorOrder);
+
+    // Block hierarchy updates for 500ms to avoid flickering
+    // because of multiple async updates
+    this._blockHierarchyUpdateFor(500);
+
+    try {
+      await reorderAreaRegistryEntries(this.hass, areaOrder);
+      await reorderFloorRegistryEntries(this.hass, floorOrder);
+    } catch {
+      showToast(this, {
+        message: this.hass.localize(
+          "ui.panel.config.areas.picker.floor_reorder_failed"
+        ),
+      });
+      // Revert on error
+      this._computeHierarchy();
+    }
   }
 
   private async _areaMoved(ev) {
@@ -431,6 +454,7 @@ export class HaConfigAreasDashboard extends LitElement {
       return newAreas;
     };
 
+    // Optimistically update UI
     this._hierarchy = {
       ...this._hierarchy,
       floors: this._hierarchy.floors.map((f) => {
@@ -449,7 +473,18 @@ export class HaConfigAreasDashboard extends LitElement {
     };
 
     const areaOrder = getAreasOrder(this._hierarchy);
-    await reorderAreaRegistryEntries(this.hass, areaOrder);
+
+    try {
+      await reorderAreaRegistryEntries(this.hass, areaOrder);
+    } catch {
+      showToast(this, {
+        message: this.hass.localize(
+          "ui.panel.config.areas.picker.area_move_failed"
+        ),
+      });
+      // Revert on error
+      this._computeHierarchy();
+    }
   }
 
   private async _areaAdded(ev) {
@@ -469,7 +504,7 @@ export class HaConfigAreasDashboard extends LitElement {
       return newAreas;
     };
 
-    // Remove area from old location and add to new location at the right index
+    // Optimistically update UI
     this._hierarchy = {
       ...this._hierarchy,
       floors: this._hierarchy.floors.map((f) => {
@@ -493,16 +528,33 @@ export class HaConfigAreasDashboard extends LitElement {
     const areaOrder = getAreasOrder(this._hierarchy);
 
     // Block hierarchy updates for 500ms to avoid flickering
-    // (because the registry is updated twice asynchronously)
-    this._blockHierarchy = true;
-    setTimeout(() => {
-      this._blockHierarchy = false;
-    }, 500);
+    // because of multiple async updates
+    this._blockHierarchyUpdateFor(500);
 
-    await reorderAreaRegistryEntries(this.hass, areaOrder);
-    await updateAreaRegistryEntry(this.hass, area.area_id, {
-      floor_id: newFloorId,
-    });
+    try {
+      await reorderAreaRegistryEntries(this.hass, areaOrder);
+      await updateAreaRegistryEntry(this.hass, area.area_id, {
+        floor_id: newFloorId,
+      });
+    } catch {
+      showToast(this, {
+        message: this.hass.localize(
+          "ui.panel.config.areas.picker.area_move_failed"
+        ),
+      });
+      // Revert on error
+      this._computeHierarchy();
+    }
+  }
+
+  private _blockHierarchyUpdateFor(time: number) {
+    this._blockHierarchyUpdate = true;
+    if (this._blockHierarchyUpdateTimeout) {
+      clearTimeout(this._blockHierarchyUpdateTimeout);
+    }
+    this._blockHierarchyUpdateTimeout = window.setTimeout(() => {
+      this._blockHierarchyUpdate = false;
+    }, time);
   }
 
   private _handleFloorAction(ev: CustomEvent<ActionDetail>) {
