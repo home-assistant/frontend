@@ -180,6 +180,24 @@ export const haStyleDialog = css`
   }
 `;
 
+export const haStyleDialogFixedTop = css`
+  ha-dialog {
+    /* Pin dialog to top so it doesn't jump when content changes size */
+    --vertical-align-dialog: flex-start;
+    --dialog-surface-margin-top: max(
+      var(--ha-space-10),
+      var(--safe-area-inset-top, var(--ha-space-0))
+    );
+  }
+
+  @media all and (max-width: 450px), all and (max-height: 500px) {
+    ha-dialog {
+      /* When in fullscreen, dialog should be attached to top */
+      --dialog-surface-margin-top: var(--ha-space-0);
+    }
+  }
+`;
+
 export const haStyleScrollbar = css`
   .ha-scrollbar::-webkit-scrollbar {
     width: 0.4rem;
