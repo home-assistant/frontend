@@ -199,6 +199,7 @@ export interface UpdateActionsCardFeatureConfig {
 export interface TrendGraphCardFeatureConfig {
   type: "trend-graph";
   hours_to_show?: number;
+  detail?: boolean;
 }
 
 export const AREA_CONTROLS = [

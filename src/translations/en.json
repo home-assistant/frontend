@@ -8434,7 +8434,8 @@
                 "max": "Maximum value"
               },
               "trend-graph": {
-                "label": "Trend graph"
+                "label": "Trend graph",
+                "detail": "Show more detail"
               }
             }
           },
