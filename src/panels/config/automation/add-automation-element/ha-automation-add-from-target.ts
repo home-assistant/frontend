@@ -171,10 +171,18 @@ export default class HaAutomationAddFromTarget extends LitElement {
     }
 
     return html`
-      ${!this.narrow || !this.value ? this._renderFloors() : nothing}
-      ${this.narrow && this.value ? this._renderNarrow(this.value) : nothing}
-      ${!this.narrow || !this.value ? this._renderUnassigned() : nothing}
-      ${!this.narrow || !this.value ? this._renderLabels() : nothing}
+      ${!this.narrow || !this.value
+        ? this._renderFloors(this.narrow, this._entries, this.value)
+        : nothing}
+      ${this.narrow && this.value
+        ? this._renderNarrow(this._entries, this.value)
+        : nothing}
+      ${!this.narrow || !this.value
+        ? this._renderUnassigned(this.narrow, this._entries, this.value)
+        : nothing}
+      ${!this.narrow || !this.value
+        ? this._renderLabels(this.narrow, this.value)
+        : nothing}
       ${this.narrow && this._showShowMoreButton && !this._fullHeight
         ? html`
             <div class="targets-show-more">
@@ -187,397 +195,419 @@ export default class HaAutomationAddFromTarget extends LitElement {
     `;
   }
 
-  private _renderNarrow(value: SingleHassServiceTarget) {
-    const [valueTypeId, valueId] = Object.entries(value)[0];
-    const valueType = valueTypeId.replace("_id", "");
+  private _renderNarrow = memoizeOne(
+    (
+      entries: Record<string, Level1Entries>,
+      value: SingleHassServiceTarget
+    ) => {
+      const [valueTypeId, valueId] = Object.entries(value)[0];
+      const valueType = valueTypeId.replace("_id", "");
 
-    if (!valueType || valueType === "label") {
-      return nothing;
-    }
+      if (!valueType || valueType === "label") {
+        return nothing;
+      }
 
-    // floor areas, unassigned areas
-    if (valueType === "floor") {
-      return this._renderAreas(
-        this._entries[`floor${TARGET_SEPARATOR}${valueId ?? ""}`].areas!
-      );
-    }
+      // floor areas, unassigned areas
+      if (valueType === "floor") {
+        return this._renderAreas(
+          entries[`floor${TARGET_SEPARATOR}${valueId ?? ""}`].areas!
+        );
+      }
 
-    if (valueType === "area" && valueId) {
-      const floor =
-        this._entries[
-          `floor${TARGET_SEPARATOR}${this.areas[valueId]?.floor_id || ""}`
-        ];
-      const { devices, entities } =
-        floor.areas![`area${TARGET_SEPARATOR}${valueId}`];
-      const numberOfDevices = Object.keys(devices).length;
+      if (valueType === "area" && valueId) {
+        const floor =
+          entries[
+            `floor${TARGET_SEPARATOR}${this.areas[valueId]?.floor_id || ""}`
+          ];
+        const { devices, entities } =
+          floor.areas![`area${TARGET_SEPARATOR}${valueId}`];
+        const numberOfDevices = Object.keys(devices).length;
 
-      return html`
-        ${numberOfDevices ? this._renderDevices(devices) : nothing}
-        ${entities.length ? this._renderEntities(entities) : nothing}
-      `;
-    }
+        return html`
+          ${numberOfDevices ? this._renderDevices(devices) : nothing}
+          ${entities.length ? this._renderEntities(entities) : nothing}
+        `;
+      }
 
-    if ((!valueId && valueType === "area") || valueType === "service") {
-      const floor = this._entries[`${valueType}${TARGET_SEPARATOR}`];
-      const devices = floor.devices!;
+      if ((!valueId && valueType === "area") || valueType === "service") {
+        const floor = entries[`${valueType}${TARGET_SEPARATOR}`];
+        const devices = floor.devices!;
 
-      return this._renderDevices(devices);
-    }
+        return this._renderDevices(devices);
+      }
 
-    if (valueId && valueType === "device") {
-      const areaId = this.devices[valueId]?.area_id;
-      if (areaId) {
-        const floorId = this.areas[areaId]?.floor_id || "";
+      if (valueId && valueType === "device") {
+        const areaId = this.devices[valueId]?.area_id;
+        if (areaId) {
+          const floorId = this.areas[areaId]?.floor_id || "";
+          const { entities } =
+            entries[`floor${TARGET_SEPARATOR}${floorId}`].areas![
+              `area${TARGET_SEPARATOR}${areaId}`
+            ].devices![valueId];
+
+          return entities.length ? this._renderEntities(entities) : nothing;
+        }
+
+        const device = this.devices[valueId];
+        const isService = device.entry_type === "service";
         const { entities } =
-          this._entries[`floor${TARGET_SEPARATOR}${floorId}`].areas![
-            `area${TARGET_SEPARATOR}${areaId}`
-          ].devices![valueId];
-
+          entries[`${isService ? "service" : "area"}${TARGET_SEPARATOR}`]
+            .devices![valueId];
         return entities.length ? this._renderEntities(entities) : nothing;
       }
 
-      const device = this.devices[valueId];
-      const isService = device.entry_type === "service";
-      const { entities } =
-        this._entries[`${isService ? "service" : "area"}${TARGET_SEPARATOR}`]
-          .devices![valueId];
-      return entities.length ? this._renderEntities(entities) : nothing;
+      if (valueType === "device" || valueType === "helper") {
+        const { devices } = entries[`${valueType}${TARGET_SEPARATOR}`];
+        return this._renderDomains(
+          devices!,
+          valueType === "device" ? "entity_" : "helper_"
+        );
+      }
+
+      if (
+        !valueId &&
+        (valueType.startsWith("entity") || valueType.startsWith("helper"))
+      ) {
+        const { entities } =
+          entries[
+            `${valueType.startsWith("entity") ? "device" : "helper"}${TARGET_SEPARATOR}`
+          ].devices![`${valueType}${TARGET_SEPARATOR}`];
+        return this._renderEntities(entities);
+      }
+
+      return nothing;
     }
+  );
 
-    if (valueType === "device" || valueType === "helper") {
-      const { devices } = this._entries[`${valueType}${TARGET_SEPARATOR}`];
-      return this._renderDomains(
-        devices!,
-        valueType === "device" ? "entity_" : "helper_"
-      );
-    }
-
-    if (
-      !valueId &&
-      (valueType.startsWith("entity") || valueType.startsWith("helper"))
-    ) {
-      const { entities } =
-        this._entries[
-          `${valueType.startsWith("entity") ? "device" : "helper"}${TARGET_SEPARATOR}`
-        ].devices![`${valueType}${TARGET_SEPARATOR}`];
-      return this._renderEntities(entities);
-    }
-
-    return nothing;
-  }
-
-  private _renderFloors() {
-    return html`<ha-section-title
-        >${this.localize(
-          "ui.panel.config.automation.editor.home"
-        )}</ha-section-title
-      >
-      ${!this._floorAreas.length ||
-      (!this._floorAreas[0].id && !this._floorAreas[0].areas.length)
-        ? html`<ha-md-list>
-            <ha-md-list-item type="text">
-              <div slot="headline">
-                ${this.localize("ui.components.area-picker.no_areas")}
-              </div>
-            </ha-md-list-item>
-          </ha-md-list>`
-        : this.narrow
+  private _renderFloors = memoizeOne(
+    (
+      narrow: boolean,
+      entries: Record<string, Level1Entries>,
+      value?: SingleHassServiceTarget
+    ) =>
+      html`<ha-section-title
+          >${this.localize(
+            "ui.panel.config.automation.editor.home"
+          )}</ha-section-title
+        >
+        ${!this._floorAreas.length ||
+        (!this._floorAreas[0].id && !this._floorAreas[0].areas.length)
           ? html`<ha-md-list>
-              ${this._floorAreas.map((floor, index) =>
-                index === 0 && !floor.id
-                  ? this._renderAreas(
-                      this._entries[floor.id || `floor${TARGET_SEPARATOR}`]
-                        .areas!
-                    )
-                  : html`<ha-md-list-item
-                      interactive
-                      type="button"
-                      .target=${floor.id || `floor${TARGET_SEPARATOR}`}
-                      @click=${this._selectItem}
-                    >
-                      ${floor.id && (floor as FloorNestedComboBoxItem).floor
-                        ? html`<ha-floor-icon
-                            slot="start"
-                            .floor=${(floor as FloorNestedComboBoxItem).floor}
-                          ></ha-floor-icon>`
-                        : html`<ha-svg-icon
-                            slot="start"
-                            .path=${mdiTextureBox}
-                          ></ha-svg-icon>`}
+              <ha-md-list-item type="text">
+                <div slot="headline">
+                  ${this.localize("ui.components.area-picker.no_areas")}
+                </div>
+              </ha-md-list-item>
+            </ha-md-list>`
+          : narrow
+            ? html`<ha-md-list>
+                ${this._floorAreas.map((floor, index) =>
+                  index === 0 && !floor.id
+                    ? this._renderAreas(
+                        entries[floor.id || `floor${TARGET_SEPARATOR}`].areas!
+                      )
+                    : html`<ha-md-list-item
+                        interactive
+                        type="button"
+                        .target=${floor.id || `floor${TARGET_SEPARATOR}`}
+                        @click=${this._selectItem}
+                      >
+                        ${floor.id && (floor as FloorNestedComboBoxItem).floor
+                          ? html`<ha-floor-icon
+                              slot="start"
+                              .floor=${(floor as FloorNestedComboBoxItem).floor}
+                            ></ha-floor-icon>`
+                          : html`<ha-svg-icon
+                              slot="start"
+                              .path=${mdiTextureBox}
+                            ></ha-svg-icon>`}
 
-                      <div slot="headline">
+                        <div slot="headline">
+                          ${!floor.id
+                            ? this.localize(
+                                "ui.panel.config.automation.editor.other_areas"
+                              )
+                            : floor.primary}
+                        </div>
+                        <ha-icon-next slot="end"></ha-icon-next>
+                      </ha-md-list-item>`
+                )}
+              </ha-md-list>`
+            : html`<wa-tree @wa-selection-change=${this._handleSelectionChange}>
+                ${this._floorAreas.map((floor, index) =>
+                  index === 0 && !floor.id
+                    ? this._renderAreas(
+                        entries[floor.id || `floor${TARGET_SEPARATOR}`].areas!
+                      )
+                    : html`<wa-tree-item
+                        .preventSelection=${!floor.id}
+                        .target=${floor.id || `floor${TARGET_SEPARATOR}`}
+                        .selected=${!!floor.id &&
+                        this._getSelectedTargetId(value) === floor.id}
+                        .lazy=${!entries[floor.id || `floor${TARGET_SEPARATOR}`]
+                          .open &&
+                        !!Object.keys(
+                          entries[floor.id || `floor${TARGET_SEPARATOR}`].areas!
+                        ).length}
+                        @wa-lazy-load=${this._expandItem}
+                        @wa-collapse=${this._collapseItem}
+                        .expanded=${entries[
+                          floor.id || `floor${TARGET_SEPARATOR}`
+                        ].open}
+                      >
+                        ${floor.id && (floor as FloorNestedComboBoxItem).floor
+                          ? html`<ha-floor-icon
+                              .floor=${(floor as FloorNestedComboBoxItem).floor}
+                            ></ha-floor-icon>`
+                          : html`<ha-svg-icon
+                              .path=${mdiTextureBox}
+                            ></ha-svg-icon>`}
                         ${!floor.id
                           ? this.localize(
                               "ui.panel.config.automation.editor.other_areas"
                             )
                           : floor.primary}
-                      </div>
-                      <ha-icon-next slot="end"></ha-icon-next>
-                    </ha-md-list-item>`
-              )}
+                        ${entries[floor.id || `floor${TARGET_SEPARATOR}`].open
+                          ? this._renderAreas(
+                              entries[floor.id || `floor${TARGET_SEPARATOR}`]
+                                .areas!
+                            )
+                          : nothing}
+                      </wa-tree-item>`
+                )}
+              </wa-tree>`}`
+  );
+
+  private _renderLabels = memoizeOne(
+    (narrow: boolean, value?: SingleHassServiceTarget) => {
+      const labels = this._getLabelsMemoized(
+        this.states,
+        this.areas,
+        this.devices,
+        this.entities,
+        this._labelRegistry,
+        undefined,
+        undefined,
+        undefined,
+        undefined,
+        undefined,
+        undefined,
+        `label${TARGET_SEPARATOR}`
+      );
+
+      if (!labels.length) {
+        return nothing;
+      }
+
+      return html`<ha-section-title
+          >${this.localize(
+            "ui.components.label-picker.labels"
+          )}</ha-section-title
+        >
+        <ha-md-list>
+          ${labels.map(
+            (label) =>
+              html`<ha-md-list-item
+                interactive
+                type="button"
+                .target=${label.id}
+                @click=${this._selectItem}
+                class=${this._getSelectedTargetId(value) === label.id
+                  ? "selected"
+                  : ""}
+                >${label.icon
+                  ? html`<ha-icon slot="start" .icon=${label.icon}></ha-icon>`
+                  : label.icon_path
+                    ? html`<ha-svg-icon
+                        slot="start"
+                        .path=${label.icon_path}
+                      ></ha-svg-icon>`
+                    : nothing}
+                <div slot="headline">${label.primary}</div>
+                ${narrow
+                  ? html`<ha-icon-next slot="end"></ha-icon-next> `
+                  : nothing}
+              </ha-md-list-item>`
+          )}
+        </ha-md-list>`;
+    }
+  );
+
+  private _renderUnassigned = memoizeOne(
+    (
+      narrow: boolean,
+      entries: Record<string, Level1Entries>,
+      _value?: SingleHassServiceTarget
+    ) => {
+      const unassignedDevicesLength = Object.keys(
+        entries[`area${TARGET_SEPARATOR}`]?.devices || {}
+      ).length;
+      const unassignedServicesLength = Object.keys(
+        entries[`service${TARGET_SEPARATOR}`]?.devices || {}
+      ).length;
+      const unassignedEntitiesLength = Object.keys(
+        entries[`device${TARGET_SEPARATOR}`]?.devices || {}
+      ).length;
+      const unassignedHelpersLength = Object.keys(
+        entries[`helper${TARGET_SEPARATOR}`]?.devices || {}
+      ).length;
+
+      if (
+        !unassignedDevicesLength &&
+        !unassignedServicesLength &&
+        !unassignedEntitiesLength &&
+        !unassignedHelpersLength
+      ) {
+        return nothing;
+      }
+
+      return html`<ha-section-title
+          >${this.localize(
+            "ui.panel.config.automation.editor.unassigned"
+          )}</ha-section-title
+        >${narrow
+          ? html`<ha-md-list>
+              ${unassignedEntitiesLength
+                ? html`<ha-md-list-item
+                    interactive
+                    type="button"
+                    .target=${`device${TARGET_SEPARATOR}`}
+                    @click=${this._selectItem}
+                  >
+                    <div slot="headline">
+                      ${this.localize(
+                        "ui.components.target-picker.type.entities"
+                      )}
+                    </div>
+                    <ha-icon-next slot="end"></ha-icon-next>
+                  </ha-md-list-item>`
+                : nothing}
+              ${unassignedHelpersLength
+                ? html`<ha-md-list-item
+                    interactive
+                    type="button"
+                    .target=${`helper${TARGET_SEPARATOR}`}
+                    @click=${this._selectItem}
+                  >
+                    <div slot="headline">
+                      ${this.localize(
+                        "ui.panel.config.automation.editor.helpers"
+                      )}
+                    </div>
+                    <ha-icon-next slot="end"></ha-icon-next>
+                  </ha-md-list-item>`
+                : nothing}
+              ${unassignedDevicesLength
+                ? html`<ha-md-list-item
+                    interactive
+                    type="button"
+                    .target=${`area${TARGET_SEPARATOR}`}
+                    @click=${this._selectItem}
+                  >
+                    <div slot="headline">
+                      ${this.localize(
+                        "ui.components.target-picker.type.devices"
+                      )}
+                    </div>
+                    <ha-icon-next slot="end"></ha-icon-next>
+                  </ha-md-list-item>`
+                : nothing}
+              ${unassignedServicesLength
+                ? html`<ha-md-list-item
+                    interactive
+                    type="button"
+                    .target=${`service${TARGET_SEPARATOR}`}
+                    @click=${this._selectItem}
+                  >
+                    <div slot="headline">
+                      ${this.localize(
+                        "ui.panel.config.automation.editor.services"
+                      )}
+                    </div>
+                    <ha-icon-next slot="end"></ha-icon-next>
+                  </ha-md-list-item>`
+                : nothing}
             </ha-md-list>`
           : html`<wa-tree @wa-selection-change=${this._handleSelectionChange}>
-              ${this._floorAreas.map((floor, index) =>
-                index === 0 && !floor.id
-                  ? this._renderAreas(
-                      this._entries[floor.id || `floor${TARGET_SEPARATOR}`]
-                        .areas!
-                    )
-                  : html`<wa-tree-item
-                      .preventSelection=${!floor.id}
-                      .target=${floor.id || `floor${TARGET_SEPARATOR}`}
-                      .selected=${!!floor.id &&
-                      this._getSelectedTargetId(this.value) === floor.id}
-                      .lazy=${!this._entries[
-                        floor.id || `floor${TARGET_SEPARATOR}`
-                      ].open &&
-                      !!Object.keys(
-                        this._entries[floor.id || `floor${TARGET_SEPARATOR}`]
-                          .areas!
-                      ).length}
-                      @wa-lazy-load=${this._expandItem}
-                      @wa-collapse=${this._collapseItem}
-                      .expanded=${this._entries[
-                        floor.id || `floor${TARGET_SEPARATOR}`
-                      ].open}
-                    >
-                      ${floor.id && (floor as FloorNestedComboBoxItem).floor
-                        ? html`<ha-floor-icon
-                            .floor=${(floor as FloorNestedComboBoxItem).floor}
-                          ></ha-floor-icon>`
-                        : html`<ha-svg-icon
-                            .path=${mdiTextureBox}
-                          ></ha-svg-icon>`}
-                      ${!floor.id
-                        ? this.localize(
-                            "ui.panel.config.automation.editor.other_areas"
-                          )
-                        : floor.primary}
-                      ${this._entries[floor.id || `floor${TARGET_SEPARATOR}`]
-                        .open
-                        ? this._renderAreas(
-                            this._entries[
-                              floor.id || `floor${TARGET_SEPARATOR}`
-                            ].areas!
-                          )
-                        : nothing}
-                    </wa-tree-item>`
-              )}
-            </wa-tree>`}`;
-  }
-
-  private _renderLabels() {
-    const labels = this._getLabelsMemoized(
-      this.states,
-      this.areas,
-      this.devices,
-      this.entities,
-      this._labelRegistry,
-      undefined,
-      undefined,
-      undefined,
-      undefined,
-      undefined,
-      undefined,
-      `label${TARGET_SEPARATOR}`
-    );
-
-    if (!labels.length) {
-      return nothing;
-    }
-
-    return html`<ha-section-title
-        >${this.localize("ui.components.label-picker.labels")}</ha-section-title
-      >
-      <ha-md-list>
-        ${labels.map(
-          (label) =>
-            html`<ha-md-list-item
-              interactive
-              type="button"
-              .target=${label.id}
-              @click=${this._selectItem}
-              class=${this._getSelectedTargetId(this.value) === label.id
-                ? "selected"
-                : ""}
-              >${label.icon
-                ? html`<ha-icon slot="start" .icon=${label.icon}></ha-icon>`
-                : label.icon_path
-                  ? html`<ha-svg-icon
-                      slot="start"
-                      .path=${label.icon_path}
-                    ></ha-svg-icon>`
-                  : nothing}
-              <div slot="headline">${label.primary}</div>
-              ${this.narrow
-                ? html`<ha-icon-next slot="end"></ha-icon-next> `
-                : nothing}
-            </ha-md-list-item>`
-        )}
-      </ha-md-list>`;
-  }
-
-  private _renderUnassigned() {
-    const unassignedDevicesLength = Object.keys(
-      this._entries[`area${TARGET_SEPARATOR}`]?.devices || {}
-    ).length;
-    const unassignedServicesLength = Object.keys(
-      this._entries[`service${TARGET_SEPARATOR}`]?.devices || {}
-    ).length;
-    const unassignedEntitiesLength = Object.keys(
-      this._entries[`device${TARGET_SEPARATOR}`]?.devices || {}
-    ).length;
-    const unassignedHelpersLength = Object.keys(
-      this._entries[`helper${TARGET_SEPARATOR}`]?.devices || {}
-    ).length;
-
-    if (
-      !unassignedDevicesLength &&
-      !unassignedServicesLength &&
-      !unassignedEntitiesLength &&
-      !unassignedHelpersLength
-    ) {
-      return nothing;
-    }
-
-    return html`<ha-section-title
-        >${this.localize(
-          "ui.panel.config.automation.editor.unassigned"
-        )}</ha-section-title
-      >${this.narrow
-        ? html`<ha-md-list>
-            ${unassignedEntitiesLength
-              ? html`<ha-md-list-item
-                  interactive
-                  type="button"
-                  .target=${`device${TARGET_SEPARATOR}`}
-                  @click=${this._selectItem}
-                >
-                  <div slot="headline">
+              ${unassignedEntitiesLength
+                ? html`<wa-tree-item
+                    .lazy=${!entries[`device${TARGET_SEPARATOR}`].open}
+                    .target=${`device${TARGET_SEPARATOR}`}
+                    @wa-lazy-load=${this._expandItem}
+                    @wa-collapse=${this._collapseItem}
+                    prevent-selection
+                    .expanded=${entries[`device${TARGET_SEPARATOR}`].open}
+                  >
                     ${this.localize(
                       "ui.components.target-picker.type.entities"
                     )}
-                  </div>
-                  <ha-icon-next slot="end"></ha-icon-next>
-                </ha-md-list-item>`
-              : nothing}
-            ${unassignedHelpersLength
-              ? html`<ha-md-list-item
-                  interactive
-                  type="button"
-                  .target=${`helper${TARGET_SEPARATOR}`}
-                  @click=${this._selectItem}
-                >
-                  <div slot="headline">
+                    ${entries[`device${TARGET_SEPARATOR}`].open
+                      ? this._renderDomains(
+                          entries[`device${TARGET_SEPARATOR}`].devices!,
+                          "entity_"
+                        )
+                      : nothing}
+                  </wa-tree-item>`
+                : nothing}
+              ${unassignedHelpersLength
+                ? html`<wa-tree-item
+                    .lazy=${!entries[`helper${TARGET_SEPARATOR}`].open}
+                    .expanded=${entries[`helper${TARGET_SEPARATOR}`].open}
+                    .target=${`helper${TARGET_SEPARATOR}`}
+                    @wa-lazy-load=${this._expandItem}
+                    @wa-collapse=${this._collapseItem}
+                    prevent-selection
+                  >
                     ${this.localize(
                       "ui.panel.config.automation.editor.helpers"
                     )}
-                  </div>
-                  <ha-icon-next slot="end"></ha-icon-next>
-                </ha-md-list-item>`
-              : nothing}
-            ${unassignedDevicesLength
-              ? html`<ha-md-list-item
-                  interactive
-                  type="button"
-                  .target=${`area${TARGET_SEPARATOR}`}
-                  @click=${this._selectItem}
-                >
-                  <div slot="headline">
+                    ${entries[`helper${TARGET_SEPARATOR}`].open
+                      ? this._renderDomains(
+                          entries[`helper${TARGET_SEPARATOR}`].devices!,
+                          "helper_"
+                        )
+                      : nothing}
+                  </wa-tree-item>`
+                : nothing}
+              ${unassignedDevicesLength
+                ? html`<wa-tree-item
+                    .lazy=${!entries[`area${TARGET_SEPARATOR}`].open}
+                    .expanded=${entries[`area${TARGET_SEPARATOR}`].open}
+                    .target=${`area${TARGET_SEPARATOR}`}
+                    @wa-lazy-load=${this._expandItem}
+                    @wa-collapse=${this._collapseItem}
+                    prevent-selection
+                  >
                     ${this.localize("ui.components.target-picker.type.devices")}
-                  </div>
-                  <ha-icon-next slot="end"></ha-icon-next>
-                </ha-md-list-item>`
-              : nothing}
-            ${unassignedServicesLength
-              ? html`<ha-md-list-item
-                  interactive
-                  type="button"
-                  .target=${`service${TARGET_SEPARATOR}`}
-                  @click=${this._selectItem}
-                >
-                  <div slot="headline">
+                    ${entries[`area${TARGET_SEPARATOR}`].open
+                      ? this._renderDevices(
+                          entries[`area${TARGET_SEPARATOR}`].devices!
+                        )
+                      : nothing}
+                  </wa-tree-item>`
+                : nothing}
+              ${unassignedServicesLength
+                ? html`<wa-tree-item
+                    .lazy=${!entries[`service${TARGET_SEPARATOR}`].open}
+                    .expanded=${entries[`service${TARGET_SEPARATOR}`].open}
+                    .target=${`service${TARGET_SEPARATOR}`}
+                    @wa-lazy-load=${this._expandItem}
+                    @wa-collapse=${this._collapseItem}
+                    prevent-selection
+                  >
                     ${this.localize(
                       "ui.panel.config.automation.editor.services"
                     )}
-                  </div>
-                  <ha-icon-next slot="end"></ha-icon-next>
-                </ha-md-list-item>`
-              : nothing}
-          </ha-md-list>`
-        : html`<wa-tree @wa-selection-change=${this._handleSelectionChange}>
-            ${unassignedEntitiesLength
-              ? html`<wa-tree-item
-                  .lazy=${!this._entries[`device${TARGET_SEPARATOR}`].open}
-                  .target=${`device${TARGET_SEPARATOR}`}
-                  @wa-lazy-load=${this._expandItem}
-                  @wa-collapse=${this._collapseItem}
-                  prevent-selection
-                  .expanded=${this._entries[`device${TARGET_SEPARATOR}`].open}
-                >
-                  ${this.localize("ui.components.target-picker.type.entities")}
-                  ${this._entries[`device${TARGET_SEPARATOR}`].open
-                    ? this._renderDomains(
-                        this._entries[`device${TARGET_SEPARATOR}`].devices!,
-                        "entity_"
-                      )
-                    : nothing}
-                </wa-tree-item>`
-              : nothing}
-            ${unassignedHelpersLength
-              ? html`<wa-tree-item
-                  .lazy=${!this._entries[`helper${TARGET_SEPARATOR}`].open}
-                  .expanded=${this._entries[`helper${TARGET_SEPARATOR}`].open}
-                  .target=${`helper${TARGET_SEPARATOR}`}
-                  @wa-lazy-load=${this._expandItem}
-                  @wa-collapse=${this._collapseItem}
-                  prevent-selection
-                >
-                  ${this.localize("ui.panel.config.automation.editor.helpers")}
-                  ${this._entries[`helper${TARGET_SEPARATOR}`].open
-                    ? this._renderDomains(
-                        this._entries[`helper${TARGET_SEPARATOR}`].devices!,
-                        "helper_"
-                      )
-                    : nothing}
-                </wa-tree-item>`
-              : nothing}
-            ${unassignedDevicesLength
-              ? html`<wa-tree-item
-                  .lazy=${!this._entries[`area${TARGET_SEPARATOR}`].open}
-                  .expanded=${this._entries[`area${TARGET_SEPARATOR}`].open}
-                  .target=${`area${TARGET_SEPARATOR}`}
-                  @wa-lazy-load=${this._expandItem}
-                  @wa-collapse=${this._collapseItem}
-                  prevent-selection
-                >
-                  ${this.localize("ui.components.target-picker.type.devices")}
-                  ${this._entries[`area${TARGET_SEPARATOR}`].open
-                    ? this._renderDevices(
-                        this._entries[`area${TARGET_SEPARATOR}`].devices!
-                      )
-                    : nothing}
-                </wa-tree-item>`
-              : nothing}
-            ${unassignedServicesLength
-              ? html`<wa-tree-item
-                  .lazy=${!this._entries[`service${TARGET_SEPARATOR}`].open}
-                  .expanded=${this._entries[`service${TARGET_SEPARATOR}`].open}
-                  .target=${`service${TARGET_SEPARATOR}`}
-                  @wa-lazy-load=${this._expandItem}
-                  @wa-collapse=${this._collapseItem}
-                  prevent-selection
-                >
-                  ${this.localize("ui.panel.config.automation.editor.services")}
-                  ${this._entries[`service${TARGET_SEPARATOR}`].open
-                    ? this._renderDevices(
-                        this._entries[`service${TARGET_SEPARATOR}`].devices!
-                      )
-                    : nothing}
-                </wa-tree-item>`
-              : nothing}
-          </wa-tree>`} `;
-  }
+                    ${entries[`service${TARGET_SEPARATOR}`].open
+                      ? this._renderDevices(
+                          entries[`service${TARGET_SEPARATOR}`].devices!
+                        )
+                      : nothing}
+                  </wa-tree-item>`
+                : nothing}
+            </wa-tree>`} `;
+    }
+  );
 
   private _renderAreas(areas: Record<string, Level2Entries>) {
     const renderedAreas = Object.keys(areas)
