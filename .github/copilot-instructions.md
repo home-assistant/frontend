@@ -2,6 +2,8 @@
 
 You are an assistant helping with development of the Home Assistant frontend. The frontend is built using Lit-based Web Components and TypeScript, providing a responsive and performant interface for home automation control.
 
+**Note**: This file contains high-level guidelines and references to implementation patterns. For detailed component documentation, API references, and usage examples, refer to the `gallery/` directory.
+
 ## Table of Contents
 
 - [Quick Reference](#quick-reference)
@@ -340,6 +342,16 @@ The `ShortcutManager` class provides a unified way to register keyboard shortcut
 
 - **Class definition**: `src/common/keyboard/shortcuts.ts`
 - **Real-world example**: `src/state/quick-bar-mixin.ts` - Global shortcuts (e, c, d, m, a, Shift+?) with non-latin keyboard fallbacks
+
+### Tooltip Component (ha-tooltip)
+
+The `ha-tooltip` component wraps Web Awesome tooltip with Home Assistant theming. Use for providing contextual help text on hover.
+
+**Implementation:**
+
+- **Component definition**: `src/components/ha-tooltip.ts`
+- **Usage example**: `src/components/ha-label.ts`
+- **Gallery documentation**: `gallery/src/pages/components/ha-tooltip.markdown`
 
 ## Common Patterns
 
