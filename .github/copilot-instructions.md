@@ -243,12 +243,13 @@ fireEvent(this, "show-dialog", {
 **Recent Examples:**
 
 See these files for current patterns:
+
 - `src/panels/config/repairs/dialog-repairs-issue.ts`
 - `src/dialogs/restart/dialog-restart.ts`
 - `src/panels/config/lovelace/resources/dialog-lovelace-resource-detail.ts`
 
-
 ### Form Component (ha-form)
+
 - Schema-driven using `HaFormSchema[]`
 - Supports entity, device, area, target, number, boolean, time, action, text, object, select, icon, media, location selectors
 - Built-in validation with error display
