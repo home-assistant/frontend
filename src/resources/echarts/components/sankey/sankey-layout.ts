@@ -257,10 +257,10 @@ export function sortNodesInSections(
 
       // Both are passthrough nodes - sort by source position
       if (aIsPassthrough && bIsPassthrough) {
-        // Find positions of source nodes in previous section
+        // Find positions of source nodes in previous section (use already sorted section)
         if (depthIndex > 0) {
           const prevDepth = depths[depthIndex - 1];
-          const prevSection = nodesPerSection[prevDepth] || [];
+          const prevSection = sortedSections[prevDepth] || nodesPerSection[prevDepth] || [];
 
           const aSourceIndex = prevSection.findIndex((n) => {
             const nodeId = isPassThroughNode(n) ? n.id : (n as GraphNode).id;
@@ -280,7 +280,7 @@ export function sortNodesInSections(
           }
         }
 
-        // Fall back to target node positions in next section
+        // Fall back to target node positions in next section (not sorted yet, use original)
         if (depthIndex < depths.length - 1) {
           const nextDepth = depths[depthIndex + 1];
           const nextSection = nodesPerSection[nextDepth] || [];
