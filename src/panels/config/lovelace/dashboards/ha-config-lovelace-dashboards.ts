@@ -1,8 +1,9 @@
 import {
   mdiCheck,
-  mdiCheckCircleOutline,
   mdiDelete,
   mdiDotsVertical,
+  mdiHomeCircleOutline,
+  mdiHomeEdit,
   mdiPencil,
   mdiPlus,
 } from "@mdi/js";
@@ -28,6 +29,7 @@ import "../../../../components/ha-md-button-menu";
 import "../../../../components/ha-md-list-item";
 import "../../../../components/ha-svg-icon";
 import "../../../../components/ha-tooltip";
+import { saveFrontendSystemData } from "../../../../data/frontend";
 import type { LovelacePanelConfig } from "../../../../data/lovelace";
 import type { LovelaceRawConfig } from "../../../../data/lovelace/config/types";
 import {
@@ -171,7 +173,7 @@ export class HaConfigLovelaceDashboards extends LitElement {
                       <ha-svg-icon
                         .id="default-icon-${dashboard.title}"
                         style="padding-left: 10px; padding-inline-start: 10px; padding-inline-end: initial; direction: var(--direction);"
-                        .path=${mdiCheckCircleOutline}
+                        .path=${mdiHomeCircleOutline}
                       ></ha-svg-icon>
                       <ha-tooltip
                         .for="default-icon-${dashboard.title}"
@@ -258,14 +260,22 @@ export class HaConfigLovelaceDashboards extends LitElement {
             narrow
             .items=${[
               {
-                path: mdiPencil,
-                label: this.hass.localize(
-                  "ui.panel.config.lovelace.dashboards.picker.edit"
+                path: mdiHomeEdit,
+                label: localize(
+                  "ui.panel.config.lovelace.dashboards.picker.set_as_default"
                 ),
-                action: () => this._handleEdit(dashboard),
+                action: () => this._handleSetAsDefault(dashboard),
+                disabled: dashboard.default,
               },
               ...(dashboard.type === "user_created"
                 ? [
+                    {
+                      path: mdiPencil,
+                      label: this.hass.localize(
+                        "ui.panel.config.lovelace.dashboards.picker.edit"
+                      ),
+                      action: () => this._handleEdit(dashboard),
+                    },
                     {
                       label: this.hass.localize(
                         "ui.panel.config.lovelace.dashboards.picker.delete"
@@ -438,9 +448,15 @@ export class HaConfigLovelaceDashboards extends LitElement {
     this._openDetailDialog(dashboard, urlPath);
   }
 
-  private _canEdit(urlPath: string) {
-    return !["light", "security", "climate", "home"].includes(urlPath);
-  }
+  private _handleSetAsDefault = async (item: DataTableItem) => {
+    if (item.default) {
+      return;
+    }
+    await saveFrontendSystemData(this.hass.connection, "core", {
+      ...this.hass.systemData,
+      defaultPanel: item.url_path === DEFAULT_PANEL ? undefined : item.url_path,
+    });
+  };
 
   private _handleDelete = async (item: DataTableItem) => {
     const dashboard = this._dashboards.find(

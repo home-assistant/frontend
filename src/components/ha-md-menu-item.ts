@@ -36,6 +36,11 @@ export class HaMdMenuItem extends MenuItemEl {
       ::slotted([slot="headline"]) {
         text-wrap: nowrap;
       }
+      :host([disabled]) {
+        opacity: 1;
+        --md-menu-item-label-text-color: var(--disabled-text-color);
+        --md-menu-item-leading-icon-color: var(--disabled-text-color);
+      }
     `,
   ];
 }

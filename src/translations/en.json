@@ -3507,6 +3507,7 @@
               "edit": "Edit",
               "delete": "Delete",
               "add_dashboard": "Add dashboard",
+              "set_as_default": "Set as default",
               "type": {
                 "user_created": "User created",
                 "built_in": "Built-in"
