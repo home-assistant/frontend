@@ -1,5 +1,5 @@
 import "@material/mwc-linear-progress/mwc-linear-progress";
-import { mdiClose } from "@mdi/js";
+import { mdiClose, mdiDotsVertical, mdiRestart } from "@mdi/js";
 import { css, html, LitElement, nothing, type TemplateResult } from "lit";
 import { customElement, property, query, state } from "lit/decorators";
 import memoizeOne from "memoize-one";
@@ -10,10 +10,13 @@ import "../../components/ha-fade-in";
 import "../../components/ha-icon-button";
 import "../../components/ha-items-display-editor";
 import type { DisplayValue } from "../../components/ha-items-display-editor";
+import "../../components/ha-md-button-menu";
 import "../../components/ha-md-dialog";
 import type { HaMdDialog } from "../../components/ha-md-dialog";
+import "../../components/ha-md-menu-item";
 import { computePanels } from "../../components/ha-sidebar";
 import "../../components/ha-spinner";
+import "../../components/ha-svg-icon";
 import {
   fetchFrontendUserData,
   saveFrontendUserData,
@@ -170,6 +173,22 @@ class DialogEditSidebar extends LitElement {
                 >${this.hass.localize("ui.sidebar.edit_subtitle")}</span
               >`
             : nothing}
+          <ha-md-button-menu
+            slot="actionItems"
+            positioning="popover"
+            anchor-corner="end-end"
+            menu-corner="start-end"
+          >
+            <ha-icon-button
+              slot="trigger"
+              .label=${this.hass.localize("ui.common.menu")}
+              .path=${mdiDotsVertical}
+            ></ha-icon-button>
+            <ha-md-menu-item .clickAction=${this._resetToDefaults}>
+              <ha-svg-icon slot="start" .path=${mdiRestart}></ha-svg-icon>
+              ${this.hass.localize("ui.sidebar.reset_to_defaults")}
+            </ha-md-menu-item>
+          </ha-md-button-menu>
         </ha-dialog-header>
         <div slot="content" class="content">${this._renderContent()}</div>
         <div slot="actions">
@@ -192,6 +211,26 @@ class DialogEditSidebar extends LitElement {
     this._order = [...order];
     this._hidden = [...hidden];
   }
+
+  private _resetToDefaults = async () => {
+    const confirmation = await showConfirmationDialog(this, {
+      text: this.hass.localize("ui.sidebar.reset_confirmation"),
+      confirmText: this.hass.localize("ui.common.reset"),
+    });
+
+    if (!confirmation) {
+      return;
+    }
+
+    this._order = [];
+    this._hidden = [];
+    try {
+      await saveFrontendUserData(this.hass.connection, "sidebar", {});
+    } catch (err: any) {
+      this._error = err.message || err;
+    }
+    this.closeDialog();
+  };
 
   private async _save() {
     if (this._migrateToUserData) {
