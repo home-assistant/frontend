@@ -151,6 +151,7 @@ try {
 ### Styling Guidelines
 
 - **Use CSS custom properties**: Leverage the theme system
+- **Use spacing tokens**: Prefer `--ha-space-*` tokens over hardcoded values for consistent spacing
 - **Mobile-first responsive**: Design for mobile, enhance for desktop
 - **Follow Material Design**: Use Material Web Components where appropriate
 - **Support RTL**: Ensure all layouts work in RTL languages
@@ -159,15 +160,18 @@ try {
 static get styles() {
   return css`
     :host {
-      --spacing: 16px;
-      padding: var(--spacing);
+      padding: var(--ha-space-16);
       color: var(--primary-text-color);
       background-color: var(--card-background-color);
     }
 
+    .content {
+      gap: var(--ha-space-8);
+    }
+
     @media (max-width: 600px) {
       :host {
-        --spacing: 8px;
+        padding: var(--ha-space-8);
       }
     }
   `;
@@ -233,6 +237,7 @@ fireEvent(this, "show-dialog", {
 - **Primary action buttons**: Default appearance (no appearance attribute) or omit for standard styling
 - **Secondary action buttons**: Use `appearance="plain"` for cancel/dismiss actions
 - **Destructive actions**: Use `appearance="filled"` for delete/remove operations (combined with appropriate semantic styling)
+- **Button sizes**: Use `size="small"` (32px height) or default/medium (40px height)
 - Always place primary action in `slot="primaryAction"` and secondary in `slot="secondaryAction"` within `ha-dialog-footer`
 
 **Recent Examples:**
