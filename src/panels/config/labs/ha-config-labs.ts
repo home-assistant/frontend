@@ -2,6 +2,8 @@ import { mdiFlask, mdiHelpCircle, mdiOpenInNew } from "@mdi/js";
 import type { PropertyValues, TemplateResult } from "lit";
 import { LitElement, css, html, nothing } from "lit";
 import { customElement, property, state } from "lit/decorators";
+import memoizeOne from "memoize-one";
+import type { LocalizeFunc } from "../../../common/translations/localize";
 import { extractSearchParam } from "../../../common/url/search-params";
 import { domainToName } from "../../../data/integration";
 import {
@@ -38,6 +40,16 @@ class HaConfigLabs extends SubscribeMixin(LitElement) {
 
   @state() private _highlightedPreviewFeature?: string;
 
+  private _sortedPreviewFeatures = memoizeOne(
+    (localize: LocalizeFunc, features: LabPreviewFeature[]) =>
+      // Sort by localized integration name alphabetically
+      [...features].sort((a, b) =>
+        domainToName(localize, a.domain).localeCompare(
+          domainToName(localize, b.domain)
+        )
+      )
+  );
+
   public hassSubscribe() {
     return [
       subscribeLabFeatures(this.hass.connection, (features) => {
@@ -45,12 +57,7 @@ class HaConfigLabs extends SubscribeMixin(LitElement) {
         const domains = [...new Set(features.map((f) => f.domain))];
         this.hass.loadBackendTranslation("title", domains);
 
-        // Sort by localized integration name alphabetically
-        this._preview_features = features.sort((a, b) =>
-          domainToName(this.hass.localize, a.domain).localeCompare(
-            domainToName(this.hass.localize, b.domain)
-          )
-        );
+        this._preview_features = features;
       }),
     ];
   }
@@ -77,6 +84,11 @@ class HaConfigLabs extends SubscribeMixin(LitElement) {
   }
 
   protected render() {
+    const sortedFeatures = this._sortedPreviewFeatures(
+      this.hass.localize,
+      this._preview_features
+    );
+
     return html`
       <hass-subpage
         .hass=${this.hass}
@@ -84,7 +96,7 @@ class HaConfigLabs extends SubscribeMixin(LitElement) {
         back-path="/config"
         .header=${this.hass.localize("ui.panel.config.labs.caption")}
       >
-        ${this._preview_features.length
+        ${sortedFeatures.length
           ? html`
               <a
                 slot="toolbar-icon"
@@ -101,7 +113,7 @@ class HaConfigLabs extends SubscribeMixin(LitElement) {
             `
           : nothing}
         <div class="content">
-          ${!this._preview_features.length
+          ${!sortedFeatures.length
             ? html`
                 <div class="empty">
                   <ha-svg-icon .path=${mdiFlask}></ha-svg-icon>
@@ -140,7 +152,7 @@ class HaConfigLabs extends SubscribeMixin(LitElement) {
                   </div>
                 </ha-card>
 
-                ${this._preview_features.map((preview_feature) =>
+                ${sortedFeatures.map((preview_feature) =>
                   this._renderPreviewFeature(preview_feature)
                 )}
               `}
