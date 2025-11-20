@@ -198,13 +198,17 @@ The View Transitions API creates smooth animations between DOM state changes. Wh
 2. Keep transitions simple (subtle crossfades and fades work best)
 3. Use `--ha-animation-base-duration` CSS variable for consistent timing
 4. Assign unique `view-transition-name` to elements (must be unique at any given time)
-5. View transitions operate at document level, not within Shadow DOM
-6. For Lit components: Override `performUpdate()` or use `::part()` for internal elements
+5. For Lit components: Override `performUpdate()` or use `::part()` for internal elements
+
+**Default Root Transition:**
+
+By default, `:root` receives `view-transition-name: root`, creating a full-page crossfade. Target with [`::view-transition-group(root)`](https://developer.mozilla.org/en-US/docs/Web/CSS/::view-transition-group) to customize the default page transition.
 
 **Important Constraints:**
 
 - Each `view-transition-name` must be unique at any given time
 - Only one view transition can run at a time
+- **Shadow DOM incompatibility**: View transitions operate at document level and do not work within Shadow DOM due to style isolation ([spec discussion](https://github.com/w3c/csswg-drafts/issues/10303)). For web components, set `view-transition-name` on the `:host` element or use document-level transitions
 
 **Current Usage & Planned Applications:**
 
