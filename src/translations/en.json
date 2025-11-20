@@ -3516,7 +3516,7 @@
             "confirm_delete_title": "Delete {dashboard_title}?",
             "confirm_delete_text": "This dashboard will be permanently deleted.",
             "cant_edit_yaml": "Dashboards created in YAML cannot be edited from the UI. Change them in configuration.yaml.",
-            "cant_edit_default": "The default dashboard, Overview, cannot be edited from the UI. You can hide it by setting another dashboard as default.",
+            "cant_edit_lovelace": "The Overview dashboard title and icon cannot be changed. You can create a new dashboard to get more customization options.",
             "detail": {
               "edit_dashboard": "Edit dashboard",
               "new_dashboard": "Add new dashboard",
