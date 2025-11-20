@@ -81,6 +81,7 @@ class HaLabel extends LitElement {
 
         .container {
           display: flex;
+          align-items: center;
           position: relative;
           height: 100%;
           padding: 0 16px;
