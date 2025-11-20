@@ -1567,6 +1567,11 @@ export default class HaAutomationAddFromTarget extends LitElement {
       font-weight: var(--ha-font-weight-medium);
       overflow: hidden;
     }
+    ha-md-list-item {
+      --md-list-item-label-text-weight: var(--ha-font-weight-medium);
+      --md-list-item-label-text-font: var(--ha-font-family-heading);
+    }
+
     .item-label {
       white-space: nowrap;
       overflow: hidden;
