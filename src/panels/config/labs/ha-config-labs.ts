@@ -4,14 +4,17 @@ import { LitElement, css, html, nothing } from "lit";
 import { customElement, property, state } from "lit/decorators";
 import { extractSearchParam } from "../../../common/url/search-params";
 import { domainToName } from "../../../data/integration";
-import { labsUpdatePreviewFeature } from "../../../data/labs";
+import {
+  labsUpdatePreviewFeature,
+  subscribeLabFeatures,
+} from "../../../data/labs";
 import type { LabPreviewFeature } from "../../../data/labs";
-import { subscribeLabFeatures } from "../../../data/ws-labs";
 import { showConfirmationDialog } from "../../../dialogs/generic/show-dialog-box";
 import type { HomeAssistant } from "../../../types";
 import { SubscribeMixin } from "../../../mixins/subscribe-mixin";
 import { brandsUrl } from "../../../util/brands-url";
 import { showToast } from "../../../util/toast";
+import { haStyle } from "../../../resources/styles";
 import { showLabsPreviewFeatureEnableDialog } from "./show-dialog-labs-preview-feature-enable";
 import {
   showLabsProgressDialog,
@@ -38,8 +41,12 @@ class HaConfigLabs extends SubscribeMixin(LitElement) {
   public hassSubscribe() {
     return [
       subscribeLabFeatures(this.hass.connection, (features) => {
-        // Sort by integration domain alphabetically
-        this._preview_features = features.sort((a, b) => a.domain.localeCompare(b.domain));
+        // Sort by localized integration name alphabetically
+        this._preview_features = features.sort((a, b) =>
+          domainToName(this.hass.localize, a.domain).localeCompare(
+            domainToName(this.hass.localize, b.domain)
+          )
+        );
       }),
     ];
   }
@@ -360,174 +367,169 @@ class HaConfigLabs extends SubscribeMixin(LitElement) {
     });
   }
 
-  static styles = css`
-    :host {
-      display: block;
-    }
-
-    .content {
-      max-width: 800px;
-      margin: 0 auto;
-      padding: 16px;
-      min-height: calc(100vh - 64px);
-      display: flex;
-      flex-direction: column;
-    }
-
-    .content:has(.empty) {
-      justify-content: center;
-    }
-
-    ha-card {
-      margin-bottom: 16px;
-      position: relative;
-      transition: box-shadow 0.3s ease;
-    }
-
-    ha-card.highlighted {
-      animation: highlight-fade 2.5s ease-out forwards;
-    }
-
-    @keyframes highlight-fade {
-      0% {
-        box-shadow:
-          0 0 0 2px var(--primary-color),
-          0 0 12px rgba(var(--rgb-primary-color), 0.4);
+  static styles = [
+    haStyle,
+    css`
+      :host {
+        display: block;
       }
-      100% {
-        box-shadow:
-          0 0 0 2px transparent,
-          0 0 0 transparent;
+
+      .content {
+        max-width: 800px;
+        margin: 0 auto;
+        padding: 16px;
+        min-height: calc(100vh - 64px);
+        display: flex;
+        flex-direction: column;
       }
-    }
 
-    /* Intro card */
-    .intro-card {
-      display: flex;
-      flex-direction: column;
-      gap: 16px;
-    }
+      .content:has(.empty) {
+        justify-content: center;
+      }
 
-    .intro-card h1 {
-      margin: 0;
-      font-size: 24px;
-      font-weight: 500;
-      line-height: 32px;
-    }
+      ha-card {
+        margin-bottom: 16px;
+        position: relative;
+        transition: box-shadow 0.3s ease;
+      }
 
-    .intro-text {
-      margin: 0 0 12px;
-    }
+      ha-card.highlighted {
+        animation: highlight-fade 2.5s ease-out forwards;
+      }
 
-    /* Feature cards */
-    .card-content {
-      padding: 16px;
-    }
+      @keyframes highlight-fade {
+        0% {
+          box-shadow:
+            0 0 0 2px var(--primary-color),
+            0 0 12px rgba(var(--rgb-primary-color), 0.4);
+        }
+        100% {
+          box-shadow:
+            0 0 0 2px transparent,
+            0 0 0 transparent;
+        }
+      }
 
-    .card-header {
-      display: flex;
-      gap: 12px;
-      margin-bottom: 16px;
-      align-items: flex-start;
-    }
+      /* Intro card */
+      .intro-card {
+        display: flex;
+        flex-direction: column;
+        gap: 16px;
+      }
 
-    .card-header img {
-      width: 38px;
-      height: 38px;
-      flex-shrink: 0;
-      margin-top: 2px;
-    }
+      .intro-card h1 {
+        margin: 0;
+      }
 
-    .feature-title {
-      flex: 1;
-      min-width: 0;
-    }
+      .intro-text {
+        margin: 0 0 12px;
+      }
 
-    .feature-title h2 {
-      margin: 0;
-      font-size: 20px;
-      font-weight: 500;
-      line-height: 1.3;
-    }
+      /* Feature cards */
+      .card-content {
+        padding: 16px;
+      }
 
-    .integration-name {
-      display: block;
-      margin-bottom: 2px;
-      font-size: 14px;
-      color: var(--secondary-text-color);
-    }
+      .card-header {
+        display: flex;
+        gap: 12px;
+        margin-bottom: 16px;
+        align-items: flex-start;
+      }
 
-    /* Empty state */
-    .empty {
-      max-width: 500px;
-      margin: 0 auto;
-      padding: 48px 16px;
-      text-align: center;
-    }
+      .card-header img {
+        width: 38px;
+        height: 38px;
+        flex-shrink: 0;
+        margin-top: 2px;
+      }
 
-    .empty ha-svg-icon {
-      width: 120px;
-      height: 120px;
-      color: var(--secondary-text-color);
-      opacity: 0.3;
-    }
+      .feature-title {
+        flex: 1;
+        min-width: 0;
+      }
 
-    .empty h1 {
-      margin: 24px 0 16px;
-      font-size: 24px;
-      font-weight: 500;
-      line-height: 32px;
-    }
+      .feature-title h2 {
+        margin: 0;
+        line-height: 1.3;
+      }
 
-    .empty p {
-      margin: 0 0 24px;
-      font-size: 16px;
-      line-height: 24px;
-      color: var(--secondary-text-color);
-    }
+      .integration-name {
+        display: block;
+        margin-bottom: 2px;
+        font-size: 14px;
+        color: var(--secondary-text-color);
+      }
 
-    .empty a {
-      display: inline-flex;
-      align-items: center;
-      gap: 4px;
-      color: var(--primary-color);
-      text-decoration: none;
-      font-weight: 500;
-    }
+      /* Empty state */
+      .empty {
+        max-width: 500px;
+        margin: 0 auto;
+        padding: 48px 16px;
+        text-align: center;
+      }
 
-    .empty a:hover {
-      text-decoration: underline;
-    }
+      .empty ha-svg-icon {
+        width: 120px;
+        height: 120px;
+        color: var(--secondary-text-color);
+        opacity: 0.3;
+      }
 
-    .empty a:focus-visible {
-      outline: 2px solid var(--primary-color);
-      outline-offset: 2px;
-      border-radius: 4px;
-    }
+      .empty h1 {
+        margin: 24px 0 16px;
+      }
 
-    .empty a ha-svg-icon {
-      width: 16px;
-      height: 16px;
-      opacity: 1;
-    }
+      .empty p {
+        margin: 0 0 24px;
+        font-size: 16px;
+        line-height: 24px;
+        color: var(--secondary-text-color);
+      }
 
-    /* Card actions */
-    .card-actions {
-      display: flex;
-      justify-content: space-between;
-      align-items: center;
-      flex-wrap: wrap;
-      gap: 8px;
-      padding: 8px;
-      border-top: 1px solid var(--divider-color);
-    }
+      .empty a {
+        display: inline-flex;
+        align-items: center;
+        gap: 4px;
+        color: var(--primary-color);
+        text-decoration: none;
+        font-weight: 500;
+      }
 
-    .card-actions > div {
-      display: flex;
-      flex-wrap: wrap;
-      gap: 8px;
-    }
-  `;
+      .empty a:hover {
+        text-decoration: underline;
+      }
+
+      .empty a:focus-visible {
+        outline: 2px solid var(--primary-color);
+        outline-offset: 2px;
+        border-radius: 4px;
+      }
+
+      .empty a ha-svg-icon {
+        width: 16px;
+        height: 16px;
+        opacity: 1;
+      }
+
+      /* Card actions */
+      .card-actions {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        flex-wrap: wrap;
+        gap: 8px;
+        padding: 8px;
+        border-top: 1px solid var(--divider-color);
+      }
+
+      .card-actions > div {
+        display: flex;
+        flex-wrap: wrap;
+        gap: 8px;
+      }
+    `,
+  ];
 }
 
 declare global {

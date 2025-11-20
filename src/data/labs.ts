@@ -1,3 +1,7 @@
+import type { Connection } from "home-assistant-js-websocket";
+import { createCollection } from "home-assistant-js-websocket";
+import type { Store } from "home-assistant-js-websocket/dist/store";
+import { debounce } from "../common/util/debounce";
 import type { HomeAssistant } from "../types";
 
 export interface LabPreviewFeature {
@@ -37,3 +41,38 @@ export const labsUpdatePreviewFeature = (
     enabled,
     ...(create_backup !== undefined && { create_backup }),
   });
+
+const fetchLabFeaturesCollection = (conn: Connection) =>
+  conn
+    .sendMessagePromise<LabPreviewFeaturesResponse>({
+      type: "labs/list",
+    })
+    .then((response) => response.features);
+
+const subscribeLabUpdates = (
+  conn: Connection,
+  store: Store<LabPreviewFeature[]>
+) =>
+  conn.subscribeEvents(
+    debounce(
+      () =>
+        fetchLabFeaturesCollection(conn).then((features: LabPreviewFeature[]) =>
+          store.setState(features, true)
+        ),
+      500,
+      true
+    ),
+    "labs_updated"
+  );
+
+export const subscribeLabFeatures = (
+  conn: Connection,
+  onChange: (features: LabPreviewFeature[]) => void
+) =>
+  createCollection<LabPreviewFeature[]>(
+    "_labFeatures",
+    fetchLabFeaturesCollection,
+    subscribeLabUpdates,
+    conn,
+    onChange
+  );

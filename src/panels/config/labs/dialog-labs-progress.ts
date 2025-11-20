@@ -70,13 +70,17 @@ export class DialogLabsProgress
   }
 
   static readonly styles = css`
+    ha-md-dialog {
+      --dialog-content-padding: var(--ha-space-6);
+    }
+
     .summary {
       display: flex;
       flex-direction: row;
       column-gap: var(--ha-space-4);
       align-items: center;
       justify-content: center;
-      padding: var(--ha-space-6);
+      padding: var(--ha-space-4) 0;
     }
     ha-spinner {
       --ha-spinner-size: 60px;
