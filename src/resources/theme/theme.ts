@@ -1,4 +1,5 @@
 import { fontStyles } from "../roboto";
+import { animationStyles } from "./animations.globals";
 import { colorDerivedVariables, colorStylesCollection } from "./color";
 import { coreDerivedVariables, coreStyles } from "./core.globals";
 import { mainDerivedVariables, mainStyles } from "./main.globals";
@@ -17,6 +18,7 @@ export const themeStyles = [
   ...colorStylesCollection,
   fontStyles.toString(),
   waMainStyles.toString(),
+  animationStyles.toString(),
 ].join("");
 
 export const derivedStyles = {

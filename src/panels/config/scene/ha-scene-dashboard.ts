@@ -1112,6 +1112,9 @@ ${rejected
   private async _delete(scene: SceneEntity): Promise<void> {
     if (scene.attributes.id) {
       await deleteScene(this.hass, scene.attributes.id);
+      this._selected = this._selected.filter(
+        (entityId) => entityId !== scene.entity_id
+      );
     }
   }
 

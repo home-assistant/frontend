@@ -199,23 +199,3 @@ export const baseEntrypointStyles = css`
     width: 100vw;
   }
 `;
-
-export const baseAnimationStyles = css`
-  @keyframes fade-in {
-    from {
-      opacity: 0;
-    }
-    to {
-      opacity: 1;
-    }
-  }
-
-  @keyframes fade-out {
-    from {
-      opacity: 1;
-    }
-    to {
-      opacity: 0;
-    }
-  }
-`;

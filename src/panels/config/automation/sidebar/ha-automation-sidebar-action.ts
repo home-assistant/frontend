@@ -28,7 +28,6 @@ import type HaAutomationConditionEditor from "../action/ha-automation-action-edi
 import { getAutomationActionType } from "../action/ha-automation-action-row";
 import { getRepeatType } from "../action/types/ha-automation-action-repeat";
 import { overflowStyles, sidebarEditorStyles } from "../styles";
-import "../trigger/ha-automation-trigger-editor";
 import "./ha-automation-sidebar-card";
 
 @customElement("ha-automation-sidebar-action")

@@ -94,6 +94,12 @@ export class HaDateInput extends LitElement {
   }
 
   private _keyDown(ev: KeyboardEvent) {
+    if (["Space", "Enter"].includes(ev.code)) {
+      ev.preventDefault();
+      ev.stopPropagation();
+      this._openDialog();
+      return;
+    }
     if (!this.canClear) {
       return;
     }

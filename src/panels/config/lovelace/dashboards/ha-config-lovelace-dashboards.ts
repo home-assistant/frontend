@@ -45,6 +45,7 @@ import {
   fetchDashboards,
   updateDashboard,
 } from "../../../../data/lovelace/dashboard";
+import { DEFAULT_PANEL } from "../../../../data/panel";
 import { showConfirmationDialog } from "../../../../dialogs/generic/show-dialog-box";
 import "../../../../layouts/hass-loading-screen";
 import "../../../../layouts/hass-tabs-subpage-data-table";
@@ -286,7 +287,7 @@ export class HaConfigLovelaceDashboards extends LitElement {
   );
 
   private _getItems = memoize(
-    (dashboards: LovelaceDashboard[], defaultUrlPath: string) => {
+    (dashboards: LovelaceDashboard[], defaultUrlPath: string | null) => {
       const defaultMode = (
         this.hass.panels?.lovelace?.config as LovelacePanelConfig
       ).mode;
@@ -403,6 +404,8 @@ export class HaConfigLovelaceDashboards extends LitElement {
       return html` <hass-loading-screen></hass-loading-screen> `;
     }
 
+    const defaultPanel = this.hass.systemData?.defaultPanel || DEFAULT_PANEL;
+
     return html`
       <hass-tabs-subpage-data-table
         .hass=${this.hass}
@@ -416,7 +419,7 @@ export class HaConfigLovelaceDashboards extends LitElement {
           this._dashboards,
           this.hass.localize
         )}
-        .data=${this._getItems(this._dashboards, this.hass.defaultPanel)}
+        .data=${this._getItems(this._dashboards, defaultPanel)}
         .initialGroupColumn=${this._activeGrouping}
         .initialCollapsedGroups=${this._activeCollapsed}
         .initialSorting=${this._activeSorting}

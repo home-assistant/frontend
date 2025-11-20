@@ -154,6 +154,10 @@ class HaProfileSectionGeneral extends LitElement {
               .narrow=${this.narrow}
               .hass=${this.hass}
             ></ha-pick-first-weekday-row>
+            <ha-pick-dashboard-row
+              .narrow=${this.narrow}
+              .hass=${this.hass}
+            ></ha-pick-dashboard-row>
             <ha-settings-row .narrow=${this.narrow}>
               <span slot="heading">
                 ${this.hass.localize(
@@ -208,10 +212,6 @@ class HaProfileSectionGeneral extends LitElement {
               .narrow=${this.narrow}
               .hass=${this.hass}
             ></ha-pick-theme-row>
-            <ha-pick-dashboard-row
-              .narrow=${this.narrow}
-              .hass=${this.hass}
-            ></ha-pick-dashboard-row>
             ${this.hass.dockedSidebar !== "auto" || !this.narrow
               ? html`
                   <ha-force-narrow-row

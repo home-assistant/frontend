@@ -124,16 +124,24 @@ class HuiHistoryChartCardFeature
     }
 
     const hourToShow = this._config.hours_to_show ?? DEFAULT_HOURS_TO_SHOW;
+    const detail = this._config.detail !== false; // default to true (high detail)
 
     return subscribeHistoryStatesTimeWindow(
       this.hass!,
       (historyStates) => {
+        // sample to 1 point per hour for low detail or 1 point per 5 pixels for high detail
+        const maxDetails = detail
+          ? Math.max(10, this.clientWidth / 5, hourToShow)
+          : Math.max(10, hourToShow);
+        const useMean = !detail;
         const { points, yAxisOrigin } =
           coordinatesMinimalResponseCompressedState(
             historyStates[this.context!.entity_id!],
             this.clientWidth,
             this.clientHeight,
-            this.clientWidth / 5 // sample to 1 point per 5 pixels
+            maxDetails,
+            undefined,
+            useMean
           );
         this._coordinates = points;
         this._yAxisOrigin = yAxisOrigin;

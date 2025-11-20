@@ -199,6 +199,7 @@ export interface UpdateActionsCardFeatureConfig {
 export interface TrendGraphCardFeatureConfig {
   type: "trend-graph";
   hours_to_show?: number;
+  detail?: boolean;
 }
 
 export const AREA_CONTROLS = [
@@ -226,6 +227,8 @@ export interface AreaControlsCardFeatureConfig {
 
 export interface BarGaugeCardFeatureConfig {
   type: "bar-gauge";
+  min?: number;
+  max?: number;
 }
 
 export type LovelaceCardFeaturePosition = "bottom" | "inline";

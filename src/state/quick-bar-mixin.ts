@@ -1,5 +1,4 @@
 import type { PropertyValues } from "lit";
-import { tinykeys } from "tinykeys";
 import memoizeOne from "memoize-one";
 import { isComponentLoaded } from "../common/config/is_component_loaded";
 import { mainWindow } from "../common/dom/get_main_window";
@@ -12,9 +11,9 @@ import type { Constructor, HomeAssistant } from "../types";
 import { storeState } from "../util/ha-pref-storage";
 import { showToast } from "../util/toast";
 import type { HassElement } from "./hass-element";
+import { ShortcutManager } from "../common/keyboard/shortcuts";
 import { extractSearchParamsObject } from "../common/url/search-params";
 import { showVoiceCommandDialog } from "../dialogs/voice-command-dialog/show-ha-voice-command-dialog";
-import { canOverrideAlphanumericInput } from "../common/dom/can-override-input";
 import { showShortcutsDialog } from "../dialogs/shortcuts/show-shortcuts-dialog";
 import type { Redirects } from "../panels/my/ha-panel-my";
 
@@ -62,21 +61,22 @@ export default <T extends Constructor<HassElement>>(superClass: T) =>
     }
 
     private _registerShortcut() {
-      tinykeys(window, {
+      const shortcutManager = new ShortcutManager();
+      shortcutManager.add({
         // Those are for latin keyboards that have e, c, m keys
-        e: (ev) => this._showQuickBar(ev),
-        c: (ev) => this._showQuickBar(ev, QuickBarMode.Command),
-        m: (ev) => this._createMyLink(ev),
-        a: (ev) => this._showVoiceCommandDialog(ev),
-        d: (ev) => this._showQuickBar(ev, QuickBarMode.Device),
+        e: { handler: (ev) => this._showQuickBar(ev) },
+        c: { handler: (ev) => this._showQuickBar(ev, QuickBarMode.Command) },
+        m: { handler: (ev) => this._createMyLink(ev) },
+        a: { handler: (ev) => this._showVoiceCommandDialog(ev) },
+        d: { handler: (ev) => this._showQuickBar(ev, QuickBarMode.Device) },
         // Workaround see https://github.com/jamiebuilds/tinykeys/issues/130
-        "Shift+?": (ev) => this._showShortcutDialog(ev),
+        "Shift+?": { handler: (ev) => this._showShortcutDialog(ev) },
         // Those are fallbacks for non-latin keyboards that don't have e, c, m keys (qwerty-based shortcuts)
-        KeyE: (ev) => this._showQuickBar(ev),
-        KeyC: (ev) => this._showQuickBar(ev, QuickBarMode.Command),
-        KeyM: (ev) => this._createMyLink(ev),
-        KeyA: (ev) => this._showVoiceCommandDialog(ev),
-        KeyD: (ev) => this._showQuickBar(ev, QuickBarMode.Device),
+        KeyE: { handler: (ev) => this._showQuickBar(ev) },
+        KeyC: { handler: (ev) => this._showQuickBar(ev, QuickBarMode.Command) },
+        KeyM: { handler: (ev) => this._createMyLink(ev) },
+        KeyA: { handler: (ev) => this._showVoiceCommandDialog(ev) },
+        KeyD: { handler: (ev) => this._showQuickBar(ev, QuickBarMode.Device) },
       });
     }
 
@@ -87,7 +87,6 @@ export default <T extends Constructor<HassElement>>(superClass: T) =>
     private _showVoiceCommandDialog(e: KeyboardEvent) {
       if (
         !this.hass?.enableShortcuts ||
-        !canOverrideAlphanumericInput(e.composedPath()) ||
         !this._conversation(this.hass.config.components)
       ) {
         return;
@@ -105,7 +104,7 @@ export default <T extends Constructor<HassElement>>(superClass: T) =>
       e: KeyboardEvent,
       mode: QuickBarMode = QuickBarMode.Entity
     ) {
-      if (!this._canShowQuickBar(e)) {
+      if (!this._canShowQuickBar()) {
         return;
       }
 
@@ -118,7 +117,7 @@ export default <T extends Constructor<HassElement>>(superClass: T) =>
     }
 
     private _showShortcutDialog(e: KeyboardEvent) {
-      if (!this._canShowQuickBar(e)) {
+      if (!this._canShowQuickBar()) {
         return;
       }
 
@@ -131,10 +130,7 @@ export default <T extends Constructor<HassElement>>(superClass: T) =>
     }
 
     private async _createMyLink(e: KeyboardEvent) {
-      if (
-        !this.hass?.enableShortcuts ||
-        !canOverrideAlphanumericInput(e.composedPath())
-      ) {
+      if (!this.hass?.enableShortcuts) {
         return;
       }
 
@@ -193,11 +189,7 @@ export default <T extends Constructor<HassElement>>(superClass: T) =>
       });
     }
 
-    private _canShowQuickBar(e: KeyboardEvent) {
-      return (
-        this.hass?.user?.is_admin &&
-        this.hass.enableShortcuts &&
-        canOverrideAlphanumericInput(e.composedPath())
-      );
+    private _canShowQuickBar() {
+      return this.hass?.user?.is_admin && this.hass.enableShortcuts;
     }
   };
