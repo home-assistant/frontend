@@ -187,7 +187,7 @@ export class HaMdDialog extends Dialog {
       }
 
       slot[name="actions"]::slotted(*) {
-        padding: 16px;
+        padding: var(--ha-space-4);
       }
 
       .scroller {
@@ -195,7 +195,7 @@ export class HaMdDialog extends Dialog {
       }
 
       slot[name="content"]::slotted(*) {
-        padding: var(--dialog-content-padding, 24px);
+        padding: var(--dialog-content-padding, var(--ha-space-6));
       }
       .scrim {
         z-index: 10; /* overlay navigation */
