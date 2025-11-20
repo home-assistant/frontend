@@ -152,6 +152,9 @@ try {
 
 - **Use CSS custom properties**: Leverage the theme system
 - **Use spacing tokens**: Prefer `--ha-space-*` tokens over hardcoded values for consistent spacing
+  - Spacing scale: `--ha-space-0` (0px) through `--ha-space-20` (80px) in 4px increments
+  - Defined in `src/resources/theme/core.globals.ts`
+  - Common values: `--ha-space-2` (8px), `--ha-space-4` (16px), `--ha-space-8` (32px)
 - **Mobile-first responsive**: Design for mobile, enhance for desktop
 - **Follow Material Design**: Use Material Web Components where appropriate
 - **Support RTL**: Ensure all layouts work in RTL languages
