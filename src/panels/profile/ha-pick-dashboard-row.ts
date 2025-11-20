@@ -8,6 +8,9 @@ import type { LovelaceDashboard } from "../../data/lovelace/dashboard";
 import { fetchDashboards } from "../../data/lovelace/dashboard";
 import type { HomeAssistant } from "../../types";
 import { saveFrontendUserData } from "../../data/frontend";
+import { PANEL_DASHBOARDS } from "../config/lovelace/dashboards/ha-config-lovelace-dashboards";
+import { getPanelTitle } from "../../data/panel";
+import "../../components/ha-divider";
 
 const USE_SYSTEM_VALUE = "___use_system___";
 
@@ -47,12 +50,19 @@ class HaPickDashboardRow extends LitElement {
               <ha-list-item .value=${USE_SYSTEM_VALUE}>
                 ${this.hass.localize("ui.panel.profile.dashboard.system")}
               </ha-list-item>
+              <ha-divider></ha-divider>
               <ha-list-item value="lovelace">
                 ${this.hass.localize("ui.panel.profile.dashboard.lovelace")}
               </ha-list-item>
-              <ha-list-item value="home">
-                ${this.hass.localize("ui.panel.profile.dashboard.home")}
-              </ha-list-item>
+              ${PANEL_DASHBOARDS.map((panel) => {
+                const panelInfo = this.hass.panels[panel];
+                return html`
+                  <ha-list-item value="lovelace">
+                    ${panelInfo ? getPanelTitle(this.hass, panelInfo) : panel}
+                  </ha-list-item>
+                `;
+              })}
+              <ha-divider></ha-divider>
               ${this._dashboards.map((dashboard) => {
                 if (!this.hass.user!.is_admin && dashboard.require_admin) {
                   return "";

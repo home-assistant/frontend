@@ -43,7 +43,7 @@ const createViewNavigationItem = (
 
 const createPanelNavigationItem = (hass: HomeAssistant, panel: PanelInfo) => ({
   path: `/${panel.url_path}`,
-  icon: getPanelIcon(panel),
+  icon: getPanelIcon(panel) || "mdi:view-dashboard",
   title: getPanelTitle(hass, panel) || "",
 });
 
