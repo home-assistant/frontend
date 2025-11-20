@@ -202,6 +202,8 @@ class DialogAddAutomationElement
 {
   @property({ attribute: false }) public hass!: HomeAssistant;
 
+  @state() private _open = true;
+
   @state() private _params?: AddAutomationElementDialogParams;
 
   @state() private _selectedCollectionIndex?: number;
@@ -217,8 +219,6 @@ class DialogAddAutomationElement
   @state() private _manifests?: DomainManifestLookup;
 
   @state() private _domains?: Set<string>;
-
-  @state() private _open = true;
 
   @state() private _itemsScrolled = false;
 
@@ -332,22 +332,26 @@ class DialogAddAutomationElement
       fireEvent(this, "dialog-closed", { dialog: this.localName });
     }
     this._open = true;
-    this._itemsScrolled = false;
-    this._bottomSheetMode = false;
     this._params = undefined;
-    this._selectedGroup = undefined;
-    this._tab = "targets";
-    this._selectedTarget = undefined;
     this._selectedCollectionIndex = undefined;
+    this._selectedGroup = undefined;
+    this._selectedTarget = undefined;
+    this._tab = "targets";
     this._filter = "";
     this._manifests = undefined;
     this._domains = undefined;
+    this._itemsScrolled = false;
+    this._bottomSheetMode = false;
+    this._narrow = false;
     this._selectedSearchSection = undefined;
     this._searchSectionTitle = undefined;
     this._searchListScrolled = false;
-    this._configEntryLookup = {};
+    this._searchSectionTitle = undefined;
+    this._searchListScrolled = false;
     this._targetItems = undefined;
     this._loadItemsError = false;
+
+    this._fullScreen = false;
     return true;
   }
 
@@ -1735,6 +1739,7 @@ class DialogAddAutomationElement
     ) {
       this._params!.add(item.id);
       this.closeDialog();
+      return;
     }
 
     const targetType = getTargetComboBoxItemType(item);
