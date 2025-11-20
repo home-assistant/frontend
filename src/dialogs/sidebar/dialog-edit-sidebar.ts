@@ -12,15 +12,20 @@ import "../../components/ha-items-display-editor";
 import type { DisplayValue } from "../../components/ha-items-display-editor";
 import "../../components/ha-md-dialog";
 import type { HaMdDialog } from "../../components/ha-md-dialog";
-import { computePanels, PANEL_ICONS } from "../../components/ha-sidebar";
+import { computePanels } from "../../components/ha-sidebar";
 import "../../components/ha-spinner";
 import {
   fetchFrontendUserData,
   saveFrontendUserData,
 } from "../../data/frontend";
+import {
+  getDefaultPanelUrlPath,
+  getPanelIcon,
+  getPanelIconPath,
+  getPanelTitle,
+} from "../../data/panel";
 import type { HomeAssistant } from "../../types";
 import { showConfirmationDialog } from "../generic/show-dialog-box";
-import { getDefaultPanelUrlPath } from "../../data/panel";
 
 @customElement("dialog-edit-sidebar")
 class DialogEditSidebar extends LitElement {
@@ -119,34 +124,28 @@ class DialogEditSidebar extends LitElement {
     const items = [
       ...beforeSpacer,
       ...panels.filter((panel) => this._hidden!.includes(panel.url_path)),
-      ...afterSpacer.filter((panel) => panel.url_path !== "config"),
+      ...afterSpacer,
     ].map((panel) => ({
       value: panel.url_path,
-      label:
-        panel.url_path === defaultPanel
-          ? panel.title || this.hass.localize("panel.states")
-          : this.hass.localize(`panel.${panel.title}`) || panel.title || "?",
-      icon: panel.icon || undefined,
-      iconPath:
-        panel.url_path === defaultPanel && !panel.icon
-          ? PANEL_ICONS.lovelace
-          : panel.url_path in PANEL_ICONS
-            ? PANEL_ICONS[panel.url_path]
-            : undefined,
+      label: getPanelTitle(this.hass, panel) || panel.title,
+      icon: getPanelIcon(panel),
+      iconPath: getPanelIconPath(panel),
       disableSorting: panel.url_path === "developer-tools",
     }));
 
-    return html`<ha-items-display-editor
-      .hass=${this.hass}
-      .value=${{
-        order: this._order,
-        hidden: this._hidden,
-      }}
-      .items=${items}
-      @value-changed=${this._changed}
-      dont-sort-visible
-    >
-    </ha-items-display-editor>`;
+    return html`
+      <ha-items-display-editor
+        .hass=${this.hass}
+        .value=${{
+          order: this._order,
+          hidden: this._hidden,
+        }}
+        .items=${items}
+        @value-changed=${this._changed}
+        dont-sort-visible
+      >
+      </ha-items-display-editor>
+    `;
   }
 
   protected render() {
