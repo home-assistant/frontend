@@ -118,6 +118,7 @@ import {
   type LabelRegistryEntry,
 } from "../../../data/label_registry";
 import {
+  getServicesForTarget,
   getTargetComboBoxItemType,
   getTriggersForTarget,
 } from "../../../data/target";
@@ -1063,6 +1064,38 @@ class DialogAddAutomationElement
     });
   }
 
+  private _getActionListItems(
+    localize: LocalizeFunc,
+    serviceIds: string[]
+  ): ListItem[] {
+    return serviceIds.map((service) => {
+      const [domain, serviceName] = service.split(".", 2);
+
+      return {
+        icon: html`
+          <ha-service-icon
+            .hass=${this.hass}
+            .service=${`${domain}.${serviceName}`}
+          ></ha-service-icon>
+        `,
+        key: `${DYNAMIC_PREFIX}${domain}.${serviceName}`,
+        name: `${domain ? "" : `${domainToName(localize, domain)}: `}${
+          this.hass.localize(
+            `component.${domain}.services.${serviceName}.name`
+          ) ||
+          this.hass.services[domain][serviceName]?.name ||
+          serviceName
+        }`,
+        description:
+          this.hass.localize(
+            `component.${domain}.services.${serviceName}.description`
+          ) ||
+          this.hass.services[domain][serviceName]?.description ||
+          "",
+      };
+    });
+  }
+
   private _services = memoizeOne(
     (
       localize: LocalizeFunc,
@@ -1914,18 +1947,31 @@ class DialogAddAutomationElement
     }
 
     try {
-      let items: string[] = [];
       if (this._params!.type === "trigger") {
-        items = await getTriggersForTarget(
+        const items = await getTriggersForTarget(
           this.hass.callWS,
-          this._selectedTarget,
-          true
+          this._selectedTarget
         );
-      } else {
-        throw new Error("Not implemented");
+
+        this._targetItems = this._getTriggerListItems(
+          this.hass.localize,
+          items
+        );
+        return;
       }
 
-      this._targetItems = this._getTriggerListItems(this.hass.localize, items);
+      if (this._params!.type === "action") {
+        const items = await getServicesForTarget(
+          this.hass.callWS,
+          this._selectedTarget
+        );
+
+        this._targetItems = this._getActionListItems(this.hass.localize, items);
+
+        return;
+      }
+
+      throw new Error("Not implemented");
     } catch (err) {
       this._loadItemsError = true;
       // eslint-disable-next-line no-console
