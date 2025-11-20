@@ -6792,6 +6792,45 @@
           "intro": "Share anonymized information from your installation to help make Home Assistant better and help us convince manufacturers to add local control and privacy-focused features.",
           "download_device_info": "Preview device analytics"
         },
+        "labs": {
+          "caption": "Labs",
+          "custom_integration": "Custom integration",
+          "description": "Preview new features",
+          "description_enabled": "Preview features are enabled",
+          "intro_title": "Home Assistant Labs",
+          "intro_subtitle": "Preview upcoming features",
+          "intro_description": "Home Assistant Labs lets you preview new features we're actively working on. These features are stable and fully functional, but may not yet include the complete feature set we envision. We're still refining the design and approach based on your feedback.",
+          "intro_warning": "Preview features may change or be replaced with different solutions in future releases.",
+          "empty": {
+            "title": "No preview features available",
+            "description": "There are currently no preview features available to try. Check back in future releases for new features!"
+          },
+          "learn_more": "Learn more",
+          "provide_feedback": "Provide feedback",
+          "report_issue": "Report issue",
+          "enable": "Enable",
+          "disable": "Disable",
+          "enable_title": "Enable preview feature?",
+          "enable_confirmation": "This preview feature is stable but may evolve based on feedback. Enabling it may affect your setup, and changes may persist after disabling.",
+          "disable_title": "Disable preview feature?",
+          "disable_confirmation": "This will disable the preview feature, but changes made while it was active may still affect your setup.",
+          "enabled_success": "Preview feature enabled",
+          "disabled_success": "Preview feature disabled",
+          "enable_failed": "Enabling preview feature failed: {error}",
+          "disable_failed": "Disabling preview feature failed: {error}",
+          "progress": {
+            "creating_backup": "Creating backup",
+            "backing_up_before_enabling": "Home Assistant is being backed up before enabling the Home Assistant Labs preview feature",
+            "backing_up_before_disabling": "Home Assistant is being backed up before disabling the Home Assistant Labs preview feature"
+          },
+          "create_backup": {
+            "automatic": "Automatic backup before enabling",
+            "automatic_description_last": "Last automatic backup {relative_time}.",
+            "automatic_description_none": "No automatic backup yet.",
+            "manual": "Create manual backup before enabling",
+            "manual_description": "Includes Home Assistant settings and history."
+          }
+        },
         "network": {
           "caption": "Network",
           "description": "External access {state}",
