@@ -71,7 +71,7 @@ export class DialogLabsProgress
 
   static readonly styles = css`
     ha-md-dialog {
-      --dialog-content-padding: 24px;
+      --dialog-content-padding: var(--ha-space-6);
     }
     .summary {
       display: flex;
@@ -79,7 +79,7 @@ export class DialogLabsProgress
       column-gap: var(--ha-space-4);
       align-items: center;
       justify-content: center;
-      padding: 16px 0;
+      padding: var(--ha-space-4) 0;
     }
     ha-spinner {
       --ha-spinner-size: 60px;
@@ -93,7 +93,7 @@ export class DialogLabsProgress
       font-size: var(--ha-font-size-xl);
       line-height: var(--ha-line-height-condensed);
       color: var(--primary-text-color);
-      margin: 0 0 4px;
+      margin: 0 0 var(--ha-space-1);
     }
     .description {
       font-size: var(--ha-font-size-m);

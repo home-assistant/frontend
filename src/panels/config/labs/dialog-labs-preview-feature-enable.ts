@@ -1,11 +1,13 @@
 import { css, html, LitElement, nothing } from "lit";
-import { customElement, property, state } from "lit/decorators";
+import { customElement, property, query, state } from "lit/decorators";
 import { relativeTime } from "../../../common/datetime/relative_time";
 import { fireEvent } from "../../../common/dom/fire_event";
 import "../../../components/ha-button";
+import type { HaMdDialog } from "../../../components/ha-md-dialog";
 import "../../../components/ha-md-dialog";
 import "../../../components/ha-md-list";
 import "../../../components/ha-md-list-item";
+import type { HaSwitch } from "../../../components/ha-switch";
 import "../../../components/ha-switch";
 import type { BackupConfig } from "../../../data/backup";
 import { fetchBackupConfig } from "../../../data/backup";
@@ -26,17 +28,26 @@ export class DialogLabsPreviewFeatureEnable
 
   @state() private _createBackup = false;
 
+  @query("ha-md-dialog") private _dialog?: HaMdDialog;
+
   public async showDialog(
     params: LabsPreviewFeatureEnableDialogParams
   ): Promise<void> {
     this._params = params;
+    this._createBackup = false;
     await this._fetchBackupConfig();
   }
 
   public closeDialog(): boolean {
-    this._params = undefined;
-    fireEvent(this, "dialog-closed", { dialog: this.localName });
+    this._dialog?.close();
     return true;
+  }
+
+  private _dialogClosed(): void {
+    this._params = undefined;
+    this._backupConfig = undefined;
+    this._createBackup = false;
+    fireEvent(this, "dialog-closed", { dialog: this.localName });
   }
 
   private async _fetchBackupConfig() {
@@ -44,29 +55,26 @@ export class DialogLabsPreviewFeatureEnable
       const { config } = await fetchBackupConfig(this.hass);
       this._backupConfig = config;
 
-      // Default to enabled if automatic backups are configured
-      if (
+      // Default to enabled if automatic backups are configured, disabled otherwise
+      this._createBackup =
         config.automatic_backups_configured &&
-        config.create_backup.password &&
-        config.create_backup.agent_ids.length > 0
-      ) {
-        this._createBackup = true;
-      }
+        !!config.create_backup.password &&
+        config.create_backup.agent_ids.length > 0;
     } catch {
       // User will get manual backup option if fetch fails
+      this._createBackup = false;
     }
   }
 
   private _computeCreateBackupTexts():
     | { title: string; description?: string }
     | undefined {
-    const isBackupConfigValid =
-      !!this._backupConfig &&
-      !!this._backupConfig.automatic_backups_configured &&
-      !!this._backupConfig.create_backup.password &&
-      this._backupConfig.create_backup.agent_ids.length > 0;
-
-    if (!isBackupConfigValid) {
+    if (
+      !this._backupConfig ||
+      !this._backupConfig.automatic_backups_configured ||
+      !this._backupConfig.create_backup.password ||
+      this._backupConfig.create_backup.agent_ids.length === 0
+    ) {
       return {
         title: this.hass.localize("ui.panel.config.labs.create_backup.manual"),
         description: this.hass.localize(
@@ -76,8 +84,8 @@ export class DialogLabsPreviewFeatureEnable
     }
 
     const lastAutomaticBackupDate = this._backupConfig
-      ?.last_completed_automatic_backup
-      ? new Date(this._backupConfig?.last_completed_automatic_backup)
+      .last_completed_automatic_backup
+      ? new Date(this._backupConfig.last_completed_automatic_backup)
       : null;
     const now = new Date();
 
@@ -102,7 +110,7 @@ export class DialogLabsPreviewFeatureEnable
   }
 
   private _createBackupChanged(ev: Event): void {
-    this._createBackup = (ev.target as HTMLInputElement).checked;
+    this._createBackup = (ev.target as HaSwitch).checked;
   }
 
   private _handleCancel(): void {
@@ -124,7 +132,7 @@ export class DialogLabsPreviewFeatureEnable
     const createBackupTexts = this._computeCreateBackupTexts();
 
     return html`
-      <ha-md-dialog open @closed=${this.closeDialog}>
+      <ha-md-dialog open @closed=${this._dialogClosed}>
         <span slot="headline">
           ${this.hass.localize("ui.panel.config.labs.enable_title")}
         </span>
@@ -176,7 +184,7 @@ export class DialogLabsPreviewFeatureEnable
 
   static readonly styles = css`
     ha-md-dialog {
-      --dialog-content-padding: 24px;
+      --dialog-content-padding: var(--ha-space-6);
     }
 
     p {
@@ -193,8 +201,8 @@ export class DialogLabsPreviewFeatureEnable
 
     ha-md-list {
       background: none;
-      --md-list-item-leading-space: 24px;
-      --md-list-item-trailing-space: 24px;
+      --md-list-item-leading-space: var(--ha-space-6);
+      --md-list-item-trailing-space: var(--ha-space-6);
       margin: 0;
       padding: 0;
       border-top: 1px solid var(--divider-color);
@@ -203,8 +211,8 @@ export class DialogLabsPreviewFeatureEnable
     div[slot="actions"] > div {
       display: flex;
       justify-content: flex-end;
-      gap: 8px;
-      padding: 16px 24px;
+      gap: var(--ha-space-2);
+      padding: var(--ha-space-4) var(--ha-space-6);
     }
   `;
 }

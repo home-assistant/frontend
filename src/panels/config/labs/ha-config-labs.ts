@@ -1,8 +1,10 @@
 import { mdiFlask, mdiHelpCircle, mdiOpenInNew } from "@mdi/js";
+import type { UnsubscribeFunc } from "home-assistant-js-websocket";
 import type { PropertyValues, TemplateResult } from "lit";
 import { LitElement, css, html, nothing } from "lit";
 import { customElement, property, state } from "lit/decorators";
 import { extractSearchParam } from "../../../common/url/search-params";
+import { domainToName } from "../../../data/integration";
 import { fetchLabFeatures, labsUpdatePreviewFeature } from "../../../data/labs";
 import type { LabPreviewFeature } from "../../../data/labs";
 import { showConfirmationDialog } from "../../../dialogs/generic/show-dialog-box";
@@ -32,20 +34,24 @@ class HaConfigLabs extends LitElement {
 
   @state() private _highlightedPreviewFeature?: string;
 
-  private _unsubscribe?: () => void;
+  private _unsubscribe?: UnsubscribeFunc;
 
   public disconnectedCallback(): void {
     super.disconnectedCallback();
     if (this._unsubscribe) {
       this._unsubscribe();
+      this._unsubscribe = undefined;
     }
   }
 
-  protected async firstUpdated(changedProps: PropertyValues): Promise<void> {
+  protected firstUpdated(changedProps: PropertyValues): void {
     super.firstUpdated(changedProps);
-    await this._loadPreviewFeatures();
+    this._loadPreviewFeatures();
     this._subscribeToLabsUpdates();
+    this._handleUrlParams();
+  }
 
+  private _handleUrlParams(): void {
     // Check for feature parameters in URL
     const domain = extractSearchParam("domain");
     const previewFeature = extractSearchParam("preview_feature");
@@ -53,8 +59,9 @@ class HaConfigLabs extends LitElement {
       const previewFeatureId = `${domain}.${previewFeature}`;
       this._highlightedPreviewFeature = previewFeatureId;
       // Wait for next render to ensure cards are in DOM
-      await this.updateComplete;
-      this._scrollToPreviewFeature(previewFeatureId);
+      this.updateComplete.then(() => {
+        this._scrollToPreviewFeature(previewFeatureId);
+      });
     }
   }
 
@@ -62,7 +69,10 @@ class HaConfigLabs extends LitElement {
     this._preview_features = await fetchLabFeatures(this.hass);
     // Sort by integration domain alphabetically
     this._preview_features.sort((a, b) => a.domain.localeCompare(b.domain));
-    await this.hass.loadBackendTranslation("preview_features");
+    await Promise.all([
+      this.hass.loadBackendTranslation("preview_features"),
+      this.hass.loadBackendTranslation("title"),
+    ]);
   }
 
   private async _subscribeToLabsUpdates(): Promise<void> {
@@ -73,33 +83,6 @@ class HaConfigLabs extends LitElement {
   }
 
   protected render() {
-    if (!this._preview_features.length) {
-      return html`
-        <hass-subpage
-          .hass=${this.hass}
-          .narrow=${this.narrow}
-          back-path="/config"
-          .header=${this.hass.localize("ui.panel.config.labs.caption")}
-        >
-          <div class="content">
-            <div class="empty">
-              <ha-svg-icon .path=${mdiFlask}></ha-svg-icon>
-              <h1>${this.hass.localize("ui.panel.config.labs.empty.title")}</h1>
-              ${this.hass.localize("ui.panel.config.labs.empty.description")}
-              <a
-                href="https://www.home-assistant.io/integrations/labs/"
-                target="_blank"
-                rel="noopener noreferrer"
-              >
-                ${this.hass.localize("ui.panel.config.labs.learn_more")}
-                <ha-svg-icon .path=${mdiOpenInNew}></ha-svg-icon>
-              </a>
-            </div>
-          </div>
-        </hass-subpage>
-      `;
-    }
-
     return html`
       <hass-subpage
         .hass=${this.hass}
@@ -107,34 +90,66 @@ class HaConfigLabs extends LitElement {
         back-path="/config"
         .header=${this.hass.localize("ui.panel.config.labs.caption")}
       >
-        <a
-          slot="toolbar-icon"
-          href="https://www.home-assistant.io/integrations/labs/"
-          target="_blank"
-          rel="noopener noreferrer"
-          .title=${this.hass.localize("ui.common.help")}
-        >
-          <ha-icon-button
-            .label=${this.hass.localize("ui.common.help")}
-            .path=${mdiHelpCircle}
-          ></ha-icon-button>
-        </a>
+        ${this._preview_features.length
+          ? html`
+              <a
+                slot="toolbar-icon"
+                href="https://www.home-assistant.io/integrations/labs/"
+                target="_blank"
+                rel="noopener noreferrer"
+                .title=${this.hass.localize("ui.common.help")}
+              >
+                <ha-icon-button
+                  .label=${this.hass.localize("ui.common.help")}
+                  .path=${mdiHelpCircle}
+                ></ha-icon-button>
+              </a>
+            `
+          : nothing}
         <div class="content">
-          <ha-card outlined>
-            <div class="card-content intro-card">
-              <h1>${this.hass.localize("ui.panel.config.labs.intro_title")}</h1>
-              <p class="intro-text">
-                ${this.hass.localize("ui.panel.config.labs.intro_description")}
-              </p>
-              <ha-alert alert-type="warning">
-                ${this.hass.localize("ui.panel.config.labs.intro_warning")}
-              </ha-alert>
-            </div>
-          </ha-card>
+          ${!this._preview_features.length
+            ? html`
+                <div class="empty">
+                  <ha-svg-icon .path=${mdiFlask}></ha-svg-icon>
+                  <h1>
+                    ${this.hass.localize("ui.panel.config.labs.empty.title")}
+                  </h1>
+                  ${this.hass.localize(
+                    "ui.panel.config.labs.empty.description"
+                  )}
+                  <a
+                    href="https://www.home-assistant.io/integrations/labs/"
+                    target="_blank"
+                    rel="noopener noreferrer"
+                  >
+                    ${this.hass.localize("ui.panel.config.labs.learn_more")}
+                    <ha-svg-icon .path=${mdiOpenInNew}></ha-svg-icon>
+                  </a>
+                </div>
+              `
+            : html`
+                <ha-card outlined>
+                  <div class="card-content intro-card">
+                    <h1>
+                      ${this.hass.localize("ui.panel.config.labs.intro_title")}
+                    </h1>
+                    <p class="intro-text">
+                      ${this.hass.localize(
+                        "ui.panel.config.labs.intro_description"
+                      )}
+                    </p>
+                    <ha-alert alert-type="warning">
+                      ${this.hass.localize(
+                        "ui.panel.config.labs.intro_warning"
+                      )}
+                    </ha-alert>
+                  </div>
+                </ha-card>
 
-          ${this._preview_features.map((preview_feature) =>
-            this._renderPreviewFeature(preview_feature)
-          )}
+                ${this._preview_features.map((preview_feature) =>
+                  this._renderPreviewFeature(preview_feature)
+                )}
+              `}
         </div>
       </hass-subpage>
     `;
@@ -151,8 +166,9 @@ class HaConfigLabs extends LitElement {
       `component.${preview_feature.domain}.preview_features.${preview_feature.preview_feature}.description`
     );
 
-    const integrationName = this.hass.localize(
-      `component.${preview_feature.domain}.title`
+    const integrationName = domainToName(
+      this.hass.localize,
+      preview_feature.domain
     );
 
     const integrationNameWithCustomLabel = !preview_feature.is_built_in
@@ -226,7 +242,7 @@ class HaConfigLabs extends LitElement {
           </div>
           <ha-button
             appearance="filled"
-            variant=${preview_feature.enabled ? "danger" : "brand"}
+            .variant=${preview_feature.enabled ? "danger" : "brand"}
             @click=${this._handleToggle}
             .preview_feature=${preview_feature}
           >
@@ -262,25 +278,24 @@ class HaConfigLabs extends LitElement {
     const enabled = !preview_feature.enabled;
     const previewFeatureId = `${preview_feature.domain}.${preview_feature.preview_feature}`;
 
-    let confirmed = false;
-    let createBackup = false;
-
     if (enabled) {
       // Show custom enable dialog with backup option
       showLabsPreviewFeatureEnableDialog(this, {
         preview_feature,
         previewFeatureId,
         onConfirm: async (shouldCreateBackup) => {
-          confirmed = true;
-          createBackup = shouldCreateBackup;
-          await this._performToggle(previewFeatureId, enabled, createBackup);
+          await this._performToggle(
+            previewFeatureId,
+            enabled,
+            shouldCreateBackup
+          );
         },
       });
       return;
     }
 
     // Show simple confirmation dialog for disable
-    confirmed = await showConfirmationDialog(this, {
+    const confirmed = await showConfirmationDialog(this, {
       title: this.hass.localize("ui.panel.config.labs.disable_title"),
       text:
         this.hass.localize(
