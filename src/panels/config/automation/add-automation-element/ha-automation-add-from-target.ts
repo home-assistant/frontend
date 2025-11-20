@@ -800,6 +800,7 @@ export default class HaAutomationAddFromTarget extends LitElement {
           .target=${domainTargetId}
           .selected=${this._getSelectedTargetId(this.value) === domainTargetId}
           .lazy=${!open && !!entities.length}
+          prevent-selection
           .expanded=${open}
           @wa-lazy-load=${this._expandItem}
           @wa-collapse=${this._collapseItem}
