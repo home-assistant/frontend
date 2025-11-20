@@ -226,8 +226,14 @@ class DialogDashboardStrategyEditor extends LitElement {
       css`
         ha-dialog {
           --dialog-content-padding: 0 24px;
-          --mdc-dialog-min-width: min(640px, calc(100% - 32px));
-          --mdc-dialog-max-width: min(640px, calc(100% - 32px));
+          --mdc-dialog-min-width: min(
+            640px,
+            calc(100vw - 32px - var(--safe-area-inset-x))
+          );
+          --mdc-dialog-max-width: min(
+            640px,
+            calc(100vw - 32px - var(--safe-area-inset-x))
+          );
           --mdc-dialog-max-height: calc(100% - 80px);
         }
 
