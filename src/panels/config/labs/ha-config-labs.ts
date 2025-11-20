@@ -41,6 +41,7 @@ class HaConfigLabs extends LitElement {
     if (this._unsubscribe) {
       this._unsubscribe();
       this._unsubscribe = undefined;
+      this._unsubscribe = undefined;
     }
   }
 
