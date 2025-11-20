@@ -67,6 +67,8 @@ describe("Sankey Layout Functions", () => {
         id: "test",
         value: 10,
         depth: 1,
+        sourceId: "source",
+        targetId: "target",
       };
       expect(isPassThroughNode(passThroughNode)).toBe(true);
     });
@@ -142,7 +144,14 @@ describe("Sankey Layout Functions", () => {
       ];
 
       const passThroughNodes = [
-        { id: "pt1", depth: 1, passThrough: true, value: 5, sourceId: "node1", targetId: "node2" },
+        {
+          id: "pt1",
+          depth: 1,
+          passThrough: true,
+          value: 5,
+          sourceId: "node1",
+          targetId: "node2",
+        },
       ];
 
       const result = groupNodesBySection(

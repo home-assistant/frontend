@@ -260,7 +260,8 @@ export function sortNodesInSections(
         // Find positions of source nodes in previous section (use already sorted section)
         if (depthIndex > 0) {
           const prevDepth = depths[depthIndex - 1];
-          const prevSection = sortedSections[prevDepth] || nodesPerSection[prevDepth] || [];
+          const prevSection =
+            sortedSections[prevDepth] || nodesPerSection[prevDepth] || [];
 
           const aSourceIndex = prevSection.findIndex((n) => {
             const nodeId = isPassThroughNode(n) ? n.id : (n as GraphNode).id;
