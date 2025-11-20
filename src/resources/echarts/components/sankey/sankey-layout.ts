@@ -271,7 +271,11 @@ export function sortNodesInSections(
             return nodeId === b.sourceId;
           });
 
-          if (aSourceIndex !== bSourceIndex && aSourceIndex !== -1 && bSourceIndex !== -1) {
+          if (
+            aSourceIndex !== bSourceIndex &&
+            aSourceIndex !== -1 &&
+            bSourceIndex !== -1
+          ) {
             return aSourceIndex - bSourceIndex;
           }
         }
@@ -290,7 +294,11 @@ export function sortNodesInSections(
             return nodeId === b.targetId;
           });
 
-          if (aTargetIndex !== bTargetIndex && aTargetIndex !== -1 && bTargetIndex !== -1) {
+          if (
+            aTargetIndex !== bTargetIndex &&
+            aTargetIndex !== -1 &&
+            bTargetIndex !== -1
+          ) {
             return aTargetIndex - bTargetIndex;
           }
         }
