@@ -2,6 +2,8 @@
 
 You are an assistant helping with development of the Home Assistant frontend. The frontend is built using Lit-based Web Components and TypeScript, providing a responsive and performant interface for home automation control.
 
+**Note**: This file contains high-level guidelines and references to implementation patterns. For detailed component documentation, API references, and usage examples, refer to the `gallery/` directory.
+
 ## Table of Contents
 
 - [Quick Reference](#quick-reference)
@@ -151,6 +153,10 @@ try {
 ### Styling Guidelines
 
 - **Use CSS custom properties**: Leverage the theme system
+- **Use spacing tokens**: Prefer `--ha-space-*` tokens over hardcoded values for consistent spacing
+  - Spacing scale: `--ha-space-0` (0px) through `--ha-space-20` (80px) in 4px increments
+  - Defined in `src/resources/theme/core.globals.ts`
+  - Common values: `--ha-space-2` (8px), `--ha-space-4` (16px), `--ha-space-8` (32px)
 - **Mobile-first responsive**: Design for mobile, enhance for desktop
 - **Follow Material Design**: Use Material Web Components where appropriate
 - **Support RTL**: Ensure all layouts work in RTL languages
@@ -159,20 +165,67 @@ try {
 static get styles() {
   return css`
     :host {
-      --spacing: 16px;
-      padding: var(--spacing);
+      padding: var(--ha-space-4);
       color: var(--primary-text-color);
       background-color: var(--card-background-color);
     }
 
+    .content {
+      gap: var(--ha-space-2);
+    }
+
     @media (max-width: 600px) {
       :host {
-        --spacing: 8px;
+        padding: var(--ha-space-2);
       }
     }
   `;
 }
 ```
+
+### View Transitions
+
+The View Transitions API creates smooth animations between DOM state changes. When implementing view transitions:
+
+**Core Resources:**
+
+- **Utility wrapper**: `src/common/util/view-transition.ts` - `withViewTransition()` function with graceful fallback
+- **Real-world example**: `src/util/launch-screen.ts` - Launch screen fade pattern with browser support detection
+- **Animation keyframes**: `src/resources/theme/animations.globals.ts` - Global `fade-in`, `fade-out`, `scale` animations
+- **Animation duration**: `src/resources/theme/core.globals.ts` - `--ha-animation-base-duration` (350ms, respects `prefers-reduced-motion`)
+
+**Implementation Guidelines:**
+
+1. Always use `withViewTransition()` wrapper for automatic fallback
+2. Keep transitions simple (subtle crossfades and fades work best)
+3. Use `--ha-animation-base-duration` CSS variable for consistent timing
+4. Assign unique `view-transition-name` to elements (must be unique at any given time)
+5. For Lit components: Override `performUpdate()` or use `::part()` for internal elements
+
+**Default Root Transition:**
+
+By default, `:root` receives `view-transition-name: root`, creating a full-page crossfade. Target with [`::view-transition-group(root)`](https://developer.mozilla.org/en-US/docs/Web/CSS/::view-transition-group) to customize the default page transition.
+
+**Important Constraints:**
+
+- Each `view-transition-name` must be unique at any given time
+- Only one view transition can run at a time
+- **Shadow DOM incompatibility**: View transitions operate at document level and do not work within Shadow DOM due to style isolation ([spec discussion](https://github.com/w3c/csswg-drafts/issues/10303)). For web components, set `view-transition-name` on the `:host` element or use document-level transitions
+
+**Current Usage & Planned Applications:**
+
+- Launch screen fade out (implemented)
+- Automation sidebar transitions (planned - #27238)
+- More info dialog content changes (planned - #27672)
+- Toolbar navigation, ha-spinner transitions (planned)
+
+**Specification & Documentation:**
+
+For browser support, API details, and current specifications, refer to these authoritative sources (note: check publication dates as specs evolve):
+
+- [MDN: View Transition API](https://developer.mozilla.org/en-US/docs/Web/API/View_Transition_API) - Comprehensive API reference
+- [Chrome for Developers: View Transitions](https://developer.chrome.com/docs/web-platform/view-transitions) - Implementation guide and examples
+- [W3C Draft Specification](https://drafts.csswg.org/css-view-transitions/) - Official specification (evolving)
 
 ### Performance Best Practices
 
@@ -195,8 +248,9 @@ static get styles() {
 
 **Available Dialog Types:**
 
-- `ha-md-dialog` - Preferred for new code (Material Design 3)
-- `ha-dialog` - Legacy component still widely used
+- `ha-wa-dialog` - Preferred for new dialogs (Web Awesome based)
+- `ha-md-dialog` - Material Design 3 dialog component
+- `ha-dialog` - Legacy component (still widely used)
 
 **Opening Dialogs (Fire Event Pattern - Recommended):**
 
@@ -211,15 +265,45 @@ fireEvent(this, "show-dialog", {
 **Dialog Implementation Requirements:**
 
 - Implement `HassDialog<T>` interface
-- Use `createCloseHeading()` for standard headers
-- Import `haStyleDialog` for consistent styling
+- Use `@state() private _open = false` to control dialog visibility
+- Set `_open = true` in `showDialog()`, `_open = false` in `closeDialog()`
 - Return `nothing` when no params (loading state)
-- Fire `dialog-closed` event when closing
-- Add `dialogInitialFocus` for accessibility
+- Fire `dialog-closed` event in `_dialogClosed()` handler
+- Use `header-title` attribute for simple titles
+- Use `header-subtitle` attribute for simple subtitles
+- Use slots for custom content where the standard attributes are not enough
+- Use `ha-dialog-footer` with `primaryAction`/`secondaryAction` slots for footer content
+- Add `autofocus` to first focusable element (e.g., `<ha-form autofocus>`). The component may need to forward this attribute internally.
 
-````
+**Dialog Sizing:**
+
+- Use `width` attribute with predefined sizes: `"small"` (320px), `"medium"` (560px - default), `"large"` (720px), or `"full"`
+- Custom sizing is NOT recommended - use the standard width presets
+- Example: `<ha-wa-dialog width="small">` for alert/confirmation dialogs
+
+**Button Appearance Guidelines:**
+
+- **Primary action buttons**: Default appearance (no appearance attribute) or omit for standard styling
+- **Secondary action buttons**: Use `appearance="plain"` for cancel/dismiss actions
+- **Destructive actions**: Use `appearance="filled"` for delete/remove operations (combined with appropriate semantic styling)
+- **Button sizes**: Use `size="small"` (32px height) or default/medium (40px height)
+- Always place primary action in `slot="primaryAction"` and secondary in `slot="secondaryAction"` within `ha-dialog-footer`
+
+**Recent Examples:**
+
+See these files for current patterns:
+
+- `src/panels/config/repairs/dialog-repairs-issue.ts`
+- `src/dialogs/restart/dialog-restart.ts`
+- `src/panels/config/lovelace/resources/dialog-lovelace-resource-detail.ts`
+
+**Gallery Documentation:**
+
+- `gallery/src/pages/components/ha-wa-dialog.markdown`
+- `gallery/src/pages/components/ha-dialogs.markdown`
 
 ### Form Component (ha-form)
+
 - Schema-driven using `HaFormSchema[]`
 - Supports entity, device, area, target, number, boolean, time, action, text, object, select, icon, media, location selectors
 - Built-in validation with error display
@@ -235,7 +319,11 @@ fireEvent(this, "show-dialog", {
   .computeLabel=${(schema) => this.hass.localize(`ui.panel.${schema.name}`)}
   @value-changed=${this._valueChanged}
 ></ha-form>
-````
+```
+
+**Gallery Documentation:**
+
+- `gallery/src/pages/components/ha-form.markdown`
 
 ### Alert Component (ha-alert)
 
@@ -248,6 +336,35 @@ fireEvent(this, "show-dialog", {
 <ha-alert alert-type="warning" title="Warning">Description</ha-alert>
 <ha-alert alert-type="success" dismissable>Success message</ha-alert>
 ```
+
+**Gallery Documentation:**
+
+- `gallery/src/pages/components/ha-alert.markdown`
+
+### Keyboard Shortcuts (ShortcutManager)
+
+The `ShortcutManager` class provides a unified way to register keyboard shortcuts with automatic input field protection.
+
+**Key Features:**
+
+- Automatically blocks shortcuts when input fields are focused
+- Prevents shortcuts during text selection (configurable via `allowWhenTextSelected`)
+- Supports both character-based and KeyCode-based shortcuts (for non-latin keyboards)
+
+**Implementation:**
+
+- **Class definition**: `src/common/keyboard/shortcuts.ts`
+- **Real-world example**: `src/state/quick-bar-mixin.ts` - Global shortcuts (e, c, d, m, a, Shift+?) with non-latin keyboard fallbacks
+
+### Tooltip Component (ha-tooltip)
+
+The `ha-tooltip` component wraps Web Awesome tooltip with Home Assistant theming. Use for providing contextual help text on hover.
+
+**Implementation:**
+
+- **Component definition**: `src/components/ha-tooltip.ts`
+- **Usage example**: `src/components/ha-label.ts`
+- **Gallery documentation**: `gallery/src/pages/components/ha-tooltip.markdown`
 
 ## Common Patterns
 
@@ -289,11 +406,19 @@ export class DialogMyFeature
   @state()
   private _params?: MyDialogParams;
 
+  @state()
+  private _open = false;
+
   public async showDialog(params: MyDialogParams): Promise<void> {
     this._params = params;
+    this._open = true;
   }
 
   public closeDialog(): void {
+    this._open = false;
+  }
+
+  private _dialogClosed(): void {
     this._params = undefined;
     fireEvent(this, "dialog-closed", { dialog: this.localName });
   }
@@ -304,23 +429,27 @@ export class DialogMyFeature
     }
 
     return html`
-      <ha-dialog
-        open
-        @closed=${this.closeDialog}
-        .heading=${createCloseHeading(this.hass, this._params.title)}
+      <ha-wa-dialog
+        .hass=${this.hass}
+        .open=${this._open}
+        header-title=${this._params.title}
+        header-subtitle=${this._params.subtitle}
+        @closed=${this._dialogClosed}
       >
-        <!-- Dialog content -->
-        <ha-button
-          appearance="plain"
-          @click=${this.closeDialog}
-          slot="secondaryAction"
-        >
-          ${this.hass.localize("ui.common.cancel")}
-        </ha-button>
-        <ha-button @click=${this._submit} slot="primaryAction">
-          ${this.hass.localize("ui.common.save")}
-        </ha-button>
-      </ha-dialog>
+        <p>Dialog content</p>
+        <ha-dialog-footer slot="footer">
+          <ha-button
+            slot="secondaryAction"
+            appearance="plain"
+            @click=${this.closeDialog}
+          >
+            ${this.hass.localize("ui.common.cancel")}
+          </ha-button>
+          <ha-button slot="primaryAction" @click=${this._submit}>
+            ${this.hass.localize("ui.common.save")}
+          </ha-button>
+        </ha-dialog-footer>
+      </ha-wa-dialog>
     `;
   }
 
