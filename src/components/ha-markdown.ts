@@ -142,10 +142,10 @@ export class HaMarkdown extends LitElement {
     table {
       border-collapse: collapse;
       display: block;
-      overflow-x: scroll;
+      overflow-x: auto;
     }
     th {
-      text-align: justify;
+      text-align: start;
     }
     td,
     th {

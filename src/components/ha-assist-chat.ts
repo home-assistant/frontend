@@ -97,10 +97,7 @@ export class HaAssistChat extends LitElement {
   public disconnectedCallback() {
     super.disconnectedCallback();
     this._audioRecorder?.close();
-    this._audioRecorder = undefined;
     this._unloadAudio();
-    this._conversation = [];
-    this._conversationId = null;
   }
 
   protected render(): TemplateResult {
@@ -210,7 +207,7 @@ export class HaAssistChat extends LitElement {
       this._lastChatMessageImage &&
       !this._lastChatMessageImage.naturalHeight
     ) {
-      await this._lastChatMessageImage.decode();
+      await this._lastChatMessageImage.decode().catch(() => undefined);
     }
     const isLastMessageFullyVisible =
       lastChatMessage.getBoundingClientRect().y <
