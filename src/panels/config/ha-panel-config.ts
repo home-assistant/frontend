@@ -333,7 +333,7 @@ export const configSections: Record<string, PageNavigation[]> = {
       path: "/config/labs",
       translationKey: "labs",
       iconPath: mdiFlask,
-      iconColor: "#8E24AA",
+      iconColor: "#b1b134",
       core: true,
     },
     {

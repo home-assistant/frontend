@@ -72,7 +72,7 @@ export type TranslationCategory =
   | "system_health"
   | "application_credentials"
   | "issues"
-  | "labs_features"
+  | "preview_features"
   | "selector"
   | "services"
   | "triggers";
