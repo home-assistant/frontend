@@ -1,8 +1,4 @@
-import {
-  mdiFlask,
-  mdiHelpCircle,
-  mdiOpenInNew,
-} from "@mdi/js";
+import { mdiFlask, mdiHelpCircle, mdiOpenInNew } from "@mdi/js";
 import type { PropertyValues, TemplateResult } from "lit";
 import { LitElement, css, html, nothing } from "lit";
 import { customElement, property, state } from "lit/decorators";
@@ -14,7 +10,10 @@ import type { HomeAssistant } from "../../../types";
 import { brandsUrl } from "../../../util/brands-url";
 import { showToast } from "../../../util/toast";
 import { showLabsPreviewFeatureEnableDialog } from "./show-dialog-labs-preview-feature-enable";
-import { showLabsProgressDialog, closeLabsProgressDialog } from "./show-dialog-labs-progress";
+import {
+  showLabsProgressDialog,
+  closeLabsProgressDialog,
+} from "./show-dialog-labs-progress";
 import "../../../components/ha-alert";
 import "../../../components/ha-button";
 import "../../../components/ha-card";
@@ -123,13 +122,9 @@ class HaConfigLabs extends LitElement {
         <div class="content">
           <ha-card outlined>
             <div class="card-content intro-card">
-              <h1>
-                ${this.hass.localize("ui.panel.config.labs.intro_title")}
-              </h1>
+              <h1>${this.hass.localize("ui.panel.config.labs.intro_title")}</h1>
               <p class="intro-text">
-                ${this.hass.localize(
-                  "ui.panel.config.labs.intro_description"
-                )}
+                ${this.hass.localize("ui.panel.config.labs.intro_description")}
               </p>
               <ha-alert alert-type="warning">
                 ${this.hass.localize("ui.panel.config.labs.intro_warning")}
@@ -137,13 +132,17 @@ class HaConfigLabs extends LitElement {
             </div>
           </ha-card>
 
-          ${this._preview_features.map((preview_feature) => this._renderPreviewFeature(preview_feature))}
+          ${this._preview_features.map((preview_feature) =>
+            this._renderPreviewFeature(preview_feature)
+          )}
         </div>
       </hass-subpage>
     `;
   }
 
-  private _renderPreviewFeature(preview_feature: LabPreviewFeature): TemplateResult {
+  private _renderPreviewFeature(
+    preview_feature: LabPreviewFeature
+  ): TemplateResult {
     const featureName = this.hass.localize(
       `component.${preview_feature.domain}.preview_features.${preview_feature.preview_feature}.name`
     );
@@ -188,7 +187,9 @@ class HaConfigLabs extends LitElement {
               referrerpolicy="no-referrer"
             />
             <div class="feature-title">
-              <span class="integration-name">${integrationNameWithCustomLabel}</span>
+              <span class="integration-name"
+                >${integrationNameWithCustomLabel}</span
+              >
               <h2>${featureName}</h2>
             </div>
           </div>
@@ -316,7 +317,13 @@ class HaConfigLabs extends LitElement {
     const [domain, preview_feature] = parts;
 
     try {
-      await labsUpdatePreviewFeature(this.hass, domain, preview_feature, enabled, createBackup);
+      await labsUpdatePreviewFeature(
+        this.hass,
+        domain,
+        preview_feature,
+        enabled,
+        createBackup
+      );
     } catch (err: any) {
       if (createBackup) {
         closeLabsProgressDialog();
