@@ -11,6 +11,7 @@ import { css, html, LitElement, nothing, type PropertyValues } from "lit";
 import { customElement, property, state } from "lit/decorators";
 import memoizeOne from "memoize-one";
 import { fireEvent } from "../../../../common/dom/fire_event";
+import { computeAreaName } from "../../../../common/entity/compute_area_name";
 import { computeDeviceName } from "../../../../common/entity/compute_device_name";
 import { computeEntityNameList } from "../../../../common/entity/compute_entity_name_display";
 import "../../../../components/entity/state-badge";
@@ -46,7 +47,10 @@ import {
   statesContext,
 } from "../../../../data/context";
 import { getDeviceEntityLookup } from "../../../../data/device_registry";
-import type { DomainManifestLookup } from "../../../../data/integration";
+import {
+  domainToName,
+  type DomainManifestLookup,
+} from "../../../../data/integration";
 import {
   getLabels,
   type LabelRegistryEntry,
@@ -56,14 +60,20 @@ import { brandsUrl } from "../../../../util/brands-url";
 
 export const TARGET_SEPARATOR = "________";
 
-interface DeviceEntries {
+interface Level1Entries {
   open: boolean;
+  areas?: Record<string, Level2Entries>;
+  devices?: Record<string, Level3Entries>;
+}
+
+interface Level2Entries {
+  open: boolean;
+  devices: Record<string, Level3Entries>;
   entities: string[];
 }
 
-interface AreaEntries {
+interface Level3Entries {
   open: boolean;
-  devices: Record<string, DeviceEntries>;
   entities: string[];
 }
 
@@ -114,8 +124,7 @@ export default class HaAutomationAddFromTarget extends LitElement {
     | UnassignedAreasFloorComboBoxItem
   )[] = [];
 
-  @state()
-  private _areaEntries: Record<string, AreaEntries> = {};
+  @state() private _entries: Record<string, Level1Entries> = {};
 
   @state() private _showShowMoreButton?: boolean;
 
@@ -129,8 +138,7 @@ export default class HaAutomationAddFromTarget extends LitElement {
     super.willUpdate(changedProps);
 
     if (!this.hasUpdated) {
-      this._loadConfigEntries();
-      this._getTreeData();
+      this._initialDataLoad();
     }
 
     if (changedProps.has("value") || changedProps.has("narrow")) {
@@ -150,9 +158,18 @@ export default class HaAutomationAddFromTarget extends LitElement {
     }
   }
 
+  private async _initialDataLoad() {
+    await this._loadConfigEntries();
+    this._getTreeData();
+  }
+
   // #region render
 
   protected render() {
+    if (!this.manifests || !this._configEntryLookup) {
+      return nothing;
+    }
+
     return html`
       ${!this.narrow || !this.value ? this._renderFloors() : nothing}
       ${this.narrow && this.value ? this._renderNarrow(this.value) : nothing}
@@ -178,20 +195,20 @@ export default class HaAutomationAddFromTarget extends LitElement {
       return nothing;
     }
 
+    // floor areas, unassigned areas
     if (valueType === "floor") {
       return this._renderAreas(
-        this._floorAreas.find(
-          (floor) =>
-            (valueId &&
-              floor.id === `${valueType}${TARGET_SEPARATOR}${valueId}`) ||
-            (!valueId && !floor.id)
-        )?.areas
+        this._entries[`floor${TARGET_SEPARATOR}${valueId ?? ""}`].areas!
       );
     }
 
-    if (valueType === "area" || valueType === "service") {
+    if (valueType === "area" && valueId) {
+      const floor =
+        this._entries[
+          `floor${TARGET_SEPARATOR}${this.areas[valueId]?.floor_id || ""}`
+        ];
       const { devices, entities } =
-        this._areaEntries[`${valueType}${TARGET_SEPARATOR}${valueId ?? ""}`];
+        floor.areas![`area${TARGET_SEPARATOR}${valueId}`];
       const numberOfDevices = Object.keys(devices).length;
 
       return html`
@@ -200,23 +217,50 @@ export default class HaAutomationAddFromTarget extends LitElement {
       `;
     }
 
-    if (valueType === "device" && this.devices[valueId]) {
-      const deviceArea = this.devices[valueId].area_id!;
-      return this._renderEntities(
-        this._areaEntries[`area${TARGET_SEPARATOR}${deviceArea}`]?.devices[
-          valueId
-        ]?.entities
+    if ((!valueId && valueType === "area") || valueType === "service") {
+      const floor = this._entries[`${valueType}${TARGET_SEPARATOR}`];
+      const devices = floor.devices!;
+
+      return this._renderDevices(devices);
+    }
+
+    if (valueId && valueType === "device") {
+      const areaId = this.devices[valueId]?.area_id;
+      if (areaId) {
+        const floorId = this.areas[areaId]?.floor_id || "";
+        const { entities } =
+          this._entries[`floor${TARGET_SEPARATOR}${floorId}`].areas![
+            `area${TARGET_SEPARATOR}${areaId}`
+          ].devices![valueId];
+
+        return entities.length ? this._renderEntities(entities) : nothing;
+      }
+
+      const device = this.devices[valueId];
+      const isService = device.entry_type === "service";
+      const { entities } =
+        this._entries[`${isService ? "service" : "area"}${TARGET_SEPARATOR}`]
+          .devices![valueId];
+      return entities.length ? this._renderEntities(entities) : nothing;
+    }
+
+    if (valueType === "device" || valueType === "helper") {
+      const { devices } = this._entries[`${valueType}${TARGET_SEPARATOR}`];
+      return this._renderDomains(
+        devices!,
+        valueType === "device" ? "entity_" : "helper_"
       );
     }
-    if (valueType === "device" && !valueId) {
-      return this._renderEntities(
-        this._getUnassignedEntities(this.entities, this.manifests).entities
-      );
-    }
-    if (valueType === "helper" && !valueId) {
-      return this._renderEntities(
-        this._getUnassignedEntities(this.entities, this.manifests).helpers
-      );
+
+    if (
+      !valueId &&
+      (valueType.startsWith("entity") || valueType.startsWith("helper"))
+    ) {
+      const { entities } =
+        this._entries[
+          `${valueType.startsWith("entity") ? "device" : "helper"}${TARGET_SEPARATOR}`
+        ].devices![`${valueType}${TARGET_SEPARATOR}`];
+      return this._renderEntities(entities);
     }
 
     return nothing;
@@ -241,7 +285,10 @@ export default class HaAutomationAddFromTarget extends LitElement {
           ? html`<ha-md-list>
               ${this._floorAreas.map((floor, index) =>
                 index === 0 && !floor.id
-                  ? this._renderAreas(floor.areas)
+                  ? this._renderAreas(
+                      this._entries[floor.id || `floor${TARGET_SEPARATOR}`]
+                        .areas!
+                    )
                   : html`<ha-md-list-item
                       interactive
                       type="button"
@@ -272,12 +319,27 @@ export default class HaAutomationAddFromTarget extends LitElement {
           : html`<wa-tree @wa-selection-change=${this._handleSelectionChange}>
               ${this._floorAreas.map((floor, index) =>
                 index === 0 && !floor.id
-                  ? this._renderAreas(floor.areas)
+                  ? this._renderAreas(
+                      this._entries[floor.id || `floor${TARGET_SEPARATOR}`]
+                        .areas!
+                    )
                   : html`<wa-tree-item
                       .preventSelection=${!floor.id}
                       .target=${floor.id || `floor${TARGET_SEPARATOR}`}
                       .selected=${!!floor.id &&
                       this._getSelectedTargetId(this.value) === floor.id}
+                      .lazy=${!this._entries[
+                        floor.id || `floor${TARGET_SEPARATOR}`
+                      ].open &&
+                      !!Object.keys(
+                        this._entries[floor.id || `floor${TARGET_SEPARATOR}`]
+                          .areas!
+                      ).length}
+                      @wa-lazy-load=${this._expandItem}
+                      @wa-collapse=${this._collapseItem}
+                      .expanded=${this._entries[
+                        floor.id || `floor${TARGET_SEPARATOR}`
+                      ].open}
                     >
                       ${floor.id && (floor as FloorNestedComboBoxItem).floor
                         ? html`<ha-floor-icon
@@ -291,10 +353,17 @@ export default class HaAutomationAddFromTarget extends LitElement {
                             "ui.panel.config.automation.editor.other_areas"
                           )
                         : floor.primary}
-                      ${this._renderAreas(floor.areas)}
+                      ${this._entries[floor.id || `floor${TARGET_SEPARATOR}`]
+                        .open
+                        ? this._renderAreas(
+                            this._entries[
+                              floor.id || `floor${TARGET_SEPARATOR}`
+                            ].areas!
+                          )
+                        : nothing}
                     </wa-tree-item>`
               )}
-            </wa-tree>`} `;
+            </wa-tree>`}`;
   }
 
   private _renderLabels() {
@@ -349,20 +418,24 @@ export default class HaAutomationAddFromTarget extends LitElement {
   }
 
   private _renderUnassigned() {
-    const { entities, helpers } = this._getUnassignedEntities(
-      this.entities,
-      this.manifests
-    );
+    const unassignedDevicesLength = Object.keys(
+      this._entries[`area${TARGET_SEPARATOR}`]?.devices || {}
+    ).length;
+    const unassignedServicesLength = Object.keys(
+      this._entries[`service${TARGET_SEPARATOR}`]?.devices || {}
+    ).length;
+    const unassignedEntitiesLength = Object.keys(
+      this._entries[`device${TARGET_SEPARATOR}`]?.devices || {}
+    ).length;
+    const unassignedHelpersLength = Object.keys(
+      this._entries[`helper${TARGET_SEPARATOR}`]?.devices || {}
+    ).length;
 
     if (
-      !this._areaEntries[`area${TARGET_SEPARATOR}`] &&
-      !Object.keys(this._areaEntries[`area${TARGET_SEPARATOR}`]?.devices)
-        .length &&
-      !this._areaEntries[`service${TARGET_SEPARATOR}`] &&
-      !Object.keys(this._areaEntries[`service${TARGET_SEPARATOR}`]?.devices)
-        .length &&
-      !entities.length &&
-      !helpers.length
+      !unassignedDevicesLength &&
+      !unassignedServicesLength &&
+      !unassignedEntitiesLength &&
+      !unassignedHelpersLength
     ) {
       return nothing;
     }
@@ -373,7 +446,7 @@ export default class HaAutomationAddFromTarget extends LitElement {
         )}</ha-section-title
       >${this.narrow
         ? html`<ha-md-list>
-            ${entities.length
+            ${unassignedEntitiesLength
               ? html`<ha-md-list-item
                   interactive
                   type="button"
@@ -388,7 +461,7 @@ export default class HaAutomationAddFromTarget extends LitElement {
                   <ha-icon-next slot="end"></ha-icon-next>
                 </ha-md-list-item>`
               : nothing}
-            ${helpers.length
+            ${unassignedHelpersLength
               ? html`<ha-md-list-item
                   interactive
                   type="button"
@@ -403,9 +476,7 @@ export default class HaAutomationAddFromTarget extends LitElement {
                   <ha-icon-next slot="end"></ha-icon-next>
                 </ha-md-list-item>`
               : nothing}
-            ${this._areaEntries[`area${TARGET_SEPARATOR}`] &&
-            Object.keys(this._areaEntries[`area${TARGET_SEPARATOR}`]?.devices)
-              .length
+            ${unassignedDevicesLength
               ? html`<ha-md-list-item
                   interactive
                   type="button"
@@ -418,10 +489,7 @@ export default class HaAutomationAddFromTarget extends LitElement {
                   <ha-icon-next slot="end"></ha-icon-next>
                 </ha-md-list-item>`
               : nothing}
-            ${this._areaEntries[`service${TARGET_SEPARATOR}`] &&
-            Object.keys(
-              this._areaEntries[`service${TARGET_SEPARATOR}`]?.devices
-            ).length
+            ${unassignedServicesLength
               ? html`<ha-md-list-item
                   interactive
                   type="button"
@@ -438,48 +506,143 @@ export default class HaAutomationAddFromTarget extends LitElement {
               : nothing}
           </ha-md-list>`
         : html`<wa-tree @wa-selection-change=${this._handleSelectionChange}>
-            ${entities.length
-              ? html`<wa-tree-item prevent-selection>
+            ${unassignedEntitiesLength
+              ? html`<wa-tree-item
+                  .lazy=${!this._entries[`device${TARGET_SEPARATOR}`].open}
+                  .target=${`device${TARGET_SEPARATOR}`}
+                  @wa-lazy-load=${this._expandItem}
+                  @wa-collapse=${this._collapseItem}
+                  prevent-selection
+                  .expanded=${this._entries[`device${TARGET_SEPARATOR}`].open}
+                >
                   ${this.localize("ui.components.target-picker.type.entities")}
-                  ${this._renderEntities(entities)}
+                  ${this._entries[`device${TARGET_SEPARATOR}`].open
+                    ? this._renderDomains(
+                        this._entries[`device${TARGET_SEPARATOR}`].devices!,
+                        "entity_"
+                      )
+                    : nothing}
                 </wa-tree-item>`
               : nothing}
-            ${helpers.length
-              ? html`<wa-tree-item prevent-selection>
+            ${unassignedHelpersLength
+              ? html`<wa-tree-item
+                  .lazy=${!this._entries[`helper${TARGET_SEPARATOR}`].open}
+                  .expanded=${this._entries[`helper${TARGET_SEPARATOR}`].open}
+                  .target=${`helper${TARGET_SEPARATOR}`}
+                  @wa-lazy-load=${this._expandItem}
+                  @wa-collapse=${this._collapseItem}
+                  prevent-selection
+                >
                   ${this.localize("ui.panel.config.automation.editor.helpers")}
-                  ${this._renderEntities(helpers)}
+                  ${this._entries[`helper${TARGET_SEPARATOR}`].open
+                    ? this._renderDomains(
+                        this._entries[`helper${TARGET_SEPARATOR}`].devices!,
+                        "helper_"
+                      )
+                    : nothing}
                 </wa-tree-item>`
               : nothing}
-            ${this._areaEntries[`area${TARGET_SEPARATOR}`] &&
-            Object.keys(this._areaEntries[`area${TARGET_SEPARATOR}`]?.devices)
-              .length
-              ? html`<wa-tree-item prevent-selection>
+            ${unassignedDevicesLength
+              ? html`<wa-tree-item
+                  .lazy=${!this._entries[`area${TARGET_SEPARATOR}`].open}
+                  .expanded=${this._entries[`area${TARGET_SEPARATOR}`].open}
+                  .target=${`area${TARGET_SEPARATOR}`}
+                  @wa-lazy-load=${this._expandItem}
+                  @wa-collapse=${this._collapseItem}
+                  prevent-selection
+                >
                   ${this.localize("ui.components.target-picker.type.devices")}
-                  ${this._renderDevices(
-                    this._areaEntries[`area${TARGET_SEPARATOR}`]?.devices
-                  )}
+                  ${this._entries[`area${TARGET_SEPARATOR}`].open
+                    ? this._renderDevices(
+                        this._entries[`area${TARGET_SEPARATOR}`].devices!
+                      )
+                    : nothing}
                 </wa-tree-item>`
               : nothing}
-            ${this._areaEntries[`service${TARGET_SEPARATOR}`] &&
-            Object.keys(
-              this._areaEntries[`service${TARGET_SEPARATOR}`]?.devices
-            ).length
-              ? html`<wa-tree-item prevent-selection>
+            ${unassignedServicesLength
+              ? html`<wa-tree-item
+                  .lazy=${!this._entries[`service${TARGET_SEPARATOR}`].open}
+                  .expanded=${this._entries[`service${TARGET_SEPARATOR}`].open}
+                  .target=${`service${TARGET_SEPARATOR}`}
+                  @wa-lazy-load=${this._expandItem}
+                  @wa-collapse=${this._collapseItem}
+                  prevent-selection
+                >
                   ${this.localize("ui.panel.config.automation.editor.services")}
-                  ${this._renderDevices(
-                    this._areaEntries[`service${TARGET_SEPARATOR}`]?.devices
-                  )}
+                  ${this._entries[`service${TARGET_SEPARATOR}`].open
+                    ? this._renderDevices(
+                        this._entries[`service${TARGET_SEPARATOR}`].devices!
+                      )
+                    : nothing}
                 </wa-tree-item>`
               : nothing}
           </wa-tree>`} `;
   }
 
-  private _renderAreas(areas: FloorComboBoxItem[] = []) {
-    if (!areas.length) {
-      return nothing;
-    }
+  private _renderAreas(areas: Record<string, Level2Entries>) {
+    const renderedAreas = Object.keys(areas)
+      .filter((areaTargetId) => {
+        const [, areaId] = areaTargetId.split(TARGET_SEPARATOR, 2);
+        return this.areas[areaId];
+      })
+      .map((areaTargetId) => {
+        const [, areaId] = areaTargetId.split(TARGET_SEPARATOR, 2);
+        const area = this.areas[areaId];
+        return [
+          areaTargetId,
+          computeAreaName(area) || area.area_id,
+          area.floor_id || undefined,
+          area.icon,
+        ] as [string, string, string | undefined, string | undefined];
+      })
+      .sort(([, nameA], [, nameB]) => nameA.localeCompare(nameB))
+      .map(([areaTargetId, areaName, floorId, areaIcon]) => {
+        if (this.narrow) {
+          return html`<ha-md-list-item
+            interactive
+            type="button"
+            .target=${areaTargetId}
+            @click=${this._selectItem}
+          >
+            ${areaIcon
+              ? html`<ha-icon slot="start" .icon=${areaIcon}></ha-icon>`
+              : html`<ha-svg-icon
+                  slot="start"
+                  .path=${mdiTextureBox}
+                ></ha-svg-icon>`}
 
-    areas.sort((a, b) => a.primary.localeCompare(b.primary));
+            <div slot="headline">${areaName}</div>
+            <ha-icon-next slot="end"></ha-icon-next>
+          </ha-md-list-item>`;
+        }
+
+        const { open, devices, entities } =
+          this._entries[`floor${TARGET_SEPARATOR}${floorId || ""}`].areas![
+            areaTargetId
+          ];
+        const numberOfDevices = Object.keys(devices).length;
+        const numberOfItems = numberOfDevices + entities.length;
+
+        return html`<wa-tree-item
+          .target=${areaTargetId}
+          .selected=${this._getSelectedTargetId(this.value) === areaTargetId}
+          .lazy=${!open && !!numberOfItems}
+          .expanded=${open}
+          @wa-lazy-load=${this._expandItem}
+          @wa-collapse=${this._collapseItem}
+        >
+          ${areaIcon
+            ? html`<ha-icon .icon=${areaIcon}></ha-icon>`
+            : html`<ha-svg-icon .path=${mdiTextureBox}></ha-svg-icon>`}
+          ${areaName}
+          ${open
+            ? html`
+                ${numberOfDevices ? this._renderDevices(devices) : nothing}
+                ${entities.length ? this._renderEntities(entities) : nothing}
+              `
+            : nothing}
+        </wa-tree-item>`;
+      });
 
     if (this.narrow) {
       return html`<ha-section-title
@@ -487,65 +650,13 @@ export default class HaAutomationAddFromTarget extends LitElement {
             "ui.components.target-picker.type.areas"
           )}</ha-section-title
         >
-        <ha-md-list>
-          ${areas.map(({ id, primary, icon, icon_path }) => {
-            if (!this._areaEntries[id]) {
-              return nothing;
-            }
-
-            return html`<ha-md-list-item
-              interactive
-              type="button"
-              .target=${id}
-              @click=${this._selectItem}
-            >
-              ${icon
-                ? html`<ha-icon slot="start" .icon=${icon}></ha-icon>`
-                : html`<ha-svg-icon
-                    slot="start"
-                    .path=${icon_path || mdiTextureBox}
-                  ></ha-svg-icon>`}
-
-              <div slot="headline">${primary}</div>
-              <ha-icon-next slot="end"></ha-icon-next>
-            </ha-md-list-item>`;
-          })}
-        </ha-md-list>`;
+        <ha-md-list>${renderedAreas}</ha-md-list>`;
     }
 
-    return areas.map(({ id, primary, icon, icon_path }) => {
-      if (!this._areaEntries[id]) {
-        return nothing;
-      }
-
-      const { open, devices, entities } = this._areaEntries[id];
-      const numberOfDevices = Object.keys(devices).length;
-      const numberOfItems = numberOfDevices + entities.length;
-
-      return html`<wa-tree-item
-        .target=${id}
-        .selected=${this._getSelectedTargetId(this.value) === id}
-        .lazy=${!open && !!numberOfItems}
-        @wa-lazy-load=${this._expandItem}
-        @wa-collapse=${this._collapseItem}
-      >
-        ${icon
-          ? html`<ha-icon .icon=${icon}></ha-icon>`
-          : html`<ha-svg-icon
-              .path=${icon_path || mdiTextureBox}
-            ></ha-svg-icon>`}
-        ${primary}
-        ${open
-          ? html`
-              ${numberOfDevices ? this._renderDevices(devices) : nothing}
-              ${entities.length ? this._renderEntities(entities) : nothing}
-            `
-          : nothing}
-      </wa-tree-item>`;
-    });
+    return renderedAreas;
   }
 
-  private _renderDevices(devices: Record<string, DeviceEntries>) {
+  private _renderDevices(devices: Record<string, Level3Entries>) {
     const renderedDevices = Object.keys(devices)
       .filter((deviceId) => this.devices[deviceId])
       .map((deviceId) => {
@@ -601,6 +712,7 @@ export default class HaAutomationAddFromTarget extends LitElement {
           .selected=${this._getSelectedTargetId(this.value) ===
           `device${TARGET_SEPARATOR}${deviceId}`}
           .lazy=${!open && !!entities.length}
+          .expanded=${open}
           @wa-lazy-load=${this._expandItem}
           @wa-collapse=${this._collapseItem}
           .title=${deviceName}
@@ -634,6 +746,91 @@ export default class HaAutomationAddFromTarget extends LitElement {
     }
 
     return renderedDevices;
+  }
+
+  private _renderDomains(
+    domains: Record<string, Level3Entries>,
+    prefix: "helper_" | "entity_"
+  ) {
+    const renderedDomains = Object.keys(domains)
+      .map((domainTargetId) => {
+        const domain = domainTargetId.substring(
+          prefix.length,
+          domainTargetId.length - TARGET_SEPARATOR.length
+        );
+        const label = domainToName(
+          this.localize,
+          domain,
+          this.manifests![domain]
+        );
+
+        return [domainTargetId, label, domain] as [string, string, string];
+      })
+      .sort(([, labelA = "zzz"], [, labelB = "zzz"]) =>
+        labelA.localeCompare(labelB)
+      )
+      .map(([domainTargetId, label, domain]) => {
+        if (this.narrow) {
+          return html`<ha-md-list-item
+            interactive
+            type="button"
+            .target=${domainTargetId}
+            @click=${this._selectItem}
+          >
+            <img
+              slot="start"
+              class="domain-icon"
+              alt=""
+              crossorigin="anonymous"
+              referrerpolicy="no-referrer"
+              src=${brandsUrl({
+                domain,
+                type: "icon",
+                darkOptimized: this.hass.themes?.darkMode,
+              })}
+            />
+            <div slot="headline">${label}</div>
+            <ha-icon-next slot="end"></ha-icon-next>
+          </ha-md-list-item>`;
+        }
+
+        const { open, entities } = domains[domainTargetId];
+
+        return html`<wa-tree-item
+          .target=${domainTargetId}
+          .selected=${this._getSelectedTargetId(this.value) === domainTargetId}
+          .lazy=${!open && !!entities.length}
+          .expanded=${open}
+          @wa-lazy-load=${this._expandItem}
+          @wa-collapse=${this._collapseItem}
+          .title=${label}
+        >
+          <img
+            alt=""
+            crossorigin="anonymous"
+            referrerpolicy="no-referrer"
+            class="domain-icon"
+            src=${brandsUrl({
+              domain,
+              type: "icon",
+              darkOptimized: this.hass.themes?.darkMode,
+            })}
+          />
+          <span class="item-label">${label}</span>
+          ${open ? this._renderEntities(entities) : nothing}
+        </wa-tree-item>`;
+      });
+
+    if (this.narrow) {
+      return html`<ha-section-title
+          >${this.localize(
+            "ui.components.target-picker.type.devices"
+          )}</ha-section-title
+        >
+        <ha-md-list> ${renderedDomains} </ha-md-list>`;
+    }
+
+    return renderedDomains;
   }
 
   private _renderEntities(entities: string[] = []) {
@@ -718,30 +915,6 @@ export default class HaAutomationAddFromTarget extends LitElement {
       getDeviceEntityLookup(Object.values(entities), true)
   );
 
-  private _getUnassignedEntities = memoizeOne(
-    (
-      entities: HomeAssistant["entities"],
-      manifests?: DomainManifestLookup
-    ): { entities: string[]; helpers: string[] } => {
-      const unassignedEntities: string[] = [];
-      const unassignedHelpers: string[] = [];
-
-      Object.values(entities)
-        .filter((entity) => !entity.area_id && !entity.device_id)
-        .forEach(({ entity_id }) => {
-          const domain = entity_id.split(".", 2)[0];
-          const manifest = manifests ? manifests[domain] : undefined;
-          if (manifest?.integration_type === "helper") {
-            unassignedHelpers.push(entity_id);
-            return;
-          }
-
-          unassignedEntities.push(entity_id);
-        });
-      return { entities: unassignedEntities, helpers: unassignedHelpers };
-    }
-  );
-
   private _getSelectedTargetId = memoizeOne(
     (value: SingleHassServiceTarget | undefined) =>
       value && Object.keys(value).length
@@ -768,12 +941,24 @@ export default class HaAutomationAddFromTarget extends LitElement {
     );
 
     this._floorAreas.forEach((floor) => {
+      this._entries[floor.id || `floor${TARGET_SEPARATOR}`] = {
+        open: false,
+        areas: {},
+      };
+
       floor.areas.forEach((area) => {
-        this._loadArea(area);
+        this._entries[floor.id || `floor${TARGET_SEPARATOR}`].areas![area.id] =
+          this._loadArea(area);
       });
     });
 
     this._loadUnassignedDevices();
+    this._loadUnassignedEntities();
+    this._entries = { ...this._entries };
+
+    if (this.value) {
+      this._valueChanged(this._getSelectedTargetId(this.value)!, !this.narrow);
+    }
   }
 
   private _formatId = memoizeOne((value: AreaFloorValue): string =>
@@ -798,12 +983,153 @@ export default class HaAutomationAddFromTarget extends LitElement {
     }
   }
 
-  private _valueChanged(itemId: string) {
+  private async _valueChanged(itemId: string, expand = false) {
     const [type, id] = itemId.split(TARGET_SEPARATOR, 2);
 
     fireEvent(this, "value-changed", {
       value: { [`${type}_id`]: id || undefined },
     });
+
+    if (expand && id) {
+      this._expandTreeToItem(type, id);
+      await this.updateComplete;
+      if (type === "label") {
+        this.shadowRoot!.querySelector(
+          "ha-md-list-item.selected"
+        )?.scrollIntoView({
+          block: "center",
+        });
+      } else {
+        this.shadowRoot!.querySelector(
+          "wa-tree-item[selected]"
+        )?.scrollIntoView({
+          block: "center",
+        });
+      }
+    }
+  }
+
+  private _expandTreeToItem(type: string, id: string) {
+    if (type === "floor" || type === "label") {
+      return;
+    }
+
+    if (type === "entity") {
+      const deviceId = this.entities[id]?.device_id;
+      const device = deviceId ? this.devices[deviceId] : undefined;
+      const deviceAreaId = (deviceId && device?.area_id) || undefined;
+
+      if (!deviceAreaId) {
+        let floor: string;
+        let area: string;
+        const entity = this.entities[id];
+
+        if (!deviceId && entity.area_id) {
+          floor = `floor${TARGET_SEPARATOR}${this.areas[entity.area_id]?.floor_id || ""}`;
+          area = `area${TARGET_SEPARATOR}${entity.area_id}`;
+        } else if (!deviceId) {
+          const domain = id.split(".", 1)[0];
+          const isHelper =
+            this.manifests![domain]?.integration_type === "helper";
+
+          floor = isHelper
+            ? `helper${TARGET_SEPARATOR}`
+            : `device${TARGET_SEPARATOR}`;
+          area = `${isHelper ? "helper_" : "entity_"}${domain}${TARGET_SEPARATOR}`;
+        } else {
+          floor = `${device!.entry_type === "service" ? "service" : "area"}${TARGET_SEPARATOR}`;
+          area = deviceId;
+        }
+        this._entries = {
+          ...this._entries,
+          [floor]: {
+            ...this._entries[floor],
+            open: true,
+            devices: {
+              ...this._entries[floor].devices!,
+              [area]: {
+                ...this._entries[floor].devices![area],
+                open: true,
+              },
+            },
+          },
+        };
+        return;
+      }
+
+      const floor = `floor${TARGET_SEPARATOR}${this.areas[deviceAreaId]?.floor_id || ""}`;
+      const area = `area${TARGET_SEPARATOR}${deviceAreaId}`;
+
+      this._entries = {
+        ...this._entries,
+        [floor]: {
+          ...this._entries[floor],
+          open: true,
+          areas: {
+            ...this._entries[floor].areas!,
+            [area]: {
+              ...this._entries[floor].areas![area],
+              open: true,
+              devices: {
+                ...this._entries[floor].areas![area].devices,
+                [deviceId!]: {
+                  ...this._entries[floor].areas![area].devices![deviceId!],
+                  open: true,
+                },
+              },
+            },
+          },
+        },
+      };
+      return;
+    }
+
+    if (type === "device") {
+      const deviceAreaId = this.devices[id]?.area_id;
+
+      if (!deviceAreaId) {
+        const device = this.devices[id];
+        const floor = `${device.entry_type === "service" ? "service" : "area"}${TARGET_SEPARATOR}`;
+        this._entries = {
+          ...this._entries,
+          [floor]: {
+            ...this._entries[floor],
+            open: true,
+          },
+        };
+        return;
+      }
+
+      const floor = `floor${TARGET_SEPARATOR}${this.areas[deviceAreaId]?.floor_id || ""}`;
+      const area = `area${TARGET_SEPARATOR}${deviceAreaId}`;
+
+      this._entries = {
+        ...this._entries,
+        [floor]: {
+          ...this._entries[floor],
+          open: true,
+          areas: {
+            ...this._entries[floor].areas!,
+            [area]: {
+              ...this._entries[floor].areas![area],
+              open: true,
+            },
+          },
+        },
+      };
+      return;
+    }
+
+    if (type === "area") {
+      const floor = `floor${TARGET_SEPARATOR}${this.areas[id]?.floor_id || ""}`;
+      this._entries = {
+        ...this._entries,
+        [floor]: {
+          ...this._entries[floor],
+          open: true,
+        },
+      };
+    }
   }
 
   private _loadUnassignedDevices() {
@@ -811,9 +1137,9 @@ export default class HaAutomationAddFromTarget extends LitElement {
       (device) => !device.area_id
     );
 
-    const devices: Record<string, DeviceEntries> = {};
+    const devices: Record<string, Level3Entries> = {};
 
-    const services: Record<string, DeviceEntries> = {};
+    const services: Record<string, Level3Entries> = {};
 
     unassignedDevices.forEach(({ id: deviceId, entry_type }) => {
       const deviceEntry = {
@@ -832,26 +1158,79 @@ export default class HaAutomationAddFromTarget extends LitElement {
     });
 
     if (Object.keys(devices).length) {
-      this._areaEntries = {
-        ...this._areaEntries,
+      this._entries = {
+        ...this._entries,
         [`area${TARGET_SEPARATOR}`]: {
           open: false,
           devices,
-          entities: [],
         },
       };
     }
 
     if (Object.keys(services).length) {
-      this._areaEntries = {
-        ...this._areaEntries,
+      this._entries = {
+        ...this._entries,
         [`service${TARGET_SEPARATOR}`]: {
           open: false,
           devices: services,
-          entities: [],
         },
       };
     }
+  }
+
+  private _loadUnassignedEntities() {
+    Object.values(this.entities)
+      .filter((entity) => !entity.area_id && !entity.device_id)
+      .forEach(({ entity_id }) => {
+        const domain = entity_id.split(".", 2)[0];
+        const manifest = this.manifests ? this.manifests[domain] : undefined;
+        if (manifest?.integration_type === "helper") {
+          if (!this._entries[`helper${TARGET_SEPARATOR}`]) {
+            this._entries[`helper${TARGET_SEPARATOR}`] = {
+              open: false,
+              devices: {},
+            };
+          }
+          if (
+            !this._entries[`helper${TARGET_SEPARATOR}`].devices![
+              `helper_${domain}${TARGET_SEPARATOR}`
+            ]
+          ) {
+            this._entries[`helper${TARGET_SEPARATOR}`].devices![
+              `helper_${domain}${TARGET_SEPARATOR}`
+            ] = {
+              open: false,
+              entities: [],
+            };
+          }
+          this._entries[`helper${TARGET_SEPARATOR}`].devices![
+            `helper_${domain}${TARGET_SEPARATOR}`
+          ].entities.push(entity_id);
+          return;
+        }
+
+        if (!this._entries[`device${TARGET_SEPARATOR}`]) {
+          this._entries[`device${TARGET_SEPARATOR}`] = {
+            open: false,
+            devices: {},
+          };
+        }
+        if (
+          !this._entries[`device${TARGET_SEPARATOR}`].devices![
+            `entity_${domain}${TARGET_SEPARATOR}`
+          ]
+        ) {
+          this._entries[`device${TARGET_SEPARATOR}`].devices![
+            `entity_${domain}${TARGET_SEPARATOR}`
+          ] = {
+            open: false,
+            entities: [],
+          };
+        }
+        this._entries[`device${TARGET_SEPARATOR}`].devices![
+          `entity_${domain}${TARGET_SEPARATOR}`
+        ].entities.push(entity_id);
+      });
   }
 
   private _loadArea(area: FloorComboBoxItem) {
@@ -861,7 +1240,7 @@ export default class HaAutomationAddFromTarget extends LitElement {
     const referenced_entities =
       this._getAreaEntityLookupMemoized(this.entities)[id] || [];
 
-    const devices: Record<string, DeviceEntries> = {};
+    const devices: Record<string, Level3Entries> = {};
 
     referenced_devices.forEach(({ id: deviceId }) => {
       devices[deviceId] = {
@@ -881,64 +1260,180 @@ export default class HaAutomationAddFromTarget extends LitElement {
       }
     });
 
-    this._areaEntries = {
-      ...this._areaEntries,
-      [area.id]: {
-        open: false,
-        devices,
-        entities,
-      },
+    return {
+      open: false,
+      devices,
+      entities,
     };
+  }
+
+  private _toggleItem(targetId: string, open: boolean) {
+    const [type, id] = targetId.split(TARGET_SEPARATOR, 2);
+
+    if (type === "floor") {
+      this._entries = {
+        ...this._entries,
+        [targetId]: {
+          ...this._entries[targetId],
+          open,
+        },
+      };
+      return;
+    }
+
+    if (type === "area" && id) {
+      const floorId = `floor${TARGET_SEPARATOR}${this.areas[id]?.floor_id || ""}`;
+
+      this._entries = {
+        ...this._entries,
+        [floorId]: {
+          ...this._entries[floorId],
+          areas: {
+            ...this._entries[floorId].areas,
+            [targetId]: {
+              ...this._entries[floorId].areas![targetId],
+              open,
+            },
+          },
+        },
+      };
+      return;
+    }
+
+    if (type === "area") {
+      this._entries = {
+        ...this._entries,
+        [targetId]: {
+          ...this._entries[targetId],
+          open,
+        },
+      };
+      return;
+    }
+
+    if (type === "service") {
+      this._entries = {
+        ...this._entries,
+        [targetId]: {
+          ...this._entries[targetId],
+          open,
+        },
+      };
+      return;
+    }
+
+    if (type === "device" && id) {
+      const areaId = this.devices[id]?.area_id;
+      if (areaId) {
+        const areaTargetId = `area${TARGET_SEPARATOR}${this.devices[id]?.area_id ?? ""}`;
+        const floorId = `floor${TARGET_SEPARATOR}${(areaId && this.areas[areaId]?.floor_id) || ""}`;
+
+        this._entries = {
+          ...this._entries,
+          [floorId]: {
+            ...this._entries[floorId],
+            areas: {
+              ...this._entries[floorId].areas,
+              [areaTargetId]: {
+                ...this._entries[floorId].areas![areaTargetId],
+                devices: {
+                  ...this._entries[floorId].areas![areaTargetId].devices,
+                  [id]: {
+                    ...this._entries[floorId].areas![areaTargetId].devices[id],
+                    open,
+                  },
+                },
+              },
+            },
+          },
+        };
+        return;
+      }
+
+      const deviceType =
+        this.devices[id]?.entry_type === "service" ? "service" : "area";
+      const floorId = `${deviceType}${TARGET_SEPARATOR}`;
+      this._entries = {
+        ...this._entries,
+        [floorId]: {
+          ...this._entries[floorId],
+          devices: {
+            ...this._entries[floorId].devices,
+            [id]: {
+              ...this._entries[floorId].devices![id],
+              open,
+            },
+          },
+        },
+      };
+      return;
+    }
+
+    // unassigned entities
+    if (type === "device") {
+      this._entries = {
+        ...this._entries,
+        [targetId]: {
+          ...this._entries[targetId],
+          open,
+        },
+      };
+      return;
+    }
+
+    if (type === "helper") {
+      this._entries = {
+        ...this._entries,
+        [targetId]: {
+          ...this._entries[targetId],
+          open,
+        },
+      };
+      return;
+    }
+
+    if (type.startsWith("entity_")) {
+      this._entries = {
+        ...this._entries,
+        [`device${TARGET_SEPARATOR}`]: {
+          ...this._entries[`device${TARGET_SEPARATOR}`],
+          devices: {
+            ...this._entries[`device${TARGET_SEPARATOR}`].devices,
+            [targetId]: {
+              ...this._entries[`device${TARGET_SEPARATOR}`].devices![targetId],
+              open,
+            },
+          },
+        },
+      };
+      return;
+    }
+
+    if (type.startsWith("helper_")) {
+      this._entries = {
+        ...this._entries,
+        [`helper${TARGET_SEPARATOR}`]: {
+          ...this._entries[`helper${TARGET_SEPARATOR}`],
+          devices: {
+            ...this._entries[`helper${TARGET_SEPARATOR}`].devices,
+            [targetId]: {
+              ...this._entries[`helper${TARGET_SEPARATOR}`].devices![targetId],
+              open,
+            },
+          },
+        },
+      };
+    }
   }
 
   private _expandItem(ev) {
     const targetId = ev.target.target;
-    const [type, id] = targetId.split(TARGET_SEPARATOR, 2);
-
-    if (type === "area") {
-      this._areaEntries = {
-        ...this._areaEntries,
-        [targetId]: {
-          ...this._areaEntries[targetId],
-          open: true,
-        },
-      };
-    } else if (type === "device") {
-      const areaEntry = Object.values(this._areaEntries).find((area) =>
-        Object.keys(area.devices).includes(id)
-      );
-      if (areaEntry) {
-        areaEntry.devices[id].open = true;
-        this._areaEntries = {
-          ...this._areaEntries,
-        };
-      }
-    }
+    this._toggleItem(targetId, true);
   }
 
   private _collapseItem(ev) {
     const targetId = ev.target.target;
-    const [type, id] = targetId.split(TARGET_SEPARATOR, 2);
-
-    if (type === "area") {
-      this._areaEntries = {
-        ...this._areaEntries,
-        [targetId]: {
-          ...this._areaEntries[targetId],
-          open: false,
-        },
-      };
-    } else if (type === "device") {
-      const areaEntry = Object.values(this._areaEntries).find((area) =>
-        Object.keys(area.devices).includes(id)
-      );
-      if (areaEntry) {
-        areaEntry.devices[id].open = false;
-        this._areaEntries = {
-          ...this._areaEntries,
-        };
-      }
-    }
+    this._toggleItem(targetId, false);
   }
 
   private async _loadConfigEntries() {
@@ -956,14 +1451,22 @@ export default class HaAutomationAddFromTarget extends LitElement {
     const valueType = Object.keys(this.value)[0].replace("_id", "");
     const valueId = this.value[`${valueType}_id`];
 
-    if (valueType === "floor" || valueType === "label" || !valueId) {
+    if (
+      valueType === "floor" ||
+      valueType === "label" ||
+      (!valueId &&
+        (valueType === "device" ||
+          valueType === "helper" ||
+          valueType === "service" ||
+          valueType === "area"))
+    ) {
       fireEvent(this, "value-changed", { value: undefined });
       return;
     }
 
     if (valueType === "area") {
       fireEvent(this, "value-changed", {
-        value: { floor_id: this.areas[valueId].floor_id },
+        value: { floor_id: this.areas[valueId].floor_id || undefined },
       });
       return;
     }
@@ -980,40 +1483,48 @@ export default class HaAutomationAddFromTarget extends LitElement {
       }
 
       fireEvent(this, "value-changed", {
-        value: { area_id: this.devices[valueId].area_id },
+        value: { area_id: this.devices[valueId].area_id || undefined },
       });
       return;
     }
 
-    if (valueType === "entity") {
-      for (const [areaId, areaEntry] of Object.entries(this._areaEntries)) {
-        const entityDeviceId = this.entities[valueId].device_id;
-        if (entityDeviceId && areaEntry.devices[entityDeviceId]) {
-          // Device is also in area -> go back to device
-          break;
-        }
-
-        if (areaEntry.entities.includes(valueId)) {
-          fireEvent(this, "value-changed", {
-            value: { area_id: areaId.split(TARGET_SEPARATOR, 2)[1] },
-          });
-          return;
-        }
+    if (valueType === "entity" && valueId) {
+      const deviceId = this.entities[valueId].device_id;
+      if (deviceId) {
+        fireEvent(this, "value-changed", {
+          value: { device_id: deviceId },
+        });
+        return;
       }
 
-      if (!this.entities[valueId].device_id) {
-        const domain = valueId.split(".", 2)[0];
-        const manifest = this.manifests ? this.manifests[domain] : undefined;
-        if (manifest?.integration_type === "helper") {
-          fireEvent(this, "value-changed", {
-            value: { helper_id: undefined },
-          });
-          return;
-        }
+      const areaId = this.entities[valueId].area_id;
+      if (areaId) {
+        fireEvent(this, "value-changed", {
+          value: { area_id: areaId },
+        });
+        return;
+      }
+
+      const domain = valueId.split(".", 2)[0];
+      const manifest = this.manifests ? this.manifests[domain] : undefined;
+      if (manifest?.integration_type === "helper") {
+        fireEvent(this, "value-changed", {
+          value: { [`helper_${domain}_id`]: undefined },
+        });
+        return;
       }
 
       fireEvent(this, "value-changed", {
-        value: { device_id: this.entities[valueId].device_id },
+        value: { [`entity_${domain}_id`]: undefined },
+      });
+    }
+
+    if (valueType.startsWith("helper_") || valueType.startsWith("entity_")) {
+      fireEvent(this, "value-changed", {
+        value: {
+          [`${valueType.startsWith("helper_") ? "helper" : "device"}_id`]:
+            undefined,
+        },
       });
     }
   }
@@ -1077,6 +1588,10 @@ export default class HaAutomationAddFromTarget extends LitElement {
       width: 24px;
       height: 24px;
       padding: var(--ha-space-1);
+    }
+
+    img.domain-icon {
+      filter: grayscale(100%);
     }
 
     state-badge {

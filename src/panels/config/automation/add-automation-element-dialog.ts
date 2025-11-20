@@ -632,7 +632,15 @@ class DialogAddAutomationElement
           this.hass.entities,
           memoizeOne((value: AreaFloorValue): string =>
             [value.type, value.id].join(TARGET_SEPARATOR)
-          )
+          ),
+          undefined,
+          undefined,
+          undefined,
+          undefined,
+          undefined,
+          undefined,
+          undefined,
+          true
         );
 
         if (searchTerm) {
