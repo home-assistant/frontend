@@ -187,6 +187,12 @@ export class HuiCreateDialogCard
         @media all and (min-width: 850px) {
           ha-dialog {
             --mdc-dialog-min-width: 845px;
+            --mdc-dialog-min-height: calc(
+              100vh - var(--ha-space-18) - var(--safe-area-inset-y)
+            );
+            --mdc-dialog-max-height: calc(
+              100vh - var(--ha-space-18) - var(--safe-area-inset-y)
+            );
           }
         }
 
