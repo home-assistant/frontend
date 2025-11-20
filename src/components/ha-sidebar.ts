@@ -16,7 +16,7 @@ import {
 } from "@mdi/js";
 import type { UnsubscribeFunc } from "home-assistant-js-websocket";
 import type { CSSResultGroup, PropertyValues } from "lit";
-import { LitElement, css, html, nothing } from "lit";
+import { css, html, LitElement, nothing } from "lit";
 import {
   customElement,
   eventOptions,
@@ -39,6 +39,7 @@ import {
   getPanelIcon,
   getPanelIconPath,
   getPanelTitle,
+  SHOW_AFTER_SPACER_PANELS,
 } from "../data/panel";
 import type { PersistentNotification } from "../data/persistent_notification";
 import { subscribeNotifications } from "../data/persistent_notification";
@@ -59,8 +60,6 @@ import type { HaMdListItem } from "./ha-md-list-item";
 import "./ha-spinner";
 import "./ha-svg-icon";
 import "./user/ha-user-badge";
-
-const SHOW_AFTER_SPACER = ["developer-tools"];
 
 const SUPPORT_SCROLL_IF_NEEDED = "scrollIntoViewIfNeeded" in document.body;
 
@@ -166,15 +165,18 @@ export const computePanels = memoizeOne(
     );
 
     allPanels.forEach((panel) => {
+      const isDefaultPanel = panel.url_path === defaultPanel;
+
       if (
-        hiddenPanels.includes(panel.url_path) ||
-        (!panel.title && panel.url_path !== defaultPanel) ||
-        (panel.default_visible === false &&
-          !panelsOrder.includes(panel.url_path))
+        !isDefaultPanel &&
+        (!panel.title ||
+          hiddenPanels.includes(panel.url_path) ||
+          (panel.default_visible === false &&
+            !panelsOrder.includes(panel.url_path)))
       ) {
         return;
       }
-      (SHOW_AFTER_SPACER.includes(panel.url_path)
+      (SHOW_AFTER_SPACER_PANELS.includes(panel.url_path)
         ? afterSpacer
         : beforeSpacer
       ).push(panel);
@@ -405,9 +407,9 @@ class HaSidebar extends SubscribeMixin(LitElement) {
   private _renderAllPanels(selectedPanel: string) {
     if (!this._panelOrder || !this._hiddenPanels) {
       return html`
-        <ha-fade-in .delay=${500}
-          ><ha-spinner size="small"></ha-spinner
-        ></ha-fade-in>
+        <ha-fade-in .delay=${500}>
+          <ha-spinner size="small"></ha-spinner>
+        </ha-fade-in>
       `;
     }
 
