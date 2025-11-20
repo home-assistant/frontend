@@ -185,18 +185,6 @@ export const haStyleDialogFixedTop = css`
     /* Pin dialog to top so it doesn't jump when content changes size */
     --vertical-align-dialog: flex-start;
     --dialog-surface-margin-top: var(--ha-space-10);
-    --mdc-dialog-min-height: calc(
-      100vh - var(--dialog-surface-margin-top) - var(--ha-space-2) - var(
-          --safe-area-inset-y,
-          var(--ha-space-0)
-        )
-    );
-    --mdc-dialog-min-height: calc(
-      100svh - var(--dialog-surface-margin-top) - var(--ha-space-2) - var(
-          --safe-area-inset-y,
-          var(--ha-space-0)
-        )
-    );
     --mdc-dialog-max-height: calc(
       100vh - var(--dialog-surface-margin-top) - var(--ha-space-2) - var(
           --safe-area-inset-y,
