@@ -2150,6 +2150,18 @@ class DialogAddAutomationElement
       return this.hass.localize("ui.panel.config.automation.editor.helpers");
     }
 
+    if (
+      targetId === undefined &&
+      (targetType.startsWith("entity_") || targetType.startsWith("helper_"))
+    ) {
+      const domain = targetType.substring(7);
+      return domainToName(
+        this.hass.localize,
+        domain,
+        this._manifests?.[domain]
+      );
+    }
+
     if (targetId) {
       if (targetType === "floor") {
         return computeFloorName(this.hass.floors[targetId]) || targetId;
@@ -2239,19 +2251,29 @@ class DialogAddAutomationElement
           subtitle = computeAreaName(this.hass.areas[areaId]) || areaId;
         }
         if (targetType === "entity" && this.hass.states[targetId]) {
-          const stateObj = this.hass.states[targetId];
-          const [entityName, deviceName, areaName] = computeEntityNameList(
-            stateObj,
-            [{ type: "entity" }, { type: "device" }, { type: "area" }],
-            this.hass.entities,
-            this.hass.devices,
-            this.hass.areas,
-            this.hass.floors
-          );
+          const entity = this.hass.entities[targetId];
+          if (!entity.device_id && !entity.area_id) {
+            const domain = targetId.split(".", 2)[0];
+            subtitle = domainToName(
+              this.hass.localize,
+              domain,
+              this._manifests?.[domain]
+            );
+          } else {
+            const stateObj = this.hass.states[targetId];
+            const [entityName, deviceName, areaName] = computeEntityNameList(
+              stateObj,
+              [{ type: "entity" }, { type: "device" }, { type: "area" }],
+              this.hass.entities,
+              this.hass.devices,
+              this.hass.areas,
+              this.hass.floors
+            );
 
-          subtitle = [areaName, entityName ? deviceName : undefined]
-            .filter(Boolean)
-            .join(computeRTL(this.hass) ? " ◂ " : " ▸ ");
+            subtitle = [areaName, entityName ? deviceName : undefined]
+              .filter(Boolean)
+              .join(computeRTL(this.hass) ? " ◂ " : " ▸ ");
+          }
         }
       }
 
