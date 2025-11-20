@@ -195,8 +195,9 @@ static get styles() {
 
 **Available Dialog Types:**
 
-- `ha-md-dialog` - Preferred for new code (Material Design 3)
-- `ha-dialog` - Legacy component still widely used
+- `ha-wa-dialog` - Preferred for new dialogs (Web Awesome based)
+- `ha-md-dialog` - Material Design 3 dialog component
+- `ha-dialog` - Legacy component (still widely used)
 
 **Opening Dialogs (Fire Event Pattern - Recommended):**
 
@@ -211,13 +212,24 @@ fireEvent(this, "show-dialog", {
 **Dialog Implementation Requirements:**
 
 - Implement `HassDialog<T>` interface
-- Use `createCloseHeading()` for standard headers
-- Import `haStyleDialog` for consistent styling
+- Use `@state() private _open = false` to control dialog visibility
+- Set `_open = true` in `showDialog()`, `_open = false` in `closeDialog()`
 - Return `nothing` when no params (loading state)
-- Fire `dialog-closed` event when closing
-- Add `dialogInitialFocus` for accessibility
+- Fire `dialog-closed` event in `_dialogClosed()` handler
+- Use `header-title` attribute for simple titles
+- Use `header-subtitle` attribute for simple subtitles
+- Use slots for custom content where the standard attributes are not enough
+- Use `ha-dialog-footer` with `primaryAction`/`secondaryAction` slots for footer content
+    - Follow the design guidelines for button appearance and variant types.
+- Add `autofocus` to first focusable element (e.g., `<ha-form autofocus>`). The component may need to forward this attribute internally.
 
-````
+**Recent Examples:**
+
+See these files for current patterns:
+- `src/panels/config/repairs/dialog-repairs-issue.ts`
+- `src/dialogs/restart/dialog-restart.ts`
+- `src/panels/config/lovelace/resources/dialog-lovelace-resource-detail.ts`
+
 
 ### Form Component (ha-form)
 - Schema-driven using `HaFormSchema[]`
@@ -235,7 +247,7 @@ fireEvent(this, "show-dialog", {
   .computeLabel=${(schema) => this.hass.localize(`ui.panel.${schema.name}`)}
   @value-changed=${this._valueChanged}
 ></ha-form>
-````
+```
 
 ### Alert Component (ha-alert)
 
@@ -289,11 +301,19 @@ export class DialogMyFeature
   @state()
   private _params?: MyDialogParams;
 
+  @state()
+  private _open = false;
+
   public async showDialog(params: MyDialogParams): Promise<void> {
     this._params = params;
+    this._open = true;
   }
 
   public closeDialog(): void {
+    this._open = false;
+  }
+
+  private _dialogClosed(): void {
     this._params = undefined;
     fireEvent(this, "dialog-closed", { dialog: this.localName });
   }
@@ -304,23 +324,27 @@ export class DialogMyFeature
     }
 
     return html`
-      <ha-dialog
-        open
-        @closed=${this.closeDialog}
-        .heading=${createCloseHeading(this.hass, this._params.title)}
+      <ha-wa-dialog
+        .hass=${this.hass}
+        .open=${this._open}
+        header-title=${this._params.title}
+        header-subtitle=${this._params.subtitle}
+        @closed=${this._dialogClosed}
       >
-        <!-- Dialog content -->
-        <ha-button
-          appearance="plain"
-          @click=${this.closeDialog}
-          slot="secondaryAction"
-        >
-          ${this.hass.localize("ui.common.cancel")}
-        </ha-button>
-        <ha-button @click=${this._submit} slot="primaryAction">
-          ${this.hass.localize("ui.common.save")}
-        </ha-button>
-      </ha-dialog>
+        <p>Dialog content</p>
+        <ha-dialog-footer slot="footer">
+          <ha-button
+            slot="secondaryAction"
+            appearance="plain"
+            @click=${this.closeDialog}
+          >
+            ${this.hass.localize("ui.common.cancel")}
+          </ha-button>
+          <ha-button slot="primaryAction" @click=${this._submit}>
+            ${this.hass.localize("ui.common.save")}
+          </ha-button>
+        </ha-dialog-footer>
+      </ha-wa-dialog>
     `;
   }
 
