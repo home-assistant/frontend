@@ -20,6 +20,7 @@ import {
 } from "../../data/frontend";
 import type { HomeAssistant } from "../../types";
 import { showConfirmationDialog } from "../generic/show-dialog-box";
+import { getDefaultPanelUrlPath } from "../../data/panel";
 
 @customElement("dialog-edit-sidebar")
 class DialogEditSidebar extends LitElement {
@@ -94,9 +95,11 @@ class DialogEditSidebar extends LitElement {
 
     const panels = this._panels(this.hass.panels);
 
+    const defaultPanel = getDefaultPanelUrlPath(this.hass);
+
     const [beforeSpacer, afterSpacer] = computePanels(
       this.hass.panels,
-      this.hass.defaultPanel,
+      defaultPanel,
       this._order,
       this._hidden,
       this.hass.locale
@@ -120,12 +123,12 @@ class DialogEditSidebar extends LitElement {
     ].map((panel) => ({
       value: panel.url_path,
       label:
-        panel.url_path === this.hass.defaultPanel
+        panel.url_path === defaultPanel
           ? panel.title || this.hass.localize("panel.states")
           : this.hass.localize(`panel.${panel.title}`) || panel.title || "?",
       icon: panel.icon || undefined,
       iconPath:
-        panel.url_path === this.hass.defaultPanel && !panel.icon
+        panel.url_path === defaultPanel && !panel.icon
           ? PANEL_ICONS.lovelace
           : panel.url_path in PANEL_ICONS
             ? PANEL_ICONS[panel.url_path]

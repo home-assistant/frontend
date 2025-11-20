@@ -1,3 +1,4 @@
+import { getAreasFloorHierarchy } from "../common/areas/areas-floor-hierarchy";
 import { computeAreaName } from "../common/entity/compute_area_name";
 import { computeDomain } from "../common/entity/compute_domain";
 import { computeFloorName } from "../common/entity/compute_floor_name";
@@ -12,11 +13,7 @@ import {
 } from "./device_registry";
 import type { HaEntityPickerEntityFilterFunc } from "./entity";
 import type { EntityRegistryDisplayEntry } from "./entity_registry";
-import {
-  floorCompare,
-  getFloorAreaLookup,
-  type FloorRegistryEntry,
-} from "./floor_registry";
+import type { FloorRegistryEntry } from "./floor_registry";
 
 export interface FloorComboBoxItem extends PickerComboBoxItem {
   type: "floor" | "area";
@@ -182,68 +179,59 @@ export const getAreasAndFloors = (
     );
   }
 
-  const floorAreaLookup = getFloorAreaLookup(outputAreas);
-  const unassignedAreas = Object.values(outputAreas).filter(
-    (area) => !area.floor_id || !floorAreaLookup[area.floor_id]
-  );
-
-  const compare = floorCompare(haFloors);
-
-  // @ts-ignore
-  const floorAreaEntries: [
-    FloorRegistryEntry | undefined,
-    AreaRegistryEntry[],
-  ][] = Object.entries(floorAreaLookup)
-    .map(([floorId, floorAreas]) => {
-      const floor = floors.find((fl) => fl.floor_id === floorId)!;
-      return [floor, floorAreas] as const;
-    })
-    .sort(([floorA], [floorB]) => compare(floorA.floor_id, floorB.floor_id));
+  const hierarchy = getAreasFloorHierarchy(floors, outputAreas);
 
   const items: FloorComboBoxItem[] = [];
 
-  floorAreaEntries.forEach(([floor, floorAreas]) => {
-    if (floor) {
-      const floorName = computeFloorName(floor);
+  hierarchy.floors.forEach((f) => {
+    const floor = haFloors[f.id];
+    const floorAreas = f.areas.map((areaId) => haAreas[areaId]);
 
-      const areaSearchLabels = floorAreas
-        .map((area) => {
-          const areaName = computeAreaName(area) || area.area_id;
-          return [area.area_id, areaName, ...area.aliases];
-        })
-        .flat();
+    const floorName = computeFloorName(floor);
 
-      items.push({
-        id: formatId({ id: floor.floor_id, type: "floor" }),
-        type: "floor",
-        primary: floorName,
-        floor: floor,
-        icon: floor.icon || undefined,
-        search_labels: [
-          floor.floor_id,
-          floorName,
-          ...floor.aliases,
-          ...areaSearchLabels,
-        ],
-      });
-    }
+    const areaSearchLabels = floorAreas
+      .map((area) => {
+        const areaName = computeAreaName(area);
+        return [area.area_id, ...(areaName ? [areaName] : []), ...area.aliases];
+      })
+      .flat();
+
+    items.push({
+      id: formatId({ id: floor.floor_id, type: "floor" }),
+      type: "floor",
+      primary: floorName,
+      floor: floor,
+      icon: floor.icon || undefined,
+      search_labels: [
+        floor.floor_id,
+        floorName,
+        ...floor.aliases,
+        ...areaSearchLabels,
+      ],
+    });
+
     items.push(
       ...floorAreas.map((area) => {
-        const areaName = computeAreaName(area) || area.area_id;
+        const areaName = computeAreaName(area);
         return {
           id: formatId({ id: area.area_id, type: "area" }),
           type: "area" as const,
-          primary: areaName,
+          primary: areaName || area.area_id,
           area: area,
           icon: area.icon || undefined,
-          search_labels: [area.area_id, areaName, ...area.aliases],
+          search_labels: [
+            area.area_id,
+            ...(areaName ? [areaName] : []),
+            ...area.aliases,
+          ],
         };
       })
     );
   });
 
   items.push(
-    ...unassignedAreas.map((area) => {
+    ...hierarchy.areas.map((areaId) => {
+      const area = haAreas[areaId];
       const areaName = computeAreaName(area) || area.area_id;
       return {
         id: formatId({ id: area.area_id, type: "area" }),

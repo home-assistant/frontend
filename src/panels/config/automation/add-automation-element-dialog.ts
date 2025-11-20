@@ -1336,7 +1336,7 @@ class DialogAddAutomationElement
           --md-list-item-trailing-space: var(--md-list-item-leading-space);
           --md-list-item-bottom-space: var(--ha-space-1);
           --md-list-item-top-space: var(--md-list-item-bottom-space);
-          --md-list-item-supporting-text-font: var(--ha-font-size-s);
+          --md-list-item-supporting-text-font: var(--ha-font-family-body);
           --md-list-item-one-line-container-height: var(--ha-space-10);
         }
         ha-bottom-sheet .groups {
@@ -1400,7 +1400,7 @@ class DialogAddAutomationElement
           --md-list-item-trailing-space: var(--md-list-item-leading-space);
           --md-list-item-bottom-space: var(--ha-space-2);
           --md-list-item-top-space: var(--md-list-item-bottom-space);
-          --md-list-item-supporting-text-font: var(--ha-font-size-s);
+          --md-list-item-supporting-text-font: var(--ha-font-family-body);
           gap: var(--ha-space-2);
           padding: var(--ha-space-0) var(--ha-space-4);
         }

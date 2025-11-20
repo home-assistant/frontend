@@ -150,11 +150,6 @@ export interface EnergyCardBaseConfig extends LovelaceCardConfig {
   collection_key?: string;
 }
 
-export interface EnergySummaryCardConfig extends EnergyCardBaseConfig {
-  type: "energy-summary";
-  title?: string;
-}
-
 export interface EnergyDistributionCardConfig extends EnergyCardBaseConfig {
   type: "energy-distribution";
   title?: string;
@@ -234,6 +229,14 @@ export interface EnergySankeyCardConfig extends EnergyCardBaseConfig {
 export interface PowerSourcesGraphCardConfig extends EnergyCardBaseConfig {
   type: "power-sources-graph";
   title?: string;
+}
+
+export interface PowerSankeyCardConfig extends EnergyCardBaseConfig {
+  type: "power-sankey";
+  title?: string;
+  layout?: "vertical" | "horizontal" | "auto";
+  group_by_floor?: boolean;
+  group_by_area?: boolean;
 }
 
 export interface EntityFilterCardConfig extends LovelaceCardConfig {

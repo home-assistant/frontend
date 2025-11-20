@@ -1237,7 +1237,8 @@
             "times": "times"
           },
           "summary": "Summary",
-          "description": "Description"
+          "description": "Description",
+          "location": "Location"
         },
         "views": {
           "dayGridMonth": "[%key:ui::panel::lovelace::editor::card::calendar::views::dayGridMonth%]",
@@ -2456,7 +2457,10 @@
               "delete_floor": "Delete floor",
               "confirm_delete": "Delete floor?",
               "confirm_delete_text": "Deleting the floor will unassign all areas from it."
-            }
+            },
+            "area_reorder_failed": "Failed to reorder areas",
+            "area_move_failed": "Failed to move area",
+            "floor_reorder_failed": "Failed to reorder floors"
           },
           "editor": {
             "create_area": "Create area",
@@ -3515,8 +3519,12 @@
               "delete": "Delete",
               "update": "Update",
               "create": "Create",
-              "set_default": "Set as default on this device",
-              "remove_default": "Remove as default on this device"
+              "set_default": "Set as default",
+              "remove_default": "Remove as default",
+              "set_default_confirm_title": "Set as default dashboard?",
+              "set_default_confirm_text": "This will replace the current default dashboard. Users can still override their default dashboard in their profile settings.",
+              "remove_default_confirm_title": "Remove default dashboard?",
+              "remove_default_confirm_text": "The default dashboard will be changed to Overview for every user. Users can still override their default dashboard in their profile settings."
             }
           },
           "resources": {
@@ -7166,7 +7174,7 @@
               "grid": "Grid",
               "solar": "Solar",
               "battery": "Battery",
-              "usage": "Used"
+              "usage": "Consumption"
             },
             "energy_compare": {
               "info": "You are comparing the period {start} with the period {end}",
@@ -8424,10 +8432,13 @@
                 "no_compatible_controls": "No compatible controls available for this area"
               },
               "bar-gauge": {
-                "label": "Bar gauge"
+                "label": "Bar gauge",
+                "min": "Minimum value",
+                "max": "Maximum value"
               },
               "trend-graph": {
-                "label": "Trend graph"
+                "label": "Trend graph",
+                "detail": "Show more detail"
               }
             }
           },
@@ -8663,9 +8674,11 @@
         },
         "dashboard": {
           "header": "Dashboard",
-          "description": "Pick a default dashboard for this device.",
+          "description": "Pick a default dashboard to show.",
           "dropdown_label": "Dashboard",
-          "default_dashboard_label": "Overview (default)"
+          "lovelace": "Overview",
+          "home": "Home",
+          "system": "Auto (use system settings)"
         },
         "change_password": {
           "header": "Change password",
@@ -9426,6 +9439,11 @@
         }
       },
       "energy": {
+        "overview": {
+          "electricity": "Electricity",
+          "gas": "Gas",
+          "water": "Water"
+        },
         "download_data": "[%key:ui::panel::history::download_data%]",
         "configure": "[%key:ui::dialogs::quick-bar::commands::navigation::energy%]",
         "setup": {
@@ -9450,7 +9468,9 @@
           "energy_sources_table_title": "Sources",
           "energy_devices_graph_title": "Individual devices total usage",
           "energy_devices_detail_graph_title": "Individual devices detail usage",
-          "energy_sankey_title": "Energy flow"
+          "energy_sankey_title": "Energy flow",
+          "energy_top_consumers_title": "Top consumers",
+          "power_sankey_title": "Current power flow"
         }
       },
       "history": {

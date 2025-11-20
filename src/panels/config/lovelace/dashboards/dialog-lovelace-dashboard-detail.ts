@@ -4,18 +4,20 @@ import { customElement, property, state } from "lit/decorators";
 import memoizeOne from "memoize-one";
 import { fireEvent } from "../../../../common/dom/fire_event";
 import { slugify } from "../../../../common/string/slugify";
+import "../../../../components/ha-button";
 import { createCloseHeading } from "../../../../components/ha-dialog";
 import "../../../../components/ha-form/ha-form";
-import "../../../../components/ha-button";
 import type { SchemaUnion } from "../../../../components/ha-form/types";
+import { saveFrontendSystemData } from "../../../../data/frontend";
 import type {
   LovelaceDashboard,
   LovelaceDashboardCreateParams,
   LovelaceDashboardMutableParams,
 } from "../../../../data/lovelace/dashboard";
-import { DEFAULT_PANEL, setDefaultPanel } from "../../../../data/panel";
+import { DEFAULT_PANEL } from "../../../../data/panel";
 import { haStyleDialog } from "../../../../resources/styles";
 import type { HomeAssistant } from "../../../../types";
+import { showConfirmationDialog } from "../../../lovelace/custom-card-helpers";
 import type { LovelaceDashboardDetailsDialogParams } from "./show-dialog-lovelace-dashboard-detail";
 
 @customElement("dialog-lovelace-dashboard-detail")
@@ -59,7 +61,8 @@ export class DialogLovelaceDashboardDetail extends LitElement {
     if (!this._params || !this._data) {
       return nothing;
     }
-    const defaultPanelUrlPath = this.hass.defaultPanel;
+    const defaultPanelUrlPath =
+      this.hass.systemData?.defaultPanel || DEFAULT_PANEL;
     const titleInvalid = !this._data.title || !this._data.title.trim();
 
     return html`
@@ -251,15 +254,38 @@ export class DialogLovelaceDashboardDetail extends LitElement {
     };
   }
 
-  private _toggleDefault() {
+  private async _toggleDefault() {
     const urlPath = this._params?.urlPath;
     if (!urlPath) {
       return;
     }
-    setDefaultPanel(
-      this,
-      urlPath === this.hass.defaultPanel ? DEFAULT_PANEL : urlPath
-    );
+
+    const defaultPanel = this.hass.systemData?.defaultPanel || DEFAULT_PANEL;
+    // Add warning dialog to saying that this will change the default dashboard for all users
+    const confirm = await showConfirmationDialog(this, {
+      title: this.hass.localize(
+        urlPath === defaultPanel
+          ? "ui.panel.config.lovelace.dashboards.detail.remove_default_confirm_title"
+          : "ui.panel.config.lovelace.dashboards.detail.set_default_confirm_title"
+      ),
+      text: this.hass.localize(
+        urlPath === defaultPanel
+          ? "ui.panel.config.lovelace.dashboards.detail.remove_default_confirm_text"
+          : "ui.panel.config.lovelace.dashboards.detail.set_default_confirm_text"
+      ),
+      confirmText: this.hass.localize("ui.common.ok"),
+      dismissText: this.hass.localize("ui.common.cancel"),
+      destructive: false,
+    });
+
+    if (!confirm) {
+      return;
+    }
+
+    saveFrontendSystemData(this.hass.connection, "core", {
+      ...this.hass.systemData,
+      defaultPanel: urlPath === defaultPanel ? undefined : urlPath,
+    });
   }
 
   private async _updateDashboard() {

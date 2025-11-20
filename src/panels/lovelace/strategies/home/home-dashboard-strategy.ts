@@ -4,7 +4,6 @@ import { customElement } from "lit/decorators";
 import type { LovelaceConfig } from "../../../../data/lovelace/config/types";
 import type { LovelaceViewRawConfig } from "../../../../data/lovelace/config/view";
 import type { HomeAssistant } from "../../../../types";
-import { getAreas } from "../areas/helpers/areas-strategy-helper";
 import type { LovelaceStrategyEditor } from "../types";
 import {
   getSummaryLabel,
@@ -46,7 +45,7 @@ export class HomeDashboardStrategy extends ReactiveElement {
       };
     }
 
-    const areas = getAreas(hass.areas);
+    const areas = Object.values(hass.areas);
 
     const areaViews = areas.map<LovelaceViewRawConfig>((area) => {
       const path = `areas-${area.area_id}`;
