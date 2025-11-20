@@ -41,6 +41,10 @@ class HaConfigLabs extends SubscribeMixin(LitElement) {
   public hassSubscribe() {
     return [
       subscribeLabFeatures(this.hass.connection, (features) => {
+        // Load title translations for integrations with preview features
+        const domains = [...new Set(features.map((f) => f.domain))];
+        this.hass.loadBackendTranslation("title", domains);
+
         // Sort by localized integration name alphabetically
         this._preview_features = features.sort((a, b) =>
           domainToName(this.hass.localize, a.domain).localeCompare(
@@ -53,7 +57,8 @@ class HaConfigLabs extends SubscribeMixin(LitElement) {
 
   protected firstUpdated(changedProps: PropertyValues): void {
     super.firstUpdated(changedProps);
-    this._loadTranslations();
+    // Load preview_features translations
+    this.hass.loadBackendTranslation("preview_features");
     this._handleUrlParams();
   }
 
@@ -69,13 +74,6 @@ class HaConfigLabs extends SubscribeMixin(LitElement) {
         this._scrollToPreviewFeature(previewFeatureId);
       });
     }
-  }
-
-  private async _loadTranslations(): Promise<void> {
-    await Promise.all([
-      this.hass.loadBackendTranslation("preview_features"),
-      this.hass.loadBackendTranslation("title"),
-    ]);
   }
 
   protected render() {
