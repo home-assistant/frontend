@@ -23,8 +23,9 @@ export class DialogLabsProgress
     this._open = true;
   }
 
-  public closeDialog(): void {
+  public closeDialog(): boolean {
     this._open = false;
+    return true;
   }
 
   private _handleClosed(): void {

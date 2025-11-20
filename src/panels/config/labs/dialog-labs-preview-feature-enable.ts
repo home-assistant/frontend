@@ -33,9 +33,10 @@ export class DialogLabsPreviewFeatureEnable
     await this._fetchBackupConfig();
   }
 
-  public closeDialog(): void {
+  public closeDialog(): boolean {
     this._params = undefined;
     fireEvent(this, "dialog-closed", { dialog: this.localName });
+    return true;
   }
 
   private async _fetchBackupConfig() {
