@@ -297,6 +297,11 @@ See these files for current patterns:
 - `src/dialogs/restart/dialog-restart.ts`
 - `src/panels/config/lovelace/resources/dialog-lovelace-resource-detail.ts`
 
+**Gallery Documentation:**
+
+- `gallery/src/pages/components/ha-wa-dialog.markdown`
+- `gallery/src/pages/components/ha-dialogs.markdown`
+
 ### Form Component (ha-form)
 
 - Schema-driven using `HaFormSchema[]`
@@ -316,6 +321,10 @@ See these files for current patterns:
 ></ha-form>
 ```
 
+**Gallery Documentation:**
+
+- `gallery/src/pages/components/ha-form.markdown`
+
 ### Alert Component (ha-alert)
 
 - Types: `error`, `warning`, `info`, `success`
@@ -327,6 +336,10 @@ See these files for current patterns:
 <ha-alert alert-type="warning" title="Warning">Description</ha-alert>
 <ha-alert alert-type="success" dismissable>Success message</ha-alert>
 ```
+
+**Gallery Documentation:**
+
+- `gallery/src/pages/components/ha-alert.markdown`
 
 ### Keyboard Shortcuts (ShortcutManager)
 
