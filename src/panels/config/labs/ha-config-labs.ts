@@ -1,14 +1,15 @@
 import { mdiFlask, mdiHelpCircle, mdiOpenInNew } from "@mdi/js";
-import type { UnsubscribeFunc } from "home-assistant-js-websocket";
 import type { PropertyValues, TemplateResult } from "lit";
 import { LitElement, css, html, nothing } from "lit";
 import { customElement, property, state } from "lit/decorators";
 import { extractSearchParam } from "../../../common/url/search-params";
 import { domainToName } from "../../../data/integration";
-import { fetchLabFeatures, labsUpdatePreviewFeature } from "../../../data/labs";
+import { labsUpdatePreviewFeature } from "../../../data/labs";
 import type { LabPreviewFeature } from "../../../data/labs";
+import { subscribeLabFeatures } from "../../../data/ws-labs";
 import { showConfirmationDialog } from "../../../dialogs/generic/show-dialog-box";
 import type { HomeAssistant } from "../../../types";
+import { SubscribeMixin } from "../../../mixins/subscribe-mixin";
 import { brandsUrl } from "../../../util/brands-url";
 import { showToast } from "../../../util/toast";
 import { showLabsPreviewFeatureEnableDialog } from "./show-dialog-labs-preview-feature-enable";
@@ -25,7 +26,7 @@ import "../../../components/ha-switch";
 import "../../../layouts/hass-subpage";
 
 @customElement("ha-config-labs")
-class HaConfigLabs extends LitElement {
+class HaConfigLabs extends SubscribeMixin(LitElement) {
   @property({ attribute: false }) public hass!: HomeAssistant;
 
   @property({ type: Boolean }) public narrow = false;
@@ -34,21 +35,19 @@ class HaConfigLabs extends LitElement {
 
   @state() private _highlightedPreviewFeature?: string;
 
-  private _unsubscribe?: UnsubscribeFunc;
-
-  public disconnectedCallback(): void {
-    super.disconnectedCallback();
-    if (this._unsubscribe) {
-      this._unsubscribe();
-      this._unsubscribe = undefined;
-      this._unsubscribe = undefined;
-    }
+  public hassSubscribe() {
+    return [
+      subscribeLabFeatures(this.hass.connection, (features) => {
+        this._preview_features = features;
+        // Sort by integration domain alphabetically
+        this._preview_features.sort((a, b) => a.domain.localeCompare(b.domain));
+      }),
+    ];
   }
 
   protected firstUpdated(changedProps: PropertyValues): void {
     super.firstUpdated(changedProps);
-    this._loadPreviewFeatures();
-    this._subscribeToLabsUpdates();
+    this._loadTranslations();
     this._handleUrlParams();
   }
 
@@ -66,21 +65,11 @@ class HaConfigLabs extends LitElement {
     }
   }
 
-  private async _loadPreviewFeatures(): Promise<void> {
-    this._preview_features = await fetchLabFeatures(this.hass);
-    // Sort by integration domain alphabetically
-    this._preview_features.sort((a, b) => a.domain.localeCompare(b.domain));
+  private async _loadTranslations(): Promise<void> {
     await Promise.all([
       this.hass.loadBackendTranslation("preview_features"),
       this.hass.loadBackendTranslation("title"),
     ]);
-  }
-
-  private async _subscribeToLabsUpdates(): Promise<void> {
-    this._unsubscribe = await this.hass.connection.subscribeEvents(
-      () => this._loadPreviewFeatures(),
-      "labs_updated"
-    );
   }
 
   protected render() {
@@ -362,9 +351,7 @@ class HaConfigLabs extends LitElement {
       closeLabsProgressDialog();
     }
 
-    await this._loadPreviewFeatures();
-
-    // Show success toast after dialog is dismissed
+    // Show success toast - collection will auto-update via labs_updated event
     showToast(this, {
       message: this.hass.localize(
         enabled
