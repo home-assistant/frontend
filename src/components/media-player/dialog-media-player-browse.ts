@@ -254,21 +254,13 @@ class DialogMediaPlayerBrowse extends LitElement {
           ha-dialog {
             --mdc-dialog-max-width: 800px;
             --mdc-dialog-max-height: calc(
-              100vh -
-                72px - var(--safe-area-inset-top, var(--ha-space-0)) - var(
-                  --safe-area-inset-bottom,
-                  var(--ha-space-0)
-                )
+              100vh - var(--ha-space-18) - var(--safe-area-inset-y)
             );
           }
           ha-media-player-browse {
             position: initial;
             --media-browser-max-height: calc(
-              100vh -
-                145px - var(--safe-area-inset-top, var(--ha-space-0)) - var(
-                  --safe-area-inset-bottom,
-                  var(--ha-space-0)
-                )
+              100vh - 145px - var(--safe-area-inset-y)
             );
             width: 700px;
           }

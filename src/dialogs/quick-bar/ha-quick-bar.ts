@@ -1015,7 +1015,9 @@ export class QuickBar extends LitElement {
           ha-dialog {
             --mdc-dialog-max-width: 800px;
             --mdc-dialog-min-width: 500px;
-            --mdc-dialog-max-height: calc(100% - var(--ha-space-18));
+            --mdc-dialog-max-height: calc(
+              100vh - var(--ha-space-18) - var(--safe-area-inset-y)
+            );
           }
         }
 

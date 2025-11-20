@@ -232,7 +232,9 @@ class DialogZHAManageZigbeeDevice extends LitElement {
           ha-dialog {
             --mdc-dialog-min-width: 560px;
             --mdc-dialog-max-width: 560px;
-            --mdc-dialog-max-height: calc(100% - 72px);
+            --mdc-dialog-max-height: calc(
+              100vh - var(--ha-space-18) - var(--safe-area-inset-y)
+            );
           }
         }
 

@@ -315,7 +315,9 @@ class DialogMediaManage extends LitElement {
         @media (min-width: 800px) {
           ha-dialog {
             --mdc-dialog-max-width: 800px;
-            --mdc-dialog-max-height: calc(100vh - 72px);
+            --mdc-dialog-max-height: calc(
+              100vh - var(--ha-space-18) - var(--safe-area-inset-y)
+            );
           }
         }
 

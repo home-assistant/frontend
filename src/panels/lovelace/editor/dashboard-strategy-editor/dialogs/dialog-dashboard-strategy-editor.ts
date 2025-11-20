@@ -234,7 +234,9 @@ class DialogDashboardStrategyEditor extends LitElement {
             640px,
             calc(100vw - var(--safe-area-inset-x))
           );
-          --mdc-dialog-max-height: calc(100% - 80px);
+          --mdc-dialog-max-height: calc(
+            100vh - var(--ha-space-20) - var(--safe-area-inset-y)
+          );
         }
 
         @media all and (max-width: 450px), all and (max-height: 500px) {
