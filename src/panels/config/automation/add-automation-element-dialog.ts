@@ -1247,7 +1247,15 @@ class DialogAddAutomationElement
       <div
         class=${classMap({
           content: true,
-          column: this._filter || (this._narrow && this._selectedTarget),
+          column:
+            this._filter ||
+            (this._narrow &&
+              this._selectedTarget &&
+              Object.values(this._selectedTarget)[0] &&
+              !this._getAddFromTargetHidden(
+                this._narrow,
+                this._selectedTarget
+              )),
         })}
       >
         ${this._filter
@@ -1258,7 +1266,10 @@ class DialogAddAutomationElement
                 .value=${this._selectedTarget}
                 @value-changed=${this._handleTargetSelected}
                 .narrow=${this._narrow}
-                class=${this._getAddFromTargetHidden()}
+                class=${this._getAddFromTargetHidden(
+                  this._narrow,
+                  this._selectedTarget
+                )}
                 .manifests=${this._manifests}
               ></ha-automation-add-from-target>`
             : html`
@@ -2293,41 +2304,42 @@ class DialogAddAutomationElement
     }
   );
 
-  private _getAddFromTargetHidden() {
-    if (this._narrow && this._selectedTarget) {
-      const [targetType, targetId] = this._extractTypeAndIdFromTarget(
-        this._selectedTarget
-      );
+  private _getAddFromTargetHidden = memoizeOne(
+    (narrow: boolean, target?: SingleHassServiceTarget) => {
+      if (narrow && target) {
+        const [targetType, targetId] = this._extractTypeAndIdFromTarget(target);
 
-      if (
-        targetId &&
-        ((targetType === "floor" &&
-          !(
-            this._getFloorAreaLookupMemoized(this.hass.areas)[targetId]
-              ?.length > 0
-          )) ||
-          (targetType === "area" &&
+        if (
+          targetId &&
+          ((targetType === "floor" &&
             !(
-              this._getAreaDeviceLookupMemoized(this.hass.devices)[targetId]
-                ?.length > 0
-            ) &&
-            !(
-              this._getAreaEntityLookupMemoized(this.hass.entities)[targetId]
+              this._getFloorAreaLookupMemoized(this.hass.areas)[targetId]
                 ?.length > 0
             )) ||
-          (targetType === "device" &&
-            !(
-              this._getDeviceEntityLookupMemoized(this.hass.entities)[targetId]
-                ?.length > 0
-            )) ||
-          targetType === "entity")
-      ) {
-        return "hidden";
+            (targetType === "area" &&
+              !(
+                this._getAreaDeviceLookupMemoized(this.hass.devices)[targetId]
+                  ?.length > 0
+              ) &&
+              !(
+                this._getAreaEntityLookupMemoized(this.hass.entities)[targetId]
+                  ?.length > 0
+              )) ||
+            (targetType === "device" &&
+              !(
+                this._getDeviceEntityLookupMemoized(this.hass.entities)[
+                  targetId
+                ]?.length > 0
+              )) ||
+            targetType === "entity")
+        ) {
+          return "hidden";
+        }
       }
-    }
 
-    return "";
-  }
+      return "";
+    }
+  );
 
   private async _loadConfigEntries() {
     const configEntries = await getConfigEntries(this.hass);
@@ -2422,12 +2434,6 @@ class DialogAddAutomationElement
           display: none;
         }
 
-        @media all and (max-width: 870px), all and (max-height: 500px) {
-          ha-automation-add-from-target {
-            overflow: hidden;
-          }
-        }
-
         .groups {
           --md-list-item-leading-space: var(--ha-space-3);
           --md-list-item-trailing-space: var(--md-list-item-leading-space);
@@ -2465,6 +2471,12 @@ class DialogAddAutomationElement
         .content.column ha-automation-add-from-target,
         .content.column .items {
           flex: none;
+        }
+        .content.column .items {
+          min-height: 160px;
+        }
+        .content.column ha-automation-add-from-target {
+          overflow: hidden;
         }
 
         ha-wa-dialog .items {
