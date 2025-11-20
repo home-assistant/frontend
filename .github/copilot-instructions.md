@@ -220,8 +220,20 @@ fireEvent(this, "show-dialog", {
 - Use `header-subtitle` attribute for simple subtitles
 - Use slots for custom content where the standard attributes are not enough
 - Use `ha-dialog-footer` with `primaryAction`/`secondaryAction` slots for footer content
-    - Follow the design guidelines for button appearance and variant types.
 - Add `autofocus` to first focusable element (e.g., `<ha-form autofocus>`). The component may need to forward this attribute internally.
+
+**Dialog Sizing:**
+
+- Use `width` attribute with predefined sizes: `"small"` (320px), `"medium"` (560px - default), `"large"` (720px), or `"full"`
+- Custom sizing is NOT recommended - use the standard width presets
+- Example: `<ha-wa-dialog width="small">` for alert/confirmation dialogs
+
+**Button Appearance Guidelines:**
+
+- **Primary action buttons**: Default appearance (no appearance attribute) or omit for standard styling
+- **Secondary action buttons**: Use `appearance="plain"` for cancel/dismiss actions
+- **Destructive actions**: Use `appearance="filled"` for delete/remove operations (combined with appropriate semantic styling)
+- Always place primary action in `slot="primaryAction"` and secondary in `slot="secondaryAction"` within `ha-dialog-footer`
 
 **Recent Examples:**
 
