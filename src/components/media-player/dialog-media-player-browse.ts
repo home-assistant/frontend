@@ -237,9 +237,7 @@ class DialogMediaPlayerBrowse extends LitElement {
         }
 
         :host(.opened) ha-media-player-browse {
-          height: calc(
-            100vh - 65px - var(--safe-area-inset-y)
-          );
+          height: calc(100vh - 65px - var(--safe-area-inset-y));
         }
 
         @media (min-width: 800px) {
