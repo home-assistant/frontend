@@ -625,7 +625,6 @@ export class HaAssistChat extends LitElement {
       margin-inline-start: 24px;
       margin-inline-end: initial;
       align-self: flex-end;
-      text-align: left;
       border-bottom-right-radius: 0px;
       --markdown-link-color: var(--text-primary-color);
       background-color: var(--chat-background-color-user, var(--primary-color));
