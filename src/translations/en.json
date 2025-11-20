@@ -9470,7 +9470,8 @@
           "energy_devices_detail_graph_title": "Individual devices detail usage",
           "energy_sankey_title": "Energy flow",
           "energy_top_consumers_title": "Top consumers",
-          "power_sankey_title": "Current power flow"
+          "power_sankey_title": "Current power flow",
+          "power_sources_graph_title": "Power sources"
         }
       },
       "history": {
