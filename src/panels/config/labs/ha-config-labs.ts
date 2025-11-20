@@ -38,9 +38,8 @@ class HaConfigLabs extends SubscribeMixin(LitElement) {
   public hassSubscribe() {
     return [
       subscribeLabFeatures(this.hass.connection, (features) => {
-        this._preview_features = features;
         // Sort by integration domain alphabetically
-        this._preview_features.sort((a, b) => a.domain.localeCompare(b.domain));
+        this._preview_features = features.sort((a, b) => a.domain.localeCompare(b.domain));
       }),
     ];
   }
