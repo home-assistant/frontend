@@ -9,7 +9,10 @@ import "../../components/ha-dialog-header";
 import "../../components/ha-fade-in";
 import "../../components/ha-icon-button";
 import "../../components/ha-items-display-editor";
-import type { DisplayValue } from "../../components/ha-items-display-editor";
+import type {
+  DisplayItem,
+  DisplayValue,
+} from "../../components/ha-items-display-editor";
 import "../../components/ha-md-button-menu";
 import "../../components/ha-md-dialog";
 import type { HaMdDialog } from "../../components/ha-md-dialog";
@@ -26,6 +29,7 @@ import {
   getPanelIcon,
   getPanelIconPath,
   getPanelTitle,
+  SHOW_AFTER_SPACER_PANELS,
 } from "../../data/panel";
 import type { HomeAssistant } from "../../types";
 import { showConfirmationDialog } from "../generic/show-dialog-box";
@@ -113,27 +117,38 @@ class DialogEditSidebar extends LitElement {
       this.hass.locale
     );
 
-    // Add default hidden panels that are missing in hidden
+    const orderSet = new Set(this._order);
+    const hiddenSet = new Set(this._hidden);
+
     for (const panel of panels) {
       if (
         panel.default_visible === false &&
-        !this._order.includes(panel.url_path) &&
-        !this._hidden.includes(panel.url_path)
+        !orderSet.has(panel.url_path) &&
+        !hiddenSet.has(panel.url_path)
       ) {
-        this._hidden.push(panel.url_path);
+        hiddenSet.add(panel.url_path);
       }
     }
 
+    if (hiddenSet.has(defaultPanel)) {
+      hiddenSet.delete(defaultPanel);
+    }
+
+    const hiddenPanels = Array.from(hiddenSet);
+
     const items = [
       ...beforeSpacer,
-      ...panels.filter((panel) => this._hidden!.includes(panel.url_path)),
+      ...panels.filter((panel) => hiddenPanels.includes(panel.url_path)),
       ...afterSpacer,
-    ].map((panel) => ({
+    ].map<DisplayItem>((panel) => ({
       value: panel.url_path,
-      label: getPanelTitle(this.hass, panel) || panel.title,
+      label:
+        (getPanelTitle(this.hass, panel) || panel.url_path) +
+        `${defaultPanel === panel.url_path ? " (default)" : ""}`,
       icon: getPanelIcon(panel),
       iconPath: getPanelIconPath(panel),
-      disableSorting: panel.url_path === "developer-tools",
+      disableSorting: SHOW_AFTER_SPACER_PANELS.includes(panel.url_path),
+      disableHiding: panel.url_path === defaultPanel,
     }));
 
     return html`
@@ -141,7 +156,7 @@ class DialogEditSidebar extends LitElement {
         .hass=${this.hass}
         .value=${{
           order: this._order,
-          hidden: this._hidden,
+          hidden: hiddenPanels,
         }}
         .items=${items}
         @value-changed=${this._changed}
