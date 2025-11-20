@@ -61,6 +61,14 @@ import { lovelaceTabs } from "../ha-config-lovelace";
 import { showDashboardConfigureStrategyDialog } from "./show-dialog-lovelace-dashboard-configure-strategy";
 import { showDashboardDetailDialog } from "./show-dialog-lovelace-dashboard-detail";
 
+export const PANEL_DASHBOARDS = [
+  "home",
+  "light",
+  "security",
+  "climate",
+  "energy",
+] as string[];
+
 type DataTableItem = Pick<
   LovelaceDashboard,
   "icon" | "title" | "show_in_sidebar" | "require_admin" | "mode" | "url_path"
@@ -316,7 +324,7 @@ export class HaConfigLovelaceDashboards extends LitElement {
         },
       ];
 
-      ["home", "light", "security", "climate", "energy"].forEach((panel) => {
+      PANEL_DASHBOARDS.forEach((panel) => {
         const panelInfo = this.hass.panels[panel];
         if (!panel) {
           return;
