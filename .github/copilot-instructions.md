@@ -165,18 +165,18 @@ try {
 static get styles() {
   return css`
     :host {
-      padding: var(--ha-space-16);
+      padding: var(--ha-space-4);
       color: var(--primary-text-color);
       background-color: var(--card-background-color);
     }
 
     .content {
-      gap: var(--ha-space-8);
+      gap: var(--ha-space-2);
     }
 
     @media (max-width: 600px) {
       :host {
-        padding: var(--ha-space-8);
+        padding: var(--ha-space-2);
       }
     }
   `;
