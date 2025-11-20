@@ -195,7 +195,6 @@ export class DialogLabsPreviewFeatureEnable
     div[slot="actions"] {
       display: flex;
       flex-direction: column;
-      gap: 0;
       padding: 0;
     }
 
