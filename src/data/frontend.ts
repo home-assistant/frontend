@@ -3,7 +3,7 @@ import type { Connection } from "home-assistant-js-websocket";
 export interface CoreFrontendUserData {
   showAdvanced?: boolean;
   showEntityIdPicker?: boolean;
-  defaultPanel?: string;
+  default_panel?: string;
 }
 
 export interface SidebarFrontendUserData {
@@ -12,7 +12,7 @@ export interface SidebarFrontendUserData {
 }
 
 export interface CoreFrontendSystemData {
-  defaultPanel?: string;
+  default_panel?: string;
 }
 
 export interface HomeFrontendSystemData {

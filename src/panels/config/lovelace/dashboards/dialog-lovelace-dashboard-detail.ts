@@ -62,7 +62,7 @@ export class DialogLovelaceDashboardDetail extends LitElement {
       return nothing;
     }
     const defaultPanelUrlPath =
-      this.hass.systemData?.defaultPanel || DEFAULT_PANEL;
+      this.hass.systemData?.default_panel || DEFAULT_PANEL;
     const titleInvalid = !this._data.title || !this._data.title.trim();
 
     return html`
@@ -260,7 +260,7 @@ export class DialogLovelaceDashboardDetail extends LitElement {
       return;
     }
 
-    const defaultPanel = this.hass.systemData?.defaultPanel || DEFAULT_PANEL;
+    const defaultPanel = this.hass.systemData?.default_panel || DEFAULT_PANEL;
     // Add warning dialog to saying that this will change the default dashboard for all users
     const confirm = await showConfirmationDialog(this, {
       title: this.hass.localize(
@@ -284,7 +284,7 @@ export class DialogLovelaceDashboardDetail extends LitElement {
 
     saveFrontendSystemData(this.hass.connection, "core", {
       ...this.hass.systemData,
-      defaultPanel: urlPath === defaultPanel ? undefined : urlPath,
+      default_panel: urlPath === defaultPanel ? undefined : urlPath,
     });
   }
 
