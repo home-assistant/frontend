@@ -227,7 +227,7 @@ export class HomeMainViewStrategy extends ReactiveElement {
       cards: [
         {
           type: "heading",
-          heading: "For you",
+          heading: hass.localize("ui.panel.lovelace.strategy.home.for_you"),
           heading_style: "title",
         },
       ],
@@ -298,8 +298,8 @@ export class HomeMainViewStrategy extends ReactiveElement {
       },
       sidebar: {
         sections: [forYouSection],
-        content_label: "Home",
-        sidebar_label: "For you",
+        content_label: hass.localize("ui.panel.lovelace.strategy.home.home"),
+        sidebar_label: hass.localize("ui.panel.lovelace.strategy.home.for_you"),
       },
     };
   }
