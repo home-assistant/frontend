@@ -208,7 +208,7 @@ export class HaConfigFlowCard extends LitElement {
   // Return an application credentials id for this config entry to prompt the
   // user for removal. This is best effort so we don't stop overall removal
   // if the integration isn't loaded or there is some other error.
-  private async _applicationCredentialForRemove(entryId: string) {
+  private async _fetchApplicationCredentials(entryId: string) {
     try {
       return (await fetchApplicationCredentialsConfigEntry(this.hass, entryId))
         .application_credentials_id;
@@ -272,7 +272,7 @@ export class HaConfigFlowCard extends LitElement {
     }
 
     const applicationCredentialsId =
-      await this._applicationCredentialForRemove(entryId);
+      await this._fetchApplicationCredentials(entryId);
 
     const confirmed = await showConfirmationDialog(this, {
       title: this.hass.localize(
