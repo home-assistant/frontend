@@ -204,7 +204,7 @@ export class DialogLabsPreviewFeatureEnable
       --md-list-item-trailing-space: var(--ha-space-6);
       margin: 0;
       padding: 0;
-      border-top: 1px solid var(--divider-color);
+      border-top: var(--ha-border-width-sm) solid var(--divider-color);
     }
 
     div[slot="actions"] > div {
