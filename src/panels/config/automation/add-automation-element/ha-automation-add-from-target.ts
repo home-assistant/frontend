@@ -63,10 +63,9 @@ import {
   getLabels,
   type LabelRegistryEntry,
 } from "../../../../data/label_registry";
+import { TARGET_SEPARATOR } from "../../../../data/target";
 import type { HomeAssistant } from "../../../../types";
 import { brandsUrl } from "../../../../util/brands-url";
-
-export const TARGET_SEPARATOR = "________";
 
 interface Level1Entries {
   open: boolean;

@@ -12,6 +12,8 @@ import type {
   EntityRegistryDisplayEntry,
 } from "./entity_registry";
 
+export const TARGET_SEPARATOR = "________";
+
 export type TargetType = "entity" | "device" | "area" | "label" | "floor";
 export type TargetTypeFloorless = Exclude<TargetType, "floor">;
 

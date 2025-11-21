@@ -118,6 +118,7 @@ import {
   type LabelRegistryEntry,
 } from "../../../data/label_registry";
 import {
+  TARGET_SEPARATOR,
   getServicesForTarget,
   getTargetComboBoxItemType,
   getTriggersForTarget,
@@ -137,8 +138,8 @@ import type { HomeAssistant } from "../../../types";
 import { brandsUrl } from "../../../util/brands-url";
 import { isMac } from "../../../util/is_mac";
 import { showToast } from "../../../util/toast";
+import "./add-automation-element/ha-automation-add-from-target";
 import type HaAutomationAddFromTarget from "./add-automation-element/ha-automation-add-from-target";
-import { TARGET_SEPARATOR } from "./add-automation-element/ha-automation-add-from-target";
 import type { AddAutomationElementDialogParams } from "./show-add-automation-element-dialog";
 import { PASTE_VALUE } from "./show-add-automation-element-dialog";
 
