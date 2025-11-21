@@ -1493,7 +1493,11 @@ class DialogAddAutomationElement
               .group=${item.group}
               @click=${this._selected}
             >
-              <div slot="headline">${item.name}</div>
+              <div slot="headline" class="item-headline">
+                ${item.name}${this._tab === "targets" && this._selectedTarget
+                  ? this._renderTarget(this._selectedTarget)
+                  : nothing}
+              </div>
               <div slot="supporting-text">${item.description}</div>
               ${item.icon
                 ? html`<span slot="start">${item.icon}</span>`
@@ -2632,6 +2636,13 @@ class DialogAddAutomationElement
           border-bottom: 1px solid var(--ha-color-border-neutral-quiet);
         }
 
+        .items .item-headline {
+          display: flex;
+          align-items: center;
+          gap: var(--ha-space-1);
+          min-height: var(--ha-space-9);
+        }
+
         ha-icon-next {
           width: var(--ha-space-6);
         }
@@ -2737,6 +2748,9 @@ class DialogAddAutomationElement
           padding: var(--ha-space-1) 0;
         }
 
+        .selected-target state-badge {
+          --mdc-icon-size: 20px;
+        }
         .selected-target state-badge,
         .selected-target img {
           width: 24px;
