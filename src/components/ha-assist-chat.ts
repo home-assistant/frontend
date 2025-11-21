@@ -17,6 +17,7 @@ import type { HomeAssistant } from "../types";
 import { AudioRecorder } from "../util/audio-recorder";
 import { documentationUrl } from "../util/documentation-url";
 import "./ha-alert";
+import "./ha-markdown";
 import "./ha-textfield";
 import type { HaTextField } from "./ha-textfield";
 
@@ -40,7 +41,11 @@ export class HaAssistChat extends LitElement {
 
   @query("#message-input") private _messageInput!: HaTextField;
 
-  @query("#scroll-container") private _scrollContainer!: HTMLDivElement;
+  @query(".message:last-child")
+  private _lastChatMessage!: LitElement;
+
+  @query(".message:last-child img:last-of-type")
+  private _lastChatMessageImage: HTMLImageElement | undefined;
 
   @state() private _conversation: AssistMessage[] = [];
 
@@ -92,10 +97,7 @@ export class HaAssistChat extends LitElement {
   public disconnectedCallback() {
     super.disconnectedCallback();
     this._audioRecorder?.close();
-    this._audioRecorder = undefined;
     this._unloadAudio();
-    this._conversation = [];
-    this._conversationId = null;
   }
 
   protected render(): TemplateResult {
@@ -112,7 +114,7 @@ export class HaAssistChat extends LitElement {
     const supportsSTT = this.pipeline?.stt_engine && !this.disableSpeech;
 
     return html`
-      <div class="messages" id="scroll-container">
+      <div class="messages">
         ${controlHA
           ? nothing
           : html`
@@ -124,11 +126,18 @@ export class HaAssistChat extends LitElement {
             `}
         <div class="spacer"></div>
         ${this._conversation!.map(
-          // New lines matter for messages
-          // prettier-ignore
           (message) => html`
-                <div class="message ${classMap({ error: !!message.error, [message.who]: true })}">${message.text}</div>
-              `
+            <ha-markdown
+              class="message ${classMap({
+                error: !!message.error,
+                [message.who]: true,
+              })}"
+              breaks
+              cache
+              .content=${message.text}
+            >
+            </ha-markdown>
+          `
         )}
       </div>
       <div class="input" slot="primaryAction">
@@ -189,12 +198,28 @@ export class HaAssistChat extends LitElement {
     `;
   }
 
-  private _scrollMessagesBottom() {
-    const scrollContainer = this._scrollContainer;
-    if (!scrollContainer) {
-      return;
+  private async _scrollMessagesBottom() {
+    const lastChatMessage = this._lastChatMessage;
+    if (!lastChatMessage.hasUpdated) {
+      await lastChatMessage.updateComplete;
     }
-    scrollContainer.scrollTo(0, scrollContainer.scrollHeight);
+    if (
+      this._lastChatMessageImage &&
+      !this._lastChatMessageImage.naturalHeight
+    ) {
+      try {
+        await this._lastChatMessageImage.decode();
+      } catch (err: any) {
+        // eslint-disable-next-line no-console
+        console.warn("Failed to decode image:", err);
+      }
+    }
+    const isLastMessageFullyVisible =
+      lastChatMessage.getBoundingClientRect().y <
+      this.getBoundingClientRect().top + 24;
+    if (!isLastMessageFullyVisible) {
+      lastChatMessage.scrollIntoView({ behavior: "smooth", block: "start" });
+    }
   }
 
   private _handleKeyUp(ev: KeyboardEvent) {
@@ -586,42 +611,31 @@ export class HaAssistChat extends LitElement {
       flex: 1;
     }
     .message {
-      white-space: pre-line;
       font-size: var(--ha-font-size-l);
       clear: both;
+      max-width: -webkit-fill-available;
+      overflow-wrap: break-word;
+      scroll-margin-top: 24px;
       margin: 8px 0;
       padding: 8px;
       border-radius: var(--ha-border-radius-xl);
     }
-    .message:last-child {
-      margin-bottom: 0;
-    }
-
     @media all and (max-width: 450px), all and (max-height: 500px) {
       .message {
         font-size: var(--ha-font-size-l);
       }
     }
-
-    .message p {
-      margin: 0;
-    }
-    .message p:not(:last-child) {
-      margin-bottom: 8px;
-    }
-
     .message.user {
       margin-left: 24px;
       margin-inline-start: 24px;
       margin-inline-end: initial;
       align-self: flex-end;
-      text-align: right;
       border-bottom-right-radius: 0px;
+      --markdown-link-color: var(--text-primary-color);
       background-color: var(--chat-background-color-user, var(--primary-color));
       color: var(--text-primary-color);
       direction: var(--direction);
     }
-
     .message.hass {
       margin-right: 24px;
       margin-inline-end: 24px;
@@ -636,20 +650,21 @@ export class HaAssistChat extends LitElement {
       color: var(--primary-text-color);
       direction: var(--direction);
     }
-
-    .message.user a {
-      color: var(--text-primary-color);
-    }
-
-    .message.hass a {
-      color: var(--primary-text-color);
-    }
-
     .message.error {
       background-color: var(--error-color);
       color: var(--text-primary-color);
     }
-
+    ha-markdown {
+      --markdown-image-border-radius: calc(var(--ha-border-radius-xl) / 2);
+      --markdown-table-border-color: var(--divider-color);
+      --markdown-code-background-color: var(--primary-background-color);
+      --markdown-code-text-color: var(--primary-text-color);
+      &:not(:has(ha-markdown-element)) {
+        min-height: 1lh;
+        min-width: 1lh;
+        flex-shrink: 0;
+      }
+    }
     .bouncer {
       width: 48px;
       height: 48px;
