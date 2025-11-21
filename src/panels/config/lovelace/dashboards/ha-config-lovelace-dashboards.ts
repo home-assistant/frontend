@@ -404,7 +404,7 @@ export class HaConfigLovelaceDashboards extends LitElement {
       return html` <hass-loading-screen></hass-loading-screen> `;
     }
 
-    const defaultPanel = this.hass.systemData?.defaultPanel || DEFAULT_PANEL;
+    const defaultPanel = this.hass.systemData?.default_panel || DEFAULT_PANEL;
 
     return html`
       <hass-tabs-subpage-data-table
