@@ -237,20 +237,25 @@ export const scrollableFadeStyles = css`
     right: 1px;
     height: 16px;
     pointer-events: none;
-    transition: box-shadow 180ms ease-in-out;
-    background-color: var(
-      --ha-dialog-surface-background,
-      var(--card-background-color, var(--mdc-theme-surface, #fff))
+    transition: opacity 180ms ease-in-out;
+    background: linear-gradient(
+      to bottom,
+      var(
+        --ha-dialog-surface-background,
+        var(--card-background-color, var(--mdc-theme-surface, #fff))
+      ),
+      transparent
     );
     transform: rotate(180deg);
     border-radius: var(--ha-card-border-radius, var(--ha-border-radius-lg));
     border-bottom-left-radius: var(--ha-border-radius-square);
     border-bottom-right-radius: var(--ha-border-radius-square);
     z-index: 100;
+    opacity: 0;
   }
 
   .fade.scrollable {
-    box-shadow: var(--bar-box-shadow);
+    opacity: 1;
   }
 
   @media all and (max-width: 870px) {
