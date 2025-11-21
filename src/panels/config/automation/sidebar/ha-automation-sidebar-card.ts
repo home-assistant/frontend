@@ -71,9 +71,7 @@ export default class HaAutomationSidebarCard extends LitElement {
           yaml: this.yamlMode,
         })}
       >
-        <ha-dialog-header
-          class=${classMap({ scrolled: this._contentScrolled })}
-        >
+        <ha-dialog-header>
           <ha-icon-button
             slot="navigationIcon"
             .label=${this.hass.localize("ui.common.close")}
@@ -110,10 +108,23 @@ export default class HaAutomationSidebarCard extends LitElement {
           : nothing}
         <div class="card-content" @scroll=${this._onScroll}>
           <slot></slot>
+          <div
+            class=${classMap({
+              "fade-top": true,
+              rounded: this.isWide,
+              visible: true,
+              // visible: this._contentScrolled,
+            })}
+          ></div>
+          <div
+            class=${classMap({
+              "fade-bottom": true,
+              rounded: this.isWide,
+              visible: true,
+              // visible: this._contentScrollable,
+            })}
+          ></div>
         </div>
-        <div
-          class=${classMap({ fade: true, scrollable: this._contentScrollable })}
-        ></div>
       </ha-card>
     `;
   }
@@ -171,8 +182,6 @@ export default class HaAutomationSidebarCard extends LitElement {
 
       ha-dialog-header {
         border-radius: var(--ha-card-border-radius);
-        box-shadow: none;
-        transition: box-shadow 180ms ease-in-out;
         border-bottom-left-radius: 0;
         border-bottom-right-radius: 0;
         position: relative;
@@ -182,11 +191,8 @@ export default class HaAutomationSidebarCard extends LitElement {
         );
       }
 
-      ha-dialog-header.scrolled {
-        box-shadow: var(--bar-box-shadow);
-      }
-
       .card-content {
+        position: relative;
         flex: 1 1 auto;
         min-height: 0;
         overflow: auto;
