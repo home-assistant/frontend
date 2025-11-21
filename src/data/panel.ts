@@ -1,3 +1,15 @@
+import {
+  mdiAccount,
+  mdiCalendar,
+  mdiChartBox,
+  mdiClipboardList,
+  mdiFormatListBulletedType,
+  mdiHammer,
+  mdiLightningBolt,
+  mdiPlayBoxMultiple,
+  mdiTooltipAccount,
+  mdiViewDashboard,
+} from "@mdi/js";
 import type { HomeAssistant, PanelInfo } from "../types";
 
 /** Panel to show when no panel is picked. */
@@ -60,7 +72,7 @@ export const getPanelTitleFromUrlPath = (
   return getPanelTitle(hass, panel);
 };
 
-export const getPanelIcon = (panel: PanelInfo): string | null => {
+export const getPanelIcon = (panel: PanelInfo): string | undefined => {
   if (!panel.icon) {
     switch (panel.component_name) {
       case "profile":
@@ -70,5 +82,24 @@ export const getPanelIcon = (panel: PanelInfo): string | null => {
     }
   }
 
-  return panel.icon;
+  return panel.icon || undefined;
 };
+
+export const PANEL_ICON_PATHS = {
+  calendar: mdiCalendar,
+  "developer-tools": mdiHammer,
+  energy: mdiLightningBolt,
+  history: mdiChartBox,
+  logbook: mdiFormatListBulletedType,
+  lovelace: mdiViewDashboard,
+  profile: mdiAccount,
+  map: mdiTooltipAccount,
+  "media-browser": mdiPlayBoxMultiple,
+  todo: mdiClipboardList,
+};
+
+export const getPanelIconPath = (panel: PanelInfo): string | undefined =>
+  PANEL_ICON_PATHS[panel.url_path];
+
+export const FIXED_PANELS = ["profile", "config"];
+export const SHOW_AFTER_SPACER_PANELS = ["developer-tools"];
