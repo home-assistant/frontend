@@ -298,6 +298,8 @@ export class HomeMainViewStrategy extends ReactiveElement {
       },
       sidebar: {
         sections: [forYouSection],
+        content_label: "Home",
+        sidebar_label: "For you",
       },
     };
   }
