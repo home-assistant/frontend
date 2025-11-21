@@ -38,13 +38,13 @@ export const showSubConfigFlowDialog = (
       return step;
     },
     fetchFlow: async (hass, flowId) => {
-      const step = await fetchSubConfigFlow(hass, flowId);
-      await hass.loadFragmentTranslation("config");
-      await hass.loadBackendTranslation(
-        "config_subentries",
-        configEntry.domain
-      );
-      await hass.loadBackendTranslation("selector", configEntry.domain);
+      const [step] = await Promise.all([
+        fetchSubConfigFlow(hass, flowId),
+        hass.loadFragmentTranslation("config"),
+        hass.loadBackendTranslation("config_subentries", configEntry.domain),
+        hass.loadBackendTranslation("selector", configEntry.domain),
+      ]);
+      flowType = step.handler[1]; // Update flowType based on fetched step
       return step;
     },
     handleFlowStep: handleSubConfigFlowStep,
