@@ -28,7 +28,7 @@ export class DemoHaDropdown extends LitElement {
           <div class=${mode}>
             <ha-card header="ha-button in ${mode}">
               <div class="card-content">
-                <ha-dropdown open>
+                <ha-dropdown>
                   <ha-button slot="trigger" with-caret>Dropdown</ha-button>
 
                   <ha-dropdown-item>
