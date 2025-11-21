@@ -3514,6 +3514,7 @@
               "title": "Title",
               "title_required": "Title is required.",
               "url": "URL",
+              "url_already_exists": "The {url} URL is already in use. Please choose a different one.",
               "url_error_msg": "The URL should contain a - and cannot contain spaces or special characters, except for _ and -",
               "require_admin": "Admin only",
               "delete": "Delete",
