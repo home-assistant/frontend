@@ -21,12 +21,20 @@ export interface HassioStats {
 export const hassioApiResultExtractor = <T>(response: HassioResponse<T>) =>
   response.data;
 
-export const extractApiErrorMessage = (error: any): string =>
-  typeof error === "object"
+export const extractApiErrorMessage = (
+  error: any,
+  isSupervisor?: boolean
+): string => {
+  let errorMessage;
+  if (isSupervisor ?? true) errorMessage = "Unknown error, see supervisor logs";
+  else errorMessage = "Unknown error";
+
+  return typeof error === "object"
     ? typeof error.body === "object"
-      ? error.body.message || "Unknown error, see supervisor logs"
-      : error.body || error.message || "Unknown error, see supervisor logs"
+      ? error.body.message || errorMessage
+      : error.body || error.message || errorMessage
     : error;
+};
 
 const ignoredStatusCodes = new Set([502, 503, 504]);
 
