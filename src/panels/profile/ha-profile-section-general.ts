@@ -31,6 +31,7 @@ import "./ha-pick-time-zone-row";
 import "./ha-push-notifications-row";
 import "./ha-set-suspend-row";
 import "./ha-set-vibrate-row";
+import "./ha-set-winter-mode-row";
 
 @customElement("ha-profile-section-general")
 class HaProfileSectionGeneral extends LitElement {
@@ -240,6 +241,10 @@ class HaProfileSectionGeneral extends LitElement {
               .narrow=${this.narrow}
               .hass=${this.hass}
             ></ha-set-suspend-row>
+            <ha-set-winter-mode-row
+              .narrow=${this.narrow}
+              .hass=${this.hass}
+            ></ha-set-winter-mode-row>
             ${!isMobileClient
               ? html`
                   <ha-enable-shortcuts-row
