@@ -87,6 +87,7 @@ interface Level3Entries {
 
 @customElement("ha-automation-add-from-target")
 export default class HaAutomationAddFromTarget extends LitElement {
+  // #region properties
   @property({ attribute: false }) public hass!: HomeAssistant;
 
   @property({ attribute: false })
@@ -95,6 +96,8 @@ export default class HaAutomationAddFromTarget extends LitElement {
   @property({ type: Boolean }) public narrow = false;
 
   @property({ attribute: false }) public manifests?: DomainManifestLookup;
+
+  // #endregion properties
 
   // #region context
   @state()
@@ -126,6 +129,8 @@ export default class HaAutomationAddFromTarget extends LitElement {
   private _labelRegistry!: LabelRegistryEntry[];
   // #endregion context
 
+  // #region state and variables
+
   @state()
   private _floorAreas: (
     | FloorNestedComboBoxItem
@@ -138,9 +143,11 @@ export default class HaAutomationAddFromTarget extends LitElement {
 
   @state() private _fullHeight = false;
 
-  private _getLabelsMemoized = memoizeOne(getLabels);
-
   private _configEntryLookup: Record<string, ConfigEntry> = {};
+
+  // #endregion state and variables
+
+  // #region lifecycle
 
   public willUpdate(changedProps: PropertyValues) {
     super.willUpdate(changedProps);
@@ -170,6 +177,17 @@ export default class HaAutomationAddFromTarget extends LitElement {
     await this._loadConfigEntries();
     this._getTreeData();
   }
+
+  private async _setShowTargetShowMoreButton() {
+    await this.updateComplete;
+    this._showShowMoreButton =
+      this.narrow &&
+      this.value &&
+      !!Object.values(this.value)[0] &&
+      this.scrollHeight > this.clientHeight;
+  }
+
+  // #endregion lifecycle
 
   // #region render
   protected render() {
@@ -811,6 +829,8 @@ export default class HaAutomationAddFromTarget extends LitElement {
 
   // #endregion render
 
+  // #region memoized data helpers
+
   private _getAreaDeviceLookupMemoized = memoizeOne(
     (devices: HomeAssistant["devices"]) =>
       getAreaDeviceLookup(Object.values(devices))
@@ -832,6 +852,16 @@ export default class HaAutomationAddFromTarget extends LitElement {
         ? `${Object.keys(value)[0].replace("_id", "")}${TARGET_SEPARATOR}${Object.values(value)[0]}`
         : undefined
   );
+
+  private _getLabelsMemoized = memoizeOne(getLabels);
+
+  private _formatId = memoizeOne((value: AreaFloorValue): string =>
+    [value.type, value.id].join(TARGET_SEPARATOR)
+  );
+
+  // #endregion memoized data helpers
+
+  // #region data
 
   private _getTreeData() {
     this._floorAreas = getAreasNestedInFloors(
@@ -869,177 +899,6 @@ export default class HaAutomationAddFromTarget extends LitElement {
 
     if (this.value) {
       this._valueChanged(this._getSelectedTargetId(this.value)!, !this.narrow);
-    }
-  }
-
-  private _formatId = memoizeOne((value: AreaFloorValue): string =>
-    [value.type, value.id].join(TARGET_SEPARATOR)
-  );
-
-  private _handleSelectionChange(ev: WaSelectionChangeEvent) {
-    const treeItem = ev.detail.selection[0] as unknown as
-      | { target?: string }
-      | undefined;
-
-    if (treeItem?.target) {
-      this._valueChanged(treeItem.target);
-    }
-  }
-
-  private _selectItem(ev: CustomEvent) {
-    const target = (ev.currentTarget as any).target;
-
-    if (target) {
-      this._valueChanged(target);
-    }
-  }
-
-  private async _valueChanged(itemId: string, expand = false) {
-    const [type, id] = itemId.split(TARGET_SEPARATOR, 2);
-
-    fireEvent(this, "value-changed", {
-      value: { [`${type}_id`]: id || undefined },
-    });
-
-    if (expand && id) {
-      this._expandTreeToItem(type, id);
-      await this.updateComplete;
-      if (type === "label") {
-        this.shadowRoot!.querySelector(
-          "ha-md-list-item.selected"
-        )?.scrollIntoView({
-          block: "center",
-        });
-      } else {
-        this.shadowRoot!.querySelector(
-          "wa-tree-item[selected]"
-        )?.scrollIntoView({
-          block: "center",
-        });
-      }
-    }
-  }
-
-  private _expandTreeToItem(type: string, id: string) {
-    if (type === "floor" || type === "label") {
-      return;
-    }
-
-    if (type === "entity") {
-      const deviceId = this.entities[id]?.device_id;
-      const device = deviceId ? this.devices[deviceId] : undefined;
-      const deviceAreaId = (deviceId && device?.area_id) || undefined;
-
-      if (!deviceAreaId) {
-        let floor: string;
-        let area: string;
-        const entity = this.entities[id];
-
-        if (!deviceId && entity.area_id) {
-          floor = `floor${TARGET_SEPARATOR}${this.areas[entity.area_id]?.floor_id || ""}`;
-          area = `area${TARGET_SEPARATOR}${entity.area_id}`;
-        } else if (!deviceId) {
-          const domain = id.split(".", 1)[0];
-          const isHelper =
-            this.manifests![domain]?.integration_type === "helper";
-
-          floor = isHelper
-            ? `helper${TARGET_SEPARATOR}`
-            : `device${TARGET_SEPARATOR}`;
-          area = `${isHelper ? "helper_" : "entity_"}${domain}${TARGET_SEPARATOR}`;
-        } else {
-          floor = `${device!.entry_type === "service" ? "service" : "area"}${TARGET_SEPARATOR}`;
-          area = deviceId;
-        }
-        this._entries = {
-          ...this._entries,
-          [floor]: {
-            ...this._entries[floor],
-            open: true,
-            devices: {
-              ...this._entries[floor].devices!,
-              [area]: {
-                ...this._entries[floor].devices![area],
-                open: true,
-              },
-            },
-          },
-        };
-        return;
-      }
-
-      const floor = `floor${TARGET_SEPARATOR}${this.areas[deviceAreaId]?.floor_id || ""}`;
-      const area = `area${TARGET_SEPARATOR}${deviceAreaId}`;
-
-      this._entries = {
-        ...this._entries,
-        [floor]: {
-          ...this._entries[floor],
-          open: true,
-          areas: {
-            ...this._entries[floor].areas!,
-            [area]: {
-              ...this._entries[floor].areas![area],
-              open: true,
-              devices: {
-                ...this._entries[floor].areas![area].devices,
-                [deviceId!]: {
-                  ...this._entries[floor].areas![area].devices![deviceId!],
-                  open: true,
-                },
-              },
-            },
-          },
-        },
-      };
-      return;
-    }
-
-    if (type === "device") {
-      const deviceAreaId = this.devices[id]?.area_id;
-
-      if (!deviceAreaId) {
-        const device = this.devices[id];
-        const floor = `${device.entry_type === "service" ? "service" : "area"}${TARGET_SEPARATOR}`;
-        this._entries = {
-          ...this._entries,
-          [floor]: {
-            ...this._entries[floor],
-            open: true,
-          },
-        };
-        return;
-      }
-
-      const floor = `floor${TARGET_SEPARATOR}${this.areas[deviceAreaId]?.floor_id || ""}`;
-      const area = `area${TARGET_SEPARATOR}${deviceAreaId}`;
-
-      this._entries = {
-        ...this._entries,
-        [floor]: {
-          ...this._entries[floor],
-          open: true,
-          areas: {
-            ...this._entries[floor].areas!,
-            [area]: {
-              ...this._entries[floor].areas![area],
-              open: true,
-            },
-          },
-        },
-      };
-      return;
-    }
-
-    if (type === "area") {
-      const floor = `floor${TARGET_SEPARATOR}${this.areas[id]?.floor_id || ""}`;
-      this._entries = {
-        ...this._entries,
-        [floor]: {
-          ...this._entries[floor],
-          open: true,
-        },
-      };
     }
   }
 
@@ -1176,6 +1035,177 @@ export default class HaAutomationAddFromTarget extends LitElement {
       devices,
       entities,
     };
+  }
+
+  private _expandTreeToItem(type: string, id: string) {
+    if (type === "floor" || type === "label") {
+      return;
+    }
+
+    if (type === "entity") {
+      const deviceId = this.entities[id]?.device_id;
+      const device = deviceId ? this.devices[deviceId] : undefined;
+      const deviceAreaId = (deviceId && device?.area_id) || undefined;
+
+      if (!deviceAreaId) {
+        let floor: string;
+        let area: string;
+        const entity = this.entities[id];
+
+        if (!deviceId && entity.area_id) {
+          floor = `floor${TARGET_SEPARATOR}${this.areas[entity.area_id]?.floor_id || ""}`;
+          area = `area${TARGET_SEPARATOR}${entity.area_id}`;
+        } else if (!deviceId) {
+          const domain = id.split(".", 1)[0];
+          const isHelper =
+            this.manifests![domain]?.integration_type === "helper";
+
+          floor = isHelper
+            ? `helper${TARGET_SEPARATOR}`
+            : `device${TARGET_SEPARATOR}`;
+          area = `${isHelper ? "helper_" : "entity_"}${domain}${TARGET_SEPARATOR}`;
+        } else {
+          floor = `${device!.entry_type === "service" ? "service" : "area"}${TARGET_SEPARATOR}`;
+          area = deviceId;
+        }
+        this._entries = {
+          ...this._entries,
+          [floor]: {
+            ...this._entries[floor],
+            open: true,
+            devices: {
+              ...this._entries[floor].devices!,
+              [area]: {
+                ...this._entries[floor].devices![area],
+                open: true,
+              },
+            },
+          },
+        };
+        return;
+      }
+
+      const floor = `floor${TARGET_SEPARATOR}${this.areas[deviceAreaId]?.floor_id || ""}`;
+      const area = `area${TARGET_SEPARATOR}${deviceAreaId}`;
+
+      this._entries = {
+        ...this._entries,
+        [floor]: {
+          ...this._entries[floor],
+          open: true,
+          areas: {
+            ...this._entries[floor].areas!,
+            [area]: {
+              ...this._entries[floor].areas![area],
+              open: true,
+              devices: {
+                ...this._entries[floor].areas![area].devices,
+                [deviceId!]: {
+                  ...this._entries[floor].areas![area].devices![deviceId!],
+                  open: true,
+                },
+              },
+            },
+          },
+        },
+      };
+      return;
+    }
+
+    if (type === "device") {
+      const deviceAreaId = this.devices[id]?.area_id;
+
+      if (!deviceAreaId) {
+        const device = this.devices[id];
+        const floor = `${device.entry_type === "service" ? "service" : "area"}${TARGET_SEPARATOR}`;
+        this._entries = {
+          ...this._entries,
+          [floor]: {
+            ...this._entries[floor],
+            open: true,
+          },
+        };
+        return;
+      }
+
+      const floor = `floor${TARGET_SEPARATOR}${this.areas[deviceAreaId]?.floor_id || ""}`;
+      const area = `area${TARGET_SEPARATOR}${deviceAreaId}`;
+
+      this._entries = {
+        ...this._entries,
+        [floor]: {
+          ...this._entries[floor],
+          open: true,
+          areas: {
+            ...this._entries[floor].areas!,
+            [area]: {
+              ...this._entries[floor].areas![area],
+              open: true,
+            },
+          },
+        },
+      };
+      return;
+    }
+
+    if (type === "area") {
+      const floor = `floor${TARGET_SEPARATOR}${this.areas[id]?.floor_id || ""}`;
+      this._entries = {
+        ...this._entries,
+        [floor]: {
+          ...this._entries[floor],
+          open: true,
+        },
+      };
+    }
+  }
+
+  // #endregion data
+
+  // #region interactions
+
+  private _handleSelectionChange(ev: WaSelectionChangeEvent) {
+    const treeItem = ev.detail.selection[0] as unknown as
+      | { target?: string }
+      | undefined;
+
+    if (treeItem?.target) {
+      this._valueChanged(treeItem.target);
+    }
+  }
+
+  private _selectItem(ev: CustomEvent) {
+    const target = (ev.currentTarget as any).target;
+
+    if (target) {
+      this._valueChanged(target);
+    }
+  }
+
+  private async _valueChanged(itemId: string, expand = false) {
+    const [type, id] = itemId.split(TARGET_SEPARATOR, 2);
+
+    fireEvent(this, "value-changed", {
+      value: { [`${type}_id`]: id || undefined },
+    });
+
+    if (expand && id) {
+      this._expandTreeToItem(type, id);
+      await this.updateComplete;
+      if (type === "label") {
+        this.shadowRoot!.querySelector(
+          "ha-md-list-item.selected"
+        )?.scrollIntoView({
+          block: "center",
+        });
+      } else {
+        this.shadowRoot!.querySelector(
+          "wa-tree-item[selected]"
+        )?.scrollIntoView({
+          block: "center",
+        });
+      }
+    }
   }
 
   private _toggleItem(targetId: string, open: boolean) {
@@ -1445,14 +1475,9 @@ export default class HaAutomationAddFromTarget extends LitElement {
     this.style.setProperty("--max-height", "none");
   }
 
-  private async _setShowTargetShowMoreButton() {
-    await this.updateComplete;
-    this._showShowMoreButton =
-      this.narrow &&
-      this.value &&
-      !!Object.values(this.value)[0] &&
-      this.scrollHeight > this.clientHeight;
-  }
+  // #endregion interactions
+
+  // #region styles
 
   static styles = css`
     :host {
@@ -1570,6 +1595,8 @@ export default class HaAutomationAddFromTarget extends LitElement {
       }
     }
   `;
+
+  // #endregion styles
 }
 
 declare global {
