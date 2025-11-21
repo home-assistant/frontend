@@ -295,15 +295,15 @@ class DialogAddAutomationElement
 
     this._loadConfigEntries();
 
+    this._fetchManifests();
+
     if (this._params?.type === "action") {
       this.hass.loadBackendTranslation("services");
-      this._fetchManifests();
       this._calculateUsedDomains();
       getServiceIcons(this.hass);
     }
     if (this._params?.type === "trigger") {
       this.hass.loadBackendTranslation("triggers");
-      this._fetchManifests();
       getTriggerIcons(this.hass);
       this._unsub = subscribeTriggers(this.hass, (triggers) => {
         this._triggerDescriptions = {
