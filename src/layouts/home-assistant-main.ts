@@ -51,7 +51,7 @@ export class HomeAssistantMain extends LitElement {
       this.hass.panels && this.hass.userData && this.hass.systemData;
 
     return html`
-      <ha-snowflakes .hass=${this.hass}></ha-snowflakes>
+      <ha-snowflakes .hass=${this.hass} .narrow=${this.narrow}></ha-snowflakes>
       <ha-drawer
         .type=${sidebarNarrow ? "modal" : ""}
         .open=${sidebarNarrow ? this._drawerOpen : false}
