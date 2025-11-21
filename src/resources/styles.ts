@@ -230,39 +230,49 @@ export const haStyleScrollbar = css`
 `;
 
 export const scrollableFadeStyles = css`
-  .fade {
+  .fade-top,
+  .fade-bottom {
     position: absolute;
-    bottom: 1px;
-    left: 1px;
-    right: 1px;
-    height: 16px;
+    left: var(--ha-space-0);
+    right: var(--ha-space-0);
+    height: var(--ha-space-4);
     pointer-events: none;
     transition: opacity 180ms ease-in-out;
-    background: linear-gradient(
-      to bottom,
-      var(
-        --ha-dialog-surface-background,
-        var(--card-background-color, var(--mdc-theme-surface, #fff))
-      ),
-      transparent
-    );
-    transform: rotate(180deg);
-    border-radius: var(--ha-card-border-radius, var(--ha-border-radius-lg));
-    border-bottom-left-radius: var(--ha-border-radius-square);
-    border-bottom-right-radius: var(--ha-border-radius-square);
+    background: linear-gradient(to bottom, rgba(17, 17, 17, 0.4), transparent);
     z-index: 100;
     opacity: 0;
   }
+  .fade-top {
+    top: var(--ha-space-0);
+  }
+  .fade-bottom {
+    bottom: var(--ha-space-0);
+    transform: rotate(180deg);
+  }
 
-  .fade.scrollable {
+  .fade-top.visible,
+  .fade-bottom.visible {
     opacity: 1;
   }
 
-  @media all and (max-width: 870px) {
-    .fade {
-      bottom: 0;
-      border-radius: var(--ha-border-radius-square);
-    }
+  .fade-top.rounded,
+  .fade-bottom.rounded {
+    border-radius: var(--ha-card-border-radius, var(--ha-border-radius-lg));
+    border-bottom-left-radius: var(--ha-border-radius-square);
+    border-bottom-right-radius: var(--ha-border-radius-square);
+  }
+  .fade-top.rounded {
+    border-top-left-radius: var(--ha-border-radius-square);
+    border-top-right-radius: var(--ha-border-radius-square);
+  }
+  .fade-bottom.rounded {
+    border-bottom-left-radius: var(--ha-border-radius-square);
+    border-bottom-right-radius: var(--ha-border-radius-square);
+  }
+
+  .fade-top:not(.rounded),
+  .fade-bottom:not(.rounded) {
+    border-radius: var(--ha-border-radius-square);
   }
 `;
 
