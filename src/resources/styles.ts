@@ -229,6 +229,38 @@ export const haStyleScrollbar = css`
   }
 `;
 
+export const scrollableFadeStyles = css`
+  .fade {
+    position: absolute;
+    bottom: 1px;
+    left: 1px;
+    right: 1px;
+    height: 16px;
+    pointer-events: none;
+    transition: box-shadow 180ms ease-in-out;
+    background-color: var(
+      --ha-dialog-surface-background,
+      var(--card-background-color, var(--mdc-theme-surface, #fff))
+    );
+    transform: rotate(180deg);
+    border-radius: var(--ha-card-border-radius, var(--ha-border-radius-lg));
+    border-bottom-left-radius: var(--ha-border-radius-square);
+    border-bottom-right-radius: var(--ha-border-radius-square);
+    z-index: 100;
+  }
+
+  .fade.scrollable {
+    box-shadow: var(--bar-box-shadow);
+  }
+
+  @media all and (max-width: 870px) {
+    .fade {
+      bottom: 0;
+      border-radius: var(--ha-border-radius-square);
+    }
+  }
+`;
+
 export const baseEntrypointStyles = css`
   body {
     background-color: var(--primary-background-color);

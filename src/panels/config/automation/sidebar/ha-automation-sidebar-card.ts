@@ -17,6 +17,7 @@ import "../../../../components/ha-dialog-header";
 import "../../../../components/ha-icon-button";
 import "../../../../components/ha-md-button-menu";
 import "../../../../components/ha-md-divider";
+import { scrollableFadeStyles } from "../../../../resources/styles";
 import type { HomeAssistant } from "../../../../types";
 import "../ha-automation-editor-warning";
 
@@ -144,86 +145,62 @@ export default class HaAutomationSidebarCard extends LitElement {
     ev.preventDefault();
   }
 
-  static styles = css`
-    ha-card {
-      position: relative;
-      height: 100%;
-      width: 100%;
-      border-color: var(--primary-color);
-      border-width: 2px;
-      display: flex;
-      flex-direction: column;
-    }
+  static styles = [
+    scrollableFadeStyles,
+    css`
+      ha-card {
+        position: relative;
+        height: 100%;
+        width: 100%;
+        border-color: var(--primary-color);
+        border-width: 2px;
+        display: flex;
+        flex-direction: column;
+      }
 
-    @media all and (max-width: 870px) {
-      ha-card.mobile {
-        border: none;
+      @media all and (max-width: 870px) {
+        ha-card.mobile {
+          border: none;
+          box-shadow: none;
+        }
+        ha-card.mobile {
+          border-bottom-right-radius: var(--ha-border-radius-square);
+          border-bottom-left-radius: var(--ha-border-radius-square);
+        }
+      }
+
+      ha-dialog-header {
+        border-radius: var(--ha-card-border-radius);
         box-shadow: none;
+        transition: box-shadow 180ms ease-in-out;
+        border-bottom-left-radius: 0;
+        border-bottom-right-radius: 0;
+        position: relative;
+        background-color: var(
+          --ha-dialog-surface-background,
+          var(--mdc-theme-surface, #fff)
+        );
       }
-      ha-card.mobile {
-        border-bottom-right-radius: var(--ha-border-radius-square);
-        border-bottom-left-radius: var(--ha-border-radius-square);
-      }
-    }
 
-    ha-dialog-header {
-      border-radius: var(--ha-card-border-radius);
-      box-shadow: none;
-      transition: box-shadow 180ms ease-in-out;
-      border-bottom-left-radius: 0;
-      border-bottom-right-radius: 0;
-      position: relative;
-      background-color: var(
-        --ha-dialog-surface-background,
-        var(--mdc-theme-surface, #fff)
-      );
-    }
-
-    ha-dialog-header.scrolled {
-      box-shadow: var(--bar-box-shadow);
-    }
-
-    .fade {
-      position: absolute;
-      bottom: 1px;
-      left: 1px;
-      right: 1px;
-      height: 16px;
-      pointer-events: none;
-      transition: box-shadow 180ms ease-in-out;
-      background-color: var(
-        --ha-dialog-surface-background,
-        var(--mdc-theme-surface, #fff)
-      );
-      transform: rotate(180deg);
-      border-radius: var(--ha-card-border-radius);
-      border-bottom-left-radius: var(--ha-border-radius-square);
-      border-bottom-right-radius: var(--ha-border-radius-square);
-    }
-
-    .fade.scrollable {
-      box-shadow: var(--bar-box-shadow);
-    }
-
-    .card-content {
-      flex: 1 1 auto;
-      min-height: 0;
-      overflow: auto;
-      margin-top: 0;
-      padding-bottom: max(var(--safe-area-inset-bottom, 0px), 32px);
-    }
-
-    @media all and (max-width: 870px) {
-      .fade {
-        bottom: 0;
-        border-radius: var(--ha-border-radius-square);
+      ha-dialog-header.scrolled {
+        box-shadow: var(--bar-box-shadow);
       }
 
       .card-content {
-        padding-bottom: 42px;
+        flex: 1 1 auto;
+        min-height: 0;
+        overflow: auto;
+        margin-top: 0;
+        padding-bottom: max(var(--safe-area-inset-bottom, 0px), 32px);
       }
-    }
-  `;
+
+      @media all and (max-width: 870px) {
+        .card-content {
+          padding-bottom: 42px;
+        }
+      }
+    `,
+  ];
 }
 
 declare global {
