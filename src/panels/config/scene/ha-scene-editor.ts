@@ -1265,6 +1265,10 @@ export class HaSceneEditor extends PreventUnsavedMixin(
           display: block;
           margin-bottom: 24px;
         }
+        ha-alert ha-button[slot="action"] {
+          width: max-content;
+          white-space: nowrap;
+        }
         ha-fab.dirty {
           bottom: 0;
         }
