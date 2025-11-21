@@ -60,7 +60,7 @@ export class HaAuthFlow extends LitElement {
     super.willUpdate(changedProps);
 
     if (!this.hasUpdated && this.clientId === genClientId()) {
-      // Preselect store token when login in to own instance
+      // Preselect store token when logging in to own instance
       this._storeToken = this.initStoreToken;
     }
 
