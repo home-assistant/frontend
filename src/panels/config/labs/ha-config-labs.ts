@@ -387,7 +387,7 @@ class HaConfigLabs extends SubscribeMixin(LitElement) {
       .content {
         max-width: 800px;
         margin: 0 auto;
-        padding: 16px;
+        padding: var(--ha-space-4);
         min-height: calc(100vh - 64px);
         display: flex;
         flex-direction: column;
@@ -398,7 +398,7 @@ class HaConfigLabs extends SubscribeMixin(LitElement) {
       }
 
       ha-card {
-        margin-bottom: 16px;
+        margin-bottom: var(--ha-space-4);
         position: relative;
         transition: box-shadow 0.3s ease;
       }
@@ -410,12 +410,12 @@ class HaConfigLabs extends SubscribeMixin(LitElement) {
       @keyframes highlight-fade {
         0% {
           box-shadow:
-            0 0 0 2px var(--primary-color),
-            0 0 12px rgba(var(--rgb-primary-color), 0.4);
+            0 0 0 var(--ha-border-width-md) var(--primary-color),
+            0 0 var(--ha-shadow-blur-lg) rgba(var(--rgb-primary-color), 0.4);
         }
         100% {
           box-shadow:
-            0 0 0 2px transparent,
+            0 0 0 var(--ha-border-width-md) transparent,
             0 0 0 transparent;
         }
       }
@@ -424,7 +424,7 @@ class HaConfigLabs extends SubscribeMixin(LitElement) {
       .intro-card {
         display: flex;
         flex-direction: column;
-        gap: 16px;
+        gap: var(--ha-space-4);
       }
 
       .intro-card h1 {
@@ -432,18 +432,18 @@ class HaConfigLabs extends SubscribeMixin(LitElement) {
       }
 
       .intro-text {
-        margin: 0 0 12px;
+        margin: 0 0 var(--ha-space-3);
       }
 
       /* Feature cards */
       .card-content {
-        padding: 16px;
+        padding: var(--ha-space-4);
       }
 
       .card-header {
         display: flex;
-        gap: 12px;
-        margin-bottom: 16px;
+        gap: var(--ha-space-3);
+        margin-bottom: var(--ha-space-4);
         align-items: flex-start;
       }
 
@@ -475,7 +475,7 @@ class HaConfigLabs extends SubscribeMixin(LitElement) {
       .empty {
         max-width: 500px;
         margin: 0 auto;
-        padding: 48px 16px;
+        padding: var(--ha-space-12) var(--ha-space-4);
         text-align: center;
       }
 
@@ -487,11 +487,11 @@ class HaConfigLabs extends SubscribeMixin(LitElement) {
       }
 
       .empty h1 {
-        margin: 24px 0 16px;
+        margin: var(--ha-space-6) 0 var(--ha-space-4);
       }
 
       .empty p {
-        margin: 0 0 24px;
+        margin: 0 0 var(--ha-space-6);
         font-size: 16px;
         line-height: 24px;
         color: var(--secondary-text-color);
@@ -500,7 +500,7 @@ class HaConfigLabs extends SubscribeMixin(LitElement) {
       .empty a {
         display: inline-flex;
         align-items: center;
-        gap: 4px;
+        gap: var(--ha-space-1);
         color: var(--primary-color);
         text-decoration: none;
         font-weight: 500;
@@ -511,9 +511,9 @@ class HaConfigLabs extends SubscribeMixin(LitElement) {
       }
 
       .empty a:focus-visible {
-        outline: 2px solid var(--primary-color);
+        outline: var(--ha-border-width-md) solid var(--primary-color);
         outline-offset: 2px;
-        border-radius: 4px;
+        border-radius: var(--ha-border-radius-sm);
       }
 
       .empty a ha-svg-icon {
@@ -528,15 +528,15 @@ class HaConfigLabs extends SubscribeMixin(LitElement) {
         justify-content: space-between;
         align-items: center;
         flex-wrap: wrap;
-        gap: 8px;
-        padding: 8px;
-        border-top: 1px solid var(--divider-color);
+        gap: var(--ha-space-2);
+        padding: var(--ha-space-2);
+        border-top: var(--ha-border-width-sm) solid var(--divider-color);
       }
 
       .card-actions > div {
         display: flex;
         flex-wrap: wrap;
-        gap: 8px;
+        gap: var(--ha-space-2);
       }
     `,
   ];
