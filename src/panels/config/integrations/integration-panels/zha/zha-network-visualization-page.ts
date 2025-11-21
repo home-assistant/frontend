@@ -295,7 +295,7 @@ export class ZHANetworkVisualizationPage extends LitElement {
                 color:
                   route.route_status === "Active"
                     ? primaryColor
-                    : style.getPropertyValue("--disabled-color"),
+                    : style.getPropertyValue("--dark-primary-color"),
                 type: ["Child", "Parent"].includes(neighbor.relationship)
                   ? "solid"
                   : "dotted",
@@ -335,7 +335,7 @@ export class ZHANetworkVisualizationPage extends LitElement {
             symbolSize: 5,
             lineStyle: {
               width: 1,
-              color: style.getPropertyValue("--disabled-color"),
+              color: style.getPropertyValue("--dark-primary-color"),
               type: "dotted",
             },
             ignoreForceLayout: true,
