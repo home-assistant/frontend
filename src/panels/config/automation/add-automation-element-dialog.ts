@@ -204,6 +204,8 @@ class DialogAddAutomationElement
 {
   @property({ attribute: false }) public hass!: HomeAssistant;
 
+  // #region state
+
   @state() private _open = true;
 
   @state() private _params?: AddAutomationElementDialogParams;
@@ -244,6 +246,10 @@ class DialogAddAutomationElement
   @consume({ context: labelsContext, subscribe: true })
   private _labelRegistry!: LabelRegistryEntry[];
 
+  // #endregion state
+
+  // #region queries
+
   @query("ha-automation-add-from-target")
   private _targetPickerElement?: HaAutomationAddFromTarget;
 
@@ -254,6 +260,10 @@ class DialogAddAutomationElement
   private _contentElement?: HTMLDivElement;
 
   @query("lit-virtualizer") private _virtualizerElement?: LitVirtualizer;
+
+  // #endregion queries
+
+  // #region variables
 
   private _fullScreen = false;
 
@@ -274,6 +284,10 @@ class DialogAddAutomationElement
   private get _showEntityId() {
     return this.hass.userData?.showEntityIdPicker;
   }
+
+  // #endregion variables
+
+  // #region lifecycle
 
   protected willUpdate(changedProps: PropertyValues) {
     if (!this.hasUpdated) {
@@ -357,822 +371,25 @@ class DialogAddAutomationElement
     return true;
   }
 
-  private _getGroups = (
-    type: AddAutomationElementDialogParams["type"],
-    group?: string,
-    collectionIndex?: number
-  ): AutomationElementGroup => {
-    if (group && collectionIndex !== undefined) {
-      return (
-        TYPES[type].collections[collectionIndex].groups[group].members || {
-          [group]: {},
-        }
-      );
-    }
-
-    return TYPES[type].collections.reduce(
-      (acc, collection) => ({ ...acc, ...collection.groups }),
-      {} as AutomationElementGroup
-    );
+  private _updateNarrow = () => {
+    this._narrow =
+      window.matchMedia("(max-width: 870px)").matches ||
+      window.matchMedia("(max-height: 500px)").matches;
   };
 
-  private _convertItemsToComboBoxItems = (
-    items: ListItem[],
-    type: "trigger" | "condition" | "action" | "block"
-  ): AutomationItemComboBoxItem[] =>
-    items.map(({ key, name, description, iconPath, icon }) => ({
-      id: key,
-      primary: name,
-      secondary: description,
-      iconPath,
-      renderedIcon: icon,
-      type,
-      search_labels: [key, name, description],
-    }));
-
-  private _convertToItem = (
-    key: string,
-    options,
-    type: AddAutomationElementDialogParams["type"],
-    localize: LocalizeFunc
-  ): ListItem => ({
-    key,
-    name: localize(
-      // @ts-ignore
-      `ui.panel.config.automation.editor.${type}s.${
-        options.members ? "groups" : "type"
-      }.${key}.label`
-    ),
-    description: localize(
-      // @ts-ignore
-      `ui.panel.config.automation.editor.${type}s.${
-        options.members ? "groups" : "type"
-      }.${key}.description${options.members ? "" : ".picker"}`
-    ),
-    iconPath: options.icon || TYPES[type].icons[key],
-  });
-
-  private _createFuseIndex = (states) =>
-    Fuse.createIndex(["search_labels"], states);
-
-  private _fuseIndexes = {
-    area: memoizeOne((states: PickerComboBoxItem[]) =>
-      this._createFuseIndex(states)
-    ),
-    entity: memoizeOne((states: PickerComboBoxItem[]) =>
-      this._createFuseIndex(states)
-    ),
-    device: memoizeOne((states: PickerComboBoxItem[]) =>
-      this._createFuseIndex(states)
-    ),
-    label: memoizeOne((states: PickerComboBoxItem[]) =>
-      this._createFuseIndex(states)
-    ),
-    item: memoizeOne((states: PickerComboBoxItem[]) =>
-      this._createFuseIndex(states)
-    ),
-    block: memoizeOne((states: PickerComboBoxItem[]) =>
-      this._createFuseIndex(states)
-    ),
-  };
-
-  private _filterGroup(
-    type: SearchSection,
-    items: (
-      | FloorComboBoxItem
-      | PickerComboBoxItem
-      | EntityComboBoxItem
-      | AutomationItemComboBoxItem
-    )[],
-    searchTerm: string,
-    fuseOptions?: IFuseOptions<any>,
-    checkExact?: (
-      item:
-        | FloorComboBoxItem
-        | PickerComboBoxItem
-        | EntityComboBoxItem
-        | AutomationItemComboBoxItem
-    ) => boolean
-  ) {
-    const fuseIndex = this._fuseIndexes[type](items);
-    const fuse = new HaFuse<
-      | FloorComboBoxItem
-      | PickerComboBoxItem
-      | EntityComboBoxItem
-      | AutomationItemComboBoxItem
-    >(
-      items,
-      fuseOptions || {
-        shouldSort: false,
-        minMatchCharLength: Math.min(searchTerm.length, 2),
-      },
-      fuseIndex
-    );
-
-    const results = fuse.multiTermsSearch(searchTerm);
-    let filteredItems = items;
-    if (results) {
-      filteredItems = results.map((result) => result.item);
+  private _calculateUsedDomains() {
+    const domains = new Set(Object.keys(this.hass.states).map(computeDomain));
+    if (!deepEqual(domains, this._domains)) {
+      this._domains = domains;
     }
-
-    if (!checkExact) {
-      return filteredItems;
-    }
-
-    // If there is exact match for entity id, put it first
-    const index = filteredItems.findIndex((item) => checkExact(item));
-    if (index === -1) {
-      return filteredItems;
-    }
-
-    const [exactMatch] = filteredItems.splice(index, 1);
-    filteredItems.unshift(exactMatch);
-
-    return filteredItems;
   }
 
-  private _getFilteredItems = memoizeOne(
-    (
-      type: AddAutomationElementDialogParams["type"],
-      localize: HomeAssistant["localize"],
-      searchTerm: string,
-      configEntryLookup: Record<string, ConfigEntry>,
-      services: HomeAssistant["services"],
-      selectedSection?: SearchSection,
-      manifests?: DomainManifestLookup
-    ) => {
-      const resultItems: (
-        | string
-        | FloorComboBoxItem
-        | EntityComboBoxItem
-        | PickerComboBoxItem
-      )[] = [];
-
-      if (!selectedSection || selectedSection === "item") {
-        let items = this._convertItemsToComboBoxItems(
-          this._items(type, localize, services, manifests),
-          type
-        );
-        if (searchTerm) {
-          items = this._filterGroup("item", items, searchTerm, {
-            ignoreLocation: true,
-            includeScore: true,
-            minMatchCharLength: Math.min(2, this._filter.length),
-          }) as AutomationItemComboBoxItem[];
-        }
-
-        if (!selectedSection && items.length) {
-          // show group title
-          resultItems.push(
-            localize(`ui.panel.config.automation.editor.${type}s.name`)
-          );
-        }
-
-        resultItems.push(...items);
-      }
-
-      if (
-        type !== "trigger" &&
-        (!selectedSection || selectedSection === "block")
-      ) {
-        const groups =
-          type === "action"
-            ? ACTION_BUILDING_BLOCKS_GROUP
-            : type === "condition"
-              ? CONDITION_BUILDING_BLOCKS_GROUP
-              : {};
-
-        let blocks = this._convertItemsToComboBoxItems(
-          Object.keys(groups).map((key) =>
-            this._convertToItem(key, {}, type, localize)
-          ),
-          "block"
-        );
-
-        if (searchTerm) {
-          blocks = this._filterGroup("block", blocks, searchTerm, {
-            ignoreLocation: true,
-            includeScore: true,
-            minMatchCharLength: Math.min(2, this._filter.length),
-          }) as AutomationItemComboBoxItem[];
-        }
-
-        if (!selectedSection && blocks.length) {
-          // show group title
-          resultItems.push(
-            localize("ui.panel.config.automation.editor.blocks")
-          );
-        }
-        resultItems.push(...blocks);
-      }
-
-      if (!selectedSection || selectedSection === "entity") {
-        let entityItems = this._getEntitiesMemoized(
-          this.hass,
-          undefined,
-          undefined,
-          undefined,
-          undefined,
-          undefined,
-          undefined,
-          undefined,
-          undefined,
-          `entity${TARGET_SEPARATOR}`
-        );
-
-        if (searchTerm) {
-          entityItems = this._filterGroup(
-            "entity",
-            entityItems,
-            searchTerm,
-            undefined,
-            (item: EntityComboBoxItem) =>
-              item.stateObj?.entity_id === searchTerm
-          ) as EntityComboBoxItem[];
-        }
-
-        if (!selectedSection && entityItems.length) {
-          // show group title
-          resultItems.push(
-            localize("ui.components.target-picker.type.entities")
-          );
-        }
-
-        resultItems.push(...entityItems);
-      }
-
-      if (!selectedSection || selectedSection === "device") {
-        let deviceItems = this._getDevicesMemoized(
-          this.hass,
-          configEntryLookup,
-          undefined,
-          undefined,
-          undefined,
-          undefined,
-          undefined,
-          undefined,
-          undefined,
-          `device${TARGET_SEPARATOR}`
-        );
-
-        if (searchTerm) {
-          deviceItems = this._filterGroup("device", deviceItems, searchTerm);
-        }
-
-        if (!selectedSection && deviceItems.length) {
-          // show group title
-          resultItems.push(
-            localize("ui.components.target-picker.type.devices")
-          );
-        }
-
-        resultItems.push(...deviceItems);
-      }
-
-      if (!selectedSection || selectedSection === "area") {
-        let areasAndFloors = this._getAreasAndFloorsMemoized(
-          this.hass.states,
-          this.hass.floors,
-          this.hass.areas,
-          this.hass.devices,
-          this.hass.entities,
-          memoizeOne((value: AreaFloorValue): string =>
-            [value.type, value.id].join(TARGET_SEPARATOR)
-          ),
-          undefined,
-          undefined,
-          undefined,
-          undefined,
-          undefined,
-          undefined,
-          undefined,
-          true
-        );
-
-        if (searchTerm) {
-          areasAndFloors = this._filterGroup(
-            "area",
-            areasAndFloors,
-            searchTerm
-          ) as FloorComboBoxItem[];
-        }
-
-        if (!selectedSection && areasAndFloors.length) {
-          // show group title
-          resultItems.push(localize("ui.components.target-picker.type.areas"));
-        }
-
-        resultItems.push(
-          ...areasAndFloors.map((item, index) => {
-            const nextItem = areasAndFloors[index + 1];
-
-            if (
-              !nextItem ||
-              (item.type === "area" && nextItem.type === "floor")
-            ) {
-              return {
-                ...item,
-                last: true,
-              };
-            }
-
-            return item;
-          })
-        );
-      }
-
-      if (!selectedSection || selectedSection === "label") {
-        let labels = this._getLabelsMemoized(
-          this.hass.states,
-          this.hass.areas,
-          this.hass.devices,
-          this.hass.entities,
-          this._labelRegistry,
-          undefined,
-          undefined,
-          undefined,
-          undefined,
-          undefined,
-          undefined,
-          `label${TARGET_SEPARATOR}`
-        );
-
-        if (searchTerm) {
-          labels = this._filterGroup("label", labels, searchTerm);
-        }
-
-        if (!selectedSection && labels.length) {
-          // show group title
-          resultItems.push(localize("ui.components.target-picker.type.labels"));
-        }
-
-        resultItems.push(...labels);
-      }
-
-      return resultItems;
-    }
-  );
-
-  private _items = memoizeOne(
-    (
-      type: AddAutomationElementDialogParams["type"],
-      localize: LocalizeFunc,
-      services: HomeAssistant["services"],
-      manifests?: DomainManifestLookup
-    ): ListItem[] => {
-      const groups = this._getGroups(type);
-
-      const flattenGroups = (grp: AutomationElementGroup) =>
-        Object.entries(grp).map(([key, options]) =>
-          options.members
-            ? flattenGroups(options.members)
-            : this._convertToItem(key, options, type, localize)
-        );
-
-      const items = flattenGroups(groups).flat();
-      if (type === "trigger") {
-        items.push(...this._triggers(localize, this._triggerDescriptions));
-      }
-      if (type === "action") {
-        items.push(...this._services(localize, services, manifests));
-      }
-
-      return items.filter(({ name }) => name);
-    }
-  );
-
-  private _getCollections = memoizeOne(
-    (
-      type: AddAutomationElementDialogParams["type"],
-      collections: AutomationElementGroupCollection[],
-      domains: Set<string> | undefined,
-      localize: LocalizeFunc,
-      services: HomeAssistant["services"],
-      triggerDescriptions: TriggerDescriptions,
-      manifests?: DomainManifestLookup
-    ): {
-      titleKey?: LocalizeKeys;
-      groups: ListItem[];
-    }[] => {
-      const generatedCollections: any = [];
-
-      collections.forEach((collection) => {
-        let collectionGroups = Object.entries(collection.groups);
-        const groups: ListItem[] = [];
-
-        if (
-          type === "action" &&
-          Object.keys(collection.groups).some((item) =>
-            ACTION_SERVICE_KEYWORDS.includes(item)
-          )
-        ) {
-          groups.push(
-            ...this._serviceGroups(
-              localize,
-              services,
-              manifests,
-              domains,
-              collection.groups.dynamicGroups
-                ? undefined
-                : collection.groups.helpers
-                  ? "helper"
-                  : "other"
-            )
-          );
-
-          collectionGroups = collectionGroups.filter(
-            ([key]) => !ACTION_SERVICE_KEYWORDS.includes(key)
-          );
-        }
-
-        if (
-          type === "trigger" &&
-          Object.keys(collection.groups).some((item) =>
-            ACTION_SERVICE_KEYWORDS.includes(item)
-          )
-        ) {
-          groups.push(
-            ...this._triggerGroups(
-              localize,
-              triggerDescriptions,
-              manifests,
-              domains,
-              collection.groups.dynamicGroups
-                ? undefined
-                : collection.groups.helpers
-                  ? "helper"
-                  : "other"
-            )
-          );
-
-          collectionGroups = collectionGroups.filter(
-            ([key]) => !ACTION_SERVICE_KEYWORDS.includes(key)
-          );
-        }
-
-        groups.push(
-          ...collectionGroups.map(([key, options]) =>
-            this._convertToItem(key, options, type, localize)
-          )
-        );
-
-        generatedCollections.push({
-          titleKey: collection.titleKey,
-          groups: groups.sort((a, b) => {
-            // make sure device is always on top
-            if (a.key === "device" || a.key === "device_id") {
-              return -1;
-            }
-            if (b.key === "device" || b.key === "device_id") {
-              return 1;
-            }
-            return stringCompare(a.name, b.name, this.hass.locale.language);
-          }),
-        });
-      });
-      return generatedCollections;
-    }
-  );
-
-  private _getBlockItems = memoizeOne(
-    (
-      type: AddAutomationElementDialogParams["type"],
-      localize: LocalizeFunc
-    ): ListItem[] => {
-      const groups =
-        type === "action"
-          ? ACTION_BUILDING_BLOCKS_GROUP
-          : CONDITION_BUILDING_BLOCKS_GROUP;
-
-      const result = Object.entries(groups).map(([key, options]) =>
-        this._convertToItem(key, options, type, localize)
-      );
-
-      return result.sort((a, b) =>
-        stringCompare(a.name, b.name, this.hass.locale.language)
-      );
-    }
-  );
-
-  private _getGroupItems = memoizeOne(
-    (
-      type: AddAutomationElementDialogParams["type"],
-      group: string,
-      collectionIndex: number,
-      domains: Set<string> | undefined,
-      localize: LocalizeFunc,
-      services: HomeAssistant["services"],
-      manifests?: DomainManifestLookup
-    ): ListItem[] => {
-      if (type === "action" && isDynamic(group)) {
-        return this._services(localize, services, manifests, group);
-      }
-
-      if (type === "trigger" && isDynamic(group)) {
-        return this._triggers(localize, this._triggerDescriptions, group);
-      }
-
-      const groups = this._getGroups(type, group, collectionIndex);
-
-      const result = Object.entries(groups).map(([key, options]) =>
-        this._convertToItem(key, options, type, localize)
-      );
-
-      if (type === "action") {
-        if (!this._selectedGroup) {
-          result.unshift(
-            ...this._serviceGroups(
-              localize,
-              services,
-              manifests,
-              domains,
-              undefined
-            )
-          );
-        } else if (this._selectedGroup === "helpers") {
-          result.unshift(
-            ...this._serviceGroups(
-              localize,
-              services,
-              manifests,
-              domains,
-              "helper"
-            )
-          );
-        } else if (this._selectedGroup === "other") {
-          result.unshift(
-            ...this._serviceGroups(
-              localize,
-              services,
-              manifests,
-              domains,
-              "other"
-            )
-          );
-        }
-      }
-
-      return result.sort((a, b) =>
-        stringCompare(a.name, b.name, this.hass.locale.language)
-      );
-    }
-  );
-
-  private _serviceGroups = (
-    localize: LocalizeFunc,
-    services: HomeAssistant["services"],
-    manifests: DomainManifestLookup | undefined,
-    domains: Set<string> | undefined,
-    type: "helper" | "other" | undefined
-  ): ListItem[] => {
-    if (!services || !manifests) {
-      return [];
-    }
-    const result: ListItem[] = [];
-    Object.keys(services).forEach((domain) => {
-      const manifest = manifests[domain];
-      const domainUsed = !domains ? true : domains.has(domain);
-      if (
-        (type === undefined &&
-          (ENTITY_DOMAINS_MAIN.has(domain) ||
-            (manifest?.integration_type === "entity" &&
-              domainUsed &&
-              !ENTITY_DOMAINS_OTHER.has(domain)))) ||
-        (type === "helper" && manifest?.integration_type === "helper") ||
-        (type === "other" &&
-          !ENTITY_DOMAINS_MAIN.has(domain) &&
-          (ENTITY_DOMAINS_OTHER.has(domain) ||
-            (!domainUsed && manifest?.integration_type === "entity") ||
-            !["helper", "entity"].includes(manifest?.integration_type || "")))
-      ) {
-        result.push({
-          icon: html`
-            <ha-domain-icon
-              .hass=${this.hass}
-              .domain=${domain}
-              brand-fallback
-            ></ha-domain-icon>
-          `,
-          key: `${DYNAMIC_PREFIX}${domain}`,
-          name: domainToName(localize, domain, manifest),
-          description: "",
-        });
-      }
-    });
-    return result.sort((a, b) =>
-      stringCompare(a.name, b.name, this.hass.locale.language)
+  private async _loadConfigEntries() {
+    const configEntries = await getConfigEntries(this.hass);
+    this._configEntryLookup = Object.fromEntries(
+      configEntries.map((entry) => [entry.entry_id, entry])
     );
-  };
-
-  private _triggerGroups = (
-    localize: LocalizeFunc,
-    triggers: TriggerDescriptions,
-    manifests: DomainManifestLookup | undefined,
-    domains: Set<string> | undefined,
-    type: "helper" | "other" | undefined
-  ): ListItem[] => {
-    if (!triggers || !manifests) {
-      return [];
-    }
-    const result: ListItem[] = [];
-    const addedDomains = new Set<string>();
-    Object.keys(triggers).forEach((trigger) => {
-      const domain = getTriggerDomain(trigger);
-
-      if (addedDomains.has(domain)) {
-        return;
-      }
-      addedDomains.add(domain);
-
-      const manifest = manifests[domain];
-      const domainUsed = !domains ? true : domains.has(domain);
-
-      if (
-        (type === undefined &&
-          (ENTITY_DOMAINS_MAIN.has(domain) ||
-            (manifest?.integration_type === "entity" &&
-              domainUsed &&
-              !ENTITY_DOMAINS_OTHER.has(domain)))) ||
-        (type === "helper" && manifest?.integration_type === "helper") ||
-        (type === "other" &&
-          !ENTITY_DOMAINS_MAIN.has(domain) &&
-          (ENTITY_DOMAINS_OTHER.has(domain) ||
-            (!domainUsed && manifest?.integration_type === "entity") ||
-            !["helper", "entity"].includes(manifest?.integration_type || "")))
-      ) {
-        result.push({
-          icon: html`
-            <ha-domain-icon
-              .hass=${this.hass}
-              .domain=${domain}
-              brand-fallback
-            ></ha-domain-icon>
-          `,
-          key: `${DYNAMIC_PREFIX}${domain}`,
-          name: domainToName(localize, domain, manifest),
-          description: "",
-        });
-      }
-    });
-    return result.sort((a, b) =>
-      stringCompare(a.name, b.name, this.hass.locale.language)
-    );
-  };
-
-  private _triggers = memoizeOne(
-    (
-      localize: LocalizeFunc,
-      triggers: TriggerDescriptions,
-      group?: string
-    ): ListItem[] => {
-      if (!triggers) {
-        return [];
-      }
-
-      return this._getTriggerListItems(
-        localize,
-        Object.keys(triggers).filter((trigger) => {
-          const domain = getTriggerDomain(trigger);
-          return !group || group === `${DYNAMIC_PREFIX}${domain}`;
-        })
-      );
-    }
-  );
-
-  private _getTriggerListItems(
-    localize: LocalizeFunc,
-    triggerIds: string[]
-  ): ListItem[] {
-    return triggerIds.map((trigger) => {
-      const domain = getTriggerDomain(trigger);
-      const triggerName = getTriggerObjectId(trigger);
-
-      return {
-        icon: html`
-          <ha-trigger-icon
-            .hass=${this.hass}
-            .trigger=${trigger}
-          ></ha-trigger-icon>
-        `,
-        key: `${DYNAMIC_PREFIX}${trigger}`,
-        name:
-          localize(`component.${domain}.triggers.${triggerName}.name`) ||
-          trigger,
-        description:
-          localize(`component.${domain}.triggers.${triggerName}.description`) ||
-          trigger,
-      };
-    });
   }
-
-  private _getActionListItems(
-    localize: LocalizeFunc,
-    serviceIds: string[]
-  ): ListItem[] {
-    return serviceIds.map((service) => {
-      const [domain, serviceName] = service.split(".", 2);
-
-      return {
-        icon: html`
-          <ha-service-icon
-            .hass=${this.hass}
-            .service=${`${domain}.${serviceName}`}
-          ></ha-service-icon>
-        `,
-        key: `${DYNAMIC_PREFIX}${domain}.${serviceName}`,
-        name: `${domain ? "" : `${domainToName(localize, domain)}: `}${
-          this.hass.localize(
-            `component.${domain}.services.${serviceName}.name`
-          ) ||
-          this.hass.services[domain][serviceName]?.name ||
-          serviceName
-        }`,
-        description:
-          this.hass.localize(
-            `component.${domain}.services.${serviceName}.description`
-          ) ||
-          this.hass.services[domain][serviceName]?.description ||
-          "",
-      };
-    });
-  }
-
-  private _services = memoizeOne(
-    (
-      localize: LocalizeFunc,
-      services: HomeAssistant["services"],
-      manifests: DomainManifestLookup | undefined,
-      group?: string
-    ): ListItem[] => {
-      if (!services) {
-        return [];
-      }
-      const result: ListItem[] = [];
-
-      let domain: string | undefined;
-
-      if (isDynamic(group)) {
-        domain = getValueFromDynamic(group!);
-      }
-
-      const addDomain = (dmn: string) => {
-        const services_keys = Object.keys(services[dmn]);
-
-        for (const service of services_keys) {
-          result.push({
-            icon: html`
-              <ha-service-icon
-                .hass=${this.hass}
-                .service=${`${dmn}.${service}`}
-              ></ha-service-icon>
-            `,
-            key: `${DYNAMIC_PREFIX}${dmn}.${service}`,
-            name: `${domain ? "" : `${domainToName(localize, dmn)}: `}${
-              this.hass.localize(`component.${dmn}.services.${service}.name`) ||
-              services[dmn][service]?.name ||
-              service
-            }`,
-            description:
-              this.hass.localize(
-                `component.${dmn}.services.${service}.description`
-              ) ||
-              services[dmn][service]?.description ||
-              "",
-          });
-        }
-      };
-
-      if (domain) {
-        addDomain(domain);
-        return result.sort((a, b) =>
-          stringCompare(a.name, b.name, this.hass.locale.language)
-        );
-      }
-
-      if (group && !["helpers", "other"].includes(group)) {
-        return [];
-      }
-
-      Object.keys(services)
-        .sort()
-        .forEach((dmn) => {
-          const manifest = manifests?.[dmn];
-          if (group === "helpers" && manifest?.integration_type !== "helper") {
-            return;
-          }
-          if (
-            group === "other" &&
-            (ENTITY_DOMAINS_OTHER.has(dmn) ||
-              ["helper", "entity"].includes(manifest?.integration_type || ""))
-          ) {
-            return;
-          }
-          addDomain(dmn);
-        });
-
-      return result;
-    }
-  );
 
   private async _fetchManifests() {
     const manifests = {};
@@ -1183,11 +400,53 @@ class DialogAddAutomationElement
     this._manifests = manifests;
   }
 
-  private _calculateUsedDomains() {
-    const domains = new Set(Object.keys(this.hass.states).map(computeDomain));
-    if (!deepEqual(domains, this._domains)) {
-      this._domains = domains;
+  public disconnectedCallback(): void {
+    super.disconnectedCallback();
+    window.removeEventListener("resize", this._updateNarrow);
+    this._removeSearchKeybindings();
+  }
+
+  protected supportedShortcuts(): SupportedShortcuts {
+    return {
+      v: () => this._addClipboard(),
+    };
+  }
+
+  private _removeSearchKeybindings() {
+    this._removeKeyboardShortcuts?.();
+  }
+
+  // #endregion lifecycle
+
+  // #region render
+
+  protected render() {
+    if (!this._params) {
+      return nothing;
     }
+
+    if (this._bottomSheetMode) {
+      return html`
+        <ha-bottom-sheet
+          .open=${this._open}
+          @closed=${this.closeDialog}
+          flexcontent
+        >
+          ${this._renderContent()}
+        </ha-bottom-sheet>
+      `;
+    }
+
+    return html`
+      <ha-wa-dialog
+        width="large"
+        .open=${this._open}
+        @closed=${this.closeDialog}
+        flexcontent
+      >
+        ${this._renderContent()}
+      </ha-wa-dialog>
+    `;
   }
 
   private _renderContent() {
@@ -1527,35 +786,6 @@ class DialogAddAutomationElement
     `;
   }
 
-  protected render() {
-    if (!this._params) {
-      return nothing;
-    }
-
-    if (this._bottomSheetMode) {
-      return html`
-        <ha-bottom-sheet
-          .open=${this._open}
-          @closed=${this.closeDialog}
-          flexcontent
-        >
-          ${this._renderContent()}
-        </ha-bottom-sheet>
-      `;
-    }
-
-    return html`
-      <ha-wa-dialog
-        width="large"
-        .open=${this._open}
-        @closed=${this.closeDialog}
-        flexcontent
-      >
-        ${this._renderContent()}
-      </ha-wa-dialog>
-    `;
-  }
-
   private _renderSectionButtons() {
     return html`
       <ha-chip-set class="sections">
@@ -1763,6 +993,1061 @@ class DialogAddAutomationElement
     `;
   };
 
+  private _renderHeader() {
+    return html`
+      <ha-dialog-header subtitle-position="above">
+        <span slot="title">${this._getDialogTitle()}</span>
+
+        ${this._renderDialogSubtitle()}
+        ${this._narrow && (this._selectedGroup || this._selectedTarget)
+          ? html`<ha-icon-button-prev
+              slot="navigationIcon"
+              @click=${this._back}
+            ></ha-icon-button-prev>`
+          : html`<ha-icon-button
+              .path=${mdiClose}
+              @click=${this._close}
+              slot="navigationIcon"
+            ></ha-icon-button>`}
+      </ha-dialog-header>
+    `;
+  }
+
+  private _getSelectedTargetIcon(
+    selectedTarget: SingleHassServiceTarget
+  ): TemplateResult | typeof nothing {
+    const [targetType, targetId] =
+      this._extractTypeAndIdFromTarget(selectedTarget);
+
+    if (!targetId) {
+      return nothing;
+    }
+
+    if (targetType === "floor" && this.hass.floors[targetId]) {
+      return html`<ha-floor-icon
+        .floor=${this.hass.floors[targetId]}
+      ></ha-floor-icon>`;
+    }
+
+    if (targetType === "area" && this.hass.areas[targetId]) {
+      const area = this.hass.areas[targetId];
+      if (area.icon) {
+        return html`<ha-icon .icon=${area.icon}></ha-icon>`;
+      }
+      return html`<ha-svg-icon .path=${mdiTextureBox}></ha-svg-icon>`;
+    }
+
+    if (targetType === "device" && this.hass.devices[targetId]) {
+      const device = this.hass.devices[targetId];
+      const configEntry = device.primary_config_entry
+        ? this._configEntryLookup?.[device.primary_config_entry]
+        : undefined;
+      const domain = configEntry?.domain;
+
+      if (domain) {
+        return html`<img
+          slot="start"
+          alt=""
+          crossorigin="anonymous"
+          referrerpolicy="no-referrer"
+          src=${brandsUrl({
+            domain,
+            type: "icon",
+            darkOptimized: this.hass.themes?.darkMode,
+          })}
+        />`;
+      }
+    }
+
+    if (targetType === "entity" && this.hass.states[targetId]) {
+      const stateObj = this.hass.states[targetId];
+      if (stateObj) {
+        return html`<state-badge
+          .stateObj=${stateObj}
+          .hass=${this.hass}
+          .stateColor=${false}
+        ></state-badge>`;
+      }
+    }
+
+    if (targetType === "label") {
+      const label = this._getLabel(targetId);
+      if (label?.icon) {
+        return html`<ha-icon .icon=${label.icon}></ha-icon>`;
+      }
+      return html`<ha-svg-icon .path=${mdiLabel}></ha-svg-icon>`;
+    }
+
+    return nothing;
+  }
+
+  private _renderDialogSubtitle() {
+    if (!this._narrow) {
+      return nothing;
+    }
+
+    if (this._selectedGroup) {
+      return html`<span slot="subtitle"
+        >${this.hass.localize(
+          `ui.panel.config.automation.editor.${this._params!.type}s.add`
+        )}</span
+      >`;
+    }
+
+    if (this._selectedTarget) {
+      let subtitle: string | undefined;
+      const [targetType, targetId] = this._extractTypeAndIdFromTarget(
+        this._selectedTarget
+      );
+
+      if (targetId) {
+        if (targetType === "area" && this.hass.areas[targetId].floor_id) {
+          const floorId = this.hass.areas[targetId].floor_id;
+          subtitle = computeFloorName(this.hass.floors[floorId]) || floorId;
+        }
+        if (targetType === "device" && this.hass.devices[targetId].area_id) {
+          const areaId = this.hass.devices[targetId].area_id;
+          subtitle = computeAreaName(this.hass.areas[areaId]) || areaId;
+        }
+        if (targetType === "entity" && this.hass.states[targetId]) {
+          const entity = this.hass.entities[targetId];
+          if (!entity.device_id && !entity.area_id) {
+            const domain = targetId.split(".", 2)[0];
+            subtitle = domainToName(
+              this.hass.localize,
+              domain,
+              this._manifests?.[domain]
+            );
+          } else {
+            const stateObj = this.hass.states[targetId];
+            const [entityName, deviceName, areaName] = computeEntityNameList(
+              stateObj,
+              [{ type: "entity" }, { type: "device" }, { type: "area" }],
+              this.hass.entities,
+              this.hass.devices,
+              this.hass.areas,
+              this.hass.floors
+            );
+
+            subtitle = [areaName, entityName ? deviceName : undefined]
+              .filter(Boolean)
+              .join(computeRTL(this.hass) ? " ◂ " : " ▸ ");
+          }
+        }
+      }
+
+      if (subtitle) {
+        return html`<span slot="subtitle">${subtitle}</span>`;
+      }
+    }
+
+    return nothing;
+  }
+
+  private _renderTarget = memoizeOne(
+    (selectedTarget?: SingleHassServiceTarget) => {
+      if (!selectedTarget) {
+        return nothing;
+      }
+
+      return html`<span class="selected-target"
+        >${this._getSelectedTargetIcon(
+          selectedTarget
+        )}${this._getSelectedTargetLabel(selectedTarget)}</span
+      >`;
+    }
+  );
+
+  // #endregion render
+
+  // #region data
+
+  private _getGroups = (
+    type: AddAutomationElementDialogParams["type"],
+    group?: string,
+    collectionIndex?: number
+  ): AutomationElementGroup => {
+    if (group && collectionIndex !== undefined) {
+      return (
+        TYPES[type].collections[collectionIndex].groups[group].members || {
+          [group]: {},
+        }
+      );
+    }
+
+    return TYPES[type].collections.reduce(
+      (acc, collection) => ({ ...acc, ...collection.groups }),
+      {} as AutomationElementGroup
+    );
+  };
+
+  private _items = memoizeOne(
+    (
+      type: AddAutomationElementDialogParams["type"],
+      localize: LocalizeFunc,
+      services: HomeAssistant["services"],
+      manifests?: DomainManifestLookup
+    ): ListItem[] => {
+      const groups = this._getGroups(type);
+
+      const flattenGroups = (grp: AutomationElementGroup) =>
+        Object.entries(grp).map(([key, options]) =>
+          options.members
+            ? flattenGroups(options.members)
+            : this._convertToItem(key, options, type, localize)
+        );
+
+      const items = flattenGroups(groups).flat();
+      if (type === "trigger") {
+        items.push(...this._triggers(localize, this._triggerDescriptions));
+      }
+      if (type === "action") {
+        items.push(...this._services(localize, services, manifests));
+      }
+
+      return items.filter(({ name }) => name);
+    }
+  );
+
+  private _getCollections = memoizeOne(
+    (
+      type: AddAutomationElementDialogParams["type"],
+      collections: AutomationElementGroupCollection[],
+      domains: Set<string> | undefined,
+      localize: LocalizeFunc,
+      services: HomeAssistant["services"],
+      triggerDescriptions: TriggerDescriptions,
+      manifests?: DomainManifestLookup
+    ): {
+      titleKey?: LocalizeKeys;
+      groups: ListItem[];
+    }[] => {
+      const generatedCollections: any = [];
+
+      collections.forEach((collection) => {
+        let collectionGroups = Object.entries(collection.groups);
+        const groups: ListItem[] = [];
+
+        if (
+          type === "action" &&
+          Object.keys(collection.groups).some((item) =>
+            ACTION_SERVICE_KEYWORDS.includes(item)
+          )
+        ) {
+          groups.push(
+            ...this._serviceGroups(
+              localize,
+              services,
+              manifests,
+              domains,
+              collection.groups.dynamicGroups
+                ? undefined
+                : collection.groups.helpers
+                  ? "helper"
+                  : "other"
+            )
+          );
+
+          collectionGroups = collectionGroups.filter(
+            ([key]) => !ACTION_SERVICE_KEYWORDS.includes(key)
+          );
+        }
+
+        if (
+          type === "trigger" &&
+          Object.keys(collection.groups).some((item) =>
+            ACTION_SERVICE_KEYWORDS.includes(item)
+          )
+        ) {
+          groups.push(
+            ...this._triggerGroups(
+              localize,
+              triggerDescriptions,
+              manifests,
+              domains,
+              collection.groups.dynamicGroups
+                ? undefined
+                : collection.groups.helpers
+                  ? "helper"
+                  : "other"
+            )
+          );
+
+          collectionGroups = collectionGroups.filter(
+            ([key]) => !ACTION_SERVICE_KEYWORDS.includes(key)
+          );
+        }
+
+        groups.push(
+          ...collectionGroups.map(([key, options]) =>
+            this._convertToItem(key, options, type, localize)
+          )
+        );
+
+        generatedCollections.push({
+          titleKey: collection.titleKey,
+          groups: groups.sort((a, b) => {
+            // make sure device is always on top
+            if (a.key === "device" || a.key === "device_id") {
+              return -1;
+            }
+            if (b.key === "device" || b.key === "device_id") {
+              return 1;
+            }
+            return stringCompare(a.name, b.name, this.hass.locale.language);
+          }),
+        });
+      });
+      return generatedCollections;
+    }
+  );
+
+  private _getBlockItems = memoizeOne(
+    (
+      type: AddAutomationElementDialogParams["type"],
+      localize: LocalizeFunc
+    ): ListItem[] => {
+      const groups =
+        type === "action"
+          ? ACTION_BUILDING_BLOCKS_GROUP
+          : CONDITION_BUILDING_BLOCKS_GROUP;
+
+      const result = Object.entries(groups).map(([key, options]) =>
+        this._convertToItem(key, options, type, localize)
+      );
+
+      return result.sort((a, b) =>
+        stringCompare(a.name, b.name, this.hass.locale.language)
+      );
+    }
+  );
+
+  private _getGroupItems = memoizeOne(
+    (
+      type: AddAutomationElementDialogParams["type"],
+      group: string,
+      collectionIndex: number,
+      domains: Set<string> | undefined,
+      localize: LocalizeFunc,
+      services: HomeAssistant["services"],
+      manifests?: DomainManifestLookup
+    ): ListItem[] => {
+      if (type === "action" && isDynamic(group)) {
+        return this._services(localize, services, manifests, group);
+      }
+
+      if (type === "trigger" && isDynamic(group)) {
+        return this._triggers(localize, this._triggerDescriptions, group);
+      }
+
+      const groups = this._getGroups(type, group, collectionIndex);
+
+      const result = Object.entries(groups).map(([key, options]) =>
+        this._convertToItem(key, options, type, localize)
+      );
+
+      if (type === "action") {
+        if (!this._selectedGroup) {
+          result.unshift(
+            ...this._serviceGroups(
+              localize,
+              services,
+              manifests,
+              domains,
+              undefined
+            )
+          );
+        } else if (this._selectedGroup === "helpers") {
+          result.unshift(
+            ...this._serviceGroups(
+              localize,
+              services,
+              manifests,
+              domains,
+              "helper"
+            )
+          );
+        } else if (this._selectedGroup === "other") {
+          result.unshift(
+            ...this._serviceGroups(
+              localize,
+              services,
+              manifests,
+              domains,
+              "other"
+            )
+          );
+        }
+      }
+
+      return result.sort((a, b) =>
+        stringCompare(a.name, b.name, this.hass.locale.language)
+      );
+    }
+  );
+
+  private _serviceGroups = (
+    localize: LocalizeFunc,
+    services: HomeAssistant["services"],
+    manifests: DomainManifestLookup | undefined,
+    domains: Set<string> | undefined,
+    type: "helper" | "other" | undefined
+  ): ListItem[] => {
+    if (!services || !manifests) {
+      return [];
+    }
+    const result: ListItem[] = [];
+    Object.keys(services).forEach((domain) => {
+      const manifest = manifests[domain];
+      const domainUsed = !domains ? true : domains.has(domain);
+      if (
+        (type === undefined &&
+          (ENTITY_DOMAINS_MAIN.has(domain) ||
+            (manifest?.integration_type === "entity" &&
+              domainUsed &&
+              !ENTITY_DOMAINS_OTHER.has(domain)))) ||
+        (type === "helper" && manifest?.integration_type === "helper") ||
+        (type === "other" &&
+          !ENTITY_DOMAINS_MAIN.has(domain) &&
+          (ENTITY_DOMAINS_OTHER.has(domain) ||
+            (!domainUsed && manifest?.integration_type === "entity") ||
+            !["helper", "entity"].includes(manifest?.integration_type || "")))
+      ) {
+        result.push({
+          icon: html`
+            <ha-domain-icon
+              .hass=${this.hass}
+              .domain=${domain}
+              brand-fallback
+            ></ha-domain-icon>
+          `,
+          key: `${DYNAMIC_PREFIX}${domain}`,
+          name: domainToName(localize, domain, manifest),
+          description: "",
+        });
+      }
+    });
+    return result.sort((a, b) =>
+      stringCompare(a.name, b.name, this.hass.locale.language)
+    );
+  };
+
+  private _triggerGroups = (
+    localize: LocalizeFunc,
+    triggers: TriggerDescriptions,
+    manifests: DomainManifestLookup | undefined,
+    domains: Set<string> | undefined,
+    type: "helper" | "other" | undefined
+  ): ListItem[] => {
+    if (!triggers || !manifests) {
+      return [];
+    }
+    const result: ListItem[] = [];
+    const addedDomains = new Set<string>();
+    Object.keys(triggers).forEach((trigger) => {
+      const domain = getTriggerDomain(trigger);
+
+      if (addedDomains.has(domain)) {
+        return;
+      }
+      addedDomains.add(domain);
+
+      const manifest = manifests[domain];
+      const domainUsed = !domains ? true : domains.has(domain);
+
+      if (
+        (type === undefined &&
+          (ENTITY_DOMAINS_MAIN.has(domain) ||
+            (manifest?.integration_type === "entity" &&
+              domainUsed &&
+              !ENTITY_DOMAINS_OTHER.has(domain)))) ||
+        (type === "helper" && manifest?.integration_type === "helper") ||
+        (type === "other" &&
+          !ENTITY_DOMAINS_MAIN.has(domain) &&
+          (ENTITY_DOMAINS_OTHER.has(domain) ||
+            (!domainUsed && manifest?.integration_type === "entity") ||
+            !["helper", "entity"].includes(manifest?.integration_type || "")))
+      ) {
+        result.push({
+          icon: html`
+            <ha-domain-icon
+              .hass=${this.hass}
+              .domain=${domain}
+              brand-fallback
+            ></ha-domain-icon>
+          `,
+          key: `${DYNAMIC_PREFIX}${domain}`,
+          name: domainToName(localize, domain, manifest),
+          description: "",
+        });
+      }
+    });
+    return result.sort((a, b) =>
+      stringCompare(a.name, b.name, this.hass.locale.language)
+    );
+  };
+
+  private _triggers = memoizeOne(
+    (
+      localize: LocalizeFunc,
+      triggers: TriggerDescriptions,
+      group?: string
+    ): ListItem[] => {
+      if (!triggers) {
+        return [];
+      }
+
+      return this._getTriggerListItems(
+        localize,
+        Object.keys(triggers).filter((trigger) => {
+          const domain = getTriggerDomain(trigger);
+          return !group || group === `${DYNAMIC_PREFIX}${domain}`;
+        })
+      );
+    }
+  );
+
+  private _services = memoizeOne(
+    (
+      localize: LocalizeFunc,
+      services: HomeAssistant["services"],
+      manifests: DomainManifestLookup | undefined,
+      group?: string
+    ): ListItem[] => {
+      if (!services) {
+        return [];
+      }
+      const result: ListItem[] = [];
+
+      let domain: string | undefined;
+
+      if (isDynamic(group)) {
+        domain = getValueFromDynamic(group!);
+      }
+
+      const addDomain = (dmn: string) => {
+        const services_keys = Object.keys(services[dmn]);
+
+        for (const service of services_keys) {
+          result.push({
+            icon: html`
+              <ha-service-icon
+                .hass=${this.hass}
+                .service=${`${dmn}.${service}`}
+              ></ha-service-icon>
+            `,
+            key: `${DYNAMIC_PREFIX}${dmn}.${service}`,
+            name: `${domain ? "" : `${domainToName(localize, dmn)}: `}${
+              this.hass.localize(`component.${dmn}.services.${service}.name`) ||
+              services[dmn][service]?.name ||
+              service
+            }`,
+            description:
+              this.hass.localize(
+                `component.${dmn}.services.${service}.description`
+              ) ||
+              services[dmn][service]?.description ||
+              "",
+          });
+        }
+      };
+
+      if (domain) {
+        addDomain(domain);
+        return result.sort((a, b) =>
+          stringCompare(a.name, b.name, this.hass.locale.language)
+        );
+      }
+
+      if (group && !["helpers", "other"].includes(group)) {
+        return [];
+      }
+
+      Object.keys(services)
+        .sort()
+        .forEach((dmn) => {
+          const manifest = manifests?.[dmn];
+          if (group === "helpers" && manifest?.integration_type !== "helper") {
+            return;
+          }
+          if (
+            group === "other" &&
+            (ENTITY_DOMAINS_OTHER.has(dmn) ||
+              ["helper", "entity"].includes(manifest?.integration_type || ""))
+          ) {
+            return;
+          }
+          addDomain(dmn);
+        });
+
+      return result;
+    }
+  );
+
+  private _getLabel = memoizeOne((labelId) =>
+    this._labelRegistry?.find(({ label_id }) => label_id === labelId)
+  );
+
+  // #endregion data
+
+  // #region data memoize
+
+  private _getFloorAreaLookupMemoized = memoizeOne(
+    (areas: HomeAssistant["areas"]) => getFloorAreaLookup(Object.values(areas))
+  );
+
+  private _getAreaDeviceLookupMemoized = memoizeOne(
+    (devices: HomeAssistant["devices"]) =>
+      getAreaDeviceLookup(Object.values(devices))
+  );
+
+  private _getAreaEntityLookupMemoized = memoizeOne(
+    (entities: HomeAssistant["entities"]) =>
+      getAreaEntityLookup(Object.values(entities), true)
+  );
+
+  private _getDeviceEntityLookupMemoized = memoizeOne(
+    (entities: HomeAssistant["entities"]) =>
+      getDeviceEntityLookup(Object.values(entities), true)
+  );
+
+  private _extractTypeAndIdFromTarget = memoizeOne(
+    (target: SingleHassServiceTarget): [string, string | undefined] => {
+      const [targetTypeId, targetId] = Object.entries(target)[0];
+      const targetType = targetTypeId.replace("_id", "");
+      return [targetType, targetId];
+    }
+  );
+
+  // #endregion data memoize
+
+  // #region search
+
+  private _createFuseIndex = (states) =>
+    Fuse.createIndex(["search_labels"], states);
+
+  private _fuseIndexes = {
+    area: memoizeOne((states: PickerComboBoxItem[]) =>
+      this._createFuseIndex(states)
+    ),
+    entity: memoizeOne((states: PickerComboBoxItem[]) =>
+      this._createFuseIndex(states)
+    ),
+    device: memoizeOne((states: PickerComboBoxItem[]) =>
+      this._createFuseIndex(states)
+    ),
+    label: memoizeOne((states: PickerComboBoxItem[]) =>
+      this._createFuseIndex(states)
+    ),
+    item: memoizeOne((states: PickerComboBoxItem[]) =>
+      this._createFuseIndex(states)
+    ),
+    block: memoizeOne((states: PickerComboBoxItem[]) =>
+      this._createFuseIndex(states)
+    ),
+  };
+
+  private _getFilteredItems = memoizeOne(
+    (
+      type: AddAutomationElementDialogParams["type"],
+      localize: HomeAssistant["localize"],
+      searchTerm: string,
+      configEntryLookup: Record<string, ConfigEntry>,
+      services: HomeAssistant["services"],
+      selectedSection?: SearchSection,
+      manifests?: DomainManifestLookup
+    ) => {
+      const resultItems: (
+        | string
+        | FloorComboBoxItem
+        | EntityComboBoxItem
+        | PickerComboBoxItem
+      )[] = [];
+
+      if (!selectedSection || selectedSection === "item") {
+        let items = this._convertItemsToComboBoxItems(
+          this._items(type, localize, services, manifests),
+          type
+        );
+        if (searchTerm) {
+          items = this._filterGroup("item", items, searchTerm, {
+            ignoreLocation: true,
+            includeScore: true,
+            minMatchCharLength: Math.min(2, this._filter.length),
+          }) as AutomationItemComboBoxItem[];
+        }
+
+        if (!selectedSection && items.length) {
+          // show group title
+          resultItems.push(
+            localize(`ui.panel.config.automation.editor.${type}s.name`)
+          );
+        }
+
+        resultItems.push(...items);
+      }
+
+      if (
+        type !== "trigger" &&
+        (!selectedSection || selectedSection === "block")
+      ) {
+        const groups =
+          type === "action"
+            ? ACTION_BUILDING_BLOCKS_GROUP
+            : type === "condition"
+              ? CONDITION_BUILDING_BLOCKS_GROUP
+              : {};
+
+        let blocks = this._convertItemsToComboBoxItems(
+          Object.keys(groups).map((key) =>
+            this._convertToItem(key, {}, type, localize)
+          ),
+          "block"
+        );
+
+        if (searchTerm) {
+          blocks = this._filterGroup("block", blocks, searchTerm, {
+            ignoreLocation: true,
+            includeScore: true,
+            minMatchCharLength: Math.min(2, this._filter.length),
+          }) as AutomationItemComboBoxItem[];
+        }
+
+        if (!selectedSection && blocks.length) {
+          // show group title
+          resultItems.push(
+            localize("ui.panel.config.automation.editor.blocks")
+          );
+        }
+        resultItems.push(...blocks);
+      }
+
+      if (!selectedSection || selectedSection === "entity") {
+        let entityItems = this._getEntitiesMemoized(
+          this.hass,
+          undefined,
+          undefined,
+          undefined,
+          undefined,
+          undefined,
+          undefined,
+          undefined,
+          undefined,
+          `entity${TARGET_SEPARATOR}`
+        );
+
+        if (searchTerm) {
+          entityItems = this._filterGroup(
+            "entity",
+            entityItems,
+            searchTerm,
+            undefined,
+            (item: EntityComboBoxItem) =>
+              item.stateObj?.entity_id === searchTerm
+          ) as EntityComboBoxItem[];
+        }
+
+        if (!selectedSection && entityItems.length) {
+          // show group title
+          resultItems.push(
+            localize("ui.components.target-picker.type.entities")
+          );
+        }
+
+        resultItems.push(...entityItems);
+      }
+
+      if (!selectedSection || selectedSection === "device") {
+        let deviceItems = this._getDevicesMemoized(
+          this.hass,
+          configEntryLookup,
+          undefined,
+          undefined,
+          undefined,
+          undefined,
+          undefined,
+          undefined,
+          undefined,
+          `device${TARGET_SEPARATOR}`
+        );
+
+        if (searchTerm) {
+          deviceItems = this._filterGroup("device", deviceItems, searchTerm);
+        }
+
+        if (!selectedSection && deviceItems.length) {
+          // show group title
+          resultItems.push(
+            localize("ui.components.target-picker.type.devices")
+          );
+        }
+
+        resultItems.push(...deviceItems);
+      }
+
+      if (!selectedSection || selectedSection === "area") {
+        let areasAndFloors = this._getAreasAndFloorsMemoized(
+          this.hass.states,
+          this.hass.floors,
+          this.hass.areas,
+          this.hass.devices,
+          this.hass.entities,
+          memoizeOne((value: AreaFloorValue): string =>
+            [value.type, value.id].join(TARGET_SEPARATOR)
+          ),
+          undefined,
+          undefined,
+          undefined,
+          undefined,
+          undefined,
+          undefined,
+          undefined,
+          true
+        );
+
+        if (searchTerm) {
+          areasAndFloors = this._filterGroup(
+            "area",
+            areasAndFloors,
+            searchTerm
+          ) as FloorComboBoxItem[];
+        }
+
+        if (!selectedSection && areasAndFloors.length) {
+          // show group title
+          resultItems.push(localize("ui.components.target-picker.type.areas"));
+        }
+
+        resultItems.push(
+          ...areasAndFloors.map((item, index) => {
+            const nextItem = areasAndFloors[index + 1];
+
+            if (
+              !nextItem ||
+              (item.type === "area" && nextItem.type === "floor")
+            ) {
+              return {
+                ...item,
+                last: true,
+              };
+            }
+
+            return item;
+          })
+        );
+      }
+
+      if (!selectedSection || selectedSection === "label") {
+        let labels = this._getLabelsMemoized(
+          this.hass.states,
+          this.hass.areas,
+          this.hass.devices,
+          this.hass.entities,
+          this._labelRegistry,
+          undefined,
+          undefined,
+          undefined,
+          undefined,
+          undefined,
+          undefined,
+          `label${TARGET_SEPARATOR}`
+        );
+
+        if (searchTerm) {
+          labels = this._filterGroup("label", labels, searchTerm);
+        }
+
+        if (!selectedSection && labels.length) {
+          // show group title
+          resultItems.push(localize("ui.components.target-picker.type.labels"));
+        }
+
+        resultItems.push(...labels);
+      }
+
+      return resultItems;
+    }
+  );
+
+  private _filterGroup(
+    type: SearchSection,
+    items: (
+      | FloorComboBoxItem
+      | PickerComboBoxItem
+      | EntityComboBoxItem
+      | AutomationItemComboBoxItem
+    )[],
+    searchTerm: string,
+    fuseOptions?: IFuseOptions<any>,
+    checkExact?: (
+      item:
+        | FloorComboBoxItem
+        | PickerComboBoxItem
+        | EntityComboBoxItem
+        | AutomationItemComboBoxItem
+    ) => boolean
+  ) {
+    const fuseIndex = this._fuseIndexes[type](items);
+    const fuse = new HaFuse<
+      | FloorComboBoxItem
+      | PickerComboBoxItem
+      | EntityComboBoxItem
+      | AutomationItemComboBoxItem
+    >(
+      items,
+      fuseOptions || {
+        shouldSort: false,
+        minMatchCharLength: Math.min(searchTerm.length, 2),
+      },
+      fuseIndex
+    );
+
+    const results = fuse.multiTermsSearch(searchTerm);
+    let filteredItems = items;
+    if (results) {
+      filteredItems = results.map((result) => result.item);
+    }
+
+    if (!checkExact) {
+      return filteredItems;
+    }
+
+    // If there is exact match for entity id, put it first
+    const index = filteredItems.findIndex((item) => checkExact(item));
+    if (index === -1) {
+      return filteredItems;
+    }
+
+    const [exactMatch] = filteredItems.splice(index, 1);
+    filteredItems.unshift(exactMatch);
+
+    return filteredItems;
+  }
+
+  private _getSearchSectionLabel(section: SearchSection) {
+    if (section === "block") {
+      return this.hass.localize("ui.panel.config.automation.editor.blocks");
+    }
+
+    if (
+      section === "item" ||
+      ["trigger", "condition", "action"].includes(section)
+    ) {
+      return this.hass.localize(
+        `ui.panel.config.automation.editor.${this._params!.type}s.name`
+      );
+    }
+
+    return this.hass.localize(
+      `ui.components.target-picker.type.${section === "entity" ? "entities" : `${section as "area" | "device" | "floor"}s`}` as LocalizeKeys
+    );
+  }
+
+  private _keyFunction = (item: PickerComboBoxItem | string) =>
+    typeof item === "string" ? item : item.id;
+
+  // #endregion search
+
+  // #region render prepare
+
+  private _convertItemsToComboBoxItems = (
+    items: ListItem[],
+    type: "trigger" | "condition" | "action" | "block"
+  ): AutomationItemComboBoxItem[] =>
+    items.map(({ key, name, description, iconPath, icon }) => ({
+      id: key,
+      primary: name,
+      secondary: description,
+      iconPath,
+      renderedIcon: icon,
+      type,
+      search_labels: [key, name, description],
+    }));
+
+  private _convertToItem = (
+    key: string,
+    options,
+    type: AddAutomationElementDialogParams["type"],
+    localize: LocalizeFunc
+  ): ListItem => ({
+    key,
+    name: localize(
+      // @ts-ignore
+      `ui.panel.config.automation.editor.${type}s.${
+        options.members ? "groups" : "type"
+      }.${key}.label`
+    ),
+    description: localize(
+      // @ts-ignore
+      `ui.panel.config.automation.editor.${type}s.${
+        options.members ? "groups" : "type"
+      }.${key}.description${options.members ? "" : ".picker"}`
+    ),
+    iconPath: options.icon || TYPES[type].icons[key],
+  });
+
+  private _getTriggerListItems(
+    localize: LocalizeFunc,
+    triggerIds: string[]
+  ): ListItem[] {
+    return triggerIds.map((trigger) => {
+      const domain = getTriggerDomain(trigger);
+      const triggerName = getTriggerObjectId(trigger);
+
+      return {
+        icon: html`
+          <ha-trigger-icon
+            .hass=${this.hass}
+            .trigger=${trigger}
+          ></ha-trigger-icon>
+        `,
+        key: `${DYNAMIC_PREFIX}${trigger}`,
+        name:
+          localize(`component.${domain}.triggers.${triggerName}.name`) ||
+          trigger,
+        description:
+          localize(`component.${domain}.triggers.${triggerName}.description`) ||
+          trigger,
+      };
+    });
+  }
+
+  private _getActionListItems(
+    localize: LocalizeFunc,
+    serviceIds: string[]
+  ): ListItem[] {
+    return serviceIds.map((service) => {
+      const [domain, serviceName] = service.split(".", 2);
+
+      return {
+        icon: html`
+          <ha-service-icon
+            .hass=${this.hass}
+            .service=${`${domain}.${serviceName}`}
+          ></ha-service-icon>
+        `,
+        key: `${DYNAMIC_PREFIX}${domain}.${serviceName}`,
+        name: `${domain ? "" : `${domainToName(localize, domain)}: `}${
+          this.hass.localize(
+            `component.${domain}.services.${serviceName}.name`
+          ) ||
+          this.hass.services[domain][serviceName]?.name ||
+          serviceName
+        }`,
+        description:
+          this.hass.localize(
+            `component.${domain}.services.${serviceName}.description`
+          ) ||
+          this.hass.services[domain][serviceName]?.description ||
+          "",
+      };
+    });
+  }
+
+  // #endregion render prepare
+
+  // #region interaction
+
   private _selectSearchResult = (ev: Event) => {
     ev.stopPropagation();
     const value = (ev.currentTarget as any).value as
@@ -1847,34 +2132,6 @@ class DialogAddAutomationElement
     }
   }
 
-  private _getSearchSectionLabel(section: SearchSection) {
-    if (section === "block") {
-      return this.hass.localize("ui.panel.config.automation.editor.blocks");
-    }
-
-    if (
-      section === "item" ||
-      ["trigger", "condition", "action"].includes(section)
-    ) {
-      return this.hass.localize(
-        `ui.panel.config.automation.editor.${this._params!.type}s.name`
-      );
-    }
-
-    return this.hass.localize(
-      `ui.components.target-picker.type.${section === "entity" ? "entities" : `${section as "area" | "device" | "floor"}s`}` as LocalizeKeys
-    );
-  }
-
-  private _keyFunction = (item: PickerComboBoxItem | string) =>
-    typeof item === "string" ? item : item.id;
-
-  public disconnectedCallback(): void {
-    super.disconnectedCallback();
-    window.removeEventListener("resize", this._updateNarrow);
-    this._removeSearchKeybindings();
-  }
-
   private _toggleSection(ev: Event) {
     ev.stopPropagation();
     // this._resetSelectedItem();
@@ -1894,12 +2151,6 @@ class DialogAddAutomationElement
       this._virtualizerElement.scrollToIndex(0);
     }
   }
-
-  private _updateNarrow = () => {
-    this._narrow =
-      window.matchMedia("(max-width: 870px)").matches ||
-      window.matchMedia("(max-height: 500px)").matches;
-  };
 
   private _close() {
     this._open = false;
@@ -2016,12 +2267,6 @@ class DialogAddAutomationElement
     }
   };
 
-  protected supportedShortcuts(): SupportedShortcuts {
-    return {
-      v: () => this._addClipboard(),
-    };
-  }
-
   private _switchTab(ev) {
     this._tab = ev.detail.value;
   }
@@ -2037,10 +2282,6 @@ class DialogAddAutomationElement
       ArrowDown: this._focusSearchList,
       Enter: this._pickSingleItem,
     });
-  }
-
-  private _removeSearchKeybindings() {
-    this._removeKeyboardShortcuts?.();
   }
 
   private _focusSearchList = (ev) => {
@@ -2082,97 +2323,9 @@ class DialogAddAutomationElement
     this._selectSearchItem(items[0]);
   };
 
-  private _renderHeader() {
-    return html`
-      <ha-dialog-header subtitle-position="above">
-        <span slot="title">${this._getDialogTitle()}</span>
+  // #region interaction
 
-        ${this._renderDialogSubtitle()}
-        ${this._narrow && (this._selectedGroup || this._selectedTarget)
-          ? html`<ha-icon-button-prev
-              slot="navigationIcon"
-              @click=${this._back}
-            ></ha-icon-button-prev>`
-          : html`<ha-icon-button
-              .path=${mdiClose}
-              @click=${this._close}
-              slot="navigationIcon"
-            ></ha-icon-button>`}
-      </ha-dialog-header>
-    `;
-  }
-
-  private _getSelectedTargetIcon(
-    selectedTarget: SingleHassServiceTarget
-  ): TemplateResult | typeof nothing {
-    const [targetType, targetId] =
-      this._extractTypeAndIdFromTarget(selectedTarget);
-
-    if (!targetId) {
-      return nothing;
-    }
-
-    if (targetType === "floor" && this.hass.floors[targetId]) {
-      return html`<ha-floor-icon
-        .floor=${this.hass.floors[targetId]}
-      ></ha-floor-icon>`;
-    }
-
-    if (targetType === "area" && this.hass.areas[targetId]) {
-      const area = this.hass.areas[targetId];
-      if (area.icon) {
-        return html`<ha-icon .icon=${area.icon}></ha-icon>`;
-      }
-      return html`<ha-svg-icon .path=${mdiTextureBox}></ha-svg-icon>`;
-    }
-
-    if (targetType === "device" && this.hass.devices[targetId]) {
-      const device = this.hass.devices[targetId];
-      const configEntry = device.primary_config_entry
-        ? this._configEntryLookup?.[device.primary_config_entry]
-        : undefined;
-      const domain = configEntry?.domain;
-
-      if (domain) {
-        return html`<img
-          slot="start"
-          alt=""
-          crossorigin="anonymous"
-          referrerpolicy="no-referrer"
-          src=${brandsUrl({
-            domain,
-            type: "icon",
-            darkOptimized: this.hass.themes?.darkMode,
-          })}
-        />`;
-      }
-    }
-
-    if (targetType === "entity" && this.hass.states[targetId]) {
-      const stateObj = this.hass.states[targetId];
-      if (stateObj) {
-        return html`<state-badge
-          .stateObj=${stateObj}
-          .hass=${this.hass}
-          .stateColor=${false}
-        ></state-badge>`;
-      }
-    }
-
-    if (targetType === "label") {
-      const label = this._getLabel(targetId);
-      if (label?.icon) {
-        return html`<ha-icon .icon=${label.icon}></ha-icon>`;
-      }
-      return html`<ha-svg-icon .path=${mdiLabel}></ha-svg-icon>`;
-    }
-
-    return nothing;
-  }
-
-  private _getLabel = memoizeOne((labelId) =>
-    this._labelRegistry?.find(({ label_id }) => label_id === labelId)
-  );
+  // #region render helpers
 
   private _getSelectedTargetLabel(
     selectedTarget: SingleHassServiceTarget
@@ -2278,110 +2431,6 @@ class DialogAddAutomationElement
     );
   }
 
-  private _renderDialogSubtitle() {
-    if (!this._narrow) {
-      return nothing;
-    }
-
-    if (this._selectedGroup) {
-      return html`<span slot="subtitle"
-        >${this.hass.localize(
-          `ui.panel.config.automation.editor.${this._params!.type}s.add`
-        )}</span
-      >`;
-    }
-
-    if (this._selectedTarget) {
-      let subtitle: string | undefined;
-      const [targetType, targetId] = this._extractTypeAndIdFromTarget(
-        this._selectedTarget
-      );
-
-      if (targetId) {
-        if (targetType === "area" && this.hass.areas[targetId].floor_id) {
-          const floorId = this.hass.areas[targetId].floor_id;
-          subtitle = computeFloorName(this.hass.floors[floorId]) || floorId;
-        }
-        if (targetType === "device" && this.hass.devices[targetId].area_id) {
-          const areaId = this.hass.devices[targetId].area_id;
-          subtitle = computeAreaName(this.hass.areas[areaId]) || areaId;
-        }
-        if (targetType === "entity" && this.hass.states[targetId]) {
-          const entity = this.hass.entities[targetId];
-          if (!entity.device_id && !entity.area_id) {
-            const domain = targetId.split(".", 2)[0];
-            subtitle = domainToName(
-              this.hass.localize,
-              domain,
-              this._manifests?.[domain]
-            );
-          } else {
-            const stateObj = this.hass.states[targetId];
-            const [entityName, deviceName, areaName] = computeEntityNameList(
-              stateObj,
-              [{ type: "entity" }, { type: "device" }, { type: "area" }],
-              this.hass.entities,
-              this.hass.devices,
-              this.hass.areas,
-              this.hass.floors
-            );
-
-            subtitle = [areaName, entityName ? deviceName : undefined]
-              .filter(Boolean)
-              .join(computeRTL(this.hass) ? " ◂ " : " ▸ ");
-          }
-        }
-      }
-
-      if (subtitle) {
-        return html`<span slot="subtitle">${subtitle}</span>`;
-      }
-    }
-
-    return nothing;
-  }
-
-  private _renderTarget = memoizeOne(
-    (selectedTarget?: SingleHassServiceTarget) => {
-      if (!selectedTarget) {
-        return nothing;
-      }
-
-      return html`<span class="selected-target"
-        >${this._getSelectedTargetIcon(
-          selectedTarget
-        )}${this._getSelectedTargetLabel(selectedTarget)}</span
-      >`;
-    }
-  );
-
-  private _getFloorAreaLookupMemoized = memoizeOne(
-    (areas: HomeAssistant["areas"]) => getFloorAreaLookup(Object.values(areas))
-  );
-
-  private _getAreaDeviceLookupMemoized = memoizeOne(
-    (devices: HomeAssistant["devices"]) =>
-      getAreaDeviceLookup(Object.values(devices))
-  );
-
-  private _getAreaEntityLookupMemoized = memoizeOne(
-    (entities: HomeAssistant["entities"]) =>
-      getAreaEntityLookup(Object.values(entities), true)
-  );
-
-  private _getDeviceEntityLookupMemoized = memoizeOne(
-    (entities: HomeAssistant["entities"]) =>
-      getDeviceEntityLookup(Object.values(entities), true)
-  );
-
-  private _extractTypeAndIdFromTarget = memoizeOne(
-    (target: SingleHassServiceTarget): [string, string | undefined] => {
-      const [targetTypeId, targetId] = Object.entries(target)[0];
-      const targetType = targetTypeId.replace("_id", "");
-      return [targetType, targetId];
-    }
-  );
-
   private _getAddFromTargetHidden = memoizeOne(
     (narrow: boolean, target?: SingleHassServiceTarget) => {
       if (narrow && target) {
@@ -2419,12 +2468,9 @@ class DialogAddAutomationElement
     }
   );
 
-  private async _loadConfigEntries() {
-    const configEntries = await getConfigEntries(this.hass);
-    this._configEntryLookup = Object.fromEntries(
-      configEntries.map((entry) => [entry.entry_id, entry])
-    );
-  }
+  // #endregion render helpers
+
+  // #region styles
 
   static get styles(): CSSResultGroup {
     return [
@@ -2766,6 +2812,8 @@ class DialogAddAutomationElement
       `,
     ];
   }
+
+  // #endregion styles
 }
 
 declare global {
