@@ -120,6 +120,7 @@ export interface AreaCardConfig extends LovelaceCardConfig {
   display_type?: AreaCardDisplayType;
   /** @deprecated Use `display_type` instead */
   show_camera?: boolean;
+  camera_entity?: string;
   camera_view?: HuiImage["cameraView"];
   aspect_ratio?: string;
   sensor_classes?: string[];
