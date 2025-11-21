@@ -1,8 +1,9 @@
 import { css, LitElement, nothing, html } from "lit";
 import { customElement, property, state } from "lit/decorators";
 import { computeDomain } from "../../../common/entity/compute_domain";
+import { isNumericFromAttributes } from "../../../common/number/format_number";
 import type { HomeAssistant } from "../../../types";
-import type { LovelaceCardFeature } from "../types";
+import type { LovelaceCardFeature, LovelaceCardFeatureEditor } from "../types";
 import type {
   LovelaceCardFeatureContext,
   BarGaugeCardFeatureConfig,
@@ -17,7 +18,7 @@ export const supportsBarGaugeCardFeature = (
     : undefined;
   if (!stateObj) return false;
   const domain = computeDomain(stateObj.entity_id);
-  return domain === "sensor" && stateObj.attributes.unit_of_measurement === "%";
+  return domain === "sensor" && isNumericFromAttributes(stateObj.attributes);
 };
 
 @customElement("hui-bar-gauge-card-feature")
@@ -32,6 +33,11 @@ class HuiBarGaugeCardFeature extends LitElement implements LovelaceCardFeature {
     return {
       type: "bar-gauge",
     };
+  }
+
+  public static async getConfigElement(): Promise<LovelaceCardFeatureEditor> {
+    await import("../editor/config-elements/hui-bar-gauge-card-feature-editor");
+    return document.createElement("hui-bar-gauge-card-feature-editor");
   }
 
   public setConfig(config: BarGaugeCardFeatureConfig): void {
@@ -53,8 +59,20 @@ class HuiBarGaugeCardFeature extends LitElement implements LovelaceCardFeature {
       return nothing;
     }
     const stateObj = this.hass.states[this.context.entity_id];
-    const value = stateObj.state;
-    return html`<div style="width: ${value}%"></div>
+    const min = this._config.min ?? 0;
+    const max = this._config.max ?? 100;
+    const value = parseFloat(stateObj.state);
+
+    if (isNaN(value) || min >= max) {
+      return nothing;
+    }
+
+    const percentage = Math.max(
+      0,
+      Math.min(100, ((value - min) / (max - min)) * 100)
+    );
+
+    return html`<div style="width: ${percentage}%"></div>
       <div class="bar-gauge-background"></div>`;
   }
 

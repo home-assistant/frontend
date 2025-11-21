@@ -1,10 +1,14 @@
 import type { PropertyValues } from "lit";
-import { ReactiveElement } from "lit";
+import { ReactiveElement, render, html } from "lit";
 import { customElement, property } from "lit/decorators";
+// eslint-disable-next-line import/extensions
+import { unsafeHTML } from "lit/directives/unsafe-html.js";
 import hash from "object-hash";
 import { fireEvent } from "../common/dom/fire_event";
 import { renderMarkdown } from "../resources/render-markdown";
 import { CacheManager } from "../util/cache-manager";
+
+const h = (template: ReturnType<typeof unsafeHTML>) => html`${template}`;
 
 const markdownCache = new CacheManager<string>(1000);
 
@@ -48,18 +52,26 @@ class HaMarkdownElement extends ReactiveElement {
     return this;
   }
 
+  private _renderPromise: ReturnType<typeof this._render> = Promise.resolve();
+
   protected update(changedProps) {
     super.update(changedProps);
     if (this.content !== undefined) {
-      this._render();
+      this._renderPromise = this._render();
     }
+  }
+
+  protected async getUpdateComplete(): Promise<boolean> {
+    await super.getUpdateComplete();
+    await this._renderPromise;
+    return true;
   }
 
   protected willUpdate(_changedProperties: PropertyValues): void {
     if (!this.innerHTML && this.cache) {
       const key = this._computeCacheKey();
       if (markdownCache.has(key)) {
-        this.innerHTML = markdownCache.get(key)!;
+        render(markdownCache.get(key)!, this.renderRoot);
         this._resize();
       }
     }
@@ -75,7 +87,7 @@ class HaMarkdownElement extends ReactiveElement {
   }
 
   private async _render() {
-    this.innerHTML = await renderMarkdown(
+    const elements = await renderMarkdown(
       String(this.content),
       {
         breaks: this.breaks,
@@ -85,6 +97,11 @@ class HaMarkdownElement extends ReactiveElement {
         allowSvg: this.allowSvg,
         allowDataUrl: this.allowDataUrl,
       }
+    );
+
+    render(
+      elements.map((e) => h(unsafeHTML(e))),
+      this.renderRoot
     );
 
     this._resize();

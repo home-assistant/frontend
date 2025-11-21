@@ -10,8 +10,7 @@ import type { LovelaceSectionRawConfig } from "../../../../data/lovelace/config/
 import type { LovelaceViewConfig } from "../../../../data/lovelace/config/view";
 import type { HomeAssistant } from "../../../../types";
 import type { MediaControlCardConfig } from "../../cards/types";
-import { getAreas, getFloors } from "../areas/helpers/areas-strategy-helper";
-import { getHomeStructure } from "./helpers/home-structure";
+import { getAreasFloorHierarchy } from "../../../../common/areas/areas-floor-hierarchy";
 import { HOME_SUMMARIES_FILTERS } from "./helpers/home-summaries";
 
 export interface HomeMediaPlayersViewStrategyConfig {
@@ -85,9 +84,9 @@ export class HomeMMediaPlayersViewStrategy extends ReactiveElement {
     _config: HomeMediaPlayersViewStrategyConfig,
     hass: HomeAssistant
   ): Promise<LovelaceViewConfig> {
-    const areas = getAreas(hass.areas);
-    const floors = getFloors(hass.floors);
-    const home = getHomeStructure(floors, areas);
+    const areas = Object.values(hass.areas);
+    const floors = Object.values(hass.floors);
+    const home = getAreasFloorHierarchy(floors, areas);
 
     const sections: LovelaceSectionRawConfig[] = [];
 

@@ -65,6 +65,15 @@ export const deleteAreaRegistryEntry = (hass: HomeAssistant, areaId: string) =>
     area_id: areaId,
   });
 
+export const reorderAreaRegistryEntries = (
+  hass: HomeAssistant,
+  areaIds: string[]
+) =>
+  hass.callWS({
+    type: "config/area_registry/reorder",
+    area_ids: areaIds,
+  });
+
 export const getAreaEntityLookup = (
   entities: (EntityRegistryEntry | EntityRegistryDisplayEntry)[],
   filterHidden = false

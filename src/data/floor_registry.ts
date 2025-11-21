@@ -51,6 +51,15 @@ export const deleteFloorRegistryEntry = (
     floor_id: floorId,
   });
 
+export const reorderFloorRegistryEntries = (
+  hass: HomeAssistant,
+  floorIds: string[]
+) =>
+  hass.callWS({
+    type: "config/floor_registry/reorder",
+    floor_ids: floorIds,
+  });
+
 export const getFloorAreaLookup = (
   areas: AreaRegistryEntry[]
 ): FloorAreaLookup => {

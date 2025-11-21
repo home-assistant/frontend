@@ -90,7 +90,8 @@ export class HaDialog extends DialogBase {
       }
       .mdc-dialog__actions {
         justify-content: var(--justify-action-buttons, flex-end);
-        padding: 12px 16px 16px 16px;
+        padding: var(--ha-space-3) var(--ha-space-4) var(--ha-space-4)
+          var(--ha-space-4);
       }
       .mdc-dialog__actions span:nth-child(1) {
         flex: var(--secondary-action-button-flex, unset);
@@ -100,22 +101,24 @@ export class HaDialog extends DialogBase {
       }
       .mdc-dialog__container {
         align-items: var(--vertical-align-dialog, center);
+        padding: var(--dialog-container-padding, var(--ha-space-0));
       }
       .mdc-dialog__title {
-        padding: 16px 16px 0 16px;
+        padding: var(--ha-space-4) var(--ha-space-4) var(--ha-space-0)
+          var(--ha-space-4);
       }
       .mdc-dialog__title:has(span) {
-        padding: 12px 12px 0;
+        padding: var(--ha-space-3) var(--ha-space-3) var(--ha-space-0);
       }
       .mdc-dialog__title::before {
         content: unset;
       }
       .mdc-dialog .mdc-dialog__content {
         position: var(--dialog-content-position, relative);
-        padding: var(--dialog-content-padding, 24px);
+        padding: var(--dialog-content-padding, var(--ha-space-6));
       }
       :host([hideactions]) .mdc-dialog .mdc-dialog__content {
-        padding-bottom: var(--dialog-content-padding, 24px);
+        padding-bottom: var(--dialog-content-padding, var(--ha-space-6));
       }
       .mdc-dialog .mdc-dialog__surface {
         position: var(--dialog-surface-position, relative);
@@ -133,7 +136,7 @@ export class HaDialog extends DialogBase {
           --ha-dialog-surface-background,
           var(--mdc-theme-surface, #fff)
         );
-        padding: var(--dialog-surface-padding);
+        padding: var(--dialog-surface-padding, var(--ha-space-0));
       }
       :host([flexContent]) .mdc-dialog .mdc-dialog__content {
         display: flex;
@@ -150,22 +153,22 @@ export class HaDialog extends DialogBase {
         text-overflow: ellipsis;
         white-space: nowrap;
         display: block;
-        padding-left: 4px;
-        padding-right: 4px;
-        margin-right: 12px;
-        margin-inline-end: 12px;
+        padding-left: var(--ha-space-1);
+        padding-right: var(--ha-space-1);
+        margin-right: var(--ha-space-3);
+        margin-inline-end: var(--ha-space-3);
         margin-inline-start: initial;
       }
       .header_button {
         text-decoration: none;
         color: inherit;
         inset-inline-start: initial;
-        inset-inline-end: -12px;
+        inset-inline-end: calc(var(--ha-space-3) * -1);
         direction: var(--direction);
       }
       .dialog-actions {
         inset-inline-start: initial !important;
-        inset-inline-end: 0px !important;
+        inset-inline-end: var(--ha-space-0) !important;
         direction: var(--direction);
       }
     `,
