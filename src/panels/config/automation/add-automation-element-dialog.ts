@@ -1493,7 +1493,12 @@ class DialogAddAutomationElement
               .group=${item.group}
               @click=${this._selected}
             >
-              <div slot="headline" class="item-headline">
+              <div
+                slot="headline"
+                class=${this._tab === "targets" && this._selectedTarget
+                  ? "item-headline"
+                  : ""}
+              >
                 ${item.name}${this._tab === "targets" && this._selectedTarget
                   ? this._renderTarget(this._selectedTarget)
                   : nothing}
