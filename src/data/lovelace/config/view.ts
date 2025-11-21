@@ -38,6 +38,8 @@ export interface LovelaceViewHeaderConfig {
 
 export interface LovelaceViewSidebarConfig {
   sections?: LovelaceSectionConfig[];
+  content_label?: string;
+  sidebar_label?: string;
 }
 
 export interface LovelaceBaseViewConfig {
