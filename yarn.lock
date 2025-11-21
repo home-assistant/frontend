@@ -4520,10 +4520,10 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@types/emscripten@npm:^1.41.2":
-  version: 1.41.2
-  resolution: "@types/emscripten@npm:1.41.2"
-  checksum: 10/95bc5acddaab2155a1fbe0c816717a2552b8d4df484d4bb8b6962b9f2e65c7a8d81872d6e80d706384608e9ea0cde07f852b3069e12921c2b445c6fb48bd985b
+"@types/emscripten@npm:^1.41.5":
+  version: 1.41.5
+  resolution: "@types/emscripten@npm:1.41.5"
+  checksum: 10/60dfcced39b2d0c94f31907c5cf5d97fe06ed35ed6cb134650a1a96bae861302722d4a6f459b484ea09588cde70cbcc034974454a746be3ce9688b52398d2953
   languageName: node
   linkType: hard
 
@@ -6108,12 +6108,12 @@ __metadata:
   languageName: node
   linkType: hard
 
-"barcode-detector@npm:3.0.6":
-  version: 3.0.6
-  resolution: "barcode-detector@npm:3.0.6"
+"barcode-detector@npm:3.0.8":
+  version: 3.0.8
+  resolution: "barcode-detector@npm:3.0.8"
   dependencies:
-    zxing-wasm: "npm:2.2.2"
-  checksum: 10/c1d4fbeecbb0be8f91e15c2bfdaaf3b27e3fd6fe224e60c4c25793a3bf90bab844702956de2f596a8e3229d2b4e0d88b42fb629472efc0b36a3751c3b01b7151
+    zxing-wasm: "npm:2.2.4"
+  checksum: 10/7de6225f659c69a0f4101d080a9e0812f2404c485fa2406424b8b13eaff274f6e7405c94de24827a09def52c32a63b19b9c9fba61c5274b074d558f696ec1684
   languageName: node
   linkType: hard
 
@@ -9298,7 +9298,7 @@ __metadata:
     app-datepicker: "npm:5.1.1"
     babel-loader: "npm:10.0.0"
     babel-plugin-template-html-minifier: "npm:4.1.0"
-    barcode-detector: "npm:3.0.6"
+    barcode-detector: "npm:3.0.8"
     browserslist-useragent-regexp: "npm:4.1.3"
     color-name: "npm:2.0.2"
     comlink: "npm:4.4.2"
@@ -14223,12 +14223,12 @@ __metadata:
   languageName: node
   linkType: hard
 
-"type-fest@npm:^5.0.1":
-  version: 5.0.1
-  resolution: "type-fest@npm:5.0.1"
+"type-fest@npm:^5.2.0":
+  version: 5.2.0
+  resolution: "type-fest@npm:5.2.0"
   dependencies:
     tagged-tag: "npm:^1.0.0"
-  checksum: 10/5ec4def4ce82e6a33cf2e1a50f7ef512226fbe85314e402155aaedd70d4aa7ccea4224a72234d5351b1b4a730b36243d5b011c147e91795d2eee0dba291c6e51
+  checksum: 10/4ce526139c05e92a1d92fa905840ff9ae725b8058df5a5571380bca1827db1f2e4e204c9d561fd63e972d45591dd4d38eab5f5529c0af93d6cfb5f99109aa74a
   languageName: node
   linkType: hard
 
@@ -15803,14 +15803,14 @@ __metadata:
   languageName: node
   linkType: hard
 
-"zxing-wasm@npm:2.2.2":
-  version: 2.2.2
-  resolution: "zxing-wasm@npm:2.2.2"
+"zxing-wasm@npm:2.2.4":
+  version: 2.2.4
+  resolution: "zxing-wasm@npm:2.2.4"
   dependencies:
-    "@types/emscripten": "npm:^1.41.2"
-    type-fest: "npm:^5.0.1"
+    "@types/emscripten": "npm:^1.41.5"
+    type-fest: "npm:^5.2.0"
   peerDependencies:
     "@types/emscripten": ">=1.39.6"
-  checksum: 10/c542a3a56d30961cd221535fa82fef7fe49abff896339e23236b6a13297e0eba2dc9d51fb0808544321950b51a8f554d57a7859ddb7f8c236cdf66e2509a8b02
+  checksum: 10/e5928cbb066c854c970cbf724e978e502c3469d69de2469bd37d1f6ab8f5d2a2acdbaa9dea32d35cfc058e2b482e29a9c4f12161d9df3e1e952c30dda3a96d8c
   languageName: node
   linkType: hard
