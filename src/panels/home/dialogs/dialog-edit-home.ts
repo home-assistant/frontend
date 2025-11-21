@@ -76,7 +76,7 @@ export class DialogEditHome
           )}
           reorder
           allow-custom-entity
-          @value-changed=${this._valueChanged}
+          @value-changed=${this._favoriteEntitiesChanged}
         ></ha-entities-picker>
 
         <ha-dialog-footer slot="footer">
@@ -100,7 +100,7 @@ export class DialogEditHome
     `;
   }
 
-  private _valueChanged(ev: CustomEvent): void {
+  private _favoriteEntitiesChanged(ev: CustomEvent): void {
     this._config = {
       ...this._config,
       favorite_entities: ev.detail.value as string[],
