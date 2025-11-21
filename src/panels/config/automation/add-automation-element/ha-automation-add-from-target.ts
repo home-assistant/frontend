@@ -7,8 +7,16 @@ import type {
   HassEntity,
   SingleHassServiceTarget,
 } from "home-assistant-js-websocket";
-import { css, html, LitElement, nothing, type PropertyValues } from "lit";
+import {
+  css,
+  html,
+  LitElement,
+  nothing,
+  type PropertyValues,
+  type TemplateResult,
+} from "lit";
 import { customElement, property, state } from "lit/decorators";
+import { ifDefined } from "lit/directives/if-defined";
 import memoizeOne from "memoize-one";
 import { fireEvent } from "../../../../common/dom/fire_event";
 import { computeAreaName } from "../../../../common/entity/compute_area_name";
@@ -164,7 +172,6 @@ export default class HaAutomationAddFromTarget extends LitElement {
   }
 
   // #region render
-
   protected render() {
     if (!this.manifests || !this._configEntryLookup) {
       return nothing;
@@ -284,14 +291,46 @@ export default class HaAutomationAddFromTarget extends LitElement {
       narrow: boolean,
       entries: Record<string, Level1Entries>,
       value?: SingleHassServiceTarget
-    ) =>
-      html`<ha-section-title
+    ) => {
+      const emptyFloors =
+        !this._floorAreas.length ||
+        (!this._floorAreas[0].id && !this._floorAreas[0].areas.length);
+
+      const floorAreas = emptyFloors
+        ? undefined
+        : this._floorAreas.map((floor, index) =>
+            index === 0 && !floor.id
+              ? this._renderAreas(
+                  entries[floor.id || `floor${TARGET_SEPARATOR}`].areas!
+                )
+              : this._renderItem(
+                  !floor.id
+                    ? this.localize(
+                        "ui.panel.config.automation.editor.other_areas"
+                      )
+                    : floor.primary,
+                  floor.id || `floor${TARGET_SEPARATOR}`,
+                  !floor.id,
+                  !!floor.id && this._getSelectedTargetId(value) === floor.id,
+                  !entries[floor.id || `floor${TARGET_SEPARATOR}`].open &&
+                    !!Object.keys(
+                      entries[floor.id || `floor${TARGET_SEPARATOR}`].areas!
+                    ).length,
+                  entries[floor.id || `floor${TARGET_SEPARATOR}`].open,
+                  this._renderFloorIcon(floor as FloorNestedComboBoxItem),
+                  entries[floor.id || `floor${TARGET_SEPARATOR}`].open
+                    ? this._renderAreas(
+                        entries[floor.id || `floor${TARGET_SEPARATOR}`].areas!
+                      )
+                    : undefined
+                )
+          );
+      return html`<ha-section-title
           >${this.localize(
             "ui.panel.config.automation.editor.home"
           )}</ha-section-title
         >
-        ${!this._floorAreas.length ||
-        (!this._floorAreas[0].id && !this._floorAreas[0].areas.length)
+        ${emptyFloors
           ? html`<ha-md-list>
               <ha-md-list-item type="text">
                 <div slot="headline">
@@ -299,83 +338,13 @@ export default class HaAutomationAddFromTarget extends LitElement {
                 </div>
               </ha-md-list-item>
             </ha-md-list>`
-          : narrow
-            ? html`<ha-md-list>
-                ${this._floorAreas.map((floor, index) =>
-                  index === 0 && !floor.id
-                    ? this._renderAreas(
-                        entries[floor.id || `floor${TARGET_SEPARATOR}`].areas!
-                      )
-                    : html`<ha-md-list-item
-                        interactive
-                        type="button"
-                        .target=${floor.id || `floor${TARGET_SEPARATOR}`}
-                        @click=${this._selectItem}
-                      >
-                        ${floor.id && (floor as FloorNestedComboBoxItem).floor
-                          ? html`<ha-floor-icon
-                              slot="start"
-                              .floor=${(floor as FloorNestedComboBoxItem).floor}
-                            ></ha-floor-icon>`
-                          : html`<ha-svg-icon
-                              slot="start"
-                              .path=${mdiTextureBox}
-                            ></ha-svg-icon>`}
-
-                        <div slot="headline">
-                          ${!floor.id
-                            ? this.localize(
-                                "ui.panel.config.automation.editor.other_areas"
-                              )
-                            : floor.primary}
-                        </div>
-                        <ha-icon-next slot="end"></ha-icon-next>
-                      </ha-md-list-item>`
-                )}
-              </ha-md-list>`
-            : html`<wa-tree @wa-selection-change=${this._handleSelectionChange}>
-                ${this._floorAreas.map((floor, index) =>
-                  index === 0 && !floor.id
-                    ? this._renderAreas(
-                        entries[floor.id || `floor${TARGET_SEPARATOR}`].areas!
-                      )
-                    : html`<wa-tree-item
-                        .preventSelection=${!floor.id}
-                        .target=${floor.id || `floor${TARGET_SEPARATOR}`}
-                        .selected=${!!floor.id &&
-                        this._getSelectedTargetId(value) === floor.id}
-                        .lazy=${!entries[floor.id || `floor${TARGET_SEPARATOR}`]
-                          .open &&
-                        !!Object.keys(
-                          entries[floor.id || `floor${TARGET_SEPARATOR}`].areas!
-                        ).length}
-                        @wa-lazy-load=${this._expandItem}
-                        @wa-collapse=${this._collapseItem}
-                        .expanded=${entries[
-                          floor.id || `floor${TARGET_SEPARATOR}`
-                        ].open}
-                      >
-                        ${floor.id && (floor as FloorNestedComboBoxItem).floor
-                          ? html`<ha-floor-icon
-                              .floor=${(floor as FloorNestedComboBoxItem).floor}
-                            ></ha-floor-icon>`
-                          : html`<ha-svg-icon
-                              .path=${mdiTextureBox}
-                            ></ha-svg-icon>`}
-                        ${!floor.id
-                          ? this.localize(
-                              "ui.panel.config.automation.editor.other_areas"
-                            )
-                          : floor.primary}
-                        ${entries[floor.id || `floor${TARGET_SEPARATOR}`].open
-                          ? this._renderAreas(
-                              entries[floor.id || `floor${TARGET_SEPARATOR}`]
-                                .areas!
-                            )
-                          : nothing}
-                      </wa-tree-item>`
-                )}
-              </wa-tree>`}`
+          : html`${narrow
+              ? html`<ha-md-list>${floorAreas}</ha-md-list>`
+              : html`<wa-tree
+                  @wa-selection-change=${this._handleSelectionChange}
+                  >${floorAreas}</wa-tree
+                >`}`}`;
+    }
   );
 
   private _renderLabels = memoizeOne(
@@ -461,150 +430,96 @@ export default class HaAutomationAddFromTarget extends LitElement {
         return nothing;
       }
 
+      const items: TemplateResult[] = [];
+
+      if (unassignedEntitiesLength) {
+        const open = entries[`device${TARGET_SEPARATOR}`].open;
+        items.push(
+          this._renderItem(
+            this.localize("ui.components.target-picker.type.entities"),
+            `device${TARGET_SEPARATOR}`,
+            true,
+            false,
+            !open,
+            open,
+            undefined,
+            entries[`device${TARGET_SEPARATOR}`].open
+              ? this._renderDomains(
+                  entries[`device${TARGET_SEPARATOR}`].devices!,
+                  "entity_"
+                )
+              : undefined
+          )
+        );
+      }
+
+      if (unassignedHelpersLength) {
+        const open = entries[`helper${TARGET_SEPARATOR}`].open;
+        items.push(
+          this._renderItem(
+            this.localize("ui.panel.config.automation.editor.helpers"),
+            `helper${TARGET_SEPARATOR}`,
+            true,
+            false,
+            !open,
+            open,
+            undefined,
+            entries[`helper${TARGET_SEPARATOR}`].open
+              ? this._renderDomains(
+                  entries[`helper${TARGET_SEPARATOR}`].devices!,
+                  "helper_"
+                )
+              : undefined
+          )
+        );
+      }
+
+      if (unassignedDevicesLength) {
+        const open = entries[`area${TARGET_SEPARATOR}`].open;
+        items.push(
+          this._renderItem(
+            this.localize("ui.components.target-picker.type.devices"),
+            `area${TARGET_SEPARATOR}`,
+            true,
+            false,
+            !open,
+            open,
+            undefined,
+            entries[`area${TARGET_SEPARATOR}`].open
+              ? this._renderDevices(entries[`area${TARGET_SEPARATOR}`].devices!)
+              : undefined
+          )
+        );
+      }
+
+      if (unassignedServicesLength) {
+        const open = entries[`service${TARGET_SEPARATOR}`].open;
+        items.push(
+          this._renderItem(
+            this.localize("ui.components.target-picker.type.devices"),
+            `service${TARGET_SEPARATOR}`,
+            true,
+            false,
+            !open,
+            open,
+            undefined,
+            entries[`service${TARGET_SEPARATOR}`].open
+              ? this._renderDevices(
+                  entries[`service${TARGET_SEPARATOR}`].devices!
+                )
+              : undefined
+          )
+        );
+      }
+
       return html`<ha-section-title
           >${this.localize(
             "ui.panel.config.automation.editor.unassigned"
           )}</ha-section-title
         >${narrow
-          ? html`<ha-md-list>
-              ${unassignedEntitiesLength
-                ? html`<ha-md-list-item
-                    interactive
-                    type="button"
-                    .target=${`device${TARGET_SEPARATOR}`}
-                    @click=${this._selectItem}
-                  >
-                    <div slot="headline">
-                      ${this.localize(
-                        "ui.components.target-picker.type.entities"
-                      )}
-                    </div>
-                    <ha-icon-next slot="end"></ha-icon-next>
-                  </ha-md-list-item>`
-                : nothing}
-              ${unassignedHelpersLength
-                ? html`<ha-md-list-item
-                    interactive
-                    type="button"
-                    .target=${`helper${TARGET_SEPARATOR}`}
-                    @click=${this._selectItem}
-                  >
-                    <div slot="headline">
-                      ${this.localize(
-                        "ui.panel.config.automation.editor.helpers"
-                      )}
-                    </div>
-                    <ha-icon-next slot="end"></ha-icon-next>
-                  </ha-md-list-item>`
-                : nothing}
-              ${unassignedDevicesLength
-                ? html`<ha-md-list-item
-                    interactive
-                    type="button"
-                    .target=${`area${TARGET_SEPARATOR}`}
-                    @click=${this._selectItem}
-                  >
-                    <div slot="headline">
-                      ${this.localize(
-                        "ui.components.target-picker.type.devices"
-                      )}
-                    </div>
-                    <ha-icon-next slot="end"></ha-icon-next>
-                  </ha-md-list-item>`
-                : nothing}
-              ${unassignedServicesLength
-                ? html`<ha-md-list-item
-                    interactive
-                    type="button"
-                    .target=${`service${TARGET_SEPARATOR}`}
-                    @click=${this._selectItem}
-                  >
-                    <div slot="headline">
-                      ${this.localize(
-                        "ui.panel.config.automation.editor.services"
-                      )}
-                    </div>
-                    <ha-icon-next slot="end"></ha-icon-next>
-                  </ha-md-list-item>`
-                : nothing}
-            </ha-md-list>`
+          ? html`<ha-md-list>${items}</ha-md-list>`
           : html`<wa-tree @wa-selection-change=${this._handleSelectionChange}>
-              ${unassignedEntitiesLength
-                ? html`<wa-tree-item
-                    .lazy=${!entries[`device${TARGET_SEPARATOR}`].open}
-                    .target=${`device${TARGET_SEPARATOR}`}
-                    @wa-lazy-load=${this._expandItem}
-                    @wa-collapse=${this._collapseItem}
-                    prevent-selection
-                    .expanded=${entries[`device${TARGET_SEPARATOR}`].open}
-                  >
-                    ${this.localize(
-                      "ui.components.target-picker.type.entities"
-                    )}
-                    ${entries[`device${TARGET_SEPARATOR}`].open
-                      ? this._renderDomains(
-                          entries[`device${TARGET_SEPARATOR}`].devices!,
-                          "entity_"
-                        )
-                      : nothing}
-                  </wa-tree-item>`
-                : nothing}
-              ${unassignedHelpersLength
-                ? html`<wa-tree-item
-                    .lazy=${!entries[`helper${TARGET_SEPARATOR}`].open}
-                    .expanded=${entries[`helper${TARGET_SEPARATOR}`].open}
-                    .target=${`helper${TARGET_SEPARATOR}`}
-                    @wa-lazy-load=${this._expandItem}
-                    @wa-collapse=${this._collapseItem}
-                    prevent-selection
-                  >
-                    ${this.localize(
-                      "ui.panel.config.automation.editor.helpers"
-                    )}
-                    ${entries[`helper${TARGET_SEPARATOR}`].open
-                      ? this._renderDomains(
-                          entries[`helper${TARGET_SEPARATOR}`].devices!,
-                          "helper_"
-                        )
-                      : nothing}
-                  </wa-tree-item>`
-                : nothing}
-              ${unassignedDevicesLength
-                ? html`<wa-tree-item
-                    .lazy=${!entries[`area${TARGET_SEPARATOR}`].open}
-                    .expanded=${entries[`area${TARGET_SEPARATOR}`].open}
-                    .target=${`area${TARGET_SEPARATOR}`}
-                    @wa-lazy-load=${this._expandItem}
-                    @wa-collapse=${this._collapseItem}
-                    prevent-selection
-                  >
-                    ${this.localize("ui.components.target-picker.type.devices")}
-                    ${entries[`area${TARGET_SEPARATOR}`].open
-                      ? this._renderDevices(
-                          entries[`area${TARGET_SEPARATOR}`].devices!
-                        )
-                      : nothing}
-                  </wa-tree-item>`
-                : nothing}
-              ${unassignedServicesLength
-                ? html`<wa-tree-item
-                    .lazy=${!entries[`service${TARGET_SEPARATOR}`].open}
-                    .expanded=${entries[`service${TARGET_SEPARATOR}`].open}
-                    .target=${`service${TARGET_SEPARATOR}`}
-                    @wa-lazy-load=${this._expandItem}
-                    @wa-collapse=${this._collapseItem}
-                    prevent-selection
-                  >
-                    ${this.localize(
-                      "ui.panel.config.automation.editor.services"
-                    )}
-                    ${entries[`service${TARGET_SEPARATOR}`].open
-                      ? this._renderDevices(
-                          entries[`service${TARGET_SEPARATOR}`].devices!
-                        )
-                      : nothing}
-                  </wa-tree-item>`
-                : nothing}
+              ${items}
             </wa-tree>`} `;
     }
   );
@@ -627,25 +542,6 @@ export default class HaAutomationAddFromTarget extends LitElement {
       })
       .sort(([, nameA], [, nameB]) => nameA.localeCompare(nameB))
       .map(([areaTargetId, areaName, floorId, areaIcon]) => {
-        if (this.narrow) {
-          return html`<ha-md-list-item
-            interactive
-            type="button"
-            .target=${areaTargetId}
-            @click=${this._selectItem}
-          >
-            ${areaIcon
-              ? html`<ha-icon slot="start" .icon=${areaIcon}></ha-icon>`
-              : html`<ha-svg-icon
-                  slot="start"
-                  .path=${mdiTextureBox}
-                ></ha-svg-icon>`}
-
-            <div slot="headline">${areaName}</div>
-            <ha-icon-next slot="end"></ha-icon-next>
-          </ha-md-list-item>`;
-        }
-
         const { open, devices, entities } =
           this._entries[`floor${TARGET_SEPARATOR}${floorId || ""}`].areas![
             areaTargetId
@@ -653,25 +549,21 @@ export default class HaAutomationAddFromTarget extends LitElement {
         const numberOfDevices = Object.keys(devices).length;
         const numberOfItems = numberOfDevices + entities.length;
 
-        return html`<wa-tree-item
-          .target=${areaTargetId}
-          .selected=${this._getSelectedTargetId(this.value) === areaTargetId}
-          .lazy=${!open && !!numberOfItems}
-          .expanded=${open}
-          @wa-lazy-load=${this._expandItem}
-          @wa-collapse=${this._collapseItem}
-        >
-          ${areaIcon
-            ? html`<ha-icon .icon=${areaIcon}></ha-icon>`
-            : html`<ha-svg-icon .path=${mdiTextureBox}></ha-svg-icon>`}
-          ${areaName}
-          ${open
+        return this._renderItem(
+          areaName,
+          areaTargetId,
+          false,
+          this._getSelectedTargetId(this.value) === areaTargetId,
+          !open && !!numberOfItems,
+          open,
+          this._renderAreaIcon(areaIcon),
+          open
             ? html`
                 ${numberOfDevices ? this._renderDevices(devices) : nothing}
                 ${entities.length ? this._renderEntities(entities) : nothing}
               `
-            : nothing}
-        </wa-tree-item>`;
+            : undefined
+        );
       });
 
     if (this.narrow) {
@@ -708,62 +600,19 @@ export default class HaAutomationAddFromTarget extends LitElement {
         deviceNameA.localeCompare(deviceNameB)
       )
       .map(([deviceId, deviceName, domain]) => {
-        if (this.narrow) {
-          return html`<ha-md-list-item
-            interactive
-            type="button"
-            .target=${`device${TARGET_SEPARATOR}${deviceId}`}
-            @click=${this._selectItem}
-          >
-            ${domain
-              ? html`
-                  <img
-                    slot="start"
-                    alt=""
-                    crossorigin="anonymous"
-                    referrerpolicy="no-referrer"
-                    src=${brandsUrl({
-                      domain,
-                      type: "icon",
-                      darkOptimized: this.hass.themes?.darkMode,
-                    })}
-                  />
-                `
-              : nothing}
-            <div slot="headline">${deviceName}</div>
-            <ha-icon-next slot="end"></ha-icon-next>
-          </ha-md-list-item>`;
-        }
-
         const { open, entities } = devices[deviceId];
 
-        return html`<wa-tree-item
-          .target=${`device${TARGET_SEPARATOR}${deviceId}`}
-          .selected=${this._getSelectedTargetId(this.value) ===
-          `device${TARGET_SEPARATOR}${deviceId}`}
-          .lazy=${!open && !!entities.length}
-          .expanded=${open}
-          @wa-lazy-load=${this._expandItem}
-          @wa-collapse=${this._collapseItem}
-          .title=${deviceName}
-        >
-          ${domain
-            ? html`
-                <img
-                  alt=""
-                  crossorigin="anonymous"
-                  referrerpolicy="no-referrer"
-                  src=${brandsUrl({
-                    domain,
-                    type: "icon",
-                    darkOptimized: this.hass.themes?.darkMode,
-                  })}
-                />
-              `
-            : nothing}
-          <span class="item-label">${deviceName}</span>
-          ${open ? this._renderEntities(entities) : nothing}
-        </wa-tree-item>`;
+        return this._renderItem(
+          deviceName || deviceId,
+          `device${TARGET_SEPARATOR}${deviceId}`,
+          false,
+          this._getSelectedTargetId(this.value) ===
+            `device${TARGET_SEPARATOR}${deviceId}`,
+          !open && !!entities.length,
+          open,
+          domain ? this._renderDomainIcon(domain) : undefined,
+          open ? this._renderEntities(entities) : undefined
+        );
       });
 
     if (this.narrow) {
@@ -772,7 +621,7 @@ export default class HaAutomationAddFromTarget extends LitElement {
             "ui.components.target-picker.type.devices"
           )}</ha-section-title
         >
-        <ha-md-list> ${renderedDevices} </ha-md-list>`;
+        <ha-md-list>${renderedDevices}</ha-md-list>`;
     }
 
     return renderedDevices;
@@ -800,56 +649,17 @@ export default class HaAutomationAddFromTarget extends LitElement {
         labelA.localeCompare(labelB)
       )
       .map(([domainTargetId, label, domain]) => {
-        if (this.narrow) {
-          return html`<ha-md-list-item
-            interactive
-            type="button"
-            .target=${domainTargetId}
-            @click=${this._selectItem}
-          >
-            <img
-              slot="start"
-              class="domain-icon"
-              alt=""
-              crossorigin="anonymous"
-              referrerpolicy="no-referrer"
-              src=${brandsUrl({
-                domain,
-                type: "icon",
-                darkOptimized: this.hass.themes?.darkMode,
-              })}
-            />
-            <div slot="headline">${label}</div>
-            <ha-icon-next slot="end"></ha-icon-next>
-          </ha-md-list-item>`;
-        }
-
         const { open, entities } = domains[domainTargetId];
-
-        return html`<wa-tree-item
-          .target=${domainTargetId}
-          .selected=${this._getSelectedTargetId(this.value) === domainTargetId}
-          .lazy=${!open && !!entities.length}
-          prevent-selection
-          .expanded=${open}
-          @wa-lazy-load=${this._expandItem}
-          @wa-collapse=${this._collapseItem}
-          .title=${label}
-        >
-          <img
-            alt=""
-            crossorigin="anonymous"
-            referrerpolicy="no-referrer"
-            class="domain-icon"
-            src=${brandsUrl({
-              domain,
-              type: "icon",
-              darkOptimized: this.hass.themes?.darkMode,
-            })}
-          />
-          <span class="item-label">${label}</span>
-          ${open ? this._renderEntities(entities) : nothing}
-        </wa-tree-item>`;
+        return this._renderItem(
+          label,
+          domainTargetId,
+          true,
+          false,
+          !open && !!entities.length,
+          open,
+          this._renderDomainIcon(domain),
+          open ? this._renderEntities(entities) : undefined
+        );
       });
 
     if (this.narrow) {
@@ -888,34 +698,18 @@ export default class HaAutomationAddFromTarget extends LitElement {
         return [entityId, label, stateObj] as [string, string, HassEntity];
       })
       .sort(([, labelA], [, labelB]) => labelA.localeCompare(labelB))
-      .map(([entityId, label, stateObj]) => {
-        if (this.narrow) {
-          return html`<ha-md-list-item
-            interactive
-            type="button"
-            .target=${`entity${TARGET_SEPARATOR}${entityId}`}
-            @click=${this._selectItem}
-          >
-            <state-badge
-              slot="start"
-              .stateObj=${stateObj}
-              .hass=${this.hass}
-            ></state-badge>
-            <div slot="headline" class="item-label">${label}</div>
-            <ha-icon-next slot="end"></ha-icon-next>
-          </ha-md-list-item>`;
-        }
-
-        return html`<wa-tree-item
-          .target=${`entity${TARGET_SEPARATOR}${entityId}`}
-          .selected=${this._getSelectedTargetId(this.value) ===
-          `entity${TARGET_SEPARATOR}${entityId}`}
-          .title=${label}
-        >
-          <state-badge .stateObj=${stateObj} .hass=${this.hass}></state-badge>
-          <span class="item-label">${label}</span>
-        </wa-tree-item>`;
-      });
+      .map(([entityId, label, stateObj]) =>
+        this._renderItem(
+          label,
+          `entity${TARGET_SEPARATOR}${entityId}`,
+          false,
+          this._getSelectedTargetId(this.value) ===
+            `entity${TARGET_SEPARATOR}${entityId}`,
+          false,
+          false,
+          this._renderEntityIcon(stateObj)
+        )
+      );
 
     if (this.narrow) {
       return html`<ha-section-title
@@ -927,6 +721,92 @@ export default class HaAutomationAddFromTarget extends LitElement {
     }
 
     return renderedEntites;
+  }
+
+  private _renderFloorIcon =
+    (floor: FloorNestedComboBoxItem) => (slot: string | undefined) => {
+      if (floor.id && floor.floor) {
+        return html`<ha-floor-icon
+          slot=${ifDefined(slot)}
+          .floor=${floor.floor}
+        ></ha-floor-icon>`;
+      }
+      return html`<ha-svg-icon
+        slot=${ifDefined(slot)}
+        .path=${mdiTextureBox}
+      ></ha-svg-icon>`;
+    };
+
+  private _renderAreaIcon =
+    (areaIcon?: string) => (slot: string | undefined) =>
+      areaIcon
+        ? html`<ha-icon slot=${ifDefined(slot)} .icon=${areaIcon}></ha-icon>`
+        : html`<ha-svg-icon
+            slot=${ifDefined(slot)}
+            .path=${mdiTextureBox}
+          ></ha-svg-icon>`;
+
+  private _renderDomainIcon =
+    (domain: string) => (slot: string | undefined) => html`
+      <img
+        slot=${ifDefined(slot)}
+        alt=""
+        crossorigin="anonymous"
+        referrerpolicy="no-referrer"
+        src=${brandsUrl({
+          domain,
+          type: "icon",
+          darkOptimized: this.hass.themes?.darkMode,
+        })}
+      />
+    `;
+
+  private _renderEntityIcon =
+    (stateObj: HassEntity) => (slot: string | undefined) =>
+      html`<state-badge
+        slot=${ifDefined(slot)}
+        .stateObj=${stateObj}
+        .hass=${this.hass}
+      ></state-badge>`;
+
+  private _renderItem(
+    label: string,
+    target: string,
+    preventSelection = false,
+    selected = false,
+    lazy = false,
+    open = false,
+    icon?: (slot?: string) => TemplateResult,
+    children?: TemplateResult | TemplateResult[] | typeof nothing
+  ) {
+    if (this.narrow) {
+      return html`<ha-md-list-item
+        interactive
+        type="button"
+        .target=${target}
+        @click=${this._selectItem}
+        .title=${label}
+      >
+        ${icon?.("start")}
+        <div slot="headline">${label}</div>
+        <ha-icon-next slot="end"></ha-icon-next>
+      </ha-md-list-item>`;
+    }
+
+    return html`
+      <wa-tree-item
+        .preventSelection=${preventSelection}
+        .target=${target}
+        .selected=${selected}
+        .lazy=${lazy}
+        @wa-lazy-load=${this._expandItem}
+        @wa-collapse=${this._collapseItem}
+        .expanded=${open}
+        .title=${label}
+      >
+        ${icon?.()} ${label} ${children || nothing}
+      </wa-tree-item>
+    `;
   }
 
   // #endregion render
