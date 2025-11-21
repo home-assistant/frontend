@@ -207,7 +207,12 @@ export class HaAssistChat extends LitElement {
       this._lastChatMessageImage &&
       !this._lastChatMessageImage.naturalHeight
     ) {
-      await this._lastChatMessageImage.decode().catch(() => undefined);
+      try {
+        await this._lastChatMessageImage.decode();
+      } catch (err: any) {
+        // eslint-disable-next-line no-console
+        console.warn("Failed to decode image:", err);
+      }
     }
     const isLastMessageFullyVisible =
       lastChatMessage.getBoundingClientRect().y <
