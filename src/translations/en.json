@@ -7088,7 +7088,9 @@
             "unamed_device": "Unnamed device",
             "others": "Others",
             "scenes": "Scenes",
-            "automations": "Automations"
+            "automations": "Automations",
+            "for_you": "For you",
+            "home": "Home"
           },
           "common_controls": {
             "not_loaded": "Usage Prediction integration is not loaded.",
