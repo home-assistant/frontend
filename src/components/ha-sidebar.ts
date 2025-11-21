@@ -1,18 +1,9 @@
 import {
   mdiBell,
-  mdiCalendar,
   mdiCellphoneCog,
-  mdiChartBox,
-  mdiClipboardList,
   mdiCog,
-  mdiFormatListBulletedType,
-  mdiHammer,
-  mdiLightningBolt,
   mdiMenu,
   mdiMenuOpen,
-  mdiPlayBoxMultiple,
-  mdiTooltipAccount,
-  mdiViewDashboard,
 } from "@mdi/js";
 import type { UnsubscribeFunc } from "home-assistant-js-websocket";
 import type { CSSResultGroup, PropertyValues } from "lit";
@@ -70,18 +61,6 @@ const SORT_VALUE_URL_PATHS = {
   history: 4,
   "developer-tools": 9,
   config: 11,
-};
-
-export const PANEL_ICON_PATHS = {
-  calendar: mdiCalendar,
-  "developer-tools": mdiHammer,
-  energy: mdiLightningBolt,
-  history: mdiChartBox,
-  logbook: mdiFormatListBulletedType,
-  lovelace: mdiViewDashboard,
-  map: mdiTooltipAccount,
-  "media-browser": mdiPlayBoxMultiple,
-  todo: mdiClipboardList,
 };
 
 const panelSorter = (
