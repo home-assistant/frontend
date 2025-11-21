@@ -1,4 +1,10 @@
-import { mdiBookshelf, mdiCog, mdiDotsVertical, mdiOpenInNew } from "@mdi/js";
+import {
+  mdiBookshelf,
+  mdiCog,
+  mdiDelete,
+  mdiDotsVertical,
+  mdiOpenInNew,
+} from "@mdi/js";
 import type { TemplateResult } from "lit";
 import { LitElement, css, html } from "lit";
 import { customElement, property } from "lit/decorators";
@@ -8,6 +14,11 @@ import "../../../components/ha-button";
 import "../../../components/ha-button-menu";
 import "../../../components/ha-list-item";
 import {
+  deleteApplicationCredential,
+  fetchApplicationCredentialsConfigEntry,
+} from "../../../data/application_credential";
+import { deleteConfigEntry } from "../../../data/config_entries";
+import {
   ATTENTION_SOURCES,
   DISCOVERY_SOURCES,
   ignoreConfigFlow,
@@ -15,7 +26,10 @@ import {
 } from "../../../data/config_flow";
 import type { IntegrationManifest } from "../../../data/integration";
 import { showConfigFlowDialog } from "../../../dialogs/config-flow/show-dialog-config-flow";
-import { showConfirmationDialog } from "../../../dialogs/generic/show-dialog-box";
+import {
+  showAlertDialog,
+  showConfirmationDialog,
+} from "../../../dialogs/generic/show-dialog-box";
 import type { HomeAssistant } from "../../../types";
 import { documentationUrl } from "../../../util/documentation-url";
 import type { DataEntryFlowProgressExtended } from "./ha-config-integrations";
@@ -60,7 +74,7 @@ export class HaConfigFlowCard extends LitElement {
               : "ui.common.add"
           )}
         </ha-button>
-        ${this.flow.context.configuration_url || this.manifest
+        ${this.flow.context.configuration_url || this.manifest || attention
           ? html`<ha-button-menu slot="header-button">
               <ha-icon-button
                 slot="trigger"
@@ -117,6 +131,22 @@ export class HaConfigFlowCard extends LitElement {
                       ></ha-svg-icon>
                     </ha-list-item>
                   </a>`
+                : ""}
+              ${attention
+                ? html`<ha-list-item
+                    class="warning"
+                    graphic="icon"
+                    @click=${this._handleDelete}
+                  >
+                    <ha-svg-icon
+                      class="warning"
+                      slot="graphic"
+                      .path=${mdiDelete}
+                    ></ha-svg-icon>
+                    ${this.hass.localize(
+                      "ui.panel.config.integrations.config_entry.delete"
+                    )}
+                  </ha-list-item>`
                 : ""}
             </ha-button-menu>`
           : ""}
@@ -175,6 +205,109 @@ export class HaConfigFlowCard extends LitElement {
     });
   }
 
+  // Return an application credentials id for this config entry to prompt the
+  // user for removal. This is best effort so we don't stop overall removal
+  // if the integration isn't loaded or there is some other error.
+  private async _fetchApplicationCredentials(entryId: string) {
+    try {
+      return (await fetchApplicationCredentialsConfigEntry(this.hass, entryId))
+        .application_credentials_id;
+    } catch (_err: any) {
+      // We won't prompt the user to remove credentials
+      return null;
+    }
+  }
+
+  private async _removeApplicationCredential(applicationCredentialsId: string) {
+    const confirmed = await showConfirmationDialog(this, {
+      title: this.hass.localize(
+        "ui.panel.config.integrations.config_entry.application_credentials.delete_title"
+      ),
+      text: html`${this.hass.localize(
+          "ui.panel.config.integrations.config_entry.application_credentials.delete_prompt"
+        )},
+        <br />
+        <br />
+        ${this.hass.localize(
+          "ui.panel.config.integrations.config_entry.application_credentials.delete_detail"
+        )}
+        <br />
+        <br />
+        <a
+          href="https://www.home-assistant.io/integrations/application_credentials"
+          target="_blank"
+          rel="noreferrer"
+        >
+          ${this.hass.localize(
+            "ui.panel.config.integrations.config_entry.application_credentials.learn_more"
+          )}
+        </a>`,
+      confirmText: this.hass.localize("ui.common.delete"),
+      dismissText: this.hass.localize("ui.common.cancel"),
+      destructive: true,
+    });
+
+    if (!confirmed) {
+      return;
+    }
+
+    try {
+      await deleteApplicationCredential(this.hass, applicationCredentialsId);
+    } catch (err: any) {
+      showAlertDialog(this, {
+        title: this.hass.localize(
+          "ui.panel.config.integrations.config_entry.application_credentials.delete_error_title"
+        ),
+        text: err.message,
+      });
+    }
+  }
+
+  private async _handleDelete() {
+    const entryId = this.flow.context.entry_id;
+
+    if (!entryId) {
+      // This shouldn't happen for reauth flows, but handle gracefully
+      return;
+    }
+
+    const applicationCredentialsId =
+      await this._fetchApplicationCredentials(entryId);
+
+    const confirmed = await showConfirmationDialog(this, {
+      title: this.hass.localize(
+        "ui.panel.config.integrations.config_entry.delete_confirm_title",
+        { title: localizeConfigFlowTitle(this.hass.localize, this.flow) }
+      ),
+      text: this.hass.localize(
+        "ui.panel.config.integrations.config_entry.delete_confirm_text"
+      ),
+      confirmText: this.hass!.localize("ui.common.delete"),
+      dismissText: this.hass!.localize("ui.common.cancel"),
+      destructive: true,
+    });
+
+    if (!confirmed) {
+      return;
+    }
+
+    const result = await deleteConfigEntry(this.hass, entryId);
+
+    if (result.require_restart) {
+      showAlertDialog(this, {
+        text: this.hass.localize(
+          "ui.panel.config.integrations.config_entry.restart_confirm"
+        ),
+      });
+    }
+
+    if (applicationCredentialsId) {
+      this._removeApplicationCredential(applicationCredentialsId);
+    }
+
+    this._handleFlowUpdated();
+  }
+
   static styles = css`
     a {
       text-decoration: none;
@@ -190,6 +323,9 @@ export class HaConfigFlowCard extends LitElement {
     .attention {
       --mdc-theme-primary: var(--error-color);
       --ha-card-border-color: var(--error-color);
+    }
+    .warning {
+      --mdc-theme-text-primary-on-background: var(--error-color);
     }
   `;
 }
