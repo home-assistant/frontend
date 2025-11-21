@@ -13,7 +13,7 @@ class HaSetWinterModeRow extends LitElement {
 
   @property({ type: Boolean }) public narrow = false;
 
-  @storage({ key: "snowflakes-enabled", state: true, subscribe: true })
+  @storage({ key: "winter-mode", state: true, subscribe: true })
   @state()
   private _winterMode = true;
 
