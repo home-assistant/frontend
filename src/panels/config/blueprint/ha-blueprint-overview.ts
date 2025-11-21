@@ -299,7 +299,7 @@ class HaBlueprintOverview extends LitElement {
         >
           <ha-button
             appearance="plain"
-            href="https://www.home-assistant.io/get-blueprints"
+            href=${documentationUrl(this.hass, "/get-blueprints")}
             target="_blank"
             rel="noreferrer noopener"
             size="small"

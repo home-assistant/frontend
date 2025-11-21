@@ -2,6 +2,7 @@ import type { CSSResultGroup } from "lit";
 import { LitElement, css, html, nothing } from "lit";
 import { customElement, property, state } from "lit/decorators";
 import { fireEvent } from "../../../common/dom/fire_event";
+import { documentationUrl } from "../../../util/documentation-url";
 import "../../../components/ha-alert";
 import "../../../components/ha-button";
 import { createCloseHeading } from "../../../components/ha-dialog";
@@ -13,8 +14,6 @@ import type { HassDialog } from "../../../dialogs/make-dialog-manager";
 import { haStyleDialog } from "../../../resources/styles";
 import type { HomeAssistant } from "../../../types";
 import type { TagDetailDialogParams } from "./show-dialog-tag-detail";
-
-const TAG_BASE = "https://www.home-assistant.io/tag/";
 
 @customElement("dialog-tag-detail")
 class DialogTagDetail
@@ -122,7 +121,7 @@ class DialogTagDetail
                 </div>
                 <div id="qr">
                   <ha-qr-code
-                    .data=${`${TAG_BASE}${this._params!.entry!.id}`}
+                    .data=${`${documentationUrl(this.hass, "/tag/")}${this._params!.entry!.id}`}
                     center-image="/static/icons/favicon-192x192.png"
                     error-correction-level="quartile"
                     scale="5"
