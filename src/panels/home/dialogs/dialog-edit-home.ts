@@ -105,6 +105,9 @@ export class DialogEditHome
       ...this._config,
       favorite_entities: ev.detail.value as string[],
     };
+    if (this._config?.favorite_entities?.length === 0) {
+      delete this._config.favorite_entities;
+    }
   }
 
   private async _save(): Promise<void> {
