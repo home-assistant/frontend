@@ -139,9 +139,9 @@ const getCalendarDate = (dateObj: any): string | undefined => {
 
 export const getCalendars = (
   hass: HomeAssistant,
-  element?: Element
+  element: Element
 ): Calendar[] => {
-  const computedStyles = getComputedStyle(element || document.documentElement);
+  const computedStyles = getComputedStyle(element);
   return Object.keys(hass.states)
     .filter(
       (eid) =>
