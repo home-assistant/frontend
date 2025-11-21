@@ -28,14 +28,14 @@ class PanelHome extends LitElement {
 
   @state() private _lovelace?: Lovelace;
 
-  @state() private _favoriteEntities: string[] = [];
+  @state() private _config: FrontendSystemData["home"] = {};
 
   public willUpdate(changedProps: PropertyValues) {
     super.willUpdate(changedProps);
     // Initial setup
     if (!this.hasUpdated) {
       this.hass.loadFragmentTranslation("lovelace");
-      this._loadFavorites();
+      this._loadConfig();
       return;
     }
 
@@ -97,23 +97,23 @@ class PanelHome extends LitElement {
     `;
   }
 
-  private async _loadFavorites() {
+  private async _loadConfig() {
     try {
       const data = await fetchFrontendSystemData(this.hass.connection, "home");
-      this._favoriteEntities = data?.favorite_entities || [];
+      this._config = data || {};
     } catch (err) {
       // eslint-disable-next-line no-console
       console.error("Failed to load favorites:", err);
-      this._favoriteEntities = [];
+      this._config = {};
     }
-    await this._setLovelace();
+    this._setLovelace();
   }
 
   private async _setLovelace() {
     const strategyConfig: LovelaceDashboardStrategyConfig = {
       strategy: {
         type: "home",
-        favorite_entities: this._favoriteEntities.length > 0 ? this._favoriteEntities : undefined,
+        favorite_entities: this._config.favorite_entities,
       },
     };
 
@@ -143,9 +143,7 @@ class PanelHome extends LitElement {
 
   private _setEditMode = () => {
     showEditHomeDialog(this, {
-      config: {
-        favorite_entities: this._favoriteEntities,
-      },
+      config: this._config,
       saveConfig: async (config) => {
         await this._saveConfig(config);
       },
@@ -155,11 +153,7 @@ class PanelHome extends LitElement {
   private async _saveConfig(config: HomeFrontendSystemData): Promise<void> {
     try {
       await saveFrontendSystemData(this.hass.connection, "home", config);
-      this._favoriteEntities = config.favorite_entities || [];
-      await this._setLovelace();
-      showToast(this, {
-        message: this.hass.localize("ui.common.successfully_saved"),
-      });
+      this._config = config || {};
     } catch (err: any) {
       // eslint-disable-next-line no-console
       console.error("Failed to save home configuration:", err);
@@ -168,8 +162,12 @@ class PanelHome extends LitElement {
         duration: 0,
         dismissable: true,
       });
-      throw err;
+      return;
     }
+    showToast(this, {
+      message: this.hass.localize("ui.common.successfully_saved"),
+    });
+    this._setLovelace();
   }
 
   static readonly styles: CSSResultGroup = css`

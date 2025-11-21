@@ -1,15 +1,14 @@
 import { css, html, LitElement, nothing } from "lit";
 import { customElement, property, state } from "lit/decorators";
 import { fireEvent } from "../../../common/dom/fire_event";
+import "../../../components/entity/ha-entities-picker";
 import "../../../components/ha-button";
 import "../../../components/ha-dialog-footer";
-import "../../../components/entity/ha-entities-picker";
 import "../../../components/ha-wa-dialog";
 import type { HomeFrontendSystemData } from "../../../data/frontend";
 import type { HassDialog } from "../../../dialogs/make-dialog-manager";
 import { haStyleDialog } from "../../../resources/styles";
 import type { HomeAssistant } from "../../../types";
-import { showToast } from "../../../util/toast";
 import type { EditHomeDialogParams } from "./show-dialog-edit-home";
 
 @customElement("dialog-edit-home")
@@ -101,13 +100,11 @@ export class DialogEditHome
   }
 
   private _favoriteEntitiesChanged(ev: CustomEvent): void {
+    const entities = ev.detail.value as string[];
     this._config = {
       ...this._config,
-      favorite_entities: ev.detail.value as string[],
+      favorite_entities: entities.length > 0 ? entities : undefined,
     };
-    if (this._config?.favorite_entities?.length === 0) {
-      delete this._config.favorite_entities;
-    }
   }
 
   private async _save(): Promise<void> {
@@ -119,18 +116,10 @@ export class DialogEditHome
 
     try {
       await this._params.saveConfig(this._config);
-      showToast(this, {
-        message: this.hass.localize("ui.common.successfully_saved"),
-      });
       this.closeDialog();
     } catch (err: any) {
       // eslint-disable-next-line no-console
       console.error("Failed to save home configuration:", err);
-      showToast(this, {
-        message: this.hass.localize("ui.panel.home.editor.save_failed"),
-        duration: 0,
-        dismissable: true,
-      });
     } finally {
       this._submitting = false;
     }
