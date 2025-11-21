@@ -18,7 +18,7 @@ import {
   removeLocalMedia,
 } from "../../data/media_source";
 import { showConfirmationDialog } from "../../dialogs/generic/show-dialog-box";
-import { haStyleDialog } from "../../resources/styles";
+import { haStyleDialog, haStyleDialogFixedTop } from "../../resources/styles";
 import type { HomeAssistant } from "../../types";
 import "../ha-button";
 import "../ha-check-list-item";
@@ -305,6 +305,7 @@ class DialogMediaManage extends LitElement {
   static get styles(): CSSResultGroup {
     return [
       haStyleDialog,
+      haStyleDialogFixedTop,
       css`
         ha-dialog {
           --dialog-z-index: 9;
@@ -314,9 +315,9 @@ class DialogMediaManage extends LitElement {
         @media (min-width: 800px) {
           ha-dialog {
             --mdc-dialog-max-width: 800px;
-            --dialog-surface-position: fixed;
-            --dialog-surface-top: 40px;
-            --mdc-dialog-max-height: calc(100vh - 72px);
+            --mdc-dialog-max-height: calc(
+              100vh - var(--ha-space-18) - var(--safe-area-inset-y)
+            );
           }
         }
 
