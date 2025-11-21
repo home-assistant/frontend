@@ -876,8 +876,7 @@ export default class HaAutomationAddFromTarget extends LitElement {
       undefined,
       undefined,
       undefined,
-      undefined,
-      true
+      undefined
     );
 
     this._floorAreas.forEach((floor) => {
