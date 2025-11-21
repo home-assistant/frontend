@@ -15,6 +15,10 @@ export interface CoreFrontendSystemData {
   defaultPanel?: string;
 }
 
+export interface HomeFrontendSystemData {
+  favorite_entities?: string[];
+}
+
 declare global {
   interface FrontendUserData {
     core: CoreFrontendUserData;
@@ -22,6 +26,7 @@ declare global {
   }
   interface FrontendSystemData {
     core: CoreFrontendSystemData;
+    home: HomeFrontendSystemData;
   }
 }
 
