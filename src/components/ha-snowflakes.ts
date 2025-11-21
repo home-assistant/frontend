@@ -16,6 +16,8 @@ interface Snowflake {
 export class HaSnowflakes extends LitElement {
   @property({ attribute: false }) public hass?: HomeAssistant;
 
+  @property({ type: Boolean }) public narrow = false;
+
   @storage({ key: "snowflakes-enabled", state: true, subscribe: true })
   @state()
   private _enabled = true;
@@ -63,7 +65,9 @@ export class HaSnowflakes extends LitElement {
         ${this._snowflakes.map(
           (flake) => html`
             <div
-              class="snowflake"
+              class="snowflake ${this.narrow && flake.id >= 30
+                ? "hide-narrow"
+                : ""}"
               style="
                 left: ${flake.left}%;
                 font-size: ${flake.size}px;
@@ -123,6 +127,10 @@ export class HaSnowflakes extends LitElement {
       text-shadow:
         0 0 5px rgba(255, 255, 255, 0.8),
         0 0 10px rgba(255, 255, 255, 0.5);
+    }
+
+    .snowflake.hide-narrow {
+      display: none;
     }
 
     @keyframes fall {
