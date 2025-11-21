@@ -281,6 +281,8 @@ class DialogAddAutomationElement
 
   private _configEntryLookup: Record<string, ConfigEntry> = {};
 
+  private _selectedSearchItemIndex = -1;
+
   private get _showEntityId() {
     return this.hass.userData?.showEntityIdPicker;
   }
@@ -366,6 +368,7 @@ class DialogAddAutomationElement
     this._searchListScrolled = false;
     this._targetItems = undefined;
     this._loadItemsError = false;
+    this._resetSelectedSearchItem();
 
     this._fullScreen = false;
     return true;
@@ -518,7 +521,6 @@ class DialogAddAutomationElement
                 .filter=${this._filter}
                 @value-changed=${this._debounceFilterChanged}
                 .label=${this.hass.localize(`ui.common.search`)}
-                @focus=${this._onSearchFocus}
                 @blur=${this._removeSearchKeybindings}
               ></search-input>
             `
@@ -893,7 +895,7 @@ class DialogAddAutomationElement
 
     return html`
       <ha-combo-box-item
-        id=${`list-item-${index}`}
+        id=${`search-list-item-${index}`}
         tabindex="-1"
         .type=${type === "empty" ? "text" : "button"}
         class=${type === "empty" ? "empty" : ""}
@@ -1801,8 +1803,7 @@ class DialogAddAutomationElement
           undefined,
           undefined,
           undefined,
-          undefined,
-          true
+          undefined
         );
 
         if (searchTerm) {
@@ -1945,6 +1946,167 @@ class DialogAddAutomationElement
 
   private _keyFunction = (item: PickerComboBoxItem | string) =>
     typeof item === "string" ? item : item.id;
+
+  private _focusSearchList = () => {
+    if (this._selectedSearchItemIndex === -1) {
+      this._selectNextSearchItem();
+    }
+  };
+
+  private _resetSelectedSearchItem() {
+    this._virtualizerElement
+      ?.querySelector(".selected")
+      ?.classList.remove("selected");
+    this._selectedSearchItemIndex = -1;
+  }
+
+  private _selectNextSearchItem = (ev?: KeyboardEvent) => {
+    ev?.stopPropagation();
+    ev?.preventDefault();
+    if (!this._virtualizerElement) {
+      return;
+    }
+
+    const items = this._virtualizerElement.items as PickerComboBoxItem[];
+
+    const maxItems = items.length - 1;
+
+    if (maxItems === -1) {
+      this._resetSelectedSearchItem();
+      return;
+    }
+
+    const nextIndex =
+      maxItems === this._selectedSearchItemIndex
+        ? this._selectedSearchItemIndex
+        : this._selectedSearchItemIndex + 1;
+
+    if (!items[nextIndex]) {
+      return;
+    }
+
+    if (typeof items[nextIndex] === "string") {
+      // Skip titles, padding and empty search
+      if (nextIndex === maxItems) {
+        return;
+      }
+      this._selectedSearchItemIndex = nextIndex + 1;
+    } else {
+      this._selectedSearchItemIndex = nextIndex;
+    }
+
+    this._scrollToSelectedSearchItem();
+  };
+
+  private _scrollToSelectedSearchItem = () => {
+    this._virtualizerElement
+      ?.querySelector(".selected")
+      ?.classList.remove("selected");
+
+    this._virtualizerElement?.scrollToIndex(
+      this._selectedSearchItemIndex,
+      "end"
+    );
+
+    requestAnimationFrame(() => {
+      this._virtualizerElement
+        ?.querySelector(`#search-list-item-${this._selectedSearchItemIndex}`)
+        ?.classList.add("selected");
+    });
+  };
+
+  private _selectPreviousSearchItem = (ev: KeyboardEvent) => {
+    ev.stopPropagation();
+    ev.preventDefault();
+    if (!this._virtualizerElement) {
+      return;
+    }
+
+    if (this._selectedSearchItemIndex > 0) {
+      const nextIndex = this._selectedSearchItemIndex - 1;
+
+      const items = this._virtualizerElement.items as PickerComboBoxItem[];
+
+      if (!items[nextIndex]) {
+        return;
+      }
+
+      if (typeof items[nextIndex] === "string") {
+        // Skip titles, padding and empty search
+        if (nextIndex === 0) {
+          return;
+        }
+        this._selectedSearchItemIndex = nextIndex - 1;
+      } else {
+        this._selectedSearchItemIndex = nextIndex;
+      }
+
+      this._scrollToSelectedSearchItem();
+    }
+  };
+
+  private _selectFirstSearchItem = (ev: KeyboardEvent) => {
+    ev.stopPropagation();
+    if (!this._virtualizerElement || !this._virtualizerElement.items.length) {
+      return;
+    }
+
+    const nextIndex = 0;
+
+    if (typeof this._virtualizerElement.items[nextIndex] === "string") {
+      this._selectedSearchItemIndex = nextIndex + 1;
+    } else {
+      this._selectedSearchItemIndex = nextIndex;
+    }
+
+    this._scrollToSelectedSearchItem();
+  };
+
+  private _selectLastSearchItem = (ev: KeyboardEvent) => {
+    ev.stopPropagation();
+    if (!this._virtualizerElement || !this._virtualizerElement.items.length) {
+      return;
+    }
+
+    const nextIndex = this._virtualizerElement.items.length - 1;
+
+    if (typeof this._virtualizerElement.items[nextIndex] === "string") {
+      this._selectedSearchItemIndex = nextIndex - 1;
+    } else {
+      this._selectedSearchItemIndex = nextIndex;
+    }
+
+    this._scrollToSelectedSearchItem();
+  };
+
+  private _pickSelectedSearchItem = (ev: KeyboardEvent) => {
+    ev.stopPropagation();
+
+    const filteredItems = this._virtualizerElement?.items.filter(
+      (item) => typeof item !== "string"
+    );
+
+    if (filteredItems && filteredItems.length === 1) {
+      const firstItem = filteredItems[0] as PickerComboBoxItem;
+
+      this._selectSearchItem(firstItem as PickerComboBoxItem);
+      return;
+    }
+
+    if (this._selectedSearchItemIndex === -1) {
+      return;
+    }
+
+    // if filter button is focused
+    ev.preventDefault();
+
+    const item = this._virtualizerElement?.items[
+      this._selectedSearchItemIndex
+    ] as PickerComboBoxItem;
+    if (item) {
+      this._selectSearchItem(item);
+    }
+  };
 
   // #endregion search
 
@@ -2247,6 +2409,24 @@ class DialogAddAutomationElement
 
   private _filterChanged = (ev) => {
     this._filter = ev.detail.value;
+
+    this._resetSelectedSearchItem();
+
+    if (this._removeKeyboardShortcuts) {
+      if (!this._filter) {
+        this._removeKeyboardShortcuts();
+        this._removeKeyboardShortcuts = undefined;
+      }
+      return;
+    }
+
+    this._removeKeyboardShortcuts = tinykeys(this, {
+      ArrowUp: this._selectPreviousSearchItem,
+      ArrowDown: this._selectNextSearchItem,
+      Home: this._selectFirstSearchItem,
+      End: this._selectLastSearchItem,
+      Enter: this._pickSelectedSearchItem,
+    });
   };
 
   private _addClipboard = () => {
@@ -2276,52 +2456,6 @@ class DialogAddAutomationElement
     const top = ev.target.scrollTop ?? 0;
     this._itemsScrolled = top > 0;
   }
-
-  private _onSearchFocus(ev) {
-    this._removeKeyboardShortcuts = tinykeys(ev.target, {
-      ArrowDown: this._focusSearchList,
-      Enter: this._pickSingleItem,
-    });
-  }
-
-  private _focusSearchList = (ev) => {
-    if (!this._filter) {
-      return;
-    }
-
-    ev.preventDefault();
-    // TODO
-    // if (this._selectedItemIndex === -1) {
-    //   this._selectNextItem();
-    // }
-  };
-
-  private _pickSingleItem = (ev: KeyboardEvent) => {
-    if (!this._filter) {
-      return;
-    }
-
-    ev.preventDefault();
-    const automationElementType = this._params!.type;
-
-    const items = this._getFilteredItems(
-      automationElementType,
-      this.hass.localize,
-      this._filter,
-      this._configEntryLookup,
-      this.hass.services,
-      this._selectedSearchSection,
-      this._manifests
-    ).filter(
-      (item) => typeof item !== "string"
-    ) as AutomationItemComboBoxItem[];
-
-    if (items.length !== 1) {
-      return;
-    }
-
-    this._selectSearchItem(items[0]);
-  };
 
   // #region interaction
 
@@ -2808,6 +2942,16 @@ class DialogAddAutomationElement
           width: 24px;
           height: 24px;
           filter: grayscale(100%);
+        }
+
+        ha-combo-box-item.selected {
+          background-color: var(--ha-color-fill-neutral-quiet-hover);
+        }
+
+        @media (prefers-color-scheme: dark) {
+          ha-combo-box-item.selected {
+            background-color: var(--ha-color-fill-neutral-normal-hover);
+          }
         }
       `,
     ];
