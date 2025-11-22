@@ -7,6 +7,7 @@ import { computeStateName } from "../common/entity/compute_state_name";
 import { supportsFeature } from "../common/entity/supports-feature";
 import {
   CAMERA_SUPPORT_STREAM,
+  CAMERA_SUPPORT_TWO_WAY_AUDIO,
   type CameraCapabilities,
   type CameraEntity,
   computeMJPEGStreamUrl,
@@ -137,6 +138,10 @@ export class HaCameraStream extends LitElement {
         autoplay
         playsinline
         .muted=${this.muted}
+        .twoWayAudio=${supportsFeature(
+          this.stateObj!,
+          CAMERA_SUPPORT_TWO_WAY_AUDIO
+        )}
         .controls=${this.controls}
         .hass=${this.hass}
         .entityid=${this.stateObj.entity_id}

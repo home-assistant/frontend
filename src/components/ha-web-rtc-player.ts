@@ -1,9 +1,18 @@
+import "./ha-spinner";
 import type { UnsubscribeFunc } from "home-assistant-js-websocket";
 import type { PropertyValues, TemplateResult } from "lit";
-import { css, html, LitElement } from "lit";
+import { css, html, nothing, LitElement } from "lit";
 import { customElement, property, query, state } from "lit/decorators";
 import { ifDefined } from "lit/directives/if-defined";
 import { styleMap } from "lit/directives/style-map";
+import {
+  mdiMicrophone,
+  mdiMicrophoneOff,
+  mdiVolumeHigh,
+  mdiVolumeOff,
+  mdiPlay,
+  mdiPause,
+} from "@mdi/js";
 import { fireEvent } from "../common/dom/fire_event";
 import {
   addWebRtcCandidate,
@@ -11,10 +20,12 @@ import {
   type WebRtcAnswer,
   type WebRTCClientConfiguration,
   webRtcOffer,
+  webRtcReOffer,
   type WebRtcOfferEvent,
 } from "../data/camera";
 import type { HomeAssistant } from "../types";
 import "./ha-alert";
+import "./ha-button";
 
 /**
  * A WebRTC stream is established by first sending an offer through a signal
@@ -37,6 +48,9 @@ class HaWebRtcPlayer extends LitElement {
   @property({ type: Boolean, attribute: "muted" })
   public muted = false;
 
+  @property({ type: Boolean, attribute: "two-way-audio" })
+  public twoWayAudio = false;
+
   @property({ type: Boolean, attribute: "autoplay" })
   public autoPlay = false;
 
@@ -54,6 +68,100 @@ class HaWebRtcPlayer extends LitElement {
   private _peerConnection?: RTCPeerConnection;
 
   private _remoteStream?: MediaStream;
+
+  private _localReturnTrackAdded = false;
+
+  private _localReturnAudioTrack?: MediaStreamTrack;
+
+  private _paused = false;
+
+  private _twoWayAudio = false;
+
+  private _timer_running = false;
+
+  private async _addLocalReturnAudio() {
+    const tracks = await this._getMediaTracks("user", {
+      video: false,
+      audio: true,
+    });
+    if (tracks && tracks.length > 0) {
+      this._logEvent(
+        "found",
+        tracks.length,
+        "microphone(s) to use for audio return track"
+      );
+      this._localReturnAudioTrack = tracks[0];
+
+      // The ice-ufrag and ice-pwd will change when changing from recvonly > sendrecv
+      // Therefore a ICE restart is required (firefox enforces, chrome accepts)
+      this._peerConnection!.restartIce();
+      this._candidatesList = [];
+
+      // Find the audio transceiver
+      // Transceiver are in the order they were added, audio should be first
+      for (const transceiver of this._peerConnection!.getTransceivers()) {
+        if (transceiver.receiver.track.kind === "audio") {
+          transceiver!.sender.replaceTrack(this._localReturnAudioTrack);
+          transceiver!.direction = "sendrecv";
+
+          this._localReturnTrackAdded = true;
+          return;
+        }
+      }
+    }
+
+    this._logEvent("unable to add audio send track");
+    this._twoWayAudio = false;
+    this.requestUpdate();
+  }
+
+  public async toggleMic() {
+    if (!this._localReturnTrackAdded) {
+      await this._addLocalReturnAudio();
+    } else {
+      this._localReturnAudioTrack!.enabled =
+        !this._localReturnAudioTrack!.enabled;
+    }
+    this.requestUpdate();
+  }
+
+  public toggleMute() {
+    this._videoEl.muted = !this._videoEl.muted;
+    this.requestUpdate();
+  }
+
+  public togglePause() {
+    const pause = () => {
+      if (this._remoteStream && this._remoteStream.active) {
+        this._remoteStream.getAudioTracks().forEach((track) => {
+          track.enabled = false;
+        });
+        this._remoteStream.getVideoTracks().forEach((track) => {
+          track.enabled = false;
+        });
+        this._paused = true;
+      }
+    };
+
+    const resume = () => {
+      if (this._remoteStream && this._remoteStream.active) {
+        this._remoteStream.getAudioTracks().forEach((track) => {
+          track.enabled = true;
+        });
+        this._remoteStream.getVideoTracks().forEach((track) => {
+          track.enabled = true;
+        });
+        this._paused = false;
+      }
+    };
+
+    if (this._paused) {
+      resume();
+    } else {
+      pause();
+    }
+    this.requestUpdate();
+  }
 
   private _unsub?: Promise<UnsubscribeFunc>;
 
@@ -77,21 +185,73 @@ class HaWebRtcPlayer extends LitElement {
     if (this._error) {
       return html`<ha-alert alert-type="error">${this._error}</ha-alert>`;
     }
+    // The standard controls will still be disabled until the remoteStream is
+    // created so they don't appear and disappear once twoWayAudio is requested
+    // and enabled.
+    const standardControls = this._twoWayAudio ? false : this.controls;
+
+    const videoHtml = html` <video
+      id="remote-stream"
+      ?autoplay=${this.autoPlay}
+      .muted=${this.muted}
+      ?playsinline=${this.playsInline}
+      ?controls=${standardControls && this._remoteStream !== undefined}
+      poster=${ifDefined(this.posterUrl)}
+      @loadeddata=${this._loadedData}
+      style=${styleMap({
+        height: this.aspectRatio == null ? "100%" : "auto",
+        aspectRatio: this.aspectRatio,
+        objectFit: this.fitMode,
+      })}
+    ></video>`;
+    const progressHtml =
+      this._remoteStream !== undefined
+        ? nothing
+        : html`
+            <div class="video-progress">
+              <ha-spinner class="render-spinner" size="medium"></ha-spinner>
+            </div>
+          `;
+    // Custom controls are required for two way audio to allow muting/unmuting
+    // the microphone
+    const customControls = standardControls
+      ? nothing
+      : html`
+          <div class="video-controls">
+            <ha-button @click=${this.togglePause} halign id="toggle_pause">
+              <ha-svg-icon
+                .path=${this._paused ? mdiPlay : mdiPause}
+              ></ha-svg-icon>
+            </ha-button>
+            <ha-button
+              @click=${this.toggleMute}
+              halign
+              id="toggle_mute"
+              class="video-controls-right"
+            >
+              <ha-svg-icon
+                .path=${this._videoEl.muted ? mdiVolumeOff : mdiVolumeHigh}
+              ></ha-svg-icon>
+            </ha-button>
+            <ha-button
+              @click=${this.toggleMic}
+              halign
+              id="toggle_mic"
+              class="video-controls-right"
+            >
+              <ha-svg-icon
+                .path=${this._localReturnAudioTrack &&
+                this._localReturnAudioTrack!.enabled
+                  ? mdiMicrophone
+                  : mdiMicrophoneOff}
+              ></ha-svg-icon>
+            </ha-button>
+          </div>
+        `;
     return html`
-      <video
-        id="remote-stream"
-        ?autoplay=${this.autoPlay}
-        .muted=${this.muted}
-        ?playsinline=${this.playsInline}
-        ?controls=${this.controls}
-        poster=${ifDefined(this.posterUrl)}
-        @loadeddata=${this._loadedData}
-        style=${styleMap({
-          height: this.aspectRatio == null ? "100%" : "auto",
-          aspectRatio: this.aspectRatio,
-          objectFit: this.fitMode,
-        })}
-      ></video>
+      <div class="video-container">
+        ${videoHtml}${progressHtml}${customControls}
+      </div>
     `;
   }
 
@@ -147,6 +307,10 @@ class HaWebRtcPlayer extends LitElement {
 
     this._logEvent("end clientConfig", this._clientConfig);
 
+    // On most platforms mediaDevices will be undefined if not running in a secure context
+    this._twoWayAudio =
+      this.twoWayAudio && navigator.mediaDevices !== undefined;
+
     this._peerConnection = new RTCPeerConnection(
       this._clientConfig.configuration
     );
@@ -162,6 +326,7 @@ class HaWebRtcPlayer extends LitElement {
     this._peerConnection.onicecandidate = this._handleIceCandidate;
     this._peerConnection.oniceconnectionstatechange =
       this._iceConnectionStateChanged;
+    this._peerConnection.onicegatheringstatechange = this._iceGatheringStateChanged;
 
     // just for debugging
     this._peerConnection.onsignalingstatechange = (ev) => {
@@ -230,9 +395,22 @@ class HaWebRtcPlayer extends LitElement {
     this._logEvent("start webRtcOffer", offer_sdp);
 
     try {
-      this._unsub = webRtcOffer(this.hass, this.entityid, offer_sdp, (event) =>
-        this._handleOfferEvent(event)
-      );
+      if (!this._sessionId) {
+        this._unsub = webRtcOffer(
+          this.hass,
+          this.entityid,
+          offer_sdp,
+          (event) => this._handleOfferEvent(event),
+        );
+      } else {
+        this._unsub = webRtcReOffer(
+          this.hass,
+          this.entityid,
+          offer_sdp,
+          (event) => this._handleOfferEvent(event),
+          this._sessionId
+        );
+      }
     } catch (err: any) {
       this._error = "Failed to start WebRTC stream: " + err.message;
       this._cleanUp();
@@ -244,9 +422,19 @@ class HaWebRtcPlayer extends LitElement {
       "ice connection state change",
       this._peerConnection?.iceConnectionState
     );
+    if (this._peerConnection?.iceConnectionState === "connected") {
+      this.requestUpdate();
+    }
     if (this._peerConnection?.iceConnectionState === "failed") {
       this._peerConnection.restartIce();
     }
+  };
+
+  private _iceGatheringStateChanged = () => {
+    this._logEvent(
+      "ice gathering state change",
+      this._peerConnection?.iceGatheringState
+    );
   };
 
   private async _handleOfferEvent(event: WebRtcOfferEvent) {
@@ -254,6 +442,7 @@ class HaWebRtcPlayer extends LitElement {
       return;
     }
     if (event.type === "session") {
+      this._logEvent("session", event.session_id);
       this._sessionId = event.session_id;
       this._candidatesList.forEach((candidate) =>
         addWebRtcCandidate(
@@ -359,6 +548,19 @@ class HaWebRtcPlayer extends LitElement {
     this._logEvent("end setRemoteDescription");
   }
 
+  private async _getMediaTracks(media, constraints) {
+    try {
+      const stream =
+        media === "user"
+          ? await navigator.mediaDevices.getUserMedia(constraints)
+          : await navigator.mediaDevices.getDisplayMedia(constraints);
+      return stream.getTracks();
+    } catch (err: any) {
+      this._error = "Failed to get media tracks: " + err.message;
+      return [];
+    }
+  }
+
   private _cleanUp() {
     if (this._remoteStream) {
       this._remoteStream.getTracks().forEach((track) => {
@@ -366,6 +568,9 @@ class HaWebRtcPlayer extends LitElement {
       });
 
       this._remoteStream = undefined;
+    }
+    if (this._localReturnAudioTrack) {
+      this._localReturnAudioTrack.stop();
     }
     const videoEl = this._videoEl;
     if (videoEl) {
@@ -417,18 +622,25 @@ class HaWebRtcPlayer extends LitElement {
     }
     // eslint-disable-next-line no-console
     console.time("WebRTC");
+    this._timer_running = true;
   }
 
   private _stopTimer() {
     if (!__DEV__) {
       return;
     }
+    this._timer_running = false;
     // eslint-disable-next-line no-console
     console.timeEnd("WebRTC");
   }
 
   private _logEvent(msg: string, ...args: unknown[]) {
     if (!__DEV__) {
+      return;
+    }
+    if (!this._timer_running) {
+      // eslint-disable-next-line no-console
+      console.log("WebRTC:", msg, ...args);
       return;
     }
     // eslint-disable-next-line no-console
@@ -444,6 +656,34 @@ class HaWebRtcPlayer extends LitElement {
     video {
       width: 100%;
       max-height: var(--video-max-height, calc(100vh - 97px));
+    }
+
+    .video-container {
+      position: relative;
+    }
+
+    .video-controls {
+      width: 100%;
+      background: rgba(0, 0, 0, 0.35);
+      position: absolute;
+      bottom: 0;
+      left: 0;
+      z-index: 10;
+    }
+
+    .video-progress {
+      position: absolute;
+      top: 50%;
+      left: 50%;
+      z-index: 10;
+    }
+
+    .video-controls-right {
+      float: right;
+    }
+
+    ha-button {
+      --mdc-theme-primary: white;
     }
   `;
 }

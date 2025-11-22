@@ -9,6 +9,7 @@ import { getSignedPath } from "./auth";
 export const CAMERA_ORIENTATIONS = [1, 2, 3, 4, 6, 8];
 export const CAMERA_SUPPORT_ON_OFF = 1;
 export const CAMERA_SUPPORT_STREAM = 2;
+export const CAMERA_SUPPORT_TWO_WAY_AUDIO = 4;
 
 export const STREAM_TYPE_HLS = "hls";
 export const STREAM_TYPE_WEB_RTC = "web_rtc";
@@ -127,12 +128,26 @@ export const webRtcOffer = (
   hass: HomeAssistant,
   entity_id: string,
   offer: string,
-  callback: (event: WebRtcOfferEvent) => void
+  callback: (event: WebRtcOfferEvent) => void,
 ) =>
   hass.connection.subscribeMessage<WebRtcOfferEvent>(callback, {
     type: "camera/webrtc/offer",
     entity_id,
     offer,
+  });
+
+export const webRtcReOffer = (
+  hass: HomeAssistant,
+  entity_id: string,
+  offer: string,
+  callback: (event: WebRtcOfferEvent) => void,
+  session_id: string
+) =>
+  hass.connection.subscribeMessage<WebRtcOfferEvent>(callback, {
+    type: "camera/webrtc/re_offer",
+    entity_id,
+    offer,
+    session_id,
   });
 
 export const addWebRtcCandidate = (
