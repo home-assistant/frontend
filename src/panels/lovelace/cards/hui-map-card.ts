@@ -394,7 +394,8 @@ class HuiMapCard extends LitElement implements LovelaceCard {
     if (color) {
       return color;
     }
-    color = getColorByIndex(this._colorIndex);
+    const computedStyles = getComputedStyle(this);
+    color = getColorByIndex(this._colorIndex, computedStyles);
     this._colorIndex++;
     this._colorDict[entityId] = color;
     return color;

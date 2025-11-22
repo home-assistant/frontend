@@ -87,7 +87,7 @@ class PanelCalendar extends LitElement {
   public willUpdate(changedProps: PropertyValues): void {
     super.willUpdate(changedProps);
     if (!this.hasUpdated) {
-      this._calendars = getCalendars(this.hass);
+      this._calendars = getCalendars(this.hass, this);
     }
   }
 
@@ -243,7 +243,7 @@ class PanelCalendar extends LitElement {
       manifest: await fetchIntegrationManifest(this.hass, "local_calendar"),
       dialogClosedCallback: ({ flowFinished }) => {
         if (flowFinished) {
-          this._calendars = getCalendars(this.hass);
+          this._calendars = getCalendars(this.hass, this);
         }
       },
     });

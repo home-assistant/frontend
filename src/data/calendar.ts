@@ -137,8 +137,12 @@ const getCalendarDate = (dateObj: any): string | undefined => {
   return undefined;
 };
 
-export const getCalendars = (hass: HomeAssistant): Calendar[] =>
-  Object.keys(hass.states)
+export const getCalendars = (
+  hass: HomeAssistant,
+  element: Element
+): Calendar[] => {
+  const computedStyles = getComputedStyle(element);
+  return Object.keys(hass.states)
     .filter(
       (eid) =>
         computeDomain(eid) === "calendar" &&
@@ -149,8 +153,9 @@ export const getCalendars = (hass: HomeAssistant): Calendar[] =>
     .map((eid, idx) => ({
       ...hass.states[eid],
       name: computeStateName(hass.states[eid]),
-      backgroundColor: getColorByIndex(idx),
+      backgroundColor: getColorByIndex(idx, computedStyles),
     }));
+};
 
 export const createCalendarEvent = (
   hass: HomeAssistant,
