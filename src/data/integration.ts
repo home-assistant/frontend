@@ -1,8 +1,8 @@
 import type { Connection } from "home-assistant-js-websocket";
 import { createCollection } from "home-assistant-js-websocket";
 import type { LocalizeFunc } from "../common/translations/localize";
-import type { HomeAssistant } from "../types";
 import { debounce } from "../common/util/debounce";
+import type { HomeAssistant } from "../types";
 
 export const integrationsWithPanel = {
   bluetooth: "config/bluetooth",
@@ -24,6 +24,8 @@ export type IntegrationType =
   | "hardware"
   | "entity"
   | "system";
+
+export type DomainManifestLookup = Record<string, IntegrationManifest>;
 
 export interface IntegrationManifest {
   is_built_in: boolean;

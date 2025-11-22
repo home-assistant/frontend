@@ -192,7 +192,7 @@ export class HaPickerComboBox extends LitElement {
         @focus=${this._focusList}
         @visibilityChanged=${this._visibilityChanged}
       >
-      </lit-virtualizer> `;
+      </lit-virtualizer>`;
   }
 
   private _renderSectionButtons() {
