@@ -1,0 +1,343 @@
+import type { CSSResultGroup } from "lit";
+import { css, LitElement, html, nothing } from "lit";
+import { customElement, property, state } from "lit/decorators";
+import "../../../components/ha-yaml-editor";
+import "../../../components/ha-textfield";
+import "../../../components/ha-button";
+import "../../../components/ha-card";
+import { dump } from "js-yaml";
+import type { HomeAssistant } from "../../../types";
+import { haStyle } from "../../../resources/styles";
+import type {
+  Blueprint,
+  BlueprintDomain,
+  BlueprintMetaDataEditorSchema,
+  BlueprintOrError,
+  Blueprints,
+} from "../../../data/blueprint";
+import {
+  saveBlueprint,
+  fetchBlueprints,
+  BlueprintYamlSchema,
+} from "../../../data/blueprint";
+import "./ha-blueprint-editor";
+import "./blueprint-metadata-editor";
+import { showPickBlueprintDialog } from "./pick-blueprint-dialog/show-dialog-pick-blueprint";
+import {
+  showAlertDialog,
+  showConfirmationDialog,
+} from "../../../dialogs/generic/show-dialog-box";
+
+@customElement("developer-tools-blueprints")
+class HaPanelDevBlueprints extends LitElement {
+  @property({ attribute: false }) public hass!: HomeAssistant;
+
+  @property({ type: Boolean }) public narrow = false;
+
+  @state() public _blueprints?: Record<BlueprintDomain, Blueprints>;
+
+  @state() private _selectedBlueprint?: BlueprintOrError;
+
+  @state() private _selectedBlueprintDomain?: BlueprintDomain;
+
+  @state() private _dirty = false;
+
+  @state() public _originalBlueprint?: BlueprintOrError;
+
+  @state() private _selectedBlueprintPath?: string;
+
+  @state() private _originalBlueprintPath?: string;
+
+  protected firstUpdated(changedProps) {
+    super.firstUpdated(changedProps);
+    this.hass.loadFragmentTranslation("config");
+    this._getBlueprints();
+    this.addEventListener("reload-blueprints", () => {
+      this._getBlueprints();
+    });
+  }
+
+  private async _getBlueprints() {
+    const [automation, script] = await Promise.all([
+      fetchBlueprints(this.hass, "automation"),
+      fetchBlueprints(this.hass, "script"),
+    ]);
+    this._blueprints = { automation, script };
+  }
+
+  private _onBlueprintContentChanged(ev: CustomEvent<{ value: Blueprint }>) {
+    ev.stopPropagation();
+
+    if (!this._selectedBlueprint || "error" in this._selectedBlueprint) {
+      this._selectedBlueprint = ev.detail.value;
+    } else {
+      this._selectedBlueprint = {
+        ...this._selectedBlueprint,
+        ...ev.detail.value,
+        metadata: {
+          ...this._selectedBlueprint.metadata,
+          input: ev.detail.value.metadata.input,
+        },
+        blueprint: {
+          ...this._selectedBlueprint.metadata,
+          input: ev.detail.value.metadata.input,
+        },
+      };
+    }
+    this._dirty = true;
+  }
+
+  private _onBlueprintMetadataChanged(
+    ev: CustomEvent<{ value: BlueprintMetaDataEditorSchema }>
+  ) {
+    ev.stopPropagation();
+    if (!this._selectedBlueprint || "error" in this._selectedBlueprint) {
+      return;
+    }
+
+    this._selectedBlueprint = {
+      ...this._selectedBlueprint,
+      metadata: {
+        ...this._selectedBlueprint.metadata,
+        domain: this._selectedBlueprintDomain!,
+        name: ev.detail.value.name,
+        author: ev.detail.value.author,
+        description: ev.detail.value.description,
+        homeassistant: {
+          min_version: ev.detail.value.minimum_version,
+        },
+      },
+      blueprint: {
+        ...this._selectedBlueprint.metadata,
+        domain: this._selectedBlueprintDomain!,
+        name: ev.detail.value.name,
+        author: ev.detail.value.author,
+        description: ev.detail.value.description,
+        homeassistant: {
+          min_version: ev.detail.value.minimum_version,
+        },
+      },
+    };
+
+    this._selectedBlueprintPath = ev.detail.value.path;
+    this._dirty = true;
+  }
+
+  private _handleBlueprintPicked(domain: BlueprintDomain, id: string) {
+    if (!this._blueprints) {
+      return;
+    }
+
+    const allBlueprints = [
+      ...Object.entries(this._blueprints.script),
+      ...Object.entries(this._blueprints.automation),
+    ];
+    const entry = allBlueprints.find(([blueprintId]) => blueprintId === id);
+    if (entry) {
+      this._dirty = false;
+      this._originalBlueprint = entry[1];
+      this._selectedBlueprint = entry[1];
+      this._selectedBlueprintPath = id;
+      this._originalBlueprintPath = id;
+      this._selectedBlueprintDomain = domain;
+    }
+  }
+
+  private _handleNewBlueprintPicked(domain: BlueprintDomain) {
+    const editorElement = customElements.get(
+      `ha-blueprint-${domain}-editor`
+    ) as CustomElementConstructor & {
+      defaultConfig: Blueprint;
+    };
+
+    this._dirty = false;
+    this._selectedBlueprintDomain = domain;
+    this._originalBlueprint = editorElement.defaultConfig;
+    this._selectedBlueprint = editorElement.defaultConfig;
+    this._originalBlueprintPath = "new_blueprint";
+    this._selectedBlueprintPath = "new_blueprint";
+  }
+
+  private _pickBlueprint() {
+    if (!this._blueprints) {
+      return;
+    }
+
+    showPickBlueprintDialog(this, {
+      blueprints: this._blueprints,
+      handlePickBlueprint: this._handleBlueprintPicked.bind(this),
+      handlePickNewBlueprint: this._handleNewBlueprintPicked.bind(this),
+    });
+  }
+
+  private async _saveBlueprint() {
+    if (!this._selectedBlueprintPath || !this._selectedBlueprintDomain) {
+      // This shouldn't be possible!
+      return;
+    }
+
+    if (!this._selectedBlueprint || "error" in this._selectedBlueprint) {
+      await showAlertDialog(this, {
+        title: this.hass.localize(
+          "ui.panel.developer-tools.tabs.blueprints.editor.error"
+        ),
+        text: this._selectedBlueprint?.error,
+      });
+      return;
+    }
+
+    if (this._selectedBlueprint.metadata.source_url) {
+      const shouldSave = await showConfirmationDialog(this, {
+        title: this.hass.localize(
+          "ui.panel.developer-tools.tabs.blueprints.editor.overwrite_existing_title"
+        ),
+        text: this.hass.localize(
+          "ui.panel.developer-tools.tabs.blueprints.editor.overwrite_existing_text"
+        ),
+      });
+      if (!shouldSave) {
+        return;
+      }
+    }
+
+    await saveBlueprint(
+      this.hass,
+      this._selectedBlueprintDomain,
+      this._selectedBlueprintPath,
+      dump(this._selectedBlueprint),
+      this._selectedBlueprint.metadata.source_url,
+      true
+    );
+    this._originalBlueprint = this._selectedBlueprint;
+    this._originalBlueprintPath = this._selectedBlueprintPath;
+    this._dirty = false;
+  }
+
+  private _resetBlueprint() {
+    if (!this._originalBlueprint) {
+      return;
+    }
+
+    this._selectedBlueprintPath = this._originalBlueprintPath;
+    this._selectedBlueprint = { ...this._originalBlueprint };
+    this._dirty = false;
+  }
+
+  protected render() {
+    if (!this._blueprints) {
+      return nothing;
+    }
+
+    const blueprints = Object.values(this._blueprints)
+      .flatMap((b) => Object.values(b))
+      .filter((b) => !("error" in b)) as Blueprint[];
+    const blueprintMetadata =
+      !this._selectedBlueprint || "error" in this._selectedBlueprint
+        ? ({
+            name: "",
+            description: "",
+            minimum_version: "",
+            path: "",
+            author: "",
+          } as BlueprintMetaDataEditorSchema)
+        : ({
+            name: this._selectedBlueprint.metadata.name,
+            description: this._selectedBlueprint.metadata.description,
+            minimum_version:
+              this._selectedBlueprint.metadata.homeassistant?.min_version,
+            path: this._selectedBlueprintPath,
+            author: this._selectedBlueprint.metadata.author,
+          } as BlueprintMetaDataEditorSchema);
+
+    return html`
+      <div class="container">
+        <div class="full-row">
+          <ha-button @click=${this._pickBlueprint}>
+            ${this.hass.localize(
+              "ui.panel.developer-tools.tabs.blueprints.editor.actions.pick"
+            )}
+          </ha-button>
+          <ha-button @click=${this._saveBlueprint} .disabled=${!this._dirty}>
+            ${this.hass.localize(
+              "ui.panel.developer-tools.tabs.blueprints.editor.actions.save"
+            )}
+          </ha-button>
+          <ha-button @click=${this._resetBlueprint} .disabled=${!this._dirty}>
+            ${this.hass.localize(
+              "ui.panel.developer-tools.tabs.blueprints.editor.actions.reset"
+            )}
+          </ha-button>
+        </div>
+        <ha-card>
+          ${!this._selectedBlueprint
+            ? html`
+                ${this.hass.localize(
+                  "ui.panel.developer-tools.tabs.blueprints.editor.none_selected"
+                )}
+              `
+            : "error" in this._selectedBlueprint
+              ? html`
+                  ${this.hass.localize(
+                    "ui.panel.developer-tools.tabs.blueprints.editor.error"
+                  )}
+                `
+              : html`
+                  <blueprint-metadata-editor
+                    .hass=${this.hass}
+                    .metadata=${blueprintMetadata}
+                    @value-changed=${this._onBlueprintMetadataChanged}
+                  ></blueprint-metadata-editor>
+                  <ha-blueprint-editor
+                    .hass=${this.hass}
+                    .narrow=${this.narrow}
+                    .isWide=${!this.narrow}
+                    .blueprints=${blueprints}
+                    .blueprintPath=${this._originalBlueprintPath ?? ""}
+                    .domain=${this._selectedBlueprint.blueprint?.domain ??
+                    this._selectedBlueprint.metadata.domain ??
+                    ""}
+                    @value-changed=${this._onBlueprintContentChanged}
+                  >
+                  </ha-blueprint-editor>
+                `}
+        </ha-card>
+        <ha-yaml-editor
+          .hass=${this.hass}
+          .yamlSchema=${BlueprintYamlSchema}
+          .value=${this._selectedBlueprint}
+          .autoUpdate=${true}
+          .readOnly=${true}
+        >
+        </ha-yaml-editor>
+      </div>
+    `;
+  }
+
+  static get styles(): CSSResultGroup {
+    return [
+      haStyle,
+      css`
+        .container {
+          margin: 16px;
+          gap: 16px;
+          display: flex;
+          flex-direction: column;
+        }
+
+        ha-card {
+          padding: 8px;
+        }
+
+        .full-row {
+          flex: 1 0 100%;
+        }
+      `,
+    ];
+  }
+}
+
+declare global {
+  interface HTMLElementTagNameMap {
+    "developer-tools-blueprints": HaPanelDevBlueprints;
+  }
+}

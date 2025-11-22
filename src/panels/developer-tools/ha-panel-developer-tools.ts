@@ -100,6 +100,15 @@ class PanelDeveloperTools extends LitElement {
             .active=${page === "assist"}
             >Assist</ha-tab-group-tab
           >
+          <ha-tab-group-tab
+            slot="nav"
+            panel="blueprints"
+            .active=${page === "blueprints"}
+          >
+            ${this.hass.localize(
+              "ui.panel.developer-tools.tabs.blueprints.title"
+            )}
+          </ha-tab-group-tab>
         </ha-tab-group>
       </div>
       <developer-tools-router

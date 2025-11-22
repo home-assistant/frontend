@@ -56,6 +56,7 @@ import "./condition/ha-automation-condition";
 import type HaAutomationCondition from "./condition/ha-automation-condition";
 import "./ha-automation-sidebar";
 import type HaAutomationSidebar from "./ha-automation-sidebar";
+import type { AutomationBlueprint } from "../../../data/blueprint";
 import { showPasteReplaceDialog } from "./paste-replace-dialog/show-dialog-paste-replace";
 import { manualEditorStyles, saveFabStyles } from "./styles";
 import "./trigger/ha-automation-trigger";
@@ -91,7 +92,9 @@ export class HaManualAutomationEditor extends LitElement {
 
   @property({ type: Boolean }) public saving = false;
 
-  @property({ attribute: false }) public config!: ManualAutomationConfig;
+  @property({ attribute: false }) public config!:
+    | ManualAutomationConfig
+    | AutomationBlueprint;
 
   @property({ attribute: false }) public stateObj?: HassEntity;
 

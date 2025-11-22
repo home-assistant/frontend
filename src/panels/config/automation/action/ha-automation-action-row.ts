@@ -183,6 +183,8 @@ export default class HaAutomationActionRow extends LitElement {
   @consume({ context: floorsContext, subscribe: true })
   _floorReg!: Record<string, FloorRegistryEntry>;
 
+  @state() private _warnings?: string[];
+
   @state() private _uiModeAvailable = true;
 
   @state() private _yamlMode = false;
@@ -190,8 +192,6 @@ export default class HaAutomationActionRow extends LitElement {
   @state() private _selected = false;
 
   @state() private _collapsed = true;
-
-  @state() private _warnings?: string[];
 
   @query("ha-automation-action-editor")
   private _actionEditor?: HaAutomationActionEditor;

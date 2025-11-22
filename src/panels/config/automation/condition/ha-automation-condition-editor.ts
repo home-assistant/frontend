@@ -2,6 +2,7 @@ import { css, html, LitElement, nothing } from "lit";
 import { customElement, property, query } from "lit/decorators";
 import { classMap } from "lit/directives/class-map";
 import memoizeOne from "memoize-one";
+import { DEFAULT_SCHEMA, Schema } from "js-yaml";
 import { dynamicElement } from "../../../../common/dom/dynamic-element-directive";
 import { fireEvent } from "../../../../common/dom/fire_event";
 import "../../../../components/ha-yaml-editor";
@@ -13,6 +14,8 @@ import type { HomeAssistant } from "../../../../types";
 import "../ha-automation-editor-warning";
 import { editorStyles, indentStyle } from "../styles";
 import type { ConditionElement } from "./ha-automation-condition-row";
+import { consume } from "@lit/context";
+import { yamlSchemaContext } from "../../../../data/blueprint";
 
 @customElement("ha-automation-condition-editor")
 export default class HaAutomationConditionEditor extends LitElement {
@@ -39,6 +42,9 @@ export default class HaAutomationConditionEditor extends LitElement {
 
   @query(COLLAPSIBLE_CONDITION_ELEMENTS.join(", "))
   private _collapsibleElement?: ConditionElement;
+
+  @consume({ context: yamlSchemaContext })
+  private _yamlSchema?: Schema;
 
   private _processedCondition = memoizeOne((condition) =>
     expandConditionWithShorthand(condition)
@@ -74,22 +80,23 @@ export default class HaAutomationConditionEditor extends LitElement {
                     ></ha-automation-editor-warning>
                   `
                 : nothing}
-              <ha-yaml-editor
-                .hass=${this.hass}
-                .defaultValue=${this.condition}
-                @value-changed=${this._onYamlChange}
-                .readOnly=${this.disabled}
-              ></ha-yaml-editor>
-            `
-          : html`
-              <div @value-changed=${this._onUiChanged}>
-                ${dynamicElement(
-                  `ha-automation-condition-${condition.condition}`,
-                  {
-                    hass: this.hass,
-                    condition: condition,
-                    disabled: this.disabled,
-                    optionsInSidebar: this.indent,
+            <ha-yaml-editor
+              .hass=${this.hass}
+              .defaultValue=${this.condition}
+              @value-changed=${this._onYamlChange}
+              .readOnly=${this.disabled}
+              .yamlSchema=${this._yamlSchema ?? DEFAULT_SCHEMA}
+            ></ha-yaml-editor>
+          `
+        : html`
+            <div @value-changed=${this._onUiChanged}>
+              ${dynamicElement(
+                `ha-automation-condition-${condition.condition}`,
+                {
+                  hass: this.hass,
+                  condition: condition,
+                  disabled: this.disabled,
+                optionsInSidebar: this.indent,
                     narrow: this.narrow,
                   }
                 )}

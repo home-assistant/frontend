@@ -20,7 +20,7 @@ import { haStyle } from "../../../resources/styles";
 import type { HomeAssistant } from "../../../types";
 
 @customElement("blueprint-generic-editor")
-export abstract class HaBlueprintGenericEditor extends LitElement {
+export abstract class BlueprintGenericEditor extends LitElement {
   @property({ attribute: false }) public hass!: HomeAssistant;
 
   @property({ attribute: "is-wide", type: Boolean }) public isWide = false;
@@ -300,6 +300,6 @@ export abstract class HaBlueprintGenericEditor extends LitElement {
 
 declare global {
   interface HTMLElementTagNameMap {
-    "blueprint-generic-editor": HaBlueprintGenericEditor;
+    "blueprint-generic-editor": BlueprintGenericEditor;
   }
 }

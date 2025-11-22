@@ -9262,6 +9262,100 @@
                 "restart_error": "Failed to restart Home Assistant"
               }
             }
+          },
+          "blueprints": {
+            "title": "Blueprints",
+            "dialog_pick": {
+              "header": "Pick a blueprint",
+              "automation": "Automation",
+              "script": "Script",
+              "create_empty_automation": "Create new automation blueprint",
+              "create_empty_automation_description": "Start with an empty automation blueprint from scratch",
+              "create_empty_script": "Create new script blueprint",
+              "create_empty_script_description": "Start with an empty script blueprint from scratch"
+            },
+            "editor": {
+              "default_name": "New blueprint",
+              "save": "Save",
+              "rename": "Rename",
+              "load_error_not_editable": "Only blueprints in blueprints.yaml are editable.",
+              "load_error_unknown": "Error loading blueprint ({err_no}).",
+              "move_up": "Move up",
+              "move_down": "Move down",
+              "edit_ui": "UI editor",
+              "edit_yaml": "YAML editor",
+              "missing_path": "Cannot save blueprint without a path",
+              "missing_name": "Cannot save blueprint without a name",
+              "metadata": "Metadata",
+              "error": "There is a problem with the selected blueprint.",
+              "none_selected": "Please pick a blueprint to edit it.",
+              "overwrite_existing_title": "You are about to overwrite an existing blueprint",
+              "overwrite_existing_text": "Reimporting this blueprint will cause your changes to be lost. Are you sure?",
+              "actions": {
+                "delete": "Delete",
+                "duplicate": "Duplicate",
+                "pick": "Pick a blueprint",
+                "save": "Save",
+                "reset": "Reset"
+              },
+              "inputs": {
+                "header": "Inputs",
+                "section_description": "Inputs are variables that make blueprints generic. The exact value will be determined when an instance of this blueprint is created",
+                "learn_more": "Learn more about inputs",
+                "add": "Add new input",
+                "testing_pass": "Input passes",
+                "testing_error": "Input did not pass",
+                "copy": "Copy",
+                "cut": "Cut",
+                "rename": "Rename",
+                "delete_confirm_title": "Delete input",
+                "delete_confirm_text": "Do you want to delete this input from your blueprint?",
+                "id": "ID",
+                "change_id": "Change input ID",
+                "type": {
+                  "new": {
+                    "input": "Input",
+                    "section": "Section",
+                    "type": "Type",
+                    "id": "ID"
+                  },
+                  "section": {
+                    "name": "Name",
+                    "description": "Description",
+                    "icon": "Icon",
+                    "collapsed": "Collapsed"
+                  },
+                  "single": {
+                    "name": "Name",
+                    "description": "Description",
+                    "default": "Default value",
+                    "selector": "Selector"
+                  }
+                }
+              },
+              "dialog": {
+                "add_description": "Add description",
+                "add_author": "Add author",
+                "add_minimum_version": "Add minimum version"
+              },
+              "name": {
+                "label": "Name"
+              },
+              "path": {
+                "label": "Path"
+              },
+              "description": {
+                "label": "Description"
+              },
+              "author": {
+                "label": "Author",
+                "placeholder": "Linus Torvalds"
+              },
+              "minimum_version": {
+                "label": "Minimum version",
+                "placeholder": "2025.1.0"
+              }
+            }
           }
         }
       },
