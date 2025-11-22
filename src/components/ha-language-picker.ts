@@ -22,6 +22,7 @@ export const getLanguageOptions = (
 ): PickerComboBoxItem[] => {
   let options: PickerComboBoxItem[] = [];
 
+  const enLocale = { language: "en" } as FrontendLocaleData;
   if (nativeName) {
     const translations = translationMetadata.translations;
     options = languages.map((lang) => {
@@ -37,18 +38,38 @@ export const getLanguageOptions = (
           primary = lang;
         }
       }
+      let searchLabels = primary;
+      const browserLangName = formatLanguageCode(
+        lang,
+        locale || ({ language: navigator.language } as FrontendLocaleData)
+      );
+      if (browserLangName !== primary) {
+        searchLabels += `;${browserLangName}`;
+      }
+      const englishName = formatLanguageCode(lang, enLocale);
+      if (englishName !== primary && englishName !== browserLangName) {
+        searchLabels += `;${englishName}`;
+      }
       return {
         id: lang,
         primary,
-        search_labels: [primary],
+        search_labels: searchLabels.split(";"),
       };
     });
   } else if (locale) {
-    options = languages.map((lang) => ({
-      id: lang,
-      primary: formatLanguageCode(lang, locale),
-      search_labels: [formatLanguageCode(lang, locale)],
-    }));
+    options = languages.map((lang) => {
+      const primary = formatLanguageCode(lang, locale);
+      let searchLabels = primary;
+      const englishName = formatLanguageCode(lang, enLocale);
+      if (englishName !== primary) {
+        searchLabels += `;${englishName}`;
+      }
+      return {
+        id: lang,
+        primary,
+        search_labels: searchLabels.split(";"),
+      };
+    });
   }
 
   if (!noSort && locale) {
