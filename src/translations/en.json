@@ -8618,6 +8618,10 @@
           "header": "Vibrate",
           "description": "Enable or disable vibration on this device when controlling devices."
         },
+        "winter_mode": {
+          "header": "Winter mode",
+          "description": "Add a seasonal touch to your Home Assistant interface."
+        },
         "enable_shortcuts": {
           "header": "Keyboard shortcuts",
           "description": "Enable or disable keyboard shortcuts for performing various actions in the UI."

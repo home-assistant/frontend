@@ -7,6 +7,7 @@ import { listenMediaQuery } from "../common/dom/media_query";
 import { toggleAttribute } from "../common/dom/toggle_attribute";
 import { computeRTLDirection } from "../common/util/compute_rtl";
 import "../components/ha-drawer";
+import "../components/ha-snowflakes";
 import { showNotificationDrawer } from "../dialogs/notifications/show-notification-drawer";
 import type { HomeAssistant, Route } from "../types";
 import "./partial-panel-resolver";
@@ -50,6 +51,7 @@ export class HomeAssistantMain extends LitElement {
       this.hass.panels && this.hass.userData && this.hass.systemData;
 
     return html`
+      <ha-snowflakes .hass=${this.hass} .narrow=${this.narrow}></ha-snowflakes>
       <ha-drawer
         .type=${sidebarNarrow ? "modal" : ""}
         .open=${sidebarNarrow ? this._drawerOpen : false}
