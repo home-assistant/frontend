@@ -451,7 +451,9 @@ export interface TargetSelector {
 }
 
 export interface TemplateSelector {
-  template: {} | null;
+  template: {
+    preview?: boolean;
+  } | null;
 }
 
 export interface ThemeSelector {
