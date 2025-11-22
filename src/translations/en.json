@@ -3265,7 +3265,10 @@
             "create_helper": "Create helper",
             "no_helpers": "Looks like you don't have any helpers yet!",
             "search": "Search {number} {number, plural,\n  one {helper}\n  other {helpers}\n}",
-            "error_information": "Error information"
+            "error_information": "Error information",
+            "delete_confirm_title": "Delete helper?",
+            "delete_confirm_text": "Are you sure you want to delete {name}?",
+            "delete_failed": "Failed to delete helper"
           },
           "dialog": {
             "create": "Create",
