@@ -16,7 +16,7 @@ export class HaTooltip extends Tooltip {
       Tooltip.styles,
       css`
         :host {
-          --wa-tooltip-background-color: var(--secondary-background-color);
+          --wa-tooltip-background-color: var(--card-background-color);
           --wa-tooltip-content-color: var(--primary-text-color);
           --wa-tooltip-font-family: var(
             --ha-tooltip-font-family,
@@ -35,6 +35,9 @@ export class HaTooltip extends Tooltip {
             var(--ha-line-height-condensed)
           );
           --wa-tooltip-padding: 8px;
+          --wa-tooltip-border-width: 1px;
+          --wa-tooltip-border-style: solid;
+          --wa-tooltip-border-color: var(--secondary-text-color);
           --wa-tooltip-border-radius: var(
             --ha-tooltip-border-radius,
             var(--ha-border-radius-sm)
