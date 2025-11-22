@@ -84,6 +84,7 @@ export const mockEnergy = (hass: MockHomeAssistant) => {
           stat_consumption: "sensor.energy_boiler",
         },
       ],
+      device_consumption_water: [],
     })
   );
   hass.mockWS(
