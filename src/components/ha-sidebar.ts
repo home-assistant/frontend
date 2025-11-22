@@ -206,6 +206,8 @@ class HaSidebar extends SubscribeMixin(LitElement) {
 
   private _mouseLeaveTimeout?: number;
 
+  private _touchendTimeout?: number;
+
   private _tooltipHideTimeout?: number;
 
   private _recentKeydownActiveUntil = 0;
@@ -419,6 +421,7 @@ class HaSidebar extends SubscribeMixin(LitElement) {
         class="ha-scrollbar"
         @focusin=${this._listboxFocusIn}
         @focusout=${this._listboxFocusOut}
+        @touchend=${this._listboxTouchend}
         @scroll=${this._listboxScroll}
         @keydown=${this._listboxKeydown}
       >
@@ -643,6 +646,13 @@ class HaSidebar extends SubscribeMixin(LitElement) {
 
   private _listboxFocusOut() {
     this._hideTooltip();
+  }
+
+  private _listboxTouchend() {
+    clearTimeout(this._touchendTimeout);
+    this._touchendTimeout = window.setTimeout(() => {
+      this._hideTooltip();
+    }, 1000);
   }
 
   @eventOptions({
