@@ -30,6 +30,14 @@ import type {
   SchemaUnion,
 } from "../../../../../components/ha-form/types";
 
+// Extended form data used only in the UI form. These fields do not exist on the
+// persisted StateTrigger type, but are convenient for toggling between positive
+// and negative matches in the editor.
+type StateTriggerFormData = StateTrigger & {
+  from_match?: "is" | "is_not";
+  to_match?: "is" | "is_not";
+};
+
 const stateTriggerStruct = assign(
   baseTriggerStruct,
   object({
@@ -39,6 +47,8 @@ const stateTriggerStruct = assign(
     attribute: optional(string()),
     from: optional(union([nullable(string()), array(string())])),
     to: optional(union([nullable(string()), array(string())])),
+    not_from: optional(union([nullable(string()), array(string())])),
+    not_to: optional(union([nullable(string()), array(string())])),
     for: optional(union([number(), string(), forDictStruct])),
   })
 );
@@ -129,6 +139,27 @@ export class HaStateTrigger extends LitElement implements TriggerElement {
           },
         },
         {
+          name: "from_match",
+          selector: {
+            button_toggle: {
+              options: [
+                {
+                  value: "is",
+                  label: localize(
+                    "ui.panel.config.automation.editor.triggers.type.state.is"
+                  ),
+                },
+                {
+                  value: "is_not",
+                  label: localize(
+                    "ui.panel.config.automation.editor.triggers.type.state.is_not"
+                  ),
+                },
+              ],
+            },
+          },
+        },
+        {
           name: "from",
           context: {
             filter_entity: "entity_id",
@@ -148,6 +179,27 @@ export class HaStateTrigger extends LitElement implements TriggerElement {
                   ]) as any,
               attribute: attribute,
               hide_states: hideInFrom,
+            },
+          },
+        },
+        {
+          name: "to_match",
+          selector: {
+            button_toggle: {
+              options: [
+                {
+                  value: "is",
+                  label: localize(
+                    "ui.panel.config.automation.editor.triggers.type.state.is"
+                  ),
+                },
+                {
+                  value: "is_not",
+                  label: localize(
+                    "ui.panel.config.automation.editor.triggers.type.state.is_not"
+                  ),
+                },
+              ],
             },
           },
         },
@@ -210,14 +262,22 @@ export class HaStateTrigger extends LitElement implements TriggerElement {
   protected render() {
     const trgFor = createDurationData(this.trigger.for);
 
-    const data = {
+    const data: StateTriggerFormData = {
       ...this.trigger,
       entity_id: ensureArray(this.trigger.entity_id),
       for: trgFor,
     };
 
-    data.to = this._normalizeStates(this.trigger.to, data.attribute);
-    data.from = this._normalizeStates(this.trigger.from, data.attribute);
+    const hasNotFrom = this.trigger.not_from !== undefined;
+    const hasNotTo = this.trigger.not_to !== undefined;
+    data.from_match = hasNotFrom ? "is_not" : "is";
+    data.to_match = hasNotTo ? "is_not" : "is";
+
+    const fromSource = hasNotFrom ? this.trigger.not_from : this.trigger.from;
+    const toSource = hasNotTo ? this.trigger.not_to : this.trigger.to;
+
+    data.from = this._normalizeStates(fromSource, data.attribute);
+    data.to = this._normalizeStates(toSource, data.attribute);
     const schema = this._schema(
       this.hass.localize,
       this.trigger.attribute,
@@ -240,21 +300,27 @@ export class HaStateTrigger extends LitElement implements TriggerElement {
   private _valueChanged(ev: CustomEvent): void {
     ev.stopPropagation();
     const newTrigger = ev.detail.value;
+    const fromMatch = newTrigger.from_match === "is_not" ? "is_not" : "is";
+    const toMatch = newTrigger.to_match === "is_not" ? "is_not" : "is";
 
-    newTrigger.to = this._applyAnyStateExclusive(
-      newTrigger.to,
-      newTrigger.attribute
-    );
-    if (Array.isArray(newTrigger.to) && newTrigger.to.length === 0) {
-      delete newTrigger.to;
-    }
-    newTrigger.from = this._applyAnyStateExclusive(
+    // Sanitize values based on match mode
+    const sanitizedFrom = this._sanitizeForMatch(
       newTrigger.from,
+      fromMatch,
       newTrigger.attribute
     );
-    if (Array.isArray(newTrigger.from) && newTrigger.from.length === 0) {
-      delete newTrigger.from;
-    }
+    const sanitizedTo = this._sanitizeForMatch(
+      newTrigger.to,
+      toMatch,
+      newTrigger.attribute
+    );
+
+    // Apply back to correct keys and clean up UI-only props
+    delete newTrigger.from_match;
+    delete newTrigger.to_match;
+
+    this._applyMatchAssignment(newTrigger, "from", fromMatch, sanitizedFrom);
+    this._applyMatchAssignment(newTrigger, "to", toMatch, sanitizedTo);
 
     Object.keys(newTrigger).forEach((key) => {
       const val = newTrigger[key];
@@ -264,6 +330,53 @@ export class HaStateTrigger extends LitElement implements TriggerElement {
     });
 
     fireEvent(this, "value-changed", { value: newTrigger });
+  }
+
+  private _applyMatchAssignment(
+    target: any,
+    baseKey: "from" | "to",
+    match: "is" | "is_not",
+    value: string | string[] | null | undefined
+  ): void {
+    const negKey = `not_${baseKey}`;
+
+    const hasValue = !(
+      value === undefined ||
+      (Array.isArray(value) && value.length === 0)
+    );
+
+    const setKey = match === "is_not" ? negKey : baseKey;
+    const clearKey = match === "is_not" ? baseKey : negKey;
+
+    // Always clear the opposite key first, then set (or clear) the target key
+    delete target[clearKey];
+    if (hasValue) {
+      target[setKey] = value;
+    } else {
+      delete target[setKey];
+    }
+  }
+
+  private _sanitizeForMatch(
+    val: string | string[] | null | undefined,
+    match: string,
+    attribute?: string
+  ): string | string[] | null | undefined {
+    if (match === "is") {
+      return this._applyAnyStateExclusive(val, attribute);
+    }
+    // is_not mode: if Any state selected and no attribute, map to null.
+    if (Array.isArray(val)) {
+      if (val.includes(ANY_STATE_VALUE)) {
+        return attribute ? undefined : null;
+      }
+      const filtered = val.filter((v) => v !== ANY_STATE_VALUE);
+      return filtered.length > 0 ? filtered : undefined;
+    }
+    if (val === ANY_STATE_VALUE) {
+      return attribute ? undefined : null;
+    }
+    return val ?? undefined;
   }
 
   private _applyAnyStateExclusive(

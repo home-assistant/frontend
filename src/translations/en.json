@@ -4097,13 +4097,17 @@
                 "state": {
                   "label": "State",
                   "attribute": "Attribute (optional)",
+                  "from_match": "From match",
                   "from": "From (optional)",
                   "for": "For",
+                  "to_match": "To match",
                   "to": "To (optional)",
+                  "is": "is",
+                  "is_not": "is not",
                   "any_state_ignore_attributes": "Any state (ignoring attribute changes)",
                   "description": {
                     "picker": "When the state of an entity (or attribute) changes.",
-                    "full": "When{hasAttribute, select, \n true { {attribute} of} \n other {}\n} {hasEntity, select, \n true {{entity}} \n other {something}\n} changes{fromChoice, select, \n fromUsed { from {fromString}}\n null { from any state} \n other {}\n}{toChoice, select, \n toUsed { to {toString}} \n null { to any state} \n special { state or any attributes} \n other {}\n}{hasDuration, select, \n true { for {duration}} \n other {}\n}"
+                    "full": "When{hasAttribute, select, \n true { {attribute} of} \n other {}\n} {hasEntity, select, \n true {{entity}} \n other {something}\n} changes{fromChoice, select, \n fromUsed { from {fromString}}\n fromNotUsed { from any state except {fromString}}\n null { from any state} \n other {}\n}{toChoice, select, \n toUsed { to {toString}} \n toNotUsed { to any state except {toString}}\n null { to any state} \n special { state or any attributes} \n other {}\n}{hasDuration, select, \n true { for {duration}} \n other {}\n}"
                   }
                 },
                 "homeassistant": {
