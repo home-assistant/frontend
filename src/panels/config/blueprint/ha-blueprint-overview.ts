@@ -208,7 +208,24 @@ class HaBlueprintOverview extends LitElement {
         type: "numeric",
         minWidth: "100px",
         maxWidth: "120px",
-        template: (blueprint) => html`${blueprint.usageCount ?? 0}`,
+        template: (blueprint) => {
+          const count = blueprint.usageCount ?? 0;
+          return html`
+            <ha-assist-chip
+              filled
+              .active=${count > 0}
+              label=${String(count)}
+              title=${blueprint.error
+                ? String(count)
+                : this.hass.localize(
+                    `ui.panel.config.blueprint.overview.view_${blueprint.type}`
+                  )}
+              ?disabled=${blueprint.error}
+              data-fullpath=${blueprint.fullpath}
+              @click=${this._handleUsageClick}
+            ></ha-assist-chip>
+          `;
+        },
       },
       fullpath: {
         title: "fullpath",
@@ -470,6 +487,25 @@ class HaBlueprintOverview extends LitElement {
       return;
     }
     this._createNew(blueprint);
+  }
+
+  private _handleUsageClick(ev: Event) {
+    ev.stopPropagation();
+    ev.preventDefault();
+    const target = ev.currentTarget as HTMLElement | null;
+    const fullpath = target?.dataset.fullpath;
+    if (!fullpath) {
+      return;
+    }
+    const blueprint = this._processedBlueprints(
+      this.blueprints,
+      this.hass.localize,
+      this._usageCounts
+    ).find((item) => item.fullpath === fullpath);
+    if (!blueprint || blueprint.error) {
+      return;
+    }
+    this._showUsed(blueprint);
   }
 
   private _showUsed = (blueprint: BlueprintMetaDataPath) => {
