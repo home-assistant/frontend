@@ -1323,13 +1323,19 @@ ${rejected
         const entityReg = this._entityReg.find(
           (e) => e.entity_id === helper.entity_id
         );
-        if (entityReg?.unique_id && isComponentLoaded(this.hass, helper.type)) {
-          await HELPERS_CRUD[helper.type as HelperDomain].delete(
-            this.hass,
-            entityReg.unique_id
+        if (
+          !entityReg?.unique_id ||
+          !isComponentLoaded(this.hass, helper.type)
+        ) {
+          throw new Error(
+            this.hass.localize("ui.panel.config.helpers.picker.delete_failed")
           );
-          return;
         }
+        await HELPERS_CRUD[helper.type as HelperDomain].delete(
+          this.hass,
+          entityReg.unique_id
+        );
+        return;
       }
 
       // For config entry-based helpers, delete the config entry
