@@ -309,16 +309,20 @@ export class DialogLovelaceDashboardDetail extends LitElement {
       }
       this.closeDialog();
     } catch (err: any) {
-      if (err?.translation_key === "url_already_exists") {
-        this._error = {
-          url_path: this.hass!.localize(
-            "ui.panel.config.lovelace.dashboards.detail.url_already_exists",
-            err?.translation_placeholders
-          ),
-        };
-        return;
+      let localizedErrorMessage: string | undefined;
+      if (err?.translation_domain && err?.translation_key) {
+        const localize = await this.hass.loadBackendTranslation(
+          "exceptions",
+          err.translation_domain
+        );
+        localizedErrorMessage = localize(
+          `component.${err.translation_domain}.exceptions.${err.translation_key}.message`,
+          err.translation_placeholders
+        );
       }
-      this._error = { base: err?.message || "Unknown error" };
+      this._error = {
+        base: localizedErrorMessage || err?.message || "Unknown error",
+      };
     } finally {
       this._submitting = false;
     }
