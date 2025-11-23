@@ -50,7 +50,7 @@ import { lightSupportsFavoriteColors } from "../../data/light";
 import type { ItemType } from "../../data/search";
 import { SearchableDomains } from "../../data/search";
 import { getSensorNumericDeviceClasses } from "../../data/sensor";
-import { haStyleDialog } from "../../resources/styles";
+import { haStyleDialog, haStyleDialogFixedTop } from "../../resources/styles";
 import "../../state-summary/state-card-content";
 import type { HomeAssistant } from "../../types";
 import {
@@ -707,14 +707,9 @@ export class MoreInfoDialog extends LitElement {
   static get styles() {
     return [
       haStyleDialog,
+      haStyleDialogFixedTop,
       css`
         ha-dialog {
-          /* Set the top top of the dialog to a fixed position, so it doesnt jump when the content changes size */
-          --vertical-align-dialog: flex-start;
-          --dialog-surface-margin-top: max(
-            var(--ha-space-10),
-            var(--safe-area-inset-top, var(--ha-space-0))
-          );
           --dialog-content-padding: 0;
         }
 
@@ -735,13 +730,6 @@ export class MoreInfoDialog extends LitElement {
           padding: var(--ha-space-2) var(--ha-space-6) var(--ha-space-6)
             var(--ha-space-6);
           display: block;
-        }
-
-        @media all and (max-width: 450px), all and (max-height: 500px) {
-          /* When in fullscreen dialog should be attached to top */
-          ha-dialog {
-            --dialog-surface-margin-top: var(--ha-space-0);
-          }
         }
 
         @media all and (min-width: 600px) and (min-height: 501px) {

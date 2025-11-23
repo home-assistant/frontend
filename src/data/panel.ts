@@ -9,8 +9,8 @@ export const getLegacyDefaultPanelUrlPath = (): string | null => {
 };
 
 export const getDefaultPanelUrlPath = (hass: HomeAssistant): string =>
-  hass.userData?.defaultPanel ||
-  hass.systemData?.defaultPanel ||
+  hass.userData?.default_panel ||
+  hass.systemData?.default_panel ||
   getLegacyDefaultPanelUrlPath() ||
   DEFAULT_PANEL;
 
