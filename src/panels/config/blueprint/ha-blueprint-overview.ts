@@ -43,6 +43,7 @@ import {
 } from "../../../data/blueprint";
 import { showScriptEditor } from "../../../data/script";
 import { findRelated } from "../../../data/search";
+import "../../../components/chips/ha-assist-chip";
 import {
   showAlertDialog,
   showConfirmationDialog,
@@ -131,6 +132,8 @@ class HaBlueprintOverview extends LitElement {
 
   @state() private _usageCounts: Record<string, number> = {};
 
+  private _usageCountRequest = 0;
+
   private _processedBlueprints = memoizeOne(
     (
       blueprints: Record<string, Blueprints>,
@@ -201,9 +204,11 @@ class HaBlueprintOverview extends LitElement {
           "ui.panel.config.blueprint.overview.headers.usage_count"
         ),
         sortable: true,
+        valueColumn: "usageCount",
         type: "numeric",
         minWidth: "100px",
         maxWidth: "120px",
+        template: (blueprint) => html`${blueprint.usageCount ?? 0}`,
       },
       fullpath: {
         title: "fullpath",
@@ -289,6 +294,13 @@ class HaBlueprintOverview extends LitElement {
       if (url) {
         this._addBlueprint(url);
       }
+    }
+  }
+
+  protected updated(changedProps: PropertyValues) {
+    super.updated(changedProps);
+    if (changedProps.has("blueprints")) {
+      this._loadUsageCounts();
     }
   }
 
@@ -403,6 +415,11 @@ class HaBlueprintOverview extends LitElement {
   }
 
   private async _loadUsageCounts() {
+    if (!this.blueprints) {
+      return;
+    }
+
+    const request = ++this._usageCountRequest;
     const usageCounts: Record<string, number> = {};
 
     const blueprintList = this._processedBlueprints(
@@ -432,7 +449,9 @@ class HaBlueprintOverview extends LitElement {
       })
     );
 
-    this._usageCounts = usageCounts;
+    if (request === this._usageCountRequest) {
+      this._usageCounts = usageCounts;
+    }
   }
 
   private _handleRowClicked(ev: HASSDomEvent<RowClickedEvent>) {
