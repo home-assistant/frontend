@@ -489,7 +489,7 @@ class HaBlueprintOverview extends LitElement {
     this._createNew(blueprint);
   }
 
-  private _handleUsageClick(ev: Event) {
+  private _handleUsageClick = (ev: Event) => {
     ev.stopPropagation();
     ev.preventDefault();
     const target = ev.currentTarget as HTMLElement | null;
@@ -506,7 +506,7 @@ class HaBlueprintOverview extends LitElement {
       return;
     }
     this._showUsed(blueprint);
-  }
+  };
 
   private _showUsed = (blueprint: BlueprintMetaDataPath) => {
     navigate(
