@@ -73,6 +73,7 @@ export class HaYamlEditor extends LitElement {
             schema: this.yamlSchema,
             quotingType: '"',
             noRefs: true,
+            lineWidth: -1,
           })
         : "";
     } catch (err: any) {
