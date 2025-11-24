@@ -428,7 +428,6 @@ class HaBlueprintOverview extends LitElement {
 
   private _reload() {
     fireEvent(this, "reload-blueprints");
-    this._loadUsageCounts();
   }
 
   private async _loadUsageCounts() {
