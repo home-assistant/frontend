@@ -105,60 +105,63 @@ export default class HaAutomationSidebarCard extends ScrollableFadeMixin(
     ev.preventDefault();
   }
 
-  static styles = [
-    haStyleScrollbar,
-    css`
-      ha-card {
-        position: relative;
-        height: 100%;
-        width: 100%;
-        border-color: var(--primary-color);
-        border-width: 2px;
-        display: flex;
-        flex-direction: column;
-      }
-
-      @media all and (max-width: 870px) {
-        ha-card.mobile {
-          border: none;
-          box-shadow: none;
+  static get styles() {
+    return [
+      ...super.styles,
+      haStyleScrollbar,
+      css`
+        ha-card {
+          position: relative;
+          height: 100%;
+          width: 100%;
+          border-color: var(--primary-color);
+          border-width: 2px;
+          display: flex;
+          flex-direction: column;
         }
-        ha-card.mobile {
-          border-bottom-right-radius: var(--ha-border-radius-square);
-          border-bottom-left-radius: var(--ha-border-radius-square);
+
+        @media all and (max-width: 870px) {
+          ha-card.mobile {
+            border: none;
+            box-shadow: none;
+          }
+          ha-card.mobile {
+            border-bottom-right-radius: var(--ha-border-radius-square);
+            border-bottom-left-radius: var(--ha-border-radius-square);
+          }
         }
-      }
 
-      ha-dialog-header {
-        border-radius: var(--ha-card-border-radius);
-        border-bottom-left-radius: 0;
-        border-bottom-right-radius: 0;
-        position: relative;
-        background-color: var(
-          --ha-dialog-surface-background,
-          var(--mdc-theme-surface, #fff)
-        );
-      }
+        ha-dialog-header {
+          border-radius: var(--ha-card-border-radius);
+          border-bottom-left-radius: 0;
+          border-bottom-right-radius: 0;
+          position: relative;
+          background-color: var(
+            --ha-dialog-surface-background,
+            var(--mdc-theme-surface, #fff)
+          );
+        }
 
-      .card-content {
-        flex: 1 1 auto;
-        min-height: 0;
-        overflow: auto;
-        margin-top: 0;
-        padding-bottom: max(var(--safe-area-inset-bottom, 0px), 32px);
-      }
-
-      .fade-top {
-        top: var(--ha-space-17);
-      }
-
-      @media all and (max-width: 870px) {
         .card-content {
-          padding-bottom: 42px;
+          flex: 1 1 auto;
+          min-height: 0;
+          overflow: auto;
+          margin-top: 0;
+          padding-bottom: max(var(--safe-area-inset-bottom, 0px), 32px);
         }
-      }
-    `,
-  ];
+
+        .fade-top {
+          top: var(--ha-space-17);
+        }
+
+        @media all and (max-width: 870px) {
+          .card-content {
+            padding-bottom: 42px;
+          }
+        }
+      `,
+    ];
+  }
 }
 
 declare global {
