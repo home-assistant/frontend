@@ -184,8 +184,8 @@ export class HaDeviceCard extends SubscribeMixin(LitElement) {
                         : undefined;
                     return html`
                       <ha-label
-                        style=${color ? `--color: ${color}` : nothing}
-                        .description=${label?.description || undefined}
+                        style=${color && `--color: ${color}`}
+                        .description=${label?.description}
                       >
                         ${label?.icon
                           ? html`<ha-icon
@@ -214,7 +214,7 @@ export class HaDeviceCard extends SubscribeMixin(LitElement) {
     );
   }
 
-  private _computeDeviceNameDisplay(deviceId) {
+  private _computeDeviceNameDisplay(deviceId: string) {
     const device = this.hass.devices[deviceId];
     return device
       ? computeDeviceNameDisplay(device, this.hass)
