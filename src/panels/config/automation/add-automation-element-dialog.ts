@@ -236,7 +236,7 @@ class DialogAddAutomationElement
 
   @state() private _searchListScrolled = false;
 
-  @state() private _targetItems?: ListItem[];
+  @state() private _targetItems?: { title: string; items: ListItem[] }[];
 
   @state() private _loadItemsError = false;
 
@@ -715,12 +715,24 @@ class DialogAddAutomationElement
                             <div>
                               ${this._renderTarget(this._selectedTarget)}
                             </div>`
-                        : this._renderItemList(
-                            this.hass.localize(
-                              `ui.panel.config.automation.editor.${automationElementType}s.name`
-                            ),
+                        : this._tab === "targets" &&
+                            this._selectedTarget &&
                             items
-                          )}
+                          ? repeat(
+                              items,
+                              (itemGroup) => itemGroup.title,
+                              (itemGroup) =>
+                                this._renderItemList(
+                                  itemGroup.title,
+                                  itemGroup.items
+                                )
+                            )
+                          : this._renderItemList(
+                              this.hass.localize(
+                                `ui.panel.config.automation.editor.${automationElementType}s.name`
+                              ),
+                              items as ListItem[]
+                            )}
               </div>
             `
           : nothing}
@@ -763,7 +775,9 @@ class DialogAddAutomationElement
                   ? this._renderTarget(this._selectedTarget)
                   : nothing}
               </div>
-              <div slot="supporting-text">${item.description}</div>
+              ${this._tab !== "targets"
+                ? html`<div slot="supporting-text">${item.description}</div>`
+                : nothing}
               ${item.icon
                 ? html`<span slot="start">${item.icon}</span>`
                 : item.iconPath
@@ -2146,40 +2160,87 @@ class DialogAddAutomationElement
     iconPath: options.icon || TYPES[type].icons[key],
   });
 
+  private _getDomainGroupedTriggerListItems(
+    localize: LocalizeFunc,
+    triggerIds: string[]
+  ): { title: string; items: ListItem[] }[] {
+    const items: Record<string, { title: string; items: ListItem[] }> = {};
+
+    triggerIds.forEach((trigger) => {
+      const domain = getTriggerDomain(trigger);
+
+      if (!items[domain]) {
+        items[domain] = {
+          title: domainToName(localize, domain, this._manifests?.[domain]),
+          items: [],
+        };
+      }
+
+      items[domain].items.push(
+        this._getTriggerListItem(localize, domain, trigger)
+      );
+
+      items[domain].items.sort((a, b) =>
+        stringCompare(a.name, b.name, this.hass.locale.language)
+      );
+    });
+
+    return Object.values(items).sort((a, b) =>
+      stringCompare(a.title, b.title, this.hass.locale.language)
+    );
+  }
+
   private _getTriggerListItems(
     localize: LocalizeFunc,
     triggerIds: string[]
   ): ListItem[] {
-    return triggerIds.map((trigger) => {
-      const domain = getTriggerDomain(trigger);
-      const triggerName = getTriggerObjectId(trigger);
+    return triggerIds
+      .map((trigger) => {
+        const domain = getTriggerDomain(trigger);
 
-      return {
-        icon: html`
-          <ha-trigger-icon
-            .hass=${this.hass}
-            .trigger=${trigger}
-          ></ha-trigger-icon>
-        `,
-        key: `${DYNAMIC_PREFIX}${trigger}`,
-        name:
-          localize(`component.${domain}.triggers.${triggerName}.name`) ||
-          trigger,
-        description:
-          localize(`component.${domain}.triggers.${triggerName}.description`) ||
-          trigger,
-      };
-    });
+        return this._getTriggerListItem(localize, domain, trigger);
+      })
+      .sort((a, b) => stringCompare(a.name, b.name, this.hass.locale.language));
   }
 
-  private _getActionListItems(
+  private _getTriggerListItem(
+    localize: LocalizeFunc,
+    domain: string,
+    trigger: string
+  ): ListItem {
+    const triggerName = getTriggerObjectId(trigger);
+    return {
+      icon: html`
+        <ha-trigger-icon
+          .hass=${this.hass}
+          .trigger=${trigger}
+        ></ha-trigger-icon>
+      `,
+      key: `${DYNAMIC_PREFIX}${trigger}`,
+      name:
+        localize(`component.${domain}.triggers.${triggerName}.name`) || trigger,
+      description:
+        localize(`component.${domain}.triggers.${triggerName}.description`) ||
+        trigger,
+    };
+  }
+
+  private _getDomainGroupedActionListItems(
     localize: LocalizeFunc,
     serviceIds: string[]
-  ): ListItem[] {
-    return serviceIds.map((service) => {
-      const [domain, serviceName] = service.split(".", 2);
+  ): { title: string; items: ListItem[] }[] {
+    const items: Record<string, { title: string; items: ListItem[] }> = {};
 
-      return {
+    serviceIds.forEach((service) => {
+      const [domain, serviceName] = service.split(".", 2);
+      if (!items[domain]) {
+        items[domain] = {
+          title: domainToName(localize, domain, this._manifests?.[domain]),
+          items: [],
+        };
+      }
+
+      items[domain].items.push({
         icon: html`
           <ha-service-icon
             .hass=${this.hass}
@@ -2200,8 +2261,16 @@ class DialogAddAutomationElement
           ) ||
           this.hass.services[domain][serviceName]?.description ||
           "",
-      };
+      });
+
+      items[domain].items.sort((a, b) =>
+        stringCompare(a.name, b.name, this.hass.locale.language)
+      );
     });
+
+    return Object.values(items).sort((a, b) =>
+      stringCompare(a.title, b.title, this.hass.locale.language)
+    );
   }
 
   // #endregion render prepare
@@ -2374,7 +2443,7 @@ class DialogAddAutomationElement
           this._selectedTarget
         );
 
-        this._targetItems = this._getTriggerListItems(
+        this._targetItems = this._getDomainGroupedTriggerListItems(
           this.hass.localize,
           items
         );
@@ -2387,7 +2456,10 @@ class DialogAddAutomationElement
           this._selectedTarget
         );
 
-        this._targetItems = this._getActionListItems(this.hass.localize, items);
+        this._targetItems = this._getDomainGroupedActionListItems(
+          this.hass.localize,
+          items
+        );
 
         return;
       }
