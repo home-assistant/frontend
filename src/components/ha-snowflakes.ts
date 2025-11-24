@@ -1,11 +1,7 @@
 import { css, html, LitElement, nothing } from "lit";
 import { customElement, property, state } from "lit/decorators";
-import type { UnsubscribeFunc } from "home-assistant-js-websocket";
-import { storage } from "../common/decorators/storage";
 import type { HomeAssistant } from "../types";
-import { subscribeFrontendSystemData } from "../data/frontend";
 import { subscribeLabFeatures } from "../data/labs";
-import type { LabPreviewFeature } from "../data/labs";
 import { SubscribeMixin } from "../mixins/subscribe-mixin";
 
 interface Snowflake {
@@ -17,83 +13,32 @@ interface Snowflake {
   blur: number;
 }
 
-type WinterModePreference = "auto" | "always" | "never";
-
 @customElement("ha-snowflakes")
 export class HaSnowflakes extends SubscribeMixin(LitElement) {
   @property({ attribute: false }) public hass?: HomeAssistant;
 
   @property({ type: Boolean }) public narrow = false;
 
-  @storage({ key: "winter-mode-preference", state: true, subscribe: true })
-  @state()
-  private _preference: WinterModePreference = "auto";
-
-  @state() private _systemEnabled = false;
-
-  @state() private _labFeatures: LabPreviewFeature[] = [];
+  @state() private _enabled = false;
 
   @state() private _snowflakes: Snowflake[] = [];
 
   private _maxSnowflakes = 50;
 
-  private _unsub?: Promise<UnsubscribeFunc>;
-
   public hassSubscribe() {
     return [
       subscribeLabFeatures(this.hass!.connection, (features) => {
-        this._labFeatures = features;
+        this._enabled =
+          features.find(
+            (f) =>
+              f.domain === "frontend" && f.preview_feature === "winter_mode"
+          )?.enabled ?? false;
       }),
     ];
   }
 
-  connectedCallback() {
-    super.connectedCallback();
-    if (this.hass) {
-      this._unsub = subscribeFrontendSystemData(
-        this.hass.connection,
-        "winter_mode",
-        ({ value }) => {
-          this._systemEnabled = value?.enabled ?? false;
-        }
-      );
-    }
-  }
-
-  async disconnectedCallback() {
-    super.disconnectedCallback();
-    if (this._unsub) {
-      (await this._unsub)();
-    }
-  }
-
-  private _isWinterModeLabEnabled(): boolean {
-    return (
-      this._labFeatures.find(
-        (f) => f.domain === "frontend" && f.preview_feature === "winter_mode"
-      )?.enabled ?? false
-    );
-  }
-
-  private _shouldShowSnowflakes(): boolean {
-    // First check if lab feature is enabled
-    if (!this._isWinterModeLabEnabled()) {
-      return false;
-    }
-
-    // Then check user preference
-    if (this._preference === "always") {
-      return true;
-    }
-    if (this._preference === "never") {
-      return false;
-    }
-    // "auto" - follow system setting
-    return this._systemEnabled;
-  }
-
   private _generateSnowflakes() {
-    if (!this._shouldShowSnowflakes()) {
+    if (!this._enabled) {
       this._snowflakes = [];
       return;
     }
@@ -114,26 +59,13 @@ export class HaSnowflakes extends SubscribeMixin(LitElement) {
 
   protected willUpdate(changedProps: Map<string, unknown>) {
     super.willUpdate(changedProps);
-
-    // Only regenerate if the visibility state actually changes
-    if (
-      changedProps.has("_preference") ||
-      changedProps.has("_systemEnabled") ||
-      changedProps.has("_labFeatures")
-    ) {
-      // Check if we were showing before
-      const wasShowing = this._snowflakes.length > 0;
-      const shouldShow = this._shouldShowSnowflakes();
-
-      // Only regenerate if visibility state changed
-      if (wasShowing !== shouldShow) {
-        this._generateSnowflakes();
-      }
+    if (changedProps.has("_enabled")) {
+      this._generateSnowflakes();
     }
   }
 
   protected render() {
-    if (!this._shouldShowSnowflakes()) {
+    if (!this._enabled) {
       return nothing;
     }
 

@@ -1,6 +1,6 @@
 import type { UnsubscribeFunc } from "home-assistant-js-websocket";
 import type { CSSResultGroup, TemplateResult } from "lit";
-import { css, html, LitElement, nothing } from "lit";
+import { css, html, LitElement } from "lit";
 import { customElement, property, state } from "lit/decorators";
 import { fireEvent } from "../../common/dom/fire_event";
 import { nextRender } from "../../common/util/render-status";
@@ -9,8 +9,6 @@ import "../../components/ha-card";
 import { isExternal } from "../../data/external";
 import type { CoreFrontendUserData } from "../../data/frontend";
 import { subscribeFrontendUserData } from "../../data/frontend";
-import { subscribeLabFeatures } from "../../data/labs";
-import type { LabPreviewFeature } from "../../data/labs";
 import { showConfirmationDialog } from "../../dialogs/generic/show-dialog-box";
 import { showEditSidebarDialog } from "../../dialogs/sidebar/show-dialog-edit-sidebar";
 import "../../layouts/hass-tabs-subpage";
@@ -33,7 +31,6 @@ import "./ha-pick-time-zone-row";
 import "./ha-push-notifications-row";
 import "./ha-set-suspend-row";
 import "./ha-set-vibrate-row";
-import "./ha-set-winter-mode-row";
 
 @customElement("ha-profile-section-general")
 class HaProfileSectionGeneral extends LitElement {
@@ -43,13 +40,9 @@ class HaProfileSectionGeneral extends LitElement {
 
   @state() private _coreUserData?: CoreFrontendUserData | null;
 
-  @state() private _labFeatures: LabPreviewFeature[] = [];
-
   @property({ attribute: false }) public route!: Route;
 
   private _unsubCoreData?: Promise<UnsubscribeFunc>;
-
-  private _unsubLabFeatures?: Promise<UnsubscribeFunc>;
 
   private _getCoreData() {
     this._unsubCoreData = subscribeFrontendUserData(
@@ -61,20 +54,10 @@ class HaProfileSectionGeneral extends LitElement {
     );
   }
 
-  private _getLabFeatures() {
-    this._unsubLabFeatures = subscribeLabFeatures(
-      this.hass.connection,
-      (features) => {
-        this._labFeatures = features;
-      }
-    );
-  }
-
   public connectedCallback() {
     super.connectedCallback();
     if (this.hass) {
       this._getCoreData();
-      this._getLabFeatures();
     }
 
     this._scrollToHash();
@@ -84,9 +67,6 @@ class HaProfileSectionGeneral extends LitElement {
     if (!this._unsubCoreData) {
       this._getCoreData();
     }
-    if (!this._unsubLabFeatures) {
-      this._getLabFeatures();
-    }
   }
 
   public disconnectedCallback() {
@@ -95,18 +75,6 @@ class HaProfileSectionGeneral extends LitElement {
       this._unsubCoreData.then((unsub) => unsub());
       this._unsubCoreData = undefined;
     }
-    if (this._unsubLabFeatures) {
-      this._unsubLabFeatures.then((unsub) => unsub());
-      this._unsubLabFeatures = undefined;
-    }
-  }
-
-  private _isWinterModeLabEnabled(): boolean {
-    return (
-      this._labFeatures.find(
-        (f) => f.domain === "frontend" && f.preview_feature === "winter_mode"
-      )?.enabled ?? false
-    );
   }
 
   private async _scrollToHash() {
@@ -272,14 +240,6 @@ class HaProfileSectionGeneral extends LitElement {
               .narrow=${this.narrow}
               .hass=${this.hass}
             ></ha-set-suspend-row>
-            ${this._isWinterModeLabEnabled()
-              ? html`
-                  <ha-set-winter-mode-row
-                    .narrow=${this.narrow}
-                    .hass=${this.hass}
-                  ></ha-set-winter-mode-row>
-                `
-              : nothing}
             ${!isMobileClient
               ? html`
                   <ha-enable-shortcuts-row
