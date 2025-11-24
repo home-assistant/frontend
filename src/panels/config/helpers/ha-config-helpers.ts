@@ -595,9 +595,7 @@ export class HaConfigHelpers extends SubscribeMixin(LitElement) {
 
   private _formatHelperName(stateObj: HassEntity): string {
     const formatted =
-      this.hass.formatEntityName(stateObj, HELPER_ENTITY_NAME, {
-        separator: " ",
-      }) || "";
+      this.hass.formatEntityName(stateObj, HELPER_ENTITY_NAME) || "";
     return (
       formatted || stateObj.attributes.friendly_name || stateObj.entity_id || ""
     );
