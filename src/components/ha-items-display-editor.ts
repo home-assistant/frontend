@@ -157,7 +157,7 @@ export class HaItemDisplayEditor extends LitElement {
                         </div>
                       `
                     : nothing}
-                  ${isVisible && !disableHiding
+                  ${!isVisible || !disableHiding
                     ? html`<ha-icon-button
                         .path=${isVisible ? mdiEye : mdiEyeOff}
                         slot="end"
