@@ -175,7 +175,7 @@ export class HaDeviceCard extends SubscribeMixin(LitElement) {
           )}
           ${labels.length > 0
             ? html`
-                <div class="labels">
+                <div class="extra-info labels">
                   ${labels.map((labelId) => {
                     const label = labelMap.get(labelId);
                     const color =
