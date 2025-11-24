@@ -1,14 +1,6 @@
-import { ResizeController } from "@lit-labs/observers/resize-controller";
 import { mdiClose, mdiDotsVertical } from "@mdi/js";
-import type { PropertyValues } from "lit";
 import { css, html, LitElement, nothing } from "lit";
-import {
-  customElement,
-  eventOptions,
-  property,
-  query,
-  state,
-} from "lit/decorators";
+import { customElement, property, query } from "lit/decorators";
 import { classMap } from "lit/directives/class-map";
 import { fireEvent } from "../../../../common/dom/fire_event";
 import { stopPropagation } from "../../../../common/dom/stop_propagation";
@@ -17,12 +9,10 @@ import "../../../../components/ha-dialog-header";
 import "../../../../components/ha-icon-button";
 import "../../../../components/ha-md-button-menu";
 import "../../../../components/ha-md-divider";
-import {
-  haStyleScrollbar,
-  scrollableFadeStyles,
-} from "../../../../resources/styles";
+import { haStyleScrollbar } from "../../../../resources/styles";
 import type { HomeAssistant } from "../../../../types";
 import "../ha-automation-editor-warning";
+import { ScrollableFadeMixin } from "../../../../mixins/scrollable-fade-mixin";
 
 export interface SidebarOverflowMenuEntry {
   clickAction: () => void;
@@ -35,7 +25,9 @@ export interface SidebarOverflowMenuEntry {
 export type SidebarOverflowMenu = (SidebarOverflowMenuEntry | "separator")[];
 
 @customElement("ha-automation-sidebar-card")
-export default class HaAutomationSidebarCard extends LitElement {
+export default class HaAutomationSidebarCard extends ScrollableFadeMixin(
+  LitElement
+) {
   @property({ attribute: false }) public hass!: HomeAssistant;
 
   @property({ type: Boolean, attribute: "wide" }) public isWide = false;
@@ -46,23 +38,10 @@ export default class HaAutomationSidebarCard extends LitElement {
 
   @property({ type: Boolean }) public narrow = false;
 
-  @state() private _contentScrolled = false;
-
-  @state() private _contentScrollable = false;
-
   @query(".card-content") private _contentElement!: HTMLDivElement;
 
-  private _contentSize = new ResizeController(this, {
-    target: null,
-    callback: (entries) => {
-      if (entries[0]?.target) {
-        this._canScrollDown(entries[0].target);
-      }
-    },
-  });
-
-  protected firstUpdated(_changedProperties: PropertyValues): void {
-    this._contentSize.observe(this._contentElement);
+  protected get scrollableElement(): HTMLElement | null {
+    return this._contentElement;
   }
 
   protected render() {
@@ -109,43 +88,12 @@ export default class HaAutomationSidebarCard extends LitElement {
             >
             </ha-automation-editor-warning>`
           : nothing}
-        <div class="card-content ha-scrollbar" @scroll=${this._onScroll}>
+        <div class="card-content ha-scrollbar">
           <slot></slot>
-          <div
-            class=${classMap({
-              "fade-top": true,
-              rounded: this.isWide,
-              visible: this._contentScrolled,
-            })}
-          ></div>
-          <div
-            class=${classMap({
-              "fade-bottom": true,
-              rounded: this.isWide,
-              visible: this._contentScrollable,
-            })}
-          ></div>
+          ${this.renderScrollableFades(this.isWide)}
         </div>
       </ha-card>
     `;
-  }
-
-  @eventOptions({ passive: true })
-  private _onScroll(ev) {
-    const top = ev.target.scrollTop ?? 0;
-    this._contentScrolled = top > 0;
-
-    this._canScrollDown(ev.target);
-  }
-
-  private _canScrollDown(element: HTMLElement) {
-    const safeAreaInsetBottom =
-      parseFloat(
-        getComputedStyle(element).getPropertyValue("--safe-area-inset-bottom")
-      ) || 0;
-    this._contentScrollable =
-      (element.scrollHeight ?? 0) - (element.clientHeight ?? 0) >
-      (element.scrollTop ?? 0) + safeAreaInsetBottom + 16;
   }
 
   private _closeSidebar() {
@@ -158,7 +106,6 @@ export default class HaAutomationSidebarCard extends LitElement {
   }
 
   static styles = [
-    scrollableFadeStyles,
     haStyleScrollbar,
     css`
       ha-card {
