@@ -14,6 +14,7 @@ import { getEnergyColor } from "./common/color";
 import { formatNumber } from "../../../../common/number/format_number";
 import "../../../../components/chart/ha-chart-base";
 import "../../../../components/ha-card";
+import "./common/hui-energy-graph-chip";
 import type {
   EnergyData,
   EnergySumData,
@@ -67,6 +68,8 @@ export class HuiEnergyUsageGraphCard
 
   @state() private _compareEnd?: Date;
 
+  @state() private _total?: number;
+
   protected hassSubscribeRequiredHostProps = ["_config"];
 
   public hassSubscribe(): UnsubscribeFunc[] {
@@ -100,9 +103,16 @@ export class HuiEnergyUsageGraphCard
 
     return html`
       <ha-card>
-        ${this._config.title
-          ? html`<h1 class="card-header">${this._config.title}</h1>`
-          : ""}
+        <div class="card-header">
+          <span>${this._config.title ? this._config.title : nothing}</span>
+          ${this._total && this._total > 0
+            ? html`<hui-energy-graph-chip
+                .tooltip=${this._formatTotal(this._total)}
+              >
+                ${formatNumber(this._total, this.hass.locale)} kWh
+              </hui-energy-graph-chip>`
+            : nothing}
+        </div>
         <div
           class="content ${classMap({
             "has-header": !!this._config.title,
@@ -338,6 +348,13 @@ export class HuiEnergyUsageGraphCard
     datasets.sort((a, b) => a.order - b.order);
     fillDataGapsAndRoundCaps(datasets);
     this._chartData = datasets;
+    this._total = this._processTotal(consumption);
+  }
+
+  private _processTotal(consumption: EnergyConsumptionData) {
+    return consumption.total.used_total > 0
+      ? consumption.total.used_total
+      : undefined;
   }
 
   private _processDataSet(
@@ -515,7 +532,16 @@ export class HuiEnergyUsageGraphCard
       height: 100%;
     }
     .card-header {
-      padding-bottom: 0;
+      padding: 16px 16px 0;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      gap: 8px;
+    }
+    .card-header span {
+      font-size: 20px;
+      font-weight: 500;
+      line-height: 28px;
     }
     .content {
       padding: 16px;
