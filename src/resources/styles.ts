@@ -239,6 +239,7 @@ export const scrollableFadeStyles = css`
     pointer-events: none;
     transition: opacity 180ms ease-in-out;
     background: linear-gradient(to bottom, rgba(17, 17, 17, 0.4), transparent);
+    border-radius: var(--ha-border-radius-square);
     z-index: 100;
     opacity: 0;
   }
@@ -268,11 +269,6 @@ export const scrollableFadeStyles = css`
   .fade-bottom.rounded {
     border-bottom-left-radius: var(--ha-border-radius-square);
     border-bottom-right-radius: var(--ha-border-radius-square);
-  }
-
-  .fade-top:not(.rounded),
-  .fade-bottom:not(.rounded) {
-    border-radius: var(--ha-border-radius-square);
   }
 `;
 

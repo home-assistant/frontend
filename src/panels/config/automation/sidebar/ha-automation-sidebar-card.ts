@@ -115,16 +115,14 @@ export default class HaAutomationSidebarCard extends LitElement {
             class=${classMap({
               "fade-top": true,
               rounded: this.isWide,
-              visible: true,
-              // visible: this._contentScrolled,
+              visible: this._contentScrolled,
             })}
           ></div>
           <div
             class=${classMap({
               "fade-bottom": true,
               rounded: this.isWide,
-              visible: true,
-              // visible: this._contentScrollable,
+              visible: this._contentScrollable,
             })}
           ></div>
         </div>
@@ -196,12 +194,15 @@ export default class HaAutomationSidebarCard extends LitElement {
       }
 
       .card-content {
-        position: relative;
         flex: 1 1 auto;
         min-height: 0;
         overflow: auto;
         margin-top: 0;
         padding-bottom: max(var(--safe-area-inset-bottom, 0px), 32px);
+      }
+
+      .fade-top {
+        top: var(--ha-space-17);
       }
 
       @media all and (max-width: 870px) {
