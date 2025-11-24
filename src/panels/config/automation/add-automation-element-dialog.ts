@@ -4,6 +4,7 @@ import {
   mdiAppleKeyboardCommand,
   mdiClose,
   mdiContentPaste,
+  mdiInformationOutline,
   mdiLabel,
   mdiPlus,
   mdiTextureBox,
@@ -26,6 +27,7 @@ import { styleMap } from "lit/directives/style-map";
 import memoizeOne from "memoize-one";
 import { tinykeys } from "tinykeys";
 import { fireEvent } from "../../../common/dom/fire_event";
+import { stopPropagation } from "../../../common/dom/stop_propagation";
 import { computeAreaName } from "../../../common/entity/compute_area_name";
 import { computeDeviceName } from "../../../common/entity/compute_device_name";
 import { computeDomain } from "../../../common/entity/compute_domain";
@@ -59,6 +61,7 @@ import "../../../components/ha-md-list-item";
 import type { PickerComboBoxItem } from "../../../components/ha-picker-combo-box";
 import "../../../components/ha-section-title";
 import "../../../components/ha-service-icon";
+import "../../../components/ha-tooltip";
 import "../../../components/ha-tree-indicator";
 import { TRIGGER_ICONS } from "../../../components/ha-trigger-icon";
 import "../../../components/ha-wa-dialog";
@@ -775,6 +778,7 @@ class DialogAddAutomationElement
                   ? this._renderTarget(this._selectedTarget)
                   : nothing}
               </div>
+
               ${this._tab !== "targets"
                 ? html`<div slot="supporting-text">${item.description}</div>`
                 : nothing}
@@ -786,6 +790,25 @@ class DialogAddAutomationElement
                       .path=${item.iconPath}
                     ></ha-svg-icon>`
                   : nothing}
+              ${this._tab === "targets" &&
+              this._selectedTarget &&
+              item.description
+                ? html`<ha-svg-icon
+                      tabindex="0"
+                      id=${`description-tooltip-${item.key}`}
+                      slot="end"
+                      .path=${mdiInformationOutline}
+                      @click=${stopPropagation}
+                    ></ha-svg-icon>
+                    <ha-tooltip
+                      .for=${`description-tooltip-${item.key}`}
+                      @wa-show=${stopPropagation}
+                      @wa-hide=${stopPropagation}
+                      @wa-after-hide=${stopPropagation}
+                      @wa-after-show=${stopPropagation}
+                      >${item.description}</ha-tooltip
+                    > `
+                : nothing}
               ${item.group
                 ? html`<ha-icon-next slot="end"></ha-icon-next>`
                 : html`<ha-svg-icon
@@ -1164,11 +1187,10 @@ class DialogAddAutomationElement
         return nothing;
       }
 
-      return html`<span class="selected-target"
-        >${this._getSelectedTargetIcon(
-          selectedTarget
-        )}${this._getSelectedTargetLabel(selectedTarget)}</span
-      >`;
+      return html`<div class="selected-target">
+        ${this._getSelectedTargetIcon(selectedTarget)}
+        <div class="label">${this._getSelectedTargetLabel(selectedTarget)}</div>
+      </div>`;
     }
   );
 
@@ -2850,6 +2872,7 @@ class DialogAddAutomationElement
           --md-list-item-bottom-space: var(--ha-space-2);
           --md-list-item-top-space: var(--md-list-item-bottom-space);
           --md-list-item-supporting-text-font: var(--ha-font-family-body);
+          --ha-md-list-item-gap: var(--ha-space-3);
           gap: var(--ha-space-2);
           padding: var(--ha-space-0) var(--ha-space-4);
         }
@@ -2897,6 +2920,7 @@ class DialogAddAutomationElement
           align-items: center;
           gap: var(--ha-space-1);
           min-height: var(--ha-space-9);
+          flex-wrap: wrap;
         }
 
         ha-icon-next {
@@ -2994,6 +3018,12 @@ class DialogAddAutomationElement
           background: var(--ha-color-fill-neutral-normal-resting);
           padding: 0 var(--ha-space-2) 0 var(--ha-space-1);
           color: var(--ha-color-on-neutral-normal);
+          overflow: hidden;
+        }
+        .selected-target .label {
+          overflow: hidden;
+          text-overflow: ellipsis;
+          white-space: nowrap;
         }
 
         .selected-target ha-icon,
