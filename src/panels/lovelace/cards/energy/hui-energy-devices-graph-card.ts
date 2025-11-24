@@ -39,6 +39,12 @@ import { listenMediaQuery } from "../../../../common/dom/media_query";
 import { getEnergyColor } from "./common/color";
 import type { CustomLegendOption } from "../../../../components/chart/ha-chart-base";
 
+/**
+ * Data item structure for energy device consumption in the chart.
+ * Used for both bar and pie chart representations with universal transitions.
+ * The value is stored as a tuple where [0] is the numeric consumption value
+ * and [1] is the device statistic identifier.
+ */
 interface EnergyDeviceDataItem {
   id: string;
   value: [number, string];
