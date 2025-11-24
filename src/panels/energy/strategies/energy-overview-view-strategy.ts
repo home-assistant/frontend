@@ -9,6 +9,14 @@ import type { LovelaceSectionConfig } from "../../../data/lovelace/config/sectio
 import type { LovelaceCardConfig } from "../../../data/lovelace/config/card";
 import { DEFAULT_ENERGY_COLLECTION_KEY } from "../ha-panel-energy";
 
+const sourceHasCost = (source: Record<string, any>): boolean =>
+  Boolean(
+    source.stat_cost ||
+      source.stat_compensation ||
+      source.entity_energy_price ||
+      source.number_energy_price
+  );
+
 @customElement("energy-overview-view-strategy")
 export class EnergyViewStrategy extends ReactiveElement {
   static async generate(
@@ -64,6 +72,13 @@ export class EnergyViewStrategy extends ReactiveElement {
     const hasPowerDevices = prefs.device_consumption.find(
       (device) => device.stat_rate
     );
+    const hasCost = prefs.energy_sources.some(
+      (source) =>
+        sourceHasCost(source) ||
+        (source.type === "grid" &&
+          (source.flow_from?.some(sourceHasCost) ||
+            source.flow_to?.some(sourceHasCost)))
+    );
 
     const overviewSection: LovelaceSectionConfig = {
       type: "grid",
@@ -88,7 +103,7 @@ export class EnergyViewStrategy extends ReactiveElement {
         collection_key: collectionKey,
       });
     }
-    if (hasGrid || hasSolar || hasBattery || hasGas || hasWater) {
+    if (hasCost) {
       overviewSection.cards!.push({
         type: "energy-sources-table",
         collection_key: collectionKey,
