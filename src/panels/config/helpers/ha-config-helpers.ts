@@ -25,6 +25,10 @@ import { computeCssColor } from "../../../common/color/compute-color";
 import { storage } from "../../../common/decorators/storage";
 import type { HASSDomEvent } from "../../../common/dom/fire_event";
 import { computeStateDomain } from "../../../common/entity/compute_state_domain";
+import {
+  DEFAULT_ENTITY_NAME,
+  type EntityNameItem,
+} from "../../../common/entity/compute_entity_name_display";
 import { navigate } from "../../../common/navigate";
 import type {
   LocalizeFunc,
@@ -121,6 +125,11 @@ import {
 } from "../../../data/diagnostics";
 import { getSignedPath } from "../../../data/auth";
 import { fileDownload } from "../../../util/file_download";
+
+const HELPER_ENTITY_NAME: EntityNameItem[] = [
+  { type: "area" },
+  ...DEFAULT_ENTITY_NAME,
+];
 
 interface HelperItem {
   id: string;
@@ -505,7 +514,7 @@ export class HaConfigHelpers extends SubscribeMixin(LitElement) {
 
         return {
           id: entityState.entity_id,
-          name: entityState.attributes.friendly_name || "",
+          name: this._formatHelperName(entityState),
           entity_id: entityState.entity_id,
           editable:
             configEntry !== undefined || entityState.attributes.editable,
@@ -583,6 +592,16 @@ export class HaConfigHelpers extends SubscribeMixin(LitElement) {
         });
     }
   );
+
+  private _formatHelperName(stateObj: HassEntity): string {
+    const formatted =
+      this.hass.formatEntityName(stateObj, HELPER_ENTITY_NAME, {
+        separator: " ",
+      }) || "";
+    return (
+      formatted || stateObj.attributes.friendly_name || stateObj.entity_id || ""
+    );
+  }
 
   private _labelsForEntity(entityId: string): string[] {
     return (
