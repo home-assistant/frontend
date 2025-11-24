@@ -184,7 +184,7 @@ export class HaDeviceCard extends SubscribeMixin(LitElement) {
                         : undefined;
                     return html`
                       <ha-label
-                        style=${color && `--color: ${color}`}
+                        style=${color ? `--color: ${color}` : ""}
                         .description=${label?.description}
                       >
                         ${label?.icon
