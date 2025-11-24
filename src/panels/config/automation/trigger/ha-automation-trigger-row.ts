@@ -15,7 +15,8 @@ import {
   mdiStopCircleOutline,
 } from "@mdi/js";
 import type { UnsubscribeFunc } from "home-assistant-js-websocket";
-import { DEFAULT_SCHEMA, Schema } from "js-yaml";
+import { dump, DEFAULT_SCHEMA} from "js-yaml";
+import type { Schema } from "js-yaml";
 import type { CSSResultGroup, PropertyValues, TemplateResult } from "lit";
 import { LitElement, css, html, nothing } from "lit";
 import { customElement, property, query, state } from "lit/decorators";
