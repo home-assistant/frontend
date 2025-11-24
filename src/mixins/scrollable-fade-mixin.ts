@@ -1,15 +1,14 @@
 import { ResizeController } from "@lit-labs/observers/resize-controller";
+import { css, html } from "lit";
 import type {
   CSSResultGroup,
   LitElement,
   PropertyValues,
   TemplateResult,
 } from "lit";
-import { html } from "lit";
 import { classMap } from "lit/directives/class-map";
 import { state } from "lit/decorators";
 import type { Constructor } from "../types";
-import { scrollableFadeStyles } from "../resources/styles";
 
 const stylesArray = (styles?: CSSResultGroup | CSSResultGroup[]) =>
   styles === undefined ? [] : Array.isArray(styles) ? styles : [styles];
@@ -94,7 +93,58 @@ export const ScrollableFadeMixin = <T extends Constructor<LitElement>>(
       const inheritedStyles = stylesArray(
         (superCtor?.styles ?? []) as CSSResultGroup | CSSResultGroup[]
       );
-      return [...inheritedStyles, scrollableFadeStyles];
+      return [
+        ...inheritedStyles,
+        css`
+          .fade-top,
+          .fade-bottom {
+            position: absolute;
+            left: var(--ha-space-0);
+            right: var(--ha-space-0);
+            height: var(--ha-space-4);
+            pointer-events: none;
+            transition: opacity 180ms ease-in-out;
+            background: linear-gradient(
+              to bottom,
+              rgba(17, 17, 17, 0.4),
+              transparent
+            );
+            border-radius: var(--ha-border-radius-square);
+            z-index: 100;
+            opacity: 0;
+          }
+          .fade-top {
+            top: var(--ha-space-0);
+          }
+          .fade-bottom {
+            bottom: var(--ha-space-0);
+            transform: rotate(180deg);
+          }
+
+          .fade-top.visible,
+          .fade-bottom.visible {
+            opacity: 1;
+          }
+
+          .fade-top.rounded,
+          .fade-bottom.rounded {
+            border-radius: var(
+              --ha-card-border-radius,
+              var(--ha-border-radius-lg)
+            );
+            border-bottom-left-radius: var(--ha-border-radius-square);
+            border-bottom-right-radius: var(--ha-border-radius-square);
+          }
+          .fade-top.rounded {
+            border-top-left-radius: var(--ha-border-radius-square);
+            border-top-right-radius: var(--ha-border-radius-square);
+          }
+          .fade-bottom.rounded {
+            border-bottom-left-radius: var(--ha-border-radius-square);
+            border-bottom-right-radius: var(--ha-border-radius-square);
+          }
+        `,
+      ];
     }
 
     private _attachScrollableElement() {
