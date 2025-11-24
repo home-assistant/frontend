@@ -39,6 +39,16 @@ import { listenMediaQuery } from "../../../../common/dom/media_query";
 import { getEnergyColor } from "./common/color";
 import type { CustomLegendOption } from "../../../../components/chart/ha-chart-base";
 
+interface EnergyDeviceDataItem {
+  id: string;
+  value: [number, string];
+  name: string;
+  itemStyle: {
+    color: string;
+    borderColor: string;
+  };
+}
+
 @customElement("hui-energy-devices-graph-card")
 export class HuiEnergyDevicesGraphCard
   extends SubscribeMixin(LitElement)
@@ -478,9 +488,9 @@ export class HuiEnergyDevicesGraphCard
       }
       const totalChart = pieChartData.reduce(
         (acc: number, d) =>
-          this._hiddenStats.includes((d as any).id as string)
+          this._hiddenStats.includes((d as EnergyDeviceDataItem).id)
             ? acc
-            : acc + (d as any).value[0],
+            : acc + (d as EnergyDeviceDataItem).value[0],
         0
       );
       datasets.push({
