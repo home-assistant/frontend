@@ -2,8 +2,8 @@
 import { genClientId } from "home-assistant-js-websocket";
 import type { PropertyValues } from "lit";
 import { html, LitElement, nothing } from "lit";
-import { keyed } from "lit/directives/keyed";
 import { customElement, property, state } from "lit/decorators";
+import { keyed } from "lit/directives/keyed";
 import type { LocalizeFunc } from "../common/translations/localize";
 import "../components/ha-alert";
 import "../components/ha-button";
@@ -117,6 +117,9 @@ export class HaAuthFlow extends LitElement {
         ha-auth-form {
           display: block;
           margin-top: 16px;
+        }
+        .action ha-button {
+          width: 100%;
         }
       </style>
       <form>${this._renderForm()}</form>
