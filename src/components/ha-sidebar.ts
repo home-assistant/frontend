@@ -626,6 +626,7 @@ class HaSidebar extends SubscribeMixin(LitElement) {
   private _listboxTouchend() {
     clearTimeout(this._touchendTimeout);
     this._touchendTimeout = window.setTimeout(() => {
+      // Allow 1 second for users to read the tooltip on touch devices
       this._hideTooltip();
     }, 1000);
   }
