@@ -492,13 +492,12 @@ export class HuiEnergyDevicesGraphCard
           }
         }
       }
-      const totalChart = pieChartData.reduce(
-        (acc: number, d) =>
-          this._hiddenStats.includes((d as EnergyDeviceDataItem).id)
-            ? acc
-            : acc + (d as EnergyDeviceDataItem).value[0],
-        0
-      );
+      const totalChart = pieChartData.reduce((acc: number, d) => {
+        const item = d as EnergyDeviceDataItem;
+        return this._hiddenStats.includes(item.id)
+          ? acc
+          : acc + item.value[0];
+      }, 0);
       datasets.push({
         type: "pie",
         radius: ["0%", compareData ? "30%" : "40%"],
