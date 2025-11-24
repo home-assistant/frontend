@@ -17,7 +17,10 @@ import "../../../../components/ha-dialog-header";
 import "../../../../components/ha-icon-button";
 import "../../../../components/ha-md-button-menu";
 import "../../../../components/ha-md-divider";
-import { scrollableFadeStyles } from "../../../../resources/styles";
+import {
+  haStyleScrollbar,
+  scrollableFadeStyles,
+} from "../../../../resources/styles";
 import type { HomeAssistant } from "../../../../types";
 import "../ha-automation-editor-warning";
 
@@ -106,7 +109,7 @@ export default class HaAutomationSidebarCard extends LitElement {
             >
             </ha-automation-editor-warning>`
           : nothing}
-        <div class="card-content" @scroll=${this._onScroll}>
+        <div class="card-content ha-scrollbar" @scroll=${this._onScroll}>
           <slot></slot>
           <div
             class=${classMap({
@@ -158,6 +161,7 @@ export default class HaAutomationSidebarCard extends LitElement {
 
   static styles = [
     scrollableFadeStyles,
+    haStyleScrollbar,
     css`
       ha-card {
         position: relative;
