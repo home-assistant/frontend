@@ -127,7 +127,7 @@ const ENTITY_DOMAINS_OTHER = new Set([
 
 const ENTITY_DOMAINS_MAIN = new Set(["notify"]);
 
-const ACTION_SERVICE_KEYWORDS = ["dynamicGroups", "helpers", "other"];
+const DYNAMIC_KEYWORDS = ["dynamicGroups", "helpers", "other"];
 
 @customElement("add-automation-element-dialog")
 class DialogAddAutomationElement
@@ -180,16 +180,14 @@ class DialogAddAutomationElement
     this.addKeyboardShortcuts();
 
     this._unsubscribe();
+    this._fetchManifests();
 
     if (this._params?.type === "action") {
       this.hass.loadBackendTranslation("services");
-      this._fetchManifests();
       this._calculateUsedDomains();
       getServiceIcons(this.hass);
-    }
-    if (this._params?.type === "trigger") {
+    } else if (this._params?.type === "trigger") {
       this.hass.loadBackendTranslation("triggers");
-      this._fetchManifests();
       getTriggerIcons(this.hass);
       this._unsub = subscribeTriggers(this.hass, (triggers) => {
         this._triggerDescriptions = {
@@ -197,10 +195,8 @@ class DialogAddAutomationElement
           ...triggers,
         };
       });
-    }
-    if (this._params?.type === "condition") {
+    } else if (this._params?.type === "condition") {
       this.hass.loadBackendTranslation("conditions");
-      this._fetchManifests();
       getConditionIcons(this.hass);
       this._unsub = subscribeConditions(this.hass, (conditions) => {
         this._conditionDescriptions = {
@@ -376,13 +372,11 @@ class DialogAddAutomationElement
         items.push(
           ...this._triggers(localize, this._triggerDescriptions, manifests)
         );
-      }
-      if (type === "condition") {
+      } else if (type === "condition") {
         items.push(
           ...this._conditions(localize, this._conditionDescriptions, manifests)
         );
-      }
-      if (type === "action") {
+      } else if (type === "action") {
         items.push(...this._services(localize, services, manifests));
       }
       return items;
@@ -418,34 +412,9 @@ class DialogAddAutomationElement
         const groups: ListItem[] = [];
 
         if (
-          type === "action" &&
-          Object.keys(collection.groups).some((item) =>
-            ACTION_SERVICE_KEYWORDS.includes(item)
-          )
-        ) {
-          groups.push(
-            ...this._serviceGroups(
-              localize,
-              services,
-              manifests,
-              domains,
-              collection.groups.dynamicGroups
-                ? undefined
-                : collection.groups.helpers
-                  ? "helper"
-                  : "other"
-            )
-          );
-
-          collectionGroups = collectionGroups.filter(
-            ([key]) => !ACTION_SERVICE_KEYWORDS.includes(key)
-          );
-        }
-
-        if (
           type === "trigger" &&
           Object.keys(collection.groups).some((item) =>
-            ACTION_SERVICE_KEYWORDS.includes(item)
+            DYNAMIC_KEYWORDS.includes(item)
           )
         ) {
           groups.push(
@@ -463,14 +432,12 @@ class DialogAddAutomationElement
           );
 
           collectionGroups = collectionGroups.filter(
-            ([key]) => !ACTION_SERVICE_KEYWORDS.includes(key)
+            ([key]) => !DYNAMIC_KEYWORDS.includes(key)
           );
-        }
-
-        if (
+        } else if (
           type === "condition" &&
           Object.keys(collection.groups).some((item) =>
-            ACTION_SERVICE_KEYWORDS.includes(item)
+            DYNAMIC_KEYWORDS.includes(item)
           )
         ) {
           groups.push(
@@ -488,7 +455,30 @@ class DialogAddAutomationElement
           );
 
           collectionGroups = collectionGroups.filter(
-            ([key]) => !ACTION_SERVICE_KEYWORDS.includes(key)
+            ([key]) => !DYNAMIC_KEYWORDS.includes(key)
+          );
+        } else if (
+          type === "action" &&
+          Object.keys(collection.groups).some((item) =>
+            DYNAMIC_KEYWORDS.includes(item)
+          )
+        ) {
+          groups.push(
+            ...this._serviceGroups(
+              localize,
+              services,
+              manifests,
+              domains,
+              collection.groups.dynamicGroups
+                ? undefined
+                : collection.groups.helpers
+                  ? "helper"
+                  : "other"
+            )
+          );
+
+          collectionGroups = collectionGroups.filter(
+            ([key]) => !DYNAMIC_KEYWORDS.includes(key)
           );
         }
 
@@ -546,10 +536,6 @@ class DialogAddAutomationElement
       services: HomeAssistant["services"],
       manifests?: DomainManifestLookup
     ): ListItem[] => {
-      if (type === "action" && isDynamic(group)) {
-        return this._services(localize, services, manifests, group);
-      }
-
       if (type === "trigger" && isDynamic(group)) {
         return this._triggers(
           localize,
@@ -558,7 +544,6 @@ class DialogAddAutomationElement
           group
         );
       }
-
       if (type === "condition" && isDynamic(group)) {
         return this._conditions(
           localize,
@@ -566,6 +551,9 @@ class DialogAddAutomationElement
           manifests,
           group
         );
+      }
+      if (type === "action" && isDynamic(group)) {
+        return this._services(localize, services, manifests, group);
       }
 
       const groups = this._getGroups(type, group, collectionIndex);

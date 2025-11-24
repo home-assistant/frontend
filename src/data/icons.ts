@@ -558,10 +558,9 @@ export const conditionIcon = async (
   let icon: string | undefined;
 
   const domain = getConditionDomain(condition);
-  const conditionName = getConditionObjectId(condition);
-
   const conditionIcons = await getConditionIcons(hass, domain);
   if (conditionIcons) {
+    const conditionName = getConditionObjectId(condition);
     const condIcon = conditionIcons[conditionName] as ConditionIcons[string];
     icon = condIcon?.condition;
   }
