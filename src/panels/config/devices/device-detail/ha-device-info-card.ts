@@ -256,7 +256,7 @@ export class HaDeviceCard extends SubscribeMixin(LitElement) {
           --ha-label-icon-color: var(--primary-text-color);
         }
         .extra-info {
-          margin-top: 8px;
+          margin-top: var(--ha-space-2);
           word-wrap: break-word;
         }
         .manuf,
