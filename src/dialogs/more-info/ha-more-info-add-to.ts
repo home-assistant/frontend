@@ -130,15 +130,6 @@ export class HaMoreInfoAddTo extends LitElement {
       flex-direction: column;
     }
 
-    ha-list-item {
-      cursor: pointer;
-    }
-
-    ha-list-item[disabled] {
-      cursor: not-allowed;
-      opacity: 0.5;
-    }
-
     ha-icon {
       display: flex;
       align-items: center;
