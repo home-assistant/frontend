@@ -1,7 +1,8 @@
 import { css, html, LitElement, nothing } from "lit";
 import { customElement, property, state } from "lit/decorators";
-import { storage } from "../common/decorators/storage";
+import type { UnsubscribeFunc } from "home-assistant-js-websocket";
 import type { HomeAssistant } from "../types";
+import { subscribeFrontendSystemData } from "../data/frontend";
 
 interface Snowflake {
   id: number;
@@ -18,13 +19,33 @@ export class HaSnowflakes extends LitElement {
 
   @property({ type: Boolean }) public narrow = false;
 
-  @storage({ key: "winter-mode", state: true, subscribe: true })
-  @state()
-  private _enabled = true;
+  @state() private _enabled = false;
 
   @state() private _snowflakes: Snowflake[] = [];
 
   private _maxSnowflakes = 50;
+
+  private _unsub?: Promise<UnsubscribeFunc>;
+
+  connectedCallback() {
+    super.connectedCallback();
+    if (this.hass) {
+      this._unsub = subscribeFrontendSystemData(
+        this.hass.connection,
+        "winter_mode",
+        ({ value }) => {
+          this._enabled = value?.enabled ?? false;
+        }
+      );
+    }
+  }
+
+  async disconnectedCallback() {
+    super.disconnectedCallback();
+    if (this._unsub) {
+      (await this._unsub)();
+    }
+  }
 
   private _generateSnowflakes() {
     if (!this._enabled) {

@@ -19,6 +19,10 @@ export interface HomeFrontendSystemData {
   favorite_entities?: string[];
 }
 
+export interface WinterModeFrontendSystemData {
+  enabled?: boolean;
+}
+
 declare global {
   interface FrontendUserData {
     core: CoreFrontendUserData;
@@ -27,6 +31,7 @@ declare global {
   interface FrontendSystemData {
     core: CoreFrontendSystemData;
     home: HomeFrontendSystemData;
+    winter_mode: WinterModeFrontendSystemData;
   }
 }
 
