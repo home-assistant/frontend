@@ -3,18 +3,18 @@ import { LitElement, css, html, nothing } from "lit";
 import { customElement, property, state } from "lit/decorators";
 import { debounce } from "../../common/util/debounce";
 import { deepEqual } from "../../common/util/deep-equal";
+import {
+  fetchFrontendSystemData,
+  saveFrontendSystemData,
+  type HomeFrontendSystemData,
+} from "../../data/frontend";
 import type { LovelaceDashboardStrategyConfig } from "../../data/lovelace/config/types";
 import type { HomeAssistant, PanelInfo, Route } from "../../types";
+import { showToast } from "../../util/toast";
 import "../lovelace/hui-root";
 import { generateLovelaceDashboardStrategy } from "../lovelace/strategies/get-strategy";
 import type { Lovelace } from "../lovelace/types";
-import { showAlertDialog } from "../lovelace/custom-card-helpers";
-
-const HOME_LOVELACE_CONFIG: LovelaceDashboardStrategyConfig = {
-  strategy: {
-    type: "home",
-  },
-};
+import { showEditHomeDialog } from "./dialogs/show-dialog-edit-home";
 
 @customElement("ha-panel-home")
 class PanelHome extends LitElement {
@@ -28,12 +28,14 @@ class PanelHome extends LitElement {
 
   @state() private _lovelace?: Lovelace;
 
+  @state() private _config: FrontendSystemData["home"] = {};
+
   public willUpdate(changedProps: PropertyValues) {
     super.willUpdate(changedProps);
     // Initial setup
     if (!this.hasUpdated) {
       this.hass.loadFragmentTranslation("lovelace");
-      this._setLovelace();
+      this._loadConfig();
       return;
     }
 
@@ -95,9 +97,28 @@ class PanelHome extends LitElement {
     `;
   }
 
+  private async _loadConfig() {
+    try {
+      const data = await fetchFrontendSystemData(this.hass.connection, "home");
+      this._config = data || {};
+    } catch (err) {
+      // eslint-disable-next-line no-console
+      console.error("Failed to load favorites:", err);
+      this._config = {};
+    }
+    this._setLovelace();
+  }
+
   private async _setLovelace() {
+    const strategyConfig: LovelaceDashboardStrategyConfig = {
+      strategy: {
+        type: "home",
+        favorite_entities: this._config.favorite_entities,
+      },
+    };
+
     const config = await generateLovelaceDashboardStrategy(
-      HOME_LOVELACE_CONFIG,
+      strategyConfig,
       this.hass
     );
 
@@ -121,14 +142,33 @@ class PanelHome extends LitElement {
   }
 
   private _setEditMode = () => {
-    // For now, we just show an alert that edit mode is not supported.
-    // This will be expanded in the future.
-    showAlertDialog(this, {
-      title: "Edit mode not available",
-      text: "The Home panel does not support edit mode.",
-      confirmText: this.hass.localize("ui.common.ok"),
+    showEditHomeDialog(this, {
+      config: this._config,
+      saveConfig: async (config) => {
+        await this._saveConfig(config);
+      },
     });
   };
+
+  private async _saveConfig(config: HomeFrontendSystemData): Promise<void> {
+    try {
+      await saveFrontendSystemData(this.hass.connection, "home", config);
+      this._config = config || {};
+    } catch (err: any) {
+      // eslint-disable-next-line no-console
+      console.error("Failed to save home configuration:", err);
+      showToast(this, {
+        message: this.hass.localize("ui.panel.home.editor.save_failed"),
+        duration: 0,
+        dismissable: true,
+      });
+      return;
+    }
+    showToast(this, {
+      message: this.hass.localize("ui.common.successfully_saved"),
+    });
+    this._setLovelace();
+  }
 
   static readonly styles: CSSResultGroup = css`
     :host {

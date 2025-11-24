@@ -16,6 +16,7 @@ import type { HomeAssistant } from "../../../types";
 import { SubscribeMixin } from "../../../mixins/subscribe-mixin";
 import { brandsUrl } from "../../../util/brands-url";
 import { showToast } from "../../../util/toast";
+import { documentationUrl } from "../../../util/documentation-url";
 import { haStyle } from "../../../resources/styles";
 import { showLabsPreviewFeatureEnableDialog } from "./show-dialog-labs-preview-feature-enable";
 import {
@@ -100,7 +101,7 @@ class HaConfigLabs extends SubscribeMixin(LitElement) {
           ? html`
               <a
                 slot="toolbar-icon"
-                href="https://www.home-assistant.io/integrations/labs/"
+                href=${documentationUrl(this.hass, "/integrations/labs/")}
                 target="_blank"
                 rel="noopener noreferrer"
                 .title=${this.hass.localize("ui.common.help")}
@@ -124,7 +125,7 @@ class HaConfigLabs extends SubscribeMixin(LitElement) {
                     "ui.panel.config.labs.empty.description"
                   )}
                   <a
-                    href="https://www.home-assistant.io/integrations/labs/"
+                    href=${documentationUrl(this.hass, "/integrations/labs/")}
                     target="_blank"
                     rel="noopener noreferrer"
                   >

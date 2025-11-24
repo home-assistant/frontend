@@ -11,6 +11,7 @@ import type {
 import { showToast } from "../../util/toast";
 
 import type { HomeAssistant } from "../../types";
+import { fireEvent } from "../../common/dom/fire_event";
 
 @customElement("ha-more-info-add-to")
 export class HaMoreInfoAddTo extends LitElement {
@@ -51,6 +52,7 @@ export class HaMoreInfoAddTo extends LitElement {
           app_payload: action.app_payload,
         },
       });
+      fireEvent(this, "add-to-action-selected");
     } catch (err: any) {
       showToast(this, {
         message: this.hass.localize(
@@ -148,5 +150,9 @@ export class HaMoreInfoAddTo extends LitElement {
 declare global {
   interface HTMLElementTagNameMap {
     "ha-more-info-add-to": HaMoreInfoAddTo;
+  }
+
+  interface HASSDomEvents {
+    "add-to-action-selected": undefined;
   }
 }
