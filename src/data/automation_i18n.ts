@@ -914,8 +914,8 @@ const tryDescribeCondition = (
 
   const conditionType = condition.condition;
 
-  const domain = getTriggerDomain(condition.condition);
-  const type = getTriggerObjectId(condition.condition);
+  const domain = getConditionDomain(condition.condition);
+  const type = getConditionObjectId(condition.condition);
 
   return (
     hass.localize(
