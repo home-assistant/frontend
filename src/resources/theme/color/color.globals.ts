@@ -224,7 +224,8 @@ export const colorStyles = css`
     --table-row-alternative-background-color: var(--secondary-background-color);
     --data-table-background-color: var(--card-background-color);
     --markdown-code-background-color: var(--primary-background-color);
-    --bar-box-shadow: 0 2px 12px rgba(0, 0, 0, 0.16);
+    --shadow-color: rgba(0, 0, 0, 0.16);
+    --bar-box-shadow: 0 2px 12px var(--shadow-color);
 
     /* https://github.com/material-components/material-web/blob/master/docs/theming.md */
     --mdc-theme-primary: var(--primary-color);
@@ -350,7 +351,8 @@ export const darkColorStyles = css`
     --ha-button-neutral-color: #d9dae0;
     --ha-button-neutral-light-color: #6a7081;
 
-    --bar-box-shadow: 0 2px 12px rgba(0, 0, 0, 0.48);
+    --shadow-color: rgba(0, 0, 0, 0.48);
+    --bar-box-shadow: 0 2px 12px var(--shadow-color);
   }
 `;
 

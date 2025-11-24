@@ -106,7 +106,7 @@ export const ScrollableFadeMixin = <T extends Constructor<LitElement>>(
             transition: opacity 180ms ease-in-out;
             background: linear-gradient(
               to bottom,
-              rgba(17, 17, 17, 0.4),
+              var(--shadow-color),
               transparent
             );
             border-radius: var(--ha-border-radius-square);
