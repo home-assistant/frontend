@@ -13,8 +13,8 @@ import {
 import { haStyle } from "../../../resources/styles";
 import type { HomeAssistant } from "../../../types";
 import { documentationUrl } from "../../../util/documentation-url";
-import { isDevVersion } from "../../../common/config/version";
 import type { HaSwitch } from "../../../components/ha-switch";
+import "../../../components/ha-alert";
 
 @customElement("ha-config-analytics")
 class ConfigAnalytics extends LitElement {
@@ -56,7 +56,8 @@ class ConfigAnalytics extends LitElement {
           ></ha-analytics>
         </div>
       </ha-card>
-      ${isDevVersion(this.hass.config.version)
+      ${this._analyticsDetails &&
+      "snapshots" in this._analyticsDetails.preferences
         ? html`<ha-card
             outlined
             .header=${this.hass.localize(
@@ -77,6 +78,14 @@ class ConfigAnalytics extends LitElement {
                   )}</a
                 >.
               </p>
+              <ha-alert
+                .title=${this.hass.localize(
+                  "ui.panel.config.analytics.preferences.snapshots.alert.title"
+                )}
+                >${this.hass.localize(
+                  "ui.panel.config.analytics.preferences.snapshots.alert.content"
+                )}</ha-alert
+              >
               <ha-settings-row>
                 <span slot="heading" data-for="snapshots">
                   ${this.hass.localize(
