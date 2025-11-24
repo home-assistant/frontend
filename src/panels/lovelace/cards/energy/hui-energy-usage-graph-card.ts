@@ -109,7 +109,10 @@ export class HuiEnergyUsageGraphCard
             ? html`<hui-energy-graph-chip
                 .tooltip=${this._formatTotal(this._total)}
               >
-                ${formatNumber(this._total, this.hass.locale)} kWh
+                ${this.hass.localize(
+                  "ui.panel.lovelace.cards.energy.energy_usage_graph.total_usage",
+                  { num: formatNumber(this._total, this.hass.locale) }
+                )}
               </hui-energy-graph-chip>`
             : nothing}
         </div>

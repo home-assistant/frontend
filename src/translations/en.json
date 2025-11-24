@@ -7158,6 +7158,7 @@
             "energy_usage_graph": {
               "total_consumed": "Total consumed {num} kWh",
               "total_returned": "Total returned {num} kWh",
+              "total_usage": "{num} kWh used",
               "combined_from_grid": "Combined from grid",
               "consumed_solar": "Consumed solar",
               "consumed_battery": "Consumed battery"
