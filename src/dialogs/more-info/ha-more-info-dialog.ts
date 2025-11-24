@@ -645,6 +645,7 @@ export class MoreInfoDialog extends LitElement {
                                 <ha-more-info-add-to
                                   .hass=${this.hass}
                                   .entityId=${entityId}
+                                  @add-to-action-selected=${this._goBack}
                                 ></ha-more-info-add-to>
                               `
                             : nothing
