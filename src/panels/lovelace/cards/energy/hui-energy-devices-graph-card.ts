@@ -39,22 +39,6 @@ import { listenMediaQuery } from "../../../../common/dom/media_query";
 import { getEnergyColor } from "./common/color";
 import type { CustomLegendOption } from "../../../../components/chart/ha-chart-base";
 
-/**
- * Data item structure for energy device consumption in the chart.
- * Used for both bar and pie chart representations with universal transitions.
- * The value is stored as a tuple where [0] is the numeric consumption value
- * and [1] is the device statistic identifier.
- */
-interface EnergyDeviceDataItem {
-  id: string;
-  value: [number, string];
-  name: string;
-  itemStyle: {
-    color: string;
-    borderColor: string;
-  };
-}
-
 @customElement("hui-energy-devices-graph-card")
 export class HuiEnergyDevicesGraphCard
   extends SubscribeMixin(LitElement)
@@ -201,7 +185,7 @@ export class HuiEnergyDevicesGraphCard
     const value = `${formatNumber(
       params.value[0] as number,
       this.hass.locale,
-      params.value[0] < 0.1 ? { maximumFractionDigits: 3 } : undefined
+      params.value < 0.1 ? { maximumFractionDigits: 3 } : undefined
     )} kWh`;
     return `${title}${params.marker} ${params.seriesName}: <div style="direction:ltr; display: inline;">${value}</div>`;
   }
@@ -492,12 +476,13 @@ export class HuiEnergyDevicesGraphCard
           }
         }
       }
-      const totalChart = pieChartData.reduce((acc: number, d) => {
-        const item = d as EnergyDeviceDataItem;
-        return this._hiddenStats.includes(item.id)
-          ? acc
-          : acc + item.value[0];
-      }, 0);
+      const totalChart = pieChartData.reduce(
+        (acc: number, d) =>
+          this._hiddenStats.includes((d as PieDataItemOption).id as string)
+            ? acc
+            : acc + (d as PieDataItemOption).value![0],
+        0
+      );
       datasets.push({
         type: "pie",
         radius: ["0%", compareData ? "30%" : "40%"],
