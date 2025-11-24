@@ -3,10 +3,7 @@ import "@home-assistant/webawesome/dist/components/tree/tree";
 import type { WaSelectionChangeEvent } from "@home-assistant/webawesome/dist/events/selection-change";
 import { consume } from "@lit/context";
 import { mdiTextureBox } from "@mdi/js";
-import type {
-  HassEntity,
-  SingleHassServiceTarget,
-} from "home-assistant-js-websocket";
+import type { HassEntity } from "home-assistant-js-websocket";
 import {
   css,
   html,
@@ -63,7 +60,10 @@ import {
   getLabels,
   type LabelRegistryEntry,
 } from "../../../../data/label_registry";
-import { TARGET_SEPARATOR } from "../../../../data/target";
+import {
+  TARGET_SEPARATOR,
+  type SingleHassServiceTarget,
+} from "../../../../data/target";
 import type { HomeAssistant } from "../../../../types";
 import { brandsUrl } from "../../../../util/brands-url";
 

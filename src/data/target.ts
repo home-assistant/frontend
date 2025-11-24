@@ -17,6 +17,14 @@ export const TARGET_SEPARATOR = "________";
 export type TargetType = "entity" | "device" | "area" | "label" | "floor";
 export type TargetTypeFloorless = Exclude<TargetType, "floor">;
 
+export interface SingleHassServiceTarget {
+  entity_id?: string;
+  device_id?: string;
+  area_id?: string;
+  floor_id?: string;
+  label_id?: string;
+}
+
 export interface ExtractFromTargetResult {
   missing_areas: string[];
   missing_devices: string[];

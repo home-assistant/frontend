@@ -9,10 +9,7 @@ import {
   mdiTextureBox,
 } from "@mdi/js";
 import Fuse, { type IFuseOptions } from "fuse.js";
-import type {
-  SingleHassServiceTarget,
-  UnsubscribeFunc,
-} from "home-assistant-js-websocket";
+import type { UnsubscribeFunc } from "home-assistant-js-websocket";
 import type { CSSResultGroup, PropertyValues, TemplateResult } from "lit";
 import { LitElement, css, html, nothing } from "lit";
 import {
@@ -122,6 +119,7 @@ import {
   getServicesForTarget,
   getTargetComboBoxItemType,
   getTriggersForTarget,
+  type SingleHassServiceTarget,
 } from "../../../data/target";
 import type { TriggerDescriptions } from "../../../data/trigger";
 import {
