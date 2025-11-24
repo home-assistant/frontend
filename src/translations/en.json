@@ -8624,7 +8624,13 @@
         },
         "winter_mode": {
           "header": "Winter mode",
-          "description": "Add a seasonal touch to your Home Assistant interface."
+          "description": "Add a seasonal touch to your Home Assistant interface.",
+          "dropdown_label": "Winter mode",
+          "options": {
+            "auto": "Use system settings",
+            "always": "Always",
+            "never": "Never"
+          }
         },
         "enable_shortcuts": {
           "header": "Keyboard shortcuts",
