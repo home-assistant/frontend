@@ -50,10 +50,11 @@ export type DeviceEntityDisplayLookup = Record<
   EntityRegistryDisplayEntry[]
 >;
 
-export type DeviceEntityLookup = Record<
-  string,
-  (EntityRegistryEntry | EntityRegistryDisplayEntry)[]
->;
+export type DeviceEntityLookup<
+  T extends EntityRegistryEntry | EntityRegistryDisplayEntry =
+    | EntityRegistryEntry
+    | EntityRegistryDisplayEntry,
+> = Record<string, T[]>;
 
 export interface DeviceRegistryEntryMutableParams {
   area_id?: string | null;
