@@ -1,5 +1,6 @@
 import { ReactiveElement } from "lit";
 import { customElement } from "lit/decorators";
+import { getAreasFloorHierarchy } from "../../../../common/areas/areas-floor-hierarchy";
 import { isComponentLoaded } from "../../../../common/config/is_component_loaded";
 import {
   findEntities,
@@ -23,8 +24,8 @@ import type {
   WeatherForecastCardConfig,
 } from "../../cards/types";
 import type { CommonControlSectionStrategyConfig } from "../usage_prediction/common-controls-section-strategy";
-import { getAreasFloorHierarchy } from "../../../../common/areas/areas-floor-hierarchy";
 import { HOME_SUMMARIES_FILTERS } from "./helpers/home-summaries";
+import type { Condition } from "../../common/validate-condition";
 
 export interface HomeOverviewViewStrategyConfig {
   type: "home-overview";
@@ -71,6 +72,11 @@ export class HomeOverviewViewStrategy extends ReactiveElement {
     const floorCount = home.floors.length + (home.areas.length ? 1 : 0);
 
     const maxColumns = 3;
+
+    const largeScreenCondition: Condition = {
+      condition: "screen",
+      media_query: "(min-width: 871px)",
+    };
 
     const floorsSections: LovelaceSectionConfig[] = [];
     for (const floorStructure of home.floors) {
@@ -124,12 +130,6 @@ export class HomeOverviewViewStrategy extends ReactiveElement {
         ],
       });
     }
-
-    const favoriteSection: LovelaceSectionConfig = {
-      type: "grid",
-      column_span: maxColumns,
-      cards: [],
-    };
 
     const favoriteEntities = (config.favorite_entities || []).filter(
       (entityId) => hass.states[entityId] !== undefined
@@ -223,18 +223,22 @@ export class HomeOverviewViewStrategy extends ReactiveElement {
 
     const forYouSection: LovelaceSectionConfig = {
       type: "grid",
-      column_span: maxColumns,
       cards: [
         {
           type: "heading",
           heading: hass.localize("ui.panel.lovelace.strategy.home.for_you"),
           heading_style: "title",
+          visibility: [largeScreenCondition],
         },
       ],
     };
 
+    const widgetSection: LovelaceSectionConfig = {
+      cards: [],
+    };
+
     if (summaryCards.length) {
-      forYouSection.cards!.push(...summaryCards);
+      widgetSection.cards!.push(...summaryCards);
     }
 
     const weatherFilter = generateEntityFilter(hass, {
@@ -247,7 +251,7 @@ export class HomeOverviewViewStrategy extends ReactiveElement {
       .sort()[0];
 
     if (weatherEntity) {
-      forYouSection.cards!.push({
+      widgetSection.cards!.push({
         type: "weather-forecast",
         entity: weatherEntity,
         forecast_type: "daily",
@@ -265,7 +269,7 @@ export class HomeOverviewViewStrategy extends ReactiveElement {
       );
 
       if (grid && grid.flow_from.length > 0) {
-        forYouSection.cards!.push({
+        widgetSection.cards!.push({
           title: hass.localize(
             "ui.panel.lovelace.cards.energy.energy_distribution.title_today"
           ),
@@ -278,7 +282,17 @@ export class HomeOverviewViewStrategy extends ReactiveElement {
 
     const sections = (
       [
-        favoriteSection.cards && favoriteSection,
+        {
+          type: "grid",
+          cards: [
+            // Heading to add some spacing on large screens
+            {
+              type: "heading",
+              heading_style: "subtitle",
+              visibility: [largeScreenCondition],
+            },
+          ],
+        },
         commonControlsSection,
         ...floorsSections,
       ] satisfies (LovelaceSectionRawConfig | undefined)[]
@@ -297,7 +311,7 @@ export class HomeOverviewViewStrategy extends ReactiveElement {
         } satisfies MarkdownCardConfig,
       },
       sidebar: {
-        sections: [forYouSection],
+        sections: [forYouSection, widgetSection],
         content_label: hass.localize("ui.panel.lovelace.strategy.home.home"),
         sidebar_label: hass.localize("ui.panel.lovelace.strategy.home.for_you"),
       },

@@ -44,7 +44,7 @@ export class HuiViewSidebar extends LitElement {
     .container {
       display: flex;
       flex-direction: column;
-      gap: 16px;
+      gap: var(--row-gap, 8px);
       width: 100%;
     }
   `;
