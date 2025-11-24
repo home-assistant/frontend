@@ -5,6 +5,7 @@ import {
   mdiCancel,
   mdiChevronRight,
   mdiCog,
+  mdiDelete,
   mdiDotsVertical,
   mdiMenuDown,
   mdiPencilOff,
@@ -109,10 +110,11 @@ import { configSections } from "../ha-panel-config";
 import "../integrations/ha-integration-overflow-menu";
 import { renderConfigEntryError } from "../integrations/ha-config-integration-page";
 import { showLabelDetailDialog } from "../labels/show-dialog-label-detail";
-import { isHelperDomain } from "./const";
+import { isHelperDomain, type HelperDomain } from "./const";
 import { showHelperDetailDialog } from "./show-dialog-helper-detail";
 import { slugify } from "../../../common/string/slugify";
 import { isComponentLoaded } from "../../../common/config/is_component_loaded";
+import { HELPERS_CRUD } from "../../../data/helpers_crud";
 import {
   fetchDiagnosticHandlers,
   getConfigEntryDiagnosticsDownloadUrl,
@@ -448,6 +450,19 @@ export class HaConfigHelpers extends SubscribeMixin(LitElement) {
                         "ui.panel.config.integrations.config_entry.download_diagnostics"
                       ),
                       action: () => this._downloadDiagnostics(helper),
+                    },
+                  ]
+                : []),
+              ...(helper.editable && helper.entity
+                ? [
+                    {
+                      divider: true,
+                    },
+                    {
+                      path: mdiDelete,
+                      label: this.hass.localize("ui.common.delete"),
+                      warning: true,
+                      action: () => this._deleteHelper(helper),
                     },
                   ]
                 : []),
@@ -1277,6 +1292,62 @@ ${rejected
       });
     } else {
       showOptionsFlowDialog(this, helper.configEntry!);
+    }
+  }
+
+  private async _deleteHelper(helper: HelperItem) {
+    if (!helper.entity_id) {
+      return;
+    }
+
+    const confirmed = await showConfirmationDialog(this, {
+      title: this.hass.localize(
+        "ui.panel.config.helpers.picker.delete_confirm_title"
+      ),
+      text: this.hass.localize(
+        "ui.panel.config.helpers.picker.delete_confirm_text",
+        { name: helper.name }
+      ),
+      confirmText: this.hass.localize("ui.common.delete"),
+      dismissText: this.hass.localize("ui.common.cancel"),
+      destructive: true,
+    });
+
+    if (!confirmed) {
+      return;
+    }
+
+    try {
+      // For old-style helpers (input_boolean, etc.), use HELPERS_CRUD
+      if (isHelperDomain(helper.type)) {
+        const entityReg = this._entityReg.find(
+          (e) => e.entity_id === helper.entity_id
+        );
+        if (
+          !entityReg?.unique_id ||
+          !isComponentLoaded(this.hass, helper.type)
+        ) {
+          throw new Error(
+            this.hass.localize("ui.panel.config.helpers.picker.delete_failed")
+          );
+        }
+        await HELPERS_CRUD[helper.type as HelperDomain].delete(
+          this.hass,
+          entityReg.unique_id
+        );
+        return;
+      }
+
+      // For config entry-based helpers, delete the config entry
+      if (helper.configEntry) {
+        await deleteConfigEntry(this.hass, helper.configEntry.entry_id);
+      }
+    } catch (err: any) {
+      showAlertDialog(this, {
+        text:
+          err.message ||
+          this.hass.localize("ui.panel.config.helpers.picker.delete_failed"),
+      });
     }
   }
 

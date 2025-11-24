@@ -46,11 +46,38 @@ export class EnergyElectricityViewStrategy extends ReactiveElement {
     const hasBattery = prefs.energy_sources.some(
       (source) => source.type === "battery"
     );
+    const hasPowerSources = prefs.energy_sources.find(
+      (source) =>
+        (source.type === "solar" && source.stat_rate) ||
+        (source.type === "battery" && source.stat_rate) ||
+        (source.type === "grid" && source.power?.length)
+    );
+    const hasPowerDevices = prefs.device_consumption.find(
+      (device) => device.stat_rate
+    );
 
     view.cards!.push({
       type: "energy-compare",
       collection_key: "energy_dashboard",
     });
+
+    if (hasPowerSources) {
+      if (hasPowerDevices) {
+        view.cards!.push({
+          title: hass.localize("ui.panel.energy.cards.power_sankey_title"),
+          type: "power-sankey",
+          collection_key: collectionKey,
+          grid_options: {
+            columns: 24,
+          },
+        });
+      }
+      view.cards!.push({
+        title: hass.localize("ui.panel.energy.cards.power_sources_graph_title"),
+        type: "power-sources-graph",
+        collection_key: collectionKey,
+      });
+    }
 
     // Only include if we have a grid or battery.
     if (hasGrid || hasBattery) {

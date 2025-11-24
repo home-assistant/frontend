@@ -10,6 +10,7 @@ import {
 import { formatTime } from "../common/datetime/format_time";
 import type { LocalizeFunc } from "../common/translations/localize";
 import type { HomeAssistant } from "../types";
+import { documentationUrl } from "../util/documentation-url";
 import { fileDownload } from "../util/file_download";
 import { handleFetchPromise } from "../util/hass-call-api";
 import type { BackupManagerState, ManagerStateEvent } from "./backup_manager";
@@ -414,7 +415,7 @@ ${hass.auth.data.hassUrl}
 ${hass.localize("ui.panel.config.backup.emergency_kit_file.encryption_key")}
 ${encryptionKey}
 
-${hass.localize("ui.panel.config.backup.emergency_kit_file.more_info", { link: "https://www.home-assistant.io/more-info/backup-emergency-kit" })}`);
+${hass.localize("ui.panel.config.backup.emergency_kit_file.more_info", { link: documentationUrl(hass, "/more-info/backup-emergency-kit") })}`);
 
 export const geneateEmergencyKitFileName = (
   hass: HomeAssistant,

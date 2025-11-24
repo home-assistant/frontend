@@ -25,7 +25,7 @@ class HaPickDashboardRow extends LitElement {
   }
 
   protected render(): TemplateResult {
-    const value = this.hass.userData?.defaultPanel || USE_SYSTEM_VALUE;
+    const value = this.hass.userData?.default_panel || USE_SYSTEM_VALUE;
     return html`
       <ha-settings-row .narrow=${this.narrow}>
         <span slot="heading">
@@ -84,12 +84,12 @@ class HaPickDashboardRow extends LitElement {
       return;
     }
     const urlPath = value === USE_SYSTEM_VALUE ? undefined : value;
-    if (urlPath === this.hass.userData?.defaultPanel) {
+    if (urlPath === this.hass.userData?.default_panel) {
       return;
     }
     saveFrontendUserData(this.hass.connection, "core", {
       ...this.hass.userData,
-      defaultPanel: urlPath,
+      default_panel: urlPath,
     });
   }
 }
