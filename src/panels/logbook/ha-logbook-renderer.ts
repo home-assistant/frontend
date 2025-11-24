@@ -11,6 +11,7 @@ import { formatTimeWithSeconds } from "../../common/datetime/format_time";
 import { restoreScroll } from "../../common/decorators/restore-scroll";
 import { fireEvent } from "../../common/dom/fire_event";
 import { computeDomain } from "../../common/entity/compute_domain";
+import { DEFAULT_ENTITY_NAME } from "../../common/entity/compute_entity_name_display";
 import { navigate } from "../../common/navigate";
 import { computeTimelineColor } from "../../components/chart/timeline-color";
 import "../../components/entity/state-badge";
@@ -463,15 +464,24 @@ class HaLogbookRenderer extends LitElement {
     entityName: string | undefined,
     noLink?: boolean
   ) {
-    const hasState = entityId && entityId in this.hass.states;
-    const displayName =
-      entityName ||
-      (hasState
-        ? this.hass.states[entityId].attributes.friendly_name || entityId
-        : entityId);
+    if (!entityId) {
+      return entityName || "";
+    }
+
+    const stateObj = this.hass.states[entityId];
+    const hasState = Boolean(stateObj);
+
+    const displayName = hasState
+      ? this.hass.formatEntityName(stateObj, DEFAULT_ENTITY_NAME) ||
+        entityName ||
+        stateObj.attributes.friendly_name ||
+        entityId
+      : entityName || entityId;
+
     if (!hasState) {
       return displayName;
     }
+
     return noLink
       ? displayName
       : html`<button
