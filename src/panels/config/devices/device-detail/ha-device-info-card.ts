@@ -58,7 +58,7 @@ export class HaDeviceCard extends LitElement {
                   <span class="hub"
                     ><a
                       href="/config/devices/device/${this.device.via_device_id}"
-                      >${this._computeDeviceNameDislay(
+                      >${this._computeDeviceNameDisplay(
                         this.device.via_device_id
                       )}</a
                     ></span
@@ -139,7 +139,7 @@ export class HaDeviceCard extends LitElement {
     );
   }
 
-  private _computeDeviceNameDislay(deviceId) {
+  private _computeDeviceNameDisplay(deviceId) {
     const device = this.hass.devices[deviceId];
     return device
       ? computeDeviceNameDisplay(device, this.hass)
