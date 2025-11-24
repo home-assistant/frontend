@@ -775,6 +775,7 @@ export const getEnergyDataCollection = (
           hass.locale,
           hass.config
         );
+        collection.refresh();
         scheduleUpdatePeriod();
       },
       addHours(
