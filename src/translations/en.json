@@ -5400,6 +5400,11 @@
                 "partial_failure": "Some devices failed to delete successfully. Check system logs for more information."
               }
             }
+          },
+          "esphome": {
+            "show_encryption_key": "Show encryption key",
+            "encryption_key_title": "ESPHome Encryption Key",
+            "encryption_key_description": "This is the encryption key for your ESPHome device. Keep it in a safe place, as you may need it when transferring devices between Home Assistant instances."
           }
         },
         "entities": {

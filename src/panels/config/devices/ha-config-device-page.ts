@@ -1162,6 +1162,17 @@ export class HaConfigDevicePage extends LitElement {
       );
       deviceActions.push(...actions);
     }
+    if (domains.includes("esphome")) {
+      const esphome = await import(
+        "./device-detail/integration-elements/esphome/device-actions"
+      );
+      const actions = await esphome.getESPHomeDeviceActions(
+        this,
+        this.hass,
+        device
+      );
+      deviceActions.push(...actions);
+    }
     if (domains.includes("matter")) {
       const matter = await import(
         "./device-detail/integration-elements/matter/device-actions"
