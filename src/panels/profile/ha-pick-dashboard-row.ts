@@ -1,16 +1,16 @@
 import type { PropertyValues, TemplateResult } from "lit";
-import { html, LitElement } from "lit";
+import { html, LitElement, nothing } from "lit";
 import { customElement, property, state } from "lit/decorators";
+import "../../components/ha-divider";
 import "../../components/ha-list-item";
 import "../../components/ha-select";
 import "../../components/ha-settings-row";
+import { saveFrontendUserData } from "../../data/frontend";
 import type { LovelaceDashboard } from "../../data/lovelace/dashboard";
 import { fetchDashboards } from "../../data/lovelace/dashboard";
-import type { HomeAssistant } from "../../types";
-import { saveFrontendUserData } from "../../data/frontend";
-import { PANEL_DASHBOARDS } from "../config/lovelace/dashboards/ha-config-lovelace-dashboards";
 import { getPanelTitle } from "../../data/panel";
-import "../../components/ha-divider";
+import type { HomeAssistant, PanelInfo } from "../../types";
+import { PANEL_DASHBOARDS } from "../config/lovelace/dashboards/ha-config-lovelace-dashboards";
 
 const USE_SYSTEM_VALUE = "___use_system___";
 
@@ -55,10 +55,15 @@ class HaPickDashboardRow extends LitElement {
                 ${this.hass.localize("ui.panel.profile.dashboard.lovelace")}
               </ha-list-item>
               ${PANEL_DASHBOARDS.map((panel) => {
-                const panelInfo = this.hass.panels[panel];
+                const panelInfo = this.hass.panels[panel] as
+                  | PanelInfo
+                  | undefined;
+                if (!panelInfo) {
+                  return nothing;
+                }
                 return html`
-                  <ha-list-item value="lovelace">
-                    ${panelInfo ? getPanelTitle(this.hass, panelInfo) : panel}
+                  <ha-list-item value=${panelInfo.url_path}>
+                    ${getPanelTitle(this.hass, panelInfo)}
                   </ha-list-item>
                 `;
               })}
