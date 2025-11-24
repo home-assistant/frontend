@@ -185,7 +185,7 @@ export class HuiEnergyDevicesGraphCard
     const value = `${formatNumber(
       params.value[0] as number,
       this.hass.locale,
-      params.value < 0.1 ? { maximumFractionDigits: 3 } : undefined
+      params.value[0] < 0.1 ? { maximumFractionDigits: 3 } : undefined
     )} kWh`;
     return `${title}${params.marker} ${params.seriesName}: <div style="direction:ltr; display: inline;">${value}</div>`;
   }
@@ -478,9 +478,9 @@ export class HuiEnergyDevicesGraphCard
       }
       const totalChart = pieChartData.reduce(
         (acc: number, d) =>
-          this._hiddenStats.includes((d as PieDataItemOption).id as string)
+          this._hiddenStats.includes((d as any).id as string)
             ? acc
-            : acc + (d as PieDataItemOption).value![0],
+            : acc + (d as any).value[0],
         0
       );
       datasets.push({
