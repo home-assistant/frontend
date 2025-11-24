@@ -98,7 +98,7 @@ export const getAreasAndFloors = (
     excludeFloors
   ) as FloorComboBoxItem[];
 
-export const getAreasAndFloorsItems = (
+const getAreasAndFloorsItems = (
   states: HomeAssistant["states"],
   haFloors: HomeAssistant["floors"],
   haAreas: HomeAssistant["areas"],
