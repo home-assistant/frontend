@@ -5,6 +5,7 @@ import { customElement, property } from "lit/decorators";
 import "../../../components/ha-button-menu";
 import "../../../components/ha-icon-button";
 import "../../../components/ha-list-item";
+import "../../../components/ha-icon-button";
 import "../../../components/ha-svg-icon";
 import { getSignedPath } from "../../../data/auth";
 import "../../../layouts/hass-subpage";
