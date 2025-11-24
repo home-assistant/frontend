@@ -19,6 +19,7 @@ import { fireEvent } from "../../../../common/dom/fire_event";
 import { computeAreaName } from "../../../../common/entity/compute_area_name";
 import { computeDeviceName } from "../../../../common/entity/compute_device_name";
 import { computeEntityNameList } from "../../../../common/entity/compute_entity_name_display";
+import { stringCompare } from "../../../../common/string/compare";
 import "../../../../components/entity/state-badge";
 import "../../../../components/ha-floor-icon";
 import "../../../../components/ha-icon";
@@ -557,7 +558,9 @@ export default class HaAutomationAddFromTarget extends LitElement {
           area.icon,
         ] as [string, string, string | undefined, string | undefined];
       })
-      .sort(([, nameA], [, nameB]) => nameA.localeCompare(nameB))
+      .sort(([, nameA], [, nameB]) =>
+        stringCompare(nameA, nameB, this.hass.locale.language)
+      )
       .map(([areaTargetId, areaName, floorId, areaIcon]) => {
         const { open, devices, entities } =
           this._entries[`floor${TARGET_SEPARATOR}${floorId || ""}`].areas![
@@ -614,7 +617,7 @@ export default class HaAutomationAddFromTarget extends LitElement {
         ];
       })
       .sort(([, deviceNameA = "zzz"], [, deviceNameB = "zzz"]) =>
-        deviceNameA.localeCompare(deviceNameB)
+        stringCompare(deviceNameA, deviceNameB, this.hass.locale.language)
       )
       .map(([deviceId, deviceName, domain]) => {
         const { open, entities } = devices[deviceId];
@@ -663,7 +666,7 @@ export default class HaAutomationAddFromTarget extends LitElement {
         return [domainTargetId, label, domain] as [string, string, string];
       })
       .sort(([, labelA = "zzz"], [, labelB = "zzz"]) =>
-        labelA.localeCompare(labelB)
+        stringCompare(labelA, labelB, this.hass.locale.language)
       )
       .map(([domainTargetId, label, domain]) => {
         const { open, entities } = domains[domainTargetId];
@@ -714,7 +717,9 @@ export default class HaAutomationAddFromTarget extends LitElement {
 
         return [entityId, label, stateObj] as [string, string, HassEntity];
       })
-      .sort(([, labelA], [, labelB]) => labelA.localeCompare(labelB))
+      .sort(([, labelA], [, labelB]) =>
+        stringCompare(labelA, labelB, this.hass.locale.language)
+      )
       .map(([entityId, label, stateObj]) =>
         this._renderItem(
           label,
