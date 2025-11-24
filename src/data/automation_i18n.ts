@@ -25,6 +25,7 @@ import type {
   LegacyTrigger,
   Trigger,
 } from "./automation";
+import { getConditionDomain, getConditionObjectId } from "./condition";
 import type { DeviceCondition, DeviceTrigger } from "./device_automation";
 import {
   localizeDeviceAutomationCondition,
