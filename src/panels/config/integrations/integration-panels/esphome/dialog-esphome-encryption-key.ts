@@ -4,9 +4,9 @@ import { css, html, LitElement, nothing } from "lit";
 import { customElement, property, state } from "lit/decorators";
 import { fireEvent } from "../../../../../common/dom/fire_event";
 import { copyToClipboard } from "../../../../../common/util/copy-clipboard";
-import "../../../../../components/ha-dialog";
 import "../../../../../components/ha-dialog-header";
 import "../../../../../components/ha-icon-button";
+import "../../../../../components/ha-wa-dialog";
 import { haStyleDialog } from "../../../../../resources/styles";
 import type { HomeAssistant } from "../../../../../types";
 import { showToast } from "../../../../../util/toast";
@@ -35,11 +35,11 @@ class DialogESPHomeEncryptionKey extends LitElement {
     }
 
     return html`
-      <ha-dialog
+      <ha-wa-dialog
         open
         @closed=${this.closeDialog}
         hideActions
-        .heading=${this.hass.localize(
+        header-title=${this.hass.localize(
           "ui.panel.config.devices.esphome.encryption_key_title"
         )}
       >
@@ -74,7 +74,7 @@ class DialogESPHomeEncryptionKey extends LitElement {
             ></ha-icon-button>
           </div>
         </div>
-      </ha-dialog>
+      </ha-wa-dialog>
     `;
   }
 
@@ -94,35 +94,34 @@ class DialogESPHomeEncryptionKey extends LitElement {
       haStyleDialog,
       css`
         ha-dialog {
-          --dialog-content-padding: 0 24px 24px 24px;
           --mdc-dialog-max-width: 500px;
         }
 
         .content {
           display: flex;
           flex-direction: column;
-          gap: 24px;
-          margin-bottom: 24px;
+          gap: var(--ha-space-6);
         }
 
         .key-row {
           display: flex;
-          gap: 8px;
+          gap: var(--ha-space-2);
           align-items: center;
         }
 
         .key-container {
           flex: 1;
-          border-radius: 8px;
+          border-radius: var(--ha-space-2);
           border: 1px solid var(--divider-color);
           background-color: var(--code-editor-background-color, #f8f8f8);
-          padding: 12px;
+          padding: var(--ha-space-3);
           overflow: hidden;
         }
 
         p {
           margin: 0;
           color: var(--secondary-text-color);
+          line-height: var(--ha-line-height-condensed);
         }
       `,
     ];
