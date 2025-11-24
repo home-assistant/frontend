@@ -241,11 +241,13 @@ export class HaDeviceCard extends SubscribeMixin(LitElement) {
           display: flex;
           flex-wrap: wrap;
           gap: var(--ha-space-1);
-          word-wrap: break-word;
+          width: 100%;
           max-width: 100%;
-          overflow: hidden;
-          text-overflow: ellipsis;
-          white-space: nowrap;
+        }
+        .labels ha-label {
+          min-width: 0;
+          max-width: 100%;
+          flex: 0 1 auto;
         }
         ha-label {
           --ha-label-background-color: var(--color, var(--grey-color));
