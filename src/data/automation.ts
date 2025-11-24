@@ -10,6 +10,7 @@ import type { LocalizeKeys } from "../common/translations/localize";
 import { createSearchParam } from "../common/url/search-params";
 import type { Context, HomeAssistant } from "../types";
 import type { BlueprintInput } from "./blueprint";
+import type { ConditionDescription } from "./condition";
 import { CONDITION_BUILDING_BLOCKS } from "./condition";
 import type { DeviceCondition, DeviceTrigger } from "./device_automation";
 import type { Action, Field, MODES } from "./script";
@@ -236,6 +237,12 @@ interface BaseCondition {
   condition: string;
   alias?: string;
   enabled?: boolean;
+  options?: Record<string, unknown>;
+}
+
+export interface PlatformCondition extends BaseCondition {
+  condition: Exclude<string, LegacyCondition["condition"]>;
+  target?: HassServiceTarget;
 }
 
 export interface LogicalCondition extends BaseCondition {
@@ -320,7 +327,7 @@ export type AutomationElementGroup = Record<
   { icon?: string; members?: AutomationElementGroup }
 >;
 
-export type Condition =
+export type LegacyCondition =
   | StateCondition
   | NumericStateCondition
   | SunCondition
@@ -330,6 +337,8 @@ export type Condition =
   | DeviceCondition
   | LogicalCondition
   | TriggerCondition;
+
+export type Condition = LegacyCondition | PlatformCondition;
 
 export type ConditionWithShorthand =
   | Condition
@@ -608,6 +617,7 @@ export interface ConditionSidebarConfig extends BaseSidebarConfig {
   insertAfter: (value: Condition | Condition[]) => boolean;
   toggleYamlMode: () => void;
   config: Condition;
+  description?: ConditionDescription;
   yamlMode: boolean;
   uiSupported: boolean;
 }
