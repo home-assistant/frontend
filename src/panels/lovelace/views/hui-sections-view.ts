@@ -421,31 +421,19 @@ export class SectionsView extends LitElement implements LovelaceViewElement {
   private _toggleView() {
     // Save current scroll position
     if (this._showSidebar) {
-      // Currently showing sidebar, save its scroll position
-      const sidebar = this.shadowRoot?.querySelector("hui-view-sidebar");
-      if (sidebar) {
-        this._sidebarScrollTop = sidebar.scrollTop || 0;
-      }
+      this._sidebarScrollTop = window.scrollY;
     } else {
-      // Currently showing content, save window scroll position
       this._contentScrollTop = window.scrollY;
     }
 
-    // Toggle view
     this._showSidebar = !this._showSidebar;
 
     // Restore scroll position after view updates
     this.updateComplete.then(() => {
-      if (this._showSidebar) {
-        // Switched to sidebar, restore sidebar scroll
-        const sidebar = this.shadowRoot?.querySelector("hui-view-sidebar");
-        if (sidebar) {
-          sidebar.scrollTop = this._sidebarScrollTop;
-        }
-      } else {
-        // Switched to content, restore window scroll
-        window.scrollTo(0, this._contentScrollTop);
-      }
+      const scrollY = this._showSidebar
+        ? this._sidebarScrollTop
+        : this._contentScrollTop;
+      window.scrollTo(0, scrollY);
     });
   }
 
