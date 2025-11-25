@@ -167,8 +167,8 @@ class DialogBox extends LitElement {
   }
 
   private _dialogClosed() {
+    fireEvent(this, "dialog-closed", { dialog: this.localName });
     if (!this._closeState) {
-      fireEvent(this, "dialog-closed", { dialog: this.localName });
       this._cancel();
     }
     this._closeState = undefined;
