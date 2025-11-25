@@ -535,10 +535,10 @@ export class HuiEnergyUsageGraphCard
       height: 100%;
     }
     .card-header {
-      padding: 16px 16px 0;
       display: flex;
       justify-content: space-between;
       align-items: center;
+      padding-bottom: 0;
     }
     .content {
       padding: 16px;
