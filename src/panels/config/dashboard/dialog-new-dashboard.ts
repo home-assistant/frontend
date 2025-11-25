@@ -37,26 +37,6 @@ const STRATEGIES = [
       "ui.panel.config.lovelace.dashboards.dialog_new.strategy.overview.description",
   },
   {
-    type: "areas",
-    images: {
-      light: "/static/images/dashboard-options/light/icon-dashboard-areas.svg",
-      dark: "/static/images/dashboard-options/dark/icon-dashboard-areas.svg",
-    },
-    name: "ui.panel.config.lovelace.dashboards.dialog_new.strategy.areas.title",
-    description:
-      "ui.panel.config.lovelace.dashboards.dialog_new.strategy.areas.description",
-  },
-  {
-    type: "home",
-    images: {
-      light: "/static/images/dashboard-options/light/icon-dashboard-home.svg",
-      dark: "/static/images/dashboard-options/dark/icon-dashboard-home.svg",
-    },
-    name: "ui.panel.config.lovelace.dashboards.dialog_new.strategy.home.title",
-    description:
-      "ui.panel.config.lovelace.dashboards.dialog_new.strategy.home.description",
-  },
-  {
     type: "map",
     images: {
       light: "/static/images/dashboard-options/light/icon-dashboard-map.svg",
