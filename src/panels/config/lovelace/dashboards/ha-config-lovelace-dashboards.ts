@@ -460,6 +460,23 @@ export class HaConfigLovelaceDashboards extends LitElement {
     if (item.default) {
       return;
     }
+
+    const confirm = await showConfirmationDialog(this, {
+      title: this.hass.localize(
+        "ui.panel.config.lovelace.dashboards.detail.set_default_confirm_title"
+      ),
+      text: this.hass.localize(
+        "ui.panel.config.lovelace.dashboards.detail.set_default_confirm_text"
+      ),
+      confirmText: this.hass.localize("ui.common.ok"),
+      dismissText: this.hass.localize("ui.common.cancel"),
+      destructive: false,
+    });
+
+    if (!confirm) {
+      return;
+    }
+
     await saveFrontendSystemData(this.hass.connection, "core", {
       ...this.hass.systemData,
       default_panel: item.url_path,
