@@ -3276,6 +3276,26 @@
             "create_platform": "Create {platform}"
           }
         },
+        "entity_migration": {
+          "caption": "Entity migration",
+          "description": "Find and migrate entity references",
+          "scan_title": "Scan for entity references",
+          "scan_description": "Select an entity to find all places where it is used, including automations, scripts, scenes, dashboards, and more.",
+          "source_entity": "Entity to scan",
+          "scan_button": "Scan for references",
+          "scan_error": "Failed to scan entity references",
+          "no_references": "No references found for this entity.",
+          "results_title": "{count} references found",
+          "reference_count": "{count} references",
+          "category_automations": "Automations",
+          "category_scripts": "Scripts",
+          "category_scenes": "Scenes",
+          "category_dashboards": "Dashboards",
+          "category_helpers": "Helpers",
+          "category_template_entities": "Template entities",
+          "category_groups": "Groups",
+          "category_other": "Other"
+        },
         "core": {
           "caption": "General",
           "description": "Name, time zone, and locale settings",

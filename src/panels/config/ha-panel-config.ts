@@ -26,6 +26,7 @@ import {
   mdiScriptText,
   mdiShape,
   mdiSofa,
+  mdiSwapHorizontal,
   mdiTools,
   mdiUpdate,
   mdiViewDashboard,
@@ -176,6 +177,14 @@ export const configSections: Record<string, PageNavigation[]> = {
       translationKey: "ui.panel.config.helpers.caption",
       iconPath: mdiTools,
       iconColor: "#4D2EA4",
+      core: true,
+    },
+    {
+      component: "entity_migration",
+      path: "/config/entity-migration",
+      translationKey: "ui.panel.config.entity_migration.caption",
+      iconPath: mdiSwapHorizontal,
+      iconColor: "#7B1FA2",
       core: true,
     },
   ],
@@ -458,6 +467,10 @@ class HaPanelConfig extends SubscribeMixin(HassRouterPage) {
       entities: {
         tag: "ha-config-entities",
         load: () => import("./entities/ha-config-entities"),
+      },
+      "entity-migration": {
+        tag: "ha-config-entity-migration",
+        load: () => import("./entity-migration/ha-config-entity-migration"),
       },
       energy: {
         tag: "ha-config-energy",
