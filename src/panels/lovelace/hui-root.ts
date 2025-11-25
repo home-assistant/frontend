@@ -151,8 +151,8 @@ class HUIRoot extends LitElement {
 
   private _undoRedoController = new UndoRedoController<UndoStackItem>(this, {
     apply: (config) => this._applyUndoRedo(config),
-    currentConfig: () => ({
-      location: this.route!.path,
+    currentConfig: (itemBeingApplied) => ({
+      location: itemBeingApplied?.location ?? this.route!.path,
       config: this.lovelace!.rawConfig,
     }),
   });

@@ -12,7 +12,7 @@ const UNDO_REDO_STACK_LIMIT = 75;
  */
 export interface UndoRedoControllerConfig<ConfigType> {
   stackLimit?: number;
-  currentConfig: () => ConfigType;
+  currentConfig: (itemBeingApplied?: ConfigType) => ConfigType;
   apply: (config: ConfigType) => void;
 }
 
@@ -34,7 +34,9 @@ export class UndoRedoController<ConfigType> implements ReactiveController {
     throw new Error("No apply function provided");
   };
 
-  private readonly _currentConfig: () => ConfigType = () => {
+  private readonly _currentConfig: (
+    itemBeingApplied?: ConfigType
+  ) => ConfigType = () => {
     throw new Error("No currentConfig function provided");
   };
 
@@ -105,8 +107,8 @@ export class UndoRedoController<ConfigType> implements ReactiveController {
     if (this._undoStack.length === 0) {
       return;
     }
-    this._redoStack.push({ ...this._currentConfig() });
     const config = this._undoStack.pop()!;
+    this._redoStack.push({ ...this._currentConfig(config) });
     this._apply(config);
     this._host.requestUpdate();
   }
@@ -119,8 +121,8 @@ export class UndoRedoController<ConfigType> implements ReactiveController {
     if (this._redoStack.length === 0) {
       return;
     }
-    this._undoStack.push({ ...this._currentConfig() });
     const config = this._redoStack.pop()!;
+    this._undoStack.push({ ...this._currentConfig(config) });
     this._apply(config);
     this._host.requestUpdate();
   }
