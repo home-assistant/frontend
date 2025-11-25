@@ -240,10 +240,10 @@ class PanelEnergy extends LitElement {
       };
     }
 
-    const isSingleView = prefs.energy_sources.every((source) =>
+    const isElectricityOnly = prefs.energy_sources.every((source) =>
       ["grid", "solar", "battery"].includes(source.type)
     );
-    if (isSingleView) {
+    if (isElectricityOnly) {
       return {
         views: [ELECTRICITY_VIEW],
       };
