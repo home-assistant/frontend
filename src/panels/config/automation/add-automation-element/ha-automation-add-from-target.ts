@@ -514,7 +514,7 @@ export default class HaAutomationAddFromTarget extends LitElement {
         const open = entries[`service${TARGET_SEPARATOR}`].open;
         items.push(
           this._renderItem(
-            this.localize("ui.components.target-picker.type.devices"),
+            this.localize("ui.panel.config.automation.editor.services"),
             `service${TARGET_SEPARATOR}`,
             true,
             false,
