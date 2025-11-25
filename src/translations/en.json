@@ -7305,6 +7305,7 @@
         "editor": {
           "header": "Edit UI",
           "yaml_unsupported": "The edit UI is not available when in YAML mode.",
+          "undo_redo_failed_to_apply_changes": "Unable to apply changes: {error}",
           "menu": {
             "open": "Open dashboard menu",
             "raw_editor": "Raw configuration editor",
