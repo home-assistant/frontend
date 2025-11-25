@@ -9184,10 +9184,10 @@ __metadata:
   languageName: node
   linkType: hard
 
-"hls.js@npm:1.6.14":
-  version: 1.6.14
-  resolution: "hls.js@npm:1.6.14"
-  checksum: 10/56eedf163912abf72bd5ca0eac44dbaa442cff59bb8d1ff3303614bf18d21dfa3ec7b85db5b71449986c52c63b7efb6bd5392b048bf22c61549f71a001fa94cd
+"hls.js@npm:1.6.15":
+  version: 1.6.15
+  resolution: "hls.js@npm:1.6.15"
+  checksum: 10/c385f8b5ed541d658d2c7f8616d6aef6064855f6d70ad4e1d0e9696d35820394e4d170e53891530098d648108ce68af948d726a4fad73c99fda274c9e68aa49c
   languageName: node
   linkType: hard
 
@@ -9331,7 +9331,7 @@ __metadata:
     gulp-json-transform: "npm:0.5.0"
     gulp-rename: "npm:2.1.0"
     gulp-zopfli-green: "npm:6.0.2"
-    hls.js: "npm:1.6.14"
+    hls.js: "npm:1.6.15"
     home-assistant-js-websocket: "npm:9.6.0"
     html-minifier-terser: "npm:7.2.0"
     husky: "npm:9.1.7"
