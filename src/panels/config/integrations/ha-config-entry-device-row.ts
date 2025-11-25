@@ -87,7 +87,7 @@ class HaConfigEntryDeviceRow extends LitElement {
       ${!this.narrow
         ? html`<ha-icon-button
             slot="end"
-            @click=${this._handleEditDevice}
+            @click=${this._handleEditDeviceButton}
             .path=${mdiPencil}
             .label=${this.hass.localize(
               "ui.panel.config.integrations.config_entry.device.edit"
@@ -106,7 +106,7 @@ class HaConfigEntryDeviceRow extends LitElement {
           .path=${mdiDotsVertical}
         ></ha-icon-button>
         ${this.narrow
-          ? html`<ha-md-menu-item @click=${this._handleEditDevice}>
+          ? html`<ha-md-menu-item .clickAction=${this._handleEditDevice}>
               <ha-svg-icon .path=${mdiPencil} slot="start"></ha-svg-icon>
               ${this.hass.localize(
                 "ui.panel.config.integrations.config_entry.device.edit"
@@ -115,7 +115,7 @@ class HaConfigEntryDeviceRow extends LitElement {
           : nothing}
         ${entities.length
           ? html`
-              <ha-md-menu-item @click=${this._handleNavigateToEntities}>
+              <ha-md-menu-item .clickAction=${this._handleNavigateToEntities}>
                 <ha-svg-icon
                   .path=${mdiShapeOutline}
                   slot="start"
@@ -130,7 +130,7 @@ class HaConfigEntryDeviceRow extends LitElement {
           : nothing}
         <ha-md-menu-item
           class=${device.disabled_by !== "user" ? "warning" : ""}
-          @click=${this._handleDisableDevice}
+          .clickAction=${this._handleDisableDevice}
           .disabled=${device.disabled_by !== "user" && device.disabled_by}
         >
           <ha-svg-icon .path=${mdiStopCircleOutline} slot="start"></ha-svg-icon>
@@ -160,7 +160,7 @@ class HaConfigEntryDeviceRow extends LitElement {
         ${this.entry.supports_remove_device
           ? html`<ha-md-menu-item
               class="warning"
-              @click=${this._handleDeleteDevice}
+              .clickAction=${this._handleDeleteDevice}
             >
               <ha-svg-icon .path=${mdiDelete} slot="start"></ha-svg-icon>
               ${this.hass.localize(
@@ -175,21 +175,25 @@ class HaConfigEntryDeviceRow extends LitElement {
   private _getEntities = (): EntityRegistryEntry[] =>
     this.entities?.filter((entity) => entity.device_id === this.device.id);
 
-  private _handleEditDevice(ev: MouseEvent) {
+  private _handleEditDeviceButton(ev: MouseEvent) {
     ev.stopPropagation(); // Prevent triggering the click handler on the list item
+    this._handleEditDevice();
+  }
+
+  private _handleEditDevice = () => {
     showDeviceRegistryDetailDialog(this, {
       device: this.device,
       updateEntry: async (updates) => {
         await updateDeviceRegistryEntry(this.hass, this.device.id, updates);
       },
     });
-  }
+  };
 
-  private _handleNavigateToEntities() {
+  private _handleNavigateToEntities = () => {
     navigate(`/config/entities/?historyBack=1&device=${this.device.id}`);
-  }
+  };
 
-  private async _handleDisableDevice() {
+  private _handleDisableDevice = async () => {
     const disable = this.device.disabled_by === null;
 
     if (disable) {
@@ -263,9 +267,9 @@ class HaConfigEntryDeviceRow extends LitElement {
     await updateDeviceRegistryEntry(this.hass, this.device.id, {
       disabled_by: disable ? "user" : null,
     });
-  }
+  };
 
-  private async _handleDeleteDevice() {
+  private _handleDeleteDevice = async () => {
     const entry = this.entry;
     const confirmed = await showConfirmationDialog(this, {
       text: this.hass.localize("ui.panel.config.devices.confirm_delete"),
@@ -290,7 +294,7 @@ class HaConfigEntryDeviceRow extends LitElement {
         text: err.message,
       });
     }
-  }
+  };
 
   private _handleNavigateToDevice() {
     navigate(`/config/devices/device/${this.device.id}`);

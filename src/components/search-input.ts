@@ -34,6 +34,7 @@ class SearchInput extends LitElement {
     return html`
       <ha-textfield
         .autofocus=${this.autofocus}
+        autocomplete="off"
         .label=${this.label || this.hass.localize("ui.common.search")}
         .value=${this.filter || ""}
         icon

@@ -2,6 +2,7 @@ import { mdiClose, mdiOpenInNew } from "@mdi/js";
 import { css, html, LitElement, nothing } from "lit";
 import { customElement, property, query, state } from "lit/decorators";
 import { fireEvent } from "../../../common/dom/fire_event";
+import { documentationUrl } from "../../../util/documentation-url";
 import "../../../components/ha-alert";
 import "../../../components/ha-button";
 import "../../../components/ha-code-editor";
@@ -140,7 +141,7 @@ class DialogImportBlueprint extends LitElement {
                 <ha-button
                   size="small"
                   appearance="plain"
-                  href="https://www.home-assistant.io/get-blueprints"
+                  href=${documentationUrl(this.hass, "/get-blueprints")}
                   target="_blank"
                   rel="noreferrer noopener"
                 >

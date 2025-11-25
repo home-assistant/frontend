@@ -66,7 +66,7 @@ export class HaIconOverflowMenu extends LitElement {
                         .path=${item.path}
                       ></ha-svg-icon>
                       ${item.label}
-                    </ha-md-menu-item> `
+                    </ha-md-menu-item>`
               )}
             </ha-md-button-menu>`
         : html`
@@ -103,6 +103,7 @@ export class HaIconOverflowMenu extends LitElement {
         :host {
           display: flex;
           justify-content: flex-end;
+          cursor: initial;
         }
         div[role="separator"] {
           border-right: 1px solid var(--divider-color);

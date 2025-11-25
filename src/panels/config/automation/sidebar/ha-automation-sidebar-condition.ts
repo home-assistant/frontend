@@ -16,11 +16,16 @@ import { classMap } from "lit/directives/class-map";
 import { keyed } from "lit/directives/keyed";
 import { fireEvent } from "../../../../common/dom/fire_event";
 import { handleStructError } from "../../../../common/structs/handle-errors";
-import {
-  testCondition,
-  type ConditionSidebarConfig,
+import type {
+  LegacyCondition,
+  ConditionSidebarConfig,
 } from "../../../../data/automation";
-import { CONDITION_BUILDING_BLOCKS } from "../../../../data/condition";
+import { testCondition } from "../../../../data/automation";
+import {
+  CONDITION_BUILDING_BLOCKS,
+  getConditionDomain,
+  getConditionObjectId,
+} from "../../../../data/condition";
 import { validateConfig } from "../../../../data/config";
 import type { HomeAssistant } from "../../../../types";
 import { isMac } from "../../../../util/is_mac";
@@ -84,14 +89,25 @@ export default class HaAutomationSidebarCondition extends LitElement {
       "ui.panel.config.automation.editor.conditions.condition"
     );
 
+    const domain =
+      "condition" in this.config.config &&
+      getConditionDomain(this.config.config.condition);
+    const conditionName =
+      "condition" in this.config.config &&
+      getConditionObjectId(this.config.config.condition);
+
     const title =
       this.hass.localize(
-        `ui.panel.config.automation.editor.conditions.type.${type}.label`
-      ) || type;
+        `ui.panel.config.automation.editor.conditions.type.${type as LegacyCondition["condition"]}.label`
+      ) ||
+      this.hass.localize(
+        `component.${domain}.conditions.${conditionName}.name`
+      ) ||
+      type;
 
     const description = isBuildingBlock
       ? this.hass.localize(
-          `ui.panel.config.automation.editor.conditions.type.${type}.description.picker`
+          `ui.panel.config.automation.editor.conditions.type.${type as LegacyCondition["condition"]}.description.picker`
         )
       : "";
 
@@ -282,6 +298,7 @@ export default class HaAutomationSidebarCondition extends LitElement {
               class="sidebar-editor"
               .hass=${this.hass}
               .condition=${this.config.config}
+              .description=${this.config.description}
               .yamlMode=${this.yamlMode}
               .uiSupported=${this.config.uiSupported}
               @value-changed=${this._valueChangedSidebar}

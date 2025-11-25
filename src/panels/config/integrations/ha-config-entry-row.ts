@@ -302,7 +302,7 @@ class HaConfigEntryRow extends LitElement {
           item.supports_unload &&
           item.source !== "system"
             ? html`
-                <ha-md-menu-item @click=${this._handleReload}>
+                <ha-md-menu-item .clickAction=${this._handleReload}>
                   <ha-svg-icon slot="start" .path=${mdiReload}></ha-svg-icon>
                   ${this.hass.localize(
                     "ui.panel.config.integrations.config_entry.reload"
@@ -311,14 +311,14 @@ class HaConfigEntryRow extends LitElement {
               `
             : nothing}
 
-          <ha-md-menu-item @click=${this._handleRename} graphic="icon">
+          <ha-md-menu-item .clickAction=${this._handleRename} graphic="icon">
             <ha-svg-icon slot="start" .path=${mdiRenameBox}></ha-svg-icon>
             ${this.hass.localize(
               "ui.panel.config.integrations.config_entry.rename"
             )}
           </ha-md-menu-item>
 
-          <ha-md-menu-item @click=${this._handleCopy} graphic="icon">
+          <ha-md-menu-item .clickAction=${this._handleCopy} graphic="icon">
             <ha-svg-icon slot="start" .path=${mdiContentCopy}></ha-svg-icon>
             ${this.hass.localize(
               "ui.panel.config.integrations.config_entry.copy"
@@ -328,7 +328,7 @@ class HaConfigEntryRow extends LitElement {
           ${Object.keys(item.supported_subentry_types).map(
             (flowType) =>
               html`<ha-md-menu-item
-                @click=${this._addSubEntry}
+                .clickAction=${this._addSubEntry}
                 .entry=${item}
                 .flowType=${flowType}
                 graphic="icon"
@@ -360,7 +360,7 @@ class HaConfigEntryRow extends LitElement {
           item.supports_reconfigure &&
           item.source !== "system"
             ? html`
-                <ha-md-menu-item @click=${this._handleReconfigure}>
+                <ha-md-menu-item .clickAction=${this._handleReconfigure}>
                   <ha-svg-icon slot="start" .path=${mdiWrench}></ha-svg-icon>
                   ${this.hass.localize(
                     "ui.panel.config.integrations.config_entry.reconfigure"
@@ -369,7 +369,10 @@ class HaConfigEntryRow extends LitElement {
               `
             : nothing}
 
-          <ha-md-menu-item @click=${this._handleSystemOptions} graphic="icon">
+          <ha-md-menu-item
+            .clickAction=${this._handleSystemOptions}
+            graphic="icon"
+          >
             <ha-svg-icon slot="start" .path=${mdiCogOutline}></ha-svg-icon>
             ${this.hass.localize(
               "ui.panel.config.integrations.config_entry.system_options"
@@ -377,7 +380,7 @@ class HaConfigEntryRow extends LitElement {
           </ha-md-menu-item>
           ${item.disabled_by === "user"
             ? html`
-                <ha-md-menu-item @click=${this._handleEnable}>
+                <ha-md-menu-item .clickAction=${this._handleEnable}>
                   <ha-svg-icon
                     slot="start"
                     .path=${mdiPlayCircleOutline}
@@ -389,7 +392,7 @@ class HaConfigEntryRow extends LitElement {
               ? html`
                   <ha-md-menu-item
                     class="warning"
-                    @click=${this._handleDisable}
+                    .clickAction=${this._handleDisable}
                     graphic="icon"
                   >
                     <ha-svg-icon
@@ -403,7 +406,10 @@ class HaConfigEntryRow extends LitElement {
               : nothing}
           ${item.source !== "system"
             ? html`
-                <ha-md-menu-item class="warning" @click=${this._handleDelete}>
+                <ha-md-menu-item
+                  class="warning"
+                  .clickAction=${this._handleDelete}
+                >
                   <ha-svg-icon
                     slot="start"
                     class="warning"
@@ -611,7 +617,7 @@ class HaConfigEntryRow extends LitElement {
     }
   }
 
-  private async _handleReload() {
+  private _handleReload = async () => {
     const result = await reloadConfigEntry(this.hass, this.entry.entry_id);
     const locale_key = result.require_restart
       ? "reload_restart_confirm"
@@ -621,9 +627,9 @@ class HaConfigEntryRow extends LitElement {
         `ui.panel.config.integrations.config_entry.${locale_key}`
       ),
     });
-  }
+  };
 
-  private async _handleReconfigure() {
+  private _handleReconfigure = async () => {
     showConfigFlowDialog(this, {
       startFlowHandler: this.entry.domain,
       showAdvanced: this.hass.userData?.showAdvanced,
@@ -631,18 +637,18 @@ class HaConfigEntryRow extends LitElement {
       entryId: this.entry.entry_id,
       navigateToResult: true,
     });
-  }
+  };
 
-  private async _handleCopy() {
+  private _handleCopy = async () => {
     await copyToClipboard(this.entry.entry_id);
     showToast(this, {
       message:
         this.hass?.localize("ui.common.copied_clipboard") ||
         "Copied to clipboard",
     });
-  }
+  };
 
-  private async _handleRename() {
+  private _handleRename = async () => {
     const newName = await showPromptDialog(this, {
       title: this.hass.localize("ui.panel.config.integrations.rename_dialog"),
       defaultValue: this.entry.title,
@@ -656,7 +662,7 @@ class HaConfigEntryRow extends LitElement {
     await updateConfigEntry(this.hass, this.entry.entry_id, {
       title: newName,
     });
-  }
+  };
 
   private async _signUrl(ev) {
     const anchor = ev.currentTarget;
@@ -668,7 +674,7 @@ class HaConfigEntryRow extends LitElement {
     fileDownload(signedUrl.path);
   }
 
-  private async _handleDisable() {
+  private _handleDisable = async () => {
     const entryId = this.entry.entry_id;
 
     const confirmed = await showConfirmationDialog(this, {
@@ -706,9 +712,9 @@ class HaConfigEntryRow extends LitElement {
         ),
       });
     }
-  }
+  };
 
-  private async _handleEnable() {
+  private _handleEnable = async () => {
     const entryId = this.entry.entry_id;
 
     let result: DisableConfigEntryResult;
@@ -731,9 +737,9 @@ class HaConfigEntryRow extends LitElement {
         ),
       });
     }
-  }
+  };
 
-  private async _handleDelete() {
+  private _handleDelete = async () => {
     const entryId = this.entry.entry_id;
 
     const applicationCredentialsId =
@@ -767,20 +773,20 @@ class HaConfigEntryRow extends LitElement {
     if (applicationCredentialsId) {
       this._removeApplicationCredential(applicationCredentialsId);
     }
-  }
+  };
 
-  private _handleSystemOptions() {
+  private _handleSystemOptions = () => {
     showConfigEntrySystemOptionsDialog(this, {
       entry: this.entry,
       manifest: this.manifest,
     });
-  }
+  };
 
-  private _addSubEntry(ev) {
-    showSubConfigFlowDialog(this, this.entry, ev.target.flowType, {
+  private _addSubEntry = (item) => {
+    showSubConfigFlowDialog(this, this.entry, item.flowType, {
       startFlowHandler: this.entry.entry_id,
     });
-  }
+  };
 
   static styles = [
     haStyle,

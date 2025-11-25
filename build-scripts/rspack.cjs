@@ -260,7 +260,6 @@ const createRspackConfig = ({
       ),
     },
     experiments: {
-      layers: true,
       outputModule: true,
     },
   };

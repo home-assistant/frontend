@@ -4,6 +4,7 @@ import type { PropertyValues } from "lit";
 import { html, LitElement, nothing } from "lit";
 import { customElement, property, state } from "lit/decorators";
 import { repeat } from "lit/directives/repeat";
+import { ensureArray } from "../../../../common/array/ensure-array";
 import { storage } from "../../../../common/decorators/storage";
 import { fireEvent } from "../../../../common/dom/fire_event";
 import { stopPropagation } from "../../../../common/dom/stop_propagation";
@@ -12,12 +13,16 @@ import "../../../../components/ha-button";
 import "../../../../components/ha-button-menu";
 import "../../../../components/ha-sortable";
 import "../../../../components/ha-svg-icon";
-import type {
-  AutomationClipboard,
-  Trigger,
-  TriggerList,
+import {
+  getValueFromDynamic,
+  isDynamic,
+  type AutomationClipboard,
+  type Trigger,
+  type TriggerList,
 } from "../../../../data/automation";
-import { isTriggerList } from "../../../../data/trigger";
+import type { TriggerDescriptions } from "../../../../data/trigger";
+import { isTriggerList, subscribeTriggers } from "../../../../data/trigger";
+import { SubscribeMixin } from "../../../../mixins/subscribe-mixin";
 import type { HomeAssistant } from "../../../../types";
 import {
   PASTE_VALUE,
@@ -26,10 +31,9 @@ import {
 import { automationRowsStyles } from "../styles";
 import "./ha-automation-trigger-row";
 import type HaAutomationTriggerRow from "./ha-automation-trigger-row";
-import { ensureArray } from "../../../../common/array/ensure-array";
 
 @customElement("ha-automation-trigger")
-export default class HaAutomationTrigger extends LitElement {
+export default class HaAutomationTrigger extends SubscribeMixin(LitElement) {
   @property({ attribute: false }) public hass!: HomeAssistant;
 
   @property({ attribute: false }) public triggers!: Trigger[];
@@ -62,6 +66,23 @@ export default class HaAutomationTrigger extends LitElement {
 
   private _triggerKeys = new WeakMap<Trigger, string>();
 
+  @state() private _triggerDescriptions: TriggerDescriptions = {};
+
+  protected hassSubscribe() {
+    return [
+      subscribeTriggers(this.hass, (triggers) => this._addTriggers(triggers)),
+    ];
+  }
+
+  private _addTriggers(triggers: TriggerDescriptions) {
+    this._triggerDescriptions = { ...this._triggerDescriptions, ...triggers };
+  }
+
+  protected firstUpdated(changedProps: PropertyValues) {
+    super.firstUpdated(changedProps);
+    this.hass.loadBackendTranslation("triggers");
+  }
+
   protected render() {
     return html`
       <ha-sortable
@@ -85,6 +106,7 @@ export default class HaAutomationTrigger extends LitElement {
                 .first=${idx === 0}
                 .last=${idx === this.triggers.length - 1}
                 .trigger=${trg}
+                .triggerDescriptions=${this._triggerDescriptions}
                 @duplicate=${this._duplicateTrigger}
                 @insert-after=${this._insertAfter}
                 @move-down=${this._moveDown}
@@ -156,6 +178,10 @@ export default class HaAutomationTrigger extends LitElement {
     let triggers: Trigger[];
     if (value === PASTE_VALUE) {
       triggers = this.triggers.concat(deepClone(this._clipboard!.trigger));
+    } else if (isDynamic(value)) {
+      triggers = this.triggers.concat({
+        trigger: getValueFromDynamic(value),
+      });
     } else {
       const trigger = value as Exclude<Trigger, TriggerList>["trigger"];
       const elClass = customElements.get(

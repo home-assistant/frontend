@@ -5,10 +5,7 @@ import { fireEvent } from "../../../common/dom/fire_event";
 import "../../../components/ha-svg-icon";
 import type { LovelaceBadgeConfig } from "../../../data/lovelace/config/badge";
 import type { HomeAssistant } from "../../../types";
-import {
-  ConditionalListenerMixin,
-  setupMediaQueryListeners,
-} from "../../../mixins/conditional-listener-mixin";
+import { ConditionalListenerMixin } from "../../../mixins/conditional-listener-mixin";
 import { checkConditionsMet } from "../common/validate-condition";
 import { createBadgeElement } from "../create-element/create-badge-element";
 import { createErrorBadgeConfig } from "../create-element/create-element-base";
@@ -22,7 +19,9 @@ declare global {
 }
 
 @customElement("hui-badge")
-export class HuiBadge extends ConditionalListenerMixin(ReactiveElement) {
+export class HuiBadge extends ConditionalListenerMixin<LovelaceBadgeConfig>(
+  ReactiveElement
+) {
   @property({ type: Boolean }) public preview = false;
 
   @property({ attribute: false }) public config?: LovelaceBadgeConfig;
@@ -53,7 +52,7 @@ export class HuiBadge extends ConditionalListenerMixin(ReactiveElement) {
     this._updateVisibility();
   }
 
-  private _updateElement(config: LovelaceBadgeConfig) {
+  protected _updateElement(config: LovelaceBadgeConfig) {
     if (!this._element) {
       return;
     }
@@ -133,22 +132,7 @@ export class HuiBadge extends ConditionalListenerMixin(ReactiveElement) {
     }
   }
 
-  protected setupConditionalListeners() {
-    if (!this.config?.visibility || !this.hass) {
-      return;
-    }
-
-    setupMediaQueryListeners(
-      this.config.visibility,
-      this.hass,
-      (unsub) => this.addConditionalListener(unsub),
-      (conditionsMet) => {
-        this._updateVisibility(conditionsMet);
-      }
-    );
-  }
-
-  private _updateVisibility(ignoreConditions?: boolean) {
+  protected _updateVisibility(conditionsMet?: boolean) {
     if (!this._element || !this.hass) {
       return;
     }
@@ -169,9 +153,9 @@ export class HuiBadge extends ConditionalListenerMixin(ReactiveElement) {
     }
 
     const visible =
-      ignoreConditions ||
-      !this.config?.visibility ||
-      checkConditionsMet(this.config.visibility, this.hass);
+      conditionsMet ??
+      (!this.config?.visibility ||
+        checkConditionsMet(this.config.visibility, this.hass));
     this._setElementVisibility(visible);
   }
 

@@ -281,7 +281,6 @@ class HaScriptPicker extends SubscribeMixin(LitElement) {
         },
         area: {
           title: localize("ui.panel.config.script.picker.headers.area"),
-          defaultHidden: true,
           groupable: true,
           filterable: true,
           sortable: true,
@@ -1183,6 +1182,9 @@ ${rejected
       );
       if (entry) {
         await deleteScript(this.hass, entry.unique_id);
+        this._selected = this._selected.filter(
+          (entityId) => entityId !== script.entity_id
+        );
       }
     } catch (err: any) {
       await showAlertDialog(this, {

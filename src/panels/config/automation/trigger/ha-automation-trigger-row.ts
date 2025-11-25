@@ -40,9 +40,11 @@ import "../../../../components/ha-md-button-menu";
 import "../../../../components/ha-md-divider";
 import "../../../../components/ha-md-menu-item";
 import "../../../../components/ha-svg-icon";
+import { TRIGGER_ICONS } from "../../../../components/ha-trigger-icon";
 import type {
   AutomationClipboard,
   Trigger,
+  TriggerList,
   TriggerSidebarConfig,
 } from "../../../../data/automation";
 import { isTrigger, subscribeTrigger } from "../../../../data/automation";
@@ -50,7 +52,8 @@ import { describeTrigger } from "../../../../data/automation_i18n";
 import { validateConfig } from "../../../../data/config";
 import { fullEntitiesContext } from "../../../../data/context";
 import type { EntityRegistryEntry } from "../../../../data/entity_registry";
-import { TRIGGER_ICONS, isTriggerList } from "../../../../data/trigger";
+import type { TriggerDescriptions } from "../../../../data/trigger";
+import { isTriggerList } from "../../../../data/trigger";
 import {
   showAlertDialog,
   showPromptDialog,
@@ -72,6 +75,7 @@ import "./types/ha-automation-trigger-list";
 import "./types/ha-automation-trigger-mqtt";
 import "./types/ha-automation-trigger-numeric_state";
 import "./types/ha-automation-trigger-persistent_notification";
+import "./types/ha-automation-trigger-platform";
 import "./types/ha-automation-trigger-state";
 import "./types/ha-automation-trigger-sun";
 import "./types/ha-automation-trigger-tag";
@@ -137,6 +141,9 @@ export default class HaAutomationTriggerRow extends LitElement {
 
   @state() private _warnings?: string[];
 
+  @property({ attribute: false })
+  public triggerDescriptions: TriggerDescriptions = {};
+
   @property({ type: Boolean }) public narrow = false;
 
   @query("ha-automation-trigger-editor")
@@ -178,18 +185,24 @@ export default class HaAutomationTriggerRow extends LitElement {
   }
 
   private _renderRow() {
-    const type = this._getType(this.trigger);
+    const type = this._getType(this.trigger, this.triggerDescriptions);
 
     const supported = this._uiSupported(type);
 
     const yamlMode = this._yamlMode || !supported;
 
     return html`
-      <ha-svg-icon
-        slot="leading-icon"
-        class="trigger-icon"
-        .path=${TRIGGER_ICONS[type]}
-      ></ha-svg-icon>
+      ${type === "list"
+        ? html`<ha-svg-icon
+            slot="leading-icon"
+            class="trigger-icon"
+            .path=${TRIGGER_ICONS[type]}
+          ></ha-svg-icon>`
+        : html`<ha-trigger-icon
+            slot="leading-icon"
+            .hass=${this.hass}
+            .trigger=${(this.trigger as Exclude<Trigger, TriggerList>).trigger}
+          ></ha-trigger-icon>`}
       <h3 slot="header">
         ${describeTrigger(this.trigger, this.hass, this._entityReg)}
       </h3>
@@ -393,6 +406,9 @@ export default class HaAutomationTriggerRow extends LitElement {
             <ha-automation-trigger-editor
               .hass=${this.hass}
               .trigger=${this.trigger}
+              .description=${"trigger" in this.trigger
+                ? this.triggerDescriptions[this.trigger.trigger]
+                : undefined}
               .disabled=${this.disabled}
               .yamlMode=${this._yamlMode}
               .uiSupported=${supported}
@@ -552,6 +568,7 @@ export default class HaAutomationTriggerRow extends LitElement {
   }
 
   public openSidebar(trigger?: Trigger): void {
+    trigger = trigger || this.trigger;
     fireEvent(this, "open-sidebar", {
       save: (value) => {
         fireEvent(this, "value-changed", { value });
@@ -576,8 +593,14 @@ export default class HaAutomationTriggerRow extends LitElement {
       duplicate: this._duplicateTrigger,
       cut: this._cutTrigger,
       insertAfter: this._insertAfter,
-      config: trigger || this.trigger,
-      uiSupported: this._uiSupported(this._getType(trigger || this.trigger)),
+      config: trigger,
+      uiSupported: this._uiSupported(
+        this._getType(trigger, this.triggerDescriptions)
+      ),
+      description:
+        "trigger" in trigger
+          ? this.triggerDescriptions[trigger.trigger]
+          : undefined,
       yamlMode: this._yamlMode,
     } satisfies TriggerSidebarConfig);
     this._selected = true;
@@ -759,8 +782,18 @@ export default class HaAutomationTriggerRow extends LitElement {
     });
   }
 
-  private _getType = memoizeOne((trigger: Trigger) =>
-    isTriggerList(trigger) ? "list" : trigger.trigger
+  private _getType = memoizeOne(
+    (trigger: Trigger, triggerDescriptions: TriggerDescriptions) => {
+      if (isTriggerList(trigger)) {
+        return "list";
+      }
+
+      if (trigger.trigger in triggerDescriptions) {
+        return "platform";
+      }
+
+      return trigger.trigger;
+    }
   );
 
   private _uiSupported = memoizeOne(
