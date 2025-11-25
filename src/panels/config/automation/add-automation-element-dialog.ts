@@ -109,7 +109,6 @@ import {
 } from "../../../data/trigger";
 import type { HassDialog } from "../../../dialogs/make-dialog-manager";
 import { KeyboardShortcutMixin } from "../../../mixins/keyboard-shortcut-mixin";
-import { loadVirtualizer } from "../../../resources/virtualizer";
 import type { HomeAssistant } from "../../../types";
 import { isMac } from "../../../util/is_mac";
 import { showToast } from "../../../util/toast";
@@ -233,10 +232,6 @@ class DialogAddAutomationElement
   // #region lifecycle
 
   protected willUpdate(changedProps: PropertyValues) {
-    if (!this.hasUpdated) {
-      loadVirtualizer();
-    }
-
     if (
       this._params?.type === "action" &&
       changedProps.has("hass") &&
@@ -393,54 +388,6 @@ class DialogAddAutomationElement
   private _renderContent() {
     const automationElementType = this._params!.type;
 
-    const items =
-      !this._filter && this._tab === "blocks"
-        ? [
-            {
-              title: this.hass.localize(
-                "ui.panel.config.automation.editor.blocks"
-              ),
-              items: this._getBlockItems(
-                automationElementType,
-                this.hass.localize
-              ),
-            },
-          ]
-        : !this._filter && this._tab === "groups" && this._selectedGroup
-          ? [
-              {
-                title: this.hass.localize(
-                  `ui.panel.config.automation.editor.${automationElementType}s.name`
-                ),
-                items: this._getGroupItems(
-                  automationElementType,
-                  this._selectedGroup,
-                  this._selectedCollectionIndex ?? 0,
-                  this._domains,
-                  this.hass.localize,
-                  this.hass.services,
-                  this._manifests
-                ),
-              },
-            ]
-          : !this._filter &&
-              this._tab === "targets" &&
-              this._selectedTarget &&
-              this._targetItems
-            ? this._targetItems
-            : undefined;
-
-    const collections = this._getCollections(
-      automationElementType,
-      TYPES[automationElementType].collections,
-      this._domains,
-      this.hass.localize,
-      this.hass.services,
-      this._triggerDescriptions,
-      this._conditionDescriptions,
-      this._manifests
-    );
-
     const tabButtons = [
       {
         label: this.hass.localize(`ui.panel.config.automation.editor.targets`),
@@ -464,7 +411,21 @@ class DialogAddAutomationElement
     const hideCollections =
       this._filter ||
       this._tab === "blocks" ||
+      this._tab === "targets" ||
       (this._narrow && this._selectedGroup);
+
+    const collections = hideCollections
+      ? []
+      : this._getCollections(
+          automationElementType,
+          TYPES[automationElementType].collections,
+          this._domains,
+          this.hass.localize,
+          this.hass.services,
+          this._triggerDescriptions,
+          this._conditionDescriptions,
+          this._manifests
+        );
 
     return html`
       <div slot="header">
@@ -642,7 +603,7 @@ class DialogAddAutomationElement
           ? html`
               <ha-automation-add-items
                 .hass=${this.hass}
-                .items=${items}
+                .items=${this._getItems()}
                 .error=${this._tab === "targets" && this._loadItemsError
                   ? this.hass.localize(
                       "ui.panel.config.automation.editor.load_target_items_failed"
@@ -767,6 +728,40 @@ class DialogAddAutomationElement
   // #endregion render
 
   // #region data
+
+  private _getItems = () =>
+    !this._filter && this._tab === "blocks"
+      ? [
+          {
+            title: this.hass.localize(
+              "ui.panel.config.automation.editor.blocks"
+            ),
+            items: this._getBlockItems(this._params!.type, this.hass.localize),
+          },
+        ]
+      : !this._filter && this._tab === "groups" && this._selectedGroup
+        ? [
+            {
+              title: this.hass.localize(
+                `ui.panel.config.automation.editor.${this._params!.type}s.name`
+              ),
+              items: this._getGroupItems(
+                this._params!.type,
+                this._selectedGroup,
+                this._selectedCollectionIndex ?? 0,
+                this._domains,
+                this.hass.localize,
+                this.hass.services,
+                this._manifests
+              ),
+            },
+          ]
+        : !this._filter &&
+            this._tab === "targets" &&
+            this._selectedTarget &&
+            this._targetItems
+          ? this._targetItems
+          : undefined;
 
   private _getGroups = (
     type: AddAutomationElementDialogParams["type"],

@@ -71,6 +71,7 @@ export class HaAutomationAddItems extends LitElement {
         items: true,
         blank: this.error || !this.items || !this.items.length,
         error: this.error,
+        scrolled: this._itemsScrolled,
       })}
       @scroll=${this._onItemsScroll}
     >
@@ -99,9 +100,7 @@ export class HaAutomationAddItems extends LitElement {
     }
 
     return html`
-      <div class="items-title ${this._itemsScrolled ? "scrolled" : ""}">
-        ${title}
-      </div>
+      <div class="items-title">${title}</div>
       <ha-md-list>
         ${repeat(
           items,
@@ -176,7 +175,7 @@ export class HaAutomationAddItems extends LitElement {
       return nothing;
     }
 
-    if (targetType === "floor" && this.hass.floors[targetId]) {
+    if (targetType === "floor") {
       return html`<ha-floor-icon
         .floor=${this.hass.floors[targetId]}
       ></ha-floor-icon>`;
@@ -328,7 +327,7 @@ export class HaAutomationAddItems extends LitElement {
     ha-bottom-sheet .items-title {
       padding-top: var(--ha-space-3);
     }
-    .items-title.scrolled:first-of-type {
+    .scrolled .items-title:first-of-type {
       box-shadow: var(--bar-box-shadow);
       border-bottom: 1px solid var(--ha-color-border-neutral-quiet);
     }

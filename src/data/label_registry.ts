@@ -186,6 +186,7 @@ export const getLabels = (
       inputEntities = inputEntities!.filter((entity) => {
         const stateObj = hassStates[entity.entity_id];
         return (
+          stateObj &&
           stateObj.attributes.device_class &&
           includeDeviceClasses.includes(stateObj.attributes.device_class)
         );
@@ -249,7 +250,7 @@ export const getLabels = (
   if (areaIds) {
     areaIds.forEach((areaId) => {
       const area = hassAreas[areaId];
-      area.labels.forEach((label) => usedLabels.add(label));
+      area?.labels.forEach((label) => usedLabels.add(label));
     });
   }
 
