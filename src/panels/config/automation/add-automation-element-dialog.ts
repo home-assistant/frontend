@@ -3,27 +3,16 @@ import {
   mdiAppleKeyboardCommand,
   mdiClose,
   mdiContentPaste,
-  mdiInformationOutline,
-  mdiLabel,
   mdiPlus,
-  mdiTextureBox,
 } from "@mdi/js";
 import type { UnsubscribeFunc } from "home-assistant-js-websocket";
 import type { CSSResultGroup, PropertyValues, TemplateResult } from "lit";
 import { LitElement, css, html, nothing } from "lit";
-import {
-  customElement,
-  eventOptions,
-  property,
-  query,
-  state,
-} from "lit/decorators";
+import { customElement, property, query, state } from "lit/decorators";
 import { classMap } from "lit/directives/class-map";
-import { ifDefined } from "lit/directives/if-defined";
 import { repeat } from "lit/directives/repeat";
 import memoizeOne from "memoize-one";
 import { fireEvent } from "../../../common/dom/fire_event";
-import { stopPropagation } from "../../../common/dom/stop_propagation";
 import { computeAreaName } from "../../../common/entity/compute_area_name";
 import { computeDeviceName } from "../../../common/entity/compute_device_name";
 import { computeDomain } from "../../../common/entity/compute_domain";
@@ -114,11 +103,11 @@ import type { HassDialog } from "../../../dialogs/make-dialog-manager";
 import { KeyboardShortcutMixin } from "../../../mixins/keyboard-shortcut-mixin";
 import { loadVirtualizer } from "../../../resources/virtualizer";
 import type { HomeAssistant } from "../../../types";
-import { brandsUrl } from "../../../util/brands-url";
 import { isMac } from "../../../util/is_mac";
 import { showToast } from "../../../util/toast";
 import "./add-automation-element/ha-automation-add-from-target";
 import type HaAutomationAddFromTarget from "./add-automation-element/ha-automation-add-from-target";
+import "./add-automation-element/ha-automation-add-items";
 import "./add-automation-element/ha-automation-add-search";
 import type { AddAutomationElementDialogParams } from "./show-add-automation-element-dialog";
 import { PASTE_VALUE } from "./show-add-automation-element-dialog";
@@ -191,8 +180,6 @@ class DialogAddAutomationElement
 
   @state() private _domains?: Set<string>;
 
-  @state() private _itemsScrolled = false;
-
   @state() private _bottomSheetMode = false;
 
   @state() private _narrow = false;
@@ -226,8 +213,6 @@ class DialogAddAutomationElement
   // #endregion queries
 
   // #region variables
-
-  private _fullScreen = false;
 
   private _unsub?: Promise<UnsubscribeFunc>;
 
@@ -275,9 +260,6 @@ class DialogAddAutomationElement
         };
       });
     }
-    this._fullScreen = matchMedia(
-      "all and (max-width: 450px), all and (max-height: 500px)"
-    ).matches;
 
     window.addEventListener("resize", this._updateNarrow);
     this._updateNarrow();
@@ -304,13 +286,10 @@ class DialogAddAutomationElement
     this._filter = "";
     this._manifests = undefined;
     this._domains = undefined;
-    this._itemsScrolled = false;
     this._bottomSheetMode = false;
     this._narrow = false;
     this._targetItems = undefined;
     this._loadItemsError = false;
-
-    this._fullScreen = false;
     return true;
   }
 
@@ -392,17 +371,34 @@ class DialogAddAutomationElement
 
     const items =
       !this._filter && this._tab === "blocks"
-        ? this._getBlockItems(automationElementType, this.hass.localize)
+        ? [
+            {
+              title: this.hass.localize(
+                "ui.panel.config.automation.editor.blocks"
+              ),
+              items: this._getBlockItems(
+                automationElementType,
+                this.hass.localize
+              ),
+            },
+          ]
         : !this._filter && this._tab === "groups" && this._selectedGroup
-          ? this._getGroupItems(
-              automationElementType,
-              this._selectedGroup,
-              this._selectedCollectionIndex ?? 0,
-              this._domains,
-              this.hass.localize,
-              this.hass.services,
-              this._manifests
-            )
+          ? [
+              {
+                title: this.hass.localize(
+                  `ui.panel.config.automation.editor.${automationElementType}s.name`
+                ),
+                items: this._getGroupItems(
+                  automationElementType,
+                  this._selectedGroup,
+                  this._selectedCollectionIndex ?? 0,
+                  this._domains,
+                  this.hass.localize,
+                  this.hass.services,
+                  this._manifests
+                ),
+              },
+            ]
           : !this._filter &&
               this._tab === "targets" &&
               this._selectedTarget &&
@@ -619,155 +615,44 @@ class DialogAddAutomationElement
               `}
         ${!this._filter
           ? html`
-              <div
-                class=${classMap({
-                  items: true,
-                  blank:
-                    (this._tab === "groups" && !this._selectedGroup) ||
-                    (this._tab === "targets" && !this._selectedTarget) ||
-                    (this._tab === "targets" &&
-                      this._selectedTarget &&
-                      (this._loadItemsError || (items && !items.length))),
-                  hidden:
-                    this._narrow &&
-                    !this._selectedGroup &&
-                    (!this._selectedTarget ||
-                      (this._selectedTarget &&
-                        !Object.values(this._selectedTarget)[0])) &&
-                    this._tab !== "blocks",
-                  error: this._tab === "targets" && this._loadItemsError,
-                })}
-                @scroll=${this._onItemsScroll}
-              >
-                ${this._tab === "groups" && !this._selectedGroup
+              <ha-automation-add-items
+                .hass=${this.hass}
+                .items=${items}
+                .error=${this._tab === "targets" && this._loadItemsError
                   ? this.hass.localize(
-                      `ui.panel.config.automation.editor.${automationElementType}s.select`
+                      "ui.panel.config.automation.editor.load_target_items_failed"
                     )
-                  : this._tab === "targets" && !this._selectedTarget
-                    ? this.hass.localize(
-                        "ui.panel.config.automation.editor.select_target"
-                      )
-                    : this._tab === "targets" &&
-                        this._selectedTarget &&
-                        this._loadItemsError
-                      ? html`${this.hass.localize(
-                            "ui.panel.config.automation.editor.load_target_items_failed"
-                          )}
-                          <div>
-                            ${this._renderTarget(this._selectedTarget)}
-                          </div>`
-                      : this._tab === "targets" &&
-                          this._selectedTarget &&
-                          items &&
-                          !items.length
-                        ? html`${this.hass.localize(
-                              `ui.panel.config.automation.editor.${automationElementType}s.no_items_for_target`
-                            )}
-                            <div>
-                              ${this._renderTarget(this._selectedTarget)}
-                            </div>`
-                        : this._tab === "targets" &&
-                            this._selectedTarget &&
-                            items
-                          ? repeat(
-                              items,
-                              (itemGroup) => itemGroup.title,
-                              (itemGroup) =>
-                                this._renderItemList(
-                                  itemGroup.title,
-                                  itemGroup.items
-                                )
-                            )
-                          : this._renderItemList(
-                              this.hass.localize(
-                                `ui.panel.config.automation.editor.${automationElementType}s.name`
-                              ),
-                              items as AddAutomationElementListItem[]
-                            )}
-              </div>
+                  : undefined}
+                .selectLabel=${this.hass.localize(
+                  `ui.panel.config.automation.editor.${this._tab === "groups" ? `${automationElementType}s.select` : "select_target"}` as LocalizeKeys
+                )}
+                .emptyLabel=${this.hass.localize(
+                  `ui.panel.config.automation.editor.${automationElementType}s.no_items_for_target`
+                )}
+                .tooltipDescription=${this._tab === "targets"}
+                .target=${(this._tab === "targets" &&
+                  this._selectedTarget &&
+                  ([
+                    ...this._extractTypeAndIdFromTarget(this._selectedTarget),
+                    this._getSelectedTargetLabel(this._selectedTarget),
+                  ] as [string, string | undefined, string | undefined])) ||
+                undefined}
+                .getLabel=${this._getLabel}
+                .configEntryLookup=${this._configEntryLookup}
+                class=${this._narrow &&
+                !this._selectedGroup &&
+                (!this._selectedTarget ||
+                  (this._selectedTarget &&
+                    !Object.values(this._selectedTarget)[0])) &&
+                this._tab !== "blocks"
+                  ? "hidden"
+                  : ""}
+                @value-changed=${this._selected}
+              >
+              </ha-automation-add-items>
             `
           : nothing}
       </div>
-    `;
-  }
-
-  private _renderItemList(title, items?: AddAutomationElementListItem[]) {
-    if (!items || !items.length) {
-      return nothing;
-    }
-
-    return html`
-      <div class="items-title ${this._itemsScrolled ? "scrolled" : ""}">
-        ${this._tab === "blocks" && !this._filter
-          ? this.hass.localize("ui.panel.config.automation.editor.blocks")
-          : title}
-      </div>
-      <ha-md-list
-        dialogInitialFocus=${ifDefined(this._fullScreen ? "" : undefined)}
-      >
-        ${repeat(
-          items,
-          (item) => item.key,
-          (item) => html`
-            <ha-md-list-item
-              interactive
-              type="button"
-              .value=${item.key}
-              .group=${item.group}
-              @click=${this._selected}
-            >
-              <div
-                slot="headline"
-                class=${this._tab === "targets" && this._selectedTarget
-                  ? "item-headline"
-                  : ""}
-              >
-                ${item.name}${this._tab === "targets" && this._selectedTarget
-                  ? this._renderTarget(this._selectedTarget)
-                  : nothing}
-              </div>
-
-              ${this._tab !== "targets"
-                ? html`<div slot="supporting-text">${item.description}</div>`
-                : nothing}
-              ${item.icon
-                ? html`<span slot="start">${item.icon}</span>`
-                : item.iconPath
-                  ? html`<ha-svg-icon
-                      slot="start"
-                      .path=${item.iconPath}
-                    ></ha-svg-icon>`
-                  : nothing}
-              ${this._tab === "targets" &&
-              this._selectedTarget &&
-              item.description
-                ? html`<ha-svg-icon
-                      tabindex="0"
-                      id=${`description-tooltip-${item.key}`}
-                      slot="end"
-                      .path=${mdiInformationOutline}
-                      @click=${stopPropagation}
-                    ></ha-svg-icon>
-                    <ha-tooltip
-                      .for=${`description-tooltip-${item.key}`}
-                      @wa-show=${stopPropagation}
-                      @wa-hide=${stopPropagation}
-                      @wa-after-hide=${stopPropagation}
-                      @wa-after-show=${stopPropagation}
-                      >${item.description}</ha-tooltip
-                    > `
-                : nothing}
-              ${item.group
-                ? html`<ha-icon-next slot="end"></ha-icon-next>`
-                : html`<ha-svg-icon
-                    slot="end"
-                    class="plus"
-                    .path=${mdiPlus}
-                  ></ha-svg-icon>`}
-            </ha-md-list-item>
-          `
-        )}
-      </ha-md-list>
     `;
   }
 
@@ -789,74 +674,6 @@ class DialogAddAutomationElement
             ></ha-icon-button>`}
       </ha-dialog-header>
     `;
-  }
-
-  private _getSelectedTargetIcon(
-    selectedTarget: SingleHassServiceTarget
-  ): TemplateResult | typeof nothing {
-    const [targetType, targetId] =
-      this._extractTypeAndIdFromTarget(selectedTarget);
-
-    if (!targetId) {
-      return nothing;
-    }
-
-    if (targetType === "floor" && this.hass.floors[targetId]) {
-      return html`<ha-floor-icon
-        .floor=${this.hass.floors[targetId]}
-      ></ha-floor-icon>`;
-    }
-
-    if (targetType === "area" && this.hass.areas[targetId]) {
-      const area = this.hass.areas[targetId];
-      if (area.icon) {
-        return html`<ha-icon .icon=${area.icon}></ha-icon>`;
-      }
-      return html`<ha-svg-icon .path=${mdiTextureBox}></ha-svg-icon>`;
-    }
-
-    if (targetType === "device" && this.hass.devices[targetId]) {
-      const device = this.hass.devices[targetId];
-      const configEntry = device.primary_config_entry
-        ? this._configEntryLookup?.[device.primary_config_entry]
-        : undefined;
-      const domain = configEntry?.domain;
-
-      if (domain) {
-        return html`<img
-          slot="start"
-          alt=""
-          crossorigin="anonymous"
-          referrerpolicy="no-referrer"
-          src=${brandsUrl({
-            domain,
-            type: "icon",
-            darkOptimized: this.hass.themes?.darkMode,
-          })}
-        />`;
-      }
-    }
-
-    if (targetType === "entity" && this.hass.states[targetId]) {
-      const stateObj = this.hass.states[targetId];
-      if (stateObj) {
-        return html`<state-badge
-          .stateObj=${stateObj}
-          .hass=${this.hass}
-          .stateColor=${false}
-        ></state-badge>`;
-      }
-    }
-
-    if (targetType === "label") {
-      const label = this._getLabel(targetId);
-      if (label?.icon) {
-        return html`<ha-icon .icon=${label.icon}></ha-icon>`;
-      }
-      return html`<ha-svg-icon .path=${mdiLabel}></ha-svg-icon>`;
-    }
-
-    return nothing;
   }
 
   private _renderDialogSubtitle() {
@@ -921,19 +738,6 @@ class DialogAddAutomationElement
 
     return nothing;
   }
-
-  private _renderTarget = memoizeOne(
-    (selectedTarget?: SingleHassServiceTarget) => {
-      if (!selectedTarget) {
-        return nothing;
-      }
-
-      return html`<div class="selected-target">
-        ${this._getSelectedTargetIcon(selectedTarget)}
-        <div class="label">${this._getSelectedTargetLabel(selectedTarget)}</div>
-      </div>`;
-    }
-  );
 
   // #endregion render
 
@@ -1571,9 +1375,8 @@ class DialogAddAutomationElement
     });
   }
 
-  private _selected(ev) {
-    const item = ev.currentTarget;
-    this._params!.add(item.value);
+  private _selected(ev: CustomEvent<{ value: string }>) {
+    this._params!.add(ev.detail.value);
     this.closeDialog();
   }
 
@@ -1667,12 +1470,6 @@ class DialogAddAutomationElement
     this._tab = ev.detail.value;
   }
 
-  @eventOptions({ passive: true })
-  private _onItemsScroll(ev) {
-    const top = ev.target.scrollTop ?? 0;
-    this._itemsScrolled = top > 0;
-  }
-
   private _searchItemSelected(
     ev: CustomEvent<PickerComboBoxItem | FloorComboBoxItem | EntityComboBoxItem>
   ) {
@@ -1699,81 +1496,81 @@ class DialogAddAutomationElement
 
   // #region render helpers
 
-  private _getSelectedTargetLabel(
-    selectedTarget: SingleHassServiceTarget
-  ): string | undefined {
-    const [targetType, targetId] =
-      this._extractTypeAndIdFromTarget(selectedTarget);
+  private _getSelectedTargetLabel = memoizeOne(
+    (selectedTarget: SingleHassServiceTarget): string | undefined => {
+      const [targetType, targetId] =
+        this._extractTypeAndIdFromTarget(selectedTarget);
 
-    if (targetId === undefined && targetType === "floor") {
-      return this.hass.localize(
-        "ui.panel.config.automation.editor.other_areas"
-      );
-    }
-
-    if (targetId === undefined && targetType === "area") {
-      return this.hass.localize(
-        "ui.panel.config.automation.editor.unassigned_devices"
-      );
-    }
-
-    if (targetId === undefined && targetType === "service") {
-      return this.hass.localize("ui.panel.config.automation.editor.services");
-    }
-
-    if (targetId === undefined && targetType === "device") {
-      return this.hass.localize(
-        "ui.panel.config.automation.editor.unassigned_entities"
-      );
-    }
-
-    if (targetId === undefined && targetType === "helper") {
-      return this.hass.localize("ui.panel.config.automation.editor.helpers");
-    }
-
-    if (
-      targetId === undefined &&
-      (targetType.startsWith("entity_") || targetType.startsWith("helper_"))
-    ) {
-      const domain = targetType.substring(7);
-      return domainToName(
-        this.hass.localize,
-        domain,
-        this._manifests?.[domain]
-      );
-    }
-
-    if (targetId) {
-      if (targetType === "floor") {
-        return computeFloorName(this.hass.floors[targetId]) || targetId;
-      }
-      if (targetType === "area") {
-        return computeAreaName(this.hass.areas[targetId]) || targetId;
-      }
-      if (targetType === "device") {
-        return computeDeviceName(this.hass.devices[targetId]) || targetId;
-      }
-      if (targetType === "entity" && this.hass.states[targetId]) {
-        const stateObj = this.hass.states[targetId];
-        const [entityName, deviceName] = computeEntityNameList(
-          stateObj,
-          [{ type: "entity" }, { type: "device" }, { type: "area" }],
-          this.hass.entities,
-          this.hass.devices,
-          this.hass.areas,
-          this.hass.floors
+      if (targetId === undefined && targetType === "floor") {
+        return this.hass.localize(
+          "ui.panel.config.automation.editor.other_areas"
         );
+      }
 
-        return entityName || deviceName || targetId;
+      if (targetId === undefined && targetType === "area") {
+        return this.hass.localize(
+          "ui.panel.config.automation.editor.unassigned_devices"
+        );
       }
-      if (targetType === "label") {
-        const label = this._getLabel(targetId);
-        return label?.name || targetId;
+
+      if (targetId === undefined && targetType === "service") {
+        return this.hass.localize("ui.panel.config.automation.editor.services");
       }
+
+      if (targetId === undefined && targetType === "device") {
+        return this.hass.localize(
+          "ui.panel.config.automation.editor.unassigned_entities"
+        );
+      }
+
+      if (targetId === undefined && targetType === "helper") {
+        return this.hass.localize("ui.panel.config.automation.editor.helpers");
+      }
+
+      if (
+        targetId === undefined &&
+        (targetType.startsWith("entity_") || targetType.startsWith("helper_"))
+      ) {
+        const domain = targetType.substring(7);
+        return domainToName(
+          this.hass.localize,
+          domain,
+          this._manifests?.[domain]
+        );
+      }
+
+      if (targetId) {
+        if (targetType === "floor") {
+          return computeFloorName(this.hass.floors[targetId]) || targetId;
+        }
+        if (targetType === "area") {
+          return computeAreaName(this.hass.areas[targetId]) || targetId;
+        }
+        if (targetType === "device") {
+          return computeDeviceName(this.hass.devices[targetId]) || targetId;
+        }
+        if (targetType === "entity" && this.hass.states[targetId]) {
+          const stateObj = this.hass.states[targetId];
+          const [entityName, deviceName] = computeEntityNameList(
+            stateObj,
+            [{ type: "entity" }, { type: "device" }, { type: "area" }],
+            this.hass.entities,
+            this.hass.devices,
+            this.hass.areas,
+            this.hass.floors
+          );
+
+          return entityName || deviceName || targetId;
+        }
+        if (targetType === "label") {
+          const label = this._getLabel(targetId);
+          return label?.name || targetId;
+        }
+      }
+
+      return undefined;
     }
-
-    return undefined;
-  }
+  );
 
   private _getDialogTitle() {
     if (this._narrow && this._selectedGroup) {
@@ -1949,25 +1746,22 @@ class DialogAddAutomationElement
           z-index: 1;
         }
 
-        .items {
-          display: flex;
-          flex-direction: column;
-          overflow: auto;
+        ha-automation-add-items {
           flex: 6;
         }
 
         .content.column ha-automation-add-from-target,
-        .content.column .items {
+        .content.column ha-automation-add-items {
           flex: none;
         }
-        .content.column .items {
+        .content.column ha-automation-add-items {
           min-height: 160px;
         }
         .content.column ha-automation-add-from-target {
           overflow: hidden;
         }
 
-        ha-wa-dialog .items {
+        ha-wa-dialog ha-automation-add-items {
           margin-top: var(--ha-space-3);
         }
 
@@ -1975,78 +1769,13 @@ class DialogAddAutomationElement
           padding-bottom: max(var(--safe-area-inset-bottom), var(--ha-space-4));
         }
 
-        .items.hidden,
+        .ha-automation-add-items.hidden,
         .groups.hidden {
           display: none;
         }
-        .items.blank {
-          border-radius: var(--ha-border-radius-xl);
-          background-color: var(--ha-color-surface-default);
-          align-items: center;
-          color: var(--ha-color-text-secondary);
-          padding: var(--ha-space-0);
-          margin: var(--ha-space-3) var(--ha-space-4)
-            max(var(--safe-area-inset-bottom), var(--ha-space-3));
-          line-height: var(--ha-line-height-expanded);
-        }
 
-        .items.error {
-          background-color: var(--ha-color-fill-danger-quiet-resting);
-          color: var(--ha-color-on-danger-normal);
-        }
-
-        .items ha-md-list {
-          --md-list-item-two-line-container-height: var(--ha-space-12);
-          --md-list-item-leading-space: var(--ha-space-3);
-          --md-list-item-trailing-space: var(--md-list-item-leading-space);
-          --md-list-item-bottom-space: var(--ha-space-2);
-          --md-list-item-top-space: var(--md-list-item-bottom-space);
-          --md-list-item-supporting-text-font: var(--ha-font-family-body);
-          --ha-md-list-item-gap: var(--ha-space-3);
-          gap: var(--ha-space-2);
-          padding: var(--ha-space-0) var(--ha-space-4);
-        }
-        .items ha-md-list ha-md-list-item {
-          border-radius: var(--ha-border-radius-lg);
-          border: 1px solid var(--ha-color-border-neutral-quiet);
-        }
-
-        .items ha-md-list,
         .groups {
           padding-bottom: max(var(--safe-area-inset-bottom), var(--ha-space-3));
-        }
-
-        .items.blank {
-          justify-content: center;
-        }
-
-        .items-title {
-          position: sticky;
-          display: flex;
-          align-items: center;
-          font-weight: var(--ha-font-weight-medium);
-          padding-top: var(--ha-space-2);
-          padding-bottom: var(--ha-space-2);
-          padding-inline-start: var(--ha-space-8);
-          padding-inline-end: var(--ha-space-3);
-          top: 0;
-          z-index: 1;
-          background-color: var(--card-background-color);
-        }
-        ha-bottom-sheet .items-title {
-          padding-top: var(--ha-space-3);
-        }
-        .items-title.scrolled:first-of-type {
-          box-shadow: var(--bar-box-shadow);
-          border-bottom: 1px solid var(--ha-color-border-neutral-quiet);
-        }
-
-        .items .item-headline {
-          display: flex;
-          align-items: center;
-          gap: var(--ha-space-1);
-          min-height: var(--ha-space-9);
-          flex-wrap: wrap;
         }
 
         ha-icon-next {
@@ -2096,41 +1825,6 @@ class DialogAddAutomationElement
 
         ha-automation-add-search {
           flex: 1;
-        }
-
-        .selected-target {
-          display: inline-flex;
-          gap: var(--ha-space-1);
-          justify-content: center;
-          align-items: center;
-          border-radius: var(--ha-border-radius-md);
-          background: var(--ha-color-fill-neutral-normal-resting);
-          padding: 0 var(--ha-space-2) 0 var(--ha-space-1);
-          color: var(--ha-color-on-neutral-normal);
-          overflow: hidden;
-        }
-        .selected-target .label {
-          overflow: hidden;
-          text-overflow: ellipsis;
-          white-space: nowrap;
-        }
-
-        .selected-target ha-icon,
-        .selected-target ha-svg-icon,
-        .selected-target state-badge,
-        .selected-target img {
-          display: flex;
-          padding: var(--ha-space-1) 0;
-        }
-
-        .selected-target state-badge {
-          --mdc-icon-size: 20px;
-        }
-        .selected-target state-badge,
-        .selected-target img {
-          width: 24px;
-          height: 24px;
-          filter: grayscale(100%);
         }
       `,
     ];
