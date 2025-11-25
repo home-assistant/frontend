@@ -23,6 +23,7 @@ import {
   subscribeForecast,
   weatherAttrIcons,
   weatherSVGStyles,
+  weatherTempRound,
 } from "../../../data/weather";
 import type { HomeAssistant } from "../../../types";
 import { actionHandler } from "../common/directives/action-handler-directive";
@@ -266,6 +267,20 @@ class HuiWeatherForecastCard extends LitElement implements LovelaceCard {
       this._config.name
     );
 
+    const temperatureFractionDigits = this._config.round_temperature
+      ? 0
+      : undefined;
+
+    const isSecondaryInfoAttributeTemperature =
+      this._config.secondary_info_attribute?.includes("temperature") ||
+      this._config.secondary_info_attribute === "dew_point";
+
+    const isSecondaryInfoNumber =
+      this._config.secondary_info_attribute &&
+      !Number.isNaN(
+        +stateObj.attributes[this._config.secondary_info_attribute]
+      );
+
     return html`
       <ha-card
         class=${classMap({
@@ -312,7 +327,11 @@ class HuiWeatherForecastCard extends LitElement implements LovelaceCard {
                         ? html`
                             ${formatNumber(
                               stateObj.attributes.temperature,
-                              this.hass.locale
+                              this.hass.locale,
+                              {
+                                maximumFractionDigits:
+                                  temperatureFractionDigits,
+                              }
                             )}&nbsp;<span
                               >${getWeatherUnit(
                                 this.hass.config,
@@ -350,14 +369,26 @@ class HuiWeatherForecastCard extends LitElement implements LovelaceCard {
                               : html`
                                   ${this.hass.formatEntityAttributeValue(
                                     stateObj,
-                                    this._config.secondary_info_attribute
+                                    this._config.secondary_info_attribute,
+                                    temperatureFractionDigits === 0 &&
+                                      isSecondaryInfoNumber &&
+                                      isSecondaryInfoAttributeTemperature
+                                      ? weatherTempRound(
+                                          stateObj.attributes[
+                                            this._config
+                                              .secondary_info_attribute
+                                          ],
+                                          temperatureFractionDigits
+                                        )
+                                      : undefined
                                   )}
                                 `}
                           `
                         : getSecondaryWeatherAttribute(
                             this.hass,
                             stateObj,
-                            forecast!
+                            forecast!,
+                            temperatureFractionDigits
                           )}
                     </div>
                   </div>
@@ -425,7 +456,12 @@ class HuiWeatherForecastCard extends LitElement implements LovelaceCard {
                             ${this._showValue(item.temperature)
                               ? html`${formatNumber(
                                   item.temperature,
-                                  this.hass!.locale
+                                  this.hass!.locale,
+
+                                  {
+                                    maximumFractionDigits:
+                                      temperatureFractionDigits,
+                                  }
                                 )}°`
                               : "—"}
                           </div>
@@ -433,7 +469,11 @@ class HuiWeatherForecastCard extends LitElement implements LovelaceCard {
                             ${this._showValue(item.templow)
                               ? html`${formatNumber(
                                   item.templow!,
-                                  this.hass!.locale
+                                  this.hass!.locale,
+                                  {
+                                    maximumFractionDigits:
+                                      temperatureFractionDigits,
+                                  }
                                 )}°`
                               : hourly
                                 ? ""

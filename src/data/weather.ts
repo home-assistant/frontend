@@ -179,6 +179,22 @@ const cardinalDirections = [
   "N",
 ];
 
+export function weatherTempRound(
+  value: number | undefined,
+  decimals: number | undefined
+): number | undefined {
+  if (value === undefined) {
+    return undefined;
+  }
+  if (decimals === undefined) {
+    return value;
+  }
+  const rounded = Number.isInteger(value)
+    ? value.toString()
+    : value.toFixed(decimals);
+  return Number(rounded);
+}
+
 const getWindBearingText = (degree: number | string): string => {
   const degreenum = typeof degree === "number" ? degree : parseInt(degree, 10);
   if (isFinite(degreenum)) {
@@ -256,9 +272,15 @@ export const getWeatherUnit = (
 export const getSecondaryWeatherAttribute = (
   hass: HomeAssistant,
   stateObj: WeatherEntity,
-  forecast: ForecastAttribute[]
+  forecast: ForecastAttribute[],
+  temperatureFractionDigits?: number
 ): TemplateResult | undefined => {
-  const extrema = getWeatherExtrema(hass, stateObj, forecast);
+  const extrema = getWeatherExtrema(
+    hass,
+    stateObj,
+    forecast,
+    temperatureFractionDigits
+  );
 
   if (extrema) {
     return extrema;
@@ -298,7 +320,8 @@ export const getSecondaryWeatherAttribute = (
 const getWeatherExtrema = (
   hass: HomeAssistant,
   stateObj: WeatherEntity,
-  forecast: ForecastAttribute[]
+  forecast: ForecastAttribute[],
+  temperatureFractionDigits?: number
 ): TemplateResult | undefined => {
   if (!forecast?.length) {
     return undefined;
@@ -313,13 +336,13 @@ const getWeatherExtrema = (
       break;
     }
     if (!tempHigh || fc.temperature > tempHigh) {
-      tempHigh = fc.temperature;
+      tempHigh = weatherTempRound(fc.temperature, temperatureFractionDigits);
     }
     if (!tempLow || (fc.templow && fc.templow < tempLow)) {
-      tempLow = fc.templow;
+      tempLow = weatherTempRound(fc.templow, temperatureFractionDigits);
     }
     if (!fc.templow && (!tempLow || fc.temperature < tempLow)) {
-      tempLow = fc.temperature;
+      tempLow = weatherTempRound(fc.temperature, temperatureFractionDigits);
     }
   }
 
