@@ -462,7 +462,7 @@ export class HaConfigLovelaceDashboards extends LitElement {
     }
     await saveFrontendSystemData(this.hass.connection, "core", {
       ...this.hass.systemData,
-      defaultPanel: item.url_path === DEFAULT_PANEL ? undefined : item.url_path,
+      default_panel: item.url_path,
     });
   };
 
