@@ -1,13 +1,16 @@
 import type { PropertyValues, TemplateResult } from "lit";
-import { html, LitElement } from "lit";
+import { html, LitElement, nothing } from "lit";
 import { customElement, property, state } from "lit/decorators";
+import "../../components/ha-divider";
 import "../../components/ha-list-item";
 import "../../components/ha-select";
 import "../../components/ha-settings-row";
+import { saveFrontendUserData } from "../../data/frontend";
 import type { LovelaceDashboard } from "../../data/lovelace/dashboard";
 import { fetchDashboards } from "../../data/lovelace/dashboard";
-import type { HomeAssistant } from "../../types";
-import { saveFrontendUserData } from "../../data/frontend";
+import { getPanelTitle } from "../../data/panel";
+import type { HomeAssistant, PanelInfo } from "../../types";
+import { PANEL_DASHBOARDS } from "../config/lovelace/dashboards/ha-config-lovelace-dashboards";
 
 const USE_SYSTEM_VALUE = "___use_system___";
 
@@ -47,12 +50,24 @@ class HaPickDashboardRow extends LitElement {
               <ha-list-item .value=${USE_SYSTEM_VALUE}>
                 ${this.hass.localize("ui.panel.profile.dashboard.system")}
               </ha-list-item>
+              <ha-divider></ha-divider>
               <ha-list-item value="lovelace">
                 ${this.hass.localize("ui.panel.profile.dashboard.lovelace")}
               </ha-list-item>
-              <ha-list-item value="home">
-                ${this.hass.localize("ui.panel.profile.dashboard.home")}
-              </ha-list-item>
+              ${PANEL_DASHBOARDS.map((panel) => {
+                const panelInfo = this.hass.panels[panel] as
+                  | PanelInfo
+                  | undefined;
+                if (!panelInfo) {
+                  return nothing;
+                }
+                return html`
+                  <ha-list-item value=${panelInfo.url_path}>
+                    ${getPanelTitle(this.hass, panelInfo)}
+                  </ha-list-item>
+                `;
+              })}
+              <ha-divider></ha-divider>
               ${this._dashboards.map((dashboard) => {
                 if (!this.hass.user!.is_admin && dashboard.require_admin) {
                   return "";

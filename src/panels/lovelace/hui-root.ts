@@ -11,10 +11,12 @@ import {
   mdiMagnify,
   mdiPencil,
   mdiPlus,
+  mdiRedo,
   mdiRefresh,
   mdiRobot,
   mdiShape,
   mdiSofa,
+  mdiUndo,
   mdiViewDashboard,
 } from "@mdi/js";
 import type { CSSResultGroup, PropertyValues, TemplateResult } from "lit";
@@ -50,7 +52,10 @@ import "../../components/ha-tab-group-tab";
 import "../../components/ha-tooltip";
 import { createAreaRegistryEntry } from "../../data/area_registry";
 import type { LovelacePanelConfig } from "../../data/lovelace";
-import type { LovelaceConfig } from "../../data/lovelace/config/types";
+import type {
+  LovelaceConfig,
+  LovelaceRawConfig,
+} from "../../data/lovelace/config/types";
 import { isStrategyDashboard } from "../../data/lovelace/config/types";
 import type { LovelaceViewConfig } from "../../data/lovelace/config/view";
 import {
@@ -92,6 +97,7 @@ import "./views/hui-view";
 import type { HUIView } from "./views/hui-view";
 import "./views/hui-view-background";
 import "./views/hui-view-container";
+import { UndoRedoController } from "../../common/controllers/undo-redo-controller";
 
 interface ActionItem {
   icon: string;
@@ -113,6 +119,11 @@ interface SubActionItem {
   visible: boolean | undefined;
 }
 
+interface UndoStackItem {
+  location: string;
+  config: LovelaceRawConfig;
+}
+
 @customElement("hui-root")
 class HUIRoot extends LitElement {
   @property({ attribute: false }) public panel?: PanelInfo<LovelacePanelConfig>;
@@ -130,11 +141,21 @@ class HUIRoot extends LitElement {
 
   @state() private _curView?: number | "hass-unused-entities";
 
+  private _configChangedByUndo = false;
+
   private _viewCache?: Record<string, HUIView>;
 
   private _viewScrollPositions: Record<string, number> = {};
 
   private _restoreScroll = false;
+
+  private _undoRedoController = new UndoRedoController<UndoStackItem>(this, {
+    apply: (config) => this._applyUndoRedo(config),
+    currentConfig: () => ({
+      location: this.route!.path,
+      config: this.lovelace!.rawConfig,
+    }),
+  });
 
   private _debouncedConfigChanged: () => void;
 
@@ -157,7 +178,29 @@ class HUIRoot extends LitElement {
     const result: TemplateResult[] = [];
     if (this._editMode) {
       result.push(
-        html`<ha-button
+        html`<ha-icon-button
+            slot="toolbar-icon"
+            .path=${mdiUndo}
+            @click=${this._undo}
+            .disabled=${!this._undoRedoController.canUndo}
+            id="button-undo"
+          >
+          </ha-icon-button>
+          <ha-tooltip placement="bottom" for="button-undo">
+            ${this.hass.localize("ui.common.undo")}
+          </ha-tooltip>
+          <ha-icon-button
+            slot="toolbar-icon"
+            .path=${mdiRedo}
+            @click=${this._redo}
+            .disabled=${!this._undoRedoController.canRedo}
+            id="button-redo"
+          >
+          </ha-icon-button>
+          <ha-tooltip placement="bottom" for="button-redo">
+            ${this.hass.localize("ui.common.redo")}
+          </ha-tooltip>
+          <ha-button
             appearance="filled"
             size="small"
             class="exit-edit-mode"
@@ -645,6 +688,27 @@ class HUIRoot extends LitElement {
     window.history.scrollRestoration = "auto";
   }
 
+  protected willUpdate(changedProperties: PropertyValues): void {
+    if (changedProperties.has("lovelace")) {
+      const oldLovelace = changedProperties.get("lovelace") as
+        | Lovelace
+        | undefined;
+
+      if (
+        oldLovelace &&
+        this.lovelace!.rawConfig !== oldLovelace!.rawConfig &&
+        !this._configChangedByUndo
+      ) {
+        this._undoRedoController.commit({
+          location: this.route!.path,
+          config: oldLovelace.rawConfig,
+        });
+      } else {
+        this._configChangedByUndo = false;
+      }
+    }
+  }
+
   protected updated(changedProperties: PropertyValues): void {
     super.updated(changedProperties);
 
@@ -1029,6 +1093,7 @@ class HUIRoot extends LitElement {
 
   private _editModeDisable(): void {
     this.lovelace!.setEditMode(false);
+    this._undoRedoController.reset();
   }
 
   private async _editDashboard() {
@@ -1205,6 +1270,36 @@ class HUIRoot extends LitElement {
   private _openShortcutDialog(ev: Event) {
     ev.preventDefault();
     showShortcutsDialog(this);
+  }
+
+  private async _applyUndoRedo(item: UndoStackItem) {
+    this._configChangedByUndo = true;
+    try {
+      await this.lovelace!.saveConfig(item.config);
+    } catch (err: any) {
+      this._configChangedByUndo = false;
+      showToast(this, {
+        message: this.hass.localize(
+          "ui.panel.lovelace.editor.undo_redo_failed_to_apply_changes",
+          {
+            error: err.message,
+          }
+        ),
+        duration: 4000,
+        dismissable: true,
+      });
+      return;
+    }
+
+    this._navigateToView(item.location);
+  }
+
+  private _undo() {
+    this._undoRedoController.undo();
+  }
+
+  private _redo() {
+    this._undoRedoController.redo();
   }
 
   static get styles(): CSSResultGroup {

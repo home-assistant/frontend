@@ -8,16 +8,13 @@ import "../../../../components/ha-button";
 import { createCloseHeading } from "../../../../components/ha-dialog";
 import "../../../../components/ha-form/ha-form";
 import type { SchemaUnion } from "../../../../components/ha-form/types";
-import { saveFrontendSystemData } from "../../../../data/frontend";
 import type {
   LovelaceDashboard,
   LovelaceDashboardCreateParams,
   LovelaceDashboardMutableParams,
 } from "../../../../data/lovelace/dashboard";
-import { DEFAULT_PANEL } from "../../../../data/panel";
 import { haStyleDialog } from "../../../../resources/styles";
 import type { HomeAssistant } from "../../../../types";
-import { showConfirmationDialog } from "../../../lovelace/custom-card-helpers";
 import type { LovelaceDashboardDetailsDialogParams } from "./show-dialog-lovelace-dashboard-detail";
 
 @customElement("dialog-lovelace-dashboard-detail")
@@ -61,9 +58,9 @@ export class DialogLovelaceDashboardDetail extends LitElement {
     if (!this._params || !this._data) {
       return nothing;
     }
-    const defaultPanelUrlPath =
-      this.hass.systemData?.default_panel || DEFAULT_PANEL;
+
     const titleInvalid = !this._data.title || !this._data.title.trim();
+    const isLovelaceDashboard = this._params.urlPath === "lovelace";
 
     return html`
       <ha-dialog
@@ -88,9 +85,9 @@ export class DialogLovelaceDashboardDetail extends LitElement {
             ? this.hass.localize(
                 "ui.panel.config.lovelace.dashboards.cant_edit_yaml"
               )
-            : this._params.urlPath === "lovelace"
+            : isLovelaceDashboard
               ? this.hass.localize(
-                  "ui.panel.config.lovelace.dashboards.cant_edit_default"
+                  "ui.panel.config.lovelace.dashboards.cant_edit_lovelace"
                 )
               : html`
                   <ha-form
@@ -119,24 +116,9 @@ export class DialogLovelaceDashboardDetail extends LitElement {
                       )}
                     </ha-button>
                   `
-                : ""}
-              <ha-button
-                slot="secondaryAction"
-                appearance="plain"
-                @click=${this._toggleDefault}
-                .disabled=${this._params.urlPath === "lovelace" &&
-                defaultPanelUrlPath === "lovelace"}
-              >
-                ${this._params.urlPath === defaultPanelUrlPath
-                  ? this.hass.localize(
-                      "ui.panel.config.lovelace.dashboards.detail.remove_default"
-                    )
-                  : this.hass.localize(
-                      "ui.panel.config.lovelace.dashboards.detail.set_default"
-                    )}
-              </ha-button>
+                : nothing}
             `
-          : ""}
+          : nothing}
         <ha-button
           slot="primaryAction"
           @click=${this._updateDashboard}
@@ -252,40 +234,6 @@ export class DialogLovelaceDashboardDetail extends LitElement {
         ? slugifyTitle
         : `dashboard-${slugifyTitle}`,
     };
-  }
-
-  private async _toggleDefault() {
-    const urlPath = this._params?.urlPath;
-    if (!urlPath) {
-      return;
-    }
-
-    const defaultPanel = this.hass.systemData?.default_panel || DEFAULT_PANEL;
-    // Add warning dialog to saying that this will change the default dashboard for all users
-    const confirm = await showConfirmationDialog(this, {
-      title: this.hass.localize(
-        urlPath === defaultPanel
-          ? "ui.panel.config.lovelace.dashboards.detail.remove_default_confirm_title"
-          : "ui.panel.config.lovelace.dashboards.detail.set_default_confirm_title"
-      ),
-      text: this.hass.localize(
-        urlPath === defaultPanel
-          ? "ui.panel.config.lovelace.dashboards.detail.remove_default_confirm_text"
-          : "ui.panel.config.lovelace.dashboards.detail.set_default_confirm_text"
-      ),
-      confirmText: this.hass.localize("ui.common.ok"),
-      dismissText: this.hass.localize("ui.common.cancel"),
-      destructive: false,
-    });
-
-    if (!confirm) {
-      return;
-    }
-
-    saveFrontendSystemData(this.hass.connection, "core", {
-      ...this.hass.systemData,
-      default_panel: urlPath === defaultPanel ? undefined : urlPath,
-    });
   }
 
   private async _updateDashboard() {
