@@ -219,6 +219,19 @@ export class HomeOverviewViewStrategy extends ReactiveElement {
             columns: 12,
           },
         } satisfies HomeSummaryCard),
+      {
+        type: "home-summary",
+        summary: "unassigned_devices",
+        vertical: true,
+        tap_action: {
+          action: "navigate",
+          navigation_path: "unassigned-devices",
+        },
+        grid_options: {
+          rows: 2,
+          columns: 4,
+        },
+      } satisfies HomeSummaryCard,
     ].filter(Boolean) as LovelaceCardConfig[];
 
     const forYouSection: LovelaceSectionConfig = {
@@ -283,6 +296,29 @@ export class HomeOverviewViewStrategy extends ReactiveElement {
           link_dashboard: true,
         });
       }
+    }
+
+    const noAreaFilter = generateEntityFilter(hass, {
+      area: null,
+    });
+
+    const otherEntities = allEntities.filter(noAreaFilter);
+
+    if (otherEntities.length > 0) {
+      widgetSection.cards!.push({
+        type: "tile",
+        entity: otherEntities[0],
+        icon: "mdi:shape",
+        name: "Unassigned devices",
+        hide_state: true,
+        tap_action: {
+          action: "navigate",
+          navigation_path: "unassigned-devices",
+        },
+        icon_tap_action: {
+          action: "none",
+        },
+      });
     }
 
     const sections = (
