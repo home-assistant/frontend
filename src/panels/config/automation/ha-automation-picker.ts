@@ -299,7 +299,6 @@ class HaAutomationPicker extends SubscribeMixin(LitElement) {
         },
         area: {
           title: localize("ui.panel.config.automation.picker.headers.area"),
-          defaultHidden: true,
           groupable: true,
           filterable: true,
           sortable: true,
