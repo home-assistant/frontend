@@ -1,4 +1,6 @@
 import {
+  mdiAlertCircleCheck,
+  mdiAlertCircleCheckOutline,
   mdiAppleKeyboardCommand,
   mdiContentCopy,
   mdiContentCut,
@@ -21,7 +23,11 @@ import "../../../../components/ha-md-menu-item";
 import { ACTION_BUILDING_BLOCKS } from "../../../../data/action";
 import type { ActionSidebarConfig } from "../../../../data/automation";
 import { domainToName } from "../../../../data/integration";
-import type { RepeatAction, ServiceAction } from "../../../../data/script";
+import type {
+  NonConditionAction,
+  RepeatAction,
+  ServiceAction,
+} from "../../../../data/script";
 import type { HomeAssistant } from "../../../../types";
 import { isMac } from "../../../../util/is_mac";
 import type HaAutomationConditionEditor from "../action/ha-automation-action-editor";
@@ -249,6 +255,29 @@ export default class HaAutomationSidebarAction extends LitElement {
           <span class="shortcut-placeholder ${isMac ? "mac" : ""}"></span>
         </div>
       </ha-md-menu-item>
+      ${actionType !== "condition"
+        ? html`
+            <ha-md-menu-item
+              slot="menu-items"
+              .clickAction=${this.config.continueOnError}
+              .disabled=${this.disabled}
+            >
+              <ha-svg-icon
+                slot="start"
+                .path=${(actionConfig as NonConditionAction)
+                  .continue_on_error === true
+                  ? mdiAlertCircleCheck
+                  : mdiAlertCircleCheckOutline}
+              ></ha-svg-icon>
+              <div class="overflow-label">
+                ${this.hass.localize(
+                  "ui.panel.config.automation.editor.actions.continue_on_error"
+                )}
+                <span class="shortcut-placeholder ${isMac ? "mac" : ""}"></span>
+              </div>
+            </ha-md-menu-item>
+          `
+        : nothing}
       <ha-md-menu-item
         slot="menu-items"
         .clickAction=${this.config.delete}

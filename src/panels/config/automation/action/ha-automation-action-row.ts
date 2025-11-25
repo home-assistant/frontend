@@ -1,6 +1,7 @@
 import { consume } from "@lit/context";
 import {
   mdiAlertCircleCheck,
+  mdiAlertCircleCheckOutline,
   mdiAppleKeyboardCommand,
   mdiArrowDown,
   mdiArrowUp,
@@ -444,6 +445,28 @@ export default class HaAutomationActionRow extends LitElement {
             )
           )}
         </ha-md-menu-item>
+        ${type !== "condition"
+          ? html`
+              <ha-md-menu-item
+                .clickAction=${this._onContinueOnError}
+                .disabled=${this.disabled}
+              >
+                <ha-svg-icon
+                  slot="start"
+                  .path=${(this.action as NonConditionAction)
+                    .continue_on_error === true
+                    ? mdiAlertCircleCheck
+                    : mdiAlertCircleCheckOutline}
+                ></ha-svg-icon>
+
+                ${this._renderOverflowLabel(
+                  this.hass.localize(
+                    "ui.panel.config.automation.editor.actions.continue_on_error"
+                  )
+                )}
+              </ha-md-menu-item>
+            `
+          : nothing}
         <ha-md-menu-item
           class="warning"
           .clickAction=${this._onDelete}
@@ -602,6 +625,27 @@ export default class HaAutomationActionRow extends LitElement {
 
     if (this._selected && this.optionsInSidebar) {
       this.openSidebar(value); // refresh sidebar
+    }
+
+    if (this._yamlMode && !this.optionsInSidebar) {
+      this._actionEditor?.yamlEditor?.setValue(value);
+    }
+  };
+
+  private _onContinueOnError = () => {
+    const continueOnError = !(
+      (this.action as NonConditionAction).continue_on_error ?? false
+    );
+    const value = continueOnError
+      ? { ...this.action, continue_on_error: true }
+      : { ...this.action };
+    if (!continueOnError) {
+      delete (value as NonConditionAction).continue_on_error;
+    }
+    fireEvent(this, "value-changed", { value });
+
+    if (this._selected && this.optionsInSidebar) {
+      this.openSidebar(value);
     }
 
     if (this._yamlMode && !this.optionsInSidebar) {
@@ -818,6 +862,7 @@ export default class HaAutomationActionRow extends LitElement {
         this.openSidebar();
       },
       disable: this._onDisable,
+      continueOnError: this._onContinueOnError,
       delete: this._onDelete,
       copy: this._copyAction,
       cut: this._cutAction,
