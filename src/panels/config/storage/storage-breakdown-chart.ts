@@ -1,7 +1,6 @@
 import type { TemplateResult } from "lit";
 import { LitElement, css, html, nothing } from "lit";
 import { customElement, property } from "lit/decorators";
-import memoizeOne from "memoize-one";
 import { getGraphColorByIndex } from "../../../common/color/colors";
 import "../../../components/ha-alert";
 import "../../../components/ha-spinner";
@@ -13,7 +12,6 @@ import { roundWithOneDecimal } from "../../../util/calculate";
 
 @customElement("storage-breakdown-chart")
 export class StorageBreakdownChart extends LitElement {
-  @property({ attribute: false })
   public hass!: HomeAssistant;
 
   @property({ attribute: false })
@@ -23,92 +21,83 @@ export class StorageBreakdownChart extends LitElement {
   public storageInfo?: HostDisksUsage | null;
 
   protected render(): TemplateResult | typeof nothing {
-    return this._renderStorageMetrics(this.hostInfo, this.storageInfo);
-  }
-
-  private _renderStorageMetrics = memoizeOne(
-    (
-      hostInfo?: HassioHostInfo,
-      storageInfo?: HostDisksUsage | null
-    ): TemplateResult | typeof nothing => {
-      if (!hostInfo) {
-        return nothing;
-      }
-      const computedStyles = getComputedStyle(this);
-      let totalSpaceGB = hostInfo.disk_total;
-      let usedSpaceGB = hostInfo.disk_used;
-      // hostInfo.disk_free is sometimes 0, so we may need to calculate it
-      let freeSpaceGB =
-        hostInfo.disk_free || hostInfo.disk_total - hostInfo.disk_used;
-      const segments: Segment[] = [];
-      if (storageInfo) {
-        const totalSpace =
-          storageInfo.total_bytes ?? this._gbToBytes(hostInfo.disk_total);
-        totalSpaceGB = this._bytesToGB(totalSpace);
-        usedSpaceGB = this._bytesToGB(storageInfo.used_bytes);
-        freeSpaceGB = this._bytesToGB(totalSpace - storageInfo.used_bytes);
-        storageInfo.children?.forEach((child, index) => {
-          if (child.used_bytes > 0) {
-            const space = this._bytesToGB(child.used_bytes);
-            segments.push({
-              value: space,
-              color: getGraphColorByIndex(index, computedStyles),
-              label: html`${this.hass.localize(
-                  `ui.panel.config.storage.segments.${child.id}`
-                ) ||
-                child.label ||
-                child.id}
-                <span style="color: var(--secondary-text-color)"
-                  >${roundWithOneDecimal(space)} GB</span
-                >`,
-            });
-          }
-        });
-      } else {
-        segments.push({
-          value: usedSpaceGB,
-          color: "var(--primary-color)",
-          label: html`${this.hass.localize(
-              "ui.panel.config.storage.segments.used"
-            )}
-            <span style="color: var(--secondary-text-color)"
-              >${roundWithOneDecimal(usedSpaceGB)} GB</span
-            >`,
-        });
-      }
+    if (!this.hostInfo) {
+      return nothing;
+    }
+    const computedStyles = getComputedStyle(this);
+    let totalSpaceGB = this.hostInfo.disk_total;
+    let usedSpaceGB = this.hostInfo.disk_used;
+    // this.hostInfo.disk_free is sometimes 0, so we may need to calculate it
+    let freeSpaceGB =
+      this.hostInfo.disk_free ||
+      this.hostInfo.disk_total - this.hostInfo.disk_used;
+    const segments: Segment[] = [];
+    if (this.storageInfo) {
+      const totalSpace =
+        this.storageInfo.total_bytes ??
+        this._gbToBytes(this.hostInfo.disk_total);
+      totalSpaceGB = this._bytesToGB(totalSpace);
+      usedSpaceGB = this._bytesToGB(this.storageInfo.used_bytes);
+      freeSpaceGB = this._bytesToGB(totalSpace - this.storageInfo.used_bytes);
+      this.storageInfo.children?.forEach((child, index) => {
+        if (child.used_bytes > 0) {
+          const space = this._bytesToGB(child.used_bytes);
+          segments.push({
+            value: space,
+            color: getGraphColorByIndex(index, computedStyles),
+            label: html`${this.hass.localize(
+                `ui.panel.config.storage.segments.${child.id}`
+              ) ||
+              child.label ||
+              child.id}
+              <span style="color: var(--secondary-text-color)"
+                >${roundWithOneDecimal(space)} GB</span
+              >`,
+          });
+        }
+      });
+    } else {
       segments.push({
-        value: freeSpaceGB,
-        color:
-          "var(--ha-bar-background-color, var(--secondary-background-color))",
+        value: usedSpaceGB,
+        color: "var(--primary-color)",
         label: html`${this.hass.localize(
-            "ui.panel.config.storage.segments.free"
+            "ui.panel.config.storage.segments.used"
           )}
           <span style="color: var(--secondary-text-color)"
-            >${roundWithOneDecimal(freeSpaceGB)} GB</span
+            >${roundWithOneDecimal(usedSpaceGB)} GB</span
           >`,
       });
-      return html`<ha-segmented-bar
-          .heading=${this.hass.localize("ui.panel.config.storage.used_space")}
-          .description=${this.hass.localize(
-            "ui.panel.config.storage.detailed_description",
-            {
-              used: `${roundWithOneDecimal(usedSpaceGB)} GB`,
-              total: `${roundWithOneDecimal(totalSpaceGB)} GB`,
-            }
-          )}
-          .segments=${segments}
-        ></ha-segmented-bar>
-
-        ${!storageInfo || storageInfo === null
-          ? html`<ha-alert alert-type="info">
-              <ha-spinner slot="icon"></ha-spinner>
-              ${this.hass.localize(
-                "ui.panel.config.storage.loading_detailed"
-              )}</ha-alert
-            >`
-          : nothing}`;
     }
-  );
+    segments.push({
+      value: freeSpaceGB,
+      color:
+        "var(--ha-bar-background-color, var(--secondary-background-color))",
+      label: html`${this.hass.localize("ui.panel.config.storage.segments.free")}
+        <span style="color: var(--secondary-text-color)"
+          >${roundWithOneDecimal(freeSpaceGB)} GB</span
+        >`,
+    });
+    return html`<ha-segmented-bar
+        .heading=${this.hass.localize("ui.panel.config.storage.used_space")}
+        .description=${this.hass.localize(
+          "ui.panel.config.storage.detailed_description",
+          {
+            used: `${roundWithOneDecimal(usedSpaceGB)} GB`,
+            total: `${roundWithOneDecimal(totalSpaceGB)} GB`,
+          }
+        )}
+        .segments=${segments}
+      ></ha-segmented-bar>
+
+      ${!this.storageInfo || this.storageInfo === null
+        ? html`<ha-alert alert-type="info">
+            <ha-spinner slot="icon"></ha-spinner>
+            ${this.hass.localize(
+              "ui.panel.config.storage.loading_detailed"
+            )}</ha-alert
+          >`
+        : nothing}`;
+  }
 
   private _bytesToGB(bytes: number): number {
     return bytes / 1024 / 1024 / 1024;
