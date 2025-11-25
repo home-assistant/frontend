@@ -152,7 +152,7 @@ class HUIRoot extends LitElement {
   private _undoRedoController = new UndoRedoController<UndoStackItem>(this, {
     apply: (config) => this._applyUndoRedo(config),
     currentConfig: () => ({
-      location: this.route!.path,
+      location: this.route!.path.split("/")[1],
       config: this.lovelace!.rawConfig,
     }),
   });
@@ -699,8 +699,9 @@ class HUIRoot extends LitElement {
         this.lovelace!.rawConfig !== oldLovelace!.rawConfig &&
         !this._configChangedByUndo
       ) {
+        const viewPath: string | undefined = this.route!.path.split("/")[1];
         this._undoRedoController.commit({
-          location: this.route!.path,
+          location: viewPath,
           config: oldLovelace.rawConfig,
         });
       } else {
