@@ -10,6 +10,7 @@ import { clamp } from "../../../../common/number/clamp";
 import type { LovelaceSectionRawConfig } from "../../../../data/lovelace/config/section";
 import type { LovelaceViewConfig } from "../../../../data/lovelace/config/view";
 import type { HomeAssistant } from "../../../../types";
+import { isHelperDomain } from "../../../config/helpers/const";
 import type { HeadingCardConfig } from "../../cards/types";
 import { HOME_SUMMARIES_FILTERS } from "./helpers/home-summaries";
 
@@ -23,7 +24,6 @@ export class HomeUnassignedDevicesViewStrategy extends ReactiveElement {
     _config: HomeUnassignedDevicesViewStrategyConfig,
     hass: HomeAssistant
   ): Promise<LovelaceViewConfig> {
-    const sections: LovelaceSectionRawConfig[] = [];
     const allEntities = Object.keys(hass.states);
 
     const unassignedFilters = HOME_SUMMARIES_FILTERS.unassigned_devices.map(
@@ -32,7 +32,7 @@ export class HomeUnassignedDevicesViewStrategy extends ReactiveElement {
 
     const unassignedEntities = findEntities(allEntities, unassignedFilters);
 
-    const deviceSections: LovelaceSectionRawConfig[] = [];
+    const sections: LovelaceSectionRawConfig[] = [];
 
     const entitiesByDevice: Record<string, string[]> = {};
     const entitiesWithoutDevices: string[] = [];
@@ -56,19 +56,22 @@ export class HomeUnassignedDevicesViewStrategy extends ReactiveElement {
       entitiesByDevice[device.id].push(entityId);
     }
 
-    const otherDeviceEntities = Object.entries(entitiesByDevice).map(
+    const devicesEntities = Object.entries(entitiesByDevice).map(
       ([deviceId, entities]) => ({
         device_id: deviceId,
         entities: entities,
       })
     );
 
-    if (entitiesWithoutDevices.length > 0) {
-      otherDeviceEntities.push({
-        device_id: "unassigned",
-        entities: entitiesWithoutDevices,
-      });
-    }
+    const helpersEntities = entitiesWithoutDevices.filter((entityId) => {
+      const domain = entityId.split(".")[0];
+      return isHelperDomain(domain);
+    });
+
+    const otherEntities = entitiesWithoutDevices.filter((entityId) => {
+      const domain = entityId.split(".")[0];
+      return !isHelperDomain(domain);
+    });
 
     const batteryFilter = generateEntityFilter(hass, {
       domain: "sensor",
@@ -84,7 +87,7 @@ export class HomeUnassignedDevicesViewStrategy extends ReactiveElement {
       entity_category: "none",
     });
 
-    for (const deviceEntities of otherDeviceEntities) {
+    for (const deviceEntities of devicesEntities) {
       if (deviceEntities.entities.length === 0) continue;
 
       const batteryEntities = deviceEntities.entities.filter((e) =>
@@ -105,11 +108,9 @@ export class HomeUnassignedDevicesViewStrategy extends ReactiveElement {
         heading =
           computeDeviceName(device) ||
           hass.localize("ui.panel.lovelace.strategy.home.unamed_device");
-      } else {
-        heading = hass.localize("ui.panel.lovelace.strategy.home.others");
       }
 
-      deviceSections.push({
+      sections.push({
         type: "grid",
         cards: [
           {
@@ -142,19 +143,40 @@ export class HomeUnassignedDevicesViewStrategy extends ReactiveElement {
       });
     }
 
-    if (deviceSections.length > 0) {
+    if (helpersEntities.length) {
       sections.push({
         type: "grid",
-        column_span: 3,
         cards: [
           {
             type: "heading",
-            heading_style: "subtitle",
-            heading: "",
+            heading: hass.localize(
+              "ui.panel.lovelace.strategy.unassigned_devices.unassigned_helpers"
+            ),
           } satisfies HeadingCardConfig,
+          ...helpersEntities.map((e) => ({
+            type: "tile",
+            entity: e,
+          })),
         ],
-      } satisfies LovelaceSectionRawConfig);
-      sections.push(...deviceSections);
+      });
+    }
+
+    if (otherEntities.length) {
+      sections.push({
+        type: "grid",
+        cards: [
+          {
+            type: "heading",
+            heading: hass.localize(
+              "ui.panel.lovelace.strategy.unassigned_devices.unassigned_entities"
+            ),
+          } satisfies HeadingCardConfig,
+          ...otherEntities.map((e) => ({
+            type: "tile",
+            entity: e,
+          })),
+        ],
+      });
     }
 
     // Allow between 2 and 3 columns (the max should be set to define the width of the header)
