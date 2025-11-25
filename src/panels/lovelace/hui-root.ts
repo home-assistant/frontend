@@ -1278,6 +1278,7 @@ class HUIRoot extends LitElement {
     try {
       await this.lovelace!.saveConfig(item.config);
     } catch (err: any) {
+      this._configChangedByUndo = false;
       showToast(this, {
         message: this.hass.localize(
           "ui.panel.lovelace.editor.undo_redo_failed_to_apply_changes",
