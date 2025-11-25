@@ -215,6 +215,7 @@ class HaConfigInfo extends LitElement {
                   >${this.hass.localize("ui.panel.config.info.shortcuts")}</span
                 >
               </ha-md-list-item>
+
               ${PAGES.map(
                 (page) => html`
                   <ha-md-list-item
