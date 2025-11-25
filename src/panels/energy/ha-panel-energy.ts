@@ -1,60 +1,60 @@
+import { mdiDownload, mdiPencil } from "@mdi/js";
 import type { CSSResultGroup, PropertyValues } from "lit";
 import { LitElement, css, html, nothing } from "lit";
-import { mdiPencil, mdiDownload } from "@mdi/js";
 import { customElement, property, state } from "lit/decorators";
-import "../../components/ha-menu-button";
+import { goBack, navigate } from "../../common/navigate";
+import "../../components/ha-alert";
 import "../../components/ha-icon-button-arrow-prev";
 import "../../components/ha-list-item";
+import "../../components/ha-menu-button";
 import "../../components/ha-top-app-bar-fixed";
-import "../../components/ha-alert";
-import type { LovelaceConfig } from "../../data/lovelace/config/types";
-import { haStyle } from "../../resources/styles";
-import type { HomeAssistant } from "../../types";
-import "../lovelace/components/hui-energy-period-selector";
-import type { Lovelace } from "../lovelace/types";
-import "../lovelace/views/hui-view";
-import "../lovelace/views/hui-view-container";
-import { goBack, navigate } from "../../common/navigate";
 import type {
+  BatterySourceTypeEnergyPreference,
+  DeviceConsumptionEnergyPreference,
+  EnergyPreferences,
+  GasSourceTypeEnergyPreference,
   GridSourceTypeEnergyPreference,
   SolarSourceTypeEnergyPreference,
-  BatterySourceTypeEnergyPreference,
-  GasSourceTypeEnergyPreference,
   WaterSourceTypeEnergyPreference,
-  DeviceConsumptionEnergyPreference,
-  EnergyCollection,
 } from "../../data/energy";
 import {
   computeConsumptionData,
   getEnergyDataCollection,
   getSummedData,
 } from "../../data/energy";
-import { fileDownload } from "../../util/file_download";
+import type { LovelaceConfig } from "../../data/lovelace/config/types";
+import type { LovelaceViewConfig } from "../../data/lovelace/config/view";
 import type { StatisticValue } from "../../data/recorder";
+import { haStyle } from "../../resources/styles";
+import type { HomeAssistant } from "../../types";
+import { fileDownload } from "../../util/file_download";
+import "../lovelace/components/hui-energy-period-selector";
+import type { Lovelace } from "../lovelace/types";
+import "../lovelace/views/hui-view";
+import "../lovelace/views/hui-view-container";
 
 export const DEFAULT_ENERGY_COLLECTION_KEY = "energy_dashboard";
 
-const ENERGY_LOVELACE_CONFIG: LovelaceConfig = {
-  views: [
-    {
-      strategy: {
-        type: "energy-overview",
-        collection_key: DEFAULT_ENERGY_COLLECTION_KEY,
-      },
-    },
-    {
-      strategy: {
-        type: "energy-electricity",
-        collection_key: DEFAULT_ENERGY_COLLECTION_KEY,
-      },
-      path: "electricity",
-    },
-    {
-      type: "panel",
-      path: "setup",
-      cards: [{ type: "custom:energy-setup-wizard-card" }],
-    },
-  ],
+const OVERVIEW_VIEW = {
+  strategy: {
+    type: "energy-overview",
+    collection_key: DEFAULT_ENERGY_COLLECTION_KEY,
+  },
+};
+
+const ELECTRICITY_VIEW = {
+  back_path: "/energy",
+  path: "electricity",
+  strategy: {
+    type: "energy-electricity",
+    collection_key: DEFAULT_ENERGY_COLLECTION_KEY,
+  },
+} as LovelaceViewConfig;
+
+const WIZARD_VIEW = {
+  type: "panel",
+  path: "setup",
+  cards: [{ type: "custom:energy-setup-wizard-card" }],
 };
 
 @customElement("ha-panel-energy")
@@ -74,7 +74,8 @@ class PanelEnergy extends LitElement {
     prefix: string;
   };
 
-  private _energyCollection?: EnergyCollection;
+  @state()
+  private _config?: LovelaceConfig;
 
   get _viewPath(): string | undefined {
     const viewPath: string | undefined = this.route!.path.split("/")[1];
@@ -83,7 +84,7 @@ class PanelEnergy extends LitElement {
 
   public connectedCallback() {
     super.connectedCallback();
-    this._loadPrefs();
+    this._loadLovelaceConfig();
   }
 
   public async willUpdate(changedProps: PropertyValues) {
@@ -101,32 +102,15 @@ class PanelEnergy extends LitElement {
     }
   }
 
-  private async _loadPrefs() {
-    if (this._viewPath === "setup") {
-      await import("./cards/energy-setup-wizard-card");
-    } else {
-      this._energyCollection = getEnergyDataCollection(this.hass, {
-        key: DEFAULT_ENERGY_COLLECTION_KEY,
-      });
-      try {
-        // Have to manually refresh here as we don't want to subscribe yet
-        await this._energyCollection.refresh();
-      } catch (err: any) {
-        if (err.code === "not_found") {
-          navigate("/energy/setup");
-        }
-        this._error = err.message;
-        return;
-      }
-      const prefs = this._energyCollection.prefs!;
-      if (
-        prefs.device_consumption.length === 0 &&
-        prefs.energy_sources.length === 0
-      ) {
-        // No energy sources available, start from scratch
-        navigate("/energy/setup");
-      }
+  private async _loadLovelaceConfig() {
+    try {
+      this._config = undefined;
+      this._config = await this._generateLovelaceConfig();
+    } catch (err) {
+      this._error = (err as Error).message;
     }
+
+    this._setLovelace();
   }
 
   private _back(ev) {
@@ -135,25 +119,22 @@ class PanelEnergy extends LitElement {
   }
 
   protected render() {
-    if (!this._energyCollection?.prefs) {
+    if (!this._config && !this._error) {
       // Still loading
-      return html`<div class="centered">
-        <ha-spinner size="large"></ha-spinner>
-      </div>`;
+      return html`
+        <div class="centered">
+          <ha-spinner size="large"></ha-spinner>
+        </div>
+      `;
     }
-    const { prefs } = this._energyCollection;
-    const isSingleView = prefs.energy_sources.every((source) =>
-      ["grid", "solar", "battery"].includes(source.type)
-    );
-    let viewPath = this._viewPath;
-    if (isSingleView) {
-      // if only electricity sources, show electricity view directly
-      viewPath = "electricity";
-    }
-    const viewIndex = Math.max(
-      ENERGY_LOVELACE_CONFIG.views.findIndex((view) => view.path === viewPath),
-      0
-    );
+    const isSingleView = this._config?.views.length === 1;
+    const viewPath = this._viewPath;
+    const viewIndex = this._config
+      ? Math.max(
+          this._config.views.findIndex((view) => view.path === viewPath),
+          0
+        )
+      : 0;
     const showBack =
       this._searchParms.has("historyBack") || (!isSingleView && viewIndex > 0);
 
@@ -229,10 +210,56 @@ class PanelEnergy extends LitElement {
     `;
   }
 
+  private _fetchEnergyPrefs = async (): Promise<
+    EnergyPreferences | undefined
+  > => {
+    const collection = getEnergyDataCollection(this.hass, {
+      key: DEFAULT_ENERGY_COLLECTION_KEY,
+    });
+    try {
+      await collection.refresh();
+    } catch (err: any) {
+      if (err.code === "not_found") {
+        return undefined;
+      }
+      throw err;
+    }
+    return collection.prefs;
+  };
+
+  private async _generateLovelaceConfig(): Promise<LovelaceConfig> {
+    const prefs = await this._fetchEnergyPrefs();
+    if (
+      !prefs ||
+      (prefs.device_consumption.length === 0 &&
+        prefs.energy_sources.length === 0)
+    ) {
+      await import("./cards/energy-setup-wizard-card");
+      return {
+        views: [WIZARD_VIEW],
+      };
+    }
+
+    const isSingleView = prefs.energy_sources.every((source) =>
+      ["grid", "solar", "battery"].includes(source.type)
+    );
+    if (isSingleView) {
+      return {
+        views: [ELECTRICITY_VIEW],
+      };
+    }
+    return {
+      views: [OVERVIEW_VIEW, ELECTRICITY_VIEW],
+    };
+  }
+
   private _setLovelace() {
+    if (!this._config) {
+      return;
+    }
     this._lovelace = {
-      config: ENERGY_LOVELACE_CONFIG,
-      rawConfig: ENERGY_LOVELACE_CONFIG,
+      config: this._config,
+      rawConfig: this._config,
       editMode: false,
       urlPath: "energy",
       mode: "generated",
@@ -252,7 +279,9 @@ class PanelEnergy extends LitElement {
 
   private async _dumpCSV(ev) {
     ev.stopPropagation();
-    const energyData = this._energyCollection!;
+    const energyData = getEnergyDataCollection(this.hass, {
+      key: "energy_dashboard",
+    });
 
     if (!energyData.prefs || !energyData.state.stats) {
       return;
@@ -549,12 +578,7 @@ class PanelEnergy extends LitElement {
   }
 
   private _reloadView() {
-    // Force strategy to be re-run by making a copy of the view
-    const config = this._lovelace!.config;
-    this._lovelace = {
-      ...this._lovelace!,
-      config: { ...config, views: config.views.map((view) => ({ ...view })) },
-    };
+    this._loadLovelaceConfig();
   }
 
   static get styles(): CSSResultGroup {
