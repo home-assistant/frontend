@@ -214,7 +214,7 @@ class DialogAddAutomationElement
   @query("ha-automation-add-from-target")
   private _targetPickerElement?: HaAutomationAddFromTarget;
 
-  @query(".items")
+  @query("ha-automation-add-items")
   private _itemsListElement?: HTMLDivElement;
 
   @query(".content")

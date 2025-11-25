@@ -5,7 +5,13 @@ import {
   mdiTextureBox,
 } from "@mdi/js";
 import { LitElement, css, html, nothing, type TemplateResult } from "lit";
-import { customElement, eventOptions, property, state } from "lit/decorators";
+import {
+  customElement,
+  eventOptions,
+  property,
+  query,
+  state,
+} from "lit/decorators";
 import { classMap } from "lit/directives/class-map";
 import { repeat } from "lit/directives/repeat";
 import memoizeOne from "memoize-one";
@@ -55,6 +61,9 @@ export class HaAutomationAddItems extends LitElement {
   public tooltipDescription = false;
 
   @state() private _itemsScrolled = false;
+
+  @query(".items")
+  private _itemsDiv!: HTMLDivElement;
 
   protected render() {
     return html`<div
@@ -231,6 +240,21 @@ export class HaAutomationAddItems extends LitElement {
   private _onItemsScroll(ev) {
     const top = ev.target.scrollTop ?? 0;
     this._itemsScrolled = top > 0;
+  }
+
+  public override scrollTo(options?: ScrollToOptions): void;
+
+  public override scrollTo(x: number, y: number): void;
+
+  public override scrollTo(
+    xOrOptions?: number | ScrollToOptions,
+    y?: number
+  ): void {
+    if (typeof xOrOptions === "number") {
+      this._itemsDiv?.scrollTo(xOrOptions, y!);
+    } else {
+      this._itemsDiv?.scrollTo(xOrOptions);
+    }
   }
 
   static styles = css`
