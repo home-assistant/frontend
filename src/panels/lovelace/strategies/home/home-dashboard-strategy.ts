@@ -10,7 +10,7 @@ import {
   HOME_SUMMARIES_ICONS,
 } from "./helpers/home-summaries";
 import type { HomeAreaViewStrategyConfig } from "./home-area-view-strategy";
-import type { HomeMainViewStrategyConfig } from "./home-main-view-strategy";
+import type { HomeOverviewViewStrategyConfig } from "./home-overview-view-strategy";
 
 export interface HomeDashboardStrategyConfig {
   type: "home";
@@ -75,11 +75,11 @@ export class HomeDashboardStrategy extends ReactiveElement {
       views: [
         {
           icon: "mdi:home",
-          path: "home",
+          path: "overview",
           strategy: {
-            type: "home-main",
+            type: "home-overview",
             favorite_entities: config.favorite_entities,
-          } satisfies HomeMainViewStrategyConfig,
+          } satisfies HomeOverviewViewStrategyConfig,
         },
         ...areaViews,
         mediaPlayersView,
