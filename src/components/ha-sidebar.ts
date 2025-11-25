@@ -242,7 +242,6 @@ class HaSidebar extends SubscribeMixin(LitElement) {
       return nothing;
     }
 
-    // Show the supervisor as being part of configuration
     const selectedPanel = this.hass.panelUrl;
 
     // prettier-ignore
