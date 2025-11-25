@@ -18,6 +18,10 @@ export const PreventUnsavedMixin = <T extends Constructor<LitElement>>(
         return;
       }
 
+      if (!isNavigationClick(e)) {
+        return;
+      }
+      // get the right target, otherwise the composedPath would return <home-assistant> in the new event
       const target = e.composedPath()[0];
 
       this._isNavigating = true;
