@@ -38,12 +38,15 @@ const STRATEGIES: Record<LovelaceStrategyConfigType, Record<string, any>> = {
   view: {
     "original-states": () =>
       import("./original-states/original-states-view-strategy"),
-    energy: () => import("../../energy/strategies/energy-view-strategy"),
+    "energy-overview": () =>
+      import("../../energy/strategies/energy-overview-view-strategy"),
+    "energy-electricity": () =>
+      import("../../energy/strategies/energy-electricity-view-strategy"),
     map: () => import("./map/map-view-strategy"),
     iframe: () => import("./iframe/iframe-view-strategy"),
     area: () => import("./areas/area-view-strategy"),
     "areas-overview": () => import("./areas/areas-overview-view-strategy"),
-    "home-main": () => import("./home/home-main-view-strategy"),
+    "home-overview": () => import("./home/home-overview-view-strategy"),
     "home-media-players": () =>
       import("./home/home-media-players-view-strategy"),
     "home-area": () => import("./home/home-area-view-strategy"),

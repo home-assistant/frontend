@@ -271,7 +271,6 @@ class HaSceneDashboard extends SubscribeMixin(LitElement) {
         },
         area: {
           title: localize("ui.panel.config.scene.picker.headers.area"),
-          defaultHidden: true,
           groupable: true,
           filterable: true,
           sortable: true,
@@ -1112,6 +1111,9 @@ ${rejected
   private async _delete(scene: SceneEntity): Promise<void> {
     if (scene.attributes.id) {
       await deleteScene(this.hass, scene.attributes.id);
+      this._selected = this._selected.filter(
+        (entityId) => entityId !== scene.entity_id
+      );
     }
   }
 

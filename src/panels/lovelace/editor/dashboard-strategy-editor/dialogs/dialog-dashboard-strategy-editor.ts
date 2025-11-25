@@ -17,7 +17,10 @@ import "../../../../../components/ha-dialog-header";
 import "../../../../../components/ha-icon-button";
 import "../../../../../components/ha-list-item";
 import type { LovelaceStrategyConfig } from "../../../../../data/lovelace/config/strategy";
-import { haStyleDialog } from "../../../../../resources/styles";
+import {
+  haStyleDialog,
+  haStyleDialogFixedTop,
+} from "../../../../../resources/styles";
 import type { HomeAssistant } from "../../../../../types";
 import { showSaveSuccessToast } from "../../../../../util/toast-saved-success";
 import { cleanLegacyStrategyConfig } from "../../../strategies/legacy-strategy";
@@ -219,14 +222,21 @@ class DialogDashboardStrategyEditor extends LitElement {
   static get styles(): CSSResultGroup {
     return [
       haStyleDialog,
+      haStyleDialogFixedTop,
       css`
         ha-dialog {
           --dialog-content-padding: 0 24px;
-          --dialog-surface-position: fixed;
-          --dialog-surface-top: 40px;
-          --mdc-dialog-min-width: min(640px, calc(100% - 32px));
-          --mdc-dialog-max-width: min(640px, calc(100% - 32px));
-          --mdc-dialog-max-height: calc(100% - 80px);
+          --mdc-dialog-min-width: min(
+            640px,
+            calc(100vw - var(--safe-area-inset-x))
+          );
+          --mdc-dialog-max-width: min(
+            640px,
+            calc(100vw - var(--safe-area-inset-x))
+          );
+          --mdc-dialog-max-height: calc(
+            100vh - var(--ha-space-20) - var(--safe-area-inset-y)
+          );
         }
 
         @media all and (max-width: 450px), all and (max-height: 500px) {
@@ -234,9 +244,12 @@ class DialogDashboardStrategyEditor extends LitElement {
           ha-dialog {
             height: 100%;
             --dialog-surface-top: 0px;
-            --mdc-dialog-min-width: 100%;
-            --mdc-dialog-max-width: 100%;
-            --mdc-dialog-max-height: 100%;
+            --mdc-dialog-min-width: 100vw;
+            --mdc-dialog-max-width: 100vw;
+            --mdc-dialog-min-height: 100vh;
+            --mdc-dialog-min-height: 100svh;
+            --mdc-dialog-max-height: 100vh;
+            --mdc-dialog-max-height: 100svh;
             --dialog-content-padding: 8px;
           }
         }

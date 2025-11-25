@@ -72,9 +72,11 @@ export type TranslationCategory =
   | "system_health"
   | "application_credentials"
   | "issues"
+  | "preview_features"
   | "selector"
   | "services"
-  | "triggers";
+  | "triggers"
+  | "conditions";
 
 export const subscribeTranslationPreferences = (
   hass: HomeAssistant,

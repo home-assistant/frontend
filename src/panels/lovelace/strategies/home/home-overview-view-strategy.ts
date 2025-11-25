@@ -22,13 +22,12 @@ import type {
   MarkdownCardConfig,
   WeatherForecastCardConfig,
 } from "../../cards/types";
-import { getAreas, getFloors } from "../areas/helpers/areas-strategy-helper";
 import type { CommonControlSectionStrategyConfig } from "../usage_prediction/common-controls-section-strategy";
-import { getHomeStructure } from "./helpers/home-structure";
+import { getAreasFloorHierarchy } from "../../../../common/areas/areas-floor-hierarchy";
 import { HOME_SUMMARIES_FILTERS } from "./helpers/home-summaries";
 
-export interface HomeMainViewStrategyConfig {
-  type: "home-main";
+export interface HomeOverviewViewStrategyConfig {
+  type: "home-overview";
   favorite_entities?: string[];
 }
 
@@ -58,16 +57,16 @@ const computeAreaCard = (
   };
 };
 
-@customElement("home-main-view-strategy")
-export class HomeMainViewStrategy extends ReactiveElement {
+@customElement("home-overview-view-strategy")
+export class HomeOverviewViewStrategy extends ReactiveElement {
   static async generate(
-    config: HomeMainViewStrategyConfig,
+    config: HomeOverviewViewStrategyConfig,
     hass: HomeAssistant
   ): Promise<LovelaceViewConfig> {
-    const areas = getAreas(hass.areas);
-    const floors = getFloors(hass.floors);
+    const areas = Object.values(hass.areas);
+    const floors = Object.values(hass.floors);
 
-    const home = getHomeStructure(floors, areas);
+    const home = getAreasFloorHierarchy(floors, areas);
 
     const floorCount = home.floors.length + (home.areas.length ? 1 : 0);
 
@@ -326,6 +325,6 @@ export class HomeMainViewStrategy extends ReactiveElement {
 
 declare global {
   interface HTMLElementTagNameMap {
-    "home-main-view-strategy": HomeMainViewStrategy;
+    "home-overview-view-strategy": HomeOverviewViewStrategy;
   }
 }

@@ -365,7 +365,7 @@ export class SectionsView extends LitElement implements LovelaceViewElement {
 
     @media (max-width: 600px) {
       :host {
-        --column-gap: var(--row-gap);
+        --column-gap: var(--ha-view-sections-narrow-column-gap, var(--row-gap));
       }
     }
 

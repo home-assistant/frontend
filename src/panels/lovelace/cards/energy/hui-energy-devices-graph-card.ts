@@ -135,11 +135,13 @@ export class HuiEnergyDevicesGraphCard
       return nothing;
     }
 
+    const modes = this._getAllowedModes();
+
     return html`
       <ha-card>
         <div class="card-header">
           <span>${this._config.title ? this._config.title : nothing}</span>
-          ${this._getAllowedModes().length > 1
+          ${modes.length > 1
             ? html`
                 <ha-icon-button
                   .path=${this._chartType === "pie"
@@ -166,7 +168,7 @@ export class HuiEnergyDevicesGraphCard
               this._chartType,
               this._legendData
             )}
-            .height=${`${Math.max(300, (this._legendData?.length || 0) * 28 + 50)}px`}
+            .height=${`${Math.max(modes.includes("pie") ? 300 : 100, (this._legendData?.length || 0) * 28 + 50)}px`}
             .extraComponents=${[PieChart]}
             @chart-click=${this._handleChartClick}
             @dataset-hidden=${this._datasetHidden}
@@ -492,7 +494,7 @@ export class HuiEnergyDevicesGraphCard
           show: true,
           position: "center",
           color: computedStyle.getPropertyValue("--secondary-text-color"),
-          fontSize: computedStyle.getPropertyValue("--ha-font-size-l"),
+          fontSize: computedStyle.getPropertyValue("--ha-font-size-m"),
           lineHeight: 24,
           fontWeight: "bold",
           formatter: `{a}\n${formatNumber(totalChart, this.hass.locale)} kWh`,

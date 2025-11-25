@@ -23,6 +23,8 @@ import {
   fetchHassioHassOsInfo,
   fetchHassioHostInfo,
 } from "../../../data/hassio/host";
+import type { LabPreviewFeature } from "../../../data/labs";
+import { fetchLabFeatures } from "../../../data/labs";
 import { showRestartDialog } from "../../../dialogs/restart/show-dialog-restart";
 import "../../../layouts/hass-subpage";
 import { haStyle } from "../../../resources/styles";
@@ -49,6 +51,8 @@ class HaConfigSystemNavigation extends LitElement {
   @state() private _storageInfo?: { used: number; free: number; total: number };
 
   @state() private _externalAccess = false;
+
+  @state() private _labFeatures?: LabPreviewFeature[];
 
   protected render(): TemplateResult {
     const pages = configSections.general
@@ -93,6 +97,12 @@ class HaConfigSystemNavigation extends LitElement {
             description =
               this._boardName ||
               this.hass.localize("ui.panel.config.hardware.description");
+            break;
+          case "labs":
+            description =
+              this._labFeatures && this._labFeatures.some((f) => f.enabled)
+                ? this.hass.localize("ui.panel.config.labs.description_enabled")
+                : this.hass.localize("ui.panel.config.labs.description");
             break;
 
           default:
@@ -156,6 +166,7 @@ class HaConfigSystemNavigation extends LitElement {
     const isHassioLoaded = isComponentLoaded(this.hass, "hassio");
     this._fetchBackupInfo();
     this._fetchHardwareInfo(isHassioLoaded);
+    this._fetchLabFeatures();
     if (isHassioLoaded) {
       this._fetchStorageInfo();
     }
@@ -209,6 +220,12 @@ class HaConfigSystemNavigation extends LitElement {
       }
     }
     this._externalAccess = this.hass.config.external_url !== null;
+  }
+
+  private async _fetchLabFeatures() {
+    if (isComponentLoaded(this.hass, "labs")) {
+      this._labFeatures = await fetchLabFeatures(this.hass);
+    }
   }
 
   private async _showRestartDialog() {

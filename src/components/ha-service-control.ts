@@ -33,6 +33,7 @@ import type { HomeAssistant, ValueChangedEvent } from "../types";
 import { documentationUrl } from "../util/documentation-url";
 import "./ha-checkbox";
 import "./ha-icon-button";
+import "./ha-markdown";
 import "./ha-selector/ha-selector";
 import "./ha-service-picker";
 import "./ha-service-section-icon";
@@ -684,10 +685,14 @@ export class HaServiceControl extends LitElement {
             dataField.key}</span
           >
           <span slot="description"
-            >${this.hass.localize(
-              `component.${domain}.services.${serviceName}.fields.${dataField.key}.description`
-            ) || dataField?.description}</span
-          >
+            ><ha-markdown
+              breaks
+              allow-svg
+              .content=${this.hass.localize(
+                `component.${domain}.services.${serviceName}.fields.${dataField.key}.description`
+              ) || dataField?.description}
+            ></ha-markdown>
+          </span>
           <ha-selector
             .context=${this._selectorContext(targetEntities)}
             .disabled=${this.disabled ||

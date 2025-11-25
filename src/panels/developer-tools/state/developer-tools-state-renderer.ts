@@ -61,7 +61,7 @@ class HaPanelDevStateRenderer extends LitElement {
   protected render() {
     const showAttributes = !this.narrow && this.showAttributes;
     return html`
-        <div 
+        <div
           class=${classMap({ entities: true, "hide-attributes": !showAttributes })}
           role="table"
         >
@@ -245,6 +245,7 @@ class HaPanelDevStateRenderer extends LitElement {
         :host([virtualize]) {
           display: block;
           height: 100%;
+          overflow: auto;
         }
 
         .entities {
