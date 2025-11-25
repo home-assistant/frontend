@@ -30,6 +30,7 @@ import type {
   CustomSeriesOption,
   SankeySeriesOption,
   GraphSeriesOption,
+  SunburstSeriesOption,
 } from "echarts/charts";
 import type {
   // The component option types are defined with the ComponentOption suffix
@@ -55,6 +56,7 @@ export type ECOption = ComposeOption<
   | VisualMapComponentOption
   | SankeySeriesOption
   | GraphSeriesOption
+  | SunburstSeriesOption
 >;
 
 // Register the required components
