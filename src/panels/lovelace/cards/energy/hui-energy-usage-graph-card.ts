@@ -105,7 +105,7 @@ export class HuiEnergyUsageGraphCard
       <ha-card>
         <div class="card-header">
           <span>${this._config.title ? this._config.title : nothing}</span>
-          ${this._total && this._total > 0
+          ${this._total
             ? html`<hui-energy-graph-chip
                 .tooltip=${this._formatTotal(this._total)}
               >
@@ -539,12 +539,6 @@ export class HuiEnergyUsageGraphCard
       display: flex;
       justify-content: space-between;
       align-items: center;
-      gap: 8px;
-    }
-    .card-header span {
-      font-size: 20px;
-      font-weight: 500;
-      line-height: 28px;
     }
     .content {
       padding: 16px;
