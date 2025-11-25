@@ -1922,7 +1922,7 @@ class DialogAddAutomationElement
           padding-bottom: max(var(--safe-area-inset-bottom), var(--ha-space-4));
         }
 
-        .ha-automation-add-items.hidden,
+        ha-automation-add-items.hidden,
         .groups.hidden {
           display: none;
         }
