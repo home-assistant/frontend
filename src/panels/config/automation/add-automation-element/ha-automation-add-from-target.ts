@@ -196,18 +196,13 @@ export default class HaAutomationAddFromTarget extends LitElement {
     }
 
     return html`
-      ${!this.narrow || !this.value
-        ? this._renderFloors(this.narrow, this._entries, this.value)
-        : nothing}
       ${this.narrow && this.value
         ? this._renderNarrow(this._entries, this.value)
-        : nothing}
-      ${!this.narrow || !this.value
-        ? this._renderUnassigned(this.narrow, this._entries, this.value)
-        : nothing}
-      ${!this.narrow || !this.value
-        ? this._renderLabels(this.narrow, this.value)
-        : nothing}
+        : html`
+            ${this._renderFloors(this.narrow, this._entries, this.value)}
+            ${this._renderUnassigned(this.narrow, this._entries, this.value)}
+            ${this._renderLabels(this.narrow, this.value)}
+          `}
       ${this.narrow && this._showShowMoreButton && !this._fullHeight
         ? html`
             <div class="targets-show-more">

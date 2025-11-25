@@ -1775,7 +1775,8 @@ class DialogAddAutomationElement
                   targetId
                 ]?.length > 0
               )) ||
-            targetType === "entity")
+            targetType === "entity" ||
+            targetType === "label")
         ) {
           return "hidden";
         }
