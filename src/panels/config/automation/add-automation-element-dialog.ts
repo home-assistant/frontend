@@ -93,6 +93,7 @@ import {
   fetchIntegrationManifests,
 } from "../../../data/integration";
 import type { LabelRegistryEntry } from "../../../data/label_registry";
+import { subscribeLabFeatures } from "../../../data/labs";
 import {
   TARGET_SEPARATOR,
   getServicesForTarget,
@@ -109,6 +110,7 @@ import {
 } from "../../../data/trigger";
 import type { HassDialog } from "../../../dialogs/make-dialog-manager";
 import { KeyboardShortcutMixin } from "../../../mixins/keyboard-shortcut-mixin";
+import { SubscribeMixin } from "../../../mixins/subscribe-mixin";
 import type { HomeAssistant } from "../../../types";
 import { isMac } from "../../../util/is_mac";
 import { showToast } from "../../../util/toast";
@@ -162,7 +164,7 @@ const DYNAMIC_KEYWORDS = ["dynamicGroups", "helpers", "other"];
 
 @customElement("add-automation-element-dialog")
 class DialogAddAutomationElement
-  extends KeyboardShortcutMixin(LitElement)
+  extends KeyboardShortcutMixin(SubscribeMixin(LitElement))
   implements HassDialog
 {
   @property({ attribute: false }) public hass!: HomeAssistant;
@@ -199,6 +201,8 @@ class DialogAddAutomationElement
   }[];
 
   @state() private _loadItemsError = false;
+
+  @state() private _newTriggersAndConditions = false;
 
   @state() private _conditionDescriptions: ConditionDescriptions = {};
 
@@ -239,6 +243,20 @@ class DialogAddAutomationElement
     ) {
       this._calculateUsedDomains();
     }
+  }
+
+  public hassSubscribe() {
+    return [
+      subscribeLabFeatures(this.hass!.connection, (features) => {
+        this._newTriggersAndConditions =
+          features.find(
+            (feature) =>
+              feature.domain === "automation" &&
+              feature.preview_feature === "new_triggers_conditions"
+          )?.enabled ?? false;
+        this._tab = this._newTriggersAndConditions ? "targets" : "groups";
+      }),
+    ];
   }
 
   public showDialog(params): void {
@@ -293,7 +311,7 @@ class DialogAddAutomationElement
     this._selectedCollectionIndex = undefined;
     this._selectedGroup = undefined;
     this._selectedTarget = undefined;
-    this._tab = "targets";
+    this._tab = this._newTriggersAndConditions ? "targets" : "groups";
     this._filter = "";
     this._manifests = undefined;
     this._domains = undefined;
@@ -390,16 +408,19 @@ class DialogAddAutomationElement
 
     const tabButtons = [
       {
-        label: this.hass.localize(`ui.panel.config.automation.editor.targets`),
-        value: "targets",
-      },
-      {
         label: this.hass.localize(
           `ui.panel.config.automation.editor.${automationElementType}s.name`
         ),
         value: "groups",
       },
     ];
+
+    if (this._newTriggersAndConditions) {
+      tabButtons.unshift({
+        label: this.hass.localize(`ui.panel.config.automation.editor.targets`),
+        value: "targets",
+      });
+    }
 
     if (this._params?.type !== "trigger") {
       tabButtons.push({
@@ -442,6 +463,7 @@ class DialogAddAutomationElement
             `
           : nothing}
         ${!this._filter &&
+        tabButtons.length > 1 &&
         (!this._narrow || (!this._selectedGroup && !this._selectedTarget))
           ? html`<ha-button-toggle-group
               variant="neutral"
@@ -483,6 +505,7 @@ class DialogAddAutomationElement
                 this._manifests
               )}
               .convertToItem=${this._convertToItem}
+              .newTriggersAndConditions=${this._newTriggersAndConditions}
               @search-element-picked=${this._searchItemSelected}
             >
             </ha-automation-add-search>`
