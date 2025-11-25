@@ -696,17 +696,17 @@ class DialogAddAutomationElement
       );
 
       if (targetId) {
-        if (targetType === "area" && this.hass.areas[targetId].floor_id) {
+        if (targetType === "area" && this.hass.areas[targetId]?.floor_id) {
           const floorId = this.hass.areas[targetId].floor_id;
           subtitle = computeFloorName(this.hass.floors[floorId]) || floorId;
         }
-        if (targetType === "device" && this.hass.devices[targetId].area_id) {
+        if (targetType === "device" && this.hass.devices[targetId]?.area_id) {
           const areaId = this.hass.devices[targetId].area_id;
           subtitle = computeAreaName(this.hass.areas[areaId]) || areaId;
         }
         if (targetType === "entity" && this.hass.states[targetId]) {
           const entity = this.hass.entities[targetId];
-          if (!entity.device_id && !entity.area_id) {
+          if (entity && !entity.device_id && !entity.area_id) {
             const domain = targetId.split(".", 2)[0];
             subtitle = domainToName(
               this.hass.localize,
