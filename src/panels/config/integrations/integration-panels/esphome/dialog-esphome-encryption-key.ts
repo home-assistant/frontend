@@ -96,7 +96,6 @@ class DialogESPHomeEncryptionKey extends LitElement {
         ha-dialog {
           --mdc-dialog-max-width: 500px;
         }
-
         .content {
           display: flex;
           flex-direction: column;
