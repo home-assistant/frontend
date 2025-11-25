@@ -2,16 +2,16 @@ import { LitElement, css, html, nothing } from "lit";
 import { customElement, property, state } from "lit/decorators";
 import "../../components/ha-alert";
 import "../../components/ha-icon";
-import "../../components/ha-list-item";
+import "../../components/ha-md-list-item";
 import "../../components/ha-spinner";
 import type {
-  ExternalEntityAddToActions,
   ExternalEntityAddToAction,
+  ExternalEntityAddToActions,
 } from "../../external_app/external_messaging";
 import { showToast } from "../../util/toast";
 
-import type { HomeAssistant } from "../../types";
 import { fireEvent } from "../../common/dom/fire_event";
+import type { HomeAssistant } from "../../types";
 
 @customElement("ha-more-info-add-to")
 export class HaMoreInfoAddTo extends LitElement {
@@ -93,19 +93,18 @@ export class HaMoreInfoAddTo extends LitElement {
       <div class="actions-list">
         ${this._externalActions.actions.map(
           (action) => html`
-            <ha-list-item
-              graphic="icon"
+            <ha-md-list-item
+              type="button"
               .disabled=${!action.enabled}
               .action=${action}
-              .twoline=${!!action.details}
               @click=${this._actionSelected}
             >
+              <ha-icon slot="start" .icon=${action.mdi_icon}></ha-icon>
               <span>${action.name}</span>
               ${action.details
-                ? html`<span slot="secondary">${action.details}</span>`
+                ? html`<span slot="supporting-text">${action.details}</span>`
                 : nothing}
-              <ha-icon slot="graphic" .icon=${action.mdi_icon}></ha-icon>
-            </ha-list-item>
+            </ha-md-list-item>
           `
         )}
       </div>
@@ -129,15 +128,6 @@ export class HaMoreInfoAddTo extends LitElement {
     .actions-list {
       display: flex;
       flex-direction: column;
-    }
-
-    ha-list-item {
-      cursor: pointer;
-    }
-
-    ha-list-item[disabled] {
-      cursor: not-allowed;
-      opacity: 0.5;
     }
 
     ha-icon {

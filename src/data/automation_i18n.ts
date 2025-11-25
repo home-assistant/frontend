@@ -18,7 +18,14 @@ import {
 } from "../common/string/format-list";
 import { hasTemplate } from "../common/string/has-template";
 import type { HomeAssistant } from "../types";
-import type { Condition, ForDict, LegacyTrigger, Trigger } from "./automation";
+import type {
+  Condition,
+  ForDict,
+  LegacyCondition,
+  LegacyTrigger,
+  Trigger,
+} from "./automation";
+import { getConditionDomain, getConditionObjectId } from "./condition";
 import type { DeviceCondition, DeviceTrigger } from "./device_automation";
 import {
   localizeDeviceAutomationCondition,
@@ -896,6 +903,39 @@ const tryDescribeCondition = (
     }
   }
 
+  const description = describeLegacyCondition(
+    condition as LegacyCondition,
+    hass,
+    entityRegistry
+  );
+
+  if (description) {
+    return description;
+  }
+
+  const conditionType = condition.condition;
+
+  const domain = getConditionDomain(condition.condition);
+  const type = getConditionObjectId(condition.condition);
+
+  return (
+    hass.localize(
+      `component.${domain}.conditions.${type}.description_configured`
+    ) ||
+    hass.localize(
+      `ui.panel.config.automation.editor.conditions.type.${conditionType as LegacyCondition["condition"]}.label`
+    ) ||
+    hass.localize(
+      `ui.panel.config.automation.editor.conditions.unknown_condition`
+    )
+  );
+};
+
+const describeLegacyCondition = (
+  condition: LegacyCondition,
+  hass: HomeAssistant,
+  entityRegistry: EntityRegistryEntry[]
+) => {
   if (condition.condition === "or") {
     const conditions = ensureArray(condition.conditions);
 
@@ -1287,12 +1327,5 @@ const tryDescribeCondition = (
     );
   }
 
-  return (
-    hass.localize(
-      `ui.panel.config.automation.editor.conditions.type.${condition.condition}.label`
-    ) ||
-    hass.localize(
-      `ui.panel.config.automation.editor.conditions.unknown_condition`
-    )
-  );
+  return undefined;
 };

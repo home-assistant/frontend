@@ -4,6 +4,7 @@ import type { PropertyValues } from "lit";
 import { html, LitElement, nothing } from "lit";
 import { customElement, property, queryAll, state } from "lit/decorators";
 import { repeat } from "lit/directives/repeat";
+import { ensureArray } from "../../../../common/array/ensure-array";
 import { storage } from "../../../../common/decorators/storage";
 import { fireEvent } from "../../../../common/dom/fire_event";
 import { stopPropagation } from "../../../../common/dom/stop_propagation";
@@ -12,11 +13,18 @@ import "../../../../components/ha-button";
 import "../../../../components/ha-button-menu";
 import "../../../../components/ha-sortable";
 import "../../../../components/ha-svg-icon";
-import type {
-  AutomationClipboard,
-  Condition,
+import {
+  getValueFromDynamic,
+  isDynamic,
+  type AutomationClipboard,
+  type Condition,
 } from "../../../../data/automation";
-import { CONDITION_BUILDING_BLOCKS } from "../../../../data/condition";
+import type { ConditionDescriptions } from "../../../../data/condition";
+import {
+  CONDITION_BUILDING_BLOCKS,
+  subscribeConditions,
+} from "../../../../data/condition";
+import { SubscribeMixin } from "../../../../mixins/subscribe-mixin";
 import type { HomeAssistant } from "../../../../types";
 import {
   PASTE_VALUE,
@@ -25,10 +33,9 @@ import {
 import { automationRowsStyles } from "../styles";
 import "./ha-automation-condition-row";
 import type HaAutomationConditionRow from "./ha-automation-condition-row";
-import { ensureArray } from "../../../../common/array/ensure-array";
 
 @customElement("ha-automation-condition")
-export default class HaAutomationCondition extends LitElement {
+export default class HaAutomationCondition extends SubscribeMixin(LitElement) {
   @property({ attribute: false }) public hass!: HomeAssistant;
 
   @property({ attribute: false }) public conditions!: Condition[];
@@ -45,6 +52,8 @@ export default class HaAutomationCondition extends LitElement {
     false;
 
   @state() private _rowSortSelected?: number;
+
+  @state() private _conditionDescriptions: ConditionDescriptions = {};
 
   @state()
   @storage({
@@ -63,6 +72,26 @@ export default class HaAutomationCondition extends LitElement {
   private _focusConditionIndexOnChange?: number;
 
   private _conditionKeys = new WeakMap<Condition, string>();
+
+  protected hassSubscribe() {
+    return [
+      subscribeConditions(this.hass, (conditions) =>
+        this._addConditions(conditions)
+      ),
+    ];
+  }
+
+  private _addConditions(conditions: ConditionDescriptions) {
+    this._conditionDescriptions = {
+      ...this._conditionDescriptions,
+      ...conditions,
+    };
+  }
+
+  protected firstUpdated(changedProps: PropertyValues) {
+    super.firstUpdated(changedProps);
+    this.hass.loadBackendTranslation("conditions");
+  }
 
   protected updated(changedProperties: PropertyValues) {
     if (!changedProperties.has("conditions")) {
@@ -168,6 +197,7 @@ export default class HaAutomationCondition extends LitElement {
                 .last=${idx === this.conditions.length - 1}
                 .totalConditions=${this.conditions.length}
                 .condition=${cond}
+                .conditionDescriptions=${this._conditionDescriptions}
                 .disabled=${this.disabled}
                 .narrow=${this.narrow}
                 @duplicate=${this._duplicateCondition}
@@ -237,6 +267,10 @@ export default class HaAutomationCondition extends LitElement {
       conditions = this.conditions.concat(
         deepClone(this._clipboard!.condition)
       );
+    } else if (isDynamic(value)) {
+      conditions = this.conditions.concat({
+        condition: getValueFromDynamic(value),
+      });
     } else {
       const condition = value as Condition["condition"];
       const elClass = customElements.get(

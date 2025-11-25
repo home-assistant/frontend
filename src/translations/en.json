@@ -6810,6 +6810,7 @@
         },
         "analytics": {
           "caption": "Analytics",
+          "header": "Home Assistant analytics",
           "description": "Learn how to share data to improve Home Assistant",
           "preferences": {
             "base": {
@@ -6827,10 +6828,21 @@
             "diagnostics": {
               "title": "Diagnostics",
               "description": "Share crash reports when unexpected errors occur."
+            },
+            "snapshots": {
+              "title": "Devices",
+              "description": "Generic information about your devices.",
+              "header": "Device analytics",
+              "info": "Anonymously share data about your devices to help build the Open Home Foundation’s device database. This free, open source resource helps users find useful information about smart home devices. Only device-specific details (like model or manufacturer) are shared — never personally identifying information (like the names you assign).",
+              "learn_more": "Learn more about the device database and how we process your data",
+              "alert": {
+                "title": "Important",
+                "content": "Only enable this option if you understand that your device information will be shared."
+              }
             }
           },
           "need_base_enabled": "You need to enable basic analytics for this option to be available",
-          "learn_more": "How we process your data",
+          "learn_more": "Learn how we process your data",
           "intro": "Share anonymized information from your installation to help make Home Assistant better and help us convince manufacturers to add local control and privacy-focused features.",
           "download_device_info": "Preview device analytics"
         },
@@ -7176,6 +7188,7 @@
             "energy_usage_graph": {
               "total_consumed": "Total consumed {num} kWh",
               "total_returned": "Total returned {num} kWh",
+              "total_usage": "{num} kWh used",
               "combined_from_grid": "Combined from grid",
               "consumed_solar": "Consumed solar",
               "consumed_battery": "Consumed battery"
