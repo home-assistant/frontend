@@ -211,7 +211,7 @@ export default class HaAutomationAddFromTarget extends LitElement {
       ${this.narrow && this._showShowMoreButton && !this._fullHeight
         ? html`
             <div class="targets-show-more">
-              <ha-button appearance="plain" @click=${this._expandHeight}>
+              <ha-button appearance="filled" @click=${this._expandHeight}>
                 ${this.localize("ui.panel.config.automation.editor.show_more")}
               </ha-button>
             </div>
@@ -1589,6 +1589,14 @@ export default class HaAutomationAddFromTarget extends LitElement {
       box-shadow: inset var(--ha-shadow-offset-x-lg)
         calc(var(--ha-shadow-offset-y-lg) * -1) var(--ha-shadow-blur-lg)
         var(--ha-shadow-spread-lg) var(--ha-color-shadow-light);
+    }
+
+    @media (prefers-color-scheme: dark) {
+      .targets-show-more {
+        box-shadow: inset var(--ha-shadow-offset-x-lg)
+          calc(var(--ha-shadow-offset-y-lg) * -1) var(--ha-shadow-blur-lg)
+          var(--ha-shadow-spread-lg) var(--ha-color-shadow-dark);
+      }
     }
 
     @media all and (max-width: 870px), all and (max-height: 500px) {
