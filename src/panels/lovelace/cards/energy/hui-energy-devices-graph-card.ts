@@ -551,9 +551,12 @@ export class HuiEnergyDevicesGraphCard
       e.detail.seriesType === "pie" &&
       e.detail.event?.target?.type === "tspan" // label
     ) {
-      fireEvent(this, "hass-more-info", {
-        entityId: (e.detail.data as any).id as string,
-      });
+      const id = (e.detail.data as any).id as string;
+      if (id !== "untracked") {
+        fireEvent(this, "hass-more-info", {
+          entityId: id,
+        });
+      }
     }
   }
 
