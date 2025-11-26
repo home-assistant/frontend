@@ -74,7 +74,7 @@ export class HaPlatformCondition extends LitElement {
       let updatedDefaultValue = false;
       const updatedOptions = {};
       if (this.condition && this.description?.fields) {
-        const loadDefaults = this.condition && !("options" in this.condition);
+        const loadDefaults = !("options" in this.condition);
         // Set mandatory bools without a default value to false
         Object.entries(this.description.fields).forEach(([key, field]) => {
           if (
@@ -86,8 +86,7 @@ export class HaPlatformCondition extends LitElement {
           ) {
             updatedDefaultValue = true;
             updatedOptions[key] = false;
-          }
-          if (
+          } else if (
             loadDefaults &&
             field.selector &&
             field.default !== undefined &&
