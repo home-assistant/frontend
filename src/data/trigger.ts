@@ -40,7 +40,6 @@ export const TRIGGER_COLLECTIONS: AutomationElementGroupCollection[] = [
       event: {},
       geo_location: {},
       homeassistant: {},
-      mqtt: {},
       conversation: {},
       tag: {},
       template: {},
