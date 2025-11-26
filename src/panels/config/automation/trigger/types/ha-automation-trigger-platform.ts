@@ -76,10 +76,7 @@ export class HaPlatformTrigger extends LitElement {
           options: { [key]: this.trigger[key] },
         };
       } else {
-        if (!newValue.options) {
-          newValue.options = {};
-        }
-        newValue.options[key] = this.trigger[key];
+        newValue.options![key] = this.trigger[key];
       }
       delete newValue[key];
     }
