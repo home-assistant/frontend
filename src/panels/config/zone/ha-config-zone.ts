@@ -47,9 +47,12 @@ import "../ha-config-section";
 import { configSections } from "../ha-panel-config";
 import { showHomeZoneDetailDialog } from "./show-dialog-home-zone-detail";
 import { showZoneDetailDialog } from "./show-dialog-zone-detail";
+import { KeyboardShortcutMixin } from "../../../mixins/keyboard-shortcut-mixin";
 
 @customElement("ha-config-zone")
-export class HaConfigZone extends SubscribeMixin(LitElement) {
+export class HaConfigZone extends KeyboardShortcutMixin(
+  SubscribeMixin(LitElement)
+) {
   @property({ attribute: false }) public hass!: HomeAssistant;
 
   @property({ attribute: "is-wide", type: Boolean }) public isWide = false;
@@ -535,6 +538,12 @@ export class HaConfigZone extends SubscribeMixin(LitElement) {
         : undefined,
       removeEntry: entry ? () => this._removeEntry(entry) : undefined,
     });
+  }
+
+  protected supportedSingleKeyShortcuts(): SupportedShortcuts {
+    return {
+      n: () => this._createZone(),
+    };
   }
 
   static styles = css`

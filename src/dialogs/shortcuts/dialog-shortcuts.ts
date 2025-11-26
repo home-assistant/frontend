@@ -63,6 +63,11 @@ const _SHORTCUTS: Section[] = [
         descriptionTranslationKey:
           "ui.dialogs.shortcuts.searching.search_in_table",
       },
+      {
+        shortcut: ["N"],
+        descriptionTranslationKey:
+          "ui.dialogs.shortcuts.searching.new_in_table",
+      },
     ],
   },
   {

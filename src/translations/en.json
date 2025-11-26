@@ -2135,7 +2135,8 @@
           "search_command": "search command",
           "search_entities": "search entities",
           "search_devices": "search devices",
-          "search_in_table": "to search in tables"
+          "search_in_table": "to search in tables",
+          "new_in_table": "to create a new item in tables"
         },
         "assist": {
           "title": "Assist",

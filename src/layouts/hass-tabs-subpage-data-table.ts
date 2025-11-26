@@ -190,6 +190,21 @@ export class HaTabsSubpageDataTable extends KeyboardShortcutMixin(LitElement) {
     };
   }
 
+  protected supportedSingleKeyShortcuts(): SupportedShortcuts {
+    if (this.hasFab) {
+      return {
+        n: () => {
+          const fab = this.querySelector<HTMLElement>('[slot="fab"]');
+          if (fab) {
+            fab.click();
+          }
+        },
+      };
+    }
+
+    return {};
+  }
+
   private _showPaneController = new ResizeController(this, {
     callback: (entries) => entries[0]?.contentRect.width > 750,
   });
