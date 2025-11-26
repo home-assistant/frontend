@@ -70,33 +70,36 @@ export class HaPlatformTrigger extends LitElement {
       this._manifest = undefined;
     }
 
-    if (oldValue?.trigger !== this.trigger?.trigger) {
+    if (
+      oldValue?.trigger !== this.trigger?.trigger &&
+      this.trigger &&
+      this.description?.fields
+    ) {
       let updatedDefaultValue = false;
       const updatedOptions = {};
-      if (this.trigger && this.description?.fields) {
-        const loadDefaults = !("options" in this.trigger);
-        // Set mandatory bools without a default value to false
-        Object.entries(this.description.fields).forEach(([key, field]) => {
-          if (
-            field.selector &&
-            field.required &&
-            field.default === undefined &&
-            "boolean" in field.selector &&
-            updatedOptions[key] === undefined
-          ) {
-            updatedDefaultValue = true;
-            updatedOptions[key] = false;
-          } else if (
-            loadDefaults &&
-            field.selector &&
-            field.default !== undefined &&
-            updatedOptions[key] === undefined
-          ) {
-            updatedDefaultValue = true;
-            updatedOptions[key] = field.default;
-          }
-        });
-      }
+      const loadDefaults = !("options" in this.trigger);
+      // Set mandatory bools without a default value to false
+      Object.entries(this.description.fields).forEach(([key, field]) => {
+        if (
+          field.selector &&
+          field.required &&
+          field.default === undefined &&
+          "boolean" in field.selector &&
+          updatedOptions[key] === undefined
+        ) {
+          updatedDefaultValue = true;
+          updatedOptions[key] = false;
+        } else if (
+          loadDefaults &&
+          field.selector &&
+          field.default !== undefined &&
+          updatedOptions[key] === undefined
+        ) {
+          updatedDefaultValue = true;
+          updatedOptions[key] = field.default;
+        }
+      });
+
       if (updatedDefaultValue) {
         fireEvent(this, "value-changed", {
           value: {
