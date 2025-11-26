@@ -40,7 +40,7 @@ const OVERVIEW_VIEW = {
     type: "energy-overview",
     collection_key: DEFAULT_ENERGY_COLLECTION_KEY,
   },
-};
+} as LovelaceViewConfig;
 
 const ELECTRICITY_VIEW = {
   back_path: "/energy",
