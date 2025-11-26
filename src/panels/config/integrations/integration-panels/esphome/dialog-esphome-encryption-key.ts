@@ -4,6 +4,8 @@ import { css, html, LitElement, nothing } from "lit";
 import { customElement, property, state } from "lit/decorators";
 import { fireEvent } from "../../../../../common/dom/fire_event";
 import { copyToClipboard } from "../../../../../common/util/copy-clipboard";
+import "../../../../../components/ha-button";
+import "../../../../../components/ha-dialog-footer";
 import "../../../../../components/ha-dialog-header";
 import "../../../../../components/ha-icon-button";
 import "../../../../../components/ha-wa-dialog";
@@ -38,7 +40,6 @@ class DialogESPHomeEncryptionKey extends LitElement {
       <ha-wa-dialog
         open
         @closed=${this.closeDialog}
-        hideActions
         header-title=${this.hass.localize(
           "ui.panel.config.devices.esphome.encryption_key_title"
         )}
@@ -74,6 +75,11 @@ class DialogESPHomeEncryptionKey extends LitElement {
             ></ha-icon-button>
           </div>
         </div>
+        <ha-dialog-footer slot="footer">
+          <ha-button slot="primaryAction" data-dialog="close">
+            ${this.hass.localize("ui.common.close")}
+          </ha-button>
+        </ha-dialog-footer>
       </ha-wa-dialog>
     `;
   }
@@ -93,9 +99,6 @@ class DialogESPHomeEncryptionKey extends LitElement {
     return [
       haStyleDialog,
       css`
-        ha-dialog {
-          --mdc-dialog-max-width: 500px;
-        }
         .content {
           display: flex;
           flex-direction: column;
