@@ -99,6 +99,7 @@ import type { LabelRegistryEntry } from "../../../data/label_registry";
 import { subscribeLabFeatures } from "../../../data/labs";
 import {
   TARGET_SEPARATOR,
+  getConditionsForTarget,
   getServicesForTarget,
   getTargetComboBoxItemType,
   getTriggersForTarget,
@@ -1235,28 +1236,12 @@ class DialogAddAutomationElement
 
       for (const condition of Object.keys(conditions)) {
         const domain = getConditionDomain(condition);
-        const conditionName = getConditionObjectId(condition);
 
         if (group && group !== `${DYNAMIC_PREFIX}${domain}`) {
           continue;
         }
 
-        result.push({
-          icon: html`
-            <ha-condition-icon
-              .hass=${this.hass}
-              .condition=${condition}
-            ></ha-condition-icon>
-          `,
-          key: `${DYNAMIC_PREFIX}${condition}`,
-          name:
-            localize(`component.${domain}.conditions.${conditionName}.name`) ||
-            condition,
-          description:
-            localize(
-              `component.${domain}.conditions.${conditionName}.description`
-            ) || condition,
-        });
+        result.push(this._getConditionListItem(localize, domain, condition));
       }
       return result;
     }
@@ -1468,6 +1453,30 @@ class DialogAddAutomationElement
     };
   }
 
+  private _getConditionListItem(
+    localize: LocalizeFunc,
+    domain: string,
+    condition: string
+  ): AddAutomationElementListItem {
+    const conditionName = getConditionObjectId(condition);
+    return {
+      icon: html`
+        <ha-condition-icon
+          .hass=${this.hass}
+          .condition=${condition}
+        ></ha-condition-icon>
+      `,
+      key: `${DYNAMIC_PREFIX}${condition}`,
+      name:
+        localize(`component.${domain}.conditions.${conditionName}.name`) ||
+        condition,
+      description:
+        localize(
+          `component.${domain}.conditions.${conditionName}.description`
+        ) || condition,
+    };
+  }
+
   private _getDomainGroupedActionListItems(
     localize: LocalizeFunc,
     serviceIds: string[]
@@ -1508,6 +1517,38 @@ class DialogAddAutomationElement
           this.hass.services[domain][serviceName]?.description ||
           "",
       });
+
+      items[domain].items.sort((a, b) =>
+        stringCompare(a.name, b.name, this.hass.locale.language)
+      );
+    });
+
+    return Object.values(items).sort((a, b) =>
+      stringCompare(a.title, b.title, this.hass.locale.language)
+    );
+  }
+
+  private _getDomainGroupedConditionListItems(
+    localize: LocalizeFunc,
+    conditionIds: string[]
+  ): { title: string; items: AddAutomationElementListItem[] }[] {
+    const items: Record<
+      string,
+      { title: string; items: AddAutomationElementListItem[] }
+    > = {};
+
+    conditionIds.forEach((condition) => {
+      const domain = getConditionDomain(condition);
+      if (!items[domain]) {
+        items[domain] = {
+          title: domainToName(localize, domain, this._manifests?.[domain]),
+          items: [],
+        };
+      }
+
+      items[domain].items.push(
+        this._getConditionListItem(localize, domain, condition)
+      );
 
       items[domain].items.sort((a, b) =>
         stringCompare(a.name, b.name, this.hass.locale.language)
@@ -1598,6 +1639,18 @@ class DialogAddAutomationElement
         );
         return;
       }
+      if (this._params!.type === "condition") {
+        const items = await getConditionsForTarget(
+          this.hass.callWS,
+          this._selectedTarget
+        );
+
+        this._targetItems = this._getDomainGroupedConditionListItems(
+          this.hass.localize,
+          items
+        );
+        return;
+      }
 
       if (this._params!.type === "action") {
         const items = await getServicesForTarget(
@@ -1609,11 +1662,7 @@ class DialogAddAutomationElement
           this.hass.localize,
           items
         );
-
-        return;
       }
-
-      throw new Error("Not implemented");
     } catch (err) {
       this._loadItemsError = true;
       // eslint-disable-next-line no-console
