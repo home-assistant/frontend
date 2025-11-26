@@ -2299,6 +2299,10 @@
             "main": "System",
             "secondary": "Create backups, check logs, or reboot your system"
           },
+          "entity_migration": {
+            "main": "Entity migration",
+            "secondary": "Find and migrate entity references across configurations"
+          },
           "about": {
             "main": "About",
             "secondary": "Version information, credit, and more"
@@ -3299,8 +3303,11 @@
           "description": "Find and migrate entity references",
           "scan_title": "Scan for entity references",
           "scan_description": "Select an entity to find all places where it is used, including automations, scripts, scenes, dashboards, and more.",
-          "source_entity": "Entity to scan",
+          "source_entity": "Source entity",
+          "target_entity": "Target entity",
           "scan_button": "Scan for references",
+          "preview_button": "Preview migration",
+          "migrate_button": "Migrate now",
           "scan_error": "Failed to scan entity references",
           "no_references": "No references found for this entity.",
           "results_title": "{count} references found",
@@ -3312,7 +3319,16 @@
           "category_helpers": "Helpers",
           "category_template_entities": "Template entities",
           "category_groups": "Groups",
-          "category_other": "Other"
+          "category_other": "Other",
+          "preview_title": "Migration preview",
+          "preview_summary": "The following {count} references will be updated:",
+          "compatibility_warnings": "The following compatibility issues were found:",
+          "migration_blocked": "Migration cannot proceed due to the following errors:",
+          "create_backup": "Create backup before migration",
+          "migration_success": "Successfully migrated {count} references",
+          "migration_failed": "Migration failed",
+          "backup_created": "A backup was created before the migration.",
+          "updated_configs": "Updated configurations"
         },
         "core": {
           "caption": "General",

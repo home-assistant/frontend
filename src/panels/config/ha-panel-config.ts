@@ -123,6 +123,13 @@ export const configSections: Record<string, PageNavigation[]> = {
       iconColor: "#8E24AA",
     },
     {
+      path: "/config/entity-migration",
+      translationKey: "entity_migration",
+      iconPath: mdiSwapHorizontal,
+      iconColor: "#7B1FA2",
+      core: true,
+    },
+    {
       path: "/config/system",
       translationKey: "system",
       iconPath: mdiCog,
