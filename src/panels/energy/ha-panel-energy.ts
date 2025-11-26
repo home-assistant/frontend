@@ -91,16 +91,6 @@ class PanelEnergy extends LitElement {
   @state()
   private _error?: string;
 
-  connectedCallback(): void {
-    super.connectedCallback();
-    this._loadConfig();
-  }
-
-  get _viewPath(): string | undefined {
-    const viewPath: string | undefined = this.route!.path.split("/")[1];
-    return viewPath ? decodeURI(viewPath) : undefined;
-  }
-
   public willUpdate(changedProps: PropertyValues) {
     super.willUpdate(changedProps);
     // Initial setup
@@ -154,7 +144,7 @@ class PanelEnergy extends LitElement {
     const firstPath = this._lovelace!.config?.views?.[0]?.path;
     const viewPath: string | undefined = this.route!.path.split("/")[1];
     if (viewPath !== firstPath) {
-      navigate(`${firstPath}`);
+      navigate(`${this.route!.prefix}/${firstPath}`);
     }
   }
 
