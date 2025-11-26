@@ -61,6 +61,17 @@ export const getTriggersForTarget = async (
     expand_group: expandGroup,
   });
 
+export const getConditionsForTarget = async (
+  callWS: HomeAssistant["callWS"],
+  target: HassServiceTarget,
+  expandGroup = true
+) =>
+  callWS<string[]>({
+    type: "get_conditions_for_target",
+    target,
+    expand_group: expandGroup,
+  });
+
 export const getServicesForTarget = async (
   callWS: HomeAssistant["callWS"],
   target: HassServiceTarget,
