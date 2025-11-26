@@ -259,7 +259,7 @@ class DialogAddAutomationElement
               feature.preview_feature === "new_triggers_conditions"
           )?.enabled ?? false;
         this._tab =
-          this._newTriggersAndConditions && this._params?.type === "trigger"
+          this._newTriggersAndConditions && this._params?.type !== "condition"
             ? "targets"
             : "groups";
       }),
@@ -270,7 +270,7 @@ class DialogAddAutomationElement
     this._params = params;
 
     this._tab =
-      this._newTriggersAndConditions && this._params?.type === "trigger"
+      this._newTriggersAndConditions && this._params?.type !== "condition"
         ? "targets"
         : "groups";
 
@@ -427,7 +427,10 @@ class DialogAddAutomationElement
       },
     ];
 
-    if (this._newTriggersAndConditions && automationElementType === "trigger") {
+    if (
+      this._newTriggersAndConditions &&
+      automationElementType !== "condition"
+    ) {
       tabButtons.unshift({
         label: this.hass.localize(`ui.panel.config.automation.editor.targets`),
         value: "targets",
@@ -518,7 +521,7 @@ class DialogAddAutomationElement
               )}
               .convertToItem=${this._convertToItem}
               .newTriggersAndConditions=${this._newTriggersAndConditions &&
-              automationElementType === "trigger"}
+              automationElementType !== "condition"}
               @search-element-picked=${this._searchItemSelected}
             >
             </ha-automation-add-search>`
