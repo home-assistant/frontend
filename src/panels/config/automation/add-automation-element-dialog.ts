@@ -599,7 +599,7 @@ class DialogAddAutomationElement
                     : nothing}
                   ${collections.map(
                     (collection, index) => html`
-                      ${collection.titleKey
+                      ${collection.titleKey && collection.groups.length
                         ? html`<ha-section-title>
                             ${this.hass.localize(collection.titleKey)}
                           </ha-section-title>`
