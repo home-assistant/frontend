@@ -50,6 +50,13 @@ const ENERGY_LOVELACE_CONFIG: LovelaceConfig = {
       path: "electricity",
     },
     {
+      strategy: {
+        type: "energy-water",
+        collection_key: DEFAULT_ENERGY_COLLECTION_KEY,
+      },
+      path: "water",
+    },
+    {
       type: "panel",
       path: "setup",
       cards: [{ type: "custom:energy-setup-wizard-card" }],

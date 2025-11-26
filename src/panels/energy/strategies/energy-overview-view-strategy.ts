@@ -210,6 +210,10 @@ export class EnergyViewStrategy extends ReactiveElement {
           {
             type: "heading",
             heading: hass.localize("ui.panel.energy.overview.water"),
+            tap_action: {
+              action: "navigate",
+              navigation_path: "/energy/water",
+            },
           },
           {
             title: hass.localize(
