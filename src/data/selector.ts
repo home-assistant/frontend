@@ -332,6 +332,7 @@ export interface NumberSelector {
     max?: number;
     step?: number | "any";
     mode?: "box" | "slider";
+    entity?: { domains: readonly string[] };
     unit_of_measurement?: string;
     slider_ticks?: boolean;
     translation_key?: string;
