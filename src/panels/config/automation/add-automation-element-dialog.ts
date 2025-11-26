@@ -56,12 +56,19 @@ import {
   type AutomationElementGroup,
   type AutomationElementGroupCollection,
 } from "../../../data/automation";
+import type { ConditionDescriptions } from "../../../data/condition";
 import {
   CONDITION_BUILDING_BLOCKS_GROUP,
   CONDITION_COLLECTIONS,
-  CONDITION_ICONS,
+  getConditionDomain,
+  getConditionObjectId,
+  subscribeConditions,
 } from "../../../data/condition";
-import { getServiceIcons, getTriggerIcons } from "../../../data/icons";
+import {
+  getConditionIcons,
+  getServiceIcons,
+  getTriggerIcons,
+} from "../../../data/icons";
 import type { IntegrationManifest } from "../../../data/integration";
 import {
   domainToName,
@@ -82,6 +89,7 @@ import { isMac } from "../../../util/is_mac";
 import { showToast } from "../../../util/toast";
 import type { AddAutomationElementDialogParams } from "./show-add-automation-element-dialog";
 import { PASTE_VALUE } from "./show-add-automation-element-dialog";
+import { CONDITION_ICONS } from "../../../components/ha-condition-icon";
 
 const TYPES = {
   trigger: { collections: TRIGGER_COLLECTIONS, icons: TRIGGER_ICONS },
@@ -119,7 +127,7 @@ const ENTITY_DOMAINS_OTHER = new Set([
 
 const ENTITY_DOMAINS_MAIN = new Set(["notify"]);
 
-const ACTION_SERVICE_KEYWORDS = ["dynamicGroups", "helpers", "other"];
+const DYNAMIC_KEYWORDS = ["dynamicGroups", "helpers", "other"];
 
 @customElement("add-automation-element-dialog")
 class DialogAddAutomationElement
@@ -152,6 +160,8 @@ class DialogAddAutomationElement
 
   @state() private _triggerDescriptions: TriggerDescriptions = {};
 
+  @state() private _conditionDescriptions: ConditionDescriptions = {};
+
   @query(".items ha-md-list ha-md-list-item")
   private _itemsListFirstElement?: HaMdList;
 
@@ -169,15 +179,15 @@ class DialogAddAutomationElement
 
     this.addKeyboardShortcuts();
 
+    this._unsubscribe();
+    this._fetchManifests();
+
     if (this._params?.type === "action") {
       this.hass.loadBackendTranslation("services");
-      this._fetchManifests();
       this._calculateUsedDomains();
       getServiceIcons(this.hass);
-    }
-    if (this._params?.type === "trigger") {
+    } else if (this._params?.type === "trigger") {
       this.hass.loadBackendTranslation("triggers");
-      this._fetchManifests();
       getTriggerIcons(this.hass);
       this._unsub = subscribeTriggers(this.hass, (triggers) => {
         this._triggerDescriptions = {
@@ -185,7 +195,17 @@ class DialogAddAutomationElement
           ...triggers,
         };
       });
+    } else if (this._params?.type === "condition") {
+      this.hass.loadBackendTranslation("conditions");
+      getConditionIcons(this.hass);
+      this._unsub = subscribeConditions(this.hass, (conditions) => {
+        this._conditionDescriptions = {
+          ...this._conditionDescriptions,
+          ...conditions,
+        };
+      });
     }
+
     this._fullScreen = matchMedia(
       "all and (max-width: 450px), all and (max-height: 500px)"
     ).matches;
@@ -199,10 +219,7 @@ class DialogAddAutomationElement
 
   public closeDialog() {
     this.removeKeyboardShortcuts();
-    if (this._unsub) {
-      this._unsub.then((unsub) => unsub());
-      this._unsub = undefined;
-    }
+    this._unsubscribe();
     if (this._params) {
       fireEvent(this, "dialog-closed", { dialog: this.localName });
     }
@@ -217,6 +234,13 @@ class DialogAddAutomationElement
     this._manifests = undefined;
     this._domains = undefined;
     return true;
+  }
+
+  private _unsubscribe() {
+    if (this._unsub) {
+      this._unsub.then((unsub) => unsub());
+      this._unsub = undefined;
+    }
   }
 
   private _getGroups = (
@@ -348,8 +372,11 @@ class DialogAddAutomationElement
         items.push(
           ...this._triggers(localize, this._triggerDescriptions, manifests)
         );
-      }
-      if (type === "action") {
+      } else if (type === "condition") {
+        items.push(
+          ...this._conditions(localize, this._conditionDescriptions, manifests)
+        );
+      } else if (type === "action") {
         items.push(...this._services(localize, services, manifests));
       }
       return items;
@@ -372,6 +399,7 @@ class DialogAddAutomationElement
       localize: LocalizeFunc,
       services: HomeAssistant["services"],
       triggerDescriptions: TriggerDescriptions,
+      conditionDescriptions: ConditionDescriptions,
       manifests?: DomainManifestLookup
     ): {
       titleKey?: LocalizeKeys;
@@ -384,34 +412,9 @@ class DialogAddAutomationElement
         const groups: ListItem[] = [];
 
         if (
-          type === "action" &&
-          Object.keys(collection.groups).some((item) =>
-            ACTION_SERVICE_KEYWORDS.includes(item)
-          )
-        ) {
-          groups.push(
-            ...this._serviceGroups(
-              localize,
-              services,
-              manifests,
-              domains,
-              collection.groups.dynamicGroups
-                ? undefined
-                : collection.groups.helpers
-                  ? "helper"
-                  : "other"
-            )
-          );
-
-          collectionGroups = collectionGroups.filter(
-            ([key]) => !ACTION_SERVICE_KEYWORDS.includes(key)
-          );
-        }
-
-        if (
           type === "trigger" &&
           Object.keys(collection.groups).some((item) =>
-            ACTION_SERVICE_KEYWORDS.includes(item)
+            DYNAMIC_KEYWORDS.includes(item)
           )
         ) {
           groups.push(
@@ -429,7 +432,53 @@ class DialogAddAutomationElement
           );
 
           collectionGroups = collectionGroups.filter(
-            ([key]) => !ACTION_SERVICE_KEYWORDS.includes(key)
+            ([key]) => !DYNAMIC_KEYWORDS.includes(key)
+          );
+        } else if (
+          type === "condition" &&
+          Object.keys(collection.groups).some((item) =>
+            DYNAMIC_KEYWORDS.includes(item)
+          )
+        ) {
+          groups.push(
+            ...this._conditionGroups(
+              localize,
+              conditionDescriptions,
+              manifests,
+              domains,
+              collection.groups.dynamicGroups
+                ? undefined
+                : collection.groups.helpers
+                  ? "helper"
+                  : "other"
+            )
+          );
+
+          collectionGroups = collectionGroups.filter(
+            ([key]) => !DYNAMIC_KEYWORDS.includes(key)
+          );
+        } else if (
+          type === "action" &&
+          Object.keys(collection.groups).some((item) =>
+            DYNAMIC_KEYWORDS.includes(item)
+          )
+        ) {
+          groups.push(
+            ...this._serviceGroups(
+              localize,
+              services,
+              manifests,
+              domains,
+              collection.groups.dynamicGroups
+                ? undefined
+                : collection.groups.helpers
+                  ? "helper"
+                  : "other"
+            )
+          );
+
+          collectionGroups = collectionGroups.filter(
+            ([key]) => !DYNAMIC_KEYWORDS.includes(key)
           );
         }
 
@@ -487,10 +536,6 @@ class DialogAddAutomationElement
       services: HomeAssistant["services"],
       manifests?: DomainManifestLookup
     ): ListItem[] => {
-      if (type === "action" && isDynamic(group)) {
-        return this._services(localize, services, manifests, group);
-      }
-
       if (type === "trigger" && isDynamic(group)) {
         return this._triggers(
           localize,
@@ -498,6 +543,17 @@ class DialogAddAutomationElement
           manifests,
           group
         );
+      }
+      if (type === "condition" && isDynamic(group)) {
+        return this._conditions(
+          localize,
+          this._conditionDescriptions,
+          manifests,
+          group
+        );
+      }
+      if (type === "action" && isDynamic(group)) {
+        return this._services(localize, services, manifests, group);
       }
 
       const groups = this._getGroups(type, group, collectionIndex);
@@ -688,6 +744,102 @@ class DialogAddAutomationElement
     }
   );
 
+  private _conditionGroups = (
+    localize: LocalizeFunc,
+    conditions: ConditionDescriptions,
+    manifests: DomainManifestLookup | undefined,
+    domains: Set<string> | undefined,
+    type: "helper" | "other" | undefined
+  ): ListItem[] => {
+    if (!conditions || !manifests) {
+      return [];
+    }
+    const result: ListItem[] = [];
+    const addedDomains = new Set<string>();
+    Object.keys(conditions).forEach((condition) => {
+      const domain = getConditionDomain(condition);
+
+      if (addedDomains.has(domain)) {
+        return;
+      }
+      addedDomains.add(domain);
+
+      const manifest = manifests[domain];
+      const domainUsed = !domains ? true : domains.has(domain);
+
+      if (
+        (type === undefined &&
+          (ENTITY_DOMAINS_MAIN.has(domain) ||
+            (manifest?.integration_type === "entity" &&
+              domainUsed &&
+              !ENTITY_DOMAINS_OTHER.has(domain)))) ||
+        (type === "helper" && manifest?.integration_type === "helper") ||
+        (type === "other" &&
+          !ENTITY_DOMAINS_MAIN.has(domain) &&
+          (ENTITY_DOMAINS_OTHER.has(domain) ||
+            (!domainUsed && manifest?.integration_type === "entity") ||
+            !["helper", "entity"].includes(manifest?.integration_type || "")))
+      ) {
+        result.push({
+          icon: html`
+            <ha-domain-icon
+              .hass=${this.hass}
+              .domain=${domain}
+              brand-fallback
+            ></ha-domain-icon>
+          `,
+          key: `${DYNAMIC_PREFIX}${domain}`,
+          name: domainToName(localize, domain, manifest),
+          description: "",
+        });
+      }
+    });
+    return result.sort((a, b) =>
+      stringCompare(a.name, b.name, this.hass.locale.language)
+    );
+  };
+
+  private _conditions = memoizeOne(
+    (
+      localize: LocalizeFunc,
+      conditions: ConditionDescriptions,
+      _manifests: DomainManifestLookup | undefined,
+      group?: string
+    ): ListItem[] => {
+      if (!conditions) {
+        return [];
+      }
+      const result: ListItem[] = [];
+
+      for (const condition of Object.keys(conditions)) {
+        const domain = getConditionDomain(condition);
+        const conditionName = getConditionObjectId(condition);
+
+        if (group && group !== `${DYNAMIC_PREFIX}${domain}`) {
+          continue;
+        }
+
+        result.push({
+          icon: html`
+            <ha-condition-icon
+              .hass=${this.hass}
+              .condition=${condition}
+            ></ha-condition-icon>
+          `,
+          key: `${DYNAMIC_PREFIX}${condition}`,
+          name:
+            localize(`component.${domain}.conditions.${conditionName}.name`) ||
+            condition,
+          description:
+            localize(
+              `component.${domain}.conditions.${conditionName}.description`
+            ) || condition,
+        });
+      }
+      return result;
+    }
+  );
+
   private _services = memoizeOne(
     (
       localize: LocalizeFunc,
@@ -832,6 +984,7 @@ class DialogAddAutomationElement
       this.hass.localize,
       this.hass.services,
       this._triggerDescriptions,
+      this._conditionDescriptions,
       this._manifests
     );
 
@@ -1136,6 +1289,7 @@ class DialogAddAutomationElement
     super.disconnectedCallback();
     window.removeEventListener("resize", this._updateNarrow);
     this._removeSearchKeybindings();
+    this._unsubscribe();
   }
 
   private _updateNarrow = () => {

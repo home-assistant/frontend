@@ -1,8 +1,9 @@
 import {
   mdiCheck,
-  mdiCheckCircleOutline,
   mdiDelete,
   mdiDotsVertical,
+  mdiHomeCircleOutline,
+  mdiHomeEdit,
   mdiPencil,
   mdiPlus,
 } from "@mdi/js";
@@ -10,7 +11,6 @@ import type { PropertyValues } from "lit";
 import { LitElement, html, nothing } from "lit";
 import { customElement, property, state } from "lit/decorators";
 import memoize from "memoize-one";
-import { isComponentLoaded } from "../../../../common/config/is_component_loaded";
 import { storage } from "../../../../common/decorators/storage";
 import { navigate } from "../../../../common/navigate";
 import { stringCompare } from "../../../../common/string/compare";
@@ -29,6 +29,7 @@ import "../../../../components/ha-md-button-menu";
 import "../../../../components/ha-md-list-item";
 import "../../../../components/ha-svg-icon";
 import "../../../../components/ha-tooltip";
+import { saveFrontendSystemData } from "../../../../data/frontend";
 import type { LovelacePanelConfig } from "../../../../data/lovelace";
 import type { LovelaceRawConfig } from "../../../../data/lovelace/config/types";
 import {
@@ -45,7 +46,11 @@ import {
   fetchDashboards,
   updateDashboard,
 } from "../../../../data/lovelace/dashboard";
-import { DEFAULT_PANEL } from "../../../../data/panel";
+import {
+  DEFAULT_PANEL,
+  getPanelIcon,
+  getPanelTitle,
+} from "../../../../data/panel";
 import { showConfirmationDialog } from "../../../../dialogs/generic/show-dialog-box";
 import "../../../../layouts/hass-loading-screen";
 import "../../../../layouts/hass-tabs-subpage-data-table";
@@ -56,12 +61,21 @@ import { lovelaceTabs } from "../ha-config-lovelace";
 import { showDashboardConfigureStrategyDialog } from "./show-dialog-lovelace-dashboard-configure-strategy";
 import { showDashboardDetailDialog } from "./show-dialog-lovelace-dashboard-detail";
 
+export const PANEL_DASHBOARDS = [
+  "home",
+  "light",
+  "security",
+  "climate",
+  "energy",
+] as string[];
+
 type DataTableItem = Pick<
   LovelaceDashboard,
   "icon" | "title" | "show_in_sidebar" | "require_admin" | "mode" | "url_path"
 > & {
   default: boolean;
   filename: string;
+  localized_type: string;
   type: string;
 };
 
@@ -112,7 +126,7 @@ export class HaConfigLovelaceDashboards extends LitElement {
     state: false,
     subscribe: false,
   })
-  private _activeGrouping?: string = "type";
+  private _activeGrouping?: string = "localized_type";
 
   @storage({
     key: "lovelace-dashboards-table-collapsed",
@@ -167,7 +181,7 @@ export class HaConfigLovelaceDashboards extends LitElement {
                       <ha-svg-icon
                         .id="default-icon-${dashboard.title}"
                         style="padding-left: 10px; padding-inline-start: 10px; padding-inline-end: initial; direction: var(--direction);"
-                        .path=${mdiCheckCircleOutline}
+                        .path=${mdiHomeCircleOutline}
                       ></ha-svg-icon>
                       <ha-tooltip
                         .for="default-icon-${dashboard.title}"
@@ -183,7 +197,7 @@ export class HaConfigLovelaceDashboards extends LitElement {
         },
       };
 
-      columns.type = {
+      columns.localized_type = {
         title: localize(
           "ui.panel.config.lovelace.dashboards.picker.headers.type"
         ),
@@ -253,7 +267,15 @@ export class HaConfigLovelaceDashboards extends LitElement {
             .hass=${this.hass}
             narrow
             .items=${[
-              ...(this._canEdit(dashboard.url_path)
+              {
+                path: mdiHomeEdit,
+                label: localize(
+                  "ui.panel.config.lovelace.dashboards.picker.set_as_default"
+                ),
+                action: () => this._handleSetAsDefault(dashboard),
+                disabled: dashboard.default,
+              },
+              ...(dashboard.type === "user_created"
                 ? [
                     {
                       path: mdiPencil,
@@ -262,10 +284,6 @@ export class HaConfigLovelaceDashboards extends LitElement {
                       ),
                       action: () => this._handleEdit(dashboard),
                     },
-                  ]
-                : []),
-              ...(this._canDelete(dashboard.url_path)
-                ? [
                     {
                       label: this.hass.localize(
                         "ui.panel.config.lovelace.dashboards.picker.delete"
@@ -288,92 +306,43 @@ export class HaConfigLovelaceDashboards extends LitElement {
 
   private _getItems = memoize(
     (dashboards: LovelaceDashboard[], defaultUrlPath: string | null) => {
-      const defaultMode = (
-        this.hass.panels?.lovelace?.config as LovelacePanelConfig
-      ).mode;
+      const mode = (this.hass.panels?.lovelace?.config as LovelacePanelConfig)
+        .mode;
       const isDefault = defaultUrlPath === "lovelace";
       const result: DataTableItem[] = [
         {
           icon: "mdi:view-dashboard",
           title: this.hass.localize("panel.states"),
           default: isDefault,
-          show_in_sidebar: isDefault,
+          show_in_sidebar: true,
           require_admin: false,
           url_path: "lovelace",
-          mode: defaultMode,
-          filename: defaultMode === "yaml" ? "ui-lovelace.yaml" : "",
-          type: this._localizeType("built_in"),
+          mode: mode,
+          filename: mode === "yaml" ? "ui-lovelace.yaml" : "",
+          type: "built_in",
+          localized_type: this._localizeType("built_in"),
         },
       ];
-      if (isComponentLoaded(this.hass, "energy")) {
-        result.push({
-          icon: "mdi:lightning-bolt",
-          title: this.hass.localize(`ui.panel.config.dashboard.energy.main`),
-          show_in_sidebar: true,
-          mode: "storage",
-          url_path: "energy",
-          filename: "",
-          default: false,
-          require_admin: false,
-          type: this._localizeType("built_in"),
-        });
-      }
 
-      if (this.hass.panels.light) {
-        result.push({
-          icon: this.hass.panels.light.icon || "mdi:lamps",
-          title: this.hass.localize("panel.light"),
+      PANEL_DASHBOARDS.forEach((panel) => {
+        const panelInfo = this.hass.panels[panel];
+        if (!panel) {
+          return;
+        }
+        const item: DataTableItem = {
+          icon: getPanelIcon(panelInfo),
+          title: getPanelTitle(this.hass, panelInfo) || panelInfo.url_path,
           show_in_sidebar: true,
           mode: "storage",
-          url_path: "light",
+          url_path: panelInfo.url_path,
           filename: "",
-          default: false,
+          default: defaultUrlPath === panelInfo.url_path,
           require_admin: false,
-          type: this._localizeType("built_in"),
-        });
-      }
-
-      if (this.hass.panels.security) {
-        result.push({
-          icon: this.hass.panels.security.icon || "mdi:security",
-          title: this.hass.localize("panel.security"),
-          show_in_sidebar: true,
-          mode: "storage",
-          url_path: "security",
-          filename: "",
-          default: false,
-          require_admin: false,
-          type: this._localizeType("built_in"),
-        });
-      }
-
-      if (this.hass.panels.climate) {
-        result.push({
-          icon: this.hass.panels.climate.icon || "mdi:home-thermometer",
-          title: this.hass.localize("panel.climate"),
-          show_in_sidebar: true,
-          mode: "storage",
-          url_path: "climate",
-          filename: "",
-          default: false,
-          require_admin: false,
-          type: this._localizeType("built_in"),
-        });
-      }
-
-      if (this.hass.panels.home) {
-        result.push({
-          icon: this.hass.panels.home.icon || "mdi:home",
-          title: this.hass.localize("panel.home"),
-          show_in_sidebar: true,
-          mode: "storage",
-          url_path: "home",
-          filename: "",
-          default: false,
-          require_admin: false,
-          type: this._localizeType("built_in"),
-        });
-      }
+          type: "built_in",
+          localized_type: this._localizeType("built_in"),
+        };
+        result.push(item);
+      });
 
       result.push(
         ...dashboards
@@ -386,7 +355,8 @@ export class HaConfigLovelaceDashboards extends LitElement {
                 filename: "",
                 ...dashboard,
                 default: defaultUrlPath === dashboard.url_path,
-                type: this._localizeType("user_created"),
+                type: "user_created",
+                localized_type: this._localizeType("user_created"),
               }) satisfies DataTableItem
           )
       );
@@ -486,20 +456,32 @@ export class HaConfigLovelaceDashboards extends LitElement {
     this._openDetailDialog(dashboard, urlPath);
   }
 
-  private _canDelete(urlPath: string) {
-    return ![
-      "lovelace",
-      "energy",
-      "light",
-      "security",
-      "climate",
-      "home",
-    ].includes(urlPath);
-  }
+  private _handleSetAsDefault = async (item: DataTableItem) => {
+    if (item.default) {
+      return;
+    }
 
-  private _canEdit(urlPath: string) {
-    return !["light", "security", "climate", "home"].includes(urlPath);
-  }
+    const confirm = await showConfirmationDialog(this, {
+      title: this.hass.localize(
+        "ui.panel.config.lovelace.dashboards.detail.set_default_confirm_title"
+      ),
+      text: this.hass.localize(
+        "ui.panel.config.lovelace.dashboards.detail.set_default_confirm_text"
+      ),
+      confirmText: this.hass.localize("ui.common.ok"),
+      dismissText: this.hass.localize("ui.common.cancel"),
+      destructive: false,
+    });
+
+    if (!confirm) {
+      return;
+    }
+
+    await saveFrontendSystemData(this.hass.connection, "core", {
+      ...this.hass.systemData,
+      default_panel: item.url_path,
+    });
+  };
 
   private _handleDelete = async (item: DataTableItem) => {
     const dashboard = this._dashboards.find(
@@ -581,10 +563,6 @@ export class HaConfigLovelaceDashboards extends LitElement {
   private async _deleteDashboard(
     dashboard: LovelaceDashboard
   ): Promise<boolean> {
-    if (!this._canDelete(dashboard.url_path)) {
-      return false;
-    }
-
     const confirm = await showConfirmationDialog(this, {
       title: this.hass!.localize(
         "ui.panel.config.lovelace.dashboards.confirm_delete_title",

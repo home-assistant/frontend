@@ -75,7 +75,8 @@ export type TranslationCategory =
   | "preview_features"
   | "selector"
   | "services"
-  | "triggers";
+  | "triggers"
+  | "conditions";
 
 export const subscribeTranslationPreferences = (
   hass: HomeAssistant,

@@ -32,6 +32,7 @@ import { copyToClipboard } from "../../../../common/util/copy-clipboard";
 import "../../../../components/ha-automation-row";
 import type { HaAutomationRow } from "../../../../components/ha-automation-row";
 import "../../../../components/ha-card";
+import "../../../../components/ha-condition-icon";
 import "../../../../components/ha-expansion-panel";
 import "../../../../components/ha-icon-button";
 import "../../../../components/ha-md-button-menu";
@@ -44,10 +45,8 @@ import type {
 } from "../../../../data/automation";
 import { isCondition, testCondition } from "../../../../data/automation";
 import { describeCondition } from "../../../../data/automation_i18n";
-import {
-  CONDITION_BUILDING_BLOCKS,
-  CONDITION_ICONS,
-} from "../../../../data/condition";
+import type { ConditionDescriptions } from "../../../../data/condition";
+import { CONDITION_BUILDING_BLOCKS } from "../../../../data/condition";
 import { validateConfig } from "../../../../data/config";
 import { fullEntitiesContext } from "../../../../data/context";
 import type { EntityRegistryEntry } from "../../../../data/entity_registry";
@@ -130,6 +129,9 @@ export default class HaAutomationConditionRow extends LitElement {
 
   @state() private _warnings?: string[];
 
+  @property({ attribute: false })
+  public conditionDescriptions: ConditionDescriptions = {};
+
   @property({ type: Boolean, attribute: "sidebar" })
   public optionsInSidebar = false;
 
@@ -179,11 +181,11 @@ export default class HaAutomationConditionRow extends LitElement {
 
   private _renderRow() {
     return html`
-      <ha-svg-icon
+      <ha-condition-icon
         slot="leading-icon"
-        class="condition-icon"
-        .path=${CONDITION_ICONS[this.condition.condition]}
-      ></ha-svg-icon>
+        .hass=${this.hass}
+        .condition=${this.condition.condition}
+      ></ha-condition-icon>
       <h3 slot="header">
         ${capitalizeFirstLetter(
           describeCondition(this.condition, this.hass, this._entityReg)
@@ -395,9 +397,14 @@ export default class HaAutomationConditionRow extends LitElement {
             <ha-automation-condition-editor
               .hass=${this.hass}
               .condition=${this.condition}
+              .description=${this.conditionDescriptions[
+                this.condition.condition
+              ]}
               .disabled=${this.disabled}
               .yamlMode=${this._yamlMode}
-              .uiSupported=${this._uiSupported(this.condition.condition)}
+              .uiSupported=${this._uiSupported(
+                this._getType(this.condition, this.conditionDescriptions)
+              )}
               .narrow=${this.narrow}
               @ui-mode-not-available=${this._handleUiModeNotAvailable}
             ></ha-automation-condition-editor>`
@@ -476,7 +483,9 @@ export default class HaAutomationConditionRow extends LitElement {
             .hass=${this.hass}
             .condition=${this.condition}
             .disabled=${this.disabled}
-            .uiSupported=${this._uiSupported(this.condition.condition)}
+            .uiSupported=${this._uiSupported(
+              this._getType(this.condition, this.conditionDescriptions)
+            )}
             indent
             .selected=${this._selected}
             .narrow=${this.narrow}
@@ -786,7 +795,10 @@ export default class HaAutomationConditionRow extends LitElement {
       cut: this._cutCondition,
       test: this._testCondition,
       config: sidebarCondition,
-      uiSupported: this._uiSupported(sidebarCondition.condition),
+      uiSupported: this._uiSupported(
+        this._getType(sidebarCondition, this.conditionDescriptions)
+      ),
+      description: this.conditionDescriptions[sidebarCondition.condition],
       yamlMode: this._yamlMode,
     } satisfies ConditionSidebarConfig);
     this._selected = true;
@@ -801,6 +813,16 @@ export default class HaAutomationConditionRow extends LitElement {
       }, 180); // duration of transition of added padding for bottom sheet
     }
   }
+
+  private _getType = memoizeOne(
+    (condition: Condition, conditionDescriptions: ConditionDescriptions) => {
+      if (condition.condition in conditionDescriptions) {
+        return "platform";
+      }
+
+      return condition.condition;
+    }
+  );
 
   private _uiSupported = memoizeOne(
     (type: string) =>

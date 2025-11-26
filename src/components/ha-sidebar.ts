@@ -1,22 +1,13 @@
 import {
   mdiBell,
-  mdiCalendar,
   mdiCellphoneCog,
-  mdiChartBox,
-  mdiClipboardList,
   mdiCog,
-  mdiFormatListBulletedType,
-  mdiHammer,
-  mdiLightningBolt,
   mdiMenu,
   mdiMenuOpen,
-  mdiPlayBoxMultiple,
-  mdiTooltipAccount,
-  mdiViewDashboard,
 } from "@mdi/js";
 import type { UnsubscribeFunc } from "home-assistant-js-websocket";
 import type { CSSResultGroup, PropertyValues } from "lit";
-import { LitElement, css, html, nothing } from "lit";
+import { css, html, LitElement, nothing } from "lit";
 import {
   customElement,
   eventOptions,
@@ -33,7 +24,14 @@ import { computeRTL } from "../common/util/compute_rtl";
 import { throttle } from "../common/util/throttle";
 import { subscribeFrontendUserData } from "../data/frontend";
 import type { ActionHandlerDetail } from "../data/lovelace/action_handler";
-import { getDefaultPanelUrlPath } from "../data/panel";
+import {
+  FIXED_PANELS,
+  getDefaultPanelUrlPath,
+  getPanelIcon,
+  getPanelIconPath,
+  getPanelTitle,
+  SHOW_AFTER_SPACER_PANELS,
+} from "../data/panel";
 import type { PersistentNotification } from "../data/persistent_notification";
 import { subscribeNotifications } from "../data/persistent_notification";
 import { subscribeRepairsIssueRegistry } from "../data/repairs";
@@ -54,8 +52,6 @@ import "./ha-spinner";
 import "./ha-svg-icon";
 import "./user/ha-user-badge";
 
-const SHOW_AFTER_SPACER = ["config", "developer-tools"];
-
 const SUPPORT_SCROLL_IF_NEEDED = "scrollIntoViewIfNeeded" in document.body;
 
 const SORT_VALUE_URL_PATHS = {
@@ -65,18 +61,6 @@ const SORT_VALUE_URL_PATHS = {
   history: 4,
   "developer-tools": 9,
   config: 11,
-};
-
-export const PANEL_ICONS = {
-  calendar: mdiCalendar,
-  "developer-tools": mdiHammer,
-  energy: mdiLightningBolt,
-  history: mdiChartBox,
-  logbook: mdiFormatListBulletedType,
-  lovelace: mdiViewDashboard,
-  map: mdiTooltipAccount,
-  "media-browser": mdiPlayBoxMultiple,
-  todo: mdiClipboardList,
 };
 
 const panelSorter = (
@@ -155,16 +139,23 @@ export const computePanels = memoizeOne(
     const beforeSpacer: PanelInfo[] = [];
     const afterSpacer: PanelInfo[] = [];
 
-    Object.values(panels).forEach((panel) => {
+    const allPanels = Object.values(panels).filter(
+      (panel) => !FIXED_PANELS.includes(panel.url_path)
+    );
+
+    allPanels.forEach((panel) => {
+      const isDefaultPanel = panel.url_path === defaultPanel;
+
       if (
-        hiddenPanels.includes(panel.url_path) ||
-        (!panel.title && panel.url_path !== defaultPanel) ||
-        (panel.default_visible === false &&
-          !panelsOrder.includes(panel.url_path))
+        !isDefaultPanel &&
+        (!panel.title ||
+          hiddenPanels.includes(panel.url_path) ||
+          (panel.default_visible === false &&
+            !panelsOrder.includes(panel.url_path)))
       ) {
         return;
       }
-      (SHOW_AFTER_SPACER.includes(panel.url_path)
+      (SHOW_AFTER_SPACER_PANELS.includes(panel.url_path)
         ? afterSpacer
         : beforeSpacer
       ).push(panel);
@@ -251,10 +242,7 @@ class HaSidebar extends SubscribeMixin(LitElement) {
       return nothing;
     }
 
-    // Show the supervisor as being part of configuration
-    const selectedPanel = this.route.path?.startsWith("/hassio/")
-      ? "config"
-      : this.hass.panelUrl;
+    const selectedPanel = this.hass.panelUrl;
 
     // prettier-ignore
     return html`
@@ -397,9 +385,9 @@ class HaSidebar extends SubscribeMixin(LitElement) {
   private _renderAllPanels(selectedPanel: string) {
     if (!this._panelOrder || !this._hiddenPanels) {
       return html`
-        <ha-fade-in .delay=${500}
-          ><ha-spinner size="small"></ha-spinner
-        ></ha-fade-in>
+        <ha-fade-in .delay=${500}>
+          <ha-spinner size="small"></ha-spinner>
+        </ha-fade-in>
       `;
     }
 
@@ -413,7 +401,6 @@ class HaSidebar extends SubscribeMixin(LitElement) {
       this.hass.locale
     );
 
-    // prettier-ignore
     return html`
       <ha-md-list
         class="ha-scrollbar"
@@ -422,61 +409,42 @@ class HaSidebar extends SubscribeMixin(LitElement) {
         @scroll=${this._listboxScroll}
         @keydown=${this._listboxKeydown}
       >
-        ${this._renderPanels(beforeSpacer, selectedPanel, defaultPanel)}
+        ${this._renderPanels(beforeSpacer, selectedPanel)}
         ${this._renderSpacer()}
-        ${this._renderPanels(afterSpacer, selectedPanel, defaultPanel)}
-        ${this._renderExternalConfiguration()}
+        ${this._renderPanels(afterSpacer, selectedPanel)}
+        ${this.hass.user?.is_admin
+          ? this._renderConfiguration(selectedPanel)
+          : this._renderExternalConfiguration()}
       </ha-md-list>
     `;
   }
 
-  private _renderPanels(
-    panels: PanelInfo[],
-    selectedPanel: string,
-    defaultPanel: string
-  ) {
+  private _renderPanels(panels: PanelInfo[], selectedPanel: string) {
     return panels.map((panel) =>
-      this._renderPanel(
-        panel.url_path,
-        panel.url_path === defaultPanel
-          ? panel.title || this.hass.localize("panel.states")
-          : this.hass.localize(`panel.${panel.title}`) || panel.title,
-        panel.icon,
-        panel.url_path === defaultPanel && !panel.icon
-          ? PANEL_ICONS.lovelace
-          : panel.url_path in PANEL_ICONS
-            ? PANEL_ICONS[panel.url_path]
-            : undefined,
-        selectedPanel
-      )
+      this._renderPanel(panel, panel.url_path === selectedPanel)
     );
   }
 
-  private _renderPanel(
-    urlPath: string,
-    title: string | null,
-    icon: string | null | undefined,
-    iconPath: string | null | undefined,
-    selectedPanel: string
-  ) {
-    return urlPath === "config"
-      ? this._renderConfiguration(title, selectedPanel)
-      : html`
-          <ha-md-list-item
-            .href=${`/${urlPath}`}
-            type="link"
-            class=${classMap({
-              selected: selectedPanel === urlPath,
-            })}
-            @mouseenter=${this._itemMouseEnter}
-            @mouseleave=${this._itemMouseLeave}
-          >
-            ${iconPath
-              ? html`<ha-svg-icon slot="start" .path=${iconPath}></ha-svg-icon>`
-              : html`<ha-icon slot="start" .icon=${icon}></ha-icon>`}
-            <span class="item-text" slot="headline">${title}</span>
-          </ha-md-list-item>
-        `;
+  private _renderPanel(panel: PanelInfo, isSelected: boolean) {
+    const title = getPanelTitle(this.hass, panel);
+    const urlPath = panel.url_path;
+    const icon = getPanelIcon(panel);
+    const iconPath = getPanelIconPath(panel);
+
+    return html`
+      <ha-md-list-item
+        .href=${`/${urlPath}`}
+        type="link"
+        class=${classMap({ selected: isSelected })}
+        @mouseenter=${this._itemMouseEnter}
+        @mouseleave=${this._itemMouseLeave}
+      >
+        ${iconPath
+          ? html`<ha-svg-icon slot="start" .path=${iconPath}></ha-svg-icon>`
+          : html`<ha-icon slot="start" .icon=${icon}></ha-icon>`}
+        <span class="item-text" slot="headline">${title}</span>
+      </ha-md-list-item>
+    `;
   }
 
   private _renderDivider() {
@@ -487,10 +455,15 @@ class HaSidebar extends SubscribeMixin(LitElement) {
     return html`<div class="spacer" disabled></div>`;
   }
 
-  private _renderConfiguration(title: string | null, selectedPanel: string) {
+  private _renderConfiguration(selectedPanel: string) {
+    if (!this.hass.user?.is_admin) {
+      return nothing;
+    }
+    const isSelected =
+      selectedPanel === "config" || this.route.path?.startsWith("/hassio/");
     return html`
       <ha-md-list-item
-        class="configuration${selectedPanel === "config" ? " selected" : ""}"
+        class="configuration ${classMap({ selected: isSelected })}"
         type="button"
         href="/config"
         @mouseenter=${this._itemMouseEnter}
@@ -504,15 +477,17 @@ class HaSidebar extends SubscribeMixin(LitElement) {
                 ${this._updatesCount + this._issuesCount}
               </span>
             `
-          : ""}
-        <span class="item-text" slot="headline">${title}</span>
+          : nothing}
+        <span class="item-text" slot="headline"
+          >${this.hass.localize("panel.config")}</span
+        >
         ${this.alwaysExpand && (this._updatesCount > 0 || this._issuesCount > 0)
           ? html`
               <span class="badge" slot="end"
                 >${this._updatesCount + this._issuesCount}</span
               >
             `
-          : ""}
+          : nothing}
       </ha-md-list-item>
     `;
   }
@@ -535,19 +510,20 @@ class HaSidebar extends SubscribeMixin(LitElement) {
           ? html`
               <span class="badge" slot="start"> ${notificationCount} </span>
             `
-          : ""}
+          : nothing}
         <span class="item-text" slot="headline"
           >${this.hass.localize("ui.notification_drawer.title")}</span
         >
         ${this.alwaysExpand && notificationCount > 0
           ? html`<span class="badge" slot="end">${notificationCount}</span>`
-          : ""}
+          : nothing}
       </ha-md-list-item>
     `;
   }
 
   private _renderUserItem(selectedPanel: string) {
     const isRTL = computeRTL(this.hass);
+    const isSelected = selectedPanel === "profile";
 
     return html`
       <ha-md-list-item
@@ -555,7 +531,7 @@ class HaSidebar extends SubscribeMixin(LitElement) {
         type="link"
         class=${classMap({
           user: true,
-          selected: selectedPanel === "profile",
+          selected: isSelected,
           rtl: isRTL,
         })}
         @mouseenter=${this._itemMouseEnter}
@@ -566,31 +542,30 @@ class HaSidebar extends SubscribeMixin(LitElement) {
           .user=${this.hass.user}
           .hass=${this.hass}
         ></ha-user-badge>
-
-        <span class="item-text" slot="headline"
-          >${this.hass.user ? this.hass.user.name : ""}</span
-        >
+        <span class="item-text" slot="headline">
+          ${this.hass.user ? this.hass.user.name : ""}
+        </span>
       </ha-md-list-item>
     `;
   }
 
   private _renderExternalConfiguration() {
-    return html`${!this.hass.user?.is_admin &&
-    this.hass.auth.external?.config.hasSettingsScreen
-      ? html`
-          <ha-md-list-item
-            @click=${this._handleExternalAppConfiguration}
-            type="button"
-            @mouseenter=${this._itemMouseEnter}
-            @mouseleave=${this._itemMouseLeave}
-          >
-            <ha-svg-icon slot="start" .path=${mdiCellphoneCog}></ha-svg-icon>
-            <span class="item-text" slot="headline">
-              ${this.hass.localize("ui.sidebar.external_app_configuration")}
-            </span>
-          </ha-md-list-item>
-        `
-      : ""}`;
+    if (!this.hass.auth.external?.config.hasSettingsScreen) {
+      return nothing;
+    }
+    return html`
+      <ha-md-list-item
+        @click=${this._handleExternalAppConfiguration}
+        type="button"
+        @mouseenter=${this._itemMouseEnter}
+        @mouseleave=${this._itemMouseLeave}
+      >
+        <ha-svg-icon slot="start" .path=${mdiCellphoneCog}></ha-svg-icon>
+        <span class="item-text" slot="headline">
+          ${this.hass.localize("ui.sidebar.external_app_configuration")}
+        </span>
+      </ha-md-list-item>
+    `;
   }
 
   private _handleExternalAppConfiguration(ev: Event) {

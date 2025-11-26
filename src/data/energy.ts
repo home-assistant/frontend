@@ -200,6 +200,7 @@ export type EnergySource =
 export interface EnergyPreferences {
   energy_sources: EnergySource[];
   device_consumption: DeviceConsumptionEnergyPreference[];
+  device_consumption_water: DeviceConsumptionEnergyPreference[];
 }
 
 export interface EnergyInfo {
@@ -216,6 +217,7 @@ export interface EnergyValidationIssue {
 export interface EnergyPreferencesValidation {
   energy_sources: EnergyValidationIssue[][];
   device_consumption: EnergyValidationIssue[][];
+  device_consumption_water: EnergyValidationIssue[][];
 }
 
 export const getEnergyInfo = (hass: HomeAssistant) =>
@@ -355,6 +357,11 @@ export const getReferencedStatisticIds = (
   }
   if (!(includeTypes && !includeTypes.includes("device"))) {
     statIDs.push(...prefs.device_consumption.map((d) => d.stat_consumption));
+  }
+  if (!(includeTypes && !includeTypes.includes("water"))) {
+    statIDs.push(
+      ...prefs.device_consumption_water.map((d) => d.stat_consumption)
+    );
   }
 
   return statIDs;

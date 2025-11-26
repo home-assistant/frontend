@@ -7,8 +7,8 @@ export interface CoreFrontendUserData {
 }
 
 export interface SidebarFrontendUserData {
-  panelOrder: string[];
-  hiddenPanels: string[];
+  panelOrder?: string[];
+  hiddenPanels?: string[];
 }
 
 export interface CoreFrontendSystemData {

@@ -281,7 +281,6 @@ class HaScriptPicker extends SubscribeMixin(LitElement) {
         },
         area: {
           title: localize("ui.panel.config.script.picker.headers.area"),
-          defaultHidden: true,
           groupable: true,
           filterable: true,
           sortable: true,

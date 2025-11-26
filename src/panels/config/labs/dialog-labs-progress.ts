@@ -41,9 +41,7 @@ export class DialogLabsProgress
     return html`
       <ha-md-dialog
         .open=${this._open}
-        hideActions
-        scrimClickAction=""
-        escapeKeyAction=""
+        disable-cancel-action
         @closed=${this._handleClosed}
       >
         <div slot="content">

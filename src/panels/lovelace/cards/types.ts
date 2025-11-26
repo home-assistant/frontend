@@ -226,6 +226,14 @@ export interface EnergySankeyCardConfig extends EnergyCardBaseConfig {
   group_by_area?: boolean;
 }
 
+export interface WaterSankeyCardConfig extends EnergyCardBaseConfig {
+  type: "water-sankey";
+  title?: string;
+  layout?: "vertical" | "horizontal" | "auto";
+  group_by_floor?: boolean;
+  group_by_area?: boolean;
+}
+
 export interface PowerSourcesGraphCardConfig extends EnergyCardBaseConfig {
   type: "power-sources-graph";
   title?: string;
