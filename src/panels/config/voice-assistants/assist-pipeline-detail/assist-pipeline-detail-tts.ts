@@ -125,8 +125,8 @@ export class AssistPipelineDetailTTS extends LitElement {
     this._supportedLanguages = ev.detail.value;
 
     if (
-      !this._supportedLanguages?.includes(this.data?.tts_language || "") ||
-      !this.data?.tts_language
+      !this.data?.tts_language ||
+      !this._supportedLanguages?.includes(this.data?.tts_language)
     ) {
       // wait for update of conversation_engine
       setTimeout(() => {
