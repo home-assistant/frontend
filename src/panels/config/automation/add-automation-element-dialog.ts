@@ -246,6 +246,31 @@ class DialogAddAutomationElement
     ) {
       this._calculateUsedDomains();
     }
+
+    if (changedProps.has("_newTriggersAndConditions")) {
+      this._subscribeDescriptions();
+    }
+  }
+
+  private _subscribeDescriptions() {
+    this._unsubscribe();
+    if (this._params?.type === "trigger") {
+      this._triggerDescriptions = {};
+      this._unsub = subscribeTriggers(this.hass, (triggers) => {
+        this._triggerDescriptions = {
+          ...this._triggerDescriptions,
+          ...triggers,
+        };
+      });
+    } else if (this._params?.type === "condition") {
+      this._conditionDescriptions = {};
+      this._unsub = subscribeConditions(this.hass, (conditions) => {
+        this._conditionDescriptions = {
+          ...this._conditionDescriptions,
+          ...conditions,
+        };
+      });
+    }
   }
 
   public hassSubscribe() {
@@ -287,21 +312,11 @@ class DialogAddAutomationElement
     } else if (this._params?.type === "trigger") {
       this.hass.loadBackendTranslation("triggers");
       getTriggerIcons(this.hass);
-      this._unsub = subscribeTriggers(this.hass, (triggers) => {
-        this._triggerDescriptions = {
-          ...this._triggerDescriptions,
-          ...triggers,
-        };
-      });
+      this._subscribeDescriptions();
     } else if (this._params?.type === "condition") {
       this.hass.loadBackendTranslation("conditions");
       getConditionIcons(this.hass);
-      this._unsub = subscribeConditions(this.hass, (conditions) => {
-        this._conditionDescriptions = {
-          ...this._conditionDescriptions,
-          ...conditions,
-        };
-      });
+      this._subscribeDescriptions();
     }
 
     window.addEventListener("resize", this._updateNarrow);
