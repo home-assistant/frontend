@@ -6699,10 +6699,10 @@ __metadata:
   languageName: node
   linkType: hard
 
-"color-name@npm:2.0.2":
-  version: 2.0.2
-  resolution: "color-name@npm:2.0.2"
-  checksum: 10/58e5fa3853a0dac813179e75a1fe07ff362abacb9fd456fcaae702b74d4ed5f6de2cbaee07ff2660f3495c7a6ceabc4ef0420165db0018e7150a6d4045f6539e
+"color-name@npm:2.1.0":
+  version: 2.1.0
+  resolution: "color-name@npm:2.1.0"
+  checksum: 10/eb014f71d87408e318e95d3f554f188370d354ba8e0ffa4341d0fd19de391bfe2bc96e563d4f6614644d676bc24f475560dffee3fe310c2d6865d007410a9a2b
   languageName: node
   linkType: hard
 
@@ -9300,7 +9300,7 @@ __metadata:
     babel-plugin-template-html-minifier: "npm:4.1.0"
     barcode-detector: "npm:3.0.8"
     browserslist-useragent-regexp: "npm:4.1.3"
-    color-name: "npm:2.0.2"
+    color-name: "npm:2.1.0"
     comlink: "npm:4.4.2"
     core-js: "npm:3.46.0"
     cropperjs: "npm:1.6.2"
