@@ -6,7 +6,6 @@ import type { HomeAssistant } from "../../../types";
 import type { LovelaceViewConfig } from "../../../data/lovelace/config/view";
 import type { LovelaceStrategyConfig } from "../../../data/lovelace/config/strategy";
 import type { LovelaceSectionConfig } from "../../../data/lovelace/config/section";
-import type { LovelaceCardConfig } from "../../../data/lovelace/config/card";
 import { DEFAULT_ENERGY_COLLECTION_KEY } from "../ha-panel-energy";
 
 const sourceHasCost = (source: Record<string, any>): boolean =>
@@ -52,10 +51,6 @@ export class EnergyViewStrategy extends ReactiveElement {
         source.type === "grid" &&
         (source.flow_from?.length || source.flow_to?.length)
     ) as GridSourceTypeEnergyPreference;
-    const hasReturn = hasGrid && hasGrid.flow_to.length > 0;
-    const hasSolar = prefs.energy_sources.some(
-      (source) => source.type === "solar"
-    );
     const hasGas = prefs.energy_sources.some((source) => source.type === "gas");
     const hasBattery = prefs.energy_sources.some(
       (source) => source.type === "battery"
@@ -143,43 +138,10 @@ export class EnergyViewStrategy extends ReactiveElement {
         modes: ["bar"],
       });
     } else if (hasGrid) {
-      const gauges: LovelaceCardConfig[] = [];
-      // Only include if we have a grid source & return.
-      if (hasReturn) {
-        gauges.push({
-          type: "energy-grid-neutrality-gauge",
-          view_layout: { position: "sidebar" },
-          collection_key: collectionKey,
-        });
-      }
-
-      gauges.push({
-        type: "energy-carbon-consumed-gauge",
-        view_layout: { position: "sidebar" },
-        collection_key: collectionKey,
-      });
-
-      // Only include if we have a solar source.
-      if (hasSolar) {
-        if (hasReturn) {
-          gauges.push({
-            type: "energy-solar-consumed-gauge",
-            view_layout: { position: "sidebar" },
-            collection_key: collectionKey,
-          });
-        }
-        gauges.push({
-          type: "energy-self-sufficiency-gauge",
-          view_layout: { position: "sidebar" },
-          collection_key: collectionKey,
-        });
-      }
-
       electricitySection.cards!.push({
-        type: "grid",
-        columns: 2,
-        square: false,
-        cards: gauges,
+        title: hass.localize("ui.panel.energy.cards.energy_usage_graph_title"),
+        type: "energy-usage-graph",
+        collection_key: collectionKey,
       });
     }
 
