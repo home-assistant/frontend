@@ -114,7 +114,6 @@ import {
 } from "../../../data/trigger";
 import type { HassDialog } from "../../../dialogs/make-dialog-manager";
 import { KeyboardShortcutMixin } from "../../../mixins/keyboard-shortcut-mixin";
-import { SubscribeMixin } from "../../../mixins/subscribe-mixin";
 import type { HomeAssistant } from "../../../types";
 import { isMac } from "../../../util/is_mac";
 import { showToast } from "../../../util/toast";
@@ -168,7 +167,7 @@ const DYNAMIC_KEYWORDS = ["dynamicGroups", "helpers", "other"];
 
 @customElement("add-automation-element-dialog")
 class DialogAddAutomationElement
-  extends KeyboardShortcutMixin(SubscribeMixin(LitElement))
+  extends KeyboardShortcutMixin(LitElement)
   implements HassDialog
 {
   @property({ attribute: false }) public hass!: HomeAssistant;
@@ -233,6 +232,8 @@ class DialogAddAutomationElement
 
   private _unsub?: Promise<UnsubscribeFunc>;
 
+  private _unsubscribeLabFeatures?: UnsubscribeFunc;
+
   private _configEntryLookup: Record<string, ConfigEntry> = {};
 
   // #endregion variables
@@ -246,23 +247,6 @@ class DialogAddAutomationElement
     ) {
       this._calculateUsedDomains();
     }
-  }
-
-  public hassSubscribe() {
-    return [
-      subscribeLabFeatures(this.hass!.connection, (features) => {
-        this._newTriggersAndConditions =
-          features.find(
-            (feature) =>
-              feature.domain === "automation" &&
-              feature.preview_feature === "new_triggers_conditions"
-          )?.enabled ?? false;
-        this._tab =
-          this._newTriggersAndConditions && this._params?.type !== "condition"
-            ? "targets"
-            : "groups";
-      }),
-    ];
   }
 
   public showDialog(params): void {
@@ -280,6 +264,22 @@ class DialogAddAutomationElement
     this._unsubscribe();
     this._fetchManifests();
     this._calculateUsedDomains();
+
+    this._unsubscribeLabFeatures = subscribeLabFeatures(
+      this.hass.connection,
+      (features) => {
+        this._newTriggersAndConditions =
+          features.find(
+            (feature) =>
+              feature.domain === "automation" &&
+              feature.preview_feature === "new_triggers_conditions"
+          )?.enabled ?? false;
+        this._tab =
+          this._newTriggersAndConditions && this._params?.type !== "condition"
+            ? "targets"
+            : "groups";
+      }
+    );
 
     if (this._params?.type === "action") {
       this.hass.loadBackendTranslation("services");
@@ -378,6 +378,10 @@ class DialogAddAutomationElement
     if (this._unsub) {
       this._unsub.then((unsub) => unsub());
       this._unsub = undefined;
+    }
+    if (this._unsubscribeLabFeatures) {
+      this._unsubscribeLabFeatures();
+      this._unsubscribeLabFeatures = undefined;
     }
   }
 
