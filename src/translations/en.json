@@ -7362,8 +7362,6 @@
             "header": "View configuration",
             "header_name": "{name} view configuration",
             "add": "Add view",
-            "show_sidebar": "Show sidebar",
-            "show_content": "Show content",
             "background": {
               "settings": "Background settings",
               "image": "Background image",
