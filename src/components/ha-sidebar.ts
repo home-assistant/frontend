@@ -239,6 +239,18 @@ class HaSidebar extends SubscribeMixin(LitElement) {
     ];
   }
 
+  public disconnectedCallback() {
+    super.disconnectedCallback();
+    // clear timeouts
+    clearTimeout(this._mouseLeaveTimeout);
+    clearTimeout(this._tooltipHideTimeout);
+    clearTimeout(this._touchendTimeout);
+    // set undefined values
+    this._mouseLeaveTimeout = undefined;
+    this._tooltipHideTimeout = undefined;
+    this._touchendTimeout = undefined;
+  }
+
   protected render() {
     if (!this.hass) {
       return nothing;
