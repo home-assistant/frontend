@@ -81,7 +81,8 @@ export class AssistPipelineDetailSTT extends LitElement {
     this._supportedLanguages = ev.detail.value;
 
     if (
-      !this.data?.stt_language || !this._supportedLanguages?.includes(this.data.stt_language)
+      !this.data?.stt_language ||
+      !this._supportedLanguages?.includes(this.data.stt_language)
     ) {
       // wait for update of conversation_engine
       setTimeout(() => {
