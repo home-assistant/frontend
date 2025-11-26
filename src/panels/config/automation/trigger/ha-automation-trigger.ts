@@ -1,5 +1,6 @@
 import { mdiDragHorizontalVariant, mdiPlus } from "@mdi/js";
 import deepClone from "deep-clone-simple";
+import type { HassServiceTarget } from "home-assistant-js-websocket";
 import type { PropertyValues } from "lit";
 import { html, LitElement, nothing } from "lit";
 import { customElement, property, state } from "lit/decorators";
@@ -174,13 +175,14 @@ export default class HaAutomationTrigger extends SubscribeMixin(LitElement) {
     });
   }
 
-  private _addTrigger = (value: string) => {
+  private _addTrigger = (value: string, target?: HassServiceTarget) => {
     let triggers: Trigger[];
     if (value === PASTE_VALUE) {
       triggers = this.triggers.concat(deepClone(this._clipboard!.trigger));
     } else if (isDynamic(value)) {
       triggers = this.triggers.concat({
         trigger: getValueFromDynamic(value),
+        target,
       });
     } else {
       const trigger = value as Exclude<Trigger, TriggerList>["trigger"];

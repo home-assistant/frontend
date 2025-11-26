@@ -1,5 +1,6 @@
 import { mdiDragHorizontalVariant, mdiPlus } from "@mdi/js";
 import deepClone from "deep-clone-simple";
+import type { HassServiceTarget } from "home-assistant-js-websocket";
 import type { PropertyValues } from "lit";
 import { html, LitElement, nothing } from "lit";
 import { customElement, property, queryAll, state } from "lit/decorators";
@@ -261,7 +262,7 @@ export default class HaAutomationCondition extends SubscribeMixin(LitElement) {
     });
   }
 
-  private _addCondition = (value) => {
+  private _addCondition = (value: string, target?: HassServiceTarget) => {
     let conditions: Condition[];
     if (value === PASTE_VALUE) {
       conditions = this.conditions.concat(
@@ -270,6 +271,7 @@ export default class HaAutomationCondition extends SubscribeMixin(LitElement) {
     } else if (isDynamic(value)) {
       conditions = this.conditions.concat({
         condition: getValueFromDynamic(value),
+        target,
       });
     } else {
       const condition = value as Condition["condition"];

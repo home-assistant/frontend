@@ -5,7 +5,10 @@ import {
   mdiContentPaste,
   mdiPlus,
 } from "@mdi/js";
-import type { UnsubscribeFunc } from "home-assistant-js-websocket";
+import type {
+  HassServiceTarget,
+  UnsubscribeFunc,
+} from "home-assistant-js-websocket";
 import type { CSSResultGroup, PropertyValues, TemplateResult } from "lit";
 import { LitElement, css, html, nothing } from "lit";
 import { customElement, property, query, state } from "lit/decorators";
@@ -1547,7 +1550,15 @@ class DialogAddAutomationElement
   }
 
   private _selected(ev: CustomEvent<{ value: string }>) {
-    this._params!.add(ev.detail.value);
+    let target: HassServiceTarget | undefined;
+    if (
+      this._tab === "targets" &&
+      this._selectedTarget &&
+      Object.values(this._selectedTarget)[0]
+    ) {
+      target = this._selectedTarget;
+    }
+    this._params!.add(ev.detail.value, target);
     this.closeDialog();
   }
 
