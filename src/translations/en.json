@@ -7229,9 +7229,9 @@
               "solar_total": "Solar total",
               "water_total": "Water total",
               "source": "Source",
-              "energy": "Energy",
+              "energy": "Usage",
               "cost": "Cost",
-              "previous_energy": "Previous energy",
+              "previous_energy": "Previous usage",
               "previous_cost": "Previous cost",
               "battery_total": "Battery total",
               "total_costs": "Total costs"

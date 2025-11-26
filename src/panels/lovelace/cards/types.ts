@@ -194,6 +194,7 @@ export interface EnergySourcesTableCardConfig extends EnergyCardBaseConfig {
   type: "energy-sources-table";
   title?: string;
   types?: (keyof EnergySourceByType)[];
+  show_only_totals?: boolean;
 }
 
 export interface EnergySolarGaugeCardConfig extends EnergyCardBaseConfig {
