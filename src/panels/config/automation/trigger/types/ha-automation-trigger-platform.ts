@@ -25,6 +25,16 @@ const showOptionalToggle = (field: TriggerDescription["fields"][string]) =>
   !field.required &&
   !("boolean" in field.selector && field.default);
 
+const DEFAULT_KEYS: (keyof PlatformTrigger)[] = [
+  "trigger",
+  "target",
+  "alias",
+  "id",
+  "variables",
+  "enabled",
+  "options",
+] as const;
+
 @customElement("ha-automation-trigger-platform")
 export class HaPlatformTrigger extends LitElement {
   @property({ attribute: false }) public hass!: HomeAssistant;
@@ -52,6 +62,31 @@ export class HaPlatformTrigger extends LitElement {
     if (!changedProperties.has("trigger")) {
       return;
     }
+
+    let newValue: PlatformTrigger | undefined;
+
+    for (const key in this.trigger) {
+      // Migrate old options to `options`
+      if (DEFAULT_KEYS.includes(key as keyof PlatformTrigger)) {
+        continue;
+      }
+      if (newValue === undefined) {
+        newValue = {
+          ...this.trigger,
+          options: { [key]: this.trigger[key] },
+        };
+      } else {
+        newValue.options![key] = this.trigger[key];
+      }
+      delete newValue[key];
+    }
+    if (newValue !== undefined) {
+      fireEvent(this, "value-changed", {
+        value: newValue,
+      });
+      this.trigger = newValue;
+    }
+
     const oldValue = changedProperties.get("trigger") as
       | undefined
       | this["trigger"];

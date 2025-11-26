@@ -107,6 +107,7 @@ export class EnergyViewStrategy extends ReactiveElement {
       overviewSection.cards!.push({
         type: "energy-sources-table",
         collection_key: collectionKey,
+        show_only_totals: true,
       });
     }
     view.sections!.push(overviewSection);

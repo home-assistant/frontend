@@ -114,17 +114,17 @@ export interface StateTrigger extends BaseTrigger {
   for?: string | number | ForDict;
 }
 
-export interface MqttTrigger extends BaseTrigger {
-  trigger: "mqtt";
-  topic: string;
-  payload?: string;
-}
-
 export interface GeoLocationTrigger extends BaseTrigger {
   trigger: "geo_location";
   source: string;
   zone: string;
   event: "enter" | "leave";
+}
+
+export interface MqttTrigger extends BaseTrigger {
+  trigger: "mqtt";
+  topic: string;
+  payload?: string;
 }
 
 export interface HassTrigger extends BaseTrigger {

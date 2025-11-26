@@ -1,6 +1,9 @@
 import { mdiDragHorizontalVariant, mdiPlus } from "@mdi/js";
 import deepClone from "deep-clone-simple";
-import type { HassServiceTarget } from "home-assistant-js-websocket";
+import type {
+  HassServiceTarget,
+  UnsubscribeFunc,
+} from "home-assistant-js-websocket";
 import type { PropertyValues } from "lit";
 import { html, LitElement, nothing } from "lit";
 import { customElement, property, queryAll, state } from "lit/decorators";
@@ -25,6 +28,7 @@ import {
   CONDITION_BUILDING_BLOCKS,
   subscribeConditions,
 } from "../../../../data/condition";
+import { subscribeLabFeatures } from "../../../../data/labs";
 import { SubscribeMixin } from "../../../../mixins/subscribe-mixin";
 import type { HomeAssistant } from "../../../../types";
 import {
@@ -74,19 +78,52 @@ export default class HaAutomationCondition extends SubscribeMixin(LitElement) {
 
   private _conditionKeys = new WeakMap<Condition, string>();
 
+  private _unsub?: Promise<UnsubscribeFunc>;
+
+  // @ts-ignore
+  @state() private _newTriggersAndConditions = false;
+
+  public disconnectedCallback() {
+    super.disconnectedCallback();
+    this._unsubscribe();
+  }
+
   protected hassSubscribe() {
     return [
-      subscribeConditions(this.hass, (conditions) =>
-        this._addConditions(conditions)
-      ),
+      subscribeLabFeatures(this.hass!.connection, (features) => {
+        this._newTriggersAndConditions =
+          features.find(
+            (feature) =>
+              feature.domain === "automation" &&
+              feature.preview_feature === "new_triggers_conditions"
+          )?.enabled ?? false;
+      }),
     ];
   }
 
-  private _addConditions(conditions: ConditionDescriptions) {
-    this._conditionDescriptions = {
-      ...this._conditionDescriptions,
-      ...conditions,
-    };
+  private _subscribeDescriptions() {
+    this._unsubscribe();
+    this._conditionDescriptions = {};
+    this._unsub = subscribeConditions(this.hass, (descriptions) => {
+      this._conditionDescriptions = {
+        ...this._conditionDescriptions,
+        ...descriptions,
+      };
+    });
+  }
+
+  private _unsubscribe() {
+    if (this._unsub) {
+      this._unsub.then((unsub) => unsub());
+      this._unsub = undefined;
+    }
+  }
+
+  protected willUpdate(changedProperties: PropertyValues): void {
+    super.willUpdate(changedProperties);
+    if (changedProperties.has("_newTriggersAndConditions")) {
+      this._subscribeDescriptions();
+    }
   }
 
   protected firstUpdated(changedProps: PropertyValues) {

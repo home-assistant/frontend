@@ -5465,6 +5465,11 @@
                 "partial_failure": "Some devices failed to delete successfully. Check system logs for more information."
               }
             }
+          },
+          "esphome": {
+            "show_encryption_key": "Show encryption key",
+            "encryption_key_title": "ESPHome Encryption Key",
+            "encryption_key_description": "This is the encryption key for your ESPHome device. Keep it in a safe place, as you may need it when transferring devices between Home Assistant instances."
           }
         },
         "entities": {
@@ -7224,9 +7229,9 @@
               "solar_total": "Solar total",
               "water_total": "Water total",
               "source": "Source",
-              "energy": "Energy",
+              "energy": "Usage",
               "cost": "Cost",
-              "previous_energy": "Previous energy",
+              "previous_energy": "Previous usage",
               "previous_cost": "Previous cost",
               "battery_total": "Battery total",
               "total_costs": "Total costs"

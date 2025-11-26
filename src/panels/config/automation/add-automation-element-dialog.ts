@@ -247,15 +247,35 @@ class DialogAddAutomationElement
     ) {
       this._calculateUsedDomains();
     }
+
+    if (changedProps.has("_newTriggersAndConditions")) {
+      this._subscribeDescriptions();
+    }
+  }
+
+  private _subscribeDescriptions() {
+    this._unsubscribe();
+    if (this._params?.type === "trigger") {
+      this._triggerDescriptions = {};
+      this._unsub = subscribeTriggers(this.hass, (triggers) => {
+        this._triggerDescriptions = {
+          ...this._triggerDescriptions,
+          ...triggers,
+        };
+      });
+    } else if (this._params?.type === "condition") {
+      this._conditionDescriptions = {};
+      this._unsub = subscribeConditions(this.hass, (conditions) => {
+        this._conditionDescriptions = {
+          ...this._conditionDescriptions,
+          ...conditions,
+        };
+      });
+    }
   }
 
   public showDialog(params): void {
     this._params = params;
-
-    this._tab =
-      this._newTriggersAndConditions && this._params?.type !== "condition"
-        ? "targets"
-        : "groups";
 
     this.addKeyboardShortcuts();
 
@@ -287,21 +307,11 @@ class DialogAddAutomationElement
     } else if (this._params?.type === "trigger") {
       this.hass.loadBackendTranslation("triggers");
       getTriggerIcons(this.hass);
-      this._unsub = subscribeTriggers(this.hass, (triggers) => {
-        this._triggerDescriptions = {
-          ...this._triggerDescriptions,
-          ...triggers,
-        };
-      });
+      this._subscribeDescriptions();
     } else if (this._params?.type === "condition") {
       this.hass.loadBackendTranslation("conditions");
       getConditionIcons(this.hass);
-      this._unsub = subscribeConditions(this.hass, (conditions) => {
-        this._conditionDescriptions = {
-          ...this._conditionDescriptions,
-          ...conditions,
-        };
-      });
+      this._subscribeDescriptions();
     }
 
     window.addEventListener("resize", this._updateNarrow);
@@ -430,10 +440,7 @@ class DialogAddAutomationElement
       },
     ];
 
-    if (
-      this._newTriggersAndConditions &&
-      automationElementType !== "condition"
-    ) {
+    if (this._newTriggersAndConditions) {
       tabButtons.unshift({
         label: this.hass.localize(`ui.panel.config.automation.editor.targets`),
         value: "targets",
@@ -523,8 +530,7 @@ class DialogAddAutomationElement
                 this._manifests
               )}
               .convertToItem=${this._convertToItem}
-              .newTriggersAndConditions=${this._newTriggersAndConditions &&
-              automationElementType !== "condition"}
+              .newTriggersAndConditions=${this._newTriggersAndConditions}
               @search-element-picked=${this._searchItemSelected}
             >
             </ha-automation-add-search>`

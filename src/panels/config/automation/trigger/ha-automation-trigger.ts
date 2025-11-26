@@ -1,6 +1,9 @@
 import { mdiDragHorizontalVariant, mdiPlus } from "@mdi/js";
 import deepClone from "deep-clone-simple";
-import type { HassServiceTarget } from "home-assistant-js-websocket";
+import type {
+  HassServiceTarget,
+  UnsubscribeFunc,
+} from "home-assistant-js-websocket";
 import type { PropertyValues } from "lit";
 import { html, LitElement, nothing } from "lit";
 import { customElement, property, state } from "lit/decorators";
@@ -21,6 +24,7 @@ import {
   type Trigger,
   type TriggerList,
 } from "../../../../data/automation";
+import { subscribeLabFeatures } from "../../../../data/labs";
 import type { TriggerDescriptions } from "../../../../data/trigger";
 import { isTriggerList, subscribeTriggers } from "../../../../data/trigger";
 import { SubscribeMixin } from "../../../../mixins/subscribe-mixin";
@@ -67,16 +71,54 @@ export default class HaAutomationTrigger extends SubscribeMixin(LitElement) {
 
   private _triggerKeys = new WeakMap<Trigger, string>();
 
+  private _unsub?: Promise<UnsubscribeFunc>;
+
   @state() private _triggerDescriptions: TriggerDescriptions = {};
+
+  // @ts-ignore
+  @state() private _newTriggersAndConditions = false;
+
+  public disconnectedCallback() {
+    super.disconnectedCallback();
+    this._unsubscribe();
+  }
 
   protected hassSubscribe() {
     return [
-      subscribeTriggers(this.hass, (triggers) => this._addTriggers(triggers)),
+      subscribeLabFeatures(this.hass!.connection, (features) => {
+        this._newTriggersAndConditions =
+          features.find(
+            (feature) =>
+              feature.domain === "automation" &&
+              feature.preview_feature === "new_triggers_conditions"
+          )?.enabled ?? false;
+      }),
     ];
   }
 
-  private _addTriggers(triggers: TriggerDescriptions) {
-    this._triggerDescriptions = { ...this._triggerDescriptions, ...triggers };
+  private _subscribeDescriptions() {
+    this._unsubscribe();
+    this._triggerDescriptions = {};
+    this._unsub = subscribeTriggers(this.hass, (descriptions) => {
+      this._triggerDescriptions = {
+        ...this._triggerDescriptions,
+        ...descriptions,
+      };
+    });
+  }
+
+  private _unsubscribe() {
+    if (this._unsub) {
+      this._unsub.then((unsub) => unsub());
+      this._unsub = undefined;
+    }
+  }
+
+  protected willUpdate(changedProperties: PropertyValues): void {
+    super.willUpdate(changedProperties);
+    if (changedProperties.has("_newTriggersAndConditions")) {
+      this._subscribeDescriptions();
+    }
   }
 
   protected firstUpdated(changedProps: PropertyValues) {
