@@ -292,7 +292,7 @@ export class HaLabelPicker extends SubscribeMixin(LitElement) {
 
   private _notFoundLabel = (search: string) =>
     this.hass.localize("ui.components.label-picker.no_match", {
-      term: html`<b>‘${search}’</b>`,
+      term: ‘${search}’
     });
 }
 
