@@ -38,11 +38,6 @@ const SCHEMAS: { name: string; triggers: Trigger[] }[] = [
   },
 
   {
-    name: "MQTT",
-    triggers: [{ ...HaMQTTTrigger.defaultConfig }],
-  },
-
-  {
     name: "GeoLocation",
     triggers: [{ ...HaGeolocationTrigger.defaultConfig }],
   },
