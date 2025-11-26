@@ -18,10 +18,18 @@ export const CONDITION_COLLECTIONS: AutomationElementGroupCollection[] = [
     },
   },
   {
+    titleKey:
+      "ui.panel.config.automation.editor.conditions.groups.helpers.label",
+    groups: {
+      helpers: {},
+    },
+  },
+  {
     titleKey: "ui.panel.config.automation.editor.conditions.groups.other.label",
     groups: {
       template: {},
       trigger: {},
+      other: {},
     },
   },
 ] as const;

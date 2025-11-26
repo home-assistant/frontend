@@ -4084,6 +4084,9 @@
                 "entity": {
                   "label": "Entity"
                 },
+                "helpers": {
+                  "label": "Helpers"
+                },
                 "time_location": {
                   "label": "Time and location"
                 },
@@ -4354,6 +4357,9 @@
                 },
                 "time_location": {
                   "label": "Time and location"
+                },
+                "helpers": {
+                  "label": "Helpers"
                 },
                 "other": {
                   "label": "Other conditions"

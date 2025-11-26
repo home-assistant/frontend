@@ -241,7 +241,6 @@ class DialogAddAutomationElement
 
   protected willUpdate(changedProps: PropertyValues) {
     if (
-      this._params?.type === "action" &&
       changedProps.has("hass") &&
       changedProps.get("hass")?.states !== this.hass.states
     ) {
@@ -280,10 +279,10 @@ class DialogAddAutomationElement
 
     this._unsubscribe();
     this._fetchManifests();
+    this._calculateUsedDomains();
 
     if (this._params?.type === "action") {
       this.hass.loadBackendTranslation("services");
-      this._calculateUsedDomains();
       getServiceIcons(this.hass);
     } else if (this._params?.type === "trigger") {
       this.hass.loadBackendTranslation("triggers");
