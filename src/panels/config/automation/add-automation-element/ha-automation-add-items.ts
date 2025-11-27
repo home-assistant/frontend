@@ -273,7 +273,7 @@ export class HaAutomationAddItems extends LitElement {
       align-items: center;
       color: var(--ha-color-text-secondary);
       padding: var(--ha-space-0);
-      margin: var(--ha-space-3) var(--ha-space-4)
+      margin: var(--ha-space-0) var(--ha-space-4)
         max(var(--safe-area-inset-bottom), var(--ha-space-3));
       line-height: var(--ha-line-height-expanded);
       justify-content: center;
