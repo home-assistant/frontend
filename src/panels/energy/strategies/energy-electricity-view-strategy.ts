@@ -55,6 +55,9 @@ export class EnergyElectricityViewStrategy extends ReactiveElement {
     const hasPowerDevices = prefs.device_consumption.find(
       (device) => device.stat_rate
     );
+    const showFloorsNAreas = !prefs.device_consumption.some(
+      (d) => d.included_in_stat
+    );
 
     view.cards!.push({
       type: "energy-compare",
@@ -67,6 +70,8 @@ export class EnergyElectricityViewStrategy extends ReactiveElement {
           title: hass.localize("ui.panel.energy.cards.power_sankey_title"),
           type: "power-sankey",
           collection_key: collectionKey,
+          group_by_floor: showFloorsNAreas,
+          group_by_area: showFloorsNAreas,
           grid_options: {
             columns: 24,
           },
@@ -156,9 +161,6 @@ export class EnergyElectricityViewStrategy extends ReactiveElement {
 
     // Only include if we have at least 1 device in the config.
     if (prefs.device_consumption.length) {
-      const showFloorsNAreas = !prefs.device_consumption.some(
-        (d) => d.included_in_stat
-      );
       view.cards!.push({
         title: hass.localize("ui.panel.energy.cards.energy_sankey_title"),
         type: "energy-sankey",
