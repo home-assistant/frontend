@@ -1,6 +1,7 @@
 import { mdiAlertOutline, mdiClose } from "@mdi/js";
 import { css, html, LitElement, nothing } from "lit";
 import { customElement, property, query, state } from "lit/decorators";
+import { classMap } from "lit/directives/class-map";
 import { ifDefined } from "lit/directives/if-defined";
 import { fireEvent } from "../../common/dom/fire_event";
 import "../../components/ha-button";
@@ -80,7 +81,11 @@ class DialogBox extends LitElement {
                 ></ha-icon-button
               ></slot>`
             : nothing}
-          <span slot="title" id="dialog-box-title">
+          <span
+            class=${classMap({ title: true, alert: confirmPrompt })}
+            slot="title"
+            id="dialog-box-title"
+          >
             ${this._params.warning
               ? html`<ha-svg-icon
                   .path=${mdiAlertOutline}
@@ -199,6 +204,9 @@ class DialogBox extends LitElement {
     }
     ha-textfield {
       width: 100%;
+    }
+    .title.alert {
+      margin-left: var(--ha-space-2);
     }
   `;
 }
