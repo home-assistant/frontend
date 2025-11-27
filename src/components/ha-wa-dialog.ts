@@ -266,24 +266,8 @@ export class HaWaDialog extends LitElement {
     haStyleScrollbar,
     css`
       wa-dialog {
-        --safe-area-top: max(
-          var(--safe-area-inset-top, var(--ha-space-0)),
-          var(--ha-space-0)
-        );
-        --safe-area-bottom: max(
-          var(--safe-area-inset-bottom, var(--ha-space-0)),
-          var(--ha-space-0)
-        );
-        --safe-area-left: max(
-          var(--safe-area-inset-left, var(--ha-space-0)),
-          var(--ha-space-0)
-        );
-        --safe-area-right: max(
-          var(--safe-area-inset-right, var(--ha-space-0)),
-          var(--ha-space-0)
-        );
         --safe-width: calc(
-          100vw - var(--safe-area-left) - var(--safe-area-right)
+          100vw - var(--safe-area-inset-left) - var(--safe-area-inset-right)
         );
         --full-width: var(--ha-dialog-width-full, min(95vw, var(--safe-width)));
         --width: min(var(--ha-dialog-width-md, 580px), var(--full-width));
@@ -346,10 +330,10 @@ export class HaWaDialog extends LitElement {
             min-height: var(--ha-dialog-min-height, 100svh);
             max-height: var(--ha-dialog-max-height, 100vh);
             max-height: var(--ha-dialog-max-height, 100svh);
-            padding-top: var(--safe-area-top);
-            padding-bottom: var(--safe-area-bottom);
-            padding-left: var(--safe-area-left);
-            padding-right: var(--safe-area-right);
+            padding-top: var(--safe-area-inset-top);
+            padding-bottom: var(--safe-area-inset-bottom);
+            padding-left: var(--safe-area-inset-left);
+            padding-right: var(--safe-area-inset-right);
           }
         }
       }
