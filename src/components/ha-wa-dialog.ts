@@ -283,8 +283,7 @@ export class HaWaDialog extends LitElement {
           --ha-dialog-border-radius,
           var(--ha-border-radius-3xl)
         );
-        max-width: var(--ha-dialog-max-width, 100vw);
-        max-width: var(--ha-dialog-max-width, 100svw);
+        max-width: var(--ha-dialog-max-width, var(--safe-width));
       }
 
       :host([width="small"]) wa-dialog {
@@ -323,10 +322,8 @@ export class HaWaDialog extends LitElement {
           }
 
           wa-dialog::part(dialog) {
-            min-height: var(--ha-dialog-min-height, 100vh);
-            min-height: var(--ha-dialog-min-height, 100svh);
-            max-height: var(--ha-dialog-max-height, 100vh);
-            max-height: var(--ha-dialog-max-height, 100svh);
+            min-height: var(--ha-dialog-min-height, var(--safe-height));
+            max-height: var(--ha-dialog-max-height, var(--safe-height));
             padding-top: var(--safe-area-inset-top);
             padding-bottom: var(--safe-area-inset-bottom);
             padding-left: var(--safe-area-inset-left);
