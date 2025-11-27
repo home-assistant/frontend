@@ -838,10 +838,10 @@ export class HaDataTable extends LitElement {
     } else if (this.sortDirection === "asc") {
       this.sortDirection = "desc";
     } else {
-      this.sortDirection = null;
+      this.sortDirection = "asc";
     }
 
-    this.sortColumn = this.sortDirection === null ? undefined : columnId;
+    this.sortColumn = columnId;
 
     fireEvent(this, "sorting-changed", {
       column: columnId,

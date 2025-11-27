@@ -273,7 +273,7 @@ export class HaAutomationAddItems extends LitElement {
       align-items: center;
       color: var(--ha-color-text-secondary);
       padding: var(--ha-space-0);
-      margin: var(--ha-space-3) var(--ha-space-4)
+      margin: var(--ha-space-0) var(--ha-space-4)
         max(var(--safe-area-inset-bottom), var(--ha-space-3));
       line-height: var(--ha-line-height-expanded);
       justify-content: center;
@@ -306,7 +306,7 @@ export class HaAutomationAddItems extends LitElement {
     .items .item-headline {
       display: flex;
       align-items: center;
-      gap: var(--ha-space-1);
+      gap: var(--ha-space-2);
       min-height: var(--ha-space-9);
       flex-wrap: wrap;
     }
@@ -366,12 +366,16 @@ export class HaAutomationAddItems extends LitElement {
     }
 
     .selected-target state-badge {
-      --mdc-icon-size: 20px;
+      --mdc-icon-size: 24px;
     }
     .selected-target state-badge,
-    .selected-target ha-domain-icon {
+    .selected-target ha-floor-icon {
+      display: flex;
+      height: 32px;
       width: 24px;
-      height: 24px;
+      align-items: center;
+    }
+    .selected-target ha-domain-icon {
       filter: grayscale(100%);
     }
   `;

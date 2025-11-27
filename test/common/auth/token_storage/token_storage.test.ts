@@ -2,6 +2,8 @@ import { describe, it, expect, test, vi, afterEach, beforeEach } from "vitest";
 import type { AuthData } from "home-assistant-js-websocket";
 import { FallbackStorage } from "../../../test_helper/local-storage-fallback";
 
+const HASS_URL = `${location.protocol}//${location.host}`;
+
 describe("token_storage", () => {
   beforeEach(() => {
     vi.stubGlobal(
@@ -11,6 +13,7 @@ describe("token_storage", () => {
         writeEnabled: undefined,
       })
     );
+    vi.stubGlobal("__HASS_URL__", HASS_URL);
     window.localStorage = new FallbackStorage();
   });
 

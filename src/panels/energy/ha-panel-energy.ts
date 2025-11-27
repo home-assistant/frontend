@@ -26,16 +26,24 @@ import type { LovelaceConfig } from "../../data/lovelace/config/types";
 import type { LovelaceViewConfig } from "../../data/lovelace/config/view";
 import type { StatisticValue } from "../../data/recorder";
 import { haStyle } from "../../resources/styles";
-import type { HomeAssistant } from "../../types";
+import type { HomeAssistant, PanelInfo } from "../../types";
 import { fileDownload } from "../../util/file_download";
 import "../lovelace/components/hui-energy-period-selector";
+import "../lovelace/hui-root";
 import type { Lovelace } from "../lovelace/types";
 import "../lovelace/views/hui-view";
 import "../lovelace/views/hui-view-container";
 
 export const DEFAULT_ENERGY_COLLECTION_KEY = "energy_dashboard";
 
+const EMPTY_PREFERENCES: EnergyPreferences = {
+  energy_sources: [],
+  device_consumption: [],
+  device_consumption_water: [],
+};
+
 const OVERVIEW_VIEW = {
+  path: "overview",
   strategy: {
     type: "energy-overview",
     collection_key: DEFAULT_ENERGY_COLLECTION_KEY,
@@ -43,8 +51,8 @@ const OVERVIEW_VIEW = {
 } as LovelaceViewConfig;
 
 const ELECTRICITY_VIEW = {
-  back_path: "/energy",
   path: "electricity",
+  back_path: "/energy",
   strategy: {
     type: "energy-electricity",
     collection_key: DEFAULT_ENERGY_COLLECTION_KEY,
@@ -72,11 +80,11 @@ class PanelEnergy extends LitElement {
 
   @property({ type: Boolean, reflect: true }) public narrow = false;
 
+  @property({ attribute: false }) public panel?: PanelInfo;
+
   @state() private _lovelace?: Lovelace;
 
   @state() private _searchParms = new URLSearchParams(window.location.search);
-
-  @state() private _error?: string;
 
   @property({ attribute: false }) public route?: {
     path: string;
@@ -84,42 +92,84 @@ class PanelEnergy extends LitElement {
   };
 
   @state()
-  private _config?: LovelaceConfig;
+  private _prefs?: EnergyPreferences;
 
-  get _viewPath(): string | undefined {
-    const viewPath: string | undefined = this.route!.path.split("/")[1];
-    return viewPath ? decodeURI(viewPath) : undefined;
-  }
+  @state()
+  private _error?: string;
 
-  public connectedCallback() {
-    super.connectedCallback();
-    this._loadLovelaceConfig();
-  }
-
-  public async willUpdate(changedProps: PropertyValues) {
+  public willUpdate(changedProps: PropertyValues) {
+    super.willUpdate(changedProps);
+    // Initial setup
     if (!this.hasUpdated) {
       this.hass.loadFragmentTranslation("lovelace");
+      this._loadConfig();
+      return;
     }
+
     if (!changedProps.has("hass")) {
       return;
     }
+
     const oldHass = changedProps.get("hass") as this["hass"];
-    if (oldHass?.locale !== this.hass.locale) {
+    if (oldHass && oldHass.localize !== this.hass.localize) {
       this._setLovelace();
-    } else if (oldHass && oldHass.localize !== this.hass.localize) {
-      this._reloadView();
     }
   }
 
-  private async _loadLovelaceConfig() {
+  private _fetchEnergyPrefs = async (): Promise<
+    EnergyPreferences | undefined
+  > => {
+    const collection = getEnergyDataCollection(this.hass, {
+      key: DEFAULT_ENERGY_COLLECTION_KEY,
+    });
     try {
-      this._config = undefined;
-      this._config = await this._generateLovelaceConfig();
-    } catch (err) {
-      this._error = (err as Error).message;
+      await collection.refresh();
+    } catch (err: any) {
+      if (err.code === "not_found") {
+        return undefined;
+      }
+      throw err;
     }
+    return collection.prefs;
+  };
 
-    this._setLovelace();
+  private async _loadConfig() {
+    try {
+      this._error = undefined;
+      const prefs = await this._fetchEnergyPrefs();
+      this._prefs = prefs || EMPTY_PREFERENCES;
+    } catch (err) {
+      // eslint-disable-next-line no-console
+      console.error("Failed to load prefs:", err);
+      this._prefs = EMPTY_PREFERENCES;
+      this._error = (err as Error).message || "Unknown error";
+    }
+    await this._setLovelace();
+
+    // Navigate to first view if not there yet
+    const firstPath = this._lovelace!.config?.views?.[0]?.path;
+    const viewPath: string | undefined = this.route!.path.split("/")[1];
+    if (viewPath !== firstPath) {
+      navigate(`${this.route!.prefix}/${firstPath}`);
+    }
+  }
+
+  private async _setLovelace() {
+    const config = await this._generateLovelaceConfig();
+
+    this._lovelace = {
+      config: config,
+      rawConfig: config,
+      editMode: false,
+      urlPath: "energy",
+      mode: "generated",
+      locale: this.hass.locale,
+      enableFullEditMode: () => undefined,
+      saveConfig: async () => undefined,
+      deleteConfig: async () => undefined,
+      setEditMode: () => undefined,
+      showToast: () => undefined,
+    };
   }
 
   private _back(ev) {
@@ -128,7 +178,17 @@ class PanelEnergy extends LitElement {
   }
 
   protected render() {
-    if (!this._config && !this._error) {
+    if (this._error) {
+      return html`
+        <div class="centered">
+          <ha-alert alert-type="error">
+            An error occurred loading energy preferences: ${this._error}
+          </ha-alert>
+        </div>
+      `;
+    }
+
+    if (!this._prefs) {
       // Still loading
       return html`
         <div class="centered">
@@ -136,20 +196,31 @@ class PanelEnergy extends LitElement {
         </div>
       `;
     }
-    const isSingleView = this._config?.views.length === 1;
-    const viewPath = this._viewPath;
-    const viewIndex = this._config
-      ? Math.max(
-          this._config.views.findIndex((view) => view.path === viewPath),
-          0
-        )
-      : 0;
-    const showBack =
-      this._searchParms.has("historyBack") || (!isSingleView && viewIndex > 0);
+
+    if (!this._lovelace) {
+      return nothing;
+    }
+
+    const viewPath: string | undefined = this.route!.path.split("/")[1];
+
+    const views = this._lovelace.config?.views || [];
+    const viewIndex = Math.max(
+      views.findIndex((view) => view.path === viewPath),
+      0
+    );
+
+    const showBack = this._searchParms.has("historyBack") || viewIndex > 0;
 
     return html`
-      <div class="header">
-        <div class="toolbar">
+      <hui-root
+        .hass=${this.hass}
+        .narrow=${this.narrow}
+        .lovelace=${this._lovelace}
+        .route=${this.route}
+        .panel=${this.panel}
+        @reload-energy-panel=${this._reloadConfig}
+      >
+        <div class="toolbar" slot="toolbar">
           ${showBack
             ? html`
                 <ha-icon-button-arrow-prev
@@ -175,14 +246,17 @@ class PanelEnergy extends LitElement {
             .collectionKey=${DEFAULT_ENERGY_COLLECTION_KEY}
           >
             ${this.hass.user?.is_admin
-              ? html` <ha-list-item
-                  slot="overflow-menu"
-                  graphic="icon"
-                  @request-selected=${this._navigateConfig}
-                >
-                  <ha-svg-icon slot="graphic" .path=${mdiPencil}> </ha-svg-icon>
-                  ${this.hass!.localize("ui.panel.energy.configure")}
-                </ha-list-item>`
+              ? html`
+                  <ha-list-item
+                    slot="overflow-menu"
+                    graphic="icon"
+                    @request-selected=${this._navigateConfig}
+                  >
+                    <ha-svg-icon slot="graphic" .path=${mdiPencil}>
+                    </ha-svg-icon>
+                    ${this.hass!.localize("ui.panel.energy.configure")}
+                  </ha-list-item>
+                `
               : nothing}
             <ha-list-item
               slot="overflow-menu"
@@ -194,54 +268,15 @@ class PanelEnergy extends LitElement {
             </ha-list-item>
           </hui-energy-period-selector>
         </div>
-      </div>
-
-      <hui-view-container
-        .hass=${this.hass}
-        @reload-energy-panel=${this._reloadView}
-      >
-        ${this._error
-          ? html`<div class="centered">
-              <ha-alert alert-type="error">
-                An error occurred while fetching your energy preferences:
-                ${this._error}
-              </ha-alert>
-            </div>`
-          : this._lovelace
-            ? html`<hui-view
-                .hass=${this.hass}
-                .narrow=${this.narrow}
-                .lovelace=${this._lovelace}
-                .index=${viewIndex}
-              ></hui-view>`
-            : nothing}
-      </hui-view-container>
+      </hui-root>
     `;
   }
 
-  private _fetchEnergyPrefs = async (): Promise<
-    EnergyPreferences | undefined
-  > => {
-    const collection = getEnergyDataCollection(this.hass, {
-      key: DEFAULT_ENERGY_COLLECTION_KEY,
-    });
-    try {
-      await collection.refresh();
-    } catch (err: any) {
-      if (err.code === "not_found") {
-        return undefined;
-      }
-      throw err;
-    }
-    return collection.prefs;
-  };
-
   private async _generateLovelaceConfig(): Promise<LovelaceConfig> {
-    const prefs = await this._fetchEnergyPrefs();
     if (
-      !prefs ||
-      (prefs.device_consumption.length === 0 &&
-        prefs.energy_sources.length === 0)
+      !this._prefs ||
+      (this._prefs.device_consumption.length === 0 &&
+        this._prefs.energy_sources.length === 0)
     ) {
       await import("./cards/energy-setup-wizard-card");
       return {
@@ -249,7 +284,7 @@ class PanelEnergy extends LitElement {
       };
     }
 
-    const isElectricityOnly = prefs.energy_sources.every((source) =>
+    const isElectricityOnly = this._prefs.energy_sources.every((source) =>
       ["grid", "solar", "battery"].includes(source.type)
     );
     if (isElectricityOnly) {
@@ -259,33 +294,14 @@ class PanelEnergy extends LitElement {
     }
 
     const hasWater =
-      prefs.energy_sources.some((source) => source.type === "water") ||
-      prefs.device_consumption_water?.length > 0;
+      this._prefs.energy_sources.some((source) => source.type === "water") ||
+      this._prefs.device_consumption_water?.length > 0;
 
     const views: LovelaceViewConfig[] = [OVERVIEW_VIEW, ELECTRICITY_VIEW];
     if (hasWater) {
       views.push(WATER_VIEW);
     }
     return { views };
-  }
-
-  private _setLovelace() {
-    if (!this._config) {
-      return;
-    }
-    this._lovelace = {
-      config: this._config,
-      rawConfig: this._config,
-      editMode: false,
-      urlPath: "energy",
-      mode: "generated",
-      locale: this.hass.locale,
-      enableFullEditMode: () => undefined,
-      saveConfig: async () => undefined,
-      deleteConfig: async () => undefined,
-      setEditMode: () => undefined,
-      showToast: () => undefined,
-    };
   }
 
   private _navigateConfig(ev) {
@@ -593,8 +609,8 @@ class PanelEnergy extends LitElement {
     fileDownload(url, "energy.csv");
   }
 
-  private _reloadView() {
-    this._loadLovelaceConfig();
+  private _reloadConfig() {
+    this._loadConfig();
   }
 
   static get styles(): CSSResultGroup {
@@ -620,45 +636,6 @@ class PanelEnergy extends LitElement {
           -webkit-user-select: none;
           -moz-user-select: none;
         }
-        .header {
-          background-color: var(--app-header-background-color);
-          color: var(--app-header-text-color, white);
-          border-bottom: var(--app-header-border-bottom, none);
-          position: fixed;
-          top: 0;
-          width: calc(
-            var(--mdc-top-app-bar-width, 100%) - var(
-                --safe-area-inset-right,
-                0px
-              )
-          );
-          padding-top: var(--safe-area-inset-top);
-          z-index: 4;
-          transition: box-shadow 200ms linear;
-          display: flex;
-          flex-direction: row;
-          -webkit-backdrop-filter: var(--app-header-backdrop-filter, none);
-          backdrop-filter: var(--app-header-backdrop-filter, none);
-          padding-top: var(--safe-area-inset-top);
-          padding-right: var(--safe-area-inset-right);
-        }
-        :host([narrow]) .header {
-          width: calc(
-            var(--mdc-top-app-bar-width, 100%) - var(
-                --safe-area-inset-left,
-                0px
-              ) - var(--safe-area-inset-right, 0px)
-          );
-          padding-left: var(--safe-area-inset-left);
-        }
-        :host([scrolled]) .header {
-          box-shadow: var(
-            --mdc-top-app-bar-fixed-box-shadow,
-            0px 2px 4px -1px rgba(0, 0, 0, 0.2),
-            0px 4px 5px 0px rgba(0, 0, 0, 0.14),
-            0px 1px 10px 0px rgba(0, 0, 0, 0.12)
-          );
-        }
         .toolbar {
           height: var(--header-height);
           display: flex;
@@ -676,24 +653,6 @@ class PanelEnergy extends LitElement {
           margin: var(--margin-title);
           line-height: var(--ha-line-height-normal);
           flex-grow: 1;
-        }
-        hui-view-container {
-          position: relative;
-          display: flex;
-          min-height: 100vh;
-          box-sizing: border-box;
-          padding-top: calc(var(--header-height) + var(--safe-area-inset-top));
-          padding-right: var(--safe-area-inset-right);
-          padding-inline-end: var(--safe-area-inset-right);
-          padding-bottom: var(--safe-area-inset-bottom);
-        }
-        :host([narrow]) hui-view-container {
-          padding-left: var(--safe-area-inset-left);
-          padding-inline-start: var(--safe-area-inset-left);
-        }
-        hui-view {
-          flex: 1 1 100%;
-          max-width: 100%;
         }
         .centered {
           width: 100%;

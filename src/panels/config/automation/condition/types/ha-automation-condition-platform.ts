@@ -393,6 +393,10 @@ export class HaPlatformCondition extends LitElement {
   }
 
   static styles = css`
+    :host {
+      display: block;
+      margin: 0px calc(-1 * var(--ha-space-4));
+    }
     ha-settings-row {
       padding: 0 var(--ha-space-4);
     }

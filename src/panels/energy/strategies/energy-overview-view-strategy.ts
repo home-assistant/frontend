@@ -81,10 +81,15 @@ export class EnergyViewStrategy extends ReactiveElement {
       cards: [],
     };
     if (hasPowerSources && hasPowerDevices) {
+      const showFloorsNAreas = !prefs.device_consumption.some(
+        (d) => d.included_in_stat
+      );
       overviewSection.cards!.push({
         title: hass.localize("ui.panel.energy.cards.power_sankey_title"),
         type: "power-sankey",
         collection_key: collectionKey,
+        group_by_floor: showFloorsNAreas,
+        group_by_area: showFloorsNAreas,
         grid_options: {
           columns: 24,
         },

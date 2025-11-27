@@ -708,7 +708,11 @@ export default class HaAutomationAddFromTarget extends LitElement {
           this.floors
         );
 
-        const label = entityName || deviceName || entityId;
+        let label = entityName || deviceName || entityId;
+
+        if (this.entities[entityId]?.hidden) {
+          label += ` (${this.localize("ui.panel.config.automation.editor.entity_hidden")})`;
+        }
 
         return [entityId, label, stateObj] as [string, string, HassEntity];
       })
@@ -837,12 +841,12 @@ export default class HaAutomationAddFromTarget extends LitElement {
 
   private _getAreaEntityLookupMemoized = memoizeOne(
     (entities: HomeAssistant["entities"]) =>
-      getAreaEntityLookup(Object.values(entities), true)
+      getAreaEntityLookup(Object.values(entities))
   );
 
   private _getDeviceEntityLookupMemoized = memoizeOne(
     (entities: HomeAssistant["entities"]) =>
-      getDeviceEntityLookup(Object.values(entities), true)
+      getDeviceEntityLookup(Object.values(entities))
   );
 
   private _getSelectedTargetId = memoizeOne(

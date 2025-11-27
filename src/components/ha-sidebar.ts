@@ -197,6 +197,8 @@ class HaSidebar extends SubscribeMixin(LitElement) {
 
   private _mouseLeaveTimeout?: number;
 
+  private _touchendTimeout?: number;
+
   private _tooltipHideTimeout?: number;
 
   private _recentKeydownActiveUntil = 0;
@@ -235,6 +237,18 @@ class HaSidebar extends SubscribeMixin(LitElement) {
           ]
         : []),
     ];
+  }
+
+  public disconnectedCallback() {
+    super.disconnectedCallback();
+    // clear timeouts
+    clearTimeout(this._mouseLeaveTimeout);
+    clearTimeout(this._tooltipHideTimeout);
+    clearTimeout(this._touchendTimeout);
+    // set undefined values
+    this._mouseLeaveTimeout = undefined;
+    this._tooltipHideTimeout = undefined;
+    this._touchendTimeout = undefined;
   }
 
   protected render() {
@@ -406,6 +420,7 @@ class HaSidebar extends SubscribeMixin(LitElement) {
         class="ha-scrollbar"
         @focusin=${this._listboxFocusIn}
         @focusout=${this._listboxFocusOut}
+        @touchend=${this._listboxTouchend}
         @scroll=${this._listboxScroll}
         @keydown=${this._listboxKeydown}
       >
@@ -618,6 +633,14 @@ class HaSidebar extends SubscribeMixin(LitElement) {
 
   private _listboxFocusOut() {
     this._hideTooltip();
+  }
+
+  private _listboxTouchend() {
+    clearTimeout(this._touchendTimeout);
+    this._touchendTimeout = window.setTimeout(() => {
+      // Allow 1 second for users to read the tooltip on touch devices
+      this._hideTooltip();
+    }, 1000);
   }
 
   @eventOptions({
