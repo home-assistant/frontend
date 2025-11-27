@@ -217,6 +217,9 @@ export class HuiEnergyDevicesGraphCard
           show: true,
           type: "value",
           name: "kWh",
+          axisPointer: {
+            show: false,
+          },
         };
         options.yAxis = {
           show: true,
