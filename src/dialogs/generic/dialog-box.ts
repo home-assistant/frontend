@@ -206,9 +206,12 @@ class DialogBox extends LitElement {
       width: 100%;
     }
     .title.alert {
-      margin-left: var(--ha-space-2);
-      margin-inline-start: var(--ha-space-2);
-      margin-inline-end: initial;
+      padding: 0 var(--ha-space-2);
+    }
+    @media all and (min-width: 450px) and (min-height: 500px) {
+      .title.alert {
+        padding: 0 var(--ha-space-1);
+      }
     }
   `;
 }
