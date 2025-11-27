@@ -518,13 +518,11 @@ export class SectionsView extends LitElement implements LovelaceViewElement {
 
     .mobile-tabs {
       position: fixed;
-      bottom: calc(var(--ha-space-4) + env(safe-area-inset-bottom));
+      bottom: calc(var(--ha-space-3) + env(safe-area-inset-bottom));
       left: 50%;
       transform: translateX(-50%);
       padding: 0;
       z-index: 1;
-      filter: drop-shadow(0 2px 8px rgba(0, 0, 0, 0.15))
-        drop-shadow(0 4px 16px rgba(0, 0, 0, 0.1));
     }
 
     .mobile-tabs ha-control-select {
@@ -537,6 +535,7 @@ export class SectionsView extends LitElement implements LovelaceViewElement {
       --control-select-background-opacity: 1;
       --control-select-color: var(--primary-color);
       --control-select-padding: 6px;
+      box-shadow: rgba(0, 0, 0, 0.3) 0px 4px 10px 0px;
     }
 
     ha-sortable {
