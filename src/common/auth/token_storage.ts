@@ -30,7 +30,11 @@ export function askWrite() {
 export function saveTokens(tokens: AuthData | null) {
   tokenCache.tokens = tokens;
 
-  if (!tokenCache.writeEnabled && extractSearchParam("storeToken") === "true") {
+  if (
+    !tokenCache.writeEnabled &&
+    (extractSearchParam("storeToken") === "true" ||
+      __HASS_URL__ !== `${location.protocol}//${location.host}`)
+  ) {
     tokenCache.writeEnabled = true;
   }
 
