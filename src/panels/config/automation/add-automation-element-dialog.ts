@@ -294,10 +294,7 @@ class DialogAddAutomationElement
               feature.domain === "automation" &&
               feature.preview_feature === "new_triggers_conditions"
           )?.enabled ?? false;
-        this._tab =
-          this._newTriggersAndConditions && this._params?.type !== "condition"
-            ? "targets"
-            : "groups";
+        this._tab = this._newTriggersAndConditions ? "targets" : "groups";
       }
     );
 
