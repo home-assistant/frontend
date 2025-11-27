@@ -514,8 +514,7 @@ export class SectionsView extends LitElement implements LovelaceViewElement {
     .wrapper.narrow hui-view-sidebar {
       grid-column: 1 / -1;
       padding-bottom: calc(
-        var(--ha-space-4) + 56px + var(--ha-space-4) +
-          env(safe-area-inset-bottom)
+        var(--ha-space-14) + var(--ha-space-3) + var(--safe-area-inset-bottom)
       );
     }
 
@@ -525,7 +524,7 @@ export class SectionsView extends LitElement implements LovelaceViewElement {
 
     .mobile-tabs {
       position: fixed;
-      bottom: calc(var(--ha-space-3) + env(safe-area-inset-bottom));
+      bottom: calc(var(--ha-space-3) + var(--safe-area-inset-bottom));
       left: 50%;
       transform: translateX(-50%);
       padding: 0;
@@ -566,8 +565,7 @@ export class SectionsView extends LitElement implements LovelaceViewElement {
 
     .wrapper.narrow.has-sidebar .content {
       padding-bottom: calc(
-        var(--ha-space-4) + 56px + var(--ha-space-4) +
-          env(safe-area-inset-bottom)
+        var(--ha-space-14) + var(--ha-space-3) + var(--safe-area-inset-bottom)
       );
     }
 
