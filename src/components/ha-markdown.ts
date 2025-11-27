@@ -141,7 +141,7 @@ export class HaMarkdown extends LitElement {
     table {
       border-collapse: var(--markdown-table-border-collapse, collapse);
     }
-    div:has(>table) {
+    div:has(> table) {
       overflow: auto;
     }
     th {
