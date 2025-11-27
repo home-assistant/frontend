@@ -266,9 +266,6 @@ export class HaWaDialog extends LitElement {
     haStyleScrollbar,
     css`
       wa-dialog {
-        --safe-width: calc(
-          100vw - var(--safe-area-inset-left) - var(--safe-area-inset-right)
-        );
         --full-width: var(--ha-dialog-width-full, min(95vw, var(--safe-width)));
         --width: min(var(--ha-dialog-width-md, 580px), var(--full-width));
         --spacing: var(--dialog-content-padding, var(--ha-space-6));
