@@ -1,5 +1,6 @@
 import type { AuthData } from "home-assistant-js-websocket";
 import { extractSearchParam } from "../url/search-params";
+import { hassUrl } from "../../data/auth";
 
 declare global {
   interface Window {
@@ -33,7 +34,7 @@ export function saveTokens(tokens: AuthData | null) {
   if (
     !tokenCache.writeEnabled &&
     (extractSearchParam("storeToken") === "true" ||
-      __HASS_URL__ !== `${location.protocol}//${location.host}`)
+      hassUrl !== `${location.protocol}//${location.host}`)
   ) {
     tokenCache.writeEnabled = true;
   }
