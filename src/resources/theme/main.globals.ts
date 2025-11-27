@@ -31,16 +31,16 @@ export const mainStyles = css`
     --app-safe-area-inset-left: 68px;
 
     /* safe-area-insets */
-    --safe-area-inset-top: max(var(--app-safe-area-inset-top, env(safe-area-inset-top, 0)), var(--ha-space-0));
-    --safe-area-inset-bottom: max(var(--app-safe-area-inset-bottom, env(safe-area-inset-bottom, 0)), var(--ha-space-0));
-    --safe-area-inset-left: max(var(--app-safe-area-inset-left, env(safe-area-inset-left, 0)), var(--ha-space-0));
-    --safe-area-inset-right: max(var(--app-safe-area-inset-right, env(safe-area-inset-right, 0)), var(--ha-space-0));
+    --safe-area-inset-top: max(var(--app-safe-area-inset-top, env(safe-area-inset-top, 0)), 0px);
+    --safe-area-inset-bottom: max(var(--app-safe-area-inset-bottom, env(safe-area-inset-bottom, 0)), 0px);
+    --safe-area-inset-left: max(var(--app-safe-area-inset-left, env(safe-area-inset-left, 0)), 0px);
+    --safe-area-inset-right: max(var(--app-safe-area-inset-right, env(safe-area-inset-right, 0)), 0px);
 
-    --safe-area-inset-y: calc(var(--safe-area-inset-top, var(--ha-space-0)) + var(--safe-area-inset-bottom, var(--ha-space-0)));
-    --safe-area-inset-x: calc(var(--safe-area-inset-left, var(--ha-space-0)) + var(--safe-area-inset-right, var(--ha-space-0)));
+    --safe-area-inset-y: calc(var(--safe-area-inset-top, 0px) + var(--safe-area-inset-bottom, 0px));
+    --safe-area-inset-x: calc(var(--safe-area-inset-left, 0px) + var(--safe-area-inset-right, 0px));
 
-    --safe-width: calc(100vw - var(--safe-area-inset-left, var(--ha-space-0)) - var(--safe-area-inset-right, var(--ha-space-0)));
-    --safe-height: calc(100vh - var(--safe-area-inset-top, var(--ha-space-0)) - var(--safe-area-inset-bottom, var(--ha-space-0)));
+    --safe-width: calc(100vw - var(--safe-area-inset-left, 0px) - var(--safe-area-inset-right, 0px));
+    --safe-height: calc(100vh - var(--safe-area-inset-top, 0px) - var(--safe-area-inset-bottom, 0px));
   }
 `;
 
