@@ -111,17 +111,11 @@ export const sortDeviceRegistryByName = (
   );
 
 export const getDeviceEntityLookup = (
-  entities: (EntityRegistryEntry | EntityRegistryDisplayEntry)[],
-  filterHidden = false
+  entities: (EntityRegistryEntry | EntityRegistryDisplayEntry)[]
 ): DeviceEntityLookup => {
   const deviceEntityLookup: DeviceEntityLookup = {};
   for (const entity of entities) {
-    if (
-      !entity.device_id ||
-      (filterHidden &&
-        ((entity as EntityRegistryDisplayEntry).hidden ||
-          (entity as EntityRegistryEntry).hidden_by))
-    ) {
+    if (!entity.device_id) {
       continue;
     }
     if (!(entity.device_id in deviceEntityLookup)) {

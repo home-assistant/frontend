@@ -4045,6 +4045,7 @@
             "other_areas": "Other areas",
             "services": "Services",
             "helpers": "Helpers",
+            "entity_hidden": "[%key:ui::panel::config::devices::entities::hidden%]",
             "triggers": {
               "name": "Triggers",
               "header": "When",

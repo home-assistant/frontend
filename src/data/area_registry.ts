@@ -75,17 +75,11 @@ export const reorderAreaRegistryEntries = (
   });
 
 export const getAreaEntityLookup = (
-  entities: (EntityRegistryEntry | EntityRegistryDisplayEntry)[],
-  filterHidden = false
+  entities: (EntityRegistryEntry | EntityRegistryDisplayEntry)[]
 ): AreaEntityLookup => {
   const areaEntityLookup: AreaEntityLookup = {};
   for (const entity of entities) {
-    if (
-      !entity.area_id ||
-      (filterHidden &&
-        ((entity as EntityRegistryDisplayEntry).hidden ||
-          (entity as EntityRegistryEntry).hidden_by))
-    ) {
+    if (!entity.area_id) {
       continue;
     }
     if (!(entity.area_id in areaEntityLookup)) {
