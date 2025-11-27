@@ -2,6 +2,7 @@ import { css, html, LitElement, nothing } from "lit";
 import { customElement, property, state } from "lit/decorators";
 import { fireEvent } from "../../../common/dom/fire_event";
 import "../../../components/entity/ha-entities-picker";
+import "../../../components/ha-alert";
 import "../../../components/ha-button";
 import "../../../components/ha-dialog-footer";
 import "../../../components/ha-wa-dialog";
@@ -78,6 +79,16 @@ export class DialogEditHome
           @value-changed=${this._favoriteEntitiesChanged}
         ></ha-entities-picker>
 
+        <ha-alert alert-type="info">
+          ${this.hass.localize("ui.panel.home.editor.areas_hint", {
+            areas_page: html`<a
+              href="/config/areas?historyBack=1"
+              @click=${this.closeDialog}
+              >${this.hass.localize("ui.panel.home.editor.areas_page")}</a
+            >`,
+          })}
+        </ha-alert>
+
         <ha-dialog-footer slot="footer">
           <ha-button
             appearance="plain"
@@ -139,6 +150,11 @@ export class DialogEditHome
 
       ha-entities-picker {
         display: block;
+      }
+
+      ha-alert {
+        display: block;
+        margin-top: var(--ha-space-4);
       }
     `,
   ];
