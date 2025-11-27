@@ -207,6 +207,8 @@ class DialogBox extends LitElement {
     }
     .title.alert {
       margin-left: var(--ha-space-2);
+      margin-inline-start: var(--ha-space-2);
+      margin-inline-end: initial;
     }
   `;
 }
