@@ -14,11 +14,6 @@ import { haStyleScrollbar } from "../resources/styles";
 import type { HomeAssistant } from "../types";
 import "./ha-dialog-header";
 import "./ha-icon-button";
-import "./ha-safe-area-debug";
-import {
-  SAFE_AREA_DIRECTIONS,
-  type SafeAreaExtraMap,
-} from "./ha-safe-area-debug";
 
 export type DialogWidth = "small" | "medium" | "large" | "full";
 
@@ -119,11 +114,6 @@ export class HaWaDialog extends LitElement {
   @state()
   private _bodyScrolled = false;
 
-  @state()
-  private _dialogSafeAreas: SafeAreaExtraMap = {};
-
-  private _handleResize = () => this._updateDialogSafeAreas();
-
   protected updated(
     changedProperties: Map<string | number | symbol, unknown>
   ): void {
@@ -131,59 +121,6 @@ export class HaWaDialog extends LitElement {
 
     if (changedProperties.has("open")) {
       this._open = this.open;
-    }
-
-    this._updateDialogSafeAreas();
-  }
-
-  public connectedCallback(): void {
-    super.connectedCallback();
-    window.addEventListener("resize", this._handleResize);
-  }
-
-  public disconnectedCallback(): void {
-    super.disconnectedCallback();
-    window.removeEventListener("resize", this._handleResize);
-    this._open = false;
-  }
-
-  protected firstUpdated(): void {
-    this._updateDialogSafeAreas();
-  }
-
-  private _updateDialogSafeAreas() {
-    const dialog = this.renderRoot.querySelector("wa-dialog");
-    if (!dialog) {
-      return;
-    }
-
-    const dialogStyles = getComputedStyle(dialog);
-    const rootZero =
-      getComputedStyle(document.documentElement)
-        .getPropertyValue("--ha-space-0")
-        .trim() ||
-      dialogStyles.getPropertyValue("--ha-space-0").trim() ||
-      "0px";
-
-    const normalize = (value: string) => value.trim() || rootZero;
-
-    const next = SAFE_AREA_DIRECTIONS.reduce((acc, dir) => {
-      const dialogVar = `--safe-area-${dir}`;
-      acc[dir] = [
-        {
-          label: "dialog",
-          value: normalize(dialogStyles.getPropertyValue(dialogVar)),
-        },
-      ];
-      return acc;
-    }, {} as SafeAreaExtraMap);
-
-    const changed = SAFE_AREA_DIRECTIONS.some(
-      (dir) => this._dialogSafeAreas[dir]?.[0]?.value !== next[dir]?.[0]?.value
-    );
-
-    if (changed) {
-      this._dialogSafeAreas = next;
     }
   }
 
@@ -229,10 +166,6 @@ export class HaWaDialog extends LitElement {
         </slot>
         <div class="body ha-scrollbar" @scroll=${this._handleBodyScroll}>
           <slot></slot>
-          <ha-safe-area-debug
-            class="safe-area-debug"
-            .extraSections=${this._dialogSafeAreas}
-          ></ha-safe-area-debug>
         </div>
         <slot name="footer" slot="footer"></slot>
       </wa-dialog>
@@ -256,6 +189,11 @@ export class HaWaDialog extends LitElement {
     this._open = false;
     fireEvent(this, "closed");
   };
+
+  public disconnectedCallback(): void {
+    super.disconnectedCallback();
+    this._open = false;
+  }
 
   @eventOptions({ passive: true })
   private _handleBodyScroll(ev: Event) {
