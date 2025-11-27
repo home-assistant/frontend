@@ -1350,6 +1350,61 @@ class DialogAddAutomationElement
     this._labelRegistry?.find(({ label_id }) => label_id === labelId)
   );
 
+  private _getDomainType(domain: string) {
+    return ENTITY_DOMAINS_MAIN.has(domain) ||
+      (this._manifests?.[domain].integration_type === "entity" &&
+        !ENTITY_DOMAINS_OTHER.has(domain))
+      ? "dynamicGroups"
+      : this._manifests?.[domain].integration_type === "helper"
+        ? "helpers"
+        : "other";
+  }
+
+  private _sortDomainsByCollection(
+    type: AddAutomationElementDialogParams["type"],
+    entries: [
+      string,
+      { title: string; items: AddAutomationElementListItem[] },
+    ][]
+  ): { title: string; items: AddAutomationElementListItem[] }[] {
+    const order: string[] = [];
+
+    TYPES[type].collections.forEach((collection) => {
+      order.push(...Object.keys(collection.groups));
+    });
+
+    return entries
+      .sort((a, b) => {
+        const domainA = a[0];
+        const domainB = b[0];
+
+        if (order.includes(domainA) && order.includes(domainB)) {
+          return order.indexOf(domainA) - order.indexOf(domainB);
+        }
+
+        let typeA = domainA;
+        let typeB = domainB;
+
+        if (!order.includes(domainA)) {
+          typeA = this._getDomainType(domainA);
+        }
+
+        if (!order.includes(domainB)) {
+          typeB = this._getDomainType(domainB);
+        }
+
+        if (typeA === typeB) {
+          return stringCompare(
+            a[1].title,
+            b[1].title,
+            this.hass.locale.language
+          );
+        }
+        return order.indexOf(typeA) - order.indexOf(typeB);
+      })
+      .map((entry) => entry[1]);
+  }
+
   // #endregion data
 
   // #region data memoize
@@ -1435,8 +1490,9 @@ class DialogAddAutomationElement
       );
     });
 
-    return Object.values(items).sort((a, b) =>
-      stringCompare(a.title, b.title, this.hass.locale.language)
+    return this._sortDomainsByCollection(
+      this._params!.type,
+      Object.entries(items)
     );
   }
 
@@ -1545,8 +1601,9 @@ class DialogAddAutomationElement
       );
     });
 
-    return Object.values(items).sort((a, b) =>
-      stringCompare(a.title, b.title, this.hass.locale.language)
+    return this._sortDomainsByCollection(
+      this._params!.type,
+      Object.entries(items)
     );
   }
 
@@ -1577,8 +1634,9 @@ class DialogAddAutomationElement
       );
     });
 
-    return Object.values(items).sort((a, b) =>
-      stringCompare(a.title, b.title, this.hass.locale.language)
+    return this._sortDomainsByCollection(
+      this._params!.type,
+      Object.entries(items)
     );
   }
 
@@ -1675,14 +1733,19 @@ class DialogAddAutomationElement
       }
 
       if (this._params!.type === "action") {
-        const items = await getServicesForTarget(
+        const items: string[] = await getServicesForTarget(
           this.hass.callWS,
           this._selectedTarget
         );
 
+        const filteredItems = items.filter(
+          // homeassistant services are too generic to be applied on the selected target
+          (service) => !service.startsWith("homeassistant.")
+        );
+
         this._targetItems = this._getDomainGroupedActionListItems(
           this.hass.localize,
-          items
+          filteredItems
         );
       }
     } catch (err) {
