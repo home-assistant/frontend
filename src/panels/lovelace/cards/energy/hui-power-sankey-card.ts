@@ -23,6 +23,9 @@ const DEFAULT_CONFIG: Partial<PowerSankeyCardConfig> = {
   group_by_area: true,
 };
 
+// Minimum power threshold in kW to display a device node
+const MIN_POWER_THRESHOLD = 0.01;
+
 interface PowerData {
   solar: number;
   from_grid: number;
@@ -251,15 +254,67 @@ class HuiPowerSankeyCard
     let untrackedConsumption = homeNode.value;
     const deviceNodes: Node[] = [];
     const parentLinks: Record<string, string> = {};
+
+    // Build a map of device relationships for hierarchy resolution
+    // Key: stat_consumption (energy), Value: { stat_rate, included_in_stat }
+    const deviceMap = new Map<
+      string,
+      { stat_rate?: string; included_in_stat?: string }
+    >();
+    prefs.device_consumption.forEach((device) => {
+      deviceMap.set(device.stat_consumption, {
+        stat_rate: device.stat_rate,
+        included_in_stat: device.included_in_stat,
+      });
+    });
+
+    // Set of stat_rate entities that will be rendered as nodes
+    const renderedStatRates = new Set<string>();
+    prefs.device_consumption.forEach((device) => {
+      if (device.stat_rate) {
+        const value = this._getCurrentPower(device.stat_rate);
+        if (value >= MIN_POWER_THRESHOLD) {
+          renderedStatRates.add(device.stat_rate);
+        }
+      }
+    });
+
+    // Find the effective parent for power hierarchy
+    // Walks up the chain to find an ancestor with stat_rate that will be rendered
+    const findEffectiveParent = (
+      includedInStat: string | undefined
+    ): string | undefined => {
+      let currentParent = includedInStat;
+      while (currentParent) {
+        const parentDevice = deviceMap.get(currentParent);
+        if (!parentDevice) {
+          return undefined;
+        }
+        // If this parent has a stat_rate and will be rendered, use it
+        if (
+          parentDevice.stat_rate &&
+          renderedStatRates.has(parentDevice.stat_rate)
+        ) {
+          return parentDevice.stat_rate;
+        }
+        // Otherwise, continue up the chain
+        currentParent = parentDevice.included_in_stat;
+      }
+      return undefined;
+    };
+
     prefs.device_consumption.forEach((device, idx) => {
       if (!device.stat_rate) {
         return;
       }
       const value = this._getCurrentPower(device.stat_rate);
 
-      if (value < 0.01) {
+      if (value < MIN_POWER_THRESHOLD) {
         return;
       }
+
+      // Find the effective parent (may be different from direct parent if parent has no stat_rate)
+      const effectiveParent = findEffectiveParent(device.included_in_stat);
 
       const node = {
         id: device.stat_rate,
@@ -267,7 +322,7 @@ class HuiPowerSankeyCard
         value,
         color: getGraphColorByIndex(idx, computedStyle),
         index: 4,
-        parent: device.included_in_stat,
+        parent: effectiveParent,
       };
       if (node.parent) {
         parentLinks[node.id] = node.parent;
