@@ -64,6 +64,9 @@ class DialogBox extends LitElement {
       <ha-wa-dialog
         .hass=${this.hass}
         .open=${this._open}
+        type=${this._params?.confirmation || this._params?.prompt
+          ? "alert"
+          : "standard"}
         ?prevent-scrim-close=${confirmPrompt}
         @closed=${this._dialogClosed}
         aria-labelledby="dialog-box-title"

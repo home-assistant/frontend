@@ -58,6 +58,7 @@ export type DialogWidth = "small" | "medium" | "large" | "full";
  * @cssprop --dialog-surface-margin-top - Top margin for the dialog surface.
  *
  * @attr {boolean} open - Controls the dialog open state.
+ * @attr {("alert"|"standard")} type - Dialog type. Defaults to "standard".
  * @attr {("small"|"medium"|"large"|"full")} width - Preferred dialog width preset. Defaults to "medium".
  * @attr {boolean} prevent-scrim-close - Prevents closing the dialog by clicking the scrim/overlay. Defaults to false.
  * @attr {string} header-title - Header title text. If not set, the headerTitle slot is used.
@@ -88,6 +89,9 @@ export class HaWaDialog extends LitElement {
 
   @property({ type: Boolean, reflect: true })
   public open = false;
+
+  @property({ type: String, reflect: true, attribute: "type" })
+  public type: "alert" | "standard" = "standard";
 
   @property({ type: String, reflect: true, attribute: "width" })
   public width: DialogWidth = "medium";
@@ -335,24 +339,24 @@ export class HaWaDialog extends LitElement {
         overflow: hidden;
       }
 
-      @media all and (max-width: 450px), all and (max-height: 500px) {
-        :host {
+      :host([type="standard"]) {
+        @media all and (max-width: 450px), all and (max-height: 500px) {
           --ha-dialog-border-radius: var(--ha-space-0);
-        }
 
-        wa-dialog {
-          --full-width: var(--ha-dialog-width-full, 100vw);
-        }
+          wa-dialog {
+            --full-width: var(--ha-dialog-width-full, 100vw);
+          }
 
-        wa-dialog::part(dialog) {
-          min-height: var(--ha-dialog-min-height, 100vh);
-          min-height: var(--ha-dialog-min-height, 100svh);
-          max-height: var(--ha-dialog-max-height, 100vh);
-          max-height: var(--ha-dialog-max-height, 100svh);
-          padding-top: var(--safe-area-top);
-          padding-bottom: var(--safe-area-bottom);
-          padding-left: var(--safe-area-left);
-          padding-right: var(--safe-area-right);
+          wa-dialog::part(dialog) {
+            min-height: var(--ha-dialog-min-height, 100vh);
+            min-height: var(--ha-dialog-min-height, 100svh);
+            max-height: var(--ha-dialog-max-height, 100vh);
+            max-height: var(--ha-dialog-max-height, 100svh);
+            padding-top: var(--safe-area-top);
+            padding-bottom: var(--safe-area-bottom);
+            padding-left: var(--safe-area-left);
+            padding-right: var(--safe-area-right);
+          }
         }
       }
 
