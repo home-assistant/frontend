@@ -303,7 +303,7 @@ export class HaWaDialog extends LitElement {
         max-width: var(--width, var(--full-width));
         max-height: var(
           --ha-dialog-max-height,
-          calc(var(--safe-width) - var(--ha-space-20))
+          calc(var(--safe-height) - var(--ha-space-20))
         );
         min-height: var(--ha-dialog-min-height);
         position: var(--dialog-surface-position, relative);
