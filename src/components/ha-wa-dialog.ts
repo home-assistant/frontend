@@ -1,4 +1,4 @@
-import { css, html, LitElement } from "lit";
+import { css, html, LitElement, nothing } from "lit";
 import {
   customElement,
   eventOptions,
@@ -208,11 +208,13 @@ export class HaWaDialog extends LitElement {
             .showBorder=${this._bodyScrolled}
           >
             <slot name="headerNavigationIcon" slot="navigationIcon">
-              <ha-icon-button
-                data-dialog="close"
-                .label=${this.hass?.localize("ui.common.close") ?? "Close"}
-                .path=${mdiClose}
-              ></ha-icon-button>
+              ${this.type === "alert"
+                ? nothing
+                : html`<ha-icon-button
+                    data-dialog="close"
+                    .label=${this.hass?.localize("ui.common.close") ?? "Close"}
+                    .path=${mdiClose}
+                  ></ha-icon-button>`}
             </slot>
             ${this.headerTitle !== undefined
               ? html`<span slot="title" class="title" id="ha-wa-dialog-title">
