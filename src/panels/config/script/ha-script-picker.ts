@@ -34,6 +34,7 @@ import { fireEvent } from "../../../common/dom/fire_event";
 import { computeStateName } from "../../../common/entity/compute_state_name";
 import { navigate } from "../../../common/navigate";
 import { slugify } from "../../../common/string/slugify";
+import "../../../components/ha-tooltip";
 import type { LocalizeFunc } from "../../../common/translations/localize";
 import {
   hasRejectedItems,
@@ -320,7 +321,7 @@ class HaScriptPicker extends SubscribeMixin(LitElement) {
                 ? formattedTime
                 : html`
                     <ha-tooltip for=${elementId}> ${formattedTime} </ha-tooltip>
-                    <span .id=${elementId}
+                    <span id=${elementId}
                       >${relativeTime(date, this.hass.locale)}</span
                     >
                   `}

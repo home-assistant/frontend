@@ -312,7 +312,7 @@ class HaSceneDashboard extends SubscribeMixin(LitElement) {
                 ? formattedTime
                 : html`
                     <ha-tooltip for=${elementId}> ${formattedTime} </ha-tooltip>
-                    <span .id=${elementId}
+                    <span id=${elementId}
                       >${relativeTime(date, this.hass.locale)}</span
                     >
                   `}
