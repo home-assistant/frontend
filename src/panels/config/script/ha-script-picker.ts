@@ -320,7 +320,7 @@ class HaScriptPicker extends SubscribeMixin(LitElement) {
               ${dayDifference > 3
                 ? formattedTime
                 : html`
-                    <ha-tooltip for=${elementId}> ${formattedTime} </ha-tooltip>
+                    <ha-tooltip for=${elementId}>${formattedTime}</ha-tooltip>
                     <span id=${elementId}
                       >${relativeTime(date, this.hass.locale)}</span
                     >
