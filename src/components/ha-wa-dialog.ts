@@ -333,8 +333,8 @@ export class HaWaDialog extends LitElement {
         overflow: hidden;
       }
 
+      @media all and (max-width: 450px), all and (max-height: 500px) {
       :host([type="standard"]) {
-        @media all and (max-width: 450px), all and (max-height: 500px) {
           --ha-dialog-border-radius: var(--ha-space-0);
 
           wa-dialog {
