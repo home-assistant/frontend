@@ -146,9 +146,9 @@ export class HaWaDialog extends LitElement {
           >
             <slot name="headerNavigationIcon" slot="navigationIcon">
               <ha-icon-button
-                    data-dialog="close"
-                    .label=${this.hass?.localize("ui.common.close") ?? "Close"}
-                    .path=${mdiClose}
+                data-dialog="close"
+                .label=${this.hass?.localize("ui.common.close") ?? "Close"}
+                .path=${mdiClose}
               ></ha-icon-button>
             </slot>
             ${this.headerTitle !== undefined
