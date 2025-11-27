@@ -43,7 +43,9 @@ export const mainStyles = css`
     --safe-area-offset-top: calc(max(var(--safe-area-inset-top, 0px) - var(--safe-area-inset-bottom, 0px), 0px) / 2);
     --safe-area-offset-bottom: calc(max(var(--safe-area-inset-bottom, 0px) - var(--safe-area-inset-top, 0px), 0px) / 2);
 
-    /* Safe width and height for use instead of 100vw and 100vh */
+    /* Safe width and height for use instead of 100vw and 100vh
+     * when working with areas like dialogs which need to fill the entire safe area.
+     */
     --safe-width: calc(100vw - var(--safe-area-inset-left) - var(--safe-area-inset-right));
     --safe-height: calc(100vh - var(--safe-area-inset-top) - var(--safe-area-inset-bottom));
   }
