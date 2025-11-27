@@ -246,6 +246,14 @@ export class HaWaDialog extends LitElement {
         min-height: var(--ha-dialog-min-height);
         position: var(--dialog-surface-position, relative);
         margin-top: var(--dialog-surface-margin-top, auto);
+        transform: translateX(
+          calc(
+            var(--safe-area-offset-left, var(--ha-space-0)) - var(
+                --safe-area-offset-right,
+                var(--ha-space-0)
+              )
+          )
+        );
         display: flex;
         flex-direction: column;
         overflow: hidden;
@@ -270,6 +278,8 @@ export class HaWaDialog extends LitElement {
             padding-bottom: var(--safe-area-inset-bottom);
             padding-left: var(--safe-area-inset-left);
             padding-right: var(--safe-area-inset-right);
+            /* Reset the transform to center the dialog */
+            transform: none;
           }
         }
       }
