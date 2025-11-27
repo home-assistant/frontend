@@ -246,10 +246,16 @@ export class HaWaDialog extends LitElement {
         min-height: var(--ha-dialog-min-height);
         position: var(--dialog-surface-position, relative);
         margin-top: var(--dialog-surface-margin-top, auto);
-        transform: translateX(
+        transform: translate(
           calc(
             var(--safe-area-offset-left, var(--ha-space-0)) - var(
                 --safe-area-offset-right,
+                var(--ha-space-0)
+              )
+          ),
+          calc(
+            var(--safe-area-offset-top, var(--ha-space-0)) - var(
+                --safe-area-offset-bottom,
                 var(--ha-space-0)
               )
           )
