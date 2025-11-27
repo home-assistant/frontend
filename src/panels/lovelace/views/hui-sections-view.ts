@@ -123,6 +123,7 @@ export class SectionsView extends LitElement implements LovelaceViewElement {
       "section-visibility-changed",
       this._sectionVisibilityChanged
     );
+    this._showSidebar = Boolean(window.history.state?.sidebar);
   }
 
   disconnectedCallback(): void {
@@ -427,6 +428,12 @@ export class SectionsView extends LitElement implements LovelaceViewElement {
     }
 
     this._showSidebar = !this._showSidebar;
+
+    // Add sidebar state to history
+    window.history.replaceState(
+      { ...window.history.state, sidebar: this._showSidebar },
+      ""
+    );
 
     // Restore scroll position after view updates
     this.updateComplete.then(() => {
