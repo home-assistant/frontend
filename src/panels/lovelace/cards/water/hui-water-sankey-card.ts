@@ -98,17 +98,32 @@ class HuiWaterSankeyCard
     const nodes: Node[] = [];
     const links: Link[] = [];
 
-    // Calculate total water consumption from all devices
-    let totalWaterConsumption = 0;
-    prefs.device_consumption_water.forEach((device) => {
+    // Calculate total water consumption from all sources or devices
+    const totalDownstreamConsumption = prefs.device_consumption_water.reduce(
+      (total, device) => {
+        const value =
+          device.stat_consumption in this._data!.stats
+            ? calculateStatisticSumGrowth(
+                this._data!.stats[device.stat_consumption]
+              ) || 0
+            : 0;
+        return total + value;
+      },
+      0
+    );
+    const totalSourceSupply = waterSources.reduce((total, source) => {
       const value =
-        device.stat_consumption in this._data!.stats
+        source.stat_energy_from in this._data!.stats
           ? calculateStatisticSumGrowth(
-              this._data!.stats[device.stat_consumption]
+              this._data!.stats[source.stat_energy_from]
             ) || 0
           : 0;
-      totalWaterConsumption += value;
-    });
+      return total + value;
+    }, 0);
+    const totalWaterConsumption = Math.max(
+      totalDownstreamConsumption,
+      totalSourceSupply
+    );
 
     // Create home/consumption node
     const homeNode: Node = {
