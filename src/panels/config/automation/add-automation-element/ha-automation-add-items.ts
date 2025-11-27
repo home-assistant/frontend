@@ -306,7 +306,7 @@ export class HaAutomationAddItems extends LitElement {
     .items .item-headline {
       display: flex;
       align-items: center;
-      gap: var(--ha-space-1);
+      gap: var(--ha-space-2);
       min-height: var(--ha-space-9);
       flex-wrap: wrap;
     }
