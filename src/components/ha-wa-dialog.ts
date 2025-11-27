@@ -282,18 +282,10 @@ export class HaWaDialog extends LitElement {
           var(--safe-area-inset-right, var(--ha-space-0)),
           var(--ha-space-0)
         );
-        --full-width: var(
-          --ha-dialog-width-full,
-          min(
-            95vw,
-            calc(
-              100vw - var(--safe-area-left, var(--ha-space-0)) - var(
-                  --safe-area-right,
-                  var(--ha-space-0)
-                )
-            )
-          )
+        --safe-width: calc(
+          100vw - var(--safe-area-left) - var(--safe-area-right)
         );
+        --full-width: var(--ha-dialog-width-full, min(95vw, var(--safe-width)));
         --width: min(var(--ha-dialog-width-md, 580px), var(--full-width));
         --spacing: var(--dialog-content-padding, var(--ha-space-6));
         --show-duration: var(--ha-dialog-show-duration, 200ms);
