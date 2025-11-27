@@ -366,12 +366,16 @@ export class HaAutomationAddItems extends LitElement {
     }
 
     .selected-target state-badge {
-      --mdc-icon-size: 20px;
+      --mdc-icon-size: 24px;
     }
     .selected-target state-badge,
-    .selected-target ha-domain-icon {
+    .selected-target ha-floor-icon {
+      display: flex;
+      height: 32px;
       width: 24px;
-      height: 24px;
+      align-items: center;
+    }
+    .selected-target ha-domain-icon {
       filter: grayscale(100%);
     }
   `;
