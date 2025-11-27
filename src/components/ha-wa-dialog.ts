@@ -275,8 +275,10 @@ export class HaWaDialog extends LitElement {
 
           wa-dialog::part(dialog) {
             /* Make the dialog fill the whole screen height and not the safe height */
-            min-height: var(--ha-dialog-min-height, 100vh);
-            max-height: var(--ha-dialog-max-height, 100vh);
+            min-height: var(--ha-dialog-min-height, var(--safe-height));
+            max-height: var(--ha-dialog-max-height, var(--safe-height));
+            margin-top: 0;
+            margin-bottom: 0;
             /* Use safe area as padding instead of the container size */
             padding-top: var(--safe-area-inset-top);
             padding-bottom: var(--safe-area-inset-bottom);
