@@ -85,7 +85,7 @@ export class HaWaDialog extends LitElement {
   @property({ type: Boolean, reflect: true })
   public open = false;
 
-  @property({ type: String, reflect: true, attribute: "type" })
+  @property({ reflect: true })
   public type: "alert" | "standard" = "standard";
 
   @property({ type: String, reflect: true, attribute: "width" })
