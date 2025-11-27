@@ -1,3 +1,5 @@
+import "@home-assistant/webawesome/dist/components/dialog/dialog";
+import { mdiClose } from "@mdi/js";
 import { css, html, LitElement } from "lit";
 import {
   customElement,
@@ -7,8 +9,6 @@ import {
   state,
 } from "lit/decorators";
 import { ifDefined } from "lit/directives/if-defined";
-import { mdiClose } from "@mdi/js";
-import "@home-assistant/webawesome/dist/components/dialog/dialog";
 import { fireEvent } from "../common/dom/fire_event";
 import { haStyleScrollbar } from "../resources/styles";
 import type { HomeAssistant } from "../types";
@@ -172,7 +172,9 @@ export class HaWaDialog extends LitElement {
 
     await this.updateComplete;
 
-    (this.querySelector("[autofocus]") as HTMLElement | null)?.focus();
+    requestAnimationFrame(() => {
+      (this.querySelector("[autofocus]") as HTMLElement | null)?.focus();
+    });
   };
 
   private _handleAfterShow = () => {
