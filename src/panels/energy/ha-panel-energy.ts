@@ -36,6 +36,12 @@ import "../lovelace/views/hui-view-container";
 
 export const DEFAULT_ENERGY_COLLECTION_KEY = "energy_dashboard";
 
+const EMPTY_PREFERENCES: EnergyPreferences = {
+  energy_sources: [],
+  device_consumption: [],
+  device_consumption_water: [],
+};
+
 const OVERVIEW_VIEW = {
   path: "overview",
   strategy: {
@@ -131,11 +137,11 @@ class PanelEnergy extends LitElement {
     try {
       this._error = undefined;
       const prefs = await this._fetchEnergyPrefs();
-      this._prefs = prefs || ({} as EnergyPreferences);
+      this._prefs = prefs || EMPTY_PREFERENCES;
     } catch (err) {
       // eslint-disable-next-line no-console
       console.error("Failed to load prefs:", err);
-      this._prefs = {} as EnergyPreferences;
+      this._prefs = EMPTY_PREFERENCES;
       this._error = (err as Error).message || "Unknown error";
     }
     await this._setLovelace();
