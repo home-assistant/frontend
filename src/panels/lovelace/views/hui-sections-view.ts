@@ -529,8 +529,8 @@ export class SectionsView extends LitElement implements LovelaceViewElement {
       width: max-content;
       min-width: 280px;
       max-width: 90%;
-      --control-select-thickness: 56px;
-      --control-select-border-radius: var(--ha-border-radius-6xl);
+      --control-select-thickness: var(--ha-space-14);
+      --control-select-border-radius: var(--ha-border-radius-pill);
       --control-select-background: var(--card-background-color);
       --control-select-background-opacity: 1;
       --control-select-color: var(--primary-color);
