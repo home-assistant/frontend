@@ -1365,12 +1365,12 @@ class DialogAddAutomationElement
 
   private _getAreaEntityLookupMemoized = memoizeOne(
     (entities: HomeAssistant["entities"]) =>
-      getAreaEntityLookup(Object.values(entities), true)
+      getAreaEntityLookup(Object.values(entities))
   );
 
   private _getDeviceEntityLookupMemoized = memoizeOne(
     (entities: HomeAssistant["entities"]) =>
-      getDeviceEntityLookup(Object.values(entities), true)
+      getDeviceEntityLookup(Object.values(entities))
   );
 
   private _extractTypeAndIdFromTarget = memoizeOne(
