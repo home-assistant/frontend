@@ -28,10 +28,10 @@ export const mainStyles = css`
     --margin-title-rtl: 0 24px 0 0;
 
     /* Safe area insets */
-    --safe-area-inset-top: max(var(--app-safe-area-inset-top, env(safe-area-inset-top, 0)), 0px);
-    --safe-area-inset-bottom: max(var(--app-safe-area-inset-bottom, env(safe-area-inset-bottom, 0)), 0px);
-    --safe-area-inset-left: max(var(--app-safe-area-inset-left, env(safe-area-inset-left, 0)), 0px);
-    --safe-area-inset-right: max(var(--app-safe-area-inset-right, env(safe-area-inset-right, 0)), 0px);
+    --safe-area-inset-top: var(--app-safe-area-inset-top, env(safe-area-inset-top, 0px));
+    --safe-area-inset-bottom: var(--app-safe-area-inset-bottom, env(safe-area-inset-bottom, 0px));
+    --safe-area-inset-left: var(--app-safe-area-inset-left, env(safe-area-inset-left, 0px));
+    --safe-area-inset-right: var(--app-safe-area-inset-right, env(safe-area-inset-right, 0px));
 
     /* Safe area inset x and y */
     --safe-area-inset-x: calc(var(--safe-area-inset-left, 0px) + var(--safe-area-inset-right, 0px));
