@@ -1,10 +1,11 @@
-import { mdiAlertOutline } from "@mdi/js";
+import { mdiAlertOutline, mdiClose } from "@mdi/js";
 import { css, html, LitElement, nothing } from "lit";
 import { customElement, property, query, state } from "lit/decorators";
 import { ifDefined } from "lit/directives/if-defined";
 import { fireEvent } from "../../common/dom/fire_event";
 import "../../components/ha-button";
 import "../../components/ha-dialog-footer";
+import "../../components/ha-dialog-header";
 import "../../components/ha-svg-icon";
 import "../../components/ha-textfield";
 import type { HaTextField } from "../../components/ha-textfield";
@@ -59,32 +60,36 @@ class DialogBox extends LitElement {
       (this._params.confirmation &&
         this.hass.localize("ui.dialogs.generic.default_confirmation_title"));
 
-    const titleId = this._params.warning ? "dialog-box-title" : undefined;
-
     return html`
       <ha-wa-dialog
         .hass=${this.hass}
         .open=${this._open}
         type=${confirmPrompt ? "alert" : "standard"}
         ?prevent-scrim-close=${confirmPrompt}
-        aria-labelledby=${ifDefined(titleId)}
         @closed=${this._dialogClosed}
+        aria-labelledby="dialog-box-title"
         aria-describedby="dialog-box-description"
-        header-title=${ifDefined(
-          !this._params.warning ? (dialogTitle ?? undefined) : undefined
-        )}
       >
-        ${this._params.warning
-          ? html`
-              <span slot="headerTitle" id="dialog-box-title" class="title-icon">
-                <ha-svg-icon
+        <ha-dialog-header slot="header">
+          ${!confirmPrompt
+            ? html`<slot name="headerNavigationIcon" slot="navigationIcon">
+                <ha-icon-button
+                  data-dialog="close"
+                  .label=${this.hass?.localize("ui.common.close") ?? "Close"}
+                  .path=${mdiClose}
+                ></ha-icon-button
+              ></slot>`
+            : nothing}
+          <span slot="title" id="dialog-box-title">
+            ${this._params.warning
+              ? html`<ha-svg-icon
                   .path=${mdiAlertOutline}
                   style="color: var(--warning-color)"
-                ></ha-svg-icon>
-                ${dialogTitle}
-              </span>
-            `
-          : nothing}
+                ></ha-svg-icon> `
+              : nothing}
+            ${dialogTitle}
+          </span>
+        </ha-dialog-header>
         <div id="dialog-box-description">
           ${this._params.text ? html` <p>${this._params.text}</p> ` : ""}
           ${this._params.prompt
@@ -191,11 +196,6 @@ class DialogBox extends LitElement {
     }
     .secondary {
       color: var(--secondary-text-color);
-    }
-    .title-icon {
-      display: inline-flex;
-      align-items: center;
-      gap: var(--ha-space-2, 8px);
     }
     ha-textfield {
       width: 100%;

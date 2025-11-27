@@ -145,13 +145,11 @@ export class HaWaDialog extends LitElement {
             .showBorder=${this._bodyScrolled}
           >
             <slot name="headerNavigationIcon" slot="navigationIcon">
-              ${this.type === "alert"
-                ? nothing
-                : html`<ha-icon-button
+              <ha-icon-button
                     data-dialog="close"
                     .label=${this.hass?.localize("ui.common.close") ?? "Close"}
                     .path=${mdiClose}
-                  ></ha-icon-button>`}
+              ></ha-icon-button>
             </slot>
             ${this.headerTitle !== undefined
               ? html`<span slot="title" class="title" id="ha-wa-dialog-title">
