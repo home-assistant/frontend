@@ -186,7 +186,6 @@ export class HaIcon extends LitElement {
 
   static styles = css`
     :host {
-      display: flex;
       fill: currentcolor;
     }
   `;
