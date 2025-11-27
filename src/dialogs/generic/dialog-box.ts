@@ -1,15 +1,15 @@
-import { mdiAlertOutline } from "@mdi/js";
+import { mdiAlertOutline, mdiClose } from "@mdi/js";
 import { css, html, LitElement, nothing } from "lit";
 import { customElement, property, query, state } from "lit/decorators";
 import { ifDefined } from "lit/directives/if-defined";
 import { fireEvent } from "../../common/dom/fire_event";
 import "../../components/ha-button";
+import "../../components/ha-dialog-footer";
 import "../../components/ha-dialog-header";
-import "../../components/ha-md-dialog";
-import type { HaMdDialog } from "../../components/ha-md-dialog";
 import "../../components/ha-svg-icon";
 import "../../components/ha-textfield";
 import type { HaTextField } from "../../components/ha-textfield";
+import "../../components/ha-wa-dialog";
 import type { HomeAssistant } from "../../types";
 import type { DialogBoxParams } from "./show-dialog-box";
 
@@ -19,11 +19,11 @@ class DialogBox extends LitElement {
 
   @state() private _params?: DialogBoxParams;
 
+  @state() private _open = false;
+
   @state() private _closeState?: "canceled" | "confirmed";
 
   @query("ha-textfield") private _textField?: HaTextField;
-
-  @query("ha-md-dialog") private _dialog?: HaMdDialog;
 
   private _closePromise?: Promise<void>;
 
@@ -34,6 +34,7 @@ class DialogBox extends LitElement {
       await this._closePromise;
     }
     this._params = params;
+    this._open = true;
   }
 
   public closeDialog(): boolean {
@@ -60,16 +61,25 @@ class DialogBox extends LitElement {
         this.hass.localize("ui.dialogs.generic.default_confirmation_title"));
 
     return html`
-      <ha-md-dialog
-        open
-        .disableCancelAction=${confirmPrompt}
+      <ha-wa-dialog
+        .hass=${this.hass}
+        .open=${this._open}
+        ?prevent-scrim-close=${confirmPrompt}
         @closed=${this._dialogClosed}
-        type="alert"
         aria-labelledby="dialog-box-title"
         aria-describedby="dialog-box-description"
       >
-        <div slot="headline">
-          <span .title=${dialogTitle} id="dialog-box-title">
+        <ha-dialog-header slot="header">
+          ${!confirmPrompt
+            ? html`<slot name="headerNavigationIcon" slot="navigationIcon">
+                <ha-icon-button
+                  data-dialog="close"
+                  .label=${this.hass?.localize("ui.common.close") ?? "Close"}
+                  .path=${mdiClose}
+                ></ha-icon-button
+              ></slot>`
+            : nothing}
+          <span slot="title" id="dialog-box-title">
             ${this._params.warning
               ? html`<ha-svg-icon
                   .path=${mdiAlertOutline}
@@ -78,13 +88,13 @@ class DialogBox extends LitElement {
               : nothing}
             ${dialogTitle}
           </span>
-        </div>
-        <div slot="content" id="dialog-box-description">
+        </ha-dialog-header>
+        <div id="dialog-box-description">
           ${this._params.text ? html` <p>${this._params.text}</p> ` : ""}
           ${this._params.prompt
             ? html`
                 <ha-textfield
-                  dialogInitialFocus
+                  autofocus
                   value=${ifDefined(this._params.defaultValue)}
                   .placeholder=${this._params.placeholder}
                   .label=${this._params.inputLabel
@@ -99,10 +109,11 @@ class DialogBox extends LitElement {
               `
             : ""}
         </div>
-        <div slot="actions">
+        <ha-dialog-footer slot="footer">
           ${confirmPrompt
             ? html`
                 <ha-button
+                  slot="secondaryAction"
                   @click=${this._dismiss}
                   ?autofocus=${!this._params.prompt && this._params.destructive}
                   appearance="plain"
@@ -114,6 +125,7 @@ class DialogBox extends LitElement {
               `
             : nothing}
           <ha-button
+            slot="primaryAction"
             @click=${this._confirm}
             ?autofocus=${!this._params.prompt && !this._params.destructive}
             variant=${this._params.destructive ? "danger" : "brand"}
@@ -122,8 +134,8 @@ class DialogBox extends LitElement {
               ? this._params.confirmText
               : this.hass.localize("ui.common.ok")}
           </ha-button>
-        </div>
-      </ha-md-dialog>
+        </ha-dialog-footer>
+      </ha-wa-dialog>
     `;
   }
 
@@ -148,20 +160,20 @@ class DialogBox extends LitElement {
   }
 
   private _closeDialog() {
-    fireEvent(this, "dialog-closed", { dialog: this.localName });
-    this._dialog?.close();
+    this._open = false;
     this._closePromise = new Promise((resolve) => {
       this._closeResolve = resolve;
     });
   }
 
   private _dialogClosed() {
+    fireEvent(this, "dialog-closed", { dialog: this.localName });
     if (!this._closeState) {
-      fireEvent(this, "dialog-closed", { dialog: this.localName });
       this._cancel();
     }
     this._closeState = undefined;
     this._params = undefined;
+    this._open = false;
     this._closeResolve?.();
     this._closeResolve = undefined;
   }

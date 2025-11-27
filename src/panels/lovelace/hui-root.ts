@@ -37,6 +37,7 @@ import {
   removeSearchParam,
 } from "../../common/url/search-params";
 import { debounce } from "../../common/util/debounce";
+import { isMobileClient } from "../../util/is_mobile";
 import { afterNextRender } from "../../common/util/render-status";
 import "../../components/ha-button";
 import "../../components/ha-button-menu";
@@ -294,7 +295,8 @@ class HUIRoot extends LitElement {
         overflowAction: this._handleShowQuickBar,
         visible: !this._editMode,
         overflow: this.narrow,
-        suffix: this.hass.enableShortcuts ? "(E)" : undefined,
+        suffix:
+          this.hass.enableShortcuts && !isMobileClient ? "(E)" : undefined,
       },
       {
         icon: mdiCommentProcessingOutline,
@@ -304,7 +306,8 @@ class HUIRoot extends LitElement {
         visible:
           !this._editMode && this._conversation(this.hass.config.components),
         overflow: this.narrow,
-        suffix: this.hass.enableShortcuts ? "(A)" : undefined,
+        suffix:
+          this.hass.enableShortcuts && !isMobileClient ? "(A)" : undefined,
       },
       {
         icon: mdiRefresh,

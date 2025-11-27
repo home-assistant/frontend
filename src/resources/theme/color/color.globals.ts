@@ -92,6 +92,62 @@ export const colorStyles = css`
     --black-color: #000000;
     --white-color: #ffffff;
 
+    /* colors - used for graphs, calendars, maps, etc */
+    --color-1: #4269d0;
+    --color-2: #f4bd4a;
+    --color-3: #ff725c;
+    --color-4: #6cc5b0;
+    --color-5: #a463f2;
+    --color-6: #ff8ab7;
+    --color-7: #9c6b4e;
+    --color-8: #97bbf5;
+    --color-9: #01ab63;
+    --color-10: #094bad;
+    --color-11: #c99000;
+    --color-12: #d84f3e;
+    --color-13: #49a28f;
+    --color-14: #048732;
+    --color-15: #d96895;
+    --color-16: #8043ce;
+    --color-17: #7599d1;
+    --color-18: #7a4c31;
+    --color-19: #6989f4;
+    --color-20: #ffd444;
+    --color-21: #ff957c;
+    --color-22: #8fe9d3;
+    --color-23: #62cc71;
+    --color-24: #ffadda;
+    --color-25: #c884ff;
+    --color-26: #badeff;
+    --color-27: #bf8b6d;
+    --color-28: #927acc;
+    --color-29: #97ee3f;
+    --color-30: #bf3947;
+    --color-31: #9f5b00;
+    --color-32: #f48758;
+    --color-33: #8caed6;
+    --color-34: #f2b94f;
+    --color-35: #eff26e;
+    --color-36: #e43872;
+    --color-37: #d9b100;
+    --color-38: #9d7a00;
+    --color-39: #698cff;
+    --color-40: #00d27e;
+    --color-41: #d06800;
+    --color-42: #009f82;
+    --color-43: #c49200;
+    --color-44: #cbe8ff;
+    --color-45: #fecddf;
+    --color-46: #c27eb6;
+    --color-47: #8cd2ce;
+    --color-48: #c4b8d9;
+    --color-49: #f883b0;
+    --color-50: #a49100;
+    --color-51: #f48800;
+    --color-52: #27d0df;
+    --color-53: #a04a9b;
+    --color-54: #4269d0;
+
     /* history colors */
     --history-unavailable-color: transparent;
 

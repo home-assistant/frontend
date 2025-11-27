@@ -235,7 +235,7 @@ export class HaWaDialog extends LitElement {
       }
 
       :host([width="large"]) wa-dialog {
-        --width: min(var(--ha-dialog-width-lg, 720px), var(--full-width));
+        --width: min(var(--ha-dialog-width-lg, 1024px), var(--full-width));
       }
 
       :host([width="full"]) wa-dialog {

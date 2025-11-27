@@ -69,6 +69,45 @@ export class HaPlatformCondition extends LitElement {
     } else {
       this._manifest = undefined;
     }
+
+    if (
+      oldValue?.condition !== this.condition?.condition &&
+      this.condition &&
+      this.description?.fields
+    ) {
+      let updatedDefaultValue = false;
+      const updatedOptions = {};
+      const loadDefaults = !("options" in this.condition);
+      // Set mandatory bools without a default value to false
+      Object.entries(this.description.fields).forEach(([key, field]) => {
+        if (
+          field.selector &&
+          field.required &&
+          field.default === undefined &&
+          "boolean" in field.selector &&
+          updatedOptions[key] === undefined
+        ) {
+          updatedDefaultValue = true;
+          updatedOptions[key] = false;
+        } else if (
+          loadDefaults &&
+          field.selector &&
+          field.default !== undefined &&
+          updatedOptions[key] === undefined
+        ) {
+          updatedDefaultValue = true;
+          updatedOptions[key] = field.default;
+        }
+      });
+      if (updatedDefaultValue) {
+        fireEvent(this, "value-changed", {
+          value: {
+            ...this.condition,
+            options: updatedOptions,
+          },
+        });
+      }
+    }
   }
 
   protected render() {

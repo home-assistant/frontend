@@ -21,10 +21,51 @@ export interface FloorComboBoxItem extends PickerComboBoxItem {
   area?: AreaRegistryEntry;
 }
 
+export interface FloorNestedComboBoxItem extends PickerComboBoxItem {
+  floor?: FloorRegistryEntry;
+  areas: FloorComboBoxItem[];
+}
+
+export interface UnassignedAreasFloorComboBoxItem extends PickerComboBoxItem {
+  areas: FloorComboBoxItem[];
+}
+
 export interface AreaFloorValue {
   id: string;
   type: "floor" | "area";
 }
+
+export const getAreasNestedInFloors = (
+  states: HomeAssistant["states"],
+  haFloors: HomeAssistant["floors"],
+  haAreas: HomeAssistant["areas"],
+  haDevices: HomeAssistant["devices"],
+  haEntities: HomeAssistant["entities"],
+  formatId: (value: AreaFloorValue) => string,
+  includeDomains?: string[],
+  excludeDomains?: string[],
+  includeDeviceClasses?: string[],
+  deviceFilter?: HaDevicePickerDeviceFilterFunc,
+  entityFilter?: HaEntityPickerEntityFilterFunc,
+  excludeAreas?: string[],
+  excludeFloors?: string[]
+) =>
+  getAreasAndFloorsItems(
+    states,
+    haFloors,
+    haAreas,
+    haDevices,
+    haEntities,
+    formatId,
+    includeDomains,
+    excludeDomains,
+    includeDeviceClasses,
+    deviceFilter,
+    entityFilter,
+    excludeAreas,
+    excludeFloors,
+    true
+  ) as (FloorNestedComboBoxItem | UnassignedAreasFloorComboBoxItem)[];
 
 export const getAreasAndFloors = (
   states: HomeAssistant["states"],
@@ -40,7 +81,43 @@ export const getAreasAndFloors = (
   entityFilter?: HaEntityPickerEntityFilterFunc,
   excludeAreas?: string[],
   excludeFloors?: string[]
-): FloorComboBoxItem[] => {
+) =>
+  getAreasAndFloorsItems(
+    states,
+    haFloors,
+    haAreas,
+    haDevices,
+    haEntities,
+    formatId,
+    includeDomains,
+    excludeDomains,
+    includeDeviceClasses,
+    deviceFilter,
+    entityFilter,
+    excludeAreas,
+    excludeFloors
+  ) as FloorComboBoxItem[];
+
+const getAreasAndFloorsItems = (
+  states: HomeAssistant["states"],
+  haFloors: HomeAssistant["floors"],
+  haAreas: HomeAssistant["areas"],
+  haDevices: HomeAssistant["devices"],
+  haEntities: HomeAssistant["entities"],
+  formatId: (value: AreaFloorValue) => string,
+  includeDomains?: string[],
+  excludeDomains?: string[],
+  includeDeviceClasses?: string[],
+  deviceFilter?: HaDevicePickerDeviceFilterFunc,
+  entityFilter?: HaEntityPickerEntityFilterFunc,
+  excludeAreas?: string[],
+  excludeFloors?: string[],
+  nested = false
+): (
+  | FloorComboBoxItem
+  | FloorNestedComboBoxItem
+  | UnassignedAreasFloorComboBoxItem
+)[] => {
   const floors = Object.values(haFloors);
   const areas = Object.values(haAreas);
   const devices = Object.values(haDevices);
@@ -181,7 +258,11 @@ export const getAreasAndFloors = (
 
   const hierarchy = getAreasFloorHierarchy(floors, outputAreas);
 
-  const items: FloorComboBoxItem[] = [];
+  const items: (
+    | FloorComboBoxItem
+    | FloorNestedComboBoxItem
+    | UnassignedAreasFloorComboBoxItem
+  )[] = [];
 
   hierarchy.floors.forEach((f) => {
     const floor = haFloors[f.id];
@@ -196,7 +277,7 @@ export const getAreasAndFloors = (
       })
       .flat();
 
-    items.push({
+    const floorItem: FloorComboBoxItem | FloorNestedComboBoxItem = {
       id: formatId({ id: floor.floor_id, type: "floor" }),
       type: "floor",
       primary: floorName,
@@ -208,41 +289,53 @@ export const getAreasAndFloors = (
         ...floor.aliases,
         ...areaSearchLabels,
       ],
-    });
+    };
 
-    items.push(
-      ...floorAreas.map((area) => {
-        const areaName = computeAreaName(area);
-        return {
-          id: formatId({ id: area.area_id, type: "area" }),
-          type: "area" as const,
-          primary: areaName || area.area_id,
-          area: area,
-          icon: area.icon || undefined,
-          search_labels: [
-            area.area_id,
-            ...(areaName ? [areaName] : []),
-            ...area.aliases,
-          ],
-        };
-      })
-    );
-  });
+    items.push(floorItem);
 
-  items.push(
-    ...hierarchy.areas.map((areaId) => {
-      const area = haAreas[areaId];
-      const areaName = computeAreaName(area) || area.area_id;
+    const floorAreasItems = floorAreas.map((area) => {
+      const areaName = computeAreaName(area);
       return {
         id: formatId({ id: area.area_id, type: "area" }),
         type: "area" as const,
-        primary: areaName,
+        primary: areaName || area.area_id,
         area: area,
         icon: area.icon || undefined,
-        search_labels: [area.area_id, areaName, ...area.aliases],
+        search_labels: [
+          area.area_id,
+          ...(areaName ? [areaName] : []),
+          ...area.aliases,
+        ],
       };
-    })
-  );
+    });
+
+    if (nested && floor) {
+      (floorItem as unknown as FloorNestedComboBoxItem).areas = floorAreasItems;
+    } else {
+      items.push(...floorAreasItems);
+    }
+  });
+
+  const unassignedAreaItems = hierarchy.areas.map((areaId) => {
+    const area = haAreas[areaId];
+    const areaName = computeAreaName(area) || area.area_id;
+    return {
+      id: formatId({ id: area.area_id, type: "area" }),
+      type: "area" as const,
+      primary: areaName,
+      area: area,
+      icon: area.icon || undefined,
+      search_labels: [area.area_id, areaName, ...area.aliases],
+    };
+  });
+
+  if (nested && unassignedAreaItems.length) {
+    items.push({
+      areas: unassignedAreaItems,
+    } as UnassignedAreasFloorComboBoxItem);
+  } else {
+    items.push(...unassignedAreaItems);
+  }
 
   return items;
 };

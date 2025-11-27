@@ -29,17 +29,23 @@ export const TRIGGER_COLLECTIONS: AutomationElementGroupCollection[] = [
     },
   },
   {
+    titleKey: "ui.panel.config.automation.editor.triggers.groups.helpers.label",
+    groups: {
+      helpers: {},
+    },
+  },
+  {
     titleKey: "ui.panel.config.automation.editor.triggers.groups.other.label",
     groups: {
       event: {},
       geo_location: {},
       homeassistant: {},
-      mqtt: {},
       conversation: {},
       tag: {},
       template: {},
       webhook: {},
       persistent_notification: {},
+      other: {},
     },
   },
 ] as const;

@@ -80,9 +80,10 @@ export class HuiCalendarCard extends LitElement implements LovelaceCard {
       throw new Error("Entities need to be an array");
     }
 
+    const computedStyles = getComputedStyle(this);
     this._calendars = config!.entities.map((entity, idx) => ({
       entity_id: entity,
-      backgroundColor: getColorByIndex(idx),
+      backgroundColor: getColorByIndex(idx, computedStyles),
     }));
 
     if (this._config?.entities !== config.entities) {
