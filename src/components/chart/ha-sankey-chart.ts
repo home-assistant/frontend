@@ -279,6 +279,7 @@ export class HaSankeyChart extends LitElement {
     :host {
       display: block;
       flex: 1;
+      max-width: 100%;
       background: var(--ha-card-background, var(--card-background-color));
     }
     ha-chart-base {
