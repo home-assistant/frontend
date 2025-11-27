@@ -4,6 +4,8 @@ import { FallbackStorage } from "../../../test_helper/local-storage-fallback";
 
 let saveTokens;
 
+const HASS_URL = `${location.protocol}//${location.host}`;
+
 describe("token_storage.saveTokens", () => {
   beforeEach(() => {
     window.localStorage = new FallbackStorage();
@@ -32,6 +34,8 @@ describe("token_storage.saveTokens", () => {
       })
     );
 
+    vi.stubGlobal("__HASS_URL__", HASS_URL);
+
     ({ saveTokens } = await import(
       "../../../../src/common/auth/token_storage"
     ));
@@ -56,6 +60,8 @@ describe("token_storage.saveTokens", () => {
         writeEnabled: undefined,
       })
     );
+
+    vi.stubGlobal("__HASS_URL__", HASS_URL);
 
     const extractSearchParamSpy = vi.fn().mockReturnValue("true");
 
@@ -97,6 +103,8 @@ describe("token_storage.saveTokens", () => {
         writeEnabled: true,
       })
     );
+
+    vi.stubGlobal("__HASS_URL__", HASS_URL);
 
     const extractSearchParamSpy = vi.fn();
 
