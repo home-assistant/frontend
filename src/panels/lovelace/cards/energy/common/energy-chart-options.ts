@@ -203,7 +203,7 @@ function formatTooltip(
           countNegative++;
         }
       }
-      return `${param.marker} ${filterXSS(param.seriesName!)}: ${value} ${unit}`;
+      return `${param.marker} ${filterXSS(param.seriesName!)}: <div style="direction:ltr; display: inline;">${value} ${unit}</div>`;
     })
     .filter(Boolean);
   let footer = "";

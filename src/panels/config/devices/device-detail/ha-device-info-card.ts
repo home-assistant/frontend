@@ -1,7 +1,9 @@
 import type { CSSResultGroup, TemplateResult } from "lit";
-import { css, html, LitElement } from "lit";
-import { customElement, property } from "lit/decorators";
+import { css, html, LitElement, nothing } from "lit";
+import { customElement, property, state } from "lit/decorators";
+import memoizeOne from "memoize-one";
 import { computeDeviceNameDisplay } from "../../../../common/entity/compute_device_name";
+import { stringCompare } from "../../../../common/string/compare";
 import { titleCase } from "../../../../common/string/title-case";
 import "../../../../components/ha-card";
 import type { DeviceRegistryEntry } from "../../../../data/device_registry";
@@ -9,16 +11,61 @@ import { haStyle } from "../../../../resources/styles";
 import type { HomeAssistant } from "../../../../types";
 import { createSearchParam } from "../../../../common/url/search-params";
 import { isComponentLoaded } from "../../../../common/config/is_component_loaded";
+import "../../../../components/ha-icon";
+import "../../../../components/ha-label";
+import type { LabelRegistryEntry } from "../../../../data/label_registry";
+import { subscribeLabelRegistry } from "../../../../data/label_registry";
+import { computeCssColor } from "../../../../common/color/compute-color";
+import { SubscribeMixin } from "../../../../mixins/subscribe-mixin";
 
 @customElement("ha-device-info-card")
-export class HaDeviceCard extends LitElement {
+export class HaDeviceCard extends SubscribeMixin(LitElement) {
   @property({ attribute: false }) public hass!: HomeAssistant;
 
   @property({ attribute: false }) public device!: DeviceRegistryEntry;
 
   @property({ type: Boolean }) public narrow = false;
 
+  @state() private _labelRegistry?: LabelRegistryEntry[];
+
+  private _labelsData = memoizeOne(
+    (
+      labels: LabelRegistryEntry[] | undefined,
+      labelIds: string[],
+      language: string
+    ): {
+      map: Map<string, LabelRegistryEntry>;
+      ids: string[];
+    } => {
+      const map = labels
+        ? new Map(labels.map((label) => [label.label_id, label]))
+        : new Map<string, LabelRegistryEntry>();
+      const ids = [...labelIds].sort((labelA, labelB) =>
+        stringCompare(
+          map.get(labelA)?.name || labelA,
+          map.get(labelB)?.name || labelB,
+          language
+        )
+      );
+      return { map, ids };
+    }
+  );
+
+  public hassSubscribe() {
+    return [
+      subscribeLabelRegistry(this.hass.connection, (labels) => {
+        this._labelRegistry = labels;
+      }),
+    ];
+  }
+
   protected render(): TemplateResult {
+    const { map: labelMap, ids: labels } = this._labelsData(
+      this._labelRegistry,
+      this.device.labels,
+      this.hass.locale.language
+    );
+
     return html`
       <ha-card
         outlined
@@ -58,7 +105,7 @@ export class HaDeviceCard extends LitElement {
                   <span class="hub"
                     ><a
                       href="/config/devices/device/${this.device.via_device_id}"
-                      >${this._computeDeviceNameDislay(
+                      >${this._computeDeviceNameDisplay(
                         this.device.via_device_id
                       )}</a
                     ></span
@@ -126,6 +173,34 @@ export class HaDeviceCard extends LitElement {
               </div>
             `
           )}
+          ${labels.length > 0
+            ? html`
+                <div class="extra-info labels">
+                  ${labels.map((labelId) => {
+                    const label = labelMap.get(labelId);
+                    const color =
+                      label?.color && typeof label.color === "string"
+                        ? computeCssColor(label.color)
+                        : undefined;
+                    return html`
+                      <ha-label
+                        style=${color ? `--color: ${color}` : ""}
+                        .description=${label?.description}
+                      >
+                        ${label?.icon
+                          ? html`<ha-icon
+                              slot="icon"
+                              .icon=${label.icon}
+                            ></ha-icon>`
+                          : nothing}
+                        ${label?.name || labelId}
+                      </ha-label>
+                    `;
+                  })}
+                </div>
+              `
+            : nothing}
+
           <slot></slot>
         </div>
         <slot name="actions"></slot>
@@ -139,7 +214,7 @@ export class HaDeviceCard extends LitElement {
     );
   }
 
-  private _computeDeviceNameDislay(deviceId) {
+  private _computeDeviceNameDisplay(deviceId: string) {
     const device = this.hass.devices[deviceId];
     return device
       ? computeDeviceNameDisplay(device, this.hass)
@@ -162,8 +237,26 @@ export class HaDeviceCard extends LitElement {
         .device {
           width: 30%;
         }
+        .labels {
+          display: flex;
+          flex-wrap: wrap;
+          gap: var(--ha-space-1);
+          width: 100%;
+          max-width: 100%;
+        }
+        .labels ha-label {
+          min-width: 0;
+          max-width: 100%;
+          flex: 0 1 auto;
+        }
+        ha-label {
+          --ha-label-background-color: var(--color, var(--grey-color));
+          --ha-label-background-opacity: 0.5;
+          --ha-label-text-color: var(--primary-text-color);
+          --ha-label-icon-color: var(--primary-text-color);
+        }
         .extra-info {
-          margin-top: 8px;
+          margin-top: var(--ha-space-2);
           word-wrap: break-word;
         }
         .manuf,

@@ -597,10 +597,15 @@ export class HaChartBase extends LitElement {
       aria: { show: true },
       dataZoom: this._getDataZoomConfig(),
       toolbox: {
-        top: Infinity,
-        left: Infinity,
+        top: Number.MAX_SAFE_INTEGER,
+        left: Number.MAX_SAFE_INTEGER,
         feature: {
-          dataZoom: { show: true, yAxisIndex: false, filterMode: "none" },
+          dataZoom: {
+            show: true,
+            yAxisIndex: false,
+            filterMode: "none",
+            showTitle: false,
+          },
         },
         iconStyle: { opacity: 0 },
       },

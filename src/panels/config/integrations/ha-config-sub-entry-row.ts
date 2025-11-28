@@ -145,13 +145,16 @@ class HaConfigSubEntryRow extends LitElement {
                 </ha-md-menu-item>
               `
             : nothing}
-          <ha-md-menu-item @click=${this._handleRenameSub}>
+          <ha-md-menu-item .clickAction=${this._handleRenameSub}>
             <ha-svg-icon slot="start" .path=${mdiRenameBox}></ha-svg-icon>
             ${this.hass.localize(
               "ui.panel.config.integrations.config_entry.rename"
             )}
           </ha-md-menu-item>
-          <ha-md-menu-item class="warning" @click=${this._handleDeleteSub}>
+          <ha-md-menu-item
+            class="warning"
+            .clickAction=${this._handleDeleteSub}
+          >
             <ha-svg-icon
               slot="start"
               class="warning"
@@ -222,7 +225,7 @@ class HaConfigSubEntryRow extends LitElement {
     });
   }
 
-  private async _handleRenameSub(): Promise<void> {
+  private _handleRenameSub = async (): Promise<void> => {
     const newName = await showPromptDialog(this, {
       title: this.hass.localize("ui.common.rename"),
       defaultValue: this.subEntry.title,
@@ -239,9 +242,9 @@ class HaConfigSubEntryRow extends LitElement {
       this.subEntry.subentry_id,
       { title: newName }
     );
-  }
+  };
 
-  private async _handleDeleteSub(): Promise<void> {
+  private _handleDeleteSub = async (): Promise<void> => {
     const confirmed = await showConfirmationDialog(this, {
       title: this.hass.localize(
         "ui.panel.config.integrations.config_entry.delete_confirm_title",
@@ -263,7 +266,7 @@ class HaConfigSubEntryRow extends LitElement {
       this.entry.entry_id,
       this.subEntry.subentry_id
     );
-  }
+  };
 
   static styles = css`
     .expand-button {

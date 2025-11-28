@@ -60,6 +60,7 @@ import type {
 
 import { mdiHomeAssistant } from "../resources/home-assistant-logo-svg";
 import { getTriggerDomain, getTriggerObjectId } from "./trigger";
+import { getConditionDomain, getConditionObjectId } from "./condition";
 
 /** Icon to use when no icon specified for service. */
 export const DEFAULT_SERVICE_ICON = mdiRoomService;
@@ -138,15 +139,25 @@ const resources: {
     all?: Promise<Record<string, TriggerIcons>>;
     domains: Record<string, TriggerIcons | Promise<TriggerIcons>>;
   };
+  conditions: {
+    all?: Promise<Record<string, ConditionIcons>>;
+    domains: Record<string, ConditionIcons | Promise<ConditionIcons>>;
+  };
 } = {
   entity: {},
   entity_component: {},
   services: { domains: {} },
   triggers: { domains: {} },
+  conditions: { domains: {} },
 };
 
 interface IconResources<
-  T extends ComponentIcons | PlatformIcons | ServiceIcons | TriggerIcons,
+  T extends
+    | ComponentIcons
+    | PlatformIcons
+    | ServiceIcons
+    | TriggerIcons
+    | ConditionIcons,
 > {
   resources: Record<string, T>;
 }
@@ -195,17 +206,24 @@ type TriggerIcons = Record<
   { trigger: string; sections?: Record<string, string> }
 >;
 
+type ConditionIcons = Record<
+  string,
+  { condition: string; sections?: Record<string, string> }
+>;
+
 export type IconCategory =
   | "entity"
   | "entity_component"
   | "services"
-  | "triggers";
+  | "triggers"
+  | "conditions";
 
 interface CategoryType {
   entity: PlatformIcons;
   entity_component: ComponentIcons;
   services: ServiceIcons;
   triggers: TriggerIcons;
+  conditions: ConditionIcons;
 }
 
 export const getHassIcons = async <T extends IconCategory>(
@@ -326,6 +344,13 @@ export const getTriggerIcons = async (
   force = false
 ): Promise<TriggerIcons | Record<string, TriggerIcons> | undefined> =>
   getCategoryIcons(hass, "triggers", domain, force);
+
+export const getConditionIcons = async (
+  hass: HomeAssistant,
+  domain?: string,
+  force = false
+): Promise<ConditionIcons | Record<string, ConditionIcons> | undefined> =>
+  getCategoryIcons(hass, "conditions", domain, force);
 
 // Cache for sorted range keys
 const sortedRangeCache = new WeakMap<Record<string, string>, number[]>();
@@ -519,6 +544,25 @@ export const triggerIcon = async (
   if (triggerIcons) {
     const trgrIcon = triggerIcons[triggerName] as TriggerIcons[string];
     icon = trgrIcon?.trigger;
+  }
+  if (!icon) {
+    icon = await domainIcon(hass, domain);
+  }
+  return icon;
+};
+
+export const conditionIcon = async (
+  hass: HomeAssistant,
+  condition: string
+): Promise<string | undefined> => {
+  let icon: string | undefined;
+
+  const domain = getConditionDomain(condition);
+  const conditionIcons = await getConditionIcons(hass, domain);
+  if (conditionIcons) {
+    const conditionName = getConditionObjectId(condition);
+    const condIcon = conditionIcons[conditionName] as ConditionIcons[string];
+    icon = condIcon?.condition;
   }
   if (!icon) {
     icon = await domainIcon(hass, domain);

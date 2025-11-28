@@ -1,5 +1,6 @@
 import { ReactiveElement } from "lit";
 import { customElement } from "lit/decorators";
+import { getAreasFloorHierarchy } from "../../../common/areas/areas-floor-hierarchy";
 import {
   findEntities,
   generateEntityFilter,
@@ -10,12 +11,7 @@ import type { LovelaceCardConfig } from "../../../data/lovelace/config/card";
 import type { LovelaceSectionRawConfig } from "../../../data/lovelace/config/section";
 import type { LovelaceViewConfig } from "../../../data/lovelace/config/view";
 import type { HomeAssistant } from "../../../types";
-import {
-  computeAreaTileCardConfig,
-  getAreas,
-  getFloors,
-} from "../../lovelace/strategies/areas/helpers/areas-strategy-helper";
-import { getHomeStructure } from "../../lovelace/strategies/home/helpers/home-structure";
+import { computeAreaTileCardConfig } from "../../lovelace/strategies/areas/helpers/areas-strategy-helper";
 
 export interface SecurityViewStrategyConfig {
   type: "security";
@@ -127,9 +123,9 @@ export class SecurityViewStrategy extends ReactiveElement {
     _config: SecurityViewStrategyConfig,
     hass: HomeAssistant
   ): Promise<LovelaceViewConfig> {
-    const areas = getAreas(hass.areas);
-    const floors = getFloors(hass.floors);
-    const home = getHomeStructure(floors, areas);
+    const areas = Object.values(hass.areas);
+    const floors = Object.values(hass.floors);
+    const hierarchy = getAreasFloorHierarchy(floors, areas);
 
     const sections: LovelaceSectionRawConfig[] = [];
 
@@ -141,10 +137,11 @@ export class SecurityViewStrategy extends ReactiveElement {
 
     const entities = findEntities(allEntities, securityFilters);
 
-    const floorCount = home.floors.length + (home.areas.length ? 1 : 0);
+    const floorCount =
+      hierarchy.floors.length + (hierarchy.areas.length ? 1 : 0);
 
     // Process floors
-    for (const floorStructure of home.floors) {
+    for (const floorStructure of hierarchy.floors) {
       const floorId = floorStructure.id;
       const areaIds = floorStructure.areas;
       const floor = hass.floors[floorId];
@@ -173,7 +170,7 @@ export class SecurityViewStrategy extends ReactiveElement {
     }
 
     // Process unassigned areas
-    if (home.areas.length > 0) {
+    if (hierarchy.areas.length > 0) {
       const section: LovelaceSectionRawConfig = {
         type: "grid",
         column_span: 2,
@@ -188,7 +185,11 @@ export class SecurityViewStrategy extends ReactiveElement {
         ],
       };
 
-      const areaCards = processAreasForSecurity(home.areas, hass, entities);
+      const areaCards = processAreasForSecurity(
+        hierarchy.areas,
+        hass,
+        entities
+      );
 
       if (areaCards.length > 0) {
         section.cards!.push(...areaCards);

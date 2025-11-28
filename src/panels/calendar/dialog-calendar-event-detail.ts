@@ -80,10 +80,12 @@ class DialogCalendarEventDetail extends LitElement {
               ${this._data!.rrule
                 ? this._renderRRuleAsText(this._data.rrule)
                 : ""}
+              ${this._data.location
+                ? html`${this._data.location} <br />`
+                : nothing}
               ${this._data.description
                 ? html`<br />
-                    <div class="description">${this._data.description}</div>
-                    <br />`
+                    <div class="description">${this._data.description}</div>`
                 : nothing}
             </div>
           </div>
@@ -241,7 +243,7 @@ class DialogCalendarEventDetail extends LitElement {
       haStyleDialog,
       css`
         state-info {
-          line-height: 40px;
+          margin-top: 24px;
         }
         ha-svg-icon {
           width: 40px;

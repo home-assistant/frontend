@@ -1,5 +1,6 @@
 import { ReactiveElement } from "lit";
 import { customElement } from "lit/decorators";
+import { getAreasFloorHierarchy } from "../../../../common/areas/areas-floor-hierarchy";
 import { isComponentLoaded } from "../../../../common/config/is_component_loaded";
 import {
   findEntities,
@@ -22,13 +23,12 @@ import type {
   MarkdownCardConfig,
   WeatherForecastCardConfig,
 } from "../../cards/types";
-import { getAreas, getFloors } from "../areas/helpers/areas-strategy-helper";
 import type { CommonControlSectionStrategyConfig } from "../usage_prediction/common-controls-section-strategy";
-import { getHomeStructure } from "./helpers/home-structure";
 import { HOME_SUMMARIES_FILTERS } from "./helpers/home-summaries";
+import type { Condition } from "../../common/validate-condition";
 
-export interface HomeMainViewStrategyConfig {
-  type: "home-main";
+export interface HomeOverviewViewStrategyConfig {
+  type: "home-overview";
   favorite_entities?: string[];
 }
 
@@ -58,21 +58,25 @@ const computeAreaCard = (
   };
 };
 
-@customElement("home-main-view-strategy")
-export class HomeMainViewStrategy extends ReactiveElement {
+@customElement("home-overview-view-strategy")
+export class HomeOverviewViewStrategy extends ReactiveElement {
   static async generate(
-    config: HomeMainViewStrategyConfig,
+    config: HomeOverviewViewStrategyConfig,
     hass: HomeAssistant
   ): Promise<LovelaceViewConfig> {
-    const areas = getAreas(hass.areas);
-    const floors = getFloors(hass.floors);
+    const areas = Object.values(hass.areas);
+    const floors = Object.values(hass.floors);
 
-    const home = getHomeStructure(floors, areas);
+    const home = getAreasFloorHierarchy(floors, areas);
 
     const floorCount = home.floors.length + (home.areas.length ? 1 : 0);
 
-    // Allow between 2 and 3 columns (the max should be set to define the width of the header)
-    const maxColumns = 2;
+    const maxColumns = 3;
+
+    const largeScreenCondition: Condition = {
+      condition: "screen",
+      media_query: "(min-width: 871px)",
+    };
 
     const floorsSections: LovelaceSectionConfig[] = [];
     for (const floorStructure of home.floors) {
@@ -127,12 +131,6 @@ export class HomeMainViewStrategy extends ReactiveElement {
       });
     }
 
-    const favoriteSection: LovelaceSectionConfig = {
-      type: "grid",
-      column_span: maxColumns,
-      cards: [],
-    };
-
     const favoriteEntities = (config.favorite_entities || []).filter(
       (entityId) => hass.states[entityId] !== undefined
     );
@@ -177,74 +175,70 @@ export class HomeMainViewStrategy extends ReactiveElement {
         ({
           type: "home-summary",
           summary: "light",
-          vertical: true,
           tap_action: {
             action: "navigate",
             navigation_path: "/light?historyBack=1",
           },
           grid_options: {
-            rows: 2,
-            columns: 4,
+            columns: 12,
           },
         } satisfies HomeSummaryCard),
       hasClimate &&
         ({
           type: "home-summary",
           summary: "climate",
-          vertical: true,
           tap_action: {
             action: "navigate",
             navigation_path: "/climate?historyBack=1",
           },
           grid_options: {
-            rows: 2,
-            columns: 4,
+            columns: 12,
           },
         } satisfies HomeSummaryCard),
       hasSecurity &&
         ({
           type: "home-summary",
           summary: "security",
-          vertical: true,
           tap_action: {
             action: "navigate",
             navigation_path: "/security?historyBack=1",
           },
           grid_options: {
-            rows: 2,
-            columns: 4,
+            columns: 12,
           },
         } satisfies HomeSummaryCard),
       hasMediaPlayers &&
         ({
           type: "home-summary",
           summary: "media_players",
-          vertical: true,
           tap_action: {
             action: "navigate",
             navigation_path: "media-players",
           },
           grid_options: {
-            rows: 2,
-            columns: 4,
+            columns: 12,
           },
         } satisfies HomeSummaryCard),
     ].filter(Boolean) as LovelaceCardConfig[];
 
-    const summarySection: LovelaceSectionConfig = {
+    const forYouSection: LovelaceSectionConfig = {
       type: "grid",
-      column_span: maxColumns,
+      cards: [
+        {
+          type: "heading",
+          heading: hass.localize("ui.panel.lovelace.strategy.home.for_you"),
+          heading_style: "title",
+          visibility: [largeScreenCondition],
+        },
+      ],
+    };
+
+    const widgetSection: LovelaceSectionConfig = {
       cards: [],
     };
 
     if (summaryCards.length) {
-      summarySection.cards!.push(
-        {
-          type: "heading",
-          heading: hass.localize("ui.panel.lovelace.strategy.home.summaries"),
-        },
-        ...summaryCards
-      );
+      widgetSection.cards!.push(...summaryCards);
     }
 
     const weatherFilter = generateEntityFilter(hass, {
@@ -252,28 +246,16 @@ export class HomeMainViewStrategy extends ReactiveElement {
       entity_category: "none",
     });
 
-    const widgetSection: LovelaceSectionConfig = {
-      type: "grid",
-      column_span: maxColumns,
-      cards: [],
-    };
     const weatherEntity = Object.keys(hass.states)
       .filter(weatherFilter)
       .sort()[0];
 
     if (weatherEntity) {
-      widgetSection.cards!.push(
-        {
-          type: "heading",
-          heading: "",
-          heading_style: "subtitle",
-        },
-        {
-          type: "weather-forecast",
-          entity: weatherEntity,
-          forecast_type: "daily",
-        } as WeatherForecastCardConfig
-      );
+      widgetSection.cards!.push({
+        type: "weather-forecast",
+        entity: weatherEntity,
+        forecast_type: "daily",
+      } as WeatherForecastCardConfig);
     }
 
     const energyPrefs = isComponentLoaded(hass, "energy")
@@ -300,11 +282,19 @@ export class HomeMainViewStrategy extends ReactiveElement {
 
     const sections = (
       [
-        favoriteSection.cards && favoriteSection,
+        {
+          type: "grid",
+          cards: [
+            // Heading to add some spacing on large screens
+            {
+              type: "heading",
+              heading_style: "subtitle",
+              visibility: [largeScreenCondition],
+            },
+          ],
+        },
         commonControlsSection,
-        summarySection.cards && summarySection,
         ...floorsSections,
-        widgetSection.cards && widgetSection,
       ] satisfies (LovelaceSectionRawConfig | undefined)[]
     ).filter(Boolean) as LovelaceSectionRawConfig[];
 
@@ -320,12 +310,17 @@ export class HomeMainViewStrategy extends ReactiveElement {
           content: `## ${hass.localize("ui.panel.lovelace.strategy.home.welcome_user", { user: "{{ user }}" })}`,
         } satisfies MarkdownCardConfig,
       },
+      sidebar: {
+        sections: [forYouSection, widgetSection],
+        content_label: hass.localize("ui.panel.lovelace.strategy.home.home"),
+        sidebar_label: hass.localize("ui.panel.lovelace.strategy.home.for_you"),
+      },
     };
   }
 }
 
 declare global {
   interface HTMLElementTagNameMap {
-    "home-main-view-strategy": HomeMainViewStrategy;
+    "home-overview-view-strategy": HomeOverviewViewStrategy;
   }
 }

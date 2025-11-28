@@ -1,5 +1,6 @@
 import { ReactiveElement } from "lit";
 import { customElement } from "lit/decorators";
+import { getAreasFloorHierarchy } from "../../../common/areas/areas-floor-hierarchy";
 import {
   findEntities,
   generateEntityFilter,
@@ -10,12 +11,7 @@ import type { LovelaceCardConfig } from "../../../data/lovelace/config/card";
 import type { LovelaceSectionRawConfig } from "../../../data/lovelace/config/section";
 import type { LovelaceViewConfig } from "../../../data/lovelace/config/view";
 import type { HomeAssistant } from "../../../types";
-import {
-  computeAreaTileCardConfig,
-  getAreas,
-  getFloors,
-} from "../../lovelace/strategies/areas/helpers/areas-strategy-helper";
-import { getHomeStructure } from "../../lovelace/strategies/home/helpers/home-structure";
+import { computeAreaTileCardConfig } from "../../lovelace/strategies/areas/helpers/areas-strategy-helper";
 
 export interface LightViewStrategyConfig {
   type: "light";
@@ -85,9 +81,9 @@ export class LightViewStrategy extends ReactiveElement {
     _config: LightViewStrategyConfig,
     hass: HomeAssistant
   ): Promise<LovelaceViewConfig> {
-    const areas = getAreas(hass.areas);
-    const floors = getFloors(hass.floors);
-    const home = getHomeStructure(floors, areas);
+    const areas = Object.values(hass.areas);
+    const floors = Object.values(hass.floors);
+    const hierarchy = getAreasFloorHierarchy(floors, areas);
 
     const sections: LovelaceSectionRawConfig[] = [];
 
@@ -99,10 +95,11 @@ export class LightViewStrategy extends ReactiveElement {
 
     const entities = findEntities(allEntities, lightFilters);
 
-    const floorCount = home.floors.length + (home.areas.length ? 1 : 0);
+    const floorCount =
+      hierarchy.floors.length + (hierarchy.areas.length ? 1 : 0);
 
     // Process floors
-    for (const floorStructure of home.floors) {
+    for (const floorStructure of hierarchy.floors) {
       const floorId = floorStructure.id;
       const areaIds = floorStructure.areas;
       const floor = hass.floors[floorId];
@@ -131,7 +128,7 @@ export class LightViewStrategy extends ReactiveElement {
     }
 
     // Process unassigned areas
-    if (home.areas.length > 0) {
+    if (hierarchy.areas.length > 0) {
       const section: LovelaceSectionRawConfig = {
         type: "grid",
         column_span: 2,
@@ -146,7 +143,7 @@ export class LightViewStrategy extends ReactiveElement {
         ],
       };
 
-      const areaCards = processAreasForLight(home.areas, hass, entities);
+      const areaCards = processAreasForLight(hierarchy.areas, hass, entities);
 
       if (areaCards.length > 0) {
         section.cards!.push(...areaCards);
