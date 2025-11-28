@@ -1,6 +1,7 @@
 import type { CSSResultGroup } from "lit";
 import { css, LitElement, html, nothing } from "lit";
 import { customElement, property, state } from "lit/decorators";
+import { mdiContentSave } from "@mdi/js";
 import "../../../components/ha-yaml-editor";
 import "../../../components/ha-textfield";
 import "../../../components/ha-button";
@@ -87,6 +88,28 @@ class HaPanelDevBlueprints extends LitElement {
     this._dirty = true;
   }
 
+  private _onBlueprintInit(ev: CustomEvent<{ value: Blueprint }>) {
+    ev.stopPropagation();
+
+    if (!this._selectedBlueprint || "error" in this._selectedBlueprint) {
+      this._selectedBlueprint = ev.detail.value;
+    } else {
+      this._selectedBlueprint = {
+        ...this._selectedBlueprint,
+        ...ev.detail.value,
+        metadata: {
+          ...this._selectedBlueprint.metadata,
+          input: ev.detail.value.metadata.input,
+        },
+        blueprint: {
+          ...this._selectedBlueprint.metadata,
+          input: ev.detail.value.metadata.input,
+        },
+      };
+    }
+    this._dirty = false;
+  }
+
   private _onBlueprintMetadataChanged(
     ev: CustomEvent<{ value: BlueprintMetaDataEditorSchema }>
   ) {
@@ -154,13 +177,27 @@ class HaPanelDevBlueprints extends LitElement {
     this._selectedBlueprintDomain = domain;
     this._originalBlueprint = editorElement.defaultConfig;
     this._selectedBlueprint = editorElement.defaultConfig;
-    this._originalBlueprintPath = "new_blueprint";
-    this._selectedBlueprintPath = "new_blueprint";
+    this._originalBlueprintPath = "";
+    this._selectedBlueprintPath = "";
   }
 
-  private _pickBlueprint() {
+  private async _pickBlueprint() {
     if (!this._blueprints) {
       return;
+    }
+
+    if (this._dirty) {
+      const shouldContinue = await showConfirmationDialog(this, {
+        title: this.hass.localize(
+          "ui.panel.developer-tools.tabs.blueprints.editor.abandon_changes_title"
+        ),
+        text: this.hass.localize(
+          "ui.panel.developer-tools.tabs.blueprints.editor.abandon_changes_text"
+        ),
+      });
+      if (!shouldContinue) {
+        return;
+      }
     }
 
     showPickBlueprintDialog(this, {
@@ -213,7 +250,9 @@ class HaPanelDevBlueprints extends LitElement {
     this._dirty = false;
   }
 
-  private _resetBlueprint() {
+  private _resetBlueprint(e: Event) {
+    e.stopPropagation();
+
     if (!this._originalBlueprint) {
       return;
     }
@@ -257,16 +296,6 @@ class HaPanelDevBlueprints extends LitElement {
               "ui.panel.developer-tools.tabs.blueprints.editor.actions.pick"
             )}
           </ha-button>
-          <ha-button @click=${this._saveBlueprint} .disabled=${!this._dirty}>
-            ${this.hass.localize(
-              "ui.panel.developer-tools.tabs.blueprints.editor.actions.save"
-            )}
-          </ha-button>
-          <ha-button @click=${this._resetBlueprint} .disabled=${!this._dirty}>
-            ${this.hass.localize(
-              "ui.panel.developer-tools.tabs.blueprints.editor.actions.reset"
-            )}
-          </ha-button>
         </div>
         <ha-card>
           ${!this._selectedBlueprint
@@ -292,11 +321,14 @@ class HaPanelDevBlueprints extends LitElement {
                     .narrow=${this.narrow}
                     .isWide=${!this.narrow}
                     .blueprints=${blueprints}
-                    .blueprintPath=${this._originalBlueprintPath ?? ""}
+                    .blueprintPath=${this._originalBlueprintPath}
                     .domain=${this._selectedBlueprint.blueprint?.domain ??
                     this._selectedBlueprint.metadata.domain ??
                     ""}
+                    .dirty=${this._dirty}
                     @value-changed=${this._onBlueprintContentChanged}
+                    @value-init=${this._onBlueprintInit}
+                    @reset=${this._resetBlueprint}
                   >
                   </ha-blueprint-editor>
                 `}
@@ -310,6 +342,16 @@ class HaPanelDevBlueprints extends LitElement {
         >
         </ha-yaml-editor>
       </div>
+
+      <ha-fab
+        slot="fab"
+        .label=${this.hass.localize("ui.common.save")}
+        class=${this._dirty ? "dirty" : ""}
+        extended
+        @click=${this._saveBlueprint}
+      >
+        <ha-svg-icon slot="icon" .path=${mdiContentSave}></ha-svg-icon>
+      </ha-fab>
     `;
   }
 
@@ -330,6 +372,15 @@ class HaPanelDevBlueprints extends LitElement {
 
         .full-row {
           flex: 1 0 100%;
+        }
+        ha-fab {
+          position: fixed;
+          bottom: calc(-80px - var(--safe-area-inset-bottom));
+          right: calc(24px + var(--safe-area-inset-right));
+          transition: bottom 0.3s;
+        }
+        ha-fab.dirty {
+          bottom: calc(24px + var(--safe-area-inset-bottom));
         }
       `,
     ];

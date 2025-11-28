@@ -110,6 +110,7 @@ class DialogNewInput extends LitElement implements HassDialog {
           @value-changed=${this._valueChanged}
         ></ha-form>
         <ha-button
+          variant="neutral"
           @click=${this.closeDialog}
           dialogInitialFocus
           slot="secondaryAction"
@@ -133,8 +134,8 @@ class DialogNewInput extends LitElement implements HassDialog {
       css`
         ha-dialog {
           --mdc-dialog-max-width: 500px;
-        } 
-      `
+        }
+      `,
     ];
   }
 }

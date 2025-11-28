@@ -21,11 +21,24 @@ import {
 } from "../../../data/blueprint";
 import { PreventUnsavedMixin } from "../../../mixins/prevent-unsaved-mixin";
 import { KeyboardShortcutMixin } from "../../../mixins/keyboard-shortcut-mixin";
-import { showAlertDialog } from "../../../dialogs/generic/show-dialog-box";
+import {
+  showAlertDialog,
+  showConfirmationDialog,
+} from "../../../dialogs/generic/show-dialog-box";
 import { documentationUrl } from "../../../util/documentation-url";
 import "./input/ha-blueprint-input";
 import { haStyle } from "../../../resources/styles";
 import { fireEvent } from "../../../common/dom/fire_event";
+
+import "../../../components/ha-button";
+
+declare global {
+  // for fire event
+  interface HASSDomEvents {
+    "value-init": { value: unknown };
+    "reset": {};
+  }
+}
 
 export abstract class HaBlueprintGenericEditor extends PreventUnsavedMixin(
   KeyboardShortcutMixin(LitElement)
@@ -44,6 +57,8 @@ export abstract class HaBlueprintGenericEditor extends PreventUnsavedMixin(
   >;
 
   @property({ attribute: "blueprint-path" }) public blueprintPath!: string;
+
+  @property({ attribute: false }) public dirty!: boolean;
 
   @state() protected _readOnly = false;
 
@@ -74,6 +89,10 @@ export abstract class HaBlueprintGenericEditor extends PreventUnsavedMixin(
 
   private async _loadBlueprint() {
     try {
+      if (!this._blueprintPath) {
+        return;
+      }
+
       const blueprintGetResult = await getBlueprint(
         this.hass,
         this._domain,
@@ -85,7 +104,7 @@ export abstract class HaBlueprintGenericEditor extends PreventUnsavedMixin(
       this._readOnly = false;
       this._blueprint = this.normalizeBlueprint(blueprint);
       this._updateInputsInHass();
-      fireEvent(this, "value-changed", { value: this._blueprint });
+      fireEvent(this, "value-init", { value: this._blueprint });
     } catch (err: any) {
       await showAlertDialog(this, {
         text:
@@ -98,7 +117,6 @@ export abstract class HaBlueprintGenericEditor extends PreventUnsavedMixin(
                 { err_no: err.status_code }
               ),
       });
-      history.back();
     }
   }
 
@@ -121,6 +139,15 @@ export abstract class HaBlueprintGenericEditor extends PreventUnsavedMixin(
       },
     };
     fireEvent(this, "value-changed", { value: this._blueprint });
+  }
+
+  private async _resetBlueprint() {
+    const shouldReset = await showConfirmationDialog(this, {});
+    if (!shouldReset) {
+      return;
+    }
+
+    fireEvent(this, "reset");
   }
 
   protected updated(changedProps: PropertyValues) {
@@ -147,7 +174,7 @@ export abstract class HaBlueprintGenericEditor extends PreventUnsavedMixin(
       } as Blueprint;
       this._blueprintPath = undefined;
       this._readOnly = false;
-      fireEvent(this, "value-changed", { value: this._blueprint });
+      fireEvent(this, "value-init", { value: this._blueprint });
     }
 
     this._blueprintPath = this.blueprintPath;
@@ -198,6 +225,18 @@ export abstract class HaBlueprintGenericEditor extends PreventUnsavedMixin(
         ></ha-blueprint-input>
 
         ${this.renderEditor()}
+        
+        <div class="actions">
+          <ha-button 
+            appearance="plain"
+            @click=${this._resetBlueprint}
+            .disabled=${!this.dirty}
+          >
+            ${this.hass.localize(
+              "ui.panel.developer-tools.tabs.blueprints.editor.actions.reset"
+            )}
+          </ha-button>
+        </div>
       </div>
     `;
   }
@@ -246,14 +285,6 @@ export abstract class HaBlueprintGenericEditor extends PreventUnsavedMixin(
           margin-right: 8px;
           margin-inline-end: 8px;
           margin-inline-start: initial;
-        }
-        ha-fab {
-          position: relative;
-          bottom: calc(-80px - env(safe-area-inset-bottom));
-          transition: bottom 0.3s;
-        }
-        ha-fab.dirty {
-          bottom: 0;
         }
         li[role="separator"] {
           border-bottom-color: var(--divider-color);
@@ -318,6 +349,11 @@ export abstract class HaBlueprintGenericEditor extends PreventUnsavedMixin(
         manual-automation-editor,
         manual-script-editor {
           margin-top: -48px;
+        }
+        
+        .actions {
+          display: flex;
+          flex-direction: row-reverse;
         }
       `,
     ];

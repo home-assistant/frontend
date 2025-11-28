@@ -22,6 +22,8 @@ class HaBlueprintEditor extends LitElement {
 
   @property({ attribute: false }) public domain?: BlueprintDomain;
 
+  @property({ attribute: false }) public dirty!: boolean;
+
   protected render() {
     return html`
       ${dynamicElement(`ha-blueprint-${this.domain}-editor`, {
@@ -31,6 +33,7 @@ class HaBlueprintEditor extends LitElement {
         narrow: this.narrow,
         blueprints: this.blueprints,
         blueprintPath: this.blueprintPath,
+        dirty: this.dirty,
       })}
     `;
   }

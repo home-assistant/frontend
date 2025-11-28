@@ -14,7 +14,7 @@ export class HaBlueprintScriptEditor extends HaBlueprintGenericEditor {
 
   public static defaultConfig: Blueprint = {
     metadata: {
-      name: "New blueprint",
+      name: "",
       domain: "script",
       input: {},
     },

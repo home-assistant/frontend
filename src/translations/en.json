@@ -9214,7 +9214,6 @@
               "create_empty_script_description": "Start with an empty script blueprint from scratch"
             },
             "editor": {
-              "default_name": "New blueprint",
               "save": "Save",
               "rename": "Rename",
               "load_error_not_editable": "Only blueprints in blueprints.yaml are editable.",
@@ -9230,11 +9229,12 @@
               "none_selected": "Please pick a blueprint to edit it.",
               "overwrite_existing_title": "You are about to overwrite an existing blueprint",
               "overwrite_existing_text": "Reimporting this blueprint will cause your changes to be lost. Are you sure?",
+              "abandon_changes_title": "You have unsaved changes",
+              "abandon_changes_text": "Picking a new blueprint will cause your changes to be lost.",
               "actions": {
                 "delete": "Delete",
                 "duplicate": "Duplicate",
                 "pick": "Pick a blueprint",
-                "save": "Save",
                 "reset": "Reset"
               },
               "inputs": {
