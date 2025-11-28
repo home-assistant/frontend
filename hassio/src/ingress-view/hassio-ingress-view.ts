@@ -2,6 +2,7 @@ import { mdiMenu } from "@mdi/js";
 import type { PropertyValues, TemplateResult } from "lit";
 import { css, html, LitElement } from "lit";
 import { customElement, property, state } from "lit/decorators";
+import { ref } from "lit/directives/ref";
 import { fireEvent } from "../../../src/common/dom/fire_event";
 import { goBack, navigate } from "../../../src/common/navigate";
 import { extractSearchParam } from "../../../src/common/url/search-params";
@@ -42,12 +43,24 @@ class HassioIngressView extends LitElement {
 
   @state() private _loadingMessage?: string;
 
+  @state() private _hideToolbar = false;
+
   private _sessionKeepAlive?: number;
 
   private _fetchDataTimeout?: number;
 
+  private _iframe?: HTMLIFrameElement;
+
+  private _boundMessageHandler = this._handleMessage.bind(this);
+
+  public connectedCallback() {
+    super.connectedCallback();
+    window.addEventListener("message", this._boundMessageHandler);
+  }
+
   public disconnectedCallback() {
     super.disconnectedCallback();
+    window.removeEventListener("message", this._boundMessageHandler);
 
     if (this._sessionKeepAlive) {
       clearInterval(this._sessionKeepAlive);
@@ -59,6 +72,50 @@ class HassioIngressView extends LitElement {
     }
   }
 
+  private _handleMessage(event: MessageEvent) {
+    // Only accept messages from our iframe
+    if (!this._iframe || event.source !== this._iframe.contentWindow) {
+      return;
+    }
+
+    const { type, ...data } = event.data;
+
+    switch (type) {
+      case "hass-app/subscribe":
+        this._hideToolbar = data.hideToolbar ?? false;
+        this._sendPropertiesToIframe();
+        break;
+      case "hass-app/unsubscribe":
+        this._hideToolbar = false;
+        break;
+      case "hass-app/navigate":
+        navigate(data.path, data.options);
+        break;
+      case "hass-app/toggle-menu":
+        this._toggleMenu();
+        break;
+    }
+  }
+
+  private _sendPropertiesToIframe() {
+    if (!this._iframe?.contentWindow) {
+      return;
+    }
+
+    this._iframe.contentWindow.postMessage(
+      {
+        type: "hass-app/properties",
+        narrow: this.narrow,
+        route: this.route,
+      },
+      "*"
+    );
+  }
+
+  private _handleIframeRef = (el: Element | undefined) => {
+    this._iframe = el as HTMLIFrameElement;
+  };
+
   protected render(): TemplateResult {
     if (!this._addon) {
       return html`<hass-loading-screen
@@ -69,7 +126,9 @@ class HassioIngressView extends LitElement {
     const iframe = html`<iframe
       title=${this._addon.name}
       src=${this._addon.ingress_url!}
-      @load=${this._checkLoaded}
+      sandbox="allow-forms allow-modals allow-popups allow-popups-to-escape-sandbox allow-same-origin allow-scripts allow-top-navigation"
+      @load=${this._handleIframeLoad}
+      ${ref(this._handleIframeRef)}
     >
     </iframe>`;
 
@@ -83,7 +142,10 @@ class HassioIngressView extends LitElement {
       </hass-subpage>`;
     }
 
-    return html`${this.narrow || this.hass.dockedSidebar === "always_hidden"
+    // Only show header if narrow/sidebar hidden AND add-on hasn't opted to hide toolbar
+    return html`${(this.narrow ||
+      this.hass.dockedSidebar === "always_hidden") &&
+    !this._hideToolbar
       ? html`<div class="header">
             <ha-icon-button
               .label=${this.hass.localize("ui.sidebar.sidebar_toggle")}
@@ -148,6 +210,18 @@ class HassioIngressView extends LitElement {
     if (addon && addon !== oldAddon) {
       this._loadingMessage = undefined;
       this._fetchData(addon);
+    }
+  }
+
+  protected updated(changedProps: PropertyValues) {
+    super.updated(changedProps);
+
+    // Send property updates to iframe when narrow or route changes
+    if (
+      this._hideToolbar &&
+      (changedProps.has("narrow") || changedProps.has("route"))
+    ) {
+      this._sendPropertiesToIframe();
     }
   }
 
@@ -293,7 +367,7 @@ class HassioIngressView extends LitElement {
     this._addon = addon;
   }
 
-  private async _checkLoaded(ev): Promise<void> {
+  private async _handleIframeLoad(ev): Promise<void> {
     if (!this._addon) {
       return;
     }
