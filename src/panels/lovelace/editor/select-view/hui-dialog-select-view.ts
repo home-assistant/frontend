@@ -16,6 +16,7 @@ import { fetchConfig } from "../../../../data/lovelace/config/types";
 import { isStrategyView } from "../../../../data/lovelace/config/view";
 import type { LovelaceDashboard } from "../../../../data/lovelace/dashboard";
 import { fetchDashboards } from "../../../../data/lovelace/dashboard";
+import { getDefaultPanelUrlPath } from "../../../../data/panel";
 import { haStyleDialog } from "../../../../resources/styles";
 import type { HomeAssistant } from "../../../../types";
 import type { SelectViewDialogParams } from "./show-select-view-dialog";
@@ -60,6 +61,9 @@ export class HuiDialogSelectView extends LitElement {
     if (!this._params) {
       return nothing;
     }
+
+    const defaultPanel = getDefaultPanelUrlPath(this.hass);
+
     return html`
       <ha-dialog
         open
@@ -76,7 +80,7 @@ export class HuiDialogSelectView extends LitElement {
                 "ui.panel.lovelace.editor.select_view.dashboard_label"
               )}
               .disabled=${!this._dashboards.length}
-              .value=${this._urlPath || this.hass.defaultPanel}
+              .value=${this._urlPath || defaultPanel}
               @selected=${this._dashboardChanged}
               @closed=${stopPropagation}
               fixedMenuPosition

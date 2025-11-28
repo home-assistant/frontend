@@ -55,6 +55,7 @@ export const coreStyles = css`
     --ha-shadow-spread-sm: 0;
     --ha-shadow-spread-md: 0;
     --ha-shadow-spread-lg: 0;
+
     --ha-animation-base-duration: 350ms;
   }
 

@@ -21,6 +21,7 @@ import { hasConfigChanged } from "../../common/has-changed";
 import { getCommonOptions, fillLineGaps } from "./common/energy-chart-options";
 import type { ECOption } from "../../../../resources/echarts/echarts";
 import { hex2rgb } from "../../../../common/color/convert-color";
+import type { CustomLegendOption } from "../../../../components/chart/ha-chart-base";
 
 @customElement("hui-power-sources-graph-card")
 export class HuiPowerSourcesGraphCard
@@ -32,6 +33,8 @@ export class HuiPowerSourcesGraphCard
   @state() private _config?: PowerSourcesGraphCardConfig;
 
   @state() private _chartData: LineSeriesOption[] = [];
+
+  @state() private _legendData?: CustomLegendOption["data"];
 
   @state() private _start = startOfToday();
 
@@ -91,7 +94,8 @@ export class HuiPowerSourcesGraphCard
               this.hass.locale,
               this.hass.config,
               this._compareStart,
-              this._compareEnd
+              this._compareEnd,
+              this._legendData
             )}
           ></ha-chart-base>
           ${!this._chartData.some((dataset) => dataset.data!.length)
@@ -115,9 +119,10 @@ export class HuiPowerSourcesGraphCard
       locale: FrontendLocaleData,
       config: HassConfig,
       compareStart?: Date,
-      compareEnd?: Date
-    ): ECOption =>
-      getCommonOptions(
+      compareEnd?: Date,
+      legendData?: CustomLegendOption["data"]
+    ): ECOption => ({
+      ...getCommonOptions(
         start,
         end,
         locale,
@@ -125,11 +130,18 @@ export class HuiPowerSourcesGraphCard
         "kW",
         compareStart,
         compareEnd
-      )
+      ),
+      legend: {
+        show: true,
+        type: "custom",
+        data: legendData,
+      },
+    })
   );
 
   private async _getStatistics(energyData: EnergyData): Promise<void> {
     const datasets: LineSeriesOption[] = [];
+    this._legendData = [];
 
     const statIds = {
       solar: {
@@ -238,6 +250,15 @@ export class HuiPowerSourcesGraphCard
             z: 4 - keyIndex, // draw in reverse order but above positive series
           });
         }
+        this._legendData!.push({
+          id: key,
+          secondaryIds: key !== "solar" ? [`${key}-negative`] : [],
+          name: statIds[key].name,
+          itemStyle: {
+            color: `rgba(${rgb[0]}, ${rgb[1]}, ${rgb[2]}, 0.75)`,
+            borderColor: colorHex,
+          },
+        });
       }
     });
 
@@ -268,10 +289,22 @@ export class HuiPowerSourcesGraphCard
       name: this.hass.localize(
         "ui.panel.lovelace.cards.energy.power_graph.usage"
       ),
-      color: computedStyles.getPropertyValue("--primary-color"),
-      lineStyle: { width: 2 },
+      color: computedStyles.getPropertyValue("--primary-text-color"),
+      lineStyle: {
+        type: [7, 2],
+        width: 1.5,
+      },
       data: usageData,
       z: 5,
+    });
+    this._legendData!.push({
+      id: "usage",
+      name: this.hass.localize(
+        "ui.panel.lovelace.cards.energy.power_graph.usage"
+      ),
+      itemStyle: {
+        color: computedStyles.getPropertyValue("--primary-text-color"),
+      },
     });
   }
 

@@ -101,7 +101,10 @@ export const deleteLabelRegistryEntry = (
   });
 
 export const getLabels = (
-  hass: HomeAssistant,
+  hassStates: HomeAssistant["states"],
+  hassAreas: HomeAssistant["areas"],
+  hassDevices: HomeAssistant["devices"],
+  hassEntities: HomeAssistant["entities"],
   labels?: LabelRegistryEntry[],
   includeDomains?: string[],
   excludeDomains?: string[],
@@ -115,8 +118,8 @@ export const getLabels = (
     return [];
   }
 
-  const devices = Object.values(hass.devices);
-  const entities = Object.values(hass.entities);
+  const devices = Object.values(hassDevices);
+  const entities = Object.values(hassEntities);
 
   let deviceEntityLookup: DeviceEntityDisplayLookup = {};
   let inputDevices: DeviceRegistryEntry[] | undefined;
@@ -170,7 +173,7 @@ export const getLabels = (
           return false;
         }
         return deviceEntityLookup[device.id].some((entity) => {
-          const stateObj = hass.states[entity.entity_id];
+          const stateObj = hassStates[entity.entity_id];
           if (!stateObj) {
             return false;
           }
@@ -181,8 +184,9 @@ export const getLabels = (
         });
       });
       inputEntities = inputEntities!.filter((entity) => {
-        const stateObj = hass.states[entity.entity_id];
+        const stateObj = hassStates[entity.entity_id];
         return (
+          stateObj &&
           stateObj.attributes.device_class &&
           includeDeviceClasses.includes(stateObj.attributes.device_class)
         );
@@ -200,7 +204,7 @@ export const getLabels = (
           return false;
         }
         return deviceEntityLookup[device.id].some((entity) => {
-          const stateObj = hass.states[entity.entity_id];
+          const stateObj = hassStates[entity.entity_id];
           if (!stateObj) {
             return false;
           }
@@ -208,7 +212,7 @@ export const getLabels = (
         });
       });
       inputEntities = inputEntities!.filter((entity) => {
-        const stateObj = hass.states[entity.entity_id];
+        const stateObj = hassStates[entity.entity_id];
         if (!stateObj) {
           return false;
         }
@@ -245,8 +249,8 @@ export const getLabels = (
 
   if (areaIds) {
     areaIds.forEach((areaId) => {
-      const area = hass.areas[areaId];
-      area.labels.forEach((label) => usedLabels.add(label));
+      const area = hassAreas[areaId];
+      area?.labels.forEach((label) => usedLabels.add(label));
     });
   }
 

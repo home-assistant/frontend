@@ -621,9 +621,9 @@ export class HaTabsSubpageDataTable extends KeyboardShortcutMixin(LitElement) {
     } else if (this._sortDirection === "asc") {
       this._sortDirection = "desc";
     } else {
-      this._sortDirection = null;
+      this._sortDirection = "asc";
     }
-    this._sortColumn = this._sortDirection === null ? undefined : columnId;
+    this._sortColumn = columnId;
 
     fireEvent(this, "sorting-changed", {
       column: columnId,

@@ -4,9 +4,12 @@ import { FallbackStorage } from "../../../test_helper/local-storage-fallback";
 
 let saveTokens;
 
+const HASS_URL = `${location.protocol}//${location.host}`;
+
 describe("token_storage.saveTokens", () => {
   beforeEach(() => {
     window.localStorage = new FallbackStorage();
+    vi.stubGlobal("__HASS_URL__", HASS_URL);
   });
 
   afterEach(() => {

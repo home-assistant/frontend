@@ -28,7 +28,6 @@ import type HaAutomationConditionEditor from "../action/ha-automation-action-edi
 import { getAutomationActionType } from "../action/ha-automation-action-row";
 import { getRepeatType } from "../action/types/ha-automation-action-repeat";
 import { overflowStyles, sidebarEditorStyles } from "../styles";
-import "../trigger/ha-automation-trigger-editor";
 import "./ha-automation-sidebar-card";
 
 @customElement("ha-automation-sidebar-action")
@@ -94,8 +93,12 @@ export default class HaAutomationSidebarAction extends LitElement {
         ".",
         2
       );
+
       title = `${domainToName(this.hass.localize, domain)}: ${
-        this.hass.localize(`component.${domain}.services.${service}.name`) ||
+        this.hass.localize(
+          `component.${domain}.services.${service}.name`,
+          this.hass.services[domain][service].description_placeholders
+        ) ||
         this.hass.services[domain][service]?.name ||
         title
       }`;

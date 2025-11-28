@@ -1,5 +1,6 @@
 import { mdiDragHorizontalVariant, mdiPlus } from "@mdi/js";
 import deepClone from "deep-clone-simple";
+import type { HassServiceTarget } from "home-assistant-js-websocket";
 import type { PropertyValues } from "lit";
 import { html, LitElement, nothing } from "lit";
 import { customElement, property, queryAll, state } from "lit/decorators";
@@ -14,11 +15,13 @@ import "../../../../components/ha-sortable";
 import "../../../../components/ha-svg-icon";
 import {
   ACTION_BUILDING_BLOCKS,
-  getService,
-  isService,
   VIRTUAL_ACTIONS,
 } from "../../../../data/action";
-import type { AutomationClipboard } from "../../../../data/automation";
+import {
+  getValueFromDynamic,
+  isDynamic,
+  type AutomationClipboard,
+} from "../../../../data/automation";
 import type { Action } from "../../../../data/script";
 import type { HomeAssistant } from "../../../../types";
 import {
@@ -211,16 +214,17 @@ export default class HaAutomationAction extends LitElement {
     });
   }
 
-  private _addAction = (action: string) => {
+  private _addAction = (action: string, target?: HassServiceTarget) => {
     let actions: Action[];
     if (action === PASTE_VALUE) {
       actions = this.actions.concat(deepClone(this._clipboard!.action));
     } else if (action in VIRTUAL_ACTIONS) {
       actions = this.actions.concat(VIRTUAL_ACTIONS[action]);
-    } else if (isService(action)) {
+    } else if (isDynamic(action)) {
       actions = this.actions.concat({
-        action: getService(action),
+        action: getValueFromDynamic(action),
         metadata: {},
+        target,
       });
     } else {
       const elClass = customElements.get(

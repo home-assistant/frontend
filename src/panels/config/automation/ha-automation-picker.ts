@@ -35,6 +35,8 @@ import type { HASSDomEvent } from "../../../common/dom/fire_event";
 import { fireEvent } from "../../../common/dom/fire_event";
 import { computeStateName } from "../../../common/entity/compute_state_name";
 import { navigate } from "../../../common/navigate";
+import { slugify } from "../../../common/string/slugify";
+import "../../../components/ha-tooltip";
 import type { LocalizeFunc } from "../../../common/translations/localize";
 import {
   hasRejectedItems,
@@ -299,7 +301,6 @@ class HaAutomationPicker extends SubscribeMixin(LitElement) {
         },
         area: {
           title: localize("ui.panel.config.automation.picker.headers.area"),
-          defaultHidden: true,
           groupable: true,
           filterable: true,
           sortable: true,
@@ -328,14 +329,19 @@ class HaAutomationPicker extends SubscribeMixin(LitElement) {
             const date = new Date(automation.last_triggered);
             const now = new Date();
             const dayDifference = differenceInDays(now, date);
+            const formattedTime = formatShortDateTimeWithConditionalYear(
+              date,
+              this.hass.locale,
+              this.hass.config
+            );
+            const elementId = "last-triggered-" + slugify(automation.entity_id);
             return html`
               ${dayDifference > 3
-                ? formatShortDateTimeWithConditionalYear(
-                    date,
-                    this.hass.locale,
-                    this.hass.config
-                  )
-                : relativeTime(date, locale)}
+                ? formattedTime
+                : html`
+                    <ha-tooltip for=${elementId}>${formattedTime}</ha-tooltip>
+                    <span id=${elementId}>${relativeTime(date, locale)}</span>
+                  `}
             `;
           },
         },
@@ -1161,6 +1167,9 @@ class HaAutomationPicker extends SubscribeMixin(LitElement) {
   private async _delete(automation) {
     try {
       await deleteAutomation(this.hass, automation.attributes.id);
+      this._selected = this._selected.filter(
+        (entityId) => entityId !== automation.entity_id
+      );
     } catch (err: any) {
       await showAlertDialog(this, {
         text:

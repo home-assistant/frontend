@@ -33,6 +33,8 @@ import type { HASSDomEvent } from "../../../common/dom/fire_event";
 import { fireEvent } from "../../../common/dom/fire_event";
 import { computeStateName } from "../../../common/entity/compute_state_name";
 import { navigate } from "../../../common/navigate";
+import { slugify } from "../../../common/string/slugify";
+import "../../../components/ha-tooltip";
 import type { LocalizeFunc } from "../../../common/translations/localize";
 import {
   hasRejectedItems,
@@ -281,7 +283,6 @@ class HaScriptPicker extends SubscribeMixin(LitElement) {
         },
         area: {
           title: localize("ui.panel.config.script.picker.headers.area"),
-          defaultHidden: true,
           groupable: true,
           filterable: true,
           sortable: true,
@@ -303,19 +304,27 @@ class HaScriptPicker extends SubscribeMixin(LitElement) {
           sortable: true,
           title: localize("ui.card.automation.last_triggered"),
           template: (script) => {
+            if (!script.last_triggered) {
+              return this.hass.localize("ui.components.relative_time.never");
+            }
             const date = new Date(script.last_triggered);
             const now = new Date();
             const dayDifference = differenceInDays(now, date);
+            const formattedTime = formatShortDateTimeWithConditionalYear(
+              date,
+              this.hass.locale,
+              this.hass.config
+            );
+            const elementId = "last-triggered-" + slugify(script.entity_id);
             return html`
-              ${script.last_triggered
-                ? dayDifference > 3
-                  ? formatShortDateTimeWithConditionalYear(
-                      date,
-                      this.hass.locale,
-                      this.hass.config
-                    )
-                  : relativeTime(date, this.hass.locale)
-                : this.hass.localize("ui.components.relative_time.never")}
+              ${dayDifference > 3
+                ? formattedTime
+                : html`
+                    <ha-tooltip for=${elementId}>${formattedTime}</ha-tooltip>
+                    <span id=${elementId}
+                      >${relativeTime(date, this.hass.locale)}</span
+                    >
+                  `}
             `;
           },
         },
@@ -1183,6 +1192,9 @@ ${rejected
       );
       if (entry) {
         await deleteScript(this.hass, entry.unique_id);
+        this._selected = this._selected.filter(
+          (entityId) => entityId !== script.entity_id
+        );
       }
     } catch (err: any) {
       await showAlertDialog(this, {
