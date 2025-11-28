@@ -284,13 +284,14 @@ export class HaAreaPicker extends LitElement {
         const { floor } = getAreaContext(area, this.hass.floors);
         const floorName = floor ? computeFloorName(floor) : undefined;
         const areaName = computeAreaName(area);
+        const level = floor?.level ?? "";
         return {
           id: area.area_id,
           primary: areaName || area.area_id,
           secondary: floorName,
           icon: area.icon || undefined,
           icon_path: area.icon ? undefined : mdiTextureBox,
-          sorting_label: areaName,
+          sorting_label: level !== "" ? level + "-" + areaName : areaName,
           search_labels: [
             areaName,
             floorName,
