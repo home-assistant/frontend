@@ -28,6 +28,10 @@ interface AppPanelConfig {
   addon?: string;
 }
 
+// Time to wait for app to start before we ask the user if we should try again
+const START_WAIT_TIME = 20000; // ms
+const RETRY_START_WAIT_TIME = 5000; // ms
+
 @customElement("ha-panel-app")
 class HaPanelApp extends LitElement {
   @property({ attribute: false }) public hass!: HomeAssistant;
@@ -45,6 +49,8 @@ class HaPanelApp extends LitElement {
   private _sessionKeepAlive?: number;
 
   private _fetchDataTimeout?: number;
+
+  private _autoRetryUntil?: number;
 
   public disconnectedCallback() {
     super.disconnectedCallback();
@@ -182,6 +188,8 @@ class HaPanelApp extends LitElement {
           this._loadingMessage = this.hass.localize(
             "ui.panel.app.app_starting"
           );
+          // Set auto-retry window for after starting the app
+          this._autoRetryUntil = Date.now() + START_WAIT_TIME;
           await startHassioAddon(this.hass, addonSlug);
           this._fetchData(addonSlug);
           return;
@@ -254,29 +262,46 @@ class HaPanelApp extends LitElement {
   }
 
   private async _checkLoaded(ev): Promise<void> {
-    if (!this._addon) {
+    if (
+      !this._addon ||
+      ev.target.contentDocument.body.textContent !== "502: Bad Gateway"
+    ) {
       return;
     }
-    if (ev.target.contentDocument.body.textContent === "502: Bad Gateway") {
-      await this.updateComplete;
-      showConfirmationDialog(this, {
-        text: this.hass.localize("ui.panel.app.error_app_not_ready"),
-        title: this._addon.name,
-        confirmText: this.hass.localize("ui.panel.app.retry"),
-        dismissText: this.hass.localize("ui.common.no"),
-        confirm: async () => {
-          const addon = this._addon;
-          this._addon = undefined;
-          await Promise.all([
-            this.updateComplete,
-            new Promise((resolve) => {
-              setTimeout(resolve, 500);
-            }),
-          ]);
-          this._addon = addon;
-        },
-      });
+
+    // Auto-retry if within the retry window
+    if (this._autoRetryUntil && Date.now() < this._autoRetryUntil) {
+      this._reloadIframe();
+      return;
     }
+
+    // Clear auto-retry window and show dialog
+    this._autoRetryUntil = undefined;
+
+    await this.updateComplete;
+    showConfirmationDialog(this, {
+      text: this.hass.localize("ui.panel.app.error_app_not_ready"),
+      title: this._addon.name,
+      confirmText: this.hass.localize("ui.panel.app.retry"),
+      dismissText: this.hass.localize("ui.common.no"),
+      confirm: () => {
+        // Set auto-retry window for a bit more time.
+        this._autoRetryUntil = Date.now() + RETRY_START_WAIT_TIME;
+        this._reloadIframe();
+      },
+    });
+  }
+
+  private async _reloadIframe(): Promise<void> {
+    const addon = this._addon;
+    this._addon = undefined;
+    await Promise.all([
+      this.updateComplete,
+      new Promise((resolve) => {
+        setTimeout(resolve, 1000);
+      }),
+    ]);
+    this._addon = addon;
   }
 
   private _toggleMenu(): void {
