@@ -4,6 +4,7 @@ import { property } from "lit/decorators";
 import memoizeOne from "memoize-one";
 import { navigate } from "../common/navigate";
 import type { Route } from "../types";
+import { computeRouteTail } from "../data/route";
 
 const extractPage = (path: string, defaultPage: string) => {
   if (path === "") {
@@ -56,18 +57,7 @@ export class HassRouterPage extends ReactiveElement {
 
   private _initialLoadDone = false;
 
-  private _computeTail = memoizeOne((route: Route) => {
-    const dividerPos = route.path.indexOf("/", 1);
-    return dividerPos === -1
-      ? {
-          prefix: route.prefix + route.path,
-          path: "",
-        }
-      : {
-          prefix: route.prefix + route.path.substr(0, dividerPos),
-          path: route.path.substr(dividerPos),
-        };
-  });
+  private _computeTail = memoizeOne(computeRouteTail);
 
   protected createRenderRoot() {
     return this;

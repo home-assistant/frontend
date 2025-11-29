@@ -1,6 +1,7 @@
 import { mdiMenu } from "@mdi/js";
 import type { PropertyValues, TemplateResult } from "lit";
-import { css, html, LitElement } from "lit";
+import { css, html, LitElement, nothing } from "lit";
+import { createRef, ref } from "lit/directives/ref";
 import { customElement, property, state } from "lit/decorators";
 import { fireEvent } from "../../common/dom/fire_event";
 import { navigate } from "../../common/navigate";
@@ -23,6 +24,7 @@ import {
 import "../../layouts/hass-loading-screen";
 import "../../layouts/hass-subpage";
 import type { HomeAssistant, PanelInfo, Route } from "../../types";
+import { computeRouteTail } from "../../data/route";
 
 interface AppPanelConfig {
   addon?: string;
@@ -46,14 +48,41 @@ class HaPanelApp extends LitElement {
 
   @state() private _loadingMessage?: string;
 
+  @state() private _hideToolbar = false;
+
   private _sessionKeepAlive?: number;
 
   private _fetchDataTimeout?: number;
 
   private _autoRetryUntil?: number;
 
+  private _iframeRef = createRef<HTMLIFrameElement>();
+
+  /**
+   * iFrames can subscribe to Home Assistant specific updates
+   */
+  private _iframeSubscribeUpdates = false;
+
+  protected updated(changedProps: PropertyValues) {
+    super.updated(changedProps);
+
+    // Send property updates to iframe when narrow or route changes
+    if (
+      this._iframeSubscribeUpdates &&
+      (changedProps.has("narrow") || changedProps.has("route"))
+    ) {
+      this._sendPropertiesToIframe();
+    }
+  }
+
+  public connectedCallback() {
+    super.connectedCallback();
+    window.addEventListener("message", this._handleIframeMessage);
+  }
+
   public disconnectedCallback() {
     super.disconnectedCallback();
+    window.removeEventListener("message", this._handleIframeMessage);
 
     if (this._sessionKeepAlive) {
       clearInterval(this._sessionKeepAlive);
@@ -72,26 +101,29 @@ class HaPanelApp extends LitElement {
       ></hass-loading-screen>`;
     }
 
-    const iframe = html`<iframe
-      title=${this._addon.name}
-      src=${this._addon.ingress_url!}
-      @load=${this._checkLoaded}
-    >
-    </iframe>`;
-
-    return this.narrow || this.hass.dockedSidebar === "always_hidden"
-      ? html`
-          <div class="header">
-            <ha-icon-button
-              .label=${this.hass.localize("ui.sidebar.sidebar_toggle")}
-              .path=${mdiMenu}
-              @click=${this._toggleMenu}
-            ></ha-icon-button>
-            <div class="main-title">${this._addon.name}</div>
-          </div>
-          ${iframe}
-        `
-      : iframe;
+    // Make sure this all is 1 template so hiding toolbar doesn't reload iframe
+    return html`
+      ${!this._hideToolbar &&
+      (this.narrow || this.hass.dockedSidebar === "always_hidden")
+        ? html`
+            <div class="header">
+              <ha-icon-button
+                .label=${this.hass.localize("ui.sidebar.sidebar_toggle")}
+                .path=${mdiMenu}
+                @click=${this._toggleMenu}
+              ></ha-icon-button>
+              <div class="main-title">${this._addon.name}</div>
+            </div>
+          `
+        : nothing}
+      <iframe
+        title=${this._addon.name}
+        src=${this._addon.ingress_url!}
+        @load=${this._checkLoaded}
+        ${ref(this._iframeRef)}
+      >
+      </iframe>
+    `;
   }
 
   protected willUpdate(changedProps: PropertyValues) {
@@ -310,6 +342,49 @@ class HaPanelApp extends LitElement {
 
   private _toggleMenu(): void {
     fireEvent(this, "hass-toggle-menu");
+  }
+
+  private _handleIframeMessage = (event: MessageEvent) => {
+    if (event.source !== this._iframeRef.value?.contentWindow) {
+      return;
+    }
+    const { type, ...data } = event.data;
+
+    switch (type) {
+      case "home-assistant/navigate":
+        navigate(data.path, data.options);
+        break;
+
+      case "home-assistant/toggle-menu":
+        this._toggleMenu();
+        break;
+
+      case "home-assistant/subscribe-properties":
+        this._iframeSubscribeUpdates = true;
+        this._hideToolbar = data.hideToolbar ?? false;
+        this._sendPropertiesToIframe();
+        break;
+
+      case "home-assistant/unsubscribe-properties":
+        this._iframeSubscribeUpdates = false;
+        this._hideToolbar = false;
+        break;
+    }
+  };
+
+  private _sendPropertiesToIframe() {
+    if (!this._iframeRef.value?.contentWindow) {
+      return;
+    }
+
+    this._iframeRef.value.contentWindow.postMessage(
+      {
+        type: "home-assistant/properties",
+        narrow: this.narrow,
+        route: computeRouteTail(this.route),
+      },
+      "*"
+    );
   }
 
   static styles = css`
