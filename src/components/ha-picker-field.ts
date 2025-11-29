@@ -103,8 +103,8 @@ export class HaPickerField extends LitElement {
           --md-list-item-two-line-container-height: 56px;
           --md-list-item-top-space: 0px;
           --md-list-item-bottom-space: 0px;
-          --md-list-item-leading-space: 8px;
-          --md-list-item-trailing-space: 8px;
+          --md-list-item-leading-space: var(--ha-space-4);
+          --md-list-item-trailing-space: var(--ha-space-2);
           --ha-md-list-item-gap: var(--ha-space-2);
           /* Remove the default focus ring */
           --md-focus-ring-width: 0px;
