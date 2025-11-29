@@ -21,7 +21,7 @@ export const computeLovelaceEntityName = (
   if (!config) {
     return stateObj ? computeStateName(stateObj) : "";
   }
-  if (typeof config === "string") {
+  if (typeof config === "string" || typeof config === "number") {
     return config;
   }
   if (stateObj) {
