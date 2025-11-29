@@ -127,7 +127,11 @@ class HaPanelApp extends LitElement {
     }
     // Fall back to route path (e.g., /app/core_configurator)
     if (route?.path) {
-      const slug = route.path.substring(1);
+      const dividerPos = route.path.indexOf("/", 1);
+      const slug =
+        dividerPos === -1
+          ? route.path.substring(1)
+          : route.path.substring(1, dividerPos);
       if (slug) {
         return slug;
       }
