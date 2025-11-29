@@ -73,6 +73,8 @@ export class HaLanguagePicker extends LitElement {
 
   @property({ type: Boolean }) public required = false;
 
+  @property() public helper?: string;
+
   @property({ attribute: "native-name", type: Boolean })
   public nativeName = false;
 
@@ -135,6 +137,7 @@ export class HaLanguagePicker extends LitElement {
         .value=${value}
         .valueRenderer=${this._valueRenderer}
         .disabled=${this.disabled}
+        .helper=${this.helper}
         .getItems=${this._getItems}
         @value-changed=${this._changed}
         hide-clear-icon
