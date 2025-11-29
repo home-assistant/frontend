@@ -58,6 +58,8 @@ export type PickerComboBoxSearchFn<T extends PickerComboBoxItem> = (
   allItems: T[]
 ) => T[];
 
+interface ScrollToCurrentItemEvent {}
+
 @customElement("ha-picker-combo-box")
 export class HaPickerComboBox extends LitElement {
   @property({ attribute: false }) public hass?: HomeAssistant;
@@ -142,7 +144,8 @@ export class HaPickerComboBox extends LitElement {
   private _search = "";
 
   protected firstUpdated() {
-    this._registerKeyboardShortcuts();
+    this._selectedItemIndex = -1;
+    fireEvent(this, "scroll-to-current-item");
   }
 
   public willUpdate() {
@@ -153,9 +156,49 @@ export class HaPickerComboBox extends LitElement {
     }
   }
 
+  private async _scrollToCurrentItem() {
+    if (this._value && this._items.length) {
+      let currentIndex = -1;
+      for (let i = 0; i < this._items.length; i++) {
+        if (this._value === this._keyFunction(this._items[i])) {
+          currentIndex = i;
+          break;
+        }
+      }
+
+      this._selectedItemIndex = currentIndex;
+
+      try {
+        await new Promise((resolve) => {
+          setTimeout(resolve, 300);
+        });
+        this._scrollToSelectedItem();
+      } catch (_err: any) {
+        await new Promise((resolve) => {
+          setTimeout(resolve, 300);
+        });
+        try {
+          this._scrollToSelectedItem();
+        } catch (_err_2: any) {
+          this._selectedItemIndex = -1;
+        }
+      }
+    }
+  }
+
+  connectedCallback() {
+    super.connectedCallback();
+    this._registerKeyboardShortcuts();
+    this.addEventListener("scroll-to-current-item", this._scrollToCurrentItem);
+  }
+
   disconnectedCallback() {
     super.disconnectedCallback();
     this._removeKeyboardShortcuts?.();
+    this.removeEventListener(
+      "scroll-to-current-item",
+      this._scrollToCurrentItem
+    );
   }
 
   protected render() {
@@ -739,5 +782,10 @@ export class HaPickerComboBox extends LitElement {
 declare global {
   interface HTMLElementTagNameMap {
     "ha-picker-combo-box": HaPickerComboBox;
+  }
+
+  // for fire event
+  interface HASSDomEvents {
+    "scroll-to-current-item": ScrollToCurrentItemEvent;
   }
 }
