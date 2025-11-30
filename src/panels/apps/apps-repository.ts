@@ -3,7 +3,6 @@ import type { CSSResultGroup, TemplateResult } from "lit";
 import { css, html, LitElement } from "lit";
 import { customElement, property } from "lit/decorators";
 import memoizeOne from "memoize-one";
-import { atLeastVersion } from "../../common/config/version";
 import { navigate } from "../../common/navigate";
 import { caseInsensitiveStringCompare } from "../../common/string/compare";
 import "../../components/ha-card";
@@ -82,8 +81,12 @@ export class AppsRepositoryEl extends LitElement {
                           )
                         : this.hass.localize("ui.panel.apps.state.installed")
                       : addon.available
-                        ? this.hass.localize("ui.panel.apps.state.not_installed")
-                        : this.hass.localize("ui.panel.apps.state.not_available")}
+                        ? this.hass.localize(
+                            "ui.panel.apps.state.not_installed"
+                          )
+                        : this.hass.localize(
+                            "ui.panel.apps.state.not_available"
+                          )}
                     .iconClass=${addon.installed
                       ? addon.update_available
                         ? "update"
@@ -91,11 +94,7 @@ export class AppsRepositoryEl extends LitElement {
                       : !addon.available
                         ? "not_available"
                         : ""}
-                    .iconImage=${atLeastVersion(
-                      this.hass.config.version,
-                      0,
-                      105
-                    ) && addon.icon
+                    .iconImage=${addon.icon
                       ? `/api/hassio/addons/${addon.slug}/icon`
                       : undefined}
                     .showTopbar=${addon.installed || !addon.available}

@@ -4,7 +4,6 @@ import type { PropertyValues, TemplateResult } from "lit";
 import { css, html, LitElement, nothing } from "lit";
 import { customElement, property, state } from "lit/decorators";
 import memoizeOne from "memoize-one";
-import { atLeastVersion } from "../../common/config/version";
 import { fireEvent } from "../../common/dom/fire_event";
 import { navigate } from "../../common/navigate";
 import { extractSearchParam } from "../../common/url/search-params";
@@ -99,8 +98,7 @@ export class AppsStore extends LitElement {
           <ha-list-item>
             ${this.hass.localize("ui.panel.apps.store.repositories")}
           </ha-list-item>
-          ${this.hass.userData?.showAdvanced &&
-          atLeastVersion(this.hass.config.version, 0, 117)
+          ${this.hass.userData?.showAdvanced
             ? html`<ha-list-item>
                 ${this.hass.localize("ui.panel.apps.store.registries")}
               </ha-list-item>`
