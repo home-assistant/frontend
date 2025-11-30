@@ -70,9 +70,7 @@ class HuiClimateHvacModesCardFeature
   }
 
   public static async getConfigElement(): Promise<LovelaceCardFeatureEditor> {
-    await import(
-      "../editor/config-elements/hui-climate-hvac-modes-card-feature-editor"
-    );
+    await import("../editor/config-elements/hui-climate-hvac-modes-card-feature-editor");
     return document.createElement("hui-climate-hvac-modes-card-feature-editor");
   }
 

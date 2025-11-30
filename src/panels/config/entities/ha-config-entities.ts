@@ -116,8 +116,10 @@ import { showAddIntegrationDialog } from "../integrations/show-add-integration-d
 import { showLabelDetailDialog } from "../labels/show-dialog-label-detail";
 import { slugify } from "../../../common/string/slugify";
 
-export interface StateEntity
-  extends Omit<EntityRegistryEntry, "id" | "unique_id"> {
+export interface StateEntity extends Omit<
+  EntityRegistryEntry,
+  "id" | "unique_id"
+> {
   readonly?: boolean;
   selectable?: boolean;
   id?: string;

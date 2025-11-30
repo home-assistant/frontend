@@ -128,9 +128,7 @@ class HuiLawnMowerCommandCardFeature
   }
 
   public static async getConfigElement(): Promise<LovelaceCardFeatureEditor> {
-    await import(
-      "../editor/config-elements/hui-lawn-mower-commands-card-feature-editor"
-    );
+    await import("../editor/config-elements/hui-lawn-mower-commands-card-feature-editor");
     return document.createElement(
       "hui-lawn-mower-commands-card-feature-editor"
     );

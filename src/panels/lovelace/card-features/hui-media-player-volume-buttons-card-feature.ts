@@ -60,9 +60,7 @@ class HuiMediaPlayerVolumeButtonsCardFeature
   }
 
   public static async getConfigElement(): Promise<LovelaceCardFeatureEditor> {
-    await import(
-      "../editor/config-elements/hui-media-player-volume-buttons-card-feature-editor"
-    );
+    await import("../editor/config-elements/hui-media-player-volume-buttons-card-feature-editor");
     return document.createElement(
       "hui-media-player-volume-buttons-card-feature-editor"
     );

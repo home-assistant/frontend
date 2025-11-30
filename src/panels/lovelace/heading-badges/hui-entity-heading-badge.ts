@@ -39,9 +39,7 @@ export class HuiEntityHeadingBadge
   implements LovelaceHeadingBadge
 {
   public static async getConfigElement(): Promise<LovelaceHeadingBadgeEditor> {
-    await import(
-      "../editor/heading-badge-editor/hui-entity-heading-badge-editor"
-    );
+    await import("../editor/heading-badge-editor/hui-entity-heading-badge-editor");
     return document.createElement("hui-heading-entity-editor");
   }
 

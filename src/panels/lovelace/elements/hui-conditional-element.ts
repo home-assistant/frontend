@@ -13,9 +13,7 @@ import type {
 
 class HuiConditionalElement extends HTMLElement implements LovelaceElement {
   public static async getConfigElement(): Promise<LovelacePictureElementEditor> {
-    await import(
-      "../editor/config-elements/elements/hui-conditional-element-editor"
-    );
+    await import("../editor/config-elements/elements/hui-conditional-element-editor");
     return document.createElement("hui-conditional-element-editor");
   }
 

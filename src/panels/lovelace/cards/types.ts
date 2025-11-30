@@ -183,8 +183,7 @@ export interface EnergyDevicesGraphCardConfig extends EnergyCardBaseConfig {
   modes?: ("bar" | "pie")[];
 }
 
-export interface EnergyDevicesDetailGraphCardConfig
-  extends EnergyCardBaseConfig {
+export interface EnergyDevicesDetailGraphCardConfig extends EnergyCardBaseConfig {
   type: "energy-devices-detail-graph";
   title?: string;
   max_devices?: number;
@@ -202,14 +201,12 @@ export interface EnergySolarGaugeCardConfig extends EnergyCardBaseConfig {
   title?: string;
 }
 
-export interface EnergySelfSufficiencyGaugeCardConfig
-  extends EnergyCardBaseConfig {
+export interface EnergySelfSufficiencyGaugeCardConfig extends EnergyCardBaseConfig {
   type: "energy-self-sufficiency-gauge";
   title?: string;
 }
 
-export interface EnergyGridNeutralityGaugeCardConfig
-  extends EnergyCardBaseConfig {
+export interface EnergyGridNeutralityGaugeCardConfig extends EnergyCardBaseConfig {
   type: "energy-grid-neutrality-gauge";
   title?: string;
 }

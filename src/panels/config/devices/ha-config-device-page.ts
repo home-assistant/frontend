@@ -1138,23 +1138,20 @@ export class HaConfigDevicePage extends LitElement {
     }
 
     if (domains.includes("mqtt")) {
-      const mqtt = await import(
-        "./device-detail/integration-elements/mqtt/device-actions"
-      );
+      const mqtt =
+        await import("./device-detail/integration-elements/mqtt/device-actions");
       const actions = mqtt.getMQTTDeviceActions(this, device);
       deviceActions.push(...actions);
     }
     if (domains.includes("zha")) {
-      const zha = await import(
-        "./device-detail/integration-elements/zha/device-actions"
-      );
+      const zha =
+        await import("./device-detail/integration-elements/zha/device-actions");
       const actions = await zha.getZHADeviceActions(this, this.hass, device);
       deviceActions.push(...actions);
     }
     if (domains.includes("zwave_js")) {
-      const zwave = await import(
-        "./device-detail/integration-elements/zwave_js/device-actions"
-      );
+      const zwave =
+        await import("./device-detail/integration-elements/zwave_js/device-actions");
       const actions = await zwave.getZwaveDeviceActions(
         this,
         this.hass,
@@ -1163,9 +1160,8 @@ export class HaConfigDevicePage extends LitElement {
       deviceActions.push(...actions);
     }
     if (domains.includes("esphome")) {
-      const esphome = await import(
-        "./device-detail/integration-elements/esphome/device-actions"
-      );
+      const esphome =
+        await import("./device-detail/integration-elements/esphome/device-actions");
       const actions = await esphome.getESPHomeDeviceActions(
         this,
         this.hass,
@@ -1174,9 +1170,8 @@ export class HaConfigDevicePage extends LitElement {
       deviceActions.push(...actions);
     }
     if (domains.includes("matter")) {
-      const matter = await import(
-        "./device-detail/integration-elements/matter/device-actions"
-      );
+      const matter =
+        await import("./device-detail/integration-elements/matter/device-actions");
       const defaultActions = matter.getMatterDeviceDefaultActions(
         this,
         this.hass,
@@ -1220,9 +1215,8 @@ export class HaConfigDevicePage extends LitElement {
     ).map((int) => int.domain);
 
     if (domains.includes("zwave_js")) {
-      const zwave = await import(
-        "./device-detail/integration-elements/zwave_js/device-alerts"
-      );
+      const zwave =
+        await import("./device-detail/integration-elements/zwave_js/device-alerts");
 
       const alerts = await zwave.getZwaveDeviceAlerts(this.hass, device);
       deviceAlerts.push(...alerts);
@@ -1304,9 +1298,7 @@ export class HaConfigDevicePage extends LitElement {
       `);
     }
     if (domains.includes("zwave_js")) {
-      import(
-        "./device-detail/integration-elements/zwave_js/ha-device-info-zwave_js"
-      );
+      import("./device-detail/integration-elements/zwave_js/ha-device-info-zwave_js");
       deviceInfo.push(html`
         <ha-device-info-zwave_js
           .hass=${this.hass}
@@ -1315,9 +1307,7 @@ export class HaConfigDevicePage extends LitElement {
       `);
     }
     if (domains.includes("matter")) {
-      import(
-        "./device-detail/integration-elements/matter/ha-device-info-matter"
-      );
+      import("./device-detail/integration-elements/matter/ha-device-info-matter");
       deviceInfo.push(html`
         <ha-device-info-matter
           .hass=${this.hass}

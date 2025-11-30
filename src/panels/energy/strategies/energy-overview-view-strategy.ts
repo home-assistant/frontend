@@ -11,9 +11,9 @@ import { DEFAULT_ENERGY_COLLECTION_KEY } from "../ha-panel-energy";
 const sourceHasCost = (source: Record<string, any>): boolean =>
   Boolean(
     source.stat_cost ||
-      source.stat_compensation ||
-      source.entity_energy_price ||
-      source.number_energy_price
+    source.stat_compensation ||
+    source.entity_energy_price ||
+    source.number_energy_price
   );
 
 @customElement("energy-overview-view-strategy")

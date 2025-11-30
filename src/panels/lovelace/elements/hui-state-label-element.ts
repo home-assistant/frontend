@@ -20,9 +20,7 @@ import type { LovelaceElement, StateLabelElementConfig } from "./types";
 @customElement("hui-state-label-element")
 class HuiStateLabelElement extends LitElement implements LovelaceElement {
   public static async getConfigElement(): Promise<LovelacePictureElementEditor> {
-    await import(
-      "../editor/config-elements/elements/hui-state-label-element-editor"
-    );
+    await import("../editor/config-elements/elements/hui-state-label-element-editor");
     return document.createElement("hui-state-label-element-editor");
   }
 
