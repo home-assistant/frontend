@@ -177,6 +177,7 @@ class DialogAutomationSave extends LitElement implements HassDialog {
             .hass=${this.hass}
             .scope=${this._params.domain}
             .value=${this._entryUpdates.category}
+            show-label
             @value-changed=${this._registryEntryChanged}
           ></ha-category-picker>`
         : nothing}
@@ -193,6 +194,7 @@ class DialogAutomationSave extends LitElement implements HassDialog {
             id="area"
             .hass=${this.hass}
             .value=${this._entryUpdates.area}
+            show-label
             @value-changed=${this._registryEntryChanged}
           ></ha-area-picker>`
         : nothing}
