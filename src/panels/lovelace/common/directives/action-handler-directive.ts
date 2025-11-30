@@ -45,6 +45,7 @@ class ActionHandler extends HTMLElement implements ActionHandlerType {
 
   private dblClickTimeout?: number;
 
+  // eslint-disable-next-line lit/lifecycle-super -- not a LitElement
   public connectedCallback() {
     Object.assign(this.style, {
       position: "fixed",
