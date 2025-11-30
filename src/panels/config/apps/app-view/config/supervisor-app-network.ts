@@ -101,7 +101,9 @@ class SupervisorAppNetwork extends LitElement {
             .disabled=${this.disabled}
             @click=${this._resetTapped}
           >
-            ${this.hass.localize("ui.common.reset_defaults")}
+            ${this.hass.localize(
+              "ui.panel.config.apps.configuration.network.reset_defaults"
+            )}
           </ha-progress-button>
           <ha-progress-button
             @click=${this._saveTapped}

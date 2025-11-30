@@ -2267,7 +2267,7 @@
             "secondary": "Generate backups of your Home Assistant configuration"
           },
           "supervisor": {
-            "main": "Add-ons",
+            "main": "Apps",
             "secondary": "Run extra applications next to Home Assistant"
           },
           "dashboards": {
@@ -2416,7 +2416,7 @@
           "installed": {
             "search": "Search apps",
             "no_apps": "You don't have any apps installed yet. Click here to browse available apps.",
-            "add_app": "Add app",
+            "add_app": "Install app",
             "app_stopped": "App is stopped",
             "app_update_available": "Update available",
             "app_running": "App is running"
@@ -2479,7 +2479,7 @@
             "protection_mode": {
               "title": "Protection mode disabled!",
               "content": "Protection mode on this app is disabled! This gives the app full access to the entire system, which is more risky for your system if the app is compromised. Only disable protection mode if you know what you are doing.",
-              "enable": "Enable protection mode"
+              "enable": "Enable"
             },
             "system_managed": {
               "title": "System managed",
@@ -2516,11 +2516,11 @@
               },
               "label": {
                 "rating": "Rating",
-                "host": "Host network",
-                "hardware": "Full hardware access",
-                "core": "Home Assistant Core",
-                "docker": "Docker access",
-                "host_pid": "Host PID namespace",
+                "host": "Host",
+                "hardware": "Hardware access",
+                "core": "Home Assistant",
+                "docker": "Docker",
+                "host_pid": "Host PID",
                 "apparmor": "AppArmor",
                 "auth": "Auth API",
                 "ingress": "Ingress",
@@ -2624,7 +2624,8 @@
             "network": {
               "header": "Network",
               "introduction": "Configure the network ports that this app uses.",
-              "show_disabled": "Show disabled ports"
+              "show_disabled": "Show disabled ports",
+              "reset_defaults": "Reset to defaults"
             },
             "audio": {
               "header": "Audio",
