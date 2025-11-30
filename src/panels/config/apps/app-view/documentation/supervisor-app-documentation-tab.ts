@@ -11,10 +11,10 @@ import { extractApiErrorMessage } from "../../../../../data/hassio/common";
 import "../../../../../layouts/hass-loading-screen";
 import { haStyle } from "../../../../../resources/styles";
 import type { HomeAssistant } from "../../../../../types";
-import { appsStyle } from "../../resources/apps-style";
+import { supervisorAppsStyle } from "../../resources/supervisor-apps-style";
 
-@customElement("app-documentation-tab")
-class AppDocumentationDashboard extends LitElement {
+@customElement("supervisor-app-documentation-tab")
+class SupervisorAppDocumentationDashboard extends LitElement {
   @property({ attribute: false }) public hass!: HomeAssistant;
 
   @property({ attribute: false }) public addon?: HassioAddonDetails;
@@ -54,7 +54,7 @@ class AppDocumentationDashboard extends LitElement {
   static get styles(): CSSResultGroup {
     return [
       haStyle,
-      appsStyle,
+      supervisorAppsStyle,
       css`
         ha-card {
           display: block;
@@ -89,6 +89,6 @@ class AppDocumentationDashboard extends LitElement {
 
 declare global {
   interface HTMLElementTagNameMap {
-    "app-documentation-tab": AppDocumentationDashboard;
+    "supervisor-app-documentation-tab": SupervisorAppDocumentationDashboard;
   }
 }

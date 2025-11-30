@@ -5,8 +5,8 @@ import { customElement, property } from "lit/decorators";
 import "../../../../components/ha-svg-icon";
 import type { HomeAssistant } from "../../../../types";
 
-@customElement("apps-card-content")
-class AppsCardContent extends LitElement {
+@customElement("supervisor-apps-card-content")
+class SupervisorAppsCardContent extends LitElement {
   @property({ attribute: false }) public hass!: HomeAssistant;
 
   // eslint-disable-next-line lit/no-native-attributes
@@ -146,6 +146,6 @@ class AppsCardContent extends LitElement {
 
 declare global {
   interface HTMLElementTagNameMap {
-    "apps-card-content": AppsCardContent;
+    "supervisor-apps-card-content": SupervisorAppsCardContent;
   }
 }

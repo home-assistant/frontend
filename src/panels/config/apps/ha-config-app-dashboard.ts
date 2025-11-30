@@ -20,7 +20,7 @@ import { haStyle } from "../../../resources/styles";
 import type { HomeAssistant, Route } from "../../../types";
 
 // Import app-view components
-import "./app-view/app-router";
+import "./app-view/supervisor-app-router";
 
 @customElement("ha-config-app-dashboard")
 class HaConfigAppDashboard extends LitElement {
@@ -122,14 +122,14 @@ class HaConfigAppDashboard extends LitElement {
         back-path="/config/apps"
       >
         <span slot="header">${this._addon.name}</span>
-        <app-router
+        <supervisor-app-router
           .route=${route}
           .narrow=${this.narrow}
           .hass=${this.hass}
           .addon=${this._addon}
           .controlEnabled=${this._controlEnabled}
           @system-managed-take-control=${this._enableControl}
-        ></app-router>
+        ></supervisor-app-router>
       </hass-tabs-subpage>
     `;
   }

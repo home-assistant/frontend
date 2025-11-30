@@ -76,11 +76,11 @@ import { mdiHomeAssistant } from "../../../../../resources/home-assistant-logo-s
 import { haStyle } from "../../../../../resources/styles";
 import type { HomeAssistant, Route } from "../../../../../types";
 import { bytesToString } from "../../../../../util/bytes-to-string";
-import "../../components/apps-card-content";
-import "../components/app-metric";
-import { extractChangelog } from "../util/app";
-import "./app-system-managed";
-import "../components/app-update-available-card";
+import "../../components/supervisor-apps-card-content";
+import "../components/supervisor-app-metric";
+import { extractChangelog } from "../util/supervisor-app";
+import "./supervisor-app-system-managed";
+import "../components/supervisor-app-update-available-card";
 
 const STAGE_ICON = {
   stable: mdiCheckCircle,
@@ -99,8 +99,8 @@ const RATING_ICON = {
   8: mdiNumeric8,
 };
 
-@customElement("app-info")
-class AppInfo extends LitElement {
+@customElement("supervisor-app-info")
+class SupervisorAppInfo extends LitElement {
   @property({ type: Boolean }) public narrow = false;
 
   @property({ attribute: false }) public route!: Route;
@@ -153,12 +153,12 @@ class AppInfo extends LitElement {
     return html`
       ${this.addon.update_available
         ? html`
-            <app-update-available-card
+            <supervisor-app-update-available-card
               .hass=${this.hass}
               .narrow=${this.narrow}
               .addon=${this.addon}
               @update-complete=${this._updateComplete}
-            ></app-update-available-card>
+            ></supervisor-app-update-available-card>
           `
         : nothing}
       ${"protected" in this.addon && !this.addon.protected
@@ -186,11 +186,11 @@ class AppInfo extends LitElement {
         : nothing}
       ${systemManaged
         ? html`
-            <app-system-managed
+            <supervisor-app-system-managed
               .hass=${this.hass}
               .narrow=${this.narrow}
               .hideButton=${this.controlEnabled}
-            ></app-system-managed>
+            ></supervisor-app-system-managed>
           `
         : nothing}
 
@@ -642,11 +642,11 @@ class AppInfo extends LitElement {
                     </ha-settings-row>
                     ${metrics.map(
                       (metric) => html`
-                        <app-metric
+                        <supervisor-app-metric
                           .description=${metric.description}
                           .value=${metric.value ?? 0}
                           .tooltip=${metric.tooltip}
-                        ></app-metric>
+                        ></supervisor-app-metric>
                       `
                     )}`
                 : nothing}
@@ -1437,7 +1437,7 @@ class AppInfo extends LitElement {
           text-decoration: none;
         }
 
-        app-update-available-card {
+        supervisor-app-update-available-card {
           padding-bottom: 16px;
         }
 
@@ -1455,6 +1455,6 @@ class AppInfo extends LitElement {
 }
 declare global {
   interface HTMLElementTagNameMap {
-    "app-info": AppInfo;
+    "supervisor-app-info": SupervisorAppInfo;
   }
 }

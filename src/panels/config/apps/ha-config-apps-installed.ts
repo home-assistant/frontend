@@ -29,7 +29,7 @@ import "../../../layouts/hass-error-screen";
 import "../../../layouts/hass-loading-screen";
 import "../../../layouts/hass-subpage";
 import type { HomeAssistant, Route } from "../../../types";
-import "./components/apps-card-content";
+import "./components/supervisor-apps-card-content";
 
 @customElement("ha-config-apps-installed")
 export class HaConfigAppsInstalled extends LitElement {
@@ -120,7 +120,7 @@ export class HaConfigAppsInstalled extends LitElement {
                       @click=${this._addonTapped}
                     >
                       <div class="card-content">
-                        <apps-card-content
+                        <supervisor-apps-card-content
                           .hass=${this.hass}
                           .title=${addon.name}
                           .description=${addon.description}
@@ -151,7 +151,7 @@ export class HaConfigAppsInstalled extends LitElement {
                           .iconImage=${addon.icon
                             ? `/api/hassio/addons/${addon.slug}/icon`
                             : undefined}
-                        ></apps-card-content>
+                        ></supervisor-apps-card-content>
                       </div>
                     </ha-card>
                   `

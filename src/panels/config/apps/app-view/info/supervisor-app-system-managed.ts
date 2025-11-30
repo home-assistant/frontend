@@ -6,8 +6,8 @@ import "../../../../../components/ha-alert";
 import "../../../../../components/ha-button";
 import type { HomeAssistant } from "../../../../../types";
 
-@customElement("app-system-managed")
-class AppSystemManaged extends LitElement {
+@customElement("supervisor-app-system-managed")
+class SupervisorAppSystemManaged extends LitElement {
   @property({ type: Boolean }) public narrow = false;
 
   @property({ attribute: false }) public hass!: HomeAssistant;
@@ -56,7 +56,7 @@ class AppSystemManaged extends LitElement {
 }
 declare global {
   interface HTMLElementTagNameMap {
-    "app-system-managed": AppSystemManaged;
+    "supervisor-app-system-managed": SupervisorAppSystemManaged;
   }
 
   interface HASSDomEvents {

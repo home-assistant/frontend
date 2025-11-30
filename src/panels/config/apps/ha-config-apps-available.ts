@@ -32,7 +32,7 @@ import type { HASSDomEvent } from "../../../common/dom/fire_event";
 import type { HomeAssistant, Route } from "../../../types";
 import { showRepositoriesDialog } from "./dialogs/repositories/show-dialog-repositories";
 import { showRegistriesDialog } from "./dialogs/registries/show-dialog-registries";
-import "./apps-repository";
+import "./supervisor-apps-repository";
 
 const sortRepos = (a: HassioAddonRepository, b: HassioAddonRepository) => {
   if (a.slug === "local") {
@@ -190,12 +190,12 @@ export class HaConfigAppsAvailable extends LitElement {
 
         return filteredAddons.length !== 0
           ? html`
-              <apps-repository
+              <supervisor-apps-repository
                 .hass=${this.hass}
                 .repo=${repo}
                 .addons=${filteredAddons}
                 .filter=${filter!}
-              ></apps-repository>
+              ></supervisor-apps-repository>
             `
           : nothing;
       })
@@ -292,7 +292,7 @@ export class HaConfigAppsAvailable extends LitElement {
       height: 100%;
       background-color: var(--primary-background-color);
     }
-    apps-repository {
+    supervisor-apps-repository {
       margin-top: 24px;
     }
     .search {

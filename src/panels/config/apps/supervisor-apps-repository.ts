@@ -9,12 +9,12 @@ import "../../../components/ha-card";
 import type { HassioAddonRepository } from "../../../data/hassio/addon";
 import type { StoreAddon } from "../../../data/supervisor/store";
 import type { HomeAssistant } from "../../../types";
-import "./components/apps-card-content";
-import { filterAndSort } from "./components/apps-filter";
-import { appsStyle } from "./resources/apps-style";
+import "./components/supervisor-apps-card-content";
+import { filterAndSort } from "./components/supervisor-apps-filter";
+import { supervisorAppsStyle } from "./resources/supervisor-apps-style";
 
-@customElement("apps-repository")
-export class AppsRepositoryEl extends LitElement {
+@customElement("supervisor-apps-repository")
+export class SupervisorAppsRepositoryEl extends LitElement {
   @property({ attribute: false }) public hass!: HomeAssistant;
 
   @property({ attribute: false }) public repo!: HassioAddonRepository;
@@ -69,7 +69,7 @@ export class AppsRepositoryEl extends LitElement {
                 @click=${this._addonTapped}
               >
                 <div class="card-content">
-                  <apps-card-content
+                  <supervisor-apps-card-content
                     .hass=${this.hass}
                     .title=${addon.name}
                     .description=${addon.description}
@@ -110,7 +110,7 @@ export class AppsRepositoryEl extends LitElement {
                       : !addon.available
                         ? "unavailable"
                         : ""}
-                  ></apps-card-content>
+                  ></supervisor-apps-card-content>
                 </div>
               </ha-card>
             `
@@ -126,7 +126,7 @@ export class AppsRepositoryEl extends LitElement {
 
   static get styles(): CSSResultGroup {
     return [
-      appsStyle,
+      supervisorAppsStyle,
       css`
         ha-card {
           cursor: pointer;
@@ -145,6 +145,6 @@ export class AppsRepositoryEl extends LitElement {
 
 declare global {
   interface HTMLElementTagNameMap {
-    "apps-repository": AppsRepositoryEl;
+    "supervisor-apps-repository": SupervisorAppsRepositoryEl;
   }
 }

@@ -8,7 +8,7 @@ import {
 } from "../../../../../dialogs/generic/show-dialog-box";
 import type { HomeAssistant } from "../../../../../types";
 
-export const suggestAppRestart = async (
+export const suggestSupervisorAppRestart = async (
   element: LitElement,
   hass: HomeAssistant,
   addon: HassioAddonDetails

@@ -16,11 +16,11 @@ import type { HassioHardwareAudioDevice } from "../../../../../data/hassio/hardw
 import { fetchHassioHardwareAudio } from "../../../../../data/hassio/hardware";
 import { haStyle } from "../../../../../resources/styles";
 import type { HomeAssistant } from "../../../../../types";
-import { suggestAppRestart } from "../dialogs/suggestAppRestart";
-import { appsStyle } from "../../resources/apps-style";
+import { suggestSupervisorAppRestart } from "../dialogs/suggestSupervisorAppRestart";
+import { supervisorAppsStyle } from "../../resources/supervisor-apps-style";
 
-@customElement("app-audio")
-class AppAudio extends LitElement {
+@customElement("supervisor-app-audio")
+class SupervisorAppAudio extends LitElement {
   @property({ attribute: false }) public hass!: HomeAssistant;
 
   @property({ attribute: false }) public addon!: HassioAddonDetails;
@@ -105,7 +105,7 @@ class AppAudio extends LitElement {
   static get styles(): CSSResultGroup {
     return [
       haStyle,
-      appsStyle,
+      supervisorAppsStyle,
       css`
         :host,
         ha-card {
@@ -195,7 +195,7 @@ class AppAudio extends LitElement {
     try {
       await setHassioAddonOption(this.hass, this.addon.slug, data);
       if (this.addon?.state === "started") {
-        await suggestAppRestart(this, this.hass, this.addon);
+        await suggestSupervisorAppRestart(this, this.hass, this.addon);
       }
     } catch {
       this._error = "Failed to set addon audio device";
@@ -207,6 +207,6 @@ class AppAudio extends LitElement {
 
 declare global {
   interface HTMLElementTagNameMap {
-    "app-audio": AppAudio;
+    "supervisor-app-audio": SupervisorAppAudio;
   }
 }

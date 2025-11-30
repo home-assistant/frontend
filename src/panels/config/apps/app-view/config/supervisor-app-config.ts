@@ -33,8 +33,8 @@ import { extractApiErrorMessage } from "../../../../../data/hassio/common";
 import { showConfirmationDialog } from "../../../../../dialogs/generic/show-dialog-box";
 import { haStyle } from "../../../../../resources/styles";
 import type { HomeAssistant } from "../../../../../types";
-import { suggestAppRestart } from "../dialogs/suggestAppRestart";
-import { appsStyle } from "../../resources/apps-style";
+import { suggestSupervisorAppRestart } from "../dialogs/suggestSupervisorAppRestart";
+import { supervisorAppsStyle } from "../../resources/supervisor-apps-style";
 import type { ObjectSelector, Selector } from "../../../../../data/selector";
 
 const SUPPORTED_UI_TYPES = [
@@ -55,8 +55,8 @@ const ADDON_YAML_SCHEMA = DEFAULT_SCHEMA.extend([
 
 const MASKED_FIELDS = ["password", "secret", "token"];
 
-@customElement("app-config")
-class AppConfig extends LitElement {
+@customElement("supervisor-app-config")
+class SupervisorAppConfig extends LitElement {
   @property({ attribute: false }) public addon!: HassioAddonDetails;
 
   @property({ attribute: false }) public hass!: HomeAssistant;
@@ -443,7 +443,7 @@ class AppConfig extends LitElement {
 
       this._configHasChanged = false;
       if (this.addon?.state === "started") {
-        await suggestAppRestart(this, this.hass, this.addon);
+        await suggestSupervisorAppRestart(this, this.hass, this.addon);
       }
     } catch (err: any) {
       this._error = this.hass.localize(
@@ -461,7 +461,7 @@ class AppConfig extends LitElement {
   static get styles(): CSSResultGroup {
     return [
       haStyle,
-      appsStyle,
+      supervisorAppsStyle,
       css`
         :host {
           display: block;
@@ -511,6 +511,6 @@ class AppConfig extends LitElement {
 
 declare global {
   interface HTMLElementTagNameMap {
-    "app-config": AppConfig;
+    "supervisor-app-config": SupervisorAppConfig;
   }
 }

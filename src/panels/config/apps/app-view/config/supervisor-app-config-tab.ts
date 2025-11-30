@@ -5,14 +5,14 @@ import "../../../../../components/ha-spinner";
 import type { HassioAddonDetails } from "../../../../../data/hassio/addon";
 import { haStyle } from "../../../../../resources/styles";
 import type { HomeAssistant } from "../../../../../types";
-import { appsStyle } from "../../resources/apps-style";
-import "../info/app-system-managed";
-import "./app-audio";
-import "./app-config";
-import "./app-network";
+import { supervisorAppsStyle } from "../../resources/supervisor-apps-style";
+import "../info/supervisor-app-system-managed";
+import "./supervisor-app-audio";
+import "./supervisor-app-config";
+import "./supervisor-app-network";
 
-@customElement("app-config-tab")
-class AppConfigDashboard extends LitElement {
+@customElement("supervisor-app-config-tab")
+class SupervisorAppConfigDashboard extends LitElement {
   @property({ attribute: false }) public hass!: HomeAssistant;
 
   @property({ attribute: false }) public addon?: HassioAddonDetails;
@@ -35,43 +35,43 @@ class AppConfigDashboard extends LitElement {
         ${this.addon.system_managed &&
         (hasConfiguration || this.addon.network || this.addon.audio)
           ? html`
-              <app-system-managed
+              <supervisor-app-system-managed
                 .hass=${this.hass}
                 .narrow=${this.narrow}
                 .hideButton=${this.controlEnabled}
-              ></app-system-managed>
+              ></supervisor-app-system-managed>
             `
           : nothing}
         ${hasConfiguration || this.addon.network || this.addon.audio
           ? html`
               ${hasConfiguration
                 ? html`
-                    <app-config
+                    <supervisor-app-config
                       .hass=${this.hass}
                       .addon=${this.addon}
                       .disabled=${this.addon.system_managed &&
                       !this.controlEnabled}
-                    ></app-config>
+                    ></supervisor-app-config>
                   `
                 : nothing}
               ${this.addon.network
                 ? html`
-                    <app-network
+                    <supervisor-app-network
                       .hass=${this.hass}
                       .addon=${this.addon}
                       .disabled=${this.addon.system_managed &&
                       !this.controlEnabled}
-                    ></app-network>
+                    ></supervisor-app-network>
                   `
                 : nothing}
               ${this.addon.audio
                 ? html`
-                    <app-audio
+                    <supervisor-app-audio
                       .hass=${this.hass}
                       .addon=${this.addon}
                       .disabled=${this.addon.system_managed &&
                       !this.controlEnabled}
-                    ></app-audio>
+                    ></supervisor-app-audio>
                   `
                 : nothing}
             `
@@ -85,16 +85,16 @@ class AppConfigDashboard extends LitElement {
   static get styles(): CSSResultGroup {
     return [
       haStyle,
-      appsStyle,
+      supervisorAppsStyle,
       css`
         .content {
           margin: auto;
           padding: 8px;
           max-width: 1024px;
         }
-        app-network,
-        app-audio,
-        app-config {
+        supervisor-app-network,
+        supervisor-app-audio,
+        supervisor-app-config {
           margin-bottom: 24px;
         }
       `,
@@ -104,6 +104,6 @@ class AppConfigDashboard extends LitElement {
 
 declare global {
   interface HTMLElementTagNameMap {
-    "app-config-tab": AppConfigDashboard;
+    "supervisor-app-config-tab": SupervisorAppConfigDashboard;
   }
 }

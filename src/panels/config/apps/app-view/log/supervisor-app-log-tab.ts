@@ -10,13 +10,13 @@ import "../../../../../components/ha-spinner";
 import type { HassioAddonDetails } from "../../../../../data/hassio/addon";
 import { haStyle } from "../../../../../resources/styles";
 import type { HomeAssistant } from "../../../../../types";
-import { appsStyle } from "../../resources/apps-style";
+import { supervisorAppsStyle } from "../../resources/supervisor-apps-style";
 import "../../../logs/error-log-card";
 import "../../../../../components/search-input";
 import { extractSearchParam } from "../../../../../common/url/search-params";
 
-@customElement("app-log-tab")
-class AppLogDashboard extends LitElement {
+@customElement("supervisor-app-log-tab")
+class SupervisorAppLogDashboard extends LitElement {
   @property({ attribute: false }) public hass!: HomeAssistant;
 
   @property({ attribute: false }) public addon?: HassioAddonDetails;
@@ -55,7 +55,7 @@ class AppLogDashboard extends LitElement {
   static get styles(): CSSResultGroup {
     return [
       haStyle,
-      appsStyle,
+      supervisorAppsStyle,
       css`
         .content {
           margin: auto;
@@ -83,6 +83,6 @@ class AppLogDashboard extends LitElement {
 
 declare global {
   interface HTMLElementTagNameMap {
-    "app-log-tab": AppLogDashboard;
+    "supervisor-app-log-tab": SupervisorAppLogDashboard;
   }
 }

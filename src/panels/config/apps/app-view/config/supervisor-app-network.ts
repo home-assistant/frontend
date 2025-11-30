@@ -17,11 +17,11 @@ import { setHassioAddonOption } from "../../../../../data/hassio/addon";
 import { extractApiErrorMessage } from "../../../../../data/hassio/common";
 import { haStyle } from "../../../../../resources/styles";
 import type { HomeAssistant } from "../../../../../types";
-import { suggestAppRestart } from "../dialogs/suggestAppRestart";
-import { appsStyle } from "../../resources/apps-style";
+import { suggestSupervisorAppRestart } from "../dialogs/suggestSupervisorAppRestart";
+import { supervisorAppsStyle } from "../../resources/supervisor-apps-style";
 
-@customElement("app-network")
-class AppNetwork extends LitElement {
+@customElement("supervisor-app-network")
+class SupervisorAppNetwork extends LitElement {
   @property({ attribute: false }) public hass!: HomeAssistant;
 
   @property({ attribute: false }) public addon!: HassioAddonDetails;
@@ -181,7 +181,7 @@ class AppNetwork extends LitElement {
       button.actionSuccess();
       fireEvent(this, "hass-api-called", eventdata);
       if (this.addon?.state === "started") {
-        await suggestAppRestart(this, this.hass, this.addon);
+        await suggestSupervisorAppRestart(this, this.hass, this.addon);
       }
     } catch (err: any) {
       this._error = this.hass.localize(
@@ -226,7 +226,7 @@ class AppNetwork extends LitElement {
       button.actionSuccess();
       fireEvent(this, "hass-api-called", eventdata);
       if (this.addon?.state === "started") {
-        await suggestAppRestart(this, this.hass, this.addon);
+        await suggestSupervisorAppRestart(this, this.hass, this.addon);
       }
     } catch (err: any) {
       this._error = this.hass.localize(
@@ -242,7 +242,7 @@ class AppNetwork extends LitElement {
   static get styles(): CSSResultGroup {
     return [
       haStyle,
-      appsStyle,
+      supervisorAppsStyle,
       css`
         :host {
           display: block;
@@ -264,6 +264,6 @@ class AppNetwork extends LitElement {
 
 declare global {
   interface HTMLElementTagNameMap {
-    "app-network": AppNetwork;
+    "supervisor-app-network": SupervisorAppNetwork;
   }
 }

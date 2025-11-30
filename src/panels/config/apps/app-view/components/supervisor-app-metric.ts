@@ -6,8 +6,8 @@ import "../../../../../components/ha-bar";
 import "../../../../../components/ha-settings-row";
 import { roundWithOneDecimal } from "../../../../../util/calculate";
 
-@customElement("app-metric")
-class AppMetric extends LitElement {
+@customElement("supervisor-app-metric")
+class SupervisorAppMetric extends LitElement {
   @property({ type: Number }) public value!: number;
 
   @property({ type: String }) public description!: string;
@@ -70,6 +70,6 @@ class AppMetric extends LitElement {
 
 declare global {
   interface HTMLElementTagNameMap {
-    "app-metric": AppMetric;
+    "supervisor-app-metric": SupervisorAppMetric;
   }
 }

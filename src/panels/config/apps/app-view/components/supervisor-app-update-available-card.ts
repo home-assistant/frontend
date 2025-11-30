@@ -32,7 +32,7 @@ import {
 import type { StoreAddonDetails } from "../../../../../data/supervisor/store";
 import { haStyle } from "../../../../../resources/styles";
 import type { HomeAssistant } from "../../../../../types";
-import { extractChangelog } from "../util/app";
+import { extractChangelog } from "../util/supervisor-app";
 
 declare global {
   interface HASSDomEvents {
@@ -40,8 +40,8 @@ declare global {
   }
 }
 
-@customElement("app-update-available-card")
-class AppUpdateAvailableCard extends LitElement {
+@customElement("supervisor-app-update-available-card")
+class SupervisorAppUpdateAvailableCard extends LitElement {
   @property({ attribute: false }) public hass!: HomeAssistant;
 
   @property({ type: Boolean }) public narrow = false;
@@ -293,6 +293,6 @@ class AppUpdateAvailableCard extends LitElement {
 
 declare global {
   interface HTMLElementTagNameMap {
-    "app-update-available-card": AppUpdateAvailableCard;
+    "supervisor-app-update-available-card": SupervisorAppUpdateAvailableCard;
   }
 }

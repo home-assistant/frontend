@@ -4,14 +4,14 @@ import type { StoreAddonDetails } from "../../../../data/supervisor/store";
 import type { RouterOptions } from "../../../../layouts/hass-router-page";
 import { HassRouterPage } from "../../../../layouts/hass-router-page";
 import type { HomeAssistant } from "../../../../types";
-import "./config/app-config-tab";
-import "./documentation/app-documentation-tab";
+import "./config/supervisor-app-config-tab";
+import "./documentation/supervisor-app-documentation-tab";
 // Don't codesplit the others, because it breaks the UI when pushed to a Pi
-import "./info/app-info-tab";
-import "./log/app-log-tab";
+import "./info/supervisor-app-info-tab";
+import "./log/supervisor-app-log-tab";
 
-@customElement("app-router")
-class AppRouter extends HassRouterPage {
+@customElement("supervisor-app-router")
+class SupervisorAppRouter extends HassRouterPage {
   @property({ type: Boolean }) public narrow = false;
 
   @property({ attribute: false }) public hass!: HomeAssistant;
@@ -28,16 +28,16 @@ class AppRouter extends HassRouterPage {
     showLoading: true,
     routes: {
       info: {
-        tag: "app-info-tab",
+        tag: "supervisor-app-info-tab",
       },
       documentation: {
-        tag: "app-documentation-tab",
+        tag: "supervisor-app-documentation-tab",
       },
       config: {
-        tag: "app-config-tab",
+        tag: "supervisor-app-config-tab",
       },
       logs: {
-        tag: "app-log-tab",
+        tag: "supervisor-app-log-tab",
       },
     },
   };
@@ -53,6 +53,6 @@ class AppRouter extends HassRouterPage {
 
 declare global {
   interface HTMLElementTagNameMap {
-    "app-router": AppRouter;
+    "supervisor-app-router": SupervisorAppRouter;
   }
 }

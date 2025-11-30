@@ -5,11 +5,11 @@ import "../../../../../components/ha-spinner";
 import type { HassioAddonDetails } from "../../../../../data/hassio/addon";
 import { haStyle } from "../../../../../resources/styles";
 import type { HomeAssistant, Route } from "../../../../../types";
-import { appsStyle } from "../../resources/apps-style";
-import "./app-info";
+import { supervisorAppsStyle } from "../../resources/supervisor-apps-style";
+import "./supervisor-app-info";
 
-@customElement("app-info-tab")
-class AppInfoDashboard extends LitElement {
+@customElement("supervisor-app-info-tab")
+class SupervisorAppInfoDashboard extends LitElement {
   @property({ type: Boolean }) public narrow = false;
 
   @property({ attribute: false }) public route!: Route;
@@ -28,13 +28,13 @@ class AppInfoDashboard extends LitElement {
 
     return html`
       <div class="content">
-        <app-info
+        <supervisor-app-info
           .narrow=${this.narrow}
           .route=${this.route}
           .hass=${this.hass}
           .addon=${this.addon}
           .controlEnabled=${this.controlEnabled}
-        ></app-info>
+        ></supervisor-app-info>
       </div>
     `;
   }
@@ -42,7 +42,7 @@ class AppInfoDashboard extends LitElement {
   static get styles(): CSSResultGroup {
     return [
       haStyle,
-      appsStyle,
+      supervisorAppsStyle,
       css`
         .content {
           margin: auto;
@@ -56,6 +56,6 @@ class AppInfoDashboard extends LitElement {
 
 declare global {
   interface HTMLElementTagNameMap {
-    "app-info-tab": AppInfoDashboard;
+    "supervisor-app-info-tab": SupervisorAppInfoDashboard;
   }
 }

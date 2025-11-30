@@ -1,6 +1,6 @@
 import { css } from "lit";
 
-export const appsStyle = css`
+export const supervisorAppsStyle = css`
   .content {
     margin: 8px;
   }
