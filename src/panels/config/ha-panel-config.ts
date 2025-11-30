@@ -593,6 +593,10 @@ class HaPanelConfig extends SubscribeMixin(HassRouterPage) {
         tag: "ha-config-apps",
         load: () => import("./apps/ha-config-apps"),
       },
+      app: {
+        tag: "ha-config-app-dashboard",
+        load: () => import("./apps/ha-config-app-dashboard"),
+      },
     },
   };
 

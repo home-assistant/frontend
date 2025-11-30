@@ -3355,8 +3355,16 @@
           "caption": "Apps",
           "description": "Install and manage add-ons",
           "error_loading": "Error loading apps",
+          "installed": {
+            "search": "Search installed apps",
+            "no_addons": "No apps installed yet. Browse the app store to get started.",
+            "add_addon": "App store",
+            "addon_stopped": "Stopped",
+            "addon_running": "Running",
+            "addon_update_available": "Update available"
+          },
           "store": {
-            "title": "Apps",
+            "title": "App store",
             "check_updates": "Check for updates",
             "repositories": "Repositories",
             "registries": "Registries",
