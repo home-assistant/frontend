@@ -149,7 +149,9 @@ class AppsRegistriesDialog extends LitElement {
   }
 
   private _computeLabel = (schema: SchemaUnion<typeof SCHEMA>) =>
-    this.hass.localize(`ui.panel.apps.dialog.registries.${schema.name}` as any);
+    this.hass.localize(
+      `ui.panel.config.apps.dialog.registries.${schema.name}` as any
+    );
 
   private _valueChanged(ev: CustomEvent) {
     this._input = ev.detail.value;
