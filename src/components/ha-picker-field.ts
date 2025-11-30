@@ -36,6 +36,9 @@ export class HaPickerField extends LitElement {
   @property({ attribute: "hide-clear-icon", type: Boolean })
   public hideClearIcon = false;
 
+  @property({ attribute: "show-label", type: Boolean })
+  public showLabel = false;
+
   @property({ attribute: false })
   public valueRenderer?: PickerValueRenderer;
 
@@ -49,13 +52,16 @@ export class HaPickerField extends LitElement {
   protected render() {
     const showClearIcon =
       !!this.value && !this.required && !this.disabled && !this.hideClearIcon;
+    const placeholder = this.showLabel
+      ? html`<span slot="overline">${this.placeholder}</span>`
+      : "";
 
     return html`
       <ha-combo-box-item .disabled=${this.disabled} type="button" compact>
         ${this.value
           ? this.valueRenderer
-            ? this.valueRenderer(this.value)
-            : html`<slot name="headline">${this.value}</slot>`
+            ? html`${placeholder}${this.valueRenderer(this.value)}`
+            : html`${placeholder}<span slot="headline">${this.value}</span>`
           : html`
               <span slot="headline" class="placeholder">
                 ${this.placeholder}
