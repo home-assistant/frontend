@@ -68,7 +68,6 @@ export class HaConfigApps extends LitElement {
 
   public connectedCallback(): void {
     super.connectedCallback();
-    this._loadData();
     this.addEventListener(
       "apps-collection-refresh",
       this._handleCollectionRefresh as unknown as EventListener
@@ -85,6 +84,7 @@ export class HaConfigApps extends LitElement {
 
   protected firstUpdated(changedProps: PropertyValues) {
     super.firstUpdated(changedProps);
+    this._loadData();
     const repositoryUrl = extractSearchParam("repository_url");
     navigate("/config/apps", { replace: true });
     if (repositoryUrl) {

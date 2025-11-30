@@ -82,7 +82,7 @@ export const configSections: Record<string, PageNavigation[]> = {
       component: "zone",
     },
     {
-      path: "/hassio",
+      path: "/config/apps",
       translationKey: "supervisor",
       iconPath: mdiPuzzle,
       iconColor: "#F1C447",
