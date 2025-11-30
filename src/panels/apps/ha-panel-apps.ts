@@ -1,20 +1,15 @@
-import type { PropertyValues } from "lit";
 import { css, html, LitElement } from "lit";
 import { customElement, property, state } from "lit/decorators";
 import { isComponentLoaded } from "../../common/config/is_component_loaded";
-import { computeLocalize } from "../../common/translations/localize";
 import { fireEvent } from "../../common/dom/fire_event";
 import "../../layouts/hass-error-screen";
 import "../../layouts/hass-loading-screen";
+import type { HassioAddonsInfo } from "../../data/hassio/addon";
 import { fetchHassioAddonsInfo } from "../../data/hassio/addon";
+import type { SupervisorStore } from "../../data/supervisor/store";
 import { fetchSupervisorStore } from "../../data/supervisor/store";
-import type {
-  Supervisor,
-  SupervisorKeys,
-} from "../../data/supervisor/supervisor";
 import { showAlertDialog } from "../../dialogs/generic/show-dialog-box";
 import type { HomeAssistant, Route } from "../../types";
-import { getTranslation } from "../../util/common-translation";
 import "./apps-store";
 
 @customElement("ha-panel-apps")
@@ -25,26 +20,15 @@ class HaPanelApps extends LitElement {
 
   @property({ attribute: false }) public route!: Route;
 
-  @state() private _supervisor?: Partial<Supervisor>;
+  @state() private _store?: SupervisorStore;
+
+  @state() private _addon?: HassioAddonsInfo;
 
   @state() private _error?: string;
 
   public connectedCallback(): void {
     super.connectedCallback();
-    this._loadSupervisorData();
-  }
-
-  protected willUpdate(changedProperties: PropertyValues): void {
-    super.willUpdate(changedProperties);
-
-    if (
-      changedProperties.has("hass") &&
-      this._supervisor &&
-      this.hass.language !==
-        (changedProperties.get("hass") as HomeAssistant | undefined)?.language
-    ) {
-      this._initializeLocalize();
-    }
+    this._loadData();
   }
 
   protected render() {
@@ -66,7 +50,7 @@ class HaPanelApps extends LitElement {
       `;
     }
 
-    if (!this._supervisor?.store || !this._supervisor?.addon) {
+    if (!this._store || !this._addon) {
       return html`
         <hass-loading-screen
           .hass=${this.hass}
@@ -78,51 +62,30 @@ class HaPanelApps extends LitElement {
     return html`
       <apps-store
         .hass=${this.hass}
-        .supervisor=${this._supervisor as Supervisor}
+        .store=${this._store}
+        .addon=${this._addon}
         .narrow=${this.narrow}
         .route=${this.route}
       ></apps-store>
     `;
   }
 
-  private async _initializeLocalize() {
-    const { language, data } = await getTranslation(null, this.hass.language);
-
-    this._supervisor = {
-      ...this._supervisor,
-      localize: await computeLocalize<SupervisorKeys>(
-        this.constructor.prototype,
-        language,
-        {
-          [language]: data,
-        }
-      ),
-    };
-  }
-
-  private async _loadSupervisorData(): Promise<void> {
+  private async _loadData(): Promise<void> {
     try {
-      // Initialize localize function
-      await this._initializeLocalize();
-
-      // Fetch addon and store data
       const [addon, store] = await Promise.all([
         fetchHassioAddonsInfo(this.hass),
         fetchSupervisorStore(this.hass),
       ]);
 
-      this._supervisor = {
-        ...this._supervisor,
-        addon,
-        store,
-      };
+      this._addon = addon;
+      this._store = store;
 
       this.addEventListener(
-        "supervisor-collection-refresh",
+        "apps-collection-refresh",
         this._handleCollectionRefresh as unknown as EventListener
       );
     } catch (err: any) {
-      this._error = err.message || "Failed to load supervisor data";
+      this._error = err.message || "Failed to load apps data";
       showAlertDialog(this, {
         title: this.hass.localize("ui.panel.apps.error_loading"),
         text: this._error,
@@ -134,16 +97,14 @@ class HaPanelApps extends LitElement {
     const { collection } = ev.detail;
     try {
       if (collection === "addon") {
-        const addon = await fetchHassioAddonsInfo(this.hass);
-        this._supervisor = { ...this._supervisor, addon };
+        this._addon = await fetchHassioAddonsInfo(this.hass);
       } else if (collection === "store") {
-        const store = await fetchSupervisorStore(this.hass);
-        this._supervisor = { ...this._supervisor, store };
+        this._store = await fetchSupervisorStore(this.hass);
       }
     } catch (_err: any) {
       // Silently fail on refresh errors
     }
-    fireEvent(this, "supervisor-collection-refresh", { collection });
+    fireEvent(this, "apps-collection-refresh", { collection });
   };
 
   static styles = css`
@@ -156,6 +117,9 @@ class HaPanelApps extends LitElement {
 }
 
 declare global {
+  interface HASSDomEvents {
+    "apps-collection-refresh": { collection: "addon" | "store" };
+  }
   interface HTMLElementTagNameMap {
     "ha-panel-apps": HaPanelApps;
   }

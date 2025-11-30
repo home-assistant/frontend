@@ -8900,7 +8900,43 @@
       },
       "apps": {
         "not_available": "The apps panel requires the Supervisor. Please install Home Assistant OS or Supervised to use this feature.",
-        "error_loading": "Error loading apps"
+        "error_loading": "Error loading apps",
+        "store": {
+          "title": "Apps store",
+          "check_updates": "Check for updates",
+          "repositories": "Repositories",
+          "registries": "Registries",
+          "missing_apps": "Looking for apps? Enable advanced mode.",
+          "no_results_found": "No results found in {repository}"
+        },
+        "state": {
+          "installed": "Installed",
+          "not_installed": "Not installed",
+          "not_available": "Not available",
+          "update_available": "Update available"
+        },
+        "dialog": {
+          "repositories": {
+            "title": "Manage app repositories",
+            "add": "Add repository",
+            "remove": "Remove repository",
+            "used": "Repository in use",
+            "no_repositories": "No repositories"
+          },
+          "registries": {
+            "title_add": "Add registry",
+            "title_manage": "Manage registries",
+            "registry": "Registry",
+            "username": "Username",
+            "password": "Password",
+            "add_registry": "Add registry",
+            "add_new_registry": "Add new registry",
+            "remove": "Remove registry",
+            "no_registries": "No registries",
+            "failed_to_add": "Failed to add registry",
+            "failed_to_remove": "Failed to remove registry"
+          }
+        }
       },
       "page-authorize": {
         "initializing": "Initializing",

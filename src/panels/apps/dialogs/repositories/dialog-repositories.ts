@@ -17,6 +17,7 @@ import type { HaTextField } from "../../../../components/ha-textfield";
 import "../../../../components/ha-tooltip";
 import type {
   HassioAddonInfo,
+  HassioAddonsInfo,
   HassioAddonRepository,
 } from "../../../../data/hassio/addon";
 import { extractApiErrorMessage } from "../../../../data/hassio/common";
@@ -39,6 +40,8 @@ class AppsRepositoriesDialog extends LitElement {
 
   @state() private _dialogParams?: RepositoryDialogParams;
 
+  @state() private _addon?: HassioAddonsInfo;
+
   @state() private _opened = false;
 
   @state() private _processing = false;
@@ -47,6 +50,7 @@ class AppsRepositoriesDialog extends LitElement {
 
   public async showDialog(dialogParams: RepositoryDialogParams): Promise<void> {
     this._dialogParams = dialogParams;
+    this._addon = dialogParams.addon;
     this._opened = true;
     await this._loadData();
     await this.updateComplete;
@@ -83,13 +87,13 @@ class AppsRepositoriesDialog extends LitElement {
   );
 
   protected render() {
-    if (!this._dialogParams?.supervisor || this._repositories === undefined) {
+    if (!this._addon || this._repositories === undefined) {
       return nothing;
     }
     const repositories = this._filteredRepositories(this._repositories);
     const usedRepositories = this._filteredUsedRepositories(
       repositories,
-      this._dialogParams.supervisor.addon.addons
+      this._addon.addons
     );
     return html`
       <ha-dialog
@@ -99,7 +103,7 @@ class AppsRepositoriesDialog extends LitElement {
         escapeKeyAction
         .heading=${createCloseHeading(
           this.hass,
-          this._dialogParams!.supervisor.localize("dialog.repositories.title")
+          this.hass.localize("ui.panel.apps.dialog.repositories.title")
         )}
       >
         ${this._error
@@ -121,10 +125,10 @@ class AppsRepositoriesDialog extends LitElement {
                         class="delete"
                         slot="end"
                       >
-                        ${this._dialogParams!.supervisor.localize(
+                        ${this.hass.localize(
                           usedRepositories.includes(repo.slug)
-                            ? "dialog.repositories.used"
-                            : "dialog.repositories.remove"
+                            ? "ui.panel.apps.dialog.repositories.used"
+                            : "ui.panel.apps.dialog.repositories.remove"
                         )}
                       </ha-tooltip>
                       <div .id="icon-button-${repo.slug}">
@@ -142,8 +146,8 @@ class AppsRepositoriesDialog extends LitElement {
                   `
                 )
               : html`<ha-md-list-item
-                  >${this._dialogParams!.supervisor.localize(
-                    "dialog.repositories.no_repositories"
+                  >${this.hass.localize(
+                    "ui.panel.apps.dialog.repositories.no_repositories"
                   )}</ha-md-list-item
                 >`}
           </ha-md-list>
@@ -151,9 +155,9 @@ class AppsRepositoriesDialog extends LitElement {
             <ha-textfield
               class="flex-auto"
               id="repository_input"
-              .value=${this._dialogParams!.url || ""}
-              .label=${this._dialogParams!.supervisor.localize(
-                "dialog.repositories.add"
+              .value=${this._dialogParams?.url || ""}
+              .label=${this.hass.localize(
+                "ui.panel.apps.dialog.repositories.add"
               )}
               @keydown=${this._handleKeyAdd}
               dialogInitialFocus
@@ -165,14 +169,12 @@ class AppsRepositoriesDialog extends LitElement {
               size="small"
             >
               <ha-svg-icon slot="start" .path=${mdiPlus}></ha-svg-icon>
-              ${this._dialogParams!.supervisor.localize(
-                "dialog.repositories.add"
-              )}
+              ${this.hass.localize("ui.panel.apps.dialog.repositories.add")}
             </ha-button>
           </div>
         </div>
         <ha-button slot="primaryAction" @click=${this.closeDialog}>
-          ${this._dialogParams?.supervisor.localize("common.close")}
+          ${this.hass.localize("ui.common.close")}
         </ha-button>
       </ha-dialog>
     `;
@@ -230,7 +232,7 @@ class AppsRepositoriesDialog extends LitElement {
     try {
       this._repositories = await fetchStoreRepositories(this.hass);
 
-      fireEvent(this, "supervisor-collection-refresh", { collection: "addon" });
+      fireEvent(this, "apps-collection-refresh", { collection: "addon" });
     } catch (err: any) {
       this._error = extractApiErrorMessage(err);
     }
@@ -247,7 +249,7 @@ class AppsRepositoriesDialog extends LitElement {
       await addStoreRepository(this.hass, input.value);
       await this._loadData();
 
-      fireEvent(this, "supervisor-collection-refresh", { collection: "store" });
+      fireEvent(this, "apps-collection-refresh", { collection: "store" });
 
       input.value = "";
     } catch (err: any) {
@@ -262,7 +264,7 @@ class AppsRepositoriesDialog extends LitElement {
       await removeStoreRepository(this.hass, slug);
       await this._loadData();
 
-      fireEvent(this, "supervisor-collection-refresh", { collection: "store" });
+      fireEvent(this, "apps-collection-refresh", { collection: "store" });
     } catch (err: any) {
       this._error = extractApiErrorMessage(err);
     }

@@ -9,7 +9,6 @@ import { caseInsensitiveStringCompare } from "../../common/string/compare";
 import "../../components/ha-card";
 import type { HassioAddonRepository } from "../../data/hassio/addon";
 import type { StoreAddon } from "../../data/supervisor/store";
-import type { Supervisor } from "../../data/supervisor/supervisor";
 import type { HomeAssistant } from "../../types";
 import "./components/apps-card-content";
 import { filterAndSort } from "./components/apps-filter";
@@ -18,8 +17,6 @@ import { appsStyle } from "./resources/apps-style";
 @customElement("apps-repository")
 export class AppsRepositoryEl extends LitElement {
   @property({ attribute: false }) public hass!: HomeAssistant;
-
-  @property({ attribute: false }) public supervisor!: Supervisor;
 
   @property({ attribute: false }) public repo!: HassioAddonRepository;
 
@@ -50,7 +47,7 @@ export class AppsRepositoryEl extends LitElement {
       return html`
         <div class="content">
           <p class="description">
-            ${this.supervisor.localize("store.no_results_found", {
+            ${this.hass.localize("ui.panel.apps.store.no_results_found", {
               repository: repo.name,
             })}
           </p>
@@ -80,13 +77,13 @@ export class AppsRepositoryEl extends LitElement {
                       : mdiPuzzle}
                     .iconTitle=${addon.installed
                       ? addon.update_available
-                        ? this.supervisor.localize(
-                            "common.new_version_available"
+                        ? this.hass.localize(
+                            "ui.panel.apps.state.update_available"
                           )
-                        : this.supervisor.localize("addon.state.installed")
+                        : this.hass.localize("ui.panel.apps.state.installed")
                       : addon.available
-                        ? this.supervisor.localize("addon.state.not_installed")
-                        : this.supervisor.localize("addon.state.not_available")}
+                        ? this.hass.localize("ui.panel.apps.state.not_installed")
+                        : this.hass.localize("ui.panel.apps.state.not_available")}
                     .iconClass=${addon.installed
                       ? addon.update_available
                         ? "update"

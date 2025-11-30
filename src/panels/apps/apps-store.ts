@@ -12,11 +12,13 @@ import "../../components/ha-button-menu";
 import "../../components/ha-icon-button";
 import "../../components/ha-list-item";
 import "../../components/search-input";
-import type { HassioAddonRepository } from "../../data/hassio/addon";
+import type {
+  HassioAddonsInfo,
+  HassioAddonRepository,
+} from "../../data/hassio/addon";
 import { reloadHassioAddons } from "../../data/hassio/addon";
 import { extractApiErrorMessage } from "../../data/hassio/common";
-import type { StoreAddon } from "../../data/supervisor/store";
-import type { Supervisor } from "../../data/supervisor/supervisor";
+import type { StoreAddon, SupervisorStore } from "../../data/supervisor/store";
 import { showAlertDialog } from "../../dialogs/generic/show-dialog-box";
 import "../../layouts/hass-loading-screen";
 import "../../layouts/hass-subpage";
@@ -45,7 +47,9 @@ const sortRepos = (a: HassioAddonRepository, b: HassioAddonRepository) => {
 export class AppsStore extends LitElement {
   @property({ attribute: false }) public hass!: HomeAssistant;
 
-  @property({ attribute: false }) public supervisor!: Supervisor;
+  @property({ attribute: false }) public store!: SupervisorStore;
+
+  @property({ attribute: false }) public addon!: HassioAddonsInfo;
 
   @property({ type: Boolean }) public narrow = false;
 
@@ -68,10 +72,10 @@ export class AppsStore extends LitElement {
   protected render() {
     let repos: (TemplateResult | typeof nothing)[] = [];
 
-    if (this.supervisor.store.repositories) {
+    if (this.store.repositories) {
       repos = this.addonRepositories(
-        this.supervisor.store.repositories,
-        this.supervisor.store.addons,
+        this.store.repositories,
+        this.store.addons,
         this._filter
       );
     }
@@ -81,24 +85,24 @@ export class AppsStore extends LitElement {
         .hass=${this.hass}
         .narrow=${this.narrow}
         .route=${this.route}
-        .header=${this.supervisor.localize("panel.store")}
+        .header=${this.hass.localize("ui.panel.apps.store.title")}
       >
         <ha-button-menu slot="toolbar-icon" @action=${this._handleAction}>
           <ha-icon-button
-            .label=${this.supervisor.localize("common.menu")}
+            .label=${this.hass.localize("ui.common.menu")}
             .path=${mdiDotsVertical}
             slot="trigger"
           ></ha-icon-button>
           <ha-list-item>
-            ${this.supervisor.localize("store.check_updates")}
+            ${this.hass.localize("ui.panel.apps.store.check_updates")}
           </ha-list-item>
           <ha-list-item>
-            ${this.supervisor.localize("store.repositories")}
+            ${this.hass.localize("ui.panel.apps.store.repositories")}
           </ha-list-item>
           ${this.hass.userData?.showAdvanced &&
           atLeastVersion(this.hass.config.version, 0, 117)
             ? html`<ha-list-item>
-                ${this.supervisor.localize("store.registries")}
+                ${this.hass.localize("ui.panel.apps.store.registries")}
               </ha-list-item>`
             : ""}
         </ha-button-menu>
@@ -119,7 +123,7 @@ export class AppsStore extends LitElement {
           ? html`
               <div class="advanced">
                 <a href="/profile" target="_top">
-                  ${this.supervisor.localize("store.missing_addons")}
+                  ${this.hass.localize("ui.panel.apps.store.missing_apps")}
                 </a>
               </div>
             `
@@ -158,7 +162,6 @@ export class AppsStore extends LitElement {
                 .repo=${repo}
                 .addons=${filteredAddons}
                 .filter=${filter!}
-                .supervisor=${this.supervisor}
               ></apps-repository>
             `
           : nothing;
@@ -191,20 +194,18 @@ export class AppsStore extends LitElement {
 
   private _manageRepositories(url?: string) {
     showRepositoriesDialog(this, {
-      supervisor: this.supervisor,
+      addon: this.addon,
       url,
     });
   }
 
   private _manageRegistries() {
-    showRegistriesDialog(this, { supervisor: this.supervisor });
+    showRegistriesDialog(this);
   }
 
   private _loadData() {
-    fireEvent(this, "supervisor-collection-refresh", { collection: "addon" });
-    fireEvent(this, "supervisor-collection-refresh", {
-      collection: "supervisor",
-    });
+    fireEvent(this, "apps-collection-refresh", { collection: "addon" });
+    fireEvent(this, "apps-collection-refresh", { collection: "store" });
   }
 
   private _filterChanged(e) {
