@@ -3,12 +3,12 @@ import type { CSSResultGroup, TemplateResult } from "lit";
 import { css, html, LitElement } from "lit";
 import { customElement, property } from "lit/decorators";
 import memoizeOne from "memoize-one";
-import { navigate } from "../../common/navigate";
-import { caseInsensitiveStringCompare } from "../../common/string/compare";
-import "../../components/ha-card";
-import type { HassioAddonRepository } from "../../data/hassio/addon";
-import type { StoreAddon } from "../../data/supervisor/store";
-import type { HomeAssistant } from "../../types";
+import { navigate } from "../../../common/navigate";
+import { caseInsensitiveStringCompare } from "../../../common/string/compare";
+import "../../../components/ha-card";
+import type { HassioAddonRepository } from "../../../data/hassio/addon";
+import type { StoreAddon } from "../../../data/supervisor/store";
+import type { HomeAssistant } from "../../../types";
 import "./components/apps-card-content";
 import { filterAndSort } from "./components/apps-filter";
 import { appsStyle } from "./resources/apps-style";
@@ -46,9 +46,12 @@ export class AppsRepositoryEl extends LitElement {
       return html`
         <div class="content">
           <p class="description">
-            ${this.hass.localize("ui.panel.apps.store.no_results_found", {
-              repository: repo.name,
-            })}
+            ${this.hass.localize(
+              "ui.panel.config.apps.store.no_results_found",
+              {
+                repository: repo.name,
+              }
+            )}
           </p>
         </div>
       `;
@@ -77,15 +80,17 @@ export class AppsRepositoryEl extends LitElement {
                     .iconTitle=${addon.installed
                       ? addon.update_available
                         ? this.hass.localize(
-                            "ui.panel.apps.state.update_available"
-                          )
-                        : this.hass.localize("ui.panel.apps.state.installed")
-                      : addon.available
-                        ? this.hass.localize(
-                            "ui.panel.apps.state.not_installed"
+                            "ui.panel.config.apps.state.update_available"
                           )
                         : this.hass.localize(
-                            "ui.panel.apps.state.not_available"
+                            "ui.panel.config.apps.state.installed"
+                          )
+                      : addon.available
+                        ? this.hass.localize(
+                            "ui.panel.config.apps.state.not_installed"
+                          )
+                        : this.hass.localize(
+                            "ui.panel.config.apps.state.not_available"
                           )}
                     .iconClass=${addon.installed
                       ? addon.update_available

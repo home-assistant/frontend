@@ -3,31 +3,31 @@ import type { CSSResultGroup } from "lit";
 import { css, html, LitElement, nothing } from "lit";
 import { customElement, property, query, state } from "lit/decorators";
 import memoizeOne from "memoize-one";
-import { fireEvent } from "../../../../common/dom/fire_event";
-import { caseInsensitiveStringCompare } from "../../../../common/string/compare";
-import "../../../../components/ha-alert";
-import "../../../../components/ha-button";
-import { createCloseHeading } from "../../../../components/ha-dialog";
-import "../../../../components/ha-icon-button";
-import "../../../../components/ha-md-list";
-import "../../../../components/ha-md-list-item";
-import "../../../../components/ha-svg-icon";
-import "../../../../components/ha-textfield";
-import type { HaTextField } from "../../../../components/ha-textfield";
-import "../../../../components/ha-tooltip";
+import { fireEvent } from "../../../../../common/dom/fire_event";
+import { caseInsensitiveStringCompare } from "../../../../../common/string/compare";
+import "../../../../../components/ha-alert";
+import "../../../../../components/ha-button";
+import { createCloseHeading } from "../../../../../components/ha-dialog";
+import "../../../../../components/ha-icon-button";
+import "../../../../../components/ha-md-list";
+import "../../../../../components/ha-md-list-item";
+import "../../../../../components/ha-svg-icon";
+import "../../../../../components/ha-textfield";
+import type { HaTextField } from "../../../../../components/ha-textfield";
+import "../../../../../components/ha-tooltip";
 import type {
   HassioAddonInfo,
   HassioAddonsInfo,
   HassioAddonRepository,
-} from "../../../../data/hassio/addon";
-import { extractApiErrorMessage } from "../../../../data/hassio/common";
+} from "../../../../../data/hassio/addon";
+import { extractApiErrorMessage } from "../../../../../data/hassio/common";
 import {
   addStoreRepository,
   fetchStoreRepositories,
   removeStoreRepository,
-} from "../../../../data/supervisor/store";
-import { haStyle, haStyleDialog } from "../../../../resources/styles";
-import type { HomeAssistant } from "../../../../types";
+} from "../../../../../data/supervisor/store";
+import { haStyle, haStyleDialog } from "../../../../../resources/styles";
+import type { HomeAssistant } from "../../../../../types";
 import type { RepositoryDialogParams } from "./show-dialog-repositories";
 
 @customElement("dialog-apps-repositories")
@@ -103,7 +103,7 @@ class AppsRepositoriesDialog extends LitElement {
         escapeKeyAction
         .heading=${createCloseHeading(
           this.hass,
-          this.hass.localize("ui.panel.apps.dialog.repositories.title")
+          this.hass.localize("ui.panel.config.apps.dialog.repositories.title")
         )}
       >
         ${this._error
@@ -127,8 +127,8 @@ class AppsRepositoriesDialog extends LitElement {
                       >
                         ${this.hass.localize(
                           usedRepositories.includes(repo.slug)
-                            ? "ui.panel.apps.dialog.repositories.used"
-                            : "ui.panel.apps.dialog.repositories.remove"
+                            ? "ui.panel.config.apps.dialog.repositories.used"
+                            : "ui.panel.config.apps.dialog.repositories.remove"
                         )}
                       </ha-tooltip>
                       <div .id="icon-button-${repo.slug}">
@@ -147,7 +147,7 @@ class AppsRepositoriesDialog extends LitElement {
                 )
               : html`<ha-md-list-item
                   >${this.hass.localize(
-                    "ui.panel.apps.dialog.repositories.no_repositories"
+                    "ui.panel.config.apps.dialog.repositories.no_repositories"
                   )}</ha-md-list-item
                 >`}
           </ha-md-list>
@@ -157,7 +157,7 @@ class AppsRepositoriesDialog extends LitElement {
               id="repository_input"
               .value=${this._dialogParams?.url || ""}
               .label=${this.hass.localize(
-                "ui.panel.apps.dialog.repositories.add"
+                "ui.panel.config.apps.dialog.repositories.add"
               )}
               @keydown=${this._handleKeyAdd}
               dialogInitialFocus
@@ -169,7 +169,9 @@ class AppsRepositoriesDialog extends LitElement {
               size="small"
             >
               <ha-svg-icon slot="start" .path=${mdiPlus}></ha-svg-icon>
-              ${this.hass.localize("ui.panel.apps.dialog.repositories.add")}
+              ${this.hass.localize(
+                "ui.panel.config.apps.dialog.repositories.add"
+              )}
             </ha-button>
           </div>
         </div>

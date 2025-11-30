@@ -2,8 +2,8 @@ import { mdiHelpCircle } from "@mdi/js";
 import type { TemplateResult } from "lit";
 import { css, html, LitElement } from "lit";
 import { customElement, property } from "lit/decorators";
-import "../../../components/ha-svg-icon";
-import type { HomeAssistant } from "../../../types";
+import "../../../../components/ha-svg-icon";
+import type { HomeAssistant } from "../../../../types";
 
 @customElement("apps-card-content")
 class AppsCardContent extends LitElement {

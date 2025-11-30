@@ -356,6 +356,13 @@ export const configSections: Record<string, PageNavigation[]> = {
       iconColor: "#301A8E",
       component: ["hassio", "hardware"],
     },
+    {
+      path: "/config/apps",
+      translationKey: "apps",
+      iconPath: mdiPuzzle,
+      iconColor: "#F1C447",
+      component: "hassio",
+    },
   ],
   about: [
     {
@@ -588,6 +595,10 @@ class HaPanelConfig extends SubscribeMixin(HassRouterPage) {
         tag: "ha-config-application-credentials",
         load: () =>
           import("./application_credentials/ha-config-application-credentials"),
+      },
+      apps: {
+        tag: "ha-config-apps",
+        load: () => import("./apps/ha-config-apps"),
       },
     },
   };

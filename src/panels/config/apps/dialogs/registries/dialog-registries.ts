@@ -2,22 +2,22 @@ import { mdiDelete, mdiPlus } from "@mdi/js";
 import type { CSSResultGroup, TemplateResult } from "lit";
 import { css, html, LitElement } from "lit";
 import { customElement, property, state } from "lit/decorators";
-import "../../../../components/ha-button";
-import { createCloseHeading } from "../../../../components/ha-dialog";
-import "../../../../components/ha-form/ha-form";
-import type { SchemaUnion } from "../../../../components/ha-form/types";
-import "../../../../components/ha-icon-button";
-import "../../../../components/ha-settings-row";
-import "../../../../components/ha-svg-icon";
-import { extractApiErrorMessage } from "../../../../data/hassio/common";
+import "../../../../../components/ha-button";
+import { createCloseHeading } from "../../../../../components/ha-dialog";
+import "../../../../../components/ha-form/ha-form";
+import type { SchemaUnion } from "../../../../../components/ha-form/types";
+import "../../../../../components/ha-icon-button";
+import "../../../../../components/ha-settings-row";
+import "../../../../../components/ha-svg-icon";
+import { extractApiErrorMessage } from "../../../../../data/hassio/common";
 import {
   addHassioDockerRegistry,
   fetchHassioDockerRegistries,
   removeHassioDockerRegistry,
-} from "../../../../data/hassio/docker";
-import { showAlertDialog } from "../../../../dialogs/generic/show-dialog-box";
-import { haStyle, haStyleDialog } from "../../../../resources/styles";
-import type { HomeAssistant } from "../../../../types";
+} from "../../../../../data/hassio/docker";
+import { showAlertDialog } from "../../../../../dialogs/generic/show-dialog-box";
+import { haStyle, haStyleDialog } from "../../../../../resources/styles";
+import type { HomeAssistant } from "../../../../../types";
 
 const SCHEMA = [
   {
@@ -67,8 +67,12 @@ class AppsRegistriesDialog extends LitElement {
         .heading=${createCloseHeading(
           this.hass,
           this._addingRegistry
-            ? this.hass.localize("ui.panel.apps.dialog.registries.title_add")
-            : this.hass.localize("ui.panel.apps.dialog.registries.title_manage")
+            ? this.hass.localize(
+                "ui.panel.config.apps.dialog.registries.title_add"
+              )
+            : this.hass.localize(
+                "ui.panel.config.apps.dialog.registries.title_manage"
+              )
         )}
       >
         ${this._addingRegistry
@@ -93,7 +97,7 @@ class AppsRegistriesDialog extends LitElement {
                 >
                   <ha-svg-icon slot="start" .path=${mdiPlus}></ha-svg-icon>
                   ${this.hass.localize(
-                    "ui.panel.apps.dialog.registries.add_registry"
+                    "ui.panel.config.apps.dialog.registries.add_registry"
                   )}
                 </ha-button>
               </div>
@@ -105,14 +109,14 @@ class AppsRegistriesDialog extends LitElement {
                         <span slot="heading"> ${entry.registry} </span>
                         <span slot="description">
                           ${this.hass.localize(
-                            "ui.panel.apps.dialog.registries.username"
+                            "ui.panel.config.apps.dialog.registries.username"
                           )}:
                           ${entry.username}
                         </span>
                         <ha-icon-button
                           .entry=${entry}
                           .label=${this.hass.localize(
-                            "ui.panel.apps.dialog.registries.remove"
+                            "ui.panel.config.apps.dialog.registries.remove"
                           )}
                           .path=${mdiDelete}
                           @click=${this._removeRegistry}
@@ -123,7 +127,7 @@ class AppsRegistriesDialog extends LitElement {
                 : html`
                     <ha-alert>
                       ${this.hass.localize(
-                        "ui.panel.apps.dialog.registries.no_registries"
+                        "ui.panel.config.apps.dialog.registries.no_registries"
                       )}
                     </ha-alert>
                   `}
@@ -136,7 +140,7 @@ class AppsRegistriesDialog extends LitElement {
                 >
                   <ha-svg-icon slot="start" .path=${mdiPlus}></ha-svg-icon>
                   ${this.hass.localize(
-                    "ui.panel.apps.dialog.registries.add_new_registry"
+                    "ui.panel.config.apps.dialog.registries.add_new_registry"
                   )}
                 </ha-button>
               </div> `}
@@ -145,9 +149,7 @@ class AppsRegistriesDialog extends LitElement {
   }
 
   private _computeLabel = (schema: SchemaUnion<typeof SCHEMA>) =>
-    this.hass.localize(
-      `ui.panel.apps.dialog.registries.${schema.name}` as any
-    );
+    this.hass.localize(`ui.panel.apps.dialog.registries.${schema.name}` as any);
 
   private _valueChanged(ev: CustomEvent) {
     this._input = ev.detail.value;
@@ -201,7 +203,7 @@ class AppsRegistriesDialog extends LitElement {
     } catch (err: any) {
       showAlertDialog(this, {
         title: this.hass.localize(
-          "ui.panel.apps.dialog.registries.failed_to_add"
+          "ui.panel.config.apps.dialog.registries.failed_to_add"
         ),
         text: extractApiErrorMessage(err),
       });
@@ -217,7 +219,7 @@ class AppsRegistriesDialog extends LitElement {
     } catch (err: any) {
       showAlertDialog(this, {
         title: this.hass.localize(
-          "ui.panel.apps.dialog.registries.failed_to_remove"
+          "ui.panel.config.apps.dialog.registries.failed_to_remove"
         ),
         text: extractApiErrorMessage(err),
       });
