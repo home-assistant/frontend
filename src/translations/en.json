@@ -2449,6 +2449,197 @@
               "registry": "Registry",
               "password": "Password"
             }
+          },
+          "panel": {
+            "info": "Info",
+            "documentation": "Documentation",
+            "configuration": "Configuration",
+            "log": "Log"
+          },
+          "dashboard": {
+            "cpu_usage": "CPU usage",
+            "ram_usage": "RAM usage",
+            "app_running": "App is running",
+            "app_stopped": "App is stopped",
+            "current_version": "Current version: {version}",
+            "changelog": "Changelog",
+            "hostname": "Hostname",
+            "visit_addon_page": "Visit {name} page for more details.",
+            "start": "Start",
+            "stop": "Stop",
+            "restart": "Restart",
+            "rebuild": "Rebuild",
+            "uninstall": "Uninstall",
+            "install": "Install",
+            "open_web_ui": "Open Web UI",
+            "failed_to_save": "Failed to save: {error}",
+            "failed_to_reset": "Failed to reset: {error}",
+            "failed_to_restart": "Failed to restart {name}",
+            "protection_mode": {
+              "title": "Protection mode disabled!",
+              "content": "Protection mode on this app is disabled! This gives the app full access to the entire system, which is more risky for your system if the app is compromised. Only disable protection mode if you know what you are doing.",
+              "enable": "Enable protection mode"
+            },
+            "system_managed": {
+              "title": "System managed",
+              "description": "This app is managed by the system. Settings are automatically configured and changes may be overwritten.",
+              "take_control": "Take control",
+              "badge": "System managed"
+            },
+            "option": {
+              "boot": {
+                "title": "Start on boot",
+                "description": "Automatically start this app when Home Assistant starts."
+              },
+              "watchdog": {
+                "title": "Watchdog",
+                "description": "Automatically restart this app when it crashes."
+              },
+              "auto_update": {
+                "title": "Auto update",
+                "description": "Automatically update this app when a new version is available."
+              },
+              "ingress_panel": {
+                "title": "Show in sidebar",
+                "description": "Show a shortcut to this app in the sidebar."
+              },
+              "protected": {
+                "title": "Protection mode",
+                "description": "Prevent the app from getting full access to the system."
+              }
+            },
+            "capability": {
+              "stages": {
+                "experimental": "Experimental",
+                "deprecated": "Deprecated"
+              },
+              "label": {
+                "rating": "Rating",
+                "host": "Host network",
+                "hardware": "Full hardware access",
+                "core": "Home Assistant Core",
+                "docker": "Docker access",
+                "host_pid": "Host PID namespace",
+                "apparmor": "AppArmor",
+                "auth": "Auth API",
+                "ingress": "Ingress",
+                "signed": "Signed"
+              },
+              "role": {
+                "manager": "Supervisor manager",
+                "admin": "Supervisor admin"
+              },
+              "stage": {
+                "title": "App stage",
+                "description": "This app has a specific stage classification."
+              },
+              "rating": {
+                "title": "Security rating",
+                "description": "This shows the security rating of the app. Higher is better."
+              },
+              "host_network": {
+                "title": "Host network",
+                "description": "This app uses the host network stack."
+              },
+              "full_access": {
+                "title": "Full hardware access",
+                "description": "This app has full access to the hardware."
+              },
+              "homeassistant_api": {
+                "title": "Home Assistant API",
+                "description": "This app has access to the Home Assistant API."
+              },
+              "hassio_api": {
+                "title": "Supervisor API",
+                "description": "This app has access to the Supervisor API."
+              },
+              "docker_api": {
+                "title": "Docker API",
+                "description": "This app has access to the Docker API."
+              },
+              "host_pid": {
+                "title": "Host PID namespace",
+                "description": "This app has access to the host PID namespace."
+              },
+              "apparmor": {
+                "title": "AppArmor",
+                "description": "This shows the AppArmor status of the app."
+              },
+              "auth_api": {
+                "title": "Auth API",
+                "description": "This app has access to the Auth API."
+              },
+              "ingress": {
+                "title": "Ingress",
+                "description": "This app supports ingress for secure access."
+              },
+              "signed": {
+                "title": "Signed",
+                "description": "This app is cryptographically signed."
+              }
+            },
+            "action_error": {
+              "install": "Failed to install app",
+              "start": "Failed to start app",
+              "stop": "Failed to stop app",
+              "restart": "Failed to restart app",
+              "rebuild": "Failed to rebuild app",
+              "uninstall": "Failed to uninstall app",
+              "get_changelog": "Failed to get changelog",
+              "start_invalid_config": "Invalid configuration",
+              "go_to_config": "Go to configuration"
+            },
+            "uninstall_dialog": {
+              "title": "Uninstall {name}?",
+              "remove_data": "Also remove app data",
+              "uninstall": "Uninstall"
+            },
+            "restart_dialog": {
+              "title": "Restart {name}?",
+              "text": "The app needs to be restarted for the changes to take effect.",
+              "restart": "Restart"
+            },
+            "update_available": {
+              "update_name": "Update {name}",
+              "no_update": "{name} is up to date.",
+              "description": "{name} {version} is available. You are running {newest_version}.",
+              "updating": "Updating {name} to {version}...",
+              "create_backup": {
+                "addon": "Create backup before updating",
+                "addon_description": "Creates a backup of {version} before updating.",
+                "generic": "Create backup"
+              }
+            }
+          },
+          "configuration": {
+            "no_configuration": "This app has no configuration options.",
+            "options": {
+              "header": "Options",
+              "edit_in_ui": "Edit in UI",
+              "edit_in_yaml": "Edit in YAML",
+              "invalid_yaml": "Invalid YAML",
+              "show_unused_optional": "Show unused optional configuration options"
+            },
+            "network": {
+              "header": "Network",
+              "introduction": "Configure the network ports that this app uses.",
+              "show_disabled": "Show disabled ports"
+            },
+            "audio": {
+              "header": "Audio",
+              "input": "Audio input",
+              "output": "Audio output",
+              "default": "Default"
+            },
+            "confirm": {
+              "reset_options": {
+                "title": "Reset options?",
+                "text": "Are you sure you want to reset all options to their default values?"
+              }
+            }
+          },
+          "documentation": {
+            "get_documentation": "Failed to get documentation: {error}"
           }
         },
         "category": {
