@@ -1,6 +1,5 @@
 import { css, html, LitElement } from "lit";
 import { customElement, property, state } from "lit/decorators";
-import { isComponentLoaded } from "../../common/config/is_component_loaded";
 import { fireEvent } from "../../common/dom/fire_event";
 import "../../layouts/hass-error-screen";
 import "../../layouts/hass-loading-screen";
@@ -32,15 +31,6 @@ class HaPanelApps extends LitElement {
   }
 
   protected render() {
-    if (!isComponentLoaded(this.hass, "hassio")) {
-      return html`
-        <hass-error-screen
-          .hass=${this.hass}
-          .error=${this.hass.localize("ui.panel.apps.not_available")}
-        ></hass-error-screen>
-      `;
-    }
-
     if (this._error) {
       return html`
         <hass-error-screen
