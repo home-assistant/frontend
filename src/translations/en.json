@@ -3357,11 +3357,11 @@
           "error_loading": "Error loading apps",
           "installed": {
             "search": "Search installed apps",
-            "no_addons": "No apps installed yet. Browse the app store to get started.",
-            "add_addon": "App store",
-            "addon_stopped": "Stopped",
-            "addon_running": "Running",
-            "addon_update_available": "Update available"
+            "no_apps": "No apps installed yet. Browse the app store to get started.",
+            "add_app": "Add app",
+            "app_stopped": "Stopped",
+            "app_running": "Running",
+            "app_update_available": "Update available"
           },
           "store": {
             "title": "App store",

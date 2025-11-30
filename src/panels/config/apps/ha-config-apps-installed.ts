@@ -106,7 +106,7 @@ export class HaConfigAppsInstalled extends LitElement {
                     <div class="card-content">
                       <button class="link" @click=${this._openStore}>
                         ${this.hass.localize(
-                          "ui.panel.config.apps.installed.no_addons"
+                          "ui.panel.config.apps.installed.no_apps"
                         )}
                       </button>
                     </div>
@@ -132,14 +132,14 @@ export class HaConfigAppsInstalled extends LitElement {
                             : mdiPuzzle}
                           .iconTitle=${addon.state !== "started"
                             ? this.hass.localize(
-                                "ui.panel.config.apps.installed.addon_stopped"
+                                "ui.panel.config.apps.installed.app_stopped"
                               )
                             : addon.update_available
                               ? this.hass.localize(
-                                  "ui.panel.config.apps.installed.addon_update_available"
+                                  "ui.panel.config.apps.installed.app_update_available"
                                 )
                               : this.hass.localize(
-                                  "ui.panel.config.apps.installed.addon_running"
+                                  "ui.panel.config.apps.installed.app_running"
                                 )}
                           .iconClass=${addon.update_available
                             ? addon.state === "started"
@@ -162,7 +162,7 @@ export class HaConfigAppsInstalled extends LitElement {
         <a href="/config/apps/available">
           <ha-fab
             .label=${this.hass.localize(
-              "ui.panel.config.apps.installed.add_addon"
+              "ui.panel.config.apps.installed.add_app"
             )}
             extended
           >
