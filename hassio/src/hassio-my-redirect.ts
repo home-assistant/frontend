@@ -33,13 +33,13 @@ export const REDIRECTS: Redirects = {
     redirect: "/hassio/backups",
   },
   supervisor_store: {
-    redirect: "/config/apps/available",
+    redirect: "/hassio/store",
   },
   supervisor_addons: {
-    redirect: "/config/apps",
+    redirect: "/hassio/dashboard",
   },
   supervisor_addon: {
-    redirect: "/config/app",
+    redirect: "/hassio/addon",
     params: {
       addon: "string",
     },
@@ -54,7 +54,7 @@ export const REDIRECTS: Redirects = {
     },
   },
   supervisor_add_addon_repository: {
-    redirect: "/config/apps/available",
+    redirect: "/hassio/store",
     params: {
       repository_url: "url",
     },
@@ -110,21 +110,8 @@ class HassioMyRedirect extends LitElement {
   }
 
   private _createRedirectUrl(redirect: Redirect): string {
-    const params = extractSearchParamsObject();
-
-    // Special case for supervisor_addon: use path-based URL
-    if (params.addon && redirect.redirect === "/config/app") {
-      const addon = params.addon;
-      delete params.addon;
-      const remainingParams = this._createRedirectParams({
-        ...redirect,
-        params: {},
-      });
-      return `/config/app/${addon}/info${remainingParams}`;
-    }
-
-    const resultParams = this._createRedirectParams(redirect);
-    return `${redirect.redirect}${resultParams}`;
+    const params = this._createRedirectParams(redirect);
+    return `${redirect.redirect}${params}`;
   }
 
   private _createRedirectParams(redirect: Redirect): string {

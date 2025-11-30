@@ -71,17 +71,14 @@ export class HaMarkdown extends LitElement {
       color: var(--markdown-link-color, var(--primary-color));
     }
     img {
-      background-color: var(
-        --markdown-image-background-color,
-        rgba(10, 10, 10, 0.15)
-      );
+      background-color: rgba(10, 10, 10, 0.15);
       border-radius: var(--markdown-image-border-radius);
-      max-width: var(--markdown-image-max-width, 100%);
-      min-height: var(--markdown-image-min-height, 2lh);
+      max-width: 100%;
+      min-height: 2lh;
       height: auto;
       width: auto;
-      text-indent: var(--markdown-image-text-indent, 4px);
-      transition: var(--markdown-image-transition, height 0.2s ease-in-out);
+      text-indent: 4px;
+      transition: height 0.2s ease-in-out;
     }
     p:first-child > img:first-child {
       vertical-align: top;
