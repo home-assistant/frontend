@@ -121,7 +121,7 @@ export class SupervisorAppsRepositoryEl extends LitElement {
   }
 
   private _addonTapped(ev) {
-    navigate(`/hassio/addon/${ev.currentTarget.addon.slug}?store=true`);
+    navigate(`/config/app/${ev.currentTarget.addon.slug}/info`);
   }
 
   static get styles(): CSSResultGroup {
