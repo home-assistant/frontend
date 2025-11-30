@@ -1138,23 +1138,20 @@ export class HaConfigDevicePage extends LitElement {
     }
 
     if (domains.includes("mqtt")) {
-      const mqtt = await import(
-        "./device-detail/integration-elements/mqtt/device-actions"
-      );
+      const mqtt =
+        await import("./device-detail/integration-elements/mqtt/device-actions");
       const actions = mqtt.getMQTTDeviceActions(this, device);
       deviceActions.push(...actions);
     }
     if (domains.includes("zha")) {
-      const zha = await import(
-        "./device-detail/integration-elements/zha/device-actions"
-      );
+      const zha =
+        await import("./device-detail/integration-elements/zha/device-actions");
       const actions = await zha.getZHADeviceActions(this, this.hass, device);
       deviceActions.push(...actions);
     }
     if (domains.includes("zwave_js")) {
-      const zwave = await import(
-        "./device-detail/integration-elements/zwave_js/device-actions"
-      );
+      const zwave =
+        await import("./device-detail/integration-elements/zwave_js/device-actions");
       const actions = await zwave.getZwaveDeviceActions(
         this,
         this.hass,
@@ -1162,10 +1159,19 @@ export class HaConfigDevicePage extends LitElement {
       );
       deviceActions.push(...actions);
     }
-    if (domains.includes("matter")) {
-      const matter = await import(
-        "./device-detail/integration-elements/matter/device-actions"
+    if (domains.includes("esphome")) {
+      const esphome =
+        await import("./device-detail/integration-elements/esphome/device-actions");
+      const actions = await esphome.getESPHomeDeviceActions(
+        this,
+        this.hass,
+        device
       );
+      deviceActions.push(...actions);
+    }
+    if (domains.includes("matter")) {
+      const matter =
+        await import("./device-detail/integration-elements/matter/device-actions");
       const defaultActions = matter.getMatterDeviceDefaultActions(
         this,
         this.hass,
@@ -1209,9 +1215,8 @@ export class HaConfigDevicePage extends LitElement {
     ).map((int) => int.domain);
 
     if (domains.includes("zwave_js")) {
-      const zwave = await import(
-        "./device-detail/integration-elements/zwave_js/device-alerts"
-      );
+      const zwave =
+        await import("./device-detail/integration-elements/zwave_js/device-alerts");
 
       const alerts = await zwave.getZwaveDeviceAlerts(this.hass, device);
       deviceAlerts.push(...alerts);
@@ -1293,9 +1298,7 @@ export class HaConfigDevicePage extends LitElement {
       `);
     }
     if (domains.includes("zwave_js")) {
-      import(
-        "./device-detail/integration-elements/zwave_js/ha-device-info-zwave_js"
-      );
+      import("./device-detail/integration-elements/zwave_js/ha-device-info-zwave_js");
       deviceInfo.push(html`
         <ha-device-info-zwave_js
           .hass=${this.hass}
@@ -1304,9 +1307,7 @@ export class HaConfigDevicePage extends LitElement {
       `);
     }
     if (domains.includes("matter")) {
-      import(
-        "./device-detail/integration-elements/matter/ha-device-info-matter"
-      );
+      import("./device-detail/integration-elements/matter/ha-device-info-matter");
       deviceInfo.push(html`
         <ha-device-info-matter
           .hass=${this.hass}
@@ -1482,8 +1483,8 @@ export class HaConfigDevicePage extends LitElement {
           flex-wrap: wrap;
           margin: auto;
           max-width: 1000px;
-          margin-top: 32px;
-          margin-bottom: 32px;
+          margin-top: var(--ha-space-8);
+          margin-bottom: var(--ha-space-8);
         }
         :host([narrow]) .container {
           margin-top: 0;
@@ -1493,12 +1494,12 @@ export class HaConfigDevicePage extends LitElement {
           display: flex;
           align-items: center;
           justify-content: space-between;
-          padding-bottom: 12px;
+          padding-bottom: var(--ha-space-3);
         }
 
         .card-header ha-icon-button {
-          margin-right: -8px;
-          margin-inline-end: -8px;
+          margin-right: calc(var(--ha-space-2) * -1);
+          margin-inline-end: calc(var(--ha-space-2) * -1);
           margin-inline-start: initial;
           color: var(--primary-color);
           height: auto;
@@ -1506,7 +1507,7 @@ export class HaConfigDevicePage extends LitElement {
         }
 
         .device-info {
-          padding: 16px;
+          padding: var(--ha-space-4);
         }
 
         h1 {
@@ -1528,15 +1529,15 @@ export class HaConfigDevicePage extends LitElement {
         .header-name {
           display: flex;
           align-items: center;
-          padding-left: 8px;
-          padding-inline-start: 8px;
+          padding-left: var(--ha-space-2);
+          padding-inline-start: var(--ha-space-2);
           padding-inline-end: initial;
           direction: var(--direction);
         }
 
         .column,
         .fullwidth {
-          padding: 8px;
+          padding: var(--ha-space-2);
           box-sizing: border-box;
         }
         .column {
@@ -1566,8 +1567,8 @@ export class HaConfigDevicePage extends LitElement {
         }
 
         .header-right > *:not(:first-child) {
-          margin-left: 16px;
-          margin-inline-start: 16px;
+          margin-left: var(--ha-space-4);
+          margin-inline-start: var(--ha-space-4);
           margin-inline-end: initial;
           direction: var(--direction);
         }
@@ -1580,7 +1581,7 @@ export class HaConfigDevicePage extends LitElement {
         }
 
         .column > *:not(:first-child) {
-          margin-top: 16px;
+          margin-top: var(--ha-space-4);
         }
 
         :host([narrow]) .column {
@@ -1600,7 +1601,7 @@ export class HaConfigDevicePage extends LitElement {
           display: block;
           width: 18px;
           height: 18px;
-          margin-inline-start: 8px;
+          margin-inline-start: var(--ha-space-2);
           margin-inline-end: initial;
         }
 
@@ -1610,7 +1611,7 @@ export class HaConfigDevicePage extends LitElement {
         }
 
         .items {
-          padding-bottom: 16px;
+          padding-bottom: var(--ha-space-4);
         }
 
         ha-card:has(ha-logbook) {
@@ -1631,7 +1632,8 @@ export class HaConfigDevicePage extends LitElement {
           display: flex;
           justify-content: space-between;
           align-items: center;
-          padding: 4px 16px 4px 4px;
+          padding: var(--ha-space-1) var(--ha-space-4) var(--ha-space-1)
+            var(--ha-space-1);
         }
       `,
     ];

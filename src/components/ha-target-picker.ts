@@ -30,6 +30,7 @@ import {
   areaMeetsFilter,
   deviceMeetsFilter,
   entityRegMeetsFilter,
+  getTargetComboBoxItemType,
   type TargetType,
   type TargetTypeFloorless,
 } from "../data/target";
@@ -47,7 +48,6 @@ import "./ha-tree-indicator";
 import "./target-picker/ha-target-picker-item-group";
 import "./target-picker/ha-target-picker-value-chip";
 
-const EMPTY_SEARCH = "___EMPTY_SEARCH___";
 const SEPARATOR = "________";
 const CREATE_ID = "___create-new-entity___";
 
@@ -634,35 +634,6 @@ export class HaTargetPicker extends SubscribeMixin(LitElement) {
     return undefined;
   }
 
-  private _getRowType = (
-    item:
-      | PickerComboBoxItem
-      | (FloorComboBoxItem & { last?: boolean | undefined })
-      | EntityComboBoxItem
-      | DevicePickerItem
-  ) => {
-    if (
-      (item as FloorComboBoxItem).type === "area" ||
-      (item as FloorComboBoxItem).type === "floor"
-    ) {
-      return (item as FloorComboBoxItem).type;
-    }
-
-    if ("domain" in item) {
-      return "device";
-    }
-
-    if ("stateObj" in item) {
-      return "entity";
-    }
-
-    if (item.id === EMPTY_SEARCH) {
-      return "empty";
-    }
-
-    return "label";
-  };
-
   private _sectionTitleFunction = ({
     firstIndex,
     lastIndex,
@@ -686,7 +657,7 @@ export class HaTargetPicker extends SubscribeMixin(LitElement) {
       return undefined;
     }
 
-    const type = this._getRowType(firstItem as PickerComboBoxItem);
+    const type = getTargetComboBoxItemType(firstItem as PickerComboBoxItem);
     const translationType:
       | "areas"
       | "entities"
@@ -858,7 +829,10 @@ export class HaTargetPicker extends SubscribeMixin(LitElement) {
 
       if (!filterType || filterType === "label") {
         let labels = this._getLabelsMemoized(
-          this.hass,
+          this.hass.states,
+          this.hass.areas,
+          this.hass.devices,
+          this.hass.entities,
           this._labelRegistry,
           includeDomains,
           undefined,
@@ -974,7 +948,7 @@ export class HaTargetPicker extends SubscribeMixin(LitElement) {
       return nothing;
     }
 
-    const type = this._getRowType(item);
+    const type = getTargetComboBoxItemType(item);
     let hasFloor = false;
     let rtl = false;
     let showEntityId = false;

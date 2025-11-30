@@ -84,6 +84,8 @@ export class HaConfigAreasDashboard extends LitElement {
 
   @property({ attribute: false }) public route!: Route;
 
+  private _searchParms = new URLSearchParams(window.location.search);
+
   @state() private _hierarchy?: AreasFloorHierarchy;
 
   private _blockHierarchyUpdate = false;
@@ -167,7 +169,9 @@ export class HaConfigAreasDashboard extends LitElement {
         .hass=${this.hass}
         .narrow=${this.narrow}
         .isWide=${this.isWide}
-        back-path="/config"
+        .backPath=${this._searchParms.has("historyBack")
+          ? undefined
+          : "/config"}
         .tabs=${configSections.areas}
         .route=${this.route}
         has-fab

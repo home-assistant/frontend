@@ -88,8 +88,7 @@ export class HaMarkdown extends LitElement {
     }
     ol,
     ul {
-      list-style-position: inside;
-      padding-inline-start: 0;
+      padding-inline-start: 1rem;
     }
     li {
       &:has(input[type="checkbox"]) {
@@ -140,16 +139,19 @@ export class HaMarkdown extends LitElement {
       margin: var(--ha-space-4) 0;
     }
     table {
-      border-collapse: collapse;
-      display: block;
-      overflow-x: auto;
+      border-collapse: var(--markdown-table-border-collapse, collapse);
+    }
+    div:has(> table) {
+      overflow: auto;
     }
     th {
       text-align: start;
     }
     td,
     th {
-      border: 1px solid var(--markdown-table-border-color, transparent);
+      border-width: var(--markdown-table-border-width, 1px);
+      border-style: var(--markdown-table-border-style, solid);
+      border-color: var(--markdown-table-border-color, var(--divider-color));
       padding: 0.25em 0.5em;
     }
     blockquote {

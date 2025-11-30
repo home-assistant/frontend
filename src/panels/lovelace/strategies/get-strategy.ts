@@ -42,11 +42,13 @@ const STRATEGIES: Record<LovelaceStrategyConfigType, Record<string, any>> = {
       import("../../energy/strategies/energy-overview-view-strategy"),
     "energy-electricity": () =>
       import("../../energy/strategies/energy-electricity-view-strategy"),
+    "energy-water": () =>
+      import("../../energy/strategies/energy-water-view-strategy"),
     map: () => import("./map/map-view-strategy"),
     iframe: () => import("./iframe/iframe-view-strategy"),
     area: () => import("./areas/area-view-strategy"),
     "areas-overview": () => import("./areas/areas-overview-view-strategy"),
-    "home-main": () => import("./home/home-main-view-strategy"),
+    "home-overview": () => import("./home/home-overview-view-strategy"),
     "home-media-players": () =>
       import("./home/home-media-players-view-strategy"),
     "home-area": () => import("./home/home-area-view-strategy"),

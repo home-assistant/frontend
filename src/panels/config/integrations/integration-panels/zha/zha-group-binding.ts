@@ -192,9 +192,9 @@ export class ZHAGroupBindingControl extends LitElement {
   private get _canBind(): boolean {
     return Boolean(
       this._groupToBind &&
-        this._clustersToBind &&
-        this._clustersToBind?.length > 0 &&
-        this.device
+      this._clustersToBind &&
+      this._clustersToBind?.length > 0 &&
+      this.device
     );
   }
 

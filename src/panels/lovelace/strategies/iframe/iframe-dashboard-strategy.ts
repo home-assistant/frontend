@@ -21,9 +21,7 @@ export class IframeDashboardStrategy extends ReactiveElement {
   }
 
   public static async getConfigElement(): Promise<LovelaceStrategyEditor> {
-    await import(
-      "../../editor/dashboard-strategy-editor/hui-iframe-dashboard-strategy-editor"
-    );
+    await import("../../editor/dashboard-strategy-editor/hui-iframe-dashboard-strategy-editor");
     return document.createElement("hui-iframe-dashboard-strategy-editor");
   }
 

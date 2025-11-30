@@ -71,9 +71,7 @@ class HuiHumidifierModesCardFeature
   }
 
   public static async getConfigElement(): Promise<LovelaceCardFeatureEditor> {
-    await import(
-      "../editor/config-elements/hui-humidifier-modes-card-feature-editor"
-    );
+    await import("../editor/config-elements/hui-humidifier-modes-card-feature-editor");
     return document.createElement("hui-humidifier-modes-card-feature-editor");
   }
 

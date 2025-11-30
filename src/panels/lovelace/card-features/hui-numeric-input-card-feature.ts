@@ -57,9 +57,7 @@ class HuiNumericInputCardFeature
   }
 
   public static async getConfigElement(): Promise<LovelaceCardFeatureEditor> {
-    await import(
-      "../editor/config-elements/hui-numeric-input-card-feature-editor"
-    );
+    await import("../editor/config-elements/hui-numeric-input-card-feature-editor");
     return document.createElement("hui-numeric-input-card-feature-editor");
   }
 

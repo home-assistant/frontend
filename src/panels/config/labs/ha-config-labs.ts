@@ -94,7 +94,7 @@ class HaConfigLabs extends SubscribeMixin(LitElement) {
       <hass-subpage
         .hass=${this.hass}
         .narrow=${this.narrow}
-        back-path="/config"
+        back-path="/config/system"
         .header=${this.hass.localize("ui.panel.config.labs.caption")}
       >
         ${sortedFeatures.length

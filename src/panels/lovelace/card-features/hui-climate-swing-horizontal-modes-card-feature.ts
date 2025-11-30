@@ -71,9 +71,7 @@ class HuiClimateSwingHorizontalModesCardFeature
   }
 
   public static async getConfigElement(): Promise<LovelaceCardFeatureEditor> {
-    await import(
-      "../editor/config-elements/hui-climate-swing-horizontal-modes-card-feature-editor"
-    );
+    await import("../editor/config-elements/hui-climate-swing-horizontal-modes-card-feature-editor");
     return document.createElement(
       "hui-climate-swing-horizontal-modes-card-feature-editor"
     );

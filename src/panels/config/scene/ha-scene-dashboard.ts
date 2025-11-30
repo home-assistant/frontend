@@ -24,7 +24,7 @@ import { LitElement, css, html, nothing } from "lit";
 import { customElement, property, state } from "lit/decorators";
 import memoizeOne from "memoize-one";
 import { computeCssColor } from "../../../common/color/compute-color";
-import { formatShortDateTime } from "../../../common/datetime/format_date_time";
+import { formatShortDateTimeWithConditionalYear } from "../../../common/datetime/format_date_time";
 import { relativeTime } from "../../../common/datetime/relative_time";
 import { storage } from "../../../common/decorators/storage";
 import type { HASSDomEvent } from "../../../common/dom/fire_event";
@@ -301,10 +301,21 @@ class HaSceneDashboard extends SubscribeMixin(LitElement) {
             const date = new Date(scene.state);
             const now = new Date();
             const dayDifference = differenceInDays(now, date);
+            const formattedTime = formatShortDateTimeWithConditionalYear(
+              date,
+              this.hass.locale,
+              this.hass.config
+            );
+            const elementId = "last-activated-" + slugify(scene.entity_id);
             return html`
               ${dayDifference > 3
-                ? formatShortDateTime(date, this.hass.locale, this.hass.config)
-                : relativeTime(date, this.hass.locale)}
+                ? formattedTime
+                : html`
+                    <ha-tooltip for=${elementId}>${formattedTime}</ha-tooltip>
+                    <span id=${elementId}
+                      >${relativeTime(date, this.hass.locale)}</span
+                    >
+                  `}
             `;
           },
         },

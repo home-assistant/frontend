@@ -172,9 +172,7 @@ class HuiVacuumCommandCardFeature
   }
 
   public static async getConfigElement(): Promise<LovelaceCardFeatureEditor> {
-    await import(
-      "../editor/config-elements/hui-vacuum-commands-card-feature-editor"
-    );
+    await import("../editor/config-elements/hui-vacuum-commands-card-feature-editor");
     return document.createElement("hui-vacuum-commands-card-feature-editor");
   }
 

@@ -37,6 +37,7 @@ import {
   removeSearchParam,
 } from "../../common/url/search-params";
 import { debounce } from "../../common/util/debounce";
+import { isMobileClient } from "../../util/is_mobile";
 import { afterNextRender } from "../../common/util/render-status";
 import "../../components/ha-button";
 import "../../components/ha-button-menu";
@@ -126,7 +127,7 @@ interface UndoStackItem {
 
 @customElement("hui-root")
 class HUIRoot extends LitElement {
-  @property({ attribute: false }) public panel?: PanelInfo<LovelacePanelConfig>;
+  @property({ attribute: false }) public panel?: PanelInfo;
 
   @property({ attribute: false }) public hass!: HomeAssistant;
 
@@ -152,7 +153,7 @@ class HUIRoot extends LitElement {
   private _undoRedoController = new UndoRedoController<UndoStackItem>(this, {
     apply: (config) => this._applyUndoRedo(config),
     currentConfig: () => ({
-      location: this.route!.path,
+      location: this.route!.path.split("/")[1],
       config: this.lovelace!.rawConfig,
     }),
   });
@@ -294,7 +295,8 @@ class HUIRoot extends LitElement {
         overflowAction: this._handleShowQuickBar,
         visible: !this._editMode,
         overflow: this.narrow,
-        suffix: this.hass.enableShortcuts ? "(E)" : undefined,
+        suffix:
+          this.hass.enableShortcuts && !isMobileClient ? "(E)" : undefined,
       },
       {
         icon: mdiCommentProcessingOutline,
@@ -304,7 +306,8 @@ class HUIRoot extends LitElement {
         visible:
           !this._editMode && this._conversation(this.hass.config.components),
         overflow: this.narrow,
-        suffix: this.hass.enableShortcuts ? "(A)" : undefined,
+        suffix:
+          this.hass.enableShortcuts && !isMobileClient ? "(A)" : undefined,
       },
       {
         icon: mdiRefresh,
@@ -540,68 +543,72 @@ class HUIRoot extends LitElement {
         })}
       >
         <div class="header">
-          <div class="toolbar">
+          <slot name="toolbar">
+            <div class="toolbar">
+              ${this._editMode
+                ? html`
+                    <div class="main-title">
+                      ${dashboardTitle ||
+                      this.hass!.localize("ui.panel.lovelace.editor.header")}
+                      <ha-icon-button
+                        slot="actionItems"
+                        .label=${this.hass!.localize(
+                          "ui.panel.lovelace.editor.edit_lovelace.edit_title"
+                        )}
+                        .path=${mdiPencil}
+                        class="edit-icon"
+                        @click=${this._editDashboard}
+                      ></ha-icon-button>
+                    </div>
+                    <div class="action-items">${this._renderActionItems()}</div>
+                  `
+                : html`
+                    ${isSubview
+                      ? html`
+                          <ha-icon-button-arrow-prev
+                            .hass=${this.hass}
+                            slot="navigationIcon"
+                            @click=${this._goBack}
+                          ></ha-icon-button-arrow-prev>
+                        `
+                      : html`
+                          <ha-menu-button
+                            slot="navigationIcon"
+                            .hass=${this.hass}
+                            .narrow=${this.narrow}
+                          ></ha-menu-button>
+                        `}
+                    ${isSubview
+                      ? html`
+                          <div class="main-title">${curViewConfig.title}</div>
+                        `
+                      : hasTabViews
+                        ? tabs
+                        : html`
+                            <div class="main-title">
+                              ${views[0]?.title ?? dashboardTitle}
+                            </div>
+                          `}
+                    <div class="action-items">${this._renderActionItems()}</div>
+                  `}
+            </div>
             ${this._editMode
               ? html`
-                  <div class="main-title">
-                    ${dashboardTitle ||
-                    this.hass!.localize("ui.panel.lovelace.editor.header")}
+                  <div class="tab-bar">
+                    ${tabs}
                     <ha-icon-button
-                      slot="actionItems"
+                      slot="nav"
+                      id="add-view"
+                      @click=${this._addView}
                       .label=${this.hass!.localize(
-                        "ui.panel.lovelace.editor.edit_lovelace.edit_title"
+                        "ui.panel.lovelace.editor.edit_view.add"
                       )}
-                      .path=${mdiPencil}
-                      class="edit-icon"
-                      @click=${this._editDashboard}
+                      .path=${mdiPlus}
                     ></ha-icon-button>
                   </div>
-                  <div class="action-items">${this._renderActionItems()}</div>
                 `
-              : html`
-                  ${isSubview
-                    ? html`
-                        <ha-icon-button-arrow-prev
-                          .hass=${this.hass}
-                          slot="navigationIcon"
-                          @click=${this._goBack}
-                        ></ha-icon-button-arrow-prev>
-                      `
-                    : html`
-                        <ha-menu-button
-                          slot="navigationIcon"
-                          .hass=${this.hass}
-                          .narrow=${this.narrow}
-                        ></ha-menu-button>
-                      `}
-                  ${isSubview
-                    ? html`<div class="main-title">${curViewConfig.title}</div>`
-                    : hasTabViews
-                      ? tabs
-                      : html`
-                          <div class="main-title">
-                            ${views[0]?.title ?? dashboardTitle}
-                          </div>
-                        `}
-                  <div class="action-items">${this._renderActionItems()}</div>
-                `}
-          </div>
-          ${this._editMode
-            ? html`
-                <div class="tab-bar">
-                  ${tabs}
-                  <ha-icon-button
-                    slot="nav"
-                    id="add-view"
-                    @click=${this._addView}
-                    .label=${this.hass!.localize(
-                      "ui.panel.lovelace.editor.edit_view.add"
-                    )}
-                    .path=${mdiPlus}
-                  ></ha-icon-button>
-                </div>
-              `
-            : nothing}
+              : nothing}
+          </slot>
         </div>
         <hui-view-container
           class=${this._editMode ? "has-tab-bar" : ""}
@@ -628,10 +635,10 @@ class HUIRoot extends LitElement {
   private _isVisible = (view: LovelaceViewConfig) =>
     Boolean(
       this._editMode ||
-        view.visible === undefined ||
-        view.visible === true ||
-        (Array.isArray(view.visible) &&
-          view.visible.some((show) => show.user === this.hass!.user?.id))
+      view.visible === undefined ||
+      view.visible === true ||
+      (Array.isArray(view.visible) &&
+        view.visible.some((show) => show.user === this.hass!.user?.id))
     );
 
   private _clearParam(param: string) {
@@ -699,8 +706,9 @@ class HUIRoot extends LitElement {
         this.lovelace!.rawConfig !== oldLovelace!.rawConfig &&
         !this._configChangedByUndo
       ) {
+        const viewPath: string | undefined = this.route!.path.split("/")[1];
         this._undoRedoController.commit({
-          location: this.route!.path,
+          location: viewPath,
           config: oldLovelace.rawConfig,
         });
       } else {

@@ -2228,7 +2228,9 @@
           "title": "Edit home page",
           "description": "Configure your home page display preferences.",
           "favorite_entities_helper": "Display your favorite entities. Home Assistant will still suggest based on commonly used up to 8 slots.",
-          "save_failed": "Failed to save home page configuration"
+          "save_failed": "Failed to save home page configuration",
+          "areas_hint": "You can rearrange your floors and areas in the order that best represents your house on the {areas_page}.",
+          "areas_page": "areas page"
         }
       },
       "my": {
@@ -3240,6 +3242,22 @@
               "included_in_device_helper": "If this device is already counted by another device (such as a smart switch measured by a smart breaker), selecting the upstream device prevents duplicate energy tracking.",
               "no_upstream_devices": "No eligible upstream devices"
             }
+          },
+          "device_consumption_water": {
+            "title": "Individual water devices",
+            "sub": "Tracking the water usage of individual devices allows Home Assistant to break down your water usage by device.",
+            "learn_more": "More information on how to get started.",
+            "devices": "Devices",
+            "add_device": "Add device",
+            "dialog": {
+              "header": "Add a water device",
+              "display_name": "Display name",
+              "device_consumption_water": "Device water consumption",
+              "selected_stat_intro": "Select the water sensor that measures the device's water usage in either of {unit}.",
+              "included_in_device": "Upstream device",
+              "included_in_device_helper": "If this device is already counted by another device (such as a water meter measured by the main water supply), selecting the upstream device prevents duplicate water tracking.",
+              "no_upstream_devices": "No eligible upstream devices"
+            }
           }
         },
         "helpers": {
@@ -4011,7 +4029,26 @@
             "item_pasted": "{item} pasted",
             "ctrl": "Ctrl",
             "del": "Del",
+            "targets": "Targets",
+            "select_target": "Select a target",
+            "home": "Home",
+            "unassigned": "Unassigned",
             "blocks": "Blocks",
+            "show_more": "Show more",
+            "unassigned_entities": "Unassigned entities",
+            "unassigned_devices": "Unassigned devices",
+            "empty_section_search": {
+              "block": "No blocks found for {term}",
+              "entity": "No entities found for {term}",
+              "device": "No devices found for {term}",
+              "area": "No areas or floors found for {term}",
+              "label": "No labels found for {term}"
+            },
+            "load_target_items_failed": "Failed to load target items for",
+            "other_areas": "Other areas",
+            "services": "Services",
+            "helpers": "Helpers",
+            "entity_hidden": "[%key:ui::panel::config::devices::entities::hidden%]",
             "triggers": {
               "name": "Triggers",
               "header": "When",
@@ -4019,7 +4056,10 @@
               "learn_more": "Learn more about triggers",
               "triggered": "Triggered",
               "add": "Add trigger",
-              "empty_search": "No triggers found for {term}",
+              "empty_search": {
+                "global": "No triggers and targets found for {term}",
+                "item": "No triggers found for {term}"
+              },
               "id": "Trigger ID",
               "optional": "Optional",
               "edit_id": "Edit ID",
@@ -4040,12 +4080,16 @@
               "copied_to_clipboard": "Trigger copied to clipboard",
               "cut_to_clipboard": "Trigger cut to clipboard",
               "select": "Select a trigger",
+              "no_items_for_target": "No triggers available for",
               "groups": {
                 "device": {
                   "label": "Device"
                 },
                 "entity": {
                   "label": "Entity"
+                },
+                "helpers": {
+                  "label": "Helpers"
                 },
                 "time_location": {
                   "label": "Time and location"
@@ -4281,7 +4325,10 @@
               "description": "All conditions added here need to be satisfied for the automation to run. A condition can be satisfied or not at any given time, for example: ''If {user} is home''. You can use building blocks to create more complex conditions.",
               "learn_more": "Learn more about conditions",
               "add": "Add condition",
-              "empty_search": "No conditions and blocks found for {term}",
+              "empty_search": {
+                "global": "No conditions, blocks and targets found for {term}",
+                "item": "No conditions found for {term}"
+              },
               "add_building_block": "Add building block",
               "test": "Test",
               "testing_error": "Condition did not pass",
@@ -4304,6 +4351,7 @@
               "copied_to_clipboard": "Condition copied to clipboard",
               "cut_to_clipboard": "Condition cut to clipboard",
               "select": "Select a condition",
+              "no_items_for_target": "No conditions available for",
               "groups": {
                 "device": {
                   "label": "Device"
@@ -4313,6 +4361,9 @@
                 },
                 "time_location": {
                   "label": "Time and location"
+                },
+                "helpers": {
+                  "label": "Helpers"
                 },
                 "other": {
                   "label": "Other conditions"
@@ -4449,7 +4500,10 @@
               "description": "All actions added here will be performed in sequence when the automation runs. An action usually controls one of your areas, devices, or entities, for example: 'Turn on the lights'. You can use building blocks to create more complex sequences of actions.",
               "learn_more": "Learn more about actions",
               "add": "Add action",
-              "empty_search": "No actions and blocks found for {term}",
+              "empty_search": {
+                "global": "No actions, blocks and targets found for {term}",
+                "item": "No actions found for {term}"
+              },
               "add_building_block": "Add building block",
               "invalid_action": "Invalid action",
               "run": "Run action",
@@ -4474,6 +4528,7 @@
               "copied_to_clipboard": "Action copied to clipboard",
               "cut_to_clipboard": "Action cut to clipboard",
               "select": "Select an action",
+              "no_items_for_target": "No actions available for",
               "groups": {
                 "device_id": {
                   "label": "Device"
@@ -5414,6 +5469,11 @@
                 "partial_failure": "Some devices failed to delete successfully. Check system logs for more information."
               }
             }
+          },
+          "esphome": {
+            "show_encryption_key": "Show encryption key",
+            "encryption_key_title": "ESPHome Encryption Key",
+            "encryption_key_description": "This is the encryption key for your ESPHome device. Keep it in a safe place, as you may need it when transferring devices between Home Assistant instances."
           }
         },
         "entities": {
@@ -7073,7 +7133,9 @@
             "unamed_device": "Unnamed device",
             "others": "Others",
             "scenes": "Scenes",
-            "automations": "Automations"
+            "automations": "Automations",
+            "for_you": "For you",
+            "home": "Home"
           },
           "common_controls": {
             "not_loaded": "Usage Prediction integration is not loaded.",
@@ -7171,9 +7233,9 @@
               "solar_total": "Solar total",
               "water_total": "Water total",
               "source": "Source",
-              "energy": "Energy",
+              "energy": "Usage",
               "cost": "Cost",
-              "previous_energy": "Previous energy",
+              "previous_energy": "Previous usage",
               "previous_cost": "Previous cost",
               "battery_total": "Battery total",
               "total_costs": "Total costs"
@@ -9537,6 +9599,7 @@
           "energy_devices_graph_title": "Individual devices total usage",
           "energy_devices_detail_graph_title": "Individual devices detail usage",
           "energy_sankey_title": "Energy flow",
+          "water_sankey_title": "Water flow",
           "energy_top_consumers_title": "Top consumers",
           "power_sankey_title": "Current power flow",
           "power_sources_graph_title": "Power sources"

@@ -18,8 +18,7 @@ export const enum LawnMowerEntityFeature {
 }
 
 interface LawnMowerEntityAttributes
-  extends HassEntityAttributeBase,
-    Record<string, any> {}
+  extends HassEntityAttributeBase, Record<string, any> {}
 
 export interface LawnMowerEntity extends HassEntityBase {
   attributes: LawnMowerEntityAttributes;
