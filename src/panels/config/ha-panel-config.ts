@@ -356,13 +356,6 @@ export const configSections: Record<string, PageNavigation[]> = {
       iconColor: "#301A8E",
       component: ["hassio", "hardware"],
     },
-    {
-      path: "/config/apps",
-      translationKey: "apps",
-      iconPath: mdiPuzzle,
-      iconColor: "#F1C447",
-      component: "hassio",
-    },
   ],
   about: [
     {
