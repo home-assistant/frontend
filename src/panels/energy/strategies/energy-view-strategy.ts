@@ -7,8 +7,8 @@ import type { LovelaceViewConfig } from "../../../data/lovelace/config/view";
 import type { LovelaceStrategyConfig } from "../../../data/lovelace/config/strategy";
 import { DEFAULT_ENERGY_COLLECTION_KEY } from "../ha-panel-energy";
 
-@customElement("energy-electricity-view-strategy")
-export class EnergyElectricityViewStrategy extends ReactiveElement {
+@customElement("energy-view-strategy")
+export class EnergyViewStrategy extends ReactiveElement {
   static async generate(
     _config: LovelaceStrategyConfig,
     hass: HomeAssistant
@@ -46,15 +46,6 @@ export class EnergyElectricityViewStrategy extends ReactiveElement {
     const hasBattery = prefs.energy_sources.some(
       (source) => source.type === "battery"
     );
-    const hasPowerSources = prefs.energy_sources.find(
-      (source) =>
-        (source.type === "solar" && source.stat_rate) ||
-        (source.type === "battery" && source.stat_rate) ||
-        (source.type === "grid" && source.power?.length)
-    );
-    const hasPowerDevices = prefs.device_consumption.find(
-      (device) => device.stat_rate
-    );
     const showFloorsNAreas = !prefs.device_consumption.some(
       (d) => d.included_in_stat
     );
@@ -63,26 +54,6 @@ export class EnergyElectricityViewStrategy extends ReactiveElement {
       type: "energy-compare",
       collection_key: "energy_dashboard",
     });
-
-    if (hasPowerSources) {
-      if (hasPowerDevices) {
-        view.cards!.push({
-          title: hass.localize("ui.panel.energy.cards.power_sankey_title"),
-          type: "power-sankey",
-          collection_key: collectionKey,
-          group_by_floor: showFloorsNAreas,
-          group_by_area: showFloorsNAreas,
-          grid_options: {
-            columns: 24,
-          },
-        });
-      }
-      view.cards!.push({
-        title: hass.localize("ui.panel.energy.cards.power_sources_graph_title"),
-        type: "power-sources-graph",
-        collection_key: collectionKey,
-      });
-    }
 
     // Only include if we have a grid or battery.
     if (hasGrid || hasBattery) {
@@ -190,6 +161,6 @@ export class EnergyElectricityViewStrategy extends ReactiveElement {
 
 declare global {
   interface HTMLElementTagNameMap {
-    "energy-electricity-view-strategy": EnergyElectricityViewStrategy;
+    "energy-view-strategy": EnergyViewStrategy;
   }
 }

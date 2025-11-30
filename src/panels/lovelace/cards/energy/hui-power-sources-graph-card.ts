@@ -6,7 +6,7 @@ import { customElement, property, state } from "lit/decorators";
 import { classMap } from "lit/directives/class-map";
 import memoizeOne from "memoize-one";
 import type { LineSeriesOption } from "echarts/charts";
-import { graphic } from "echarts";
+import { LinearGradient } from "../../../../resources/echarts/echarts";
 import "../../../../components/chart/ha-chart-base";
 import "../../../../components/ha-card";
 import type { EnergyData } from "../../../../data/energy";
@@ -213,7 +213,7 @@ export class HuiPowerSourcesGraphCard
           color: colorHex,
           stack: "positive",
           areaStyle: {
-            color: new graphic.LinearGradient(0, 0, 0, 1, [
+            color: new LinearGradient(0, 0, 0, 1, [
               {
                 offset: 0,
                 color: `rgba(${rgb[0]}, ${rgb[1]}, ${rgb[2]}, 0.75)`,
@@ -235,7 +235,7 @@ export class HuiPowerSourcesGraphCard
             color: colorHex,
             stack: "negative",
             areaStyle: {
-              color: new graphic.LinearGradient(0, 1, 0, 0, [
+              color: new LinearGradient(0, 1, 0, 0, [
                 {
                   offset: 0,
                   color: `rgba(${rgb[0]}, ${rgb[1]}, ${rgb[2]}, 0.75)`,

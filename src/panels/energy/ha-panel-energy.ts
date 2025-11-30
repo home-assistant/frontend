@@ -50,11 +50,11 @@ const OVERVIEW_VIEW = {
   },
 } as LovelaceViewConfig;
 
-const ELECTRICITY_VIEW = {
+const ENERGY_VIEW = {
   path: "electricity",
   back_path: "/energy",
   strategy: {
-    type: "energy-electricity",
+    type: "energy",
     collection_key: DEFAULT_ENERGY_COLLECTION_KEY,
   },
 } as LovelaceViewConfig;
@@ -63,7 +63,16 @@ const WATER_VIEW = {
   back_path: "/energy",
   path: "water",
   strategy: {
-    type: "energy-water",
+    type: "water",
+    collection_key: DEFAULT_ENERGY_COLLECTION_KEY,
+  },
+} as LovelaceViewConfig;
+
+const POWER_VIEW = {
+  back_path: "/energy",
+  path: "power",
+  strategy: {
+    type: "power",
     collection_key: DEFAULT_ENERGY_COLLECTION_KEY,
   },
 } as LovelaceViewConfig;
@@ -284,22 +293,34 @@ class PanelEnergy extends LitElement {
       };
     }
 
-    const isElectricityOnly = this._prefs.energy_sources.every((source) =>
+    const hasEnergy = this._prefs.energy_sources.some((source) =>
       ["grid", "solar", "battery"].includes(source.type)
     );
-    if (isElectricityOnly) {
-      return {
-        views: [ELECTRICITY_VIEW],
-      };
-    }
+
+    const hasPower =
+      this._prefs.energy_sources.some(
+        (source) =>
+          (source.type === "solar" && source.stat_rate) ||
+          (source.type === "battery" && source.stat_rate) ||
+          (source.type === "grid" && source.power?.length)
+      ) || this._prefs.device_consumption.some((device) => device.stat_rate);
 
     const hasWater =
       this._prefs.energy_sources.some((source) => source.type === "water") ||
       this._prefs.device_consumption_water?.length > 0;
 
-    const views: LovelaceViewConfig[] = [OVERVIEW_VIEW, ELECTRICITY_VIEW];
+    const views: LovelaceViewConfig[] = [];
+    if (hasEnergy) {
+      views.push(ENERGY_VIEW);
+    }
+    if (hasPower) {
+      views.push(POWER_VIEW);
+    }
     if (hasWater) {
       views.push(WATER_VIEW);
+    }
+    if (views.length > 1) {
+      views.unshift(OVERVIEW_VIEW);
     }
     return { views };
   }
