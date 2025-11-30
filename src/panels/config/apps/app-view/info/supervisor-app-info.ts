@@ -1396,6 +1396,11 @@ class SupervisorAppInfo extends LitElement {
         }
         ha-markdown {
           padding: 16px;
+          --markdown-image-background-color: transparent;
+          --markdown-image-border-radius: 0;
+          --markdown-image-min-height: auto;
+          --markdown-image-text-indent: 0;
+          --markdown-image-transition: none;
         }
         ha-settings-row {
           padding: 0;

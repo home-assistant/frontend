@@ -121,7 +121,7 @@ export class SupervisorAppsRepositoryEl extends LitElement {
   }
 
   private _addonTapped(ev) {
-    navigate(`/config/app/${ev.currentTarget.addon.slug}/info`);
+    navigate(`/config/app/${ev.currentTarget.addon.slug}/info?store=true`);
   }
 
   static get styles(): CSSResultGroup {

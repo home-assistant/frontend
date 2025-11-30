@@ -9,6 +9,7 @@ import { css, html, LitElement } from "lit";
 import { customElement, property, state } from "lit/decorators";
 import memoizeOne from "memoize-one";
 import { fireEvent } from "../../../common/dom/fire_event";
+import { extractSearchParam } from "../../../common/url/search-params";
 import type { HassioAddonDetails } from "../../../data/hassio/addon";
 import { fetchHassioAddonInfo } from "../../../data/hassio/addon";
 import { extractApiErrorMessage } from "../../../data/hassio/common";
@@ -36,6 +37,8 @@ class HaConfigAppDashboard extends LitElement {
 
   @state() private _controlEnabled = false;
 
+  @state() private _fromStore = false;
+
   private _computeTail = memoizeOne((route: Route) => {
     const pathParts = route.path.split("/").filter(Boolean);
     // Path is like /<slug>/info or /<slug>/config
@@ -49,6 +52,7 @@ class HaConfigAppDashboard extends LitElement {
   });
 
   protected async firstUpdated(): Promise<void> {
+    this._fromStore = extractSearchParam("store") === "true";
     await this._loadAddon();
     this.addEventListener("hass-api-called", (ev) => this._apiCalled(ev));
   }
@@ -119,7 +123,7 @@ class HaConfigAppDashboard extends LitElement {
         .narrow=${this.narrow}
         .route=${route}
         .tabs=${addonTabs}
-        back-path="/config/apps"
+        back-path=${this._fromStore ? "/config/apps/available" : "/config/apps"}
       >
         <span slot="header">${this._addon.name}</span>
         <supervisor-app-router
