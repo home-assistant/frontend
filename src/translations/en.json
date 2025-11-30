@@ -2403,6 +2403,54 @@
           "gen_image_header": "Image generation tasks",
           "gen_image_description": "Generate images."
         },
+        "apps": {
+          "caption": "Apps",
+          "error_loading": "Error loading apps",
+          "state": {
+            "update_available": "Update available",
+            "installed": "Installed",
+            "not_installed": "Not installed",
+            "not_available": "Not available"
+          },
+          "installed": {
+            "search": "Search apps",
+            "no_apps": "You don't have any apps installed yet. Click here to browse available apps.",
+            "add_app": "Add app",
+            "app_stopped": "App is stopped",
+            "app_update_available": "Update available",
+            "app_running": "App is running"
+          },
+          "store": {
+            "title": "App store",
+            "check_updates": "Check for updates",
+            "repositories": "Repositories",
+            "registries": "Registries",
+            "missing_apps": "Looking for apps? Enable advanced mode.",
+            "no_results_found": "No results found in {repository}"
+          },
+          "dialog": {
+            "repositories": {
+              "title": "Manage app repositories",
+              "add": "Add",
+              "remove": "Remove",
+              "used": "In use by installed apps",
+              "no_repositories": "You don't have any app repositories configured"
+            },
+            "registries": {
+              "title_add": "Add registry",
+              "title_manage": "Manage registries",
+              "add_registry": "Add",
+              "add_new_registry": "Add new registry",
+              "username": "Username",
+              "remove": "Remove registry",
+              "no_registries": "You don't have any registries configured",
+              "failed_to_add": "Failed to add registry",
+              "failed_to_remove": "Failed to remove registry",
+              "registry": "Registry",
+              "password": "Password"
+            }
+          }
+        },
         "category": {
           "caption": "Categories",
           "assign": {
