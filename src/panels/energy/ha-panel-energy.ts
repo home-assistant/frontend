@@ -324,6 +324,7 @@ class PanelEnergy extends LitElement {
 
     const energy_sources = energyData.prefs.energy_sources;
     const device_consumption = energyData.prefs.device_consumption;
+    const device_consumption_water = energyData.prefs.device_consumption_water;
     const stats = energyData.state.stats;
 
     const timeSet = new Set<number>();
@@ -508,6 +509,20 @@ class PanelEnergy extends LitElement {
     });
 
     printCategory("device_consumption", devices, electricUnit);
+
+    if (device_consumption_water) {
+      const waterDevices: string[] = [];
+      device_consumption_water.forEach((source) => {
+        source = source as DeviceConsumptionEnergyPreference;
+        waterDevices.push(source.stat_consumption);
+      });
+
+      printCategory(
+        "device_consumption_water",
+        waterDevices,
+        energyData.state.waterUnit
+      );
+    }
 
     const { summedData, compareSummedData: _ } = getSummedData(
       energyData.state
