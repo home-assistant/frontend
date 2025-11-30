@@ -3,6 +3,7 @@ import type { PropertyValues, TemplateResult } from "lit";
 import { css, html, LitElement, nothing } from "lit";
 import { createRef, ref } from "lit/directives/ref";
 import { customElement, property, state } from "lit/decorators";
+import memoizeOne from "memoize-one";
 import { fireEvent } from "../../common/dom/fire_event";
 import { navigate } from "../../common/navigate";
 import { nextRender } from "../../common/util/render-status";
@@ -381,11 +382,13 @@ class HaPanelApp extends LitElement {
       {
         type: "home-assistant/properties",
         narrow: this.narrow,
-        route: computeRouteTail(this.route),
+        route: this._computeRouteTail(this.route),
       },
       "*"
     );
   }
+
+  private _computeRouteTail = memoizeOne(computeRouteTail);
 
   static styles = css`
     :host {
