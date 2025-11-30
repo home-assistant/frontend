@@ -1,3 +1,4 @@
+import { customElement } from "lit/decorators";
 import type { HomeAssistant } from "../../../types";
 import { createStyledHuiElement } from "../cards/picture-elements/create-styled-hui-element";
 import {
@@ -11,6 +12,7 @@ import type {
   LovelaceElementConfig,
 } from "./types";
 
+@customElement("hui-conditional-element")
 class HuiConditionalElement extends HTMLElement implements LovelaceElement {
   public static async getConfigElement(): Promise<LovelacePictureElementEditor> {
     await import(
@@ -86,5 +88,3 @@ declare global {
     "hui-conditional-element": HuiConditionalElement;
   }
 }
-
-customElements.define("hui-conditional-element", HuiConditionalElement);

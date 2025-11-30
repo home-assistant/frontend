@@ -1,7 +1,7 @@
 import { mdiPower, mdiTuneVariant } from "@mdi/js";
 import type { CSSResultGroup, PropertyValues } from "lit";
 import { LitElement, css, html, nothing } from "lit";
-import { property, state } from "lit/decorators";
+import { customElement, property, state } from "lit/decorators";
 import { stopPropagation } from "../../../common/dom/stop_propagation";
 import { supportsFeature } from "../../../common/entity/supports-feature";
 import "../../../components/ha-control-select-menu";
@@ -15,6 +15,7 @@ import type { HomeAssistant } from "../../../types";
 import "../components/ha-more-info-control-select-container";
 import { moreInfoControlStyle } from "../components/more-info-control-style";
 
+@customElement("more-info-humidifier")
 class MoreInfoHumidifier extends LitElement {
   @property({ attribute: false }) public hass!: HomeAssistant;
 
@@ -248,8 +249,6 @@ class MoreInfoHumidifier extends LitElement {
     ];
   }
 }
-
-customElements.define("more-info-humidifier", MoreInfoHumidifier);
 
 declare global {
   interface HTMLElementTagNameMap {

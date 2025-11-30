@@ -1,7 +1,7 @@
 import { mdiTextureBox } from "@mdi/js";
 import type { CSSResultGroup } from "lit";
 import { css, html, LitElement, nothing } from "lit";
-import { property, state } from "lit/decorators";
+import { customElement, property, state } from "lit/decorators";
 import { repeat } from "lit/directives/repeat";
 import memoizeOne from "memoize-one";
 import { fireEvent } from "../../../common/dom/fire_event";
@@ -27,6 +27,7 @@ import type { HomeAssistant } from "../../../types";
 import { showAreaRegistryDetailDialog } from "./show-dialog-area-registry-detail";
 import type { FloorRegistryDetailDialogParams } from "./show-dialog-floor-registry-detail";
 
+@customElement("dialog-floor-registry-detail")
 class DialogFloorDetail extends LitElement {
   @property({ attribute: false }) public hass!: HomeAssistant;
 
@@ -357,5 +358,3 @@ declare global {
     "dialog-floor-registry-detail": DialogFloorDetail;
   }
 }
-
-customElements.define("dialog-floor-registry-detail", DialogFloorDetail);

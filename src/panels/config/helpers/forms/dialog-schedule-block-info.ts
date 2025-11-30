@@ -1,7 +1,7 @@
 import type { CSSResultGroup } from "lit";
 import { html, LitElement, nothing } from "lit";
 import memoizeOne from "memoize-one";
-import { property, state } from "lit/decorators";
+import { customElement, property, state } from "lit/decorators";
 import { fireEvent } from "../../../../common/dom/fire_event";
 import { createCloseHeading } from "../../../../components/ha-dialog";
 import "../../../../components/ha-form/ha-form";
@@ -14,6 +14,7 @@ import type {
 } from "./show-dialog-schedule-block-info";
 import type { SchemaUnion } from "../../../../components/ha-form/types";
 
+@customElement("dialog-schedule-block-info")
 class DialogScheduleBlockInfo extends LitElement {
   @property({ attribute: false }) public hass!: HomeAssistant;
 
@@ -156,5 +157,3 @@ declare global {
     "dialog-schedule-block-info": DialogScheduleBlockInfo;
   }
 }
-
-customElements.define("dialog-schedule-block-info", DialogScheduleBlockInfo);

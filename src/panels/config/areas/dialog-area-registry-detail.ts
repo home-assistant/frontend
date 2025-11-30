@@ -1,7 +1,7 @@
 import type { HassEntity } from "home-assistant-js-websocket";
 import type { CSSResultGroup } from "lit";
 import { css, html, LitElement, nothing } from "lit";
-import { property, state } from "lit/decorators";
+import { customElement, property, state } from "lit/decorators";
 import { fireEvent } from "../../../common/dom/fire_event";
 import "../../../components/entity/ha-entity-picker";
 import type { HaEntityPicker } from "../../../components/entity/ha-entity-picker";
@@ -40,6 +40,7 @@ const SENSOR_DOMAINS = ["sensor"];
 const TEMPERATURE_DEVICE_CLASSES = [SENSOR_DEVICE_CLASS_TEMPERATURE];
 const HUMIDITY_DEVICE_CLASSES = [SENSOR_DEVICE_CLASS_HUMIDITY];
 
+@customElement("dialog-area-registry-detail")
 class DialogAreaDetail extends LitElement {
   @property({ attribute: false }) public hass!: HomeAssistant;
 
@@ -426,5 +427,3 @@ declare global {
     "dialog-area-registry-detail": DialogAreaDetail;
   }
 }
-
-customElements.define("dialog-area-registry-detail", DialogAreaDetail);

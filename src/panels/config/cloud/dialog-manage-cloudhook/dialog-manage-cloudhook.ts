@@ -1,7 +1,7 @@
 import { mdiOpenInNew } from "@mdi/js";
 import type { CSSResultGroup } from "lit";
 import { css, html, LitElement, nothing } from "lit";
-import { state } from "lit/decorators";
+import { customElement, state } from "lit/decorators";
 import { fireEvent } from "../../../../common/dom/fire_event";
 import { createCloseHeading } from "../../../../components/ha-dialog";
 import { showConfirmationDialog } from "../../../../dialogs/generic/show-dialog-box";
@@ -13,6 +13,7 @@ import type { WebhookDialogParams } from "./show-dialog-manage-cloudhook";
 import "../../../../components/ha-button";
 import "../../../../components/ha-copy-textfield";
 
+@customElement("dialog-manage-cloudhook")
 export class DialogManageCloudhook extends LitElement {
   protected hass?: HomeAssistant;
 
@@ -155,5 +156,3 @@ declare global {
     "dialog-manage-cloudhook": DialogManageCloudhook;
   }
 }
-
-customElements.define("dialog-manage-cloudhook", DialogManageCloudhook);
