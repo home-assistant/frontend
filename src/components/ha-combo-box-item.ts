@@ -24,7 +24,7 @@ export class HaComboBoxItem extends HaMdListItem {
         /* mimicing a floating label of mdc-select */
         line-height: 1.15rem;
         font-size: calc(var(--mdc-typography-subtitle1-font-size, 1rem) * 0.75);
-        font-weight: var(--mdc-typogra phy-subtitle1-font-weight, 400);
+        font-weight: var(--mdc-typography-subtitle1-font-weight, 400);
         font-family: var(
           --mdc-typography-subtitle1-font-family,
           var(--mdc-typography-font-family)
