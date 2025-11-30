@@ -1,5 +1,6 @@
 {
   "panel": {
+    "apps": "Apps",
     "energy": "Energy",
     "calendar": "Calendar",
     "config": "Settings",
@@ -8896,6 +8897,10 @@
         "delete_confirm_title": "Remove {name}?",
         "delete_confirm_text": "Are you sure you want to remove this list and all of its items?",
         "restart_confirm": "Restart Home Assistant to finish removing this to-do list"
+      },
+      "apps": {
+        "not_available": "The apps panel requires the Supervisor. Please install Home Assistant OS or Supervised to use this feature.",
+        "error_loading": "Error loading apps"
       },
       "page-authorize": {
         "initializing": "Initializing",
