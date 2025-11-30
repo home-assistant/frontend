@@ -80,6 +80,7 @@ class DialogDeviceRegistryDetail extends LitElement {
             <ha-area-picker
               .hass=${this.hass}
               .value=${this._areaId}
+              show-label
               @value-changed=${this._areaPicked}
             ></ha-area-picker>
             <ha-labels-picker
