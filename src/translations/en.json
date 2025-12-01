@@ -2657,7 +2657,7 @@
             "update_available": {
               "update_name": "Update {name}",
               "no_update": "{name} is up to date.",
-              "description": "{name} {version} is available. You are running {newest_version}.",
+              "description": "{name} {newest_version} is available. You are running {version}.",
               "updating": "Updating {name} to {version}...",
               "create_backup": {
                 "addon": "Create backup before updating",
