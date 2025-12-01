@@ -29,7 +29,6 @@ import {
   extractApiErrorMessage,
   ignoreSupervisorError,
 } from "../../../../../data/hassio/common";
-import type { StoreAddonDetails } from "../../../../../data/supervisor/store";
 import { haStyle } from "../../../../../resources/styles";
 import type { HomeAssistant } from "../../../../../types";
 import { extractChangelog } from "../util/supervisor-app";
@@ -46,9 +45,7 @@ class SupervisorAppUpdateAvailableCard extends LitElement {
 
   @property({ type: Boolean }) public narrow = false;
 
-  @property({ attribute: false }) public addon!:
-    | HassioAddonDetails
-    | StoreAddonDetails;
+  @property({ attribute: false }) public addon!: HassioAddonDetails;
 
   @state() private _changelogContent?: string;
 

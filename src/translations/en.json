@@ -2527,8 +2527,11 @@
                 "signed": "Signed"
               },
               "role": {
-                "manager": "Supervisor manager",
-                "admin": "Supervisor admin"
+                "manager": "manager",
+                "default": "default",
+                "homeassistant": "homeassistant",
+                "backup": "backup",
+                "admin": "admin"
               },
               "stage": {
                 "title": "App stage",
