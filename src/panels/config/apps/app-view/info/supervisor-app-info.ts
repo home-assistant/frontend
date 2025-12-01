@@ -277,7 +277,7 @@ class SupervisorAppInfo extends LitElement {
               class=${classMap({
                 green: Number(this.addon.rating) >= 6,
                 yellow: [3, 4, 5].includes(Number(this.addon.rating)),
-                red: Number(this.addon.rating) >= 2,
+                red: Number(this.addon.rating) <= 2,
               })}
               @click=${this._showMoreInfo}
               id="rating"
