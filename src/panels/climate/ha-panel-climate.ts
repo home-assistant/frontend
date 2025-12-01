@@ -13,6 +13,7 @@ import { generateLovelaceViewStrategy } from "../lovelace/strategies/get-strateg
 import type { Lovelace } from "../lovelace/types";
 import "../lovelace/views/hui-view";
 import "../lovelace/views/hui-view-container";
+import "../lovelace/views/hui-view-background";
 
 const CLIMATE_LOVELACE_VIEW_CONFIG: LovelaceStrategyViewConfig = {
   strategy: {
