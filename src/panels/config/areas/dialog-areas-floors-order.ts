@@ -1,4 +1,4 @@
-import { mdiClose, mdiDragHorizontalVariant } from "@mdi/js";
+import { mdiClose, mdiDragHorizontalVariant, mdiTextureBox } from "@mdi/js";
 import type { CSSResultGroup } from "lit";
 import { LitElement, css, html, nothing } from "lit";
 import { customElement, property, query, state } from "lit/decorators";
@@ -151,7 +151,13 @@ class DialogAreasFloorsOrder extends LitElement {
           .floor=${floor.id}
         >
           <ha-md-list>
-            ${floor.areas.map((areaId) => this._renderArea(areaId))}
+            ${floor.areas.length > 0
+              ? floor.areas.map((areaId) => this._renderArea(areaId))
+              : html`<p class="empty">
+                  ${this.hass.localize(
+                    "ui.panel.config.areas.dialog.empty_floor"
+                  )}
+                </p>`}
           </ha-md-list>
         </ha-sortable>
       </div>
@@ -194,7 +200,7 @@ class DialogAreasFloorsOrder extends LitElement {
       <ha-md-list-item .sortableData=${area}>
         ${area.icon
           ? html`<ha-icon slot="start" .icon=${area.icon}></ha-icon>`
-          : nothing}
+          : html`<ha-svg-icon slot="start" .path=${mdiTextureBox}></ha-svg-icon>`}
         <span slot="headline">${area.name}</span>
         <ha-svg-icon
           class="area-handle"
@@ -399,15 +405,35 @@ class DialogAreasFloorsOrder extends LitElement {
           padding: 0;
           --md-list-item-leading-space: 16px;
           --md-list-item-trailing-space: 16px;
+          display: flex;
+          flex-direction: column;
         }
 
         ha-md-list-item {
           --md-list-item-one-line-container-height: 48px;
+          --md-list-item-container-shape: 0;
+        }
+
+        ha-md-list-item.sortable-drag {
+          border-radius: 0;
         }
 
         .area-handle {
           cursor: grab;
           color: var(--secondary-text-color);
+        }
+
+        .empty {
+          text-align: center;
+          color: var(--secondary-text-color);
+          font-style: italic;
+          margin: 0;
+          padding: 12px 16px;
+          order: 1;
+        }
+
+        ha-md-list:has(ha-md-list-item) .empty {
+          display: none;
         }
 
         .content {

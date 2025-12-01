@@ -2479,7 +2479,8 @@
           "dialog": {
             "reorder_title": "Reorder floors and areas",
             "unassigned_areas": "Unassigned areas",
-            "reorder_failed": "Failed to save order"
+            "reorder_failed": "Failed to save order",
+            "empty_floor": "No areas on this floor"
           },
           "editor": {
             "create_area": "Create area",
