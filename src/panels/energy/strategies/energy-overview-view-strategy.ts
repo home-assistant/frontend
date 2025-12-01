@@ -103,7 +103,7 @@ export class EnergyViewStrategy extends ReactiveElement {
       cards: [
         {
           type: "heading",
-          heading: hass.localize("ui.panel.energy.overview.power"),
+          heading: hass.localize("ui.panel.energy.title.power"),
           tap_action: {
             action: "navigate",
             navigation_path: "/energy/power",
@@ -141,7 +141,7 @@ export class EnergyViewStrategy extends ReactiveElement {
       cards: [
         {
           type: "heading",
-          heading: hass.localize("ui.panel.energy.overview.energy"),
+          heading: hass.localize("ui.panel.energy.title.energy"),
           tap_action: {
             action: "navigate",
             navigation_path: "/energy/electricity",
@@ -175,7 +175,7 @@ export class EnergyViewStrategy extends ReactiveElement {
         cards: [
           {
             type: "heading",
-            heading: hass.localize("ui.panel.energy.overview.gas"),
+            heading: hass.localize("ui.panel.energy.title.gas"),
           },
           {
             title: hass.localize(
@@ -194,7 +194,7 @@ export class EnergyViewStrategy extends ReactiveElement {
         cards: [
           {
             type: "heading",
-            heading: hass.localize("ui.panel.energy.overview.water"),
+            heading: hass.localize("ui.panel.energy.title.water"),
             tap_action: {
               action: "navigate",
               navigation_path: "/energy/water",

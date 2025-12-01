@@ -36,6 +36,7 @@ import "../lovelace/hui-root";
 import type { Lovelace } from "../lovelace/types";
 import "../lovelace/views/hui-view";
 import "../lovelace/views/hui-view-container";
+import type { LocalizeKeys } from "../../common/translations/localize";
 
 export const DEFAULT_ENERGY_COLLECTION_KEY = "energy_dashboard";
 
@@ -254,7 +255,9 @@ class PanelEnergy extends LitElement {
               `}
           ${!this.narrow
             ? html`<div class="main-title">
-                ${this.hass.localize("panel.energy")}
+                ${this.hass.localize(
+                  `ui.panel.energy.title.${viewPath}` as LocalizeKeys
+                ) || this.hass.localize("panel.energy")}
               </div>`
             : nothing}
 
