@@ -200,7 +200,10 @@ class DialogAreasFloorsOrder extends LitElement {
       <ha-md-list-item .sortableData=${area}>
         ${area.icon
           ? html`<ha-icon slot="start" .icon=${area.icon}></ha-icon>`
-          : html`<ha-svg-icon slot="start" .path=${mdiTextureBox}></ha-svg-icon>`}
+          : html`<ha-svg-icon
+              slot="start"
+              .path=${mdiTextureBox}
+            ></ha-svg-icon>`}
         <span slot="headline">${area.name}</span>
         <ha-svg-icon
           class="area-handle"
