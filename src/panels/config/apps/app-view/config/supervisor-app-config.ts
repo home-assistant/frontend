@@ -313,11 +313,13 @@ class SupervisorAppConfig extends LitElement {
 
   protected firstUpdated(changedProps) {
     super.firstUpdated(changedProps);
-    this._canShowSchema = !this.addon.schema!.find(
-      (entry) =>
-        // @ts-ignore
-        !SUPPORTED_UI_TYPES.includes(entry.type)
-    );
+    this._canShowSchema =
+      this.addon.schema !== null &&
+      !this.addon.schema!.find(
+        (entry) =>
+          // @ts-ignore
+          !SUPPORTED_UI_TYPES.includes(entry.type)
+      );
     this._yamlMode = !this._canShowSchema;
   }
 
