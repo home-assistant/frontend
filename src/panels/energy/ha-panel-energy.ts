@@ -146,11 +146,15 @@ class PanelEnergy extends LitElement {
     }
     await this._setLovelace();
 
-    // Navigate to first view if not there yet
-    const firstPath = this._lovelace!.config?.views?.[0]?.path;
+    // Check if current path is valid, navigate to first view if not
+    const views = this._lovelace!.config?.views || [];
+    const validPaths = views.map((view) => view.path);
     const viewPath: string | undefined = this.route!.path.split("/")[1];
-    if (viewPath !== firstPath) {
-      navigate(`${this.route!.prefix}/${firstPath}`);
+    if (!viewPath || !validPaths.includes(viewPath)) {
+      navigate(`${this.route!.prefix}/${validPaths[0]}`);
+    } else {
+      // Force hui-root to re-process the route by creating a new route object
+      this.route = { ...this.route! };
     }
   }
 
