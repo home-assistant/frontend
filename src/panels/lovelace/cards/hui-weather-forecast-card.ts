@@ -23,9 +23,9 @@ import {
   subscribeForecast,
   weatherAttrIcons,
   weatherSVGStyles,
-  weatherTempRound,
 } from "../../../data/weather";
 import type { HomeAssistant } from "../../../types";
+import { round } from "../../../common/number/round";
 import { actionHandler } from "../common/directives/action-handler-directive";
 import { computeLovelaceEntityName } from "../common/entity/compute-lovelace-entity-name";
 import { findEntities } from "../common/find-entities";
@@ -271,9 +271,14 @@ class HuiWeatherForecastCard extends LitElement implements LovelaceCard {
       ? 0
       : undefined;
 
-    const isSecondaryInfoAttributeTemperature =
-      this._config.secondary_info_attribute?.includes("temperature") ||
-      this._config.secondary_info_attribute === "dew_point";
+    const TEMPERATURE_ATTRIBUTES = [
+      "temperature",
+      "apparent_temperature",
+      "dew_point",
+    ];
+    const isSecondaryInfoAttributeTemperature = TEMPERATURE_ATTRIBUTES.some(
+      (attr) => this._config?.secondary_info_attribute?.includes(attr)
+    );
 
     const isSecondaryInfoNumber =
       this._config.secondary_info_attribute &&
@@ -373,7 +378,7 @@ class HuiWeatherForecastCard extends LitElement implements LovelaceCard {
                                     temperatureFractionDigits === 0 &&
                                       isSecondaryInfoNumber &&
                                       isSecondaryInfoAttributeTemperature
-                                      ? weatherTempRound(
+                                      ? round(
                                           stateObj.attributes[
                                             this._config
                                               .secondary_info_attribute
@@ -457,7 +462,6 @@ class HuiWeatherForecastCard extends LitElement implements LovelaceCard {
                               ? html`${formatNumber(
                                   item.temperature,
                                   this.hass!.locale,
-
                                   {
                                     maximumFractionDigits:
                                       temperatureFractionDigits,

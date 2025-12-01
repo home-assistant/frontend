@@ -179,22 +179,6 @@ const cardinalDirections = [
   "N",
 ];
 
-export function weatherTempRound(
-  value: number | undefined,
-  decimals: number | undefined
-): number | undefined {
-  if (value === undefined) {
-    return undefined;
-  }
-  if (decimals === undefined) {
-    return value;
-  }
-  const rounded = Number.isInteger(value)
-    ? value.toString()
-    : value.toFixed(decimals);
-  return Number(rounded);
-}
-
 const getWindBearingText = (degree: number | string): string => {
   const degreenum = typeof degree === "number" ? degree : parseInt(degree, 10);
   if (isFinite(degreenum)) {
@@ -336,13 +320,13 @@ const getWeatherExtrema = (
       break;
     }
     if (!tempHigh || fc.temperature > tempHigh) {
-      tempHigh = weatherTempRound(fc.temperature, temperatureFractionDigits);
+      tempHigh = round(fc.temperature, temperatureFractionDigits);
     }
-    if (!tempLow || (fc.templow && fc.templow < tempLow)) {
-      tempLow = weatherTempRound(fc.templow, temperatureFractionDigits);
+    if (fc.templow !== undefined && (!tempLow || fc.templow < tempLow)) {
+      tempLow = round(fc.templow, temperatureFractionDigits);
     }
     if (!fc.templow && (!tempLow || fc.temperature < tempLow)) {
-      tempLow = weatherTempRound(fc.temperature, temperatureFractionDigits);
+      tempLow = round(fc.temperature, temperatureFractionDigits);
     }
   }
 
