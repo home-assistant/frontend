@@ -248,7 +248,7 @@ export class HaGenericPicker extends LitElement {
     });
   };
 
-  private _hidePicker(ev) {
+  private _hidePicker(ev: Event) {
     ev.stopPropagation();
     if (this._newValue) {
       fireEvent(this, "value-changed", { value: this._newValue });

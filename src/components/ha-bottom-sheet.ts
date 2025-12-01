@@ -21,7 +21,8 @@ export class HaBottomSheet extends LitElement {
 
   private _isDragging = false;
 
-  private _handleAfterHide() {
+  private _handleAfterHide(afterHideEvent: Event) {
+    afterHideEvent.stopPropagation();
     this.open = false;
     const ev = new Event("closed", {
       bubbles: true,
