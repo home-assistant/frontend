@@ -75,7 +75,7 @@ jobs:
 
       # home-assistant/wheels doesn't support SHA pinning
       - name: Build wheels
-        uses: home-assistant/wheels@2025.10.0
+        uses: home-assistant/wheels@2025.11.0
         with:
           abi: cp313
           tag: musllinux_1_2
