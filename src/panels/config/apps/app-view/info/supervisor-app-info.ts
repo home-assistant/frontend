@@ -1171,7 +1171,9 @@ class SupervisorAppInfo extends LitElement {
       button.actionError();
       button.progress = false;
       showAlertDialog(this, {
-        title: "Failed to validate addon configuration",
+        title: this.hass.localize(
+          "ui.panel.config.apps.dashboard.action_error.validate_config"
+        ),
         text: extractApiErrorMessage(err),
       });
       return;
