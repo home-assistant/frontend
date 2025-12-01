@@ -36,11 +36,6 @@ class SupervisorAppNetwork extends LitElement {
 
   @state() private _config?: Record<string, any>;
 
-  public connectedCallback(): void {
-    super.connectedCallback();
-    this._setNetworkConfig();
-  }
-
   protected render() {
     if (!this._config) {
       return nothing;
@@ -116,8 +111,8 @@ class SupervisorAppNetwork extends LitElement {
     `;
   }
 
-  protected update(changedProperties: PropertyValues): void {
-    super.update(changedProperties);
+  protected willUpdate(changedProperties: PropertyValues): void {
+    super.willUpdate(changedProperties);
     if (changedProperties.has("addon")) {
       this._setNetworkConfig();
     }
