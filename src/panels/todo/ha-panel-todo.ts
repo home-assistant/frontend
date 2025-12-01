@@ -392,6 +392,11 @@ class PanelTodo extends LitElement {
           --mdc-shape-medium: 0 0 var(--mdc-shape-medium)
             var(--mdc-shape-medium);
         }
+
+        ha-fab {
+          display: none !important;
+        }
+
         ha-button-menu {
           max-width: 100%;
         }
