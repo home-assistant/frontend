@@ -84,12 +84,13 @@ export class HaConfigAppsAvailable extends LitElement {
 
   protected firstUpdated(changedProps: PropertyValues) {
     super.firstUpdated(changedProps);
-    this._loadData();
     const repositoryUrl = extractSearchParam("repository_url");
     navigate("/config/apps/available", { replace: true });
-    if (repositoryUrl) {
-      this._manageRepositories(repositoryUrl);
-    }
+    this._loadData().then(() => {
+      if (repositoryUrl) {
+        this._manageRepositories(repositoryUrl);
+      }
+    });
 
     this.addEventListener("hass-api-called", (ev) => this._apiCalled(ev));
   }
