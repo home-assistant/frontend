@@ -7,7 +7,6 @@ import { orderCompare } from "../../../../../common/string/compare";
 import type { AreaRegistryEntry } from "../../../../../data/area_registry";
 import { areaCompare } from "../../../../../data/area_registry";
 import type { FloorRegistryEntry } from "../../../../../data/floor_registry";
-import { floorCompare } from "../../../../../data/floor_registry";
 import type { LovelaceCardConfig } from "../../../../../data/lovelace/config/card";
 import type { HomeAssistant } from "../../../../../types";
 import { supportsAlarmModesCardFeature } from "../../../card-features/hui-alarm-modes-card-feature";
@@ -302,7 +301,12 @@ export const getFloors = (
   floorsOrder?: string[]
 ): FloorRegistryEntry[] => {
   const floors = Object.values(entries);
-  const compare = floorCompare(entries, floorsOrder);
+
+  if (!floorsOrder) {
+    return floors;
+  }
+
+  const compare = orderCompare(floorsOrder);
 
   return floors.sort((floorA, floorB) =>
     compare(floorA.floor_id, floorB.floor_id)
