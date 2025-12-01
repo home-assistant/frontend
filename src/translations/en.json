@@ -1392,7 +1392,8 @@
             "addon_dashboard": "Add-on dashboard",
             "addon_store": "Add-on store",
             "addon_info": "{addon} info",
-            "shortcuts": "[%key:ui::panel::config::info::shortcuts%]"
+            "shortcuts": "[%key:ui::panel::config::info::shortcuts%]",
+            "labs": "[%key:ui::panel::config::labs::caption%]"
           }
         },
         "filter_placeholder": "Search entities",
