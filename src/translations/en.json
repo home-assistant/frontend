@@ -2383,6 +2383,7 @@
             "name": "Name",
             "icon": "Icon",
             "level": "Level",
+            "level_helper": "Used to determine the default floor icon.",
             "name_required": "Name is required",
             "floor_id": "Floor ID",
             "unknown_error": "Unknown error",
