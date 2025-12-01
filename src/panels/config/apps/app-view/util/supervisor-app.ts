@@ -12,7 +12,7 @@ export const extractChangelog = (
   content: string
 ): string => {
   if (content.startsWith("# Changelog")) {
-    content = content.substr(12, content.length);
+    content = content.substring(12);
   }
   if (
     content.includes(`# ${addon.version}`) &&

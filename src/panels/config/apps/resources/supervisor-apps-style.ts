@@ -2,7 +2,7 @@ import { css } from "lit";
 
 export const supervisorAppsStyle = css`
   .content {
-    margin: 8px;
+    margin: var(--ha-space-2);
   }
   h1,
   .description,

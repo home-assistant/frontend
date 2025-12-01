@@ -171,7 +171,9 @@ class SupervisorAppAudio extends LitElement {
       this._inputDevices = [noDevice, ...input];
       this._outputDevices = [noDevice, ...output];
     } catch {
-      this._error = "Failed to fetch audio hardware";
+      this._error = this.hass.localize(
+        "ui.panel.config.apps.configuration.audio.failed_to_load_hardware"
+      );
       this._inputDevices = [noDevice];
       this._outputDevices = [noDevice];
     }
@@ -198,7 +200,9 @@ class SupervisorAppAudio extends LitElement {
         await suggestSupervisorAppRestart(this, this.hass, this.addon);
       }
     } catch {
-      this._error = "Failed to set addon audio device";
+      this._error = this.hass.localize(
+        "ui.panel.config.apps.configuration.audio.failed_to_save"
+      );
     }
 
     button.progress = false;

@@ -2641,7 +2641,8 @@
               "uninstall": "Failed to uninstall app",
               "get_changelog": "Failed to get changelog",
               "start_invalid_config": "Invalid configuration",
-              "go_to_config": "Go to configuration"
+              "go_to_config": "Go to configuration",
+              "validate_config": "Failed to validate app configuration"
             },
             "uninstall_dialog": {
               "title": "Uninstall {name}?",
@@ -2684,7 +2685,9 @@
               "header": "Audio",
               "input": "Audio input",
               "output": "Audio output",
-              "default": "Default"
+              "default": "Default",
+              "failed_to_load_hardware": "Failed to fetch audio hardware",
+              "failed_to_save": "Failed to set audio device"
             },
             "confirm": {
               "reset_options": {
