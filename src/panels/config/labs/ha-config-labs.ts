@@ -385,6 +385,10 @@ class HaConfigLabs extends SubscribeMixin(LitElement) {
         display: block;
       }
 
+      a[slot="toolbar-icon"] {
+        color: var(--sidebar-icon-color);
+      }
+
       .content {
         max-width: 800px;
         margin: 0 auto;

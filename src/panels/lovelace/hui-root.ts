@@ -635,10 +635,10 @@ class HUIRoot extends LitElement {
   private _isVisible = (view: LovelaceViewConfig) =>
     Boolean(
       this._editMode ||
-        view.visible === undefined ||
-        view.visible === true ||
-        (Array.isArray(view.visible) &&
-          view.visible.some((show) => show.user === this.hass!.user?.id))
+      view.visible === undefined ||
+      view.visible === true ||
+      (Array.isArray(view.visible) &&
+        view.visible.some((show) => show.user === this.hass!.user?.id))
     );
 
   private _clearParam(param: string) {

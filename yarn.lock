@@ -9350,7 +9350,7 @@ __metadata:
     node-vibrant: "npm:4.0.3"
     object-hash: "npm:3.0.0"
     pinst: "npm:3.0.0"
-    prettier: "npm:3.6.2"
+    prettier: "npm:3.7.1"
     punycode: "npm:2.3.1"
     qr-scanner: "npm:1.4.2"
     qrcode: "npm:1.5.4"
@@ -12125,12 +12125,12 @@ __metadata:
   languageName: node
   linkType: hard
 
-"prettier@npm:3.6.2":
-  version: 3.6.2
-  resolution: "prettier@npm:3.6.2"
+"prettier@npm:3.7.1":
+  version: 3.7.1
+  resolution: "prettier@npm:3.7.1"
   bin:
     prettier: bin/prettier.cjs
-  checksum: 10/1213691706bcef1371d16ef72773c8111106c3533b660b1cc8ec158bd109cdf1462804125f87f981f23c4a3dba053b6efafda30ab0114cc5b4a725606bb9ff26
+  checksum: 10/59fa89769246d395de30dec976e0ad31c8d2fe3889733765d89398c95c2b9d6cd341553a850fe14fe187407c9bfb2262a2ab1823c6de1f0205a968e2012f0f11
   languageName: node
   linkType: hard
 

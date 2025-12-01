@@ -21,7 +21,7 @@ import {
 } from "@mdi/js";
 import type { CSSResultGroup, PropertyValues, TemplateResult } from "lit";
 import { LitElement, css, html, nothing } from "lit";
-import { property, query, state } from "lit/decorators";
+import { customElement, property, query, state } from "lit/decorators";
 import { classMap } from "lit/directives/class-map";
 import { fireEvent } from "../../../common/dom/fire_event";
 import { goBack, navigate } from "../../../common/navigate";
@@ -79,6 +79,7 @@ import "./manual-script-editor";
 import type { HaManualScriptEditor } from "./manual-script-editor";
 import { showAutomationSaveTimeoutDialog } from "../automation/automation-save-timeout-dialog/show-dialog-automation-save-timeout";
 
+@customElement("ha-script-editor")
 export class HaScriptEditor extends SubscribeMixin(
   PreventUnsavedMixin(KeyboardShortcutMixin(LitElement))
 ) {
@@ -1277,8 +1278,6 @@ export class HaScriptEditor extends SubscribeMixin(
     ];
   }
 }
-
-customElements.define("ha-script-editor", HaScriptEditor);
 
 declare global {
   interface HTMLElementTagNameMap {

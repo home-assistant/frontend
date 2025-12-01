@@ -71,9 +71,7 @@ class HuiClimateFanModesCardFeature
   }
 
   public static async getConfigElement(): Promise<LovelaceCardFeatureEditor> {
-    await import(
-      "../editor/config-elements/hui-climate-fan-modes-card-feature-editor"
-    );
+    await import("../editor/config-elements/hui-climate-fan-modes-card-feature-editor");
     return document.createElement("hui-climate-fan-modes-card-feature-editor");
   }
 

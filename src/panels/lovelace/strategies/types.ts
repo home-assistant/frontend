@@ -12,14 +12,11 @@ export interface LovelaceStrategy<T = any> {
   configRequired?: boolean;
 }
 
-export interface LovelaceDashboardStrategy
-  extends LovelaceStrategy<LovelaceConfig> {}
+export interface LovelaceDashboardStrategy extends LovelaceStrategy<LovelaceConfig> {}
 
-export interface LovelaceViewStrategy
-  extends LovelaceStrategy<LovelaceViewConfig> {}
+export interface LovelaceViewStrategy extends LovelaceStrategy<LovelaceViewConfig> {}
 
-export interface LovelaceSectionStrategy
-  extends LovelaceStrategy<LovelaceSectionConfig> {}
+export interface LovelaceSectionStrategy extends LovelaceStrategy<LovelaceSectionConfig> {}
 
 export interface LovelaceStrategyEditor extends LovelaceGenericElementEditor {
   setConfig(config: LovelaceStrategyConfig): void;

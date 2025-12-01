@@ -163,11 +163,15 @@ class PanelEnergy extends LitElement {
     }
     await this._setLovelace();
 
-    // Navigate to first view if not there yet
-    const firstPath = this._lovelace!.config?.views?.[0]?.path;
+    // Check if current path is valid, navigate to first view if not
+    const views = this._lovelace!.config?.views || [];
+    const validPaths = views.map((view) => view.path);
     const viewPath: string | undefined = this.route!.path.split("/")[1];
-    if (viewPath !== firstPath) {
-      navigate(`${this.route!.prefix}/${firstPath}`);
+    if (!viewPath || !validPaths.includes(viewPath)) {
+      navigate(`${this.route!.prefix}/${validPaths[0]}`);
+    } else {
+      // Force hui-root to re-process the route by creating a new route object
+      this.route = { ...this.route! };
     }
   }
 
@@ -357,6 +361,7 @@ class PanelEnergy extends LitElement {
 
     const energy_sources = energyData.prefs.energy_sources;
     const device_consumption = energyData.prefs.device_consumption;
+    const device_consumption_water = energyData.prefs.device_consumption_water;
     const stats = energyData.state.stats;
 
     const timeSet = new Set<number>();
@@ -541,6 +546,20 @@ class PanelEnergy extends LitElement {
     });
 
     printCategory("device_consumption", devices, electricUnit);
+
+    if (device_consumption_water) {
+      const waterDevices: string[] = [];
+      device_consumption_water.forEach((source) => {
+        source = source as DeviceConsumptionEnergyPreference;
+        waterDevices.push(source.stat_consumption);
+      });
+
+      printCategory(
+        "device_consumption_water",
+        waterDevices,
+        energyData.state.waterUnit
+      );
+    }
 
     const { summedData, compareSummedData: _ } = getSummedData(
       energyData.state

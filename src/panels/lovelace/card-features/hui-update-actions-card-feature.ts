@@ -56,9 +56,7 @@ class HuiUpdateActionsCardFeature
   }
 
   public static async getConfigElement(): Promise<LovelaceCardFeatureEditor> {
-    await import(
-      "../editor/config-elements/hui-update-actions-card-feature-editor"
-    );
+    await import("../editor/config-elements/hui-update-actions-card-feature-editor");
     return document.createElement("hui-update-actions-card-feature-editor");
   }
 

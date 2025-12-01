@@ -54,9 +54,7 @@ class HuiHistoryChartCardFeature
   }
 
   public static async getConfigElement(): Promise<LovelaceCardFeatureEditor> {
-    await import(
-      "../editor/config-elements/hui-trend-graph-card-feature-editor"
-    );
+    await import("../editor/config-elements/hui-trend-graph-card-feature-editor");
     return document.createElement("hui-trend-graph-card-feature-editor");
   }
 

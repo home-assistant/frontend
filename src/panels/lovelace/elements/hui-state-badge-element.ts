@@ -24,9 +24,7 @@ export class HuiStateBadgeElement
   implements LovelaceElement
 {
   public static async getConfigElement(): Promise<LovelacePictureElementEditor> {
-    await import(
-      "../editor/config-elements/elements/hui-state-badge-element-editor"
-    );
+    await import("../editor/config-elements/elements/hui-state-badge-element-editor");
     return document.createElement("hui-state-badge-element-editor");
   }
 

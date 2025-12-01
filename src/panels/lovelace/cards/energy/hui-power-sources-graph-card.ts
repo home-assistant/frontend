@@ -323,9 +323,9 @@ export class HuiPowerSourcesGraphCard
     const negative: [number, number][] = [];
     Object.entries(data).forEach(([x, y]) => {
       const ts = Number(x);
-      const meanY = y.reduce((a, b) => a + b, 0) / y.length;
-      positive.push([ts, Math.max(0, meanY)]);
-      negative.push([ts, Math.min(0, meanY)]);
+      const sumY = y.reduce((a, b) => a + b, 0);
+      positive.push([ts, Math.max(0, sumY)]);
+      negative.push([ts, Math.min(0, sumY)]);
     });
     return { positive, negative };
   }

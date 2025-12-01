@@ -1,7 +1,7 @@
 import { mdiArrowLeft, mdiArrowRight, mdiPlus } from "@mdi/js";
 import type { PropertyValues, TemplateResult } from "lit";
 import { LitElement, css, html } from "lit";
-import { property, state } from "lit/decorators";
+import { customElement, property, state } from "lit/decorators";
 import { fireEvent } from "../../../common/dom/fire_event";
 import type { LovelaceViewElement } from "../../../data/lovelace";
 import type { LovelaceViewConfig } from "../../../data/lovelace/config/view";
@@ -13,6 +13,7 @@ import type { HuiCardOptions } from "../components/hui-card-options";
 import { replaceCard } from "../editor/config-util";
 import type { Lovelace } from "../types";
 
+@customElement("hui-sidebar-view")
 export class SideBarView extends LitElement implements LovelaceViewElement {
   @property({ attribute: false }) public hass!: HomeAssistant;
 
@@ -256,5 +257,3 @@ declare global {
     "hui-sidebar-view": SideBarView;
   }
 }
-
-customElements.define("hui-sidebar-view", SideBarView);

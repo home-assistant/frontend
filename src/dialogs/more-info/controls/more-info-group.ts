@@ -1,7 +1,7 @@
 import type { HassEntity } from "home-assistant-js-websocket";
 import type { CSSResultGroup, PropertyValues } from "lit";
 import { LitElement, css, html, nothing } from "lit";
-import { property, state } from "lit/decorators";
+import { customElement, property, state } from "lit/decorators";
 import { dynamicElement } from "../../../common/dom/dynamic-element-directive";
 import type { GroupEntity } from "../../../data/group";
 import { computeGroupDomain } from "../../../data/group";
@@ -13,6 +13,7 @@ import {
   importMoreInfoControl,
 } from "../state_more_info_control";
 
+@customElement("more-info-group")
 class MoreInfoGroup extends LitElement {
   @property({ attribute: false }) public hass!: HomeAssistant;
 
@@ -105,8 +106,6 @@ class MoreInfoGroup extends LitElement {
     ];
   }
 }
-
-customElements.define("more-info-group", MoreInfoGroup);
 
 declare global {
   interface HTMLElementTagNameMap {
