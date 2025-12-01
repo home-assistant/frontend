@@ -1112,7 +1112,7 @@ class SupervisorAppInfo extends LitElement {
       const eventdata = {
         success: true,
         response: undefined,
-        path: "stop",
+        path: "restart",
       };
       fireEvent(this, "hass-api-called", eventdata);
     } catch (err: any) {
