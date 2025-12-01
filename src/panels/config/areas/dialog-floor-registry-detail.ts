@@ -145,6 +145,10 @@ class DialogFloorDetail extends LitElement {
                 "ui.panel.config.floors.editor.level"
               )}
               type="number"
+              .helper=${this.hass.localize(
+                "ui.panel.config.floors.editor.level_helper"
+              )}
+              helperPersistent
             ></ha-textfield>
 
             <ha-icon-picker
