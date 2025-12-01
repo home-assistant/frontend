@@ -34,6 +34,11 @@ import type { AreasFloorsOrderDialogParams } from "./show-dialog-areas-floors-or
 
 const UNASSIGNED_FLOOR = "__unassigned__";
 
+interface FloorChange {
+  areaId: string;
+  floorId: string | null;
+}
+
 @customElement("dialog-areas-floors-order")
 class DialogAreasFloorsOrder extends LitElement {
   @property({ attribute: false }) public hass!: HomeAssistant;
@@ -41,8 +46,6 @@ class DialogAreasFloorsOrder extends LitElement {
   @state() private _open = false;
 
   @state() private _hierarchy?: AreasFloorHierarchy;
-
-  @state() private _floorChanges = new Map<string, string | null>();
 
   @state() private _saving = false;
 
@@ -52,7 +55,6 @@ class DialogAreasFloorsOrder extends LitElement {
     _params: AreasFloorsOrderDialogParams
   ): Promise<void> {
     this._open = true;
-    this._floorChanges = new Map();
     this._computeHierarchy();
   }
 
@@ -70,7 +72,6 @@ class DialogAreasFloorsOrder extends LitElement {
   private _dialogClosed(): void {
     this._open = false;
     this._hierarchy = undefined;
-    this._floorChanges = new Map();
     this._saving = false;
     fireEvent(this, "dialog-closed", { dialog: this.localName });
   }
@@ -282,10 +283,6 @@ class DialogAreasFloorsOrder extends LitElement {
 
     const newFloorId = floor === UNASSIGNED_FLOOR ? null : floor;
 
-    // Track the floor change
-    this._floorChanges = new Map(this._floorChanges);
-    this._floorChanges.set(area.area_id, newFloorId);
-
     // Update hierarchy
     this._hierarchy = {
       ...this._hierarchy,
@@ -310,6 +307,34 @@ class DialogAreasFloorsOrder extends LitElement {
     };
   }
 
+  private _computeFloorChanges(): FloorChange[] {
+    if (!this._hierarchy) {
+      return [];
+    }
+
+    const changes: FloorChange[] = [];
+
+    // Check areas assigned to floors
+    for (const floor of this._hierarchy.floors) {
+      for (const areaId of floor.areas) {
+        const originalFloorId = this.hass.areas[areaId]?.floor_id ?? null;
+        if (floor.id !== originalFloorId) {
+          changes.push({ areaId, floorId: floor.id });
+        }
+      }
+    }
+
+    // Check unassigned areas
+    for (const areaId of this._hierarchy.areas) {
+      const originalFloorId = this.hass.areas[areaId]?.floor_id ?? null;
+      if (originalFloorId !== null) {
+        changes.push({ areaId, floorId: null });
+      }
+    }
+
+    return changes;
+  }
+
   private async _save(): Promise<void> {
     if (!this._hierarchy || this._saving) {
       return;
@@ -322,11 +347,11 @@ class DialogAreasFloorsOrder extends LitElement {
       const floorOrder = getFloorOrder(this._hierarchy);
 
       // Update floor assignments for areas that changed floors
-      const floorChangePromises = Array.from(this._floorChanges.entries()).map(
-        ([areaId, newFloorId]) =>
-          updateAreaRegistryEntry(this.hass, areaId, {
-            floor_id: newFloorId,
-          })
+      const floorChanges = this._computeFloorChanges();
+      const floorChangePromises = floorChanges.map(({ areaId, floorId }) =>
+        updateAreaRegistryEntry(this.hass, areaId, {
+          floor_id: floorId,
+        })
       );
 
       await Promise.all(floorChangePromises);
