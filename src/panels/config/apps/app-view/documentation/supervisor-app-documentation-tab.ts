@@ -61,11 +61,11 @@ class SupervisorAppDocumentationDashboard extends LitElement {
         }
         .content {
           margin: auto;
-          padding: 8px;
+          padding: var(--ha-space-2);
           max-width: 1024px;
         }
         ha-markdown {
-          padding: 16px;
+          padding: var(--ha-space-4);
         }
       `,
     ];
