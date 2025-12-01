@@ -6,6 +6,7 @@ import {
   mdiHelpCircle,
   mdiPencil,
   mdiPlus,
+  mdiSort,
 } from "@mdi/js";
 import {
   css,
@@ -58,6 +59,7 @@ import {
   loadAreaRegistryDetailDialog,
   showAreaRegistryDetailDialog,
 } from "./show-dialog-area-registry-detail";
+import { showAreasFloorsOrderDialog } from "./show-dialog-areas-floors-order";
 import { showFloorRegistryDetailDialog } from "./show-dialog-floor-registry-detail";
 
 const UNASSIGNED_FLOOR = "__unassigned__";
@@ -176,12 +178,21 @@ export class HaConfigAreasDashboard extends LitElement {
         .route=${this.route}
         has-fab
       >
-        <ha-icon-button
-          slot="toolbar-icon"
-          .label=${this.hass.localize("ui.common.help")}
-          .path=${mdiHelpCircle}
-          @click=${this._showHelp}
-        ></ha-icon-button>
+        <ha-button-menu slot="toolbar-icon">
+          <ha-icon-button
+            slot="trigger"
+            .label=${this.hass.localize("ui.common.menu")}
+            .path=${mdiDotsVertical}
+          ></ha-icon-button>
+          <ha-list-item graphic="icon" @click=${this._showReorderDialog}>
+            <ha-svg-icon .path=${mdiSort} slot="graphic"></ha-svg-icon>
+            ${this.hass.localize("ui.panel.config.areas.picker.reorder")}
+          </ha-list-item>
+          <ha-list-item graphic="icon" @click=${this._showHelp}>
+            <ha-svg-icon .path=${mdiHelpCircle} slot="graphic"></ha-svg-icon>
+            ${this.hass.localize("ui.common.help")}
+          </ha-list-item>
+        </ha-button-menu>
         <div class="container">
           <ha-sortable
             handle-selector=".handle"
@@ -600,6 +611,10 @@ export class HaConfigAreasDashboard extends LitElement {
 
   private _createArea() {
     this._openAreaDialog();
+  }
+
+  private _showReorderDialog() {
+    showAreasFloorsOrderDialog(this, {});
   }
 
   private _showHelp() {
