@@ -124,7 +124,7 @@ class SupervisorAppInfo extends LitElement {
     super.disconnectedCallback();
 
     if (this._fetchDataTimeout) {
-      clearInterval(this._fetchDataTimeout);
+      clearTimeout(this._fetchDataTimeout);
       this._fetchDataTimeout = undefined;
     }
   }
