@@ -115,11 +115,7 @@ class PanelLight extends LitElement {
         this._lovelace
           ? html`
               <hui-view-container .hass=${this.hass}>
-                <hui-view-background
-                  .hass=${this.hass}
-                  .background=${this._lovelace.config.views[0].background}
-                >
-                </hui-view-background>
+                <hui-view-background .hass=${this.hass}> </hui-view-background>
                 <hui-view
                   .hass=${this.hass}
                   .narrow=${this.narrow}
