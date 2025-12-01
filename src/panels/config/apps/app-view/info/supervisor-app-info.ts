@@ -675,6 +675,7 @@ class SupervisorAppInfo extends LitElement {
                       variant="danger"
                       appearance="plain"
                       @click=${this._restartClicked}
+                      .disabled=${systemManaged && !this.controlEnabled}
                     >
                       ${this.hass.localize(
                         "ui.panel.config.apps.dashboard.restart"
@@ -1099,6 +1100,10 @@ class SupervisorAppInfo extends LitElement {
   }
 
   private async _restartClicked(ev: CustomEvent): Promise<void> {
+    if (this._isSystemManaged(this.addon) && !this.controlEnabled) {
+      return;
+    }
+
     const button = ev.currentTarget as any;
     button.progress = true;
 
