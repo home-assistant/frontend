@@ -23,7 +23,10 @@ import {
   getSummedData,
 } from "../../data/energy";
 import type { LovelaceConfig } from "../../data/lovelace/config/types";
-import type { LovelaceViewConfig } from "../../data/lovelace/config/view";
+import {
+  isStrategyView,
+  type LovelaceViewConfig,
+} from "../../data/lovelace/config/view";
 import type { StatisticValue } from "../../data/recorder";
 import { haStyle } from "../../resources/styles";
 import type { HomeAssistant, PanelInfo } from "../../types";
@@ -47,6 +50,7 @@ const OVERVIEW_VIEW = {
   strategy: {
     type: "energy-overview",
     collection_key: DEFAULT_ENERGY_COLLECTION_KEY,
+    allow_compare: false,
   },
 } as LovelaceViewConfig;
 
@@ -56,6 +60,7 @@ const ENERGY_VIEW = {
   strategy: {
     type: "energy",
     collection_key: DEFAULT_ENERGY_COLLECTION_KEY,
+    allow_compare: true,
   },
 } as LovelaceViewConfig;
 
@@ -65,6 +70,7 @@ const WATER_VIEW = {
   strategy: {
     type: "water",
     collection_key: DEFAULT_ENERGY_COLLECTION_KEY,
+    allow_compare: true,
   },
 } as LovelaceViewConfig;
 
@@ -74,6 +80,7 @@ const POWER_VIEW = {
   strategy: {
     type: "power",
     collection_key: DEFAULT_ENERGY_COLLECTION_KEY,
+    allow_compare: false,
   },
 } as LovelaceViewConfig;
 
@@ -217,6 +224,7 @@ class PanelEnergy extends LitElement {
       views.findIndex((view) => view.path === viewPath),
       0
     );
+    const view = views[viewIndex];
 
     const showBack = this._searchParms.has("historyBack") || viewIndex > 0;
 
@@ -253,6 +261,7 @@ class PanelEnergy extends LitElement {
           <hui-energy-period-selector
             .hass=${this.hass}
             .collectionKey=${DEFAULT_ENERGY_COLLECTION_KEY}
+            .allowCompare=${isStrategyView(view) && view.strategy.allow_compare}
           >
             ${this.hass.user?.is_admin
               ? html`
