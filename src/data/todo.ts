@@ -28,6 +28,7 @@ export interface TodoItem {
   status: TodoItemStatus | null;
   description?: string | null;
   due?: string | null;
+  priority?: number | null;
 }
 
 export const enum TodoListEntityFeature {
