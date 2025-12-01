@@ -659,6 +659,7 @@ export class HaAssistChat extends LitElement {
       --markdown-table-border-color: var(--divider-color);
       --markdown-code-background-color: var(--primary-background-color);
       --markdown-code-text-color: var(--primary-text-color);
+      --markdown-list-indent: 1rem;
       &:not(:has(ha-markdown-element)) {
         min-height: 1lh;
         min-width: 1lh;

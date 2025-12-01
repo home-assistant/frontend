@@ -71,13 +71,11 @@ export class HaMarkdown extends LitElement {
       color: var(--markdown-link-color, var(--primary-color));
     }
     img {
-      background-color: rgba(10, 10, 10, 0.15);
+      background-color: var(--markdown-image-background-color);
       border-radius: var(--markdown-image-border-radius);
       max-width: 100%;
-      min-height: 2lh;
       height: auto;
       width: auto;
-      text-indent: 4px;
       transition: height 0.2s ease-in-out;
     }
     p:first-child > img:first-child {
@@ -86,9 +84,9 @@ export class HaMarkdown extends LitElement {
     p:first-child > img:last-child {
       vertical-align: top;
     }
-    ol,
-    ul {
-      padding-inline-start: 1rem;
+    :host > ul,
+    :host > ol {
+      padding-inline-start: var(--markdown-list-indent, revert);
     }
     li {
       &:has(input[type="checkbox"]) {
