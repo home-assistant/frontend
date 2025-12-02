@@ -16,6 +16,7 @@ import { classMap } from "lit/directives/class-map";
 import { repeat } from "lit/directives/repeat";
 import memoizeOne from "memoize-one";
 import { fireEvent } from "../../../common/dom/fire_event";
+import { mainWindow } from "../../../common/dom/get_main_window";
 import { computeAreaName } from "../../../common/entity/compute_area_name";
 import { computeDeviceName } from "../../../common/entity/compute_device_name";
 import { computeDomain } from "../../../common/entity/compute_domain";
@@ -298,6 +299,15 @@ class DialogAddAutomationElement
       }
     );
 
+    // add initial dialog view state to history
+    mainWindow.history.pushState(
+      {
+        ...mainWindow.history.state,
+        data: {},
+      },
+      ""
+    );
+
     if (this._params?.type === "action") {
       this.hass.loadBackendTranslation("services");
       getServiceIcons(this.hass);
@@ -318,7 +328,24 @@ class DialogAddAutomationElement
     this._bottomSheetMode = this._narrow;
   }
 
-  public closeDialog() {
+  public closeDialog(historyState?: any) {
+    if (historyState && (this._selectedTarget || this._selectedGroup)) {
+      if (historyState.data?.target) {
+        this._selectedTarget = historyState.data.target;
+        this._getItemsByTarget();
+        return false;
+      }
+      if (historyState.data?.group) {
+        this._selectedGroup = historyState.data.group;
+        return false;
+      }
+
+      // return to home
+      this._selectedTarget = undefined;
+      this._selectedGroup = undefined;
+      return false;
+    }
+
     this.removeKeyboardShortcuts();
     this._unsubscribe();
     if (this._params) {
@@ -1649,11 +1676,7 @@ class DialogAddAutomationElement
   }
 
   private _back() {
-    if (this._selectedTarget) {
-      this._targetPickerElement?.navigateBack();
-      return;
-    }
-    this._selectedGroup = undefined;
+    mainWindow.history.back();
   }
 
   private _groupSelected(ev) {
@@ -1664,6 +1687,16 @@ class DialogAddAutomationElement
       return;
     }
     this._selectedGroup = group.value;
+    mainWindow.history.pushState(
+      {
+        ...mainWindow.history.state,
+        data: {
+          group: this._selectedGroup,
+        },
+      },
+      ""
+    );
+
     this._selectedCollectionIndex = ev.currentTarget.index;
     requestAnimationFrame(() => {
       this._itemsListElement?.scrollTo(0, 0);
@@ -1689,6 +1722,15 @@ class DialogAddAutomationElement
     this._targetItems = undefined;
     this._loadItemsError = false;
     this._selectedTarget = ev.detail.value;
+    mainWindow.history.pushState(
+      {
+        ...mainWindow.history.state,
+        data: {
+          target: this._selectedTarget,
+        },
+      },
+      ""
+    );
 
     requestAnimationFrame(() => {
       if (this._narrow) {
