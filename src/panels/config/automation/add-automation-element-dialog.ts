@@ -555,8 +555,7 @@ class DialogAddAutomationElement
                           interactive
                           type="button"
                           class="paste"
-                          .value=${PASTE_VALUE}
-                          @click=${this._selected}
+                          @click=${this._paste}
                         >
                           <div class="shortcut-label">
                             <div class="label">
@@ -1668,6 +1667,11 @@ class DialogAddAutomationElement
     requestAnimationFrame(() => {
       this._itemsListElement?.scrollTo(0, 0);
     });
+  }
+
+  private _paste() {
+    this._params!.add(PASTE_VALUE);
+    this.closeDialog();
   }
 
   private _selected(ev: CustomEvent<{ value: string }>) {
