@@ -15,18 +15,19 @@ import type { LocalizeKeys } from "../../../common/translations/localize";
 import "../../../components/ha-automation-row";
 import type { HaAutomationRow } from "../../../components/ha-automation-row";
 import "../../../components/ha-card";
-import "../../../components/ha-md-button-menu";
-import "../../../components/ha-md-menu-item";
+import "../../../components/ha-dropdown";
+import "../../../components/ha-dropdown-item";
+import type { HaDropdownItem } from "../../../components/ha-dropdown-item";
 import type { ScriptFieldSidebarConfig } from "../../../data/automation";
 import type { Field } from "../../../data/script";
 import { SELECTOR_SELECTOR_BUILDING_BLOCKS } from "../../../data/selector/selector_selector";
 import { haStyle } from "../../../resources/styles";
 import type { HomeAssistant } from "../../../types";
 import { isMac } from "../../../util/is_mac";
+import { showToast } from "../../../util/toast";
 import { indentStyle, overflowStyles } from "../automation/styles";
 import "./ha-script-field-selector-editor";
 import type HaScriptFieldSelectorEditor from "./ha-script-field-selector-editor";
-import { showToast } from "../../../util/toast";
 
 @customElement("ha-script-field-row")
 export default class HaScriptFieldRow extends LitElement {
@@ -79,36 +80,33 @@ export default class HaScriptFieldRow extends LitElement {
           .highlight=${this.highlight}
           @delete-row=${this._onDelete}
         >
-          <ha-md-button-menu
-            quick
+          <ha-dropdown
             slot="icons"
             @click=${preventDefaultStopPropagation}
             @keydown=${stopPropagation}
-            @closed=${stopPropagation}
-            positioning="fixed"
-            anchor-corner="end-end"
-            menu-corner="start-end"
+            @wa-select=${this._handleDropdownSelect}
+            placement="bottom-end"
           >
             <ha-icon-button
               slot="trigger"
               .label=${this.hass.localize("ui.common.menu")}
               .path=${mdiDotsVertical}
             ></ha-icon-button>
-            <ha-md-menu-item .clickAction=${this._toggleYamlMode}>
-              <ha-svg-icon slot="start" .path=${mdiPlaylistEdit}></ha-svg-icon>
+            <ha-dropdown-item data-action="toggle_yaml_mode">
+              <ha-svg-icon slot="icon" .path=${mdiPlaylistEdit}></ha-svg-icon>
               <div class="overflow-label">
                 ${this.hass.localize(
                   `ui.panel.config.automation.editor.edit_${!this._yamlMode ? "yaml" : "ui"}`
                 )}
                 <span class="shortcut-placeholder ${isMac ? "mac" : ""}"></span>
               </div>
-            </ha-md-menu-item>
-            <ha-md-menu-item
-              .clickAction=${this._onDelete}
+            </ha-dropdown-item>
+            <ha-dropdown-item
+              data-action="delete"
               .disabled=${this.disabled}
               class="warning"
             >
-              <ha-svg-icon slot="start" .path=${mdiDelete}></ha-svg-icon>
+              <ha-svg-icon slot="icon" .path=${mdiDelete}></ha-svg-icon>
               <div class="overflow-label">
                 ${this.hass.localize(
                   "ui.panel.config.automation.editor.actions.delete"
@@ -118,7 +116,6 @@ export default class HaScriptFieldRow extends LitElement {
                       <span
                         >${isMac
                           ? html`<ha-svg-icon
-                              slot="start"
                               .path=${mdiAppleKeyboardCommand}
                             ></ha-svg-icon>`
                           : this.hass.localize(
@@ -134,8 +131,8 @@ export default class HaScriptFieldRow extends LitElement {
                     </span>`
                   : nothing}
               </div>
-            </ha-md-menu-item>
-          </ha-md-button-menu>
+            </ha-dropdown-item>
+          </ha-dropdown>
 
           <h3 slot="header">${this.key}</h3>
 
@@ -185,7 +182,7 @@ export default class HaScriptFieldRow extends LitElement {
                       .label=${this.hass.localize("ui.common.menu")}
                       .path=${mdiDotsVertical}
                     ></ha-icon-button>
-                    <ha-md-menu-item
+                    <ha-dropdown-item
                       .clickAction=${this._toggleYamlMode}
                       selector-row
                     >
@@ -201,8 +198,8 @@ export default class HaScriptFieldRow extends LitElement {
                           class="shortcut-placeholder ${isMac ? "mac" : ""}"
                         ></span>
                       </div>
-                    </ha-md-menu-item>
-                    <ha-md-menu-item
+                    </ha-dropdown-item>
+                    <ha-dropdown-item
                       .clickAction=${this._onDelete}
                       .disabled=${this.disabled}
                       class="warning"
@@ -236,7 +233,7 @@ export default class HaScriptFieldRow extends LitElement {
                             </span>`
                           : nothing}
                       </div>
-                    </ha-md-menu-item>
+                    </ha-dropdown-item>
                   </ha-md-button-menu>
                 </ha-automation-row>
               </ha-card>
@@ -420,6 +417,23 @@ export default class HaScriptFieldRow extends LitElement {
     this._selectorRowElement?.focus();
   }
 
+  private _handleDropdownSelect(ev: CustomEvent<{ item: HaDropdownItem }>) {
+    const action = ev.detail?.item?.dataset?.action;
+
+    if (!action) {
+      return;
+    }
+
+    switch (action) {
+      case "toggle_yaml_mode":
+        this._toggleYamlMode(ev.target as HTMLElement);
+        break;
+      case "delete":
+        this._onDelete();
+        break;
+    }
+  }
+
   static get styles(): CSSResultGroup {
     return [
       haStyle,
@@ -476,9 +490,6 @@ export default class HaScriptFieldRow extends LitElement {
         }
         .selected_menu_item {
           color: var(--primary-color);
-        }
-        li[role="separator"] {
-          border-bottom-color: var(--divider-color);
         }
         .selector-row {
           padding-top: 12px;
