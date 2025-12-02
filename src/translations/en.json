@@ -9570,10 +9570,11 @@
       },
       "energy": {
         "title": {
-          "energy": "Energy",
-          "power": "Power",
+          "overview": "Summary",
+          "electricity": "Energy",
           "gas": "Gas",
-          "water": "Water"
+          "water": "Water",
+          "now": "Now"
         },
         "download_data": "[%key:ui::panel::history::download_data%]",
         "configure": "[%key:ui::dialogs::quick-bar::commands::navigation::energy%]",

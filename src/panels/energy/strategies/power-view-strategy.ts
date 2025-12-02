@@ -20,6 +20,7 @@ export class PowerViewStrategy extends ReactiveElement {
     const energyCollection = getEnergyDataCollection(hass, {
       key: collectionKey,
     });
+    await energyCollection.refresh();
     const prefs = energyCollection.prefs;
 
     const hasPowerSources = prefs?.energy_sources.some(
@@ -39,10 +40,13 @@ export class PowerViewStrategy extends ReactiveElement {
 
     view.type = "sidebar";
 
-    view.cards!.push({
-      type: "energy-compare",
-      collection_key: collectionKey,
-    });
+    if (hasPowerSources) {
+      view.cards!.push({
+        title: hass.localize("ui.panel.energy.cards.power_sources_graph_title"),
+        type: "power-sources-graph",
+        collection_key: collectionKey,
+      });
+    }
 
     if (hasPowerDevices) {
       const showFloorsNAreas = !prefs.device_consumption.some(
@@ -54,14 +58,6 @@ export class PowerViewStrategy extends ReactiveElement {
         collection_key: collectionKey,
         group_by_floor: showFloorsNAreas,
         group_by_area: showFloorsNAreas,
-      });
-    }
-
-    if (hasPowerSources) {
-      view.cards!.push({
-        title: hass.localize("ui.panel.energy.cards.power_sources_graph_title"),
-        type: "power-sources-graph",
-        collection_key: collectionKey,
       });
     }
 

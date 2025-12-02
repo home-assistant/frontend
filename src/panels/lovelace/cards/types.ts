@@ -235,6 +235,7 @@ export interface WaterSankeyCardConfig extends EnergyCardBaseConfig {
 export interface PowerSourcesGraphCardConfig extends EnergyCardBaseConfig {
   type: "power-sources-graph";
   title?: string;
+  show_legend: boolean;
 }
 
 export interface PowerSankeyCardConfig extends EnergyCardBaseConfig {

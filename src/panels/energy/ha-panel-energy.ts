@@ -51,47 +51,38 @@ const OVERVIEW_VIEW = {
   strategy: {
     type: "energy-overview",
     collection_key: DEFAULT_ENERGY_COLLECTION_KEY,
-    allow_compare: false,
   },
 } as LovelaceViewConfig;
 
 const ENERGY_VIEW = {
   path: "electricity",
-  back_path: "/energy",
   strategy: {
     type: "energy",
     collection_key: DEFAULT_ENERGY_COLLECTION_KEY,
-    allow_compare: true,
   },
 } as LovelaceViewConfig;
 
 const WATER_VIEW = {
-  back_path: "/energy",
   path: "water",
   strategy: {
     type: "water",
     collection_key: DEFAULT_ENERGY_COLLECTION_KEY,
-    allow_compare: true,
   },
 } as LovelaceViewConfig;
 
 const GAS_VIEW = {
-  back_path: "/energy",
   path: "gas",
   strategy: {
     type: "gas",
     collection_key: DEFAULT_ENERGY_COLLECTION_KEY,
-    allow_compare: true,
   },
 } as LovelaceViewConfig;
 
 const POWER_VIEW = {
-  back_path: "/energy",
-  path: "power",
+  path: "now",
   strategy: {
     type: "power",
-    collection_key: DEFAULT_ENERGY_COLLECTION_KEY,
-    allow_compare: false,
+    collection_key: "energy_dashboard_now",
   },
 } as LovelaceViewConfig;
 
@@ -198,7 +189,7 @@ class PanelEnergy extends LitElement {
       enableFullEditMode: () => undefined,
       saveConfig: async () => undefined,
       deleteConfig: async () => undefined,
-      setEditMode: () => undefined,
+      setEditMode: () => this._navigateConfig(),
       showToast: () => undefined,
     };
   }
@@ -252,57 +243,14 @@ class PanelEnergy extends LitElement {
         .panel=${this.panel}
         @reload-energy-panel=${this._reloadConfig}
       >
-        <div class="toolbar" slot="toolbar">
-          ${showBack
-            ? html`
-                <ha-icon-button-arrow-prev
-                  @click=${this._back}
-                  slot="navigationIcon"
-                ></ha-icon-button-arrow-prev>
-              `
-            : html`
-                <ha-menu-button
-                  slot="navigationIcon"
-                  .hass=${this.hass}
-                  .narrow=${this.narrow}
-                ></ha-menu-button>
-              `}
-          ${!this.narrow
-            ? html`<div class="main-title">
-                ${this.hass.localize(
-                  `ui.panel.energy.title.${viewPath}` as LocalizeKeys
-                ) || this.hass.localize("panel.energy")}
-              </div>`
-            : nothing}
-
-          <hui-energy-period-selector
-            .hass=${this.hass}
-            .collectionKey=${DEFAULT_ENERGY_COLLECTION_KEY}
-            .allowCompare=${isStrategyView(view) && view.strategy.allow_compare}
-          >
-            ${this.hass.user?.is_admin
-              ? html`
-                  <ha-list-item
-                    slot="overflow-menu"
-                    graphic="icon"
-                    @request-selected=${this._navigateConfig}
-                  >
-                    <ha-svg-icon slot="graphic" .path=${mdiPencil}>
-                    </ha-svg-icon>
-                    ${this.hass!.localize("ui.panel.energy.configure")}
-                  </ha-list-item>
-                `
-              : nothing}
-            <ha-list-item
-              slot="overflow-menu"
-              graphic="icon"
-              @request-selected=${this._dumpCSV}
-            >
-              <ha-svg-icon slot="graphic" .path=${mdiDownload}> </ha-svg-icon>
-              ${this.hass!.localize("ui.panel.energy.download_data")}
-            </ha-list-item>
-          </hui-energy-period-selector>
-        </div>
+        <ha-list-item
+          slot="actionItems"
+          graphic="icon"
+          @request-selected=${this._dumpCSV}
+        >
+          <ha-svg-icon slot="graphic" .path=${mdiDownload}> </ha-svg-icon>
+          ${this.hass!.localize("ui.panel.energy.download_data")}
+        </ha-list-item>
       </hui-root>
     `;
   }
@@ -343,23 +291,32 @@ class PanelEnergy extends LitElement {
     if (hasEnergy) {
       views.push(ENERGY_VIEW);
     }
-    if (hasPower) {
-      views.push(POWER_VIEW);
-    }
     if (hasGas) {
       views.push(GAS_VIEW);
     }
     if (hasWater) {
       views.push(WATER_VIEW);
     }
+    if (hasPower) {
+      views.push(POWER_VIEW);
+    }
     if (views.length > 1) {
       views.unshift(OVERVIEW_VIEW);
     }
-    return { views };
+    return {
+      views: views.map((view) => ({
+        ...view,
+        title:
+          view.title ||
+          this.hass.localize(
+            `ui.panel.energy.title.${view.path}` as LocalizeKeys
+          ),
+      })),
+    };
   }
 
-  private _navigateConfig(ev) {
-    ev.stopPropagation();
+  private _navigateConfig(ev?: Event) {
+    ev?.stopPropagation();
     navigate("/config/energy?historyBack=1");
   }
 
