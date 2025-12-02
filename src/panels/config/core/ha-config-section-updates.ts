@@ -1,4 +1,11 @@
-import { mdiDotsVertical, mdiRefresh } from "@mdi/js";
+import {
+  mdiCheckboxBlankOutline,
+  mdiCheckboxMarked,
+  mdiDotsVertical,
+  mdiLocationEnter,
+  mdiLocationExit,
+  mdiRefresh,
+} from "@mdi/js";
 import type { HassEntities } from "home-assistant-js-websocket";
 import type { TemplateResult } from "lit";
 import { LitElement, css, html } from "lit";
@@ -78,11 +85,13 @@ class HaConfigSectionUpdates extends LitElement {
               .path=${mdiDotsVertical}
             ></ha-icon-button>
 
-            <ha-dropdown-item
-              type="checkbox"
-              value="show_skipped"
-              .checked=${this._showSkipped}
-            >
+            <ha-dropdown-item value="show_skipped">
+              <ha-svg-icon
+                .path=${this._showSkipped
+                  ? mdiCheckboxMarked
+                  : mdiCheckboxBlankOutline}
+                slot="icon"
+              ></ha-svg-icon>
               ${this.hass.localize("ui.panel.config.updates.show_skipped")}
             </ha-dropdown-item>
             ${this._supervisorInfo
@@ -92,6 +101,12 @@ class HaConfigSectionUpdates extends LitElement {
                     value="toggle_beta"
                     .disabled=${this._supervisorInfo.channel === "dev"}
                   >
+                    <ha-svg-icon
+                      .path=${this._supervisorInfo.channel === "stable"
+                        ? mdiLocationEnter
+                        : mdiLocationExit}
+                      slot="icon"
+                    ></ha-svg-icon>
                     ${this._supervisorInfo.channel === "stable"
                       ? this.hass.localize("ui.panel.config.updates.join_beta")
                       : this.hass.localize(
