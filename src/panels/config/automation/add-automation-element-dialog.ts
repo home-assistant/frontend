@@ -726,15 +726,26 @@ class DialogAddAutomationElement
       );
 
       if (targetId) {
-        if (targetType === "area" && this.hass.areas[targetId]?.floor_id) {
-          const floorId = this.hass.areas[targetId].floor_id;
-          subtitle = computeFloorName(this.hass.floors[floorId]) || floorId;
-        }
-        if (targetType === "device" && this.hass.devices[targetId]?.area_id) {
-          const areaId = this.hass.devices[targetId].area_id;
-          subtitle = computeAreaName(this.hass.areas[areaId]) || areaId;
-        }
-        if (targetType === "entity" && this.hass.states[targetId]) {
+        if (targetType === "area") {
+          const floorId = this.hass.areas[targetId]?.floor_id;
+          if (floorId) {
+            subtitle = computeFloorName(this.hass.floors[floorId]) || floorId;
+          } else {
+            subtitle = this.hass.localize(
+              "ui.panel.config.automation.editor.other_areas"
+            );
+          }
+        } else if (targetType === "device") {
+          const areaId = this.hass.devices[targetId]?.area_id;
+          if (areaId) {
+            subtitle = computeAreaName(this.hass.areas[areaId]) || areaId;
+          } else {
+            const device = this.hass.devices[targetId];
+            subtitle = this.hass.localize(
+              `ui.panel.config.automation.editor.${device?.entry_type === "service" ? "services" : "unassigned_devices"}`
+            );
+          }
+        } else if (targetType === "entity" && this.hass.states[targetId]) {
           const entity = this.hass.entities[targetId];
           if (entity && !entity.device_id && !entity.area_id) {
             const domain = targetId.split(".", 2)[0];
@@ -759,10 +770,10 @@ class DialogAddAutomationElement
               .join(computeRTL(this.hass) ? " ◂ " : " ▸ ");
           }
         }
-      }
 
-      if (subtitle) {
-        return html`<span slot="subtitle">${subtitle}</span>`;
+        if (subtitle) {
+          return html`<span slot="subtitle">${subtitle}</span>`;
+        }
       }
     }
 
