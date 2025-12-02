@@ -17,7 +17,7 @@ const sourceHasCost = (source: Record<string, any>): boolean =>
   );
 
 @customElement("energy-overview-view-strategy")
-export class EnergyViewStrategy extends ReactiveElement {
+export class EnergyOverviewViewStrategy extends ReactiveElement {
   static async generate(
     _config: LovelaceStrategyConfig,
     hass: HomeAssistant
@@ -183,6 +183,6 @@ export class EnergyViewStrategy extends ReactiveElement {
 
 declare global {
   interface HTMLElementTagNameMap {
-    "energy-overview-view-strategy": EnergyViewStrategy;
+    "energy-overview-view-strategy": EnergyOverviewViewStrategy;
   }
 }
