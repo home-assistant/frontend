@@ -1,3 +1,4 @@
+import type { EntityNameItem } from "../../../common/entity/compute_entity_name_display";
 import type { ActionConfig } from "../../../data/lovelace/config/action";
 import type { LovelaceBadgeConfig } from "../../../data/lovelace/config/badge";
 import type { LegacyStateFilter } from "../common/evaluate-filter";
@@ -31,7 +32,7 @@ export interface StateLabelBadgeConfig extends LovelaceBadgeConfig {
 export interface EntityBadgeConfig extends LovelaceBadgeConfig {
   type: "entity";
   entity?: string;
-  name?: string;
+  name?: string | EntityNameItem | EntityNameItem[];
   icon?: string;
   color?: string;
   show_name?: boolean;

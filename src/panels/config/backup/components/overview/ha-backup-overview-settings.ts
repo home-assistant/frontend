@@ -285,7 +285,7 @@ class HaBackupBackupsSummary extends LitElement {
           </ha-md-list>
         </div>
         <div class="card-actions">
-          <ha-button @click=${this._configure}>
+          <ha-button @click=${this._configure} appearance="filled">
             ${this.hass.localize(
               "ui.panel.config.backup.overview.settings.configure"
             )}
@@ -303,7 +303,7 @@ class HaBackupBackupsSummary extends LitElement {
           padding: 28px 20px 0;
           max-width: 690px;
           margin: 0 auto;
-          gap: 24px;
+          gap: var(--ha-space-6);
           display: flex;
           flex-direction: column;
           margin-bottom: 24px;

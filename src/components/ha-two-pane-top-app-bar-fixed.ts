@@ -32,6 +32,8 @@ export class TopAppBarBaseBase extends BaseElement {
 
   protected _scrollTarget!: HTMLElement | Window;
 
+  @property({ type: Boolean, reflect: true }) public narrow = false;
+
   @property({ attribute: "center-title", type: Boolean }) centerTitle = false;
 
   @property({ type: Boolean, reflect: true }) prominent = false;
@@ -244,12 +246,22 @@ export class TopAppBarBaseBase extends BaseElement {
     styles,
     haStyleScrollbar,
     css`
+      header {
+        padding-top: var(--safe-area-inset-top);
+      }
       .mdc-top-app-bar__row {
         height: var(--header-height);
         border-bottom: var(--app-header-border-bottom);
       }
       .mdc-top-app-bar--fixed-adjust {
-        padding-top: var(--header-height);
+        padding-top: calc(
+          var(--header-height, 0px) + var(--safe-area-inset-top, 0px)
+        );
+        padding-bottom: var(--safe-area-inset-bottom);
+        padding-right: var(--safe-area-inset-right);
+      }
+      :host([narrow]) .mdc-top-app-bar--fixed-adjust {
+        padding-left: var(--safe-area-inset-left);
       }
       .shadow-container {
         position: absolute;
@@ -268,12 +280,17 @@ export class TopAppBarBaseBase extends BaseElement {
         );
       }
       .mdc-top-app-bar {
-        --mdc-typography-headline6-font-weight: 400;
+        --mdc-typography-headline6-font-weight: var(--ha-font-weight-normal);
         color: var(--app-header-text-color, var(--mdc-theme-on-primary, #fff));
         background-color: var(
           --app-header-background-color,
           var(--mdc-theme-primary)
         );
+        padding-top: var(--safe-area-inset-top);
+        padding-right: var(--safe-area-inset-right);
+      }
+      :host([narrow]) .mdc-top-app-bar {
+        padding-left: var(--safe-area-inset-left);
       }
       .mdc-top-app-bar--pane.mdc-top-app-bar--fixed-scrolled {
         box-shadow: none;
@@ -288,7 +305,12 @@ export class TopAppBarBaseBase extends BaseElement {
       }
       div.mdc-top-app-bar--pane {
         display: flex;
-        height: calc(100vh - var(--header-height));
+        height: calc(
+          100vh - var(--header-height, 0px) - var(
+              --safe-area-inset-top,
+              0px
+            ) - var(--safe-area-inset-bottom, 0px)
+        );
       }
       .pane {
         border-right: 1px solid var(--divider-color);
@@ -321,7 +343,7 @@ export class TopAppBarBaseBase extends BaseElement {
         overflow: auto;
       }
       .mdc-top-app-bar__title {
-        font-size: 20px;
+        font-size: var(--ha-font-size-xl);
         padding-inline-start: 24px;
         padding-inline-end: initial;
       }

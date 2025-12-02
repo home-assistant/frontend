@@ -1,41 +1,94 @@
-import type { CSSResultGroup, PropertyValues, TemplateResult } from "lit";
+import { mdiDownload, mdiPencil } from "@mdi/js";
+import type { CSSResultGroup, PropertyValues } from "lit";
 import { LitElement, css, html, nothing } from "lit";
-import { mdiPencil, mdiDownload } from "@mdi/js";
 import { customElement, property, state } from "lit/decorators";
-import "../../components/ha-menu-button";
+import { goBack, navigate } from "../../common/navigate";
+import "../../components/ha-alert";
+import "../../components/ha-icon-button-arrow-prev";
 import "../../components/ha-list-item";
+import "../../components/ha-menu-button";
 import "../../components/ha-top-app-bar-fixed";
+import type {
+  BatterySourceTypeEnergyPreference,
+  DeviceConsumptionEnergyPreference,
+  EnergyPreferences,
+  GasSourceTypeEnergyPreference,
+  GridSourceTypeEnergyPreference,
+  SolarSourceTypeEnergyPreference,
+  WaterSourceTypeEnergyPreference,
+} from "../../data/energy";
+import {
+  computeConsumptionData,
+  getEnergyDataCollection,
+  getSummedData,
+} from "../../data/energy";
 import type { LovelaceConfig } from "../../data/lovelace/config/types";
+import {
+  isStrategyView,
+  type LovelaceViewConfig,
+} from "../../data/lovelace/config/view";
+import type { StatisticValue } from "../../data/recorder";
 import { haStyle } from "../../resources/styles";
-import type { HomeAssistant } from "../../types";
+import type { HomeAssistant, PanelInfo } from "../../types";
+import { fileDownload } from "../../util/file_download";
 import "../lovelace/components/hui-energy-period-selector";
+import "../lovelace/hui-root";
 import type { Lovelace } from "../lovelace/types";
 import "../lovelace/views/hui-view";
 import "../lovelace/views/hui-view-container";
-import { navigate } from "../../common/navigate";
-import type {
-  GridSourceTypeEnergyPreference,
-  SolarSourceTypeEnergyPreference,
-  BatterySourceTypeEnergyPreference,
-  GasSourceTypeEnergyPreference,
-  WaterSourceTypeEnergyPreference,
-  DeviceConsumptionEnergyPreference,
-} from "../../data/energy";
-import {
-  getEnergyDataCollection,
-  getEnergyGasUnit,
-  getEnergyWaterUnit,
-} from "../../data/energy";
-import { fileDownload } from "../../util/file_download";
+import type { LocalizeKeys } from "../../common/translations/localize";
 
-const ENERGY_LOVELACE_CONFIG: LovelaceConfig = {
-  views: [
-    {
-      strategy: {
-        type: "energy",
-      },
-    },
-  ],
+export const DEFAULT_ENERGY_COLLECTION_KEY = "energy_dashboard";
+
+const EMPTY_PREFERENCES: EnergyPreferences = {
+  energy_sources: [],
+  device_consumption: [],
+  device_consumption_water: [],
+};
+
+const OVERVIEW_VIEW = {
+  path: "overview",
+  strategy: {
+    type: "energy-overview",
+    collection_key: DEFAULT_ENERGY_COLLECTION_KEY,
+    allow_compare: false,
+  },
+} as LovelaceViewConfig;
+
+const ENERGY_VIEW = {
+  path: "electricity",
+  back_path: "/energy",
+  strategy: {
+    type: "energy",
+    collection_key: DEFAULT_ENERGY_COLLECTION_KEY,
+    allow_compare: true,
+  },
+} as LovelaceViewConfig;
+
+const WATER_VIEW = {
+  back_path: "/energy",
+  path: "water",
+  strategy: {
+    type: "water",
+    collection_key: DEFAULT_ENERGY_COLLECTION_KEY,
+    allow_compare: true,
+  },
+} as LovelaceViewConfig;
+
+const POWER_VIEW = {
+  back_path: "/energy",
+  path: "power",
+  strategy: {
+    type: "power",
+    collection_key: DEFAULT_ENERGY_COLLECTION_KEY,
+    allow_compare: false,
+  },
+} as LovelaceViewConfig;
+
+const WIZARD_VIEW = {
+  type: "panel",
+  path: "setup",
+  cards: [{ type: "custom:energy-setup-wizard-card" }],
 };
 
 @customElement("ha-panel-energy")
@@ -44,54 +97,191 @@ class PanelEnergy extends LitElement {
 
   @property({ type: Boolean, reflect: true }) public narrow = false;
 
-  @state() private _viewIndex = 0;
+  @property({ attribute: false }) public panel?: PanelInfo;
 
   @state() private _lovelace?: Lovelace;
 
+  @state() private _searchParms = new URLSearchParams(window.location.search);
+
+  @property({ attribute: false }) public route?: {
+    path: string;
+    prefix: string;
+  };
+
+  @state()
+  private _prefs?: EnergyPreferences;
+
+  @state()
+  private _error?: string;
+
   public willUpdate(changedProps: PropertyValues) {
+    super.willUpdate(changedProps);
+    // Initial setup
     if (!this.hasUpdated) {
       this.hass.loadFragmentTranslation("lovelace");
+      this._loadConfig();
+      return;
     }
+
     if (!changedProps.has("hass")) {
       return;
     }
+
     const oldHass = changedProps.get("hass") as this["hass"];
-    if (oldHass?.locale !== this.hass.locale) {
-      this._setLovelace();
-    }
     if (oldHass && oldHass.localize !== this.hass.localize) {
-      this._reloadView();
+      this._setLovelace();
     }
   }
 
-  protected render(): TemplateResult {
+  private _fetchEnergyPrefs = async (): Promise<
+    EnergyPreferences | undefined
+  > => {
+    const collection = getEnergyDataCollection(this.hass, {
+      key: DEFAULT_ENERGY_COLLECTION_KEY,
+    });
+    try {
+      await collection.refresh();
+    } catch (err: any) {
+      if (err.code === "not_found") {
+        return undefined;
+      }
+      throw err;
+    }
+    return collection.prefs;
+  };
+
+  private async _loadConfig() {
+    try {
+      this._error = undefined;
+      const prefs = await this._fetchEnergyPrefs();
+      this._prefs = prefs || EMPTY_PREFERENCES;
+    } catch (err) {
+      // eslint-disable-next-line no-console
+      console.error("Failed to load prefs:", err);
+      this._prefs = EMPTY_PREFERENCES;
+      this._error = (err as Error).message || "Unknown error";
+    }
+    await this._setLovelace();
+
+    // Check if current path is valid, navigate to first view if not
+    const views = this._lovelace!.config?.views || [];
+    const validPaths = views.map((view) => view.path);
+    const viewPath: string | undefined = this.route!.path.split("/")[1];
+    if (!viewPath || !validPaths.includes(viewPath)) {
+      navigate(`${this.route!.prefix}/${validPaths[0]}`);
+    } else {
+      // Force hui-root to re-process the route by creating a new route object
+      this.route = { ...this.route! };
+    }
+  }
+
+  private async _setLovelace() {
+    const config = await this._generateLovelaceConfig();
+
+    this._lovelace = {
+      config: config,
+      rawConfig: config,
+      editMode: false,
+      urlPath: "energy",
+      mode: "generated",
+      locale: this.hass.locale,
+      enableFullEditMode: () => undefined,
+      saveConfig: async () => undefined,
+      deleteConfig: async () => undefined,
+      setEditMode: () => undefined,
+      showToast: () => undefined,
+    };
+  }
+
+  private _back(ev) {
+    ev.stopPropagation();
+    goBack();
+  }
+
+  protected render() {
+    if (this._error) {
+      return html`
+        <div class="centered">
+          <ha-alert alert-type="error">
+            An error occurred loading energy preferences: ${this._error}
+          </ha-alert>
+        </div>
+      `;
+    }
+
+    if (!this._prefs) {
+      // Still loading
+      return html`
+        <div class="centered">
+          <ha-spinner size="large"></ha-spinner>
+        </div>
+      `;
+    }
+
+    if (!this._lovelace) {
+      return nothing;
+    }
+
+    const viewPath: string | undefined = this.route!.path.split("/")[1];
+
+    const views = this._lovelace.config?.views || [];
+    const viewIndex = Math.max(
+      views.findIndex((view) => view.path === viewPath),
+      0
+    );
+    const view = views[viewIndex];
+
+    const showBack = this._searchParms.has("historyBack") || viewIndex > 0;
+
     return html`
-      <div class="header">
-        <div class="toolbar">
-          <ha-menu-button
-            slot="navigationIcon"
-            .hass=${this.hass}
-            .narrow=${this.narrow}
-          ></ha-menu-button>
+      <hui-root
+        .hass=${this.hass}
+        .narrow=${this.narrow}
+        .lovelace=${this._lovelace}
+        .route=${this.route}
+        .panel=${this.panel}
+        @reload-energy-panel=${this._reloadConfig}
+      >
+        <div class="toolbar" slot="toolbar">
+          ${showBack
+            ? html`
+                <ha-icon-button-arrow-prev
+                  @click=${this._back}
+                  slot="navigationIcon"
+                ></ha-icon-button-arrow-prev>
+              `
+            : html`
+                <ha-menu-button
+                  slot="navigationIcon"
+                  .hass=${this.hass}
+                  .narrow=${this.narrow}
+                ></ha-menu-button>
+              `}
           ${!this.narrow
             ? html`<div class="main-title">
-                ${this.hass.localize("panel.energy")}
+                ${this.hass.localize(
+                  `ui.panel.energy.title.${viewPath}` as LocalizeKeys
+                ) || this.hass.localize("panel.energy")}
               </div>`
             : nothing}
 
           <hui-energy-period-selector
             .hass=${this.hass}
-            collection-key="energy_dashboard"
+            .collectionKey=${DEFAULT_ENERGY_COLLECTION_KEY}
+            .allowCompare=${isStrategyView(view) && view.strategy.allow_compare}
           >
             ${this.hass.user?.is_admin
-              ? html` <ha-list-item
-                  slot="overflow-menu"
-                  graphic="icon"
-                  @request-selected=${this._navigateConfig}
-                >
-                  <ha-svg-icon slot="graphic" .path=${mdiPencil}> </ha-svg-icon>
-                  ${this.hass!.localize("ui.panel.energy.configure")}
-                </ha-list-item>`
+              ? html`
+                  <ha-list-item
+                    slot="overflow-menu"
+                    graphic="icon"
+                    @request-selected=${this._navigateConfig}
+                  >
+                    <ha-svg-icon slot="graphic" .path=${mdiPencil}>
+                    </ha-svg-icon>
+                    ${this.hass!.localize("ui.panel.energy.configure")}
+                  </ha-list-item>
+                `
               : nothing}
             <ha-list-item
               slot="overflow-menu"
@@ -103,36 +293,52 @@ class PanelEnergy extends LitElement {
             </ha-list-item>
           </hui-energy-period-selector>
         </div>
-      </div>
-
-      <hui-view-container
-        .hass=${this.hass}
-        @reload-energy-panel=${this._reloadView}
-      >
-        <hui-view
-          .hass=${this.hass}
-          .narrow=${this.narrow}
-          .lovelace=${this._lovelace}
-          .index=${this._viewIndex}
-        ></hui-view>
-      </hui-view-container>
+      </hui-root>
     `;
   }
 
-  private _setLovelace() {
-    this._lovelace = {
-      config: ENERGY_LOVELACE_CONFIG,
-      rawConfig: ENERGY_LOVELACE_CONFIG,
-      editMode: false,
-      urlPath: "energy",
-      mode: "generated",
-      locale: this.hass.locale,
-      enableFullEditMode: () => undefined,
-      saveConfig: async () => undefined,
-      deleteConfig: async () => undefined,
-      setEditMode: () => undefined,
-      showToast: () => undefined,
-    };
+  private async _generateLovelaceConfig(): Promise<LovelaceConfig> {
+    if (
+      !this._prefs ||
+      (this._prefs.device_consumption.length === 0 &&
+        this._prefs.energy_sources.length === 0)
+    ) {
+      await import("./cards/energy-setup-wizard-card");
+      return {
+        views: [WIZARD_VIEW],
+      };
+    }
+
+    const hasEnergy = this._prefs.energy_sources.some((source) =>
+      ["grid", "solar", "battery"].includes(source.type)
+    );
+
+    const hasPower =
+      this._prefs.energy_sources.some(
+        (source) =>
+          (source.type === "solar" && source.stat_rate) ||
+          (source.type === "battery" && source.stat_rate) ||
+          (source.type === "grid" && source.power?.length)
+      ) || this._prefs.device_consumption.some((device) => device.stat_rate);
+
+    const hasWater =
+      this._prefs.energy_sources.some((source) => source.type === "water") ||
+      this._prefs.device_consumption_water?.length > 0;
+
+    const views: LovelaceViewConfig[] = [];
+    if (hasEnergy) {
+      views.push(ENERGY_VIEW);
+    }
+    if (hasPower) {
+      views.push(POWER_VIEW);
+    }
+    if (hasWater) {
+      views.push(WATER_VIEW);
+    }
+    if (views.length > 1) {
+      views.unshift(OVERVIEW_VIEW);
+    }
+    return { views };
   }
 
   private _navigateConfig(ev) {
@@ -150,16 +356,12 @@ class PanelEnergy extends LitElement {
       return;
     }
 
-    const gasUnit = getEnergyGasUnit(
-      this.hass,
-      energyData.prefs,
-      energyData.state.statsMetadata
-    );
-    const waterUnit = getEnergyWaterUnit(this.hass);
+    const gasUnit = energyData.state.gasUnit;
     const electricUnit = "kWh";
 
     const energy_sources = energyData.prefs.energy_sources;
     const device_consumption = energyData.prefs.device_consumption;
+    const device_consumption_water = energyData.prefs.device_consumption_water;
     const stats = energyData.state.stats;
 
     const timeSet = new Set<number>();
@@ -177,24 +379,34 @@ class PanelEnergy extends LitElement {
     const csv: string[] = [];
     csv[0] = headers;
 
-    const processStat = function (stat: string, type: string, unit: string) {
+    const processCsvRow = function (
+      id: string,
+      type: string,
+      unit: string,
+      data: StatisticValue[]
+    ) {
       let n = 0;
       const row: string[] = [];
-      if (!stats[stat]) {
-        return;
-      }
-      row.push(stat);
+      row.push(id);
       row.push(type);
       row.push(unit.normalize("NFKD"));
       times.forEach((t) => {
-        if (n < stats[stat].length && stats[stat][n].start === t) {
-          row.push((stats[stat][n].change ?? "").toString());
+        if (n < data.length && data[n].start === t) {
+          row.push((data[n].change ?? "").toString());
           n++;
         } else {
           row.push("");
         }
       });
       csv.push(row.join(",") + "\n");
+    };
+
+    const processStat = function (stat: string, type: string, unit: string) {
+      if (!stats[stat]) {
+        return;
+      }
+
+      processCsvRow(stat, type, unit, stats[stat]);
     };
 
     const currency = this.hass.config.currency;
@@ -322,7 +534,7 @@ class PanelEnergy extends LitElement {
     printCategory(
       "water_consumption",
       water_consumptions,
-      waterUnit,
+      energyData.state.waterUnit,
       "water_consumption_cost",
       water_consumptions_cost
     );
@@ -335,6 +547,113 @@ class PanelEnergy extends LitElement {
 
     printCategory("device_consumption", devices, electricUnit);
 
+    if (device_consumption_water) {
+      const waterDevices: string[] = [];
+      device_consumption_water.forEach((source) => {
+        source = source as DeviceConsumptionEnergyPreference;
+        waterDevices.push(source.stat_consumption);
+      });
+
+      printCategory(
+        "device_consumption_water",
+        waterDevices,
+        energyData.state.waterUnit
+      );
+    }
+
+    const { summedData, compareSummedData: _ } = getSummedData(
+      energyData.state
+    );
+    const { consumption, compareConsumption: __ } = computeConsumptionData(
+      summedData,
+      undefined
+    );
+
+    const processConsumptionData = function (
+      type: string,
+      unit: string,
+      data: Record<number, number>
+    ) {
+      const data2: StatisticValue[] = [];
+
+      Object.entries(data).forEach(([t, value]) => {
+        data2.push({
+          start: Number(t),
+          end: NaN,
+          change: value,
+        });
+      });
+
+      processCsvRow("", type, unit, data2);
+    };
+
+    const hasSolar = !!solar_productions.length;
+    const hasBattery = !!battery_ins.length;
+    const hasGridReturn = !!grid_productions.length;
+    const hasGridSource = !!grid_consumptions.length;
+
+    if (hasGridSource) {
+      processConsumptionData(
+        "calculated_consumed_grid",
+        electricUnit,
+        consumption.used_grid
+      );
+      if (hasBattery) {
+        processConsumptionData(
+          "calculated_grid_to_battery",
+          electricUnit,
+          consumption.grid_to_battery
+        );
+      }
+    }
+    if (hasGridReturn && hasBattery) {
+      processConsumptionData(
+        "calculated_battery_to_grid",
+        electricUnit,
+        consumption.battery_to_grid
+      );
+    }
+    if (hasBattery) {
+      processConsumptionData(
+        "calculated_consumed_battery",
+        electricUnit,
+        consumption.used_battery
+      );
+    }
+
+    if (hasSolar) {
+      processConsumptionData(
+        "calculated_consumed_solar",
+        electricUnit,
+        consumption.used_solar
+      );
+      if (hasBattery) {
+        processConsumptionData(
+          "calculated_solar_to_battery",
+          electricUnit,
+          consumption.solar_to_battery
+        );
+      }
+      if (hasGridReturn) {
+        processConsumptionData(
+          "calculated_solar_to_grid",
+          electricUnit,
+          consumption.solar_to_grid
+        );
+      }
+    }
+
+    if (
+      (hasGridSource ? 1 : 0) + (hasSolar ? 1 : 0) + (hasBattery ? 1 : 0) >
+      1
+    ) {
+      processConsumptionData(
+        "calculated_total_consumption",
+        electricUnit,
+        consumption.used_total
+      );
+    }
+
     const blob = new Blob(csv, {
       type: "text/csv",
     });
@@ -342,13 +661,8 @@ class PanelEnergy extends LitElement {
     fileDownload(url, "energy.csv");
   }
 
-  private _reloadView() {
-    // Force strategy to be re-run by make a copy of the view
-    const config = this._lovelace!.config;
-    this._lovelace = {
-      ...this._lovelace!,
-      config: { ...config, views: [{ ...config.views[0] }] },
-    };
+  private _reloadConfig() {
+    this._loadConfig();
   }
 
   static get styles(): CSSResultGroup {
@@ -374,64 +688,30 @@ class PanelEnergy extends LitElement {
           -webkit-user-select: none;
           -moz-user-select: none;
         }
-        .header {
-          background-color: var(--app-header-background-color);
-          color: var(--app-header-text-color, white);
-          border-bottom: var(--app-header-border-bottom, none);
-          position: fixed;
-          top: 0;
-          width: var(--mdc-top-app-bar-width, 100%);
-          padding-top: env(safe-area-inset-top);
-          z-index: 4;
-          transition: box-shadow 200ms linear;
-          display: flex;
-          flex-direction: row;
-          -webkit-backdrop-filter: var(--app-header-backdrop-filter, none);
-          backdrop-filter: var(--app-header-backdrop-filter, none);
-        }
-        :host([scrolled]) .header {
-          box-shadow: var(
-            --mdc-top-app-bar-fixed-box-shadow,
-            0px 2px 4px -1px rgba(0, 0, 0, 0.2),
-            0px 4px 5px 0px rgba(0, 0, 0, 0.14),
-            0px 1px 10px 0px rgba(0, 0, 0, 0.12)
-          );
-        }
         .toolbar {
           height: var(--header-height);
           display: flex;
           flex: 1;
           align-items: center;
-          font-size: 20px;
+          font-size: var(--ha-font-size-xl);
           padding: 0px 12px;
-          font-weight: 400;
+          font-weight: var(--ha-font-weight-normal);
           box-sizing: border-box;
         }
-        @media (max-width: 599px) {
-          .toolbar {
-            padding: 0 4px;
-          }
+        :host([narrow]) .toolbar {
+          padding: 0 4px;
         }
         .main-title {
           margin: var(--margin-title);
-          line-height: 20px;
+          line-height: var(--ha-line-height-normal);
           flex-grow: 1;
         }
-        hui-view-container {
-          position: relative;
+        .centered {
+          width: 100%;
+          height: 100%;
           display: flex;
-          min-height: 100vh;
-          box-sizing: border-box;
-          padding-top: calc(var(--header-height) + env(safe-area-inset-top));
-          padding-left: env(safe-area-inset-left);
-          padding-right: env(safe-area-inset-right);
-          padding-inline-start: env(safe-area-inset-left);
-          padding-inline-end: env(safe-area-inset-right);
-          padding-bottom: env(safe-area-inset-bottom);
-        }
-        hui-view {
-          flex: 1 1 100%;
-          max-width: 100%;
+          align-items: center;
+          justify-content: center;
         }
       `,
     ];

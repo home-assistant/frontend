@@ -1,5 +1,3 @@
-import "@material/mwc-button/mwc-button";
-import "@material/mwc-list/mwc-list";
 import {
   mdiCrosshairsGps,
   mdiMagnify,
@@ -13,10 +11,11 @@ import memoizeOne from "memoize-one";
 import { fireEvent } from "../common/dom/fire_event";
 import type { LocalizeFunc } from "../common/translations/localize";
 import "../components/ha-alert";
-import "../components/ha-spinner";
-import "../components/ha-formfield";
+import "../components/ha-list";
+import "../components/ha-button";
 import "../components/ha-list-item";
 import "../components/ha-radio";
+import "../components/ha-spinner";
 import "../components/ha-textfield";
 import type { HaTextField } from "../components/ha-textfield";
 import "../components/map/ha-locations-editor";
@@ -132,7 +131,7 @@ class OnboardingLocation extends LitElement {
         </ha-textfield>
         ${this._places !== undefined
           ? html`
-              <mwc-list activatable>
+              <ha-list activatable>
                 ${this._places?.length
                   ? this._places.map((place) => {
                       const primary = [
@@ -172,7 +171,7 @@ class OnboardingLocation extends LitElement {
                         ? ""
                         : "No results"}</ha-list-item
                     >`}
-              </mwc-list>
+              </ha-list>
             `
           : nothing}
       </div>
@@ -194,11 +193,11 @@ class OnboardingLocation extends LitElement {
       <p class="attribution">${addressAttribution}</p>
 
       <div class="footer">
-        <mwc-button @click=${this._save} unelevated .disabled=${this._working}>
+        <ha-button @click=${this._save} .disabled=${this._working}>
           ${this.onboardingLocalize(
             "ui.panel.page-onboarding.core-config.finish"
           )}
-        </mwc-button>
+        </ha-button>
       </div>
     `;
   }
@@ -507,7 +506,7 @@ class OnboardingLocation extends LitElement {
           border-radius: var(--mdc-shape-large, 16px);
           overflow: hidden;
         }
-        mwc-list {
+        ha-list {
           width: 100%;
           border: 1px solid var(--divider-color);
           box-sizing: border-box;
@@ -526,10 +525,16 @@ class OnboardingLocation extends LitElement {
           color: var(--mdc-text-field-label-ink-color, rgba(0, 0, 0, 0.6));
           font-family: var(
             --mdc-typography-caption-font-family,
-            var(--mdc-typography-font-family, Roboto, sans-serif)
+            var(--mdc-typography-font-family, var(--ha-font-family-body))
           );
-          font-size: var(--mdc-typography-caption-font-size, 0.75rem);
-          font-weight: var(--mdc-typography-caption-font-weight, 400);
+          font-size: var(
+            --mdc-typography-caption-font-size,
+            var(--ha-font-size-xs)
+          );
+          font-weight: var(
+            --mdc-typography-caption-font-weight,
+            var(--ha-font-weight-normal)
+          );
           letter-spacing: var(
             --mdc-typography-caption-letter-spacing,
             0.0333333333em

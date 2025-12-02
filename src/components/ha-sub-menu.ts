@@ -1,16 +1,17 @@
-import { MdSubMenu } from "@material/web/menu/sub-menu";
+import { SubMenu } from "@material/web/menu/internal/submenu/sub-menu";
+import { styles } from "@material/web/menu/internal/submenu/sub-menu-styles";
 import { css } from "lit";
 import { customElement } from "lit/decorators";
 
 @customElement("ha-sub-menu")
-export class HaSubMenu extends MdSubMenu {
+export class HaSubMenu extends SubMenu {
   async show() {
     super.show();
     this.menu.hasOverflow = false;
   }
 
   static override styles = [
-    ...super.styles,
+    styles,
     css`
       :host {
         --ha-icon-display: block;

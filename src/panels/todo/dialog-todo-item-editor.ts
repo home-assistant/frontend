@@ -1,5 +1,4 @@
-import "@material/mwc-button";
-import { formatInTimeZone, toDate } from "date-fns-tz";
+import { TZDate } from "@date-fns/tz";
 import type { CSSResultGroup } from "lit";
 import { LitElement, css, html, nothing } from "lit";
 import { customElement, property, state } from "lit/decorators";
@@ -8,6 +7,7 @@ import { resolveTimeZone } from "../../common/datetime/resolve-time-zone";
 import { fireEvent } from "../../common/dom/fire_event";
 import { supportsFeature } from "../../common/entity/supports-feature";
 import "../../components/ha-alert";
+import "../../components/ha-button";
 import "../../components/ha-checkbox";
 import "../../components/ha-date-input";
 import { createCloseHeading } from "../../components/ha-dialog";
@@ -25,6 +25,8 @@ import { showConfirmationDialog } from "../../dialogs/generic/show-dialog-box";
 import { haStyleDialog } from "../../resources/styles";
 import type { HomeAssistant } from "../../types";
 import type { TodoItemEditDialogParams } from "./show-dialog-todo-item-editor";
+import { supportsMarkdownHelper } from "../../common/translations/markdown_support";
+import { formatShortDateTimeWithConditionalYear } from "../../common/datetime/format_date_time";
 
 @customElement("dialog-todo-item-editor")
 class DialogTodoItemEditor extends LitElement {
@@ -39,6 +41,8 @@ class DialogTodoItemEditor extends LitElement {
   @state() private _description? = "";
 
   @state() private _due?: Date;
+
+  @state() private _completedTime?: Date;
 
   @state() private _checked = false;
 
@@ -64,6 +68,9 @@ class DialogTodoItemEditor extends LitElement {
       this._checked = entry.status === TodoItemStatus.Completed;
       this._summary = entry.summary;
       this._description = entry.description || "";
+      this._completedTime = entry.completed
+        ? new Date(entry.completed)
+        : undefined;
       this._hasTime = entry.due?.includes("T") || false;
       this._due = entry.due
         ? new Date(this._hasTime ? entry.due : `${entry.due}T00:00:00`)
@@ -137,6 +144,17 @@ class DialogTodoItemEditor extends LitElement {
               .disabled=${!canUpdate}
             ></ha-textfield>
           </div>
+          ${this._completedTime
+            ? html`<div class="italic">
+                ${this.hass.localize("ui.components.todo.item.completed_time", {
+                  datetime: formatShortDateTimeWithConditionalYear(
+                    this._completedTime,
+                    this.hass.locale,
+                    this.hass.config
+                  ),
+                })}
+              </div>`
+            : nothing}
           ${this._todoListSupportsFeature(
             TodoListEntityFeature.SET_DESCRIPTION_ON_ITEM
           )
@@ -146,6 +164,7 @@ class DialogTodoItemEditor extends LitElement {
                 .label=${this.hass.localize(
                   "ui.components.todo.item.description"
                 )}
+                .helper=${supportsMarkdownHelper(this.hass.localize)}
                 .value=${this._description}
                 @input=${this._handleDescriptionChanged}
                 autogrow
@@ -186,34 +205,35 @@ class DialogTodoItemEditor extends LitElement {
         </div>
         ${isCreate
           ? html`
-              <mwc-button
+              <ha-button
                 slot="primaryAction"
                 @click=${this._createItem}
                 .disabled=${this._submitting}
               >
                 ${this.hass.localize("ui.components.todo.item.add")}
-              </mwc-button>
+              </ha-button>
             `
           : html`
-              <mwc-button
+              <ha-button
                 slot="primaryAction"
                 @click=${this._saveItem}
                 .disabled=${!canUpdate || this._submitting}
               >
                 ${this.hass.localize("ui.components.todo.item.save")}
-              </mwc-button>
+              </ha-button>
               ${this._todoListSupportsFeature(
                 TodoListEntityFeature.DELETE_TODO_ITEM
               )
                 ? html`
-                    <mwc-button
+                    <ha-button
                       slot="secondaryAction"
-                      class="warning"
+                      variant="danger"
+                      appearance="plain"
                       @click=${this._deleteItem}
                       .disabled=${this._submitting}
                     >
                       ${this.hass.localize("ui.components.todo.item.delete")}
-                    </mwc-button>
+                    </ha-button>
                   `
                 : ""}
             `}
@@ -236,7 +256,8 @@ class DialogTodoItemEditor extends LitElement {
 
   // Formats a date in specified timezone, or defaulting to browser display timezone
   private _formatDate(date: Date, timeZone: string = this._timeZone!): string {
-    return formatInTimeZone(date, timeZone, "yyyy-MM-dd");
+    const tzDate = new TZDate(date, timeZone);
+    return tzDate.toISOString().split("T")[0]; // Get YYYY-MM-DD format
   }
 
   // Formats a time in specified timezone, or defaulting to browser display timezone
@@ -244,14 +265,19 @@ class DialogTodoItemEditor extends LitElement {
     date: Date,
     timeZone: string = this._timeZone!
   ): string | undefined {
-    return this._hasTime
-      ? formatInTimeZone(date, timeZone, "HH:mm:ss")
-      : undefined; // 24 hr
+    if (!this._hasTime) return undefined;
+    const tzDate = new TZDate(date, timeZone);
+    return tzDate.toISOString().split("T")[1].split(".")[0]; // Get HH:mm:ss format
   }
 
   // Parse a date in the browser timezone
   private _parseDate(dateStr: string): Date {
-    return toDate(dateStr, { timeZone: this._timeZone! });
+    // If it's a date-only string (no 'T'), parse as midnight in browser time to avoid offset issues
+    if (!dateStr.includes("T")) {
+      return new Date(dateStr + "T00:00:00");
+    }
+    const tzDate = new TZDate(dateStr, this._timeZone!);
+    return new Date(tzDate.getTime());
   }
 
   private _checkedCanged(ev) {
@@ -423,8 +449,8 @@ class DialogTodoItemEditor extends LitElement {
           justify-content: space-between;
         }
         .label {
-          font-size: 12px;
-          font-weight: 500;
+          font-size: var(--ha-font-size-s);
+          font-weight: var(--ha-font-weight-medium);
           color: var(--input-label-ink-color);
         }
         .date-range-details-content {
@@ -445,6 +471,9 @@ class DialogTodoItemEditor extends LitElement {
         .value {
           display: inline-block;
           vertical-align: top;
+        }
+        .italic {
+          font-style: italic;
         }
       `,
     ];

@@ -1,0 +1,26 @@
+diff --git a/mwc-list-base.js b/mwc-list-base.js
+index 1ba95b6a01dcecea4d85b5cbbbcc3dfb04c40d5f..dced13fdb7929c490d6661b1bbe7e9f96dcd2285 100644
+--- a/mwc-list-base.js
++++ b/mwc-list-base.js
+@@ -11,7 +11,7 @@ import { BaseElement } from '@material/mwc-base/base-element.js';
+ import { observer } from '@material/mwc-base/observer.js';
+ import { deepActiveElementPath, doesElementContainFocus, isNodeElement } from '@material/mwc-base/utils.js';
+ import { html } from 'lit';
+-import { property, query, queryAssignedNodes } from 'lit/decorators.js';
++import { property, query, queryAssignedElements } from 'lit/decorators.js';
+ import { ifDefined } from 'lit/directives/if-defined.js';
+ import MDCListFoundation, { isIndexSet } from './mwc-list-foundation.js';
+ export { createSetFromIndex, isEventMulti, isIndexSet } from './mwc-list-foundation.js';
+@@ -425,10 +425,10 @@ __decorate([
+     query('.mdc-deprecated-list')
+ ], ListBase.prototype, "mdcRoot", void 0);
+ __decorate([
+-    queryAssignedNodes('', true, '*')
++    queryAssignedElements({ flatten: true, selector: "*" })
+ ], ListBase.prototype, "assignedElements", void 0);
+ __decorate([
+-    queryAssignedNodes('', true, '[tabindex="0"]')
++    queryAssignedElements({ flatten: true, selector: '[tabindex="0"]' })
+ ], ListBase.prototype, "tabbableElements", void 0);
+ __decorate([
+     property({ type: Boolean }),

@@ -78,7 +78,7 @@ export class HuiErrorHeadingBadge extends LitElement implements LovelaceBadge {
       white-space: nowrap;
     }
     pre {
-      font-family: var(--code-font-family, monospace);
+      font-family: var(--ha-font-family-code);
       white-space: break-spaces;
       user-select: text;
     }

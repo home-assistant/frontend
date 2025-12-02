@@ -1,5 +1,3 @@
-import "@material/mwc-button";
-import "@material/mwc-list/mwc-list-item";
 import type { CSSResultGroup, TemplateResult } from "lit";
 import { css, html, LitElement } from "lit";
 import { customElement, property, state } from "lit/decorators";
@@ -8,6 +6,7 @@ import "../../../src/components/ha-alert";
 import "../../../src/components/ha-ansi-to-html";
 import "../../../src/components/ha-card";
 import "../../../src/components/ha-select";
+import "../../../src/components/ha-list-item";
 import { extractApiErrorMessage } from "../../../src/data/hassio/common";
 import { fetchHassioLogs } from "../../../src/data/hassio/supervisor";
 import type { Supervisor } from "../../../src/data/supervisor/supervisor";
@@ -80,9 +79,9 @@ class HassioSupervisorLog extends LitElement {
               >
                 ${logProviders.map(
                   (provider) => html`
-                    <mwc-list-item .value=${provider.key}>
+                    <ha-list-item .value=${provider.key}>
                       ${provider.name}
-                    </mwc-list-item>
+                    </ha-list-item>
                   `
                 )}
               </ha-select>

@@ -2,11 +2,10 @@ import type { HassEntity } from "home-assistant-js-websocket/dist/types";
 import type { PropertyValues } from "lit";
 import { css, html, LitElement, nothing } from "lit";
 import { customElement, property, state } from "lit/decorators";
-import { ifDefined } from "lit/directives/if-defined";
 import { classMap } from "lit/directives/class-map";
+import { ifDefined } from "lit/directives/if-defined";
 import { styleMap } from "lit/directives/style-map";
 import { applyThemesOnElement } from "../../../common/dom/apply_themes_on_element";
-import { computeStateName } from "../../../common/entity/compute_state_name";
 import { isValidEntityId } from "../../../common/entity/valid_entity_id";
 import { getNumberFormatOptions } from "../../../common/number/format_number";
 import "../../../components/ha-card";
@@ -15,6 +14,7 @@ import { UNAVAILABLE } from "../../../data/entity";
 import type { ActionHandlerEvent } from "../../../data/lovelace/action_handler";
 import type { HomeAssistant } from "../../../types";
 import { actionHandler } from "../common/directives/action-handler-directive";
+import { computeLovelaceEntityName } from "../common/entity/compute-lovelace-entity-name";
 import { findEntities } from "../common/find-entities";
 import { handleAction } from "../common/handle-action";
 import { hasAction, hasAnyAction } from "../common/has-action";
@@ -90,7 +90,7 @@ class HuiGaugeCard extends LitElement implements LovelaceCard {
 
     if (!stateObj) {
       return html`
-        <hui-warning>
+        <hui-warning .hass=${this.hass}>
           ${createEntityNotFoundWarning(this.hass, this._config.entity)}
         </hui-warning>
       `;
@@ -109,24 +109,36 @@ class HuiGaugeCard extends LitElement implements LovelaceCard {
       `;
     }
 
-    if (isNaN(entityState)) {
+    const valueToDisplay = this._config.attribute
+      ? stateObj.attributes[this._config.attribute]
+      : stateObj.state;
+
+    if (isNaN(valueToDisplay)) {
       return html`
         <hui-warning
           >${this.hass.localize(
-            "ui.panel.lovelace.warning.entity_non_numeric",
-            { entity: this._config.entity }
+            this._config.attribute
+              ? "ui.panel.lovelace.warning.attribute_not_numeric"
+              : "ui.panel.lovelace.warning.entity_non_numeric",
+            { entity: this._config.entity, attribute: this._config.attribute }
           )}</hui-warning
         >
       `;
     }
 
-    const name = this._config.name ?? computeStateName(stateObj);
+    const name = computeLovelaceEntityName(
+      this.hass,
+      stateObj,
+      this._config.name
+    );
 
     // Use `stateObj.state` as value to keep formatting (e.g trailing zeros)
     // for consistent value display across gauge, entity, entity-row, etc.
     return html`
       <ha-card
-        class=${classMap({ action: hasAnyAction(this._config) })}
+        class=${classMap({
+          action: hasAnyAction(this._config),
+        })}
         @action=${this._handleAction}
         .actionHandler=${actionHandler({
           hasHold: hasAction(this._config.hold_action),
@@ -141,7 +153,7 @@ class HuiGaugeCard extends LitElement implements LovelaceCard {
         <ha-gauge
           .min=${this._config.min!}
           .max=${this._config.max!}
-          .value=${stateObj.state}
+          .value=${valueToDisplay}
           .formatOptions=${getNumberFormatOptions(
             stateObj,
             this.hass.entities[stateObj.entity_id]
@@ -301,7 +313,7 @@ class HuiGaugeCard extends LitElement implements LovelaceCard {
       line-height: initial;
       color: var(--primary-text-color);
       width: 100%;
-      font-size: 15px;
+      font-size: var(--ha-font-size-m);
       margin-top: 8px;
     }
   `;

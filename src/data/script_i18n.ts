@@ -26,7 +26,6 @@ import type {
   EventAction,
   IfAction,
   ParallelAction,
-  PlayMediaAction,
   RepeatAction,
   SequenceAction,
   SetConversationResponseAction,
@@ -220,9 +219,13 @@ const tryDescribeAction = <T extends ActionType>(
 
     if (config.action) {
       const [domain, serviceName] = config.action.split(".", 2);
+      const descriptionPlaceholders =
+        hass.services[domain][serviceName].description_placeholders;
       const service =
-        hass.localize(`component.${domain}.services.${serviceName}.name`) ||
-        hass.services[domain][serviceName]?.name;
+        hass.localize(
+          `component.${domain}.services.${serviceName}.name`,
+          descriptionPlaceholders
+        ) || hass.services[domain][serviceName]?.name;
 
       if (config.metadata) {
         return hass.localize(
@@ -301,27 +304,6 @@ const tryDescribeAction = <T extends ActionType>(
     return hass.localize(`${actionTranslationBaseKey}.delay.description.full`, {
       duration: duration,
     });
-  }
-
-  if (actionType === "play_media") {
-    const config = action as PlayMediaAction;
-    const entityId = config.target?.entity_id || config.entity_id;
-    const mediaStateObj = entityId ? hass.states[entityId] : undefined;
-    return hass.localize(
-      `${actionTranslationBaseKey}.play_media.description.full`,
-      {
-        hasMedia:
-          config.metadata.title || config.data.media_content_id
-            ? "true"
-            : "false",
-        media:
-          (config.metadata.title as string | undefined) ||
-          config.data.media_content_id,
-        hasMediaPlayer:
-          mediaStateObj || entityId !== undefined ? "true" : "false",
-        mediaPlayer: mediaStateObj ? computeStateName(mediaStateObj) : entityId,
-      }
-    );
   }
 
   if (actionType === "wait_for_trigger") {
@@ -468,9 +450,17 @@ const tryDescribeAction = <T extends ActionType>(
       return localized;
     }
     const stateObj = hass.states[config.entity_id];
-    return `${config.type || "Perform action with"} ${
-      stateObj ? computeStateName(stateObj) : config.entity_id
-    }`;
+    if (config.type) {
+      return `${config.type} ${
+        stateObj ? computeStateName(stateObj) : config.entity_id
+      }`;
+    }
+    return hass.localize(
+      `${actionTranslationBaseKey}.device_id.description.perform_device_action`,
+      {
+        device: stateObj ? computeStateName(stateObj) : config.entity_id,
+      }
+    );
   }
 
   if (actionType === "sequence") {

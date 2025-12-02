@@ -1,11 +1,11 @@
-import "@material/mwc-button";
 import type { CSSResultGroup } from "lit";
 import { css, html, LitElement, nothing } from "lit";
-import { property, state } from "lit/decorators";
+import { customElement, property, state } from "lit/decorators";
 import memoizeOne from "memoize-one";
 import { fireEvent } from "../../../common/dom/fire_event";
 import { createCloseHeading } from "../../../components/ha-dialog";
 import "../../../components/ha-form/ha-form";
+import "../../../components/ha-button";
 import type { HomeZoneMutableParams } from "../../../data/zone";
 import { haStyleDialog } from "../../../resources/styles";
 import type { HomeAssistant } from "../../../types";
@@ -19,6 +19,7 @@ const SCHEMA = [
   },
 ];
 
+@customElement("dialog-home-zone-detail")
 class DialogHomeZoneDetail extends LitElement {
   @property({ attribute: false }) public hass!: HomeAssistant;
 
@@ -34,6 +35,7 @@ class DialogHomeZoneDetail extends LitElement {
     this._params = params;
     this._error = undefined;
     this._data = {
+      name: this.hass.config.location_name,
       latitude: this.hass.config.latitude,
       longitude: this.hass.config.longitude,
       radius: this.hass.config.radius,
@@ -63,7 +65,7 @@ class DialogHomeZoneDetail extends LitElement {
         escapeKeyAction
         .heading=${createCloseHeading(
           this.hass,
-          this.hass!.localize("ui.panel.config.zone.edit_home")
+          this.hass!.localize("ui.common.edit_item", { name: this._data.name })
         )}
       >
         <div>
@@ -76,13 +78,20 @@ class DialogHomeZoneDetail extends LitElement {
             @value-changed=${this._valueChanged}
           ></ha-form>
         </div>
-        <mwc-button
+        <ha-button
+          slot="primaryAction"
+          appearance="plain"
+          @click=${this.closeDialog}
+        >
+          ${this.hass!.localize("ui.common.cancel")}
+        </ha-button>
+        <ha-button
           slot="primaryAction"
           @click=${this._updateEntry}
           .disabled=${!valid || this._submitting}
         >
-          ${this.hass!.localize("ui.panel.config.zone.detail.update")}
-        </mwc-button>
+          ${this.hass!.localize("ui.common.save")}
+        </ha-button>
       </ha-dialog>
     `;
   }
@@ -129,9 +138,8 @@ class DialogHomeZoneDetail extends LitElement {
         }
         @media all and (max-width: 450px), all and (max-height: 500px) {
           ha-dialog {
-            --mdc-dialog-min-width: calc(
-              100vw - env(safe-area-inset-right) - env(safe-area-inset-left)
-            );
+            --mdc-dialog-min-width: 100vw;
+            --mdc-dialog-max-width: 100vw;
           }
         }
       `,
@@ -144,5 +152,3 @@ declare global {
     "dialog-home-zone-detail": DialogHomeZoneDetail;
   }
 }
-
-customElements.define("dialog-home-zone-detail", DialogHomeZoneDetail);

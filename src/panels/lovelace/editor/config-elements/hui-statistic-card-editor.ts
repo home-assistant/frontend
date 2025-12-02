@@ -21,12 +21,13 @@ import type { StatisticCardConfig } from "../../cards/types";
 import { headerFooterConfigStructs } from "../../header-footer/structs";
 import type { LovelaceCardEditor } from "../../types";
 import { baseLovelaceCardConfig } from "../structs/base-card-struct";
+import { entityNameStruct } from "../structs/entity-name-struct";
 
 const cardConfigStruct = assign(
   baseLovelaceCardConfig,
   object({
     entity: optional(string()),
-    name: optional(string()),
+    name: optional(entityNameStruct),
     icon: optional(string()),
     unit: optional(string()),
     stat_type: optional(string()),
@@ -129,8 +130,7 @@ export class HuiStatisticCardEditor
           name: "period",
           required: true,
           selector:
-            selectedPeriodKey &&
-            Object.keys(periods).includes(selectedPeriodKey)
+            selectedPeriodKey && selectedPeriodKey in periods
               ? {
                   select: {
                     multiple: false,
@@ -146,10 +146,14 @@ export class HuiStatisticCardEditor
               : { object: {} },
         },
         {
+          name: "name",
+          selector: { entity_name: {} },
+          context: { entity: "entity" },
+        },
+        {
           type: "grid",
           name: "",
           schema: [
-            { name: "name", selector: { text: {} } },
             {
               name: "icon",
               selector: {

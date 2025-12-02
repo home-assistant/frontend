@@ -1,4 +1,4 @@
-import { createContext } from "@lit-labs/context";
+import { createContext } from "@lit/context";
 import type { HassConfig } from "home-assistant-js-websocket";
 import type { HomeAssistant } from "../types";
 import type { EntityRegistryEntry } from "./entity_registry";

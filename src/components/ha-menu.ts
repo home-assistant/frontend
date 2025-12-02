@@ -1,46 +1,45 @@
-import { MdMenu } from "@material/web/menu/menu";
-import type { CloseMenuEvent } from "@material/web/menu/menu";
-import {
-  CloseReason,
-  KeydownCloseKey,
-} from "@material/web/menu/internal/controllers/shared";
-import { css } from "lit";
+import { MenuBase } from "@material/mwc-menu/mwc-menu-base";
+import { styles } from "@material/mwc-menu/mwc-menu.css";
+import { html } from "lit";
 import { customElement } from "lit/decorators";
-import type { HaMdMenuItem } from "./ha-md-menu-item";
+import { classMap } from "lit/directives/class-map";
+import "./ha-list";
 
 @customElement("ha-menu")
-export class HaMenu extends MdMenu {
-  connectedCallback(): void {
-    super.connectedCallback();
-    this.addEventListener("close-menu", this._handleCloseMenu);
-  }
-
-  private _handleCloseMenu(ev: CloseMenuEvent) {
-    if (
-      ev.detail.reason.kind === CloseReason.KEYDOWN &&
-      ev.detail.reason.key === KeydownCloseKey.ESCAPE
-    ) {
-      return;
+export class HaMenu extends MenuBase {
+  protected get listElement() {
+    if (!this.listElement_) {
+      this.listElement_ = this.renderRoot.querySelector("ha-list");
+      return this.listElement_;
     }
-    (ev.detail.initiator as HaMdMenuItem).clickAction?.(ev.detail.initiator);
+
+    return this.listElement_;
   }
 
-  static override styles = [
-    ...super.styles,
-    css`
-      :host {
-        --md-sys-color-surface-container: var(--card-background-color);
-      }
-    `,
-  ];
+  protected renderList() {
+    const itemRoles = this.innerRole === "menu" ? "menuitem" : "option";
+    const classes = this.renderListClasses();
+
+    return html`<ha-list
+      rootTabbable
+      .innerAriaLabel=${this.innerAriaLabel}
+      .innerRole=${this.innerRole}
+      .multi=${this.multi}
+      class=${classMap(classes)}
+      .itemRoles=${itemRoles}
+      .wrapFocus=${this.wrapFocus}
+      .activatable=${this.activatable}
+      @action=${this.onAction}
+    >
+      <slot></slot>
+    </ha-list>`;
+  }
+
+  static styles = styles;
 }
 
 declare global {
   interface HTMLElementTagNameMap {
     "ha-menu": HaMenu;
-  }
-
-  interface HTMLElementEventMap {
-    "close-menu": CloseMenuEvent;
   }
 }

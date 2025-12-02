@@ -191,7 +191,7 @@ class ZWaveJSCapabilityDoorLock extends LitElement {
                 <ha-switch
                   @change=${this._booleanChanged}
                   key="twistAssist"
-                  .checked=${this._configuration?.twistAssist}
+                  .checked=${!!this._configuration?.twistAssist}
                 >
                 </ha-switch>
               </ha-formfield>
@@ -209,7 +209,7 @@ class ZWaveJSCapabilityDoorLock extends LitElement {
                 <ha-switch
                   @change=${this._booleanChanged}
                   key="blockToBlock"
-                  .checked=${this._configuration?.blockToBlock}
+                  .checked=${!!this._configuration?.blockToBlock}
                 >
                 </ha-switch>
               </ha-formfield>

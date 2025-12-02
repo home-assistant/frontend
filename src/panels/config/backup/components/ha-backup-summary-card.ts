@@ -9,8 +9,8 @@ import { css, html, LitElement, nothing } from "lit";
 import { customElement, property } from "lit/decorators";
 import "../../../../components/ha-button";
 import "../../../../components/ha-card";
-import "../../../../components/ha-spinner";
 import "../../../../components/ha-icon";
+import "../../../../components/ha-spinner";
 
 type SummaryStatus = "success" | "error" | "info" | "warning" | "loading";
 
@@ -74,8 +74,8 @@ class HaBackupSummaryCard extends LitElement {
     .summary {
       display: flex;
       flex-direction: row;
-      column-gap: 16px;
-      row-gap: 8px;
+      column-gap: var(--ha-space-4);
+      row-gap: var(--ha-space-2);
       align-items: center;
       padding: 16px;
       padding-bottom: 8px;
@@ -84,7 +84,7 @@ class HaBackupSummaryCard extends LitElement {
     }
     .icon {
       position: relative;
-      border-radius: 20px;
+      border-radius: var(--ha-border-radius-2xl);
       width: 40px;
       height: 40px;
       display: flex;
@@ -125,10 +125,10 @@ class HaBackupSummaryCard extends LitElement {
       min-width: 0;
     }
     .heading {
-      font-size: 22px;
+      font-size: var(--ha-font-size-xl);
       font-style: normal;
-      font-weight: 400;
-      line-height: 28px;
+      font-weight: var(--ha-font-weight-normal);
+      line-height: var(--ha-line-height-condensed);
       color: var(--primary-text-color);
       margin: 0;
       text-overflow: ellipsis;
@@ -136,10 +136,10 @@ class HaBackupSummaryCard extends LitElement {
       white-space: nowrap;
     }
     .description {
-      font-size: 14px;
+      font-size: var(--ha-font-size-m);
       font-style: normal;
-      font-weight: 400;
-      line-height: 20px;
+      font-weight: var(--ha-font-weight-normal);
+      line-height: var(--ha-line-height-condensed);
       letter-spacing: 0.25px;
       color: var(--secondary-text-color);
       margin: 0;

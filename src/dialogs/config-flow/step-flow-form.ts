@@ -1,27 +1,33 @@
-import "@material/mwc-button";
 import type { CSSResultGroup, PropertyValues, TemplateResult } from "lit";
 import { css, html, LitElement, nothing } from "lit";
 import { customElement, property, state } from "lit/decorators";
+import memoizeOne from "memoize-one";
 import { dynamicElement } from "../../common/dom/dynamic-element-directive";
 import { fireEvent } from "../../common/dom/fire_event";
 import { isNavigationClick } from "../../common/dom/is-navigation-click";
+import "../../components/ha-button";
 import "../../components/ha-alert";
-import "../../components/ha-spinner";
 import { computeInitialHaFormData } from "../../components/ha-form/compute-initial-ha-form-data";
 import "../../components/ha-form/ha-form";
-import type { HaFormSchema } from "../../components/ha-form/types";
+import type {
+  HaFormSchema,
+  HaFormSelector,
+} from "../../components/ha-form/types";
 import "../../components/ha-markdown";
+import "../../components/ha-spinner";
 import { autocompleteLoginFields } from "../../data/auth";
 import type { DataEntryFlowStepForm } from "../../data/data_entry_flow";
+import { previewModule } from "../../data/preview";
+import { haStyle } from "../../resources/styles";
 import type { HomeAssistant } from "../../types";
 import type { FlowConfig } from "./show-dialog-data-entry-flow";
 import { configFlowContentStyles } from "./styles";
-import { haStyle } from "../../resources/styles";
-import { previewModule } from "../../data/preview";
 
 @customElement("step-flow-form")
 class StepFlowForm extends LitElement {
   @property({ attribute: false }) public flowConfig!: FlowConfig;
+
+  @property({ type: Boolean }) public narrow = false;
 
   @property({ attribute: false }) public step!: DataEntryFlowStepForm;
 
@@ -31,19 +37,33 @@ class StepFlowForm extends LitElement {
 
   @state() private _stepData?: Record<string, any>;
 
+  @state() private _previewErrors?: Record<string, string>;
+
+  @state() private _submitErrors?: Record<string, string>;
+
   @state() private _errorMsg?: string;
+
+  private _errors?: Record<string, string>;
 
   public disconnectedCallback(): void {
     super.disconnectedCallback();
     this.removeEventListener("keydown", this._handleKeyDown);
   }
 
+  private handleReadOnlyFields = memoizeOne((schema) =>
+    schema?.map((field) => ({
+      ...field,
+      ...(Object.values((field as HaFormSelector)?.selector ?? {})[0]?.read_only
+        ? { disabled: true }
+        : {}),
+    }))
+  );
+
   protected render(): TemplateResult {
     const step = this.step;
     const stepData = this._stepDataProcessed;
 
     return html`
-      <h2>${this.flowConfig.renderShowFormStepHeader(this.hass, this.step)}</h2>
       <div class="content" @click=${this._clickHandler}>
         ${this.flowConfig.renderShowFormStepDescription(this.hass, this.step)}
         ${this._errorMsg
@@ -51,11 +71,14 @@ class StepFlowForm extends LitElement {
           : ""}
         <ha-form
           .hass=${this.hass}
+          .narrow=${this.narrow}
           .data=${stepData}
           .disabled=${this._loading}
           @value-changed=${this._stepDataChanged}
-          .schema=${autocompleteLoginFields(step.data_schema)}
-          .error=${step.errors}
+          .schema=${autocompleteLoginFields(
+            this.handleReadOnlyFields(step.data_schema)
+          )}
+          .error=${this._errors}
           .computeLabel=${this._labelCallback}
           .computeHelper=${this._helperCallback}
           .computeError=${this._errorCallback}
@@ -81,28 +104,18 @@ class StepFlowForm extends LitElement {
           </div>`
         : nothing}
       <div class="buttons">
-        ${this._loading
-          ? html`
-              <div class="submit-spinner">
-                <ha-spinner size="small"></ha-spinner>
-              </div>
-            `
-          : html`
-              <div>
-                <mwc-button @click=${this._submitStep}>
-                  ${this.flowConfig.renderShowFormStepSubmitButton(
-                    this.hass,
-                    this.step
-                  )}
-                </mwc-button>
-              </div>
-            `}
+        <ha-button @click=${this._submitStep} .loading=${this._loading}>
+          ${this.flowConfig.renderShowFormStepSubmitButton(
+            this.hass,
+            this.step
+          )}
+        </ha-button>
       </div>
     `;
   }
 
   private _setError(ev: CustomEvent) {
-    this.step = { ...this.step, errors: ev.detail };
+    this._previewErrors = ev.detail;
   }
 
   protected firstUpdated(changedProps: PropertyValues) {
@@ -115,6 +128,21 @@ class StepFlowForm extends LitElement {
     super.willUpdate(changedProps);
     if (changedProps.has("step") && this.step?.preview) {
       import(`./previews/flow-preview-${previewModule(this.step.preview)}`);
+    }
+
+    if (
+      changedProps.has("step") ||
+      changedProps.has("_previewErrors") ||
+      changedProps.has("_submitErrors")
+    ) {
+      this._errors =
+        this.step.errors || this._previewErrors || this._submitErrors
+          ? {
+              ...this.step.errors,
+              ...this._previewErrors,
+              ...this._submitErrors,
+            }
+          : undefined;
     }
   }
 
@@ -172,6 +200,7 @@ class StepFlowForm extends LitElement {
 
     this._loading = true;
     this._errorMsg = undefined;
+    this._submitErrors = undefined;
 
     const flowId = this.step.flow_id;
 
@@ -179,8 +208,10 @@ class StepFlowForm extends LitElement {
     Object.keys(stepData).forEach((key) => {
       const value = stepData[key];
       const isEmpty = [undefined, ""].includes(value);
-
-      if (!isEmpty) {
+      const field = this.step.data_schema?.find((f) => f.name === key);
+      const selector = (field as HaFormSelector)?.selector ?? {};
+      const read_only = (Object.values(selector)[0] as any)?.read_only;
+      if (!isEmpty && !read_only) {
         toSendData[key] = value;
       }
     });
@@ -198,6 +229,7 @@ class StepFlowForm extends LitElement {
         return;
       }
 
+      this._previewErrors = undefined;
       fireEvent(this, "flow-update", {
         step,
       });
@@ -207,7 +239,7 @@ class StepFlowForm extends LitElement {
           this._errorMsg = err.body.message;
         }
         if (err.body.errors) {
-          this.step = { ...this.step, errors: err.body.errors };
+          this._submitErrors = err.body.errors;
         }
         if (!err.body.message && !err.body.errors) {
           this._errorMsg = "Unknown error occurred";
@@ -262,24 +294,14 @@ class StepFlowForm extends LitElement {
           color: red;
         }
 
-        .submit-spinner {
-          height: 36px;
-          display: flex;
-          align-items: center;
-          margin-right: 16px;
-          margin-inline-end: 16px;
-          margin-inline-start: initial;
-        }
-
         ha-alert,
         ha-form {
           margin-top: 24px;
           display: block;
         }
-        h2 {
-          word-break: break-word;
-          padding-inline-end: 72px;
-          direction: var(--direction);
+
+        .buttons {
+          padding: 16px;
         }
       `,
     ];

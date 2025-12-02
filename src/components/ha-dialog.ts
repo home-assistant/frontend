@@ -85,12 +85,13 @@ export class HaDialog extends DialogBase {
           var(--dialog-backdrop-filter, none)
         );
         --mdc-dialog-box-shadow: var(--dialog-box-shadow, none);
-        --mdc-typography-headline6-font-weight: 400;
+        --mdc-typography-headline6-font-weight: var(--ha-font-weight-normal);
         --mdc-typography-headline6-font-size: 1.574rem;
       }
       .mdc-dialog__actions {
         justify-content: var(--justify-action-buttons, flex-end);
-        padding-bottom: max(env(safe-area-inset-bottom), 24px);
+        padding: var(--ha-space-3) var(--ha-space-4) var(--ha-space-4)
+          var(--ha-space-4);
       }
       .mdc-dialog__actions span:nth-child(1) {
         flex: var(--secondary-action-button-flex, unset);
@@ -100,46 +101,48 @@ export class HaDialog extends DialogBase {
       }
       .mdc-dialog__container {
         align-items: var(--vertical-align-dialog, center);
+        padding: var(--dialog-container-padding, var(--ha-space-0));
       }
       .mdc-dialog__title {
-        padding: 24px 24px 0 24px;
+        padding: var(--ha-space-4) var(--ha-space-4) var(--ha-space-0)
+          var(--ha-space-4);
       }
       .mdc-dialog__title:has(span) {
-        padding: 12px 12px 0;
-      }
-      .mdc-dialog__actions {
-        padding: 12px 24px 12px 24px;
+        padding: var(--ha-space-3) var(--ha-space-3) var(--ha-space-0);
       }
       .mdc-dialog__title::before {
         content: unset;
       }
       .mdc-dialog .mdc-dialog__content {
         position: var(--dialog-content-position, relative);
-        padding: var(--dialog-content-padding, 24px);
+        padding: var(--dialog-content-padding, var(--ha-space-6));
       }
       :host([hideactions]) .mdc-dialog .mdc-dialog__content {
-        padding-bottom: max(
-          var(--dialog-content-padding, 24px),
-          env(safe-area-inset-bottom)
-        );
+        padding-bottom: var(--dialog-content-padding, var(--ha-space-6));
       }
       .mdc-dialog .mdc-dialog__surface {
         position: var(--dialog-surface-position, relative);
         top: var(--dialog-surface-top);
         margin-top: var(--dialog-surface-margin-top);
+        min-width: var(--mdc-dialog-min-width, auto);
         min-height: var(--mdc-dialog-min-height, auto);
-        border-radius: var(--ha-dialog-border-radius, 28px);
+        border-radius: var(
+          --ha-dialog-border-radius,
+          var(--ha-border-radius-3xl)
+        );
         -webkit-backdrop-filter: var(--ha-dialog-surface-backdrop-filter, none);
         backdrop-filter: var(--ha-dialog-surface-backdrop-filter, none);
         background: var(
           --ha-dialog-surface-background,
           var(--mdc-theme-surface, #fff)
         );
+        padding: var(--dialog-surface-padding, var(--ha-space-0));
       }
       :host([flexContent]) .mdc-dialog .mdc-dialog__content {
         display: flex;
         flex-direction: column;
       }
+
       .header_title {
         display: flex;
         align-items: center;
@@ -150,18 +153,22 @@ export class HaDialog extends DialogBase {
         text-overflow: ellipsis;
         white-space: nowrap;
         display: block;
-        padding-left: 4px;
+        padding-left: var(--ha-space-1);
+        padding-right: var(--ha-space-1);
+        margin-right: var(--ha-space-3);
+        margin-inline-end: var(--ha-space-3);
+        margin-inline-start: initial;
       }
       .header_button {
         text-decoration: none;
         color: inherit;
         inset-inline-start: initial;
-        inset-inline-end: -12px;
+        inset-inline-end: calc(var(--ha-space-3) * -1);
         direction: var(--direction);
       }
       .dialog-actions {
         inset-inline-start: initial !important;
-        inset-inline-end: 0px !important;
+        inset-inline-end: var(--ha-space-0) !important;
         direction: var(--direction);
       }
     `,

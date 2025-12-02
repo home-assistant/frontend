@@ -4,8 +4,8 @@ import { property, query, state } from "lit/decorators";
 import { cache } from "lit/directives/cache";
 import type { HASSDomEvent } from "../../../common/dom/fire_event";
 import { fireEvent } from "../../../common/dom/fire_event";
-import { debounce } from "../../../common/util/debounce";
 import { handleStructError } from "../../../common/structs/handle-errors";
+import { debounce } from "../../../common/util/debounce";
 import { deepEqual } from "../../../common/util/deep-equal";
 import "../../../components/ha-alert";
 import "../../../components/ha-spinner";
@@ -81,6 +81,8 @@ export abstract class HuiElementEditor<
   @state() private _loading = false;
 
   @query("ha-yaml-editor") _yamlEditor?: HaYamlEditor;
+
+  private _loadCount = 0;
 
   public get value(): T | undefined {
     return this._config;
@@ -241,6 +243,7 @@ export abstract class HuiElementEditor<
                   @blur=${this._onBlurYaml}
                   @keydown=${this._ignoreKeydown}
                   dir="ltr"
+                  .showErrors=${false}
                 ></ha-yaml-editor>
               </div>
             `}
@@ -411,7 +414,7 @@ export abstract class HuiElementEditor<
     if (!this.value) {
       return;
     }
-
+    const loadNum = ++this._loadCount;
     try {
       this._errors = undefined;
       this._warnings = undefined;
@@ -435,6 +438,9 @@ export abstract class HuiElementEditor<
         this.GUImode = false;
       }
     } catch (err: any) {
+      if (loadNum !== this._loadCount) {
+        return;
+      }
       if (err instanceof GUISupportError) {
         this._warnings = err.warnings ?? [err.message];
         this._errors = err.errors || undefined;

@@ -41,6 +41,7 @@ const createRspackConfig = ({
   isStatsBuild,
   isTestBuild,
   isHassioBuild,
+  isLandingPageBuild,
   dontHash,
 }) => {
   if (!dontHash) {
@@ -65,19 +66,26 @@ const createRspackConfig = ({
       rules: [
         {
           test: /\.m?js$|\.ts$/,
-          use: (info) => ({
-            loader: "babel-loader",
-            options: {
-              ...bundle.babelOptions({
-                latestBuild,
-                isProdBuild,
-                isTestBuild,
-                sw: info.issuerLayer === "sw",
-              }),
-              cacheDirectory: !isProdBuild,
-              cacheCompression: false,
+          exclude: /node_modules[\\/]core-js/,
+          use: (info) => [
+            {
+              loader: "babel-loader",
+              options: {
+                ...bundle.babelOptions({
+                  latestBuild,
+                  isProdBuild,
+                  isTestBuild,
+                  sw: info.issuerLayer === "sw",
+                }),
+                cacheDirectory: !isProdBuild,
+                cacheCompression: false,
+              },
             },
-          }),
+            {
+              loader: "builtin:swc-loader",
+              options: bundle.swcOptions(),
+            },
+          ],
           resolve: {
             fullySpecified: false,
           },
@@ -136,7 +144,8 @@ const createRspackConfig = ({
             // calling define.amd will call require("!!webpack amd options")
             resource.startsWith("!!webpack") ||
             // loaded by webpack dev server but doesn't exist.
-            resource === "webpack/hot"
+            resource === "webpack/hot" ||
+            resource.startsWith("@swc/helpers")
           ) {
             return false;
           }
@@ -160,7 +169,9 @@ const createRspackConfig = ({
         },
       }),
       new rspack.NormalModuleReplacementPlugin(
-        new RegExp(bundle.emptyPackages({ isHassioBuild }).join("|")),
+        new RegExp(
+          bundle.emptyPackages({ isHassioBuild, isLandingPageBuild }).join("|")
+        ),
         path.resolve(paths.root_dir, "src/util/empty.js")
       ),
       !isProdBuild && new LogStartCompilePlugin(),
@@ -249,7 +260,6 @@ const createRspackConfig = ({
       ),
     },
     experiments: {
-      layers: true,
       outputModule: true,
     },
   };

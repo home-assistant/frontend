@@ -1,9 +1,8 @@
-import "@material/mwc-list/mwc-list-item";
 import type { PropertyValues } from "lit";
 import { css, html, LitElement, nothing } from "lit";
 import { customElement, property, state } from "lit/decorators";
 import { stopPropagation } from "../../../common/dom/stop_propagation";
-import { computeStateName } from "../../../common/entity/compute_state_name";
+import "../../../components/ha-list-item";
 import "../../../components/ha-select";
 import { UNAVAILABLE } from "../../../data/entity";
 import { forwardHaptic } from "../../../data/haptics";
@@ -11,6 +10,7 @@ import type { InputSelectEntity } from "../../../data/input_select";
 import { setInputSelectOption } from "../../../data/input_select";
 import type { HomeAssistant } from "../../../types";
 import type { EntitiesCardEntityConfig } from "../cards/types";
+import { computeLovelaceEntityName } from "../common/entity/compute-lovelace-entity-name";
 import { hasConfigOrEntityChanged } from "../common/has-changed";
 import "../components/hui-generic-entity-row";
 import { createEntityNotFoundWarning } from "../components/hui-warning";
@@ -45,11 +45,17 @@ class HuiInputSelectEntityRow extends LitElement implements LovelaceRow {
 
     if (!stateObj) {
       return html`
-        <hui-warning>
+        <hui-warning .hass=${this.hass}>
           ${createEntityNotFoundWarning(this.hass, this._config.entity)}
         </hui-warning>
       `;
     }
+
+    const name = computeLovelaceEntityName(
+      this.hass!,
+      stateObj,
+      this._config.name
+    );
 
     return html`
       <hui-generic-entity-row
@@ -58,7 +64,7 @@ class HuiInputSelectEntityRow extends LitElement implements LovelaceRow {
         hide-name
       >
         <ha-select
-          .label=${this._config.name || computeStateName(stateObj)}
+          .label=${name}
           .value=${stateObj.state}
           .options=${stateObj.attributes.options}
           .disabled=${
@@ -72,9 +78,7 @@ class HuiInputSelectEntityRow extends LitElement implements LovelaceRow {
           ${stateObj.attributes.options
             ? stateObj.attributes.options.map(
                 (option) =>
-                  html`<mwc-list-item .value=${option}
-                    >${option}</mwc-list-item
-                  >`
+                  html`<ha-list-item .value=${option}>${option}</ha-list-item>`
               )
             : ""}
         </ha-select>
@@ -105,7 +109,7 @@ class HuiInputSelectEntityRow extends LitElement implements LovelaceRow {
       return;
     }
 
-    forwardHaptic("light");
+    forwardHaptic(this, "light");
 
     setInputSelectOption(this.hass!, stateObj.entity_id, option);
   }

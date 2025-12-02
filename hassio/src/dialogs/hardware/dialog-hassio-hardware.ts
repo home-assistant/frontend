@@ -164,16 +164,16 @@ class HassioHardwareDialog extends LitElement {
         pre,
         code {
           background-color: var(--markdown-code-background-color, none);
-          border-radius: 3px;
+          border-radius: var(--ha-border-radius-sm);
         }
         pre {
           padding: 16px;
           overflow: auto;
           line-height: 1.45;
-          font-family: var(--code-font-family, monospace);
+          font-family: var(--ha-font-family-code);
         }
         code {
-          font-size: 85%;
+          font-size: var(--ha-font-size-s);
           padding: 0.2em 0.4em;
         }
         search-input {

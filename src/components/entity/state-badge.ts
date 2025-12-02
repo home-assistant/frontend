@@ -2,7 +2,7 @@ import { mdiAlert } from "@mdi/js";
 import type { HassEntity } from "home-assistant-js-websocket";
 import type { CSSResultGroup, PropertyValues } from "lit";
 import { LitElement, css, html, nothing } from "lit";
-import { property, state } from "lit/decorators";
+import { customElement, property, state } from "lit/decorators";
 import { ifDefined } from "lit/directives/if-defined";
 import { styleMap } from "lit/directives/style-map";
 import { computeDomain } from "../../common/entity/compute_domain";
@@ -17,6 +17,7 @@ import { CLIMATE_HVAC_ACTION_TO_MODE } from "../../data/climate";
 import type { HomeAssistant } from "../../types";
 import "../ha-state-icon";
 
+@customElement("state-badge")
 export class StateBadge extends LitElement {
   public hass?: HomeAssistant;
 
@@ -220,7 +221,7 @@ export class StateBadge extends LitElement {
           position: relative;
           display: inline-flex;
           width: 40px;
-          color: var(--paper-item-icon-color, #44739e);
+          color: var(--state-icon-color);
           border-radius: var(--state-badge-border-radius, 50%);
           height: 40px;
           background-size: cover;
@@ -236,7 +237,7 @@ export class StateBadge extends LitElement {
           border-radius: var(--state-badge-with-media-image-border-radius, 8%);
         }
         :host(.has-no-radius) {
-          border-radius: 0;
+          border-radius: var(--ha-border-radius-square);
         }
         :host(:focus) {
           outline: none;
@@ -265,5 +266,3 @@ declare global {
     "state-badge": StateBadge;
   }
 }
-
-customElements.define("state-badge", StateBadge);

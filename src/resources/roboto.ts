@@ -121,4 +121,4 @@ export const fontStyles = css`
     font-weight: 900;
     font-style: italic;
   }
-`.toString();
+`;

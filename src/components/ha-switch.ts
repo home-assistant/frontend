@@ -15,7 +15,7 @@ export class HaSwitch extends SwitchBase {
     super.firstUpdated();
     this.addEventListener("change", () => {
       if (this.haptic) {
-        forwardHaptic("light");
+        forwardHaptic(this, "light");
       }
     });
   }

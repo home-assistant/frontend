@@ -1,6 +1,5 @@
     <script>
-      if (navigator.userAgent.indexOf("Android") === -1 &&
-          navigator.userAgent.indexOf("CrOS") === -1) {
+      if (navigator.userAgent.indexOf("Android") === -1) {
         function _pf(src, type) {
           var el = document.createElement("link");
           el.rel = "preload";

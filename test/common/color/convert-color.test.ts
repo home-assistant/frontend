@@ -48,6 +48,7 @@ describe("Color Conversion Tests", () => {
 
   it("should convert theme color to hex (ignoring alpha)", () => {
     expect(theme2hex("red")).toBe("#ff0000");
+    expect(theme2hex("ReD")).toBe("#ff0000");
     expect(theme2hex("#ff0000")).toBe("#ff0000");
     expect(theme2hex("unicorn")).toBe("unicorn");
     expect(theme2hex("#abc")).toBe("#aabbcc");

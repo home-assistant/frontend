@@ -53,3 +53,7 @@ src/cast/dev_const.ts
 
 # test coverage
 test/coverage/
+
+# AI tooling
+.claude
+

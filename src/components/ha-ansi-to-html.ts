@@ -56,7 +56,7 @@ export class HaAnsiToHtml extends LitElement {
       overflow-wrap: break-word;
     }
     .bold {
-      font-weight: bold;
+      font-weight: var(--ha-font-weight-bold);
     }
     .italic {
       font-style: italic;

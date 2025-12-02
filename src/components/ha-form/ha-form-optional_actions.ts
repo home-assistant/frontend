@@ -1,3 +1,4 @@
+import { mdiPlus } from "@mdi/js";
 import type { PropertyValues, TemplateResult } from "lit";
 import { css, html, LitElement, nothing } from "lit";
 import { customElement, property, state } from "lit/decorators";
@@ -5,11 +6,14 @@ import memoizeOne from "memoize-one";
 import { stopPropagation } from "../../common/dom/stop_propagation";
 import type { LocalizeFunc } from "../../common/translations/localize";
 import type { HomeAssistant } from "../../types";
+import "../ha-button";
+import "../ha-list-item";
+import "../ha-svg-icon";
 import "./ha-form";
 import type {
-  HaFormOptionalActionsSchema,
   HaFormDataContainer,
   HaFormElement,
+  HaFormOptionalActionsSchema,
   HaFormSchema,
 } from "./types";
 
@@ -117,7 +121,8 @@ export class HaFormOptionalActions extends LitElement implements HaFormElement {
               fixed
               @closed=${stopPropagation}
             >
-              <ha-button slot="trigger">
+              <ha-button slot="trigger" appearance="filled" size="small">
+                <ha-svg-icon .path=${mdiPlus} slot="start"></ha-svg-icon>
                 ${this.localize?.("ui.components.form-optional-actions.add") ||
                 "Add interaction"}
               </ha-button>
@@ -151,7 +156,7 @@ export class HaFormOptionalActions extends LitElement implements HaFormElement {
     :host {
       display: flex !important;
       flex-direction: column;
-      gap: 24px;
+      gap: var(--ha-space-6);
     }
     :host ha-form {
       display: block;

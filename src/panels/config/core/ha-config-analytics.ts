@@ -1,11 +1,9 @@
-import "@material/mwc-button/mwc-button";
 import type { CSSResultGroup, PropertyValues, TemplateResult } from "lit";
-import { css, html, LitElement } from "lit";
+import { css, html, LitElement, nothing } from "lit";
 import { customElement, property, state } from "lit/decorators";
 import { isComponentLoaded } from "../../../common/config/is_component_loaded";
 import "../../../components/ha-analytics";
 import "../../../components/ha-card";
-import "../../../components/ha-checkbox";
 import "../../../components/ha-settings-row";
 import type { Analytics } from "../../../data/analytics";
 import {
@@ -15,6 +13,8 @@ import {
 import { haStyle } from "../../../resources/styles";
 import type { HomeAssistant } from "../../../types";
 import { documentationUrl } from "../../../util/documentation-url";
+import type { HaSwitch } from "../../../components/ha-switch";
+import "../../../components/ha-alert";
 
 @customElement("ha-config-analytics")
 class ConfigAnalytics extends LitElement {
@@ -32,10 +32,22 @@ class ConfigAnalytics extends LitElement {
         : undefined;
 
     return html`
-      <ha-card outlined>
+      <ha-card
+        outlined
+        .header=${this.hass.localize("ui.panel.config.analytics.header") ||
+        "Home Assistant analytics"}
+      >
         <div class="card-content">
-          ${error ? html`<div class="error">${error}</div>` : ""}
-          <p>${this.hass.localize("ui.panel.config.analytics.intro")}</p>
+          ${error ? html`<div class="error">${error}</div>` : nothing}
+          <p>
+            ${this.hass.localize("ui.panel.config.analytics.intro")}
+            <a
+              href=${documentationUrl(this.hass, "/integrations/analytics/")}
+              target="_blank"
+              rel="noreferrer"
+              >${this.hass.localize("ui.panel.config.analytics.learn_more")}</a
+            >.
+          </p>
           <ha-analytics
             translation_key_panel="config"
             @analytics-preferences-changed=${this._preferencesChanged}
@@ -43,23 +55,59 @@ class ConfigAnalytics extends LitElement {
             .analytics=${this._analyticsDetails}
           ></ha-analytics>
         </div>
-        <div class="card-actions">
-          <mwc-button @click=${this._save}>
-            ${this.hass.localize(
-              "ui.panel.config.core.section.core.core_config.save_button"
-            )}
-          </mwc-button>
-        </div>
       </ha-card>
-      <div class="footer">
-        <a
-          href=${documentationUrl(this.hass, "/integrations/analytics/")}
-          target="_blank"
-          rel="noreferrer"
-        >
-          ${this.hass.localize("ui.panel.config.analytics.learn_more")}
-        </a>
-      </div>
+      ${this._analyticsDetails &&
+      "snapshots" in this._analyticsDetails.preferences
+        ? html`<ha-card
+            outlined
+            .header=${this.hass.localize(
+              "ui.panel.config.analytics.preferences.snapshots.header"
+            )}
+          >
+            <div class="card-content">
+              <p>
+                ${this.hass.localize(
+                  "ui.panel.config.analytics.preferences.snapshots.info"
+                )}
+                <a
+                  href=${documentationUrl(this.hass, "/device-database/")}
+                  target="_blank"
+                  rel="noreferrer"
+                  >${this.hass.localize(
+                    "ui.panel.config.analytics.preferences.snapshots.learn_more"
+                  )}</a
+                >.
+              </p>
+              <ha-alert
+                .title=${this.hass.localize(
+                  "ui.panel.config.analytics.preferences.snapshots.alert.title"
+                )}
+                >${this.hass.localize(
+                  "ui.panel.config.analytics.preferences.snapshots.alert.content"
+                )}</ha-alert
+              >
+              <ha-settings-row>
+                <span slot="heading" data-for="snapshots">
+                  ${this.hass.localize(
+                    `ui.panel.config.analytics.preferences.snapshots.title`
+                  )}
+                </span>
+                <span slot="description" data-for="snapshots">
+                  ${this.hass.localize(
+                    `ui.panel.config.analytics.preferences.snapshots.description`
+                  )}
+                </span>
+                <ha-switch
+                  @change=${this._handleDeviceRowClick}
+                  .checked=${!!this._analyticsDetails?.preferences.snapshots}
+                  .disabled=${this._analyticsDetails === undefined}
+                  name="snapshots"
+                >
+                </ha-switch>
+              </ha-settings-row>
+            </div>
+          </ha-card>`
+        : nothing}
     `;
   }
 
@@ -91,11 +139,25 @@ class ConfigAnalytics extends LitElement {
     }
   }
 
+  private _handleDeviceRowClick(ev: Event) {
+    const target = ev.target as HaSwitch;
+
+    this._analyticsDetails = {
+      ...this._analyticsDetails!,
+      preferences: {
+        ...this._analyticsDetails!.preferences,
+        snapshots: target.checked,
+      },
+    };
+    this._save();
+  }
+
   private _preferencesChanged(event: CustomEvent): void {
     this._analyticsDetails = {
       ...this._analyticsDetails!,
       preferences: event.detail.preferences,
     };
+    this._save();
   }
 
   static get styles(): CSSResultGroup {
@@ -112,17 +174,10 @@ class ConfigAnalytics extends LitElement {
         p {
           margin-top: 0;
         }
-        .card-actions {
-          display: flex;
-          flex-direction: row-reverse;
-          justify-content: space-between;
-          align-items: center;
+        ha-card:not(:first-of-type) {
+          margin-top: 24px;
         }
-        .footer {
-          padding: 32px 0 16px;
-          text-align: center;
-        }
-      `, // row-reverse so we tab first to "save"
+      `,
     ];
   }
 }

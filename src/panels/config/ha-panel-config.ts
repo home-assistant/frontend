@@ -1,4 +1,4 @@
-import { ContextProvider } from "@lit-labs/context";
+import { ContextProvider } from "@lit/context";
 import {
   mdiAccount,
   mdiBackupRestore,
@@ -7,6 +7,7 @@ import {
   mdiCog,
   mdiDatabase,
   mdiDevices,
+  mdiFlask,
   mdiInformation,
   mdiInformationOutline,
   mdiLabel,
@@ -329,6 +330,13 @@ export const configSections: Record<string, PageNavigation[]> = {
       iconColor: "#f1c447",
     },
     {
+      path: "/config/labs",
+      translationKey: "labs",
+      iconPath: mdiFlask,
+      iconColor: "#b1b134",
+      core: true,
+    },
+    {
       path: "/config/network",
       translationKey: "network",
       iconPath: mdiNetwork,
@@ -515,12 +523,14 @@ class HaPanelConfig extends SubscribeMixin(HassRouterPage) {
         tag: "ha-config-section-general",
         load: () => import("./core/ha-config-section-general"),
       },
+      labs: {
+        tag: "ha-config-labs",
+        load: () => import("./labs/ha-config-labs"),
+      },
       zha: {
         tag: "zha-config-dashboard-router",
         load: () =>
-          import(
-            "./integrations/integration-panels/zha/zha-config-dashboard-router"
-          ),
+          import("./integrations/integration-panels/zha/zha-config-dashboard-router"),
       },
       mqtt: {
         tag: "mqtt-config-panel",
@@ -530,30 +540,37 @@ class HaPanelConfig extends SubscribeMixin(HassRouterPage) {
       zwave_js: {
         tag: "zwave_js-config-router",
         load: () =>
-          import(
-            "./integrations/integration-panels/zwave_js/zwave_js-config-router"
-          ),
+          import("./integrations/integration-panels/zwave_js/zwave_js-config-router"),
       },
       matter: {
         tag: "matter-config-panel",
         load: () =>
-          import(
-            "./integrations/integration-panels/matter/matter-config-panel"
-          ),
+          import("./integrations/integration-panels/matter/matter-config-panel"),
       },
       thread: {
         tag: "thread-config-panel",
         load: () =>
-          import(
-            "./integrations/integration-panels/thread/thread-config-panel"
-          ),
+          import("./integrations/integration-panels/thread/thread-config-panel"),
       },
       bluetooth: {
         tag: "bluetooth-config-dashboard-router",
         load: () =>
-          import(
-            "./integrations/integration-panels/bluetooth/bluetooth-config-dashboard-router"
-          ),
+          import("./integrations/integration-panels/bluetooth/bluetooth-config-dashboard-router"),
+      },
+      dhcp: {
+        tag: "dhcp-config-panel",
+        load: () =>
+          import("./integrations/integration-panels/dhcp/dhcp-config-panel"),
+      },
+      ssdp: {
+        tag: "ssdp-config-panel",
+        load: () =>
+          import("./integrations/integration-panels/ssdp/ssdp-config-panel"),
+      },
+      zeroconf: {
+        tag: "zeroconf-config-panel",
+        load: () =>
+          import("./integrations/integration-panels/zeroconf/zeroconf-config-panel"),
       },
       application_credentials: {
         tag: "ha-config-application-credentials",

@@ -1,20 +1,20 @@
-import "@material/mwc-button";
 import { genClientId } from "home-assistant-js-websocket";
 import type { CSSResultGroup, PropertyValues, TemplateResult } from "lit";
 import { html, LitElement } from "lit";
 import { customElement, property, query, state } from "lit/decorators";
 import { fireEvent } from "../common/dom/fire_event";
 import type { LocalizeFunc } from "../common/translations/localize";
+import { debounce } from "../common/util/debounce";
+import "../components/ha-button";
 import "../components/ha-form/ha-form";
 import type { HaForm } from "../components/ha-form/ha-form";
 import type {
   HaFormDataContainer,
   HaFormSchema,
 } from "../components/ha-form/types";
-import { onboardUserStep, waitForIntegration } from "../data/onboarding";
+import { onboardUserStep } from "../data/onboarding";
 import type { ValueChangedEvent } from "../types";
 import { onBoardingStyles } from "./styles";
-import { debounce } from "../common/util/debounce";
 
 const CHECK_USERNAME_REGEX = /\s|[A-Z]/;
 
@@ -76,8 +76,7 @@ class OnboardingCreateUser extends LitElement {
         @value-changed=${this._handleValueChanged}
       ></ha-form>
       <div class="footer">
-        <mwc-button
-          unelevated
+        <ha-button
           @click=${this._submitForm}
           .disabled=${this._loading ||
           !this._newUser.name ||
@@ -87,7 +86,7 @@ class OnboardingCreateUser extends LitElement {
           this._newUser.password !== this._newUser.password_confirm}
         >
           ${this.localize("ui.panel.page-onboarding.user.create_account")}
-        </mwc-button>
+        </ha-button>
       </div>
     `;
   }
@@ -195,9 +194,6 @@ class OnboardingCreateUser extends LitElement {
 
     try {
       const clientId = genClientId();
-
-      // Person integration is used for onboarding, so we wait for it to be set up. It is not critical, so if it fails, we just continue
-      await waitForIntegration("person");
 
       const result = await onboardUserStep({
         client_id: clientId,

@@ -22,7 +22,7 @@ class OnboardingWelcome extends LitElement {
       <h1>${this.localize("ui.panel.page-onboarding.welcome.header")}</h1>
       <p>${this.localize("ui.panel.page-onboarding.intro")}</p>
 
-      <ha-button unelevated @click=${this._start} class="start">
+      <ha-button @click=${this._start} class="start">
         ${this.localize("ui.panel.page-onboarding.welcome.start")}
       </ha-button>
 
@@ -83,6 +83,7 @@ class OnboardingWelcome extends LitElement {
           display: flex;
           flex-direction: column;
           align-items: flex-start;
+          margin-bottom: -16px;
         }
         h1 {
           margin-top: 16px;
@@ -92,10 +93,8 @@ class OnboardingWelcome extends LitElement {
           margin: 0;
         }
         .start {
-          --button-height: 48px;
-          --mdc-typography-button-font-size: 1rem;
-          --mdc-button-horizontal-padding: 24px;
           margin: 32px 0;
+          width: 100%;
         }
         ha-divider {
           --ha-divider-width: calc(100% + 64px);
@@ -103,10 +102,10 @@ class OnboardingWelcome extends LitElement {
           margin-right: -32px;
         }
         ha-md-list {
-          width: calc(100% + 32px);
-          margin-left: -16px;
-          margin-right: -16px;
+          width: 100%;
           padding-bottom: 0;
+          --md-list-item-leading-space: 0;
+          --md-list-item-trailing-space: 0;
         }
       `,
     ];

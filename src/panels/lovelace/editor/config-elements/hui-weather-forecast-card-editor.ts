@@ -24,12 +24,13 @@ import type { WeatherForecastCardConfig } from "../../cards/types";
 import type { LovelaceCardEditor } from "../../types";
 import { actionConfigStruct } from "../structs/action-struct";
 import { baseLovelaceCardConfig } from "../structs/base-card-struct";
+import { entityNameStruct } from "../structs/entity-name-struct";
 
 const cardConfigStruct = assign(
   baseLovelaceCardConfig,
   object({
     entity: optional(string()),
-    name: optional(string()),
+    name: optional(entityNameStruct),
     theme: optional(string()),
     show_current: optional(boolean()),
     show_forecast: optional(boolean()),
@@ -57,7 +58,7 @@ export class HuiWeatherForecastCardEditor
 
     if (
       /* cannot show forecast in case it is unavailable on the entity */
-      (config.show_forecast === true && this._hasForecast === false) ||
+      (config.show_forecast !== false && this._hasForecast === false) ||
       /* cannot hide both weather and forecast, need one of them */
       (config.show_current === false && config.show_forecast === false)
     ) {
@@ -65,6 +66,7 @@ export class HuiWeatherForecastCardEditor
       fireEvent(this, "config-changed", {
         config: { ...config, show_current: true, show_forecast: false },
       });
+      return;
     }
     if (
       !config.forecast_type ||
@@ -147,7 +149,13 @@ export class HuiWeatherForecastCardEditor
           required: true,
           selector: { entity: { domain: "weather" } },
         },
-        { name: "name", selector: { text: {} } },
+        {
+          name: "name",
+          selector: {
+            entity_name: {},
+          },
+          context: { entity: "entity" },
+        },
         {
           name: "",
           type: "grid",
@@ -210,6 +218,7 @@ export class HuiWeatherForecastCardEditor
           ? ([
               {
                 name: "forecast",
+                default: "show_both",
                 selector: {
                   select: {
                     options: [

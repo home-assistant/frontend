@@ -1,9 +1,9 @@
-import "@material/mwc-button/mwc-button";
 import {
   mdiDelete,
   mdiHomeExportOutline,
   mdiHomeImportOutline,
   mdiPencil,
+  mdiPlus,
   mdiTransmissionTower,
 } from "@mdi/js";
 import type { CSSResultGroup, TemplateResult } from "lit";
@@ -11,7 +11,9 @@ import { html, LitElement } from "lit";
 import { customElement, property, state } from "lit/decorators";
 import { fireEvent } from "../../../../common/dom/fire_event";
 import "../../../../components/ha-card";
+import "../../../../components/ha-button";
 import "../../../../components/ha-icon-button";
+import "../../../../components/ha-svg-icon";
 import type { ConfigEntry } from "../../../../data/config_entries";
 import {
   deleteConfigEntry,
@@ -24,6 +26,7 @@ import type {
   EnergySource,
   FlowFromGridSourceEnergyPreference,
   FlowToGridSourceEnergyPreference,
+  GridPowerSourceEnergyPreference,
   GridSourceTypeEnergyPreference,
 } from "../../../../data/energy";
 import {
@@ -45,6 +48,7 @@ import { documentationUrl } from "../../../../util/documentation-url";
 import {
   showEnergySettingsGridFlowFromDialog,
   showEnergySettingsGridFlowToDialog,
+  showEnergySettingsGridPowerDialog,
 } from "../dialogs/show-dialogs-energy";
 import "./ha-energy-validation-result";
 import { energyCardStyles } from "./styles";
@@ -160,10 +164,15 @@ export class EnergyGridSettings extends LitElement {
           })}
           <div class="row border-bottom">
             <ha-svg-icon .path=${mdiHomeImportOutline}></ha-svg-icon>
-            <mwc-button @click=${this._addFromSource}
-              >${this.hass.localize(
+            <ha-button
+              appearance="filled"
+              size="small"
+              @click=${this._addFromSource}
+            >
+              <ha-svg-icon .path=${mdiPlus} slot="start"></ha-svg-icon>
+              ${this.hass.localize(
                 "ui.panel.config.energy.grid.add_consumption"
-              )}</mwc-button
+              )}</ha-button
             >
           </div>
 
@@ -207,10 +216,67 @@ export class EnergyGridSettings extends LitElement {
           })}
           <div class="row border-bottom">
             <ha-svg-icon .path=${mdiHomeExportOutline}></ha-svg-icon>
-            <mwc-button @click=${this._addToSource}
+            <ha-button
+              @click=${this._addToSource}
+              appearance="filled"
+              size="small"
+            >
+              <ha-svg-icon .path=${mdiPlus} slot="start"></ha-svg-icon
               >${this.hass.localize(
                 "ui.panel.config.energy.grid.add_return"
-              )}</mwc-button
+              )}</ha-button
+            >
+          </div>
+
+          <h3>
+            ${this.hass.localize("ui.panel.config.energy.grid.grid_power")}
+          </h3>
+          ${gridSource.power?.map((power) => {
+            const entityState = this.hass.states[power.stat_rate];
+            return html`
+              <div class="row" .source=${power}>
+                ${entityState?.attributes.icon
+                  ? html`<ha-icon
+                      .icon=${entityState.attributes.icon}
+                    ></ha-icon>`
+                  : html`<ha-svg-icon
+                      .path=${mdiTransmissionTower}
+                    ></ha-svg-icon>`}
+                <span class="content"
+                  >${getStatisticLabel(
+                    this.hass,
+                    power.stat_rate,
+                    this.statsMetadata?.[power.stat_rate]
+                  )}</span
+                >
+                <ha-icon-button
+                  .label=${this.hass.localize(
+                    "ui.panel.config.energy.grid.edit_power"
+                  )}
+                  @click=${this._editPowerSource}
+                  .path=${mdiPencil}
+                ></ha-icon-button>
+                <ha-icon-button
+                  .label=${this.hass.localize(
+                    "ui.panel.config.energy.grid.delete_power"
+                  )}
+                  @click=${this._deletePowerSource}
+                  .path=${mdiDelete}
+                ></ha-icon-button>
+              </div>
+            `;
+          })}
+          <div class="row border-bottom">
+            <ha-svg-icon .path=${mdiTransmissionTower}></ha-svg-icon>
+            <ha-button
+              @click=${this._addPowerSource}
+              appearance="filled"
+              size="small"
+            >
+              <ha-svg-icon .path=${mdiPlus} slot="start"></ha-svg-icon
+              >${this.hass.localize(
+                "ui.panel.config.energy.grid.add_power"
+              )}</ha-button
             >
           </div>
 
@@ -257,11 +323,16 @@ export class EnergyGridSettings extends LitElement {
                       darkOptimized: this.hass.themes?.darkMode,
                     })}
                   />
-                  <mwc-button @click=${this._addCO2Sensor}>
+                  <ha-button
+                    @click=${this._addCO2Sensor}
+                    appearance="filled"
+                    size="small"
+                  >
+                    <ha-svg-icon .path=${mdiPlus} slot="start"></ha-svg-icon>
                     ${this.hass.localize(
                       "ui.panel.config.energy.grid.add_co2_signal"
                     )}
-                  </mwc-button>
+                  </ha-button>
                 </div>
               `}
         </div>
@@ -482,6 +553,97 @@ export class EnergyGridSettings extends LitElement {
     await this._savePreferences(cleanedPreferences);
   }
 
+  private _addPowerSource() {
+    const gridSource = this.preferences.energy_sources.find(
+      (src) => src.type === "grid"
+    ) as GridSourceTypeEnergyPreference | undefined;
+    showEnergySettingsGridPowerDialog(this, {
+      grid_source: gridSource,
+      saveCallback: async (power) => {
+        let preferences: EnergyPreferences;
+        if (!gridSource) {
+          preferences = {
+            ...this.preferences,
+            energy_sources: [
+              ...this.preferences.energy_sources,
+              {
+                ...emptyGridSourceEnergyPreference(),
+                power: [power],
+              },
+            ],
+          };
+        } else {
+          preferences = {
+            ...this.preferences,
+            energy_sources: this.preferences.energy_sources.map((src) =>
+              src.type === "grid"
+                ? { ...src, power: [...(gridSource.power || []), power] }
+                : src
+            ),
+          };
+        }
+        await this._savePreferences(preferences);
+      },
+    });
+  }
+
+  private _editPowerSource(ev) {
+    const origSource: GridPowerSourceEnergyPreference =
+      ev.currentTarget.closest(".row").source;
+    const gridSource = this.preferences.energy_sources.find(
+      (src) => src.type === "grid"
+    ) as GridSourceTypeEnergyPreference | undefined;
+    showEnergySettingsGridPowerDialog(this, {
+      source: { ...origSource },
+      grid_source: gridSource,
+      saveCallback: async (source) => {
+        const power =
+          energySourcesByType(this.preferences).grid![0].power || [];
+
+        const preferences: EnergyPreferences = {
+          ...this.preferences,
+          energy_sources: this.preferences.energy_sources.map((src) =>
+            src.type === "grid"
+              ? {
+                  ...src,
+                  power: power.map((p) => (p === origSource ? source : p)),
+                }
+              : src
+          ),
+        };
+        await this._savePreferences(preferences);
+      },
+    });
+  }
+
+  private async _deletePowerSource(ev) {
+    const sourceToDelete: GridPowerSourceEnergyPreference =
+      ev.currentTarget.closest(".row").source;
+
+    if (
+      !(await showConfirmationDialog(this, {
+        title: this.hass.localize("ui.panel.config.energy.delete_source"),
+      }))
+    ) {
+      return;
+    }
+
+    const power =
+      energySourcesByType(this.preferences).grid![0].power?.filter(
+        (p) => p !== sourceToDelete
+      ) || [];
+
+    const preferences: EnergyPreferences = {
+      ...this.preferences,
+      energy_sources: this.preferences.energy_sources.map((source) =>
+        source.type === "grid" ? { ...source, power } : source
+      ),
+    };
+
+    const cleanedPreferences = this._removeEmptySources(preferences);
+    await this._savePreferences(cleanedPreferences);
+  }
+
   private _removeEmptySources(preferences: EnergyPreferences) {
     // Check if grid sources became an empty type and remove if so
     preferences.energy_sources = preferences.energy_sources.reduce<
@@ -490,7 +652,8 @@ export class EnergyGridSettings extends LitElement {
       if (
         source.type !== "grid" ||
         source.flow_from.length > 0 ||
-        source.flow_to.length > 0
+        source.flow_to.length > 0 ||
+        (source.power && source.power.length > 0)
       ) {
         acc.push(source);
       }

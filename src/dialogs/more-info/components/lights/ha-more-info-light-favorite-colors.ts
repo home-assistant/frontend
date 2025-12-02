@@ -316,7 +316,7 @@ export class HaMoreInfoLightFavoriteColors extends LitElement {
       outline: none;
       background-color: var(--secondary-background-color);
       padding: 0;
-      border-radius: 10px;
+      border-radius: var(--ha-border-radius-md);
       border: none;
       cursor: pointer;
       display: block;

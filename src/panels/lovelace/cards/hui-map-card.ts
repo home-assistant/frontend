@@ -35,23 +35,17 @@ import {
   hasConfigOrEntitiesChanged,
 } from "../common/has-changed";
 import { processConfigEntities } from "../common/process-config-entities";
-import type { EntityConfig } from "../entity-rows/types";
 import type { LovelaceCard, LovelaceGridOptions } from "../types";
-import type { MapCardConfig } from "./types";
+import type { MapCardConfig, MapEntityConfig } from "./types";
 
 export const DEFAULT_HOURS_TO_SHOW = 0;
 export const DEFAULT_ZOOM = 14;
-
-interface MapEntityConfig extends EntityConfig {
-  label_mode?: "state" | "attribute" | "name";
-  attribute?: string;
-  focus?: boolean;
-}
 
 interface GeoEntity {
   entity_id: string;
   label_mode?: "state" | "attribute" | "name" | "icon";
   attribute?: string;
+  unit?: string;
   focus: boolean;
 }
 
@@ -139,6 +133,7 @@ class HuiMapCard extends LitElement implements LovelaceCard {
       ? processConfigEntities<MapEntityConfig>(this._config.entities)
       : [];
     this._mapEntities = this._getMapEntities();
+    this._clusterMarkers = this._config.cluster ?? true;
   }
 
   public getCardSize(): number {
@@ -215,24 +210,28 @@ class HuiMapCard extends LitElement implements LovelaceCard {
             render-passive
           ></ha-map>
           <div id="buttons">
-            <ha-icon-button
-              .label=${this.hass!.localize(
-                "ui.panel.lovelace.cards.map.toggle_grouping"
-              )}
-              .path=${this._clusterMarkers
-                ? mdiGoogleCirclesCommunities
-                : mdiDotsHexagon}
-              style=${isDarkMode ? "color:#ffffff" : "color:#000000"}
-              @click=${this._toggleClusterMarkers}
-              tabindex="0"
-            ></ha-icon-button>
+            ${this._mapEntities.length > 1
+              ? html`
+                  <ha-icon-button
+                    .label=${this.hass!.localize(
+                      "ui.panel.lovelace.cards.map.toggle_grouping"
+                    )}
+                    .path=${this._clusterMarkers
+                      ? mdiGoogleCirclesCommunities
+                      : mdiDotsHexagon}
+                    style=${isDarkMode ? "color:#ffffff" : "color:#000000"}
+                    @click=${this._toggleClusterMarkers}
+                    tabindex="0"
+                  ></ha-icon-button>
+                `
+              : nothing}
             <ha-icon-button
               .label=${this.hass!.localize(
                 "ui.panel.lovelace.cards.map.reset_focus"
               )}
               .path=${mdiImageFilterCenterFocus}
               style=${isDarkMode ? "color:#ffffff" : "color:#000000"}
-              @click=${this._fitMap}
+              @click=${this._resetFocus}
               tabindex="0"
             ></ha-icon-button>
           </div>
@@ -382,8 +381,8 @@ class HuiMapCard extends LitElement implements LovelaceCard {
         : (root.style.paddingBottom = "100%");
   }
 
-  private _fitMap() {
-    this._map?.fitMap();
+  private _resetFocus() {
+    this._map?.fitMap({ unpause_autofit: true });
   }
 
   private _toggleClusterMarkers() {
@@ -395,7 +394,8 @@ class HuiMapCard extends LitElement implements LovelaceCard {
     if (color) {
       return color;
     }
-    color = getColorByIndex(this._colorIndex);
+    const computedStyles = getComputedStyle(this);
+    color = getColorByIndex(this._colorIndex, computedStyles);
     this._colorIndex++;
     this._colorDict[entityId] = color;
     return color;
@@ -425,6 +425,7 @@ class HuiMapCard extends LitElement implements LovelaceCard {
           entity_id: stateObj.entity_id,
           label_mode: sourceObj?.label_mode ?? allSource?.label_mode,
           attribute: sourceObj?.attribute ?? allSource?.attribute,
+          unit: sourceObj?.unit ?? allSource?.unit,
           focus: sourceObj
             ? (sourceObj.focus ?? true)
             : (allSource?.focus ?? true),
@@ -441,6 +442,7 @@ class HuiMapCard extends LitElement implements LovelaceCard {
         color: this._getColor(entityConf.entity),
         label_mode: entityConf.label_mode,
         attribute: entityConf.attribute,
+        unit: entityConf.unit,
         focus: entityConf.focus,
         name: entityConf.name,
       })),
@@ -532,7 +534,7 @@ class HuiMapCard extends LitElement implements LovelaceCard {
       width: 100%;
       height: 100%;
       background: inherit;
-      border-radius: var(--ha-card-border-radius, 12px);
+      border-radius: var(--ha-card-border-radius, var(--ha-border-radius-lg));
       overflow: hidden;
     }
 

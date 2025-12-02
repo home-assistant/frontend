@@ -144,7 +144,7 @@ export function theme2hex(themeColor: string): string {
     return themeColor;
   }
 
-  const rgbFromColorName = colors[themeColor];
+  const rgbFromColorName = colors[themeColor.toLowerCase()];
   if (rgbFromColorName) {
     return rgb2hex(rgbFromColorName);
   }

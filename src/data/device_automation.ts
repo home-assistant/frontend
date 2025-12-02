@@ -167,10 +167,18 @@ const compareEntityIdWithEntityRegId = (
     return false;
   }
   if (entityIdA.includes(".")) {
-    entityIdA = entityRegistryByEntityId(entityRegistry)[entityIdA].id;
+    const entityA = entityRegistryByEntityId(entityRegistry)[entityIdA];
+    if (!entityA) {
+      return false;
+    }
+    entityIdA = entityA.id;
   }
   if (entityIdB.includes(".")) {
-    entityIdB = entityRegistryByEntityId(entityRegistry)[entityIdB].id;
+    const entityB = entityRegistryByEntityId(entityRegistry)[entityIdB];
+    if (!entityB) {
+      return false;
+    }
+    entityIdB = entityB.id;
   }
   return entityIdA === entityIdB;
 };

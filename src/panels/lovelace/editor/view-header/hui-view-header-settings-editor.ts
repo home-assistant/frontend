@@ -16,6 +16,7 @@ import type {
 import type { HomeAssistant } from "../../../../types";
 import {
   DEFAULT_VIEW_HEADER_BADGES_POSITION,
+  DEFAULT_VIEW_HEADER_BADGES_WRAP,
   DEFAULT_VIEW_HEADER_LAYOUT,
 } from "../../views/hui-view-header";
 import { listenMediaQuery } from "../../../../common/dom/media_query";
@@ -92,6 +93,30 @@ export class HuiViewHeaderSettingsEditor extends LitElement {
             },
           },
         },
+        {
+          name: "badges_wrap",
+          selector: {
+            select: {
+              mode: "box",
+              options: ["wrap", "scroll"].map((value) => ({
+                value,
+                label: localize(
+                  `ui.panel.lovelace.editor.edit_view_header.settings.badges_wrap_options.${value}`
+                ),
+                ...(value === "scroll" && {
+                  description: localize(
+                    `ui.panel.lovelace.editor.edit_view_header.settings.badges_wrap_options.${value}_description`
+                  ),
+                }),
+                image: {
+                  src: `/static/images/form/view_header_badges_wrap_${value}.svg`,
+                  src_dark: `/static/images/form/view_header_badges_wrap_${value}_dark.svg`,
+                  flip_rtl: true,
+                },
+              })),
+            },
+          },
+        },
       ] as const satisfies HaFormSchema[]
   );
 
@@ -104,6 +129,7 @@ export class HuiViewHeaderSettingsEditor extends LitElement {
       layout: this.config?.layout || DEFAULT_VIEW_HEADER_LAYOUT,
       badges_position:
         this.config?.badges_position || DEFAULT_VIEW_HEADER_BADGES_POSITION,
+      badges_wrap: this.config?.badges_wrap || DEFAULT_VIEW_HEADER_BADGES_WRAP,
     };
 
     const narrow = this.narrow;
@@ -139,6 +165,7 @@ export class HuiViewHeaderSettingsEditor extends LitElement {
     switch (schema.name) {
       case "layout":
       case "badges_position":
+      case "badges_wrap":
         return this.hass.localize(
           `ui.panel.lovelace.editor.edit_view_header.settings.${schema.name}`
         );

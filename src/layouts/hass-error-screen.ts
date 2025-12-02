@@ -1,8 +1,9 @@
-import "@material/mwc-button";
 import type { CSSResultGroup, TemplateResult } from "lit";
 import { css, html, LitElement } from "lit";
 import { customElement, property } from "lit/decorators";
+import { goBack } from "../common/navigate";
 import "../components/ha-icon-button-arrow-prev";
+import "../components/ha-button";
 import "../components/ha-menu-button";
 import type { HomeAssistant } from "../types";
 import "../components/ha-alert";
@@ -41,16 +42,16 @@ class HassErrorScreen extends LitElement {
       <div class="content">
         <ha-alert alert-type="error">${this.error}</ha-alert>
         <slot>
-          <mwc-button @click=${this._handleBack}>
+          <ha-button appearance="plain" size="small" @click=${this._handleBack}>
             ${this.hass?.localize("ui.common.back")}
-          </mwc-button>
+          </ha-button>
         </slot>
       </div>
     `;
   }
 
   private _handleBack(): void {
-    history.back();
+    goBack();
   }
 
   static get styles(): CSSResultGroup {
@@ -64,12 +65,12 @@ class HassErrorScreen extends LitElement {
         .toolbar {
           display: flex;
           align-items: center;
-          font-size: 20px;
+          font-size: var(--ha-font-size-xl);
           height: var(--header-height);
           padding: 8px 12px;
           pointer-events: none;
           background-color: var(--app-header-background-color);
-          font-weight: 400;
+          font-weight: var(--ha-font-weight-normal);
           color: var(--app-header-text-color, white);
           border-bottom: var(--app-header-border-bottom, none);
           box-sizing: border-box;

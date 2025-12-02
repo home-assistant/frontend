@@ -6,6 +6,7 @@ import type { DataTableColumnContainer } from "../../../../../components/data-ta
 import type { ZwaveJSProvisioningEntry } from "../../../../../data/zwave_js";
 import {
   fetchZwaveProvisioningEntries,
+  ProvisioningEntryStatus,
   SecurityClass,
   unprovisionZwaveSmartStartNode,
 } from "../../../../../data/zwave_js";
@@ -68,6 +69,14 @@ class ZWaveJSProvisioned extends LitElement {
                 ></ha-svg-icon>
               `,
       },
+      active: {
+        title: localize("ui.panel.config.zwave_js.provisioned.active"),
+        type: "icon",
+        template: (entry) =>
+          entry.status === ProvisioningEntryStatus.Active
+            ? html`<ha-svg-icon .path=${mdiCheckCircle}></ha-svg-icon>`
+            : html`<ha-svg-icon .path=${mdiCloseCircleOutline}></ha-svg-icon>`,
+      },
       dsk: {
         main: true,
         title: localize("ui.panel.config.zwave_js.provisioned.dsk"),
@@ -123,18 +132,21 @@ class ZWaveJSProvisioned extends LitElement {
   }
 
   private _unprovision = async (ev) => {
-    const dsk = ev.currentTarget.provisioningEntry.dsk;
+    const { dsk, nodeId } = ev.currentTarget.provisioningEntry;
 
     const confirm = await showConfirmationDialog(this, {
       title: this.hass.localize(
         "ui.panel.config.zwave_js.provisioned.confirm_unprovision_title"
       ),
       text: this.hass.localize(
-        "ui.panel.config.zwave_js.provisioned.confirm_unprovision_text"
+        nodeId
+          ? "ui.panel.config.zwave_js.provisioned.confirm_unprovision_text_included"
+          : "ui.panel.config.zwave_js.provisioned.confirm_unprovision_text"
       ),
       confirmText: this.hass.localize(
-        "ui.panel.config.zwave_js.provisioned.unprovison"
+        "ui.panel.config.zwave_js.provisioned.unprovision"
       ),
+      destructive: true,
     });
 
     if (!confirm) {

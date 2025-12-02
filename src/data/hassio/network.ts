@@ -120,7 +120,7 @@ export const parseAddress = (address: string) => {
   const [ip, cidr] = address.split("/");
   const isIPv6 = ip.includes(":");
   const mask = cidr ? cidrToNetmask(cidr, isIPv6) : null;
-  return { ip, mask };
+  return { ip, mask, prefix: cidr };
 };
 
 export const formatAddress = (ip: string, mask: string) =>

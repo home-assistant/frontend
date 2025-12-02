@@ -1,4 +1,3 @@
-import "@material/mwc-list/mwc-list-item";
 import type { CSSResultGroup, PropertyValues, TemplateResult } from "lit";
 import { css, html, LitElement } from "lit";
 import { customElement, property, state } from "lit/decorators";
@@ -6,6 +5,7 @@ import { stopPropagation } from "../../../../../common/dom/stop_propagation";
 import "../../../../../components/buttons/ha-progress-button";
 import "../../../../../components/ha-card";
 import "../../../../../components/ha-select";
+import "../../../../../components/ha-list-item";
 import type { ZHADevice } from "../../../../../data/zha";
 import { bindDevices, unbindDevices } from "../../../../../data/zha";
 import { haStyle } from "../../../../../resources/styles";
@@ -50,29 +50,31 @@ export class ZHADeviceBindingControl extends LitElement {
           >
             ${this.bindableDevices.map(
               (device, idx) => html`
-                <mwc-list-item .value=${String(idx)}>
+                <ha-list-item .value=${String(idx)}>
                   ${device.user_given_name
                     ? device.user_given_name
                     : device.name}
-                </mwc-list-item>
+                </ha-list-item>
               `
             )}
           </ha-select>
         </div>
         <div class="card-actions">
           <ha-progress-button
+            @click=${this._onUnbindDevicesClick}
+            .disabled=${!(this._deviceToBind && this.device) ||
+            this._bindingOperationInProgress}
+            variant="danger"
+            appearance="plain"
+          >
+            ${this.hass!.localize("ui.panel.config.zha.device_binding.unbind")}
+          </ha-progress-button>
+          <ha-progress-button
             @click=${this._onBindDevicesClick}
             .disabled=${!(this._deviceToBind && this.device) ||
             this._bindingOperationInProgress}
           >
             ${this.hass!.localize("ui.panel.config.zha.device_binding.bind")}
-          </ha-progress-button>
-          <ha-progress-button
-            @click=${this._onUnbindDevicesClick}
-            .disabled=${!(this._deviceToBind && this.device) ||
-            this._bindingOperationInProgress}
-          >
-            ${this.hass!.localize("ui.panel.config.zha.device_binding.unbind")}
           </ha-progress-button>
         </div>
       </ha-card>
@@ -133,6 +135,10 @@ export class ZHADeviceBindingControl extends LitElement {
           width: 100%;
         }
 
+        .content {
+          padding-top: var(--ha-space-2);
+        }
+
         .command-picker {
           align-items: center;
           padding-left: 28px;
@@ -144,6 +150,11 @@ export class ZHADeviceBindingControl extends LitElement {
 
         .header {
           flex-grow: 1;
+        }
+        .card-actions {
+          display: flex;
+          justify-content: flex-end;
+          gap: var(--ha-space-1);
         }
       `,
     ];

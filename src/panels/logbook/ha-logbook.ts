@@ -52,6 +52,8 @@ export class HaLogbook extends LitElement {
 
   @property({ attribute: false }) public deviceIds?: string[];
 
+  @property({ attribute: false }) public stateFilter?: string[];
+
   @property({ type: Boolean }) public narrow = false;
 
   @property({ type: Boolean, reflect: true }) public virtualize = false;
@@ -87,6 +89,8 @@ export class HaLogbook extends LitElement {
     () => this._getLogBookData(),
     1000
   );
+
+  private _logbookSubscriptionId = 0;
 
   protected render() {
     if (!isComponentLoaded(this.hass, "logbook")) {
@@ -163,7 +167,7 @@ export class HaLogbook extends LitElement {
   protected willUpdate(changedProps: PropertyValues): void {
     let changed = changedProps.has("time");
 
-    for (const key of ["entityIds", "deviceIds"]) {
+    for (const key of ["entityIds", "deviceIds", "stateFilter"]) {
       if (!changedProps.has(key)) {
         continue;
       }
@@ -278,13 +282,20 @@ export class HaLogbook extends LitElement {
     }
 
     try {
+      this._logbookSubscriptionId++;
+
       this._unsubLogbook = subscribeLogbook(
         this.hass,
-        (streamMessage) => {
+        (streamMessage, subscriptionId) => {
+          if (subscriptionId !== this._logbookSubscriptionId) {
+            // Ignore messages from previous subscriptions
+            return;
+          }
           this._processOrQueueStreamMessage(streamMessage);
         },
         logbookPeriod.startTime.toISOString(),
         logbookPeriod.endTime.toISOString(),
+        this._logbookSubscriptionId,
         this.entityIds,
         this.deviceIds
       );
@@ -343,9 +354,19 @@ export class HaLogbook extends LitElement {
       "recent" in this.time
         ? findStartOfRecentTime(new Date(), this.time.recent)
         : undefined;
+
+    let eventsFiltered: LogbookEntry[] | undefined;
+    if (this.stateFilter && this.stateFilter.length > 0) {
+      eventsFiltered = streamMessage.events.filter(
+        (e) => e.state && this.stateFilter?.includes(e.state)
+      );
+    } else {
+      eventsFiltered = [...streamMessage.events];
+    }
+
     // Put newest ones on top. Reverse works in-place so
     // make a copy first.
-    const newEntries = [...streamMessage.events].reverse();
+    const newEntries = eventsFiltered.reverse();
     if (!this._logbookEntries || !this._logbookEntries.length) {
       this._logbookEntries = newEntries;
       return;

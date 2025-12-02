@@ -1,6 +1,6 @@
 import { tsParticles } from "@tsparticles/engine";
 import { loadLinksPreset } from "@tsparticles/preset-links";
-import { DEFAULT_PRIMARY_COLOR } from "./styles-data";
+import { DefaultPrimaryColor } from "./theme/color/color.globals";
 
 loadLinksPreset(tsParticles).then(() => {
   tsParticles.load({
@@ -25,11 +25,11 @@ loadLinksPreset(tsParticles).then(() => {
       },
       particles: {
         color: {
-          value: DEFAULT_PRIMARY_COLOR,
+          value: DefaultPrimaryColor,
         },
         links: {
           color: {
-            value: DEFAULT_PRIMARY_COLOR,
+            value: DefaultPrimaryColor,
           },
           distance: 100,
           enable: true,

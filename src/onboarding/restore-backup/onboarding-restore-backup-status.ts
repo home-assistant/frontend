@@ -86,11 +86,11 @@ class OnboardingRestoreBackupStatus extends LitElement {
         p {
           text-align: center;
           padding: 0 16px;
-          font-size: 16px;
+          font-size: var(--ha-font-size-l);
         }
         .failed {
           padding: 16px 0;
-          font-size: 16px;
+          font-size: var(--ha-font-size-l);
         }
         mwc-linear-progress {
           width: 100%;

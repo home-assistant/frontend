@@ -8,7 +8,6 @@ import { styleMap } from "lit/directives/style-map";
 import { applyThemesOnElement } from "../../../common/dom/apply_themes_on_element";
 import { fireEvent } from "../../../common/dom/fire_event";
 import { computeStateDomain } from "../../../common/entity/compute_state_domain";
-import { computeStateName } from "../../../common/entity/compute_state_name";
 import {
   stateColorBrightness,
   stateColorCss,
@@ -27,6 +26,7 @@ import { CLIMATE_HVAC_ACTION_TO_MODE } from "../../../data/climate";
 import { isUnavailableState } from "../../../data/entity";
 import type { HomeAssistant } from "../../../types";
 import { computeCardSize } from "../common/compute-card-size";
+import { computeLovelaceEntityName } from "../common/entity/compute-lovelace-entity-name";
 import { findEntities } from "../common/find-entities";
 import { hasConfigOrEntityChanged } from "../common/has-changed";
 import { createEntityNotFoundWarning } from "../components/hui-warning";
@@ -114,7 +114,7 @@ export class HuiEntityCard extends LitElement implements LovelaceCard {
 
     if (!stateObj) {
       return html`
-        <hui-warning>
+        <hui-warning .hass=${this.hass}>
           ${createEntityNotFoundWarning(this.hass, this._config.entity)}
         </hui-warning>
       `;
@@ -125,7 +125,11 @@ export class HuiEntityCard extends LitElement implements LovelaceCard {
       ? this._config.attribute in stateObj.attributes
       : !isUnavailableState(stateObj.state);
 
-    const name = this._config.name || computeStateName(stateObj);
+    const name = computeLovelaceEntityName(
+      this.hass,
+      stateObj,
+      this._config.name
+    );
 
     const colored = stateObj && this._getStateColor(stateObj, this._config);
 
@@ -282,16 +286,16 @@ export class HuiEntityCard extends LitElement implements LovelaceCard {
         .name {
           color: var(--secondary-text-color);
           line-height: 40px;
-          font-weight: 500;
-          font-size: 16px;
+          font-size: var(--ha-font-size-l);
+          font-weight: var(--ha-font-weight-medium);
           overflow: hidden;
           white-space: nowrap;
           text-overflow: ellipsis;
         }
 
         .icon {
-          color: var(--paper-item-icon-color, #44739e);
-          --state-inactive-color: var(--paper-item-icon-color, #44739e);
+          color: var(--state-icon-color);
+          --state-inactive-color: var(--state-icon-color);
           line-height: 40px;
         }
 
@@ -301,18 +305,18 @@ export class HuiEntityCard extends LitElement implements LovelaceCard {
           overflow: hidden;
           white-space: nowrap;
           text-overflow: ellipsis;
-          line-height: 28px;
+          line-height: var(--ha-line-height-condensed);
         }
 
         .value {
-          font-size: 28px;
+          font-size: var(--ha-font-size-3xl);
           margin-right: 4px;
           margin-inline-end: 4px;
           margin-inline-start: initial;
         }
 
         .measurement {
-          font-size: 18px;
+          font-size: var(--ha-font-size-l);
           color: var(--secondary-text-color);
         }
 

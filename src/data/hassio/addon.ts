@@ -29,9 +29,15 @@ export type AddonState =
   | null;
 export type AddonRepository = "core" | "local" | string;
 
+interface AddonFieldTranslation {
+  name?: string;
+  description?: string;
+  fields?: Record<string, AddonFieldTranslation>;
+}
+
 interface AddonTranslations {
   network?: Record<string, string>;
-  configuration?: Record<string, { name?: string; description?: string }>;
+  configuration?: Record<string, AddonFieldTranslation>;
 }
 
 export interface HassioAddonInfo {
@@ -101,6 +107,8 @@ export interface HassioAddonDetails extends HassioAddonInfo {
   slug: string;
   startup: AddonStartup;
   stdin: boolean;
+  system_managed: boolean;
+  system_managed_config_entry: string | null;
   translations: Record<string, AddonTranslations>;
   watchdog: null | boolean;
   webui: null | string;

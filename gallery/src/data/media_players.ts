@@ -17,6 +17,10 @@ export const createMediaPlayerEntities = () => [
       new Date().getTime() - 23000
     ).toISOString(),
     volume_level: 0.5,
+    source_list: ["AirPlay", "Blu-Ray", "TV", "USB", "iPod (USB)"],
+    source: "AirPlay",
+    sound_mode_list: ["Movie", "Music", "Game", "Pure Audio"],
+    sound_mode: "Music",
   }),
   getEntity("media_player", "music_playing", "playing", {
     friendly_name: "Playing The Music",
@@ -24,8 +28,8 @@ export const createMediaPlayerEntities = () => [
     media_title: "I Wanna Be A Hippy (Flamman & Abraxas Radio Mix)",
     media_artist: "Technohead",
     // Pause + Seek + Volume Set + Volume Mute + Previous Track + Next Track + Play Media +
-    // Select Source + Stop + Clear + Play + Shuffle Set + Browse Media
-    supported_features: 195135,
+    // Select Source + Stop + Clear + Play + Shuffle Set + Browse Media + Grouping
+    supported_features: 784959,
     entity_picture: "/images/album_cover.jpg",
     media_duration: 300,
     media_position: 0,
@@ -34,6 +38,9 @@ export const createMediaPlayerEntities = () => [
       new Date().getTime() - 23000
     ).toISOString(),
     volume_level: 0.5,
+    sound_mode_list: ["Movie", "Music", "Game", "Pure Audio"],
+    sound_mode: "Music",
+    group_members: ["media_player.playing", "media_player.stream_playing"],
   }),
   getEntity("media_player", "stream_playing", "playing", {
     friendly_name: "Playing the Stream",
@@ -149,15 +156,18 @@ export const createMediaPlayerEntities = () => [
   }),
   getEntity("media_player", "receiver_on", "on", {
     source_list: ["AirPlay", "Blu-Ray", "TV", "USB", "iPod (USB)"],
+    sound_mode_list: ["Movie", "Music", "Game", "Pure Audio"],
     volume_level: 0.63,
     is_volume_muted: false,
     source: "TV",
+    sound_mode: "Movie",
     friendly_name: "Receiver (selectable sources)",
     // Volume Set + Volume Mute + On + Off + Select Source + Play + Sound Mode
     supported_features: 84364,
   }),
   getEntity("media_player", "receiver_off", "off", {
     source_list: ["AirPlay", "Blu-Ray", "TV", "USB", "iPod (USB)"],
+    sound_mode_list: ["Movie", "Music", "Game", "Pure Audio"],
     friendly_name: "Receiver (selectable sources)",
     // Volume Set + Volume Mute + On + Off + Select Source + Play + Sound Mode
     supported_features: 84364,

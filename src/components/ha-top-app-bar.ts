@@ -13,15 +13,18 @@ export class HaTopAppBar extends TopAppBarBase {
         border-bottom: var(--app-header-border-bottom);
       }
       .mdc-top-app-bar--fixed-adjust {
-        padding-top: var(--header-height);
+        padding-top: calc(var(--safe-area-inset-top) + var(--header-height));
       }
       .mdc-top-app-bar {
-        --mdc-typography-headline6-font-weight: 400;
+        --mdc-typography-headline6-font-weight: var(--ha-font-weight-normal);
         color: var(--app-header-text-color, var(--mdc-theme-on-primary, #fff));
         background-color: var(
           --app-header-background-color,
           var(--mdc-theme-primary)
         );
+        padding-top: var(--safe-area-inset-top);
+        padding-left: var(--safe-area-inset-left);
+        padding-right: var(--safe-area-inset-right);
       }
     `,
   ];

@@ -1,6 +1,6 @@
 import "../onboarding/ha-onboarding";
 
-import("../resources/ha-style");
+import("../resources/append-ha-style");
 
 declare global {
   interface Window {

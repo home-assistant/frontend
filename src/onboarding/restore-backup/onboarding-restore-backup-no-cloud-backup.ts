@@ -32,17 +32,16 @@ class OnboardingRestoreBackupNoCloudBackup extends LitElement {
         <ha-button @click=${this._signOut}>
           ${this.localize("ui.panel.page-onboarding.restore.ha-cloud.sign_out")}
         </ha-button>
-        <a
+        <ha-button
           href="https://www.nabucasa.com/config/backups/"
           target="_blank"
           rel="noreferrer noopener"
+          appearance="plain"
         >
-          <ha-button>
-            ${this.localize(
-              "ui.panel.page-onboarding.restore.ha-cloud.learn_more"
-            )}
-          </ha-button>
-        </a>
+          ${this.localize(
+            "ui.panel.page-onboarding.restore.ha-cloud.learn_more"
+          )}
+        </ha-button>
       </div>
     `;
   }
@@ -65,7 +64,7 @@ class OnboardingRestoreBackupNoCloudBackup extends LitElement {
         }
         .description {
           font-size: 1rem;
-          line-height: 1.5rem;
+          line-height: var(--ha-line-height-normal);
           margin-top: 24px;
           margin-bottom: 32px;
         }

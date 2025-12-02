@@ -3,9 +3,11 @@ import { styles } from "@material/mwc-select/mwc-select.css";
 import { mdiClose } from "@mdi/js";
 import { css, html, nothing } from "lit";
 import { customElement, property } from "lit/decorators";
+import { classMap } from "lit/directives/class-map";
 import { debounce } from "../common/util/debounce";
 import { nextRender } from "../common/util/render-status";
 import "./ha-icon-button";
+import "./ha-menu";
 
 @customElement("ha-select")
 export class HaSelect extends SelectBase {
@@ -30,6 +32,27 @@ export class HaSelect extends SelectBase {
           ></ha-icon-button>`
         : nothing}
     `;
+  }
+
+  protected override renderMenu() {
+    const classes = this.getMenuClasses();
+    return html`<ha-menu
+      innerRole="listbox"
+      wrapFocus
+      class=${classMap(classes)}
+      activatable
+      .fullwidth=${this.fixedMenuPosition ? false : !this.naturalMenuWidth}
+      .open=${this.menuOpen}
+      .anchor=${this.anchorElement}
+      .fixed=${this.fixedMenuPosition}
+      @selected=${this.onSelected}
+      @opened=${this.onOpened}
+      @closed=${this.onClosed}
+      @items-updated=${this.onItemsUpdated}
+      @keydown=${this.handleTypeahead}
+    >
+      ${this.renderMenuContent()}
+    </ha-menu>`;
   }
 
   protected override renderLeadingIcon() {
@@ -114,7 +137,7 @@ export class HaSelect extends SelectBase {
         height: var(--ha-select-height, 56px);
       }
       .mdc-select--filled .mdc-floating-label {
-        inset-inline-start: 12px;
+        inset-inline-start: var(--ha-space-4);
         inset-inline-end: initial;
         direction: var(--direction);
       }
@@ -124,7 +147,7 @@ export class HaSelect extends SelectBase {
         direction: var(--direction);
       }
       .mdc-select .mdc-select__anchor {
-        padding-inline-start: 12px;
+        padding-inline-start: var(--ha-space-4);
         padding-inline-end: 0px;
         direction: var(--direction);
       }
@@ -135,7 +158,10 @@ export class HaSelect extends SelectBase {
         padding-inline-end: var(--select-selected-text-padding-end, 0px);
       }
       :host([clearable]) .mdc-select__selected-text-container {
-        padding-inline-end: var(--select-selected-text-padding-end, 12px);
+        padding-inline-end: var(
+          --select-selected-text-padding-end,
+          var(--ha-space-4)
+        );
       }
       ha-icon-button {
         position: absolute;

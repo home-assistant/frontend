@@ -1,18 +1,19 @@
-import "@shoelace-style/shoelace/dist/components/animation/animation";
+import "@home-assistant/webawesome/dist/components/animation/animation";
 import { mdiRestart } from "@mdi/js";
 
-import { customElement, property } from "lit/decorators";
 import { css, html, LitElement, nothing } from "lit";
-import type { HomeAssistant } from "../../../../../../types";
+import { customElement, property } from "lit/decorators";
 import { fireEvent } from "../../../../../../common/dom/fire_event";
 import { InclusionStrategy } from "../../../../../../data/zwave_js";
+import type { HomeAssistant } from "../../../../../../types";
 
-import "../../../../../../components/ha-spinner";
-import "../../../../../../components/ha-button";
 import "../../../../../../components/ha-alert";
+import "../../../../../../components/ha-button";
+import "../../../../../../components/ha-spinner";
+import { WakeLockMixin } from "../../../../../../mixins/wakelock-mixin";
 
 @customElement("zwave-js-add-node-searching-devices")
-export class ZWaveJsAddNodeSearchingDevices extends LitElement {
+export class ZWaveJsAddNodeSearchingDevices extends WakeLockMixin(LitElement) {
   @property({ attribute: false }) public hass!: HomeAssistant;
 
   @property({ type: Boolean, attribute: "smart-start" })
@@ -47,9 +48,9 @@ export class ZWaveJsAddNodeSearchingDevices extends LitElement {
           <div class="spinner">
             <ha-spinner></ha-spinner>
           </div>
-          <sl-animation name="pulse" easing="linear" .duration=${2000} play>
+          <wa-animation name="pulse" easing="linear" .duration=${2000} play>
             <div class="circle"></div>
-          </sl-animation>
+          </wa-animation>
         </div>
         ${this.smartStart
           ? html`<ha-alert
@@ -121,7 +122,7 @@ export class ZWaveJsAddNodeSearchingDevices extends LitElement {
       display: block;
     }
     .note {
-      font-size: 12px;
+      font-size: var(--ha-font-size-s);
       color: var(--secondary-text-color);
     }
     .searching-spinner {
@@ -132,7 +133,7 @@ export class ZWaveJsAddNodeSearchingDevices extends LitElement {
       height: 128px;
     }
     .searching-spinner .circle {
-      border-radius: 50%;
+      border-radius: var(--ha-border-radius-circle);
       background-color: var(--light-primary-color);
       position: absolute;
       width: calc(100% - 32px);

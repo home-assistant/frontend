@@ -8,19 +8,26 @@ import type { HomeAssistant } from "../../../../types";
 import type { PlantStatusCardConfig } from "../../cards/types";
 import type { LovelaceCardEditor } from "../../types";
 import { baseLovelaceCardConfig } from "../structs/base-card-struct";
+import { entityNameStruct } from "../structs/entity-name-struct";
 
 const cardConfigStruct = assign(
   baseLovelaceCardConfig,
   object({
     entity: optional(string()),
-    name: optional(string()),
+    name: optional(entityNameStruct),
     theme: optional(string()),
   })
 );
 
 const SCHEMA = [
   { name: "entity", required: true, selector: { entity: { domain: "plant" } } },
-  { name: "name", selector: { text: {} } },
+  {
+    name: "name",
+    selector: {
+      entity_name: {},
+    },
+    context: { entity: "entity" },
+  },
   { name: "theme", selector: { theme: {} } },
 ] as const;
 

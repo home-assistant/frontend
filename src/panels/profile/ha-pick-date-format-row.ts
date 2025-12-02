@@ -1,10 +1,10 @@
-import "@material/mwc-list/mwc-list-item";
 import type { TemplateResult } from "lit";
 import { html, LitElement } from "lit";
 import { customElement, property } from "lit/decorators";
 import { formatDateNumeric } from "../../common/datetime/format_date";
 import { fireEvent } from "../../common/dom/fire_event";
 import "../../components/ha-card";
+import "../../components/ha-list-item";
 import "../../components/ha-select";
 import "../../components/ha-settings-row";
 import { DateFormat } from "../../data/translation";
@@ -47,10 +47,10 @@ class DateFormatRow extends LitElement {
             const value = this.hass.localize(
               `ui.panel.profile.date_format.formats.${format}`
             );
-            return html`<mwc-list-item .value=${format} twoline>
+            return html`<ha-list-item .value=${format} twoline>
               <span>${value}</span>
               <span slot="secondary">${formattedDate}</span>
-            </mwc-list-item>`;
+            </ha-list-item>`;
           })}
         </ha-select>
       </ha-settings-row>

@@ -1,5 +1,5 @@
 import "./ha-gallery";
 
-import("../../src/resources/ha-style");
+import("../../src/resources/append-ha-style");
 
 document.body.appendChild(document.createElement("ha-gallery"));

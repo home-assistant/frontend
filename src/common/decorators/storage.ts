@@ -1,14 +1,17 @@
 import type { UnsubscribeFunc } from "home-assistant-js-websocket";
 import type { ReactiveElement } from "lit";
-import type { InternalPropertyDeclaration } from "lit/decorators";
-import type { ClassElement } from "../../types";
 
 type Callback = (oldValue: any, newValue: any) => void;
 
+type ReactiveStorageElement = ReactiveElement & {
+  __unbsubLocalStorage: UnsubscribeFunc | undefined;
+  __initialized: boolean;
+};
+
 class StorageClass {
-  constructor(storage = window.localStorage) {
-    this.storage = storage;
-    if (storage !== window.localStorage) {
+  constructor(store = window.localStorage) {
+    this.storage = store;
+    if (this.storage !== window.localStorage) {
       // storage events only work for localStorage
       return;
     }
@@ -99,17 +102,22 @@ class StorageClass {
 
 const storages: Record<string, StorageClass> = {};
 
-export const storage =
-  (options: {
-    key?: string;
-    storage?: "localStorage" | "sessionStorage";
-    subscribe?: boolean;
-    state?: boolean;
-    stateOptions?: InternalPropertyDeclaration;
-    serializer?: (value: any) => any;
-    deserializer?: (value: any) => any;
-  }): any =>
-  (clsElement: ClassElement) => {
+export function storage(options: {
+  key?: string;
+  storage?: "localStorage" | "sessionStorage";
+  subscribe?: boolean;
+  state?: boolean;
+  serializer?: (value: any) => any;
+  deserializer?: (value: any) => any;
+}) {
+  return <ElemClass extends ReactiveElement>(
+    proto: ElemClass,
+    propertyKey: string
+  ) => {
+    if (typeof propertyKey === "object") {
+      throw new Error("This decorator does not support this compilation type.");
+    }
+
     const storageName = options.storage || "localStorage";
 
     let storageInstance: StorageClass;
@@ -120,11 +128,7 @@ export const storage =
       storages[storageName] = storageInstance;
     }
 
-    const key = String(clsElement.key);
-    const storageKey = options.key || String(clsElement.key);
-    const initVal = clsElement.initializer
-      ? clsElement.initializer()
-      : undefined;
+    const storageKey = options.key || String(propertyKey);
 
     storageInstance.addFromStorage(storageKey);
 
@@ -134,7 +138,7 @@ export const storage =
             storageInstance.subscribeChanges(
               storageKey!,
               (oldValue, _newValue) => {
-                el.requestUpdate(clsElement.key, oldValue);
+                el.requestUpdate(propertyKey, oldValue);
               }
             )
         : undefined;
@@ -144,7 +148,7 @@ export const storage =
         ? options.deserializer
           ? options.deserializer(storageInstance.getValue(storageKey!))
           : storageInstance.getValue(storageKey!)
-        : initVal;
+        : undefined;
 
     const setValue = (el: ReactiveElement, value: any) => {
       let oldValue: unknown | undefined;
@@ -156,44 +160,69 @@ export const storage =
         options.serializer ? options.serializer(value) : value
       );
       if (options.state) {
-        el.requestUpdate(clsElement.key, oldValue);
+        el.requestUpdate(propertyKey, oldValue);
       }
     };
 
-    return {
-      kind: "method",
-      placement: "prototype",
-      key: clsElement.key,
-      descriptor: {
-        set(this: ReactiveElement, value: unknown) {
-          setValue(this, value);
-        },
-        get() {
+    // @ts-ignore
+    const performUpdate = proto.performUpdate;
+    // @ts-ignore
+    proto.performUpdate = function () {
+      (this as unknown as ReactiveStorageElement).__initialized = true;
+      performUpdate.call(this);
+    };
+
+    if (options.subscribe) {
+      const connectedCallback = proto.connectedCallback;
+      const disconnectedCallback = proto.disconnectedCallback;
+
+      proto.connectedCallback = function () {
+        connectedCallback.call(this);
+        const el = this as unknown as ReactiveStorageElement;
+        if (!el.__unbsubLocalStorage) {
+          el.__unbsubLocalStorage = subscribeChanges?.(this);
+        }
+      };
+      proto.disconnectedCallback = function () {
+        disconnectedCallback.call(this);
+        const el = this as unknown as ReactiveStorageElement;
+        el.__unbsubLocalStorage?.();
+        el.__unbsubLocalStorage = undefined;
+      };
+    }
+
+    const descriptor = Object.getOwnPropertyDescriptor(proto, propertyKey);
+    let newDescriptor: PropertyDescriptor;
+    if (descriptor === undefined) {
+      newDescriptor = {
+        get(this: ReactiveStorageElement) {
           return getValue();
         },
-        enumerable: true,
+        set(this: ReactiveStorageElement, value) {
+          // Don't set the initial value if we have a value in localStorage
+          if (this.__initialized || getValue() === undefined) {
+            setValue(this, value);
+          }
+        },
         configurable: true,
-      },
-      finisher(cls: typeof ReactiveElement) {
-        if (options.state && options.subscribe) {
-          const connectedCallback = cls.prototype.connectedCallback;
-          const disconnectedCallback = cls.prototype.disconnectedCallback;
-          cls.prototype.connectedCallback = function () {
-            connectedCallback.call(this);
-            this[`__unbsubLocalStorage${key}`] = subscribeChanges?.(this);
-          };
-          cls.prototype.disconnectedCallback = function () {
-            disconnectedCallback.call(this);
-            this[`__unbsubLocalStorage${key}`]?.();
-            this[`__unbsubLocalStorage${key}`] = undefined;
-          };
-        }
-        if (options.state) {
-          cls.createProperty(clsElement.key, {
-            noAccessor: true,
-            ...options.stateOptions,
-          });
-        }
-      },
-    };
+        enumerable: true,
+      };
+    } else {
+      const oldSetter = descriptor.set;
+      newDescriptor = {
+        ...descriptor,
+        get(this: ReactiveStorageElement) {
+          return getValue();
+        },
+        set(this: ReactiveStorageElement, value) {
+          // Don't set the initial value if we have a value in localStorage
+          if (this.__initialized || getValue() === undefined) {
+            setValue(this, value);
+          }
+          oldSetter?.call(this, value);
+        },
+      };
+    }
+    Object.defineProperty(proto, propertyKey, newDescriptor);
   };
+}

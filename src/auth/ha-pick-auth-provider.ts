@@ -1,9 +1,9 @@
-import "@material/mwc-list";
 import { css, html, LitElement } from "lit";
 import { customElement, property } from "lit/decorators";
 import { fireEvent } from "../common/dom/fire_event";
 import type { LocalizeFunc } from "../common/translations/localize";
 import "../components/ha-icon-next";
+import "../components/ha-list";
 import "../components/ha-list-item";
 import type { AuthProvider } from "../data/auth";
 
@@ -29,7 +29,7 @@ export class HaPickAuthProvider extends LitElement {
           >${this.localize("ui.panel.page-authorize.pick_auth_provider")}</span
         >
       </h3>
-      <mwc-list>
+      <ha-list>
         ${this.authProviders.map(
           (provider) => html`
             <ha-list-item
@@ -43,7 +43,7 @@ export class HaPickAuthProvider extends LitElement {
             </ha-list-item>
           `
         )}
-      </mwc-list>
+      </ha-list>
     `;
   }
 
@@ -57,9 +57,9 @@ export class HaPickAuthProvider extends LitElement {
       position: relative;
       z-index: 1;
       text-align: center;
-      font-size: 14px;
-      font-weight: 400;
-      line-height: 20px;
+      font-size: var(--ha-font-size-m);
+      font-weight: var(--ha-font-weight-normal);
+      line-height: var(--ha-line-height-normal);
     }
     h3:before {
       border-top: 1px solid var(--divider-color);
@@ -77,7 +77,7 @@ export class HaPickAuthProvider extends LitElement {
       background: var(--card-background-color);
       padding: 0 15px;
     }
-    mwc-list {
+    ha-list {
       margin: 16px -16px 0;
       --mdc-list-side-padding: 24px;
     }

@@ -8,14 +8,18 @@ import { fireEvent } from "../../../../common/dom/fire_event";
 import { stopPropagation } from "../../../../common/dom/stop_propagation";
 import { deepEqual } from "../../../../common/util/deep-equal";
 import "../../../../components/ha-button";
-import "../../../../components/ha-spinner";
 import "../../../../components/ha-dialog";
 import "../../../../components/ha-dialog-header";
+import "../../../../components/ha-list-item";
+import "../../../../components/ha-spinner";
 import "../../../../components/ha-yaml-editor";
 import type { HaYamlEditor } from "../../../../components/ha-yaml-editor";
 import type { LovelaceViewHeaderConfig } from "../../../../data/lovelace/config/view";
 import { showAlertDialog } from "../../../../dialogs/generic/show-dialog-box";
-import { haStyleDialog } from "../../../../resources/styles";
+import {
+  haStyleDialog,
+  haStyleDialogFixedTop,
+} from "../../../../resources/styles";
 import type { HomeAssistant } from "../../../../types";
 import "./hui-view-header-settings-editor";
 import type { EditViewHeaderDialogParams } from "./show-edit-view-header-dialog";
@@ -138,10 +142,8 @@ export class HuiDialogEditViewHeader extends LitElement {
           slot="primaryAction"
           .disabled=${!this._config || this._saving || !this._dirty}
           @click=${this._save}
+          .loading=${this._saving}
         >
-          ${this._saving
-            ? html`<ha-spinner size="small" aria-label="Saving"></ha-spinner>`
-            : nothing}
           ${this.hass!.localize("ui.common.save")}</ha-button
         >
       </ha-dialog>
@@ -202,19 +204,8 @@ export class HuiDialogEditViewHeader extends LitElement {
   static get styles(): CSSResultGroup {
     return [
       haStyleDialog,
+      haStyleDialogFixedTop,
       css`
-        ha-dialog {
-          /* Set the top top of the dialog to a fixed position, so it doesnt jump when the content changes size */
-          --vertical-align-dialog: flex-start;
-          --dialog-surface-margin-top: 40px;
-        }
-
-        @media all and (max-width: 450px), all and (max-height: 500px) {
-          /* When in fullscreen dialog should be attached to top */
-          ha-dialog {
-            --dialog-surface-margin-top: 0px;
-          }
-        }
         ha-dialog.yaml-mode {
           --dialog-content-padding: 0;
         }

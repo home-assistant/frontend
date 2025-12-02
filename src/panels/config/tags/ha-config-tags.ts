@@ -62,6 +62,7 @@ export class HaConfigTags extends SubscribeMixin(LitElement) {
     return this.hass.auth.external?.config.canWriteTag;
   }
 
+  @state()
   @storage({
     storage: "sessionStorage",
     key: "tags-table-search",

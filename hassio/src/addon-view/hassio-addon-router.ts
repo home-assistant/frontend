@@ -23,6 +23,9 @@ class HassioAddonRouter extends HassRouterPage {
     | HassioAddonDetails
     | StoreAddonDetails;
 
+  @property({ type: Boolean, attribute: "control-enabled" })
+  public controlEnabled = false;
+
   protected routerOptions: RouterOptions = {
     defaultPage: "info",
     showLoading: true,
@@ -48,6 +51,7 @@ class HassioAddonRouter extends HassRouterPage {
     el.supervisor = this.supervisor;
     el.addon = this.addon;
     el.narrow = this.narrow;
+    el.controlEnabled = this.controlEnabled;
   }
 }
 

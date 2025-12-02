@@ -32,8 +32,7 @@ export interface PromptDialogParams extends BaseDialogBoxParams {
 }
 
 export interface DialogBoxParams
-  extends ConfirmationDialogParams,
-    PromptDialogParams {
+  extends ConfirmationDialogParams, PromptDialogParams {
   confirm?: (out?: string) => void;
   confirmation?: boolean;
   prompt?: boolean;

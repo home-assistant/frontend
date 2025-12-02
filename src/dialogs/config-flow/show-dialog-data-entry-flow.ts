@@ -31,10 +31,12 @@ export interface FlowConfig {
 
   deleteFlow(hass: HomeAssistant, flowId: string): Promise<unknown>;
 
-  renderAbortHeader?(
+  renderAbortHeader?(hass: HomeAssistant, step: DataEntryFlowStepAbort): string;
+
+  renderAbortSubheader?(
     hass: HomeAssistant,
     step: DataEntryFlowStepAbort
-  ): TemplateResult | string;
+  ): string | TemplateResult;
 
   renderAbortDescription(
     hass: HomeAssistant,
@@ -42,6 +44,11 @@ export interface FlowConfig {
   ): TemplateResult | string;
 
   renderShowFormStepHeader(
+    hass: HomeAssistant,
+    step: DataEntryFlowStepForm
+  ): string;
+
+  renderShowFormStepSubheader?(
     hass: HomeAssistant,
     step: DataEntryFlowStepForm
   ): string | TemplateResult;
@@ -100,6 +107,11 @@ export interface FlowConfig {
   renderShowFormProgressHeader(
     hass: HomeAssistant,
     step: DataEntryFlowStepProgress
+  ): string;
+
+  renderShowFormProgressSubheader?(
+    hass: HomeAssistant,
+    step: DataEntryFlowStepProgress
   ): string | TemplateResult;
 
   renderShowFormProgressDescription(
@@ -107,7 +119,9 @@ export interface FlowConfig {
     step: DataEntryFlowStepProgress
   ): TemplateResult | "";
 
-  renderMenuHeader(
+  renderMenuHeader(hass: HomeAssistant, step: DataEntryFlowStepMenu): string;
+
+  renderMenuSubheader?(
     hass: HomeAssistant,
     step: DataEntryFlowStepMenu
   ): string | TemplateResult;
@@ -118,6 +132,12 @@ export interface FlowConfig {
   ): TemplateResult | "";
 
   renderMenuOption(
+    hass: HomeAssistant,
+    step: DataEntryFlowStepMenu,
+    option: string
+  ): string;
+
+  renderMenuOptionDescription(
     hass: HomeAssistant,
     step: DataEntryFlowStepMenu,
     option: string
@@ -150,6 +170,7 @@ export interface DataEntryFlowDialogParams {
   showAdvanced?: boolean;
   dialogParentElement?: HTMLElement;
   navigateToResult?: boolean;
+  carryOverDevices?: string[];
 }
 
 export const loadDataEntryFlowDialog = () => import("./dialog-data-entry-flow");

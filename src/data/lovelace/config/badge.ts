@@ -4,6 +4,7 @@ export interface LovelaceBadgeConfig {
   type: string;
   [key: string]: any;
   visibility?: Condition[];
+  disabled?: boolean;
 }
 
 export const ensureBadgeConfig = (

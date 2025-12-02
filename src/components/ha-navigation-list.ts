@@ -5,10 +5,9 @@ import { ifDefined } from "lit/directives/if-defined";
 import type { PageNavigation } from "../layouts/hass-tabs-subpage";
 import type { HomeAssistant } from "../types";
 import "./ha-icon-next";
-import "./ha-list-item";
-import "./ha-svg-icon";
 import "./ha-md-list";
 import "./ha-md-list-item";
+import "./ha-svg-icon";
 
 @customElement("ha-navigation-list")
 class HaNavigationList extends LitElement {
@@ -45,7 +44,7 @@ class HaNavigationList extends LitElement {
               >
                 <ha-svg-icon .path=${page.iconPath}></ha-svg-icon>
               </div>
-              <span>${page.name}</span>
+              <span slot="headline">${page.name}</span>
               ${this.hasSecondary
                 ? html`<span slot="supporting-text">${page.description}</span>`
                 : ""}
@@ -75,7 +74,7 @@ class HaNavigationList extends LitElement {
       padding: 8px;
     }
     .icon-background {
-      border-radius: 50%;
+      border-radius: var(--ha-border-radius-circle);
     }
     .icon-background ha-svg-icon {
       color: #fff;

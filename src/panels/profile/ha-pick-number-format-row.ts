@@ -1,10 +1,10 @@
-import "@material/mwc-list/mwc-list-item";
 import type { TemplateResult } from "lit";
 import { html, LitElement } from "lit";
 import { customElement, property } from "lit/decorators";
 import { fireEvent } from "../../common/dom/fire_event";
 import { formatNumber } from "../../common/number/format_number";
 import "../../components/ha-card";
+import "../../components/ha-list-item";
 import "../../components/ha-select";
 import "../../components/ha-settings-row";
 import { NumberFormat } from "../../data/translation";
@@ -44,12 +44,12 @@ class NumberFormatRow extends LitElement {
             );
             const twoLine = value.slice(value.length - 2) !== "89"; // Display explicit number formats on one line
             return html`
-              <mwc-list-item .value=${format} .twoline=${twoLine}>
+              <ha-list-item .value=${format} .twoline=${twoLine}>
                 <span>${value}</span>
                 ${twoLine
                   ? html`<span slot="secondary">${formattedNumber}</span>`
                   : ""}
-              </mwc-list-item>
+              </ha-list-item>
             `;
           })}
         </ha-select>

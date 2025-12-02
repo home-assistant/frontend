@@ -1,4 +1,3 @@
-import "@material/mwc-button/mwc-button";
 import "@material/mwc-linear-progress/mwc-linear-progress";
 import { mdiCheckCircle, mdiCloseCircle, mdiStethoscope } from "@mdi/js";
 import type { UnsubscribeFunc } from "home-assistant-js-websocket";
@@ -6,10 +5,11 @@ import type { CSSResultGroup } from "lit";
 import { css, html, LitElement, nothing } from "lit";
 import { customElement, property, state } from "lit/decorators";
 import { fireEvent } from "../../../../../common/dom/fire_event";
+import "../../../../../components/ha-button";
 import { createCloseHeading } from "../../../../../components/ha-dialog";
 import type {
-  ZWaveJSRebuildRoutesStatusMessage,
   ZWaveJSNetwork,
+  ZWaveJSRebuildRoutesStatusMessage,
 } from "../../../../../data/zwave_js";
 import {
   fetchZwaveNetworkStatus,
@@ -91,14 +91,14 @@ class DialogZWaveJSRebuildNetworkRoutes extends LitElement {
                   )}
                 </em>
               </p>
-              <mwc-button
+              <ha-button
                 slot="primaryAction"
                 @click=${this._startRebuildingRoutes}
               >
                 ${this.hass.localize(
                   "ui.panel.config.zwave_js.rebuild_network_routes.start_rebuilding_routes"
                 )}
-              </mwc-button>
+              </ha-button>
             `
           : ``}
         ${this._status === "started"
@@ -122,17 +122,19 @@ class DialogZWaveJSRebuildNetworkRoutes extends LitElement {
                     <mwc-linear-progress indeterminate> </mwc-linear-progress>
                   `
                 : ""}
-              <mwc-button
+              <ha-button
                 slot="secondaryAction"
+                appearance="plain"
                 @click=${this._stopRebuildingRoutes}
+                variant="danger"
               >
                 ${this.hass.localize(
                   "ui.panel.config.zwave_js.rebuild_network_routes.stop_rebuilding_routes"
                 )}
-              </mwc-button>
-              <mwc-button slot="primaryAction" @click=${this.closeDialog}>
+              </ha-button>
+              <ha-button slot="primaryAction" @click=${this.closeDialog}>
                 ${this.hass.localize("ui.common.close")}
-              </mwc-button>
+              </ha-button>
             `
           : ``}
         ${this._status === "failed"
@@ -150,9 +152,9 @@ class DialogZWaveJSRebuildNetworkRoutes extends LitElement {
                   </p>
                 </div>
               </div>
-              <mwc-button slot="primaryAction" @click=${this.closeDialog}>
+              <ha-button slot="primaryAction" @click=${this.closeDialog}>
                 ${this.hass.localize("ui.common.close")}
-              </mwc-button>
+              </ha-button>
             `
           : ``}
         ${this._status === "finished"
@@ -170,9 +172,9 @@ class DialogZWaveJSRebuildNetworkRoutes extends LitElement {
                   </p>
                 </div>
               </div>
-              <mwc-button slot="primaryAction" @click=${this.closeDialog}>
+              <ha-button slot="primaryAction" @click=${this.closeDialog}>
                 ${this.hass.localize("ui.common.close")}
-              </mwc-button>
+              </ha-button>
             `
           : ``}
         ${this._status === "cancelled"
@@ -190,9 +192,9 @@ class DialogZWaveJSRebuildNetworkRoutes extends LitElement {
                   </p>
                 </div>
               </div>
-              <mwc-button slot="primaryAction" @click=${this.closeDialog}>
+              <ha-button slot="primaryAction" @click=${this.closeDialog}>
                 ${this.hass.localize("ui.common.close")}
-              </mwc-button>
+              </ha-button>
             `
           : ``}
         ${this._progress_total && this._status !== "finished"

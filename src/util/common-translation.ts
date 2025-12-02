@@ -1,7 +1,5 @@
 import type { FrontendLocaleData } from "../data/translation";
-import { fetchTranslationPreferences } from "../data/translation";
 import { translationMetadata } from "../resources/translations-metadata";
-import type { HomeAssistant } from "../types";
 
 const BASE_URL = `${__STATIC_PATH__}translations`;
 const STORAGE = window.localStorage || {};
@@ -68,15 +66,14 @@ export function findAvailableLanguage(language: string) {
  * Get user selected locale data from backend
  */
 export async function getUserLocale(
-  hass: HomeAssistant
+  data: FrontendLocaleData | null
 ): Promise<Partial<FrontendLocaleData>> {
-  const result = await fetchTranslationPreferences(hass);
-  const language = result?.language;
-  const number_format = result?.number_format;
-  const time_format = result?.time_format;
-  const date_format = result?.date_format;
-  const time_zone = result?.time_zone;
-  const first_weekday = result?.first_weekday;
+  const language = data?.language;
+  const number_format = data?.number_format;
+  const time_format = data?.time_format;
+  const date_format = data?.date_format;
+  const time_zone = data?.time_zone;
+  const first_weekday = data?.first_weekday;
   if (language) {
     const availableLanguage = findAvailableLanguage(language);
     if (availableLanguage) {

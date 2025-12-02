@@ -131,7 +131,7 @@ export class HaVoiceAssistantSetupStepUpdate extends LitElement {
       );
       this._refreshTimeout = window.setTimeout(() => {
         this._nextStep();
-      }, 5000);
+      }, 10000);
     } else {
       this._nextStep();
     }

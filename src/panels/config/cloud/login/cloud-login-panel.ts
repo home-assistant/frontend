@@ -1,4 +1,3 @@
-import "@material/mwc-list/mwc-list";
 import { mdiDeleteForever, mdiDotsVertical, mdiDownload } from "@mdi/js";
 import type { TemplateResult } from "lit";
 import { css, html, LitElement } from "lit";
@@ -6,10 +5,11 @@ import { customElement, property, query } from "lit/decorators";
 import { fireEvent } from "../../../../common/dom/fire_event";
 import { navigate } from "../../../../common/navigate";
 import "../../../../components/ha-alert";
+import "../../../../components/ha-button-menu";
 import "../../../../components/ha-card";
 import "../../../../components/ha-icon-next";
+import "../../../../components/ha-list";
 import "../../../../components/ha-list-item";
-import "../../../../components/ha-button-menu";
 import { removeCloudData } from "../../../../data/cloud";
 import {
   showAlertDialog,
@@ -19,8 +19,8 @@ import "../../../../layouts/hass-subpage";
 import { haStyle } from "../../../../resources/styles";
 import type { HomeAssistant } from "../../../../types";
 import "../../ha-config-section";
-import "./cloud-login";
 import { showSupportPackageDialog } from "../account/show-dialog-cloud-support-package";
+import "./cloud-login";
 import type { CloudLogin } from "./cloud-login";
 
 @customElement("cloud-login-panel")
@@ -123,7 +123,7 @@ export class CloudLoginPanel extends LitElement {
             ></cloud-login>
 
             <ha-card outlined>
-              <mwc-list>
+              <ha-list>
                 <ha-list-item @click=${this._handleRegister} twoline hasMeta>
                   ${this.hass.localize(
                     "ui.panel.config.cloud.login.start_trial"
@@ -135,7 +135,7 @@ export class CloudLoginPanel extends LitElement {
                   </span>
                   <ha-icon-next slot="meta"></ha-icon-next>
                 </ha-list-item>
-              </mwc-list>
+              </ha-list>
             </ha-card>
           </ha-config-section>
         </div>

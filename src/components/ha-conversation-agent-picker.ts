@@ -5,8 +5,8 @@ import { customElement, property, state } from "lit/decorators";
 import { fireEvent } from "../common/dom/fire_event";
 import { stopPropagation } from "../common/dom/stop_propagation";
 import { debounce } from "../common/util/debounce";
-import type { ConfigEntry } from "../data/config_entries";
-import { getConfigEntry } from "../data/config_entries";
+import type { ConfigEntry, SubEntry } from "../data/config_entries";
+import { getConfigEntry, getSubEntries } from "../data/config_entries";
 import type { Agent } from "../data/conversation";
 import { listAgents } from "../data/conversation";
 import { fetchIntegrationManifest } from "../data/integration";
@@ -16,6 +16,7 @@ import "./ha-list-item";
 import "./ha-select";
 import type { HaSelect } from "./ha-select";
 import { getExtendedEntityRegistryEntry } from "../data/entity_registry";
+import { showSubConfigFlowDialog } from "../dialogs/config-flow/show-dialog-sub-config-flow";
 
 const NONE = "__NONE_OPTION__";
 
@@ -36,6 +37,8 @@ export class HaConversationAgentPicker extends LitElement {
   @state() _agents?: Agent[];
 
   @state() private _configEntry?: ConfigEntry;
+
+  @state() private _subConfigEntry?: SubEntry;
 
   protected render() {
     if (!this._agents) {
@@ -101,7 +104,11 @@ export class HaConversationAgentPicker extends LitElement {
               ${agent.name}
             </ha-list-item>`
         )}</ha-select
-      >${this._configEntry?.supports_options
+      >${(this._subConfigEntry &&
+        this._configEntry?.supported_subentry_types[
+          this._subConfigEntry.subentry_type
+        ]?.supports_reconfigure) ||
+      this._configEntry?.supports_options
         ? html`<ha-icon-button
             .path=${mdiCog}
             @click=${this._openOptionsFlow}
@@ -142,8 +149,17 @@ export class HaConversationAgentPicker extends LitElement {
       this._configEntry = (
         await getConfigEntry(this.hass, regEntry.config_entry_id)
       ).config_entry;
+
+      if (!regEntry.config_subentry_id) {
+        this._subConfigEntry = undefined;
+      } else {
+        this._subConfigEntry = (
+          await getSubEntries(this.hass, regEntry.config_entry_id)
+        ).find((entry) => entry.subentry_id === regEntry.config_subentry_id);
+      }
     } catch (_err) {
       this._configEntry = undefined;
+      this._subConfigEntry = undefined;
     }
   }
 
@@ -182,6 +198,25 @@ export class HaConversationAgentPicker extends LitElement {
     if (!this._configEntry) {
       return;
     }
+
+    if (
+      this._subConfigEntry &&
+      this._configEntry.supported_subentry_types[
+        this._subConfigEntry.subentry_type
+      ]?.supports_reconfigure
+    ) {
+      showSubConfigFlowDialog(
+        this,
+        this._configEntry,
+        this._subConfigEntry.subentry_type,
+        {
+          startFlowHandler: this._configEntry.entry_id,
+          subEntryId: this._subConfigEntry.subentry_id,
+        }
+      );
+      return;
+    }
+
     showOptionsFlowDialog(this, this._configEntry, {
       manifest: await fetchIntegrationManifest(
         this.hass,

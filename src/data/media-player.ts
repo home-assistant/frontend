@@ -63,6 +63,7 @@ interface MediaPlayerEntityAttributes extends HassEntityAttributeBase {
   source_list?: string[];
   sound_mode?: string;
   sound_mode_list?: string[];
+  group_members?: string[];
 }
 
 export interface MediaPlayerEntity extends HassEntityBase {
@@ -198,10 +199,12 @@ export interface MediaPlayerItem {
   media_content_type: string;
   media_content_id: string;
   media_class: keyof TranslationDict["ui"]["components"]["media-browser"]["class"];
-  children_media_class?: string;
+  children_media_class?: string | null;
   can_play: boolean;
   can_expand: boolean;
+  can_search: boolean;
   thumbnail?: string;
+  iconPath?: string;
   children?: MediaPlayerItem[];
   not_shown?: number;
 }
@@ -510,3 +513,12 @@ export const mediaPlayerPlayMedia = (
     ...extra,
   });
 };
+
+export const mediaPlayerJoin = (
+  hass: HomeAssistant,
+  entity_id: string,
+  group_members: string[]
+) => hass.callService("media_player", "join", { group_members }, { entity_id });
+
+export const mediaPlayerUnjoin = (hass: HomeAssistant, entity_id: string) =>
+  hass.callService("media_player", "unjoin", {}, { entity_id });

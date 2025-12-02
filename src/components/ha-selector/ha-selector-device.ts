@@ -36,6 +36,8 @@ export class HaDeviceSelector extends LitElement {
 
   @property() public helper?: string;
 
+  @property() public placeholder?: string;
+
   @property({ type: Boolean }) public disabled = false;
 
   @property({ type: Boolean }) public required = true;
@@ -56,7 +58,7 @@ export class HaDeviceSelector extends LitElement {
   }
 
   protected willUpdate(changedProperties: PropertyValues): void {
-    if (changedProperties.has("selector") && this.value !== undefined) {
+    if (changedProperties.get("selector") && this.value !== undefined) {
       if (this.selector.device?.multiple && !Array.isArray(this.value)) {
         this.value = [this.value];
         fireEvent(this, "value-changed", { value: this.value });
@@ -102,6 +104,7 @@ export class HaDeviceSelector extends LitElement {
           .entityFilter=${this.selector.device?.entity
             ? this._filterEntities
             : undefined}
+          .placeholder=${this.placeholder}
           .disabled=${this.disabled}
           .required=${this.required}
           allow-custom-entity

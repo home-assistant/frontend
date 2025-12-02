@@ -1,4 +1,3 @@
-import "@material/mwc-list/mwc-list-item";
 import {
   mdiDotsVertical,
   mdiDownload,
@@ -15,7 +14,11 @@ import { classMap } from "lit/directives/class-map";
 import { repeat } from "lit/directives/repeat";
 import { isComponentLoaded } from "../../../common/config/is_component_loaded";
 import { formatDateTimeWithSeconds } from "../../../common/datetime/format_date_time";
+import { fireEvent } from "../../../common/dom/fire_event";
+import "../../../components/ha-button-menu";
+import "../../../components/ha-button";
 import "../../../components/ha-icon-button";
+import "../../../components/ha-list-item";
 import "../../../components/trace/ha-trace-blueprint-config";
 import "../../../components/trace/ha-trace-config";
 import "../../../components/trace/ha-trace-logbook";
@@ -27,18 +30,16 @@ import type {
   NodeInfo,
 } from "../../../components/trace/hat-script-graph";
 import { traceTabStyles } from "../../../components/trace/trace-tab-styles";
+import type { EntityRegistryEntry } from "../../../data/entity_registry";
 import type { LogbookEntry } from "../../../data/logbook";
 import { getLogbookDataForContext } from "../../../data/logbook";
 import type { ScriptEntity } from "../../../data/script";
 import type { ScriptTrace, ScriptTraceExtended } from "../../../data/trace";
 import { loadTrace, loadTraces } from "../../../data/trace";
 import { showAlertDialog } from "../../../dialogs/generic/show-dialog-box";
+import "../../../layouts/hass-subpage";
 import { haStyle } from "../../../resources/styles";
 import type { HomeAssistant, Route } from "../../../types";
-import "../../../layouts/hass-subpage";
-import "../../../components/ha-button-menu";
-import { fireEvent } from "../../../common/dom/fire_event";
-import type { EntityRegistryEntry } from "../../../data/entity_registry";
 
 @customElement("ha-script-trace")
 export class HaScriptTrace extends LitElement {
@@ -101,17 +102,16 @@ export class HaScriptTrace extends LitElement {
       <hass-subpage .hass=${this.hass} .narrow=${this.narrow} .header=${title}>
         ${!this.narrow && this.scriptId
           ? html`
-              <a
+              <ha-button
                 class="trace-link"
                 href="/config/script/edit/${this.scriptId}"
                 slot="toolbar-icon"
+                appearance="plain"
               >
-                <mwc-button>
-                  ${this.hass.localize(
-                    "ui.panel.config.script.trace.edit_script"
-                  )}
-                </mwc-button>
-              </a>
+                ${this.hass.localize(
+                  "ui.panel.config.script.trace.edit_script"
+                )}
+              </ha-button>
             `
           : ""}
 
@@ -122,7 +122,7 @@ export class HaScriptTrace extends LitElement {
             .path=${mdiDotsVertical}
           ></ha-icon-button>
 
-          <mwc-list-item
+          <ha-list-item
             graphic="icon"
             .disabled=${!stateObj}
             @click=${this._showInfo}
@@ -132,7 +132,7 @@ export class HaScriptTrace extends LitElement {
               slot="graphic"
               .path=${mdiInformationOutline}
             ></ha-svg-icon>
-          </mwc-list-item>
+          </ha-list-item>
 
           ${this.narrow && this.scriptId
             ? html`
@@ -140,7 +140,7 @@ export class HaScriptTrace extends LitElement {
                   class="trace-link"
                   href="/config/script/edit/${this.scriptId}"
                 >
-                  <mwc-list-item graphic="icon">
+                  <ha-list-item graphic="icon">
                     ${this.hass.localize(
                       "ui.panel.config.script.trace.edit_script"
                     )}
@@ -148,19 +148,19 @@ export class HaScriptTrace extends LitElement {
                       slot="graphic"
                       .path=${mdiPencil}
                     ></ha-svg-icon>
-                  </mwc-list-item>
+                  </ha-list-item>
                 </a>
               `
             : ""}
 
           <li divider role="separator"></li>
 
-          <mwc-list-item graphic="icon" @click=${this._refreshTraces}>
+          <ha-list-item graphic="icon" @click=${this._refreshTraces}>
             ${this.hass.localize("ui.panel.config.automation.trace.refresh")}
             <ha-svg-icon slot="graphic" .path=${mdiRefresh}></ha-svg-icon>
-          </mwc-list-item>
+          </ha-list-item>
 
-          <mwc-list-item
+          <ha-list-item
             graphic="icon"
             .disabled=${!this._trace}
             @click=${this._downloadTrace}
@@ -169,7 +169,7 @@ export class HaScriptTrace extends LitElement {
               "ui.panel.config.automation.trace.download_trace"
             )}
             <ha-svg-icon slot="graphic" .path=${mdiDownload}></ha-svg-icon>
-          </mwc-list-item>
+          </ha-list-item>
         </ha-button-menu>
 
         <div class="toolbar">
@@ -263,7 +263,9 @@ export class HaScriptTrace extends LitElement {
                             <button
                               tabindex="0"
                               .view=${view}
-                              class=${classMap({ active: this._view === view })}
+                              class=${classMap({
+                                active: this._view === view,
+                              })}
                               @click=${this._showTab}
                             >
                               ${label}

@@ -1,7 +1,6 @@
 import type { PropertyValues } from "lit";
 import { css, html, LitElement, nothing } from "lit";
 import { customElement, property, state } from "lit/decorators";
-import { computeStateName } from "../../../common/entity/compute_state_name";
 import "../../../components/ha-date-input";
 import "../../../components/ha-time-input";
 import { isUnavailableState, UNKNOWN } from "../../../data/entity";
@@ -10,6 +9,7 @@ import {
   stateToIsoDateString,
 } from "../../../data/input_datetime";
 import type { HomeAssistant } from "../../../types";
+import { computeLovelaceEntityName } from "../common/entity/compute-lovelace-entity-name";
 import { hasConfigOrEntityChanged } from "../common/has-changed";
 import "../components/hui-generic-entity-row";
 import { createEntityNotFoundWarning } from "../components/hui-warning";
@@ -41,13 +41,17 @@ class HuiInputDatetimeEntityRow extends LitElement implements LovelaceRow {
 
     if (!stateObj) {
       return html`
-        <hui-warning>
+        <hui-warning .hass=${this.hass}>
           ${createEntityNotFoundWarning(this.hass, this._config.entity)}
         </hui-warning>
       `;
     }
 
-    const name = this._config.name || computeStateName(stateObj);
+    const name = computeLovelaceEntityName(
+      this.hass!,
+      stateObj,
+      this._config.name
+    );
 
     return html`
       <hui-generic-entity-row

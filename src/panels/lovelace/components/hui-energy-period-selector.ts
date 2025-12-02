@@ -1,4 +1,3 @@
-import "@material/mwc-button/mwc-button";
 import type { RequestSelectedDetail } from "@material/mwc-list/mwc-list-item";
 import { mdiDotsVertical } from "@mdi/js";
 import {
@@ -34,13 +33,14 @@ import {
 } from "../../../common/datetime/format_date";
 import { debounce } from "../../../common/util/debounce";
 import "../../../components/ha-button-menu";
+import "../../../components/ha-button";
 import "../../../components/ha-check-list-item";
 import "../../../components/ha-date-range-picker";
 import type { DateRangePickerRanges } from "../../../components/ha-date-range-picker";
 import "../../../components/ha-icon-button-next";
 import "../../../components/ha-icon-button-prev";
 import type { EnergyData } from "../../../data/energy";
-import { getEnergyDataCollection } from "../../../data/energy";
+import { CompareMode, getEnergyDataCollection } from "../../../data/energy";
 import { SubscribeMixin } from "../../../mixins/subscribe-mixin";
 import type { HomeAssistant } from "../../../types";
 import { calcDateRange } from "../../../common/datetime/calc_date_range";
@@ -65,6 +65,9 @@ export class HuiEnergyPeriodSelector extends SubscribeMixin(LitElement) {
   @property({ attribute: "collection-key" }) public collectionKey?: string;
 
   @property({ type: Boolean, reflect: true }) public narrow?;
+
+  @property({ type: Boolean, attribute: "allow-compare" }) public allowCompare =
+    true;
 
   @state() _startDate?: Date;
 
@@ -205,11 +208,15 @@ export class HuiEnergyPeriodSelector extends SubscribeMixin(LitElement) {
         </div>
 
         ${!this.narrow
-          ? html`<mwc-button dense outlined @click=${this._pickNow}>
+          ? html`<ha-button
+              appearance="filled"
+              size="small"
+              @click=${this._pickNow}
+            >
               ${this.hass.localize(
                 "ui.panel.lovelace.components.energy_period_selector.now"
               )}
-            </mwc-button>`
+            </ha-button>`
           : nothing}
 
         <ha-button-menu>
@@ -218,15 +225,17 @@ export class HuiEnergyPeriodSelector extends SubscribeMixin(LitElement) {
             .label=${this.hass.localize("ui.common.menu")}
             .path=${mdiDotsVertical}
           ></ha-icon-button>
-          <ha-check-list-item
-            left
-            @request-selected=${this._toggleCompare}
-            .selected=${this._compare}
-          >
-            ${this.hass.localize(
-              "ui.panel.lovelace.components.energy_period_selector.compare"
-            )}
-          </ha-check-list-item>
+          ${this.allowCompare
+            ? html`<ha-check-list-item
+                left
+                @request-selected=${this._toggleCompare}
+                .selected=${this._compare}
+              >
+                ${this.hass.localize(
+                  "ui.panel.lovelace.components.energy_period_selector.compare"
+                )}
+              </ha-check-list-item>`
+            : nothing}
           <slot name="overflow-menu"></slot>
         </ha-button-menu>
       </div>
@@ -297,24 +306,17 @@ export class HuiEnergyPeriodSelector extends SubscribeMixin(LitElement) {
   }
 
   private _dateRangeChanged(ev) {
-    const weekStartsOn = firstWeekdayIndex(this.hass.locale);
     this._startDate = calcDate(
       ev.detail.value.startDate,
       startOfDay,
       this.hass.locale,
-      this.hass.config,
-      {
-        weekStartsOn,
-      }
+      this.hass.config
     );
     this._endDate = calcDate(
       ev.detail.value.endDate,
       endOfDay,
       this.hass.locale,
-      this.hass.config,
-      {
-        weekStartsOn,
-      }
+      this.hass.config
     );
 
     this._updateCollectionPeriod();
@@ -452,7 +454,9 @@ export class HuiEnergyPeriodSelector extends SubscribeMixin(LitElement) {
     const energyCollection = getEnergyDataCollection(this.hass, {
       key: this.collectionKey,
     });
-    energyCollection.setCompare(this._compare);
+    energyCollection.setCompare(
+      this._compare ? CompareMode.PREVIOUS : CompareMode.NONE
+    );
     energyCollection.refresh();
   }
 
@@ -475,7 +479,7 @@ export class HuiEnergyPeriodSelector extends SubscribeMixin(LitElement) {
       display: flex;
       align-items: center;
       justify-content: flex-end;
-      font-size: 20px;
+      font-size: var(--ha-font-size-xl);
       margin-left: auto;
       margin-inline-start: auto;
       margin-inline-end: initial;
@@ -485,17 +489,12 @@ export class HuiEnergyPeriodSelector extends SubscribeMixin(LitElement) {
       margin-inline-start: unset;
       margin-inline-end: initial;
     }
-    mwc-button {
+    ha-button {
       margin-left: 8px;
       margin-inline-start: 8px;
       margin-inline-end: initial;
       flex-shrink: 0;
-      --mdc-button-outline-color: currentColor;
-      --primary-color: currentColor;
-      --mdc-theme-primary: currentColor;
-      --mdc-theme-on-primary: currentColor;
-      --mdc-button-disabled-outline-color: var(--disabled-text-color);
-      --mdc-button-disabled-ink-color: var(--disabled-text-color);
+      --ha-button-theme-color: currentColor;
     }
   `;
 }

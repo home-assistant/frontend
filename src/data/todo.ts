@@ -25,9 +25,10 @@ export enum TodoSortMode {
 export interface TodoItem {
   uid: string;
   summary: string;
-  status: TodoItemStatus;
+  status: TodoItemStatus | null;
   description?: string | null;
   due?: string | null;
+  completed?: string | null;
 }
 
 export const enum TodoListEntityFeature {
@@ -72,7 +73,7 @@ export const fetchItems = async (
 export const subscribeItems = (
   hass: HomeAssistant,
   entity_id: string,
-  callback: (item) => void
+  callback: (update: TodoItems) => void
 ) =>
   hass.connection.subscribeMessage<any>(callback, {
     type: "todo/item/subscribe",

@@ -1,6 +1,6 @@
-import ProgressRing from "@shoelace-style/shoelace/dist/components/progress-ring/progress-ring.component";
-import progressRingStyles from "@shoelace-style/shoelace/dist/components/progress-ring/progress-ring.styles";
+import ProgressRing from "@home-assistant/webawesome/dist/components/progress-ring/progress-ring";
 import { css } from "lit";
+import type { CSSResultGroup } from "lit";
 import { customElement, property } from "lit/decorators";
 
 @customElement("ha-progress-ring")
@@ -31,24 +31,26 @@ export class HaProgressRing extends ProgressRing {
     }
   }
 
-  static override styles = [
-    progressRingStyles,
-    css`
-      :host {
-        --indicator-color: var(
-          --ha-progress-ring-indicator-color,
-          var(--primary-color)
-        );
-        --track-color: var(
-          --ha-progress-ring-divider-color,
-          var(--divider-color)
-        );
-        --track-width: 4px;
-        --speed: 3.5s;
-        --size: var(--ha-progress-ring-size, 48px);
-      }
-    `,
-  ];
+  static get styles(): CSSResultGroup {
+    return [
+      ProgressRing.styles,
+      css`
+        :host {
+          --indicator-color: var(
+            --ha-progress-ring-indicator-color,
+            var(--primary-color)
+          );
+          --track-color: var(
+            --ha-progress-ring-divider-color,
+            var(--divider-color)
+          );
+          --track-width: 4px;
+          --speed: 3.5s;
+          --size: var(--ha-progress-ring-size, 48px);
+        }
+      `,
+    ];
+  }
 }
 
 declare global {

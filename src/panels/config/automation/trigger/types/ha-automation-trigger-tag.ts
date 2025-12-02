@@ -1,10 +1,10 @@
-import "@material/mwc-list/mwc-list-item";
 import type { PropertyValues } from "lit";
 import { css, html, LitElement, nothing } from "lit";
 import { customElement, property, state } from "lit/decorators";
 import { fireEvent } from "../../../../../common/dom/fire_event";
 import { caseInsensitiveStringCompare } from "../../../../../common/string/compare";
 import "../../../../../components/ha-select";
+import "../../../../../components/ha-list-item";
 import type { TagTrigger } from "../../../../../data/automation";
 import type { Tag } from "../../../../../data/tag";
 import { fetchTags } from "../../../../../data/tag";
@@ -42,12 +42,14 @@ export class HaTagTrigger extends LitElement implements TriggerElement {
         .disabled=${this.disabled || this._tags.length === 0}
         .value=${this.trigger.tag_id}
         @selected=${this._tagChanged}
+        fixedMenuPosition
+        naturalMenuWidth
       >
         ${this._tags.map(
           (tag) => html`
-            <mwc-list-item .value=${tag.id}>
+            <ha-list-item .value=${tag.id}>
               ${tag.name || tag.id}
-            </mwc-list-item>
+            </ha-list-item>
           `
         )}
       </ha-select>

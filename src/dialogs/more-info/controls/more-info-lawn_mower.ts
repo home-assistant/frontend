@@ -178,7 +178,7 @@ class MoreInfoLawnMower extends LitElement {
 
   static styles = css`
     :host {
-      line-height: 1.5;
+      line-height: var(--ha-line-height-normal);
     }
     .status-subtitle {
       color: var(--secondary-text-color);

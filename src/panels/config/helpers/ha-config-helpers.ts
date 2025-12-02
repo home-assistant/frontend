@@ -1,10 +1,11 @@
-import { consume } from "@lit-labs/context";
+import { consume } from "@lit/context";
 import { ResizeController } from "@lit-labs/observers/resize-controller";
 import {
   mdiAlertCircle,
   mdiCancel,
   mdiChevronRight,
   mdiCog,
+  mdiDelete,
   mdiDotsVertical,
   mdiMenuDown,
   mdiPencilOff,
@@ -12,6 +13,7 @@ import {
   mdiPlus,
   mdiTag,
   mdiTrashCan,
+  mdiDownload,
 } from "@mdi/js";
 import type { HassEntity } from "home-assistant-js-websocket";
 import type { CSSResultGroup, PropertyValues, TemplateResult } from "lit";
@@ -74,6 +76,7 @@ import type {
   UpdateEntityRegistryEntryResult,
 } from "../../../data/entity_registry";
 import {
+  entityRegistryByEntityId,
   subscribeEntityRegistry,
   updateEntityRegistryEntry,
 } from "../../../data/entity_registry";
@@ -107,8 +110,17 @@ import { configSections } from "../ha-panel-config";
 import "../integrations/ha-integration-overflow-menu";
 import { renderConfigEntryError } from "../integrations/ha-config-integration-page";
 import { showLabelDetailDialog } from "../labels/show-dialog-label-detail";
-import { isHelperDomain } from "./const";
+import { isHelperDomain, type HelperDomain } from "./const";
 import { showHelperDetailDialog } from "./show-dialog-helper-detail";
+import { slugify } from "../../../common/string/slugify";
+import { isComponentLoaded } from "../../../common/config/is_component_loaded";
+import { HELPERS_CRUD } from "../../../data/helpers_crud";
+import {
+  fetchDiagnosticHandlers,
+  getConfigEntryDiagnosticsDownloadUrl,
+} from "../../../data/diagnostics";
+import { getSignedPath } from "../../../data/auth";
+import { fileDownload } from "../../../util/file_download";
 
 interface HelperItem {
   id: string;
@@ -168,6 +180,7 @@ export class HaConfigHelpers extends SubscribeMixin(LitElement) {
   })
   private _activeCollapsed?: string;
 
+  @state()
   @storage({
     storage: "sessionStorage",
     key: "helpers-table-search",
@@ -205,6 +218,8 @@ export class HaConfigHelpers extends SubscribeMixin(LitElement) {
   @state() private _activeFilters?: string[];
 
   @state() private _helperManifests?: Record<string, IntegrationManifest>;
+
+  @state() private _diagnosticHandlers?: Record<string, boolean>;
 
   @storage({
     storage: "sessionStorage",
@@ -359,13 +374,16 @@ export class HaConfigHelpers extends SubscribeMixin(LitElement) {
                   tabindex="0"
                   style="display:inline-block; position: relative;"
                 >
+                  <ha-svg-icon
+                    .id="icon-edit-${slugify(helper.entity_id)}"
+                    .path=${mdiPencilOff}
+                  ></ha-svg-icon>
                   <ha-tooltip
+                    .for="icon-edit-${slugify(helper.entity_id)}"
                     placement="left"
-                    .content=${this.hass.localize(
+                    >${this.hass.localize(
                       "ui.panel.config.entities.picker.status.unmanageable"
                     )}
-                  >
-                    <ha-svg-icon .path=${mdiPencilOff}></ha-svg-icon>
                   </ha-tooltip>
                 </div>
               `
@@ -421,6 +439,30 @@ export class HaConfigHelpers extends SubscribeMixin(LitElement) {
                       label: this.hass.localize("ui.common.delete"),
                       warning: true,
                       action: () => this._deleteEntry(helper),
+                    },
+                  ]
+                : []),
+              ...(this._diagnosticHandlers?.[helper.type] && helper.configEntry
+                ? [
+                    {
+                      path: mdiDownload,
+                      label: this.hass.localize(
+                        "ui.panel.config.integrations.config_entry.download_diagnostics"
+                      ),
+                      action: () => this._downloadDiagnostics(helper),
+                    },
+                  ]
+                : []),
+              ...(helper.editable && helper.entity
+                ? [
+                    {
+                      divider: true,
+                    },
+                    {
+                      path: mdiDelete,
+                      label: this.hass.localize("ui.common.delete"),
+                      warning: true,
+                      action: () => this._deleteHelper(helper),
                     },
                   ]
                 : []),
@@ -519,9 +561,8 @@ export class HaConfigHelpers extends SubscribeMixin(LitElement) {
             : true
         )
         .map((item) => {
-          const entityRegEntry = entityReg.find(
-            (reg) => reg.entity_id === item.entity_id
-          );
+          const entityRegEntry =
+            entityRegistryByEntityId(entityReg)[item.entity_id];
           const labels = labelReg && entityRegEntry?.labels;
           const category = entityRegEntry?.categories.helpers;
           return {
@@ -546,7 +587,7 @@ export class HaConfigHelpers extends SubscribeMixin(LitElement) {
   private _labelsForEntity(entityId: string): string[] {
     return (
       this.hass.entities[entityId]?.labels ||
-      this._entityReg.find((e) => e.entity_id === entityId)?.labels ||
+      entityRegistryByEntityId(this._entityReg)[entityId]?.labels ||
       []
     );
   }
@@ -608,7 +649,10 @@ export class HaConfigHelpers extends SubscribeMixin(LitElement) {
             .indeterminate=${partial}
             reducedTouchTarget
           ></ha-checkbox>
-          <ha-label style=${color ? `--color: ${color}` : ""}>
+          <ha-label
+            style=${color ? `--color: ${color}` : ""}
+            .description=${label.description}
+          >
             ${label.icon
               ? html`<ha-icon slot="icon" .icon=${label.icon}></ha-icon>`
               : nothing}
@@ -796,7 +840,7 @@ export class HaConfigHelpers extends SubscribeMixin(LitElement) {
                         .path=${mdiChevronRight}
                       ></ha-svg-icon>
                     </ha-md-menu-item>
-                    <ha-menu slot="menu">${categoryItems}</ha-menu>
+                    <ha-md-menu slot="menu">${categoryItems}</ha-md-menu>
                   </ha-sub-menu>`
                 : nothing
             }
@@ -814,7 +858,7 @@ export class HaConfigHelpers extends SubscribeMixin(LitElement) {
                         .path=${mdiChevronRight}
                       ></ha-svg-icon>
                     </ha-md-menu-item>
-                    <ha-menu slot="menu">${labelItems}</ha-menu>
+                    <ha-md-menu slot="menu">${labelItems}</ha-md-menu>
                   </ha-sub-menu>`
                 : nothing
             }
@@ -884,9 +928,9 @@ export class HaConfigHelpers extends SubscribeMixin(LitElement) {
         const labelItems = new Set<string>();
         this._stateItems
           .filter((stateItem) =>
-            this._entityReg
-              .find((reg) => reg.entity_id === stateItem.entity_id)
-              ?.labels.some((lbl) => filter.includes(lbl))
+            entityRegistryByEntityId(this._entityReg)[
+              stateItem.entity_id
+            ]?.labels.some((lbl) => filter.includes(lbl))
           )
           .forEach((stateItem) => labelItems.add(stateItem.entity_id));
         (this._disabledEntityEntries || [])
@@ -912,9 +956,8 @@ export class HaConfigHelpers extends SubscribeMixin(LitElement) {
           .filter(
             (stateItem) =>
               filter[0] ===
-              this._entityReg.find(
-                (reg) => reg.entity_id === stateItem.entity_id
-              )?.categories.helpers
+              entityRegistryByEntityId(this._entityReg)[stateItem.entity_id]
+                ?.categories.helpers
           )
           .forEach((stateItem) => categoryItems.add(stateItem.entity_id));
         (this._disabledEntityEntries || [])
@@ -942,9 +985,9 @@ export class HaConfigHelpers extends SubscribeMixin(LitElement) {
   }
 
   private _editCategory(helper: any) {
-    const entityReg = this._entityReg.find(
-      (reg) => reg.entity_id === helper.entity_id
-    );
+    const entityReg = entityRegistryByEntityId(this._entityReg)[
+      helper.entity_id
+    ];
     if (!entityReg) {
       showAlertDialog(this, {
         title: this.hass.localize(
@@ -1037,6 +1080,16 @@ ${rejected
     super.firstUpdated(changedProps);
 
     this._fetchEntitySources();
+
+    if (isComponentLoaded(this.hass, "diagnostics")) {
+      fetchDiagnosticHandlers(this.hass).then((infos) => {
+        const handlers = {};
+        for (const info of infos) {
+          handlers[info.domain] = info.handlers.config_entry;
+        }
+        this._diagnosticHandlers = handlers;
+      });
+    }
 
     if (this.route.path === "/add") {
       this._handleAdd();
@@ -1223,6 +1276,14 @@ ${rejected
     deleteConfigEntry(this.hass, helper.id);
   }
 
+  private async _downloadDiagnostics(helper: HelperItem) {
+    const url = getConfigEntryDiagnosticsDownloadUrl(
+      helper.configEntry!.entry_id
+    );
+    const signedUrl = await getSignedPath(this.hass, url);
+    fileDownload(signedUrl.path);
+  }
+
   private _openSettings(helper: HelperItem) {
     if (helper.entity) {
       showMoreInfoDialog(this, {
@@ -1231,6 +1292,62 @@ ${rejected
       });
     } else {
       showOptionsFlowDialog(this, helper.configEntry!);
+    }
+  }
+
+  private async _deleteHelper(helper: HelperItem) {
+    if (!helper.entity_id) {
+      return;
+    }
+
+    const confirmed = await showConfirmationDialog(this, {
+      title: this.hass.localize(
+        "ui.panel.config.helpers.picker.delete_confirm_title"
+      ),
+      text: this.hass.localize(
+        "ui.panel.config.helpers.picker.delete_confirm_text",
+        { name: helper.name }
+      ),
+      confirmText: this.hass.localize("ui.common.delete"),
+      dismissText: this.hass.localize("ui.common.cancel"),
+      destructive: true,
+    });
+
+    if (!confirmed) {
+      return;
+    }
+
+    try {
+      // For old-style helpers (input_boolean, etc.), use HELPERS_CRUD
+      if (isHelperDomain(helper.type)) {
+        const entityReg = this._entityReg.find(
+          (e) => e.entity_id === helper.entity_id
+        );
+        if (
+          !entityReg?.unique_id ||
+          !isComponentLoaded(this.hass, helper.type)
+        ) {
+          throw new Error(
+            this.hass.localize("ui.panel.config.helpers.picker.delete_failed")
+          );
+        }
+        await HELPERS_CRUD[helper.type as HelperDomain].delete(
+          this.hass,
+          entityReg.unique_id
+        );
+        return;
+      }
+
+      // For config entry-based helpers, delete the config entry
+      if (helper.configEntry) {
+        await deleteConfigEntry(this.hass, helper.configEntry.entry_id);
+      }
+    } catch (err: any) {
+      showAlertDialog(this, {
+        text:
+          err.message ||
+          this.hass.localize("ui.panel.config.helpers.picker.delete_failed"),
+      });
     }
   }
 
@@ -1258,7 +1375,6 @@ ${rejected
       createEntry: async (values) => {
         const label = await createLabelRegistryEntry(this.hass, values);
         this._bulkLabel(label.label_id, "add");
-        return label;
       },
     });
   };

@@ -131,18 +131,17 @@ class OnboardingRestoreBackupRestore extends LitElement {
             ${this.localize(
               "ui.panel.page-onboarding.restore.details.addons_unsupported"
             )}
-            <a
+            <ha-button
               slot="action"
               href="https://www.home-assistant.io/installation/#advanced-installation-methods"
               target="_blank"
               rel="noreferrer noopener"
+              size="small"
             >
-              <ha-button
-                >${this.localize(
-                  "ui.panel.page-onboarding.restore.ha-cloud.learn_more"
-                )}</ha-button
-              >
-            </a>
+              ${this.localize(
+                "ui.panel.page-onboarding.restore.ha-cloud.learn_more"
+              )}</ha-button
+            >
           </ha-alert>`
         : nothing}
       ${!onlyHomeAssistantBackup
@@ -191,14 +190,13 @@ class OnboardingRestoreBackupRestore extends LitElement {
 
       <div class="actions${this.mode === "cloud" ? " cloud" : ""}">
         ${this.mode === "cloud"
-          ? html`<ha-button @click=${this._signOut}>
+          ? html`<ha-button appearance="plain" @click=${this._signOut}>
               ${this.localize(
                 "ui.panel.page-onboarding.restore.ha-cloud.sign_out"
               )}
             </ha-button>`
           : nothing}
         <ha-progress-button
-          unelevated
           .progress=${this._loading}
           .disabled=${this._loading ||
           (backupProtected && this._encryptionKey === "") ||
@@ -308,7 +306,7 @@ class OnboardingRestoreBackupRestore extends LitElement {
         }
         .description {
           font-size: 1rem;
-          line-height: 1.5rem;
+          line-height: var(--ha-line-height-normal);
           margin-top: 24px;
           margin-bottom: 16px;
         }
@@ -334,15 +332,15 @@ class OnboardingRestoreBackupRestore extends LitElement {
           display: flex;
           align-items: center;
           flex-direction: row;
-          gap: 8px;
-          line-height: normal;
+          gap: var(--ha-space-2);
+          line-height: var(--ha-line-height-condensed);
         }
         h2 {
-          font-size: 22px;
+          font-size: var(--ha-font-size-xl);
           margin-top: 24px;
           margin-bottom: 8px;
           font-style: normal;
-          font-weight: 400;
+          font-weight: var(--ha-font-weight-normal);
         }
         .supervisor-warning {
           display: block;

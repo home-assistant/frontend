@@ -1,7 +1,7 @@
 import { mdiArrowLeft, mdiArrowRight, mdiPlus } from "@mdi/js";
 import type { PropertyValues, TemplateResult } from "lit";
 import { LitElement, css, html } from "lit";
-import { property, state } from "lit/decorators";
+import { customElement, property, state } from "lit/decorators";
 import { fireEvent } from "../../../common/dom/fire_event";
 import type { LovelaceViewElement } from "../../../data/lovelace";
 import type { LovelaceViewConfig } from "../../../data/lovelace/config/view";
@@ -13,6 +13,7 @@ import type { HuiCardOptions } from "../components/hui-card-options";
 import { replaceCard } from "../editor/config-util";
 import type { Lovelace } from "../types";
 
+@customElement("hui-sidebar-view")
 export class SideBarView extends LitElement implements LovelaceViewElement {
   @property({ attribute: false }) public hass!: HomeAssistant;
 
@@ -198,7 +199,7 @@ export class SideBarView extends LitElement implements LovelaceViewElement {
     hui-view-badges {
       display: block;
       margin: 4px 8px 4px 8px;
-      font-size: 85%;
+      font-size: var(--ha-font-size-s);
     }
 
     .container {
@@ -242,9 +243,9 @@ export class SideBarView extends LitElement implements LovelaceViewElement {
 
     ha-fab {
       position: fixed;
-      right: calc(16px + env(safe-area-inset-right));
-      bottom: calc(16px + env(safe-area-inset-bottom));
-      inset-inline-end: calc(16px + env(safe-area-inset-right));
+      right: calc(16px + var(--safe-area-inset-right));
+      bottom: calc(16px + var(--safe-area-inset-bottom));
+      inset-inline-end: calc(16px + var(--safe-area-inset-right));
       inset-inline-start: initial;
       z-index: 1;
     }
@@ -256,5 +257,3 @@ declare global {
     "hui-sidebar-view": SideBarView;
   }
 }
-
-customElements.define("hui-sidebar-view", SideBarView);

@@ -4,7 +4,7 @@ import { css, html, LitElement, nothing } from "lit";
 import { customElement, property, query, state } from "lit/decorators";
 import { fireEvent } from "../../../../common/dom/fire_event";
 import "../../../../components/ha-yaml-editor";
-import "../../../../components/ha-spinner";
+import "../../../../components/ha-button";
 
 import type { HaYamlEditor } from "../../../../components/ha-yaml-editor";
 import type { LovelaceBadgeConfig } from "../../../../data/lovelace/config/badge";
@@ -92,30 +92,27 @@ export class HuiDialogSuggestBadge extends LitElement {
               `
             : nothing}
         </div>
-        <mwc-button
-          slot="secondaryAction"
+        <ha-button
+          appearance="plain"
+          slot="primaryAction"
           @click=${this.closeDialog}
           dialogInitialFocus
         >
           ${this._params.yaml
             ? this.hass!.localize("ui.common.close")
             : this.hass!.localize("ui.common.cancel")}
-        </mwc-button>
+        </ha-button>
         ${!this._params.yaml
           ? html`
-              <mwc-button
+              <ha-button
                 slot="primaryAction"
-                .disabled=${this._saving}
                 @click=${this._save}
+                .loading=${this._saving}
               >
-                ${this._saving
-                  ? html`
-                      <ha-spinner aria-label="Saving" size="small"></ha-spinner>
-                    `
-                  : this.hass!.localize(
-                      "ui.panel.lovelace.editor.suggest_badge.add"
-                    )}
-              </mwc-button>
+                ${this.hass!.localize(
+                  "ui.panel.lovelace.editor.suggest_badge.add"
+                )}
+              </ha-button>
             `
           : nothing}
       </ha-dialog>
@@ -151,7 +148,7 @@ export class HuiDialogSuggestBadge extends LitElement {
           align-items: flex-start;
           flex-wrap: wrap;
           justify-content: center;
-          gap: 8px;
+          gap: var(--ha-space-2);
           margin: 0;
         }
         .editor {

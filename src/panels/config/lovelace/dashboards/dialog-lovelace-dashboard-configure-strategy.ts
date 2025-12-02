@@ -12,7 +12,7 @@ import "../../../lovelace/editor/dashboard-strategy-editor/hui-dashboard-strateg
 import type { LovelaceDashboardConfigureStrategyDialogParams } from "./show-dialog-lovelace-dashboard-configure-strategy";
 
 @customElement("dialog-lovelace-dashboard-configure-strategy")
-export class DialogLovelaceDashboardDetail extends LitElement {
+export class DialogLovelaceDashboardConfigureStrategy extends LitElement {
   @property({ attribute: false }) public hass!: HomeAssistant;
 
   @state() private _params?: LovelaceDashboardConfigureStrategyDialogParams;
@@ -97,6 +97,6 @@ export class DialogLovelaceDashboardDetail extends LitElement {
 
 declare global {
   interface HTMLElementTagNameMap {
-    "dialog-lovelace-dashboard-configure-strategy": DialogLovelaceDashboardDetail;
+    "dialog-lovelace-dashboard-configure-strategy": DialogLovelaceDashboardConfigureStrategy;
   }
 }

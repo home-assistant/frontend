@@ -1,4 +1,3 @@
-import "@material/mwc-button/mwc-button";
 import type { PropertyValues, TemplateResult } from "lit";
 import { css, html, LitElement, nothing } from "lit";
 import { customElement, property, state } from "lit/decorators";
@@ -6,8 +5,9 @@ import { LOCAL_TIME_ZONE } from "../common/datetime/resolve-time-zone";
 import { fireEvent } from "../common/dom/fire_event";
 import type { LocalizeFunc } from "../common/translations/localize";
 import "../components/ha-alert";
-import "../components/ha-spinner";
+import "../components/ha-button";
 import { COUNTRIES } from "../components/ha-country-picker";
+import "../components/ha-spinner";
 import type { ConfigUpdateValues } from "../data/core";
 import { saveCoreConfig } from "../data/core";
 import { countryCurrency } from "../data/currency";
@@ -80,11 +80,11 @@ class OnboardingCoreConfig extends LitElement {
       </ha-country-picker>
 
       <div class="footer">
-        <mwc-button @click=${this._save} .disabled=${this._working}>
+        <ha-button @click=${this._save} .disabled=${this._working}>
           ${this.onboardingLocalize(
             "ui.panel.page-onboarding.core-config.finish"
           )}
-        </mwc-button>
+        </ha-button>
       </div>
     `;
   }
@@ -199,8 +199,8 @@ class OnboardingCoreConfig extends LitElement {
     }
 
     p {
-      font-size: 14px;
-      line-height: 20px;
+      font-size: var(--ha-font-size-m);
+      line-height: var(--ha-line-height-condensed);
     }
 
     ha-textfield {

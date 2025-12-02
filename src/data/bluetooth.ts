@@ -24,11 +24,14 @@ export interface BluetoothConnectionData extends DataTableRowData {
   source: string;
 }
 
+export type HaScannerType = "usb" | "uart" | "remote" | "unknown";
+
 export interface BluetoothScannerDetails {
   source: string;
   connectable: boolean;
   name: string;
   adapter: string;
+  scanner_type?: HaScannerType;
 }
 
 export type BluetoothScannersDetails = Record<string, BluetoothScannerDetails>;
@@ -53,6 +56,13 @@ export interface BluetoothAllocationsData {
   slots: number;
   free: number;
   allocated: string[];
+}
+
+export interface BluetoothScannerState {
+  source: string;
+  adapter: string;
+  current_mode: "active" | "passive" | null;
+  requested_mode: "active" | "passive" | null;
 }
 
 export const subscribeBluetoothScannersDetailsUpdates = (
@@ -167,6 +177,23 @@ export const subscribeBluetoothConnectionAllocations = (
   }
   return conn.subscribeMessage<BluetoothAllocationsData[]>(
     (bluetoothAllocationsData) => callbackFunction(bluetoothAllocationsData),
+    params
+  );
+};
+
+export const subscribeBluetoothScannerState = (
+  conn: Connection,
+  callbackFunction: (scannerState: BluetoothScannerState) => void,
+  configEntryId?: string
+): Promise<() => Promise<void>> => {
+  const params: { type: string; config_entry_id?: string } = {
+    type: "bluetooth/subscribe_scanner_state",
+  };
+  if (configEntryId) {
+    params.config_entry_id = configEntryId;
+  }
+  return conn.subscribeMessage<BluetoothScannerState>(
+    (scannerState) => callbackFunction(scannerState),
     params
   );
 };

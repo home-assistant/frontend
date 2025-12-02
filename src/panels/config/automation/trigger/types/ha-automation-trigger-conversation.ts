@@ -155,11 +155,6 @@ export class HaConversationTrigger
     .option {
       margin-top: 4px;
     }
-    mwc-button {
-      margin-left: 8px;
-      margin-inline-start: 8px;
-      margin-inline-end: initial;
-    }
     ha-textfield {
       display: block;
       margin-bottom: 8px;

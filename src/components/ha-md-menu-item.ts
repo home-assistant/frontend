@@ -1,13 +1,14 @@
-import { MdMenuItem } from "@material/web/menu/menu-item";
+import { MenuItemEl } from "@material/web/menu/internal/menuitem/menu-item";
+import { styles } from "@material/web/menu/internal/menuitem/menu-item-styles";
 import { css } from "lit";
 import { customElement, property } from "lit/decorators";
 
 @customElement("ha-md-menu-item")
-export class HaMdMenuItem extends MdMenuItem {
+export class HaMdMenuItem extends MenuItemEl {
   @property({ attribute: false }) clickAction?: (item?: HTMLElement) => void;
 
   static override styles = [
-    ...super.styles,
+    styles,
     css`
       :host {
         --ha-icon-display: block;
@@ -34,6 +35,11 @@ export class HaMdMenuItem extends MdMenuItem {
       }
       ::slotted([slot="headline"]) {
         text-wrap: nowrap;
+      }
+      :host([disabled]) {
+        opacity: 1;
+        --md-menu-item-label-text-color: var(--disabled-text-color);
+        --md-menu-item-leading-icon-color: var(--disabled-text-color);
       }
     `,
   ];

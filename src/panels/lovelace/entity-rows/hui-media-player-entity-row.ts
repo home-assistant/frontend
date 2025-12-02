@@ -92,7 +92,7 @@ class HuiMediaPlayerEntityRow extends LitElement implements LovelaceRow {
 
     if (!stateObj) {
       return html`
-        <hui-warning>
+        <hui-warning .hass=${this.hass}>
           ${createEntityNotFoundWarning(this.hass, this._config.entity)}
         </hui-warning>
       `;
@@ -418,7 +418,7 @@ class HuiMediaPlayerEntityRow extends LitElement implements LovelaceRow {
       flex-grow: 2;
       flex-shrink: 2;
       width: 100%;
-      margin: 0 -8px 0 1px;
+      margin: 1px;
     }
   `;
 }

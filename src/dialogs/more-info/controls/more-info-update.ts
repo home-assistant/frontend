@@ -7,9 +7,9 @@ import { relativeTime } from "../../../common/datetime/relative_time";
 import { supportsFeature } from "../../../common/entity/supports-feature";
 import "../../../components/ha-alert";
 import "../../../components/ha-button";
+import "../../../components/buttons/ha-progress-button";
 import "../../../components/ha-checkbox";
 import "../../../components/ha-faded";
-import "../../../components/ha-formfield";
 import "../../../components/ha-markdown";
 import "../../../components/ha-md-list";
 import "../../../components/ha-md-list-item";
@@ -27,6 +27,8 @@ import {
   UpdateEntityFeature,
   updateIsInstalling,
   updateReleaseNotes,
+  latestVersionIsSkipped,
+  updateButtonIsDisabled,
 } from "../../../data/update";
 import type { HomeAssistant } from "../../../types";
 import { showAlertDialog } from "../../generic/show-dialog-box";
@@ -181,11 +183,6 @@ class MoreInfoUpdate extends LitElement {
       return nothing;
     }
 
-    const skippedVersion =
-      this.stateObj.attributes.latest_version &&
-      this.stateObj.attributes.skipped_version ===
-        this.stateObj.attributes.latest_version;
-
     const createBackupTexts = this._computeCreateBackupTexts();
 
     return html`
@@ -252,15 +249,17 @@ class MoreInfoUpdate extends LitElement {
                 <hr />
                 ${this._markdownLoading ? this._renderLoader() : nothing}
               `
-            : html`
-                <hr />
-                <ha-markdown
-                  @content-resize=${this._markdownLoaded}
-                  .content=${this._releaseNotes}
-                  class=${this._markdownLoading ? "hidden" : ""}
-                ></ha-markdown>
-                ${this._markdownLoading ? this._renderLoader() : nothing}
-              `
+            : this._releaseNotes
+              ? html`
+                  <hr />
+                  <ha-markdown
+                    @content-resize=${this._markdownLoaded}
+                    .content=${this._releaseNotes}
+                    class=${this._markdownLoading ? "hidden" : ""}
+                  ></ha-markdown>
+                  ${this._markdownLoading ? this._renderLoader() : nothing}
+                `
+              : nothing
           : this.stateObj.attributes.release_summary
             ? html`
                 <hr />
@@ -300,7 +299,10 @@ class MoreInfoUpdate extends LitElement {
           ${this.stateObj.state === BINARY_STATE_OFF &&
           this.stateObj.attributes.skipped_version
             ? html`
-                <ha-button @click=${this._handleClearSkipped}>
+                <ha-button
+                  appearance="plain"
+                  @click=${this._handleClearSkipped}
+                >
                   ${this.hass.localize(
                     "ui.dialogs.more_info_control.update.clear_skipped"
                   )}
@@ -308,8 +310,9 @@ class MoreInfoUpdate extends LitElement {
               `
             : html`
                 <ha-button
+                  appearance="plain"
                   @click=${this._handleSkip}
-                  .disabled=${skippedVersion ||
+                  .disabled=${latestVersionIsSkipped(this.stateObj) ||
                   this.stateObj.state === BINARY_STATE_OFF ||
                   updateIsInstalling(this.stateObj)}
                 >
@@ -322,9 +325,8 @@ class MoreInfoUpdate extends LitElement {
             ? html`
                 <ha-button
                   @click=${this._handleInstall}
-                  .disabled=${(this.stateObj.state === BINARY_STATE_OFF &&
-                    !skippedVersion) ||
-                  updateIsInstalling(this.stateObj)}
+                  .loading=${updateIsInstalling(this.stateObj)}
+                  .disabled=${updateButtonIsDisabled(this.stateObj)}
                 >
                   ${this.hass.localize(
                     "ui.dialogs.more_info_control.update.update"
@@ -472,8 +474,7 @@ class MoreInfoUpdate extends LitElement {
       position: sticky;
       bottom: 0;
       margin: 0 -24px 0 -24px;
-      margin-bottom: calc(-1 * max(env(safe-area-inset-bottom), 24px));
-      padding-bottom: env(safe-area-inset-bottom);
+      margin-bottom: calc(-1 * max(var(--safe-area-inset-bottom), 24px));
       box-sizing: border-box;
       display: flex;
       flex-direction: column;
@@ -505,9 +506,9 @@ class MoreInfoUpdate extends LitElement {
       flex-wrap: wrap;
       justify-content: flex-end;
       box-sizing: border-box;
-      padding: 12px;
+      padding: 16px;
       z-index: 1;
-      gap: 8px;
+      gap: var(--ha-space-2);
     }
 
     a {

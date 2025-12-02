@@ -165,6 +165,7 @@ export const computeStateDisplayFromEntityAttributes = (
   // state is a timestamp
   if (
     [
+      "ai_task",
       "button",
       "conversation",
       "event",

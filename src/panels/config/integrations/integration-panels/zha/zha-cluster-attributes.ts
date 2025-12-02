@@ -1,4 +1,3 @@
-import "@material/mwc-list/mwc-list-item";
 import type { CSSResultGroup, PropertyValues, TemplateResult } from "lit";
 import { css, html, LitElement, nothing } from "lit";
 import { customElement, property, state } from "lit/decorators";
@@ -6,6 +5,7 @@ import { stopPropagation } from "../../../../../common/dom/stop_propagation";
 import "../../../../../components/buttons/ha-call-service-button";
 import "../../../../../components/buttons/ha-progress-button";
 import "../../../../../components/ha-card";
+import "../../../../../components/ha-list-item";
 import "../../../../../components/ha-select";
 import "../../../../../components/ha-textfield";
 import { forwardHaptic } from "../../../../../data/haptics";
@@ -76,9 +76,9 @@ export class ZHAClusterAttributes extends LitElement {
           >
             ${this._attributes.map(
               (entry) => html`
-                <mwc-list-item .value=${String(entry.id)}>
+                <ha-list-item .value=${String(entry.id)}>
                   ${`${entry.name} (id: ${formatAsPaddedHex(entry.id)})`}
-                </mwc-list-item>
+                </ha-list-item>
               `
             )}
           </ha-select>
@@ -117,15 +117,6 @@ export class ZHAClusterAttributes extends LitElement {
         ></ha-textfield>
       </div>
       <div class="card-actions">
-        <ha-progress-button
-          @click=${this._onGetZigbeeAttributeClick}
-          .progress=${this._readingAttribute}
-          .disabled=${this._readingAttribute}
-        >
-          ${this.hass!.localize(
-            "ui.panel.config.zha.cluster_attributes.read_zigbee_attribute"
-          )}
-        </ha-progress-button>
         <ha-call-service-button
           .hass=${this.hass}
           domain="zha"
@@ -136,6 +127,15 @@ export class ZHAClusterAttributes extends LitElement {
             "ui.panel.config.zha.cluster_attributes.write_zigbee_attribute"
           )}
         </ha-call-service-button>
+        <ha-progress-button
+          @click=${this._onGetZigbeeAttributeClick}
+          .progress=${this._readingAttribute}
+          .disabled=${this._readingAttribute}
+        >
+          ${this.hass!.localize(
+            "ui.panel.config.zha.cluster_attributes.read_zigbee_attribute"
+          )}
+        </ha-progress-button>
       </div>
     `;
   }
@@ -210,10 +210,10 @@ export class ZHAClusterAttributes extends LitElement {
       this._readingAttribute = true;
       try {
         this._attributeValue = await readAttributeValue(this.hass, data);
-        forwardHaptic("success");
+        forwardHaptic(this, "success");
         button.actionSuccess();
       } catch (_err: any) {
-        forwardHaptic("failure");
+        forwardHaptic(this, "failure");
         button.actionError();
       } finally {
         this._readingAttribute = false;
@@ -230,6 +230,10 @@ export class ZHAClusterAttributes extends LitElement {
     return [
       haStyle,
       css`
+        ha-card {
+          border: none;
+        }
+
         ha-select {
           margin-top: 16px;
         }
@@ -262,6 +266,12 @@ export class ZHAClusterAttributes extends LitElement {
 
         .header {
           flex-grow: 1;
+        }
+
+        .card-actions {
+          display: flex;
+          justify-content: flex-end;
+          gap: var(--ha-space-1);
         }
       `,
     ];

@@ -2,7 +2,9 @@ import { mdiAlertOctagram, mdiCheckBold } from "@mdi/js";
 import type { TemplateResult } from "lit";
 import { css, html, LitElement, nothing } from "lit";
 import { customElement, property, state } from "lit/decorators";
+import { classMap } from "lit/directives/class-map";
 import "../ha-button";
+import type { Appearance } from "../ha-button";
 import "../ha-spinner";
 import "../ha-svg-icon";
 
@@ -12,28 +14,47 @@ export class HaProgressButton extends LitElement {
 
   @property({ type: Boolean }) public disabled = false;
 
-  @property({ type: Boolean }) public progress = false;
+  @property({ type: Boolean, reflect: true }) public progress = false;
 
-  @property({ type: Boolean }) public raised = false;
+  @property() appearance: Appearance = "accent";
 
-  @property({ type: Boolean }) public unelevated = false;
+  @property({ attribute: false }) public iconPath?: string;
+
+  @property() variant: "brand" | "danger" | "neutral" | "warning" | "success" =
+    "brand";
 
   @state() private _result?: "success" | "error";
 
   public render(): TemplateResult {
-    const overlay = this._result || this.progress;
+    const appearance =
+      this.progress || this._result ? "accent" : this.appearance;
+
     return html`
       <ha-button
-        .raised=${this.raised}
-        .label=${this.label}
-        .unelevated=${this.unelevated}
-        .disabled=${this.disabled || this.progress}
-        class=${this._result || ""}
+        .appearance=${appearance}
+        .disabled=${this.disabled}
+        .loading=${this.progress}
+        .variant=${this._result === "success"
+          ? "success"
+          : this._result === "error"
+            ? "danger"
+            : this.variant}
+        class=${classMap({
+          result: !!this._result,
+          success: this._result === "success",
+          error: this._result === "error",
+        })}
       >
-        <slot name="icon" slot="icon"></slot>
-        <slot></slot>
+        ${this.iconPath
+          ? html`<ha-svg-icon
+              .path=${this.iconPath}
+              slot="start"
+            ></ha-svg-icon>`
+          : nothing}
+
+        <slot>${this.label}</slot>
       </ha-button>
-      ${!overlay
+      ${!this._result
         ? nothing
         : html`
             <div class="progress">
@@ -41,9 +62,7 @@ export class HaProgressButton extends LitElement {
                 ? html`<ha-svg-icon .path=${mdiCheckBold}></ha-svg-icon>`
                 : this._result === "error"
                   ? html`<ha-svg-icon .path=${mdiAlertOctagram}></ha-svg-icon>`
-                  : this.progress
-                    ? html`<ha-spinner size="small"></ha-spinner>`
-                    : nothing}
+                  : nothing}
             </div>
           `}
     `;
@@ -69,60 +88,36 @@ export class HaProgressButton extends LitElement {
       outline: none;
       display: inline-block;
       position: relative;
+    }
+
+    :host([progress]) {
       pointer-events: none;
-    }
-
-    ha-button {
-      transition: all 1s;
-      pointer-events: initial;
-    }
-
-    ha-button.success {
-      --mdc-theme-primary: white;
-      background-color: var(--success-color);
-      transition: none;
-      border-radius: 4px;
-      pointer-events: none;
-    }
-
-    ha-button[unelevated].success,
-    ha-button[raised].success {
-      --mdc-theme-primary: var(--success-color);
-      --mdc-theme-on-primary: white;
-    }
-
-    ha-button.error {
-      --mdc-theme-primary: white;
-      background-color: var(--error-color);
-      transition: none;
-      border-radius: 4px;
-      pointer-events: none;
-    }
-
-    ha-button[unelevated].error,
-    ha-button[raised].error {
-      --mdc-theme-primary: var(--error-color);
-      --mdc-theme-on-primary: white;
     }
 
     .progress {
-      bottom: 4px;
+      bottom: 0;
+      display: flex;
+      justify-content: center;
+      align-items: center;
       position: absolute;
-      text-align: center;
-      top: 4px;
+      top: 0;
       width: 100%;
     }
 
-    ha-svg-icon {
-      color: white;
+    ha-button {
+      width: 100%;
     }
 
-    ha-button.success slot,
-    ha-button.error slot {
+    ha-button.result::part(start),
+    ha-button.result::part(end),
+    ha-button.result::part(label),
+    ha-button.result::part(caret),
+    ha-button.result::part(spinner) {
       visibility: hidden;
     }
-    :host([destructive]) {
-      --mdc-theme-primary: var(--error-color);
+
+    ha-svg-icon {
+      color: var(--white-color);
     }
   `;
 }

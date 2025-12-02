@@ -1,19 +1,20 @@
-import "@material/mwc-button/mwc-button";
-import "@material/mwc-list/mwc-list-item";
 import type { PropertyValues, TemplateResult } from "lit";
 import { css, html, LitElement } from "lit";
 import { customElement, property, state } from "lit/decorators";
+import { normalizeLuminance } from "../../common/color/palette";
 import { fireEvent } from "../../common/dom/fire_event";
 import "../../components/ha-formfield";
+import "../../components/ha-list-item";
 import "../../components/ha-radio";
+import "../../components/ha-button";
 import type { HaRadio } from "../../components/ha-radio";
 import "../../components/ha-select";
 import "../../components/ha-settings-row";
 import "../../components/ha-textfield";
 import {
-  DEFAULT_ACCENT_COLOR,
-  DEFAULT_PRIMARY_COLOR,
-} from "../../resources/styles-data";
+  DefaultAccentColor,
+  DefaultPrimaryColor,
+} from "../../resources/theme/color/color.globals";
 import type { HomeAssistant } from "../../types";
 import { documentationUrl } from "../../util/documentation-url";
 
@@ -68,15 +69,15 @@ export class HaPickThemeRow extends LitElement {
           @selected=${this._handleThemeSelection}
           naturalMenuWidth
         >
-          <mwc-list-item .value=${USE_DEFAULT_THEME}>
+          <ha-list-item .value=${USE_DEFAULT_THEME}>
             ${this.hass.localize("ui.panel.profile.themes.use_default")}
-          </mwc-list-item>
-          <mwc-list-item .value=${HOME_ASSISTANT_THEME}>
+          </ha-list-item>
+          <ha-list-item .value=${HOME_ASSISTANT_THEME}>
             Home Assistant
-          </mwc-list-item>
+          </ha-list-item>
           ${this._themeNames.map(
             (theme) => html`
-              <mwc-list-item .value=${theme}>${theme}</mwc-list-item>
+              <ha-list-item .value=${theme}>${theme}</ha-list-item>
             `
           )}
         </ha-select>
@@ -128,8 +129,7 @@ export class HaPickThemeRow extends LitElement {
             ${curTheme === HOME_ASSISTANT_THEME
               ? html`<div class="color-pickers">
                   <ha-textfield
-                    .value=${themeSettings?.primaryColor ||
-                    DEFAULT_PRIMARY_COLOR}
+                    .value=${themeSettings?.primaryColor || DefaultPrimaryColor}
                     type="color"
                     .label=${this.hass.localize(
                       "ui.panel.profile.themes.primary_color"
@@ -138,7 +138,7 @@ export class HaPickThemeRow extends LitElement {
                     @change=${this._handleColorChange}
                   ></ha-textfield>
                   <ha-textfield
-                    .value=${themeSettings?.accentColor || DEFAULT_ACCENT_COLOR}
+                    .value=${themeSettings?.accentColor || DefaultAccentColor}
                     type="color"
                     .label=${this.hass.localize(
                       "ui.panel.profile.themes.accent_color"
@@ -147,9 +147,13 @@ export class HaPickThemeRow extends LitElement {
                     @change=${this._handleColorChange}
                   ></ha-textfield>
                   ${themeSettings?.primaryColor || themeSettings?.accentColor
-                    ? html` <mwc-button @click=${this._resetColors}>
+                    ? html` <ha-button
+                        appearance="plain"
+                        size="small"
+                        @click=${this._resetColors}
+                      >
                         ${this.hass.localize("ui.panel.profile.themes.reset")}
-                      </mwc-button>`
+                      </ha-button>`
                     : ""}
                 </div>`
               : ""}
@@ -171,6 +175,12 @@ export class HaPickThemeRow extends LitElement {
 
   private _handleColorChange(ev: CustomEvent) {
     const target = ev.target as any;
+
+    // normalize primary color if needed for contrast
+    if (target.name === "primaryColor") {
+      target.value = normalizeLuminance(target.value);
+    }
+
     fireEvent(this, "settheme", { [target.name]: target.value });
   }
 
@@ -182,10 +192,12 @@ export class HaPickThemeRow extends LitElement {
   }
 
   private _supportsModeSelection(themeName: string): boolean {
-    if (!(themeName in this.hass.themes.themes)) {
+    const theme = this.hass.themes.themes[themeName];
+    if (!theme) {
       return false; // User's theme no longer exists
     }
-    return "modes" in this.hass.themes.themes[themeName];
+
+    return !!(theme.modes && "light" in theme.modes && "dark" in theme.modes);
   }
 
   private _handleDarkMode(ev: CustomEvent) {

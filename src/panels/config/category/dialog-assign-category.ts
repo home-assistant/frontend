@@ -1,4 +1,3 @@
-import "@material/mwc-button";
 import type { CSSResultGroup } from "lit";
 import { css, html, LitElement, nothing } from "lit";
 import { customElement, property, state } from "lit/decorators";
@@ -8,6 +7,7 @@ import { createCloseHeading } from "../../../components/ha-dialog";
 import "../../../components/ha-icon-picker";
 import "../../../components/ha-settings-row";
 import "../../../components/ha-textfield";
+import "../../../components/ha-button";
 import { updateEntityRegistryEntry } from "../../../data/entity_registry";
 import { haStyleDialog } from "../../../resources/styles";
 import type { HomeAssistant } from "../../../types";
@@ -70,16 +70,20 @@ class DialogAssignCategory extends LitElement {
             ></ha-category-picker>
           </div>
         </div>
-        <mwc-button slot="secondaryAction" @click=${this.closeDialog}>
+        <ha-button
+          appearance="plain"
+          slot="primaryAction"
+          @click=${this.closeDialog}
+        >
           ${this.hass.localize("ui.common.cancel")}
-        </mwc-button>
-        <mwc-button
+        </ha-button>
+        <ha-button
           slot="primaryAction"
           @click=${this._updateEntry}
-          .disabled=${this._submitting}
+          .disabled=${!!this._submitting}
         >
           ${this.hass.localize("ui.common.save")}
-        </mwc-button>
+        </ha-button>
       </ha-dialog>
     `;
   }

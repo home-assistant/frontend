@@ -1,10 +1,10 @@
-import "@material/mwc-list/mwc-list-item";
 import type { TemplateResult } from "lit";
 import { css, html, LitElement } from "lit";
 import { customElement, property } from "lit/decorators";
 import { stopPropagation } from "../common/dom/stop_propagation";
 import { computeStateName } from "../common/entity/compute_state_name";
 import "../components/entity/state-badge";
+import "../components/ha-list-item";
 import "../components/ha-select";
 import { UNAVAILABLE } from "../data/entity";
 import type { SelectEntity } from "../data/select";
@@ -32,9 +32,9 @@ class StateCardSelect extends LitElement {
       >
         ${this.stateObj.attributes.options.map(
           (option) => html`
-            <mwc-list-item .value=${option}>
+            <ha-list-item .value=${option}>
               ${this.hass.formatEntityState(this.stateObj, option)}
-            </mwc-list-item>
+            </ha-list-item>
           `
         )}
       </ha-select>

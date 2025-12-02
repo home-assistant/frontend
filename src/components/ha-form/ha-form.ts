@@ -34,6 +34,8 @@ const getWarning = (obj, item) => (obj && item.name ? obj[item.name] : null);
 export class HaForm extends LitElement implements HaFormElement {
   @property({ attribute: false }) public hass?: HomeAssistant;
 
+  @property({ type: Boolean }) public narrow = false;
+
   @property({ attribute: false }) public data!: HaFormDataContainer;
 
   @property({ attribute: false }) public schema!: readonly HaFormSchema[];
@@ -103,6 +105,11 @@ export class HaForm extends LitElement implements HaFormElement {
     }
   }
 
+  static shadowRootOptions: ShadowRootInit = {
+    mode: "open",
+    delegatesFocus: true,
+  };
+
   protected render(): TemplateResult {
     return html`
       <div class="root" part="root">
@@ -135,12 +142,13 @@ export class HaForm extends LitElement implements HaFormElement {
               ? html`<ha-selector
                   .schema=${item}
                   .hass=${this.hass}
+                  .narrow=${this.narrow}
                   .name=${item.name}
                   .selector=${item.selector}
                   .value=${getValue(this.data, item)}
                   .label=${this._computeLabel(item, this.data)}
                   .disabled=${item.disabled || this.disabled || false}
-                  .placeholder=${item.required ? "" : item.default}
+                  .placeholder=${item.required ? undefined : item.default}
                   .helper=${this._computeHelper(item)}
                   .localizeValue=${this.localizeValue}
                   .required=${item.required || false}
@@ -184,8 +192,8 @@ export class HaForm extends LitElement implements HaFormElement {
     return context;
   }
 
-  protected createRenderRoot() {
-    const root = super.createRenderRoot();
+  protected createRenderRoot(): HTMLElement | DocumentFragment {
+    const root = super.createRenderRoot() as ShadowRoot;
     // attach it as soon as possible to make sure we fetch all events.
     this.addValueChangedListener(root);
     return root;

@@ -59,6 +59,19 @@ class HaHLSPlayer extends LitElement {
 
   private static streamCount = 0;
 
+  private _handleVisibilityChange = () => {
+    if (document.pictureInPictureElement) {
+      // video is playing in picture-in-picture mode, don't do anything
+      return;
+    }
+    if (document.hidden) {
+      this._cleanUp();
+    } else {
+      this._resetError();
+      this._startHls();
+    }
+  };
+
   public connectedCallback() {
     super.connectedCallback();
     HaHLSPlayer.streamCount += 1;
@@ -66,10 +79,15 @@ class HaHLSPlayer extends LitElement {
       this._resetError();
       this._startHls();
     }
+    document.addEventListener("visibilitychange", this._handleVisibilityChange);
   }
 
   public disconnectedCallback() {
     super.disconnectedCallback();
+    document.removeEventListener(
+      "visibilitychange",
+      this._handleVisibilityChange
+    );
     HaHLSPlayer.streamCount -= 1;
     this._cleanUp();
   }
@@ -307,7 +325,7 @@ class HaHLSPlayer extends LitElement {
               } else if (data.response.code >= 400) {
                 error += " (Stream never started)";
               } else {
-                error += " (" + data.response.code + ")";
+                error += ` (${data.response.code})`;
               }
             }
             this._setRetryableError(error);

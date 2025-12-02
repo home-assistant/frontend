@@ -1,11 +1,11 @@
-import "@material/mwc-button";
 import type { CSSResultGroup } from "lit";
 import { LitElement, css, html, nothing } from "lit";
 import { customElement, property, state } from "lit/decorators";
 import { fireEvent } from "../../../common/dom/fire_event";
+import { documentationUrl } from "../../../util/documentation-url";
 import "../../../components/ha-alert";
+import "../../../components/ha-button";
 import { createCloseHeading } from "../../../components/ha-dialog";
-import "../../../components/ha-formfield";
 import "../../../components/ha-qr-code";
 import "../../../components/ha-switch";
 import "../../../components/ha-textfield";
@@ -14,8 +14,6 @@ import type { HassDialog } from "../../../dialogs/make-dialog-manager";
 import { haStyleDialog } from "../../../resources/styles";
 import type { HomeAssistant } from "../../../types";
 import type { TagDetailDialogParams } from "./show-dialog-tag-detail";
-
-const TAG_BASE = "https://www.home-assistant.io/tag/";
 
 @customElement("dialog-tag-detail")
 class DialogTagDetail
@@ -123,7 +121,7 @@ class DialogTagDetail
                 </div>
                 <div id="qr">
                   <ha-qr-code
-                    .data=${`${TAG_BASE}${this._params!.entry!.id}`}
+                    .data=${`${documentationUrl(this.hass, "/tag/")}${this._params!.entry!.id}`}
                     center-image="/static/icons/favicon-192x192.png"
                     error-correction-level="quartile"
                     scale="5"
@@ -135,17 +133,18 @@ class DialogTagDetail
         </div>
         ${this._params.entry
           ? html`
-              <mwc-button
+              <ha-button
                 slot="secondaryAction"
-                class="warning"
+                variant="danger"
+                appearance="plain"
                 @click=${this._deleteEntry}
                 .disabled=${this._submitting}
               >
                 ${this.hass!.localize("ui.panel.config.tag.detail.delete")}
-              </mwc-button>
+              </ha-button>
             `
           : nothing}
-        <mwc-button
+        <ha-button
           slot="primaryAction"
           @click=${this._updateEntry}
           .disabled=${this._submitting || !this._name}
@@ -153,9 +152,9 @@ class DialogTagDetail
           ${this._params.entry
             ? this.hass!.localize("ui.panel.config.tag.detail.update")
             : this.hass!.localize("ui.panel.config.tag.detail.create")}
-        </mwc-button>
+        </ha-button>
         ${this._params.openWrite && !this._params.entry
-          ? html`<mwc-button
+          ? html`<ha-button
               slot="primaryAction"
               @click=${this._updateWriteEntry}
               .disabled=${this._submitting || !this._name}
@@ -163,7 +162,7 @@ class DialogTagDetail
               ${this.hass!.localize(
                 "ui.panel.config.tag.detail.create_and_write"
               )}
-            </mwc-button>`
+            </ha-button>`
           : ""}
       </ha-dialog>
     `;

@@ -18,16 +18,16 @@ module.exports.sourceMapURL = () => {
 module.exports.ignorePackages = () => [];
 
 // Files from NPM packages that we should replace with empty file
-module.exports.emptyPackages = ({ isHassioBuild }) =>
+module.exports.emptyPackages = ({ isHassioBuild, isLandingPageBuild }) =>
   [
     require.resolve("@vaadin/vaadin-material-styles/typography.js"),
     require.resolve("@vaadin/vaadin-material-styles/font-icons.js"),
     // Icons in supervisor conflict with icons in HA so we don't load.
-    isHassioBuild &&
+    (isHassioBuild || isLandingPageBuild) &&
       require.resolve(
         path.resolve(paths.root_dir, "src/components/ha-icon.ts")
       ),
-    isHassioBuild &&
+    (isHassioBuild || isLandingPageBuild) &&
       require.resolve(
         path.resolve(paths.root_dir, "src/components/ha-icon-picker.ts")
       ),
@@ -73,6 +73,19 @@ module.exports.terserOptions = ({ latestBuild, isTestBuild }) => ({
   sourceMap: !isTestBuild,
 });
 
+/** @type {import('@rspack/core').SwcLoaderOptions} */
+module.exports.swcOptions = () => ({
+  jsc: {
+    loose: true,
+    externalHelpers: true,
+    target: "ES2021",
+    parser: {
+      syntax: "typescript",
+      decorators: true,
+    },
+  },
+});
+
 module.exports.babelOptions = ({
   latestBuild,
   isProdBuild,
@@ -97,7 +110,6 @@ module.exports.babelOptions = ({
         shippedProposals: true,
       },
     ],
-    "@babel/preset-typescript",
   ],
   plugins: [
     [
@@ -133,12 +145,6 @@ module.exports.babelOptions = ({
     [
       "@babel/plugin-transform-runtime",
       { version: dependencies["@babel/runtime"] },
-    ],
-    // Transpile decorators (still in TC39 process)
-    // Modern browsers support class fields and private methods, but transform is required with the older decorator version dictated by Lit
-    [
-      "@babel/plugin-proposal-decorators",
-      { version: "2018-09", decoratorsBeforeExport: true },
     ],
     "@babel/plugin-transform-class-properties",
     "@babel/plugin-transform-private-methods",
@@ -177,7 +183,6 @@ module.exports.babelOptions = ({
       include: /\/node_modules\//,
       exclude: [
         "element-internals-polyfill",
-        "@shoelace-style",
         "@?lit(?:-labs|-element|-html)?",
       ].map((p) => new RegExp(`/node_modules/${p}/`)),
     },
@@ -332,6 +337,7 @@ module.exports.config = {
       publicPath: publicPath(latestBuild),
       isProdBuild,
       latestBuild,
+      isLandingPageBuild: true,
     };
   },
 };
