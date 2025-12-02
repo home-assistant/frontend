@@ -2,7 +2,7 @@ import { mdiDownload } from "@mdi/js";
 import type { CSSResultGroup, PropertyValues } from "lit";
 import { LitElement, css, html, nothing } from "lit";
 import { customElement, property, state } from "lit/decorators";
-import { goBack, navigate } from "../../common/navigate";
+import { navigate } from "../../common/navigate";
 import "../../components/ha-alert";
 import "../../components/ha-icon-button-arrow-prev";
 import "../../components/ha-menu-button";
@@ -197,11 +197,6 @@ class PanelEnergy extends LitElement {
       setEditMode: () => this._navigateConfig(),
       showToast: () => undefined,
     };
-  }
-
-  private _back(ev) {
-    ev.stopPropagation();
-    goBack();
   }
 
   protected render() {
