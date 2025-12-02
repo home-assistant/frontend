@@ -79,9 +79,7 @@ class HuiCounterActionsCardFeature
   }
 
   public static async getConfigElement(): Promise<LovelaceCardFeatureEditor> {
-    await import(
-      "../editor/config-elements/hui-counter-actions-card-feature-editor"
-    );
+    await import("../editor/config-elements/hui-counter-actions-card-feature-editor");
     return document.createElement("hui-counter-actions-card-feature-editor");
   }
 

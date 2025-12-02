@@ -45,7 +45,13 @@ const cardConfigStruct = assign(
 
 const SUB_SCHEMA = [
   { name: "entity", selector: { entity: {} }, required: true },
-  { name: "name", selector: { text: {} } },
+  {
+    name: "name",
+    selector: { entity_name: {} },
+    context: {
+      entity: "entity",
+    },
+  },
 ] as const;
 
 @customElement("hui-history-graph-card-editor")

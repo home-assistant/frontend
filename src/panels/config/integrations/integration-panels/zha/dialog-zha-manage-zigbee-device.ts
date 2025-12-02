@@ -12,7 +12,10 @@ import "../../../../../components/ha-tab-group";
 import "../../../../../components/ha-tab-group-tab";
 import type { ZHADevice, ZHAGroup } from "../../../../../data/zha";
 import { fetchBindableDevices, fetchGroups } from "../../../../../data/zha";
-import { haStyleDialog } from "../../../../../resources/styles";
+import {
+  haStyleDialog,
+  haStyleDialogFixedTop,
+} from "../../../../../resources/styles";
 import type { HomeAssistant } from "../../../../../types";
 import { sortZHADevices, sortZHAGroups } from "./functions";
 import type {
@@ -211,23 +214,27 @@ class DialogZHAManageZigbeeDevice extends LitElement {
   static get styles(): CSSResultGroup {
     return [
       haStyleDialog,
+      haStyleDialogFixedTop,
       css`
         ha-dialog {
           --dialog-surface-position: static;
           --dialog-content-position: static;
-          --vertical-align-dialog: flex-start;
         }
 
         .content {
           outline: none;
+          display: flex;
+          flex-direction: column;
+          gap: var(--ha-space-2);
         }
 
         @media all and (min-width: 600px) and (min-height: 501px) {
           ha-dialog {
             --mdc-dialog-min-width: 560px;
             --mdc-dialog-max-width: 560px;
-            --dialog-surface-margin-top: 40px;
-            --mdc-dialog-max-height: calc(100% - 72px);
+            --mdc-dialog-max-height: calc(
+              100vh - var(--ha-space-18) - var(--safe-area-inset-y)
+            );
           }
         }
 

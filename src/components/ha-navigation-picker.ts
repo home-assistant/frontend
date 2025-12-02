@@ -6,6 +6,7 @@ import { fireEvent } from "../common/dom/fire_event";
 import { titleCase } from "../common/string/title-case";
 import { fetchConfig } from "../data/lovelace/config/types";
 import type { LovelaceViewRawConfig } from "../data/lovelace/config/view";
+import { getPanelIcon, getPanelTitle } from "../data/panel";
 import type { HomeAssistant, PanelInfo, ValueChangedEvent } from "../types";
 import "./ha-combo-box";
 import type { HaComboBox } from "./ha-combo-box";
@@ -42,13 +43,8 @@ const createViewNavigationItem = (
 
 const createPanelNavigationItem = (hass: HomeAssistant, panel: PanelInfo) => ({
   path: `/${panel.url_path}`,
-  icon: panel.icon ?? "mdi:view-dashboard",
-  title:
-    panel.url_path === hass.defaultPanel
-      ? hass.localize("panel.states")
-      : hass.localize(`panel.${panel.title}`) ||
-        panel.title ||
-        (panel.url_path ? titleCase(panel.url_path) : ""),
+  icon: getPanelIcon(panel) || "mdi:view-dashboard",
+  title: getPanelTitle(hass, panel) || "",
 });
 
 @customElement("ha-navigation-picker")

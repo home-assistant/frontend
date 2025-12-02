@@ -11,20 +11,20 @@ import {
   string,
   union,
 } from "superstruct";
+import type { HASSDomEvent } from "../../../../common/dom/fire_event";
 import { fireEvent } from "../../../../common/dom/fire_event";
 import "../../../../components/ha-form/ha-form";
-import "../hui-sub-element-editor";
-import type { EditDetailElementEvent, SubElementEditorConfig } from "../types";
-import type { HASSDomEvent } from "../../../../common/dom/fire_event";
 import type { SchemaUnion } from "../../../../components/ha-form/types";
 import type { HomeAssistant } from "../../../../types";
 import type { ConfigEntity, GlanceCardConfig } from "../../cards/types";
 import "../../components/hui-entity-editor";
+import type { EntityConfig } from "../../entity-rows/types";
 import type { LovelaceCardEditor } from "../../types";
+import "../hui-sub-element-editor";
 import { processEditorEntities } from "../process-editor-entities";
 import { baseLovelaceCardConfig } from "../structs/base-card-struct";
 import { entitiesConfigStruct } from "../structs/entities-struct";
-import type { EntityConfig } from "../../entity-rows/types";
+import type { EditDetailElementEvent, SubElementEditorConfig } from "../types";
 
 const cardConfigStruct = assign(
   baseLovelaceCardConfig,
@@ -43,10 +43,16 @@ const cardConfigStruct = assign(
 const SUB_SCHEMA = [
   { name: "entity", selector: { entity: {} }, required: true },
   {
+    name: "name",
+    selector: { entity_name: {} },
+    context: {
+      entity: "entity",
+    },
+  },
+  {
     type: "grid",
     name: "",
     schema: [
-      { name: "name", selector: { text: {} } },
       {
         name: "icon",
         selector: {

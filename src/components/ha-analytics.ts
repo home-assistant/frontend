@@ -46,7 +46,7 @@ export class HaAnalytics extends LitElement {
         </span>
         <ha-switch
           @change=${this._handleRowClick}
-          .checked=${baseEnabled}
+          .checked=${!!baseEnabled}
           .preference=${"base"}
           .disabled=${loading}
           name="base"
@@ -70,7 +70,7 @@ export class HaAnalytics extends LitElement {
               <ha-switch
                 .id="switch-${preference}"
                 @change=${this._handleRowClick}
-                .checked=${this.analytics?.preferences[preference]}
+                .checked=${!!this.analytics?.preferences[preference]}
                 .preference=${preference}
                 name=${preference}
               >
@@ -102,7 +102,7 @@ export class HaAnalytics extends LitElement {
         </span>
         <ha-switch
           @change=${this._handleRowClick}
-          .checked=${this.analytics?.preferences.diagnostics}
+          .checked=${!!this.analytics?.preferences.diagnostics}
           .preference=${"diagnostics"}
           .disabled=${loading}
           name="diagnostics"

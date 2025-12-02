@@ -59,10 +59,31 @@ export class HaSlider extends Slider {
           background-color: var(--ha-slider-thumb-color, var(--primary-color));
         }
 
+        #thumb:after {
+          content: "";
+          border-radius: 50%;
+          position: absolute;
+          width: calc(var(--thumb-width) * 2 + 8px);
+          height: calc(var(--thumb-height) * 2 + 8px);
+          left: calc(-50% - 4px);
+          top: calc(-50% - 4px);
+          cursor: pointer;
+        }
+
         #slider:focus-visible:not(.disabled) #thumb,
         #slider:focus-visible:not(.disabled) #thumb-min,
         #slider:focus-visible:not(.disabled) #thumb-max {
           outline: var(--wa-focus-ring);
+        }
+
+        #track:after {
+          content: "";
+          position: absolute;
+          top: calc(-50% - 4px);
+          left: 0;
+          width: 100%;
+          height: calc(var(--track-size) * 2 + 8px);
+          cursor: pointer;
         }
 
         #indicator {

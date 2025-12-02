@@ -31,12 +31,22 @@ export class HaButtonToggleGroup extends LitElement {
   @property({ type: Boolean, reflect: true, attribute: "no-wrap" })
   public nowrap = false;
 
+  @property({ type: Boolean, reflect: true, attribute: "full-width" })
+  public fullWidth = false;
+
   @property() public variant:
     | "brand"
     | "neutral"
     | "success"
     | "warning"
     | "danger" = "brand";
+
+  @property({ attribute: "active-variant" }) public activeVariant?:
+    | "brand"
+    | "neutral"
+    | "success"
+    | "warning"
+    | "danger";
 
   protected render(): TemplateResult {
     return html`
@@ -46,7 +56,9 @@ export class HaButtonToggleGroup extends LitElement {
             html`<ha-button
               iconTag="ha-svg-icon"
               class="icon"
-              .variant=${this.variant}
+              .variant=${this.active !== button.value || !this.activeVariant
+                ? this.variant
+                : this.activeVariant}
               .size=${this.size}
               .value=${button.value}
               @click=${this._handleClick}
@@ -77,6 +89,19 @@ export class HaButtonToggleGroup extends LitElement {
 
     :host([no-wrap]) wa-button-group::part(base) {
       flex-wrap: nowrap;
+    }
+
+    wa-button-group {
+      padding: var(--ha-button-toggle-group-padding);
+    }
+
+    :host([full-width]) wa-button-group,
+    :host([full-width]) wa-button-group::part(base) {
+      width: 100%;
+    }
+
+    :host([full-width]) ha-button {
+      flex: 1;
     }
   `;
 }

@@ -86,22 +86,23 @@ export class ZHAGroupBindingControl extends LitElement {
           </div>
           <div class="card-actions">
           <ha-progress-button
-            @click=${this._onBindGroupClick}
-            .disabled=${!this._canBind || this._bindingOperationInProgress}
-          >
-            ${this.hass!.localize(
-              "ui.panel.config.zha.group_binding.bind_button_label"
-            )}
-          </ha-progress-button>
-
-          <ha-progress-button
             @click=${this._onUnbindGroupClick}
             .disabled=${!this._canBind || this._bindingOperationInProgress}
+            variant="danger"
+            appearance="plain"
           >
             ${this.hass!.localize(
               "ui.panel.config.zha.group_binding.unbind_button_label"
             )}
           </ha-progress-button>
+              <ha-progress-button
+                      @click=${this._onBindGroupClick}
+                      .disabled=${!this._canBind || this._bindingOperationInProgress}
+              >
+                  ${this.hass!.localize(
+                    "ui.panel.config.zha.group_binding.bind_button_label"
+                  )}
+              </ha-progress-button>
           </div>
         </ha-card>
       </ha-config-section>
@@ -191,9 +192,9 @@ export class ZHAGroupBindingControl extends LitElement {
   private get _canBind(): boolean {
     return Boolean(
       this._groupToBind &&
-        this._clustersToBind &&
-        this._clustersToBind?.length > 0 &&
-        this.device
+      this._clustersToBind &&
+      this._clustersToBind?.length > 0 &&
+      this.device
     );
   }
 
@@ -203,6 +204,10 @@ export class ZHAGroupBindingControl extends LitElement {
       css`
         .menu {
           width: 100%;
+        }
+
+        .content {
+          padding-top: var(--ha-space-2);
         }
 
         .command-picker {
@@ -224,6 +229,12 @@ export class ZHAGroupBindingControl extends LitElement {
 
         .sectionHeader {
           flex-grow: 1;
+        }
+
+        .card-actions {
+          display: flex;
+          justify-content: flex-end;
+          gap: var(--ha-space-1);
         }
       `,
     ];

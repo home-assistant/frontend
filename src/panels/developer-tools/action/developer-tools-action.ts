@@ -1,7 +1,7 @@
 import { mdiHelpCircle } from "@mdi/js";
 import type { HassService } from "home-assistant-js-websocket";
 import { ERR_CONNECTION_LOST } from "home-assistant-js-websocket";
-import { load } from "js-yaml";
+import { dump, load } from "js-yaml";
 import type { CSSResultGroup, TemplateResult } from "lit";
 import { css, html, LitElement, nothing } from "lit";
 import { customElement, property, query, state } from "lit/decorators";
@@ -134,6 +134,11 @@ class HaPanelDevAction extends LitElement {
     const serviceName = this._serviceData?.action
       ? computeObjectId(this._serviceData?.action)
       : undefined;
+
+    const descriptionPlaceholders =
+      domain && serviceName
+        ? this.hass.services[domain]?.[serviceName]?.description_placeholders
+        : undefined;
 
     return html`
       <div class="content">
@@ -307,13 +312,18 @@ class HaPanelDevAction extends LitElement {
                       <td><pre>${field.key}</pre></td>
                       <td>
                         ${this.hass.localize(
-                          `component.${domain}.services.${serviceName}.fields.${field.key}.description`
+                          `component.${domain}.services.${serviceName}.fields.${field.key}.description`,
+                          descriptionPlaceholders
                         ) || field.description}
                       </td>
                       <td>
                         ${this.hass.localize(
-                          `component.${domain}.services.${serviceName}.fields.${field.key}.example`
-                        ) || field.example}
+                          `component.${domain}.services.${serviceName}.fields.${field.key}.example`,
+                          descriptionPlaceholders
+                        ) ||
+                        (typeof field.example === "object"
+                          ? html`<pre>${dump(field.example)}</pre>`
+                          : field.example)}
                       </td>
                     </tr>`
                 )}
@@ -643,7 +653,11 @@ class HaPanelDevAction extends LitElement {
         } catch (_err: any) {
           value =
             this.hass.localize(
-              `component.${domain}.services.${serviceName}.fields.${field.key}.example`
+              `component.${domain}.services.${serviceName}.fields.${field.key}.example`,
+              domain && serviceName
+                ? this.hass.services[domain][serviceName]
+                    .description_placeholders
+                : undefined
             ) || field.example;
         }
         example[field.key] = value;

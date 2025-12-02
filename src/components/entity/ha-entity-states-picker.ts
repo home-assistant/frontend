@@ -4,6 +4,7 @@ import { customElement, property } from "lit/decorators";
 import { keyed } from "lit/directives/keyed";
 import { repeat } from "lit/directives/repeat";
 import { fireEvent } from "../../common/dom/fire_event";
+import { ANY_STATE_VALUE } from "./const";
 import { ensureArray } from "../../common/array/ensure-array";
 import type { HomeAssistant } from "../../types";
 import "./ha-entity-state-picker";
@@ -57,6 +58,7 @@ export class HaEntityStatesPicker extends LitElement {
 
     const value = this.value || [];
     const hide = [...(this.hideStates || []), ...value];
+    const hideValue = value.includes(ANY_STATE_VALUE);
 
     return html`
       ${repeat(
@@ -84,7 +86,7 @@ export class HaEntityStatesPicker extends LitElement {
         `
       )}
       <div>
-        ${this.disabled && value.length
+        ${(this.disabled && value.length) || hideValue
           ? nothing
           : keyed(
               value.length,

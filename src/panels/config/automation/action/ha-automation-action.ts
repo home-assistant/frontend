@@ -1,9 +1,11 @@
 import { mdiDragHorizontalVariant, mdiPlus } from "@mdi/js";
 import deepClone from "deep-clone-simple";
+import type { HassServiceTarget } from "home-assistant-js-websocket";
 import type { PropertyValues } from "lit";
-import { LitElement, html, nothing } from "lit";
+import { html, LitElement, nothing } from "lit";
 import { customElement, property, queryAll, state } from "lit/decorators";
 import { repeat } from "lit/directives/repeat";
+import { ensureArray } from "../../../../common/array/ensure-array";
 import { storage } from "../../../../common/decorators/storage";
 import { fireEvent } from "../../../../common/dom/fire_event";
 import { stopPropagation } from "../../../../common/dom/stop_propagation";
@@ -13,21 +15,22 @@ import "../../../../components/ha-sortable";
 import "../../../../components/ha-svg-icon";
 import {
   ACTION_BUILDING_BLOCKS,
-  getService,
-  isService,
+  VIRTUAL_ACTIONS,
 } from "../../../../data/action";
-import type { AutomationClipboard } from "../../../../data/automation";
+import {
+  getValueFromDynamic,
+  isDynamic,
+  type AutomationClipboard,
+} from "../../../../data/automation";
 import type { Action } from "../../../../data/script";
 import type { HomeAssistant } from "../../../../types";
 import {
   PASTE_VALUE,
-  VIRTUAL_ACTIONS,
   showAddAutomationElementDialog,
 } from "../show-add-automation-element-dialog";
 import { automationRowsStyles } from "../styles";
 import type HaAutomationActionRow from "./ha-automation-action-row";
 import { getAutomationActionType } from "./ha-automation-action-row";
-import { ensureArray } from "../../../../common/array/ensure-array";
 
 @customElement("ha-automation-action")
 export default class HaAutomationAction extends LitElement {
@@ -136,17 +139,6 @@ export default class HaAutomationAction extends LitElement {
                 "ui.panel.config.automation.editor.actions.add"
               )}
             </ha-button>
-            <ha-button
-              .disabled=${this.disabled}
-              @click=${this._addActionBuildingBlockDialog}
-              appearance="plain"
-              .size=${this.root ? "medium" : "small"}
-            >
-              <ha-svg-icon .path=${mdiPlus} slot="start"></ha-svg-icon>
-              ${this.hass.localize(
-                "ui.panel.config.automation.editor.actions.add_building_block"
-              )}
-            </ha-button>
           </div>
         </div>
       </ha-sortable>
@@ -222,25 +214,17 @@ export default class HaAutomationAction extends LitElement {
     });
   }
 
-  private _addActionBuildingBlockDialog() {
-    showAddAutomationElementDialog(this, {
-      type: "action",
-      add: this._addAction,
-      clipboardItem: getAutomationActionType(this._clipboard?.action),
-      group: "building_blocks",
-    });
-  }
-
-  private _addAction = (action: string) => {
+  private _addAction = (action: string, target?: HassServiceTarget) => {
     let actions: Action[];
     if (action === PASTE_VALUE) {
       actions = this.actions.concat(deepClone(this._clipboard!.action));
     } else if (action in VIRTUAL_ACTIONS) {
       actions = this.actions.concat(VIRTUAL_ACTIONS[action]);
-    } else if (isService(action)) {
+    } else if (isDynamic(action)) {
       actions = this.actions.concat({
-        action: getService(action),
+        action: getValueFromDynamic(action),
         metadata: {},
+        target,
       });
     } else {
       const elClass = customElements.get(

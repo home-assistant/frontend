@@ -153,6 +153,8 @@ class HaConfigHardware extends SubscribeMixin(LitElement) {
         },
         yAxis: {
           type: "value",
+          min: 0,
+          max: 100,
           splitLine: {
             show: true,
           },

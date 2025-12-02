@@ -14,7 +14,6 @@ import {
   string,
 } from "superstruct";
 import { fireEvent } from "../../../../common/dom/fire_event";
-import { DEFAULT_ENTITY_NAME } from "../../../../common/entity/compute_entity_name_display";
 import "../../../../components/ha-form/ha-form";
 import type { SchemaUnion } from "../../../../components/ha-form/types";
 import { NON_NUMERIC_ATTRIBUTES } from "../../../../data/entity_attributes";
@@ -102,9 +101,7 @@ export class HuiGaugeCardEditor
         {
           name: "name",
           selector: {
-            entity_name: {
-              default_name: DEFAULT_ENTITY_NAME,
-            },
+            entity_name: {},
           },
           context: { entity: "entity" },
         },

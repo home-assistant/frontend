@@ -17,6 +17,7 @@ import type { HomeAssistant } from "../../../../types";
 import { showSaveSuccessToast } from "../../../../util/toast-saved-success";
 import "../../cards/hui-card";
 import "../../sections/hui-section";
+import { getViewType } from "../../views/get-view-type";
 import { addCards, addSection } from "../config-util";
 import type { LovelaceContainerPath } from "../lovelace-path";
 import { parseLovelaceContainerPath } from "../lovelace-path";
@@ -66,7 +67,9 @@ export class HuiDialogSuggestCard extends LitElement {
     const { viewIndex } = parseLovelaceContainerPath(this._params.path);
     const viewConfig = this._params!.lovelaceConfig.views[viewIndex];
 
-    return !isStrategyView(viewConfig) && viewConfig.type === "sections";
+    return (
+      !isStrategyView(viewConfig) && getViewType(viewConfig) === "sections"
+    );
   }
 
   private _renderPreview() {

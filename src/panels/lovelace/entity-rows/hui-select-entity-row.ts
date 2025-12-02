@@ -2,7 +2,6 @@ import type { PropertyValues } from "lit";
 import { LitElement, css, html, nothing } from "lit";
 import { customElement, property, state } from "lit/decorators";
 import { stopPropagation } from "../../../common/dom/stop_propagation";
-import { computeStateName } from "../../../common/entity/compute_state_name";
 import "../../../components/ha-list-item";
 import "../../../components/ha-select";
 import { UNAVAILABLE } from "../../../data/entity";
@@ -11,6 +10,7 @@ import type { SelectEntity } from "../../../data/select";
 import { setSelectOption } from "../../../data/select";
 import type { HomeAssistant } from "../../../types";
 import type { EntitiesCardEntityConfig } from "../cards/types";
+import { computeLovelaceEntityName } from "../common/entity/compute-lovelace-entity-name";
 import { hasConfigOrEntityChanged } from "../common/has-changed";
 import "../components/hui-generic-entity-row";
 import { createEntityNotFoundWarning } from "../components/hui-warning";
@@ -51,6 +51,12 @@ class HuiSelectEntityRow extends LitElement implements LovelaceRow {
       `;
     }
 
+    const name = computeLovelaceEntityName(
+      this.hass!,
+      stateObj,
+      this._config.name
+    );
+
     return html`
       <hui-generic-entity-row
         .hass=${this.hass}
@@ -58,7 +64,7 @@ class HuiSelectEntityRow extends LitElement implements LovelaceRow {
         hide-name
       >
         <ha-select
-          .label=${this._config.name || computeStateName(stateObj)}
+          .label=${name}
           .value=${stateObj.state}
           .options=${stateObj.attributes.options}
           .disabled=${stateObj.state === UNAVAILABLE}

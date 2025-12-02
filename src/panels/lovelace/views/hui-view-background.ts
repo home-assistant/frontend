@@ -27,7 +27,9 @@ export class HUIViewBackground extends LitElement {
     const backgroundImage =
       typeof this.background === "string"
         ? this.background
-        : this.background?.image;
+        : typeof this.background?.image === "object"
+          ? this.background.image.media_content_id
+          : this.background?.image;
 
     if (backgroundImage && isMediaSourceContentId(backgroundImage)) {
       resolveMediaSource(this.hass, backgroundImage).then((result) => {
@@ -73,13 +75,17 @@ export class HUIViewBackground extends LitElement {
     background?: string | LovelaceViewBackgroundConfig
   ) {
     if (typeof background === "object" && background.image) {
-      if (isMediaSourceContentId(background.image) && !this.resolvedImage) {
+      const image =
+        typeof background.image === "object"
+          ? background.image.media_content_id || ""
+          : background.image;
+      if (isMediaSourceContentId(image) && !this.resolvedImage) {
         return null;
       }
       const alignment = background.alignment ?? "center";
       const size = background.size ?? "cover";
       const repeat = background.repeat ?? "no-repeat";
-      return `${alignment} / ${size} ${repeat} url('${this.hass.hassUrl(this.resolvedImage || background.image)}')`;
+      return `${alignment} / ${size} ${repeat} url('${this.hass.hassUrl(this.resolvedImage || image)}')`;
     }
     if (typeof background === "string") {
       if (isMediaSourceContentId(background) && !this.resolvedImage) {
@@ -103,6 +109,7 @@ export class HUIViewBackground extends LitElement {
 
   protected willUpdate(changedProperties: PropertyValues<this>) {
     super.willUpdate(changedProperties);
+    let applyTheme = false;
     if (changedProperties.has("hass") && this.hass) {
       const oldHass = changedProperties.get("hass");
       if (
@@ -110,16 +117,18 @@ export class HUIViewBackground extends LitElement {
         this.hass.themes !== oldHass.themes ||
         this.hass.selectedTheme !== oldHass.selectedTheme
       ) {
-        this._applyTheme();
-        return;
+        applyTheme = true;
       }
     }
 
     if (changedProperties.has("background")) {
-      this._applyTheme();
+      applyTheme = true;
       this._fetchMedia();
     }
     if (changedProperties.has("resolvedImage")) {
+      applyTheme = true;
+    }
+    if (applyTheme) {
       this._applyTheme();
     }
   }

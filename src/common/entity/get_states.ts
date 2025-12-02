@@ -214,6 +214,7 @@ const FIXED_DOMAIN_ATTRIBUTE_STATES = {
       "pm1",
       "pm10",
       "pm25",
+      "pm4",
       "power_factor",
       "power",
       "pressure",

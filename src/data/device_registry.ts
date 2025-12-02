@@ -50,7 +50,11 @@ export type DeviceEntityDisplayLookup = Record<
   EntityRegistryDisplayEntry[]
 >;
 
-export type DeviceEntityLookup = Record<string, EntityRegistryEntry[]>;
+export type DeviceEntityLookup<
+  T extends EntityRegistryEntry | EntityRegistryDisplayEntry =
+    | EntityRegistryEntry
+    | EntityRegistryDisplayEntry,
+> = Record<string, T[]>;
 
 export interface DeviceRegistryEntryMutableParams {
   area_id?: string | null;
@@ -107,7 +111,7 @@ export const sortDeviceRegistryByName = (
   );
 
 export const getDeviceEntityLookup = (
-  entities: EntityRegistryEntry[]
+  entities: (EntityRegistryEntry | EntityRegistryDisplayEntry)[]
 ): DeviceEntityLookup => {
   const deviceEntityLookup: DeviceEntityLookup = {};
   for (const entity of entities) {
@@ -186,7 +190,8 @@ export const getDevices = (
   deviceFilter?: HaDevicePickerDeviceFilterFunc,
   entityFilter?: HaEntityPickerEntityFilterFunc,
   excludeDevices?: string[],
-  value?: string
+  value?: string,
+  idPrefix = ""
 ): DevicePickerItem[] => {
   const devices = Object.values(hass.devices);
   const entities = Object.values(hass.entities);
@@ -298,7 +303,7 @@ export const getDevices = (
     const domainName = domain ? domainToName(hass.localize, domain) : undefined;
 
     return {
-      id: device.id,
+      id: `${idPrefix}${device.id}`,
       label: "",
       primary:
         deviceName ||

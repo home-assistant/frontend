@@ -383,8 +383,9 @@ export class HaFloorPicker extends LitElement {
         .hass=${this.hass}
         .autofocus=${this.autofocus}
         .label=${this.label}
-        .notFoundLabel=${this.hass.localize(
-          "ui.components.floor-picker.no_match"
+        .notFoundLabel=${this._notFoundLabel}
+        .emptyLabel=${this.hass.localize(
+          "ui.components.floor-picker.no_floors"
         )}
         .placeholder=${placeholder}
         .value=${this.value}
@@ -444,6 +445,11 @@ export class HaFloorPicker extends LitElement {
     fireEvent(this, "value-changed", { value });
     fireEvent(this, "change");
   }
+
+  private _notFoundLabel = (search: string) =>
+    this.hass.localize("ui.components.floor-picker.no_match", {
+      term: html`<b>‘${search}’</b>`,
+    });
 }
 
 declare global {

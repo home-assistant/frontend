@@ -1,4 +1,4 @@
-import { mdiTag, mdiPlus } from "@mdi/js";
+import { mdiPlus, mdiTag } from "@mdi/js";
 import type { UnsubscribeFunc } from "home-assistant-js-websocket";
 import type { TemplateResult } from "lit";
 import { html, LitElement } from "lit";
@@ -194,8 +194,9 @@ export class HaCategoryPicker extends SubscribeMixin(LitElement) {
         .hass=${this.hass}
         .autofocus=${this.autofocus}
         .label=${this.label}
-        .notFoundLabel=${this.hass.localize(
-          "ui.components.category-picker.no_match"
+        .notFoundLabel=${this._notFoundLabel}
+        .emptyLabel=${this.hass.localize(
+          "ui.components.category-picker.no_categories"
         )}
         .placeholder=${placeholder}
         .value=${this.value}
@@ -254,6 +255,11 @@ export class HaCategoryPicker extends SubscribeMixin(LitElement) {
       fireEvent(this, "change");
     }, 0);
   }
+
+  private _notFoundLabel = (search: string) =>
+    this.hass.localize("ui.components.category-picker.no_match", {
+      term: html`<b>‘${search}’</b>`,
+    });
 }
 
 declare global {

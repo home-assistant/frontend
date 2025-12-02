@@ -1,12 +1,19 @@
-import { css, html, LitElement, nothing } from "lit";
-import { customElement, property, state } from "lit/decorators";
 import "@home-assistant/webawesome/dist/components/dialog/dialog";
 import { mdiClose } from "@mdi/js";
-import "./ha-dialog-header";
-import "./ha-icon-button";
-import type { HomeAssistant } from "../types";
+import { css, html, LitElement } from "lit";
+import {
+  customElement,
+  eventOptions,
+  property,
+  query,
+  state,
+} from "lit/decorators";
+import { ifDefined } from "lit/directives/if-defined";
 import { fireEvent } from "../common/dom/fire_event";
 import { haStyleScrollbar } from "../resources/styles";
+import type { HomeAssistant } from "../types";
+import "./ha-dialog-header";
+import "./ha-icon-button";
 
 export type DialogWidth = "small" | "medium" | "large" | "full";
 
@@ -25,6 +32,8 @@ export type DialogWidth = "small" | "medium" | "large" | "full";
  *
  * @slot header - Replace the entire header area.
  * @slot headerNavigationIcon - Leading header action (e.g. close/back button).
+ * @slot headerTitle - Custom title content (used when header-title is not set).
+ * @slot headerSubtitle - Custom subtitle content (used when header-subtitle is not set).
  * @slot headerActionItems - Trailing header actions (e.g. buttons, menus).
  * @slot - Dialog content body.
  * @slot footer - Dialog footer content.
@@ -44,10 +53,11 @@ export type DialogWidth = "small" | "medium" | "large" | "full";
  * @cssprop --dialog-surface-margin-top - Top margin for the dialog surface.
  *
  * @attr {boolean} open - Controls the dialog open state.
+ * @attr {("alert"|"standard")} type - Dialog type. Defaults to "standard".
  * @attr {("small"|"medium"|"large"|"full")} width - Preferred dialog width preset. Defaults to "medium".
  * @attr {boolean} prevent-scrim-close - Prevents closing the dialog by clicking the scrim/overlay. Defaults to false.
- * @attr {string} header-title - Header title text when no custom title slot is provided.
- * @attr {string} header-subtitle - Header subtitle text when no custom subtitle slot is provided.
+ * @attr {string} header-title - Header title text. If not set, the headerTitle slot is used.
+ * @attr {string} header-subtitle - Header subtitle text. If not set, the headerSubtitle slot is used.
  * @attr {("above"|"below")} header-subtitle-position - Position of the subtitle relative to the title. Defaults to "below".
  * @attr {boolean} flexcontent - Makes the dialog body a flex container for flexible layouts.
  *
@@ -66,8 +76,17 @@ export type DialogWidth = "small" | "medium" | "large" | "full";
 export class HaWaDialog extends LitElement {
   @property({ attribute: false }) public hass!: HomeAssistant;
 
+  @property({ attribute: "aria-labelledby" })
+  public ariaLabelledBy?: string;
+
+  @property({ attribute: "aria-describedby" })
+  public ariaDescribedBy?: string;
+
   @property({ type: Boolean, reflect: true })
   public open = false;
+
+  @property({ reflect: true })
+  public type: "alert" | "standard" = "standard";
 
   @property({ type: String, reflect: true, attribute: "width" })
   public width: DialogWidth = "medium";
@@ -75,11 +94,11 @@ export class HaWaDialog extends LitElement {
   @property({ type: Boolean, reflect: true, attribute: "prevent-scrim-close" })
   public preventScrimClose = false;
 
-  @property({ type: String, attribute: "header-title" })
-  public headerTitle = "";
+  @property({ attribute: "header-title" })
+  public headerTitle?: string;
 
-  @property({ type: String, attribute: "header-subtitle" })
-  public headerSubtitle = "";
+  @property({ attribute: "header-subtitle" })
+  public headerSubtitle?: string;
 
   @property({ type: String, attribute: "header-subtitle-position" })
   public headerSubtitlePosition: "above" | "below" = "below";
@@ -89,6 +108,11 @@ export class HaWaDialog extends LitElement {
 
   @state()
   private _open = false;
+
+  @query(".body") public bodyContainer!: HTMLDivElement;
+
+  @state()
+  private _bodyScrolled = false;
 
   protected updated(
     changedProperties: Map<string | number | symbol, unknown>
@@ -106,11 +130,20 @@ export class HaWaDialog extends LitElement {
         .open=${this._open}
         .lightDismiss=${!this.preventScrimClose}
         without-header
+        aria-labelledby=${ifDefined(
+          this.ariaLabelledBy ||
+            (this.headerTitle !== undefined ? "ha-wa-dialog-title" : undefined)
+        )}
+        aria-describedby=${ifDefined(this.ariaDescribedBy)}
         @wa-show=${this._handleShow}
+        @wa-after-show=${this._handleAfterShow}
         @wa-after-hide=${this._handleAfterHide}
       >
         <slot name="header">
-          <ha-dialog-header .subtitlePosition=${this.headerSubtitlePosition}>
+          <ha-dialog-header
+            .subtitlePosition=${this.headerSubtitlePosition}
+            .showBorder=${this._bodyScrolled}
+          >
             <slot name="headerNavigationIcon" slot="navigationIcon">
               <ha-icon-button
                 data-dialog="close"
@@ -118,18 +151,18 @@ export class HaWaDialog extends LitElement {
                 .path=${mdiClose}
               ></ha-icon-button>
             </slot>
-            ${this.headerTitle
-              ? html`<span slot="title" class="title">
+            ${this.headerTitle !== undefined
+              ? html`<span slot="title" class="title" id="ha-wa-dialog-title">
                   ${this.headerTitle}
                 </span>`
-              : nothing}
-            ${this.headerSubtitle
+              : html`<slot name="headerTitle" slot="title"></slot>`}
+            ${this.headerSubtitle !== undefined
               ? html`<span slot="subtitle">${this.headerSubtitle}</span>`
-              : nothing}
+              : html`<slot name="headerSubtitle" slot="subtitle"></slot>`}
             <slot name="headerActionItems" slot="actionItems"></slot>
           </ha-dialog-header>
         </slot>
-        <div class="body ha-scrollbar">
+        <div class="body ha-scrollbar" @scroll=${this._handleBodyScroll}>
           <slot></slot>
         </div>
         <slot name="footer" slot="footer"></slot>
@@ -143,7 +176,13 @@ export class HaWaDialog extends LitElement {
 
     await this.updateComplete;
 
-    (this.querySelector("[autofocus]") as HTMLElement | null)?.focus();
+    requestAnimationFrame(() => {
+      (this.querySelector("[autofocus]") as HTMLElement | null)?.focus();
+    });
+  };
+
+  private _handleAfterShow = () => {
+    fireEvent(this, "after-show");
   };
 
   private _handleAfterHide = () => {
@@ -156,23 +195,17 @@ export class HaWaDialog extends LitElement {
     this._open = false;
   }
 
+  @eventOptions({ passive: true })
+  private _handleBodyScroll(ev: Event) {
+    this._bodyScrolled = (ev.target as HTMLDivElement).scrollTop > 0;
+  }
+
   static styles = [
     haStyleScrollbar,
     css`
       wa-dialog {
-        --full-width: var(
-          --ha-dialog-width-full,
-          min(
-            95vw,
-            calc(
-              100vw - var(--safe-area-inset-left, var(--ha-space-0)) - var(
-                  --safe-area-inset-right,
-                  var(--ha-space-0)
-                )
-            )
-          )
-        );
-        --width: var(--ha-dialog-width-md, min(580px, var(--full-width)));
+        --full-width: var(--ha-dialog-width-full, min(95vw, var(--safe-width)));
+        --width: min(var(--ha-dialog-width-md, 580px), var(--full-width));
         --spacing: var(--dialog-content-padding, var(--ha-space-6));
         --show-duration: var(--ha-dialog-show-duration, 200ms);
         --hide-duration: var(--ha-dialog-hide-duration, 200ms);
@@ -188,16 +221,15 @@ export class HaWaDialog extends LitElement {
           --ha-dialog-border-radius,
           var(--ha-border-radius-3xl)
         );
-        max-width: var(--ha-dialog-max-width, 100vw);
-        max-width: var(--ha-dialog-max-width, 100svw);
+        max-width: var(--ha-dialog-max-width, var(--safe-width));
       }
 
       :host([width="small"]) wa-dialog {
-        --width: var(--ha-dialog-width-sm, min(320px, var(--full-width)));
+        --width: min(var(--ha-dialog-width-sm, 320px), var(--full-width));
       }
 
       :host([width="large"]) wa-dialog {
-        --width: var(--ha-dialog-width-lg, min(720px, var(--full-width)));
+        --width: min(var(--ha-dialog-width-lg, 1024px), var(--full-width));
       }
 
       :host([width="full"]) wa-dialog {
@@ -209,33 +241,57 @@ export class HaWaDialog extends LitElement {
         max-width: var(--width, var(--full-width));
         max-height: var(
           --ha-dialog-max-height,
-          calc(100% - var(--ha-space-20))
+          calc(var(--safe-height) - var(--ha-space-20))
         );
+        min-height: var(--ha-dialog-min-height);
         position: var(--dialog-surface-position, relative);
         margin-top: var(--dialog-surface-margin-top, auto);
+        /* Used to offset the dialog from the safe areas when space is limited */
+        transform: translate(
+          calc(
+            var(--safe-area-offset-left, var(--ha-space-0)) - var(
+                --safe-area-offset-right,
+                var(--ha-space-0)
+              )
+          ),
+          calc(
+            var(--safe-area-offset-top, var(--ha-space-0)) - var(
+                --safe-area-offset-bottom,
+                var(--ha-space-0)
+              )
+          )
+        );
         display: flex;
         flex-direction: column;
         overflow: hidden;
       }
 
       @media all and (max-width: 450px), all and (max-height: 500px) {
-        :host {
+        :host([type="standard"]) {
           --ha-dialog-border-radius: var(--ha-space-0);
-        }
 
-        wa-dialog {
-          --full-width: var(--ha-dialog-width-full, 100vw);
-        }
+          wa-dialog {
+            /* Make the container fill the whole screen width and not the safe width */
+            --full-width: var(--ha-dialog-width-full, 100vw);
+            --width: var(--full-width);
+          }
 
-        wa-dialog::part(dialog) {
-          min-height: var(--ha-dialog-min-height, 100vh);
-          min-height: var(--ha-dialog-min-height, 100svh);
-          max-height: var(--ha-dialog-max-height, 100vh);
-          max-height: var(--ha-dialog-max-height, 100svh);
-          padding-top: var(--safe-area-inset-top, var(--ha-space-0));
-          padding-bottom: var(--safe-area-inset-bottom, var(--ha-space-0));
-          padding-left: var(--safe-area-inset-left, var(--ha-space-0));
-          padding-right: var(--safe-area-inset-right, var(--ha-space-0));
+          wa-dialog::part(dialog) {
+            /* Make the dialog fill the whole screen height and not the safe height */
+            min-height: var(--ha-dialog-min-height, 100vh);
+            min-height: var(--ha-dialog-min-height, 100dvh);
+            max-height: var(--ha-dialog-max-height, 100vh);
+            max-height: var(--ha-dialog-max-height, 100dvh);
+            margin-top: 0;
+            margin-bottom: 0;
+            /* Use safe area as padding instead of the container size */
+            padding-top: var(--safe-area-inset-top);
+            padding-bottom: var(--safe-area-inset-bottom);
+            padding-left: var(--safe-area-inset-left);
+            padding-right: var(--safe-area-inset-right);
+            /* Reset the transform to center the dialog */
+            transform: none;
+          }
         }
       }
 
@@ -284,6 +340,7 @@ export class HaWaDialog extends LitElement {
       }
       :host([flexcontent]) .body {
         max-width: 100%;
+        flex: 1;
         display: flex;
         flex-direction: column;
       }
@@ -312,6 +369,7 @@ declare global {
 
   interface HASSDomEvents {
     opened: undefined;
+    "after-show": undefined;
     closed: undefined;
   }
 }

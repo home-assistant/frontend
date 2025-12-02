@@ -5,6 +5,7 @@ import type { EnergySourceByType } from "../../../data/energy";
 import type { ActionConfig } from "../../../data/lovelace/config/action";
 import type { LovelaceCardConfig } from "../../../data/lovelace/config/card";
 import type { Statistic, StatisticType } from "../../../data/recorder";
+import type { MediaSelectorValue } from "../../../data/selector";
 import type { TimeFormat } from "../../../data/translation";
 import type { ForecastType } from "../../../data/weather";
 import type {
@@ -29,7 +30,6 @@ import type {
 import type { LovelaceHeaderFooterConfig } from "../header-footer/types";
 import type { LovelaceHeadingBadgeConfig } from "../heading-badges/types";
 import type { HomeSummary } from "../strategies/home/helpers/home-summaries";
-import type { MediaSelectorValue } from "../../../data/selector";
 
 export type AlarmPanelCardConfigState =
   | "arm_away"
@@ -150,11 +150,6 @@ export interface EnergyCardBaseConfig extends LovelaceCardConfig {
   collection_key?: string;
 }
 
-export interface EnergySummaryCardConfig extends EnergyCardBaseConfig {
-  type: "energy-summary";
-  title?: string;
-}
-
 export interface EnergyDistributionCardConfig extends EnergyCardBaseConfig {
   type: "energy-distribution";
   title?: string;
@@ -185,10 +180,10 @@ export interface EnergyDevicesGraphCardConfig extends EnergyCardBaseConfig {
   title?: string;
   max_devices?: number;
   hide_compound_stats?: boolean;
+  modes?: ("bar" | "pie")[];
 }
 
-export interface EnergyDevicesDetailGraphCardConfig
-  extends EnergyCardBaseConfig {
+export interface EnergyDevicesDetailGraphCardConfig extends EnergyCardBaseConfig {
   type: "energy-devices-detail-graph";
   title?: string;
   max_devices?: number;
@@ -198,6 +193,7 @@ export interface EnergySourcesTableCardConfig extends EnergyCardBaseConfig {
   type: "energy-sources-table";
   title?: string;
   types?: (keyof EnergySourceByType)[];
+  show_only_totals?: boolean;
 }
 
 export interface EnergySolarGaugeCardConfig extends EnergyCardBaseConfig {
@@ -205,14 +201,12 @@ export interface EnergySolarGaugeCardConfig extends EnergyCardBaseConfig {
   title?: string;
 }
 
-export interface EnergySelfSufficiencyGaugeCardConfig
-  extends EnergyCardBaseConfig {
+export interface EnergySelfSufficiencyGaugeCardConfig extends EnergyCardBaseConfig {
   type: "energy-self-sufficiency-gauge";
   title?: string;
 }
 
-export interface EnergyGridNeutralityGaugeCardConfig
-  extends EnergyCardBaseConfig {
+export interface EnergyGridNeutralityGaugeCardConfig extends EnergyCardBaseConfig {
   type: "energy-grid-neutrality-gauge";
   title?: string;
 }
@@ -224,6 +218,27 @@ export interface EnergyCarbonGaugeCardConfig extends EnergyCardBaseConfig {
 
 export interface EnergySankeyCardConfig extends EnergyCardBaseConfig {
   type: "energy-sankey";
+  title?: string;
+  layout?: "vertical" | "horizontal" | "auto";
+  group_by_floor?: boolean;
+  group_by_area?: boolean;
+}
+
+export interface WaterSankeyCardConfig extends EnergyCardBaseConfig {
+  type: "water-sankey";
+  title?: string;
+  layout?: "vertical" | "horizontal" | "auto";
+  group_by_floor?: boolean;
+  group_by_area?: boolean;
+}
+
+export interface PowerSourcesGraphCardConfig extends EnergyCardBaseConfig {
+  type: "power-sources-graph";
+  title?: string;
+}
+
+export interface PowerSankeyCardConfig extends EnergyCardBaseConfig {
+  type: "power-sankey";
   title?: string;
   layout?: "vertical" | "horizontal" | "auto";
   group_by_floor?: boolean;
@@ -323,6 +338,7 @@ export interface IframeCardConfig extends LovelaceCardConfig {
   title?: string;
   allow?: string;
   url: string;
+  hide_background?: boolean;
 }
 
 export interface LightCardConfig extends LovelaceCardConfig {
@@ -345,9 +361,18 @@ export interface LogbookCardConfig extends LovelaceCardConfig {
   title?: string;
   hours_to_show?: number;
   theme?: string;
+  state_filter?: string[];
 }
 
-interface GeoLocationSourceConfig {
+export interface MapEntityConfig extends EntityConfig {
+  label_mode?: "state" | "attribute" | "name";
+  attribute?: string;
+  unit?: string;
+  focus?: boolean;
+  name?: string;
+}
+
+export interface GeoLocationSourceConfig {
   source: string;
   label_mode?: "name" | "state" | "attribute" | "icon";
   attribute?: string;
@@ -362,7 +387,7 @@ export interface MapCardConfig extends LovelaceCardConfig {
   auto_fit?: boolean;
   fit_zones?: boolean;
   default_zoom?: number;
-  entities?: (EntityConfig | string)[];
+  entities?: (MapEntityConfig | string)[];
   hours_to_show?: number;
   geo_location_sources?: (GeoLocationSourceConfig | string)[];
   dark_mode?: boolean;
@@ -434,7 +459,7 @@ export interface StatisticsGraphCardConfig extends EnergyCardBaseConfig {
 }
 
 export interface StatisticCardConfig extends LovelaceCardConfig {
-  name?: string;
+  name?: string | EntityNameItem | EntityNameItem[];
   entities: (EntityConfig | string)[];
   period:
     | {

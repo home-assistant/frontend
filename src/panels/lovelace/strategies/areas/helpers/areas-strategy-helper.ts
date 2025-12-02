@@ -3,10 +3,7 @@ import { computeStateName } from "../../../../../common/entity/compute_state_nam
 import type { EntityFilterFunc } from "../../../../../common/entity/entity_filter";
 import { generateEntityFilter } from "../../../../../common/entity/entity_filter";
 import { stripPrefixFromEntityName } from "../../../../../common/entity/strip_prefix_from_entity_name";
-import {
-  orderCompare,
-  stringCompare,
-} from "../../../../../common/string/compare";
+import { orderCompare } from "../../../../../common/string/compare";
 import type { AreaRegistryEntry } from "../../../../../data/area_registry";
 import { areaCompare } from "../../../../../data/area_registry";
 import type { FloorRegistryEntry } from "../../../../../data/floor_registry";
@@ -304,18 +301,16 @@ export const getFloors = (
   floorsOrder?: string[]
 ): FloorRegistryEntry[] => {
   const floors = Object.values(entries);
-  const compare = orderCompare(floorsOrder || []);
 
-  return floors.sort((floorA, floorB) => {
-    const order = compare(floorA.floor_id, floorB.floor_id);
-    if (order !== 0) {
-      return order;
-    }
-    if (floorA.level !== floorB.level) {
-      return (floorA.level ?? 0) - (floorB.level ?? 0);
-    }
-    return stringCompare(floorA.name, floorB.name);
-  });
+  if (!floorsOrder) {
+    return floors;
+  }
+
+  const compare = orderCompare(floorsOrder);
+
+  return floors.sort((floorA, floorB) =>
+    compare(floorA.floor_id, floorB.floor_id)
+  );
 };
 
 export const computeAreaPath = (areaId: string): string => `areas-${areaId}`;

@@ -142,9 +142,7 @@ class HuiAreaControlsCardFeature
   }
 
   public static async getConfigElement(): Promise<LovelaceCardFeatureEditor> {
-    await import(
-      "../editor/config-elements/hui-area-controls-card-feature-editor"
-    );
+    await import("../editor/config-elements/hui-area-controls-card-feature-editor");
     return document.createElement("hui-area-controls-card-feature-editor");
   }
 

@@ -228,7 +228,7 @@ export class HaDeviceEntitiesCard extends LitElement {
     addEntitiesToLovelaceView(
       this,
       this.hass,
-      computeCards(this.hass.states, entities, {
+      computeCards(this.hass, entities, {
         title: this.deviceName,
       }),
       computeSection(entities, {

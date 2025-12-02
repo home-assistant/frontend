@@ -4,11 +4,12 @@ import {
   actionConfigStruct,
   actionConfigStructConfirmation,
 } from "./action-struct";
+import { entityNameStruct } from "./entity-name-struct";
 
 export const entitiesConfigStruct = union([
   object({
     entity: string(),
-    name: optional(string()),
+    name: optional(entityNameStruct),
     icon: optional(string()),
     image: optional(string()),
     secondary_info: optional(string()),

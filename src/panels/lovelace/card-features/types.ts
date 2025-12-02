@@ -50,6 +50,11 @@ export interface MediaPlayerVolumeSliderCardFeatureConfig {
   type: "media-player-volume-slider";
 }
 
+export interface MediaPlayerVolumeButtonsCardFeatureConfig {
+  type: "media-player-volume-buttons";
+  step?: number;
+}
+
 export interface FanDirectionCardFeatureConfig {
   type: "fan-direction";
 }
@@ -194,6 +199,7 @@ export interface UpdateActionsCardFeatureConfig {
 export interface TrendGraphCardFeatureConfig {
   type: "trend-graph";
   hours_to_show?: number;
+  detail?: boolean;
 }
 
 export const AREA_CONTROLS = [
@@ -221,6 +227,8 @@ export interface AreaControlsCardFeatureConfig {
 
 export interface BarGaugeCardFeatureConfig {
   type: "bar-gauge";
+  min?: number;
+  max?: number;
 }
 
 export type LovelaceCardFeaturePosition = "bottom" | "inline";
@@ -252,6 +260,7 @@ export type LovelaceCardFeatureConfig =
   | LockCommandsCardFeatureConfig
   | LockOpenDoorCardFeatureConfig
   | MediaPlayerPlaybackCardFeatureConfig
+  | MediaPlayerVolumeButtonsCardFeatureConfig
   | MediaPlayerVolumeSliderCardFeatureConfig
   | NumericInputCardFeatureConfig
   | SelectOptionsCardFeatureConfig

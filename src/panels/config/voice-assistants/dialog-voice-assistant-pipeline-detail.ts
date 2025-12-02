@@ -214,7 +214,7 @@ export class DialogVoiceAssistantPipelineDetail extends LitElement {
         <ha-button
           slot="primaryAction"
           @click=${this._updatePipeline}
-          .disabled=${this._submitting}
+          .loading=${this._submitting}
           dialogInitialFocus
         >
           ${this._params.pipeline?.id

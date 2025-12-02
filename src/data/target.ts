@@ -1,14 +1,29 @@
 import type { HassServiceTarget } from "home-assistant-js-websocket";
 import { computeDomain } from "../common/entity/compute_domain";
 import type { HaDevicePickerDeviceFilterFunc } from "../components/device/ha-device-picker";
+import type { PickerComboBoxItem } from "../components/ha-picker-combo-box";
 import type { HomeAssistant } from "../types";
+import type { FloorComboBoxItem } from "./area_floor";
 import type { AreaRegistryEntry } from "./area_registry";
-import type { DeviceRegistryEntry } from "./device_registry";
+import type { DevicePickerItem, DeviceRegistryEntry } from "./device_registry";
 import type { HaEntityPickerEntityFilterFunc } from "./entity";
-import type { EntityRegistryDisplayEntry } from "./entity_registry";
+import type {
+  EntityComboBoxItem,
+  EntityRegistryDisplayEntry,
+} from "./entity_registry";
+
+export const TARGET_SEPARATOR = "________";
 
 export type TargetType = "entity" | "device" | "area" | "label" | "floor";
 export type TargetTypeFloorless = Exclude<TargetType, "floor">;
+
+export interface SingleHassServiceTarget {
+  entity_id?: string;
+  device_id?: string;
+  area_id?: string;
+  floor_id?: string;
+  label_id?: string;
+}
 
 export interface ExtractFromTargetResult {
   missing_areas: string[];
@@ -33,6 +48,39 @@ export const extractFromTarget = async (
   hass.callWS<ExtractFromTargetResult>({
     type: "extract_from_target",
     target,
+  });
+
+export const getTriggersForTarget = async (
+  callWS: HomeAssistant["callWS"],
+  target: HassServiceTarget,
+  expandGroup = true
+) =>
+  callWS<string[]>({
+    type: "get_triggers_for_target",
+    target,
+    expand_group: expandGroup,
+  });
+
+export const getConditionsForTarget = async (
+  callWS: HomeAssistant["callWS"],
+  target: HassServiceTarget,
+  expandGroup = true
+) =>
+  callWS<string[]>({
+    type: "get_conditions_for_target",
+    target,
+    expand_group: expandGroup,
+  });
+
+export const getServicesForTarget = async (
+  callWS: HomeAssistant["callWS"],
+  target: HassServiceTarget,
+  expandGroup = true
+) =>
+  callWS<string[]>({
+    type: "get_services_for_target",
+    target,
+    expand_group: expandGroup,
   });
 
 export const areaMeetsFilter = (
@@ -161,4 +209,33 @@ export const entityRegMeetsFilter = (
     return entityFilter!(stateObj);
   }
   return true;
+};
+
+export const getTargetComboBoxItemType = (
+  item:
+    | PickerComboBoxItem
+    | (FloorComboBoxItem & { last?: boolean | undefined })
+    | EntityComboBoxItem
+    | DevicePickerItem
+) => {
+  if (
+    (item as FloorComboBoxItem).type === "area" ||
+    (item as FloorComboBoxItem).type === "floor"
+  ) {
+    return (item as FloorComboBoxItem).type;
+  }
+
+  if ("domain" in item) {
+    return "device";
+  }
+
+  if ("stateObj" in item) {
+    return "entity";
+  }
+
+  if (item.id === "___EMPTY_SEARCH___") {
+    return "empty";
+  }
+
+  return "label";
 };

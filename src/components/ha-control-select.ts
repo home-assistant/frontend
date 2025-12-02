@@ -202,6 +202,7 @@ export class HaControlSelect extends LitElement {
       color: var(--primary-text-color);
       user-select: none;
       -webkit-tap-highlight-color: transparent;
+      border-radius: var(--control-select-border-radius);
     }
     :host([vertical]) {
       width: var(--control-select-thickness);
@@ -211,7 +212,6 @@ export class HaControlSelect extends LitElement {
       position: relative;
       height: 100%;
       width: 100%;
-      border-radius: var(--control-select-border-radius);
       transform: translateZ(0);
       display: flex;
       flex-direction: row;

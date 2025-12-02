@@ -18,7 +18,6 @@ import { classMap } from "lit/directives/class-map";
 import { fireEvent } from "../common/dom/fire_event";
 import type { LocalizeFunc } from "../common/translations/localize";
 import "../components/chips/ha-assist-chip";
-import "../components/chips/ha-filter-chip";
 import "../components/data-table/ha-data-table";
 import type {
   DataTableColumnContainer,
@@ -622,9 +621,9 @@ export class HaTabsSubpageDataTable extends KeyboardShortcutMixin(LitElement) {
     } else if (this._sortDirection === "asc") {
       this._sortDirection = "desc";
     } else {
-      this._sortDirection = null;
+      this._sortDirection = "asc";
     }
-    this._sortColumn = this._sortDirection === null ? undefined : columnId;
+    this._sortColumn = columnId;
 
     fireEvent(this, "sorting-changed", {
       column: columnId,

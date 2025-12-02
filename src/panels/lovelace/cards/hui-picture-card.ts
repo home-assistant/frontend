@@ -182,12 +182,12 @@ export class HuiPictureCard extends LitElement implements LovelaceCard {
         class=${classMap({
           clickable: Boolean(
             (this._config.image_entity && !this._config.tap_action) ||
-              (this._config.tap_action &&
-                this._config.tap_action.action !== "none") ||
-              (this._config.hold_action &&
-                this._config.hold_action.action !== "none") ||
-              (this._config.double_tap_action &&
-                this._config.double_tap_action.action !== "none")
+            (this._config.tap_action &&
+              this._config.tap_action.action !== "none") ||
+            (this._config.hold_action &&
+              this._config.hold_action.action !== "none") ||
+            (this._config.double_tap_action &&
+              this._config.double_tap_action.action !== "none")
           ),
         })}
       >

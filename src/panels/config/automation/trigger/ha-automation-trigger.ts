@@ -1,9 +1,14 @@
 import { mdiDragHorizontalVariant, mdiPlus } from "@mdi/js";
 import deepClone from "deep-clone-simple";
+import type {
+  HassServiceTarget,
+  UnsubscribeFunc,
+} from "home-assistant-js-websocket";
 import type { PropertyValues } from "lit";
 import { html, LitElement, nothing } from "lit";
 import { customElement, property, state } from "lit/decorators";
 import { repeat } from "lit/directives/repeat";
+import { ensureArray } from "../../../../common/array/ensure-array";
 import { storage } from "../../../../common/decorators/storage";
 import { fireEvent } from "../../../../common/dom/fire_event";
 import { stopPropagation } from "../../../../common/dom/stop_propagation";
@@ -12,12 +17,17 @@ import "../../../../components/ha-button";
 import "../../../../components/ha-button-menu";
 import "../../../../components/ha-sortable";
 import "../../../../components/ha-svg-icon";
-import type {
-  AutomationClipboard,
-  Trigger,
-  TriggerList,
+import {
+  getValueFromDynamic,
+  isDynamic,
+  type AutomationClipboard,
+  type Trigger,
+  type TriggerList,
 } from "../../../../data/automation";
-import { isTriggerList } from "../../../../data/trigger";
+import { subscribeLabFeatures } from "../../../../data/labs";
+import type { TriggerDescriptions } from "../../../../data/trigger";
+import { isTriggerList, subscribeTriggers } from "../../../../data/trigger";
+import { SubscribeMixin } from "../../../../mixins/subscribe-mixin";
 import type { HomeAssistant } from "../../../../types";
 import {
   PASTE_VALUE,
@@ -26,10 +36,9 @@ import {
 import { automationRowsStyles } from "../styles";
 import "./ha-automation-trigger-row";
 import type HaAutomationTriggerRow from "./ha-automation-trigger-row";
-import { ensureArray } from "../../../../common/array/ensure-array";
 
 @customElement("ha-automation-trigger")
-export default class HaAutomationTrigger extends LitElement {
+export default class HaAutomationTrigger extends SubscribeMixin(LitElement) {
   @property({ attribute: false }) public hass!: HomeAssistant;
 
   @property({ attribute: false }) public triggers!: Trigger[];
@@ -62,6 +71,61 @@ export default class HaAutomationTrigger extends LitElement {
 
   private _triggerKeys = new WeakMap<Trigger, string>();
 
+  private _unsub?: Promise<UnsubscribeFunc>;
+
+  @state() private _triggerDescriptions: TriggerDescriptions = {};
+
+  // @ts-ignore
+  @state() private _newTriggersAndConditions = false;
+
+  public disconnectedCallback() {
+    super.disconnectedCallback();
+    this._unsubscribe();
+  }
+
+  protected hassSubscribe() {
+    return [
+      subscribeLabFeatures(this.hass!.connection, (features) => {
+        this._newTriggersAndConditions =
+          features.find(
+            (feature) =>
+              feature.domain === "automation" &&
+              feature.preview_feature === "new_triggers_conditions"
+          )?.enabled ?? false;
+      }),
+    ];
+  }
+
+  private _subscribeDescriptions() {
+    this._unsubscribe();
+    this._triggerDescriptions = {};
+    this._unsub = subscribeTriggers(this.hass, (descriptions) => {
+      this._triggerDescriptions = {
+        ...this._triggerDescriptions,
+        ...descriptions,
+      };
+    });
+  }
+
+  private _unsubscribe() {
+    if (this._unsub) {
+      this._unsub.then((unsub) => unsub());
+      this._unsub = undefined;
+    }
+  }
+
+  protected willUpdate(changedProperties: PropertyValues): void {
+    super.willUpdate(changedProperties);
+    if (changedProperties.has("_newTriggersAndConditions")) {
+      this._subscribeDescriptions();
+    }
+  }
+
+  protected firstUpdated(changedProps: PropertyValues) {
+    super.firstUpdated(changedProps);
+    this.hass.loadBackendTranslation("triggers");
+  }
+
   protected render() {
     return html`
       <ha-sortable
@@ -85,6 +149,7 @@ export default class HaAutomationTrigger extends LitElement {
                 .first=${idx === 0}
                 .last=${idx === this.triggers.length - 1}
                 .trigger=${trg}
+                .triggerDescriptions=${this._triggerDescriptions}
                 @duplicate=${this._duplicateTrigger}
                 @insert-after=${this._insertAfter}
                 @move-down=${this._moveDown}
@@ -152,10 +217,15 @@ export default class HaAutomationTrigger extends LitElement {
     });
   }
 
-  private _addTrigger = (value: string) => {
+  private _addTrigger = (value: string, target?: HassServiceTarget) => {
     let triggers: Trigger[];
     if (value === PASTE_VALUE) {
       triggers = this.triggers.concat(deepClone(this._clipboard!.trigger));
+    } else if (isDynamic(value)) {
+      triggers = this.triggers.concat({
+        trigger: getValueFromDynamic(value),
+        target,
+      });
     } else {
       const trigger = value as Exclude<Trigger, TriggerList>["trigger"];
       const elClass = customElements.get(

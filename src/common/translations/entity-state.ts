@@ -45,9 +45,8 @@ export const computeFormatFunctions = async (
   formatEntityAttributeName: FormatEntityAttributeNameFunc;
   formatEntityName: FormatEntityNameFunc;
 }> => {
-  const { computeStateDisplay } = await import(
-    "../entity/compute_state_display"
-  );
+  const { computeStateDisplay } =
+    await import("../entity/compute_state_display");
   const { computeAttributeValueDisplay, computeAttributeNameDisplay } =
     await import("../entity/compute_attribute_display");
 

@@ -1,5 +1,5 @@
 import { css, html, LitElement, nothing } from "lit";
-import { property, state } from "lit/decorators";
+import { customElement, property, state } from "lit/decorators";
 import { slugify } from "../../../common/string/slugify";
 import "../../../components/buttons/ha-progress-button";
 import "../../../components/ha-camera-stream";
@@ -9,6 +9,7 @@ import type { HomeAssistant } from "../../../types";
 import { fileDownload } from "../../../util/file_download";
 import { showToast } from "../../../util/toast";
 
+@customElement("more-info-camera")
 class MoreInfoCamera extends LitElement {
   @property({ attribute: false }) public hass!: HomeAssistant;
 
@@ -111,8 +112,6 @@ class MoreInfoCamera extends LitElement {
     }
   `;
 }
-
-customElements.define("more-info-camera", MoreInfoCamera);
 
 declare global {
   interface HTMLElementTagNameMap {

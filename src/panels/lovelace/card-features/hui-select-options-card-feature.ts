@@ -64,9 +64,7 @@ class HuiSelectOptionsCardFeature
   }
 
   public static async getConfigElement(): Promise<LovelaceCardFeatureEditor> {
-    await import(
-      "../editor/config-elements/hui-select-options-card-feature-editor"
-    );
+    await import("../editor/config-elements/hui-select-options-card-feature-editor");
     return document.createElement("hui-select-options-card-feature-editor");
   }
 

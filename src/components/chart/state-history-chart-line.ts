@@ -1,6 +1,6 @@
 import type { PropertyValues } from "lit";
 import { html, LitElement } from "lit";
-import { property, state } from "lit/decorators";
+import { customElement, property, state } from "lit/decorators";
 import type { VisualMapComponentOption } from "echarts/components";
 import type { LineSeriesOption } from "echarts/charts";
 import type { YAXisOption } from "echarts/types/dist/shared";
@@ -27,6 +27,7 @@ const safeParseFloat = (value) => {
   return isFinite(parsed) ? parsed : null;
 };
 
+@customElement("state-history-chart-line")
 export class StateHistoryChartLine extends LitElement {
   @property({ attribute: false }) public hass!: HomeAssistant;
 
@@ -86,6 +87,8 @@ export class StateHistoryChartLine extends LitElement {
   private _chartTime: Date = new Date();
 
   private _previousYAxisLabelValue = 0;
+
+  private _yAxisMaximumFractionDigits = 0;
 
   protected render() {
     return html`
@@ -757,8 +760,12 @@ export class StateHistoryChartLine extends LitElement {
         Math.log10(Math.abs(value - this._previousYAxisLabelValue || 1))
       )
     );
+    this._yAxisMaximumFractionDigits = Math.max(
+      this._yAxisMaximumFractionDigits,
+      maximumFractionDigits
+    );
     const label = formatNumber(value, this.hass.locale, {
-      maximumFractionDigits,
+      maximumFractionDigits: this._yAxisMaximumFractionDigits,
     });
     const width = measureTextWidth(label, 12) + 5;
     if (width > this._yWidth) {
@@ -789,7 +796,6 @@ export class StateHistoryChartLine extends LitElement {
     return Math.abs(value) < 1 ? value : roundingFn(value);
   }
 }
-customElements.define("state-history-chart-line", StateHistoryChartLine);
 
 declare global {
   interface HTMLElementTagNameMap {

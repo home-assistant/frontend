@@ -53,7 +53,7 @@ class HaServicePicker extends LitElement {
     item,
     { index }
   ) => html`
-    <ha-combo-box-item type="button" border-top .borderTop=${index !== 0}>
+    <ha-combo-box-item type="button" .borderTop=${index !== 0}>
       <ha-service-icon
         slot="start"
         .hass=${this.hass}
@@ -76,34 +76,48 @@ class HaServicePicker extends LitElement {
     </ha-combo-box-item>
   `;
 
-  private _valueRenderer: PickerValueRenderer = (value) => {
-    const serviceId = value;
-    const [domain, service] = serviceId.split(".");
+  private _valueRenderer = memoizeOne(
+    (
+      localize: LocalizeFunc,
+      services: HomeAssistant["services"]
+    ): PickerValueRenderer =>
+      (value) => {
+        const serviceId = value;
+        const [domain, service] = serviceId.split(".");
 
-    if (!this.hass.services[domain]?.[service]) {
-      return html`
-        <ha-svg-icon slot="start" .path=${mdiRoomService}></ha-svg-icon>
-        <span slot="headline">${value}</span>
-      `;
-    }
+        if (!services[domain]?.[service]) {
+          return html`
+            <ha-svg-icon slot="start" .path=${mdiRoomService}></ha-svg-icon>
+            <span slot="headline">${value}</span>
+          `;
+        }
 
-    const serviceName =
-      this.hass.localize(`component.${domain}.services.${service}.name`) ||
-      this.hass.services[domain][service].name ||
-      service;
+        const descriptionPlaceholders =
+          this.hass.services[domain][service].description_placeholders;
 
-    return html`
-      <ha-service-icon
-        slot="start"
-        .hass=${this.hass}
-        .service=${serviceId}
-      ></ha-service-icon>
-      <span slot="headline">${serviceName}</span>
-      ${this.showServiceId
-        ? html`<span slot="supporting-text" class="code">${serviceId}</span>`
-        : nothing}
-    `;
-  };
+        const serviceName =
+          localize(
+            `component.${domain}.services.${service}.name`,
+            descriptionPlaceholders
+          ) ||
+          services[domain][service].name ||
+          service;
+
+        return html`
+          <ha-service-icon
+            slot="start"
+            .hass=${this.hass}
+            .service=${serviceId}
+          ></ha-service-icon>
+          <span slot="headline">${serviceName}</span>
+          ${this.showServiceId
+            ? html`<span slot="supporting-text" class="code"
+                >${serviceId}</span
+              >`
+            : nothing}
+        `;
+      }
+  );
 
   protected render(): TemplateResult {
     const placeholder =
@@ -123,7 +137,10 @@ class HaServicePicker extends LitElement {
         .value=${this.value}
         .getItems=${this._getItems}
         .rowRenderer=${this._rowRenderer}
-        .valueRenderer=${this._valueRenderer}
+        .valueRenderer=${this._valueRenderer(
+          this.hass.localize,
+          this.hass.services
+        )}
         @value-changed=${this._valueChanged}
       >
       </ha-generic-picker>
@@ -152,17 +169,24 @@ class HaServicePicker extends LitElement {
             const serviceId = `${domain}.${service}`;
             const domainName = domainToName(localize, domain);
 
+            const descriptionPlaceholders =
+              this.hass.services[domain][service].description_placeholders;
+
             const name =
               this.hass.localize(
-                `component.${domain}.services.${service}.name`
+                `component.${domain}.services.${service}.name`,
+                descriptionPlaceholders
               ) ||
               services[domain][service].name ||
               service;
 
             const description =
               this.hass.localize(
-                `component.${domain}.services.${service}.description`
-              ) || services[domain][service].description;
+                `component.${domain}.services.${service}.description`,
+                descriptionPlaceholders
+              ) ||
+              services[domain][service].description ||
+              "";
 
             items.push({
               id: serviceId,

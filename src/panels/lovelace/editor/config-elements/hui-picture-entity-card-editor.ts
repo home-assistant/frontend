@@ -1,8 +1,8 @@
-import memoizeOne from "memoize-one";
 import { mdiGestureTap } from "@mdi/js";
 import type { CSSResultGroup } from "lit";
 import { html, LitElement, nothing } from "lit";
 import { customElement, property, state } from "lit/decorators";
+import memoizeOne from "memoize-one";
 import {
   assert,
   assign,
@@ -15,7 +15,6 @@ import {
 } from "superstruct";
 import { fireEvent } from "../../../../common/dom/fire_event";
 import { computeDomain } from "../../../../common/entity/compute_domain";
-import { DEFAULT_ENTITY_NAME } from "../../../../common/entity/compute_entity_name_display";
 import type { LocalizeFunc } from "../../../../common/translations/localize";
 import "../../../../components/ha-form/ha-form";
 import type {
@@ -71,9 +70,7 @@ export class HuiPictureEntityCardEditor
         {
           name: "name",
           selector: {
-            entity_name: {
-              default_name: DEFAULT_ENTITY_NAME,
-            },
+            entity_name: {},
           },
           context: { entity: "entity" },
         },

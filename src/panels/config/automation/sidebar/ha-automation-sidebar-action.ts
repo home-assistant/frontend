@@ -20,14 +20,14 @@ import "../../../../components/ha-md-divider";
 import "../../../../components/ha-md-menu-item";
 import { ACTION_BUILDING_BLOCKS } from "../../../../data/action";
 import type { ActionSidebarConfig } from "../../../../data/automation";
-import type { RepeatAction } from "../../../../data/script";
+import { domainToName } from "../../../../data/integration";
+import type { RepeatAction, ServiceAction } from "../../../../data/script";
 import type { HomeAssistant } from "../../../../types";
 import { isMac } from "../../../../util/is_mac";
 import type HaAutomationConditionEditor from "../action/ha-automation-action-editor";
 import { getAutomationActionType } from "../action/ha-automation-action-row";
 import { getRepeatType } from "../action/types/ha-automation-action-repeat";
 import { overflowStyles, sidebarEditorStyles } from "../styles";
-import "../trigger/ha-automation-trigger-editor";
 import "./ha-automation-sidebar-card";
 
 @customElement("ha-automation-sidebar-action")
@@ -44,7 +44,8 @@ export default class HaAutomationSidebarAction extends LitElement {
 
   @property({ type: Boolean }) public narrow = false;
 
-  @property({ attribute: "sidebar-key" }) public sidebarKey?: string;
+  @property({ type: Number, attribute: "sidebar-key" })
+  public sidebarKey?: number;
 
   @state() private _warnings?: string[];
 
@@ -82,10 +83,26 @@ export default class HaAutomationSidebarAction extends LitElement {
       "ui.panel.config.automation.editor.actions.action"
     );
 
-    const title =
+    let title =
       this.hass.localize(
         `ui.panel.config.automation.editor.actions.type.${type}.label` as LocalizeKeys
       ) || type;
+
+    if (type === "service" && (actionConfig as ServiceAction).action) {
+      const [domain, service] = (actionConfig as ServiceAction).action!.split(
+        ".",
+        2
+      );
+
+      title = `${domainToName(this.hass.localize, domain)}: ${
+        this.hass.localize(
+          `component.${domain}.services.${service}.name`,
+          this.hass.services[domain][service].description_placeholders
+        ) ||
+        this.hass.services[domain][service]?.name ||
+        title
+      }`;
+    }
 
     const description = isBuildingBlock
       ? this.hass.localize(

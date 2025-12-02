@@ -3,7 +3,7 @@ import { TZDate } from "@date-fns/tz";
 import { addDays, isSameDay } from "date-fns";
 import type { CSSResultGroup } from "lit";
 import { LitElement, css, html, nothing } from "lit";
-import { property, state } from "lit/decorators";
+import { customElement, property, state } from "lit/decorators";
 import { formatDate } from "../../common/datetime/format_date";
 import { formatDateTime } from "../../common/datetime/format_date_time";
 import { formatTime } from "../../common/datetime/format_time";
@@ -26,6 +26,7 @@ import type { CalendarEventDetailDialogParams } from "./show-dialog-calendar-eve
 import { showCalendarEventEditDialog } from "./show-dialog-calendar-event-editor";
 import { resolveTimeZone } from "../../common/datetime/resolve-time-zone";
 
+@customElement("dialog-calendar-event-detail")
 class DialogCalendarEventDetail extends LitElement {
   @property({ attribute: false }) public hass!: HomeAssistant;
 
@@ -80,10 +81,12 @@ class DialogCalendarEventDetail extends LitElement {
               ${this._data!.rrule
                 ? this._renderRRuleAsText(this._data.rrule)
                 : ""}
+              ${this._data.location
+                ? html`${this._data.location} <br />`
+                : nothing}
               ${this._data.description
                 ? html`<br />
-                    <div class="description">${this._data.description}</div>
-                    <br />`
+                    <div class="description">${this._data.description}</div>`
                 : nothing}
             </div>
           </div>
@@ -143,9 +146,14 @@ class DialogCalendarEventDetail extends LitElement {
       this.hass.locale.time_zone,
       this.hass.config.time_zone
     );
-    const start = new TZDate(this._data!.dtstart, timeZone);
-    const endValue = new TZDate(this._data!.dtend, timeZone);
-    // All day events should be displayed as a day earlier
+    // For all-day events (date-only strings), parse without timezone to avoid offset issues
+    const start = isDate(this._data!.dtstart)
+      ? new Date(this._data!.dtstart + "T00:00:00")
+      : new TZDate(this._data!.dtstart, timeZone);
+    const endValue = isDate(this._data!.dtend)
+      ? new Date(this._data!.dtend + "T00:00:00")
+      : new TZDate(this._data!.dtend, timeZone);
+    // All day event end dates are exclusive in iCalendar format, subtract one day for display
     const end = isDate(this._data.dtend) ? addDays(endValue, -1) : endValue;
     // The range can be shortened when the start and end are on the same day.
     if (isSameDay(start, end)) {
@@ -236,7 +244,7 @@ class DialogCalendarEventDetail extends LitElement {
       haStyleDialog,
       css`
         state-info {
-          line-height: 40px;
+          margin-top: 24px;
         }
         ha-svg-icon {
           width: 40px;
@@ -264,8 +272,3 @@ declare global {
     "dialog-calendar-event-detail": DialogCalendarEventDetail;
   }
 }
-
-customElements.define(
-  "dialog-calendar-event-detail",
-  DialogCalendarEventDetail
-);

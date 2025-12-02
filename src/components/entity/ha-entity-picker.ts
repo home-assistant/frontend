@@ -113,6 +113,9 @@ export class HaEntityPicker extends LitElement {
   @property({ attribute: "hide-clear-icon", type: Boolean })
   public hideClearIcon = false;
 
+  @property({ attribute: "add-button", type: Boolean })
+  public addButton = false;
+
   @query("ha-generic-picker") private _picker?: HaGenericPicker;
 
   protected firstUpdated(changedProperties: PropertyValues): void {
@@ -266,9 +269,6 @@ export class HaEntityPicker extends LitElement {
     const placeholder =
       this.placeholder ??
       this.hass.localize("ui.components.entity.entity-picker.placeholder");
-    const notFoundLabel = this.hass.localize(
-      "ui.components.entity.entity-picker.no_match"
-    );
 
     return html`
       <ha-generic-picker
@@ -279,9 +279,9 @@ export class HaEntityPicker extends LitElement {
         .label=${this.label}
         .helper=${this.helper}
         .searchLabel=${this.searchLabel}
-        .notFoundLabel=${notFoundLabel}
+        .notFoundLabel=${this._notFoundLabel}
         .placeholder=${placeholder}
-        .value=${this.value}
+        .value=${this.addButton ? undefined : this.value}
         .rowRenderer=${this._rowRenderer}
         .getItems=${this._getItems}
         .getAdditionalItems=${this._getAdditionalItems}
@@ -289,6 +289,9 @@ export class HaEntityPicker extends LitElement {
         .searchFn=${this._searchFn}
         .valueRenderer=${this._valueRenderer}
         @value-changed=${this._valueChanged}
+        .addButtonLabel=${this.addButton
+          ? this.hass.localize("ui.components.entity.entity-picker.add")
+          : undefined}
       >
       </ha-generic-picker>
     `;
@@ -350,6 +353,11 @@ export class HaEntityPicker extends LitElement {
     fireEvent(this, "value-changed", { value });
     fireEvent(this, "change");
   }
+
+  private _notFoundLabel = (search: string) =>
+    this.hass.localize("ui.components.entity.entity-picker.no_match", {
+      term: html`<b>‘${search}’</b>`,
+    });
 }
 
 declare global {

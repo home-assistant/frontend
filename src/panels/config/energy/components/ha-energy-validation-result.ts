@@ -2,6 +2,7 @@ import { css, html, LitElement, nothing } from "lit";
 import { customElement, property } from "lit/decorators";
 import "../../../../components/ha-alert";
 import type { EnergyValidationIssue } from "../../../../data/energy";
+import { documentationUrl } from "../../../../util/documentation-url";
 import type { HomeAssistant } from "../../../../types";
 
 @customElement("ha-energy-validation-result")
@@ -29,7 +30,10 @@ class EnergyValidationMessage extends LitElement {
           )}
           ${issue.type === "recorder_untracked"
             ? html`(<a
-                  href="https://www.home-assistant.io/integrations/recorder#configure-filter"
+                  href=${documentationUrl(
+                    this.hass,
+                    "/integrations/recorder#configure-filter"
+                  )}
                   target="_blank"
                   rel="noopener noreferrer"
                   >${this.hass.localize("ui.panel.config.common.learn_more")}</a

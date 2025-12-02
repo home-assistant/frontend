@@ -152,10 +152,18 @@ export class MoreInfoHistory extends LitElement {
     }
   }
 
-  private _setRedrawTimer() {
-    // redraw the graph every minute to update the time axis
+  private _setUpdateTimer() {
     clearInterval(this._interval);
-    this._interval = window.setInterval(() => this._redrawGraph(), 1000 * 60);
+    this._interval = window.setInterval(() => {
+      // If using statistics, refresh the data
+      if (this._statistics) {
+        this._fetchStatistics();
+      }
+      // If using history, redraw the graph to update the time axis
+      if (this._stateHistory) {
+        this._redrawGraph();
+      }
+    }, 1000 * 60);
   }
 
   private async _getStatisticsMetaData(statisticIds: string[] | undefined) {
@@ -170,6 +178,30 @@ export class MoreInfoHistory extends LitElement {
     return statisticsMetaData;
   }
 
+  private async _fetchStatistics(): Promise<boolean> {
+    // Fire off the metadata and fetch at the same time
+    // to avoid waiting in sequence so the UI responds
+    // faster.
+    const _metadata = this._getStatisticsMetaData([this.entityId]);
+    const _statistics = fetchStatistics(
+      this.hass!,
+      subHours(new Date(), 24),
+      undefined,
+      [this.entityId],
+      "5minute",
+      undefined,
+      statTypes
+    );
+    const [metadata, statistics] = await Promise.all([_metadata, _statistics]);
+    if (metadata && Object.keys(metadata).length) {
+      this._metadata = metadata;
+      this._statistics = statistics;
+      this._statNames = { [this.entityId]: "" };
+      return true;
+    }
+    return false;
+  }
+
   private async _getStateHistory(): Promise<void> {
     if (
       isComponentLoaded(this.hass, "recorder") &&
@@ -180,27 +212,10 @@ export class MoreInfoHistory extends LitElement {
       // has not opted into statistics so there is no need to check as it
       // requires another round-trip to the server.
       if (stateObj && stateObj.attributes.state_class) {
-        // Fire off the metadata and fetch at the same time
-        // to avoid waiting in sequence so the UI responds
-        // faster.
-        const _metadata = this._getStatisticsMetaData([this.entityId]);
-        const _statistics = fetchStatistics(
-          this.hass!,
-          subHours(new Date(), 24),
-          undefined,
-          [this.entityId],
-          "5minute",
-          undefined,
-          statTypes
-        );
-        const [metadata, statistics] = await Promise.all([
-          _metadata,
-          _statistics,
-        ]);
-        if (metadata && Object.keys(metadata).length) {
-          this._metadata = metadata;
-          this._statistics = statistics;
-          this._statNames = { [this.entityId]: "" };
+        const hasStatistics = await this._fetchStatistics();
+        if (hasStatistics) {
+          // Using statistics, set up refresh timer
+          this._setUpdateTimer();
           return;
         }
       }
@@ -238,7 +253,7 @@ export class MoreInfoHistory extends LitElement {
       this._error = err;
       return undefined;
     });
-    this._setRedrawTimer();
+    this._setUpdateTimer();
   }
 
   static styles = [

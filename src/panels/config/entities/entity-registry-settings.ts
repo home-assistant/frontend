@@ -126,7 +126,7 @@ export class EntityRegistrySettings extends SubscribeMixin(LitElement) {
           .hass=${this.hass}
           .entry=${this.entry}
           .helperConfigEntry=${this._helperConfigEntry}
-          .disabled=${this._submitting}
+          .disabled=${!!this._submitting}
           @change=${this._entityRegistryChanged}
         ></entity-registry-settings-editor>
       </div>

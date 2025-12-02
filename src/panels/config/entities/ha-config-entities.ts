@@ -116,8 +116,10 @@ import { showAddIntegrationDialog } from "../integrations/show-add-integration-d
 import { showLabelDetailDialog } from "../labels/show-dialog-label-detail";
 import { slugify } from "../../../common/string/slugify";
 
-export interface StateEntity
-  extends Omit<EntityRegistryEntry, "id" | "unique_id"> {
+export interface StateEntity extends Omit<
+  EntityRegistryEntry,
+  "id" | "unique_id"
+> {
   readonly?: boolean;
   selectable?: boolean;
   id?: string;
@@ -792,7 +794,10 @@ export class HaConfigEntities extends SubscribeMixin(LitElement) {
             .indeterminate=${partial}
             reducedTouchTarget
           ></ha-checkbox>
-          <ha-label style=${color ? `--color: ${color}` : ""}>
+          <ha-label
+            style=${color ? `--color: ${color}` : ""}
+            .description=${label.description}
+          >
             ${label.icon
               ? html`<ha-icon slot="icon" .icon=${label.icon}></ha-icon>`
               : nothing}

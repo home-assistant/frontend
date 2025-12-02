@@ -248,6 +248,7 @@ export class HaCodeEditor extends ReactiveElement {
       this._loadedCodeMirror.crosshairCursor(),
       this._loadedCodeMirror.highlightSelectionMatches(),
       this._loadedCodeMirror.highlightActiveLine(),
+      this._loadedCodeMirror.dropCursor(),
       this._loadedCodeMirror.indentationMarkers({
         thickness: 0,
         activeThickness: 1,
@@ -680,6 +681,18 @@ export class HaCodeEditor extends ReactiveElement {
             }
           }
         }
+      }
+
+      // Properties that should never suggest entities
+      const negativeProperties = ["action"];
+
+      // Create regex pattern for negative properties
+      const negativePropertyPattern = negativeProperties.join("|");
+      const negativeEntityFieldRegex = new RegExp(
+        `^\\s*(-\\s+)?(${negativePropertyPattern}):\\s*`
+      );
+      if (lineText.match(negativeEntityFieldRegex)) {
+        return null;
       }
     }
 

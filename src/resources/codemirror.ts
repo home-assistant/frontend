@@ -25,6 +25,7 @@ export {
   keymap,
   lineNumbers,
   rectangularSelection,
+  dropCursor,
 } from "@codemirror/view";
 export { indentationMarkers } from "@replit/codemirror-indentation-markers";
 export { tags } from "@lezer/highlight";
@@ -69,6 +70,10 @@ export const haTheme = EditorView.theme({
 
   "&.cm-focused .cm-cursor": {
     borderLeftColor: "var(--primary-color)",
+  },
+
+  ".cm-dropCursor": {
+    borderLeftColor: "var(--secondary-text-color)",
   },
 
   ".cm-selectionBackground, ::selection": {

@@ -2,14 +2,11 @@ import type { PropertyValues } from "lit";
 import { ReactiveElement } from "lit";
 import { customElement, property } from "lit/decorators";
 import { fireEvent } from "../../../common/dom/fire_event";
-import type { MediaQueriesListener } from "../../../common/dom/media_query";
 import "../../../components/ha-svg-icon";
 import type { LovelaceBadgeConfig } from "../../../data/lovelace/config/badge";
 import type { HomeAssistant } from "../../../types";
-import {
-  attachConditionMediaQueriesListeners,
-  checkConditionsMet,
-} from "../common/validate-condition";
+import { ConditionalListenerMixin } from "../../../mixins/conditional-listener-mixin";
+import { checkConditionsMet } from "../common/validate-condition";
 import { createBadgeElement } from "../create-element/create-badge-element";
 import { createErrorBadgeConfig } from "../create-element/create-element-base";
 import type { LovelaceBadge } from "../types";
@@ -22,7 +19,9 @@ declare global {
 }
 
 @customElement("hui-badge")
-export class HuiBadge extends ReactiveElement {
+export class HuiBadge extends ConditionalListenerMixin<LovelaceBadgeConfig>(
+  ReactiveElement
+) {
   @property({ type: Boolean }) public preview = false;
 
   @property({ attribute: false }) public config?: LovelaceBadgeConfig;
@@ -40,24 +39,20 @@ export class HuiBadge extends ReactiveElement {
 
   private _element?: LovelaceBadge;
 
-  private _listeners: MediaQueriesListener[] = [];
-
   protected createRenderRoot() {
     return this;
   }
 
   public disconnectedCallback() {
     super.disconnectedCallback();
-    this._clearMediaQueries();
   }
 
   public connectedCallback() {
     super.connectedCallback();
-    this._listenMediaQueries();
     this._updateVisibility();
   }
 
-  private _updateElement(config: LovelaceBadgeConfig) {
+  protected _updateElement(config: LovelaceBadgeConfig) {
     if (!this._element) {
       return;
     }
@@ -137,31 +132,7 @@ export class HuiBadge extends ReactiveElement {
     }
   }
 
-  private _clearMediaQueries() {
-    this._listeners.forEach((unsub) => unsub());
-    this._listeners = [];
-  }
-
-  private _listenMediaQueries() {
-    this._clearMediaQueries();
-    if (!this.config?.visibility) {
-      return;
-    }
-    const conditions = this.config.visibility;
-    const hasOnlyMediaQuery =
-      conditions.length === 1 &&
-      conditions[0].condition === "screen" &&
-      !!conditions[0].media_query;
-
-    this._listeners = attachConditionMediaQueriesListeners(
-      this.config.visibility,
-      (matches) => {
-        this._updateVisibility(hasOnlyMediaQuery && matches);
-      }
-    );
-  }
-
-  private _updateVisibility(ignoreConditions?: boolean) {
+  protected _updateVisibility(conditionsMet?: boolean) {
     if (!this._element || !this.hass) {
       return;
     }
@@ -182,9 +153,9 @@ export class HuiBadge extends ReactiveElement {
     }
 
     const visible =
-      ignoreConditions ||
-      !this.config?.visibility ||
-      checkConditionsMet(this.config.visibility, this.hass);
+      conditionsMet ??
+      (!this.config?.visibility ||
+        checkConditionsMet(this.config.visibility, this.hass));
     this._setElementVisibility(visible);
   }
 

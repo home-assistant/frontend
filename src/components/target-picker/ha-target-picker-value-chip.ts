@@ -16,13 +16,10 @@ import memoizeOne from "memoize-one";
 import { computeCssColor } from "../../common/color/compute-color";
 import { hex2rgb } from "../../common/color/convert-color";
 import { fireEvent } from "../../common/dom/fire_event";
-import {
-  computeDeviceName,
-  computeDeviceNameDisplay,
-} from "../../common/entity/compute_device_name";
+import { computeDeviceNameDisplay } from "../../common/entity/compute_device_name";
 import { computeDomain } from "../../common/entity/compute_domain";
-import { computeEntityName } from "../../common/entity/compute_entity_name";
-import { getEntityContext } from "../../common/entity/context/get_entity_context";
+import { computeStateName } from "../../common/entity/compute_state_name";
+import { slugify } from "../../common/string/slugify";
 import { getConfigEntry } from "../../data/config_entries";
 import { labelsContext } from "../../data/context";
 import { domainToName } from "../../data/integration";
@@ -102,7 +99,7 @@ export class HaTargetPickerValueChip extends LitElement {
         ${this.type === "entity"
           ? nothing
           : html`<span role="gridcell">
-              <ha-tooltip .for="expand-${this.itemId}"
+              <ha-tooltip .for="expand-${slugify(this.itemId)}"
                 >${this.hass.localize(
                   `ui.components.target-picker.expand_${this.type}_id`
                 )}
@@ -114,13 +111,13 @@ export class HaTargetPickerValueChip extends LitElement {
                 )}
                 .path=${mdiUnfoldMoreVertical}
                 hide-title
-                .id="expand-${this.itemId}"
+                .id="expand-${slugify(this.itemId)}"
                 .type=${this.type}
                 @click=${this._handleExpand}
               ></ha-icon-button>
             </span>`}
         <span role="gridcell">
-          <ha-tooltip .for="remove-${this.itemId}">
+          <ha-tooltip .for="remove-${slugify(this.itemId)}">
             ${this.hass.localize(
               `ui.components.target-picker.remove_${this.type}_id`
             )}
@@ -130,7 +127,7 @@ export class HaTargetPickerValueChip extends LitElement {
             .label=${this.hass.localize("ui.components.target-picker.remove")}
             .path=${mdiClose}
             hide-title
-            .id="remove-${this.itemId}"
+            .id="remove-${slugify(this.itemId)}"
             .type=${this.type}
             @click=${this._removeItem}
           ></ha-icon-button>
@@ -171,23 +168,10 @@ export class HaTargetPickerValueChip extends LitElement {
     if (type === "entity") {
       this._setDomainName(computeDomain(itemId));
 
-      const stateObject = this.hass.states[itemId];
-      const entityName = computeEntityName(
-        stateObject,
-        this.hass.entities,
-        this.hass.devices
-      );
-      const { device } = getEntityContext(
-        stateObject,
-        this.hass.entities,
-        this.hass.devices,
-        this.hass.areas,
-        this.hass.floors
-      );
-      const deviceName = device ? computeDeviceName(device) : undefined;
+      const stateObj = this.hass.states[itemId];
       return {
-        name: entityName || deviceName || itemId,
-        stateObject,
+        name: computeStateName(stateObj) || itemId,
+        stateObject: stateObj,
       };
     }
 

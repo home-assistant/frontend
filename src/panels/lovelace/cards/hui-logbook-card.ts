@@ -14,7 +14,11 @@ import { findEntities } from "../common/find-entities";
 import { processConfigEntities } from "../common/process-config-entities";
 import "../components/hui-warning";
 import type { EntityConfig } from "../entity-rows/types";
-import type { LovelaceCard, LovelaceCardEditor } from "../types";
+import type {
+  LovelaceCard,
+  LovelaceCardEditor,
+  LovelaceGridOptions,
+} from "../types";
 import type { LogbookCardConfig } from "./types";
 import { resolveEntityIDs } from "../../../data/selector";
 import { ensureArray } from "../../../common/array/ensure-array";
@@ -60,8 +64,19 @@ export class HuiLogbookCard extends LitElement implements LovelaceCard {
 
   @state() private _targetPickerValue: HassServiceTarget = {};
 
+  @state() private _stateFilter?: string[];
+
   public getCardSize(): number {
     return 9 + (this._config?.title ? 1 : 0);
+  }
+
+  public getGridOptions(): LovelaceGridOptions {
+    return {
+      rows: 6,
+      columns: 12,
+      min_columns: 6,
+      min_rows: this._config?.title ? 4 : 3,
+    };
   }
 
   public validateTarget(
@@ -116,6 +131,8 @@ export class HuiLogbookCard extends LitElement implements LovelaceCard {
     };
 
     this._targetPickerValue = target;
+
+    this._stateFilter = ensureArray(config.state_filter);
   }
 
   private _getEntityIds(): string[] | undefined {
@@ -189,9 +206,14 @@ export class HuiLogbookCard extends LitElement implements LovelaceCard {
       >
         <div class="content">
           <ha-logbook
+            class=${classMap({
+              "is-grid": this.layout === "grid",
+              "is-panel": this.layout === "panel",
+            })}
             .hass=${this.hass}
             .time=${this._time}
             .entityIds=${this._getEntityIds()}
+            .stateFilter=${this._stateFilter}
             narrow
             relative-time
             virtualize
@@ -212,6 +234,7 @@ export class HuiLogbookCard extends LitElement implements LovelaceCard {
         }
 
         .content {
+          height: 100%;
           padding: 0 16px 16px;
         }
 
@@ -222,6 +245,11 @@ export class HuiLogbookCard extends LitElement implements LovelaceCard {
         ha-logbook {
           height: 385px;
           display: block;
+        }
+
+        ha-logbook.is-grid,
+        ha-logbook.is-panel {
+          height: 100%;
         }
 
         :host([ispanel]) .content,

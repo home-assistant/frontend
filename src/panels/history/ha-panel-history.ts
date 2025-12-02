@@ -12,7 +12,7 @@ import type {
 } from "home-assistant-js-websocket/dist/types";
 import type { PropertyValues } from "lit";
 import { LitElement, css, html } from "lit";
-import { property, query, state } from "lit/decorators";
+import { customElement, property, query, state } from "lit/decorators";
 import memoizeOne from "memoize-one";
 import { ensureArray } from "../../common/array/ensure-array";
 import { storage } from "../../common/decorators/storage";
@@ -52,6 +52,7 @@ import type { HomeAssistant } from "../../types";
 import { fileDownload } from "../../util/file_download";
 import { addEntitiesToLovelaceView } from "../lovelace/editor/add-entities-to-view";
 
+@customElement("ha-panel-history")
 class HaPanelHistory extends LitElement {
   @property({ attribute: false }) hass!: HomeAssistant;
 
@@ -313,9 +314,14 @@ class HaPanelHistory extends LitElement {
       return;
     }
 
+    const statsStartDate = new Date(this._startDate);
+    // History uses the end datapoint of the statistic, so if we want the
+    // graph to start at 7AM, need to fetch the statistic from 6AM.
+    statsStartDate.setHours(statsStartDate.getHours() - 1);
+
     const statistics = await fetchStatistics(
       this.hass!,
-      this._startDate,
+      statsStartDate,
       this._endDate,
       statisticIds,
       "hour",
@@ -673,8 +679,6 @@ class HaPanelHistory extends LitElement {
     ];
   }
 }
-
-customElements.define("ha-panel-history", HaPanelHistory);
 
 declare global {
   interface HTMLElementTagNameMap {

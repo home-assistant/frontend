@@ -1,32 +1,33 @@
 import { mdiTextureBox } from "@mdi/js";
 import type { CSSResultGroup } from "lit";
 import { css, html, LitElement, nothing } from "lit";
-import { property, state } from "lit/decorators";
+import { customElement, property, state } from "lit/decorators";
 import { repeat } from "lit/directives/repeat";
 import memoizeOne from "memoize-one";
 import { fireEvent } from "../../../common/dom/fire_event";
 import "../../../components/chips/ha-chip-set";
 import "../../../components/chips/ha-input-chip";
 import "../../../components/ha-alert";
-import "../../../components/ha-button";
 import "../../../components/ha-aliases-editor";
+import "../../../components/ha-area-picker";
+import "../../../components/ha-button";
 import { createCloseHeading } from "../../../components/ha-dialog";
 import "../../../components/ha-icon-picker";
 import "../../../components/ha-picture-upload";
 import "../../../components/ha-settings-row";
 import "../../../components/ha-svg-icon";
 import "../../../components/ha-textfield";
-import "../../../components/ha-area-picker";
+import { updateAreaRegistryEntry } from "../../../data/area_registry";
 import type {
   FloorRegistryEntry,
   FloorRegistryEntryMutableParams,
 } from "../../../data/floor_registry";
 import { haStyle, haStyleDialog } from "../../../resources/styles";
 import type { HomeAssistant } from "../../../types";
-import type { FloorRegistryDetailDialogParams } from "./show-dialog-floor-registry-detail";
 import { showAreaRegistryDetailDialog } from "./show-dialog-area-registry-detail";
-import { updateAreaRegistryEntry } from "../../../data/area_registry";
+import type { FloorRegistryDetailDialogParams } from "./show-dialog-floor-registry-detail";
 
+@customElement("dialog-floor-registry-detail")
 class DialogFloorDetail extends LitElement {
   @property({ attribute: false }) public hass!: HomeAssistant;
 
@@ -144,6 +145,10 @@ class DialogFloorDetail extends LitElement {
                 "ui.panel.config.floors.editor.level"
               )}
               type="number"
+              .helper=${this.hass.localize(
+                "ui.panel.config.floors.editor.level_helper"
+              )}
+              helperPersistent
             ></ha-textfield>
 
             <ha-icon-picker
@@ -168,11 +173,6 @@ class DialogFloorDetail extends LitElement {
               )}
             </h3>
 
-            <p class="description">
-              ${this.hass.localize(
-                "ui.panel.config.floors.editor.areas_description"
-              )}
-            </p>
             ${areas.length
               ? html`<ha-chip-set>
                   ${repeat(
@@ -197,13 +197,17 @@ class DialogFloorDetail extends LitElement {
                       </ha-input-chip>`
                   )}
                 </ha-chip-set>`
-              : nothing}
+              : html`<p class="description">
+                  ${this.hass.localize(
+                    "ui.panel.config.floors.editor.areas_description"
+                  )}
+                </p>`}
             <ha-area-picker
               no-add
               .hass=${this.hass}
               @value-changed=${this._addArea}
               .excludeAreas=${areas.map((a) => a.area_id)}
-              .label=${this.hass.localize(
+              .addButtonLabel=${this.hass.localize(
                 "ui.panel.config.floors.editor.add_area"
               )}
             ></ha-area-picker>
@@ -358,5 +362,3 @@ declare global {
     "dialog-floor-registry-detail": DialogFloorDetail;
   }
 }
-
-customElements.define("dialog-floor-registry-detail", DialogFloorDetail);

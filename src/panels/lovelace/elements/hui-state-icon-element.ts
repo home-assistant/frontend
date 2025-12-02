@@ -21,9 +21,7 @@ import type { LovelaceElement, StateIconElementConfig } from "./types";
 @customElement("hui-state-icon-element")
 export class HuiStateIconElement extends LitElement implements LovelaceElement {
   public static async getConfigElement(): Promise<LovelacePictureElementEditor> {
-    await import(
-      "../editor/config-elements/elements/hui-state-icon-element-editor"
-    );
+    await import("../editor/config-elements/elements/hui-state-icon-element-editor");
     return document.createElement("hui-state-icon-element-editor");
   }
 

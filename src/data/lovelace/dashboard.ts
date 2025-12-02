@@ -29,8 +29,7 @@ export interface LovelaceDashboardMutableParams {
   title: string;
 }
 
-export interface LovelaceDashboardCreateParams
-  extends LovelaceDashboardMutableParams {
+export interface LovelaceDashboardCreateParams extends LovelaceDashboardMutableParams {
   url_path: string;
   mode: "storage";
 }

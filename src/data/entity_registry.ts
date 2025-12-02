@@ -344,7 +344,8 @@ export const getEntities = (
   includeUnitOfMeasurement?: string[],
   includeEntities?: string[],
   excludeEntities?: string[],
-  value?: string
+  value?: string,
+  idPrefix = ""
 ): EntityComboBoxItem[] => {
   let items: EntityComboBoxItem[] = [];
 
@@ -395,10 +396,9 @@ export const getEntities = (
     const secondary = [areaName, entityName ? deviceName : undefined]
       .filter(Boolean)
       .join(isRTL ? " ◂ " : " ▸ ");
-    const a11yLabel = [deviceName, entityName].filter(Boolean).join(" - ");
 
     return {
-      id: entityId,
+      id: `${idPrefix}${entityId}`,
       primary: primary,
       secondary: secondary,
       domain_name: domainName,
@@ -411,7 +411,6 @@ export const getEntities = (
         friendlyName,
         entityId,
       ].filter(Boolean) as string[],
-      a11y_label: a11yLabel,
       stateObj: stateObj,
     };
   });

@@ -27,6 +27,7 @@ export interface DisplayItem {
   label: string;
   description?: string;
   disableSorting?: boolean;
+  disableHiding?: boolean;
 }
 
 export interface DisplayValue {
@@ -101,6 +102,7 @@ export class HaItemDisplayEditor extends LitElement {
                 icon,
                 iconPath,
                 disableSorting,
+                disableHiding,
               } = item;
               return html`
                 <ha-md-list-item
@@ -155,18 +157,21 @@ export class HaItemDisplayEditor extends LitElement {
                         </div>
                       `
                     : nothing}
-                  <ha-icon-button
-                    .path=${isVisible ? mdiEye : mdiEyeOff}
-                    slot="end"
-                    .label=${this.hass.localize(
-                      `ui.components.items-display-editor.${isVisible ? "hide" : "show"}`,
-                      {
-                        label: label,
-                      }
-                    )}
-                    .value=${value}
-                    @click=${this._toggle}
-                  ></ha-icon-button>
+                  ${!isVisible || !disableHiding
+                    ? html`<ha-icon-button
+                        .path=${isVisible ? mdiEye : mdiEyeOff}
+                        slot="end"
+                        .label=${this.hass.localize(
+                          `ui.components.items-display-editor.${isVisible ? "hide" : "show"}`,
+                          {
+                            label: label,
+                          }
+                        )}
+                        .value=${value}
+                        @click=${this._toggle}
+                        .disabled=${disableHiding || false}
+                      ></ha-icon-button>`
+                    : nothing}
                   ${isVisible && !disableSorting
                     ? html`
                         <ha-svg-icon

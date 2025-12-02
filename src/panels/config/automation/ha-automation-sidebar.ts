@@ -36,7 +36,8 @@ export default class HaAutomationSidebar extends LitElement {
 
   @property({ type: Boolean }) public narrow = false;
 
-  @property({ attribute: "sidebar-key" }) public sidebarKey?: string;
+  @property({ type: Number, attribute: "sidebar-key" })
+  public sidebarKey?: number;
 
   @state() private _yamlMode = false;
 
@@ -187,6 +188,7 @@ export default class HaAutomationSidebar extends LitElement {
         class="handle ${this._resizing ? "resizing" : ""}"
         @mousedown=${this._handleMouseDown}
         @touchstart=${this._handleMouseDown}
+        @dblclick=${this._handleDoubleClick}
         @focus=${this._startKeyboardResizing}
         @blur=${this._stopKeyboardResizing}
         tabindex="0"
@@ -255,6 +257,17 @@ export default class HaAutomationSidebar extends LitElement {
         ? (ev as TouchEvent).touches[0].clientX
         : (ev as MouseEvent).clientX
     );
+  };
+
+  private _handleDoubleClick = (ev: MouseEvent) => {
+    ev.preventDefault();
+    ev.stopPropagation();
+    this._unregisterResizeHandlers();
+    this._tinykeysUnsub?.();
+    this._tinykeysUnsub = undefined;
+    this._resizing = false;
+    document.body.style.removeProperty("cursor");
+    fireEvent(this, "sidebar-reset-size");
   };
 
   private _startResizing(clientX: number) {
@@ -421,5 +434,6 @@ declare global {
       deltaInPx: number;
     };
     "sidebar-resizing-stopped": undefined;
+    "sidebar-reset-size": undefined;
   }
 }

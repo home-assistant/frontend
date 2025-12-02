@@ -41,6 +41,7 @@ const createRspackConfig = ({
   isStatsBuild,
   isTestBuild,
   isHassioBuild,
+  isLandingPageBuild,
   dontHash,
 }) => {
   if (!dontHash) {
@@ -168,7 +169,9 @@ const createRspackConfig = ({
         },
       }),
       new rspack.NormalModuleReplacementPlugin(
-        new RegExp(bundle.emptyPackages({ isHassioBuild }).join("|")),
+        new RegExp(
+          bundle.emptyPackages({ isHassioBuild, isLandingPageBuild }).join("|")
+        ),
         path.resolve(paths.root_dir, "src/util/empty.js")
       ),
       !isProdBuild && new LogStartCompilePlugin(),
@@ -257,7 +260,6 @@ const createRspackConfig = ({
       ),
     },
     experiments: {
-      layers: true,
       outputModule: true,
     },
   };

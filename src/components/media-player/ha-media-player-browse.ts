@@ -15,6 +15,7 @@ import { classMap } from "lit/directives/class-map";
 import { styleMap } from "lit/directives/style-map";
 import { until } from "lit/directives/until";
 import { fireEvent } from "../../common/dom/fire_event";
+import { slugify } from "../../common/string/slugify";
 import { debounce } from "../../common/util/debounce";
 import { isUnavailableState } from "../../data/entity";
 import type {
@@ -693,10 +694,12 @@ export class HaMediaPlayerBrowse extends LitElement {
                 `
               : ""}
           </div>
-          <ha-tooltip .for="grid-${child.title}" distance="-4">
+          <ha-tooltip .for="grid-${slugify(child.title)}" distance="-4">
             ${child.title}
           </ha-tooltip>
-          <div .id="grid-${child.title}" class="title">${child.title}</div>
+          <div .id="grid-${slugify(child.title)}" class="title">
+            ${child.title}
+          </div>
         </ha-card>
       </div>
     `;

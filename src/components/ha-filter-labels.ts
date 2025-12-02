@@ -109,7 +109,10 @@ export class HaFilterLabels extends SubscribeMixin(LitElement) {
                       .selected=${(this.value || []).includes(label.label_id)}
                       hasMeta
                     >
-                      <ha-label style=${color ? `--color: ${color}` : ""}>
+                      <ha-label
+                        style=${color ? `--color: ${color}` : ""}
+                        .description=${label.description}
+                      >
                         ${label.icon
                           ? html`<ha-icon
                               slot="icon"
@@ -256,7 +259,7 @@ export class HaFilterLabels extends SubscribeMixin(LitElement) {
         }
         search-input-outlined {
           display: block;
-          padding: 0 8px;
+          padding: var(--ha-space-1) var(--ha-space-2) 0;
         }
       `,
     ];

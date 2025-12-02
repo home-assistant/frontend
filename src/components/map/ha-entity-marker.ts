@@ -1,10 +1,11 @@
 import { LitElement, html, css } from "lit";
-import { property } from "lit/decorators";
+import { customElement, property } from "lit/decorators";
 import { styleMap } from "lit/directives/style-map";
 import type { HomeAssistant } from "../../types";
 import { fireEvent } from "../../common/dom/fire_event";
 import "../ha-state-icon";
 
+@customElement("ha-entity-marker")
 class HaEntityMarker extends LitElement {
   @property({ attribute: false }) public hass!: HomeAssistant;
 
@@ -88,8 +89,6 @@ class HaEntityMarker extends LitElement {
     }
   `;
 }
-
-customElements.define("ha-entity-marker", HaEntityMarker);
 
 declare global {
   interface HTMLElementTagNameMap {

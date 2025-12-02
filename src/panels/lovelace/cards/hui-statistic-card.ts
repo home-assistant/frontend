@@ -20,14 +20,15 @@ import {
 } from "../../../data/recorder";
 import type { HomeAssistant } from "../../../types";
 import { computeCardSize } from "../common/compute-card-size";
+import { computeLovelaceEntityName } from "../common/entity/compute-lovelace-entity-name";
 import { findEntities } from "../common/find-entities";
 import { hasConfigOrEntityChanged } from "../common/has-changed";
 import { createHeaderFooterElement } from "../create-element/create-header-footer-element";
 import type {
   LovelaceCard,
   LovelaceCardEditor,
-  LovelaceHeaderFooter,
   LovelaceGridOptions,
+  LovelaceHeaderFooter,
 } from "../types";
 import type { HuiErrorCard } from "./hui-error-card";
 import type { EntityCardConfig, StatisticCardConfig } from "./types";
@@ -180,7 +181,9 @@ export class HuiStatisticCard extends LitElement implements LovelaceCard {
 
     const stateObj = this.hass.states[this._config.entity];
     const name =
-      this._config.name ||
+      (this._config.name
+        ? computeLovelaceEntityName(this.hass, stateObj, this._config.name)
+        : "") ||
       getStatisticLabel(this.hass, this._config.entity, this._metadata);
 
     return html`

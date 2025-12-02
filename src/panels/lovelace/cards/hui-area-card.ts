@@ -660,7 +660,7 @@ export class HuiAreaCard extends LitElement implements LovelaceCard {
       display: flex;
       align-items: center;
       justify-content: center;
-      --mdc-icon-size: 48px;
+      --mdc-icon-size: var(--ha-space-12);
       color: var(--tile-color);
     }
     .picture .icon-container::before {
@@ -729,13 +729,15 @@ export class HuiAreaCard extends LitElement implements LovelaceCard {
     }
     hui-card-features {
       --feature-color: var(--tile-color);
-      padding: 0 12px 12px 12px;
+      padding: 0 var(--ha-space-3) var(--ha-space-3) var(--ha-space-3);
     }
     .container.horizontal hui-card-features {
-      width: calc(50% - var(--column-gap, 0px) / 2 - 12px);
+      width: calc(
+        50% - var(--column-gap, var(--ha-space-0)) / 2 - var(--ha-space-3)
+      );
       flex: none;
-      --feature-height: 36px;
-      padding: 0 12px;
+      --feature-height: var(--ha-space-9);
+      padding: 0 var(--ha-space-3);
       padding-inline-start: 0;
     }
     .alert-badge {
@@ -748,18 +750,18 @@ export class HuiAreaCard extends LitElement implements LovelaceCard {
       display: flex;
       flex-direction: row;
       gap: var(--ha-space-2);
-      padding: 8px;
+      padding: var(--ha-space-2);
       pointer-events: none;
       z-index: 1;
     }
     .alert {
       background-color: var(--orange-color);
       border-radius: var(--ha-border-radius-lg);
-      width: 24px;
-      height: 24px;
+      width: var(--ha-space-6);
+      height: var(--ha-space-6);
       padding: 2px;
       box-sizing: border-box;
-      --mdc-icon-size: 16px;
+      --mdc-icon-size: var(--ha-space-4);
       display: flex;
       align-items: center;
       justify-content: center;

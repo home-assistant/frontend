@@ -35,19 +35,11 @@ import {
   hasConfigOrEntitiesChanged,
 } from "../common/has-changed";
 import { processConfigEntities } from "../common/process-config-entities";
-import type { EntityConfig } from "../entity-rows/types";
 import type { LovelaceCard, LovelaceGridOptions } from "../types";
-import type { MapCardConfig } from "./types";
+import type { MapCardConfig, MapEntityConfig } from "./types";
 
 export const DEFAULT_HOURS_TO_SHOW = 0;
 export const DEFAULT_ZOOM = 14;
-
-interface MapEntityConfig extends EntityConfig {
-  label_mode?: "state" | "attribute" | "name";
-  attribute?: string;
-  unit?: string;
-  focus?: boolean;
-}
 
 interface GeoEntity {
   entity_id: string;
@@ -402,7 +394,8 @@ class HuiMapCard extends LitElement implements LovelaceCard {
     if (color) {
       return color;
     }
-    color = getColorByIndex(this._colorIndex);
+    const computedStyles = getComputedStyle(this);
+    color = getColorByIndex(this._colorIndex, computedStyles);
     this._colorIndex++;
     this._colorDict[entityId] = color;
     return color;

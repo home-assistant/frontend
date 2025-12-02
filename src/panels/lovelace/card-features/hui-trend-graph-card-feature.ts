@@ -54,9 +54,7 @@ class HuiHistoryChartCardFeature
   }
 
   public static async getConfigElement(): Promise<LovelaceCardFeatureEditor> {
-    await import(
-      "../editor/config-elements/hui-trend-graph-card-feature-editor"
-    );
+    await import("../editor/config-elements/hui-trend-graph-card-feature-editor");
     return document.createElement("hui-trend-graph-card-feature-editor");
   }
 
@@ -94,7 +92,7 @@ class HuiHistoryChartCardFeature
     }
     if (!this._coordinates) {
       return html`
-        <div class="container">
+        <div class="container loading">
           <ha-spinner size="small"></ha-spinner>
         </div>
       `;
@@ -124,16 +122,24 @@ class HuiHistoryChartCardFeature
     }
 
     const hourToShow = this._config.hours_to_show ?? DEFAULT_HOURS_TO_SHOW;
+    const detail = this._config.detail !== false; // default to true (high detail)
 
     return subscribeHistoryStatesTimeWindow(
       this.hass!,
       (historyStates) => {
+        // sample to 1 point per hour for low detail or 1 point per 5 pixels for high detail
+        const maxDetails = detail
+          ? Math.max(10, this.clientWidth / 5, hourToShow)
+          : Math.max(10, hourToShow);
+        const useMean = !detail;
         const { points, yAxisOrigin } =
           coordinatesMinimalResponseCompressedState(
             historyStates[this.context!.entity_id!],
             this.clientWidth,
             this.clientHeight,
-            this.clientWidth / 5 // sample to 1 point per 5 pixels
+            maxDetails,
+            undefined,
+            useMean
           );
         this._coordinates = points;
         this._yAxisOrigin = yAxisOrigin;
@@ -153,6 +159,14 @@ class HuiHistoryChartCardFeature
       align-items: flex-end;
       pointer-events: none !important;
     }
+
+    .container.loading {
+      width: 100%;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+    }
+
     hui-graph-base {
       width: 100%;
       --accent-color: var(--feature-color);

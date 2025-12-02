@@ -107,6 +107,8 @@ class HaConfigInfo extends LitElement {
     const customUiList: { name: string; url: string; version: string }[] =
       (window as any).CUSTOM_UI_LIST || [];
 
+    const isDark = this.hass.themes?.darkMode || false;
+
     return html`
       <hass-subpage
         .hass=${this.hass}
@@ -186,7 +188,7 @@ class HaConfigInfo extends LitElement {
                 : nothing}
             </ul>
           </ha-card>
-          <ha-card outlined class="ohf">
+          <ha-card outlined class="ohf ${isDark ? "dark" : ""}">
             <div>
               ${this.hass.localize("ui.panel.config.info.proud_part_of")}
             </div>
@@ -344,6 +346,10 @@ class HaConfigInfo extends LitElement {
         .ohf img {
           width: 100%;
           max-width: 250px;
+        }
+
+        .ohf.dark img {
+          color-scheme: dark;
         }
 
         .versions {

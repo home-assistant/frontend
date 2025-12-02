@@ -98,7 +98,7 @@ class DialogCategoryDetail extends LitElement {
         </div>
         <ha-button
           appearance="plain"
-          slot="primaryAction"
+          slot="secondaryAction"
           @click=${this.closeDialog}
         >
           ${this.hass.localize("ui.common.cancel")}

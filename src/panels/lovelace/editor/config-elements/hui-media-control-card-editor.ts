@@ -2,7 +2,6 @@ import { html, LitElement, nothing } from "lit";
 import { customElement, property, state } from "lit/decorators";
 import { assert, assign, object, optional, string } from "superstruct";
 import { fireEvent } from "../../../../common/dom/fire_event";
-import { DEFAULT_ENTITY_NAME } from "../../../../common/entity/compute_entity_name_display";
 import "../../../../components/ha-form/ha-form";
 import type {
   HaFormSchema,
@@ -33,9 +32,7 @@ const SCHEMA = [
   {
     name: "name",
     selector: {
-      entity_name: {
-        default_name: DEFAULT_ENTITY_NAME,
-      },
+      entity_name: {},
     },
     context: { entity: "entity" },
   },
