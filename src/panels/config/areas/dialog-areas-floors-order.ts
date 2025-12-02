@@ -437,10 +437,6 @@ class DialogAreasFloorsOrder extends LitElement {
           color: var(--secondary-text-color);
         }
 
-        .unassigned .floor-header {
-          background-color: transparent;
-        }
-
         ha-md-list {
           padding: 0;
           --md-list-item-leading-space: 16px;
