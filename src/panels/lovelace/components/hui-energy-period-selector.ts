@@ -66,6 +66,9 @@ export class HuiEnergyPeriodSelector extends SubscribeMixin(LitElement) {
 
   @property({ type: Boolean, reflect: true }) public narrow?;
 
+  @property({ type: Boolean, attribute: "allow-compare" }) public allowCompare =
+    true;
+
   @state() _startDate?: Date;
 
   @state() _endDate?: Date;
@@ -222,15 +225,17 @@ export class HuiEnergyPeriodSelector extends SubscribeMixin(LitElement) {
             .label=${this.hass.localize("ui.common.menu")}
             .path=${mdiDotsVertical}
           ></ha-icon-button>
-          <ha-check-list-item
-            left
-            @request-selected=${this._toggleCompare}
-            .selected=${this._compare}
-          >
-            ${this.hass.localize(
-              "ui.panel.lovelace.components.energy_period_selector.compare"
-            )}
-          </ha-check-list-item>
+          ${this.allowCompare
+            ? html`<ha-check-list-item
+                left
+                @request-selected=${this._toggleCompare}
+                .selected=${this._compare}
+              >
+                ${this.hass.localize(
+                  "ui.panel.lovelace.components.energy_period_selector.compare"
+                )}
+              </ha-check-list-item>`
+            : nothing}
           <slot name="overflow-menu"></slot>
         </ha-button-menu>
       </div>

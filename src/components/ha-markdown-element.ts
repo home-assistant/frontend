@@ -71,7 +71,7 @@ class HaMarkdownElement extends ReactiveElement {
     if (!this.innerHTML && this.cache) {
       const key = this._computeCacheKey();
       if (markdownCache.has(key)) {
-        render(markdownCache.get(key)!, this.renderRoot);
+        render(h(unsafeHTML(markdownCache.get(key))), this.renderRoot);
         this._resize();
       }
     }

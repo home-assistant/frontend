@@ -1,5 +1,6 @@
 import { css, html, LitElement, nothing } from "lit";
 import { customElement, property, query, state } from "lit/decorators";
+import { isComponentLoaded } from "../../../common/config/is_component_loaded";
 import { relativeTime } from "../../../common/datetime/relative_time";
 import { fireEvent } from "../../../common/dom/fire_event";
 import "../../../components/ha-button";
@@ -11,6 +12,7 @@ import type { HaSwitch } from "../../../components/ha-switch";
 import "../../../components/ha-switch";
 import type { BackupConfig } from "../../../data/backup";
 import { fetchBackupConfig } from "../../../data/backup";
+import { getSupervisorUpdateConfig } from "../../../data/supervisor/update";
 import type { HassDialog } from "../../../dialogs/make-dialog-manager";
 import type { HomeAssistant } from "../../../types";
 import type { LabsPreviewFeatureEnableDialogParams } from "./show-dialog-labs-preview-feature-enable";
@@ -35,7 +37,10 @@ export class DialogLabsPreviewFeatureEnable
   ): Promise<void> {
     this._params = params;
     this._createBackup = false;
-    await this._fetchBackupConfig();
+    this._fetchBackupConfig();
+    if (isComponentLoaded(this.hass, "hassio")) {
+      this._fetchUpdateBackupConfig();
+    }
   }
 
   public closeDialog(): boolean {
@@ -54,15 +59,21 @@ export class DialogLabsPreviewFeatureEnable
     try {
       const { config } = await fetchBackupConfig(this.hass);
       this._backupConfig = config;
+    } catch (err) {
+      // Ignore error, user will get manual backup option
+      // eslint-disable-next-line no-console
+      console.error(err);
+    }
+  }
 
-      // Default to enabled if automatic backups are configured, disabled otherwise
-      this._createBackup =
-        config.automatic_backups_configured &&
-        !!config.create_backup.password &&
-        config.create_backup.agent_ids.length > 0;
-    } catch {
-      // User will get manual backup option if fetch fails
-      this._createBackup = false;
+  private async _fetchUpdateBackupConfig() {
+    try {
+      const config = await getSupervisorUpdateConfig(this.hass);
+      this._createBackup = config.core_backup_before_update;
+    } catch (err) {
+      // Ignore error, user can still toggle the switch manually
+      // eslint-disable-next-line no-console
+      console.error(err);
     }
   }
 

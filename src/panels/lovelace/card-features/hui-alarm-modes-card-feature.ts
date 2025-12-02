@@ -62,9 +62,7 @@ class HuiAlarmModeCardFeature
   }
 
   public static async getConfigElement(): Promise<LovelaceCardFeatureEditor> {
-    await import(
-      "../editor/config-elements/hui-alarm-modes-card-feature-editor"
-    );
+    await import("../editor/config-elements/hui-alarm-modes-card-feature-editor");
     return document.createElement("hui-alarm-modes-card-feature-editor");
   }
 

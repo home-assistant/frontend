@@ -1,6 +1,6 @@
 import { mdiHelpCircle } from "@mdi/js";
 import { css, html, LitElement, nothing } from "lit";
-import { property, state } from "lit/decorators";
+import { customElement, property, state } from "lit/decorators";
 import memoizeOne from "memoize-one";
 import { fireEvent } from "../../../common/dom/fire_event";
 import { isEmptyEntityDomainFilter } from "../../../common/entity/entity_domain_filter";
@@ -23,6 +23,7 @@ import type { HomeAssistant } from "../../../types";
 import { brandsUrl } from "../../../util/brands-url";
 import { showSaveSuccessToast } from "../../../util/toast-saved-success";
 
+@customElement("cloud-google-pref")
 export class CloudGooglePref extends LitElement {
   @property({ attribute: false }) public hass!: HomeAssistant;
 
@@ -367,5 +368,3 @@ declare global {
     "cloud-google-pref": CloudGooglePref;
   }
 }
-
-customElements.define("cloud-google-pref", CloudGooglePref);

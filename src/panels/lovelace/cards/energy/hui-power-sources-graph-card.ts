@@ -6,7 +6,7 @@ import { customElement, property, state } from "lit/decorators";
 import { classMap } from "lit/directives/class-map";
 import memoizeOne from "memoize-one";
 import type { LineSeriesOption } from "echarts/charts";
-import { graphic } from "echarts";
+import { LinearGradient } from "../../../../resources/echarts/echarts";
 import "../../../../components/chart/ha-chart-base";
 import "../../../../components/ha-card";
 import type { EnergyData } from "../../../../data/energy";
@@ -213,7 +213,7 @@ export class HuiPowerSourcesGraphCard
           color: colorHex,
           stack: "positive",
           areaStyle: {
-            color: new graphic.LinearGradient(0, 0, 0, 1, [
+            color: new LinearGradient(0, 0, 0, 1, [
               {
                 offset: 0,
                 color: `rgba(${rgb[0]}, ${rgb[1]}, ${rgb[2]}, 0.75)`,
@@ -235,7 +235,7 @@ export class HuiPowerSourcesGraphCard
             color: colorHex,
             stack: "negative",
             areaStyle: {
-              color: new graphic.LinearGradient(0, 1, 0, 0, [
+              color: new LinearGradient(0, 1, 0, 0, [
                 {
                   offset: 0,
                   color: `rgba(${rgb[0]}, ${rgb[1]}, ${rgb[2]}, 0.75)`,
@@ -323,9 +323,9 @@ export class HuiPowerSourcesGraphCard
     const negative: [number, number][] = [];
     Object.entries(data).forEach(([x, y]) => {
       const ts = Number(x);
-      const meanY = y.reduce((a, b) => a + b, 0) / y.length;
-      positive.push([ts, Math.max(0, meanY)]);
-      negative.push([ts, Math.min(0, meanY)]);
+      const sumY = y.reduce((a, b) => a + b, 0);
+      positive.push([ts, Math.max(0, sumY)]);
+      negative.push([ts, Math.min(0, sumY)]);
     });
     return { positive, negative };
   }

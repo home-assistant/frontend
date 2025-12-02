@@ -450,7 +450,7 @@ export class HaServiceControl extends LitElement {
 
     const hasOptional = Boolean(
       !shouldRenderServiceDataYaml &&
-        serviceData?.flatFields.some((field) => showOptionalToggle(field))
+      serviceData?.flatFields.some((field) => showOptionalToggle(field))
     );
 
     const targetEntities = this._getTargetedEntities(
@@ -467,7 +467,7 @@ export class HaServiceControl extends LitElement {
 
     const descriptionPlaceholders =
       domain && serviceName
-        ? this.hass.services[domain][serviceName].description_placeholders
+        ? this.hass.services[domain]?.[serviceName]?.description_placeholders
         : undefined;
 
     const description =

@@ -6,8 +6,8 @@ import type { LovelaceViewConfig } from "../../../data/lovelace/config/view";
 import type { LovelaceStrategyConfig } from "../../../data/lovelace/config/strategy";
 import { DEFAULT_ENERGY_COLLECTION_KEY } from "../ha-panel-energy";
 
-@customElement("energy-water-view-strategy")
-export class EnergyWaterViewStrategy extends ReactiveElement {
+@customElement("water-view-strategy")
+export class WaterViewStrategy extends ReactiveElement {
   static async generate(
     _config: LovelaceStrategyConfig,
     hass: HomeAssistant
@@ -22,27 +22,24 @@ export class EnergyWaterViewStrategy extends ReactiveElement {
     });
     const prefs = energyCollection.prefs;
 
+    const hasWaterSources = prefs?.energy_sources.some(
+      (source) => source.type === "water"
+    );
+    const hasWaterDevices = prefs?.device_consumption_water?.length;
+
     // No water sources available
-    if (
-      !prefs ||
-      (!prefs.device_consumption_water?.length &&
-        !prefs.energy_sources.some((source) => source.type === "water"))
-    ) {
+    if (!prefs || (!hasWaterDevices && !hasWaterSources)) {
       return view;
     }
 
     view.type = "sidebar";
-
-    const hasWater = prefs.energy_sources.some(
-      (source) => source.type === "water"
-    );
 
     view.cards!.push({
       type: "energy-compare",
       collection_key: collectionKey,
     });
 
-    if (hasWater) {
+    if (hasWaterSources) {
       view.cards!.push({
         title: hass.localize("ui.panel.energy.cards.energy_water_graph_title"),
         type: "energy-water-graph",
@@ -50,7 +47,7 @@ export class EnergyWaterViewStrategy extends ReactiveElement {
       });
     }
 
-    if (hasWater) {
+    if (hasWaterSources) {
       view.cards!.push({
         title: hass.localize(
           "ui.panel.energy.cards.energy_sources_table_title"
@@ -62,7 +59,7 @@ export class EnergyWaterViewStrategy extends ReactiveElement {
     }
 
     // Only include if we have at least 1 water device in the config.
-    if (prefs.device_consumption_water?.length) {
+    if (hasWaterDevices) {
       const showFloorsNAreas = !prefs.device_consumption_water.some(
         (d) => d.included_in_stat
       );
@@ -81,6 +78,6 @@ export class EnergyWaterViewStrategy extends ReactiveElement {
 
 declare global {
   interface HTMLElementTagNameMap {
-    "energy-water-view-strategy": EnergyWaterViewStrategy;
+    "water-view-strategy": WaterViewStrategy;
   }
 }

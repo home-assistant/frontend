@@ -553,9 +553,6 @@ export default class HaAutomationAddFromTarget extends LitElement {
           area.icon,
         ] as [string, string, string | undefined, string | undefined];
       })
-      .sort(([, nameA], [, nameB]) =>
-        stringCompare(nameA, nameB, this.hass.locale.language)
-      )
       .map(([areaTargetId, areaName, floorId, areaIcon]) => {
         const { open, devices, entities } =
           this._entries[`floor${TARGET_SEPARATOR}${floorId || ""}`].areas![

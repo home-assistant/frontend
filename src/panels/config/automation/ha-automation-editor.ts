@@ -23,7 +23,7 @@ import {
 import type { UnsubscribeFunc } from "home-assistant-js-websocket";
 import type { CSSResultGroup, PropertyValues, TemplateResult } from "lit";
 import { css, html, LitElement, nothing } from "lit";
-import { property, query, state } from "lit/decorators";
+import { customElement, property, query, state } from "lit/decorators";
 import { classMap } from "lit/directives/class-map";
 import { transform } from "../../../common/decorators/transform";
 import { fireEvent } from "../../../common/dom/fire_event";
@@ -112,6 +112,7 @@ declare global {
   }
 }
 
+@customElement("ha-automation-editor")
 export class HaAutomationEditor extends PreventUnsavedMixin(
   KeyboardShortcutMixin(LitElement)
 ) {
@@ -1339,5 +1340,3 @@ export class HaAutomationEditor extends PreventUnsavedMixin(
     ];
   }
 }
-
-customElements.define("ha-automation-editor", HaAutomationEditor);

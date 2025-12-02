@@ -207,9 +207,9 @@ class HuiPictureGlanceCard extends LitElement implements LovelaceCard {
       hasAction(this._config.tap_action) ||
       Boolean(
         !this._config.tap_action &&
-          (this._config.camera_image ||
-            this._config.image_entity ||
-            this._config.entity)
+        (this._config.camera_image ||
+          this._config.image_entity ||
+          this._config.entity)
       );
 
     return html`

@@ -49,9 +49,8 @@ describe("token_storage", () => {
     const getItemSpy = vi.fn(() => JSON.stringify(tokens));
     window.localStorage.getItem = getItemSpy;
 
-    const { loadTokens } = await import(
-      "../../../../src/common/auth/token_storage"
-    );
+    const { loadTokens } =
+      await import("../../../../src/common/auth/token_storage");
 
     const loadedTokens = loadTokens();
     expect(loadedTokens).toEqual(tokens);
@@ -66,9 +65,8 @@ describe("token_storage", () => {
     const getItemSpy = vi.fn(() => "hello");
     window.localStorage.getItem = getItemSpy;
 
-    const { loadTokens } = await import(
-      "../../../../src/common/auth/token_storage"
-    );
+    const { loadTokens } =
+      await import("../../../../src/common/auth/token_storage");
 
     const loadedTokens = loadTokens();
     expect(loadedTokens).toEqual(null);
@@ -80,9 +78,8 @@ describe("token_storage", () => {
   });
 
   it("should enable write", async () => {
-    const { enableWrite } = await import(
-      "../../../../src/common/auth/token_storage"
-    );
+    const { enableWrite } =
+      await import("../../../../src/common/auth/token_storage");
     enableWrite();
     expect(window.__tokenCache.writeEnabled).toBe(true);
   });
@@ -98,9 +95,8 @@ describe("token_storage", () => {
     const setItemSpy = vi.fn();
     window.localStorage.setItem = setItemSpy;
 
-    const { enableWrite } = await import(
-      "../../../../src/common/auth/token_storage"
-    );
+    const { enableWrite } =
+      await import("../../../../src/common/auth/token_storage");
 
     enableWrite();
     expect(window.__tokenCache.writeEnabled).toBe(true);

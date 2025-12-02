@@ -47,8 +47,7 @@ export interface HassioFullBackupCreateParams {
   confirm_password?: string;
   background?: boolean;
 }
-export interface HassioPartialBackupCreateParams
-  extends HassioFullBackupCreateParams {
+export interface HassioPartialBackupCreateParams extends HassioFullBackupCreateParams {
   folders?: string[];
   addons?: string[];
   homeassistant?: boolean;

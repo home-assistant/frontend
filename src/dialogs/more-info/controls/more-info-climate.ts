@@ -7,7 +7,7 @@ import {
 } from "@mdi/js";
 import type { CSSResultGroup, PropertyValues } from "lit";
 import { LitElement, css, html, nothing } from "lit";
-import { property, state } from "lit/decorators";
+import { customElement, property, state } from "lit/decorators";
 import { stopPropagation } from "../../../common/dom/stop_propagation";
 import { supportsFeature } from "../../../common/entity/supports-feature";
 import "../../../components/ha-attribute-icon";
@@ -32,6 +32,7 @@ import { moreInfoControlStyle } from "../components/more-info-control-style";
 
 type MainControl = "temperature" | "humidity";
 
+@customElement("more-info-climate")
 class MoreInfoClimate extends LitElement {
   @property({ attribute: false }) public hass!: HomeAssistant;
 
@@ -566,8 +567,6 @@ class MoreInfoClimate extends LitElement {
     ];
   }
 }
-
-customElements.define("more-info-climate", MoreInfoClimate);
 
 declare global {
   interface HTMLElementTagNameMap {

@@ -137,7 +137,7 @@ class HaPanelDevAction extends LitElement {
 
     const descriptionPlaceholders =
       domain && serviceName
-        ? this.hass.services[domain][serviceName].description_placeholders
+        ? this.hass.services[domain]?.[serviceName]?.description_placeholders
         : undefined;
 
     return html`

@@ -23,7 +23,10 @@ import {
   getSummedData,
 } from "../../data/energy";
 import type { LovelaceConfig } from "../../data/lovelace/config/types";
-import type { LovelaceViewConfig } from "../../data/lovelace/config/view";
+import {
+  isStrategyView,
+  type LovelaceViewConfig,
+} from "../../data/lovelace/config/view";
 import type { StatisticValue } from "../../data/recorder";
 import { haStyle } from "../../resources/styles";
 import type { HomeAssistant, PanelInfo } from "../../types";
@@ -33,6 +36,7 @@ import "../lovelace/hui-root";
 import type { Lovelace } from "../lovelace/types";
 import "../lovelace/views/hui-view";
 import "../lovelace/views/hui-view-container";
+import type { LocalizeKeys } from "../../common/translations/localize";
 
 export const DEFAULT_ENERGY_COLLECTION_KEY = "energy_dashboard";
 
@@ -47,15 +51,17 @@ const OVERVIEW_VIEW = {
   strategy: {
     type: "energy-overview",
     collection_key: DEFAULT_ENERGY_COLLECTION_KEY,
+    allow_compare: false,
   },
 } as LovelaceViewConfig;
 
-const ELECTRICITY_VIEW = {
+const ENERGY_VIEW = {
   path: "electricity",
   back_path: "/energy",
   strategy: {
-    type: "energy-electricity",
+    type: "energy",
     collection_key: DEFAULT_ENERGY_COLLECTION_KEY,
+    allow_compare: true,
   },
 } as LovelaceViewConfig;
 
@@ -63,8 +69,19 @@ const WATER_VIEW = {
   back_path: "/energy",
   path: "water",
   strategy: {
-    type: "energy-water",
+    type: "water",
     collection_key: DEFAULT_ENERGY_COLLECTION_KEY,
+    allow_compare: true,
+  },
+} as LovelaceViewConfig;
+
+const POWER_VIEW = {
+  back_path: "/energy",
+  path: "power",
+  strategy: {
+    type: "power",
+    collection_key: DEFAULT_ENERGY_COLLECTION_KEY,
+    allow_compare: false,
   },
 } as LovelaceViewConfig;
 
@@ -146,11 +163,15 @@ class PanelEnergy extends LitElement {
     }
     await this._setLovelace();
 
-    // Navigate to first view if not there yet
-    const firstPath = this._lovelace!.config?.views?.[0]?.path;
+    // Check if current path is valid, navigate to first view if not
+    const views = this._lovelace!.config?.views || [];
+    const validPaths = views.map((view) => view.path);
     const viewPath: string | undefined = this.route!.path.split("/")[1];
-    if (viewPath !== firstPath) {
-      navigate(`${this.route!.prefix}/${firstPath}`);
+    if (!viewPath || !validPaths.includes(viewPath)) {
+      navigate(`${this.route!.prefix}/${validPaths[0]}`);
+    } else {
+      // Force hui-root to re-process the route by creating a new route object
+      this.route = { ...this.route! };
     }
   }
 
@@ -208,6 +229,7 @@ class PanelEnergy extends LitElement {
       views.findIndex((view) => view.path === viewPath),
       0
     );
+    const view = views[viewIndex];
 
     const showBack = this._searchParms.has("historyBack") || viewIndex > 0;
 
@@ -237,13 +259,16 @@ class PanelEnergy extends LitElement {
               `}
           ${!this.narrow
             ? html`<div class="main-title">
-                ${this.hass.localize("panel.energy")}
+                ${this.hass.localize(
+                  `ui.panel.energy.title.${viewPath}` as LocalizeKeys
+                ) || this.hass.localize("panel.energy")}
               </div>`
             : nothing}
 
           <hui-energy-period-selector
             .hass=${this.hass}
             .collectionKey=${DEFAULT_ENERGY_COLLECTION_KEY}
+            .allowCompare=${isStrategyView(view) && view.strategy.allow_compare}
           >
             ${this.hass.user?.is_admin
               ? html`
@@ -284,22 +309,34 @@ class PanelEnergy extends LitElement {
       };
     }
 
-    const isElectricityOnly = this._prefs.energy_sources.every((source) =>
+    const hasEnergy = this._prefs.energy_sources.some((source) =>
       ["grid", "solar", "battery"].includes(source.type)
     );
-    if (isElectricityOnly) {
-      return {
-        views: [ELECTRICITY_VIEW],
-      };
-    }
+
+    const hasPower =
+      this._prefs.energy_sources.some(
+        (source) =>
+          (source.type === "solar" && source.stat_rate) ||
+          (source.type === "battery" && source.stat_rate) ||
+          (source.type === "grid" && source.power?.length)
+      ) || this._prefs.device_consumption.some((device) => device.stat_rate);
 
     const hasWater =
       this._prefs.energy_sources.some((source) => source.type === "water") ||
       this._prefs.device_consumption_water?.length > 0;
 
-    const views: LovelaceViewConfig[] = [OVERVIEW_VIEW, ELECTRICITY_VIEW];
+    const views: LovelaceViewConfig[] = [];
+    if (hasEnergy) {
+      views.push(ENERGY_VIEW);
+    }
+    if (hasPower) {
+      views.push(POWER_VIEW);
+    }
     if (hasWater) {
       views.push(WATER_VIEW);
+    }
+    if (views.length > 1) {
+      views.unshift(OVERVIEW_VIEW);
     }
     return { views };
   }
@@ -324,6 +361,7 @@ class PanelEnergy extends LitElement {
 
     const energy_sources = energyData.prefs.energy_sources;
     const device_consumption = energyData.prefs.device_consumption;
+    const device_consumption_water = energyData.prefs.device_consumption_water;
     const stats = energyData.state.stats;
 
     const timeSet = new Set<number>();
@@ -508,6 +546,20 @@ class PanelEnergy extends LitElement {
     });
 
     printCategory("device_consumption", devices, electricUnit);
+
+    if (device_consumption_water) {
+      const waterDevices: string[] = [];
+      device_consumption_water.forEach((source) => {
+        source = source as DeviceConsumptionEnergyPreference;
+        waterDevices.push(source.stat_consumption);
+      });
+
+      printCategory(
+        "device_consumption_water",
+        waterDevices,
+        energyData.state.waterUnit
+      );
+    }
 
     const { summedData, compareSummedData: _ } = getSummedData(
       energyData.state

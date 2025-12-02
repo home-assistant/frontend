@@ -73,9 +73,7 @@ class HuiWaterHeaterOperationModeCardFeature
   }
 
   public static async getConfigElement(): Promise<LovelaceCardFeatureEditor> {
-    await import(
-      "../editor/config-elements/hui-water-heater-operation-modes-card-feature-editor"
-    );
+    await import("../editor/config-elements/hui-water-heater-operation-modes-card-feature-editor");
     return document.createElement(
       "hui-water-heater-operation-modes-card-feature-editor"
     );

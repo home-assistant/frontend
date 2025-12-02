@@ -124,9 +124,9 @@ export class HaPlatformCondition extends LitElement {
 
     const hasOptional = Boolean(
       conditionDesc?.fields &&
-        Object.values(conditionDesc.fields).some((field) =>
-          showOptionalToggle(field)
-        )
+      Object.values(conditionDesc.fields).some((field) =>
+        showOptionalToggle(field)
+      )
     );
 
     return html`
