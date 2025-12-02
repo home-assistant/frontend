@@ -372,7 +372,7 @@ export class HaAutomationAddItems extends LitElement {
     .selected-target ha-floor-icon {
       display: flex;
       height: 32px;
-      width: 24px;
+      width: 32px;
       align-items: center;
     }
     .selected-target ha-domain-icon {
