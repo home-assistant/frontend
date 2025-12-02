@@ -54,7 +54,7 @@ export class HaPickerField extends LitElement {
       !!this.value && !this.required && !this.disabled && !this.hideClearIcon;
     const placeholder = this.showLabel
       ? html`<span slot="overline">${this.placeholder}</span>`
-      : "";
+      : nothing;
 
     return html`
       <ha-combo-box-item .disabled=${this.disabled} type="button" compact>
