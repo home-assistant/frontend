@@ -11,9 +11,9 @@ import { DEFAULT_ENERGY_COLLECTION_KEY } from "../ha-panel-energy";
 const sourceHasCost = (source: Record<string, any>): boolean =>
   Boolean(
     source.stat_cost ||
-      source.stat_compensation ||
-      source.entity_energy_price ||
-      source.number_energy_price
+    source.stat_compensation ||
+    source.entity_energy_price ||
+    source.number_energy_price
   );
 
 @customElement("energy-overview-view-strategy")
@@ -100,6 +100,9 @@ export class EnergyOverviewViewStrategy extends ReactiveElement {
         type: "grid",
         cards: [
           {
+            title: hass.localize(
+              "ui.panel.energy.cards.energy_sources_table_title"
+            ),
             type: "energy-sources-table",
             collection_key: collectionKey,
             show_only_totals: true,
