@@ -166,15 +166,19 @@ class DialogAreasFloorsOrder extends LitElement {
   }
 
   private _renderUnassignedAreas() {
+    const hasFloors = this._hierarchy!.floors.length > 0;
+
     return html`
       <div class="floor unassigned">
-        <div class="floor-header">
-          <span class="floor-name">
-            ${this.hass.localize(
-              "ui.panel.config.areas.dialog.unassigned_areas"
-            )}
-          </span>
-        </div>
+        ${hasFloors
+          ? html`<div class="floor-header">
+              <span class="floor-name">
+                ${this.hass.localize(
+                  "ui.panel.config.areas.dialog.unassigned_areas"
+                )}
+              </span>
+            </div>`
+          : nothing}
         <ha-sortable
           handle-selector=".area-handle"
           draggable-selector="ha-md-list-item"
