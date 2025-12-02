@@ -235,7 +235,7 @@ class HuiPowerSankeyCard
         color: computedStyle
           .getPropertyValue("--energy-grid-return-color")
           .trim(),
-        index: 2,
+        index: 1,
       });
       if (powerData.battery_to_grid > 0) {
         links.push({
