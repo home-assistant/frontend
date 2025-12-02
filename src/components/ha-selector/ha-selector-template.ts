@@ -110,13 +110,11 @@ export class HaTemplateSelector extends LitElement {
       ${this._test && this._error
         ? html`<ha-alert alert-type="error">${this._error}</ha-alert>`
         : this._test && this._templateResult
-          ? html`<ha-alert alert-type="info">
-              <pre>
+          ? html`<pre class="rendered">
 ${typeof this._templateResult.result === "object"
-                  ? JSON.stringify(this._templateResult.result, null, 2)
-                  : this._templateResult.result}</pre
-              >
-            </ha-alert>`
+                ? JSON.stringify(this._templateResult.result, null, 2)
+                : this._templateResult.result}</pre
+            >`
           : nothing}
       ${this.helper
         ? html`<ha-input-helper-text .disabled=${this.disabled}
@@ -209,6 +207,19 @@ ${typeof this._templateResult.result === "object"
   static styles = css`
     p {
       margin-top: 0;
+    }
+    .rendered {
+      font-family: var(--ha-font-family-code);
+      -webkit-font-smoothing: var(--ha-font-smoothing);
+      -moz-osx-font-smoothing: var(--ha-moz-osx-font-smoothing);
+      clear: both;
+      white-space: pre-wrap;
+      background-color: var(--secondary-background-color);
+      padding: 8px;
+      margin-top: var(--ha-space-3);
+      margin-bottom: 0;
+      direction: ltr;
+      border-radius: var(--ha-border-radius-sm);
     }
   `;
 }
