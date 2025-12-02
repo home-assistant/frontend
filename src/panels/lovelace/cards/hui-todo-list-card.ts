@@ -571,7 +571,7 @@ export class HuiTodoListCard extends LitElement implements LovelaceCard {
               class="editRow ${classMap({
                 draggable: item.status !== TodoItemStatus.Completed,
                 completed: item.status === TodoItemStatus.Completed,
-                multiline: Boolean(item.description || item.due),
+                multiline: Boolean(item.due),
               })}"
               .selected=${item.status === TodoItemStatus.Completed}
               .disabled=${unavailable}
@@ -814,6 +814,9 @@ export class HuiTodoListCard extends LitElement implements LovelaceCard {
       }
     }
 
+    const supportsDescription = this._todoListSupportsFeature(
+      TodoListEntityFeature.SET_DESCRIPTION_ON_ITEM
+    );
     const description = this._buildDescription(store, qtyRaw);
 
     const normalizedSummary = value.toLowerCase();
@@ -829,20 +832,17 @@ export class HuiTodoListCard extends LitElement implements LovelaceCard {
     if (existing) {
       // If existing item is completed, "revive" it (set back to NeedsAction)
       if (existing.status === TodoItemStatus.Completed) {
-        updateItem(this.hass!, this._entityId!, {
+        const revivePayload: any = {
           uid: existing.uid,
           summary: existing.summary,
           status: TodoItemStatus.NeedsAction,
-          description: description ?? existing.description,
-        });
-        this._addError = undefined;
-      } else {
-        // Already active: show a small message and do NOT create a duplicate
-        this._addError =
-          this.hass?.localize(
-            "ui.panel.lovelace.cards.todo-list.item_already_exists"
-          ) || "Item is already in the list";
-        // this._addError = msg;
+        };
+
+        if (supportsDescription && (description ?? existing.description)) {
+          revivePayload.description = description ?? existing.description;
+        }
+
+        updateItem(this.hass!, this._entityId!, revivePayload);
       }
 
       newItem.value = "";
@@ -855,10 +855,11 @@ export class HuiTodoListCard extends LitElement implements LovelaceCard {
     }
 
     // No existing item: create a fresh one
-    createItem(this.hass!, this._entityId!, {
-      summary: value,
-      ...(description ? { description } : {}),
-    });
+    const createPayload: any = { summary: value };
+    if (supportsDescription && description) {
+      createPayload.description = description;
+    }
+    createItem(this.hass!, this._entityId!, createPayload);
 
     this._addError = undefined;
     newItem.value = "";

@@ -317,22 +317,41 @@ class DialogTodoItemEditor extends LitElement {
     }
 
     this._submitting = true;
+
+    const supportsDescription = this._todoListSupportsFeature(
+      TodoListEntityFeature.SET_DESCRIPTION_ON_ITEM
+    );
+    const supportsDueDate = this._todoListSupportsFeature(
+      TodoListEntityFeature.SET_DUE_DATE_ON_ITEM
+    );
+    const supportsDueDateTime = this._todoListSupportsFeature(
+      TodoListEntityFeature.SET_DUE_DATETIME_ON_ITEM
+    );
+
+    const payload: any = {
+      summary: this._summary,
+    };
+
+    if (supportsDescription) {
+      // Send empty string as null? For create you can omit if empty; keep simple:
+      payload.description = this._description || undefined;
+    }
+
+    if (this._due && (supportsDueDate || supportsDueDateTime)) {
+      payload.due = this._hasTime
+        ? this._due.toISOString()
+        : this._formatDate(this._due);
+    }
+
     try {
-      await createItem(this.hass!, this._params!.entity, {
-        summary: this._summary,
-        description: this._description,
-        due: this._due
-          ? this._hasTime
-            ? this._due.toISOString()
-            : this._formatDate(this._due)
-          : undefined,
-      });
+      await createItem(this.hass!, this._params!.entity, payload);
     } catch (err: any) {
       this._error = err ? err.message : "Unknown error";
       return;
     } finally {
       this._submitting = false;
     }
+
     this.closeDialog();
   }
 
@@ -347,39 +366,46 @@ class DialogTodoItemEditor extends LitElement {
     this._submitting = true;
     const entry = this._params!.item!;
 
+    const supportsDescription = this._todoListSupportsFeature(
+      TodoListEntityFeature.SET_DESCRIPTION_ON_ITEM
+    );
+    const supportsDueDateTime = this._todoListSupportsFeature(
+      TodoListEntityFeature.SET_DUE_DATETIME_ON_ITEM
+    );
+    const supportsDueDate = this._todoListSupportsFeature(
+      TodoListEntityFeature.SET_DUE_DATE_ON_ITEM
+    );
+
+    const payload: any = {
+      uid: entry.uid,
+      summary: this._summary,
+      status: this._checked
+        ? TodoItemStatus.Completed
+        : TodoItemStatus.NeedsAction,
+    };
+
+    if (supportsDescription) {
+      // If user cleared it, send null to clear on backend
+      payload.description = this._description ? this._description : null;
+    }
+
+    if (supportsDueDateTime || supportsDueDate) {
+      payload.due = this._due
+        ? this._hasTime
+          ? this._due.toISOString()
+          : this._formatDate(this._due)
+        : null;
+    }
+
     try {
-      await updateItem(this.hass!, this._params!.entity, {
-        ...entry,
-        summary: this._summary,
-        description:
-          this._description ||
-          (this._todoListSupportsFeature(
-            TodoListEntityFeature.SET_DESCRIPTION_ON_ITEM
-          )
-            ? null
-            : undefined),
-        due: this._due
-          ? this._hasTime
-            ? this._due.toISOString()
-            : this._formatDate(this._due)
-          : this._todoListSupportsFeature(
-                TodoListEntityFeature.SET_DUE_DATETIME_ON_ITEM
-              ) ||
-              this._todoListSupportsFeature(
-                TodoListEntityFeature.SET_DUE_DATE_ON_ITEM
-              )
-            ? null
-            : undefined,
-        status: this._checked
-          ? TodoItemStatus.Completed
-          : TodoItemStatus.NeedsAction,
-      });
+      await updateItem(this.hass!, this._params!.entity, payload);
     } catch (err: any) {
       this._error = err ? err.message : "Unknown error";
       return;
     } finally {
       this._submitting = false;
     }
+
     this.closeDialog();
   }
 
