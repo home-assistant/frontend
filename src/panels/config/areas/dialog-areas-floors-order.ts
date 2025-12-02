@@ -410,7 +410,10 @@ class DialogAreasFloorsOrder extends LitElement {
 
         .floor {
           border: 1px solid var(--divider-color);
-          border-radius: var(--ha-card-border-radius, 12px);
+          border-radius: var(
+            --ha-card-border-radius,
+            var(--ha-border-radius-lg)
+          );
           overflow: hidden;
         }
 
@@ -451,7 +454,10 @@ class DialogAreasFloorsOrder extends LitElement {
         }
 
         ha-md-list-item.sortable-ghost {
-          border-radius: 0;
+          border-radius: calc(
+            var(--ha-card-border-radius, var(--ha-border-radius-lg)) - 1px
+          );
+          box-shadow: inset 0 0 0 2px var(--primary-color);
         }
 
         .area-handle {
