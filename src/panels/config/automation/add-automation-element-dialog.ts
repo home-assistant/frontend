@@ -119,7 +119,6 @@ import type { HomeAssistant } from "../../../types";
 import { isMac } from "../../../util/is_mac";
 import { showToast } from "../../../util/toast";
 import "./add-automation-element/ha-automation-add-from-target";
-import type HaAutomationAddFromTarget from "./add-automation-element/ha-automation-add-from-target";
 import "./add-automation-element/ha-automation-add-items";
 import "./add-automation-element/ha-automation-add-search";
 import type { AddAutomationElementDialogParams } from "./show-add-automation-element-dialog";
@@ -217,10 +216,6 @@ class DialogAddAutomationElement
   // #endregion state
 
   // #region queries
-
-  @query("ha-automation-add-from-target")
-  private _targetPickerElement?: HaAutomationAddFromTarget;
-
   @query("ha-automation-add-items")
   private _itemsListElement?: HTMLDivElement;
 
