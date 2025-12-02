@@ -302,8 +302,7 @@ class DialogAddAutomationElement
     // add initial dialog view state to history
     mainWindow.history.pushState(
       {
-        ...mainWindow.history.state,
-        data: {},
+        dialogData: {},
       },
       ""
     );
@@ -329,20 +328,37 @@ class DialogAddAutomationElement
   }
 
   public closeDialog(historyState?: any) {
-    if (historyState && (this._selectedTarget || this._selectedGroup)) {
-      if (historyState.data?.target) {
-        this._selectedTarget = historyState.data.target;
+    // prevent closing when come from popstate event and root level isn't active
+    if (
+      this._open &&
+      historyState &&
+      (this._selectedTarget || this._selectedGroup)
+    ) {
+      if (historyState.dialogData?.target) {
+        this._selectedTarget = historyState.dialogData.target;
         this._getItemsByTarget();
+        this._tab = "targets";
         return false;
       }
-      if (historyState.data?.group) {
-        this._selectedGroup = historyState.data.group;
+      if (historyState.dialogData?.group) {
+        this._selectedCollectionIndex = historyState.dialogData.collectionIndex;
+        this._selectedGroup = historyState.dialogData.group;
+        this._tab = "groups";
         return false;
       }
 
-      // return to home
-      this._selectedTarget = undefined;
-      this._selectedGroup = undefined;
+      // return to home on mobile
+      if (this._narrow) {
+        this._selectedTarget = undefined;
+        this._selectedGroup = undefined;
+        return false;
+      }
+    }
+
+    // if dialog is closed, but root level isn't active, clean up history state
+    if (mainWindow.history.state?.dialogData) {
+      this._open = false;
+      mainWindow.history.back();
       return false;
     }
 
@@ -432,7 +448,7 @@ class DialogAddAutomationElement
       return html`
         <ha-bottom-sheet
           .open=${this._open}
-          @closed=${this.closeDialog}
+          @closed=${this._handleClosed}
           flexcontent
         >
           ${this._renderContent()}
@@ -444,7 +460,7 @@ class DialogAddAutomationElement
       <ha-wa-dialog
         width="large"
         .open=${this._open}
-        @closed=${this.closeDialog}
+        @closed=${this._handleClosed}
         flexcontent
       >
         ${this._renderContent()}
@@ -1687,17 +1703,17 @@ class DialogAddAutomationElement
       return;
     }
     this._selectedGroup = group.value;
+    this._selectedCollectionIndex = ev.currentTarget.index;
+
     mainWindow.history.pushState(
       {
-        ...mainWindow.history.state,
-        data: {
+        dialogData: {
           group: this._selectedGroup,
+          collectionIndex: this._selectedCollectionIndex,
         },
       },
       ""
     );
-
-    this._selectedCollectionIndex = ev.currentTarget.index;
     requestAnimationFrame(() => {
       this._itemsListElement?.scrollTo(0, 0);
     });
@@ -1724,8 +1740,7 @@ class DialogAddAutomationElement
     this._selectedTarget = ev.detail.value;
     mainWindow.history.pushState(
       {
-        ...mainWindow.history.state,
-        data: {
+        dialogData: {
           target: this._selectedTarget,
         },
       },
@@ -1848,6 +1863,10 @@ class DialogAddAutomationElement
       [`${targetType}_id`]: item.id.split(TARGET_SEPARATOR, 2)[1],
     };
     this._tab = "targets";
+  }
+
+  private _handleClosed() {
+    this.closeDialog();
   }
 
   // #region interaction

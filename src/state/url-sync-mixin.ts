@@ -56,7 +56,7 @@ export const urlSyncMixin = <
               // if we are instead navigating forward, the dialogs are already closed
               closeLastDialog();
             }
-            if ("dialog" in ev.state && "data" in ev.state) {
+            if ("dialogData" in ev.state) {
               // if we have dialog data we are closing a dialog with appended state
               // so dialog has the change to navigate back to the previous state
               closeLastDialog(ev.state);
