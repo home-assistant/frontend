@@ -5,6 +5,7 @@ import type { HomeAssistant } from "../../../types";
 import type { LovelaceViewConfig } from "../../../data/lovelace/config/view";
 import type { LovelaceStrategyConfig } from "../../../data/lovelace/config/strategy";
 import { DEFAULT_ENERGY_COLLECTION_KEY } from "../ha-panel-energy";
+import type { LovelaceSectionConfig } from "../../../data/lovelace/config/section";
 
 @customElement("power-view-strategy")
 export class PowerViewStrategy extends ReactiveElement {
@@ -12,7 +13,10 @@ export class PowerViewStrategy extends ReactiveElement {
     _config: LovelaceStrategyConfig,
     hass: HomeAssistant
   ): Promise<LovelaceViewConfig> {
-    const view: LovelaceViewConfig = { cards: [] };
+    const view: LovelaceViewConfig = {
+      type: "sections",
+      sections: [{ type: "grid", cards: [] }],
+    };
 
     const collectionKey =
       _config.collection_key || DEFAULT_ENERGY_COLLECTION_KEY;
@@ -38,13 +42,16 @@ export class PowerViewStrategy extends ReactiveElement {
       return view;
     }
 
-    view.type = "sidebar";
+    const section = view.sections![0] as LovelaceSectionConfig;
 
     if (hasPowerSources) {
-      view.cards!.push({
+      section.cards!.push({
         title: hass.localize("ui.panel.energy.cards.power_sources_graph_title"),
         type: "power-sources-graph",
         collection_key: collectionKey,
+        grid_options: {
+          columns: 36,
+        },
       });
     }
 
@@ -52,12 +59,15 @@ export class PowerViewStrategy extends ReactiveElement {
       const showFloorsNAreas = !prefs.device_consumption.some(
         (d) => d.included_in_stat
       );
-      view.cards!.push({
+      section.cards!.push({
         title: hass.localize("ui.panel.energy.cards.power_sankey_title"),
         type: "power-sankey",
         collection_key: collectionKey,
         group_by_floor: showFloorsNAreas,
         group_by_area: showFloorsNAreas,
+        grid_options: {
+          columns: 36,
+        },
       });
     }
 

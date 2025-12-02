@@ -623,21 +623,8 @@ class PanelEnergy extends LitElement {
     return [
       haStyle,
       css`
-        :host hui-energy-period-selector {
-          flex-grow: 1;
-          padding-left: 32px;
-          padding-inline-start: 32px;
-          padding-inline-end: initial;
-          --disabled-text-color: rgba(var(--rgb-text-primary-color), 0.5);
-          direction: var(--direction);
-          --date-range-picker-max-height: calc(100vh - 80px);
-        }
-        :host([narrow]) hui-energy-period-selector {
-          padding-left: 0px;
-          padding-inline-start: 0px;
-          padding-inline-end: initial;
-        }
         :host {
+          --ha-view-sections-column-max-width: 100%;
           -ms-user-select: none;
           -webkit-user-select: none;
           -moz-user-select: none;

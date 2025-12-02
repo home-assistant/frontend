@@ -5,6 +5,7 @@ import type { HomeAssistant } from "../../../types";
 import type { LovelaceViewConfig } from "../../../data/lovelace/config/view";
 import type { LovelaceStrategyConfig } from "../../../data/lovelace/config/strategy";
 import { DEFAULT_ENERGY_COLLECTION_KEY } from "../ha-panel-energy";
+import type { LovelaceSectionConfig } from "../../../data/lovelace/config/section";
 
 @customElement("gas-view-strategy")
 export class GasViewStrategy extends ReactiveElement {
@@ -12,7 +13,10 @@ export class GasViewStrategy extends ReactiveElement {
     _config: LovelaceStrategyConfig,
     hass: HomeAssistant
   ): Promise<LovelaceViewConfig> {
-    const view: LovelaceViewConfig = { cards: [] };
+    const view: LovelaceViewConfig = {
+      type: "sections",
+      sections: [{ type: "grid", cards: [] }],
+    };
 
     const collectionKey =
       _config.collection_key || DEFAULT_ENERGY_COLLECTION_KEY;
@@ -31,24 +35,24 @@ export class GasViewStrategy extends ReactiveElement {
       return view;
     }
 
-    view.type = "sidebar";
+    const section = view.sections![0] as LovelaceSectionConfig;
 
-    view.cards!.push({
+    section.cards!.push({
       type: "energy-date-selection",
       collection_key: collectionKey,
     });
-    view.cards!.push({
+    section.cards!.push({
       type: "energy-compare",
       collection_key: collectionKey,
     });
 
-    view.cards!.push({
+    section.cards!.push({
       title: hass.localize("ui.panel.energy.cards.energy_gas_graph_title"),
       type: "energy-gas-graph",
       collection_key: collectionKey,
     });
 
-    view.cards!.push({
+    section.cards!.push({
       title: hass.localize("ui.panel.energy.cards.energy_sources_table_title"),
       type: "energy-sources-table",
       collection_key: collectionKey,
