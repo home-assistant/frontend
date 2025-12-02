@@ -446,7 +446,7 @@ class DialogAreasFloorsOrder extends LitElement {
           --md-list-item-container-shape: 0;
         }
 
-        ha-md-list-item.sortable-drag {
+        ha-md-list-item.sortable-ghost {
           border-radius: 0;
         }
 
