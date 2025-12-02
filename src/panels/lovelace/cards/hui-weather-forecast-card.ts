@@ -23,6 +23,7 @@ import {
   subscribeForecast,
   weatherAttrIcons,
   weatherSVGStyles,
+  WEATHER_TEMPERATURE_ATTRIBUTES,
 } from "../../../data/weather";
 import type { HomeAssistant } from "../../../types";
 import { round } from "../../../common/number/round";
@@ -271,14 +272,9 @@ class HuiWeatherForecastCard extends LitElement implements LovelaceCard {
       ? 0
       : undefined;
 
-    const TEMPERATURE_ATTRIBUTES = [
-      "temperature",
-      "apparent_temperature",
-      "dew_point",
-    ];
-    const isSecondaryInfoAttributeTemperature = TEMPERATURE_ATTRIBUTES.some(
-      (attr) => this._config?.secondary_info_attribute?.includes(attr)
-    );
+    const isSecondaryInfoAttributeTemperature =
+      this._config?.secondary_info_attribute &&
+      WEATHER_TEMPERATURE_ATTRIBUTES.has(this._config.secondary_info_attribute);
 
     const isSecondaryInfoNumber =
       this._config.secondary_info_attribute &&

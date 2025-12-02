@@ -82,6 +82,12 @@ export interface WeatherEntity extends HassEntityBase {
   attributes: WeatherEntityAttributes;
 }
 
+export const WEATHER_TEMPERATURE_ATTRIBUTES = new Set<string>([
+  "temperature",
+  "apparent_temperature",
+  "dew_point",
+]);
+
 export const weatherSVGs = new Set<string>([
   "clear-night",
   "cloudy",
@@ -320,13 +326,22 @@ const getWeatherExtrema = (
       break;
     }
     if (!tempHigh || fc.temperature > tempHigh) {
-      tempHigh = round(fc.temperature, temperatureFractionDigits);
+      tempHigh =
+        temperatureFractionDigits === undefined
+          ? fc.temperature
+          : round(fc.temperature, temperatureFractionDigits);
     }
     if (fc.templow !== undefined && (!tempLow || fc.templow < tempLow)) {
-      tempLow = round(fc.templow, temperatureFractionDigits);
+      tempLow =
+        temperatureFractionDigits === undefined
+          ? fc.templow
+          : round(fc.templow, temperatureFractionDigits);
     }
     if (!fc.templow && (!tempLow || fc.temperature < tempLow)) {
-      tempLow = round(fc.temperature, temperatureFractionDigits);
+      tempLow =
+        temperatureFractionDigits === undefined
+          ? fc.temperature
+          : round(fc.temperature, temperatureFractionDigits);
     }
   }
 
