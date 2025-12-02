@@ -254,7 +254,12 @@ export class HomeOverviewViewStrategy extends ReactiveElement {
       widgetSection.cards!.push({
         type: "weather-forecast",
         entity: weatherEntity,
-        forecast_type: "daily",
+        show_forecast: false,
+        show_current: true,
+        grid_options: {
+          columns: 12,
+          rows: "auto",
+        },
       } as WeatherForecastCardConfig);
     }
 
