@@ -111,9 +111,7 @@ class DialogAreasFloorsOrder extends LitElement {
               )}
             </div>
           </ha-sortable>
-          ${this._hierarchy.areas.length > 0
-            ? this._renderUnassignedAreas()
-            : nothing}
+          ${this._renderUnassignedAreas()}
         </div>
         <div slot="actions">
           <ha-button @click=${this.closeDialog} appearance="plain">
@@ -183,12 +181,18 @@ class DialogAreasFloorsOrder extends LitElement {
           handle-selector=".area-handle"
           draggable-selector="ha-md-list-item"
           @item-moved=${this._areaMoved}
+          @item-added=${this._areaAdded}
           group="areas"
           .floor=${UNASSIGNED_FLOOR}
-          no-drop
         >
           <ha-md-list>
-            ${this._hierarchy!.areas.map((areaId) => this._renderArea(areaId))}
+            ${this._hierarchy!.areas.length > 0
+              ? this._hierarchy!.areas.map((areaId) => this._renderArea(areaId))
+              : html`<p class="empty">
+                  ${this.hass.localize(
+                    "ui.panel.config.areas.dialog.empty_unassigned"
+                  )}
+                </p>`}
           </ha-md-list>
         </ha-sortable>
       </div>
@@ -288,6 +292,14 @@ class DialogAreasFloorsOrder extends LitElement {
     const newFloorId = floor === UNASSIGNED_FLOOR ? null : floor;
 
     // Update hierarchy
+    const newUnassignedAreas = this._hierarchy.areas.filter(
+      (id) => id !== area.area_id
+    );
+    if (newFloorId === null) {
+      // Add to unassigned at the specified index
+      newUnassignedAreas.splice(index, 0, area.area_id);
+    }
+
     this._hierarchy = {
       ...this._hierarchy,
       floors: this._hierarchy.floors.map((f) => {
@@ -303,11 +315,7 @@ class DialogAreasFloorsOrder extends LitElement {
           areas: f.areas.filter((id) => id !== area.area_id),
         };
       }),
-      // Remove from unassigned if moving to a floor
-      areas:
-        newFloorId !== null
-          ? this._hierarchy.areas.filter((id) => id !== area.area_id)
-          : this._hierarchy.areas,
+      areas: newUnassignedAreas,
     };
   }
 

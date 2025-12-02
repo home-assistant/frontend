@@ -2480,7 +2480,8 @@
             "reorder_title": "Reorder floors and areas",
             "unassigned_areas": "Unassigned areas",
             "reorder_failed": "Failed to save order",
-            "empty_floor": "No areas on this floor"
+            "empty_floor": "No areas on this floor",
+            "empty_unassigned": "All your areas are assigned to floors"
           },
           "editor": {
             "create_area": "Create area",
