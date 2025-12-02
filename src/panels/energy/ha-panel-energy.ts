@@ -1,11 +1,10 @@
-import { mdiDownload, mdiPencil } from "@mdi/js";
+import { mdiDownload } from "@mdi/js";
 import type { CSSResultGroup, PropertyValues } from "lit";
 import { LitElement, css, html, nothing } from "lit";
 import { customElement, property, state } from "lit/decorators";
 import { goBack, navigate } from "../../common/navigate";
 import "../../components/ha-alert";
 import "../../components/ha-icon-button-arrow-prev";
-import "../../components/ha-list-item";
 import "../../components/ha-menu-button";
 import "../../components/ha-top-app-bar-fixed";
 import type {
@@ -23,16 +22,14 @@ import {
   getSummedData,
 } from "../../data/energy";
 import type { LovelaceConfig } from "../../data/lovelace/config/types";
-import {
-  isStrategyView,
-  type LovelaceViewConfig,
-} from "../../data/lovelace/config/view";
+import type { LovelaceViewConfig } from "../../data/lovelace/config/view";
 import type { StatisticValue } from "../../data/recorder";
 import { haStyle } from "../../resources/styles";
 import type { HomeAssistant, PanelInfo } from "../../types";
 import { fileDownload } from "../../util/file_download";
 import "../lovelace/components/hui-energy-period-selector";
 import "../lovelace/hui-root";
+import type { ExtraActionItem } from "../lovelace/hui-root";
 import type { Lovelace } from "../lovelace/types";
 import "../lovelace/views/hui-view";
 import "../lovelace/views/hui-view-container";
@@ -102,8 +99,6 @@ class PanelEnergy extends LitElement {
 
   @state() private _lovelace?: Lovelace;
 
-  @state() private _searchParms = new URLSearchParams(window.location.search);
-
   @property({ attribute: false }) public route?: {
     path: string;
     prefix: string;
@@ -114,6 +109,16 @@ class PanelEnergy extends LitElement {
 
   @state()
   private _error?: string;
+
+  private get _extraActionItems(): ExtraActionItem[] {
+    return [
+      {
+        icon: mdiDownload,
+        labelKey: "ui.panel.energy.download_data",
+        action: this._dumpCSV,
+      },
+    ];
+  }
 
   public willUpdate(changedProps: PropertyValues) {
     super.willUpdate(changedProps);
@@ -223,17 +228,6 @@ class PanelEnergy extends LitElement {
       return nothing;
     }
 
-    const viewPath: string | undefined = this.route!.path.split("/")[1];
-
-    const views = this._lovelace.config?.views || [];
-    const viewIndex = Math.max(
-      views.findIndex((view) => view.path === viewPath),
-      0
-    );
-    const view = views[viewIndex];
-
-    const showBack = this._searchParms.has("historyBack") || viewIndex > 0;
-
     return html`
       <hui-root
         .hass=${this.hass}
@@ -241,17 +235,9 @@ class PanelEnergy extends LitElement {
         .lovelace=${this._lovelace}
         .route=${this.route}
         .panel=${this.panel}
+        .extraActionItems=${this._extraActionItems}
         @reload-energy-panel=${this._reloadConfig}
-      >
-        <ha-list-item
-          slot="actionItems"
-          graphic="icon"
-          @request-selected=${this._dumpCSV}
-        >
-          <ha-svg-icon slot="graphic" .path=${mdiDownload}> </ha-svg-icon>
-          ${this.hass!.localize("ui.panel.energy.download_data")}
-        </ha-list-item>
-      </hui-root>
+      ></hui-root>
     `;
   }
 
@@ -320,8 +306,7 @@ class PanelEnergy extends LitElement {
     navigate("/config/energy?historyBack=1");
   }
 
-  private async _dumpCSV(ev) {
-    ev.stopPropagation();
+  private _dumpCSV = async () => {
     const energyData = getEnergyDataCollection(this.hass, {
       key: "energy_dashboard",
     });
@@ -633,7 +618,7 @@ class PanelEnergy extends LitElement {
     });
     const url = window.URL.createObjectURL(blob);
     fileDownload(url, "energy.csv");
-  }
+  };
 
   private _reloadConfig() {
     this._loadConfig();
