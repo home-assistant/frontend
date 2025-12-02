@@ -371,7 +371,9 @@ export class HaAreaPicker extends LitElement {
       const area = this.hass.areas[area_id];
       const { floor } = getAreaContext(area, this.hass.floors);
       showLabel = floor ? false : this.showLabel;
-    } else showLabel = this.showLabel;
+    } else {
+      showLabel = this.showLabel;
+    }
 
     return html`
       <ha-generic-picker
