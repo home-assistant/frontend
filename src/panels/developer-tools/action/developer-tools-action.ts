@@ -1,7 +1,7 @@
 import { mdiHelpCircle } from "@mdi/js";
 import type { HassService } from "home-assistant-js-websocket";
 import { ERR_CONNECTION_LOST } from "home-assistant-js-websocket";
-import { load } from "js-yaml";
+import { dump, load } from "js-yaml";
 import type { CSSResultGroup } from "lit";
 import { css, html, LitElement, nothing } from "lit";
 import { customElement, property, query, state } from "lit/decorators";
@@ -298,7 +298,10 @@ class HaPanelDevAction extends LitElement {
                       <td>
                         ${this.hass.localize(
                           `component.${domain}.services.${serviceName}.fields.${field.key}.example`
-                        ) || JSON.stringify(field.example)}
+                        ) ||
+                        (typeof field.example === "object"
+                          ? html`<pre>${dump(field.example)}</pre>`
+                          : field.example)}
                       </td>
                     </tr>`
                 )}
