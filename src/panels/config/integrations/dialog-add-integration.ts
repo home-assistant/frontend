@@ -267,6 +267,7 @@ class AddIntegrationDialog extends LitElement {
           minMatchCharLength: Math.min(filter.length, 2),
           threshold: 0.2,
           ignoreDiacritics: true,
+          useExtendedSearch: true,
         };
         const helpers = Object.entries(h).map(([domain, integration]) => ({
           domain,
