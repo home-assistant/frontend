@@ -8,6 +8,7 @@ import { lightSupportsBrightness, type LightEntity } from "../../../data/light";
 import type { HomeAssistant } from "../../../types";
 import type { LovelaceCardFeature } from "../types";
 import { cardFeatureStyles } from "./common/card-feature-styles";
+import { throttle } from "../../../common/util/throttle";
 import type {
   LightBrightnessCardFeatureConfig,
   LovelaceCardFeatureContext,
@@ -35,6 +36,10 @@ class HuiLightBrightnessCardFeature
   @property({ attribute: false }) public context?: LovelaceCardFeatureContext;
 
   @state() private _config?: LightBrightnessCardFeatureConfig;
+
+  @state() private _value?: number;
+
+  @state() private _dragging = false;
 
   private get _stateObj() {
     if (!this.hass || !this.context || !this.context.entity_id) {
@@ -75,13 +80,16 @@ class HuiLightBrightnessCardFeature
           )
         : undefined;
 
+    const displayValue = this._dragging ? (this._value ?? position) : position;
+
     return html`
       <ha-control-slider
-        .value=${position}
+        .value=${displayValue}
         min="1"
         max="100"
         .showHandle=${stateActive(this._stateObj)}
         .disabled=${this._stateObj!.state === UNAVAILABLE}
+        @slider-moved=${this._valueMoved}
         @value-changed=${this._valueChanged}
         .label=${this.hass.localize("ui.card.light.brightness")}
         unit="%"
@@ -92,13 +100,38 @@ class HuiLightBrightnessCardFeature
 
   private _valueChanged(ev: CustomEvent) {
     ev.stopPropagation();
-    const value = ev.detail.value;
+    this._value = ev.detail.value;
 
+    this._dragging = false;
+
+    this._updateValue();
+  }
+
+  private _valueMoved(ev: CustomEvent) {
+    ev.stopPropagation();
+    this._value = ev.detail.value;
+
+    this._dragging = true;
+
+    this._throttleUpdateValue();
+  }
+
+  private _updateValue() {
     this.hass!.callService("light", "turn_on", {
       entity_id: this._stateObj!.entity_id,
-      brightness_pct: value,
+      brightness_pct: this._value,
     });
   }
+
+  private _throttleUpdateValue = throttle(() => this._updateValue(), 250);
+
+  protected shouldUpdate(changedProps: Map<string | number | symbol, unknown>) {
+    if (this._dragging && changedProps.has("hass")) {
+      return false;
+    }
+    return super.shouldUpdate(changedProps);
+  }
+
 
   static get styles() {
     return cardFeatureStyles;

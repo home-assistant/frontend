@@ -9,6 +9,7 @@ import "../../components/ha-control-slider";
 import { UNAVAILABLE } from "../../data/entity";
 import type { LightEntity } from "../../data/light";
 import type { HomeAssistant } from "../../types";
+import { throttle } from "../../common/util/throttle";
 
 @customElement("ha-state-control-light-brightness")
 export class HaStateControlLightBrightness extends LitElement {
@@ -17,6 +18,10 @@ export class HaStateControlLightBrightness extends LitElement {
   @property({ attribute: false }) public stateObj!: LightEntity;
 
   @state() value?: number;
+
+  @state() private _value?: number;
+
+  @state() private _dragging = false;
 
   protected updated(changedProp: Map<string | number | symbol, unknown>): void {
     if (changedProp.has("stateObj")) {
@@ -34,10 +39,38 @@ export class HaStateControlLightBrightness extends LitElement {
     const value = (ev.detail as any).value;
     if (isNaN(value)) return;
 
+    this._value = value;
+
+    this._dragging = false;
+
+    this._updateValue();
+  }
+
+  private _valueMoved(ev: CustomEvent) {
+    const value = (ev.detail as any).value;
+    if (isNaN(value)) return;
+
+    this._value = value;
+
+    this._dragging = true;
+
+    this._throttleUpdateValue();
+  }
+
+  private _updateValue() {
     this.hass.callService("light", "turn_on", {
       entity_id: this.stateObj!.entity_id,
-      brightness_pct: value,
+      brightness_pct: this._value,
     });
+  }
+
+  private _throttleUpdateValue = throttle(() => this._updateValue(), 250);
+
+  protected shouldUpdate(changedProps: Map<string | number | symbol, unknown>) {
+    if (this._dragging && changedProps.has("hass")) {
+      return false;
+    }
+    return super.shouldUpdate(changedProps);
   }
 
   protected render(): TemplateResult {
@@ -66,6 +99,7 @@ export class HaStateControlLightBrightness extends LitElement {
         min="1"
         max="100"
         .showHandle=${stateActive(this.stateObj)}
+        @slider-moved=${this._valueMoved}
         @value-changed=${this._valueChanged}
         .label=${this.hass.formatEntityAttributeName(
           this.stateObj,
