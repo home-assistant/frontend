@@ -494,6 +494,7 @@ export class SectionsView extends LitElement implements LovelaceViewElement {
         );
       gap: var(--row-gap) var(--column-gap);
       padding: var(--row-gap) 0;
+      align-items: flex-start;
     }
 
     .wrapper.has-sidebar .container {
