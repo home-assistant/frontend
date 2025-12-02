@@ -75,6 +75,16 @@ const WATER_VIEW = {
   },
 } as LovelaceViewConfig;
 
+const GAS_VIEW = {
+  back_path: "/energy",
+  path: "gas",
+  strategy: {
+    type: "gas",
+    collection_key: DEFAULT_ENERGY_COLLECTION_KEY,
+    allow_compare: true,
+  },
+} as LovelaceViewConfig;
+
 const POWER_VIEW = {
   back_path: "/energy",
   path: "power",
@@ -325,12 +335,19 @@ class PanelEnergy extends LitElement {
       this._prefs.energy_sources.some((source) => source.type === "water") ||
       this._prefs.device_consumption_water?.length > 0;
 
+    const hasGas = this._prefs.energy_sources.some(
+      (source) => source.type === "gas"
+    );
+
     const views: LovelaceViewConfig[] = [];
     if (hasEnergy) {
       views.push(ENERGY_VIEW);
     }
     if (hasPower) {
       views.push(POWER_VIEW);
+    }
+    if (hasGas) {
+      views.push(GAS_VIEW);
     }
     if (hasWater) {
       views.push(WATER_VIEW);
