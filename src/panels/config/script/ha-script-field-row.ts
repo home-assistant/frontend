@@ -92,7 +92,7 @@ export default class HaScriptFieldRow extends LitElement {
               .label=${this.hass.localize("ui.common.menu")}
               .path=${mdiDotsVertical}
             ></ha-icon-button>
-            <ha-dropdown-item data-action="toggle_yaml_mode">
+            <ha-dropdown-item value="toggle_yaml_mode">
               <ha-svg-icon slot="icon" .path=${mdiPlaylistEdit}></ha-svg-icon>
               <div class="overflow-label">
                 ${this.hass.localize(
@@ -102,9 +102,9 @@ export default class HaScriptFieldRow extends LitElement {
               </div>
             </ha-dropdown-item>
             <ha-dropdown-item
-              data-action="delete"
+              value="delete"
               .disabled=${this.disabled}
-              class="warning"
+              variant="danger"
             >
               <ha-svg-icon slot="icon" .path=${mdiDelete}></ha-svg-icon>
               <div class="overflow-label">
@@ -167,27 +167,21 @@ export default class HaScriptFieldRow extends LitElement {
                       "ui.panel.config.script.editor.field.selector"
                     )}
                   </h3>
-                  <ha-md-button-menu
-                    quick
+                  <ha-dropdown
                     slot="icons"
                     @click=${preventDefaultStopPropagation}
                     @keydown=${stopPropagation}
-                    @closed=${stopPropagation}
-                    positioning="fixed"
-                    anchor-corner="end-end"
-                    menu-corner="start-end"
+                    @wa-select=${this._handleDropdownSelect}
+                    placement="bottom-end"
                   >
                     <ha-icon-button
                       slot="trigger"
                       .label=${this.hass.localize("ui.common.menu")}
                       .path=${mdiDotsVertical}
                     ></ha-icon-button>
-                    <ha-dropdown-item
-                      .clickAction=${this._toggleYamlMode}
-                      selector-row
-                    >
+                    <ha-dropdown-item value="toggle_yaml_mode" selector-row>
                       <ha-svg-icon
-                        slot="start"
+                        slot="icon"
                         .path=${mdiPlaylistEdit}
                       ></ha-svg-icon>
                       <div class="overflow-label">
@@ -200,14 +194,11 @@ export default class HaScriptFieldRow extends LitElement {
                       </div>
                     </ha-dropdown-item>
                     <ha-dropdown-item
-                      .clickAction=${this._onDelete}
+                      value="delete"
                       .disabled=${this.disabled}
-                      class="warning"
+                      variant="danger"
                     >
-                      <ha-svg-icon
-                        slot="start"
-                        .path=${mdiDelete}
-                      ></ha-svg-icon>
+                      <ha-svg-icon slot="icon" .path=${mdiDelete}></ha-svg-icon>
                       <div class="overflow-label">
                         ${this.hass.localize(
                           "ui.panel.config.automation.editor.actions.delete"
@@ -217,7 +208,6 @@ export default class HaScriptFieldRow extends LitElement {
                               <span
                                 >${isMac
                                   ? html`<ha-svg-icon
-                                      slot="start"
                                       .path=${mdiAppleKeyboardCommand}
                                     ></ha-svg-icon>`
                                   : this.hass.localize(
@@ -234,7 +224,7 @@ export default class HaScriptFieldRow extends LitElement {
                           : nothing}
                       </div>
                     </ha-dropdown-item>
-                  </ha-md-button-menu>
+                  </ha-dropdown>
                 </ha-automation-row>
               </ha-card>
               ${typeof this.field.selector === "object" &&
@@ -418,7 +408,7 @@ export default class HaScriptFieldRow extends LitElement {
   }
 
   private _handleDropdownSelect(ev: CustomEvent<{ item: HaDropdownItem }>) {
-    const action = ev.detail?.item?.dataset?.action;
+    const action = ev.detail?.item?.value;
 
     if (!action) {
       return;

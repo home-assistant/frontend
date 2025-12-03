@@ -128,7 +128,7 @@ export default class HaAutomationSidebarAction extends LitElement {
           : ""}</span
       >
 
-      <ha-dropdown-item slot="menu-items" data-action="run">
+      <ha-dropdown-item slot="menu-items" value="run">
         <ha-svg-icon slot="icon" .path=${mdiPlay}></ha-svg-icon>
         <div class="overflow-label">
           ${this.hass.localize("ui.panel.config.automation.editor.actions.run")}
@@ -137,7 +137,7 @@ export default class HaAutomationSidebarAction extends LitElement {
       </ha-dropdown-item>
       <ha-dropdown-item
         slot="menu-items"
-        data-action="rename"
+        value="rename"
         .disabled=${this.disabled}
       >
         <ha-svg-icon slot="icon" .path=${mdiRenameBox}></ha-svg-icon>
@@ -152,7 +152,7 @@ export default class HaAutomationSidebarAction extends LitElement {
       <wa-divider slot="menu-items"></wa-divider>
       <ha-dropdown-item
         slot="menu-items"
-        data-action="duplicate"
+        value="duplicate"
         .disabled=${this.disabled}
       >
         <ha-svg-icon
@@ -166,7 +166,7 @@ export default class HaAutomationSidebarAction extends LitElement {
           <span class="shortcut-placeholder ${isMac ? "mac" : ""}"></span>
         </div>
       </ha-dropdown-item>
-      <ha-dropdown-item slot="menu-items" data-action="copy">
+      <ha-dropdown-item slot="menu-items" value="copy">
         <ha-svg-icon slot="icon" .path=${mdiContentCopy}></ha-svg-icon>
         <div class="overflow-label">
           ${this.hass.localize(
@@ -191,7 +191,7 @@ export default class HaAutomationSidebarAction extends LitElement {
       </ha-dropdown-item>
       <ha-dropdown-item
         slot="menu-items"
-        data-action="cut"
+        value="cut"
         .disabled=${this.disabled}
       >
         <ha-svg-icon slot="icon" .path=${mdiContentCut}></ha-svg-icon>
@@ -218,7 +218,7 @@ export default class HaAutomationSidebarAction extends LitElement {
       </ha-dropdown-item>
       <ha-dropdown-item
         slot="menu-items"
-        data-action="toggle_yaml_mode"
+        value="toggle_yaml_mode"
         .disabled=${!this.config.uiSupported || !!this._warnings}
       >
         <ha-svg-icon slot="icon" .path=${mdiPlaylistEdit}></ha-svg-icon>
@@ -233,7 +233,7 @@ export default class HaAutomationSidebarAction extends LitElement {
       <wa-divider slot="menu-items"></wa-divider>
       <ha-dropdown-item
         slot="menu-items"
-        data-action="disable"
+        value="disable"
         .disabled=${this.disabled}
       >
         <ha-svg-icon
@@ -249,7 +249,7 @@ export default class HaAutomationSidebarAction extends LitElement {
       </ha-dropdown-item>
       <ha-dropdown-item
         slot="menu-items"
-        data-action="delete"
+        value="delete"
         variant="danger"
         .disabled=${this.disabled}
       >
@@ -335,7 +335,7 @@ export default class HaAutomationSidebarAction extends LitElement {
   };
 
   private _handleDropdownSelect(ev: CustomEvent<{ item: HaDropdownItem }>) {
-    const action = ev.detail?.item?.dataset?.action;
+    const action = ev.detail?.item?.value;
 
     if (!action) {
       return;

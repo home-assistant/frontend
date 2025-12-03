@@ -209,7 +209,7 @@ export default class HaAutomationConditionRow extends LitElement {
         >
         </ha-icon-button>
 
-        <ha-dropdown-item data-action="test">
+        <ha-dropdown-item value="test">
           <ha-svg-icon slot="icon" .path=${mdiFlask}></ha-svg-icon>
           ${this._renderOverflowLabel(
             this.hass.localize(
@@ -217,7 +217,7 @@ export default class HaAutomationConditionRow extends LitElement {
             )
           )}
         </ha-dropdown-item>
-        <ha-dropdown-item data-action="rename" .disabled=${this.disabled}>
+        <ha-dropdown-item value="rename" .disabled=${this.disabled}>
           <ha-svg-icon slot="icon" .path=${mdiRenameBox}></ha-svg-icon>
           ${this._renderOverflowLabel(
             this.hass.localize(
@@ -228,7 +228,7 @@ export default class HaAutomationConditionRow extends LitElement {
 
         <wa-divider></wa-divider>
 
-        <ha-dropdown-item data-action="duplicate" .disabled=${this.disabled}>
+        <ha-dropdown-item value="duplicate" .disabled=${this.disabled}>
           <ha-svg-icon
             slot="icon"
             .path=${mdiPlusCircleMultipleOutline}
@@ -240,7 +240,7 @@ export default class HaAutomationConditionRow extends LitElement {
           )}
         </ha-dropdown-item>
 
-        <ha-dropdown-item data-action="copy" .disabled=${this.disabled}>
+        <ha-dropdown-item value="copy" .disabled=${this.disabled}>
           <ha-svg-icon slot="icon" .path=${mdiContentCopy}></ha-svg-icon
           >${this._renderOverflowLabel(
             this.hass.localize(
@@ -262,7 +262,7 @@ export default class HaAutomationConditionRow extends LitElement {
           )}
         </ha-dropdown-item>
 
-        <ha-dropdown-item data-action="cut" .disabled=${this.disabled}>
+        <ha-dropdown-item value="cut" .disabled=${this.disabled}>
           <ha-svg-icon slot="icon" .path=${mdiContentCut}></ha-svg-icon
           >${this._renderOverflowLabel(
             this.hass.localize(
@@ -287,7 +287,7 @@ export default class HaAutomationConditionRow extends LitElement {
         ${!this.optionsInSidebar
           ? html`
               <ha-dropdown-item
-                data-action="move_up"
+                value="move_up"
                 .disabled=${this.disabled || !!this.first}
               >
                 ${this.hass.localize(
@@ -296,7 +296,7 @@ export default class HaAutomationConditionRow extends LitElement {
                 <ha-svg-icon slot="icon" .path=${mdiArrowUp}></ha-svg-icon
               ></ha-dropdown-item>
               <ha-dropdown-item
-                data-action="move_down"
+                value="move_down"
                 .disabled=${this.disabled || !!this.last}
               >
                 ${this.hass.localize(
@@ -307,7 +307,7 @@ export default class HaAutomationConditionRow extends LitElement {
             `
           : nothing}
 
-        <ha-dropdown-item data-action="toggle_yaml_mode">
+        <ha-dropdown-item value="toggle_yaml_mode">
           <ha-svg-icon slot="icon" .path=${mdiPlaylistEdit}></ha-svg-icon>
           ${this._renderOverflowLabel(
             this.hass.localize(
@@ -318,7 +318,7 @@ export default class HaAutomationConditionRow extends LitElement {
 
         <wa-divider></wa-divider>
 
-        <ha-dropdown-item data-action="disable" .disabled=${this.disabled}>
+        <ha-dropdown-item value="disable" .disabled=${this.disabled}>
           <ha-svg-icon
             slot="icon"
             .path=${this.condition.enabled === false
@@ -334,7 +334,7 @@ export default class HaAutomationConditionRow extends LitElement {
         </ha-dropdown-item>
         <ha-dropdown-item
           variant="danger"
-          data-action="delete"
+          value="delete"
           .disabled=${this.disabled}
         >
           <ha-svg-icon
@@ -818,7 +818,7 @@ export default class HaAutomationConditionRow extends LitElement {
   }
 
   private _handleDropdownSelect(ev: CustomEvent<{ item: HaDropdownItem }>) {
-    const action = ev.detail?.item?.dataset?.action;
+    const action = ev.detail?.item?.value;
 
     if (!action) {
       return;

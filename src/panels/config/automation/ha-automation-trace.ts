@@ -126,7 +126,7 @@ export class HaAutomationTrace extends LitElement {
             .path=${mdiDotsVertical}
           ></ha-icon-button>
 
-          <ha-dropdown-item .disabled=${!stateObj} data-action="show_info">
+          <ha-dropdown-item .disabled=${!stateObj} value="show_info">
             ${this.hass.localize("ui.panel.config.automation.editor.show_info")}
             <ha-svg-icon
               slot="icon"
@@ -136,7 +136,7 @@ export class HaAutomationTrace extends LitElement {
 
           ${stateObj?.attributes.id && this.narrow
             ? html`
-                <ha-dropdown-item data-action="edit_automation">
+                <ha-dropdown-item value="edit_automation">
                   ${this.hass.localize(
                     "ui.panel.config.automation.trace.edit_automation"
                   )}
@@ -147,15 +147,12 @@ export class HaAutomationTrace extends LitElement {
 
           <wa-divider></wa-divider>
 
-          <ha-dropdown-item data-action="refresh">
+          <ha-dropdown-item value="refresh">
             ${this.hass.localize("ui.panel.config.automation.trace.refresh")}
             <ha-svg-icon slot="icon" .path=${mdiRefresh}></ha-svg-icon>
           </ha-dropdown-item>
 
-          <ha-dropdown-item
-            .disabled=${!this._trace}
-            data-action="download_trace"
-          >
+          <ha-dropdown-item .disabled=${!this._trace} value="download_trace">
             ${this.hass.localize(
               "ui.panel.config.automation.trace.download_trace"
             )}
@@ -518,7 +515,7 @@ export class HaAutomationTrace extends LitElement {
   }
 
   private _handleDropdownSelect(ev: CustomEvent<{ item: HaDropdownItem }>) {
-    const action = ev.detail?.item?.dataset?.action;
+    const action = ev.detail?.item?.value;
 
     if (!action) {
       return;

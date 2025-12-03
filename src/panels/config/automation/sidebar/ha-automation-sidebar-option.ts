@@ -61,7 +61,7 @@ export default class HaAutomationSidebarOption extends LitElement {
         : html`
             <ha-dropdown-item
               slot="menu-items"
-              data-action="rename"
+              value="rename"
               .disabled=${!!disabled}
             >
               <ha-svg-icon slot="icon" .path=${mdiRenameBox}></ha-svg-icon>
@@ -75,7 +75,7 @@ export default class HaAutomationSidebarOption extends LitElement {
 
             <ha-dropdown-item
               slot="menu-items"
-              data-action="duplicate"
+              value="duplicate"
               .disabled=${this.disabled}
             >
               <ha-svg-icon
@@ -92,7 +92,7 @@ export default class HaAutomationSidebarOption extends LitElement {
             <wa-divider slot="menu-items"></wa-divider>
             <ha-dropdown-item
               slot="menu-items"
-              data-action="delete"
+              value="delete"
               .disabled=${this.disabled}
               variant="danger"
             >
@@ -130,7 +130,7 @@ export default class HaAutomationSidebarOption extends LitElement {
   }
 
   private _handleDropdownSelect(ev: CustomEvent<{ item: HaDropdownItem }>) {
-    const action = ev.detail?.item?.dataset?.action;
+    const action = ev.detail?.item?.value;
 
     if (!action) {
       return;

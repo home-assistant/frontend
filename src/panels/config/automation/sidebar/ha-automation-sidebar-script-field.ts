@@ -63,7 +63,7 @@ export default class HaAutomationSidebarScriptField extends LitElement {
       <span slot="title">${title}</span>
       <ha-dropdown-item
         slot="menu-items"
-        data-action="toggle_yaml_mode"
+        value="toggle_yaml_mode"
         .disabled=${!!this._warnings}
       >
         <ha-svg-icon slot="icon" .path=${mdiPlaylistEdit}></ha-svg-icon>
@@ -76,9 +76,9 @@ export default class HaAutomationSidebarScriptField extends LitElement {
       </ha-dropdown-item>
       <ha-dropdown-item
         slot="menu-items"
-        data-action="delete"
+        value="delete"
         .disabled=${this.disabled}
-        class="warning"
+        variant="danger"
       >
         <ha-svg-icon slot="icon" .path=${mdiDelete}></ha-svg-icon>
         <div class="overflow-label">
@@ -157,7 +157,7 @@ export default class HaAutomationSidebarScriptField extends LitElement {
   };
 
   private _handleDropdownSelect(ev: CustomEvent<{ item: HaDropdownItem }>) {
-    const action = ev.detail?.item?.dataset?.action;
+    const action = ev.detail?.item?.value;
 
     if (!action) {
       return;

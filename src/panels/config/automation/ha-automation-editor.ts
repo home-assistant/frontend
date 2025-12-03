@@ -306,14 +306,14 @@ export class HaAutomationEditor extends PreventUnsavedMixin(
 
           ${this._mode === "gui" && this.narrow
             ? html`<ha-dropdown-item
-                  data-action="undo"
+                  value="undo"
                   .disabled=${!this._undoRedoController.canUndo}
                 >
                   ${this.hass.localize("ui.common.undo")}
                   <ha-svg-icon slot="icon" .path=${mdiUndo}></ha-svg-icon>
                 </ha-dropdown-item>
                 <ha-dropdown-item
-                  data-action="redo"
+                  value="redo"
                   .disabled=${!this._undoRedoController.canRedo}
                 >
                   ${this.hass.localize("ui.common.redo")}
@@ -321,7 +321,7 @@ export class HaAutomationEditor extends PreventUnsavedMixin(
                 </ha-dropdown-item>`
             : nothing}
 
-          <ha-dropdown-item .disabled=${!stateObj} data-action="info">
+          <ha-dropdown-item .disabled=${!stateObj} value="info">
             ${this.hass.localize("ui.panel.config.automation.editor.show_info")}
             <ha-svg-icon
               slot="icon"
@@ -329,27 +329,27 @@ export class HaAutomationEditor extends PreventUnsavedMixin(
             ></ha-svg-icon>
           </ha-dropdown-item>
 
-          <ha-dropdown-item .disabled=${!stateObj} data-action="settings">
+          <ha-dropdown-item .disabled=${!stateObj} value="settings">
             ${this.hass.localize(
               "ui.panel.config.automation.picker.show_settings"
             )}
             <ha-svg-icon slot="icon" .path=${mdiCog}></ha-svg-icon>
           </ha-dropdown-item>
 
-          <ha-dropdown-item .disabled=${!stateObj} data-action="category">
+          <ha-dropdown-item .disabled=${!stateObj} value="category">
             ${this.hass.localize(
               `ui.panel.config.scene.picker.${this._registryEntry?.categories?.automation ? "edit_category" : "assign_category"}`
             )}
             <ha-svg-icon slot="icon" .path=${mdiTag}></ha-svg-icon>
           </ha-dropdown-item>
 
-          <ha-dropdown-item .disabled=${!stateObj} data-action="run">
+          <ha-dropdown-item .disabled=${!stateObj} value="run">
             ${this.hass.localize("ui.panel.config.automation.editor.run")}
             <ha-svg-icon slot="icon" .path=${mdiPlay}></ha-svg-icon>
           </ha-dropdown-item>
 
           ${stateObj && this.narrow
-            ? html`<ha-dropdown-item data-action="trace">
+            ? html`<ha-dropdown-item value="trace">
                 ${this.hass.localize(
                   "ui.panel.config.automation.editor.show_trace"
                 )}
@@ -361,7 +361,7 @@ export class HaAutomationEditor extends PreventUnsavedMixin(
             : nothing}
 
           <ha-dropdown-item
-            data-action="rename"
+            value="rename"
             .disabled=${this._readOnly ||
             !this.automationId ||
             this._mode === "yaml"}
@@ -389,7 +389,7 @@ export class HaAutomationEditor extends PreventUnsavedMixin(
           <ha-dropdown-item
             .disabled=${!!this._blueprintConfig ||
             (!this._readOnly && !this.automationId)}
-            data-action="duplicate"
+            value="duplicate"
           >
             ${this.hass.localize(
               this._readOnly
@@ -405,7 +405,7 @@ export class HaAutomationEditor extends PreventUnsavedMixin(
           ${useBlueprint
             ? html`
                 <ha-dropdown-item
-                  data-action="take_control"
+                  value="take_control"
                   .disabled=${this._readOnly}
                 >
                   ${this.hass.localize(
@@ -416,7 +416,7 @@ export class HaAutomationEditor extends PreventUnsavedMixin(
               `
             : nothing}
 
-          <ha-dropdown-item data-action="toggle_yaml_mode">
+          <ha-dropdown-item value="toggle_yaml_mode">
             ${this.hass.localize(
               `ui.panel.config.automation.editor.edit_${this._mode === "gui" ? "yaml" : "ui"}`
             )}
@@ -425,7 +425,7 @@ export class HaAutomationEditor extends PreventUnsavedMixin(
 
           <wa-divider></wa-divider>
 
-          <ha-dropdown-item .disabled=${!stateObj} data-action="disable">
+          <ha-dropdown-item .disabled=${!stateObj} value="disable">
             ${stateObj?.state === "off"
               ? this.hass.localize("ui.panel.config.automation.editor.enable")
               : this.hass.localize("ui.panel.config.automation.editor.disable")}
@@ -440,7 +440,7 @@ export class HaAutomationEditor extends PreventUnsavedMixin(
           <ha-dropdown-item
             .disabled=${!this.automationId}
             .variant=${this.automationId ? "danger" : "default"}
-            data-action="delete"
+            value="delete"
           >
             ${this.hass.localize("ui.panel.config.automation.picker.delete")}
             <ha-svg-icon
@@ -1214,7 +1214,7 @@ export class HaAutomationEditor extends PreventUnsavedMixin(
   }
 
   private _handleDropdownSelect(ev: CustomEvent<{ item: HaDropdownItem }>) {
-    const action = ev.detail?.item?.dataset?.action;
+    const action = ev.detail?.item?.value;
 
     if (!action) {
       return;

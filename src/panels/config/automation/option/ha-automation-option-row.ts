@@ -169,7 +169,7 @@ export default class HaAutomationOptionRow extends LitElement {
                 .path=${mdiDotsVertical}
               ></ha-icon-button>
 
-              <ha-dropdown-item data-action="rename" .disabled=${this.disabled}>
+              <ha-dropdown-item value="rename" .disabled=${this.disabled}>
                 <ha-svg-icon slot="icon" .path=${mdiRenameBox}></ha-svg-icon>
                 ${this._renderOverflowLabel(
                   this.hass.localize(
@@ -178,10 +178,7 @@ export default class HaAutomationOptionRow extends LitElement {
                 )}
               </ha-dropdown-item>
 
-              <ha-dropdown-item
-                data-action="duplicate"
-                .disabled=${this.disabled}
-              >
+              <ha-dropdown-item value="duplicate" .disabled=${this.disabled}>
                 <ha-svg-icon
                   slot="icon"
                   .path=${mdiPlusCircleMultipleOutline}
@@ -197,7 +194,7 @@ export default class HaAutomationOptionRow extends LitElement {
               ${!this.optionsInSidebar
                 ? html`
                     <ha-dropdown-item
-                      data-action="move_up"
+                      value="move_up"
                       .disabled=${this.disabled || !!this.first}
                     >
                       ${this.hass.localize(
@@ -206,7 +203,7 @@ export default class HaAutomationOptionRow extends LitElement {
                       <ha-svg-icon slot="icon" .path=${mdiArrowUp}></ha-svg-icon
                     ></ha-dropdown-item>
                     <ha-dropdown-item
-                      data-action="move_down"
+                      value="move_down"
                       .disabled=${this.disabled || !!this.last}
                     >
                       ${this.hass.localize(
@@ -221,7 +218,7 @@ export default class HaAutomationOptionRow extends LitElement {
                 : nothing}
 
               <ha-dropdown-item
-                data-action="delete"
+                value="delete"
                 variant="danger"
                 .disabled=${this.disabled}
               >
@@ -353,7 +350,7 @@ export default class HaAutomationOptionRow extends LitElement {
   }
 
   private _handleDropdownSelect(ev: CustomEvent<{ item: HaDropdownItem }>) {
-    const action = ev.detail?.item?.dataset?.action;
+    const action = ev.detail?.item?.value;
 
     if (!action) {
       return;

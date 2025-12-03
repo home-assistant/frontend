@@ -222,7 +222,7 @@ export default class HaAutomationTriggerRow extends LitElement {
           .path=${mdiDotsVertical}
         ></ha-icon-button>
         <ha-dropdown-item
-          data-action="rename"
+          value="rename"
           .disabled=${this.disabled || type === "list"}
         >
           <ha-svg-icon slot="icon" .path=${mdiRenameBox}></ha-svg-icon>
@@ -235,7 +235,7 @@ export default class HaAutomationTriggerRow extends LitElement {
 
         <wa-divider></wa-divider>
 
-        <ha-dropdown-item data-action="duplicate" .disabled=${this.disabled}>
+        <ha-dropdown-item value="duplicate" .disabled=${this.disabled}>
           <ha-svg-icon
             slot="icon"
             .path=${mdiPlusCircleMultipleOutline}
@@ -248,7 +248,7 @@ export default class HaAutomationTriggerRow extends LitElement {
           )}
         </ha-dropdown-item>
 
-        <ha-dropdown-item data-action="copy" .disabled=${this.disabled}>
+        <ha-dropdown-item value="copy" .disabled=${this.disabled}>
           <ha-svg-icon slot="icon" .path=${mdiContentCopy}></ha-svg-icon>
           ${this._renderOverflowLabel(
             this.hass.localize(
@@ -270,7 +270,7 @@ export default class HaAutomationTriggerRow extends LitElement {
           )}
         </ha-dropdown-item>
 
-        <ha-dropdown-item data-action="cut" .disabled=${this.disabled}>
+        <ha-dropdown-item value="cut" .disabled=${this.disabled}>
           <ha-svg-icon slot="icon" .path=${mdiContentCut}></ha-svg-icon>
           ${this._renderOverflowLabel(
             this.hass.localize(
@@ -295,7 +295,7 @@ export default class HaAutomationTriggerRow extends LitElement {
         ${!this.optionsInSidebar
           ? html`
               <ha-dropdown-item
-                data-action="move_up"
+                value="move_up"
                 .disabled=${this.disabled || !!this.first}
               >
                 ${this.hass.localize(
@@ -304,7 +304,7 @@ export default class HaAutomationTriggerRow extends LitElement {
                 <ha-svg-icon slot="icon" .path=${mdiArrowUp}></ha-svg-icon
               ></ha-dropdown-item>
               <ha-dropdown-item
-                data-action="move_down"
+                value="move_down"
                 .disabled=${this.disabled || !!this.last}
               >
                 ${this.hass.localize(
@@ -316,7 +316,7 @@ export default class HaAutomationTriggerRow extends LitElement {
           : nothing}
 
         <ha-dropdown-item
-          data-action="toggle_yaml_mode"
+          value="toggle_yaml_mode"
           .disabled=${!supported || !!this._warnings}
         >
           <ha-svg-icon slot="icon" .path=${mdiPlaylistEdit}></ha-svg-icon>
@@ -330,7 +330,7 @@ export default class HaAutomationTriggerRow extends LitElement {
         <wa-divider></wa-divider>
 
         <ha-dropdown-item
-          data-action="disable"
+          value="disable"
           .disabled=${this.disabled || type === "list"}
         >
           <ha-svg-icon
@@ -347,7 +347,7 @@ export default class HaAutomationTriggerRow extends LitElement {
           )}
         </ha-dropdown-item>
         <ha-dropdown-item
-          data-action="delete"
+          value="delete"
           variant="danger"
           .disabled=${this.disabled}
         >
@@ -791,7 +791,7 @@ export default class HaAutomationTriggerRow extends LitElement {
   }
 
   private _handleDropdownSelect(ev: CustomEvent<{ item: HaDropdownItem }>) {
-    const action = ev.detail?.item?.dataset?.action;
+    const action = ev.detail?.item?.value;
 
     if (!action) {
       return;

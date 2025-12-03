@@ -128,7 +128,7 @@ export class HaScriptTrace extends LitElement {
             .path=${mdiDotsVertical}
           ></ha-icon-button>
 
-          <ha-dropdown-item .disabled=${!stateObj} data-action="show_info">
+          <ha-dropdown-item .disabled=${!stateObj} value="show_info">
             ${this.hass.localize("ui.panel.config.script.editor.show_info")}
             <ha-svg-icon
               slot="icon"
@@ -137,7 +137,7 @@ export class HaScriptTrace extends LitElement {
           </ha-dropdown-item>
 
           ${this.narrow && this.scriptId
-            ? html`<ha-dropdown-item data-action="edit_script">
+            ? html`<ha-dropdown-item value="edit_script">
                 ${this.hass.localize(
                   "ui.panel.config.script.trace.edit_script"
                 )}
@@ -147,15 +147,12 @@ export class HaScriptTrace extends LitElement {
 
           <wa-divider></wa-divider>
 
-          <ha-dropdown-item data-action="refresh">
+          <ha-dropdown-item value="refresh">
             ${this.hass.localize("ui.panel.config.automation.trace.refresh")}
             <ha-svg-icon slot="icon" .path=${mdiRefresh}></ha-svg-icon>
           </ha-dropdown-item>
 
-          <ha-dropdown-item
-            .disabled=${!this._trace}
-            data-action="download_trace"
-          >
+          <ha-dropdown-item .disabled=${!this._trace} value="download_trace">
             ${this.hass.localize(
               "ui.panel.config.automation.trace.download_trace"
             )}
@@ -528,7 +525,7 @@ export class HaScriptTrace extends LitElement {
   }
 
   private _handleDropdownSelect(ev: CustomEvent<{ item: HaDropdownItem }>) {
-    const action = ev.detail?.item?.dataset?.action;
+    const action = ev.detail?.item?.value;
 
     if (!action) {
       return;
