@@ -639,16 +639,8 @@ export class HuiTodoListCard extends LitElement implements LovelaceCard {
   private _handleCompletedMenuSelect(
     ev: CustomEvent<{ item: HaDropdownItem }>
   ) {
-    const action = ev.detail?.item?.value;
-
-    if (!action) {
-      return;
-    }
-
-    switch (action) {
-      case "clear":
-        this._clearCompletedItems();
-        break;
+    if (ev.detail?.item?.value === "clear") {
+      this._clearCompletedItems();
     }
   }
 
@@ -708,16 +700,8 @@ export class HuiTodoListCard extends LitElement implements LovelaceCard {
   }
 
   private _handlePrimaryMenuSelect(ev: CustomEvent<{ item: HaDropdownItem }>) {
-    const action = ev.detail?.item?.value;
-
-    if (!action) {
-      return;
-    }
-
-    switch (action) {
-      case "reorder":
-        this._toggleReorder();
-        break;
+    if (ev.detail?.item?.value === "reorder") {
+      this._toggleReorder();
     }
   }
 
