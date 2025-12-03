@@ -10,6 +10,7 @@ interface Snowflake {
   size: number;
   duration: number;
   delay: number;
+  rotation: number;
 }
 
 @customElement("ha-snowflakes")
@@ -50,6 +51,7 @@ export class HaSnowflakes extends SubscribeMixin(LitElement) {
         size: Math.random() * 12 + 8, // Random size between 8-20px
         duration: Math.random() * 8 + 8, // Random duration between 8-16s
         delay: Math.random() * 8, // Random delay between 0-8s
+        rotation: Math.random() * 720 - 360, // Random starting rotation -360 to 360deg
       });
     }
     this._snowflakes = snowflakes;
@@ -83,6 +85,7 @@ export class HaSnowflakes extends SubscribeMixin(LitElement) {
                 height: ${flake.size}px;
                 animation-duration: ${flake.duration}s;
                 animation-delay: ${flake.delay}s;
+                --rotation: ${flake.rotation}deg;
               "
               viewBox="0 0 16 16"
               fill="none"
@@ -144,19 +147,23 @@ export class HaSnowflakes extends SubscribeMixin(LitElement) {
 
     @keyframes fall {
       0% {
-        transform: translateY(-10vh) translateX(0);
+        transform: translateY(-10vh) translateX(0) rotate(var(--rotation));
       }
       25% {
-        transform: translateY(30vh) translateX(10px);
+        transform: translateY(30vh) translateX(10px)
+          rotate(calc(var(--rotation) + 25deg));
       }
       50% {
-        transform: translateY(60vh) translateX(-10px);
+        transform: translateY(60vh) translateX(-10px)
+          rotate(calc(var(--rotation) + 50deg));
       }
       75% {
-        transform: translateY(85vh) translateX(10px);
+        transform: translateY(85vh) translateX(10px)
+          rotate(calc(var(--rotation) + 75deg));
       }
       100% {
-        transform: translateY(120vh) translateX(0);
+        transform: translateY(120vh) translateX(0)
+          rotate(calc(var(--rotation) + 100deg));
       }
     }
 
