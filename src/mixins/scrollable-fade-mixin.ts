@@ -13,12 +13,19 @@ import type { Constructor } from "../types";
 const stylesArray = (styles?: CSSResultGroup | CSSResultGroup[]) =>
   styles === undefined ? [] : Array.isArray(styles) ? styles : [styles];
 
+/**
+ * Mixin that adds top and bottom fade overlays for scrollable content.
+ * @param superClass - The LitElement class to extend.
+ * @returns Extended class with scrollable fade functionality.
+ */
 export const ScrollableFadeMixin = <T extends Constructor<LitElement>>(
   superClass: T
 ) => {
   class ScrollableFadeClass extends superClass {
+    /** Whether content has scrolled past the threshold. Controls top fade visibility. */
     @state() protected _contentScrolled = false;
 
+    /** Whether content extends beyond the viewport. Controls bottom fade visibility. */
     @state() protected _contentScrollable = false;
 
     private _scrollTarget?: HTMLElement | null;
@@ -40,21 +47,42 @@ export const ScrollableFadeMixin = <T extends Constructor<LitElement>>(
       },
     });
 
+    /**
+     * The default safe area padding for the scrollable element.
+     */
     private static readonly DEFAULT_SAFE_AREA_PADDING = 16;
 
+    /**
+     * The default scroll threshold for the scrollable element.
+     */
     private static readonly DEFAULT_SCROLL_THRESHOLD = 4;
 
+    /**
+     * The default scrollable element.
+     */
     private static readonly DEFAULT_SCROLLABLE_ELEMENT: HTMLElement | null =
       null;
 
+    /**
+     * Safe area padding in pixels for scrollable calculations. Override to customize.
+     * @returns Safe area padding value in pixels.
+     */
     protected get scrollFadeSafeAreaPadding() {
       return ScrollableFadeClass.DEFAULT_SAFE_AREA_PADDING;
     }
 
+    /**
+     * Scroll threshold in pixels for showing the top fade. Override to customize.
+     * @returns Scroll threshold value in pixels.
+     */
     protected get scrollFadeThreshold() {
       return ScrollableFadeClass.DEFAULT_SCROLL_THRESHOLD;
     }
 
+    /**
+     * Element to observe for scroll and resize events. Override to specify target.
+     * @returns The element to observe, or null.
+     */
     protected get scrollableElement(): HTMLElement | null {
       return ScrollableFadeClass.DEFAULT_SCROLLABLE_ELEMENT;
     }
@@ -74,6 +102,11 @@ export const ScrollableFadeMixin = <T extends Constructor<LitElement>>(
       super.disconnectedCallback();
     }
 
+    /**
+     * Renders top and bottom fade overlays. Call in render method.
+     * @param rounded - Whether to apply rounded corners.
+     * @returns Template containing fade elements.
+     */
     protected renderScrollableFades(rounded = false): TemplateResult {
       return html`
         <div
