@@ -2455,7 +2455,7 @@
         },
         "apps": {
           "caption": "Apps",
-          "description": "Install and manage add-ons",
+          "description": "Install and manage apps",
           "error_loading": "Error loading apps",
           "state": {
             "update_available": "Update available",
