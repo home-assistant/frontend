@@ -831,7 +831,6 @@
         "add_new": "Add new area…",
         "no_areas": "No areas available",
         "no_match": "No areas found for {term}",
-        "unassigned_areas": "Unassigned areas",
         "failed_create_area": "Failed to create area."
       },
       "floor-picker": {
@@ -2464,7 +2463,7 @@
             "introduction2": "To place devices in an area, use the link below to navigate to the integrations page and then click on a configured integration to get to the device cards.",
             "integrations_page": "Integrations page",
             "no_areas": "Looks like you have no areas yet!",
-            "unassigned_areas": "Unassigned areas",
+            "other_areas": "Other areas",
             "create_area": "Create area",
             "create_floor": "Create floor",
             "floor": {
@@ -2480,7 +2479,7 @@
           },
           "dialog": {
             "reorder_title": "Reorder floors and areas",
-            "unassigned_areas": "Unassigned areas",
+            "other_areas": "Other areas",
             "reorder_failed": "Failed to save order",
             "empty_floor": "No areas on this floor",
             "empty_unassigned": "All your areas are assigned to floors"

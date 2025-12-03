@@ -172,7 +172,7 @@ class DialogAreasFloorsOrder extends LitElement {
           ? html`<div class="floor-header">
               <span class="floor-name">
                 ${this.hass.localize(
-                  "ui.panel.config.areas.dialog.unassigned_areas"
+                  "ui.panel.config.areas.dialog.other_areas"
                 )}
               </span>
             </div>`
