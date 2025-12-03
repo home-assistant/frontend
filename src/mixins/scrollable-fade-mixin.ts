@@ -25,7 +25,8 @@ export const ScrollableFadeMixin = <T extends Constructor<LitElement>>(
 
     private _onScroll = (ev: Event) => {
       const target = ev.currentTarget as HTMLElement;
-      this._contentScrolled = (target.scrollTop ?? 0) > 0;
+      this._contentScrolled =
+        (target.scrollTop ?? 0) > this.scrollFadeThreshold;
       this._updateScrollableState(target);
     };
 
@@ -41,11 +42,17 @@ export const ScrollableFadeMixin = <T extends Constructor<LitElement>>(
 
     private static readonly DEFAULT_SAFE_AREA_PADDING = 16;
 
+    private static readonly DEFAULT_SCROLL_THRESHOLD = 4;
+
     private static readonly DEFAULT_SCROLLABLE_ELEMENT: HTMLElement | null =
       null;
 
     protected get scrollFadeSafeAreaPadding() {
       return ScrollableFadeClass.DEFAULT_SAFE_AREA_PADDING;
+    }
+
+    protected get scrollFadeThreshold() {
+      return ScrollableFadeClass.DEFAULT_SCROLL_THRESHOLD;
     }
 
     protected get scrollableElement(): HTMLElement | null {
