@@ -223,6 +223,7 @@ const getAreasAndFloorsItems = (
   }
 
   let outputAreas = areas;
+  let outputFloors = floors;
 
   let areaIds: string[] | undefined;
 
@@ -254,9 +255,29 @@ const getAreasAndFloorsItems = (
     outputAreas = outputAreas.filter(
       (area) => !area.floor_id || !excludeFloors!.includes(area.floor_id)
     );
+
+    outputFloors = outputFloors.filter(
+      (floor) => !excludeFloors!.includes(floor.floor_id)
+    );
   }
 
-  const hierarchy = getAreasFloorHierarchy(floors, outputAreas);
+  if (
+    entityFilter ||
+    deviceFilter ||
+    includeDomains ||
+    excludeDomains ||
+    includeDeviceClasses
+  ) {
+    // Ensure we only include floors that have areas with the filtered entities/devices
+    const validFloorIds = new Set(
+      outputAreas.map((area) => area.floor_id).filter((id) => id)
+    );
+    outputFloors = outputFloors.filter((floor) =>
+      validFloorIds.has(floor.floor_id)
+    );
+  }
+
+  const hierarchy = getAreasFloorHierarchy(outputFloors, outputAreas);
 
   const items: (
     | FloorComboBoxItem

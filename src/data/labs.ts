@@ -18,6 +18,11 @@ export interface LabPreviewFeaturesResponse {
   features: LabPreviewFeature[];
 }
 
+/**
+ * Fetch all lab features
+ * @param hass - The Home Assistant instance
+ * @returns A promise to fetch the lab features
+ */
 export const fetchLabFeatures = async (
   hass: HomeAssistant
 ): Promise<LabPreviewFeature[]> => {
@@ -27,6 +32,15 @@ export const fetchLabFeatures = async (
   return response.features;
 };
 
+/**
+ * Update a specific lab feature
+ * @param hass - The Home Assistant instance
+ * @param domain - The domain of the lab feature
+ * @param preview_feature - The preview feature of the lab feature
+ * @param enabled - Whether the lab feature is enabled
+ * @param create_backup - Whether to create a backup of the lab feature
+ * @returns A promise to update the lab feature
+ */
 export const labsUpdatePreviewFeature = (
   hass: HomeAssistant,
   domain: string,
@@ -65,6 +79,12 @@ const subscribeLabUpdates = (
     "labs_updated"
   );
 
+/**
+ * Subscribe to a collection of lab features
+ * @param conn - The connection to the Home Assistant instance
+ * @param onChange - The function to call when the lab features change
+ * @returns The unsubscribe function
+ */
 export const subscribeLabFeatures = (
   conn: Connection,
   onChange: (features: LabPreviewFeature[]) => void
@@ -76,3 +96,27 @@ export const subscribeLabFeatures = (
     conn,
     onChange
   );
+
+/**
+ * Subscribe to a specific lab feature
+ * @param conn - The connection to the Home Assistant instance
+ * @param domain - The domain of the lab feature
+ * @param previewFeature - The preview feature of the lab feature
+ * @param onChange - The function to call when the lab feature changes
+ * @returns The unsubscribe function
+ */
+export const subscribeLabFeature = (
+  conn: Connection,
+  domain: string,
+  previewFeature: string,
+  onChange: (enabled: boolean) => void
+) =>
+  subscribeLabFeatures(conn, (features) => {
+    const enabled =
+      features.find(
+        (feature) =>
+          feature.domain === domain &&
+          feature.preview_feature === previewFeature
+      )?.enabled ?? false;
+    onChange(enabled);
+  });

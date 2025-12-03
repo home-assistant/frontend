@@ -28,7 +28,7 @@ import {
   CONDITION_BUILDING_BLOCKS,
   subscribeConditions,
 } from "../../../../data/condition";
-import { subscribeLabFeatures } from "../../../../data/labs";
+import { subscribeLabFeature } from "../../../../data/labs";
 import { SubscribeMixin } from "../../../../mixins/subscribe-mixin";
 import type { HomeAssistant } from "../../../../types";
 import {
@@ -90,14 +90,14 @@ export default class HaAutomationCondition extends SubscribeMixin(LitElement) {
 
   protected hassSubscribe() {
     return [
-      subscribeLabFeatures(this.hass!.connection, (features) => {
-        this._newTriggersAndConditions =
-          features.find(
-            (feature) =>
-              feature.domain === "automation" &&
-              feature.preview_feature === "new_triggers_conditions"
-          )?.enabled ?? false;
-      }),
+      subscribeLabFeature(
+        this.hass!.connection,
+        "automation",
+        "new_triggers_conditions",
+        (enabled) => {
+          this._newTriggersAndConditions = enabled;
+        }
+      ),
     ];
   }
 

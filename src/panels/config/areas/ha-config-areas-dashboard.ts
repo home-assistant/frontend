@@ -266,7 +266,7 @@ export class HaConfigAreasDashboard extends LitElement {
                   <div class="header">
                     <h2>
                       ${this.hass.localize(
-                        "ui.panel.config.areas.picker.unassigned_areas"
+                        "ui.panel.config.areas.picker.other_areas"
                       )}
                     </h2>
                   </div>

@@ -911,6 +911,10 @@ export default class HaAutomationAddFromTarget extends LitElement {
     const services: Record<string, Level3Entries> = {};
 
     unassignedDevices.forEach(({ id: deviceId, entry_type }) => {
+      const device = this.devices[deviceId];
+      if (!device || device.disabled_by) {
+        return;
+      }
       const deviceEntry = {
         open: false,
         entities:
@@ -1012,6 +1016,10 @@ export default class HaAutomationAddFromTarget extends LitElement {
     const devices: Record<string, Level3Entries> = {};
 
     referenced_devices.forEach(({ id: deviceId }) => {
+      const device = this.devices[deviceId];
+      if (!device || device.disabled_by) {
+        return;
+      }
       devices[deviceId] = {
         open: false,
         entities:

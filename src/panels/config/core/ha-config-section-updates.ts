@@ -1,3 +1,4 @@
+import type { RequestSelectedDetail } from "@material/mwc-list/mwc-list-item";
 import { mdiDotsVertical, mdiRefresh } from "@mdi/js";
 import type { HassEntities } from "home-assistant-js-websocket";
 import type { TemplateResult } from "lit";
@@ -5,9 +6,13 @@ import { LitElement, css, html } from "lit";
 import { customElement, property, state } from "lit/decorators";
 import memoizeOne from "memoize-one";
 import { isComponentLoaded } from "../../../common/config/is_component_loaded";
+import { shouldHandleRequestSelectedEvent } from "../../../common/mwc/handle-request-selected-event";
 import "../../../components/ha-alert";
 import "../../../components/ha-bar";
+import "../../../components/ha-button-menu";
 import "../../../components/ha-card";
+import "../../../components/ha-check-list-item";
+import "../../../components/ha-list-item";
 import "../../../components/ha-metric";
 import { extractApiErrorMessage } from "../../../data/hassio/common";
 import type {
@@ -28,9 +33,6 @@ import "../../../layouts/hass-subpage";
 import type { HomeAssistant } from "../../../types";
 import "../dashboard/ha-config-updates";
 import { showJoinBetaDialog } from "./updates/show-dialog-join-beta";
-import "../../../components/ha-dropdown";
-import "../../../components/ha-dropdown-item";
-import "@home-assistant/webawesome/dist/components/divider/divider";
 
 @customElement("ha-config-section-updates")
 class HaConfigSectionUpdates extends LitElement {
@@ -71,25 +73,24 @@ class HaConfigSectionUpdates extends LitElement {
             .path=${mdiRefresh}
             @click=${this._checkUpdates}
           ></ha-icon-button>
-          <ha-dropdown @wa-select=${this._handleOverflowAction}>
+          <ha-button-menu multi>
             <ha-icon-button
               slot="trigger"
               .label=${this.hass.localize("ui.common.menu")}
               .path=${mdiDotsVertical}
             ></ha-icon-button>
-
-            <ha-dropdown-item
-              type="checkbox"
-              value="show_skipped"
-              .checked=${this._showSkipped}
+            <ha-check-list-item
+              left
+              @request-selected=${this._toggleSkipped}
+              .selected=${this._showSkipped}
             >
               ${this.hass.localize("ui.panel.config.updates.show_skipped")}
-            </ha-dropdown-item>
+            </ha-check-list-item>
             ${this._supervisorInfo
               ? html`
-                  <wa-divider></wa-divider>
-                  <ha-dropdown-item
-                    value="toggle_beta"
+                  <li divider role="separator"></li>
+                  <ha-list-item
+                    @request-selected=${this._toggleBeta}
                     .disabled=${this._supervisorInfo.channel === "dev"}
                   >
                     ${this._supervisorInfo.channel === "stable"
@@ -97,10 +98,10 @@ class HaConfigSectionUpdates extends LitElement {
                       : this.hass.localize(
                           "ui.panel.config.updates.leave_beta"
                         )}
-                  </ha-dropdown-item>
+                  </ha-list-item>
                 `
               : ""}
-          </ha-dropdown>
+          </ha-button-menu>
         </div>
         <div class="content">
           <ha-card outlined>
@@ -132,19 +133,27 @@ class HaConfigSectionUpdates extends LitElement {
     this._supervisorInfo = await fetchHassioSupervisorInfo(this.hass);
   }
 
-  private async _handleOverflowAction(
-    ev: CustomEvent<{ item: { value: string } }>
+  private _toggleSkipped(ev: CustomEvent<RequestSelectedDetail>): void {
+    if (ev.detail.source !== "property") {
+      return;
+    }
+
+    this._showSkipped = !this._showSkipped;
+  }
+
+  private async _toggleBeta(
+    ev: CustomEvent<RequestSelectedDetail>
   ): Promise<void> {
-    if (ev.detail.item.value === "toggle_beta") {
-      if (this._supervisorInfo!.channel === "stable") {
-        showJoinBetaDialog(this, {
-          join: async () => this._setChannel("beta"),
-        });
-      } else {
-        this._setChannel("stable");
-      }
-    } else if (ev.detail.item.value === "show_skipped") {
-      this._showSkipped = !this._showSkipped;
+    if (!shouldHandleRequestSelectedEvent(ev)) {
+      return;
+    }
+
+    if (this._supervisorInfo!.channel === "stable") {
+      showJoinBetaDialog(this, {
+        join: async () => this._setChannel("beta"),
+      });
+    } else {
+      this._setChannel("stable");
     }
   }
 

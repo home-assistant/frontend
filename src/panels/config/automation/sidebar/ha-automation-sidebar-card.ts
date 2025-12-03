@@ -3,16 +3,16 @@ import { css, html, LitElement, nothing } from "lit";
 import { customElement, property, query } from "lit/decorators";
 import { classMap } from "lit/directives/class-map";
 import { fireEvent } from "../../../../common/dom/fire_event";
+import { preventDefaultStopPropagation } from "../../../../common/dom/prevent_default_stop_propagation";
 import { stopPropagation } from "../../../../common/dom/stop_propagation";
 import "../../../../components/ha-card";
 import "../../../../components/ha-dialog-header";
+import "../../../../components/ha-dropdown";
 import "../../../../components/ha-icon-button";
-import "../../../../components/ha-md-button-menu";
-import "../../../../components/ha-md-divider";
+import { ScrollableFadeMixin } from "../../../../mixins/scrollable-fade-mixin";
 import { haStyleScrollbar } from "../../../../resources/styles";
 import type { HomeAssistant } from "../../../../types";
 import "../ha-automation-editor-warning";
-import { ScrollableFadeMixin } from "../../../../mixins/scrollable-fade-mixin";
 
 export interface SidebarOverflowMenuEntry {
   clickAction: () => void;
@@ -35,6 +35,10 @@ export default class HaAutomationSidebarCard extends ScrollableFadeMixin(
   @property({ type: Boolean, attribute: "yaml-mode" }) public yamlMode = false;
 
   @property({ attribute: false }) public warnings?: string[];
+
+  @property({ attribute: false }) public handleDropdownSelect!: (
+    ev: CustomEvent
+  ) => void;
 
   @property({ type: Boolean }) public narrow = false;
 
@@ -63,14 +67,10 @@ export default class HaAutomationSidebarCard extends ScrollableFadeMixin(
           <slot slot="title" name="title"></slot>
           <slot slot="subtitle" name="subtitle"></slot>
           <slot name="overflow-menu" slot="actionItems">
-            <ha-md-button-menu
-              quick
-              @click=${this._openOverflowMenu}
+            <ha-dropdown
+              @click=${preventDefaultStopPropagation}
               @keydown=${stopPropagation}
-              @closed=${stopPropagation}
-              .positioning=${this.narrow ? "absolute" : "fixed"}
-              anchor-corner="end-end"
-              menu-corner="start-end"
+              placement="bottom-end"
             >
               <ha-icon-button
                 slot="trigger"
@@ -78,7 +78,7 @@ export default class HaAutomationSidebarCard extends ScrollableFadeMixin(
                 .path=${mdiDotsVertical}
               ></ha-icon-button>
               <slot name="menu-items"></slot>
-            </ha-md-button-menu>
+            </ha-dropdown>
           </slot>
         </ha-dialog-header>
         ${this.warnings
@@ -98,11 +98,6 @@ export default class HaAutomationSidebarCard extends ScrollableFadeMixin(
 
   private _closeSidebar() {
     fireEvent(this, "close-sidebar");
-  }
-
-  private _openOverflowMenu(ev: MouseEvent) {
-    ev.stopPropagation();
-    ev.preventDefault();
   }
 
   static get styles() {

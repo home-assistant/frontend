@@ -24,7 +24,7 @@ import {
   type Trigger,
   type TriggerList,
 } from "../../../../data/automation";
-import { subscribeLabFeatures } from "../../../../data/labs";
+import { subscribeLabFeature } from "../../../../data/labs";
 import type { TriggerDescriptions } from "../../../../data/trigger";
 import { isTriggerList, subscribeTriggers } from "../../../../data/trigger";
 import { SubscribeMixin } from "../../../../mixins/subscribe-mixin";
@@ -85,14 +85,14 @@ export default class HaAutomationTrigger extends SubscribeMixin(LitElement) {
 
   protected hassSubscribe() {
     return [
-      subscribeLabFeatures(this.hass!.connection, (features) => {
-        this._newTriggersAndConditions =
-          features.find(
-            (feature) =>
-              feature.domain === "automation" &&
-              feature.preview_feature === "new_triggers_conditions"
-          )?.enabled ?? false;
-      }),
+      subscribeLabFeature(
+        this.hass!.connection,
+        "automation",
+        "new_triggers_conditions",
+        (enabled) => {
+          this._newTriggersAndConditions = enabled;
+        }
+      ),
     ];
   }
 
