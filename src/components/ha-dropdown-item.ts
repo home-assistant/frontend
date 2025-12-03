@@ -25,13 +25,9 @@ export class HaDropdownItem extends DropdownItem {
             <ha-svg-icon
               id="check"
               part="checkmark"
-              exportparts="svg:checkmark__svg"
-              library="system"
-              name="check"
               .path=${this.checked
                 ? mdiCheckboxMarked
                 : mdiCheckboxBlankOutline}
-              slot="icon"
             ></ha-svg-icon>
           `
         : nothing}
