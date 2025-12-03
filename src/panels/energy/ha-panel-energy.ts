@@ -1,11 +1,10 @@
-import { mdiDownload, mdiPencil } from "@mdi/js";
+import { mdiDownload } from "@mdi/js";
 import type { CSSResultGroup, PropertyValues } from "lit";
 import { LitElement, css, html, nothing } from "lit";
 import { customElement, property, state } from "lit/decorators";
-import { goBack, navigate } from "../../common/navigate";
+import { navigate } from "../../common/navigate";
 import "../../components/ha-alert";
 import "../../components/ha-icon-button-arrow-prev";
-import "../../components/ha-list-item";
 import "../../components/ha-menu-button";
 import "../../components/ha-top-app-bar-fixed";
 import type {
@@ -23,16 +22,14 @@ import {
   getSummedData,
 } from "../../data/energy";
 import type { LovelaceConfig } from "../../data/lovelace/config/types";
-import {
-  isStrategyView,
-  type LovelaceViewConfig,
-} from "../../data/lovelace/config/view";
+import type { LovelaceViewConfig } from "../../data/lovelace/config/view";
 import type { StatisticValue } from "../../data/recorder";
 import { haStyle } from "../../resources/styles";
 import type { HomeAssistant, PanelInfo } from "../../types";
 import { fileDownload } from "../../util/file_download";
 import "../lovelace/components/hui-energy-period-selector";
 import "../lovelace/hui-root";
+import type { ExtraActionItem } from "../lovelace/hui-root";
 import type { Lovelace } from "../lovelace/types";
 import "../lovelace/views/hui-view";
 import "../lovelace/views/hui-view-container";
@@ -51,37 +48,38 @@ const OVERVIEW_VIEW = {
   strategy: {
     type: "energy-overview",
     collection_key: DEFAULT_ENERGY_COLLECTION_KEY,
-    allow_compare: false,
   },
 } as LovelaceViewConfig;
 
 const ENERGY_VIEW = {
   path: "electricity",
-  back_path: "/energy",
   strategy: {
     type: "energy",
     collection_key: DEFAULT_ENERGY_COLLECTION_KEY,
-    allow_compare: true,
   },
 } as LovelaceViewConfig;
 
 const WATER_VIEW = {
-  back_path: "/energy",
   path: "water",
   strategy: {
     type: "water",
     collection_key: DEFAULT_ENERGY_COLLECTION_KEY,
-    allow_compare: true,
+  },
+} as LovelaceViewConfig;
+
+const GAS_VIEW = {
+  path: "gas",
+  strategy: {
+    type: "gas",
+    collection_key: DEFAULT_ENERGY_COLLECTION_KEY,
   },
 } as LovelaceViewConfig;
 
 const POWER_VIEW = {
-  back_path: "/energy",
-  path: "power",
+  path: "now",
   strategy: {
     type: "power",
-    collection_key: DEFAULT_ENERGY_COLLECTION_KEY,
-    allow_compare: false,
+    collection_key: "energy_dashboard_now",
   },
 } as LovelaceViewConfig;
 
@@ -101,8 +99,6 @@ class PanelEnergy extends LitElement {
 
   @state() private _lovelace?: Lovelace;
 
-  @state() private _searchParms = new URLSearchParams(window.location.search);
-
   @property({ attribute: false }) public route?: {
     path: string;
     prefix: string;
@@ -113,6 +109,16 @@ class PanelEnergy extends LitElement {
 
   @state()
   private _error?: string;
+
+  private get _extraActionItems(): ExtraActionItem[] {
+    return [
+      {
+        icon: mdiDownload,
+        labelKey: "ui.panel.energy.download_data",
+        action: this._dumpCSV,
+      },
+    ];
+  }
 
   public willUpdate(changedProps: PropertyValues) {
     super.willUpdate(changedProps);
@@ -188,14 +194,9 @@ class PanelEnergy extends LitElement {
       enableFullEditMode: () => undefined,
       saveConfig: async () => undefined,
       deleteConfig: async () => undefined,
-      setEditMode: () => undefined,
+      setEditMode: () => this._navigateConfig(),
       showToast: () => undefined,
     };
-  }
-
-  private _back(ev) {
-    ev.stopPropagation();
-    goBack();
   }
 
   protected render() {
@@ -222,17 +223,6 @@ class PanelEnergy extends LitElement {
       return nothing;
     }
 
-    const viewPath: string | undefined = this.route!.path.split("/")[1];
-
-    const views = this._lovelace.config?.views || [];
-    const viewIndex = Math.max(
-      views.findIndex((view) => view.path === viewPath),
-      0
-    );
-    const view = views[viewIndex];
-
-    const showBack = this._searchParms.has("historyBack") || viewIndex > 0;
-
     return html`
       <hui-root
         .hass=${this.hass}
@@ -240,60 +230,9 @@ class PanelEnergy extends LitElement {
         .lovelace=${this._lovelace}
         .route=${this.route}
         .panel=${this.panel}
+        .extraActionItems=${this._extraActionItems}
         @reload-energy-panel=${this._reloadConfig}
-      >
-        <div class="toolbar" slot="toolbar">
-          ${showBack
-            ? html`
-                <ha-icon-button-arrow-prev
-                  @click=${this._back}
-                  slot="navigationIcon"
-                ></ha-icon-button-arrow-prev>
-              `
-            : html`
-                <ha-menu-button
-                  slot="navigationIcon"
-                  .hass=${this.hass}
-                  .narrow=${this.narrow}
-                ></ha-menu-button>
-              `}
-          ${!this.narrow
-            ? html`<div class="main-title">
-                ${this.hass.localize(
-                  `ui.panel.energy.title.${viewPath}` as LocalizeKeys
-                ) || this.hass.localize("panel.energy")}
-              </div>`
-            : nothing}
-
-          <hui-energy-period-selector
-            .hass=${this.hass}
-            .collectionKey=${DEFAULT_ENERGY_COLLECTION_KEY}
-            .allowCompare=${isStrategyView(view) && view.strategy.allow_compare}
-          >
-            ${this.hass.user?.is_admin
-              ? html`
-                  <ha-list-item
-                    slot="overflow-menu"
-                    graphic="icon"
-                    @request-selected=${this._navigateConfig}
-                  >
-                    <ha-svg-icon slot="graphic" .path=${mdiPencil}>
-                    </ha-svg-icon>
-                    ${this.hass!.localize("ui.panel.energy.configure")}
-                  </ha-list-item>
-                `
-              : nothing}
-            <ha-list-item
-              slot="overflow-menu"
-              graphic="icon"
-              @request-selected=${this._dumpCSV}
-            >
-              <ha-svg-icon slot="graphic" .path=${mdiDownload}> </ha-svg-icon>
-              ${this.hass!.localize("ui.panel.energy.download_data")}
-            </ha-list-item>
-          </hui-energy-period-selector>
-        </div>
-      </hui-root>
+      ></hui-root>
     `;
   }
 
@@ -325,29 +264,44 @@ class PanelEnergy extends LitElement {
       this._prefs.energy_sources.some((source) => source.type === "water") ||
       this._prefs.device_consumption_water?.length > 0;
 
+    const hasGas = this._prefs.energy_sources.some(
+      (source) => source.type === "gas"
+    );
+
     const views: LovelaceViewConfig[] = [];
     if (hasEnergy) {
       views.push(ENERGY_VIEW);
     }
-    if (hasPower) {
-      views.push(POWER_VIEW);
+    if (hasGas) {
+      views.push(GAS_VIEW);
     }
     if (hasWater) {
       views.push(WATER_VIEW);
     }
+    if (hasPower) {
+      views.push(POWER_VIEW);
+    }
     if (views.length > 1) {
       views.unshift(OVERVIEW_VIEW);
     }
-    return { views };
+    return {
+      views: views.map((view) => ({
+        ...view,
+        title:
+          view.title ||
+          this.hass.localize(
+            `ui.panel.energy.title.${view.path}` as LocalizeKeys
+          ),
+      })),
+    };
   }
 
-  private _navigateConfig(ev) {
-    ev.stopPropagation();
+  private _navigateConfig(ev?: Event) {
+    ev?.stopPropagation();
     navigate("/config/energy?historyBack=1");
   }
 
-  private async _dumpCSV(ev) {
-    ev.stopPropagation();
+  private _dumpCSV = async () => {
     const energyData = getEnergyDataCollection(this.hass, {
       key: "energy_dashboard",
     });
@@ -659,7 +613,7 @@ class PanelEnergy extends LitElement {
     });
     const url = window.URL.createObjectURL(blob);
     fileDownload(url, "energy.csv");
-  }
+  };
 
   private _reloadConfig() {
     this._loadConfig();
@@ -669,21 +623,8 @@ class PanelEnergy extends LitElement {
     return [
       haStyle,
       css`
-        :host hui-energy-period-selector {
-          flex-grow: 1;
-          padding-left: 32px;
-          padding-inline-start: 32px;
-          padding-inline-end: initial;
-          --disabled-text-color: rgba(var(--rgb-text-primary-color), 0.5);
-          direction: var(--direction);
-          --date-range-picker-max-height: calc(100vh - 80px);
-        }
-        :host([narrow]) hui-energy-period-selector {
-          padding-left: 0px;
-          padding-inline-start: 0px;
-          padding-inline-end: initial;
-        }
         :host {
+          --ha-view-sections-column-max-width: 100%;
           -ms-user-select: none;
           -webkit-user-select: none;
           -moz-user-select: none;

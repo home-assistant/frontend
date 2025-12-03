@@ -215,57 +215,62 @@ export class AssistPipelineDebug extends LitElement {
             ? html`
                 <div class="messages">
                   ${messages.map((content) =>
-                    content.role === "system" || content.role === "tool_result"
-                      ? html`
-                          <ha-expansion-panel
-                            class="content-expansion ${content.role}"
-                          >
-                            <div slot="header">
-                              ${content.role === "system"
-                                ? "System"
-                                : `Result for ${content.tool_name}`}
-                            </div>
-                            ${content.role === "system"
-                              ? html`<pre>${content.content}</pre>`
-                              : html`
-                                  <ha-yaml-editor
-                                    read-only
-                                    auto-update
-                                    .value=${content}
-                                  ></ha-yaml-editor>
-                                `}
-                          </ha-expansion-panel>
-                        `
-                      : html`
-                          ${content.content
-                            ? html`
-                                <div class=${`message ${content.role}`}>
-                                  ${content.content}
-                                </div>
-                              `
-                            : nothing}
-                          ${content.role === "assistant" &&
-                          content.tool_calls?.length
-                            ? html`
-                                <ha-expansion-panel
-                                  class="content-expansion assistant"
-                                >
-                                  <span slot="header">
-                                    Call
-                                    ${content.tool_calls.length === 1
-                                      ? content.tool_calls[0].tool_name
-                                      : `${content.tool_calls.length} tools`}
-                                  </span>
+                    content.role === "system"
+                      ? content.content
+                        ? html`
+                            <ha-expansion-panel
+                              class="content-expansion ${content.role}"
+                            >
+                              <div slot="header">System</div>
+                              <pre>${content.content}</pre>
+                            </ha-expansion-panel>
+                          `
+                        : nothing
+                      : content.role === "tool_result"
+                        ? html`
+                            <ha-expansion-panel
+                              class="content-expansion ${content.role}"
+                            >
+                              <div slot="header">
+                                Result for ${content.tool_name}
+                              </div>
+                              <ha-yaml-editor
+                                read-only
+                                auto-update
+                                .value=${content}
+                              ></ha-yaml-editor>
+                            </ha-expansion-panel>
+                          `
+                        : html`
+                            ${content.content
+                              ? html`
+                                  <div class=${`message ${content.role}`}>
+                                    ${content.content}
+                                  </div>
+                                `
+                              : nothing}
+                            ${content.role === "assistant" &&
+                            content.tool_calls?.length
+                              ? html`
+                                  <ha-expansion-panel
+                                    class="content-expansion assistant"
+                                  >
+                                    <span slot="header">
+                                      Call
+                                      ${content.tool_calls.length === 1
+                                        ? content.tool_calls[0].tool_name
+                                        : `${content.tool_calls.length} tools`}
+                                    </span>
 
-                                  <ha-yaml-editor
-                                    read-only
-                                    auto-update
-                                    .value=${content.tool_calls}
-                                  ></ha-yaml-editor>
-                                </ha-expansion-panel>
-                              `
-                            : nothing}
-                        `
+                                    <ha-yaml-editor
+                                      read-only
+                                      auto-update
+                                      .value=${content.tool_calls}
+                                    ></ha-yaml-editor>
+                                  </ha-expansion-panel>
+                                `
+                              : nothing}
+                          `
                   )}
                 </div>
                 <div style="clear:both"></div>

@@ -304,6 +304,7 @@
       },
       "weather": {
         "attributes": {
+          "dew_point": "Dew point",
           "air_pressure": "Air pressure",
           "humidity": "Humidity",
           "temperature": "Temperature",
@@ -8026,6 +8027,7 @@
               "suggested_cards": "Suggested cards",
               "other_cards": "Other cards",
               "custom_cards": "Custom cards",
+              "round_temperature": "Round temperature",
               "features": "Features",
               "actions": "Actions",
               "content": "Content"
@@ -9578,10 +9580,11 @@
       },
       "energy": {
         "title": {
-          "energy": "Energy",
-          "power": "Power",
+          "overview": "Summary",
+          "electricity": "Energy",
           "gas": "Gas",
-          "water": "Water"
+          "water": "Water",
+          "now": "Now"
         },
         "download_data": "[%key:ui::panel::history::download_data%]",
         "configure": "[%key:ui::dialogs::quick-bar::commands::navigation::energy%]",

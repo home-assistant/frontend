@@ -16,6 +16,7 @@ import { classMap } from "lit/directives/class-map";
 import { repeat } from "lit/directives/repeat";
 import memoizeOne from "memoize-one";
 import { fireEvent } from "../../../common/dom/fire_event";
+import { mainWindow } from "../../../common/dom/get_main_window";
 import { computeAreaName } from "../../../common/entity/compute_area_name";
 import { computeDeviceName } from "../../../common/entity/compute_device_name";
 import { computeDomain } from "../../../common/entity/compute_domain";
@@ -118,7 +119,6 @@ import type { HomeAssistant } from "../../../types";
 import { isMac } from "../../../util/is_mac";
 import { showToast } from "../../../util/toast";
 import "./add-automation-element/ha-automation-add-from-target";
-import type HaAutomationAddFromTarget from "./add-automation-element/ha-automation-add-from-target";
 import "./add-automation-element/ha-automation-add-items";
 import "./add-automation-element/ha-automation-add-search";
 import type { AddAutomationElementDialogParams } from "./show-add-automation-element-dialog";
@@ -216,10 +216,6 @@ class DialogAddAutomationElement
   // #endregion state
 
   // #region queries
-
-  @query("ha-automation-add-from-target")
-  private _targetPickerElement?: HaAutomationAddFromTarget;
-
   @query("ha-automation-add-items")
   private _itemsListElement?: HTMLDivElement;
 
@@ -298,6 +294,14 @@ class DialogAddAutomationElement
       }
     );
 
+    // add initial dialog view state to history
+    mainWindow.history.pushState(
+      {
+        dialogData: {},
+      },
+      ""
+    );
+
     if (this._params?.type === "action") {
       this.hass.loadBackendTranslation("services");
       getServiceIcons(this.hass);
@@ -318,7 +322,41 @@ class DialogAddAutomationElement
     this._bottomSheetMode = this._narrow;
   }
 
-  public closeDialog() {
+  public closeDialog(historyState?: any) {
+    // prevent closing when come from popstate event and root level isn't active
+    if (
+      this._open &&
+      historyState &&
+      (this._selectedTarget || this._selectedGroup)
+    ) {
+      if (historyState.dialogData?.target) {
+        this._selectedTarget = historyState.dialogData.target;
+        this._getItemsByTarget();
+        this._tab = "targets";
+        return false;
+      }
+      if (historyState.dialogData?.group) {
+        this._selectedCollectionIndex = historyState.dialogData.collectionIndex;
+        this._selectedGroup = historyState.dialogData.group;
+        this._tab = "groups";
+        return false;
+      }
+
+      // return to home on mobile
+      if (this._narrow) {
+        this._selectedTarget = undefined;
+        this._selectedGroup = undefined;
+        return false;
+      }
+    }
+
+    // if dialog is closed, but root level isn't active, clean up history state
+    if (mainWindow.history.state?.dialogData) {
+      this._open = false;
+      mainWindow.history.back();
+      return false;
+    }
+
     this.removeKeyboardShortcuts();
     this._unsubscribe();
     if (this._params) {
@@ -405,7 +443,7 @@ class DialogAddAutomationElement
       return html`
         <ha-bottom-sheet
           .open=${this._open}
-          @closed=${this.closeDialog}
+          @closed=${this._handleClosed}
           flexcontent
         >
           ${this._renderContent()}
@@ -417,7 +455,7 @@ class DialogAddAutomationElement
       <ha-wa-dialog
         width="large"
         .open=${this._open}
-        @closed=${this.closeDialog}
+        @closed=${this._handleClosed}
         flexcontent
       >
         ${this._renderContent()}
@@ -1659,11 +1697,7 @@ class DialogAddAutomationElement
   }
 
   private _back() {
-    if (this._selectedTarget) {
-      this._targetPickerElement?.navigateBack();
-      return;
-    }
-    this._selectedGroup = undefined;
+    mainWindow.history.back();
   }
 
   private _groupSelected(ev) {
@@ -1675,6 +1709,16 @@ class DialogAddAutomationElement
     }
     this._selectedGroup = group.value;
     this._selectedCollectionIndex = ev.currentTarget.index;
+
+    mainWindow.history.pushState(
+      {
+        dialogData: {
+          group: this._selectedGroup,
+          collectionIndex: this._selectedCollectionIndex,
+        },
+      },
+      ""
+    );
     requestAnimationFrame(() => {
       this._itemsListElement?.scrollTo(0, 0);
     });
@@ -1704,6 +1748,14 @@ class DialogAddAutomationElement
     this._targetItems = undefined;
     this._loadItemsError = false;
     this._selectedTarget = ev.detail.value;
+    mainWindow.history.pushState(
+      {
+        dialogData: {
+          target: this._selectedTarget,
+        },
+      },
+      ""
+    );
 
     requestAnimationFrame(() => {
       if (this._narrow) {
@@ -1821,6 +1873,10 @@ class DialogAddAutomationElement
       [`${targetType}_id`]: item.id.split(TARGET_SEPARATOR, 2)[1],
     };
     this._tab = "targets";
+  }
+
+  private _handleClosed() {
+    this.closeDialog();
   }
 
   // #region interaction

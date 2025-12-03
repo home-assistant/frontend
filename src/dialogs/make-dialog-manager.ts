@@ -1,9 +1,9 @@
-import type { HASSDomEvent, ValidHassDomEvent } from "../common/dom/fire_event";
-import { mainWindow } from "../common/dom/get_main_window";
-import type { ProvideHassElement } from "../mixins/provide-hass-lit-mixin";
 import { ancestorsWithProperty } from "../common/dom/ancestors-with-property";
 import { deepActiveElement } from "../common/dom/deep-active-element";
+import type { HASSDomEvent, ValidHassDomEvent } from "../common/dom/fire_event";
+import { mainWindow } from "../common/dom/get_main_window";
 import { nextRender } from "../common/util/render-status";
+import type { ProvideHassElement } from "../mixins/provide-hass-lit-mixin";
 
 declare global {
   // for fire event
@@ -23,7 +23,7 @@ export interface HassDialog<
   T = HASSDomEvents[ValidHassDomEvent],
 > extends HTMLElement {
   showDialog(params: T);
-  closeDialog?: () => boolean;
+  closeDialog?: (historyState?: any) => boolean;
 }
 
 interface ShowDialogParams<T> {
@@ -144,27 +144,32 @@ export const showDialog = async (
   return true;
 };
 
-export const closeDialog = async (dialogTag: string): Promise<boolean> => {
+export const closeDialog = async (
+  dialogTag: string,
+  historyState?: any
+): Promise<boolean> => {
   if (!(dialogTag in LOADED)) {
     return true;
   }
   const dialogElement = await LOADED[dialogTag].element;
   if (dialogElement.closeDialog) {
-    return dialogElement.closeDialog() !== false;
+    return dialogElement.closeDialog(historyState) !== false;
   }
   return true;
 };
 
 // called on back()
-export const closeLastDialog = async () => {
+export const closeLastDialog = async (historyState?: any) => {
   if (OPEN_DIALOG_STACK.length) {
-    const lastDialog = OPEN_DIALOG_STACK.pop();
-    const closed = await closeDialog(lastDialog!.dialogTag);
+    const lastDialog = OPEN_DIALOG_STACK.pop() as DialogState;
+    const closed = await closeDialog(lastDialog.dialogTag, historyState);
     if (!closed) {
       // if the dialog was not closed, put it back on the stack
-      OPEN_DIALOG_STACK.push(lastDialog!);
-    }
-    if (OPEN_DIALOG_STACK.length && mainWindow.history.state?.opensDialog) {
+      OPEN_DIALOG_STACK.push(lastDialog);
+    } else if (
+      OPEN_DIALOG_STACK.length &&
+      mainWindow.history.state?.opensDialog
+    ) {
       // if there are more dialogs open, push a new state so back() will close the next top dialog
       mainWindow.history.pushState(
         { dialog: OPEN_DIALOG_STACK[OPEN_DIALOG_STACK.length - 1].dialogTag },

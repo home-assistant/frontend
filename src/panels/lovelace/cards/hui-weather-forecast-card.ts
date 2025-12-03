@@ -23,8 +23,10 @@ import {
   subscribeForecast,
   weatherAttrIcons,
   weatherSVGStyles,
+  WEATHER_TEMPERATURE_ATTRIBUTES,
 } from "../../../data/weather";
 import type { HomeAssistant } from "../../../types";
+import { round } from "../../../common/number/round";
 import { actionHandler } from "../common/directives/action-handler-directive";
 import { computeLovelaceEntityName } from "../common/entity/compute-lovelace-entity-name";
 import { findEntities } from "../common/find-entities";
@@ -266,6 +268,20 @@ class HuiWeatherForecastCard extends LitElement implements LovelaceCard {
       this._config.name
     );
 
+    const temperatureFractionDigits = this._config.round_temperature
+      ? 0
+      : undefined;
+
+    const isSecondaryInfoAttributeTemperature =
+      this._config?.secondary_info_attribute &&
+      WEATHER_TEMPERATURE_ATTRIBUTES.has(this._config.secondary_info_attribute);
+
+    const isSecondaryInfoNumber =
+      this._config.secondary_info_attribute &&
+      !Number.isNaN(
+        +stateObj.attributes[this._config.secondary_info_attribute]
+      );
+
     return html`
       <ha-card
         class=${classMap({
@@ -312,7 +328,11 @@ class HuiWeatherForecastCard extends LitElement implements LovelaceCard {
                         ? html`
                             ${formatNumber(
                               stateObj.attributes.temperature,
-                              this.hass.locale
+                              this.hass.locale,
+                              {
+                                maximumFractionDigits:
+                                  temperatureFractionDigits,
+                              }
                             )}&nbsp;<span
                               >${getWeatherUnit(
                                 this.hass.config,
@@ -350,14 +370,26 @@ class HuiWeatherForecastCard extends LitElement implements LovelaceCard {
                               : html`
                                   ${this.hass.formatEntityAttributeValue(
                                     stateObj,
-                                    this._config.secondary_info_attribute
+                                    this._config.secondary_info_attribute,
+                                    temperatureFractionDigits === 0 &&
+                                      isSecondaryInfoNumber &&
+                                      isSecondaryInfoAttributeTemperature
+                                      ? round(
+                                          stateObj.attributes[
+                                            this._config
+                                              .secondary_info_attribute
+                                          ],
+                                          temperatureFractionDigits
+                                        )
+                                      : undefined
                                   )}
                                 `}
                           `
                         : getSecondaryWeatherAttribute(
                             this.hass,
                             stateObj,
-                            forecast!
+                            forecast!,
+                            temperatureFractionDigits
                           )}
                     </div>
                   </div>
@@ -425,7 +457,11 @@ class HuiWeatherForecastCard extends LitElement implements LovelaceCard {
                             ${this._showValue(item.temperature)
                               ? html`${formatNumber(
                                   item.temperature,
-                                  this.hass!.locale
+                                  this.hass!.locale,
+                                  {
+                                    maximumFractionDigits:
+                                      temperatureFractionDigits,
+                                  }
                                 )}°`
                               : "—"}
                           </div>
@@ -433,7 +469,11 @@ class HuiWeatherForecastCard extends LitElement implements LovelaceCard {
                             ${this._showValue(item.templow)
                               ? html`${formatNumber(
                                   item.templow!,
-                                  this.hass!.locale
+                                  this.hass!.locale,
+                                  {
+                                    maximumFractionDigits:
+                                      temperatureFractionDigits,
+                                  }
                                 )}°`
                               : hourly
                                 ? ""

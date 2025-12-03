@@ -37,6 +37,7 @@ const cardConfigStruct = assign(
     forecast_type: optional(string()),
     forecast_slots: optional(number()),
     secondary_info_attribute: optional(string()),
+    round_temperature: optional(boolean()),
     tap_action: optional(actionConfigStruct),
     hold_action: optional(actionConfigStruct),
     double_tap_action: optional(actionConfigStruct),
@@ -155,6 +156,10 @@ export class HuiWeatherForecastCardEditor
             entity_name: {},
           },
           context: { entity: "entity" },
+        },
+        {
+          name: "round_temperature",
+          selector: { boolean: {} },
         },
         {
           name: "",

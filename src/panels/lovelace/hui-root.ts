@@ -112,6 +112,12 @@ interface ActionItem {
   subItems?: SubActionItem[];
 }
 
+export interface ExtraActionItem {
+  icon: string;
+  labelKey: LocalizeKeys;
+  action: () => void;
+}
+
 interface SubActionItem {
   icon: string;
   key: LocalizeKeys;
@@ -139,6 +145,8 @@ class HUIRoot extends LitElement {
     path: string;
     prefix: string;
   };
+
+  @property({ attribute: false }) public extraActionItems?: ExtraActionItem[];
 
   @state() private _curView?: number | "hass-unused-entities";
 
@@ -346,6 +354,25 @@ class HUIRoot extends LitElement {
         overflow_can_promote: true,
       },
     ];
+
+    // Add extra action items from parent components
+    if (this.extraActionItems) {
+      this.extraActionItems.forEach((extraItem) => {
+        items.push({
+          icon: extraItem.icon,
+          key: extraItem.labelKey,
+          buttonAction: extraItem.action,
+          overflowAction: (ev: CustomEvent<RequestSelectedDetail>) => {
+            if (!shouldHandleRequestSelectedEvent(ev)) {
+              return;
+            }
+            extraItem.action();
+          },
+          visible: true,
+          overflow: this.narrow,
+        });
+      });
+    }
 
     const overflowItems = items.filter((i) => i.visible && i.overflow);
     const overflowCanPromote =

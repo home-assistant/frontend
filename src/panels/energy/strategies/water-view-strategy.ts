@@ -5,6 +5,7 @@ import type { HomeAssistant } from "../../../types";
 import type { LovelaceViewConfig } from "../../../data/lovelace/config/view";
 import type { LovelaceStrategyConfig } from "../../../data/lovelace/config/strategy";
 import { DEFAULT_ENERGY_COLLECTION_KEY } from "../ha-panel-energy";
+import type { LovelaceSectionConfig } from "../../../data/lovelace/config/section";
 
 @customElement("water-view-strategy")
 export class WaterViewStrategy extends ReactiveElement {
@@ -12,7 +13,10 @@ export class WaterViewStrategy extends ReactiveElement {
     _config: LovelaceStrategyConfig,
     hass: HomeAssistant
   ): Promise<LovelaceViewConfig> {
-    const view: LovelaceViewConfig = { cards: [] };
+    const view: LovelaceViewConfig = {
+      type: "sections",
+      sections: [{ type: "grid", cards: [] }],
+    };
 
     const collectionKey =
       _config.collection_key || DEFAULT_ENERGY_COLLECTION_KEY;
@@ -32,15 +36,19 @@ export class WaterViewStrategy extends ReactiveElement {
       return view;
     }
 
-    view.type = "sidebar";
+    const section = view.sections![0] as LovelaceSectionConfig;
 
-    view.cards!.push({
+    section.cards!.push({
+      type: "energy-date-selection",
+      collection_key: collectionKey,
+    });
+    section.cards!.push({
       type: "energy-compare",
       collection_key: collectionKey,
     });
 
     if (hasWaterSources) {
-      view.cards!.push({
+      section.cards!.push({
         title: hass.localize("ui.panel.energy.cards.energy_water_graph_title"),
         type: "energy-water-graph",
         collection_key: collectionKey,
@@ -48,7 +56,7 @@ export class WaterViewStrategy extends ReactiveElement {
     }
 
     if (hasWaterSources) {
-      view.cards!.push({
+      section.cards!.push({
         title: hass.localize(
           "ui.panel.energy.cards.energy_sources_table_title"
         ),
@@ -63,7 +71,7 @@ export class WaterViewStrategy extends ReactiveElement {
       const showFloorsNAreas = !prefs.device_consumption_water.some(
         (d) => d.included_in_stat
       );
-      view.cards!.push({
+      section.cards!.push({
         title: hass.localize("ui.panel.energy.cards.water_sankey_title"),
         type: "water-sankey",
         collection_key: collectionKey,

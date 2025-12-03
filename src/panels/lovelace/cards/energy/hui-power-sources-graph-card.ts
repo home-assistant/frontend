@@ -132,7 +132,7 @@ export class HuiPowerSourcesGraphCard
         compareEnd
       ),
       legend: {
-        show: true,
+        show: this._config?.show_legend !== false,
         type: "custom",
         data: legendData,
       },
