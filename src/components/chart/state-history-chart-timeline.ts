@@ -373,6 +373,7 @@ export class StateHistoryChartTimeline extends LitElement {
           itemName: 3,
         },
         renderItem: this._renderItem,
+        progressive: 0,
       });
     });
 
