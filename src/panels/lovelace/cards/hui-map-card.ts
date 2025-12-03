@@ -437,18 +437,24 @@ class HuiMapCard extends LitElement implements LovelaceCard {
 
   private _getMapEntities(): HaMapEntity[] {
     return [
-      ...(this._configEntities || []).map((entityConf) => ({
-        entity_id: entityConf.entity,
-        color: this._getColor(entityConf.entity),
-        label_mode: entityConf.label_mode,
-        attribute: entityConf.attribute,
-        unit: entityConf.unit,
-        focus: entityConf.focus,
-        name: entityConf.name,
+      ...(this._configEntities || [])
+        .filter(
+          (entityConf) => !this.hass.entities?.[entityConf.entity]?.hidden
+        )
+        .map((entityConf) => ({
+          entity_id: entityConf.entity,
+          color: this._getColor(entityConf.entity),
+          label_mode: entityConf.label_mode,
+          attribute: entityConf.attribute,
+          unit: entityConf.unit,
+          focus: entityConf.focus,
+          name: entityConf.name,
       })),
-      ...this._getSourceEntities(this.hass?.states).map((entity) => ({
-        ...entity,
-        color: this._getColor(entity.entity_id),
+      ...this._getSourceEntities(this.hass?.states)
+        .filter((entity) => !this.hass.entities?.[entity.entity_id]?.hidden)
+        .map((entity) => ({
+          ...entity,
+          color: this._getColor(entity.entity_id),
       })),
     ];
   }
