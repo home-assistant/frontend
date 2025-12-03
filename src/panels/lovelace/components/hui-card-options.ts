@@ -163,19 +163,13 @@ export class HuiCardOptions extends LitElement {
                 )}
               </ha-dropdown-item>
               <ha-dropdown-item data-action="copy">
-                <ha-svg-icon
-                  slot="icon"
-                  .path=${mdiContentCopy}
-                ></ha-svg-icon>
+                <ha-svg-icon slot="icon" .path=${mdiContentCopy}></ha-svg-icon>
                 ${this.hass!.localize(
                   "ui.panel.lovelace.editor.edit_card.copy"
                 )}
               </ha-dropdown-item>
               <ha-dropdown-item data-action="cut">
-                <ha-svg-icon
-                  slot="icon"
-                  .path=${mdiContentCut}
-                ></ha-svg-icon>
+                <ha-svg-icon slot="icon" .path=${mdiContentCut}></ha-svg-icon>
                 ${this.hass!.localize("ui.panel.lovelace.editor.edit_card.cut")}
               </ha-dropdown-item>
               <wa-divider></wa-divider>
