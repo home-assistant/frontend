@@ -1,5 +1,5 @@
+import "@home-assistant/webawesome/dist/components/divider/divider";
 import type { List } from "@material/mwc-list/mwc-list";
-import type { ActionDetail } from "@material/mwc-list/mwc-list-foundation";
 import {
   mdiClock,
   mdiDelete,
@@ -18,15 +18,16 @@ import { classMap } from "lit/directives/class-map";
 import { repeat } from "lit/directives/repeat";
 import memoizeOne from "memoize-one";
 import { applyThemesOnElement } from "../../../common/dom/apply_themes_on_element";
-import { stopPropagation } from "../../../common/dom/stop_propagation";
 import { supportsFeature } from "../../../common/entity/supports-feature";
 import { caseInsensitiveStringCompare } from "../../../common/string/compare";
 import "../../../components/ha-card";
 import "../../../components/ha-check-list-item";
 import "../../../components/ha-checkbox";
+import "../../../components/ha-dropdown";
+import "../../../components/ha-dropdown-item";
+import type { HaDropdownItem } from "../../../components/ha-dropdown-item";
 import "../../../components/ha-icon-button";
 import "../../../components/ha-list";
-import "../../../components/ha-list-item";
 import "../../../components/ha-markdown-element";
 import "../../../components/ha-relative-time";
 import "../../../components/ha-select";
@@ -378,28 +379,29 @@ export class HuiTodoListCard extends LitElement implements LovelaceCard {
                           ${this._todoListSupportsFeature(
                             TodoListEntityFeature.DELETE_TODO_ITEM
                           )
-                            ? html`<ha-button-menu
-                                @closed=${stopPropagation}
-                                fixed
-                                @action=${this._handleCompletedMenuAction}
+                            ? html`<ha-dropdown
+                                @wa-select=${this._handleCompletedMenuSelect}
+                                placement="bottom-end"
                               >
                                 <ha-icon-button
                                   slot="trigger"
                                   .path=${mdiDotsVertical}
                                 ></ha-icon-button>
-                                <ha-list-item graphic="icon" class="warning">
+                                <ha-dropdown-item
+                                  data-action="clear"
+                                  variant="danger"
+                                >
                                   ${this.hass!.localize(
                                     "ui.panel.lovelace.cards.todo-list.clear_items"
                                   )}
                                   <ha-svg-icon
                                     class="warning"
-                                    slot="graphic"
+                                    slot="icon"
                                     .path=${mdiDeleteSweep}
-                                    .disabled=${unavailable}
                                   >
                                   </ha-svg-icon>
-                                </ha-list-item>
-                              </ha-button-menu>`
+                                </ha-dropdown-item>
+                              </ha-dropdown>`
                             : nothing}
                         </div>`
                       : nothing}
@@ -413,33 +415,27 @@ export class HuiTodoListCard extends LitElement implements LovelaceCard {
     `;
   }
 
-  private _renderMenu(config: TodoListCardConfig, unavailable: boolean) {
+  private _renderMenu(config: TodoListCardConfig, _unavailable: boolean) {
     return (!config.display_order ||
       config.display_order === TodoSortMode.NONE) &&
       this._todoListSupportsFeature(TodoListEntityFeature.MOVE_TODO_ITEM)
-      ? html`<ha-button-menu
-          @closed=${stopPropagation}
-          fixed
-          @action=${this._handlePrimaryMenuAction}
+      ? html`<ha-dropdown
+          @wa-select=${this._handlePrimaryMenuSelect}
+          placement="bottom-end"
         >
           <ha-icon-button
             slot="trigger"
             .path=${mdiDotsVertical}
           ></ha-icon-button>
-          <ha-list-item graphic="icon">
+          <ha-dropdown-item data-action="reorder">
             ${this.hass!.localize(
               this._reordering
                 ? "ui.panel.lovelace.cards.todo-list.exit_reorder_items"
                 : "ui.panel.lovelace.cards.todo-list.reorder_items"
             )}
-            <ha-svg-icon
-              slot="graphic"
-              .path=${mdiSort}
-              .disabled=${unavailable}
-            >
-            </ha-svg-icon>
-          </ha-list-item>
-        </ha-button-menu>`
+            <ha-svg-icon slot="icon" .path=${mdiSort}> </ha-svg-icon>
+          </ha-dropdown-item>
+        </ha-dropdown>`
       : nothing;
   }
 
@@ -641,9 +637,17 @@ export class HuiTodoListCard extends LitElement implements LovelaceCard {
     }
   }
 
-  private _handleCompletedMenuAction(ev: CustomEvent<ActionDetail>) {
-    switch (ev.detail.index) {
-      case 0:
+  private _handleCompletedMenuSelect(
+    ev: CustomEvent<{ item: HaDropdownItem }>
+  ) {
+    const action = ev.detail?.item?.dataset?.action;
+
+    if (!action) {
+      return;
+    }
+
+    switch (action) {
+      case "clear":
         this._clearCompletedItems();
         break;
     }
@@ -704,9 +708,15 @@ export class HuiTodoListCard extends LitElement implements LovelaceCard {
     }
   }
 
-  private _handlePrimaryMenuAction(ev: CustomEvent<ActionDetail>) {
-    switch (ev.detail.index) {
-      case 0:
+  private _handlePrimaryMenuSelect(ev: CustomEvent<{ item: HaDropdownItem }>) {
+    const action = ev.detail?.item?.dataset?.action;
+
+    if (!action) {
+      return;
+    }
+
+    switch (action) {
+      case "reorder":
         this._toggleReorder();
         break;
     }
