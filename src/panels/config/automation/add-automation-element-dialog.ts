@@ -2146,7 +2146,7 @@ class DialogAddAutomationElement
           min-height: 160px;
         }
         .content.column ha-automation-add-from-target {
-          overflow: hidden;
+          overflow: clip;
         }
 
         ha-wa-dialog ha-automation-add-items {
