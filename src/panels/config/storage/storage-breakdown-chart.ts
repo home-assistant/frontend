@@ -1,4 +1,4 @@
-import { mdiChartDonut, mdiFormatListBulleted } from "@mdi/js";
+import { mdiChartDonutVariant, mdiViewArray } from "@mdi/js";
 import type { TemplateResult } from "lit";
 import { LitElement, css, html, nothing } from "lit";
 import { customElement, property, state } from "lit/decorators";
@@ -58,8 +58,8 @@ export class StorageBreakdownChart extends LitElement {
         ${hasChildren
           ? html`<ha-icon-button
               .path=${this._chartType === "sunburst"
-                ? mdiFormatListBulleted
-                : mdiChartDonut}
+                ? mdiViewArray
+                : mdiChartDonutVariant}
               .label=${this.hass.localize(
                 "ui.panel.config.storage.change_chart_type"
               )}
