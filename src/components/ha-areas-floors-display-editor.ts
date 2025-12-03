@@ -7,7 +7,6 @@ import memoizeOne from "memoize-one";
 import { fireEvent } from "../common/dom/fire_event";
 import { computeFloorName } from "../common/entity/compute_floor_name";
 import { getAreaContext } from "../common/entity/context/get_area_context";
-import { areaCompare } from "../data/area_registry";
 import type { FloorRegistryEntry } from "../data/floor_registry";
 import { getFloors } from "../panels/lovelace/strategies/areas/helpers/areas-strategy-helper";
 import type { HomeAssistant } from "../types";
@@ -131,11 +130,8 @@ export class HaAreasFloorsDisplayEditor extends LitElement {
       // update items if floors change
       _hassFloors: HomeAssistant["floors"]
     ): Record<string, DisplayItem[]> => {
-      const compare = areaCompare(hassAreas);
+      const areas = Object.values(hassAreas);
 
-      const areas = Object.values(hassAreas).sort((areaA, areaB) =>
-        compare(areaA.area_id, areaB.area_id)
-      );
       const groupedItems: Record<string, DisplayItem[]> = areas.reduce(
         (acc, area) => {
           const { floor } = getAreaContext(area, this.hass.floors);
