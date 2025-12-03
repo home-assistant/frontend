@@ -450,11 +450,9 @@ class HuiMapCard extends LitElement implements LovelaceCard {
           focus: entityConf.focus,
           name: entityConf.name,
       })),
-      ...this._getSourceEntities(this.hass?.states)
-        .filter((entity) => !this.hass.entities?.[entity.entity_id]?.hidden)
-        .map((entity) => ({
-          ...entity,
-          color: this._getColor(entity.entity_id),
+      ...this._getSourceEntities(this.hass?.states).map((entity) => ({
+        ...entity,
+        color: this._getColor(entity.entity_id),
       })),
     ];
   }
