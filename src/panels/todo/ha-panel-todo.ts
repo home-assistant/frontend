@@ -230,7 +230,6 @@ class PanelTodo extends LitElement {
         <ha-dropdown
           slot="actionItems"
           @wa-select=${this._handleDropdownSelect}
-          placement="bottom-end"
         >
           <ha-icon-button
             slot="trigger"
@@ -260,11 +259,7 @@ class PanelTodo extends LitElement {
                   variant="danger"
                   .disabled=${!this._entityId}
                 >
-                  <ha-svg-icon
-                    .path=${mdiDelete}
-                    slot="icon"
-                    class="warning"
-                  >
+                  <ha-svg-icon .path=${mdiDelete} slot="icon" class="warning">
                   </ha-svg-icon>
                   ${this.hass.localize("ui.panel.todo.delete_list")}
                 </ha-dropdown-item>`

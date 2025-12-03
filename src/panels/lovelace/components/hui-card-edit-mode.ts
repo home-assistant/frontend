@@ -44,9 +44,6 @@ export class HuiCardEditMode extends LitElement {
   public noMove = false;
 
   @state()
-  public _menuOpened = false;
-
-  @state()
   public _hover = false;
 
   @state()
@@ -93,8 +90,7 @@ export class HuiCardEditMode extends LitElement {
   };
 
   protected render(): TemplateResult {
-    const showOverlay =
-      (this._hover || this._menuOpened || this._focused) && !this.hiddenOverlay;
+    const showOverlay = (this._hover || this._focused) && !this.hiddenOverlay;
 
     return html`
       <div class="card-wrapper" inert><slot></slot></div>
@@ -121,8 +117,6 @@ export class HuiCardEditMode extends LitElement {
           class="more"
           placement="bottom-end"
           @wa-select=${this._handleDropdownSelect}
-          @wa-open=${this._handleOpened}
-          @wa-close=${this._handleClosed}
         >
           <ha-icon-button slot="trigger" .path=${mdiDotsVertical}>
           </ha-icon-button>
@@ -162,10 +156,7 @@ export class HuiCardEditMode extends LitElement {
                   )}
                 </ha-dropdown-item>
                 <ha-dropdown-item data-action="cut">
-                  <ha-svg-icon
-                    slot="icon"
-                    .path=${mdiContentCut}
-                  ></ha-svg-icon>
+                  <ha-svg-icon slot="icon" .path=${mdiContentCut}></ha-svg-icon>
                   ${this.hass.localize(
                     "ui.panel.lovelace.editor.edit_card.cut"
                   )}
@@ -185,14 +176,6 @@ export class HuiCardEditMode extends LitElement {
         </ha-dropdown>
       </div>
     `;
-  }
-
-  private _handleOpened() {
-    this._menuOpened = true;
-  }
-
-  private _handleClosed() {
-    this._menuOpened = false;
   }
 
   private _handleOverlayClick(ev): void {
@@ -315,14 +298,12 @@ export class HuiCardEditMode extends LitElement {
           background: var(--secondary-background-color);
           --mdc-icon-size: 20px;
         }
-        .more {
+        .more ha-icon-button {
           position: absolute;
           right: -6px;
           top: -6px;
           inset-inline-end: -6px;
           inset-inline-start: initial;
-        }
-        .more ha-icon-button {
           cursor: pointer;
           border-radius: var(--ha-border-radius-circle);
           background: var(--secondary-background-color);
