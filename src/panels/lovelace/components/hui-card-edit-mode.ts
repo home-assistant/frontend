@@ -123,7 +123,7 @@ export class HuiCardEditMode extends LitElement {
           ${this.noEdit
             ? nothing
             : html`
-                <ha-dropdown-item data-action="edit">
+                <ha-dropdown-item value="edit">
                   <ha-svg-icon slot="icon" .path=${mdiPencil}></ha-svg-icon>
                   ${this.hass.localize(
                     "ui.panel.lovelace.editor.edit_card.edit"
@@ -133,7 +133,7 @@ export class HuiCardEditMode extends LitElement {
           ${this.noDuplicate
             ? nothing
             : html`
-                <ha-dropdown-item data-action="duplicate">
+                <ha-dropdown-item value="duplicate">
                   <ha-svg-icon
                     slot="icon"
                     .path=${mdiPlusCircleMultipleOutline}
@@ -146,7 +146,7 @@ export class HuiCardEditMode extends LitElement {
           ${this.noMove
             ? nothing
             : html`
-                <ha-dropdown-item data-action="copy">
+                <ha-dropdown-item value="copy">
                   <ha-svg-icon
                     slot="icon"
                     .path=${mdiContentCopy}
@@ -155,7 +155,7 @@ export class HuiCardEditMode extends LitElement {
                     "ui.panel.lovelace.editor.edit_card.copy"
                   )}
                 </ha-dropdown-item>
-                <ha-dropdown-item data-action="cut">
+                <ha-dropdown-item value="cut">
                   <ha-svg-icon slot="icon" .path=${mdiContentCut}></ha-svg-icon>
                   ${this.hass.localize(
                     "ui.panel.lovelace.editor.edit_card.cut"
@@ -165,7 +165,7 @@ export class HuiCardEditMode extends LitElement {
           ${this.noDuplicate && this.noEdit && this.noMove
             ? nothing
             : html`<wa-divider></wa-divider>`}
-          <ha-dropdown-item data-action="delete" variant="danger">
+          <ha-dropdown-item value="delete" variant="danger">
             ${this.hass.localize("ui.panel.lovelace.editor.edit_card.delete")}
             <ha-svg-icon
               class="warning"
@@ -191,7 +191,7 @@ export class HuiCardEditMode extends LitElement {
   }
 
   private _handleDropdownSelect(ev: CustomEvent<{ item: HaDropdownItem }>) {
-    const action = ev.detail?.item?.dataset?.action;
+    const action = ev.detail?.item?.value;
 
     if (!action) {
       return;

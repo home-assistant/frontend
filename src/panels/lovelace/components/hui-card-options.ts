@@ -144,7 +144,7 @@ export class HuiCardOptions extends LitElement {
                 )}
                 .path=${mdiDotsVertical}
               ></ha-icon-button>
-              <ha-dropdown-item data-action="move">
+              <ha-dropdown-item value="move">
                 <ha-svg-icon
                   slot="icon"
                   .path=${mdiFileMoveOutline}
@@ -153,7 +153,7 @@ export class HuiCardOptions extends LitElement {
                   "ui.panel.lovelace.editor.edit_card.move"
                 )}
               </ha-dropdown-item>
-              <ha-dropdown-item data-action="duplicate">
+              <ha-dropdown-item value="duplicate">
                 <ha-svg-icon
                   slot="icon"
                   .path=${mdiPlusCircleMultipleOutline}
@@ -162,18 +162,18 @@ export class HuiCardOptions extends LitElement {
                   "ui.panel.lovelace.editor.edit_card.duplicate"
                 )}
               </ha-dropdown-item>
-              <ha-dropdown-item data-action="copy">
+              <ha-dropdown-item value="copy">
                 <ha-svg-icon slot="icon" .path=${mdiContentCopy}></ha-svg-icon>
                 ${this.hass!.localize(
                   "ui.panel.lovelace.editor.edit_card.copy"
                 )}
               </ha-dropdown-item>
-              <ha-dropdown-item data-action="cut">
+              <ha-dropdown-item value="cut">
                 <ha-svg-icon slot="icon" .path=${mdiContentCut}></ha-svg-icon>
                 ${this.hass!.localize("ui.panel.lovelace.editor.edit_card.cut")}
               </ha-dropdown-item>
               <wa-divider></wa-divider>
-              <ha-dropdown-item data-action="delete" variant="danger">
+              <ha-dropdown-item value="delete" variant="danger">
                 <ha-svg-icon
                   class="warning"
                   slot="icon"
@@ -247,7 +247,7 @@ export class HuiCardOptions extends LitElement {
   }
 
   private _handleDropdownSelect(ev: CustomEvent<{ item: HaDropdownItem }>) {
-    const action = ev.detail?.item?.dataset?.action;
+    const action = ev.detail?.item?.value;
 
     if (!action) {
       return;

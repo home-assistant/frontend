@@ -387,7 +387,7 @@ export class HuiTodoListCard extends LitElement implements LovelaceCard {
                                   .path=${mdiDotsVertical}
                                 ></ha-icon-button>
                                 <ha-dropdown-item
-                                  data-action="clear"
+                                  value="clear"
                                   variant="danger"
                                 >
                                   ${this.hass!.localize(
@@ -426,7 +426,7 @@ export class HuiTodoListCard extends LitElement implements LovelaceCard {
             slot="trigger"
             .path=${mdiDotsVertical}
           ></ha-icon-button>
-          <ha-dropdown-item data-action="reorder">
+          <ha-dropdown-item value="reorder">
             ${this.hass!.localize(
               this._reordering
                 ? "ui.panel.lovelace.cards.todo-list.exit_reorder_items"
@@ -639,7 +639,7 @@ export class HuiTodoListCard extends LitElement implements LovelaceCard {
   private _handleCompletedMenuSelect(
     ev: CustomEvent<{ item: HaDropdownItem }>
   ) {
-    const action = ev.detail?.item?.dataset?.action;
+    const action = ev.detail?.item?.value;
 
     if (!action) {
       return;
@@ -708,7 +708,7 @@ export class HuiTodoListCard extends LitElement implements LovelaceCard {
   }
 
   private _handlePrimaryMenuSelect(ev: CustomEvent<{ item: HaDropdownItem }>) {
-    const action = ev.detail?.item?.dataset?.action;
+    const action = ev.detail?.item?.value;
 
     if (!action) {
       return;

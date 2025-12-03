@@ -237,17 +237,14 @@ class PanelTodo extends LitElement {
             .path=${mdiDotsVertical}
           ></ha-icon-button>
           ${this._conversation(this.hass.config.components)
-            ? html`<ha-dropdown-item
-                data-action="info"
-                .disabled=${!this._entityId}
-              >
+            ? html`<ha-dropdown-item value="info" .disabled=${!this._entityId}>
                 <ha-svg-icon .path=${mdiInformationOutline} slot="icon">
                 </ha-svg-icon>
                 ${this.hass.localize("ui.panel.todo.information")}
               </ha-dropdown-item>`
             : nothing}
           <wa-divider></wa-divider>
-          <ha-dropdown-item data-action="assist">
+          <ha-dropdown-item value="assist">
             <ha-svg-icon .path=${mdiCommentProcessingOutline} slot="icon">
             </ha-svg-icon>
             ${this.hass.localize("ui.panel.todo.assist")}
@@ -255,7 +252,7 @@ class PanelTodo extends LitElement {
           ${entityRegistryEntry?.platform === "local_todo"
             ? html` <wa-divider></wa-divider>
                 <ha-dropdown-item
-                  data-action="delete"
+                  value="delete"
                   variant="danger"
                   .disabled=${!this._entityId}
                 >
@@ -366,7 +363,7 @@ class PanelTodo extends LitElement {
   }
 
   private _handleDropdownSelect(ev: CustomEvent<{ item: HaDropdownItem }>) {
-    const action = ev.detail?.item?.dataset?.action;
+    const action = ev.detail?.item?.value;
 
     if (!action) {
       return;
