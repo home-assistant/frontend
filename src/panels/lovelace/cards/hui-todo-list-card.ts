@@ -1,4 +1,3 @@
-import "@home-assistant/webawesome/dist/components/divider/divider";
 import type { List } from "@material/mwc-list/mwc-list";
 import {
   mdiClock,
