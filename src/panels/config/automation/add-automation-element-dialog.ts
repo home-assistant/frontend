@@ -686,6 +686,7 @@ class DialogAddAutomationElement
               <ha-automation-add-items
                 .hass=${this.hass}
                 .items=${this._getItems()}
+                .scrollable=${!this._narrow}
                 .error=${this._tab === "targets" && this._loadItemsError
                   ? this.hass.localize(
                       "ui.panel.config.automation.editor.load_target_items_failed"
