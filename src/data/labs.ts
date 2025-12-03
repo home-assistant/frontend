@@ -76,3 +76,19 @@ export const subscribeLabFeatures = (
     conn,
     onChange
   );
+
+export const subscribeLabFeature = (
+  conn: Connection,
+  domain: string,
+  previewFeature: string,
+  onChange: (enabled: boolean) => void
+) =>
+  subscribeLabFeatures(conn, (features) => {
+    const enabled =
+      features.find(
+        (feature) =>
+          feature.domain === domain &&
+          feature.preview_feature === previewFeature
+      )?.enabled ?? false;
+    onChange(enabled);
+  });

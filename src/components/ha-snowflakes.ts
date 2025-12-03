@@ -1,7 +1,7 @@
 import { css, html, LitElement, nothing } from "lit";
 import { customElement, property, state } from "lit/decorators";
 import type { HomeAssistant } from "../types";
-import { subscribeLabFeatures } from "../data/labs";
+import { subscribeLabFeature } from "../data/labs";
 import { SubscribeMixin } from "../mixins/subscribe-mixin";
 
 interface Snowflake {
@@ -26,13 +26,14 @@ export class HaSnowflakes extends SubscribeMixin(LitElement) {
 
   public hassSubscribe() {
     return [
-      subscribeLabFeatures(this.hass!.connection, (features) => {
-        this._enabled =
-          features.find(
-            (f) =>
-              f.domain === "frontend" && f.preview_feature === "winter_mode"
-          )?.enabled ?? false;
-      }),
+      subscribeLabFeature(
+        this.hass!.connection,
+        "frontend",
+        "winter_mode",
+        (enabled) => {
+          this._enabled = enabled;
+        }
+      ),
     ];
   }
 

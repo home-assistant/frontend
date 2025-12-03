@@ -97,7 +97,7 @@ import {
   fetchIntegrationManifests,
 } from "../../../data/integration";
 import type { LabelRegistryEntry } from "../../../data/label_registry";
-import { subscribeLabFeatures } from "../../../data/labs";
+import { subscribeLabFeature } from "../../../data/labs";
 import {
   TARGET_SEPARATOR,
   getConditionsForTarget,
@@ -281,15 +281,12 @@ class DialogAddAutomationElement
     this._fetchManifests();
     this._calculateUsedDomains();
 
-    this._unsubscribeLabFeatures = subscribeLabFeatures(
+    this._unsubscribeLabFeatures = subscribeLabFeature(
       this.hass.connection,
-      (features) => {
-        this._newTriggersAndConditions =
-          features.find(
-            (feature) =>
-              feature.domain === "automation" &&
-              feature.preview_feature === "new_triggers_conditions"
-          )?.enabled ?? false;
+      "automation",
+      "new_triggers_conditions",
+      (enabled) => {
+        this._newTriggersAndConditions = enabled;
         this._tab = this._newTriggersAndConditions ? "targets" : "groups";
       }
     );
