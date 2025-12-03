@@ -60,6 +60,7 @@ export const mockEnergy = (hass: MockHomeAssistant) => {
           type: "battery",
           stat_energy_from: "sensor.battery_output",
           stat_energy_to: "sensor.battery_input",
+          stat_rate: "sensor.power_battery",
         },
         {
           type: "gas",

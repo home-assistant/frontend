@@ -178,6 +178,14 @@ export const energyEntities = () =>
         unit_of_measurement: "W",
       },
     },
+    "sensor.power_battery": {
+      entity_id: "sensor.power_battery",
+      state: "100",
+      attributes: {
+        state_class: "measurement",
+        unit_of_measurement: "W",
+      },
+    },
     "sensor.energy_gas_cost": {
       entity_id: "sensor.energy_gas_cost",
       state: "2",
