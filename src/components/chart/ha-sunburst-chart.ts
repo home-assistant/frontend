@@ -15,7 +15,7 @@ let SunburstChart: typeof import("echarts/lib/chart/sunburst/install");
 
 export interface SunburstNode {
   id: string;
-  label?: string;
+  name?: string;
   value: number;
   itemStyle?: {
     color?: string;
@@ -31,10 +31,6 @@ export class HaSunburstChart extends LitElement {
 
   @property({ type: String, attribute: false }) public valueFormatter?: (
     value: number
-  ) => string;
-
-  @property({ type: String, attribute: false }) public labelFormatter?: (
-    id: string
   ) => string;
 
   public chart?: EChartsType;
@@ -75,10 +71,7 @@ export class HaSunburstChart extends LitElement {
     const value = this.valueFormatter
       ? this.valueFormatter(data.value)
       : data.value;
-    const label = this.labelFormatter
-      ? this.labelFormatter(data.name)
-      : data.name;
-    return `${params.marker} ${filterXSS(label)}<br>${value}`;
+    return `${params.marker} ${filterXSS(data.name)}<br>${value}`;
   };
 
   private _createData = memoizeOne(
@@ -89,23 +82,24 @@ export class HaSunburstChart extends LitElement {
       const transformNode = (
         node: SunburstNode,
         index: number,
-        depth: number
+        depth: number,
+        parentColor?: string
       ) => {
-        const result: Record<string, unknown> = {
-          name: node.id, // echarts uses 'name' for identification
-          value: node.value,
+        const result = {
+          ...node,
+          name: node.name || node.id,
         };
 
-        // Apply colors to first-level children only
-        if (depth === 1) {
+        if (depth > 0 && !node.itemStyle?.color) {
+          // Don't assign color to root node
           result.itemStyle = {
-            color: getGraphColorByIndex(index, computedStyles),
+            color: parentColor ?? getGraphColorByIndex(index, computedStyles),
           };
         }
 
         if (node.children && node.children.length > 0) {
           result.children = node.children.map((child, i) =>
-            transformNode(child, depth === 0 ? i : index, depth + 1)
+            transformNode(child, i, depth + 1, result.itemStyle?.color)
           );
         }
 
@@ -116,23 +110,24 @@ export class HaSunburstChart extends LitElement {
 
       return {
         type: "sunburst",
-        data: (transformedData.children as Record<string, unknown>[]) || [
-          transformedData,
-        ],
-        radius: [0, "95%"],
+        data: transformedData.children || [transformedData],
+        radius: [0, "90%"],
         sort: undefined, // Keep original order
         label: {
+          show: false,
+          align: "center",
           rotate: "radial",
           minAngle: 15,
-          formatter: (params) => {
-            const name = (params.data as { name: string }).name;
-            return this.labelFormatter ? this.labelFormatter(name) : name;
+          hideOverlap: true,
+        },
+        emphasis: {
+          focus: "ancestor",
+          label: {
+            show: false,
           },
         },
         itemStyle: {
-          borderRadius: 4,
-          borderWidth: 2,
-          borderColor: "var(--card-background-color, #fff)",
+          borderRadius: 2,
         },
         levels: [
           {
@@ -142,41 +137,24 @@ export class HaSunburstChart extends LitElement {
             itemStyle: {
               color: "transparent",
             },
-            label: {
-              show: false,
-            },
           },
           {
             // First level
             r0: "15%",
             r: "55%",
-            label: {
-              align: "center",
-            },
+            label: { show: true },
           },
           {
             // Second level
             r0: "55%",
             r: "80%",
-            label: {
-              align: "center",
-            },
           },
           {
             // Third level
             r0: "80%",
             r: "95%",
-            label: {
-              align: "center",
-              position: "outside",
-              padding: 3,
-              silent: false,
-            },
           },
         ],
-        emphasis: {
-          focus: "ancestor",
-        },
       } as SunburstSeriesOption;
     }
   );

@@ -33,59 +33,10 @@ export class StorageBreakdownChart extends LitElement {
     if (!this.hostInfo) {
       return nothing;
     }
-    const computedStyles = getComputedStyle(this);
-    let totalSpaceGB = this.hostInfo.disk_total;
-    let usedSpaceGB = this.hostInfo.disk_used;
-    // this.hostInfo.disk_free is sometimes 0, so we may need to calculate it
-    let freeSpaceGB =
-      this.hostInfo.disk_free ||
-      this.hostInfo.disk_total - this.hostInfo.disk_used;
-    const segments: Segment[] = [];
-    if (this.storageInfo) {
-      const totalSpace =
-        this.storageInfo.total_bytes ??
-        this._gbToBytes(this.hostInfo.disk_total);
-      totalSpaceGB = this._bytesToGB(totalSpace);
-      usedSpaceGB = this._bytesToGB(this.storageInfo.used_bytes);
-      freeSpaceGB = this._bytesToGB(totalSpace - this.storageInfo.used_bytes);
-      this.storageInfo.children?.forEach((child, index) => {
-        if (child.used_bytes > 0) {
-          const space = this._bytesToGB(child.used_bytes);
-          segments.push({
-            value: space,
-            color: getGraphColorByIndex(index, computedStyles),
-            label: html`${this.hass.localize(
-                `ui.panel.config.storage.segments.${child.id}`
-              ) ||
-              child.label ||
-              child.id}
-              <span style="color: var(--secondary-text-color)"
-                >${roundWithOneDecimal(space)} GB</span
-              >`,
-          });
-        }
-      });
-    } else {
-      segments.push({
-        value: usedSpaceGB,
-        color: "var(--primary-color)",
-        label: html`${this.hass.localize(
-            "ui.panel.config.storage.segments.used"
-          )}
-          <span style="color: var(--secondary-text-color)"
-            >${roundWithOneDecimal(usedSpaceGB)} GB</span
-          >`,
-      });
-    }
-    segments.push({
-      value: freeSpaceGB,
-      color:
-        "var(--ha-bar-background-color, var(--secondary-background-color))",
-      label: html`${this.hass.localize("ui.panel.config.storage.segments.free")}
-        <span style="color: var(--secondary-text-color)"
-          >${roundWithOneDecimal(freeSpaceGB)} GB</span
-        >`,
-    });
+    const { totalSpaceGB, usedSpaceGB, freeSpaceGB } = this._computeSpaceValues(
+      this.hostInfo,
+      this.storageInfo
+    );
 
     const hasChildren = Boolean(this.storageInfo?.children?.length);
     const heading = this.hass.localize("ui.panel.config.storage.used_space");
@@ -96,6 +47,7 @@ export class StorageBreakdownChart extends LitElement {
         total: `${roundWithOneDecimal(totalSpaceGB)} GB`,
       }
     );
+    const showBarChart = this._chartType === "bar" || !hasChildren;
 
     return html`
       <div class="header">
@@ -117,16 +69,19 @@ export class StorageBreakdownChart extends LitElement {
       </div>
 
       <div class="chart-container ${this._chartType}">
-        ${this._chartType === "bar" || !hasChildren
+        ${showBarChart
           ? html`<ha-segmented-bar
               .heading=${""}
-              .segments=${segments}
+              .segments=${this._computeSegments(
+                this.storageInfo,
+                usedSpaceGB,
+                freeSpaceGB
+              )}
             ></ha-segmented-bar>`
           : html`<ha-sunburst-chart
               .hass=${this.hass}
               .data=${this._transformToSunburstData(this.storageInfo!)}
               .valueFormatter=${this._formatBytes}
-              .labelFormatter=${this._formatLabel}
             ></ha-sunburst-chart>`}
       </div>
 
@@ -145,13 +100,95 @@ export class StorageBreakdownChart extends LitElement {
     this._chartType = this._chartType === "bar" ? "sunburst" : "bar";
   }
 
+  private _computeSpaceValues = memoizeOne(
+    (
+      hostInfo: HassioHostInfo,
+      storageInfo: HostDisksUsage | null | undefined
+    ) => {
+      let totalSpaceGB = hostInfo.disk_total;
+      let usedSpaceGB = hostInfo.disk_used;
+      let freeSpaceGB =
+        hostInfo.disk_free || hostInfo.disk_total - hostInfo.disk_used;
+
+      if (storageInfo) {
+        const totalSpace =
+          storageInfo.total_bytes ?? this._gbToBytes(hostInfo.disk_total);
+        totalSpaceGB = this._bytesToGB(totalSpace);
+        usedSpaceGB = this._bytesToGB(storageInfo.used_bytes);
+        freeSpaceGB = this._bytesToGB(totalSpace - storageInfo.used_bytes);
+      }
+
+      return { totalSpaceGB, usedSpaceGB, freeSpaceGB };
+    }
+  );
+
+  private _computeSegments = memoizeOne(
+    (
+      storageInfo: HostDisksUsage | null | undefined,
+      usedSpaceGB: number,
+      freeSpaceGB: number
+    ): Segment[] => {
+      const computedStyles = getComputedStyle(this);
+      const segments: Segment[] = [];
+
+      if (storageInfo) {
+        storageInfo.children?.forEach((child, index) => {
+          if (child.used_bytes > 0) {
+            const space = this._bytesToGB(child.used_bytes);
+            segments.push({
+              value: space,
+              color: getGraphColorByIndex(index, computedStyles),
+              label: html`${this.hass.localize(
+                  `ui.panel.config.storage.segments.${child.id}`
+                ) ||
+                child.label ||
+                child.id}
+                <span style="color: var(--secondary-text-color)"
+                  >${roundWithOneDecimal(space)} GB</span
+                >`,
+            });
+          }
+        });
+      } else {
+        segments.push({
+          value: usedSpaceGB,
+          color: "var(--primary-color)",
+          label: html`${this.hass.localize(
+              "ui.panel.config.storage.segments.used"
+            )}
+            <span style="color: var(--secondary-text-color)"
+              >${roundWithOneDecimal(usedSpaceGB)} GB</span
+            >`,
+        });
+      }
+
+      segments.push({
+        value: freeSpaceGB,
+        color:
+          "var(--ha-bar-background-color, var(--secondary-background-color))",
+        label: html`${this.hass.localize(
+            "ui.panel.config.storage.segments.free"
+          )}
+          <span style="color: var(--secondary-text-color)"
+            >${roundWithOneDecimal(freeSpaceGB)} GB</span
+          >`,
+      });
+
+      return segments;
+    }
+  );
+
   private _transformToSunburstData = memoizeOne(
     (storageInfo: HostDisksUsage): SunburstNode => {
-      const transform = (node: HostDisksUsage): SunburstNode => ({
-        id: node.id,
-        label: node.label,
+      const transform = (
+        node: HostDisksUsage,
+        parentNode?: HostDisksUsage
+      ): SunburstNode => ({
+        // prefix with parent id to avoid duplicate ids
+        id: parentNode ? `${parentNode.id}.${node.id}` : node.id,
+        name: this._formatLabel(node.id) || node.label,
         value: node.used_bytes,
-        children: node.children?.map(transform),
+        children: node.children?.map((child) => transform(child, node)),
       });
       return transform(storageInfo);
     }
@@ -214,7 +251,7 @@ export class StorageBreakdownChart extends LitElement {
     }
 
     .chart-container.sunburst {
-      height: 300px;
+      height: 400px;
     }
 
     ha-segmented-bar {
@@ -222,7 +259,7 @@ export class StorageBreakdownChart extends LitElement {
     }
 
     ha-sunburst-chart {
-      height: 300px;
+      height: 400px;
     }
 
     ha-segmented-bar,
