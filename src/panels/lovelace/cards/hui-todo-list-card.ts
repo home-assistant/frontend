@@ -18,6 +18,7 @@ import { classMap } from "lit/directives/class-map";
 import { repeat } from "lit/directives/repeat";
 import memoizeOne from "memoize-one";
 import { applyThemesOnElement } from "../../../common/dom/apply_themes_on_element";
+import { fireEvent } from "../../../common/dom/fire_event";
 import { stopPropagation } from "../../../common/dom/stop_propagation";
 import { supportsFeature } from "../../../common/entity/supports-feature";
 import { caseInsensitiveStringCompare } from "../../../common/string/compare";
@@ -129,7 +130,48 @@ export class HuiTodoListCard extends LitElement implements LovelaceCard {
     return undefined;
   }
 
-  private _sortItems(items: TodoItem[], sort?: string) {
+  private _sortItems(items: TodoItem[], sort?: string): TodoItem[] {
+    if (sort === "priority_desc") {
+      const getPriorityValue = (
+        priority: number | string | null | undefined
+      ): number => {
+        // Handle null/undefined first
+        if (priority == null) return 0;
+
+        // If it's already a number (some integrations use 1,2,3,4)
+        if (typeof priority === "number") {
+          return priority;
+        }
+
+        // It's a string — normalize and match
+        const p = priority.toString().trim().toLowerCase();
+
+        switch (p) {
+          case "urgent":
+          case "4":
+            return 4;
+          case "high":
+          case "3":
+            return 3;
+          case "medium":
+          case "2":
+            return 2;
+          case "low":
+          case "1":
+            return 1;
+          default:
+            return 0;
+        }
+      };
+
+      return [...items].sort((a, b) => {
+        const prioA = getPriorityValue(a.priority);
+        const prioB = getPriorityValue(b.priority);
+        return prioB - prioA; // Highest priority first
+      });
+    }
+
+    // Keep all original sorting modes
     if (sort === TodoSortMode.ALPHA_ASC || sort === TodoSortMode.ALPHA_DESC) {
       const sortOrder = sort === TodoSortMode.ALPHA_ASC ? 1 : -1;
       return items.sort(
@@ -142,6 +184,7 @@ export class HuiTodoListCard extends LitElement implements LovelaceCard {
           )
       );
     }
+
     if (
       sort === TodoSortMode.DUEDATE_ASC ||
       sort === TodoSortMode.DUEDATE_DESC
@@ -150,13 +193,11 @@ export class HuiTodoListCard extends LitElement implements LovelaceCard {
       return items.sort((a, b) => {
         const aDue = this._getDueDate(a) ?? Infinity;
         const bDue = this._getDueDate(b) ?? Infinity;
-        if (aDue === bDue) {
-          return 0;
-        }
-        return aDue < bDue ? -sortOrder : sortOrder;
+        return aDue === bDue ? 0 : aDue < bDue ? -sortOrder : sortOrder;
       });
     }
-    return items;
+
+    return items; // no sorting
   }
 
   private _getUncheckedAndItemsWithoutStatus = memoizeOne(
@@ -410,33 +451,61 @@ export class HuiTodoListCard extends LitElement implements LovelaceCard {
   }
 
   private _renderMenu(config: TodoListCardConfig, unavailable: boolean) {
-    return (!config.display_order ||
-      config.display_order === TodoSortMode.NONE) &&
-      this._todoListSupportsFeature(TodoListEntityFeature.MOVE_TODO_ITEM)
-      ? html`<ha-button-menu
-          @closed=${stopPropagation}
-          fixed
-          @action=${this._handlePrimaryMenuAction}
-        >
-          <ha-icon-button
-            slot="trigger"
-            .path=${mdiDotsVertical}
-          ></ha-icon-button>
-          <ha-list-item graphic="icon">
-            ${this.hass!.localize(
-              this._reordering
-                ? "ui.panel.lovelace.cards.todo-list.exit_reorder_items"
-                : "ui.panel.lovelace.cards.todo-list.reorder_items"
-            )}
-            <ha-svg-icon
-              slot="graphic"
-              .path=${mdiSort}
-              .disabled=${unavailable}
-            >
-            </ha-svg-icon>
-          </ha-list-item>
-        </ha-button-menu>`
-      : nothing;
+    const currentSort = config.display_order || TodoSortMode.NONE;
+    const isPrioritySort = currentSort === "priority_desc";
+
+    return html`
+      <div class="sort-buttons">
+        <!-- Priority Sort Button -->
+        <ha-icon-button
+          .path=${mdiSort}
+          .title=${isPrioritySort ? "Sorting by priority" : "Sort by priority"}
+          class=${classMap({ active: isPrioritySort })}
+          @click=${this._togglePrioritySort}
+          .disabled=${unavailable}
+        ></ha-icon-button>
+
+        <!-- Original Reorder Menu (only show if no other sorting active) -->
+        ${currentSort === TodoSortMode.NONE &&
+        this._todoListSupportsFeature(TodoListEntityFeature.MOVE_TODO_ITEM)
+          ? html`
+              <ha-button-menu
+                @closed=${stopPropagation}
+                fixed
+                @action=${this._handlePrimaryMenuAction}
+              >
+                <ha-icon-button
+                  slot="trigger"
+                  .path=${mdiDotsVertical}
+                ></ha-icon-button>
+                <ha-list-item graphic="icon">
+                  ${this.hass!.localize(
+                    this._reordering
+                      ? "ui.panel.lovelace.cards.todo-list.exit_reorder_items"
+                      : "ui.panel.lovelace.cards.todo-list.reorder_items"
+                  )}
+                  <ha-svg-icon slot="graphic" .path=${mdiSort}></ha-svg-icon>
+                </ha-list-item>
+              </ha-button-menu>
+            `
+          : nothing}
+      </div>
+    `;
+  }
+
+  private _togglePrioritySort() {
+    const newSort =
+      this._config!.display_order === "priority_desc"
+        ? TodoSortMode.NONE
+        : "priority_desc";
+
+    const newConfig = {
+      ...this._config!,
+      display_order: newSort,
+    };
+
+    this._config = newConfig;
+    fireEvent(this, "config-changed", { config: newConfig });
   }
 
   private _getDueDate(item: TodoItem): Date | undefined {
@@ -951,6 +1020,21 @@ export class HuiTodoListCard extends LitElement implements LovelaceCard {
     .priority-urgent {
       color: #db4437 !important;
       font-weight: 600 !important;
+    }
+
+    .sort-buttons {
+      display: flex;
+      gap: 8px;
+      align-items: center;
+    }
+
+    .sort-buttons ha-icon-button.active {
+      color: var(--primary-color);
+    }
+
+    /* Optional: make active icon bolder */
+    .sort-buttons ha-icon-button.active {
+      --mdc-icon-button-state-layer-color: var(--primary-color);
     }
   `;
 }
