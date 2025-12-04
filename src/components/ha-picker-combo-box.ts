@@ -14,7 +14,10 @@ import memoizeOne from "memoize-one";
 import { tinykeys } from "tinykeys";
 import { fireEvent } from "../common/dom/fire_event";
 import { caseInsensitiveStringCompare } from "../common/string/compare";
-import { HaFuse } from "../resources/fuse";
+import {
+  multiTermsSortedSearch,
+  type FuseWeightedKey,
+} from "../resources/fuseMultiTerm";
 import { haStyleScrollbar } from "../resources/styles";
 import { loadVirtualizer } from "../resources/virtualizer";
 import type { HomeAssistant } from "../types";
@@ -25,11 +28,22 @@ import "./ha-icon";
 import "./ha-textfield";
 import type { HaTextField } from "./ha-textfield";
 
+const DEFAULT_SEARCH_KEYS: FuseWeightedKey<PickerComboBoxItem>[] = [
+  {
+    name: "primary",
+    weight: 10,
+  },
+  {
+    name: "secondary",
+    weight: 7,
+  },
+];
+
 export interface PickerComboBoxItem {
   id: string;
   primary: string;
   secondary?: string;
-  search_labels?: string[];
+  search_labels?: Record<string, string | null>;
   sorting_label?: string;
   icon_path?: string;
   icon?: string;
@@ -75,6 +89,9 @@ export class HaPickerComboBox extends LitElement {
   @property() public label?: string;
 
   @property() public value?: string;
+
+  @property({ attribute: false })
+  public searchKeys?: FuseWeightedKey<PickerComboBoxItem>[];
 
   @state() private _listScrolled = false;
 
@@ -331,8 +348,11 @@ export class HaPickerComboBox extends LitElement {
     fireEvent(this, "value-changed", { value: newValue });
   };
 
-  private _fuseIndex = memoizeOne((states: PickerComboBoxItem[]) =>
-    Fuse.createIndex(["search_labels"], states)
+  private _fuseIndex = memoizeOne(
+    (
+      states: PickerComboBoxItem[],
+      searchKeys?: FuseWeightedKey<PickerComboBoxItem>[]
+    ) => Fuse.createIndex(searchKeys || DEFAULT_SEARCH_KEYS, states)
   );
 
   private _filterChanged = (ev: Event) => {
@@ -348,33 +368,25 @@ export class HaPickerComboBox extends LitElement {
         return;
       }
 
-      const index = this._fuseIndex(this._allItems as PickerComboBoxItem[]);
-      const fuse = new HaFuse(
+      const index = this._fuseIndex(
         this._allItems as PickerComboBoxItem[],
-        {
-          shouldSort: false,
-          minMatchCharLength: Math.min(searchString.length, 2),
-        },
-        index
+        this.searchKeys
       );
 
-      const results = fuse.multiTermsSearch(searchString);
-      let filteredItems = [...this._allItems];
+      let filteredItems = multiTermsSortedSearch<PickerComboBoxItem>(
+        this._allItems as PickerComboBoxItem[],
+        searchString,
+        this.searchKeys || DEFAULT_SEARCH_KEYS,
+        (item) => item.id,
+        index
+      ) as (PickerComboBoxItem | string)[];
 
-      if (results) {
-        const items: (PickerComboBoxItem | string)[] = results.map(
-          (result) => result.item
-        );
-
-        if (!items.length) {
-          filteredItems.push(NO_ITEMS_AVAILABLE_ID);
-        }
-
-        const additionalItems = this._getAdditionalItems();
-        items.push(...additionalItems);
-
-        filteredItems = items;
+      if (!filteredItems.length) {
+        filteredItems.push(NO_ITEMS_AVAILABLE_ID);
       }
+
+      const additionalItems = this._getAdditionalItems();
+      filteredItems.push(...additionalItems);
 
       if (this.searchFn) {
         filteredItems = this.searchFn(

@@ -9,6 +9,7 @@ import { isValidEntityId } from "../../common/entity/valid_entity_id";
 import { computeRTL } from "../../common/util/compute_rtl";
 import type { HaEntityPickerEntityFilterFunc } from "../../data/entity";
 import {
+  entityComboBoxKeys,
   getEntities,
   type EntityComboBoxItem,
 } from "../../data/entity_registry";
@@ -288,6 +289,7 @@ export class HaEntityPicker extends LitElement {
         .hideClearIcon=${this.hideClearIcon}
         .searchFn=${this._searchFn}
         .valueRenderer=${this._valueRenderer}
+        .searchKeys=${entityComboBoxKeys}
         @value-changed=${this._valueChanged}
         .addButtonLabel=${this.addButton
           ? this.hass.localize("ui.components.entity.entity-picker.add")
