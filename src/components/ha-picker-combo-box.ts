@@ -14,6 +14,7 @@ import memoizeOne from "memoize-one";
 import { tinykeys } from "tinykeys";
 import { fireEvent } from "../common/dom/fire_event";
 import { caseInsensitiveStringCompare } from "../common/string/compare";
+import { ScrollableFadeMixin } from "../mixins/scrollable-fade-mixin";
 import { HaFuse } from "../resources/fuse";
 import { haStyleScrollbar } from "../resources/styles";
 import { loadVirtualizer } from "../resources/virtualizer";
@@ -59,7 +60,7 @@ export type PickerComboBoxSearchFn<T extends PickerComboBoxItem> = (
 ) => T[];
 
 @customElement("ha-picker-combo-box")
-export class HaPickerComboBox extends LitElement {
+export class HaPickerComboBox extends ScrollableFadeMixin(LitElement) {
   @property({ attribute: false }) public hass?: HomeAssistant;
 
   // eslint-disable-next-line lit/no-native-attributes
@@ -126,6 +127,10 @@ export class HaPickerComboBox extends LitElement {
 
   @state() private _items: (PickerComboBoxItem | string)[] = [];
 
+  protected get scrollableElement(): HTMLElement | null {
+    return this._virtualizerElement as HTMLElement | null;
+  }
+
   @state() private _sectionTitle?: string;
 
   private _allItems: (PickerComboBoxItem | string)[] = [];
@@ -180,19 +185,22 @@ export class HaPickerComboBox extends LitElement {
             </div>
           `
         : nothing}
-      <lit-virtualizer
-        .keyFunction=${this._keyFunction}
-        tabindex="0"
-        scroller
-        .items=${this._items}
-        .renderItem=${this._renderItem}
-        style="min-height: 36px;"
-        class=${this._listScrolled ? "scrolled" : ""}
-        @scroll=${this._onScrollList}
-        @focus=${this._focusList}
-        @visibilityChanged=${this._visibilityChanged}
-      >
-      </lit-virtualizer>`;
+      <div class="virtualizer-wrapper">
+        <lit-virtualizer
+          .keyFunction=${this._keyFunction}
+          tabindex="0"
+          scroller
+          .items=${this._items}
+          .renderItem=${this._renderItem}
+          style="min-height: 36px;"
+          class=${this._listScrolled ? "scrolled" : ""}
+          @scroll=${this._onScrollList}
+          @focus=${this._focusList}
+          @visibilityChanged=${this._visibilityChanged}
+        >
+        </lit-virtualizer>
+        ${this.renderScrollableFades()}
+      </div>`;
   }
 
   private _renderSectionButtons() {
@@ -584,156 +592,167 @@ export class HaPickerComboBox extends LitElement {
   private _keyFunction = (item: PickerComboBoxItem | string) =>
     typeof item === "string" ? item : item.id;
 
-  static styles = [
-    haStyleScrollbar,
-    css`
-      :host {
-        display: flex;
-        flex-direction: column;
-        padding-top: var(--ha-space-3);
-        flex: 1;
-      }
+  static get styles() {
+    return [
+      ...super.styles,
+      haStyleScrollbar,
+      css`
+        :host {
+          display: flex;
+          flex-direction: column;
+          padding-top: var(--ha-space-3);
+          flex: 1;
+        }
 
-      ha-textfield {
-        padding: 0 var(--ha-space-3);
-        margin-bottom: var(--ha-space-3);
-      }
+        ha-textfield {
+          padding: 0 var(--ha-space-3);
+          margin-bottom: var(--ha-space-3);
+        }
 
-      :host([mode="dialog"]) ha-textfield {
-        padding: 0 var(--ha-space-4);
-      }
+        :host([mode="dialog"]) ha-textfield {
+          padding: 0 var(--ha-space-4);
+        }
 
-      ha-combo-box-item {
-        width: 100%;
-      }
+        ha-combo-box-item {
+          width: 100%;
+        }
 
-      ha-combo-box-item.selected {
-        background-color: var(--ha-color-fill-neutral-quiet-hover);
-      }
-
-      @media (prefers-color-scheme: dark) {
         ha-combo-box-item.selected {
-          background-color: var(--ha-color-fill-neutral-normal-hover);
+          background-color: var(--ha-color-fill-neutral-quiet-hover);
         }
-      }
 
-      lit-virtualizer {
-        flex: 1;
-      }
+        @media (prefers-color-scheme: dark) {
+          ha-combo-box-item.selected {
+            background-color: var(--ha-color-fill-neutral-normal-hover);
+          }
+        }
 
-      lit-virtualizer:focus-visible {
-        outline: none;
-      }
+        .virtualizer-wrapper {
+          position: relative;
+          flex: 1;
+          display: flex;
+          flex-direction: column;
+          min-height: 0;
+        }
 
-      lit-virtualizer.scrolled {
-        border-top: 1px solid var(--ha-color-border-neutral-quiet);
-      }
+        lit-virtualizer {
+          flex: 1;
+        }
 
-      .bottom-padding {
-        height: max(var(--safe-area-inset-bottom, 0px), var(--ha-space-8));
-        width: 100%;
-      }
+        lit-virtualizer:focus-visible {
+          outline: none;
+        }
 
-      .empty {
-        text-align: center;
-      }
+        lit-virtualizer.scrolled {
+          border-top: 1px solid var(--ha-color-border-neutral-quiet);
+        }
 
-      .combo-box-row {
-        display: flex;
-        width: 100%;
-        align-items: center;
-        box-sizing: border-box;
-        min-height: 36px;
-      }
-      .combo-box-row.current-value {
-        background-color: var(--ha-color-fill-primary-quiet-resting);
-      }
+        .bottom-padding {
+          height: max(var(--safe-area-inset-bottom, 0px), var(--ha-space-8));
+          width: 100%;
+        }
 
-      .combo-box-row.selected {
-        background-color: var(--ha-color-fill-neutral-quiet-hover);
-      }
+        .empty {
+          text-align: center;
+        }
 
-      @media (prefers-color-scheme: dark) {
+        .combo-box-row {
+          display: flex;
+          width: 100%;
+          align-items: center;
+          box-sizing: border-box;
+          min-height: 36px;
+        }
+        .combo-box-row.current-value {
+          background-color: var(--ha-color-fill-primary-quiet-resting);
+        }
+
         .combo-box-row.selected {
-          background-color: var(--ha-color-fill-neutral-normal-hover);
+          background-color: var(--ha-color-fill-neutral-quiet-hover);
         }
-      }
 
-      .sections {
-        display: flex;
-        flex-wrap: nowrap;
-        gap: var(--ha-space-2);
-        padding: var(--ha-space-3) var(--ha-space-3);
-        overflow: auto;
-      }
+        @media (prefers-color-scheme: dark) {
+          .combo-box-row.selected {
+            background-color: var(--ha-color-fill-neutral-normal-hover);
+          }
+        }
 
-      :host([mode="dialog"]) .sections {
-        padding: var(--ha-space-3) var(--ha-space-4);
-      }
+        .sections {
+          display: flex;
+          flex-wrap: nowrap;
+          gap: var(--ha-space-2);
+          padding: var(--ha-space-3) var(--ha-space-3);
+          overflow: auto;
+        }
 
-      .sections ha-filter-chip {
-        flex-shrink: 0;
-        --md-filter-chip-selected-container-color: var(
-          --ha-color-fill-primary-normal-hover
-        );
-        color: var(--primary-color);
-      }
+        :host([mode="dialog"]) .sections {
+          padding: var(--ha-space-3) var(--ha-space-4);
+        }
 
-      .sections .separator {
-        height: var(--ha-space-8);
-        width: 0;
-        border: 1px solid var(--ha-color-border-neutral-quiet);
-      }
+        .sections ha-filter-chip {
+          flex-shrink: 0;
+          --md-filter-chip-selected-container-color: var(
+            --ha-color-fill-primary-normal-hover
+          );
+          color: var(--primary-color);
+        }
 
-      .section-title,
-      .title {
-        background-color: var(--ha-color-fill-neutral-quiet-resting);
-        padding: var(--ha-space-1) var(--ha-space-2);
-        font-weight: var(--ha-font-weight-bold);
-        color: var(--secondary-text-color);
-        min-height: var(--ha-space-6);
-        display: flex;
-        align-items: center;
-      }
+        .sections .separator {
+          height: var(--ha-space-8);
+          width: 0;
+          border: 1px solid var(--ha-color-border-neutral-quiet);
+        }
 
-      .title {
-        width: 100%;
-      }
+        .section-title,
+        .title {
+          background-color: var(--ha-color-fill-neutral-quiet-resting);
+          padding: var(--ha-space-1) var(--ha-space-2);
+          font-weight: var(--ha-font-weight-bold);
+          color: var(--secondary-text-color);
+          min-height: var(--ha-space-6);
+          display: flex;
+          align-items: center;
+        }
 
-      :host([mode="dialog"]) .title {
-        padding: var(--ha-space-1) var(--ha-space-4);
-      }
+        .title {
+          width: 100%;
+        }
 
-      :host([mode="dialog"]) ha-textfield {
-        padding: 0 var(--ha-space-4);
-      }
+        :host([mode="dialog"]) .title {
+          padding: var(--ha-space-1) var(--ha-space-4);
+        }
 
-      .section-title-wrapper {
-        height: 0;
-        position: relative;
-      }
+        :host([mode="dialog"]) ha-textfield {
+          padding: 0 var(--ha-space-4);
+        }
 
-      .section-title {
-        opacity: 0;
-        position: absolute;
-        top: 1px;
-        width: calc(100% - var(--ha-space-8));
-      }
+        .section-title-wrapper {
+          height: 0;
+          position: relative;
+        }
 
-      .section-title.show {
-        opacity: 1;
-        z-index: 1;
-      }
+        .section-title {
+          opacity: 0;
+          position: absolute;
+          top: 1px;
+          width: calc(100% - var(--ha-space-8));
+        }
 
-      .empty-search {
-        display: flex;
-        width: 100%;
-        flex-direction: column;
-        align-items: center;
-        padding: var(--ha-space-3);
-      }
-    `,
-  ];
+        .section-title.show {
+          opacity: 1;
+          z-index: 1;
+        }
+
+        .empty-search {
+          display: flex;
+          width: 100%;
+          flex-direction: column;
+          align-items: center;
+          padding: var(--ha-space-3);
+        }
+      `,
+    ];
+  }
 }
 
 declare global {
