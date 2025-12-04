@@ -94,7 +94,11 @@ class HuiMapCard extends LitElement implements LovelaceCard {
       }
     });
 
-    return locationEntities.filter((entity) => !personSources.has(entity));
+    const visibleEntities = locationEntities.filter(
+      (entityId) => !hass.entities?.[entityId]?.hidden
+    );
+
+    return visibleEntities.filter((entity) => !personSources.has(entity));
   }
 
   public setConfig(config: MapCardConfig): void {
@@ -437,18 +441,14 @@ class HuiMapCard extends LitElement implements LovelaceCard {
 
   private _getMapEntities(): HaMapEntity[] {
     return [
-      ...(this._configEntities || [])
-        .filter(
-          (entityConf) => !this.hass.entities?.[entityConf.entity]?.hidden
-        )
-        .map((entityConf) => ({
-          entity_id: entityConf.entity,
-          color: this._getColor(entityConf.entity),
-          label_mode: entityConf.label_mode,
-          attribute: entityConf.attribute,
-          unit: entityConf.unit,
-          focus: entityConf.focus,
-          name: entityConf.name,
+      ...(this._configEntities || []).map((entityConf) => ({
+        entity_id: entityConf.entity,
+        color: this._getColor(entityConf.entity),
+        label_mode: entityConf.label_mode,
+        attribute: entityConf.attribute,
+        unit: entityConf.unit,
+        focus: entityConf.focus,
+        name: entityConf.name,
       })),
       ...this._getSourceEntities(this.hass?.states).map((entity) => ({
         ...entity,
