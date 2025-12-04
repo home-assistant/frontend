@@ -10,6 +10,7 @@ import { stringCompare } from "../../common/string/compare";
 import "../chips/ha-chip-set";
 import "../ha-dropdown";
 import "../ha-dropdown-item";
+import type { HaDropdownItem } from "../ha-dropdown-item";
 import "../ha-icon";
 
 @customElement("ha-data-table-labels")
@@ -29,8 +30,9 @@ class HaDataTableLabels extends LitElement {
           ? html`<ha-dropdown
               role="button"
               tabindex="0"
-              @click=${this._handleIconOverflowMenuOpened}
+              @wa-show=${this._handleIconOverflowMenuOpened}
               @wa-hide=${this._handleIconOverflowMenuClosed}
+              @wa-select=${this._handleDropdownSelect}
             >
               <ha-label slot="trigger" class="plus" dense>
                 +${labels.length - 2}
@@ -39,7 +41,7 @@ class HaDataTableLabels extends LitElement {
                 labels.slice(2),
                 (label) => label.label_id,
                 (label) => html`
-                  <ha-dropdown-item @click=${this._labelClicked} .item=${label}>
+                  <ha-dropdown-item .value=${label.label_id} .item=${label}>
                     ${this._renderLabel(label, false)}
                   </ha-dropdown-item>
                 `
@@ -80,10 +82,19 @@ class HaDataTableLabels extends LitElement {
     fireEvent(this, "label-clicked", { label });
   }
 
+  private _handleDropdownSelect(
+    ev: CustomEvent<{ item: HaDropdownItem & { item?: LabelRegistryEntry } }>
+  ) {
+    const label = ev.detail?.item?.item;
+    if (label) {
+      fireEvent(this, "label-clicked", { label });
+    }
+  }
+
   protected _handleIconOverflowMenuOpened(e) {
     e.stopPropagation();
     // If this component is used inside a data table, the z-index of the row
-    // needs to be increased. Otherwise the ha-button-menu would be displayed
+    // needs to be increased. Otherwise the ha-dropdown would be displayed
     // underneath the next row in the table.
     const row = this.closest(".mdc-data-table__row") as HTMLDivElement | null;
     if (row) {
