@@ -94,6 +94,8 @@ export class HuiTodoListCard extends LitElement implements LovelaceCard {
 
   @state() private _searchTerm = "";
 
+  @state() private _storeFilter = "";
+
   @state() private _addError?: string;
 
   private _unsubItems?: Promise<UnsubscribeFunc>;
@@ -207,6 +209,32 @@ export class HuiTodoListCard extends LitElement implements LovelaceCard {
     return items.filter((item) => item.summary.toLowerCase().includes(query));
   }
 
+  private _filterItemsByStore(items?: TodoItem[]): TodoItem[] {
+    if (!items) {
+      return [];
+    }
+    const query = this._storeFilter.trim().toLowerCase();
+    if (!query) {
+      return items;
+    }
+    return items.filter((item) => {
+      const desc = item.description ?? undefined; // or: const desc = item.description || undefined;
+      const meta = this._parseMeta(desc);
+      const store = (meta.store ?? "").trim().toLowerCase();
+      return store.includes(query);
+    });
+  }
+
+  private _filterItemsCombined(items?: TodoItem[]): TodoItem[] {
+    const byName = this._filterItems(items);
+    return this._filterItemsByStore(byName);
+  }
+
+  private _handleStoreFilterInput(ev: Event): void {
+    const target = ev.currentTarget as HaTextField;
+    this._storeFilter = target.value ?? "";
+  }
+
   private _getQuantityFromDescription(desc?: string): number | undefined {
     if (!desc) return undefined;
     for (const line of desc.split("\n")) {
@@ -278,7 +306,7 @@ export class HuiTodoListCard extends LitElement implements LovelaceCard {
 
     const unavailable = isUnavailableState(stateObj.state);
 
-    const filteredItems = this._filterItems(this._items);
+    const filteredItems = this._filterItemsCombined(this._items);
 
     const checkedItems = this._getCheckedItems(
       filteredItems,
@@ -363,6 +391,16 @@ export class HuiTodoListCard extends LitElement implements LovelaceCard {
             placeholder="Search items"
             .value=${this._searchTerm}
             @input=${this._handleSearchInput}
+            .disabled=${unavailable}
+          ></ha-textfield>
+        </div>
+
+        <div class="searchRow">
+          <ha-textfield
+            class="searchBox"
+            placeholder="Filter by store"
+            .value=${this._storeFilter}
+            @input=${this._handleStoreFilterInput}
             .disabled=${unavailable}
           ></ha-textfield>
         </div>
