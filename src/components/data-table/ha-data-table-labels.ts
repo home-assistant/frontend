@@ -106,9 +106,6 @@ class HaDataTableLabels extends LitElement {
       --ha-label-background-color: var(--color, var(--grey-color));
       --ha-label-background-opacity: 0.5;
     }
-    ha-dropdown {
-      border-radius: 10px;
-    }
     .plus {
       --ha-label-background-color: transparent;
       border: 1px solid var(--divider-color);
