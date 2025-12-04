@@ -91,16 +91,16 @@ export class HaDialogSheet extends LitElement {
 
   connectedCallback() {
     super.connectedCallback();
-    this._updateMode();
-    window.addEventListener("resize", this._updateMode);
+    this._handleResize();
+    window.addEventListener("resize", this._handleResize);
   }
 
   disconnectedCallback() {
     super.disconnectedCallback();
-    window.removeEventListener("resize", this._updateMode);
+    window.removeEventListener("resize", this._handleResize);
   }
 
-  private _updateMode = () => {
+  private _handleResize = () => {
     this._mode =
       window.matchMedia("(max-width: 870px)").matches ||
       window.matchMedia("(max-height: 500px)").matches
