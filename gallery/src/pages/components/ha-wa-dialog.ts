@@ -382,10 +382,6 @@ export class DemoHaWaDialog extends LitElement {
               <td>Z-index for the dialog.</td>
             </tr>
             <tr>
-              <td><code>--dialog-surface-position</code></td>
-              <td>CSS position of the dialog surface.</td>
-            </tr>
-            <tr>
               <td><code>--dialog-surface-margin-top</code></td>
               <td>Top margin for the dialog surface.</td>
             </tr>

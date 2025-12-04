@@ -56,6 +56,19 @@ export function getSuggestedPeriod(
   return dayDifference > 35 ? "month" : dayDifference > 2 ? "day" : "hour";
 }
 
+function createYAxisLabelFormatter(locale: FrontendLocaleData) {
+  let previousValue: number | undefined;
+
+  return (value: number): string => {
+    const maximumFractionDigits = Math.max(
+      1,
+      -Math.floor(Math.log10(Math.abs(value - (previousValue ?? value) || 1)))
+    );
+    previousValue = value;
+    return formatNumber(value, locale, { maximumFractionDigits });
+  };
+}
+
 export function getCommonOptions(
   start: Date,
   end: Date,
@@ -86,7 +99,7 @@ export function getCommonOptions(
         align: "left",
       },
       axisLabel: {
-        formatter: (value: number) => formatNumber(Math.abs(value), locale),
+        formatter: createYAxisLabelFormatter(locale),
       },
       splitLine: {
         show: true,

@@ -49,7 +49,6 @@ export type DialogWidth = "small" | "medium" | "large" | "full";
  * @cssprop --ha-dialog-surface-background - Dialog background color.
  * @cssprop --ha-dialog-border-radius - Border radius of the dialog surface.
  * @cssprop --dialog-z-index - Z-index for the dialog.
- * @cssprop --dialog-surface-position - CSS position of the dialog surface.
  * @cssprop --dialog-surface-margin-top - Top margin for the dialog surface.
  *
  * @attr {boolean} open - Controls the dialog open state.
@@ -244,7 +243,6 @@ export class HaWaDialog extends LitElement {
           calc(var(--safe-height) - var(--ha-space-20))
         );
         min-height: var(--ha-dialog-min-height);
-        position: var(--dialog-surface-position, relative);
         margin-top: var(--dialog-surface-margin-top, auto);
         /* Used to offset the dialog from the safe areas when space is limited */
         transform: translate(

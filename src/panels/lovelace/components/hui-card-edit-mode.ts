@@ -1,3 +1,4 @@
+import "@home-assistant/webawesome/dist/components/divider/divider";
 import {
   mdiContentCopy,
   mdiContentCut,
@@ -12,9 +13,10 @@ import { LitElement, css, html, nothing } from "lit";
 import { customElement, property, state } from "lit/decorators";
 import { classMap } from "lit/directives/class-map";
 import { fireEvent } from "../../../common/dom/fire_event";
-import "../../../components/ha-button-menu";
+import "../../../components/ha-dropdown";
+import "../../../components/ha-dropdown-item";
+import type { HaDropdownItem } from "../../../components/ha-dropdown-item";
 import "../../../components/ha-icon-button";
-import "../../../components/ha-list-item";
 import "../../../components/ha-svg-icon";
 import { haStyle } from "../../../resources/styles";
 import type { HomeAssistant } from "../../../types";
@@ -40,9 +42,6 @@ export class HuiCardEditMode extends LitElement {
 
   @property({ type: Boolean, attribute: "no-move" })
   public noMove = false;
-
-  @state()
-  public _menuOpened = false;
 
   @state()
   public _hover = false;
@@ -91,8 +90,7 @@ export class HuiCardEditMode extends LitElement {
   };
 
   protected render(): TemplateResult {
-    const showOverlay =
-      (this._hover || this._menuOpened || this._focused) && !this.hiddenOverlay;
+    const showOverlay = (this._hover || this._focused) && !this.hiddenOverlay;
 
     return html`
       <div class="card-wrapper" inert><slot></slot></div>
@@ -115,105 +113,69 @@ export class HuiCardEditMode extends LitElement {
                 <ha-svg-icon .path=${mdiPencil}> </ha-svg-icon>
               </div>
             `}
-        <ha-button-menu
+        <ha-dropdown
           class="more"
-          corner="BOTTOM_END"
-          menu-corner="END"
-          .path=${[this.path!]}
-          @action=${this._handleAction}
-          @opened=${this._handleOpened}
-          @closed=${this._handleClosed}
+          placement="bottom-end"
+          @wa-select=${this._handleDropdownSelect}
         >
           <ha-icon-button slot="trigger" .path=${mdiDotsVertical}>
           </ha-icon-button>
           ${this.noEdit
             ? nothing
             : html`
-                <ha-list-item
-                  graphic="icon"
-                  @click=${this._handleAction}
-                  .action=${"edit"}
-                >
-                  <ha-svg-icon slot="graphic" .path=${mdiPencil}></ha-svg-icon>
+                <ha-dropdown-item value="edit">
+                  <ha-svg-icon slot="icon" .path=${mdiPencil}></ha-svg-icon>
                   ${this.hass.localize(
                     "ui.panel.lovelace.editor.edit_card.edit"
                   )}
-                </ha-list-item>
+                </ha-dropdown-item>
               `}
           ${this.noDuplicate
             ? nothing
             : html`
-                <ha-list-item
-                  graphic="icon"
-                  @click=${this._handleAction}
-                  .action=${"duplicate"}
-                >
+                <ha-dropdown-item value="duplicate">
                   <ha-svg-icon
-                    slot="graphic"
+                    slot="icon"
                     .path=${mdiPlusCircleMultipleOutline}
                   ></ha-svg-icon>
                   ${this.hass.localize(
                     "ui.panel.lovelace.editor.edit_card.duplicate"
                   )}
-                </ha-list-item>
+                </ha-dropdown-item>
               `}
           ${this.noMove
             ? nothing
             : html`
-                <ha-list-item
-                  graphic="icon"
-                  @click=${this._handleAction}
-                  .action=${"copy"}
-                >
+                <ha-dropdown-item value="copy">
                   <ha-svg-icon
-                    slot="graphic"
+                    slot="icon"
                     .path=${mdiContentCopy}
                   ></ha-svg-icon>
                   ${this.hass.localize(
                     "ui.panel.lovelace.editor.edit_card.copy"
                   )}
-                </ha-list-item>
-                <ha-list-item
-                  graphic="icon"
-                  @click=${this._handleAction}
-                  .action=${"cut"}
-                >
-                  <ha-svg-icon
-                    slot="graphic"
-                    .path=${mdiContentCut}
-                  ></ha-svg-icon>
+                </ha-dropdown-item>
+                <ha-dropdown-item value="cut">
+                  <ha-svg-icon slot="icon" .path=${mdiContentCut}></ha-svg-icon>
                   ${this.hass.localize(
                     "ui.panel.lovelace.editor.edit_card.cut"
                   )}
-                </ha-list-item>
+                </ha-dropdown-item>
               `}
           ${this.noDuplicate && this.noEdit && this.noMove
             ? nothing
-            : html`<li divider role="separator"></li>`}
-          <ha-list-item
-            graphic="icon"
-            class="warning"
-            @click=${this._handleAction}
-            .action=${"delete"}
-          >
+            : html`<wa-divider></wa-divider>`}
+          <ha-dropdown-item value="delete" variant="danger">
             ${this.hass.localize("ui.panel.lovelace.editor.edit_card.delete")}
             <ha-svg-icon
               class="warning"
-              slot="graphic"
+              slot="icon"
               .path=${mdiDelete}
             ></ha-svg-icon>
-          </ha-list-item>
-        </ha-button-menu>
+          </ha-dropdown-item>
+        </ha-dropdown>
       </div>
     `;
-  }
-
-  private _handleOpened() {
-    this._menuOpened = true;
-  }
-
-  private _handleClosed() {
-    this._menuOpened = false;
   }
 
   private _handleOverlayClick(ev): void {
@@ -228,8 +190,14 @@ export class HuiCardEditMode extends LitElement {
     this._editCard();
   }
 
-  private _handleAction(ev) {
-    switch (ev.currentTarget.action) {
+  private _handleDropdownSelect(ev: CustomEvent<{ item: HaDropdownItem }>) {
+    const action = ev.detail?.item?.value;
+
+    if (!action) {
+      return;
+    }
+
+    switch (action) {
       case "edit":
         this._editCard();
         break;
@@ -330,14 +298,12 @@ export class HuiCardEditMode extends LitElement {
           background: var(--secondary-background-color);
           --mdc-icon-size: 20px;
         }
-        .more {
+        .more ha-icon-button {
           position: absolute;
           right: -6px;
           top: -6px;
           inset-inline-end: -6px;
           inset-inline-start: initial;
-        }
-        .more ha-icon-button {
           cursor: pointer;
           border-radius: var(--ha-border-radius-circle);
           background: var(--secondary-background-color);

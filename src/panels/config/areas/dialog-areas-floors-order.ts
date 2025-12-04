@@ -81,8 +81,11 @@ class DialogAreasFloorsOrder extends LitElement {
       return nothing;
     }
 
+    const hasFloors = this._hierarchy.floors.length > 0;
     const dialogTitle = this.hass.localize(
-      "ui.panel.config.areas.dialog.reorder_title"
+      hasFloors
+        ? "ui.panel.config.areas.dialog.reorder_floors_areas_title"
+        : "ui.panel.config.areas.dialog.reorder_areas_title"
     );
 
     return html`
@@ -172,7 +175,7 @@ class DialogAreasFloorsOrder extends LitElement {
           ? html`<div class="floor-header">
               <span class="floor-name">
                 ${this.hass.localize(
-                  "ui.panel.config.areas.dialog.unassigned_areas"
+                  "ui.panel.config.areas.dialog.other_areas"
                 )}
               </span>
             </div>`
@@ -418,7 +421,6 @@ class DialogAreasFloorsOrder extends LitElement {
         }
 
         .floor.unassigned {
-          border-style: dashed;
           margin-top: 16px;
         }
 
