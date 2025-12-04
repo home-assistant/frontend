@@ -8,7 +8,7 @@ import "./ha-icon-button";
 import "./ha-wa-dialog";
 import type { DialogWidth } from "./ha-wa-dialog";
 
-type DialogMode = "dialog" | "bottom-sheet";
+type DialogSheetMode = "dialog" | "bottom-sheet";
 
 /**
  * Home Assistant dialog sheet component
@@ -82,7 +82,7 @@ export class HaDialogSheet extends LitElement {
   @property({ type: Boolean, reflect: true, attribute: "flexcontent" })
   public flexContent = false;
 
-  @state() private _mode: DialogMode = "dialog";
+  @state() private _mode: DialogSheetMode = "dialog";
 
   @query(".body") public bodyContainer!: HTMLDivElement;
 
