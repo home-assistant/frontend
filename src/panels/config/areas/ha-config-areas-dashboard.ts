@@ -175,21 +175,12 @@ export class HaConfigAreasDashboard extends LitElement {
         .route=${this.route}
         has-fab
       >
-        <ha-button-menu slot="toolbar-icon">
-          <ha-icon-button
-            slot="trigger"
-            .label=${this.hass.localize("ui.common.menu")}
-            .path=${mdiDotsVertical}
-          ></ha-icon-button>
-          <ha-list-item graphic="icon" @click=${this._showReorderDialog}>
-            <ha-svg-icon .path=${mdiSort} slot="graphic"></ha-svg-icon>
-            ${this.hass.localize("ui.panel.config.areas.picker.reorder")}
-          </ha-list-item>
-          <ha-list-item graphic="icon" @click=${this._showHelp}>
-            <ha-svg-icon .path=${mdiHelpCircle} slot="graphic"></ha-svg-icon>
-            ${this.hass.localize("ui.common.help")}
-          </ha-list-item>
-        </ha-button-menu>
+        <ha-icon-button
+          slot="toolbar-icon"
+          .label=${this.hass.localize("ui.common.help")}
+          .path=${mdiHelpCircle}
+          @click=${this._showHelp}
+        ></ha-icon-button>
         <div class="container">
           <div class="floors">
             ${this._hierarchy.floors.map(({ areas, id }) => {
@@ -213,6 +204,16 @@ export class HaConfigAreasDashboard extends LitElement {
                           slot="trigger"
                           .path=${mdiDotsVertical}
                         ></ha-icon-button>
+                        <ha-list-item graphic="icon"
+                          ><ha-svg-icon
+                            .path=${mdiSort}
+                            slot="graphic"
+                          ></ha-svg-icon
+                          >${this.hass.localize(
+                            "ui.panel.config.areas.picker.reorder"
+                          )}</ha-list-item
+                        >
+                        <li divider role="separator"></li>
                         <ha-list-item graphic="icon"
                           ><ha-svg-icon
                             .path=${mdiPencil}
@@ -266,9 +267,30 @@ export class HaConfigAreasDashboard extends LitElement {
                   <div class="header">
                     <h2>
                       ${this.hass.localize(
-                        "ui.panel.config.areas.picker.other_areas"
+                        this._hierarchy.floors.length
+                          ? "ui.panel.config.areas.picker.other_areas"
+                          : "ui.panel.config.areas.picker.header"
                       )}
                     </h2>
+                    <div class="actions">
+                      <ha-button-menu
+                        @action=${this._handleUnassignedAreasAction}
+                      >
+                        <ha-icon-button
+                          slot="trigger"
+                          .path=${mdiDotsVertical}
+                        ></ha-icon-button>
+                        <ha-list-item graphic="icon"
+                          ><ha-svg-icon
+                            .path=${mdiSort}
+                            slot="graphic"
+                          ></ha-svg-icon
+                          >${this.hass.localize(
+                            "ui.panel.config.areas.picker.reorder"
+                          )}</ha-list-item
+                        >
+                      </ha-button-menu>
+                    </div>
                   </div>
                   <ha-sortable
                     handle-selector="a"
@@ -515,11 +537,20 @@ export class HaConfigAreasDashboard extends LitElement {
     const floor = (ev.currentTarget as any).floor;
     switch (ev.detail.index) {
       case 0:
-        this._editFloor(floor);
+        this._showReorderDialog();
         break;
       case 1:
+        this._editFloor(floor);
+        break;
+      case 2:
         this._deleteFloor(floor);
         break;
+    }
+  }
+
+  private _handleUnassignedAreasAction(ev: CustomEvent<ActionDetail>) {
+    if (ev.detail.index === 0) {
+      this._showReorderDialog();
     }
   }
 

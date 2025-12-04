@@ -2475,10 +2475,11 @@
             "area_reorder_failed": "Failed to reorder areas",
             "area_move_failed": "Failed to move area",
             "floor_reorder_failed": "Failed to reorder floors",
-            "reorder": "Reorder floors and areas"
+            "reorder": "Reorder"
           },
           "dialog": {
-            "reorder_title": "Reorder floors and areas",
+            "reorder_areas_title": "Reorder areas",
+            "reorder_floors_areas_title": "Reorder floors and areas",
             "other_areas": "Other areas",
             "reorder_failed": "Failed to save order",
             "empty_floor": "No areas on this floor",
