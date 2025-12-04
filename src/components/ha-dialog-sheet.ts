@@ -79,9 +79,6 @@ export class HaDialogSheet extends LitElement {
   @property({ type: String, attribute: "header-subtitle-position" })
   public headerSubtitlePosition: "above" | "below" = "below";
 
-  @property({ type: Boolean, reflect: true, attribute: "flexcontent" })
-  public flexContent = false;
-
   @state() private _mode: DialogSheetMode = "dialog";
 
   @query(".body") public bodyContainer!: HTMLDivElement;
@@ -111,7 +108,7 @@ export class HaDialogSheet extends LitElement {
   render() {
     if (this._mode === "bottom-sheet") {
       return html`
-        <ha-bottom-sheet .open=${this.open} ?flexcontent=${this.flexContent}>
+        <ha-bottom-sheet .open=${this.open} flexcontent>
           <ha-dialog-header
             slot="header"
             .subtitlePosition=${this.headerSubtitlePosition}
@@ -149,7 +146,7 @@ export class HaDialogSheet extends LitElement {
         .headerTitle=${this.headerTitle}
         .headerSubtitle=${this.headerSubtitle}
         .headerSubtitlePosition=${this.headerSubtitlePosition}
-        ?flexcontent=${this.flexContent}
+        flexcontent
       >
         <slot></slot>
       </ha-wa-dialog>
