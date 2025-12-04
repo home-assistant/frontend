@@ -32,8 +32,6 @@ class HaDataTableLabels extends LitElement {
               role="button"
               tabindex="0"
               @click=${stopPropagation}
-              @wa-show=${this._handleIconOverflowMenuOpened}
-              @wa-hide=${this._handleIconOverflowMenuClosed}
               @wa-select=${this._handleDropdownSelect}
             >
               <ha-label slot="trigger" class="plus" dense>
@@ -90,24 +88,6 @@ class HaDataTableLabels extends LitElement {
     const label = ev.detail?.item?.item;
     if (label) {
       fireEvent(this, "label-clicked", { label });
-    }
-  }
-
-  protected _handleIconOverflowMenuOpened(e) {
-    e.stopPropagation();
-    // If this component is used inside a data table, the z-index of the row
-    // needs to be increased. Otherwise the ha-dropdown would be displayed
-    // underneath the next row in the table.
-    const row = this.closest(".mdc-data-table__row") as HTMLDivElement | null;
-    if (row) {
-      row.style.zIndex = "1";
-    }
-  }
-
-  protected _handleIconOverflowMenuClosed() {
-    const row = this.closest(".mdc-data-table__row") as HTMLDivElement | null;
-    if (row) {
-      row.style.zIndex = "";
     }
   }
 
