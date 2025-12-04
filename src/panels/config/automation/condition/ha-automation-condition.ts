@@ -94,8 +94,8 @@ export default class HaAutomationCondition extends SubscribeMixin(LitElement) {
         this.hass!.connection,
         "automation",
         "new_triggers_conditions",
-        (enabled) => {
-          this._newTriggersAndConditions = enabled;
+        (feature) => {
+          this._newTriggersAndConditions = feature.enabled;
         }
       ),
     ];

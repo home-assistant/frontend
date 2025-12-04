@@ -31,8 +31,8 @@ export class HaSnowflakes extends SubscribeMixin(LitElement) {
         this.hass!.connection,
         "frontend",
         "winter_mode",
-        (enabled) => {
-          this._enabled = enabled;
+        (feature) => {
+          this._enabled = feature.enabled;
         }
       ),
     ];
