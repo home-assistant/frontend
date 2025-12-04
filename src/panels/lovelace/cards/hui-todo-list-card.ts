@@ -459,11 +459,7 @@ export class HuiTodoListCard extends LitElement implements LovelaceCard {
         <!-- Priority Sort Button -->
         <ha-icon-button
           .path=${mdiSort}
-          .title=${this.hass!.localize(
-            isPrioritySort
-              ? "ui.panel.lovelace.cards.todo-list.sorting_priority"
-              : "ui.panel.lovelace.cards.todo-list.sort_by_priority"
-          ) || (isPrioritySort ? "Sorting by priority" : "Sort by priority")}
+          .title=${isPrioritySort ? "Sorting by priority" : "Sort by priority"}
           class=${classMap({ active: isPrioritySort })}
           @click=${this._togglePrioritySort}
           .disabled=${unavailable}
