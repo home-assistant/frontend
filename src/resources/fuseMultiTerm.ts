@@ -48,6 +48,19 @@ function searchTerm<T>(
   return fuse.search(search);
 }
 
+/**
+ * Performs a multi-term search across an array of items using Fuse.js.
+ * All search terms must match for an item to be included in the results.
+ * Result is NOT sorted by relevance.
+ *
+ * @template T - The type of items being searched
+ * @param items - The array of items to search through
+ * @param search - The search string containing one or more space-separated terms
+ * @param searchKeys - An array of weighted keys defining which properties to search
+ * @param fuseIndex - Optional pre-built Fuse index for improved performance
+ * @param options - Optional Fuse.js configuration options
+ * @returns An array of items that match all search terms
+ */
 export function multiTermSearch<T>(
   items: T[],
   search: string,
