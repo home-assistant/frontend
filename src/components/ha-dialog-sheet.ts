@@ -37,7 +37,6 @@ type DialogSheetMode = "dialog" | "bottom-sheet";
  * @attr {string} header-title - Header title text. If not set, the headerTitle slot is used.
  * @attr {string} header-subtitle - Header subtitle text. If not set, the headerSubtitle slot is used.
  * @attr {("above"|"below")} header-subtitle-position - Position of the subtitle relative to the title. Defaults to "below".
- * @attr {boolean} flexcontent - Makes the dialog/sheet body a flex container for flexible layouts.
  *
  * @event opened - Fired when the dialog/sheet is shown (dialog mode only).
  * @event closed - Fired after the dialog/sheet is hidden (dialog mode only).
