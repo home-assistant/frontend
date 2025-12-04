@@ -8,9 +8,9 @@ import { fireEvent } from "../../common/dom/fire_event";
 import "../ha-label";
 import { stringCompare } from "../../common/string/compare";
 import "../chips/ha-chip-set";
-import "../ha-button-menu";
+import "../ha-dropdown";
+import "../ha-dropdown-item";
 import "../ha-icon";
-import "../ha-list-item";
 
 @customElement("ha-data-table-labels")
 class HaDataTableLabels extends LitElement {
@@ -26,12 +26,11 @@ class HaDataTableLabels extends LitElement {
           (label) => this._renderLabel(label, true)
         )}
         ${labels.length > 2
-          ? html`<ha-button-menu
-              absolute
+          ? html`<ha-dropdown
               role="button"
               tabindex="0"
               @click=${this._handleIconOverflowMenuOpened}
-              @closed=${this._handleIconOverflowMenuClosed}
+              @wa-hide=${this._handleIconOverflowMenuClosed}
             >
               <ha-label slot="trigger" class="plus" dense>
                 +${labels.length - 2}
@@ -40,12 +39,12 @@ class HaDataTableLabels extends LitElement {
                 labels.slice(2),
                 (label) => label.label_id,
                 (label) => html`
-                  <ha-list-item @click=${this._labelClicked} .item=${label}>
+                  <ha-dropdown-item @click=${this._labelClicked} .item=${label}>
                     ${this._renderLabel(label, false)}
-                  </ha-list-item>
+                  </ha-dropdown-item>
                 `
               )}
-            </ha-button-menu>`
+            </ha-dropdown>`
           : nothing}
       </ha-chip-set>
     `;
@@ -114,7 +113,7 @@ class HaDataTableLabels extends LitElement {
       --ha-label-background-color: var(--color, var(--grey-color));
       --ha-label-background-opacity: 0.5;
     }
-    ha-button-menu {
+    ha-dropdown {
       border-radius: 10px;
     }
     .plus {

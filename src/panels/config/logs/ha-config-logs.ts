@@ -6,8 +6,9 @@ import { isComponentLoaded } from "../../../common/config/is_component_loaded";
 import { navigate } from "../../../common/navigate";
 import { extractSearchParam } from "../../../common/url/search-params";
 import "../../../components/ha-button";
-import "../../../components/ha-button-menu";
-import "../../../components/ha-list-item";
+import "../../../components/ha-dropdown";
+import "../../../components/ha-dropdown-item";
+import type { HaDropdownItem } from "../../../components/ha-dropdown-item";
 import "../../../components/search-input";
 import type { LogProvider } from "../../../data/error_log";
 import { fetchHassioAddonsInfo } from "../../../data/hassio/addon";
@@ -117,7 +118,10 @@ export class HaConfigLogs extends LitElement {
       >
         ${isComponentLoaded(this.hass, "hassio")
           ? html`
-              <ha-button-menu slot="toolbar-icon">
+              <ha-dropdown
+                slot="toolbar-icon"
+                @wa-select=${this._handleDropdownSelect}
+              >
                 <ha-button slot="trigger" appearance="filled">
                   <ha-svg-icon slot="end" .path=${mdiChevronDown}></ha-svg-icon>
                   ${this._logProviders.find(
@@ -126,16 +130,12 @@ export class HaConfigLogs extends LitElement {
                 </ha-button>
                 ${this._logProviders.map(
                   (provider) => html`
-                    <ha-list-item
-                      ?selected=${provider.key === this._selectedLogProvider}
-                      .provider=${provider.key}
-                      @click=${this._selectProvider}
-                    >
+                    <ha-dropdown-item .value=${provider.key}>
                       ${provider.name}
-                    </ha-list-item>
+                    </ha-dropdown-item>
                   `
                 )}
-              </ha-button-menu>
+              </ha-dropdown>
             `
           : ""}
         ${search}
@@ -170,8 +170,12 @@ export class HaConfigLogs extends LitElement {
     this._detail = !this._detail;
   }
 
-  private _selectProvider(ev) {
-    this._selectedLogProvider = (ev.currentTarget as any).provider;
+  private _handleDropdownSelect(ev: CustomEvent<{ item: HaDropdownItem }>) {
+    const provider = ev.detail?.item?.value;
+    if (!provider) {
+      return;
+    }
+    this._selectedLogProvider = provider;
     this._filter = "";
     navigate(`/config/logs?provider=${this._selectedLogProvider}`);
   }
@@ -254,7 +258,7 @@ export class HaConfigLogs extends LitElement {
           direction: ltr;
         }
         @media all and (max-width: 870px) {
-          ha-button-menu {
+          ha-dropdown {
             max-width: 50%;
           }
           ha-button {
@@ -264,9 +268,6 @@ export class HaConfigLogs extends LitElement {
             overflow: hidden;
             white-space: nowrap;
           }
-        }
-        ha-list-item[selected] {
-          color: var(--primary-color);
         }
       `,
     ];
