@@ -10,6 +10,50 @@ import type { DialogWidth } from "./ha-wa-dialog";
 
 type DialogMode = "dialog" | "bottom-sheet";
 
+/**
+ * Home Assistant dialog sheet component
+ *
+ * @element ha-dialog-sheet
+ * @extends {LitElement}
+ *
+ * @summary
+ * A responsive dialog component that automatically switches between a full dialog (ha-wa-dialog)
+ * and a bottom sheet (ha-bottom-sheet) based on screen size. Uses dialog mode on larger screens
+ * (>870px width and >500px height) and bottom sheet mode on smaller screens or mobile devices.
+ *
+ * @slot headerNavigationIcon - Leading header action (e.g. close/back button).
+ * @slot headerTitle - Custom title content (used when header-title is not set).
+ * @slot headerSubtitle - Custom subtitle content (used when header-subtitle is not set).
+ * @slot headerActionItems - Trailing header actions (e.g. buttons, menus).
+ * @slot - Dialog/sheet content body.
+ *
+ * @cssprop --ha-dialog-surface-background - Dialog/sheet background color.
+ * @cssprop --ha-dialog-border-radius - Border radius of the dialog surface (dialog mode only).
+ * @cssprop --ha-dialog-show-duration - Show animation duration (dialog mode only).
+ * @cssprop --ha-dialog-hide-duration - Hide animation duration (dialog mode only).
+ *
+ * @attr {boolean} open - Controls the dialog/sheet open state.
+ * @attr {("small"|"medium"|"large"|"full")} width - Preferred dialog width preset (dialog mode only). Defaults to "medium".
+ * @attr {string} header-title - Header title text. If not set, the headerTitle slot is used.
+ * @attr {string} header-subtitle - Header subtitle text. If not set, the headerSubtitle slot is used.
+ * @attr {("above"|"below")} header-subtitle-position - Position of the subtitle relative to the title. Defaults to "below".
+ * @attr {boolean} flexcontent - Makes the dialog/sheet body a flex container for flexible layouts.
+ *
+ * @event opened - Fired when the dialog/sheet is shown (dialog mode only).
+ * @event closed - Fired after the dialog/sheet is hidden (dialog mode only).
+ * @event after-show - Fired after show animation completes (dialog mode only).
+ *
+ * @remarks
+ * **Responsive Behavior:**
+ * The component automatically switches between dialog and bottom sheet modes based on viewport size.
+ * Dialog mode is used for screens wider than 870px and taller than 500px.
+ * Bottom sheet mode is used for mobile devices and smaller screens.
+ *
+ * **Focus Management:**
+ * To automatically focus an element when opened, add the `autofocus` attribute to it.
+ * Components with `delegatesFocus: true` (like `ha-form`) will forward focus to their first focusable child.
+ * Example: `<ha-form autofocus .schema=${schema}></ha-form>`
+ */
 @customElement("ha-dialog-sheet")
 export class HaDialogSheet extends LitElement {
   @property({ attribute: false }) public hass!: HomeAssistant;
