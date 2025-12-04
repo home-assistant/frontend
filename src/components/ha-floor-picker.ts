@@ -35,6 +35,12 @@ import "./ha-svg-icon";
 
 const ADD_NEW_ID = "___ADD_NEW___";
 
+const SEARCH_KEYS = [
+  { name: "floorName", weight: 10 },
+  { name: "aliases", weight: 8 },
+  { name: "floor_id", weight: 3 },
+];
+
 interface FloorComboBoxItem extends PickerComboBoxItem {
   floor?: FloorRegistryEntry;
 }
@@ -286,9 +292,11 @@ export class HaFloorPicker extends LitElement {
           primary: floorName,
           floor: floor,
           sorting_label: floor.level?.toString() || "zzzzz",
-          search_labels: [floorName, floor.floor_id, ...floor.aliases].filter(
-            (v): v is string => Boolean(v)
-          ),
+          search_labels: {
+            floorName,
+            floor_id: floor.floor_id,
+            aliases: floor.aliases.join(" "),
+          },
         };
       });
 
@@ -393,6 +401,7 @@ export class HaFloorPicker extends LitElement {
         .getAdditionalItems=${this._getAdditionalItems}
         .valueRenderer=${valueRenderer}
         .rowRenderer=${this._rowRenderer}
+        .searchKeys=${SEARCH_KEYS}
         @value-changed=${this._valueChanged}
       >
       </ha-generic-picker>

@@ -15,6 +15,7 @@ import type { LabelRegistryEntry } from "../data/label_registry";
 import {
   createLabelRegistryEntry,
   getLabels,
+  labelComboBoxKeys,
   subscribeLabelRegistry,
 } from "../data/label_registry";
 import { showAlertDialog } from "../dialogs/generic/show-dialog-box";
@@ -237,6 +238,7 @@ export class HaLabelPicker extends SubscribeMixin(LitElement) {
         .getItems=${this._getItems}
         .getAdditionalItems=${this._getAdditionalItems}
         .valueRenderer=${valueRenderer}
+        .searchKeys=${labelComboBoxKeys}
         @value-changed=${this._valueChanged}
       >
         <slot .slot=${this._slotNodes?.length ? "field" : undefined}></slot>

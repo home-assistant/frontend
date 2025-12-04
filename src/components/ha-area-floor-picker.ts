@@ -11,6 +11,7 @@ import { computeAreaName } from "../common/entity/compute_area_name";
 import { computeFloorName } from "../common/entity/compute_floor_name";
 import { computeRTL } from "../common/util/compute_rtl";
 import {
+  areaFloorComboBoxKeys,
   getAreasAndFloors,
   type AreaFloorValue,
   type FloorComboBoxItem,
@@ -237,6 +238,7 @@ export class HaAreaFloorPicker extends LitElement {
         .getItems=${this._getItems}
         .valueRenderer=${this._valueRenderer}
         .rowRenderer=${this._rowRenderer}
+        .searchKeys=${areaFloorComboBoxKeys}
         @value-changed=${this._valueChanged}
       >
       </ha-generic-picker>

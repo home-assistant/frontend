@@ -15,7 +15,7 @@ import { tinykeys } from "tinykeys";
 import { fireEvent } from "../common/dom/fire_event";
 import { caseInsensitiveStringCompare } from "../common/string/compare";
 import {
-  multiTermsSortedSearch,
+  multiTermSortedSearch,
   type FuseWeightedKey,
 } from "../resources/fuseMultiTerm";
 import { haStyleScrollbar } from "../resources/styles";
@@ -28,7 +28,7 @@ import "./ha-icon";
 import "./ha-textfield";
 import type { HaTextField } from "./ha-textfield";
 
-const DEFAULT_SEARCH_KEYS: FuseWeightedKey<PickerComboBoxItem>[] = [
+export const DEFAULT_SEARCH_KEYS: FuseWeightedKey<PickerComboBoxItem>[] = [
   {
     name: "primary",
     weight: 10,
@@ -36,6 +36,10 @@ const DEFAULT_SEARCH_KEYS: FuseWeightedKey<PickerComboBoxItem>[] = [
   {
     name: "secondary",
     weight: 7,
+  },
+  {
+    name: "id",
+    weight: 3,
   },
 ];
 
@@ -373,7 +377,7 @@ export class HaPickerComboBox extends LitElement {
         this.searchKeys
       );
 
-      let filteredItems = multiTermsSortedSearch<PickerComboBoxItem>(
+      let filteredItems = multiTermSortedSearch<PickerComboBoxItem>(
         this._allItems as PickerComboBoxItem[],
         searchString,
         this.searchKeys || DEFAULT_SEARCH_KEYS,

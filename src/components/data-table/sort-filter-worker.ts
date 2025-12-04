@@ -3,7 +3,10 @@ import Fuse from "fuse.js";
 import memoizeOne from "memoize-one";
 import { ipCompare, stringCompare } from "../../common/string/compare";
 import { stripDiacritics } from "../../common/string/strip-diacritics";
-import { HaFuse } from "../../resources/fuse";
+import {
+  multiTermSearch,
+  type FuseWeightedKey,
+} from "../../resources/fuseMultiTerm";
 import type {
   ClonedDataTableColumnData,
   DataTableRowData,
@@ -11,20 +14,26 @@ import type {
   SortingDirection,
 } from "./ha-data-table";
 
-const fuseIndex = memoizeOne(
-  (data: DataTableRowData[], columns: SortableColumnContainer) => {
-    const searchKeys = new Set<string>();
+const getSearchKeys = memoizeOne(
+  (columns: SortableColumnContainer): FuseWeightedKey<DataTableRowData>[] => {
+    const searchKeys: FuseWeightedKey<DataTableRowData>[] = [];
     Object.entries(columns).forEach(([key, column]) => {
       if (column.filterable) {
-        searchKeys.add(
-          column.filterKey
+        searchKeys.push({
+          name: column.filterKey
             ? `${column.valueColumn || key}.${column.filterKey}`
-            : key
-        );
+            : key,
+          weight: column.filterWeight || 1,
+        });
       }
     });
-    return Fuse.createIndex([...searchKeys], data);
+    return searchKeys;
   }
+);
+
+const fuseIndex = memoizeOne(
+  (data: DataTableRowData[], keys: FuseWeightedKey<DataTableRowData>[]) =>
+    Fuse.createIndex(keys, data)
 );
 
 const filterData = (
@@ -38,21 +47,13 @@ const filterData = (
     return data;
   }
 
-  const index = fuseIndex(data, columns);
+  const keys = getSearchKeys(columns);
 
-  const fuse = new HaFuse(
-    data,
-    { shouldSort: false, minMatchCharLength: 1 },
-    index
-  );
+  const index = fuseIndex(data, keys);
 
-  const searchResults = fuse.multiTermsSearch(filter);
-
-  if (searchResults) {
-    return searchResults.map((result) => result.item);
-  }
-
-  return data;
+  return multiTermSearch<DataTableRowData>(data, filter, keys, index, {
+    threshold: 0.2, // reduce fuzzy matches in data tables
+  });
 };
 
 const sortData = (

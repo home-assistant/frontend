@@ -9,6 +9,7 @@ import { computeDeviceName } from "../../common/entity/compute_device_name";
 import { getDeviceContext } from "../../common/entity/context/get_device_context";
 import { getConfigEntries, type ConfigEntry } from "../../data/config_entries";
 import {
+  deviceComboBoxKeys,
   getDevices,
   type DevicePickerItem,
   type DeviceRegistryEntry,
@@ -216,6 +217,7 @@ export class HaDevicePicker extends LitElement {
         .getItems=${this._getItems}
         .hideClearIcon=${this.hideClearIcon}
         .valueRenderer=${valueRenderer}
+        .searchKeys=${deviceComboBoxKeys}
         @value-changed=${this._valueChanged}
       >
       </ha-generic-picker>

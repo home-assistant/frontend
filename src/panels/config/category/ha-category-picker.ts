@@ -120,9 +120,6 @@ export class HaCategoryPicker extends SubscribeMixin(LitElement) {
         icon: category.icon || undefined,
         icon_path: category.icon ? undefined : mdiTag,
         sorting_label: category.name,
-        search_labels: [category.name, category.category_id].filter(
-          (v): v is string => Boolean(v)
-        ),
       }));
 
       return items;

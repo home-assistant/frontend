@@ -56,6 +56,7 @@ export type DataTableColumnContainer<T = any> = Record<
 export interface DataTableSortColumnData {
   sortable?: boolean;
   filterable?: boolean;
+  filterWeight?: number;
   filterKey?: string;
   valueColumn?: string;
   direction?: SortingDirection;
