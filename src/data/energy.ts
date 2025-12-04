@@ -11,7 +11,7 @@ import {
   isLastDayOfMonth,
   addYears,
 } from "date-fns";
-import type { Collection } from "home-assistant-js-websocket";
+import type { Collection, HassEntity } from "home-assistant-js-websocket";
 import { getCollection } from "home-assistant-js-websocket";
 import memoizeOne from "memoize-one";
 import {
@@ -1360,4 +1360,38 @@ export const calculateSolarConsumedGauge = (
     return (solarConsumed / totalProduction) * 100;
   }
   return undefined;
+};
+
+/**
+ * Get current power value from entity state, normalized to kW
+ * @param stateObj - The entity state object to get power value from
+ * @returns Power value in kW, or 0 if entity not found or invalid
+ */
+export const getPowerFromState = (stateObj: HassEntity): number | undefined => {
+  if (!stateObj) {
+    return undefined;
+  }
+  const value = parseFloat(stateObj.state);
+  if (isNaN(value)) {
+    return undefined;
+  }
+
+  // Normalize to kW based on unit of measurement (case-sensitive)
+  // Supported units: GW, kW, MW, mW, TW, W
+  const unit = stateObj.attributes.unit_of_measurement;
+  switch (unit) {
+    case "W":
+      return value / 1000;
+    case "mW":
+      return value / 1000000;
+    case "MW":
+      return value * 1000;
+    case "GW":
+      return value * 1000000;
+    case "TW":
+      return value * 1000000000;
+    default:
+      // Assume kW if no unit or unit is kW
+      return value;
+  }
 };
