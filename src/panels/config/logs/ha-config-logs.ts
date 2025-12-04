@@ -4,6 +4,7 @@ import { css, html, LitElement } from "lit";
 import { customElement, property, query, state } from "lit/decorators";
 import { isComponentLoaded } from "../../../common/config/is_component_loaded";
 import { navigate } from "../../../common/navigate";
+import { stringCompare } from "../../../common/string/compare";
 import { extractSearchParam } from "../../../common/url/search-params";
 import "../../../components/ha-button";
 import "../../../components/ha-dropdown";
@@ -19,7 +20,6 @@ import type { HomeAssistant, Route } from "../../../types";
 import "./error-log-card";
 import "./system-log-card";
 import type { SystemLogCard } from "./system-log-card";
-import { stringCompare } from "../../../common/string/compare";
 
 const logProviders: LogProvider[] = [
   {
@@ -130,7 +130,12 @@ export class HaConfigLogs extends LitElement {
                 </ha-button>
                 ${this._logProviders.map(
                   (provider) => html`
-                    <ha-dropdown-item .value=${provider.key}>
+                    <ha-dropdown-item
+                      .value=${provider.key}
+                      class=${provider.key === this._selectedLogProvider
+                        ? "selected"
+                        : ""}
+                    >
                       ${provider.name}
                     </ha-dropdown-item>
                   `
@@ -268,6 +273,9 @@ export class HaConfigLogs extends LitElement {
             overflow: hidden;
             white-space: nowrap;
           }
+        }
+        ha-dropdown-item.selected {
+          font-weight: var(--ha-font-weight-bold);
         }
       `,
     ];

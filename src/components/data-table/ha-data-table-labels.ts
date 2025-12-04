@@ -2,16 +2,17 @@ import type { TemplateResult } from "lit";
 import { css, html, LitElement, nothing } from "lit";
 import { customElement, property } from "lit/decorators";
 import { repeat } from "lit/directives/repeat";
-import type { LabelRegistryEntry } from "../../data/label_registry";
 import { computeCssColor } from "../../common/color/compute-color";
 import { fireEvent } from "../../common/dom/fire_event";
-import "../ha-label";
+import { stopPropagation } from "../../common/dom/stop_propagation";
 import { stringCompare } from "../../common/string/compare";
+import type { LabelRegistryEntry } from "../../data/label_registry";
 import "../chips/ha-chip-set";
 import "../ha-dropdown";
 import "../ha-dropdown-item";
 import type { HaDropdownItem } from "../ha-dropdown-item";
 import "../ha-icon";
+import "../ha-label";
 
 @customElement("ha-data-table-labels")
 class HaDataTableLabels extends LitElement {
@@ -30,6 +31,7 @@ class HaDataTableLabels extends LitElement {
           ? html`<ha-dropdown
               role="button"
               tabindex="0"
+              @click=${stopPropagation}
               @wa-show=${this._handleIconOverflowMenuOpened}
               @wa-hide=${this._handleIconOverflowMenuClosed}
               @wa-select=${this._handleDropdownSelect}

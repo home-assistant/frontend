@@ -52,6 +52,8 @@ class HaQrScanner extends LitElement {
 
   @state() private _warning?: string;
 
+  @state() private _selectedCamera?: string;
+
   private _qrScanner?: QrScanner;
 
   private _qrNotFoundCount = 0;
@@ -131,7 +133,12 @@ class HaQrScanner extends LitElement {
                   ></ha-icon-button>
                   ${this._cameras!.map(
                     (camera) => html`
-                      <ha-dropdown-item .value=${camera.id}>
+                      <ha-dropdown-item
+                        .value=${camera.id}
+                        class=${this._selectedCamera === camera.id
+                          ? "selected"
+                          : ""}
+                      >
                         ${camera.label}
                       </ha-dropdown-item>
                     `
@@ -202,6 +209,9 @@ class HaQrScanner extends LitElement {
 
   private async _listCameras(qrScanner: typeof QrScanner): Promise<void> {
     this._cameras = await qrScanner.listCameras(true);
+    if (this._cameras.length > 0) {
+      this._selectedCamera = this._cameras[0].id;
+    }
   }
 
   private _qrCodeError = (err: any) => {
@@ -252,6 +262,7 @@ class HaQrScanner extends LitElement {
   private _handleDropdownSelect(ev: CustomEvent<{ item: HaDropdownItem }>) {
     const cameraId = ev.detail?.item?.value;
     if (cameraId) {
+      this._selectedCamera = cameraId;
       this._qrScanner?.setCamera(cameraId);
     }
   }
@@ -359,7 +370,7 @@ class HaQrScanner extends LitElement {
     #canvas-container {
       position: relative;
     }
-    ha-dropdown {
+    ha-icon-button {
       position: absolute;
       bottom: 8px;
       right: 8px;
@@ -368,6 +379,9 @@ class HaQrScanner extends LitElement {
       background: #727272b2;
       color: white;
       border-radius: var(--ha-border-radius-circle);
+    }
+    ha-dropdown-item.selected {
+      font-weight: var(--ha-font-weight-bold);
     }
     .row {
       display: flex;
