@@ -90,7 +90,7 @@ class HaPanelApp extends LitElement {
       this._sessionKeepAlive = undefined;
     }
     if (this._fetchDataTimeout) {
-      clearInterval(this._fetchDataTimeout);
+      clearTimeout(this._fetchDataTimeout);
       this._fetchDataTimeout = undefined;
     }
   }
@@ -263,7 +263,7 @@ class HaPanelApp extends LitElement {
     this._loadingMessage = undefined;
 
     if (this._fetchDataTimeout) {
-      clearInterval(this._fetchDataTimeout);
+      clearTimeout(this._fetchDataTimeout);
       this._fetchDataTimeout = undefined;
     }
 
