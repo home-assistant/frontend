@@ -491,7 +491,7 @@ export class HuiTodoListCard extends LitElement implements LovelaceCard {
             >
               <div class="column">
                 <span class="summary">${item.summary}</span>
-                <span class="summary">Priority:${item.priority}</span> #priority
+                <span class="summary">Priority: ${item.priority}</span>
                 ${item.description
                   ? html`<ha-markdown-element
                       class="description"
