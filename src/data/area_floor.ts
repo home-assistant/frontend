@@ -28,6 +28,7 @@ export interface FloorNestedComboBoxItem extends PickerComboBoxItem {
 }
 
 export interface UnassignedAreasFloorComboBoxItem {
+  id: undefined;
   areas: FloorComboBoxItem[];
 }
 
@@ -98,6 +99,29 @@ export const getAreasAndFloors = (
     excludeAreas,
     excludeFloors
   ) as FloorComboBoxItem[];
+
+export const areaFloorComboBoxKeys: FuseWeightedKey<PickerComboBoxItem>[] = [
+  {
+    name: "search_labels.name",
+    weight: 10,
+  },
+  {
+    name: "search_labels.aliases",
+    weight: 8,
+  },
+  {
+    name: "search_labels.floorName",
+    weight: 6,
+  },
+  {
+    name: "search_labels.relatedAreas",
+    weight: 4,
+  },
+  {
+    name: "search_labels.id",
+    weight: 3,
+  },
+];
 
 const getAreasAndFloorsItems = (
   states: HomeAssistant["states"],
@@ -309,7 +333,7 @@ const getAreasAndFloorsItems = (
         id: floor.floor_id,
         name: floorName || null,
         aliases: floor.aliases.join(", ") || null,
-        relatedAreas: areaSearchLabels.join(", ") || null,
+        relatedAreas: areaSearchLabels.join(" ") || null,
       },
     };
 
@@ -327,6 +351,7 @@ const getAreasAndFloorsItems = (
           id: area.area_id,
           name: areaName || null,
           aliases: area.aliases.join(", ") || null,
+          floorName: floorName || null,
         },
       };
     });
@@ -357,6 +382,7 @@ const getAreasAndFloorsItems = (
 
   if (nested && unassignedAreaItems.length) {
     items.push({
+      id: undefined,
       areas: unassignedAreaItems,
     } as UnassignedAreasFloorComboBoxItem);
   } else {
@@ -365,22 +391,3 @@ const getAreasAndFloorsItems = (
 
   return items;
 };
-
-export const areaFloorComboBoxKeys: FuseWeightedKey<PickerComboBoxItem>[] = [
-  {
-    name: "search_labels.name",
-    weight: 10,
-  },
-  {
-    name: "search_labels.aliases",
-    weight: 8,
-  },
-  {
-    name: "search_labels.id",
-    weight: 6,
-  },
-  {
-    name: "search_labels.relatedAreas",
-    weight: 3,
-  },
-];

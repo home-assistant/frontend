@@ -742,7 +742,8 @@ export class HaAutomationAddSearch extends LitElement {
       items,
       searchTerm,
       searchKeys,
-      fuseIndex
+      fuseIndex,
+      { ignoreLocation: true }
     );
   }
 

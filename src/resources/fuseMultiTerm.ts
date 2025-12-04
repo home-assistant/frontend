@@ -82,9 +82,16 @@ export function multiTermSearch<T>(
     })),
   };
 
-  return searchTerm<T>(items, expression, fuseIndex, options, minLength).map(
-    (r) => r.item
-  );
+  return searchTerm<T>(
+    items,
+    expression,
+    fuseIndex,
+    {
+      ...options,
+      shouldSort: false,
+    },
+    minLength
+  ).map((r) => r.item);
 }
 
 /**

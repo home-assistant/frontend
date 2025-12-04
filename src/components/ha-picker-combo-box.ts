@@ -292,6 +292,9 @@ export class HaPickerComboBox extends LitElement {
   };
 
   private _renderItem = (item: PickerComboBoxItem | string, index: number) => {
+    if (!item) {
+      return nothing;
+    }
     if (item === "padding") {
       return html`<div class="bottom-padding"></div>`;
     }
@@ -598,7 +601,7 @@ export class HaPickerComboBox extends LitElement {
   }
 
   private _keyFunction = (item: PickerComboBoxItem | string) =>
-    typeof item === "string" ? item : item.id;
+    typeof item === "string" ? item : item?.id;
 
   static styles = [
     haStyleScrollbar,

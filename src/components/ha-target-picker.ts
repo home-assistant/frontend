@@ -908,7 +908,9 @@ export class HaTargetPicker extends SubscribeMixin(LitElement) {
       );
     }
 
-    return multiTermSearch(items, searchTerm, weightedKeys, fuseIndex);
+    return multiTermSearch(items, searchTerm, weightedKeys, fuseIndex, {
+      ignoreLocation: true,
+    });
   }
 
   private _getAdditionalItems = () => this._getCreateItems(this.createDomains);
