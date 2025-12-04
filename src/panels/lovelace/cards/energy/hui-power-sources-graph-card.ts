@@ -1,4 +1,4 @@
-import { endOfToday, isToday, startOfToday } from "date-fns";
+import { endOfToday, isSameDay, isToday, startOfToday } from "date-fns";
 import type { HassConfig, UnsubscribeFunc } from "home-assistant-js-websocket";
 import type { PropertyValues } from "lit";
 import { css, html, LitElement, nothing } from "lit";
@@ -210,9 +210,12 @@ export class HuiPowerSourcesGraphCard
         const { positive, negative } = this._processData(
           statIds[key].stats.map((id: string) => {
             const stats = energyData.stats[id] ?? [];
-            const currentState = getPowerFromState(this.hass.states[id]);
-            if (currentState !== undefined) {
-              stats.push({ start: now, end: now, mean: currentState });
+            if (isSameDay(now, this._start) && isSameDay(now, this._end)) {
+              // Append current state if we are showing today
+              const currentState = getPowerFromState(this.hass.states[id]);
+              if (currentState !== undefined) {
+                stats.push({ start: now, end: now, mean: currentState });
+              }
             }
             return stats;
           })

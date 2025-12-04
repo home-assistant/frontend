@@ -40,12 +40,13 @@ export function getSuggestedMax(dayDifference: number, end: Date): number {
     suggestedMax = subHours(suggestedMax, 1);
   }
 
-  suggestedMax.setMinutes(0, 0, 0);
   if (dayDifference > 35) {
     suggestedMax.setDate(1);
+    suggestedMax.setMinutes(0, 0, 0);
   }
   if (dayDifference > 2) {
     suggestedMax.setHours(0);
+    suggestedMax.setMinutes(0, 0, 0);
   }
   return suggestedMax.getTime();
 }
