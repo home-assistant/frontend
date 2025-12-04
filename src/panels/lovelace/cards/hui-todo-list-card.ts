@@ -491,7 +491,11 @@ export class HuiTodoListCard extends LitElement implements LovelaceCard {
             >
               <div class="column">
                 <span class="summary">${item.summary}</span>
-                <span class="summary">Priority: ${item.priority}</span>
+                <span
+                  class="summary priority priority-${item.priority?.toLowerCase()}"
+                >
+                  Priority: ${item.priority || "None"}
+                </span>
                 ${item.description
                   ? html`<ha-markdown-element
                       class="description"
@@ -929,6 +933,24 @@ export class HuiTodoListCard extends LitElement implements LovelaceCard {
 
     .warning {
       color: var(--error-color);
+    }
+
+    .priority-low {
+      color: #b0b0b0 !important;
+    }
+
+    .priority-medium {
+      color: #03a9f4 !important;
+    }
+
+    .priority-high {
+      color: #ff9800 !important;
+      font-weight: 600 !important;
+    }
+
+    .priority-urgent {
+      color: #db4437 !important;
+      font-weight: 600 !important;
     }
   `;
 }
