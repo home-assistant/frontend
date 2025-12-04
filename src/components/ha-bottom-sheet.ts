@@ -2,12 +2,13 @@ import "@home-assistant/webawesome/dist/components/drawer/drawer";
 import { css, html, LitElement, type PropertyValues } from "lit";
 import { customElement, property, query, state } from "lit/decorators";
 import { SwipeGestureRecognizer } from "../common/util/swipe-gesture-recognizer";
+import { ScrollableFadeMixin } from "../mixins/scrollable-fade-mixin";
 import { haStyleScrollbar } from "../resources/styles";
 
 export const BOTTOM_SHEET_ANIMATION_DURATION_MS = 300;
 
 @customElement("ha-bottom-sheet")
-export class HaBottomSheet extends LitElement {
+export class HaBottomSheet extends ScrollableFadeMixin(LitElement) {
   @property({ type: Boolean }) public open = false;
 
   @property({ type: Boolean, reflect: true, attribute: "flexcontent" })
@@ -16,6 +17,12 @@ export class HaBottomSheet extends LitElement {
   @state() private _drawerOpen = false;
 
   @query("#drawer") private _drawer!: HTMLElement;
+
+  @query("#body") private _bodyElement!: HTMLDivElement;
+
+  protected get scrollableElement(): HTMLElement | null {
+    return this._bodyElement;
+  }
 
   private _gestureRecognizer = new SwipeGestureRecognizer();
 
@@ -49,8 +56,11 @@ export class HaBottomSheet extends LitElement {
         @touchstart=${this._handleTouchStart}
       >
         <slot name="header"></slot>
-        <div id="body" class="body ha-scrollbar">
-          <slot></slot>
+        <div class="content-wrapper">
+          <div id="body" class="body ha-scrollbar">
+            <slot></slot>
+          </div>
+          ${this.renderScrollableFades()}
         </div>
       </wa-drawer>
     `;
@@ -167,60 +177,70 @@ export class HaBottomSheet extends LitElement {
     this._isDragging = false;
   }
 
-  static styles = [
-    haStyleScrollbar,
-    css`
-      wa-drawer {
-        --wa-color-surface-raised: transparent;
-        --spacing: 0;
-        --size: var(--ha-bottom-sheet-height, auto);
-        --show-duration: ${BOTTOM_SHEET_ANIMATION_DURATION_MS}ms;
-        --hide-duration: ${BOTTOM_SHEET_ANIMATION_DURATION_MS}ms;
-      }
-      wa-drawer::part(dialog) {
-        max-height: var(--ha-bottom-sheet-max-height, 90vh);
-        align-items: center;
-        transform: var(--dialog-transform);
-        transition: var(--dialog-transition);
-      }
-      wa-drawer::part(body) {
-        max-width: var(--ha-bottom-sheet-max-width);
-        width: 100%;
-        border-top-left-radius: var(
-          --ha-bottom-sheet-border-radius,
-          var(--ha-dialog-border-radius, var(--ha-border-radius-2xl))
-        );
-        border-top-right-radius: var(
-          --ha-bottom-sheet-border-radius,
-          var(--ha-dialog-border-radius, var(--ha-border-radius-2xl))
-        );
-        background-color: var(
-          --ha-bottom-sheet-surface-background,
-          var(--ha-dialog-surface-background, var(--mdc-theme-surface, #fff)),
-        );
-        padding: var(
-          --ha-bottom-sheet-padding,
-          0 var(--safe-area-inset-right) var(--safe-area-inset-bottom)
-            var(--safe-area-inset-left)
-        );
-      }
-      :host([flexcontent]) wa-drawer::part(body) {
-        display: flex;
-        flex-direction: column;
-      }
-      :host([flexcontent]) .body {
-        flex: 1;
-        max-width: 100%;
-        display: flex;
-        flex-direction: column;
-        padding: var(
-          --ha-bottom-sheet-padding,
-          0 var(--safe-area-inset-right) var(--safe-area-inset-bottom)
-            var(--safe-area-inset-left)
-        );
-      }
-    `,
-  ];
+  static get styles() {
+    return [
+      ...super.styles,
+      haStyleScrollbar,
+      css`
+        wa-drawer {
+          --wa-color-surface-raised: transparent;
+          --spacing: 0;
+          --size: var(--ha-bottom-sheet-height, auto);
+          --show-duration: ${BOTTOM_SHEET_ANIMATION_DURATION_MS}ms;
+          --hide-duration: ${BOTTOM_SHEET_ANIMATION_DURATION_MS}ms;
+        }
+        wa-drawer::part(dialog) {
+          max-height: var(--ha-bottom-sheet-max-height, 90vh);
+          align-items: center;
+          transform: var(--dialog-transform);
+          transition: var(--dialog-transition);
+        }
+        wa-drawer::part(body) {
+          max-width: var(--ha-bottom-sheet-max-width);
+          width: 100%;
+          border-top-left-radius: var(
+            --ha-bottom-sheet-border-radius,
+            var(--ha-dialog-border-radius, var(--ha-border-radius-2xl))
+          );
+          border-top-right-radius: var(
+            --ha-bottom-sheet-border-radius,
+            var(--ha-dialog-border-radius, var(--ha-border-radius-2xl))
+          );
+          background-color: var(
+            --ha-bottom-sheet-surface-background,
+            var(--ha-dialog-surface-background, var(--mdc-theme-surface, #fff)),
+          );
+          padding: var(
+            --ha-bottom-sheet-padding,
+            0 var(--safe-area-inset-right) var(--safe-area-inset-bottom)
+              var(--safe-area-inset-left)
+          );
+        }
+        :host([flexcontent]) wa-drawer::part(body) {
+          display: flex;
+          flex-direction: column;
+        }
+        .content-wrapper {
+          position: relative;
+          flex: 1;
+          display: flex;
+          flex-direction: column;
+          min-height: 0;
+        }
+        :host([flexcontent]) .body {
+          flex: 1;
+          max-width: 100%;
+          display: flex;
+          flex-direction: column;
+          padding: var(
+            --ha-bottom-sheet-padding,
+            0 var(--safe-area-inset-right) var(--safe-area-inset-bottom)
+              var(--safe-area-inset-left)
+          );
+        }
+      `,
+    ];
+  }
 }
 
 declare global {
