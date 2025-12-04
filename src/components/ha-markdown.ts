@@ -25,11 +25,11 @@ export class HaMarkdown extends LitElement {
 
   @property({ type: Boolean }) public cache = false;
 
-  @query("ha-markdown-element") private _markdownElement!: ReactiveElement;
+  @query("ha-markdown-element") private _markdownElement?: ReactiveElement;
 
   protected async getUpdateComplete() {
     const result = await super.getUpdateComplete();
-    await this._markdownElement.updateComplete;
+    await this._markdownElement?.updateComplete;
     return result;
   }
 
