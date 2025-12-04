@@ -94,11 +94,10 @@ class HuiMapCard extends LitElement implements LovelaceCard {
       }
     });
 
-    const visibleEntities = locationEntities.filter(
-      (entityId) => !hass.entities?.[entityId]?.hidden
+    return locationEntities.filter(
+      (entityId) =>
+        !hass.entities?.[entityId]?.hidden && !personSources.has(entityId)
     );
-
-    return visibleEntities.filter((entity) => !personSources.has(entity));
   }
 
   public setConfig(config: MapCardConfig): void {
