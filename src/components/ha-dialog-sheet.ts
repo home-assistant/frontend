@@ -75,7 +75,7 @@ export class HaDialogSheet extends LitElement {
           >
             <slot name="headerNavigationIcon" slot="navigationIcon">
               <ha-icon-button
-                data-dialog="close"
+                data-drawer="close"
                 .label=${this.hass?.localize("ui.common.close") ?? "Close"}
                 .path=${mdiClose}
               ></ha-icon-button>
