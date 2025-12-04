@@ -156,7 +156,7 @@ The migration follows these patterns:
 ### PR 21: Components (Part 2)
 **Files (2):**
 1. `src/components/ha-form/ha-form-optional_actions.ts`
-2. `src/components/media-player/ha-media-player-browse.ts` (Note: check if still using old component)
+2. `src/components/media-player/ha-media-player-browse.ts`
 
 ### PR 22: Todo Panel & Developer Tools
 **Files (2):**
@@ -211,7 +211,7 @@ The migration follows these patterns:
 ### PR 31: Config Devices Dashboard
 **Files (2):**
 1. `src/panels/config/devices/ha-config-devices-dashboard.ts`
-2. `src/panels/config/devices/ha-config-device-page.ts` (if needed for md-button-menu)
+2. `src/panels/config/devices/ha-config-device-page.ts` (uses both `ha-button-menu` and `ha-md-button-menu`)
 
 ### PR 32: Developer Tools & Dialogs
 **Files (3):**
@@ -273,7 +273,7 @@ The migration follows these patterns:
 6. **activatable Mode**: Files using `activatable` mode on `ha-button-menu` (for checkable items) may need special handling - these might not be overflow menus and may need to remain as-is or use a different component.
 
 ### Estimated Timeline
-- Phase 1: ~23 PRs (47 files)
+- Phase 1: ~23 PRs (~44 files remaining, some in pending PR #28337)
 - Phase 2: ~10 PRs (20 files)
 - Phase 3: 1 PR (cleanup)
 - **Total: ~34 PRs**
