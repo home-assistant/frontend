@@ -66,7 +66,7 @@ export class HaGenericPicker extends LitElement {
   public searchFn?: PickerComboBoxSearchFn<PickerComboBoxItem>;
 
   @property({ attribute: false })
-  public searchKeys?: FuseWeightedKey<PickerComboBoxItem>[];
+  public searchKeys?: FuseWeightedKey[];
 
   @property({ attribute: false })
   public notFoundLabel?: string | ((search: string) => string);

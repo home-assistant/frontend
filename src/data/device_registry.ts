@@ -182,7 +182,7 @@ export interface DevicePickerItem extends PickerComboBoxItem {
   domain_name?: string;
 }
 
-export const deviceComboBoxKeys: FuseWeightedKey<DevicePickerItem>[] = [
+export const deviceComboBoxKeys: FuseWeightedKey[] = [
   {
     name: "search_labels.deviceName",
     weight: 10,

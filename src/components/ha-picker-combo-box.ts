@@ -28,7 +28,7 @@ import "./ha-icon";
 import "./ha-textfield";
 import type { HaTextField } from "./ha-textfield";
 
-export const DEFAULT_SEARCH_KEYS: FuseWeightedKey<PickerComboBoxItem>[] = [
+export const DEFAULT_SEARCH_KEYS: FuseWeightedKey[] = [
   {
     name: "primary",
     weight: 10,
@@ -95,7 +95,7 @@ export class HaPickerComboBox extends LitElement {
   @property() public value?: string;
 
   @property({ attribute: false })
-  public searchKeys?: FuseWeightedKey<PickerComboBoxItem>[];
+  public searchKeys?: FuseWeightedKey[];
 
   @state() private _listScrolled = false;
 
@@ -356,10 +356,8 @@ export class HaPickerComboBox extends LitElement {
   };
 
   private _fuseIndex = memoizeOne(
-    (
-      states: PickerComboBoxItem[],
-      searchKeys?: FuseWeightedKey<PickerComboBoxItem>[]
-    ) => Fuse.createIndex(searchKeys || DEFAULT_SEARCH_KEYS, states)
+    (states: PickerComboBoxItem[], searchKeys?: FuseWeightedKey[]) =>
+      Fuse.createIndex(searchKeys || DEFAULT_SEARCH_KEYS, states)
   );
 
   private _filterChanged = (ev: Event) => {

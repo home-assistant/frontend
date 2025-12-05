@@ -100,7 +100,7 @@ export const getAreasAndFloors = (
     excludeFloors
   ) as FloorComboBoxItem[];
 
-export const areaFloorComboBoxKeys: FuseWeightedKey<PickerComboBoxItem>[] = [
+export const areaFloorComboBoxKeys: FuseWeightedKey[] = [
   {
     name: "search_labels.name",
     weight: 10,

@@ -151,10 +151,8 @@ export class HaTargetPicker extends SubscribeMixin(LitElement) {
     }
   }
 
-  private _createFuseIndex = (
-    states,
-    keys: FuseWeightedKey<PickerComboBoxItem>[]
-  ) => Fuse.createIndex(keys, states);
+  private _createFuseIndex = (states, keys: FuseWeightedKey[]) =>
+    Fuse.createIndex(keys, states);
 
   protected render() {
     if (this.addOnTop) {
@@ -893,7 +891,7 @@ export class HaTargetPicker extends SubscribeMixin(LitElement) {
     type: TargetType,
     items: (FloorComboBoxItem | PickerComboBoxItem | EntityComboBoxItem)[],
     searchTerm: string,
-    weightedKeys: FuseWeightedKey<PickerComboBoxItem>[],
+    weightedKeys: FuseWeightedKey[],
     sort = true
   ) {
     const fuseIndex = this._fuseIndexes[type](items);

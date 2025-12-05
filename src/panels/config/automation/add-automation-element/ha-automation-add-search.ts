@@ -83,7 +83,7 @@ const TARGET_SEARCH_SECTIONS = [
   "label",
 ] as const;
 
-export const ITEM_SEARCH_KEYS: FuseWeightedKey<PickerComboBoxItem>[] = [
+export const ITEM_SEARCH_KEYS: FuseWeightedKey[] = [
   {
     name: "name",
     weight: 10,
@@ -452,10 +452,8 @@ export class HaAutomationAddSearch extends LitElement {
   private _keyFunction = (item: PickerComboBoxItem | string) =>
     typeof item === "string" ? item : item.id;
 
-  private _createFuseIndex = (
-    states,
-    keys: FuseWeightedKey<PickerComboBoxItem>[]
-  ) => Fuse.createIndex(keys, states);
+  private _createFuseIndex = (states, keys: FuseWeightedKey[]) =>
+    Fuse.createIndex(keys, states);
 
   private _fuseIndexes = {
     area: memoizeOne((states: PickerComboBoxItem[]) =>
@@ -723,7 +721,7 @@ export class HaAutomationAddSearch extends LitElement {
       | AutomationItemComboBoxItem
     )[],
     searchTerm: string,
-    searchKeys: FuseWeightedKey<any>[],
+    searchKeys: FuseWeightedKey[],
     sort = true
   ) {
     const fuseIndex = this._fuseIndexes[type](items);

@@ -1,12 +1,9 @@
 import { expose } from "comlink";
-import Fuse from "fuse.js";
+import Fuse, { type FuseOptionKey } from "fuse.js";
 import memoizeOne from "memoize-one";
 import { ipCompare, stringCompare } from "../../common/string/compare";
 import { stripDiacritics } from "../../common/string/strip-diacritics";
-import {
-  multiTermSearch,
-  type FuseWeightedKey,
-} from "../../resources/fuseMultiTerm";
+import { multiTermSearch } from "../../resources/fuseMultiTerm";
 import type {
   ClonedDataTableColumnData,
   DataTableRowData,
@@ -15,24 +12,24 @@ import type {
 } from "./ha-data-table";
 
 const getSearchKeys = memoizeOne(
-  (columns: SortableColumnContainer): FuseWeightedKey<DataTableRowData>[] => {
-    const searchKeys: FuseWeightedKey<DataTableRowData>[] = [];
+  (columns: SortableColumnContainer): FuseOptionKey<DataTableRowData>[] => {
+    const searchKeys = new Set<string>();
+
     Object.entries(columns).forEach(([key, column]) => {
       if (column.filterable) {
-        searchKeys.push({
-          name: column.filterKey
+        searchKeys.add(
+          column.filterKey
             ? `${column.valueColumn || key}.${column.filterKey}`
-            : key,
-          weight: column.filterWeight || 1,
-        });
+            : key
+        );
       }
     });
-    return searchKeys;
+    return Array.from(searchKeys);
   }
 );
 
 const fuseIndex = memoizeOne(
-  (data: DataTableRowData[], keys: FuseWeightedKey<DataTableRowData>[]) =>
+  (data: DataTableRowData[], keys: FuseOptionKey<DataTableRowData>[]) =>
     Fuse.createIndex(keys, data)
 );
 

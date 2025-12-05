@@ -101,7 +101,7 @@ export const deleteLabelRegistryEntry = (
     label_id: labelId,
   });
 
-export const labelComboBoxKeys: FuseWeightedKey<PickerComboBoxItem>[] = [
+export const labelComboBoxKeys: FuseWeightedKey[] = [
   {
     name: "search_labels.name",
     weight: 10,

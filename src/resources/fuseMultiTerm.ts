@@ -1,10 +1,15 @@
-import type { Expression, FuseIndex, FuseResult, IFuseOptions } from "fuse.js";
+import type {
+  Expression,
+  FuseIndex,
+  FuseOptionKey,
+  FuseResult,
+  IFuseOptions,
+} from "fuse.js";
 import Fuse from "fuse.js";
 
-export interface FuseWeightedKey<T> {
-  getFn?: (obj: T) => string;
+export interface FuseWeightedKey {
   name: string | string[];
-  weight?: number;
+  weight: number;
 }
 
 const DEFAULT_OPTIONS: IFuseOptions<any> = {
@@ -64,7 +69,7 @@ function searchTerm<T>(
 export function multiTermSearch<T>(
   items: T[],
   search: string,
-  searchKeys: FuseWeightedKey<T>[],
+  searchKeys: FuseOptionKey<T>[],
   fuseIndex?: FuseIndex<T>,
   options: IFuseOptions<T> = {}
 ): T[] {
@@ -89,7 +94,14 @@ export function multiTermSearch<T>(
   const expression: Expression = {
     $and: terms.map((term) => ({
       $or: searchKeys.map((key) => ({
-        $path: typeof key.name === "string" ? key.name : key.name.join("."),
+        $path:
+          typeof key === "string"
+            ? key
+            : Array.isArray(key)
+              ? key.join(".")
+              : typeof key.name === "string"
+                ? key.name
+                : key.name.join("."),
         $val: term,
       })),
     })),
@@ -129,7 +141,7 @@ export function multiTermSearch<T>(
 export function multiTermSortedSearch<T>(
   items: T[],
   search: string,
-  searchKeys: FuseWeightedKey<T>[],
+  searchKeys: FuseWeightedKey[],
   getItemId: (item: T) => string,
   fuseIndex?: FuseIndex<T>,
   options: IFuseOptions<T> = {}
@@ -218,7 +230,7 @@ export function multiTermSortedSearch<T>(
  */
 function _getMatchedKeyHighestWeight<T>(
   result: FuseResult<T>,
-  searchKeys: FuseWeightedKey<T>[]
+  searchKeys: FuseWeightedKey[]
 ): number {
   if (!result.matches || result.matches.length === 0) {
     return 1;

@@ -336,7 +336,7 @@ export interface EntityComboBoxItem extends PickerComboBoxItem {
   stateObj?: HassEntity;
 }
 
-export const entityComboBoxKeys: FuseWeightedKey<EntityComboBoxItem>[] = [
+export const entityComboBoxKeys: FuseWeightedKey[] = [
   {
     name: "search_labels.entityName",
     weight: 10,
