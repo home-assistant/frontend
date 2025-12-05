@@ -7,7 +7,7 @@ import type { PropertyValues } from "lit";
 import { customElement, property } from "lit/decorators";
 import { deepActiveElement } from "../common/dom/deep-active-element";
 import { deepEqual } from "../common/util/deep-equal";
-import { getDefaultPanel } from "../data/panel";
+import { DEFAULT_PANEL, getDefaultPanel } from "../data/panel";
 import type { CustomPanelInfo } from "../data/panel_custom";
 import type { HomeAssistant, Panels } from "../types";
 import { removeLaunchScreen } from "../util/launch-screen";
@@ -133,6 +133,10 @@ class PartialPanelResolver extends HassRouterPage {
     return {
       beforeRender: (page) => {
         if (!page || !routes[page]) {
+          // Special case: redirect /lovelace to /home when lovelace panel doesn't exist
+          if (page === "lovelace") {
+            return DEFAULT_PANEL;
+          }
           return getDefaultPanel(this.hass).url_path;
         }
         return undefined;
