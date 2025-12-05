@@ -44,14 +44,14 @@ export function getSuggestedMax(
     suggestedMax = subHours(suggestedMax, 1);
   }
 
-  if (dayDifference > 2) {
-    suggestedMax.setHours(0);
-    if (!detailedDailyData) {
-      suggestedMax.setMinutes(0, 0, 0);
-    }
+  if (!detailedDailyData) {
+    suggestedMax.setMinutes(0, 0, 0);
   }
   if (dayDifference > 35) {
     suggestedMax.setDate(1);
+  }
+  if (dayDifference > 2) {
+    suggestedMax.setHours(0);
   }
   return suggestedMax.getTime();
 }
