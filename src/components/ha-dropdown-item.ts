@@ -1,9 +1,9 @@
 import DropdownItem from "@home-assistant/webawesome/dist/components/dropdown-item/dropdown-item";
 import "@home-assistant/webawesome/dist/components/icon/icon";
-import { mdiCheckboxBlankOutline, mdiCheckboxMarked } from "@mdi/js";
-import { css, type CSSResultGroup, html, nothing } from "lit";
+import { css, type CSSResultGroup, html } from "lit";
 import { customElement } from "lit/decorators";
 import "./ha-svg-icon";
+import { mdiCheckboxBlankOutline, mdiCheckboxMarked } from "@mdi/js";
 
 /**
  * Home Assistant dropdown item component
@@ -17,59 +17,13 @@ import "./ha-svg-icon";
  */
 @customElement("ha-dropdown-item")
 export class HaDropdownItem extends DropdownItem {
-  // overwritten wa-dropdown-item render function, to add unchecked icon support
-  render() {
+  protected renderCheckboxIcon() {
     return html`
-      ${this.type === "checkbox"
-        ? html`
-            <ha-svg-icon
-              id="check"
-              part="checkmark"
-              .path=${this.checked
-                ? mdiCheckboxMarked
-                : mdiCheckboxBlankOutline}
-            ></ha-svg-icon>
-          `
-        : nothing}
-
-      <span id="icon" part="icon">
-        <slot name="icon"></slot>
-      </span>
-
-      <span id="label" part="label">
-        <slot></slot>
-      </span>
-
-      <span id="details" part="details">
-        <slot name="details"></slot>
-      </span>
-
-      ${this.hasSubmenu
-        ? html`
-            <wa-icon
-              id="submenu-indicator"
-              part="submenu-icon"
-              exportparts="svg:submenu-icon__svg"
-              library="system"
-              name="chevron-right"
-            ></wa-icon>
-          `
-        : nothing}
-      ${this.hasSubmenu
-        ? html`
-            <div
-              id="submenu"
-              part="submenu"
-              popover="manual"
-              role="menu"
-              tabindex="-1"
-              aria-orientation="vertical"
-              hidden
-            >
-              <slot name="submenu"></slot>
-            </div>
-          `
-        : nothing}
+      <ha-svg-icon
+        id="check"
+        part="checkmark"
+        .path=${this.checked ? mdiCheckboxMarked : mdiCheckboxBlankOutline}
+      ></ha-svg-icon>
     `;
   }
 
