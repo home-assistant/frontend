@@ -53,10 +53,11 @@ import type {
   SelectionChangedEvent,
   SortingChangedEvent,
 } from "../../../components/data-table/ha-data-table";
+import "@home-assistant/webawesome/dist/components/divider/divider";
 import "../../../components/data-table/ha-data-table-labels";
 import "../../../components/ha-alert";
-import "../../../components/ha-button-menu";
-import "../../../components/ha-check-list-item";
+import "../../../components/ha-dropdown";
+import "../../../components/ha-dropdown-item";
 import "../../../components/ha-filter-devices";
 import "../../../components/ha-filter-domains";
 import "../../../components/ha-filter-floor-areas";
@@ -65,8 +66,7 @@ import "../../../components/ha-filter-labels";
 import "../../../components/ha-filter-states";
 import "../../../components/ha-icon";
 import "../../../components/ha-icon-button";
-import "../../../components/ha-md-divider";
-import "../../../components/ha-md-menu-item";
+import "../../../components/ha-md-menu";
 import "../../../components/ha-sub-menu";
 import "../../../components/ha-svg-icon";
 import "../../../components/ha-tooltip";
@@ -782,14 +782,14 @@ export class HaConfigEntities extends SubscribeMixin(LitElement) {
           this._selected.some((entityId) =>
             this.hass.entities[entityId]?.labels.includes(label.label_id)
           );
-        return html`<ha-md-menu-item
+        return html`<ha-dropdown-item
           .value=${label.label_id}
           .action=${selected ? "remove" : "add"}
           @click=${this._handleBulkLabel}
           keep-open
         >
           <ha-checkbox
-            slot="start"
+            slot="icon"
             .checked=${selected}
             .indeterminate=${partial}
             reducedTouchTarget
@@ -803,22 +803,20 @@ export class HaConfigEntities extends SubscribeMixin(LitElement) {
               : nothing}
             ${label.name}
           </ha-label>
-        </ha-md-menu-item>`;
+        </ha-dropdown-item>`;
       })}
-      <ha-md-divider role="separator" tabindex="-1"></ha-md-divider>
-      <ha-md-menu-item .clickAction=${this._bulkCreateLabel}>
-        <div slot="headline">
-          ${this.hass.localize("ui.panel.config.labels.add_label")}
-        </div></ha-md-menu-item
-      >`;
+      <wa-divider></wa-divider>
+      <ha-dropdown-item .clickAction=${this._bulkCreateLabel}>
+        ${this.hass.localize("ui.panel.config.labels.add_label")}
+      </ha-dropdown-item>`;
 
     return html`
       <hass-tabs-subpage-data-table
         .hass=${this.hass}
         .narrow=${this.narrow}
-        .backPath=${
-          this._searchParms.has("historyBack") ? undefined : "/config"
-        }
+        .backPath=${this._searchParms.has("historyBack")
+          ? undefined
+          : "/config"}
         .route=${this.route}
         .tabs=${configSections.devices}
         .columns=${this._columns(this.hass.localize)}
@@ -828,16 +826,14 @@ export class HaConfigEntities extends SubscribeMixin(LitElement) {
           { number: filteredEntities.length }
         )}
         has-filters
-        .filters=${
-          Object.values(this._filters).filter((filter) =>
-            Array.isArray(filter)
-              ? filter.length
-              : filter &&
-                Object.values(filter).some((val) =>
-                  Array.isArray(val) ? val.length : val
-                )
-          ).length
-        }
+        .filters=${Object.values(this._filters).filter((filter) =>
+          Array.isArray(filter)
+            ? filter.length
+            : filter &&
+              Object.values(filter).some((val) =>
+                Array.isArray(val) ? val.length : val
+              )
+        ).length}
         selectable
         .selected=${this._selected.length}
         .initialGroupColumn=${this._activeGrouping ?? "device_full"}
@@ -864,157 +860,127 @@ export class HaConfigEntities extends SubscribeMixin(LitElement) {
           slot="toolbar-icon"
         ></ha-integration-overflow-menu>
 
-
-${
-  !this.narrow
-    ? html`<ha-md-button-menu slot="selection-bar">
-        <ha-assist-chip
-          slot="trigger"
-          .label=${this.hass.localize(
-            "ui.panel.config.automation.picker.bulk_actions.add_label"
-          )}
-        >
-          <ha-svg-icon slot="trailing-icon" .path=${mdiMenuDown}></ha-svg-icon>
-        </ha-assist-chip>
-        ${labelItems}
-      </ha-md-button-menu>`
-    : nothing
-}
-<ha-md-button-menu has-overflow slot="selection-bar">
-  ${
-    this.narrow
-      ? html`<ha-assist-chip
-          .label=${this.hass.localize(
-            "ui.panel.config.automation.picker.bulk_action"
-          )}
-          slot="trigger"
-        >
-          <ha-svg-icon slot="trailing-icon" .path=${mdiMenuDown}></ha-svg-icon>
-        </ha-assist-chip>`
-      : html`<ha-icon-button
-          .path=${mdiDotsVertical}
-          .label=${this.hass.localize(
-            "ui.panel.config.automation.picker.bulk_action"
-          )}
-          slot="trigger"
-        ></ha-icon-button>`
-  }
-    <ha-svg-icon
-      slot="trailing-icon"
-      .path=${mdiMenuDown}
-    ></ha-svg-icon
-  ></ha-assist-chip>
-  ${
-    this.narrow
-      ? html`<ha-sub-menu>
-            <ha-md-menu-item slot="item">
-              <div slot="headline">
-                ${this.hass.localize(
+        ${!this.narrow
+          ? html`<ha-dropdown slot="selection-bar">
+              <ha-assist-chip
+                slot="trigger"
+                .label=${this.hass.localize(
                   "ui.panel.config.automation.picker.bulk_actions.add_label"
                 )}
-              </div>
-              <ha-svg-icon slot="end" .path=${mdiChevronRight}></ha-svg-icon>
-            </ha-md-menu-item>
-            <ha-md-menu slot="menu">${labelItems}</ha-md-menu>
-          </ha-sub-menu>
-          <ha-md-divider role="separator" tabindex="-1"></ha-md-divider>`
-      : nothing
-  }
-
-  <ha-md-menu-item .clickAction=${this._enableSelected}>
-    <ha-svg-icon slot="start" .path=${mdiToggleSwitch}></ha-svg-icon>
-    <div slot="headline">
-      ${this.hass.localize(
-        "ui.panel.config.entities.picker.enable_selected.button"
-      )}
-    </div>
-  </ha-md-menu-item>
-  <ha-md-menu-item .clickAction=${this._disableSelected}>
-    <ha-svg-icon
-      slot="start"
-      .path=${mdiToggleSwitchOffOutline}
-    ></ha-svg-icon>
-    <div slot="headline">
-      ${this.hass.localize(
-        "ui.panel.config.entities.picker.disable_selected.button"
-      )}
-    </div>
-  </ha-md-menu-item>
-  <ha-md-divider role="separator" tabindex="-1"></ha-md-divider>
-
-  <ha-md-menu-item .clickAction=${this._unhideSelected}>
-    <ha-svg-icon
-      slot="start"
-      .path=${mdiEye}
-    ></ha-svg-icon>
-    <div slot="headline">
-      ${this.hass.localize(
-        "ui.panel.config.entities.picker.unhide_selected.button"
-      )}
-    </div>
-  </ha-md-menu-item>
-  <ha-md-menu-item .clickAction=${this._hideSelected}>
-    <ha-svg-icon
-      slot="start"
-      .path=${mdiEyeOff}
-    ></ha-svg-icon>
-    <div slot="headline">
-      ${this.hass.localize(
-        "ui.panel.config.entities.picker.hide_selected.button"
-      )}
-    </div>
-  </ha-md-menu-item>
-
-  <ha-md-divider role="separator" tabindex="-1"></ha-md-divider>
-
-  <ha-md-menu-item .clickAction=${this._restoreEntityIdSelected}>
-    <ha-svg-icon
-      slot="start"
-      .path=${mdiRestore}
-    ></ha-svg-icon>
-    <div slot="headline">
-      ${this.hass.localize(
-        "ui.panel.config.entities.picker.restore_entity_id_selected.button"
-      )}
-    </div>
-  </ha-md-menu-item>
-
-  <ha-md-divider role="separator" tabindex="-1"></ha-md-divider>
-
-  <ha-md-menu-item .clickAction=${this._removeSelected} class="warning">
-    <ha-svg-icon
-      slot="start"
-      .path=${mdiDelete}
-    ></ha-svg-icon>
-    <div slot="headline">
-      ${this.hass.localize(
-        "ui.panel.config.entities.picker.delete_selected.button"
-      )}
-    </div>
-  </ha-md-menu-item>
-
-</ha-md-button-menu>
-        ${
-          Array.isArray(this._filters.config_entry) &&
-          this._filters.config_entry.length
-            ? html`<ha-alert slot="filter-pane">
-                ${this.hass.localize(
-                  "ui.panel.config.entities.picker.filtering_by_config_entry"
+              >
+                <ha-svg-icon
+                  slot="trailing-icon"
+                  .path=${mdiMenuDown}
+                ></ha-svg-icon>
+              </ha-assist-chip>
+              ${labelItems}
+            </ha-dropdown>`
+          : nothing}
+        <ha-dropdown has-overflow slot="selection-bar">
+          ${this.narrow
+            ? html`<ha-assist-chip
+                .label=${this.hass.localize(
+                  "ui.panel.config.automation.picker.bulk_action"
                 )}
-                ${this._entries?.find(
-                  (entry) => entry.entry_id === this._filters.config_entry![0]
-                )?.title || this._filters.config_entry[0]}${this._filters
-                  .config_entry.length === 1 &&
-                Array.isArray(this._filters.sub_entry) &&
-                this._filters.sub_entry.length
-                  ? html` (${this._subEntries?.find(
-                      (entry) =>
-                        entry.subentry_id === this._filters.sub_entry![0]
-                    )?.title || this._filters.sub_entry[0]})`
-                  : nothing}
-              </ha-alert>`
-            : nothing
-        }
+                slot="trigger"
+              >
+                <ha-svg-icon
+                  slot="trailing-icon"
+                  .path=${mdiMenuDown}
+                ></ha-svg-icon>
+              </ha-assist-chip>`
+            : html`<ha-icon-button
+                .path=${mdiDotsVertical}
+                .label=${this.hass.localize(
+                  "ui.panel.config.automation.picker.bulk_action"
+                )}
+                slot="trigger"
+              ></ha-icon-button>`}
+          ${this.narrow
+            ? html`<ha-sub-menu>
+                  <ha-dropdown-item slot="item">
+                    ${this.hass.localize(
+                      "ui.panel.config.automation.picker.bulk_actions.add_label"
+                    )}
+                    <ha-svg-icon
+                      slot="details"
+                      .path=${mdiChevronRight}
+                    ></ha-svg-icon>
+                  </ha-dropdown-item>
+                  <ha-md-menu slot="menu">${labelItems}</ha-md-menu>
+                </ha-sub-menu>
+                <wa-divider></wa-divider>`
+            : nothing}
+
+          <ha-dropdown-item .clickAction=${this._enableSelected}>
+            <ha-svg-icon slot="icon" .path=${mdiToggleSwitch}></ha-svg-icon>
+            ${this.hass.localize(
+              "ui.panel.config.entities.picker.enable_selected.button"
+            )}
+          </ha-dropdown-item>
+          <ha-dropdown-item .clickAction=${this._disableSelected}>
+            <ha-svg-icon
+              slot="icon"
+              .path=${mdiToggleSwitchOffOutline}
+            ></ha-svg-icon>
+            ${this.hass.localize(
+              "ui.panel.config.entities.picker.disable_selected.button"
+            )}
+          </ha-dropdown-item>
+          <wa-divider></wa-divider>
+
+          <ha-dropdown-item .clickAction=${this._unhideSelected}>
+            <ha-svg-icon slot="icon" .path=${mdiEye}></ha-svg-icon>
+            ${this.hass.localize(
+              "ui.panel.config.entities.picker.unhide_selected.button"
+            )}
+          </ha-dropdown-item>
+          <ha-dropdown-item .clickAction=${this._hideSelected}>
+            <ha-svg-icon slot="icon" .path=${mdiEyeOff}></ha-svg-icon>
+            ${this.hass.localize(
+              "ui.panel.config.entities.picker.hide_selected.button"
+            )}
+          </ha-dropdown-item>
+
+          <wa-divider></wa-divider>
+
+          <ha-dropdown-item .clickAction=${this._restoreEntityIdSelected}>
+            <ha-svg-icon slot="icon" .path=${mdiRestore}></ha-svg-icon>
+            ${this.hass.localize(
+              "ui.panel.config.entities.picker.restore_entity_id_selected.button"
+            )}
+          </ha-dropdown-item>
+
+          <wa-divider></wa-divider>
+
+          <ha-dropdown-item
+            .clickAction=${this._removeSelected}
+            variant="danger"
+          >
+            <ha-svg-icon slot="icon" .path=${mdiDelete}></ha-svg-icon>
+            ${this.hass.localize(
+              "ui.panel.config.entities.picker.delete_selected.button"
+            )}
+          </ha-dropdown-item>
+        </ha-dropdown>
+        ${Array.isArray(this._filters.config_entry) &&
+        this._filters.config_entry.length
+          ? html`<ha-alert slot="filter-pane">
+              ${this.hass.localize(
+                "ui.panel.config.entities.picker.filtering_by_config_entry"
+              )}
+              ${this._entries?.find(
+                (entry) => entry.entry_id === this._filters.config_entry![0]
+              )?.title || this._filters.config_entry[0]}${this._filters
+                .config_entry.length === 1 &&
+              Array.isArray(this._filters.sub_entry) &&
+              this._filters.sub_entry.length
+                ? html` (${this._subEntries?.find(
+                    (entry) => entry.subentry_id === this._filters.sub_entry![0]
+                  )?.title || this._filters.sub_entry[0]})`
+                : nothing}
+            </ha-alert>`
+          : nothing}
         <ha-filter-floor-areas
           .hass=${this.hass}
           type="entity"
@@ -1075,20 +1041,16 @@ ${
           .narrow=${this.narrow}
           @expanded-changed=${this._filterExpanded}
         ></ha-filter-labels>
-        ${
-          includeAddDeviceFab
-            ? html`<ha-fab
-                .label=${this.hass.localize(
-                  "ui.panel.config.devices.add_device"
-                )}
-                extended
-                @click=${this._addDevice}
-                slot="fab"
-              >
-                <ha-svg-icon slot="icon" .path=${mdiPlus}></ha-svg-icon>
-              </ha-fab>`
-            : nothing
-        }
+        ${includeAddDeviceFab
+          ? html`<ha-fab
+              .label=${this.hass.localize("ui.panel.config.devices.add_device")}
+              extended
+              @click=${this._addDevice}
+              slot="fab"
+            >
+              <ha-svg-icon slot="icon" .path=${mdiPlus}></ha-svg-icon>
+            </ha-fab>`
+          : nothing}
       </hass-tabs-subpage-data-table>
     `;
   }
@@ -1612,7 +1574,7 @@ ${rejected
         ha-assist-chip {
           --ha-assist-chip-container-shape: 10px;
         }
-        ha-md-button-menu ha-assist-chip {
+        ha-dropdown ha-assist-chip {
           --md-assist-chip-trailing-space: 8px;
         }
         ha-label {
