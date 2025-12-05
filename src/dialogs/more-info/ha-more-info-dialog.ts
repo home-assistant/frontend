@@ -131,7 +131,7 @@ export class MoreInfoDialog extends ScrollableFadeMixin(LitElement) {
   protected scrollFadeThreshold = 24;
 
   protected get scrollableElement(): HTMLElement | null {
-    return this._contentElement;
+    return this._contentElement || null;
   }
 
   public showDialog(params: MoreInfoDialogParams) {
