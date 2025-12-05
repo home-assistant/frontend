@@ -772,29 +772,6 @@ export class HassioNetwork extends LitElement {
     }
   }
 
-  private _addPredefinedDNS(ev: Event) {
-    const source = ev.target as any;
-    const version = source.version as "ipv4" | "ipv6";
-    const addresses = source.addresses as string[];
-    if (!this._interface![version]!.nameservers) {
-      this._interface![version]!.nameservers = [];
-    }
-    this._interface![version]!.nameservers!.push(...addresses);
-    this._dirty = true;
-    this.requestUpdate("_interface");
-  }
-
-  private _addCustomDNS(ev: Event) {
-    const source = ev.target as any;
-    const version = source.version as "ipv4" | "ipv6";
-    if (!this._interface![version]!.nameservers) {
-      this._interface![version]!.nameservers = [];
-    }
-    this._interface![version]!.nameservers!.push("");
-    this._dirty = true;
-    this.requestUpdate("_interface");
-  }
-
   private _removeNameserver(ev: Event): void {
     const source = ev.target as any;
     const index = source.index as number;

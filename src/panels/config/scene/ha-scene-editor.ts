@@ -285,11 +285,7 @@ export class HaSceneEditor extends PreventUnsavedMixin(
             .disabled=${!this.sceneId}
             .variant=${this.sceneId ? "danger" : "default"}
           >
-            <ha-svg-icon
-              class=${classMap({ warning: Boolean(this.sceneId) })}
-              slot="icon"
-              .path=${mdiDelete}
-            ></ha-svg-icon>
+            <ha-svg-icon slot="icon" .path=${mdiDelete}></ha-svg-icon>
             ${this.hass.localize("ui.panel.config.scene.picker.delete_scene")}
           </ha-dropdown-item>
         </ha-dropdown>
