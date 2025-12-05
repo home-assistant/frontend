@@ -1,13 +1,11 @@
 import { mdiClose } from "@mdi/js";
 import type { CSSResultGroup } from "lit";
 import { css, html, LitElement, nothing } from "lit";
-import { customElement, query, state } from "lit/decorators";
+import { customElement, state } from "lit/decorators";
 import { fireEvent } from "../../../../common/dom/fire_event";
 import "../../../../components/ha-button";
-import "../../../../components/ha-dialog-header";
-import "../../../../components/ha-icon-button";
-import "../../../../components/ha-md-dialog";
-import type { HaMdDialog } from "../../../../components/ha-md-dialog";
+import "../../../../components/ha-dialog-footer";
+import "../../../../components/ha-wa-dialog";
 import "../../../../components/ha-md-select";
 import "../../../../components/ha-md-select-option";
 import "../../../../components/ha-spinner";
@@ -35,12 +33,13 @@ export class HuiDialogSelectDashboard extends LitElement {
 
   @state() private _saving = false;
 
-  @query("ha-md-dialog") private _dialog?: HaMdDialog;
+  @state() private _open = false;
 
   public showDialog(params: SelectDashboardDialogParams): void {
     this._config = params.lovelaceConfig;
     this._fromUrlPath = params.urlPath;
     this._params = params;
+    this._open = true;
     this._getDashboards();
   }
 
@@ -48,7 +47,7 @@ export class HuiDialogSelectDashboard extends LitElement {
     this._saving = false;
     this._dashboards = undefined;
     this._toUrlPath = undefined;
-    this._dialog?.close();
+    this._open = false;
   }
 
   private _dialogClosed(): void {
@@ -66,52 +65,42 @@ export class HuiDialogSelectDashboard extends LitElement {
       this.hass.localize("ui.panel.lovelace.editor.select_dashboard.header");
 
     return html`
-      <ha-md-dialog
-        open
+      <ha-wa-dialog
+        .hass=${this.hass}
+        .open=${this._open}
+        header-title=${dialogTitle}
+        ?prevent-scrim-close=${this._saving}
         @closed=${this._dialogClosed}
-        .ariaLabel=${dialogTitle}
-        .disableCancelAction=${this._saving}
       >
-        <ha-dialog-header slot="headline">
-          <ha-icon-button
-            slot="navigationIcon"
-            .label=${this.hass.localize("ui.common.close")}
-            .path=${mdiClose}
-            @click=${this.closeDialog}
-            .disabled=${this._saving}
-          ></ha-icon-button>
-          <span slot="title" .title=${dialogTitle}>${dialogTitle}</span>
-        </ha-dialog-header>
-        <div slot="content">
-          ${this._dashboards && !this._saving
-            ? html`
-                <ha-md-select
-                  .label=${this.hass.localize(
-                    "ui.panel.lovelace.editor.select_view.dashboard_label"
-                  )}
-                  @change=${this._dashboardChanged}
-                  .value=${this._toUrlPath || ""}
-                >
-                  ${this._dashboards.map(
-                    (dashboard) => html`
-                      <ha-md-select-option
-                        .disabled=${dashboard.mode !== "storage" ||
-                        dashboard.url_path === this._fromUrlPath ||
-                        (dashboard.url_path === "lovelace" &&
-                          this._fromUrlPath === null)}
-                        .value=${dashboard.url_path}
-                        >${dashboard.title}</ha-md-select-option
-                      >
-                    `
-                  )}
-                </ha-md-select>
-              `
-            : html`<div class="loading">
-                <ha-spinner size="medium"></ha-spinner>
-              </div>`}
-        </div>
-        <div slot="actions">
+        ${this._dashboards && !this._saving
+          ? html`
+              <ha-md-select
+                .label=${this.hass.localize(
+                  "ui.panel.lovelace.editor.select_view.dashboard_label"
+                )}
+                @change=${this._dashboardChanged}
+                .value=${this._toUrlPath || ""}
+              >
+                ${this._dashboards.map(
+                  (dashboard) => html`
+                    <ha-md-select-option
+                      .disabled=${dashboard.mode !== "storage" ||
+                      dashboard.url_path === this._fromUrlPath ||
+                      (dashboard.url_path === "lovelace" &&
+                        this._fromUrlPath === null)}
+                      .value=${dashboard.url_path}
+                      >${dashboard.title}</ha-md-select-option
+                    >
+                  `
+                )}
+              </ha-md-select>
+            `
+          : html`<div class="loading">
+              <ha-spinner size="medium"></ha-spinner>
+            </div>`}
+        <ha-dialog-footer slot="footer">
           <ha-button
+            slot="secondaryAction"
             appearance="plain"
             @click=${this.closeDialog}
             .disabled=${this._saving}
@@ -119,6 +108,7 @@ export class HuiDialogSelectDashboard extends LitElement {
             ${this.hass!.localize("ui.common.cancel")}
           </ha-button>
           <ha-button
+            slot="primaryAction"
             @click=${this._selectDashboard}
             .disabled=${!this._config ||
             this._fromUrlPath === this._toUrlPath ||
@@ -126,8 +116,8 @@ export class HuiDialogSelectDashboard extends LitElement {
           >
             ${this._params.actionLabel || this.hass!.localize("ui.common.move")}
           </ha-button>
-        </div>
-      </ha-md-dialog>
+        </ha-dialog-footer>
+      </ha-wa-dialog>
     `;
   }
 
