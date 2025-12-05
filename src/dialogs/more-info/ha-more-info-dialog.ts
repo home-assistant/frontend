@@ -128,14 +128,10 @@ export class MoreInfoDialog extends ScrollableFadeMixin(LitElement) {
 
   @state() private _sensorNumericDeviceClasses?: string[] = [];
 
-  private static readonly SCROLL_FADE_THRESHOLD = 24;
+  protected scrollFadeThreshold = 24;
 
   protected get scrollableElement(): HTMLElement | null {
     return this._contentElement;
-  }
-
-  protected get scrollFadeThreshold() {
-    return MoreInfoDialog.SCROLL_FADE_THRESHOLD;
   }
 
   public showDialog(params: MoreInfoDialogParams) {

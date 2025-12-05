@@ -48,40 +48,24 @@ export const ScrollableFadeMixin = <T extends Constructor<LitElement>>(
     });
 
     /**
-     * The default safe area padding for the scrollable element.
+     * Safe area padding in pixels for the scrollable element.
      */
-    private static readonly DEFAULT_SAFE_AREA_PADDING = 16;
+    protected scrollFadeSafeAreaPadding = 16;
 
     /**
-     * The default scroll threshold for the scrollable element.
+     * Scroll threshold in pixels for showing the fades.
      */
-    private static readonly DEFAULT_SCROLL_THRESHOLD = 4;
+    protected scrollFadeThreshold = 4;
 
     /**
-     * The default scrollable element.
+     * Default scrollable element value.
      */
     private static readonly DEFAULT_SCROLLABLE_ELEMENT: HTMLElement | null =
       null;
 
     /**
-     * Safe area padding in pixels for scrollable calculations. Override to customize.
-     * @returns Safe area padding value in pixels.
-     */
-    protected get scrollFadeSafeAreaPadding() {
-      return ScrollableFadeClass.DEFAULT_SAFE_AREA_PADDING;
-    }
-
-    /**
-     * Scroll threshold in pixels for showing the top fade. Override to customize.
-     * @returns Scroll threshold value in pixels.
-     */
-    protected get scrollFadeThreshold() {
-      return ScrollableFadeClass.DEFAULT_SCROLL_THRESHOLD;
-    }
-
-    /**
-     * Element to observe for scroll and resize events. Override to specify target.
-     * @returns The element to observe, or null.
+     * Element to observe for scroll and resize events. Override with a getter to specify target.
+     * Kept as a getter to allow subclasses to return query results.
      */
     protected get scrollableElement(): HTMLElement | null {
       return ScrollableFadeClass.DEFAULT_SCROLLABLE_ELEMENT;
