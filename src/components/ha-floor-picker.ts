@@ -393,6 +393,9 @@ export class HaFloorPicker extends LitElement {
         .getAdditionalItems=${this._getAdditionalItems}
         .valueRenderer=${valueRenderer}
         .rowRenderer=${this._rowRenderer}
+        .unknownItemText=${this.hass.localize(
+          "ui.components.floor-picker.unknown"
+        )}
         @value-changed=${this._valueChanged}
       >
       </ha-generic-picker>

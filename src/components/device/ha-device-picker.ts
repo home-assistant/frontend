@@ -216,6 +216,9 @@ export class HaDevicePicker extends LitElement {
         .getItems=${this._getItems}
         .hideClearIcon=${this.hideClearIcon}
         .valueRenderer=${valueRenderer}
+        .unknownItemText=${this.hass.localize(
+          "ui.components.device-picker.unknown"
+        )}
         @value-changed=${this._valueChanged}
       >
       </ha-generic-picker>

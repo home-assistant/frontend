@@ -134,6 +134,9 @@ class HaUserPicker extends LitElement {
         .getItems=${this._getItems}
         .valueRenderer=${this._valueRenderer}
         .rowRenderer=${this._rowRenderer}
+        .unknownItemText=${this.hass.localize(
+          "ui.components.user-picker.unknown"
+        )}
         @value-changed=${this._valueChanged}
       >
       </ha-generic-picker>

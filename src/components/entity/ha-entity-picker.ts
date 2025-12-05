@@ -288,10 +288,13 @@ export class HaEntityPicker extends LitElement {
         .hideClearIcon=${this.hideClearIcon}
         .searchFn=${this._searchFn}
         .valueRenderer=${this._valueRenderer}
-        @value-changed=${this._valueChanged}
         .addButtonLabel=${this.addButton
           ? this.hass.localize("ui.components.entity.entity-picker.add")
           : undefined}
+        .unknownItemText=${this.hass.localize(
+          "ui.components.entity.entity-picker.unknown"
+        )}
+        @value-changed=${this._valueChanged}
       >
       </ha-generic-picker>
     `;

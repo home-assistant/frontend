@@ -658,7 +658,8 @@
           "show_entities": "Show entities",
           "new_entity": "Create a new entity",
           "placeholder": "Select an entity",
-          "create_helper": "Create a new {domain, select, \n undefined {} \n other {{domain} }\n } helper."
+          "create_helper": "Create a new {domain, select, \n undefined {} \n other {{domain} }\n } helper.",
+          "unknown": "Unknown entity selected"
         },
         "entity-name-picker": {
           "types": {
@@ -779,7 +780,8 @@
       "user-picker": {
         "no_match": "No users found for {term}",
         "user": "User",
-        "add_user": "Add user"
+        "add_user": "Add user",
+        "unknown": "Unknown user selected"
       },
       "blueprint-picker": {
         "select_blueprint": "Select a blueprint"
@@ -793,7 +795,8 @@
         "device": "Device",
         "unnamed_device": "Unnamed device",
         "no_area": "No area",
-        "placeholder": "Select a device"
+        "placeholder": "Select a device",
+        "unknown": "Unknown device selected"
       },
       "category-picker": {
         "clear": "Clear",
@@ -805,6 +808,7 @@
         "add_new": "Add new category…",
         "no_categories": "No categories available",
         "no_match": "No categories found for {term}",
+        "unknown": "Unknown category selected",
         "add_dialog": {
           "title": "Add new category",
           "text": "Enter the name of the new category.",
@@ -831,7 +835,8 @@
         "add_new": "Add new area…",
         "no_areas": "No areas available",
         "no_match": "No areas found for {term}",
-        "failed_create_area": "Failed to create area."
+        "failed_create_area": "Failed to create area.",
+        "unknown": "Unknown area selected"
       },
       "floor-picker": {
         "clear": "Clear",
@@ -841,7 +846,8 @@
         "add_new": "Add new floor…",
         "no_floors": "No floors available",
         "no_match": "No floors found for {term}",
-        "failed_create_floor": "Failed to create floor."
+        "failed_create_floor": "Failed to create floor.",
+        "unknown": "Unknown floor selected"
       },
       "area-filter": {
         "title": "Areas",
@@ -858,7 +864,8 @@
         "no_match": "No statistics found for {term}",
         "no_state": "Entity without state",
         "missing_entity": "Why is my entity not listed?",
-        "learn_more": "Learn more about statistics"
+        "learn_more": "Learn more about statistics",
+        "unknown": "Unknown statistic selected"
       },
       "addon-picker": {
         "addon": "Add-on",
@@ -998,7 +1005,8 @@
       },
       "service-picker": {
         "action": "Action",
-        "no_match": "No matching actions found"
+        "no_match": "No matching actions found",
+        "unknown": "Unknown action selected"
       },
       "service-control": {
         "required": "This field is required",
@@ -1296,7 +1304,8 @@
       },
       "combo-box": {
         "no_match": "No matching items found",
-        "no_items": "No items available"
+        "no_items": "No items available",
+        "unknown_item": "Unknown item"
       },
       "suggest_with_ai": {
         "label": "Suggest",

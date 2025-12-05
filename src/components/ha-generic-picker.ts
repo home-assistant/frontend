@@ -4,6 +4,7 @@ import { mdiPlaylistPlus } from "@mdi/js";
 import { css, html, LitElement, nothing, type CSSResultGroup } from "lit";
 import { customElement, property, query, state } from "lit/decorators";
 import { ifDefined } from "lit/directives/if-defined";
+import memoizeOne from "memoize-one";
 import { tinykeys } from "tinykeys";
 import { fireEvent } from "../common/dom/fire_event";
 import type { HomeAssistant } from "../types";
@@ -107,6 +108,8 @@ export class HaGenericPicker extends LitElement {
 
   @property({ attribute: "selected-section" }) public selectedSection?: string;
 
+  @property({ attribute: "unknown-item-text" }) public unknownItemText;
+
   @query(".container") private _containerElement?: HTMLDivElement;
 
   @query("ha-picker-combo-box") private _comboBox?: HaPickerComboBox;
@@ -156,6 +159,8 @@ export class HaGenericPicker extends LitElement {
                   type="button"
                   class=${this._opened ? "opened" : ""}
                   compact
+                  .unknown=${this._unknownValue(this.value, this.getItems)}
+                  .unknownItemText=${this.unknownItemText}
                   aria-label=${ifDefined(this.label)}
                   @click=${this.open}
                   @clear=${this._clear}
@@ -232,6 +237,16 @@ export class HaGenericPicker extends LitElement {
       ></ha-picker-combo-box>
     `;
   }
+
+  private _unknownValue = memoizeOne(
+    (value?: string, getItems?: () => any[]) => {
+      if (value === undefined || !getItems) {
+        return false;
+      }
+
+      return !getItems().some((item) => item.id === value);
+    }
+  );
 
   private _renderHelper() {
     return this.helper

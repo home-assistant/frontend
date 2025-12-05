@@ -475,6 +475,9 @@ export class HaStatisticPicker extends LitElement {
         .searchFn=${this._searchFn}
         .valueRenderer=${this._valueRenderer}
         .helper=${this.helper}
+        .unknownItemText=${this.hass.localize(
+          "ui.components.statistic-picker.unknown"
+        )}
         @value-changed=${this._valueChanged}
       >
       </ha-generic-picker>
