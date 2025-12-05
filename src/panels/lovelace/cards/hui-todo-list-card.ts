@@ -6,6 +6,7 @@ import {
   mdiDeleteSweep,
   mdiDotsVertical,
   mdiDrag,
+  mdiFilter,
   mdiPlus,
   mdiSort,
 } from "@mdi/js";
@@ -25,6 +26,7 @@ import { caseInsensitiveStringCompare } from "../../../common/string/compare";
 import "../../../components/ha-card";
 import "../../../components/ha-check-list-item";
 import "../../../components/ha-checkbox";
+import "../../../components/ha-date-input";
 import "../../../components/ha-icon-button";
 import "../../../components/ha-list";
 import "../../../components/ha-list-item";
@@ -92,6 +94,14 @@ export class HuiTodoListCard extends LitElement implements LovelaceCard {
   @state() private _items?: TodoItem[];
 
   @state() private _reordering = false;
+
+  @state() private _filterOpen = false;
+
+  @state() private _filterPriorities: string[] = [];
+
+  @state() private _filterDateFrom: string | null = null;
+
+  @state() private _filterDateTo: string | null = null;
 
   private _unsubItems?: Promise<UnsubscribeFunc>;
 
@@ -200,47 +210,137 @@ export class HuiTodoListCard extends LitElement implements LovelaceCard {
     return items; // no sorting
   }
 
+  private _applyFilters(items: TodoItem[]): TodoItem[] {
+    if (
+      this._filterPriorities.length === 0 &&
+      !this._filterDateFrom &&
+      !this._filterDateTo
+    ) {
+      return items;
+    }
+
+    return items.filter((item) => {
+      // Priority filter
+      if (this._filterPriorities.length > 0) {
+        const priority = item.priority?.toString().toLowerCase();
+        const matchesPriority =
+          (this._filterPriorities.includes("urgent") &&
+            ["urgent", "4"].includes(priority!)) ||
+          (this._filterPriorities.includes("high") &&
+            ["high", "3"].includes(priority!)) ||
+          (this._filterPriorities.includes("medium") &&
+            ["medium", "2"].includes(priority!)) ||
+          (this._filterPriorities.includes("low") &&
+            ["low", "1"].includes(priority!));
+        if (!matchesPriority) return false;
+      }
+
+      // Date filter
+      const dueDate = this._getDueDate(item);
+      if (dueDate) {
+        if (this._filterDateFrom && dueDate < new Date(this._filterDateFrom))
+          return false;
+        if (this._filterDateTo) {
+          const toDate = new Date(this._filterDateTo);
+          toDate.setHours(23, 59, 59, 999);
+          if (dueDate > toDate) return false;
+        }
+      } else if (this._filterDateFrom || this._filterDateTo) {
+        // Item has no due date, but user wants date filter → hide
+        return false;
+      }
+
+      return true;
+    });
+  }
+
+  private _handlePriorityChange(p: string) {
+    if (this._filterPriorities.includes(p)) {
+      this._filterPriorities = this._filterPriorities.filter((x) => x !== p);
+    } else {
+      this._filterPriorities = [...this._filterPriorities, p];
+    }
+    this.requestUpdate();
+  }
+
+  private _createPriorityHandler(priority: string) {
+    return () => this._handlePriorityChange(priority);
+  }
+
+  private _setDateFrom(e: CustomEvent) {
+    this._filterDateFrom = e.detail.value || null;
+    this.requestUpdate();
+  }
+
+  private _setDateTo(e: CustomEvent) {
+    this._filterDateTo = e.detail.value || null;
+    this.requestUpdate();
+  }
+
+  private _closeFilterPanel() {
+    this._filterOpen = false;
+  }
+
+  private _clearFilters() {
+    this._filterPriorities = [];
+    this._filterDateFrom = null;
+    this._filterDateTo = null;
+    this.requestUpdate();
+  }
+
+  private _toggleFilterPanel() {
+    this._filterOpen = !this._filterOpen;
+  }
+
+  private _clearAndClose() {
+    this._clearFilters();
+    this._filterOpen = false;
+  }
+
   private _getUncheckedAndItemsWithoutStatus = memoizeOne(
-    (items?: TodoItem[], sort?: string | undefined): TodoItem[] =>
-      items
-        ? this._sortItems(
-            items.filter(
-              (item) =>
-                item.status === TodoItemStatus.NeedsAction || !item.status
-            ),
-            sort
-          )
-        : []
+    (items?: TodoItem[], sort?: string, _filterKey?: string): TodoItem[] => {
+      if (!items) return [];
+      const filtered = this._applyFilters(items);
+      return this._sortItems(
+        filtered.filter(
+          (item) => item.status === TodoItemStatus.NeedsAction || !item.status
+        ),
+        sort
+      );
+    }
   );
 
   private _getCheckedItems = memoizeOne(
-    (items?: TodoItem[], sort?: string | undefined): TodoItem[] =>
-      items
-        ? this._sortItems(
-            items.filter((item) => item.status === TodoItemStatus.Completed),
-            sort
-          )
-        : []
+    (items?: TodoItem[], sort?: string, _filterKey?: string): TodoItem[] => {
+      if (!items) return [];
+      const filtered = this._applyFilters(items);
+      return this._sortItems(
+        filtered.filter((item) => item.status === TodoItemStatus.Completed),
+        sort
+      );
+    }
   );
 
   private _getUncheckedItems = memoizeOne(
-    (items?: TodoItem[], sort?: string | undefined): TodoItem[] =>
-      items
-        ? this._sortItems(
-            items.filter((item) => item.status === TodoItemStatus.NeedsAction),
-            sort
-          )
-        : []
+    (items?: TodoItem[], sort?: string, _filterKey?: string): TodoItem[] => {
+      if (!items) return [];
+      const filtered = this._applyFilters(items);
+      return this._sortItems(
+        filtered.filter((item) => item.status === TodoItemStatus.NeedsAction),
+        sort
+      );
+    }
   );
 
   private _getItemsWithoutStatus = memoizeOne(
-    (items?: TodoItem[], sort?: string | undefined): TodoItem[] =>
-      items
-        ? this._sortItems(
-            items.filter((item) => !item.status),
-            sort
-          )
-        : []
+    (items?: TodoItem[], sort?: string, _filterKey?: string): TodoItem[] => {
+      if (!items) return [];
+      const filtered = this._applyFilters(items);
+      return this._sortItems(
+        filtered.filter((item) => !item.status),
+        sort
+      );
+    }
   );
 
   public willUpdate(
@@ -292,25 +392,29 @@ export class HuiTodoListCard extends LitElement implements LovelaceCard {
     }
 
     const unavailable = isUnavailableState(stateObj.state);
+    // Unique key that changes whenever any filter changes
+    const filterKey = `${this._filterPriorities.join(",")}|${this._filterDateFrom || ""}|${this._filterDateTo || ""}`;
 
     const checkedItems = this._getCheckedItems(
       this._items,
-      this._config.display_order
+      this._config.display_order,
+      filterKey
     );
     const uncheckedItems = this._getUncheckedItems(
       this._items,
-      this._config.display_order
+      this._config.display_order,
+      filterKey
     );
-
     const itemsWithoutStatus = this._getItemsWithoutStatus(
       this._items,
-      this._config.display_order
+      this._config.display_order,
+      filterKey
     );
-
     const reorderableItems = this._reordering
       ? this._getUncheckedAndItemsWithoutStatus(
           this._items,
-          this._config.display_order
+          this._config.display_order,
+          filterKey
         )
       : undefined;
 
@@ -453,10 +557,14 @@ export class HuiTodoListCard extends LitElement implements LovelaceCard {
   private _renderMenu(config: TodoListCardConfig, unavailable: boolean) {
     const currentSort = config.display_order || TodoSortMode.NONE;
     const isPrioritySort = currentSort === "priority_desc";
+    const hasActiveFilter =
+      this._filterPriorities.length > 0 ||
+      this._filterDateFrom ||
+      this._filterDateTo;
 
     return html`
       <div class="sort-buttons">
-        <!-- Priority Sort Button -->
+        <!-- Sort Button -->
         <ha-icon-button
           .path=${mdiSort}
           .title=${isPrioritySort ? "Sorting by priority" : "Sort by priority"}
@@ -465,7 +573,16 @@ export class HuiTodoListCard extends LitElement implements LovelaceCard {
           .disabled=${unavailable}
         ></ha-icon-button>
 
-        <!-- Original Reorder Menu (only show if no other sorting active) -->
+        <!-- Filter Button -->
+        <ha-icon-button
+          .path=${mdiFilter}
+          .title=${hasActiveFilter ? "Filter active" : "Filter items"}
+          class=${classMap({ active: hasActiveFilter })}
+          @click=${this._toggleFilterPanel}
+          .disabled=${unavailable}
+        ></ha-icon-button>
+
+        <!-- Reorder menu (only when no sorting) -->
         ${currentSort === TodoSortMode.NONE &&
         this._todoListSupportsFeature(TodoListEntityFeature.MOVE_TODO_ITEM)
           ? html`
@@ -490,6 +607,60 @@ export class HuiTodoListCard extends LitElement implements LovelaceCard {
             `
           : nothing}
       </div>
+
+      <!-- Filter Panel -->
+      ${this._filterOpen
+        ? html`
+            <div class="filter-overlay" @click=${this._closeFilterPanel}></div>
+            <div class="filter-panel">
+              <div class="filter-section">
+                <strong>Priority</strong>
+                <div class="priority-filters">
+                  ${["urgent", "high", "medium", "low"].map(
+                    (p) => html`
+                      <label>
+                        <ha-checkbox
+                          .checked=${this._filterPriorities.includes(p)}
+                          @change=${this._createPriorityHandler(p)}
+                        ></ha-checkbox>
+                        <span class="priority-${p}"
+                          >${p.charAt(0).toUpperCase() + p.slice(1)}</span
+                        >
+                      </label>
+                    `
+                  )}
+                </div>
+              </div>
+
+              <div class="filter-section">
+                <strong>Due Date</strong>
+                <div class="date-filters">
+                  <ha-date-input
+                    .hass=${this.hass}
+                    .locale=${this.hass?.locale}
+                    .label=${"From"}
+                    .value=${this._filterDateFrom}
+                    @value-changed=${this._setDateFrom}
+                  ></ha-date-input>
+
+                  <ha-date-input
+                    .hass=${this.hass}
+                    .locale=${this.hass?.locale}
+                    .label=${"To"}
+                    .value=${this._filterDateTo}
+                    @value-changed=${this._setDateTo}
+                  ></ha-date-input>
+                </div>
+              </div>
+
+              <div class="filter-actions">
+                <ha-button @click=${this._clearAndClose}
+                  >Clear filters</ha-button
+                >
+              </div>
+            </div>
+          `
+        : nothing}
     `;
   }
 
@@ -1035,6 +1206,119 @@ export class HuiTodoListCard extends LitElement implements LovelaceCard {
     /* Optional: make active icon bolder */
     .sort-buttons ha-icon-button.active {
       --mdc-icon-button-state-layer-color: var(--primary-color);
+    }
+
+    .sort-buttons {
+      position: relative; /* Important: makes the panel position correctly */
+      display: flex;
+      gap: 8px;
+      align-items: center;
+    }
+
+    .filter-panel {
+      position: absolute;
+      top: 48px;
+      right: 16px;
+      width: 340px;
+      background: var(--card-background-color, white);
+      border: 1px solid var(--divider-color);
+      border-radius: 12px;
+      padding: 16px;
+      box-shadow: 0 8px 24px rgba(0, 0, 0, 0.15);
+      z-index: 10;
+      direction: ltr;
+    }
+
+    .filter-section {
+      margin-bottom: 20px;
+    }
+
+    .filter-section strong {
+      display: block;
+      margin-bottom: 10px;
+      color: var(--primary-text-color);
+      font-weight: 500;
+    }
+
+    /* PERFECTLY ALIGNED PRIORITY CHECKBOXES */
+    .priority-filters {
+      display: flex;
+      flex-direction: column;
+      gap: 11px;
+      margin-top: 6px;
+    }
+
+    .priority-filters label {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      margin: 0;
+      cursor: pointer;
+      user-select: none;
+    }
+
+    .priority-filters ha-checkbox {
+      --mdc-checkbox-touch-target-size: 40px;
+      flex-shrink: 0;
+    }
+
+    .priority-filters span {
+      font-weight: 500;
+      line-height: 20px;
+      color: var(--primary-text-color);
+    }
+
+    /* Match your card’s priority colors */
+    .priority-filters .priority-urgent {
+      color: #db4437;
+    }
+    .priority-filters .priority-high {
+      color: #ff9800;
+    }
+    .priority-filters .priority-medium {
+      color: #03a9f4;
+    }
+    .priority-filters .priority-low {
+      color: #b0b0b0;
+    }
+
+    .date-filters {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 12px;
+      margin-top: 8px;
+    }
+
+    .filter-actions {
+      display: flex;
+      justify-content: flex-end;
+      gap: 12px;
+      padding-top: 12px;
+      border-top: 1px solid var(--divider-color);
+    }
+
+    .filter-actions ha-button {
+      --mdc-theme-primary: var(--primary-color);
+    }
+
+    ha-card {
+      overflow: visible !important;
+    }
+
+    .sort-buttons ha-icon-button.active {
+      color: var(--primary-color);
+      --mdc-icon-button-state-layer-color: var(--primary-color);
+    }
+
+    .filter-overlay {
+      position: fixed;
+      inset: 0;
+      background: transparent;
+      z-index: 9;
+    }
+
+    .date-filters ha-date-input {
+      width: 100%;
     }
   `;
 }
