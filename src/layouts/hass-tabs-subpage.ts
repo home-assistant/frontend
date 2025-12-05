@@ -114,7 +114,6 @@ class HassTabsSubpage extends LitElement {
   public willUpdate(changedProperties: PropertyValues) {
     if (changedProperties.has("route")) {
       withViewTransition(() => {
-        console.log("View transition");
         this._activeTab = this.tabs.find((tab) =>
           `${this.route.prefix}${this.route.path}`.includes(tab.path)
         );
