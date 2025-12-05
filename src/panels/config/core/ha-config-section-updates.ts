@@ -1,4 +1,4 @@
-import type { RequestSelectedDetail } from "@material/mwc-list/mwc-list-item";
+import "@home-assistant/webawesome/dist/components/divider/divider";
 import { mdiDotsVertical, mdiRefresh } from "@mdi/js";
 import type { HassEntities } from "home-assistant-js-websocket";
 import type { TemplateResult } from "lit";
@@ -6,13 +6,12 @@ import { LitElement, css, html } from "lit";
 import { customElement, property, state } from "lit/decorators";
 import memoizeOne from "memoize-one";
 import { isComponentLoaded } from "../../../common/config/is_component_loaded";
-import { shouldHandleRequestSelectedEvent } from "../../../common/mwc/handle-request-selected-event";
 import "../../../components/ha-alert";
 import "../../../components/ha-bar";
-import "../../../components/ha-button-menu";
 import "../../../components/ha-card";
-import "../../../components/ha-check-list-item";
-import "../../../components/ha-list-item";
+import "../../../components/ha-dropdown";
+import "../../../components/ha-dropdown-item";
+import type { HaDropdownItem } from "../../../components/ha-dropdown-item";
 import "../../../components/ha-metric";
 import { extractApiErrorMessage } from "../../../data/hassio/common";
 import type {
@@ -73,24 +72,24 @@ class HaConfigSectionUpdates extends LitElement {
             .path=${mdiRefresh}
             @click=${this._checkUpdates}
           ></ha-icon-button>
-          <ha-button-menu multi>
+          <ha-dropdown @wa-select=${this._handleMenuAction}>
             <ha-icon-button
               slot="trigger"
               .label=${this.hass.localize("ui.common.menu")}
               .path=${mdiDotsVertical}
             ></ha-icon-button>
-            <ha-check-list-item
-              left
-              @request-selected=${this._toggleSkipped}
-              .selected=${this._showSkipped}
+            <ha-dropdown-item
+              type="checkbox"
+              .checked=${this._showSkipped}
+              value="toggle_skipped"
             >
               ${this.hass.localize("ui.panel.config.updates.show_skipped")}
-            </ha-check-list-item>
+            </ha-dropdown-item>
             ${this._supervisorInfo
               ? html`
-                  <li divider role="separator"></li>
-                  <ha-list-item
-                    @request-selected=${this._toggleBeta}
+                  <wa-divider></wa-divider>
+                  <ha-dropdown-item
+                    value="toggle_beta"
                     .disabled=${this._supervisorInfo.channel === "dev"}
                   >
                     ${this._supervisorInfo.channel === "stable"
@@ -98,10 +97,10 @@ class HaConfigSectionUpdates extends LitElement {
                       : this.hass.localize(
                           "ui.panel.config.updates.leave_beta"
                         )}
-                  </ha-list-item>
+                  </ha-dropdown-item>
                 `
               : ""}
-          </ha-button-menu>
+          </ha-dropdown>
         </div>
         <div class="content">
           <ha-card outlined>
@@ -133,27 +132,21 @@ class HaConfigSectionUpdates extends LitElement {
     this._supervisorInfo = await fetchHassioSupervisorInfo(this.hass);
   }
 
-  private _toggleSkipped(ev: CustomEvent<RequestSelectedDetail>): void {
-    if (ev.detail.source !== "property") {
-      return;
-    }
-
-    this._showSkipped = !this._showSkipped;
-  }
-
-  private async _toggleBeta(
-    ev: CustomEvent<RequestSelectedDetail>
-  ): Promise<void> {
-    if (!shouldHandleRequestSelectedEvent(ev)) {
-      return;
-    }
-
-    if (this._supervisorInfo!.channel === "stable") {
-      showJoinBetaDialog(this, {
-        join: async () => this._setChannel("beta"),
-      });
-    } else {
-      this._setChannel("stable");
+  private _handleMenuAction(ev: CustomEvent): void {
+    const item = ev.detail.item as HaDropdownItem;
+    switch (item.value) {
+      case "toggle_skipped":
+        this._showSkipped = !this._showSkipped;
+        break;
+      case "toggle_beta":
+        if (this._supervisorInfo!.channel === "stable") {
+          showJoinBetaDialog(this, {
+            join: async () => this._setChannel("beta"),
+          });
+        } else {
+          this._setChannel("stable");
+        }
+        break;
     }
   }
 
