@@ -132,7 +132,9 @@ export class HuiPowerSourcesGraphCard
         config,
         "kW",
         compareStart,
-        compareEnd
+        compareEnd,
+        undefined,
+        true
       ),
       legend: {
         show: this._config?.show_legend !== false,
