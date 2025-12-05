@@ -158,7 +158,7 @@ class HaProfileSectionGeneral extends LitElement {
               .narrow=${this.narrow}
               .hass=${this.hass}
             ></ha-pick-dashboard-row>
-            <ha-settings-row .narrow=${this.narrow} class="customize-sidebar">
+            <ha-settings-row .narrow=${this.narrow}>
               <span slot="heading">
                 ${this.hass.localize(
                   "ui.panel.profile.customize_sidebar.header"
@@ -294,10 +294,6 @@ class HaProfileSectionGeneral extends LitElement {
         .promo-advanced {
           text-align: center;
           color: var(--secondary-text-color);
-        }
-
-        .customize-sidebar {
-          --settings-row-content-display: contents;
         }
       `,
     ];
