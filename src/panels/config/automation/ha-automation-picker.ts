@@ -60,6 +60,7 @@ import "../../../components/ha-filter-floor-areas";
 import "@home-assistant/webawesome/dist/components/divider/divider";
 import "../../../components/ha-dropdown";
 import "../../../components/ha-dropdown-item";
+import type { HaDropdownItem } from "../../../components/ha-dropdown-item";
 import "../../../components/ha-filter-labels";
 import "../../../components/ha-icon-button";
 import "../../../components/ha-md-divider";
@@ -415,23 +416,20 @@ class HaAutomationPicker extends SubscribeMixin(LitElement) {
   protected render(): TemplateResult {
     const categoryItems = html`${this._categories?.map(
         (category) =>
-          html`<ha-dropdown-item
-            .value=${category.category_id}
-            .clickAction=${this._handleBulkCategory}
-          >
+          html`<ha-dropdown-item .value=${category.category_id}>
             ${category.icon
               ? html`<ha-icon slot="icon" .icon=${category.icon}></ha-icon>`
               : html`<ha-svg-icon slot="icon" .path=${mdiTag}></ha-svg-icon>`}
             ${category.name}
           </ha-dropdown-item>`
       )}
-      <ha-dropdown-item .value=${null} .clickAction=${this._handleBulkCategory}>
+      <ha-dropdown-item value="__no_category__">
         ${this.hass.localize(
           "ui.panel.config.automation.picker.bulk_actions.no_category"
         )}
       </ha-dropdown-item>
       <wa-divider></wa-divider>
-      <ha-dropdown-item .clickAction=${this._bulkCreateCategory}>
+      <ha-dropdown-item value="__create_category__">
         ${this.hass.localize("ui.panel.config.category.editor.add")}
       </ha-dropdown-item>`;
 
@@ -469,16 +467,16 @@ class HaAutomationPicker extends SubscribeMixin(LitElement) {
         </ha-dropdown-item>`;
       })}
       <wa-divider></wa-divider>
-      <ha-dropdown-item .clickAction=${this._bulkCreateLabel}>
+      <ha-dropdown-item
+        value="__create_label__"
+        @click=${this._bulkCreateLabel}
+      >
         ${this.hass.localize("ui.panel.config.labels.add_label")}
       </ha-dropdown-item>`;
 
     const areaItems = html`${Object.values(this.hass.areas).map(
         (area) =>
-          html`<ha-dropdown-item
-            .value=${area.area_id}
-            .clickAction=${this._handleBulkArea}
-          >
+          html`<ha-dropdown-item .value=${area.area_id}>
             ${area.icon
               ? html`<ha-icon slot="icon" .icon=${area.icon}></ha-icon>`
               : html`<ha-svg-icon
@@ -488,13 +486,13 @@ class HaAutomationPicker extends SubscribeMixin(LitElement) {
             ${area.name}
           </ha-dropdown-item>`
       )}
-      <ha-dropdown-item .value=${null} .clickAction=${this._handleBulkArea}>
+      <ha-dropdown-item value="__no_area__">
         ${this.hass.localize(
           "ui.panel.config.devices.picker.bulk_actions.no_area"
         )}
       </ha-dropdown-item>
       <wa-divider></wa-divider>
-      <ha-dropdown-item .clickAction=${this._bulkCreateArea}>
+      <ha-dropdown-item value="__create_area__">
         ${this.hass.localize(
           "ui.panel.config.devices.picker.bulk_actions.add_area"
         )}
@@ -635,7 +633,10 @@ class HaAutomationPicker extends SubscribeMixin(LitElement) {
           @expanded-changed=${this._filterExpanded}
         ></ha-filter-blueprints>
         ${!this.narrow
-          ? html`<ha-dropdown slot="selection-bar">
+          ? html`<ha-dropdown
+                slot="selection-bar"
+                @wa-select=${this._handleBulkCategorySelect}
+              >
                 <ha-assist-chip
                   slot="trigger"
                   .label=${this.hass.localize(
@@ -667,7 +668,10 @@ class HaAutomationPicker extends SubscribeMixin(LitElement) {
                   </ha-dropdown>`}
               ${areasInOverflow
                 ? nothing
-                : html`<ha-dropdown slot="selection-bar">
+                : html`<ha-dropdown
+                    slot="selection-bar"
+                    @wa-select=${this._handleBulkAreaSelect}
+                  >
                     <ha-assist-chip
                       slot="trigger"
                       .label=${this.hass.localize(
@@ -682,7 +686,11 @@ class HaAutomationPicker extends SubscribeMixin(LitElement) {
                     ${areaItems}
                   </ha-dropdown>`}`
           : nothing}
-        <ha-dropdown has-overflow slot="selection-bar">
+        <ha-dropdown
+          has-overflow
+          slot="selection-bar"
+          @wa-select=${this._handleOverflowMenuSelect}
+        >
           ${this.narrow
             ? html`<ha-assist-chip
                 .label=${this.hass.localize(
@@ -744,13 +752,13 @@ class HaAutomationPicker extends SubscribeMixin(LitElement) {
                 <ha-md-menu slot="menu">${areaItems}</ha-md-menu>
               </ha-sub-menu>`
             : nothing}
-          <ha-dropdown-item .clickAction=${this._handleBulkEnable}>
+          <ha-dropdown-item value="enable">
             <ha-svg-icon slot="icon" .path=${mdiToggleSwitch}></ha-svg-icon>
             ${this.hass.localize(
               "ui.panel.config.automation.picker.bulk_actions.enable"
             )}
           </ha-dropdown-item>
-          <ha-dropdown-item .clickAction=${this._handleBulkDisable}>
+          <ha-dropdown-item value="disable">
             <ha-svg-icon
               slot="icon"
               .path=${mdiToggleSwitchOffOutline}
@@ -1216,9 +1224,16 @@ class HaAutomationPicker extends SubscribeMixin(LitElement) {
     }
   }
 
-  private _handleBulkCategory = async (item) => {
-    const category = item.value;
-    this._bulkAddCategory(category);
+  private _handleBulkCategorySelect = (ev: CustomEvent) => {
+    const item = ev.detail.item as HaDropdownItem;
+    const value = item.value as string;
+    if (value === "__create_category__") {
+      this._bulkCreateCategory();
+    } else if (value === "__no_category__") {
+      this._bulkAddCategory("");
+    } else {
+      this._bulkAddCategory(value);
+    }
   };
 
   private async _bulkAddCategory(category: string) {
@@ -1282,9 +1297,16 @@ ${rejected
     }
   }
 
-  private _handleBulkArea = (item) => {
-    const area = item.value;
-    this._bulkAddArea(area);
+  private _handleBulkAreaSelect = (ev: CustomEvent) => {
+    const item = ev.detail.item as HaDropdownItem;
+    const value = item.value as string;
+    if (value === "__create_area__") {
+      this._bulkCreateArea();
+    } else if (value === "__no_area__") {
+      this._bulkAddArea("");
+    } else {
+      this._bulkAddArea(value);
+    }
   };
 
   private async _bulkAddArea(area: string) {
@@ -1320,6 +1342,18 @@ ${rejected
         return area;
       },
     });
+  };
+
+  private _handleOverflowMenuSelect = (ev: CustomEvent) => {
+    const item = ev.detail.item as HaDropdownItem;
+    switch (item.value) {
+      case "enable":
+        this._handleBulkEnable();
+        break;
+      case "disable":
+        this._handleBulkDisable();
+        break;
+    }
   };
 
   private _handleBulkEnable = async () => {
