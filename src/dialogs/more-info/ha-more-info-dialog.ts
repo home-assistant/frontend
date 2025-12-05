@@ -302,7 +302,9 @@ export class MoreInfoDialog extends LitElement {
   }
 
   private _goToAddEntityTo(ev) {
-    if (!shouldHandleRequestSelectedEvent(ev)) return;
+    // Only check for request-selected events (from menu items), not regular clicks (from icon button)
+    if (ev.type === "request-selected" && !shouldHandleRequestSelectedEvent(ev))
+      return;
     this._setView("add_to");
   }
 
@@ -550,7 +552,18 @@ export class MoreInfoDialog extends LitElement {
                           : nothing}
                       </ha-button-menu>
                     `
-                  : nothing}
+                  : !__DEMO__ && this._shouldShowAddEntityTo()
+                    ? html`
+                        <ha-icon-button
+                          slot="actionItems"
+                          .label=${this.hass.localize(
+                            "ui.dialogs.more_info_control.add_entity_to"
+                          )}
+                          .path=${mdiPlusBoxMultipleOutline}
+                          @click=${this._goToAddEntityTo}
+                        ></ha-icon-button>
+                      `
+                    : nothing}
               `
             : isSpecificInitialView
               ? html`
