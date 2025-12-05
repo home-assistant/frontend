@@ -108,7 +108,7 @@ export class MoreInfoDialog extends ScrollableFadeMixin(LitElement) {
 
   @state() private _parentEntityIds: string[] = [];
 
-  @query(".content") private _contentElement!: HTMLDivElement;
+  @query(".content") private _contentElement?: HTMLDivElement;
 
   @state() private _entityId?: string | null;
 
