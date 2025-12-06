@@ -146,23 +146,28 @@ export class HuiPowerSourcesGraphCard
     const datasets: LineSeriesOption[] = [];
     this._legendData = [];
 
+    interface StatsArgs {
+      id: string;
+      negate?: boolean;
+    }
+
     const statIds = {
       solar: {
-        stats: [] as string[],
+        stats: [] as StatsArgs[],
         color: "--energy-solar-color",
         name: this.hass.localize(
           "ui.panel.lovelace.cards.energy.power_graph.solar"
         ),
       },
       grid: {
-        stats: [] as string[],
+        stats: [] as StatsArgs[],
         color: "--energy-grid-consumption-color",
         name: this.hass.localize(
           "ui.panel.lovelace.cards.energy.power_graph.grid"
         ),
       },
       battery: {
-        stats: [] as string[],
+        stats: [] as StatsArgs[],
         color: "--energy-battery-out-color",
         name: this.hass.localize(
           "ui.panel.lovelace.cards.energy.power_graph.battery"
@@ -175,20 +180,25 @@ export class HuiPowerSourcesGraphCard
     for (const source of energyData.prefs.energy_sources) {
       if (source.type === "solar") {
         if (source.stat_rate) {
-          statIds.solar.stats.push(source.stat_rate);
+          statIds.solar.stats.push({ id: source.stat_rate });
         }
         continue;
       }
 
       if (source.type === "battery") {
         if (source.stat_rate) {
-          statIds.battery.stats.push(source.stat_rate);
+          statIds.battery.stats.push({ id: source.stat_rate });
         }
         continue;
       }
 
       if (source.type === "grid" && source.power) {
-        statIds.grid.stats.push(...source.power.map((p) => p.stat_rate));
+        statIds.grid.stats.push(
+          ...source.power.map((power) => ({
+            id: power.stat_rate,
+            negate: !!power.stat_negate,
+          }))
+        );
       }
     }
     const commonSeriesOptions: LineSeriesOption = {
@@ -208,9 +218,12 @@ export class HuiPowerSourcesGraphCard
         // Echarts is supposed to handle that but it is bugged when you use it together with stacking.
         // The interpolation breaks the stacking, so this positive/negative is a workaround
         const { positive, negative } = this._processData(
-          statIds[key].stats.map((id: string) => {
-            const stats = energyData.stats[id] ?? [];
-            const currentState = getPowerFromState(this.hass.states[id]);
+          statIds[key].stats.map((stat: StatsArgs) => {
+            const stats = energyData.stats[stat.id] ?? [];
+            const currentState = getPowerFromState(
+              this.hass.states[stat.id],
+              !!stat.negate
+            );
             if (currentState !== undefined) {
               stats.push({ start: now, end: now, mean: currentState });
             }

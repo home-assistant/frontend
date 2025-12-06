@@ -507,7 +507,10 @@ class HuiPowerSankeyCard
       .forEach((source) => {
         if (source.type === "grid" && source.power) {
           source.power.forEach((powerSource) => {
-            const value = this._getCurrentPower(powerSource.stat_rate);
+            const value = this._getCurrentPower(
+              powerSource.stat_rate,
+              !!powerSource.stat_negate
+            );
             if (value > 0) {
               from_grid += value;
             } else if (value < 0) {
@@ -522,7 +525,10 @@ class HuiPowerSankeyCard
       .filter((source) => source.type === "battery")
       .forEach((source) => {
         if (source.type === "battery" && source.stat_rate) {
-          const value = this._getCurrentPower(source.stat_rate);
+          const value = this._getCurrentPower(
+            source.stat_rate,
+            !!source.stat_negate
+          );
           if (value > 0) {
             from_battery += value;
           } else if (value < 0) {
@@ -723,11 +729,11 @@ class HuiPowerSankeyCard
    * @param entityId - The entity ID to get power value from
    * @returns Power value in kW, or 0 if entity not found or invalid
    */
-  private _getCurrentPower(entityId: string): number {
+  private _getCurrentPower(entityId: string, negateValue = false): number {
     // Track this entity for state change detection
     this._entities.add(entityId);
 
-    return getPowerFromState(this.hass.states[entityId]) ?? 0;
+    return getPowerFromState(this.hass.states[entityId], negateValue) ?? 0;
   }
 
   /**

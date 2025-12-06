@@ -1373,16 +1373,21 @@ export const calculateSolarConsumedGauge = (
 /**
  * Get current power value from entity state, normalized to kW
  * @param stateObj - The entity state object to get power value from
+ * @param negateValue - Whether a bi-directional power value should be negated
  * @returns Power value in kW, or 0 if entity not found or invalid
  */
-export const getPowerFromState = (stateObj: HassEntity): number | undefined => {
+export const getPowerFromState = (
+  stateObj: HassEntity,
+  negateValue = false
+): number | undefined => {
   if (!stateObj) {
     return undefined;
   }
-  const value = parseFloat(stateObj.state);
+  let value = parseFloat(stateObj.state);
   if (isNaN(value)) {
     return undefined;
   }
+  if (negateValue) value = -value;
 
   // Normalize to kW based on unit of measurement (case-sensitive)
   // Supported units: GW, kW, MW, mW, TW, W
