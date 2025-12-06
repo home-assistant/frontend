@@ -16,6 +16,7 @@ export interface CoverOpenCloseCardFeatureConfig {
 
 export interface CoverPositionCardFeatureConfig {
   type: "cover-position";
+  invert?: boolean;
 }
 
 export interface CoverTiltCardFeatureConfig {

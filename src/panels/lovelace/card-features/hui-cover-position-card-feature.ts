@@ -103,7 +103,7 @@ class HuiCoverPositionCardFeature
         min="0"
         max="100"
         step="1"
-        inverted
+        ?inverted=${this._config?.invert !== false}
         show-handle
         @value-changed=${this._valueChanged}
         .label=${computeAttributeNameDisplay(
