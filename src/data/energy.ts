@@ -55,6 +55,12 @@ export const emptyFlowToGridSourceEnergyPreference =
     number_energy_price: null,
   });
 
+export const emptyGridPowerSourceEnergyPreference =
+  (): GridPowerSourceEnergyPreference => ({
+    stat_rate: "",
+    stat_negate: false,
+  });
+
 export const emptyGridSourceEnergyPreference =
   (): GridSourceTypeEnergyPreference => ({
     type: "grid",
@@ -134,6 +140,7 @@ export interface FlowToGridSourceEnergyPreference {
 export interface GridPowerSourceEnergyPreference {
   // W meter
   stat_rate: string;
+  stat_negate?: boolean;
 }
 
 export interface GridSourceTypeEnergyPreference {
@@ -159,6 +166,7 @@ export interface BatterySourceTypeEnergyPreference {
   stat_energy_from: string;
   stat_energy_to: string;
   stat_rate?: string;
+  stat_negate?: boolean;
 }
 export interface GasSourceTypeEnergyPreference {
   type: "gas";

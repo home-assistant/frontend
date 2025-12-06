@@ -37,7 +37,9 @@ export class DialogEnergyGridPowerSettings
     params: EnergySettingsGridPowerDialogParams
   ): Promise<void> {
     this._params = params;
-    this._source = params.source ? { ...params.source } : { stat_rate: "" };
+    this._source = params.source
+      ? { ...params.source }
+      : emptyGridPowerSourceEnergyPreference();
 
     const initialSourceIdPower = this._source.stat_rate;
 
