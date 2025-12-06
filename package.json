@@ -209,7 +209,7 @@
     "lodash.template": "4.5.0",
     "map-stream": "0.0.7",
     "pinst": "3.0.0",
-    "prettier": "3.7.3",
+    "prettier": "3.7.4",
     "rspack-manifest-plugin": "5.2.0",
     "serve": "14.2.5",
     "sinon": "21.0.0",
