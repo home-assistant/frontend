@@ -3159,7 +3159,7 @@
             "stat_predicted_production": "Prediction of your solar energy production",
             "dialog": {
               "header": "Configure solar panels",
-              "entity_para": "Pick a sensor which measures solar energy production in either of {unit}.",
+              "entity_para": "Pick a sensor which measures solar production in either of {unit}.",
               "solar_production_energy": "Solar production energy",
               "solar_production_power": "Solar production power",
               "solar_production_forecast": "Solar production forecast",
