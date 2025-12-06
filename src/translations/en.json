@@ -3112,7 +3112,8 @@
             "power_dialog": {
               "header": "Configure grid power",
               "power_stat": "Power sensor",
-              "power_helper": "Pick a sensor which measures grid power in either of {unit}. Positive values indicate importing electricity from the grid, negative values indicate exporting electricity to the grid."
+              "power_negate": "Invert bi-directional power sensor polarity",
+              "power_helper": "Pick a sensor which measures grid power in either of {unit}. Positive values indicate importing electricity from the grid, negative values indicate exporting electricity to the grid. Polarity can optionally be inverted."
             },
             "flow_dialog": {
               "cost_entity_helper": "Any sensor with a unit of `{currency}/(valid energy unit)` (e.g. `{currency}/Wh` or `{currency}/kWh`) may be used and will be automatically converted.",
@@ -3184,7 +3185,8 @@
               "energy_into_battery": "Energy charged into the battery",
               "energy_out_of_battery": "Energy discharged from the battery",
               "power": "Battery power",
-              "power_helper": "Pick a sensor which measures the electricity flowing into and out of the battery in either of {unit}. Positive values indicate discharging the battery, negative values indicate charging the battery."
+              "power_negate": "Invert bi-directional power sensor polarity",
+              "power_helper": "Pick a sensor which measures the electricity flowing into and out of the battery in either of {unit}. Positive values indicate discharging the battery, negative values indicate charging the battery. Polarity can optionally be inverted."
             }
           },
           "gas": {

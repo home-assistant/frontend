@@ -4,10 +4,16 @@ import { css, html, LitElement, nothing } from "lit";
 import { customElement, property, state } from "lit/decorators";
 import { fireEvent } from "../../../../common/dom/fire_event";
 import "../../../../components/entity/ha-statistic-picker";
-import "../../../../components/ha-dialog";
 import "../../../../components/ha-button";
+import "../../../../components/ha-checkbox";
+import type { HaCheckbox } from "../../../../components/ha-checkbox";
+import "../../../../components/ha-dialog";
+import "../../../../components/ha-formfield";
 import type { GridPowerSourceEnergyPreference } from "../../../../data/energy";
-import { energyStatisticHelpUrl } from "../../../../data/energy";
+import {
+  energyStatisticHelpUrl,
+  emptyGridPowerSourceEnergyPreference,
+} from "../../../../data/energy";
 import { getSensorDeviceClassConvertibleUnits } from "../../../../data/sensor";
 import type { HassDialog } from "../../../../dialogs/make-dialog-manager";
 import { haStyleDialog } from "../../../../resources/styles";
@@ -97,7 +103,19 @@ export class DialogEnergyGridPowerSettings
           )}
           dialogInitialFocus
         ></ha-statistic-picker>
-
+        <ha-formfield
+          .label=${html`<div style="display: flex; align-items: center;">
+            ${this.hass.localize(
+              "ui.panel.config.energy.grid.power_dialog.power_negate"
+            )}
+          </div>`}
+        >
+          <ha-checkbox
+            @change=${this._powerNegateChanged}
+            .checked=${!!this._source?.stat_negate}
+          >
+          </ha-checkbox>
+        </ha-formfield>
         <ha-button
           appearance="plain"
           @click=${this.closeDialog}
@@ -114,6 +132,14 @@ export class DialogEnergyGridPowerSettings
         </ha-button>
       </ha-dialog>
     `;
+  }
+
+  private _powerNegateChanged(ev) {
+    const input = ev.currentTarget as HaCheckbox;
+    this._source = {
+      ...this._source!,
+      stat_negate: input.checked,
+    };
   }
 
   private _powerStatisticChanged(ev: CustomEvent<{ value: string }>) {
