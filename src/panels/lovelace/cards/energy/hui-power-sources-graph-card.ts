@@ -187,7 +187,10 @@ export class HuiPowerSourcesGraphCard
 
       if (source.type === "battery") {
         if (source.stat_rate) {
-          statIds.battery.stats.push({ id: source.stat_rate });
+          statIds.battery.stats.push({
+            id: source.stat_rate,
+            negate: !!source.stat_rate_negate,
+          });
         }
         continue;
       }
