@@ -160,7 +160,7 @@ export class DialogEnergyBatterySettings
         >
           <ha-checkbox
             @change=${this._powerNegateChanged}
-            .checked=${!!this._source?.stat_negate}
+            .checked=${!!this._source?.stat_rate_negate}
           >
           </ha-checkbox>
         </ha-formfield>
@@ -196,7 +196,7 @@ export class DialogEnergyBatterySettings
     const input = ev.currentTarget as HaCheckbox;
     this._source = {
       ...this._source!,
-      stat_negate: input.checked,
+      stat_rate_negate: input.checked,
     };
   }
 

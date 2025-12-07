@@ -509,7 +509,7 @@ class HuiPowerSankeyCard
           source.power.forEach((powerSource) => {
             const value = this._getCurrentPower(
               powerSource.stat_rate,
-              !!powerSource.stat_negate
+              !!powerSource.stat_rate_negate
             );
             if (value > 0) {
               from_grid += value;
@@ -527,7 +527,7 @@ class HuiPowerSankeyCard
         if (source.type === "battery" && source.stat_rate) {
           const value = this._getCurrentPower(
             source.stat_rate,
-            !!source.stat_negate
+            !!source.stat_rate_negate
           );
           if (value > 0) {
             from_battery += value;

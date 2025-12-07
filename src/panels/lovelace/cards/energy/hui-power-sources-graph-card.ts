@@ -196,7 +196,7 @@ export class HuiPowerSourcesGraphCard
         statIds.grid.stats.push(
           ...source.power.map((power) => ({
             id: power.stat_rate,
-            negate: !!power.stat_negate,
+            negate: !!power.stat_rate_negate,
           }))
         );
       }
