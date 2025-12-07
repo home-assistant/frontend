@@ -180,7 +180,10 @@ export class HuiPowerSourcesGraphCard
     for (const source of energyData.prefs.energy_sources) {
       if (source.type === "solar") {
         if (source.stat_rate) {
-          statIds.solar.stats.push({ id: source.stat_rate });
+          statIds.solar.stats.push({
+            id: source.stat_rate,
+            negate: !!source.stat_rate_negate,
+          });
         }
         continue;
       }

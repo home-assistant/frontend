@@ -135,6 +135,19 @@ export class DialogEnergySolarSettings
             { unit: this._power_units?.join(", ") || "" }
           )}
         ></ha-statistic-picker>
+        <ha-formfield
+          .label=${html`<div style="display: flex; align-items: center;">
+            ${this.hass.localize(
+              "ui.panel.config.energy.solar.dialog.solar_production_power_negate"
+            )}
+          </div>`}
+        >
+          <ha-checkbox
+            @change=${this._powerNegateChanged}
+            .checked=${!!this._source?.stat_rate_negate}
+          >
+          </ha-checkbox>
+        </ha-formfield>
 
         <h3>
           ${this.hass.localize(
@@ -291,6 +304,14 @@ export class DialogEnergySolarSettings
 
   private _powerStatisticChanged(ev: CustomEvent<{ value: string }>) {
     this._source = { ...this._source!, stat_rate: ev.detail.value };
+  }
+
+  private _powerNegateChanged(ev) {
+    const input = ev.currentTarget as HaCheckbox;
+    this._source = {
+      ...this._source!,
+      stat_rate_negate: input.checked,
+    };
   }
 
   private async _save() {

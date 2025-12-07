@@ -494,7 +494,10 @@ class HuiPowerSankeyCard
       .filter((source) => source.type === "solar")
       .forEach((source) => {
         if (source.type === "solar" && source.stat_rate) {
-          const value = this._getCurrentPower(source.stat_rate);
+          const value = this._getCurrentPower(
+            source.stat_rate,
+            !!source.stat_rate_negate
+          );
           if (value > 0) {
             solar += value;
           }

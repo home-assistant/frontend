@@ -158,6 +158,7 @@ export interface SolarSourceTypeEnergyPreference {
 
   stat_energy_from: string;
   stat_rate?: string;
+  stat_rate_negate?: boolean;
   config_entry_solar_forecast: string[] | null;
 }
 
