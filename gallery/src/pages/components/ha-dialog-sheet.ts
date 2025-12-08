@@ -448,15 +448,6 @@ export class DemoHaDialogSheet extends LitElement {
               <td><code>above</code>, <code>below</code></td>
             </tr>
             <tr>
-              <td><code>flexcontent</code></td>
-              <td>
-                Makes the dialog sheet body a flex container for flexible
-                layouts.
-              </td>
-              <td><code>false</code></td>
-              <td><code>false</code>, <code>true</code></td>
-            </tr>
-            <tr>
               <td><code>aria-labelledby</code></td>
               <td>
                 The ID of the element that labels the dialog (for
