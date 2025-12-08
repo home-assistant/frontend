@@ -207,6 +207,12 @@ export class DialogLabsPreviewFeatureEnable
       color: var(--secondary-text-color);
     }
 
+    div[slot="actions"] {
+      display: flex;
+      flex-direction: column;
+      padding: 0;
+    }
+
     ha-md-list {
       background: none;
       --md-list-item-leading-space: var(--ha-space-6);
@@ -214,6 +220,13 @@ export class DialogLabsPreviewFeatureEnable
       margin: 0;
       padding: 0;
       border-top: var(--ha-border-width-sm) solid var(--divider-color);
+    }
+
+    div[slot="actions"] > div {
+      display: flex;
+      justify-content: flex-end;
+      gap: var(--ha-space-2);
+      padding: var(--ha-space-4) var(--ha-space-6);
     }
   `;
 }
