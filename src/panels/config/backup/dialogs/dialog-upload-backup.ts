@@ -69,7 +69,7 @@ export class DialogUploadBackup
   }
 
   protected render() {
-    if (!this._params || !this._formData) {
+    if (!this._formData) {
       return nothing;
     }
 
@@ -175,14 +175,9 @@ export class DialogUploadBackup
       haStyle,
       haStyleDialog,
       css`
-        ha-wa-dialog {
-          max-width: 500px;
-          width: 100%;
-          max-height: 100%;
-        }
         ha-alert {
           display: block;
-          margin-bottom: 16px;
+          margin-bottom: var(--ha-space-4);
         }
       `,
     ];
