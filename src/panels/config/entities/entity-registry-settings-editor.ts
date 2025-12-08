@@ -1556,10 +1556,10 @@ export class EntityRegistrySettingsEditor extends LitElement {
         }
         .menu-item {
           border-radius: var(--ha-border-radius-sm);
-          margin-top: var(--ha-space-1);
-          margin-bottom: var(--ha-space-1);
+          margin-top: 3px;
+          margin-bottom: 3px;
           overflow: hidden;
-          --mdc-list-side-padding: var(--ha-space-3);
+          --mdc-list-side-padding: 13px;
         }
       `,
     ];
