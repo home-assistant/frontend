@@ -134,7 +134,6 @@ export const ScrollableFadeMixin = <T extends Constructor<LitElement>>(
               transparent
             );
             border-radius: var(--ha-border-radius-square);
-            z-index: 100;
             opacity: 0;
           }
           .fade-top {
