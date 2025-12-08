@@ -30,7 +30,6 @@ import "../../../../components/ha-md-list-item";
 import "../../../../components/ha-svg-icon";
 import "../../../../components/ha-tooltip";
 import { saveFrontendSystemData } from "../../../../data/frontend";
-import type { LovelacePanelConfig } from "../../../../data/lovelace";
 import type { LovelaceRawConfig } from "../../../../data/lovelace/config/types";
 import {
   isStrategyDashboard,
@@ -313,23 +312,7 @@ export class HaConfigLovelaceDashboards extends LitElement {
 
   private _getItems = memoize(
     (dashboards: LovelaceDashboard[], defaultUrlPath: string | null) => {
-      const mode = (this.hass.panels?.lovelace?.config as LovelacePanelConfig)
-        .mode;
-      const isDefault = defaultUrlPath === "lovelace";
-      const result: DataTableItem[] = [
-        {
-          icon: "mdi:view-dashboard",
-          title: this.hass.localize("panel.states"),
-          default: isDefault,
-          show_in_sidebar: true,
-          require_admin: false,
-          url_path: "lovelace",
-          mode: mode,
-          filename: mode === "yaml" ? "ui-lovelace.yaml" : "",
-          type: "built_in",
-          localized_type: this._localizeType("built_in"),
-        },
-      ];
+      const result: DataTableItem[] = [];
 
       PANEL_DASHBOARDS.forEach((panel) => {
         const panelInfo = this.hass.panels[panel];

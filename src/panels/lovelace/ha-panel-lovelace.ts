@@ -3,6 +3,7 @@ import type { UnsubscribeFunc } from "home-assistant-js-websocket";
 import type { PropertyValues, TemplateResult } from "lit";
 import { html, LitElement } from "lit";
 import { customElement, property, state } from "lit/decorators";
+import { navigate } from "../../common/navigate";
 import { constructUrlCurrentPath } from "../../common/url/construct-url";
 import {
   addSearchParam,
@@ -10,6 +11,7 @@ import {
 } from "../../common/url/search-params";
 import { debounce } from "../../common/util/debounce";
 import { deepEqual } from "../../common/util/deep-equal";
+import "../../components/ha-button";
 import { domainToName } from "../../data/integration";
 import { subscribeLovelaceUpdates } from "../../data/lovelace";
 import type {
@@ -34,7 +36,6 @@ import { checkLovelaceConfig } from "./common/check-lovelace-config";
 import { loadLovelaceResources } from "./common/load-resources";
 import { showSaveDialog } from "./editor/show-save-config-dialog";
 import "./hui-root";
-import "../../components/ha-button";
 import { generateLovelaceDashboardStrategy } from "./strategies/get-strategy";
 import type { Lovelace } from "./types";
 
@@ -97,11 +98,6 @@ export class LovelacePanel extends LitElement {
         this.lovelace.rawConfig,
         this.lovelace.mode
       );
-    } else if (this.lovelace && this.lovelace.mode === "generated") {
-      // When lovelace is generated, we re-generate each time a user goes
-      // to the states panel to make sure new entities are shown.
-      this._panelState = "loading";
-      this._regenerateConfig();
     } else if (this._fetchConfigOnConnect) {
       // Config was changed when we were not at the lovelace panel
       this._fetchConfig(false);
@@ -296,15 +292,6 @@ export class LovelacePanel extends LitElement {
     }
   };
 
-  private async _regenerateConfig() {
-    const conf = await generateLovelaceDashboardStrategy(
-      DEFAULT_CONFIG,
-      this.hass!
-    );
-    this._setLovelaceConfig(conf, DEFAULT_CONFIG, "generated");
-    this._panelState = "loaded";
-  }
-
   private async _subscribeUpdates() {
     this._unsubUpdates = subscribeLovelaceUpdates(
       this.hass!.connection,
@@ -352,7 +339,7 @@ export class LovelacePanel extends LitElement {
 
     let conf: LovelaceConfig;
     let rawConf: LovelaceRawConfig | undefined;
-    let confMode: Lovelace["mode"] = this.panel!.config.mode;
+    const confMode: Lovelace["mode"] = this.panel!.config.mode;
     let confProm: Promise<LovelaceRawConfig> | undefined;
     const preloadWindow = window as WindowWithPreloads;
 
@@ -404,16 +391,8 @@ export class LovelacePanel extends LitElement {
         this._errorMsg = err.message;
         return;
       }
-      if (!this.hass?.entities || !this.hass.devices || !this.hass.areas) {
-        // We need these to generate a dashboard, wait for them
-        return;
-      }
-      conf = await generateLovelaceDashboardStrategy(
-        DEFAULT_CONFIG,
-        this.hass!
-      );
-      rawConf = DEFAULT_CONFIG;
-      confMode = "generated";
+      navigate("/home");
+      return;
     } finally {
       this._loading = false;
       // Ignore updates for another 2 seconds.
