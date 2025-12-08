@@ -1,7 +1,8 @@
 import { mdiClose } from "@mdi/js";
 import { css, html, LitElement } from "lit";
-import { customElement, eventOptions, property, state } from "lit/decorators";
+import { customElement, property, state } from "lit/decorators";
 import type { HomeAssistant } from "../types";
+import { listenMediaQuery } from "../common/dom/media_query";
 import "./ha-bottom-sheet";
 import "./ha-dialog-header";
 import "./ha-icon-button";
@@ -82,31 +83,22 @@ export class HaAdaptiveDialog extends LitElement {
 
   @state() private _mode: DialogSheetMode = "dialog";
 
-  @state()
-  private _bodyScrolled = false;
+  private _unsubMediaQuery?: () => void;
 
   connectedCallback() {
     super.connectedCallback();
-    this._handleResize();
-    window.addEventListener("resize", this._handleResize);
+    this._unsubMediaQuery = listenMediaQuery(
+      "(max-width: 870px), (max-height: 500px)",
+      (matches) => {
+        this._mode = matches ? "bottom-sheet" : "dialog";
+      }
+    );
   }
 
   disconnectedCallback() {
     super.disconnectedCallback();
-    window.removeEventListener("resize", this._handleResize);
-  }
-
-  private _handleResize = () => {
-    this._mode =
-      window.matchMedia("(max-width: 870px)").matches ||
-      window.matchMedia("(max-height: 500px)").matches
-        ? "bottom-sheet"
-        : "dialog";
-  };
-
-  @eventOptions({ passive: true })
-  private _handleBodyScroll(ev: Event) {
-    this._bodyScrolled = (ev.target as HTMLDivElement).scrollTop > 0;
+    this._unsubMediaQuery?.();
+    this._unsubMediaQuery = undefined;
   }
 
   render() {
@@ -116,7 +108,6 @@ export class HaAdaptiveDialog extends LitElement {
           <ha-dialog-header
             slot="header"
             .subtitlePosition=${this.headerSubtitlePosition}
-            .showBorder=${this._bodyScrolled}
           >
             <slot name="headerNavigationIcon" slot="navigationIcon">
               <ha-icon-button
@@ -135,9 +126,7 @@ export class HaAdaptiveDialog extends LitElement {
               : html`<slot name="headerSubtitle" slot="subtitle"></slot>`}
             <slot name="headerActionItems" slot="actionItems"></slot>
           </ha-dialog-header>
-          <div class="body ha-scrollbar" @scroll=${this._handleBodyScroll}>
-            <slot></slot>
-          </div>
+          <slot></slot>
         </ha-bottom-sheet>
       `;
     }
