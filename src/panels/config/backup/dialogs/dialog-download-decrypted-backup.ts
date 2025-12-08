@@ -50,7 +50,7 @@ class DialogDownloadDecryptedBackup extends LitElement implements HassDialog {
   }
 
   protected render() {
-    if (!this._open || !this._params) {
+    if (!this._params) {
       return nothing;
     }
 
@@ -180,13 +180,7 @@ class DialogDownloadDecryptedBackup extends LitElement implements HassDialog {
       haStyleDialog,
       css`
         ha-wa-dialog {
-          --dialog-content-padding: 8px 24px;
-          max-width: 500px;
-        }
-        @media all and (max-width: 450px), all and (max-height: 500px) {
-          ha-wa-dialog {
-            max-width: none;
-          }
+          --dialog-content-padding: var(--ha-space-2) var(--ha-space-6);
         }
 
         button.link {
