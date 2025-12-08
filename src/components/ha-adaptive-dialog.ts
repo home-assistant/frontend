@@ -26,6 +26,7 @@ type DialogSheetMode = "dialog" | "bottom-sheet";
  * @slot headerSubtitle - Custom subtitle content (used when header-subtitle is not set).
  * @slot headerActionItems - Trailing header actions (e.g. buttons, menus).
  * @slot - Dialog/sheet content body.
+ * @slot footer - Dialog/sheet footer content.
  *
  * @cssprop --ha-dialog-surface-background - Dialog/sheet background color.
  * @cssprop --ha-dialog-border-radius - Border radius of the dialog surface (dialog mode only).
@@ -152,7 +153,12 @@ export class HaAdaptiveDialog extends LitElement {
         .headerSubtitlePosition=${this.headerSubtitlePosition}
         flexcontent
       >
+        <slot name="headerNavigationIcon" slot="headerNavigationIcon"></slot>
+        <slot name="headerTitle" slot="headerTitle"></slot>
+        <slot name="headerSubtitle" slot="headerSubtitle"></slot>
+        <slot name="headerActionItems" slot="headerActionItems"></slot>
         <slot></slot>
+        <slot name="footer" slot="footer"></slot>
       </ha-wa-dialog>
     `;
   }
