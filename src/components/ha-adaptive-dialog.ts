@@ -1,12 +1,6 @@
 import { mdiClose } from "@mdi/js";
 import { css, html, LitElement } from "lit";
-import {
-  customElement,
-  eventOptions,
-  property,
-  query,
-  state,
-} from "lit/decorators";
+import { customElement, eventOptions, property, state } from "lit/decorators";
 import type { HomeAssistant } from "../types";
 import "./ha-bottom-sheet";
 import "./ha-dialog-header";
