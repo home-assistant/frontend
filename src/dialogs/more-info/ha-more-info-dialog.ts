@@ -766,7 +766,7 @@ export class MoreInfoDialog extends ScrollableFadeMixin(LitElement) {
         }
 
         .content-wrapper.settings-view .fade-bottom {
-          bottom: 72px;
+          bottom: var(--ha-space-18);
         }
 
         .child-view {
