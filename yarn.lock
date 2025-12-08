@@ -9356,7 +9356,7 @@ __metadata:
     stacktrace-js: "npm:2.0.2"
     superstruct: "npm:2.0.2"
     tar: "npm:7.5.2"
-    terser-webpack-plugin: "npm:5.3.14"
+    terser-webpack-plugin: "npm:5.3.15"
     tinykeys: "npm:3.0.0"
     ts-lit-plugin: "npm:2.0.2"
     typescript: "npm:5.9.3"
@@ -13895,9 +13895,9 @@ __metadata:
   languageName: node
   linkType: hard
 
-"terser-webpack-plugin@npm:5.3.14":
-  version: 5.3.14
-  resolution: "terser-webpack-plugin@npm:5.3.14"
+"terser-webpack-plugin@npm:5.3.15":
+  version: 5.3.15
+  resolution: "terser-webpack-plugin@npm:5.3.15"
   dependencies:
     "@jridgewell/trace-mapping": "npm:^0.3.25"
     jest-worker: "npm:^27.4.5"
@@ -13913,7 +13913,7 @@ __metadata:
       optional: true
     uglify-js:
       optional: true
-  checksum: 10/5b7290f7edb179b83cefb8827c12371ddddc088cf251cf58a1c738d82628331ae6604273b61fe991d77411d4bb6b7178c3826aa47edf01b4ee21f973d6c8b8fb
+  checksum: 10/54059f0fe56c16a1e30032b33b1321051d562b5292adcf88d160c7d8e74779867014e98548ae59ba5283fe60f8725bea37c16b42f2c89ee430382cff74198b7a
   languageName: node
   linkType: hard
 
