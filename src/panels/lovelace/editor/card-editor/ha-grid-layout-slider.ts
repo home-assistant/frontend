@@ -457,13 +457,16 @@ export class HaGridLayoutSlider extends LitElement {
       height: 4px;
       width: 100%;
     }
-    :host(:disabled) .slider {
+    :host([disabled]) .slider {
       cursor: not-allowed;
     }
-    :host(:disabled) .handle:after {
+    :host([disabled]) .track {
+      opacity: 0.5;
+    }
+    :host([disabled]) .handle::after {
       background: var(--disabled-color);
     }
-    :host(:disabled) .active {
+    :host([disabled]) .active {
       background: var(--disabled-color);
     }
 
