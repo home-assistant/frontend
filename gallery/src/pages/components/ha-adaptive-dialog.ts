@@ -22,6 +22,7 @@ type DialogType =
   | "basic-subtitle-below"
   | "basic-subtitle-above"
   | "form"
+  | "form-block-mode"
   | "actions"
   | "large"
   | "small";
@@ -67,6 +68,9 @@ export class DemoHaAdaptiveDialog extends LitElement {
           >
           <ha-button @click=${this._handleOpenDialog("form")}
             >Adaptive dialog with form</ha-button
+          >
+          <ha-button @click=${this._handleOpenDialog("form-block-mode")}
+            >Adaptive dialog with form (block mode change)</ha-button
           >
           <ha-button @click=${this._handleOpenDialog("actions")}
             >Adaptive dialog with actions</ha-button
@@ -131,7 +135,7 @@ export class DemoHaAdaptiveDialog extends LitElement {
           header-title="Large adaptive dialog"
           @closed=${this._handleClosed}
         >
-          <div>This dialog uses the large width preset (720px).</div>
+          <div>This dialog uses the large width preset (1024px).</div>
         </ha-adaptive-dialog>
 
         <ha-adaptive-dialog
@@ -139,6 +143,31 @@ export class DemoHaAdaptiveDialog extends LitElement {
           .open=${this._openDialog === "form"}
           header-title="Adaptive dialog with form"
           header-subtitle="This is an adaptive dialog with a form"
+          @closed=${this._handleClosed}
+        >
+          <ha-form autofocus .schema=${SCHEMA}></ha-form>
+          <ha-dialog-footer slot="footer">
+            <ha-button
+              @click=${this._handleClosed}
+              slot="secondaryAction"
+              variant="plain"
+              >Cancel</ha-button
+            >
+            <ha-button
+              @click=${this._handleClosed}
+              slot="primaryAction"
+              variant="accent"
+              >Submit</ha-button
+            >
+          </ha-dialog-footer>
+        </ha-adaptive-dialog>
+
+        <ha-adaptive-dialog
+          .hass=${this._hass}
+          .open=${this._openDialog === "form-block-mode"}
+          header-title="Adaptive dialog with form (block mode change)"
+          header-subtitle="This form will not reset when the viewport size changes"
+          block-mode-change
           @closed=${this._handleClosed}
         >
           <ha-form autofocus .schema=${SCHEMA}></ha-form>
@@ -197,7 +226,9 @@ export class DemoHaAdaptiveDialog extends LitElement {
 
         <p>
           The mode is determined automatically and updates when the window is
-          resized.
+          resized. To prevent mode changes after the initial mount (useful for
+          preventing form resets), use the <code>block-mode-change</code>
+          attribute.
         </p>
 
         <h3>Width</h3>
@@ -225,7 +256,7 @@ export class DemoHaAdaptiveDialog extends LitElement {
             </tr>
             <tr>
               <td><code>large</code></td>
-              <td><code>min(720px, var(--full-width))</code></td>
+              <td><code>min(1024px, var(--full-width))</code></td>
             </tr>
             <tr>
               <td><code>full</code></td>
@@ -367,6 +398,13 @@ export class DemoHaAdaptiveDialog extends LitElement {
           <code>ha-bottom-sheet</code> for mobile-only sheets.
         </p>
 
+        <p>
+          Use the <code>block-mode-change</code> attribute when you want to
+          prevent the dialog from switching modes after it's opened. This is
+          especially useful for forms, as it prevents form data from being lost
+          when users resize their browser window.
+        </p>
+
         <h3>Example usage</h3>
 
         <pre><code>&lt;ha-adaptive-dialog
@@ -386,6 +424,23 @@ export class DemoHaAdaptiveDialog extends LitElement {
       &gt;Cancel&lt;/ha-button
     &gt;
     &lt;ha-button slot="primaryAction" variant="accent"&gt;Submit&lt;/ha-button&gt;
+  &lt;/ha-dialog-footer&gt;
+&lt;/ha-adaptive-dialog&gt;</code></pre>
+
+        <p>Example with <code>block-mode-change</code> for forms:</p>
+
+        <pre><code>&lt;ha-adaptive-dialog
+  .hass=\${this.hass}
+  open
+  header-title="Edit configuration"
+  block-mode-change
+&gt;
+  &lt;ha-form .schema=\${schema} .data=\${data}&gt;&lt;/ha-form&gt;
+  &lt;ha-dialog-footer slot="footer"&gt;
+    &lt;ha-button slot="secondaryAction" variant="plain"
+      &gt;Cancel&lt;/ha-button
+    &gt;
+    &lt;ha-button slot="primaryAction" variant="accent"&gt;Save&lt;/ha-button&gt;
   &lt;/ha-dialog-footer&gt;
 &lt;/ha-adaptive-dialog&gt;</code></pre>
 
@@ -464,6 +519,17 @@ export class DemoHaAdaptiveDialog extends LitElement {
               </td>
               <td></td>
               <td></td>
+            </tr>
+            <tr>
+              <td><code>block-mode-change</code></td>
+              <td>
+                When set, the mode is determined at mount time based on the
+                current screen size, but subsequent mode changes are blocked.
+                Useful for preventing forms from resetting when the viewport
+                size changes.
+              </td>
+              <td><code>false</code></td>
+              <td><code>false</code>, <code>true</code></td>
             </tr>
           </tbody>
         </table>
