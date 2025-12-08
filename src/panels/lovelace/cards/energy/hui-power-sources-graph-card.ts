@@ -225,13 +225,21 @@ export class HuiPowerSourcesGraphCard
         // The interpolation breaks the stacking, so this positive/negative is a workaround
         const { positive, negative } = this._processData(
           statIds[key].stats.map((stat: StatsArgs) => {
-            const stats = energyData.stats[stat.id] ?? [];
-            const currentState = getPowerFromState(
-              this.hass.states[stat.id],
-              !!stat.negate
-            );
+            let stats = energyData.stats[stat.id] ?? [];
+            const currentState = getPowerFromState(this.hass.states[stat.id]);
             if (currentState !== undefined) {
               stats.push({ start: now, end: now, mean: currentState });
+            }
+            if (stat.negate) {
+              stats = stats.map((point) => {
+                if (point.mean)
+                  return {
+                    start: point.start,
+                    end: point.end,
+                    mean: -point.mean,
+                  };
+                return point;
+              });
             }
             return stats;
           })

@@ -736,7 +736,9 @@ class HuiPowerSankeyCard
     // Track this entity for state change detection
     this._entities.add(entityId);
 
-    return getPowerFromState(this.hass.states[entityId], negateValue) ?? 0;
+    let value = getPowerFromState(this.hass.states[entityId]) ?? 0;
+    if (negateValue) value = -value;
+    return value;
   }
 
   /**
