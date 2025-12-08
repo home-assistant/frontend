@@ -1525,17 +1525,17 @@ export class EntityRegistrySettingsEditor extends LitElement {
         }
         ha-textfield.entityId ha-icon-button {
           position: relative;
-          right: -8px;
+          right: calc(var(--ha-space-2) * -1);
           --mdc-icon-button-size: 36px;
           --mdc-icon-size: 20px;
           color: var(--secondary-text-color);
           inset-inline-start: initial;
-          inset-inline-end: -8px;
+          inset-inline-end: calc(var(--ha-space-2) * -1);
           direction: var(--direction);
         }
         ha-switch {
-          margin-right: 16px;
-          margin-inline-end: 16px;
+          margin-right: var(--ha-space-4);
+          margin-inline-end: var(--ha-space-4);
           margin-inline-start: initial;
         }
         ha-settings-row ha-switch {
@@ -1548,7 +1548,7 @@ export class EntityRegistrySettingsEditor extends LitElement {
         ha-select,
         ha-area-picker {
           display: block;
-          margin: 8px 0;
+          margin: var(--ha-space-2) 0;
           width: 100%;
         }
         li[divider] {
@@ -1556,10 +1556,10 @@ export class EntityRegistrySettingsEditor extends LitElement {
         }
         .menu-item {
           border-radius: var(--ha-border-radius-sm);
-          margin-top: 3px;
-          margin-bottom: 3px;
+          margin-top: var(--ha-space-1);
+          margin-bottom: var(--ha-space-1);
           overflow: hidden;
-          --mdc-list-side-padding: 13px;
+          --mdc-list-side-padding: var(--ha-space-3);
         }
       `,
     ];
