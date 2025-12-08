@@ -129,35 +129,64 @@ export class HaSunburstChart extends LitElement {
         itemStyle: {
           borderRadius: 2,
         },
-        levels: [
-          {
-            // Root level (center)
-            r0: "0%",
-            r: "15%",
-            itemStyle: {
-              color: "transparent",
-            },
-          },
-          {
-            // First level
-            r0: "15%",
-            r: "55%",
-            label: { show: true },
-          },
-          {
-            // Second level
-            r0: "55%",
-            r: "80%",
-          },
-          {
-            // Third level
-            r0: "80%",
-            r: "95%",
-          },
-        ],
+        levels: this._generateLevels(this._getMaxDepth(data)),
       } as SunburstSeriesOption;
     }
   );
+
+  private _getMaxDepth(node: SunburstNode, currentDepth = 0): number {
+    if (!node.children || node.children.length === 0) {
+      return currentDepth;
+    }
+    return Math.max(
+      ...node.children.map((child) =>
+        this._getMaxDepth(child, currentDepth + 1)
+      )
+    );
+  }
+
+  private _generateLevels(depth: number): SunburstSeriesOption["levels"] {
+    const levels: SunburstSeriesOption["levels"] = [];
+
+    // Root level (center) - transparent, small fixed size
+    const rootRadius = 15;
+    const outerRadius = 95;
+    const availableRadius = outerRadius - rootRadius;
+
+    levels.push({
+      r0: "0%",
+      r: `${rootRadius}%`,
+      itemStyle: {
+        color: "transparent",
+      },
+    });
+
+    if (depth === 0) {
+      return levels;
+    }
+
+    // Distribute remaining radius among data levels using weighted distribution
+    // First level gets most space, each subsequent level gets progressively smaller
+    const weights = Array.from({ length: depth }, (_, i) => depth - i);
+    const totalWeight = weights.reduce((sum, w) => sum + w, 0);
+
+    let currentRadius = rootRadius;
+    for (let i = 0; i < depth; i++) {
+      const levelRadius = (weights[i] / totalWeight) * availableRadius;
+      const r0 = currentRadius;
+      const r = currentRadius + levelRadius;
+      currentRadius = r;
+
+      levels.push({
+        r0: `${r0}%`,
+        r: `${r}%`,
+        // Show labels only on first level
+        ...(i === 0 ? { label: { show: true } } : {}),
+      });
+    }
+
+    return levels;
+  }
 
   static styles = css`
     :host {
