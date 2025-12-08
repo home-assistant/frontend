@@ -20,6 +20,7 @@ import type {
 import type {
   LovelaceCard,
   LovelaceCardEditor,
+  LovelaceGridOptions,
   LovelaceHeaderFooter,
 } from "../types";
 import type { EntitiesCardConfig } from "./types";
@@ -137,6 +138,15 @@ class HuiEntitiesCard extends LitElement implements LovelaceCard {
     }
 
     return size;
+  }
+
+  public getGridOptions(): LovelaceGridOptions {
+    return {
+      columns: 12,
+      rows: "auto",
+      min_columns: 3,
+      fixed_rows: true,
+    };
   }
 
   public setConfig(config: EntitiesCardConfig): void {
