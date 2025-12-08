@@ -127,6 +127,7 @@ export class HaAdaptiveDialog extends LitElement {
             <slot name="headerActionItems" slot="actionItems"></slot>
           </ha-dialog-header>
           <slot></slot>
+          <slot name="footer" slot="footer"></slot>
         </ha-bottom-sheet>
       `;
     }

@@ -62,6 +62,7 @@ export class HaBottomSheet extends ScrollableFadeMixin(LitElement) {
           </div>
           ${this.renderScrollableFades()}
         </div>
+        <slot name="footer"></slot>
       </wa-drawer>
     `;
   }
@@ -237,6 +238,23 @@ export class HaBottomSheet extends ScrollableFadeMixin(LitElement) {
             0 var(--safe-area-inset-right) var(--safe-area-inset-bottom)
               var(--safe-area-inset-left)
           );
+        }
+        slot[name="footer"] {
+          display: block;
+          padding: var(--ha-space-0);
+        }
+        ::slotted([slot="footer"]) {
+          display: flex;
+          padding: var(--ha-space-3) var(--ha-space-4) var(--ha-space-4)
+            var(--ha-space-4);
+          gap: var(--ha-space-3);
+          justify-content: flex-end;
+          align-items: center;
+          width: 100%;
+          box-sizing: border-box;
+        }
+        :host([flexcontent]) slot[name="footer"] {
+          flex-shrink: 0;
         }
       `,
     ];
