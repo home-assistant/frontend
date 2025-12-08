@@ -128,7 +128,9 @@ class PanelDeveloperTools extends LitElement {
   private async _handleMenuAction(ev: CustomEvent<ActionDetail>) {
     switch (ev.detail.index) {
       case 0:
-        navigate(`/developer-tools/debug`);
+        withViewTransition(() => {
+          navigate(`/developer-tools/debug`);
+        });
         break;
     }
   }
