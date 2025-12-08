@@ -81,10 +81,6 @@ class DialogChangeBackupEncryptionKey extends LitElement implements HassDialog {
   }
 
   protected render() {
-    if (!this._open || !this._params) {
-      return nothing;
-    }
-
     const dialogTitle =
       this._step === "current" || this._step === "new"
         ? this.hass.localize(
@@ -289,9 +285,7 @@ class DialogChangeBackupEncryptionKey extends LitElement implements HassDialog {
       haStyleDialog,
       css`
         ha-wa-dialog {
-          width: 90vw;
-          max-width: 560px;
-          --dialog-content-padding: 8px 24px;
+          --dialog-content-padding: var(--ha-space-2) var(--ha-space-6);
         }
         ha-md-list {
           background: none;
@@ -322,11 +316,7 @@ class DialogChangeBackupEncryptionKey extends LitElement implements HassDialog {
           flex: none;
           margin: -16px;
         }
-        @media all and (max-width: 450px), all and (max-height: 500px) {
-          ha-wa-dialog {
-            max-width: none;
-          }
-        }
+
         p {
           margin-top: 0;
         }
