@@ -177,7 +177,7 @@ class DialogEditSidebar extends LitElement {
         header-title=${dialogTitle}
         header-subtitle=${!this._migrateToUserData
           ? this.hass.localize("ui.sidebar.edit_subtitle")
-          : undefined}
+          : ""}
         @closed=${this._dialogClosed}
       >
         <ha-md-button-menu
