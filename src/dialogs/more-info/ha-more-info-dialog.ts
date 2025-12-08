@@ -16,6 +16,7 @@ import type { PropertyValues } from "lit";
 import { LitElement, css, html, nothing } from "lit";
 import { customElement, property, query, state } from "lit/decorators";
 import { cache } from "lit/directives/cache";
+import { classMap } from "lit/directives/class-map";
 import { keyed } from "lit/directives/keyed";
 import { dynamicElement } from "../../common/dom/dynamic-element-directive";
 import { fireEvent } from "../../common/dom/fire_event";
@@ -607,7 +608,12 @@ export class MoreInfoDialog extends ScrollableFadeMixin(LitElement) {
                 `
               : nothing}
         </ha-dialog-header>
-        <div class="content-wrapper">
+        <div
+          class=${classMap({
+            "content-wrapper": true,
+            "settings-view": this._currView === "settings",
+          })}
+        >
           ${keyed(
             this._entityId,
             html`
@@ -757,6 +763,10 @@ export class MoreInfoDialog extends ScrollableFadeMixin(LitElement) {
           outline: none;
           flex: 1;
           overflow: auto;
+        }
+
+        .content-wrapper.settings-view .fade-bottom {
+          bottom: 72px;
         }
 
         .child-view {
