@@ -8,7 +8,6 @@ import "./ha-dialog-header";
 import "./ha-icon-button";
 import "./ha-wa-dialog";
 import type { DialogWidth } from "./ha-wa-dialog";
-import { haStyleScrollbar } from "../resources/styles";
 
 type DialogSheetMode = "dialog" | "bottom-sheet";
 
@@ -170,7 +169,6 @@ export class HaAdaptiveDialog extends LitElement {
 
   static get styles() {
     return [
-      haStyleScrollbar,
       css`
         ha-bottom-sheet {
           --ha-bottom-sheet-surface-background: var(
