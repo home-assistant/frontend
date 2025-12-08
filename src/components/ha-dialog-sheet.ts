@@ -1,6 +1,12 @@
 import { mdiClose } from "@mdi/js";
 import { css, html, LitElement } from "lit";
-import { customElement, property, query, state } from "lit/decorators";
+import {
+  customElement,
+  eventOptions,
+  property,
+  query,
+  state,
+} from "lit/decorators";
 import type { HomeAssistant } from "../types";
 import "./ha-bottom-sheet";
 import "./ha-dialog-header";
@@ -104,6 +110,11 @@ export class HaDialogSheet extends LitElement {
         : "dialog";
   };
 
+  @eventOptions({ passive: true })
+  private _handleBodyScroll(ev: Event) {
+    this._bodyScrolled = (ev.target as HTMLDivElement).scrollTop > 0;
+  }
+
   render() {
     if (this._mode === "bottom-sheet") {
       return html`
@@ -130,7 +141,9 @@ export class HaDialogSheet extends LitElement {
               : html`<slot name="headerSubtitle" slot="subtitle"></slot>`}
             <slot name="headerActionItems" slot="actionItems"></slot>
           </ha-dialog-header>
-          <slot></slot>
+          <div class="body ha-scrollbar" @scroll=${this._handleBodyScroll}>
+            <slot></slot>
+          </div>
         </ha-bottom-sheet>
       `;
     }
