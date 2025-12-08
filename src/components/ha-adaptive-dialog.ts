@@ -17,9 +17,9 @@ import type { DialogWidth } from "./ha-wa-dialog";
 type DialogSheetMode = "dialog" | "bottom-sheet";
 
 /**
- * Home Assistant dialog sheet component
+ * Home Assistant adaptive dialog component
  *
- * @element ha-dialog-sheet
+ * @element ha-adaptive-dialog
  * @extends {LitElement}
  *
  * @summary
@@ -59,8 +59,8 @@ type DialogSheetMode = "dialog" | "bottom-sheet";
  * Components with `delegatesFocus: true` (like `ha-form`) will forward focus to their first focusable child.
  * Example: `<ha-form autofocus .schema=${schema}></ha-form>`
  */
-@customElement("ha-dialog-sheet")
-export class HaDialogSheet extends LitElement {
+@customElement("ha-adaptive-dialog")
+export class HaAdaptiveDialog extends LitElement {
   @property({ attribute: false }) public hass!: HomeAssistant;
 
   @property({ attribute: "aria-labelledby" })
@@ -175,6 +175,7 @@ export class HaDialogSheet extends LitElement {
 
 declare global {
   interface HTMLElementTagNameMap {
-    "ha-dialog-sheet": HaDialogSheet;
+    "ha-adaptive-dialog": HaAdaptiveDialog;
   }
 }
+

@@ -4,7 +4,7 @@ import { mdiCog, mdiHelp } from "@mdi/js";
 import "../../../../src/components/ha-button";
 import "../../../../src/components/ha-card";
 import "../../../../src/components/ha-dialog-footer";
-import "../../../../src/components/ha-dialog-sheet";
+import "../../../../src/components/ha-adaptive-dialog";
 import "../../../../src/components/ha-form/ha-form";
 import "../../../../src/components/ha-icon-button";
 import type { HaFormSchema } from "../../../../src/components/ha-form/types";
@@ -26,8 +26,8 @@ type DialogType =
   | "large"
   | "small";
 
-@customElement("demo-components-ha-dialog-sheet")
-export class DemoHaDialogSheet extends LitElement {
+@customElement("demo-components-ha-adaptive-dialog")
+export class DemoHaAdaptiveDialog extends LitElement {
   @state() private _openDialog: DialogType = false;
 
   @state() private _hass?: HomeAssistant;
@@ -40,7 +40,7 @@ export class DemoHaDialogSheet extends LitElement {
   protected render() {
     return html`
       <div class="content">
-        <h1>Dialog sheet <code>&lt;ha-dialog-sheet&gt;</code></h1>
+        <h1>Adaptive dialog <code>&lt;ha-adaptive-dialog&gt;</code></h1>
 
         <p class="subtitle">
           Responsive dialog component that automatically switches between a full
@@ -51,25 +51,25 @@ export class DemoHaDialogSheet extends LitElement {
 
         <div class="buttons">
           <ha-button @click=${this._handleOpenDialog("basic")}
-            >Basic dialog sheet</ha-button
+            >Basic adaptive dialog</ha-button
           >
           <ha-button @click=${this._handleOpenDialog("basic-subtitle-below")}
-            >Dialog sheet with subtitle below</ha-button
+            >Adaptive dialog with subtitle below</ha-button
           >
           <ha-button @click=${this._handleOpenDialog("basic-subtitle-above")}
-            >Dialog sheet with subtitle above</ha-button
+            >Adaptive dialog with subtitle above</ha-button
           >
           <ha-button @click=${this._handleOpenDialog("small")}
-            >Small width dialog sheet</ha-button
+            >Small width adaptive dialog</ha-button
           >
           <ha-button @click=${this._handleOpenDialog("large")}
-            >Large width dialog sheet</ha-button
+            >Large width adaptive dialog</ha-button
           >
           <ha-button @click=${this._handleOpenDialog("form")}
-            >Dialog sheet with form</ha-button
+            >Adaptive dialog with form</ha-button
           >
           <ha-button @click=${this._handleOpenDialog("actions")}
-            >Dialog sheet with actions</ha-button
+            >Adaptive dialog with actions</ha-button
           >
         </div>
 
@@ -84,61 +84,61 @@ export class DemoHaDialogSheet extends LitElement {
           </div>
         </ha-card>
 
-        <ha-dialog-sheet
+        <ha-adaptive-dialog
           .hass=${this._hass}
           .open=${this._openDialog === "basic"}
-          header-title="Basic dialog sheet"
+          header-title="Basic adaptive dialog"
           @closed=${this._handleClosed}
         >
-          <div>Dialog sheet content</div>
-        </ha-dialog-sheet>
+          <div>Adaptive dialog content</div>
+        </ha-adaptive-dialog>
 
-        <ha-dialog-sheet
+        <ha-adaptive-dialog
           .hass=${this._hass}
           .open=${this._openDialog === "basic-subtitle-below"}
-          header-title="Dialog sheet with subtitle"
-          header-subtitle="This is a dialog sheet with a subtitle below"
+          header-title="Adaptive dialog with subtitle"
+          header-subtitle="This is an adaptive dialog with a subtitle below"
           @closed=${this._handleClosed}
         >
-          <div>Dialog sheet content</div>
-        </ha-dialog-sheet>
+          <div>Adaptive dialog content</div>
+        </ha-adaptive-dialog>
 
-        <ha-dialog-sheet
+        <ha-adaptive-dialog
           .hass=${this._hass}
           .open=${this._openDialog === "basic-subtitle-above"}
-          header-title="Dialog sheet with subtitle above"
-          header-subtitle="This is a dialog sheet with a subtitle above"
+          header-title="Adaptive dialog with subtitle above"
+          header-subtitle="This is an adaptive dialog with a subtitle above"
           header-subtitle-position="above"
           @closed=${this._handleClosed}
         >
-          <div>Dialog sheet content</div>
-        </ha-dialog-sheet>
+          <div>Adaptive dialog content</div>
+        </ha-adaptive-dialog>
 
-        <ha-dialog-sheet
+        <ha-adaptive-dialog
           .hass=${this._hass}
           .open=${this._openDialog === "small"}
           width="small"
-          header-title="Small dialog sheet"
+          header-title="Small adaptive dialog"
           @closed=${this._handleClosed}
         >
           <div>This dialog uses the small width preset (320px).</div>
-        </ha-dialog-sheet>
+        </ha-adaptive-dialog>
 
-        <ha-dialog-sheet
+        <ha-adaptive-dialog
           .hass=${this._hass}
           .open=${this._openDialog === "large"}
           width="large"
-          header-title="Large dialog sheet"
+          header-title="Large adaptive dialog"
           @closed=${this._handleClosed}
         >
           <div>This dialog uses the large width preset (720px).</div>
-        </ha-dialog-sheet>
+        </ha-adaptive-dialog>
 
-        <ha-dialog-sheet
+        <ha-adaptive-dialog
           .hass=${this._hass}
           .open=${this._openDialog === "form"}
-          header-title="Dialog sheet with form"
-          header-subtitle="This is a dialog sheet with a form"
+          header-title="Adaptive dialog with form"
+          header-subtitle="This is an adaptive dialog with a form"
           @closed=${this._handleClosed}
         >
           <ha-form autofocus .schema=${SCHEMA}></ha-form>
@@ -156,13 +156,13 @@ export class DemoHaDialogSheet extends LitElement {
               >Submit</ha-button
             >
           </ha-dialog-footer>
-        </ha-dialog-sheet>
+        </ha-adaptive-dialog>
 
-        <ha-dialog-sheet
+        <ha-adaptive-dialog
           .hass=${this._hass}
           .open=${this._openDialog === "actions"}
-          header-title="Dialog sheet with actions"
-          header-subtitle="This is a dialog sheet with header actions"
+          header-title="Adaptive dialog with actions"
+          header-subtitle="This is an adaptive dialog with header actions"
           @closed=${this._handleClosed}
         >
           <div slot="headerActionItems">
@@ -170,15 +170,15 @@ export class DemoHaDialogSheet extends LitElement {
             <ha-icon-button label="Help" path=${mdiHelp}></ha-icon-button>
           </div>
 
-          <div>Dialog sheet content</div>
-        </ha-dialog-sheet>
+          <div>Adaptive dialog content</div>
+        </ha-adaptive-dialog>
 
         <h2>Design</h2>
 
         <h3>Responsive behavior</h3>
 
         <p>
-          The <code>ha-dialog-sheet</code> component automatically switches
+          The <code>ha-adaptive-dialog</code> component automatically switches
           between two modes based on screen size:
         </p>
 
@@ -234,7 +234,7 @@ export class DemoHaDialogSheet extends LitElement {
           </tbody>
         </table>
 
-        <p>Dialog sheets have a default width of <code>medium</code>.</p>
+        <p>Adaptive dialogs have a default width of <code>medium</code>.</p>
 
         <h3>Header</h3>
 
@@ -308,11 +308,11 @@ export class DemoHaDialogSheet extends LitElement {
 
         <h3>Body</h3>
 
-        <p>The body is the content of the dialog sheet.</p>
+        <p>The body is the content of the adaptive dialog.</p>
 
         <h3>Footer</h3>
 
-        <p>The footer is the footer of the dialog sheet.</p>
+        <p>The footer is the footer of the adaptive dialog.</p>
 
         <p>
           It is recommended to use the <code>ha-dialog-footer</code> component
@@ -346,7 +346,7 @@ export class DemoHaDialogSheet extends LitElement {
         <h3>When to use</h3>
 
         <p>
-          Use <code>ha-dialog-sheet</code> when you need a dialog that should
+          Use <code>ha-adaptive-dialog</code> when you need a dialog that should
           adapt to different screen sizes automatically. This is particularly
           useful for:
         </p>
@@ -369,7 +369,7 @@ export class DemoHaDialogSheet extends LitElement {
 
         <h3>Example usage</h3>
 
-        <pre><code>&lt;ha-dialog-sheet
+        <pre><code>&lt;ha-adaptive-dialog
   .hass=\${this.hass}
   open
   width="medium"
@@ -387,7 +387,7 @@ export class DemoHaDialogSheet extends LitElement {
     &gt;
     &lt;ha-button slot="primaryAction" variant="accent"&gt;Submit&lt;/ha-button&gt;
   &lt;/ha-dialog-footer&gt;
-&lt;/ha-dialog-sheet&gt;</code></pre>
+&lt;/ha-adaptive-dialog&gt;</code></pre>
 
         <h3>API</h3>
 
@@ -411,7 +411,7 @@ export class DemoHaDialogSheet extends LitElement {
           <tbody>
             <tr>
               <td><code>open</code></td>
-              <td>Controls the dialog sheet open state.</td>
+              <td>Controls the adaptive dialog open state.</td>
               <td><code>false</code></td>
               <td><code>false</code>, <code>true</code></td>
             </tr>
@@ -509,12 +509,12 @@ export class DemoHaDialogSheet extends LitElement {
           <tbody>
             <tr>
               <td><code>opened</code></td>
-              <td>Fired when the dialog sheet is shown (dialog mode only).</td>
+              <td>Fired when the adaptive dialog is shown (dialog mode only).</td>
             </tr>
             <tr>
               <td><code>closed</code></td>
               <td>
-                Fired after the dialog sheet is hidden (dialog mode only).
+                Fired after the adaptive dialog is hidden (dialog mode only).
               </td>
             </tr>
             <tr>
@@ -527,7 +527,7 @@ export class DemoHaDialogSheet extends LitElement {
         <h3>Focus management</h3>
 
         <p>
-          To automatically focus an element when the dialog sheet opens, add the
+          To automatically focus an element when the adaptive dialog opens, add the
           <code>autofocus</code> attribute to it. Components with
           <code>delegatesFocus: true</code> (like <code>ha-form</code>) will
           forward focus to their first focusable child.
@@ -535,9 +535,9 @@ export class DemoHaDialogSheet extends LitElement {
 
         <p>Example:</p>
 
-        <pre><code>&lt;ha-dialog-sheet .hass=\${this.hass} open&gt;
+        <pre><code>&lt;ha-adaptive-dialog .hass=\${this.hass} open&gt;
   &lt;ha-form autofocus .schema=\${schema}&gt;&lt;/ha-form&gt;
-&lt;/ha-dialog-sheet&gt;</code></pre>
+&lt;/ha-adaptive-dialog&gt;</code></pre>
       </div>
     `;
   }
@@ -658,6 +658,7 @@ export class DemoHaDialogSheet extends LitElement {
 
 declare global {
   interface HTMLElementTagNameMap {
-    "demo-components-ha-dialog-sheet": DemoHaDialogSheet;
+    "demo-components-ha-adaptive-dialog": DemoHaAdaptiveDialog;
   }
 }
+
