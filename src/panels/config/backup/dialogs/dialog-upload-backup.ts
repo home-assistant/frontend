@@ -69,7 +69,7 @@ export class DialogUploadBackup
   }
 
   protected render() {
-    if (!this._formData) {
+    if (!this._params || !this._formData) {
       return nothing;
     }
 
