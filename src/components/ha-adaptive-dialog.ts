@@ -40,7 +40,7 @@ type DialogSheetMode = "dialog" | "bottom-sheet";
  * @attr {string} header-title - Header title text. If not set, the headerTitle slot is used.
  * @attr {string} header-subtitle - Header subtitle text. If not set, the headerSubtitle slot is used.
  * @attr {("above"|"below")} header-subtitle-position - Position of the subtitle relative to the title. Defaults to "below".
- * @attr {boolean} block-mode-change - When set, prevents automatic mode switching between dialog and bottom sheet based on screen size.
+ * @attr {boolean} block-mode-change - When set, the mode is determined at mount time based on the current screen size, but subsequent mode changes are blocked. Useful for preventing forms from resetting when the viewport size changes.
  *
  * @event opened - Fired when the dialog/sheet is shown (dialog mode only).
  * @event closed - Fired after the dialog/sheet is hidden (dialog mode only).
@@ -51,6 +51,10 @@ type DialogSheetMode = "dialog" | "bottom-sheet";
  * The component automatically switches between dialog and bottom sheet modes based on viewport size.
  * Dialog mode is used for screens wider than 870px and taller than 500px.
  * Bottom sheet mode is used for mobile devices and smaller screens.
+ *
+ * When `block-mode-change` is set, the mode is determined once at mount time based on the initial
+ * screen size. Subsequent viewport size changes will not trigger mode switches, which is useful
+ * for preventing form resets or other state loss when users resize their browser window.
  *
  * **Focus Management:**
  * To automatically focus an element when opened, add the `autofocus` attribute to it.
