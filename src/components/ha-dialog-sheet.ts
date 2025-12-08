@@ -86,8 +86,6 @@ export class HaDialogSheet extends LitElement {
 
   @state() private _mode: DialogSheetMode = "dialog";
 
-  @query(".body") public bodyContainer!: HTMLDivElement;
-
   @state()
   private _bodyScrolled = false;
 
