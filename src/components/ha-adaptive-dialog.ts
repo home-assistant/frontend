@@ -40,6 +40,7 @@ type DialogSheetMode = "dialog" | "bottom-sheet";
  * @attr {string} header-title - Header title text. If not set, the headerTitle slot is used.
  * @attr {string} header-subtitle - Header subtitle text. If not set, the headerSubtitle slot is used.
  * @attr {("above"|"below")} header-subtitle-position - Position of the subtitle relative to the title. Defaults to "below".
+ * @attr {boolean} block-mode-change - When set, prevents automatic mode switching between dialog and bottom sheet based on screen size.
  *
  * @event opened - Fired when the dialog/sheet is shown (dialog mode only).
  * @event closed - Fired after the dialog/sheet is hidden (dialog mode only).
@@ -81,16 +82,24 @@ export class HaAdaptiveDialog extends LitElement {
   @property({ type: String, attribute: "header-subtitle-position" })
   public headerSubtitlePosition: "above" | "below" = "below";
 
+  @property({ type: Boolean, attribute: "block-mode-change" })
+  public blockModeChange = false;
+
   @state() private _mode: DialogSheetMode = "dialog";
 
   private _unsubMediaQuery?: () => void;
+
+  private _modeSet = false;
 
   connectedCallback() {
     super.connectedCallback();
     this._unsubMediaQuery = listenMediaQuery(
       "(max-width: 870px), (max-height: 500px)",
       (matches) => {
-        this._mode = matches ? "bottom-sheet" : "dialog";
+        if (!this._modeSet || !this.blockModeChange) {
+          this._mode = matches ? "bottom-sheet" : "dialog";
+          this._modeSet = true;
+        }
       }
     );
   }
@@ -99,6 +108,7 @@ export class HaAdaptiveDialog extends LitElement {
     super.disconnectedCallback();
     this._unsubMediaQuery?.();
     this._unsubMediaQuery = undefined;
+    this._modeSet = false;
   }
 
   render() {
