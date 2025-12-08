@@ -74,7 +74,7 @@ class DialogAreasFloorsOrder extends LitElement {
   }
 
   protected render() {
-    if (!this._open || !this._hierarchy) {
+    if (!this._hierarchy) {
       return nothing;
     }
 
