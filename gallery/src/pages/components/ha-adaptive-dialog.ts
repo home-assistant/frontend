@@ -509,7 +509,9 @@ export class DemoHaAdaptiveDialog extends LitElement {
           <tbody>
             <tr>
               <td><code>opened</code></td>
-              <td>Fired when the adaptive dialog is shown (dialog mode only).</td>
+              <td>
+                Fired when the adaptive dialog is shown (dialog mode only).
+              </td>
             </tr>
             <tr>
               <td><code>closed</code></td>
@@ -527,7 +529,8 @@ export class DemoHaAdaptiveDialog extends LitElement {
         <h3>Focus management</h3>
 
         <p>
-          To automatically focus an element when the adaptive dialog opens, add the
+          To automatically focus an element when the adaptive dialog opens, add
+          the
           <code>autofocus</code> attribute to it. Components with
           <code>delegatesFocus: true</code> (like <code>ha-form</code>) will
           forward focus to their first focusable child.
@@ -661,4 +664,3 @@ declare global {
     "demo-components-ha-adaptive-dialog": DemoHaAdaptiveDialog;
   }
 }
-

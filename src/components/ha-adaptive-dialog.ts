@@ -172,4 +172,3 @@ declare global {
     "ha-adaptive-dialog": HaAdaptiveDialog;
   }
 }
-
