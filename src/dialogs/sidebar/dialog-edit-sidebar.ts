@@ -269,12 +269,11 @@ class DialogEditSidebar extends LitElement {
 
   static styles = css`
     ha-wa-dialog {
-      min-width: 600px;
       max-height: 90%;
       --dialog-content-padding: 8px 24px;
     }
 
-    @media all and (max-width: 600px), all and (max-height: 500px) {
+    @media all and (max-width: 580px), all and (max-height: 500px) {
       ha-wa-dialog {
         min-width: 100%;
         min-height: 100%;
