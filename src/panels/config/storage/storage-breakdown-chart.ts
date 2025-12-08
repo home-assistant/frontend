@@ -215,13 +215,13 @@ export class StorageBreakdownChart extends LitElement {
       display: flex;
       align-items: flex-start;
       justify-content: space-between;
-      margin-bottom: 8px;
+      margin-bottom: var(--ha-space-2);
     }
 
     .heading-text {
       display: flex;
       flex-direction: column;
-      gap: 4px;
+      gap: var(--ha-space-1);
     }
 
     .heading {
@@ -242,7 +242,7 @@ export class StorageBreakdownChart extends LitElement {
     }
 
     .chart-container {
-      transition: height 0.3s ease;
+      transition: height var(--ha-animation-base-duration) ease;
       overflow: hidden;
     }
 
@@ -264,7 +264,7 @@ export class StorageBreakdownChart extends LitElement {
 
     ha-segmented-bar,
     ha-sunburst-chart {
-      animation: fade-in 0.3s ease;
+      animation: fade-in var(--ha-animation-base-duration) ease;
     }
 
     @keyframes fade-in {

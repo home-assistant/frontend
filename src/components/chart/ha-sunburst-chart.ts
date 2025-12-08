@@ -67,7 +67,7 @@ export class HaSunburstChart extends LitElement {
   }
 
   private _renderTooltip = (params: CallbackDataParams) => {
-    const data = params.data as Record<string, any>;
+    const data = params.data as { name: string; value: number };
     const value = this.valueFormatter
       ? this.valueFormatter(data.value)
       : data.value;
