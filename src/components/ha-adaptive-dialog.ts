@@ -43,7 +43,7 @@ type DialogSheetMode = "dialog" | "bottom-sheet";
  * @attr {boolean} block-mode-change - When set, the mode is determined at mount time based on the current screen size, but subsequent mode changes are blocked. Useful for preventing forms from resetting when the viewport size changes.
  *
  * @event opened - Fired when the dialog/sheet is shown (dialog mode only).
- * @event closed - Fired after the dialog/sheet is hidden (dialog mode only).
+ * @event closed - Fired after the dialog/sheet is hidden.
  * @event after-show - Fired after show animation completes (dialog mode only).
  *
  * @remarks
