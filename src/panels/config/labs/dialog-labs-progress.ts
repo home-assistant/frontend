@@ -45,6 +45,7 @@ export class DialogLabsProgress
         prevent-scrim-close
         @closed=${this._handleClosed}
       >
+        <div slot="header"></div>
         <div class="summary">
           <ha-spinner></ha-spinner>
           <div class="content">
