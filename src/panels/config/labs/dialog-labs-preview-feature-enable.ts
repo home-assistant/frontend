@@ -150,49 +150,46 @@ export class DialogLabsPreviewFeatureEnable
         header-title=${this.hass.localize("ui.panel.config.labs.enable_title")}
         @closed=${this._dialogClosed}
       >
-        <p>
-          ${this.hass.localize(
-            `component.${this._params.preview_feature.domain}.preview_features.${this._params.preview_feature.preview_feature}.enable_confirmation`
-          ) || this.hass.localize("ui.panel.config.labs.enable_confirmation")}
-        </p>
-        ${createBackupTexts
-          ? html`
-              <ha-md-list>
-                <ha-md-list-item>
-                  <span slot="headline">${createBackupTexts.title}</span>
-                  ${createBackupTexts.description
-                    ? html`
-                        <span slot="supporting-text">
-                          ${createBackupTexts.description}
-                        </span>
-                      `
-                    : nothing}
-                  <ha-switch
-                    slot="end"
-                    .checked=${this._createBackup}
-                    @change=${this._createBackupChanged}
-                  ></ha-switch>
-                </ha-md-list-item>
-              </ha-md-list>
-            `
-          : nothing}
-        <ha-dialog-footer slot="footer">
-          <ha-button
-            slot="secondaryAction"
-            appearance="plain"
-            @click=${this._handleCancel}
-          >
+        <div class="content">
+          <p>
+            ${this.hass.localize(
+              `component.${this._params.preview_feature.domain}.preview_features.${this._params.preview_feature.preview_feature}.enable_confirmation`
+            ) || this.hass.localize("ui.panel.config.labs.enable_confirmation")}
+          </p>
+          ${createBackupTexts
+            ? html`
+                <ha-md-list>
+                  <ha-md-list-item>
+                    <span slot="headline">${createBackupTexts.title}</span>
+                    ${createBackupTexts.description
+                      ? html`
+                          <span slot="supporting-text">
+                            ${createBackupTexts.description}
+                          </span>
+                        `
+                      : nothing}
+                    <ha-switch
+                      slot="end"
+                      .checked=${this._createBackup}
+                      @change=${this._createBackupChanged}
+                    ></ha-switch>
+                  </ha-md-list-item>
+                </ha-md-list>
+              `
+            : nothing}
+        </div>
+        <div class="actions">
+          <ha-button appearance="plain" @click=${this._handleCancel}>
             ${this.hass.localize("ui.common.cancel")}
           </ha-button>
           <ha-button
-            slot="primaryAction"
             appearance="filled"
             variant="brand"
             @click=${this._handleConfirm}
           >
             ${this.hass.localize("ui.panel.config.labs.enable")}
           </ha-button>
-        </ha-dialog-footer>
+        </div>
       </ha-wa-dialog>
     `;
   }
@@ -207,12 +204,6 @@ export class DialogLabsPreviewFeatureEnable
       color: var(--secondary-text-color);
     }
 
-    div[slot="actions"] {
-      display: flex;
-      flex-direction: column;
-      padding: 0;
-    }
-
     ha-md-list {
       background: none;
       --md-list-item-leading-space: var(--ha-space-6);
@@ -222,7 +213,7 @@ export class DialogLabsPreviewFeatureEnable
       border-top: var(--ha-border-width-sm) solid var(--divider-color);
     }
 
-    div[slot="actions"] > div {
+    .actions {
       display: flex;
       justify-content: flex-end;
       gap: var(--ha-space-2);
