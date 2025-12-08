@@ -62,6 +62,7 @@ class DialogAreasFloorsOrder extends LitElement {
   }
 
   public closeDialog(): void {
+    this._saving = false;
     this._open = false;
   }
 
@@ -116,7 +117,11 @@ class DialogAreasFloorsOrder extends LitElement {
           >
             ${this.hass.localize("ui.common.cancel")}
           </ha-button>
-          <ha-button slot="primaryAction" @click=${this._save} .disabled=${this._saving}>
+          <ha-button
+            slot="primaryAction"
+            @click=${this._save}
+            .disabled=${this._saving}
+          >
             ${this.hass.localize("ui.common.save")}
           </ha-button>
         </ha-dialog-footer>
