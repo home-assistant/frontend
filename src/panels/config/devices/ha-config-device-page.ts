@@ -26,6 +26,7 @@ import { computeStateName } from "../../../common/entity/compute_state_name";
 import { stringCompare } from "../../../common/string/compare";
 import { slugify } from "../../../common/string/slugify";
 import { groupBy } from "../../../common/util/group-by";
+import { getConfigurationUrl } from "../../../common/util/configuration-url";
 import "../../../components/entity/ha-battery-icon";
 import "../../../components/ha-alert";
 import "../../../components/ha-button";
@@ -1090,17 +1091,12 @@ export class HaConfigDevicePage extends LitElement {
 
     const deviceActions: DeviceAction[] = [];
 
-    const configurationUrlIsHomeAssistant =
-      device.configuration_url?.startsWith("homeassistant://") || false;
+    const processedUrl = getConfigurationUrl(device.configuration_url);
 
-    const configurationUrl = configurationUrlIsHomeAssistant
-      ? device.configuration_url!.replace("homeassistant://", "/")
-      : device.configuration_url;
-
-    if (configurationUrl) {
+    if (processedUrl) {
       deviceActions.push({
-        href: configurationUrl,
-        target: configurationUrlIsHomeAssistant ? undefined : "_blank",
+        href: processedUrl.url,
+        target: processedUrl.isLocal ? undefined : "_blank",
         icon: mdiCog,
         label: this.hass.localize(
           "ui.panel.config.devices.open_configuration_url"

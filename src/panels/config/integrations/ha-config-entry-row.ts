@@ -74,6 +74,7 @@ import "./ha-config-entry-device-row";
 import { renderConfigEntryError } from "./ha-config-integration-page";
 import "./ha-config-sub-entry-row";
 import { copyToClipboard } from "../../../common/util/copy-clipboard";
+import { getConfigurationUrl } from "../../../common/util/configuration-url";
 import { showToast } from "../../../util/toast";
 
 @customElement("ha-config-entry-row")
@@ -215,24 +216,15 @@ class HaConfigEntryRow extends LitElement {
               ${this.hass.localize("ui.common.enable")}
             </ha-button>`
           : (() => {
-              const configurationUrlIsHomeAssistant =
-                item.configuration_url?.startsWith("homeassistant://") || false;
-
-              const configurationUrl = configurationUrlIsHomeAssistant
-                ? item.configuration_url!.replace("homeassistant://", "/")
-                : item.configuration_url;
+              const processedUrl = getConfigurationUrl(item.configuration_url);
 
               return html`
-                ${configurationUrl
+                ${processedUrl
                   ? html`<a
                       slot="end"
-                      href=${configurationUrl}
-                      target=${configurationUrlIsHomeAssistant
-                        ? undefined
-                        : "_blank"}
-                      rel=${configurationUrlIsHomeAssistant
-                        ? undefined
-                        : "noreferrer"}
+                      href=${processedUrl.url}
+                      target=${processedUrl.isLocal ? undefined : "_blank"}
+                      rel=${processedUrl.isLocal ? undefined : "noreferrer"}
                     >
                       <ha-icon-button
                         .path=${mdiOpenInNew}
