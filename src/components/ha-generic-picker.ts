@@ -47,8 +47,9 @@ export class HaGenericPicker extends LitElement {
   @property({ attribute: "hide-clear-icon", type: Boolean })
   public hideClearIcon = false;
 
+  /** To prevent lags, getItems needs to be memoized */
   @property({ attribute: false })
-  public getItems?: (
+  public getItems!: (
     searchString?: string,
     section?: string
   ) => (PickerComboBoxItem | string)[];
@@ -108,7 +109,7 @@ export class HaGenericPicker extends LitElement {
 
   @property({ attribute: "selected-section" }) public selectedSection?: string;
 
-  @property({ attribute: "unknown-item-text" }) public unknownItemText;
+  @property({ attribute: "unknown-item-text" }) public unknownItemText?: string;
 
   @query(".container") private _containerElement?: HTMLDivElement;
 
@@ -159,7 +160,7 @@ export class HaGenericPicker extends LitElement {
                   type="button"
                   class=${this._opened ? "opened" : ""}
                   compact
-                  .unknown=${this._unknownValue(this.value, this.getItems)}
+                  .unknown=${this._unknownValue(this.value, this.getItems())}
                   .unknownItemText=${this.unknownItemText}
                   aria-label=${ifDefined(this.label)}
                   @click=${this.open}
@@ -239,12 +240,14 @@ export class HaGenericPicker extends LitElement {
   }
 
   private _unknownValue = memoizeOne(
-    (value?: string, getItems?: () => any[]) => {
-      if (value === undefined || !getItems) {
+    (value?: string, items?: (PickerComboBoxItem | string)[]) => {
+      if (value === undefined || !items) {
         return false;
       }
 
-      return !getItems().some((item) => item.id === value);
+      return !items.some(
+        (item) => typeof item !== "string" && item.id === value
+      );
     }
   );
 

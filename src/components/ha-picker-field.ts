@@ -38,7 +38,7 @@ export class HaPickerField extends LitElement {
 
   @property({ type: Boolean, reflect: true }) public unknown = false;
 
-  @property({ attribute: "unknown-item-text" }) public unknownItemText;
+  @property({ attribute: "unknown-item-text" }) public unknownItemText?: string;
 
   @property({ attribute: "hide-clear-icon", type: Boolean })
   public hideClearIcon = false;
