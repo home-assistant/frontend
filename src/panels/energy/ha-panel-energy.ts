@@ -22,7 +22,10 @@ import {
   getSummedData,
 } from "../../data/energy";
 import type { LovelaceConfig } from "../../data/lovelace/config/types";
-import type { LovelaceViewConfig } from "../../data/lovelace/config/view";
+import {
+  isStrategyView,
+  type LovelaceViewConfig,
+} from "../../data/lovelace/config/view";
 import type { StatisticValue } from "../../data/recorder";
 import { haStyle } from "../../resources/styles";
 import type { HomeAssistant, PanelInfo } from "../../types";
@@ -48,6 +51,7 @@ const OVERVIEW_VIEW = {
   strategy: {
     type: "energy-overview",
     collection_key: DEFAULT_ENERGY_COLLECTION_KEY,
+    show_period_selector: true,
   },
 } as LovelaceViewConfig;
 
@@ -56,6 +60,7 @@ const ENERGY_VIEW = {
   strategy: {
     type: "energy",
     collection_key: DEFAULT_ENERGY_COLLECTION_KEY,
+    show_period_selector: true,
   },
 } as LovelaceViewConfig;
 
@@ -64,6 +69,7 @@ const WATER_VIEW = {
   strategy: {
     type: "water",
     collection_key: DEFAULT_ENERGY_COLLECTION_KEY,
+    show_period_selector: true,
   },
 } as LovelaceViewConfig;
 
@@ -72,6 +78,7 @@ const GAS_VIEW = {
   strategy: {
     type: "gas",
     collection_key: DEFAULT_ENERGY_COLLECTION_KEY,
+    show_period_selector: true,
   },
 } as LovelaceViewConfig;
 
@@ -223,6 +230,11 @@ class PanelEnergy extends LitElement {
       return nothing;
     }
 
+    const routePath = this.route?.path?.split("/")[1] || "";
+    const currentView = this._lovelace.config.views.find(
+      (view) => view.path === routePath
+    );
+
     return html`
       <hui-root
         .hass=${this.hass}
@@ -233,6 +245,17 @@ class PanelEnergy extends LitElement {
         .extraActionItems=${this._extraActionItems}
         @reload-energy-panel=${this._reloadConfig}
       ></hui-root>
+      ${currentView &&
+      isStrategyView(currentView) &&
+      currentView.strategy?.show_period_selector
+        ? html`<ha-card raised class="period-selector">
+            <hui-energy-period-selector
+              .hass=${this.hass}
+              .collectionKey=${DEFAULT_ENERGY_COLLECTION_KEY}
+              vertical-opening-direction="up"
+            ></hui-energy-period-selector>
+          </ha-card>`
+        : nothing}
     `;
   }
 
@@ -655,6 +678,12 @@ class PanelEnergy extends LitElement {
           display: flex;
           align-items: center;
           justify-content: center;
+        }
+        .period-selector {
+          position: sticky;
+          bottom: var(--ha-space-2);
+          margin: 0 auto;
+          max-width: calc(min(450px, 100% - var(--ha-space-4)));
         }
       `,
     ];

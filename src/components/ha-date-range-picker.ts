@@ -74,6 +74,9 @@ export class HaDateRangePicker extends LitElement {
   @property({ attribute: "extended-presets", type: Boolean })
   public extendedPresets = false;
 
+  @property({ attribute: "vertical-opening-direction" })
+  public verticalOpeningDirection?: "up" | "down";
+
   @property({ attribute: false }) public openingDirection?:
     | "right"
     | "left"
@@ -127,6 +130,7 @@ export class HaDateRangePicker extends LitElement {
         opening-direction=${ifDefined(
           this.openingDirection || this._calcedOpeningDirection
         )}
+        opens-vertical=${ifDefined(this.verticalOpeningDirection)}
         first-day=${firstWeekdayIndex(this.hass.locale)}
         language=${this.hass.locale.language}
         @change=${this._handleChange}

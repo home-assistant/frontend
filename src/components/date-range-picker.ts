@@ -101,6 +101,10 @@ const Component = Vue.extend({
       type: String,
       default: "en",
     },
+    opensVertical: {
+      type: String,
+      default: undefined,
+    },
   },
   render(createElement) {
     // @ts-expect-error
@@ -308,6 +312,10 @@ class DateRangePickerElement extends WrappedElement {
           .vue-daterange-picker{
             min-width: unset !important;
             display: block !important;
+          }
+          :host([opens-vertical="up"]) .daterangepicker {
+            bottom: 100%;
+            top: auto !important;
           }
         `;
     if (mainWindow.document.dir === "rtl") {

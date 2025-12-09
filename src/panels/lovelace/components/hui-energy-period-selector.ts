@@ -69,6 +69,9 @@ export class HuiEnergyPeriodSelector extends SubscribeMixin(LitElement) {
   @property({ type: Boolean, attribute: "allow-compare" }) public allowCompare =
     true;
 
+  @property({ attribute: "vertical-opening-direction" })
+  public verticalOpeningDirection?: "up" | "down";
+
   @state() _startDate?: Date;
 
   @state() _endDate?: Date;
@@ -204,6 +207,7 @@ export class HuiEnergyPeriodSelector extends SubscribeMixin(LitElement) {
             @preset-selected=${this._presetSelected}
             minimal
             header-position
+            .verticalOpeningDirection=${this.verticalOpeningDirection}
           ></ha-date-range-picker>
         </div>
 

@@ -54,10 +54,6 @@ export class EnergyViewStrategy extends ReactiveElement {
     );
 
     view.cards!.push({
-      type: "energy-date-selection",
-      collection_key: collectionKey,
-    });
-    view.cards!.push({
       type: "energy-compare",
       collection_key: "energy_dashboard",
     });
