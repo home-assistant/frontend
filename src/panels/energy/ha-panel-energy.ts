@@ -654,23 +654,8 @@ class PanelEnergy extends LitElement {
           -webkit-user-select: none;
           -moz-user-select: none;
         }
-        .toolbar {
-          height: var(--header-height);
-          display: flex;
-          flex: 1;
-          align-items: center;
-          font-size: var(--ha-font-size-xl);
-          padding: 0px 12px;
-          font-weight: var(--ha-font-weight-normal);
-          box-sizing: border-box;
-        }
-        :host([narrow]) .toolbar {
-          padding: 0 4px;
-        }
-        .main-title {
-          margin: var(--margin-title);
-          line-height: var(--ha-line-height-normal);
-          flex-grow: 1;
+        :host:has([datepicker-open]) hui-root {
+          filter: blur(4px);
         }
         .centered {
           width: 100%;

@@ -133,6 +133,11 @@ const Component = Vue.extend({
         },
         expression: "dateRange",
       },
+      on: {
+        toggle: (open: boolean) => {
+          fireEvent(this.$el as HTMLElement, "toggle", { open });
+        },
+      },
       scopedSlots: {
         input() {
           return createElement("slot", {
@@ -347,5 +352,8 @@ class DateRangePickerElement extends WrappedElement {
 declare global {
   interface HTMLElementTagNameMap {
     "date-range-picker": DateRangePickerElement;
+  }
+  interface HASSDomEvents {
+    toggle: { open: boolean };
   }
 }

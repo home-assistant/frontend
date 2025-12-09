@@ -72,6 +72,9 @@ export class HuiEnergyPeriodSelector extends SubscribeMixin(LitElement) {
   @property({ attribute: "vertical-opening-direction" })
   public verticalOpeningDirection?: "up" | "down";
 
+  @property({ type: Boolean, reflect: true, attribute: "datepicker-open" })
+  public datepickerOpen = false;
+
   @state() _startDate?: Date;
 
   @state() _endDate?: Date;
@@ -205,6 +208,7 @@ export class HuiEnergyPeriodSelector extends SubscribeMixin(LitElement) {
             .ranges=${this._ranges}
             @value-changed=${this._dateRangeChanged}
             @preset-selected=${this._presetSelected}
+            @toggle=${this._handleDatepickerToggle}
             minimal
             header-position
             .verticalOpeningDirection=${this.verticalOpeningDirection}
@@ -448,6 +452,10 @@ export class HuiEnergyPeriodSelector extends SubscribeMixin(LitElement) {
     this._compare = energyData.startCompare !== undefined;
     this._startDate = energyData.start;
     this._endDate = energyData.end || endOfToday();
+  }
+
+  private _handleDatepickerToggle(ev: CustomEvent<{ open: boolean }>) {
+    this.datepickerOpen = ev.detail.open;
   }
 
   private _toggleCompare(ev: CustomEvent<RequestSelectedDetail>) {
