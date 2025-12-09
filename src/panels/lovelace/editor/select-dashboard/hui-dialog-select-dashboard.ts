@@ -43,15 +43,18 @@ export class HuiDialogSelectDashboard extends LitElement {
   }
 
   public closeDialog(): void {
+    if (this._open) {
+      fireEvent(this, "dialog-closed", { dialog: this.localName });
+    }
     this._saving = false;
     this._dashboards = undefined;
     this._toUrlPath = undefined;
     this._open = false;
+    this._params = undefined;
   }
 
   private _dialogClosed(): void {
-    this._params = undefined;
-    fireEvent(this, "dialog-closed", { dialog: this.localName });
+    this.closeDialog();
   }
 
   protected render() {
