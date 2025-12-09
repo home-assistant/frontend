@@ -730,15 +730,14 @@ class HuiPowerSankeyCard
   /**
    * Get current power value from entity state, normalized to kW
    * @param entityId - The entity ID to get power value from
+   * @param invertFlow - Whether to reverse the direction of the power flow
    * @returns Power value in kW, or 0 if entity not found or invalid
    */
-  private _getCurrentPower(entityId: string, negateValue = false): number {
+  private _getCurrentPower(entityId: string, invertFlow = false): number {
     // Track this entity for state change detection
     this._entities.add(entityId);
 
-    let value = getPowerFromState(this.hass.states[entityId]) ?? 0;
-    if (negateValue) value = -value;
-    return value;
+    return getPowerFromState(this.hass.states[entityId], invertFlow) ?? 0;
   }
 
   /**

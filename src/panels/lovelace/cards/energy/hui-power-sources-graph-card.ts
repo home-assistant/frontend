@@ -226,10 +226,6 @@ export class HuiPowerSourcesGraphCard
         const { positive, negative } = this._processData(
           statIds[key].stats.map((stat: StatsArgs) => {
             let stats = energyData.stats[stat.id] ?? [];
-            const currentState = getPowerFromState(this.hass.states[stat.id]);
-            if (currentState !== undefined) {
-              stats.push({ start: now, end: now, mean: currentState });
-            }
             if (stat.negate) {
               stats = stats.map((point) => {
                 if (point.mean)
@@ -240,6 +236,13 @@ export class HuiPowerSourcesGraphCard
                   };
                 return point;
               });
+            }
+            const currentState = getPowerFromState(
+              this.hass.states[stat.id],
+              !!stat.negate
+            );
+            if (currentState !== undefined) {
+              stats.push({ start: now, end: now, mean: currentState });
             }
             return stats;
           })

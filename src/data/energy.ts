@@ -1374,15 +1374,22 @@ export const calculateSolarConsumedGauge = (
 /**
  * Get current power value from entity state, normalized to kW
  * @param stateObj - The entity state object to get power value from
+ * @param invertFlow - Whether to reverse the direction of the power flow
  * @returns Power value in kW, or 0 if entity not found or invalid
  */
-export const getPowerFromState = (stateObj: HassEntity): number | undefined => {
+export const getPowerFromState = (
+  stateObj: HassEntity,
+  invertFlow = false
+): number | undefined => {
   if (!stateObj) {
     return undefined;
   }
-  const value = parseFloat(stateObj.state);
+  let value = parseFloat(stateObj.state);
   if (isNaN(value)) {
     return undefined;
+  }
+  if (invertFlow) {
+    value = -value;
   }
 
   // Normalize to kW based on unit of measurement (case-sensitive)
