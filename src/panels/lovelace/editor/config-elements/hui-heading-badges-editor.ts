@@ -38,6 +38,10 @@ export class HuiHeadingBadgesEditor extends LitElement {
     return this._badgesKeys.get(badge)!;
   }
 
+  private _createValueChangedHandler(index: number) {
+    return (ev: CustomEvent) => this._valueChanged(ev, index);
+  }
+
   protected render() {
     if (!this.hass) {
       return nothing;
@@ -72,8 +76,9 @@ export class HuiHeadingBadgesEditor extends LitElement {
                                 hide-clear-icon
                                 .hass=${this.hass}
                                 .value=${badge.entity as string}
-                                @value-changed=${(ev) =>
-                                  this._valueChanged(ev, index)}
+                                @value-changed=${this._createValueChangedHandler(
+                                  index
+                                )}
                               ></ha-entity-picker>
                             `
                           : html`
