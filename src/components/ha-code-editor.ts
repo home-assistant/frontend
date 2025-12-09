@@ -13,8 +13,8 @@ import {
   mdiArrowCollapse,
   mdiArrowExpand,
   mdiContentCopy,
-  mdiFlask,
-  mdiFlaskOff,
+  mdiBug,
+  mdiBugOutline,
   mdiRedo,
   mdiUndo,
 } from "@mdi/js";
@@ -377,7 +377,7 @@ export class HaCodeEditor extends ReactiveElement {
                 this.hass?.localize(
                   `ui.components.yaml-editor.test_${this.testing ? "off" : "on"}`
                 ) || "Test",
-              path: this.testing ? mdiFlaskOff : mdiFlask,
+              path: this.testing ? mdiBugOutline : mdiBug,
               action: (e: Event) => this._handleTestClick(e),
             },
           ]
