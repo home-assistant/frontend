@@ -155,7 +155,7 @@ export class HuiHeadingBadgesEditor extends LitElement {
   private _valueChanged(ev: CustomEvent, index: number): void {
     ev.stopPropagation();
     const value = ev.detail.value;
-    const newBadges = (this.badges || []).concat();
+    const newBadges = [...(this.badges || [])];
 
     if (value === "" || value === undefined) {
       newBadges.splice(index, 1);
