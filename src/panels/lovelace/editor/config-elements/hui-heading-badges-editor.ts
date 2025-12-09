@@ -147,7 +147,7 @@ export class HuiHeadingBadgesEditor extends LitElement {
       type: "entity",
       entity: ev.detail.value,
     };
-    const newBadges = (this.badges || []).concat(newEntity);
+    const newBadges = [...(this.badges || []), newEntity];
     (ev.target as HaEntityPicker).value = undefined;
     fireEvent(this, "heading-badges-changed", { badges: newBadges });
   }
@@ -157,7 +157,7 @@ export class HuiHeadingBadgesEditor extends LitElement {
     const value = ev.detail.value;
     const newBadges = [...(this.badges || [])];
 
-    if (value === "" || value === undefined) {
+    if (!value) {
       newBadges.splice(index, 1);
     } else {
       newBadges[index] = {
