@@ -99,7 +99,6 @@ import type { HUIView } from "./views/hui-view";
 import "./views/hui-view-background";
 import "./views/hui-view-container";
 import { UndoRedoController } from "../../common/controllers/undo-redo-controller";
-import { withViewTransition } from "../../common/util/view-transition";
 
 interface ActionItem {
   icon: string;
@@ -1246,9 +1245,7 @@ class HUIRoot extends LitElement {
     const viewIndex = Number(ev.detail.name);
     if (viewIndex !== this._curView) {
       const path = this.config.views[viewIndex].path || viewIndex;
-      withViewTransition(() => {
-        this._navigateToView(path);
-      });
+      this._navigateToView(path);
     } else if (!this._editMode) {
       scrollTo({ behavior: "smooth", top: 0 });
     }

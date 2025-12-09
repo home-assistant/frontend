@@ -13,7 +13,6 @@ import "../components/ha-svg-icon";
 import "../components/ha-tab";
 import { haStyleScrollbar } from "../resources/styles";
 import type { HomeAssistant, Route } from "../types";
-import { withViewTransition } from "../common/util/view-transition";
 
 export interface PageNavigation {
   path: string;
@@ -113,11 +112,9 @@ class HassTabsSubpage extends LitElement {
 
   public willUpdate(changedProperties: PropertyValues) {
     if (changedProperties.has("route")) {
-      withViewTransition(() => {
-        this._activeTab = this.tabs.find((tab) =>
-          `${this.route.prefix}${this.route.path}`.includes(tab.path)
-        );
-      });
+      this._activeTab = this.tabs.find((tab) =>
+        `${this.route.prefix}${this.route.path}`.includes(tab.path)
+      );
     }
     super.willUpdate(changedProperties);
   }
