@@ -3304,7 +3304,8 @@
               "entity_id": "Entity ID",
               "type": "Type",
               "editable": "Editable",
-              "category": "Category"
+              "category": "Category",
+              "area": "Area"
             },
             "create_helper": "Create helper",
             "no_helpers": "Looks like you don't have any helpers yet!",
