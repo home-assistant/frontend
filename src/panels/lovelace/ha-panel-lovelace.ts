@@ -327,7 +327,7 @@ export class LovelacePanel extends LitElement {
   }
 
   public get urlPath() {
-    return this.panel!.url_path === "lovelace" ? null : this.panel!.url_path;
+    return this.panel!.url_path;
   }
 
   private _forceFetchConfig() {
