@@ -5,8 +5,8 @@ import { customElement, property } from "lit/decorators";
 import { repeat } from "lit/directives/repeat";
 import { fireEvent } from "../../../../common/dom/fire_event";
 import { preventDefault } from "../../../../common/dom/prevent_default";
-import { computeStateName } from "../../../../common/entity/compute_state_name";
 import "../../../../components/entity/ha-entity-picker";
+import type { HaEntityPicker } from "../../../../components/entity/ha-entity-picker";
 import "../../../../components/ha-button";
 import "../../../../components/ha-icon-button";
 import "../../../../components/ha-sortable";
@@ -38,22 +38,6 @@ export class HuiHeadingBadgesEditor extends LitElement {
     return this._badgesKeys.get(badge)!;
   }
 
-  private _computeBadgeLabel(badge: LovelaceHeadingBadgeConfig) {
-    const type = badge.type ?? "entity";
-
-    if (type === "entity") {
-      const entityId = "entity" in badge ? (badge.entity as string) : undefined;
-      const stateObj = entityId ? this.hass.states[entityId] : undefined;
-      return (
-        (stateObj && computeStateName(stateObj)) ||
-        entityId ||
-        type ||
-        "Unknown badge"
-      );
-    }
-    return type;
-  }
-
   protected render() {
     if (!this.hass) {
       return nothing;
@@ -71,7 +55,9 @@ export class HuiHeadingBadgesEditor extends LitElement {
                   this.badges,
                   (badge) => this._getKey(badge),
                   (badge, index) => {
-                    const label = this._computeBadgeLabel(badge);
+                    const type = badge.type ?? "entity";
+                    const isEntityBadge =
+                      type === "entity" && "entity" in badge;
                     return html`
                       <div class="badge">
                         <div class="handle">
@@ -79,9 +65,22 @@ export class HuiHeadingBadgesEditor extends LitElement {
                             .path=${mdiDragHorizontalVariant}
                           ></ha-svg-icon>
                         </div>
-                        <div class="badge-content">
-                          <span>${label}</span>
-                        </div>
+                        ${isEntityBadge
+                          ? html`
+                              <ha-entity-picker
+                                allow-custom-entity
+                                hide-clear-icon
+                                .hass=${this.hass}
+                                .value=${badge.entity as string}
+                                .index=${index}
+                                @value-changed=${this._valueChanged}
+                              ></ha-entity-picker>
+                            `
+                          : html`
+                              <div class="badge-content">
+                                <span>${type}</span>
+                              </div>
+                            `}
                         <ha-icon-button
                           .label=${this.hass!.localize(
                             `ui.panel.lovelace.editor.entities.edit`
@@ -128,7 +127,7 @@ export class HuiHeadingBadgesEditor extends LitElement {
     `;
   }
 
-  private _entityPicked(ev) {
+  private _entityPicked(ev: CustomEvent): void {
     ev.stopPropagation();
     if (!ev.detail.value) {
       return;
@@ -138,6 +137,25 @@ export class HuiHeadingBadgesEditor extends LitElement {
       entity: ev.detail.value,
     };
     const newBadges = (this.badges || []).concat(newEntity);
+    (ev.target as HaEntityPicker).value = "";
+    fireEvent(this, "heading-badges-changed", { badges: newBadges });
+  }
+
+  private _valueChanged(ev: CustomEvent): void {
+    ev.stopPropagation();
+    const value = ev.detail.value;
+    const index = (ev.target as any).index;
+    const newBadges = (this.badges || []).concat();
+
+    if (value === "" || value === undefined) {
+      newBadges.splice(index, 1);
+    } else {
+      newBadges[index] = {
+        ...newBadges[index],
+        entity: value!,
+      };
+    }
+
     fireEvent(this, "heading-badges-changed", { badges: newBadges });
   }
 
@@ -176,6 +194,13 @@ export class HuiHeadingBadgesEditor extends LitElement {
     ha-button {
       margin-top: 8px;
     }
+
+    .entities {
+      display: flex;
+      flex-direction: column;
+      gap: 8px;
+    }
+
     .badge {
       display: flex;
       align-items: center;
@@ -206,6 +231,12 @@ export class HuiHeadingBadgesEditor extends LitElement {
       flex-direction: column;
     }
 
+    .badge ha-entity-picker {
+      flex-grow: 1;
+      min-width: 0;
+      margin-top: 0;
+    }
+
     .remove-icon,
     .edit-icon {
       --mdc-icon-button-size: 36px;
@@ -224,6 +255,7 @@ export class HuiHeadingBadgesEditor extends LitElement {
     .add-container {
       position: relative;
       width: 100%;
+      margin-top: 8px;
     }
 
     mwc-menu-surface {
