@@ -220,12 +220,12 @@ const tryDescribeAction = <T extends ActionType>(
     if (config.action) {
       const [domain, serviceName] = config.action.split(".", 2);
       const descriptionPlaceholders =
-        hass.services[domain][serviceName].description_placeholders;
+        hass.services[domain]?.[serviceName]?.description_placeholders;
       const service =
         hass.localize(
           `component.${domain}.services.${serviceName}.name`,
           descriptionPlaceholders
-        ) || hass.services[domain][serviceName]?.name;
+        ) || hass.services[domain]?.[serviceName]?.name;
 
       if (config.metadata) {
         return hass.localize(

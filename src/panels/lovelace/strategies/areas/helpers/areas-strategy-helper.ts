@@ -5,7 +5,6 @@ import { generateEntityFilter } from "../../../../../common/entity/entity_filter
 import { stripPrefixFromEntityName } from "../../../../../common/entity/strip_prefix_from_entity_name";
 import { orderCompare } from "../../../../../common/string/compare";
 import type { AreaRegistryEntry } from "../../../../../data/area_registry";
-import { areaCompare } from "../../../../../data/area_registry";
 import type { FloorRegistryEntry } from "../../../../../data/floor_registry";
 import type { LovelaceCardConfig } from "../../../../../data/lovelace/config/card";
 import type { HomeAssistant } from "../../../../../types";
@@ -287,7 +286,11 @@ export const getAreas = (
     ? areas.filter((area) => !hiddenAreas!.includes(area.area_id))
     : areas.concat();
 
-  const compare = areaCompare(entries, areasOrder);
+  if (!areasOrder) {
+    return filteredAreas;
+  }
+
+  const compare = orderCompare(areasOrder);
 
   const sortedAreas = filteredAreas.sort((areaA, areaB) =>
     compare(areaA.area_id, areaB.area_id)

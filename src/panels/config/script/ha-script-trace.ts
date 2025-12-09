@@ -1,3 +1,4 @@
+import "@home-assistant/webawesome/dist/components/divider/divider";
 import {
   mdiDotsVertical,
   mdiDownload,
@@ -8,17 +9,19 @@ import {
   mdiRefresh,
 } from "@mdi/js";
 import type { CSSResultGroup, TemplateResult } from "lit";
-import { css, html, LitElement } from "lit";
+import { css, html, LitElement, nothing } from "lit";
 import { customElement, property, query, state } from "lit/decorators";
 import { classMap } from "lit/directives/class-map";
 import { repeat } from "lit/directives/repeat";
 import { isComponentLoaded } from "../../../common/config/is_component_loaded";
 import { formatDateTimeWithSeconds } from "../../../common/datetime/format_date_time";
 import { fireEvent } from "../../../common/dom/fire_event";
-import "../../../components/ha-button-menu";
+import { navigate } from "../../../common/navigate";
 import "../../../components/ha-button";
+import "../../../components/ha-dropdown";
+import "../../../components/ha-dropdown-item";
+import type { HaDropdownItem } from "../../../components/ha-dropdown-item";
 import "../../../components/ha-icon-button";
-import "../../../components/ha-list-item";
 import "../../../components/trace/ha-trace-blueprint-config";
 import "../../../components/trace/ha-trace-config";
 import "../../../components/trace/ha-trace-logbook";
@@ -104,7 +107,7 @@ export class HaScriptTrace extends LitElement {
           ? html`
               <ha-button
                 class="trace-link"
-                href="/config/script/edit/${this.scriptId}"
+                @click=${this._navigateToScript}
                 slot="toolbar-icon"
                 appearance="plain"
               >
@@ -113,64 +116,49 @@ export class HaScriptTrace extends LitElement {
                 )}
               </ha-button>
             `
-          : ""}
+          : nothing}
 
-        <ha-button-menu slot="toolbar-icon">
+        <ha-dropdown
+          slot="toolbar-icon"
+          @wa-select=${this._handleDropdownSelect}
+        >
           <ha-icon-button
             slot="trigger"
             .label=${this.hass.localize("ui.common.menu")}
             .path=${mdiDotsVertical}
           ></ha-icon-button>
 
-          <ha-list-item
-            graphic="icon"
-            .disabled=${!stateObj}
-            @click=${this._showInfo}
-          >
+          <ha-dropdown-item .disabled=${!stateObj} value="show_info">
             ${this.hass.localize("ui.panel.config.script.editor.show_info")}
             <ha-svg-icon
-              slot="graphic"
+              slot="icon"
               .path=${mdiInformationOutline}
             ></ha-svg-icon>
-          </ha-list-item>
+          </ha-dropdown-item>
 
           ${this.narrow && this.scriptId
-            ? html`
-                <a
-                  class="trace-link"
-                  href="/config/script/edit/${this.scriptId}"
-                >
-                  <ha-list-item graphic="icon">
-                    ${this.hass.localize(
-                      "ui.panel.config.script.trace.edit_script"
-                    )}
-                    <ha-svg-icon
-                      slot="graphic"
-                      .path=${mdiPencil}
-                    ></ha-svg-icon>
-                  </ha-list-item>
-                </a>
-              `
-            : ""}
+            ? html`<ha-dropdown-item value="edit_script">
+                ${this.hass.localize(
+                  "ui.panel.config.script.trace.edit_script"
+                )}
+                <ha-svg-icon slot="icon" .path=${mdiPencil}></ha-svg-icon>
+              </ha-dropdown-item> `
+            : nothing}
 
-          <li divider role="separator"></li>
+          <wa-divider></wa-divider>
 
-          <ha-list-item graphic="icon" @click=${this._refreshTraces}>
+          <ha-dropdown-item value="refresh">
             ${this.hass.localize("ui.panel.config.automation.trace.refresh")}
-            <ha-svg-icon slot="graphic" .path=${mdiRefresh}></ha-svg-icon>
-          </ha-list-item>
+            <ha-svg-icon slot="icon" .path=${mdiRefresh}></ha-svg-icon>
+          </ha-dropdown-item>
 
-          <ha-list-item
-            graphic="icon"
-            .disabled=${!this._trace}
-            @click=${this._downloadTrace}
-          >
+          <ha-dropdown-item .disabled=${!this._trace} value="download_trace">
             ${this.hass.localize(
               "ui.panel.config.automation.trace.download_trace"
             )}
-            <ha-svg-icon slot="graphic" .path=${mdiDownload}></ha-svg-icon>
-          </ha-list-item>
-        </ha-button-menu>
+            <ha-svg-icon slot="icon" .path=${mdiDownload}></ha-svg-icon>
+          </ha-dropdown-item>
+        </ha-dropdown>
 
         <div class="toolbar">
           ${this._traces && this._traces.length > 0
@@ -528,6 +516,35 @@ export class HaScriptTrace extends LitElement {
       return;
     }
     fireEvent(this, "hass-more-info", { entityId: this._entityId });
+  }
+
+  private _navigateToScript() {
+    if (this.scriptId) {
+      navigate(`/config/script/edit/${this.scriptId}`);
+    }
+  }
+
+  private _handleDropdownSelect(ev: CustomEvent<{ item: HaDropdownItem }>) {
+    const action = ev.detail?.item?.value;
+
+    if (!action) {
+      return;
+    }
+
+    switch (action) {
+      case "show_info":
+        this._showInfo();
+        break;
+      case "refresh":
+        this._refreshTraces();
+        break;
+      case "download_trace":
+        this._downloadTrace();
+        break;
+      case "edit_script":
+        this._navigateToScript();
+        break;
+    }
   }
 
   static get styles(): CSSResultGroup {

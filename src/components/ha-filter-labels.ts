@@ -167,30 +167,33 @@ export class HaFilterLabels extends SubscribeMixin(LitElement) {
   }
 
   private async _labelSelected(ev: CustomEvent<SelectedDetail<Set<number>>>) {
-    if (!ev.detail.index.size) {
-      fireEvent(this, "data-table-filter-changed", {
-        value: [],
-        items: undefined,
-      });
-      this.value = [];
-      return;
-    }
-
-    const value: string[] = [];
     const filteredLabels = this._filteredLabels(
       this._labels,
       this._filter,
       this.value
     );
 
+    const filteredLabelIds = new Set(filteredLabels.map((l) => l.label_id));
+
+    // Keep previously selected labels that are not in the current filtered view
+    const preservedLabels = (this.value || []).filter(
+      (id) => !filteredLabelIds.has(id)
+    );
+
+    // Build the new selection from the filtered labels based on selected indices
+    const newlySelectedLabels: string[] = [];
     for (const index of ev.detail.index) {
-      const labelId = filteredLabels[index].label_id;
-      value.push(labelId);
+      const labelId = filteredLabels[index]?.label_id;
+      if (labelId) {
+        newlySelectedLabels.push(labelId);
+      }
     }
-    this.value = value;
+
+    const value = [...preservedLabels, ...newlySelectedLabels];
+    this.value = value.length ? value : [];
 
     fireEvent(this, "data-table-filter-changed", {
-      value,
+      value: value.length ? value : undefined,
       items: undefined,
     });
   }

@@ -156,7 +156,9 @@ const createTestTranslation = () =>
  */
 const createMasterTranslation = () =>
   gulp
-    .src([EN_SRC, ...(mergeBackend ? [`${inBackendDir}/en.json`] : [])])
+    .src([EN_SRC, ...(mergeBackend ? [`${inBackendDir}/en.json`] : [])], {
+      allowEmpty: true,
+    })
     .pipe(new CustomJSON(lokaliseTransform))
     .pipe(new MergeJSON("en"))
     .pipe(gulp.dest(workDir));

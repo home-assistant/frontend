@@ -7,8 +7,8 @@ import type { LovelaceStrategyConfig } from "../../../data/lovelace/config/strat
 import { DEFAULT_ENERGY_COLLECTION_KEY } from "../ha-panel-energy";
 import type { LovelaceSectionConfig } from "../../../data/lovelace/config/section";
 
-@customElement("water-view-strategy")
-export class WaterViewStrategy extends ReactiveElement {
+@customElement("gas-view-strategy")
+export class GasViewStrategy extends ReactiveElement {
   static async generate(
     _config: LovelaceStrategyConfig,
     hass: HomeAssistant
@@ -29,13 +29,12 @@ export class WaterViewStrategy extends ReactiveElement {
     }
     const prefs = energyCollection.prefs;
 
-    const hasWaterSources = prefs?.energy_sources.some(
-      (source) => source.type === "water"
+    const hasGasSources = prefs?.energy_sources.some(
+      (source) => source.type === "gas"
     );
-    const hasWaterDevices = prefs?.device_consumption_water?.length;
 
-    // No water sources available
-    if (!prefs || (!hasWaterDevices && !hasWaterSources)) {
+    // No gas sources available
+    if (!prefs || !hasGasSources) {
       return view;
     }
 
@@ -50,38 +49,18 @@ export class WaterViewStrategy extends ReactiveElement {
       collection_key: collectionKey,
     });
 
-    if (hasWaterSources) {
-      section.cards!.push({
-        title: hass.localize("ui.panel.energy.cards.energy_water_graph_title"),
-        type: "energy-water-graph",
-        collection_key: collectionKey,
-      });
-    }
+    section.cards!.push({
+      title: hass.localize("ui.panel.energy.cards.energy_gas_graph_title"),
+      type: "energy-gas-graph",
+      collection_key: collectionKey,
+    });
 
-    if (hasWaterSources) {
-      section.cards!.push({
-        title: hass.localize(
-          "ui.panel.energy.cards.energy_sources_table_title"
-        ),
-        type: "energy-sources-table",
-        collection_key: collectionKey,
-        types: ["water"],
-      });
-    }
-
-    // Only include if we have at least 1 water device in the config.
-    if (hasWaterDevices) {
-      const showFloorsNAreas = !prefs.device_consumption_water.some(
-        (d) => d.included_in_stat
-      );
-      section.cards!.push({
-        title: hass.localize("ui.panel.energy.cards.water_sankey_title"),
-        type: "water-sankey",
-        collection_key: collectionKey,
-        group_by_floor: showFloorsNAreas,
-        group_by_area: showFloorsNAreas,
-      });
-    }
+    section.cards!.push({
+      title: hass.localize("ui.panel.energy.cards.energy_sources_table_title"),
+      type: "energy-sources-table",
+      collection_key: collectionKey,
+      types: ["gas"],
+    });
 
     return view;
   }
@@ -89,6 +68,6 @@ export class WaterViewStrategy extends ReactiveElement {
 
 declare global {
   interface HTMLElementTagNameMap {
-    "water-view-strategy": WaterViewStrategy;
+    "gas-view-strategy": GasViewStrategy;
   }
 }

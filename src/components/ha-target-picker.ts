@@ -15,17 +15,30 @@ import { fireEvent } from "../common/dom/fire_event";
 import { isValidEntityId } from "../common/entity/valid_entity_id";
 import { computeRTL } from "../common/util/compute_rtl";
 import {
+  areaFloorComboBoxKeys,
   getAreasAndFloors,
   type AreaFloorValue,
   type FloorComboBoxItem,
 } from "../data/area_floor";
 import { getConfigEntries, type ConfigEntry } from "../data/config_entries";
 import { labelsContext } from "../data/context";
-import { getDevices, type DevicePickerItem } from "../data/device_registry";
+import {
+  deviceComboBoxKeys,
+  getDevices,
+  type DevicePickerItem,
+} from "../data/device_registry";
 import type { HaEntityPickerEntityFilterFunc } from "../data/entity";
-import { getEntities, type EntityComboBoxItem } from "../data/entity_registry";
+import {
+  entityComboBoxKeys,
+  getEntities,
+  type EntityComboBoxItem,
+} from "../data/entity_registry";
 import { domainToName } from "../data/integration";
-import { getLabels, type LabelRegistryEntry } from "../data/label_registry";
+import {
+  getLabels,
+  labelComboBoxKeys,
+  type LabelRegistryEntry,
+} from "../data/label_registry";
 import {
   areaMeetsFilter,
   deviceMeetsFilter,
@@ -37,7 +50,11 @@ import {
 import { SubscribeMixin } from "../mixins/subscribe-mixin";
 import { isHelperDomain } from "../panels/config/helpers/const";
 import { showHelperDetailDialog } from "../panels/config/helpers/show-dialog-helper-detail";
-import { HaFuse } from "../resources/fuse";
+import {
+  multiTermSearch,
+  multiTermSortedSearch,
+  type FuseWeightedKey,
+} from "../resources/fuseMultiTerm";
 import type { HomeAssistant } from "../types";
 import { brandsUrl } from "../util/brands-url";
 import type { HaDevicePickerDeviceFilterFunc } from "./device/ha-device-picker";
@@ -113,16 +130,16 @@ export class HaTargetPicker extends SubscribeMixin(LitElement) {
 
   private _fuseIndexes = {
     area: memoizeOne((states: FloorComboBoxItem[]) =>
-      this._createFuseIndex(states)
+      this._createFuseIndex(states, areaFloorComboBoxKeys)
     ),
     entity: memoizeOne((states: EntityComboBoxItem[]) =>
-      this._createFuseIndex(states)
+      this._createFuseIndex(states, entityComboBoxKeys)
     ),
     device: memoizeOne((states: DevicePickerItem[]) =>
-      this._createFuseIndex(states)
+      this._createFuseIndex(states, deviceComboBoxKeys)
     ),
     label: memoizeOne((states: PickerComboBoxItem[]) =>
-      this._createFuseIndex(states)
+      this._createFuseIndex(states, labelComboBoxKeys)
     ),
   };
 
@@ -134,8 +151,8 @@ export class HaTargetPicker extends SubscribeMixin(LitElement) {
     }
   }
 
-  private _createFuseIndex = (states) =>
-    Fuse.createIndex(["search_labels"], states);
+  private _createFuseIndex = (states, keys: FuseWeightedKey[]) =>
+    Fuse.createIndex(keys, states);
 
   protected render() {
     if (this.addOnTop) {
@@ -735,8 +752,7 @@ export class HaTargetPicker extends SubscribeMixin(LitElement) {
             "entity",
             entityItems,
             searchTerm,
-            (item: EntityComboBoxItem) =>
-              item.stateObj?.entity_id === searchTerm
+            entityComboBoxKeys
           ) as EntityComboBoxItem[];
         }
 
@@ -765,7 +781,12 @@ export class HaTargetPicker extends SubscribeMixin(LitElement) {
         );
 
         if (searchTerm) {
-          deviceItems = this._filterGroup("device", deviceItems, searchTerm);
+          deviceItems = this._filterGroup(
+            "device",
+            deviceItems,
+            searchTerm,
+            deviceComboBoxKeys
+          );
         }
 
         if (!filterType && deviceItems.length) {
@@ -799,7 +820,9 @@ export class HaTargetPicker extends SubscribeMixin(LitElement) {
           areasAndFloors = this._filterGroup(
             "area",
             areasAndFloors,
-            searchTerm
+            searchTerm,
+            areaFloorComboBoxKeys,
+            false
           ) as FloorComboBoxItem[];
         }
 
@@ -844,7 +867,12 @@ export class HaTargetPicker extends SubscribeMixin(LitElement) {
         );
 
         if (searchTerm) {
-          labels = this._filterGroup("label", labels, searchTerm);
+          labels = this._filterGroup(
+            "label",
+            labels,
+            searchTerm,
+            labelComboBoxKeys
+          );
         }
 
         if (!filterType && labels.length) {
@@ -863,40 +891,24 @@ export class HaTargetPicker extends SubscribeMixin(LitElement) {
     type: TargetType,
     items: (FloorComboBoxItem | PickerComboBoxItem | EntityComboBoxItem)[],
     searchTerm: string,
-    checkExact?: (
-      item: FloorComboBoxItem | PickerComboBoxItem | EntityComboBoxItem
-    ) => boolean
+    weightedKeys: FuseWeightedKey[],
+    sort = true
   ) {
     const fuseIndex = this._fuseIndexes[type](items);
-    const fuse = new HaFuse(
-      items,
-      {
-        shouldSort: false,
-        minMatchCharLength: Math.min(searchTerm.length, 2),
-      },
-      fuseIndex
-    );
 
-    const results = fuse.multiTermsSearch(searchTerm);
-    let filteredItems = items;
-    if (results) {
-      filteredItems = results.map((result) => result.item);
+    if (sort) {
+      return multiTermSortedSearch(
+        items,
+        searchTerm,
+        weightedKeys,
+        (item) => item.id,
+        fuseIndex
+      );
     }
 
-    if (!checkExact) {
-      return filteredItems;
-    }
-
-    // If there is exact match for entity id, put it first
-    const index = filteredItems.findIndex((item) => checkExact(item));
-    if (index === -1) {
-      return filteredItems;
-    }
-
-    const [exactMatch] = filteredItems.splice(index, 1);
-    filteredItems.unshift(exactMatch);
-
-    return filteredItems;
+    return multiTermSearch(items, searchTerm, weightedKeys, fuseIndex, {
+      ignoreLocation: true,
+    });
   }
 
   private _getAdditionalItems = () => this._getCreateItems(this.createDomains);

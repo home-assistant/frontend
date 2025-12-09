@@ -21,6 +21,9 @@ export class EnergyViewStrategy extends ReactiveElement {
     const energyCollection = getEnergyDataCollection(hass, {
       key: collectionKey,
     });
+    if (!energyCollection.prefs) {
+      await energyCollection.refresh();
+    }
     const prefs = energyCollection.prefs;
 
     // No energy sources available
@@ -50,6 +53,10 @@ export class EnergyViewStrategy extends ReactiveElement {
       (d) => d.included_in_stat
     );
 
+    view.cards!.push({
+      type: "energy-date-selection",
+      collection_key: collectionKey,
+    });
     view.cards!.push({
       type: "energy-compare",
       collection_key: "energy_dashboard",
@@ -133,11 +140,11 @@ export class EnergyViewStrategy extends ReactiveElement {
     // Only include if we have at least 1 device in the config.
     if (prefs.device_consumption.length) {
       view.cards!.push({
-        title: hass.localize("ui.panel.energy.cards.energy_sankey_title"),
-        type: "energy-sankey",
+        title: hass.localize(
+          "ui.panel.energy.cards.energy_devices_detail_graph_title"
+        ),
+        type: "energy-devices-detail-graph",
         collection_key: "energy_dashboard",
-        group_by_floor: showFloorsNAreas,
-        group_by_area: showFloorsNAreas,
       });
       view.cards!.push({
         title: hass.localize(
@@ -147,11 +154,11 @@ export class EnergyViewStrategy extends ReactiveElement {
         collection_key: "energy_dashboard",
       });
       view.cards!.push({
-        title: hass.localize(
-          "ui.panel.energy.cards.energy_devices_detail_graph_title"
-        ),
-        type: "energy-devices-detail-graph",
+        title: hass.localize("ui.panel.energy.cards.energy_sankey_title"),
+        type: "energy-sankey",
         collection_key: "energy_dashboard",
+        group_by_floor: showFloorsNAreas,
+        group_by_area: showFloorsNAreas,
       });
     }
 

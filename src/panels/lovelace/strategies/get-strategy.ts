@@ -42,6 +42,7 @@ const STRATEGIES: Record<LovelaceStrategyConfigType, Record<string, any>> = {
       import("../../energy/strategies/energy-overview-view-strategy"),
     energy: () => import("../../energy/strategies/energy-view-strategy"),
     water: () => import("../../energy/strategies/water-view-strategy"),
+    gas: () => import("../../energy/strategies/gas-view-strategy"),
     power: () => import("../../energy/strategies/power-view-strategy"),
     map: () => import("./map/map-view-strategy"),
     iframe: () => import("./iframe/iframe-view-strategy"),

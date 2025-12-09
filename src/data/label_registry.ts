@@ -7,6 +7,7 @@ import { stringCompare } from "../common/string/compare";
 import { debounce } from "../common/util/debounce";
 import type { HaDevicePickerDeviceFilterFunc } from "../components/device/ha-device-picker";
 import type { PickerComboBoxItem } from "../components/ha-picker-combo-box";
+import type { FuseWeightedKey } from "../resources/fuseMultiTerm";
 import type { HomeAssistant } from "../types";
 import {
   getDeviceEntityDisplayLookup,
@@ -99,6 +100,21 @@ export const deleteLabelRegistryEntry = (
     type: "config/label_registry/delete",
     label_id: labelId,
   });
+
+export const labelComboBoxKeys: FuseWeightedKey[] = [
+  {
+    name: "search_labels.name",
+    weight: 10,
+  },
+  {
+    name: "search_labels.description",
+    weight: 5,
+  },
+  {
+    name: "search_labels.id",
+    weight: 4,
+  },
+];
 
 export const getLabels = (
   hassStates: HomeAssistant["states"],
@@ -273,9 +289,11 @@ export const getLabels = (
     icon: label.icon || undefined,
     icon_path: label.icon ? undefined : mdiLabel,
     sorting_label: label.name,
-    search_labels: [label.name, label.label_id, label.description].filter(
-      (v): v is string => Boolean(v)
-    ),
+    search_labels: {
+      name: label.name,
+      description: label.description,
+      id: label.label_id,
+    },
   }));
 
   return items;
