@@ -246,7 +246,7 @@ export class HaGenericPicker extends LitElement {
 
   private _unknownValue = memoizeOne(
     (value?: string, items?: (PickerComboBoxItem | string)[]) => {
-      if (value === undefined || !items) {
+      if (value === undefined || value === null || value === "" || !items) {
         return false;
       }
 
