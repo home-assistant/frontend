@@ -138,7 +138,11 @@ export class HaIconPicker extends LitElement {
       for (const item of items) {
         const iconName = item.id.split(":")[1] || item.id;
         const parts = iconName.split("-");
-        const keywords = item.search_labels?.slice(1) || [];
+        const keywords = item.search_labels
+          ? Object.values(item.search_labels).filter(
+              (v): v is string => v !== null
+            )
+          : [];
 
         if (parts.includes(filter)) {
           addIcon(item, 1);
@@ -158,7 +162,7 @@ export class HaIconPicker extends LitElement {
             id: filter,
             primary: filter,
             icon: filter,
-            search_labels: [filter],
+            search_labels: { keyword: filter },
             sorting_label: filter,
           },
           0
@@ -172,17 +176,25 @@ export class HaIconPicker extends LitElement {
   );
 
   private _getItems = (): PickerComboBoxItem[] =>
-    ICONS.map((icon: IconItem) => ({
-      id: icon.icon,
-      primary: icon.icon,
-      icon: icon.icon,
-      search_labels: [
-        icon.icon.split(":")[1] || icon.icon,
-        ...Array.from(icon.parts),
-        ...icon.keywords,
-      ],
-      sorting_label: icon.icon,
-    }));
+    ICONS.map((icon: IconItem) => {
+      const iconName = icon.icon.split(":")[1] || icon.icon;
+      const searchLabels: Record<string, string> = {
+        iconName,
+      };
+      Array.from(icon.parts).forEach((part, index) => {
+        searchLabels[`part${index}`] = part;
+      });
+      icon.keywords.forEach((keyword, index) => {
+        searchLabels[`keyword${index}`] = keyword;
+      });
+      return {
+        id: icon.icon,
+        primary: icon.icon,
+        icon: icon.icon,
+        search_labels: searchLabels,
+        sorting_label: icon.icon,
+      };
+    });
 
   protected firstUpdated() {
     if (!ICONS_LOADED) {
