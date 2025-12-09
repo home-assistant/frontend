@@ -142,7 +142,7 @@ export class HuiHeadingBadgesEditor extends LitElement {
       entity: ev.detail.value,
     };
     const newBadges = (this.badges || []).concat(newEntity);
-    (ev.target as HaEntityPicker).value = "";
+    (ev.target as HaEntityPicker).value = undefined;
     fireEvent(this, "heading-badges-changed", { badges: newBadges });
   }
 
