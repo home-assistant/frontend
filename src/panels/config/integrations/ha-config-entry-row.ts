@@ -8,6 +8,7 @@ import {
   mdiDotsVertical,
   mdiDownload,
   mdiHandExtendedOutline,
+  mdiOpenInNew,
   mdiPlayCircleOutline,
   mdiPlus,
   mdiProgressHelper,
@@ -213,34 +214,64 @@ class HaConfigEntryRow extends LitElement {
           ? html`<ha-button slot="end" @click=${this._handleEnable}>
               ${this.hass.localize("ui.common.enable")}
             </ha-button>`
-          : configPanel &&
-              (item.domain !== "matter" ||
-                isDevVersion(this.hass.config.version)) &&
-              !stateText
-            ? html`<a
-                slot="end"
-                href=${`/${configPanel}?config_entry=${item.entry_id}`}
-                ><ha-icon-button
-                  .path=${mdiCogOutline}
-                  .label=${this.hass.localize(
-                    "ui.panel.config.integrations.config_entry.configure"
-                  )}
-                >
-                </ha-icon-button
-              ></a>`
-            : item.supports_options
-              ? html`
-                  <ha-icon-button
-                    slot="end"
-                    @click=${this._showOptions}
-                    .path=${mdiCogOutline}
-                    .label=${this.hass.localize(
-                      "ui.panel.config.integrations.config_entry.configure"
-                    )}
-                  >
-                  </ha-icon-button>
-                `
-              : nothing}
+          : (() => {
+              const configurationUrlIsHomeAssistant =
+                item.configuration_url?.startsWith("homeassistant://") || false;
+
+              const configurationUrl = configurationUrlIsHomeAssistant
+                ? item.configuration_url!.replace("homeassistant://", "/")
+                : item.configuration_url;
+
+              const isLocalUrl =
+                configurationUrl?.startsWith("/") ||
+                configurationUrlIsHomeAssistant;
+
+              return html`
+                ${configurationUrl
+                  ? html`<a
+                      slot="end"
+                      href=${configurationUrl}
+                      target=${isLocalUrl ? undefined : "_blank"}
+                      rel=${isLocalUrl ? undefined : "noreferrer"}
+                    >
+                      <ha-icon-button
+                        .path=${mdiOpenInNew}
+                        .label=${this.hass.localize(
+                          "ui.panel.config.integrations.config_entry.open_configuration_url"
+                        )}
+                      ></ha-icon-button>
+                    </a>`
+                  : nothing}
+                ${configPanel &&
+                (item.domain !== "matter" ||
+                  isDevVersion(this.hass.config.version)) &&
+                !stateText
+                  ? html`<a
+                      slot="end"
+                      href=${`/${configPanel}?config_entry=${item.entry_id}`}
+                      ><ha-icon-button
+                        .path=${mdiCogOutline}
+                        .label=${this.hass.localize(
+                          "ui.panel.config.integrations.config_entry.configure"
+                        )}
+                      >
+                      </ha-icon-button
+                    ></a>`
+                  : item.supports_options
+                    ? html`
+                        <ha-icon-button
+                          slot="end"
+                          @click=${this._showOptions}
+                          .path=${mdiCogOutline}
+                          .label=${this.hass.localize(
+                            "ui.panel.config.integrations.config_entry.configure"
+                          )}
+                        >
+                        </ha-icon-button>
+                      `
+                    : nothing}
+              `;
+            })()}
         <ha-md-button-menu positioning="popover" slot="end">
           <ha-icon-button
             slot="trigger"
