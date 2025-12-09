@@ -60,7 +60,6 @@ export class DialogLovelaceDashboardDetail extends LitElement {
     }
 
     const titleInvalid = !this._data.title || !this._data.title.trim();
-    const isLovelaceDashboard = this._params.urlPath === "lovelace";
 
     return html`
       <ha-dialog
@@ -85,20 +84,16 @@ export class DialogLovelaceDashboardDetail extends LitElement {
             ? this.hass.localize(
                 "ui.panel.config.lovelace.dashboards.cant_edit_yaml"
               )
-            : isLovelaceDashboard
-              ? this.hass.localize(
-                  "ui.panel.config.lovelace.dashboards.cant_edit_lovelace"
-                )
-              : html`
-                  <ha-form
-                    .schema=${this._schema(this._params)}
-                    .data=${this._data}
-                    .hass=${this.hass}
-                    .error=${this._error}
-                    .computeLabel=${this._computeLabel}
-                    @value-changed=${this._valueChanged}
-                  ></ha-form>
-                `}
+            : html`
+                <ha-form
+                  .schema=${this._schema(this._params)}
+                  .data=${this._data}
+                  .hass=${this.hass}
+                  .error=${this._error}
+                  .computeLabel=${this._computeLabel}
+                  @value-changed=${this._valueChanged}
+                ></ha-form>
+              `}
         </div>
         ${this._params.urlPath
           ? html`

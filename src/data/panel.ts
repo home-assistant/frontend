@@ -8,7 +8,6 @@ import {
   mdiLightningBolt,
   mdiPlayBoxMultiple,
   mdiTooltipAccount,
-  mdiViewDashboard,
 } from "@mdi/js";
 import type { HomeAssistant, PanelInfo } from "../types";
 import type { PageNavigation } from "../layouts/hass-tabs-subpage";
@@ -35,10 +34,6 @@ export const getDefaultPanel = (hass: HomeAssistant): PanelInfo => {
 };
 
 export const getPanelNameTranslationKey = (panel: PanelInfo) => {
-  if (panel.url_path === "lovelace") {
-    return "panel.states" as const;
-  }
-
   if (panel.url_path === "profile") {
     return "panel.profile" as const;
   }
@@ -113,8 +108,6 @@ export const getPanelIcon = (panel: PanelInfo): string | undefined => {
     switch (panel.component_name) {
       case "profile":
         return "mdi:account";
-      case "lovelace":
-        return "mdi:view-dashboard";
     }
   }
 
@@ -127,9 +120,8 @@ export const PANEL_ICON_PATHS = {
   energy: mdiLightningBolt,
   history: mdiChartBox,
   logbook: mdiFormatListBulletedType,
-  lovelace: mdiViewDashboard,
-  profile: mdiAccount,
   map: mdiTooltipAccount,
+  profile: mdiAccount,
   "media-browser": mdiPlayBoxMultiple,
   todo: mdiClipboardList,
 };
