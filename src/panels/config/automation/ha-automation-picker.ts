@@ -444,7 +444,7 @@ class HaAutomationPicker extends SubscribeMixin(LitElement) {
           );
         return html`<ha-dropdown-item
           .value=${label.label_id}
-          .action=${selected ? "remove" : "add"}
+          data-action=${selected ? "remove" : "add"}
           @click=${this._handleBulkLabel}
           keep-open
         >
@@ -763,7 +763,7 @@ class HaAutomationPicker extends SubscribeMixin(LitElement) {
                   return html`<ha-dropdown-item
                     slot="submenu"
                     .value=${label.label_id}
-                    .action=${selected ? "remove" : "add"}
+                    data-action=${selected ? "remove" : "add"}
                     @click=${this._handleBulkLabel}
                     keep-open
                   >
@@ -1339,7 +1339,7 @@ ${rejected
 
   private async _handleBulkLabel(ev) {
     const label = ev.currentTarget.value;
-    const action = ev.currentTarget.action;
+    const action = ev.currentTarget.dataset.action;
     this._bulkLabel(label, action);
   }
 
