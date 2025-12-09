@@ -12,7 +12,10 @@ import "../../../../components/ha-icon-button";
 import "../../../../components/ha-sortable";
 import "../../../../components/ha-svg-icon";
 import type { HomeAssistant } from "../../../../types";
-import type { LovelaceHeadingBadgeConfig } from "../../heading-badges/types";
+import type {
+  EntityHeadingBadgeConfig,
+  LovelaceHeadingBadgeConfig,
+} from "../../heading-badges/types";
 
 declare global {
   interface HASSDomEvents {
@@ -62,6 +65,9 @@ export class HuiHeadingBadgesEditor extends LitElement {
                     const type = badge.type ?? "entity";
                     const isEntityBadge =
                       type === "entity" && "entity" in badge;
+                    const entityBadge = isEntityBadge
+                      ? (badge as EntityHeadingBadgeConfig)
+                      : undefined;
                     return html`
                       <div class="badge">
                         <div class="handle">
@@ -69,13 +75,13 @@ export class HuiHeadingBadgesEditor extends LitElement {
                             .path=${mdiDragHorizontalVariant}
                           ></ha-svg-icon>
                         </div>
-                        ${isEntityBadge
+                        ${isEntityBadge && entityBadge
                           ? html`
                               <ha-entity-picker
                                 allow-custom-entity
                                 hide-clear-icon
                                 .hass=${this.hass}
-                                .value=${badge.entity as string}
+                                .value=${entityBadge.entity ?? ""}
                                 @value-changed=${this._createValueChangedHandler(
                                   index
                                 )}
