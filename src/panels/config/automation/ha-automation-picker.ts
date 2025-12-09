@@ -68,7 +68,6 @@ import "../../../components/ha-md-menu";
 import type { HaMdMenu } from "../../../components/ha-md-menu";
 import "../../../components/ha-md-menu-item";
 import type { HaMdMenuItem } from "../../../components/ha-md-menu-item";
-import "../../../components/ha-sub-menu";
 import "../../../components/ha-svg-icon";
 import { createAreaRegistryEntry } from "../../../data/area_registry";
 import type { AutomationEntity } from "../../../data/automation";
@@ -711,46 +710,123 @@ class HaAutomationPicker extends SubscribeMixin(LitElement) {
                 slot="trigger"
               ></ha-icon-button>`}
           ${this.narrow
-            ? html`<ha-sub-menu>
-                <ha-dropdown-item slot="item">
+            ? html`<ha-dropdown-item>
+                ${this.hass.localize(
+                  "ui.panel.config.automation.picker.bulk_actions.move_category"
+                )}
+                <ha-svg-icon
+                  slot="details"
+                  .path=${mdiChevronRight}
+                ></ha-svg-icon>
+                ${this._categories?.map(
+                  (category) =>
+                    html`<ha-dropdown-item
+                      slot="submenu"
+                      .value=${category.category_id}
+                    >
+                      ${category.icon
+                        ? html`<ha-icon slot="icon" .icon=${category.icon}></ha-icon>`
+                        : html`<ha-svg-icon slot="icon" .path=${mdiTag}></ha-svg-icon>`}
+                      ${category.name}
+                    </ha-dropdown-item>`
+                )}
+                <ha-dropdown-item slot="submenu" value="__no_category__">
                   ${this.hass.localize(
-                    "ui.panel.config.automation.picker.bulk_actions.move_category"
+                    "ui.panel.config.automation.picker.bulk_actions.no_category"
                   )}
-                  <ha-svg-icon
-                    slot="details"
-                    .path=${mdiChevronRight}
-                  ></ha-svg-icon>
                 </ha-dropdown-item>
-                <ha-md-menu slot="menu">${categoryItems}</ha-md-menu>
-              </ha-sub-menu>`
+                <wa-divider slot="submenu"></wa-divider>
+                <ha-dropdown-item slot="submenu" value="__create_category__">
+                  ${this.hass.localize("ui.panel.config.category.editor.add")}
+                </ha-dropdown-item>
+              </ha-dropdown-item>`
             : nothing}
           ${this.narrow || labelsInOverflow
-            ? html`<ha-sub-menu>
-                <ha-dropdown-item slot="item">
-                  ${this.hass.localize(
-                    "ui.panel.config.automation.picker.bulk_actions.add_label"
-                  )}
-                  <ha-svg-icon
-                    slot="details"
-                    .path=${mdiChevronRight}
-                  ></ha-svg-icon>
+            ? html`<ha-dropdown-item>
+                ${this.hass.localize(
+                  "ui.panel.config.automation.picker.bulk_actions.add_label"
+                )}
+                <ha-svg-icon
+                  slot="details"
+                  .path=${mdiChevronRight}
+                ></ha-svg-icon>
+                ${this._labels?.map((label) => {
+                  const color = label.color ? computeCssColor(label.color) : undefined;
+                  const selected = this._selected.every((entityId) =>
+                    this.hass.entities[entityId]?.labels.includes(label.label_id)
+                  );
+                  const partial =
+                    !selected &&
+                    this._selected.some((entityId) =>
+                      this.hass.entities[entityId]?.labels.includes(label.label_id)
+                    );
+                  return html`<ha-dropdown-item
+                    slot="submenu"
+                    .value=${label.label_id}
+                    .action=${selected ? "remove" : "add"}
+                    @click=${this._handleBulkLabel}
+                    keep-open
+                  >
+                    <ha-checkbox
+                      slot="icon"
+                      .checked=${selected}
+                      .indeterminate=${partial}
+                      reducedTouchTarget
+                    ></ha-checkbox>
+                    <ha-label
+                      style=${color ? `--color: ${color}` : ""}
+                      .description=${label.description}
+                    >
+                      ${label.icon
+                        ? html`<ha-icon slot="icon" .icon=${label.icon}></ha-icon>`
+                        : nothing}
+                      ${label.name}
+                    </ha-label>
+                  </ha-dropdown-item>`;
+                })}
+                <wa-divider slot="submenu"></wa-divider>
+                <ha-dropdown-item
+                  slot="submenu"
+                  value="__create_label__"
+                  @click=${this._bulkCreateLabel}
+                >
+                  ${this.hass.localize("ui.panel.config.labels.add_label")}
                 </ha-dropdown-item>
-                <ha-md-menu slot="menu">${labelItems}</ha-md-menu>
-              </ha-sub-menu>`
+              </ha-dropdown-item>`
             : nothing}
           ${this.narrow || areasInOverflow
-            ? html`<ha-sub-menu>
-                <ha-dropdown-item slot="item">
+            ? html`<ha-dropdown-item>
+                ${this.hass.localize(
+                  "ui.panel.config.devices.picker.bulk_actions.move_area"
+                )}
+                <ha-svg-icon
+                  slot="details"
+                  .path=${mdiChevronRight}
+                ></ha-svg-icon>
+                ${Object.values(this.hass.areas).map(
+                  (area) =>
+                    html`<ha-dropdown-item slot="submenu" .value=${area.area_id}>
+                      ${area.icon
+                        ? html`<ha-icon slot="icon" .icon=${area.icon}></ha-icon>`
+                        : html`<ha-svg-icon
+                            slot="icon"
+                            .path=${mdiTextureBox}
+                          ></ha-svg-icon>`}
+                      ${area.name}
+                    </ha-dropdown-item>`
+                )}
+                <ha-dropdown-item slot="submenu" value="__no_area__">
                   ${this.hass.localize(
-                    "ui.panel.config.devices.picker.bulk_actions.move_area"
+                    "ui.panel.config.devices.picker.bulk_actions.no_area"
                   )}
-                  <ha-svg-icon
-                    slot="details"
-                    .path=${mdiChevronRight}
-                  ></ha-svg-icon>
                 </ha-dropdown-item>
-                <ha-md-menu slot="menu">${areaItems}</ha-md-menu>
-              </ha-sub-menu>`
+                <wa-divider slot="submenu"></wa-divider>
+                <ha-dropdown-item slot="submenu" value="__create_area__">
+                  ${this.hass.localize(
+                    "ui.panel.config.devices.picker.bulk_actions.add_area"
+                  )}
+                </ha-dropdown-item>
+              </ha-dropdown-item>`
             : nothing}
           <ha-dropdown-item value="enable">
             <ha-svg-icon slot="icon" .path=${mdiToggleSwitch}></ha-svg-icon>
