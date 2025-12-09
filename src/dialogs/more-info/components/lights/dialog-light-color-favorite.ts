@@ -49,6 +49,9 @@ class DialogLightColorFavorite extends LitElement {
   }
 
   public closeDialog(): void {
+    if (this._open) {
+      fireEvent(this, "dialog-closed", { dialog: this.localName });
+    }
     this._open = false;
   }
 
@@ -129,7 +132,6 @@ class DialogLightColorFavorite extends LitElement {
     this._dialogParams = undefined;
     this._entry = undefined;
     this._color = undefined;
-    fireEvent(this, "dialog-closed", { dialog: this.localName });
   }
 
   private async _save() {
@@ -217,7 +219,11 @@ class DialogLightColorFavorite extends LitElement {
           >
             ${this.hass.localize("ui.common.cancel")}
           </ha-button>
-          <ha-button slot="primaryAction" @click=${this._save} .disabled=${!this._color}>
+          <ha-button
+            slot="primaryAction"
+            @click=${this._save}
+            .disabled=${!this._color}
+          >
             ${this.hass.localize("ui.common.save")}
           </ha-button>
         </ha-dialog-footer>
