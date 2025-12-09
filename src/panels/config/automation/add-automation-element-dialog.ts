@@ -228,7 +228,7 @@ class DialogAddAutomationElement
 
   private _unsub?: Promise<UnsubscribeFunc>;
 
-  private _unsubscribeLabFeatures?: UnsubscribeFunc;
+  private _unsubscribeLabFeatures?: Promise<UnsubscribeFunc>;
 
   private _configEntryLookup: Record<string, ConfigEntry> = {};
 
@@ -285,8 +285,8 @@ class DialogAddAutomationElement
       this.hass.connection,
       "automation",
       "new_triggers_conditions",
-      (enabled) => {
-        this._newTriggersAndConditions = enabled;
+      (feature) => {
+        this._newTriggersAndConditions = feature.enabled;
         this._tab = this._newTriggersAndConditions ? "targets" : "groups";
       }
     );
@@ -422,7 +422,7 @@ class DialogAddAutomationElement
       this._unsub = undefined;
     }
     if (this._unsubscribeLabFeatures) {
-      this._unsubscribeLabFeatures();
+      this._unsubscribeLabFeatures.then((unsub) => unsub());
       this._unsubscribeLabFeatures = undefined;
     }
   }

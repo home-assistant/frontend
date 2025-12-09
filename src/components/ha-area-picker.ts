@@ -386,6 +386,9 @@ export class HaAreaPicker extends LitElement {
         .valueRenderer=${valueRenderer}
         .addButtonLabel=${this.addButtonLabel}
         .searchKeys=${SEARCH_KEYS}
+        .unknownItemText=${this.hass.localize(
+          "ui.components.area-picker.unknown"
+        )}
         @value-changed=${this._valueChanged}
       >
       </ha-generic-picker>

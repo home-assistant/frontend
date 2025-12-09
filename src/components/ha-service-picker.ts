@@ -149,6 +149,9 @@ class HaServicePicker extends LitElement {
           this.hass.services
         )}
         .searchKeys=${SEARCH_KEYS}
+        .unknownItemText=${this.hass.localize(
+          "ui.components.service-picker.unknown"
+        )}
         @value-changed=${this._valueChanged}
       >
       </ha-generic-picker>

@@ -10,7 +10,10 @@ import { LinearGradient } from "../../../../resources/echarts/echarts";
 import "../../../../components/chart/ha-chart-base";
 import "../../../../components/ha-card";
 import type { EnergyData } from "../../../../data/energy";
-import { getEnergyDataCollection } from "../../../../data/energy";
+import {
+  getEnergyDataCollection,
+  getPowerFromState,
+} from "../../../../data/energy";
 import type { StatisticValue } from "../../../../data/recorder";
 import type { FrontendLocaleData } from "../../../../data/translation";
 import { SubscribeMixin } from "../../../../mixins/subscribe-mixin";
@@ -197,6 +200,7 @@ export class HuiPowerSourcesGraphCard
       },
     };
 
+    const now = Date.now();
     Object.keys(statIds).forEach((key, keyIndex) => {
       if (statIds[key].stats.length) {
         const colorHex = computedStyles.getPropertyValue(statIds[key].color);
@@ -204,7 +208,14 @@ export class HuiPowerSourcesGraphCard
         // Echarts is supposed to handle that but it is bugged when you use it together with stacking.
         // The interpolation breaks the stacking, so this positive/negative is a workaround
         const { positive, negative } = this._processData(
-          statIds[key].stats.map((id: string) => energyData.stats[id] ?? [])
+          statIds[key].stats.map((id: string) => {
+            const stats = energyData.stats[id] ?? [];
+            const currentState = getPowerFromState(this.hass.states[id]);
+            if (currentState !== undefined) {
+              stats.push({ start: now, end: now, mean: currentState });
+            }
+            return stats;
+          })
         );
         datasets.push({
           ...commonSeriesOptions,

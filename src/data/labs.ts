@@ -101,22 +101,18 @@ export const subscribeLabFeatures = (
  * Subscribe to a specific lab feature
  * @param conn - The connection to the Home Assistant instance
  * @param domain - The domain of the lab feature
- * @param previewFeature - The preview feature of the lab feature
+ * @param previewFeature - The preview feature identifier
  * @param onChange - The function to call when the lab feature changes
- * @returns The unsubscribe function
+ * @returns A promise that resolves to the unsubscribe function
  */
 export const subscribeLabFeature = (
   conn: Connection,
   domain: string,
   previewFeature: string,
-  onChange: (enabled: boolean) => void
-) =>
-  subscribeLabFeatures(conn, (features) => {
-    const enabled =
-      features.find(
-        (feature) =>
-          feature.domain === domain &&
-          feature.preview_feature === previewFeature
-      )?.enabled ?? false;
-    onChange(enabled);
+  onChange: (feature: LabPreviewFeature) => void
+): Promise<() => void> =>
+  conn.subscribeMessage<LabPreviewFeature>(onChange, {
+    type: "labs/subscribe",
+    domain,
+    preview_feature: previewFeature,
   });

@@ -98,9 +98,9 @@ export default class HaAutomationSidebarAction extends LitElement {
       title = `${domainToName(this.hass.localize, domain)}: ${
         this.hass.localize(
           `component.${domain}.services.${service}.name`,
-          this.hass.services[domain][service].description_placeholders
+          this.hass.services[domain]?.[service]?.description_placeholders
         ) ||
-        this.hass.services[domain][service]?.name ||
+        this.hass.services[domain]?.[service]?.name ||
         title
       }`;
     }

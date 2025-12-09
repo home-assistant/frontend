@@ -4,6 +4,7 @@ import { mdiPlaylistPlus } from "@mdi/js";
 import { css, html, LitElement, nothing, type CSSResultGroup } from "lit";
 import { customElement, property, query, state } from "lit/decorators";
 import { ifDefined } from "lit/directives/if-defined";
+import memoizeOne from "memoize-one";
 import { tinykeys } from "tinykeys";
 import { fireEvent } from "../common/dom/fire_event";
 import type { FuseWeightedKey } from "../resources/fuseMultiTerm";
@@ -47,8 +48,9 @@ export class HaGenericPicker extends LitElement {
   @property({ attribute: "hide-clear-icon", type: Boolean })
   public hideClearIcon = false;
 
+  /** To prevent lags, getItems needs to be memoized */
   @property({ attribute: false })
-  public getItems?: (
+  public getItems!: (
     searchString?: string,
     section?: string
   ) => (PickerComboBoxItem | string)[];
@@ -111,6 +113,8 @@ export class HaGenericPicker extends LitElement {
 
   @property({ attribute: "selected-section" }) public selectedSection?: string;
 
+  @property({ attribute: "unknown-item-text" }) public unknownItemText?: string;
+
   @query(".container") private _containerElement?: HTMLDivElement;
 
   @query("ha-picker-combo-box") private _comboBox?: HaPickerComboBox;
@@ -160,6 +164,8 @@ export class HaGenericPicker extends LitElement {
                   type="button"
                   class=${this._opened ? "opened" : ""}
                   compact
+                  .unknown=${this._unknownValue(this.value, this.getItems())}
+                  .unknownItemText=${this.unknownItemText}
                   aria-label=${ifDefined(this.label)}
                   @click=${this.open}
                   @clear=${this._clear}
@@ -237,6 +243,18 @@ export class HaGenericPicker extends LitElement {
       ></ha-picker-combo-box>
     `;
   }
+
+  private _unknownValue = memoizeOne(
+    (value?: string, items?: (PickerComboBoxItem | string)[]) => {
+      if (value === undefined || !items) {
+        return false;
+      }
+
+      return !items.some(
+        (item) => typeof item !== "string" && item.id === value
+      );
+    }
+  );
 
   private _renderHelper() {
     return this.helper
