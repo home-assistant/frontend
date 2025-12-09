@@ -222,17 +222,17 @@ class HaConfigEntryRow extends LitElement {
                 ? item.configuration_url!.replace("homeassistant://", "/")
                 : item.configuration_url;
 
-              const isLocalUrl =
-                configurationUrl?.startsWith("/") ||
-                configurationUrlIsHomeAssistant;
-
               return html`
                 ${configurationUrl
                   ? html`<a
                       slot="end"
                       href=${configurationUrl}
-                      target=${isLocalUrl ? undefined : "_blank"}
-                      rel=${isLocalUrl ? undefined : "noreferrer"}
+                      target=${configurationUrlIsHomeAssistant
+                        ? undefined
+                        : "_blank"}
+                      rel=${configurationUrlIsHomeAssistant
+                        ? undefined
+                        : "noreferrer"}
                     >
                       <ha-icon-button
                         .path=${mdiOpenInNew}
