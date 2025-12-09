@@ -1,7 +1,7 @@
-import { mdiClose, mdiDragHorizontalVariant, mdiTextureBox } from "@mdi/js";
+import { mdiDragHorizontalVariant, mdiTextureBox } from "@mdi/js";
 import type { CSSResultGroup } from "lit";
 import { LitElement, css, html, nothing } from "lit";
-import { customElement, property, query, state } from "lit/decorators";
+import { customElement, property, state } from "lit/decorators";
 import { repeat } from "lit/directives/repeat";
 import {
   type AreasFloorHierarchy,
@@ -11,12 +11,10 @@ import {
 } from "../../../common/areas/areas-floor-hierarchy";
 import { fireEvent } from "../../../common/dom/fire_event";
 import "../../../components/ha-button";
-import "../../../components/ha-dialog-header";
+import "../../../components/ha-dialog-footer";
 import "../../../components/ha-floor-icon";
 import "../../../components/ha-icon";
-import "../../../components/ha-icon-button";
-import "../../../components/ha-md-dialog";
-import type { HaMdDialog } from "../../../components/ha-md-dialog";
+import "../../../components/ha-wa-dialog";
 import "../../../components/ha-md-list";
 import "../../../components/ha-md-list-item";
 import "../../../components/ha-sortable";
@@ -49,8 +47,6 @@ class DialogAreasFloorsOrder extends LitElement {
 
   @state() private _saving = false;
 
-  @query("ha-md-dialog") private _dialog?: HaMdDialog;
-
   public async showDialog(
     _params: AreasFloorsOrderDialogParams
   ): Promise<void> {
@@ -66,7 +62,8 @@ class DialogAreasFloorsOrder extends LitElement {
   }
 
   public closeDialog(): void {
-    this._dialog?.close();
+    this._saving = false;
+    this._open = false;
   }
 
   private _dialogClosed(): void {
@@ -77,7 +74,7 @@ class DialogAreasFloorsOrder extends LitElement {
   }
 
   protected render() {
-    if (!this._open || !this._hierarchy) {
+    if (!this._hierarchy) {
       return nothing;
     }
 
@@ -89,17 +86,13 @@ class DialogAreasFloorsOrder extends LitElement {
     );
 
     return html`
-      <ha-md-dialog open @closed=${this._dialogClosed}>
-        <ha-dialog-header slot="headline">
-          <ha-icon-button
-            slot="navigationIcon"
-            .label=${this.hass.localize("ui.common.close")}
-            .path=${mdiClose}
-            @click=${this.closeDialog}
-          ></ha-icon-button>
-          <span slot="title" .title=${dialogTitle}>${dialogTitle}</span>
-        </ha-dialog-header>
-        <div slot="content" class="content">
+      <ha-wa-dialog
+        .hass=${this.hass}
+        .open=${this._open}
+        header-title=${dialogTitle}
+        @closed=${this._dialogClosed}
+      >
+        <div class="content">
           <ha-sortable
             handle-selector=".floor-handle"
             draggable-selector=".floor"
@@ -116,15 +109,23 @@ class DialogAreasFloorsOrder extends LitElement {
           </ha-sortable>
           ${this._renderUnassignedAreas()}
         </div>
-        <div slot="actions">
-          <ha-button @click=${this.closeDialog} appearance="plain">
+        <ha-dialog-footer slot="footer">
+          <ha-button
+            slot="secondaryAction"
+            @click=${this.closeDialog}
+            appearance="plain"
+          >
             ${this.hass.localize("ui.common.cancel")}
           </ha-button>
-          <ha-button @click=${this._save} .disabled=${this._saving}>
+          <ha-button
+            slot="primaryAction"
+            @click=${this._save}
+            .disabled=${this._saving}
+          >
             ${this.hass.localize("ui.common.save")}
           </ha-button>
-        </div>
-      </ha-md-dialog>
+        </ha-dialog-footer>
+      </ha-wa-dialog>
     `;
   }
 
@@ -391,15 +392,13 @@ class DialogAreasFloorsOrder extends LitElement {
       haStyle,
       haStyleDialog,
       css`
-        ha-md-dialog {
-          min-width: 600px;
+        ha-wa-dialog {
           max-height: 90%;
-          --dialog-content-padding: 8px 24px;
+          --dialog-content-padding: var(--ha-space-2) var(--ha-space-6);
         }
 
-        @media all and (max-width: 600px), all and (max-height: 500px) {
-          ha-md-dialog {
-            --md-dialog-container-shape: 0;
+        @media all and (max-width: 580px), all and (max-height: 500px) {
+          ha-wa-dialog {
             min-width: 100%;
             min-height: 100%;
           }

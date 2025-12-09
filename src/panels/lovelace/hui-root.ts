@@ -655,8 +655,13 @@ class HUIRoot extends LitElement {
     this.toggleAttribute("scrolled", window.scrollY !== 0);
   };
 
+  private _locationChanged = () => {
+    this._handleUrlChanged();
+  };
+
   private _handlePopState = () => {
     this._restoreScroll = true;
+    this._handleUrlChanged();
   };
 
   private _isVisible = (view: LovelaceViewConfig) =>
@@ -678,6 +683,34 @@ class HUIRoot extends LitElement {
 
   protected firstUpdated(changedProps: PropertyValues) {
     super.firstUpdated(changedProps);
+    window.addEventListener("scroll", this._handleWindowScroll, {
+      passive: true,
+    });
+    this._handleUrlChanged();
+  }
+
+  public connectedCallback(): void {
+    super.connectedCallback();
+    window.addEventListener("scroll", this._handleWindowScroll, {
+      passive: true,
+    });
+    window.addEventListener("popstate", this._handlePopState);
+    window.addEventListener("location-changed", this._locationChanged);
+    // Disable history scroll restoration because it is managed manually here
+    window.history.scrollRestoration = "manual";
+  }
+
+  public disconnectedCallback(): void {
+    super.disconnectedCallback();
+    window.removeEventListener("scroll", this._handleWindowScroll);
+    window.removeEventListener("popstate", this._handlePopState);
+    window.removeEventListener("location-changed", this._locationChanged);
+    this.toggleAttribute("scrolled", window.scrollY !== 0);
+    // Re-enable history scroll restoration when leaving the page
+    window.history.scrollRestoration = "auto";
+  }
+
+  private _handleUrlChanged() {
     // Check for requested edit mode
     const searchParams = extractSearchParamsObject();
     if (searchParams.edit === "1") {
@@ -697,29 +730,6 @@ class HUIRoot extends LitElement {
         this._showMoreInfoDialog(entityId);
       });
     }
-
-    window.addEventListener("scroll", this._handleWindowScroll, {
-      passive: true,
-    });
-  }
-
-  public connectedCallback(): void {
-    super.connectedCallback();
-    window.addEventListener("scroll", this._handleWindowScroll, {
-      passive: true,
-    });
-    window.addEventListener("popstate", this._handlePopState);
-    // Disable history scroll restoration because it is managed manually here
-    window.history.scrollRestoration = "manual";
-  }
-
-  public disconnectedCallback(): void {
-    super.disconnectedCallback();
-    window.removeEventListener("scroll", this._handleWindowScroll);
-    window.removeEventListener("popstate", this._handlePopState);
-    this.toggleAttribute("scrolled", window.scrollY !== 0);
-    // Re-enable history scroll restoration when leaving the page
-    window.history.scrollRestoration = "auto";
   }
 
   protected willUpdate(changedProperties: PropertyValues): void {
