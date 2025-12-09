@@ -228,9 +228,7 @@ class HaConfigEntryRow extends LitElement {
                     >
                       <ha-icon-button
                         .path=${mdiOpenInNew}
-                        .label=${this.hass.localize(
-                          "ui.panel.config.integrations.config_entry.open_configuration_url"
-                        )}
+                        .label=${processedUrl.url}
                       ></ha-icon-button>
                     </a>`
                   : nothing}
