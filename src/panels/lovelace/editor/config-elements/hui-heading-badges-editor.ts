@@ -192,13 +192,13 @@ export class HuiHeadingBadgesEditor extends LitElement {
       flex-direction: column;
     }
     ha-button {
-      margin-top: 8px;
+      margin-top: var(--ha-space-2);
     }
 
     .entities {
       display: flex;
       flex-direction: column;
-      gap: 8px;
+      gap: var(--ha-space-2);
     }
 
     .badge {
@@ -208,8 +208,8 @@ export class HuiHeadingBadgesEditor extends LitElement {
     .badge .handle {
       cursor: move; /* fallback if grab cursor is unsupported */
       cursor: grab;
-      padding-right: 8px;
-      padding-inline-end: 8px;
+      padding-right: var(--ha-space-2);
+      padding-inline-end: var(--ha-space-2);
       padding-inline-start: initial;
       direction: var(--direction);
     }
@@ -255,7 +255,7 @@ export class HuiHeadingBadgesEditor extends LitElement {
     .add-container {
       position: relative;
       width: 100%;
-      margin-top: 8px;
+      margin-top: var(--ha-space-2);
     }
 
     mwc-menu-surface {
