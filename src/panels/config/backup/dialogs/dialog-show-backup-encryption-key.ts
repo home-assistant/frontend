@@ -53,6 +53,7 @@ class DialogShowBackupEncryptionKey extends LitElement implements HassDialog {
         header-title=${this.hass.localize(
           "ui.panel.config.backup.dialogs.show_encryption_key.title"
         )}
+        prevent-scrim-close
         @closed=${this.closeDialog}
       >
         <ha-icon-button
