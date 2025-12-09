@@ -162,7 +162,7 @@ export class HuiHeadingBadgesEditor extends LitElement {
     } else {
       newBadges[index] = {
         ...newBadges[index],
-        entity: value!,
+        entity: value,
       };
     }
 
@@ -172,8 +172,7 @@ export class HuiHeadingBadgesEditor extends LitElement {
   private _badgeMoved(ev: CustomEvent): void {
     ev.stopPropagation();
     const { oldIndex, newIndex } = ev.detail;
-
-    const newBadges = (this.badges || []).concat();
+    const newBadges = [...(this.badges || [])];
 
     newBadges.splice(newIndex, 0, newBadges.splice(oldIndex, 1)[0]);
 
@@ -182,7 +181,7 @@ export class HuiHeadingBadgesEditor extends LitElement {
 
   private _removeEntity(ev: CustomEvent): void {
     const index = (ev.currentTarget as any).index;
-    const newBadges = (this.badges || []).concat();
+    const newBadges = [...(this.badges || [])];
 
     newBadges.splice(index, 1);
 
