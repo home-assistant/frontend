@@ -72,8 +72,8 @@ export class HuiHeadingBadgesEditor extends LitElement {
                                 hide-clear-icon
                                 .hass=${this.hass}
                                 .value=${badge.entity as string}
-                                .index=${index}
-                                @value-changed=${this._valueChanged}
+                                @value-changed=${(ev) =>
+                                  this._valueChanged(ev, index)}
                               ></ha-entity-picker>
                             `
                           : html`
@@ -141,10 +141,9 @@ export class HuiHeadingBadgesEditor extends LitElement {
     fireEvent(this, "heading-badges-changed", { badges: newBadges });
   }
 
-  private _valueChanged(ev: CustomEvent): void {
+  private _valueChanged(ev: CustomEvent, index: number): void {
     ev.stopPropagation();
     const value = ev.detail.value;
-    const index = (ev.target as any).index;
     const newBadges = (this.badges || []).concat();
 
     if (value === "" || value === undefined) {
