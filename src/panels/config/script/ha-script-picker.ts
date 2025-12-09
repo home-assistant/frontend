@@ -424,8 +424,7 @@ class HaScriptPicker extends SubscribeMixin(LitElement) {
     const categoryItems = html`${this._categories?.map(
         (category) =>
           html`<ha-dropdown-item
-            .value=${category.category_id}
-            .clickAction=${this._handleBulkCategory}
+            value=${category.category_id}
           >
             ${category.icon
               ? html`<ha-icon slot="icon" .icon=${category.icon}></ha-icon>`
@@ -433,13 +432,13 @@ class HaScriptPicker extends SubscribeMixin(LitElement) {
             ${category.name}
           </ha-dropdown-item>`
       )}
-      <ha-dropdown-item .value=${null} .clickAction=${this._handleBulkCategory}>
+      <ha-dropdown-item value="no-category">
         ${this.hass.localize(
           "ui.panel.config.automation.picker.bulk_actions.no_category"
         )}
       </ha-dropdown-item>
       <wa-divider></wa-divider>
-      <ha-dropdown-item .clickAction=${this._bulkCreateCategory}>
+      <ha-dropdown-item value="create-category">
         ${this.hass.localize("ui.panel.config.category.editor.add")}
       </ha-dropdown-item>`;
 
@@ -454,17 +453,11 @@ class HaScriptPicker extends SubscribeMixin(LitElement) {
             this.hass.entities[entityId]?.labels.includes(label.label_id)
           );
         return html`<ha-dropdown-item
-          .value=${label.label_id}
-          .action=${selected ? "remove" : "add"}
-          @click=${this._handleBulkLabel}
-          keep-open
+          value=${label.label_id}
+          data-action=${selected ? "remove" : "add"}
+          type="checkbox"
+          .checked=${selected}
         >
-          <ha-checkbox
-            slot="icon"
-            .checked=${selected}
-            .indeterminate=${partial}
-            reducedTouchTarget
-          ></ha-checkbox>
           <ha-label
             style=${color ? `--color: ${color}` : ""}
             .description=${label.description}
@@ -477,15 +470,14 @@ class HaScriptPicker extends SubscribeMixin(LitElement) {
         </ha-dropdown-item>`;
       })}
       <wa-divider></wa-divider>
-      <ha-dropdown-item .clickAction=${this._bulkCreateLabel}>
+      <ha-dropdown-item value="create-label">
         ${this.hass.localize("ui.panel.config.labels.add_label")}
       </ha-dropdown-item>`;
 
     const areaItems = html`${Object.values(this.hass.areas).map(
         (area) =>
           html`<ha-dropdown-item
-            .value=${area.area_id}
-            .clickAction=${this._handleBulkArea}
+            value=${area.area_id}
           >
             ${area.icon
               ? html`<ha-icon slot="icon" .icon=${area.icon}></ha-icon>`
@@ -496,13 +488,13 @@ class HaScriptPicker extends SubscribeMixin(LitElement) {
             ${area.name}
           </ha-dropdown-item>`
       )}
-      <ha-dropdown-item .value=${null} .clickAction=${this._handleBulkArea}>
+      <ha-dropdown-item value="no-area">
         ${this.hass.localize(
           "ui.panel.config.devices.picker.bulk_actions.no_area"
         )}
       </ha-dropdown-item>
       <wa-divider></wa-divider>
-      <ha-dropdown-item .clickAction=${this._bulkCreateArea}>
+      <ha-dropdown-item value="create-area">
         ${this.hass.localize(
           "ui.panel.config.devices.picker.bulk_actions.add_area"
         )}
