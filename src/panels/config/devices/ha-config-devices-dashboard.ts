@@ -756,7 +756,6 @@ export class HaConfigDeviceDashboard extends SubscribeMixin(LitElement) {
         return html`<ha-dropdown-item
           .value=${label.label_id}
           data-action=${selected ? "remove" : "add"}
-          @click=${this._handleBulkLabel}
           keep-open
         >
           <ha-checkbox
@@ -777,7 +776,7 @@ export class HaConfigDeviceDashboard extends SubscribeMixin(LitElement) {
         </ha-dropdown-item>`;
       })}
       <wa-divider></wa-divider>
-      <ha-dropdown-item value="__create_label__" @click=${this._bulkCreateLabel}>
+      <ha-dropdown-item value="__create_label__">
         ${this.hass.localize("ui.panel.config.labels.add_label")}
       </ha-dropdown-item>`;
 
@@ -1158,9 +1157,21 @@ export class HaConfigDeviceDashboard extends SubscribeMixin(LitElement) {
 
   private _handleOverflowMenuSelect(ev: CustomEvent) {
     const item = ev.detail.item as HaDropdownItem;
+    
+    // Handle label selections (checkbox items with keep-open)
+    if (item.hasAttribute("keep-open") && item.hasAttribute("data-action")) {
+      const label = item.value as string;
+      const action = (item as HTMLElement).dataset.action as "add" | "remove";
+      this._bulkLabel(label, action);
+      return;
+    }
+    
     switch (item.value) {
       case "delete":
         this._deleteSelected();
+        break;
+      case "__create_label__":
+        this._bulkCreateLabel();
         break;
       case "__no_area__":
         this._bulkAddArea(null);
@@ -1215,12 +1226,6 @@ ${rejected
       },
     });
   };
-
-  private async _handleBulkLabel(ev) {
-    const label = ev.currentTarget.value;
-    const action = ev.currentTarget.dataset.action;
-    this._bulkLabel(label, action);
-  }
 
   private async _bulkLabel(label: string, action: "add" | "remove") {
     const promises: Promise<DeviceRegistryEntry>[] = [];

@@ -610,7 +610,6 @@ export class HaConfigHelpers extends SubscribeMixin(LitElement) {
         (category) =>
           html`<ha-dropdown-item
             .value=${category.category_id}
-            .clickAction=${this._handleBulkCategory}
           >
             ${category.icon
               ? html`<ha-icon slot="icon" .icon=${category.icon}></ha-icon>`
@@ -618,13 +617,13 @@ export class HaConfigHelpers extends SubscribeMixin(LitElement) {
             ${category.name}
           </ha-dropdown-item>`
       )}
-      <ha-dropdown-item .value=${null} .clickAction=${this._handleBulkCategory}>
+      <ha-dropdown-item value="__no_category__">
         ${this.hass.localize(
           "ui.panel.config.automation.picker.bulk_actions.no_category"
         )}
       </ha-dropdown-item>
       <wa-divider></wa-divider>
-      <ha-dropdown-item .clickAction=${this._bulkCreateCategory}>
+      <ha-dropdown-item value="__create_category__">
         ${this.hass.localize("ui.panel.config.category.editor.add")}
       </ha-dropdown-item>`;
     const labelItems = html`${this._labels?.map((label) => {
@@ -639,8 +638,7 @@ export class HaConfigHelpers extends SubscribeMixin(LitElement) {
           );
         return html`<ha-dropdown-item
           .value=${label.label_id}
-          .action=${selected ? "remove" : "add"}
-          @click=${this._handleBulkLabel}
+          data-action=${selected ? "remove" : "add"}
           keep-open
         >
           <ha-checkbox
@@ -660,7 +658,7 @@ export class HaConfigHelpers extends SubscribeMixin(LitElement) {
           </ha-label>
         </ha-dropdown-item> `;
       })}<wa-divider></wa-divider>
-      <ha-dropdown-item .clickAction=${this._bulkCreateLabel}>
+      <ha-dropdown-item value="__create_label__">
         ${this.hass.localize("ui.panel.config.labels.add_label")}
       </ha-dropdown-item>`;
     const labelsInOverflow =
@@ -764,7 +762,7 @@ export class HaConfigHelpers extends SubscribeMixin(LitElement) {
         ></ha-filter-categories>
 
         ${!this.narrow
-          ? html`<ha-dropdown slot="selection-bar">
+          ? html`<ha-dropdown slot="selection-bar" @wa-select=${this._handleCategoryMenuSelect}>
                 <ha-assist-chip
                   slot="trigger"
                   .label=${this.hass.localize(
@@ -780,7 +778,7 @@ export class HaConfigHelpers extends SubscribeMixin(LitElement) {
               </ha-dropdown>
               ${labelsInOverflow
                 ? nothing
-                : html`<ha-dropdown slot="selection-bar">
+                : html`<ha-dropdown slot="selection-bar" @wa-select=${this._handleLabelMenuSelect}>
                     <ha-assist-chip
                       slot="trigger"
                       .label=${this.hass.localize(
@@ -796,7 +794,7 @@ export class HaConfigHelpers extends SubscribeMixin(LitElement) {
                   </ha-dropdown>`}`
           : nothing}
         ${this.narrow || labelsInOverflow
-          ? html` <ha-dropdown has-overflow slot="selection-bar">
+          ? html` <ha-dropdown slot="selection-bar" @wa-select=${this._handleOverflowMenuSelect}>
               ${this.narrow
                 ? html`<ha-assist-chip
                     .label=${this.hass.localize(
@@ -817,32 +815,84 @@ export class HaConfigHelpers extends SubscribeMixin(LitElement) {
                     slot="trigger"
                   ></ha-icon-button>`}
               ${this.narrow
-                ? html`<ha-sub-menu>
-                    <ha-dropdown-item slot="item">
+                ? html`<ha-dropdown-item>
+                    ${this.hass.localize(
+                      "ui.panel.config.automation.picker.bulk_actions.move_category"
+                    )}
+                    <ha-svg-icon
+                      slot="details"
+                      .path=${mdiChevronRight}
+                    ></ha-svg-icon>
+                    ${this._categories?.map(
+                      (category) =>
+                        html`<ha-dropdown-item
+                          slot="submenu"
+                          .value=${category.category_id}
+                        >
+                          ${category.icon
+                            ? html`<ha-icon slot="icon" .icon=${category.icon}></ha-icon>`
+                            : html`<ha-svg-icon slot="icon" .path=${mdiTag}></ha-svg-icon>`}
+                          ${category.name}
+                        </ha-dropdown-item>`
+                    )}
+                    <ha-dropdown-item slot="submenu" value="__no_category__">
                       ${this.hass.localize(
-                        "ui.panel.config.automation.picker.bulk_actions.move_category"
+                        "ui.panel.config.automation.picker.bulk_actions.no_category"
                       )}
-                      <ha-svg-icon
-                        slot="details"
-                        .path=${mdiChevronRight}
-                      ></ha-svg-icon>
                     </ha-dropdown-item>
-                    <ha-md-menu slot="menu">${categoryItems}</ha-md-menu>
-                  </ha-sub-menu>`
+                    <wa-divider slot="submenu"></wa-divider>
+                    <ha-dropdown-item slot="submenu" value="__create_category__">
+                      ${this.hass.localize("ui.panel.config.category.editor.add")}
+                    </ha-dropdown-item>
+                  </ha-dropdown-item>`
                 : nothing}
               ${this.narrow || this.hass.dockedSidebar === "docked"
-                ? html` <ha-sub-menu>
-                    <ha-dropdown-item slot="item">
-                      ${this.hass.localize(
-                        "ui.panel.config.automation.picker.bulk_actions.add_label"
-                      )}
-                      <ha-svg-icon
-                        slot="details"
-                        .path=${mdiChevronRight}
-                      ></ha-svg-icon>
+                ? html` <ha-dropdown-item>
+                    ${this.hass.localize(
+                      "ui.panel.config.automation.picker.bulk_actions.add_label"
+                    )}
+                    <ha-svg-icon
+                      slot="details"
+                      .path=${mdiChevronRight}
+                    ></ha-svg-icon>
+                    ${this._labels?.map((label) => {
+                      const color = label.color ? computeCssColor(label.color) : undefined;
+                      const selected = this._selected.every((entityId) =>
+                        this._labelsForEntity(entityId).includes(label.label_id)
+                      );
+                      const partial =
+                        !selected &&
+                        this._selected.some((entityId) =>
+                          this._labelsForEntity(entityId).includes(label.label_id)
+                        );
+                      return html`<ha-dropdown-item
+                        slot="submenu"
+                        .value=${label.label_id}
+                        data-action=${selected ? "remove" : "add"}
+                        keep-open
+                      >
+                        <ha-checkbox
+                          slot="icon"
+                          .checked=${selected}
+                          .indeterminate=${partial}
+                          reducedTouchTarget
+                        ></ha-checkbox>
+                        <ha-label
+                          style=${color ? `--color: ${color}` : ""}
+                          .description=${label.description}
+                        >
+                          ${label.icon
+                            ? html`<ha-icon slot="icon" .icon=${label.icon}></ha-icon>`
+                            : nothing}
+                          ${label.name}
+                        </ha-label>
+                      </ha-dropdown-item>`;
+                    })}
+                    <wa-divider slot="submenu"></wa-divider>
+                    <ha-dropdown-item slot="submenu" value="__create_label__">
+                      ${this.hass.localize("ui.panel.config.labels.add_label")}
                     </ha-dropdown-item>
-                    <ha-md-menu slot="menu">${labelItems}</ha-md-menu>
-                  </ha-sub-menu>`
+                  </ha-dropdown-item>`
                 : nothing}
             </ha-dropdown>`
           : nothing}
@@ -1056,6 +1106,71 @@ ${rejected
     ev: HASSDomEvent<SelectionChangedEvent>
   ): void {
     this._selected = ev.detail.value;
+  }
+
+  private _handleCategoryMenuSelect(ev: CustomEvent) {
+    const item = ev.detail.item as HaDropdownItem;
+    switch (item.value) {
+      case "__no_category__":
+        this._bulkAddCategory(null);
+        break;
+      case "__create_category__":
+        this._bulkCreateCategory();
+        break;
+      default:
+        if (item.value) {
+          this._bulkAddCategory(item.value as string);
+        }
+        break;
+    }
+  }
+
+  private _handleLabelMenuSelect(ev: CustomEvent) {
+    const item = ev.detail.item as HaDropdownItem;
+    
+    // Handle label selections (checkbox items with keep-open)
+    if (item.hasAttribute("keep-open") && item.hasAttribute("data-action")) {
+      const label = item.value as string;
+      const action = (item as HTMLElement).dataset.action as "add" | "remove";
+      this._bulkLabel(label, action);
+      return;
+    }
+    
+    if (item.value === "__create_label__") {
+      this._bulkCreateLabel();
+    }
+  }
+
+  private _handleOverflowMenuSelect(ev: CustomEvent) {
+    const item = ev.detail.item as HaDropdownItem;
+    
+    // Handle label selections in submenu (checkbox items with keep-open)
+    if (item.hasAttribute("keep-open") && item.hasAttribute("data-action")) {
+      const label = item.value as string;
+      const action = (item as HTMLElement).dataset.action as "add" | "remove";
+      this._bulkLabel(label, action);
+      return;
+    }
+    
+    switch (item.value) {
+      case "__no_category__":
+        this._bulkAddCategory(null);
+        break;
+      case "__create_category__":
+        this._bulkCreateCategory();
+        break;
+      case "__create_label__":
+        this._bulkCreateLabel();
+        break;
+      default:
+        if (item.value && typeof item.value === "string" && !item.value.startsWith("__")) {
+          // Check if it's a category_id or label_id
+          if (this._categories?.some(c => c.category_id === item.value)) {
+            this._bulkAddCategory(item.value);
+          }
+        }
+        break;
+    }
   }
 
   protected firstUpdated(changedProps: PropertyValues) {

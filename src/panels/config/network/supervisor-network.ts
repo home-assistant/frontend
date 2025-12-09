@@ -507,9 +507,8 @@ export class HassioNetwork extends LitElement {
                 @wa-hide=${this._handleDNSMenuClosed}
                 @wa-select=${this._handleDNSMenuSelect}
                 .version=${version}
-                class="add-nameserver"
               >
-                <ha-button appearance="filled" size="small" slot="trigger">
+                <ha-button appearance="filled" size="small" slot="trigger" class="add-nameserver">
                   ${this.hass.localize(
                     "ui.panel.config.network.supervisor.add_dns_server"
                   )}
@@ -762,7 +761,9 @@ export class HassioNetwork extends LitElement {
       this._interface![version]!.nameservers!.push(...item.addresses);
       this._dirty = true;
       this.requestUpdate("_interface");
-    } else if (item.value === "custom") {
+      return;
+    }
+    if (item.value === "custom") {
       if (!this._interface![version]!.nameservers) {
         this._interface![version]!.nameservers = [];
       }
