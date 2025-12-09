@@ -2329,6 +2329,30 @@
           },
           "cloud": {
             "secondary": "Loading..."
+          },
+          "zwave_js": {
+            "secondary": "Manage your Z-Wave network"
+          },
+          "zha": {
+            "secondary": "Manage your Zigbee network"
+          },
+          "matter": {
+            "secondary": "Manage your Matter network"
+          },
+          "thread": {
+            "secondary": "Manage your Thread network"
+          },
+          "bluetooth": {
+            "secondary": "Manage your Bluetooth devices"
+          },
+          "knx": {
+            "secondary": "Manage your KNX network"
+          },
+          "insteon": {
+            "secondary": "Manage your Insteon network"
+          },
+          "hacs": {
+            "secondary": "Manage community integrations and frontend modules"
           }
         },
         "common": {
