@@ -85,11 +85,11 @@ const TARGET_SEARCH_SECTIONS = [
 
 export const ITEM_SEARCH_KEYS: FuseWeightedKey[] = [
   {
-    name: "name",
+    name: "primary",
     weight: 10,
   },
   {
-    name: "description",
+    name: "secondary",
     weight: 7,
   },
 ];
