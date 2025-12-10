@@ -5,15 +5,11 @@ import type { PickerComboBoxItem } from "../components/ha-picker-combo-box";
 import type { HomeAssistant } from "../types";
 import type { FloorComboBoxItem } from "./area_floor_picker";
 import type { AreaRegistryEntry } from "./area_registry";
-import type {
-  DevicePickerItem,
-  DeviceRegistryEntry,
-} from "./device/device_registry";
+import type { DevicePickerItem } from "./device/device_picker";
+import type { DeviceRegistryEntry } from "./device/device_registry";
 import type { HaEntityPickerEntityFilterFunc } from "./entity/entity";
-import type {
-  EntityComboBoxItem,
-  EntityRegistryDisplayEntry,
-} from "./entity/entity_registry";
+import type { EntityComboBoxItem } from "./entity/entity_picker";
+import type { EntityRegistryDisplayEntry } from "./entity/entity_registry";
 
 export const TARGET_SEPARATOR = "________";
 
