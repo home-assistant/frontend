@@ -303,6 +303,9 @@ export class HaPanelLogbook extends LitElement {
     return [
       haStyle,
       css`
+        :host {
+          --ha-generic-picker-max-width: 400px;
+        }
         ha-logbook {
           height: calc(
             100vh -

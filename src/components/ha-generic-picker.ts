@@ -367,7 +367,10 @@ export class HaGenericPicker extends LitElement {
 
         wa-popover::part(body) {
           width: max(var(--body-width), 250px);
-          max-width: max(var(--body-width), 250px);
+          max-width: var(
+            --ha-generic-picker-max-width,
+            max(var(--body-width), 250px)
+          );
           max-height: 500px;
           height: 70vh;
           overflow: hidden;
