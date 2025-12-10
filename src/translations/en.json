@@ -8495,6 +8495,12 @@
                   "state": "[%key:ui::panel::lovelace::editor::badge::entity::displayed_elements_options::state%]"
                 }
               },
+              "button_config": {
+                "content": "Content",
+                "color": "Icon color",
+                "visibility": "Visibility",
+                "visibility_explanation": "The button will be shown when ALL conditions below are fulfilled. If no conditions are set, the button will always be shown."
+              },
               "default_heading": "Kitchen"
             },
             "map": {
