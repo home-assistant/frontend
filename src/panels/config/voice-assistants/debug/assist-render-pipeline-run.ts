@@ -535,6 +535,7 @@ export class AssistPipelineDebug extends LitElement {
           <ha-yaml-editor
             read-only
             auto-update
+            .hass=${this.hass}
             .value=${this.pipelineRun}
           ></ha-yaml-editor>
         </ha-expansion-panel>
