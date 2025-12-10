@@ -288,13 +288,30 @@ export class HaPickerComboBox extends ScrollableFadeMixin(LitElement) {
     let items = [...this.getItems(this._search, this.selectedSection)];
 
     if (!this.sections?.length) {
-      items = items.sort((entityA, entityB) =>
-        caseInsensitiveStringCompare(
-          (entityA as PickerComboBoxItem).sorting_label!,
-          (entityB as PickerComboBoxItem).sorting_label!,
+      items = items.sort((entityA, entityB) => {
+        const sortLabelA =
+          typeof entityA === "string" ? entityA : entityA.sorting_label;
+        const sortLabelB =
+          typeof entityB === "string" ? entityB : entityB.sorting_label;
+
+        if (!sortLabelA || !sortLabelB) {
+          return 0;
+        }
+
+        if (!sortLabelB) {
+          return -1;
+        }
+
+        if (!sortLabelA) {
+          return 1;
+        }
+
+        return caseInsensitiveStringCompare(
+          sortLabelA,
+          sortLabelB,
           this.hass?.locale.language ?? navigator.language
-        )
-      );
+        );
+      });
     }
 
     if (!items.length) {

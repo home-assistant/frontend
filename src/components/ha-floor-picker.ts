@@ -285,13 +285,12 @@ export class HaFloorPicker extends LitElement {
         );
       }
 
-      const items = outputFloors.map<FloorComboBoxItem>((floor, index) => {
+      const items = outputFloors.map<FloorComboBoxItem>((floor) => {
         const floorName = computeFloorName(floor);
         return {
           id: floor.floor_id,
           primary: floorName,
           floor: floor,
-          sorting_label: index.toString(),
           search_labels: {
             floorName,
             floor_id: floor.floor_id,

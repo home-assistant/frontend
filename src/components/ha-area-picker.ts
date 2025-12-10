@@ -286,7 +286,7 @@ export class HaAreaPicker extends LitElement {
         );
       }
 
-      const items = outputAreas.map<PickerComboBoxItem>((area, index) => {
+      const items = outputAreas.map<PickerComboBoxItem>((area) => {
         const { floor } = getAreaContext(area, this.hass.floors);
         const floorName = floor ? computeFloorName(floor) : undefined;
         const areaName = computeAreaName(area);
@@ -296,7 +296,6 @@ export class HaAreaPicker extends LitElement {
           secondary: floorName,
           icon: area.icon || undefined,
           icon_path: area.icon ? undefined : mdiTextureBox,
-          sorting_label: index.toString(),
           search_labels: {
             areaName: areaName || null,
             floorName: floorName || null,
