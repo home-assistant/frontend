@@ -1,8 +1,8 @@
+import "@home-assistant/webawesome/dist/components/divider/divider";
 import { consume } from "@lit/context";
 import {
   mdiAlertCircle,
   mdiCancel,
-  mdiChevronRight,
   mdiDelete,
   mdiDotsVertical,
   mdiEye,
@@ -42,6 +42,7 @@ import {
   PROTOCOL_INTEGRATIONS,
   protocolIntegrationPicked,
 } from "../../../common/integrations/protocolIntegrationPicked";
+import { slugify } from "../../../common/string/slugify";
 import type { LocalizeFunc } from "../../../common/translations/localize";
 import {
   hasRejectedItems,
@@ -53,7 +54,6 @@ import type {
   SelectionChangedEvent,
   SortingChangedEvent,
 } from "../../../components/data-table/ha-data-table";
-import "@home-assistant/webawesome/dist/components/divider/divider";
 import "../../../components/data-table/ha-data-table-labels";
 import "../../../components/ha-alert";
 import "../../../components/ha-dropdown";
@@ -113,7 +113,6 @@ import { isHelperDomain } from "../helpers/const";
 import "../integrations/ha-integration-overflow-menu";
 import { showAddIntegrationDialog } from "../integrations/show-add-integration-dialog";
 import { showLabelDetailDialog } from "../labels/show-dialog-label-detail";
-import { slugify } from "../../../common/string/slugify";
 
 export interface StateEntity extends Omit<
   EntityRegistryEntry,
@@ -747,6 +746,48 @@ export class HaConfigEntities extends SubscribeMixin(LitElement) {
     ];
   }
 
+  private _renderLabelItems = (submenu = false) =>
+    html` ${this._labels?.map((label) => {
+        const color = label.color ? computeCssColor(label.color) : undefined;
+        const selected = this._selected.every((entityId) =>
+          this.hass.entities[entityId]?.labels.includes(label.label_id)
+        );
+        const partial =
+          !selected &&
+          this._selected.some((entityId) =>
+            this.hass.entities[entityId]?.labels.includes(label.label_id)
+          );
+        return html`<ha-dropdown-item
+          .slot=${submenu ? "submenu" : ""}
+          .value=${label.label_id}
+          data-action=${selected ? "remove" : "add"}
+          @click=${this._handleLabelMenuSelect}
+        >
+          <ha-checkbox
+            slot="icon"
+            .checked=${selected}
+            .indeterminate=${partial}
+            reducedTouchTarget
+          ></ha-checkbox>
+          <ha-label
+            style=${color ? `--color: ${color}` : ""}
+            .description=${label.description}
+          >
+            ${label.icon
+              ? html`<ha-icon slot="icon" .icon=${label.icon}></ha-icon>`
+              : nothing}
+            ${label.name}
+          </ha-label>
+        </ha-dropdown-item>`;
+      })}
+      <wa-divider .slot=${submenu ? "submenu" : ""}></wa-divider>
+      <ha-dropdown-item
+        @click=${this._handleCreateLabel}
+        .slot=${submenu ? "submenu" : ""}
+      >
+        ${this.hass.localize("ui.panel.config.labels.add_label")}
+      </ha-dropdown-item>`;
+
   protected render() {
     if (!this.hass || this._entities === undefined) {
       return html` <hass-loading-screen></hass-loading-screen> `;
@@ -770,43 +811,6 @@ export class HaConfigEntities extends SubscribeMixin(LitElement) {
       (PROTOCOL_INTEGRATIONS as readonly string[]).includes(
         [...filteredDomains][0]
       );
-
-    const labelItems = html` ${this._labels?.map((label) => {
-        const color = label.color ? computeCssColor(label.color) : undefined;
-        const selected = this._selected.every((entityId) =>
-          this.hass.entities[entityId]?.labels.includes(label.label_id)
-        );
-        const partial =
-          !selected &&
-          this._selected.some((entityId) =>
-            this.hass.entities[entityId]?.labels.includes(label.label_id)
-          );
-        return html`<ha-dropdown-item
-          .value=${label.label_id}
-          data-action=${selected ? "remove" : "add"}
-          keep-open
-        >
-          <ha-checkbox
-            slot="icon"
-            .checked=${selected}
-            .indeterminate=${partial}
-            reducedTouchTarget
-          ></ha-checkbox>
-          <ha-label
-            style=${color ? `--color: ${color}` : ""}
-            .description=${label.description}
-          >
-            ${label.icon
-              ? html`<ha-icon slot="icon" .icon=${label.icon}></ha-icon>`
-              : nothing}
-            ${label.name}
-          </ha-label>
-        </ha-dropdown-item>`;
-      })}
-      <wa-divider></wa-divider>
-      <ha-dropdown-item value="__create_label__">
-        ${this.hass.localize("ui.panel.config.labels.add_label")}
-      </ha-dropdown-item>`;
 
     return html`
       <hass-tabs-subpage-data-table
@@ -859,7 +863,7 @@ export class HaConfigEntities extends SubscribeMixin(LitElement) {
         ></ha-integration-overflow-menu>
 
         ${!this.narrow
-          ? html`<ha-dropdown slot="selection-bar" @wa-select=${this._handleLabelMenuSelect}>
+          ? html`<ha-dropdown slot="selection-bar">
               <ha-assist-chip
                 slot="trigger"
                 .label=${this.hass.localize(
@@ -871,10 +875,13 @@ export class HaConfigEntities extends SubscribeMixin(LitElement) {
                   .path=${mdiMenuDown}
                 ></ha-svg-icon>
               </ha-assist-chip>
-              ${labelItems}
+              ${this._renderLabelItems()}
             </ha-dropdown>`
           : nothing}
-        <ha-dropdown slot="selection-bar" @wa-select=${this._handleOverflowMenuSelect}>
+        <ha-dropdown
+          slot="selection-bar"
+          @wa-select=${this._handleOverflowMenuSelect}
+        >
           ${this.narrow
             ? html`<ha-assist-chip
                 .label=${this.hass.localize(
@@ -896,52 +903,11 @@ export class HaConfigEntities extends SubscribeMixin(LitElement) {
               ></ha-icon-button>`}
           ${this.narrow
             ? html`<ha-dropdown-item>
-                  ${this.hass.localize(
-                    "ui.panel.config.automation.picker.bulk_actions.add_label"
-                  )}
-                  <ha-svg-icon
-                    slot="details"
-                    .path=${mdiChevronRight}
-                  ></ha-svg-icon>
-                  ${this._labels?.map((label) => {
-                    const color = label.color ? computeCssColor(label.color) : undefined;
-                    const selected = this._selected.every((entityId) =>
-                      this.hass.entities[entityId]?.labels.includes(label.label_id)
-                    );
-                    const partial =
-                      !selected &&
-                      this._selected.some((entityId) =>
-                        this.hass.entities[entityId]?.labels.includes(label.label_id)
-                      );
-                    return html`<ha-dropdown-item
-                      slot="submenu"
-                      .value=${label.label_id}
-                      data-action=${selected ? "remove" : "add"}
-                      keep-open
-                    >
-                      <ha-checkbox
-                        slot="icon"
-                        .checked=${selected}
-                        .indeterminate=${partial}
-                        reducedTouchTarget
-                      ></ha-checkbox>
-                      <ha-label
-                        style=${color ? `--color: ${color}` : ""}
-                        .description=${label.description}
-                      >
-                        ${label.icon
-                          ? html`<ha-icon slot="icon" .icon=${label.icon}></ha-icon>`
-                          : nothing}
-                        ${label.name}
-                      </ha-label>
-                    </ha-dropdown-item>`;
-                  })}
-                  <wa-divider slot="submenu"></wa-divider>
-                  <ha-dropdown-item slot="submenu" value="__create_label__">
-                    ${this.hass.localize("ui.panel.config.labels.add_label")}
-                  </ha-dropdown-item>
-                </ha-dropdown-item>
-                <wa-divider></wa-divider>`
+                ${this.hass.localize(
+                  "ui.panel.config.automation.picker.bulk_actions.add_label"
+                )}
+                ${this._renderLabelItems(true)}
+              </ha-dropdown-item>`
             : nothing}
 
           <ha-dropdown-item value="enable">
@@ -976,7 +942,7 @@ export class HaConfigEntities extends SubscribeMixin(LitElement) {
 
           <wa-divider></wa-divider>
 
-          <ha-dropdown-item .clickAction=${this._restoreEntityIdSelected}>
+          <ha-dropdown-item value="restore_entity_id">
             <ha-svg-icon slot="icon" .path=${mdiRestore}></ha-svg-icon>
             ${this.hass.localize(
               "ui.panel.config.entities.picker.restore_entity_id_selected.button"
@@ -985,10 +951,7 @@ export class HaConfigEntities extends SubscribeMixin(LitElement) {
 
           <wa-divider></wa-divider>
 
-          <ha-dropdown-item
-            value="remove"
-            variant="danger"
-          >
+          <ha-dropdown-item value="remove" variant="danger">
             <ha-svg-icon slot="icon" .path=${mdiDelete}></ha-svg-icon>
             ${this.hass.localize(
               "ui.panel.config.entities.picker.delete_selected.button"
@@ -1217,32 +1180,21 @@ export class HaConfigEntities extends SubscribeMixin(LitElement) {
   }
 
   private _handleLabelMenuSelect(ev: CustomEvent) {
-    const item = ev.detail.item as HaDropdownItem;
-    
-    // Handle label selections (checkbox items with keep-open)
-    if (item.hasAttribute("keep-open") && item.hasAttribute("data-action")) {
-      const label = item.value as string;
-      const action = (item as HTMLElement).dataset.action as "add" | "remove";
-      this._bulkLabel(label, action);
-      return;
-    }
-    
-    if (item.value === "__create_label__") {
-      this._bulkCreateLabel();
-    }
+    ev.stopPropagation();
+    const item = ev.currentTarget as HaDropdownItem;
+
+    const label = item.value as string;
+    const action = (item as HTMLElement).dataset.action as "add" | "remove";
+    this._bulkLabel(label, action);
+  }
+
+  private _handleCreateLabel() {
+    this._bulkCreateLabel();
   }
 
   private _handleOverflowMenuSelect(ev: CustomEvent) {
     const item = ev.detail.item as HaDropdownItem;
-    
-    // Handle label selections in submenu (checkbox items with keep-open)
-    if (item.hasAttribute("keep-open") && item.hasAttribute("data-action")) {
-      const label = item.value as string;
-      const action = (item as HTMLElement).dataset.action as "add" | "remove";
-      this._bulkLabel(label, action);
-      return;
-    }
-    
+
     switch (item.value) {
       case "enable":
         this._enableSelected();
@@ -1259,8 +1211,8 @@ export class HaConfigEntities extends SubscribeMixin(LitElement) {
       case "remove":
         this._removeSelected();
         break;
-      case "__create_label__":
-        this._bulkCreateLabel();
+      case "restore_entity_id":
+        this._restoreEntityIdSelected();
         break;
     }
   }

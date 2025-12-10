@@ -1,7 +1,7 @@
+import "@home-assistant/webawesome/dist/components/divider/divider";
 import { ResizeController } from "@lit-labs/observers/resize-controller";
 import { consume } from "@lit/context";
 import {
-  mdiChevronRight,
   mdiCog,
   mdiContentDuplicate,
   mdiDelete,
@@ -34,7 +34,6 @@ import { fireEvent } from "../../../common/dom/fire_event";
 import { computeStateName } from "../../../common/entity/compute_state_name";
 import { navigate } from "../../../common/navigate";
 import { slugify } from "../../../common/string/slugify";
-import "../../../components/ha-tooltip";
 import type { LocalizeFunc } from "../../../common/translations/localize";
 import {
   hasRejectedItems,
@@ -47,20 +46,20 @@ import type {
   SortingChangedEvent,
 } from "../../../components/data-table/ha-data-table";
 import "../../../components/data-table/ha-data-table-labels";
+import "../../../components/ha-dropdown";
+import "../../../components/ha-dropdown-item";
+import type { HaDropdownItem } from "../../../components/ha-dropdown-item";
 import "../../../components/ha-fab";
 import "../../../components/ha-filter-blueprints";
 import "../../../components/ha-filter-categories";
 import "../../../components/ha-filter-devices";
 import "../../../components/ha-filter-entities";
 import "../../../components/ha-filter-floor-areas";
-import "@home-assistant/webawesome/dist/components/divider/divider";
-import "../../../components/ha-dropdown";
-import "../../../components/ha-dropdown-item";
-import type { HaDropdownItem } from "../../../components/ha-dropdown-item";
 import "../../../components/ha-filter-labels";
 import "../../../components/ha-icon-button";
 import "../../../components/ha-icon-overflow-menu";
 import "../../../components/ha-svg-icon";
+import "../../../components/ha-tooltip";
 import { createAreaRegistryEntry } from "../../../data/area_registry";
 import type { CategoryRegistryEntry } from "../../../data/category_registry";
 import {
@@ -419,11 +418,13 @@ class HaScriptPicker extends SubscribeMixin(LitElement) {
     ];
   }
 
-  protected render(): TemplateResult {
-    const categoryItems = html`${this._categories?.map(
+  private _renderCategoryItems = (submenu = false) =>
+    html`${this._categories?.map(
         (category) =>
           html`<ha-dropdown-item
-            value=${category.category_id}
+            .slot=${submenu ? "submenu" : ""}
+            value="move_category"
+            data-category=${category.category_id}
           >
             ${category.icon
               ? html`<ha-icon slot="icon" .icon=${category.icon}></ha-icon>`
@@ -431,17 +432,21 @@ class HaScriptPicker extends SubscribeMixin(LitElement) {
             ${category.name}
           </ha-dropdown-item>`
       )}
-      <ha-dropdown-item value="no-category">
+      <ha-dropdown-item .slot=${submenu ? "submenu" : ""} value="no-category">
         ${this.hass.localize(
           "ui.panel.config.automation.picker.bulk_actions.no_category"
         )}
       </ha-dropdown-item>
-      <wa-divider></wa-divider>
-      <ha-dropdown-item value="create-category">
+      <wa-divider .slot=${submenu ? "submenu" : ""}></wa-divider>
+      <ha-dropdown-item
+        .slot=${submenu ? "submenu" : ""}
+        value="create-category"
+      >
         ${this.hass.localize("ui.panel.config.category.editor.add")}
       </ha-dropdown-item>`;
 
-    const labelItems = html`${this._labels?.map((label) => {
+  private _renderLabelItems = (submenu = false) =>
+    html`${this._labels?.map((label) => {
         const color = label.color ? computeCssColor(label.color) : undefined;
         const selected = this._selected.every((entityId) =>
           this.hass.entities[entityId]?.labels.includes(label.label_id)
@@ -452,11 +457,15 @@ class HaScriptPicker extends SubscribeMixin(LitElement) {
             this.hass.entities[entityId]?.labels.includes(label.label_id)
           );
         return html`<ha-dropdown-item
+          @click=${this._handleLabelMenuSelect}
+          .slot=${submenu ? "submenu" : ""}
           value=${label.label_id}
           data-action=${selected ? "remove" : "add"}
-          type="checkbox"
-          .checked=${selected}
-        >
+          ><ha-checkbox
+            slot="icon"
+            .checked=${selected}
+            .indeterminate=${partial}
+          ></ha-checkbox>
           <ha-label
             style=${color ? `--color: ${color}` : ""}
             .description=${label.description}
@@ -468,15 +477,22 @@ class HaScriptPicker extends SubscribeMixin(LitElement) {
           </ha-label>
         </ha-dropdown-item>`;
       })}
-      <wa-divider></wa-divider>
-      <ha-dropdown-item value="create-label">
+      <wa-divider .slot=${submenu ? "submenu" : ""}></wa-divider>
+      <ha-dropdown-item
+        @click=${this._bulkCreateLabel}
+        .slot=${submenu ? "submenu" : ""}
+        value="create-label"
+      >
         ${this.hass.localize("ui.panel.config.labels.add_label")}
       </ha-dropdown-item>`;
 
-    const areaItems = html`${Object.values(this.hass.areas).map(
+  private _renderAreaItems = (submenu = false) =>
+    html`${Object.values(this.hass.areas).map(
         (area) =>
           html`<ha-dropdown-item
-            value=${area.area_id}
+            .slot=${submenu ? "submenu" : ""}
+            value="move_area"
+            data-area=${area.area_id}
           >
             ${area.icon
               ? html`<ha-icon slot="icon" .icon=${area.icon}></ha-icon>`
@@ -487,18 +503,19 @@ class HaScriptPicker extends SubscribeMixin(LitElement) {
             ${area.name}
           </ha-dropdown-item>`
       )}
-      <ha-dropdown-item value="no-area">
+      <ha-dropdown-item .slot=${submenu ? "submenu" : ""} value="no-area">
         ${this.hass.localize(
           "ui.panel.config.devices.picker.bulk_actions.no_area"
         )}
       </ha-dropdown-item>
-      <wa-divider></wa-divider>
-      <ha-dropdown-item value="create-area">
+      <wa-divider .slot=${submenu ? "submenu" : ""}></wa-divider>
+      <ha-dropdown-item .slot=${submenu ? "submenu" : ""} value="create-area">
         ${this.hass.localize(
           "ui.panel.config.devices.picker.bulk_actions.add_area"
         )}
       </ha-dropdown-item>`;
 
+  protected render(): TemplateResult {
     const areasInOverflow =
       (this._sizeController.value && this._sizeController.value < 900) ||
       (!this._sizeController.value && this.hass.dockedSidebar === "docked");
@@ -630,7 +647,10 @@ class HaScriptPicker extends SubscribeMixin(LitElement) {
         ></ha-filter-blueprints>
 
         ${!this.narrow
-          ? html`<ha-dropdown slot="selection-bar" @wa-select=${this._handleCategoryMenuSelect}>
+          ? html`<ha-dropdown
+                slot="selection-bar"
+                @wa-select=${this._handleOverflowMenuSelect}
+              >
                 <ha-assist-chip
                   slot="trigger"
                   .label=${this.hass.localize(
@@ -642,11 +662,11 @@ class HaScriptPicker extends SubscribeMixin(LitElement) {
                     .path=${mdiMenuDown}
                   ></ha-svg-icon>
                 </ha-assist-chip>
-                ${categoryItems}
+                ${this._renderCategoryItems()}
               </ha-dropdown>
               ${labelsInOverflow
                 ? nothing
-                : html`<ha-dropdown slot="selection-bar" @wa-select=${this._handleLabelMenuSelect}>
+                : html`<ha-dropdown slot="selection-bar">
                     <ha-assist-chip
                       slot="trigger"
                       .label=${this.hass.localize(
@@ -658,11 +678,14 @@ class HaScriptPicker extends SubscribeMixin(LitElement) {
                         .path=${mdiMenuDown}
                       ></ha-svg-icon>
                     </ha-assist-chip>
-                    ${labelItems}
+                    ${this._renderLabelItems()}
                   </ha-dropdown>`}
               ${areasInOverflow
                 ? nothing
-                : html`<ha-dropdown slot="selection-bar" @wa-select=${this._handleAreaMenuSelect}>
+                : html`<ha-dropdown
+                    slot="selection-bar"
+                    @wa-select=${this._handleOverflowMenuSelect}
+                  >
                     <ha-assist-chip
                       slot="trigger"
                       .label=${this.hass.localize(
@@ -674,11 +697,14 @@ class HaScriptPicker extends SubscribeMixin(LitElement) {
                         .path=${mdiMenuDown}
                       ></ha-svg-icon>
                     </ha-assist-chip>
-                    ${areaItems}
+                    ${this._renderAreaItems()}
                   </ha-dropdown>`}`
           : nothing}
         ${this.narrow || areasInOverflow
-          ? html` <ha-dropdown slot="selection-bar" @wa-select=${this._handleOverflowMenuSelect}>
+          ? html` <ha-dropdown
+              slot="selection-bar"
+              @wa-select=${this._handleOverflowMenuSelect}
+            >
               ${this.narrow
                 ? html`<ha-assist-chip
                     .label=${this.hass.localize(
@@ -703,31 +729,7 @@ class HaScriptPicker extends SubscribeMixin(LitElement) {
                     ${this.hass.localize(
                       "ui.panel.config.automation.picker.bulk_actions.move_category"
                     )}
-                    <ha-svg-icon
-                      slot="details"
-                      .path=${mdiChevronRight}
-                    ></ha-svg-icon>
-                    ${this._categories?.map(
-                      (category) =>
-                        html`<ha-dropdown-item
-                          slot="submenu"
-                          value=${category.category_id}
-                        >
-                          ${category.icon
-                            ? html`<ha-icon slot="icon" .icon=${category.icon}></ha-icon>`
-                            : html`<ha-svg-icon slot="icon" .path=${mdiTag}></ha-svg-icon>`}
-                          ${category.name}
-                        </ha-dropdown-item>`
-                    )}
-                    <ha-dropdown-item slot="submenu" value="no-category">
-                      ${this.hass.localize(
-                        "ui.panel.config.automation.picker.bulk_actions.no_category"
-                      )}
-                    </ha-dropdown-item>
-                    <wa-divider slot="submenu"></wa-divider>
-                    <ha-dropdown-item slot="submenu" value="create-category">
-                      ${this.hass.localize("ui.panel.config.category.editor.add")}
-                    </ha-dropdown-item>
+                    ${this._renderCategoryItems(true)}
                   </ha-dropdown-item>`
                 : nothing}
               ${this.narrow || labelsInOverflow
@@ -735,37 +737,7 @@ class HaScriptPicker extends SubscribeMixin(LitElement) {
                     ${this.hass.localize(
                       "ui.panel.config.automation.picker.bulk_actions.add_label"
                     )}
-                    <ha-svg-icon
-                      slot="details"
-                      .path=${mdiChevronRight}
-                    ></ha-svg-icon>
-                    ${this._labels?.map((label) => {
-                      const color = label.color ? computeCssColor(label.color) : undefined;
-                      const selected = this._selected.every((entityId) =>
-                        this.hass.entities[entityId]?.labels.includes(label.label_id)
-                      );
-                      return html`<ha-dropdown-item
-                        slot="submenu"
-                        value=${label.label_id}
-                        data-action=${selected ? "remove" : "add"}
-                        type="checkbox"
-                        .checked=${selected}
-                      >
-                        <ha-label
-                          style=${color ? `--color: ${color}` : ""}
-                          .description=${label.description}
-                        >
-                          ${label.icon
-                            ? html`<ha-icon slot="icon" .icon=${label.icon}></ha-icon>`
-                            : nothing}
-                          ${label.name}
-                        </ha-label>
-                      </ha-dropdown-item>`;
-                    })}
-                    <wa-divider slot="submenu"></wa-divider>
-                    <ha-dropdown-item slot="submenu" value="create-label">
-                      ${this.hass.localize("ui.panel.config.label_registry.editor.add")}
-                    </ha-dropdown-item>
+                    ${this._renderLabelItems(true)}
                   </ha-dropdown-item>`
                 : nothing}
               ${this.narrow || areasInOverflow
@@ -773,31 +745,7 @@ class HaScriptPicker extends SubscribeMixin(LitElement) {
                     ${this.hass.localize(
                       "ui.panel.config.devices.picker.bulk_actions.move_area"
                     )}
-                    <ha-svg-icon
-                      slot="details"
-                      .path=${mdiChevronRight}
-                    ></ha-svg-icon>
-                    ${Object.values(this.hass.areas).map(
-                      (area) =>
-                        html`<ha-dropdown-item
-                          slot="submenu"
-                          value=${area.area_id}
-                        >
-                          ${area.icon
-                            ? html`<ha-icon slot="icon" .icon=${area.icon}></ha-icon>`
-                            : html`<ha-svg-icon slot="icon" .path=${mdiTextureBox}></ha-svg-icon>`}
-                          ${area.name}
-                        </ha-dropdown-item>`
-                    )}
-                    <ha-dropdown-item slot="submenu" value="no-area">
-                      ${this.hass.localize(
-                        "ui.panel.config.devices.picker.bulk_actions.no_area"
-                      )}
-                    </ha-dropdown-item>
-                    <wa-divider slot="submenu"></wa-divider>
-                    <ha-dropdown-item slot="submenu" value="create-area">
-                      ${this.hass.localize("ui.panel.config.area_registry.editor.add")}
-                    </ha-dropdown-item>
+                    ${this._renderAreaItems(true)}
                   </ha-dropdown-item>`
                 : nothing}
             </ha-dropdown>`
@@ -1018,77 +966,46 @@ class HaScriptPicker extends SubscribeMixin(LitElement) {
     this._selected = ev.detail.value;
   }
 
-  private _handleCategoryMenuSelect = (ev: CustomEvent) => {
-    const item = ev.detail.item as HaDropdownItem;
-    if (item.value === "create-category") {
-      this._bulkCreateCategory();
-      return;
-    }
-    if (item.value === "no-category") {
-      this._bulkAddCategory(null!);
-      return;
-    }
-    this._bulkAddCategory(item.value);
-  };
-
   private _handleLabelMenuSelect = (ev: CustomEvent) => {
-    const item = ev.detail.item as HaDropdownItem & { dataset: { action?: string } };
-    if (item.value === "create-label") {
-      this._bulkCreateLabel();
-      return;
-    }
+    ev.stopPropagation();
+    const item = ev.currentTarget as HaDropdownItem & {
+      dataset: { action?: string };
+    };
     const action = item.dataset.action as "add" | "remove";
     this._bulkLabel(item.value, action);
   };
 
-  private _handleAreaMenuSelect = (ev: CustomEvent) => {
-    const item = ev.detail.item as HaDropdownItem;
-    if (item.value === "create-area") {
-      this._bulkCreateArea();
-      return;
-    }
-    if (item.value === "no-area") {
-      this._bulkAddArea(null!);
-      return;
-    }
-    this._bulkAddArea(item.value);
-  };
-
   private _handleOverflowMenuSelect = (ev: CustomEvent) => {
-    const item = ev.detail.item as HaDropdownItem & { dataset: { action?: string } };
-    if (item.value === "create-category") {
-      this._bulkCreateCategory();
-      return;
+    const item = ev.detail.item as HaDropdownItem & {
+      dataset: { action?: string };
+    };
+    switch (item.value) {
+      case "create-category":
+        this._bulkCreateCategory();
+        break;
+      case "no-category":
+        this._bulkAddCategory(null!);
+        break;
+      case "create-label":
+        this._bulkCreateLabel();
+        break;
+      case "create-area":
+        this._bulkCreateArea();
+        break;
+      case "no-area":
+        this._bulkAddArea(null!);
+        break;
+      case "move_area":
+        if (item.dataset.area) {
+          this._bulkAddArea(item.dataset.area);
+        }
+        break;
+      case "move_category":
+        if (item.dataset.category) {
+          this._bulkAddCategory(item.dataset.category);
+        }
+        break;
     }
-    if (item.value === "no-category") {
-      this._bulkAddCategory(null!);
-      return;
-    }
-    if (item.value === "create-label") {
-      this._bulkCreateLabel();
-      return;
-    }
-    if (item.value === "create-area") {
-      this._bulkCreateArea();
-      return;
-    }
-    if (item.value === "no-area") {
-      this._bulkAddArea(null!);
-      return;
-    }
-    // Check if it's a label action
-    if (item.dataset.action) {
-      const action = item.dataset.action as "add" | "remove";
-      this._bulkLabel(item.value, action);
-      return;
-    }
-    // Check if it's an area
-    if (this.hass.areas[item.value]) {
-      this._bulkAddArea(item.value);
-      return;
-    }
-    // Otherwise it's a category
-    this._bulkAddCategory(item.value);
   };
 
   private async _bulkAddCategory(category: string) {

@@ -1,7 +1,6 @@
 import { consume } from "@lit/context";
 import {
   mdiCancel,
-  mdiChevronRight,
   mdiDelete,
   mdiDotsVertical,
   mdiMenuDown,
@@ -39,18 +38,18 @@ import type {
   SortingChangedEvent,
 } from "../../../components/data-table/ha-data-table";
 
+import "@home-assistant/webawesome/dist/components/divider/divider";
 import "../../../components/data-table/ha-data-table-labels";
 import "../../../components/entity/ha-battery-icon";
 import "../../../components/ha-alert";
 import "../../../components/ha-button-menu";
 import "../../../components/ha-check-list-item";
-import "../../../components/ha-fab";
-import "../../../components/ha-filter-devices";
-import "../../../components/ha-filter-floor-areas";
-import "@home-assistant/webawesome/dist/components/divider/divider";
 import "../../../components/ha-dropdown";
 import "../../../components/ha-dropdown-item";
 import type { HaDropdownItem } from "../../../components/ha-dropdown-item";
+import "../../../components/ha-fab";
+import "../../../components/ha-filter-devices";
+import "../../../components/ha-filter-floor-areas";
 import "../../../components/ha-filter-integrations";
 import "../../../components/ha-filter-labels";
 import "../../../components/ha-filter-states";
@@ -703,25 +702,14 @@ export class HaConfigDeviceDashboard extends SubscribeMixin(LitElement) {
     ];
   }
 
-  protected render(): TemplateResult {
-    const { devicesOutput } = this._devicesAndFilterDomains(
-      this.hass.devices,
-      this.entries,
-      this.entities,
-      this.hass.areas,
-      this.manifests,
-      this._filters,
-      this.hass.localize,
-      this._labels
-    );
-
-    const areasInOverflow =
-      (this._sizeController.value && this._sizeController.value < 700) ||
-      (!this._sizeController.value && this.hass.dockedSidebar === "docked");
-
-    const areaItems = html`${Object.values(this.hass.areas).map(
+  private _renderAreaItems = (submenu = false) =>
+    html`${Object.values(this.hass.areas).map(
         (area) =>
-          html`<ha-dropdown-item .value=${area.area_id}>
+          html`<ha-dropdown-item
+            .slot=${submenu ? "submenu" : ""}
+            value="toggle_area"
+            data-area=${area.area_id}
+          >
             ${area.icon
               ? html`<ha-icon slot="icon" .icon=${area.icon}></ha-icon>`
               : html`<ha-svg-icon
@@ -731,19 +719,23 @@ export class HaConfigDeviceDashboard extends SubscribeMixin(LitElement) {
             ${area.name}
           </ha-dropdown-item>`
       )}
-      <ha-dropdown-item value="__no_area__">
+      <ha-dropdown-item .slot=${submenu ? "submenu" : ""} value="__no_area__">
         ${this.hass.localize(
           "ui.panel.config.devices.picker.bulk_actions.no_area"
         )}
       </ha-dropdown-item>
-      <wa-divider></wa-divider>
-      <ha-dropdown-item value="__create_area__">
+      <wa-divider .slot=${submenu ? "submenu" : ""}></wa-divider>
+      <ha-dropdown-item
+        .slot=${submenu ? "submenu" : ""}
+        value="__create_area__"
+      >
         ${this.hass.localize(
           "ui.panel.config.devices.picker.bulk_actions.add_area"
         )}
       </ha-dropdown-item>`;
 
-    const labelItems = html`${this._labels?.map((label) => {
+  private _renderLabelItems = (submenu = false) =>
+    html`${this._labels?.map((label) => {
         const color = label.color ? computeCssColor(label.color) : undefined;
         const selected = this._selected.every((deviceId) =>
           this.hass.devices[deviceId]?.labels.includes(label.label_id)
@@ -754,9 +746,10 @@ export class HaConfigDeviceDashboard extends SubscribeMixin(LitElement) {
             this.hass.devices[deviceId]?.labels.includes(label.label_id)
           );
         return html`<ha-dropdown-item
+          .slot=${submenu ? "submenu" : ""}
           .value=${label.label_id}
           data-action=${selected ? "remove" : "add"}
-          keep-open
+          @click=${this._handleBulkLabel}
         >
           <ha-checkbox
             slot="icon"
@@ -775,10 +768,29 @@ export class HaConfigDeviceDashboard extends SubscribeMixin(LitElement) {
           </ha-label>
         </ha-dropdown-item>`;
       })}
-      <wa-divider></wa-divider>
-      <ha-dropdown-item value="__create_label__">
+      <wa-divider .slot=${submenu ? "submenu" : ""}></wa-divider>
+      <ha-dropdown-item
+        @click=${this._bulkCreateLabel}
+        .slot=${submenu ? "submenu" : ""}
+      >
         ${this.hass.localize("ui.panel.config.labels.add_label")}
       </ha-dropdown-item>`;
+
+  protected render(): TemplateResult {
+    const { devicesOutput } = this._devicesAndFilterDomains(
+      this.hass.devices,
+      this.entries,
+      this.entities,
+      this.hass.areas,
+      this.manifests,
+      this._filters,
+      this.hass.localize,
+      this._labels
+    );
+
+    const areasInOverflow =
+      (this._sizeController.value && this._sizeController.value < 700) ||
+      (!this._sizeController.value && this.hass.dockedSidebar === "docked");
 
     return html`
       <hass-tabs-subpage-data-table
@@ -909,14 +921,14 @@ export class HaConfigDeviceDashboard extends SubscribeMixin(LitElement) {
                     .path=${mdiMenuDown}
                   ></ha-svg-icon>
                 </ha-assist-chip>
-                ${labelItems}
+                ${this._renderLabelItems()}
               </ha-dropdown>
 
               ${areasInOverflow
                 ? nothing
                 : html`<ha-dropdown
                     slot="selection-bar"
-                    @wa-select=${this._handleBulkAreaSelect}
+                    @wa-select=${this._handleOverflowMenuSelect}
                   >
                     <ha-assist-chip
                       slot="trigger"
@@ -929,10 +941,14 @@ export class HaConfigDeviceDashboard extends SubscribeMixin(LitElement) {
                         .path=${mdiMenuDown}
                       ></ha-svg-icon>
                     </ha-assist-chip>
-                    ${areaItems}
+                    ${this._renderAreaItems()}
                   </ha-dropdown>`}`
           : nothing}
-        <ha-dropdown has-overflow slot="selection-bar" @wa-select=${this._handleOverflowMenuSelect}>
+        <ha-dropdown
+          has-overflow
+          slot="selection-bar"
+          @wa-select=${this._handleOverflowMenuSelect}
+        >
           ${this.narrow
             ? html`<ha-assist-chip
                 .label=${this.hass.localize(
@@ -957,88 +973,16 @@ export class HaConfigDeviceDashboard extends SubscribeMixin(LitElement) {
                 ${this.hass.localize(
                   "ui.panel.config.automation.picker.bulk_actions.add_label"
                 )}
-                <ha-svg-icon
-                  slot="details"
-                  .path=${mdiChevronRight}
-                ></ha-svg-icon>
-                ${this._labels?.map((label) => {
-                  const color = label.color ? computeCssColor(label.color) : undefined;
-                  const selected = this._selected.every((deviceId) =>
-                    this.hass.devices[deviceId]?.labels.includes(label.label_id)
-                  );
-                  const partial =
-                    !selected &&
-                    this._selected.some((deviceId) =>
-                      this.hass.devices[deviceId]?.labels.includes(label.label_id)
-                    );
-                  return html`<ha-dropdown-item
-                    slot="submenu"
-                    .value=${label.label_id}
-                    data-action=${selected ? "remove" : "add"}
-                    @click=${this._handleBulkLabel}
-                    keep-open
-                  >
-                    <ha-checkbox
-                      slot="icon"
-                      .checked=${selected}
-                      .indeterminate=${partial}
-                      reducedTouchTarget
-                    ></ha-checkbox>
-                    <ha-label
-                      style=${color ? `--color: ${color}` : ""}
-                      .description=${label.description}
-                    >
-                      ${label.icon
-                        ? html`<ha-icon slot="icon" .icon=${label.icon}></ha-icon>`
-                        : nothing}
-                      ${label.name}
-                    </ha-label>
-                  </ha-dropdown-item>`;
-                })}
-                <wa-divider slot="submenu"></wa-divider>
-                <ha-dropdown-item
-                  slot="submenu"
-                  value="__create_label__"
-                  @click=${this._bulkCreateLabel}
-                >
-                  ${this.hass.localize("ui.panel.config.labels.add_label")}
-                </ha-dropdown-item>
+                ${this._renderLabelItems(true)}
               </ha-dropdown-item>`
             : nothing}
           ${areasInOverflow
             ? html`<ha-dropdown-item>
-                  ${this.hass.localize(
-                    "ui.panel.config.devices.picker.bulk_actions.move_area"
-                  )}
-                  <ha-svg-icon
-                    slot="details"
-                    .path=${mdiChevronRight}
-                  ></ha-svg-icon>
-                  ${Object.values(this.hass.areas).map(
-                    (area) =>
-                      html`<ha-dropdown-item slot="submenu" .value=${area.area_id}>
-                        ${area.icon
-                          ? html`<ha-icon slot="icon" .icon=${area.icon}></ha-icon>`
-                          : html`<ha-svg-icon
-                              slot="icon"
-                              .path=${mdiTextureBox}
-                            ></ha-svg-icon>`}
-                        ${area.name}
-                      </ha-dropdown-item>`
-                  )}
-                  <ha-dropdown-item slot="submenu" value="__no_area__">
-                    ${this.hass.localize(
-                      "ui.panel.config.devices.picker.bulk_actions.no_area"
-                    )}
-                  </ha-dropdown-item>
-                  <wa-divider slot="submenu"></wa-divider>
-                  <ha-dropdown-item slot="submenu" value="__create_area__">
-                    ${this.hass.localize(
-                      "ui.panel.config.devices.picker.bulk_actions.add_area"
-                    )}
-                  </ha-dropdown-item>
-                </ha-dropdown-item>
-                <wa-divider></wa-divider>`
+                ${this.hass.localize(
+                  "ui.panel.config.devices.picker.bulk_actions.move_area"
+                )}
+                ${this._renderAreaItems(true)}
+              </ha-dropdown-item>`
             : nothing}
           <ha-dropdown-item
             value="delete"
@@ -1140,59 +1084,28 @@ export class HaConfigDeviceDashboard extends SubscribeMixin(LitElement) {
     this._selected = ev.detail.value;
   }
 
-  private _handleBulkAreaSelect(ev: CustomEvent) {
-    const item = ev.detail.item as HaDropdownItem;
-    switch (item.value) {
-      case "__no_area__":
-        this._bulkAddArea(null);
-        break;
-      case "__create_area__":
-        this._bulkCreateArea();
-        break;
-      default:
-        this._bulkAddArea(item.value as string);
-        break;
-    }
-  }
-
   private _handleOverflowMenuSelect(ev: CustomEvent) {
     const item = ev.detail.item as HaDropdownItem;
-    
-    // Handle label selections (checkbox items with keep-open)
-    if (item.hasAttribute("keep-open") && item.hasAttribute("data-action")) {
-      const label = item.value as string;
-      const action = (item as HTMLElement).dataset.action as "add" | "remove";
-      this._bulkLabel(label, action);
-      return;
-    }
-    
+
     switch (item.value) {
       case "delete":
         this._deleteSelected();
         break;
-      case "__create_label__":
-        this._bulkCreateLabel();
-        break;
       case "__no_area__":
         this._bulkAddArea(null);
         break;
       case "__create_area__":
         this._bulkCreateArea();
         break;
-      default:
-        if (item.value && typeof item.value === "string" && item.value.startsWith("area_")) {
-          this._bulkAddArea(item.value);
+      case "toggle_area":
+        if (item.dataset.area) {
+          this._bulkAddArea(item.dataset.area);
         }
         break;
     }
   }
 
-  private _handleBulkArea = (item) => {
-    const area = item.value;
-    this._bulkAddArea(area);
-  };
-
-  private async _bulkAddArea(area: string) {
+  private async _bulkAddArea(area: string | null) {
     const promises: Promise<DeviceRegistryEntry>[] = [];
     this._selected.forEach((deviceId) => {
       promises.push(
@@ -1265,6 +1178,13 @@ ${rejected
       },
     });
   };
+
+  private async _handleBulkLabel(ev) {
+    ev.stopPropagation();
+    const label = ev.currentTarget.value;
+    const action = ev.currentTarget.dataset.action;
+    this._bulkLabel(label, action);
+  }
 
   private _deleteSelected = () => {
     showConfirmationDialog(this, {
