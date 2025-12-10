@@ -142,6 +142,9 @@ class HaPanelApp extends LitElement {
 
     if (addon && addon !== oldAddon) {
       this._loadingMessage = undefined;
+      // Reset iframe subscription state when switching addons
+      this._hideToolbar = false;
+      this._iframeSubscribeUpdates = false;
       this._fetchData(addon);
     }
   }
@@ -294,6 +297,11 @@ class HaPanelApp extends LitElement {
         session = await createHassioSession(this.hass);
       }
     }, 60000);
+
+    // Check if user navigated away while we were fetching
+    if (this._getAddonSlug() !== addonSlug) {
+      return;
+    }
 
     this._addon = addon;
   }
