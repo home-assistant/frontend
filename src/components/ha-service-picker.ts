@@ -21,6 +21,13 @@ interface ServiceComboBoxItem extends PickerComboBoxItem {
   service_id?: string;
 }
 
+const SEARCH_KEYS = [
+  { name: "name", weight: 10 },
+  { name: "description", weight: 8 },
+  { name: "domainName", weight: 6 },
+  { name: "serviceId", weight: 3 },
+];
+
 @customElement("ha-service-picker")
 class HaServicePicker extends LitElement {
   @property({ attribute: false }) public hass!: HomeAssistant;
@@ -141,6 +148,10 @@ class HaServicePicker extends LitElement {
           this.hass.localize,
           this.hass.services
         )}
+        .searchKeys=${SEARCH_KEYS}
+        .unknownItemText=${this.hass.localize(
+          "ui.components.service-picker.unknown"
+        )}
         @value-changed=${this._valueChanged}
       >
       </ha-generic-picker>
@@ -194,9 +205,7 @@ class HaServicePicker extends LitElement {
               secondary: description,
               domain_name: domainName,
               service_id: serviceId,
-              search_labels: [serviceId, domainName, name, description].filter(
-                Boolean
-              ),
+              search_labels: { serviceId, domainName, name, description },
               sorting_label: serviceId,
             });
           }

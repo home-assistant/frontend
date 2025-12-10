@@ -9,6 +9,7 @@ import { caseInsensitiveStringCompare } from "../common/string/compare";
 import { computeRTL } from "../common/util/compute_rtl";
 import { debounce } from "../common/util/debounce";
 import type { PickerComboBoxItem } from "../components/ha-picker-combo-box";
+import type { FuseWeightedKey } from "../resources/fuseMultiTerm";
 import type { HomeAssistant } from "../types";
 import type { HaEntityPickerEntityFilterFunc } from "./entity";
 import { domainToName } from "./integration";
@@ -335,6 +336,33 @@ export interface EntityComboBoxItem extends PickerComboBoxItem {
   stateObj?: HassEntity;
 }
 
+export const entityComboBoxKeys: FuseWeightedKey[] = [
+  {
+    name: "search_labels.entityName",
+    weight: 10,
+  },
+  {
+    name: "search_labels.friendlyName",
+    weight: 8,
+  },
+  {
+    name: "search_labels.deviceName",
+    weight: 7,
+  },
+  {
+    name: "search_labels.areaName",
+    weight: 6,
+  },
+  {
+    name: "search_labels.domainName",
+    weight: 6,
+  },
+  {
+    name: "search_labels.entityId",
+    weight: 3,
+  },
+];
+
 export const getEntities = (
   hass: HomeAssistant,
   includeDomains?: string[],
@@ -403,14 +431,14 @@ export const getEntities = (
       secondary: secondary,
       domain_name: domainName,
       sorting_label: [deviceName, entityName].filter(Boolean).join("_"),
-      search_labels: [
-        entityName,
-        deviceName,
-        areaName,
-        domainName,
-        friendlyName,
-        entityId,
-      ].filter(Boolean) as string[],
+      search_labels: {
+        entityName: entityName || null,
+        deviceName: deviceName || null,
+        areaName: areaName || null,
+        domainName: domainName || null,
+        friendlyName: friendlyName || null,
+        entityId: entityId,
+      },
       stateObj: stateObj,
     };
   });

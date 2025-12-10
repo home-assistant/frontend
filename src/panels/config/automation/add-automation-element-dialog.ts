@@ -97,7 +97,7 @@ import {
   fetchIntegrationManifests,
 } from "../../../data/integration";
 import type { LabelRegistryEntry } from "../../../data/label_registry";
-import { subscribeLabFeatures } from "../../../data/labs";
+import { subscribeLabFeature } from "../../../data/labs";
 import {
   TARGET_SEPARATOR,
   getConditionsForTarget,
@@ -228,7 +228,7 @@ class DialogAddAutomationElement
 
   private _unsub?: Promise<UnsubscribeFunc>;
 
-  private _unsubscribeLabFeatures?: UnsubscribeFunc;
+  private _unsubscribeLabFeatures?: Promise<UnsubscribeFunc>;
 
   private _configEntryLookup: Record<string, ConfigEntry> = {};
 
@@ -281,15 +281,12 @@ class DialogAddAutomationElement
     this._fetchManifests();
     this._calculateUsedDomains();
 
-    this._unsubscribeLabFeatures = subscribeLabFeatures(
+    this._unsubscribeLabFeatures = subscribeLabFeature(
       this.hass.connection,
-      (features) => {
-        this._newTriggersAndConditions =
-          features.find(
-            (feature) =>
-              feature.domain === "automation" &&
-              feature.preview_feature === "new_triggers_conditions"
-          )?.enabled ?? false;
+      "automation",
+      "new_triggers_conditions",
+      (feature) => {
+        this._newTriggersAndConditions = feature.enabled;
         this._tab = this._newTriggersAndConditions ? "targets" : "groups";
       }
     );
@@ -425,7 +422,7 @@ class DialogAddAutomationElement
       this._unsub = undefined;
     }
     if (this._unsubscribeLabFeatures) {
-      this._unsubscribeLabFeatures();
+      this._unsubscribeLabFeatures.then((unsub) => unsub());
       this._unsubscribeLabFeatures = undefined;
     }
   }
@@ -686,6 +683,7 @@ class DialogAddAutomationElement
               <ha-automation-add-items
                 .hass=${this.hass}
                 .items=${this._getItems()}
+                .scrollable=${!this._narrow}
                 .error=${this._tab === "targets" && this._loadItemsError
                   ? this.hass.localize(
                       "ui.panel.config.automation.editor.load_target_items_failed"
@@ -2146,7 +2144,7 @@ class DialogAddAutomationElement
           min-height: 160px;
         }
         .content.column ha-automation-add-from-target {
-          overflow: hidden;
+          overflow: clip;
         }
 
         ha-wa-dialog ha-automation-add-items {

@@ -24,6 +24,9 @@ export class GasViewStrategy extends ReactiveElement {
     const energyCollection = getEnergyDataCollection(hass, {
       key: collectionKey,
     });
+    if (!energyCollection.prefs) {
+      await energyCollection.refresh();
+    }
     const prefs = energyCollection.prefs;
 
     const hasGasSources = prefs?.energy_sources.some(

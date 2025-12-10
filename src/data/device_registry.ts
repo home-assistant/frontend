@@ -6,6 +6,7 @@ import { getDeviceContext } from "../common/entity/context/get_device_context";
 import { caseInsensitiveStringCompare } from "../common/string/compare";
 import type { HaDevicePickerDeviceFilterFunc } from "../components/device/ha-device-picker";
 import type { PickerComboBoxItem } from "../components/ha-picker-combo-box";
+import type { FuseWeightedKey } from "../resources/fuseMultiTerm";
 import type { HomeAssistant } from "../types";
 import type { ConfigEntry } from "./config_entries";
 import type { HaEntityPickerEntityFilterFunc } from "./entity";
@@ -181,6 +182,25 @@ export interface DevicePickerItem extends PickerComboBoxItem {
   domain_name?: string;
 }
 
+export const deviceComboBoxKeys: FuseWeightedKey[] = [
+  {
+    name: "search_labels.deviceName",
+    weight: 10,
+  },
+  {
+    name: "search_labels.areaName",
+    weight: 8,
+  },
+  {
+    name: "search_labels.domainName",
+    weight: 4,
+  },
+  {
+    name: "search_labels.domain",
+    weight: 4,
+  },
+];
+
 export const getDevices = (
   hass: HomeAssistant,
   configEntryLookup: Record<string, ConfigEntry>,
@@ -311,9 +331,12 @@ export const getDevices = (
       secondary: areaName,
       domain: configEntry?.domain,
       domain_name: domainName,
-      search_labels: [deviceName, areaName, domain, domainName].filter(
-        Boolean
-      ) as string[],
+      search_labels: {
+        deviceName,
+        areaName: areaName || null,
+        domain: domain || null,
+        domainName: domainName || null,
+      },
       sorting_label: deviceName || "zzz",
     };
   });

@@ -82,6 +82,12 @@ export interface WeatherEntity extends HassEntityBase {
   attributes: WeatherEntityAttributes;
 }
 
+export const WEATHER_TEMPERATURE_ATTRIBUTES = new Set<string>([
+  "temperature",
+  "apparent_temperature",
+  "dew_point",
+]);
+
 export const weatherSVGs = new Set<string>([
   "clear-night",
   "cloudy",
@@ -256,9 +262,15 @@ export const getWeatherUnit = (
 export const getSecondaryWeatherAttribute = (
   hass: HomeAssistant,
   stateObj: WeatherEntity,
-  forecast: ForecastAttribute[]
+  forecast: ForecastAttribute[],
+  temperatureFractionDigits?: number
 ): TemplateResult | undefined => {
-  const extrema = getWeatherExtrema(hass, stateObj, forecast);
+  const extrema = getWeatherExtrema(
+    hass,
+    stateObj,
+    forecast,
+    temperatureFractionDigits
+  );
 
   if (extrema) {
     return extrema;
@@ -298,7 +310,8 @@ export const getSecondaryWeatherAttribute = (
 const getWeatherExtrema = (
   hass: HomeAssistant,
   stateObj: WeatherEntity,
-  forecast: ForecastAttribute[]
+  forecast: ForecastAttribute[],
+  temperatureFractionDigits?: number
 ): TemplateResult | undefined => {
   if (!forecast?.length) {
     return undefined;
@@ -313,13 +326,22 @@ const getWeatherExtrema = (
       break;
     }
     if (!tempHigh || fc.temperature > tempHigh) {
-      tempHigh = fc.temperature;
+      tempHigh =
+        temperatureFractionDigits === undefined
+          ? fc.temperature
+          : round(fc.temperature, temperatureFractionDigits);
     }
-    if (!tempLow || (fc.templow && fc.templow < tempLow)) {
-      tempLow = fc.templow;
+    if (fc.templow !== undefined && (!tempLow || fc.templow < tempLow)) {
+      tempLow =
+        temperatureFractionDigits === undefined
+          ? fc.templow
+          : round(fc.templow, temperatureFractionDigits);
     }
     if (!fc.templow && (!tempLow || fc.temperature < tempLow)) {
-      tempLow = fc.temperature;
+      tempLow =
+        temperatureFractionDigits === undefined
+          ? fc.temperature
+          : round(fc.temperature, temperatureFractionDigits);
     }
   }
 

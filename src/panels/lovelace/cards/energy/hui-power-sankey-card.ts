@@ -6,7 +6,10 @@ import { classMap } from "lit/directives/class-map";
 import "../../../../components/ha-card";
 import "../../../../components/ha-svg-icon";
 import type { EnergyData, EnergyPreferences } from "../../../../data/energy";
-import { getEnergyDataCollection } from "../../../../data/energy";
+import {
+  getEnergyDataCollection,
+  getPowerFromState,
+} from "../../../../data/energy";
 import { SubscribeMixin } from "../../../../mixins/subscribe-mixin";
 import type { HomeAssistant } from "../../../../types";
 import type { LovelaceCard, LovelaceGridOptions } from "../../types";
@@ -724,33 +727,7 @@ class HuiPowerSankeyCard
     // Track this entity for state change detection
     this._entities.add(entityId);
 
-    const stateObj = this.hass.states[entityId];
-    if (!stateObj) {
-      return 0;
-    }
-    const value = parseFloat(stateObj.state);
-    if (isNaN(value)) {
-      return 0;
-    }
-
-    // Normalize to kW based on unit of measurement (case-sensitive)
-    // Supported units: GW, kW, MW, mW, TW, W
-    const unit = stateObj.attributes.unit_of_measurement;
-    switch (unit) {
-      case "W":
-        return value / 1000;
-      case "mW":
-        return value / 1000000;
-      case "MW":
-        return value * 1000;
-      case "GW":
-        return value * 1000000;
-      case "TW":
-        return value * 1000000000;
-      default:
-        // Assume kW if no unit or unit is kW
-        return value;
-    }
+    return getPowerFromState(this.hass.states[entityId]) ?? 0;
   }
 
   /**

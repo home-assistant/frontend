@@ -268,8 +268,10 @@ class PanelEnergy extends LitElement {
       (source) => source.type === "gas"
     );
 
+    const hasDeviceConsumption = this._prefs.device_consumption.length > 0;
+
     const views: LovelaceViewConfig[] = [];
-    if (hasEnergy) {
+    if (hasEnergy || hasDeviceConsumption) {
       views.push(ENERGY_VIEW);
     }
     if (hasGas) {

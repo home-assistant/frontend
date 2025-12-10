@@ -1,4 +1,3 @@
-import { stringCompare } from "../common/string/compare";
 import type { HomeAssistant } from "../types";
 import type { DeviceRegistryEntry } from "./device_registry";
 import type {
@@ -105,22 +104,3 @@ export const getAreaDeviceLookup = (
   }
   return areaDeviceLookup;
 };
-
-export const areaCompare =
-  (entries?: HomeAssistant["areas"], order?: string[]) =>
-  (a: string, b: string) => {
-    const indexA = order ? order.indexOf(a) : -1;
-    const indexB = order ? order.indexOf(b) : -1;
-    if (indexA === -1 && indexB === -1) {
-      const nameA = entries?.[a]?.name ?? a;
-      const nameB = entries?.[b]?.name ?? b;
-      return stringCompare(nameA, nameB);
-    }
-    if (indexA === -1) {
-      return 1;
-    }
-    if (indexB === -1) {
-      return -1;
-    }
-    return indexA - indexB;
-  };

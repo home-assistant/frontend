@@ -1,3 +1,4 @@
+import "@home-assistant/webawesome/dist/components/divider/divider";
 import {
   mdiAppleKeyboardCommand,
   mdiContentCopy,
@@ -16,9 +17,11 @@ import { classMap } from "lit/directives/class-map";
 import { keyed } from "lit/directives/keyed";
 import { fireEvent } from "../../../../common/dom/fire_event";
 import { handleStructError } from "../../../../common/structs/handle-errors";
+import "../../../../components/ha-dropdown-item";
+import type { HaDropdownItem } from "../../../../components/ha-dropdown-item";
 import type {
-  LegacyCondition,
   ConditionSidebarConfig,
+  LegacyCondition,
 } from "../../../../data/automation";
 import { testCondition } from "../../../../data/automation";
 import {
@@ -117,6 +120,7 @@ export default class HaAutomationSidebarCondition extends LitElement {
       .yamlMode=${this.yamlMode}
       .warnings=${this._warnings}
       .narrow=${this.narrow}
+      @wa-select=${this._handleDropdownSelect}
     >
       <span slot="title">${title}</span>
       <span slot="subtitle"
@@ -124,42 +128,38 @@ export default class HaAutomationSidebarCondition extends LitElement {
           ? ` (${this.hass.localize("ui.panel.config.automation.editor.actions.disabled")})`
           : ""}</span
       >
-      <ha-md-menu-item slot="menu-items" .clickAction=${this._testCondition}>
-        <ha-svg-icon slot="start" .path=${mdiFlask}></ha-svg-icon>
+      <ha-dropdown-item slot="menu-items" value="test">
+        <ha-svg-icon slot="icon" .path=${mdiFlask}></ha-svg-icon>
         <div class="overflow-label">
           ${this.hass.localize(
             "ui.panel.config.automation.editor.conditions.test"
           )}
           <span class="shortcut-placeholder ${isMac ? "mac" : ""}"></span>
         </div>
-      </ha-md-menu-item>
-      <ha-md-menu-item
+      </ha-dropdown-item>
+      <ha-dropdown-item
         slot="menu-items"
-        .clickAction=${this.config.rename}
+        value="rename"
         .disabled=${this.disabled}
       >
-        <ha-svg-icon slot="start" .path=${mdiRenameBox}></ha-svg-icon>
+        <ha-svg-icon slot="icon" .path=${mdiRenameBox}></ha-svg-icon>
         <div class="overflow-label">
           ${this.hass.localize(
             "ui.panel.config.automation.editor.triggers.rename"
           )}
           <span class="shortcut-placeholder ${isMac ? "mac" : ""}"></span>
         </div>
-      </ha-md-menu-item>
+      </ha-dropdown-item>
 
-      <ha-md-divider
-        slot="menu-items"
-        role="separator"
-        tabindex="-1"
-      ></ha-md-divider>
+      <wa-divider slot="menu-items"></wa-divider>
 
-      <ha-md-menu-item
+      <ha-dropdown-item
         slot="menu-items"
-        .clickAction=${this.config.duplicate}
+        value="duplicate"
         .disabled=${this.disabled}
       >
         <ha-svg-icon
-          slot="start"
+          slot="icon"
           .path=${mdiPlusCircleMultipleOutline}
         ></ha-svg-icon>
         <div class="overflow-label">
@@ -168,10 +168,10 @@ export default class HaAutomationSidebarCondition extends LitElement {
           )}
           <span class="shortcut-placeholder ${isMac ? "mac" : ""}"></span>
         </div>
-      </ha-md-menu-item>
+      </ha-dropdown-item>
 
-      <ha-md-menu-item slot="menu-items" .clickAction=${this.config.copy}>
-        <ha-svg-icon slot="start" .path=${mdiContentCopy}></ha-svg-icon>
+      <ha-dropdown-item slot="menu-items" value="copy">
+        <ha-svg-icon slot="icon" .path=${mdiContentCopy}></ha-svg-icon>
         <div class="overflow-label">
           ${this.hass.localize(
             "ui.panel.config.automation.editor.triggers.copy"
@@ -181,7 +181,6 @@ export default class HaAutomationSidebarCondition extends LitElement {
                 <span
                   >${isMac
                     ? html`<ha-svg-icon
-                        slot="start"
                         .path=${mdiAppleKeyboardCommand}
                       ></ha-svg-icon>`
                     : this.hass.localize(
@@ -193,14 +192,14 @@ export default class HaAutomationSidebarCondition extends LitElement {
               </span>`
             : nothing}
         </div>
-      </ha-md-menu-item>
+      </ha-dropdown-item>
 
-      <ha-md-menu-item
+      <ha-dropdown-item
         slot="menu-items"
-        .clickAction=${this.config.cut}
+        value="cut"
         .disabled=${this.disabled}
       >
-        <ha-svg-icon slot="start" .path=${mdiContentCut}></ha-svg-icon>
+        <ha-svg-icon slot="icon" .path=${mdiContentCut}></ha-svg-icon>
         <div class="overflow-label">
           ${this.hass.localize(
             "ui.panel.config.automation.editor.triggers.cut"
@@ -210,7 +209,6 @@ export default class HaAutomationSidebarCondition extends LitElement {
                 <span
                   >${isMac
                     ? html`<ha-svg-icon
-                        slot="start"
                         .path=${mdiAppleKeyboardCommand}
                       ></ha-svg-icon>`
                     : this.hass.localize(
@@ -222,32 +220,29 @@ export default class HaAutomationSidebarCondition extends LitElement {
               </span>`
             : nothing}
         </div>
-      </ha-md-menu-item>
-      <ha-md-menu-item
+      </ha-dropdown-item>
+      <ha-dropdown-item
         slot="menu-items"
-        .clickAction=${this._toggleYamlMode}
+        value="toggle_yaml_mode"
         .disabled=${!this.config.uiSupported || !!this._warnings}
       >
-        <ha-svg-icon slot="start" .path=${mdiPlaylistEdit}></ha-svg-icon>
+        <ha-svg-icon slot="icon" .path=${mdiPlaylistEdit}></ha-svg-icon>
         <div class="overflow-label">
           ${this.hass.localize(
             `ui.panel.config.automation.editor.edit_${!this.yamlMode ? "yaml" : "ui"}`
           )}
           <span class="shortcut-placeholder ${isMac ? "mac" : ""}"></span>
         </div>
-      </ha-md-menu-item>
-      <ha-md-divider
+      </ha-dropdown-item>
+
+      <wa-divider slot="menu-items"></wa-divider>
+      <ha-dropdown-item
         slot="menu-items"
-        role="separator"
-        tabindex="-1"
-      ></ha-md-divider>
-      <ha-md-menu-item
-        slot="menu-items"
-        .clickAction=${this.config.disable}
+        value="disable"
         .disabled=${this.disabled}
       >
         <ha-svg-icon
-          slot="start"
+          slot="icon"
           .path=${rowDisabled ? mdiPlayCircleOutline : mdiStopCircleOutline}
         ></ha-svg-icon>
         <div class="overflow-label">
@@ -256,14 +251,14 @@ export default class HaAutomationSidebarCondition extends LitElement {
           )}
           <span class="shortcut-placeholder ${isMac ? "mac" : ""}"></span>
         </div>
-      </ha-md-menu-item>
-      <ha-md-menu-item
+      </ha-dropdown-item>
+      <ha-dropdown-item
         slot="menu-items"
-        .clickAction=${this.config.delete}
+        value="delete"
+        variant="danger"
         .disabled=${this.disabled}
-        class="warning"
       >
-        <ha-svg-icon slot="start" .path=${mdiDelete}></ha-svg-icon>
+        <ha-svg-icon slot="icon" .path=${mdiDelete}></ha-svg-icon>
         <div class="overflow-label">
           ${this.hass.localize(
             "ui.panel.config.automation.editor.actions.delete"
@@ -273,7 +268,6 @@ export default class HaAutomationSidebarCondition extends LitElement {
                 <span
                   >${isMac
                     ? html`<ha-svg-icon
-                        slot="start"
                         .path=${mdiAppleKeyboardCommand}
                       ></ha-svg-icon>`
                     : this.hass.localize(
@@ -289,7 +283,7 @@ export default class HaAutomationSidebarCondition extends LitElement {
               </span>`
             : nothing}
         </div>
-      </ha-md-menu-item>
+      </ha-dropdown-item>
       ${description && !this.yamlMode
         ? html`<div class="description">${description}</div>`
         : keyed(
@@ -418,6 +412,41 @@ export default class HaAutomationSidebarCondition extends LitElement {
   private _toggleYamlMode = () => {
     fireEvent(this, "toggle-yaml-mode");
   };
+
+  private _handleDropdownSelect(ev: CustomEvent<{ item: HaDropdownItem }>) {
+    const action = ev.detail?.item?.value;
+
+    if (!action) {
+      return;
+    }
+
+    switch (action) {
+      case "rename":
+        this.config.rename();
+        break;
+      case "test":
+        this._testCondition();
+        break;
+      case "duplicate":
+        this.config.duplicate();
+        break;
+      case "copy":
+        this.config.copy();
+        break;
+      case "cut":
+        this.config.cut();
+        break;
+      case "toggle_yaml_mode":
+        this._toggleYamlMode();
+        break;
+      case "disable":
+        this.config.disable();
+        break;
+      case "delete":
+        this.config.delete();
+        break;
+    }
+  }
 
   static styles = [
     sidebarEditorStyles,

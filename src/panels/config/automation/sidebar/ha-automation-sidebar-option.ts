@@ -1,3 +1,4 @@
+import "@home-assistant/webawesome/dist/components/divider/divider";
 import {
   mdiAppleKeyboardCommand,
   mdiDelete,
@@ -6,8 +7,9 @@ import {
 } from "@mdi/js";
 import { html, LitElement, nothing } from "lit";
 import { customElement, property, query } from "lit/decorators";
-import "../../../../components/ha-md-divider";
-import "../../../../components/ha-md-menu-item";
+
+import "../../../../components/ha-dropdown-item";
+import type { HaDropdownItem } from "../../../../components/ha-dropdown-item";
 import "../../../../components/ha-svg-icon";
 import type { OptionSidebarConfig } from "../../../../data/automation";
 import type { HomeAssistant } from "../../../../types";
@@ -50,33 +52,34 @@ export default class HaAutomationSidebarOption extends LitElement {
       .hass=${this.hass}
       .isWide=${this.isWide}
       .narrow=${this.narrow}
+      @wa-select=${this._handleDropdownSelect}
     >
       <span slot="title">${title}</span>
       <span slot="subtitle">${subtitle}</span>
       ${this.config.defaultOption
         ? html`<span slot="overflow-menu"></span>`
         : html`
-            <ha-md-menu-item
+            <ha-dropdown-item
               slot="menu-items"
-              .clickAction=${this.config.rename}
+              value="rename"
               .disabled=${!!disabled}
             >
-              <ha-svg-icon slot="start" .path=${mdiRenameBox}></ha-svg-icon>
+              <ha-svg-icon slot="icon" .path=${mdiRenameBox}></ha-svg-icon>
               <div class="overflow-label">
                 ${this.hass.localize(
                   "ui.panel.config.automation.editor.triggers.rename"
                 )}
                 <span class="shortcut-placeholder ${isMac ? "mac" : ""}"></span>
               </div>
-            </ha-md-menu-item>
+            </ha-dropdown-item>
 
-            <ha-md-menu-item
+            <ha-dropdown-item
               slot="menu-items"
-              @click=${this.config.duplicate}
+              value="duplicate"
               .disabled=${this.disabled}
             >
               <ha-svg-icon
-                slot="start"
+                slot="icon"
                 .path=${mdiPlusCircleMultipleOutline}
               ></ha-svg-icon>
               <div class="overflow-label">
@@ -85,19 +88,15 @@ export default class HaAutomationSidebarOption extends LitElement {
                 )}
                 <span class="shortcut-placeholder ${isMac ? "mac" : ""}"></span>
               </div>
-            </ha-md-menu-item>
-            <ha-md-divider
+            </ha-dropdown-item>
+            <wa-divider slot="menu-items"></wa-divider>
+            <ha-dropdown-item
               slot="menu-items"
-              role="separator"
-              tabindex="-1"
-            ></ha-md-divider>
-            <ha-md-menu-item
-              slot="menu-items"
-              .clickAction=${this.config.delete}
+              value="delete"
               .disabled=${this.disabled}
-              class="warning"
+              variant="danger"
             >
-              <ha-svg-icon slot="start" .path=${mdiDelete}></ha-svg-icon>
+              <ha-svg-icon slot="icon" .path=${mdiDelete}></ha-svg-icon>
               <div class="overflow-label">
                 ${this.hass.localize(
                   "ui.panel.config.automation.editor.actions.type.choose.remove_option"
@@ -123,11 +122,31 @@ export default class HaAutomationSidebarOption extends LitElement {
                     </span>`
                   : nothing}
               </div>
-            </ha-md-menu-item>
+            </ha-dropdown-item>
           `}
 
       <div class="description">${description}</div>
     </ha-automation-sidebar-card>`;
+  }
+
+  private _handleDropdownSelect(ev: CustomEvent<{ item: HaDropdownItem }>) {
+    const action = ev.detail?.item?.value;
+
+    if (!action) {
+      return;
+    }
+
+    switch (action) {
+      case "rename":
+        this.config.rename();
+        break;
+      case "duplicate":
+        this.config.duplicate();
+        break;
+      case "delete":
+        this.config.delete();
+        break;
+    }
   }
 
   static styles = [sidebarEditorStyles, overflowStyles];
