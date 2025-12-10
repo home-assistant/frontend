@@ -1567,7 +1567,7 @@ class HUIRoot extends LitElement {
               var(--safe-area-inset-top, 0px)
           );
         }
-        :host(:has(> *:not([slot]))) hui-view-container {
+        :host:has([slot]) hui-view-container {
           min-height: auto;
         }
         .hide-tab {
