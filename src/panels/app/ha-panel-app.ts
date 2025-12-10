@@ -23,7 +23,6 @@ import {
   showConfirmationDialog,
 } from "../../dialogs/generic/show-dialog-box";
 import "../../layouts/hass-loading-screen";
-import "../../layouts/hass-subpage";
 import type { HomeAssistant, PanelInfo, Route } from "../../types";
 import { computeRouteTail } from "../../data/route";
 
@@ -142,9 +141,10 @@ class HaPanelApp extends LitElement {
 
     if (addon && addon !== oldAddon) {
       this._loadingMessage = undefined;
-      // Reset iframe subscription state when switching addons
+      // Reset state when switching addons
       this._hideToolbar = false;
       this._iframeSubscribeUpdates = false;
+      this._autoRetryUntil = undefined;
       this._fetchData(addon);
     }
   }
@@ -287,6 +287,11 @@ class HaPanelApp extends LitElement {
       return;
     }
 
+    // Check if user navigated away while we were fetching
+    if (this._getAddonSlug() !== addonSlug) {
+      return;
+    }
+
     if (this._sessionKeepAlive) {
       clearInterval(this._sessionKeepAlive);
     }
@@ -298,18 +303,14 @@ class HaPanelApp extends LitElement {
       }
     }, 60000);
 
-    // Check if user navigated away while we were fetching
-    if (this._getAddonSlug() !== addonSlug) {
-      return;
-    }
-
     this._addon = addon;
   }
 
-  private async _checkLoaded(ev): Promise<void> {
+  private async _checkLoaded(ev: Event): Promise<void> {
+    const iframe = ev.target as HTMLIFrameElement;
     if (
       !this._addon ||
-      ev.target.contentDocument.body.textContent !== "502: Bad Gateway"
+      iframe.contentDocument?.body.textContent !== "502: Bad Gateway"
     ) {
       return;
     }
