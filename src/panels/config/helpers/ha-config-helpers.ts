@@ -25,6 +25,7 @@ import { computeCssColor } from "../../../common/color/compute-color";
 import { storage } from "../../../common/decorators/storage";
 import type { HASSDomEvent } from "../../../common/dom/fire_event";
 import { computeStateDomain } from "../../../common/entity/compute_state_domain";
+import { computeAreaName } from "../../../common/entity/compute_area_name";
 import { navigate } from "../../../common/navigate";
 import type {
   LocalizeFunc,
@@ -136,6 +137,7 @@ interface HelperItem {
   configEntry?: ConfigEntry;
   entity?: HassEntity;
   category: string | undefined;
+  area?: string;
   label_entries: LabelRegistryEntry[];
   disabled?: boolean;
 }
@@ -350,6 +352,12 @@ export class HaConfigHelpers extends SubscribeMixin(LitElement) {
         groupable: true,
         filterable: true,
         sortable: true,
+      },
+      area: {
+        title: localize("ui.panel.config.helpers.picker.headers.area"),
+        sortable: true,
+        filterable: true,
+        groupable: true,
       },
       labels: {
         title: "",
@@ -569,6 +577,11 @@ export class HaConfigHelpers extends SubscribeMixin(LitElement) {
             entityRegistryByEntityId(entityReg)[item.entity_id];
           const labels = labelReg && entityRegEntry?.labels;
           const category = entityRegEntry?.categories.helpers;
+          const areaId = entityRegEntry?.area_id;
+          const area =
+            areaId && this.hass.areas?.[areaId]
+              ? computeAreaName(this.hass.areas[areaId])
+              : undefined;
           return {
             ...item,
             localized_type:
@@ -583,6 +596,7 @@ export class HaConfigHelpers extends SubscribeMixin(LitElement) {
             category: category
               ? categoryReg?.find((cat) => cat.category_id === category)?.name
               : undefined,
+            area,
           };
         });
     }

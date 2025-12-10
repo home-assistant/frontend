@@ -30,6 +30,12 @@ import "./ha-svg-icon";
 
 const ADD_NEW_ID = "___ADD_NEW___";
 
+const SEARCH_KEYS = [
+  { name: "areaName", weight: 10 },
+  { name: "aliases", weight: 8 },
+  { name: "floorName", weight: 6 },
+  { name: "id", weight: 3 },
+];
 @customElement("ha-area-picker")
 export class HaAreaPicker extends LitElement {
   @property({ attribute: false }) public hass!: HomeAssistant;
@@ -291,12 +297,12 @@ export class HaAreaPicker extends LitElement {
           icon: area.icon || undefined,
           icon_path: area.icon ? undefined : mdiTextureBox,
           sorting_label: areaName,
-          search_labels: [
-            areaName,
-            floorName,
-            area.area_id,
-            ...area.aliases,
-          ].filter((v): v is string => Boolean(v)),
+          search_labels: {
+            areaName: areaName || null,
+            floorName: floorName || null,
+            id: area.area_id,
+            aliases: area.aliases.join(" "),
+          },
         };
       });
 
@@ -379,6 +385,10 @@ export class HaAreaPicker extends LitElement {
         .getAdditionalItems=${this._getAdditionalItems}
         .valueRenderer=${valueRenderer}
         .addButtonLabel=${this.addButtonLabel}
+        .searchKeys=${SEARCH_KEYS}
+        .unknownItemText=${this.hass.localize(
+          "ui.components.area-picker.unknown"
+        )}
         @value-changed=${this._valueChanged}
       >
       </ha-generic-picker>

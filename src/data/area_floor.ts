@@ -4,6 +4,7 @@ import { computeDomain } from "../common/entity/compute_domain";
 import { computeFloorName } from "../common/entity/compute_floor_name";
 import type { HaDevicePickerDeviceFilterFunc } from "../components/device/ha-device-picker";
 import type { PickerComboBoxItem } from "../components/ha-picker-combo-box";
+import type { FuseWeightedKey } from "../resources/fuseMultiTerm";
 import type { HomeAssistant } from "../types";
 import type { AreaRegistryEntry } from "./area_registry";
 import {
@@ -26,7 +27,8 @@ export interface FloorNestedComboBoxItem extends PickerComboBoxItem {
   areas: FloorComboBoxItem[];
 }
 
-export interface UnassignedAreasFloorComboBoxItem extends PickerComboBoxItem {
+export interface UnassignedAreasFloorComboBoxItem {
+  id: undefined;
   areas: FloorComboBoxItem[];
 }
 
@@ -97,6 +99,29 @@ export const getAreasAndFloors = (
     excludeAreas,
     excludeFloors
   ) as FloorComboBoxItem[];
+
+export const areaFloorComboBoxKeys: FuseWeightedKey[] = [
+  {
+    name: "search_labels.name",
+    weight: 10,
+  },
+  {
+    name: "search_labels.aliases",
+    weight: 8,
+  },
+  {
+    name: "search_labels.floorName",
+    weight: 6,
+  },
+  {
+    name: "search_labels.relatedAreas",
+    weight: 4,
+  },
+  {
+    name: "search_labels.id",
+    weight: 3,
+  },
+];
 
 const getAreasAndFloorsItems = (
   states: HomeAssistant["states"],
@@ -304,12 +329,12 @@ const getAreasAndFloorsItems = (
       primary: floorName,
       floor: floor,
       icon: floor.icon || undefined,
-      search_labels: [
-        floor.floor_id,
-        floorName,
-        ...floor.aliases,
-        ...areaSearchLabels,
-      ],
+      search_labels: {
+        id: floor.floor_id,
+        name: floorName || null,
+        aliases: floor.aliases.join(", ") || null,
+        relatedAreas: areaSearchLabels.join(" ") || null,
+      },
     };
 
     items.push(floorItem);
@@ -322,11 +347,12 @@ const getAreasAndFloorsItems = (
         primary: areaName || area.area_id,
         area: area,
         icon: area.icon || undefined,
-        search_labels: [
-          area.area_id,
-          ...(areaName ? [areaName] : []),
-          ...area.aliases,
-        ],
+        search_labels: {
+          id: area.area_id,
+          name: areaName || null,
+          aliases: area.aliases.join(", ") || null,
+          floorName: floorName || null,
+        },
       };
     });
 
@@ -339,19 +365,24 @@ const getAreasAndFloorsItems = (
 
   const unassignedAreaItems = hierarchy.areas.map((areaId) => {
     const area = haAreas[areaId];
-    const areaName = computeAreaName(area) || area.area_id;
+    const areaName = computeAreaName(area);
     return {
       id: formatId({ id: area.area_id, type: "area" }),
       type: "area" as const,
-      primary: areaName,
+      primary: areaName || area.area_id,
       area: area,
       icon: area.icon || undefined,
-      search_labels: [area.area_id, areaName, ...area.aliases],
+      search_labels: {
+        id: area.area_id,
+        name: areaName || null,
+        aliases: area.aliases.join(", ") || null,
+      },
     };
   });
 
   if (nested && unassignedAreaItems.length) {
     items.push({
+      id: undefined,
       areas: unassignedAreaItems,
     } as UnassignedAreasFloorComboBoxItem);
   } else {
