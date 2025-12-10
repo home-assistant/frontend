@@ -135,8 +135,12 @@ class HaPanelApp extends LitElement {
 
     const addon = this._getAddonSlug();
 
-    const oldRoute = changedProps.get("route") as this["route"] | undefined;
-    const oldPanel = changedProps.get("panel") as this["panel"] | undefined;
+    const oldRoute = changedProps.has("route")
+      ? (changedProps.get("route") as this["route"] | undefined)
+      : this.route;
+    const oldPanel = changedProps.has("panel")
+      ? (changedProps.get("panel") as this["panel"] | undefined)
+      : this.panel;
     const oldAddon = this._getAddonSlugFromRoutePanel(oldRoute, oldPanel);
 
     if (addon && addon !== oldAddon) {
@@ -339,7 +343,7 @@ class HaPanelApp extends LitElement {
   }
 
   private async _reloadIframe(): Promise<void> {
-    const addon = this._addon;
+    const addonSlug = this._addon!.slug;
     this._addon = undefined;
     await Promise.all([
       this.updateComplete,
@@ -347,7 +351,10 @@ class HaPanelApp extends LitElement {
         setTimeout(resolve, 1000);
       }),
     ]);
-    this._addon = addon;
+    // Guard for user navigating away during the delay
+    if (this._getAddonSlug() === addonSlug) {
+      this._fetchData(addonSlug);
+    }
   }
 
   private _toggleMenu(): void {
