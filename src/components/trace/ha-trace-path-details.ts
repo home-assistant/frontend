@@ -1,14 +1,21 @@
-import { dump } from "js-yaml";
 import { consume } from "@lit/context";
+import { dump } from "js-yaml";
 import type { CSSResultGroup, TemplateResult } from "lit";
 import { css, html, LitElement, nothing } from "lit";
 import { customElement, property, state } from "lit/decorators";
 import { classMap } from "lit/directives/class-map";
 import { formatDateTimeWithSeconds } from "../../common/datetime/format_date_time";
-import "../ha-code-editor";
-import "../ha-icon-button";
-import "./hat-logbook-note";
+import { describeCondition, describeTrigger } from "../../data/automation_i18n";
+import {
+  floorsContext,
+  fullEntitiesContext,
+  labelsContext,
+} from "../../data/context";
+import type { EntityRegistryEntry } from "../../data/entity/entity_registry";
+import type { FloorRegistryEntry } from "../../data/floor_registry";
+import type { LabelRegistryEntry } from "../../data/label/label_registry";
 import type { LogbookEntry } from "../../data/logbook";
+import { describeAction } from "../../data/script_i18n";
 import type {
   ActionTraceStep,
   ChooseActionTraceStep,
@@ -16,19 +23,12 @@ import type {
 } from "../../data/trace";
 import { getDataFromPath } from "../../data/trace";
 import "../../panels/logbook/ha-logbook-renderer";
-import { traceTabStyles } from "./trace-tab-styles";
 import type { HomeAssistant } from "../../types";
+import "../ha-code-editor";
+import "../ha-icon-button";
+import "./hat-logbook-note";
 import type { NodeInfo } from "./hat-script-graph";
-import { describeCondition, describeTrigger } from "../../data/automation_i18n";
-import type { EntityRegistryEntry } from "../../data/entity_registry";
-import type { LabelRegistryEntry } from "../../data/label_registry";
-import type { FloorRegistryEntry } from "../../data/floor_registry";
-import {
-  floorsContext,
-  fullEntitiesContext,
-  labelsContext,
-} from "../../data/context";
-import { describeAction } from "../../data/script_i18n";
+import { traceTabStyles } from "./trace-tab-styles";
 
 const TRACE_PATH_TABS = [
   "step_config",

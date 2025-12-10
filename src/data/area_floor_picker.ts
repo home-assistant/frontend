@@ -11,9 +11,9 @@ import {
   getDeviceEntityDisplayLookup,
   type DeviceEntityDisplayLookup,
   type DeviceRegistryEntry,
-} from "./device_registry";
-import type { HaEntityPickerEntityFilterFunc } from "./entity";
-import type { EntityRegistryDisplayEntry } from "./entity_registry";
+} from "./device/device_registry";
+import type { HaEntityPickerEntityFilterFunc } from "./entity/entity";
+import type { EntityRegistryDisplayEntry } from "./entity/entity_registry";
 import type { FloorRegistryEntry } from "./floor_registry";
 
 export interface FloorComboBoxItem extends PickerComboBoxItem {

@@ -1,11 +1,11 @@
 import type { HassEntity } from "home-assistant-js-websocket";
 import type { AreaRegistryEntry } from "../../../data/area_registry";
-import type { DeviceRegistryEntry } from "../../../data/device_registry";
+import type { DeviceRegistryEntry } from "../../../data/device/device_registry";
 import type {
   EntityRegistryDisplayEntry,
   EntityRegistryEntry,
   ExtEntityRegistryEntry,
-} from "../../../data/entity_registry";
+} from "../../../data/entity/entity_registry";
 import type { FloorRegistryEntry } from "../../../data/floor_registry";
 import type { HomeAssistant } from "../../../types";
 

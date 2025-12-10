@@ -1,5 +1,5 @@
-import { formatDurationDigital } from "../common/datetime/format_duration";
-import type { FrontendLocaleData } from "./translation";
+import { formatDurationDigital } from "../../common/datetime/format_duration";
+import type { FrontendLocaleData } from "../translation";
 
 // These attributes are hidden from the more-info window for all entities.
 export const STATE_ATTRIBUTES = [

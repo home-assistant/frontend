@@ -29,7 +29,7 @@ import "../../components/ha-slider";
 import "../../components/ha-spinner";
 import "../../components/ha-state-icon";
 import "../../components/ha-svg-icon";
-import { UNAVAILABLE } from "../../data/entity";
+import { UNAVAILABLE } from "../../data/entity/entity";
 import type {
   ControlButton,
   MediaPlayerEntity,

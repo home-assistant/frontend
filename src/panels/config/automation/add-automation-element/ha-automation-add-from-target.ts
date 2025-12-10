@@ -34,7 +34,7 @@ import {
   type FloorComboBoxItem,
   type FloorNestedComboBoxItem,
   type UnassignedAreasFloorComboBoxItem,
-} from "../../../../data/area_floor";
+} from "../../../../data/area_floor_picker";
 import {
   getAreaDeviceLookup,
   getAreaEntityLookup,
@@ -52,15 +52,13 @@ import {
   localizeContext,
   statesContext,
 } from "../../../../data/context";
-import { getDeviceEntityLookup } from "../../../../data/device_registry";
+import { getDeviceEntityLookup } from "../../../../data/device/device_registry";
 import {
   domainToName,
   type DomainManifestLookup,
 } from "../../../../data/integration";
-import {
-  getLabels,
-  type LabelRegistryEntry,
-} from "../../../../data/label_registry";
+import { getLabels } from "../../../../data/label/label_picker";
+import type { LabelRegistryEntry } from "../../../../data/label/label_registry";
 import {
   TARGET_SEPARATOR,
   type SingleHassServiceTarget,

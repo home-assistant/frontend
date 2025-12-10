@@ -13,9 +13,9 @@ import { createAreaRegistryEntry } from "../data/area_registry";
 import type {
   DeviceEntityDisplayLookup,
   DeviceRegistryEntry,
-} from "../data/device_registry";
-import { getDeviceEntityDisplayLookup } from "../data/device_registry";
-import type { EntityRegistryDisplayEntry } from "../data/entity_registry";
+} from "../data/device/device_registry";
+import { getDeviceEntityDisplayLookup } from "../data/device/device_registry";
+import type { EntityRegistryDisplayEntry } from "../data/entity/entity_registry";
 import { showAlertDialog } from "../dialogs/generic/show-dialog-box";
 import { showAreaRegistryDetailDialog } from "../panels/config/areas/show-dialog-area-registry-detail";
 import type { HomeAssistant, ValueChangedEvent } from "../types";
@@ -286,7 +286,7 @@ export class HaAreaPicker extends LitElement {
         );
       }
 
-      const items = outputAreas.map<PickerComboBoxItem>((area) => {
+      const items = outputAreas.map<PickerComboBoxItem>((area, index) => {
         const { floor } = getAreaContext(area, this.hass.floors);
         const floorName = floor ? computeFloorName(floor) : undefined;
         const areaName = computeAreaName(area);
@@ -296,7 +296,7 @@ export class HaAreaPicker extends LitElement {
           secondary: floorName,
           icon: area.icon || undefined,
           icon_path: area.icon ? undefined : mdiTextureBox,
-          sorting_label: areaName,
+          sorting_label: index.toString(),
           search_labels: {
             areaName: areaName || null,
             floorName: floorName || null,

@@ -10,13 +10,13 @@ import "../../../../../components/entity/state-badge";
 import "../../../../../components/ha-area-picker";
 import "../../../../../components/ha-card";
 import "../../../../../components/ha-textfield";
-import { updateDeviceRegistryEntry } from "../../../../../data/device_registry";
-import type { EntityRegistryEntry } from "../../../../../data/entity_registry";
+import { updateDeviceRegistryEntry } from "../../../../../data/device/device_registry";
+import type { EntityRegistryEntry } from "../../../../../data/entity/entity_registry";
 import {
   getAutomaticEntityIds,
   subscribeEntityRegistry,
   updateEntityRegistryEntry,
-} from "../../../../../data/entity_registry";
+} from "../../../../../data/entity/entity_registry";
 import type { ZHADevice } from "../../../../../data/zha";
 import { showAlertDialog } from "../../../../../dialogs/generic/show-dialog-box";
 import { SubscribeMixin } from "../../../../../mixins/subscribe-mixin";

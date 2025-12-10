@@ -4,12 +4,12 @@ import { html, LitElement, nothing } from "lit";
 import { customElement, property, state } from "lit/decorators";
 import { ensureArray } from "../../common/array/ensure-array";
 import { fireEvent } from "../../common/dom/fire_event";
-import type { EntitySources } from "../../data/entity_sources";
-import { fetchEntitySourcesWithCache } from "../../data/entity_sources";
+import type { EntitySources } from "../../data/entity/entity_sources";
+import { fetchEntitySourcesWithCache } from "../../data/entity/entity_sources";
 import type { EntitySelector } from "../../data/selector";
 import {
-  filterSelectorEntities,
   computeCreateDomains,
+  filterSelectorEntities,
 } from "../../data/selector";
 import type { HomeAssistant } from "../../types";
 import "../entity/ha-entities-picker";

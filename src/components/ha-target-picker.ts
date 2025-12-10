@@ -13,32 +13,30 @@ import memoizeOne from "memoize-one";
 import { ensureArray } from "../common/array/ensure-array";
 import { fireEvent } from "../common/dom/fire_event";
 import { isValidEntityId } from "../common/entity/valid_entity_id";
+import { caseInsensitiveStringCompare } from "../common/string/compare";
 import { computeRTL } from "../common/util/compute_rtl";
 import {
   areaFloorComboBoxKeys,
   getAreasAndFloors,
   type AreaFloorValue,
   type FloorComboBoxItem,
-} from "../data/area_floor";
+} from "../data/area_floor_picker";
 import { getConfigEntries, type ConfigEntry } from "../data/config_entries";
 import { labelsContext } from "../data/context";
 import {
   deviceComboBoxKeys,
   getDevices,
   type DevicePickerItem,
-} from "../data/device_registry";
-import type { HaEntityPickerEntityFilterFunc } from "../data/entity";
+} from "../data/device/device_picker";
+import type { HaEntityPickerEntityFilterFunc } from "../data/entity/entity";
 import {
   entityComboBoxKeys,
   getEntities,
   type EntityComboBoxItem,
-} from "../data/entity_registry";
+} from "../data/entity/entity_picker";
 import { domainToName } from "../data/integration";
-import {
-  getLabels,
-  labelComboBoxKeys,
-  type LabelRegistryEntry,
-} from "../data/label_registry";
+import { getLabels, labelComboBoxKeys } from "../data/label/label_picker";
+import type { LabelRegistryEntry } from "../data/label/label_registry";
 import {
   areaMeetsFilter,
   deviceMeetsFilter,
@@ -745,7 +743,7 @@ export class HaTargetPicker extends SubscribeMixin(LitElement) {
             : undefined,
           undefined,
           `entity${SEPARATOR}`
-        );
+        ).sort(this._sortBySortingLabel);
 
         if (searchTerm) {
           entityItems = this._filterGroup(
@@ -778,7 +776,7 @@ export class HaTargetPicker extends SubscribeMixin(LitElement) {
             : undefined,
           undefined,
           `device${SEPARATOR}`
-        );
+        ).sort(this._sortBySortingLabel);
 
         if (searchTerm) {
           deviceItems = this._filterGroup(
@@ -864,7 +862,7 @@ export class HaTargetPicker extends SubscribeMixin(LitElement) {
           entityFilter,
           targetValue?.label_id ? ensureArray(targetValue.label_id) : undefined,
           `label${SEPARATOR}`
-        );
+        ).sort(this._sortBySortingLabel);
 
         if (searchTerm) {
           labels = this._filterGroup(
@@ -1072,6 +1070,13 @@ export class HaTargetPicker extends SubscribeMixin(LitElement) {
     this.hass.localize("ui.components.target-picker.no_target_found", {
       term: html`<b>‘${search}’</b>`,
     });
+
+  private _sortBySortingLabel = (entityA, entityB) =>
+    caseInsensitiveStringCompare(
+      (entityA as PickerComboBoxItem).sorting_label!,
+      (entityB as PickerComboBoxItem).sorting_label!,
+      this.hass?.locale.language ?? navigator.language
+    );
 
   static get styles(): CSSResultGroup {
     return css`

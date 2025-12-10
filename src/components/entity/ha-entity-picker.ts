@@ -7,12 +7,12 @@ import { fireEvent } from "../../common/dom/fire_event";
 import { computeEntityNameList } from "../../common/entity/compute_entity_name_display";
 import { isValidEntityId } from "../../common/entity/valid_entity_id";
 import { computeRTL } from "../../common/util/compute_rtl";
-import type { HaEntityPickerEntityFilterFunc } from "../../data/entity";
+import type { HaEntityPickerEntityFilterFunc } from "../../data/entity/entity";
 import {
   entityComboBoxKeys,
   getEntities,
   type EntityComboBoxItem,
-} from "../../data/entity_registry";
+} from "../../data/entity/entity_picker";
 import { domainToName } from "../../data/integration";
 import {
   isHelperDomain,

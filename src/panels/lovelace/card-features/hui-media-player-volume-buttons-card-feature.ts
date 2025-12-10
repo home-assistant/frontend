@@ -2,8 +2,9 @@ import { html, LitElement, nothing } from "lit";
 import { customElement, property, state } from "lit/decorators";
 import { computeDomain } from "../../../common/entity/compute_domain";
 import { supportsFeature } from "../../../common/entity/supports-feature";
+import { clamp } from "../../../common/number/clamp";
 import "../../../components/ha-control-number-buttons";
-import { isUnavailableState } from "../../../data/entity";
+import { isUnavailableState } from "../../../data/entity/entity";
 import {
   MediaPlayerEntityFeature,
   type MediaPlayerEntity,
@@ -15,7 +16,6 @@ import type {
   LovelaceCardFeatureContext,
   MediaPlayerVolumeButtonsCardFeatureConfig,
 } from "./types";
-import { clamp } from "../../../common/number/clamp";
 
 export const supportsMediaPlayerVolumeButtonsCardFeature = (
   hass: HomeAssistant,

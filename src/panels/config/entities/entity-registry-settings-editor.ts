@@ -49,8 +49,8 @@ import {
   handleConfigFlowStep,
 } from "../../../data/config_flow";
 import type { DataEntryFlowStepCreateEntry } from "../../../data/data_entry_flow";
-import type { DeviceRegistryEntry } from "../../../data/device_registry";
-import { updateDeviceRegistryEntry } from "../../../data/device_registry";
+import type { DeviceRegistryEntry } from "../../../data/device/device_registry";
+import { updateDeviceRegistryEntry } from "../../../data/device/device_registry";
 import type {
   AlarmControlPanelEntityOptions,
   EntityRegistryEntry,
@@ -58,12 +58,12 @@ import type {
   ExtEntityRegistryEntry,
   LockEntityOptions,
   SensorEntityOptions,
-} from "../../../data/entity_registry";
+} from "../../../data/entity/entity_registry";
 import {
   getAutomaticEntityIds,
   subscribeEntityRegistry,
   updateEntityRegistryEntry,
-} from "../../../data/entity_registry";
+} from "../../../data/entity/entity_registry";
 import { entityIcon, entryIcon } from "../../../data/icons";
 import {
   domainToName,

@@ -12,9 +12,9 @@ import { updateAreaRegistryEntry } from "../data/area_registry";
 import type {
   DeviceEntityDisplayLookup,
   DeviceRegistryEntry,
-} from "../data/device_registry";
-import { getDeviceEntityDisplayLookup } from "../data/device_registry";
-import type { EntityRegistryDisplayEntry } from "../data/entity_registry";
+} from "../data/device/device_registry";
+import { getDeviceEntityDisplayLookup } from "../data/device/device_registry";
+import type { EntityRegistryDisplayEntry } from "../data/entity/entity_registry";
 import {
   createFloorRegistryEntry,
   getFloorAreaLookup,
@@ -285,13 +285,13 @@ export class HaFloorPicker extends LitElement {
         );
       }
 
-      const items = outputFloors.map<FloorComboBoxItem>((floor) => {
+      const items = outputFloors.map<FloorComboBoxItem>((floor, index) => {
         const floorName = computeFloorName(floor);
         return {
           id: floor.floor_id,
           primary: floorName,
           floor: floor,
-          sorting_label: floor.level?.toString() || "zzzzz",
+          sorting_label: index.toString(),
           search_labels: {
             floorName,
             floor_id: floor.floor_id,

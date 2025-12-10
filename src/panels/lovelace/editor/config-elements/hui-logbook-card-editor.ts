@@ -16,7 +16,7 @@ import "../../../../components/entity/ha-entities-picker";
 import "../../../../components/ha-form/ha-form";
 import type { SchemaUnion } from "../../../../components/ha-form/types";
 import "../../../../components/ha-target-picker";
-import type { HaEntityPickerEntityFilterFunc } from "../../../../data/entity";
+import type { HaEntityPickerEntityFilterFunc } from "../../../../data/entity/entity";
 import { filterLogbookCompatibleEntities } from "../../../../data/logbook";
 import { targetStruct } from "../../../../data/script";
 import { resolveEntityIDs } from "../../../../data/selector";

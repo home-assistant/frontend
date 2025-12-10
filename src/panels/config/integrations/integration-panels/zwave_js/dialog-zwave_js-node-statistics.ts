@@ -11,8 +11,8 @@ import "../../../../../components/ha-help-tooltip";
 import "../../../../../components/ha-list";
 import "../../../../../components/ha-list-item";
 import "../../../../../components/ha-svg-icon";
-import type { DeviceRegistryEntry } from "../../../../../data/device_registry";
-import { subscribeDeviceRegistry } from "../../../../../data/device_registry";
+import type { DeviceRegistryEntry } from "../../../../../data/device/device_registry";
+import { subscribeDeviceRegistry } from "../../../../../data/device/device_registry";
 import type {
   ZWaveJSNodeStatisticsUpdatedMessage,
   ZWaveJSRouteStatistics,

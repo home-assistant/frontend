@@ -14,8 +14,12 @@ import {
   getNumberFormatOptions,
   isNumericState,
 } from "../../common/number/format_number";
-import { isUnavailableState, UNAVAILABLE, UNKNOWN } from "../../data/entity";
-import type { EntityRegistryDisplayEntry } from "../../data/entity_registry";
+import {
+  isUnavailableState,
+  UNAVAILABLE,
+  UNKNOWN,
+} from "../../data/entity/entity";
+import type { EntityRegistryDisplayEntry } from "../../data/entity/entity_registry";
 import { timerTimeRemaining } from "../../data/timer";
 import type { HomeAssistant } from "../../types";
 import "../ha-label-badge";

@@ -37,7 +37,7 @@ import {
   getAreasAndFloors,
   type AreaFloorValue,
   type FloorComboBoxItem,
-} from "../../../../data/area_floor";
+} from "../../../../data/area_floor_picker";
 import { CONDITION_BUILDING_BLOCKS_GROUP } from "../../../../data/condition";
 import type { ConfigEntry } from "../../../../data/config_entries";
 import { labelsContext } from "../../../../data/context";
@@ -45,18 +45,18 @@ import {
   deviceComboBoxKeys,
   getDevices,
   type DevicePickerItem,
-} from "../../../../data/device_registry";
+} from "../../../../data/device/device_picker";
 import {
   entityComboBoxKeys,
   getEntities,
   type EntityComboBoxItem,
-} from "../../../../data/entity_registry";
+} from "../../../../data/entity/entity_picker";
 import type { DomainManifestLookup } from "../../../../data/integration";
 import {
   getLabels,
   labelComboBoxKeys,
-  type LabelRegistryEntry,
-} from "../../../../data/label_registry";
+} from "../../../../data/label/label_picker";
+import type { LabelRegistryEntry } from "../../../../data/label/label_registry";
 import {
   getTargetComboBoxItemType,
   TARGET_SEPARATOR,

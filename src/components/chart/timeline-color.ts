@@ -3,11 +3,11 @@ import { getGraphColorByIndex } from "../../common/color/colors";
 import { hex2rgb, lab2hex, rgb2lab } from "../../common/color/convert-color";
 import { labBrighten } from "../../common/color/lab";
 import { computeDomain } from "../../common/entity/compute_domain";
-import { stateColorProperties } from "../../common/entity/state_color";
-import { UNAVAILABLE, UNKNOWN } from "../../data/entity";
-import { computeCssValue } from "../../resources/css-variables";
 import { computeStateDomain } from "../../common/entity/compute_state_domain";
 import { FIXED_DOMAIN_STATES } from "../../common/entity/get_states";
+import { stateColorProperties } from "../../common/entity/state_color";
+import { UNAVAILABLE, UNKNOWN } from "../../data/entity/entity";
+import { computeCssValue } from "../../resources/css-variables";
 
 const DOMAIN_STATE_SHADES: Record<string, Record<string, number>> = {
   media_player: {

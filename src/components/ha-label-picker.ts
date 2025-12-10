@@ -11,13 +11,12 @@ import {
 } from "lit/decorators";
 import memoizeOne from "memoize-one";
 import { fireEvent } from "../common/dom/fire_event";
-import type { LabelRegistryEntry } from "../data/label_registry";
+import { getLabels, labelComboBoxKeys } from "../data/label/label_picker";
 import {
   createLabelRegistryEntry,
-  getLabels,
-  labelComboBoxKeys,
   subscribeLabelRegistry,
-} from "../data/label_registry";
+  type LabelRegistryEntry,
+} from "../data/label/label_registry";
 import { showAlertDialog } from "../dialogs/generic/show-dialog-box";
 import { SubscribeMixin } from "../mixins/subscribe-mixin";
 import { showLabelDetailDialog } from "../panels/config/labels/show-dialog-label-detail";

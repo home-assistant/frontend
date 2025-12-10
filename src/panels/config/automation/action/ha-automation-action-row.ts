@@ -58,9 +58,9 @@ import {
   fullEntitiesContext,
   labelsContext,
 } from "../../../../data/context";
-import type { EntityRegistryEntry } from "../../../../data/entity_registry";
+import type { EntityRegistryEntry } from "../../../../data/entity/entity_registry";
 import type { FloorRegistryEntry } from "../../../../data/floor_registry";
-import type { LabelRegistryEntry } from "../../../../data/label_registry";
+import type { LabelRegistryEntry } from "../../../../data/label/label_registry";
 import type {
   Action,
   NonConditionAction,

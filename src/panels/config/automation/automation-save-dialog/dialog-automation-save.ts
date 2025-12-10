@@ -24,8 +24,8 @@ import { supportsMarkdownHelper } from "../../../../common/translations/markdown
 import { subscribeOne } from "../../../../common/util/subscribe-one";
 import type { GenDataTaskResult } from "../../../../data/ai_task";
 import { fetchCategoryRegistry } from "../../../../data/category_registry";
-import { subscribeEntityRegistry } from "../../../../data/entity_registry";
-import { subscribeLabelRegistry } from "../../../../data/label_registry";
+import { subscribeEntityRegistry } from "../../../../data/entity/entity_registry";
+import { subscribeLabelRegistry } from "../../../../data/label/label_registry";
 import type { HassDialog } from "../../../../dialogs/make-dialog-manager";
 import { haStyle, haStyleDialog } from "../../../../resources/styles";
 import type { HomeAssistant } from "../../../../types";
