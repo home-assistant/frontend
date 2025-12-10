@@ -964,10 +964,7 @@ export class HaTargetPicker extends SubscribeMixin(LitElement) {
     let hasFloor = false;
     let rtl = false;
     let showEntityId = false;
-
     if (type === "area" || type === "floor") {
-      item.id = item[type]?.[`${type}_id`];
-
       rtl = computeRTL(this.hass);
       hasFloor =
         type === "area" && !!(item as FloorComboBoxItem).area?.floor_id;
