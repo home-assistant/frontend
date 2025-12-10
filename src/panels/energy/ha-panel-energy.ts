@@ -244,18 +244,19 @@ class PanelEnergy extends LitElement {
         .panel=${this.panel}
         .extraActionItems=${this._extraActionItems}
         @reload-energy-panel=${this._reloadConfig}
-      ></hui-root>
-      ${currentView &&
-      isStrategyView(currentView) &&
-      currentView.strategy?.show_period_selector
-        ? html`<ha-card raised class="period-selector">
-            <hui-energy-period-selector
-              .hass=${this.hass}
-              .collectionKey=${DEFAULT_ENERGY_COLLECTION_KEY}
-              vertical-opening-direction="up"
-            ></hui-energy-period-selector>
-          </ha-card>`
-        : nothing}
+      >
+        ${currentView &&
+        isStrategyView(currentView) &&
+        currentView.strategy?.show_period_selector
+          ? html`<ha-card raised class="period-selector">
+              <hui-energy-period-selector
+                .hass=${this.hass}
+                .collectionKey=${DEFAULT_ENERGY_COLLECTION_KEY}
+                vertical-opening-direction="up"
+              ></hui-energy-period-selector>
+            </ha-card>`
+          : nothing}
+      </hui-root>
     `;
   }
 
@@ -654,9 +655,6 @@ class PanelEnergy extends LitElement {
           -webkit-user-select: none;
           -moz-user-select: none;
         }
-        :host:has([datepicker-open]) hui-root {
-          filter: blur(4px);
-        }
         .centered {
           width: 100%;
           height: 100%;
@@ -667,7 +665,7 @@ class PanelEnergy extends LitElement {
         .period-selector {
           position: sticky;
           bottom: var(--ha-space-2);
-          margin: 0 auto;
+          margin: var(--ha-space-2) auto;
           max-width: calc(min(450px, 100% - var(--ha-space-4)));
         }
       `,

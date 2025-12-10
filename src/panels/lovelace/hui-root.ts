@@ -648,6 +648,7 @@ class HUIRoot extends LitElement {
           <hui-view-background .hass=${this.hass} .background=${background}>
           </hui-view-background>
         </hui-view-container>
+        <slot></slot>
       </div>
     `;
   }
@@ -1565,6 +1566,9 @@ class HUIRoot extends LitElement {
               calc(var(--tab-bar-height, 56px) - 2px) +
               var(--safe-area-inset-top, 0px)
           );
+        }
+        :host(:has(> *:not([slot]))) hui-view-container {
+          min-height: auto;
         }
         .hide-tab {
           display: none;
