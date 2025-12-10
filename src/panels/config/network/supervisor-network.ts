@@ -508,7 +508,12 @@ export class HassioNetwork extends LitElement {
                 @wa-select=${this._handleDNSMenuSelect}
                 .version=${version}
               >
-                <ha-button appearance="filled" size="small" slot="trigger" class="add-nameserver">
+                <ha-button
+                  appearance="filled"
+                  size="small"
+                  slot="trigger"
+                  class="add-nameserver"
+                >
                   ${this.hass.localize(
                     "ui.panel.config.network.supervisor.add_dns_server"
                   )}
