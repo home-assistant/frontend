@@ -81,8 +81,7 @@ export class HaMarkdown extends LitElement {
     p:first-child > img:last-child {
       vertical-align: top;
     }
-    :host > ul,
-    :host > ol {
+    ha-markdown-element > :is(ol, ul) {
       padding-inline-start: var(--markdown-list-indent, revert);
     }
     li {
