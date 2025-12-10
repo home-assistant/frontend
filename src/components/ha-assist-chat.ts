@@ -134,7 +134,6 @@ export class HaAssistChat extends LitElement {
               })}"
               breaks
               cache
-              assist
               .content=${message.text}
             >
             </ha-markdown>

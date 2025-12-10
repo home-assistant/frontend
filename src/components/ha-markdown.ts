@@ -70,11 +70,6 @@ export class HaMarkdown extends LitElement {
     a {
       color: var(--markdown-link-color, var(--primary-color));
     }
-    :host([assist]) img {
-      height: auto;
-      width: auto;
-      transition: height 0.2s ease-in-out;
-    }
     img {
       background-color: var(--markdown-image-background-color);
       border-radius: var(--markdown-image-border-radius);
