@@ -247,7 +247,7 @@ export class StorageBreakdownChart extends LitElement {
     }
 
     .chart-container.bar {
-      height: 100px;
+      height: calc-size(auto, size);
     }
 
     .chart-container.sunburst {
