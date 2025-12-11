@@ -108,7 +108,9 @@ const isDeviceItem = (item: QuickBarItem): item is DeviceItem =>
   (item as DeviceItem).deviceId !== undefined;
 
 const isIntegrationItem = (item: QuickBarItem): item is IntegrationItem =>
-  (item as IntegrationItem).domain !== undefined;
+  (item as DeviceItem).deviceId === undefined &&
+  (item as IntegrationItem).domain !== undefined &&
+  (item as IntegrationItem).translatedDomain !== undefined;
 
 interface QuickBarNavigationItem extends CommandItem {
   path: string;
