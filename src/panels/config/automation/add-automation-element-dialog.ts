@@ -450,6 +450,7 @@ class DialogAddAutomationElement
 
     return html`
       <ha-wa-dialog
+        .hass=${this.hass}
         width="large"
         .open=${this._open}
         @closed=${this._handleClosed}

@@ -278,6 +278,7 @@ export class HaTracePathDetails extends LitElement {
     return config
       ? html`<ha-code-editor
           .value=${dump(config).trimEnd()}
+          .hass=${this.hass}
           read-only
           dir="ltr"
         ></ha-code-editor>`

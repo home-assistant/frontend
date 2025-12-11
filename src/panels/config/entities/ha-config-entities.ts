@@ -311,6 +311,7 @@ export class HaConfigEntities extends SubscribeMixin(LitElement) {
                   ></ha-state-icon>
                 `
               : html`<ha-domain-icon
+                  .hass=${this.hass}
                   .domain=${computeDomain(entry.entity_id)}
                 ></ha-domain-icon>`,
       },
