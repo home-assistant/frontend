@@ -228,7 +228,7 @@ export class HaEntityPicker extends LitElement {
       if (!createDomains?.length) {
         return [];
       }
-
+      this.hass.loadFragmentTranslation("config");
       return createDomains.map((domain) => {
         const primary = localize(
           "ui.components.entity.entity-picker.create_helper",
@@ -236,7 +236,7 @@ export class HaEntityPicker extends LitElement {
             domain: isHelperDomain(domain)
               ? localize(
                   `ui.panel.config.helpers.types.${domain as HelperDomain}`
-                )
+                ) || domain
               : domainToName(localize, domain),
           }
         );
