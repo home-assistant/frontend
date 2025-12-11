@@ -41,7 +41,9 @@ const computeHeadingCard = (
           action: "navigate",
           navigation_path,
         }
-      : undefined,
+      : {
+          action: "none",
+        },
   }) satisfies HeadingCardConfig;
 
 @customElement("home-area-view-strategy")
@@ -182,7 +184,7 @@ export class HomeAreaViewStrategy extends ReactiveElement {
           computeHeadingCard(
             hass.localize("ui.panel.lovelace.strategy.home.scenes"),
             "mdi:palette",
-            "/config/scene/dashboard"
+            hass.user?.is_admin ? "/config/scene/dashboard" : undefined
           ),
           ...scenes.map(computeTileCard),
         ],
@@ -285,12 +287,13 @@ export class HomeAreaViewStrategy extends ReactiveElement {
           {
             type: "heading",
             heading: heading,
-            tap_action: device
-              ? {
-                  action: "navigate",
-                  navigation_path: `/config/devices/device/${device.id}`,
-                }
-              : undefined,
+            tap_action:
+              hass.user?.is_admin && device
+                ? {
+                    action: "navigate",
+                    navigation_path: `/config/devices/device/${device.id}`,
+                  }
+                : { action: "none" },
             badges: [
               ...batteryEntities.slice(0, 1).map((e) => ({
                 entity: e,
@@ -334,7 +337,7 @@ export class HomeAreaViewStrategy extends ReactiveElement {
           computeHeadingCard(
             hass.localize("ui.panel.lovelace.strategy.home.automations"),
             "mdi:robot",
-            "/config/automation/dashboard"
+            hass.user?.is_admin ? "/config/automation/dashboard" : undefined
           ),
           ...automations.map(computeTileCard),
         ],
