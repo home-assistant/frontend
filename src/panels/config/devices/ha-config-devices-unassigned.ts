@@ -21,6 +21,7 @@ import { sortConfigEntries } from "../../../data/config_entries";
 import { fullEntitiesContext } from "../../../data/context";
 import type { DeviceEntityLookup } from "../../../data/device/device_registry";
 import { updateDeviceRegistryEntry } from "../../../data/device/device_registry";
+import { filterUnassignedDevices } from "../../../data/device/unassigned_devices";
 import type { EntityRegistryEntry } from "../../../data/entity/entity_registry";
 import type { IntegrationManifest } from "../../../data/integration";
 import { showAlertDialog } from "../../../dialogs/generic/show-dialog-box";
@@ -54,6 +55,8 @@ export class HaConfigDevicesUnassigned extends LitElement {
   @property({ attribute: false }) public manifests!: IntegrationManifest[];
 
   @property({ attribute: false }) public route!: Route;
+
+  @state() private _searchParms = new URLSearchParams(window.location.search);
 
   @state()
   @storage({
@@ -122,10 +125,7 @@ export class HaConfigDevicesUnassigned extends LitElement {
         entryLookup[entry.entry_id] = entry;
       }
 
-      // Filter to only unassigned and enabled devices
-      const unassignedDevices = Object.values(devices).filter(
-        (device) => device.area_id === null && device.disabled_by === null
-      );
+      const unassignedDevices = filterUnassignedDevices(devices);
 
       return unassignedDevices.map((device) => {
         const deviceEntries = sortConfigEntries(
@@ -260,7 +260,9 @@ export class HaConfigDevicesUnassigned extends LitElement {
       <hass-tabs-subpage-data-table
         .hass=${this.hass}
         .narrow=${this.narrow}
-        back-path="/config/devices/dashboard"
+        .backPath=${this._searchParms.has("historyBack")
+          ? undefined
+          : "/config/devices/dashboard"}
         .tabs=${TABS}
         .route=${this.route}
         .searchLabel=${this.hass.localize(

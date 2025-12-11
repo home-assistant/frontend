@@ -24,6 +24,7 @@ import type {
   WeatherForecastCardConfig,
 } from "../../cards/types";
 import type { CommonControlSectionStrategyConfig } from "../usage_prediction/common-controls-section-strategy";
+import { countUnassignedDevices } from "../../../../data/device/unassigned_devices";
 import { HOME_SUMMARIES_FILTERS } from "./helpers/home-summaries";
 import type { Condition } from "../../common/validate-condition";
 
@@ -170,6 +171,10 @@ export class HomeOverviewViewStrategy extends ReactiveElement {
     const hasClimate = findEntities(allEntities, climateFilters).length > 0;
     const hasSecurity = findEntities(allEntities, securityFilters).length > 0;
 
+    const unassignedDevicesCount = countUnassignedDevices(hass.devices);
+    const hasUnassignedDevices =
+      hass.user?.is_admin && unassignedDevicesCount > 0;
+
     const summaryCards: LovelaceCardConfig[] = [
       hasLights &&
         ({
@@ -214,6 +219,18 @@ export class HomeOverviewViewStrategy extends ReactiveElement {
           tap_action: {
             action: "navigate",
             navigation_path: "media-players",
+          },
+          grid_options: {
+            columns: 12,
+          },
+        } satisfies HomeSummaryCard),
+      hasUnassignedDevices &&
+        ({
+          type: "home-summary",
+          summary: "unassigned_devices",
+          tap_action: {
+            action: "navigate",
+            navigation_path: "/config/devices/unassigned?historyBack=1",
           },
           grid_options: {
             columns: 12,

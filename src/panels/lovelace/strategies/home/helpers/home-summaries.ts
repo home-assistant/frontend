@@ -9,6 +9,7 @@ export const HOME_SUMMARIES = [
   "climate",
   "security",
   "media_players",
+  "unassigned_devices",
 ] as const;
 
 export type HomeSummary = (typeof HOME_SUMMARIES)[number];
@@ -18,6 +19,7 @@ export const HOME_SUMMARIES_ICONS: Record<HomeSummary, string> = {
   climate: "mdi:home-thermometer",
   security: "mdi:security",
   media_players: "mdi:multimedia",
+  unassigned_devices: "mdi:devices",
 };
 
 export const HOME_SUMMARIES_FILTERS: Record<HomeSummary, EntityFilter[]> = {
@@ -25,6 +27,7 @@ export const HOME_SUMMARIES_FILTERS: Record<HomeSummary, EntityFilter[]> = {
   climate: climateEntityFilters,
   security: securityEntityFilters,
   media_players: [{ domain: "media_player", entity_category: "none" }],
+  unassigned_devices: [], // Device-based, not entity-based
 };
 
 export const getSummaryLabel = (

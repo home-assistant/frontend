@@ -15,6 +15,7 @@ import "../../../components/ha-icon";
 import "../../../components/ha-ripple";
 import "../../../components/tile/ha-tile-icon";
 import "../../../components/tile/ha-tile-info";
+import { countUnassignedDevices } from "../../../data/device/unassigned_devices";
 import type { ActionHandlerEvent } from "../../../data/lovelace/action_handler";
 import "../../../state-display/state-display";
 import type { HomeAssistant } from "../../../types";
@@ -35,6 +36,7 @@ const COLORS: Record<HomeSummary, string> = {
   climate: "deep-orange",
   security: "blue-grey",
   media_players: "blue",
+  unassigned_devices: "grey",
 };
 
 @customElement("hui-home-summary-card")
@@ -213,6 +215,13 @@ export class HuiHomeSummaryCard extends LitElement implements LovelaceCard {
               count: playingMedia.length,
             })
           : this.hass.localize("ui.card.home-summary.no_media_playing");
+      }
+      case "unassigned_devices": {
+        const count = countUnassignedDevices(this.hass.devices);
+        return this.hass.localize(
+          "ui.card.home-summary.count_unassigned_devices",
+          { count }
+        );
       }
     }
     return "";
