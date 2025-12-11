@@ -36,9 +36,9 @@ import "./ha-svg-icon";
 const ADD_NEW_ID = "___ADD_NEW___";
 
 const SEARCH_KEYS = [
-  { name: "floorName", weight: 10 },
-  { name: "aliases", weight: 8 },
-  { name: "floor_id", weight: 3 },
+  { name: "search_labels.floorName", weight: 10 },
+  { name: "search_labels.aliases", weight: 8 },
+  { name: "search_labels.floor_id", weight: 3 },
 ];
 
 interface FloorComboBoxItem extends PickerComboBoxItem {
