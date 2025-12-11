@@ -103,6 +103,8 @@ export class StateHistoryChartLine extends LitElement {
         @chart-zoom=${this._handleDataZoom}
         .expandLegend=${this.expandLegend}
         .hideResetButton=${this.hideResetButton}
+        .externalHiddenState=${this.clickForMoreInfo}
+        @chart-legend-click=${this._handleLegendClick}
       ></ha-chart-base>
     `;
   }
@@ -211,6 +213,10 @@ export class StateHistoryChartLine extends LitElement {
       end: ev.detail.end ?? 100,
       chartIndex: this.chartIndex,
     });
+  }
+
+  private _handleLegendClick(ev: CustomEvent) {
+    fireEvent(this, "hass-more-info", { entityId: ev.detail.id });
   }
 
   public willUpdate(changedProps: PropertyValues) {

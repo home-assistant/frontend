@@ -1,6 +1,12 @@
 import { ResizeController } from "@lit-labs/observers/resize-controller";
 import { consume } from "@lit/context";
-import { mdiChevronDown, mdiChevronUp, mdiRestart } from "@mdi/js";
+import {
+  mdiCheckCircle,
+  mdiChevronDown,
+  mdiChevronUp,
+  mdiCircleOutline,
+  mdiRestart,
+} from "@mdi/js";
 import { differenceInMinutes } from "date-fns";
 import type { DataZoomComponentOption } from "echarts/components";
 import type { EChartsType } from "echarts/core";
@@ -73,6 +79,9 @@ export class HaChartBase extends LitElement {
   @state()
   @consume({ context: themesContext, subscribe: true })
   _themes!: Themes;
+
+  @property({ attribute: "external-hidden-state", type: Boolean })
+  public externalHiddenState = false;
 
   @state() private _isZoomed = false;
 
@@ -311,21 +320,34 @@ export class HaChartBase extends LitElement {
             ...itemStyle,
           };
           const color = itemStyle?.color as string;
-          const borderColor = itemStyle?.borderColor as string;
           return html`<li
             .id=${id}
-            @click=${this._legendClick}
             class=${classMap({ hidden: this._hiddenDatasets.has(id) })}
-            .title=${name}
           >
             <div
-              class="bullet"
-              style=${styleMap({
-                backgroundColor: color,
-                borderColor: borderColor || color,
-              })}
-            ></div>
-            <div class="label">${name}</div>
+              class="legend-toggle"
+              .title=${this.hass.localize("ui.common.toggle") ||
+              "Toggle visibility"}
+              @click=${this._toggleDataset}
+            >
+              <ha-svg-icon
+                .path=${this._hiddenDatasets.has(id)
+                  ? mdiCircleOutline
+                  : mdiCheckCircle}
+                style=${styleMap({
+                  color: this._hiddenDatasets.has(id) ? undefined : color,
+                })}
+              ></ha-svg-icon>
+            </div>
+            <div
+              class="label"
+              .title=${this.externalHiddenState
+                ? this.hass.localize("ui.common.more_info") || "Show more info"
+                : this.hass.localize("ui.common.toggle") || "Toggle visibility"}
+              @click=${this._labelClick}
+            >
+              ${name}
+            </div>
           </li>`;
         })}
         ${items.length > overflowLimit
@@ -961,11 +983,25 @@ export class HaChartBase extends LitElement {
     fireEvent(this, "chart-zoom", { start, end });
   }
 
-  private _legendClick(ev: any) {
+  private _toggleDataset(ev: any) {
+    ev.stopPropagation();
+    this._handleDatasetToggle(ev.currentTarget.parentElement.id);
+  }
+
+  private _labelClick(ev: any) {
+    ev.stopPropagation();
+    const id = ev.currentTarget.parentElement.id;
+    if (this.externalHiddenState) {
+      fireEvent(this, "chart-legend-click", { id });
+    } else {
+      this._handleDatasetToggle(id);
+    }
+  }
+
+  private _handleDatasetToggle(id: string) {
     if (!this.chart) {
       return;
     }
-    const id = ev.currentTarget?.id;
     if (this._hiddenDatasets.has(id)) {
       this._getAllIdsFromLegend(this.options, id).forEach((i) =>
         this._hiddenDatasets.delete(i)
@@ -1107,23 +1143,24 @@ export class HaChartBase extends LitElement {
       white-space: nowrap;
       overflow: hidden;
     }
-    .chart-legend .bullet {
-      border-width: 1px;
-      border-style: solid;
-      border-radius: var(--ha-border-radius-circle);
-      display: block;
-      height: 16px;
-      width: 16px;
-      margin-right: 4px;
-      flex-shrink: 0;
-      box-sizing: border-box;
-      margin-inline-end: 4px;
-      margin-inline-start: initial;
-      direction: var(--direction);
+    .chart-legend .label:hover {
+      text-decoration: underline;
     }
-    .chart-legend .hidden .bullet {
-      border-color: var(--secondary-text-color) !important;
-      background-color: transparent !important;
+    .chart-legend .legend-toggle {
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      cursor: pointer;
+      padding: 4px;
+      margin: -4px;
+      margin-right: 0;
+      margin-inline-end: 0;
+    }
+    .chart-legend .legend-toggle:hover {
+      opacity: 0.5;
+    }
+    .chart-legend .legend-toggle ha-svg-icon {
+      --mdc-icon-size: 18px;
     }
     ha-assist-chip {
       height: 100%;
@@ -1143,6 +1180,7 @@ declare global {
     "dataset-hidden": { id: string };
     "dataset-unhidden": { id: string };
     "chart-click": ECElementEvent;
+    "chart-legend-click": { id: string };
     "chart-zoom": {
       start: number;
       end: number;
