@@ -521,7 +521,9 @@ export class StatisticsChart extends LitElement {
                   `ui.components.statistics_charts.statistic_types.${type}`
                 ),
             symbol: "none",
-            sampling: "minmax",
+            // minmax sampling operates independently per series, breaking stacking alignment
+            // https://github.com/apache/echarts/issues/11879
+            sampling: band && drawBands ? "lttb" : "minmax",
             animationDurationUpdate: 0,
             lineStyle: {
               width: 1.5,
