@@ -4,7 +4,7 @@ import type {
   HassEntityBase,
   HassEvent,
 } from "home-assistant-js-websocket";
-import { BINARY_STATE_ON, BINARY_STATE_OFF } from "../common/const";
+import { BINARY_STATE_OFF, BINARY_STATE_ON } from "../common/const";
 import { computeDomain } from "../common/entity/compute_domain";
 import { computeStateDomain } from "../common/entity/compute_state_domain";
 import { supportsFeature } from "../common/entity/supports-feature";
@@ -13,7 +13,7 @@ import { caseInsensitiveStringCompare } from "../common/string/compare";
 import { showAlertDialog } from "../dialogs/generic/show-dialog-box";
 import type { HomeAssistant } from "../types";
 import { showToast } from "../util/toast";
-import type { EntitySources } from "./entity_sources";
+import type { EntitySources } from "./entity/entity_sources";
 
 export enum UpdateEntityFeature {
   INSTALL = 1,

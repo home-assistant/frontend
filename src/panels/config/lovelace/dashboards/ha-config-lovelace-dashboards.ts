@@ -326,7 +326,7 @@ export class HaConfigLovelaceDashboards extends LitElement {
 
       PANEL_DASHBOARDS.forEach((panel) => {
         const panelInfo = this.hass.panels[panel];
-        if (!panel) {
+        if (!panelInfo) {
           return;
         }
         const item: DataTableItem = {

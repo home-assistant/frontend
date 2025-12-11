@@ -18,7 +18,7 @@ import { stateColorCss } from "../../../common/entity/state_color";
 import "../../../components/ha-control-button";
 import "../../../components/ha-control-button-group";
 import "../../../components/ha-control-switch";
-import { UNAVAILABLE, UNKNOWN } from "../../../data/entity";
+import { UNAVAILABLE, UNKNOWN } from "../../../data/entity/entity";
 import { forwardHaptic } from "../../../data/haptics";
 import type { HomeAssistant } from "../../../types";
 import type { LovelaceCardFeature } from "../types";

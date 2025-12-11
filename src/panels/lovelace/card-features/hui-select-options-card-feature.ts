@@ -7,7 +7,7 @@ import { computeDomain } from "../../../common/entity/compute_domain";
 import "../../../components/ha-control-select-menu";
 import type { HaControlSelectMenu } from "../../../components/ha-control-select-menu";
 import "../../../components/ha-list-item";
-import { UNAVAILABLE } from "../../../data/entity";
+import { UNAVAILABLE } from "../../../data/entity/entity";
 import type { InputSelectEntity } from "../../../data/input_select";
 import type { SelectEntity } from "../../../data/select";
 import type { HomeAssistant } from "../../../types";

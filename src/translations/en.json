@@ -304,6 +304,7 @@
       },
       "weather": {
         "attributes": {
+          "dew_point": "Dew point",
           "air_pressure": "Air pressure",
           "humidity": "Humidity",
           "temperature": "Temperature",
@@ -657,7 +658,8 @@
           "show_entities": "Show entities",
           "new_entity": "Create a new entity",
           "placeholder": "Select an entity",
-          "create_helper": "Create a new {domain, select, \n undefined {} \n other {{domain} }\n } helper."
+          "create_helper": "Create a new {domain, select, \n undefined {} \n other {{domain} }\n } helper.",
+          "unknown": "Unknown entity selected"
         },
         "entity-name-picker": {
           "types": {
@@ -778,7 +780,8 @@
       "user-picker": {
         "no_match": "No users found for {term}",
         "user": "User",
-        "add_user": "Add user"
+        "add_user": "Add user",
+        "unknown": "Unknown user selected"
       },
       "blueprint-picker": {
         "select_blueprint": "Select a blueprint"
@@ -792,7 +795,8 @@
         "device": "Device",
         "unnamed_device": "Unnamed device",
         "no_area": "No area",
-        "placeholder": "Select a device"
+        "placeholder": "Select a device",
+        "unknown": "Unknown device selected"
       },
       "category-picker": {
         "clear": "Clear",
@@ -804,6 +808,7 @@
         "add_new": "Add new category…",
         "no_categories": "No categories available",
         "no_match": "No categories found for {term}",
+        "unknown": "Unknown category selected",
         "add_dialog": {
           "title": "Add new category",
           "text": "Enter the name of the new category.",
@@ -830,8 +835,8 @@
         "add_new": "Add new area…",
         "no_areas": "No areas available",
         "no_match": "No areas found for {term}",
-        "unassigned_areas": "Unassigned areas",
-        "failed_create_area": "Failed to create area."
+        "failed_create_area": "Failed to create area.",
+        "unknown": "Unknown area selected"
       },
       "floor-picker": {
         "clear": "Clear",
@@ -841,7 +846,8 @@
         "add_new": "Add new floor…",
         "no_floors": "No floors available",
         "no_match": "No floors found for {term}",
-        "failed_create_floor": "Failed to create floor."
+        "failed_create_floor": "Failed to create floor.",
+        "unknown": "Unknown floor selected"
       },
       "area-filter": {
         "title": "Areas",
@@ -858,7 +864,8 @@
         "no_match": "No statistics found for {term}",
         "no_state": "Entity without state",
         "missing_entity": "Why is my entity not listed?",
-        "learn_more": "Learn more about statistics"
+        "learn_more": "Learn more about statistics",
+        "unknown": "Unknown statistic selected"
       },
       "addon-picker": {
         "addon": "Add-on",
@@ -998,7 +1005,8 @@
       },
       "service-picker": {
         "action": "Action",
-        "no_match": "No matching actions found"
+        "no_match": "No matching actions found",
+        "unknown": "Unknown action selected"
       },
       "service-control": {
         "required": "This field is required",
@@ -1296,7 +1304,8 @@
       },
       "combo-box": {
         "no_match": "No matching items found",
-        "no_items": "No items available"
+        "no_items": "No items available",
+        "unknown_item": "Unknown item"
       },
       "suggest_with_ai": {
         "label": "Suggest",
@@ -2463,7 +2472,7 @@
             "introduction2": "To place devices in an area, use the link below to navigate to the integrations page and then click on a configured integration to get to the device cards.",
             "integrations_page": "Integrations page",
             "no_areas": "Looks like you have no areas yet!",
-            "unassigned_areas": "Unassigned areas",
+            "other_areas": "Other areas",
             "create_area": "Create area",
             "create_floor": "Create floor",
             "floor": {
@@ -2474,7 +2483,16 @@
             },
             "area_reorder_failed": "Failed to reorder areas",
             "area_move_failed": "Failed to move area",
-            "floor_reorder_failed": "Failed to reorder floors"
+            "floor_reorder_failed": "Failed to reorder floors",
+            "reorder": "Reorder"
+          },
+          "dialog": {
+            "reorder_areas_title": "Reorder areas",
+            "reorder_floors_areas_title": "Reorder floors and areas",
+            "other_areas": "Other areas",
+            "reorder_failed": "Failed to save order",
+            "empty_floor": "No areas on this floor",
+            "empty_unassigned": "All your areas are assigned to floors"
           },
           "editor": {
             "create_area": "Create area",
@@ -3150,7 +3168,7 @@
             "stat_predicted_production": "Prediction of your solar energy production",
             "dialog": {
               "header": "Configure solar panels",
-              "entity_para": "Pick a sensor which measures solar energy production in either of {unit}.",
+              "entity_para": "Pick a sensor which measures solar production in either of {unit}.",
               "solar_production_energy": "Solar production energy",
               "solar_production_power": "Solar production power",
               "solar_production_forecast": "Solar production forecast",
@@ -3197,6 +3215,9 @@
               "cost_stat_input": "[%key:ui::panel::config::energy::grid::flow_dialog::from::cost_stat_input%]",
               "cost_entity": "[%key:ui::panel::config::energy::grid::flow_dialog::from::cost_entity%]",
               "cost_entity_input": "[%key:ui::panel::config::energy::grid::flow_dialog::from::cost_entity_input%]",
+              "cost_entity_helper": "Any entity with a unit of `{currency}/(valid {class} unit)` (e.g. `{currency}/{unit1}` or `{currency}/{unit2}`) may be used and will be automatically converted.",
+              "cost_entity_helper_energy": "energy",
+              "cost_entity_helper_volume": "volume",
               "cost_number": "[%key:ui::panel::config::energy::grid::flow_dialog::from::cost_number%]",
               "cost_number_input": "[%key:ui::panel::config::energy::grid::flow_dialog::from::cost_number%]",
               "gas_usage": "Gas usage"
@@ -3220,6 +3241,7 @@
               "cost_stat_input": "[%key:ui::panel::config::energy::grid::flow_dialog::from::cost_stat_input%]",
               "cost_entity": "[%key:ui::panel::config::energy::grid::flow_dialog::from::cost_entity%]",
               "cost_entity_input": "[%key:ui::panel::config::energy::grid::flow_dialog::from::cost_entity_input%]",
+              "cost_entity_helper": "Any entity with a unit of `{currency}/(valid water unit)` (e.g. `{currency}/gal` or `{currency}/m³`) may be used and will be automatically converted.",
               "cost_number": "[%key:ui::panel::config::energy::grid::flow_dialog::from::cost_number%]",
               "cost_number_input": "[%key:ui::panel::config::energy::grid::flow_dialog::from::cost_number%]",
               "water_usage": "Water usage"
@@ -3282,7 +3304,8 @@
               "entity_id": "Entity ID",
               "type": "Type",
               "editable": "Editable",
-              "category": "Category"
+              "category": "Category",
+              "area": "Area"
             },
             "create_helper": "Create helper",
             "no_helpers": "Looks like you don't have any helpers yet!",
@@ -8018,6 +8041,7 @@
               "suggested_cards": "Suggested cards",
               "other_cards": "Other cards",
               "custom_cards": "Custom cards",
+              "round_temperature": "Round temperature",
               "features": "Features",
               "actions": "Actions",
               "content": "Content"
@@ -9570,10 +9594,11 @@
       },
       "energy": {
         "title": {
-          "energy": "Energy",
-          "power": "Power",
+          "overview": "Summary",
+          "electricity": "Energy",
           "gas": "Gas",
-          "water": "Water"
+          "water": "Water",
+          "now": "Now"
         },
         "download_data": "[%key:ui::panel::history::download_data%]",
         "configure": "[%key:ui::dialogs::quick-bar::commands::navigation::energy%]",

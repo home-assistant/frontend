@@ -16,6 +16,7 @@ import { classMap } from "lit/directives/class-map";
 import { repeat } from "lit/directives/repeat";
 import memoizeOne from "memoize-one";
 import { fireEvent } from "../../../common/dom/fire_event";
+import { mainWindow } from "../../../common/dom/get_main_window";
 import { computeAreaName } from "../../../common/entity/compute_area_name";
 import { computeDeviceName } from "../../../common/entity/compute_device_name";
 import { computeDomain } from "../../../common/entity/compute_domain";
@@ -57,7 +58,7 @@ import {
   ACTION_COLLECTIONS,
   ACTION_ICONS,
 } from "../../../data/action";
-import type { FloorComboBoxItem } from "../../../data/area_floor";
+import type { FloorComboBoxItem } from "../../../data/area_floor_picker";
 import {
   getAreaDeviceLookup,
   getAreaEntityLookup,
@@ -82,8 +83,8 @@ import {
   type ConfigEntry,
 } from "../../../data/config_entries";
 import { labelsContext } from "../../../data/context";
-import { getDeviceEntityLookup } from "../../../data/device_registry";
-import type { EntityComboBoxItem } from "../../../data/entity_registry";
+import { getDeviceEntityLookup } from "../../../data/device/device_registry";
+import type { EntityComboBoxItem } from "../../../data/entity/entity_picker";
 import { getFloorAreaLookup } from "../../../data/floor_registry";
 import {
   getConditionIcons,
@@ -95,8 +96,8 @@ import {
   domainToName,
   fetchIntegrationManifests,
 } from "../../../data/integration";
-import type { LabelRegistryEntry } from "../../../data/label_registry";
-import { subscribeLabFeatures } from "../../../data/labs";
+import type { LabelRegistryEntry } from "../../../data/label/label_registry";
+import { subscribeLabFeature } from "../../../data/labs";
 import {
   TARGET_SEPARATOR,
   getConditionsForTarget,
@@ -118,7 +119,6 @@ import type { HomeAssistant } from "../../../types";
 import { isMac } from "../../../util/is_mac";
 import { showToast } from "../../../util/toast";
 import "./add-automation-element/ha-automation-add-from-target";
-import type HaAutomationAddFromTarget from "./add-automation-element/ha-automation-add-from-target";
 import "./add-automation-element/ha-automation-add-items";
 import "./add-automation-element/ha-automation-add-search";
 import type { AddAutomationElementDialogParams } from "./show-add-automation-element-dialog";
@@ -216,10 +216,6 @@ class DialogAddAutomationElement
   // #endregion state
 
   // #region queries
-
-  @query("ha-automation-add-from-target")
-  private _targetPickerElement?: HaAutomationAddFromTarget;
-
   @query("ha-automation-add-items")
   private _itemsListElement?: HTMLDivElement;
 
@@ -232,7 +228,7 @@ class DialogAddAutomationElement
 
   private _unsub?: Promise<UnsubscribeFunc>;
 
-  private _unsubscribeLabFeatures?: UnsubscribeFunc;
+  private _unsubscribeLabFeatures?: Promise<UnsubscribeFunc>;
 
   private _configEntryLookup: Record<string, ConfigEntry> = {};
 
@@ -285,17 +281,22 @@ class DialogAddAutomationElement
     this._fetchManifests();
     this._calculateUsedDomains();
 
-    this._unsubscribeLabFeatures = subscribeLabFeatures(
+    this._unsubscribeLabFeatures = subscribeLabFeature(
       this.hass.connection,
-      (features) => {
-        this._newTriggersAndConditions =
-          features.find(
-            (feature) =>
-              feature.domain === "automation" &&
-              feature.preview_feature === "new_triggers_conditions"
-          )?.enabled ?? false;
+      "automation",
+      "new_triggers_conditions",
+      (feature) => {
+        this._newTriggersAndConditions = feature.enabled;
         this._tab = this._newTriggersAndConditions ? "targets" : "groups";
       }
+    );
+
+    // add initial dialog view state to history
+    mainWindow.history.pushState(
+      {
+        dialogData: {},
+      },
+      ""
     );
 
     if (this._params?.type === "action") {
@@ -318,7 +319,41 @@ class DialogAddAutomationElement
     this._bottomSheetMode = this._narrow;
   }
 
-  public closeDialog() {
+  public closeDialog(historyState?: any) {
+    // prevent closing when come from popstate event and root level isn't active
+    if (
+      this._open &&
+      historyState &&
+      (this._selectedTarget || this._selectedGroup)
+    ) {
+      if (historyState.dialogData?.target) {
+        this._selectedTarget = historyState.dialogData.target;
+        this._getItemsByTarget();
+        this._tab = "targets";
+        return false;
+      }
+      if (historyState.dialogData?.group) {
+        this._selectedCollectionIndex = historyState.dialogData.collectionIndex;
+        this._selectedGroup = historyState.dialogData.group;
+        this._tab = "groups";
+        return false;
+      }
+
+      // return to home on mobile
+      if (this._narrow) {
+        this._selectedTarget = undefined;
+        this._selectedGroup = undefined;
+        return false;
+      }
+    }
+
+    // if dialog is closed, but root level isn't active, clean up history state
+    if (mainWindow.history.state?.dialogData) {
+      this._open = false;
+      mainWindow.history.back();
+      return false;
+    }
+
     this.removeKeyboardShortcuts();
     this._unsubscribe();
     if (this._params) {
@@ -387,7 +422,7 @@ class DialogAddAutomationElement
       this._unsub = undefined;
     }
     if (this._unsubscribeLabFeatures) {
-      this._unsubscribeLabFeatures();
+      this._unsubscribeLabFeatures.then((unsub) => unsub());
       this._unsubscribeLabFeatures = undefined;
     }
   }
@@ -405,7 +440,7 @@ class DialogAddAutomationElement
       return html`
         <ha-bottom-sheet
           .open=${this._open}
-          @closed=${this.closeDialog}
+          @closed=${this._handleClosed}
           flexcontent
         >
           ${this._renderContent()}
@@ -415,9 +450,10 @@ class DialogAddAutomationElement
 
     return html`
       <ha-wa-dialog
+        .hass=${this.hass}
         width="large"
         .open=${this._open}
-        @closed=${this.closeDialog}
+        @closed=${this._handleClosed}
         flexcontent
       >
         ${this._renderContent()}
@@ -555,8 +591,7 @@ class DialogAddAutomationElement
                           interactive
                           type="button"
                           class="paste"
-                          .value=${PASTE_VALUE}
-                          @click=${this._selected}
+                          @click=${this._paste}
                         >
                           <div class="shortcut-label">
                             <div class="label">
@@ -649,6 +684,7 @@ class DialogAddAutomationElement
               <ha-automation-add-items
                 .hass=${this.hass}
                 .items=${this._getItems()}
+                .scrollable=${!this._narrow}
                 .error=${this._tab === "targets" && this._loadItemsError
                   ? this.hass.localize(
                       "ui.panel.config.automation.editor.load_target_items_failed"
@@ -727,15 +763,26 @@ class DialogAddAutomationElement
       );
 
       if (targetId) {
-        if (targetType === "area" && this.hass.areas[targetId]?.floor_id) {
-          const floorId = this.hass.areas[targetId].floor_id;
-          subtitle = computeFloorName(this.hass.floors[floorId]) || floorId;
-        }
-        if (targetType === "device" && this.hass.devices[targetId]?.area_id) {
-          const areaId = this.hass.devices[targetId].area_id;
-          subtitle = computeAreaName(this.hass.areas[areaId]) || areaId;
-        }
-        if (targetType === "entity" && this.hass.states[targetId]) {
+        if (targetType === "area") {
+          const floorId = this.hass.areas[targetId]?.floor_id;
+          if (floorId) {
+            subtitle = computeFloorName(this.hass.floors[floorId]) || floorId;
+          } else {
+            subtitle = this.hass.localize(
+              "ui.panel.config.automation.editor.other_areas"
+            );
+          }
+        } else if (targetType === "device") {
+          const areaId = this.hass.devices[targetId]?.area_id;
+          if (areaId) {
+            subtitle = computeAreaName(this.hass.areas[areaId]) || areaId;
+          } else {
+            const device = this.hass.devices[targetId];
+            subtitle = this.hass.localize(
+              `ui.panel.config.automation.editor.${device?.entry_type === "service" ? "services" : "unassigned_devices"}`
+            );
+          }
+        } else if (targetType === "entity" && this.hass.states[targetId]) {
           const entity = this.hass.entities[targetId];
           if (entity && !entity.device_id && !entity.area_id) {
             const domain = targetId.split(".", 2)[0];
@@ -760,10 +807,10 @@ class DialogAddAutomationElement
               .join(computeRTL(this.hass) ? " ◂ " : " ▸ ");
           }
         }
-      }
 
-      if (subtitle) {
-        return html`<span slot="subtitle">${subtitle}</span>`;
+        if (subtitle) {
+          return html`<span slot="subtitle">${subtitle}</span>`;
+        }
       }
     }
 
@@ -1649,11 +1696,7 @@ class DialogAddAutomationElement
   }
 
   private _back() {
-    if (this._selectedTarget) {
-      this._targetPickerElement?.navigateBack();
-      return;
-    }
-    this._selectedGroup = undefined;
+    mainWindow.history.back();
   }
 
   private _groupSelected(ev) {
@@ -1665,9 +1708,24 @@ class DialogAddAutomationElement
     }
     this._selectedGroup = group.value;
     this._selectedCollectionIndex = ev.currentTarget.index;
+
+    mainWindow.history.pushState(
+      {
+        dialogData: {
+          group: this._selectedGroup,
+          collectionIndex: this._selectedCollectionIndex,
+        },
+      },
+      ""
+    );
     requestAnimationFrame(() => {
       this._itemsListElement?.scrollTo(0, 0);
     });
+  }
+
+  private _paste() {
+    this._params!.add(PASTE_VALUE);
+    this.closeDialog();
   }
 
   private _selected(ev: CustomEvent<{ value: string }>) {
@@ -1689,6 +1747,14 @@ class DialogAddAutomationElement
     this._targetItems = undefined;
     this._loadItemsError = false;
     this._selectedTarget = ev.detail.value;
+    mainWindow.history.pushState(
+      {
+        dialogData: {
+          target: this._selectedTarget,
+        },
+      },
+      ""
+    );
 
     requestAnimationFrame(() => {
       if (this._narrow) {
@@ -1806,6 +1872,10 @@ class DialogAddAutomationElement
       [`${targetType}_id`]: item.id.split(TARGET_SEPARATOR, 2)[1],
     };
     this._tab = "targets";
+  }
+
+  private _handleClosed() {
+    this.closeDialog();
   }
 
   // #region interaction
@@ -2075,7 +2145,7 @@ class DialogAddAutomationElement
           min-height: 160px;
         }
         .content.column ha-automation-add-from-target {
-          overflow: hidden;
+          overflow: clip;
         }
 
         ha-wa-dialog ha-automation-add-items {

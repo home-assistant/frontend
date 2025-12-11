@@ -5,7 +5,7 @@ import { customElement, property } from "lit/decorators";
 import "../components/entity/ha-entity-toggle";
 import "../components/entity/state-info";
 import "../components/ha-button";
-import { UNAVAILABLE } from "../data/entity";
+import { UNAVAILABLE } from "../data/entity/entity";
 import { haStyle } from "../resources/styles";
 import type { HomeAssistant } from "../types";
 

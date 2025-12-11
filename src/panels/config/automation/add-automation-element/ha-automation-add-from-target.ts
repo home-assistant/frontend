@@ -34,7 +34,7 @@ import {
   type FloorComboBoxItem,
   type FloorNestedComboBoxItem,
   type UnassignedAreasFloorComboBoxItem,
-} from "../../../../data/area_floor";
+} from "../../../../data/area_floor_picker";
 import {
   getAreaDeviceLookup,
   getAreaEntityLookup,
@@ -52,15 +52,13 @@ import {
   localizeContext,
   statesContext,
 } from "../../../../data/context";
-import { getDeviceEntityLookup } from "../../../../data/device_registry";
+import { getDeviceEntityLookup } from "../../../../data/device/device_registry";
 import {
   domainToName,
   type DomainManifestLookup,
 } from "../../../../data/integration";
-import {
-  getLabels,
-  type LabelRegistryEntry,
-} from "../../../../data/label_registry";
+import { getLabels } from "../../../../data/label/label_picker";
+import type { LabelRegistryEntry } from "../../../../data/label/label_registry";
 import {
   TARGET_SEPARATOR,
   type SingleHassServiceTarget,
@@ -911,6 +909,10 @@ export default class HaAutomationAddFromTarget extends LitElement {
     const services: Record<string, Level3Entries> = {};
 
     unassignedDevices.forEach(({ id: deviceId, entry_type }) => {
+      const device = this.devices[deviceId];
+      if (!device || device.disabled_by) {
+        return;
+      }
       const deviceEntry = {
         open: false,
         entities:
@@ -1012,6 +1014,10 @@ export default class HaAutomationAddFromTarget extends LitElement {
     const devices: Record<string, Level3Entries> = {};
 
     referenced_devices.forEach(({ id: deviceId }) => {
+      const device = this.devices[deviceId];
+      if (!device || device.disabled_by) {
+        return;
+      }
       devices[deviceId] = {
         open: false,
         entities:
@@ -1381,92 +1387,6 @@ export default class HaAutomationAddFromTarget extends LitElement {
     this._configEntryLookup = Object.fromEntries(
       configEntries.map((entry) => [entry.entry_id, entry])
     );
-  }
-
-  public navigateBack() {
-    if (!this.value) {
-      return;
-    }
-
-    const valueType = Object.keys(this.value)[0].replace("_id", "");
-    const valueId = this.value[`${valueType}_id`];
-
-    if (
-      valueType === "floor" ||
-      valueType === "label" ||
-      (!valueId &&
-        (valueType === "device" ||
-          valueType === "helper" ||
-          valueType === "service" ||
-          valueType === "area"))
-    ) {
-      fireEvent(this, "value-changed", { value: undefined });
-      return;
-    }
-
-    if (valueType === "area") {
-      fireEvent(this, "value-changed", {
-        value: { floor_id: this.areas[valueId].floor_id || undefined },
-      });
-      return;
-    }
-
-    if (valueType === "device") {
-      if (
-        !this.devices[valueId].area_id &&
-        this.devices[valueId].entry_type === "service"
-      ) {
-        fireEvent(this, "value-changed", {
-          value: { service_id: undefined },
-        });
-        return;
-      }
-
-      fireEvent(this, "value-changed", {
-        value: { area_id: this.devices[valueId].area_id || undefined },
-      });
-      return;
-    }
-
-    if (valueType === "entity" && valueId) {
-      const deviceId = this.entities[valueId].device_id;
-      if (deviceId) {
-        fireEvent(this, "value-changed", {
-          value: { device_id: deviceId },
-        });
-        return;
-      }
-
-      const areaId = this.entities[valueId].area_id;
-      if (areaId) {
-        fireEvent(this, "value-changed", {
-          value: { area_id: areaId },
-        });
-        return;
-      }
-
-      const domain = valueId.split(".", 2)[0];
-      const manifest = this.manifests ? this.manifests[domain] : undefined;
-      if (manifest?.integration_type === "helper") {
-        fireEvent(this, "value-changed", {
-          value: { [`helper_${domain}_id`]: undefined },
-        });
-        return;
-      }
-
-      fireEvent(this, "value-changed", {
-        value: { [`entity_${domain}_id`]: undefined },
-      });
-    }
-
-    if (valueType.startsWith("helper_") || valueType.startsWith("entity_")) {
-      fireEvent(this, "value-changed", {
-        value: {
-          [`${valueType.startsWith("helper_") ? "helper" : "device"}_id`]:
-            undefined,
-        },
-      });
-    }
   }
 
   private _expandHeight() {

@@ -9,7 +9,7 @@ import { computeStateDomain } from "../common/entity/compute_state_domain";
 import { autoCaseNoun } from "../common/translations/auto_case_noun";
 import type { LocalizeFunc } from "../common/translations/localize";
 import type { HomeAssistant } from "../types";
-import { UNAVAILABLE, UNKNOWN } from "./entity";
+import { UNAVAILABLE, UNKNOWN } from "./entity/entity";
 import { isNumericEntity } from "./history";
 
 const LOGBOOK_LOCALIZE_PATH = "ui.components.logbook.messages";

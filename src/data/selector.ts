@@ -3,6 +3,7 @@ import type {
   HassServiceTarget,
 } from "home-assistant-js-websocket";
 import { ensureArray } from "../common/array/ensure-array";
+import type { EntityNameItem } from "../common/entity/compute_entity_name_display";
 import { computeStateDomain } from "../common/entity/compute_state_domain";
 import { supportsFeature } from "../common/entity/supports-feature";
 import { isHelperDomain } from "../panels/config/helpers/const";
@@ -11,13 +12,12 @@ import type { HomeAssistant } from "../types";
 import {
   type DeviceRegistryEntry,
   getDeviceIntegrationLookup,
-} from "./device_registry";
+} from "./device/device_registry";
 import type {
   EntityRegistryDisplayEntry,
   EntityRegistryEntry,
-} from "./entity_registry";
-import type { EntitySources } from "./entity_sources";
-import type { EntityNameItem } from "../common/entity/compute_entity_name_display";
+} from "./entity/entity_registry";
+import type { EntitySources } from "./entity/entity_sources";
 
 export type Selector =
   | ActionSelector

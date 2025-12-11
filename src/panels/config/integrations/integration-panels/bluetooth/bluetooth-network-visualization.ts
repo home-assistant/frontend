@@ -25,7 +25,7 @@ import {
   subscribeBluetoothAdvertisements,
   subscribeBluetoothScannersDetails,
 } from "../../../../../data/bluetooth";
-import type { DeviceRegistryEntry } from "../../../../../data/device_registry";
+import type { DeviceRegistryEntry } from "../../../../../data/device/device_registry";
 import "../../../../../layouts/hass-subpage";
 import type { HomeAssistant, Route } from "../../../../../types";
 import { bluetoothAdvertisementMonitorTabs } from "./bluetooth-advertisement-monitor";

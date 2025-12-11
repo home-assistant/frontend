@@ -12,7 +12,7 @@ import "../../../../../components/ha-file-upload";
 import "../../../../../components/ha-form/ha-form";
 import type { HaFormSchema } from "../../../../../components/ha-form/types";
 import "../../../../../components/ha-svg-icon";
-import type { DeviceRegistryEntry } from "../../../../../data/device_registry";
+import type { DeviceRegistryEntry } from "../../../../../data/device/device_registry";
 import type {
   ZWaveJSControllerFirmwareUpdateFinishedMessage,
   ZWaveJSFirmwareUpdateProgressMessage,

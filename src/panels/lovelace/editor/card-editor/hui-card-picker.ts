@@ -11,7 +11,7 @@ import { fireEvent } from "../../../../common/dom/fire_event";
 import { stringCompare } from "../../../../common/string/compare";
 import "../../../../components/ha-spinner";
 import "../../../../components/search-input";
-import { isUnavailableState } from "../../../../data/entity";
+import { isUnavailableState } from "../../../../data/entity/entity";
 import type { LovelaceCardConfig } from "../../../../data/lovelace/config/card";
 import type { LovelaceConfig } from "../../../../data/lovelace/config/types";
 import type { CustomCardEntry } from "../../../../data/lovelace_custom_cards";

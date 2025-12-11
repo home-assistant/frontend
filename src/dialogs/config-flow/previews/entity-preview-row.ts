@@ -18,7 +18,7 @@ import "../../../components/ha-select";
 import "../../../components/ha-slider";
 import "../../../components/ha-time-input";
 import { isTiltOnly } from "../../../data/cover";
-import { isUnavailableState } from "../../../data/entity";
+import { isUnavailableState } from "../../../data/entity/entity";
 import type { ImageEntity } from "../../../data/image";
 import { computeImageUrl } from "../../../data/image";
 import { SENSOR_DEVICE_CLASS_TIMESTAMP } from "../../../data/sensor";

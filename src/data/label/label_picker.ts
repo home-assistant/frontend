@@ -1,104 +1,32 @@
 import { mdiLabel } from "@mdi/js";
-import type { Connection } from "home-assistant-js-websocket";
-import { createCollection } from "home-assistant-js-websocket";
-import type { Store } from "home-assistant-js-websocket/dist/store";
-import { computeDomain } from "../common/entity/compute_domain";
-import { stringCompare } from "../common/string/compare";
-import { debounce } from "../common/util/debounce";
-import type { HaDevicePickerDeviceFilterFunc } from "../components/device/ha-device-picker";
-import type { PickerComboBoxItem } from "../components/ha-picker-combo-box";
-import type { HomeAssistant } from "../types";
+import { computeDomain } from "../../common/entity/compute_domain";
+import type { HaDevicePickerDeviceFilterFunc } from "../../components/device/ha-device-picker";
+import type { PickerComboBoxItem } from "../../components/ha-picker-combo-box";
+import type { FuseWeightedKey } from "../../resources/fuseMultiTerm";
+import type { HomeAssistant } from "../../types";
 import {
   getDeviceEntityDisplayLookup,
   type DeviceEntityDisplayLookup,
   type DeviceRegistryEntry,
-} from "./device_registry";
-import type { HaEntityPickerEntityFilterFunc } from "./entity";
-import type { EntityRegistryDisplayEntry } from "./entity_registry";
-import type { RegistryEntry } from "./registry";
+} from "../device/device_registry";
+import type { HaEntityPickerEntityFilterFunc } from "../entity/entity";
+import type { EntityRegistryDisplayEntry } from "../entity/entity_registry";
+import type { LabelRegistryEntry } from "./label_registry";
 
-export interface LabelRegistryEntry extends RegistryEntry {
-  label_id: string;
-  name: string;
-  icon: string | null;
-  color: string | null;
-  description: string | null;
-}
-
-export interface LabelRegistryEntryMutableParams {
-  name: string;
-  icon?: string | null;
-  color?: string | null;
-  description?: string | null;
-}
-
-export const fetchLabelRegistry = (conn: Connection) =>
-  conn
-    .sendMessagePromise({
-      type: "config/label_registry/list",
-    })
-    .then((labels) =>
-      (labels as LabelRegistryEntry[]).sort((ent1, ent2) =>
-        stringCompare(ent1.name, ent2.name)
-      )
-    );
-
-export const subscribeLabelRegistryUpdates = (
-  conn: Connection,
-  store: Store<LabelRegistryEntry[]>
-) =>
-  conn.subscribeEvents(
-    debounce(
-      () =>
-        fetchLabelRegistry(conn).then((labels: LabelRegistryEntry[]) =>
-          store.setState(labels, true)
-        ),
-      500,
-      true
-    ),
-    "label_registry_updated"
-  );
-
-export const subscribeLabelRegistry = (
-  conn: Connection,
-  onChange: (labels: LabelRegistryEntry[]) => void
-) =>
-  createCollection<LabelRegistryEntry[]>(
-    "_labelRegistry",
-    fetchLabelRegistry,
-    subscribeLabelRegistryUpdates,
-    conn,
-    onChange
-  );
-
-export const createLabelRegistryEntry = (
-  hass: HomeAssistant,
-  values: LabelRegistryEntryMutableParams
-) =>
-  hass.callWS<LabelRegistryEntry>({
-    type: "config/label_registry/create",
-    ...values,
-  });
-
-export const updateLabelRegistryEntry = (
-  hass: HomeAssistant,
-  labelId: string,
-  updates: Partial<LabelRegistryEntryMutableParams>
-) =>
-  hass.callWS<LabelRegistryEntry>({
-    type: "config/label_registry/update",
-    label_id: labelId,
-    ...updates,
-  });
-
-export const deleteLabelRegistryEntry = (
-  hass: HomeAssistant,
-  labelId: string
-) =>
-  hass.callWS({
-    type: "config/label_registry/delete",
-    label_id: labelId,
-  });
+export const labelComboBoxKeys: FuseWeightedKey[] = [
+  {
+    name: "search_labels.name",
+    weight: 10,
+  },
+  {
+    name: "search_labels.description",
+    weight: 5,
+  },
+  {
+    name: "search_labels.id",
+    weight: 4,
+  },
+];
 
 export const getLabels = (
   hassStates: HomeAssistant["states"],
@@ -273,9 +201,11 @@ export const getLabels = (
     icon: label.icon || undefined,
     icon_path: label.icon ? undefined : mdiLabel,
     sorting_label: label.name,
-    search_labels: [label.name, label.label_id, label.description].filter(
-      (v): v is string => Boolean(v)
-    ),
+    search_labels: {
+      name: label.name,
+      description: label.description,
+      id: label.label_id,
+    },
   }));
 
   return items;

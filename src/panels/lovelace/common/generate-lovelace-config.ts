@@ -5,10 +5,9 @@ import { computeStateDomain } from "../../../common/entity/compute_state_domain"
 import { computeStateName } from "../../../common/entity/compute_state_name";
 import { splitByGroups } from "../../../common/entity/split_by_groups";
 import { stripPrefixFromEntityName } from "../../../common/entity/strip_prefix_from_entity_name";
-import { stringCompare } from "../../../common/string/compare";
+import { orderCompare, stringCompare } from "../../../common/string/compare";
 import type { LocalizeFunc } from "../../../common/translations/localize";
 import type { AreasDisplayValue } from "../../../components/ha-areas-display-editor";
-import { areaCompare } from "../../../data/area_registry";
 import type {
   EnergyPreferences,
   GridSourceTypeEnergyPreference,
@@ -572,13 +571,21 @@ export const generateDefaultViewConfig = (
 
   const areaCards: LovelaceCardConfig[] = [];
 
-  const sortedAreas = Object.keys(splittedByAreaDevice.areasWithEntities).sort(
-    areaCompare(areaEntries, areasPrefs?.order)
-  );
+  const areaIds = Object.keys(areaEntries);
 
-  for (const areaId of sortedAreas) {
+  if (areasPrefs?.order) {
+    const areaOrder = areasPrefs.order;
+    areaIds.sort(orderCompare(areaOrder));
+  }
+
+  for (const areaId of areaIds) {
+    // Skip areas with no entities
+    if (!(areaId in splittedByAreaDevice.areasWithEntities)) {
+      continue;
+    }
     const areaEntities = splittedByAreaDevice.areasWithEntities[areaId];
     const area = areaEntries[areaId];
+
     areaCards.push(
       ...computeCards(
         hass,

@@ -42,9 +42,9 @@ import "../../../components/ha-list-item";
 import "../../../components/ha-svg-icon";
 import "../../../components/ha-textfield";
 import { fullEntitiesContext } from "../../../data/context";
-import type { DeviceRegistryEntry } from "../../../data/device_registry";
-import type { EntityRegistryEntry } from "../../../data/entity_registry";
-import { updateEntityRegistryEntry } from "../../../data/entity_registry";
+import type { DeviceRegistryEntry } from "../../../data/device/device_registry";
+import type { EntityRegistryEntry } from "../../../data/entity/entity_registry";
+import { updateEntityRegistryEntry } from "../../../data/entity/entity_registry";
 import type {
   SceneConfig,
   SceneEntities,

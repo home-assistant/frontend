@@ -123,9 +123,6 @@ export class HaCategoryPicker extends SubscribeMixin(LitElement) {
         icon: category.icon || undefined,
         icon_path: category.icon ? undefined : mdiTag,
         sorting_label: category.name,
-        search_labels: [category.name, category.category_id].filter(
-          (v): v is string => Boolean(v)
-        ),
       }));
 
       return items;
@@ -207,6 +204,9 @@ export class HaCategoryPicker extends SubscribeMixin(LitElement) {
         .getItems=${this._getItems}
         .getAdditionalItems=${this._getAdditionalItems}
         .valueRenderer=${valueRenderer}
+        .unknownItemText=${this.hass.localize(
+          "ui.components.category-picker.unknown"
+        )}
         @value-changed=${this._valueChanged}
       >
       </ha-generic-picker>

@@ -1,11 +1,11 @@
 import type { HassEntity } from "home-assistant-js-websocket";
 import { css, html, LitElement, nothing } from "lit";
 import { customElement, property } from "lit/decorators";
+import "../../../components/ha-button";
 import "../../../components/ha-relative-time";
 import { triggerAutomationActions } from "../../../data/automation";
-import { isUnavailableState } from "../../../data/entity";
+import { isUnavailableState } from "../../../data/entity/entity";
 import type { HomeAssistant } from "../../../types";
-import "../../../components/ha-button";
 
 @customElement("more-info-automation")
 class MoreInfoAutomation extends LitElement {

@@ -12,7 +12,7 @@ import { fireEvent } from "../../../../common/dom/fire_event";
 import { stringCompare } from "../../../../common/string/compare";
 import "../../../../components/ha-spinner";
 import "../../../../components/search-input";
-import { isUnavailableState } from "../../../../data/entity";
+import { isUnavailableState } from "../../../../data/entity/entity";
 import type { LovelaceBadgeConfig } from "../../../../data/lovelace/config/badge";
 import type { LovelaceConfig } from "../../../../data/lovelace/config/types";
 import type { CustomBadgeEntry } from "../../../../data/lovelace_custom_cards";

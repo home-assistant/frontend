@@ -60,6 +60,8 @@ export class HaAutomationAddItems extends LitElement {
   @property({ type: Boolean, attribute: "tooltip-description" })
   public tooltipDescription = false;
 
+  @property({ type: Boolean, reflect: true }) scrollable = false;
+
   @state() private _itemsScrolled = false;
 
   @query(".items")
@@ -260,11 +262,12 @@ export class HaAutomationAddItems extends LitElement {
     :host {
       display: flex;
     }
-
+    :host([scrollable]) .items {
+      overflow: auto;
+    }
     .items {
       display: flex;
       flex-direction: column;
-      overflow: auto;
       flex: 1;
     }
     .items.blank {
@@ -372,7 +375,7 @@ export class HaAutomationAddItems extends LitElement {
     .selected-target ha-floor-icon {
       display: flex;
       height: 32px;
-      width: 24px;
+      width: 32px;
       align-items: center;
     }
     .selected-target ha-domain-icon {
