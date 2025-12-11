@@ -98,7 +98,6 @@ interface DeviceItem extends QuickBarItem {
 interface IntegrationItem extends QuickBarItem {
   domain: string;
   translatedDomain: string;
-  entryId?: string;
 }
 
 const isCommandItem = (item: QuickBarItem): item is CommandItem =>
@@ -779,49 +778,29 @@ export class QuickBar extends LitElement {
   private async _generateIntegrationItems(): Promise<IntegrationItem[]> {
     const configEntries = await getConfigEntries(this.hass);
 
-    // Group entries by domain
-    const entriesByDomain = new Map<string, typeof configEntries>();
+    // Get unique domains from enabled entries
+    const domains = new Set<string>();
     for (const entry of configEntries) {
       if (entry.disabled_by || entry.source === "ignore") {
         continue;
       }
-      if (!entriesByDomain.has(entry.domain)) {
-        entriesByDomain.set(entry.domain, []);
-      }
-      entriesByDomain.get(entry.domain)!.push(entry);
+      domains.add(entry.domain);
     }
 
     const integrationItems: IntegrationItem[] = [];
 
-    for (const [domain, entries] of entriesByDomain.entries()) {
+    for (const domain of domains) {
       const translatedDomain = domainToName(this.hass.localize, domain);
       const primaryText = translatedDomain;
 
-      // If there's only one entry, navigate directly to it
-      if (entries.length === 1) {
-        integrationItems.push({
-          id: `integration-${domain}-${entries[0].entry_id}`,
-          primaryText,
-          domain,
-          translatedDomain,
-          entryId: entries[0].entry_id,
-          action: () =>
-            navigate(
-              `/config/integrations/integration/${domain}#config_entry=${entries[0].entry_id}`
-            ),
-          strings: [primaryText, domain, translatedDomain],
-        });
-      } else {
-        // Multiple entries, navigate to domain page
-        integrationItems.push({
-          id: `integration-${domain}`,
-          primaryText,
-          domain,
-          translatedDomain,
-          action: () => navigate(`/config/integrations/integration/${domain}`),
-          strings: [primaryText, domain, translatedDomain],
-        });
-      }
+      integrationItems.push({
+        id: `integration-${domain}`,
+        primaryText,
+        domain,
+        translatedDomain,
+        action: () => navigate(`/config/integrations/integration/${domain}`),
+        strings: [primaryText, domain, translatedDomain],
+      });
     }
 
     return integrationItems.sort((a, b) =>
