@@ -1407,6 +1407,7 @@
         },
         "filter_placeholder": "Search entities",
         "filter_placeholder_devices": "Search devices",
+        "filter_placeholder_integrations": "Search integrations",
         "title": "Quick search",
         "key_c_tip": "[%key:ui::tips::key_c_tip%]",
         "nothing_found": "Nothing found!"

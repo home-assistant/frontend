@@ -47,6 +47,9 @@ export default <T extends Constructor<HassElement>>(superClass: T) =>
           case "d":
             this._showQuickBar(ev.detail, QuickBarMode.Device);
             break;
+          case "i":
+            this._showQuickBar(ev.detail, QuickBarMode.Integration);
+            break;
           case "m":
             this._createMyLink(ev.detail);
             break;
@@ -70,6 +73,9 @@ export default <T extends Constructor<HassElement>>(superClass: T) =>
         m: { handler: (ev) => this._createMyLink(ev) },
         a: { handler: (ev) => this._showVoiceCommandDialog(ev) },
         d: { handler: (ev) => this._showQuickBar(ev, QuickBarMode.Device) },
+        i: {
+          handler: (ev) => this._showQuickBar(ev, QuickBarMode.Integration),
+        },
         // Workaround see https://github.com/jamiebuilds/tinykeys/issues/130
         "Shift+?": { handler: (ev) => this._showShortcutDialog(ev) },
         // Those are fallbacks for non-latin keyboards that don't have e, c, m keys (qwerty-based shortcuts)
@@ -78,6 +84,9 @@ export default <T extends Constructor<HassElement>>(superClass: T) =>
         KeyM: { handler: (ev) => this._createMyLink(ev) },
         KeyA: { handler: (ev) => this._showVoiceCommandDialog(ev) },
         KeyD: { handler: (ev) => this._showQuickBar(ev, QuickBarMode.Device) },
+        KeyI: {
+          handler: (ev) => this._showQuickBar(ev, QuickBarMode.Integration),
+        },
       });
     }
 

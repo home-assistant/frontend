@@ -6,6 +6,7 @@ import {
   mdiEarth,
   mdiKeyboard,
   mdiMagnify,
+  mdiPuzzle,
   mdiReload,
   mdiServerNetwork,
 } from "@mdi/js";
@@ -94,11 +95,20 @@ interface DeviceItem extends QuickBarItem {
   area?: string;
 }
 
+interface IntegrationItem extends QuickBarItem {
+  domain: string;
+  translatedDomain: string;
+  entryId?: string;
+}
+
 const isCommandItem = (item: QuickBarItem): item is CommandItem =>
   (item as CommandItem).categoryKey !== undefined;
 
 const isDeviceItem = (item: QuickBarItem): item is DeviceItem =>
   (item as DeviceItem).deviceId !== undefined;
+
+const isIntegrationItem = (item: QuickBarItem): item is IntegrationItem =>
+  (item as IntegrationItem).domain !== undefined;
 
 interface QuickBarNavigationItem extends CommandItem {
   path: string;
@@ -120,6 +130,8 @@ export class QuickBar extends LitElement {
   @state() private _entityItems?: EntityItem[];
 
   @state() private _deviceItems?: DeviceItem[];
+
+  @state() private _integrationItems?: IntegrationItem[];
 
   @state() private _filter = "";
 
@@ -159,6 +171,8 @@ export class QuickBar extends LitElement {
     this._search = "";
     this._entityItems = undefined;
     this._commandItems = undefined;
+    this._deviceItems = undefined;
+    this._integrationItems = undefined;
     fireEvent(this, "dialog-closed", { dialog: this.localName });
   }
 
@@ -174,6 +188,7 @@ export class QuickBar extends LitElement {
       commandItems,
       entityItems,
       deviceItems,
+      integrationItems,
       filter: string
     ) => {
       let items = entityItems;
@@ -182,6 +197,8 @@ export class QuickBar extends LitElement {
         items = commandItems;
       } else if (mode === QuickBarMode.Device) {
         items = deviceItems;
+      } else if (mode === QuickBarMode.Integration) {
+        items = integrationItems;
       }
 
       if (items && filter && filter !== " ") {
@@ -201,25 +218,37 @@ export class QuickBar extends LitElement {
       this._commandItems,
       this._entityItems,
       this._deviceItems,
+      this._integrationItems,
       this._filter
     );
 
     const translationKey =
       this._mode === QuickBarMode.Device
         ? "filter_placeholder_devices"
-        : "filter_placeholder";
+        : this._mode === QuickBarMode.Integration
+          ? "filter_placeholder_integrations"
+          : "filter_placeholder";
     const placeholder = this.hass.localize(
       `ui.dialogs.quick-bar.${translationKey}`
     );
 
     const commandMode = this._mode === QuickBarMode.Command;
     const deviceMode = this._mode === QuickBarMode.Device;
+    const integrationMode = this._mode === QuickBarMode.Integration;
     const icon = commandMode
       ? mdiConsoleLine
       : deviceMode
         ? mdiDevices
-        : mdiMagnify;
-    const searchPrefix = commandMode ? ">" : deviceMode ? "#" : "";
+        : integrationMode
+          ? mdiPuzzle
+          : mdiMagnify;
+    const searchPrefix = commandMode
+      ? ">"
+      : deviceMode
+        ? "#"
+        : integrationMode
+          ? "@"
+          : "";
 
     return html`
       <ha-dialog
@@ -318,6 +347,9 @@ export class QuickBar extends LitElement {
     } else if (this._mode === QuickBarMode.Device) {
       this._deviceItems =
         this._deviceItems || (await this._generateDeviceItems());
+    } else if (this._mode === QuickBarMode.Integration) {
+      this._integrationItems =
+        this._integrationItems || (await this._generateIntegrationItems());
     } else {
       this._entityItems =
         this._entityItems || (await this._generateEntityItems());
@@ -350,6 +382,10 @@ export class QuickBar extends LitElement {
 
     if (isCommandItem(item)) {
       return this._renderCommandItem(item, index);
+    }
+
+    if (isIntegrationItem(item)) {
+      return this._renderIntegrationItem(item, index);
     }
 
     return this._renderEntityItem(item as EntityItem, index);
@@ -459,6 +495,35 @@ export class QuickBar extends LitElement {
     `;
   }
 
+  private _renderIntegrationItem(item: IntegrationItem, index?: number) {
+    return html`
+      <ha-md-list-item
+        class="two-line"
+        .item=${item}
+        index=${ifDefined(index)}
+        tabindex="0"
+        type="button"
+      >
+        <img
+          slot="start"
+          alt=""
+          crossorigin="anonymous"
+          referrerpolicy="no-referrer"
+          src=${brandsUrl({
+            domain: item.domain,
+            type: "icon",
+            useFallback: true,
+            darkOptimized: this.hass.themes?.darkMode,
+          })}
+        />
+        <span slot="headline">${item.primaryText}</span>
+        <div slot="trailing-supporting-text" class="domain">
+          ${item.translatedDomain}
+        </div>
+      </ha-md-list-item>
+    `;
+  }
+
   private async _processItemAndCloseDialog(item: QuickBarItem, index: number) {
     this._addSpinnerToCommandItem(index);
 
@@ -506,6 +571,9 @@ export class QuickBar extends LitElement {
       newSearch = newFilter.substring(1);
     } else if (newFilter.startsWith("#")) {
       newMode = QuickBarMode.Device;
+      newSearch = newFilter.substring(1);
+    } else if (newFilter.startsWith("@")) {
+      newMode = QuickBarMode.Integration;
       newSearch = newFilter.substring(1);
     } else {
       newMode = QuickBarMode.Entity;
@@ -704,6 +772,63 @@ export class QuickBar extends LitElement {
           this.hass.locale.language
         )
       );
+  }
+
+  private async _generateIntegrationItems(): Promise<IntegrationItem[]> {
+    const configEntries = await getConfigEntries(this.hass);
+
+    // Group entries by domain
+    const entriesByDomain = new Map<string, typeof configEntries>();
+    for (const entry of configEntries) {
+      if (entry.disabled_by || entry.source === "ignore") {
+        continue;
+      }
+      if (!entriesByDomain.has(entry.domain)) {
+        entriesByDomain.set(entry.domain, []);
+      }
+      entriesByDomain.get(entry.domain)!.push(entry);
+    }
+
+    const integrationItems: IntegrationItem[] = [];
+
+    for (const [domain, entries] of entriesByDomain.entries()) {
+      const translatedDomain = domainToName(this.hass.localize, domain);
+      const primaryText = translatedDomain;
+
+      // If there's only one entry, navigate directly to it
+      if (entries.length === 1) {
+        integrationItems.push({
+          id: `integration-${domain}-${entries[0].entry_id}`,
+          primaryText,
+          domain,
+          translatedDomain,
+          entryId: entries[0].entry_id,
+          action: () =>
+            navigate(
+              `/config/integrations/integration/${domain}#config_entry=${entries[0].entry_id}`
+            ),
+          strings: [primaryText, domain, translatedDomain],
+        });
+      } else {
+        // Multiple entries, navigate to domain page
+        integrationItems.push({
+          id: `integration-${domain}`,
+          primaryText,
+          domain,
+          translatedDomain,
+          action: () => navigate(`/config/integrations/integration/${domain}`),
+          strings: [primaryText, domain, translatedDomain],
+        });
+      }
+    }
+
+    return integrationItems.sort((a, b) =>
+      caseInsensitiveStringCompare(
+        a.primaryText,
+        b.primaryText,
+        this.hass.locale.language
+      )
+    );
   }
 
   private async _generateCommandItems(): Promise<CommandItem[]> {

@@ -4,6 +4,7 @@ export const enum QuickBarMode {
   Command = "command",
   Device = "device",
   Entity = "entity",
+  Integration = "integration",
 }
 
 export interface QuickBarParams {
