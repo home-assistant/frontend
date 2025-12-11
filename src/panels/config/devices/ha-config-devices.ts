@@ -8,6 +8,7 @@ import { HassRouterPage } from "../../../layouts/hass-router-page";
 import type { HomeAssistant } from "../../../types";
 import "./ha-config-device-page";
 import "./ha-config-devices-dashboard";
+import "./ha-config-devices-unassigned";
 
 @customElement("ha-config-devices")
 class HaConfigDevices extends HassRouterPage {
@@ -24,6 +25,10 @@ class HaConfigDevices extends HassRouterPage {
     routes: {
       dashboard: {
         tag: "ha-config-devices-dashboard",
+        cache: true,
+      },
+      unassigned: {
+        tag: "ha-config-devices-unassigned",
         cache: true,
       },
       device: {

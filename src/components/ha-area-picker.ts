@@ -20,6 +20,7 @@ import { showAlertDialog } from "../dialogs/generic/show-dialog-box";
 import { showAreaRegistryDetailDialog } from "../panels/config/areas/show-dialog-area-registry-detail";
 import type { HomeAssistant, ValueChangedEvent } from "../types";
 import type { HaDevicePickerDeviceFilterFunc } from "./device/ha-device-picker";
+import "./ha-button";
 import "./ha-combo-box-item";
 import "./ha-generic-picker";
 import type { HaGenericPicker } from "./ha-generic-picker";
@@ -94,6 +95,9 @@ export class HaAreaPicker extends LitElement {
   @property({ type: Boolean }) public required = false;
 
   @property({ attribute: "add-button-label" }) public addButtonLabel?: string;
+
+  @property({ type: Boolean, attribute: "button-style" })
+  public buttonStyle = false;
 
   @query("ha-generic-picker") private _picker?: HaGenericPicker;
 
@@ -390,8 +394,24 @@ export class HaAreaPicker extends LitElement {
         )}
         @value-changed=${this._valueChanged}
       >
+        ${this.buttonStyle
+          ? html`<ha-button
+              slot="field"
+              .disabled=${this.disabled}
+              @click=${this._openPicker}
+              appearance="plain"
+              size="small"
+            >
+              ${placeholder}
+            </ha-button>`
+          : nothing}
       </ha-generic-picker>
     `;
+  }
+
+  private _openPicker(ev: Event) {
+    ev.stopPropagation();
+    this._picker?.open();
   }
 
   private _valueChanged(ev: ValueChangedEvent<string>) {

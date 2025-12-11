@@ -795,7 +795,7 @@ export class HaConfigDeviceDashboard extends SubscribeMixin(LitElement) {
         .narrow=${this.narrow}
         .backPath=${this._searchParms.has("historyBack")
           ? undefined
-          : "/config"}
+          : "/config/devices"}
         .tabs=${configSections.devices}
         .route=${this.route}
         .searchLabel=${this.hass.localize(

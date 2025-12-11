@@ -5494,6 +5494,12 @@
               }
             }
           },
+          "unassigned": {
+            "caption": "Unassigned devices",
+            "search": "Search {number} unassigned {number, plural,\n  one {device}\n  other {devices}\n}",
+            "no_devices": "All devices are assigned to areas",
+            "assign": "Assign to area"
+          },
           "esphome": {
             "show_encryption_key": "Show encryption key",
             "encryption_key_title": "ESPHome Encryption Key",
