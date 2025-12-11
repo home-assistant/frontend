@@ -523,11 +523,11 @@ export class HuiEnergyPeriodSelector extends SubscribeMixin(LitElement) {
       z-index: var(--dialog-z-index, 8);
       -webkit-backdrop-filter: var(
         --ha-dialog-scrim-backdrop-filter,
-        var(--dialog-backdrop-filter, blur(4px))
+        var(--dialog-backdrop-filter)
       );
       backdrop-filter: var(
         --ha-dialog-scrim-backdrop-filter,
-        var(--dialog-backdrop-filter, blur(4px))
+        var(--dialog-backdrop-filter)
       );
       pointer-events: none;
       opacity: 0;
