@@ -17,6 +17,7 @@ import {
   mdiStopCircleOutline,
 } from "@mdi/js";
 import deepClone from "deep-clone-simple";
+import type { HassServiceTarget } from "home-assistant-js-websocket";
 import { dump } from "js-yaml";
 import type { PropertyValues, TemplateResult } from "lit";
 import { LitElement, html, nothing } from "lit";
@@ -53,18 +54,13 @@ import type {
 } from "../../../../data/automation";
 import { CONDITION_BUILDING_BLOCKS } from "../../../../data/condition";
 import { validateConfig } from "../../../../data/config";
-import {
-  floorsContext,
-  fullEntitiesContext,
-  labelsContext,
-} from "../../../../data/context";
+import { fullEntitiesContext } from "../../../../data/context";
 import type { EntityRegistryEntry } from "../../../../data/entity/entity_registry";
-import type { FloorRegistryEntry } from "../../../../data/floor_registry";
-import type { LabelRegistryEntry } from "../../../../data/label/label_registry";
 import type {
   Action,
   NonConditionAction,
   RepeatAction,
+  ServiceAction,
 } from "../../../../data/script";
 import { getActionType, isAction } from "../../../../data/script";
 import { describeAction } from "../../../../data/script_i18n";
@@ -176,14 +172,6 @@ export default class HaAutomationActionRow extends LitElement {
   @consume({ context: fullEntitiesContext, subscribe: true })
   _entityReg!: EntityRegistryEntry[];
 
-  @state()
-  @consume({ context: labelsContext, subscribe: true })
-  _labelReg!: LabelRegistryEntry[];
-
-  @state()
-  @consume({ context: floorsContext, subscribe: true })
-  _floorReg!: Record<string, FloorRegistryEntry>;
-
   @state() private _uiModeAvailable = true;
 
   @state() private _yamlMode = false;
@@ -263,14 +251,11 @@ export default class HaAutomationActionRow extends LitElement {
           `}
       <h3 slot="header">
         ${capitalizeFirstLetter(
-          describeAction(
-            this.hass,
-            this._entityReg,
-            this._labelReg,
-            this._floorReg,
-            this.action
-          )
+          describeAction(this.hass, this._entityReg, this.action)
         )}
+        ${type === "service" && "target" in this.action
+          ? this._renderTargets((this.action as ServiceAction).target)
+          : nothing}
       </h3>
 
       <slot name="icons" slot="icons"></slot>
@@ -556,6 +541,14 @@ export default class HaAutomationActionRow extends LitElement {
     `;
   }
 
+  private _renderTargets = memoizeOne(
+    (target?: HassServiceTarget) =>
+      html`<ha-automation-row-targets
+        .hass=${this.hass}
+        .target=${target}
+      ></ha-automation-row-targets>`
+  );
+
   private _onValueChange(event: CustomEvent) {
     // reload sidebar if sort, deleted,... happend
     if (this._selected && this.optionsInSidebar) {
@@ -668,15 +661,7 @@ export default class HaAutomationActionRow extends LitElement {
       ),
       inputType: "string",
       placeholder: capitalizeFirstLetter(
-        describeAction(
-          this.hass,
-          this._entityReg,
-          this._labelReg,
-          this._floorReg,
-          this.action,
-          undefined,
-          true
-        )
+        describeAction(this.hass, this._entityReg, this.action, undefined, true)
       ),
       defaultValue: this.action.alias,
       confirmText: this.hass.localize("ui.common.submit"),
