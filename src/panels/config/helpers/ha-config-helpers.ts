@@ -461,7 +461,7 @@ export class HaConfigHelpers extends SubscribeMixin(LitElement) {
                     },
                   ]
                 : []),
-              ...(helper.editable && helper.entity
+              ...(helper.entity_id
                 ? [
                     {
                       divider: true,
