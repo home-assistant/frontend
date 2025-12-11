@@ -10,6 +10,7 @@ import { styleMap } from "lit/directives/style-map";
 import memoizeOne from "memoize-one";
 import { getGraphColorByIndex } from "../../common/color/colors";
 import { isComponentLoaded } from "../../common/config/is_component_loaded";
+import { fireEvent } from "../../common/dom/fire_event";
 
 import { formatDateTimeWithSeconds } from "../../common/datetime/format_date_time";
 import {
@@ -179,6 +180,8 @@ export class StatisticsChart extends LitElement {
         @dataset-hidden=${this._datasetHidden}
         @dataset-unhidden=${this._datasetUnhidden}
         .expandLegend=${this.expandLegend}
+        .externalHiddenState=${this.clickForMoreInfo}
+        @chart-legend-click=${this._handleLegendClick}
       ></ha-chart-base>
     `;
   }
@@ -197,6 +200,10 @@ export class StatisticsChart extends LitElement {
     }
     this._hiddenStats.delete(ev.detail.id);
     this.requestUpdate("_hiddenStats");
+  }
+
+  private _handleLegendClick(ev: CustomEvent) {
+    fireEvent(this, "hass-more-info", { entityId: ev.detail.id });
   }
 
   private _renderTooltip = (params: any) => {

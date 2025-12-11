@@ -74,6 +74,9 @@ export class HaChartBase extends LitElement {
   @consume({ context: themesContext, subscribe: true })
   _themes!: Themes;
 
+  @property({ attribute: "external-hidden-state", type: Boolean })
+  public externalHiddenState = false;
+
   @state() private _isZoomed = false;
 
   @state() private _zoomRatio = 1;
@@ -966,6 +969,10 @@ export class HaChartBase extends LitElement {
       return;
     }
     const id = ev.currentTarget?.id;
+    if (this.externalHiddenState) {
+      fireEvent(this, "chart-legend-click", { id });
+      return;
+    }
     if (this._hiddenDatasets.has(id)) {
       this._getAllIdsFromLegend(this.options, id).forEach((i) =>
         this._hiddenDatasets.delete(i)
@@ -1143,6 +1150,7 @@ declare global {
     "dataset-hidden": { id: string };
     "dataset-unhidden": { id: string };
     "chart-click": ECElementEvent;
+    "chart-legend-click": { id: string };
     "chart-zoom": {
       start: number;
       end: number;
