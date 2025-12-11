@@ -9,6 +9,7 @@ import {
   mdiPencil,
   mdiPlusCircle,
   mdiRestore,
+  mdiShapeOutline,
 } from "@mdi/js";
 import type { HassEntity } from "home-assistant-js-websocket";
 import type { CSSResultGroup, PropertyValues, TemplateResult } from "lit";
@@ -693,6 +694,22 @@ export class HaConfigDevicePage extends LitElement {
           .label=${this.hass.localize("ui.common.menu")}
           .path=${mdiDotsVertical}
         ></ha-icon-button>
+
+        <ha-md-menu-item
+          type="link"
+          href=${`/config/entities?historyBack=1&device=${this.deviceId}`}
+        >
+          <ha-svg-icon .path=${mdiShapeOutline} slot="start"></ha-svg-icon>
+          <div slot="headline">
+            ${this.hass.localize(
+              `ui.panel.config.integrations.config_entry.entities`,
+              { count: entities.length }
+            )}
+          </div>
+          <ha-icon-next slot="end"></ha-icon-next>
+        </ha-md-menu-item>
+
+        <ha-md-divider role="separator" tabindex="-1"></ha-md-divider>
 
         <ha-md-menu-item .clickAction=${this._resetEntityIds}>
           <ha-svg-icon slot="start" .path=${mdiRestore}></ha-svg-icon>
