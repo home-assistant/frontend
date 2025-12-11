@@ -365,7 +365,7 @@ export class HaAreaPicker extends LitElement {
       this.placeholder ?? this.hass.localize("ui.components.area-picker.area");
     const valueRenderer = this._computeValueRenderer(this.hass.areas);
 
-    let showLabel;
+    let showLabel = this.showLabel;
     if (this.value) {
       const area_id = this.value;
       const area = this.hass.areas[area_id];
