@@ -184,17 +184,11 @@ export class StatisticsChart extends LitElement {
   }
 
   private _datasetHidden(ev: CustomEvent) {
-    if (!this._legendData) {
-      return;
-    }
     this._hiddenStats.add(ev.detail.id);
     this.requestUpdate("_hiddenStats");
   }
 
   private _datasetUnhidden(ev: CustomEvent) {
-    if (!this._legendData) {
-      return;
-    }
     this._hiddenStats.delete(ev.detail.id);
     this.requestUpdate("_hiddenStats");
   }
@@ -541,10 +535,17 @@ export class StatisticsChart extends LitElement {
           if (band && this.chartType === "line") {
             series.stack = `band-${statistic_id}`;
             series.stackStrategy = "all";
-            if (drawBands && type === bandTop) {
-              (series as LineSeriesOption).areaStyle = {
-                color: color + "3F",
-              };
+            if (this._hiddenStats.has(`${statistic_id}-${bandBottom}`)) {
+              // changing the stackOrder forces echarts to render the stacked series that are not hidden #28472
+              series.stackOrder = "seriesDesc";
+              (series as LineSeriesOption).areaStyle = undefined;
+            } else {
+              series.stackOrder = "seriesAsc";
+              if (drawBands && type === bandTop) {
+                (series as LineSeriesOption).areaStyle = {
+                  color: color + "3F",
+                };
+              }
             }
           }
           if (!this.hideLegend) {
@@ -588,7 +589,8 @@ export class StatisticsChart extends LitElement {
           } else if (
             type === bandTop &&
             this.chartType === "line" &&
-            drawBands
+            drawBands &&
+            !this._hiddenStats.has(`${statistic_id}-${bandBottom}`)
           ) {
             const top = stat[bandTop] || 0;
             val.push(Math.abs(top - (stat[bandBottom] || 0)));
