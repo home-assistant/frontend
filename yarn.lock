@@ -9353,7 +9353,7 @@ __metadata:
     ts-lit-plugin: "npm:2.0.2"
     typescript: "npm:5.9.3"
     typescript-eslint: "npm:8.49.0"
-    ua-parser-js: "npm:2.0.6"
+    ua-parser-js: "npm:2.0.7"
     vite-tsconfig-paths: "npm:5.1.4"
     vitest: "npm:4.0.15"
     vue: "npm:2.7.16"
@@ -14375,16 +14375,16 @@ __metadata:
   languageName: node
   linkType: hard
 
-"ua-parser-js@npm:2.0.6":
-  version: 2.0.6
-  resolution: "ua-parser-js@npm:2.0.6"
+"ua-parser-js@npm:2.0.7":
+  version: 2.0.7
+  resolution: "ua-parser-js@npm:2.0.7"
   dependencies:
     detect-europe-js: "npm:^0.1.2"
     is-standalone-pwa: "npm:^0.1.1"
     ua-is-frozen: "npm:^0.1.2"
   bin:
     ua-parser-js: script/cli.js
-  checksum: 10/b0049d3b272979049c7df6af2ec2ce032e4351316b10c33699f6e3f0bec701336f67530cc3ccb363c554b1bb5047b75d2f46575699afacd6e541762ca3861f4d
+  checksum: 10/bf94032b429447a988ec0761276b1bada2657af8af547ba0c07e756f56041f76c49f1638fa502a1cb3f66c46a3e7e33c1b930d13c3c2cd520703c85f0d829182
   languageName: node
   linkType: hard
 
