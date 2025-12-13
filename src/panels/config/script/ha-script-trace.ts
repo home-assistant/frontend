@@ -43,6 +43,7 @@ import { showAlertDialog } from "../../../dialogs/generic/show-dialog-box";
 import "../../../layouts/hass-subpage";
 import { haStyle } from "../../../resources/styles";
 import type { HomeAssistant, Route } from "../../../types";
+import { fileDownload } from "../../../util/file_download";
 
 @customElement("ha-script-trace")
 export class HaScriptTrace extends LitElement {
@@ -455,21 +456,21 @@ export class HaScriptTrace extends LitElement {
   }
 
   private _downloadTrace() {
-    const aEl = document.createElement("a");
-    aEl.download = `trace ${this._entityId} ${
-      this._trace!.timestamp.start
-    }.json`;
-    aEl.href = `data:application/json;charset=utf-8,${encodeURI(
-      JSON.stringify(
-        {
-          trace: this._trace,
-          logbookEntries: this._logbookEntries,
-        },
-        undefined,
-        2
-      )
-    )}`;
-    aEl.click();
+    const json = JSON.stringify(
+      {
+        trace: this._trace,
+        logbookEntries: this._logbookEntries,
+      },
+      undefined,
+      2
+    );
+    const blob = new Blob([json], { type: "application/json" });
+    const url = URL.createObjectURL(blob);
+    fileDownload(
+      url,
+      `trace ${this._entityId} ${this._trace!.timestamp.start}.json`
+    );
+    URL.revokeObjectURL(url);
   }
 
   private _importTrace() {
