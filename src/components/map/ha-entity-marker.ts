@@ -68,8 +68,8 @@ class HaEntityMarker extends LitElement {
       text-align: center;
       align-items: center;
       box-sizing: border-box;
-      width: 48px;
-      height: 48px;
+      width: var(--ha-marker-size, 48px);
+      height: var(--ha-marker-size, 48px);
       font-size: var(--ha-marker-font-size, var(--ha-font-size-xl));
       border-radius: var(--ha-marker-border-radius, 50%);
       border: 1px solid var(--ha-marker-color, var(--primary-color));
