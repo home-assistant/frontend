@@ -739,14 +739,22 @@ export class HaMap extends ReactiveElement {
       text-align: center;
     }
 
+    .leaflet-marker-icon {
+      margin-left: calc(var(--ha-marker-size, 48px) / 2 * -1) !important;
+      margin-top: calc(var(--ha-marker-size, 48px) / 2 * -1) !important;
+      width: var(--ha-marker-size, 48px) !important;
+      height: var(--ha-marker-size, 48px) !important;
+    }
+
     .marker-cluster div {
       background-clip: padding-box;
       background-color: var(--primary-color);
       border: 3px solid rgba(var(--rgb-primary-color), 0.2);
-      width: 32px;
-      height: 32px;
-      border-radius: var(--ha-border-radius-2xl);
+      width: calc(var(--ha-marker-size, 48px) * 0.667);
+      height: calc(var(--ha-marker-size, 48px) * 0.667);
+      border-radius: 50%;
       text-align: center;
+      align-content: center;
       color: var(--text-primary-color);
       font-size: var(--ha-font-size-m);
     }
