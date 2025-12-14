@@ -560,10 +560,11 @@ export class HaMap extends ReactiveElement {
           radius,
         });
 
+        const markerSize = this._getMarkerSize(computedStyles) / 2;
         const marker = new DecoratedMarker([latitude, longitude], circle, {
           icon: Leaflet.divIcon({
             html: iconHTML,
-            iconSize: [24, 24],
+            iconSize: [markerSize, markerSize],
             className,
           }),
           interactive: this.interactiveZones,
@@ -618,10 +619,11 @@ export class HaMap extends ReactiveElement {
       }
 
       // create marker with the icon
+      const markerSize = this._getMarkerSize(computedStyles);
       const marker = new DecoratedMarker([latitude, longitude], undefined, {
         icon: Leaflet.divIcon({
           html: entityMarker,
-          iconSize: [48, 48],
+          iconSize: [markerSize, markerSize],
           className: "",
         }),
         title: title,
@@ -655,6 +657,18 @@ export class HaMap extends ReactiveElement {
     }
 
     this._mapZones.forEach((marker) => map.addLayer(marker));
+  }
+
+  private _getMarkerSize(computedStyles: CSSStyleDeclaration) {
+    let markerSize = 48;
+    const markerSizeVarValue =
+      computedStyles.getPropertyValue("--ha-marker-size");
+    if (markerSizeVarValue) {
+      const markerSizeVarValueSplit: string[] = markerSizeVarValue.split("px");
+      if (markerSizeVarValueSplit && markerSizeVarValueSplit.length === 2)
+        markerSize = Number(markerSizeVarValueSplit[0]);
+    }
+    return markerSize;
   }
 
   private async _attachObserver(): Promise<void> {
@@ -739,11 +753,8 @@ export class HaMap extends ReactiveElement {
       text-align: center;
     }
 
-    .leaflet-marker-icon {
-      margin-left: calc(var(--ha-marker-size, 48px) / 2 * -1) !important;
-      margin-top: calc(var(--ha-marker-size, 48px) / 2 * -1) !important;
-      width: var(--ha-marker-size, 48px) !important;
-      height: var(--ha-marker-size, 48px) !important;
+    ha-icon {
+      --mdc-icon-size: calc(var(--ha-marker-size, 48px) / 2);
     }
 
     .marker-cluster div {
