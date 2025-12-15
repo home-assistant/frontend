@@ -190,10 +190,14 @@ export class HuiEntityCard extends LitElement implements LovelaceCard {
             ? html`
                 <span class="measurement"
                   >${this._config.unit ||
-                  (this._config.attribute ||
-                  stateObj.attributes.device_class === "duration"
+                  (stateObj.attributes.device_class === "duration"
                     ? ""
-                    : stateObj.attributes.unit_of_measurement)}</span
+                    : this._config.attribute
+                      ? this.hass.formatEntityAttributeUnit(
+                          stateObj,
+                          this._config.attribute
+                        )
+                      : stateObj.attributes.unit_of_measurement)}</span
                 >
               `
             : ""}
