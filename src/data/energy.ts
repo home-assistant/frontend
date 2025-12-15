@@ -1418,11 +1418,10 @@ export const formatPowerShort = (
     unitIndex++;
   }
 
-  // Format the value with the appropriate number of decimal places
-  const absValue = Math.abs(value);
   return (
     formatNumber(value, hass.locale, {
-      maximumFractionDigits: absValue < 10 ? 1 : 0,
+      // For watts, show no decimals. For kW and above, always show 3 decimals.
+      maximumFractionDigits: units[unitIndex] === "W" ? 0 : 3,
     }) +
     " " +
     units[unitIndex]
