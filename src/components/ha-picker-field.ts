@@ -80,7 +80,7 @@ export class HaPickerField extends LitElement {
 
     const headlineContent = hasValue
       ? this.valueRenderer
-        ? this.valueRenderer(this.value!)
+        ? this.valueRenderer(this.value ?? "")
         : html`<span slot="headline">${this.value}</span>`
       : this.placeholder
         ? html`<span slot="headline" class="placeholder">
