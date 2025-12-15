@@ -120,38 +120,46 @@ export class HaIconPicker extends LitElement {
 
   // Filter can take a significant chunk of frame (up to 3-5 ms)
   private _filterIcons = memoizeOne(
-    (filter: string, items: PickerComboBoxItem[]): PickerComboBoxItem[] => {
-      if (!filter) {
+    (
+      filter: string,
+      filteredItems: PickerComboBoxItem[],
+      allItems: PickerComboBoxItem[]
+    ): PickerComboBoxItem[] => {
+      const normalizedFilter = filter.toLowerCase().replace(/\s+/g, "-");
+      const items = allItems?.length ? allItems : filteredItems;
+
+      if (!normalizedFilter) {
         return items;
       }
 
-      const filteredItems: RankedIcon[] = [];
+      const rankedItems: RankedIcon[] = [];
       const addIcon = (item: PickerComboBoxItem, rank: number) =>
-        filteredItems.push({ item, rank });
+        rankedItems.push({ item, rank });
 
       // Filter and rank such that exact matches rank higher, and prefer icon name matches over keywords
       for (const item of items) {
-        const iconName = item.id.split(":")[1] || item.id;
+        const iconName = (item.id.split(":")[1] || item.id).toLowerCase();
         const parts = iconName.split("-");
         const keywords = item.search_labels
-          ? Object.values(item.search_labels).filter(
-              (v): v is string => v !== null
-            )
+          ? Object.values(item.search_labels)
+              .filter((v): v is string => v !== null)
+              .map((v) => v.toLowerCase())
           : [];
+        const id = item.id.toLowerCase();
 
-        if (parts.includes(filter)) {
+        if (parts.includes(normalizedFilter)) {
           addIcon(item, 1);
-        } else if (keywords.includes(filter)) {
+        } else if (keywords.includes(normalizedFilter)) {
           addIcon(item, 2);
-        } else if (item.id.includes(filter)) {
+        } else if (id.includes(normalizedFilter)) {
           addIcon(item, 3);
-        } else if (keywords.some((word) => word.includes(filter))) {
+        } else if (keywords.some((word) => word.includes(normalizedFilter))) {
           addIcon(item, 4);
         }
       }
 
       // Allow preview for custom icon not in list
-      if (filteredItems.length === 0) {
+      if (rankedItems.length === 0) {
         addIcon(
           {
             id: filter,
@@ -164,7 +172,7 @@ export class HaIconPicker extends LitElement {
         );
       }
 
-      return filteredItems
+      return rankedItems
         .sort((itemA, itemB) => itemA.rank - itemB.rank)
         .map((item) => item.item);
     }
