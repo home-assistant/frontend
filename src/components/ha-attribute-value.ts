@@ -2,7 +2,6 @@ import type { HassEntity } from "home-assistant-js-websocket";
 import { css, html, LitElement, nothing } from "lit";
 import { customElement, property } from "lit/decorators";
 import { until } from "lit/directives/until";
-import { formatNumber } from "../common/number/format_number";
 import type { HomeAssistant } from "../types";
 
 @customElement("ha-attribute-value")
@@ -20,10 +19,6 @@ class HaAttributeValue extends LitElement {
       return nothing;
     }
     const attributeValue = this.stateObj.attributes[this.attribute];
-
-    if (typeof attributeValue === "number" && this.hideUnit) {
-      return formatNumber(attributeValue, this.hass.locale);
-    }
 
     if (typeof attributeValue === "string") {
       // URL handling
@@ -56,7 +51,12 @@ class HaAttributeValue extends LitElement {
       return html`<pre>${until(yaml, "")}</pre>`;
     }
 
-    return this.hass.formatEntityAttributeValue(this.stateObj!, this.attribute);
+    return this.hass.formatEntityAttributeValue(
+      this.stateObj!,
+      this.attribute,
+      undefined,
+      this.hideUnit
+    );
   }
 
   static styles = css`
