@@ -133,8 +133,6 @@ export class HaIconPicker extends LitElement {
       }
 
       const rankedItems: RankedIcon[] = [];
-      const addIcon = (item: PickerComboBoxItem, rank: number) =>
-        rankedItems.push({ item, rank });
 
       // Filter and rank such that exact matches rank higher, and prefer icon name matches over keywords
       for (const item of items) {
@@ -148,28 +146,28 @@ export class HaIconPicker extends LitElement {
         const id = item.id.toLowerCase();
 
         if (parts.includes(normalizedFilter)) {
-          addIcon(item, 1);
+          rankedItems.push({ item, rank: 1 });
         } else if (keywords.includes(normalizedFilter)) {
-          addIcon(item, 2);
+          rankedItems.push({ item, rank: 2 });
         } else if (id.includes(normalizedFilter)) {
-          addIcon(item, 3);
+          rankedItems.push({ item, rank: 3 });
         } else if (keywords.some((word) => word.includes(normalizedFilter))) {
-          addIcon(item, 4);
+          rankedItems.push({ item, rank: 4 });
         }
       }
 
       // Allow preview for custom icon not in list
       if (rankedItems.length === 0) {
-        addIcon(
-          {
+        rankedItems.push({
+          item: {
             id: filter,
             primary: filter,
             icon: filter,
             search_labels: { keyword: filter },
             sorting_label: filter,
           },
-          0
-        );
+          rank: 0,
+        });
       }
 
       return rankedItems
