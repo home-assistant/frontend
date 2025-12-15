@@ -295,12 +295,20 @@ export function fillDataGapsAndRoundCaps(datasets: BarSeriesOption[]) {
   });
 }
 
+function getDatapointX(datapoint: NonNullable<LineSeriesOption["data"]>[0]) {
+  const item =
+    datapoint && typeof datapoint === "object" && "value" in datapoint
+      ? datapoint
+      : { value: datapoint };
+  return Number(item.value?.[0]);
+}
+
 export function fillLineGaps(datasets: LineSeriesOption[]) {
   const buckets = Array.from(
     new Set(
       datasets
         .map((dataset) =>
-          dataset.data!.map((datapoint) => Number(datapoint![0]))
+          dataset.data!.map((datapoint) => getDatapointX(datapoint))
         )
         .flat()
     )
@@ -313,7 +321,7 @@ export function fillLineGaps(datasets: LineSeriesOption[]) {
         datapoint && typeof datapoint === "object" && "value" in datapoint
           ? datapoint
           : ({ value: datapoint } as LineDataItemOption);
-      const x = Number(item.value?.[0]);
+      const x = getDatapointX(datapoint);
       if (!Number.isNaN(x)) {
         dataMap.set(x, item);
       }
