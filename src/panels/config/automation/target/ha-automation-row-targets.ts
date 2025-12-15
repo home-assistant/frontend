@@ -209,10 +209,7 @@ export class HaAutomationRowTargets extends LitElement {
 
   static styles = css`
     :host {
-      display: flex;
-      align-items: center;
-      flex-wrap: wrap;
-      gap: var(--ha-space-1);
+      display: contents;
       min-height: 32px;
     }
     .target-wrapper {
