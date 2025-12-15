@@ -53,13 +53,13 @@ export const computeAttributeValueDisplay = (
       let unit = DOMAIN_ATTRIBUTES_UNITS[domain]?.[attribute] as
         | string
         | undefined;
-  
+
       if (domain === "weather") {
         unit = getWeatherUnit(config, stateObj as WeatherEntity, attribute);
       } else if (TEMPERATURE_ATTRIBUTES.has(attribute)) {
         unit = config.unit_system.temperature;
       }
-  
+
       if (unit) {
         return `${formattedValue}${blankBeforeUnit(unit, locale)}${unit}`;
       }
