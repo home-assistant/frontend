@@ -225,7 +225,11 @@ export class HuiEntityEditor extends LitElement {
 
   static styles = css`
     ha-entity-picker {
+      display: block;
       margin-top: 8px;
+    }
+    :host([can-edit]) > ha-entity-picker {
+      margin-top: 0px;
     }
     .entity {
       display: flex;
