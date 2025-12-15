@@ -7159,6 +7159,7 @@
             "summaries": "Summaries",
             "areas": "Areas",
             "other_areas": "Other areas",
+            "devices": "Devices",
             "unamed_device": "Unnamed device",
             "others": "Others",
             "scenes": "Scenes",
@@ -7186,9 +7187,9 @@
             "media_players": "Media players",
             "other_media_players": "Other media players"
           },
-          "unassigned_devices": {
-            "unassigned_helpers": "Unassigned helpers",
-            "unassigned_entities": "Unassigned entities"
+          "other_devices": {
+            "helpers": "Helpers",
+            "entities": "Entities"
           }
         },
         "cards": {

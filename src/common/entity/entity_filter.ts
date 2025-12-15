@@ -15,6 +15,7 @@ export interface EntityFilter {
   label?: string | string[];
   entity_category?: EntityCategory | EntityCategory[];
   hidden_platform?: string | string[];
+  hidden_domains?: string | string[];
 }
 
 export type EntityFilterFunc = (entityId: string) => boolean;
@@ -38,6 +39,9 @@ export const generateEntityFilter = (
   const domains = filter.domain
     ? new Set(ensureArray(filter.domain))
     : undefined;
+  const hiddenDomains = filter.hidden_domains
+    ? new Set(ensureArray(filter.hidden_domains))
+    : undefined;
   const deviceClasses = filter.device_class
     ? new Set(ensureArray(filter.device_class))
     : undefined;
@@ -57,12 +61,16 @@ export const generateEntityFilter = (
     if (!stateObj) {
       return false;
     }
-    if (domains) {
+    if (domains || hiddenDomains) {
       const domain = computeDomain(entityId);
-      if (!domains.has(domain)) {
+      if (domains && !domains.has(domain)) {
+        return false;
+      }
+      if (hiddenDomains && hiddenDomains.has(domain)) {
         return false;
       }
     }
+
     if (deviceClasses) {
       const dc = stateObj.attributes.device_class || "none";
       if (!deviceClasses.has(dc)) {

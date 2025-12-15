@@ -1,3 +1,4 @@
+import { ASSIST_ENTITIES } from "../../../../../common/const";
 import type { EntityFilter } from "../../../../../common/entity/entity_filter";
 import type { LocalizeFunc } from "../../../../../common/translations/localize";
 import { climateEntityFilters } from "../../../../climate/strategies/climate-view-strategy";
@@ -35,8 +36,25 @@ export const HOME_SUMMARIES_FILTERS: Record<HomeSummary, EntityFilter[]> = {
         "script",
         "hassio",
         "backup",
+        "mobile_app",
         "zone",
         "person",
+      ],
+      hidden_domains: [
+        "ai_task",
+        "automation",
+        "configurator",
+        "device_tracker",
+        "event",
+        "geo_location",
+        "notify",
+        "persistent_notification",
+        "script",
+        "sun",
+        "tag",
+        "todo",
+        "zone",
+        ...ASSIST_ENTITIES,
       ],
     },
   ],

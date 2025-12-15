@@ -143,14 +143,18 @@ export class HomeUnassignedDevicesViewStrategy extends ReactiveElement {
       });
     }
 
+    // Allow between 2 and 3 columns (the max should be set to define the width of the header)
+    const maxColumns = clamp(sections.length, 2, 3);
+
     if (helpersEntities.length) {
       sections.push({
         type: "grid",
+        column_span: maxColumns,
         cards: [
           {
             type: "heading",
             heading: hass.localize(
-              "ui.panel.lovelace.strategy.unassigned_devices.unassigned_helpers"
+              "ui.panel.lovelace.strategy.other_devices.helpers"
             ),
           } satisfies HeadingCardConfig,
           ...helpersEntities.map((e) => ({
@@ -164,11 +168,12 @@ export class HomeUnassignedDevicesViewStrategy extends ReactiveElement {
     if (otherEntities.length) {
       sections.push({
         type: "grid",
+        column_span: maxColumns,
         cards: [
           {
             type: "heading",
             heading: hass.localize(
-              "ui.panel.lovelace.strategy.unassigned_devices.unassigned_entities"
+              "ui.panel.lovelace.strategy.other_devices.entities"
             ),
           } satisfies HeadingCardConfig,
           ...otherEntities.map((e) => ({
@@ -178,9 +183,6 @@ export class HomeUnassignedDevicesViewStrategy extends ReactiveElement {
         ],
       });
     }
-
-    // Allow between 2 and 3 columns (the max should be set to define the width of the header)
-    const maxColumns = clamp(sections.length, 2, 3);
 
     // Take the full width if there is only one section to avoid narrow header on desktop
     if (sections.length === 1) {
