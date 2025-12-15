@@ -128,7 +128,7 @@ export class HaIconPicker extends LitElement {
       const normalizedFilter = filter.toLowerCase().replace(/\s+/g, "-");
       const items = allItems?.length ? allItems : filteredItems;
 
-      if (!normalizedFilter) {
+      if (!normalizedFilter.length) {
         return items;
       }
 
