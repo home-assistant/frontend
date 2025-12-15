@@ -660,15 +660,9 @@ export class HaMap extends ReactiveElement {
   }
 
   private _getMarkerSize(computedStyles: CSSStyleDeclaration) {
-    let markerSize = 48;
-    const markerSizeVarValue =
-      computedStyles.getPropertyValue("--ha-marker-size");
-    if (markerSizeVarValue) {
-      const markerSizeVarValueSplit: string[] = markerSizeVarValue.split("px");
-      if (markerSizeVarValueSplit && markerSizeVarValueSplit.length === 2)
-        markerSize = Number(markerSizeVarValueSplit[0]);
-    }
-    return markerSize;
+    const markerSizeVarValue = computedStyles.getPropertyValue("--ha-marker-size");
+    const parsed = parseFloat(markerSizeVarValue);
+    return Number.isNaN(parsed) ? 48 : parsed;
   }
 
   private async _attachObserver(): Promise<void> {
