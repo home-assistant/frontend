@@ -26,13 +26,3 @@ export interface EntityHeadingBadgeConfig extends LovelaceHeadingBadgeConfig {
   hold_action?: ActionConfig;
   double_tap_action?: ActionConfig;
 }
-
-export interface ButtonHeadingBadgeConfig extends LovelaceHeadingBadgeConfig {
-  type: "button";
-  content?: string;
-  icon?: string;
-  color?: string;
-  tap_action?: ActionConfig;
-  hold_action?: ActionConfig;
-  double_tap_action?: ActionConfig;
-}
