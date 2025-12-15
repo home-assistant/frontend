@@ -226,12 +226,12 @@ export class StorageBreakdownChart extends LitElement {
 
     .heading {
       font-weight: 500;
-      font-size: 14px;
+      font-size: var(--ha-font-size-m);
       color: var(--primary-text-color);
     }
 
     .description {
-      font-size: 12px;
+      font-size: var(--ha-font-size-s);
       color: var(--secondary-text-color);
     }
 
