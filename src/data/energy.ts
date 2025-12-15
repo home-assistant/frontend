@@ -1397,3 +1397,32 @@ export const getPowerFromState = (stateObj: HassEntity): number | undefined => {
       return value;
   }
 };
+
+/**
+ * Format power value in watts (W) to a short string with the appropriate unit
+ * @param hass - The HomeAssistant instance
+ * @param powerWatts - The power value in watts (W)
+ * @returns A string with the formatted power value and unit
+ */
+export const formatPowerShort = (
+  hass: HomeAssistant,
+  powerWatts: number
+): string => {
+  const units = ["W", "kW", "MW", "GW", "TW"];
+  let unitIndex = 0;
+  let value = powerWatts;
+
+  while (Math.abs(value) >= 1000 && unitIndex < units.length - 1) {
+    value /= 1000;
+    unitIndex++;
+  }
+
+  const absValue = Math.abs(value);
+  return (
+    formatNumber(value, hass.locale, {
+      maximumFractionDigits: absValue < 10 ? 1 : 0,
+    }) +
+    " " +
+    units[unitIndex]
+  );
+};

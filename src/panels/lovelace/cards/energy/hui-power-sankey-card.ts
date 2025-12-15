@@ -7,6 +7,7 @@ import "../../../../components/ha-card";
 import "../../../../components/ha-svg-icon";
 import type { EnergyData, EnergyPreferences } from "../../../../data/energy";
 import {
+  formatPowerShort,
   getEnergyDataCollection,
   getPowerFromState,
 } from "../../../../data/energy";
@@ -17,7 +18,6 @@ import type { PowerSankeyCardConfig } from "../types";
 import "../../../../components/chart/ha-sankey-chart";
 import type { Link, Node } from "../../../../components/chart/ha-sankey-chart";
 import { getGraphColorByIndex } from "../../../../common/color/colors";
-import { formatNumber } from "../../../../common/number/format_number";
 import { getEntityContext } from "../../../../common/entity/context/get_entity_context";
 import { MobileAwareMixin } from "../../../../mixins/mobile-aware-mixin";
 
@@ -470,17 +470,10 @@ class HuiPowerSankeyCard
     `;
   }
 
-  private _valueFormatter = (value: number) => {
-    const absValue = Math.abs(value);
-    const options =
-      absValue < 10
-        ? { maximumFractionDigits: 1 }
-        : { maximumFractionDigits: 0 };
-
-    return `<div style="direction:ltr; display: inline;">
-      ${formatNumber(value, this.hass.locale, options)}
-      W</div>`;
-  };
+  private _valueFormatter = (value: number) =>
+    `<div style="direction:ltr; display: inline;">
+      ${formatPowerShort(this.hass, value)}
+    </div>`;
 
   /**
    * Compute real-time power data from current entity states.
