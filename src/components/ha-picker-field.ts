@@ -15,6 +15,7 @@ import type { HomeAssistant } from "../types";
 import "./ha-combo-box-item";
 import type { HaComboBoxItem } from "./ha-combo-box-item";
 import "./ha-icon-button";
+import "./ha-icon";
 
 declare global {
   interface HASSDomEvents {
@@ -22,7 +23,7 @@ declare global {
   }
 }
 
-export type PickerValueRenderer = (value: string) => TemplateResult<1>;
+export type PickerValueRenderer = (value?: string) => TemplateResult<1>;
 
 @customElement("ha-picker-field")
 export class HaPickerField extends LitElement {
@@ -31,6 +32,8 @@ export class HaPickerField extends LitElement {
   @property({ type: Boolean }) public required = false;
 
   @property() public value?: string;
+
+  @property() public icon?: string;
 
   @property() public helper?: string;
 
@@ -67,21 +70,20 @@ export class HaPickerField extends LitElement {
   protected render() {
     const showClearIcon =
       !!this.value && !this.required && !this.disabled && !this.hideClearIcon;
-    const placeholder = this.showLabel
-      ? html`<span slot="overline">${this.placeholder}</span>`
-      : nothing;
 
     return html`
       <ha-combo-box-item .disabled=${this.disabled} type="button" compact>
-        ${this.value
-          ? this.valueRenderer
-            ? html`${placeholder}${this.valueRenderer(this.value)}`
-            : html`${placeholder}<span slot="headline">${this.value}</span>`
-          : html`
-              <span slot="headline" class="placeholder">
-                ${this.placeholder}
-              </span>
-            `}
+        ${this.icon
+          ? html`<ha-icon slot="start" .icon=${this.icon}></ha-icon>`
+          : nothing}
+        ${this.showLabel
+          ? this.value?.length
+            ? html`<span slot="overline">${this.placeholder}</span>`
+            : html`<span slot="headline">${this.placeholder}</span>`
+          : nothing}
+        ${this.valueRenderer
+          ? this.valueRenderer(this.value)
+          : html`<span slot="headline">${this.value}</span>`}
         ${this.unknown
           ? html`<div slot="supporting-text" class="unknown">
               ${this.unknownItemText ||

@@ -71,11 +71,6 @@ const rowRenderer: RenderItemFunction<PickerComboBoxItem> = (item) => html`
   </ha-combo-box-item>
 `;
 
-const valueRenderer = (value: string) => html`
-  <ha-icon .icon=${value} slot="start"></ha-icon>
-  <span slot="headline">${value}</span>
-`;
-
 @customElement("ha-icon-picker")
 export class HaIconPicker extends LitElement {
   @property({ attribute: false }) public hass?: HomeAssistant;
@@ -100,18 +95,18 @@ export class HaIconPicker extends LitElement {
     return html`
       <ha-generic-picker
         .hass=${this.hass}
-        .value=${this._value}
         allow-custom-value
-        .getItems=${this._getItems}
-        .placeholder=${this.label}
         show-label
+        .getItems=${this._getItems}
         .helper=${this.helper}
         .disabled=${this.disabled}
         .required=${this.required}
         .errorMessage=${this.errorMessage}
         .invalid=${this.invalid}
         .rowRenderer=${rowRenderer}
-        .valueRenderer=${valueRenderer}
+        .icon=${this._icon}
+        .placeholder=${this.label}
+        .value=${this._value}
         .searchFn=${this._filterIcons}
         .notFoundLabel=${this.hass?.localize(
           "ui.components.icon-picker.no_match"
@@ -220,6 +215,10 @@ export class HaIconPicker extends LitElement {
         composed: false,
       }
     );
+  }
+
+  private get _icon() {
+    return this.value?.length ? this.value : this.placeholder;
   }
 
   private get _value() {

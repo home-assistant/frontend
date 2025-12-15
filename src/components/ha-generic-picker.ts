@@ -34,22 +34,24 @@ export class HaGenericPicker extends LitElement {
   @property({ type: Boolean, attribute: "allow-custom-value" })
   public allowCustomValue;
 
-  @property() public label?: string;
+  @property({ attribute: "show-label", type: Boolean })
+  public showLabel = false;
 
-  @property() public value?: string;
+  @property() public icon?: string;
+
+  @property() public label?: string;
 
   @property() public helper?: string;
 
   @property() public placeholder?: string;
+
+  @property() public value?: string;
 
   @property({ type: String, attribute: "search-label" })
   public searchLabel?: string;
 
   @property({ attribute: "hide-clear-icon", type: Boolean })
   public hideClearIcon = false;
-
-  @property({ attribute: "show-label", type: Boolean })
-  public showLabel = false;
 
   /** To prevent lags, getItems needs to be memoized */
   @property({ attribute: false })
@@ -176,15 +178,16 @@ export class HaGenericPicker extends LitElement {
                   aria-label=${ifDefined(this.label)}
                   @click=${this.open}
                   @clear=${this._clear}
-                  .placeholder=${this.placeholder}
+                  .icon=${this.icon}
                   .showLabel=${this.showLabel}
+                  .placeholder=${this.placeholder}
                   .value=${this.value}
+                  .valueRenderer=${this.valueRenderer}
                   .required=${this.required}
                   .disabled=${this.disabled}
                   .errorMessage=${this.errorMessage}
                   .invalid=${this.invalid}
                   .hideClearIcon=${this.hideClearIcon}
-                  .valueRenderer=${this.valueRenderer}
                 >
                 </ha-picker-field>`}
           </slot>
