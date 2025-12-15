@@ -19,10 +19,13 @@ export const withViewTransition = (
     return Promise.resolve();
   }
 
+  let callbackInvoked = false;
+
   try {
     // View Transitions require DOM updates to happen synchronously within
     // the callback. Execute the callback immediately (synchronously).
     const transition = document.startViewTransition(() => {
+      callbackInvoked = true;
       callback(true);
     });
     return transition.finished;
@@ -32,9 +35,11 @@ export const withViewTransition = (
       "View transition failed, falling back to direct execution.",
       err
     );
-    // If startViewTransition throws synchronously, the callback hasn't run yet.
-    // Fall back to executing without a transition.
-    callback(false);
-    return Promise.resolve();
+    // Make sure the callback is invoked exactly once.
+    if (!callbackInvoked) {
+      callback(false);
+      return Promise.resolve();
+    }
+    return Promise.reject(err);
   }
 };
