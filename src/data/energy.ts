@@ -1382,6 +1382,8 @@ export const getPowerFromState = (stateObj: HassEntity): number | undefined => {
   switch (unit) {
     case "W":
       return value;
+    case "kW":
+      return value * 1000;
     case "mW":
       return value / 1000;
     case "MW":
