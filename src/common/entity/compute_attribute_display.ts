@@ -48,16 +48,7 @@ export const computeAttributeValueDisplay = (
       ? formatter(attributeValue, locale)
       : formatNumber(attributeValue, locale);
 
-    let unit = DOMAIN_ATTRIBUTES_UNITS[domain]?.[attribute] as
-      | string
-      | undefined;
-
-    if (domain === "weather") {
-      unit = getWeatherUnit(config, stateObj as WeatherEntity, attribute);
-    } else if (TEMPERATURE_ATTRIBUTES.has(attribute)) {
-      unit = config.unit_system.temperature;
-    }
-
+    const unit = computeAttributeUnitDisplay(stateObj, config, attribute);
     if (unit) {
       return `${formattedValue}${blankBeforeUnit(unit, locale)}${unit}`;
     }
@@ -134,6 +125,21 @@ export const computeAttributeValueDisplay = (
     ) ||
     attributeValue
   );
+};
+
+export const computeAttributeUnitDisplay = (
+  stateObj: HassEntity,
+  config: HassConfig,
+  attribute: string
+): string | undefined => {
+  const domain = computeStateDomain(stateObj);
+  let unit = DOMAIN_ATTRIBUTES_UNITS[domain]?.[attribute] as string | undefined;
+  if (domain === "weather") {
+    unit = getWeatherUnit(config, stateObj as WeatherEntity, attribute);
+  } else if (TEMPERATURE_ATTRIBUTES.has(attribute)) {
+    unit = config.unit_system.temperature;
+  }
+  return unit;
 };
 
 export const computeAttributeNameDisplay = (
