@@ -659,8 +659,9 @@ export class HaMap extends ReactiveElement {
     this._mapZones.forEach((marker) => map.addLayer(marker));
   }
 
-  private _getMarkerSize(computedStyles: CSSStyleDeclaration) {
-    const markerSizeVarValue = computedStyles.getPropertyValue("--ha-marker-size");
+  private _getMarkerSize(computedStyles: CSSStyleDeclaration): number {
+    const markerSizeVarValue =
+      computedStyles.getPropertyValue("--ha-marker-size");
     const parsed = parseFloat(markerSizeVarValue);
     return Number.isNaN(parsed) ? 48 : parsed;
   }
