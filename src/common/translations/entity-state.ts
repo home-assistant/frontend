@@ -17,6 +17,10 @@ export type FormatEntityAttributeValueFunc = (
   attribute: string,
   value?: any
 ) => string;
+export type FormatEntityAttributeUnitFunc = (
+  stateObj: HassEntity,
+  attribute: string
+) => string | undefined;
 export type FormatEntityAttributeNameFunc = (
   stateObj: HassEntity,
   attribute: string
@@ -42,13 +46,17 @@ export const computeFormatFunctions = async (
 ): Promise<{
   formatEntityState: FormatEntityStateFunc;
   formatEntityAttributeValue: FormatEntityAttributeValueFunc;
+  formatEntityAttributeUnit: FormatEntityAttributeUnitFunc;
   formatEntityAttributeName: FormatEntityAttributeNameFunc;
   formatEntityName: FormatEntityNameFunc;
 }> => {
   const { computeStateDisplay } =
     await import("../entity/compute_state_display");
-  const { computeAttributeValueDisplay, computeAttributeNameDisplay } =
-    await import("../entity/compute_attribute_display");
+  const {
+    computeAttributeValueDisplay,
+    computeAttributeUnitDisplay,
+    computeAttributeNameDisplay,
+  } = await import("../entity/compute_attribute_display");
 
   return {
     formatEntityState: (stateObj, state) =>
@@ -71,6 +79,8 @@ export const computeFormatFunctions = async (
         attribute,
         value
       ),
+    formatEntityAttributeUnit: (stateObj, attribute) =>
+      computeAttributeUnitDisplay(stateObj, config, attribute),
     formatEntityAttributeName: (stateObj, attribute) =>
       computeAttributeNameDisplay(localize, stateObj, entities, attribute),
     formatEntityName: (stateObj, name, options) =>
