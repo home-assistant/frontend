@@ -103,11 +103,11 @@ export class HaIconPicker extends LitElement {
         .value=${this._value}
         allow-custom-value
         .getItems=${this._getItems}
-        .label=${this.label}
+        .placeholder=${this.label}
+        show-label
         .helper=${this.helper}
         .disabled=${this.disabled}
         .required=${this.required}
-        .placeholder=${this.placeholder}
         .errorMessage=${this.errorMessage}
         .invalid=${this.invalid}
         .rowRenderer=${rowRenderer}
