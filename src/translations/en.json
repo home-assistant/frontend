@@ -7153,7 +7153,7 @@
           "home": {
             "summary_list": {
               "media_players": "Media players",
-              "unassigned_devices": "Unassigned devices"
+              "other_devices": "Other devices"
             },
             "welcome_user": "Welcome {user}",
             "summaries": "Summaries",

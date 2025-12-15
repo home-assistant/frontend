@@ -14,29 +14,29 @@ import { isHelperDomain } from "../../../config/helpers/const";
 import type { HeadingCardConfig } from "../../cards/types";
 import { HOME_SUMMARIES_FILTERS } from "./helpers/home-summaries";
 
-export interface HomeUnassignedDevicesViewStrategyConfig {
-  type: "home-unassigned-devices";
+export interface HomeOtherDevicesViewStrategyConfig {
+  type: "home-other-devices";
 }
 
-@customElement("home-unassigned-devices-view-strategy")
-export class HomeUnassignedDevicesViewStrategy extends ReactiveElement {
+@customElement("home-other-devices-view-strategy")
+export class HomeOtherDevicesViewStrategy extends ReactiveElement {
   static async generate(
-    _config: HomeUnassignedDevicesViewStrategyConfig,
+    _config: HomeOtherDevicesViewStrategyConfig,
     hass: HomeAssistant
   ): Promise<LovelaceViewConfig> {
     const allEntities = Object.keys(hass.states);
 
-    const unassignedFilters = HOME_SUMMARIES_FILTERS.unassigned_devices.map(
+    const otherDevicesFilters = HOME_SUMMARIES_FILTERS.other_devices.map(
       (filter) => generateEntityFilter(hass, filter)
     );
 
-    const unassignedEntities = findEntities(allEntities, unassignedFilters);
+    const otherDevicesEntities = findEntities(allEntities, otherDevicesFilters);
 
     const sections: LovelaceSectionRawConfig[] = [];
 
     const entitiesByDevice: Record<string, string[]> = {};
     const entitiesWithoutDevices: string[] = [];
-    for (const entityId of unassignedEntities) {
+    for (const entityId of otherDevicesEntities) {
       const stateObj = hass.states[entityId];
       if (!stateObj) continue;
       const { device } = getEntityContext(
@@ -202,6 +202,6 @@ export class HomeUnassignedDevicesViewStrategy extends ReactiveElement {
 
 declare global {
   interface HTMLElementTagNameMap {
-    "home-unassigned-devices-view-strategy": HomeUnassignedDevicesViewStrategy;
+    "home-other-devices-view-strategy": HomeOtherDevicesViewStrategy;
   }
 }

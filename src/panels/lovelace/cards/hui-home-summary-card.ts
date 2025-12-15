@@ -35,7 +35,7 @@ const COLORS: Record<HomeSummary, string> = {
   climate: "deep-orange",
   security: "blue-grey",
   media_players: "blue",
-  unassigned_devices: "grey",
+  other_devices: "grey",
 };
 
 @customElement("hui-home-summary-card")

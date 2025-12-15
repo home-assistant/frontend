@@ -81,11 +81,11 @@ export class HomeOverviewViewStrategy extends ReactiveElement {
       media_query: "(min-width: 871px)",
     };
 
-    const unassignedFilters = HOME_SUMMARIES_FILTERS.unassigned_devices.map(
+    const otherDevicesFilters = HOME_SUMMARIES_FILTERS.other_devices.map(
       (filter) => generateEntityFilter(hass, filter)
     );
 
-    const entitiesWithoutAreas = findEntities(allEntities, unassignedFilters);
+    const entitiesWithoutAreas = findEntities(allEntities, otherDevicesFilters);
 
     const floorsSections: LovelaceSectionConfig[] = [];
     for (const floorStructure of home.floors) {
@@ -134,7 +134,7 @@ export class HomeOverviewViewStrategy extends ReactiveElement {
           hide_state: true,
           tap_action: {
             action: "navigate",
-            navigation_path: "unassigned-devices",
+            navigation_path: "other-devices",
           },
           grid_options: {
             rows: 2,
@@ -262,11 +262,11 @@ export class HomeOverviewViewStrategy extends ReactiveElement {
         } satisfies HomeSummaryCard),
       {
         type: "home-summary",
-        summary: "unassigned_devices",
+        summary: "other_devices",
         vertical: true,
         tap_action: {
           action: "navigate",
-          navigation_path: "unassigned-devices",
+          navigation_path: "other-devices",
         },
         grid_options: {
           rows: 2,

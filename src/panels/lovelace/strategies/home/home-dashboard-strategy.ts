@@ -71,14 +71,14 @@ export class HomeDashboardStrategy extends ReactiveElement {
       icon: HOME_SUMMARIES_ICONS.media_players,
     } satisfies LovelaceViewRawConfig;
 
-    const unassignedDevicesView = {
-      title: getSummaryLabel(hass.localize, "unassigned_devices"),
-      path: "unassigned-devices",
+    const otherDevicesView = {
+      title: getSummaryLabel(hass.localize, "other_devices"),
+      path: "other-devices",
       subview: true,
       strategy: {
-        type: "home-unassigned-devices",
+        type: "home-other-devices",
       },
-      icon: HOME_SUMMARIES_ICONS.unassigned_devices,
+      icon: HOME_SUMMARIES_ICONS.other_devices,
     } satisfies LovelaceViewRawConfig;
 
     return {
@@ -93,7 +93,7 @@ export class HomeDashboardStrategy extends ReactiveElement {
         },
         ...areaViews,
         mediaPlayersView,
-        unassignedDevicesView,
+        otherDevicesView,
       ],
     };
   }
