@@ -93,10 +93,9 @@ export class HaAutomationRowTargets extends LitElement {
       }, []);
 
       return targets.map(
-        ([targetType, targetId], index) =>
+        ([targetType, targetId]) =>
           html`<span class="target-wrapper">
             ${this._renderTarget(targetType, targetId)}
-            ${index < targets.length - 1 ? html`<span>,</span>` : nothing}
           </span>`
       );
     }
