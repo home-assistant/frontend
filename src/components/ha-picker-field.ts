@@ -68,22 +68,32 @@ export class HaPickerField extends LitElement {
   }
 
   protected render() {
+    const hasValue = !!this.value?.length;
+
     const showClearIcon =
       !!this.value && !this.required && !this.disabled && !this.hideClearIcon;
+
+    const overlineLabel =
+      this.showLabel && hasValue && this.placeholder
+        ? html`<span slot="overline">${this.placeholder}</span>`
+        : nothing;
+
+    const headlineContent = hasValue
+      ? this.valueRenderer
+        ? this.valueRenderer(this.value!)
+        : html`<span slot="headline">${this.value}</span>`
+      : this.placeholder
+        ? html`<span slot="headline" class="placeholder">
+            ${this.placeholder}
+          </span>`
+        : nothing;
 
     return html`
       <ha-combo-box-item .disabled=${this.disabled} type="button" compact>
         ${this.icon
           ? html`<ha-icon slot="start" .icon=${this.icon}></ha-icon>`
           : nothing}
-        ${this.showLabel
-          ? this.value?.length
-            ? html`<span slot="overline">${this.placeholder}</span>`
-            : html`<span slot="headline">${this.placeholder}</span>`
-          : nothing}
-        ${this.valueRenderer
-          ? this.valueRenderer(this.value ?? "")
-          : html`<span slot="headline">${this.value}</span>`}
+        ${overlineLabel}${headlineContent}
         ${this.unknown
           ? html`<div slot="supporting-text" class="unknown">
               ${this.unknownItemText ||
