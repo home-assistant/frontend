@@ -31,19 +31,14 @@ export const withViewTransition = (
     return runCallback(false);
   }
 
-  let invoked = false;
-
   try {
-    const transition = document.startViewTransition(() => {
-      invoked = true;
-      return runCallback(true);
-    });
+    const transition = document.startViewTransition(() => runCallback(true));
     return transition.finished;
   } catch (err) {
-    if (!invoked) {
-      return runCallback(false);
-    }
-    // Callback already ran; surface the original error.
-    return Promise.reject(err);
+    // eslint-disable-next-line no-console
+    console.warn("View transition failed", err);
+    // If startViewTransition throws synchronously, the callback hasn't run yet.
+    // Fall back to executing without a transition.
+    return runCallback(false);
   }
 };
