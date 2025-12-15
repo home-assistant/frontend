@@ -39,7 +39,6 @@ import {
 } from "../../common/url/search-params";
 import { debounce } from "../../common/util/debounce";
 import { afterNextRender } from "../../common/util/render-status";
-import { withViewTransition } from "../../common/util/view-transition";
 import "../../components/ha-button";
 import "../../components/ha-button-menu";
 import "../../components/ha-icon";
@@ -100,7 +99,6 @@ import "./views/hui-view";
 import type { HUIView } from "./views/hui-view";
 import "./views/hui-view-background";
 import "./views/hui-view-container";
-import { UndoRedoController } from "../../common/controllers/undo-redo-controller";
 
 interface ActionItem {
   icon: string;
