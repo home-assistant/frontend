@@ -260,19 +260,6 @@ export class HomeOverviewViewStrategy extends ReactiveElement {
             columns: 12,
           },
         } satisfies HomeSummaryCard),
-      {
-        type: "home-summary",
-        summary: "other_devices",
-        vertical: true,
-        tap_action: {
-          action: "navigate",
-          navigation_path: "other-devices",
-        },
-        grid_options: {
-          rows: 2,
-          columns: 4,
-        },
-      } satisfies HomeSummaryCard,
     ].filter(Boolean) as LovelaceCardConfig[];
 
     const forYouSection: LovelaceSectionConfig = {
