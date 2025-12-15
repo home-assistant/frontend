@@ -126,16 +126,16 @@ export class HaIconPicker extends LitElement {
       allItems: PickerComboBoxItem[]
     ): PickerComboBoxItem[] => {
       const normalizedFilter = filter.toLowerCase().replace(/\s+/g, "-");
-      const items = allItems?.length ? allItems : filteredItems;
+      const iconItems = allItems?.length ? allItems : filteredItems;
 
       if (!normalizedFilter.length) {
-        return items;
+        return iconItems;
       }
 
       const rankedItems: RankedIcon[] = [];
 
       // Filter and rank such that exact matches rank higher, and prefer icon name matches over keywords
-      for (const item of items) {
+      for (const item of iconItems) {
         const iconName = (item.id.split(":")[1] || item.id).toLowerCase();
         const parts = iconName.split("-");
         const keywords = item.search_labels
