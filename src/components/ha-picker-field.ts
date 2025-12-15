@@ -23,7 +23,7 @@ declare global {
   }
 }
 
-export type PickerValueRenderer = (value?: string) => TemplateResult<1>;
+export type PickerValueRenderer = (value: string) => TemplateResult<1>;
 
 @customElement("ha-picker-field")
 export class HaPickerField extends LitElement {
@@ -82,7 +82,7 @@ export class HaPickerField extends LitElement {
             : html`<span slot="headline">${this.placeholder}</span>`
           : nothing}
         ${this.valueRenderer
-          ? this.valueRenderer(this.value)
+          ? this.valueRenderer(this.value ?? "")
           : html`<span slot="headline">${this.value}</span>`}
         ${this.unknown
           ? html`<div slot="supporting-text" class="unknown">
