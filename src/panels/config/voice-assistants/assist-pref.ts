@@ -306,12 +306,12 @@ export class AssistPref extends LitElement {
     navigate(`/config/voice-assistants/debug/${id}`);
   }
 
-  private async _duplicatePipeline(ev) {
-    const id = ev.currentTarget.id as string;
+  private async _duplicatePipeline(ev: Event) {
+    const id = (ev.currentTarget as HTMLElement).id as string;
     const pipeline = this._pipelines.find((res) => res.id === id);
     if (!pipeline) {
       showAlertDialog(this, {
-        text: this.hass!.localize(
+        text: this.hass.localize(
           "ui.panel.config.voice_assistants.assistants.pipeline.duplicate.error_pipeline_not_found"
         ),
       });
@@ -321,7 +321,10 @@ export class AssistPref extends LitElement {
     const { id: _id, ...pipelineWithoutId } = pipeline;
     const newPipeline = {
       ...pipelineWithoutId,
-      name: `${pipeline.name} (Copy)`,
+      name: this.hass.localize(
+        "ui.panel.config.voice_assistants.assistants.pipeline.duplicate.name",
+        { name: pipeline.name }
+      ),
     };
 
     this._openDialog(newPipeline);
@@ -385,7 +388,7 @@ export class AssistPref extends LitElement {
         ? {
             updatePipeline: async (values) => {
               const updated = await updateAssistPipeline(
-                this.hass!,
+                this.hass,
                 pipeline.id,
                 values
               );

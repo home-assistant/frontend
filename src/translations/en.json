@@ -3690,7 +3690,8 @@
                 "no_cloud_action": "Subscribe"
               },
               "duplicate": {
-                "error_pipeline_not_found": "Pipeline not found"
+                "error_pipeline_not_found": "Pipeline not found",
+                "name": "{name} (Copy)"
               }
             },
             "cloud": {
