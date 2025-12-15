@@ -68,8 +68,27 @@ export const navigate = async (
  * Navigate back in history, with fallback to a default path if no history exists.
  * This prevents a user from getting stuck when they navigate directly to a page with no history.
  */
-export const goBack = (fallbackPath?: string) => {
+export const goBack = async (
+  fallbackPath?: string,
+  timestamp = Date.now()
+): Promise<void> => {
   const { history } = mainWindow;
+
+  // Handle open dialogs similar to navigate()
+  if (history.state?.dialog && Date.now() - timestamp < DIALOG_WAIT_TIMEOUT) {
+    const closed = await closeAllDialogs();
+    if (!closed) {
+      // eslint-disable-next-line no-console
+      console.warn("Navigation blocked, because dialog refused to close");
+      return;
+    }
+    // need to wait for history state to be updated in case a dialog was closed
+    await new Promise<void>((resolve) => {
+      setTimeout(resolve);
+    });
+    await goBack(fallbackPath, timestamp);
+    return;
+  }
 
   // Check if we have history to go back to
   if (history.length > 1) {
