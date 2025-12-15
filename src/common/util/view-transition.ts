@@ -36,7 +36,10 @@ export const withViewTransition = (
     return transition.finished;
   } catch (err) {
     // eslint-disable-next-line no-console
-    console.warn("View transition failed", err);
+    console.warn(
+      "View transition failed, falling back to direct execution.",
+      err
+    );
     // If startViewTransition throws synchronously, the callback hasn't run yet.
     // Fall back to executing without a transition.
     return runCallback(false);
