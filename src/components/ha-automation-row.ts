@@ -142,6 +142,7 @@ export class HaAutomationRow extends LitElement {
       background-color: var(--ha-color-fill-neutral-loud-resting);
       border-radius: var(--ha-border-radius-md);
       padding: var(--ha-space-1);
+      margin-top: 10px;
       display: flex;
       justify-content: center;
       align-items: center;
