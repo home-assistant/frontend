@@ -560,11 +560,11 @@ export class HaMap extends ReactiveElement {
           radius,
         });
 
-        const markerSize = this._getMarkerSize(computedStyles) / 2;
+        const markerIconSize = this._getMarkerSize(computedStyles) / 2;
         const marker = new DecoratedMarker([latitude, longitude], circle, {
           icon: Leaflet.divIcon({
             html: iconHTML,
-            iconSize: [markerSize, markerSize],
+            iconSize: [markerIconSize, markerIconSize],
             className,
           }),
           interactive: this.interactiveZones,
