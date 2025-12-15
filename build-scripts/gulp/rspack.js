@@ -17,6 +17,18 @@ import {
   createLandingPageConfig,
 } from "../rspack.cjs";
 
+const selectBuildTargets = () => {
+  const target = process.env.BUILD_TARGET?.toLowerCase();
+  switch (target) {
+    case "modern":
+      return [true];
+    case "legacy":
+      return [false];
+    default:
+      return [true, false];
+  }
+};
+
 const bothBuilds = (createConfigFunc, params) => [
   createConfigFunc({ ...params, latestBuild: true }),
   createConfigFunc({ ...params, latestBuild: false }),
@@ -112,11 +124,14 @@ gulp.task("rspack-watch-app", () => {
 
 gulp.task("rspack-prod-app", () =>
   prodBuild(
-    bothBuilds(createAppConfig, {
-      isProdBuild: true,
-      isStatsBuild: env.isStatsBuild(),
-      isTestBuild: env.isTestBuild(),
-    })
+    selectBuildTargets().map((latestBuild) =>
+      createAppConfig({
+        isProdBuild: true,
+        isStatsBuild: env.isStatsBuild(),
+        isTestBuild: env.isTestBuild(),
+        latestBuild,
+      })
+    )
   )
 );
 
