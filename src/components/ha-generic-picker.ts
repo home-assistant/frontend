@@ -34,6 +34,8 @@ export class HaGenericPicker extends LitElement {
   @property({ type: Boolean, attribute: "allow-custom-value" })
   public allowCustomValue;
 
+  @property() public value?: string;
+
   @property() public icon?: string;
 
   @property() public label?: string;
@@ -41,8 +43,6 @@ export class HaGenericPicker extends LitElement {
   @property() public helper?: string;
 
   @property() public placeholder?: string;
-
-  @property() public value?: string;
 
   @property({ type: String, attribute: "search-label" })
   public searchLabel?: string;
