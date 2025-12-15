@@ -125,7 +125,6 @@ export class HaAutomationRow extends LitElement {
       align-items: flex-start;
       cursor: pointer;
       overflow: hidden;
-      font-weight: var(--ha-font-weight-medium);
       outline: none;
       border-radius: var(--ha-card-border-radius, var(--ha-border-radius-lg));
     }
