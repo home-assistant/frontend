@@ -210,9 +210,14 @@ export class HuiPowerSourcesGraphCard
         const { positive, negative } = this._processData(
           statIds[key].stats.map((id: string) => {
             const stats = energyData.stats[id] ?? [];
-            const currentState = getPowerFromState(this.hass.states[id]);
-            if (currentState !== undefined) {
-              stats.push({ start: now, end: now, mean: currentState });
+            const currentStateWatts = getPowerFromState(this.hass.states[id]);
+            if (currentStateWatts !== undefined) {
+              // getPowerFromState returns power in W; convert to kW for this graph
+              stats.push({
+                start: now,
+                end: now,
+                mean: currentStateWatts / 1000,
+              });
             }
             return stats;
           })

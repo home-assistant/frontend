@@ -1363,9 +1363,9 @@ export const calculateSolarConsumedGauge = (
 };
 
 /**
- * Get current power value from entity state, normalized to kW
+ * Get current power value from entity state, normalized to watts (W)
  * @param stateObj - The entity state object to get power value from
- * @returns Power value in kW, or 0 if entity not found or invalid
+ * @returns Power value in W (watts), or undefined if entity not found or invalid
  */
 export const getPowerFromState = (stateObj: HassEntity): number | undefined => {
   if (!stateObj) {
@@ -1376,22 +1376,22 @@ export const getPowerFromState = (stateObj: HassEntity): number | undefined => {
     return undefined;
   }
 
-  // Normalize to kW based on unit of measurement (case-sensitive)
+  // Normalize to watts (W) based on unit of measurement (case-sensitive)
   // Supported units: GW, kW, MW, mW, TW, W
   const unit = stateObj.attributes.unit_of_measurement;
   switch (unit) {
     case "W":
-      return value / 1000;
+      return value;
     case "mW":
-      return value / 1000000;
+      return value / 1000;
     case "MW":
-      return value * 1000;
+      return value * 1_000_000;
     case "GW":
-      return value * 1000000;
+      return value * 1_000_000_000;
     case "TW":
-      return value * 1000000000;
+      return value * 1_000_000_000_000;
     default:
-      // Assume kW if no unit or unit is kW
+      // Assume value is in watts (W) if no unit or an unsupported unit is provided
       return value;
   }
 };

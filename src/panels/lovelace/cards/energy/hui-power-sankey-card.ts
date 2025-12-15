@@ -26,8 +26,8 @@ const DEFAULT_CONFIG: Partial<PowerSankeyCardConfig> = {
   group_by_area: true,
 };
 
-// Minimum power threshold in kW to display a device node
-const MIN_POWER_THRESHOLD = 0.01;
+// Minimum power threshold in watts (W) to display a device node
+const MIN_POWER_THRESHOLD = 10;
 
 interface PowerData {
   solar: number;
@@ -470,10 +470,17 @@ class HuiPowerSankeyCard
     `;
   }
 
-  private _valueFormatter = (value: number) =>
-    `<div style="direction:ltr; display: inline;">
-      ${formatNumber(value, this.hass.locale, value < 0.1 ? { maximumFractionDigits: 3 } : undefined)}
-      kW</div>`;
+  private _valueFormatter = (value: number) => {
+    const absValue = Math.abs(value);
+    const options =
+      absValue < 10
+        ? { maximumFractionDigits: 1 }
+        : { maximumFractionDigits: 0 };
+
+    return `<div style="direction:ltr; display: inline;">
+      ${formatNumber(value, this.hass.locale, options)}
+      W</div>`;
+  };
 
   /**
    * Compute real-time power data from current entity states.
@@ -719,14 +726,15 @@ class HuiPowerSankeyCard
   }
 
   /**
-   * Get current power value from entity state, normalized to kW
+   * Get current power value from entity state, normalized to watts (W)
    * @param entityId - The entity ID to get power value from
-   * @returns Power value in kW, or 0 if entity not found or invalid
+   * @returns Power value in W, or 0 if entity not found or invalid
    */
   private _getCurrentPower(entityId: string): number {
     // Track this entity for state change detection
     this._entities.add(entityId);
 
+    // getPowerFromState returns power in W
     return getPowerFromState(this.hass.states[entityId]) ?? 0;
   }
 
