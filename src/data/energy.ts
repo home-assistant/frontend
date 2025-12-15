@@ -1412,11 +1412,13 @@ export const formatPowerShort = (
   let unitIndex = 0;
   let value = powerWatts;
 
+  // Scale the unit to the appropriate power of 1000
   while (Math.abs(value) >= 1000 && unitIndex < units.length - 1) {
     value /= 1000;
     unitIndex++;
   }
 
+  // Format the value with the appropriate number of decimal places
   const absValue = Math.abs(value);
   return (
     formatNumber(value, hass.locale, {
