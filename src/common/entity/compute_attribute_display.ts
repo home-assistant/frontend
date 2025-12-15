@@ -28,7 +28,8 @@ export const computeAttributeValueDisplay = (
   config: HassConfig,
   entities: HomeAssistant["entities"],
   attribute: string,
-  value?: any
+  value?: any,
+  hideUnit?: boolean
 ): string => {
   const attributeValue =
     value !== undefined ? value : stateObj.attributes[attribute];
@@ -48,18 +49,20 @@ export const computeAttributeValueDisplay = (
       ? formatter(attributeValue, locale)
       : formatNumber(attributeValue, locale);
 
-    let unit = DOMAIN_ATTRIBUTES_UNITS[domain]?.[attribute] as
-      | string
-      | undefined;
-
-    if (domain === "weather") {
-      unit = getWeatherUnit(config, stateObj as WeatherEntity, attribute);
-    } else if (TEMPERATURE_ATTRIBUTES.has(attribute)) {
-      unit = config.unit_system.temperature;
-    }
-
-    if (unit) {
-      return `${formattedValue}${blankBeforeUnit(unit, locale)}${unit}`;
+    if (!hideUnit) {
+      let unit = DOMAIN_ATTRIBUTES_UNITS[domain]?.[attribute] as
+        | string
+        | undefined;
+  
+      if (domain === "weather") {
+        unit = getWeatherUnit(config, stateObj as WeatherEntity, attribute);
+      } else if (TEMPERATURE_ATTRIBUTES.has(attribute)) {
+        unit = config.unit_system.temperature;
+      }
+  
+      if (unit) {
+        return `${formattedValue}${blankBeforeUnit(unit, locale)}${unit}`;
+      }
     }
 
     return formattedValue;
@@ -104,7 +107,8 @@ export const computeAttributeValueDisplay = (
           config,
           entities,
           attribute,
-          item
+          item,
+          hideUnit
         )
       )
       .join(", ");
