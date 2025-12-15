@@ -244,16 +244,11 @@ export class HaAutomationRowTargets extends LitElement {
 
     .target ha-icon,
     .target ha-svg-icon,
-    .target state-badge,
     .target ha-domain-icon {
       display: flex;
       padding: var(--ha-space-1) 0;
     }
 
-    .target state-badge {
-      --mdc-icon-size: 24px;
-    }
-    .target state-badge,
     .target ha-floor-icon {
       display: flex;
       height: 32px;

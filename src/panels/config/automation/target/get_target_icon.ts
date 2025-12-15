@@ -1,9 +1,9 @@
 import { mdiLabel, mdiTextureBox } from "@mdi/js";
 import { html, nothing, type TemplateResult } from "lit";
-import "../../../../components/entity/state-badge";
 import "../../../../components/ha-domain-icon";
 import "../../../../components/ha-floor-icon";
 import "../../../../components/ha-icon";
+import "../../../../components/ha-state-icon";
 import "../../../../components/ha-svg-icon";
 import type { ConfigEntry } from "../../../../data/config_entries";
 import type { LabelRegistryEntry } from "../../../../data/label/label_registry";
@@ -51,14 +51,10 @@ export const getTargetIcon = (
   }
 
   if (targetType === "entity" && hass.states[targetId]) {
-    const stateObj = hass.states[targetId];
-    if (stateObj) {
-      return html`<state-badge
-        .stateObj=${stateObj}
-        .hass=${hass}
-        .stateColor=${false}
-      ></state-badge>`;
-    }
+    return html`<ha-state-icon
+      .hass=${hass}
+      .stateObj=${hass.states[targetId]}
+    ></ha-state-icon>`;
   }
 
   if (targetType === "label" && getLabel) {

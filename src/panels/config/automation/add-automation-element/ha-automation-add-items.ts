@@ -12,10 +12,6 @@ import { repeat } from "lit/directives/repeat";
 import memoizeOne from "memoize-one";
 import { fireEvent } from "../../../../common/dom/fire_event";
 import { stopPropagation } from "../../../../common/dom/stop_propagation";
-import "../../../../components/entity/state-badge";
-import "../../../../components/ha-domain-icon";
-import "../../../../components/ha-floor-icon";
-import "../../../../components/ha-icon-next";
 import "../../../../components/ha-md-list";
 import "../../../../components/ha-md-list-item";
 import "../../../../components/ha-svg-icon";
@@ -277,10 +273,6 @@ export class HaAutomationAddItems extends LitElement {
       border-bottom: 1px solid var(--ha-color-border-neutral-quiet);
     }
 
-    ha-icon-next {
-      width: var(--ha-space-6);
-    }
-
     ha-svg-icon.plus {
       color: var(--primary-color);
     }
@@ -304,16 +296,11 @@ export class HaAutomationAddItems extends LitElement {
 
     .selected-target ha-icon,
     .selected-target ha-svg-icon,
-    .selected-target state-badge,
     .selected-target ha-domain-icon {
       display: flex;
       padding: var(--ha-space-1) 0;
     }
 
-    .selected-target state-badge {
-      --mdc-icon-size: 24px;
-    }
-    .selected-target state-badge,
     .selected-target ha-floor-icon {
       display: flex;
       height: 32px;
