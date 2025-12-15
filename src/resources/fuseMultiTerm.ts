@@ -17,6 +17,7 @@ const DEFAULT_OPTIONS: IFuseOptions<any> = {
   isCaseSensitive: false,
   threshold: 0.3,
   minMatchCharLength: 2,
+  ignoreLocation: true, // don't care where the pattern is
 };
 
 const DEFAULT_MIN_CHAR_LENGTH = 2;
