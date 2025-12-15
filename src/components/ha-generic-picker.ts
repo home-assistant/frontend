@@ -34,9 +34,6 @@ export class HaGenericPicker extends LitElement {
   @property({ type: Boolean, attribute: "allow-custom-value" })
   public allowCustomValue;
 
-  @property({ attribute: "show-label", type: Boolean })
-  public showLabel = false;
-
   @property() public icon?: string;
 
   @property() public label?: string;
@@ -52,6 +49,9 @@ export class HaGenericPicker extends LitElement {
 
   @property({ attribute: "hide-clear-icon", type: Boolean })
   public hideClearIcon = false;
+
+  @property({ attribute: "show-label", type: Boolean })
+  public showLabel = false;
 
   /** To prevent lags, getItems needs to be memoized */
   @property({ attribute: false })
