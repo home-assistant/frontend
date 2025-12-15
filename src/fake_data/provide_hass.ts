@@ -58,6 +58,10 @@ export interface MockHomeAssistant extends HomeAssistant {
     attribute: string,
     value?: any
   ): string;
+  formatEntityAttributeUnit(
+    stateObj: HassEntity,
+    attribute: string
+  ): string | undefined;
   formatEntityAttributeName(stateObj: HassEntity, attribute: string): string;
 }
 
@@ -115,6 +119,7 @@ export const provideHass = (
       formatEntityState,
       formatEntityAttributeName,
       formatEntityAttributeValue,
+      formatEntityAttributeUnit,
       formatEntityName,
     } = await computeFormatFunctions(
       hass().localize,
@@ -130,6 +135,7 @@ export const provideHass = (
       formatEntityState,
       formatEntityAttributeName,
       formatEntityAttributeValue,
+      formatEntityAttributeUnit,
       formatEntityName,
     });
   }
