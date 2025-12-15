@@ -1,38 +1,30 @@
 /**
- * Executes a callback within a View Transition if supported, otherwise runs it directly.
+ * Executes a synchronous callback within a View Transition if supported, otherwise runs it directly.
  *
- * @param callback - Function to execute. Can be synchronous or return a Promise. The callback will be passed a boolean indicating whether the view transition is available.
+ * @param callback - Synchronous function to execute. The callback will be passed a boolean indicating whether the view transition is available.
  * @returns Promise that resolves when the transition completes (or immediately if not supported)
  *
  * @example
  * ```typescript
- * // Synchronous callback
  * withViewTransition(() => {
  *   this.large = !this.large;
- * });
- *
- * // Async callback
- * await withViewTransition(async () => {
- *   await this.updateData();
  * });
  * ```
  */
 export const withViewTransition = (
-  callback: (viewTransitionAvailable: boolean) => void | Promise<void>
+  callback: (viewTransitionAvailable: boolean) => void
 ): Promise<void> => {
-  // Ensure the callback is invoked exactly once and awaited, even if
-  // view transitions are unavailable or throw.
-  const runCallback = async (viewTransitionAvailable: boolean) => {
-    const result = callback(viewTransitionAvailable);
-    await (result instanceof Promise ? result : Promise.resolve());
-  };
-
   if (!document.startViewTransition) {
-    return runCallback(false);
+    callback(false);
+    return Promise.resolve();
   }
 
   try {
-    const transition = document.startViewTransition(() => runCallback(true));
+    // View Transitions require DOM updates to happen synchronously within
+    // the callback. Execute the callback immediately (synchronously).
+    const transition = document.startViewTransition(() => {
+      callback(true);
+    });
     return transition.finished;
   } catch (err) {
     // eslint-disable-next-line no-console
@@ -42,6 +34,7 @@ export const withViewTransition = (
     );
     // If startViewTransition throws synchronously, the callback hasn't run yet.
     // Fall back to executing without a transition.
-    return runCallback(false);
+    callback(false);
+    return Promise.resolve();
   }
 };
