@@ -1,6 +1,7 @@
 import { ReactiveElement } from "lit";
 import { customElement } from "lit/decorators";
 import { computeDeviceName } from "../../../../common/entity/compute_device_name";
+import { computeDomain } from "../../../../common/entity/compute_domain";
 import { getEntityContext } from "../../../../common/entity/context/get_entity_context";
 import {
   findEntities,
@@ -64,12 +65,12 @@ export class HomeOtherDevicesViewStrategy extends ReactiveElement {
     );
 
     const helpersEntities = entitiesWithoutDevices.filter((entityId) => {
-      const domain = entityId.split(".")[0];
+      const domain = computeDomain(entityId);
       return isHelperDomain(domain);
     });
 
     const otherEntities = entitiesWithoutDevices.filter((entityId) => {
-      const domain = entityId.split(".")[0];
+      const domain = computeDomain(entityId);
       return !isHelperDomain(domain);
     });
 
