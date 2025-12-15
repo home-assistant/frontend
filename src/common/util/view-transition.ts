@@ -20,11 +20,30 @@
 export const withViewTransition = (
   callback: (viewTransitionAvailable: boolean) => void | Promise<void>
 ): Promise<void> => {
-  if (document.startViewTransition) {
-    return document.startViewTransition(() => callback(true)).finished;
+  // Ensure the callback is invoked exactly once and awaited, even if
+  // view transitions are unavailable or throw.
+  const runCallback = async (viewTransitionAvailable: boolean) => {
+    const result = callback(viewTransitionAvailable);
+    await (result instanceof Promise ? result : Promise.resolve());
+  };
+
+  if (!document.startViewTransition) {
+    return runCallback(false);
   }
 
-  // Fallback: Execute callback directly without transition
-  const result = callback(false);
-  return result instanceof Promise ? result : Promise.resolve();
+  let invoked = false;
+
+  try {
+    const transition = document.startViewTransition(() => {
+      invoked = true;
+      return runCallback(true);
+    });
+    return transition.finished;
+  } catch (err) {
+    if (!invoked) {
+      return runCallback(false);
+    }
+    // Callback already ran; surface the original error.
+    return Promise.reject(err);
+  }
 };
