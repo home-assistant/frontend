@@ -39,6 +39,10 @@ class DialogBox extends LitElement {
   }
 
   public closeDialog(): boolean {
+    if (!this._open) {
+      // Dialog is already closing
+      return true;
+    }
     if (this._params?.confirmation || this._params?.prompt) {
       return false;
     }
