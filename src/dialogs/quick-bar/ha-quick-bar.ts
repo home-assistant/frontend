@@ -45,7 +45,7 @@ import { domainToName } from "../../data/integration";
 import { getPanelNameTranslationKey } from "../../data/panel";
 import type { PageNavigation } from "../../layouts/hass-tabs-subpage";
 import { configSections } from "../../panels/config/ha-panel-config";
-import { HaFuse } from "../../resources/fuse";
+import { multiTermSortedSearch } from "../../resources/fuseMultiTerm";
 import {
   haStyleDialog,
   haStyleDialogFixedTop,
@@ -58,7 +58,17 @@ import { showConfirmationDialog } from "../generic/show-dialog-box";
 import { showShortcutsDialog } from "../shortcuts/show-shortcuts-dialog";
 import { QuickBarMode, type QuickBarParams } from "./show-dialog-quick-bar";
 
+const SEARCH_KEYS = [
+  { name: "primaryText", weight: 10 },
+  { name: "altText", weight: 8 },
+  { name: "friendlyName", weight: 8 },
+  { name: "area", weight: 6 },
+  { name: "translatedDomain", weight: 5 },
+  { name: "entityId", weight: 4 }, // for technical search
+];
+
 interface QuickBarItem extends ScorableTextItem {
+  id: string;
   primaryText: string;
   iconPath?: string;
   action(data?: any): void;
@@ -593,6 +603,7 @@ export class QuickBar extends LitElement {
         const areaName = area ? computeAreaName(area) : undefined;
 
         const deviceItem = {
+          id: device.id,
           primaryText: deviceName,
           deviceId: device.id,
           area: areaName,
@@ -666,6 +677,7 @@ export class QuickBar extends LitElement {
         );
 
         const entityItem = {
+          id: `entity-${entityId}`,
           primaryText: primary,
           altText: secondary,
           icon: html`
@@ -767,8 +779,9 @@ export class QuickBar extends LitElement {
       ),
     });
 
-    return commands.map((command) => ({
+    return commands.map((command, index) => ({
       ...command,
+      id: `command_${index}_${command.primaryText}`,
       categoryKey: "reload",
       strings: [`${command.categoryText} ${command.primaryText}`],
     }));
@@ -777,10 +790,11 @@ export class QuickBar extends LitElement {
   private _generateServerControlCommands(): CommandItem[] {
     const serverActions = ["restart", "stop"] as const;
 
-    return serverActions.map((action) => {
+    return serverActions.map((action, index) => {
       const categoryKey: CommandItem["categoryKey"] = "server_control";
 
       const item = {
+        id: `server_control_${index}_${action}`,
         primaryText: this.hass.localize(
           "ui.dialogs.quick-bar.commands.server_control.perform_action",
           {
@@ -940,10 +954,11 @@ export class QuickBar extends LitElement {
   private _finalizeNavigationCommands(
     items: BaseNavigationCommand[]
   ): CommandItem[] {
-    return items.map((item) => {
+    return items.map((item, index) => {
       const categoryKey: CommandItem["categoryKey"] = "navigation";
 
       const navItem = {
+        id: `navigation_${index}_${item.path}`,
         iconPath: mdiEarth,
         categoryText: this.hass.localize(
           `ui.dialogs.quick-bar.commands.types.${categoryKey}`
@@ -961,28 +976,20 @@ export class QuickBar extends LitElement {
   }
 
   private _fuseIndex = memoizeOne((items: QuickBarItem[]) =>
-    Fuse.createIndex(
-      [
-        "primaryText",
-        "altText",
-        "friendlyName",
-        "translatedDomain",
-        "entityId", // for technical search
-      ],
-      items
-    )
+    Fuse.createIndex(SEARCH_KEYS, items)
   );
 
   private _filterItems = memoizeOne(
     (items: QuickBarItem[], filter: string): QuickBarItem[] => {
       const index = this._fuseIndex(items);
-      const fuse = new HaFuse(items, {}, index);
 
-      const results = fuse.multiTermsSearch(filter.trim());
-      if (!results || !results.length) {
-        return items;
-      }
-      return results.map((result) => result.item);
+      return multiTermSortedSearch(
+        items,
+        filter,
+        SEARCH_KEYS,
+        (item) => item.id,
+        index
+      );
     }
   );
 

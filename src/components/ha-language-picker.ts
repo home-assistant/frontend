@@ -40,14 +40,12 @@ export const getLanguageOptions = (
       return {
         id: lang,
         primary,
-        search_labels: [primary],
       };
     });
   } else if (locale) {
     options = languages.map((lang) => ({
       id: lang,
       primary: formatLanguageCode(lang, locale),
-      search_labels: [formatLanguageCode(lang, locale)],
     }));
   }
 
@@ -134,6 +132,7 @@ export class HaLanguagePicker extends LitElement {
         .placeholder=${this.label ??
         (this.hass?.localize("ui.components.language-picker.language") ||
           "Language")}
+        show-label
         .value=${value}
         .valueRenderer=${this._valueRenderer}
         .disabled=${this.disabled}

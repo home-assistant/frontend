@@ -4,7 +4,6 @@ import type { CSSResultGroup, TemplateResult } from "lit";
 import { css, html, LitElement } from "lit";
 import { customElement, property } from "lit/decorators";
 import { navigate } from "../../common/navigate";
-import { withViewTransition } from "../../common/util/view-transition";
 import "../../components/ha-button-menu";
 import "../../components/ha-icon-button";
 import "../../components/ha-list-item";
@@ -117,9 +116,7 @@ class PanelDeveloperTools extends LitElement {
       return;
     }
     if (newPage !== this._page) {
-      withViewTransition(() => {
-        navigate(`/developer-tools/${newPage}`);
-      });
+      navigate(`/developer-tools/${newPage}`);
     } else {
       scrollTo({ behavior: "smooth", top: 0 });
     }
@@ -128,9 +125,7 @@ class PanelDeveloperTools extends LitElement {
   private async _handleMenuAction(ev: CustomEvent<ActionDetail>) {
     switch (ev.detail.index) {
       case 0:
-        withViewTransition(() => {
-          navigate(`/developer-tools/debug`);
-        });
+        navigate(`/developer-tools/debug`);
         break;
     }
   }

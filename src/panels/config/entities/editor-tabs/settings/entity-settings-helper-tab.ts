@@ -5,8 +5,8 @@ import { isComponentLoaded } from "../../../../../common/config/is_component_loa
 import { dynamicElement } from "../../../../../common/dom/dynamic-element-directive";
 import { fireEvent } from "../../../../../common/dom/fire_event";
 import "../../../../../components/ha-button";
-import type { ExtEntityRegistryEntry } from "../../../../../data/entity_registry";
-import { removeEntityRegistryEntry } from "../../../../../data/entity_registry";
+import type { ExtEntityRegistryEntry } from "../../../../../data/entity/entity_registry";
+import { removeEntityRegistryEntry } from "../../../../../data/entity/entity_registry";
 import { HELPERS_CRUD } from "../../../../../data/helpers_crud";
 import { showConfirmationDialog } from "../../../../../dialogs/generic/show-dialog-box";
 import { haStyle } from "../../../../../resources/styles";

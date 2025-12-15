@@ -295,32 +295,41 @@ export function fillDataGapsAndRoundCaps(datasets: BarSeriesOption[]) {
   });
 }
 
+function getDatapointX(datapoint: NonNullable<LineSeriesOption["data"]>[0]) {
+  const item =
+    datapoint && typeof datapoint === "object" && "value" in datapoint
+      ? datapoint
+      : { value: datapoint };
+  return Number(item.value?.[0]);
+}
+
 export function fillLineGaps(datasets: LineSeriesOption[]) {
   const buckets = Array.from(
     new Set(
       datasets
         .map((dataset) =>
-          dataset.data!.map((datapoint) => Number(datapoint![0]))
+          dataset.data!.map((datapoint) => getDatapointX(datapoint))
         )
         .flat()
     )
   ).sort((a, b) => a - b);
-  buckets.forEach((bucket, index) => {
-    for (let i = datasets.length - 1; i >= 0; i--) {
-      const dataPoint = datasets[i].data![index];
+
+  datasets.forEach((dataset) => {
+    const dataMap = new Map<number, LineDataItemOption>();
+    dataset.data!.forEach((datapoint) => {
       const item: LineDataItemOption =
-        dataPoint && typeof dataPoint === "object" && "value" in dataPoint
-          ? dataPoint
-          : ({ value: dataPoint } as LineDataItemOption);
-      const x = item.value?.[0];
-      if (x === undefined) {
-        continue;
+        datapoint && typeof datapoint === "object" && "value" in datapoint
+          ? datapoint
+          : ({ value: datapoint } as LineDataItemOption);
+      const x = getDatapointX(datapoint);
+      if (!Number.isNaN(x)) {
+        dataMap.set(x, item);
       }
-      if (Number(x) !== bucket) {
-        datasets[i].data?.splice(index, 0, [bucket, 0]);
-      }
-    }
+    });
+
+    dataset.data = buckets.map((bucket) => dataMap.get(bucket) ?? [bucket, 0]);
   });
+
   return datasets;
 }
 

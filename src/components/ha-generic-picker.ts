@@ -4,8 +4,10 @@ import { mdiPlaylistPlus } from "@mdi/js";
 import { css, html, LitElement, nothing, type CSSResultGroup } from "lit";
 import { customElement, property, query, state } from "lit/decorators";
 import { ifDefined } from "lit/directives/if-defined";
+import memoizeOne from "memoize-one";
 import { tinykeys } from "tinykeys";
 import { fireEvent } from "../common/dom/fire_event";
+import type { FuseWeightedKey } from "../resources/fuseMultiTerm";
 import type { HomeAssistant } from "../types";
 import "./ha-bottom-sheet";
 import "./ha-button";
@@ -46,8 +48,12 @@ export class HaGenericPicker extends LitElement {
   @property({ attribute: "hide-clear-icon", type: Boolean })
   public hideClearIcon = false;
 
+  @property({ attribute: "show-label", type: Boolean })
+  public showLabel = false;
+
+  /** To prevent lags, getItems needs to be memoized */
   @property({ attribute: false })
-  public getItems?: (
+  public getItems!: (
     searchString?: string,
     section?: string
   ) => (PickerComboBoxItem | string)[];
@@ -63,6 +69,9 @@ export class HaGenericPicker extends LitElement {
 
   @property({ attribute: false })
   public searchFn?: PickerComboBoxSearchFn<PickerComboBoxItem>;
+
+  @property({ attribute: false })
+  public searchKeys?: FuseWeightedKey[];
 
   @property({ attribute: false })
   public notFoundLabel?: string | ((search: string) => string);
@@ -106,6 +115,8 @@ export class HaGenericPicker extends LitElement {
   }) => string | undefined;
 
   @property({ attribute: "selected-section" }) public selectedSection?: string;
+
+  @property({ attribute: "unknown-item-text" }) public unknownItemText?: string;
 
   @query(".container") private _containerElement?: HTMLDivElement;
 
@@ -156,10 +167,13 @@ export class HaGenericPicker extends LitElement {
                   type="button"
                   class=${this._opened ? "opened" : ""}
                   compact
+                  .unknown=${this._unknownValue(this.value, this.getItems())}
+                  .unknownItemText=${this.unknownItemText}
                   aria-label=${ifDefined(this.label)}
                   @click=${this.open}
                   @clear=${this._clear}
                   .placeholder=${this.placeholder}
+                  .showLabel=${this.showLabel}
                   .value=${this.value}
                   .required=${this.required}
                   .disabled=${this.disabled}
@@ -229,9 +243,22 @@ export class HaGenericPicker extends LitElement {
         .sections=${this.sections}
         .sectionTitleFunction=${this.sectionTitleFunction}
         .selectedSection=${this.selectedSection}
+        .searchKeys=${this.searchKeys}
       ></ha-picker-combo-box>
     `;
   }
+
+  private _unknownValue = memoizeOne(
+    (value?: string, items?: (PickerComboBoxItem | string)[]) => {
+      if (value === undefined || value === null || value === "" || !items) {
+        return false;
+      }
+
+      return !items.some(
+        (item) => typeof item !== "string" && item.id === value
+      );
+    }
+  );
 
   private _renderHelper() {
     return this.helper
@@ -344,7 +371,10 @@ export class HaGenericPicker extends LitElement {
 
         wa-popover::part(body) {
           width: max(var(--body-width), 250px);
-          max-width: max(var(--body-width), 250px);
+          max-width: var(
+            --ha-generic-picker-max-width,
+            max(var(--body-width), 250px)
+          );
           max-height: 500px;
           height: 70vh;
           overflow: hidden;

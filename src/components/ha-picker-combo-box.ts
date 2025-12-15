@@ -15,7 +15,10 @@ import { tinykeys } from "tinykeys";
 import { fireEvent } from "../common/dom/fire_event";
 import { caseInsensitiveStringCompare } from "../common/string/compare";
 import { ScrollableFadeMixin } from "../mixins/scrollable-fade-mixin";
-import { HaFuse } from "../resources/fuse";
+import {
+  multiTermSortedSearch,
+  type FuseWeightedKey,
+} from "../resources/fuseMultiTerm";
 import { haStyleScrollbar } from "../resources/styles";
 import { loadVirtualizer } from "../resources/virtualizer";
 import type { HomeAssistant } from "../types";
@@ -26,11 +29,26 @@ import "./ha-icon";
 import "./ha-textfield";
 import type { HaTextField } from "./ha-textfield";
 
+export const DEFAULT_SEARCH_KEYS: FuseWeightedKey[] = [
+  {
+    name: "primary",
+    weight: 10,
+  },
+  {
+    name: "secondary",
+    weight: 7,
+  },
+  {
+    name: "id",
+    weight: 3,
+  },
+];
+
 export interface PickerComboBoxItem {
   id: string;
   primary: string;
   secondary?: string;
-  search_labels?: string[];
+  search_labels?: Record<string, string | null>;
   sorting_label?: string;
   icon_path?: string;
   icon?: string;
@@ -77,10 +95,13 @@ export class HaPickerComboBox extends ScrollableFadeMixin(LitElement) {
 
   @property() public value?: string;
 
+  @property({ attribute: false })
+  public searchKeys?: FuseWeightedKey[];
+
   @state() private _listScrolled = false;
 
   @property({ attribute: false })
-  public getItems?: (
+  public getItems!: (
     searchString?: string,
     section?: string
   ) => (PickerComboBoxItem | string)[];
@@ -132,6 +153,8 @@ export class HaPickerComboBox extends ScrollableFadeMixin(LitElement) {
   }
 
   @state() private _sectionTitle?: string;
+
+  @state() private _valuePinned = true;
 
   private _allItems: (PickerComboBoxItem | string)[] = [];
 
@@ -194,6 +217,15 @@ export class HaPickerComboBox extends ScrollableFadeMixin(LitElement) {
           .renderItem=${this._renderItem}
           style="min-height: 36px;"
           class=${this._listScrolled ? "scrolled" : ""}
+          .layout=${this.value && this._valuePinned
+            ? {
+                pin: {
+                  index: this._getInitialSelectedIndex(),
+                  block: "center",
+                },
+              }
+            : undefined}
+          @unpinned=${this._handleUnpinned}
           @scroll=${this._onScrollList}
           @focus=${this._focusList}
           @visibilityChanged=${this._visibilityChanged}
@@ -244,24 +276,42 @@ export class HaPickerComboBox extends ScrollableFadeMixin(LitElement) {
     }
   }
 
+  @eventOptions({ passive: true })
+  private _handleUnpinned() {
+    this._valuePinned = false;
+  }
+
   private _getAdditionalItems = (searchString?: string) =>
     this.getAdditionalItems?.(searchString) || [];
 
   private _getItems = () => {
-    let items = [
-      ...(this.getItems
-        ? this.getItems(this._search, this.selectedSection)
-        : []),
-    ];
+    let items = [...this.getItems(this._search, this.selectedSection)];
 
     if (!this.sections?.length) {
-      items = items.sort((entityA, entityB) =>
-        caseInsensitiveStringCompare(
-          (entityA as PickerComboBoxItem).sorting_label!,
-          (entityB as PickerComboBoxItem).sorting_label!,
+      items = items.sort((entityA, entityB) => {
+        const sortLabelA =
+          typeof entityA === "string" ? entityA : entityA.sorting_label;
+        const sortLabelB =
+          typeof entityB === "string" ? entityB : entityB.sorting_label;
+
+        if (!sortLabelA || !sortLabelB) {
+          return 0;
+        }
+
+        if (!sortLabelB) {
+          return -1;
+        }
+
+        if (!sortLabelA) {
+          return 1;
+        }
+
+        return caseInsensitiveStringCompare(
+          sortLabelA,
+          sortLabelB,
           this.hass?.locale.language ?? navigator.language
-        )
-      );
+        );
+      });
     }
 
     if (!items.length) {
@@ -279,6 +329,9 @@ export class HaPickerComboBox extends ScrollableFadeMixin(LitElement) {
   };
 
   private _renderItem = (item: PickerComboBoxItem | string, index: number) => {
+    if (!item) {
+      return nothing;
+    }
     if (item === "padding") {
       return html`<div class="bottom-padding"></div>`;
     }
@@ -339,8 +392,9 @@ export class HaPickerComboBox extends ScrollableFadeMixin(LitElement) {
     fireEvent(this, "value-changed", { value: newValue });
   };
 
-  private _fuseIndex = memoizeOne((states: PickerComboBoxItem[]) =>
-    Fuse.createIndex(["search_labels"], states)
+  private _fuseIndex = memoizeOne(
+    (states: PickerComboBoxItem[], searchKeys?: FuseWeightedKey[]) =>
+      Fuse.createIndex(searchKeys || DEFAULT_SEARCH_KEYS, states)
   );
 
   private _filterChanged = (ev: Event) => {
@@ -356,33 +410,25 @@ export class HaPickerComboBox extends ScrollableFadeMixin(LitElement) {
         return;
       }
 
-      const index = this._fuseIndex(this._allItems as PickerComboBoxItem[]);
-      const fuse = new HaFuse(
+      const index = this._fuseIndex(
         this._allItems as PickerComboBoxItem[],
-        {
-          shouldSort: false,
-          minMatchCharLength: Math.min(searchString.length, 2),
-        },
-        index
+        this.searchKeys
       );
 
-      const results = fuse.multiTermsSearch(searchString);
-      let filteredItems = [...this._allItems];
+      let filteredItems = multiTermSortedSearch<PickerComboBoxItem>(
+        this._allItems as PickerComboBoxItem[],
+        searchString,
+        this.searchKeys || DEFAULT_SEARCH_KEYS,
+        (item) => item.id,
+        index
+      ) as (PickerComboBoxItem | string)[];
 
-      if (results) {
-        const items: (PickerComboBoxItem | string)[] = results.map(
-          (result) => result.item
-        );
-
-        if (!items.length) {
-          filteredItems.push(NO_ITEMS_AVAILABLE_ID);
-        }
-
-        const additionalItems = this._getAdditionalItems();
-        items.push(...additionalItems);
-
-        filteredItems = items;
+      if (!filteredItems.length) {
+        filteredItems.push(NO_ITEMS_AVAILABLE_ID);
       }
+
+      const additionalItems = this._getAdditionalItems();
+      filteredItems.push(...additionalItems);
 
       if (this.searchFn) {
         filteredItems = this.searchFn(
@@ -590,7 +636,25 @@ export class HaPickerComboBox extends ScrollableFadeMixin(LitElement) {
   }
 
   private _keyFunction = (item: PickerComboBoxItem | string) =>
-    typeof item === "string" ? item : item.id;
+    typeof item === "string" ? item : item?.id;
+
+  private _getInitialSelectedIndex() {
+    if (!this._virtualizerElement || !this.value) {
+      return 0;
+    }
+
+    const index = this._virtualizerElement.items.findIndex(
+      (item) =>
+        typeof item !== "string" &&
+        (item as PickerComboBoxItem).id === this.value
+    );
+
+    if (index === -1) {
+      return 0;
+    }
+
+    return index;
+  }
 
   static get styles() {
     return [

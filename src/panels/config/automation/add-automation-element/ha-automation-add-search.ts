@@ -2,7 +2,6 @@ import type { LitVirtualizer } from "@lit-labs/virtualizer";
 import { consume } from "@lit/context";
 import "@material/mwc-list/mwc-list";
 import { mdiPlus, mdiTextureBox } from "@mdi/js";
-import type { IFuseOptions } from "fuse.js";
 import Fuse from "fuse.js";
 import { css, html, LitElement, nothing, type PropertyValues } from "lit";
 import {
@@ -34,31 +33,39 @@ import "../../../../components/ha-section-title";
 import "../../../../components/ha-tree-indicator";
 import { ACTION_BUILDING_BLOCKS_GROUP } from "../../../../data/action";
 import {
+  areaFloorComboBoxKeys,
   getAreasAndFloors,
   type AreaFloorValue,
   type FloorComboBoxItem,
-} from "../../../../data/area_floor";
+} from "../../../../data/area_floor_picker";
 import { CONDITION_BUILDING_BLOCKS_GROUP } from "../../../../data/condition";
 import type { ConfigEntry } from "../../../../data/config_entries";
 import { labelsContext } from "../../../../data/context";
 import {
+  deviceComboBoxKeys,
   getDevices,
   type DevicePickerItem,
-} from "../../../../data/device_registry";
+} from "../../../../data/device/device_picker";
 import {
+  entityComboBoxKeys,
   getEntities,
   type EntityComboBoxItem,
-} from "../../../../data/entity_registry";
+} from "../../../../data/entity/entity_picker";
 import type { DomainManifestLookup } from "../../../../data/integration";
 import {
   getLabels,
-  type LabelRegistryEntry,
-} from "../../../../data/label_registry";
+  labelComboBoxKeys,
+} from "../../../../data/label/label_picker";
+import type { LabelRegistryEntry } from "../../../../data/label/label_registry";
 import {
   getTargetComboBoxItemType,
   TARGET_SEPARATOR,
 } from "../../../../data/target";
-import { HaFuse } from "../../../../resources/fuse";
+import {
+  multiTermSearch,
+  multiTermSortedSearch,
+  type FuseWeightedKey,
+} from "../../../../resources/fuseMultiTerm";
 import { loadVirtualizer } from "../../../../resources/virtualizer";
 import type { HomeAssistant } from "../../../../types";
 import type {
@@ -75,6 +82,17 @@ const TARGET_SEARCH_SECTIONS = [
   "separator",
   "label",
 ] as const;
+
+export const ITEM_SEARCH_KEYS: FuseWeightedKey[] = [
+  {
+    name: "primary",
+    weight: 10,
+  },
+  {
+    name: "secondary",
+    weight: 7,
+  },
+];
 
 type SearchSection = "item" | "block" | "entity" | "device" | "area" | "label";
 
@@ -321,40 +339,39 @@ export class HaAutomationAddSearch extends LitElement {
               ></ha-tree-indicator>
             `
           : nothing}
-        ${item.icon
-          ? html`<ha-icon slot="start" .icon=${item.icon}></ha-icon>`
-          : item.icon_path
-            ? html`<ha-svg-icon
-                slot="start"
-                .path=${item.icon_path}
-              ></ha-svg-icon>`
-            : type === "entity" && (item as EntityComboBoxItem).stateObj
-              ? html`
-                  <state-badge
-                    slot="start"
-                    .stateObj=${(item as EntityComboBoxItem).stateObj}
-                    .hass=${this.hass}
-                  ></state-badge>
-                `
-              : type === "device" && (item as DevicePickerItem).domain
+        ${(item as AutomationItemComboBoxItem).renderedIcon
+          ? html`<div slot="start">
+              ${(item as AutomationItemComboBoxItem).renderedIcon}
+            </div>`
+          : item.icon
+            ? html`<ha-icon slot="start" .icon=${item.icon}></ha-icon>`
+            : item.icon_path || type === "area"
+              ? html`<ha-svg-icon
+                  slot="start"
+                  .path=${item.icon_path || mdiTextureBox}
+                ></ha-svg-icon>`
+              : type === "entity" && (item as EntityComboBoxItem).stateObj
                 ? html`
-                    <ha-domain-icon
+                    <state-badge
                       slot="start"
+                      .stateObj=${(item as EntityComboBoxItem).stateObj}
                       .hass=${this.hass}
-                      .domain=${(item as DevicePickerItem).domain!}
-                      brand-fallback
-                    ></ha-domain-icon>
+                    ></state-badge>
                   `
-                : type === "floor"
-                  ? html`<ha-floor-icon
-                      slot="start"
-                      .floor=${(item as FloorComboBoxItem).floor!}
-                    ></ha-floor-icon>`
-                  : type === "area"
-                    ? html`<ha-svg-icon
+                : type === "device" && (item as DevicePickerItem).domain
+                  ? html`
+                      <ha-domain-icon
                         slot="start"
-                        .path=${item.icon_path || mdiTextureBox}
-                      ></ha-svg-icon>`
+                        .hass=${this.hass}
+                        .domain=${(item as DevicePickerItem).domain!}
+                        brand-fallback
+                      ></ha-domain-icon>
+                    `
+                  : type === "floor"
+                    ? html`<ha-floor-icon
+                        slot="start"
+                        .floor=${(item as FloorComboBoxItem).floor!}
+                      ></ha-floor-icon>`
                     : nothing}
         <span slot="headline">${item.primary}</span>
         ${item.secondary
@@ -434,27 +451,27 @@ export class HaAutomationAddSearch extends LitElement {
   private _keyFunction = (item: PickerComboBoxItem | string) =>
     typeof item === "string" ? item : item.id;
 
-  private _createFuseIndex = (states) =>
-    Fuse.createIndex(["search_labels"], states);
+  private _createFuseIndex = (states, keys: FuseWeightedKey[]) =>
+    Fuse.createIndex(keys, states);
 
   private _fuseIndexes = {
     area: memoizeOne((states: PickerComboBoxItem[]) =>
-      this._createFuseIndex(states)
+      this._createFuseIndex(states, areaFloorComboBoxKeys)
     ),
     entity: memoizeOne((states: PickerComboBoxItem[]) =>
-      this._createFuseIndex(states)
+      this._createFuseIndex(states, entityComboBoxKeys)
     ),
     device: memoizeOne((states: PickerComboBoxItem[]) =>
-      this._createFuseIndex(states)
+      this._createFuseIndex(states, deviceComboBoxKeys)
     ),
     label: memoizeOne((states: PickerComboBoxItem[]) =>
-      this._createFuseIndex(states)
+      this._createFuseIndex(states, labelComboBoxKeys)
     ),
     item: memoizeOne((states: PickerComboBoxItem[]) =>
-      this._createFuseIndex(states)
+      this._createFuseIndex(states, ITEM_SEARCH_KEYS)
     ),
     block: memoizeOne((states: PickerComboBoxItem[]) =>
-      this._createFuseIndex(states)
+      this._createFuseIndex(states, ITEM_SEARCH_KEYS)
     ),
   };
 
@@ -478,11 +495,12 @@ export class HaAutomationAddSearch extends LitElement {
       if (!selectedSection || selectedSection === "item") {
         let items = this._convertItemsToComboBoxItems(automationItems, type);
         if (searchTerm) {
-          items = this._filterGroup("item", items, searchTerm, {
-            ignoreLocation: true,
-            includeScore: true,
-            minMatchCharLength: Math.min(2, this.filter.length),
-          }) as AutomationItemComboBoxItem[];
+          items = this._filterGroup(
+            "item",
+            items,
+            searchTerm,
+            ITEM_SEARCH_KEYS
+          ) as AutomationItemComboBoxItem[];
         }
 
         if (!selectedSection && items.length) {
@@ -514,11 +532,12 @@ export class HaAutomationAddSearch extends LitElement {
         );
 
         if (searchTerm) {
-          blocks = this._filterGroup("block", blocks, searchTerm, {
-            ignoreLocation: true,
-            includeScore: true,
-            minMatchCharLength: Math.min(2, this.filter.length),
-          }) as AutomationItemComboBoxItem[];
+          blocks = this._filterGroup(
+            "block",
+            blocks,
+            searchTerm,
+            ITEM_SEARCH_KEYS
+          ) as AutomationItemComboBoxItem[];
         }
 
         if (!selectedSection && blocks.length) {
@@ -550,9 +569,7 @@ export class HaAutomationAddSearch extends LitElement {
               "entity",
               entityItems,
               searchTerm,
-              undefined,
-              (item: EntityComboBoxItem) =>
-                item.stateObj?.entity_id === searchTerm
+              entityComboBoxKeys
             ) as EntityComboBoxItem[];
           }
 
@@ -581,7 +598,12 @@ export class HaAutomationAddSearch extends LitElement {
           );
 
           if (searchTerm) {
-            deviceItems = this._filterGroup("device", deviceItems, searchTerm);
+            deviceItems = this._filterGroup(
+              "device",
+              deviceItems,
+              searchTerm,
+              deviceComboBoxKeys
+            );
           }
 
           if (!selectedSection && deviceItems.length) {
@@ -617,7 +639,9 @@ export class HaAutomationAddSearch extends LitElement {
             areasAndFloors = this._filterGroup(
               "area",
               areasAndFloors,
-              searchTerm
+              searchTerm,
+              areaFloorComboBoxKeys,
+              false
             ) as FloorComboBoxItem[];
           }
 
@@ -664,7 +688,12 @@ export class HaAutomationAddSearch extends LitElement {
           );
 
           if (searchTerm) {
-            labels = this._filterGroup("label", labels, searchTerm);
+            labels = this._filterGroup(
+              "label",
+              labels,
+              searchTerm,
+              labelComboBoxKeys
+            );
           }
 
           if (!selectedSection && labels.length) {
@@ -691,50 +720,28 @@ export class HaAutomationAddSearch extends LitElement {
       | AutomationItemComboBoxItem
     )[],
     searchTerm: string,
-    fuseOptions?: IFuseOptions<any>,
-    checkExact?: (
-      item:
-        | FloorComboBoxItem
-        | PickerComboBoxItem
-        | EntityComboBoxItem
-        | AutomationItemComboBoxItem
-    ) => boolean
+    searchKeys: FuseWeightedKey[],
+    sort = true
   ) {
     const fuseIndex = this._fuseIndexes[type](items);
-    const fuse = new HaFuse<
-      | FloorComboBoxItem
-      | PickerComboBoxItem
-      | EntityComboBoxItem
-      | AutomationItemComboBoxItem
-    >(
+
+    if (sort) {
+      return multiTermSortedSearch<PickerComboBoxItem>(
+        items,
+        searchTerm,
+        searchKeys,
+        (item) => item.id,
+        fuseIndex
+      );
+    }
+
+    return multiTermSearch<PickerComboBoxItem>(
       items,
-      fuseOptions || {
-        shouldSort: false,
-        minMatchCharLength: Math.min(searchTerm.length, 2),
-      },
-      fuseIndex
+      searchTerm,
+      searchKeys,
+      fuseIndex,
+      { ignoreLocation: true }
     );
-
-    const results = fuse.multiTermsSearch(searchTerm);
-    let filteredItems = items;
-    if (results) {
-      filteredItems = results.map((result) => result.item);
-    }
-
-    if (!checkExact) {
-      return filteredItems;
-    }
-
-    // If there is exact match for entity id, put it first
-    const index = filteredItems.findIndex((item) => checkExact(item));
-    if (index === -1) {
-      return filteredItems;
-    }
-
-    const [exactMatch] = filteredItems.splice(index, 1);
-    filteredItems.unshift(exactMatch);
-
-    return filteredItems;
   }
 
   private _toggleSection(ev: Event) {
@@ -784,10 +791,14 @@ export class HaAutomationAddSearch extends LitElement {
       id: key,
       primary: name,
       secondary: description,
-      iconPath,
+      icon_path: iconPath,
       renderedIcon: icon,
       type,
-      search_labels: [key, name, description],
+      search_labels: {
+        key,
+        name,
+        description,
+      },
     }));
 
   private _focusSearchList = () => {

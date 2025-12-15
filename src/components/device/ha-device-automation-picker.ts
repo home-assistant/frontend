@@ -2,17 +2,17 @@ import { consume } from "@lit/context";
 import { css, html, LitElement, nothing } from "lit";
 import { property, state } from "lit/decorators";
 import { fireEvent } from "../../common/dom/fire_event";
+import { stopPropagation } from "../../common/dom/stop_propagation";
 import { fullEntitiesContext } from "../../data/context";
-import type { DeviceAutomation } from "../../data/device_automation";
+import type { DeviceAutomation } from "../../data/device/device_automation";
 import {
   deviceAutomationsEqual,
   sortDeviceAutomations,
-} from "../../data/device_automation";
-import type { EntityRegistryEntry } from "../../data/entity_registry";
+} from "../../data/device/device_automation";
+import type { EntityRegistryEntry } from "../../data/entity/entity_registry";
 import type { HomeAssistant } from "../../types";
-import "../ha-md-select-option";
 import "../ha-md-select";
-import { stopPropagation } from "../../common/dom/stop_propagation";
+import "../ha-md-select-option";
 
 const NO_AUTOMATION_KEY = "NO_AUTOMATION";
 const UNKNOWN_AUTOMATION_KEY = "UNKNOWN_AUTOMATION";

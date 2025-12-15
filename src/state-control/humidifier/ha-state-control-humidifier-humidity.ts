@@ -11,8 +11,8 @@ import "../../components/ha-big-number";
 import "../../components/ha-control-circular-slider";
 import "../../components/ha-outlined-icon-button";
 import "../../components/ha-svg-icon";
-import { UNAVAILABLE } from "../../data/entity";
-import { DOMAIN_ATTRIBUTES_UNITS } from "../../data/entity_attributes";
+import { UNAVAILABLE } from "../../data/entity/entity";
+import { DOMAIN_ATTRIBUTES_UNITS } from "../../data/entity/entity_attributes";
 import type { HumidifierEntity } from "../../data/humidifier";
 import {
   HUMIDIFIER_ACTION_MODE,

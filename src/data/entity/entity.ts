@@ -1,5 +1,5 @@
 import type { HassEntity } from "home-assistant-js-websocket";
-import { arrayLiteralIncludes } from "../common/array/literal-includes";
+import { arrayLiteralIncludes } from "../../common/array/literal-includes";
 
 export const UNAVAILABLE = "unavailable";
 export const UNKNOWN = "unknown";

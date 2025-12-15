@@ -1,6 +1,6 @@
 import type { HassEntity } from "home-assistant-js-websocket";
 import type { PropertyValues } from "lit";
-import type { EntityRegistryDisplayEntry } from "../../../data/entity_registry";
+import type { EntityRegistryDisplayEntry } from "../../../data/entity/entity_registry";
 import type { HomeAssistant } from "../../../types";
 import { processConfigEntities } from "./process-config-entities";
 

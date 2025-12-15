@@ -2,7 +2,7 @@ import { css, html, LitElement } from "lit";
 import { customElement, property } from "lit/decorators";
 import { fireEvent } from "../../common/dom/fire_event";
 import "../../components/ha-area-picker";
-import { updateDeviceRegistryEntry } from "../../data/device_registry";
+import { updateDeviceRegistryEntry } from "../../data/device/device_registry";
 import type { HomeAssistant } from "../../types";
 import { showAlertDialog } from "../generic/show-dialog-box";
 import { AssistantSetupStyles } from "./styles";

@@ -23,7 +23,7 @@ import {
   climateHvacModeIcon,
   compareClimateHvacModes,
 } from "../../../data/climate";
-import { UNAVAILABLE } from "../../../data/entity";
+import { UNAVAILABLE } from "../../../data/entity/entity";
 import "../../../state-control/climate/ha-state-control-climate-humidity";
 import "../../../state-control/climate/ha-state-control-climate-temperature";
 import type { HomeAssistant } from "../../../types";

@@ -5,7 +5,7 @@ import { customElement, property } from "lit/decorators";
 import { classMap } from "lit/directives/class-map";
 import { computeDomain } from "../common/entity/compute_domain";
 import "../components/entity/state-info";
-import { isUnavailableState } from "../data/entity";
+import { isUnavailableState } from "../data/entity/entity";
 import { SENSOR_DEVICE_CLASS_TIMESTAMP } from "../data/sensor";
 import "../panels/lovelace/components/hui-timestamp-display";
 import { haStyle } from "../resources/styles";

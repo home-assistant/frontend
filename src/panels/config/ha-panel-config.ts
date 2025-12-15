@@ -42,8 +42,8 @@ import {
   entityRegistryByEntityId,
   entityRegistryById,
   subscribeEntityRegistry,
-} from "../../data/entity_registry";
-import { subscribeLabelRegistry } from "../../data/label_registry";
+} from "../../data/entity/entity_registry";
+import { subscribeLabelRegistry } from "../../data/label/label_registry";
 import type { RouterOptions } from "../../layouts/hass-router-page";
 import { HassRouterPage } from "../../layouts/hass-router-page";
 import type { PageNavigation } from "../../layouts/hass-tabs-subpage";

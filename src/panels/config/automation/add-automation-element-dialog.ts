@@ -58,7 +58,7 @@ import {
   ACTION_COLLECTIONS,
   ACTION_ICONS,
 } from "../../../data/action";
-import type { FloorComboBoxItem } from "../../../data/area_floor";
+import type { FloorComboBoxItem } from "../../../data/area_floor_picker";
 import {
   getAreaDeviceLookup,
   getAreaEntityLookup,
@@ -83,8 +83,8 @@ import {
   type ConfigEntry,
 } from "../../../data/config_entries";
 import { labelsContext } from "../../../data/context";
-import { getDeviceEntityLookup } from "../../../data/device_registry";
-import type { EntityComboBoxItem } from "../../../data/entity_registry";
+import { getDeviceEntityLookup } from "../../../data/device/device_registry";
+import type { EntityComboBoxItem } from "../../../data/entity/entity_picker";
 import { getFloorAreaLookup } from "../../../data/floor_registry";
 import {
   getConditionIcons,
@@ -96,7 +96,7 @@ import {
   domainToName,
   fetchIntegrationManifests,
 } from "../../../data/integration";
-import type { LabelRegistryEntry } from "../../../data/label_registry";
+import type { LabelRegistryEntry } from "../../../data/label/label_registry";
 import { subscribeLabFeature } from "../../../data/labs";
 import {
   TARGET_SEPARATOR,
@@ -450,6 +450,7 @@ class DialogAddAutomationElement
 
     return html`
       <ha-wa-dialog
+        .hass=${this.hass}
         width="large"
         .open=${this._open}
         @closed=${this._handleClosed}

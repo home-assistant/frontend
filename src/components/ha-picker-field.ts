@@ -1,3 +1,4 @@
+import { consume } from "@lit/context";
 import { mdiClose, mdiMenuDown } from "@mdi/js";
 import {
   css,
@@ -7,8 +8,10 @@ import {
   type CSSResultGroup,
   type TemplateResult,
 } from "lit";
-import { customElement, property, query } from "lit/decorators";
+import { customElement, property, query, state } from "lit/decorators";
 import { fireEvent } from "../common/dom/fire_event";
+import { localizeContext } from "../data/context";
+import type { HomeAssistant } from "../types";
 import "./ha-combo-box-item";
 import type { HaComboBoxItem } from "./ha-combo-box-item";
 import "./ha-icon-button";
@@ -33,13 +36,24 @@ export class HaPickerField extends LitElement {
 
   @property() public placeholder?: string;
 
+  @property({ type: Boolean, reflect: true }) public unknown = false;
+
+  @property({ attribute: "unknown-item-text" }) public unknownItemText?: string;
+
   @property({ attribute: "hide-clear-icon", type: Boolean })
   public hideClearIcon = false;
+
+  @property({ attribute: "show-label", type: Boolean })
+  public showLabel = false;
 
   @property({ attribute: false })
   public valueRenderer?: PickerValueRenderer;
 
   @query("ha-combo-box-item", true) public item!: HaComboBoxItem;
+
+  @state()
+  @consume({ context: localizeContext, subscribe: true })
+  private localize!: HomeAssistant["localize"];
 
   public async focus() {
     await this.updateComplete;
@@ -49,18 +63,27 @@ export class HaPickerField extends LitElement {
   protected render() {
     const showClearIcon =
       !!this.value && !this.required && !this.disabled && !this.hideClearIcon;
+    const placeholder = this.showLabel
+      ? html`<span slot="overline">${this.placeholder}</span>`
+      : nothing;
 
     return html`
       <ha-combo-box-item .disabled=${this.disabled} type="button" compact>
         ${this.value
           ? this.valueRenderer
-            ? this.valueRenderer(this.value)
-            : html`<slot name="headline">${this.value}</slot>`
+            ? html`${placeholder}${this.valueRenderer(this.value)}`
+            : html`${placeholder}<span slot="headline">${this.value}</span>`
           : html`
               <span slot="headline" class="placeholder">
                 ${this.placeholder}
               </span>
             `}
+        ${this.unknown
+          ? html`<div slot="supporting-text" class="unknown">
+              ${this.unknownItemText ||
+              this.localize("ui.components.combo-box.unknown_item")}
+            </div>`
+          : nothing}
         ${showClearIcon
           ? html`
               <ha-icon-button
@@ -142,6 +165,10 @@ export class HaPickerField extends LitElement {
           background-color: var(--mdc-theme-primary);
         }
 
+        :host([unknown]) ha-combo-box-item {
+          background-color: var(--ha-color-fill-warning-quiet-resting);
+        }
+
         .clear {
           margin: 0 -8px;
           --mdc-icon-button-size: 32px;
@@ -155,6 +182,10 @@ export class HaPickerField extends LitElement {
         .placeholder {
           color: var(--secondary-text-color);
           padding: 0 8px;
+        }
+
+        .unknown {
+          color: var(--ha-color-on-warning-normal);
         }
       `,
     ];

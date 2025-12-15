@@ -16,10 +16,11 @@ import {
   fetchConfigFlowInProgress,
   handleConfigFlowStep,
 } from "../../data/config_flow";
+import { listAgents } from "../../data/conversation";
 import {
   type ExtEntityRegistryEntry,
   getExtendedEntityRegistryEntries,
-} from "../../data/entity_registry";
+} from "../../data/entity/entity_registry";
 import {
   fetchHassioAddonsInfo,
   installHassioAddon,
@@ -32,7 +33,6 @@ import type { HomeAssistant } from "../../types";
 import { documentationUrl } from "../../util/documentation-url";
 import { AssistantSetupStyles } from "./styles";
 import { STEP } from "./voice-assistant-setup-dialog";
-import { listAgents } from "../../data/conversation";
 
 @customElement("ha-voice-assistant-setup-step-local")
 export class HaVoiceAssistantSetupStepLocal extends LitElement {

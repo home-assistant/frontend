@@ -24,8 +24,8 @@ import { supportsMarkdownHelper } from "../../../../common/translations/markdown
 import { subscribeOne } from "../../../../common/util/subscribe-one";
 import type { GenDataTaskResult } from "../../../../data/ai_task";
 import { fetchCategoryRegistry } from "../../../../data/category_registry";
-import { subscribeEntityRegistry } from "../../../../data/entity_registry";
-import { subscribeLabelRegistry } from "../../../../data/label_registry";
+import { subscribeEntityRegistry } from "../../../../data/entity/entity_registry";
+import { subscribeLabelRegistry } from "../../../../data/label/label_registry";
 import type { HassDialog } from "../../../../dialogs/make-dialog-manager";
 import { haStyle, haStyleDialog } from "../../../../resources/styles";
 import type { HomeAssistant } from "../../../../types";
@@ -177,6 +177,7 @@ class DialogAutomationSave extends LitElement implements HassDialog {
             .hass=${this.hass}
             .scope=${this._params.domain}
             .value=${this._entryUpdates.category}
+            show-label
             @value-changed=${this._registryEntryChanged}
           ></ha-category-picker>`
         : nothing}
@@ -193,6 +194,7 @@ class DialogAutomationSave extends LitElement implements HassDialog {
             id="area"
             .hass=${this.hass}
             .value=${this._entryUpdates.area}
+            show-label
             @value-changed=${this._registryEntryChanged}
           ></ha-area-picker>`
         : nothing}
