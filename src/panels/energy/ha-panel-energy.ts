@@ -2,7 +2,9 @@ import { mdiDownload } from "@mdi/js";
 import type { CSSResultGroup, PropertyValues } from "lit";
 import { LitElement, css, html, nothing } from "lit";
 import { customElement, property, state } from "lit/decorators";
+import { classMap } from "lit/directives/class-map";
 import { navigate } from "../../common/navigate";
+import type { LocalizeKeys } from "../../common/translations/localize";
 import "../../components/ha-alert";
 import "../../components/ha-icon-button-arrow-prev";
 import "../../components/ha-menu-button";
@@ -36,7 +38,6 @@ import type { ExtraActionItem } from "../lovelace/hui-root";
 import type { Lovelace } from "../lovelace/types";
 import "../lovelace/views/hui-view";
 import "../lovelace/views/hui-view-container";
-import type { LocalizeKeys } from "../../common/translations/localize";
 
 export const DEFAULT_ENERGY_COLLECTION_KEY = "energy_dashboard";
 
@@ -235,6 +236,11 @@ class PanelEnergy extends LitElement {
       (view) => view.path === routePath
     );
 
+    const showEnergySelector =
+      currentView &&
+      isStrategyView(currentView) &&
+      currentView.strategy?.show_period_selector;
+
     return html`
       <hui-root
         .hass=${this.hass}
@@ -244,19 +250,20 @@ class PanelEnergy extends LitElement {
         .panel=${this.panel}
         .extraActionItems=${this._extraActionItems}
         @reload-energy-panel=${this._reloadConfig}
+        class=${classMap({ "has-period-selector": showEnergySelector })}
       >
-        ${currentView &&
-        isStrategyView(currentView) &&
-        currentView.strategy?.show_period_selector
-          ? html`<ha-card raised class="period-selector">
+      </hui-root>
+      ${showEnergySelector
+        ? html`
+            <ha-card raised class="period-selector">
               <hui-energy-period-selector
                 .hass=${this.hass}
                 .collectionKey=${DEFAULT_ENERGY_COLLECTION_KEY}
                 vertical-opening-direction="up"
               ></hui-energy-period-selector>
-            </ha-card>`
-          : nothing}
-      </hui-root>
+            </ha-card>
+          `
+        : nothing}
     `;
   }
 
@@ -662,11 +669,27 @@ class PanelEnergy extends LitElement {
           align-items: center;
           justify-content: center;
         }
+        hui-root.has-period-selector {
+          --view-container-padding-bottom: var(--ha-space-16);
+        }
         .period-selector {
-          position: sticky;
-          bottom: var(--ha-space-2);
+          position: fixed;
+          bottom: calc(var(--ha-space-2) + var(--safe-area-inset-bottom, 0px));
+          left: var(--mdc-drawer-width, 0);
+          right: var(--safe-area-inset-right, 0px);
+          inset-inline-start: var(--mdc-drawer-width, 0);
+          inset-inline-end: var(--safe-area-inset-right, 0px);
           margin: var(--ha-space-2) auto;
           max-width: calc(min(450px, 100% - var(--ha-space-4)));
+          box-sizing: border-box;
+          padding-left: calc(
+            var(--ha-space-4) + var(--safe-area-inset-left, 0px)
+          );
+          padding-right: 0;
+          padding-inline-start: calc(
+            var(--ha-space-4) + var(--safe-area-inset-left, 0px)
+          );
+          padding-inline-end: 0;
         }
       `,
     ];

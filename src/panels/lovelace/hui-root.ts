@@ -26,6 +26,7 @@ import { classMap } from "lit/directives/class-map";
 import { ifDefined } from "lit/directives/if-defined";
 import memoizeOne from "memoize-one";
 import { isComponentLoaded } from "../../common/config/is_component_loaded";
+import { UndoRedoController } from "../../common/controllers/undo-redo-controller";
 import { fireEvent } from "../../common/dom/fire_event";
 import { shouldHandleRequestSelectedEvent } from "../../common/mwc/handle-request-selected-event";
 import { goBack, navigate } from "../../common/navigate";
@@ -37,8 +38,8 @@ import {
   removeSearchParam,
 } from "../../common/url/search-params";
 import { debounce } from "../../common/util/debounce";
-import { isMobileClient } from "../../util/is_mobile";
 import { afterNextRender } from "../../common/util/render-status";
+import { withViewTransition } from "../../common/util/view-transition";
 import "../../components/ha-button";
 import "../../components/ha-button-menu";
 import "../../components/ha-icon";
@@ -81,6 +82,7 @@ import { showVoiceCommandDialog } from "../../dialogs/voice-command-dialog/show-
 import { haStyle } from "../../resources/styles";
 import type { HomeAssistant, PanelInfo } from "../../types";
 import { documentationUrl } from "../../util/documentation-url";
+import { isMobileClient } from "../../util/is_mobile";
 import { showToast } from "../../util/toast";
 import { showAreaRegistryDetailDialog } from "../config/areas/show-dialog-area-registry-detail";
 import { showNewAutomationDialog } from "../config/automation/show-dialog-new-automation";
@@ -98,8 +100,6 @@ import "./views/hui-view";
 import type { HUIView } from "./views/hui-view";
 import "./views/hui-view-background";
 import "./views/hui-view-container";
-import { UndoRedoController } from "../../common/controllers/undo-redo-controller";
-import { withViewTransition } from "../../common/util/view-transition";
 
 interface ActionItem {
   icon: string;
@@ -648,7 +648,6 @@ class HUIRoot extends LitElement {
           <hui-view-background .hass=${this.hass} .background=${background}>
           </hui-view-background>
         </hui-view-container>
-        <slot></slot>
       </div>
     `;
   }
@@ -1547,7 +1546,10 @@ class HUIRoot extends LitElement {
           padding-top: calc(var(--header-height) + var(--safe-area-inset-top));
           padding-right: var(--safe-area-inset-right);
           padding-inline-end: var(--safe-area-inset-right);
-          padding-bottom: var(--safe-area-inset-bottom);
+          padding-bottom: calc(
+            var(--safe-area-inset-bottom) +
+              var(--view-container-padding-bottom, 0px)
+          );
         }
         .narrow hui-view-container {
           padding-left: var(--safe-area-inset-left);
@@ -1566,9 +1568,6 @@ class HUIRoot extends LitElement {
               calc(var(--tab-bar-height, 56px) - 2px) +
               var(--safe-area-inset-top, 0px)
           );
-        }
-        :host:has([slot]) hui-view-container {
-          min-height: auto;
         }
         .hide-tab {
           display: none;
