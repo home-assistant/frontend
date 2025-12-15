@@ -72,13 +72,13 @@ export class HomeDashboardStrategy extends ReactiveElement {
     } satisfies LovelaceViewRawConfig;
 
     const otherDevicesView = {
-      title: getSummaryLabel(hass.localize, "other_devices"),
+      title: hass.localize("ui.panel.lovelace.strategy.home.devices"),
       path: "other-devices",
       subview: true,
       strategy: {
         type: "home-other-devices",
       },
-      icon: HOME_SUMMARIES_ICONS.other_devices,
+      icon: "mdi:devices",
     } satisfies LovelaceViewRawConfig;
 
     return {

@@ -27,6 +27,7 @@ import type {
 import type { Condition } from "../../common/validate-condition";
 import type { CommonControlSectionStrategyConfig } from "../usage_prediction/common-controls-section-strategy";
 import { HOME_SUMMARIES_FILTERS } from "./helpers/home-summaries";
+import { OTHER_DEVICES_FILTERS } from "./helpers/other-devices-filters";
 
 export interface HomeOverviewViewStrategyConfig {
   type: "home-overview";
@@ -81,8 +82,8 @@ export class HomeOverviewViewStrategy extends ReactiveElement {
       media_query: "(min-width: 871px)",
     };
 
-    const otherDevicesFilters = HOME_SUMMARIES_FILTERS.other_devices.map(
-      (filter) => generateEntityFilter(hass, filter)
+    const otherDevicesFilters = OTHER_DEVICES_FILTERS.map((filter) =>
+      generateEntityFilter(hass, filter)
     );
 
     const entitiesWithoutAreas = findEntities(allEntities, otherDevicesFilters);

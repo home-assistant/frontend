@@ -1,4 +1,3 @@
-import { ASSIST_ENTITIES } from "../../../../../common/const";
 import type { EntityFilter } from "../../../../../common/entity/entity_filter";
 import type { LocalizeFunc } from "../../../../../common/translations/localize";
 import { climateEntityFilters } from "../../../../climate/strategies/climate-view-strategy";
@@ -10,7 +9,6 @@ export const HOME_SUMMARIES = [
   "climate",
   "security",
   "media_players",
-  "other_devices",
 ] as const;
 
 export type HomeSummary = (typeof HOME_SUMMARIES)[number];
@@ -20,7 +18,6 @@ export const HOME_SUMMARIES_ICONS: Record<HomeSummary, string> = {
   climate: "mdi:home-thermometer",
   security: "mdi:security",
   media_players: "mdi:multimedia",
-  other_devices: "mdi:devices",
 };
 
 export const HOME_SUMMARIES_FILTERS: Record<HomeSummary, EntityFilter[]> = {
@@ -28,36 +25,6 @@ export const HOME_SUMMARIES_FILTERS: Record<HomeSummary, EntityFilter[]> = {
   climate: climateEntityFilters,
   security: securityEntityFilters,
   media_players: [{ domain: "media_player", entity_category: "none" }],
-  other_devices: [
-    {
-      area: null,
-      hidden_platform: [
-        "automation",
-        "script",
-        "hassio",
-        "backup",
-        "mobile_app",
-        "zone",
-        "person",
-      ],
-      hidden_domains: [
-        "ai_task",
-        "automation",
-        "configurator",
-        "device_tracker",
-        "event",
-        "geo_location",
-        "notify",
-        "persistent_notification",
-        "script",
-        "sun",
-        "tag",
-        "todo",
-        "zone",
-        ...ASSIST_ENTITIES,
-      ],
-    },
-  ],
 };
 
 export const getSummaryLabel = (

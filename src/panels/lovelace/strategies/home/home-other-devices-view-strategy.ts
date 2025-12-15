@@ -12,7 +12,7 @@ import type { LovelaceViewConfig } from "../../../../data/lovelace/config/view";
 import type { HomeAssistant } from "../../../../types";
 import { isHelperDomain } from "../../../config/helpers/const";
 import type { HeadingCardConfig } from "../../cards/types";
-import { HOME_SUMMARIES_FILTERS } from "./helpers/home-summaries";
+import { OTHER_DEVICES_FILTERS } from "./helpers/other-devices-filters";
 
 export interface HomeOtherDevicesViewStrategyConfig {
   type: "home-other-devices";
@@ -26,8 +26,8 @@ export class HomeOtherDevicesViewStrategy extends ReactiveElement {
   ): Promise<LovelaceViewConfig> {
     const allEntities = Object.keys(hass.states);
 
-    const otherDevicesFilters = HOME_SUMMARIES_FILTERS.other_devices.map(
-      (filter) => generateEntityFilter(hass, filter)
+    const otherDevicesFilters = OTHER_DEVICES_FILTERS.map((filter) =>
+      generateEntityFilter(hass, filter)
     );
 
     const otherDevicesEntities = findEntities(allEntities, otherDevicesFilters);
