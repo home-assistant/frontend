@@ -394,6 +394,10 @@ export class HuiAreaCard extends LitElement implements LovelaceCard {
         const values: number[] = [];
         let uom: string | undefined;
 
+        // Track devices that have sensor entities contributing values
+        // to avoid duplicate readings from climate/humidifier attributes
+        const devicesWithSensorValues = new Set<string>();
+
         for (const entityId of sensorEntityIds) {
           const stateObj = this.hass.states[entityId];
           if (
@@ -407,6 +411,11 @@ export class HuiAreaCard extends LitElement implements LovelaceCard {
             }
             if (stateObj.attributes.unit_of_measurement === uom) {
               values.push(Number(stateObj.state));
+              // Track the device this sensor belongs to
+              const entityEntry = this.hass.entities[entityId];
+              if (entityEntry?.device_id) {
+                devicesWithSensorValues.add(entityEntry.device_id);
+              }
             }
           }
         }
@@ -425,6 +434,15 @@ export class HuiAreaCard extends LitElement implements LovelaceCard {
           for (const entityId of attrEntityIds) {
             const stateObj = this.hass.states[entityId];
             if (!stateObj) continue;
+
+            // Skip if this entity's device already has a sensor contributing values
+            const entityEntry = this.hass.entities[entityId];
+            if (
+              entityEntry?.device_id &&
+              devicesWithSensorValues.has(entityEntry.device_id)
+            ) {
+              continue;
+            }
 
             const domain = entityId.split(".")[0];
             const source = attrSources.find((s) => s.domain === domain);
