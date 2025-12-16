@@ -403,12 +403,6 @@ export class HaGenericPicker extends LitElement {
           }
         }
 
-        @media (max-height: 1000px) {
-          wa-popover::part(body) {
-            max-height: 400px;
-          }
-        }
-
         ha-bottom-sheet {
           --ha-bottom-sheet-height: 90vh;
           --ha-bottom-sheet-height: calc(100dvh - var(--ha-space-12));
