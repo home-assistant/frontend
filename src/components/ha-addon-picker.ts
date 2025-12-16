@@ -1,5 +1,5 @@
 import type { RenderItemFunction } from "@lit-labs/virtualizer/virtualize";
-import { css, html, LitElement, nothing } from "lit";
+import { html, LitElement, nothing } from "lit";
 import { customElement, property, query, state } from "lit/decorators";
 import { isComponentLoaded } from "../common/config/is_component_loaded";
 import { fireEvent } from "../common/dom/fire_event";
@@ -154,17 +154,6 @@ class HaAddonPicker extends LitElement {
         : nothing}${item?.primary || "Unknown"}</span
     >`;
   };
-
-  static styles = css`
-    .headline {
-      display: flex;
-      align-items: center;
-      gap: 8px;
-    }
-    .headline img {
-      width: 32px;
-    }
-  `;
 }
 
 declare global {
