@@ -255,7 +255,7 @@ class PanelEnergy extends LitElement {
       </hui-root>
       ${showEnergySelector
         ? html`
-            <ha-card raised class="period-selector">
+            <ha-card class="period-selector">
               <hui-energy-period-selector
                 .hass=${this.hass}
                 .collectionKey=${DEFAULT_ENERGY_COLLECTION_KEY}
@@ -674,6 +674,7 @@ class PanelEnergy extends LitElement {
         }
         .period-selector {
           position: fixed;
+          z-index: 1;
           bottom: calc(var(--ha-space-2) + var(--safe-area-inset-bottom, 0px));
           left: var(--mdc-drawer-width, 0);
           right: var(--safe-area-inset-right, 0px);
@@ -690,6 +691,12 @@ class PanelEnergy extends LitElement {
             var(--ha-space-4) + var(--safe-area-inset-left, 0px)
           );
           padding-inline-end: 0;
+          --ha-card-box-shadow:
+            0px 3px 5px -1px rgba(0, 0, 0, 0.2),
+            0px 6px 10px 0px rgba(0, 0, 0, 0.14),
+            0px 1px 18px 0px rgba(0, 0, 0, 0.12);
+          --ha-card-border-color: var(--divider-color);
+          --ha-card-border-width: 1px;
         }
       `,
     ];
