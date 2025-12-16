@@ -59,6 +59,9 @@ export class HaTextArea extends TextAreaBase {
           max-height: 16px;
         }
       }
+      .mdc-text-field-helper-line #helper-text {
+        line-height: var(--ha-line-height-condensed);
+      }
     `,
   ];
 }
