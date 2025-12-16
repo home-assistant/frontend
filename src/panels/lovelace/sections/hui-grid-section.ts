@@ -99,7 +99,7 @@ export class GridSection extends LitElement implements LovelaceSectionElement {
         @item-removed=${this._cardRemoved}
         invert-swap
       >
-        <div class="container">
+        <div class="container ${classMap({ "edit-mode": editMode })}">
           ${repeat(
             cardsConfig,
             (cardConfig) => this._getKey(cardConfig),
