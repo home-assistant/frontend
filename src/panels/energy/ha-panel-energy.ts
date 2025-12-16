@@ -670,26 +670,28 @@ class PanelEnergy extends LitElement {
           justify-content: center;
         }
         hui-root.has-period-selector {
-          --view-container-padding-bottom: var(--ha-space-16);
+          --view-container-padding-bottom: var(--ha-space-14);
         }
         .period-selector {
           position: fixed;
           z-index: 4;
-          bottom: calc(var(--ha-space-2) + var(--safe-area-inset-bottom, 0px));
-          left: var(--mdc-drawer-width, 0);
-          right: var(--safe-area-inset-right, 0px);
-          inset-inline-start: var(--mdc-drawer-width, 0);
-          inset-inline-end: var(--safe-area-inset-right, 0px);
-          margin: var(--ha-space-2) auto;
+          bottom: max(var(--ha-space-2), var(--safe-area-inset-bottom, 0px));
+          left: max(
+            var(--mdc-drawer-width, 0px),
+            var(--safe-area-inset-left, 0px)
+          );
+          right: var(--safe-area-inset-right, 0);
+          inset-inline-start: max(
+            var(--mdc-drawer-width, 0px),
+            var(--safe-area-inset-left, 0px)
+          );
+          inset-inline-end: var(--safe-area-inset-right, 0);
+          margin: 0 auto;
           max-width: calc(min(450px, 100% - var(--ha-space-4)));
           box-sizing: border-box;
-          padding-left: calc(
-            var(--ha-space-4) + var(--safe-area-inset-left, 0px)
-          );
+          padding-left: var(--ha-space-2);
           padding-right: 0;
-          padding-inline-start: calc(
-            var(--ha-space-4) + var(--safe-area-inset-left, 0px)
-          );
+          padding-inline-start: var(--ha-space-4);
           padding-inline-end: 0;
           --ha-card-box-shadow:
             0px 3px 5px -1px rgba(0, 0, 0, 0.2),
@@ -697,6 +699,14 @@ class PanelEnergy extends LitElement {
             0px 1px 18px 0px rgba(0, 0, 0, 0.12);
           --ha-card-border-color: var(--divider-color);
           --ha-card-border-width: var(--ha-card-border-width, 1px);
+        }
+        @media (min-width: 600px) {
+          hui-root.has-period-selector {
+            --view-container-padding-bottom: var(--ha-space-18);
+          }
+          .period-selector {
+            bottom: max(var(--ha-space-4), var(--safe-area-inset-bottom, 0px));
+          }
         }
       `,
     ];
