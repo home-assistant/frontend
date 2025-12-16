@@ -118,6 +118,9 @@ export class HaGenericPicker extends LitElement {
 
   @property({ attribute: "unknown-item-text" }) public unknownItemText?: string;
 
+  @property({ attribute: "custom-value-label" })
+  public customValueLabel?: string;
+
   @query(".container") private _containerElement?: HTMLDivElement;
 
   @query("ha-picker-combo-box") private _comboBox?: HaPickerComboBox;
@@ -244,13 +247,20 @@ export class HaGenericPicker extends LitElement {
         .sectionTitleFunction=${this.sectionTitleFunction}
         .selectedSection=${this.selectedSection}
         .searchKeys=${this.searchKeys}
+        .customValueLabel=${this.customValueLabel}
       ></ha-picker-combo-box>
     `;
   }
 
   private _unknownValue = memoizeOne(
     (value?: string, items?: (PickerComboBoxItem | string)[]) => {
-      if (value === undefined || value === null || value === "" || !items) {
+      if (
+        this.allowCustomValue ||
+        value === undefined ||
+        value === null ||
+        value === "" ||
+        !items
+      ) {
         return false;
       }
 

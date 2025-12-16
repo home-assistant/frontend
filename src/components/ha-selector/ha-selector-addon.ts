@@ -28,7 +28,6 @@ export class HaAddonSelector extends LitElement {
       .helper=${this.helper}
       .disabled=${this.disabled}
       .required=${this.required}
-      allow-custom-entity
     ></ha-addon-picker>`;
   }
 

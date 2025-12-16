@@ -107,7 +107,6 @@ export class HaDeviceSelector extends LitElement {
           .placeholder=${this.placeholder}
           .disabled=${this.disabled}
           .required=${this.required}
-          allow-custom-entity
         ></ha-device-picker>
       `;
     }

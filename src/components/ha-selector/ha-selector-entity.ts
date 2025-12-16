@@ -74,7 +74,6 @@ export class HaEntitySelector extends LitElement {
         .placeholder=${this.placeholder}
         .disabled=${this.disabled}
         .required=${this.required}
-        allow-custom-entity
       ></ha-entity-picker>`;
     }
 

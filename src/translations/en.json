@@ -1305,7 +1305,9 @@
       "combo-box": {
         "no_match": "No matching items found",
         "no_items": "No items available",
-        "unknown_item": "Unknown item"
+        "unknown_item": "Unknown item",
+        "search_or_custom": "Search | Add custom item",
+        "add_custom_item": "Add custom item"
       },
       "suggest_with_ai": {
         "label": "Suggest",
@@ -1314,6 +1316,9 @@
         "suggesting_3": "Enchanting…",
         "done": "Done!",
         "error": "Fail!"
+      },
+      "navigation-picker": {
+        "add_custom_path": "Add custom path"
       }
     },
     "dialogs": {

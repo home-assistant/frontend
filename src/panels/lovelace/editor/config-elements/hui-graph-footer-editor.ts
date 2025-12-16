@@ -51,7 +51,6 @@ export class HuiGraphFooterEditor
     return html`
       <div class="card-config">
         <ha-entity-picker
-          allow-custom-entity
           .label=${this.hass.localize(
             "ui.panel.lovelace.editor.card.generic.entity"
           )}

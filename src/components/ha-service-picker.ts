@@ -135,7 +135,6 @@ class HaServicePicker extends LitElement {
       <ha-generic-picker
         .hass=${this.hass}
         .autofocus=${this.autofocus}
-        allow-custom-value
         .notFoundLabel=${this.hass.localize(
           "ui.components.service-picker.no_match"
         )}
