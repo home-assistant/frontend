@@ -64,6 +64,27 @@ const loadCustomIconItems = async (iconsetPrefix: string) => {
   }
 };
 
+const ICON_PICKER_ITEMS = (): PickerComboBoxItem[] =>
+  ICONS.map((icon: IconItem): PickerComboBoxItem => {
+    const iconName = icon.icon.split(":")[1] || icon.icon;
+    const searchLabels: Record<string, string> = {
+      iconName,
+    };
+    Array.from(icon.parts).forEach((part, index) => {
+      searchLabels[`part${index}`] = part;
+    });
+    icon.keywords.forEach((keyword, index) => {
+      searchLabels[`keyword${index}`] = keyword;
+    });
+    return {
+      id: icon.icon,
+      primary: icon.icon,
+      icon: icon.icon,
+      search_labels: searchLabels,
+      sorting_label: icon.icon,
+    };
+  });
+
 const rowRenderer: RenderItemFunction<PickerComboBoxItem> = (item) => html`
   <ha-combo-box-item type="button">
     <ha-icon .icon=${item.id} slot="start"></ha-icon>
@@ -97,7 +118,7 @@ export class HaIconPicker extends LitElement {
         .hass=${this.hass}
         allow-custom-value
         show-label
-        .getItems=${this._getItems}
+        .getItems=${ICON_PICKER_ITEMS}
         .helper=${this.helper}
         .disabled=${this.disabled}
         .required=${this.required}
@@ -175,27 +196,6 @@ export class HaIconPicker extends LitElement {
         .map((item) => item.item);
     }
   );
-
-  private _getItems = (): PickerComboBoxItem[] =>
-    ICONS.map((icon: IconItem) => {
-      const iconName = icon.icon.split(":")[1] || icon.icon;
-      const searchLabels: Record<string, string> = {
-        iconName,
-      };
-      Array.from(icon.parts).forEach((part, index) => {
-        searchLabels[`part${index}`] = part;
-      });
-      icon.keywords.forEach((keyword, index) => {
-        searchLabels[`keyword${index}`] = keyword;
-      });
-      return {
-        id: icon.icon,
-        primary: icon.icon,
-        icon: icon.icon,
-        search_labels: searchLabels,
-        sorting_label: icon.icon,
-      };
-    });
 
   protected firstUpdated() {
     if (!ICONS_LOADED) {
