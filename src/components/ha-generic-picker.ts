@@ -9,6 +9,7 @@ import { tinykeys } from "tinykeys";
 import { fireEvent } from "../common/dom/fire_event";
 import type { FuseWeightedKey } from "../resources/fuseMultiTerm";
 import type { HomeAssistant } from "../types";
+import { isIosApp } from "../util/is_ios";
 import "./ha-bottom-sheet";
 import "./ha-button";
 import "./ha-combo-box-item";
@@ -228,6 +229,7 @@ export class HaGenericPicker extends LitElement {
     }
     return html`
       <ha-picker-combo-box
+        id="combo-box"
         .hass=${this.hass}
         .allowCustomValue=${this.allowCustomValue}
         .label=${this.searchLabel}
@@ -271,6 +273,15 @@ export class HaGenericPicker extends LitElement {
   private _dialogOpened = () => {
     this._opened = true;
     requestAnimationFrame(() => {
+      if (this.hass && isIosApp(this.hass)) {
+        this.hass.auth.external!.fireMessage({
+          type: "focus_element",
+          payload: {
+            element_id: "combo-box",
+          },
+        });
+        return;
+      }
       this._comboBox?.focus();
     });
   };
