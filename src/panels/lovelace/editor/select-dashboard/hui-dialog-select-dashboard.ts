@@ -71,7 +71,7 @@ export class HuiDialogSelectDashboard extends LitElement {
         .hass=${this.hass}
         .open=${this._open}
         header-title=${dialogTitle}
-        ?prevent-scrim-close=${this._saving}
+        .preventScrimClose=${this._saving}
         @closed=${this._dialogClosed}
       >
         ${this._dashboards && !this._saving
