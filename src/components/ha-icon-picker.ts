@@ -19,32 +19,39 @@ interface RankedIcon {
 let ICONS: PickerComboBoxItem[] = [];
 let ICONS_LOADED = false;
 
+interface IconData {
+  name: string;
+  keywords?: string[];
+}
+
+const createIconItem = (icon: IconData, prefix: string): PickerComboBoxItem => {
+  const iconId = `${prefix}:${icon.name}`;
+  const iconName = icon.name;
+  const parts = iconName.split("-");
+  const keywords = icon.keywords ?? [];
+  const searchLabels: Record<string, string> = {
+    iconName,
+  };
+  parts.forEach((part, index) => {
+    searchLabels[`part${index}`] = part;
+  });
+  keywords.forEach((keyword, index) => {
+    searchLabels[`keyword${index}`] = keyword;
+  });
+  return {
+    id: iconId,
+    primary: iconId,
+    icon: iconId,
+    search_labels: searchLabels,
+    sorting_label: iconId,
+  };
+};
+
 const loadIcons = async () => {
   ICONS_LOADED = true;
 
   const iconList = await import("../../build/mdi/iconList.json");
-  ICONS = iconList.default.map((icon) => {
-    const iconId = `mdi:${icon.name}`;
-    const iconName = icon.name;
-    const parts = iconName.split("-");
-    const keywords = icon.keywords ?? [];
-    const searchLabels: Record<string, string> = {
-      iconName,
-    };
-    parts.forEach((part, index) => {
-      searchLabels[`part${index}`] = part;
-    });
-    keywords.forEach((keyword, index) => {
-      searchLabels[`keyword${index}`] = keyword;
-    });
-    return {
-      id: iconId,
-      primary: iconId,
-      icon: iconId,
-      search_labels: searchLabels,
-      sorting_label: iconId,
-    };
-  });
+  ICONS = iconList.default.map((icon) => createIconItem(icon, "mdi"));
 
   const customIconLoads: Promise<PickerComboBoxItem[]>[] = [];
   Object.keys(customIcons).forEach((iconSet) => {
@@ -64,29 +71,7 @@ const loadCustomIconItems = async (
       return [];
     }
     const iconList = await getIconList();
-    const customIconItems = iconList.map((icon) => {
-      const iconId = `${iconsetPrefix}:${icon.name}`;
-      const iconName = icon.name;
-      const parts = iconName.split("-");
-      const keywords = icon.keywords ?? [];
-      const searchLabels: Record<string, string> = {
-        iconName,
-      };
-      parts.forEach((part, index) => {
-        searchLabels[`part${index}`] = part;
-      });
-      keywords.forEach((keyword, index) => {
-        searchLabels[`keyword${index}`] = keyword;
-      });
-      return {
-        id: iconId,
-        primary: iconId,
-        icon: iconId,
-        search_labels: searchLabels,
-        sorting_label: iconId,
-      };
-    });
-    return customIconItems;
+    return iconList.map((icon) => createIconItem(icon, iconsetPrefix));
   } catch (_err) {
     // eslint-disable-next-line no-console
     console.warn(`Unable to load icon list for ${iconsetPrefix} iconset`);
