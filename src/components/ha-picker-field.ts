@@ -73,7 +73,9 @@ export class HaPickerField extends LitElement {
 
     const overlineLabel =
       this.showLabel && hasValue && this.placeholder
-        ? html`<span slot="overline">${this.placeholder}</span>`
+        ? html`<span slot="overline"
+            >${this.placeholder}${this.required ? " *" : ""}</span
+          >`
         : nothing;
 
     const headlineContent = hasValue
@@ -82,7 +84,7 @@ export class HaPickerField extends LitElement {
         : html`<span slot="headline">${this.value}</span>`
       : this.placeholder
         ? html`<span slot="headline" class="placeholder">
-            ${this.placeholder}
+            ${this.placeholder}${this.required ? " *" : ""}
           </span>`
         : nothing;
 
