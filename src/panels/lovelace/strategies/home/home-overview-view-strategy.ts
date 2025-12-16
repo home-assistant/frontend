@@ -194,8 +194,8 @@ export class HomeOverviewViewStrategy extends ReactiveElement {
         (source) => source.type === "grid" && source.flow_from.length > 0
       ) ?? false;
 
-    // Build widget cards (used in both mobile section and sidebar)
-    const widgetCards: LovelaceCardConfig[] = [
+    // Build summary cards (used in both mobile section and sidebar)
+    const summaryCards: LovelaceCardConfig[] = [
       hasLights &&
         ({
           type: "home-summary",
@@ -252,32 +252,32 @@ export class HomeOverviewViewStrategy extends ReactiveElement {
         } satisfies HomeSummaryCard),
     ].filter(Boolean) as LovelaceCardConfig[];
 
-    // Build widget cards for sidebar (full width: columns 12)
-    const sidebarWidgetCards = widgetCards.map((card) => ({
+    // Build summary cards for sidebar (full width: columns 12)
+    const sidebarSummaryCards = summaryCards.map((card) => ({
       ...card,
       grid_options: { columns: 12 },
     }));
 
-    // Build widget cards for mobile section (half width: columns 6)
-    const mobileWidgetCards = widgetCards.map((card) => ({
+    // Build summary cards for mobile section (half width: columns 6)
+    const mobileSummaryCards = summaryCards.map((card) => ({
       ...card,
       grid_options: { columns: 6 },
     }));
 
     // Mobile summary section (visible on small screens only)
     const mobileSummarySection: LovelaceSectionConfig | undefined =
-      mobileWidgetCards.length > 0
+      mobileSummaryCards.length > 0
         ? {
             type: "grid",
             column_span: maxColumns,
             visibility: [smallScreenCondition],
-            cards: mobileWidgetCards,
+            cards: mobileSummaryCards,
           }
         : undefined;
 
     // Sidebar section
     const sidebarSection: LovelaceSectionConfig | undefined =
-      sidebarWidgetCards.length > 0
+      sidebarSummaryCards.length > 0
         ? {
             type: "grid",
             cards: [
@@ -288,14 +288,14 @@ export class HomeOverviewViewStrategy extends ReactiveElement {
                 ),
                 heading_style: "title",
               },
-              ...sidebarWidgetCards,
+              ...sidebarSummaryCards,
             ],
           }
         : undefined;
 
     // Commonly used heading section (visible on small screens only, between summaries and common controls)
     const commonlyUsedHeadingSection: LovelaceSectionConfig | undefined =
-      mobileWidgetCards.length > 0
+      mobileSummaryCards.length > 0
         ? {
             type: "grid",
             column_span: maxColumns,
