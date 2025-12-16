@@ -7160,7 +7160,9 @@
           },
           "home": {
             "summary_list": {
-              "media_players": "Media players"
+              "media_players": "Media players",
+              "weather": "Current weather",
+              "energy": "Today's energy"
             },
             "welcome_user": "Welcome {user}",
             "summaries": "Summaries",

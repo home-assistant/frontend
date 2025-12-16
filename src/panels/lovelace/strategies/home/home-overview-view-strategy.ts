@@ -21,7 +21,7 @@ import type {
   AreaCardConfig,
   HomeSummaryCard,
   MarkdownCardConfig,
-  WeatherForecastCardConfig,
+  TileCardConfig,
 } from "../../cards/types";
 import type { CommonControlSectionStrategyConfig } from "../usage_prediction/common-controls-section-strategy";
 import { HOME_SUMMARIES_FILTERS } from "./helpers/home-summaries";
@@ -252,15 +252,16 @@ export class HomeOverviewViewStrategy extends ReactiveElement {
 
     if (weatherEntity) {
       widgetSection.cards!.push({
-        type: "weather-forecast",
+        type: "tile",
         entity: weatherEntity,
-        show_forecast: false,
-        show_current: true,
+        name: hass.localize(
+          "ui.panel.lovelace.strategy.home.summary_list.weather"
+        ),
+        state_content: ["state", "temperature"],
         grid_options: {
           columns: 12,
-          rows: "auto",
         },
-      } as WeatherForecastCardConfig);
+      } satisfies TileCardConfig);
     }
 
     const energyPrefs = isComponentLoaded(hass, "energy")
@@ -275,13 +276,16 @@ export class HomeOverviewViewStrategy extends ReactiveElement {
 
       if (grid && grid.flow_from.length > 0) {
         widgetSection.cards!.push({
-          title: hass.localize(
-            "ui.panel.lovelace.cards.energy.energy_distribution.title_today"
-          ),
-          type: "energy-distribution",
-          collection_key: "energy_home_dashboard",
-          link_dashboard: true,
-        });
+          type: "home-summary",
+          summary: "energy",
+          tap_action: {
+            action: "navigate",
+            navigation_path: "/energy",
+          },
+          grid_options: {
+            columns: 12,
+          },
+        } satisfies HomeSummaryCard);
       }
     }
 
