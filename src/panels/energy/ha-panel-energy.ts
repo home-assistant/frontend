@@ -670,12 +670,12 @@ class PanelEnergy extends LitElement {
           justify-content: center;
         }
         hui-root.has-period-selector {
-          --view-container-padding-bottom: var(--ha-space-14);
+          --view-container-padding-bottom: var(--ha-space-18);
         }
         .period-selector {
           position: fixed;
           z-index: 4;
-          bottom: max(var(--ha-space-2), var(--safe-area-inset-bottom, 0px));
+          bottom: max(var(--ha-space-4), var(--safe-area-inset-bottom, 0px));
           left: max(
             var(--mdc-drawer-width, 0px),
             var(--safe-area-inset-left, 0px)
@@ -700,12 +700,12 @@ class PanelEnergy extends LitElement {
           --ha-card-border-color: var(--divider-color);
           --ha-card-border-width: var(--ha-card-border-width, 1px);
         }
-        @media (min-width: 600px) {
+        @media all and (max-width: 450px), all and (max-height: 500px) {
           hui-root.has-period-selector {
-            --view-container-padding-bottom: var(--ha-space-18);
+            --view-container-padding-bottom: var(--ha-space-14);
           }
           .period-selector {
-            bottom: max(var(--ha-space-4), var(--safe-area-inset-bottom, 0px));
+            bottom: max(var(--ha-space-2), var(--safe-area-inset-bottom, 0px));
           }
         }
       `,
