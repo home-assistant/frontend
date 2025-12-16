@@ -674,7 +674,7 @@ class PanelEnergy extends LitElement {
         }
         .period-selector {
           position: fixed;
-          z-index: 1;
+          z-index: 4;
           bottom: calc(var(--ha-space-2) + var(--safe-area-inset-bottom, 0px));
           left: var(--mdc-drawer-width, 0);
           right: var(--safe-area-inset-right, 0px);
