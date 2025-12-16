@@ -94,8 +94,6 @@ const loadCustomIconItems = async (
   }
 };
 
-const getIconPickerItems = (): PickerComboBoxItem[] => ICONS;
-
 const rowRenderer: RenderItemFunction<PickerComboBoxItem> = (item) => html`
   <ha-combo-box-item type="button">
     <ha-icon .icon=${item.id} slot="start"></ha-icon>
@@ -123,13 +121,15 @@ export class HaIconPicker extends LitElement {
 
   @property({ type: Boolean }) public invalid = false;
 
+  private _getIconPickerItems = (): PickerComboBoxItem[] => ICONS;
+
   protected render(): TemplateResult {
     return html`
       <ha-generic-picker
         .hass=${this.hass}
         allow-custom-value
         show-label
-        .getItems=${getIconPickerItems}
+        .getItems=${this._getIconPickerItems}
         .helper=${this.helper}
         .disabled=${this.disabled}
         .required=${this.required}
@@ -211,6 +211,7 @@ export class HaIconPicker extends LitElement {
   protected firstUpdated() {
     if (!ICONS_LOADED) {
       loadIcons().then(() => {
+        this._getIconPickerItems = (): PickerComboBoxItem[] => ICONS;
         this.requestUpdate();
       });
     }
