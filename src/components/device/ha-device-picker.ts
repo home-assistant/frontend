@@ -205,6 +205,8 @@ export class HaDevicePicker extends LitElement {
       <ha-generic-picker
         .hass=${this.hass}
         .autofocus=${this.autofocus}
+        .disabled=${this.disabled}
+        .helper=${this.helper}
         .label=${this.label}
         .searchLabel=${this.searchLabel}
         .notFoundLabel=${this._notFoundLabel}
