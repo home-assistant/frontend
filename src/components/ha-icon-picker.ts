@@ -11,31 +11,42 @@ import "./ha-generic-picker";
 import "./ha-icon";
 import type { PickerComboBoxItem } from "./ha-picker-combo-box";
 
-interface IconItem {
-  icon: string;
-  parts: Set<string>;
-  keywords: string[];
-}
-
 interface RankedIcon {
   item: PickerComboBoxItem;
   rank: number;
 }
 
-let ICONS: IconItem[] = [];
+let ICONS: PickerComboBoxItem[] = [];
 let ICONS_LOADED = false;
 
 const loadIcons = async () => {
   ICONS_LOADED = true;
 
   const iconList = await import("../../build/mdi/iconList.json");
-  ICONS = iconList.default.map((icon) => ({
-    icon: `mdi:${icon.name}`,
-    parts: new Set(icon.name.split("-")),
-    keywords: icon.keywords,
-  }));
+  ICONS = iconList.default.map((icon) => {
+    const iconId = `mdi:${icon.name}`;
+    const iconName = icon.name;
+    const parts = iconName.split("-");
+    const keywords = icon.keywords ?? [];
+    const searchLabels: Record<string, string> = {
+      iconName,
+    };
+    parts.forEach((part, index) => {
+      searchLabels[`part${index}`] = part;
+    });
+    keywords.forEach((keyword, index) => {
+      searchLabels[`keyword${index}`] = keyword;
+    });
+    return {
+      id: iconId,
+      primary: iconId,
+      icon: iconId,
+      search_labels: searchLabels,
+      sorting_label: iconId,
+    };
+  });
 
-  const customIconLoads: Promise<IconItem[]>[] = [];
+  const customIconLoads: Promise<PickerComboBoxItem[]>[] = [];
   Object.keys(customIcons).forEach((iconSet) => {
     customIconLoads.push(loadCustomIconItems(iconSet));
   });
@@ -44,18 +55,37 @@ const loadIcons = async () => {
   });
 };
 
-const loadCustomIconItems = async (iconsetPrefix: string) => {
+const loadCustomIconItems = async (
+  iconsetPrefix: string
+): Promise<PickerComboBoxItem[]> => {
   try {
     const getIconList = customIcons[iconsetPrefix].getIconList;
     if (typeof getIconList !== "function") {
       return [];
     }
     const iconList = await getIconList();
-    const customIconItems = iconList.map((icon) => ({
-      icon: `${iconsetPrefix}:${icon.name}`,
-      parts: new Set(icon.name.split("-")),
-      keywords: icon.keywords ?? [],
-    }));
+    const customIconItems = iconList.map((icon) => {
+      const iconId = `${iconsetPrefix}:${icon.name}`;
+      const iconName = icon.name;
+      const parts = iconName.split("-");
+      const keywords = icon.keywords ?? [];
+      const searchLabels: Record<string, string> = {
+        iconName,
+      };
+      parts.forEach((part, index) => {
+        searchLabels[`part${index}`] = part;
+      });
+      keywords.forEach((keyword, index) => {
+        searchLabels[`keyword${index}`] = keyword;
+      });
+      return {
+        id: iconId,
+        primary: iconId,
+        icon: iconId,
+        search_labels: searchLabels,
+        sorting_label: iconId,
+      };
+    });
     return customIconItems;
   } catch (_err) {
     // eslint-disable-next-line no-console
@@ -63,27 +93,6 @@ const loadCustomIconItems = async (iconsetPrefix: string) => {
     return [];
   }
 };
-
-const ICON_PICKER_ITEMS = (): PickerComboBoxItem[] =>
-  ICONS.map((icon: IconItem): PickerComboBoxItem => {
-    const iconName = icon.icon.split(":")[1] || icon.icon;
-    const searchLabels: Record<string, string> = {
-      iconName,
-    };
-    Array.from(icon.parts).forEach((part, index) => {
-      searchLabels[`part${index}`] = part;
-    });
-    icon.keywords.forEach((keyword, index) => {
-      searchLabels[`keyword${index}`] = keyword;
-    });
-    return {
-      id: icon.icon,
-      primary: icon.icon,
-      icon: icon.icon,
-      search_labels: searchLabels,
-      sorting_label: icon.icon,
-    };
-  });
 
 const rowRenderer: RenderItemFunction<PickerComboBoxItem> = (item) => html`
   <ha-combo-box-item type="button">
@@ -118,7 +127,7 @@ export class HaIconPicker extends LitElement {
         .hass=${this.hass}
         allow-custom-value
         show-label
-        .getItems=${ICON_PICKER_ITEMS}
+        .getItems=${ICONS}
         .helper=${this.helper}
         .disabled=${this.disabled}
         .required=${this.required}
