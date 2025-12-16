@@ -185,7 +185,6 @@ export class HaGenericPicker extends LitElement {
                   .valueRenderer=${this.valueRenderer}
                   .required=${this.required}
                   .disabled=${this.disabled}
-                  .errorMessage=${this.errorMessage}
                   .invalid=${this.invalid}
                   .hideClearIcon=${this.hideClearIcon}
                 >
