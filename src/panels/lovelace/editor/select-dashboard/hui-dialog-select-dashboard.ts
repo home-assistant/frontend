@@ -153,7 +153,7 @@ export class HuiDialogSelectDashboard extends LitElement {
         title: this.hass.localize("ui.common.default"),
         mode: this.hass.panels.lovelace?.config?.mode,
       },
-      ...dashboards,
+      ...(dashboards ?? []),
     ];
 
     const defaultPanel = getDefaultPanelUrlPath(this.hass);
