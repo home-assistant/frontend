@@ -175,6 +175,7 @@ describe("Energy Short Format Test", () => {
   it("Power Short Format", () => {
     assert.strictEqual(formatPowerShort(hass, 0), "0 W");
     assert.strictEqual(formatPowerShort(hass, 10), "10 W");
+    assert.strictEqual(formatPowerShort(hass, 12.2), "12 W");
     assert.strictEqual(formatPowerShort(hass, 999), "999 W");
     assert.strictEqual(formatPowerShort(hass, 1000), "1 kW");
     assert.strictEqual(formatPowerShort(hass, 1234), "1.234 kW");
