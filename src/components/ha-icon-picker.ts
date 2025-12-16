@@ -94,6 +94,8 @@ const loadCustomIconItems = async (
   }
 };
 
+const getIconPickerItems = (): PickerComboBoxItem[] => ICONS;
+
 const rowRenderer: RenderItemFunction<PickerComboBoxItem> = (item) => html`
   <ha-combo-box-item type="button">
     <ha-icon .icon=${item.id} slot="start"></ha-icon>
@@ -127,7 +129,7 @@ export class HaIconPicker extends LitElement {
         .hass=${this.hass}
         allow-custom-value
         show-label
-        .getItems=${ICONS}
+        .getItems=${getIconPickerItems}
         .helper=${this.helper}
         .disabled=${this.disabled}
         .required=${this.required}
