@@ -15,6 +15,7 @@ import { getDefaultPanelUrlPath } from "../../../../data/panel";
 import { haStyleDialog } from "../../../../resources/styles";
 import type { HomeAssistant } from "../../../../types";
 import type { SelectDashboardDialogParams } from "./show-select-dashboard-dialog";
+import { showAlertDialog } from "../../../../dialogs/generic/show-dialog-box";
 
 @customElement("hui-dialog-select-dashboard")
 export class HuiDialogSelectDashboard extends LitElement {
@@ -124,6 +125,25 @@ export class HuiDialogSelectDashboard extends LitElement {
   }
 
   private async _getDashboards() {
+    let dashboards: LovelaceDashboard[] | undefined = this._params!.dashboards;
+    if (!dashboards) {
+      try {
+        dashboards = await fetchDashboards(this.hass);
+      } catch (error) {
+        // eslint-disable-next-line no-console
+        console.error("Error fetching dashboards:", error);
+
+        showAlertDialog(this, {
+          title: this.hass.localize(
+            "ui.panel.lovelace.editor.select_dashboard.error_title"
+          ),
+          text: this.hass.localize(
+            "ui.panel.lovelace.editor.select_dashboard.error_text"
+          ),
+        });
+      }
+    }
+
     this._dashboards = [
       {
         id: "lovelace",
@@ -133,7 +153,7 @@ export class HuiDialogSelectDashboard extends LitElement {
         title: this.hass.localize("ui.common.default"),
         mode: this.hass.panels.lovelace?.config?.mode,
       },
-      ...(this._params!.dashboards || (await fetchDashboards(this.hass))),
+      ...dashboards,
     ];
 
     const defaultPanel = getDefaultPanelUrlPath(this.hass);

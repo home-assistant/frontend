@@ -7634,6 +7634,8 @@
             "strategy_type": "strategy"
           },
           "select_dashboard": {
+            "error_title": "Error fetching dashboards",
+            "error_text": "Failed to fetch dashboards, please try again.",
             "header": "Choose a dashboard",
             "cannot_move_to_strategy": "The view cannot be moved because the selected dashboard is auto-generated.",
             "get_config_failed": "Failed to load selected dashboard config.",
