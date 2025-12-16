@@ -239,7 +239,7 @@ export class HomeOverviewViewStrategy extends ReactiveElement {
           name: hass.localize(
             "ui.panel.lovelace.strategy.home.summary_list.weather"
           ),
-          state_content: ["state", "temperature"],
+          state_content: ["temperature", "state"],
         } satisfies TileCardConfig),
       hasEnergy &&
         ({
@@ -275,12 +275,11 @@ export class HomeOverviewViewStrategy extends ReactiveElement {
           }
         : undefined;
 
-    // Sidebar section (visible on large screens)
+    // Sidebar section
     const sidebarSection: LovelaceSectionConfig | undefined =
       sidebarWidgetCards.length > 0
         ? {
             type: "grid",
-            visibility: [largeScreenCondition],
             cards: [
               {
                 type: "heading",
@@ -352,6 +351,7 @@ export class HomeOverviewViewStrategy extends ReactiveElement {
           sidebar_label: hass.localize(
             "ui.panel.lovelace.strategy.home.for_you"
           ),
+          visibility: [largeScreenCondition],
         },
       }),
     };
