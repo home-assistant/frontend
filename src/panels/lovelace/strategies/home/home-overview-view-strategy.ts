@@ -141,7 +141,7 @@ export class HomeOverviewViewStrategy extends ReactiveElement {
     );
     const maxCommonControls = Math.max(8, favoriteEntities.length);
 
-    const commonControlsSection = {
+    const commonControlsSectionBase = {
       strategy: {
         type: "common-controls",
         limit: maxCommonControls,
@@ -149,6 +149,20 @@ export class HomeOverviewViewStrategy extends ReactiveElement {
         hide_empty: true,
       } satisfies CommonControlSectionStrategyConfig,
       column_span: maxColumns,
+    } as LovelaceStrategySectionConfig;
+
+    const commonControlsSectionMobile = {
+      ...commonControlsSectionBase,
+      strategy: {
+        ...commonControlsSectionBase.strategy,
+        title: hass.localize("ui.panel.lovelace.strategy.home.commonly_used"),
+      },
+      visibility: [smallScreenCondition],
+    } as LovelaceStrategySectionConfig;
+
+    const commonControlsSectionDesktop = {
+      ...commonControlsSectionBase,
+      visibility: [largeScreenCondition],
     } as LovelaceStrategySectionConfig;
 
     const allEntities = Object.keys(hass.states);
@@ -293,25 +307,6 @@ export class HomeOverviewViewStrategy extends ReactiveElement {
           }
         : undefined;
 
-    // Commonly used heading section (visible on small screens only, between summaries and common controls)
-    const commonlyUsedHeadingSection: LovelaceSectionConfig | undefined =
-      mobileSummaryCards.length > 0
-        ? {
-            type: "grid",
-            column_span: maxColumns,
-            visibility: [smallScreenCondition],
-            cards: [
-              {
-                type: "heading",
-                heading: hass.localize(
-                  "ui.panel.lovelace.strategy.home.commonly_used"
-                ),
-                heading_style: "title",
-              },
-            ],
-          }
-        : undefined;
-
     const sections = (
       [
         {
@@ -326,8 +321,8 @@ export class HomeOverviewViewStrategy extends ReactiveElement {
           ],
         },
         mobileSummarySection,
-        commonlyUsedHeadingSection,
-        commonControlsSection,
+        commonControlsSectionMobile,
+        commonControlsSectionDesktop,
         ...floorsSections,
       ] satisfies (LovelaceSectionRawConfig | undefined)[]
     ).filter(Boolean) as LovelaceSectionRawConfig[];
