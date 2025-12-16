@@ -52,8 +52,6 @@ export class HaPickerField extends LitElement {
   @property({ attribute: false })
   public valueRenderer?: PickerValueRenderer;
 
-  @property({ attribute: "error-message" }) public errorMessage?: string;
-
   @property({ type: Boolean, reflect: true }) public invalid = false;
 
   @query("ha-combo-box-item", true) public item!: HaComboBoxItem;
