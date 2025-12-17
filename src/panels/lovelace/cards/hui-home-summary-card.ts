@@ -258,9 +258,6 @@ export class HuiHomeSummaryCard
         const { summedData } = getSummedData(this._energyData);
         const { consumption } = computeConsumptionData(summedData, undefined);
         const totalConsumption = consumption.total.used_total;
-        if (totalConsumption === 0) {
-          return "";
-        }
         return formatConsumptionShort(this.hass, totalConsumption, "kWh");
       }
     }

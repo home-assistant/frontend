@@ -14,7 +14,7 @@ export const HOME_SUMMARIES = [
 
 export type HomeSummary = (typeof HOME_SUMMARIES)[number];
 
-export const HOME_SUMMARIES_ICONS: Record<HomeSummary, string | undefined> = {
+export const HOME_SUMMARIES_ICONS: Record<HomeSummary, string> = {
   light: "mdi:lamps",
   climate: "mdi:home-thermometer",
   security: "mdi:security",
