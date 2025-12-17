@@ -160,7 +160,7 @@ class DialogFloorDetail extends LitElement {
               ${!this._icon
                 ? html`
                     <ha-floor-icon
-                      slot="fallback"
+                      slot="start"
                       .floor=${{ level: this._level }}
                     ></ha-floor-icon>
                   `

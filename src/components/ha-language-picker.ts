@@ -116,6 +116,11 @@ export class HaLanguagePicker extends LitElement {
     > `;
 
   protected render() {
+    const label =
+      this.label ??
+      (this.hass?.localize("ui.components.language-picker.language") ||
+        "Language");
+
     const value =
       this.value ??
       (this.required && !this.disabled ? this._getItems()[0].id : this.value);
@@ -129,10 +134,7 @@ export class HaLanguagePicker extends LitElement {
         .emptyLabel=${this.hass?.localize(
           "ui.components.language-picker.no_languages"
         ) || "No languages available"}
-        .placeholder=${this.label ??
-        (this.hass?.localize("ui.components.language-picker.language") ||
-          "Language")}
-        show-label
+        .label=${label}
         .value=${value}
         .valueRenderer=${this._valueRenderer}
         .disabled=${this.disabled}

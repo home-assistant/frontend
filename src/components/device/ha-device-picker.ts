@@ -195,10 +195,6 @@ export class HaDevicePicker extends LitElement {
   `;
 
   protected render() {
-    const placeholder =
-      this.placeholder ??
-      this.hass.localize("ui.components.device-picker.placeholder");
-
     const valueRenderer = this._valueRenderer(this._configEntryLookup);
 
     return html`
@@ -213,7 +209,7 @@ export class HaDevicePicker extends LitElement {
         .emptyLabel=${this.hass.localize(
           "ui.components.device-picker.no_devices"
         )}
-        .placeholder=${placeholder}
+        .placeholder=${this.placeholder}
         .value=${this.value}
         .rowRenderer=${this._rowRenderer}
         .getItems=${this._getItems}
@@ -223,6 +219,7 @@ export class HaDevicePicker extends LitElement {
         .unknownItemText=${this.hass.localize(
           "ui.components.device-picker.unknown"
         )}
+        use-top-label
         @value-changed=${this._valueChanged}
       >
       </ha-generic-picker>

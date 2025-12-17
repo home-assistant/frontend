@@ -403,7 +403,7 @@ export class EntityRegistrySettingsEditor extends LitElement {
               ${!this._icon && !stateObj?.attributes.icon && stateObj
                 ? html`
                     <ha-state-icon
-                      slot="fallback"
+                      slot="start"
                       .hass=${this.hass}
                       .stateObj=${stateObj}
                     ></ha-state-icon>
@@ -778,7 +778,6 @@ export class EntityRegistrySettingsEditor extends LitElement {
             .hass=${this.hass}
             .value=${this._areaId}
             .disabled=${this.disabled}
-            show-label
             @value-changed=${this._areaPicked}
           ></ha-area-picker>`
         : ""}
@@ -1013,7 +1012,6 @@ export class EntityRegistrySettingsEditor extends LitElement {
               ? html`<ha-area-picker
                   .hass=${this.hass}
                   .value=${this._areaId}
-                  show-label
                   .disabled=${this.disabled}
                   @value-changed=${this._areaPicked}
                 ></ha-area-picker>`

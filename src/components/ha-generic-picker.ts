@@ -7,6 +7,7 @@ import { ifDefined } from "lit/directives/if-defined";
 import memoizeOne from "memoize-one";
 import { tinykeys } from "tinykeys";
 import { fireEvent } from "../common/dom/fire_event";
+import { PickerMixin } from "../mixins/picker-mixin";
 import type { FuseWeightedKey } from "../resources/fuseMultiTerm";
 import type { HomeAssistant } from "../types";
 import "./ha-bottom-sheet";
@@ -20,38 +21,17 @@ import type {
   PickerComboBoxSearchFn,
 } from "./ha-picker-combo-box";
 import "./ha-picker-field";
-import type { PickerValueRenderer } from "./ha-picker-field";
 import "./ha-svg-icon";
 
 @customElement("ha-generic-picker")
-export class HaGenericPicker extends LitElement {
+export class HaGenericPicker extends PickerMixin(LitElement) {
   @property({ attribute: false }) public hass?: HomeAssistant;
-
-  @property({ type: Boolean }) public disabled = false;
-
-  @property({ type: Boolean }) public required = false;
 
   @property({ type: Boolean, attribute: "allow-custom-value" })
   public allowCustomValue;
 
-  @property() public value?: string;
-
-  @property() public icon?: string;
-
-  @property() public label?: string;
-
-  @property() public helper?: string;
-
-  @property() public placeholder?: string;
-
   @property({ type: String, attribute: "search-label" })
   public searchLabel?: string;
-
-  @property({ attribute: "hide-clear-icon", type: Boolean })
-  public hideClearIcon = false;
-
-  @property({ attribute: "show-label", type: Boolean })
-  public showLabel = false;
 
   /** To prevent lags, getItems needs to be memoized */
   @property({ attribute: false })
@@ -65,9 +45,6 @@ export class HaGenericPicker extends LitElement {
 
   @property({ attribute: false })
   public rowRenderer?: RenderItemFunction<PickerComboBoxItem>;
-
-  @property({ attribute: false })
-  public valueRenderer?: PickerValueRenderer;
 
   @property({ attribute: false })
   public searchFn?: PickerComboBoxSearchFn<PickerComboBoxItem>;
@@ -118,7 +95,8 @@ export class HaGenericPicker extends LitElement {
 
   @property({ attribute: "selected-section" }) public selectedSection?: string;
 
-  @property({ attribute: "unknown-item-text" }) public unknownItemText?: string;
+  @property({ type: Boolean, attribute: "use-top-label" })
+  public useTopLabel = false;
 
   @query(".container") private _containerElement?: HTMLDivElement;
 
@@ -149,14 +127,18 @@ export class HaGenericPicker extends LitElement {
   private _unsubscribeTinyKeys?: () => void;
 
   protected render() {
-    return html`
-      ${this.label
-        ? html`<label ?disabled=${this.disabled}>${this.label}</label>`
-        : nothing}
-      <div class="container">
+    const hasValue = !!this.value?.length;
+
+    // Only show label if it's not a top label and there is a value.
+    const label = this.useTopLabel && this.value ? undefined : this.label;
+
+    return html`<div class="container">
+        ${this.useTopLabel && this.label
+          ? html`<label ?disabled=${this.disabled}>${this.label}</label>`
+          : nothing}
         <div id="picker">
           <slot name="field">
-            ${this.addButtonLabel && !this.value
+            ${this.addButtonLabel && !hasValue
               ? html`<ha-button
                   size="small"
                   appearance="filled"
@@ -179,8 +161,10 @@ export class HaGenericPicker extends LitElement {
                   @click=${this.open}
                   @clear=${this._clear}
                   .icon=${this.icon}
-                  .showLabel=${this.showLabel}
+                  .image=${this.image}
+                  .label=${label}
                   .placeholder=${this.placeholder}
+                  .helper=${this.helper}
                   .value=${this.value}
                   .valueRenderer=${this.valueRenderer}
                   .required=${this.required}
@@ -188,6 +172,7 @@ export class HaGenericPicker extends LitElement {
                   .invalid=${this.invalid}
                   .hideClearIcon=${this.hideClearIcon}
                 >
+                  <slot name="start"></slot>
                 </ha-picker-field>`}
           </slot>
         </div>
@@ -226,8 +211,7 @@ export class HaGenericPicker extends LitElement {
               </ha-bottom-sheet>`
             : nothing}
       </div>
-      ${this._renderHelper()}
-    `;
+      ${this._renderHelper()}`;
   }
 
   private _renderComboBox(dialogMode = false) {
@@ -310,7 +294,7 @@ export class HaGenericPicker extends LitElement {
     this._newValue = value;
   }
 
-  private _clear(e) {
+  private _clear(e: CustomEvent) {
     e.stopPropagation();
     this._setValue(undefined);
   }

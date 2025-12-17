@@ -215,10 +215,6 @@ export class HaLabelPicker extends SubscribeMixin(LitElement) {
   };
 
   protected render(): TemplateResult {
-    const placeholder =
-      this.placeholder ??
-      this.hass.localize("ui.components.label-picker.label");
-
     const valueRenderer = this._computeValueRenderer(this._labels);
 
     return html`
@@ -233,7 +229,7 @@ export class HaLabelPicker extends SubscribeMixin(LitElement) {
           "ui.components.label-picker.no_labels"
         )}
         .addButtonLabel=${this.hass.localize("ui.components.label-picker.add")}
-        .placeholder=${placeholder}
+        .placeholder=${this.placeholder}
         .value=${this.value}
         .getItems=${this._getItems}
         .getAdditionalItems=${this._getAdditionalItems}

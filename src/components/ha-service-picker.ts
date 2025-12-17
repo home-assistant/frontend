@@ -127,10 +127,6 @@ class HaServicePicker extends LitElement {
   );
 
   protected render(): TemplateResult {
-    const placeholder =
-      this.placeholder ??
-      this.hass.localize("ui.components.service-picker.action");
-
     return html`
       <ha-generic-picker
         .hass=${this.hass}
@@ -140,7 +136,7 @@ class HaServicePicker extends LitElement {
           "ui.components.service-picker.no_match"
         )}
         .label=${this.label}
-        .placeholder=${placeholder}
+        .placeholder=${this.placeholder}
         .value=${this.value}
         .getItems=${this._getItems}
         .rowRenderer=${this._rowRenderer}
@@ -152,6 +148,7 @@ class HaServicePicker extends LitElement {
         .unknownItemText=${this.hass.localize(
           "ui.components.service-picker.unknown"
         )}
+        use-top-label
         @value-changed=${this._valueChanged}
       >
       </ha-generic-picker>

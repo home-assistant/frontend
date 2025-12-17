@@ -277,13 +277,13 @@ export class HaEntityPicker extends LitElement {
         .disabled=${this.disabled}
         .autofocus=${this.autofocus}
         .allowCustomValue=${this.allowCustomEntity}
-        .label=${this.label}
         .required=${this.required}
+        .label=${this.label}
+        .placeholder=${placeholder}
         .helper=${this.helper}
+        .value=${this.addButton ? undefined : this.value}
         .searchLabel=${this.searchLabel}
         .notFoundLabel=${this._notFoundLabel}
-        .placeholder=${placeholder}
-        .value=${this.addButton ? undefined : this.value}
         .rowRenderer=${this._rowRenderer}
         .getItems=${this._getItems}
         .getAdditionalItems=${this._getAdditionalItems}
@@ -291,6 +291,7 @@ export class HaEntityPicker extends LitElement {
         .searchFn=${this._searchFn}
         .valueRenderer=${this._valueRenderer}
         .searchKeys=${entityComboBoxKeys}
+        use-top-label
         .addButtonLabel=${this.addButton
           ? this.hass.localize("ui.components.entity.entity-picker.add")
           : undefined}
