@@ -1400,12 +1400,24 @@ export class HaDataTable extends LitElement {
         .center {
           text-align: center;
         }
+
         .secondary {
           color: var(--secondary-text-color);
           white-space: nowrap;
           overflow: hidden;
           text-overflow: ellipsis;
         }
+        .labels-with-text:has(ha-data-table-labels):has(.secondary) {
+          /* used to display labels with a description */
+          display: flex;
+          align-items: center;
+        }
+        .labels-with-text:has(ha-data-table-labels) > .secondary {
+          margin-left: var(--ha-space-2);
+          margin-inline-start: var(--ha-space-2);
+          margin-inline-end: initial;
+        }
+
         .scroller {
           height: calc(100% - 57px);
           overflow: overlay !important;
