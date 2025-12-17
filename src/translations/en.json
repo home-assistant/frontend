@@ -1099,6 +1099,7 @@
           "delete": "Delete {count}",
           "deleting": "Deleting {count}",
           "deselect_all": "Deselect all",
+          "select_all": "[%key:ui::components::subpage-data-table::select_all%]",
           "tip_media_storage": "[%key:ui::panel::config::tips::media_storage%]",
           "tip_storage_panel": "storage"
         },
