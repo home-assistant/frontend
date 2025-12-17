@@ -124,12 +124,15 @@ class HaUserPicker extends LitElement {
   private _getItems = () => this._getUsers(this.users);
 
   protected render(): TemplateResult {
+    const placeholder =
+      this.placeholder ?? this.hass.localize("ui.components.user-picker.user");
+
     return html`
       <ha-generic-picker
         .hass=${this.hass}
         .autofocus=${this.autofocus}
         .label=${this.label}
-        .placeholder=${this.placeholder}
+        .placeholder=${placeholder}
         .notFoundLabel=${this._notFoundLabel}
         .value=${this.value}
         .getItems=${this._getItems}
@@ -139,7 +142,6 @@ class HaUserPicker extends LitElement {
         .unknownItemText=${this.hass.localize(
           "ui.components.user-picker.unknown"
         )}
-        use-top-label
         @value-changed=${this._valueChanged}
       >
       </ha-generic-picker>
