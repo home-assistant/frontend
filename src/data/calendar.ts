@@ -2,7 +2,7 @@ import { getColorByIndex } from "../common/color/colors";
 import { computeDomain } from "../common/entity/compute_domain";
 import { computeStateName } from "../common/entity/compute_state_name";
 import type { HomeAssistant } from "../types";
-import { isUnavailableState } from "./entity";
+import { isUnavailableState } from "./entity/entity";
 
 export interface Calendar {
   entity_id: string;

@@ -1,11 +1,11 @@
 import type { PropertyValues } from "lit";
 import { css, html, LitElement, nothing } from "lit";
 import { customElement, property, state } from "lit/decorators";
-import { UNAVAILABLE } from "../../../data/entity";
+import "../../../components/ha-button";
+import { UNAVAILABLE } from "../../../data/entity/entity";
 import type { HomeAssistant } from "../../../types";
 import { confirmAction } from "../common/confirm-action";
 import { hasConfigOrEntityChanged } from "../common/has-changed";
-import "../../../components/ha-button";
 import "../components/hui-generic-entity-row";
 import { createEntityNotFoundWarning } from "../components/hui-warning";
 import type { ActionRowConfig, LovelaceRow } from "./types";

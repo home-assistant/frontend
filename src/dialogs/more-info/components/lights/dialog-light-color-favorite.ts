@@ -1,18 +1,18 @@
 import { mdiClose } from "@mdi/js";
 import type { CSSResultGroup } from "lit";
 import { css, html, LitElement, nothing } from "lit";
-import { customElement, property, state, query } from "lit/decorators";
+import { customElement, property, query, state } from "lit/decorators";
 import { classMap } from "lit/directives/class-map";
 import { fireEvent } from "../../../../common/dom/fire_event";
 import "../../../../components/ha-button";
-import {
-  getMobileOpenFromBottomAnimation,
-  getMobileCloseToBottomAnimation,
-} from "../../../../components/ha-md-dialog";
-import type { HaMdDialog } from "../../../../components/ha-md-dialog";
 import "../../../../components/ha-dialog-header";
 import "../../../../components/ha-icon-button-toggle";
-import type { EntityRegistryEntry } from "../../../../data/entity_registry";
+import type { HaMdDialog } from "../../../../components/ha-md-dialog";
+import {
+  getMobileCloseToBottomAnimation,
+  getMobileOpenFromBottomAnimation,
+} from "../../../../components/ha-md-dialog";
+import type { EntityRegistryEntry } from "../../../../data/entity/entity_registry";
 import type { LightColor, LightEntity } from "../../../../data/light";
 import {
   LightColorMode,

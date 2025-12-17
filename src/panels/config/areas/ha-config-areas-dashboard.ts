@@ -2,10 +2,10 @@ import type { ActionDetail } from "@material/mwc-list";
 import {
   mdiDelete,
   mdiDotsVertical,
-  mdiDragHorizontalVariant,
   mdiHelpCircle,
   mdiPencil,
   mdiPlus,
+  mdiSort,
 } from "@mdi/js";
 import {
   css,
@@ -21,7 +21,6 @@ import memoizeOne from "memoize-one";
 import {
   getAreasFloorHierarchy,
   getAreasOrder,
-  getFloorOrder,
   type AreasFloorHierarchy,
 } from "../../../common/areas/areas-floor-hierarchy";
 import { formatListWithAnds } from "../../../common/string/format-list";
@@ -42,7 +41,6 @@ import type { FloorRegistryEntry } from "../../../data/floor_registry";
 import {
   createFloorRegistryEntry,
   deleteFloorRegistryEntry,
-  reorderFloorRegistryEntries,
   updateFloorRegistryEntry,
 } from "../../../data/floor_registry";
 import {
@@ -58,6 +56,7 @@ import {
   loadAreaRegistryDetailDialog,
   showAreaRegistryDetailDialog,
 } from "./show-dialog-area-registry-detail";
+import { showAreasFloorsOrderDialog } from "./show-dialog-areas-floors-order";
 import { showFloorRegistryDetailDialog } from "./show-dialog-floor-registry-detail";
 
 const UNASSIGNED_FLOOR = "__unassigned__";
@@ -183,87 +182,84 @@ export class HaConfigAreasDashboard extends LitElement {
           @click=${this._showHelp}
         ></ha-icon-button>
         <div class="container">
-          <ha-sortable
-            handle-selector=".handle"
-            draggable-selector=".floor"
-            @item-moved=${this._floorMoved}
-            .options=${SORT_OPTIONS}
-            group="floors"
-            invert-swap
-          >
-            <div class="floors">
-              ${this._hierarchy.floors.map(({ areas, id }) => {
-                const floor = this.hass.floors[id];
-                if (!floor) {
-                  return nothing;
-                }
-                return html`
-                  <div class="floor">
-                    <div class="header">
-                      <h2>
-                        <ha-floor-icon .floor=${floor}></ha-floor-icon>
-                        ${floor.name}
-                      </h2>
-                      <div class="actions">
-                        <ha-svg-icon
-                          class="handle"
-                          .path=${mdiDragHorizontalVariant}
-                        ></ha-svg-icon>
-                        <ha-button-menu
-                          .floor=${floor}
-                          @action=${this._handleFloorAction}
+          <div class="floors">
+            ${this._hierarchy.floors.map(({ areas, id }) => {
+              const floor = this.hass.floors[id];
+              if (!floor) {
+                return nothing;
+              }
+              return html`
+                <div class="floor">
+                  <div class="header">
+                    <h2>
+                      <ha-floor-icon .floor=${floor}></ha-floor-icon>
+                      ${floor.name}
+                    </h2>
+                    <div class="actions">
+                      <ha-button-menu
+                        .floor=${floor}
+                        @action=${this._handleFloorAction}
+                      >
+                        <ha-icon-button
+                          slot="trigger"
+                          .path=${mdiDotsVertical}
+                        ></ha-icon-button>
+                        <ha-list-item graphic="icon"
+                          ><ha-svg-icon
+                            .path=${mdiSort}
+                            slot="graphic"
+                          ></ha-svg-icon
+                          >${this.hass.localize(
+                            "ui.panel.config.areas.picker.reorder"
+                          )}</ha-list-item
                         >
-                          <ha-icon-button
-                            slot="trigger"
-                            .path=${mdiDotsVertical}
-                          ></ha-icon-button>
-                          <ha-list-item graphic="icon"
-                            ><ha-svg-icon
-                              .path=${mdiPencil}
-                              slot="graphic"
-                            ></ha-svg-icon
-                            >${this.hass.localize(
-                              "ui.panel.config.areas.picker.floor.edit_floor"
-                            )}</ha-list-item
-                          >
-                          <ha-list-item class="warning" graphic="icon"
-                            ><ha-svg-icon
-                              class="warning"
-                              .path=${mdiDelete}
-                              slot="graphic"
-                            ></ha-svg-icon
-                            >${this.hass.localize(
-                              "ui.panel.config.areas.picker.floor.delete_floor"
-                            )}</ha-list-item
-                          >
-                        </ha-button-menu>
-                      </div>
+                        <li divider role="separator"></li>
+                        <ha-list-item graphic="icon"
+                          ><ha-svg-icon
+                            .path=${mdiPencil}
+                            slot="graphic"
+                          ></ha-svg-icon
+                          >${this.hass.localize(
+                            "ui.panel.config.areas.picker.floor.edit_floor"
+                          )}</ha-list-item
+                        >
+                        <ha-list-item class="warning" graphic="icon"
+                          ><ha-svg-icon
+                            class="warning"
+                            .path=${mdiDelete}
+                            slot="graphic"
+                          ></ha-svg-icon
+                          >${this.hass.localize(
+                            "ui.panel.config.areas.picker.floor.delete_floor"
+                          )}</ha-list-item
+                        >
+                      </ha-button-menu>
                     </div>
-                    <ha-sortable
-                      handle-selector="a"
-                      draggable-selector="a"
-                      @item-added=${this._areaAdded}
-                      @item-moved=${this._areaMoved}
-                      group="areas"
-                      .options=${SORT_OPTIONS}
-                      .floor=${floor.floor_id}
-                    >
-                      <div class="areas">
-                        ${areas.map((areaId) => {
-                          const area = this.hass.areas[areaId];
-                          if (!area) {
-                            return nothing;
-                          }
-                          const stats = areasStats.get(area.area_id);
-                          return this._renderArea(area, stats);
-                        })}
-                      </div>
-                    </ha-sortable>
                   </div>
-                `;
-              })}
-            </div>
-          </ha-sortable>
+                  <ha-sortable
+                    handle-selector="a"
+                    draggable-selector="a"
+                    @item-added=${this._areaAdded}
+                    @item-moved=${this._areaMoved}
+                    group="areas"
+                    .options=${SORT_OPTIONS}
+                    .floor=${floor.floor_id}
+                  >
+                    <div class="areas">
+                      ${areas.map((areaId) => {
+                        const area = this.hass.areas[areaId];
+                        if (!area) {
+                          return nothing;
+                        }
+                        const stats = areasStats.get(area.area_id);
+                        return this._renderArea(area, stats);
+                      })}
+                    </div>
+                  </ha-sortable>
+                </div>
+              `;
+            })}
+          </div>
 
           ${this._hierarchy.areas.length
             ? html`
@@ -271,9 +267,30 @@ export class HaConfigAreasDashboard extends LitElement {
                   <div class="header">
                     <h2>
                       ${this.hass.localize(
-                        "ui.panel.config.areas.picker.unassigned_areas"
+                        this._hierarchy.floors.length
+                          ? "ui.panel.config.areas.picker.other_areas"
+                          : "ui.panel.config.areas.picker.header"
                       )}
                     </h2>
+                    <div class="actions">
+                      <ha-button-menu
+                        @action=${this._handleUnassignedAreasAction}
+                      >
+                        <ha-icon-button
+                          slot="trigger"
+                          .path=${mdiDotsVertical}
+                        ></ha-icon-button>
+                        <ha-list-item graphic="icon"
+                          ><ha-svg-icon
+                            .path=${mdiSort}
+                            slot="graphic"
+                          ></ha-svg-icon
+                          >${this.hass.localize(
+                            "ui.panel.config.areas.picker.reorder"
+                          )}</ha-list-item
+                        >
+                      </ha-button-menu>
+                    </div>
                   </div>
                   <ha-sortable
                     handle-selector="a"
@@ -393,51 +410,6 @@ export class HaConfigAreasDashboard extends LitElement {
       updateEntry: async (values) =>
         updateAreaRegistryEntry(this.hass!, area.area_id, values),
     });
-  }
-
-  private async _floorMoved(ev) {
-    ev.stopPropagation();
-    if (!this.hass || !this._hierarchy) {
-      return;
-    }
-    const { oldIndex, newIndex } = ev.detail;
-
-    const reorderFloors = (
-      floors: AreasFloorHierarchy["floors"],
-      oldIdx: number,
-      newIdx: number
-    ) => {
-      const newFloors = [...floors];
-      const [movedFloor] = newFloors.splice(oldIdx, 1);
-      newFloors.splice(newIdx, 0, movedFloor);
-      return newFloors;
-    };
-
-    // Optimistically update UI
-    this._hierarchy = {
-      ...this._hierarchy,
-      floors: reorderFloors(this._hierarchy.floors, oldIndex, newIndex),
-    };
-
-    const areaOrder = getAreasOrder(this._hierarchy);
-    const floorOrder = getFloorOrder(this._hierarchy);
-
-    // Block hierarchy updates for 500ms to avoid flickering
-    // because of multiple async updates
-    this._blockHierarchyUpdateFor(500);
-
-    try {
-      await reorderAreaRegistryEntries(this.hass, areaOrder);
-      await reorderFloorRegistryEntries(this.hass, floorOrder);
-    } catch {
-      showToast(this, {
-        message: this.hass.localize(
-          "ui.panel.config.areas.picker.floor_reorder_failed"
-        ),
-      });
-      // Revert on error
-      this._computeHierarchy();
-    }
   }
 
   private async _areaMoved(ev) {
@@ -565,11 +537,20 @@ export class HaConfigAreasDashboard extends LitElement {
     const floor = (ev.currentTarget as any).floor;
     switch (ev.detail.index) {
       case 0:
-        this._editFloor(floor);
+        this._showReorderDialog();
         break;
       case 1:
+        this._editFloor(floor);
+        break;
+      case 2:
         this._deleteFloor(floor);
         break;
+    }
+  }
+
+  private _handleUnassignedAreasAction(ev: CustomEvent<ActionDetail>) {
+    if (ev.detail.index === 0) {
+      this._showReorderDialog();
     }
   }
 
@@ -600,6 +581,10 @@ export class HaConfigAreasDashboard extends LitElement {
 
   private _createArea() {
     this._openAreaDialog();
+  }
+
+  private _showReorderDialog() {
+    showAreasFloorsOrderDialog(this, {});
   }
 
   private _showHelp() {

@@ -8,13 +8,13 @@ import { stateColorCss } from "../../common/entity/state_color";
 import "../../components/ha-control-button";
 import "../../components/ha-control-switch";
 import "../../components/ha-state-icon";
-import { UNAVAILABLE, UNKNOWN } from "../../data/entity";
+import { UNAVAILABLE, UNKNOWN } from "../../data/entity/entity";
 import { forwardHaptic } from "../../data/haptics";
 import type { LockEntity } from "../../data/lock";
 import { callProtectedLockService } from "../../data/lock";
 import {
-  stateControlToggleStyle,
   stateControlPulseStyle,
+  stateControlToggleStyle,
 } from "../../resources/state-control-styles";
 import type { HomeAssistant } from "../../types";
 

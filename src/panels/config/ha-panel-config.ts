@@ -42,8 +42,8 @@ import {
   entityRegistryByEntityId,
   entityRegistryById,
   subscribeEntityRegistry,
-} from "../../data/entity_registry";
-import { subscribeLabelRegistry } from "../../data/label_registry";
+} from "../../data/entity/entity_registry";
+import { subscribeLabelRegistry } from "../../data/label/label_registry";
 import type { RouterOptions } from "../../layouts/hass-router-page";
 import { HassRouterPage } from "../../layouts/hass-router-page";
 import type { PageNavigation } from "../../layouts/hass-tabs-subpage";
@@ -530,9 +530,7 @@ class HaPanelConfig extends SubscribeMixin(HassRouterPage) {
       zha: {
         tag: "zha-config-dashboard-router",
         load: () =>
-          import(
-            "./integrations/integration-panels/zha/zha-config-dashboard-router"
-          ),
+          import("./integrations/integration-panels/zha/zha-config-dashboard-router"),
       },
       mqtt: {
         tag: "mqtt-config-panel",
@@ -542,30 +540,22 @@ class HaPanelConfig extends SubscribeMixin(HassRouterPage) {
       zwave_js: {
         tag: "zwave_js-config-router",
         load: () =>
-          import(
-            "./integrations/integration-panels/zwave_js/zwave_js-config-router"
-          ),
+          import("./integrations/integration-panels/zwave_js/zwave_js-config-router"),
       },
       matter: {
         tag: "matter-config-panel",
         load: () =>
-          import(
-            "./integrations/integration-panels/matter/matter-config-panel"
-          ),
+          import("./integrations/integration-panels/matter/matter-config-panel"),
       },
       thread: {
         tag: "thread-config-panel",
         load: () =>
-          import(
-            "./integrations/integration-panels/thread/thread-config-panel"
-          ),
+          import("./integrations/integration-panels/thread/thread-config-panel"),
       },
       bluetooth: {
         tag: "bluetooth-config-dashboard-router",
         load: () =>
-          import(
-            "./integrations/integration-panels/bluetooth/bluetooth-config-dashboard-router"
-          ),
+          import("./integrations/integration-panels/bluetooth/bluetooth-config-dashboard-router"),
       },
       dhcp: {
         tag: "dhcp-config-panel",
@@ -580,9 +570,7 @@ class HaPanelConfig extends SubscribeMixin(HassRouterPage) {
       zeroconf: {
         tag: "zeroconf-config-panel",
         load: () =>
-          import(
-            "./integrations/integration-panels/zeroconf/zeroconf-config-panel"
-          ),
+          import("./integrations/integration-panels/zeroconf/zeroconf-config-panel"),
       },
       application_credentials: {
         tag: "ha-config-application-credentials",

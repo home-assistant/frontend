@@ -52,7 +52,9 @@ export class HaAutomationRow extends LitElement {
           <slot name="leading-icon"></slot>
         </div>
         <slot class="header" name="header"></slot>
-        <slot name="icons"></slot>
+        <div class="icons">
+          <slot name="icons"></slot>
+        </div>
       </div>
     `;
   }
@@ -118,12 +120,11 @@ export class HaAutomationRow extends LitElement {
     }
     .row {
       display: flex;
-      padding: var(--ha-space-0) var(--ha-space-2);
+      padding: 0 var(--ha-space-3);
       min-height: 48px;
-      align-items: center;
+      align-items: flex-start;
       cursor: pointer;
       overflow: hidden;
-      font-weight: var(--ha-font-weight-medium);
       outline: none;
       border-radius: var(--ha-card-border-radius, var(--ha-border-radius-lg));
     }
@@ -140,10 +141,14 @@ export class HaAutomationRow extends LitElement {
       background-color: var(--ha-color-fill-neutral-loud-resting);
       border-radius: var(--ha-border-radius-md);
       padding: var(--ha-space-1);
+      margin-top: 10px;
       display: flex;
       justify-content: center;
       align-items: center;
       transform: rotate(45deg);
+    }
+    .leading-icon-wrapper {
+      padding-top: var(--ha-space-3);
     }
     ::slotted([slot="leading-icon"]) {
       color: var(--ha-color-on-neutral-quiet);
@@ -171,6 +176,10 @@ export class HaAutomationRow extends LitElement {
       flex: 1;
       overflow-wrap: anywhere;
       margin: var(--ha-space-0) var(--ha-space-3);
+    }
+    .icons {
+      display: flex;
+      align-items: center;
     }
     :host([sort-selected]) .row {
       outline: solid;

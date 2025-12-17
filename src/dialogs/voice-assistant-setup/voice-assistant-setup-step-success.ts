@@ -22,7 +22,7 @@ import {
   setWakeWords,
 } from "../../data/assist_satellite";
 import { fetchCloudStatus } from "../../data/cloud";
-import { updateDeviceRegistryEntry } from "../../data/device_registry";
+import { updateDeviceRegistryEntry } from "../../data/device/device_registry";
 import type { InputSelectEntity } from "../../data/input_select";
 import { setSelectOption } from "../../data/select";
 import { showVoiceAssistantPipelineDetailDialog } from "../../panels/config/voice-assistants/show-dialog-voice-assistant-pipeline-detail";

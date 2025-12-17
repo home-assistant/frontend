@@ -12,38 +12,38 @@ import {
 import type { PropertyValues } from "lit";
 import { css, html, LitElement, nothing } from "lit";
 import { customElement, property, query } from "lit/decorators";
-import { ifDefined } from "lit/directives/if-defined";
 import { classMap } from "lit/directives/class-map";
+import { ifDefined } from "lit/directives/if-defined";
+import { formatDurationDigital } from "../../../common/datetime/format_duration";
 import { stateActive } from "../../../common/entity/state_active";
 import { supportsFeature } from "../../../common/entity/supports-feature";
-import { formatDurationDigital } from "../../../common/datetime/format_duration";
+import "../../../components/chips/ha-assist-chip";
+import "../../../components/ha-button";
 import "../../../components/ha-icon-button";
 import "../../../components/ha-list-item";
+import "../../../components/ha-marquee-text";
+import "../../../components/ha-md-button-menu";
+import "../../../components/ha-md-menu-item";
 import "../../../components/ha-select";
 import type { HaSlider } from "../../../components/ha-slider";
-import "../../../components/ha-button";
 import "../../../components/ha-svg-icon";
-import { showMediaBrowserDialog } from "../../../components/media-player/show-media-browser-dialog";
 import { showJoinMediaPlayersDialog } from "../../../components/media-player/show-join-media-players-dialog";
-import { isUnavailableState } from "../../../data/entity";
+import { showMediaBrowserDialog } from "../../../components/media-player/show-media-browser-dialog";
+import { isUnavailableState } from "../../../data/entity/entity";
 import type {
   MediaPickedEvent,
   MediaPlayerEntity,
 } from "../../../data/media-player";
 import {
   cleanupMediaTitle,
-  computeMediaDescription,
   computeMediaControls,
+  computeMediaDescription,
   handleMediaControlClick,
   MediaPlayerEntityFeature,
   mediaPlayerPlayMedia,
 } from "../../../data/media-player";
 import type { HomeAssistant } from "../../../types";
 import HassMediaPlayerEntity from "../../../util/hass-media-player-model";
-import "../../../components/ha-md-button-menu";
-import "../../../components/chips/ha-assist-chip";
-import "../../../components/ha-md-menu-item";
-import "../../../components/ha-marquee-text";
 
 @customElement("more-info-media_player")
 class MoreInfoMediaPlayer extends LitElement {

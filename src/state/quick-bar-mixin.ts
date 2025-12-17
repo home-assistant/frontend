@@ -150,9 +150,8 @@ export default <T extends Constructor<HassElement>>(superClass: T) =>
       let redirects: Redirects;
 
       if (targetPath.startsWith("/hassio")) {
-        const myPanelSupervisor = await import(
-          "../../hassio/src/hassio-my-redirect"
-        );
+        const myPanelSupervisor =
+          await import("../../hassio/src/hassio-my-redirect");
         redirects = myPanelSupervisor.REDIRECTS;
       } else {
         const myPanel = await import("../panels/my/ha-panel-my");

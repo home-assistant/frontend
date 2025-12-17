@@ -9,10 +9,11 @@ import { computeDeviceName } from "../../common/entity/compute_device_name";
 import { getDeviceContext } from "../../common/entity/context/get_device_context";
 import { getConfigEntries, type ConfigEntry } from "../../data/config_entries";
 import {
+  deviceComboBoxKeys,
   getDevices,
   type DevicePickerItem,
-  type DeviceRegistryEntry,
-} from "../../data/device_registry";
+} from "../../data/device/device_picker";
+import type { DeviceRegistryEntry } from "../../data/device/device_registry";
 import type { HomeAssistant } from "../../types";
 import { brandsUrl } from "../../util/brands-url";
 import "../ha-generic-picker";
@@ -204,6 +205,8 @@ export class HaDevicePicker extends LitElement {
       <ha-generic-picker
         .hass=${this.hass}
         .autofocus=${this.autofocus}
+        .disabled=${this.disabled}
+        .helper=${this.helper}
         .label=${this.label}
         .searchLabel=${this.searchLabel}
         .notFoundLabel=${this._notFoundLabel}
@@ -216,6 +219,10 @@ export class HaDevicePicker extends LitElement {
         .getItems=${this._getItems}
         .hideClearIcon=${this.hideClearIcon}
         .valueRenderer=${valueRenderer}
+        .searchKeys=${deviceComboBoxKeys}
+        .unknownItemText=${this.hass.localize(
+          "ui.components.device-picker.unknown"
+        )}
         @value-changed=${this._valueChanged}
       >
       </ha-generic-picker>

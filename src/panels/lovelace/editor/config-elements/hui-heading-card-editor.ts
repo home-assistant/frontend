@@ -228,7 +228,7 @@ export class HuiHeadingCardEditor
         }
         ha-form {
           display: block;
-          margin-bottom: 24px;
+          margin-bottom: var(--ha-space-6);
         }
       `,
     ];

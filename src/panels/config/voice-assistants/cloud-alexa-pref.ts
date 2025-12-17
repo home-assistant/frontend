@@ -1,6 +1,6 @@
 import { mdiHelpCircle } from "@mdi/js";
 import { css, html, LitElement, nothing } from "lit";
-import { property, state } from "lit/decorators";
+import { customElement, property, state } from "lit/decorators";
 import memoizeOne from "memoize-one";
 import { fireEvent } from "../../../common/dom/fire_event";
 import { isEmptyEntityDomainFilter } from "../../../common/entity/entity_domain_filter";
@@ -20,6 +20,7 @@ import {
 import type { HomeAssistant } from "../../../types";
 import { brandsUrl } from "../../../util/brands-url";
 
+@customElement("cloud-alexa-pref")
 export class CloudAlexaPref extends LitElement {
   @property({ attribute: false }) public hass!: HomeAssistant;
 
@@ -297,5 +298,3 @@ declare global {
     "cloud-alexa-pref": CloudAlexaPref;
   }
 }
-
-customElements.define("cloud-alexa-pref", CloudAlexaPref);

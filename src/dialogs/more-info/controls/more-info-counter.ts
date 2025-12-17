@@ -1,9 +1,9 @@
 import type { HassEntity } from "home-assistant-js-websocket";
 import { css, html, LitElement, nothing } from "lit";
 import { customElement, property } from "lit/decorators";
-import { isUnavailableState } from "../../../data/entity";
-import type { HomeAssistant } from "../../../types";
 import "../../../components/ha-button";
+import { isUnavailableState } from "../../../data/entity/entity";
+import type { HomeAssistant } from "../../../types";
 
 @customElement("more-info-counter")
 class MoreInfoCounter extends LitElement {

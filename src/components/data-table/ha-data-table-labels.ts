@@ -2,15 +2,17 @@ import type { TemplateResult } from "lit";
 import { css, html, LitElement, nothing } from "lit";
 import { customElement, property } from "lit/decorators";
 import { repeat } from "lit/directives/repeat";
-import type { LabelRegistryEntry } from "../../data/label_registry";
 import { computeCssColor } from "../../common/color/compute-color";
 import { fireEvent } from "../../common/dom/fire_event";
-import "../ha-label";
+import { stopPropagation } from "../../common/dom/stop_propagation";
 import { stringCompare } from "../../common/string/compare";
+import type { LabelRegistryEntry } from "../../data/label/label_registry";
 import "../chips/ha-chip-set";
-import "../ha-button-menu";
+import "../ha-dropdown";
+import "../ha-dropdown-item";
+import type { HaDropdownItem } from "../ha-dropdown-item";
 import "../ha-icon";
-import "../ha-list-item";
+import "../ha-label";
 
 @customElement("ha-data-table-labels")
 class HaDataTableLabels extends LitElement {
@@ -26,12 +28,11 @@ class HaDataTableLabels extends LitElement {
           (label) => this._renderLabel(label, true)
         )}
         ${labels.length > 2
-          ? html`<ha-button-menu
-              absolute
+          ? html`<ha-dropdown
               role="button"
               tabindex="0"
-              @click=${this._handleIconOverflowMenuOpened}
-              @closed=${this._handleIconOverflowMenuClosed}
+              @click=${stopPropagation}
+              @wa-select=${this._handleDropdownSelect}
             >
               <ha-label slot="trigger" class="plus" dense>
                 +${labels.length - 2}
@@ -40,12 +41,12 @@ class HaDataTableLabels extends LitElement {
                 labels.slice(2),
                 (label) => label.label_id,
                 (label) => html`
-                  <ha-list-item @click=${this._labelClicked} .item=${label}>
+                  <ha-dropdown-item .value=${label.label_id} .item=${label}>
                     ${this._renderLabel(label, false)}
-                  </ha-list-item>
+                  </ha-dropdown-item>
                 `
               )}
-            </ha-button-menu>`
+            </ha-dropdown>`
           : nothing}
       </ha-chip-set>
     `;
@@ -81,21 +82,12 @@ class HaDataTableLabels extends LitElement {
     fireEvent(this, "label-clicked", { label });
   }
 
-  protected _handleIconOverflowMenuOpened(e) {
-    e.stopPropagation();
-    // If this component is used inside a data table, the z-index of the row
-    // needs to be increased. Otherwise the ha-button-menu would be displayed
-    // underneath the next row in the table.
-    const row = this.closest(".mdc-data-table__row") as HTMLDivElement | null;
-    if (row) {
-      row.style.zIndex = "1";
-    }
-  }
-
-  protected _handleIconOverflowMenuClosed() {
-    const row = this.closest(".mdc-data-table__row") as HTMLDivElement | null;
-    if (row) {
-      row.style.zIndex = "";
+  private _handleDropdownSelect(
+    ev: CustomEvent<{ item: HaDropdownItem & { item?: LabelRegistryEntry } }>
+  ) {
+    const label = ev.detail?.item?.item;
+    if (label) {
+      fireEvent(this, "label-clicked", { label });
     }
   }
 
@@ -113,9 +105,6 @@ class HaDataTableLabels extends LitElement {
     ha-label {
       --ha-label-background-color: var(--color, var(--grey-color));
       --ha-label-background-opacity: 0.5;
-    }
-    ha-button-menu {
-      border-radius: 10px;
     }
     .plus {
       --ha-label-background-color: transparent;

@@ -39,6 +39,9 @@ export class HaCategoryPicker extends SubscribeMixin(LitElement) {
   @property({ type: Boolean, attribute: "no-add" })
   public noAdd = false;
 
+  @property({ type: Boolean, attribute: "show-label" })
+  public showLabel = false;
+
   @property({ type: Boolean }) public disabled = false;
 
   @property({ type: Boolean }) public required = false;
@@ -120,9 +123,6 @@ export class HaCategoryPicker extends SubscribeMixin(LitElement) {
         icon: category.icon || undefined,
         icon_path: category.icon ? undefined : mdiTag,
         sorting_label: category.name,
-        search_labels: [category.name, category.category_id].filter(
-          (v): v is string => Boolean(v)
-        ),
       }));
 
       return items;
@@ -199,10 +199,14 @@ export class HaCategoryPicker extends SubscribeMixin(LitElement) {
           "ui.components.category-picker.no_categories"
         )}
         .placeholder=${placeholder}
+        .showLabel=${this.showLabel}
         .value=${this.value}
         .getItems=${this._getItems}
         .getAdditionalItems=${this._getAdditionalItems}
         .valueRenderer=${valueRenderer}
+        .unknownItemText=${this.hass.localize(
+          "ui.components.category-picker.unknown"
+        )}
         @value-changed=${this._valueChanged}
       >
       </ha-generic-picker>

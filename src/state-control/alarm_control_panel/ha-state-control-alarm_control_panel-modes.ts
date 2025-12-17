@@ -16,7 +16,7 @@ import {
   ALARM_MODES,
   setProtectedAlarmControlPanelMode,
 } from "../../data/alarm_control_panel";
-import { UNAVAILABLE } from "../../data/entity";
+import { UNAVAILABLE } from "../../data/entity/entity";
 import type { HomeAssistant } from "../../types";
 
 @customElement("ha-state-control-alarm_control_panel-modes")

@@ -13,6 +13,7 @@ export class HaToast extends Snackbar {
       }
 
       .mdc-snackbar {
+        z-index: 10;
         margin: 8px;
         right: calc(8px + var(--safe-area-inset-right));
         bottom: calc(8px + var(--safe-area-inset-bottom));

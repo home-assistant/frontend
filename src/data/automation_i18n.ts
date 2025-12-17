@@ -26,12 +26,15 @@ import type {
   Trigger,
 } from "./automation";
 import { getConditionDomain, getConditionObjectId } from "./condition";
-import type { DeviceCondition, DeviceTrigger } from "./device_automation";
+import type {
+  DeviceCondition,
+  DeviceTrigger,
+} from "./device/device_automation";
 import {
   localizeDeviceAutomationCondition,
   localizeDeviceAutomationTrigger,
-} from "./device_automation";
-import type { EntityRegistryEntry } from "./entity_registry";
+} from "./device/device_automation";
+import type { EntityRegistryEntry } from "./entity/entity_registry";
 import type { FrontendLocaleData } from "./translation";
 import { getTriggerDomain, getTriggerObjectId, isTriggerList } from "./trigger";
 
@@ -144,9 +147,7 @@ const tryDescribeTrigger = (
   const type = getTriggerObjectId(trigger.trigger);
 
   return (
-    hass.localize(
-      `component.${domain}.triggers.${type}.description_configured`
-    ) ||
+    hass.localize(`component.${domain}.triggers.${type}.name`) ||
     hass.localize(
       `ui.panel.config.automation.editor.triggers.type.${triggerType as LegacyTrigger["trigger"]}.label`
     ) ||
@@ -919,9 +920,7 @@ const tryDescribeCondition = (
   const type = getConditionObjectId(condition.condition);
 
   return (
-    hass.localize(
-      `component.${domain}.conditions.${type}.description_configured`
-    ) ||
+    hass.localize(`component.${domain}.conditions.${type}.name`) ||
     hass.localize(
       `ui.panel.config.automation.editor.conditions.type.${conditionType as LegacyCondition["condition"]}.label`
     ) ||

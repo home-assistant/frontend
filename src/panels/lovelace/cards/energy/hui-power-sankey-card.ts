@@ -6,7 +6,11 @@ import { classMap } from "lit/directives/class-map";
 import "../../../../components/ha-card";
 import "../../../../components/ha-svg-icon";
 import type { EnergyData, EnergyPreferences } from "../../../../data/energy";
-import { getEnergyDataCollection } from "../../../../data/energy";
+import {
+  formatPowerShort,
+  getEnergyDataCollection,
+  getPowerFromState,
+} from "../../../../data/energy";
 import { SubscribeMixin } from "../../../../mixins/subscribe-mixin";
 import type { HomeAssistant } from "../../../../types";
 import type { LovelaceCard, LovelaceGridOptions } from "../../types";
@@ -14,7 +18,6 @@ import type { PowerSankeyCardConfig } from "../types";
 import "../../../../components/chart/ha-sankey-chart";
 import type { Link, Node } from "../../../../components/chart/ha-sankey-chart";
 import { getGraphColorByIndex } from "../../../../common/color/colors";
-import { formatNumber } from "../../../../common/number/format_number";
 import { getEntityContext } from "../../../../common/entity/context/get_entity_context";
 import { MobileAwareMixin } from "../../../../mixins/mobile-aware-mixin";
 
@@ -23,8 +26,8 @@ const DEFAULT_CONFIG: Partial<PowerSankeyCardConfig> = {
   group_by_area: true,
 };
 
-// Minimum power threshold in kW to display a device node
-const MIN_POWER_THRESHOLD = 0.01;
+// Minimum power threshold in watts (W) to display a device node
+const MIN_POWER_THRESHOLD = 10;
 
 interface PowerData {
   solar: number;
@@ -235,7 +238,7 @@ class HuiPowerSankeyCard
         color: computedStyle
           .getPropertyValue("--energy-grid-return-color")
           .trim(),
-        index: 2,
+        index: 1,
       });
       if (powerData.battery_to_grid > 0) {
         links.push({
@@ -469,8 +472,8 @@ class HuiPowerSankeyCard
 
   private _valueFormatter = (value: number) =>
     `<div style="direction:ltr; display: inline;">
-      ${formatNumber(value, this.hass.locale, value < 0.1 ? { maximumFractionDigits: 3 } : undefined)}
-      kW</div>`;
+      ${formatPowerShort(this.hass, value)}
+    </div>`;
 
   /**
    * Compute real-time power data from current entity states.
@@ -716,41 +719,16 @@ class HuiPowerSankeyCard
   }
 
   /**
-   * Get current power value from entity state, normalized to kW
+   * Get current power value from entity state, normalized to watts (W)
    * @param entityId - The entity ID to get power value from
-   * @returns Power value in kW, or 0 if entity not found or invalid
+   * @returns Power value in W, or 0 if entity not found or invalid
    */
   private _getCurrentPower(entityId: string): number {
     // Track this entity for state change detection
     this._entities.add(entityId);
 
-    const stateObj = this.hass.states[entityId];
-    if (!stateObj) {
-      return 0;
-    }
-    const value = parseFloat(stateObj.state);
-    if (isNaN(value)) {
-      return 0;
-    }
-
-    // Normalize to kW based on unit of measurement (case-sensitive)
-    // Supported units: GW, kW, MW, mW, TW, W
-    const unit = stateObj.attributes.unit_of_measurement;
-    switch (unit) {
-      case "W":
-        return value / 1000;
-      case "mW":
-        return value / 1000000;
-      case "MW":
-        return value * 1000;
-      case "GW":
-        return value * 1000000;
-      case "TW":
-        return value * 1000000000;
-      default:
-        // Assume kW if no unit or unit is kW
-        return value;
-    }
+    // getPowerFromState returns power in W
+    return getPowerFromState(this.hass.states[entityId]) ?? 0;
   }
 
   /**

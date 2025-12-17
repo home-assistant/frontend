@@ -183,8 +183,7 @@ export interface EnergyDevicesGraphCardConfig extends EnergyCardBaseConfig {
   modes?: ("bar" | "pie")[];
 }
 
-export interface EnergyDevicesDetailGraphCardConfig
-  extends EnergyCardBaseConfig {
+export interface EnergyDevicesDetailGraphCardConfig extends EnergyCardBaseConfig {
   type: "energy-devices-detail-graph";
   title?: string;
   max_devices?: number;
@@ -202,14 +201,12 @@ export interface EnergySolarGaugeCardConfig extends EnergyCardBaseConfig {
   title?: string;
 }
 
-export interface EnergySelfSufficiencyGaugeCardConfig
-  extends EnergyCardBaseConfig {
+export interface EnergySelfSufficiencyGaugeCardConfig extends EnergyCardBaseConfig {
   type: "energy-self-sufficiency-gauge";
   title?: string;
 }
 
-export interface EnergyGridNeutralityGaugeCardConfig
-  extends EnergyCardBaseConfig {
+export interface EnergyGridNeutralityGaugeCardConfig extends EnergyCardBaseConfig {
   type: "energy-grid-neutrality-gauge";
   title?: string;
 }
@@ -238,6 +235,7 @@ export interface WaterSankeyCardConfig extends EnergyCardBaseConfig {
 export interface PowerSourcesGraphCardConfig extends EnergyCardBaseConfig {
   type: "power-sources-graph";
   title?: string;
+  show_legend?: boolean;
 }
 
 export interface PowerSankeyCardConfig extends EnergyCardBaseConfig {
@@ -599,6 +597,7 @@ export interface WeatherForecastCardConfig extends LovelaceCardConfig {
   forecast_type?: ForecastType;
   forecast_slots?: number;
   secondary_info_attribute?: keyof TranslationDict["ui"]["card"]["weather"]["attributes"];
+  round_temperature?: boolean;
   theme?: string;
   tap_action?: ActionConfig;
   hold_action?: ActionConfig;

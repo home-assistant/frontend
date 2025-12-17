@@ -7,7 +7,7 @@ import { supportsFeature } from "../../../common/entity/supports-feature";
 import "../../../components/ha-control-button";
 import "../../../components/ha-control-button-group";
 import "../../../components/ha-svg-icon";
-import { UNAVAILABLE } from "../../../data/entity";
+import { UNAVAILABLE } from "../../../data/entity/entity";
 import type { LawnMowerEntity } from "../../../data/lawn_mower";
 import { LawnMowerEntityFeature, canDock } from "../../../data/lawn_mower";
 import type { HomeAssistant } from "../../../types";
@@ -128,9 +128,7 @@ class HuiLawnMowerCommandCardFeature
   }
 
   public static async getConfigElement(): Promise<LovelaceCardFeatureEditor> {
-    await import(
-      "../editor/config-elements/hui-lawn-mower-commands-card-feature-editor"
-    );
+    await import("../editor/config-elements/hui-lawn-mower-commands-card-feature-editor");
     return document.createElement(
       "hui-lawn-mower-commands-card-feature-editor"
     );

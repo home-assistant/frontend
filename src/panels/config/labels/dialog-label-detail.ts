@@ -10,7 +10,7 @@ import "../../../components/ha-icon-picker";
 import "../../../components/ha-switch";
 import "../../../components/ha-textarea";
 import "../../../components/ha-textfield";
-import type { LabelRegistryEntryMutableParams } from "../../../data/label_registry";
+import type { LabelRegistryEntryMutableParams } from "../../../data/label/label_registry";
 import type { HassDialog } from "../../../dialogs/make-dialog-manager";
 import { haStyleDialog } from "../../../resources/styles";
 import type { HomeAssistant } from "../../../types";

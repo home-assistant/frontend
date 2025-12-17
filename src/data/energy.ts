@@ -11,7 +11,7 @@ import {
   isLastDayOfMonth,
   addYears,
 } from "date-fns";
-import type { Collection } from "home-assistant-js-websocket";
+import type { Collection, HassEntity } from "home-assistant-js-websocket";
 import { getCollection } from "home-assistant-js-websocket";
 import memoizeOne from "memoize-one";
 import {
@@ -1360,4 +1360,70 @@ export const calculateSolarConsumedGauge = (
     return (solarConsumed / totalProduction) * 100;
   }
   return undefined;
+};
+
+/**
+ * Get current power value from entity state, normalized to watts (W)
+ * @param stateObj - The entity state object to get power value from
+ * @returns Power value in W (watts), or undefined if entity not found or invalid
+ */
+export const getPowerFromState = (stateObj: HassEntity): number | undefined => {
+  if (!stateObj) {
+    return undefined;
+  }
+  const value = parseFloat(stateObj.state);
+  if (isNaN(value)) {
+    return undefined;
+  }
+
+  // Normalize to watts (W) based on unit of measurement (case-sensitive)
+  // Supported units: GW, kW, MW, mW, TW, W
+  const unit = stateObj.attributes.unit_of_measurement;
+  switch (unit) {
+    case "W":
+      return value;
+    case "kW":
+      return value * 1000;
+    case "mW":
+      return value / 1000;
+    case "MW":
+      return value * 1_000_000;
+    case "GW":
+      return value * 1_000_000_000;
+    case "TW":
+      return value * 1_000_000_000_000;
+    default:
+      // Assume value is in watts (W) if no unit or an unsupported unit is provided
+      return value;
+  }
+};
+
+/**
+ * Format power value in watts (W) to a short string with the appropriate unit
+ * @param hass - The HomeAssistant instance
+ * @param powerWatts - The power value in watts (W)
+ * @returns A string with the formatted power value and unit
+ */
+export const formatPowerShort = (
+  hass: HomeAssistant,
+  powerWatts: number
+): string => {
+  const units = ["W", "kW", "MW", "GW", "TW"];
+  let unitIndex = 0;
+  let value = powerWatts;
+
+  // Scale the unit to the appropriate power of 1000
+  while (Math.abs(value) >= 1000 && unitIndex < units.length - 1) {
+    value /= 1000;
+    unitIndex++;
+  }
+
+  return (
+    formatNumber(value, hass.locale, {
+      // For watts, show no decimals. For kW and above, always show 3 decimals.
+      maximumFractionDigits: units[unitIndex] === "W" ? 0 : 3,
+    }) +
+    " " +
+    units[unitIndex]
+  );
 };

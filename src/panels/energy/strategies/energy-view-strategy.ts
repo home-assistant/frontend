@@ -7,8 +7,8 @@ import type { LovelaceViewConfig } from "../../../data/lovelace/config/view";
 import type { LovelaceStrategyConfig } from "../../../data/lovelace/config/strategy";
 import { DEFAULT_ENERGY_COLLECTION_KEY } from "../ha-panel-energy";
 
-@customElement("energy-electricity-view-strategy")
-export class EnergyElectricityViewStrategy extends ReactiveElement {
+@customElement("energy-view-strategy")
+export class EnergyViewStrategy extends ReactiveElement {
   static async generate(
     _config: LovelaceStrategyConfig,
     hass: HomeAssistant
@@ -21,6 +21,9 @@ export class EnergyElectricityViewStrategy extends ReactiveElement {
     const energyCollection = getEnergyDataCollection(hass, {
       key: collectionKey,
     });
+    if (!energyCollection.prefs) {
+      await energyCollection.refresh();
+    }
     const prefs = energyCollection.prefs;
 
     // No energy sources available
@@ -46,15 +49,6 @@ export class EnergyElectricityViewStrategy extends ReactiveElement {
     const hasBattery = prefs.energy_sources.some(
       (source) => source.type === "battery"
     );
-    const hasPowerSources = prefs.energy_sources.find(
-      (source) =>
-        (source.type === "solar" && source.stat_rate) ||
-        (source.type === "battery" && source.stat_rate) ||
-        (source.type === "grid" && source.power?.length)
-    );
-    const hasPowerDevices = prefs.device_consumption.find(
-      (device) => device.stat_rate
-    );
     const showFloorsNAreas = !prefs.device_consumption.some(
       (d) => d.included_in_stat
     );
@@ -63,26 +57,6 @@ export class EnergyElectricityViewStrategy extends ReactiveElement {
       type: "energy-compare",
       collection_key: "energy_dashboard",
     });
-
-    if (hasPowerSources) {
-      if (hasPowerDevices) {
-        view.cards!.push({
-          title: hass.localize("ui.panel.energy.cards.power_sankey_title"),
-          type: "power-sankey",
-          collection_key: collectionKey,
-          group_by_floor: showFloorsNAreas,
-          group_by_area: showFloorsNAreas,
-          grid_options: {
-            columns: 24,
-          },
-        });
-      }
-      view.cards!.push({
-        title: hass.localize("ui.panel.energy.cards.power_sources_graph_title"),
-        type: "power-sources-graph",
-        collection_key: collectionKey,
-      });
-    }
 
     // Only include if we have a grid or battery.
     if (hasGrid || hasBattery) {
@@ -162,11 +136,11 @@ export class EnergyElectricityViewStrategy extends ReactiveElement {
     // Only include if we have at least 1 device in the config.
     if (prefs.device_consumption.length) {
       view.cards!.push({
-        title: hass.localize("ui.panel.energy.cards.energy_sankey_title"),
-        type: "energy-sankey",
+        title: hass.localize(
+          "ui.panel.energy.cards.energy_devices_detail_graph_title"
+        ),
+        type: "energy-devices-detail-graph",
         collection_key: "energy_dashboard",
-        group_by_floor: showFloorsNAreas,
-        group_by_area: showFloorsNAreas,
       });
       view.cards!.push({
         title: hass.localize(
@@ -176,11 +150,11 @@ export class EnergyElectricityViewStrategy extends ReactiveElement {
         collection_key: "energy_dashboard",
       });
       view.cards!.push({
-        title: hass.localize(
-          "ui.panel.energy.cards.energy_devices_detail_graph_title"
-        ),
-        type: "energy-devices-detail-graph",
+        title: hass.localize("ui.panel.energy.cards.energy_sankey_title"),
+        type: "energy-sankey",
         collection_key: "energy_dashboard",
+        group_by_floor: showFloorsNAreas,
+        group_by_area: showFloorsNAreas,
       });
     }
 
@@ -190,6 +164,6 @@ export class EnergyElectricityViewStrategy extends ReactiveElement {
 
 declare global {
   interface HTMLElementTagNameMap {
-    "energy-electricity-view-strategy": EnergyElectricityViewStrategy;
+    "energy-view-strategy": EnergyViewStrategy;
   }
 }

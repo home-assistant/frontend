@@ -1,3 +1,4 @@
+import "@home-assistant/webawesome/dist/components/divider/divider";
 import {
   mdiDotsVertical,
   mdiDownload,
@@ -15,11 +16,13 @@ import { repeat } from "lit/directives/repeat";
 import { isComponentLoaded } from "../../../common/config/is_component_loaded";
 import { formatDateTimeWithSeconds } from "../../../common/datetime/format_date_time";
 import { fireEvent } from "../../../common/dom/fire_event";
+import { navigate } from "../../../common/navigate";
 import { computeRTL } from "../../../common/util/compute_rtl";
 import "../../../components/ha-button";
-import "../../../components/ha-button-menu";
+import "../../../components/ha-dropdown";
+import "../../../components/ha-dropdown-item";
+import type { HaDropdownItem } from "../../../components/ha-dropdown-item";
 import "../../../components/ha-icon-button";
-import "../../../components/ha-list-item";
 import "../../../components/trace/ha-trace-blueprint-config";
 import "../../../components/trace/ha-trace-config";
 import "../../../components/trace/ha-trace-logbook";
@@ -43,6 +46,7 @@ import { showAlertDialog } from "../../../dialogs/generic/show-dialog-box";
 import "../../../layouts/hass-subpage";
 import { haStyle } from "../../../resources/styles";
 import type { HomeAssistant, Route } from "../../../types";
+import { fileDownload } from "../../../util/file_download";
 
 const TABS = ["details", "timeline", "logbook", "automation_config"] as const;
 
@@ -104,9 +108,7 @@ export class HaAutomationTrace extends LitElement {
                 appearance="plain"
                 size="small"
                 class="trace-link"
-                href="/config/automation/edit/${encodeURIComponent(
-                  stateObj.attributes.id
-                )}"
+                @click=${this._navigateToAutomation}
                 slot="toolbar-icon"
               >
                 ${this.hass.localize(
@@ -114,65 +116,50 @@ export class HaAutomationTrace extends LitElement {
                 )}
               </ha-button>
             `
-          : ""}
-        <ha-button-menu slot="toolbar-icon">
+          : nothing}
+        <ha-dropdown
+          slot="toolbar-icon"
+          @wa-select=${this._handleDropdownSelect}
+        >
           <ha-icon-button
             slot="trigger"
             .label=${this.hass.localize("ui.common.menu")}
             .path=${mdiDotsVertical}
           ></ha-icon-button>
 
-          <ha-list-item
-            graphic="icon"
-            .disabled=${!stateObj}
-            @click=${this._showInfo}
-          >
+          <ha-dropdown-item .disabled=${!stateObj} value="show_info">
             ${this.hass.localize("ui.panel.config.automation.editor.show_info")}
             <ha-svg-icon
-              slot="graphic"
+              slot="icon"
               .path=${mdiInformationOutline}
             ></ha-svg-icon>
-          </ha-list-item>
+          </ha-dropdown-item>
 
           ${stateObj?.attributes.id && this.narrow
             ? html`
-                <a
-                  class="trace-link"
-                  href="/config/automation/edit/${encodeURIComponent(
-                    stateObj.attributes.id
-                  )}"
-                >
-                  <ha-list-item graphic="icon">
-                    ${this.hass.localize(
-                      "ui.panel.config.automation.trace.edit_automation"
-                    )}
-                    <ha-svg-icon
-                      slot="graphic"
-                      .path=${mdiPencil}
-                    ></ha-svg-icon>
-                  </ha-list-item>
-                </a>
+                <ha-dropdown-item value="edit_automation">
+                  ${this.hass.localize(
+                    "ui.panel.config.automation.trace.edit_automation"
+                  )}
+                  <ha-svg-icon slot="icon" .path=${mdiPencil}></ha-svg-icon>
+                </ha-dropdown-item>
               `
-            : ""}
+            : nothing}
 
-          <li divider role="separator"></li>
+          <wa-divider></wa-divider>
 
-          <ha-list-item graphic="icon" @click=${this._refreshTraces}>
+          <ha-dropdown-item value="refresh">
             ${this.hass.localize("ui.panel.config.automation.trace.refresh")}
-            <ha-svg-icon slot="graphic" .path=${mdiRefresh}></ha-svg-icon>
-          </ha-list-item>
+            <ha-svg-icon slot="icon" .path=${mdiRefresh}></ha-svg-icon>
+          </ha-dropdown-item>
 
-          <ha-list-item
-            graphic="icon"
-            .disabled=${!this._trace}
-            @click=${this._downloadTrace}
-          >
+          <ha-dropdown-item .disabled=${!this._trace} value="download_trace">
             ${this.hass.localize(
               "ui.panel.config.automation.trace.download_trace"
             )}
-            <ha-svg-icon slot="graphic" .path=${mdiDownload}></ha-svg-icon>
-          </ha-list-item>
-        </ha-button-menu>
+            <ha-svg-icon slot="icon" .path=${mdiDownload}></ha-svg-icon>
+          </ha-dropdown-item>
+        </ha-dropdown>
 
         <div class="toolbar">
           ${this._traces && this._traces.length > 0
@@ -458,21 +445,21 @@ export class HaAutomationTrace extends LitElement {
   }
 
   private _downloadTrace() {
-    const aEl = document.createElement("a");
-    aEl.download = `trace ${this._entityId} ${
-      this._trace!.timestamp.start
-    }.json`;
-    aEl.href = `data:application/json;charset=utf-8,${encodeURI(
-      JSON.stringify(
-        {
-          trace: this._trace,
-          logbookEntries: this._logbookEntries,
-        },
-        undefined,
-        2
-      )
-    )}`;
-    aEl.click();
+    const json = JSON.stringify(
+      {
+        trace: this._trace,
+        logbookEntries: this._logbookEntries,
+      },
+      undefined,
+      2
+    );
+    const blob = new Blob([json], { type: "application/json" });
+    const url = URL.createObjectURL(blob);
+    fileDownload(
+      url,
+      `trace ${this._entityId} ${this._trace!.timestamp.start}.json`
+    );
+    URL.revokeObjectURL(url);
   }
 
   private _importTrace() {
@@ -518,6 +505,37 @@ export class HaAutomationTrace extends LitElement {
       return;
     }
     fireEvent(this, "hass-more-info", { entityId: this._entityId });
+  }
+
+  private _navigateToAutomation() {
+    if (this._entityId && this.hass.states[this._entityId]) {
+      navigate(
+        `/config/automation/edit/${encodeURIComponent(this.hass.states[this._entityId].attributes.id)}`
+      );
+    }
+  }
+
+  private _handleDropdownSelect(ev: CustomEvent<{ item: HaDropdownItem }>) {
+    const action = ev.detail?.item?.value;
+
+    if (!action) {
+      return;
+    }
+
+    switch (action) {
+      case "show_info":
+        this._showInfo();
+        break;
+      case "refresh":
+        this._refreshTraces();
+        break;
+      case "download_trace":
+        this._downloadTrace();
+        break;
+      case "edit_automation":
+        this._navigateToAutomation();
+        break;
+    }
   }
 
   static get styles(): CSSResultGroup {

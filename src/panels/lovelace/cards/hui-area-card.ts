@@ -35,7 +35,7 @@ import "../../../components/ha-svg-icon";
 import "../../../components/tile/ha-tile-badge";
 import "../../../components/tile/ha-tile-icon";
 import "../../../components/tile/ha-tile-info";
-import { isUnavailableState } from "../../../data/entity";
+import { isUnavailableState } from "../../../data/entity/entity";
 import type { HomeAssistant } from "../../../types";
 import "../card-features/hui-card-features";
 import type { LovelaceCardFeatureContext } from "../card-features/types";

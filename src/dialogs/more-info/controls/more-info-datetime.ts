@@ -5,7 +5,7 @@ import { customElement, property } from "lit/decorators";
 import "../../../components/ha-date-input";
 import "../../../components/ha-time-input";
 import { setDateTimeValue } from "../../../data/datetime";
-import { isUnavailableState, UNAVAILABLE } from "../../../data/entity";
+import { isUnavailableState, UNAVAILABLE } from "../../../data/entity/entity";
 import type { HomeAssistant } from "../../../types";
 
 @customElement("more-info-datetime")

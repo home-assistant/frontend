@@ -1,6 +1,6 @@
 import type { PropertyValues } from "lit";
 import { html, LitElement } from "lit";
-import { property, state } from "lit/decorators";
+import { customElement, property, state } from "lit/decorators";
 import type { VisualMapComponentOption } from "echarts/components";
 import type { LineSeriesOption } from "echarts/charts";
 import type { YAXisOption } from "echarts/types/dist/shared";
@@ -27,6 +27,7 @@ const safeParseFloat = (value) => {
   return isFinite(parsed) ? parsed : null;
 };
 
+@customElement("state-history-chart-line")
 export class StateHistoryChartLine extends LitElement {
   @property({ attribute: false }) public hass!: HomeAssistant;
 
@@ -795,7 +796,6 @@ export class StateHistoryChartLine extends LitElement {
     return Math.abs(value) < 1 ? value : roundingFn(value);
   }
 }
-customElements.define("state-history-chart-line", StateHistoryChartLine);
 
 declare global {
   interface HTMLElementTagNameMap {

@@ -6,7 +6,7 @@ import "../../components/ha-alert";
 import type {
   EntityRegistryEntry,
   ExtEntityRegistryEntry,
-} from "../../data/entity_registry";
+} from "../../data/entity/entity_registry";
 import { PLATFORMS_WITH_SETTINGS_TAB } from "../../panels/config/entities/const";
 import "../../panels/config/entities/entity-registry-settings";
 import type { HomeAssistant } from "../../types";

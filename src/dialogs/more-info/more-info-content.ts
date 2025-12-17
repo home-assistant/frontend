@@ -5,7 +5,7 @@ import memoizeOne from "memoize-one";
 import { dynamicElement } from "../../common/dom/dynamic-element-directive";
 import { computeStateDomain } from "../../common/entity/compute_state_domain";
 import "../../components/ha-badge";
-import type { ExtEntityRegistryEntry } from "../../data/entity_registry";
+import type { ExtEntityRegistryEntry } from "../../data/entity/entity_registry";
 import { supportsCoverPositionCardFeature } from "../../panels/lovelace/card-features/hui-cover-position-card-feature";
 import { supportsLightBrightnessCardFeature } from "../../panels/lovelace/card-features/hui-light-brightness-card-feature";
 import type { LovelaceCardFeatureConfig } from "../../panels/lovelace/card-features/types";

@@ -6,7 +6,7 @@ import { customElement, property, query, state } from "lit/decorators";
 import memoizeOne from "memoize-one";
 import { fireEvent } from "../../../../../../common/dom/fire_event";
 import type { HaDialog } from "../../../../../../components/ha-dialog";
-import { updateDeviceRegistryEntry } from "../../../../../../data/device_registry";
+import { updateDeviceRegistryEntry } from "../../../../../../data/device/device_registry";
 import type {
   QRProvisioningInformation,
   RequestedGrant,
@@ -49,12 +49,12 @@ import "../../../../../../components/ha-icon-button";
 import "../../../../../../components/ha-qr-scanner";
 
 import { navigate } from "../../../../../../common/navigate";
-import type { EntityRegistryEntry } from "../../../../../../data/entity_registry";
+import type { EntityRegistryEntry } from "../../../../../../data/entity/entity_registry";
 import {
   getAutomaticEntityIds,
   subscribeEntityRegistry,
   updateEntityRegistryEntry,
-} from "../../../../../../data/entity_registry";
+} from "../../../../../../data/entity/entity_registry";
 import "./zwave-js-add-node-added-insecure";
 import "./zwave-js-add-node-code-input";
 import "./zwave-js-add-node-configure-device";

@@ -1,7 +1,7 @@
 import { mdiPencil } from "@mdi/js";
 import type { CSSResultGroup } from "lit";
 import { css, html, LitElement, nothing } from "lit";
-import { property, state } from "lit/decorators";
+import { customElement, property, state } from "lit/decorators";
 import memoizeOne from "memoize-one";
 import { fireEvent } from "../../../common/dom/fire_event";
 import "../../../components/entity/ha-entities-picker";
@@ -43,6 +43,7 @@ const cropOptions: CropOptions = {
   aspectRatio: 1,
 };
 
+@customElement("dialog-person-detail")
 class DialogPersonDetail extends LitElement implements HassDialog {
   @property({ attribute: false }) public hass!: HomeAssistant;
 
@@ -567,5 +568,3 @@ declare global {
     "dialog-person-detail": DialogPersonDetail;
   }
 }
-
-customElements.define("dialog-person-detail", DialogPersonDetail);

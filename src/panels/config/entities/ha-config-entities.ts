@@ -42,6 +42,7 @@ import {
   PROTOCOL_INTEGRATIONS,
   protocolIntegrationPicked,
 } from "../../../common/integrations/protocolIntegrationPicked";
+import { slugify } from "../../../common/string/slugify";
 import type { LocalizeFunc } from "../../../common/translations/localize";
 import {
   hasRejectedItems,
@@ -77,25 +78,25 @@ import type {
   DataTableFiltersItems,
   DataTableFiltersValues,
 } from "../../../data/data_table_filters";
-import { UNAVAILABLE } from "../../../data/entity";
+import { UNAVAILABLE } from "../../../data/entity/entity";
 import type {
   EntityRegistryEntry,
   UpdateEntityRegistryEntryResult,
-} from "../../../data/entity_registry";
-import { updateEntityRegistryEntry } from "../../../data/entity_registry";
-import type { EntitySources } from "../../../data/entity_sources";
-import { fetchEntitySourcesWithCache } from "../../../data/entity_sources";
+} from "../../../data/entity/entity_registry";
+import { updateEntityRegistryEntry } from "../../../data/entity/entity_registry";
+import type { EntitySources } from "../../../data/entity/entity_sources";
+import { fetchEntitySourcesWithCache } from "../../../data/entity/entity_sources";
 import { HELPERS_CRUD } from "../../../data/helpers_crud";
 import type { IntegrationManifest } from "../../../data/integration";
 import {
   domainToName,
   fetchIntegrationManifests,
 } from "../../../data/integration";
-import type { LabelRegistryEntry } from "../../../data/label_registry";
+import type { LabelRegistryEntry } from "../../../data/label/label_registry";
 import {
   createLabelRegistryEntry,
   subscribeLabelRegistry,
-} from "../../../data/label_registry";
+} from "../../../data/label/label_registry";
 import { regenerateEntityIds } from "../../../data/regenerate_entity_ids";
 import {
   showAlertDialog,
@@ -114,10 +115,11 @@ import { isHelperDomain } from "../helpers/const";
 import "../integrations/ha-integration-overflow-menu";
 import { showAddIntegrationDialog } from "../integrations/show-add-integration-dialog";
 import { showLabelDetailDialog } from "../labels/show-dialog-label-detail";
-import { slugify } from "../../../common/string/slugify";
 
-export interface StateEntity
-  extends Omit<EntityRegistryEntry, "id" | "unique_id"> {
+export interface StateEntity extends Omit<
+  EntityRegistryEntry,
+  "id" | "unique_id"
+> {
   readonly?: boolean;
   selectable?: boolean;
   id?: string;
@@ -309,6 +311,7 @@ export class HaConfigEntities extends SubscribeMixin(LitElement) {
                   ></ha-state-icon>
                 `
               : html`<ha-domain-icon
+                  .hass=${this.hass}
                   .domain=${computeDomain(entry.entity_id)}
                 ></ha-domain-icon>`,
       },

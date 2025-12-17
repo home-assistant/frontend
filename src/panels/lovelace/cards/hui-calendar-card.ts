@@ -80,17 +80,25 @@ export class HuiCalendarCard extends LitElement implements LovelaceCard {
       throw new Error("Entities need to be an array");
     }
 
-    const computedStyles = getComputedStyle(this);
-    this._calendars = config!.entities.map((entity, idx) => ({
-      entity_id: entity,
-      backgroundColor: getColorByIndex(idx, computedStyles),
-    }));
-
     if (this._config?.entities !== config.entities) {
       this._fetchCalendarEvents();
     }
 
     this._config = { initial_view: "dayGridMonth", ...config };
+  }
+
+  public willUpdate(changedProps: PropertyValues): void {
+    super.willUpdate(changedProps);
+    if (
+      !this.hasUpdated ||
+      (changedProps.has("_config") && this._config?.entities)
+    ) {
+      const computedStyles = getComputedStyle(this);
+      this._calendars = this._config!.entities.map((entity, idx) => ({
+        entity_id: entity,
+        backgroundColor: getColorByIndex(idx, computedStyles),
+      }));
+    }
   }
 
   public getCardSize(): number {

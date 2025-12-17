@@ -34,7 +34,6 @@ import { fireEvent } from "../../../common/dom/fire_event";
 import { computeStateName } from "../../../common/entity/compute_state_name";
 import { navigate } from "../../../common/navigate";
 import { slugify } from "../../../common/string/slugify";
-import "../../../components/ha-tooltip";
 import type { LocalizeFunc } from "../../../common/translations/localize";
 import {
   hasRejectedItems,
@@ -61,6 +60,7 @@ import "../../../components/ha-md-menu";
 import "../../../components/ha-md-menu-item";
 import "../../../components/ha-sub-menu";
 import "../../../components/ha-svg-icon";
+import "../../../components/ha-tooltip";
 import { createAreaRegistryEntry } from "../../../data/area_registry";
 import type { CategoryRegistryEntry } from "../../../data/category_registry";
 import {
@@ -73,17 +73,17 @@ import {
   deserializeFilters,
   serializeFilters,
 } from "../../../data/data_table_filters";
-import { UNAVAILABLE } from "../../../data/entity";
+import { UNAVAILABLE } from "../../../data/entity/entity";
 import type {
   EntityRegistryEntry,
   UpdateEntityRegistryEntryResult,
-} from "../../../data/entity_registry";
-import { updateEntityRegistryEntry } from "../../../data/entity_registry";
-import type { LabelRegistryEntry } from "../../../data/label_registry";
+} from "../../../data/entity/entity_registry";
+import { updateEntityRegistryEntry } from "../../../data/entity/entity_registry";
+import type { LabelRegistryEntry } from "../../../data/label/label_registry";
 import {
   createLabelRegistryEntry,
   subscribeLabelRegistry,
-} from "../../../data/label_registry";
+} from "../../../data/label/label_registry";
 import type { ScriptEntity } from "../../../data/script";
 import {
   deleteScript,

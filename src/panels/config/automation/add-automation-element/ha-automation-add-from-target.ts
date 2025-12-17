@@ -20,13 +20,13 @@ import { computeAreaName } from "../../../../common/entity/compute_area_name";
 import { computeDeviceName } from "../../../../common/entity/compute_device_name";
 import { computeEntityNameList } from "../../../../common/entity/compute_entity_name_display";
 import { stringCompare } from "../../../../common/string/compare";
-import "../../../../components/entity/state-badge";
 import "../../../../components/ha-floor-icon";
 import "../../../../components/ha-icon";
 import "../../../../components/ha-icon-next";
 import "../../../../components/ha-md-list";
 import "../../../../components/ha-md-list-item";
 import "../../../../components/ha-section-title";
+import "../../../../components/ha-state-icon";
 import "../../../../components/ha-svg-icon";
 import {
   getAreasNestedInFloors,
@@ -34,7 +34,7 @@ import {
   type FloorComboBoxItem,
   type FloorNestedComboBoxItem,
   type UnassignedAreasFloorComboBoxItem,
-} from "../../../../data/area_floor";
+} from "../../../../data/area_floor_picker";
 import {
   getAreaDeviceLookup,
   getAreaEntityLookup,
@@ -52,15 +52,13 @@ import {
   localizeContext,
   statesContext,
 } from "../../../../data/context";
-import { getDeviceEntityLookup } from "../../../../data/device_registry";
+import { getDeviceEntityLookup } from "../../../../data/device/device_registry";
 import {
   domainToName,
   type DomainManifestLookup,
 } from "../../../../data/integration";
-import {
-  getLabels,
-  type LabelRegistryEntry,
-} from "../../../../data/label_registry";
+import { getLabels } from "../../../../data/label/label_picker";
+import type { LabelRegistryEntry } from "../../../../data/label/label_registry";
 import {
   TARGET_SEPARATOR,
   type SingleHassServiceTarget,
@@ -553,9 +551,6 @@ export default class HaAutomationAddFromTarget extends LitElement {
           area.icon,
         ] as [string, string, string | undefined, string | undefined];
       })
-      .sort(([, nameA], [, nameB]) =>
-        stringCompare(nameA, nameB, this.hass.locale.language)
-      )
       .map(([areaTargetId, areaName, floorId, areaIcon]) => {
         const { open, devices, entities } =
           this._entries[`floor${TARGET_SEPARATOR}${floorId || ""}`].areas![
@@ -784,11 +779,11 @@ export default class HaAutomationAddFromTarget extends LitElement {
 
   private _renderEntityIcon =
     (stateObj: HassEntity) => (slot: string | undefined) =>
-      html`<state-badge
+      html`<ha-state-icon
+        .hass=${this.hass}
         slot=${ifDefined(slot)}
         .stateObj=${stateObj}
-        .hass=${this.hass}
-      ></state-badge>`;
+      ></ha-state-icon>`;
 
   private _renderItem(
     label: string,
@@ -914,6 +909,10 @@ export default class HaAutomationAddFromTarget extends LitElement {
     const services: Record<string, Level3Entries> = {};
 
     unassignedDevices.forEach(({ id: deviceId, entry_type }) => {
+      const device = this.devices[deviceId];
+      if (!device || device.disabled_by) {
+        return;
+      }
       const deviceEntry = {
         open: false,
         entities:
@@ -1015,6 +1014,10 @@ export default class HaAutomationAddFromTarget extends LitElement {
     const devices: Record<string, Level3Entries> = {};
 
     referenced_devices.forEach(({ id: deviceId }) => {
+      const device = this.devices[deviceId];
+      if (!device || device.disabled_by) {
+        return;
+      }
       devices[deviceId] = {
         open: false,
         entities:
@@ -1386,92 +1389,6 @@ export default class HaAutomationAddFromTarget extends LitElement {
     );
   }
 
-  public navigateBack() {
-    if (!this.value) {
-      return;
-    }
-
-    const valueType = Object.keys(this.value)[0].replace("_id", "");
-    const valueId = this.value[`${valueType}_id`];
-
-    if (
-      valueType === "floor" ||
-      valueType === "label" ||
-      (!valueId &&
-        (valueType === "device" ||
-          valueType === "helper" ||
-          valueType === "service" ||
-          valueType === "area"))
-    ) {
-      fireEvent(this, "value-changed", { value: undefined });
-      return;
-    }
-
-    if (valueType === "area") {
-      fireEvent(this, "value-changed", {
-        value: { floor_id: this.areas[valueId].floor_id || undefined },
-      });
-      return;
-    }
-
-    if (valueType === "device") {
-      if (
-        !this.devices[valueId].area_id &&
-        this.devices[valueId].entry_type === "service"
-      ) {
-        fireEvent(this, "value-changed", {
-          value: { service_id: undefined },
-        });
-        return;
-      }
-
-      fireEvent(this, "value-changed", {
-        value: { area_id: this.devices[valueId].area_id || undefined },
-      });
-      return;
-    }
-
-    if (valueType === "entity" && valueId) {
-      const deviceId = this.entities[valueId].device_id;
-      if (deviceId) {
-        fireEvent(this, "value-changed", {
-          value: { device_id: deviceId },
-        });
-        return;
-      }
-
-      const areaId = this.entities[valueId].area_id;
-      if (areaId) {
-        fireEvent(this, "value-changed", {
-          value: { area_id: areaId },
-        });
-        return;
-      }
-
-      const domain = valueId.split(".", 2)[0];
-      const manifest = this.manifests ? this.manifests[domain] : undefined;
-      if (manifest?.integration_type === "helper") {
-        fireEvent(this, "value-changed", {
-          value: { [`helper_${domain}_id`]: undefined },
-        });
-        return;
-      }
-
-      fireEvent(this, "value-changed", {
-        value: { [`entity_${domain}_id`]: undefined },
-      });
-    }
-
-    if (valueType.startsWith("helper_") || valueType.startsWith("entity_")) {
-      fireEvent(this, "value-changed", {
-        value: {
-          [`${valueType.startsWith("helper_") ? "helper" : "device"}_id`]:
-            undefined,
-        },
-      });
-    }
-  }
-
   private _expandHeight() {
     this._fullHeight = true;
     this.style.setProperty("--max-height", "none");
@@ -1518,6 +1435,7 @@ export default class HaAutomationAddFromTarget extends LitElement {
 
     ha-svg-icon,
     ha-icon,
+    ha-state-icon,
     ha-floor-icon {
       padding: var(--ha-space-1);
       color: var(--ha-color-on-neutral-quiet);
@@ -1540,13 +1458,6 @@ export default class HaAutomationAddFromTarget extends LitElement {
     state-badge {
       width: 24px;
       height: 24px;
-    }
-
-    wa-tree-item[selected],
-    wa-tree-item[selected] > ha-svg-icon,
-    wa-tree-item[selected] > ha-icon,
-    wa-tree-item[selected] > ha-floor-icon {
-      color: var(--ha-color-on-primary-normal);
     }
 
     wa-tree-item[selected]::part(item):hover {
@@ -1573,6 +1484,11 @@ export default class HaAutomationAddFromTarget extends LitElement {
       --icon-primary-color: var(--ha-color-on-primary-normal);
     }
 
+    wa-tree-item[selected],
+    wa-tree-item[selected] > ha-svg-icon,
+    wa-tree-item[selected] > ha-icon,
+    wa-tree-item[selected] > ha-state-icon,
+    wa-tree-item[selected] > ha-floor-icon,
     ha-md-list-item.selected ha-icon,
     ha-md-list-item.selected ha-svg-icon {
       color: var(--ha-color-on-primary-normal);

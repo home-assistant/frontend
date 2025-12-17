@@ -12,7 +12,7 @@ import type {
 } from "home-assistant-js-websocket/dist/types";
 import type { PropertyValues } from "lit";
 import { LitElement, css, html } from "lit";
-import { property, query, state } from "lit/decorators";
+import { customElement, property, query, state } from "lit/decorators";
 import memoizeOne from "memoize-one";
 import { ensureArray } from "../../common/array/ensure-array";
 import { storage } from "../../common/decorators/storage";
@@ -52,6 +52,7 @@ import type { HomeAssistant } from "../../types";
 import { fileDownload } from "../../util/file_download";
 import { addEntitiesToLovelaceView } from "../lovelace/editor/add-entities-to-view";
 
+@customElement("ha-panel-history")
 class HaPanelHistory extends LitElement {
   @property({ attribute: false }) hass!: HomeAssistant;
 
@@ -631,6 +632,7 @@ class HaPanelHistory extends LitElement {
 
         :host([virtualize]) {
           height: 100%;
+          --ha-generic-picker-max-width: 400px;
         }
 
         .progress-wrapper {
@@ -678,8 +680,6 @@ class HaPanelHistory extends LitElement {
     ];
   }
 }
-
-customElements.define("ha-panel-history", HaPanelHistory);
 
 declare global {
   interface HTMLElementTagNameMap {

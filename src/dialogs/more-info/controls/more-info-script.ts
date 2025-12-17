@@ -11,8 +11,8 @@ import "../../../components/ha-control-button-group";
 import "../../../components/ha-markdown";
 import "../../../components/ha-relative-time";
 import "../../../components/ha-service-control";
-import { isUnavailableState } from "../../../data/entity";
-import type { ExtEntityRegistryEntry } from "../../../data/entity_registry";
+import { isUnavailableState } from "../../../data/entity/entity";
+import type { ExtEntityRegistryEntry } from "../../../data/entity/entity_registry";
 import type { ScriptEntity } from "../../../data/script";
 import {
   canRun,
