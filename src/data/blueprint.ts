@@ -58,8 +58,7 @@ export interface BlueprintBase {
 }
 
 export interface AutomationBlueprint
-  extends ManualAutomationConfig,
-    BlueprintBase {}
+  extends ManualAutomationConfig, BlueprintBase {}
 export interface ScriptBlueprint extends ManualScriptConfig, BlueprintBase {}
 export type Blueprint = AutomationBlueprint | ScriptBlueprint;
 

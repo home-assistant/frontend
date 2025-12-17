@@ -6,9 +6,7 @@ import "../../../components/ha-button";
 import "../../../components/ha-card";
 import type { HomeAssistant } from "../../../types";
 import "./ha-blueprint-editor";
-import type {
-  BlueprintMetaDataEditorSchema,
-} from "../../../data/blueprint";
+import type { BlueprintMetaDataEditorSchema } from "../../../data/blueprint";
 import type { SchemaUnion } from "../../../components/ha-form/types";
 import { haStyle } from "../../../resources/styles";
 
@@ -41,7 +39,8 @@ const SCHEMA = [
 class BlueprintMetadataEditor extends LitElement {
   @property({ attribute: false }) public hass!: HomeAssistant;
 
-  @property({ attribute: false }) public metadata?: BlueprintMetaDataEditorSchema;
+  @property({ attribute: false })
+  public metadata?: BlueprintMetaDataEditorSchema;
 
   private _computeLabel(step: SchemaUnion<typeof SCHEMA>) {
     return this.hass.localize(

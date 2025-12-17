@@ -36,7 +36,7 @@ declare global {
   // for fire event
   interface HASSDomEvents {
     "value-init": { value: unknown };
-    "reset": {};
+    reset: {};
   }
 }
 
@@ -225,9 +225,9 @@ export abstract class HaBlueprintGenericEditor extends PreventUnsavedMixin(
         ></ha-blueprint-input>
 
         ${this.renderEditor()}
-        
+
         <div class="actions">
-          <ha-button 
+          <ha-button
             appearance="plain"
             @click=${this._resetBlueprint}
             .disabled=${!this.dirty}
@@ -350,7 +350,7 @@ export abstract class HaBlueprintGenericEditor extends PreventUnsavedMixin(
         manual-script-editor {
           margin-top: -48px;
         }
-        
+
         .actions {
           display: flex;
           flex-direction: row-reverse;

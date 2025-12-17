@@ -46,7 +46,6 @@ class HaDialogPickBlueprint extends LitElement implements HassDialog {
     };
   }
 
-
   private _pickBlueprint(id: string) {
     return () => {
       this._parameters?.handlePickBlueprint(this._pickType!, id);
@@ -58,9 +57,8 @@ class HaDialogPickBlueprint extends LitElement implements HassDialog {
     return () => {
       this._parameters?.handlePickNewBlueprint(domain);
       this.closeDialog();
-    }
+    };
   }
-
 
   private _renderList() {
     if (!this._parameters) {
@@ -104,9 +102,12 @@ class HaDialogPickBlueprint extends LitElement implements HassDialog {
       `;
     }
 
-    const blueprints = Object
-      .entries(this._parameters.blueprints[this._pickType])
-      .filter(([_, blueprint]) => !("error" in blueprint)) as [string, Blueprint][];
+    const blueprints = Object.entries(
+      this._parameters.blueprints[this._pickType]
+    ).filter(([_, blueprint]) => !("error" in blueprint)) as [
+      string,
+      Blueprint,
+    ][];
     return html`
       <mwc-list
         innerRole="listbox"
@@ -128,21 +129,26 @@ class HaDialogPickBlueprint extends LitElement implements HassDialog {
             `ui.panel.developer-tools.tabs.blueprints.dialog_pick.create_empty_${this._pickType}`
           )}
           <span slot="secondary">
-              ${this.hass.localize(
-                `ui.panel.developer-tools.tabs.blueprints.dialog_pick.create_empty_${this._pickType}_description`
-              )}
-            </span>
+            ${this.hass.localize(
+              `ui.panel.developer-tools.tabs.blueprints.dialog_pick.create_empty_${this._pickType}_description`
+            )}
+          </span>
           <ha-icon-next slot="meta"></ha-icon-next>
         </ha-list-item>
-        ${blueprints.map(([id, blueprint]) => html`
-          <mwc-list-item 
-            graphic="icon"
-            @request-selected=${this._pickBlueprint(id)}
-          >
-            <ha-svg-icon slot="graphic" .path=${mdiPencilOutline}></ha-svg-icon>
-            ${blueprint.metadata.name}
-          </mwc-list-item>
-        `)}
+        ${blueprints.map(
+          ([id, blueprint]) => html`
+            <mwc-list-item
+              graphic="icon"
+              @request-selected=${this._pickBlueprint(id)}
+            >
+              <ha-svg-icon
+                slot="graphic"
+                .path=${mdiPencilOutline}
+              ></ha-svg-icon>
+              ${blueprint.metadata.name}
+            </mwc-list-item>
+          `
+        )}
       </mwc-list>
     `;
   }
