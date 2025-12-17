@@ -223,7 +223,6 @@ export class HaDevicePicker extends LitElement {
         .unknownItemText=${this.hass.localize(
           "ui.components.device-picker.unknown"
         )}
-        use-top-label
         @value-changed=${this._valueChanged}
       >
       </ha-generic-picker>
