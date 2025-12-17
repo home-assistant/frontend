@@ -146,13 +146,13 @@ class HaAddonPicker extends LitElement {
 
   private _valueRenderer = (itemId: string) => {
     const item = this._addons!.find((addon) => addon.id === itemId);
-    return html`<span
-      style="display: flex; align-items: center; gap: 8px;"
-      slot="headline"
-      >${item?.icon
-        ? html`<img style="width: 32px;" alt="" .src=${item.icon} /> `
-        : nothing}${item?.primary || "Unknown"}</span
-    >`;
+    return html`${item?.icon
+        ? html`<img
+            slot="start"
+            alt=${item.primary ?? "Unknown"}
+            .src=${item.icon}
+          />`
+        : nothing}<span slot="headline">${item?.primary || "Unknown"}</span>`;
   };
 }
 
