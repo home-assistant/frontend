@@ -95,11 +95,12 @@ export class HaNavigationPicker extends LitElement {
 
     for (const panel of panels) {
       const path = `/${panel.url_path}`;
-      const primary = getPanelTitle(this.hass, panel) || path;
+      const panelTitle = getPanelTitle(this.hass, panel);
+      const primary = panelTitle || path;
       this._navigationItems.push({
         id: path,
         primary,
-        secondary: primary ? path : undefined,
+        secondary: panelTitle ? path : undefined,
         icon: getPanelIcon(panel) || "mdi:view-dashboard",
         sorting_label: [
           primary.startsWith("/") ? `zzz${primary}` : primary,
