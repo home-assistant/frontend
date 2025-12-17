@@ -471,8 +471,8 @@ export class HaStatisticPicker extends LitElement {
         .hass=${this.hass}
         .autofocus=${this.autofocus}
         .allowCustomValue=${this.allowCustomEntity}
-        .label=${this.label}
         .disabled=${this.disabled}
+        .label=${this.label}
         .placeholder=${placeholder}
         .value=${this.value}
         .notFoundLabel=${this._notFoundLabel}
