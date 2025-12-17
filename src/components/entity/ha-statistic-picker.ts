@@ -462,6 +462,10 @@ export class HaStatisticPicker extends LitElement {
   };
 
   protected render() {
+    const placeholder =
+      this.placeholder ??
+      this.hass.localize("ui.components.statistic-picker.placeholder");
+
     return html`
       <ha-generic-picker
         .hass=${this.hass}
@@ -469,7 +473,7 @@ export class HaStatisticPicker extends LitElement {
         .allowCustomValue=${this.allowCustomEntity}
         .label=${this.label}
         .disabled=${this.disabled}
-        .placeholder=${this.placeholder}
+        .placeholder=${placeholder}
         .value=${this.value}
         .notFoundLabel=${this._notFoundLabel}
         .emptyLabel=${this.hass.localize(
@@ -486,7 +490,6 @@ export class HaStatisticPicker extends LitElement {
         .unknownItemText=${this.hass.localize(
           "ui.components.statistic-picker.unknown"
         )}
-        use-top-label
         @value-changed=${this._valueChanged}
       >
       </ha-generic-picker>
