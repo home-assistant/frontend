@@ -61,7 +61,6 @@ class HaAddonPicker extends LitElement {
   }
 
   protected render() {
-
     const label =
       this.label === undefined && this.hass
         ? this.hass.localize("ui.components.addon-picker.addon")
