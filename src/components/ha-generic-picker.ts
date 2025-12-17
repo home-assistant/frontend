@@ -170,7 +170,11 @@ export class HaGenericPicker extends LitElement {
                   type="button"
                   class=${this._opened ? "opened" : ""}
                   compact
-                  .unknown=${this._unknownValue(this.value, this.getItems())}
+                  .unknown=${this._unknownValue(
+                    this.allowCustomValue,
+                    this.value,
+                    this.getItems()
+                  )}
                   .unknownItemText=${this.unknownItemText}
                   aria-label=${ifDefined(this.label)}
                   @click=${this.open}
@@ -253,9 +257,13 @@ export class HaGenericPicker extends LitElement {
   }
 
   private _unknownValue = memoizeOne(
-    (value?: string, items?: (PickerComboBoxItem | string)[]) => {
+    (
+      allowCustomValue: boolean,
+      value?: string,
+      items?: (PickerComboBoxItem | string)[]
+    ) => {
       if (
-        this.allowCustomValue ||
+        allowCustomValue ||
         value === undefined ||
         value === null ||
         value === "" ||

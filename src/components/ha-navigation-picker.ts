@@ -29,7 +29,7 @@ export class HaNavigationPicker extends LitElement {
     this._loadNavigationItems();
   }
 
-  private _navigationItems?: PickerComboBoxItem[];
+  private _navigationItems: PickerComboBoxItem[] = [];
 
   protected render() {
     return html`
@@ -53,9 +53,7 @@ export class HaNavigationPicker extends LitElement {
   }
 
   private _valueRenderer = (itemId: string) => {
-    const item = this._navigationItems!.find(
-      (navItem) => navItem.id === itemId
-    );
+    const item = this._navigationItems.find((navItem) => navItem.id === itemId);
     return html`
       ${item?.icon
         ? html`<ha-icon slot="start" .icon=${item.icon}></ha-icon>`
@@ -67,7 +65,7 @@ export class HaNavigationPicker extends LitElement {
     `;
   };
 
-  private _getItems = () => this._navigationItems!;
+  private _getItems = () => this._navigationItems;
 
   private async _loadNavigationItems() {
     const panels = Object.entries(this.hass!.panels).map(([id, panel]) => ({
@@ -119,7 +117,7 @@ export class HaNavigationPicker extends LitElement {
         const viewPath = `/${panel.url_path}/${view.path ?? index}`;
         const viewPrimary =
           view.title ?? (view.path ? titleCase(view.path) : `${index}`);
-        this._navigationItems!.push({
+        this._navigationItems.push({
           id: viewPath,
           secondary: viewPath,
           icon: view.icon ?? "mdi:view-compact",

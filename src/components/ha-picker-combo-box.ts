@@ -191,10 +191,11 @@ export class HaPickerComboBox extends ScrollableFadeMixin(LitElement) {
 
   protected render() {
     const searchLabel =
-      (this.label ?? this.allowCustomValue)
+      this.label ??
+      (this.allowCustomValue
         ? (this.hass?.localize("ui.components.combo-box.search_or_custom") ??
           "Search | Add custom value")
-        : (this.hass?.localize("ui.common.search") ?? "Search");
+        : (this.hass?.localize("ui.common.search") ?? "Search"));
 
     return html`<ha-textfield
         .label=${searchLabel}
