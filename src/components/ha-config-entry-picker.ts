@@ -67,9 +67,6 @@ class HaConfigEntryPicker extends LitElement {
         .helper=${this.helper}
         .rowRenderer=${this._rowRenderer}
         .getItems=${this._getItems}
-        item-value-path="entry_id"
-        item-id-path="entry_id"
-        item-label-path="title"
         .searchKeys=${SEARCH_KEYS}
         .valueRenderer=${this._valueRenderer}
         @value-changed=${this._valueChanged}
