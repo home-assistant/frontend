@@ -1545,6 +1545,12 @@ export class EntityRegistrySettingsEditor extends LitElement {
           margin-inline-end: 0;
           margin-inline-start: initial;
         }
+        ha-settings-row {
+          display: grid;
+          grid-template-columns: 1fr auto;
+          gap: var(--ha-space-4);
+          align-items: start;
+        }
         ha-textfield,
         ha-icon-picker,
         ha-select,
