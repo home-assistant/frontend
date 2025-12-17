@@ -63,7 +63,7 @@ class HaDataTableLabels extends LitElement {
         @click=${clickAction ? this._labelClicked : undefined}
         @keydown=${clickAction ? this._labelClicked : undefined}
         style=${color ? `--color: ${color}` : ""}
-        .description=${label.description}
+        .description=${label.description ?? undefined}
       >
         ${label?.icon
           ? html`<ha-icon slot="icon" .icon=${label.icon}></ha-icon>`
@@ -94,13 +94,9 @@ class HaDataTableLabels extends LitElement {
   static styles = css`
     :host {
       display: block;
-      flex-grow: 1;
+      flex-shrink: 0;
       margin-top: 4px;
       height: 22px;
-    }
-    ha-chip-set {
-      position: fixed;
-      flex-wrap: nowrap;
     }
     ha-label {
       --ha-label-background-color: var(--color, var(--grey-color));
