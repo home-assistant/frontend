@@ -12,9 +12,9 @@ import { updateAreaRegistryEntry } from "../data/area_registry";
 import type {
   DeviceEntityDisplayLookup,
   DeviceRegistryEntry,
-} from "../data/device_registry";
-import { getDeviceEntityDisplayLookup } from "../data/device_registry";
-import type { EntityRegistryDisplayEntry } from "../data/entity_registry";
+} from "../data/device/device_registry";
+import { getDeviceEntityDisplayLookup } from "../data/device/device_registry";
+import type { EntityRegistryDisplayEntry } from "../data/entity/entity_registry";
 import {
   createFloorRegistryEntry,
   getFloorAreaLookup,
@@ -36,9 +36,9 @@ import "./ha-svg-icon";
 const ADD_NEW_ID = "___ADD_NEW___";
 
 const SEARCH_KEYS = [
-  { name: "floorName", weight: 10 },
-  { name: "aliases", weight: 8 },
-  { name: "floor_id", weight: 3 },
+  { name: "search_labels.floorName", weight: 10 },
+  { name: "search_labels.aliases", weight: 8 },
+  { name: "search_labels.floor_id", weight: 3 },
 ];
 
 interface FloorComboBoxItem extends PickerComboBoxItem {
@@ -291,7 +291,6 @@ export class HaFloorPicker extends LitElement {
           id: floor.floor_id,
           primary: floorName,
           floor: floor,
-          sorting_label: floor.level?.toString() || "zzzzz",
           search_labels: {
             floorName,
             floor_id: floor.floor_id,
@@ -391,6 +390,8 @@ export class HaFloorPicker extends LitElement {
         .hass=${this.hass}
         .autofocus=${this.autofocus}
         .label=${this.label}
+        .helper=${this.helper}
+        .disabled=${this.disabled}
         .notFoundLabel=${this._notFoundLabel}
         .emptyLabel=${this.hass.localize(
           "ui.components.floor-picker.no_floors"

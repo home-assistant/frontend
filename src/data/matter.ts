@@ -1,8 +1,8 @@
 import type { UnsubscribeFunc } from "home-assistant-js-websocket";
+import { isComponentLoaded } from "../common/config/is_component_loaded";
 import { navigate } from "../common/navigate";
 import type { HomeAssistant } from "../types";
-import { subscribeDeviceRegistry } from "./device_registry";
-import { isComponentLoaded } from "../common/config/is_component_loaded";
+import { subscribeDeviceRegistry } from "./device/device_registry";
 import { getThreadDataSetTLV, listThreadDataSets } from "./thread";
 
 export enum NetworkType {

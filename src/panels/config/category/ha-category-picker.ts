@@ -39,6 +39,9 @@ export class HaCategoryPicker extends SubscribeMixin(LitElement) {
   @property({ type: Boolean, attribute: "no-add" })
   public noAdd = false;
 
+  @property({ type: Boolean, attribute: "show-label" })
+  public showLabel = false;
+
   @property({ type: Boolean }) public disabled = false;
 
   @property({ type: Boolean }) public required = false;
@@ -196,6 +199,7 @@ export class HaCategoryPicker extends SubscribeMixin(LitElement) {
           "ui.components.category-picker.no_categories"
         )}
         .placeholder=${placeholder}
+        .showLabel=${this.showLabel}
         .value=${this.value}
         .getItems=${this._getItems}
         .getAdditionalItems=${this._getAdditionalItems}

@@ -23,8 +23,8 @@ import {
   removeConfigEntryFromDevice,
   updateDeviceRegistryEntry,
   type DeviceRegistryEntry,
-} from "../../../data/device_registry";
-import type { EntityRegistryEntry } from "../../../data/entity_registry";
+} from "../../../data/device/device_registry";
+import type { EntityRegistryEntry } from "../../../data/entity/entity_registry";
 import { haStyle } from "../../../resources/styles";
 import type { HomeAssistant } from "../../../types";
 import {

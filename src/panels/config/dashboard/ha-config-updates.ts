@@ -12,15 +12,15 @@ import "../../../components/ha-alert";
 import "../../../components/ha-icon-next";
 import "../../../components/ha-md-list";
 import "../../../components/ha-md-list-item";
+import "../../../components/ha-progress-ring";
 import "../../../components/ha-spinner";
-import type { DeviceRegistryEntry } from "../../../data/device_registry";
-import { subscribeDeviceRegistry } from "../../../data/device_registry";
-import type { EntityRegistryEntry } from "../../../data/entity_registry";
-import { subscribeEntityRegistry } from "../../../data/entity_registry";
+import type { DeviceRegistryEntry } from "../../../data/device/device_registry";
+import { subscribeDeviceRegistry } from "../../../data/device/device_registry";
+import type { EntityRegistryEntry } from "../../../data/entity/entity_registry";
+import { subscribeEntityRegistry } from "../../../data/entity/entity_registry";
 import type { UpdateEntity } from "../../../data/update";
 import { SubscribeMixin } from "../../../mixins/subscribe-mixin";
 import type { HomeAssistant } from "../../../types";
-import "../../../components/ha-progress-ring";
 
 @customElement("ha-config-updates")
 class HaConfigUpdates extends SubscribeMixin(LitElement) {

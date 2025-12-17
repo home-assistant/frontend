@@ -1,6 +1,6 @@
 import { mdiKey } from "@mdi/js";
 import { getConfigEntries } from "../../../../../../data/config_entries";
-import type { DeviceRegistryEntry } from "../../../../../../data/device_registry";
+import type { DeviceRegistryEntry } from "../../../../../../data/device/device_registry";
 import { fetchESPHomeEncryptionKey } from "../../../../../../data/esphome";
 import type { HomeAssistant } from "../../../../../../types";
 import { showESPHomeEncryptionKeyDialog } from "../../../../integrations/integration-panels/esphome/show-dialog-esphome-encryption-key";

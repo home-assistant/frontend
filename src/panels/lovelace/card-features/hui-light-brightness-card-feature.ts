@@ -3,7 +3,7 @@ import { customElement, property, state } from "lit/decorators";
 import { computeDomain } from "../../../common/entity/compute_domain";
 import { stateActive } from "../../../common/entity/state_active";
 import "../../../components/ha-control-slider";
-import { UNAVAILABLE } from "../../../data/entity";
+import { UNAVAILABLE } from "../../../data/entity/entity";
 import { lightSupportsBrightness, type LightEntity } from "../../../data/light";
 import type { HomeAssistant } from "../../../types";
 import type { LovelaceCardFeature } from "../types";

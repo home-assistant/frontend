@@ -13,9 +13,9 @@ import { createAreaRegistryEntry } from "../data/area_registry";
 import type {
   DeviceEntityDisplayLookup,
   DeviceRegistryEntry,
-} from "../data/device_registry";
-import { getDeviceEntityDisplayLookup } from "../data/device_registry";
-import type { EntityRegistryDisplayEntry } from "../data/entity_registry";
+} from "../data/device/device_registry";
+import { getDeviceEntityDisplayLookup } from "../data/device/device_registry";
+import type { EntityRegistryDisplayEntry } from "../data/entity/entity_registry";
 import { showAlertDialog } from "../dialogs/generic/show-dialog-box";
 import { showAreaRegistryDetailDialog } from "../panels/config/areas/show-dialog-area-registry-detail";
 import type { HomeAssistant, ValueChangedEvent } from "../types";
@@ -31,10 +31,10 @@ import "./ha-svg-icon";
 const ADD_NEW_ID = "___ADD_NEW___";
 
 const SEARCH_KEYS = [
-  { name: "areaName", weight: 10 },
-  { name: "aliases", weight: 8 },
-  { name: "floorName", weight: 6 },
-  { name: "id", weight: 3 },
+  { name: "search_labels.areaName", weight: 10 },
+  { name: "search_labels.aliases", weight: 8 },
+  { name: "search_labels.floorName", weight: 6 },
+  { name: "search_labels.id", weight: 3 },
 ];
 @customElement("ha-area-picker")
 export class HaAreaPicker extends LitElement {
@@ -50,6 +50,9 @@ export class HaAreaPicker extends LitElement {
 
   @property({ type: Boolean, attribute: "no-add" })
   public noAdd = false;
+
+  @property({ type: Boolean, attribute: "show-label" })
+  public showLabel = false;
 
   /**
    * Show only areas with entities from specific domains.
@@ -296,7 +299,6 @@ export class HaAreaPicker extends LitElement {
           secondary: floorName,
           icon: area.icon || undefined,
           icon_path: area.icon ? undefined : mdiTextureBox,
-          sorting_label: areaName,
           search_labels: {
             areaName: areaName || null,
             floorName: floorName || null,
@@ -366,8 +368,16 @@ export class HaAreaPicker extends LitElement {
   protected render(): TemplateResult {
     const placeholder =
       this.placeholder ?? this.hass.localize("ui.components.area-picker.area");
-
     const valueRenderer = this._computeValueRenderer(this.hass.areas);
+
+    let showLabel = this.showLabel;
+    if (this.value) {
+      const area = this.hass.areas[this.value];
+      if (area) {
+        const { floor } = getAreaContext(area, this.hass.floors);
+        showLabel = !floor && this.showLabel;
+      }
+    }
 
     return html`
       <ha-generic-picker
@@ -380,6 +390,7 @@ export class HaAreaPicker extends LitElement {
         .disabled=${this.disabled}
         .required=${this.required}
         .placeholder=${placeholder}
+        .showLabel=${showLabel}
         .value=${this.value}
         .getItems=${this._getItems}
         .getAdditionalItems=${this._getAdditionalItems}

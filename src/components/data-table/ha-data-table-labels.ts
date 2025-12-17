@@ -6,7 +6,7 @@ import { computeCssColor } from "../../common/color/compute-color";
 import { fireEvent } from "../../common/dom/fire_event";
 import { stopPropagation } from "../../common/dom/stop_propagation";
 import { stringCompare } from "../../common/string/compare";
-import type { LabelRegistryEntry } from "../../data/label_registry";
+import type { LabelRegistryEntry } from "../../data/label/label_registry";
 import "../chips/ha-chip-set";
 import "../ha-dropdown";
 import "../ha-dropdown-item";

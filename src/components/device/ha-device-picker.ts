@@ -12,8 +12,8 @@ import {
   deviceComboBoxKeys,
   getDevices,
   type DevicePickerItem,
-  type DeviceRegistryEntry,
-} from "../../data/device_registry";
+} from "../../data/device/device_picker";
+import type { DeviceRegistryEntry } from "../../data/device/device_registry";
 import type { HomeAssistant } from "../../types";
 import { brandsUrl } from "../../util/brands-url";
 import "../ha-generic-picker";
@@ -205,6 +205,8 @@ export class HaDevicePicker extends LitElement {
       <ha-generic-picker
         .hass=${this.hass}
         .autofocus=${this.autofocus}
+        .disabled=${this.disabled}
+        .helper=${this.helper}
         .label=${this.label}
         .searchLabel=${this.searchLabel}
         .notFoundLabel=${this._notFoundLabel}

@@ -769,6 +769,9 @@
         "no_match": "No languages found for {term}",
         "no_languages": "No languages available"
       },
+      "icon-picker": {
+        "no_match": "No matching icons found"
+      },
       "tts-picker": {
         "tts": "Text-to-speech",
         "none": "None"
@@ -3688,6 +3691,10 @@
                 },
                 "no_cloud_message": "You should have an active cloud subscription to use cloud speech services.",
                 "no_cloud_action": "Subscribe"
+              },
+              "duplicate": {
+                "error_pipeline_not_found": "Pipeline not found",
+                "name": "{name} (Copy)"
               }
             },
             "cloud": {
@@ -4073,6 +4080,13 @@
             "services": "Services",
             "helpers": "Helpers",
             "entity_hidden": "[%key:ui::panel::config::devices::entities::hidden%]",
+            "target_summary": {
+              "no_target": "No target set",
+              "targets": "{count} {count, plural,\n  one {target}\n  other {targets}\n}",
+              "invalid": "Invalid target",
+              "all_entities": "All entities",
+              "none_entities": "No entities"
+            },
             "triggers": {
               "name": "Triggers",
               "header": "When",
@@ -4584,11 +4598,11 @@
                     "service": "Perform an action",
                     "target_template": "templated {name}",
                     "target_every_entity": "every entity",
-                    "target_unknown_entity": "unknown entity",
-                    "target_unknown_device": "unknown device",
-                    "target_unknown_area": "unknown area",
-                    "target_unknown_floor": "unknown floor",
-                    "target_unknown_label": "unknown label"
+                    "target_unknown_entity": "Unknown entity",
+                    "target_unknown_device": "Unknown device",
+                    "target_unknown_area": "Unknown area",
+                    "target_unknown_floor": "Unknown floor",
+                    "target_unknown_label": "Unknown label"
                   }
                 },
                 "play_media": {
@@ -7019,6 +7033,7 @@
           "lifetime_description": "{lifetime} used",
           "lifetime_used_description": "The drive’s wear level is shown as a percentage, based on endurance indicators reported by the device via NVMe SMART or eMMC lifetime estimate fields.",
           "disk_metrics": "Disk metrics",
+          "change_chart_type": "Change chart type",
           "datadisk": {
             "title": "Move data disk",
             "description": "You are currently using ''{current_path}'' as data disk. Moving the data disk will reboot your device and it's estimated to take {time} minutes. Your Home Assistant installation will not be accessible during this period. Do not disconnect the power during the move!",
@@ -7148,7 +7163,9 @@
           },
           "home": {
             "summary_list": {
-              "media_players": "Media players"
+              "media_players": "Media players",
+              "weather": "Weather",
+              "energy": "Today's energy"
             },
             "welcome_user": "Welcome {user}",
             "summaries": "Summaries",
@@ -7159,7 +7176,8 @@
             "scenes": "Scenes",
             "automations": "Automations",
             "for_you": "For you",
-            "home": "Home"
+            "home": "Home",
+            "commonly_used": "Commonly used"
           },
           "common_controls": {
             "not_loaded": "Usage Prediction integration is not loaded.",
@@ -7644,6 +7662,8 @@
             "strategy_type": "strategy"
           },
           "select_dashboard": {
+            "error_title": "Error fetching dashboards",
+            "error_text": "Failed to fetch dashboards, please try again.",
             "header": "Choose a dashboard",
             "cannot_move_to_strategy": "The view cannot be moved because the selected dashboard is auto-generated.",
             "get_config_failed": "Failed to load selected dashboard config.",

@@ -132,6 +132,7 @@ export class HaLanguagePicker extends LitElement {
         .placeholder=${this.label ??
         (this.hass?.localize("ui.components.language-picker.language") ||
           "Language")}
+        show-label
         .value=${value}
         .valueRenderer=${this._valueRenderer}
         .disabled=${this.disabled}

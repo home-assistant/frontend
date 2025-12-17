@@ -103,6 +103,7 @@ class EventSubscribeCard extends LitElement {
                     this.hass!.config
                   )}:
                   <ha-yaml-editor
+                    .hass=${this.hass}
                     .defaultValue=${event.event}
                     read-only
                   ></ha-yaml-editor>

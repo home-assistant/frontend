@@ -70,11 +70,6 @@ export class HaMarkdown extends LitElement {
     a {
       color: var(--markdown-link-color, var(--primary-color));
     }
-    :host([assist]) img {
-      height: auto;
-      width: auto;
-      transition: height 0.2s ease-in-out;
-    }
     img {
       background-color: var(--markdown-image-background-color);
       border-radius: var(--markdown-image-border-radius);
@@ -86,8 +81,7 @@ export class HaMarkdown extends LitElement {
     p:first-child > img:last-child {
       vertical-align: top;
     }
-    :host > ul,
-    :host > ol {
+    ha-markdown-element > :is(ol, ul) {
       padding-inline-start: var(--markdown-list-indent, revert);
     }
     li {
@@ -138,6 +132,18 @@ export class HaMarkdown extends LitElement {
       border-bottom: none;
       margin: var(--ha-space-4) 0;
     }
+    table[role="presentation"] {
+      --markdown-table-border-collapse: separate;
+      --markdown-table-border-width: attr(border, 0);
+      --markdown-table-padding-inline: 0;
+      --markdown-table-padding-block: 0;
+      th {
+        vertical-align: attr(align, center);
+      }
+      td {
+        vertical-align: attr(align, left);
+      }
+    }
     table {
       border-collapse: var(--markdown-table-border-collapse, collapse);
     }
@@ -145,14 +151,15 @@ export class HaMarkdown extends LitElement {
       overflow: auto;
     }
     th {
-      text-align: start;
+      text-align: var(--markdown-table-text-align, start);
     }
     td,
     th {
       border-width: var(--markdown-table-border-width, 1px);
       border-style: var(--markdown-table-border-style, solid);
       border-color: var(--markdown-table-border-color, var(--divider-color));
-      padding: 0.25em 0.5em;
+      padding-inline: var(--markdown-table-padding-inline, 0.5em);
+      padding-block: var(--markdown-table-padding-block, 0.25em);
     }
     blockquote {
       border-left: 4px solid var(--divider-color);

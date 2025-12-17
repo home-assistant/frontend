@@ -6,6 +6,7 @@ import {
 import { fireEvent } from "../common/dom/fire_event";
 import { computeFormatFunctions } from "../common/translations/entity-state";
 import { computeLocalize } from "../common/translations/localize";
+import type { EntityRegistryDisplayEntry } from "../data/entity/entity_registry";
 import { DEFAULT_PANEL } from "../data/panel";
 import {
   DateFormat,
@@ -22,7 +23,6 @@ import { demoPanels } from "./demo_panels";
 import { demoServices } from "./demo_services";
 import type { Entity } from "./entity";
 import { getEntity } from "./entity";
-import type { EntityRegistryDisplayEntry } from "../data/entity_registry";
 
 const ensureArray = <T>(val: T | T[]): T[] =>
   Array.isArray(val) ? val : [val];

@@ -37,7 +37,7 @@ import "../../components/ha-state-icon";
 import "../../components/ha-svg-icon";
 import "../../components/ha-two-pane-top-app-bar-fixed";
 import { deleteConfigEntry } from "../../data/config_entries";
-import { getExtendedEntityRegistryEntry } from "../../data/entity_registry";
+import { getExtendedEntityRegistryEntry } from "../../data/entity/entity_registry";
 import { fetchIntegrationManifest } from "../../data/integration";
 import type { LovelaceCardConfig } from "../../data/lovelace/config/card";
 import { TodoListEntityFeature, getTodoLists } from "../../data/todo";

@@ -2,21 +2,21 @@ import type { CSSResultGroup, TemplateResult } from "lit";
 import { css, html, LitElement, nothing } from "lit";
 import { customElement, property, state } from "lit/decorators";
 import memoizeOne from "memoize-one";
+import { computeCssColor } from "../../../../common/color/compute-color";
+import { isComponentLoaded } from "../../../../common/config/is_component_loaded";
 import { computeDeviceNameDisplay } from "../../../../common/entity/compute_device_name";
 import { stringCompare } from "../../../../common/string/compare";
 import { titleCase } from "../../../../common/string/title-case";
-import "../../../../components/ha-card";
-import type { DeviceRegistryEntry } from "../../../../data/device_registry";
-import { haStyle } from "../../../../resources/styles";
-import type { HomeAssistant } from "../../../../types";
 import { createSearchParam } from "../../../../common/url/search-params";
-import { isComponentLoaded } from "../../../../common/config/is_component_loaded";
+import "../../../../components/ha-card";
 import "../../../../components/ha-icon";
 import "../../../../components/ha-label";
-import type { LabelRegistryEntry } from "../../../../data/label_registry";
-import { subscribeLabelRegistry } from "../../../../data/label_registry";
-import { computeCssColor } from "../../../../common/color/compute-color";
+import type { DeviceRegistryEntry } from "../../../../data/device/device_registry";
+import type { LabelRegistryEntry } from "../../../../data/label/label_registry";
+import { subscribeLabelRegistry } from "../../../../data/label/label_registry";
 import { SubscribeMixin } from "../../../../mixins/subscribe-mixin";
+import { haStyle } from "../../../../resources/styles";
+import type { HomeAssistant } from "../../../../types";
 
 @customElement("ha-device-info-card")
 export class HaDeviceCard extends SubscribeMixin(LitElement) {

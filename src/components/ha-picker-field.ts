@@ -15,6 +15,7 @@ import type { HomeAssistant } from "../types";
 import "./ha-combo-box-item";
 import type { HaComboBoxItem } from "./ha-combo-box-item";
 import "./ha-icon-button";
+import "./ha-icon";
 
 declare global {
   interface HASSDomEvents {
@@ -32,6 +33,8 @@ export class HaPickerField extends LitElement {
 
   @property() public value?: string;
 
+  @property() public icon?: string;
+
   @property() public helper?: string;
 
   @property() public placeholder?: string;
@@ -43,8 +46,13 @@ export class HaPickerField extends LitElement {
   @property({ attribute: "hide-clear-icon", type: Boolean })
   public hideClearIcon = false;
 
+  @property({ attribute: "show-label", type: Boolean })
+  public showLabel = false;
+
   @property({ attribute: false })
   public valueRenderer?: PickerValueRenderer;
+
+  @property({ type: Boolean, reflect: true }) public invalid = false;
 
   @query("ha-combo-box-item", true) public item!: HaComboBoxItem;
 
@@ -58,20 +66,32 @@ export class HaPickerField extends LitElement {
   }
 
   protected render() {
+    const hasValue = !!this.value?.length;
+
     const showClearIcon =
       !!this.value && !this.required && !this.disabled && !this.hideClearIcon;
 
+    const overlineLabel =
+      this.showLabel && hasValue && this.placeholder
+        ? html`<span slot="overline">${this.placeholder}</span>`
+        : nothing;
+
+    const headlineContent = hasValue
+      ? this.valueRenderer
+        ? this.valueRenderer(this.value ?? "")
+        : html`<span slot="headline">${this.value}</span>`
+      : this.placeholder
+        ? html`<span slot="headline" class="placeholder">
+            ${this.placeholder}
+          </span>`
+        : nothing;
+
     return html`
       <ha-combo-box-item .disabled=${this.disabled} type="button" compact>
-        ${this.value
-          ? this.valueRenderer
-            ? this.valueRenderer(this.value)
-            : html`<slot name="headline">${this.value}</slot>`
-          : html`
-              <span slot="headline" class="placeholder">
-                ${this.placeholder}
-              </span>
-            `}
+        ${this.icon
+          ? html`<ha-icon slot="start" .icon=${this.icon}></ha-icon>`
+          : nothing}
+        ${overlineLabel}${headlineContent}
         ${this.unknown
           ? html`<div slot="supporting-text" class="unknown">
               ${this.unknownItemText ||
@@ -161,6 +181,11 @@ export class HaPickerField extends LitElement {
 
         :host([unknown]) ha-combo-box-item {
           background-color: var(--ha-color-fill-warning-quiet-resting);
+        }
+
+        :host([invalid]) ha-combo-box-item:after {
+          height: 2px;
+          background-color: var(--mdc-theme-error, var(--error-color, #b00020));
         }
 
         .clear {

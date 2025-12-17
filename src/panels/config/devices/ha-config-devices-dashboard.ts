@@ -66,22 +66,22 @@ import {
 import type {
   DeviceEntityLookup,
   DeviceRegistryEntry,
-} from "../../../data/device_registry";
+} from "../../../data/device/device_registry";
 import {
   removeConfigEntryFromDevice,
   updateDeviceRegistryEntry,
-} from "../../../data/device_registry";
-import type { EntityRegistryEntry } from "../../../data/entity_registry";
+} from "../../../data/device/device_registry";
+import type { EntityRegistryEntry } from "../../../data/entity/entity_registry";
 import {
   findBatteryChargingEntity,
   findBatteryEntity,
-} from "../../../data/entity_registry";
+} from "../../../data/entity/entity_registry";
 import type { IntegrationManifest } from "../../../data/integration";
-import type { LabelRegistryEntry } from "../../../data/label_registry";
+import type { LabelRegistryEntry } from "../../../data/label/label_registry";
 import {
   createLabelRegistryEntry,
   subscribeLabelRegistry,
-} from "../../../data/label_registry";
+} from "../../../data/label/label_registry";
 import {
   showAlertDialog,
   showConfirmationDialog,

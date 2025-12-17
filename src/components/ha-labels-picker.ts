@@ -8,11 +8,11 @@ import memoizeOne from "memoize-one";
 import { computeCssColor } from "../common/color/compute-color";
 import { fireEvent } from "../common/dom/fire_event";
 import { stringCompare } from "../common/string/compare";
-import type { LabelRegistryEntry } from "../data/label_registry";
+import type { LabelRegistryEntry } from "../data/label/label_registry";
 import {
   subscribeLabelRegistry,
   updateLabelRegistryEntry,
-} from "../data/label_registry";
+} from "../data/label/label_registry";
 import { SubscribeMixin } from "../mixins/subscribe-mixin";
 import { showLabelDetailDialog } from "../panels/config/labels/show-dialog-label-detail";
 import type { HomeAssistant, ValueChangedEvent } from "../types";

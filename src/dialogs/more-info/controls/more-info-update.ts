@@ -5,9 +5,9 @@ import { isComponentLoaded } from "../../../common/config/is_component_loaded";
 import { BINARY_STATE_OFF } from "../../../common/const";
 import { relativeTime } from "../../../common/datetime/relative_time";
 import { supportsFeature } from "../../../common/entity/supports-feature";
+import "../../../components/buttons/ha-progress-button";
 import "../../../components/ha-alert";
 import "../../../components/ha-button";
-import "../../../components/buttons/ha-progress-button";
 import "../../../components/ha-checkbox";
 import "../../../components/ha-faded";
 import "../../../components/ha-markdown";
@@ -17,18 +17,18 @@ import "../../../components/ha-spinner";
 import "../../../components/ha-switch";
 import type { BackupConfig } from "../../../data/backup";
 import { fetchBackupConfig } from "../../../data/backup";
-import { isUnavailableState } from "../../../data/entity";
-import type { EntitySources } from "../../../data/entity_sources";
-import { fetchEntitySourcesWithCache } from "../../../data/entity_sources";
+import { isUnavailableState } from "../../../data/entity/entity";
+import type { EntitySources } from "../../../data/entity/entity_sources";
+import { fetchEntitySourcesWithCache } from "../../../data/entity/entity_sources";
 import { getSupervisorUpdateConfig } from "../../../data/supervisor/update";
 import type { UpdateEntity, UpdateType } from "../../../data/update";
 import {
   getUpdateType,
+  latestVersionIsSkipped,
+  updateButtonIsDisabled,
   UpdateEntityFeature,
   updateIsInstalling,
   updateReleaseNotes,
-  latestVersionIsSkipped,
-  updateButtonIsDisabled,
 } from "../../../data/update";
 import type { HomeAssistant } from "../../../types";
 import { showAlertDialog } from "../../generic/show-dialog-box";

@@ -22,10 +22,10 @@ interface ServiceComboBoxItem extends PickerComboBoxItem {
 }
 
 const SEARCH_KEYS = [
-  { name: "name", weight: 10 },
-  { name: "description", weight: 8 },
-  { name: "domainName", weight: 6 },
-  { name: "serviceId", weight: 3 },
+  { name: "search_labels.name", weight: 10 },
+  { name: "search_labels.description", weight: 8 },
+  { name: "search_labels.domainName", weight: 6 },
+  { name: "search_labels.serviceId", weight: 3 },
 ];
 
 @customElement("ha-service-picker")

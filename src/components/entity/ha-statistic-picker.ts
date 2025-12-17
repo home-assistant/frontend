@@ -472,6 +472,7 @@ export class HaStatisticPicker extends LitElement {
         .autofocus=${this.autofocus}
         .allowCustomValue=${this.allowCustomEntity}
         .label=${this.label}
+        .disabled=${this.disabled}
         .notFoundLabel=${this._notFoundLabel}
         .emptyLabel=${this.hass.localize(
           "ui.components.statistic-picker.no_statistics"

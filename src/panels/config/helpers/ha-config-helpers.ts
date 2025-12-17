@@ -86,13 +86,13 @@ import {
 import type {
   EntityRegistryEntry,
   UpdateEntityRegistryEntryResult,
-} from "../../../data/entity_registry";
+} from "../../../data/entity/entity_registry";
 import {
   entityRegistryByEntityId,
   subscribeEntityRegistry,
   updateEntityRegistryEntry,
-} from "../../../data/entity_registry";
-import { fetchEntitySourcesWithCache } from "../../../data/entity_sources";
+} from "../../../data/entity/entity_registry";
+import { fetchEntitySourcesWithCache } from "../../../data/entity/entity_sources";
 import { HELPERS_CRUD } from "../../../data/helpers_crud";
 import type { IntegrationManifest } from "../../../data/integration";
 import {
@@ -100,11 +100,11 @@ import {
   fetchIntegrationManifest,
   fetchIntegrationManifests,
 } from "../../../data/integration";
-import type { LabelRegistryEntry } from "../../../data/label_registry";
+import type { LabelRegistryEntry } from "../../../data/label/label_registry";
 import {
   createLabelRegistryEntry,
   subscribeLabelRegistry,
-} from "../../../data/label_registry";
+} from "../../../data/label/label_registry";
 import { showConfigFlowDialog } from "../../../dialogs/config-flow/show-dialog-config-flow";
 import { showOptionsFlowDialog } from "../../../dialogs/config-flow/show-dialog-options-flow";
 import {
@@ -358,6 +358,7 @@ export class HaConfigHelpers extends SubscribeMixin(LitElement) {
         sortable: true,
         filterable: true,
         groupable: true,
+        template: (helper) => helper.area || "—",
       },
       labels: {
         title: "",
@@ -465,7 +466,7 @@ export class HaConfigHelpers extends SubscribeMixin(LitElement) {
                     },
                   ]
                 : []),
-              ...(helper.editable && helper.entity
+              ...(helper.editable && helper.entity_id
                 ? [
                     {
                       divider: true,
