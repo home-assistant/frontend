@@ -9,6 +9,7 @@ import type { HomeAssistant } from "../../../types";
 import { checkConditionsMet } from "../common/validate-condition";
 import "../sections/hui-section";
 import type { Lovelace } from "../types";
+import type { LovelaceSectionConfig } from "../../../data/lovelace/config/section";
 
 export const DEFAULT_VIEW_SIDEBAR_LAYOUT = "start";
 
@@ -47,6 +48,15 @@ export class HuiViewSidebar extends ConditionalListenerMixin<LovelaceViewSidebar
     }
   }
 
+  private _sectionConfigKeys = new WeakMap<LovelaceSectionConfig, string>();
+
+  private _getSectionKey(section: LovelaceSectionConfig) {
+    if (!this._sectionConfigKeys.has(section)) {
+      this._sectionConfigKeys.set(section, Math.random().toString());
+    }
+    return this._sectionConfigKeys.get(section)!;
+  }
+
   render() {
     if (!this.lovelace) return nothing;
 
@@ -56,7 +66,7 @@ export class HuiViewSidebar extends ConditionalListenerMixin<LovelaceViewSidebar
       <div class="container">
         ${repeat(
           this.config?.sections ?? [],
-          (section) => section,
+          (section) => this._getSectionKey(section),
           (section) => html`
             <hui-section
               .config=${section}
