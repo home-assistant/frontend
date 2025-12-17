@@ -12,10 +12,6 @@ import "./ha-generic-picker";
 import type { HaGenericPicker } from "./ha-generic-picker";
 import type { PickerComboBoxItem } from "./ha-picker-combo-box";
 
-export interface ConfigEntryExtended extends ConfigEntry {
-  localized_domain_name?: string;
-}
-
 const SEARCH_KEYS = [
   { name: "primary", weight: 10 },
   { name: "secondary", weight: 8 },
