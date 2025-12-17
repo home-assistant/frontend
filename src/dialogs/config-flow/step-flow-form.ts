@@ -51,7 +51,7 @@ class StepFlowForm extends LitElement {
   }
 
   private handleReadOnlyFields = memoizeOne((schema) => {
-    function handleReadOnlyField(field) {
+    function handleReadOnlyField(field: HaFormSchema) {
       return {
         ...field,
         ...(Object.values((field as HaFormSelector)?.selector ?? {})[0]
@@ -60,7 +60,7 @@ class StepFlowForm extends LitElement {
           : {}),
       };
     }
-    return schema?.map((field) =>
+    return schema?.map((field: HaFormSchema) =>
       field.type === "expandable" && field.schema
         ? {
             ...field,
