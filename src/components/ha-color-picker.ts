@@ -41,8 +41,7 @@ export class HaColorPicker extends LitElement {
         .hass=${this.hass}
         .disabled=${this.disabled}
         .required=${this.required}
-        show-label
-        .placeholder=${this.label}
+        .label=${this.label}
         .helper=${this.helper}
         .value=${effectiveValue}
         .getItems=${this._getItems}
