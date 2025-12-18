@@ -78,7 +78,8 @@ export class HuiPictureElementsCardEditor
   private _handlePositionClick(x: number, y: number): void {
     if (
       !this._subElementEditorConfig?.elementConfig ||
-      this._subElementEditorConfig.type !== "element"
+      this._subElementEditorConfig.type !== "element" ||
+      this._subElementEditorConfig.elementConfig.type === "conditional"
     ) {
       return;
     }
@@ -178,7 +179,8 @@ export class HuiPictureElementsCardEditor
 
     if (this._subElementEditorConfig) {
       return html`
-        ${this._subElementEditorConfig.type === "element"
+        ${this._subElementEditorConfig.type === "element" &&
+        this._subElementEditorConfig.elementConfig?.type !== "conditional"
           ? html`
               <ha-alert alert-type="info">
                 ${this.hass.localize(
