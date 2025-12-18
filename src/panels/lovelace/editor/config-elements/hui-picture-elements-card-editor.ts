@@ -104,14 +104,6 @@ export class HuiPictureElementsCardEditor
     this._handleSubElementChanged(updateEvent);
   }
 
-  private _configWithPreviewCallback(
-    config: PictureElementsCardConfig
-  ): PictureElementsCardConfig {
-    const configWithCallback = { ...config };
-    (configWithCallback as any)[PREVIEW_CLICK_CALLBACK] = this._onPreviewClick;
-    return configWithCallback;
-  }
-
   private _schema = memoizeOne(
     (localize: LocalizeFunc) =>
       [
@@ -236,6 +228,7 @@ export class HuiPictureElementsCardEditor
       return;
     }
 
+    // no need to attach the preview click callback here, no element is being edited
     fireEvent(this, "config-changed", { config: ev.detail.value });
   }
 
@@ -246,11 +239,10 @@ export class HuiPictureElementsCardEditor
     const config = {
       ...this._config,
       elements: ev.detail.elements as LovelaceElementConfig[],
+      [PREVIEW_CLICK_CALLBACK]: this._onPreviewClick,
     } as PictureElementsCardConfig;
 
-    fireEvent(this, "config-changed", {
-      config: this._configWithPreviewCallback(config),
-    });
+    fireEvent(this, "config-changed", { config });
 
     const newLength = ev.detail.elements?.length || 0;
     if (newLength === oldLength + 1) {
@@ -290,7 +282,10 @@ export class HuiPictureElementsCardEditor
     };
 
     fireEvent(this, "config-changed", {
-      config: this._configWithPreviewCallback(this._config),
+      config: {
+        ...this._config,
+        [PREVIEW_CLICK_CALLBACK]: this._onPreviewClick,
+      },
     });
   }
 
