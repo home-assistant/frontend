@@ -72,36 +72,36 @@ export class HaColorPicker extends LitElement {
         isDefault && defaultSuffix ? `${label} (${defaultSuffix})` : label;
 
       if (includeNone) {
-        const baseLabel =
+        const noneLabel =
           this.hass.localize("ui.components.color-picker.none") || "None";
         items.push({
           id: "none",
-          primary: addDefaultSuffix(baseLabel, defaultColor === "none"),
+          primary: addDefaultSuffix(noneLabel, defaultColor === "none"),
           icon_path: mdiInvertColorsOff,
-          sorting_label: baseLabel,
+          sorting_label: noneLabel,
         });
       }
 
       if (includeState) {
-        const baseLabel =
+        const stateLabel =
           this.hass.localize("ui.components.color-picker.state") || "State";
         items.push({
           id: "state",
-          primary: addDefaultSuffix(baseLabel, defaultColor === "state"),
+          primary: addDefaultSuffix(stateLabel, defaultColor === "state"),
           icon_path: mdiPalette,
-          sorting_label: baseLabel,
+          sorting_label: stateLabel,
         });
       }
 
       Array.from(THEME_COLORS).forEach((color) => {
-        const localized =
+        const themeLabel =
           this.hass.localize(
             `ui.components.color-picker.colors.${color}` as LocalizeKeys
           ) || color;
         items.push({
           id: color,
-          primary: addDefaultSuffix(localized, defaultColor === color),
-          sorting_label: localized,
+          primary: addDefaultSuffix(themeLabel, defaultColor === color),
+          sorting_label: themeLabel,
         });
       });
 
