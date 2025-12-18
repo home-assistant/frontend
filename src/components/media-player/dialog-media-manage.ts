@@ -29,6 +29,7 @@ import "../ha-check-list-item";
 import "../ha-wa-dialog";
 import "../ha-dialog-header";
 import "../ha-dialog-footer";
+import "../ha-icon-button";
 import "../ha-list";
 import "../ha-spinner";
 import "../ha-svg-icon";
