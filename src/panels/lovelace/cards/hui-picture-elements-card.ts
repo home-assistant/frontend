@@ -14,6 +14,12 @@ import { createStyledHuiElement } from "./picture-elements/create-styled-hui-ele
 import type { PictureElementsCardConfig } from "./types";
 import type { PersonEntity } from "../../../data/person";
 
+// Symbol for preview click callback - preserved through spreads, not serialized
+// This allows the editor to attach a callback that only exists on the edited card's config
+export const PREVIEW_CLICK_CALLBACK = Symbol("previewClickCallback");
+
+export type PreviewClickCallback = (x: number, y: number) => void;
+
 @customElement("hui-picture-elements-card")
 class HuiPictureElementsCard extends LitElement implements LovelaceCard {
   public static async getConfigElement(): Promise<LovelaceCardEditor> {
@@ -166,6 +172,7 @@ class HuiPictureElementsCard extends LitElement implements LovelaceCard {
             .aspectRatio=${this._config.aspect_ratio}
             .darkModeFilter=${this._config.dark_mode_filter}
             .darkModeImage=${darkModeImage}
+            @click=${this._handleImageClick}
           ></hui-image>
           ${this._elements}
         </div>
@@ -220,6 +227,26 @@ class HuiPictureElementsCard extends LitElement implements LovelaceCard {
     this._elements = this._elements!.map((curCardEl) =>
       curCardEl === elToReplace ? newCardEl : curCardEl
     );
+  }
+
+  private _handleImageClick(ev: MouseEvent): void {
+    if (
+      !this.preview ||
+      !this._config ||
+      !(this._config as any)[PREVIEW_CLICK_CALLBACK]
+    ) {
+      return;
+    }
+
+    const rect = (ev.currentTarget as HTMLElement).getBoundingClientRect();
+    const x = ((ev.clientX - rect.left) / rect.width) * 100;
+    const y = ((ev.clientY - rect.top) / rect.height) * 100;
+
+    // Call the callback if present on config (only the edited card has this)
+    const callback = (this._config as any)[
+      PREVIEW_CLICK_CALLBACK
+    ] as PreviewClickCallback;
+    callback(x, y);
   }
 }
 

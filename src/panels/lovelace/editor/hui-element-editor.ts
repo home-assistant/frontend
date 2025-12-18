@@ -89,7 +89,11 @@ export abstract class HuiElementEditor<
   }
 
   public set value(config: T | undefined) {
-    if (this._config && deepEqual(config, this._config)) {
+    // Compare symbols to detect callback changes (e.g., preview click handlers)
+    if (
+      this._config &&
+      deepEqual(config, this._config, { compareSymbols: true })
+    ) {
       return;
     }
     this._config = config;
