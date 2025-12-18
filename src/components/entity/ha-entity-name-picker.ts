@@ -10,7 +10,6 @@ import type { EntityNameItem } from "../../common/entity/compute_entity_name_dis
 import { getEntityContext } from "../../common/entity/context/get_entity_context";
 import type { EntityNameType } from "../../common/translations/entity-state";
 import type { LocalizeKeys } from "../../common/translations/localize";
-import type { FuseWeightedKey } from "../../resources/fuseMultiTerm";
 import type { HomeAssistant, ValueChangedEvent } from "../../types";
 import "../chips/ha-assist-chip";
 import "../chips/ha-chip-set";
@@ -24,12 +23,6 @@ import {
   type PickerComboBoxItem,
 } from "../ha-picker-combo-box";
 import "../ha-sortable";
-
-const SEARCH_KEYS: FuseWeightedKey[] = [
-  { name: "primary", weight: 10 },
-  { name: "secondary", weight: 7 },
-  { name: "id", weight: 3 },
-];
 
 const rowRenderer: RenderItemFunction<PickerComboBoxItem> = (item) => html`
   <ha-combo-box-item type="button" compact>
@@ -193,7 +186,6 @@ export class HaEntityNamePicker extends LitElement {
         .getItems=${this._getFilteredItems}
         .getAdditionalItems=${this._getAdditionalItems}
         .rowRenderer=${rowRenderer}
-        .searchKeys=${SEARCH_KEYS}
         .searchFn=${this._searchFn}
         .notFoundLabel=${this.hass.localize(
           "ui.components.entity.entity-name-picker.no_match"
