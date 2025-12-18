@@ -342,20 +342,19 @@ export class HaStateContentPicker extends LitElement {
     return !this.value ? [] : ensureArray(this.value);
   }
 
-  private _getItemLabel(
-    value: string,
-    stateObj?: HassEntity
-  ): string | undefined {
-    const stateObjForItems = this.entityId
-      ? this.hass.states[this.entityId]
-      : stateObj;
-    const items = this._getItems(
-      this.entityId,
-      stateObjForItems,
-      this.allowName
-    );
-    return items.find((item) => item.id === value)?.primary;
-  }
+  private _getItemLabel = memoizeOne(
+    (value: string, stateObj?: HassEntity): string | undefined => {
+      const stateObjForItems = this.entityId
+        ? this.hass.states[this.entityId]
+        : stateObj;
+      const items = this._getItems(
+        this.entityId,
+        stateObjForItems,
+        this.allowName
+      );
+      return items.find((item) => item.id === value)?.primary;
+    }
+  );
 
   private _toValue = memoizeOne((value: string[]): typeof this.value => {
     if (value.length === 0) {
