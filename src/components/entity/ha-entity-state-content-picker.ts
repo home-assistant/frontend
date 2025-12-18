@@ -121,12 +121,6 @@ export class HaStateContentPicker extends LitElement {
           primary: this.hass.localize(
             "ui.components.state-content-picker.state"
           ),
-          search_labels: {
-            primary: this.hass.localize(
-              "ui.components.state-content-picker.state"
-            ),
-            id: "state",
-          },
           sorting_label: this.hass.localize(
             "ui.components.state-content-picker.state"
           ),
