@@ -23,14 +23,6 @@ import "../ha-input-helper-text";
 import type { PickerComboBoxItem } from "../ha-picker-combo-box";
 import "../ha-sortable";
 
-const rowRenderer: RenderItemFunction<PickerComboBoxItem> = (item) => html`
-  <ha-combo-box-item type="button" compact>
-    <span slot="headline">${item.primary}</span>
-    ${item.secondary
-      ? html`<span slot="supporting-text">${item.secondary}</span>`
-      : nothing}
-  </ha-combo-box-item>
-`;
 
 const HIDDEN_ATTRIBUTES = [
   "access_token",
@@ -240,11 +232,10 @@ export class HaStateContentPicker extends LitElement {
         .value=${this._getPickerValue()}
         .getItems=${this._getFilteredItems}
         .getAdditionalItems=${this._getAdditionalItems}
-        .rowRenderer=${rowRenderer}
         .notFoundLabel=${this.hass.localize("ui.components.combo-box.no_match")}
         allow-custom-value
         .customValueLabel=${this.hass.localize(
-          "ui.components.entity.entity-state-content-picker.add_custom_value"
+          "ui.components.entity.entity-state-content-picker.add_custom_state"
         )}
         @value-changed=${this._pickerValueChanged}
       >

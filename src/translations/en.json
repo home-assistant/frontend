@@ -685,7 +685,7 @@
         "entity-state-content-picker": {
           "add": "Add",
           "custom_value": "Custom value",
-          "add_custom_value": "Add custom value"
+          "add_custom_state": "Custom state"
         }
       },
       "target-picker": {
