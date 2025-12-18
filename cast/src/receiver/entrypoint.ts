@@ -127,9 +127,9 @@ playerManager.setMessageInterceptor(
       media.contentId = media.entity;
       media.streamType = "LIVE" as framework.messages.StreamType.LIVE;
       media.contentType = "application/vnd.apple.mpegurl";
-      // @ts-ignore
+      // type definition is wrong, should be "FMP4" instead of "fmp4"
       media.hlsVideoSegmentFormat =
-        "fmp4" as framework.messages.HlsVideoSegmentFormat.FMP4;
+        "FMP4" as framework.messages.HlsVideoSegmentFormat.FMP4;
     }
     return loadRequestData;
   }
