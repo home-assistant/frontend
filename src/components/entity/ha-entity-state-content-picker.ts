@@ -202,7 +202,7 @@ export class HaStateContentPicker extends LitElement {
         .notFoundLabel=${this.hass.localize("ui.components.combo-box.no_match")}
         allow-custom-value
         .customValueLabel=${this.hass.localize(
-          "ui.components.entity.entity-state-content-picker.add_custom_state"
+          "ui.components.entity.entity-state-content-picker.custom_state"
         )}
         @value-changed=${this._pickerValueChanged}
       >
@@ -328,7 +328,7 @@ export class HaStateContentPicker extends LitElement {
     (text: string): PickerComboBoxItem => ({
       id: text,
       primary: this.hass.localize(
-        "ui.components.entity.entity-state-content-picker.custom_value"
+        "ui.components.entity.entity-state-content-picker.custom_state"
       ),
       secondary: `"${text}"`,
       search_labels: {
