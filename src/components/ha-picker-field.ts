@@ -11,13 +11,13 @@ import {
 import { customElement, property, query, state } from "lit/decorators";
 import { ifDefined } from "lit/directives/if-defined";
 import { fireEvent } from "../common/dom/fire_event";
-import { PickerMixin } from "../mixins/picker-mixin";
 import { localizeContext } from "../data/context";
+import { PickerMixin } from "../mixins/picker-mixin";
 import type { HomeAssistant } from "../types";
 import "./ha-combo-box-item";
 import type { HaComboBoxItem } from "./ha-combo-box-item";
-import "./ha-icon-button";
 import "./ha-icon";
+import "./ha-icon-button";
 
 declare global {
   interface HASSDomEvents {
@@ -194,7 +194,10 @@ export class HaPickerField extends PickerMixin(LitElement) {
 
         .placeholder {
           color: var(--secondary-text-color);
-          padding: 0 8px;
+        }
+
+        :host([invalid]) .placeholder {
+          color: var(--mdc-theme-error, var(--error-color, #b00020));
         }
 
         .unknown {
