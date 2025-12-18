@@ -89,7 +89,8 @@ const showMediaPlayer = () => {
 const options = new framework.CastReceiverOptions();
 options.disableIdleTimeout = true;
 options.customNamespaces = {
-  [CAST_NS]: "json" as framework.system.MessageType.JSON,
+  // type definition is wrong, should be "JSON" instead of "json"
+  [CAST_NS]: "JSON" as framework.system.MessageType.JSON,
 };
 
 castContext.addCustomMessageListener(CAST_NS, (ev) => {
