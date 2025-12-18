@@ -55,74 +55,80 @@ export class HaColorPicker extends LitElement {
     `;
   }
 
-  private _getItems = memoizeOne(
-    (
-      includeNone: boolean,
-      includeState: boolean,
-      defaultColor: string | undefined,
-      currentValue: string | undefined
-    ): PickerComboBoxItem[] => {
-      const items: PickerComboBoxItem[] = [];
+  private _getItems = () =>
+    this._getColors(
+      this.includeNone,
+      this.includeState,
+      this.defaultColor,
+      this.value
+    );
 
-      const defaultSuffix = this.hass.localize(
-        "ui.components.color-picker.default"
-      );
+  private _getColors = (
+    includeNone: boolean,
+    includeState: boolean,
+    defaultColor: string | undefined,
+    currentValue: string | undefined
+  ): PickerComboBoxItem[] => {
+    const items: PickerComboBoxItem[] = [];
 
-      const addDefaultSuffix = (label: string, isDefault: boolean) =>
-        isDefault && defaultSuffix ? `${label} (${defaultSuffix})` : label;
+    const defaultSuffix = this.hass.localize(
+      "ui.components.color-picker.default"
+    );
 
-      if (includeNone) {
-        const noneLabel =
-          this.hass.localize("ui.components.color-picker.none") || "None";
-        items.push({
-          id: "none",
-          primary: addDefaultSuffix(noneLabel, defaultColor === "none"),
-          icon_path: mdiInvertColorsOff,
-          sorting_label: noneLabel,
-        });
-      }
+    const addDefaultSuffix = (label: string, isDefault: boolean) =>
+      isDefault && defaultSuffix ? `${label} (${defaultSuffix})` : label;
 
-      if (includeState) {
-        const stateLabel =
-          this.hass.localize("ui.components.color-picker.state") || "State";
-        items.push({
-          id: "state",
-          primary: addDefaultSuffix(stateLabel, defaultColor === "state"),
-          icon_path: mdiPalette,
-          sorting_label: stateLabel,
-        });
-      }
-
-      Array.from(THEME_COLORS).forEach((color) => {
-        const themeLabel =
-          this.hass.localize(
-            `ui.components.color-picker.colors.${color}` as LocalizeKeys
-          ) || color;
-        items.push({
-          id: color,
-          primary: addDefaultSuffix(themeLabel, defaultColor === color),
-          sorting_label: themeLabel,
-        });
+    if (includeNone) {
+      const noneLabel =
+        this.hass.localize("ui.components.color-picker.none") || "None";
+      items.push({
+        id: "none",
+        primary: addDefaultSuffix(noneLabel, defaultColor === "none"),
+        icon_path: mdiInvertColorsOff,
+        sorting_label: noneLabel,
       });
-
-      const isSpecial =
-        currentValue === "none" ||
-        currentValue === "state" ||
-        THEME_COLORS.has(currentValue || "");
-
-      const hasValue = currentValue && currentValue.length > 0;
-
-      if (hasValue && !isSpecial) {
-        items.push({
-          id: currentValue!,
-          primary: currentValue!,
-          sorting_label: currentValue!,
-        });
-      }
-
-      return items;
     }
-  );
+
+    if (includeState) {
+      const stateLabel =
+        this.hass.localize("ui.components.color-picker.state") || "State";
+      items.push({
+        id: "state",
+        primary: addDefaultSuffix(stateLabel, defaultColor === "state"),
+        icon_path: mdiPalette,
+        sorting_label: stateLabel,
+      });
+    }
+
+    Array.from(THEME_COLORS).forEach((color) => {
+      const themeLabel =
+        this.hass.localize(
+          `ui.components.color-picker.colors.${color}` as LocalizeKeys
+        ) || color;
+      items.push({
+        id: color,
+        primary: addDefaultSuffix(themeLabel, defaultColor === color),
+        sorting_label: themeLabel,
+      });
+    });
+
+    const isSpecial =
+      currentValue === "none" ||
+      currentValue === "state" ||
+      THEME_COLORS.has(currentValue || "");
+
+    const hasValue = currentValue && currentValue.length > 0;
+
+    if (hasValue && !isSpecial) {
+      items.push({
+        id: currentValue!,
+        primary: currentValue!,
+        sorting_label: currentValue!,
+      });
+    }
+
+    return items;
+  };
 
   private _rowRenderer: (
     item: PickerComboBoxItem,
