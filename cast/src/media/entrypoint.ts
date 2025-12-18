@@ -14,8 +14,10 @@ playerManager.setMessageInterceptor(
       media.streamType = "LIVE" as framework.messages.StreamType.LIVE;
       media.contentType = "application/vnd.apple.mpegurl";
       // @ts-ignore
+      // type definition is wrong, should be "FMP4" instead of "fmp4"
+      // https://developers.google.com/cast/docs/reference/web_receiver/cast.framework.messages#.HlsVideoSegmentFormat
       media.hlsVideoSegmentFormat =
-        "fmp4" as framework.messages.HlsVideoSegmentFormat.FMP4;
+        "FMP4" as framework.messages.HlsVideoSegmentFormat.FMP4;
     }
     return loadRequestData;
   }
