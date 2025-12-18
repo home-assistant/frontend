@@ -122,12 +122,6 @@ export class HaStateContentPicker extends LitElement {
                 primary: this.hass.localize(
                   "ui.components.state-content-picker.name"
                 ),
-                search_labels: {
-                  primary: this.hass.localize(
-                    "ui.components.state-content-picker.name"
-                  ),
-                  id: "name",
-                },
                 sorting_label: this.hass.localize(
                   "ui.components.state-content-picker.name"
                 ),
@@ -139,12 +133,6 @@ export class HaStateContentPicker extends LitElement {
           primary: this.hass.localize(
             "ui.components.state-content-picker.last_changed"
           ),
-          search_labels: {
-            primary: this.hass.localize(
-              "ui.components.state-content-picker.last_changed"
-            ),
-            id: "last_changed",
-          },
           sorting_label: this.hass.localize(
             "ui.components.state-content-picker.last_changed"
           ),
@@ -154,12 +142,6 @@ export class HaStateContentPicker extends LitElement {
           primary: this.hass.localize(
             "ui.components.state-content-picker.last_updated"
           ),
-          search_labels: {
-            primary: this.hass.localize(
-              "ui.components.state-content-picker.last_updated"
-            ),
-            id: "last_updated",
-          },
           sorting_label: this.hass.localize(
             "ui.components.state-content-picker.last_updated"
           ),
@@ -174,12 +156,6 @@ export class HaStateContentPicker extends LitElement {
                   primary: this.hass.localize(
                     `ui.components.state-content-picker.${content}`
                   ),
-                  search_labels: {
-                    primary: this.hass.localize(
-                      `ui.components.state-content-picker.${content}`
-                    ),
-                    id: content,
-                  },
                   sorting_label: this.hass.localize(
                     `ui.components.state-content-picker.${content}`
                   ),
@@ -196,13 +172,6 @@ export class HaStateContentPicker extends LitElement {
                   stateObj!,
                   attribute
                 ),
-                search_labels: {
-                  primary: this.hass.formatEntityAttributeName(
-                    stateObj!,
-                    attribute
-                  ),
-                  id: attribute,
-                },
                 sorting_label: this.hass.formatEntityAttributeName(
                   stateObj!,
                   attribute
