@@ -5,11 +5,12 @@ import { customElement, property, state } from "lit/decorators";
 import { fireEvent } from "../../../common/dom/fire_event";
 import "../../../components/ha-alert";
 import "../../../components/ha-button";
-import "../../../components/ha-combo-box";
 import { createCloseHeading } from "../../../components/ha-dialog";
 import "../../../components/ha-fade-in";
+import "../../../components/ha-generic-picker";
 import "../../../components/ha-markdown";
 import "../../../components/ha-password-field";
+import type { PickerComboBoxItem } from "../../../components/ha-picker-combo-box";
 import "../../../components/ha-spinner";
 import "../../../components/ha-textfield";
 import type {
@@ -165,20 +166,19 @@ export class DialogAddApplicationCredential extends LitElement {
                   : nothing}
                 ${this._params.selectedDomain
                   ? nothing
-                  : html`<ha-combo-box
+                  : html`<ha-generic-picker
                       name="domain"
                       .hass=${this.hass}
                       .label=${this.hass.localize(
                         "ui.panel.config.application_credentials.editor.domain"
                       )}
                       .value=${this._domain}
-                      .items=${this._domains}
-                      item-id-path="id"
-                      item-value-path="id"
-                      item-label-path="name"
+                      .getItems=${this._getDomainItems}
                       required
+                      .disabled=${!this._domains}
+                      .valueRenderer=${this._domainRenderer}
                       @value-changed=${this._handleDomainPicked}
-                    ></ha-combo-box>`}
+                    ></ha-generic-picker>`}
                 ${this._description
                   ? html`<ha-markdown
                       breaks
@@ -327,6 +327,20 @@ export class DialogAddApplicationCredential extends LitElement {
     this._params!.applicationCredentialAddedCallback(applicationCredential);
     this.closeDialog();
   }
+
+  private _getDomainItems = (): PickerComboBoxItem[] =>
+    this._domains?.map((domain) => ({
+      id: domain.id,
+      primary: domain.name,
+      sorting_label: domain.name,
+    })) ?? [];
+
+  private _domainRenderer = (domainId: string) => {
+    const domain = this._domains?.find((d) => d.id === domainId);
+    return html`<span slot="headline"
+      >${domain ? domain.name : domainId}</span
+    >`;
+  };
 
   static get styles(): CSSResultGroup {
     return [
