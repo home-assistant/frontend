@@ -1,7 +1,6 @@
 import { mdiInvertColorsOff, mdiPalette } from "@mdi/js";
 import { html, LitElement } from "lit";
 import { customElement, property } from "lit/decorators";
-import memoizeOne from "memoize-one";
 import { styleMap } from "lit/directives/style-map";
 import { computeCssColor, THEME_COLORS } from "../common/color/compute-color";
 import { fireEvent } from "../common/dom/fire_event";
