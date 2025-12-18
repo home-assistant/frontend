@@ -354,13 +354,10 @@ export class DialogAddApplicationCredential extends LitElement {
           display: flex;
           padding: 8px 0;
         }
-        ha-combo-box {
-          display: block;
-          margin-bottom: 24px;
-        }
         ha-textfield {
           display: block;
-          margin-bottom: 24px;
+          margin-top: 16px;
+          margin-bottom: 16px;
         }
         a {
           text-decoration: none;
@@ -369,6 +366,7 @@ export class DialogAddApplicationCredential extends LitElement {
           --mdc-icon-size: 16px;
         }
         ha-markdown {
+          margin-top: 16px;
           margin-bottom: 16px;
         }
         ha-fade-in {
