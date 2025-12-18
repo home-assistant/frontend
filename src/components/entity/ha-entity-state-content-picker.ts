@@ -30,6 +30,9 @@ import "../ha-sortable";
 const rowRenderer: RenderItemFunction<PickerComboBoxItem> = (item) => html`
   <ha-combo-box-item type="button" compact>
     <span slot="headline">${item.primary}</span>
+    ${item.secondary
+      ? html`<span slot="supporting-text">${item.secondary}</span>`
+      : nothing}
   </ha-combo-box-item>
 `;
 
@@ -372,8 +375,24 @@ export class HaStateContentPicker extends LitElement {
     return undefined;
   }
 
+  private _customValueOption = memoizeOne(
+    (text: string): PickerComboBoxItem => ({
+      id: text,
+      primary: this.hass.localize(
+        "ui.components.entity.entity-state-content-picker.custom_value"
+      ),
+      secondary: `"${text}"`,
+      search_labels: {
+        primary: text,
+        secondary: `"${text}"`,
+        id: text,
+      },
+      sorting_label: text,
+    })
+  );
+
   private _getFilteredItems = (
-    _searchString?: string,
+    searchString?: string,
     _section?: string
   ): PickerComboBoxItem[] => {
     const stateObj = this.entityId
@@ -389,21 +408,65 @@ export class HaStateContentPicker extends LitElement {
       (item) => !value.includes(item.id) || item.id === currentValue
     );
 
+    // When editing an existing custom value, include it in the base items
+    if (
+      currentValue &&
+      !items.find((item) => item.id === currentValue) &&
+      !searchString
+    ) {
+      filteredItems.push(this._customValueOption(currentValue));
+    }
+
     return filteredItems;
   };
 
   private _getAdditionalItems = (
-    _searchString?: string
-  ): PickerComboBoxItem[] => [];
+    searchString?: string
+  ): PickerComboBoxItem[] => {
+    if (!searchString) {
+      return [];
+    }
+
+    const currentValue =
+      this._editIndex != null ? this._value[this._editIndex] : undefined;
+
+    // Don't add if it's the same as the current item being edited
+    if (currentValue && currentValue === searchString) {
+      return [];
+    }
+
+    // Check if the search string matches an existing item
+    const stateObj = this.entityId
+      ? this.hass.states[this.entityId]
+      : undefined;
+    const items = this._getItems(this.entityId, stateObj, this.allowName);
+    const existingItem = items.find((item) => item.id === searchString);
+
+    // Only return custom value option if it doesn't match an existing item
+    if (!existingItem) {
+      return [this._customValueOption(searchString)];
+    }
+
+    return [];
+  };
 
   private _searchFn: PickerComboBoxSearchFn<PickerComboBoxItem> = (
-    _search: string,
+    search: string,
     filteredItems: PickerComboBoxItem[],
     _allItems: PickerComboBoxItem[]
-  ): PickerComboBoxItem[] =>
-    filteredItems.filter(
+  ): PickerComboBoxItem[] => {
+    // Remove NO_ITEMS_AVAILABLE_ID if we have additional items (custom value option)
+    // This prevents "No matching items found" from showing when custom values are allowed
+    const hasAdditionalItems = this._getAdditionalItems(search).length > 0;
+    if (hasAdditionalItems) {
+      return filteredItems.filter(
+        (item) => typeof item !== "string" || item !== NO_ITEMS_AVAILABLE_ID
+      );
+    }
+    return filteredItems.filter(
       (item) => typeof item !== "string" || item !== NO_ITEMS_AVAILABLE_ID
     );
+  };
 
   private async _moveItem(ev: CustomEvent) {
     ev.stopPropagation();

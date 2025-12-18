@@ -683,7 +683,8 @@
           "state": "State"
         },
         "entity-state-content-picker": {
-          "add": "Add"
+          "add": "Add",
+          "custom_value": "Custom value"
         }
       },
       "target-picker": {
