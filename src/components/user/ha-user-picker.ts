@@ -132,9 +132,9 @@ class HaUserPicker extends LitElement {
         .hass=${this.hass}
         .autofocus=${this.autofocus}
         .label=${this.label}
-        .notFoundLabel=${this._notFoundLabel}
         .placeholder=${placeholder}
         .value=${this.value}
+        .notFoundLabel=${this._notFoundLabel}
         .getItems=${this._getItems}
         .valueRenderer=${this._valueRenderer}
         .rowRenderer=${this._rowRenderer}

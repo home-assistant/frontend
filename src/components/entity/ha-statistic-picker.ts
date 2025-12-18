@@ -471,13 +471,14 @@ export class HaStatisticPicker extends LitElement {
         .hass=${this.hass}
         .autofocus=${this.autofocus}
         .allowCustomValue=${this.allowCustomEntity}
+        .disabled=${this.disabled}
         .label=${this.label}
+        .placeholder=${placeholder}
+        .value=${this.value}
         .notFoundLabel=${this._notFoundLabel}
         .emptyLabel=${this.hass.localize(
           "ui.components.statistic-picker.no_statistics"
         )}
-        .placeholder=${placeholder}
-        .value=${this.value}
         .rowRenderer=${this._rowRenderer}
         .getItems=${this._getItems}
         .getAdditionalItems=${this._getAdditionalItems}

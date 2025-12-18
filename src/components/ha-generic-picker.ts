@@ -7,8 +7,10 @@ import { ifDefined } from "lit/directives/if-defined";
 import memoizeOne from "memoize-one";
 import { tinykeys } from "tinykeys";
 import { fireEvent } from "../common/dom/fire_event";
+import { PickerMixin } from "../mixins/picker-mixin";
 import type { FuseWeightedKey } from "../resources/fuseMultiTerm";
 import type { HomeAssistant } from "../types";
+import { isIosApp } from "../util/is_ios";
 import "./ha-bottom-sheet";
 import "./ha-button";
 import "./ha-combo-box-item";
@@ -20,36 +22,17 @@ import type {
   PickerComboBoxSearchFn,
 } from "./ha-picker-combo-box";
 import "./ha-picker-field";
-import type { PickerValueRenderer } from "./ha-picker-field";
 import "./ha-svg-icon";
 
 @customElement("ha-generic-picker")
-export class HaGenericPicker extends LitElement {
+export class HaGenericPicker extends PickerMixin(LitElement) {
   @property({ attribute: false }) public hass?: HomeAssistant;
-
-  @property({ type: Boolean }) public disabled = false;
-
-  @property({ type: Boolean }) public required = false;
 
   @property({ type: Boolean, attribute: "allow-custom-value" })
   public allowCustomValue;
 
-  @property() public label?: string;
-
-  @property() public value?: string;
-
-  @property() public helper?: string;
-
-  @property() public placeholder?: string;
-
   @property({ type: String, attribute: "search-label" })
   public searchLabel?: string;
-
-  @property({ attribute: "hide-clear-icon", type: Boolean })
-  public hideClearIcon = false;
-
-  @property({ attribute: "show-label", type: Boolean })
-  public showLabel = false;
 
   /** To prevent lags, getItems needs to be memoized */
   @property({ attribute: false })
@@ -63,9 +46,6 @@ export class HaGenericPicker extends LitElement {
 
   @property({ attribute: false })
   public rowRenderer?: RenderItemFunction<PickerComboBoxItem>;
-
-  @property({ attribute: false })
-  public valueRenderer?: PickerValueRenderer;
 
   @property({ attribute: false })
   public searchFn?: PickerComboBoxSearchFn<PickerComboBoxItem>;
@@ -116,7 +96,8 @@ export class HaGenericPicker extends LitElement {
 
   @property({ attribute: "selected-section" }) public selectedSection?: string;
 
-  @property({ attribute: "unknown-item-text" }) public unknownItemText?: string;
+  @property({ type: Boolean, attribute: "use-top-label" })
+  public useTopLabel = false;
 
   @property({ attribute: "custom-value-label" })
   public customValueLabel?: string;
@@ -143,14 +124,20 @@ export class HaGenericPicker extends LitElement {
   // helper to set new value after closing picker, to avoid flicker
   private _newValue?: string;
 
+  @property({ attribute: "error-message" }) public errorMessage?: string;
+
+  @property({ type: Boolean, reflect: true }) public invalid = false;
+
   private _unsubscribeTinyKeys?: () => void;
 
   protected render() {
-    return html`
-      ${this.label
-        ? html`<label ?disabled=${this.disabled}>${this.label}</label>`
-        : nothing}
-      <div class="container">
+    // Only show label if it's not a top label and there is a value.
+    const label = this.useTopLabel && this.value ? undefined : this.label;
+
+    return html`<div class="container">
+        ${this.useTopLabel && this.label
+          ? html`<label ?disabled=${this.disabled}>${this.label}</label>`
+          : nothing}
         <div id="picker">
           <slot name="field">
             ${this.addButtonLabel && !this.value
@@ -179,14 +166,19 @@ export class HaGenericPicker extends LitElement {
                   aria-label=${ifDefined(this.label)}
                   @click=${this.open}
                   @clear=${this._clear}
+                  .icon=${this.icon}
+                  .image=${this.image}
+                  .label=${label}
                   .placeholder=${this.placeholder}
-                  .showLabel=${this.showLabel}
+                  .helper=${this.helper}
                   .value=${this.value}
+                  .valueRenderer=${this.valueRenderer}
                   .required=${this.required}
                   .disabled=${this.disabled}
+                  .invalid=${this.invalid}
                   .hideClearIcon=${this.hideClearIcon}
-                  .valueRenderer=${this.valueRenderer}
                 >
+                  <slot name="start"></slot>
                 </ha-picker-field>`}
           </slot>
         </div>
@@ -225,8 +217,7 @@ export class HaGenericPicker extends LitElement {
               </ha-bottom-sheet>`
             : nothing}
       </div>
-      ${this._renderHelper()}
-    `;
+      ${this._renderHelper()}`;
   }
 
   private _renderComboBox(dialogMode = false) {
@@ -235,6 +226,7 @@ export class HaGenericPicker extends LitElement {
     }
     return html`
       <ha-picker-combo-box
+        id="combo-box"
         .hass=${this.hass}
         .allowCustomValue=${this.allowCustomValue}
         .label=${this.searchLabel}
@@ -279,16 +271,30 @@ export class HaGenericPicker extends LitElement {
   );
 
   private _renderHelper() {
-    return this.helper
-      ? html`<ha-input-helper-text .disabled=${this.disabled}
-          >${this.helper}</ha-input-helper-text
-        >`
-      : nothing;
+    const showError = this.invalid && this.errorMessage;
+    const showHelper = !showError && this.helper;
+
+    if (!showError && !showHelper) {
+      return nothing;
+    }
+
+    return html`<ha-input-helper-text .disabled=${this.disabled}>
+      ${showError ? this.errorMessage : this.helper}
+    </ha-input-helper-text>`;
   }
 
   private _dialogOpened = () => {
     this._opened = true;
     requestAnimationFrame(() => {
+      if (this.hass && isIosApp(this.hass)) {
+        this.hass.auth.external!.fireMessage({
+          type: "focus_element",
+          payload: {
+            element_id: "combo-box",
+          },
+        });
+        return;
+      }
       this._comboBox?.focus();
     });
   };
@@ -315,7 +321,7 @@ export class HaGenericPicker extends LitElement {
     this._newValue = value;
   }
 
-  private _clear(e) {
+  private _clear(e: CustomEvent) {
     e.stopPropagation();
     this._setValue(undefined);
   }
@@ -382,6 +388,9 @@ export class HaGenericPicker extends LitElement {
           display: block;
           margin: var(--ha-space-2) 0 0;
         }
+        :host([invalid]) ha-input-helper-text {
+          color: var(--mdc-theme-error, var(--error-color, #b00020));
+        }
 
         wa-popover {
           --wa-space-l: var(--ha-space-0);
@@ -396,12 +405,6 @@ export class HaGenericPicker extends LitElement {
           max-height: 500px;
           height: 70vh;
           overflow: hidden;
-        }
-
-        @media (max-height: 1000px) {
-          wa-popover::part(body) {
-            max-height: 400px;
-          }
         }
 
         @media (max-height: 1000px) {

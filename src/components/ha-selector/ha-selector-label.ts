@@ -36,6 +36,7 @@ export class HaLabelSelector extends LitElement {
           .required=${this.required}
           .disabled=${this.disabled}
           .label=${this.label}
+          .helper=${this.helper}
           @value-changed=${this._handleChange}
         >
         </ha-labels-picker>
@@ -49,6 +50,7 @@ export class HaLabelSelector extends LitElement {
         .required=${this.required}
         .disabled=${this.disabled}
         .label=${this.label}
+        .helper=${this.helper}
         @value-changed=${this._handleChange}
       >
       </ha-label-picker>

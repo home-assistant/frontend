@@ -65,6 +65,9 @@ class DialogAssignCategory extends LitElement {
             <ha-category-picker
               .hass=${this.hass}
               .scope=${this._scope}
+              .label=${this.hass.localize(
+                "ui.components.category-picker.category"
+              )}
               .value=${this._category}
               @value-changed=${this._categoryChanged}
             ></ha-category-picker>

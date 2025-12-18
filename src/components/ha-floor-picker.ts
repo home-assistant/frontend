@@ -389,12 +389,14 @@ export class HaFloorPicker extends LitElement {
       <ha-generic-picker
         .hass=${this.hass}
         .autofocus=${this.autofocus}
+        .disabled=${this.disabled}
         .label=${this.label}
+        .helper=${this.helper}
+        .placeholder=${placeholder}
         .notFoundLabel=${this._notFoundLabel}
         .emptyLabel=${this.hass.localize(
           "ui.components.floor-picker.no_floors"
         )}
-        .placeholder=${placeholder}
         .value=${this.value}
         .getItems=${this._getItems}
         .getAdditionalItems=${this._getAdditionalItems}

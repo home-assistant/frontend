@@ -769,6 +769,9 @@
         "no_match": "No languages found for {term}",
         "no_languages": "No languages available"
       },
+      "icon-picker": {
+        "no_match": "No matching icons found"
+      },
       "tts-picker": {
         "tts": "Text-to-speech",
         "none": "None"
@@ -7165,7 +7168,9 @@
           },
           "home": {
             "summary_list": {
-              "media_players": "Media players"
+              "media_players": "Media players",
+              "weather": "Weather",
+              "energy": "Today's energy"
             },
             "welcome_user": "Welcome {user}",
             "summaries": "Summaries",
@@ -7176,7 +7181,8 @@
             "scenes": "Scenes",
             "automations": "Automations",
             "for_you": "For you",
-            "home": "Home"
+            "home": "Home",
+            "commonly_used": "Commonly used"
           },
           "common_controls": {
             "not_loaded": "Usage Prediction integration is not loaded.",

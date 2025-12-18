@@ -235,6 +235,12 @@ export class HaWaDialog extends ScrollableFadeMixin(LitElement) {
           );
           max-width: var(--ha-dialog-max-width, var(--safe-width));
         }
+        @media (prefers-reduced-motion: reduce) {
+          wa-dialog {
+            --show-duration: 0ms;
+            --hide-duration: 0ms;
+          }
+        }
 
         :host([width="small"]) wa-dialog {
           --width: min(var(--ha-dialog-width-sm, 320px), var(--full-width));

@@ -393,6 +393,7 @@ export class HaTargetPicker extends SubscribeMixin(LitElement) {
           .rowRenderer=${this._renderRow}
           .getItems=${this._getItems}
           @value-changed=${this._targetPicked}
+          use-top-label
           .addButtonLabel=${this.hass.localize(
             "ui.components.target-picker.add_target"
           )}
