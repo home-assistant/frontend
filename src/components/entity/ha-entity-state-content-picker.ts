@@ -250,7 +250,6 @@ export class HaStateContentPicker extends LitElement {
         .getItems=${this._getFilteredItems}
         .getAdditionalItems=${this._getAdditionalItems}
         .rowRenderer=${rowRenderer}
-        .searchFn=${this._searchFn}
         .notFoundLabel=${this.hass.localize("ui.components.combo-box.no_match")}
         .value=${this._getPickerValue()}
         allow-custom-value
@@ -448,24 +447,6 @@ export class HaStateContentPicker extends LitElement {
     }
 
     return [];
-  };
-
-  private _searchFn: PickerComboBoxSearchFn<PickerComboBoxItem> = (
-    search: string,
-    filteredItems: PickerComboBoxItem[],
-    _allItems: PickerComboBoxItem[]
-  ): PickerComboBoxItem[] => {
-    // Remove NO_ITEMS_AVAILABLE_ID if we have additional items (custom value option)
-    // This prevents "No matching items found" from showing when custom values are allowed
-    const hasAdditionalItems = this._getAdditionalItems(search).length > 0;
-    if (hasAdditionalItems) {
-      return filteredItems.filter(
-        (item) => typeof item !== "string" || item !== NO_ITEMS_AVAILABLE_ID
-      );
-    }
-    return filteredItems.filter(
-      (item) => typeof item !== "string" || item !== NO_ITEMS_AVAILABLE_ID
-    );
   };
 
   private async _moveItem(ev: CustomEvent) {
