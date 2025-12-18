@@ -20,11 +20,7 @@ import "../ha-combo-box-item";
 import "../ha-generic-picker";
 import type { HaGenericPicker } from "../ha-generic-picker";
 import "../ha-input-helper-text";
-import {
-  NO_ITEMS_AVAILABLE_ID,
-  type PickerComboBoxItem,
-  type PickerComboBoxSearchFn,
-} from "../ha-picker-combo-box";
+import type { PickerComboBoxItem } from "../ha-picker-combo-box";
 import "../ha-sortable";
 
 const rowRenderer: RenderItemFunction<PickerComboBoxItem> = (item) => html`
@@ -247,12 +243,15 @@ export class HaStateContentPicker extends LitElement {
         .hass=${this.hass}
         .disabled=${this.disabled}
         .required=${this.required && !value.length}
+        .value=${this._getPickerValue()}
         .getItems=${this._getFilteredItems}
         .getAdditionalItems=${this._getAdditionalItems}
         .rowRenderer=${rowRenderer}
         .notFoundLabel=${this.hass.localize("ui.components.combo-box.no_match")}
-        .value=${this._getPickerValue()}
         allow-custom-value
+        .customValueLabel=${this.hass.localize(
+          "ui.components.entity.entity-state-content-picker.add_custom_value"
+        )}
         @value-changed=${this._pickerValueChanged}
       >
         <div slot="field" class="container">
