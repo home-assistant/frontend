@@ -379,6 +379,10 @@ export class HaFloorPicker extends LitElement {
   };
 
   protected render(): TemplateResult {
+    const placeholder =
+      this.placeholder ??
+      this.hass.localize("ui.components.floor-picker.floor");
+
     const valueRenderer = this._computeValueRenderer(this.hass.floors);
 
     return html`
@@ -388,7 +392,7 @@ export class HaFloorPicker extends LitElement {
         .disabled=${this.disabled}
         .label=${this.label}
         .helper=${this.helper}
-        .placeholder=${this.placeholder}
+        .placeholder=${placeholder}
         .notFoundLabel=${this._notFoundLabel}
         .emptyLabel=${this.hass.localize(
           "ui.components.floor-picker.no_floors"

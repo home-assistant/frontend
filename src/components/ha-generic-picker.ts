@@ -127,8 +127,6 @@ export class HaGenericPicker extends PickerMixin(LitElement) {
   private _unsubscribeTinyKeys?: () => void;
 
   protected render() {
-    const hasValue = !!this.value?.length;
-
     // Only show label if it's not a top label and there is a value.
     const label = this.useTopLabel && this.value ? undefined : this.label;
 
@@ -138,7 +136,7 @@ export class HaGenericPicker extends PickerMixin(LitElement) {
           : nothing}
         <div id="picker">
           <slot name="field">
-            ${this.addButtonLabel && !hasValue
+            ${this.addButtonLabel && !this.value
               ? html`<ha-button
                   size="small"
                   appearance="filled"
