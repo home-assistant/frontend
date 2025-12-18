@@ -84,7 +84,6 @@ class HaEntityAttributePicker extends LitElement {
       <ha-generic-picker
         .hass=${this.hass}
         .value=${this.value}
-        .autofocus=${this.autofocus}
         .label=${this.label ??
         this.hass.localize(
           "ui.components.entity.entity-attribute-picker.attribute"
