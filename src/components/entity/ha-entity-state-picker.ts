@@ -6,11 +6,7 @@ import { fireEvent } from "../../common/dom/fire_event";
 import { getStates } from "../../common/entity/get_states";
 import type { HomeAssistant, ValueChangedEvent } from "../../types";
 import "../ha-generic-picker";
-import {
-  NO_ITEMS_AVAILABLE_ID,
-  type PickerComboBoxItem,
-  type PickerComboBoxSearchFn,
-} from "../ha-picker-combo-box";
+import type { PickerComboBoxItem } from "../ha-picker-combo-box";
 
 @customElement("ha-entity-state-picker")
 export class HaEntityStatePicker extends LitElement {
@@ -147,24 +143,6 @@ export class HaEntityStatePicker extends LitElement {
     return [];
   };
 
-  private _searchFn: PickerComboBoxSearchFn<PickerComboBoxItem> = (
-    search: string,
-    filteredItems: PickerComboBoxItem[],
-    _allItems: PickerComboBoxItem[]
-  ): PickerComboBoxItem[] => {
-    // Remove NO_ITEMS_AVAILABLE_ID if we have additional items (custom value option)
-    // This prevents "No matching items found" from showing when custom values are allowed
-    const hasAdditionalItems = this._getAdditionalItems(search).length > 0;
-    if (hasAdditionalItems) {
-      return filteredItems.filter(
-        (item) => typeof item !== "string" || item !== NO_ITEMS_AVAILABLE_ID
-      );
-    }
-    return filteredItems.filter(
-      (item) => typeof item !== "string" || item !== NO_ITEMS_AVAILABLE_ID
-    );
-  };
-
   protected render() {
     if (!this.hass) {
       return nothing;
@@ -183,8 +161,10 @@ export class HaEntityStatePicker extends LitElement {
         .value=${this.value}
         .getItems=${this._getFilteredItems}
         .getAdditionalItems=${this._getAdditionalItems}
-        .searchFn=${this._searchFn}
         .notFoundLabel=${this.hass.localize("ui.components.combo-box.no_match")}
+        .customValueLabel=${this.hass.localize(
+          "ui.components.entity.entity-state-picker.add_custom_state" as any
+        )}
         @value-changed=${this._valueChanged}
       >
       </ha-generic-picker>

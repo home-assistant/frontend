@@ -680,7 +680,8 @@
           "show_attributes": "Show attributes"
         },
         "entity-state-picker": {
-          "state": "State"
+          "state": "State",
+          "add_custom_state": "Add custom state"
         },
         "entity-state-content-picker": {
           "add": "Add"
