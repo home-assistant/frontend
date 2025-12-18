@@ -196,7 +196,7 @@ export class HaEntityNamePicker extends LitElement {
         .searchKeys=${SEARCH_KEYS}
         .searchFn=${this._searchFn}
         .notFoundLabel=${this.hass.localize(
-          "ui.components.entity.entity-name-picker.no_match" as LocalizeKeys
+          "ui.components.entity.entity-name-picker.no_match"
         )}
         .value=${this._getPickerValue()}
         allow-custom-value
