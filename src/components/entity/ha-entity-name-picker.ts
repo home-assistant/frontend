@@ -19,7 +19,10 @@ import "../ha-combo-box-item";
 import "../ha-generic-picker";
 import type { HaGenericPicker } from "../ha-generic-picker";
 import "../ha-input-helper-text";
-import type { PickerComboBoxItem } from "../ha-picker-combo-box";
+import {
+  NO_ITEMS_AVAILABLE_ID,
+  type PickerComboBoxItem,
+} from "../ha-picker-combo-box";
 import "../ha-sortable";
 
 const SEARCH_KEYS: FuseWeightedKey[] = [
@@ -382,8 +385,7 @@ export class HaEntityNamePicker extends LitElement {
     const hasAdditionalItems = this._getAdditionalItems(search).length > 0;
     if (hasAdditionalItems) {
       return filteredItems.filter(
-        (item) =>
-          typeof item !== "string" || item !== "___no_items_available___"
+        (item) => typeof item !== "string" || item !== NO_ITEMS_AVAILABLE_ID
       );
     }
     return filteredItems;

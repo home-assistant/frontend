@@ -53,7 +53,8 @@ export interface PickerComboBoxItem {
   icon_path?: string;
   icon?: string;
 }
-const NO_ITEMS_AVAILABLE_ID = "___no_items_available___";
+
+export const NO_ITEMS_AVAILABLE_ID = "___no_items_available___";
 
 const DEFAULT_ROW_RENDERER: RenderItemFunction<PickerComboBoxItem> = (
   item
