@@ -1,5 +1,4 @@
 import { mdiDragHorizontalVariant, mdiPlus } from "@mdi/js";
-import type { RenderItemFunction } from "@lit-labs/virtualizer/virtualize";
 import type { HassEntity } from "home-assistant-js-websocket";
 import { css, html, LitElement, nothing } from "lit";
 import { customElement, property, query } from "lit/decorators";
