@@ -195,9 +195,11 @@ export class HaColorPicker extends LitElement {
 
   private _valueChanged(ev: CustomEvent<{ value?: string }>) {
     ev.stopPropagation();
-    const newValue = ev.detail.value ?? "";
+    const selected = ev.detail.value;
     const normalized =
-      newValue && newValue === this.defaultColor ? undefined : newValue;
+      selected && selected === this.defaultColor
+        ? undefined
+        : (selected ?? undefined);
     this.value = normalized;
     fireEvent(this, "value-changed", { value: this.value });
   }
