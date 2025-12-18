@@ -63,6 +63,7 @@ class HaEntityAttributePicker extends LitElement {
             options.push({
               id: attribute,
               primary: hass.formatEntityAttributeName(stateObj, attribute),
+              sorting_label: attribute,
             });
           }
         }
