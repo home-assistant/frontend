@@ -43,7 +43,7 @@ export class HaPickerField extends PickerMixin(LitElement) {
   }
 
   protected render() {
-    const hasValue = !!this.value?.length;
+    const hasValue = !!this.value;
 
     const showClearIcon =
       !!this.value && !this.required && !this.disabled && !this.hideClearIcon;
