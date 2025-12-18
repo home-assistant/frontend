@@ -90,6 +90,7 @@ const options = new framework.CastReceiverOptions();
 options.disableIdleTimeout = true;
 options.customNamespaces = {
   // type definition is wrong, should be "JSON" instead of "json"
+  // https://developers.google.com/cast/docs/reference/web_receiver/cast.framework.system#.MessageType
   [CAST_NS]: "JSON" as framework.system.MessageType.JSON,
 };
 
@@ -128,6 +129,7 @@ playerManager.setMessageInterceptor(
       media.streamType = "LIVE" as framework.messages.StreamType.LIVE;
       media.contentType = "application/vnd.apple.mpegurl";
       // type definition is wrong, should be "FMP4" instead of "fmp4"
+      // https://developers.google.com/cast/docs/reference/web_receiver/cast.framework.messages#.HlsVideoSegmentFormat
       media.hlsVideoSegmentFormat =
         "FMP4" as framework.messages.HlsVideoSegmentFormat.FMP4;
     }
