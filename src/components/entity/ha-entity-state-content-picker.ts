@@ -23,7 +23,6 @@ import "../ha-input-helper-text";
 import type { PickerComboBoxItem } from "../ha-picker-combo-box";
 import "../ha-sortable";
 
-
 const HIDDEN_ATTRIBUTES = [
   "access_token",
   "available_modes",
