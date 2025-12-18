@@ -352,12 +352,12 @@ export class DialogAddApplicationCredential extends LitElement {
         }
         .row {
           display: flex;
-          padding: 8px 0;
+          padding: var(--ha-space-2) 0;
         }
         ha-textfield {
           display: block;
-          margin-top: 16px;
-          margin-bottom: 16px;
+          margin-top: var(--ha-space-4);
+          margin-bottom: var(--ha-space-4);
         }
         a {
           text-decoration: none;
@@ -366,8 +366,8 @@ export class DialogAddApplicationCredential extends LitElement {
           --mdc-icon-size: 16px;
         }
         ha-markdown {
-          margin-top: 16px;
-          margin-bottom: 16px;
+          margin-top: var(--ha-space-4);
+          margin-bottom: var(--ha-space-4);
         }
         ha-fade-in {
           display: flex;
