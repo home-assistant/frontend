@@ -145,7 +145,7 @@ export class HaEntityStatePicker extends LitElement {
     }
 
     return [];
-  };;
+  };
 
   private _searchFn: PickerComboBoxSearchFn<PickerComboBoxItem> = (
     search: string,
