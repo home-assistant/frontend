@@ -11,14 +11,11 @@ import { findEntities } from "../common/find-entities";
 import type { LovelaceElement, LovelaceElementConfig } from "../elements/types";
 import type { LovelaceCard, LovelaceCardEditor } from "../types";
 import { createStyledHuiElement } from "./picture-elements/create-styled-hui-element";
-import type { PictureElementsCardConfig } from "./types";
+import {
+  PREVIEW_CLICK_CALLBACK,
+  type PictureElementsCardConfig,
+} from "./types";
 import type { PersonEntity } from "../../../data/person";
-
-// Symbol for preview click callback - preserved through spreads, not serialized
-// This allows the editor to attach a callback that only exists on the edited card's config
-export const PREVIEW_CLICK_CALLBACK = Symbol("previewClickCallback");
-
-export type PreviewClickCallback = (x: number, y: number) => void;
 
 @customElement("hui-picture-elements-card")
 class HuiPictureElementsCard extends LitElement implements LovelaceCard {
@@ -230,11 +227,7 @@ class HuiPictureElementsCard extends LitElement implements LovelaceCard {
   }
 
   private _handleImageClick(ev: MouseEvent): void {
-    if (
-      !this.preview ||
-      !this._config ||
-      !(this._config as any)[PREVIEW_CLICK_CALLBACK]
-    ) {
+    if (!this.preview || !this._config?.[PREVIEW_CLICK_CALLBACK]) {
       return;
     }
 
@@ -242,11 +235,8 @@ class HuiPictureElementsCard extends LitElement implements LovelaceCard {
     const x = ((ev.clientX - rect.left) / rect.width) * 100;
     const y = ((ev.clientY - rect.top) / rect.height) * 100;
 
-    // Call the callback if present on config (only the edited card has this)
-    const callback = (this._config as any)[
-      PREVIEW_CLICK_CALLBACK
-    ] as PreviewClickCallback;
-    callback(x, y);
+    // only the edited card has this callback
+    this._config[PREVIEW_CLICK_CALLBACK](x, y);
   }
 }
 

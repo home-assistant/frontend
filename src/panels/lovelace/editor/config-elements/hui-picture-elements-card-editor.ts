@@ -21,13 +21,15 @@ import "../../../../components/ha-form/ha-form";
 import "../../../../components/ha-icon";
 import "../../../../components/ha-switch";
 import type { HomeAssistant } from "../../../../types";
-import type { PictureElementsCardConfig } from "../../cards/types";
+import {
+  PREVIEW_CLICK_CALLBACK,
+  type PictureElementsCardConfig,
+} from "../../cards/types";
 import type { LovelaceCardEditor } from "../../types";
 import "../hui-sub-element-editor";
 import { baseLovelaceCardConfig } from "../structs/base-card-struct";
 import type { EditDetailElementEvent, SubElementEditorConfig } from "../types";
 import { configElementStyle } from "./config-elements-style";
-import { PREVIEW_CLICK_CALLBACK } from "../../cards/hui-picture-elements-card";
 import "../hui-picture-elements-card-row-editor";
 import type { LovelaceElementConfig } from "../../elements/types";
 import type { LocalizeFunc } from "../../../../common/translations/localize";

@@ -483,6 +483,10 @@ export interface PictureCardConfig extends LovelaceCardConfig {
   alt_text?: string;
 }
 
+// Symbol for preview click callback - preserved through spreads, not serialized
+// This allows the editor to attach a callback that only exists on the edited card's config
+export const PREVIEW_CLICK_CALLBACK = Symbol("previewClickCallback");
+
 export interface PictureElementsCardConfig extends LovelaceCardConfig {
   title?: string;
   image?: string | MediaSelectorValue;
@@ -497,6 +501,7 @@ export interface PictureElementsCardConfig extends LovelaceCardConfig {
   theme?: string;
   dark_mode_image?: string | MediaSelectorValue;
   dark_mode_filter?: string;
+  [PREVIEW_CLICK_CALLBACK]?: (x: number, y: number) => void;
 }
 
 export interface PictureEntityCardConfig extends LovelaceCardConfig {
