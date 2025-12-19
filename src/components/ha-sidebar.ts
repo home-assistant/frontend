@@ -681,7 +681,7 @@ class HaSidebar extends SubscribeMixin(LitElement) {
     tooltip.style.display = "block";
     tooltip.style.position = "fixed";
     tooltip.style.top = `${top}px`;
-    tooltip.style.left = `calc(${item.offsetLeft + item.clientWidth + 8}px + var(--safe-area-inset-left, 0))`;
+    tooltip.style.left = `calc(${item.offsetLeft + item.clientWidth + 8}px + var(--safe-area-inset-left, 0px))`;
   }
 
   private _hideTooltip() {
@@ -723,7 +723,7 @@ class HaSidebar extends SubscribeMixin(LitElement) {
           padding-bottom: calc(14px + var(--safe-area-inset-bottom, 0px));
         }
         .menu {
-          height: calc(var(--header-height) + var(--safe-area-inset-top, 0));
+          height: calc(var(--header-height) + var(--safe-area-inset-top, 0px));
           box-sizing: border-box;
           display: flex;
           padding: 0 var(--ha-space-1);
@@ -742,16 +742,16 @@ class HaSidebar extends SubscribeMixin(LitElement) {
           font-size: var(--ha-font-size-xl);
           align-items: center;
           padding-left: calc(
-            var(--ha-space-1) + var(--safe-area-inset-left, 0)
+            var(--ha-space-1) + var(--safe-area-inset-left, 0px)
           );
           padding-inline-start: calc(
-            var(--ha-space-1) + var(--safe-area-inset-left, 0)
+            var(--ha-space-1) + var(--safe-area-inset-left, 0px)
           );
           padding-inline-end: initial;
-          padding-top: var(--safe-area-inset-top, 0);
+          padding-top: var(--safe-area-inset-top, 0px);
         }
         :host([expanded]) .menu {
-          width: calc(256px + var(--safe-area-inset-left, 0));
+          width: calc(256px + var(--safe-area-inset-left, 0px));
         }
         :host([narrow][expanded]) .menu {
           width: 100%;
@@ -780,7 +780,8 @@ class HaSidebar extends SubscribeMixin(LitElement) {
         ha-fade-in,
         ha-md-list {
           height: calc(
-            100% - var(--header-height) - var(--safe-area-inset-top, 0) - 132px
+            100% - var(--header-height) - var(--safe-area-inset-top, 0px) -
+              132px
           );
         }
 
@@ -795,7 +796,7 @@ class HaSidebar extends SubscribeMixin(LitElement) {
         ha-md-list {
           overflow-x: hidden;
           background: none;
-          margin-left: var(--safe-area-inset-left, 0);
+          margin-left: var(--safe-area-inset-left, 0px);
         }
 
         ha-md-list-item {
@@ -817,7 +818,7 @@ class HaSidebar extends SubscribeMixin(LitElement) {
           width: 248px;
         }
         :host([narrow][expanded]) ha-md-list-item {
-          width: calc(240px - var(--safe-area-inset-left, 0));
+          width: calc(240px - var(--safe-area-inset-left, 0px));
         }
 
         ha-md-list-item.selected {

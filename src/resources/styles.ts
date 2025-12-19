@@ -186,13 +186,13 @@ export const haStyleDialogFixedTop = css`
     --mdc-dialog-max-height: calc(
       100vh - var(--dialog-surface-margin-top) - var(--ha-space-2) - var(
           --safe-area-inset-y,
-          0
+          0px
         )
     );
     --mdc-dialog-max-height: calc(
       100svh - var(--dialog-surface-margin-top) - var(--ha-space-2) - var(
           --safe-area-inset-y,
-          0
+          0px
         )
     );
   }

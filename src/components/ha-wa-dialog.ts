@@ -266,10 +266,16 @@ export class HaWaDialog extends ScrollableFadeMixin(LitElement) {
           /* Used to offset the dialog from the safe areas when space is limited */
           transform: translate(
             calc(
-              var(--safe-area-offset-left, 0) - var(--safe-area-offset-right, 0)
+              var(--safe-area-offset-left, 0px) - var(
+                  --safe-area-offset-right,
+                  0px
+                )
             ),
             calc(
-              var(--safe-area-offset-top, 0) - var(--safe-area-offset-bottom, 0)
+              var(--safe-area-offset-top, 0px) - var(
+                  --safe-area-offset-bottom,
+                  0px
+                )
             )
           );
           display: flex;
