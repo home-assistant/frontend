@@ -159,7 +159,7 @@ export class HaEntityStatePicker extends LitElement {
         .getAdditionalItems=${this._getAdditionalItems}
         .notFoundLabel=${this.hass.localize("ui.components.combo-box.no_match")}
         .customValueLabel=${this.hass.localize(
-          "ui.components.entity.entity-state-picker.add_custom_state" as any
+          "ui.components.entity.entity-state-picker.add_custom_state"
         )}
         @value-changed=${this._valueChanged}
       >
