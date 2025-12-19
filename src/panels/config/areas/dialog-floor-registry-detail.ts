@@ -104,7 +104,6 @@ class DialogFloorDetail extends LitElement {
       return nothing;
     }
     const entry = this._params.entry;
-    const nameInvalid = !this._isNameValid();
 
     return html`
       <ha-wa-dialog
@@ -247,7 +246,7 @@ class DialogFloorDetail extends LitElement {
           <ha-button
             slot="primaryAction"
             @click=${this._updateEntry}
-            .disabled=${nameInvalid || !!this._submitting}
+            .disabled=${!!this._submitting}
           >
             ${entry
               ? this.hass.localize("ui.common.save")
@@ -293,10 +292,6 @@ class DialogFloorDetail extends LitElement {
     this._addedAreas = new Set(this._addedAreas);
   }
 
-  private _isNameValid() {
-    return this._name.trim() !== "";
-  }
-
   private _nameChanged(ev) {
     this._error = undefined;
     this._name = ev.target.value;
@@ -313,7 +308,16 @@ class DialogFloorDetail extends LitElement {
   }
 
   private async _updateEntry() {
+    if (this._name.trim() === "") {
+      this._error = this.hass.localize(
+        "ui.panel.config.floors.editor.name_required"
+      );
+      return;
+    }
+    this._error = undefined;
+
     this._submitting = true;
+
     const create = !this._params!.entry;
     try {
       const values: FloorRegistryEntryMutableParams = {
