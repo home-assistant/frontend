@@ -168,7 +168,7 @@ const createRspackConfig = ({
           );
         },
       }),
-      isHassioBuild || isLandingPageBuild
+      bundle.emptyPackages({ isHassioBuild, isLandingPageBuild }).length
         ? new rspack.NormalModuleReplacementPlugin(
             new RegExp(
               bundle
