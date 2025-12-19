@@ -120,6 +120,7 @@ export interface ButtonToggleSelector {
 export interface ChooseSelector {
   choose: {
     choices: Record<string, { selector: Selector }>;
+    translation_key?: string;
   };
 }
 
