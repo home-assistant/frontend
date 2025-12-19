@@ -217,6 +217,10 @@ const createRspackConfig = ({
           "@lit-labs/virtualizer/polyfills/resize-observer-polyfill/ResizeObserver.js",
         "@lit-labs/observers/resize-controller":
           "@lit-labs/observers/resize-controller.js",
+        "@formatjs/intl-durationformat/should-polyfill$":
+          "@formatjs/intl-durationformat/should-polyfill.js",
+        "@formatjs/intl-durationformat/polyfill-force$":
+          "@formatjs/intl-durationformat/polyfill-force.js",
       },
     },
     output: {
