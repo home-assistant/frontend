@@ -107,13 +107,13 @@ class HaPanelDevDebug extends SubscribeMixin(LitElement) {
     haStyle,
     css`
       ha-card {
-        margin-bottom: 16px;
+        margin-bottom: var(--ha-space-4);
       }
       .card-content {
-        padding: 8px;
+        padding: var(--ha-space-2);
       }
       .content {
-        padding: 28px 20px 16px;
+        padding: var(--ha-space-7) var(--ha-space-5) var(--ha-space-4);
         display: block;
         max-width: 600px;
         margin: 0 auto;

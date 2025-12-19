@@ -507,7 +507,7 @@ class HaPanelDevState extends LitElement {
           -webkit-user-select: initial;
           -moz-user-select: initial;
           display: block;
-          padding: 16px;
+          padding: var(--ha-space-4);
         }
 
         :host search-input {
@@ -525,7 +525,7 @@ class HaPanelDevState extends LitElement {
         }
 
         .heading ha-formfield {
-          margin-right: 8px;
+          margin-right: var(--ha-space-2);
           --mdc-typography-body2-font-size: var(--ha-font-size-m);
           --mdc-typography-body2-font-weight: var(--ha-font-weight-medium);
         }
@@ -534,9 +534,9 @@ class HaPanelDevState extends LitElement {
           display: block;
           font-family: var(--ha-font-family-code);
           color: var(--secondary-text-color);
-          padding: 0 8px;
-          margin-bottom: 8px;
-          margin-top: 4px;
+          padding: 0 var(--ha-space-2);
+          margin-bottom: var(--ha-space-2);
+          margin-top: var(--ha-space-1);
           font-size: var(--ha-font-size-s);
           --mdc-icon-size: 14px;
           --mdc-icon-button-size: 24px;
@@ -557,15 +557,15 @@ class HaPanelDevState extends LitElement {
         }
 
         .state-input {
-          margin-top: 16px;
+          margin-top: var(--ha-space-4);
         }
 
         ha-expansion-panel {
-          margin: 0 8px 16px;
+          margin: 0 var(--ha-space-2) var(--ha-space-4);
         }
 
         ha-expansion-panel p {
-          padding: 0 8px;
+          padding: 0 var(--ha-space-2);
         }
 
         .inputs {
@@ -574,12 +574,12 @@ class HaPanelDevState extends LitElement {
         }
 
         .info {
-          padding: 0 16px;
+          padding: 0 var(--ha-space-4);
         }
 
         .button-row {
           display: flex;
-          margin: 8px 0;
+          margin: var(--ha-space-2) 0;
           align-items: center;
           gap: var(--ha-space-2);
         }
