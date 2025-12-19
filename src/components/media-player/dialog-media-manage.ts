@@ -333,6 +333,9 @@ class DialogMediaManage extends LitElement {
   static get styles(): CSSResultGroup {
     return [
       css`
+        ha-wa-dialog {
+          --dialog-content-padding: 0;
+        }
         ha-dialog-header ha-media-upload-button,
         ha-dialog-header ha-button {
           --mdc-theme-primary: var(--primary-text-color);
